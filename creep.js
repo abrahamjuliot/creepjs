@@ -50,12 +50,18 @@
     // change varies
     const nav = () => {
         const n = navigator
-		let { userAgent, appVersion, platform } = n
-		const trust = (
-			userAgent.includes(appVersion) &&
-			userAgent.includes(platform)
-		) ? true: false
-		if (!trust) { userAgent = appVersion = platform = undefined }
+        let {
+            userAgent,
+            appVersion,
+            platform
+        } = n
+        const trust = (
+            userAgent.includes(appVersion) &&
+            userAgent.includes(platform)
+        ) ? true : false
+        if (!trust) {
+            userAgent = appVersion = platform = undefined
+        }
         return {
             appVersion: appVersion,
             deviceMemory: n.deviceMemory, // device
@@ -69,12 +75,12 @@
             mimeTypes: attempt(() => [...navigator.mimeTypes].map(m => m.type)),
             plugins: attempt(() => {
                 return [...navigator.plugins]
-				.map(p => ({
-					name: p.name,
-					description: p.description,
-					filename: p.filename,
-					version: p.version
-				}))
+                    .map(p => ({
+                        name: p.name,
+                        description: p.description,
+                        filename: p.filename,
+                        version: p.version
+                    }))
             })
         }
     }
@@ -107,15 +113,13 @@
     // browser
     const getVoices = () => {
         return new Promise(resolve => {
-			if (typeof speechSynthesis === 'undefined') {
-				return resolve(undefined)
-  			}
-            else if (speechSynthesis.getVoices().length) {
+            if (typeof speechSynthesis === 'undefined') {
+                return resolve(undefined)
+            } else if (speechSynthesis.getVoices().length) {
                 return resolve(voices)
+            } else {
+                speechSynthesis.onvoiceschanged = () => resolve(speechSynthesis.getVoices())
             }
-			else {
-				speechSynthesis.onvoiceschanged = () => resolve(speechSynthesis.getVoices())
-			}
         })
     }
     // browser
@@ -221,9 +225,9 @@
     }
     // device
     const timezone = () => {
-		const time = /(\d{1,2}:\d{1,2}:\d{1,2}\s)/ig
+        const time = /(\d{1,2}:\d{1,2}:\d{1,2}\s)/ig
         return [
-			(new Date()).getTimezoneOffset(),
+            (new Date()).getTimezoneOffset(),
             Intl.DateTimeFormat().resolvedOptions().timeZone,
             (new Date('1/1/2001').toTimeString()).replace(time, '')
         ].join(', ')
@@ -276,23 +280,39 @@
         const timezoneComputed = attempt(() => timezone())
         const cRectsComputed = attempt(() => cRects())
         const mathsComputed = attempt(() => maths())
-		// await voices and media, then compute
+        // await voices and media, then compute
         const [
-			voices,
-			mediaDevices
-		] = await Promise.all([
-			getVoices(),
-			navigator.mediaDevices.enumerateDevices()
-		])
-		const voicesComputed = voices.map(({ name, lang }) => ({ name, lang }))
-		const mediaDevicesComputed = mediaDevices
-			.map(({ deviceId, groupId, kind, label }) => ({ deviceId, groupId, kind, label }))
-		// await hash values
+            voices,
+            mediaDevices
+        ] = await Promise.all([
+            getVoices(),
+            navigator.mediaDevices.enumerateDevices()
+        ])
+        const voicesComputed = voices.map(({
+            name,
+            lang
+        }) => ({
+            name,
+            lang
+        }))
+        const mediaDevicesComputed = mediaDevices
+            .map(({
+                deviceId,
+                groupId,
+                kind,
+                label
+            }) => ({
+                deviceId,
+                groupId,
+                kind,
+                label
+            }))
+        // await hash values
         const [
             mimeTypesHash, // order must match
             pluginsHash,
-			voicesHash,
-			mediaDeviceHash,
+            voicesHash,
+            mediaDeviceHash,
             screenHash,
             weglDataURLHash,
             consoleErrorsHash,
@@ -302,8 +322,8 @@
         ] = await Promise.all([
             hashify(mimeTypes),
             hashify(plugins),
-			hashify(voicesComputed),
-			hashify(mediaDevicesComputed),
+            hashify(voicesComputed),
+            hashify(mediaDevicesComputed),
             hashify(screenComputed),
             hashify(webglDataURLComputed),
             hashify(consoleErrorsComputed),
@@ -317,8 +337,8 @@
             webgl: webglComputed,
             mimeTypes: [mimeTypes, mimeTypesHash],
             plugins: [plugins, pluginsHash],
-			voices: [voicesComputed, voicesHash],
-			mediaDevices: [mediaDevicesComputed, mediaDeviceHash],
+            voices: [voicesComputed, voicesHash],
+            mediaDevices: [mediaDevicesComputed, mediaDeviceHash],
             screen: [screenComputed, screenHash],
             webglDataURL: [webglDataURLComputed, weglDataURLHash],
             consoleErrors: [consoleErrorsComputed, consoleErrorsHash],
@@ -337,7 +357,7 @@
         const {
             nav,
             webgl,
-			mediaDevices
+            mediaDevices
         } = fp
         const device = {
             renderer: webgl.renderer,
@@ -347,7 +367,7 @@
             language: nav.language,
             maxTouchPoints: nav.maxTouchPoints,
             platform: nav.platform,
-			mediaDevices: fp.mediaDevices[1]
+            mediaDevices: fp.mediaDevices[1]
         }
         console.log(fp)
         const [deviceHash, fpHash] = await Promise.all([
