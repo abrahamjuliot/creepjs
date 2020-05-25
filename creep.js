@@ -14,7 +14,6 @@
             return undefined
         }
     }
-    const jsonify = (x) => JSON.stringify(x)
     const hashify = async (x) => {
         const json = `${JSON.stringify(x)}`
         const jsonBuffer = new TextEncoder('utf-8').encode(json)
