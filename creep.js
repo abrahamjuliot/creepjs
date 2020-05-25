@@ -295,17 +295,7 @@
             lang
         }))
         const mediaDevicesComputed = mediaDevices
-            .map(({
-                deviceId,
-                groupId,
-                kind,
-                label
-            }) => ({
-                deviceId,
-                groupId,
-                kind,
-                label
-            }))
+            .map(({ kind }) => ({ kind })) // chrome randomizes groupId
         // await hash values
         const [
             mimeTypesHash, // order must match
@@ -365,8 +355,7 @@
             hardwareConcurrency: nav.hardwareConcurrency,
             language: nav.language,
             maxTouchPoints: nav.maxTouchPoints,
-            platform: nav.platform,
-            mediaDevices: fp.mediaDevices[1]
+            platform: nav.platform
         }
         console.log(fp)
         const [deviceHash, fpHash] = await Promise.all([
