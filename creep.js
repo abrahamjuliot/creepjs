@@ -394,7 +394,7 @@
 			[device] platform: ${nav.platform}<br>
 			plugins: ${fp.plugins[1]}<br>
 			voices: ${fp.voices[1]}<br>
-			media deviced: ${fp.mediaDevices[1]}<br>
+			[device] media devices: ${fp.mediaDevices[1]}<br>
 			userAgent: ${nav.userAgent}<br>
 			vendor: ${nav.vendor}<br>
 		`
