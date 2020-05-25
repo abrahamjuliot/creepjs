@@ -15,16 +15,13 @@
         }
     }
     const jsonify = (x) => JSON.stringify(x)
-
-    function hashify(x) {
-        const str = `${JSON.stringify(x)}`
-        let i, l = str.length,
-            hash = 0x811c9dc5
-        for (i = 0; i < l; i++) {
-            hash ^= str.charCodeAt(i)
-            hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24)
-        }
-        return ("0000000" + (hash >>> 0).toString(16)).substr(-8)
+    const hashify = async (x) => {
+        const json = `${JSON.stringify(x)}`
+        const jsonBuffer = new TextEncoder('utf-8').encode(json)
+        const hashBuffer = await crypto.subtle.digest('SHA-256', jsonBuffer)
+        const hashArray = Array.from(new Uint8Array(hashBuffer))
+        const hashHex = hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('')
+        return hashHex
     }
     // ie11 fix for template.content
     function templateContent(template) {
@@ -41,9 +38,9 @@
         }
     }
     // tagged template literal (JSX alternative)
-    const patch = (oldEl, newEl, fn = null) => {
+    const patch = async (oldEl, newEl, fn = null) => {
         oldEl.parentNode.replaceChild(newEl, oldEl);
-        return typeof fn === 'function' ? fn() : true
+        return typeof fn === 'function' ? await fn() : true
     }
     const html = (stringSet, ...expressionSet) => {
         const template = document.createElement('template')
@@ -53,22 +50,31 @@
     // change varies
     const nav = () => {
         const n = navigator
+		let { userAgent, appVersion, platform } = n
+		const trust = (
+			userAgent.includes(appVersion) &&
+			userAgent.includes(platform)
+		) ? true: false
+		if (!trust) { userAgent = appVersion = platform = undefined }
         return {
-            appVersion: n.appVersion,
-            appCodeName: n.appCodeName,
+            appVersion: appVersion,
             deviceMemory: n.deviceMemory, // device
             doNotTrack: n.doNotTrack,
             hardwareConcurrency: n.hardwareConcurrency, // device
-            languages: n.languages, // device
+            language: n.languages[0] != n.language ? undefined : n.language, // distrust
             maxTouchPoints: n.maxTouchPoints, // device
-            platform: n.platform, // device
-            userAgent: n.userAgent,
+            platform: platform, // device
+            userAgent: userAgent,
             vendor: n.vendor,
             mimeTypes: attempt(() => [...navigator.mimeTypes].map(m => m.type)),
             plugins: attempt(() => {
-                return [...n.plugins].map((p, i) => ({
-                    i: [p.name, p.description, p.filename, p.version]
-                }))
+                return [...navigator.plugins]
+				.map(p => ({
+					name: p.name,
+					description: p.description,
+					filename: p.filename,
+					version: p.version
+				}))
             })
         }
     }
@@ -97,6 +103,20 @@
             colorDepth,
             pixelDepth
         }
+    }
+    // browser
+    const getVoices = () => {
+        return new Promise(resolve => {
+			if (typeof speechSynthesis === 'undefined') {
+				return resolve(undefined)
+  			}
+            else if (speechSynthesis.getVoices().length) {
+                return resolve(voices)
+            }
+			else {
+				speechSynthesis.onvoiceschanged = () => resolve(speechSynthesis.getVoices())
+			}
+        })
     }
     // browser
     const canvas = () => {
@@ -136,7 +156,7 @@
             }
         }
     }
-    // browser+device
+    // device + browser
     const maths = () => {
         const n = 0.123124234234234242
         const fns = [
@@ -201,11 +221,12 @@
     }
     // device
     const timezone = () => {
-        return {
-            offset: (new Date()).getTimezoneOffset(),
-            format: Intl.DateTimeFormat().resolvedOptions().timeZone,
-            string: new Date('1/1/2001').toTimeString()
-        }
+		const time = /(\d{1,2}:\d{1,2}:\d{1,2}\s)/ig
+        return [
+			(new Date()).getTimezoneOffset(),
+            Intl.DateTimeFormat().resolvedOptions().timeZone,
+            (new Date('1/1/2001').toTimeString()).replace(time, '')
+        ].join(', ')
     }
     // device + browser
     const cRects = () => {
@@ -216,31 +237,33 @@
     }
     // scene
     const scene = html `
-<fingerprint>
-	<div id="fingerpring"></div>
-	<style>
-	#rect-container{opacity:0;position:relative;border:1px solid #F72585}.rects{width:10px;height:10px;max-width:100%}.absolute{position:absolute}#cRect1{border:solid 2.715px;border-color:#F72585;padding:3.98px;margin-left:12.12px}#cRect2{border:solid 2px;border-color:#7209B7;font-size:30px;margin-top:20px;transform:skewY(23.1753218deg)}#cRect3{border:solid 2.89px;border-color:#3A0CA3;font-size:45px;transform:scale(100000000000000000000009999999999999.99, 1.89);margin-top:50px}#cRect4{border:solid 2px;border-color:#4361EE;transform:matrix(1.11, 2.0001, -1.0001, 1.009, 150, 94.4);margin-top:11.1331px;margin-left:12.1212px;padding:4.4545px;left:239.4141px;top:8.5050px}#cRect5{border:solid 2px;border-color:#4CC9F0;margin-left:42.395pt}#cRect6{border:solid 2px;border-color:#F72585;transform:perspective(12890px) translateZ(101.5px);padding:12px}#cRect7{margin-top:-350.552px;margin-left:0.9099rem;border:solid 2px;border-color:#4361EE}#cRect8{margin-top:-150.552px;margin-left:15.9099rem;border:solid 2px;border-color:#3A0CA3}#cRect9{margin-top:-110.552px;margin-left:15.9099rem;border:solid 2px;border-color:#7209B7}#cRect10{margin-top:-315.552px;margin-left:15.9099rem;border:solid 2px;border-color:#F72585}
-	</style>
-	<div id="rect-container">
-		<div id="cRect1" class="rects"></div>
-		<div id="cRect2" class="rects"></div>
-		<div id="cRect3" class="rects"></div>
-		<div id="cRect4" class="rects absolute"></div>
-		<div id="cRect5" class="rects"></div>
-		<div id="cRect6" class="rects"></div>
-		<div id="cRect7" class="rects absolute"></div>
-		<div id="cRect8" class="rects absolute"></div>
-		<div id="cRect9" class="rects absolute"></div>
-		<div id="cRect10" class="rects absolute"></div>
-	</div>
-</fingerprint>
-`
+	<fingerprint>
+		<div id="fingerpring"></div>
+		<style>
+		#rect-container{opacity:0;position:relative;border:1px solid #F72585}.rects{width:10px;height:10px;max-width:100%}.absolute{position:absolute}#cRect1{border:solid 2.715px;border-color:#F72585;padding:3.98px;margin-left:12.12px}#cRect2{border:solid 2px;border-color:#7209B7;font-size:30px;margin-top:20px;transform:skewY(23.1753218deg)}#cRect3{border:solid 2.89px;border-color:#3A0CA3;font-size:45px;transform:scale(100000000000000000000009999999999999.99, 1.89);margin-top:50px}#cRect4{border:solid 2px;border-color:#4361EE;transform:matrix(1.11, 2.0001, -1.0001, 1.009, 150, 94.4);margin-top:11.1331px;margin-left:12.1212px;padding:4.4545px;left:239.4141px;top:8.5050px}#cRect5{border:solid 2px;border-color:#4CC9F0;margin-left:42.395pt}#cRect6{border:solid 2px;border-color:#F72585;transform:perspective(12890px) translateZ(101.5px);padding:12px}#cRect7{margin-top:-350.552px;margin-left:0.9099rem;border:solid 2px;border-color:#4361EE}#cRect8{margin-top:-150.552px;margin-left:15.9099rem;border:solid 2px;border-color:#3A0CA3}#cRect9{margin-top:-110.552px;margin-left:15.9099rem;border:solid 2px;border-color:#7209B7}#cRect10{margin-top:-315.552px;margin-left:15.9099rem;border:solid 2px;border-color:#F72585}
+		</style>
+		<div id="rect-container">
+			<div id="cRect1" class="rects"></div>
+			<div id="cRect2" class="rects"></div>
+			<div id="cRect3" class="rects"></div>
+			<div id="cRect4" class="rects absolute"></div>
+			<div id="cRect5" class="rects"></div>
+			<div id="cRect6" class="rects"></div>
+			<div id="cRect7" class="rects absolute"></div>
+			<div id="cRect8" class="rects absolute"></div>
+			<div id="cRect9" class="rects absolute"></div>
+			<div id="cRect10" class="rects absolute"></div>
+		</div>
+	</fingerprint>
+	`
     // fingerprint
-    const fingerprint = () => {
-        //return device, browser, combined hash
-        //return list of data points|github pages
-        // compile device fp
+    const fingerprint = async () => {
+        // attempt to compute values
         const navComputed = attempt(() => nav())
+        const {
+            mimeTypes,
+            plugins
+        } = navComputed
         const screenComputed = attempt(() => screenFp())
         const canvasComputed = attempt(() => canvas())
         const gl = attempt(() => webgl())
@@ -253,67 +276,109 @@
         const timezoneComputed = attempt(() => timezone())
         const cRectsComputed = attempt(() => cRects())
         const mathsComputed = attempt(() => maths())
-        return {
+		// await voices and media, then compute
+        const [
+			voices,
+			mediaDevices
+		] = await Promise.all([
+			getVoices(),
+			navigator.mediaDevices.enumerateDevices()
+		])
+		const voicesComputed = voices.map(({ name, lang }) => ({ name, lang }))
+		const mediaDevicesComputed = mediaDevices
+			.map(({ deviceId, groupId, kind, label }) => ({ deviceId, groupId, kind, label }))
+		// await hash values
+        const [
+            mimeTypesHash, // order must match
+            pluginsHash,
+			voicesHash,
+			mediaDeviceHash,
+            screenHash,
+            weglDataURLHash,
+            consoleErrorsHash,
+            cRectsHash,
+            mathsHash,
+            canvasHash
+        ] = await Promise.all([
+            hashify(mimeTypes),
+            hashify(plugins),
+			hashify(voicesComputed),
+			hashify(mediaDevicesComputed),
+            hashify(screenComputed),
+            hashify(webglDataURLComputed),
+            hashify(consoleErrorsComputed),
+            hashify(cRectsComputed),
+            hashify(mathsComputed),
+            hashify(canvasComputed)
+        ])
+        const fingerprint = {
             nav: navComputed,
-            screen: [screenComputed, hashify(screenComputed)],
-            webgl: webglComputed,
-            webglDataURL: [webglDataURLComputed, hashify(webglDataURLComputed)],
-            consoleErrors: [consoleErrorsComputed, hashify(consoleErrorsComputed)],
             timezone: timezoneComputed,
-            cRects: [cRectsComputed, hashify(cRectsComputed)],
-            maths: [mathsComputed, hashify(mathsComputed)],
-            canvas: [canvasComputed, hashify(canvasComputed)]
+            webgl: webglComputed,
+            mimeTypes: [mimeTypes, mimeTypesHash],
+            plugins: [plugins, pluginsHash],
+			voices: [voicesComputed, voicesHash],
+			mediaDevices: [mediaDevicesComputed, mediaDeviceHash],
+            screen: [screenComputed, screenHash],
+            webglDataURL: [webglDataURLComputed, weglDataURLHash],
+            consoleErrors: [consoleErrorsComputed, consoleErrorsHash],
+            cRects: [cRectsComputed, cRectsHash],
+            maths: [mathsComputed, mathsHash],
+            canvas: [canvasComputed, canvasHash]
         }
+        return fingerprint
     }
     // patch
     const app = document.getElementById('fp-app')
-    patch(app, scene, () => {
+    patch(app, scene, async () => {
         // fingerprint and and render
         const fpElem = document.getElementById('fingerpring')
-        const fp = fingerprint()
-		const { nav, webgl } = fp
-		const device = {
-			renderer: webgl.renderer,
-			timezone: fp.timezone,
-			deviceMemory: nav.deviceMemory,
-			hardwareConcurrency: nav.hardwareConcurrency,
-			languages: nav.languages,
-			maxTouchPoints: nav.maxTouchPoints,
-			platform: nav.platform
-		}
+        const fp = await fingerprint().catch((e) => console.log(e))
+        const {
+            nav,
+            webgl,
+			mediaDevices
+        } = fp
+        const device = {
+            renderer: webgl.renderer,
+            timezone: fp.timezone,
+            deviceMemory: nav.deviceMemory,
+            hardwareConcurrency: nav.hardwareConcurrency,
+            language: nav.language,
+            maxTouchPoints: nav.maxTouchPoints,
+            platform: nav.platform,
+			mediaDevices: fp.mediaDevices[1]
+        }
         console.log(fp)
+        const [deviceHash, fpHash] = await Promise.all([
+            hashify(device),
+            hashify(fp)
+        ])
         data = `
-
-Device Id: ${hashify(device)}<br>
-Device/Browser Id: ${hashify(fp)}<br>
-webgl vendor: ${webgl.vendor}<br>
-[device] webgl renderer: ${webgl.renderer}<br>
-webglDataURL: ${fp.webglDataURL[1]}<br>
-client rects: ${fp.cRects[1]}<br>
-console errors: ${fp.consoleErrors[1]}<br>
-maths: ${fp.maths[1]}<br>
-canvas: ${fp.canvas[1]}<br>
-[device] timezone: ${hashify(fp.timezone)}<br>
-appCodeName: ${nav.appCodeName}<br>
-appVersion: ${nav.appVersion}<br>
-[device] deviceMemory: ${nav.deviceMemory}<br>
-doNotTrack: ${nav.doNotTrack}<br>
-[device] hardwareConcurrency: ${nav.hardwareConcurrency}<br>
-[device] languages: ${hashify(nav.languages)}<br>
-[device] maxTouchPoints: ${nav.maxTouchPoints}<br>
-mimeTypes: ${hashify(nav.mimeTypes)}<br>
-[device] platform: ${nav.platform}<br>
-plugins hash: ${hashify(nav.plugins)}<br>
-userAgent: ${nav.userAgent}<br>
-vendor: ${nav.vendor}<br>
+			Device Id: ${deviceHash}<br>
+			Device/Browser Id: ${fpHash}<br>
+			webgl vendor: ${webgl.vendor}<br>
+			[device] webgl renderer: ${webgl.renderer}<br>
+			webglDataURL: ${fp.webglDataURL[1]}<br>
+			client rects: ${fp.cRects[1]}<br>
+			console errors: ${fp.consoleErrors[1]}<br>
+			maths: ${fp.maths[1]}<br>
+			canvas: ${fp.canvas[1]}<br>
+			[device] timezone: ${fp.timezone}<br>
+			appVersion: ${nav.appVersion}<br>
+			[device] deviceMemory: ${nav.deviceMemory}<br>
+			doNotTrack: ${nav.doNotTrack}<br>
+			[device] hardwareConcurrency: ${nav.hardwareConcurrency}<br>
+			[device] language: ${nav.language}<br>
+			[device] maxTouchPoints: ${nav.maxTouchPoints}<br>
+			mimeTypes: ${fp.mimeTypes[1]}<br>
+			[device] platform: ${nav.platform}<br>
+			plugins: ${fp.plugins[1]}<br>
+			voices: ${fp.voices[1]}<br>
+			media deviced: ${fp.mediaDevices[1]}<br>
+			userAgent: ${nav.userAgent}<br>
+			vendor: ${nav.vendor}<br>
 		`
         return patch(fpElem, html `${data}`)
-    })
+    }).catch((e) => console.log(e))
 })()
-/*
-F72585 pin
-7209B7 lpur
-3A0CA3 pur
-4361EE blue
-4CC9F0 lblue
-*/
