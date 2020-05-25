@@ -121,6 +121,13 @@
             }
         })
     }
+	// device
+	const getmediaDevices = () => {
+		if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+			new Promise(resolve => resolve(undefined))
+		}
+		return navigator.mediaDevices.enumerateDevices()
+	}
     // browser
     const canvas = () => {
         const canvas = document.createElement('canvas')
@@ -285,7 +292,7 @@
             mediaDevices
         ] = await Promise.all([
             getVoices(),
-            navigator.mediaDevices.enumerateDevices()
+            getmediaDevices()
         ])
         const voicesComputed = voices.map(({
             name,
