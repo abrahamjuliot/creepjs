@@ -55,8 +55,7 @@
             platform
         } = n
         const trust = (
-            userAgent.includes(appVersion) &&
-            userAgent.includes(platform)
+            userAgent.includes(appVersion)
         ) ? true : false
         if (!trust) {
             userAgent = appVersion = platform = undefined
@@ -66,7 +65,7 @@
             deviceMemory: n.deviceMemory, // device
             doNotTrack: n.doNotTrack,
             hardwareConcurrency: n.hardwareConcurrency, // device
-            language: n.languages[0] != n.language ? undefined : n.language, // distrust
+            language: `${n.languages.join(', ')} (${n.language})`,
             maxTouchPoints: n.maxTouchPoints, // device
             platform: platform, // device
             userAgent: userAgent,
@@ -248,7 +247,7 @@
     // scene
     const scene = html `
 	<fingerprint>
-		<div id="fingerpring">Loading...</div>
+		<div id="fingerpring"></div>
 		<style>
 		#rect-container{opacity:0;position:relative;border:1px solid #F72585}.rects{width:10px;height:10px;max-width:100%}.absolute{position:absolute}#cRect1{border:solid 2.715px;border-color:#F72585;padding:3.98px;margin-left:12.12px}#cRect2{border:solid 2px;border-color:#7209B7;font-size:30px;margin-top:20px;transform:skewY(23.1753218deg)}#cRect3{border:solid 2.89px;border-color:#3A0CA3;font-size:45px;transform:scale(100000000000000000000009999999999999.99, 1.89);margin-top:50px}#cRect4{border:solid 2px;border-color:#4361EE;transform:matrix(1.11, 2.0001, -1.0001, 1.009, 150, 94.4);margin-top:11.1331px;margin-left:12.1212px;padding:4.4545px;left:239.4141px;top:8.5050px}#cRect5{border:solid 2px;border-color:#4CC9F0;margin-left:42.395pt}#cRect6{border:solid 2px;border-color:#F72585;transform:perspective(12890px) translateZ(101.5px);padding:12px}#cRect7{margin-top:-350.552px;margin-left:0.9099rem;border:solid 2px;border-color:#4361EE}#cRect8{margin-top:-150.552px;margin-left:15.9099rem;border:solid 2px;border-color:#3A0CA3}#cRect9{margin-top:-110.552px;margin-left:15.9099rem;border:solid 2px;border-color:#7209B7}#cRect10{margin-top:-315.552px;margin-left:15.9099rem;border:solid 2px;border-color:#F72585}
 		</style>
@@ -373,30 +372,68 @@
             hashify(device),
             hashify(fp)
         ])
+		
+		// await post fp hash to server
+		// if new, then append row and return timestamp (new)
+		// if not new, then get/return onld timestamp (insert new timestamp)
+		
         data = `
-			Device Id: ${deviceHash}<br>
-			Device/Browser Id: ${fpHash}<br>
-			webgl vendor: ${webgl.vendor}<br>
-			[device] webgl renderer: ${webgl.renderer}<br>
-			webglDataURL: ${fp.webglDataURL[1]}<br>
-			client rects: ${fp.cRects[1]}<br>
-			console errors: ${fp.consoleErrors[1]}<br>
-			maths: ${fp.maths[1]}<br>
-			canvas: ${fp.canvas[1]}<br>
-			[device] timezone: ${fp.timezone}<br>
-			appVersion: ${nav.appVersion}<br>
-			[device] deviceMemory: ${nav.deviceMemory}<br>
-			doNotTrack: ${nav.doNotTrack}<br>
-			[device] hardwareConcurrency: ${nav.hardwareConcurrency}<br>
-			[device] language: ${nav.language}<br>
-			[device] maxTouchPoints: ${nav.maxTouchPoints}<br>
-			mimeTypes: ${fp.mimeTypes[1]}<br>
-			[device] platform: ${nav.platform}<br>
-			plugins: ${fp.plugins[1]}<br>
-			voices: ${fp.voices[1]}<br>
-			[device] media devices: ${fp.mediaDevices[1]}<br>
-			userAgent: ${nav.userAgent}<br>
-			vendor: ${nav.vendor}<br>
+			<section>
+				<style>
+					#fingerprint-data {
+						box-sizing: border-box;
+						margin: 0 auto;
+					  	max-width: 700px;
+					}
+					#fingerprint-data > div {
+					  	color: #2c2f33;
+						overflow-wrap: break-word;
+						padding: 10px;
+						margin: 10px 0;
+						box-shadow: 0px 2px 2px 0px #cfd0d1;
+					}
+					#fingerprint-data h1,
+					#fingerprint-data h2 {
+						color: #2d3657;
+						text-align: center;
+					}
+					.device {
+						background: #7289da3b;
+					}
+				</style>
+				
+				<div id="fingerprint-data">
+					<h1 class="visit">Your Fingerprint</h1>
+					<h2 class="visit">last visit: ${new Date()}</h2>
+					<div class="device">Device Id: ${deviceHash}</div>
+					<div>Device/Browser Id: ${fpHash}</div>
+
+					<div class="device">platform: ${nav.platform}</div>
+					<div class="device">webgl renderer: ${webgl.renderer}</div>
+					<div class="device">deviceMemory: ${nav.deviceMemory}</div>
+					<div class="device">hardwareConcurrency: ${nav.hardwareConcurrency}</div>
+					<div class="device">maxTouchPoints: ${nav.maxTouchPoints}</div>
+					<div class="device">screen: ${fp.screen[1]}</div>
+					<div class="device">media devices: ${fp.mediaDevices[1]}</div>
+					<div class="device">language: ${nav.language}</div>
+					<div class="device">timezone: ${fp.timezone}</div>
+
+					<div>webglDataURL: ${fp.webglDataURL[1]}</div>
+					<div>client rects: ${fp.cRects[1]}</div>
+					<div>console errors: ${fp.consoleErrors[1]}</div>	
+					<div>maths: ${fp.maths[1]}</div>
+					<div>canvas: ${fp.canvas[1]}</div>
+					<div>userAgent: ${nav.userAgent}</div>
+					<div>appVersion: ${nav.appVersion}</div>	
+					<div>mimeTypes: ${fp.mimeTypes[1]}</div>
+					<div>plugins: ${fp.plugins[1]}</div>
+					<div>voices: ${fp.voices[1]}</div>
+					<div>webgl vendor: ${webgl.vendor}</div>
+					<div>vendor: ${nav.vendor}</div>
+					<div>doNotTrack: ${nav.doNotTrack}</div>
+					<span>view the console for details</span>
+				</div>
+			</section>
 		`
         return patch(fpElem, html `${data}`)
     }).catch((e) => console.log(e))
