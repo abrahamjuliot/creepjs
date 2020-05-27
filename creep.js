@@ -389,9 +389,9 @@
 		const errs = err => console.error('Error!', err.message)
 		postData(formData).catch(errs)
 
-		const data = await getData().catch(errs)
-		console.log(data)
-		data = `
+		const responseData = await getData().catch(errs)
+		console.log(responseData)
+		const data = `
 			<section>
 				<style>
 					#fingerprint-data {
