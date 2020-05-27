@@ -347,6 +347,16 @@
 		}
 		return fingerprint
 	}
+	// get/post requests
+	const webapp = 'https://script.google.com/macros/s/AKfycbzKRjt6FPboOEkh1vTXttGyCjp97YBP7z-5bODQmtSkQ9BqDRY/exec'
+	async function postData(formData) {
+		const response = await fetch(webapp, { method: 'POST', body: formData })
+		return response.json()
+	}
+	async function getData() {
+		const response = await fetch(webapp)
+		return response.json()
+	}
 	// patch
 	const app = document.getElementById('fp-app')
 	patch(app, scene, async () => {
@@ -372,11 +382,15 @@
 			hashify(device),
 			hashify(fp)
 		])
+		// post hash to database
+		const formData = new FormData()
+		formData.append('id', fpHash)
+		formData.append('visits', 1)
+		const errs = err => console.error('Error!', err.message)
+		postData(formData).catch(errs)
 
-		// await post fp hash to server
-		// if new, then append row and return timestamp (new)
-		// if not new, then get/return onld timestamp (insert new timestamp)
-
+		const data = await getData().catch(errs)
+		console.log(data)
 		data = `
 			<section>
 				<style>
@@ -404,7 +418,8 @@
 				
 				<div id="fingerprint-data">
 					<h1 class="visit">Your Fingerprint</h1>
-					<h2 class="visit">last visit: ${new Date()}</h2>
+					<h2 class="visit">last visit: ${'compute client side'}</h2>
+					<h3 class="visit">total visits: ${'compute client side + 1'}</h3>
 					<div class="device">Device Id: ${deviceHash}</div>
 					<div>Device/Browser Id: ${fpHash}</div>
 
