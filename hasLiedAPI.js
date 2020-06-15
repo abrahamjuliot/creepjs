@@ -7,7 +7,7 @@ function hasLiedAPI(api, name) {
 	    }
 	    return ('0000000' + (hash >>> 0).toString(16)).substr(-8)
 	}
-	const native = (x) => `function {x}() { [native code] }`
+	const native = (x) => `function ${x}() { [native code] }`
 	let lieTypes = []
 	let fingerprint = ''
 	
