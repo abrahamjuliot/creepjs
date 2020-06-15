@@ -7,17 +7,21 @@ function hasLiedAPI(api, name) {
 	    }
 	    return ('0000000' + (hash >>> 0).toString(16)).substr(-8)
 	}
-	
+	const native = (x) => `function {x}() { [native code] }`
 	let lieTypes = []
 	let fingerprint = ''
 	
 	const { name: apiName, toString: apiToString, toLocaleString: apiToLocaleString } = api
 	const fnToStr = Function.prototype.toString
 	const fnToLStr = Function.prototype.toLocaleString
+	const fnStr = String
+	const fnStringify = JSON.stringify
 	
 	// detect attempts to rewrite Function string conversion APIs
-	if (fnToStr != 'function toString() { [native code] }') { lieTypes.push({ fnToStr }) }
-	if (fnToLStr != 'function toLocaleString() { [native code] }') { lieTypes.push({ fnToLStr }) } 
+	if (fnToStr != native('toString')) { lieTypes.push({ fnToStr }) }
+	if (fnToLStr != native('toLocaleString')) { lieTypes.push({ fnToLStr }) }
+	if (fnStr != native('String')) { lieTypes.push({ fnStr }) }
+	if (fnStringify != native('stringify')) { lieTypes.push({ fnStringify }) }
 	
 	// detect attempts to rename the API and/or rewrite string conversion API on this
 	if (apiName != name) { lieTypes.push({ apiName }) }
@@ -28,7 +32,7 @@ function hasLiedAPI(api, name) {
 	const result = ''+api
 	
 	// fingerprint result if it does not match native code
-	if (result != `function ${name}() { [native code] }`) { fingerprint = result }
+	if (result != native(name)) { fingerprint = result }
 	
 	return {
 		lied: lieTypes.length || fingerprint ? true : false,
