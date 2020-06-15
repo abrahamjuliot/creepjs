@@ -26,7 +26,7 @@ function detectFunctionSpoofing(api, name) {
 	if (result != nativeCode) { fingerprint = result }
 	
 	return {
-		spoofed:  spoofTypes.length || fingerprint ? true : false,
+		spoofed: spoofTypes.length || fingerprint ? true : false,
 		hash: hashMini({ spoofTypes, fingerprint })
 	}
 }
@@ -34,5 +34,3 @@ function detectFunctionSpoofing(api, name) {
 const { spoofed, hash } = detectFunctionSpoofing(HTMLCanvasElement.prototype.toDataURL, 'toDataURL')
 
 spoofed && console.log(`Spoofing detected: ${hash}`)
-
-
