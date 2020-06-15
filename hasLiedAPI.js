@@ -11,19 +11,18 @@ function hasLiedAPI(api, name) {
 	let lieTypes = []
 	let fingerprint = ''
 	
-	const { name: apiName, toString: apiToString, toLocaleString: apiToLocaleString } = api
+	// detect attempts to rewrite Function string conversion APIs
 	const fnToStr = Function.prototype.toString
 	const fnToLStr = Function.prototype.toLocaleString
 	const fnStr = String
 	const fnStringify = JSON.stringify
-	
-	// detect attempts to rewrite Function string conversion APIs
 	if (fnToStr != native('toString')) { lieTypes.push({ fnToStr }) }
 	if (fnToLStr != native('toLocaleString')) { lieTypes.push({ fnToLStr }) }
 	if (fnStr != native('String')) { lieTypes.push({ fnStr }) }
 	if (fnStringify != native('stringify')) { lieTypes.push({ fnStringify }) }
 	
 	// detect attempts to rename the API and/or rewrite string conversion API on this
+	const { name: apiName, toString: apiToString, toLocaleString: apiToLocaleString } = api
 	if (apiName != name) { lieTypes.push({ apiName }) }
 	if (apiToString !== fnToStr) { lieTypes.push({ apiToString }) }
 	if (apiToLocaleString !== fnToLStr) { lieTypes.push({ apiToLocaleString }) }
