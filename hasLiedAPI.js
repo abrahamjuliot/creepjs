@@ -21,7 +21,7 @@ function hasLiedAPI(api, name) {
 	if (fnStr != native('String')) { lieTypes.push({ fnStr }) }
 	if (fnStringify != native('stringify')) { lieTypes.push({ fnStringify }) }
 	
-	// detect attempts to rename the API and/or rewrite string conversion API on this
+	// detect attempts to rename the API and/or rewrite string conversion APIs on this API object
 	const { name: apiName, toString: apiToString, toLocaleString: apiToLocaleString } = api
 	if (apiName != name) { lieTypes.push({ apiName }) }
 	if (apiToString !== fnToStr) { lieTypes.push({ apiToString }) }
