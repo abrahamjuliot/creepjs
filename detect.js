@@ -1,6 +1,15 @@
 function detectFunctionSpoofing(api, name) {
+	const hashMini = str => {
+	    const json = `${JSON.stringify(str)}`
+	    let i, len, hash = 0x811c9dc5
+	    for (i = 0, len = json.length; i < len; i++) {
+	        hash = Math.imul(31, hash) + json.charCodeAt(i) | 0
+	    }
+	    return ('0000000' + (hash >>> 0).toString(16)).substr(-8)
+	}
+	
 	let spoofTypes = []
-	let fingerprint = []
+	let fingerprint = ''
 	
 	const nativeCode = `function ${name}() { [native code] }`
 	const { name: apiName, toString: apiToString, toLocaleString: apiToLocaleString } = api
@@ -10,30 +19,20 @@ function detectFunctionSpoofing(api, name) {
 	if (apiToString !== Function.prototype.toString) { spoofTypes.push({ apiToString }) }
 	if (apiToLocaleString !== Function.prototype.toLocaleString) { spoofTypes.push({ apiToLocaleString }) }
 	
-	// collect string conversion results
-	const a_localString = api.toLocaleString()
-	const b_toString = api.toString()
-	const c_jsonStringify = JSON.stringify(`${api}`)
-	const d_quotes = ''+api
-	const e_string = String(api)
-	const f_template = `${HTMLCanvasElement.prototype.toDataURL}`
+	// collect string conversion result
+	const result = ''+api
 	
 	// fingerprint result if it does not match native code
-	if (a_localString != nativeCode) { fingerprint.push({ a_localString }) }
-	if (b_toString != nativeCode) { fingerprint.push({ b_toString }) }
-	if (c_jsonStringify != JSON.stringify(`${nativeCode}`)) {
-		fingerprint.push({ c_jsonStringify: JSON.parse(c_jsonStringify) })
-	}
-	if (d_quotes != nativeCode) { fingerprint.push({ d_quotes }) }
-	if (e_string != nativeCode) { fingerprint.push({ e_string }) }
-	if (f_template != nativeCode) { fingerprint.push({ f_template }) }
+	if (result != nativeCode) { fingerprint = result }
 	
-	return { spoofTypes, fingerprint }
+	return {
+		spoofed:  spoofTypes.length || fingerprint ? true : false,
+		hash: hashMini({ spoofTypes, fingerprint })
+	}
 }
 
-const { spoofTypes, fingerprint } = detectFunctionSpoofing(HTMLCanvasElement.prototype.toDataURL, 'toDataURL')
+const { spoofed, hash } = detectFunctionSpoofing(HTMLCanvasElement.prototype.toDataURL, 'toDataURL')
 
-spoofTypes.length && console.log('Spoofing detected:', spoofTypes)
-fingerprint.length && console.log('Spoofing detected (Fingerprint):', fingerprint)
+spoofed && console.log(`Spoofing detected: ${hash}`)
 
 
