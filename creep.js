@@ -14,6 +14,16 @@
 			return undefined
 		}
 	}
+
+	const hashMini = str => {
+	    const json = `${JSON.stringify(str)}`
+	    let i, len, hash = 0x811c9dc5
+	    for (i = 0, len = json.length; i < len; i++) {
+	        hash = Math.imul(31, hash) + json.charCodeAt(i) | 0
+	    }
+	    return ('0000000' + (hash >>> 0).toString(16)).substr(-8)
+	}
+
 	const hashify = async (x) => {
 		const json = `${JSON.stringify(x)}`
 		const jsonBuffer = new TextEncoder('utf-8').encode(json)
@@ -22,6 +32,7 @@
 		const hashHex = hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('')
 		return hashHex
 	}
+
 	// ie11 fix for template.content
 	function templateContent(template) {
 		// template {display: none !important} /* add css if template is in dom */
@@ -36,6 +47,7 @@
 			return frag
 		}
 	}
+
 	// tagged template literal (JSX alternative)
 	const patch = async (oldEl, newEl, fn = null) => {
 		oldEl.parentNode.replaceChild(newEl, oldEl);
@@ -46,30 +58,66 @@
 		template.innerHTML = stringSet.map((str, i) => `${str}${expressionSet[i] || ''}`).join('')
 		return templateContent(template) // ie11 fix for template.content
 	}
-	// change varies
+
+	// detect and fingerprint Function API lies
+	function hasLiedAPI(api, name) {
+		const native = (x) => `function ${x}() { [native code] }`
+		let lieTypes = []
+		let fingerprint = ''
+		
+		// detect attempts to rewrite Function string conversion APIs
+		const fnToStr = Function.prototype.toString
+		const fnToLStr = Function.prototype.toLocaleString
+		const fnStr = String
+		const fnStringify = JSON.stringify
+		if (fnToStr != native('toString')) { lieTypes.push({ fnToStr }) }
+		if (fnToLStr != native('toLocaleString')) { lieTypes.push({ fnToLStr }) }
+		if (fnStr != native('String')) { lieTypes.push({ fnStr }) }
+		if (fnStringify != native('stringify')) { lieTypes.push({ fnStringify }) }
+		
+		// detect attempts to rename the API and/or rewrite string conversion APIs on this API object
+		const { name: apiName, toString: apiToString, toLocaleString: apiToLocaleString } = api
+		if (apiName != name) { lieTypes.push({ apiName }) }
+		if (apiToString !== fnToStr) { lieTypes.push({ apiToString }) }
+		if (apiToLocaleString !== fnToLStr) { lieTypes.push({ apiToLocaleString }) }
+		
+		// collect string conversion result
+		const result = ''+api
+		
+		// fingerprint the API code if it does not match native code
+		if (result != native(name)) { fingerprint = result }
+		
+		return {
+			lie: lieTypes.length || fingerprint ? { lieTypes, fingerprint } : false, 
+		}
+	}
+
+	// navigator
 	const nav = () => {
-		const n = navigator
 		let {
 			userAgent,
 			appVersion,
-			platform
-		} = n
+			platform,
+			deviceMemory: dMem,
+			hardwareConcurrency: hCon,
+			maxTouchPoints: maxTP
+		} = navigator
 		const trust = (
 			userAgent.includes(appVersion)
 		) ? true : false
 		if (!trust) {
-			userAgent = appVersion = platform = undefined
+			userAgent = appVersion = platform = '[blocked]'
 		}
 		return {
-			appVersion: appVersion,
-			deviceMemory: n.deviceMemory, // device
-			doNotTrack: n.doNotTrack,
-			hardwareConcurrency: n.hardwareConcurrency, // device
-			language: `${n.languages.join(', ')} (${n.language})`,
-			maxTouchPoints: n.maxTouchPoints, // device
-			platform: platform, // device
-			userAgent: userAgent,
-			vendor: n.vendor,
+			appVersion,
+			deviceMemory: isNaN(dMem) ? '[blocked]' : dMem,
+			doNotTrack: navigator.doNotTrack,
+			hardwareConcurrency: isNaN(hCon) ? '[blocked]' : hCon,
+			language: `${navigator.languages.join(', ')} (${navigator.language})`,
+			maxTouchPoints: isNaN(maxTP) ? '[blocked]' : maxTP,
+			platform,
+			userAgent,
+			vendor: navigator.vendor || '[blocked]',
 			mimeTypes: attempt(() => [...navigator.mimeTypes].map(m => m.type)),
 			plugins: attempt(() => {
 				return [...navigator.plugins]
@@ -82,7 +130,16 @@
 			})
 		}
 	}
-	// device + browser
+
+	// client hints
+	const highEntropyValues = () => {
+		return !navigator.userAgentData ? undefined : 
+			attempt(() => navigator.userAgentData.getHighEntropyValues(
+				['platform', 'platformVersion', 'architecture',  'model', 'uaFullVersion']
+			))
+	}
+
+	// screen
 	const screenFp = () => {
 		let {
 			width,
@@ -91,8 +148,8 @@
 			availHeight,
 			availTop,
 			availLeft,
-			colorDepth, // device
-			pixelDepth // device
+			colorDepth,
+			pixelDepth
 		} = screen
 		if (availWidth > width || availHeight > height) {
 			width = height = availWidth = availHeight = availTop = availLeft = undefined // distrust
@@ -108,64 +165,95 @@
 			pixelDepth
 		}
 	}
-	// browser
+
+	// voices
 	const getVoices = () => {
 		return new Promise(resolve => {
 			if (typeof speechSynthesis === 'undefined') {
 				return resolve(undefined)
-			} else if (speechSynthesis.getVoices().length) {
+			} 
+			else if (!speechSynthesis.getVoices) {
+				return resolve(undefined)
+			}
+			else if (speechSynthesis.getVoices().length) {
 				return resolve(voices)
 			} else {
 				speechSynthesis.onvoiceschanged = () => resolve(speechSynthesis.getVoices())
 			}
 		})
 	}
-	// device
+
+	// media devices
 	const getmediaDevices = () => {
 		if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
 			new Promise(resolve => resolve(undefined))
 		}
-		return navigator.mediaDevices.enumerateDevices()
+		return attempt(() => navigator.mediaDevices.enumerateDevices())
 	}
-	// browser
+
+	// canvas
 	const canvas = () => {
-		const canvas = document.createElement('canvas')
-		const context = canvas.getContext('2d')
-		const str = '%$%^LGFWE($HIF)'
-		context.font = '20px Arial'
-		context.fillText(str, 100, 100)
-		context.fillStyle = 'red'
-		context.fillRect(100, 30, 80, 50)
-		context.font = '32px Times New Roman'
-		context.fillStyle = 'blue'
-		context.fillText(str, 20, 70)
-		context.font = '20px Arial'
-		context.fillStyle = 'green'
-		context.fillText(str, 10, 50)
-		return canvas.toDataURL()
+		const { lie: dataLie } = hasLiedAPI(HTMLCanvasElement.prototype.toDataURL, 'toDataURL')
+		const { lie: contextLie } = hasLiedAPI(HTMLCanvasElement.prototype.getContext, 'getContext')
+		if (!dataLie && !contextLie) {
+			const canvas = document.createElement('canvas')
+			const context = canvas.getContext('2d')
+			const str = '%$%^LGFWE($HIF)'
+			context.font = '20px Arial'
+			context.fillText(str, 100, 100)
+			context.fillStyle = 'red'
+			context.fillRect(100, 30, 80, 50)
+			context.font = '32px Times New Roman'
+			context.fillStyle = 'blue'
+			context.fillText(str, 20, 70)
+			context.font = '20px Arial'
+			context.fillStyle = 'green'
+			context.fillText(str, 10, 50)
+			return canvas.toDataURL()
+		}
+		
+		dataLie && console.log('Lie detected (toDataURL):', hashMini(dataLie))
+		contextLie && console.log('Lie detected (getContext):', hashMini(contextLie))
+
+		return { dataLie, contextLie }
 	}
-	// device + browser
+
+	// webgl
 	const webgl = () => {
-		const canvas = document.createElement('canvas')
-		const context = canvas.getContext('webgl')
-		return {
-			unmasked: () => {
-				const extension = context.getExtension('WEBGL_debug_renderer_info')
-				const vendor = context.getParameter(extension.UNMASKED_VENDOR_WEBGL)
-				const renderer = context.getParameter(extension.UNMASKED_RENDERER_WEBGL)
-				return {
-					vendor,
-					renderer
+		const { lie: paramLie } = hasLiedAPI(WebGLRenderingContext.prototype.getParameter, 'getParameter')
+		const { lie: extLie } = hasLiedAPI(WebGLRenderingContext.prototype.getExtension, 'getExtension')
+		if (!paramLie && !extLie) {
+			const canvas = document.createElement('canvas')
+			const context = canvas.getContext('webgl')
+			return {
+				unmasked: () => {
+					const extension = context.getExtension('WEBGL_debug_renderer_info')
+					const vendor = context.getParameter(extension.UNMASKED_VENDOR_WEBGL)
+					const renderer = context.getParameter(extension.UNMASKED_RENDERER_WEBGL)
+					return {
+						vendor,
+						renderer
+					}
+				},
+				dataURL: () => {
+					context.clearColor(0.2, 0.4, 0.6, 0.8)
+					context.clear(context.COLOR_BUFFER_BIT)
+					return canvas.toDataURL()
 				}
-			},
-			dataURL: () => {
-				context.clearColor(0.2, 0.4, 0.6, 0.8)
-				context.clear(context.COLOR_BUFFER_BIT)
-				return canvas.toDataURL()
 			}
 		}
+
+		paramLie && console.log('Lie detected (getParameter):', hashMini(paramLie))
+		extLie && console.log('Lie detected (getExtension):', hashMini(extLie))
+
+		return {
+			unmasked: () => ({ vendor: '[lie detected]', renderer: '[lie detected]' }),
+			dataURL: () => { paramLie, extLie }
+		}
+
 	}
-	// device + browser
+
+	// maths
 	const maths = () => {
 		const n = 0.123124234234234242
 		const fns = [
@@ -202,7 +290,8 @@
 			[fn[0]]: attempt(() => Math[fn[0]](...fn[1]))
 		}))
 	}
-	// browser
+
+	// browser console errors
 	const consoleErrs = () => {
 		const getErrors = (errs, errFns) => {
 			let i, len = errFns.length
@@ -228,26 +317,43 @@
 		]
 		return getErrors([], errFns)
 	}
-	// device
+
+	// timezone
 	const timezone = () => {
-		const time = /(\d{1,2}:\d{1,2}:\d{1,2}\s)/ig
-		return [
-			(new Date()).getTimezoneOffset(),
-			Intl.DateTimeFormat().resolvedOptions().timeZone,
-			(new Date('1/1/2001').toTimeString()).replace(time, '')
-		].join(', ')
+		const { lie: timezoneLie } = hasLiedAPI(Date.prototype.getTimezoneOffset, 'getTimezoneOffset')
+		if (!timezoneLie) {
+			const time = /(\d{1,2}:\d{1,2}:\d{1,2}\s)/ig
+			return [
+				(new Date()).getTimezoneOffset(),
+				Intl.DateTimeFormat().resolvedOptions().timeZone,
+				(new Date('1/1/2001').toTimeString()).replace(time, '')
+			].join(', ')
+		}
+
+		timezoneLie && console.log('Lie detected (getTimezoneOffset):', hashMini(timezoneLie))
+
+		return { timezoneLie }
 	}
-	// device + browser
+
+	// client rects
 	const cRects = () => {
-		const cRectProps = ['x', 'y', 'width', 'height', 'top', 'right', 'bottom', 'left']
-		const rectElems = document.getElementsByClassName('rects')
-		const rectFp = [...rectElems].map(el => el.getClientRects()[0].toJSON())
-		return rectFp
+		const { lie: rectsLie } = hasLiedAPI(Element.prototype.getClientRects, 'getClientRects')
+		if (!rectsLie) {
+			const cRectProps = ['x', 'y', 'width', 'height', 'top', 'right', 'bottom', 'left']
+			const rectElems = document.getElementsByClassName('rects')
+			const rectFp = [...rectElems].map(el => el.getClientRects()[0].toJSON())
+			return rectFp
+		}
+
+		rectsLie && console.log('Lie detected (getClientRects):', hashMini(rectsLie))
+
+		return { rectsLie }
 	}
+
 	// scene
 	const scene = html`
 	<fingerprint>
-		<div id="fingerpring"></div>
+		<div id="fingerprint"></div>
 		<style>
 		#rect-container{opacity:0;position:relative;border:1px solid #F72585}.rects{width:10px;height:10px;max-width:100%}.absolute{position:absolute}#cRect1{border:solid 2.715px;border-color:#F72585;padding:3.98px;margin-left:12.12px}#cRect2{border:solid 2px;border-color:#7209B7;font-size:30px;margin-top:20px;transform:skewY(23.1753218deg)}#cRect3{border:solid 2.89px;border-color:#3A0CA3;font-size:45px;transform:scale(100000000000000000000009999999999999.99, 1.89);margin-top:50px}#cRect4{border:solid 2px;border-color:#4361EE;transform:matrix(1.11, 2.0001, -1.0001, 1.009, 150, 94.4);margin-top:11.1331px;margin-left:12.1212px;padding:4.4545px;left:239.4141px;top:8.5050px}#cRect5{border:solid 2px;border-color:#4CC9F0;margin-left:42.395pt}#cRect6{border:solid 2px;border-color:#F72585;transform:perspective(12890px) translateZ(101.5px);padding:12px}#cRect7{margin-top:-350.552px;margin-left:0.9099rem;border:solid 2px;border-color:#4361EE}#cRect8{margin-top:-150.552px;margin-left:15.9099rem;border:solid 2px;border-color:#3A0CA3}#cRect9{margin-top:-110.552px;margin-left:15.9099rem;border:solid 2px;border-color:#7209B7}#cRect10{margin-top:-315.552px;margin-left:15.9099rem;border:solid 2px;border-color:#F72585}
 		</style>
@@ -265,14 +371,12 @@
 		</div>
 	</fingerprint>
 	`
+
 	// fingerprint
 	const fingerprint = async () => {
 		// attempt to compute values
 		const navComputed = attempt(() => nav())
-		const {
-			mimeTypes,
-			plugins
-		} = navComputed
+		const { mimeTypes, plugins } = navComputed
 		const screenComputed = attempt(() => screenFp())
 		const canvasComputed = attempt(() => canvas())
 		const gl = attempt(() => webgl())
@@ -285,33 +389,25 @@
 		const timezoneComputed = attempt(() => timezone())
 		const cRectsComputed = attempt(() => cRects())
 		const mathsComputed = attempt(() => maths())
-		// await voices and media, then compute
+		// await voices, media, and client hints, then compute
 		const [
 			voices,
-			mediaDevices
+			mediaDevices,
+			highEntropy
 		] = await Promise.all([
 			getVoices(),
-			getmediaDevices()
+			getmediaDevices(),
+			highEntropyValues()
 		])
-		const voicesComputed = voices.map(({
-			name,
-			lang
-		}) => ({
-			name,
-			lang
-		}))
-		const mediaDevicesComputed = mediaDevices
-			.map(({
-				kind
-			}) => ({
-				kind
-			})) // chrome randomizes groupId
+		const voicesComputed = voices.map(({ name, lang }) => ({ name, lang }))
+		const mediaDevicesComputed = !mediaDevices ? undefined : mediaDevices.map(({ kind }) => ({ kind })) // chrome randomizes groupId
 		// await hash values
 		const [
 			mimeTypesHash, // order must match
 			pluginsHash,
 			voicesHash,
 			mediaDeviceHash,
+			highEntropyHash,
 			screenHash,
 			weglDataURLHash,
 			consoleErrorsHash,
@@ -323,6 +419,7 @@
 			hashify(plugins),
 			hashify(voicesComputed),
 			hashify(mediaDevicesComputed),
+			hashify(highEntropy),
 			hashify(screenComputed),
 			hashify(webglDataURLComputed),
 			hashify(consoleErrorsComputed),
@@ -332,6 +429,7 @@
 		])
 		const fingerprint = {
 			nav: navComputed,
+			highEntropy: [highEntropy, highEntropyHash],
 			timezone: timezoneComputed,
 			webgl: webglComputed,
 			mimeTypes: [mimeTypes, mimeTypesHash],
@@ -360,14 +458,10 @@
 	// patch
 	const app = document.getElementById('fp-app')
 	patch(app, scene, async () => {
-		// fingerprint and and render
-		const fpElem = document.getElementById('fingerpring')
+		// fingerprint and render
+		const fpElem = document.getElementById('fingerprint')
 		const fp = await fingerprint().catch((e) => console.log(e))
-		const {
-			nav,
-			webgl,
-			mediaDevices
-		} = fp
+		const { nav, webgl, mediaDevices } = fp
 		const device = {
 			renderer: webgl.renderer,
 			timezone: fp.timezone,
@@ -377,8 +471,10 @@
 			maxTouchPoints: nav.maxTouchPoints,
 			platform: nav.platform
 		}
-		console.log(fp)
-		const [deviceHash, fpHash] = await Promise.all([
+		console.log('Fingerprint', fp)
+		const [
+			deviceHash, 
+			fpHash] = await Promise.all([
 			hashify(device),
 			hashify(fp)
 		])
@@ -389,8 +485,11 @@
 		const errs = err => console.error('Error!', err.message)
 		postData(formData).catch(errs)
 
+		// get data from server
 		const responseData = await getData().catch(errs)
-		console.log(responseData)
+		console.log('Response data:', responseData)
+
+		// template
 		const data = `
 			<section>
 				<style>
@@ -446,6 +545,18 @@
 					<div>webgl vendor: ${webgl.vendor}</div>
 					<div>vendor: ${nav.vendor}</div>
 					<div>doNotTrack: ${nav.doNotTrack}</div>
+
+					${(
+						!fp.highEntropy[0] ? '': `
+						<div>high entropy hash: ${fp.highEntropy[1]}</div>
+						<div>ua architecture: ${fp.highEntropy[0].architecture}</div>
+						<div>ua model: ${fp.highEntropy[0].model || undefined}</div>
+						<div>ua platform: ${fp.highEntropy[0].platform}</div>
+						<div>ua platform version: ${fp.highEntropy[0].platformVersion}</div>
+						<div>ua full version: ${fp.highEntropy[0].uaFullVersion}</div>
+						`
+					)}
+					
 					<span>view the console for details</span>
 				</div>
 			</section>
