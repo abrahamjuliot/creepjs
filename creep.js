@@ -74,7 +74,7 @@
 		// detect attempts to rewrite Function.prototype.toString conversion APIs
 		const { toString } = Function.prototype
 		if (toString != native('toString')) {
-			lieTypes.push({ fnToStr })
+			lieTypes.push({ toString })
 		}
 
 		// The idea of checking new is inspired by https://adtechmadness.wordpress.com/2019/03/23/javascript-tampering-detection-and-stealth/
