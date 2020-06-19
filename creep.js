@@ -217,6 +217,7 @@
 					return resolve(undefined)
 				}
 				else if (speechSynthesis.getVoices().length) {
+					const voices = speechSynthesis.getVoices()
 					return resolve(voices)
 				} else {
 					speechSynthesis.onvoiceschanged = () => resolve(speechSynthesis.getVoices())
