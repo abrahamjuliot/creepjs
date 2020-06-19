@@ -28,6 +28,10 @@ function hasLiedAPI(api, name) {
 
 	// detect attempts to rename the API and/or rewrite string conversion APIs on this API object
 	const {
+		toString: fnToStr,
+		toLocaleString: fnToLStr
+	} = Function.prototype
+	const {
 		name: apiName,
 		toString: apiToString,
 		toLocaleString: apiToLocaleString

@@ -11,6 +11,7 @@
 		try {
 			return fn()
 		} catch (err) {
+			console.error(err)
 			return undefined
 		}
 	}
@@ -89,6 +90,10 @@
 
 		// detect attempts to rename the API and/or rewrite string conversion APIs on this API object
 		const {
+			toString: fnToStr,
+			toLocaleString: fnToLStr
+		} = Function.prototype
+		const {
 			name: apiName,
 			toString: apiToString,
 			toLocaleString: apiToLocaleString
@@ -149,15 +154,15 @@
 			userAgent.includes(appVersion)
 		) ? true : false
 		if (!trust) {
-			userAgent = appVersion = platform = '[blocked]'
+			userAgent = appVersion = platform = '[invalid]'
 		}
 		return {
 			appVersion,
-			deviceMemory: isNaN(dMem) ? '[blocked]' : dMem,
+			deviceMemory: isNaN(dMem) ? '[invalid]' : dMem,
 			doNotTrack: navigator.doNotTrack,
-			hardwareConcurrency: isNaN(hCon) ? '[blocked]' : hCon,
+			hardwareConcurrency: isNaN(hCon) ? '[invalid]' : hCon,
 			language: `${navigator.languages.join(', ')} (${navigator.language})`,
-			maxTouchPoints: isNaN(maxTP) ? '[blocked]' : maxTP,
+			maxTouchPoints: isNaN(maxTP) ? '[invalid]' : maxTP,
 			platform,
 			userAgent,
 			vendor: navigator.vendor || '[blocked]',
@@ -227,11 +232,11 @@
 	}
 
 	// media devices
-	const getmediaDevices = () => {
+	const getMediaDevices = () => {
 		if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
 			new Promise(resolve => resolve(undefined))
 		}
-		return attempt(() => navigator.mediaDevices.enumerateDevices())
+		return navigator.mediaDevices.enumerateDevices()
 	}
 
 	// canvas
@@ -439,9 +444,11 @@
 			highEntropy
 		] = await Promise.all([
 			getVoices(),
-			getmediaDevices(),
+			getMediaDevices(),
 			highEntropyValues()
-		])
+		]).catch(error => { 
+			console.error(error.message)
+		})
 		const voicesComputed = voices.map(({ name, lang }) => ({ name, lang }))
 		const mediaDevicesComputed = !mediaDevices ? undefined : mediaDevices.map(({ kind }) => ({ kind })) // chrome randomizes groupId
 		// await hash values
@@ -469,7 +476,9 @@
 			hashify(cRectsComputed),
 			hashify(mathsComputed),
 			hashify(canvasComputed)
-		])
+		]).catch(error => { 
+			console.error(error.message)
+		})
 		const fingerprint = {
 			nav: navComputed,
 			highEntropy: [highEntropy, highEntropyHash],
@@ -520,7 +529,9 @@
 			fpHash] = await Promise.all([
 			hashify(device),
 			hashify(fp)
-		])
+		]).catch(error => { 
+			console.error(error.message)
+		})
 		// post hash to database
 		const formData = new FormData()
 		formData.append('id', fpHash)
