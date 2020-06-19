@@ -501,7 +501,7 @@
 		const fingerprint = {
 			nav: navComputed,
 			highEntropy: [highEntropy, highEntropyHash],
-			timezone: [timezoneComputed, timezoneHash]
+			timezone: [timezoneComputed, timezoneHash],
 			webgl: webglComputed,
 			mimeTypes: [mimeTypes, mimeTypesHash],
 			plugins: [plugins, pluginsHash],
