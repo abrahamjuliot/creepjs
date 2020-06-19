@@ -71,22 +71,10 @@
 	const native = (x) => `function ${x}() { [native code] }`
 	function hasLiedStringAPI() {
 		let lieTypes = []
-		// detect attempts to rewrite Function string conversion APIs
-		const fnToStr = Function.prototype.toString
-		const fnToLStr = Function.prototype.toLocaleString
-		const fnStr = String
-		const fnStringify = JSON.stringify
-		if (fnToStr != native('toString')) {
+		// detect attempts to rewrite Function.prototype.toString conversion APIs
+		const { toString } = Function.prototype
+		if (toString != native('toString')) {
 			lieTypes.push({ fnToStr })
-		}
-		if (fnToLStr != native('toLocaleString')) {
-			lieTypes.push({ fnToLStr })
-		}
-		if (fnStr != native('String')) {
-			lieTypes.push({ fnStr })
-		}
-		if (fnStringify != native('stringify')) {
-			lieTypes.push({ fnStringify })
 		}
 		return () => lieTypes
 	}
@@ -95,24 +83,14 @@
 		let lieTypes = [...stringAPILieTypes()]
 		let fingerprint = ''
 
-		// detect attempts to rename the API and/or rewrite string conversion APIs on this API object
-		const {
-			toString: fnToStr,
-			toLocaleString: fnToLStr
-		} = Function.prototype
-		const {
-			name: apiName,
-			toString: apiToString,
-			toLocaleString: apiToLocaleString
-		} = api
+		// detect attempts to rename the API and/or rewrite toString
+		const { toString: fnToStr } = Function.prototype
+		const { name: apiName, toString: apiToString } = api
 		if (apiName != name) {
 			lieTypes.push({ apiName })
 		}
 		if (apiToString !== fnToStr || apiToString.toString !== fnToStr) {
 			lieTypes.push({ apiToString })
-		}
-		if (apiToLocaleString !== fnToLStr) {
-			lieTypes.push({ apiToLocaleString })
 		}
 
 		// The idea of checking new is inspired by https://adtechmadness.wordpress.com/2019/03/23/javascript-tampering-detection-and-stealth/
