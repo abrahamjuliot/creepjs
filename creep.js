@@ -535,7 +535,6 @@
 
 		// creep by detecting lies
 		const creep = {
-			
 			timezone: fp.timezone,
 			renderer: webgl.renderer,
 			vendor: webgl.vendor,
@@ -544,11 +543,10 @@
 			cRects: fp.cRects,
 			maths: fp.maths,
 			canvas: fp.canvas
-
 		}
 
 		console.log('Fingerprint Id', fp)
-		console.log('Creepy Id', fp)
+		console.log('Creepy Id', creep)
 
 		const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
 		.catch(error => { 
