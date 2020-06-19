@@ -76,6 +76,26 @@
 		if (toString != native('toString')) {
 			lieTypes.push({ fnToStr })
 		}
+
+		// The idea of checking new is inspired by https://adtechmadness.wordpress.com/2019/03/23/javascript-tampering-detection-and-stealth/
+		try {
+			const str_1 = new Function.prototype.toString
+			const str_2 = new Function.prototype.toString()
+			const str_3 = new Function.prototype.toString.toString
+			const str_4 = new Function.prototype.toString.toString()
+			lieTypes.push({
+				str_1,
+				str_2,
+				str_3,
+				str_4
+			})
+		} catch (error) {
+			const nativeTypeError = 'TypeError: Function.prototype.toString is not a constructor'
+			if ('' + error != nativeTypeError) {
+				lieTypes.push({ newErr: '' + error })
+			}
+		}
+
 		return () => lieTypes
 	}
 	const stringAPILieTypes = hasLiedStringAPI() // compute and cache result
@@ -91,25 +111,6 @@
 		}
 		if (apiToString !== fnToStr || apiToString.toString !== fnToStr) {
 			lieTypes.push({ apiToString })
-		}
-
-		// The idea of checking new is inspired by https://adtechmadness.wordpress.com/2019/03/23/javascript-tampering-detection-and-stealth/
-		try {
-			const str_1 = new Function.prototype.toString
-			const str_2 = new Function.prototype.toString()
-			const str_3 = new Function.prototype.toString.toString
-			const str_4 = new Function.prototype.toString.toString()
-			lieTypes.push({
-				str_1,
-				str_2,
-				str_3,
-				str_4
-			})
-		} catch (err) {
-			const nativeTypeError = 'TypeError: Function.prototype.toString is not a constructor'
-			if ('' + err != nativeTypeError) {
-				lieTypes.push({ newErr: '' + err })
-			}
 		}
 
 		// collect string conversion result
