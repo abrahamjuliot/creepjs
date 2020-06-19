@@ -18,7 +18,7 @@
 	const attempt = fn => {
 		try {
 			return fn()
-		} catch (err) {
+		} catch (error) {
 			return captureError(error)
 		}
 	}
