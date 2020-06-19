@@ -7,11 +7,15 @@
 			console.log(`${logEnd}: ${end / 1000} seconds`)
 		}
 	}
+	const errorsCaptured = []
 	const attempt = fn => {
 		try {
 			return fn()
 		} catch (err) {
 			console.error(err)
+			const { name, message } = err
+			const stack = JSON.stringify(err.stack)
+			errorsCaptured.push({ name, message, stack })
 			return undefined
 		}
 	}
@@ -154,18 +158,18 @@
 			userAgent.includes(appVersion)
 		) ? true : false
 		if (!trust) {
-			userAgent = appVersion = platform = '[invalid]'
+			userAgent = appVersion = platform = undefined
 		}
 		return {
 			appVersion,
-			deviceMemory: isNaN(dMem) ? '[invalid]' : dMem,
+			deviceMemory: isNaN(dMem) ? undefined : dMem,
 			doNotTrack: navigator.doNotTrack,
-			hardwareConcurrency: isNaN(hCon) ? '[invalid]' : hCon,
+			hardwareConcurrency: isNaN(hCon) ? undefined : hCon,
 			language: `${navigator.languages.join(', ')} (${navigator.language})`,
-			maxTouchPoints: isNaN(maxTP) ? '[invalid]' : maxTP,
+			maxTouchPoints: isNaN(maxTP) ? undefined : maxTP,
 			platform,
 			userAgent,
-			vendor: navigator.vendor || '[blocked]',
+			vendor: navigator.vendor || undefined,
 			mimeTypes: attempt(() => [...navigator.mimeTypes].map(m => m.type)),
 			plugins: attempt(() => {
 				return [...navigator.plugins]
@@ -236,7 +240,7 @@
 		if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
 			new Promise(resolve => resolve(undefined))
 		}
-		return navigator.mediaDevices.enumerateDevices()
+		return attempt(() => navigator.mediaDevices.enumerateDevices())
 	}
 
 	// canvas
@@ -295,7 +299,7 @@
 		extLie && console.log('Lie detected (getExtension):', hashMini(extLie))
 
 		return {
-			unmasked: () => ({ vendor: '[lie detected]', renderer: '[lie detected]' }),
+			unmasked: () => ({ vendor: undefined, renderer: undefined }),
 			dataURL: () => { paramLie, extLie }
 		}
 
@@ -307,30 +311,21 @@
 		const fns = [
 			['acos', [n]],
 			['acosh', [1e308]],
-			['acoshPf', [1e154]],
 			['asin', [n]],
 			['asinh', [1e300]],
 			['asinh', [1]],
-			['asinhPf', [1]],
 			['atan', [2]],
 			['atanh', [0.5]],
-			['atanhPf', [0.5]],
 			['atan2', [90, 15]],
 			['atan2', [1e-310, 2]],
 			['cbrt', [100]],
-			['cbrtPf', [100]],
 			['cosh', [100]],
-			['coshPf', [100]],
 			['expm1', [1]],
-			['expm1Pf', [1]],
 			['sin', [1]],
 			['sinh', [1]],
-			['sinhPf', [1]],
 			['tan', [-1e308]],
 			['tanh', [1e300]],
-			['tanhPf', [1e300]],
 			['cosh', [1]],
-			['coshPf', [1]],
 			['sin', [Math.PI]],
 			['pow', [Math.PI, -100]]
 		]
@@ -463,7 +458,8 @@
 			consoleErrorsHash,
 			cRectsHash,
 			mathsHash,
-			canvasHash
+			canvasHash,
+			errorsCapturedHash
 		] = await Promise.all([
 			hashify(mimeTypes),
 			hashify(plugins),
@@ -475,7 +471,8 @@
 			hashify(consoleErrorsComputed),
 			hashify(cRectsComputed),
 			hashify(mathsComputed),
-			hashify(canvasComputed)
+			hashify(canvasComputed),
+			hashify(errorsCaptured)
 		]).catch(error => { 
 			console.error(error.message)
 		})
@@ -493,7 +490,8 @@
 			consoleErrors: [consoleErrorsComputed, consoleErrorsHash],
 			cRects: [cRectsComputed, cRectsHash],
 			maths: [mathsComputed, mathsHash],
-			canvas: [canvasComputed, canvasHash]
+			canvas: [canvasComputed, canvasHash],
+			errorsCaptured: [errorsCaptured, errorsCapturedHash]
 		}
 		return fingerprint
 	}
@@ -513,28 +511,31 @@
 		// fingerprint and render
 		const fpElem = document.getElementById('fingerprint')
 		const fp = await fingerprint().catch((e) => console.log(e))
-		const { nav, webgl, mediaDevices } = fp
-		const device = {
-			renderer: webgl.renderer,
+		const { nav, webgl } = fp
+
+		// creep by detecting lies
+		const creep = {
+			
 			timezone: fp.timezone,
-			deviceMemory: nav.deviceMemory,
-			hardwareConcurrency: nav.hardwareConcurrency,
-			language: nav.language,
-			maxTouchPoints: nav.maxTouchPoints,
-			platform: nav.platform
+			renderer: webgl.renderer,
+			vendor: webgl.vendor,
+			webglDataURL: fp.webglDataURL,
+			consoleErrors: fp.consoleErrors,
+			cRects: fp.cRects,
+			maths: fp.maths,
+			canvas: fp.canvas
+
 		}
+
 		console.log('Fingerprint', fp)
-		const [
-			deviceHash, 
-			fpHash] = await Promise.all([
-			hashify(device),
-			hashify(fp)
-		]).catch(error => { 
+
+		const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
+		.catch(error => { 
 			console.error(error.message)
 		})
 		// post hash to database
 		const formData = new FormData()
-		formData.append('id', fpHash)
+		formData.append('id', creepHash)
 		formData.append('visits', 1)
 		const errs = err => console.error('Error!', err.message)
 		postData(formData).catch(errs)
@@ -573,32 +574,33 @@
 					<h1 class="visit">Your Fingerprint</h1>
 					<h2 class="visit">last visit: ${'compute client side'}</h2>
 					<h3 class="visit">total visits: ${'compute client side + 1'}</h3>
-					<div class="device">Device Id: ${deviceHash}</div>
-					<div>Device/Browser Id: ${fpHash}</div>
-
-					<div class="device">platform: ${nav.platform}</div>
-					<div class="device">webgl renderer: ${webgl.renderer}</div>
-					<div class="device">deviceMemory: ${nav.deviceMemory}</div>
-					<div class="device">hardwareConcurrency: ${nav.hardwareConcurrency}</div>
-					<div class="device">maxTouchPoints: ${nav.maxTouchPoints}</div>
-					<div class="device">screen: ${fp.screen[1]}</div>
-					<div class="device">media devices: ${fp.mediaDevices[1]}</div>
-					<div class="device">language: ${nav.language}</div>
-					<div class="device">timezone: ${fp.timezone}</div>
-
-					<div>webglDataURL: ${fp.webglDataURL[1]}</div>
-					<div>client rects: ${fp.cRects[1]}</div>
-					<div>console errors: ${fp.consoleErrors[1]}</div>	
-					<div>maths: ${fp.maths[1]}</div>
+					<div>Fingerprint Id: ${fpHash}</div>
+					<div>Creepy Id: ${creepHash}</div>
 					<div>canvas: ${fp.canvas[1]}</div>
-					<div>userAgent: ${nav.userAgent}</div>
-					<div>appVersion: ${nav.appVersion}</div>	
+					<div>webglDataURL: ${fp.webglDataURL[1]}</div>
+					<div>webgl renderer: ${webgl.renderer}</div>
+					<div>webgl vendor: ${webgl.vendor}</div>
+					<div>client rects: ${fp.cRects[1]}</div>
+					<div>console errors: ${fp.consoleErrors[1]}</div>
+					<div>errors captured: ${fp.errorsCaptured[1]}</div>	
+					<div>maths: ${fp.maths[1]}</div>
+					<div>media devices: ${fp.mediaDevices[1]}</div>
+					<div>timezone: ${fp.timezone}</div>
 					<div>mimeTypes: ${fp.mimeTypes[1]}</div>
 					<div>plugins: ${fp.plugins[1]}</div>
 					<div>voices: ${fp.voices[1]}</div>
-					<div>webgl vendor: ${webgl.vendor}</div>
+
+					<div>screen: ${fp.screen[1]}</div>
+					<div>platform: ${nav.platform}</div>
+					<div>deviceMemory: ${nav.deviceMemory}</div>
+					<div>hardwareConcurrency: ${nav.hardwareConcurrency}</div>
+					<div>maxTouchPoints: ${nav.maxTouchPoints}</div>
+					<div>userAgent: ${nav.userAgent}</div>
+					<div>appVersion: ${nav.appVersion}</div>
+					<div>language: ${nav.language}</div>
 					<div>vendor: ${nav.vendor}</div>
 					<div>doNotTrack: ${nav.doNotTrack}</div>
+
 
 					${(
 						!fp.highEntropy[0] ? '': `
