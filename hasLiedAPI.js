@@ -1,44 +1,75 @@
-function hasLiedAPI(api, name) {
-	const hashMini = str => {
-	    const json = `${JSON.stringify(str)}`
-	    let i, len, hash = 0x811c9dc5
-	    for (i = 0, len = json.length; i < len; i++) {
-	        hash = Math.imul(31, hash) + json.charCodeAt(i) | 0
-	    }
-	    return ('0000000' + (hash >>> 0).toString(16)).substr(-8)
-	}
-	const native = (x) => `function ${x}() { [native code] }`
+// detect and fingerprint Function API lies
+const native = (x) => `function ${x}() { [native code] }`
+function hasLiedStringAPI() {
 	let lieTypes = []
-	let fingerprint = ''
-	
 	// detect attempts to rewrite Function string conversion APIs
 	const fnToStr = Function.prototype.toString
 	const fnToLStr = Function.prototype.toLocaleString
 	const fnStr = String
 	const fnStringify = JSON.stringify
-	if (fnToStr != native('toString')) { lieTypes.push({ fnToStr }) }
-	if (fnToLStr != native('toLocaleString')) { lieTypes.push({ fnToLStr }) }
-	if (fnStr != native('String')) { lieTypes.push({ fnStr }) }
-	if (fnStringify != native('stringify')) { lieTypes.push({ fnStringify }) }
-	
+	if (fnToStr != native('toString')) {
+		lieTypes.push({ fnToStr })
+	}
+	if (fnToLStr != native('toLocaleString')) {
+		lieTypes.push({ fnToLStr })
+	}
+	if (fnStr != native('String')) {
+		lieTypes.push({ fnStr })
+	}
+	if (fnStringify != native('stringify')) {
+		lieTypes.push({ fnStringify })
+	}
+	return () => lieTypes
+}
+const stringAPILieTypes = hasLiedStringAPI() // compute and cache result
+function hasLiedAPI(api, name) {
+	let lieTypes = [...stringAPILieTypes()]
+	let fingerprint = ''
+
 	// detect attempts to rename the API and/or rewrite string conversion APIs on this API object
-	const { name: apiName, toString: apiToString, toLocaleString: apiToLocaleString } = api
-	if (apiName != name) { lieTypes.push({ apiName }) }
-	if (apiToString !== fnToStr) { lieTypes.push({ apiToString }) }
-	if (apiToLocaleString !== fnToLStr) { lieTypes.push({ apiToLocaleString }) }
-	
+	const {
+		name: apiName,
+		toString: apiToString,
+		toLocaleString: apiToLocaleString
+	} = api
+	if (apiName != name) {
+		lieTypes.push({ apiName })
+	}
+	if (apiToString !== fnToStr || apiToString.toString !== fnToStr) {
+		lieTypes.push({ apiToString })
+	}
+	if (apiToLocaleString !== fnToLStr) {
+		lieTypes.push({ apiToLocaleString })
+	}
+
+	// The idea of checking new is inspired by https://adtechmadness.wordpress.com/2019/03/23/javascript-tampering-detection-and-stealth/
+	try {
+		const str_1 = new Function.prototype.toString
+		const str_2 = new Function.prototype.toString()
+		const str_3 = new Function.prototype.toString.toString
+		const str_4 = new Function.prototype.toString.toString()
+		lieTypes.push({
+			str_1,
+			str_2,
+			str_3,
+			str_4
+		})
+	} catch (err) {
+		const nativeTypeError = 'TypeError: Function.prototype.toString is not a constructor'
+		if ('' + err != nativeTypeError) {
+			lieTypes.push({ newErr: '' + err })
+		}
+	}
+
 	// collect string conversion result
-	const result = ''+api
-	
+	const result = '' + api
+
 	// fingerprint result if it does not match native code
-	if (result != native(name)) { fingerprint = result }
+	if (result != native(name)) {
+		fingerprint = result
+	}
 	
 	return {
-		lied: lieTypes.length || fingerprint ? true : false,
-		hash: hashMini({ lieTypes, fingerprint })
+		lie: lieTypes.length || fingerprint ? { lieTypes, fingerprint } : false, 
 	}
 }
-
-const { lied, hash } = hasLiedAPI(HTMLCanvasElement.prototype.toDataURL, 'toDataURL')
-
-lied && console.log(`API Lie Detected: ${hash}`)

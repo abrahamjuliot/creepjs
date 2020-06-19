@@ -60,6 +60,7 @@
 	}
 
 	// detect and fingerprint Function API lies
+	const native = (x) => `function ${x}() { [native code] }`
 	function hasLiedStringAPI() {
 		let lieTypes = []
 		// detect attempts to rewrite Function string conversion APIs
@@ -83,7 +84,6 @@
 	}
 	const stringAPILieTypes = hasLiedStringAPI() // compute and cache result
 	function hasLiedAPI(api, name) {
-		const native = (x) => `function ${x}() { [native code] }`
 		let lieTypes = [...stringAPILieTypes()]
 		let fingerprint = ''
 
@@ -102,7 +102,7 @@
 		if (apiToLocaleString !== fnToLStr) {
 			lieTypes.push({ apiToLocaleString })
 		}
-		
+
 		// The idea of checking new is inspired by https://adtechmadness.wordpress.com/2019/03/23/javascript-tampering-detection-and-stealth/
 		try {
 			const str_1 = new Function.prototype.toString
