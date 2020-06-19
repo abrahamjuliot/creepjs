@@ -8,15 +8,18 @@
 		}
 	}
 	const errorsCaptured = []
+	const captureError = (error) => {
+		console.error(error)
+		const { name, message } = error
+		const stack = JSON.stringify(error.stack)
+		errorsCaptured.push({ name, message, stack })
+		return undefined
+	}
 	const attempt = fn => {
 		try {
 			return fn()
 		} catch (err) {
-			console.error(err)
-			const { name, message } = err
-			const stack = JSON.stringify(err.stack)
-			errorsCaptured.push({ name, message, stack })
-			return undefined
+			return captureError(error)
 		}
 	}
 
@@ -185,10 +188,16 @@
 
 	// client hints
 	const highEntropyValues = () => {
-		return !navigator.userAgentData ? undefined : 
-			attempt(() => navigator.userAgentData.getHighEntropyValues(
-				['platform', 'platformVersion', 'architecture',  'model', 'uaFullVersion']
-			))
+		try {
+			const { userAgentData } = navigator
+			return !userAgentData ? undefined : 
+				attempt(() => navigator.userAgentData.getHighEntropyValues(
+					['platform', 'platformVersion', 'architecture',  'model', 'uaFullVersion']
+				))
+		}
+		catch(error) {
+			return captureError(error)
+		}
 	}
 
 	// screen
@@ -220,27 +229,38 @@
 
 	// voices
 	const getVoices = () => {
-		return new Promise(resolve => {
-			if (typeof speechSynthesis === 'undefined') {
-				return resolve(undefined)
-			} 
-			else if (!speechSynthesis.getVoices) {
-				return resolve(undefined)
-			}
-			else if (speechSynthesis.getVoices().length) {
-				return resolve(voices)
-			} else {
-				speechSynthesis.onvoiceschanged = () => resolve(speechSynthesis.getVoices())
-			}
-		})
+		try {
+			const promise = new Promise(resolve => {
+				if (typeof speechSynthesis === 'undefined') {
+					return resolve(undefined)
+				} 
+				else if (!speechSynthesis.getVoices) {
+					return resolve(undefined)
+				}
+				else if (speechSynthesis.getVoices().length) {
+					return resolve(voices)
+				} else {
+					speechSynthesis.onvoiceschanged = () => resolve(speechSynthesis.getVoices())
+				}
+			})
+			return promise
+		}
+		catch(error) {
+			return captureError(error)
+		}
 	}
 
 	// media devices
 	const getMediaDevices = () => {
-		if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
-			new Promise(resolve => resolve(undefined))
+		try {
+			if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+				new Promise(resolve => resolve(undefined))
+			}
+			return attempt(() => navigator.mediaDevices.enumerateDevices())
 		}
-		return attempt(() => navigator.mediaDevices.enumerateDevices())
+		catch(error) {
+			return captureError(error)
+		}
 	}
 
 	// canvas
@@ -527,7 +547,8 @@
 
 		}
 
-		console.log('Fingerprint', fp)
+		console.log('Fingerprint Id', fp)
+		console.log('Creepy Id', fp)
 
 		const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
 		.catch(error => { 
