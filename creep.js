@@ -473,6 +473,7 @@
 			voicesHash,
 			mediaDeviceHash,
 			highEntropyHash,
+			timezoneHash,
 			screenHash,
 			weglDataURLHash,
 			consoleErrorsHash,
@@ -486,6 +487,7 @@
 			hashify(voicesComputed),
 			hashify(mediaDevicesComputed),
 			hashify(highEntropy),
+			hashify(timezoneComputed),
 			hashify(screenComputed),
 			hashify(webglDataURLComputed),
 			hashify(consoleErrorsComputed),
@@ -499,7 +501,7 @@
 		const fingerprint = {
 			nav: navComputed,
 			highEntropy: [highEntropy, highEntropyHash],
-			timezone: timezoneComputed,
+			timezone: [timezoneComputed, timezoneHash]
 			webgl: webglComputed,
 			mimeTypes: [mimeTypes, mimeTypesHash],
 			plugins: [plugins, pluginsHash],
@@ -604,7 +606,7 @@
 					<div>errors captured: ${fp.errorsCaptured[1]}</div>	
 					<div>maths: ${fp.maths[1]}</div>
 					<div>media devices: ${fp.mediaDevices[1]}</div>
-					<div>timezone: ${fp.timezone}</div>
+					<div>timezone: ${fp.timezone[1]}</div>
 					<div>mimeTypes: ${fp.mimeTypes[1]}</div>
 					<div>plugins: ${fp.plugins[1]}</div>
 					<div>voices: ${fp.voices[1]}</div>
