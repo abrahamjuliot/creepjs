@@ -217,7 +217,7 @@
 				if (typeof speechSynthesis === 'undefined') {
 					return resolve(undefined)
 				} 
-				else if (!speechSynthesis.getVoices) {
+				else if (!speechSynthesis.getVoices || speechSynthesis.getVoices() == undefined) {
 					return resolve(undefined)
 				}
 				else if (speechSynthesis.getVoices().length) {
@@ -230,7 +230,8 @@
 			return promise
 		}
 		catch(error) {
-			return captureError(error)
+			captureError(error)
+			return new Promise(resolve => resolve(undefined))
 		}
 	}
 
@@ -243,7 +244,8 @@
 			return attempt(() => navigator.mediaDevices.enumerateDevices())
 		}
 		catch(error) {
-			return captureError(error)
+			captureError(error)
+			return new Promise(resolve => resolve(undefined))
 		}
 	}
 
@@ -448,7 +450,7 @@
 		]).catch(error => { 
 			console.error(error.message)
 		})
-		const voicesComputed = voices.map(({ name, lang }) => ({ name, lang }))
+		const voicesComputed = !voices ? undefined : voices.map(({ name, lang }) => ({ name, lang }))
 		const mediaDevicesComputed = !mediaDevices ? undefined : mediaDevices.map(({ kind }) => ({ kind })) // chrome randomizes groupId
 		// await hash values
 		const [
