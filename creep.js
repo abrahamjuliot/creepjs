@@ -7,6 +7,7 @@
 			console.log(`${logEnd}: ${end / 1000} seconds`)
 		}
 	}
+
 	const errorsCaptured = []
 	const captureError = (error) => {
 		console.error(error)
@@ -132,30 +133,27 @@
 
 	// navigator
 	const nav = () => {
-		let {
-			userAgent,
-			appVersion,
-			platform,
-			deviceMemory: dMem,
-			hardwareConcurrency: hCon,
-			maxTouchPoints: maxTP
-		} = navigator
-		const trust = (
-			userAgent.includes(appVersion)
-		) ? true : false
-		if (!trust) {
-			userAgent = appVersion = platform = undefined
-		}
 		return {
-			appVersion,
-			deviceMemory: isNaN(dMem) ? undefined : dMem,
-			doNotTrack: navigator.doNotTrack,
-			hardwareConcurrency: isNaN(hCon) ? undefined : hCon,
-			language: `${navigator.languages.join(', ')} (${navigator.language})`,
-			maxTouchPoints: isNaN(maxTP) ? undefined : maxTP,
-			platform,
-			userAgent,
-			vendor: navigator.vendor || undefined,
+			appVersion: attempt(() => navigator.appVersion),
+			deviceMemory: attempt(() => {
+				const { deviceMemory } = navigator
+				return isNaN(deviceMemory) ? undefined : deviceMemory
+			}),
+			doNotTrack: attempt(() => navigator.doNotTrack),
+			hardwareConcurrency: attempt(() => {
+				const { hardwareConcurrency } = navigator
+				return isNaN(hardwareConcurrency) ? undefined : hardwareConcurrency 
+			}),
+			language: attempt(() => {
+				return `${navigator.languages.join(', ')} (${navigator.language})`
+			}),
+			maxTouchPoints: attempt(() => {
+				const { maxTouchPoints } = navigator
+				return isNaN(maxTouchPoints) ? undefined : maxTouchPoints
+			}),
+			platform: attempt(() => navigator.platform),
+			userAgent: attempt(() => navigator.userAgent),
+			vendor: attempt(() => navigator.vendor),
 			mimeTypes: attempt(() => [...navigator.mimeTypes].map(m => m.type)),
 			plugins: attempt(() => {
 				return [...navigator.plugins]
@@ -179,34 +177,22 @@
 				))
 		}
 		catch(error) {
-			return captureError(error)
+			captureError(error)
+			return new Promise(resolve => resolve(undefined))
 		}
 	}
 
 	// screen
 	const screenFp = () => {
-		let {
-			width,
-			height,
-			availWidth,
-			availHeight,
-			availTop,
-			availLeft,
-			colorDepth,
-			pixelDepth
-		} = screen
-		if (availWidth > width || availHeight > height) {
-			width = height = availWidth = availHeight = availTop = availLeft = undefined // distrust
-		}
 		return {
-			width,
-			height,
-			availWidth,
-			availHeight,
-			availTop,
-			availLeft,
-			colorDepth,
-			pixelDepth
+			width: attempt(() => screen.width),
+			height: attempt(() => screen.height),
+			availWidth: attempt(() => screen.availWidth),
+			availHeight: attempt(() => screen.availHeight),
+			availTop: attempt(() => screen.availTop),
+			availLeft: attempt(() => screen.availLeft),
+			colorDepth: attempt(() => screen.colorDepth),
+			pixelDepth: attempt(() => screen.pixelDepth)
 		}
 	}
 
@@ -214,17 +200,23 @@
 	const getVoices = () => {
 		try {
 			const promise = new Promise(resolve => {
-				if (typeof speechSynthesis === 'undefined') {
-					return resolve(undefined)
-				} 
-				else if (!speechSynthesis.getVoices || speechSynthesis.getVoices() == undefined) {
-					return resolve(undefined)
+				try {
+					if (typeof speechSynthesis === 'undefined') {
+						return resolve(undefined)
+					} 
+					else if (!speechSynthesis.getVoices || speechSynthesis.getVoices() == undefined) {
+						return resolve(undefined)
+					}
+					else if (speechSynthesis.getVoices().length) {
+						const voices = speechSynthesis.getVoices()
+						return resolve(voices)
+					} else {
+						speechSynthesis.onvoiceschanged = () => resolve(speechSynthesis.getVoices())
+					}
 				}
-				else if (speechSynthesis.getVoices().length) {
-					const voices = speechSynthesis.getVoices()
-					return resolve(voices)
-				} else {
-					speechSynthesis.onvoiceschanged = () => resolve(speechSynthesis.getVoices())
+				catch(error) {
+					captureError(error)
+					return resolve(undefined)
 				}
 			})
 			return promise
@@ -425,7 +417,8 @@
 	const fingerprint = async () => {
 		// attempt to compute values
 		const navComputed = attempt(() => nav())
-		const { mimeTypes, plugins } = navComputed
+		const mimeTypes = navComputed ? navComputed.mimeTypes : undefined
+		const plugins = navComputed ? navComputed.plugins : undefined
 		const screenComputed = attempt(() => screenFp())
 		const canvasComputed = attempt(() => canvas())
 		const gl = attempt(() => webgl())
@@ -450,11 +443,13 @@
 		]).catch(error => { 
 			console.error(error.message)
 		})
+		
 		const voicesComputed = !voices ? undefined : voices.map(({ name, lang }) => ({ name, lang }))
 		const mediaDevicesComputed = !mediaDevices ? undefined : mediaDevices.map(({ kind }) => ({ kind })) // chrome randomizes groupId
 		// await hash values
 		const [
-			mimeTypesHash, // order must match
+			navHash, // order must match
+			mimeTypesHash,
 			pluginsHash,
 			voicesHash,
 			mediaDeviceHash,
@@ -468,6 +463,7 @@
 			canvasHash,
 			errorsCapturedHash
 		] = await Promise.all([
+			hashify(navComputed),
 			hashify(mimeTypes),
 			hashify(plugins),
 			hashify(voicesComputed),
@@ -485,7 +481,7 @@
 			console.error(error.message)
 		})
 		const fingerprint = {
-			nav: navComputed,
+			nav: [navComputed, navHash],
 			highEntropy: [highEntropy, highEntropyHash],
 			timezone: [timezoneComputed, timezoneHash],
 			webgl: webglComputed,
@@ -513,13 +509,14 @@
 		const response = await fetch(webapp)
 		return response.json()
 	}
+
 	// patch
 	const app = document.getElementById('fp-app')
 	patch(app, scene, async () => {
 		// fingerprint and render
 		const fpElem = document.getElementById('fingerprint')
 		const fp = await fingerprint().catch((e) => console.log(e))
-		const { nav, webgl } = fp
+		const { webgl } = fp
 
 		// creep by detecting lies
 		const creep = {
@@ -532,9 +529,8 @@
 			maths: fp.maths,
 			canvas: fp.canvas
 		}
-
-		console.log('Fingerprint Id', fp)
-		console.log('Creepy Id', creep)
+		
+		console.log('Fingerprint Id', JSON.stringify(fp, null, '\t'))
 
 		const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
 		.catch(error => { 
@@ -548,8 +544,12 @@
 		postData(formData).catch(errs)
 
 		// get data from server
-		const responseData = await getData().catch(errs)
-		console.log('Response data:', responseData)
+		//const responseData = await getData().catch(errs)
+		//console.log('Response data:', responseData)
+		fetch(webapp)
+			.then(response => response.json())
+  			.then(data => console.log(data))
+		
 
 		// template
 		const data = `
@@ -581,45 +581,90 @@
 					<h1 class="visit">Your Fingerprint</h1>
 					<h2 class="visit">last visit: ${'compute client side'}</h2>
 					<h3 class="visit">total visits: ${'compute client side + 1'}</h3>
+					<div>Purified Fingerprint Id: ${creepHash}</div>
 					<div>Fingerprint Id: ${fpHash}</div>
-					<div>Creepy Id: ${creepHash}</div>
-					<div>canvas: ${fp.canvas[1]}</div>
-					<div>webglDataURL: ${fp.webglDataURL[1]}</div>
-					<div>webgl renderer: ${webgl.renderer}</div>
-					<div>webgl vendor: ${webgl.vendor}</div>
-					<div>client rects: ${fp.cRects[1]}</div>
+					<div>canvas: ${fp.canvas[0] ? fp.canvas[1] : '[blocked]'}</div>
+					<div>webglDataURL: ${fp.webglDataURL[0] ? fp.webglDataURL[1] : '[blocked]'}</div>
+					<div>webgl renderer: ${webgl.renderer ? webgl.renderer : '[blocked]'}</div>
+					<div>webgl vendor: ${webgl.vendor ? webgl.vendor : '[blocked]'}</div>
+					<div>client rects: ${fp.cRects[0] ? fp.cRects[1] : '[blocked]'}</div>
 					<div>console errors: ${fp.consoleErrors[1]}</div>
-					<div>errors captured: ${fp.errorsCaptured[1]}</div>	
-					<div>maths: ${fp.maths[1]}</div>
-					<div>media devices: ${fp.mediaDevices[1]}</div>
-					<div>timezone: ${fp.timezone[1]}</div>
-					<div>mimeTypes: ${fp.mimeTypes[1]}</div>
-					<div>plugins: ${fp.plugins[1]}</div>
-					<div>voices: ${fp.voices[1]}</div>
-
-					<div>screen: ${fp.screen[1]}</div>
-					<div>platform: ${nav.platform}</div>
-					<div>deviceMemory: ${nav.deviceMemory}</div>
-					<div>hardwareConcurrency: ${nav.hardwareConcurrency}</div>
-					<div>maxTouchPoints: ${nav.maxTouchPoints}</div>
-					<div>userAgent: ${nav.userAgent}</div>
-					<div>appVersion: ${nav.appVersion}</div>
-					<div>language: ${nav.language}</div>
-					<div>vendor: ${nav.vendor}</div>
-					<div>doNotTrack: ${nav.doNotTrack}</div>
-
+					<div>errors captured: ${fp.errorsCaptured[0].length ? fp.errorsCaptured[1] : '[none]'}</div>	
+					<div>maths: ${fp.maths[0] ? fp.maths[1] : '[blocked]'}</div>
+					<div>media devices: ${fp.mediaDevices[0] ? fp.mediaDevices[1] : '[blocked]'}</div>
+					<div>timezone: ${fp.timezone[0] ? fp.timezone[1] : '[blocked]'}</div>
+					<div>mimeTypes: ${fp.mimeTypes[0] ? fp.mimeTypes[1] : '[blocked]'}</div>
+					<div>plugins: ${fp.plugins[0] ? fp.plugins[1] : '[blocked]'}</div>
+					<div>voices: ${fp.voices[0] ? fp.voices[1] : '[blocked]'}</div>
 
 					${(
-						!fp.highEntropy[0] ? '': `
-						<div>high entropy hash: ${fp.highEntropy[1]}</div>
-						<div>ua architecture: ${fp.highEntropy[0].architecture}</div>
-						<div>ua model: ${fp.highEntropy[0].model || undefined}</div>
-						<div>ua platform: ${fp.highEntropy[0].platform}</div>
-						<div>ua platform version: ${fp.highEntropy[0].platformVersion}</div>
-						<div>ua full version: ${fp.highEntropy[0].uaFullVersion}</div>
-						`
+						!fp.screen[0] ? '<div>screen: [blocked]</div>': (() => {
+							const [ scrn, hash ]  = fp.screen
+							const { width, height, availWidth, availHeight, availTop, availLeft, colorDepth, pixelDepth } = scrn
+							return `
+							<div>
+								<div>screen hash: ${hash}</div>
+								<div>width: ${width !== undefined ? width : '[blocked]'}</div>
+								<div>height: ${height !== undefined ? height : '[blocked]'}</div>
+								<div>availWidth: ${availWidth !== undefined ? availWidth : '[blocked]'}</div>
+								<div>availHeight: ${availHeight !== undefined ? availHeight : '[blocked]'}</div>
+								<div>availTop: ${availTop !== undefined ? availTop : '[blocked]'}</div>
+								<div>availLeft: ${availLeft !== undefined ? availLeft : '[blocked]'}</div>
+								<div>colorDepth: ${colorDepth !== undefined ? colorDepth : '[blocked]'}</div>
+								<div>pixelDepth: ${pixelDepth !== undefined ? pixelDepth : '[blocked]'}</div>
+							</div>
+							`
+						})()
 					)}
 					
+					${(
+						!fp.nav[0] ? '<div>navigator: [blocked]</div>': (() => {
+							const [ nav, hash ]  = fp.nav
+							const {
+								platform,
+								deviceMemory,
+								hardwareConcurrency,
+								maxTouchPoints,
+								userAgent,
+								appVersion,
+								language,
+								vendor,
+								doNotTrack
+							} = nav
+							return `
+							<div>
+								<div>navigator hash: ${hash}</div>
+								<div>platform: ${platform ? platform : '[blocked]'}</div>
+								<div>deviceMemory: ${deviceMemory ? deviceMemory : '[blocked]'}</div>
+								<div>hardwareConcurrency: ${hardwareConcurrency ? hardwareConcurrency : '[blocked]'}</div>
+								<div>maxTouchPoints: ${maxTouchPoints !== undefined ? maxTouchPoints : '[blocked]'}</div>
+								<div>userAgent: ${userAgent ? userAgent : '[blocked]'}</div>
+								<div>appVersion: ${appVersion ? appVersion : '[blocked]'}</div>
+								<div>language: ${language ? language : '[blocked]'}</div>
+								<div>vendor: ${vendor ? vendor : '[blocked]'}</div>
+								<div>doNotTrack: ${doNotTrack !== undefined ? doNotTrack : '[blocked]'}</div>
+							</div>
+							`
+						})()
+					)}
+
+					${(
+						!fp.highEntropy[0] ? '<div>high entropy: [blocked or unsupported]</div>': (() => {
+							const [ ua, hash ]  = fp.highEntropy
+							const { architecture, model, platform, platformVersion, uaFullVersion } = ua
+							return `
+							<div>
+								<div>high entropy hash: ${hash}</div>
+								<div>ua architecture: ${architecture}</div>
+								<div>ua model: ${model}</div>
+								<div>ua platform: ${platform}</div>
+								<div>ua platform version: ${platformVersion}</div>
+								<div>ua full version: ${uaFullVersion}</div>
+							</div>
+							`
+						})()
+					)}
+
 					<span>view the console for details</span>
 				</div>
 			</section>
