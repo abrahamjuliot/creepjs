@@ -649,6 +649,7 @@
 				'94e40669f496f2cef69cc289f3ee50dc442ced21fb42a88bc223270630002556': 'Canvas Fingerprint Defender',
 				'32cfbc8d166d60a416d942a678dd707119474a541969ad95c0968ae5df32bdcb': 'Privacy Possom',
 				'1a2e56badfca47209ba445811f27e848b4c2dae58224445a4af3d3581ffe7561': 'Privacy Possom',
+				'107362a28208c432abd04f7d571f64ea1089c14db531e1c1375b83ae9ca0ba6a': 'Privacy Badger or similar',
 				'785acfe6b266709e167dcc85fdd5697798cfdb1dcb9bed4eab42f422117ebaab' : 'Trace',
 				'015523301c35459c43d145f3bc2b3edc6c4f3d2963a2d67bbd10cf634d84bacb': 'Trace',
 				'7757f7416b78fb8ac1f079b3e0677c0fe179826a63727d809e7d69795e915cd5': 'Chromium',
