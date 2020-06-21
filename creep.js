@@ -169,9 +169,12 @@
 
 	// client hints
 	const highEntropyValues = () => {
+		const undfnd = new Promise(resolve => resolve(undefined))
 		try {
-			const { userAgentData } = navigator
-			return !userAgentData ? undefined : 
+			if (!('userAgentData' in navigator)) {
+				return undfnd
+			}
+			return !navigator.userAgentData ? undfnd : 
 				attempt(() => navigator.userAgentData.getHighEntropyValues(
 					['platform', 'platformVersion', 'architecture',  'model', 'uaFullVersion']
 				))
@@ -198,6 +201,7 @@
 
 	// voices
 	const getVoices = () => {
+		const undfn = new Promise(resolve => resolve(undefined))
 		try {
 			const promise = new Promise(resolve => {
 				try {
@@ -219,25 +223,31 @@
 					return resolve(undefined)
 				}
 			})
+			
 			return promise
 		}
 		catch(error) {
 			captureError(error)
-			return new Promise(resolve => resolve(undefined))
+			return undfn
 		}
 	}
 
 	// media devices
 	const getMediaDevices = () => {
+		const undfn = new Promise(resolve => resolve(undefined))
+		
+		if (!('mediaDevices' in navigator)) {
+			return undfn
+		}
 		try {
 			if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
-				new Promise(resolve => resolve(undefined))
+				return undfn
 			}
 			return attempt(() => navigator.mediaDevices.enumerateDevices())
 		}
 		catch(error) {
 			captureError(error)
-			return new Promise(resolve => resolve(undefined))
+			return undfn
 		}
 	}
 
@@ -277,18 +287,32 @@
 			const context = canvas.getContext('webgl')
 			return {
 				unmasked: () => {
-					const extension = context.getExtension('WEBGL_debug_renderer_info')
-					const vendor = context.getParameter(extension.UNMASKED_VENDOR_WEBGL)
-					const renderer = context.getParameter(extension.UNMASKED_RENDERER_WEBGL)
-					return {
-						vendor,
-						renderer
+					try {
+						const extension = context.getExtension('WEBGL_debug_renderer_info')
+						const vendor = context.getParameter(extension.UNMASKED_VENDOR_WEBGL)
+						const renderer = context.getParameter(extension.UNMASKED_RENDERER_WEBGL)
+						return {
+							vendor,
+							renderer
+						}
+					}
+					catch(error) {
+						captureError(error)
+						return {
+							vendor: undefined,
+							renderer: undefined
+						}
 					}
 				},
 				dataURL: () => {
-					context.clearColor(0.2, 0.4, 0.6, 0.8)
-					context.clear(context.COLOR_BUFFER_BIT)
-					return canvas.toDataURL()
+					try {
+						context.clearColor(0.2, 0.4, 0.6, 0.8)
+						context.clear(context.COLOR_BUFFER_BIT)
+						return canvas.toDataURL()
+					}
+					catch(error) {
+						return captureError(error)
+					}
 				}
 			}
 		}
@@ -431,6 +455,7 @@
 		const timezoneComputed = attempt(() => timezone())
 		const cRectsComputed = attempt(() => cRects())
 		const mathsComputed = attempt(() => maths())
+		
 		// await voices, media, and client hints, then compute
 		const [
 			voices,
@@ -550,7 +575,23 @@
 			.then(response => response.json())
   			.then(data => console.log(data))
 		
+		// identify known hash
+		const identify = prop => {
+			const known = {
+				'785acfe6b266709e167dcc85fdd5697798cfdb1dcb9bed4eab42f422117ebaab' : 'Trace (canvas code unmasked)',
+				'015523301c35459c43d145f3bc2b3edc6c4f3d2963a2d67bbd10cf634d84bacb': 'Trace (client rects code unmasked)',
+				'7757f7416b78fb8ac1f079b3e0677c0fe179826a63727d809e7d69795e915cd5': 'Chromium',
+				'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': 'Firefox',
+				'99dfbc2000c9c81588259515fed8a1f6fbe17bf9964c850560d08d0bfabc1fff': 'Tor Browser',
+				'e086050038b44b8dcb9d0565da3ff448a0162da7023469d347303479f981f5fd': 'Firefox (privacy protections)',
+				'0a1a099e6b0a7365acfdf38ed79c9cde9ec0617b0c39b6366dad4d1a4aa6fcaf': 'Firefox (privacy protections)'
+			}
 
+			const [ data, hash ] = prop
+			const iterable = Symbol.iterator in Object(data)
+			return !data || (iterable && !data.length)? '[blocked]' : known[hash] ? known[hash] : hash
+		}
+		
 		// template
 		const data = `
 			<section>
@@ -583,19 +624,18 @@
 					<h3 class="visit">total visits: ${'compute client side + 1'}</h3>
 					<div>Purified Fingerprint Id: ${creepHash}</div>
 					<div>Fingerprint Id: ${fpHash}</div>
-					<div>canvas: ${fp.canvas[0] ? fp.canvas[1] : '[blocked]'}</div>
-					<div>webglDataURL: ${fp.webglDataURL[0] ? fp.webglDataURL[1] : '[blocked]'}</div>
+					<div>canvas: ${identify(fp.canvas)}</div>
+					<div>webglDataURL: ${identify(fp.webglDataURL)}</div>
 					<div>webgl renderer: ${webgl.renderer ? webgl.renderer : '[blocked]'}</div>
 					<div>webgl vendor: ${webgl.vendor ? webgl.vendor : '[blocked]'}</div>
-					<div>client rects: ${fp.cRects[0] ? fp.cRects[1] : '[blocked]'}</div>
-					<div>console errors: ${fp.consoleErrors[1]}</div>
+					<div>client rects: ${identify(fp.cRects)}</div>
+					<div>console errors: ${identify(fp.consoleErrors)}</div>
 					<div>errors captured: ${fp.errorsCaptured[0].length ? fp.errorsCaptured[1] : '[none]'}</div>	
-					<div>maths: ${fp.maths[0] ? fp.maths[1] : '[blocked]'}</div>
-					<div>media devices: ${fp.mediaDevices[0] ? fp.mediaDevices[1] : '[blocked]'}</div>
-					<div>timezone: ${fp.timezone[0] ? fp.timezone[1] : '[blocked]'}</div>
-					<div>mimeTypes: ${fp.mimeTypes[0] ? fp.mimeTypes[1] : '[blocked]'}</div>
-					<div>plugins: ${fp.plugins[0] ? fp.plugins[1] : '[blocked]'}</div>
-					<div>voices: ${fp.voices[0] ? fp.voices[1] : '[blocked]'}</div>
+					<div>maths: ${identify(fp.maths)}</div>
+					<div>media devices: ${identify(fp.mediaDevices)}</div>
+					<div>timezone: ${identify(fp.timezone)}</div>
+					
+					<div>voices: ${identify(fp.voices)}</div>
 
 					${(
 						!fp.screen[0] ? '<div>screen: [blocked]</div>': (() => {
@@ -643,6 +683,8 @@
 								<div>language: ${language ? language : '[blocked]'}</div>
 								<div>vendor: ${vendor ? vendor : '[blocked]'}</div>
 								<div>doNotTrack: ${doNotTrack !== undefined ? doNotTrack : '[blocked]'}</div>
+								<div>mimeTypes: ${identify(fp.mimeTypes)}</div>
+								<div>plugins: ${identify(fp.plugins)}</div>
 							</div>
 							`
 						})()
