@@ -135,13 +135,14 @@
 		}
 	}
 
+	// Detect renderer lie @Brave Browser and Privacy Possom
+	const credibleRenderer = (str) => {
+		const spaces = s => s.match(/\s/g).length
+		const hasAngle = s => /ANGLE\s\(.+\)/.test(s)
+		return hasAngle(str) && spaces(str) >= 3
+	}
 	// Detect Brave Browser and fingerprinting blocking
 	brave = () => {
-		const credibleRenderer = (str) => {
-			const spaces = s => s.match(/\s/g).length
-			const hasAngle = s => /ANGLE\s\(.+\)/.test(s)
-			return hasAngle(str) && spaces(str) > 2
-		}
 		if ('brave' in navigator) {
 			const canvas = document.createElement('canvas')
 			const webglContext = canvas.getContext('webgl')
@@ -157,26 +158,43 @@
 
 	// navigator
 	const nav = () => {
+		const credibleUserAgent = navigator.userAgent.includes(navigator.appVersion)
 		return {
-			appVersion: attempt(() => navigator.appVersion),
+			appVersion: attempt(() => {
+				return credibleUserAgent ? navigator.appVersion : undefined
+			}),
 			deviceMemory: attempt(() => {
 				const { deviceMemory } = navigator
 				return isNaN(deviceMemory) ? undefined : deviceMemory
 			}),
-			doNotTrack: attempt(() => navigator.doNotTrack),
+			doNotTrack: attempt(() => {
+				const { doNotTrack: dnt } = navigator
+				const dntValues = [1, '1', true, 'yes', 0, '0', false, 'no', 'unspecified', 'null']
+				const trusted = dntValues.filter(val => val === dnt )[0]
+				return trusted ? dnt : undefined
+			}),
 			hardwareConcurrency: attempt(() => {
 				const { hardwareConcurrency } = navigator
 				return isNaN(hardwareConcurrency) ? undefined : hardwareConcurrency 
 			}),
 			language: attempt(() => {
-				return `${navigator.languages.join(', ')} (${navigator.language})`
+				const lan1 = /^.{0,2}/g.exec(navigator.languages[0])[0]
+				const lan2 = /^.{0,2}/g.exec(navigator.languages)[0]
+				return lan1 == lan2 ? `${navigator.languages.join(', ')} (${navigator.language})` : undefined
 			}),
 			maxTouchPoints: attempt(() => {
 				const { maxTouchPoints } = navigator
 				return isNaN(maxTouchPoints) ? undefined : maxTouchPoints
 			}),
-			platform: attempt(() => navigator.platform),
-			userAgent: attempt(() => navigator.userAgent),
+			platform: attempt(() => {
+				const { platform } = navigator
+				const systems = ['win', 'linux', 'mac', 'arm', 'pike', 'linux', 'iphone', 'ipad', 'ipod', 'android', 'x11']
+				const trusted = systems.filter(val => platform.toLowerCase().includes(val))[0]
+				return trusted ? platform : undefined
+			}),
+			userAgent: attempt(() => {
+				return credibleUserAgent ? navigator.userAgent : undefined
+			}),
 			vendor: attempt(() => navigator.vendor),
 			mimeTypes: attempt(() => [...navigator.mimeTypes].map(m => m.type)),
 			plugins: attempt(() => {
@@ -211,15 +229,16 @@
 
 	// screen
 	const screenFp = () => {
+		const { width, height, availWidth, availHeight, availTop, availLeft, colorDepth, pixelDepth } = screen
 		return {
-			width: attempt(() => screen.width),
-			height: attempt(() => screen.height),
-			availWidth: attempt(() => screen.availWidth),
-			availHeight: attempt(() => screen.availHeight),
-			availTop: attempt(() => screen.availTop),
-			availLeft: attempt(() => screen.availLeft),
-			colorDepth: attempt(() => screen.colorDepth),
-			pixelDepth: attempt(() => screen.pixelDepth)
+			width: attempt(() => isNaN(width) ? undefined : width),
+			height: attempt(() => isNaN(height) ? undefined : height),
+			availWidth: attempt(() => isNaN(availWidth) ? undefined : availWidth),
+			availHeight: attempt(() => isNaN(availHeight) ? undefined : availHeight),
+			availTop: attempt(() => isNaN(availTop) ? undefined : availTop),
+			availLeft: attempt(() => isNaN(availLeft) ? undefined : availLeft),
+			colorDepth: attempt(() => isNaN(colorDepth) ? undefined : colorDepth),
+			pixelDepth: attempt(() => isNaN(pixelDepth) ? undefined : pixelDepth)
 		}
 	}
 
@@ -227,7 +246,7 @@
 	const getVoices = () => {
 		const undfn = new Promise(resolve => resolve(undefined))
 		/* block till Tor Browser fix */
-		return undfn
+		// return undfn
 		try {
 			const promise = new Promise(resolve => {
 				try {
@@ -278,9 +297,9 @@
 	}
 
 	// canvas
+	const { lie: dataLie } = hasLiedAPI(HTMLCanvasElement.prototype.toDataURL, 'toDataURL')
+	const { lie: contextLie } = hasLiedAPI(HTMLCanvasElement.prototype.getContext, 'getContext')
 	const canvas = () => {
-		const { lie: dataLie } = hasLiedAPI(HTMLCanvasElement.prototype.toDataURL, 'toDataURL')
-		const { lie: contextLie } = hasLiedAPI(HTMLCanvasElement.prototype.getContext, 'getContext')
 		if (!dataLie && !contextLie) {
 			const canvas = document.createElement('canvas')
 			const context = canvas.getContext('2d')
@@ -308,44 +327,57 @@
 	const webgl = () => {
 		const { lie: paramLie } = hasLiedAPI(WebGLRenderingContext.prototype.getParameter, 'getParameter')
 		const { lie: extLie } = hasLiedAPI(WebGLRenderingContext.prototype.getExtension, 'getExtension')
-		if (!paramLie && !extLie) {
-			const canvas = document.createElement('canvas')
-			const context = canvas.getContext('webgl')
-			return {
-				unmasked: () => {
-					try {
+		 
+		const canvas = document.createElement('canvas')
+		const context = canvas.getContext('webgl')
+		return {
+			unmasked: () => {
+				try {
+					if (!paramLie && !extLie) {
 						const extension = context.getExtension('WEBGL_debug_renderer_info')
 						const vendor = context.getParameter(extension.UNMASKED_VENDOR_WEBGL)
 						const renderer = context.getParameter(extension.UNMASKED_RENDERER_WEBGL)
+						if (!credibleRenderer(renderer)) {
+							return {
+								vendor: undefined,
+								renderer: undefined
+							}
+						}
 						return {
 							vendor,
 							renderer
 						}
 					}
-					catch(error) {
-						captureError(error)
-						return {
-							vendor: undefined,
-							renderer: undefined
-						}
+					paramLie && console.log('Lie detected (getParameter):', hashMini(paramLie))
+					extLie && console.log('Lie detected (getExtension):', hashMini(extLie))
+					return {
+						vendor: { paramLie, extLie },
+						renderer: { paramLie, extLie }
 					}
-				},
-				dataURL: () => {
-					try {
+				}
+				catch(error) {
+					captureError(error)
+					return {
+						vendor: undefined,
+						renderer: undefined
+					}
+				}
+			},
+			dataURL: () => {
+				try {
+					if (!dataLie && !contextLie) {
 						context.clearColor(0.2, 0.4, 0.6, 0.8)
 						context.clear(context.COLOR_BUFFER_BIT)
 						return canvas.toDataURL()
 					}
-					catch(error) {
-						return captureError(error)
-					}
+					return { dataLie, contextLie }
+				}
+				catch(error) {
+					return captureError(error)
 				}
 			}
 		}
-
-		paramLie && console.log('Lie detected (getParameter):', hashMini(paramLie))
-		extLie && console.log('Lie detected (getExtension):', hashMini(extLie))
-
+		
 		return {
 			unmasked: () => ({ vendor: undefined, renderer: undefined }),
 			dataURL: () => { paramLie, extLie }
@@ -584,7 +616,7 @@
 			canvas: fp.canvas
 		}
 		
-		console.log('Fingerprint Id', JSON.stringify(fp, null, '\t'))
+		console.log('Fingerprint Id', fp, JSON.stringify(fp, null, '\t'))
 
 		const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
 		.catch(error => { 
@@ -607,13 +639,16 @@
 		// identify known hash
 		const identify = prop => {
 			const known = {
-				'785acfe6b266709e167dcc85fdd5697798cfdb1dcb9bed4eab42f422117ebaab' : 'Trace (canvas code unmasked)',
-				'015523301c35459c43d145f3bc2b3edc6c4f3d2963a2d67bbd10cf634d84bacb': 'Trace (client rects code unmasked)',
+				'32cfbc8d166d60a416d942a678dd707119474a541969ad95c0968ae5df32bdcb': 'Privacy Possom',
+				'1a2e56badfca47209ba445811f27e848b4c2dae58224445a4af3d3581ffe7561': 'Privacy Possom',
+				'785acfe6b266709e167dcc85fdd5697798cfdb1dcb9bed4eab42f422117ebaab' : 'Trace',
+				'015523301c35459c43d145f3bc2b3edc6c4f3d2963a2d67bbd10cf634d84bacb': 'Trace',
 				'7757f7416b78fb8ac1f079b3e0677c0fe179826a63727d809e7d69795e915cd5': 'Chromium',
 				'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': 'Firefox',
-				'99dfbc2000c9c81588259515fed8a1f6fbe17bf9964c850560d08d0bfabc1fff': 'Tor Browser',
-				'e086050038b44b8dcb9d0565da3ff448a0162da7023469d347303479f981f5fd': 'Firefox (privacy protections)',
-				'0a1a099e6b0a7365acfdf38ed79c9cde9ec0617b0c39b6366dad4d1a4aa6fcaf': 'Firefox (privacy protections)'
+				'e086050038b44b8dcb9d0565da3ff448a0162da7023469d347303479f981f5fd': 'Firefox',
+				'0a1a099e6b0a7365acfdf38ed79c9cde9ec0617b0c39b6366dad4d1a4aa6fcaf': 'Firefox',
+				'99dfbc2000c9c81588259515fed8a1f6fbe17bf9964c850560d08d0bfabc1fff': 'Tor Browser'
+				
 			}
 
 			const [ data, hash ] = prop
@@ -722,7 +757,7 @@
 							return `
 							<div>
 								<div>navigator hash: ${hash}</div>
-								<div>platform: ${platform ? platform : '[blocked]'}</div>
+								<div>platform: ${platform ? platform : '[blocked or other]'}</div>
 								<div>deviceMemory: ${deviceMemory ? deviceMemory : '[blocked]'}</div>
 								<div>hardwareConcurrency: ${hardwareConcurrency ? hardwareConcurrency : '[blocked]'}</div>
 								<div>maxTouchPoints: ${maxTouchPoints !== undefined ? maxTouchPoints : '[blocked]'}</div>
