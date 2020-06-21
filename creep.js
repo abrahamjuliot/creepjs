@@ -24,6 +24,7 @@
 		}
 	}
 
+	// https://stackoverflow.com/a/22429679
 	const hashMini = str => {
 	    const json = `${JSON.stringify(str)}`
 	    let i, len, hash = 0x811c9dc5
@@ -33,6 +34,9 @@
 	    return ('0000000' + (hash >>> 0).toString(16)).substr(-8)
 	}
 
+	// https://stackoverflow.com/a/53490958
+	// https://stackoverflow.com/a/43383990
+	// https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest
 	const hashify = async (x) => {
 		const json = `${JSON.stringify(x)}`
 		const jsonBuffer = new TextEncoder('utf-8').encode(json)
@@ -131,6 +135,26 @@
 		}
 	}
 
+	// Detect Brave Browser and fingerprinting blocking
+	brave = () => {
+		const credibleRenderer = (str) => {
+			const spaces = s => s.match(/\s/g).length
+			const hasAngle = s => /ANGLE\s\(.+\)/.test(s)
+			return hasAngle(str) && spaces(str) > 2
+		}
+		if ('brave' in navigator) {
+			const canvas = document.createElement('canvas')
+			const webglContext = canvas.getContext('webgl')
+			const extension = webglContext.getExtension('WEBGL_debug_renderer_info')
+			const renderer = extension && webglContext.getParameter(extension.UNMASKED_RENDERER_WEBGL)
+			return {
+				blockingFingerprintingStrict: !extension ? true : renderer ? !credibleRenderer(renderer): false
+			}
+		}
+		return false
+	}
+	const isBrave = brave() // compute and cache result
+
 	// navigator
 	const nav = () => {
 		return {
@@ -202,6 +226,8 @@
 	// voices
 	const getVoices = () => {
 		const undfn = new Promise(resolve => resolve(undefined))
+		/* block till Tor Browser fix */
+		return undfn
 		try {
 			const promise = new Promise(resolve => {
 				try {
@@ -269,7 +295,7 @@
 			context.font = '20px Arial'
 			context.fillStyle = 'green'
 			context.fillText(str, 10, 50)
-			return canvas.toDataURL()
+			return isBrave ? undefined : canvas.toDataURL()
 		}
 		
 		dataLie && console.log('Lie detected (toDataURL):', hashMini(dataLie))
@@ -472,6 +498,7 @@
 		const voicesComputed = !voices ? undefined : voices.map(({ name, lang }) => ({ name, lang }))
 		const mediaDevicesComputed = !mediaDevices ? undefined : mediaDevices.map(({ kind }) => ({ kind })) // chrome randomizes groupId
 		// await hash values
+		const hashTimer = timer('hashing values...')
 		const [
 			navHash, // order must match
 			mimeTypesHash,
@@ -505,6 +532,8 @@
 		]).catch(error => { 
 			console.error(error.message)
 		})
+		hashTimer('Hashing complete')
+
 		const fingerprint = {
 			nav: [navComputed, navHash],
 			highEntropy: [highEntropy, highEntropyHash],
@@ -624,10 +653,29 @@
 					<h3 class="visit">total visits: ${'compute client side + 1'}</h3>
 					<div>Purified Fingerprint Id: ${creepHash}</div>
 					<div>Fingerprint Id: ${fpHash}</div>
-					<div>canvas: ${identify(fp.canvas)}</div>
-					<div>webglDataURL: ${identify(fp.webglDataURL)}</div>
-					<div>webgl renderer: ${webgl.renderer ? webgl.renderer : '[blocked]'}</div>
-					<div>webgl vendor: ${webgl.vendor ? webgl.vendor : '[blocked]'}</div>
+
+					${(
+						!isBrave || !isBrave.blockingFingerprintingStrict? '': (() => {
+							return `
+							<div>
+								<div>Brave Browser is Blocking Fingerprinting in Strict Mode</div>
+							</div>
+							`
+						})()
+					)}
+
+					<div>canvas: ${
+						isBrave ? 'Brave Browser' : identify(fp.canvas)
+					}</div>
+					<div>webglDataURL: ${
+						isBrave ? 'Brave Browser' : identify(fp.webglDataURL)
+					}</div>
+					<div>webgl renderer: ${
+						isBrave ? 'Brave Browser' : webgl.renderer ? webgl.renderer : '[blocked]'
+					}</div>
+					<div>webgl vendor: ${
+						isBrave ? 'Brave Browser' : webgl.vendor ? webgl.vendor : '[blocked]'
+					}</div>
 					<div>client rects: ${identify(fp.cRects)}</div>
 					<div>console errors: ${identify(fp.consoleErrors)}</div>
 					<div>errors captured: ${fp.errorsCaptured[0].length ? fp.errorsCaptured[1] : '[none]'}</div>	
