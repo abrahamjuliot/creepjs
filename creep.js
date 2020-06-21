@@ -539,6 +539,7 @@
 			mediaDeviceHash,
 			highEntropyHash,
 			timezoneHash,
+			webglHash,
 			screenHash,
 			weglDataURLHash,
 			consoleErrorsHash,
@@ -554,6 +555,7 @@
 			hashify(mediaDevicesComputed),
 			hashify(highEntropy),
 			hashify(timezoneComputed),
+			hashify(webglComputed),
 			hashify(screenComputed),
 			hashify(webglDataURLComputed),
 			hashify(consoleErrorsComputed),
@@ -570,7 +572,7 @@
 			nav: [navComputed, navHash],
 			highEntropy: [highEntropy, highEntropyHash],
 			timezone: [timezoneComputed, timezoneHash],
-			webgl: webglComputed,
+			webgl: [webglComputed, webglHash],
 			mimeTypes: [mimeTypes, mimeTypesHash],
 			plugins: [plugins, pluginsHash],
 			voices: [voicesComputed, voicesHash],
@@ -602,7 +604,6 @@
 		// fingerprint and render
 		const fpElem = document.getElementById('fingerprint')
 		const fp = await fingerprint().catch((e) => console.log(e))
-		const { webgl } = fp
 
 		// creep by detecting lies
 		const creep = {
@@ -639,6 +640,11 @@
 		// identify known hash
 		const identify = prop => {
 			const known = {
+				'0df25df426d0ce052d04482c0c2cd4d874ae7a4da4feb430be36150a770f3b6b': 'Browser Plugs',
+				'65069db4579c03d49fde85983c905817c8798cad3ad6b39dd93df24bde1449c9': 'Browser Plugs',
+				'3ac278638742f3475dcd69559fd1d12e01eefefffe3df66f9129d35635fc3311': 'Browser Plugs',
+				'e9f96e6b7f0b93f9d7677f0e270c97d6fa12cbbe3134ab5f906d152f57953e72': 'Browser Plugs',
+				'0c3156fbce7624886a6a5485d3fabfb8038f9b656de01100392b2cebf354106d': 'Browser Plugs',
 				'94e40669f496f2cef69cc289f3ee50dc442ced21fb42a88bc223270630002556': 'Canvas Fingerprint Defender',
 				'32cfbc8d166d60a416d942a678dd707119474a541969ad95c0968ae5df32bdcb': 'Privacy Possom',
 				'1a2e56badfca47209ba445811f27e848b4c2dae58224445a4af3d3581ffe7561': 'Privacy Possom',
@@ -649,7 +655,6 @@
 				'e086050038b44b8dcb9d0565da3ff448a0162da7023469d347303479f981f5fd': 'Firefox',
 				'0a1a099e6b0a7365acfdf38ed79c9cde9ec0617b0c39b6366dad4d1a4aa6fcaf': 'Firefox',
 				'99dfbc2000c9c81588259515fed8a1f6fbe17bf9964c850560d08d0bfabc1fff': 'Tor Browser'
-				
 			}
 
 			const [ data, hash ] = prop
@@ -706,12 +711,26 @@
 					<div>webglDataURL: ${
 						isBrave ? 'Brave Browser' : identify(fp.webglDataURL)
 					}</div>
-					<div>webgl renderer: ${
-						isBrave ? 'Brave Browser' : webgl.renderer ? webgl.renderer : '[blocked]'
-					}</div>
-					<div>webgl vendor: ${
-						isBrave ? 'Brave Browser' : webgl.vendor ? webgl.vendor : '[blocked]'
-					}</div>
+					<div>webgl renderer: ${(() => {
+						const [ data, hash ] = fp.webgl
+						const { renderer } = data
+						const isString = typeof renderer == 'string'
+						return (
+							isBrave ? 'Brave Browser' : 
+							isString && renderer ? renderer : 
+							!renderer ? '[blocked]' : identify(fp.webgl)
+						)
+					})()}</div>
+					<div>webgl vendor: ${(() => {
+						const [ data, hash ] = fp.webgl
+						const { vendor } = data
+						const isString = typeof vendor == 'string'
+						return (
+							isBrave ? 'Brave Browser' : 
+							isString && vendor ? vendor : 
+							!vendor ? '[blocked]' : identify(fp.webgl)
+						)
+					})()}</div>
 					<div>client rects: ${identify(fp.cRects)}</div>
 					<div>console errors: ${identify(fp.consoleErrors)}</div>
 					<div>errors captured: ${fp.errorsCaptured[0].length ? fp.errorsCaptured[1] : '[none]'}</div>	
@@ -721,7 +740,7 @@
 					
 					<div>voices: ${identify(fp.voices)}</div>
 
-					${(
+					${
 						!fp.screen[0] ? '<div>screen: [blocked]</div>': (() => {
 							const [ scrn, hash ]  = fp.screen
 							const { width, height, availWidth, availHeight, availTop, availLeft, colorDepth, pixelDepth } = scrn
@@ -739,9 +758,9 @@
 							</div>
 							`
 						})()
-					)}
+					}
 					
-					${(
+					${
 						!fp.nav[0] ? '<div>navigator: [blocked]</div>': (() => {
 							const [ nav, hash ]  = fp.nav
 							const {
@@ -772,9 +791,9 @@
 							</div>
 							`
 						})()
-					)}
+					}
 
-					${(
+					${
 						!fp.highEntropy[0] ? '<div>high entropy: [blocked or unsupported]</div>': (() => {
 							const [ ua, hash ]  = fp.highEntropy
 							const { architecture, model, platform, platformVersion, uaFullVersion } = ua
@@ -789,7 +808,7 @@
 							</div>
 							`
 						})()
-					)}
+					}
 
 					<span>view the console for details</span>
 				</div>
