@@ -178,9 +178,10 @@
 				return isNaN(hardwareConcurrency) ? undefined : hardwareConcurrency 
 			}),
 			language: attempt(() => {
-				const lan1 = /^.{0,2}/g.exec(navigator.languages[0])[0]
-				const lan2 = /^.{0,2}/g.exec(navigator.languages)[0]
-				return lan1 == lan2 ? `${navigator.languages.join(', ')} (${navigator.language})` : undefined
+				const languages = /^.{0,2}/g.exec(navigator.languages[0])[0]
+				const language = /^.{0,2}/g.exec(navigator.language)[0]
+				const trusted = languages == language
+				return trusted ? `${navigator.languages.join(', ')} (${navigator.language})` : undefined
 			}),
 			maxTouchPoints: attempt(() => {
 				const { maxTouchPoints } = navigator
