@@ -1,4 +1,5 @@
 (function () {
+	// Log performance time
 	const timer = (logStart) => {
 		console.log(logStart)
 		const start = Date.now()
@@ -8,6 +9,7 @@
 		}
 	}
 
+	// Handle Errors
 	const errorsCaptured = []
 	const captureError = (error) => {
 		console.error(error)
@@ -71,6 +73,20 @@
 		template.innerHTML = stringSet.map((str, i) => `${str}${expressionSet[i] || ''}`).join('')
 		return templateContent(template) // ie11 fix for template.content
 	}
+	// Detect proxy behavior
+	const proxyBehavior = (obj) => {
+		const target = (Math.random().toString(36)+'00000000000000000').slice(2, 8+2)
+		try {
+			window.postMessage(obj, target)
+			return false
+		}
+		catch(error) {
+			const clonable = !error.message.includes('could not be cloned')
+			const json = JSON.stringify(obj)
+			const emptyJSON = json === '{}' || json == undefined
+			return  emptyJSON && !clonable
+		}
+	}
 
 	// detect and fingerprint Function API lies
 	const native = (result, str) => {
@@ -78,7 +94,7 @@
 		const firefox = `function ${str}() {\n    [native code]\n}`
 		return result == chrome || result == firefox
 	}
-	function hasLiedStringAPI() {
+	const hasLiedStringAPI = () => {
 		let lieTypes = []
 		// detect attempts to rewrite Function.prototype.toString conversion APIs
 		const { toString } = Function.prototype
@@ -108,7 +124,7 @@
 		return () => lieTypes
 	}
 	const stringAPILieTypes = hasLiedStringAPI() // compute and cache result
-	function hasLiedAPI(api, name) {
+	const hasLiedAPI = (api, name) => {
 		let lieTypes = [...stringAPILieTypes()]
 		let fingerprint = ''
 
@@ -141,7 +157,7 @@
 		const hasAngle = s => /ANGLE\s\(.+\)/.test(s)
 		return hasAngle(str) && spaces(str) >= 3
 	}
-	// Detect Brave Browser and fingerprinting blocking
+	// Detect Brave Browser and strict fingerprinting blocking
 	brave = () => {
 		if ('brave' in navigator) {
 			const canvas = document.createElement('canvas')
@@ -156,52 +172,77 @@
 	}
 	const isBrave = brave() // compute and cache result
 
-	// validate
-	const isInt = (x) => typeof x == 'number' && x % 1 == 0
-	const trustIntegerWithinRange = (n, min, max) => {
-		const trusted = isInt(n) && n >= min && n <= max 
-		return trusted ? n : undefined
+	// Collect trash values
+	const trashBin = []
+	const sendToTrash = (name, val) => {
+		const proxyLike = proxyBehavior(val)
+		const value = !proxyLike ? val : 'proxy behavior detected'
+		trashBin.push({ name, value })
+		return undefined
+	}
+
+	// Collect lies detected
+	const lieRecords = []
+	const compress = (x) => {
+		return JSON.stringify(x).replace(/((\n|\r|\s|:|\"|\,|\{|\}|\[|\]|\(|\))+)/gm, '').toLowerCase()
+	}
+	const documentLie = (name, lie, lieDetail) => {
+		console.warn(`Lie detected (${name}):`, lieDetail)
+		return lieRecords.push({ name, hash: hashMini({ lie, lieDetail }) })
 	}
 	
+	// validate
+	const isInt = (x) => typeof x == 'number' && x % 1 == 0
+	const trustIntegerWithinRange = (name, val, min, max) => {
+		const trusted = isInt(val) && val >= min && val <= max 
+		return trusted ? val : sendToTrash(name, val)
+	}
+
 	// navigator
 	const nav = () => {
 		const credibleUserAgent = navigator.userAgent.includes(navigator.appVersion)
 		return {
 			appVersion: attempt(() => {
-				return credibleUserAgent ? navigator.appVersion : undefined
+				const { appVersion } = navigator
+				return credibleUserAgent ? appVersion : sendToTrash('appVersion', 'does not match userAgent')
 			}),
 			deviceMemory: attempt(() => {
 				const { deviceMemory } = navigator
-				return trustIntegerWithinRange(deviceMemory, 1, 100)
+				return deviceMemory ? trustIntegerWithinRange('deviceMemory', deviceMemory, 1, 100) : undefined
 			}),
 			doNotTrack: attempt(() => {
-				const { doNotTrack: dnt } = navigator
+				const { doNotTrack } = navigator
 				const dntValues = [1, '1', true, 'yes', 0, '0', false, 'no', 'unspecified', 'null']
-				const trusted = dntValues.filter(val => val === dnt )[0]
-				return trusted ? dnt : undefined
+				const trusted = dntValues.filter(val => val === doNotTrack )[0]
+				return trusted ? doNotTrack : doNotTrack ? sendToTrash('doNotTrack', doNotTrack) : undefined
 			}),
 			hardwareConcurrency: attempt(() => {
 				const { hardwareConcurrency } = navigator 
-				return trustIntegerWithinRange(hardwareConcurrency, 1, 100)
+				return trustIntegerWithinRange('hardwareConcurrency', hardwareConcurrency, 1, 100)
 			}),
 			language: attempt(() => {
-				const languages = /^.{0,2}/g.exec(navigator.languages[0])[0]
-				const language = /^.{0,2}/g.exec(navigator.language)[0]
-				const trusted = languages == language
-				return trusted ? `${navigator.languages.join(', ')} (${navigator.language})` : undefined
+				const { languages, language } = navigator
+				const langs = /^.{0,2}/g.exec(languages[0])[0]
+				const lang = /^.{0,2}/g.exec(language)[0]
+				const trusted = langs == lang
+				return (
+					trusted ? `${languages.join(', ')} (${language})` : 
+					sendToTrash('languages', [languages, language].join(' '))
+				)
 			}),
 			maxTouchPoints: attempt(() => {
 				const { maxTouchPoints } = navigator 
-				return trustIntegerWithinRange(maxTouchPoints, 0, 100)
+				return trustIntegerWithinRange('maxTouchPoints', maxTouchPoints, 0, 100)
 			}),
 			platform: attempt(() => {
 				const { platform } = navigator
 				const systems = ['win', 'linux', 'mac', 'arm', 'pike', 'linux', 'iphone', 'ipad', 'ipod', 'android', 'x11']
 				const trusted = systems.filter(val => platform.toLowerCase().includes(val))[0]
-				return trusted ? platform : undefined
+				return trusted ? platform : sendToTrash('platform', platform)
 			}),
 			userAgent: attempt(() => {
-				return credibleUserAgent ? navigator.userAgent : undefined
+				const { userAgent } = navigator
+				return credibleUserAgent ? userAgent : sendToTrash('userAgent', userAgent)
 			}),
 			vendor: attempt(() => navigator.vendor),
 			mimeTypes: attempt(() => [...navigator.mimeTypes].map(m => m.type)),
@@ -239,14 +280,14 @@
 	const screenFp = () => {
 		const { width, height, availWidth, availHeight, availTop, availLeft, colorDepth, pixelDepth } = screen
 		return {
-			width: attempt(() => trustIntegerWithinRange(width, 10, 10000)),
-			height: attempt(() => trustIntegerWithinRange(height, 10, 10000)),
-			availWidth: attempt(() => trustIntegerWithinRange(availWidth, 10, width)),
-			availHeight: attempt(() => trustIntegerWithinRange(availHeight, 10, height)),
-			availTop: attempt(() => trustIntegerWithinRange(availTop, 0, 10000)),
-			availLeft: attempt(() => trustIntegerWithinRange(availLeft, 0, 10000)),
-			colorDepth: attempt(() => trustIntegerWithinRange(colorDepth, 2, 1000)),
-			pixelDepth: attempt(() => trustIntegerWithinRange(pixelDepth, 2, 1000))
+			width: attempt(() => trustIntegerWithinRange('width', width, 10, 10000)),
+			height: attempt(() => trustIntegerWithinRange('height', height, 10, 10000)),
+			availWidth: attempt(() => trustIntegerWithinRange('availWidth', availWidth, 10, width)),
+			availHeight: attempt(() => trustIntegerWithinRange('availHeight', availHeight, 10, height)),
+			availTop: attempt(() => trustIntegerWithinRange('availTop', availTop, 0, 10000)),
+			availLeft: attempt(() => trustIntegerWithinRange('availLeft', availLeft, 0, 10000)),
+			colorDepth: attempt(() => trustIntegerWithinRange('colorDepth', colorDepth, 2, 1000)),
+			pixelDepth: attempt(() => trustIntegerWithinRange('pixelDepth', pixelDepth, 2, 1000))
 		}
 	}
 
@@ -308,8 +349,9 @@
 	const { lie: dataLie } = hasLiedAPI(HTMLCanvasElement.prototype.toDataURL, 'toDataURL')
 	const { lie: contextLie } = hasLiedAPI(HTMLCanvasElement.prototype.getContext, 'getContext')
 	const canvas = () => {
+		const canvas = document.createElement('canvas')
+		let canvas2dDataURI = ''
 		if (!dataLie && !contextLie) {
-			const canvas = document.createElement('canvas')
 			const context = canvas.getContext('2d')
 			const str = '%$%^LGFWE($HIF)'
 			context.font = '20px Arial'
@@ -322,12 +364,23 @@
 			context.font = '20px Arial'
 			context.fillStyle = 'green'
 			context.fillText(str, 10, 50)
-			return isBrave ? undefined : canvas.toDataURL()
+			canvas2dDataURI = canvas.toDataURL()
+			return isBrave ? sendToTrash('canvas2dDataURI', hashMini(canvas2dDataURI)+' (hash of data URI)') : canvas2dDataURI
 		}
 		
-		dataLie && console.log('Lie detected (toDataURL):', hashMini(dataLie))
-		contextLie && console.log('Lie detected (getContext):', hashMini(contextLie))
-
+		// document lie and send to trash
+		canvas2dDataURI = canvas.toDataURL()
+		const canvas2dContextDataURI = canvas2dDataURI
+		if (contextLie) {
+			documentLie('canvas2dContextDataURI', hashMini(canvas2dContextDataURI)+' (hash of data URI)', contextLie)
+			sendToTrash('canvas2dContextDataURI', hashMini(canvas2dContextDataURI)+' (hash of data URI)')
+		}
+		if (dataLie) {
+			documentLie('canvas2dDataURI', hashMini(canvas2dDataURI)+' (hash of data URI)', dataLie)
+			sendToTrash('canvas2dDataURI', hashMini(canvas2dDataURI)+' (hash of data URI)')
+		}
+		
+		// fingerprint lie
 		return { dataLie, contextLie }
 	}
 
@@ -335,29 +388,41 @@
 	const webgl = () => {
 		const { lie: paramLie } = hasLiedAPI(WebGLRenderingContext.prototype.getParameter, 'getParameter')
 		const { lie: extLie } = hasLiedAPI(WebGLRenderingContext.prototype.getExtension, 'getExtension')
-		 
 		const canvas = document.createElement('canvas')
 		const context = canvas.getContext('webgl')
+
 		return {
-			unmasked: () => {
+			unmasked: (() => {
 				try {
+					const extension = context.getExtension('WEBGL_debug_renderer_info')
+					const vendor = context.getParameter(extension.UNMASKED_VENDOR_WEBGL)
+					const renderer = context.getParameter(extension.UNMASKED_RENDERER_WEBGL)
+
 					if (!paramLie && !extLie) {
-						const extension = context.getExtension('WEBGL_debug_renderer_info')
-						const vendor = context.getParameter(extension.UNMASKED_VENDOR_WEBGL)
-						const renderer = context.getParameter(extension.UNMASKED_RENDERER_WEBGL)
 						if (!credibleRenderer(renderer)) {
 							return {
-								vendor: undefined,
-								renderer: undefined
+								vendor: sendToTrash('webglVendor', vendor),
+								renderer: sendToTrash('webglRenderer', renderer)
 							}
 						}
 						return {
-							vendor,
-							renderer
+							vendor: isBrave ? sendToTrash('webglVendor', vendor) : vendor,
+							renderer: isBrave ? sendToTrash('webglRenderer', renderer) : renderer
 						}
 					}
-					paramLie && console.log('Lie detected (getParameter):', hashMini(paramLie))
-					extLie && console.log('Lie detected (getExtension):', hashMini(extLie))
+
+					// document lie and send to trash
+					const webglVendorAndRendererParameter = { vendor, renderer }
+					const webglVendorAndRendererExtension = webglVendorAndRendererParameter
+					if (paramLie) { 
+						documentLie('webglVendorAndRendererParameter', webglVendorAndRendererParameter, paramLie)
+						sendToTrash('webglVendorAndRendererParameter', webglVendorAndRendererParameter)
+					}
+					if (extLie) {
+						documentLie('webglVendorAndRendererExtension', webglVendorAndRendererExtension, extLie)
+						sendToTrash('webglVendorAndRendererExtension', webglVendorAndRendererExtension)
+					}
+					// Fingerprint lie
 					return {
 						vendor: { paramLie, extLie },
 						renderer: { paramLie, extLie }
@@ -370,27 +435,39 @@
 						renderer: undefined
 					}
 				}
-			},
-			dataURL: () => {
+			})(),
+			dataURL: (() => {
 				try {
+					let canvasWebglDataURI = ''
+
 					if (!dataLie && !contextLie) {
 						context.clearColor(0.2, 0.4, 0.6, 0.8)
 						context.clear(context.COLOR_BUFFER_BIT)
-						return canvas.toDataURL()
+						canvasWebglDataURI = canvas.toDataURL()
+						return isBrave ? sendToTrash('canvasWebglDataURI', hashMini(canvasWebglDataURI)+' (hash of data URI)') : canvasWebglDataURI
 					}
+
+					// document lie and send to trash
+					canvasWebglDataURI = canvas.toDataURL()
+					const canvasWebglContextDataURI = canvasWebglDataURI
+					if (contextLie) {
+						documentLie('canvasWebglContextDataURI', hashMini(canvasWebglContextDataURI)+' (hash of data URI)', contextLie)
+						sendToTrash('canvasWebglContextDataURI', hashMini(canvasWebglContextDataURI)+' (hash of data URI)')
+					}
+					if (dataLie) {
+						documentLie('canvasWebglDataURI', hashMini(canvasWebglDataURI)+' (hash of data URI)', dataLie)
+						sendToTrash('canvasWebglDataURI', hashMini(canvasWebglDataURI)+' (hash of data URI)')
+					}
+
+					// fingerprint lie
 					return { dataLie, contextLie }
 				}
 				catch(error) {
 					return captureError(error)
 				}
-			}
+			})()
 		}
 		
-		return {
-			unmasked: () => ({ vendor: undefined, renderer: undefined }),
-			dataURL: () => { paramLie, extLie }
-		}
-
 	}
 
 	// maths
@@ -452,35 +529,48 @@
 	// timezone
 	const timezone = () => {
 		const { lie: timezoneLie } = hasLiedAPI(Date.prototype.getTimezoneOffset, 'getTimezoneOffset')
+		const timezoneOffset_1 = new Date().getTimezoneOffset()
 		if (!timezoneLie) {
 			const withinParentheses = /(?<=\().+?(?=\))/g
 			const utc = Date.parse(new Date().toJSON().split`Z`.join``)
 			const now = +new Date()
-			const timezoneOffset_1 = (utc - now)/60000
-			const timezoneOffset_2 = new Date().getTimezoneOffset()
+			const timezoneOffset_2 = (utc - now)/60000
 			const trusted = timezoneOffset_1 == timezoneOffset_2
 			const timezoneLocation = Intl.DateTimeFormat().resolvedOptions().timeZone
 			const timezone = withinParentheses.exec(''+new Date())[0]
-			return trusted ? `${timezoneOffset_2}, ${timezoneLocation}, ${timezone}` : undefined
+			return trusted ? `${timezoneOffset_1}, ${timezoneLocation}, ${timezone}` : undefined
 		}
 
-		timezoneLie && console.log('Lie detected (getTimezoneOffset):', hashMini(timezoneLie))
+		// document lie and send to trash
+		const timezoneOffset = timezoneOffset_1
+		if (timezoneLie) {
+			documentLie('timezoneOffset', timezoneOffset, timezoneLie)
+			sendToTrash('timezoneOffset', timezoneOffset)
+		}
 
+		// Fingerprint lie
 		return { timezoneLie }
 	}
 
 	// client rects
 	const cRects = () => {
 		const { lie: rectsLie } = hasLiedAPI(Element.prototype.getClientRects, 'getClientRects')
+		const cRectProps = ['x', 'y', 'width', 'height', 'top', 'right', 'bottom', 'left']
+		const rectElems = document.getElementsByClassName('rects')
+		const clientRects = [...rectElems].map(el => el.getClientRects()[0].toJSON())
+
 		if (!rectsLie) {
-			const cRectProps = ['x', 'y', 'width', 'height', 'top', 'right', 'bottom', 'left']
-			const rectElems = document.getElementsByClassName('rects')
-			const rectFp = [...rectElems].map(el => el.getClientRects()[0].toJSON())
-			return rectFp
+			return clientRects
+		}
+		
+		// document lie and send to trash
+		const timezoneOffset = timezoneOffset_1
+		if (rectsLie) {
+			documentLie('clientRects', clientRects, rectsLie)
+			sendToTrash('clientRects', clientRects)
 		}
 
-		rectsLie && console.log('Lie detected (getClientRects):', hashMini(rectsLie))
-
+		// Fingerprint lie
 		return { rectsLie }
 	}
 
@@ -516,10 +606,10 @@
 		const canvasComputed = attempt(() => canvas())
 		const gl = attempt(() => webgl())
 		const webglComputed = {
-			vendor: attempt(() => gl.unmasked().vendor),
-			renderer: attempt(() => gl.unmasked().renderer)
+			vendor: attempt(() => gl.unmasked.vendor),
+			renderer: attempt(() => gl.unmasked.renderer)
 		}
-		const webglDataURLComputed = attempt(() => gl.dataURL())
+		const webglDataURLComputed = attempt(() => gl.dataURL)
 		const consoleErrorsComputed = attempt(() => consoleErrs())
 		const timezoneComputed = attempt(() => timezone())
 		const cRectsComputed = attempt(() => cRects())
@@ -627,9 +717,12 @@
 			maths: fp.maths,
 			canvas: fp.canvas
 		}
-		
-		console.log('Fingerprint Id', fp, JSON.stringify(fp, null, '\t'))
+		const log = (message, obj) => console.log(message, JSON.stringify(obj, null, '\t'))
 
+		log('Fingerprint Id', fp)
+		console.log('Trash Bin', trashBin)
+		console.log('Lie Records', lieRecords)
+		
 		const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
 		.catch(error => { 
 			console.error(error.message)
@@ -660,7 +753,7 @@
 				'32cfbc8d166d60a416d942a678dd707119474a541969ad95c0968ae5df32bdcb': 'Privacy Possom',
 				'1a2e56badfca47209ba445811f27e848b4c2dae58224445a4af3d3581ffe7561': 'Privacy Possom',
 				'107362a28208c432abd04f7d571f64ea1089c14db531e1c1375b83ae9ca0ba6a': 'Privacy Badger or similar',
-				'785acfe6b266709e167dcc85fdd5697798cfdb1dcb9bed4eab42f422117ebaab' : 'Trace',
+				'785acfe6b266709e167dcc85fdd5697798cfdb1dcb9bed4eab42f422117ebaab': 'Trace',
 				'015523301c35459c43d145f3bc2b3edc6c4f3d2963a2d67bbd10cf634d84bacb': 'Trace',
 				'7757f7416b78fb8ac1f079b3e0677c0fe179826a63727d809e7d69795e915cd5': 'Chromium',
 				'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': 'Firefox',
@@ -671,9 +764,9 @@
 
 			const [ data, hash ] = prop
 			const iterable = Symbol.iterator in Object(data)
-			return !data || (iterable && !data.length)? '[blocked]' : known[hash] ? known[hash] : hash
+			return !data || (iterable && !data.length) ? '[blocked]' : known[hash] ? known[hash] : hash
 		}
-		
+		const pluralify = (len) => len > 1 ? 's' : ''
 		// template
 		const data = `
 			<section>
@@ -707,7 +800,7 @@
 					<div>Purified Fingerprint Id: ${creepHash}</div>
 					<div>Fingerprint Id: ${fpHash}</div>
 
-					${(
+					${
 						!isBrave || !isBrave.blockingFingerprintingStrict? '': (() => {
 							return `
 							<div>
@@ -715,7 +808,31 @@
 							</div>
 							`
 						})()
-					)}
+					}
+
+					${
+						!trashBin.length ? '': (() => {
+							const plural = pluralify(trashBin.length)
+							return `
+							<div>
+								<div>${trashBin.length} API${plural} ignored and considered trash: </div>
+								${trashBin.map(item => `<div>${item.name} - ${item.value}</div>`).join('')}
+							</div>
+							`
+						})()
+					}
+
+					${
+						!lieRecords.length ? '': (() => {
+							const plural = pluralify(lieRecords.length)
+							return `
+							<div>
+								<div>${lieRecords.length} API lie${plural} detected: </div>
+								${lieRecords.map(item => `<div>${item.name} - ${item.hash} (hash of value)</div>`).join('')}
+							</div>
+							`
+						})()
+					}
 
 					<div>canvas: ${
 						isBrave ? 'Brave Browser' : identify(fp.canvas)
