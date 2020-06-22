@@ -187,8 +187,7 @@
 		return JSON.stringify(x).replace(/((\n|\r|\s|:|\"|\,|\{|\}|\[|\]|\(|\))+)/gm, '').toLowerCase()
 	}
 	const documentLie = (name, lie, lieDetail) => {
-		console.warn(`Lie detected (${name}):`, lieDetail)
-		return lieRecords.push({ name, hash: hashMini({ lie, lieDetail }) })
+		return lieRecords.push({ name, hash: lie, lie: hashMini(lieDetail) })
 	}
 	
 	// validate
@@ -365,19 +364,21 @@
 			context.fillStyle = 'green'
 			context.fillText(str, 10, 50)
 			canvas2dDataURI = canvas.toDataURL()
-			return isBrave ? sendToTrash('canvas2dDataURI', hashMini(canvas2dDataURI)+' (hash of data URI)') : canvas2dDataURI
+			return isBrave ? sendToTrash('canvas2dDataURI', hashMini(canvas2dDataURI)) : canvas2dDataURI
 		}
 		
 		// document lie and send to trash
 		canvas2dDataURI = canvas.toDataURL()
 		const canvas2dContextDataURI = canvas2dDataURI
 		if (contextLie) {
-			documentLie('canvas2dContextDataURI', hashMini(canvas2dContextDataURI)+' (hash of data URI)', contextLie)
-			sendToTrash('canvas2dContextDataURI', hashMini(canvas2dContextDataURI)+' (hash of data URI)')
+			const contextHash = hashMini(canvas2dContextDataURI)
+			documentLie('canvas2dContextDataURI', contextHash, contextLie)
+			sendToTrash('canvas2dContextDataURI', contextHash)
 		}
 		if (dataLie) {
-			documentLie('canvas2dDataURI', hashMini(canvas2dDataURI)+' (hash of data URI)', dataLie)
-			sendToTrash('canvas2dDataURI', hashMini(canvas2dDataURI)+' (hash of data URI)')
+			const dataHash = hashMini(canvas2dDataURI)
+			documentLie('canvas2dDataURI', dataHash, dataLie)
+			sendToTrash('canvas2dDataURI', dataHash)
 		}
 		
 		// fingerprint lie
@@ -444,23 +445,25 @@
 						context.clearColor(0.2, 0.4, 0.6, 0.8)
 						context.clear(context.COLOR_BUFFER_BIT)
 						canvasWebglDataURI = canvas.toDataURL()
-						return isBrave ? sendToTrash('canvasWebglDataURI', hashMini(canvasWebglDataURI)+' (hash of data URI)') : canvasWebglDataURI
+						return isBrave ? sendToTrash('canvasWebglDataURI', hashMini(canvasWebglDataURI)) : canvasWebglDataURI
 					}
-
+					
 					// document lie and send to trash
 					canvasWebglDataURI = canvas.toDataURL()
 					const canvasWebglContextDataURI = canvasWebglDataURI
 					if (contextLie) {
-						documentLie('canvasWebglContextDataURI', hashMini(canvasWebglContextDataURI)+' (hash of data URI)', contextLie)
-						sendToTrash('canvasWebglContextDataURI', hashMini(canvasWebglContextDataURI)+' (hash of data URI)')
+						contextHash = hashMini(canvasWebglContextDataURI)
+						documentLie('canvasWebglContextDataURI', contextHash, contextLie)
+						sendToTrash('canvasWebglContextDataURI', contextHash)
 					}
 					if (dataLie) {
-						documentLie('canvasWebglDataURI', hashMini(canvasWebglDataURI)+' (hash of data URI)', dataLie)
-						sendToTrash('canvasWebglDataURI', hashMini(canvasWebglDataURI)+' (hash of data URI)')
+						const dataHash = hashMini(canvasWebglDataURI)
+						documentLie('canvasWebglDataURI', dataHash, dataLie)
+						sendToTrash('canvasWebglDataURI', dataHash)
 					}
 
 					// fingerprint lie
-					return { dataLie, contextLie }
+					return { dataLie, contextLie, canvasRandomizationIsExcessive }
 				}
 				catch(error) {
 					return captureError(error)
@@ -720,8 +723,6 @@
 		const log = (message, obj) => console.log(message, JSON.stringify(obj, null, '\t'))
 
 		log('Fingerprint Id', fp)
-		console.log('Trash Bin', trashBin)
-		console.log('Lie Records', lieRecords)
 		
 		const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
 		.catch(error => { 
@@ -828,7 +829,7 @@
 							return `
 							<div>
 								<div>${lieRecords.length} API lie${plural} detected: </div>
-								${lieRecords.map(item => `<div>${item.name} - ${item.hash} (hash of value)</div>`).join('')}
+								${lieRecords.map(item => `<div>${item.name} - ${item.hash} (lie fingerprint: ${item.lie})</div>`).join('')}
 							</div>
 							`
 						})()
