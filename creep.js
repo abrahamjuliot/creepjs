@@ -81,7 +81,7 @@
 			return false
 		}
 		catch(error) {
-			const clonable = !error.message.includes('could not be cloned')
+			const cloneable = !error.message.includes('could not be cloned')
 			const json = JSON.stringify(obj)
 			const emptyJSON = json === '{}' || json == undefined
 			return  emptyJSON && !clonable
@@ -153,9 +153,8 @@
 
 	// Detect renderer lie @Brave Browser and Privacy Possom
 	const credibleRenderer = (str) => {
-		const spaces = s => s.match(/\s/g).length
-		const hasAngle = s => /ANGLE\s\(.+\)/.test(s)
-		return hasAngle(str) && spaces(str) >= 3
+		const hasInnerSpace = s => /.+(\s).+/g.test(s)
+		return hasInnerSpace(str)
 	}
 	// Detect Brave Browser and strict fingerprinting blocking
 	brave = () => {
