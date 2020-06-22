@@ -60,3 +60,19 @@ function hasLiedAPI(api, name) {
 		lie: lieTypes.length || fingerprint ? { lieTypes, fingerprint } : false, 
 	}
 }
+
+// Detect proxy behavior
+const proxyBehavior = (obj) => {
+	const target = (Math.random().toString(36)+'00000000000000000').slice(2, 8+2)
+	console.log(JSON.stringify(obj))
+	try {
+		window.postMessage(obj, target)
+		return false
+	}
+	catch(error) {
+		const clonable = !error.message.includes('could not be cloned')
+		const json = JSON.stringify(obj)
+		const emptyJSON = json === '{}' || json == null || json == undefined
+		return  emptyJSON && !clonable
+	}
+}
