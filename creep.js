@@ -156,6 +156,13 @@
 	}
 	const isBrave = brave() // compute and cache result
 
+	// validate
+	const isInt = (x) => typeof x == 'number' && x % 1 == 0
+	const trustIntegerWithinRange = (n, min, max) => {
+		const trusted = isInt(n) && n >= min && n <= max 
+		return trusted ? n : undefined
+	}
+	
 	// navigator
 	const nav = () => {
 		const credibleUserAgent = navigator.userAgent.includes(navigator.appVersion)
@@ -165,7 +172,7 @@
 			}),
 			deviceMemory: attempt(() => {
 				const { deviceMemory } = navigator
-				return isNaN(deviceMemory) ? undefined : deviceMemory
+				return trustIntegerWithinRange(deviceMemory, 1, 100)
 			}),
 			doNotTrack: attempt(() => {
 				const { doNotTrack: dnt } = navigator
@@ -174,8 +181,8 @@
 				return trusted ? dnt : undefined
 			}),
 			hardwareConcurrency: attempt(() => {
-				const { hardwareConcurrency } = navigator
-				return isNaN(hardwareConcurrency) ? undefined : hardwareConcurrency 
+				const { hardwareConcurrency } = navigator 
+				return trustIntegerWithinRange(hardwareConcurrency, 1, 100)
 			}),
 			language: attempt(() => {
 				const languages = /^.{0,2}/g.exec(navigator.languages[0])[0]
@@ -184,8 +191,8 @@
 				return trusted ? `${navigator.languages.join(', ')} (${navigator.language})` : undefined
 			}),
 			maxTouchPoints: attempt(() => {
-				const { maxTouchPoints } = navigator
-				return isNaN(maxTouchPoints) ? undefined : maxTouchPoints
+				const { maxTouchPoints } = navigator 
+				return trustIntegerWithinRange(maxTouchPoints, 0, 100)
 			}),
 			platform: attempt(() => {
 				const { platform } = navigator
@@ -232,14 +239,14 @@
 	const screenFp = () => {
 		const { width, height, availWidth, availHeight, availTop, availLeft, colorDepth, pixelDepth } = screen
 		return {
-			width: attempt(() => isNaN(width) ? undefined : width),
-			height: attempt(() => isNaN(height) ? undefined : height),
-			availWidth: attempt(() => isNaN(availWidth) ? undefined : availWidth),
-			availHeight: attempt(() => isNaN(availHeight) ? undefined : availHeight),
-			availTop: attempt(() => isNaN(availTop) ? undefined : availTop),
-			availLeft: attempt(() => isNaN(availLeft) ? undefined : availLeft),
-			colorDepth: attempt(() => isNaN(colorDepth) ? undefined : colorDepth),
-			pixelDepth: attempt(() => isNaN(pixelDepth) ? undefined : pixelDepth)
+			width: attempt(() => trustIntegerWithinRange(width, 10, 10000)),
+			height: attempt(() => trustIntegerWithinRange(height, 10, 10000)),
+			availWidth: attempt(() => trustIntegerWithinRange(availWidth, 10, width)),
+			availHeight: attempt(() => trustIntegerWithinRange(availHeight, 10, height)),
+			availTop: attempt(() => trustIntegerWithinRange(availTop, 0, 10000)),
+			availLeft: attempt(() => trustIntegerWithinRange(availLeft, 0, 10000)),
+			colorDepth: attempt(() => trustIntegerWithinRange(colorDepth, 2, 1000)),
+			pixelDepth: attempt(() => trustIntegerWithinRange(pixelDepth, 2, 1000))
 		}
 	}
 
@@ -446,12 +453,15 @@
 	const timezone = () => {
 		const { lie: timezoneLie } = hasLiedAPI(Date.prototype.getTimezoneOffset, 'getTimezoneOffset')
 		if (!timezoneLie) {
-			const time = /(\d{1,2}:\d{1,2}:\d{1,2}\s)/ig
-			return [
-				(new Date()).getTimezoneOffset(),
-				Intl.DateTimeFormat().resolvedOptions().timeZone,
-				(new Date('1/1/2001').toTimeString()).replace(time, '')
-			].join(', ')
+			const withinParentheses = /(?<=\().+?(?=\))/g
+			const utc = Date.parse(new Date().toJSON().split`Z`.join``)
+			const now = +new Date()
+			const timezoneOffset_1 = (utc - now)/60000
+			const timezoneOffset_2 = new Date().getTimezoneOffset()
+			const trusted = timezoneOffset_1 == timezoneOffset_2
+			const timezoneLocation = Intl.DateTimeFormat().resolvedOptions().timeZone
+			const timezone = withinParentheses.exec(''+new Date())[0]
+			return trusted ? `${timezoneOffset_2}, ${timezoneLocation}, ${timezone}` : undefined
 		}
 
 		timezoneLie && console.log('Lie detected (getTimezoneOffset):', hashMini(timezoneLie))
