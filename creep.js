@@ -407,8 +407,8 @@
 							}
 						}
 						return {
-							vendor: isBrave ? sendToTrash('webglVendor', vendor) : vendor,
-							renderer: isBrave ? sendToTrash('webglRenderer', renderer) : renderer
+							vendor: isBrave && isBrave.blockingFingerprintingStrict ? sendToTrash('webglVendor', vendor) : vendor,
+							renderer: isBrave && isBrave.blockingFingerprintingStrict ? sendToTrash('webglRenderer', renderer) : renderer
 						}
 					}
 
@@ -432,8 +432,8 @@
 				catch(error) {
 					captureError(error)
 					return {
-						vendor: undefined,
-						renderer: undefined
+						vendor: isBrave && isBrave.blockingFingerprintingStrict ? sendToTrash('webglVendor', null) : undefined,
+						renderer: isBrave && isBrave.blockingFingerprintingStrict ? sendToTrash('webglRenderer', null) : undefined
 					}
 				}
 			})(),
@@ -712,8 +712,8 @@
 		// creep by detecting lies
 		const creep = {
 			timezone: fp.timezone,
-			renderer: webgl.renderer,
-			vendor: webgl.vendor,
+			renderer: fp.webgl[0].renderer,
+			vendor: fp.webgl[0].vendor,
 			webglDataURL: fp.webglDataURL,
 			consoleErrors: fp.consoleErrors,
 			cRects: fp.cRects,
@@ -728,6 +728,7 @@
 		.catch(error => { 
 			console.error(error.message)
 		})
+
 		// post hash to database
 		const formData = new FormData()
 		formData.append('id', creepHash)
@@ -846,7 +847,7 @@
 						const { renderer } = data
 						const isString = typeof renderer == 'string'
 						return (
-							isBrave ? 'Brave Browser' : 
+							isBrave && isBrave.blockingFingerprintingStrict ? 'Brave Browser' : 
 							isString && renderer ? renderer : 
 							!renderer ? '[blocked]' : identify(fp.webgl)
 						)
@@ -856,7 +857,7 @@
 						const { vendor } = data
 						const isString = typeof vendor == 'string'
 						return (
-							isBrave ? 'Brave Browser' : 
+							isBrave && isBrave.blockingFingerprintingStrict ? 'Brave Browser' : 
 							isString && vendor ? vendor : 
 							!vendor ? '[blocked]' : identify(fp.webgl)
 						)
