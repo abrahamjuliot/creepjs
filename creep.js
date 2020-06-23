@@ -1,4 +1,5 @@
 (function () {
+	console.log(document.createElement('canvas').toDataURL().length)
 	// Log performance time
 	const timer = (logStart) => {
 		console.log(logStart)
@@ -156,8 +157,8 @@
 
 	// Detect renderer lie @Brave Browser and Privacy Possom
 	const credibleRenderer = (str) => {
-		const hasInnerSpace = s => /.+(\s).+/g.test(s)
-		return hasInnerSpace(str)
+		//const hasInnerSpace = s => /.+(\s).+/g.test(s)
+		return true//hasInnerSpace(str)
 	}
 	// Detect Brave Browser and strict fingerprinting blocking
 	brave = () => {
@@ -223,9 +224,9 @@
 			}),
 			language: attempt(() => {
 				const { languages, language } = navigator
-				const langs = /^.{0,2}/g.exec(languages[0])[0]
-				const lang = /^.{0,2}/g.exec(language)[0]
-				const trusted = langs == lang
+				//const langs = /^.{0,2}/g.exec(languages[0])[0]
+				//const lang = /^.{0,2}/g.exec(language)[0]
+				const trusted = true//langs == lang
 				return (
 					trusted ? `${languages.join(', ')} (${language})` : 
 					sendToTrash('languages', [languages, language].join(' '))
@@ -296,7 +297,7 @@
 	const getVoices = () => {
 		const undfn = new Promise(resolve => resolve(undefined))
 		/* block till Tor Browser fix */
-		// return undfn
+		return undfn
 		try {
 			const promise = new Promise(resolve => {
 				try {
@@ -398,8 +399,8 @@
 			unmasked: (() => {
 				try {
 					const extension = context.getExtension('WEBGL_debug_renderer_info')
-					const vendor = context.getParameter(extension.UNMASKED_VENDOR_WEBGL)
-					const renderer = context.getParameter(extension.UNMASKED_RENDERER_WEBGL)
+					const vendor = extension && context.getParameter(extension.UNMASKED_VENDOR_WEBGL)
+					const renderer = extension && context.getParameter(extension.UNMASKED_RENDERER_WEBGL)
 
 					if (!paramLie && !extLie) {
 						if (!credibleRenderer(renderer)) {
@@ -536,13 +537,13 @@
 		const { lie: timezoneLie } = hasLiedAPI(Date.prototype.getTimezoneOffset, 'getTimezoneOffset')
 		const timezoneOffset_1 = new Date().getTimezoneOffset()
 		if (!timezoneLie) {
-			const withinParentheses = /(?<=\().+?(?=\))/g
+			//const withinParentheses = /(?<=\().+?(?=\))/g
 			const utc = Date.parse(new Date().toJSON().split`Z`.join``)
 			const now = +new Date()
 			const timezoneOffset_2 = (utc - now)/60000
 			const trusted = timezoneOffset_1 == timezoneOffset_2
 			const timezoneLocation = Intl.DateTimeFormat().resolvedOptions().timeZone
-			const timezone = withinParentheses.exec(''+new Date())[0]
+			const timezone = ''//withinParentheses.exec(''+new Date())[0]
 			return trusted ? `${timezoneOffset_1}, ${timezoneLocation}, ${timezone}` : undefined
 		}
 
@@ -723,8 +724,8 @@
 		}
 		const log = (message, obj) => console.log(message, JSON.stringify(obj, null, '\t'))
 
-		console.log(fp)
-		log('Fingerprint Id', fp)
+		console.log('Fingerprint Id (Object)', fp)
+		log('Fingerprint Id (JSON)', fp)
 		
 		const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
 		.catch(error => { 
@@ -747,6 +748,9 @@
 		
 		// identify known hash
 		const identify = prop => {
+			const catchTorBrowser = (
+				!('geolocation' in navigator) ? 'Tor Browser' : 'Firefox'
+			)
 			const known = {
 				'0df25df426d0ce052d04482c0c2cd4d874ae7a4da4feb430be36150a770f3b6b': 'Browser Plugs',
 				'65069db4579c03d49fde85983c905817c8798cad3ad6b39dd93df24bde1449c9': 'Browser Plugs',
@@ -760,10 +764,10 @@
 				'785acfe6b266709e167dcc85fdd5697798cfdb1dcb9bed4eab42f422117ebaab': 'Trace',
 				'015523301c35459c43d145f3bc2b3edc6c4f3d2963a2d67bbd10cf634d84bacb': 'Trace',
 				'7757f7416b78fb8ac1f079b3e0677c0fe179826a63727d809e7d69795e915cd5': 'Chromium',
-				'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': 'Firefox',
+				'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': catchTorBrowser,
 				'e086050038b44b8dcb9d0565da3ff448a0162da7023469d347303479f981f5fd': 'Firefox',
 				'0a1a099e6b0a7365acfdf38ed79c9cde9ec0617b0c39b6366dad4d1a4aa6fcaf': 'Firefox',
-				'99dfbc2000c9c81588259515fed8a1f6fbe17bf9964c850560d08d0bfabc1fff': 'Tor Browser'
+				'99dfbc2000c9c81588259515fed8a1f6fbe17bf9964c850560d08d0bfabc1fff': catchTorBrowser
 			}
 
 			const [ data, hash ] = prop
