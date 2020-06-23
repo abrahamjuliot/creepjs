@@ -80,6 +80,7 @@ const proxyBehavior = (obj) => {
 const interceptedProxies = new WeakSet()
 Proxy = new Proxy(Proxy, {
     construct(...args) {
+		// https://stackoverflow.com/a/53208015
         const newProxy = Reflect.construct(...args)
         interceptedProxies.add(newProxy)
 		console.log(args[1])
