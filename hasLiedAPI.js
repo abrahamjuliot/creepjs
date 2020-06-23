@@ -77,6 +77,7 @@ const proxyBehavior = (obj) => {
 	}
 }
 // Intercept Proxies (concept)
+// https://hacks.mozilla.org/2015/07/es6-in-depth-proxies-and-reflect/
 const interceptedProxies = new WeakSet()
 Proxy = new Proxy(Proxy, {
     construct(...args) {
