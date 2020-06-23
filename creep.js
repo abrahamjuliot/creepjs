@@ -769,11 +769,13 @@
 		// identify known hash
 		const identify = prop => {
 			const torBrowser = (
-				// navigator props in Firefox, but not Tor Browser
-				!('geolocation' in navigator) ||
-				!('credentials' in navigator) ||
-				!('maxTouchPoints' in navigator) ||
-				!('serviceWorker' in navigator)
+				/* geo.enabled can be set to true or fals:
+				Geolocation is in window of Firefox
+				Geolocation is not in the window of Tor Browser 
+				https://browserleaks.com/geo
+				https://bugzilla.mozilla.org/show_bug.cgi?id=1403813
+				*/
+				!('Geolocation' in window)
 			)
 			const catchTorBrowser = (
 				torBrowser ? 'Tor Browser' : 'Firefox'
