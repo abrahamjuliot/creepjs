@@ -1,5 +1,4 @@
 (function () {
-	console.log(document.createElement('canvas').toDataURL().length)
 	// Log performance time
 	const timer = (logStart) => {
 		console.log(logStart)
@@ -157,7 +156,7 @@
 
 	// Detect renderer lie @Brave Browser and Privacy Possom
 	const credibleRenderer = (str) => {
-		//const hasInnerSpace = s => /.+(\s).+/g.test(s)
+		const hasInnerSpace = s => /.+(\s).+/g.test(s)
 		return true//hasInnerSpace(str)
 	}
 	// Detect Brave Browser and strict fingerprinting blocking
@@ -202,7 +201,10 @@
 
 	// navigator
 	const nav = () => {
-		const credibleUserAgent = navigator.userAgent.includes(navigator.appVersion)
+		const credibleUserAgent = (
+			'chrome' in window ? navigator.userAgent.includes(navigator.appVersion) : true
+			// todo: additional checks
+		)
 		return {
 			appVersion: attempt(() => {
 				const { appVersion } = navigator
@@ -224,17 +226,20 @@
 			}),
 			language: attempt(() => {
 				const { languages, language } = navigator
-				//const langs = /^.{0,2}/g.exec(languages[0])[0]
-				//const lang = /^.{0,2}/g.exec(language)[0]
-				const trusted = true//langs == lang
+				const langs = /^.{0,2}/g.exec(languages[0])[0]
+				const lang = /^.{0,2}/g.exec(language)[0]
+				const trusted = langs == lang
 				return (
 					trusted ? `${languages.join(', ')} (${language})` : 
 					sendToTrash('languages', [languages, language].join(' '))
 				)
 			}),
 			maxTouchPoints: attempt(() => {
-				const { maxTouchPoints } = navigator 
-				return trustIntegerWithinRange('maxTouchPoints', maxTouchPoints, 0, 100)
+				if ('maxTouchPoints' in navigator) {
+					const { maxTouchPoints } = navigator 
+					return trustIntegerWithinRange('maxTouchPoints', maxTouchPoints, 0, 100)
+				}
+				return null
 			}),
 			platform: attempt(() => {
 				const { platform } = navigator
@@ -409,14 +414,23 @@
 								renderer: sendToTrash('webglRenderer', renderer)
 							}
 						}
+						
 						return {
-							vendor: isBrave && isBrave.blockingFingerprintingStrict ? sendToTrash('webglVendor', vendor) : vendor,
-							renderer: isBrave && isBrave.blockingFingerprintingStrict ? sendToTrash('webglRenderer', renderer) : renderer
+							vendor: (
+								isBrave && isBrave.blockingFingerprintingStrict ? sendToTrash('webglVendor', vendor) : 
+								!proxyBehavior(vendor) ? vendor : 
+								sendToTrash('webglVendor', 'proxy behavior detected')
+							),
+							renderer: (
+								isBrave && isBrave.blockingFingerprintingStrict ? sendToTrash('webglRenderer', renderer) :
+								!proxyBehavior(renderer) ? renderer : 
+								sendToTrash('webglRenderer', 'proxy behavior detected')
+							)
 						}
 					}
 
 					// document lie and send to trash
-					const webglVendorAndRendererParameter = { vendor, renderer }
+					const webglVendorAndRendererParameter = `${vendor}, ${renderer}`
 					const webglVendorAndRendererExtension = webglVendorAndRendererParameter
 					if (paramLie) { 
 						documentLie('webglVendorAndRendererParameter', webglVendorAndRendererParameter, paramLie)
@@ -537,13 +551,13 @@
 		const { lie: timezoneLie } = hasLiedAPI(Date.prototype.getTimezoneOffset, 'getTimezoneOffset')
 		const timezoneOffset_1 = new Date().getTimezoneOffset()
 		if (!timezoneLie) {
-			//const withinParentheses = /(?<=\().+?(?=\))/g
+			const notWithinParentheses = /.*\(|\).*/g
 			const utc = Date.parse(new Date().toJSON().split`Z`.join``)
 			const now = +new Date()
 			const timezoneOffset_2 = (utc - now)/60000
 			const trusted = timezoneOffset_1 == timezoneOffset_2
 			const timezoneLocation = Intl.DateTimeFormat().resolvedOptions().timeZone
-			const timezone = ''//withinParentheses.exec(''+new Date())[0]
+			const timezone = (''+new Date()).replace(notWithinParentheses, '')
 			return trusted ? `${timezoneOffset_1}, ${timezoneLocation}, ${timezone}` : undefined
 		}
 
@@ -560,29 +574,33 @@
 
 	// client rects
 	const cRects = () => {
+		const rectContainer = document.getElementById('rect-container')
+		const removeRectsFromDom = () => rectContainer.parentNode.removeChild(rectContainer)
 		const { lie: rectsLie } = hasLiedAPI(Element.prototype.getClientRects, 'getClientRects')
 		const cRectProps = ['x', 'y', 'width', 'height', 'top', 'right', 'bottom', 'left']
 		const rectElems = document.getElementsByClassName('rects')
 		const clientRects = [...rectElems].map(el => el.getClientRects()[0].toJSON())
 
 		if (!rectsLie) {
+			removeRectsFromDom()
 			return clientRects
 		}
 		
 		// document lie and send to trash
 		if (rectsLie) {
-			documentLie('clientRects', clientRects, rectsLie)
-			sendToTrash('clientRects', clientRects)
+			documentLie('clientRects', hashMini(clientRects), rectsLie)
+			sendToTrash('clientRects', hashMini(clientRects))
 		}
 
 		// Fingerprint lie
+		removeRectsFromDom()
 		return { rectsLie }
 	}
 
 	// scene
 	const scene = html`
 	<fingerprint>
-		<div id="fingerprint">Loading...</div>
+		<div id="fingerprint"></div>
 		<style>
 		#rect-container{opacity:0;position:relative;border:1px solid #F72585}.rects{width:10px;height:10px;max-width:100%}.absolute{position:absolute}#cRect1{border:solid 2.715px;border-color:#F72585;padding:3.98px;margin-left:12.12px}#cRect2{border:solid 2px;border-color:#7209B7;font-size:30px;margin-top:20px;transform:skewY(23.1753218deg)}#cRect3{border:solid 2.89px;border-color:#3A0CA3;font-size:45px;transform:scale(100000000000000000000009999999999999.99, 1.89);margin-top:50px}#cRect4{border:solid 2px;border-color:#4361EE;transform:matrix(1.11, 2.0001, -1.0001, 1.009, 150, 94.4);margin-top:11.1331px;margin-left:12.1212px;padding:4.4545px;left:239.4141px;top:8.5050px}#cRect5{border:solid 2px;border-color:#4CC9F0;margin-left:42.395pt}#cRect6{border:solid 2px;border-color:#F72585;transform:perspective(12890px) translateZ(101.5px);padding:12px}#cRect7{margin-top:-350.552px;margin-left:0.9099rem;border:solid 2px;border-color:#4361EE}#cRect8{margin-top:-150.552px;margin-left:15.9099rem;border:solid 2px;border-color:#3A0CA3}#cRect9{margin-top:-110.552px;margin-left:15.9099rem;border:solid 2px;border-color:#7209B7}#cRect10{margin-top:-315.552px;margin-left:15.9099rem;border:solid 2px;border-color:#F72585}
 		</style>
@@ -748,8 +766,21 @@
 		
 		// identify known hash
 		const identify = prop => {
+			const torBrowser = (
+				// navigator props in Firefox, but not Tor Browser
+				!('geolocation' in navigator) ||
+				!('credentials' in navigator) ||
+				!('maxTouchPoints' in navigator) ||
+				!('serviceWorker' in navigator)
+			)
 			const catchTorBrowser = (
-				!('geolocation' in navigator) ? 'Tor Browser' : 'Firefox'
+				torBrowser ? 'Tor Browser' : 'Firefox'
+			)
+			const catchTorBrowserResist = (
+				torBrowser ? 'Tor Browser (pending permission or blocked temporarily)' : 'Firefox (privacy.resistFingerprinting)'
+			)
+			const catchTorBrowserAllow = (
+				torBrowser ? 'Tor Browser' : 'Firefox (privacy.resistFingerprinting)'
 			)
 			const known = {
 				'0df25df426d0ce052d04482c0c2cd4d874ae7a4da4feb430be36150a770f3b6b': 'Browser Plugs',
@@ -758,16 +789,17 @@
 				'e9f96e6b7f0b93f9d7677f0e270c97d6fa12cbbe3134ab5f906d152f57953e72': 'Browser Plugs',
 				'0c3156fbce7624886a6a5485d3fabfb8038f9b656de01100392b2cebf354106d': 'Browser Plugs',
 				'94e40669f496f2cef69cc289f3ee50dc442ced21fb42a88bc223270630002556': 'Canvas Fingerprint Defender',
-				'32cfbc8d166d60a416d942a678dd707119474a541969ad95c0968ae5df32bdcb': 'Privacy Possom',
+				'ea43a000cd99bbe3fcd6861a2a5b9da1cba4c75c5ed7756f19562a8b5e034018': 'Privacy Possom',
 				'1a2e56badfca47209ba445811f27e848b4c2dae58224445a4af3d3581ffe7561': 'Privacy Possom',
-				'107362a28208c432abd04f7d571f64ea1089c14db531e1c1375b83ae9ca0ba6a': 'Privacy Badger or similar',
+				'e5c60fb55b35e96ec8482d4cfccb2e3b8245ef2a148c96a473ee7e526a2f21c5': 'Privacy Badger or similar',
 				'785acfe6b266709e167dcc85fdd5697798cfdb1dcb9bed4eab42f422117ebaab': 'Trace',
-				'015523301c35459c43d145f3bc2b3edc6c4f3d2963a2d67bbd10cf634d84bacb': 'Trace',
+				'c53d59bceea14b20c5b2a0680457314fc04f71c240604ced26ff37f42242ff0e': 'Trace',
+				'96fc9e8167ed27c6f45442df78619601955728422a111e02c08cd5af94378d34': 'Trace',
 				'7757f7416b78fb8ac1f079b3e0677c0fe179826a63727d809e7d69795e915cd5': 'Chromium',
 				'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': catchTorBrowser,
-				'e086050038b44b8dcb9d0565da3ff448a0162da7023469d347303479f981f5fd': 'Firefox',
+				'e086050038b44b8dcb9d0565da3ff448a0162da7023469d347303479f981f5fd': catchTorBrowserAllow,
 				'0a1a099e6b0a7365acfdf38ed79c9cde9ec0617b0c39b6366dad4d1a4aa6fcaf': 'Firefox',
-				'99dfbc2000c9c81588259515fed8a1f6fbe17bf9964c850560d08d0bfabc1fff': catchTorBrowser
+				'99dfbc2000c9c81588259515fed8a1f6fbe17bf9964c850560d08d0bfabc1fff': catchTorBrowserResist
 			}
 
 			const [ data, hash ] = prop
@@ -836,7 +868,7 @@
 							return `
 							<div>
 								<div>${lieRecords.length} API lie${plural} detected: </div>
-								${lieRecords.map(item => `<div>${item.name} - ${item.hash} (lie fingerprint: ${item.lie})</div>`).join('')}
+								${lieRecords.map(item => `<div>${item.name} Lie Fingerprint: ${item.lie}</div>`).join('')}
 							</div>
 							`
 						})()
