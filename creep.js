@@ -13,9 +13,11 @@
 	const errorsCaptured = []
 	const captureError = (error) => {
 		console.error(error)
-		const { name, message } = error
+		const { name, message, fileName, lineNumber, description, number, columnNumber } = error
 		const stack = JSON.stringify(error.stack)
-		errorsCaptured.push({ name, message, stack })
+		errorsCaptured.push(
+			{ name, message, fileName, lineNumber, description, number, columnNumber, stack }
+		)
 		return undefined
 	}
 	const attempt = fn => {
