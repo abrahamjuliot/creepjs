@@ -62,6 +62,7 @@ function hasLiedAPI(api, name) {
 }
 
 // Detect proxy behavior
+// https://stackoverflow.com/questions/36372611
 const proxyBehavior = (obj) => {
 	const target = (Math.random().toString(36)+'00000000000000000').slice(2, 8+2)
 	try {
@@ -75,3 +76,16 @@ const proxyBehavior = (obj) => {
 		return  emptyJSON && !clonable
 	}
 }
+// Intercept Proxies (concept)
+const interceptedProxies = new WeakSet()
+Proxy = new Proxy(Proxy, {
+    construct(...args) {
+        const newProxy = Reflect.construct(...args)
+        interceptedProxies.add(newProxy)
+		console.log(args[1])
+        return newProxy
+    }
+})
+const obj1 = ({})
+const obj2 = new Proxy({}, {})
+console.log(interceptedProxies.has(obj2))
