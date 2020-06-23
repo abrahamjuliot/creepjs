@@ -81,10 +81,8 @@
 			return false
 		}
 		catch(error) {
-			const cloneable = !error.message.includes('could not be cloned')
-			const json = JSON.stringify(obj)
-			const emptyJSON = json === '{}' || json == undefined
-			return  emptyJSON && !clonable
+			cloneable = error.code != 25 // data clone error
+			return !cloneable
 		}
 	}
 
