@@ -94,6 +94,7 @@
 	}
 	const hasLiedStringAPI = () => {
 		let lieTypes = []
+
 		// detect attempts to rewrite Function.prototype.toString conversion APIs
 		const { toString } = Function.prototype
 		if (!native(toString, 'toString')) {
@@ -115,7 +116,7 @@
 		} catch (error) {
 			const nativeTypeError = 'TypeError: Function.prototype.toString is not a constructor'
 			if ('' + error != nativeTypeError) {
-				lieTypes.push({ newErr: '' + error })
+				lieTypes.push({ newErr: '' + error.message })
 			}
 		}
 
@@ -130,10 +131,14 @@
 		const { toString: fnToStr } = Function.prototype
 		const { name: apiName, toString: apiToString } = api
 		if (apiName != name) {
-			lieTypes.push({ apiName })
+			lieTypes.push({
+				apiName: !proxyBehavior(apiName) ? apiName: true
+			})
 		}
 		if (apiToString !== fnToStr || apiToString.toString !== fnToStr) {
-			lieTypes.push({ apiToString })
+			lieTypes.push({
+				apiToString: !proxyBehavior(apiToString) ? apiToString: true
+			})
 		}
 
 		// collect string conversion result
@@ -460,7 +465,7 @@
 					}
 
 					// fingerprint lie
-					return { dataLie, contextLie, canvasRandomizationIsExcessive }
+					return { dataLie, contextLie }
 				}
 				catch(error) {
 					return captureError(error)
@@ -564,7 +569,6 @@
 		}
 		
 		// document lie and send to trash
-		const timezoneOffset = timezoneOffset_1
 		if (rectsLie) {
 			documentLie('clientRects', clientRects, rectsLie)
 			sendToTrash('clientRects', clientRects)
@@ -719,6 +723,7 @@
 		}
 		const log = (message, obj) => console.log(message, JSON.stringify(obj, null, '\t'))
 
+		console.log(fp)
 		log('Fingerprint Id', fp)
 		
 		const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])

@@ -27,7 +27,7 @@ function hasLiedStringAPI() {
 	} catch (error) {
 		const nativeTypeError = 'TypeError: Function.prototype.toString is not a constructor'
 		if ('' + error != nativeTypeError) {
-			lieTypes.push({ newErr: '' + error })
+			lieTypes.push({ newErr: '' + error.message })
 		}
 	}
 
