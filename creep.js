@@ -319,11 +319,9 @@
 			width: attempt(() => trustIntegerWithinRange('width', width, 10, 10000)),
 			outerWidth: attempt(() => trustIntegerWithinRange('outerWidth', outerWidth, 10, width+20)),
 			availWidth: attempt(() => trustIntegerWithinRange('availWidth', availWidth, 10, width)),
-			innerWidth: attempt(() => trustIntegerWithinRange('innerWidth', innerWidth, 10, width)),
 			height: attempt(() => trustIntegerWithinRange('height', height, 10, 10000)),
 			outerHeight: attempt(() => trustIntegerWithinRange('outerHeight', outerHeight, 10, height+20)),
 			availHeight: attempt(() => trustIntegerWithinRange('availHeight', availHeight, 10, height)),
-			innerHeight: attempt(() => trustIntegerWithinRange('innerHeight', innerHeight, 10, height)),
 			colorDepth: attempt(() => trustIntegerWithinRange('colorDepth', colorDepth, 2, 1000)),
 			pixelDepth: attempt(() => trustIntegerWithinRange('pixelDepth', pixelDepth, 2, 1000))
 		}
