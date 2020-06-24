@@ -13,20 +13,20 @@
 	const errorsCaptured = []
 	const captureError = (error) => {
 		const type = {
-			EvalError: 'EvalError', 
-			InternalError: 'InternalError',
-			RangeError: 'RangeError',
-			ReferenceError: 'ReferenceError',
-			SyntaxError: 'SyntaxError',
-			TypeError: 'TypeError',
-			URIError: 'URIError'
+			EvalError: true, 
+			InternalError: true,
+			RangeError: true,
+			ReferenceError: true,
+			SyntaxError: true,
+			TypeError: true,
+			URIError: true
 		}
 		const hasInnerSpace = s => /.+(\s).+/g.test(s) // ignore AOPR noise
 		console.error(error) // log error to educate
 		const { name, message } = error
 		const trustedMessage = hasInnerSpace(message) ? message: undefined
 		const trustName = type[name] ? name : undefined
-		const lineNumber = error.stack.split('\n')[4]
+		const lineNumber = error.stack.split('\n')[2]
 		const index = lineNumber.indexOf('at ')
 		const lineAndIndex = lineNumber.slice(index + 2, lineNumber.length)
 		errorsCaptured.push(
