@@ -12,14 +12,29 @@
 	// Handle Errors
 	const errorsCaptured = []
 	const captureError = (error) => {
-		console.error(error)
-		const { name, message, fileName, lineNumber, description, number, columnNumber } = error
-		const stack = JSON.stringify(error.stack)
+		const type = {
+			EvalError: 'EvalError', 
+			InternalError: 'InternalError',
+			RangeError: 'RangeError',
+			ReferenceError: 'ReferenceError',
+			SyntaxError: 'SyntaxError',
+			TypeError: 'TypeError',
+			URIError: 'URIError'
+		}
+		const hasInnerSpace = s => /.+(\s).+/g.test(s) // ignore AOPR noise
+		console.error(error) // log error to educate
+		const { name, message } = error
+		const trustedMessage = hasInnerSpace(message) ? message: undefined
+		const trustName = type[name] ? name : undefined
+		const lineNumber = error.stack.split('\n')[4]
+		const index = lineNumber.indexOf('at ')
+		const lineAndIndex = lineNumber.slice(index + 2, lineNumber.length)
 		errorsCaptured.push(
-			{ name, message, fileName, lineNumber, description, number, columnNumber, stack }
+			{ name, trustedMessage, lineAndIndex }
 		)
 		return undefined
 	}
+	
 	const attempt = fn => {
 		try {
 			return fn()
@@ -159,7 +174,7 @@
 	// Detect renderer lie @Brave Browser and Privacy Possom
 	const credibleRenderer = (str) => {
 		const hasInnerSpace = s => /.+(\s).+/g.test(s)
-		return true//hasInnerSpace(str)
+		return hasInnerSpace(str)
 	}
 	// Detect Brave Browser and strict fingerprinting blocking
 	brave = () => {
@@ -190,8 +205,8 @@
 	const compress = (x) => {
 		return JSON.stringify(x).replace(/((\n|\r|\s|:|\"|\,|\{|\}|\[|\]|\(|\))+)/gm, '').toLowerCase()
 	}
-	const documentLie = (name, lie, lieDetail) => {
-		return lieRecords.push({ name, hash: lie, lie: hashMini(lieDetail) })
+	const documentLie = (name, lieResult, lieTypes) => {
+		return lieRecords.push({ name, lieTypes, hash: lieResult, lie: hashMini(lieTypes) })
 	}
 	
 	// validate
@@ -263,6 +278,10 @@
 						filename: p.filename,
 						version: p.version
 					}))
+			}),
+			version: attempt(() => {
+				const keys = Object.keys(Object.getPrototypeOf(navigator))
+				return keys
 			})
 		}
 	}
@@ -286,15 +305,17 @@
 	}
 
 	// screen
-	const screenFp = () => {
-		const { width, height, availWidth, availHeight, availTop, availLeft, colorDepth, pixelDepth } = screen
+	const screenFp = () => {	
+		const { width, height, availWidth, availHeight, colorDepth, pixelDepth } = screen
 		return {
 			width: attempt(() => trustIntegerWithinRange('width', width, 10, 10000)),
-			height: attempt(() => trustIntegerWithinRange('height', height, 10, 10000)),
+			outerWidth: attempt(() => trustIntegerWithinRange('outerWidth', outerWidth, 10, width+20)),
 			availWidth: attempt(() => trustIntegerWithinRange('availWidth', availWidth, 10, width)),
+			innerWidth: attempt(() => trustIntegerWithinRange('innerWidth', innerWidth, 10, width)),
+			height: attempt(() => trustIntegerWithinRange('height', height, 10, 10000)),
+			outerHeight: attempt(() => trustIntegerWithinRange('outerHeight', outerHeight, 10, height+20)),
 			availHeight: attempt(() => trustIntegerWithinRange('availHeight', availHeight, 10, height)),
-			availTop: attempt(() => trustIntegerWithinRange('availTop', availTop, 0, 10000)),
-			availLeft: attempt(() => trustIntegerWithinRange('availLeft', availLeft, 0, 10000)),
+			innerHeight: attempt(() => trustIntegerWithinRange('innerHeight', innerHeight, 10, height)),
 			colorDepth: attempt(() => trustIntegerWithinRange('colorDepth', colorDepth, 2, 1000)),
 			pixelDepth: attempt(() => trustIntegerWithinRange('pixelDepth', pixelDepth, 2, 1000))
 		}
@@ -355,8 +376,10 @@
 	}
 
 	// canvas
-	const { lie: dataLie } = hasLiedAPI(HTMLCanvasElement.prototype.toDataURL, 'toDataURL')
-	const { lie: contextLie } = hasLiedAPI(HTMLCanvasElement.prototype.getContext, 'getContext')
+	const canvasToDataURL = attempt(() => HTMLCanvasElement.prototype.toDataURL)
+	const canvasGetContext = attempt(() => HTMLCanvasElement.prototype.getContext)
+	const dataLie = canvasToDataURL ? hasLiedAPI(canvasToDataURL, 'toDataURL').lie : false
+	const contextLie = canvasGetContext ? hasLiedAPI(canvasGetContext, 'getContext').lie : false
 	const canvas = () => {
 		const canvas = document.createElement('canvas')
 		let canvas2dDataURI = ''
@@ -397,8 +420,10 @@
 
 	// webgl
 	const webgl = () => {
-		const { lie: paramLie } = hasLiedAPI(WebGLRenderingContext.prototype.getParameter, 'getParameter')
-		const { lie: extLie } = hasLiedAPI(WebGLRenderingContext.prototype.getExtension, 'getExtension')
+		const webglGetParameter = attempt(() => WebGLRenderingContext.prototype.getParameter)
+		const webglGetExtension = attempt(() => WebGLRenderingContext.prototype.getExtension)
+		const paramLie = webglGetParameter ? hasLiedAPI(webglGetParameter, 'getParameter').lie : false
+		const extLie = webglGetExtension ? hasLiedAPI(webglGetExtension, 'getExtension').lie : false
 		const canvas = document.createElement('canvas')
 		const context = canvas.getContext('webgl')
 
@@ -549,8 +574,10 @@
 	}
 
 	// timezone
-	const timezone = () => {
-		const { lie: timezoneLie } = hasLiedAPI(Date.prototype.getTimezoneOffset, 'getTimezoneOffset')
+	const timezone = () => {		
+		const dateGetTimezoneOffset = attempt(() => Date.prototype.getTimezoneOffset)
+		const timezoneLie = dateGetTimezoneOffset ? hasLiedAPI(dateGetTimezoneOffset, 'getTimezoneOffset').lie : false
+
 		const timezoneOffset_1 = new Date().getTimezoneOffset()
 		if (!timezoneLie) {
 			const notWithinParentheses = /.*\(|\).*/g
@@ -578,7 +605,10 @@
 	const cRects = () => {
 		const rectContainer = document.getElementById('rect-container')
 		const removeRectsFromDom = () => rectContainer.parentNode.removeChild(rectContainer)
-		const { lie: rectsLie } = hasLiedAPI(Element.prototype.getClientRects, 'getClientRects')
+		const elementGetClientRects = attempt(() => Element.prototype.getClientRects)
+		const rectsLie = (
+			elementGetClientRects ? hasLiedAPI(elementGetClientRects, 'getClientRects').lie : false
+		)
 		const cRectProps = ['x', 'y', 'width', 'height', 'top', 'right', 'bottom', 'left']
 		const rectElems = document.getElementsByClassName('rects')
 		const clientRects = [...rectElems].map(el => el.getClientRects()[0].toJSON())
@@ -603,10 +633,11 @@
 	const scene = html`
 	<fingerprint>
 		<div id="fingerprint"></div>
-		<style>
-		#rect-container{opacity:0;position:relative;border:1px solid #F72585}.rects{width:10px;height:10px;max-width:100%}.absolute{position:absolute}#cRect1{border:solid 2.715px;border-color:#F72585;padding:3.98px;margin-left:12.12px}#cRect2{border:solid 2px;border-color:#7209B7;font-size:30px;margin-top:20px;transform:skewY(23.1753218deg)}#cRect3{border:solid 2.89px;border-color:#3A0CA3;font-size:45px;transform:scale(100000000000000000000009999999999999.99, 1.89);margin-top:50px}#cRect4{border:solid 2px;border-color:#4361EE;transform:matrix(1.11, 2.0001, -1.0001, 1.009, 150, 94.4);margin-top:11.1331px;margin-left:12.1212px;padding:4.4545px;left:239.4141px;top:8.5050px}#cRect5{border:solid 2px;border-color:#4CC9F0;margin-left:42.395pt}#cRect6{border:solid 2px;border-color:#F72585;transform:perspective(12890px) translateZ(101.5px);padding:12px}#cRect7{margin-top:-350.552px;margin-left:0.9099rem;border:solid 2px;border-color:#4361EE}#cRect8{margin-top:-150.552px;margin-left:15.9099rem;border:solid 2px;border-color:#3A0CA3}#cRect9{margin-top:-110.552px;margin-left:15.9099rem;border:solid 2px;border-color:#7209B7}#cRect10{margin-top:-315.552px;margin-left:15.9099rem;border:solid 2px;border-color:#F72585}
-		</style>
+		
 		<div id="rect-container">
+			<style>
+			.rects{width:10px;height:10px;max-width:100%}.absolute{position:absolute}#cRect1{border:solid 2.715px;border-color:#F72585;padding:3.98px;margin-left:12.12px}#cRect2{border:solid 2px;border-color:#7209B7;font-size:30px;margin-top:20px;transform:skewY(23.1753218deg)}#cRect3{border:solid 2.89px;border-color:#3A0CA3;font-size:45px;transform:scale(100000000000000000000009999999999999.99, 1.89);margin-top:50px}#cRect4{border:solid 2px;border-color:#4361EE;transform:matrix(1.11, 2.0001, -1.0001, 1.009, 150, 94.4);margin-top:11.1331px;margin-left:12.1212px;padding:4.4545px;left:239.4141px;top:8.5050px}#cRect5{border:solid 2px;border-color:#4CC9F0;margin-left:42.395pt}#cRect6{border:solid 2px;border-color:#F72585;transform:perspective(12890px) translateZ(101.5px);padding:12px}#cRect7{margin-top:-350.552px;margin-left:0.9099rem;border:solid 2px;border-color:#4361EE}#cRect8{margin-top:-150.552px;margin-left:15.9099rem;border:solid 2px;border-color:#3A0CA3}#cRect9{margin-top:-110.552px;margin-left:15.9099rem;border:solid 2px;border-color:#7209B7}#cRect10{margin-top:-315.552px;margin-left:15.9099rem;border:solid 2px;border-color:#F72585}
+			</style>
 			<div id="cRect1" class="rects"></div>
 			<div id="cRect2" class="rects"></div>
 			<div id="cRect3" class="rects"></div>
@@ -627,6 +658,7 @@
 		const navComputed = attempt(() => nav())
 		const mimeTypes = navComputed ? navComputed.mimeTypes : undefined
 		const plugins = navComputed ? navComputed.plugins : undefined
+		const navVersion = navComputed ? navComputed.version : undefined
 		const screenComputed = attempt(() => screenFp())
 		const canvasComputed = attempt(() => canvas())
 		const gl = attempt(() => webgl())
@@ -655,12 +687,23 @@
 		
 		const voicesComputed = !voices ? undefined : voices.map(({ name, lang }) => ({ name, lang }))
 		const mediaDevicesComputed = !mediaDevices ? undefined : mediaDevices.map(({ kind }) => ({ kind })) // chrome randomizes groupId
+		
+		// Compile property names sent to the trashBin (exclude trash values)
+		const trashComputed = trashBin.map(trash => trash.name)
+
+		// Compile name and lie type values from lie records (exclude random lie results)
+		const liesComputed = lieRecords.map(lie => {
+			const { name, lieTypes } = lie
+			return { name, lieTypes }
+		})
+
 		// await hash values
 		const hashTimer = timer('hashing values...')
 		const [
 			navHash, // order must match
 			mimeTypesHash,
 			pluginsHash,
+			navVersionHash,
 			voicesHash,
 			mediaDeviceHash,
 			highEntropyHash,
@@ -672,11 +715,14 @@
 			cRectsHash,
 			mathsHash,
 			canvasHash,
-			errorsCapturedHash
+			errorsCapturedHash,
+			trashHash,
+			liesHash
 		] = await Promise.all([
 			hashify(navComputed),
 			hashify(mimeTypes),
 			hashify(plugins),
+			hashify(navVersion),
 			hashify(voicesComputed),
 			hashify(mediaDevicesComputed),
 			hashify(highEntropy),
@@ -688,7 +734,9 @@
 			hashify(cRectsComputed),
 			hashify(mathsComputed),
 			hashify(canvasComputed),
-			hashify(errorsCaptured)
+			hashify(errorsCaptured),
+			hashify(trashComputed),
+			hashify(liesComputed)
 		]).catch(error => { 
 			console.error(error.message)
 		})
@@ -701,6 +749,7 @@
 			webgl: [webglComputed, webglHash],
 			mimeTypes: [mimeTypes, mimeTypesHash],
 			plugins: [plugins, pluginsHash],
+			navVersion: [navVersion, navVersionHash],
 			voices: [voicesComputed, voicesHash],
 			mediaDevices: [mediaDevicesComputed, mediaDeviceHash],
 			screen: [screenComputed, screenHash],
@@ -709,7 +758,9 @@
 			cRects: [cRectsComputed, cRectsHash],
 			maths: [mathsComputed, mathsHash],
 			canvas: [canvasComputed, canvasHash],
-			errorsCaptured: [errorsCaptured, errorsCapturedHash]
+			errorsCaptured: [errorsCaptured, errorsCapturedHash],
+			trash: [trashComputed, trashHash],
+			lies: [liesComputed, liesHash]
 		}
 		return fingerprint
 	}
@@ -731,13 +782,15 @@
 		const fpElem = document.getElementById('fingerprint')
 		const fp = await fingerprint().catch((e) => console.log(e))
 
-		// creep by detecting lies
+		// Purified Fingerprint
 		const creep = {
 			timezone: fp.timezone,
 			renderer: fp.webgl[0].renderer,
 			vendor: fp.webgl[0].vendor,
 			webglDataURL: fp.webglDataURL,
 			consoleErrors: fp.consoleErrors,
+			trash: fp.trash,
+			lies: fp.lies,
 			cRects: fp.cRects,
 			maths: fp.maths,
 			canvas: fp.canvas
@@ -766,14 +819,15 @@
 			.then(response => response.json())
   			.then(data => console.log(data))
 		
+		// symbol notes
+		const note = { blocked: '<span class="blocked">blocked</span>'}
+
 		// identify known hash
 		const identify = prop => {
 			const torBrowser = (
-				/* geo.enabled can be set to true or fals:
+				/* geo.enabled can be set to true or false:
 				Geolocation is in window of Firefox
-				Geolocation is not in the window of Tor Browser 
-				https://browserleaks.com/geo
-				https://bugzilla.mozilla.org/show_bug.cgi?id=1403813
+				Geolocation is not in the window of Tor Browser
 				*/
 				!('Geolocation' in window)
 			)
@@ -802,41 +856,21 @@
 				'7757f7416b78fb8ac1f079b3e0677c0fe179826a63727d809e7d69795e915cd5': 'Chromium',
 				'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': catchTorBrowser,
 				'e086050038b44b8dcb9d0565da3ff448a0162da7023469d347303479f981f5fd': catchTorBrowserAllow,
-				'0a1a099e6b0a7365acfdf38ed79c9cde9ec0617b0c39b6366dad4d1a4aa6fcaf': 'Firefox',
+				'0a1a099e6b0a7365acfdf38ed79c9cde9ec0617b0c39b6366dad4d1a4aa6fcaf': catchTorBrowser,
 				'99dfbc2000c9c81588259515fed8a1f6fbe17bf9964c850560d08d0bfabc1fff': catchTorBrowserResist
 			}
 
 			const [ data, hash ] = prop
 			const iterable = Symbol.iterator in Object(data)
-			return !data || (iterable && !data.length) ? '[blocked]' : known[hash] ? known[hash] : hash
+			return (
+				!data || (iterable && !data.length) ? note.blocked :
+				known[hash] ? `<span class="known">${known[hash]}</span>` : hash
+			)
 		}
 		const pluralify = (len) => len > 1 ? 's' : ''
 		// template
 		const data = `
 			<section>
-				<style>
-					#fingerprint-data {
-						box-sizing: border-box;
-						margin: 0 auto;
-					  	max-width: 700px;
-					}
-					#fingerprint-data > div {
-					  	color: #2c2f33;
-						overflow-wrap: break-word;
-						padding: 10px;
-						margin: 10px 0;
-						box-shadow: 0px 2px 2px 0px #cfd0d1;
-					}
-					#fingerprint-data h1,
-					#fingerprint-data h2 {
-						color: #2d3657;
-						text-align: center;
-					}
-					.device {
-						background: #7289da3b;
-					}
-				</style>
-				
 				<div id="fingerprint-data">
 					<h1 class="visit">Your Fingerprint</h1>
 					<h2 class="visit">last visit: ${'compute client side'}</h2>
@@ -855,11 +889,13 @@
 					}
 
 					${
-						!trashBin.length ? '': (() => {
+						!trashBin.length ? '<div>trash: ✔️ [none]</div>': (() => {
 							const plural = pluralify(trashBin.length)
+							const hash = fp.trash[1]
 							return `
-							<div>
-								<div>${trashBin.length} API${plural} ignored and considered trash: </div>
+							<div class="trash">
+								<strong>🤮 ${trashBin.length} API${plural} are counted as trash</strong>
+								<div>trash hash: ${hash}</div>
 								${trashBin.map(item => `<div>${item.name} - ${item.value}</div>`).join('')}
 							</div>
 							`
@@ -867,12 +903,33 @@
 					}
 
 					${
-						!lieRecords.length ? '': (() => {
+						!lieRecords.length ? '<div>lies: ✔️ [none]</div>': (() => {
 							const plural = pluralify(lieRecords.length)
+							const hash = fp.lies[1]
 							return `
-							<div>
-								<div>${lieRecords.length} API lie${plural} detected: </div>
+							<div class="lies">
+								<strong>🤥 ${lieRecords.length} API lie${plural} detected</strong>
+								<div>lie hash: ${hash}</div>
 								${lieRecords.map(item => `<div>${item.name} Lie Fingerprint: ${item.lie}</div>`).join('')}
+							</div>
+							`
+						})()
+					}
+
+					${
+						!fp.errorsCaptured[0].length ? `<div>errors captured: ✔️ [none]</div>`: (() => {
+							const [ errors, hash ]  = fp.errorsCaptured
+							return `
+							<div class="errors">
+								<div>🧐 errors captured hash: ${hash}</div>
+								${
+									errors.map(err => {
+										return `
+										<div>
+											${err.name}: ${err.trustedMessage} - ${err.lineAndIndex}
+										</div>`
+									}).join('')
+								}
 							</div>
 							`
 						})()
@@ -891,7 +948,7 @@
 						return (
 							isBrave && isBrave.blockingFingerprintingStrict ? 'Brave Browser' : 
 							isString && renderer ? renderer : 
-							!renderer ? '[blocked]' : identify(fp.webgl)
+							!renderer ? note.blocked : identify(fp.webgl)
 						)
 					})()}</div>
 					<div>webgl vendor: ${(() => {
@@ -901,12 +958,11 @@
 						return (
 							isBrave && isBrave.blockingFingerprintingStrict ? 'Brave Browser' : 
 							isString && vendor ? vendor : 
-							!vendor ? '[blocked]' : identify(fp.webgl)
+							!vendor ? note.blocked : identify(fp.webgl)
 						)
 					})()}</div>
 					<div>client rects: ${identify(fp.cRects)}</div>
-					<div>console errors: ${identify(fp.consoleErrors)}</div>
-					<div>errors captured: ${fp.errorsCaptured[0].length ? fp.errorsCaptured[1] : '[none]'}</div>	
+					<div>console errors: ${identify(fp.consoleErrors)}</div>	
 					<div>maths: ${identify(fp.maths)}</div>
 					<div>media devices: ${identify(fp.mediaDevices)}</div>
 					<div>timezone: ${identify(fp.timezone)}</div>
@@ -914,27 +970,23 @@
 					<div>voices: ${identify(fp.voices)}</div>
 
 					${
-						!fp.screen[0] ? '<div>screen: [blocked]</div>': (() => {
+						!fp.screen[0] ? `<div>screen: ${note.blocked}</div>`: (() => {
 							const [ scrn, hash ]  = fp.screen
-							const { width, height, availWidth, availHeight, availTop, availLeft, colorDepth, pixelDepth } = scrn
 							return `
 							<div>
 								<div>screen hash: ${hash}</div>
-								<div>width: ${width !== undefined ? width : '[blocked]'}</div>
-								<div>height: ${height !== undefined ? height : '[blocked]'}</div>
-								<div>availWidth: ${availWidth !== undefined ? availWidth : '[blocked]'}</div>
-								<div>availHeight: ${availHeight !== undefined ? availHeight : '[blocked]'}</div>
-								<div>availTop: ${availTop !== undefined ? availTop : '[blocked]'}</div>
-								<div>availLeft: ${availLeft !== undefined ? availLeft : '[blocked]'}</div>
-								<div>colorDepth: ${colorDepth !== undefined ? colorDepth : '[blocked]'}</div>
-								<div>pixelDepth: ${pixelDepth !== undefined ? pixelDepth : '[blocked]'}</div>
+								${
+									Object.entries(scrn).map(([key, value]) => {
+										return `<div>${key}: ${value ? value : note.blocked}</div>`
+									}).join('')
+								}
 							</div>
 							`
 						})()
 					}
 					
 					${
-						!fp.nav[0] ? '<div>navigator: [blocked]</div>': (() => {
+						!fp.nav[0] ? `<div>navigator: ${note.blocked}</div>`: (() => {
 							const [ nav, hash ]  = fp.nav
 							const {
 								platform,
@@ -950,15 +1002,16 @@
 							return `
 							<div>
 								<div>navigator hash: ${hash}</div>
-								<div>platform: ${platform ? platform : '[blocked or other]'}</div>
-								<div>deviceMemory: ${deviceMemory ? deviceMemory : '[blocked]'}</div>
-								<div>hardwareConcurrency: ${hardwareConcurrency ? hardwareConcurrency : '[blocked]'}</div>
-								<div>maxTouchPoints: ${maxTouchPoints !== undefined ? maxTouchPoints : '[blocked]'}</div>
-								<div>userAgent: ${userAgent ? userAgent : '[blocked]'}</div>
-								<div>appVersion: ${appVersion ? appVersion : '[blocked]'}</div>
-								<div>language: ${language ? language : '[blocked]'}</div>
-								<div>vendor: ${vendor ? vendor : '[blocked]'}</div>
-								<div>doNotTrack: ${doNotTrack !== undefined ? doNotTrack : '[blocked]'}</div>
+								<div>version: ${identify(fp.navVersion)}</div>
+								<div>platform: ${platform ? platform : `${note.blocked} or other`}</div>
+								<div>deviceMemory: ${deviceMemory ? deviceMemory : note.blocked}</div>
+								<div>hardwareConcurrency: ${hardwareConcurrency ? hardwareConcurrency : note.blocked}</div>
+								<div>maxTouchPoints: ${maxTouchPoints !== undefined ? maxTouchPoints : note.blocked}</div>
+								<div>userAgent: ${userAgent ? userAgent : note.blocked}</div>
+								<div>appVersion: ${appVersion ? appVersion : note.blocked}</div>
+								<div>language: ${language ? language : note.blocked}</div>
+								<div>vendor: ${vendor ? vendor : note.blocked}</div>
+								<div>doNotTrack: ${doNotTrack !== undefined ? doNotTrack : note.blocked}</div>
 								<div>mimeTypes: ${identify(fp.mimeTypes)}</div>
 								<div>plugins: ${identify(fp.plugins)}</div>
 							</div>
@@ -967,7 +1020,7 @@
 					}
 
 					${
-						!fp.highEntropy[0] ? '<div>high entropy: [blocked or unsupported]</div>': (() => {
+						!fp.highEntropy[0] ? `<div>high entropy: ${note.blocked} or unsupported</div>`: (() => {
 							const [ ua, hash ]  = fp.highEntropy
 							const { architecture, model, platform, platformVersion, uaFullVersion } = ua
 							return `
@@ -983,7 +1036,6 @@
 						})()
 					}
 
-					<span>view the console for details</span>
 				</div>
 			</section>
 		`

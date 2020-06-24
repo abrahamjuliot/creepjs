@@ -42,3 +42,47 @@ table {
 	border-collapse: collapse;
 	border-spacing: 0;
 }
+
+/* custom */
+body {
+	box-sizing: border-box;
+	font-family: monospace;
+}
+strong {
+	font-weight: bold;
+}
+#rect-container{
+	opacity: 0;
+	position: relative;
+	border: 1px solid
+}
+#fingerprint-data {
+	box-sizing: border-box;
+	margin: 0 auto;
+	max-width: 700px;
+}
+#fingerprint-data > div {
+	color: #2c2f33;
+	overflow-wrap: break-word;
+	padding: 10px;
+	margin: 10px 0;
+	box-shadow: 0px 2px 2px 0px #cfd0d1;
+}
+#fingerprint-data h1,
+#fingerprint-data h2 {
+	color: #2d3657;
+	text-align: center;
+}
+.device {
+	background: #7289da3b;
+}
+.blocked { color: #e00033; font-weight: bold; }
+.known {
+    font-weight: bold;
+    padding: 2px 5px;
+    background: rgba(114, 9, 183, 0.82);
+    color: #fff;
+}
+.trash, .lies, .errors {
+	background: rgba(224, 0, 51, 0.05);
+}
