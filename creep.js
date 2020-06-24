@@ -233,9 +233,17 @@
 			}),
 			doNotTrack: attempt(() => {
 				const { doNotTrack } = navigator
-				const dntValues = [1, '1', true, 'yes', 0, '0', false, 'no', 'unspecified', 'null']
-				const trusted = dntValues.filter(val => val === doNotTrack )[0]
-				return trusted ? doNotTrack : doNotTrack ? sendToTrash('doNotTrack', doNotTrack) : undefined
+				const trusted = {
+					'1': true,
+					'true': true, 
+					'yes': true,
+					'0': true, 
+					'false': true, 
+					'no': true, 
+					'unspecified': true, 
+					'null': true
+				}
+				return trusted[doNotTrack] ? doNotTrack : doNotTrack ? sendToTrash('doNotTrack', doNotTrack) : undefined
 			}),
 			hardwareConcurrency: attempt(() => {
 				const { hardwareConcurrency } = navigator 
