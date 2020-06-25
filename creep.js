@@ -171,11 +171,6 @@
 		}
 	}
 
-	// Detect renderer lie @Brave Browser and Privacy Possom
-	const credibleRenderer = (str) => {
-		const hasInnerSpace = s => /.+(\s).+/g.test(s)
-		return hasInnerSpace(str)
-	}
 	// Detect Brave Browser and strict fingerprinting blocking
 	brave = () => 'brave' in navigator ? true : false
 	const isBrave = brave() // compute and cache result
