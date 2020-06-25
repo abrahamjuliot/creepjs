@@ -30,7 +30,7 @@
 		const index = lineNumber.indexOf('at ')
 		const lineAndIndex = lineNumber.slice(index + 2, lineNumber.length)
 		errorsCaptured.push(
-			{ name, trustedMessage, lineAndIndex }
+			{ name, trustedMessage }
 		)
 		return undefined
 	}
