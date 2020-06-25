@@ -177,18 +177,7 @@
 		return hasInnerSpace(str)
 	}
 	// Detect Brave Browser and strict fingerprinting blocking
-	brave = () => {
-		if ('brave' in navigator) {
-			const canvas = document.createElement('canvas')
-			const webglContext = canvas.getContext('webgl')
-			const extension = webglContext.getExtension('WEBGL_debug_renderer_info')
-			const renderer = extension && webglContext.getParameter(extension.UNMASKED_RENDERER_WEBGL)
-			return {
-				blockingFingerprintingStrict: !extension ? true : renderer ? !credibleRenderer(renderer): false
-			}
-		}
-		return false
-	}
+	brave = () => 'brave' in navigator ? true : false
 	const isBrave = brave() // compute and cache result
 
 	// Collect trash values
@@ -441,21 +430,14 @@
 					const renderer = extension && context.getParameter(extension.UNMASKED_RENDERER_WEBGL)
 
 					if (!paramLie && !extLie) {
-						if (!credibleRenderer(renderer)) {
-							return {
-								vendor: sendToTrash('webglVendor', vendor),
-								renderer: sendToTrash('webglRenderer', renderer)
-							}
-						}
-						
 						return {
 							vendor: (
-								isBrave && isBrave.blockingFingerprintingStrict ? sendToTrash('webglVendor', vendor) : 
+								isBrave ? sendToTrash('webglVendor', vendor) : 
 								!proxyBehavior(vendor) ? vendor : 
 								sendToTrash('webglVendor', 'proxy behavior detected')
 							),
 							renderer: (
-								isBrave && isBrave.blockingFingerprintingStrict ? sendToTrash('webglRenderer', renderer) :
+								isBrave ? sendToTrash('webglRenderer', renderer) :
 								!proxyBehavior(renderer) ? renderer : 
 								sendToTrash('webglRenderer', 'proxy behavior detected')
 							)
@@ -482,8 +464,8 @@
 				catch(error) {
 					captureError(error)
 					return {
-						vendor: isBrave && isBrave.blockingFingerprintingStrict ? sendToTrash('webglVendor', null) : undefined,
-						renderer: isBrave && isBrave.blockingFingerprintingStrict ? sendToTrash('webglRenderer', null) : undefined
+						vendor: isBrave ? sendToTrash('webglVendor', null) : undefined,
+						renderer: isBrave ? sendToTrash('webglRenderer', null) : undefined
 					}
 				}
 			})(),
@@ -885,16 +867,6 @@
 					<div>Fingerprint Id: ${fpHash}</div>
 
 					${
-						!isBrave || !isBrave.blockingFingerprintingStrict? '': (() => {
-							return `
-							<div>
-								<div>Brave Browser is Blocking Fingerprinting in Strict Mode</div>
-							</div>
-							`
-						})()
-					}
-
-					${
 						!trashBin.length ? '<div>trash: ✔️ [none]</div>': (() => {
 							const plural = pluralify(trashBin.length)
 							const hash = fp.trash[1]
@@ -952,7 +924,7 @@
 						const { renderer } = data
 						const isString = typeof renderer == 'string'
 						return (
-							isBrave && isBrave.blockingFingerprintingStrict ? 'Brave Browser' : 
+							isBrave ? 'Brave Browser' : 
 							isString && renderer ? renderer : 
 							!renderer ? note.blocked : identify(fp.webgl)
 						)
@@ -962,7 +934,7 @@
 						const { vendor } = data
 						const isString = typeof vendor == 'string'
 						return (
-							isBrave && isBrave.blockingFingerprintingStrict ? 'Brave Browser' : 
+							isBrave ? 'Brave Browser' : 
 							isString && vendor ? vendor : 
 							!vendor ? note.blocked : identify(fp.webgl)
 						)
