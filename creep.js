@@ -770,21 +770,24 @@
 
 		// Purified Fingerprint
 		const creep = {
-			timezone: fp.timezone,
+			//timezone: fp.timezone, // subject to randomization
+			voices: fp.voices,
+			navVersion: fp.navVersion,
 			renderer: fp.webgl[0].renderer,
 			vendor: fp.webgl[0].vendor,
 			webglDataURL: fp.webglDataURL,
 			consoleErrors: fp.consoleErrors,
-			trash: fp.trash,
-			lies: fp.lies,
+			//trash: fp.trash, // both subject to lies at random
+			//lies: fp.lies, 
 			cRects: fp.cRects,
 			maths: fp.maths,
 			canvas: fp.canvas
 		}
 		const log = (message, obj) => console.log(message, JSON.stringify(obj, null, '\t'))
-
-		console.log('Fingerprint Id (Object)', fp)
-		log('Fingerprint Id (JSON)', fp)
+		
+		console.log('Pure Fingerprint (Object):', creep)
+		console.log('Fingerprint Id (Object):', fp)
+		log('Fingerprint Id (JSON):', fp)
 		
 		const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
 		.catch(error => { 
