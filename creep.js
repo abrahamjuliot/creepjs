@@ -314,15 +314,41 @@
 
 	// voices
 	const getVoices = () => {
+		const undfn = new Promise(resolve => resolve(undefined))
+		
 		try {
-			const promise = speechSynthesis.getVoices
+			if (!('chrome' in window)) {
+				return speechSynthesis.getVoices()
+			}
+			const promise = new Promise(resolve => {
+				try {
+					if (typeof speechSynthesis === 'undefined') {
+						return resolve(undefined)
+					} 
+					else if (!speechSynthesis.getVoices || speechSynthesis.getVoices() == undefined) {
+						return resolve(undefined)
+					}
+					else if (speechSynthesis.getVoices().length) {
+						const voices = speechSynthesis.getVoices()
+						return resolve(voices)
+					} else {
+						speechSynthesis.onvoiceschanged = () => resolve(speechSynthesis.getVoices())
+					}
+				}
+				catch(error) {
+					captureError(error)
+					return resolve(undefined)
+				}
+			})
+			
 			return promise
 		}
 		catch(error) {
 			captureError(error)
-			return new Promise(resolve => resolve(undefined))
+			return undfn
 		}
 	}
+
 
 	// media devices
 	const getMediaDevices = () => {
@@ -645,8 +671,8 @@
 		]).catch(error => { 
 			console.error(error.message)
 		})
-		
-		const voicesComputed = !voices.length ? undefined : voices.map(({ name, lang }) => ({ name, lang }))
+		//console.log(voices)
+		const voicesComputed = !voices ? undefined : voices.map(({ name, lang }) => ({ name, lang }))
 		const mediaDevicesComputed = !mediaDevices ? undefined : mediaDevices.map(({ kind }) => ({ kind })) // chrome randomizes groupId
 		
 		// Compile property names sent to the trashBin (exclude trash values)
