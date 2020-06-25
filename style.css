@@ -79,7 +79,7 @@ strong {
 .blocked { color: #e00033; font-weight: bold; }
 .known {
     font-weight: bold;
-    padding: 2px 5px;
+    padding: 0 2px;
     background: rgba(114, 9, 183, 0.82);
     color: #fff;
 }

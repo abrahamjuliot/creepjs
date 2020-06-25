@@ -318,36 +318,13 @@
 
 	// voices
 	const getVoices = () => {
-		const undfn = new Promise(resolve => resolve(undefined))
-		/* block till Tor Browser fix */
-		return undfn
 		try {
-			const promise = new Promise(resolve => {
-				try {
-					if (typeof speechSynthesis === 'undefined') {
-						return resolve(undefined)
-					} 
-					else if (!speechSynthesis.getVoices || speechSynthesis.getVoices() == undefined) {
-						return resolve(undefined)
-					}
-					else if (speechSynthesis.getVoices().length) {
-						const voices = speechSynthesis.getVoices()
-						return resolve(voices)
-					} else {
-						speechSynthesis.onvoiceschanged = () => resolve(speechSynthesis.getVoices())
-					}
-				}
-				catch(error) {
-					captureError(error)
-					return resolve(undefined)
-				}
-			})
-			
+			const promise = speechSynthesis.getVoices
 			return promise
 		}
 		catch(error) {
 			captureError(error)
-			return undfn
+			return new Promise(resolve => resolve(undefined))
 		}
 	}
 
@@ -673,7 +650,7 @@
 			console.error(error.message)
 		})
 		
-		const voicesComputed = !voices ? undefined : voices.map(({ name, lang }) => ({ name, lang }))
+		const voicesComputed = !voices.length ? undefined : voices.map(({ name, lang }) => ({ name, lang }))
 		const mediaDevicesComputed = !mediaDevices ? undefined : mediaDevices.map(({ kind }) => ({ kind })) // chrome randomizes groupId
 		
 		// Compile property names sent to the trashBin (exclude trash values)
@@ -873,7 +850,7 @@
 							return `
 							<div class="trash">
 								<strong>${trashBin.length} API${plural} are counted as trash</strong>
-								<div>trash hash: ${hash}</div>
+								<div>hash: ${hash}</div>
 								${trashBin.map(item => `<div>${item.name} - ${item.value}</div>`).join('')}
 							</div>
 							`
@@ -887,7 +864,7 @@
 							return `
 							<div class="lies">
 								<strong>${lieRecords.length} API lie${plural} detected</strong>
-								<div>lie hash: ${hash}</div>
+								<div>hash: ${hash}</div>
 								${lieRecords.map(item => `<div>${item.name} Lie Fingerprint: ${item.lie}</div>`).join('')}
 							</div>
 							`
@@ -900,7 +877,7 @@
 							return `
 							<div class="errors">
 								<strong>${errors.length} errors captured</strong>
-								<div>errors captured hash: ${hash}</div>
+								<div>hash: ${hash}</div>
 								${
 									errors.map(err => {
 										return `
