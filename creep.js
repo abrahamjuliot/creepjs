@@ -872,7 +872,7 @@
 							const hash = fp.trash[1]
 							return `
 							<div class="trash">
-								<strong>🤮 ${trashBin.length} API${plural} are counted as trash</strong>
+								<strong>${trashBin.length} API${plural} are counted as trash</strong>
 								<div>trash hash: ${hash}</div>
 								${trashBin.map(item => `<div>${item.name} - ${item.value}</div>`).join('')}
 							</div>
@@ -886,7 +886,7 @@
 							const hash = fp.lies[1]
 							return `
 							<div class="lies">
-								<strong>🤥 ${lieRecords.length} API lie${plural} detected</strong>
+								<strong>${lieRecords.length} API lie${plural} detected</strong>
 								<div>lie hash: ${hash}</div>
 								${lieRecords.map(item => `<div>${item.name} Lie Fingerprint: ${item.lie}</div>`).join('')}
 							</div>
@@ -899,7 +899,8 @@
 							const [ errors, hash ]  = fp.errorsCaptured
 							return `
 							<div class="errors">
-								<div>🧐 errors captured hash: ${hash}</div>
+								<strong>${errors.length} errors captured</strong>
+								<div>errors captured hash: ${hash}</div>
 								${
 									errors.map(err => {
 										return `
