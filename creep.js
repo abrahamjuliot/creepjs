@@ -952,8 +952,8 @@
 							const [ timezone, hash ]  = fp.timezone
 							return `
 							<div>
-								<div>timezone hash: ${hash}</div>
-								<div>${timezone}</div>
+								<div>timezone hash: ${identify(fp.timezone)}</div>
+								${typeof timezone == 'string' ? `<div>${timezone}</div>`: ''}
 							</div>
 							`
 						})()
