@@ -349,7 +349,6 @@
 		}
 	}
 
-
 	// media devices
 	const getMediaDevices = () => {
 		const undfn = new Promise(resolve => resolve(undefined))
@@ -571,7 +570,7 @@
 			const utc = Date.parse(new Date().toJSON().split`Z`.join``)
 			const now = +new Date()
 			const timezoneOffset_2 = (utc - now)/60000
-			const trusted = timezoneOffset_1 == timezoneOffset_2
+			const trusted = timezoneOffset_1 === timezoneOffset_2
 			const timezoneLocation = Intl.DateTimeFormat().resolvedOptions().timeZone
 			const timezone = (''+new Date()).replace(notWithinParentheses, '')
 			return trusted ? `${timezoneOffset_1}, ${timezoneLocation}, ${timezone}` : undefined
@@ -916,36 +915,63 @@
 					<div>canvas: ${
 						isBrave ? 'Brave Browser' : identify(fp.canvas)
 					}</div>
+					<div>
 					<div>webglDataURL: ${
 						isBrave ? 'Brave Browser' : identify(fp.webglDataURL)
 					}</div>
-					<div>webgl renderer: ${(() => {
-						const [ data, hash ] = fp.webgl
-						const { renderer } = data
-						const isString = typeof renderer == 'string'
-						return (
-							isBrave ? 'Brave Browser' : 
-							isString && renderer ? renderer : 
-							!renderer ? note.blocked : identify(fp.webgl)
-						)
-					})()}</div>
-					<div>webgl vendor: ${(() => {
-						const [ data, hash ] = fp.webgl
-						const { vendor } = data
-						const isString = typeof vendor == 'string'
-						return (
-							isBrave ? 'Brave Browser' : 
-							isString && vendor ? vendor : 
-							!vendor ? note.blocked : identify(fp.webgl)
-						)
-					})()}</div>
+						<div>webgl renderer: ${(() => {
+							const [ data, hash ] = fp.webgl
+							const { renderer } = data
+							const isString = typeof renderer == 'string'
+							return (
+								isBrave ? 'Brave Browser' : 
+								isString && renderer ? renderer : 
+								!renderer ? note.blocked : identify(fp.webgl)
+							)
+						})()}</div>
+						<div>webgl vendor: ${(() => {
+							const [ data, hash ] = fp.webgl
+							const { vendor } = data
+							const isString = typeof vendor == 'string'
+							return (
+								isBrave ? 'Brave Browser' : 
+								isString && vendor ? vendor : 
+								!vendor ? note.blocked : identify(fp.webgl)
+							)
+						})()}</div>
+					</div>
 					<div>client rects: ${identify(fp.cRects)}</div>
 					<div>console errors: ${identify(fp.consoleErrors)}</div>	
 					<div>maths: ${identify(fp.maths)}</div>
 					<div>media devices: ${identify(fp.mediaDevices)}</div>
-					<div>timezone: ${identify(fp.timezone)}</div>
 					
-					<div>voices: ${identify(fp.voices)}</div>
+					${
+						!fp.timezone[0] ? `<div>timezone: ${note.blocked}</div>`: (() => {
+							const [ timezone, hash ]  = fp.timezone
+							return `
+							<div>
+								<div>timezone hash: ${hash}</div>
+								<div>${timezone}</div>
+							</div>
+							`
+						})()
+					}
+
+					${
+						!fp.voices[0] ? `<div>voices: ${note.blocked}</div>`: (() => {
+							const [ voices, hash ]  = fp.voices
+							return `
+							<div>
+								<div>voices hash: ${hash}</div>
+								${
+									voices.map(voice => {
+										return `<div>${voice.name}</div>`
+									}).join('')
+								}
+							</div>
+							`
+						})()
+					}
 
 					${
 						!fp.screen[0] ? `<div>screen: ${note.blocked}</div>`: (() => {
