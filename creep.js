@@ -13,6 +13,7 @@
 	const errorsCaptured = []
 	const captureError = (error) => {
 		const type = {
+			Error: true,
 			EvalError: true, 
 			InternalError: true,
 			RangeError: true,
@@ -877,7 +878,7 @@
 									errors.map(err => {
 										return `
 										<div>
-											${err.name}: ${err.trustedMessage} - ${err.lineAndIndex}
+											${err.trustedName}: ${err.trustedMessage}
 										</div>`
 									}).join('')
 								}
