@@ -835,6 +835,7 @@
 				'3ac278638742f3475dcd69559fd1d12e01eefefffe3df66f9129d35635fc3311': 'Browser Plugs',
 				'e9f96e6b7f0b93f9d7677f0e270c97d6fa12cbbe3134ab5f906d152f57953e72': 'Browser Plugs',
 				'0c3156fbce7624886a6a5485d3fabfb8038f9b656de01100392b2cebf354106d': 'Browser Plugs',
+				'235354122e45f69510264fc45ebd5a161eb15ada33702d85ee96a23b28ba2295': 'CyDec',
 				'94e40669f496f2cef69cc289f3ee50dc442ced21fb42a88bc223270630002556': 'Canvas Fingerprint Defender',
 				'ea43a000cd99bbe3fcd6861a2a5b9da1cba4c75c5ed7756f19562a8b5e034018': 'Privacy Possom',
 				'1a2e56badfca47209ba445811f27e848b4c2dae58224445a4af3d3581ffe7561': 'Privacy Possom',
@@ -877,7 +878,7 @@
 							<div class="trash">
 								<strong>${trashBin.length} API${plural} are counted as trash</strong>
 								<div>hash: ${hash}</div>
-								${trashBin.map(item => `<div>${item.name} - ${item.value}</div>`).join('')}
+								${trashBin.map(item => `<div>${item.name}: ${item.value}</div>`).join('')}
 							</div>
 							`
 						})()
