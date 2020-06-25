@@ -62,6 +62,7 @@ strong {
 	max-width: 700px;
 }
 #fingerprint-data > div {
+	line-height: 1.5;
 	color: #2c2f33;
 	overflow-wrap: break-word;
 	padding: 10px;
@@ -79,9 +80,9 @@ strong {
 .blocked { color: #e00033; font-weight: bold; }
 .known {
     font-weight: bold;
-    padding: 0 2px;
-    background: rgba(114, 9, 183, 0.82);
-    color: #fff;
+    padding: 0 4px;
+    background: rgba(94, 77, 241, 0.07);
+    color: #5e4df1;
 }
 .trash, .lies, .errors {
 	background: rgba(224, 0, 51, 0.05);
