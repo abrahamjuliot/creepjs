@@ -25,12 +25,12 @@
 		console.error(error) // log error to educate
 		const { name, message } = error
 		const trustedMessage = hasInnerSpace(message) ? message: undefined
-		const trustName = type[name] ? name : undefined
+		const trustedName = type[name] ? name : undefined
 		const lineNumber = error.stack.split('\n')[2]
 		const index = lineNumber.indexOf('at ')
 		const lineAndIndex = lineNumber.slice(index + 2, lineNumber.length)
 		errorsCaptured.push(
-			{ name, trustedMessage }
+			{ trustedName, trustedMessage }
 		)
 		return undefined
 	}
