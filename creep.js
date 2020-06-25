@@ -567,7 +567,8 @@
 		const timezoneOffset_1 = new Date().getTimezoneOffset()
 		if (!timezoneLie) {
 			const notWithinParentheses = /.*\(|\).*/g
-			const utc = Date.parse(new Date().toJSON().split`Z`.join``)
+			const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
+			const utc = Date.parse(toJSONParsed(new Date()).split`Z`.join``)
 			const now = +new Date()
 			const timezoneOffset_2 = (utc - now)/60000
 			const trusted = timezoneOffset_1 === timezoneOffset_2
@@ -589,6 +590,7 @@
 
 	// client rects
 	const cRects = () => {
+		const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
 		const rectContainer = document.getElementById('rect-container')
 		const removeRectsFromDom = () => rectContainer.parentNode.removeChild(rectContainer)
 		const elementGetClientRects = attempt(() => Element.prototype.getClientRects)
@@ -597,7 +599,9 @@
 		)
 		const cRectProps = ['x', 'y', 'width', 'height', 'top', 'right', 'bottom', 'left']
 		const rectElems = document.getElementsByClassName('rects')
-		const clientRects = [...rectElems].map(el => el.getClientRects()[0].toJSON())
+		const clientRects = [...rectElems].map(el => {
+			return toJSONParsed(el.getClientRects()[0])
+		})
 
 		if (!rectsLie) {
 			removeRectsFromDom()
