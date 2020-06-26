@@ -668,7 +668,7 @@
 		]).catch(error => { 
 			console.error(error.message)
 		})
-		//console.log(voices)
+		
 		const voicesComputed = !voices ? undefined : voices.map(({ name, lang }) => ({ name, lang }))
 		const mediaDevicesComputed = !mediaDevices ? undefined : mediaDevices.map(({ kind }) => ({ kind })) // chrome randomizes groupId
 		
