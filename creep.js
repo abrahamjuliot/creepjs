@@ -196,7 +196,6 @@
 	
 	// validate
 	const isInt = (x) => typeof x == 'number' && x % 1 == 0
-	
 	const trustInteger = (name, val) => {
 		const trusted = isInt(val) 
 		return trusted ? val : sendToTrash(name, val)
@@ -777,7 +776,8 @@
 			webglDataURL: fp.webglDataURL,
 			consoleErrors: fp.consoleErrors,
 			trash: fp.trash,
-			lies: fp.lies, 
+			lies: fp.lies,
+			errorsCaptured: fp.errorsCaptured,
 			cRects: fp.cRects,
 			maths: fp.maths,
 			canvas: fp.canvas
