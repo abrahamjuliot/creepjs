@@ -196,8 +196,9 @@
 	
 	// validate
 	const isInt = (x) => typeof x == 'number' && x % 1 == 0
-	const trustIntegerWithinRange = (name, val, min, max) => {
-		const trusted = isInt(val) && val >= min && val <= max 
+	
+	const trustInteger = (name, val) => {
+		const trusted = isInt(val) 
 		return trusted ? val : sendToTrash(name, val)
 	}
 
@@ -214,7 +215,7 @@
 			}),
 			deviceMemory: attempt(() => {
 				const { deviceMemory } = navigator
-				return deviceMemory ? trustIntegerWithinRange('deviceMemory', deviceMemory, 1, 100) : undefined
+				return deviceMemory ? trustInteger('deviceMemory', deviceMemory) : undefined
 			}),
 			doNotTrack: attempt(() => {
 				const { doNotTrack } = navigator
@@ -232,7 +233,7 @@
 			}),
 			hardwareConcurrency: attempt(() => {
 				const { hardwareConcurrency } = navigator 
-				return trustIntegerWithinRange('hardwareConcurrency', hardwareConcurrency, 1, 100)
+				return trustInteger('hardwareConcurrency', hardwareConcurrency)
 			}),
 			language: attempt(() => {
 				const { languages, language } = navigator
@@ -247,7 +248,7 @@
 			maxTouchPoints: attempt(() => {
 				if ('maxTouchPoints' in navigator) {
 					const { maxTouchPoints } = navigator 
-					return trustIntegerWithinRange('maxTouchPoints', maxTouchPoints, 0, 100)
+					return trustInteger('maxTouchPoints', maxTouchPoints)
 				}
 				return null
 			}),
@@ -255,7 +256,7 @@
 				const { platform } = navigator
 				const systems = ['win', 'linux', 'mac', 'arm', 'pike', 'linux', 'iphone', 'ipad', 'ipod', 'android', 'x11']
 				const trusted = systems.filter(val => platform.toLowerCase().includes(val))[0]
-				return trusted ? platform : sendToTrash('platform', platform)
+				return trusted ? platform : undefined
 			}),
 			userAgent: attempt(() => {
 				const { userAgent } = navigator
@@ -297,18 +298,18 @@
 		}
 	}
 
-	// screen
+	// screen (allow some discrepancy otherwise lie detection triggers at random)
 	const screenFp = () => {	
 		const { width, height, availWidth, availHeight, colorDepth, pixelDepth } = screen
 		return {
-			width: attempt(() => trustIntegerWithinRange('width', width, 10, 10000)),
-			outerWidth: attempt(() => trustIntegerWithinRange('outerWidth', outerWidth, 10, width+20)),
-			availWidth: attempt(() => trustIntegerWithinRange('availWidth', availWidth, 10, width)),
-			height: attempt(() => trustIntegerWithinRange('height', height, 10, 10000)),
-			outerHeight: attempt(() => trustIntegerWithinRange('outerHeight', outerHeight, 10, height+20)),
-			availHeight: attempt(() => trustIntegerWithinRange('availHeight', availHeight, 10, height)),
-			colorDepth: attempt(() => trustIntegerWithinRange('colorDepth', colorDepth, 2, 1000)),
-			pixelDepth: attempt(() => trustIntegerWithinRange('pixelDepth', pixelDepth, 2, 1000))
+			width: attempt(() => trustInteger('width', width)),
+			outerWidth: attempt(() => trustInteger('outerWidth', outerWidth)),
+			availWidth: attempt(() => trustInteger('availWidth', availWidth)),
+			height: attempt(() => trustInteger('height', height)),
+			outerHeight: attempt(() => trustInteger('outerHeight', outerHeight)),
+			availHeight: attempt(() => trustInteger('availHeight', availHeight)),
+			colorDepth: attempt(() => trustInteger('colorDepth', colorDepth)),
+			pixelDepth: attempt(() => trustInteger('pixelDepth', pixelDepth))
 		}
 	}
 
@@ -775,8 +776,8 @@
 			vendor: fp.webgl[0].vendor,
 			webglDataURL: fp.webglDataURL,
 			consoleErrors: fp.consoleErrors,
-			//trash: fp.trash, // both subject to lies at random
-			//lies: fp.lies, 
+			trash: fp.trash,
+			lies: fp.lies, 
 			cRects: fp.cRects,
 			maths: fp.maths,
 			canvas: fp.canvas
