@@ -563,22 +563,16 @@
 	const timezone = () => {		
 		const dateGetTimezoneOffset = attempt(() => Date.prototype.getTimezoneOffset)
 		const timezoneLie = dateGetTimezoneOffset ? hasLiedAPI(dateGetTimezoneOffset, 'getTimezoneOffset').lie : false
+		const timezoneOffset = new Date().getTimezoneOffset()
 
-		const timezoneOffset_1 = new Date().getTimezoneOffset()
 		if (!timezoneLie) {
 			const notWithinParentheses = /.*\(|\).*/g
-			const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
-			const utc = Date.parse(toJSONParsed(new Date()).split`Z`.join``)
-			const now = +new Date()
-			const timezoneOffset_2 = (utc - now)/60000
-			const trusted = timezoneOffset_1 === timezoneOffset_2
 			const timezoneLocation = Intl.DateTimeFormat().resolvedOptions().timeZone
 			const timezone = (''+new Date()).replace(notWithinParentheses, '')
-			return trusted ? `${timezoneOffset_1}, ${timezoneLocation}, ${timezone}` : undefined
+			return { timezoneOffset, timezoneLocation, timezone }
 		}
 
 		// document lie and send to trash
-		const timezoneOffset = timezoneOffset_1
 		if (timezoneLie) {
 			documentLie('timezoneOffset', timezoneOffset, timezoneLie)
 			sendToTrash('timezoneOffset', timezoneOffset)
@@ -961,12 +955,15 @@
 							return `
 							<div>
 								<div>timezone hash: ${identify(fp.timezone)}</div>
-								${typeof timezone == 'string' ? `<div>${timezone}</div>`: ''}
+								${
+									Object.entries(timezone).map(([key, value]) => {
+										return `<div>${key}: ${value ? value : note.blocked}</div>`
+									}).join('')
+								}
 							</div>
 							`
 						})()
 					}
-
 					${
 						!fp.voices[0] ? `<div>voices: ${note.blocked}</div>`: (() => {
 							const [ voices, hash ]  = fp.voices
