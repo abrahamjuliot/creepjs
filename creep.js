@@ -560,16 +560,20 @@
 	}
 
 	// timezone
-	const timezone = () => {		
+	const timezone = () => {
+		const computeTimezoneOffset = () => {
+			const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
+			const utc = Date.parse(toJSONParsed(new Date()).split`Z`.join``)
+			const now = +new Date()
+			return +((utc - now)/60000).toFixed(2)
+		}		
 		const dateGetTimezoneOffset = attempt(() => Date.prototype.getTimezoneOffset)
 		const timezoneLie = dateGetTimezoneOffset ? hasLiedAPI(dateGetTimezoneOffset, 'getTimezoneOffset').lie : false
 		const timezoneOffset = new Date().getTimezoneOffset()
 		let trusted = true
 		if (!timezoneLie) {
-			const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
-			const utc = Date.parse(toJSONParsed(new Date()).split`Z`.join``)
-			const now = +new Date()
-			const timezoneOffsetComputed = +((utc - now)/60000).toFixed(2)
+
+			const timezoneOffsetComputed = computeTimezoneOffset()
 			trusted = timezoneOffsetComputed == timezoneOffset
 			const notWithinParentheses = /.*\(|\).*/g
 			const timezoneLocation = Intl.DateTimeFormat().resolvedOptions().timeZone
