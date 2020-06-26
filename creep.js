@@ -564,21 +564,24 @@
 		const dateGetTimezoneOffset = attempt(() => Date.prototype.getTimezoneOffset)
 		const timezoneLie = dateGetTimezoneOffset ? hasLiedAPI(dateGetTimezoneOffset, 'getTimezoneOffset').lie : false
 		const timezoneOffset = new Date().getTimezoneOffset()
-
+		let trusted = true
 		if (!timezoneLie) {
 			const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
 			const utc = Date.parse(toJSONParsed(new Date()).split`Z`.join``)
 			const now = +new Date()
-			const timezoneOffsetComputed = (utc - now)/60000
+			const timezoneOffsetComputed = +((utc - now)/60000).toFixed(2)
+			trusted = timezoneOffsetComputed == timezoneOffset
 			const notWithinParentheses = /.*\(|\).*/g
 			const timezoneLocation = Intl.DateTimeFormat().resolvedOptions().timeZone
 			const timezone = (''+new Date()).replace(notWithinParentheses, '')
-			return { timezoneOffsetComputed, timezoneOffset, timezoneLocation, timezone }
+			return trusted ? { timezoneOffsetComputed, timezoneOffset, timezoneLocation, timezone } : undefined
 		}
 
 		// document lie and send to trash
 		if (timezoneLie) {
 			documentLie('timezoneOffset', timezoneOffset, timezoneLie)
+		}
+		if (timezoneLie || !trusted) {
 			sendToTrash('timezoneOffset', timezoneOffset)
 		}
 
