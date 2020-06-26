@@ -566,10 +566,14 @@
 		const timezoneOffset = new Date().getTimezoneOffset()
 
 		if (!timezoneLie) {
+			const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
+			const utc = Date.parse(toJSONParsed(new Date()).split`Z`.join``)
+			const now = +new Date()
+			const timezoneOffsetComputed = (utc - now)/60000
 			const notWithinParentheses = /.*\(|\).*/g
 			const timezoneLocation = Intl.DateTimeFormat().resolvedOptions().timeZone
 			const timezone = (''+new Date()).replace(notWithinParentheses, '')
-			return { timezoneOffset, timezoneLocation, timezone }
+			return { timezoneOffsetComputed, timezoneOffset, timezoneLocation, timezone }
 		}
 
 		// document lie and send to trash
