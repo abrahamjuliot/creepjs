@@ -426,7 +426,7 @@
 					const extension = context.getExtension('WEBGL_debug_renderer_info')
 					const vendor = extension && context.getParameter(extension.UNMASKED_VENDOR_WEBGL)
 					const renderer = extension && context.getParameter(extension.UNMASKED_RENDERER_WEBGL)
-
+					
 					if (!paramLie && !extLie) {
 						return {
 							vendor: (
@@ -875,7 +875,7 @@
 					<div>Fingerprint Id: ${fpHash}</div>
 
 					${
-						!trashBin.length ? '<div>trash: ✔️ [none]</div>': (() => {
+						!trashBin.length ? '<div>trash: <span class="none">none</span></div>': (() => {
 							const plural = pluralify(trashBin.length)
 							const hash = fp.trash[1]
 							return `
@@ -889,7 +889,7 @@
 					}
 
 					${
-						!lieRecords.length ? '<div>lies: ✔️ [none]</div>': (() => {
+						!lieRecords.length ? '<div>lies: <span class="none">none</span></div>': (() => {
 							const plural = pluralify(lieRecords.length)
 							const hash = fp.lies[1]
 							return `
@@ -903,7 +903,7 @@
 					}
 
 					${
-						!fp.errorsCaptured[0].length ? `<div>errors captured: ✔️ [none]</div>`: (() => {
+						!fp.errorsCaptured[0].length ? `<div>errors captured: <span class="none">none</span></div>`: (() => {
 							const [ errors, hash ]  = fp.errorsCaptured
 							return `
 							<div class="errors">
