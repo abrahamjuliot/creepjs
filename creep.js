@@ -624,6 +624,7 @@
 	// scene
 	const scene = html`
 	<fingerprint>
+		<visitor><div id="visitor">Loading visitor data...</div></visitor>
 		<div id="fingerprint"></div>
 		
 		<div id="rect-container">
@@ -756,16 +757,12 @@
 		}
 		return fingerprint
 	}
-	// get/post requests
+	// get/post request
 	const webapp = 'https://script.google.com/macros/s/AKfycbzKRjt6FPboOEkh1vTXttGyCjp97YBP7z-5bODQmtSkQ9BqDRY/exec'
 	async function postData(formData) {
 		const response = await fetch(webapp, { method: 'POST', body: formData })
 		return response.json()
 	}
-	// async function getData() {
-	// 	const response = await fetch(webapp)
-	// 	return response.json()
-	// }
 
 	// patch
 	const app = document.getElementById('fp-app')
@@ -785,7 +782,7 @@
 			consoleErrors: fp.consoleErrors,
 			trash: fp.trash,
 			lies: fp.lies,
-			errorsCaptured: fp.errorsCaptured,
+			//errorsCaptured: fp.errorsCaptured,
 			cRects: fp.cRects,
 			maths: fp.maths,
 			canvas: fp.canvas
@@ -805,17 +802,30 @@
 		const formData = new FormData()
 		formData.append('id', creepHash)
 		formData.append('subId', fpHash)
-		formData.append('errors', JSON.stringify(fp.errorsCaptured[0]))
 		
 		const errs = err => console.error('Error!', err.message)
-		postData(formData).catch(errs)
+		postData(formData)
+			.catch(errs)
 
 		// get data from server
-		//const responseData = await getData().catch(errs)
-		//console.log('Response data:', responseData)
-		fetch(webapp)
+		fetch(`${webapp}?id=${creepHash}`)
 			.then(response => response.json())
-  			.then(data => console.log(data))
+  			.then(data => {
+				const visitorElem = document.getElementById('visitor')
+				const { firstVisit, latestVisit, subIds, visits } = data
+				const subIdsLen = Object.keys(subIds).length
+				const toLocaleStr = str => new Date(str).toLocaleString()
+				const pluralify = (len) => len > 1 ? 's' : ''
+				const plural = pluralify(subIdsLen)
+				const template = `
+					<div>First Visit: ${toLocaleStr(firstVisit)} (x days ago)</div>
+					<div>Latest Visit: ${toLocaleStr(latestVisit)}</div>
+					${subIdsLen ? `<div>${subIdsLen} sub fingerprint${plural} detected</div>` : ''}
+					<div>Visits: ${visits}</div>
+				`
+				return patch(visitorElem, html`${template}`)
+			})
+			.catch(errs)
 		
 		// symbol notes
 		const note = { blocked: '<span class="blocked">blocked</span>'}
@@ -873,9 +883,6 @@
 		const data = `
 			<section>
 				<div id="fingerprint-data">
-					<h1 class="visit">Your Fingerprint</h1>
-					<h2 class="visit">last visit: ${'compute client side'}</h2>
-					<h3 class="visit">total visits: ${'compute client side + 1'}</h3>
 					<div>Purified Fingerprint Id: ${creepHash}</div>
 					<div>Fingerprint Id: ${fpHash}</div>
 

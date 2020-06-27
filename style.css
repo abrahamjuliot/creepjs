@@ -61,20 +61,26 @@ table {
 body { 
 	box-sizing: border-box;
 	font-family: monospace;
+	color: var(--text);
 }
 strong {
 	font-weight: bold;
+}
+visitor {
+    display: block;
+    padding: 15px 10px;
+    min-height: 60px !important;
 }
 #rect-container {
 	opacity: 0;
 	position: relative;
 	border: 1px solid
 }
-#fingerprint-data {
+#fingerprint-data,
+visitor {
 	box-sizing: border-box;
 	margin: 0 auto;
 	max-width: 700px;
-	color: var(--text);
 }
 #fingerprint-data > div {
 	line-height: 1.5;

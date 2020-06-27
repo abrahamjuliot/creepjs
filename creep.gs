@@ -48,7 +48,7 @@ function getData() {
   }
 }
           
-function setJSON(obj) {
+function setData(obj) {
   const json = JSON.stringify(obj)
   const filename = 'db.json.txt'        
   const files = DriveApp.getFilesByName(filename)
@@ -61,8 +61,8 @@ function doGet(e) {
   lock.tryLock(3000)
   try {
     //const { data } = getSheetData()
-    const db = getData() 
-    //const scriptProps = PropertiesService.getScriptProperties()
+    const { parameter: { id } } = e
+    const db = getData()[id] 
     const json = JSON.stringify(db)
     return ContentService.createTextOutput(json).setMimeType(ContentService.MimeType.JSON)
   }
@@ -108,14 +108,6 @@ function doPost(e) {
         sheet.getRange(nextRow, 1, 1, 4).setValues([[timestamp, timestamp, e.parameter.id, 1]])
     }
     
-    // log errors
-    const { parameter: { errors } } = e
-    log(errors)
-    if (errors.length) {
-      const text = errors.map(err => `${err.trustedName}: ${err.trustedMessage}`).join('\n')
-      log(text)
-    }    
-
     // get database
     const db = getData()
     const { parameter: { id: fingerprintId, subId } } = e
@@ -144,8 +136,8 @@ function doPost(e) {
     }
     
     // set database
-    setJSON(db)
-    
+    setData(db)
+     
     return ContentService
       .createTextOutput(JSON.stringify({ 'result': 'success' }))
       .setMimeType(ContentService.MimeType.JSON)
