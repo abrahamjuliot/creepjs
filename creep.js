@@ -808,10 +808,10 @@
 			.catch(errs)
 
 		// get data from server
+		const visitorElem = document.getElementById('visitor')
 		fetch(`${webapp}?id=${creepHash}`)
 			.then(response => response.json())
   			.then(data => {
-				const visitorElem = document.getElementById('visitor')
 				const { firstVisit, latestVisit, subIds, visits } = data
 				const subIdsLen = Object.keys(subIds).length
 				const toLocaleStr = str => new Date(str).toLocaleString()
@@ -825,7 +825,10 @@
 				`
 				return patch(visitorElem, html`${template}`)
 			})
-			.catch(errs)
+			.catch(errs => {
+				patch(visitorElem, html`<div>Error loading visitor data</div>`)
+				return console.error('Error!', err.message)
+			})
 		
 		// symbol notes
 		const note = { blocked: '<span class="blocked">blocked</span>'}
