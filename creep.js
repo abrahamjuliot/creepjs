@@ -764,10 +764,10 @@
 		const response = await fetch(webapp, { method: 'POST', body: formData })
 		return response.json()
 	}
-	async function getData() {
-		const response = await fetch(webapp)
-		return response.json()
-	}
+	// async function getData() {
+	// 	const response = await fetch(webapp)
+	// 	return response.json()
+	// }
 
 	// patch
 	const app = document.getElementById('fp-app')
@@ -806,7 +806,9 @@
 		// post hash to database
 		const formData = new FormData()
 		formData.append('id', creepHash)
-		formData.append('visits', 1)
+		formData.append('subId', fpHash)
+		formData.append('errors', JSON.stringify(fp.errorsCaptured[0]))
+		
 		const errs = err => console.error('Error!', err.message)
 		postData(formData).catch(errs)
 
