@@ -64,15 +64,13 @@ function hasLiedAPI(api, name) {
 // Detect proxy behavior
 // https://stackoverflow.com/questions/36372611
 const proxyBehavior = (obj) => {
-	const target = (Math.random().toString(36)+'00000000000000000').slice(2, 8+2)
-	try {
-		window.postMessage(obj, target)
-		return false
-	}
-	catch(error) {
-		cloneable = error.code != 25 // data clone error
-		return !cloneable
-	}
+    try {
+        window.postMessage(obj, location)
+        return false
+    } catch (error) {
+        const cloneable = error.code != 25 // data clone error	
+        return !cloneable
+    }
 }
 // Intercept Proxies (concept)
 // https://hacks.mozilla.org/2015/07/es6-in-depth-proxies-and-reflect/

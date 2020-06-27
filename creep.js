@@ -93,13 +93,11 @@
 	}
 	// Detect proxy behavior
 	const proxyBehavior = (obj) => {
-		const target = (Math.random().toString(36)+'00000000000000000').slice(2, 8+2)
 		try {
-			window.postMessage(obj, target)
+			window.postMessage(obj, location)
 			return false
-		}
-		catch(error) {
-			cloneable = error.code != 25 // data clone error
+		} catch (error) {
+			const cloneable = error.code != 25 // data clone error	
 			return !cloneable
 		}
 	}
