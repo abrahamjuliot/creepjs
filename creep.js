@@ -825,7 +825,7 @@
 				`
 				return patch(visitorElem, html`${template}`)
 			})
-			.catch(errs => {
+			.catch(err => {
 				patch(visitorElem, html`<div>Error loading visitor data</div>`)
 				return console.error('Error!', err.message)
 			})
