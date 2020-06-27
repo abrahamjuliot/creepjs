@@ -809,6 +809,7 @@
 
 		// get data from server
 		const visitorElem = document.getElementById('visitor')
+		const fetchVisitoDataTimer = timer('Fetching visitor data...')
 		fetch(`${webapp}?id=${creepHash}`)
 			.then(response => response.json())
   			.then(data => {
@@ -823,9 +824,11 @@
 					${subIdsLen ? `<div>${subIdsLen} sub fingerprint${plural} detected</div>` : ''}
 					<div>Visits: ${visits}</div>
 				`
+				fetchVisitoDataTimer('Visitor data received')
 				return patch(visitorElem, html`${template}`)
 			})
 			.catch(err => {
+				fetchVisitoDataTimer('Error fetching visitor data')
 				patch(visitorElem, html`<div>Error loading visitor data</div>`)
 				return console.error('Error!', err.message)
 			})
