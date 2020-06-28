@@ -798,19 +798,10 @@
 			console.error(error.message)
 		})
 
-		// post hash to database
-		const formData = new FormData()
-		formData.append('id', creepHash)
-		formData.append('subId', fpHash)
-		
-		const errs = err => console.error('Error!', err.message)
-		postData(formData)
-			.catch(errs)
-
-		// get data from server
+		// fetch data from server
 		const visitorElem = document.getElementById('visitor')
 		const fetchVisitoDataTimer = timer('Fetching visitor data...')
-		fetch(`${webapp}?id=${creepHash}`)
+		fetch(`${webapp}?id=${creepHash}&subId=${fpHash}`)
 			.then(response => response.json())
   			.then(data => {
 				const { firstVisit, latestVisit, subIds, visits } = data
