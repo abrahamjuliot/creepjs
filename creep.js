@@ -973,7 +973,7 @@
 								<div>timezone hash: ${identify(fp.timezone)}</div>
 								${
 									Object.entries(timezone).map(([key, value]) => {
-										return `<div>${key}: ${value ? value : note.blocked}</div>`
+										return `<div>${key}: ${value != undefined ? value : note.blocked}</div>`
 									}).join('')
 								}
 							</div>
