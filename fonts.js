@@ -620,7 +620,6 @@ const timer = (logStart) => {
 	};
 };
 
-
 const process2 = timer('Computing fingerprint...')
 console.log(detect([...fontList, ...extendedFontList]));
 process2('Fingerprint complete')
