@@ -1,3 +1,4 @@
+// @ts-nocheck
 (function () {
 	// Log performance time
 	const timer = (logStart) => {
@@ -59,7 +60,7 @@
 	// https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest
 	const hashify = async (x) => {
 		const json = `${JSON.stringify(x)}`
-		const jsonBuffer = new TextEncoder('utf-8').encode(json)
+		const jsonBuffer = new TextEncoder().encode(json)
 		const hashBuffer = await crypto.subtle.digest('SHA-256', jsonBuffer)
 		const hashArray = Array.from(new Uint8Array(hashBuffer))
 		const hashHex = hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('')
@@ -93,8 +94,9 @@
 	}
 	// Detect proxy behavior
 	const proxyBehavior = (obj) => {
+		const url: string = ''+location
 		try {
-			window.postMessage(obj, location)
+			window.postMessage(obj, url)
 			return false
 		} catch (error) {
 			const cloneable = error.code != 25 // data clone error	
@@ -119,10 +121,10 @@
 
 		// The idea of checking new is inspired by https://adtechmadness.wordpress.com/2019/03/23/javascript-tampering-detection-and-stealth/
 		try {
-			const str_1 = new Function.prototype.toString
-			const str_2 = new Function.prototype.toString()
-			const str_3 = new Function.prototype.toString.toString
-			const str_4 = new Function.prototype.toString.toString()
+			const str_1 = new (<any>Function.prototype.toString)
+			const str_2 = new (<any>Function.prototype.toString())
+			const str_3 = new (<any>Function.prototype.toString.toString)
+			const str_4 = new (<any>Function.prototype.toString.toString())
 			lieTypes.push({
 				str_1,
 				str_2,
@@ -171,7 +173,7 @@
 	}
 
 	// Detect Brave Browser and strict fingerprinting blocking
-	brave = () => 'brave' in navigator ? true : false
+	const brave = () => 'brave' in navigator ? true : false
 	const isBrave = brave() // compute and cache result
 
 	// Collect trash values
@@ -211,7 +213,7 @@
 				return credibleUserAgent ? appVersion : sendToTrash('appVersion', 'does not match userAgent')
 			}),
 			deviceMemory: attempt(() => {
-				const { deviceMemory } = navigator
+				const { deviceMemory } = <any>navigator
 				return deviceMemory ? trustInteger('deviceMemory', deviceMemory) : undefined
 			}),
 			doNotTrack: attempt(() => {
@@ -260,7 +262,7 @@
 				return credibleUserAgent ? userAgent : sendToTrash('userAgent', userAgent)
 			}),
 			vendor: attempt(() => navigator.vendor),
-			mimeTypes: attempt(() => [...navigator.mimeTypes].map(m => m.type)),
+			mimeTypes: attempt(() => [...navigator.mimeTypes].map(m => (<any>m).type)),
 			plugins: attempt(() => {
 				return [...navigator.plugins]
 					.map(p => ({
@@ -284,8 +286,8 @@
 			if (!('userAgentData' in navigator)) {
 				return undfnd
 			}
-			return !navigator.userAgentData ? undfnd : 
-				attempt(() => navigator.userAgentData.getHighEntropyValues(
+			return !('userAgentData' in navigator) ? undfnd : 
+				attempt(() => (<any>navigator).userAgentData.getHighEntropyValues(
 					['platform', 'platformVersion', 'architecture',  'model', 'uaFullVersion']
 				))
 		}
@@ -295,7 +297,7 @@
 		}
 	}
 
-	// screen (allow some discrepancy otherwise lie detection triggers at random)
+	// screen (allow some discrepancies otherwise lie detection triggers at random)
 	const screenFp = () => {	
 		const { width, height, availWidth, availHeight, colorDepth, pixelDepth } = screen
 		return {
@@ -480,7 +482,7 @@
 					canvasWebglDataURI = canvas.toDataURL()
 					const canvasWebglContextDataURI = canvasWebglDataURI
 					if (contextLie) {
-						contextHash = hashMini(canvasWebglContextDataURI)
+						const contextHash = hashMini(canvasWebglContextDataURI)
 						documentLie('canvasWebglContextDataURI', contextHash, contextLie)
 						sendToTrash('canvasWebglContextDataURI', contextHash)
 					}
@@ -500,7 +502,7 @@
 		}
 		
 	}
-
+	
 	// maths
 	const maths = () => {
 		const n = 0.123124234234234242
@@ -526,7 +528,7 @@
 			['pow', [Math.PI, -100]]
 		]
 		return fns.map(fn => ({
-			[fn[0]]: attempt(() => Math[fn[0]](...fn[1]))
+			[fn[0] as string]: attempt(() => Math[fn[0] as string](...fn[1]))
 		}))
 	}
 
@@ -646,7 +648,7 @@
 	`
 
 	// fingerprint
-	const fingerprint = async () => {
+	const fingerprint = async (): Promise<any> => {
 		// attempt to compute values
 		const navComputed = attempt(() => nav())
 		const mimeTypes = navComputed ? navComputed.mimeTypes : undefined
@@ -670,7 +672,7 @@
 			voices,
 			mediaDevices,
 			highEntropy
-		] = await Promise.all([
+		]: any = await Promise.all([
 			getVoices(),
 			getMediaDevices(),
 			highEntropyValues()
@@ -711,7 +713,7 @@
 			errorsCapturedHash,
 			trashHash,
 			liesHash
-		] = await Promise.all([
+		]: any = await Promise.all([
 			hashify(navComputed),
 			hashify(mimeTypes),
 			hashify(plugins),
@@ -735,14 +737,15 @@
 		})
 		hashTimer('Hashing complete')
 
+		navComputed.mimeTypesHash = mimeTypesHash
+		navComputed.versionHash = navVersionHash
+		navComputed.pluginsHash = pluginsHash
+
 		const fingerprint = {
 			nav: [navComputed, navHash],
 			highEntropy: [highEntropy, highEntropyHash],
 			timezone: [timezoneComputed, timezoneHash],
 			webgl: [webglComputed, webglHash],
-			mimeTypes: [mimeTypes, mimeTypesHash],
-			plugins: [plugins, pluginsHash],
-			navVersion: [navVersion, navVersionHash],
 			voices: [voicesComputed, voicesHash],
 			mediaDevices: [mediaDevicesComputed, mediaDeviceHash],
 			screen: [screenComputed, screenHash],
@@ -775,7 +778,7 @@
 		const creep = {
 			//timezone: fp.timezone, // subject to randomization
 			voices: fp.voices,
-			navVersion: fp.navVersion,
+			navVersion: fp.nav[0].navVersion,
 			renderer: fp.webgl[0].renderer,
 			vendor: fp.webgl[0].vendor,
 			webglDataURL: fp.webglDataURL,
@@ -793,7 +796,7 @@
 		console.log('Fingerprint Id (Object):', fp)
 		log('Fingerprint Id (JSON):', fp)
 		
-		const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
+		const [fpHash, creepHash]: any = await Promise.all([hashify(fp), hashify(creep)])
 		.catch(error => { 
 			console.error(error.message)
 		})
@@ -972,7 +975,8 @@
 							<div>
 								<div>timezone hash: ${identify(fp.timezone)}</div>
 								${
-									Object.entries(timezone).map(([key, value]) => {
+									Object.keys(timezone).map(key => {
+										const value = timezone[key]
 										return `<div>${key}: ${value != undefined ? value : note.blocked}</div>`
 									}).join('')
 								}
@@ -1003,7 +1007,8 @@
 							<div>
 								<div>screen hash: ${hash}</div>
 								${
-									Object.entries(scrn).map(([key, value]) => {
+									Object.keys(scrn).map(key => {
+										const value = scrn[key]
 										return `<div>${key}: ${value ? value : note.blocked}</div>`
 									}).join('')
 								}
@@ -1020,6 +1025,12 @@
 								deviceMemory,
 								hardwareConcurrency,
 								maxTouchPoints,
+								mimeTypes,
+								mimeTypesHash,
+								version,
+								versionHash,
+								plugins,
+								pluginsHash,
 								userAgent,
 								appVersion,
 								language,
@@ -1029,7 +1040,7 @@
 							return `
 							<div>
 								<div>navigator hash: ${hash}</div>
-								<div>version: ${identify(fp.navVersion)}</div>
+								<div>version: ${version !== undefined ? versionHash : note.blocked}</div>
 								<div>platform: ${platform ? platform : `${note.blocked} or other`}</div>
 								<div>deviceMemory: ${deviceMemory ? deviceMemory : note.blocked}</div>
 								<div>hardwareConcurrency: ${hardwareConcurrency ? hardwareConcurrency : note.blocked}</div>
@@ -1039,8 +1050,8 @@
 								<div>language: ${language ? language : note.blocked}</div>
 								<div>vendor: ${vendor ? vendor : note.blocked}</div>
 								<div>doNotTrack: ${doNotTrack !== undefined ? doNotTrack : note.blocked}</div>
-								<div>mimeTypes: ${identify(fp.mimeTypes)}</div>
-								<div>plugins: ${identify(fp.plugins)}</div>
+								<div>mimeTypes: ${mimeTypes !== undefined ? mimeTypesHash : note.blocked}</div>
+								<div>plugins: ${plugins !== undefined ? pluginsHash : note.blocked}</div>
 							</div>
 							`
 						})()

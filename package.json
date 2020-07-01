@@ -1,11 +1,14 @@
 {
   "name": "creepjs",
   "version": "1.0.0",
-  "description": "creepy",
-  "main": "creep.js",
+  "description": "creepy device and browser fingerprinting",
+  "main": "creep.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "browserify:typescript": "browserify src/creep.ts -p [ tsify ] > dist/creep.js",
+    "uglifyjs": "uglifyjs dist/creep.js -m -c -o dist/creep.min.js",
+    "build:js": "npm run browserify:typescript && npm run uglifyjs"
   },
   "repository": {
     "type": "git",
