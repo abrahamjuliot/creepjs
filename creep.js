@@ -645,14 +645,14 @@
 						<style>#font-detector-test${style}</style>
 						${baseFonts.map(font => baseFontSpan(font)).join('')}
 						${
-								fonts.map(font => {
-									const template = `
-									${systemFontSpan(font, baseFonts[0])}
-									${systemFontSpan(font, baseFonts[1])}
-									${systemFontSpan(font, baseFonts[2])}
-									`
-									return template
-								}).join('')
+							fonts.map(font => {
+								const template = `
+								${systemFontSpan(font, baseFonts[0])}
+								${systemFontSpan(font, baseFonts[1])}
+								${systemFontSpan(font, baseFonts[2])}
+								`
+								return template
+							}).join('')
 						}
 					</div>
 				`,
@@ -848,7 +848,7 @@
 		const creep = {
 			timezone: fp.timezone, // subject to randomization
 			voices: fp.voices,
-			navVersion: fp.nav[0].navVersion,
+			version: fp.nav[0].version,
 			renderer: fp.webgl[0].renderer,
 			vendor: fp.webgl[0].vendor,
 			webglDataURL: fp.webglDataURL,
