@@ -846,7 +846,7 @@
 
 		// Purified Fingerprint
 		const creep = {
-			timezone: fp.timezone, // subject to randomization
+			//timezone: fp.timezone, // subject to randomization
 			voices: fp.voices,
 			navVersion: fp.nav[0].navVersion,
 			renderer: fp.webgl[0].renderer,
