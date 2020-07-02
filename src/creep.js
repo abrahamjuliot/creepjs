@@ -1,4 +1,3 @@
-// @ts-nocheck
 (function () {
 	// Log performance time
 	const timer = (logStart) => {
@@ -94,9 +93,8 @@
 	}
 	// Detect proxy behavior
 	const proxyBehavior = (obj) => {
-		const url: string = ''+location
 		try {
-			window.postMessage(obj, url)
+			window.postMessage(obj, location)
 			return false
 		} catch (error) {
 			const cloneable = error.code != 25 // data clone error	
@@ -121,10 +119,10 @@
 
 		// The idea of checking new is inspired by https://adtechmadness.wordpress.com/2019/03/23/javascript-tampering-detection-and-stealth/
 		try {
-			const str_1 = new (<any>Function.prototype.toString)
-			const str_2 = new (<any>Function.prototype.toString())
-			const str_3 = new (<any>Function.prototype.toString.toString)
-			const str_4 = new (<any>Function.prototype.toString.toString())
+			const str_1 = new Function.prototype.toString
+			const str_2 = new Function.prototype.toString()
+			const str_3 = new Function.prototype.toString.toString
+			const str_4 = new Function.prototype.toString.toString()
 			lieTypes.push({
 				str_1,
 				str_2,
@@ -213,7 +211,7 @@
 				return credibleUserAgent ? appVersion : sendToTrash('appVersion', 'does not match userAgent')
 			}),
 			deviceMemory: attempt(() => {
-				const { deviceMemory } = <any>navigator
+				const { deviceMemory } = navigator
 				return deviceMemory ? trustInteger('deviceMemory', deviceMemory) : undefined
 			}),
 			doNotTrack: attempt(() => {
@@ -262,7 +260,7 @@
 				return credibleUserAgent ? userAgent : sendToTrash('userAgent', userAgent)
 			}),
 			vendor: attempt(() => navigator.vendor),
-			mimeTypes: attempt(() => [...navigator.mimeTypes].map(m => (<any>m).type)),
+			mimeTypes: attempt(() => [...navigator.mimeTypes].map(m => m.type)),
 			plugins: attempt(() => {
 				return [...navigator.plugins]
 					.map(p => ({
@@ -287,7 +285,7 @@
 				return undfnd
 			}
 			return !('userAgentData' in navigator) ? undfnd : 
-				attempt(() => (<any>navigator).userAgentData.getHighEntropyValues(
+				attempt(() => navigator.userAgentData.getHighEntropyValues(
 					['platform', 'platformVersion', 'architecture',  'model', 'uaFullVersion']
 				))
 		}
@@ -528,7 +526,7 @@
 			['pow', [Math.PI, -100]]
 		]
 		return fns.map(fn => ({
-			[fn[0] as string]: attempt(() => Math[fn[0] as string](...fn[1]))
+			[fn[0]]: attempt(() => Math[fn[0]](...fn[1]))
 		}))
 	}
 
@@ -648,7 +646,7 @@
 	`
 
 	// fingerprint
-	const fingerprint = async (): Promise<any> => {
+	const fingerprint = async () => {
 		// attempt to compute values
 		const navComputed = attempt(() => nav())
 		const mimeTypes = navComputed ? navComputed.mimeTypes : undefined
@@ -672,7 +670,7 @@
 			voices,
 			mediaDevices,
 			highEntropy
-		]: any = await Promise.all([
+		] = await Promise.all([
 			getVoices(),
 			getMediaDevices(),
 			highEntropyValues()
@@ -713,7 +711,7 @@
 			errorsCapturedHash,
 			trashHash,
 			liesHash
-		]: any = await Promise.all([
+		] = await Promise.all([
 			hashify(navComputed),
 			hashify(mimeTypes),
 			hashify(plugins),
@@ -796,7 +794,7 @@
 		console.log('Fingerprint Id (Object):', fp)
 		log('Fingerprint Id (JSON):', fp)
 		
-		const [fpHash, creepHash]: any = await Promise.all([hashify(fp), hashify(creep)])
+		const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
 		.catch(error => { 
 			console.error(error.message)
 		})

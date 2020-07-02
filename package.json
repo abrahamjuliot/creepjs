@@ -6,9 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "browserify:typescript": "browserify src/creep.ts -p [ tsify ] > dist/creep.js",
+    "browserify:babelify": "browserify src/creep.js -t babelify --outfile dist/creep.js",
     "uglifyjs": "uglifyjs dist/creep.js -m -c -o dist/creep.min.js",
-    "build:js": "npm run browserify:typescript && npm run uglifyjs"
+    "build:js": "npm run browserify:babelify && npm run uglifyjs"
   },
   "repository": {
     "type": "git",
@@ -25,9 +25,10 @@
     "serve-static": "^1.14.1"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.10.4",
+	"@babel/core": "^7.10.4",
+    "babelify": "^10.0.0",
     "browserify": "^16.5.1",
-    "tsify": "^4.0.2",
-    "typescript": "^3.9.5",
     "uglify-js": "^3.10.0"
   }
 }
