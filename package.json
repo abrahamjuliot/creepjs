@@ -5,10 +5,7 @@
   "main": "creep.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
-    "browserify:typescript": "browserify src/creep.ts -p [ tsify ] > dist/creep.js",
-    "uglifyjs": "uglifyjs dist/creep.js -m -c -o dist/creep.min.js",
-    "build:js": "npm run browserify:typescript && npm run uglifyjs"
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -23,11 +20,5 @@
   "dependencies": {
     "connect": "^3.7.0",
     "serve-static": "^1.14.1"
-  },
-  "devDependencies": {
-    "browserify": "^16.5.1",
-    "tsify": "^4.0.2",
-    "typescript": "^3.9.5",
-    "uglify-js": "^3.10.0"
   }
 }
