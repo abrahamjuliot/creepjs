@@ -639,7 +639,7 @@
 		const detect = fonts => {
 			const fontsElem = document.getElementById('font-detector')
 			const stageElem = document.getElementById('font-detector-stage')
-			const detectedFonts = []
+			const detectedFonts = {}
 			patch(stageElem, html`
 					<div id="font-detector-test">
 						<style>#font-detector-test${style}</style>
@@ -667,17 +667,20 @@
 						return
 					})
 					;[...systemFontElems].forEach(span => {
-						const { dataset: { basefont, font }, offsetWidth, offsetHeight } = span
-						const widthMatchesBase = toInt(offsetWidth) == baseOffsetWidth[basefont]
-						const heightMatchesBase = toInt(offsetHeight) == baseOffsetHeight[basefont]
-						const detected = !widthMatchesBase || !heightMatchesBase
-						if (detected) { detectedFonts.push(font) }
+						const { dataset: { font } }= span
+						if (!detectedFonts[font]) {
+							const { dataset: { basefont }, offsetWidth, offsetHeight } = span
+							const widthMatchesBase = toInt(offsetWidth) == baseOffsetWidth[basefont]
+							const heightMatchesBase = toInt(offsetHeight) == baseOffsetHeight[basefont]
+							const detected = !widthMatchesBase || !heightMatchesBase
+							if (detected) { detectedFonts[font] = true }
+						}
 						return
 					})
 					return fontsElem.removeChild(testElem)
 				}
 			)
-			return [...new Set(detectedFonts)] // remove dups
+			return Object.keys(detectedFonts)
 		}
 		return detect
 	}
