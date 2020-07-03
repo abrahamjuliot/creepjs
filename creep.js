@@ -864,7 +864,8 @@
 		const creep = {
 			timezone: fp.timezone, // subject to randomization
 			voices: fp.voices,
-			version: fp.nav[0].version,
+			windowVersion: fp.window,
+			navigatorVersion: fp.nav[0].version,
 			renderer: fp.webgl[0].renderer,
 			vendor: fp.webgl[0].vendor,
 			webglDataURL: fp.webglDataURL,
