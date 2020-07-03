@@ -421,8 +421,10 @@
 	const webgl = () => {
 		const webglGetParameter = attempt(() => WebGLRenderingContext.prototype.getParameter)
 		const webglGetExtension = attempt(() => WebGLRenderingContext.prototype.getExtension)
+		const webglGetSupportedExtensions = attempt(() => WebGLRenderingContext.prototype.getSupportedExtensions)
 		const paramLie = webglGetParameter ? hasLiedAPI(webglGetParameter, 'getParameter').lie : false
 		const extLie = webglGetExtension ? hasLiedAPI(webglGetExtension, 'getExtension').lie : false
+		const supportedExtLie = webglGetSupportedExtensions ? hasLiedAPI(webglGetSupportedExtensions, 'getSupportedExtensions').lie : false
 		const canvas = document.createElement('canvas')
 		const context = (
 			canvas.getContext('webgl') ||
@@ -432,6 +434,37 @@
 		)
 
 		return {
+			supported: (() => {
+				try {
+					const extensions = context.getSupportedExtensions()
+					
+					if (!supportedExtLie) {
+						return {
+							extensions: (
+								isBrave ? sendToTrash('webglSupportedExtensions', extensions) : 
+								!proxyBehavior(extensions) ? extensions : 
+								sendToTrash('webglSupportedExtensions', 'proxy behavior detected')
+							)
+						}
+					}
+
+					// document lie and send to trash
+					if (supportedExtLie) { 
+						documentLie('webglSupportedExtensions', extensions, supportedExtLie)
+						sendToTrash('webglSupportedExtensions', extensions)
+					}
+					// Fingerprint lie
+					return {
+						extensions: { supportedExtLie }
+					}
+				}
+				catch(error) {
+					captureError(error)
+					return {
+						extensions: isBrave ? sendToTrash('webglSupportedExtensions', null) : undefined
+					}
+				}
+			})(),
 			unmasked: (() => {
 				try {
 					const extension = context.getExtension('WEBGL_debug_renderer_info')
@@ -739,7 +772,8 @@
 		const gl = attempt(() => webgl())
 		const webglComputed = {
 			vendor: attempt(() => gl.unmasked.vendor),
-			renderer: attempt(() => gl.unmasked.renderer)
+			renderer: attempt(() => gl.unmasked.renderer),
+			extensions: attempt(() => gl.supported.extensions)
 		}
 		const webglDataURLComputed = attempt(() => gl.dataURL)
 		const consoleErrorsComputed = attempt(() => consoleErrs())
@@ -871,8 +905,9 @@
 			voices: fp.voices,
 			windowVersion: fp.window,
 			navigatorVersion: fp.nav[0].version,
-			renderer: fp.webgl[0].renderer,
-			vendor: fp.webgl[0].vendor,
+			webglRenderer: fp.webgl[0].renderer,
+			webglVendor: fp.webgl[0].vendor,
+			webglExtensions: fp.webgl[0].extensions,
 			webglDataURL: fp.webglDataURL,
 			consoleErrors: fp.consoleErrors,
 			trash: fp.trash,
@@ -1035,26 +1070,36 @@
 					<div>webglDataURL: ${
 						isBrave ? 'Brave Browser' : identify(fp.webglDataURL)
 					}</div>
-						<div>webgl renderer: ${(() => {
-							const [ data, hash ] = fp.webgl
-							const { renderer } = data
-							const isString = typeof renderer == 'string'
-							return (
-								isBrave ? 'Brave Browser' : 
-								isString && renderer ? renderer : 
-								!renderer ? note.blocked : identify(fp.webgl)
-							)
-						})()}</div>
-						<div>webgl vendor: ${(() => {
-							const [ data, hash ] = fp.webgl
-							const { vendor } = data
-							const isString = typeof vendor == 'string'
-							return (
-								isBrave ? 'Brave Browser' : 
-								isString && vendor ? vendor : 
-								!vendor ? note.blocked : identify(fp.webgl)
-							)
-						})()}</div>
+					<div>webgl renderer: ${(() => {
+						const [ data ] = fp.webgl
+						const { renderer } = data
+						const isString = typeof renderer == 'string'
+						return (
+							isBrave ? 'Brave Browser' : 
+							isString && renderer ? renderer : 
+							!renderer ? note.blocked : identify(fp.webgl)
+						)
+					})()}</div>
+					<div>webgl vendor: ${(() => {
+						const [ data ] = fp.webgl
+						const { vendor } = data
+						const isString = typeof vendor == 'string'
+						return (
+							isBrave ? 'Brave Browser' : 
+							isString && vendor ? vendor : 
+							!vendor ? note.blocked : identify(fp.webgl)
+						)
+					})()}</div>
+					<div>webgl extensions: ${(() => {
+						const [ data ] = fp.webgl
+						const { extensions } = data
+						const isArray = typeof extensions == 'array'
+						return (
+							isBrave ? 'Brave Browser' : 
+							isArray && extensions ? extensions : 
+							!extensions ? note.blocked : identify(fp.webgl)
+						)
+					})()}</div>
 					</div>
 					<div>client rects: ${identify(fp.cRects)}</div>
 					<div>console errors: ${identify(fp.consoleErrors)}</div>	
