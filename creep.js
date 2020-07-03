@@ -295,6 +295,16 @@
 		}
 	}
 
+	// window version
+	const windowVersion = () => {
+		iframe = document.createElement('iframe')
+		iframe.style.display = 'none'
+		document.body.appendChild(iframe)
+		const version = Object.getOwnPropertyNames(iframe.contentWindow)
+		document.body.removeChild(iframe)
+		return version
+	}
+
 	// screen (allow some discrepancies otherwise lie detection triggers at random)
 	const screenFp = () => {	
 		const { width, height, availWidth, availHeight, colorDepth, pixelDepth } = screen
@@ -719,6 +729,7 @@
 		const mimeTypes = navComputed ? navComputed.mimeTypes : undefined
 		const plugins = navComputed ? navComputed.plugins : undefined
 		const navVersion = navComputed ? navComputed.version : undefined
+		const windowVersionComputed = windowVersion()
 		const screenComputed = attempt(() => screenFp())
 		const canvasComputed = attempt(() => canvas())
 		const gl = attempt(() => webgl())
@@ -769,6 +780,7 @@
 			mimeTypesHash,
 			pluginsHash,
 			navVersionHash,
+			windowVersionHash,
 			voicesHash,
 			mediaDeviceHash,
 			highEntropyHash,
@@ -789,6 +801,7 @@
 			hashify(mimeTypes),
 			hashify(plugins),
 			hashify(navVersion),
+			hashify(windowVersionComputed),
 			hashify(voicesComputed),
 			hashify(mediaDevicesComputed),
 			hashify(highEntropy),
@@ -816,6 +829,7 @@
 		const fingerprint = {
 			nav: [navComputed, navHash],
 			highEntropy: [highEntropy, highEntropyHash],
+			window: [windowVersionComputed, windowVersionHash],
 			timezone: [timezoneComputed, timezoneHash],
 			webgl: [webglComputed, webglHash],
 			voices: [voicesComputed, voicesHash],
@@ -1092,6 +1106,8 @@
 						})()
 					}
 					
+					<div>window version: ${identify(fp.window)}</div>
+
 					${
 						!fp.nav[0] ? `<div>navigator: ${note.blocked}</div>`: (() => {
 							const [ nav, hash ]  = fp.nav
