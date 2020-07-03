@@ -424,7 +424,12 @@
 		const paramLie = webglGetParameter ? hasLiedAPI(webglGetParameter, 'getParameter').lie : false
 		const extLie = webglGetExtension ? hasLiedAPI(webglGetExtension, 'getExtension').lie : false
 		const canvas = document.createElement('canvas')
-		const context = canvas.getContext('webgl')
+		const context = (
+			canvas.getContext('webgl') ||
+			canvas.getContext('experimental-webgl') ||
+			canvas.getContext('moz-webgl') ||
+			canvas.getContext('webkit-3d')
+		)
 
 		return {
 			unmasked: (() => {
