@@ -733,7 +733,7 @@
 		const mathsComputed = attempt(() => maths())
 		const fontsProcess = timer('Computing fonts...')
 		const fontsComputed = attempt(() => {
-			return detectFonts([...fontList, ...extendedFontList])
+			return detectFonts([...fontList])
 		})
 		fontsProcess('Fonts complete')
 
