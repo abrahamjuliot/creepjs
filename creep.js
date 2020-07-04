@@ -1,7 +1,7 @@
 (function() {
 	// Log performance time
 	const timer = (logStart) => {
-		console.log(logStart)
+		logStart && console.log(logStart)
 		const start = Date.now()
 		return (logEnd) => {
 			const end = Date.now() - start
@@ -440,8 +440,7 @@
 					
 					if (!supportedExtLie) {
 						return {
-							extensions: (
-								isBrave ? sendToTrash('webglSupportedExtensions', extensions) : 
+							extensions: ( 
 								!proxyBehavior(extensions) ? extensions : 
 								sendToTrash('webglSupportedExtensions', 'proxy behavior detected')
 							)
@@ -669,6 +668,7 @@
 
 	const offlineAudioOscillator = () => {
 		try {
+			const audioProcess = timer('')
 			const audioContext = OfflineAudioContext || webkitOfflineAudioContext
 			const context = new audioContext(1, 44100, 44100)
 			const oscillator = context.createOscillator()
@@ -705,16 +705,29 @@
 				oscillator.disconnect()
 				return
 			}
+
 			return new Promise(resolve => {
 				const check = setInterval(() => {
 					if (copySample.length && binsSample.length) {
-						resolve({ copySample, binsSample, matching })
+						audioProcess('Audio complete')
+						if (isBrave) {
+							clearInterval(check)
+							sendToTrash('audio', binsSample[0])
+							resolve(undefined)
+						}
+						else if (proxyBehavior(binsSample)) {
+							clearInterval(check)
+							sendToTrash('audio', 'proxy behavior detected')
+							resolve(undefined)
+						}
 						clearInterval(check)
+						resolve({ copySample, binsSample, matching })
 					}
 				}, 100)
 			})
 		}
 		catch (error) {
+			audioProcess('Audio failed to complete')
 			captureError(error)
 			return new Promise(resolve => resolve(undefined))
 		}
@@ -734,50 +747,61 @@
 			return `<span class="system-font" data-font="${font}" data-basefont="${basefont}" style="font-family: ${`'${font}', '${basefont}'`}">${text}</span>`
 		}
 		const detect = fonts => {
-			const fontsElem = document.getElementById('font-detector')
-			const stageElem = document.getElementById('font-detector-stage')
-			const detectedFonts = {}
-			patch(stageElem, html`
-					<div id="font-detector-test">
-						<style>#font-detector-test${style}</style>
-						${baseFonts.map(font => baseFontSpan(font)).join('')}
-						${
-							fonts.map(font => {
-								const template = `
-								${systemFontSpan(font, baseFonts[0])}
-								${systemFontSpan(font, baseFonts[1])}
-								${systemFontSpan(font, baseFonts[2])}
-								`
-								return template
-							}).join('')
+			return new Promise(resolve => {
+				try {
+					const fontsProcess = timer('')
+					const fontsElem = document.getElementById('font-detector')
+					const stageElem = document.getElementById('font-detector-stage')
+					const detectedFonts = {}
+					patch(stageElem, html`
+							<div id="font-detector-test">
+								<style>#font-detector-test${style}</style>
+								${baseFonts.map(font => baseFontSpan(font)).join('')}
+								${
+									fonts.map(font => {
+										const template = `
+										${systemFontSpan(font, baseFonts[0])}
+										${systemFontSpan(font, baseFonts[1])}
+										${systemFontSpan(font, baseFonts[2])}
+										`
+										return template
+									}).join('')
+								}
+							</div>
+						`,
+						() => {
+							const testElem = document.getElementById('font-detector-test')
+							const basefontElems = document.querySelectorAll('#font-detector-test .basefont')
+							const systemFontElems = document.querySelectorAll('#font-detector-test .system-font')
+							;[...basefontElems].forEach(span => {
+								const { dataset: { font }, offsetWidth, offsetHeight } = span
+								baseOffsetWidth[font] = toInt(offsetWidth)
+								baseOffsetHeight[font] = toInt(offsetHeight)
+								return
+							})
+							;[...systemFontElems].forEach(span => {
+								const { dataset: { font } }= span
+								if (!detectedFonts[font]) {
+									const { dataset: { basefont }, offsetWidth, offsetHeight } = span
+									const widthMatchesBase = toInt(offsetWidth) == baseOffsetWidth[basefont]
+									const heightMatchesBase = toInt(offsetHeight) == baseOffsetHeight[basefont]
+									const detected = !widthMatchesBase || !heightMatchesBase
+									if (detected) { detectedFonts[font] = true }
+								}
+								return
+							})
+							return fontsElem.removeChild(testElem)
 						}
-					</div>
-				`,
-				() => {
-					const testElem = document.getElementById('font-detector-test')
-					const basefontElems = document.querySelectorAll('#font-detector-test .basefont')
-					const systemFontElems = document.querySelectorAll('#font-detector-test .system-font')
-					;[...basefontElems].forEach(span => {
-						const { dataset: { font }, offsetWidth, offsetHeight } = span
-						baseOffsetWidth[font] = toInt(offsetWidth)
-						baseOffsetHeight[font] = toInt(offsetHeight)
-						return
-					})
-					;[...systemFontElems].forEach(span => {
-						const { dataset: { font } }= span
-						if (!detectedFonts[font]) {
-							const { dataset: { basefont }, offsetWidth, offsetHeight } = span
-							const widthMatchesBase = toInt(offsetWidth) == baseOffsetWidth[basefont]
-							const heightMatchesBase = toInt(offsetHeight) == baseOffsetHeight[basefont]
-							const detected = !widthMatchesBase || !heightMatchesBase
-							if (detected) { detectedFonts[font] = true }
-						}
-						return
-					})
-					return fontsElem.removeChild(testElem)
+					)
+					fontsProcess('Fonts complete')
+					resolve(Object.keys(detectedFonts))
 				}
-			)
-			return Object.keys(detectedFonts)
+				catch (error) {
+					fontsProcess('Fonts complete')
+					captureError(error)
+					return new Promise(resolve => resolve(undefined))
+				}
+			})
 		}
 		return detect
 	}
@@ -831,28 +855,26 @@
 		const timezoneComputed = attempt(() => timezone())
 		const cRectsComputed = attempt(() => cRects())
 		const mathsComputed = attempt(() => maths())
-
-		const fontsProcess = timer('Computing fonts...')
-		const fontsComputed = attempt(() => {
-			return detectFonts([...fontList])
-		})
-		fontsProcess('Fonts complete')
-
+		
 		// await
+		const asyncValues = timer('')
 		const [
 			voices,
 			mediaDevices,
 			highEntropy,
-			offlineAudio
+			offlineAudio,
+			fonts
 		] = await Promise.all([
 			getVoices(),
 			getMediaDevices(),
 			highEntropyValues(),
-			offlineAudioOscillator()
+			offlineAudioOscillator(),
+			detectFonts([...fontList,...extendedFontList])
 		]).catch(error => { 
 			console.error(error.message)
 		})
-		
+		asyncValues('Async computation complete')
+
 		const voicesComputed = !voices ? undefined : voices.map(({ name, lang }) => ({ name, lang }))
 		const mediaDevicesComputed = !mediaDevices ? undefined : mediaDevices.map(({ kind }) => ({ kind })) // chrome randomizes groupId
 		
@@ -866,7 +888,7 @@
 		})
 
 		// await hash values
-		const hashProcess = timer('hashing values...')
+		const hashProcess = timer('')
 		const [
 			navHash, // order must match
 			mimeTypesHash,
@@ -905,7 +927,7 @@
 			hashify(webglDataURLComputed),
 			hashify(consoleErrorsComputed),
 			hashify(cRectsComputed),
-			hashify(fontsComputed),
+			hashify(fonts),
 			hashify(mathsComputed),
 			hashify(canvasComputed),
 			hashify(errorsCaptured),
@@ -933,7 +955,7 @@
 			webglDataURL: [webglDataURLComputed, weglDataURLHash],
 			consoleErrors: [consoleErrorsComputed, consoleErrorsHash],
 			cRects: [cRectsComputed, cRectsHash],
-			fonts: [fontsComputed, fontsHash],
+			fonts: [fonts, fontsHash],
 			maths: [mathsComputed, mathsHash],
 			canvas: [canvasComputed, canvasHash],
 			errorsCaptured: [errorsCaptured, errorsCapturedHash],
@@ -1153,7 +1175,6 @@
 						const { extensions } = data
 						const isArray = typeof extensions == 'array'
 						return (
-							isBrave ? 'Brave Browser' : 
 							isArray && extensions ? extensions : 
 							!extensions ? note.blocked : identify(fp.webgl)
 						)
