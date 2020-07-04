@@ -436,7 +436,7 @@
 		return {
 			supported: (() => {
 				try {
-					const extensions = context.getSupportedExtensions()
+					const extensions = context ? context.getSupportedExtensions() : []
 					
 					if (!supportedExtLie) {
 						return {
@@ -466,7 +466,7 @@
 			})(),
 			unmasked: (() => {
 				try {
-					const extension = context.getExtension('WEBGL_debug_renderer_info')
+					const extension = context && context.getExtension('WEBGL_debug_renderer_info')
 					const vendor = extension && context.getParameter(extension.UNMASKED_VENDOR_WEBGL)
 					const renderer = extension && context.getParameter(extension.UNMASKED_RENDERER_WEBGL)
 					
@@ -667,6 +667,15 @@
 	}
 
 	const offlineAudioOscillator = () => {
+		const audioBufferGetChannelData = attempt(() => AudioBuffer.prototype.getChannelData)
+		const audioBufferCopyFromChannel = attempt(() => AudioBuffer.prototype.copyFromChannel)
+		const channelDataLie = (
+			audioBufferGetChannelData ? hasLiedAPI(audioBufferGetChannelData, 'getChannelData').lie : false
+		)
+		const copyFromChannelLie = (
+			audioBufferCopyFromChannel ? hasLiedAPI(audioBufferCopyFromChannel, 'copyFromChannel').lie : false
+		)
+
 		try {
 			const audioProcess = timer('')
 			const audioContext = OfflineAudioContext || webkitOfflineAudioContext
@@ -691,19 +700,34 @@
 			let copySample = []
 			let binsSample = []
 			let matching = false
+			
 			context.oncomplete = event => {
-				const copy = new Float32Array(44100)
-				event.renderedBuffer.copyFromChannel(copy, 0)
-				const bins = event.renderedBuffer.getChannelData(0)
-				copySample = [...copy].slice(4500, 4600)
-				binsSample = [...bins].slice(4500, 4600)
-				const copyJSON = JSON.stringify([...bins].slice(4500, 4600))
-				const binsJSON = JSON.stringify([...copy].slice(4500, 4600))
-				matching = binsJSON === copyJSON
+				try {
+					const copy = new Float32Array(44100)
+					event.renderedBuffer.copyFromChannel(copy, 0)
+					const bins = event.renderedBuffer.getChannelData(0)
+					
+					copySample = copy ? [...copy].slice(4500, 4600) : [sendToTrash('audioCopy', null)]
+					binsSample = bins ? [...bins].slice(4500, 4600) : [sendToTrash('audioSample', null)]
+					
+					const copyJSON = copy && JSON.stringify([...copy].slice(4500, 4600))
+					const binsJSON = bins && JSON.stringify([...bins].slice(4500, 4600))
 
-				compressor.disconnect()
-				oscillator.disconnect()
-				return
+					matching = binsJSON === copyJSON
+
+					if (!matching) {
+						documentLie('audioSampleAndCopyMatch', hashMini(matching), { audioSampleAndCopyMatch: false })
+					}
+					compressor.disconnect()
+					oscillator.disconnect()
+					return
+				} catch (error) {
+					captureError(error)
+					copySample = [undefined]
+					binsSample = [undefined]
+					compressor.disconnect()
+					oscillator.disconnect()
+				}
 			}
 
 			return new Promise(resolve => {
@@ -721,7 +745,24 @@
 							resolve(undefined)
 						}
 						clearInterval(check)
-						resolve({ copySample, binsSample, matching })
+
+						// document lies and send to trash
+						if (copyFromChannelLie) { 
+							documentLie('audioBufferCopyFromChannel', (copySample[0] || null), copyFromChannelLie)
+							sendToTrash('audioBufferCopyFromChannel', (copySample[0] || null))
+						}
+						if (channelDataLie) { 
+							documentLie('audioBufferGetChannelData', (binsSample[0] || null), channelDataLie)
+							sendToTrash('audioBufferGetChannelData', (binsSample[0] || null))
+						}
+
+						// Fingerprint lie if it exists
+						const response = {
+							copySample: copyFromChannelLie ? [copyFromChannelLie] : copySample,
+							binsSample: channelDataLie ? [channelDataLie] : binsSample,
+							matching
+						}
+						resolve(response)
 					}
 				}, 100)
 			})
@@ -1193,8 +1234,8 @@
 							return `
 							<div>
 								<div>audio hash: ${hash}</div>
-								<div>sample: ${binsSample[0]}</div>
-								<div>copy: ${copySample[0]}</div>
+								<div>sample: ${binsSample[0] ? binsSample[0] : note.blocked}</div>
+								<div>copy: ${copySample[0] ? copySample[0] : note.blocked}</div>
 								<div>matching: ${matching}</div>
 							</div>
 							`
