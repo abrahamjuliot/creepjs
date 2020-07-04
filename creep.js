@@ -289,7 +289,7 @@
 					['platform', 'platformVersion', 'architecture',  'model', 'uaFullVersion']
 				))
 		}
-		catch(error) {
+		catch (error) {
 			captureError(error)
 			return new Promise(resolve => resolve(undefined))
 		}
@@ -341,7 +341,7 @@
 						speechSynthesis.onvoiceschanged = () => resolve(speechSynthesis.getVoices())
 					}
 				}
-				catch(error) {
+				catch (error) {
 					captureError(error)
 					return resolve(undefined)
 				}
@@ -349,7 +349,7 @@
 			
 			return promise
 		}
-		catch(error) {
+		catch (error) {
 			captureError(error)
 			return undfn
 		}
@@ -368,7 +368,7 @@
 			}
 			return attempt(() => navigator.mediaDevices.enumerateDevices())
 		}
-		catch(error) {
+		catch (error) {
 			captureError(error)
 			return undfn
 		}
@@ -458,7 +458,7 @@
 						extensions: { supportedExtLie }
 					}
 				}
-				catch(error) {
+				catch (error) {
 					captureError(error)
 					return {
 						extensions: isBrave ? sendToTrash('webglSupportedExtensions', null) : undefined
@@ -503,7 +503,7 @@
 						renderer: { paramLie, extLie }
 					}
 				}
-				catch(error) {
+				catch (error) {
 					captureError(error)
 					return {
 						vendor: isBrave ? sendToTrash('webglVendor', null) : undefined,
@@ -539,7 +539,7 @@
 					// fingerprint lie
 					return { dataLie, contextLie }
 				}
-				catch(error) {
+				catch (error) {
 					return captureError(error)
 				}
 			})()
@@ -667,8 +667,58 @@
 		return { rectsLie }
 	}
 
+	const offlineAudioOscillator = () => {
+		try {
+			const audioContext = OfflineAudioContext || webkitOfflineAudioContext
+			const context = new audioContext(1, 44100, 44100)
+			const oscillator = context.createOscillator()
+			const compressor = context.createDynamicsCompressor()
+			oscillator.type = 'triangle'
+			oscillator.frequency.value = 10000
 
-	const style = ` > span{position:absolute;left:-9999px;fontSize:100px;fontStyle:normal;fontWeight:normal;letterSpacing:normal;lineBreak:auto;lineHeight:normal;textTransform:none;textAlign:left;textDecoration:none;textShadow:none;whiteSpace:normal;wordBreak:normal;wordSpacing:normal}`
+			if (compressor.threshold) { compressor.threshold.value = -50 }
+			if (compressor.knee) { compressor.knee.value = 40 }
+			if (compressor.ratio) { compressor.ratio.value = 12 }
+			if (compressor.reduction) { compressor.reduction.value = -20 }
+			if (compressor.attack) { compressor.attack.value = 0 }
+			if (compressor.release) { compressor.release.value = 0.25 }
+
+			oscillator.connect(compressor)
+			compressor.connect(context.destination)
+			oscillator.start(0)
+			context.startRendering()
+
+			let copySample = []
+			let binsSample = []
+			let matching = false
+			context.oncomplete = event => {
+				const copy = new Float32Array(44100)
+				event.renderedBuffer.copyFromChannel(copy, 0)
+				const bins = event.renderedBuffer.getChannelData(0)
+				copySample = [...copy].slice(4500, 4600)
+				binsSample = [...bins].slice(4500, 4600)
+				const copyJSON = JSON.stringify([...bins].slice(4500, 4600))
+				const binsJSON = JSON.stringify([...copy].slice(4500, 4600))
+				matching = binsJSON === copyJSON
+
+				compressor.disconnect()
+				oscillator.disconnect()
+				return
+			}
+			return new Promise(resolve => {
+				const check = setInterval(() => {
+					if (copySample.length && binsSample.length) {
+						resolve({ copySample, binsSample, matching })
+						clearInterval(check)
+					}
+				}, 100)
+			})
+		}
+		catch (error) {
+			captureError(error)
+			return new Promise(resolve => resolve(undefined))
+		}
+	}
 
 	const fontDetector = () => {
 		const toInt = val => ~~val // protect against decimal noise
@@ -676,6 +726,7 @@
 		const text = 'mmmmmmmmmmlli'
 		const baseOffsetWidth = {}
 		const baseOffsetHeight = {}
+		const style = ` > span{position:absolute;left:-9999px;fontSize:100px;fontStyle:normal;fontWeight:normal;letterSpacing:normal;lineBreak:auto;lineHeight:normal;textTransform:none;textAlign:left;textDecoration:none;textShadow:none;whiteSpace:normal;wordBreak:normal;wordSpacing:normal}`
 		const baseFontSpan = font => {
 			return `<span class="basefont" data-font="${font}" style="font-family: '${font}'">${text}</span>`
 		}
@@ -780,21 +831,24 @@
 		const timezoneComputed = attempt(() => timezone())
 		const cRectsComputed = attempt(() => cRects())
 		const mathsComputed = attempt(() => maths())
+
 		const fontsProcess = timer('Computing fonts...')
 		const fontsComputed = attempt(() => {
 			return detectFonts([...fontList])
 		})
 		fontsProcess('Fonts complete')
 
-		// await voices, media, and client hints, then compute
+		// await
 		const [
 			voices,
 			mediaDevices,
-			highEntropy
+			highEntropy,
+			offlineAudio
 		] = await Promise.all([
 			getVoices(),
 			getMediaDevices(),
-			highEntropyValues()
+			highEntropyValues(),
+			offlineAudioOscillator()
 		]).catch(error => { 
 			console.error(error.message)
 		})
@@ -822,6 +876,7 @@
 			voicesHash,
 			mediaDeviceHash,
 			highEntropyHash,
+			audioHash,
 			timezoneHash,
 			webglHash,
 			screenHash,
@@ -843,6 +898,7 @@
 			hashify(voicesComputed),
 			hashify(mediaDevicesComputed),
 			hashify(highEntropy),
+			hashify(offlineAudio),
 			hashify(timezoneComputed),
 			hashify(webglComputed),
 			hashify(screenComputed),
@@ -872,6 +928,7 @@
 			webgl: [webglComputed, webglHash],
 			voices: [voicesComputed, voicesHash],
 			mediaDevices: [mediaDevicesComputed, mediaDeviceHash],
+			audio: [offlineAudio, audioHash],
 			screen: [screenComputed, screenHash],
 			webglDataURL: [webglDataURLComputed, weglDataURLHash],
 			consoleErrors: [consoleErrorsComputed, consoleErrorsHash],
@@ -915,6 +972,7 @@
 			errorsCaptured: fp.errorsCaptured,
 			cRects: fp.cRects,
 			fonts: fp.fonts,
+			audio: fp.audio,
 			maths: fp.maths,
 			canvas: fp.canvas
 		}
@@ -1106,6 +1164,21 @@
 					<div>maths: ${identify(fp.maths)}</div>
 					<div>fonts: ${identify(fp.fonts)}</div>
 					<div>media devices: ${identify(fp.mediaDevices)}</div>
+
+					${
+						!fp.audio[0] ? `<div>audio: ${note.blocked}</div>`: (() => {
+							const [ audio, hash ]  = fp.audio
+							const { copySample, binsSample, matching } = audio
+							return `
+							<div>
+								<div>audio hash: ${hash}</div>
+								<div>sample: ${binsSample[0]}</div>
+								<div>copy: ${copySample[0]}</div>
+								<div>matching: ${matching}</div>
+							</div>
+							`
+						})()
+					}
 					
 					${
 						!fp.timezone[0] ? `<div>timezone: ${note.blocked}</div>`: (() => {
