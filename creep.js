@@ -1234,8 +1234,8 @@
 							return `
 							<div>
 								<div>audio hash: ${hash}</div>
-								<div>sample: ${binsSample[0] ? binsSample[0] : note.blocked}</div>
-								<div>copy: ${copySample[0] ? copySample[0] : note.blocked}</div>
+								<div>sample: ${binsSample[0] &&  !isNaN(binsSample[0]) ? binsSample[0] : note.blocked}</div>
+								<div>copy: ${copySample[0] && !isNaN(copySample[0]) ? copySample[0] : note.blocked}</div>
 								<div>matching: ${matching}</div>
 							</div>
 							`
