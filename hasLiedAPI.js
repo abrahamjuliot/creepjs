@@ -57,7 +57,7 @@ function hasLiedAPI(api, name) {
 	}
 	
 	return {
-		lie: lieTypes.length || fingerprint ? { lieTypes, fingerprint } : false, 
+		lie: lieTypes.length || fingerprint ? { lieTypes, fingerprint } : false 
 	}
 }
 

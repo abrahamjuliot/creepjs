@@ -27,9 +27,6 @@
 		const { name, message } = error
 		const trustedMessage = hasInnerSpace(message) ? message: undefined
 		const trustedName = type[name] ? name : undefined
-		const lineNumber = error.stack.split('\n')[2]
-		const index = lineNumber.indexOf('at ')
-		const lineAndIndex = lineNumber.slice(index + 2, lineNumber.length)
 		errorsCaptured.push(
 			{ trustedName, trustedMessage }
 		)
@@ -105,8 +102,9 @@
 	// detect and fingerprint Function API lies
 	const native = (result, str) => {
 		const chrome = `function ${str}() { [native code] }`
+		const chromeGet = `function get ${str}() { [native code] }`
 		const firefox = `function ${str}() {\n    [native code]\n}`
-		return result == chrome || result == firefox
+		return result == chrome || result == chromeGet || result == firefox
 	}
 	const hasLiedStringAPI = () => {
 		let lieTypes = []
@@ -140,34 +138,70 @@
 	}
 	const stringAPILieTypes = hasLiedStringAPI() // compute and cache result
 	const hasLiedAPI = (api, name) => {
-		let lieTypes = [...stringAPILieTypes()]
-		let fingerprint = ''
-
-		// detect attempts to rename the API and/or rewrite toString
 		const { toString: fnToStr } = Function.prototype
-		const { name: apiName, toString: apiToString } = api
-		if (apiName != name) {
-			lieTypes.push({
-				apiName: !proxyBehavior(apiName) ? apiName: true
-			})
-		}
-		if (apiToString !== fnToStr || apiToString.toString !== fnToStr) {
-			lieTypes.push({
-				apiToString: !proxyBehavior(apiToString) ? apiToString: true
-			})
+
+		if (typeof api == 'function') {
+			let lieTypes = [...stringAPILieTypes()]
+			let fingerprint = ''
+
+			// detect attempts to rename the API and/or rewrite toString
+			const { name: apiName, toString: apiToString } = api
+			if (apiName != name) {
+				lieTypes.push({
+					apiName: !proxyBehavior(apiName) ? apiName: true
+				})
+			}
+			if (apiToString !== fnToStr || apiToString.toString !== fnToStr) {
+				lieTypes.push({
+					apiToString: !proxyBehavior(apiToString) ? apiToString: true
+				})
+			}
+
+			// collect string conversion result
+			const result = '' + api
+
+			// fingerprint result if it does not match native code
+			if (!native(result, name)) {
+				fingerprint = result
+			}
+			
+			return {
+				lie: lieTypes.length || fingerprint ? { lieTypes, fingerprint } : false 
+			}
 		}
 
-		// collect string conversion result
-		const result = '' + api
+		if (typeof api == 'object') {
+			const apiFunction = Object.getOwnPropertyDescriptor(api, name).get
+			let lieTypes = [...stringAPILieTypes()]
+			let fingerprint = ''
 
-		// fingerprint result if it does not match native code
-		if (!native(result, name)) {
-			fingerprint = result
+			// detect attempts to rename the API and/or rewrite toString
+			const { name: apiName, toString: apiToString } = apiFunction
+			if (apiName != `get ${name}` && apiName != name) {
+				lieTypes.push({
+					apiName: !proxyBehavior(apiName) ? apiName: true
+				})
+			}
+			if (apiToString !== fnToStr || apiToString.toString !== fnToStr) {
+				lieTypes.push({
+					apiToString: !proxyBehavior(apiToString) ? apiToString: true
+				})
+			}
+
+			// collect string conversion result
+			const result = '' + apiFunction
+
+			// fingerprint result if it does not match native code
+			if (!native(result, name)) {
+				fingerprint = result
+			}
+
+			return {
+				lie: lieTypes.length || fingerprint ? { lieTypes, fingerprint } : false
+			}
 		}
-		
-		return {
-			lie: lieTypes.length || fingerprint ? { lieTypes, fingerprint } : false, 
-		}
+
+		return false
 	}
 
 	// Detect Brave Browser and strict fingerprinting blocking
@@ -185,9 +219,6 @@
 
 	// Collect lies detected
 	const lieRecords = []
-	const compress = (x) => {
-		return JSON.stringify(x).replace(/((\n|\r|\s|:|\"|\,|\{|\}|\[|\]|\(|\))+)/gm, '').toLowerCase()
-	}
 	const documentLie = (name, lieResult, lieTypes) => {
 		return lieRecords.push({ name, lieTypes, hash: lieResult, lie: hashMini(lieTypes) })
 	}
@@ -201,21 +232,30 @@
 
 	// navigator
 	const nav = () => {
+		const navigatorPrototype = attempt(() => Navigator.prototype)
+		const detectLies = (name, value) => {
+			const lie = navigatorPrototype ? hasLiedAPI(navigatorPrototype, name).lie : false
+			if (lie) {
+				documentLie(name, value, lie)
+				return sendToTrash(name, value)
+			}
+			return value
+		}
 		const credibleUserAgent = (
 			'chrome' in window ? navigator.userAgent.includes(navigator.appVersion) : true
 			// todo: additional checks
 		)
 		return {
 			appVersion: attempt(() => {
-				const { appVersion } = navigator
-				return credibleUserAgent ? appVersion : sendToTrash('appVersion', 'does not match userAgent')
+				const appVersion = detectLies('appVersion', navigator.appVersion)
+				return credibleUserAgent ? appVersion : sendToTrash('InvalidAppVersion', 'does not match userAgent')
 			}),
 			deviceMemory: attempt(() => {
-				const { deviceMemory } = navigator
-				return deviceMemory ? trustInteger('deviceMemory', deviceMemory) : undefined
+				const deviceMemory = detectLies('deviceMemory', navigator.deviceMemory)
+				return deviceMemory ? trustInteger('InvalidDeviceMemory', deviceMemory) : undefined
 			}),
 			doNotTrack: attempt(() => {
-				const { doNotTrack } = navigator
+				const doNotTrack = detectLies('doNotTrack', navigator.doNotTrack)
 				const trusted = {
 					'1': true,
 					'true': true, 
@@ -226,49 +266,63 @@
 					'unspecified': true, 
 					'null': true
 				}
-				return trusted[doNotTrack] ? doNotTrack : doNotTrack ? sendToTrash('doNotTrack', doNotTrack) : undefined
+				return trusted[doNotTrack] ? doNotTrack : doNotTrack ? sendToTrash('InvalidDoNotTrack', doNotTrack) : undefined
 			}),
 			hardwareConcurrency: attempt(() => {
-				const { hardwareConcurrency } = navigator 
-				return trustInteger('hardwareConcurrency', hardwareConcurrency)
+				const hardwareConcurrency = detectLies('hardwareConcurrency', navigator.hardwareConcurrency)
+				return hardwareConcurrency ? trustInteger('InvalidHardwareConcurrency', hardwareConcurrency): undefined
 			}),
 			language: attempt(() => {
-				const { languages, language } = navigator
-				const langs = /^.{0,2}/g.exec(languages[0])[0]
-				const lang = /^.{0,2}/g.exec(language)[0]
-				const trusted = langs == lang
-				return (
-					trusted ? `${languages.join(', ')} (${language})` : 
-					sendToTrash('languages', [languages, language].join(' '))
-				)
+				const languages = detectLies('languages', navigator.languages)
+				const language = detectLies('language', navigator.language)
+
+				if (languages && languages) {
+					const langs = /^.{0,2}/g.exec(languages[0])[0]
+					const lang = /^.{0,2}/g.exec(language)[0]
+					const trusted = langs == lang
+					return (
+						trusted ? `${languages.join(', ')} (${language})` : 
+						sendToTrash('InvalidLanguages', [languages, language].join(' '))
+					)
+				}
+
+				return undefined
 			}),
 			maxTouchPoints: attempt(() => {
 				if ('maxTouchPoints' in navigator) {
-					const { maxTouchPoints } = navigator 
-					return trustInteger('maxTouchPoints', maxTouchPoints)
+					const maxTouchPoints = detectLies('maxTouchPoints', navigator.maxTouchPoints)
+					return maxTouchPoints != undefined ? trustInteger('InvalidMaxTouchPoints', maxTouchPoints) : undefined
 				}
+
 				return null
 			}),
 			platform: attempt(() => {
-				const { platform } = navigator
+				const platform = detectLies('platform', navigator.platform)
 				const systems = ['win', 'linux', 'mac', 'arm', 'pike', 'linux', 'iphone', 'ipad', 'ipod', 'android', 'x11']
-				const trusted = systems.filter(val => platform.toLowerCase().includes(val))[0]
+				const trusted = typeof platform == 'string' && systems.filter(val => platform.toLowerCase().includes(val))[0]
 				return trusted ? platform : undefined
 			}),
 			userAgent: attempt(() => {
-				const { userAgent } = navigator
-				return credibleUserAgent ? userAgent : sendToTrash('userAgent', userAgent)
+				const userAgent = detectLies('userAgent', navigator.userAgent)
+				return credibleUserAgent ? userAgent : sendToTrash('InvalidUserAgent', userAgent)
 			}),
-			vendor: attempt(() => navigator.vendor),
-			mimeTypes: attempt(() => [...navigator.mimeTypes].map(m => m.type)),
+			vendor: attempt(() => {
+				const vendor = detectLies('vendor', navigator.vendor)
+				return vendor
+			}),
+			mimeTypes: attempt(() => {
+				const mimeTypes = detectLies('mimeTypes', navigator.mimeTypes)
+				return mimeTypes ? [...mimeTypes].map(m => m.type) : undefined
+			}),
 			plugins: attempt(() => {
-				return [...navigator.plugins]
+				const plugins = detectLies('plugins', navigator.plugins)
+				return plugins ? [...navigator.plugins]
 					.map(p => ({
 						name: p.name,
 						description: p.description,
 						filename: p.filename,
 						version: p.version
-					}))
+					})) : undefined
 			}),
 			version: attempt(() => {
 				const keys = Object.keys(Object.getPrototypeOf(navigator))
@@ -307,14 +361,14 @@
 	const screenFp = () => {	
 		const { width, height, availWidth, availHeight, colorDepth, pixelDepth } = screen
 		return {
-			width: attempt(() => trustInteger('width', width)),
-			outerWidth: attempt(() => trustInteger('outerWidth', outerWidth)),
-			availWidth: attempt(() => trustInteger('availWidth', availWidth)),
-			height: attempt(() => trustInteger('height', height)),
-			outerHeight: attempt(() => trustInteger('outerHeight', outerHeight)),
-			availHeight: attempt(() => trustInteger('availHeight', availHeight)),
-			colorDepth: attempt(() => trustInteger('colorDepth', colorDepth)),
-			pixelDepth: attempt(() => trustInteger('pixelDepth', pixelDepth))
+			width: attempt(() => trustInteger('InvalidWidth', width)),
+			outerWidth: attempt(() => trustInteger('InvalidOuterWidth', outerWidth)),
+			availWidth: attempt(() => trustInteger('InvalidAvailWidth', availWidth)),
+			height: attempt(() => trustInteger('InvalidHeight', height)),
+			outerHeight: attempt(() => trustInteger('InvalidOuterHeight', outerHeight)),
+			availHeight: attempt(() => trustInteger('InvalidAvailHeight', availHeight)),
+			colorDepth: attempt(() => trustInteger('InvalidColorDepth', colorDepth)),
+			pixelDepth: attempt(() => trustInteger('InvalidPixelDepth', pixelDepth))
 		}
 	}
 
@@ -764,7 +818,7 @@
 						}
 						resolve(response)
 					}
-				}, 100)
+				}, 10)
 			})
 		}
 		catch (error) {
