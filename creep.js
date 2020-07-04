@@ -89,6 +89,7 @@
 		return templateContent(template) // ie11 fix for template.content
 	}
 	// Detect proxy behavior
+	// https://stackoverflow.com/questions/36372611
 	const proxyBehavior = (obj) => {
 		try {
 			window.postMessage(obj, location)
