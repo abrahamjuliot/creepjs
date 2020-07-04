@@ -869,7 +869,7 @@
 			getMediaDevices(),
 			highEntropyValues(),
 			offlineAudioOscillator(),
-			detectFonts([...fontList,...extendedFontList])
+			detectFonts([...fontList])
 		]).catch(error => { 
 			console.error(error.message)
 		})
