@@ -90,9 +90,10 @@
 	}
 	// Detect proxy behavior
 	// https://stackoverflow.com/questions/36372611
-	const proxyBehavior = (obj) => {
+	const proxyBehavior = x => {
+		if (typeof x == 'object') { return false }
 		try {
-			window.postMessage(obj, location)
+			window.postMessage(x, location)
 			return false
 		} catch (error) {
 			const cloneable = error.code != 25 // data clone error	
@@ -359,17 +360,31 @@
 	}
 
 	// screen (allow some discrepancies otherwise lie detection triggers at random)
-	const screenFp = () => {	
-		const { width, height, availWidth, availHeight, colorDepth, pixelDepth } = screen
+	const screenFp = () => {
+		const screenPrototype = attempt(() => Screen.prototype)
+		const detectLies = (name, value) => {
+			const lie = screenPrototype ? hasLiedAPI(screenPrototype, name).lie : false
+			if (lie) {
+				documentLie(name, value, lie)
+				return sendToTrash(name, value)
+			}
+			return value
+		}
+		const width = detectLies('width', screen.width)
+		const height = detectLies('height', screen.height)
+		const availWidth = detectLies('availWidth', screen.availWidth)
+		const availHeight = detectLies('availHeight', screen.availHeight)
+		const colorDepth = detectLies('colorDepth', screen.colorDepth)
+		const pixelDepth = detectLies('pixelDepth', screen.pixelDepth)
 		return {
-			width: attempt(() => trustInteger('InvalidWidth', width)),
-			outerWidth: attempt(() => trustInteger('InvalidOuterWidth', outerWidth)),
-			availWidth: attempt(() => trustInteger('InvalidAvailWidth', availWidth)),
-			height: attempt(() => trustInteger('InvalidHeight', height)),
-			outerHeight: attempt(() => trustInteger('InvalidOuterHeight', outerHeight)),
-			availHeight: attempt(() => trustInteger('InvalidAvailHeight', availHeight)),
-			colorDepth: attempt(() => trustInteger('InvalidColorDepth', colorDepth)),
-			pixelDepth: attempt(() => trustInteger('InvalidPixelDepth', pixelDepth))
+			width: attempt(() => width ? trustInteger('InvalidWidth', width) : undefined),
+			outerWidth: attempt(() => outerWidth ? trustInteger('InvalidOuterWidth', outerWidth) : undefined),
+			availWidth: attempt(() => availWidth ? trustInteger('InvalidAvailWidth', availWidth) : undefined),
+			height: attempt(() => height ? trustInteger('InvalidHeight', height) : undefined),
+			outerHeight: attempt(() => outerHeight ? trustInteger('InvalidOuterHeight', outerHeight) : undefined),
+			availHeight: attempt(() => availHeight ?  trustInteger('InvalidAvailHeight', availHeight) : undefined),
+			colorDepth: attempt(() => colorDepth ? trustInteger('InvalidColorDepth', colorDepth) : undefined),
+			pixelDepth: attempt(() => pixelDepth ? trustInteger('InvalidPixelDepth', pixelDepth) : undefined)
 		}
 	}
 
