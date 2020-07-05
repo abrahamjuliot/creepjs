@@ -130,7 +130,7 @@
 		return () => lies
 	}
 	const stringAPILieTypes = hasLiedStringAPI() // compute and cache result
-	const hasLiedAPI = (api, name) => {
+	const hasLiedAPI = (api, name, obj = null) => {
 		const { toString: fnToStr } = Function.prototype
 
 		if (typeof api == 'function') {
@@ -169,28 +169,45 @@
 			let fingerprint = ''
 
 			// detect attempts to rename the API and/or rewrite toString
-			const { name: apiName, toString: apiToString } = apiFunction
-			if (apiName != `get ${name}` && apiName != name) {
-				lies.push({
-					apiName: !proxyBehavior(apiName) ? apiName: true
-				})
-			}
-			if (apiToString !== fnToStr || apiToString.toString !== fnToStr) {
-				lies.push({
-					apiToString: !proxyBehavior(apiToString) ? apiToString: true
-				})
-			}
+			try {
+				const { name: apiName, toString: apiToString } = apiFunction
+				if (apiName != `get ${name}` && apiName != name) {
+					lies.push({
+						apiName: !proxyBehavior(apiName) ? apiName: true
+					})
+				}
+				if (apiToString !== fnToStr || apiToString.toString !== fnToStr) {
+					lies.push({
+						apiToString: !proxyBehavior(apiToString) ? apiToString: true
+					})
+				}
 
-			// collect string conversion result
-			const result = '' + apiFunction
+				if (obj) {
+					try {
+						const definedPropertyValue = !!Object.getOwnPropertyDescriptor(obj, name).value
+						lies.push({
+							definedPropertyValue
+						})
+					}
+					catch (error) {}
+				}
 
-			// fingerprint result if it does not match native code
-			if (!native(result, name)) {
-				fingerprint = result
+				// collect string conversion result
+				const result = '' + apiFunction
+
+				// fingerprint result if it does not match native code
+				if (!native(result, name)) {
+					fingerprint = result
+				}
+
+				return {
+					lie: lies.length || fingerprint ? { lies, fingerprint } : false
+				}
 			}
-
-			return {
-				lie: lies.length || fingerprint ? { lies, fingerprint } : false
+			catch (error) {
+				captureError(error)
+				return false
+				
 			}
 		}
 
@@ -227,7 +244,7 @@
 	const nav = () => {
 		const navigatorPrototype = attempt(() => Navigator.prototype)
 		const detectLies = (name, value) => {
-			const lie = navigatorPrototype ? hasLiedAPI(navigatorPrototype, name).lie : false
+			const lie = navigatorPrototype ? hasLiedAPI(navigatorPrototype, name, navigator).lie : false
 			if (lie) {
 				documentLie(name, value, lie)
 				return sendToTrash(name, value)
@@ -357,7 +374,7 @@
 	const screenFp = () => {
 		const screenPrototype = attempt(() => Screen.prototype)
 		const detectLies = (name, value) => {
-			const lie = screenPrototype ? hasLiedAPI(screenPrototype, name).lie : false
+			const lie = screenPrototype ? hasLiedAPI(screenPrototype, name, screen).lie : false
 			if (lie) {
 				documentLie(name, value, lie)
 				return sendToTrash(name, value)
@@ -739,9 +756,8 @@
 		const copyFromChannelLie = (
 			audioBufferCopyFromChannel ? hasLiedAPI(audioBufferCopyFromChannel, 'copyFromChannel').lie : false
 		)
-
+		const audioProcess = timer('')
 		try {
-			const audioProcess = timer('')
 			const audioContext = OfflineAudioContext || webkitOfflineAudioContext
 			const context = new audioContext(1, 44100, 44100)
 			const oscillator = context.createOscillator()
@@ -863,8 +879,8 @@
 		}
 		const detect = fonts => {
 			return new Promise(resolve => {
+				const fontsProcess = timer('')
 				try {
-					const fontsProcess = timer('')
 					const fontsElem = document.getElementById('font-detector')
 					const stageElem = document.getElementById('font-detector-stage')
 					const detectedFonts = {}
@@ -1344,7 +1360,7 @@
 						})()
 					}
 					${
-						!fp.voices[0] ? `<div>voices: ${note.blocked}</div>`: (() => {
+						!fp.voices[0].length ? `<div>voices: ${note.blocked}</div>`: (() => {
 							const [ voices, hash ]  = fp.voices
 							return `
 							<div>
