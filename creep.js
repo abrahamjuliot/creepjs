@@ -1162,7 +1162,7 @@
 				const pluralify = (len) => len > 1 ? 's' : ''
 				const plural = pluralify(subIdsLen)
 				const template = `
-					<div>First Visit: ${toLocaleStr(firstVisit)} (x days ago)</div>
+					<div>First Visit: ${toLocaleStr(firstVisit)}</div>
 					<div>Latest Visit: ${toLocaleStr(latestVisit)}</div>
 					${subIdsLen ? `<div>${subIdsLen} sub fingerprint${plural} detected</div>` : ''}
 					<div>Visits: ${visits}</div>
