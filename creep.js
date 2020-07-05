@@ -184,12 +184,14 @@
 
 				if (obj) {
 					try {
-						const definedPropertyValue = !!Object.getOwnPropertyDescriptor(obj, name).value
+						const definedPropertyValue = Object.getOwnPropertyDescriptor(obj, name).value
 						lies.push({
-							definedPropertyValue
+							definedPropertyValue: true
 						})
 					}
-					catch (error) {}
+					catch (error) {
+						// Native throws error
+					}
 				}
 
 				// collect string conversion result
