@@ -1360,7 +1360,7 @@
 						})()
 					}
 					${
-						!fp.voices[0].length ? `<div>voices: ${note.blocked}</div>`: (() => {
+						!fp.voices[0].length ? `<div>voices: ${note.blocked} or unsupported</div>`: (() => {
 							const [ voices, hash ]  = fp.voices
 							return `
 							<div>
