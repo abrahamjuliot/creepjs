@@ -109,12 +109,12 @@
 		return result == chrome || result == chromeGet || result == firefox
 	}
 	const hasLiedStringAPI = () => {
-		let lieTypes = []
+		let lies = []
 
 		// detect attempts to rewrite Function.prototype.toString conversion APIs
 		const { toString } = Function.prototype
 		if (!native(toString, 'toString')) {
-			lieTypes.push({ toString })
+			lies.push({ toString })
 		}
 
 		// The idea of checking new is inspired by https://adtechmadness.wordpress.com/2019/03/23/javascript-tampering-detection-and-stealth/
@@ -123,7 +123,7 @@
 			const str_2 = new Function.prototype.toString()
 			const str_3 = new Function.prototype.toString.toString
 			const str_4 = new Function.prototype.toString.toString()
-			lieTypes.push({
+			lies.push({
 				str_1,
 				str_2,
 				str_3,
@@ -132,29 +132,29 @@
 		} catch (error) {
 			const nativeTypeError = 'TypeError: Function.prototype.toString is not a constructor'
 			if ('' + error != nativeTypeError) {
-				lieTypes.push({ newErr: '' + error.message })
+				lies.push({ newErr: '' + error.message })
 			}
 		}
 
-		return () => lieTypes
+		return () => lies
 	}
 	const stringAPILieTypes = hasLiedStringAPI() // compute and cache result
 	const hasLiedAPI = (api, name) => {
 		const { toString: fnToStr } = Function.prototype
 
 		if (typeof api == 'function') {
-			let lieTypes = [...stringAPILieTypes()]
+			let lies = [...stringAPILieTypes()]
 			let fingerprint = ''
 
 			// detect attempts to rename the API and/or rewrite toString
 			const { name: apiName, toString: apiToString } = api
 			if (apiName != name) {
-				lieTypes.push({
+				lies.push({
 					apiName: !proxyBehavior(apiName) ? apiName: true
 				})
 			}
 			if (apiToString !== fnToStr || apiToString.toString !== fnToStr) {
-				lieTypes.push({
+				lies.push({
 					apiToString: !proxyBehavior(apiToString) ? apiToString: true
 				})
 			}
@@ -168,24 +168,24 @@
 			}
 			
 			return {
-				lie: lieTypes.length || fingerprint ? { lieTypes, fingerprint } : false 
+				lie: lies.length || fingerprint ? { lies, fingerprint } : false 
 			}
 		}
 
 		if (typeof api == 'object') {
 			const apiFunction = Object.getOwnPropertyDescriptor(api, name).get
-			let lieTypes = [...stringAPILieTypes()]
+			let lies = [...stringAPILieTypes()]
 			let fingerprint = ''
 
 			// detect attempts to rename the API and/or rewrite toString
 			const { name: apiName, toString: apiToString } = apiFunction
 			if (apiName != `get ${name}` && apiName != name) {
-				lieTypes.push({
+				lies.push({
 					apiName: !proxyBehavior(apiName) ? apiName: true
 				})
 			}
 			if (apiToString !== fnToStr || apiToString.toString !== fnToStr) {
-				lieTypes.push({
+				lies.push({
 					apiToString: !proxyBehavior(apiToString) ? apiToString: true
 				})
 			}
@@ -199,7 +199,7 @@
 			}
 
 			return {
-				lie: lieTypes.length || fingerprint ? { lieTypes, fingerprint } : false
+				lie: lies.length || fingerprint ? { lies, fingerprint } : false
 			}
 		}
 
@@ -845,6 +845,16 @@
 	}
 
 	const fontDetector = () => {
+		const htmlElementPrototype = attempt(() => HTMLElement.prototype)
+		const detectLies = (name, value) => {
+			const lie = htmlElementPrototype ? hasLiedAPI(htmlElementPrototype, name).lie : false
+			if (lie) {
+				documentLie(name, value, lie)
+				return sendToTrash(name, value)
+			}
+			return value
+		}
+
 		const toInt = val => ~~val // protect against decimal noise
 		const baseFonts = ['monospace', 'sans-serif', 'serif']
 		const text = 'mmmmmmmmmmlli'
@@ -884,6 +894,14 @@
 							const testElem = document.getElementById('font-detector-test')
 							const basefontElems = document.querySelectorAll('#font-detector-test .basefont')
 							const systemFontElems = document.querySelectorAll('#font-detector-test .system-font')
+							
+							// detect and document lies
+							const spanLieDetect = [...basefontElems][0]
+							const offsetWidth = detectLies('offsetWidth', spanLieDetect.offsetWidth)
+							const offsetHeight = detectLies('offsetHeight', spanLieDetect.offsetHeight)
+							if (!offsetWidth || !offsetHeight) { return resolve(undefined) }
+							
+							// Compute fingerprint
 							;[...basefontElems].forEach(span => {
 								const { dataset: { font }, offsetWidth, offsetHeight } = span
 								baseOffsetWidth[font] = toInt(offsetWidth)
