@@ -1,8 +1,5 @@
 // Detect proxy behavior
-const proxyBehavior = x => {
-	if (typeof x == 'function') { return true }
-	return false
-}
+const proxyBehavior = x => typeof x == 'function' ? true : false
 
 // detect and fingerprint Function API lies
 const native = (result, str) => {

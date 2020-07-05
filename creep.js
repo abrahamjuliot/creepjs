@@ -88,11 +88,9 @@
 		template.innerHTML = stringSet.map((str, i) => `${str}${expressionSet[i] || ''}`).join('')
 		return templateContent(template) // ie11 fix for template.content
 	}
+
 	// Detect proxy behavior
-	const proxyBehavior = x => {
-		if (typeof x == 'function') { return true }
-		return false
-	}
+	const proxyBehavior = x => typeof x == 'function' ? true : false
 
 	// detect and fingerprint Function API lies
 	const native = (result, str) => {
@@ -246,8 +244,11 @@
 				return credibleUserAgent ? appVersion : sendToTrash('InvalidAppVersion', 'does not match userAgent')
 			}),
 			deviceMemory: attempt(() => {
-				const deviceMemory = detectLies('deviceMemory', navigator.deviceMemory)
-				return deviceMemory ? trustInteger('InvalidDeviceMemory', deviceMemory) : undefined
+				if ('deviceMemory' in navigator) {
+					const deviceMemory = detectLies('deviceMemory', navigator.deviceMemory)
+					return deviceMemory ? trustInteger('InvalidDeviceMemory', deviceMemory) : undefined
+				}
+				return undefined
 			}),
 			doNotTrack: attempt(() => {
 				const doNotTrack = detectLies('doNotTrack', navigator.doNotTrack)
