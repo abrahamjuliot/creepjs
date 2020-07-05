@@ -89,16 +89,9 @@
 		return templateContent(template) // ie11 fix for template.content
 	}
 	// Detect proxy behavior
-	// https://stackoverflow.com/questions/36372611
 	const proxyBehavior = x => {
-		if (typeof x == 'object') { return false }
-		try {
-			window.postMessage(x, location)
-			return false
-		} catch (error) {
-			const cloneable = error.code != 25 // data clone error	
-			return !cloneable
-		}
+		if (typeof x == 'function') { return true }
+		return false
 	}
 
 	// detect and fingerprint Function API lies
