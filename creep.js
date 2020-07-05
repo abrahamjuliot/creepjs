@@ -1317,8 +1317,8 @@
 						const { extensions } = data
 						const isArray = typeof extensions == 'array'
 						return (
-							isArray && extensions ? extensions : 
-							!extensions ? note.blocked : identify(fp.webgl)
+							isArray && extensions.length ? extensions : 
+							!isArray || !extensions.length ? note.blocked : identify(fp.webgl)
 						)
 					})()}</div>
 					</div>
