@@ -1330,8 +1330,19 @@
 					<div>client rects: ${identify(fp.cRects)}</div>
 					<div>console errors: ${identify(fp.consoleErrors)}</div>	
 					<div>maths: ${identify(fp.maths)}</div>
-					<div>fonts: ${identify(fp.fonts)}</div>
 					<div>media devices: ${identify(fp.mediaDevices)}</div>
+
+					${
+						!fp.fonts[0] ? `<div>fonts: ${note.blocked}</div>`: (() => {
+							const [ fonts, hash ]  = fp.fonts
+							return `
+							<div>
+								<div>fonts hash: ${hash}</div>
+								<div>fonts: ${fonts.length}</div>
+							</div>
+							`
+						})()
+					}
 
 					${
 						!fp.audio[0] ? `<div>audio: ${note.blocked}</div>`: (() => {
@@ -1370,11 +1381,7 @@
 							return `
 							<div>
 								<div>voices hash: ${hash}</div>
-								${
-									voices.map(voice => {
-										return `<div>${voice.name}</div>`
-									}).join('')
-								}
+								<div>voices: ${voices.length}</div>
 							</div>
 							`
 						})()
