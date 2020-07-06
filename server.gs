@@ -1,9 +1,11 @@
-// !important: redeploy
+// !important: must redeploy
+// required: doPost trigger in spreadsheet on form submit 
 
-// required: doPost trigger in spreadsheet on form submit           
-function createJSONFile() {
+function setJSONFile() {
   const filename = 'db.json.txt'
   const timestamp = new Date()
+  
+  // create some dummy data
   const obj = {}
   obj['init'] = {
     firstVisit: timestamp,
@@ -12,9 +14,21 @@ function createJSONFile() {
     subIds: { ['init']: 1 }
   }
   const json = JSON.stringify(obj)
+  
+  // get the file
   const files = DriveApp.getFilesByName(filename)
-  if (files.hasNext()) { return files.next().setContent(json) }
-  else { return DriveApp.createFile(filename, json) }
+  if (files.hasNext()) { return files.next().setContent(json) } // overwrite and set the contents of the file 
+  else { return DriveApp.createFile(filename, json) } // create the file if it does not exist
+}
+
+function setTimeBasedTrigger() {
+  return ScriptApp.newTrigger('setJSONFile')
+  .timeBased()
+  .atHour(1)
+  .everyWeeks(1)
+  .onWeekDay(ScriptApp.WeekDay.MONDAY)
+  .inTimezone('America/Los_Angeles')
+  .create()
 }
 
 function log(message) {
