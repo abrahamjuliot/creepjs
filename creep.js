@@ -1294,6 +1294,10 @@
 					<div>webglDataURL: ${
 						isBrave ? 'Brave Browser' : identify(fp.webglDataURL)
 					}</div>
+					<div>webgl hash: ${(() => {
+						const [ data, hash ] = fp.webgl
+						return hash
+					})()}</div>
 					<div>webgl renderer: ${(() => {
 						const [ data ] = fp.webgl
 						const { renderer } = data
@@ -1314,13 +1318,12 @@
 							!vendor ? note.blocked : identify(fp.webgl)
 						)
 					})()}</div>
-					<div>webgl extensions: ${(() => {
+					<div>webgl supported extensions: ${(() => {
 						const [ data ] = fp.webgl
 						const { extensions } = data
-						const isArray = typeof extensions == 'array'
+						const isObj = typeof extensions == 'object'
 						return (
-							isArray && extensions.length ? extensions : 
-							!isArray || !extensions.length ? note.blocked : identify(fp.webgl)
+							isObj && extensions && extensions.length ? extensions.length : note.blocked
 						)
 					})()}</div>
 					</div>
@@ -1452,9 +1455,10 @@
 							`
 						})()
 					}
-
+					<div>This is site is intended fro developers. Visitor data is deleted <a href="https://github.com/abrahamjuliot/creepjs/blob/8d6603ee39c9534cad700b899ef221e0ee97a5a4/server.gs#L24" target="_blank">every 7 days</a>.</div>
 				</div>
 			</section>
+			
 		`
 		return patch(fpElem, html`${data}`)
 	}).catch((e) => console.log(e))
