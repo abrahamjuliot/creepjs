@@ -145,6 +145,12 @@ visitor div:nth-of-type(4) {
 #fingerprint-data {
 	animation: fade-in 0.3s .3s ease both;
 }
+
+#fingerprint-data .trash,
+#fingerprint-data .lies,
+#fingerprint-data .errors {
+	animation: zoom 0.3s .6s cubic-bezier(0,1.13,0,1.2) both;
+}
 @keyframes enter {
 	0%, 60% {
 		transform: translate(5px, 0);
@@ -160,7 +166,15 @@ visitor div:nth-of-type(4) {
 		opacity: 0;
 	}
 	100% {
-		transform: translate(0);
+		opacity: 1;
+	}
+}
+@keyframes zoom {
+	0%, 30% {
+		transform: scale(1.1);
+		opacity: 0;
+	}
+	100% {
 		opacity: 1;
 	}
 }
