@@ -281,7 +281,7 @@
 					'unspecified': true, 
 					'null': true
 				}
-				return trusted[doNotTrack] ? doNotTrack : doNotTrack ? sendToTrash('InvalidDoNotTrack', doNotTrack) : undefined
+				return trusted[doNotTrack] ? doNotTrack : sendToTrash('InvalidDoNotTrack', doNotTrack)
 			}),
 			hardwareConcurrency: attempt(() => {
 				const hardwareConcurrency = detectLies('hardwareConcurrency', navigator.hardwareConcurrency)
