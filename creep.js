@@ -1455,7 +1455,7 @@
 							`
 						})()
 					}
-					<div>This is site is intended fro developers. Visitor data is deleted <a href="https://github.com/abrahamjuliot/creepjs/blob/8d6603ee39c9534cad700b899ef221e0ee97a5a4/server.gs#L24" target="_blank">every 7 days</a>.</div>
+					<div>Visitor data is deleted <a href="https://github.com/abrahamjuliot/creepjs/blob/8d6603ee39c9534cad700b899ef221e0ee97a5a4/server.gs#L24" target="_blank">every 7 days</a>.</div>
 				</div>
 			</section>
 			
