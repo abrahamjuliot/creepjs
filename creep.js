@@ -1294,11 +1294,11 @@
 					<div>webglDataURL: ${
 						isBrave ? 'Brave Browser' : identify(fp.webglDataURL)
 					}</div>
-					<div>webgl hash: ${(() => {
+					<div>hash: ${(() => {
 						const [ data, hash ] = fp.webgl
 						return hash
 					})()}</div>
-					<div>webgl renderer: ${(() => {
+					<div>renderer: ${(() => {
 						const [ data ] = fp.webgl
 						const { renderer } = data
 						const isString = typeof renderer == 'string'
@@ -1308,7 +1308,7 @@
 							!renderer ? note.blocked : identify(fp.webgl)
 						)
 					})()}</div>
-					<div>webgl vendor: ${(() => {
+					<div>vendor: ${(() => {
 						const [ data ] = fp.webgl
 						const { vendor } = data
 						const isString = typeof vendor == 'string'
