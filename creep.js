@@ -1269,7 +1269,7 @@
 					${
 						!fp.errorsCaptured[0].length ? `<div>errors captured: <span class="none">none</span></div>`: (() => {
 							const [ errors, hash ]  = fp.errorsCaptured
-							const plural = pluralify(errors)
+							const plural = pluralify(errors.length)
 							return `
 							<div class="errors">
 								<strong>${errors.length} error${plural} captured</strong>
