@@ -502,129 +502,156 @@
 
 	// webgl
 	const webgl = () => {
+		// detect webgl lies
 		const webglGetParameter = attempt(() => WebGLRenderingContext.prototype.getParameter)
 		const webglGetExtension = attempt(() => WebGLRenderingContext.prototype.getExtension)
 		const webglGetSupportedExtensions = attempt(() => WebGLRenderingContext.prototype.getSupportedExtensions)
 		const paramLie = webglGetParameter ? hasLiedAPI(webglGetParameter, 'getParameter').lie : false
 		const extLie = webglGetExtension ? hasLiedAPI(webglGetExtension, 'getExtension').lie : false
 		const supportedExtLie = webglGetSupportedExtensions ? hasLiedAPI(webglGetSupportedExtensions, 'getSupportedExtensions').lie : false
+
+		// detect webgl2 lies
+		const webgl2GetParameter = attempt(() => WebGL2RenderingContext.prototype.getParameter)
+		const webgl2GetExtension = attempt(() => WebGL2RenderingContext.prototype.getExtension)
+		const webgl2GetSupportedExtensions = attempt(() => WebGL2RenderingContext.prototype.getSupportedExtensions)
+		const param2Lie = webgl2GetParameter ? hasLiedAPI(webgl2GetParameter, 'getParameter').lie : false
+		const ext2Lie = webgl2GetExtension ? hasLiedAPI(webgl2GetExtension, 'getExtension').lie : false
+		const supportedExt2Lie = webgl2GetSupportedExtensions ? hasLiedAPI(webgl2GetSupportedExtensions, 'getSupportedExtensions').lie : false
+
+		// crreate canvas context
 		const canvas = document.createElement('canvas')
+		const canvas2 = document.createElement('canvas')
 		const context = (
 			canvas.getContext('webgl') ||
 			canvas.getContext('experimental-webgl') ||
 			canvas.getContext('moz-webgl') ||
 			canvas.getContext('webkit-3d')
 		)
+		const context2 = canvas2.getContext('webgl2')
+
+		const getSupportedExtensions = (context, supportedExtLie, title) => {
+			try {
+				const extensions = context ? context.getSupportedExtensions() : []
+				
+				if (!supportedExtLie) {
+					return {
+						extensions: ( 
+							!proxyBehavior(extensions) ? extensions : 
+							sendToTrash(title, 'proxy behavior detected')
+						)
+					}
+				}
+
+				// document lie and send to trash
+				if (supportedExtLie) { 
+					documentLie(title, extensions, supportedExtLie)
+					sendToTrash(title, extensions)
+				}
+				// Fingerprint lie
+				return {
+					extensions: { supportedExtLie }
+				}
+			}
+			catch (error) {
+				captureError(error)
+				return {
+					extensions: isBrave ? sendToTrash(title, null) : undefined
+				}
+			}
+		}
+
+		const getUnmasked = (context, [paramLie, extLie], [rendererTitle, vendorTitle]) => {
+			try {
+				const extension = context && context.getExtension('WEBGL_debug_renderer_info')
+				const vendor = extension && context.getParameter(extension.UNMASKED_VENDOR_WEBGL)
+				const renderer = extension && context.getParameter(extension.UNMASKED_RENDERER_WEBGL)
+				const validate = (value, title) => {
+					return (
+						isBrave ? sendToTrash(title, value) :
+						!proxyBehavior(value) ? value : 
+						sendToTrash(title, 'proxy behavior detected')
+					)
+				}
+
+				if (!paramLie && !extLie) {
+					return {
+						vendor: validate(vendor, vendorTitle),
+						renderer: validate(renderer, rendererTitle)
+					}
+				}
+
+				// document lie and send to trash
+				const webglVendorAndRenderer = `${vendor}, ${renderer}`
+				const paramTitle = `${vendorTitle}And${rendererTitle}Parameter`
+				const extTitle = `${vendorTitle}And${rendererTitle}Extension`
+				if (paramLie) { 
+					documentLie(paramTitle, webglVendorAndRenderer, paramLie)
+					sendToTrash(paramTitle, webglVendorAndRenderer)
+				}
+				if (extLie) {
+					documentLie(extTitle, webglVendorAndRenderer, extLie)
+					sendToTrash(extTitle, webglVendorAndRenderer)
+				}
+
+				// Fingerprint lie
+				return {
+					vendor: { paramLie, extLie },
+					renderer: { paramLie, extLie }
+				}
+			}
+			catch (error) {
+				captureError(error)
+				return {
+					vendor: isBrave ? sendToTrash(vendorTitle, null) : undefined,
+					renderer: isBrave ? sendToTrash(rendererTitle, null) : undefined
+				}
+			}
+		}
+		const getDataURL = (canvas, context, [dataLie, contextLie], [canvasTitle, contextTitle]) => {
+			try {
+				let canvasWebglDataURI = ''
+
+				if (!dataLie && !contextLie) {
+					context.clearColor(0.2, 0.4, 0.6, 0.8)
+					context.clear(context.COLOR_BUFFER_BIT)
+					canvasWebglDataURI = canvas.toDataURL()
+					return isBrave ? sendToTrash(canvasTitle, hashMini(canvasWebglDataURI)) : canvasWebglDataURI
+				}
+				
+				// document lie and send to trash
+				canvasWebglDataURI = canvas.toDataURL()
+				if (contextLie) {
+					const hash = hashMini(canvasWebglDataURI)
+					documentLie(contextTitle, hash, contextLie)
+					sendToTrash(contextTitle, hash)
+				}
+				if (dataLie) {
+					const hash = hashMini(canvasWebglDataURI)
+					documentLie(canvasTitle, hash, dataLie)
+					sendToTrash(canvasTitle, hash)
+				}
+
+				// fingerprint lie
+				return { dataLie, contextLie }
+			}
+			catch (error) {
+				return captureError(error)
+			}
+		}
 
 		return {
-			supported: (() => {
-				try {
-					const extensions = context ? context.getSupportedExtensions() : []
-					
-					if (!supportedExtLie) {
-						return {
-							extensions: ( 
-								!proxyBehavior(extensions) ? extensions : 
-								sendToTrash('webglSupportedExtensions', 'proxy behavior detected')
-							)
-						}
-					}
-
-					// document lie and send to trash
-					if (supportedExtLie) { 
-						documentLie('webglSupportedExtensions', extensions, supportedExtLie)
-						sendToTrash('webglSupportedExtensions', extensions)
-					}
-					// Fingerprint lie
-					return {
-						extensions: { supportedExtLie }
-					}
-				}
-				catch (error) {
-					captureError(error)
-					return {
-						extensions: isBrave ? sendToTrash('webglSupportedExtensions', null) : undefined
-					}
-				}
-			})(),
-			unmasked: (() => {
-				try {
-					const extension = context && context.getExtension('WEBGL_debug_renderer_info')
-					const vendor = extension && context.getParameter(extension.UNMASKED_VENDOR_WEBGL)
-					const renderer = extension && context.getParameter(extension.UNMASKED_RENDERER_WEBGL)
-					
-					if (!paramLie && !extLie) {
-						return {
-							vendor: (
-								isBrave ? sendToTrash('webglVendor', vendor) : 
-								!proxyBehavior(vendor) ? vendor : 
-								sendToTrash('webglVendor', 'proxy behavior detected')
-							),
-							renderer: (
-								isBrave ? sendToTrash('webglRenderer', renderer) :
-								!proxyBehavior(renderer) ? renderer : 
-								sendToTrash('webglRenderer', 'proxy behavior detected')
-							)
-						}
-					}
-
-					// document lie and send to trash
-					const webglVendorAndRendererParameter = `${vendor}, ${renderer}`
-					const webglVendorAndRendererExtension = webglVendorAndRendererParameter
-					if (paramLie) { 
-						documentLie('webglVendorAndRendererParameter', webglVendorAndRendererParameter, paramLie)
-						sendToTrash('webglVendorAndRendererParameter', webglVendorAndRendererParameter)
-					}
-					if (extLie) {
-						documentLie('webglVendorAndRendererExtension', webglVendorAndRendererExtension, extLie)
-						sendToTrash('webglVendorAndRendererExtension', webglVendorAndRendererExtension)
-					}
-					// Fingerprint lie
-					return {
-						vendor: { paramLie, extLie },
-						renderer: { paramLie, extLie }
-					}
-				}
-				catch (error) {
-					captureError(error)
-					return {
-						vendor: isBrave ? sendToTrash('webglVendor', null) : undefined,
-						renderer: isBrave ? sendToTrash('webglRenderer', null) : undefined
-					}
-				}
-			})(),
-			dataURL: (() => {
-				try {
-					let canvasWebglDataURI = ''
-
-					if (!dataLie && !contextLie) {
-						context.clearColor(0.2, 0.4, 0.6, 0.8)
-						context.clear(context.COLOR_BUFFER_BIT)
-						canvasWebglDataURI = canvas.toDataURL()
-						return isBrave ? sendToTrash('canvasWebglDataURI', hashMini(canvasWebglDataURI)) : canvasWebglDataURI
-					}
-					
-					// document lie and send to trash
-					canvasWebglDataURI = canvas.toDataURL()
-					const canvasWebglContextDataURI = canvasWebglDataURI
-					if (contextLie) {
-						const contextHash = hashMini(canvasWebglContextDataURI)
-						documentLie('canvasWebglContextDataURI', contextHash, contextLie)
-						sendToTrash('canvasWebglContextDataURI', contextHash)
-					}
-					if (dataLie) {
-						const dataHash = hashMini(canvasWebglDataURI)
-						documentLie('canvasWebglDataURI', dataHash, dataLie)
-						sendToTrash('canvasWebglDataURI', dataHash)
-					}
-
-					// fingerprint lie
-					return { dataLie, contextLie }
-				}
-				catch (error) {
-					return captureError(error)
-				}
-			})()
+			supported: getSupportedExtensions(context, supportedExtLie, 'webglSupportedExtensions'),
+			supported2: getSupportedExtensions(context2, supportedExt2Lie, 'webgl2SupportedExtensions'),
+			unmasked: getUnmasked(context, [paramLie, extLie], ['webglRenderer', 'webglVendor']),
+			unmasked2: getUnmasked(context2, [param2Lie, ext2Lie], ['webgl2Renderer', 'webgl2Vendor']),
+			dataURL: getDataURL(canvas, context, [dataLie, contextLie], ['canvasWebglDataURI', 'canvasWebglContextDataURI']),
+			dataURL2: getDataURL(canvas, context, [dataLie, contextLie], ['canvasWebglDataURI', 'canvasWebglContextDataURI']),
+			matching: function() {
+				return (
+					JSON.stringify(this.unmasked) === JSON.stringify(this.unmasked2) &&
+					this.dataURL === this.dataURL2
+				)
+			}
 		}
 		
 	}
@@ -987,11 +1014,16 @@
 		const canvasComputed = attempt(() => canvas())
 		const gl = attempt(() => webgl())
 		const webglComputed = {
-			vendor: attempt(() => gl.unmasked.vendor),
-			renderer: attempt(() => gl.unmasked.renderer),
-			extensions: attempt(() => gl.supported.extensions)
+			vendor: gl.unmasked.vendor,
+			renderer: gl.unmasked.renderer,
+			extensions: gl.supported.extensions,
+			vendor2: gl.unmasked2.vendor,
+			renderer2: gl.unmasked2.renderer,
+			extensions2: gl.supported2.extensions,
+			matching: gl.matching()
 		}
 		const webglDataURLComputed = attempt(() => gl.dataURL)
+		const webgl2DataURLComputed = attempt(() => gl.dataURL2)
 		const consoleErrorsComputed = attempt(() => consoleErrs())
 		const timezoneComputed = attempt(() => timezone())
 		const cRectsComputed = attempt(() => cRects())
@@ -1044,6 +1076,7 @@
 			webglHash,
 			screenHash,
 			weglDataURLHash,
+			wegl2DataURLHash,
 			consoleErrorsHash,
 			cRectsHash,
 			fontsHash,
@@ -1066,6 +1099,7 @@
 			hashify(webglComputed),
 			hashify(screenComputed),
 			hashify(webglDataURLComputed),
+			hashify(webgl2DataURLComputed),
 			hashify(consoleErrorsComputed),
 			hashify(cRectsComputed),
 			hashify(fonts),
@@ -1094,6 +1128,7 @@
 			audio: [offlineAudio, audioHash],
 			screen: [screenComputed, screenHash],
 			webglDataURL: [webglDataURLComputed, weglDataURLHash],
+			webgl2DataURL: [webgl2DataURLComputed, wegl2DataURLHash],
 			consoleErrors: [consoleErrorsComputed, consoleErrorsHash],
 			cRects: [cRectsComputed, cRectsHash],
 			fonts: [fonts, fontsHash],
@@ -1125,10 +1160,9 @@
 			voices: fp.voices,
 			windowVersion: fp.window,
 			navigatorVersion: fp.nav[0].version,
-			webglRenderer: fp.webgl[0].renderer,
-			webglVendor: fp.webgl[0].vendor,
-			webglExtensions: fp.webgl[0].extensions,
+			webgl: fp.webgl[0],
 			webglDataURL: fp.webglDataURL,
+			webgl2DataURL: fp.webgl2DataURL,
 			consoleErrors: fp.consoleErrors,
 			trash: fp.trash,
 			lies: fp.lies,
@@ -1294,38 +1328,43 @@
 					<div>webglDataURL: ${
 						isBrave ? 'Brave Browser' : identify(fp.webglDataURL)
 					}</div>
-					<div>hash: ${(() => {
+					<div>webgl2DataURL: ${
+						isBrave ? 'Brave Browser' : identify(fp.webgl2DataURL)
+					}</div>
+					<div>webgl/webgl2 hash: ${(() => {
 						const [ data, hash ] = fp.webgl
 						return hash
 					})()}</div>
-					<div>renderer: ${(() => {
+					${(() => {
 						const [ data ] = fp.webgl
-						const { renderer } = data
-						const isString = typeof renderer == 'string'
-						return (
-							isBrave ? 'Brave Browser' : 
-							isString && renderer ? renderer : 
-							!renderer ? note.blocked : identify(fp.webgl)
-						)
-					})()}</div>
-					<div>vendor: ${(() => {
+						const { renderer, renderer2, vendor, vendor2, matching } = data
+						const validate = (value) => {
+							const isString = typeof renderer == 'string'
+							return (
+								isBrave ? 'Brave Browser' : 
+								isString && value ? value : 
+								!value ? note.blocked : identify(fp.webgl)
+							)
+						}
+						return `
+							<div>renderer: ${validate(renderer)}, ${validate(renderer2)}</div>
+							<div>vendor: ${validate(vendor)}, ${validate(vendor2)}</div>
+							<div>matching: ${matching}</div>
+						`
+					})()}
+					${(() => {
 						const [ data ] = fp.webgl
-						const { vendor } = data
-						const isString = typeof vendor == 'string'
-						return (
-							isBrave ? 'Brave Browser' : 
-							isString && vendor ? vendor : 
-							!vendor ? note.blocked : identify(fp.webgl)
-						)
-					})()}</div>
-					<div>webgl supported extensions: ${(() => {
-						const [ data ] = fp.webgl
-						const { extensions } = data
-						const isObj = typeof extensions == 'object'
-						return (
-							isObj && extensions && extensions.length ? extensions.length : note.blocked
-						)
-					})()}</div>
+						const { extensions, extensions2 } = data
+						const validate = value => {
+							const isObj = typeof extensions == 'object'
+							return (
+								isObj && value && value.length ? value.length : note.blocked
+							)
+						}
+						return `
+							<div>supported extensions: ${validate(extensions)}, ${validate(extensions2)}</div>
+						`
+					})()}
 					</div>
 					<div>client rects: ${identify(fp.cRects)}</div>
 					<div>console errors: ${identify(fp.consoleErrors)}</div>	
