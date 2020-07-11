@@ -901,10 +901,10 @@
 		const baseOffsetHeight = {}
 		const style = ` > span{position:absolute;left:-9999px;font-size:100px;font-style:normal;font-weight:normal;letter-spacing:normal;line-break:auto;line-height:normal;text-transform:none;text-align:left;text-decoration:none;text-shadow:none;white-space:normal;word-break:normal;word-spacing:normal}`
 		const baseFontSpan = font => {
-			return `<span class="basefont" data-font="${font}" style="font-family: '${font}'">${text}</span>`
+			return `<span class="basefont" data-font="${font}" style="font-family: ${font}">${text}</span>`
 		}
 		const systemFontSpan = (font, basefont) => {
-			return `<span class="system-font" data-font="${font}" data-basefont="${basefont}" style="font-family: ${`'${font}', '${basefont}'`}">${text}</span>`
+			return `<span class="system-font" data-font="${font}" data-basefont="${basefont}" style="font-family: ${`'${font}', ${basefont}`}">${text}</span>`
 		}
 		const detect = fonts => {
 			return new Promise(resolve => {
