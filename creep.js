@@ -899,7 +899,7 @@
 		const text = 'mmmmmmmmmmlli'
 		const baseOffsetWidth = {}
 		const baseOffsetHeight = {}
-		const style = ` > span{position:absolute;left:-9999px;fontSize:100px;fontStyle:normal;fontWeight:normal;letterSpacing:normal;lineBreak:auto;lineHeight:normal;textTransform:none;textAlign:left;textDecoration:none;textShadow:none;whiteSpace:normal;wordBreak:normal;wordSpacing:normal}`
+		const style = ` > span{position:absolute;left:-9999px;font-size:100px;font-style:normal;font-weight:normal;letter-spacing:normal;line-break:auto;line-height:normal;text-transform:none;text-align:left;text-decoration:none;text-shadow:none;white-space:normal;word-break:normal;word-spacing:normal}`
 		const baseFontSpan = font => {
 			return `<span class="basefont" data-font="${font}" style="font-family: '${font}'">${text}</span>`
 		}
