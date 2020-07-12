@@ -645,7 +645,7 @@
 			unmasked: getUnmasked(context, [paramLie, extLie], ['webglRenderer', 'webglVendor']),
 			unmasked2: getUnmasked(context2, [param2Lie, ext2Lie], ['webgl2Renderer', 'webgl2Vendor']),
 			dataURL: getDataURL(canvas, context, [dataLie, contextLie], ['canvasWebglDataURI', 'canvasWebglContextDataURI']),
-			dataURL2: getDataURL(canvas, context, [dataLie, contextLie], ['canvasWebglDataURI', 'canvasWebglContextDataURI']),
+			dataURL2: getDataURL(canvas2, context2, [dataLie, contextLie], ['canvasWebgl2DataURI', 'canvasWebgl2ContextDataURI']),
 			matching: function() {
 				return (
 					JSON.stringify(this.unmasked) === JSON.stringify(this.unmasked2) &&
