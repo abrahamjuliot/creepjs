@@ -754,7 +754,6 @@
 		const rectsLie = (
 			elementGetClientRects ? hasLiedAPI(elementGetClientRects, 'getClientRects').lie : false
 		)
-		const cRectProps = ['x', 'y', 'width', 'height', 'top', 'right', 'bottom', 'left']
 		const rectElems = document.getElementsByClassName('rects')
 		const clientRects = [...rectElems].map(el => {
 			return toJSONParsed(el.getClientRects()[0])
