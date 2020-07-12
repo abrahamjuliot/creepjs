@@ -528,7 +528,6 @@
 			canvas.getContext('webkit-3d')
 		)
 		const context2 = canvas2.getContext('webgl2')
-
 		const getSupportedExtensions = (context, supportedExtLie, title) => {
 			try {
 				const extensions = context ? context.getSupportedExtensions() : []
