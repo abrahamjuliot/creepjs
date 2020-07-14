@@ -1,0 +1,189 @@
+/* Reset */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+/* custom */
+
+:root {
+  --grey: #50514F;
+  --red: #F25F5C;
+  --yellow: #FFE066;
+  --blue: #247BA0;
+  --aqua: #70C1B3;
+  --text: var(--grey);
+  --error: var(--red);
+  --warn: var(--yellow);
+  --known: var(--blue);
+  --good: var(--aqua);
+}
+
+body { 
+	box-sizing: border-box;
+	font-family: monospace;
+	color: var(--text);
+}
+strong {
+	font-weight: bold;
+}
+visitor {
+    display: block;
+    padding: 15px 10px;
+    min-height: 90px !important;
+}
+#rect-container {
+	opacity: 0;
+	position: relative;
+	border: 1px solid
+}
+#fingerprint-data,
+visitor {
+	box-sizing: border-box;
+	margin: 0 auto;
+	max-width: 700px;
+}
+#fingerprint-data > div {
+	line-height: 1.5;
+	overflow-wrap: break-word;
+	padding: 10px;
+	margin: 10px 0;
+	box-shadow: 0px 2px 2px 0px #cfd0d1;
+}
+#fingerprint-data h1,
+#fingerprint-data h2 {
+	text-align: center;
+}
+#fingerprint-data .trash,
+#fingerprint-data .lies,
+#fingerprint-data .blocked,
+#fingerprint-data .known,
+#fingerprint-data .none {
+	color: #fff;
+}
+#fingerprint-data .trash,
+#fingerprint-data .lies,
+#fingerprint-data .errors {
+	box-shadow: none;
+}
+#fingerprint-data .trash,
+#fingerprint-data .lies,
+#fingerprint-data .blocked {
+	background: var(--error);
+}
+#fingerprint-data .errors {
+	background: var(--warn);
+}
+#fingerprint-data .blocked,
+#fingerprint-data .known,
+#fingerprint-data .none {
+	font-weight: bold;
+	padding: 0 4px;
+}
+
+#fingerprint-data .known {
+	background: var(--known);
+}
+#fingerprint-data .none {
+	background: var(--good);
+}
+
+visitor {
+	animation: enter 0.3s 0.2s ease both;
+}
+visitor div:nth-of-type(1) {
+	animation: enter 0.3s 0.2s ease both;
+}
+visitor div:nth-of-type(2) {
+	animation: enter 0.3s 0.5s ease both;
+}
+visitor div:nth-of-type(3) {
+	animation: enter 0.3s 0.8s ease both;
+}
+visitor div:nth-of-type(4) {
+	animation: enter 0.3s 1.1s ease both;
+}
+#fingerprint-data {
+	animation: fade-in 0.3s .3s ease both;
+}
+
+#fingerprint-data .trash,
+#fingerprint-data .lies,
+#fingerprint-data .errors {
+	animation: zoom 0.3s .6s cubic-bezier(0,1.13,0,1.2) both;
+}
+@keyframes enter {
+	0%, 60% {
+		transform: translate(5px, 0);
+		opacity: 0;
+	}
+	100% {
+		transform: translate(0);
+		opacity: 1;
+	}
+}
+@keyframes fade-in {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+@keyframes zoom {
+	0%, 30% {
+		transform: scale(1.1);
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+/*
+  --text: var(--grey);
+  --error: var(--red);
+  --warn: var(--yellow);
+  --known: var(--blue);
+  --good: var(--aqua);
+
+  */
