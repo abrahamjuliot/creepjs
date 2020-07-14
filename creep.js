@@ -1111,9 +1111,11 @@
 		})
 		hashProcess('Hashing complete')
 
-		navComputed.mimeTypesHash = mimeTypesHash
-		navComputed.versionHash = navVersionHash
-		navComputed.pluginsHash = pluginsHash
+		if (navComputed) { 
+			navComputed.mimeTypesHash = mimeTypesHash
+			navComputed.versionHash = navVersionHash
+			navComputed.pluginsHash = pluginsHash
+		}
 
 		const fingerprint = {
 			nav: [navComputed, navHash],
