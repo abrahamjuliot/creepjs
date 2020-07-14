@@ -1012,13 +1012,13 @@
 		const canvasComputed = attempt(() => canvas())
 		const gl = attempt(() => webgl())
 		const webglComputed = {
-			vendor: gl.unmasked.vendor,
-			renderer: gl.unmasked.renderer,
-			extensions: gl.supported.extensions,
-			vendor2: gl.unmasked2.vendor,
-			renderer2: gl.unmasked2.renderer,
-			extensions2: gl.supported2.extensions,
-			matching: gl.matching()
+			vendor: gl ? gl.unmasked.vendor : undefined,
+			renderer: gl ? gl.unmasked.renderer : undefined,
+			extensions: gl ? gl.supported.extensions : undefined,
+			vendor2: gl ? gl.unmasked2.vendor : undefined,
+			renderer2: gl ? gl.unmasked2.renderer : undefined,
+			extensions2: gl ? gl.supported2.extensions : undefined,
+			matching: gl ? gl.matching() : undefined
 		}
 		const webglDataURLComputed = attempt(() => gl.dataURL)
 		const webgl2DataURLComputed = attempt(() => gl.dataURL2)
