@@ -1020,8 +1020,8 @@
 			extensions2: gl ? gl.supported2.extensions : undefined,
 			matching: gl ? gl.matching() : undefined
 		}
-		const webglDataURLComputed = attempt(() => gl.dataURL)
-		const webgl2DataURLComputed = attempt(() => gl.dataURL2)
+		const webglDataURLComputed = attempt(() => gl ? gl.dataURL : undefined)
+		const webgl2DataURLComputed = attempt(() => gl ? gl.dataURL2 : undefined)
 		const consoleErrorsComputed = attempt(() => consoleErrs())
 		const timezoneComputed = attempt(() => timezone())
 		const cRectsComputed = attempt(() => cRects())
