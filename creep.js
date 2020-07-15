@@ -468,7 +468,6 @@
 		if (!dataLie && !contextLie) {
 			const context = canvas.getContext('2d')
 			const str = '%$%^LGFWE($HIF)'
-			context.clearRect(0, 0, canvas.width, canvas.height) // clear
 			context.font = '20px Arial'
 			context.fillText(str, 100, 100)
 			context.fillStyle = 'red'
