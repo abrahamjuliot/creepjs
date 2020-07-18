@@ -373,6 +373,16 @@
 		return version
 	}
 
+	// computed style version
+	const computedStyleVersion = () => {
+		const div = document.createElement('div')
+		if ('getComputedStyle' in window) {
+			const computedStyle = getComputedStyle(div)
+			return Object.keys(computedStyle)
+		}
+		return undefined
+	}
+
 	// screen (allow some discrepancies otherwise lie detection triggers at random)
 	const screenFp = () => {
 		const screenPrototype = attempt(() => Screen.prototype)
@@ -1008,7 +1018,8 @@
 		const mimeTypes = navComputed ? navComputed.mimeTypes : undefined
 		const plugins = navComputed ? navComputed.plugins : undefined
 		const navVersion = navComputed ? navComputed.version : undefined
-		const windowVersionComputed = windowVersion()
+		const windowVersionComputed = attempt(() => windowVersion())
+		const computedStyleVersionComputed = attempt(() => computedStyleVersion())
 		const screenComputed = attempt(() => screenFp())
 		const canvasComputed = attempt(() => canvas())
 		const gl = attempt(() => webgl())
@@ -1067,6 +1078,7 @@
 			pluginsHash,
 			navVersionHash,
 			windowVersionHash,
+			computedStyleVersionHash,
 			voicesHash,
 			mediaDeviceHash,
 			highEntropyHash,
@@ -1090,6 +1102,7 @@
 			hashify(plugins),
 			hashify(navVersion),
 			hashify(windowVersionComputed),
+			hashify(computedStyleVersionComputed),
 			hashify(voicesComputed),
 			hashify(mediaDevicesComputed),
 			hashify(highEntropy),
@@ -1122,6 +1135,7 @@
 			nav: [navComputed, navHash],
 			highEntropy: [highEntropy, highEntropyHash],
 			window: [windowVersionComputed, windowVersionHash],
+			style: [computedStyleVersionComputed, computedStyleVersionHash],
 			timezone: [timezoneComputed, timezoneHash],
 			webgl: [webglComputed, webglHash],
 			voices: [voicesComputed, voicesHash],
@@ -1160,6 +1174,7 @@
 			timezone: fp.timezone,
 			voices: fp.voices,
 			windowVersion: fp.window,
+			styleVersion: fp.style,
 			navigatorVersion: fp.nav[0] ? fp.nav[0].version : undefined,
 			webgl: fp.webgl[0],
 			webglDataURL: fp.webglDataURL,
@@ -1446,7 +1461,29 @@
 						})()
 					}
 					
-					<div>window API version: ${identify(fp.window)}</div>
+					${
+						!fp.window[0] || !fp.window[0].length ? `<div>window API: ${note.blocked}</div>`: (() => {
+							const [ props, hash ]  = fp.window
+							return `
+							<div>
+								<div>window API: ${hash}</div>
+								<div>properties: ${props.length}</div>
+							</div>
+							`
+						})()
+					}
+
+					${
+						!fp.style[0] || !fp.style[0].length ? `<div>computed style: ${note.blocked} or unsupported</div>`: (() => {
+							const [ props, hash ]  = fp.style
+							return `
+							<div>
+								<div>computed style: ${hash}</div>
+								<div>properties: ${props.length}</div>
+							</div>
+							`
+						})()
+					}
 
 					${
 						!fp.nav[0] ? `<div>navigator: ${note.blocked}</div>`: (() => {
