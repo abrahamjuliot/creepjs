@@ -1,6 +1,6 @@
 # CreepJS
 
-[https://creepjs-live.abrahamjuliot.repl.co](https://creepjs-live.abrahamjuliot.repl.co)
+[abrahamjuliot.github.io/creepjs](https://abrahamjuliot.github.io/creepjs)
 
 The purpose of this project is to shed light on weaknesses and privacy leaks among modern anti-fingerprinting extensions and browsers.
 
