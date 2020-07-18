@@ -1172,7 +1172,10 @@
 		// Trusted Fingerprint
 		const creep = {
 			// avoid random timezone fingerprint values
-			timezone: !fp.timezone[0].timezoneLie ? fp.timezone : fp.timezone[0].timezoneLie.lies,
+			timezone: (
+				!fp.timezone[0] || !fp.timezone[0].timezoneLie ? fp.timezone :
+				fp.timezone[0].timezoneLie.lies
+			),
 			voices: fp.voices,
 			windowVersion: fp.window,
 			styleVersion: fp.style,
