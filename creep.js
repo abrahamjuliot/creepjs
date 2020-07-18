@@ -1509,17 +1509,18 @@
 							<div>
 								<div>navigator hash: ${hash}</div>
 								<div>version: ${version !== undefined ? versionHash : note.blocked}</div>
+								<div>properties: ${version !== undefined ? version.length : note.blocked}</div>
+								<div>mimeTypes: ${mimeTypes !== undefined ? mimeTypesHash : note.blocked}</div>
+								<div>plugins: ${plugins !== undefined ? pluginsHash : note.blocked}</div>
 								<div>platform: ${platform ? platform : `${note.blocked} or other`}</div>
 								<div>deviceMemory: ${deviceMemory ? deviceMemory : note.blocked}</div>
 								<div>hardwareConcurrency: ${hardwareConcurrency ? hardwareConcurrency : note.blocked}</div>
 								<div>maxTouchPoints: ${maxTouchPoints !== undefined ? maxTouchPoints : note.blocked}</div>
-								<div>userAgent: ${userAgent ? userAgent : note.blocked}</div>
-								<div>appVersion: ${appVersion ? appVersion : note.blocked}</div>
 								<div>language: ${language ? language : note.blocked}</div>
 								<div>vendor: ${vendor ? vendor : note.blocked}</div>
 								<div>doNotTrack: ${doNotTrack !== undefined ? doNotTrack : note.blocked}</div>
-								<div>mimeTypes: ${mimeTypes !== undefined ? mimeTypesHash : note.blocked}</div>
-								<div>plugins: ${plugins !== undefined ? pluginsHash : note.blocked}</div>
+								<div>userAgent: ${userAgent ? userAgent : note.blocked}</div>
+								<div>appVersion: ${appVersion ? appVersion : note.blocked}</div>
 							</div>
 							`
 						})()
