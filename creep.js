@@ -171,7 +171,7 @@
 			// detect attempts to rename the API and/or rewrite toString
 			try {
 				const { name: apiName, toString: apiToString } = apiFunction
-				if (apiName != `get ${name}` || apiName != name) {
+				if (apiName != `get ${name}` && apiName != name) {
 					lies.push({
 						apiName: !proxyBehavior(apiName) ? apiName: true
 					})
