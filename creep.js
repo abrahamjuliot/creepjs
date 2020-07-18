@@ -347,20 +347,21 @@
 	}
 
 	// client hints
+	// https://github.com/WICG/ua-client-hints
 	const highEntropyValues = () => {
-		const undfnd = new Promise(resolve => resolve(undefined))
+		const promiseUndefined = new Promise(resolve => resolve(undefined))
 		try {
 			if (!('userAgentData' in navigator)) {
-				return undfnd
+				return promiseUndefined
 			}
-			return !('userAgentData' in navigator) ? undfnd : 
+			return !('userAgentData' in navigator) ? promiseUndefined : 
 				attempt(() => navigator.userAgentData.getHighEntropyValues(
 					['platform', 'platformVersion', 'architecture',  'model', 'uaFullVersion']
 				))
 		}
 		catch (error) {
 			captureError(error)
-			return new Promise(resolve => resolve(undefined))
+			return promiseUndefined
 		}
 	}
 
