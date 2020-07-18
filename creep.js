@@ -788,14 +788,14 @@
 	const offlineAudioOscillator = () => {
 		const audioBufferGetChannelData = attempt(() => AudioBuffer.prototype.getChannelData)
 		const audioBufferCopyFromChannel = attempt(() => AudioBuffer.prototype.copyFromChannel)
-		const channelDataLie = (
-			audioBufferGetChannelData ? hasLiedAPI(audioBufferGetChannelData, 'getChannelData').lie : false
-		)
-		const copyFromChannelLie = (
-			audioBufferCopyFromChannel ? hasLiedAPI(audioBufferCopyFromChannel, 'copyFromChannel').lie : false
-		)
 		const audioProcess = timer('')
 		try {
+			const channelDataLie = (
+				audioBufferGetChannelData ? hasLiedAPI(audioBufferGetChannelData, 'getChannelData').lie : false
+			)
+			const copyFromChannelLie = (
+				audioBufferCopyFromChannel ? hasLiedAPI(audioBufferCopyFromChannel, 'copyFromChannel').lie : false
+			)
 			const audioContext = OfflineAudioContext || webkitOfflineAudioContext
 			const context = new audioContext(1, 44100, 44100)
 			const oscillator = context.createOscillator()
