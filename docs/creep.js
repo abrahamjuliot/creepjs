@@ -347,20 +347,21 @@
 	}
 
 	// client hints
+	// https://github.com/WICG/ua-client-hints
 	const highEntropyValues = () => {
-		const undfnd = new Promise(resolve => resolve(undefined))
+		const promiseUndefined = new Promise(resolve => resolve(undefined))
 		try {
 			if (!('userAgentData' in navigator)) {
-				return undfnd
+				return promiseUndefined
 			}
-			return !('userAgentData' in navigator) ? undfnd : 
+			return !('userAgentData' in navigator) ? promiseUndefined : 
 				attempt(() => navigator.userAgentData.getHighEntropyValues(
 					['platform', 'platformVersion', 'architecture',  'model', 'uaFullVersion']
 				))
 		}
 		catch (error) {
 			captureError(error)
-			return new Promise(resolve => resolve(undefined))
+			return promiseUndefined
 		}
 	}
 
@@ -370,6 +371,16 @@
 		const version = Object.getOwnPropertyNames(iframe.contentWindow)
 		iframe.parentNode.removeChild(iframe)
 		return version
+	}
+
+	// computed style version
+	const computedStyleVersion = () => {
+		const div = document.createElement('div')
+		if ('getComputedStyle' in window) {
+			const computedStyle = getComputedStyle(div)
+			return Object.keys(computedStyle)
+		}
+		return undefined
 	}
 
 	// screen (allow some discrepancies otherwise lie detection triggers at random)
@@ -1007,7 +1018,8 @@
 		const mimeTypes = navComputed ? navComputed.mimeTypes : undefined
 		const plugins = navComputed ? navComputed.plugins : undefined
 		const navVersion = navComputed ? navComputed.version : undefined
-		const windowVersionComputed = windowVersion()
+		const windowVersionComputed = attempt(() => windowVersion())
+		const computedStyleVersionComputed = attempt(() => computedStyleVersion())
 		const screenComputed = attempt(() => screenFp())
 		const canvasComputed = attempt(() => canvas())
 		const gl = attempt(() => webgl())
@@ -1066,6 +1078,7 @@
 			pluginsHash,
 			navVersionHash,
 			windowVersionHash,
+			computedStyleVersionHash,
 			voicesHash,
 			mediaDeviceHash,
 			highEntropyHash,
@@ -1089,6 +1102,7 @@
 			hashify(plugins),
 			hashify(navVersion),
 			hashify(windowVersionComputed),
+			hashify(computedStyleVersionComputed),
 			hashify(voicesComputed),
 			hashify(mediaDevicesComputed),
 			hashify(highEntropy),
@@ -1121,6 +1135,7 @@
 			nav: [navComputed, navHash],
 			highEntropy: [highEntropy, highEntropyHash],
 			window: [windowVersionComputed, windowVersionHash],
+			style: [computedStyleVersionComputed, computedStyleVersionHash],
 			timezone: [timezoneComputed, timezoneHash],
 			webgl: [webglComputed, webglHash],
 			voices: [voicesComputed, voicesHash],
@@ -1154,18 +1169,26 @@
 		const fpElem = document.getElementById('fingerprint')
 		const fp = await fingerprint().catch((e) => console.log(e))
 
-		// Purified Fingerprint
+		// Trusted Fingerprint
 		const creep = {
-			timezone: fp.timezone,
+			// avoid random timezone fingerprint values
+			timezone: !fp.timezone[0].timezoneLie ? fp.timezone : fp.timezone[0].timezoneLie.lies,
 			voices: fp.voices,
 			windowVersion: fp.window,
+			styleVersion: fp.style,
 			navigatorVersion: fp.nav[0] ? fp.nav[0].version : undefined,
 			webgl: fp.webgl[0],
 			webglDataURL: fp.webglDataURL,
 			webgl2DataURL: fp.webgl2DataURL,
 			consoleErrors: fp.consoleErrors,
 			trash: fp.trash,
-			lies: fp.lies,
+			// avoid random lie fingerprint values
+			lies: fp.lies[0].map(lie => {
+				const { lieTypes, name } = lie
+				const types = Object.keys(lieTypes)
+				const lies = lieTypes.lies
+				return { name, types, lies }
+			}),
 			errorsCaptured: fp.errorsCaptured,
 			cRects: fp.cRects,
 			fonts: fp.fonts,
@@ -1175,9 +1198,9 @@
 		}
 		const log = (message, obj) => console.log(message, JSON.stringify(obj, null, '\t'))
 		
-		console.log('Pure Fingerprint (Object):', creep)
-		console.log('Fingerprint Id (Object):', fp)
-		log('Fingerprint Id (JSON):', fp)
+		console.log('Trusted Fingerprint (Object):', creep)
+		console.log('Loose Id (Object):', fp)
+		log('Loose Id (JSON):', fp)
 		
 		const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
 		.catch(error => { 
@@ -1196,10 +1219,12 @@
 				const pluralify = (len) => len > 1 ? 's' : ''
 				const plural = pluralify(subIdsLen)
 				const template = `
-					<div>First Visit: ${toLocaleStr(firstVisit)}</div>
-					<div>Latest Visit: ${toLocaleStr(latestVisit)}</div>
-					${subIdsLen ? `<div>${subIdsLen} sub fingerprint${plural} detected</div>` : ''}
-					<div>Visits: ${visits}</div>
+					<div>
+						<div>First Visit: ${toLocaleStr(firstVisit)}</div>
+						<div>Latest Visit: ${toLocaleStr(latestVisit)}</div>
+						${subIdsLen ? `<div>${subIdsLen} Loose fingerprint${plural}</div>` : ''}
+						<div>Visits: ${visits}${subIdsLen > 3 ? ` (<strong>Bot</strong>)`: ''}</div>
+					</div>
 				`
 				fetchVisitoDataTimer('Visitor data received')
 				return patch(visitorElem, html`${template}`)
@@ -1271,8 +1296,11 @@
 		const data = `
 			<section>
 				<div id="fingerprint-data">
-					<div>Purified Id: ${creepHash}</div>
-					<div>Fingerprint Id: ${fpHash}</div>
+					<div>
+						<strong>Fingerprint</strong>
+						<div>Trusted Id: ${creepHash}</div>
+						<div>Loose Id: ${fpHash}</div>
+					</div>
 
 					${
 						!trashBin.length ? '<div>trash: <span class="none">none</span></div>': (() => {
@@ -1445,7 +1473,29 @@
 						})()
 					}
 					
-					<div>window API version: ${identify(fp.window)}</div>
+					${
+						!fp.window[0] || !fp.window[0].length ? `<div>window API: ${note.blocked}</div>`: (() => {
+							const [ props, hash ]  = fp.window
+							return `
+							<div>
+								<div>window API: ${hash}</div>
+								<div>properties: ${props.length}</div>
+							</div>
+							`
+						})()
+					}
+
+					${
+						!fp.style[0] || !fp.style[0].length ? `<div>computed style: ${note.blocked} or unsupported</div>`: (() => {
+							const [ props, hash ]  = fp.style
+							return `
+							<div>
+								<div>computed style: ${hash}</div>
+								<div>properties: ${props.length}</div>
+							</div>
+							`
+						})()
+					}
 
 					${
 						!fp.nav[0] ? `<div>navigator: ${note.blocked}</div>`: (() => {
@@ -1471,17 +1521,18 @@
 							<div>
 								<div>navigator hash: ${hash}</div>
 								<div>version: ${version !== undefined ? versionHash : note.blocked}</div>
+								<div>properties: ${version !== undefined ? version.length : note.blocked}</div>
+								<div>mimeTypes: ${mimeTypes !== undefined ? mimeTypesHash : note.blocked}</div>
+								<div>plugins: ${plugins !== undefined ? pluginsHash : note.blocked}</div>
 								<div>platform: ${platform ? platform : `${note.blocked} or other`}</div>
 								<div>deviceMemory: ${deviceMemory ? deviceMemory : note.blocked}</div>
 								<div>hardwareConcurrency: ${hardwareConcurrency ? hardwareConcurrency : note.blocked}</div>
 								<div>maxTouchPoints: ${maxTouchPoints !== undefined ? maxTouchPoints : note.blocked}</div>
-								<div>userAgent: ${userAgent ? userAgent : note.blocked}</div>
-								<div>appVersion: ${appVersion ? appVersion : note.blocked}</div>
 								<div>language: ${language ? language : note.blocked}</div>
 								<div>vendor: ${vendor ? vendor : note.blocked}</div>
 								<div>doNotTrack: ${doNotTrack !== undefined ? doNotTrack : note.blocked}</div>
-								<div>mimeTypes: ${mimeTypes !== undefined ? mimeTypesHash : note.blocked}</div>
-								<div>plugins: ${plugins !== undefined ? pluginsHash : note.blocked}</div>
+								<div>userAgent: ${userAgent ? userAgent : note.blocked}</div>
+								<div>appVersion: ${appVersion ? appVersion : note.blocked}</div>
 							</div>
 							`
 						})()
@@ -1503,7 +1554,7 @@
 							`
 						})()
 					}
-					<div>Visitor fingerprints are deleted <a href="https://github.com/abrahamjuliot/creepjs/blob/8d6603ee39c9534cad700b899ef221e0ee97a5a4/server.gs#L24" target="_blank">every 7 days</a>.</div>
+					<div>Visitor data auto deletes <a href="https://github.com/abrahamjuliot/creepjs/blob/8d6603ee39c9534cad700b899ef221e0ee97a5a4/server.gs#L24" target="_blank">every 7 days</a>.</div>
 				</div>
 			</section>
 			
