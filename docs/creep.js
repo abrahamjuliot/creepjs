@@ -1504,7 +1504,7 @@
 							return `
 							<div>
 								<div>window API: ${hash}</div>
-								<div>properties: ${props.length}</div>
+								<div>iframe properties: ${props.length}</div>
 							</div>
 							`
 						})()
