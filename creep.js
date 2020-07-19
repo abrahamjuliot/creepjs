@@ -821,12 +821,12 @@
 			let binsSample = []
 			let matching = false
 			const values = {
-				channelCount: oscillator.channelCount,
-				forwardXMax: oscillator.context.listener.forwardX.maxValue,
-				compressorAttackDefault: compressor.attack.defaultValue,
-				oscillatorDetuneMax: oscillator.detune.maxValue,
-				oscillatorFrequencyMax: oscillator.frequency.maxValue,
-				biquadFilterGainMax: biquadFilter.gain.maxValue
+				channelCount: attempt(() => oscillator.channelCount),
+				forwardXMax: attempt(() => oscillator.context.listener.forwardX.maxValue),
+				compressorAttackDefault: attempt(() => compressor.attack.defaultValue),
+				oscillatorDetuneMax: attempt(() => oscillator.detune.maxValue),
+				oscillatorFrequencyMax: attempt(() => oscillator.frequency.maxValue),
+				biquadFilterGainMax: attempt(() => biquadFilter.gain.maxValue)
 			}
 			
 			context.oncomplete = event => {
