@@ -788,18 +788,20 @@
 	const offlineAudioOscillator = () => {
 		const audioBufferGetChannelData = attempt(() => AudioBuffer.prototype.getChannelData)
 		const audioBufferCopyFromChannel = attempt(() => AudioBuffer.prototype.copyFromChannel)
-		const channelDataLie = (
-			audioBufferGetChannelData ? hasLiedAPI(audioBufferGetChannelData, 'getChannelData').lie : false
-		)
-		const copyFromChannelLie = (
-			audioBufferCopyFromChannel ? hasLiedAPI(audioBufferCopyFromChannel, 'copyFromChannel').lie : false
-		)
 		const audioProcess = timer('')
 		try {
+			const channelDataLie = (
+				audioBufferGetChannelData ? hasLiedAPI(audioBufferGetChannelData, 'getChannelData').lie : false
+			)
+			const copyFromChannelLie = (
+				audioBufferCopyFromChannel ? hasLiedAPI(audioBufferCopyFromChannel, 'copyFromChannel').lie : false
+			)
 			const audioContext = OfflineAudioContext || webkitOfflineAudioContext
 			const context = new audioContext(1, 44100, 44100)
 			const oscillator = context.createOscillator()
 			const compressor = context.createDynamicsCompressor()
+			const biquadFilter = context.createBiquadFilter()
+
 			oscillator.type = 'triangle'
 			oscillator.frequency.value = 10000
 
@@ -818,6 +820,14 @@
 			let copySample = []
 			let binsSample = []
 			let matching = false
+			const values = {
+				channelCount: oscillator.channelCount,
+				forwardXMax: oscillator.context.listener.forwardX.maxValue,
+				compressorAttackDefault: compressor.attack.defaultValue,
+				oscillatorDetuneMax: oscillator.detune.maxValue,
+				oscillatorFrequencyMax: oscillator.frequency.maxValue,
+				biquadFilterGainMax: biquadFilter.gain.maxValue
+			}
 			
 			context.oncomplete = event => {
 				try {
@@ -878,7 +888,8 @@
 						const response = {
 							copySample: copyFromChannelLie ? [copyFromChannelLie] : copySample,
 							binsSample: channelDataLie ? [channelDataLie] : binsSample,
-							matching
+							matching,
+							values
 						}
 						resolve(response)
 					}
@@ -1419,13 +1430,19 @@
 					${
 						!fp.audio[0] ? `<div>audio: ${note.blocked}</div>`: (() => {
 							const [ audio, hash ]  = fp.audio
-							const { copySample, binsSample, matching } = audio
+							const { copySample, binsSample, matching, values } = audio
 							return `
 							<div>
 								<div>audio hash: ${hash}</div>
 								<div>sample: ${binsSample[0] &&  !isNaN(binsSample[0]) ? binsSample[0] : note.blocked}</div>
 								<div>copy: ${copySample[0] && !isNaN(copySample[0]) ? copySample[0] : note.blocked}</div>
 								<div>matching: ${matching}</div>
+								${
+									Object.keys(values).map(key => {
+										const value = values[key]
+										return `<div>${key}: ${value != undefined ? value : note.blocked}</div>`
+									}).join('')
+								}
 							</div>
 							`
 						})()
