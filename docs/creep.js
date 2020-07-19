@@ -865,7 +865,12 @@
 						if (isBrave) {
 							clearInterval(check)
 							sendToTrash('audio', binsSample[0])
-							resolve(undefined)
+							resolve({
+								copySample: [undefined],
+								binsSample: [undefined],
+								matching,
+								values
+							})
 						}
 						else if (proxyBehavior(binsSample)) {
 							clearInterval(check)
