@@ -1558,7 +1558,7 @@
 								const errors = fp.consoleErrors[0]
 								return Object.keys(errors).map(key => {
 									const value = errors[key]
-									return `<div>${key}: ${value != undefined ? value : note.blocked}</div>`
+									return `<div>${+key+1}: ${value != undefined ? value : note.blocked}</div>`
 								}).join('')
 							})()
 						}
@@ -1584,7 +1584,7 @@
 							<div>
 								<div>media devices: ${hash}</div>
 								<div>devices:</div>
-								${Object.keys(devices).map(key => `<div>${key}: ${devices[key].kind}</div>`).join('')}
+								${Object.keys(devices).map(key => `<div>${+key+1}: ${devices[key].kind}</div>`).join('')}
 							</div>
 							`
 						})()
