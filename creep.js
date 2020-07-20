@@ -570,6 +570,112 @@
 			}
 		}
 
+		const getSpecs = ([webgl, webgl2]) => {
+			const getShaderPrecisionFormat = (gl, shaderType) => {
+				const low = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.LOW_FLOAT))
+				const medium = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.MEDIUM_FLOAT))
+				const high = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.HIGH_FLOAT))
+				const highInt = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.HIGH_INT))
+				return { low, medium, high, highInt }
+			}
+			const getMaxAnisotropy = gl => {
+				const ext = (
+					gl.getExtension('EXT_texture_filter_anisotropic') ||
+					gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic') ||
+					gl.getExtension('MOZ_EXT_texture_filter_anisotropic')
+				)
+				return gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT)
+			}
+			const camelCaseProps = data => {
+				const renamed = {}
+				Object.keys(data).map(key => {
+					const val = data[key]
+					const name = key.toLowerCase().split('_').map((word, i) => {
+						return i == 0 ? word : word.charAt(0).toUpperCase() + word.slice(1)
+					}).join('')
+					renamed[name] = val
+				})
+				return renamed
+			}
+			const getShaderData = (name, shader) => {
+				const data = {}
+				for (const prop in shader) {
+					const obj = shader[prop]
+					data[name+'_'+prop+'_Precision'] = obj ? attempt(() => obj.precision) : undefined
+					data[name+'_'+prop+'_RangeMax'] = obj ? (() => obj.rangeMax) : undefined
+					data[name+'_'+prop+'_RangeMin'] = obj ? attempt(() => obj.rangeMin) : undefined
+				}
+				return data
+			}
+
+			const getWebglSpecs = gl => {
+				const data =  {
+					VERSION: attempt(() => gl.getParameter(gl.VERSION)),
+					SHADING_LANGUAGE_VERSION: attempt( () => gl.getParameter(gl.SHADING_LANGUAGE_VERSION)),
+					ANTIALIAS: attempt(() => (gl.getContextAttributes() ? gl.getContextAttributes().antialias : undefined)),
+					RED_BITS: attempt(() => gl.getParameter(gl.RED_BITS)),
+					GREEN_BITS: attempt(() => gl.getParameter(gl.GREEN_BITS)),
+					BLUE_BITS: attempt(() => gl.getParameter(gl.BLUE_BITS)),
+					ALPHA_BITS: attempt(() => gl.getParameter(gl.ALPHA_BITS)),
+					DEPTH_BITS: attempt(() => gl.getParameter(gl.DEPTH_BITS)),
+					STENCIL_BITS: attempt(() => gl.getParameter(gl.STENCIL_BITS)),
+					MAX_RENDERBUFFER_SIZE: attempt(() => gl.getParameter(gl.MAX_RENDERBUFFER_SIZE)),
+					MAX_COMBINED_TEXTURE_IMAGE_UNITS: attempt(() => gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS)),
+					MAX_CUBE_MAP_TEXTURE_SIZE: attempt(() => gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE)),
+					MAX_FRAGMENT_UNIFORM_VECTORS: attempt(() => gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS)),
+					MAX_TEXTURE_IMAGE_UNITS: attempt(() => gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS)),
+					MAX_TEXTURE_SIZE: attempt(() => gl.getParameter(gl.MAX_TEXTURE_SIZE)),
+					MAX_VARYING_VECTORS: attempt(() => gl.getParameter(gl.MAX_VARYING_VECTORS)),
+					MAX_VERTEX_ATTRIBS: attempt(() => gl.getParameter(gl.MAX_VERTEX_ATTRIBS)),
+					MAX_VERTEX_TEXTURE_IMAGE_UNITS: attempt(() => gl.getParameter(gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS)),
+					MAX_VERTEX_UNIFORM_VECTORS: attempt(() => gl.getParameter(gl.MAX_VERTEX_UNIFORM_VECTORS)),
+					ALIASED_LINE_WIDTH_RANGE: attempt(() => [...gl.getParameter(gl.ALIASED_LINE_WIDTH_RANGE)]),
+					ALIASED_POINT_SIZE_RANGE: attempt(() => [...gl.getParameter(gl.ALIASED_POINT_SIZE_RANGE)]),
+					MAX_VIEWPORT_DIMS: attempt(() => [...gl.getParameter(gl.MAX_VIEWPORT_DIMS)]),
+					MAX_TEXTURE_MAX_ANISOTROPY_EXT: attempt(() => getMaxAnisotropy(gl)),
+					...getShaderData('VERTEX_SHADER', getShaderPrecisionFormat(gl, 'VERTEX_SHADER')),
+					...getShaderData('FRAGMENT_SHADER', getShaderPrecisionFormat(gl, 'FRAGMENT_SHADER')),
+					MAX_DRAW_BUFFERS_WEBGL: attempt(() => gl.getParameter(
+						gl.getExtension('WEBGL_draw_buffers').MAX_DRAW_BUFFERS_WEBGL
+					))
+				}
+				return camelCaseProps(data)
+			}
+
+			const getWebgl2Specs = gl => {
+				const data = {
+					MAX_VERTEX_UNIFORM_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_VERTEX_UNIFORM_COMPONENTS)),
+					MAX_VERTEX_UNIFORM_BLOCKS: attempt(() => gl.getParameter(gl.MAX_VERTEX_UNIFORM_BLOCKS)),
+					MAX_VERTEX_OUTPUT_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_VERTEX_OUTPUT_COMPONENTS)),
+					MAX_VARYING_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_VARYING_COMPONENTS)),
+					MAX_FRAGMENT_UNIFORM_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_COMPONENTS)),
+					MAX_FRAGMENT_UNIFORM_BLOCKS: attempt(() => gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_BLOCKS)),
+					MAX_FRAGMENT_INPUT_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_FRAGMENT_INPUT_COMPONENTS)),
+					MIN_PROGRAM_TEXEL_OFFSET: attempt(() => gl.getParameter(gl.MIN_PROGRAM_TEXEL_OFFSET)),
+					MAX_PROGRAM_TEXEL_OFFSET: attempt(() => gl.getParameter(gl.MAX_PROGRAM_TEXEL_OFFSET)),
+					MAX_DRAW_BUFFERS: attempt(() => gl.getParameter(gl.MAX_DRAW_BUFFERS)),
+					MAX_COLOR_ATTACHMENTS: attempt(() => gl.getParameter(gl.MAX_COLOR_ATTACHMENTS)),
+					MAX_SAMPLES: attempt(() => gl.getParameter(gl.MAX_SAMPLES)),
+					MAX_3D_TEXTURE_SIZE: attempt(() => gl.getParameter(gl.MAX_3D_TEXTURE_SIZE)),
+					MAX_ARRAY_TEXTURE_LAYERS: attempt(() => gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS)),
+					MAX_TEXTURE_LOD_BIAS: attempt(() => gl.getParameter(gl.MAX_TEXTURE_LOD_BIAS)),
+					MAX_UNIFORM_BUFFER_BINDINGS: attempt(() => gl.getParameter(gl.MAX_UNIFORM_BUFFER_BINDINGS)),
+					MAX_UNIFORM_BLOCK_SIZE: attempt(() => gl.getParameter(gl.MAX_UNIFORM_BLOCK_SIZE)),
+					UNIFORM_BUFFER_OFFSET_ALIGNMENT: attempt(() => gl.getParameter(gl.UNIFORM_BUFFER_OFFSET_ALIGNMENT)),
+					MAX_COMBINED_UNIFORM_BLOCKS: attempt(() => gl.getParameter(gl.MAX_COMBINED_UNIFORM_BLOCKS)),
+					MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS)),
+					MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS)),
+					MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS)),
+					MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS: attempt(() => gl.getParameter(gl.MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS)),
+					MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS)),
+					MAX_ELEMENT_INDEX: attempt(() => gl.getParameter(gl.MAX_ELEMENT_INDEX)),
+					MAX_SERVER_WAIT_TIMEOUT: attempt(() => gl.getParameter(gl.MAX_SERVER_WAIT_TIMEOUT))
+				}
+				return camelCaseProps(data)
+			}
+			return { ...getWebglSpecs(webgl), ...getWebgl2Specs(webgl2) }
+		}
+
 		const getUnmasked = (context, [paramLie, extLie], [rendererTitle, vendorTitle]) => {
 			try {
 				const extension = context && context.getExtension('WEBGL_debug_renderer_info')
@@ -661,7 +767,8 @@
 					JSON.stringify(this.unmasked) === JSON.stringify(this.unmasked2) &&
 					this.dataURL === this.dataURL2
 				)
-			}
+			},
+			specs: getSpecs([context, context2])
 		}
 		
 	}
@@ -1046,7 +1153,8 @@
 			vendor2: gl ? gl.unmasked2.vendor : undefined,
 			renderer2: gl ? gl.unmasked2.renderer : undefined,
 			extensions2: gl ? gl.supported2.extensions : undefined,
-			matching: gl ? gl.matching() : undefined
+			matching: gl ? gl.matching() : undefined,
+			specs: gl ? gl.specs : undefined
 		}
 		const webglDataURLComputed = attempt(() => gl ? gl.dataURL : undefined)
 		const webgl2DataURLComputed = attempt(() => gl ? gl.dataURL2 : undefined)
@@ -1380,9 +1488,16 @@
 					<div>webgl2DataURL: ${
 						isBrave ? 'Brave Browser' : identify(fp.webgl2DataURL)
 					}</div>
-					<div>webgl/webgl2 hash: ${(() => {
+					<div>webgl1/webgl2 specs: ${(() => {
 						const [ data, hash ] = fp.webgl
 						return hash
+					})()}</div>
+					<div>supported specs: ${(() => {
+						const [ data ] = fp.webgl
+						const { specs } = data
+						return Object.keys(specs).filter(key => {  
+							return specs[key] || specs[key] === 0
+						}).length
 					})()}</div>
 					${(() => {
 						const [ data ] = fp.webgl
@@ -1396,8 +1511,10 @@
 							)
 						}
 						return `
-							<div>renderer: ${validate(renderer)}, ${validate(renderer2)}</div>
-							<div>vendor: ${validate(vendor)}, ${validate(vendor2)}</div>
+							<div>webgl1 renderer: ${validate(renderer)}</div>
+							<div>webgl2 renderer: ${validate(renderer2)}</div>
+							<div>webgl1 vendor: ${validate(vendor)}</div>
+							<div>webgl2 vendor: ${validate(vendor2)}</div>
 							<div>matching: ${matching}</div>
 						`
 					})()}
@@ -1411,7 +1528,8 @@
 							)
 						}
 						return `
-							<div>supported extensions: ${validate(extensions)}, ${validate(extensions2)}</div>
+							<div>webgl1 supported extensions: ${validate(extensions)}</div>
+							<div>webgl2 supported extensions: ${validate(extensions2)}</div>
 						`
 					})()}
 					</div>
