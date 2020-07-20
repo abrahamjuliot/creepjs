@@ -1488,50 +1488,35 @@
 						<div>webgl2DataURL: ${
 							isBrave ? 'Brave Browser' : identify(fp.webgl2DataURL)
 						}</div>
-						<div>specs: ${(() => {
-							const [ data, hash ] = fp.webgl
-							return hash
-						})()}</div>
-						<div>supported specs: ${(() => {
-							const [ data ] = fp.webgl
-							const { specs } = data
-							return Object.keys(specs).filter(key => {  
-								return specs[key] || specs[key] === 0
-							}).length
-						})()}</div>
-						${(() => {
-							const [ data ] = fp.webgl
-							const { renderer, renderer2, vendor, vendor2, matching } = data
-							const validate = (value) => {
-								const isString = typeof renderer == 'string'
-								return (
-									isBrave ? 'Brave Browser' : 
-									isString && value ? value : 
-									!value ? note.blocked : identify(fp.webgl)
-								)
-							}
-							return `
-								<div>webgl1 renderer: ${validate(renderer)}</div>
-								<div>webgl2 renderer: ${validate(renderer2)}</div>
-								<div>webgl1 vendor: ${validate(vendor)}</div>
-								<div>webgl2 vendor: ${validate(vendor2)}</div>
-								<div>matching: ${matching}</div>
-							`
-						})()}
-						${(() => {
-							const [ data ] = fp.webgl
-							const { extensions, extensions2 } = data
-							const validate = value => {
-								const isObj = typeof extensions == 'object'
-								return (
-									isObj && value && value.length ? value.length : note.blocked
-								)
-							}
-							return `
-								<div>webgl1 supported extensions: ${validate(extensions)}</div>
-								<div>webgl2 supported extensions: ${validate(extensions2)}</div>
-							`
-						})()}
+						${
+							!fp.webgl[0] ? `<div>specs: ${note.blocked}</div>`: (() => {
+								const [ data, hash ] = fp.webgl
+								const { renderer, renderer2, vendor, vendor2, extensions, extensions2, matching, specs } = data
+								const validate = (value, checkBrave = false) => {
+									const isObj = typeof extensions == 'object'
+									const isString = typeof renderer == 'string'
+									return checkBrave ? (
+										isBrave ? 'Brave Browser' : 
+										isString && value ? value : 
+										!value ? note.blocked : identify(fp.webgl)
+									) : isObj && value && value.length ? value.length : note.blocked
+								}
+								return `
+									<div>specs: ${hash}</div>
+									<div>supported specs: ${
+										!specs && specs !== 0 ? note.blocked :
+										Object.keys(specs).filter(key => specs[key] || specs[key] === 0).length
+									}</div>
+									<div>webgl1 renderer: ${validate(renderer, true)}</div>
+									<div>webgl2 renderer: ${validate(renderer2, true)}</div>
+									<div>webgl1 vendor: ${validate(vendor, true)}</div>
+									<div>webgl2 vendor: ${validate(vendor2, true)}</div>
+									<div>matching: ${matching}</div>
+									<div>webgl1 supported extensions: ${validate(extensions)}</div>
+									<div>webgl2 supported extensions: ${validate(extensions2)}</div>
+								`
+							})()
+						}
 					</div>
 
 					${
