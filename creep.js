@@ -1488,11 +1488,11 @@
 						<div>webgl2DataURL: ${
 							isBrave ? 'Brave Browser' : identify(fp.webgl2DataURL)
 						}</div>
-						<div>webgl1/webgl2 specs: ${(() => {
+						<div>specs: ${(() => {
 							const [ data, hash ] = fp.webgl
 							return hash
 						})()}</div>
-						<div>specs: ${(() => {
+						<div>supported specs: ${(() => {
 							const [ data ] = fp.webgl
 							const { specs } = data
 							return Object.keys(specs).filter(key => {  
