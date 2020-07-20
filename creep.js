@@ -602,7 +602,7 @@
 				for (const prop in shader) {
 					const obj = shader[prop]
 					data[name+'_'+prop+'_Precision'] = obj ? attempt(() => obj.precision) : undefined
-					data[name+'_'+prop+'_RangeMax'] = obj ? (() => obj.rangeMax) : undefined
+					data[name+'_'+prop+'_RangeMax'] = obj ? attempt(() => obj.rangeMax) : undefined
 					data[name+'_'+prop+'_RangeMin'] = obj ? attempt(() => obj.rangeMin) : undefined
 				}
 				return data
