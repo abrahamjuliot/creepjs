@@ -1492,7 +1492,7 @@
 							const [ data, hash ] = fp.webgl
 							return hash
 						})()}</div>
-						<div>supported specs: ${(() => {
+						<div>specs: ${(() => {
 							const [ data ] = fp.webgl
 							const { specs } = data
 							return Object.keys(specs).filter(key => {  
