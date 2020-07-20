@@ -1534,7 +1534,15 @@
 					})()}
 					</div>
 					<div>client rects: ${identify(fp.cRects)}</div>
-					<div>console errors: ${identify(fp.consoleErrors)}</div>	
+					<div>console error messages: ${identify(fp.consoleErrors)}
+						${(() => {
+							const errors = fp.consoleErrors[0]
+							return Object.keys(errors).map(key => {
+								const value = errors[key]
+								return `<div>${key}: ${value != undefined ? value : note.blocked}</div>`
+							}).join('')
+						})()}
+					</div>	
 					<div>maths: ${identify(fp.maths)}</div>
 					<div>media devices: ${identify(fp.mediaDevices)}</div>
 
