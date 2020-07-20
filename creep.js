@@ -1597,18 +1597,7 @@
 							`
 						})()
 					}
-					${
-						!fp.voices[0] || !fp.voices[0].length ? `<div>voices: ${note.blocked} or unsupported</div>`: (() => {
-							const [ voices, hash ]  = fp.voices
-							return `
-							<div>
-								<div>voices hash: ${hash}</div>
-								<div>voices: ${voices.length}</div>
-							</div>
-							`
-						})()
-					}
-
+					
 					${
 						!fp.screen[0] ? `<div>screen: ${note.blocked}</div>`: (() => {
 							const [ scrn, hash ]  = fp.screen
@@ -1703,6 +1692,20 @@
 								<div>ua platform: ${platform}</div>
 								<div>ua platform version: ${platformVersion}</div>
 								<div>ua full version: ${uaFullVersion}</div>
+							</div>
+							`
+						})()
+					}
+
+					${
+						!fp.voices[0] || !fp.voices[0].length ? `<div>voices: ${note.blocked} or unsupported</div>`: (() => {
+							const [ voices, hash ]  = fp.voices
+							return `
+							<div>
+								<div>voices hash: ${hash}</div>
+								<div>total voices: ${voices.length}</div>
+								<div>voices:</div>
+								${voices.map(voice => `<div>${voice.name}</div>`).join('')}
 							</div>
 							`
 						})()
