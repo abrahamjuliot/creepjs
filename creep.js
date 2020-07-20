@@ -1482,66 +1482,79 @@
 						isBrave ? 'Brave Browser' : identify(fp.canvas)
 					}</div>
 					<div>
-					<div>webglDataURL: ${
-						isBrave ? 'Brave Browser' : identify(fp.webglDataURL)
-					}</div>
-					<div>webgl2DataURL: ${
-						isBrave ? 'Brave Browser' : identify(fp.webgl2DataURL)
-					}</div>
-					<div>webgl1/webgl2 specs: ${(() => {
-						const [ data, hash ] = fp.webgl
-						return hash
-					})()}</div>
-					<div>supported specs: ${(() => {
-						const [ data ] = fp.webgl
-						const { specs } = data
-						return Object.keys(specs).filter(key => {  
-							return specs[key] || specs[key] === 0
-						}).length
-					})()}</div>
-					${(() => {
-						const [ data ] = fp.webgl
-						const { renderer, renderer2, vendor, vendor2, matching } = data
-						const validate = (value) => {
-							const isString = typeof renderer == 'string'
-							return (
-								isBrave ? 'Brave Browser' : 
-								isString && value ? value : 
-								!value ? note.blocked : identify(fp.webgl)
-							)
-						}
-						return `
-							<div>webgl1 renderer: ${validate(renderer)}</div>
-							<div>webgl2 renderer: ${validate(renderer2)}</div>
-							<div>webgl1 vendor: ${validate(vendor)}</div>
-							<div>webgl2 vendor: ${validate(vendor2)}</div>
-							<div>matching: ${matching}</div>
-						`
-					})()}
-					${(() => {
-						const [ data ] = fp.webgl
-						const { extensions, extensions2 } = data
-						const validate = value => {
-							const isObj = typeof extensions == 'object'
-							return (
-								isObj && value && value.length ? value.length : note.blocked
-							)
-						}
-						return `
-							<div>webgl1 supported extensions: ${validate(extensions)}</div>
-							<div>webgl2 supported extensions: ${validate(extensions2)}</div>
-						`
-					})()}
-					</div>
-					<div>client rects: ${identify(fp.cRects)}</div>
-					<div>console error messages: ${identify(fp.consoleErrors)}
+						<div>webglDataURL: ${
+							isBrave ? 'Brave Browser' : identify(fp.webglDataURL)
+						}</div>
+						<div>webgl2DataURL: ${
+							isBrave ? 'Brave Browser' : identify(fp.webgl2DataURL)
+						}</div>
+						<div>webgl1/webgl2 specs: ${(() => {
+							const [ data, hash ] = fp.webgl
+							return hash
+						})()}</div>
+						<div>supported specs: ${(() => {
+							const [ data ] = fp.webgl
+							const { specs } = data
+							return Object.keys(specs).filter(key => {  
+								return specs[key] || specs[key] === 0
+							}).length
+						})()}</div>
 						${(() => {
-							const errors = fp.consoleErrors[0]
-							return Object.keys(errors).map(key => {
-								const value = errors[key]
-								return `<div>${key}: ${value != undefined ? value : note.blocked}</div>`
-							}).join('')
+							const [ data ] = fp.webgl
+							const { renderer, renderer2, vendor, vendor2, matching } = data
+							const validate = (value) => {
+								const isString = typeof renderer == 'string'
+								return (
+									isBrave ? 'Brave Browser' : 
+									isString && value ? value : 
+									!value ? note.blocked : identify(fp.webgl)
+								)
+							}
+							return `
+								<div>webgl1 renderer: ${validate(renderer)}</div>
+								<div>webgl2 renderer: ${validate(renderer2)}</div>
+								<div>webgl1 vendor: ${validate(vendor)}</div>
+								<div>webgl2 vendor: ${validate(vendor2)}</div>
+								<div>matching: ${matching}</div>
+							`
 						})()}
+						${(() => {
+							const [ data ] = fp.webgl
+							const { extensions, extensions2 } = data
+							const validate = value => {
+								const isObj = typeof extensions == 'object'
+								return (
+									isObj && value && value.length ? value.length : note.blocked
+								)
+							}
+							return `
+								<div>webgl1 supported extensions: ${validate(extensions)}</div>
+								<div>webgl2 supported extensions: ${validate(extensions2)}</div>
+							`
+						})()}
+					</div>
+					${
+						!fp.cRects[0] ? `<div>client rects: ${note.blocked}</div>`: (() => {
+							const [ rects, hash ]  = fp.cRects
+							return `
+							<div>
+								<div>client rects: ${hash}</div>
+								<div>x samples:</div>
+								${rects.map(rect => `<div>${rect.x}</div>`).join('')}
+							</div>
+							`
+						})()
+					}
+					<div>console error messages: ${identify(fp.consoleErrors)}
+						${
+							(() => {
+								const errors = fp.consoleErrors[0]
+								return Object.keys(errors).map(key => {
+									const value = errors[key]
+									return `<div>${key}: ${value != undefined ? value : note.blocked}</div>`
+								}).join('')
+							})()
+						}
 					</div>	
 					<div>maths: ${identify(fp.maths)}</div>
 					<div>media devices: ${identify(fp.mediaDevices)}</div>
