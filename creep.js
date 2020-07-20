@@ -1578,8 +1578,32 @@
 							})()
 						}
 					</div>	
-					<div>maths: ${identify(fp.maths)}</div>
-					<div>media devices: ${identify(fp.mediaDevices)}</div>
+
+					${
+						!fp.maths[0] ? `<div>maths: ${note.blocked}</div>`: (() => {
+							const [ maths, hash ]  = fp.maths
+							return `
+							<div>
+								<div>maths: ${hash}</div>
+								<div>formulas:</div>
+								${maths.map(math => `<div>${Object.keys(math).map(key => `${key}: ${math[key]}`).join('')}</div>`).join('')}
+							</div>
+							`
+						})()
+					}
+
+					${
+						!fp.mediaDevices[0] ? `<div>media devices: ${note.blocked}</div>`: (() => {
+							const [ devices, hash ]  = fp.mediaDevices
+							return `
+							<div>
+								<div>media devices: ${hash}</div>
+								<div>devices:</div>
+								${Object.keys(devices).map(key => `<div>${key}: ${devices[key].kind}</div>`).join('')}
+							</div>
+							`
+						})()
+					}
 
 					${
 						!fp.timezone[0] ? `<div>timezone: ${note.blocked}</div>`: (() => {
@@ -1718,7 +1742,7 @@
 							<div>
 								<div>fonts hash: ${hash}</div>
 								<div>total fonts: ${fonts.length}</div>
-								<div>font list:</div>
+								<div>fonts:</div>
 								<div>${fonts.join(', ')}</div>
 							</div>
 							`
