@@ -1533,6 +1533,28 @@
 							`
 						})()}
 					</div>
+
+					${
+						!fp.audio[0] ? `<div>audio: ${note.blocked}</div>`: (() => {
+							const [ audio, hash ]  = fp.audio
+							const { copySample, binsSample, matching, values } = audio
+							return `
+							<div>
+								<div>audio hash: ${hash}</div>
+								<div>sample: ${binsSample[0] &&  !isNaN(binsSample[0]) ? binsSample[0] : note.blocked}</div>
+								<div>copy: ${copySample[0] && !isNaN(copySample[0]) ? copySample[0] : note.blocked}</div>
+								<div>matching: ${matching}</div>
+								${
+									Object.keys(values).map(key => {
+										const value = values[key]
+										return `<div>${key}: ${value != undefined ? value : note.blocked}</div>`
+									}).join('')
+								}
+							</div>
+							`
+						})()
+					}
+
 					${
 						!fp.cRects[0] ? `<div>client rects: ${note.blocked}</div>`: (() => {
 							const [ rects, hash ]  = fp.cRects
@@ -1559,39 +1581,6 @@
 					<div>maths: ${identify(fp.maths)}</div>
 					<div>media devices: ${identify(fp.mediaDevices)}</div>
 
-					${
-						!fp.fonts[0] ? `<div>fonts: ${note.blocked}</div>`: (() => {
-							const [ fonts, hash ]  = fp.fonts
-							return `
-							<div>
-								<div>fonts hash: ${hash}</div>
-								<div>fonts: ${fonts.length}</div>
-							</div>
-							`
-						})()
-					}
-
-					${
-						!fp.audio[0] ? `<div>audio: ${note.blocked}</div>`: (() => {
-							const [ audio, hash ]  = fp.audio
-							const { copySample, binsSample, matching, values } = audio
-							return `
-							<div>
-								<div>audio hash: ${hash}</div>
-								<div>sample: ${binsSample[0] &&  !isNaN(binsSample[0]) ? binsSample[0] : note.blocked}</div>
-								<div>copy: ${copySample[0] && !isNaN(copySample[0]) ? copySample[0] : note.blocked}</div>
-								<div>matching: ${matching}</div>
-								${
-									Object.keys(values).map(key => {
-										const value = values[key]
-										return `<div>${key}: ${value != undefined ? value : note.blocked}</div>`
-									}).join('')
-								}
-							</div>
-							`
-						})()
-					}
-					
 					${
 						!fp.timezone[0] ? `<div>timezone: ${note.blocked}</div>`: (() => {
 							const [ timezone, hash ]  = fp.timezone
@@ -1718,6 +1707,21 @@
 							`
 						})()
 					}
+
+					${
+						!fp.fonts[0] ? `<div>fonts: ${note.blocked}</div>`: (() => {
+							const [ fonts, hash ]  = fp.fonts
+							return `
+							<div>
+								<div>fonts hash: ${hash}</div>
+								<div>total fonts: ${fonts.length}</div>
+								<div>font list:</div>
+								<div>${fonts.join(', ')}</div>
+							</div>
+							`
+						})()
+					}
+
 					<div>Visitor data auto deletes <a href="https://github.com/abrahamjuliot/creepjs/blob/8d6603ee39c9534cad700b899ef221e0ee97a5a4/server.gs#L24" target="_blank">every 7 days</a>.</div>
 				</div>
 			</section>
