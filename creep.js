@@ -1647,34 +1647,30 @@
 					${
 						!fp.maths[0] ? `<div>maths: ${note.blocked}</div>`: (() => {
 							const [ maths, hash ]  = fp.maths
-							let counter = 0
-							const chromeV8Template = Object.keys(maths).map((key, i) => {
-								const value = maths[key]
-								const result = value ? value.result : `${note.blocked}`
-								const chromeV8 = value ? value.chromeV8 : false
-								if (!chromeV8) { counter += 1}
-								return `${!chromeV8 ? `<div>${counter}: ${key} => ${result}</div>` : ''}`
-							})
-							
-							const firefoxSpiderMonkeyTemplate = Object.keys(maths).map((key, i) => {
-								const value = maths[key]
-								const result = value ? value.result : `${note.blocked}`
-								const firefoxSpiderMonkey = value ? value.firefoxSpiderMonkey : false
-								if (!firefoxSpiderMonkey) { counter += 1}
-								return `${!firefoxSpiderMonkey ? `<div>${counter}: ${key} => ${result}</div>` : ''}`
-							})
+							const createTemplate = (maths, prop) => {
+								let counter = 0
+								return Object.keys(maths).map((key, i) => {
+									const value = maths[key]
+									const result = value ? value.result : `${note.blocked}`
+									const engine = value ? value[prop] : false
+									if (!engine) { counter += 1}
+									return `${!engine ? `<div>${counter}: ${key} => ${result}</div>` : ''}`
+								})
+							}
+							const chromeV8Template = createTemplate(maths, 'chromeV8')
+							const firefoxSpiderMonkeyTemplate = createTemplate(maths, 'firefoxSpiderMonkey')
 							return `
 							<div>
 								<div>maths: ${hash}</div>
 								${
 									!!chromeV8Template.filter(str => str.length)[0] ?
-									`<div>unique results not in Chrome V8:
+									`<br><div>unique results not in Chrome V8:
 										${chromeV8Template.join('')}
 									</div>` : ''
 								}
 								${
 									!!firefoxSpiderMonkeyTemplate.filter(str => str.length)[0] ?
-									`<div>unique results not in Firefox SpiderMonkey:
+									`<br><div>unique results not in Firefox SpiderMonkey:
 										${firefoxSpiderMonkeyTemplate.join('')}
 									</div>` : ''
 								}
