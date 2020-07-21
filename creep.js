@@ -780,7 +780,7 @@
 		const fns = [
 			['acos', [n], `acos(${n})`, 1.4474840516030247],
 			['acos', [Math.SQRT1_2], 'acos(Math.SQRT1_2)', 0.7853981633974483],
-
+			
 			['acosh', [1e308], 'acosh(1e308)', 709.889355822726],
 			['acosh', [Math.PI], 'acosh(Math.PI)', 1.811526272460853],
 			['acosh', [Math.SQRT2], 'acosh(Math.SQRT2)', 0.881373587019543],
@@ -832,7 +832,7 @@
 			['log10', [Math.SQRT1_2], 'log10(Math.SQRT1_2)', -0.15051499783199057],
 			['log10', [Math.SQRT2], 'log10(Math.SQRT2)', 0.1505149978319906],
 			
-			['sin', [bigN], `sin(${bigN})`, 0.994076732536068], // unique to Tor
+			['sin', [bigN], `sin(${bigN})`, 0.994076732536068], // unique in Tor
 			['sin', [Math.PI], 'sin(Math.PI)', 1.2246467991473532e-16], // unique in Tor
 			['sin', [Math.E], 'sin(Math.E])', 0.41078129050290885],
 			['sin', [Math.LN2], 'sin(Math.LN2)', 0.6389612763136348],
