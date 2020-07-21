@@ -1621,8 +1621,8 @@
 							let counter = 0
 							const chromeV8Template = Object.keys(maths).map((key, i) => {
 								const value = maths[key]
-								const result = value ? value.result : value
-								const chromeV8 = value ? value.chromeV8 : value
+								const result = value ? value.result : `${note.blocked}`
+								const chromeV8 = value ? value.chromeV8 : false
 								if (!chromeV8) { counter += 1}
 								return `${!chromeV8 ? `<div>${counter}: ${key} => ${result}</div>` : ''}`
 							})
