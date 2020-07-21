@@ -1630,7 +1630,7 @@
 								<div>maths: ${hash}</div>
 								${
 									!!chromeV8Template.filter(str => str.length)[0] ?
-									`<div>Unique results not in Chrome V8:
+									`<div>unique results not in Chrome V8:
 										${chromeV8Template.join('')}
 									</div>` : ''
 								}
