@@ -776,33 +776,53 @@
 	// maths
 	const maths = () => {
 		const n = 0.123
+		const bigN = 586084736227728400000000000000000000000
 		const fns = [
 			['acos', [n], `acos(${n})`, 1.4474840516030247],
+			['acos', [Math.SQRT1_2], 'acos(Math.SQRT1_2)', 0.7853981633974483],
+
 			['acosh', [1e308], 'acosh(1e308)', 709.889355822726],
 			['acosh', [Math.PI], 'acosh(Math.PI)', 1.811526272460853],
+			['acosh', [Math.SQRT2], 'acosh(Math.SQRT2)', 0.881373587019543],
+
 			['asin', [n], `asin(${n})`, 0.12331227519187199],
+
 			['asinh', [1e300], 'asinh(1e308)', 691.4686750787736],
 			['asinh', [Math.PI], 'asinh(Math.PI)', 1.8622957433108482],
+
 			['atan', [2], 'atan(2)', 1.1071487177940904],
 			['atan', [Math.PI], 'atan(Math.PI)', 1.2626272556789115],
+
 			['atanh', [0.5], 'atanh(0.5)', 0.5493061443340548],
+
 			['atan2', [1e-310, 2], 'atan2(1e-310, 2)', 5e-311],
 			['atan2', [Math.PI, 2], 'atan2(Math.PI)', 1.0038848218538872],
+
 			['cbrt', [100], 'cbrt(100)', 4.641588833612779],
 			['cbrt', [Math.PI], 'cbrt(Math.PI)', 1.4645918875615231],
+			
 			['cos', [n], `cos(${n})`, 0.9924450321351935],
 			['cos', [Math.PI], 'cos(Math.PI)', -1],
+			['cos', [bigN], `cos(${bigN})`, -0.10868049424995659], // unique in Tor
+
 			['cosh', [1], 'cosh(1)', 1.5430806348152437],
 			['cosh', [Math.PI], 'cosh(Math.PI)', 11.591953275521519],
+
 			['expm1', [1], 'expm1(1)', 1.718281828459045],
 			['expm1', [Math.PI], 'expm1(Math.PI)', 22.140692632779267],
+
 			['exp', [n], `exp(${n})`, 1.1308844209474893],
 			['exp', [Math.PI], 'exp(Math.PI)', 23.140692632779267],
+
 			['hypot', [1, 2, 3, 4, 5, 6], 'hypot(1, 2, 3, 4, 5, 6)', 9.539392014169456],
+			['hypot', [bigN, bigN], `hypot(${bigN}, ${bigN})`, 8.288489826731116e+38],
+
 			['log', [n], `log(${n})`, -2.0955709236097197],
 			['log', [Math.PI], 'log(Math.PI)', 1.1447298858494002],
+
 			['log1p', [n], `log1p(${n})`, 0.11600367575630613],
 			['log1p', [Math.PI], 'log1p(Math.PI)', 1.4210804127942926],
+
 			['log10', [n], `log10(${n})`, -0.9100948885606021],
 			['log10', [Math.PI], 'log10(Math.PI)', 0.4971498726941338],
 			['log10', [Math.E], 'log10(Math.E])', 0.4342944819032518],
@@ -811,13 +831,16 @@
 			['log10', [Math.LOG10E], 'log10(Math.LOG10E)', -0.36221568869946325],
 			['log10', [Math.SQRT1_2], 'log10(Math.SQRT1_2)', -0.15051499783199057],
 			['log10', [Math.SQRT2], 'log10(Math.SQRT2)', 0.1505149978319906],
-			['sin', [Math.PI], 'sin(Math.PI)', 1.2246467991473532e-16],
+			
+			['sin', [bigN], `sin(${bigN})`, 0.994076732536068], // unique to Tor
+			['sin', [Math.PI], 'sin(Math.PI)', 1.2246467991473532e-16], // unique in Tor
 			['sin', [Math.E], 'sin(Math.E])', 0.41078129050290885],
 			['sin', [Math.LN2], 'sin(Math.LN2)', 0.6389612763136348],
 			['sin', [Math.LOG2E], 'sin(Math.LOG2E)', 0.9918062443936637],
 			['sin', [Math.LOG10E], 'sin(Math.LOG10E)', 0.4207704833137573],
 			['sin', [Math.SQRT1_2], 'sin(Math.SQRT1_2)', 0.6496369390800625],
 			['sin', [Math.SQRT2], 'sin(Math.SQRT2)', 0.9877659459927356],
+			
 			['sinh', [1], 'sinh(1)', 1.1752011936438014],
 			['sinh', [Math.PI], 'sinh(Math.PI)', 11.548739357257748],
 			['sinh', [Math.E], 'sinh(Math.E])', 7.544137102816975],
@@ -826,12 +849,17 @@
 			['sinh', [Math.LOG10E], 'sinh(Math.LOG10E)', 0.44807597941469024],
 			['sinh', [Math.SQRT1_2], 'sinh(Math.SQRT1_2)', 0.7675231451261164],
 			['sinh', [Math.SQRT2], 'sinh(Math.SQRT2)', 1.935066822174357],
+			
 			['sqrt', [n], `sqrt(${n})`, 0.3507135583350036],
 			['sqrt', [Math.PI], 'sqrt(Math.PI)', 1.7724538509055159],
+			
 			['tan', [-1e308], 'tan(-1e308)', 0.5086861259107568],
 			['tan', [Math.PI], 'tan(Math.PI)', -1.2246467991473532e-16],
+
 			['tanh', [n], `tanh(${n})`, 0.12238344189440875],
 			['tanh', [Math.PI], 'tanh(Math.PI)', 0.99627207622075],
+
+			['pow', [n, -100], `pow(${n}, -100)`, 1.022089333584519e+91],
 			['pow', [Math.PI, -100], 'pow(Math.PI, -100)', 1.9275814160560204e-50],
 			['pow', [Math.E, -100], 'pow(Math.E, -100)', 3.7200759760208555e-44],
 			['pow', [Math.LN2, -100], 'pow(Math.LN2, -100)', 8269017203802394],
