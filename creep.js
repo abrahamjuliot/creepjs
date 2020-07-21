@@ -815,7 +815,7 @@
 			['exp', [Math.PI], 'exp(Math.PI)', 23.140692632779267],
 
 			['hypot', [1, 2, 3, 4, 5, 6], 'hypot(1, 2, 3, 4, 5, 6)', 9.539392014169456],
-			['hypot', [bigN, bigN], `hypot(${bigN}, ${bigN})`, 8.288489826731116e+38],
+			['hypot', [bigN, bigN], `hypot(${bigN}, ${bigN})`, 8.288489826731116e+38, 8.288489826731114e+38],
 
 			['log', [n], `log(${n})`, -2.0955709236097197],
 			['log', [Math.PI], 'log(Math.PI)', 1.1447298858494002],
@@ -824,13 +824,13 @@
 			['log1p', [Math.PI], 'log1p(Math.PI)', 1.4210804127942926],
 
 			['log10', [n], `log10(${n})`, -0.9100948885606021],
-			['log10', [Math.PI], 'log10(Math.PI)', 0.4971498726941338],
+			['log10', [Math.PI], 'log10(Math.PI)', 0.4971498726941338, 0.49714987269413385],
 			['log10', [Math.E], 'log10(Math.E])', 0.4342944819032518],
 			['log10', [Math.LN2], 'log10(Math.LN2)', -0.1591745389548616],
 			['log10', [Math.LOG2E], 'log10(Math.LOG2E)', 0.15917453895486158],
 			['log10', [Math.LOG10E], 'log10(Math.LOG10E)', -0.36221568869946325],
 			['log10', [Math.SQRT1_2], 'log10(Math.SQRT1_2)', -0.15051499783199057],
-			['log10', [Math.SQRT2], 'log10(Math.SQRT2)', 0.1505149978319906],
+			['log10', [Math.SQRT2], 'log10(Math.SQRT2)', 0.1505149978319906, 0.15051499783199063],
 			
 			['sin', [bigN], `sin(${bigN})`, 0.994076732536068], // unique in Tor
 			['sin', [Math.PI], 'sin(Math.PI)', 1.2246467991473532e-16], // unique in Tor
@@ -859,22 +859,23 @@
 			['tanh', [n], `tanh(${n})`, 0.12238344189440875],
 			['tanh', [Math.PI], 'tanh(Math.PI)', 0.99627207622075],
 
-			['pow', [n, -100], `pow(${n}, -100)`, 1.022089333584519e+91],
-			['pow', [Math.PI, -100], 'pow(Math.PI, -100)', 1.9275814160560204e-50],
-			['pow', [Math.E, -100], 'pow(Math.E, -100)', 3.7200759760208555e-44],
-			['pow', [Math.LN2, -100], 'pow(Math.LN2, -100)', 8269017203802394],
-			['pow', [Math.LN10, -100], 'pow(Math.LN10, -100)', 6.003867926738829e-37],
-			['pow', [Math.LOG2E, -100], 'pow(Math.LOG2E, -100)', 1.20933355845501e-16],
-			['pow', [Math.LOG10E, -100], 'pow(Math.LOG10E, -100)', 1.6655929347585958e+36],
-			['pow', [Math.SQRT1_2, -100], 'pow(Math.SQRT1_2, -100)', 1125899906842616.2],
-			['pow', [Math.SQRT2, -100], 'pow(Math.SQRT2, -100)', 8.881784197001191e-16]
+			['pow', [n, -100], `pow(${n}, -100)`, 1.022089333584519e+91, 1.0220893335845176e+91],
+			['pow', [Math.PI, -100], 'pow(Math.PI, -100)', 1.9275814160560204e-50, 1.9275814160560185e-50],
+			['pow', [Math.E, -100], 'pow(Math.E, -100)', 3.7200759760208555e-44, 3.720075976020851e-44],
+			['pow', [Math.LN2, -100], 'pow(Math.LN2, -100)', 8269017203802394, 8269017203802410],
+			['pow', [Math.LN10, -100], 'pow(Math.LN10, -100)', 6.003867926738829e-37, 6.003867926738811e-37],
+			['pow', [Math.LOG2E, -100], 'pow(Math.LOG2E, -100)', 1.20933355845501e-16, 1.2093335584550061e-16],
+			['pow', [Math.LOG10E, -100], 'pow(Math.LOG10E, -100)', 1.6655929347585958e+36, 1.665592934758592e+36],
+			['pow', [Math.SQRT1_2, -100], 'pow(Math.SQRT1_2, -100)', 1125899906842616.2, 1125899906842611.5],
+			['pow', [Math.SQRT2, -100], 'pow(Math.SQRT2, -100)', 8.881784197001191e-16, 8.881784197001154e-16]
 		]
 		const data = {}
 		fns.forEach(fn => {
 			data[fn[2]] = attempt(() => {
 				const result = Math[fn[0]](...fn[1])
 				const chromeV8 = result == fn[3]
-				return { result, chromeV8 }
+				const firefoxSpiderMonkey = fn[4] ? result == fn[4] : result == fn[3]
+				return { result, chromeV8, firefoxSpiderMonkey }
 			})
 		})
 		return data
@@ -1654,6 +1655,14 @@
 								if (!chromeV8) { counter += 1}
 								return `${!chromeV8 ? `<div>${counter}: ${key} => ${result}</div>` : ''}`
 							})
+							
+							const firefoxSpiderMonkeyTemplate = Object.keys(maths).map((key, i) => {
+								const value = maths[key]
+								const result = value ? value.result : `${note.blocked}`
+								const firefoxSpiderMonkey = value ? value.firefoxSpiderMonkey : false
+								if (!firefoxSpiderMonkey) { counter += 1}
+								return `${!firefoxSpiderMonkey ? `<div>${counter}: ${key} => ${result}</div>` : ''}`
+							})
 							return `
 							<div>
 								<div>maths: ${hash}</div>
@@ -1661,6 +1670,12 @@
 									!!chromeV8Template.filter(str => str.length)[0] ?
 									`<div>unique results not in Chrome V8:
 										${chromeV8Template.join('')}
+									</div>` : ''
+								}
+								${
+									!!firefoxSpiderMonkeyTemplate.filter(str => str.length)[0] ?
+									`<div>unique results not in Firefox SpiderMonkey:
+										${firefoxSpiderMonkeyTemplate.join('')}
 									</div>` : ''
 								}
 							</div>
