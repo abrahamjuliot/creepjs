@@ -1593,11 +1593,12 @@
 					${
 						!fp.cRects[0] ? `<div>client rects: ${note.blocked}</div>`: (() => {
 							const [ rects, hash ]  = fp.cRects
+							console.log(rects)
 							return `
 							<div>
 								<div>client rects: ${hash}</div>
 								<div>x samples:</div>
-								${rects.map(rect => `<div>${rect.x}</div>`).join('')}
+								${rects && !rects.rectsLie ? rects.map(rect => `<div>${rect.x}</div>`).join('') : note.blocked}
 							</div>
 							`
 						})()
