@@ -570,6 +570,112 @@
 			}
 		}
 
+		const getSpecs = ([webgl, webgl2]) => {
+			const getShaderPrecisionFormat = (gl, shaderType) => {
+				const low = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.LOW_FLOAT))
+				const medium = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.MEDIUM_FLOAT))
+				const high = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.HIGH_FLOAT))
+				const highInt = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.HIGH_INT))
+				return { low, medium, high, highInt }
+			}
+			const getMaxAnisotropy = gl => {
+				const ext = (
+					gl.getExtension('EXT_texture_filter_anisotropic') ||
+					gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic') ||
+					gl.getExtension('MOZ_EXT_texture_filter_anisotropic')
+				)
+				return gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT)
+			}
+			const camelCaseProps = data => {
+				const renamed = {}
+				Object.keys(data).map(key => {
+					const val = data[key]
+					const name = key.toLowerCase().split('_').map((word, i) => {
+						return i == 0 ? word : word.charAt(0).toUpperCase() + word.slice(1)
+					}).join('')
+					renamed[name] = val
+				})
+				return renamed
+			}
+			const getShaderData = (name, shader) => {
+				const data = {}
+				for (const prop in shader) {
+					const obj = shader[prop]
+					data[name+'_'+prop+'_Precision'] = obj ? attempt(() => obj.precision) : undefined
+					data[name+'_'+prop+'_RangeMax'] = obj ? attempt(() => obj.rangeMax) : undefined
+					data[name+'_'+prop+'_RangeMin'] = obj ? attempt(() => obj.rangeMin) : undefined
+				}
+				return data
+			}
+
+			const getWebglSpecs = gl => {
+				const data =  {
+					VERSION: attempt(() => gl.getParameter(gl.VERSION)),
+					SHADING_LANGUAGE_VERSION: attempt( () => gl.getParameter(gl.SHADING_LANGUAGE_VERSION)),
+					ANTIALIAS: attempt(() => (gl.getContextAttributes() ? gl.getContextAttributes().antialias : undefined)),
+					RED_BITS: attempt(() => gl.getParameter(gl.RED_BITS)),
+					GREEN_BITS: attempt(() => gl.getParameter(gl.GREEN_BITS)),
+					BLUE_BITS: attempt(() => gl.getParameter(gl.BLUE_BITS)),
+					ALPHA_BITS: attempt(() => gl.getParameter(gl.ALPHA_BITS)),
+					DEPTH_BITS: attempt(() => gl.getParameter(gl.DEPTH_BITS)),
+					STENCIL_BITS: attempt(() => gl.getParameter(gl.STENCIL_BITS)),
+					MAX_RENDERBUFFER_SIZE: attempt(() => gl.getParameter(gl.MAX_RENDERBUFFER_SIZE)),
+					MAX_COMBINED_TEXTURE_IMAGE_UNITS: attempt(() => gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS)),
+					MAX_CUBE_MAP_TEXTURE_SIZE: attempt(() => gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE)),
+					MAX_FRAGMENT_UNIFORM_VECTORS: attempt(() => gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS)),
+					MAX_TEXTURE_IMAGE_UNITS: attempt(() => gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS)),
+					MAX_TEXTURE_SIZE: attempt(() => gl.getParameter(gl.MAX_TEXTURE_SIZE)),
+					MAX_VARYING_VECTORS: attempt(() => gl.getParameter(gl.MAX_VARYING_VECTORS)),
+					MAX_VERTEX_ATTRIBS: attempt(() => gl.getParameter(gl.MAX_VERTEX_ATTRIBS)),
+					MAX_VERTEX_TEXTURE_IMAGE_UNITS: attempt(() => gl.getParameter(gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS)),
+					MAX_VERTEX_UNIFORM_VECTORS: attempt(() => gl.getParameter(gl.MAX_VERTEX_UNIFORM_VECTORS)),
+					ALIASED_LINE_WIDTH_RANGE: attempt(() => [...gl.getParameter(gl.ALIASED_LINE_WIDTH_RANGE)]),
+					ALIASED_POINT_SIZE_RANGE: attempt(() => [...gl.getParameter(gl.ALIASED_POINT_SIZE_RANGE)]),
+					MAX_VIEWPORT_DIMS: attempt(() => [...gl.getParameter(gl.MAX_VIEWPORT_DIMS)]),
+					MAX_TEXTURE_MAX_ANISOTROPY_EXT: attempt(() => getMaxAnisotropy(gl)),
+					...getShaderData('VERTEX_SHADER', getShaderPrecisionFormat(gl, 'VERTEX_SHADER')),
+					...getShaderData('FRAGMENT_SHADER', getShaderPrecisionFormat(gl, 'FRAGMENT_SHADER')),
+					MAX_DRAW_BUFFERS_WEBGL: attempt(() => gl.getParameter(
+						gl.getExtension('WEBGL_draw_buffers').MAX_DRAW_BUFFERS_WEBGL
+					))
+				}
+				return camelCaseProps(data)
+			}
+
+			const getWebgl2Specs = gl => {
+				const data = {
+					MAX_VERTEX_UNIFORM_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_VERTEX_UNIFORM_COMPONENTS)),
+					MAX_VERTEX_UNIFORM_BLOCKS: attempt(() => gl.getParameter(gl.MAX_VERTEX_UNIFORM_BLOCKS)),
+					MAX_VERTEX_OUTPUT_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_VERTEX_OUTPUT_COMPONENTS)),
+					MAX_VARYING_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_VARYING_COMPONENTS)),
+					MAX_FRAGMENT_UNIFORM_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_COMPONENTS)),
+					MAX_FRAGMENT_UNIFORM_BLOCKS: attempt(() => gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_BLOCKS)),
+					MAX_FRAGMENT_INPUT_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_FRAGMENT_INPUT_COMPONENTS)),
+					MIN_PROGRAM_TEXEL_OFFSET: attempt(() => gl.getParameter(gl.MIN_PROGRAM_TEXEL_OFFSET)),
+					MAX_PROGRAM_TEXEL_OFFSET: attempt(() => gl.getParameter(gl.MAX_PROGRAM_TEXEL_OFFSET)),
+					MAX_DRAW_BUFFERS: attempt(() => gl.getParameter(gl.MAX_DRAW_BUFFERS)),
+					MAX_COLOR_ATTACHMENTS: attempt(() => gl.getParameter(gl.MAX_COLOR_ATTACHMENTS)),
+					MAX_SAMPLES: attempt(() => gl.getParameter(gl.MAX_SAMPLES)),
+					MAX_3D_TEXTURE_SIZE: attempt(() => gl.getParameter(gl.MAX_3D_TEXTURE_SIZE)),
+					MAX_ARRAY_TEXTURE_LAYERS: attempt(() => gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS)),
+					MAX_TEXTURE_LOD_BIAS: attempt(() => gl.getParameter(gl.MAX_TEXTURE_LOD_BIAS)),
+					MAX_UNIFORM_BUFFER_BINDINGS: attempt(() => gl.getParameter(gl.MAX_UNIFORM_BUFFER_BINDINGS)),
+					MAX_UNIFORM_BLOCK_SIZE: attempt(() => gl.getParameter(gl.MAX_UNIFORM_BLOCK_SIZE)),
+					UNIFORM_BUFFER_OFFSET_ALIGNMENT: attempt(() => gl.getParameter(gl.UNIFORM_BUFFER_OFFSET_ALIGNMENT)),
+					MAX_COMBINED_UNIFORM_BLOCKS: attempt(() => gl.getParameter(gl.MAX_COMBINED_UNIFORM_BLOCKS)),
+					MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS)),
+					MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS)),
+					MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS)),
+					MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS: attempt(() => gl.getParameter(gl.MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS)),
+					MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS)),
+					MAX_ELEMENT_INDEX: attempt(() => gl.getParameter(gl.MAX_ELEMENT_INDEX)),
+					MAX_SERVER_WAIT_TIMEOUT: attempt(() => gl.getParameter(gl.MAX_SERVER_WAIT_TIMEOUT))
+				}
+				return camelCaseProps(data)
+			}
+			return { ...getWebglSpecs(webgl), ...getWebgl2Specs(webgl2) }
+		}
+
 		const getUnmasked = (context, [paramLie, extLie], [rendererTitle, vendorTitle]) => {
 			try {
 				const extension = context && context.getExtension('WEBGL_debug_renderer_info')
@@ -661,38 +767,89 @@
 					JSON.stringify(this.unmasked) === JSON.stringify(this.unmasked2) &&
 					this.dataURL === this.dataURL2
 				)
-			}
+			},
+			specs: getSpecs([context, context2])
 		}
 		
 	}
 
 	// maths
 	const maths = () => {
-		const n = 0.123124234234234242
+		const n = 0.123
 		const fns = [
-			['acos', [n]],
-			['acosh', [1e308]],
-			['asin', [n]],
-			['asinh', [1e300]],
-			['asinh', [1]],
-			['atan', [2]],
-			['atanh', [0.5]],
-			['atan2', [90, 15]],
-			['atan2', [1e-310, 2]],
-			['cbrt', [100]],
-			['cosh', [100]],
-			['expm1', [1]],
-			['sin', [1]],
-			['sinh', [1]],
-			['tan', [-1e308]],
-			['tanh', [1e300]],
-			['cosh', [1]],
-			['sin', [Math.PI]],
-			['pow', [Math.PI, -100]]
+			['acos', [n], `acos(${n})`, 1.4474840516030247],
+			['acosh', [1e308], 'acosh(1e308)', 709.889355822726],
+			['acosh', [Math.PI], 'acosh(Math.PI)', 1.811526272460853],
+			['asin', [n], `asin(${n})`, 0.12331227519187199],
+			['asinh', [1e300], 'asinh(1e308)', 691.4686750787736],
+			['asinh', [Math.PI], 'asinh(Math.PI)', 1.8622957433108482],
+			['atan', [2], 'atan(2)', 1.1071487177940904],
+			['atan', [Math.PI], 'atan(Math.PI)', 1.2626272556789115],
+			['atanh', [0.5], 'atanh(0.5)', 0.5493061443340548],
+			['atan2', [1e-310, 2], 'atan2(1e-310, 2)', 5e-311],
+			['atan2', [Math.PI, 2], 'atan2(Math.PI)', 1.0038848218538872],
+			['cbrt', [100], 'cbrt(100)', 4.641588833612779],
+			['cbrt', [Math.PI], 'cbrt(Math.PI)', 1.4645918875615231],
+			['cos', [n], `cos(${n})`, 0.9924450321351935],
+			['cos', [Math.PI], 'cos(Math.PI)', -1],
+			['cosh', [1], 'cosh(1)', 1.5430806348152437],
+			['cosh', [Math.PI], 'cosh(Math.PI)', 11.591953275521519],
+			['expm1', [1], 'expm1(1)', 1.718281828459045],
+			['expm1', [Math.PI], 'expm1(Math.PI)', 22.140692632779267],
+			['exp', [n], `exp(${n})`, 1.1308844209474893],
+			['exp', [Math.PI], 'exp(Math.PI)', 23.140692632779267],
+			['hypot', [1, 2, 3, 4, 5, 6], 'hypot(1, 2, 3, 4, 5, 6)', 9.539392014169456],
+			['log', [n], `log(${n})`, -2.0955709236097197],
+			['log', [Math.PI], 'log(Math.PI)', 1.1447298858494002],
+			['log1p', [n], `log1p(${n})`, 0.11600367575630613],
+			['log1p', [Math.PI], 'log1p(Math.PI)', 1.4210804127942926],
+			['log10', [n], `log10(${n})`, -0.9100948885606021],
+			['log10', [Math.PI], 'log10(Math.PI)', 0.4971498726941338],
+			['log10', [Math.E], 'log10(Math.E])', 0.4342944819032518],
+			['log10', [Math.LN2], 'log10(Math.LN2)', -0.1591745389548616],
+			['log10', [Math.LOG2E], 'log10(Math.LOG2E)', 0.15917453895486158],
+			['log10', [Math.LOG10E], 'log10(Math.LOG10E)', -0.36221568869946325],
+			['log10', [Math.SQRT1_2], 'log10(Math.SQRT1_2)', -0.15051499783199057],
+			['log10', [Math.SQRT2], 'log10(Math.SQRT2)', 0.1505149978319906],
+			['sin', [Math.PI], 'sin(Math.PI)', 1.2246467991473532e-16],
+			['sin', [Math.E], 'sin(Math.E])', 0.41078129050290885],
+			['sin', [Math.LN2], 'sin(Math.LN2)', 0.6389612763136348],
+			['sin', [Math.LOG2E], 'sin(Math.LOG2E)', 0.9918062443936637],
+			['sin', [Math.LOG10E], 'sin(Math.LOG10E)', 0.4207704833137573],
+			['sin', [Math.SQRT1_2], 'sin(Math.SQRT1_2)', 0.6496369390800625],
+			['sin', [Math.SQRT2], 'sin(Math.SQRT2)', 0.9877659459927356],
+			['sinh', [1], 'sinh(1)', 1.1752011936438014],
+			['sinh', [Math.PI], 'sinh(Math.PI)', 11.548739357257748],
+			['sinh', [Math.E], 'sinh(Math.E])', 7.544137102816975],
+			['sinh', [Math.LN2], 'sinh(Math.LN2)', 0.75],
+			['sinh', [Math.LOG2E], 'sinh(Math.LOG2E)', 1.9978980091062795],
+			['sinh', [Math.LOG10E], 'sinh(Math.LOG10E)', 0.44807597941469024],
+			['sinh', [Math.SQRT1_2], 'sinh(Math.SQRT1_2)', 0.7675231451261164],
+			['sinh', [Math.SQRT2], 'sinh(Math.SQRT2)', 1.935066822174357],
+			['sqrt', [n], `sqrt(${n})`, 0.3507135583350036],
+			['sqrt', [Math.PI], 'sqrt(Math.PI)', 1.7724538509055159],
+			['tan', [-1e308], 'tan(-1e308)', 0.5086861259107568],
+			['tan', [Math.PI], 'tan(Math.PI)', -1.2246467991473532e-16],
+			['tanh', [n], `tanh(${n})`, 0.12238344189440875],
+			['tanh', [Math.PI], 'tanh(Math.PI)', 0.99627207622075],
+			['pow', [Math.PI, -100], 'pow(Math.PI, -100)', 1.9275814160560204e-50],
+			['pow', [Math.E, -100], 'pow(Math.E, -100)', 3.7200759760208555e-44],
+			['pow', [Math.LN2, -100], 'pow(Math.LN2, -100)', 8269017203802394],
+			['pow', [Math.LN10, -100], 'pow(Math.LN10, -100)', 6.003867926738829e-37],
+			['pow', [Math.LOG2E, -100], 'pow(Math.LOG2E, -100)', 1.20933355845501e-16],
+			['pow', [Math.LOG10E, -100], 'pow(Math.LOG10E, -100)', 1.6655929347585958e+36],
+			['pow', [Math.SQRT1_2, -100], 'pow(Math.SQRT1_2, -100)', 1125899906842616.2],
+			['pow', [Math.SQRT2, -100], 'pow(Math.SQRT2, -100)', 8.881784197001191e-16]
 		]
-		return fns.map(fn => ({
-			[fn[0]]: attempt(() => Math[fn[0]](...fn[1]))
-		}))
+		const data = {}
+		fns.forEach(fn => {
+			data[fn[2]] = attempt(() => {
+				const result = Math[fn[0]](...fn[1])
+				const chromeV8 = result == fn[3]
+				return { result, chromeV8 }
+			})
+		})
+		return data
 	}
 
 	// browser console errors
@@ -1046,7 +1203,8 @@
 			vendor2: gl ? gl.unmasked2.vendor : undefined,
 			renderer2: gl ? gl.unmasked2.renderer : undefined,
 			extensions2: gl ? gl.supported2.extensions : undefined,
-			matching: gl ? gl.matching() : undefined
+			matching: gl ? gl.matching() : undefined,
+			specs: gl ? gl.specs : undefined
 		}
 		const webglDataURLComputed = attempt(() => gl ? gl.dataURL : undefined)
 		const webgl2DataURLComputed = attempt(() => gl ? gl.dataURL2 : undefined)
@@ -1374,63 +1532,42 @@
 						isBrave ? 'Brave Browser' : identify(fp.canvas)
 					}</div>
 					<div>
-					<div>webglDataURL: ${
-						isBrave ? 'Brave Browser' : identify(fp.webglDataURL)
-					}</div>
-					<div>webgl2DataURL: ${
-						isBrave ? 'Brave Browser' : identify(fp.webgl2DataURL)
-					}</div>
-					<div>webgl/webgl2 hash: ${(() => {
-						const [ data, hash ] = fp.webgl
-						return hash
-					})()}</div>
-					${(() => {
-						const [ data ] = fp.webgl
-						const { renderer, renderer2, vendor, vendor2, matching } = data
-						const validate = (value) => {
-							const isString = typeof renderer == 'string'
-							return (
-								isBrave ? 'Brave Browser' : 
-								isString && value ? value : 
-								!value ? note.blocked : identify(fp.webgl)
-							)
+						<div>webglDataURL: ${
+							isBrave ? 'Brave Browser' : identify(fp.webglDataURL)
+						}</div>
+						<div>webgl2DataURL: ${
+							isBrave ? 'Brave Browser' : identify(fp.webgl2DataURL)
+						}</div>
+						${
+							!fp.webgl[0] ? `<div>specs: ${note.blocked}</div>`: (() => {
+								const [ data, hash ] = fp.webgl
+								const { renderer, renderer2, vendor, vendor2, extensions, extensions2, matching, specs } = data
+								const validate = (value, checkBrave = false) => {
+									const isObj = typeof extensions == 'object'
+									const isString = typeof renderer == 'string'
+									return checkBrave ? (
+										isBrave ? 'Brave Browser' : 
+										isString && value ? value : 
+										!value ? note.blocked : identify(fp.webgl)
+									) : isObj && value && value.length ? value.length : note.blocked
+								}
+								return `
+									<div>specs: ${hash}</div>
+									<div>supported specs: ${
+										!specs && specs !== 0 ? note.blocked :
+										Object.keys(specs).filter(key => specs[key] || specs[key] === 0).length
+									}</div>
+									<div>webgl1 renderer: ${validate(renderer, true)}</div>
+									<div>webgl2 renderer: ${validate(renderer2, true)}</div>
+									<div>webgl1 vendor: ${validate(vendor, true)}</div>
+									<div>webgl2 vendor: ${validate(vendor2, true)}</div>
+									<div>matching: ${matching}</div>
+									<div>webgl1 supported extensions: ${validate(extensions)}</div>
+									<div>webgl2 supported extensions: ${validate(extensions2)}</div>
+								`
+							})()
 						}
-						return `
-							<div>renderer: ${validate(renderer)}, ${validate(renderer2)}</div>
-							<div>vendor: ${validate(vendor)}, ${validate(vendor2)}</div>
-							<div>matching: ${matching}</div>
-						`
-					})()}
-					${(() => {
-						const [ data ] = fp.webgl
-						const { extensions, extensions2 } = data
-						const validate = value => {
-							const isObj = typeof extensions == 'object'
-							return (
-								isObj && value && value.length ? value.length : note.blocked
-							)
-						}
-						return `
-							<div>supported extensions: ${validate(extensions)}, ${validate(extensions2)}</div>
-						`
-					})()}
 					</div>
-					<div>client rects: ${identify(fp.cRects)}</div>
-					<div>console errors: ${identify(fp.consoleErrors)}</div>	
-					<div>maths: ${identify(fp.maths)}</div>
-					<div>media devices: ${identify(fp.mediaDevices)}</div>
-
-					${
-						!fp.fonts[0] ? `<div>fonts: ${note.blocked}</div>`: (() => {
-							const [ fonts, hash ]  = fp.fonts
-							return `
-							<div>
-								<div>fonts hash: ${hash}</div>
-								<div>fonts: ${fonts.length}</div>
-							</div>
-							`
-						})()
-					}
 
 					${
 						!fp.audio[0] ? `<div>audio: ${note.blocked}</div>`: (() => {
@@ -1452,7 +1589,70 @@
 							`
 						})()
 					}
-					
+
+					${
+						!fp.cRects[0] ? `<div>client rects: ${note.blocked}</div>`: (() => {
+							const [ rects, hash ]  = fp.cRects
+							console.log(rects)
+							return `
+							<div>
+								<div>client rects: ${hash}</div>
+								<div>x samples:</div>
+								${rects && !rects.rectsLie ? rects.map(rect => `<div>${rect.x}</div>`).join('') : note.blocked}
+							</div>
+							`
+						})()
+					}
+					<div>console error messages: ${identify(fp.consoleErrors)}
+						${
+							(() => {
+								const errors = fp.consoleErrors[0]
+								return Object.keys(errors).map(key => {
+									const value = errors[key]
+									return `<div>${+key+1}: ${value != undefined ? value : note.blocked}</div>`
+								}).join('')
+							})()
+						}
+					</div>	
+
+					${
+						!fp.maths[0] ? `<div>maths: ${note.blocked}</div>`: (() => {
+							const [ maths, hash ]  = fp.maths
+							let counter = 0
+							const chromeV8Template = Object.keys(maths).map((key, i) => {
+								const value = maths[key]
+								const result = value ? value.result : value
+								const chromeV8 = value ? value.chromeV8 : value
+								if (!chromeV8) { counter += 1}
+								return `${!chromeV8 ? `<div>${counter}: ${key} => ${result}</div>` : ''}`
+							})
+							return `
+							<div>
+								<div>maths: ${hash}</div>
+								${
+									!!chromeV8Template.filter(str => str.length)[0] ?
+									`<div>unique results not in Chrome V8:
+										${chromeV8Template.join('')}
+									</div>` : ''
+								}
+							</div>
+							`
+						})()
+					}
+
+					${
+						!fp.mediaDevices[0] ? `<div>media devices: ${note.blocked}</div>`: (() => {
+							const [ devices, hash ]  = fp.mediaDevices
+							return `
+							<div>
+								<div>media devices: ${hash}</div>
+								<div>devices:</div>
+								${Object.keys(devices).map(key => `<div>${+key+1}: ${devices[key].kind}</div>`).join('')}
+							</div>
+							`
+						})()
+					}
+
 					${
 						!fp.timezone[0] ? `<div>timezone: ${note.blocked}</div>`: (() => {
 							const [ timezone, hash ]  = fp.timezone
@@ -1469,18 +1669,7 @@
 							`
 						})()
 					}
-					${
-						!fp.voices[0] || !fp.voices[0].length ? `<div>voices: ${note.blocked} or unsupported</div>`: (() => {
-							const [ voices, hash ]  = fp.voices
-							return `
-							<div>
-								<div>voices hash: ${hash}</div>
-								<div>voices: ${voices.length}</div>
-							</div>
-							`
-						})()
-					}
-
+					
 					${
 						!fp.screen[0] ? `<div>screen: ${note.blocked}</div>`: (() => {
 							const [ scrn, hash ]  = fp.screen
@@ -1579,6 +1768,35 @@
 							`
 						})()
 					}
+
+					${
+						!fp.voices[0] || !fp.voices[0].length ? `<div>voices: ${note.blocked} or unsupported</div>`: (() => {
+							const [ voices, hash ]  = fp.voices
+							return `
+							<div>
+								<div>voices hash: ${hash}</div>
+								<div>total voices: ${voices.length}</div>
+								<div>voices:</div>
+								${voices.map(voice => `<div>${voice.name}</div>`).join('')}
+							</div>
+							`
+						})()
+					}
+
+					${
+						!fp.fonts[0] ? `<div>fonts: ${note.blocked}</div>`: (() => {
+							const [ fonts, hash ]  = fp.fonts
+							return `
+							<div>
+								<div>fonts hash: ${hash}</div>
+								<div>total fonts: ${fonts.length}</div>
+								<div>fonts:</div>
+								<div>${fonts.join(', ')}</div>
+							</div>
+							`
+						})()
+					}
+
 					<div>Visitor data auto deletes <a href="https://github.com/abrahamjuliot/creepjs/blob/8d6603ee39c9534cad700b899ef221e0ee97a5a4/server.gs#L24" target="_blank">every 7 days</a>.</div>
 				</div>
 			</section>
