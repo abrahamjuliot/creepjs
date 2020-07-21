@@ -1625,7 +1625,6 @@
 								if (!chromeV8) { counter += 1}
 								return `${!chromeV8 ? `<div>${counter}: ${key} => ${result}</div>` : ''}`
 							})
-							console.log(chromeV8Template)
 							return `
 							<div>
 								<div>maths: ${hash}</div>
