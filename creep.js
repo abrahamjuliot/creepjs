@@ -803,7 +803,7 @@
 			
 			['cos', [n], `cos(${n})`, 0.9924450321351935],
 			['cos', [Math.PI], 'cos(Math.PI)', -1],
-			['cos', [bigN], `cos(${bigN})`, -0.10868049424995659], // unique in Tor
+			['cos', [bigN], `cos(${bigN})`, -0.10868049424995659, -0.10868049424995659, -0.9779661551196617], // unique in Tor
 
 			['cosh', [1], 'cosh(1)', 1.5430806348152437],
 			['cosh', [Math.PI], 'cosh(Math.PI)', 11.591953275521519],
@@ -832,8 +832,8 @@
 			['log10', [Math.SQRT1_2], 'log10(Math.SQRT1_2)', -0.15051499783199057],
 			['log10', [Math.SQRT2], 'log10(Math.SQRT2)', 0.1505149978319906, 0.15051499783199063],
 			
-			['sin', [bigN], `sin(${bigN})`, 0.994076732536068], // unique in Tor
-			['sin', [Math.PI], 'sin(Math.PI)', 1.2246467991473532e-16], // unique in Tor
+			['sin', [bigN], `sin(${bigN})`, 0.994076732536068, 0.994076732536068, -0.20876350121720488], // unique in Tor
+			['sin', [Math.PI], 'sin(Math.PI)', 1.2246467991473532e-16, 1.2246467991473532e-16, 1.2246063538223773e-16], // unique in Tor
 			['sin', [Math.E], 'sin(Math.E])', 0.41078129050290885],
 			['sin', [Math.LN2], 'sin(Math.LN2)', 0.6389612763136348],
 			['sin', [Math.LOG2E], 'sin(Math.LOG2E)', 0.9918062443936637],
@@ -874,8 +874,9 @@
 			data[fn[2]] = attempt(() => {
 				const result = Math[fn[0]](...fn[1])
 				const chromeV8 = result == fn[3]
-				const firefoxSpiderMonkey = fn[4] ? result == fn[4] : result == fn[3]
-				return { result, chromeV8, firefoxSpiderMonkey }
+				const firefoxSpiderMonkey = fn[4] ? result == fn[4] : chromeV8
+				const torBrowser = fn[5] ? result != fn[5] : true
+				return { result, chromeV8, firefoxSpiderMonkey, torBrowser }
 			})
 		})
 		return data
@@ -1487,7 +1488,10 @@
 				'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': catchTorBrowser,
 				'e086050038b44b8dcb9d0565da3ff448a0162da7023469d347303479f981f5fd': catchTorBrowserAllow,
 				'0a1a099e6b0a7365acfdf38ed79c9cde9ec0617b0c39b6366dad4d1a4aa6fcaf': catchTorBrowser,
-				'99dfbc2000c9c81588259515fed8a1f6fbe17bf9964c850560d08d0bfabc1fff': catchTorBrowserResist
+				'99dfbc2000c9c81588259515fed8a1f6fbe17bf9964c850560d08d0bfabc1fff': catchTorBrowserResist,
+				'7d2dd43add8cba5f7ee983078ddd17297320ae8c8ee9d28a587a1a9baf06d824': 'Desktop Tor Browser', // Maths
+				'42c8fac38f48b86a292edddf9a2beb2ea6c9778f0d974b2bc3c39dd67c0362e0': 'Firefox', // Maths
+				'1d01513ba7fce45962c6e3761b820e872175dcc33af4aba543499ea0e56a1bef': 'Chromium'
 			}
 
 			const [ data, hash ] = prop
@@ -1659,19 +1663,26 @@
 							}
 							const chromeV8Template = createTemplate(maths, 'chromeV8')
 							const firefoxSpiderMonkeyTemplate = createTemplate(maths, 'firefoxSpiderMonkey')
+							const torBrowserTemplate = createTemplate(maths, 'torBrowser')
 							return `
 							<div>
-								<div>maths: ${hash}</div>
+								<div>maths: ${identify(fp.maths)}</div>
 								${
 									!!chromeV8Template.filter(str => str.length)[0] ?
-									`<br><div>unique results not in Chrome V8:
+									`<br><div>does not match Chrome V8:
 										${chromeV8Template.join('')}
 									</div>` : ''
 								}
 								${
 									!!firefoxSpiderMonkeyTemplate.filter(str => str.length)[0] ?
-									`<br><div>unique results not in Firefox SpiderMonkey:
+									`<br><div>does not match Firefox SpiderMonkey:
 										${firefoxSpiderMonkeyTemplate.join('')}
+									</div>` : ''
+								}
+								${
+									!!torBrowserTemplate.filter(str => str.length)[0] ?
+									`<br><div>matches Desktop Tor Browser:
+										${torBrowserTemplate.join('')}
 									</div>` : ''
 								}
 							</div>
