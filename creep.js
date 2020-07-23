@@ -875,8 +875,8 @@
 				const result = Math[fn[0]](...fn[1])
 				const chromeV8 = result == fn[3]
 				const firefoxSpiderMonkey = fn[4] ? result == fn[4] : chromeV8
-				const torBrowser = fn[5] ? result != fn[5] : true
-				return { result, chromeV8, firefoxSpiderMonkey, torBrowser }
+				const other = fn[5] ? result != fn[5] : true
+				return { result, chromeV8, firefoxSpiderMonkey, other }
 			})
 		})
 		return data
@@ -1492,9 +1492,9 @@
 				'e086050038b44b8dcb9d0565da3ff448a0162da7023469d347303479f981f5fd': catchTorBrowserAllow,
 				'0a1a099e6b0a7365acfdf38ed79c9cde9ec0617b0c39b6366dad4d1a4aa6fcaf': catchTorBrowser,
 				'99dfbc2000c9c81588259515fed8a1f6fbe17bf9964c850560d08d0bfabc1fff': catchTorBrowserResist,
-				'7d2dd43add8cba5f7ee983078ddd17297320ae8c8ee9d28a587a1a9baf06d824': 'Tor Browser', // Maths
-				'42c8fac38f48b86a292edddf9a2beb2ea6c9778f0d974b2bc3c39dd67c0362e0': catchTorBrowserMobile, // Maths
-				'1d01513ba7fce45962c6e3761b820e872175dcc33af4aba543499ea0e56a1bef': 'Chromium'
+				'd7d8dbcf47a1a3bffd2ff1137dd97f12bfb3e04c8ebbc5e9cee6ede070244536': 'Tor Browser', // Maths
+				'39052892640fac40a004237b18cdac0b1d60572840c5c8b448be51d17a4b3ec0': catchTorBrowserMobile, // Maths
+				'be62031a99e7eb50017f44db5a3f41c697cfb3e7c267905d4f1c50e0958477b8': 'Chromium' // Maths
 			}
 
 			const [ data, hash ] = prop
@@ -1666,7 +1666,7 @@
 							}
 							const chromeV8Template = createTemplate(maths, 'chromeV8')
 							const firefoxSpiderMonkeyTemplate = createTemplate(maths, 'firefoxSpiderMonkey')
-							const torBrowserTemplate = createTemplate(maths, 'torBrowser')
+							const otherTemplate = createTemplate(maths, 'other')
 							return `
 							<div>
 								<div>maths: ${identify(fp.maths)}</div>
@@ -1683,9 +1683,9 @@
 									</div>` : ''
 								}
 								${
-									!!torBrowserTemplate.filter(str => str.length)[0] ?
-									`<br><div>matches Tor Browser (desktop):
-										${torBrowserTemplate.join('')}
+									!!otherTemplate.filter(str => str.length)[0] ?
+									`<br><div>does not match Chrome V8 or Firefox SpiderMonkey:
+										${otherTemplate.join('')}
 									</div>` : ''
 								}
 							</div>
