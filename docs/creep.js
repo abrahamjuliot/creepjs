@@ -776,48 +776,71 @@
 	// maths
 	const maths = () => {
 		const n = 0.123
+		const bigN = 586084736227728400000000000000000000000
 		const fns = [
 			['acos', [n], `acos(${n})`, 1.4474840516030247],
+			['acos', [Math.SQRT1_2], 'acos(Math.SQRT1_2)', 0.7853981633974483],
+			
 			['acosh', [1e308], 'acosh(1e308)', 709.889355822726],
 			['acosh', [Math.PI], 'acosh(Math.PI)', 1.811526272460853],
+			['acosh', [Math.SQRT2], 'acosh(Math.SQRT2)', 0.881373587019543],
+
 			['asin', [n], `asin(${n})`, 0.12331227519187199],
+
 			['asinh', [1e300], 'asinh(1e308)', 691.4686750787736],
 			['asinh', [Math.PI], 'asinh(Math.PI)', 1.8622957433108482],
+
 			['atan', [2], 'atan(2)', 1.1071487177940904],
 			['atan', [Math.PI], 'atan(Math.PI)', 1.2626272556789115],
+
 			['atanh', [0.5], 'atanh(0.5)', 0.5493061443340548],
+
 			['atan2', [1e-310, 2], 'atan2(1e-310, 2)', 5e-311],
 			['atan2', [Math.PI, 2], 'atan2(Math.PI)', 1.0038848218538872],
+
 			['cbrt', [100], 'cbrt(100)', 4.641588833612779],
 			['cbrt', [Math.PI], 'cbrt(Math.PI)', 1.4645918875615231],
+			
 			['cos', [n], `cos(${n})`, 0.9924450321351935],
 			['cos', [Math.PI], 'cos(Math.PI)', -1],
+			['cos', [bigN], `cos(${bigN})`, -0.10868049424995659, -0.10868049424995659, -0.9779661551196617], // unique in Tor
+
 			['cosh', [1], 'cosh(1)', 1.5430806348152437],
 			['cosh', [Math.PI], 'cosh(Math.PI)', 11.591953275521519],
+
 			['expm1', [1], 'expm1(1)', 1.718281828459045],
 			['expm1', [Math.PI], 'expm1(Math.PI)', 22.140692632779267],
+
 			['exp', [n], `exp(${n})`, 1.1308844209474893],
 			['exp', [Math.PI], 'exp(Math.PI)', 23.140692632779267],
+
 			['hypot', [1, 2, 3, 4, 5, 6], 'hypot(1, 2, 3, 4, 5, 6)', 9.539392014169456],
+			['hypot', [bigN, bigN], `hypot(${bigN}, ${bigN})`, 8.288489826731116e+38, 8.288489826731114e+38],
+
 			['log', [n], `log(${n})`, -2.0955709236097197],
 			['log', [Math.PI], 'log(Math.PI)', 1.1447298858494002],
+
 			['log1p', [n], `log1p(${n})`, 0.11600367575630613],
 			['log1p', [Math.PI], 'log1p(Math.PI)', 1.4210804127942926],
+
 			['log10', [n], `log10(${n})`, -0.9100948885606021],
-			['log10', [Math.PI], 'log10(Math.PI)', 0.4971498726941338],
+			['log10', [Math.PI], 'log10(Math.PI)', 0.4971498726941338, 0.49714987269413385],
 			['log10', [Math.E], 'log10(Math.E])', 0.4342944819032518],
 			['log10', [Math.LN2], 'log10(Math.LN2)', -0.1591745389548616],
 			['log10', [Math.LOG2E], 'log10(Math.LOG2E)', 0.15917453895486158],
 			['log10', [Math.LOG10E], 'log10(Math.LOG10E)', -0.36221568869946325],
 			['log10', [Math.SQRT1_2], 'log10(Math.SQRT1_2)', -0.15051499783199057],
-			['log10', [Math.SQRT2], 'log10(Math.SQRT2)', 0.1505149978319906],
-			['sin', [Math.PI], 'sin(Math.PI)', 1.2246467991473532e-16],
+			['log10', [Math.SQRT2], 'log10(Math.SQRT2)', 0.1505149978319906, 0.15051499783199063],
+			
+			['sin', [bigN], `sin(${bigN})`, 0.994076732536068, 0.994076732536068, -0.20876350121720488], // unique in Tor
+			['sin', [Math.PI], 'sin(Math.PI)', 1.2246467991473532e-16, 1.2246467991473532e-16, 1.2246063538223773e-16], // unique in Tor
 			['sin', [Math.E], 'sin(Math.E])', 0.41078129050290885],
 			['sin', [Math.LN2], 'sin(Math.LN2)', 0.6389612763136348],
 			['sin', [Math.LOG2E], 'sin(Math.LOG2E)', 0.9918062443936637],
 			['sin', [Math.LOG10E], 'sin(Math.LOG10E)', 0.4207704833137573],
 			['sin', [Math.SQRT1_2], 'sin(Math.SQRT1_2)', 0.6496369390800625],
 			['sin', [Math.SQRT2], 'sin(Math.SQRT2)', 0.9877659459927356],
+			
 			['sinh', [1], 'sinh(1)', 1.1752011936438014],
 			['sinh', [Math.PI], 'sinh(Math.PI)', 11.548739357257748],
 			['sinh', [Math.E], 'sinh(Math.E])', 7.544137102816975],
@@ -826,27 +849,34 @@
 			['sinh', [Math.LOG10E], 'sinh(Math.LOG10E)', 0.44807597941469024],
 			['sinh', [Math.SQRT1_2], 'sinh(Math.SQRT1_2)', 0.7675231451261164],
 			['sinh', [Math.SQRT2], 'sinh(Math.SQRT2)', 1.935066822174357],
+			
 			['sqrt', [n], `sqrt(${n})`, 0.3507135583350036],
 			['sqrt', [Math.PI], 'sqrt(Math.PI)', 1.7724538509055159],
+			
 			['tan', [-1e308], 'tan(-1e308)', 0.5086861259107568],
 			['tan', [Math.PI], 'tan(Math.PI)', -1.2246467991473532e-16],
+
 			['tanh', [n], `tanh(${n})`, 0.12238344189440875],
 			['tanh', [Math.PI], 'tanh(Math.PI)', 0.99627207622075],
-			['pow', [Math.PI, -100], 'pow(Math.PI, -100)', 1.9275814160560204e-50],
-			['pow', [Math.E, -100], 'pow(Math.E, -100)', 3.7200759760208555e-44],
-			['pow', [Math.LN2, -100], 'pow(Math.LN2, -100)', 8269017203802394],
-			['pow', [Math.LN10, -100], 'pow(Math.LN10, -100)', 6.003867926738829e-37],
-			['pow', [Math.LOG2E, -100], 'pow(Math.LOG2E, -100)', 1.20933355845501e-16],
-			['pow', [Math.LOG10E, -100], 'pow(Math.LOG10E, -100)', 1.6655929347585958e+36],
-			['pow', [Math.SQRT1_2, -100], 'pow(Math.SQRT1_2, -100)', 1125899906842616.2],
-			['pow', [Math.SQRT2, -100], 'pow(Math.SQRT2, -100)', 8.881784197001191e-16]
+
+			['pow', [n, -100], `pow(${n}, -100)`, 1.022089333584519e+91, 1.0220893335845176e+91],
+			['pow', [Math.PI, -100], 'pow(Math.PI, -100)', 1.9275814160560204e-50, 1.9275814160560185e-50],
+			['pow', [Math.E, -100], 'pow(Math.E, -100)', 3.7200759760208555e-44, 3.720075976020851e-44],
+			['pow', [Math.LN2, -100], 'pow(Math.LN2, -100)', 8269017203802394, 8269017203802410],
+			['pow', [Math.LN10, -100], 'pow(Math.LN10, -100)', 6.003867926738829e-37, 6.003867926738811e-37],
+			['pow', [Math.LOG2E, -100], 'pow(Math.LOG2E, -100)', 1.20933355845501e-16, 1.2093335584550061e-16],
+			['pow', [Math.LOG10E, -100], 'pow(Math.LOG10E, -100)', 1.6655929347585958e+36, 1.665592934758592e+36],
+			['pow', [Math.SQRT1_2, -100], 'pow(Math.SQRT1_2, -100)', 1125899906842616.2, 1125899906842611.5],
+			['pow', [Math.SQRT2, -100], 'pow(Math.SQRT2, -100)', 8.881784197001191e-16, 8.881784197001154e-16]
 		]
 		const data = {}
 		fns.forEach(fn => {
 			data[fn[2]] = attempt(() => {
 				const result = Math[fn[0]](...fn[1])
 				const chromeV8 = result == fn[3]
-				return { result, chromeV8 }
+				const firefoxSpiderMonkey = fn[4] ? result == fn[4] : chromeV8
+				const other = fn[5] ? result != fn[5] : true
+				return { result, chromeV8, firefoxSpiderMonkey, other }
 			})
 		})
 		return data
@@ -1427,6 +1457,9 @@
 			const catchTorBrowser = (
 				torBrowser ? 'Tor Browser' : 'Firefox'
 			)
+			const catchTorBrowserMobile = (
+				torBrowser ? 'Tor Browser Mobile' : 'Firefox'
+			)
 			const catchTorBrowserResist = (
 				torBrowser ? 'Tor Browser (pending permission or blocked)' : 'Firefox (privacy.resistFingerprinting)'
 			)
@@ -1458,7 +1491,10 @@
 				'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': catchTorBrowser,
 				'e086050038b44b8dcb9d0565da3ff448a0162da7023469d347303479f981f5fd': catchTorBrowserAllow,
 				'0a1a099e6b0a7365acfdf38ed79c9cde9ec0617b0c39b6366dad4d1a4aa6fcaf': catchTorBrowser,
-				'99dfbc2000c9c81588259515fed8a1f6fbe17bf9964c850560d08d0bfabc1fff': catchTorBrowserResist
+				'99dfbc2000c9c81588259515fed8a1f6fbe17bf9964c850560d08d0bfabc1fff': catchTorBrowserResist,
+				'd7d8dbcf47a1a3bffd2ff1137dd97f12bfb3e04c8ebbc5e9cee6ede070244536': 'Tor Browser', // Maths
+				'39052892640fac40a004237b18cdac0b1d60572840c5c8b448be51d17a4b3ec0': catchTorBrowserMobile, // Maths
+				'be62031a99e7eb50017f44db5a3f41c697cfb3e7c267905d4f1c50e0958477b8': 'Chromium' // Maths
 			}
 
 			const [ data, hash ] = prop
@@ -1618,21 +1654,38 @@
 					${
 						!fp.maths[0] ? `<div>maths: ${note.blocked}</div>`: (() => {
 							const [ maths, hash ]  = fp.maths
-							let counter = 0
-							const chromeV8Template = Object.keys(maths).map((key, i) => {
-								const value = maths[key]
-								const result = value ? value.result : value
-								const chromeV8 = value ? value.chromeV8 : value
-								if (!chromeV8) { counter += 1}
-								return `${!chromeV8 ? `<div>${counter}: ${key} => ${result}</div>` : ''}`
-							})
+							const createTemplate = (maths, prop) => {
+								let counter = 0
+								return Object.keys(maths).map((key, i) => {
+									const value = maths[key]
+									const result = value ? value.result : `${note.blocked}`
+									const engine = value ? value[prop] : false
+									if (!engine) { counter += 1}
+									return `${!engine ? `<div>${counter}: ${key} => ${result}</div>` : ''}`
+								})
+							}
+							const chromeV8Template = createTemplate(maths, 'chromeV8')
+							const firefoxSpiderMonkeyTemplate = createTemplate(maths, 'firefoxSpiderMonkey')
+							const otherTemplate = createTemplate(maths, 'other')
 							return `
 							<div>
-								<div>maths: ${hash}</div>
+								<div>maths: ${identify(fp.maths)}</div>
 								${
 									!!chromeV8Template.filter(str => str.length)[0] ?
-									`<div>unique results not in Chrome V8:
+									`<br><div>does not match Chrome V8:
 										${chromeV8Template.join('')}
+									</div>` : ''
+								}
+								${
+									!!firefoxSpiderMonkeyTemplate.filter(str => str.length)[0] ?
+									`<br><div>does not match Firefox SpiderMonkey:
+										${firefoxSpiderMonkeyTemplate.join('')}
+									</div>` : ''
+								}
+								${
+									!!otherTemplate.filter(str => str.length)[0] ?
+									`<br><div>does not match Chrome V8 or Firefox SpiderMonkey:
+										${otherTemplate.join('')}
 									</div>` : ''
 								}
 							</div>
