@@ -1457,6 +1457,9 @@
 			const catchTorBrowser = (
 				torBrowser ? 'Tor Browser' : 'Firefox'
 			)
+			const catchTorBrowserMobile = (
+				torBrowser ? 'Tor Browser Mobile' : 'Firefox'
+			)
 			const catchTorBrowserResist = (
 				torBrowser ? 'Tor Browser (pending permission or blocked)' : 'Firefox (privacy.resistFingerprinting)'
 			)
@@ -1489,8 +1492,8 @@
 				'e086050038b44b8dcb9d0565da3ff448a0162da7023469d347303479f981f5fd': catchTorBrowserAllow,
 				'0a1a099e6b0a7365acfdf38ed79c9cde9ec0617b0c39b6366dad4d1a4aa6fcaf': catchTorBrowser,
 				'99dfbc2000c9c81588259515fed8a1f6fbe17bf9964c850560d08d0bfabc1fff': catchTorBrowserResist,
-				'7d2dd43add8cba5f7ee983078ddd17297320ae8c8ee9d28a587a1a9baf06d824': 'Desktop Tor Browser', // Maths
-				'42c8fac38f48b86a292edddf9a2beb2ea6c9778f0d974b2bc3c39dd67c0362e0': 'Firefox', // Maths
+				'7d2dd43add8cba5f7ee983078ddd17297320ae8c8ee9d28a587a1a9baf06d824': 'Tor Browser', // Maths
+				'42c8fac38f48b86a292edddf9a2beb2ea6c9778f0d974b2bc3c39dd67c0362e0': catchTorBrowserMobile, // Maths
 				'1d01513ba7fce45962c6e3761b820e872175dcc33af4aba543499ea0e56a1bef': 'Chromium'
 			}
 
@@ -1681,7 +1684,7 @@
 								}
 								${
 									!!torBrowserTemplate.filter(str => str.length)[0] ?
-									`<br><div>matches Desktop Tor Browser:
+									`<br><div>matches Tor Browser (desktop):
 										${torBrowserTemplate.join('')}
 									</div>` : ''
 								}
