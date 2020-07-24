@@ -1114,7 +1114,7 @@
 		const style = ` > span {
 			position: absolute!important;
 			left: -9999px!important;
-			font-size: 100px!important;
+			font-size: 70px!important;
 			font-style: normal!important;
 			font-weight: normal!important;
 			letter-spacing: normal!important;
@@ -1129,10 +1129,10 @@
 			word-spacing: normal!important;
 		}`
 		const baseFontSpan = font => {
-			return `<span class="basefont" data-font="${font}" style="font-family: ${font}">${text}</span>`
+			return `<span class="basefont" data-font="${font}" style="font-family: ${font}!important">${text}</span>`
 		}
 		const systemFontSpan = (font, basefont) => {
-			return `<span class="system-font" data-font="${font}" data-basefont="${basefont}" style="font-family: ${`'${font}', ${basefont}`}">${text}</span>`
+			return `<span class="system-font" data-font="${font}" data-basefont="${basefont}" style="font-family: ${`'${font}', ${basefont}`}!important">${text}</span>`
 		}
 		const detect = fonts => {
 			return new Promise(resolve => {
@@ -1645,7 +1645,6 @@
 					${
 						!fp.cRects[0] ? `<div>client rects: ${note.blocked}</div>`: (() => {
 							const [ rects, hash ]  = fp.cRects
-							console.log(rects)
 							return `
 							<div>
 								<div>client rects: ${hash}</div>
