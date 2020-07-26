@@ -218,7 +218,9 @@
 
 	// Detect Brave Browser and strict fingerprinting blocking
 	const brave = () => 'brave' in navigator ? true : false
-	const isBrave = brave() // compute and cache result
+	const firefox = () => typeof InstallTrigger !== 'undefined'
+	const isBrave = brave()
+	const isFirefox = firefox()
 
 	// Collect trash values
 	const trashBin = []
@@ -490,7 +492,9 @@
 			context.fillStyle = 'green'
 			context.fillText(str, 10, 50)
 			canvas2dDataURI = canvas.toDataURL()
-			return isBrave ? sendToTrash('canvas2dDataURI', hashMini(canvas2dDataURI)) : canvas2dDataURI
+			return (
+				isBrave || isFirefox ? sendToTrash('canvas2dDataURI', hashMini(canvas2dDataURI)) : canvas2dDataURI
+			)
 		}
 		
 		// document lie and send to trash
@@ -731,7 +735,9 @@
 					context.clearColor(0.2, 0.4, 0.6, 0.8)
 					context.clear(context.COLOR_BUFFER_BIT)
 					canvasWebglDataURI = canvas.toDataURL()
-					return isBrave ? sendToTrash(canvasTitle, hashMini(canvasWebglDataURI)) : canvasWebglDataURI
+					return (
+						isBrave || isFirefox ? sendToTrash(canvasTitle, hashMini(canvasWebglDataURI)) : canvasWebglDataURI
+					)
 				}
 				
 				// document lie and send to trash
@@ -1488,8 +1494,7 @@
 				'2bc45cdcef8ec09dd0f28ee622c25aac195976d8b1584b2377d0393538f04752': 'Trace',
 				'522ae9e830dc90e334a900f70c276bce794dd28ccacf87df6fedfc35d2fe7268': 'Trace',
 				'7757f7416b78fb8ac1f079b3e0677c0fe179826a63727d809e7d69795e915cd5': 'Chromium',
-				'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': 'Firefox', // errors
-				'99dfbc2000c9c81588259515fed8a1f6fbe17bf9964c850560d08d0bfabc1fff': 'Firefox (denied)' // canvas denied
+				'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': 'Firefox' // errors
 			}
 
 			const [ data, hash ] = prop
@@ -1560,14 +1565,14 @@
 					}
 
 					<div>canvas: ${
-						isBrave ? 'Brave Browser' : identify(fp.canvas)
+						isBrave ? 'Brave Browser' : isFirefox ? 'Firefox' : identify(fp.canvas)
 					}</div>
 					<div>
 						<div>webglDataURL: ${
-							isBrave ? 'Brave Browser' : identify(fp.webglDataURL)
+							isBrave ? 'Brave Browser' : isFirefox ? 'Firefox' : identify(fp.webglDataURL)
 						}</div>
 						<div>webgl2DataURL: ${
-							isBrave ? 'Brave Browser' : identify(fp.webgl2DataURL)
+							isBrave ? 'Brave Browser' : isFirefox ? 'Firefox' : identify(fp.webgl2DataURL)
 						}</div>
 						${
 							!fp.webgl[0] ? `<div>specs: ${note.blocked}</div>`: (() => {
