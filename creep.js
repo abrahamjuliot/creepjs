@@ -1504,6 +1504,7 @@
 				known[hash] ? `<span class="known">${known[hash]}</span>` : hash
 			)
 		}
+		const knownStyle = str => `<span class="known">${str}</span>`
 		const pluralify = (len) => len > 1 ? 's' : ''
 		// template
 		const data = `
@@ -1565,14 +1566,14 @@
 					}
 
 					<div>canvas: ${
-						isBrave ? 'Brave Browser' : isFirefox ? 'Firefox' : identify(fp.canvas)
+						isBrave ? knownStyle('Brave Browser') : isFirefox ? knownStyle('Firefox') : identify(fp.canvas)
 					}</div>
 					<div>
 						<div>webglDataURL: ${
-							isBrave ? 'Brave Browser' : isFirefox ? 'Firefox' : identify(fp.webglDataURL)
+							isBrave ? knownStyle('Brave Browser') : isFirefox ? knownStyle('Firefox') : identify(fp.webglDataURL)
 						}</div>
 						<div>webgl2DataURL: ${
-							isBrave ? 'Brave Browser' : isFirefox ? 'Firefox' : identify(fp.webgl2DataURL)
+							isBrave ? knownStyle('Brave Browser') : isFirefox ? knownStyle('Firefox') : identify(fp.webgl2DataURL)
 						}</div>
 						${
 							!fp.webgl[0] ? `<div>specs: ${note.blocked}</div>`: (() => {
@@ -1582,7 +1583,7 @@
 									const isObj = typeof extensions == 'object'
 									const isString = typeof renderer == 'string'
 									return checkBrave ? (
-										isBrave ? 'Brave Browser' : 
+										isBrave ? knownStyle('Brave Browser') : 
 										isString && value ? value : 
 										!value ? note.blocked : identify(fp.webgl)
 									) : isObj && value && value.length ? value.length : note.blocked
