@@ -1522,7 +1522,7 @@
 							const hash = fp.trash[1]
 							return `
 							<div class="trash">
-								<strong>${trashBin.length} API${plural} are counted as trash</strong>
+								<strong>${trashBin.length} API${plural} counted as trash</strong>
 								<div>hash: ${hash}</div>
 								${trashBin.map(item => `<div>${item.name}: ${item.value}</div>`).join('')}
 							</div>
