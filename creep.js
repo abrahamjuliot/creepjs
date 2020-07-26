@@ -1489,8 +1489,7 @@
 				'522ae9e830dc90e334a900f70c276bce794dd28ccacf87df6fedfc35d2fe7268': 'Trace',
 				'7757f7416b78fb8ac1f079b3e0677c0fe179826a63727d809e7d69795e915cd5': 'Chromium',
 				'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': 'Firefox', // errors
-				'99dfbc2000c9c81588259515fed8a1f6fbe17bf9964c850560d08d0bfabc1fff': 'Firefox (denied)', // canvas denied
-				'e086050038b44b8dcb9d0565da3ff448a0162da7023469d347303479f981f5fd': 'Firefox (allowed)' // canvas denied
+				'99dfbc2000c9c81588259515fed8a1f6fbe17bf9964c850560d08d0bfabc1fff': 'Firefox (denied)' // canvas denied
 			}
 
 			const [ data, hash ] = prop
