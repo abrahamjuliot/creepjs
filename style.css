@@ -63,6 +63,48 @@ body {
 	font-family: monospace;
 	color: var(--text);
 }
+
+#fp-app {
+    width: 100px;
+    height: 50px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    margin: auto;
+    text-align: center;
+}
+#fp-app .loader {
+    width: 50px;
+    height: 50px;
+    background-color: var(--aqua);
+    border-radius: 5px;
+    display: inline-block;
+    animation: spin 2s cubic-bezier(0.77, 0, 0.175, 1.5) infinite;
+	transition: height .3s ease;
+}
+@keyframes spin {
+    0% {
+        transform: translateX(0);
+    }
+    20% {
+        transform: translateY(-10px) rotate(90deg);
+    }
+    40% {
+        transform: translateY(0) rotate(180deg);
+    }
+    60% {
+        transform: translateY(10px) rotate(270deg);
+    }
+    80% {
+        transform: translateY(0px) rotate(360deg);
+    }
+    100% {
+        transform: translateY(0px) rotate(-360deg);
+    }
+}
+
 strong {
 	font-weight: bold;
 }

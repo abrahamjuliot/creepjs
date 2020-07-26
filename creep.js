@@ -1094,7 +1094,9 @@
 			return new Promise(resolve => resolve(undefined))
 		}
 	}
-
+	
+	// inspired by Lalit Patel's fontdetect.js
+	// https://www.lalit.org/wordpress/wp-content/uploads/2008/05/fontdetect.js?ver=0.3
 	const fontDetector = () => {
 		const htmlElementPrototype = attempt(() => HTMLElement.prototype)
 		const detectLies = (name, value) => {
@@ -1114,7 +1116,7 @@
 		const style = ` > span {
 			position: absolute!important;
 			left: -9999px!important;
-			font-size: 70px!important;
+			font-size: 256px!important;
 			font-style: normal!important;
 			font-weight: normal!important;
 			letter-spacing: normal!important;
@@ -1177,6 +1179,7 @@
 							})
 							;[...systemFontElems].forEach(span => {
 								const { dataset: { font } }= span
+								
 								if (!detectedFonts[font]) {
 									const { dataset: { basefont }, offsetWidth, offsetHeight } = span
 									const widthMatchesBase = toInt(offsetWidth) == baseOffsetWidth[basefont]
@@ -1229,7 +1232,7 @@
 		</div>
 	</fingerprint>
 	`
-
+	
 	// fingerprint
 	const fingerprint = async () => {
 		// attempt to compute values
@@ -1272,7 +1275,7 @@
 			getMediaDevices(),
 			highEntropyValues(),
 			offlineAudioOscillator(),
-			detectFonts([...fontList])
+			detectFonts([...fontList, ...extendedFontList, ...googleFonts])
 		]).catch(error => { 
 			console.error(error.message)
 		})
