@@ -1739,7 +1739,7 @@
 							return `
 							<div>
 								<div>window API: ${hash}</div>
-								<div>iframe properties: ${props.length}</div>
+								<div>iframe.contentWindow properties: ${props.length}</div>
 							</div>
 							`
 						})()
