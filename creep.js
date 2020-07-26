@@ -1466,25 +1466,6 @@
 
 		// identify known hash
 		const identify = prop => {
-			const torBrowser = (
-				/* geo.enabled can be set to true or false:
-				Geolocation is in window of Firefox
-				Geolocation is not in the window of Tor Browser
-				*/
-				!('Geolocation' in window)
-			)
-			const catchTorBrowser = (
-				torBrowser ? 'Tor Browser' : 'Firefox'
-			)
-			const catchTorBrowserMobile = (
-				torBrowser ? 'Tor Browser Mobile' : 'Firefox'
-			)
-			const catchTorBrowserResist = (
-				torBrowser ? 'Tor Browser (pending permission or blocked)' : 'Firefox (privacy.resistFingerprinting)'
-			)
-			const catchTorBrowserAllow = (
-				torBrowser ? 'Tor Browser' : 'Firefox (privacy.resistFingerprinting)'
-			)
 			const known = {
 				'0df25df426d0ce052d04482c0c2cd4d874ae7a4da4feb430be36150a770f3b6b': 'Browser Plugs',
 				'65069db4579c03d49fde85983c905817c8798cad3ad6b39dd93df24bde1449c9': 'Browser Plugs',
@@ -1507,13 +1488,7 @@
 				'2bc45cdcef8ec09dd0f28ee622c25aac195976d8b1584b2377d0393538f04752': 'Trace',
 				'522ae9e830dc90e334a900f70c276bce794dd28ccacf87df6fedfc35d2fe7268': 'Trace',
 				'7757f7416b78fb8ac1f079b3e0677c0fe179826a63727d809e7d69795e915cd5': 'Chromium',
-				'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': catchTorBrowser,
-				'e086050038b44b8dcb9d0565da3ff448a0162da7023469d347303479f981f5fd': catchTorBrowserAllow,
-				'0a1a099e6b0a7365acfdf38ed79c9cde9ec0617b0c39b6366dad4d1a4aa6fcaf': catchTorBrowser,
-				'99dfbc2000c9c81588259515fed8a1f6fbe17bf9964c850560d08d0bfabc1fff': catchTorBrowserResist,
-				'd7d8dbcf47a1a3bffd2ff1137dd97f12bfb3e04c8ebbc5e9cee6ede070244536': 'Tor Browser', // Maths
-				'39052892640fac40a004237b18cdac0b1d60572840c5c8b448be51d17a4b3ec0': catchTorBrowserMobile, // Maths
-				'be62031a99e7eb50017f44db5a3f41c697cfb3e7c267905d4f1c50e0958477b8': 'Chromium' // Maths
+				'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': 'Firefox'
 			}
 
 			const [ data, hash ] = prop
