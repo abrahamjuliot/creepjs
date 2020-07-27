@@ -244,6 +244,20 @@
 		return trusted ? val : sendToTrash(name, val)
 	}
 
+	// ip address
+	const getIP = async () => {
+		const promiseUndefined = new Promise(resolve => resolve(undefined))
+		const api = 'https://api6.ipify.org/?format=json'
+		try {
+			const res = await fetch(api)
+			return res.json()
+		}
+		catch (error) {
+			captureError(error)
+			return promiseUndefined
+		}
+	}
+
 	// navigator
 	const nav = () => {
 		const navigatorPrototype = attempt(() => Navigator.prototype)
@@ -1271,12 +1285,14 @@
 		// await
 		const asyncValues = timer('')
 		const [
+			ipAddress,
 			voices,
 			mediaDevices,
 			highEntropy,
 			offlineAudio,
 			fonts
 		] = await Promise.all([
+			getIP(),
 			getVoices(),
 			getMediaDevices(),
 			highEntropyValues(),
@@ -1287,6 +1303,7 @@
 		})
 		asyncValues('Async computation complete')
 
+		const ipAddressComputed = !ipAddress ? undefined : ipAddress.ip
 		const voicesComputed = !voices ? undefined : voices.map(({ name, lang }) => ({ name, lang }))
 		const mediaDevicesComputed = !mediaDevices ? undefined : mediaDevices.map(({ kind }) => ({ kind })) // chrome randomizes groupId
 		
@@ -1361,6 +1378,7 @@
 		}
 
 		const fingerprint = {
+			ipAddress: [ipAddressComputed],
 			nav: [navComputed, navHash],
 			highEntropy: [highEntropy, highEntropyHash],
 			window: [windowVersionComputed, windowVersionHash],
@@ -1455,7 +1473,7 @@
 						<div>First Visit: ${toLocaleStr(firstVisit)}</div>
 						<div>Latest Visit: ${toLocaleStr(latestVisit)}</div>
 						${subIdsLen ? `<div>${subIdsLen} Loose fingerprint${plural}</div>` : ''}
-						<div>Visits: ${visits}${subIdsLen > 3 ? ` (<strong>Bot</strong>)`: ''}</div>
+						<div>Visits: ${visits}${subIdsLen > 20 ? ` (<strong>Bot</strong>)`: ''}</div>
 					</div>
 				`
 				fetchVisitoDataTimer('Visitor data received')
@@ -1510,6 +1528,20 @@
 		const data = `
 			<section>
 				<div id="fingerprint-data">
+					
+					${
+						!fp.ipAddress[0] ? '': (() => {
+							const plural = pluralify(trashBin.length)
+							const [ ip ] = fp.ipAddress
+							return `
+							<div>
+								<strong>IP address</strong>
+								<div>${ip}</div>
+							</div>
+							`
+						})()
+					}
+
 					<div>
 						<strong>Fingerprint</strong>
 						<div>Trusted Id: ${creepHash}</div>
