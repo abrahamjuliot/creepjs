@@ -940,14 +940,13 @@
 		const dateGetTimezoneOffset = attempt(() => Date.prototype.getTimezoneOffset)
 		const timezoneLie = dateGetTimezoneOffset ? hasLiedAPI(dateGetTimezoneOffset, 'getTimezoneOffset').lie : false
 		const timezoneOffset = new Date().getTimezoneOffset()
-		let trusted = true
 		if (!timezoneLie) {
 			const timezoneOffsetComputed = computeTimezoneOffset()
-			trusted = timezoneOffsetComputed == timezoneOffset
+			const matching = timezoneOffsetComputed == timezoneOffset
 			const notWithinParentheses = /.*\(|\).*/g
 			const timezoneLocation = Intl.DateTimeFormat().resolvedOptions().timeZone
 			const timezone = (''+new Date()).replace(notWithinParentheses, '')
-			return trusted ? { timezoneOffsetComputed, timezoneOffset, timezoneLocation, timezone } : undefined
+			return { timezoneOffsetComputed, timezoneOffset, matching, timezoneLocation, timezone }
 		}
 
 		// document lie and send to trash
