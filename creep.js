@@ -1230,7 +1230,7 @@
 	// scene
 	const scene = html`
 	<fingerprint>
-		<visitor><div id="visitor">Loading visitor data...</div></visitor>
+		<visitor><div id="visitor"><div class="visitor-loader"></div></div></visitor>
 		<div id="fingerprint"></div>
 		<div id="font-detector"><div id="font-detector-stage"></div></div>
 		<iframe style="display:none" id="iframe-window-version"></iframe>
