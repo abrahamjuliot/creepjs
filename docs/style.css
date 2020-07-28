@@ -63,6 +63,93 @@ body {
 	font-family: monospace;
 	color: var(--text);
 }
+
+#fp-app {
+    width: 100px;
+    height: 50px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    margin: auto;
+    text-align: center;
+}
+#visitor .visitor-loader,
+.app-loader {
+	width: 50px;
+    height: 50px;
+    background-color: var(--aqua);
+    display: inline-block;
+	border-radius: 5px;
+	transition: height .3s ease;
+}
+
+.app-loader {
+	animation: spin 2s cubic-bezier(0.77, 0, 0.175, 1.5) infinite;
+}
+
+#visitor .visitor-loader {
+    animation: work 2s cubic-bezier(0, 0.78, 0.15, 1.54) infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: translateX(0);
+    }
+    20% {
+        transform: translateY(-10px) rotate(90deg);
+    }
+    40% {
+        transform: translateY(0) rotate(180deg);
+    }
+    60% {
+        transform: translateY(10px) rotate(270deg);
+    }
+    80% {
+        transform: translateY(0px) rotate(360deg);
+    }
+    100% {
+        transform: translateY(0px) rotate(-360deg);
+    }
+}
+
+@keyframes work {
+    0% {
+        transform: translateX(0);
+    }
+    10% {
+        transform: translate(-10px, 0);
+    }
+    20% {
+        transform: translate(10px, 0);
+    }
+    30% {
+        transform: translate(-10px, 0);
+    }
+    40% {
+        transform: translate(10px, 0);
+    }
+    50% {
+        transform: translate(0) rotate(-720deg);
+    }
+    60% {
+        transform: scale(.9);
+    }
+    70% {
+        transform: scale(.8);
+    }
+    80% {
+        transform: scale(1.1);
+    }
+    90% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: translate(0);
+    }
+}
+
 strong {
 	font-weight: bold;
 }
