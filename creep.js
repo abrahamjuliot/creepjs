@@ -247,10 +247,12 @@
 	// ip address
 	const getIP = async () => {
 		const promiseUndefined = new Promise(resolve => resolve(undefined))
-		const api = 'https://api6.ipify.org/?format=json'
+		
 		try {
+			const api = 'https://api6.ipify.org/?format=json'
 			const res = await fetch(api)
-			return res.json()
+			const json = await res.json()
+			return json
 		}
 		catch (error) {
 			captureError(error)
@@ -796,7 +798,7 @@
 	// maths
 	const maths = () => {
 		const n = 0.123
-		const bigN = 586084736227728400000000000000000000000
+		const bigN = 5.860847362277284e+38
 		const fns = [
 			['acos', [n], `acos(${n})`, 1.4474840516030247],
 			['acos', [Math.SQRT1_2], 'acos(Math.SQRT1_2)', 0.7853981633974483],
@@ -1486,9 +1488,22 @@
 		
 		// symbol notes
 		const note = { blocked: '<span class="blocked">blocked</span>'}
-
+		const knownStyle = str => `<span class="known">${str}</span>`
+		const knownBrowser = () => {
+			return (
+				isBrave ? knownStyle('Brave Browser') :  
+				isFirefox ? knownStyle('Firefox') : 
+				false
+			)
+		}
 		// identify known hash
-		const identify = prop => {
+		const identify = (prop, check = null) => {
+			if (check == 'identifyBrowser') {
+				const browser = knownBrowser()
+				if (browser) {
+					return browser
+				}
+			}
 			const known = {
 				'0df25df426d0ce052d04482c0c2cd4d874ae7a4da4feb430be36150a770f3b6b': 'Browser Plugs',
 				'65069db4579c03d49fde85983c905817c8798cad3ad6b39dd93df24bde1449c9': 'Browser Plugs',
@@ -1521,7 +1536,7 @@
 				known[hash] ? `<span class="known">${known[hash]}</span>` : hash
 			)
 		}
-		const knownStyle = str => `<span class="known">${str}</span>`
+		
 		const pluralify = (len) => len > 1 ? 's' : ''
 		// template
 		const data = `
@@ -1596,16 +1611,10 @@
 						})()
 					}
 
-					<div>canvas: ${
-						isBrave ? knownStyle('Brave Browser') : isFirefox ? knownStyle('Firefox') : identify(fp.canvas)
-					}</div>
+					<div>canvas: ${identify(fp.canvas, 'identifyBrowser')}</div>
 					<div>
-						<div>webglDataURL: ${
-							isBrave ? knownStyle('Brave Browser') : isFirefox ? knownStyle('Firefox') : identify(fp.webglDataURL)
-						}</div>
-						<div>webgl2DataURL: ${
-							isBrave ? knownStyle('Brave Browser') : isFirefox ? knownStyle('Firefox') : identify(fp.webgl2DataURL)
-						}</div>
+						<div>webglDataURL: ${identify(fp.webglDataURL, 'identifyBrowser')}</div>
+						<div>webgl2DataURL: ${identify(fp.webgl2DataURL, 'identifyBrowser')}</div>
 						${
 							!fp.webgl[0] ? `<div>specs: ${note.blocked}</div>`: (() => {
 								const [ data, hash ] = fp.webgl
@@ -1670,7 +1679,7 @@
 							`
 						})()
 					}
-					<div>console error messages: ${identify(fp.consoleErrors)}
+					<div>console error messages: ${identify(fp.consoleErrors, 'identifyBrowser')}
 						${
 							(() => {
 								const errors = fp.consoleErrors[0]
