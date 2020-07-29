@@ -393,10 +393,26 @@
 
 	// computed style version
 	const computedStyleVersion = () => {
-		const div = document.createElement('div')
+		const body = document.querySelector('body')
 		if ('getComputedStyle' in window) {
-			const computedStyle = getComputedStyle(div)
-			return Object.keys(computedStyle)
+			const computedStyle = getComputedStyle(body)
+			const keys = []
+			Object.keys(computedStyle).forEach(key => {
+				const numericKey = !isNaN(key)
+				const value = computedStyle[key]
+				const cssVar = /^--.*$/
+				const customProp = cssVar.test(key) || cssVar.test(value)
+				if (numericKey && !customProp) {
+					return keys.push(value)
+				}
+				else if (!customProp) {
+					return keys.push(key)
+				}
+				return
+			})
+			const moz = !!keys.filter(key => (/-moz-/).test(key))[0]
+			const webkit = !!keys.filter(key => (/-webkit-/).test(key))[0]
+			return { keys, moz, webkit }
 		}
 		return undefined
 	}
@@ -1793,12 +1809,14 @@
 					}
 
 					${
-						!fp.style[0] || !fp.style[0].length ? `<div>computed style: ${note.blocked} or unsupported</div>`: (() => {
-							const [ props, hash ]  = fp.style
+						!fp.style[0] || !fp.style[0].keys.length ? `<div>computed style: ${note.blocked} or unsupported</div>`: (() => {
+							const [ style, hash ]  = fp.style
 							return `
 							<div>
 								<div>computed style: ${hash}</div>
-								<div>properties: ${props.length}</div>
+								<div>keys: ${style.keys.length}</div>
+								<div>moz: ${style.moz}</div>
+								<div>webkit: ${style.webkit}</div>
 							</div>
 							`
 						})()
