@@ -1425,10 +1425,6 @@
 	}
 	// get/post request
 	const webapp = 'https://script.google.com/macros/s/AKfycbzKRjt6FPboOEkh1vTXttGyCjp97YBP7z-5bODQmtSkQ9BqDRY/exec'
-	async function postData(formData) {
-		const response = await fetch(webapp, { method: 'POST', body: formData })
-		return response.json()
-	}
 
 	// patch
 	const app = document.getElementById('fp-app')
