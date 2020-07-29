@@ -1843,12 +1843,21 @@
 								doNotTrack
 							} = nav
 							return `
+							${
+								version === undefined ? `<div>navigator version: ${note.blocked}</div>`: (() => {
+									const len = version.length
+									return `
+									<div>
+										<div>navigator version hash: ${versionHash}</div>
+										<div>total properties: ${len}</div>
+										${len ? `<div>properties:</div>${version.join(', ')}` : ''}
+									</div>
+									`
+								})()
+							}
+
 							<div>
 								<div>navigator hash: ${hash}</div>
-								<div>version: ${version !== undefined ? versionHash : note.blocked}</div>
-								<div>properties: ${version !== undefined ? version.length : note.blocked}</div>
-								<div>mimeTypes: ${mimeTypes !== undefined ? mimeTypesHash : note.blocked}</div>
-								<div>plugins: ${plugins !== undefined ? pluginsHash : note.blocked}</div>
 								<div>platform: ${platform ? platform : `${note.blocked} or other`}</div>
 								<div>deviceMemory: ${deviceMemory ? deviceMemory : note.blocked}</div>
 								<div>hardwareConcurrency: ${hardwareConcurrency ? hardwareConcurrency : note.blocked}</div>
@@ -1859,6 +1868,33 @@
 								<div>userAgent: ${userAgent ? userAgent : note.blocked}</div>
 								<div>appVersion: ${appVersion ? appVersion : note.blocked}</div>
 							</div>
+
+							${
+								mimeTypes === undefined ? `<div>mimeTypes: ${note.blocked}</div>`: (() => {
+									const len = mimeTypes.length
+									return `
+									<div>
+										<div>mimeTypes hash: ${mimeTypesHash}</div>
+										<div>total mimeTypes: ${len}</div>
+										${len ? `<div>mimeTypes:</div>${mimeTypes.join(', ')}` : ''}
+									</div>
+									`
+								})()
+							}
+
+							${
+								plugins === undefined ? `<div>plugins: ${note.blocked}</div>`: (() => {
+									const pluginsList = Object.keys(plugins).map(key => plugins[key].name)
+									const len = pluginsList.length
+									return `
+									<div>
+										<div>plugins hash: ${pluginsHash}</div>
+										<div>total plugins: ${len}</div>
+										${len ? `<div>plugins:</div>${pluginsList.join(', ')}` : ''}
+									</div>
+									`
+								})()
+							}
 							`
 						})()
 					}
@@ -1883,12 +1919,13 @@
 					${
 						!fp.voices[0] || !fp.voices[0].length ? `<div>voices: ${note.blocked} or unsupported</div>`: (() => {
 							const [ voices, hash ]  = fp.voices
+							const voiceList = voices.map(voice => voice.name)
+							const len = voices.length
 							return `
 							<div>
 								<div>voices hash: ${hash}</div>
-								<div>total voices: ${voices.length}</div>
-								<div>voices:</div>
-								${voices.map(voice => `<div>${voice.name}</div>`).join('')}
+								<div>total voices: ${len}</div>
+								${len ? `<div>voices:</div>${voiceList.join(', ')}` : ''}
 							</div>
 							`
 						})()
@@ -1897,12 +1934,12 @@
 					${
 						!fp.fonts[0] ? `<div>fonts: ${note.blocked}</div>`: (() => {
 							const [ fonts, hash ]  = fp.fonts
+							const len = fonts.length
 							return `
 							<div>
 								<div>fonts hash: ${hash}</div>
-								<div>total fonts: ${fonts.length}</div>
-								<div>fonts:</div>
-								<div>${fonts.join(', ')}</div>
+								<div>total fonts: ${len}</div>
+								${len ? `<div>fonts:</div>${fonts.join(', ')}` : ''}
 							</div>
 							`
 						})()
