@@ -11,7 +11,7 @@
 
 	// Handle Errors
 	const errorsCaptured = []
-	const captureError = (error) => {
+	const captureError = (error, customMessage = null) => {
 		const type = {
 			Error: true,
 			EvalError: true, 
@@ -25,7 +25,11 @@
 		const hasInnerSpace = s => /.+(\s).+/g.test(s) // ignore AOPR noise
 		console.error(error) // log error to educate
 		const { name, message } = error
-		const trustedMessage = hasInnerSpace(message) ? message: undefined
+		const trustedMessage = (
+			!hasInnerSpace(message) ? undefined :
+			!customMessage ? message :
+			`${message} [${customMessage}]`
+		)
 		const trustedName = type[name] ? name : undefined
 		errorsCaptured.push(
 			{ trustedName, trustedMessage }
@@ -255,7 +259,7 @@
 			return json
 		}
 		catch (error) {
-			captureError(error)
+			captureError(error, 'api6.ipify.org: failed or client blocked')
 			return promiseUndefined
 		}
 	}
