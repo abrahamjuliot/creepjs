@@ -1771,7 +1771,7 @@
 								${
 									Object.keys(timezone).map(key => {
 										const value = timezone[key]
-										return `<div>${key}: ${value != undefined ? value : note.blocked}</div>`
+										return `<div>${key}: ${value != undefined && typeof value != 'object' ? value : note.blocked}</div>`
 									}).join('')
 								}
 							</div>
