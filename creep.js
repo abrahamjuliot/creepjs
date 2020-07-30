@@ -1485,9 +1485,11 @@
 				const toLocaleStr = str => new Date(str).toLocaleString()
 				const pluralify = (len) => len > 1 ? 's' : ''
 				const plural = pluralify(subIdsLen)
+				const hoursAgo = (date1, date2) => Math.abs(date1 - date2) / 36e5
+				const hours = hoursAgo(new Date(firstVisit), new Date(latestVisit)).toFixed(1)
 				const template = `
 					<div>
-						<div>First Visit: ${toLocaleStr(firstVisit)}</div>
+						<div>First Visit: ${toLocaleStr(firstVisit)} (${hours} hours ago)</div>
 						<div>Latest Visit: ${toLocaleStr(latestVisit)}</div>
 						${subIdsLen ? `<div>${subIdsLen} Loose fingerprint${plural}</div>` : ''}
 						<div>Visits: ${visits}${subIdsLen > 20 ? ` (<strong>Bot</strong>)`: ''}</div>
