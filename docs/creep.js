@@ -11,7 +11,7 @@
 
 	// Handle Errors
 	const errorsCaptured = []
-	const captureError = (error) => {
+	const captureError = (error, customMessage = null) => {
 		const type = {
 			Error: true,
 			EvalError: true, 
@@ -25,7 +25,11 @@
 		const hasInnerSpace = s => /.+(\s).+/g.test(s) // ignore AOPR noise
 		console.error(error) // log error to educate
 		const { name, message } = error
-		const trustedMessage = hasInnerSpace(message) ? message: undefined
+		const trustedMessage = (
+			!hasInnerSpace(message) ? undefined :
+			!customMessage ? message :
+			`${message} [${customMessage}]`
+		)
 		const trustedName = type[name] ? name : undefined
 		errorsCaptured.push(
 			{ trustedName, trustedMessage }
@@ -244,18 +248,42 @@
 		return trusted ? val : sendToTrash(name, val)
 	}
 
-	// ip address
-	const getIP = async () => {
+	// headers
+	const getOS = userAgent => {
+		const os = (
+			// order is important
+			/windows phone/ig.test(userAgent) ? 'Windows Phone' :
+			/win(dows|16|32|64|95|98|nt)|wow64/ig.test(userAgent) ? 'Windows' :
+			/android/ig.test(userAgent) ? 'Android' :
+			/cros/ig.test(userAgent) ? 'Chrome OS' :
+			/linux/ig.test(userAgent) ? 'Linux' :
+			/ipad/ig.test(userAgent) ? 'iPad' :
+			/iphone/ig.test(userAgent) ? 'iPhone' :
+			/ipod/ig.test(userAgent) ? 'iPod' :
+			/ios/ig.test(userAgent) ? 'iOS' :
+			/mac/ig.test(userAgent) ? 'Mac' :
+			'Other'
+		)
+		return os
+	}
+	const getHeaders = async () => {
 		const promiseUndefined = new Promise(resolve => resolve(undefined))
-		
 		try {
-			const api = 'https://api6.ipify.org/?format=json'
+			const api = 'https://www.cloudflare.com/cdn-cgi/trace'
 			const res = await fetch(api)
-			const json = await res.json()
-			return json
+			const text = await res.text()
+			const lines = text.match(/^(?:ip|uag|loc|tls)=(.*)$/igm)
+			const data = {}
+			lines.forEach(line => {
+				const key = line.split('=')[0]
+				const value = line.substr(line.indexOf('=') + 1)
+				data[key] = value
+			})
+			data.uag = getOS(data.uag)
+			return data
 		}
 		catch (error) {
-			captureError(error)
+			captureError(error, 'cloudflare.com: failed or client blocked')
 			return promiseUndefined
 		}
 	}
@@ -393,10 +421,26 @@
 
 	// computed style version
 	const computedStyleVersion = () => {
-		const div = document.createElement('div')
 		if ('getComputedStyle' in window) {
-			const computedStyle = getComputedStyle(div)
-			return Object.keys(computedStyle)
+			const body = document.querySelector('body')
+			const computedStyle = getComputedStyle(body)
+			const keys = []
+			Object.keys(computedStyle).forEach(key => {
+				const numericKey = !isNaN(key)
+				const value = computedStyle[key]
+				const cssVar = /^--.*$/
+				const customProp = cssVar.test(key) || cssVar.test(value)
+				if (numericKey && !customProp) {
+					return keys.push(value)
+				}
+				else if (!customProp) {
+					return keys.push(key)
+				}
+				return
+			})
+			const moz = !!keys.filter(key => (/-moz-/).test(key))[0]
+			const webkit = !!keys.filter(key => (/-webkit-/).test(key))[0]
+			return { keys, moz, webkit }
 		}
 		return undefined
 	}
@@ -1286,14 +1330,14 @@
 		// await
 		const asyncValues = timer('')
 		const [
-			ipAddress,
+			headers,
 			voices,
 			mediaDevices,
 			highEntropy,
 			offlineAudio,
 			fonts
 		] = await Promise.all([
-			getIP(),
+			getHeaders(),
 			getVoices(),
 			getMediaDevices(),
 			highEntropyValues(),
@@ -1304,7 +1348,6 @@
 		})
 		asyncValues('Async computation complete')
 
-		const ipAddressComputed = !ipAddress ? undefined : ipAddress.ip
 		const voicesComputed = !voices ? undefined : voices.map(({ name, lang }) => ({ name, lang }))
 		const mediaDevicesComputed = !mediaDevices ? undefined : mediaDevices.map(({ kind }) => ({ kind })) // chrome randomizes groupId
 		
@@ -1320,7 +1363,8 @@
 		// await hash values
 		const hashProcess = timer('')
 		const [
-			navHash, // order must match
+			headersHash, // order must match
+			navHash, 
 			mimeTypesHash,
 			pluginsHash,
 			navVersionHash,
@@ -1344,6 +1388,7 @@
 			trashHash,
 			liesHash
 		] = await Promise.all([
+			hashify(headers),
 			hashify(navComputed),
 			hashify(mimeTypes),
 			hashify(plugins),
@@ -1379,7 +1424,7 @@
 		}
 
 		const fingerprint = {
-			ipAddress: [ipAddressComputed],
+			headers: [headers, headersHash],
 			nav: [navComputed, navHash],
 			highEntropy: [highEntropy, highEntropyHash],
 			window: [windowVersionComputed, windowVersionHash],
@@ -1405,10 +1450,6 @@
 	}
 	// get/post request
 	const webapp = 'https://script.google.com/macros/s/AKfycbzKRjt6FPboOEkh1vTXttGyCjp97YBP7z-5bODQmtSkQ9BqDRY/exec'
-	async function postData(formData) {
-		const response = await fetch(webapp, { method: 'POST', body: formData })
-		return response.json()
-	}
 
 	// patch
 	const app = document.getElementById('fp-app')
@@ -1466,12 +1507,19 @@
 			.then(data => {
 				const { firstVisit, latestVisit, subIds, visits } = data
 				const subIdsLen = Object.keys(subIds).length
-				const toLocaleStr = str => new Date(str).toLocaleString()
+				const toLocaleStr = str => {
+					const date = new Date(str)
+					const dateString = date.toDateString()
+					const timeString = date.toLocaleTimeString()
+					return `${dateString}, ${timeString}`
+				}
 				const pluralify = (len) => len > 1 ? 's' : ''
 				const plural = pluralify(subIdsLen)
+				const hoursAgo = (date1, date2) => Math.abs(date1 - date2) / 36e5
+				const hours = hoursAgo(new Date(firstVisit), new Date(latestVisit)).toFixed(1)
 				const template = `
 					<div>
-						<div>First Visit: ${toLocaleStr(firstVisit)}</div>
+						<div>First Visit: ${toLocaleStr(firstVisit)} (${hours} hours ago)</div>
 						<div>Latest Visit: ${toLocaleStr(latestVisit)}</div>
 						${subIdsLen ? `<div>${subIdsLen} Loose fingerprint${plural}</div>` : ''}
 						<div>Visits: ${visits}${subIdsLen > 20 ? ` (<strong>Bot</strong>)`: ''}</div>
@@ -1542,19 +1590,6 @@
 		const data = `
 			<section>
 				<div id="fingerprint-data">
-					
-					${
-						!fp.ipAddress[0] ? '': (() => {
-							const plural = pluralify(trashBin.length)
-							const [ ip ] = fp.ipAddress
-							return `
-							<div>
-								<strong>IP address</strong>
-								<div>${ip}</div>
-							</div>
-							`
-						})()
-					}
 
 					<div>
 						<strong>Fingerprint</strong>
@@ -1604,6 +1639,30 @@
 										<div>
 											${err.trustedName}: ${err.trustedMessage}
 										</div>`
+									}).join('')
+								}
+							</div>
+							`
+						})()
+					}
+
+					${
+						!fp.headers[0] ? `<div>headers: ${note.blocked}</div>`: (() => {
+							const [ headers, hash ]  = fp.headers
+							return `
+							<div>
+								<div>headers: ${hash}</div>
+								${
+									Object.keys(headers).map(key => {
+										const value = headers[key]
+										key = (
+											key == 'ip' ? 'ip address' :
+											key == 'uag' ? 'ua system' :
+											key == 'loc' ? 'ip location' :
+											key == 'tls' ? 'tls version' :
+											key
+										)
+										return `<div>${key}: ${value}</div>`
 									}).join('')
 								}
 							</div>
@@ -1755,7 +1814,7 @@
 								${
 									Object.keys(timezone).map(key => {
 										const value = timezone[key]
-										return `<div>${key}: ${value != undefined ? value : note.blocked}</div>`
+										return `<div>${key}: ${value != undefined && typeof value != 'object' ? value : note.blocked}</div>`
 									}).join('')
 								}
 							</div>
@@ -1793,12 +1852,14 @@
 					}
 
 					${
-						!fp.style[0] || !fp.style[0].length ? `<div>computed style: ${note.blocked} or unsupported</div>`: (() => {
-							const [ props, hash ]  = fp.style
+						!fp.style[0] || !fp.style[0].keys.length ? `<div>computed style: ${note.blocked} or unsupported</div>`: (() => {
+							const [ style, hash ]  = fp.style
 							return `
 							<div>
 								<div>computed style: ${hash}</div>
-								<div>properties: ${props.length}</div>
+								<div>keys: ${style.keys.length}</div>
+								<div>moz: ${style.moz}</div>
+								<div>webkit: ${style.webkit}</div>
 							</div>
 							`
 						})()
@@ -1825,12 +1886,21 @@
 								doNotTrack
 							} = nav
 							return `
+							${
+								version === undefined ? `<div>navigator version: ${note.blocked}</div>`: (() => {
+									const len = version.length
+									return `
+									<div>
+										<div>navigator version hash: ${versionHash}</div>
+										<div>total properties: ${len}</div>
+										${len ? `<div>properties:</div>${version.join(', ')}` : ''}
+									</div>
+									`
+								})()
+							}
+
 							<div>
 								<div>navigator hash: ${hash}</div>
-								<div>version: ${version !== undefined ? versionHash : note.blocked}</div>
-								<div>properties: ${version !== undefined ? version.length : note.blocked}</div>
-								<div>mimeTypes: ${mimeTypes !== undefined ? mimeTypesHash : note.blocked}</div>
-								<div>plugins: ${plugins !== undefined ? pluginsHash : note.blocked}</div>
 								<div>platform: ${platform ? platform : `${note.blocked} or other`}</div>
 								<div>deviceMemory: ${deviceMemory ? deviceMemory : note.blocked}</div>
 								<div>hardwareConcurrency: ${hardwareConcurrency ? hardwareConcurrency : note.blocked}</div>
@@ -1841,6 +1911,33 @@
 								<div>userAgent: ${userAgent ? userAgent : note.blocked}</div>
 								<div>appVersion: ${appVersion ? appVersion : note.blocked}</div>
 							</div>
+
+							${
+								mimeTypes === undefined ? `<div>mimeTypes: ${note.blocked}</div>`: (() => {
+									const len = mimeTypes.length
+									return `
+									<div>
+										<div>mimeTypes hash: ${mimeTypesHash}</div>
+										<div>total mimeTypes: ${len}</div>
+										${len ? `<div>mimeTypes:</div>${mimeTypes.join(', ')}` : ''}
+									</div>
+									`
+								})()
+							}
+
+							${
+								plugins === undefined ? `<div>plugins: ${note.blocked}</div>`: (() => {
+									const pluginsList = Object.keys(plugins).map(key => plugins[key].name)
+									const len = pluginsList.length
+									return `
+									<div>
+										<div>plugins hash: ${pluginsHash}</div>
+										<div>total plugins: ${len}</div>
+										${len ? `<div>plugins:</div>${pluginsList.join(', ')}` : ''}
+									</div>
+									`
+								})()
+							}
 							`
 						})()
 					}
@@ -1865,12 +1962,13 @@
 					${
 						!fp.voices[0] || !fp.voices[0].length ? `<div>voices: ${note.blocked} or unsupported</div>`: (() => {
 							const [ voices, hash ]  = fp.voices
+							const voiceList = voices.map(voice => voice.name)
+							const len = voices.length
 							return `
 							<div>
 								<div>voices hash: ${hash}</div>
-								<div>total voices: ${voices.length}</div>
-								<div>voices:</div>
-								${voices.map(voice => `<div>${voice.name}</div>`).join('')}
+								<div>total voices: ${len}</div>
+								${len ? `<div>voices:</div>${voiceList.join(', ')}` : ''}
 							</div>
 							`
 						})()
@@ -1879,12 +1977,12 @@
 					${
 						!fp.fonts[0] ? `<div>fonts: ${note.blocked}</div>`: (() => {
 							const [ fonts, hash ]  = fp.fonts
+							const len = fonts.length
 							return `
 							<div>
 								<div>fonts hash: ${hash}</div>
-								<div>total fonts: ${fonts.length}</div>
-								<div>fonts:</div>
-								<div>${fonts.join(', ')}</div>
+								<div>total fonts: ${len}</div>
+								${len ? `<div>fonts:</div>${fonts.join(', ')}` : ''}
 							</div>
 							`
 						})()
