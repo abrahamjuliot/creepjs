@@ -248,18 +248,24 @@
 		return trusted ? val : sendToTrash(name, val)
 	}
 
-	// ip address
-	const getIP = async () => {
+	// headers
+	const getHeaders = async () => {
 		const promiseUndefined = new Promise(resolve => resolve(undefined))
-		
 		try {
-			const api = 'https://api6.ipify.org/?format=json'
+			const api = 'https://www.cloudflare.com/cdn-cgi/trace'
 			const res = await fetch(api)
-			const json = await res.json()
-			return json
+			const text = await res.text()
+			const lines = text.match(/^(?:ip|uag|loc|tls)=(.*)$/igm)
+			const data = {}
+			lines.forEach(line => {
+				const key = line.split('=')[0]
+				const value = line.substr(line.indexOf('=') + 1)
+				data[key] = value
+			})
+			return data
 		}
 		catch (error) {
-			captureError(error, 'api6.ipify.org: failed or client blocked')
+			captureError(error, 'cloudflare.com: failed or client blocked')
 			return promiseUndefined
 		}
 	}
@@ -1306,14 +1312,14 @@
 		// await
 		const asyncValues = timer('')
 		const [
-			ipAddress,
+			headers,
 			voices,
 			mediaDevices,
 			highEntropy,
 			offlineAudio,
 			fonts
 		] = await Promise.all([
-			getIP(),
+			getHeaders(),
 			getVoices(),
 			getMediaDevices(),
 			highEntropyValues(),
@@ -1324,7 +1330,6 @@
 		})
 		asyncValues('Async computation complete')
 
-		const ipAddressComputed = !ipAddress ? undefined : ipAddress.ip
 		const voicesComputed = !voices ? undefined : voices.map(({ name, lang }) => ({ name, lang }))
 		const mediaDevicesComputed = !mediaDevices ? undefined : mediaDevices.map(({ kind }) => ({ kind })) // chrome randomizes groupId
 		
@@ -1340,7 +1345,8 @@
 		// await hash values
 		const hashProcess = timer('')
 		const [
-			navHash, // order must match
+			headersHash, // order must match
+			navHash, 
 			mimeTypesHash,
 			pluginsHash,
 			navVersionHash,
@@ -1364,6 +1370,7 @@
 			trashHash,
 			liesHash
 		] = await Promise.all([
+			hashify(headers),
 			hashify(navComputed),
 			hashify(mimeTypes),
 			hashify(plugins),
@@ -1399,7 +1406,7 @@
 		}
 
 		const fingerprint = {
-			ipAddress: [ipAddressComputed],
+			headers: [headers, headersHash],
 			nav: [navComputed, navHash],
 			highEntropy: [highEntropy, highEntropyHash],
 			window: [windowVersionComputed, windowVersionHash],
@@ -1560,19 +1567,6 @@
 		const data = `
 			<section>
 				<div id="fingerprint-data">
-					
-					${
-						!fp.ipAddress[0] ? '': (() => {
-							const plural = pluralify(trashBin.length)
-							const [ ip ] = fp.ipAddress
-							return `
-							<div>
-								<strong>IP address</strong>
-								<div>${ip}</div>
-							</div>
-							`
-						})()
-					}
 
 					<div>
 						<strong>Fingerprint</strong>
@@ -1622,6 +1616,30 @@
 										<div>
 											${err.trustedName}: ${err.trustedMessage}
 										</div>`
+									}).join('')
+								}
+							</div>
+							`
+						})()
+					}
+
+					${
+						!fp.headers[0] ? `<div>headers: ${note.blocked}</div>`: (() => {
+							const [ headers, hash ]  = fp.headers
+							return `
+							<div>
+								<div>headers: ${hash}</div>
+								${
+									Object.keys(headers).map(key => {
+										const value = headers[key]
+										key = (
+											key == 'ip' ? 'ip address' :
+											key == 'uag' ? 'user agent' :
+											key == 'loc' ? 'location' :
+											key == 'tls' ? 'tls version' :
+											key
+										)
+										return `<div>${key}: ${value}</div>`
 									}).join('')
 								}
 							</div>
