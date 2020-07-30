@@ -421,8 +421,8 @@
 
 	// computed style version
 	const computedStyleVersion = () => {
-		const body = document.querySelector('body')
 		if ('getComputedStyle' in window) {
+			const body = document.querySelector('body')
 			const computedStyle = getComputedStyle(body)
 			const keys = []
 			Object.keys(computedStyle).forEach(key => {
