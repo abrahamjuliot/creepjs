@@ -1657,8 +1657,8 @@
 										const value = headers[key]
 										key = (
 											key == 'ip' ? 'ip address' :
-											key == 'uag' ? 'system' :
-											key == 'loc' ? 'location' :
+											key == 'uag' ? 'ua system' :
+											key == 'loc' ? 'ip location' :
 											key == 'tls' ? 'tls version' :
 											key
 										)
