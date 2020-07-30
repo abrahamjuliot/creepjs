@@ -1507,7 +1507,12 @@
 			.then(data => {
 				const { firstVisit, latestVisit, subIds, visits } = data
 				const subIdsLen = Object.keys(subIds).length
-				const toLocaleStr = str => new Date(str).toLocaleString()
+				const toLocaleStr = str => {
+					const date = new Date(str)
+					const dateString = date.toDateString()
+					const timeString = date.toLocaleTimeString()
+					return `${dateString}, ${timeString}`
+				}
 				const pluralify = (len) => len > 1 ? 's' : ''
 				const plural = pluralify(subIdsLen)
 				const hoursAgo = (date1, date2) => Math.abs(date1 - date2) / 36e5
