@@ -1,7 +1,6 @@
 # CreepJS
 
 - Desktop and mobile: [https://abrahamjuliot.github.io/creepjs](https://abrahamjuliot.github.io/creepjs)
-- Recommended server to test desktop extensions: [https://creepjs-live.abrahamjuliot.repl.co](https://creepjs-live.abrahamjuliot.repl.co)
 
 The purpose of this project is to shed light on weaknesses and privacy leaks among modern anti-fingerprinting extensions and browsers.
 
