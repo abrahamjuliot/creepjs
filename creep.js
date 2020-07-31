@@ -45,20 +45,6 @@
 		}
 	}
 
-	const caniuse = (api, objects) => {
-		let i, len = objects.length, chain = api
-		for (i = 0; i < len; i++) {
-			const obj = objects[i]
-			try {
-				chain = chain[obj]
-			}
-			catch (error) {
-				return undefined
-			}
-		}
-		return chain
-	}
-
 	// https://stackoverflow.com/a/22429679
 	const hashMini = str => {
 		const json = `${JSON.stringify(str)}`
