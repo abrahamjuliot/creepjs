@@ -456,15 +456,15 @@
 			const computedStyle = getComputedStyle(body)
 			const keys = []
 			Object.keys(computedStyle).forEach(key => {
-				const isNumericKey = !isNaN(key)
+				const numericKey = !isNaN(key)
 				const value = computedStyle[key]
 				const cssVar = /^--.*$/
 				const customPropKey = cssVar.test(key)
 				const customPropValue = cssVar.test(value)
-				if (isNumericKey && !customPropValue) {
+				if (numericKey && !customPropValue) {
 					return keys.push(value)
 				}
-				else if (!customPropKey) {
+				else if (!numericKey && !customPropKey) {
 					return keys.push(key)
 				}
 				return
