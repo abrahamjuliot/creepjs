@@ -97,9 +97,9 @@
 	}
 
 	// tagged template literal (JSX alternative)
-	const patch = async (oldEl, newEl, fn = null) => {
-		oldEl.parentNode.replaceChild(newEl, oldEl);
-		return typeof fn === 'function' ? await fn() : true
+	const patch = (oldEl, newEl, fn = null) => {
+		oldEl.parentNode.replaceChild(newEl, oldEl)
+		return typeof fn === 'function' ? fn() : true
 	}
 	const html = (stringSet, ...expressionSet) => {
 		const template = document.createElement('template')
@@ -1312,7 +1312,6 @@
 							})
 							;[...systemFontElems].forEach(span => {
 								const { dataset: { font } }= span
-								
 								if (!detectedFonts[font]) {
 									const { dataset: { basefont }, offsetWidth, offsetHeight } = span
 									const widthMatchesBase = toInt(offsetWidth) == baseOffsetWidth[basefont]
@@ -1410,7 +1409,7 @@
 			getMediaDevices(),
 			highEntropyValues(),
 			offlineAudioOscillator(),
-			detectFonts([...fontList, ...extendedFontList, ...googleFonts, ...notoFonts])
+			detectFonts([...fontList, ...notoFonts])
 		]).catch(error => { 
 			console.error(error.message)
 		})
@@ -1518,7 +1517,7 @@
 	}
 	// get/post request
 	const webapp = 'https://script.google.com/macros/s/AKfycbzKRjt6FPboOEkh1vTXttGyCjp97YBP7z-5bODQmtSkQ9BqDRY/exec'
-
+	
 	// patch
 	const app = document.getElementById('fp-app')
 	patch(app, scene, async () => {
