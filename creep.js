@@ -45,6 +45,20 @@
 		}
 	}
 
+	const caniuse = (api, objects) => {
+		let i, len = objects.length, chain = api
+		for (i = 0; i < len; i++) {
+			const obj = objects[i]
+			try {
+				chain = chain[obj]
+			}
+			catch (error) {
+				return undefined
+			}
+		}
+		return chain
+	}
+
 	// https://stackoverflow.com/a/22429679
 	const hashMini = str => {
 		const json = `${JSON.stringify(str)}`
@@ -578,17 +592,19 @@
 	// webgl
 	const webgl = () => {
 		// detect webgl lies
-		const webglGetParameter = attempt(() => WebGLRenderingContext.prototype.getParameter)
-		const webglGetExtension = attempt(() => WebGLRenderingContext.prototype.getExtension)
-		const webglGetSupportedExtensions = attempt(() => WebGLRenderingContext.prototype.getSupportedExtensions)
+		const gl = 'WebGLRenderingContext' in window
+		const webglGetParameter = gl && attempt(() => WebGLRenderingContext.prototype.getParameter)
+		const webglGetExtension = gl && attempt(() => WebGLRenderingContext.prototype.getExtension)
+		const webglGetSupportedExtensions = gl && attempt(() => WebGLRenderingContext.prototype.getSupportedExtensions)
 		const paramLie = webglGetParameter ? hasLiedAPI(webglGetParameter, 'getParameter').lie : false
 		const extLie = webglGetExtension ? hasLiedAPI(webglGetExtension, 'getExtension').lie : false
 		const supportedExtLie = webglGetSupportedExtensions ? hasLiedAPI(webglGetSupportedExtensions, 'getSupportedExtensions').lie : false
 
 		// detect webgl2 lies
-		const webgl2GetParameter = attempt(() => WebGL2RenderingContext.prototype.getParameter)
-		const webgl2GetExtension = attempt(() => WebGL2RenderingContext.prototype.getExtension)
-		const webgl2GetSupportedExtensions = attempt(() => WebGL2RenderingContext.prototype.getSupportedExtensions)
+		const gl2 = 'WebGL2RenderingContext' in window
+		const webgl2GetParameter = gl2 && attempt(() => WebGL2RenderingContext.prototype.getParameter)
+		const webgl2GetExtension = gl2 && attempt(() => WebGL2RenderingContext.prototype.getExtension)
+		const webgl2GetSupportedExtensions = gl2 && attempt(() => WebGL2RenderingContext.prototype.getSupportedExtensions)
 		const param2Lie = webgl2GetParameter ? hasLiedAPI(webgl2GetParameter, 'getParameter').lie : false
 		const ext2Lie = webgl2GetExtension ? hasLiedAPI(webgl2GetExtension, 'getExtension').lie : false
 		const supportedExt2Lie = webgl2GetSupportedExtensions ? hasLiedAPI(webgl2GetSupportedExtensions, 'getSupportedExtensions').lie : false
@@ -604,6 +620,9 @@
 		)
 		const context2 = canvas2.getContext('webgl2')
 		const getSupportedExtensions = (context, supportedExtLie, title) => {
+			if (!context) {
+				return { extensions: undefined }
+			}
 			try {
 				const extensions = context ? context.getSupportedExtensions() : []
 				
@@ -648,7 +667,7 @@
 					gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic') ||
 					gl.getExtension('MOZ_EXT_texture_filter_anisotropic')
 				)
-				return gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT)
+				return ext ? gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT) : undefined
 			}
 			const camelCaseProps = data => {
 				const renamed = {}
@@ -673,6 +692,9 @@
 			}
 
 			const getWebglSpecs = gl => {
+				if (!gl) {
+					return undefined
+				}
 				const data =  {
 					VERSION: attempt(() => gl.getParameter(gl.VERSION)),
 					SHADING_LANGUAGE_VERSION: attempt( () => gl.getParameter(gl.SHADING_LANGUAGE_VERSION)),
@@ -699,14 +721,18 @@
 					MAX_TEXTURE_MAX_ANISOTROPY_EXT: attempt(() => getMaxAnisotropy(gl)),
 					...getShaderData('VERTEX_SHADER', getShaderPrecisionFormat(gl, 'VERTEX_SHADER')),
 					...getShaderData('FRAGMENT_SHADER', getShaderPrecisionFormat(gl, 'FRAGMENT_SHADER')),
-					MAX_DRAW_BUFFERS_WEBGL: attempt(() => gl.getParameter(
-						gl.getExtension('WEBGL_draw_buffers').MAX_DRAW_BUFFERS_WEBGL
-					))
+					MAX_DRAW_BUFFERS_WEBGL: attempt(() => {
+						const buffers = gl.getExtension('WEBGL_draw_buffers')
+						return buffers ? gl.getParameter(buffers.MAX_DRAW_BUFFERS_WEBGL) : undefined
+					})
 				}
 				return camelCaseProps(data)
 			}
 
 			const getWebgl2Specs = gl => {
+				if (!gl) {
+					return undefined
+				}
 				const data = {
 					MAX_VERTEX_UNIFORM_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_VERTEX_UNIFORM_COMPONENTS)),
 					MAX_VERTEX_UNIFORM_BLOCKS: attempt(() => gl.getParameter(gl.MAX_VERTEX_UNIFORM_BLOCKS)),
@@ -741,6 +767,12 @@
 		}
 
 		const getUnmasked = (context, [paramLie, extLie], [rendererTitle, vendorTitle]) => {
+			if (!context) {
+				return {
+					vendor: undefined,
+					renderer: undefined
+				}
+			}
 			try {
 				const extension = context && context.getExtension('WEBGL_debug_renderer_info')
 				const vendor = extension && context.getParameter(extension.UNMASKED_VENDOR_WEBGL)
@@ -788,6 +820,9 @@
 			}
 		}
 		const getDataURL = (canvas, context, [dataLie, contextLie], [canvasTitle, contextTitle]) => {
+			if (!context) {
+				return undefined
+			}
 			try {
 				let canvasWebglDataURI = ''
 
@@ -1038,8 +1073,13 @@
 	}
 
 	const offlineAudioOscillator = () => {
-		const audioBufferGetChannelData = attempt(() => AudioBuffer.prototype.getChannelData)
-		const audioBufferCopyFromChannel = attempt(() => AudioBuffer.prototype.copyFromChannel)
+		const promiseUndefined = new Promise(resolve => resolve(undefined))
+		if (!('OfflineAudioContext' in window || 'OfflineAudioContext' in window)) {
+			return promiseUndefined
+		}
+		const audioBuffer = 'AudioBuffer' in window
+		const audioBufferGetChannelData = audioBuffer && attempt(() => AudioBuffer.prototype.getChannelData)
+		const audioBufferCopyFromChannel = audioBuffer && attempt(() => AudioBuffer.prototype.copyFromChannel)
 		const audioProcess = timer('')
 		try {
 			const channelDataLie = (
@@ -1156,7 +1196,7 @@
 		catch (error) {
 			audioProcess('Audio failed to complete')
 			captureError(error)
-			return new Promise(resolve => resolve(undefined))
+			return promiseUndefined
 		}
 	}
 	
