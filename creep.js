@@ -1924,7 +1924,7 @@
 							const [ style, hash ]  = fp.style
 							return `
 							<div>
-								<div>computed style: ${hash}</div>
+								<div>computed styles: ${hash}</div>
 								<div>keys: ${style.keys.length}</div>
 								<div>moz: ${style.moz}</div>
 								<div>webkit: ${style.webkit}</div>
