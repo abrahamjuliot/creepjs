@@ -45,6 +45,20 @@
 		}
 	}
 
+	const caniuse = (api, objChain) => {
+		let i, len = objChain.length, chain = api
+		try {
+			for (i = 0; i < len; i++) {
+				const obj = objChain[i]
+				chain = chain[obj]
+			}
+		}
+		catch (error) {
+			return undefined
+		}
+		return chain
+	}
+
 	// https://stackoverflow.com/a/22429679
 	const hashMini = str => {
 		const json = `${JSON.stringify(str)}`
@@ -83,9 +97,9 @@
 	}
 
 	// tagged template literal (JSX alternative)
-	const patch = async (oldEl, newEl, fn = null) => {
-		oldEl.parentNode.replaceChild(newEl, oldEl);
-		return typeof fn === 'function' ? await fn() : true
+	const patch = (oldEl, newEl, fn = null) => {
+		oldEl.parentNode.replaceChild(newEl, oldEl)
+		return typeof fn === 'function' ? fn() : true
 	}
 	const html = (stringSet, ...expressionSet) => {
 		const template = document.createElement('template')
@@ -413,10 +427,26 @@
 
 	// window version
 	const windowVersion = () => {
-		const iframe = document.getElementById('iframe-window-version')
-		const version = Object.getOwnPropertyNames(iframe.contentWindow)
-		iframe.parentNode.removeChild(iframe)
-		return version
+		// create an iframe with a unique id
+		const iframeId = 'iframe-window-version'
+		const iframeElement = document.createElement('iframe')
+		iframeElement.setAttribute('id', iframeId)
+		iframeElement.setAttribute('style', 'display: none') // optional		
+		
+		// append the iframe to the dom
+		document.body.appendChild(iframeElement)
+
+		// get the iframe contentWindow
+		const iframe = document.getElementById(iframeId)
+		const contentWindow = iframe.contentWindow
+
+		// get the contentWindow properties
+		const properties = Object.getOwnPropertyNames(contentWindow)
+
+		// remove the iframe from the dom
+		iframe.parentNode.removeChild(iframe) 
+
+		return properties
 	}
 
 	// computed style version
@@ -426,14 +456,15 @@
 			const computedStyle = getComputedStyle(body)
 			const keys = []
 			Object.keys(computedStyle).forEach(key => {
-				const numericKey = !isNaN(key)
+				const isNumericKey = !isNaN(key)
 				const value = computedStyle[key]
 				const cssVar = /^--.*$/
-				const customProp = cssVar.test(key) || cssVar.test(value)
-				if (numericKey && !customProp) {
+				const customPropKey = cssVar.test(key)
+				const customPropValue = cssVar.test(value)
+				if (isNumericKey && !customPropValue) {
 					return keys.push(value)
 				}
-				else if (!customProp) {
+				else if (!customPropKey) {
 					return keys.push(key)
 				}
 				return
@@ -578,17 +609,19 @@
 	// webgl
 	const webgl = () => {
 		// detect webgl lies
-		const webglGetParameter = attempt(() => WebGLRenderingContext.prototype.getParameter)
-		const webglGetExtension = attempt(() => WebGLRenderingContext.prototype.getExtension)
-		const webglGetSupportedExtensions = attempt(() => WebGLRenderingContext.prototype.getSupportedExtensions)
+		const gl = 'WebGLRenderingContext' in window
+		const webglGetParameter = gl && attempt(() => WebGLRenderingContext.prototype.getParameter)
+		const webglGetExtension = gl && attempt(() => WebGLRenderingContext.prototype.getExtension)
+		const webglGetSupportedExtensions = gl && attempt(() => WebGLRenderingContext.prototype.getSupportedExtensions)
 		const paramLie = webglGetParameter ? hasLiedAPI(webglGetParameter, 'getParameter').lie : false
 		const extLie = webglGetExtension ? hasLiedAPI(webglGetExtension, 'getExtension').lie : false
 		const supportedExtLie = webglGetSupportedExtensions ? hasLiedAPI(webglGetSupportedExtensions, 'getSupportedExtensions').lie : false
 
 		// detect webgl2 lies
-		const webgl2GetParameter = attempt(() => WebGL2RenderingContext.prototype.getParameter)
-		const webgl2GetExtension = attempt(() => WebGL2RenderingContext.prototype.getExtension)
-		const webgl2GetSupportedExtensions = attempt(() => WebGL2RenderingContext.prototype.getSupportedExtensions)
+		const gl2 = 'WebGL2RenderingContext' in window
+		const webgl2GetParameter = gl2 && attempt(() => WebGL2RenderingContext.prototype.getParameter)
+		const webgl2GetExtension = gl2 && attempt(() => WebGL2RenderingContext.prototype.getExtension)
+		const webgl2GetSupportedExtensions = gl2 && attempt(() => WebGL2RenderingContext.prototype.getSupportedExtensions)
 		const param2Lie = webgl2GetParameter ? hasLiedAPI(webgl2GetParameter, 'getParameter').lie : false
 		const ext2Lie = webgl2GetExtension ? hasLiedAPI(webgl2GetExtension, 'getExtension').lie : false
 		const supportedExt2Lie = webgl2GetSupportedExtensions ? hasLiedAPI(webgl2GetSupportedExtensions, 'getSupportedExtensions').lie : false
@@ -604,6 +637,9 @@
 		)
 		const context2 = canvas2.getContext('webgl2')
 		const getSupportedExtensions = (context, supportedExtLie, title) => {
+			if (!context) {
+				return { extensions: undefined }
+			}
 			try {
 				const extensions = context ? context.getSupportedExtensions() : []
 				
@@ -648,7 +684,7 @@
 					gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic') ||
 					gl.getExtension('MOZ_EXT_texture_filter_anisotropic')
 				)
-				return gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT)
+				return ext ? gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT) : undefined
 			}
 			const camelCaseProps = data => {
 				const renamed = {}
@@ -673,6 +709,9 @@
 			}
 
 			const getWebglSpecs = gl => {
+				if (!gl) {
+					return undefined
+				}
 				const data =  {
 					VERSION: attempt(() => gl.getParameter(gl.VERSION)),
 					SHADING_LANGUAGE_VERSION: attempt( () => gl.getParameter(gl.SHADING_LANGUAGE_VERSION)),
@@ -699,14 +738,18 @@
 					MAX_TEXTURE_MAX_ANISOTROPY_EXT: attempt(() => getMaxAnisotropy(gl)),
 					...getShaderData('VERTEX_SHADER', getShaderPrecisionFormat(gl, 'VERTEX_SHADER')),
 					...getShaderData('FRAGMENT_SHADER', getShaderPrecisionFormat(gl, 'FRAGMENT_SHADER')),
-					MAX_DRAW_BUFFERS_WEBGL: attempt(() => gl.getParameter(
-						gl.getExtension('WEBGL_draw_buffers').MAX_DRAW_BUFFERS_WEBGL
-					))
+					MAX_DRAW_BUFFERS_WEBGL: attempt(() => {
+						const buffers = gl.getExtension('WEBGL_draw_buffers')
+						return buffers ? gl.getParameter(buffers.MAX_DRAW_BUFFERS_WEBGL) : undefined
+					})
 				}
 				return camelCaseProps(data)
 			}
 
 			const getWebgl2Specs = gl => {
+				if (!gl) {
+					return undefined
+				}
 				const data = {
 					MAX_VERTEX_UNIFORM_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_VERTEX_UNIFORM_COMPONENTS)),
 					MAX_VERTEX_UNIFORM_BLOCKS: attempt(() => gl.getParameter(gl.MAX_VERTEX_UNIFORM_BLOCKS)),
@@ -741,6 +784,12 @@
 		}
 
 		const getUnmasked = (context, [paramLie, extLie], [rendererTitle, vendorTitle]) => {
+			if (!context) {
+				return {
+					vendor: undefined,
+					renderer: undefined
+				}
+			}
 			try {
 				const extension = context && context.getExtension('WEBGL_debug_renderer_info')
 				const vendor = extension && context.getParameter(extension.UNMASKED_VENDOR_WEBGL)
@@ -788,6 +837,9 @@
 			}
 		}
 		const getDataURL = (canvas, context, [dataLie, contextLie], [canvasTitle, contextTitle]) => {
+			if (!context) {
+				return undefined
+			}
 			try {
 				let canvasWebglDataURI = ''
 
@@ -1038,8 +1090,13 @@
 	}
 
 	const offlineAudioOscillator = () => {
-		const audioBufferGetChannelData = attempt(() => AudioBuffer.prototype.getChannelData)
-		const audioBufferCopyFromChannel = attempt(() => AudioBuffer.prototype.copyFromChannel)
+		const promiseUndefined = new Promise(resolve => resolve(undefined))
+		if (!('OfflineAudioContext' in window || 'OfflineAudioContext' in window)) {
+			return promiseUndefined
+		}
+		const audioBuffer = 'AudioBuffer' in window
+		const audioBufferGetChannelData = audioBuffer && attempt(() => AudioBuffer.prototype.getChannelData)
+		const audioBufferCopyFromChannel = audioBuffer && attempt(() => AudioBuffer.prototype.copyFromChannel)
 		const audioProcess = timer('')
 		try {
 			const channelDataLie = (
@@ -1050,35 +1107,63 @@
 			)
 			const audioContext = OfflineAudioContext || webkitOfflineAudioContext
 			const context = new audioContext(1, 44100, 44100)
+			const analyser = context.createAnalyser()
 			const oscillator = context.createOscillator()
-			const compressor = context.createDynamicsCompressor()
+			const dynamicsCompressor = context.createDynamicsCompressor()
 			const biquadFilter = context.createBiquadFilter()
 
 			oscillator.type = 'triangle'
 			oscillator.frequency.value = 10000
 
-			if (compressor.threshold) { compressor.threshold.value = -50 }
-			if (compressor.knee) { compressor.knee.value = 40 }
-			if (compressor.ratio) { compressor.ratio.value = 12 }
-			if (compressor.reduction) { compressor.reduction.value = -20 }
-			if (compressor.attack) { compressor.attack.value = 0 }
-			if (compressor.release) { compressor.release.value = 0.25 }
+			if (dynamicsCompressor.threshold) { dynamicsCompressor.threshold.value = -50 }
+			if (dynamicsCompressor.knee) { dynamicsCompressor.knee.value = 40 }
+			if (dynamicsCompressor.ratio) { dynamicsCompressor.ratio.value = 12 }
+			if (dynamicsCompressor.reduction) { dynamicsCompressor.reduction.value = -20 }
+			if (dynamicsCompressor.attack) { dynamicsCompressor.attack.value = 0 }
+			if (dynamicsCompressor.release) { dynamicsCompressor.release.value = 0.25 }
 
-			oscillator.connect(compressor)
-			compressor.connect(context.destination)
+			oscillator.connect(dynamicsCompressor)
+			dynamicsCompressor.connect(context.destination)
 			oscillator.start(0)
 			context.startRendering()
 
 			let copySample = []
 			let binsSample = []
 			let matching = false
+
 			const values = {
-				channelCount: attempt(() => oscillator.channelCount),
-				forwardXMax: attempt(() => oscillator.context.listener.forwardX.maxValue),
-				compressorAttackDefault: attempt(() => compressor.attack.defaultValue),
+				analyserChannelCount: attempt(() => analyser.channelCount),
+				analyserChannelCountMode: attempt(() => analyser.channelCountMode),
+				analyserChannelInterpretation: attempt(() => analyser.channelInterpretation),
+				analyserSampleRate: attempt(() => analyser.context.sampleRate),
+				analyserFftSize: attempt(() => analyser.fftSize),
+				analyserFrequencyBinCount: attempt(() => analyser.frequencyBinCount),
+				analyserMaxDecibels: attempt(() => analyser.maxDecibels),
+				analyserMinDecibels: attempt(() => analyser.minDecibels),
+				analyserNumberOfInputs: attempt(() => analyser.numberOfInputs),
+				analyserNumberOfOutputs: attempt(() => analyser.numberOfOutputs),
+				analyserSmoothingTimeConstant: attempt(() => analyser.smoothingTimeConstant),
+				analyserContextListenerForwardXMax: attempt(() => {
+					const chain = ['context', 'listener', 'forwardX', 'maxValue']
+					return caniuse(analyser, chain)
+				}),
+				dynamicsCompressorAttackDefault: attempt(() => dynamicsCompressor.attack.defaultValue),
+				dynamicsCompressorKneeDefault: attempt(() => dynamicsCompressor.knee.defaultValue),
+				dynamicsCompressorKneeMax: attempt(() => dynamicsCompressor.knee.maxValue),
+				dynamicsCompressorRatioDefault: attempt(() => dynamicsCompressor.ratio.defaultValue),
+				dynamicsCompressorRatioMax: attempt(() => dynamicsCompressor.ratio.maxValue),
+				dynamicsCompressorReleaseDefault: attempt(() => dynamicsCompressor.release.defaultValue),
+				dynamicsCompressorReleaseMax: attempt(() => dynamicsCompressor.release.maxValue),
+				dynamicsCompressorThresholdDefault: attempt(() => dynamicsCompressor.threshold.defaultValue),
+				dynamicsCompressorThresholdMin: attempt(() => dynamicsCompressor.threshold.minValue),
 				oscillatorDetuneMax: attempt(() => oscillator.detune.maxValue),
+				oscillatorDetuneMin: attempt(() => oscillator.detune.minValue),
+				oscillatorFrequencyDefault: attempt(() => oscillator.frequency.defaultValue),
 				oscillatorFrequencyMax: attempt(() => oscillator.frequency.maxValue),
-				biquadFilterGainMax: attempt(() => biquadFilter.gain.maxValue)
+				oscillatorFrequencyMin: attempt(() => oscillator.frequency.minValue),
+				biquadFilterGainMax: attempt(() => biquadFilter.gain.maxValue),
+				biquadFilterFrequencyDefault: attempt(() => biquadFilter.frequency.defaultValue),
+				biquadFilterFrequencyMax: attempt(() => biquadFilter.frequency.maxValue)
 			}
 			
 			context.oncomplete = event => {
@@ -1098,14 +1183,14 @@
 					if (!matching) {
 						documentLie('audioSampleAndCopyMatch', hashMini(matching), { audioSampleAndCopyMatch: false })
 					}
-					compressor.disconnect()
+					dynamicsCompressor.disconnect()
 					oscillator.disconnect()
 					return
 				} catch (error) {
 					captureError(error)
 					copySample = [undefined]
 					binsSample = [undefined]
-					compressor.disconnect()
+					dynamicsCompressor.disconnect()
 					oscillator.disconnect()
 				}
 			}
@@ -1156,7 +1241,7 @@
 		catch (error) {
 			audioProcess('Audio failed to complete')
 			captureError(error)
-			return new Promise(resolve => resolve(undefined))
+			return promiseUndefined
 		}
 	}
 	
@@ -1244,7 +1329,6 @@
 							})
 							;[...systemFontElems].forEach(span => {
 								const { dataset: { font } }= span
-								
 								if (!detectedFonts[font]) {
 									const { dataset: { basefont }, offsetWidth, offsetHeight } = span
 									const widthMatchesBase = toInt(offsetWidth) == baseOffsetWidth[basefont]
@@ -1279,7 +1363,6 @@
 		<visitor><div id="visitor"><div class="visitor-loader"></div></div></visitor>
 		<div id="fingerprint"></div>
 		<div id="font-detector"><div id="font-detector-stage"></div></div>
-		<iframe style="display:none" id="iframe-window-version"></iframe>
 		<div id="rect-container">
 			<style>
 			.rects{width:10px;height:10px;max-width:100%}.absolute{position:absolute}#cRect1{border:solid 2.715px;border-color:#F72585;padding:3.98px;margin-left:12.12px}#cRect2{border:solid 2px;border-color:#7209B7;font-size:30px;margin-top:20px;transform:skewY(23.1753218deg)}#cRect3{border:solid 2.89px;border-color:#3A0CA3;font-size:45px;transform:scale(100000000000000000000009999999999999.99, 1.89);margin-top:50px}#cRect4{border:solid 2px;border-color:#4361EE;transform:matrix(1.11, 2.0001, -1.0001, 1.009, 150, 94.4);margin-top:11.1331px;margin-left:12.1212px;padding:4.4545px;left:239.4141px;top:8.5050px}#cRect5{border:solid 2px;border-color:#4CC9F0;margin-left:42.395pt}#cRect6{border:solid 2px;border-color:#F72585;transform:perspective(12890px) translateZ(101.5px);padding:12px}#cRect7{margin-top:-350.552px;margin-left:0.9099rem;border:solid 2px;border-color:#4361EE}#cRect8{margin-top:-150.552px;margin-left:15.9099rem;border:solid 2px;border-color:#3A0CA3}#cRect9{margin-top:-110.552px;margin-left:15.9099rem;border:solid 2px;border-color:#7209B7}#cRect10{margin-top:-315.552px;margin-left:15.9099rem;border:solid 2px;border-color:#F72585}
@@ -1342,7 +1425,7 @@
 			getMediaDevices(),
 			highEntropyValues(),
 			offlineAudioOscillator(),
-			detectFonts([...fontList, ...extendedFontList, ...googleFonts, ...notoFonts])
+			detectFonts([...fontList, ...notoFonts])
 		]).catch(error => { 
 			console.error(error.message)
 		})
@@ -1450,7 +1533,7 @@
 	}
 	// get/post request
 	const webapp = 'https://script.google.com/macros/s/AKfycbzKRjt6FPboOEkh1vTXttGyCjp97YBP7z-5bODQmtSkQ9BqDRY/exec'
-
+	
 	// patch
 	const app = document.getElementById('fp-app')
 	patch(app, scene, async () => {
@@ -1856,7 +1939,7 @@
 							const [ style, hash ]  = fp.style
 							return `
 							<div>
-								<div>computed style: ${hash}</div>
+								<div>computed styles: ${hash}</div>
 								<div>keys: ${style.keys.length}</div>
 								<div>moz: ${style.moz}</div>
 								<div>webkit: ${style.webkit}</div>
