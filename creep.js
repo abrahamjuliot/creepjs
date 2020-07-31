@@ -45,6 +45,20 @@
 		}
 	}
 
+	const caniuse = (api, objChain) => {
+		let i, len = objChain.length, chain = api
+		try {
+			for (i = 0; i < len; i++) {
+				const obj = objChain[i]
+				chain = chain[obj]
+			}
+		}
+		catch (error) {
+			return undefined
+		}
+		return chain
+	}
+
 	// https://stackoverflow.com/a/22429679
 	const hashMini = str => {
 		const json = `${JSON.stringify(str)}`
@@ -1076,35 +1090,63 @@
 			)
 			const audioContext = OfflineAudioContext || webkitOfflineAudioContext
 			const context = new audioContext(1, 44100, 44100)
+			const analyser = context.createAnalyser()
 			const oscillator = context.createOscillator()
-			const compressor = context.createDynamicsCompressor()
+			const dynamicsCompressor = context.createDynamicsCompressor()
 			const biquadFilter = context.createBiquadFilter()
 
 			oscillator.type = 'triangle'
 			oscillator.frequency.value = 10000
 
-			if (compressor.threshold) { compressor.threshold.value = -50 }
-			if (compressor.knee) { compressor.knee.value = 40 }
-			if (compressor.ratio) { compressor.ratio.value = 12 }
-			if (compressor.reduction) { compressor.reduction.value = -20 }
-			if (compressor.attack) { compressor.attack.value = 0 }
-			if (compressor.release) { compressor.release.value = 0.25 }
+			if (dynamicsCompressor.threshold) { dynamicsCompressor.threshold.value = -50 }
+			if (dynamicsCompressor.knee) { dynamicsCompressor.knee.value = 40 }
+			if (dynamicsCompressor.ratio) { dynamicsCompressor.ratio.value = 12 }
+			if (dynamicsCompressor.reduction) { dynamicsCompressor.reduction.value = -20 }
+			if (dynamicsCompressor.attack) { dynamicsCompressor.attack.value = 0 }
+			if (dynamicsCompressor.release) { dynamicsCompressor.release.value = 0.25 }
 
-			oscillator.connect(compressor)
-			compressor.connect(context.destination)
+			oscillator.connect(dynamicsCompressor)
+			dynamicsCompressor.connect(context.destination)
 			oscillator.start(0)
 			context.startRendering()
 
 			let copySample = []
 			let binsSample = []
 			let matching = false
+
 			const values = {
-				channelCount: attempt(() => oscillator.channelCount),
-				forwardXMax: attempt(() => oscillator.context.listener.forwardX.maxValue),
-				compressorAttackDefault: attempt(() => compressor.attack.defaultValue),
+				analyserChannelCount: attempt(() => analyser.channelCount),
+				analyserChannelCountMode: attempt(() => analyser.channelCountMode),
+				analyserChannelInterpretation: attempt(() => analyser.channelInterpretation),
+				analyserSampleRate: attempt(() => analyser.context.sampleRate),
+				analyserFftSize: attempt(() => analyser.fftSize),
+				analyserFrequencyBinCount: attempt(() => analyser.frequencyBinCount),
+				analyserMaxDecibels: attempt(() => analyser.maxDecibels),
+				analyserMinDecibels: attempt(() => analyser.minDecibels),
+				analyserNumberOfInputs: attempt(() => analyser.numberOfInputs),
+				analyserNumberOfOutputs: attempt(() => analyser.numberOfOutputs),
+				analyserSmoothingTimeConstant: attempt(() => analyser.smoothingTimeConstant),
+				analyserContextListenerForwardXMax: attempt(() => {
+					const chain = ['context', 'listener', 'forwardX', 'maxValue']
+					return caniuse(analyser, chain)
+				}),
+				dynamicsCompressorAttackDefault: attempt(() => dynamicsCompressor.attack.defaultValue),
+				dynamicsCompressorKneeDefault: attempt(() => dynamicsCompressor.knee.defaultValue),
+				dynamicsCompressorKneeMax: attempt(() => dynamicsCompressor.knee.maxValue),
+				dynamicsCompressorRatioDefault: attempt(() => dynamicsCompressor.ratio.defaultValue),
+				dynamicsCompressorRatioMax: attempt(() => dynamicsCompressor.ratio.maxValue),
+				dynamicsCompressorReleaseDefault: attempt(() => dynamicsCompressor.release.defaultValue),
+				dynamicsCompressorReleaseMax: attempt(() => dynamicsCompressor.release.maxValue),
+				dynamicsCompressorThresholdDefault: attempt(() => dynamicsCompressor.threshold.defaultValue),
+				dynamicsCompressorThresholdMin: attempt(() => dynamicsCompressor.threshold.minValue),
 				oscillatorDetuneMax: attempt(() => oscillator.detune.maxValue),
+				oscillatorDetuneMin: attempt(() => oscillator.detune.minValue),
+				oscillatorFrequencyDefault: attempt(() => oscillator.frequency.defaultValue),
 				oscillatorFrequencyMax: attempt(() => oscillator.frequency.maxValue),
-				biquadFilterGainMax: attempt(() => biquadFilter.gain.maxValue)
+				oscillatorFrequencyMin: attempt(() => oscillator.frequency.minValue),
+				biquadFilterGainMax: attempt(() => biquadFilter.gain.maxValue),
+				biquadFilterFrequencyDefault: attempt(() => biquadFilter.frequency.defaultValue),
+				biquadFilterFrequencyMax: attempt(() => biquadFilter.frequency.maxValue)
 			}
 			
 			context.oncomplete = event => {
@@ -1124,14 +1166,14 @@
 					if (!matching) {
 						documentLie('audioSampleAndCopyMatch', hashMini(matching), { audioSampleAndCopyMatch: false })
 					}
-					compressor.disconnect()
+					dynamicsCompressor.disconnect()
 					oscillator.disconnect()
 					return
 				} catch (error) {
 					captureError(error)
 					copySample = [undefined]
 					binsSample = [undefined]
-					compressor.disconnect()
+					dynamicsCompressor.disconnect()
 					oscillator.disconnect()
 				}
 			}
