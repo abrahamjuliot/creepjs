@@ -455,23 +455,28 @@
 			const body = document.querySelector('body')
 			const computedStyle = getComputedStyle(body)
 			const keys = []
-			Object.keys(computedStyle).forEach(key => {
+			
+			for (const key of computedStyle) {
 				const numericKey = !isNaN(key)
 				const value = computedStyle[key]
 				const cssVar = /^--.*$/
+				const caps = /[A-Z]/
+				const camelCaseKey = caps.test(key) // disregard camel case keys (duplicates)
 				const customPropKey = cssVar.test(key)
 				const customPropValue = cssVar.test(value)
 				if (numericKey && !customPropValue) {
-					return keys.push(value)
+					keys.push(value)
 				}
-				else if (!numericKey && !customPropKey) {
-					return keys.push(key)
+				else if (!numericKey && !customPropKey && !camelCaseKey) {
+					keys.push(key)
 				}
-				return
-			})
-			const moz = !!keys.filter(key => (/-moz-/).test(key))[0]
-			const webkit = !!keys.filter(key => (/-webkit-/).test(key))[0]
-			return { keys, moz, webkit }
+			}
+
+			const moz = keys.filter(key => (/-moz-/).test(key)).length
+			const webkit = keys.filter(key => (/-webkit-/).test(key)).length
+
+			const uniqueKeys = keys.filter((el, i, arr) => arr.indexOf(el) === i)
+			return { keys: uniqueKeys.sort(), moz, webkit }
 		}
 		return undefined
 	}
@@ -1801,7 +1806,7 @@
 								${
 									Object.keys(values).map(key => {
 										const value = values[key]
-										return `<div>${key}: ${value != undefined ? value : note.blocked}</div>`
+										return `<div>${key}: ${value != undefined ? value : `${note.blocked} or unsupported`}</div>`
 									}).join('')
 								}
 							</div>
