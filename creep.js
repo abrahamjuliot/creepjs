@@ -1132,38 +1132,38 @@
 			let matching = false
 
 			const values = {
-				analyserChannelCount: attempt(() => analyser.channelCount),
-				analyserChannelCountMode: attempt(() => analyser.channelCountMode),
-				analyserChannelInterpretation: attempt(() => analyser.channelInterpretation),
-				analyserSampleRate: attempt(() => analyser.context.sampleRate),
-				analyserFftSize: attempt(() => analyser.fftSize),
-				analyserFrequencyBinCount: attempt(() => analyser.frequencyBinCount),
-				analyserMaxDecibels: attempt(() => analyser.maxDecibels),
-				analyserMinDecibels: attempt(() => analyser.minDecibels),
-				analyserNumberOfInputs: attempt(() => analyser.numberOfInputs),
-				analyserNumberOfOutputs: attempt(() => analyser.numberOfOutputs),
-				analyserSmoothingTimeConstant: attempt(() => analyser.smoothingTimeConstant),
-				analyserContextListenerForwardXMax: attempt(() => {
+				['AnalyserNode.channelCount']: attempt(() => analyser.channelCount),
+				['AnalyserNode.channelCountMode']: attempt(() => analyser.channelCountMode),
+				['AnalyserNode.channelInterpretation']: attempt(() => analyser.channelInterpretation),
+				['AnalyserNode.context.sampleRate']: attempt(() => analyser.context.sampleRate),
+				['AnalyserNode.fftSize']: attempt(() => analyser.fftSize),
+				['AnalyserNode.frequencyBinCount']: attempt(() => analyser.frequencyBinCount),
+				['AnalyserNode.maxDecibels']: attempt(() => analyser.maxDecibels),
+				['AnalyserNode.minDecibels']: attempt(() => analyser.minDecibels),
+				['AnalyserNode.numberOfInputs']: attempt(() => analyser.numberOfInputs),
+				['AnalyserNode.numberOfOutputs']: attempt(() => analyser.numberOfOutputs),
+				['AnalyserNode.smoothingTimeConstant']: attempt(() => analyser.smoothingTimeConstant),
+				['AnalyserNode.context.listener.forwardX.maxValue']: attempt(() => {
 					const chain = ['context', 'listener', 'forwardX', 'maxValue']
 					return caniuse(analyser, chain)
 				}),
-				dynamicsCompressorAttackDefault: attempt(() => dynamicsCompressor.attack.defaultValue),
-				dynamicsCompressorKneeDefault: attempt(() => dynamicsCompressor.knee.defaultValue),
-				dynamicsCompressorKneeMax: attempt(() => dynamicsCompressor.knee.maxValue),
-				dynamicsCompressorRatioDefault: attempt(() => dynamicsCompressor.ratio.defaultValue),
-				dynamicsCompressorRatioMax: attempt(() => dynamicsCompressor.ratio.maxValue),
-				dynamicsCompressorReleaseDefault: attempt(() => dynamicsCompressor.release.defaultValue),
-				dynamicsCompressorReleaseMax: attempt(() => dynamicsCompressor.release.maxValue),
-				dynamicsCompressorThresholdDefault: attempt(() => dynamicsCompressor.threshold.defaultValue),
-				dynamicsCompressorThresholdMin: attempt(() => dynamicsCompressor.threshold.minValue),
-				oscillatorDetuneMax: attempt(() => oscillator.detune.maxValue),
-				oscillatorDetuneMin: attempt(() => oscillator.detune.minValue),
-				oscillatorFrequencyDefault: attempt(() => oscillator.frequency.defaultValue),
-				oscillatorFrequencyMax: attempt(() => oscillator.frequency.maxValue),
-				oscillatorFrequencyMin: attempt(() => oscillator.frequency.minValue),
-				biquadFilterGainMax: attempt(() => biquadFilter.gain.maxValue),
-				biquadFilterFrequencyDefault: attempt(() => biquadFilter.frequency.defaultValue),
-				biquadFilterFrequencyMax: attempt(() => biquadFilter.frequency.maxValue)
+				['BiquadFilterNode.gain.maxValue']: attempt(() => biquadFilter.gain.maxValue),
+				['BiquadFilterNode.frequency.defaultValue']: attempt(() => biquadFilter.frequency.defaultValue),
+				['BiquadFilterNode.frequency.maxValue']: attempt(() => biquadFilter.frequency.maxValue),
+				['DynamicsCompressorNode.attack.defaultValue']: attempt(() => dynamicsCompressor.attack.defaultValue),
+				['DynamicsCompressorNode.knee.defaultValue']: attempt(() => dynamicsCompressor.knee.defaultValue),
+				['DynamicsCompressorNode.knee.maxValue']: attempt(() => dynamicsCompressor.knee.maxValue),
+				['DynamicsCompressorNode.ratio.defaultValue']: attempt(() => dynamicsCompressor.ratio.defaultValue),
+				['DynamicsCompressorNode.ratio.maxValue']: attempt(() => dynamicsCompressor.ratio.maxValue),
+				['DynamicsCompressorNode.release.defaultValue']: attempt(() => dynamicsCompressor.release.defaultValue),
+				['DynamicsCompressorNode.release.maxValue']: attempt(() => dynamicsCompressor.release.maxValue),
+				['DynamicsCompressorNode.threshold.defaultValue']: attempt(() => dynamicsCompressor.threshold.defaultValue),
+				['DynamicsCompressorNode.threshold.minValue']: attempt(() => dynamicsCompressor.threshold.minValue),
+				['OscillatorNode.detune.maxValue']: attempt(() => oscillator.detune.maxValue),
+				['OscillatorNode.detune.minValue']: attempt(() => oscillator.detune.minValue),
+				['OscillatorNode.frequency.defaultValue']: attempt(() => oscillator.frequency.defaultValue),
+				['OscillatorNode.frequency.maxValue']: attempt(() => oscillator.frequency.maxValue),
+				['OscillatorNode.frequency.minValue']: attempt(() => oscillator.frequency.minValue)
 			}
 			
 			context.oncomplete = event => {
