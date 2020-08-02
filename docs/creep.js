@@ -454,20 +454,38 @@
 		if ('getComputedStyle' in window) {
 			const body = document.querySelector('body')
 			const computedStyle = getComputedStyle(body)
-			const keys = []
 			
+			const hasAlias = (str, obj) => {
+				capitalize = str => str.charAt(0).toUpperCase() + str.slice(1)
+				const hasDash = str.indexOf('-') > -1
+				if (!hasDash) {
+					return true
+				} 
+				str = str.charAt(0) == '-' ? str.slice(1) : str // -moz, -webkt-, etc.
+				const alias = str.split('-').map((word, index) => {
+					return index == 0 ? word : capitalize(word)
+				}).join('')
+				const found = (obj[alias] || obj[alias] === '') || (obj[capitalize(alias)] || obj[capitalize(alias)] === '')
+				return found
+			}
+			const keysMissingAlias = []
+			const keys = []
+			const cssVar = /^--.*$/
+			const caps = /[A-Z]/
 			for (const key in computedStyle) {
 				const numericKey = !isNaN(key)
 				const value = computedStyle[key]
-				const cssVar = /^--.*$/
-				const caps = /[A-Z]/
-				const camelCaseKey = caps.test(key) // disregard camel case keys (duplicates)
+				const aliasKey = caps.test(key) // disregard alias keys (duplicates)
 				const customPropKey = cssVar.test(key)
 				const customPropValue = cssVar.test(value)
 				if (numericKey && !customPropValue) {
 					keys.push(value)
 				}
-				else if (!numericKey && !customPropKey && !camelCaseKey) {
+				else if (!numericKey && !customPropKey && !aliasKey) {
+					const missingAlias = !hasAlias(key, computedStyle)
+					if (missingAlias) {
+						keysMissingAlias.push(key)
+					}
 					keys.push(key)
 				}
 			}
@@ -476,8 +494,7 @@
 			const moz = uniqueKeys.filter(key => (/-moz-/).test(key)).length
 			const webkit = uniqueKeys.filter(key => (/-webkit-/).test(key)).length
 
-			
-			return { keys: uniqueKeys.sort(), moz, webkit }
+			return { keys: uniqueKeys.sort(), keysMissingAlias, moz, webkit }
 		}
 		return undefined
 	}
@@ -1962,6 +1979,7 @@
 								<div>keys: ${style.keys.length}</div>
 								<div>moz: ${style.moz}</div>
 								<div>webkit: ${style.webkit}</div>
+								<div>missing aliases: ${style.keysMissingAlias.length}</div>
 							</div>
 							`
 						})()
