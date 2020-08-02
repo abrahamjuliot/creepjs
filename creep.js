@@ -482,15 +482,18 @@
 					hasCaps && firstChar == firstChar.toUpperCase() ? uncapitalize(str) : 
 					str
 				)
-				let alias = ''
-				let dashSyntax = '' 
+				let aliasAttribute = ''
+				let namedAttribute = '' 
 				if (hasDash) {
-					alias = str.split('-').map((word, index) => index == 0 ? word : capitalize(word)).join('')
+					aliasAttribute = str.split('-').map((word, index) => index == 0 ? word : capitalize(word)).join('')
 				}
 				else if (hasCaps) {
-					dashSyntax = str.replace(caps, char => '-' + char.toLowerCase())
+					namedAttribute = str.replace(caps, char => '-' + char.toLowerCase())
 				}
-				let found = (hasDash && (alias in obj || capitalize(alias) in obj)) || (hasCaps && (dashSyntax in obj || `-${dashSyntax}` in obj))
+				let found = (
+					(hasDash && (aliasAttribute in obj || capitalize(aliasAttribute) in obj)) || 
+					(hasCaps && (namedAttribute in obj || `-${namedAttribute}` in obj))
+				)
 				return found
 			}
 			
