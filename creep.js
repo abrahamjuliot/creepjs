@@ -456,7 +456,7 @@
 			const computedStyle = getComputedStyle(body)
 			const keys = []
 			
-			for (const key of computedStyle) {
+			for (const key in computedStyle) {
 				const numericKey = !isNaN(key)
 				const value = computedStyle[key]
 				const cssVar = /^--.*$/
@@ -785,7 +785,7 @@
 				}
 				return camelCaseProps(data)
 			}
-			return { ...getWebglSpecs(webgl), ...getWebgl2Specs(webgl2) }
+			return { webglSpecs: getWebglSpecs(webgl), webgl2Specs: getWebgl2Specs(webgl2) }
 		}
 
 		const getUnmasked = (context, [paramLie, extLie], [rendererTitle, vendorTitle]) => {
@@ -1766,6 +1766,7 @@
 							!fp.webgl[0] ? `<div>specs: ${note.blocked}</div>`: (() => {
 								const [ data, hash ] = fp.webgl
 								const { renderer, renderer2, vendor, vendor2, extensions, extensions2, matching, specs } = data
+								const { webglSpecs, webgl2Specs } = specs
 								const validate = (value, checkBrave = false) => {
 									const isObj = typeof extensions == 'object'
 									const isString = typeof renderer == 'string'
@@ -1775,19 +1776,30 @@
 										!value ? note.blocked : identify(fp.webgl)
 									) : isObj && value && value.length ? value.length : note.blocked
 								}
+								const supportedSpecs = (specs, type) => {
+									const supported = Object.keys(specs).filter(key => {
+										const value = specs[key]
+										const validValue = !!value || value === 0
+										return validValue
+									})
+									return `<div>supported ${type} specs: ${supported.length}</div>`
+								}
 								return `
-									<div>specs: ${hash}</div>
-									<div>supported specs: ${
-										!specs && specs !== 0 ? note.blocked :
-										Object.keys(specs).filter(key => specs[key] || specs[key] === 0).length
-									}</div>
+									${
+										!webglSpecs ? `<div>supported webgl1 specs: ${note.blocked}</div>` :
+										supportedSpecs(webglSpecs, 'webgl1')
+									}
+									${
+										!webgl2Specs ? `<div>supported webgl2 specs: ${note.blocked}</div>` :
+										supportedSpecs(webgl2Specs, 'webgl2')
+									}
+									<div>webgl1 supported extensions: ${validate(extensions)}</div>
+									<div>webgl2 supported extensions: ${validate(extensions2)}</div>
 									<div>webgl1 renderer: ${validate(renderer, true)}</div>
 									<div>webgl2 renderer: ${validate(renderer2, true)}</div>
 									<div>webgl1 vendor: ${validate(vendor, true)}</div>
 									<div>webgl2 vendor: ${validate(vendor2, true)}</div>
-									<div>matching: ${matching}</div>
-									<div>webgl1 supported extensions: ${validate(extensions)}</div>
-									<div>webgl2 supported extensions: ${validate(extensions2)}</div>
+									<div>matching renderer/vendor: ${matching}</div>
 								`
 							})()
 						}
