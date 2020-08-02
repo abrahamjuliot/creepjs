@@ -454,23 +454,43 @@
 		if ('getComputedStyle' in window) {
 			const body = document.querySelector('body')
 			const computedStyle = getComputedStyle(body)
+			const isMethod = (str, obj) => typeof obj[str] === 'function'
+			const htmlElementStyle = body.style
 			
-			const hasAlias = (str, obj) => {
+			const hasCounterpart = (str, obj) => {
+				if (isMethod(str, obj)) {
+					return true // don't count methods
+				}
 				const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1)
+				const uncapitalize = str => str.charAt(0).toLowerCase() + str.slice(1)
+				const caps =  /[A-Z]/g
 				const hasDash = str.indexOf('-') > -1
-				if (!hasDash) {
-					return true
+				const hasCaps = caps.test(str)
+				if (!hasDash && !hasCaps) {
+					return true // example: 'float', 'zoom', etc.
 				} 
-				str = str.charAt(0) == '-' ? str.slice(1) : str // -moz, -webkt-, etc.
-				const alias = str.split('-').map((word, index) => {
-					return index == 0 ? word : capitalize(word)
-				}).join('')
-				const found = alias in obj || capitalize(alias) in obj
+				const firstChar = str.charAt(0)
+				str = (
+					hasDash && firstChar == '-' ? str.slice(1) : 
+					hasCaps && firstChar == firstChar.toUpperCase() ? uncapitalize(str) : 
+					str
+				)
+				let alias = ''
+				let dashSyntax = '' 
+				if (hasDash) {
+					alias = str.split('-').map((word, index) => index == 0 ? word : capitalize(word)).join('')
+				}
+				else if (hasCaps) {
+					dashSyntax = str.replace(caps, char => '-' + char.toLowerCase())
+				}
+				let found = (hasDash && (alias in obj || capitalize(alias) in obj)) || (hasCaps && (dashSyntax in obj || `-${dashSyntax}` in obj))
 				return found
 			}
 			
-			const keysMissingAlias = []
 			const keys = []
+			const methods = []
+			const keysMissingCounterpart = []
+			const aliasNamedKeys = []
 			const cssVar = /^--.*$/
 			const caps = /[A-Z]/
 			for (const key in computedStyle) {
@@ -479,23 +499,33 @@
 				const aliasKey = caps.test(key) // disregard alias keys (duplicates)
 				const customPropKey = cssVar.test(key)
 				const customPropValue = cssVar.test(value)
+				
 				if (numericKey && !customPropValue) {
+					aliasNamedKeys.push(value)
 					keys.push(value)
 				}
-				else if (!numericKey && !customPropKey && !aliasKey) {
-					const missingAlias = !hasAlias(key, computedStyle)
-					if (missingAlias) {
-						keysMissingAlias.push(key)
-					}
+				else if (!numericKey && !customPropKey) {
 					keys.push(key)
+					const method = isMethod(key, computedStyle)
+					if (method) {
+						methods.push(key)
+					}
+					const missingCounterpart = !hasCounterpart(key, computedStyle)
+					if (missingCounterpart) {
+						keysMissingCounterpart.push(key)
+					}
+					else if (!method && !missingCounterpart) {
+						aliasNamedKeys.push(key)
+					}
+					
 				}
 			}
-			const uniqueKeys = keys.filter((el, i, arr) => arr.indexOf(el) === i)
+			const uniqueAliasNamedKeys = aliasNamedKeys.filter((el, i, arr) => arr.indexOf(el) === i)
 
-			const moz = uniqueKeys.filter(key => (/-moz-/).test(key)).length
-			const webkit = uniqueKeys.filter(key => (/-webkit-/).test(key)).length
+			const moz = uniqueAliasNamedKeys.filter(key => (/-moz-/).test(key)).length
+			const webkit = uniqueAliasNamedKeys.filter(key => (/-webkit-/).test(key)).length
 
-			return { keys: uniqueKeys.sort(), keysMissingAlias, moz, webkit }
+			return { keys, aliasNamedKeys: uniqueAliasNamedKeys.sort(), keysMissingCounterpart, methods, moz, webkit }
 		}
 		return undefined
 	}
@@ -1977,10 +2007,12 @@
 							return `
 							<div>
 								<div>computed styles: ${hash}</div>
-								<div>keys: ${style.keys.length}</div>
+								<div>total keys: ${style.keys.length}</div>
+								<div>alias/named attributes: ${style.aliasNamedKeys.length}</div>
 								<div>moz: ${style.moz}</div>
 								<div>webkit: ${style.webkit}</div>
-								<div>missing aliases: ${style.keysMissingAlias.length}</div>
+								<div>properties: ${style.keysMissingCounterpart.join(', ')}</div>
+								<div>methods: ${style.methods.join(', ')}</div>
 							</div>
 							`
 						})()
