@@ -1786,12 +1786,13 @@
 									return `<div>supported ${type} specs: ${supported.length}</div>`
 								}
 								return `
+									<div>parameters/extensions: ${hash}</div>
 									${
-										!webglSpecs ? `<div>supported webgl1 specs: ${note.blocked}</div>` :
+										!webglSpecs ? `<div>supported webgl1 parameters: ${note.blocked}</div>` :
 										supportedSpecs(webglSpecs, 'webgl1')
 									}
 									${
-										!webgl2Specs ? `<div>supported webgl2 specs: ${note.blocked}</div>` :
+										!webgl2Specs ? `<div>supported webgl2 parameters: ${note.blocked}</div>` :
 										supportedSpecs(webgl2Specs, 'webgl2')
 									}
 									<div>webgl1 supported extensions: ${validate(extensions)}</div>
