@@ -1783,7 +1783,7 @@
 										const validValue = !!value || value === 0
 										return validValue
 									})
-									return `<div>supported ${type} specs: ${supported.length}</div>`
+									return `<div>supported ${type} parameters: ${supported.length}</div>`
 								}
 								return `
 									<div>parameters/extensions: ${hash}</div>
