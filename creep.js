@@ -471,11 +471,12 @@
 					keys.push(key)
 				}
 			}
-
-			const moz = keys.filter(key => (/-moz-/).test(key)).length
-			const webkit = keys.filter(key => (/-webkit-/).test(key)).length
-
 			const uniqueKeys = keys.filter((el, i, arr) => arr.indexOf(el) === i)
+
+			const moz = uniqueKeys.filter(key => (/-moz-/).test(key)).length
+			const webkit = uniqueKeys.filter(key => (/-webkit-/).test(key)).length
+
+			
 			return { keys: uniqueKeys.sort(), moz, webkit }
 		}
 		return undefined
