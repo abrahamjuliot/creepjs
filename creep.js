@@ -450,13 +450,20 @@
 	}
 
 	// computed style version
-	const computedStyleVersion = () => {
+	const styleVersion = type => {
 		if ('getComputedStyle' in window) {
 			const body = document.querySelector('body')
-			const computedStyle = getComputedStyle(body)
 			const isMethod = (str, obj) => typeof obj[str] === 'function'
-			const htmlElementStyle = body.style
-			
+			let cssStyleDeclaration = {}
+			if (type == 'getComputedStyle') {
+				cssStyleDeclaration = getComputedStyle(body)
+			}
+			else if (type == 'HTMLElement.style') {
+				cssStyleDeclaration = body.style
+			}
+			else {
+				throw new TypeError('invalid argument string')
+			}
 			const hasCounterpart = (str, obj) => {
 				if (isMethod(str, obj)) {
 					return true // don't count methods
@@ -493,9 +500,9 @@
 			const aliasNamedKeys = []
 			const cssVar = /^--.*$/
 			const caps = /[A-Z]/
-			for (const key in computedStyle) {
+			for (const key in cssStyleDeclaration) {
 				const numericKey = !isNaN(key)
-				const value = computedStyle[key]
+				const value = cssStyleDeclaration[key]
 				const aliasKey = caps.test(key) // disregard alias keys (duplicates)
 				const customPropKey = cssVar.test(key)
 				const customPropValue = cssVar.test(value)
@@ -506,11 +513,11 @@
 				}
 				else if (!numericKey && !customPropKey) {
 					keys.push(key)
-					const method = isMethod(key, computedStyle)
+					const method = isMethod(key, cssStyleDeclaration)
 					if (method) {
 						methods.push(key)
 					}
-					const missingCounterpart = !hasCounterpart(key, computedStyle)
+					const missingCounterpart = !hasCounterpart(key, cssStyleDeclaration)
 					if (missingCounterpart) {
 						properties.push(key)
 					}
@@ -520,12 +527,17 @@
 					
 				}
 			}
+
+			// debug
+			const diff = (arr1, arr2) =>  arr1.filter(item => !arr2.includes(item))
+			console.assert(diff(aliasNamedKeys, keys).length == 0)
+
 			const uniqueAliasNamedKeys = aliasNamedKeys.filter((el, i, arr) => arr.indexOf(el) === i)
 
 			const moz = uniqueAliasNamedKeys.filter(key => (/-moz-/).test(key)).length
 			const webkit = uniqueAliasNamedKeys.filter(key => (/-webkit-/).test(key)).length
 
-			return { keys, aliasNamedKeys: uniqueAliasNamedKeys.sort(), properties, methods, moz, webkit }
+			return { keys, aliasNamedKeys: aliasNamedKeys, properties, methods, moz, webkit }
 		}
 		return undefined
 	}
@@ -1443,7 +1455,8 @@
 		const plugins = navComputed ? navComputed.plugins : undefined
 		const navVersion = navComputed ? navComputed.version : undefined
 		const windowVersionComputed = attempt(() => windowVersion())
-		const computedStyleVersionComputed = attempt(() => computedStyleVersion())
+		const computedStyleVersionComputed = attempt(() => styleVersion('getComputedStyle'))
+		const htmlElementStyleVersionComputed = attempt(() => styleVersion('HTMLElement.style'))
 		const screenComputed = attempt(() => screenFp())
 		const canvasComputed = attempt(() => canvas())
 		const gl = attempt(() => webgl())
@@ -1507,6 +1520,7 @@
 			navVersionHash,
 			windowVersionHash,
 			computedStyleVersionHash,
+			htmlElementStyleVersionHash,
 			voicesHash,
 			mediaDeviceHash,
 			highEntropyHash,
@@ -1532,6 +1546,7 @@
 			hashify(navVersion),
 			hashify(windowVersionComputed),
 			hashify(computedStyleVersionComputed),
+			hashify(htmlElementStyleVersionComputed),
 			hashify(voicesComputed),
 			hashify(mediaDevicesComputed),
 			hashify(highEntropy),
@@ -1565,7 +1580,8 @@
 			nav: [navComputed, navHash],
 			highEntropy: [highEntropy, highEntropyHash],
 			window: [windowVersionComputed, windowVersionHash],
-			style: [computedStyleVersionComputed, computedStyleVersionHash],
+			computedStyle: [computedStyleVersionComputed, computedStyleVersionHash],
+			htmlElementStyle: [htmlElementStyleVersionComputed, htmlElementStyleVersionHash],
 			timezone: [timezoneComputed, timezoneHash],
 			webgl: [webglComputed, webglHash],
 			voices: [voicesComputed, voicesHash],
@@ -1604,7 +1620,8 @@
 			),
 			voices: fp.voices,
 			windowVersion: fp.window,
-			styleVersion: fp.style,
+			computedStyle: fp.computedStyle,
+			htmlElementStyle: fp.htmlElementStyle,
 			navigatorVersion: fp.nav[0] ? fp.nav[0].version : undefined,
 			webgl: fp.webgl[0],
 			webglDataURL: fp.webglDataURL,
@@ -2000,23 +2017,44 @@
 							`
 						})()
 					}
-
-					${
-						!fp.style[0] || !fp.style[0].keys.length ? `<div>computed style: ${note.blocked} or unsupported</div>`: (() => {
-							const [ style, hash ]  = fp.style
-							return `
-							<div>
-								<div>computed styles: ${hash}</div>
-								<div>total keys: ${style.keys.length}</div>
-								<div>alias/named attributes: ${style.aliasNamedKeys.length}</div>
-								<div>moz: ${style.moz}</div>
-								<div>webkit: ${style.webkit}</div>
-								<div>properties: ${style.properties.join(', ')}</div>
-								<div>methods: ${style.methods.join(', ')}</div>
-							</div>
-							`
-						})()
-					}
+					<div>
+						<strong>CSSStyleDeclaration</strong>
+						${
+							!fp.computedStyle[0] || !fp.computedStyle[0].keys.length ? `<div>computed style: ${note.blocked} or unsupported</div>`: (() => {
+								const [ style, hash ]  = fp.computedStyle
+								const { methods, properties } = style
+								return `
+								<div>
+									<div>getComputedStyle: ${hash}</div>
+									<div>keys: ${style.keys.length}</div>
+									<div>alias/named attributes: ${style.aliasNamedKeys.length}</div>
+									<div>moz: ${style.moz}</div>
+									<div>webkit: ${style.webkit}</div>
+									<div>properties (${properties.length}): ${properties.join(', ')}</div>
+									<div>methods (${methods.length}): ${methods.join(', ')}</div>
+								</div>
+								`
+							})()
+						}
+						<br>
+						${
+							!fp.htmlElementStyle[0] || !fp.htmlElementStyle[0].keys.length ? `<div>computed style: ${note.blocked} or unsupported</div>`: (() => {
+								const [ style, hash ]  = fp.htmlElementStyle
+								const { methods, properties } = style
+								return `
+								<div>
+									<div>HTMLElement.style: ${hash}</div>
+									<div>keys: ${style.keys.length}</div>
+									<div>alias/named attributes: ${style.aliasNamedKeys.length}</div>
+									<div>moz: ${style.moz}</div>
+									<div>webkit: ${style.webkit}</div>
+									<div>properties (${properties.length}): ${properties.join(', ')}</div>
+									<div>methods (${methods.length}): ${methods.join(', ')}</div>
+								</div>
+								`
+							})()
+						}
+					</div>
 
 					${
 						!fp.nav[0] ? `<div>navigator: ${note.blocked}</div>`: (() => {
