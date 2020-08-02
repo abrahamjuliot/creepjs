@@ -455,23 +455,29 @@
 			const body = document.querySelector('body')
 			const computedStyle = getComputedStyle(body)
 			const keys = []
-			Object.keys(computedStyle).forEach(key => {
-				const isNumericKey = !isNaN(key)
+			
+			for (const key in computedStyle) {
+				const numericKey = !isNaN(key)
 				const value = computedStyle[key]
 				const cssVar = /^--.*$/
+				const caps = /[A-Z]/
+				const camelCaseKey = caps.test(key) // disregard camel case keys (duplicates)
 				const customPropKey = cssVar.test(key)
 				const customPropValue = cssVar.test(value)
-				if (isNumericKey && !customPropValue) {
-					return keys.push(value)
+				if (numericKey && !customPropValue) {
+					keys.push(value)
 				}
-				else if (!customPropKey) {
-					return keys.push(key)
+				else if (!numericKey && !customPropKey && !camelCaseKey) {
+					keys.push(key)
 				}
-				return
-			})
-			const moz = !!keys.filter(key => (/-moz-/).test(key))[0]
-			const webkit = !!keys.filter(key => (/-webkit-/).test(key))[0]
-			return { keys, moz, webkit }
+			}
+			const uniqueKeys = keys.filter((el, i, arr) => arr.indexOf(el) === i)
+
+			const moz = uniqueKeys.filter(key => (/-moz-/).test(key)).length
+			const webkit = uniqueKeys.filter(key => (/-webkit-/).test(key)).length
+
+			
+			return { keys: uniqueKeys.sort(), moz, webkit }
 		}
 		return undefined
 	}
@@ -780,7 +786,7 @@
 				}
 				return camelCaseProps(data)
 			}
-			return { ...getWebglSpecs(webgl), ...getWebgl2Specs(webgl2) }
+			return { webglSpecs: getWebglSpecs(webgl), webgl2Specs: getWebgl2Specs(webgl2) }
 		}
 
 		const getUnmasked = (context, [paramLie, extLie], [rendererTitle, vendorTitle]) => {
@@ -1132,38 +1138,38 @@
 			let matching = false
 
 			const values = {
-				analyserChannelCount: attempt(() => analyser.channelCount),
-				analyserChannelCountMode: attempt(() => analyser.channelCountMode),
-				analyserChannelInterpretation: attempt(() => analyser.channelInterpretation),
-				analyserSampleRate: attempt(() => analyser.context.sampleRate),
-				analyserFftSize: attempt(() => analyser.fftSize),
-				analyserFrequencyBinCount: attempt(() => analyser.frequencyBinCount),
-				analyserMaxDecibels: attempt(() => analyser.maxDecibels),
-				analyserMinDecibels: attempt(() => analyser.minDecibels),
-				analyserNumberOfInputs: attempt(() => analyser.numberOfInputs),
-				analyserNumberOfOutputs: attempt(() => analyser.numberOfOutputs),
-				analyserSmoothingTimeConstant: attempt(() => analyser.smoothingTimeConstant),
-				analyserContextListenerForwardXMax: attempt(() => {
+				['analyserNode.channelCount']: attempt(() => analyser.channelCount),
+				['analyserNode.channelCountMode']: attempt(() => analyser.channelCountMode),
+				['analyserNode.channelInterpretation']: attempt(() => analyser.channelInterpretation),
+				['analyserNode.context.sampleRate']: attempt(() => analyser.context.sampleRate),
+				['analyserNode.fftSize']: attempt(() => analyser.fftSize),
+				['analyserNode.frequencyBinCount']: attempt(() => analyser.frequencyBinCount),
+				['analyserNode.maxDecibels']: attempt(() => analyser.maxDecibels),
+				['analyserNode.minDecibels']: attempt(() => analyser.minDecibels),
+				['analyserNode.numberOfInputs']: attempt(() => analyser.numberOfInputs),
+				['analyserNode.numberOfOutputs']: attempt(() => analyser.numberOfOutputs),
+				['analyserNode.smoothingTimeConstant']: attempt(() => analyser.smoothingTimeConstant),
+				['analyserNode.context.listener.forwardX.maxValue']: attempt(() => {
 					const chain = ['context', 'listener', 'forwardX', 'maxValue']
 					return caniuse(analyser, chain)
 				}),
-				dynamicsCompressorAttackDefault: attempt(() => dynamicsCompressor.attack.defaultValue),
-				dynamicsCompressorKneeDefault: attempt(() => dynamicsCompressor.knee.defaultValue),
-				dynamicsCompressorKneeMax: attempt(() => dynamicsCompressor.knee.maxValue),
-				dynamicsCompressorRatioDefault: attempt(() => dynamicsCompressor.ratio.defaultValue),
-				dynamicsCompressorRatioMax: attempt(() => dynamicsCompressor.ratio.maxValue),
-				dynamicsCompressorReleaseDefault: attempt(() => dynamicsCompressor.release.defaultValue),
-				dynamicsCompressorReleaseMax: attempt(() => dynamicsCompressor.release.maxValue),
-				dynamicsCompressorThresholdDefault: attempt(() => dynamicsCompressor.threshold.defaultValue),
-				dynamicsCompressorThresholdMin: attempt(() => dynamicsCompressor.threshold.minValue),
-				oscillatorDetuneMax: attempt(() => oscillator.detune.maxValue),
-				oscillatorDetuneMin: attempt(() => oscillator.detune.minValue),
-				oscillatorFrequencyDefault: attempt(() => oscillator.frequency.defaultValue),
-				oscillatorFrequencyMax: attempt(() => oscillator.frequency.maxValue),
-				oscillatorFrequencyMin: attempt(() => oscillator.frequency.minValue),
-				biquadFilterGainMax: attempt(() => biquadFilter.gain.maxValue),
-				biquadFilterFrequencyDefault: attempt(() => biquadFilter.frequency.defaultValue),
-				biquadFilterFrequencyMax: attempt(() => biquadFilter.frequency.maxValue)
+				['biquadFilterNode.gain.maxValue']: attempt(() => biquadFilter.gain.maxValue),
+				['biquadFilterNode.frequency.defaultValue']: attempt(() => biquadFilter.frequency.defaultValue),
+				['biquadFilterNode.frequency.maxValue']: attempt(() => biquadFilter.frequency.maxValue),
+				['dynamicsCompressorNode.attack.defaultValue']: attempt(() => dynamicsCompressor.attack.defaultValue),
+				['dynamicsCompressorNode.knee.defaultValue']: attempt(() => dynamicsCompressor.knee.defaultValue),
+				['dynamicsCompressorNode.knee.maxValue']: attempt(() => dynamicsCompressor.knee.maxValue),
+				['dynamicsCompressorNode.ratio.defaultValue']: attempt(() => dynamicsCompressor.ratio.defaultValue),
+				['dynamicsCompressorNode.ratio.maxValue']: attempt(() => dynamicsCompressor.ratio.maxValue),
+				['dynamicsCompressorNode.release.defaultValue']: attempt(() => dynamicsCompressor.release.defaultValue),
+				['dynamicsCompressorNode.release.maxValue']: attempt(() => dynamicsCompressor.release.maxValue),
+				['dynamicsCompressorNode.threshold.defaultValue']: attempt(() => dynamicsCompressor.threshold.defaultValue),
+				['dynamicsCompressorNode.threshold.minValue']: attempt(() => dynamicsCompressor.threshold.minValue),
+				['oscillatorNode.detune.maxValue']: attempt(() => oscillator.detune.maxValue),
+				['oscillatorNode.detune.minValue']: attempt(() => oscillator.detune.minValue),
+				['oscillatorNode.frequency.defaultValue']: attempt(() => oscillator.frequency.defaultValue),
+				['oscillatorNode.frequency.maxValue']: attempt(() => oscillator.frequency.maxValue),
+				['oscillatorNode.frequency.minValue']: attempt(() => oscillator.frequency.minValue)
 			}
 			
 			context.oncomplete = event => {
@@ -1761,6 +1767,7 @@
 							!fp.webgl[0] ? `<div>specs: ${note.blocked}</div>`: (() => {
 								const [ data, hash ] = fp.webgl
 								const { renderer, renderer2, vendor, vendor2, extensions, extensions2, matching, specs } = data
+								const { webglSpecs, webgl2Specs } = specs
 								const validate = (value, checkBrave = false) => {
 									const isObj = typeof extensions == 'object'
 									const isString = typeof renderer == 'string'
@@ -1770,19 +1777,30 @@
 										!value ? note.blocked : identify(fp.webgl)
 									) : isObj && value && value.length ? value.length : note.blocked
 								}
+								const supportedSpecs = (specs, type) => {
+									const supported = Object.keys(specs).filter(key => {
+										const value = specs[key]
+										const validValue = !!value || value === 0
+										return validValue
+									})
+									return `<div>supported ${type} specs: ${supported.length}</div>`
+								}
 								return `
-									<div>specs: ${hash}</div>
-									<div>supported specs: ${
-										!specs && specs !== 0 ? note.blocked :
-										Object.keys(specs).filter(key => specs[key] || specs[key] === 0).length
-									}</div>
+									${
+										!webglSpecs ? `<div>supported webgl1 specs: ${note.blocked}</div>` :
+										supportedSpecs(webglSpecs, 'webgl1')
+									}
+									${
+										!webgl2Specs ? `<div>supported webgl2 specs: ${note.blocked}</div>` :
+										supportedSpecs(webgl2Specs, 'webgl2')
+									}
+									<div>webgl1 supported extensions: ${validate(extensions)}</div>
+									<div>webgl2 supported extensions: ${validate(extensions2)}</div>
 									<div>webgl1 renderer: ${validate(renderer, true)}</div>
 									<div>webgl2 renderer: ${validate(renderer2, true)}</div>
 									<div>webgl1 vendor: ${validate(vendor, true)}</div>
 									<div>webgl2 vendor: ${validate(vendor2, true)}</div>
-									<div>matching: ${matching}</div>
-									<div>webgl1 supported extensions: ${validate(extensions)}</div>
-									<div>webgl2 supported extensions: ${validate(extensions2)}</div>
+									<div>matching renderer/vendor: ${matching}</div>
 								`
 							})()
 						}
@@ -1801,7 +1819,7 @@
 								${
 									Object.keys(values).map(key => {
 										const value = values[key]
-										return `<div>${key}: ${value != undefined ? value : note.blocked}</div>`
+										return `<div>${key}: ${value != undefined ? value : `${note.blocked} or unsupported`}</div>`
 									}).join('')
 								}
 							</div>
