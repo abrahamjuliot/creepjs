@@ -465,7 +465,7 @@
 				const alias = str.split('-').map((word, index) => {
 					return index == 0 ? word : capitalize(word)
 				}).join('')
-				const found = (obj[alias] || obj[alias] === '') || (obj[capitalize(alias)] || obj[capitalize(alias)] === '')
+				const found = alias in obj || capitalize(alias) in obj
 				return found
 			}
 			const keysMissingAlias = []
