@@ -489,7 +489,7 @@
 			
 			const keys = []
 			const methods = []
-			const keysMissingCounterpart = []
+			const properties = []
 			const aliasNamedKeys = []
 			const cssVar = /^--.*$/
 			const caps = /[A-Z]/
@@ -512,7 +512,7 @@
 					}
 					const missingCounterpart = !hasCounterpart(key, computedStyle)
 					if (missingCounterpart) {
-						keysMissingCounterpart.push(key)
+						properties.push(key)
 					}
 					else if (!method && !missingCounterpart) {
 						aliasNamedKeys.push(key)
@@ -525,7 +525,7 @@
 			const moz = uniqueAliasNamedKeys.filter(key => (/-moz-/).test(key)).length
 			const webkit = uniqueAliasNamedKeys.filter(key => (/-webkit-/).test(key)).length
 
-			return { keys, aliasNamedKeys: uniqueAliasNamedKeys.sort(), keysMissingCounterpart, methods, moz, webkit }
+			return { keys, aliasNamedKeys: uniqueAliasNamedKeys.sort(), properties, methods, moz, webkit }
 		}
 		return undefined
 	}
@@ -2011,7 +2011,7 @@
 								<div>alias/named attributes: ${style.aliasNamedKeys.length}</div>
 								<div>moz: ${style.moz}</div>
 								<div>webkit: ${style.webkit}</div>
-								<div>properties: ${style.keysMissingCounterpart.join(', ')}</div>
+								<div>properties: ${style.properties.join(', ')}</div>
 								<div>methods: ${style.methods.join(', ')}</div>
 							</div>
 							`
