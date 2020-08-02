@@ -456,7 +456,7 @@
 			const computedStyle = getComputedStyle(body)
 			
 			const hasAlias = (str, obj) => {
-				capitalize = str => str.charAt(0).toUpperCase() + str.slice(1)
+				const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1)
 				const hasDash = str.indexOf('-') > -1
 				if (!hasDash) {
 					return true
@@ -468,6 +468,7 @@
 				const found = alias in obj || capitalize(alias) in obj
 				return found
 			}
+			
 			const keysMissingAlias = []
 			const keys = []
 			const cssVar = /^--.*$/
