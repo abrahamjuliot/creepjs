@@ -450,51 +450,130 @@
 	}
 
 	// computed style version
-	const computedStyleVersion = () => {
+	const styleVersion = type => {
 		if ('getComputedStyle' in window) {
-			const body = document.querySelector('body')
-			const computedStyle = getComputedStyle(body)
-			
-			const hasAlias = (str, obj) => {
-				capitalize = str => str.charAt(0).toUpperCase() + str.slice(1)
-				const hasDash = str.indexOf('-') > -1
-				if (!hasDash) {
+			const isMethod = (str, obj) => typeof obj[str] === 'function'
+			const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1)
+			const uncapitalize = str => str.charAt(0).toLowerCase() + str.slice(1)
+
+			// create an element, append to dom and get
+			const divElementId = 'cssStyleDeclaration-verson'
+			const devElement = document.createElement('div')
+			devElement.setAttribute('id', divElementId)
+			document.body.appendChild(devElement) 
+			const div = document.getElementById(divElementId)
+
+			let cssStyleDeclaration = {}
+			if (type == 'getComputedStyle') {
+				cssStyleDeclaration = getComputedStyle(div)
+			}
+			else if (type == 'HTMLElement.style') {
+				cssStyleDeclaration = div.style
+			}
+			else if (type == 'CSSRuleList.style') {
+				cssStyleDeclaration = document.styleSheets[0].cssRules[0].style
+			}
+			else {
+				throw new TypeError('invalid argument string')
+			}
+
+			// remove the element from the dom
+			div.parentNode.removeChild(div) 
+
+			const counterpartsFound = {}
+			const hasCounterpart = (str, obj) => {
+				if (counterpartsFound[str]) {
 					return true
+				}
+				const caps =  /[A-Z]/g
+				const hasDash = str.indexOf('-') > -1
+				const hasCaps = caps.test(str)
+				if (str != 'length' && !hasDash && !hasCaps) {
+					return true // example: 'float', 'zoom', etc.
 				} 
-				str = str.charAt(0) == '-' ? str.slice(1) : str // -moz, -webkt-, etc.
-				const alias = str.split('-').map((word, index) => {
-					return index == 0 ? word : capitalize(word)
-				}).join('')
-				const found = (obj[alias] || obj[alias] === '') || (obj[capitalize(alias)] || obj[capitalize(alias)] === '')
+				const firstChar = str.charAt(0)
+				str = (
+					hasDash && firstChar == '-' ? str.slice(1) : 
+					hasCaps && firstChar == firstChar.toUpperCase() ? uncapitalize(str) : 
+					str
+				)
+				let aliasAttribute = ''
+				let namedAttribute = '' 
+				if (hasDash) {
+					aliasAttribute = str.split('-').map((word, index) => index == 0 ? word : capitalize(word)).join('')
+				}
+				else if (hasCaps) {
+					namedAttribute = str.replace(caps, char => '-' + char.toLowerCase())
+				}
+				let found = (
+					(hasDash && (aliasAttribute in obj || capitalize(aliasAttribute) in obj)) || 
+					(hasCaps && (namedAttribute in obj || `-${namedAttribute}` in obj))
+				)
+				if (found) {
+					counterpartsFound[aliasAttribute] = true
+					counterpartsFound[namedAttribute] = true
+				}
 				return found
 			}
-			const keysMissingAlias = []
+			
 			const keys = []
+			const ownPropertyKeys = []
+			const methods = []
+			const properties = []
+			const aliasNamedKeys = []
 			const cssVar = /^--.*$/
-			const caps = /[A-Z]/
-			for (const key in computedStyle) {
+
+			Object.keys(cssStyleDeclaration).forEach(key => {
 				const numericKey = !isNaN(key)
-				const value = computedStyle[key]
-				const aliasKey = caps.test(key) // disregard alias keys (duplicates)
+				const value = cssStyleDeclaration[key]
 				const customPropKey = cssVar.test(key)
 				const customPropValue = cssVar.test(value)
-				if (numericKey && !customPropValue) {
+				if (type == 'CSSRuleList.style' && numericKey) {
+					return
+				}
+				else if (type != 'CSSRuleList.style' && numericKey && !customPropValue) {
+					return ownPropertyKeys.push(value)
+				}
+				else if (!numericKey && !customPropKey) {
+					return ownPropertyKeys.push(key)
+				}
+				return
+			})
+
+			for (const key in cssStyleDeclaration) {
+				const numericKey = !isNaN(key)
+				const value = cssStyleDeclaration[key]
+				const customPropKey = cssVar.test(key)
+				const customPropValue = cssVar.test(value)
+				if (type == 'CSSRuleList.style' && numericKey) {
+					continue
+				}
+				if (type != 'CSSRuleList.style' && numericKey && !customPropValue) {
+					aliasNamedKeys.push(value)
 					keys.push(value)
 				}
-				else if (!numericKey && !customPropKey && !aliasKey) {
-					const missingAlias = !hasAlias(key, computedStyle)
-					if (missingAlias) {
-						keysMissingAlias.push(key)
-					}
+				else if (!numericKey && !customPropKey) {
 					keys.push(key)
+					const method = isMethod(key, cssStyleDeclaration)
+					if (method) {
+						methods.push(key)
+					}
+					const missingCounterpart = !method && !hasCounterpart(key, cssStyleDeclaration)
+					if (missingCounterpart) {
+						properties.push(key)
+					}
+					else if (!method && !missingCounterpart) {
+						aliasNamedKeys.push(key)
+					}
+					
 				}
 			}
-			const uniqueKeys = keys.filter((el, i, arr) => arr.indexOf(el) === i)
 
-			const moz = uniqueKeys.filter(key => (/-moz-/).test(key)).length
-			const webkit = uniqueKeys.filter(key => (/-webkit-/).test(key)).length
+			const uniqueAliasNamedKeys = aliasNamedKeys.filter((el, i, arr) => arr.indexOf(el) === i)
+			const moz = uniqueAliasNamedKeys.filter(key => (/-moz-/).test(key)).length
+			const webkit = uniqueAliasNamedKeys.filter(key => (/-webkit-/).test(key)).length
 
-			return { keys: uniqueKeys.sort(), keysMissingAlias, moz, webkit }
+			return { keys, ownPropertyKeys, aliasNamedKeys: aliasNamedKeys, properties, methods, moz, webkit }
 		}
 		return undefined
 	}
@@ -1412,7 +1491,10 @@
 		const plugins = navComputed ? navComputed.plugins : undefined
 		const navVersion = navComputed ? navComputed.version : undefined
 		const windowVersionComputed = attempt(() => windowVersion())
-		const computedStyleVersionComputed = attempt(() => computedStyleVersion())
+		const computedStyleVersionComputed = attempt(() => styleVersion('getComputedStyle'))
+		const htmlElementStyleVersionComputed = attempt(() => styleVersion('HTMLElement.style'))
+		const cssRuleListStyleVersionComputed = attempt(() => styleVersion('CSSRuleList.style'))
+		
 		const screenComputed = attempt(() => screenFp())
 		const canvasComputed = attempt(() => canvas())
 		const gl = attempt(() => webgl())
@@ -1476,6 +1558,8 @@
 			navVersionHash,
 			windowVersionHash,
 			computedStyleVersionHash,
+			htmlElementStyleVersionHash,
+			cssRuleListStyleVersionHash,
 			voicesHash,
 			mediaDeviceHash,
 			highEntropyHash,
@@ -1501,6 +1585,8 @@
 			hashify(navVersion),
 			hashify(windowVersionComputed),
 			hashify(computedStyleVersionComputed),
+			hashify(htmlElementStyleVersionComputed),
+			hashify(cssRuleListStyleVersionComputed),
 			hashify(voicesComputed),
 			hashify(mediaDevicesComputed),
 			hashify(highEntropy),
@@ -1534,7 +1620,9 @@
 			nav: [navComputed, navHash],
 			highEntropy: [highEntropy, highEntropyHash],
 			window: [windowVersionComputed, windowVersionHash],
-			style: [computedStyleVersionComputed, computedStyleVersionHash],
+			computedStyle: [computedStyleVersionComputed, computedStyleVersionHash],
+			htmlElementStyle: [htmlElementStyleVersionComputed, htmlElementStyleVersionHash],
+			cssRuleListStyle: [cssRuleListStyleVersionComputed, cssRuleListStyleVersionHash],
 			timezone: [timezoneComputed, timezoneHash],
 			webgl: [webglComputed, webglHash],
 			voices: [voicesComputed, voicesHash],
@@ -1573,7 +1661,8 @@
 			),
 			voices: fp.voices,
 			windowVersion: fp.window,
-			styleVersion: fp.style,
+			computedStyle: fp.computedStyle,
+			htmlElementStyle: fp.htmlElementStyle,
 			navigatorVersion: fp.nav[0] ? fp.nav[0].version : undefined,
 			webgl: fp.webgl[0],
 			webglDataURL: fp.webglDataURL,
@@ -1969,21 +2058,65 @@
 							`
 						})()
 					}
-
-					${
-						!fp.style[0] || !fp.style[0].keys.length ? `<div>computed style: ${note.blocked} or unsupported</div>`: (() => {
-							const [ style, hash ]  = fp.style
-							return `
-							<div>
-								<div>computed styles: ${hash}</div>
-								<div>keys: ${style.keys.length}</div>
-								<div>moz: ${style.moz}</div>
-								<div>webkit: ${style.webkit}</div>
-								<div>missing aliases: ${style.keysMissingAlias.length}</div>
-							</div>
-							`
-						})()
-					}
+					<div>
+						<strong>CSSStyleDeclaration</strong>
+						${
+							!fp.computedStyle[0] || !fp.computedStyle[0].keys.length ? `<div>computed style: ${note.blocked} or unsupported</div>`: (() => {
+								const [ style, hash ]  = fp.computedStyle
+								const { methods, properties } = style
+								return `
+								<div>
+									<div>getComputedStyle: ${hash}</div>
+									<div>keys: ${style.keys.length}</div>
+									<div>own property keys: ${style.ownPropertyKeys.length}</div>
+									<div>alias/named attributes: ${style.aliasNamedKeys.length}</div>
+									<div>moz: ${style.moz}</div>
+									<div>webkit: ${style.webkit}</div>
+									<div>properties (${properties.length}): ${properties.join(', ')}</div>
+									<div>methods (${methods.length}): ${methods.join(', ')}</div>
+								</div>
+								`
+							})()
+						}
+						<br>
+						${
+							!fp.htmlElementStyle[0] || !fp.htmlElementStyle[0].keys.length ? `<div>computed style: ${note.blocked} or unsupported</div>`: (() => {
+								const [ style, hash ]  = fp.htmlElementStyle
+								const { methods, properties } = style
+								return `
+								<div>
+									<div>HTMLElement.style: ${hash}</div>
+									<div>keys: ${style.keys.length}</div>
+									<div>own property keys: ${style.ownPropertyKeys.length}</div>
+									<div>alias/named attributes: ${style.aliasNamedKeys.length}</div>
+									<div>moz: ${style.moz}</div>
+									<div>webkit: ${style.webkit}</div>
+									<div>properties (${properties.length}): ${properties.join(', ')}</div>
+									<div>methods (${methods.length}): ${methods.join(', ')}</div>
+								</div>
+								`
+							})()
+						}
+						<br>
+						${
+							!fp.cssRuleListStyle[0] || !fp.cssRuleListStyle[0].keys.length ? `<div>computed style: ${note.blocked} or unsupported</div>`: (() => {
+								const [ style, hash ]  = fp.cssRuleListStyle
+								const { methods, properties } = style
+								return `
+								<div>
+									<div>CSSRuleList.style: ${hash}</div>
+									<div>keys: ${style.keys.length}</div>
+									<div>own property keys: ${style.ownPropertyKeys.length}</div>
+									<div>alias/named attributes: ${style.aliasNamedKeys.length}</div>
+									<div>moz: ${style.moz}</div>
+									<div>webkit: ${style.webkit}</div>
+									<div>properties (${properties.length}): ${properties.join(', ')}</div>
+									<div>methods (${methods.length}): ${methods.join(', ')}</div>
+								</div>
+								`
+							})()
+						}
+					</div>
 
 					${
 						!fp.nav[0] ? `<div>navigator: ${note.blocked}</div>`: (() => {
