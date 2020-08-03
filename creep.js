@@ -476,7 +476,7 @@
 			else {
 				throw new TypeError('invalid argument string')
 			}
-			
+
 			// remove the element from the dom
 			div.parentNode.removeChild(div) 
 
@@ -540,7 +540,6 @@
 				return
 			})
 
-
 			for (const key in cssStyleDeclaration) {
 				const numericKey = !isNaN(key)
 				const value = cssStyleDeclaration[key]
@@ -570,12 +569,7 @@
 				}
 			}
 
-			// debug
-			const diff = (arr1, arr2) =>  arr1.filter(item => !arr2.includes(item))
-			console.assert(diff(aliasNamedKeys, keys).length == 0)
-
 			const uniqueAliasNamedKeys = aliasNamedKeys.filter((el, i, arr) => arr.indexOf(el) === i)
-
 			const moz = uniqueAliasNamedKeys.filter(key => (/-moz-/).test(key)).length
 			const webkit = uniqueAliasNamedKeys.filter(key => (/-webkit-/).test(key)).length
 
