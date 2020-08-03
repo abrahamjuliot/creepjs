@@ -1179,7 +1179,7 @@
 
 	const offlineAudioOscillator = () => {
 		const promiseUndefined = new Promise(resolve => resolve(undefined))
-		if (!('OfflineAudioContext' in window || 'OfflineAudioContext' in window)) {
+		if (!('OfflineAudioContext' in window || 'webkitOfflineAudioContext' in window)) {
 			return promiseUndefined
 		}
 		const audioBuffer = 'AudioBuffer' in window
@@ -1850,9 +1850,12 @@
 							`
 						})()
 					}
-
-					<div>canvas: ${identify(fp.canvas, 'identifyBrowser')}</div>
 					<div>
+						<strong>CanvasRenderingContext2D</strong>
+						<div>toDataURL: ${identify(fp.canvas, 'identifyBrowser')}</div>
+					</div>
+					<div>
+						<strong>WebGLRenderingContext/WebGL2RenderingContext</strong>
 						<div>webglDataURL: ${identify(fp.webglDataURL, 'identifyBrowser')}</div>
 						<div>webgl2DataURL: ${identify(fp.webgl2DataURL, 'identifyBrowser')}</div>
 						${
@@ -1905,6 +1908,7 @@
 							const { copySample, binsSample, matching, values } = audio
 							return `
 							<div>
+								<strong>OfflineAudioContext</strong>
 								<div>audio hash: ${hash}</div>
 								<div>sample: ${binsSample[0] &&  !isNaN(binsSample[0]) ? binsSample[0] : note.blocked}</div>
 								<div>copy: ${copySample[0] && !isNaN(copySample[0]) ? copySample[0] : note.blocked}</div>
@@ -2047,7 +2051,7 @@
 					<div>
 						<strong>CSSStyleDeclaration</strong>
 						${
-							!fp.computedStyle[0] || !fp.computedStyle[0].keys.length ? `<div>computed style: ${note.blocked} or unsupported</div>`: (() => {
+							!fp.computedStyle[0] || !fp.computedStyle[0].keys.length ? `<div>getComputedStyle: ${note.blocked} or unsupported</div>`: (() => {
 								const [ style, hash ]  = fp.computedStyle
 								const { methods, properties } = style
 								return `
@@ -2065,7 +2069,7 @@
 						}
 						<br>
 						${
-							!fp.htmlElementStyle[0] || !fp.htmlElementStyle[0].keys.length ? `<div>computed style: ${note.blocked} or unsupported</div>`: (() => {
+							!fp.htmlElementStyle[0] || !fp.htmlElementStyle[0].keys.length ? `<div>HTMLElement.style: ${note.blocked} or unsupported</div>`: (() => {
 								const [ style, hash ]  = fp.htmlElementStyle
 								const { methods, properties } = style
 								return `
@@ -2083,7 +2087,7 @@
 						}
 						<br>
 						${
-							!fp.cssRuleListStyle[0] || !fp.cssRuleListStyle[0].keys.length ? `<div>computed style: ${note.blocked} or unsupported</div>`: (() => {
+							!fp.cssRuleListStyle[0] || !fp.cssRuleListStyle[0].keys.length ? `<div>CSSRuleList.style: ${note.blocked} or unsupported</div>`: (() => {
 								const [ style, hash ]  = fp.cssRuleListStyle
 								const { methods, properties } = style
 								return `
@@ -2100,7 +2104,8 @@
 							})()
 						}
 					</div>
-
+					<div>
+						<strong>Navigator</strong>
 					${
 						!fp.nav[0] ? `<div>navigator: ${note.blocked}</div>`: (() => {
 							const [ nav, hash ]  = fp.nav
@@ -2134,7 +2139,7 @@
 									`
 								})()
 							}
-
+							<br>
 							<div>
 								<div>navigator hash: ${hash}</div>
 								<div>platform: ${platform ? platform : `${note.blocked} or other`}</div>
@@ -2147,7 +2152,7 @@
 								<div>userAgent: ${userAgent ? userAgent : note.blocked}</div>
 								<div>appVersion: ${appVersion ? appVersion : note.blocked}</div>
 							</div>
-
+							<br>
 							${
 								mimeTypes === undefined ? `<div>mimeTypes: ${note.blocked}</div>`: (() => {
 									const len = mimeTypes.length
@@ -2160,7 +2165,7 @@
 									`
 								})()
 							}
-
+							<br>
 							${
 								plugins === undefined ? `<div>plugins: ${note.blocked}</div>`: (() => {
 									const pluginsList = Object.keys(plugins).map(key => plugins[key].name)
@@ -2177,7 +2182,7 @@
 							`
 						})()
 					}
-
+					<br>
 					${
 						!fp.highEntropy[0] ? `<div>high entropy: ${note.blocked} or unsupported</div>`: (() => {
 							const [ ua, hash ]  = fp.highEntropy
@@ -2194,7 +2199,7 @@
 							`
 						})()
 					}
-
+					</div>
 					${
 						!fp.voices[0] || !fp.voices[0].length ? `<div>voices: ${note.blocked} or unsupported</div>`: (() => {
 							const [ voices, hash ]  = fp.voices
