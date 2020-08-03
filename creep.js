@@ -451,112 +451,117 @@
 
 	// computed style version
 	const styleVersion = type => {
-		if ('getComputedStyle' in window) {
-			// helpers
-			const isMethod = (prop, obj) => typeof obj[prop] === 'function'
-			const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1)
-			const uncapitalize = str => str.charAt(0).toLowerCase() + str.slice(1)
-			
-			let cssStyleDeclaration = {}
-			if (type == 'getComputedStyle') {
-				cssStyleDeclaration = getComputedStyle(document.body)
-			}
-			else if (type == 'HTMLElement.style') {
-				cssStyleDeclaration = document.body.style
-			}
-			else if (type == 'CSSRuleList.style') {
-				cssStyleDeclaration = document.styleSheets[0].cssRules[0].style
-			}
-			else {
-				throw new TypeError('invalid argument string')
-			}
+		// helpers
+		const isMethod = (prop, obj) => typeof obj[prop] === 'function'
+		const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1)
+		const uncapitalize = str => str.charAt(0).toLowerCase() + str.slice(1)
+		const removeFirstChar = str => str.slice(1)
+		
+		// get CSSStyleDeclaration
+		const cssStyleDeclaration = (
+			type == 'getComputedStyle' ? getComputedStyle(document.body) :
+			type == 'HTMLElement.style' ? document.body.style :
+			type == 'CSSRuleList.style' ? document.styleSheets[0].cssRules[0].style :
+			undefined
+		)
+		if (!cssStyleDeclaration) {
+			throw new TypeError('invalid argument string')
+		}
 
-			const counterpartsFound = {}
-			const hasCounterpart = (str, obj) => {
-				if (counterpartsFound[str]) {
-					return true
-				}
-				const caps =  /[A-Z]/g
-				const hasDash = str.indexOf('-') > -1
-				const hasCaps = caps.test(str)
-				if (str != 'length' && !hasDash && !hasCaps) {
-					return true // example: 'float', 'zoom', etc.
-				} 
-				const firstChar = str.charAt(0)
-				str = (
-					hasDash && firstChar == '-' ? str.slice(1) : 
-					hasCaps && firstChar == firstChar.toUpperCase() ? uncapitalize(str) : 
-					str
-				)
-				let aliasAttribute = ''
-				let namedAttribute = '' 
-				if (hasDash) {
-					aliasAttribute = str.split('-').map((word, index) => index == 0 ? word : capitalize(word)).join('')
-				}
-				else if (hasCaps) {
-					namedAttribute = str.replace(caps, char => '-' + char.toLowerCase())
-				}
-				let found = (
-					(hasDash && (aliasAttribute in obj || capitalize(aliasAttribute) in obj)) || 
-					(hasCaps && (namedAttribute in obj || `-${namedAttribute}` in obj))
-				)
-				if (found) {
-					counterpartsFound[aliasAttribute] = true
-					counterpartsFound[namedAttribute] = true
-				}
-				return found
+		// find and collect aliases/named attributes with counterparts
+		const counterpartsFound = {}
+		const caps =  /[A-Z]/g
+		const hasCounterpart = (str, obj) => {
+			if (counterpartsFound[str]) {
+				return true
 			}
-			
-			const keys = []
-			const methods = []
-			const properties = []
-			const aliasNamedKeys = []
-			const cssVar = /^--.*$/
-
-			for (const key in cssStyleDeclaration) {
-				const numericKey = !isNaN(key)
-				const value = cssStyleDeclaration[key]
-				const customPropKey = cssVar.test(key)
-				const customPropValue = cssVar.test(value)
-				if (type == 'CSSRuleList.style' && numericKey) {
-					continue
-				}
-				if (type != 'CSSRuleList.style' && numericKey && !customPropValue) {
-					aliasNamedKeys.push(value)
-					keys.push(value)
-				}
-				else if (!numericKey && !customPropKey) {
-					keys.push(key)
-					const method = isMethod(key, cssStyleDeclaration)
-					if (method) {
-						methods.push(key)
-					}
-					const missingCounterpart = !method && !hasCounterpart(key, cssStyleDeclaration)
-					if (missingCounterpart) {
-						properties.push(key)
-					}
-					else if (!method && !missingCounterpart) {
-						aliasNamedKeys.push(key)
-					}
-					
-				}
+			const isNamedAttribute = str.indexOf('-') > -1
+			const isAliasAttribute = caps.test(str)
+			const isOneWordAttribute = !isNamedAttribute && !isAliasAttribute && str != 'length'
+			if (isOneWordAttribute) {
+				return true
 			}
+			// clean str
+			const firstChar = str.charAt(0)
+			const isPrefixedName = isNamedAttribute && firstChar == '-'
+			const isCapitalizedAlias = isAliasAttribute && firstChar == firstChar.toUpperCase()
+			str = (
+				isPrefixedName ? removeFirstChar(str) : 
+				isCapitalizedAlias ? uncapitalize(str) : 
+				str
+			)
+			// compute counterparts
+			let aliasAttribute = ''
+			let namedAttribute = ''
+			// compute alias of name 
+			if (isNamedAttribute) {
+				aliasAttribute = str.split('-').map((word, index) => index == 0 ? word : capitalize(word)).join('')
+			}
+			// compute name of alias
+			else if (isAliasAttribute) {
+				namedAttribute = str.replace(caps, char => '-' + char.toLowerCase())
+			}
+			// find counterpart
+			let found = (
+				(isNamedAttribute && (aliasAttribute in obj || capitalize(aliasAttribute) in obj)) || 
+				(isAliasAttribute && (namedAttribute in obj || `-${namedAttribute}` in obj))
+			)
+			// collect found counterparts
+			if (found) {
+				counterpartsFound[aliasAttribute] = true
+				counterpartsFound[namedAttribute] = true
+			}
+			return found
+		}
+		
+		const keys = []
+		const methods = []
+		const properties = []
+		const aliasNamedKeys = []
+		const cssVar = /^--.*$/
 
-			const uniqueKeys = keys.filter((el, i, arr) => arr.indexOf(el) === i)
-			const uniqueAliasNamedKeys = aliasNamedKeys.filter((el, i, arr) => arr.indexOf(el) === i)
-			const moz = uniqueAliasNamedKeys.filter(key => (/moz/i).test(key)).length
-			const webkit = uniqueAliasNamedKeys.filter(key => (/webkit/i).test(key)).length
-
-			return {
-				keys: uniqueKeys,
-				aliasNamedKeys: uniqueAliasNamedKeys,
-				properties,
-				methods,
-				moz,
-				webkit
+		for (const key in cssStyleDeclaration) {
+			const numericKey = !isNaN(key)
+			const value = cssStyleDeclaration[key]
+			const customPropKey = cssVar.test(key)
+			const customPropValue = cssVar.test(value)
+			if (type == 'CSSRuleList.style' && numericKey) {
+				continue
+			}
+			if (type != 'CSSRuleList.style' && numericKey && !customPropValue) {
+				aliasNamedKeys.push(value)
+				keys.push(value)
+			}
+			else if (!numericKey && !customPropKey) {
+				keys.push(key)
+				const method = isMethod(key, cssStyleDeclaration)
+				if (method) {
+					methods.push(key)
+				}
+				const missingCounterpart = !method && !hasCounterpart(key, cssStyleDeclaration)
+				if (missingCounterpart) {
+					properties.push(key)
+				}
+				else if (!method && !missingCounterpart) {
+					aliasNamedKeys.push(key)
+				}
+				
 			}
 		}
-		return undefined
+
+		const uniqueKeys = keys.filter((el, i, arr) => arr.indexOf(el) === i)
+		const uniqueAliasNamedKeys = aliasNamedKeys.filter((el, i, arr) => arr.indexOf(el) === i)
+		const moz = uniqueAliasNamedKeys.filter(key => (/moz/i).test(key)).length
+		const webkit = uniqueAliasNamedKeys.filter(key => (/webkit/i).test(key)).length
+
+		return {
+			keys: uniqueKeys,
+			aliasNamedKeys: uniqueAliasNamedKeys,
+			properties,
+			methods,
+			moz,
+			webkit
+		}
 	}
 
 	// screen (allow some discrepancies otherwise lie detection triggers at random)
