@@ -452,8 +452,10 @@
 	// computed style version
 	const styleVersion = type => {
 		if ('getComputedStyle' in window) {
-			const body = document.querySelector('body')
 			const isMethod = (str, obj) => typeof obj[str] === 'function'
+			const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1)
+			const uncapitalize = str => str.charAt(0).toLowerCase() + str.slice(1)
+			const body = document.querySelector('body')
 			let cssStyleDeclaration = {}
 			if (type == 'getComputedStyle') {
 				cssStyleDeclaration = getComputedStyle(body)
@@ -461,19 +463,21 @@
 			else if (type == 'HTMLElement.style') {
 				cssStyleDeclaration = body.style
 			}
+			else if (type == 'CSSRuleList.style') {
+				cssStyleDeclaration = document.styleSheets[0].cssRules[0].style
+			}
 			else {
 				throw new TypeError('invalid argument string')
 			}
+			const counterpartsFound = {}
 			const hasCounterpart = (str, obj) => {
-				if (isMethod(str, obj)) {
-					return true // don't count methods
+				if (counterpartsFound[str]) {
+					return true
 				}
-				const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1)
-				const uncapitalize = str => str.charAt(0).toLowerCase() + str.slice(1)
 				const caps =  /[A-Z]/g
 				const hasDash = str.indexOf('-') > -1
 				const hasCaps = caps.test(str)
-				if (!hasDash && !hasCaps) {
+				if (str != 'length' && !hasDash && !hasCaps) {
 					return true // example: 'float', 'zoom', etc.
 				} 
 				const firstChar = str.charAt(0)
@@ -494,23 +498,49 @@
 					(hasDash && (aliasAttribute in obj || capitalize(aliasAttribute) in obj)) || 
 					(hasCaps && (namedAttribute in obj || `-${namedAttribute}` in obj))
 				)
+				if (found) {
+					counterpartsFound[aliasAttribute] = true
+					counterpartsFound[namedAttribute] = true
+				}
 				return found
 			}
 			
 			const keys = []
+			const ownPropertyKeys = []
 			const methods = []
 			const properties = []
 			const aliasNamedKeys = []
 			const cssVar = /^--.*$/
 			const caps = /[A-Z]/
+
+			Object.keys(cssStyleDeclaration).forEach(key => {
+				const numericKey = !isNaN(key)
+				const value = cssStyleDeclaration[key]
+				const cssVar = /^--.*$/
+				const customPropKey = cssVar.test(key)
+				const customPropValue = cssVar.test(value)
+				if (type == 'CSSRuleList.style' && numericKey) {
+					return
+				}
+				else if (type != 'CSSRuleList.style' && numericKey && !customPropValue) {
+					return ownPropertyKeys.push(value)
+				}
+				else if (!numericKey && !customPropKey) {
+					return ownPropertyKeys.push(key)
+				}
+				return
+			})
+
+
 			for (const key in cssStyleDeclaration) {
 				const numericKey = !isNaN(key)
 				const value = cssStyleDeclaration[key]
-				const aliasKey = caps.test(key) // disregard alias keys (duplicates)
 				const customPropKey = cssVar.test(key)
 				const customPropValue = cssVar.test(value)
-				
-				if (numericKey && !customPropValue) {
+				if (type == 'CSSRuleList.style' && numericKey) {
+					continue
+				}
+				if (type != 'CSSRuleList.style' && numericKey && !customPropValue) {
 					aliasNamedKeys.push(value)
 					keys.push(value)
 				}
@@ -520,7 +550,7 @@
 					if (method) {
 						methods.push(key)
 					}
-					const missingCounterpart = !hasCounterpart(key, cssStyleDeclaration)
+					const missingCounterpart = !method && !hasCounterpart(key, cssStyleDeclaration)
 					if (missingCounterpart) {
 						properties.push(key)
 					}
@@ -540,7 +570,7 @@
 			const moz = uniqueAliasNamedKeys.filter(key => (/-moz-/).test(key)).length
 			const webkit = uniqueAliasNamedKeys.filter(key => (/-webkit-/).test(key)).length
 
-			return { keys, aliasNamedKeys: aliasNamedKeys, properties, methods, moz, webkit }
+			return { keys, ownPropertyKeys, aliasNamedKeys: aliasNamedKeys, properties, methods, moz, webkit }
 		}
 		return undefined
 	}
@@ -1460,6 +1490,8 @@
 		const windowVersionComputed = attempt(() => windowVersion())
 		const computedStyleVersionComputed = attempt(() => styleVersion('getComputedStyle'))
 		const htmlElementStyleVersionComputed = attempt(() => styleVersion('HTMLElement.style'))
+		const cssRuleListStyleVersionComputed = attempt(() => styleVersion('CSSRuleList.style'))
+		
 		const screenComputed = attempt(() => screenFp())
 		const canvasComputed = attempt(() => canvas())
 		const gl = attempt(() => webgl())
@@ -1524,6 +1556,7 @@
 			windowVersionHash,
 			computedStyleVersionHash,
 			htmlElementStyleVersionHash,
+			cssRuleListStyleVersionHash,
 			voicesHash,
 			mediaDeviceHash,
 			highEntropyHash,
@@ -1550,6 +1583,7 @@
 			hashify(windowVersionComputed),
 			hashify(computedStyleVersionComputed),
 			hashify(htmlElementStyleVersionComputed),
+			hashify(cssRuleListStyleVersionComputed),
 			hashify(voicesComputed),
 			hashify(mediaDevicesComputed),
 			hashify(highEntropy),
@@ -1585,6 +1619,7 @@
 			window: [windowVersionComputed, windowVersionHash],
 			computedStyle: [computedStyleVersionComputed, computedStyleVersionHash],
 			htmlElementStyle: [htmlElementStyleVersionComputed, htmlElementStyleVersionHash],
+			cssRuleListStyle: [cssRuleListStyleVersionComputed, cssRuleListStyleVersionHash],
 			timezone: [timezoneComputed, timezoneHash],
 			webgl: [webglComputed, webglHash],
 			voices: [voicesComputed, voicesHash],
@@ -2030,6 +2065,7 @@
 								<div>
 									<div>getComputedStyle: ${hash}</div>
 									<div>keys: ${style.keys.length}</div>
+									<div>own property keys: ${style.ownPropertyKeys.length}</div>
 									<div>alias/named attributes: ${style.aliasNamedKeys.length}</div>
 									<div>moz: ${style.moz}</div>
 									<div>webkit: ${style.webkit}</div>
@@ -2048,6 +2084,26 @@
 								<div>
 									<div>HTMLElement.style: ${hash}</div>
 									<div>keys: ${style.keys.length}</div>
+									<div>own property keys: ${style.ownPropertyKeys.length}</div>
+									<div>alias/named attributes: ${style.aliasNamedKeys.length}</div>
+									<div>moz: ${style.moz}</div>
+									<div>webkit: ${style.webkit}</div>
+									<div>properties (${properties.length}): ${properties.join(', ')}</div>
+									<div>methods (${methods.length}): ${methods.join(', ')}</div>
+								</div>
+								`
+							})()
+						}
+						<br>
+						${
+							!fp.cssRuleListStyle[0] || !fp.cssRuleListStyle[0].keys.length ? `<div>computed style: ${note.blocked} or unsupported</div>`: (() => {
+								const [ style, hash ]  = fp.cssRuleListStyle
+								const { methods, properties } = style
+								return `
+								<div>
+									<div>CSSRuleList.style: ${hash}</div>
+									<div>keys: ${style.keys.length}</div>
+									<div>own property keys: ${style.ownPropertyKeys.length}</div>
 									<div>alias/named attributes: ${style.aliasNamedKeys.length}</div>
 									<div>moz: ${style.moz}</div>
 									<div>webkit: ${style.webkit}</div>
