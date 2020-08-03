@@ -511,12 +511,10 @@
 			const properties = []
 			const aliasNamedKeys = []
 			const cssVar = /^--.*$/
-			const caps = /[A-Z]/
 
 			Object.keys(cssStyleDeclaration).forEach(key => {
 				const numericKey = !isNaN(key)
 				const value = cssStyleDeclaration[key]
-				const cssVar = /^--.*$/
 				const customPropKey = cssVar.test(key)
 				const customPropValue = cssVar.test(value)
 				if (type == 'CSSRuleList.style' && numericKey) {
