@@ -455,13 +455,20 @@
 			const isMethod = (str, obj) => typeof obj[str] === 'function'
 			const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1)
 			const uncapitalize = str => str.charAt(0).toLowerCase() + str.slice(1)
-			const body = document.querySelector('body')
+
+			// create an element, append to dom and get
+			const divElementId = 'cssStyleDeclaration-verson'
+			const devElement = document.createElement('div')
+			devElement.setAttribute('id', divElementId)
+			document.body.appendChild(devElement) 
+			const div = document.getElementById(divElementId)
+
 			let cssStyleDeclaration = {}
 			if (type == 'getComputedStyle') {
-				cssStyleDeclaration = getComputedStyle(body)
+				cssStyleDeclaration = getComputedStyle(div)
 			}
 			else if (type == 'HTMLElement.style') {
-				cssStyleDeclaration = body.style
+				cssStyleDeclaration = div.style
 			}
 			else if (type == 'CSSRuleList.style') {
 				cssStyleDeclaration = document.styleSheets[0].cssRules[0].style
@@ -469,6 +476,10 @@
 			else {
 				throw new TypeError('invalid argument string')
 			}
+			
+			// remove the element from the dom
+			div.parentNode.removeChild(div) 
+
 			const counterpartsFound = {}
 			const hasCounterpart = (str, obj) => {
 				if (counterpartsFound[str]) {
