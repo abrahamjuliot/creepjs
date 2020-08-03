@@ -457,18 +457,19 @@
 			const uncapitalize = str => str.charAt(0).toLowerCase() + str.slice(1)
 
 			// create an element, append to dom and get
-			const divElementId = 'cssStyleDeclaration-verson'
-			const devElement = document.createElement('div')
-			devElement.setAttribute('id', divElementId)
-			document.body.appendChild(devElement) 
-			const div = document.getElementById(divElementId)
-
+			const iframeElementId = 'cssStyleDeclaration-verson'
+			const iframeElement = document.createElement('iframe')
+			iframeElement.setAttribute('id', iframeElementId)
+			document.body.appendChild(iframeElement) 
+			const iframe = document.getElementById(iframeElementId)
+			const body = iframe.contentDocument.body
+			
 			let cssStyleDeclaration = {}
 			if (type == 'getComputedStyle') {
-				cssStyleDeclaration = getComputedStyle(div)
+				cssStyleDeclaration = getComputedStyle(body)
 			}
 			else if (type == 'HTMLElement.style') {
-				cssStyleDeclaration = div.style
+				cssStyleDeclaration = body.style
 			}
 			else if (type == 'CSSRuleList.style') {
 				cssStyleDeclaration = document.styleSheets[0].cssRules[0].style
@@ -478,7 +479,7 @@
 			}
 
 			// remove the element from the dom
-			div.parentNode.removeChild(div) 
+			iframe.parentNode.removeChild(iframe) 
 
 			const counterpartsFound = {}
 			const hasCounterpart = (str, obj) => {
@@ -570,8 +571,8 @@
 			}
 
 			const uniqueAliasNamedKeys = aliasNamedKeys.filter((el, i, arr) => arr.indexOf(el) === i)
-			const moz = uniqueAliasNamedKeys.filter(key => (/-moz-/).test(key)).length
-			const webkit = uniqueAliasNamedKeys.filter(key => (/-webkit-/).test(key)).length
+			const moz = uniqueAliasNamedKeys.filter(key => (/moz/i).test(key)).length
+			const webkit = uniqueAliasNamedKeys.filter(key => (/webkit/i).test(key)).length
 
 			return { keys, ownPropertyKeys, aliasNamedKeys: aliasNamedKeys, properties, methods, moz, webkit }
 		}
