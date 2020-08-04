@@ -517,8 +517,7 @@
 			if (isNamedAttribute) {
 				aliasAttribute = str.split('-').map((word, index) => index == 0 ? word : capitalize(word)).join('')
 			}
-			// compute name of alias
-			else if (isAliasAttribute) {
+			else if (isAliasAttribute) { // compute name of alias
 				namedAttribute = str.replace(caps, char => '-' + char.toLowerCase())
 			}
 			// find counterpart
