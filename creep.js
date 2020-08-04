@@ -2105,7 +2105,7 @@
 								return `
 								<div>
 									<div>getComputedStyle: ${hash}</div>
-									<div>alias/named attributes: ${style.aliasNamedKeys.join(', ')}</div>
+									<div>alias/named attributes: ${style.aliasNamedKeys.length}</div>
 									<div>moz: ${style.moz}</div>
 									<div>webkit: ${style.webkit}</div>
 								</div>
@@ -2120,7 +2120,7 @@
 								return `
 								<div>
 									<div>HTMLElement.style: ${hash}</div>
-									<div>alias/named attributes: ${style.aliasNamedKeys.join(', ')}</div>
+									<div>alias/named attributes: ${style.aliasNamedKeys.length}</div>
 									<div>moz: ${style.moz}</div>
 									<div>webkit: ${style.webkit}</div>
 								</div>
