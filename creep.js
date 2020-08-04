@@ -428,16 +428,16 @@
 	// window version
 	const windowVersion = () => {
 		// create an iframe with a unique id
-		const iframeId = 'iframe-window-version'
+		const randomId = hashMini(crypto.getRandomValues(new Uint32Array(10)))
 		const iframeElement = document.createElement('iframe')
-		iframeElement.setAttribute('id', iframeId)
+		iframeElement.setAttribute('id', randomId)
 		iframeElement.setAttribute('style', 'display: none') // optional		
 		
 		// append the iframe to the dom
 		document.body.appendChild(iframeElement)
 
 		// get the iframe contentWindow
-		const iframe = document.getElementById(iframeId)
+		const iframe = document.getElementById(randomId)
 		const contentWindow = iframe.contentWindow
 
 		// get the contentWindow properties
