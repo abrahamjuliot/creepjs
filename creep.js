@@ -535,10 +535,10 @@
 			return found
 		}
 		
-		const keys = []
+		const keys = new Set()
 		const methods = []
 		const properties = []
-		const aliasNamedKeys = []
+		const aliasNamedKeys = new Set()
 		const cssVar = /^--.*$/
 
 		for (const key in cssStyleDeclaration) {
@@ -550,11 +550,11 @@
 				continue
 			}
 			if (type != 'CSSRuleList.style' && numericKey && !customPropValue) {
-				aliasNamedKeys.push(value)
-				keys.push(value)
+				aliasNamedKeys.add(value)
+				keys.add(value)
 			}
 			else if (!numericKey && !customPropKey) {
-				keys.push(key)
+				keys.add(key)
 				const method = isMethod(key, cssStyleDeclaration)
 				if (method) {
 					methods.push(key)
@@ -564,20 +564,18 @@
 					properties.push(key)
 				}
 				else if (!method && !missingCounterpart) {
-					aliasNamedKeys.push(key)
+					aliasNamedKeys.add(key)
 				}
 				
 			}
 		}
 		
-		const uniqueKeys = keys.filter((el, i, arr) => arr.indexOf(el) === i)
-		const uniqueAliasNamedKeys = aliasNamedKeys.filter((el, i, arr) => arr.indexOf(el) === i)
-		const moz = uniqueAliasNamedKeys.filter(key => (/moz/i).test(key)).length
-		const webkit = uniqueAliasNamedKeys.filter(key => (/webkit/i).test(key)).length
+		const moz = [...keys].filter(key => (/moz/i).test(key)).length
+		const webkit = [...aliasNamedKeys].filter(key => (/webkit/i).test(key)).length
 
 		return {
-			keys: uniqueKeys,
-			aliasNamedKeys: uniqueAliasNamedKeys,
+			keys: [...keys],
+			aliasNamedKeys: [...aliasNamedKeys],
 			properties,
 			methods,
 			moz,
