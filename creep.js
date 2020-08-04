@@ -526,10 +526,12 @@
 				(isNamedAttribute && (aliasAttribute in obj || capitalize(aliasAttribute) in obj)) || 
 				(isAliasAttribute && (namedAttribute in obj || `-${namedAttribute}` in obj))
 			)
-			// collect found counterparts
+			// collect found counterparts (to prevent repeat search)
 			if (found) {
 				counterpartsFound[aliasAttribute] = true
+				counterpartsFound[capitalize(aliasAttribute)] = true
 				counterpartsFound[namedAttribute] = true
+				counterpartsFound[`-${namedAttribute}`] = true
 			}
 			return found
 		}
@@ -568,7 +570,7 @@
 				
 			}
 		}
-
+		
 		const uniqueKeys = keys.filter((el, i, arr) => arr.indexOf(el) === i)
 		const uniqueAliasNamedKeys = aliasNamedKeys.filter((el, i, arr) => arr.indexOf(el) === i)
 		const moz = uniqueAliasNamedKeys.filter(key => (/moz/i).test(key)).length
