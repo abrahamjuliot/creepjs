@@ -497,7 +497,7 @@
 			}
 			const isNamedAttribute = str.indexOf('-') > -1
 			const isAliasAttribute = caps.test(str)
-			const isOneWordAttribute = !isNamedAttribute && !isAliasAttribute && str != 'length'
+			const isOneWordAttribute = !isNamedAttribute && !isAliasAttribute
 			if (isOneWordAttribute) {
 				return true
 			}
@@ -521,26 +521,36 @@
 				namedAttribute = str.replace(caps, char => '-' + char.toLowerCase())
 			}
 			// find counterpart
-			let found = (
-				(isNamedAttribute && (aliasAttribute in obj || capitalize(aliasAttribute) in obj)) || 
-				(isAliasAttribute && (namedAttribute in obj || `-${namedAttribute}` in obj))
-			)
-			// collect found counterparts (to prevent repeat search)
-			if (found) {
-				counterpartsFound[aliasAttribute] = true
-				counterpartsFound[capitalize(aliasAttribute)] = true
-				counterpartsFound[namedAttribute] = true
-				counterpartsFound[`-${namedAttribute}`] = true
+			let found = false
+			if (isNamedAttribute) {
+				if (aliasAttribute in obj) {
+					found = true
+					counterpartsFound[aliasAttribute] = true
+				}
+				else if (capitalize(aliasAttribute) in obj) { // some aliases begin capitalized
+					found = true
+					counterpartsFound[capitalize(aliasAttribute)] = true
+				}
+			}
+			else if (isAliasAttribute) {
+				if (namedAttribute in obj) {
+					found = true
+					counterpartsFound[namedAttribute] = true
+				}
+				else if (`-${namedAttribute}` in obj) { // -webkit-, -moz-, etc.
+					found = true
+					counterpartsFound[`-${namedAttribute}`] = true
+				}
 			}
 			return found
 		}
 		
-		const keys = new Set()
-		const methods = []
-		const properties = []
+		const prototypeProperties = Object.getOwnPropertyNames(Object.getPrototypeOf(cssStyleDeclaration))
+		const methods = prototypeProperties.filter(prop => typeof cssStyleDeclaration[prop] === 'function')
+		const properties = prototypeProperties.filter(prop => typeof cssStyleDeclaration[prop] != 'function')
 		const aliasNamedKeys = new Set()
 		const cssVar = /^--.*$/
-
+		
 		for (const key in cssStyleDeclaration) {
 			const numericKey = !isNaN(key)
 			const value = cssStyleDeclaration[key]
@@ -551,33 +561,28 @@
 			}
 			if (type != 'CSSRuleList.style' && numericKey && !customPropValue) {
 				aliasNamedKeys.add(value)
-				keys.add(value)
 			}
 			else if (!numericKey && !customPropKey) {
-				keys.add(key)
-				const method = isMethod(key, cssStyleDeclaration)
-				if (method) {
-					methods.push(key)
-				}
-				const missingCounterpart = !method && !hasCounterpart(key, cssStyleDeclaration)
-				if (missingCounterpart) {
-					properties.push(key)
-				}
-				else if (!method && !missingCounterpart) {
+				const prototypeProperty = methods.indexOf('') > -1 ||  properties.indexOf('') > -1
+				const missingCounterpart = !prototypeProperty && !hasCounterpart(key, cssStyleDeclaration)
+				// collect alias/named keys
+				if (!prototypeProperty && !missingCounterpart) {
 					aliasNamedKeys.add(key)
 				}
-				
 			}
 		}
-		
-		const moz = [...keys].filter(key => (/moz/i).test(key)).length
+
+		// collect alias/named attributes inherited from the prototype chain
+		// https://github.com/abrahamjuliot/creepjs/issues/42#issuecomment-668372784
+		Object.keys(counterpartsFound).forEach(key => {
+			aliasNamedKeys.add(key)
+		})
+
+		const moz = [...aliasNamedKeys].filter(key => (/moz/i).test(key)).length
 		const webkit = [...aliasNamedKeys].filter(key => (/webkit/i).test(key)).length
 
 		return {
-			keys: [...keys],
 			aliasNamedKeys: [...aliasNamedKeys],
-			properties,
-			methods,
 			moz,
 			webkit
 		}
@@ -2094,54 +2099,45 @@
 					<div>
 						<strong>CSSStyleDeclaration</strong>
 						${
-							!fp.cssComputedStyle[0] || !fp.cssComputedStyle[0].keys.length ? `<div>getComputedStyle: ${note.blocked} or unsupported</div>`: (() => {
+							!fp.cssComputedStyle[0] || !fp.cssComputedStyle[0].aliasNamedKeys.length ? `<div>getComputedStyle: ${note.blocked} or unsupported</div>`: (() => {
 								const [ style, hash ]  = fp.cssComputedStyle
 								const { methods, properties } = style
 								return `
 								<div>
 									<div>getComputedStyle: ${hash}</div>
-									<div>keys: ${style.keys.length}</div>
 									<div>alias/named attributes: ${style.aliasNamedKeys.length}</div>
 									<div>moz: ${style.moz}</div>
 									<div>webkit: ${style.webkit}</div>
-									<div>properties (${properties.length}): ${properties.join(', ')}</div>
-									<div>methods (${methods.length}): ${methods.join(', ')}</div>
 								</div>
 								`
 							})()
 						}
 						<br>
 						${
-							!fp.cssHtmlElementStyle[0] || !fp.cssHtmlElementStyle[0].keys.length ? `<div>HTMLElement.style: ${note.blocked} or unsupported</div>`: (() => {
+							!fp.cssHtmlElementStyle[0] || !fp.cssHtmlElementStyle[0].aliasNamedKeys.length ? `<div>HTMLElement.style: ${note.blocked} or unsupported</div>`: (() => {
 								const [ style, hash ]  = fp.cssHtmlElementStyle
 								const { methods, properties } = style
 								return `
 								<div>
 									<div>HTMLElement.style: ${hash}</div>
-									<div>keys: ${style.keys.length}</div>
 									<div>alias/named attributes: ${style.aliasNamedKeys.length}</div>
 									<div>moz: ${style.moz}</div>
 									<div>webkit: ${style.webkit}</div>
-									<div>properties (${properties.length}): ${properties.join(', ')}</div>
-									<div>methods (${methods.length}): ${methods.join(', ')}</div>
 								</div>
 								`
 							})()
 						}
 						<br>
 						${
-							!fp.cssRuleListStyle[0] || !fp.cssRuleListStyle[0].keys.length ? `<div>CSSRuleList.style: ${note.blocked} or unsupported</div>`: (() => {
+							!fp.cssRuleListStyle[0] || !fp.cssRuleListStyle[0].aliasNamedKeys.length ? `<div>CSSRuleList.style: ${note.blocked} or unsupported</div>`: (() => {
 								const [ style, hash ]  = fp.cssRuleListStyle
 								const { methods, properties } = style
 								return `
 								<div>
 									<div>CSSRuleList.style: ${hash}</div>
-									<div>keys: ${style.keys.length}</div>
 									<div>alias/named attributes: ${style.aliasNamedKeys.length}</div>
 									<div>moz: ${style.moz}</div>
 									<div>webkit: ${style.webkit}</div>
-									<div>properties (${properties.length}): ${properties.join(', ')}</div>
-									<div>methods (${methods.length}): ${methods.join(', ')}</div>
 								</div>
 								`
 							})()
