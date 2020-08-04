@@ -582,7 +582,7 @@
 		const webkit = [...aliasNamedKeys].filter(key => (/webkit/i).test(key)).length
 
 		return {
-			aliasNamedKeys: [...aliasNamedKeys],
+			aliasNamedKeys: [...aliasNamedKeys].sort(),
 			moz,
 			webkit
 		}
@@ -2105,7 +2105,7 @@
 								return `
 								<div>
 									<div>getComputedStyle: ${hash}</div>
-									<div>alias/named attributes: ${style.aliasNamedKeys.length}</div>
+									<div>alias/named attributes: ${style.aliasNamedKeys.join(', ')}</div>
 									<div>moz: ${style.moz}</div>
 									<div>webkit: ${style.webkit}</div>
 								</div>
@@ -2120,7 +2120,7 @@
 								return `
 								<div>
 									<div>HTMLElement.style: ${hash}</div>
-									<div>alias/named attributes: ${style.aliasNamedKeys.length}</div>
+									<div>alias/named attributes: ${style.aliasNamedKeys.join(', ')}</div>
 									<div>moz: ${style.moz}</div>
 									<div>webkit: ${style.webkit}</div>
 								</div>
