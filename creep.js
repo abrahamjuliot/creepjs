@@ -449,6 +449,26 @@
 		return properties
 	}
 
+	const htmlElementVersion = () => {
+		// create unique element
+		const randomValues = crypto.getRandomValues(new Uint32Array(10))
+		const randomId = hashMini(randomValues)
+		const element = document.createElement('div')
+		element.setAttribute('id', randomId)
+
+		// append element to dom and get html element
+		document.body.appendChild(element) 
+		const htmlElement = document.getElementById(randomId)
+
+		// collect keys in html element
+		const keys = []
+		for (const key in htmlElement) {
+			keys.push(key)
+		}
+
+		return keys
+	}
+
 	// computed style version
 	const styleVersion = type => {
 		// helpers
@@ -1477,6 +1497,7 @@
 		const plugins = navComputed ? navComputed.plugins : undefined
 		const navVersion = navComputed ? navComputed.version : undefined
 		const windowVersionComputed = attempt(() => windowVersion())
+		const htmlElementVersionComputed = attempt(() => htmlElementVersion())
 		const computedStyleVersionComputed = attempt(() => styleVersion('getComputedStyle'))
 		const htmlElementStyleVersionComputed = attempt(() => styleVersion('HTMLElement.style'))
 		const cssRuleListStyleVersionComputed = attempt(() => styleVersion('CSSRuleList.style'))
@@ -1543,6 +1564,7 @@
 			pluginsHash,
 			navVersionHash,
 			windowVersionHash,
+			htmlElementVersionHash,
 			computedStyleVersionHash,
 			htmlElementStyleVersionHash,
 			cssRuleListStyleVersionHash,
@@ -1570,6 +1592,7 @@
 			hashify(plugins),
 			hashify(navVersion),
 			hashify(windowVersionComputed),
+			hashify(htmlElementVersionComputed),
 			hashify(computedStyleVersionComputed),
 			hashify(htmlElementStyleVersionComputed),
 			hashify(cssRuleListStyleVersionComputed),
@@ -1606,8 +1629,9 @@
 			nav: [navComputed, navHash],
 			highEntropy: [highEntropy, highEntropyHash],
 			window: [windowVersionComputed, windowVersionHash],
-			computedStyle: [computedStyleVersionComputed, computedStyleVersionHash],
-			htmlElementStyle: [htmlElementStyleVersionComputed, htmlElementStyleVersionHash],
+			htmlElement: [htmlElementVersionComputed, htmlElementVersionHash],
+			cssComputedStyle: [computedStyleVersionComputed, computedStyleVersionHash],
+			cssHtmlElementStyle: [htmlElementStyleVersionComputed, htmlElementStyleVersionHash],
 			cssRuleListStyle: [cssRuleListStyleVersionComputed, cssRuleListStyleVersionHash],
 			timezone: [timezoneComputed, timezoneHash],
 			webgl: [webglComputed, webglHash],
@@ -1646,9 +1670,11 @@
 				fp.timezone[0].timezoneLie.lies
 			),
 			voices: fp.voices,
-			windowVersion: fp.window,
-			computedStyle: fp.computedStyle,
-			htmlElementStyle: fp.htmlElementStyle,
+			window: fp.window,
+			htmlElement: fp.htmlElement,
+			cssComputedStyle: fp.cssComputedStyle,
+			cssHtmlElementStyle: fp.cssHtmlElementStyle,
+			cssRuleListStyle: fp.cssRuleListStyle,
 			navigatorVersion: fp.nav[0] ? fp.nav[0].version : undefined,
 			webgl: fp.webgl[0],
 			webglDataURL: fp.webglDataURL,
@@ -2036,23 +2062,41 @@
 							`
 						})()
 					}
-					
-					${
-						!fp.window[0] || !fp.window[0].length ? `<div>window API: ${note.blocked}</div>`: (() => {
-							const [ props, hash ]  = fp.window
-							return `
-							<div>
-								<div>window API: ${hash}</div>
-								<div>iframe.contentWindow properties: ${props.length}</div>
-							</div>
-							`
-						})()
-					}
+					<div>
+						<strong>HTMLIFrameElement.contentWindow</strong>
+						${
+							!fp.window[0] || !fp.window[0].length ? `<div>api version: ${note.blocked}</div>`: (() => {
+								const [ keys, hash ]  = fp.window
+								return `
+								<div>
+									<div>api version: ${hash}</div>
+									<div>keys: ${keys.length}</div>
+								</div>
+								`
+							})()
+						}
+					</div>
+
+					<div>
+						<strong>HTMLElement</strong>
+						${
+							!fp.htmlElement[0] || !fp.htmlElement[0].length ? `<div>api version: ${note.blocked}</div>`: (() => {
+								const [ keys, hash ]  = fp.htmlElement
+								return `
+								<div>
+									<div>api version: ${hash}</div>
+									<div>keys: ${keys.length}</div>
+								</div>
+								`
+							})()
+						}
+					</div>
+
 					<div>
 						<strong>CSSStyleDeclaration</strong>
 						${
-							!fp.computedStyle[0] || !fp.computedStyle[0].keys.length ? `<div>getComputedStyle: ${note.blocked} or unsupported</div>`: (() => {
-								const [ style, hash ]  = fp.computedStyle
+							!fp.cssComputedStyle[0] || !fp.cssComputedStyle[0].keys.length ? `<div>getComputedStyle: ${note.blocked} or unsupported</div>`: (() => {
+								const [ style, hash ]  = fp.cssComputedStyle
 								const { methods, properties } = style
 								return `
 								<div>
@@ -2069,8 +2113,8 @@
 						}
 						<br>
 						${
-							!fp.htmlElementStyle[0] || !fp.htmlElementStyle[0].keys.length ? `<div>HTMLElement.style: ${note.blocked} or unsupported</div>`: (() => {
-								const [ style, hash ]  = fp.htmlElementStyle
+							!fp.cssHtmlElementStyle[0] || !fp.cssHtmlElementStyle[0].keys.length ? `<div>HTMLElement.style: ${note.blocked} or unsupported</div>`: (() => {
+								const [ style, hash ]  = fp.cssHtmlElementStyle
 								const { methods, properties } = style
 								return `
 								<div>
