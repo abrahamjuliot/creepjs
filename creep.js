@@ -927,7 +927,7 @@
 				if (!dataLie && !contextLie) {
 					const colorBufferBit = caniuse(context, ['COLOR_BUFFER_BIT'])
 					caniuse(context, ['clearColor'], [0.2, 0.4, 0.6, 0.8], true)
-					caniuse(context, ['clear'], colorBufferBit, true)
+					caniuse(context, ['clear'], [colorBufferBit], true)
 					canvasWebglDataURI = canvas.toDataURL()
 					return (
 						isBrave || isFirefox ? sendToTrash(canvasTitle, hashMini(canvasWebglDataURI)) : canvasWebglDataURI
