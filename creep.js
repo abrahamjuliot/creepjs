@@ -555,7 +555,7 @@
 		const moz = keys.filter(key => (/moz/i).test(key)).length
 		const webkit = keys.filter(key => (/webkit/i).test(key)).length
 		const prototypeName = (''+prototype).match(/\[object (.+)\]/)[1]
-		return { keys, moz, webkit, prototypeName }
+		return { keys: keys.sort(), moz, webkit, prototypeName }
 	}
 
 	// screen (allow some discrepancies otherwise lie detection triggers at random)
@@ -1597,10 +1597,7 @@
 			navComputed.versionHash = navVersionHash
 			navComputed.pluginsHash = pluginsHash
 		}
-		const computedStyleVersionSorted = ''+caniuse(computedStyleVersionComputed, ['keys', 'sort'], [], true)
-		const htmlElementStyleVersionSorted = ''+caniuse(htmlElementStyleVersionComputed, ['keys', 'sort'], [], true)
-		const cssRuleListStyleVersionSorted = ''+caniuse(cssRuleListStyleVersionComputed, ['keys', 'sort'], [], true)
-		
+
 		const fingerprint = {
 			headers: [headers, headersHash],
 			nav: [navComputed, navHash],
@@ -1611,8 +1608,8 @@
 			cssHtmlElementStyle: [htmlElementStyleVersionComputed, htmlElementStyleVersionHash],
 			cssRuleListStyle: [cssRuleListStyleVersionComputed, cssRuleListStyleVersionHash],
 			cssStylesMatch: (
-				computedStyleVersionSorted == htmlElementStyleVersionSorted &&
-				htmlElementStyleVersionSorted == cssRuleListStyleVersionSorted
+				''+computedStyleVersionComputed == ''+htmlElementStyleVersionComputed &&
+				''+htmlElementStyleVersionComputed == ''+cssRuleListStyleVersionComputed
 			),
 			timezone: [timezoneComputed, timezoneHash],
 			webgl: [webglComputed, webglHash],
