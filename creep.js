@@ -45,11 +45,12 @@
 		}
 	}
 
-	const caniuse = (api, objChain, method = null, args = null) => {
-		let i, len = objChain.length, chain = api
+	const caniuse = (api, objChainList, args = [], method = false) => {
+		if (!api) { return undefined }
+		let i, len = objChainList.length, chain = api
 		try {
 			for (i = 0; i < len; i++) {
-				const obj = objChain[i]
+				const obj = objChainList[i]
 				chain = chain[obj]
 			}
 		}
@@ -57,8 +58,8 @@
 			return undefined
 		}
 		return (
-			method && args ? chain[method](...args) :
-			method && !args ? chain[method]() :
+			method && args.length ? chain.apply(api, args) :
+			method && !args.length ? chain.apply(api) :
 			chain
 		)
 	}
@@ -722,8 +723,7 @@
 				return { extensions: undefined }
 			}
 			try {
-				const extensions = context ? context.getSupportedExtensions() : []
-				
+				const extensions = caniuse(context, ['getSupportedExtensions'], [], true) || []
 				if (!supportedExtLie) {
 					return {
 						extensions: ( 
@@ -790,7 +790,7 @@
 			}
 
 			const getWebglSpecs = gl => {
-				if (!gl) {
+				if (!caniuse(gl, ['getParameter'])) {
 					return undefined
 				}
 				const data =  {
@@ -828,7 +828,7 @@
 			}
 
 			const getWebgl2Specs = gl => {
-				if (!gl) {
+				if (!caniuse(gl, ['getParameter'])) {
 					return undefined
 				}
 				const data = {
@@ -872,7 +872,7 @@
 				}
 			}
 			try {
-				const extension = context && context.getExtension('WEBGL_debug_renderer_info')
+				const extension = caniuse(context, ['getExtension'], ['WEBGL_debug_renderer_info'], true)
 				const vendor = extension && context.getParameter(extension.UNMASKED_VENDOR_WEBGL)
 				const renderer = extension && context.getParameter(extension.UNMASKED_RENDERER_WEBGL)
 				const validate = (value, title) => {
@@ -925,8 +925,9 @@
 				let canvasWebglDataURI = ''
 
 				if (!dataLie && !contextLie) {
-					context.clearColor(0.2, 0.4, 0.6, 0.8)
-					context.clear(context.COLOR_BUFFER_BIT)
+					const colorBufferBit = caniuse(context, ['COLOR_BUFFER_BIT'])
+					caniuse(context, ['clearColor'], [0.2, 0.4, 0.6, 0.8], true)
+					caniuse(context, ['clear'], colorBufferBit, true)
 					canvasWebglDataURI = canvas.toDataURL()
 					return (
 						isBrave || isFirefox ? sendToTrash(canvasTitle, hashMini(canvasWebglDataURI)) : canvasWebglDataURI
@@ -1596,9 +1597,9 @@
 			navComputed.versionHash = navVersionHash
 			navComputed.pluginsHash = pluginsHash
 		}
-		const computedStyleVersionSorted = ''+caniuse(computedStyleVersionComputed, ['keys'], 'sort')
-		const htmlElementStyleVersionSorted = ''+caniuse(htmlElementStyleVersionComputed, ['keys'], 'sort')
-		const cssRuleListStyleVersionSorted = ''+caniuse(cssRuleListStyleVersionComputed, ['keys'], 'sort')
+		const computedStyleVersionSorted = ''+caniuse(computedStyleVersionComputed, ['keys', 'sort'], [], true)
+		const htmlElementStyleVersionSorted = ''+caniuse(htmlElementStyleVersionComputed, ['keys', 'sort'], [], true)
+		const cssRuleListStyleVersionSorted = ''+caniuse(cssRuleListStyleVersionComputed, ['keys', 'sort'], [], true)
 		
 		const fingerprint = {
 			headers: [headers, headersHash],
