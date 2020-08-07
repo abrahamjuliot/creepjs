@@ -47,7 +47,7 @@
 		}
 	}
 
-	const caniuse = (api, objChainList, args = [], method = false) => {
+	const caniuse = (api, objChainList = [], args = [], method = false) => {
 		if (!api) { return undefined }
 		let i, len = objChainList.length, chain = api
 		try {
@@ -323,14 +323,16 @@
 	const workerScopeCanvas = {
 		dataURI: workerScope.dataURI
 	}
-
+	
 	const getCloudflare = async () => {
 		const promiseUndefined = new Promise(resolve => resolve(undefined))
-		const detectLies = (name, value) => {
+		const detectUserAgentLie = value => {
+			const name = 'userAgent'
 			const workerScopeValue = caniuse(workerScopeNavigator, [name])
-			if (workerScopeValue && workerScopeValue != value) {
-				documentLie(`${name} header`, value, 'mismatches worker scope')
-				return sendToTrash(name, value)
+			const system = getOS(value)
+			if (workerScopeValue && workerScopeNavigator.system != system) {
+				documentLie(`${name} header`, system, 'mismatches worker scope')
+				return sendToTrash(name, system)
 			}
 			return value
 		}
@@ -345,7 +347,7 @@
 				const value = line.substr(line.indexOf('=') + 1)
 				data[key] = value
 			})
-			const userAgent = detectLies('userAgent', data.uag)
+			const userAgent = detectUserAgentLie(data.uag)
 			data.uag = userAgent ? getOS(userAgent) : undefined
 			return data
 		}
@@ -360,9 +362,18 @@
 		const navigatorPrototype = attempt(() => Navigator.prototype)
 		const detectLies = (name, value) => {
 			const workerScopeValue = caniuse(workerScopeNavigator, [name])
-			if (workerScopeValue && workerScopeValue != value) {
-				documentLie(name, value, 'mismatches worker scope')
-				return sendToTrash(name, value)
+			if (workerScopeValue) {
+				if (name == 'userAgent') {
+					const system = getOS(value)
+					if (workerScopeNavigator.system != system) {
+						documentLie(name, system, 'mismatches worker scope')
+						return sendToTrash(name, system)
+					}
+				}
+				else if (name != 'userAgent' && workerScopeValue != value) {
+					documentLie(name, value, 'mismatches worker scope')
+					return sendToTrash(name, value)
+				}
 			}
 			const lie = navigatorPrototype ? hasLiedAPI(navigatorPrototype, name, navigator).lie : false
 			if (lie) {
@@ -462,7 +473,7 @@
 			})
 		}
 	}
-
+	
 	// client hints
 	// https://github.com/WICG/ua-client-hints
 	const highEntropyValues = () => {
@@ -677,11 +688,11 @@
 	const getMediaDevices = () => {
 		const promiseUndefined = new Promise(resolve => resolve(undefined))
 		if (!('mediaDevices' in navigator)) {
-			return undfn
+			return promiseUndefined
 		}
 		try {
 			if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
-				return undfn
+				return promiseUndefined
 			}
 			return attempt(() => navigator.mediaDevices.enumerateDevices())
 		}
@@ -1263,14 +1274,15 @@
 
 	const offlineAudioOscillator = () => {
 		const promiseUndefined = new Promise(resolve => resolve(undefined))
-		if (!('OfflineAudioContext' in window || 'webkitOfflineAudioContext' in window)) {
-			return promiseUndefined
-		}
-		const audioBuffer = 'AudioBuffer' in window
-		const audioBufferGetChannelData = audioBuffer && attempt(() => AudioBuffer.prototype.getChannelData)
-		const audioBufferCopyFromChannel = audioBuffer && attempt(() => AudioBuffer.prototype.copyFromChannel)
 		const audioProcess = timer('')
+		
 		try {
+			if (!('OfflineAudioContext' in window || 'webkitOfflineAudioContext' in window)) {
+				return promiseUndefined
+			}
+			const audioBuffer = 'AudioBuffer' in window
+			const audioBufferGetChannelData = audioBuffer && attempt(() => AudioBuffer.prototype.getChannelData)
+			const audioBufferCopyFromChannel = audioBuffer && attempt(() => AudioBuffer.prototype.copyFromChannel)
 			const channelDataLie = (
 				audioBufferGetChannelData ? hasLiedAPI(audioBufferGetChannelData, 'getChannelData').lie : false
 			)
@@ -1302,7 +1314,7 @@
 			let copySample = []
 			let binsSample = []
 			let matching = false
-
+			
 			const values = {
 				['analyserNode.channelCount']: attempt(() => analyser.channelCount),
 				['analyserNode.channelCountMode']: attempt(() => analyser.channelCountMode),
@@ -1576,7 +1588,6 @@
 		const timezoneComputed = attempt(() => timezone())
 		const cRectsComputed = attempt(() => cRects())
 		const mathsComputed = attempt(() => maths())
-		
 		// await
 		const asyncValues = timer('')
 		const [
@@ -1595,7 +1606,7 @@
 			getBitmapRenderer(),
 			offlineAudioOscillator(),
 			detectFonts([...fontList, ...notoFonts])
-		]).catch(error => { 
+		]).catch(error => {
 			console.error(error.message)
 		})
 		asyncValues('Async computation complete')
@@ -1611,7 +1622,7 @@
 			const { name, lieTypes } = lie
 			return { name, lieTypes }
 		})
-
+		
 		// await hash values
 		const hashProcess = timer('')
 		const [
