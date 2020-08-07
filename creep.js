@@ -1,4 +1,4 @@
-(function() {
+(async function() {
 	// Log performance time
 	const timer = (logStart) => {
 		logStart && console.log(logStart)
@@ -21,7 +21,8 @@
 			SyntaxError: true,
 			TypeError: true,
 			URIError: true,
-			InvalidStateError: true
+			InvalidStateError: true,
+			SecurityError: true
 		}
 		const hasInnerSpace = s => /.+(\s).+/g.test(s) // ignore AOPR noise
 		console.error(error) // log error to educate
@@ -287,8 +288,52 @@
 		)
 		return os
 	}
-	const getHeaders = async () => {
+
+	// worker
+	const getWorkerScope = async () => {
 		const promiseUndefined = new Promise(resolve => resolve(undefined))
+		try {
+			const worker = new Worker('worker.js')
+			return new Promise(resolve => {
+				const workerPerformance = timer('')
+				worker.addEventListener('message', event => {
+					const { data } = event
+					data.system = getOS(data.userAgent)
+					workerPerformance('worker complete')
+					return resolve(data)
+				}, false)
+				return
+			})
+		}
+		catch (error) {
+			captureError(error)
+			return promiseUndefined
+		}
+	}
+
+	const workerScope = await getWorkerScope()
+	const workerScopeNavigator = {
+		hardwareConcurrency: workerScope.hardwareConcurrency,
+		language: workerScope.language,
+		platform: workerScope.platform,
+		system: workerScope.system,
+		userAgent: workerScope.userAgent,
+		
+	}
+	const workerScopeCanvas = {
+		dataURI: workerScope.dataURI
+	}
+
+	const getCloudflare = async () => {
+		const promiseUndefined = new Promise(resolve => resolve(undefined))
+		const detectLies = (name, value) => {
+			const workerScopeValue = caniuse(workerScopeNavigator, [name])
+			if (workerScopeValue && workerScopeValue != value) {
+				documentLie(`${name} header`, value, 'mismatches worker scope')
+				return sendToTrash(name, value)
+			}
+			return value
+		}
 		try {
 			const api = 'https://www.cloudflare.com/cdn-cgi/trace'
 			const res = await fetch(api)
@@ -300,7 +345,8 @@
 				const value = line.substr(line.indexOf('=') + 1)
 				data[key] = value
 			})
-			data.uag = getOS(data.uag)
+			const userAgent = detectLies('userAgent', data.uag)
+			data.uag = userAgent ? getOS(userAgent) : undefined
 			return data
 		}
 		catch (error) {
@@ -313,6 +359,11 @@
 	const nav = () => {
 		const navigatorPrototype = attempt(() => Navigator.prototype)
 		const detectLies = (name, value) => {
+			const workerScopeValue = caniuse(workerScopeNavigator, [name])
+			if (workerScopeValue && workerScopeValue != value) {
+				documentLie(name, value, 'mismatches worker scope')
+				return sendToTrash(name, value)
+			}
 			const lie = navigatorPrototype ? hasLiedAPI(navigatorPrototype, name, navigator).lie : false
 			if (lie) {
 				documentLie(name, value, lie)
@@ -322,7 +373,6 @@
 		}
 		const credibleUserAgent = (
 			'chrome' in window ? navigator.userAgent.includes(navigator.appVersion) : true
-			// todo: additional checks
 		)
 		return {
 			appVersion: attempt(() => {
@@ -596,7 +646,7 @@
 			if (!('chrome' in window)) {
 				return speechSynthesis.getVoices()
 			}
-			const promise = new Promise(resolve => {
+			return new Promise(resolve => {
 				try {
 					if (typeof speechSynthesis === 'undefined') {
 						return resolve(undefined)
@@ -616,8 +666,6 @@
 					return resolve(undefined)
 				}
 			})
-			
-			return promise
 		}
 		catch (error) {
 			captureError(error)
@@ -695,22 +743,17 @@
 				const context = canvas.getContext('bitmaprenderer')
 				const image = new Image()
 				image.src = 'bitmap.png'
-				image.onload = async () => {
-					const bitmap = await createImageBitmap(image, 0, 0, image.width, image.height)
-					context.transferFromImageBitmap(bitmap)
-					canvasBMRDataURI = canvas.toDataURL()
-				}
 				return new Promise(resolve => {
-					const check = setInterval(() => {
-						if (canvasBMRDataURI) {
-							if (isBrave || isFirefox) {
-								clearInterval(check)
-								resolve(sendToTrash('canvasBMRDataURI', hashMini(canvasBMRDataURI)))
-							}
-							clearInterval(check)
+					image.onload = async () => {
+						const bitmap = await createImageBitmap(image, 0, 0, image.width, image.height)
+						context.transferFromImageBitmap(bitmap)
+						canvasBMRDataURI = canvas.toDataURL()
+						return (
+							isBrave || isFirefox ? 
+							resolve(sendToTrash('canvasBMRDataURI', hashMini(canvasBMRDataURI))) :
 							resolve(canvasBMRDataURI)
-						}
-					}, 10)
+						)
+					}
 				})
 			}
 			// document lie and send to trash
@@ -1295,43 +1338,30 @@
 				['oscillatorNode.frequency.minValue']: attempt(() => oscillator.frequency.minValue)
 			}
 			
-			context.oncomplete = event => {
-				try {
-					const copy = new Float32Array(44100)
-					event.renderedBuffer.copyFromChannel(copy, 0)
-					const bins = event.renderedBuffer.getChannelData(0)
-					
-					copySample = copy ? [...copy].slice(4500, 4600) : [sendToTrash('audioCopy', null)]
-					binsSample = bins ? [...bins].slice(4500, 4600) : [sendToTrash('audioSample', null)]
-					
-					const copyJSON = copy && JSON.stringify([...copy].slice(4500, 4600))
-					const binsJSON = bins && JSON.stringify([...bins].slice(4500, 4600))
-
-					matching = binsJSON === copyJSON
-
-					if (!matching) {
-						documentLie('audioSampleAndCopyMatch', hashMini(matching), { audioSampleAndCopyMatch: false })
-					}
-					dynamicsCompressor.disconnect()
-					oscillator.disconnect()
-					return
-				} catch (error) {
-					captureError(error)
-					copySample = [undefined]
-					binsSample = [undefined]
-					dynamicsCompressor.disconnect()
-					oscillator.disconnect()
-				}
-			}
-
 			return new Promise(resolve => {
-				const check = setInterval(() => {
-					if (copySample.length && binsSample.length) {
+				context.oncomplete = event => {
+					try {
+						const copy = new Float32Array(44100)
+						event.renderedBuffer.copyFromChannel(copy, 0)
+						const bins = event.renderedBuffer.getChannelData(0)
+						
+						copySample = copy ? [...copy].slice(4500, 4600) : [sendToTrash('audioCopy', null)]
+						binsSample = bins ? [...bins].slice(4500, 4600) : [sendToTrash('audioSample', null)]
+						
+						const copyJSON = copy && JSON.stringify([...copy].slice(4500, 4600))
+						const binsJSON = bins && JSON.stringify([...bins].slice(4500, 4600))
+
+						matching = binsJSON === copyJSON
+
+						if (!matching) {
+							documentLie('audioSampleAndCopyMatch', hashMini(matching), { audioSampleAndCopyMatch: false })
+						}
+						dynamicsCompressor.disconnect()
+						oscillator.disconnect()
 						audioProcess('Audio complete')
 						if (isBrave) {
-							clearInterval(check)
 							sendToTrash('audio', binsSample[0])
-							resolve({
+							return resolve({
 								copySample: [undefined],
 								binsSample: [undefined],
 								matching,
@@ -1339,11 +1369,9 @@
 							})
 						}
 						else if (proxyBehavior(binsSample)) {
-							clearInterval(check)
 							sendToTrash('audio', 'proxy behavior detected')
-							resolve(undefined)
+							return resolve(undefined)
 						}
-						clearInterval(check)
 
 						// document lies and send to trash
 						if (copyFromChannelLie) { 
@@ -1362,9 +1390,15 @@
 							matching,
 							values
 						}
-						resolve(response)
+						return resolve(response)
+					} catch (error) {
+						captureError(error)
+						copySample = [undefined]
+						binsSample = [undefined]
+						dynamicsCompressor.disconnect()
+						oscillator.disconnect()
 					}
-				}, 10)
+				}
 			})
 		}
 		catch (error) {
@@ -1546,7 +1580,7 @@
 		// await
 		const asyncValues = timer('')
 		const [
-			headers,
+			cloudflare,
 			voices,
 			mediaDevices,
 			highEntropy,
@@ -1554,7 +1588,7 @@
 			offlineAudio,
 			fonts
 		] = await Promise.all([
-			getHeaders(),
+			getCloudflare(),
 			getVoices(),
 			getMediaDevices(),
 			highEntropyValues(),
@@ -1581,7 +1615,7 @@
 		// await hash values
 		const hashProcess = timer('')
 		const [
-			headersHash, // order must match
+			cloudflareHash, // order must match
 			navHash, 
 			mimeTypesHash,
 			pluginsHash,
@@ -1608,9 +1642,11 @@
 			bitmapRendererHash,
 			errorsCapturedHash,
 			trashHash,
-			liesHash
+			liesHash,
+			workerScopeNavigatorHash,
+			workerScopeCanvasHash
 		] = await Promise.all([
-			hashify(headers),
+			hashify(cloudflare),
 			hashify(navComputed),
 			hashify(mimeTypes),
 			hashify(plugins),
@@ -1637,7 +1673,9 @@
 			hashify(bitmapRenderer),
 			hashify(errorsCaptured),
 			hashify(trashComputed),
-			hashify(liesComputed)
+			hashify(liesComputed),
+			hashify(workerScopeNavigator),
+			hashify(workerScopeCanvas)
 		]).catch(error => { 
 			console.error(error.message)
 		})
@@ -1650,7 +1688,7 @@
 		}
 
 		const fingerprint = {
-			headers: [headers, headersHash],
+			cloudflare: [cloudflare, cloudflareHash],
 			nav: [navComputed, navHash],
 			highEntropy: [highEntropy, highEntropyHash],
 			window: [windowVersionComputed, windowVersionHash],
@@ -1674,11 +1712,13 @@
 			cRects: [cRectsComputed, cRectsHash],
 			fonts: [fonts, fontsHash],
 			maths: [mathsComputed, mathsHash],
-			canvas: [canvasComputed, canvasHash],
+			canvas2d: [canvasComputed, canvasHash],
 			bitmapRenderer: [bitmapRenderer, bitmapRendererHash],
 			errorsCaptured: [errorsCaptured, errorsCapturedHash],
 			trash: [trashComputed, trashHash],
-			lies: [liesComputed, liesHash]
+			lies: [liesComputed, liesHash],
+			workerScopeNavigator: [workerScopeNavigator, workerScopeNavigatorHash],
+			workerScopeCanvas: [workerScopeCanvas, workerScopeCanvasHash]
 		}
 		return fingerprint
 	}
@@ -1724,8 +1764,10 @@
 			fonts: fp.fonts,
 			audio: fp.audio,
 			maths: fp.maths,
-			canvas: fp.canvas,
-			bitmapRenderer: fp.bitmapRenderer
+			canvas2d: fp.canvas2d,
+			bitmapRenderer: fp.bitmapRenderer,
+			workerScopeNavigator: fp.workerScopeNavigator,
+			workerScopeCanvas: fp.workerScopeCanvas
 		}
 		const log = (message, obj) => console.log(message, JSON.stringify(obj, null, '\t'))
 		
@@ -1884,33 +1926,55 @@
 							`
 						})()
 					}
-
-					${
-						!fp.headers[0] ? `<div>headers: ${note.blocked}</div>`: (() => {
-							const [ headers, hash ]  = fp.headers
-							return `
-							<div>
-								<div>headers: ${hash}</div>
-								${
-									Object.keys(headers).map(key => {
-										const value = headers[key]
-										key = (
-											key == 'ip' ? 'ip address' :
-											key == 'uag' ? 'ua system' :
-											key == 'loc' ? 'ip location' :
-											key == 'tls' ? 'tls version' :
-											key
-										)
-										return `<div>${key}: ${value}</div>`
-									}).join('')
-								}
-							</div>
-							`
-						})()
-					}
+					<div>
+						<strong>Cloudflare</strong>
+						${
+							!fp.cloudflare[0] ? `<div>hash: ${note.blocked}</div>`: (() => {
+								const [ cloudflare, hash ]  = fp.cloudflare
+								return `
+								<div>
+									<div>hash: ${hash}</div>
+									${
+										Object.keys(cloudflare).map(key => {
+											const value = cloudflare[key]
+											key = (
+												key == 'ip' ? 'ip address' :
+												key == 'uag' ? 'system' :
+												key == 'loc' ? 'ip location' :
+												key == 'tls' ? 'tls version' :
+												key
+											)
+											return `<div>${key}: ${value ? value : note.blocked}</div>`
+										}).join('')
+									}
+								</div>
+								`
+							})()
+						}
+					</div>
+					<div>
+						<strong>WorkerGlobalScope: WorkerNavigator/OffscreenCanvas</strong>
+						${
+							!fp.workerScopeNavigator[0] ? `<div>navigator: ${note.blocked}</div>`: (() => {
+								const [ data, hash ]  = fp.workerScopeNavigator
+								return `
+								<div>
+									<div>navigator: ${hash}</div>
+									${
+										Object.keys(data).map(key => {
+											const value = data[key]
+											return `<div>${key}: ${value ? value : note.blocked}</div>`
+										}).join('')
+									}
+								</div>
+								`
+							})()
+						}
+						<div>toDataURL: ${identify(fp.workerScopeCanvas, 'identifyBrowser')}</div>
+					</div>
 					<div>
 						<strong>CanvasRenderingContext2D</strong>
-						<div>toDataURL: ${identify(fp.canvas, 'identifyBrowser')}</div>
+						<div>toDataURL: ${identify(fp.canvas2d, 'identifyBrowser')}</div>
 					</div>
 					<div>
 						<strong>ImageBitmapRenderingContext</strong>
@@ -1918,8 +1982,6 @@
 					</div>
 					<div>
 						<strong>WebGLRenderingContext/WebGL2RenderingContext</strong>
-						<div>v1 toDataURL: ${identify(fp.webglDataURL, 'identifyBrowser')}</div>
-						<div>v2 DataURL: ${identify(fp.webgl2DataURL, 'identifyBrowser')}</div>
 						${
 							!fp.webgl[0] ? `<div>parameters/extensions: ${note.blocked}</div>`: (() => {
 								const [ data, hash ] = fp.webgl
@@ -1940,24 +2002,30 @@
 										const validValue = !!value || value === 0
 										return validValue
 									})
-									return `<div>supported ${type} parameters: ${supported.length}</div>`
+									return `<div>${type} supported parameters: ${supported.length}</div>`
 								}
 								return `
 									<div>parameters/extensions: ${hash}</div>
+									<br>
+									<div>v1 toDataURL: ${identify(fp.webglDataURL, 'identifyBrowser')}</div>
 									${
 										!webglSpecs ? `<div>v1 supported parameters: ${note.blocked}</div>` :
-										supportedSpecs(webglSpecs, 'webgl1')
+										supportedSpecs(webglSpecs, 'v1')
 									}
+									
+									<div>v1 supported extensions: ${validate(extensions)}</div>
+									<div>v1 renderer: ${validate(renderer, true)}</div>
+									<div>v1 vendor: ${validate(vendor, true)}</div>
+									<br>
+									<div>v2 toDataURL: ${identify(fp.webgl2DataURL, 'identifyBrowser')}</div>
 									${
 										!webgl2Specs ? `<div>v2 supported parameters: ${note.blocked}</div>` :
-										supportedSpecs(webgl2Specs, 'webgl2')
+										supportedSpecs(webgl2Specs, 'v2')
 									}
-									<div>v1 supported extensions: ${validate(extensions)}</div>
 									<div>v2 supported extensions: ${validate(extensions2)}</div>
-									<div>v1 renderer: ${validate(renderer, true)}</div>
 									<div>v2 renderer: ${validate(renderer2, true)}</div>
-									<div>v1 vendor: ${validate(vendor, true)}</div>
 									<div>v2 vendor: ${validate(vendor2, true)}</div>
+									<br>
 									<div>matching renderer/vendor: ${matching}</div>
 								`
 							})()
