@@ -20,7 +20,8 @@
 			ReferenceError: true,
 			SyntaxError: true,
 			TypeError: true,
-			URIError: true
+			URIError: true,
+			InvalidStateError: true
 		}
 		const hasInnerSpace = s => /.+(\s).+/g.test(s) // ignore AOPR noise
 		console.error(error) // log error to educate
@@ -55,6 +56,7 @@
 			}
 		}
 		catch (error) {
+			const prop = `${api.name}`
 			return undefined
 		}
 		return (
@@ -589,8 +591,7 @@
 
 	// voices
 	const getVoices = () => {
-		const undfn = new Promise(resolve => resolve(undefined))
-		
+		const promiseUndefined = new Promise(resolve => resolve(undefined))
 		try {
 			if (!('chrome' in window)) {
 				return speechSynthesis.getVoices()
@@ -620,14 +621,13 @@
 		}
 		catch (error) {
 			captureError(error)
-			return undfn
+			return promiseUndefined
 		}
 	}
 
 	// media devices
 	const getMediaDevices = () => {
-		const undfn = new Promise(resolve => resolve(undefined))
-		
+		const promiseUndefined = new Promise(resolve => resolve(undefined))
 		if (!('mediaDevices' in navigator)) {
 			return undfn
 		}
@@ -639,7 +639,7 @@
 		}
 		catch (error) {
 			captureError(error)
-			return undfn
+			return promiseUndefined
 		}
 	}
 
@@ -669,23 +669,70 @@
 				isBrave || isFirefox ? sendToTrash('canvas2dDataURI', hashMini(canvas2dDataURI)) : canvas2dDataURI
 			)
 		}
-		
 		// document lie and send to trash
 		canvas2dDataURI = canvas.toDataURL()
-		const canvas2dContextDataURI = canvas2dDataURI
+		const hash = hashMini(canvas2dDataURI)
 		if (contextLie) {
-			const contextHash = hashMini(canvas2dContextDataURI)
-			documentLie('canvas2dContextDataURI', contextHash, contextLie)
-			sendToTrash('canvas2dContextDataURI', contextHash)
+			documentLie('canvas2dContextDataURI', hash, contextLie)
+			sendToTrash('canvas2dContextDataURI', hash)
 		}
 		if (dataLie) {
-			const dataHash = hashMini(canvas2dDataURI)
-			documentLie('canvas2dDataURI', dataHash, dataLie)
-			sendToTrash('canvas2dDataURI', dataHash)
+			documentLie('canvas2dDataURI', hash, dataLie)
+			sendToTrash('canvas2dDataURI', hash)
 		}
 		
 		// fingerprint lie
 		return { dataLie, contextLie }
+	}
+
+
+	const getBitmapRenderer = async () => {
+		const promiseUndefined = new Promise(resolve => resolve(undefined))
+		try {
+			const canvas = document.createElement('canvas')
+			let canvasBMRDataURI = ''
+			if (!dataLie && !contextLie) {
+				const context = canvas.getContext('bitmaprenderer')
+				const image = new Image()
+				image.src = 'bitmap.png'
+				image.onload = async () => {
+					const bitmap = await createImageBitmap(image, 0, 0, image.width, image.height)
+					context.transferFromImageBitmap(bitmap)
+					canvasBMRDataURI = canvas.toDataURL()
+				}
+				return new Promise(resolve => {
+					const check = setInterval(() => {
+						if (canvasBMRDataURI) {
+							if (isBrave || isFirefox) {
+								clearInterval(check)
+								resolve(sendToTrash('canvasBMRDataURI', hashMini(canvasBMRDataURI)))
+							}
+							clearInterval(check)
+							resolve(canvasBMRDataURI)
+						}
+					}, 10)
+				})
+			}
+			// document lie and send to trash
+			canvasBMRDataURI = canvas.toDataURL()
+			const hash = hashMini(canvasBMRDataURI)
+			if (contextLie) {
+				documentLie('canvasBMRContextDataURI', hash, contextLie)
+				sendToTrash('canvasBMRContextDataURI', hash)
+			}
+			if (dataLie) {
+				documentLie('canvasBMRDataURI', hash, dataLie)
+				sendToTrash('canvasBMRDataURI', hash)
+			}
+			// fingerprint lie
+			return new Promise(resolve => {
+				resolve({ dataLie, contextLie })
+			})
+		}
+		catch (error) {
+			captureError(error)
+			return promiseUndefined
+		}
 	}
 
 	// webgl
@@ -717,7 +764,7 @@
 			canvas.getContext('moz-webgl') ||
 			canvas.getContext('webkit-3d')
 		)
-		const context2 = canvas2.getContext('webgl2')
+		const context2 = canvas2.getContext('webgl2') || canvas.getContext('experimental-webgl2')
 		const getSupportedExtensions = (context, supportedExtLie, title) => {
 			if (!context) {
 				return { extensions: undefined }
@@ -1503,6 +1550,7 @@
 			voices,
 			mediaDevices,
 			highEntropy,
+			bitmapRenderer,
 			offlineAudio,
 			fonts
 		] = await Promise.all([
@@ -1510,6 +1558,7 @@
 			getVoices(),
 			getMediaDevices(),
 			highEntropyValues(),
+			getBitmapRenderer(),
 			offlineAudioOscillator(),
 			detectFonts([...fontList, ...notoFonts])
 		]).catch(error => { 
@@ -1556,6 +1605,7 @@
 			fontsHash,
 			mathsHash,
 			canvasHash,
+			bitmapRendererHash,
 			errorsCapturedHash,
 			trashHash,
 			liesHash
@@ -1584,6 +1634,7 @@
 			hashify(fonts),
 			hashify(mathsComputed),
 			hashify(canvasComputed),
+			hashify(bitmapRenderer),
 			hashify(errorsCaptured),
 			hashify(trashComputed),
 			hashify(liesComputed)
@@ -1624,6 +1675,7 @@
 			fonts: [fonts, fontsHash],
 			maths: [mathsComputed, mathsHash],
 			canvas: [canvasComputed, canvasHash],
+			bitmapRenderer: [bitmapRenderer, bitmapRendererHash],
 			errorsCaptured: [errorsCaptured, errorsCapturedHash],
 			trash: [trashComputed, trashHash],
 			lies: [liesComputed, liesHash]
@@ -1672,7 +1724,8 @@
 			fonts: fp.fonts,
 			audio: fp.audio,
 			maths: fp.maths,
-			canvas: fp.canvas
+			canvas: fp.canvas,
+			bitmapRenderer: fp.bitmapRenderer
 		}
 		const log = (message, obj) => console.log(message, JSON.stringify(obj, null, '\t'))
 		
@@ -1860,11 +1913,15 @@
 						<div>toDataURL: ${identify(fp.canvas, 'identifyBrowser')}</div>
 					</div>
 					<div>
+						<strong>ImageBitmapRenderingContext</strong>
+						<div>toDataURL: ${identify(fp.bitmapRenderer, 'identifyBrowser')}</div>
+					</div>
+					<div>
 						<strong>WebGLRenderingContext/WebGL2RenderingContext</strong>
-						<div>webglDataURL: ${identify(fp.webglDataURL, 'identifyBrowser')}</div>
-						<div>webgl2DataURL: ${identify(fp.webgl2DataURL, 'identifyBrowser')}</div>
+						<div>v1 toDataURL: ${identify(fp.webglDataURL, 'identifyBrowser')}</div>
+						<div>v2 DataURL: ${identify(fp.webgl2DataURL, 'identifyBrowser')}</div>
 						${
-							!fp.webgl[0] ? `<div>specs: ${note.blocked}</div>`: (() => {
+							!fp.webgl[0] ? `<div>parameters/extensions: ${note.blocked}</div>`: (() => {
 								const [ data, hash ] = fp.webgl
 								const { renderer, renderer2, vendor, vendor2, extensions, extensions2, matching, specs } = data
 								const { webglSpecs, webgl2Specs } = specs
@@ -1888,19 +1945,19 @@
 								return `
 									<div>parameters/extensions: ${hash}</div>
 									${
-										!webglSpecs ? `<div>supported webgl1 parameters: ${note.blocked}</div>` :
+										!webglSpecs ? `<div>v1 supported parameters: ${note.blocked}</div>` :
 										supportedSpecs(webglSpecs, 'webgl1')
 									}
 									${
-										!webgl2Specs ? `<div>supported webgl2 parameters: ${note.blocked}</div>` :
+										!webgl2Specs ? `<div>v2 supported parameters: ${note.blocked}</div>` :
 										supportedSpecs(webgl2Specs, 'webgl2')
 									}
-									<div>webgl1 supported extensions: ${validate(extensions)}</div>
-									<div>webgl2 supported extensions: ${validate(extensions2)}</div>
-									<div>webgl1 renderer: ${validate(renderer, true)}</div>
-									<div>webgl2 renderer: ${validate(renderer2, true)}</div>
-									<div>webgl1 vendor: ${validate(vendor, true)}</div>
-									<div>webgl2 vendor: ${validate(vendor2, true)}</div>
+									<div>v1 supported extensions: ${validate(extensions)}</div>
+									<div>v2 supported extensions: ${validate(extensions2)}</div>
+									<div>v1 renderer: ${validate(renderer, true)}</div>
+									<div>v2 renderer: ${validate(renderer2, true)}</div>
+									<div>v1 vendor: ${validate(vendor, true)}</div>
+									<div>v2 vendor: ${validate(vendor2, true)}</div>
 									<div>matching renderer/vendor: ${matching}</div>
 								`
 							})()
@@ -2203,12 +2260,12 @@
 					}
 					<br>
 					${
-						!fp.highEntropy[0] ? `<div>high entropy: ${note.blocked} or unsupported</div>`: (() => {
+						!fp.highEntropy[0] ? `<div>NavigatorUAData.getHighEntropyValues: ${note.blocked} or unsupported</div>`: (() => {
 							const [ ua, hash ]  = fp.highEntropy
 							const { architecture, model, platform, platformVersion, uaFullVersion } = ua
 							return `
 							<div>
-								<div>high entropy hash: ${hash}</div>
+								<div>NavigatorUAData.getHighEntropyValues: ${hash}</div>
 								<div>ua architecture: ${architecture}</div>
 								<div>ua model: ${model}</div>
 								<div>ua platform: ${platform}</div>
