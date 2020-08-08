@@ -310,32 +310,9 @@
 			return promiseUndefined
 		}
 	}
-
-	const workerScope = await getWorkerScope()
-	const workerScopeNavigator = {
-		hardwareConcurrency: workerScope.hardwareConcurrency,
-		language: workerScope.language,
-		platform: workerScope.platform,
-		system: workerScope.system,
-		userAgent: workerScope.userAgent,
-		
-	}
-	const workerScopeCanvas = {
-		dataURI: workerScope.dataURI
-	}
 	
-	const getCloudflare = async () => {
+	const getCloudflare = async workerScopeNavigator => {
 		const promiseUndefined = new Promise(resolve => resolve(undefined))
-		const detectUserAgentLie = value => {
-			const name = 'userAgent'
-			const workerScopeValue = caniuse(workerScopeNavigator, [name])
-			const system = getOS(value)
-			if (workerScopeValue && workerScopeNavigator.system != system) {
-				documentLie(`${name} header`, system, 'mismatches worker scope')
-				return sendToTrash(name, system)
-			}
-			return value
-		}
 		try {
 			const api = 'https://www.cloudflare.com/cdn-cgi/trace'
 			const res = await fetch(api)
@@ -347,8 +324,7 @@
 				const value = line.substr(line.indexOf('=') + 1)
 				data[key] = value
 			})
-			const userAgent = detectUserAgentLie(data.uag)
-			data.uag = userAgent ? getOS(userAgent) : undefined
+			data.uag = getOS(data.uag)
 			return data
 		}
 		catch (error) {
@@ -358,7 +334,7 @@
 	}
 
 	// navigator
-	const nav = () => {
+	const nav = workerScopeNavigator => {
 		const navigatorPrototype = attempt(() => Navigator.prototype)
 		const detectLies = (name, value) => {
 			const workerScopeValue = caniuse(workerScopeNavigator, [name])
@@ -1558,8 +1534,46 @@
 	
 	// fingerprint
 	const fingerprint = async () => {
+		// await
+		const asyncValues = timer('')
+		const [
+			workerScope,
+			cloudflare,
+			voices,
+			mediaDevices,
+			highEntropy,
+			bitmapRenderer,
+			offlineAudio,
+			fonts
+		] = await Promise.all([
+			getWorkerScope(),
+			getCloudflare(),
+			getVoices(),
+			getMediaDevices(),
+			highEntropyValues(),
+			getBitmapRenderer(),
+			offlineAudioOscillator(),
+			detectFonts([...fontList, ...notoFonts])
+		]).catch(error => {
+			console.error(error.message)
+		})
+		asyncValues('Async computation complete')
+
+		const voicesComputed = !voices ? undefined : voices.map(({ name, lang }) => ({ name, lang }))
+		const mediaDevicesComputed = !mediaDevices ? undefined : mediaDevices.map(({ kind }) => ({ kind })) // chrome randomizes groupId
+		const workerScopeNavigator = !workerScope ? undefined : {
+			hardwareConcurrency: workerScope.hardwareConcurrency,
+			language: workerScope.language,
+			platform: workerScope.platform,
+			system: workerScope.system,
+			userAgent: workerScope.userAgent
+		}
+		const workerScopeCanvas = !workerScope ? undefined : {
+			dataURI: workerScope.dataURI
+		}
+
 		// attempt to compute values
-		const navComputed = attempt(() => nav())
+		const navComputed = attempt(() => nav(workerScopeNavigator))
 		const mimeTypes = navComputed ? navComputed.mimeTypes : undefined
 		const plugins = navComputed ? navComputed.plugins : undefined
 		const navVersion = navComputed ? navComputed.version : undefined
@@ -1588,31 +1602,6 @@
 		const timezoneComputed = attempt(() => timezone())
 		const cRectsComputed = attempt(() => cRects())
 		const mathsComputed = attempt(() => maths())
-		// await
-		const asyncValues = timer('')
-		const [
-			cloudflare,
-			voices,
-			mediaDevices,
-			highEntropy,
-			bitmapRenderer,
-			offlineAudio,
-			fonts
-		] = await Promise.all([
-			getCloudflare(),
-			getVoices(),
-			getMediaDevices(),
-			highEntropyValues(),
-			getBitmapRenderer(),
-			offlineAudioOscillator(),
-			detectFonts([...fontList, ...notoFonts])
-		]).catch(error => {
-			console.error(error.message)
-		})
-		asyncValues('Async computation complete')
-
-		const voicesComputed = !voices ? undefined : voices.map(({ name, lang }) => ({ name, lang }))
-		const mediaDevicesComputed = !mediaDevices ? undefined : mediaDevices.map(({ kind }) => ({ kind })) // chrome randomizes groupId
 		
 		// Compile property names sent to the trashBin (exclude trash values)
 		const trashComputed = trashBin.map(trash => trash.name)

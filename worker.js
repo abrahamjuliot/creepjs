@@ -1,5 +1,5 @@
 (async () => {
-	const caniuse = (api, objChainList, args = [], method = false) => {
+	const caniuse = (api, objChainList = [], args = [], method = false) => {
 		if (!api) { return undefined }
 		let i, len = objChainList.length, chain = api
 		try {
