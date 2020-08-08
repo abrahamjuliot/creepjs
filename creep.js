@@ -48,7 +48,9 @@
 	}
 
 	const caniuse = (api, objChainList = [], args = [], method = false) => {
-		if (!api) { return undefined }
+		if (!api) {
+			return undefined
+		}
 		let i, len = objChainList.length, chain = api
 		try {
 			for (i = 0; i < len; i++) {
@@ -57,7 +59,6 @@
 			}
 		}
 		catch (error) {
-			const prop = `${api.name}`
 			return undefined
 		}
 		return (
