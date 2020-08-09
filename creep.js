@@ -795,7 +795,7 @@
 			canvas.getContext('moz-webgl') ||
 			canvas.getContext('webkit-3d')
 		)
-		const context2 = canvas2.getContext('webgl2') || canvas.getContext('experimental-webgl2')
+		const context2 = canvas2.getContext('webgl2') || canvas2.getContext('experimental-webgl2')
 		const getSupportedExtensions = (context, supportedExtLie, title) => {
 			if (!context) {
 				return { extensions: undefined }
@@ -840,8 +840,8 @@
 			const getMaxAnisotropy = gl => {
 				const ext = (
 					gl.getExtension('EXT_texture_filter_anisotropic') ||
-					gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic') ||
-					gl.getExtension('MOZ_EXT_texture_filter_anisotropic')
+					gl.getExtension('MOZ_EXT_texture_filter_anisotropic') ||
+					gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic')
 				)
 				return ext ? gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT) : undefined
 			}
