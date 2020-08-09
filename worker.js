@@ -36,7 +36,6 @@
 		context.fillText(str, 10, 50)
 		const getDataURI = async () => {
 			const blob = await canvas.convertToBlob()
-			const file = new File([blob], 'offscreen')
 			const reader = new FileReader()
 			reader.readAsDataURL(blob)
 			return new Promise(resolve => {
