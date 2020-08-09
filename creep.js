@@ -732,15 +732,21 @@
 				const image = new Image()
 				image.src = 'bitmap.png'
 				return new Promise(resolve => {
-					image.onload = async () => {
-						const bitmap = await createImageBitmap(image, 0, 0, image.width, image.height)
-						context.transferFromImageBitmap(bitmap)
-						canvasBMRDataURI = canvas.toDataURL()
-						return (
-							isBrave || isFirefox ? 
-							resolve(sendToTrash('canvasBMRDataURI', hashMini(canvasBMRDataURI))) :
-							resolve(canvasBMRDataURI)
-						)
+					try {
+						image.onload = async () => {
+							const bitmap = await createImageBitmap(image, 0, 0, image.width, image.height)
+							context.transferFromImageBitmap(bitmap)
+							canvasBMRDataURI = canvas.toDataURL()
+							return (
+								isBrave || isFirefox ? 
+								resolve(sendToTrash('canvasBMRDataURI', hashMini(canvasBMRDataURI))) :
+								resolve(canvasBMRDataURI)
+							)
+						}
+					}
+					catch (error) {
+						captureError(error)
+						resolve(undefined)
 					}
 				})
 			}
@@ -1380,12 +1386,17 @@
 							values
 						}
 						return resolve(response)
-					} catch (error) {
+					}
+					catch (error) {
 						captureError(error)
-						copySample = [undefined]
-						binsSample = [undefined]
 						dynamicsCompressor.disconnect()
 						oscillator.disconnect()
+						return resolve({
+							copySample: [undefined],
+							binsSample: [undefined],
+							matching,
+							values
+						})
 					}
 				}
 			})
@@ -1987,7 +1998,8 @@
 							!fp.webgl[0] ? `<div>parameters/extensions: ${note.blocked}</div>`: (() => {
 								const [ data, hash ] = fp.webgl
 								const { renderer, renderer2, vendor, vendor2, extensions, extensions2, matching, specs } = data
-								const { webglSpecs, webgl2Specs } = specs
+								const webglSpecs = caniuse(specs, ['webglSpecs'])
+								const webgl2Specs = caniuse(specs, ['webgl2Specs'])
 								const validate = (value, checkBrave = false) => {
 									const isObj = typeof extensions == 'object'
 									const isString = typeof renderer == 'string'
