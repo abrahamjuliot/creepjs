@@ -1,4 +1,4 @@
-(function() {
+(async function() {
 	// Log performance time
 	const timer = (logStart) => {
 		logStart && console.log(logStart)
@@ -20,7 +20,9 @@
 			ReferenceError: true,
 			SyntaxError: true,
 			TypeError: true,
-			URIError: true
+			URIError: true,
+			InvalidStateError: true,
+			SecurityError: true
 		}
 		const hasInnerSpace = s => /.+(\s).+/g.test(s) // ignore AOPR noise
 		console.error(error) // log error to educate
@@ -45,18 +47,25 @@
 		}
 	}
 
-	const caniuse = (api, objChain) => {
-		let i, len = objChain.length, chain = api
+	const caniuse = (api, objChainList = [], args = [], method = false) => {
+		if (!api) {
+			return undefined
+		}
+		let i, len = objChainList.length, chain = api
 		try {
 			for (i = 0; i < len; i++) {
-				const obj = objChain[i]
+				const obj = objChainList[i]
 				chain = chain[obj]
 			}
 		}
 		catch (error) {
 			return undefined
 		}
-		return chain
+		return (
+			method && args.length ? chain.apply(api, args) :
+			method && !args.length ? chain.apply(api) :
+			chain
+		)
 	}
 
 	// https://stackoverflow.com/a/22429679
@@ -280,7 +289,30 @@
 		)
 		return os
 	}
-	const getHeaders = async () => {
+
+	// worker
+	const getWorkerScope = async () => {
+		const promiseUndefined = new Promise(resolve => resolve(undefined))
+		try {
+			const worker = new Worker('worker.js')
+			return new Promise(resolve => {
+				const workerPerformance = timer('')
+				worker.addEventListener('message', event => {
+					const { data } = event
+					data.system = getOS(data.userAgent)
+					workerPerformance('worker complete')
+					return resolve(data)
+				}, false)
+				return
+			})
+		}
+		catch (error) {
+			captureError(error)
+			return promiseUndefined
+		}
+	}
+	
+	const getCloudflare = async workerScopeNavigator => {
 		const promiseUndefined = new Promise(resolve => resolve(undefined))
 		try {
 			const api = 'https://www.cloudflare.com/cdn-cgi/trace'
@@ -303,9 +335,23 @@
 	}
 
 	// navigator
-	const nav = () => {
+	const nav = workerScopeNavigator => {
 		const navigatorPrototype = attempt(() => Navigator.prototype)
 		const detectLies = (name, value) => {
+			const workerScopeValue = caniuse(workerScopeNavigator, [name])
+			if (workerScopeValue) {
+				if (name == 'userAgent') {
+					const system = getOS(value)
+					if (workerScopeNavigator.system != system) {
+						documentLie(name, system, 'mismatches worker scope')
+						return sendToTrash(name, system)
+					}
+				}
+				else if (name != 'userAgent' && workerScopeValue != value) {
+					documentLie(name, value, 'mismatches worker scope')
+					return sendToTrash(name, value)
+				}
+			}
 			const lie = navigatorPrototype ? hasLiedAPI(navigatorPrototype, name, navigator).lie : false
 			if (lie) {
 				documentLie(name, value, lie)
@@ -315,7 +361,6 @@
 		}
 		const credibleUserAgent = (
 			'chrome' in window ? navigator.userAgent.includes(navigator.appVersion) : true
-			// todo: additional checks
 		)
 		return {
 			appVersion: attempt(() => {
@@ -405,7 +450,7 @@
 			})
 		}
 	}
-
+	
 	// client hints
 	// https://github.com/WICG/ua-client-hints
 	const highEntropyValues = () => {
@@ -428,16 +473,16 @@
 	// window version
 	const windowVersion = () => {
 		// create an iframe with a unique id
-		const iframeId = 'iframe-window-version'
+		const randomId = hashMini(crypto.getRandomValues(new Uint32Array(10)))
 		const iframeElement = document.createElement('iframe')
-		iframeElement.setAttribute('id', iframeId)
+		iframeElement.setAttribute('id', randomId)
 		iframeElement.setAttribute('style', 'display: none') // optional		
 		
 		// append the iframe to the dom
 		document.body.appendChild(iframeElement)
 
 		// get the iframe contentWindow
-		const iframe = document.getElementById(iframeId)
+		const iframe = document.getElementById(randomId)
 		const contentWindow = iframe.contentWindow
 
 		// get the contentWindow properties
@@ -449,14 +494,28 @@
 		return properties
 	}
 
+	const htmlElementVersion = () => {
+		// create unique element
+		const randomValues = crypto.getRandomValues(new Uint32Array(10))
+		const randomId = hashMini(randomValues)
+		const element = document.createElement('div')
+		element.setAttribute('id', randomId)
+
+		// append element to dom and get html element
+		document.body.appendChild(element) 
+		const htmlElement = document.getElementById(randomId)
+
+		// collect keys in html element
+		const keys = []
+		for (const key in htmlElement) {
+			keys.push(key)
+		}
+
+		return keys
+	}
+
 	// computed style version
 	const styleVersion = type => {
-		// helpers
-		const isMethod = (prop, obj) => typeof obj[prop] === 'function'
-		const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1)
-		const uncapitalize = str => str.charAt(0).toLowerCase() + str.slice(1)
-		const removeFirstChar = str => str.slice(1)
-		
 		// get CSSStyleDeclaration
 		const cssStyleDeclaration = (
 			type == 'getComputedStyle' ? getComputedStyle(document.body) :
@@ -467,101 +526,76 @@
 		if (!cssStyleDeclaration) {
 			throw new TypeError('invalid argument string')
 		}
-
-		// find and collect aliases/named attributes with counterparts
-		const counterpartsFound = {}
-		const caps =  /[A-Z]/g
-		const hasCounterpart = (str, obj) => {
-			if (counterpartsFound[str]) {
-				return true
-			}
-			const isNamedAttribute = str.indexOf('-') > -1
-			const isAliasAttribute = caps.test(str)
-			const isOneWordAttribute = !isNamedAttribute && !isAliasAttribute && str != 'length'
-			if (isOneWordAttribute) {
-				return true
-			}
-			// clean str
-			const firstChar = str.charAt(0)
-			const isPrefixedName = isNamedAttribute && firstChar == '-'
-			const isCapitalizedAlias = isAliasAttribute && firstChar == firstChar.toUpperCase()
-			str = (
-				isPrefixedName ? removeFirstChar(str) : 
-				isCapitalizedAlias ? uncapitalize(str) : 
-				str
-			)
-			// compute counterparts
-			let aliasAttribute = ''
-			let namedAttribute = ''
-			// compute alias of name 
-			if (isNamedAttribute) {
-				aliasAttribute = str.split('-').map((word, index) => index == 0 ? word : capitalize(word)).join('')
-			}
-			// compute name of alias
-			else if (isAliasAttribute) {
-				namedAttribute = str.replace(caps, char => '-' + char.toLowerCase())
-			}
-			// find counterpart
-			let found = (
-				(isNamedAttribute && (aliasAttribute in obj || capitalize(aliasAttribute) in obj)) || 
-				(isAliasAttribute && (namedAttribute in obj || `-${namedAttribute}` in obj))
-			)
-			// collect found counterparts
-			if (found) {
-				counterpartsFound[aliasAttribute] = true
-				counterpartsFound[namedAttribute] = true
-			}
-			return found
-		}
-		
-		const keys = []
-		const methods = []
-		const properties = []
-		const aliasNamedKeys = []
+		// get properties
+		const prototype = Object.getPrototypeOf(cssStyleDeclaration)
+		const prototypeProperties = Object.getOwnPropertyNames(prototype)
+		const ownEnumerablePropertyNames = []
 		const cssVar = /^--.*$/
-
-		for (const key in cssStyleDeclaration) {
+		Object.keys(cssStyleDeclaration).forEach(key => {
 			const numericKey = !isNaN(key)
 			const value = cssStyleDeclaration[key]
 			const customPropKey = cssVar.test(key)
 			const customPropValue = cssVar.test(value)
-			if (type == 'CSSRuleList.style' && numericKey) {
-				continue
+			if (numericKey && !customPropValue) {
+				return ownEnumerablePropertyNames.push(value)
+			} else if (!numericKey && !customPropKey) {
+				return ownEnumerablePropertyNames.push(key)
 			}
-			if (type != 'CSSRuleList.style' && numericKey && !customPropValue) {
-				aliasNamedKeys.push(value)
-				keys.push(value)
+			return
+		})
+		// get properties in prototype chain (required only in chrome)
+		const propertiesInPrototypeChain = {}
+		const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1)
+		const uncapitalize = str => str.charAt(0).toLowerCase() + str.slice(1)
+		const removeFirstChar = str => str.slice(1)
+		const caps = /[A-Z]/g
+		ownEnumerablePropertyNames.forEach(key => {
+			if (propertiesInPrototypeChain[key]) {
+				return
 			}
-			else if (!numericKey && !customPropKey) {
-				keys.push(key)
-				const method = isMethod(key, cssStyleDeclaration)
-				if (method) {
-					methods.push(key)
+			// determine attribute type
+			const isNamedAttribute = key.indexOf('-') > -1
+			const isAliasAttribute = caps.test(key)
+			// reduce key for computation
+			const firstChar = key.charAt(0)
+			const isPrefixedName = isNamedAttribute && firstChar == '-'
+			const isCapitalizedAlias = isAliasAttribute && firstChar == firstChar.toUpperCase()
+			key = (
+				isPrefixedName ? removeFirstChar(key) :
+				isCapitalizedAlias ? uncapitalize(key) :
+				key
+			)
+			// find counterpart in CSSStyleDeclaration object or its prototype chain
+			if (isNamedAttribute) {
+				const aliasAttribute = key.split('-').map((word, index) => index == 0 ? word : capitalize(word)).join('')
+				if (aliasAttribute in cssStyleDeclaration) {
+					propertiesInPrototypeChain[aliasAttribute] = true
+				} else if (capitalize(aliasAttribute) in cssStyleDeclaration) {
+					propertiesInPrototypeChain[capitalize(aliasAttribute)] = true
 				}
-				const missingCounterpart = !method && !hasCounterpart(key, cssStyleDeclaration)
-				if (missingCounterpart) {
-					properties.push(key)
+			} else if (isAliasAttribute) {
+				const namedAttribute = key.replace(caps, char => '-' + char.toLowerCase())
+				if (namedAttribute in cssStyleDeclaration) {
+					propertiesInPrototypeChain[namedAttribute] = true
+				} else if (`-${namedAttribute}` in cssStyleDeclaration) {
+					propertiesInPrototypeChain[`-${namedAttribute}`] = true
 				}
-				else if (!method && !missingCounterpart) {
-					aliasNamedKeys.push(key)
-				}
-				
 			}
-		}
-
-		const uniqueKeys = keys.filter((el, i, arr) => arr.indexOf(el) === i)
-		const uniqueAliasNamedKeys = aliasNamedKeys.filter((el, i, arr) => arr.indexOf(el) === i)
-		const moz = uniqueAliasNamedKeys.filter(key => (/moz/i).test(key)).length
-		const webkit = uniqueAliasNamedKeys.filter(key => (/webkit/i).test(key)).length
-
-		return {
-			keys: uniqueKeys,
-			aliasNamedKeys: uniqueAliasNamedKeys,
-			properties,
-			methods,
-			moz,
-			webkit
-		}
+			return
+		})
+		// compile keys
+		const keys = [
+			...new Set([
+				...prototypeProperties,
+				...ownEnumerablePropertyNames,
+				...Object.keys(propertiesInPrototypeChain)
+			])
+		]
+		// checks
+		const moz = keys.filter(key => (/moz/i).test(key)).length
+		const webkit = keys.filter(key => (/webkit/i).test(key)).length
+		const prototypeName = (''+prototype).match(/\[object (.+)\]/)[1]
+		return { keys: keys.sort(), moz, webkit, prototypeName }
 	}
 
 	// screen (allow some discrepancies otherwise lie detection triggers at random)
@@ -595,13 +629,12 @@
 
 	// voices
 	const getVoices = () => {
-		const undfn = new Promise(resolve => resolve(undefined))
-		
+		const promiseUndefined = new Promise(resolve => resolve(undefined))
 		try {
 			if (!('chrome' in window)) {
 				return speechSynthesis.getVoices()
 			}
-			const promise = new Promise(resolve => {
+			return new Promise(resolve => {
 				try {
 					if (typeof speechSynthesis === 'undefined') {
 						return resolve(undefined)
@@ -621,31 +654,28 @@
 					return resolve(undefined)
 				}
 			})
-			
-			return promise
 		}
 		catch (error) {
 			captureError(error)
-			return undfn
+			return promiseUndefined
 		}
 	}
 
 	// media devices
 	const getMediaDevices = () => {
-		const undfn = new Promise(resolve => resolve(undefined))
-		
+		const promiseUndefined = new Promise(resolve => resolve(undefined))
 		if (!('mediaDevices' in navigator)) {
-			return undfn
+			return promiseUndefined
 		}
 		try {
 			if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
-				return undfn
+				return promiseUndefined
 			}
 			return attempt(() => navigator.mediaDevices.enumerateDevices())
 		}
 		catch (error) {
 			captureError(error)
-			return undfn
+			return promiseUndefined
 		}
 	}
 
@@ -675,23 +705,71 @@
 				isBrave || isFirefox ? sendToTrash('canvas2dDataURI', hashMini(canvas2dDataURI)) : canvas2dDataURI
 			)
 		}
-		
 		// document lie and send to trash
 		canvas2dDataURI = canvas.toDataURL()
-		const canvas2dContextDataURI = canvas2dDataURI
+		const hash = hashMini(canvas2dDataURI)
 		if (contextLie) {
-			const contextHash = hashMini(canvas2dContextDataURI)
-			documentLie('canvas2dContextDataURI', contextHash, contextLie)
-			sendToTrash('canvas2dContextDataURI', contextHash)
+			documentLie('canvas2dContextDataURI', hash, contextLie)
+			sendToTrash('canvas2dContextDataURI', hash)
 		}
 		if (dataLie) {
-			const dataHash = hashMini(canvas2dDataURI)
-			documentLie('canvas2dDataURI', dataHash, dataLie)
-			sendToTrash('canvas2dDataURI', dataHash)
+			documentLie('canvas2dDataURI', hash, dataLie)
+			sendToTrash('canvas2dDataURI', hash)
 		}
 		
 		// fingerprint lie
 		return { dataLie, contextLie }
+	}
+
+
+	const getBitmapRenderer = async () => {
+		const promiseUndefined = new Promise(resolve => resolve(undefined))
+		try {
+			const canvas = document.createElement('canvas')
+			let canvasBMRDataURI = ''
+			if (!dataLie && !contextLie) {
+				const context = canvas.getContext('bitmaprenderer')
+				const image = new Image()
+				image.src = 'bitmap.png'
+				return new Promise(resolve => {
+					try {
+						image.onload = async () => {
+							const bitmap = await createImageBitmap(image, 0, 0, image.width, image.height)
+							context.transferFromImageBitmap(bitmap)
+							canvasBMRDataURI = canvas.toDataURL()
+							return (
+								isBrave || isFirefox ? 
+								resolve(sendToTrash('canvasBMRDataURI', hashMini(canvasBMRDataURI))) :
+								resolve(canvasBMRDataURI)
+							)
+						}
+					}
+					catch (error) {
+						captureError(error)
+						resolve(undefined)
+					}
+				})
+			}
+			// document lie and send to trash
+			canvasBMRDataURI = canvas.toDataURL()
+			const hash = hashMini(canvasBMRDataURI)
+			if (contextLie) {
+				documentLie('canvasBMRContextDataURI', hash, contextLie)
+				sendToTrash('canvasBMRContextDataURI', hash)
+			}
+			if (dataLie) {
+				documentLie('canvasBMRDataURI', hash, dataLie)
+				sendToTrash('canvasBMRDataURI', hash)
+			}
+			// fingerprint lie
+			return new Promise(resolve => {
+				resolve({ dataLie, contextLie })
+			})
+		}
+		catch (error) {
+			captureError(error)
+			return promiseUndefined
+		}
 	}
 
 	// webgl
@@ -723,14 +801,13 @@
 			canvas.getContext('moz-webgl') ||
 			canvas.getContext('webkit-3d')
 		)
-		const context2 = canvas2.getContext('webgl2')
+		const context2 = canvas2.getContext('webgl2') || canvas2.getContext('experimental-webgl2')
 		const getSupportedExtensions = (context, supportedExtLie, title) => {
 			if (!context) {
 				return { extensions: undefined }
 			}
 			try {
-				const extensions = context ? context.getSupportedExtensions() : []
-				
+				const extensions = caniuse(context, ['getSupportedExtensions'], [], true) || []
 				if (!supportedExtLie) {
 					return {
 						extensions: ( 
@@ -769,8 +846,8 @@
 			const getMaxAnisotropy = gl => {
 				const ext = (
 					gl.getExtension('EXT_texture_filter_anisotropic') ||
-					gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic') ||
-					gl.getExtension('MOZ_EXT_texture_filter_anisotropic')
+					gl.getExtension('MOZ_EXT_texture_filter_anisotropic') ||
+					gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic')
 				)
 				return ext ? gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT) : undefined
 			}
@@ -797,7 +874,7 @@
 			}
 
 			const getWebglSpecs = gl => {
-				if (!gl) {
+				if (!caniuse(gl, ['getParameter'])) {
 					return undefined
 				}
 				const data =  {
@@ -835,7 +912,7 @@
 			}
 
 			const getWebgl2Specs = gl => {
-				if (!gl) {
+				if (!caniuse(gl, ['getParameter'])) {
 					return undefined
 				}
 				const data = {
@@ -879,7 +956,7 @@
 				}
 			}
 			try {
-				const extension = context && context.getExtension('WEBGL_debug_renderer_info')
+				const extension = caniuse(context, ['getExtension'], ['WEBGL_debug_renderer_info'], true)
 				const vendor = extension && context.getParameter(extension.UNMASKED_VENDOR_WEBGL)
 				const renderer = extension && context.getParameter(extension.UNMASKED_RENDERER_WEBGL)
 				const validate = (value, title) => {
@@ -932,8 +1009,9 @@
 				let canvasWebglDataURI = ''
 
 				if (!dataLie && !contextLie) {
-					context.clearColor(0.2, 0.4, 0.6, 0.8)
-					context.clear(context.COLOR_BUFFER_BIT)
+					const colorBufferBit = caniuse(context, ['COLOR_BUFFER_BIT'])
+					caniuse(context, ['clearColor'], [0.2, 0.4, 0.6, 0.8], true)
+					caniuse(context, ['clear'], [colorBufferBit], true)
 					canvasWebglDataURI = canvas.toDataURL()
 					return (
 						isBrave || isFirefox ? sendToTrash(canvasTitle, hashMini(canvasWebglDataURI)) : canvasWebglDataURI
@@ -1179,14 +1257,15 @@
 
 	const offlineAudioOscillator = () => {
 		const promiseUndefined = new Promise(resolve => resolve(undefined))
-		if (!('OfflineAudioContext' in window || 'OfflineAudioContext' in window)) {
-			return promiseUndefined
-		}
-		const audioBuffer = 'AudioBuffer' in window
-		const audioBufferGetChannelData = audioBuffer && attempt(() => AudioBuffer.prototype.getChannelData)
-		const audioBufferCopyFromChannel = audioBuffer && attempt(() => AudioBuffer.prototype.copyFromChannel)
 		const audioProcess = timer('')
+		
 		try {
+			if (!('OfflineAudioContext' in window || 'webkitOfflineAudioContext' in window)) {
+				return promiseUndefined
+			}
+			const audioBuffer = 'AudioBuffer' in window
+			const audioBufferGetChannelData = audioBuffer && attempt(() => AudioBuffer.prototype.getChannelData)
+			const audioBufferCopyFromChannel = audioBuffer && attempt(() => AudioBuffer.prototype.copyFromChannel)
 			const channelDataLie = (
 				audioBufferGetChannelData ? hasLiedAPI(audioBufferGetChannelData, 'getChannelData').lie : false
 			)
@@ -1218,7 +1297,7 @@
 			let copySample = []
 			let binsSample = []
 			let matching = false
-
+			
 			const values = {
 				['analyserNode.channelCount']: attempt(() => analyser.channelCount),
 				['analyserNode.channelCountMode']: attempt(() => analyser.channelCountMode),
@@ -1254,43 +1333,30 @@
 				['oscillatorNode.frequency.minValue']: attempt(() => oscillator.frequency.minValue)
 			}
 			
-			context.oncomplete = event => {
-				try {
-					const copy = new Float32Array(44100)
-					event.renderedBuffer.copyFromChannel(copy, 0)
-					const bins = event.renderedBuffer.getChannelData(0)
-					
-					copySample = copy ? [...copy].slice(4500, 4600) : [sendToTrash('audioCopy', null)]
-					binsSample = bins ? [...bins].slice(4500, 4600) : [sendToTrash('audioSample', null)]
-					
-					const copyJSON = copy && JSON.stringify([...copy].slice(4500, 4600))
-					const binsJSON = bins && JSON.stringify([...bins].slice(4500, 4600))
-
-					matching = binsJSON === copyJSON
-
-					if (!matching) {
-						documentLie('audioSampleAndCopyMatch', hashMini(matching), { audioSampleAndCopyMatch: false })
-					}
-					dynamicsCompressor.disconnect()
-					oscillator.disconnect()
-					return
-				} catch (error) {
-					captureError(error)
-					copySample = [undefined]
-					binsSample = [undefined]
-					dynamicsCompressor.disconnect()
-					oscillator.disconnect()
-				}
-			}
-
 			return new Promise(resolve => {
-				const check = setInterval(() => {
-					if (copySample.length && binsSample.length) {
+				context.oncomplete = event => {
+					try {
+						const copy = new Float32Array(44100)
+						event.renderedBuffer.copyFromChannel(copy, 0)
+						const bins = event.renderedBuffer.getChannelData(0)
+						
+						copySample = copy ? [...copy].slice(4500, 4600) : [sendToTrash('audioCopy', null)]
+						binsSample = bins ? [...bins].slice(4500, 4600) : [sendToTrash('audioSample', null)]
+						
+						const copyJSON = copy && JSON.stringify([...copy].slice(4500, 4600))
+						const binsJSON = bins && JSON.stringify([...bins].slice(4500, 4600))
+
+						matching = binsJSON === copyJSON
+
+						if (!matching) {
+							documentLie('audioSampleAndCopyMatch', hashMini(matching), { audioSampleAndCopyMatch: false })
+						}
+						dynamicsCompressor.disconnect()
+						oscillator.disconnect()
 						audioProcess('Audio complete')
 						if (isBrave) {
-							clearInterval(check)
 							sendToTrash('audio', binsSample[0])
-							resolve({
+							return resolve({
 								copySample: [undefined],
 								binsSample: [undefined],
 								matching,
@@ -1298,11 +1364,9 @@
 							})
 						}
 						else if (proxyBehavior(binsSample)) {
-							clearInterval(check)
 							sendToTrash('audio', 'proxy behavior detected')
-							resolve(undefined)
+							return resolve(undefined)
 						}
-						clearInterval(check)
 
 						// document lies and send to trash
 						if (copyFromChannelLie) { 
@@ -1321,9 +1385,20 @@
 							matching,
 							values
 						}
-						resolve(response)
+						return resolve(response)
 					}
-				}, 10)
+					catch (error) {
+						captureError(error)
+						dynamicsCompressor.disconnect()
+						oscillator.disconnect()
+						return resolve({
+							copySample: [undefined],
+							binsSample: [undefined],
+							matching,
+							values
+						})
+					}
+				}
 			})
 		}
 		catch (error) {
@@ -1471,12 +1546,51 @@
 	
 	// fingerprint
 	const fingerprint = async () => {
+		// await
+		const asyncValues = timer('')
+		const [
+			workerScope,
+			cloudflare,
+			voices,
+			mediaDevices,
+			highEntropy,
+			bitmapRenderer,
+			offlineAudio,
+			fonts
+		] = await Promise.all([
+			getWorkerScope(),
+			getCloudflare(),
+			getVoices(),
+			getMediaDevices(),
+			highEntropyValues(),
+			getBitmapRenderer(),
+			offlineAudioOscillator(),
+			detectFonts([...fontList, ...notoFonts])
+		]).catch(error => {
+			console.error(error.message)
+		})
+		asyncValues('Async computation complete')
+
+		const voicesComputed = !voices ? undefined : voices.map(({ name, lang }) => ({ name, lang }))
+		const mediaDevicesComputed = !mediaDevices ? undefined : mediaDevices.map(({ kind }) => ({ kind })) // chrome randomizes groupId
+		const workerScopeNavigator = !workerScope ? undefined : {
+			hardwareConcurrency: workerScope.hardwareConcurrency,
+			language: workerScope.language,
+			platform: workerScope.platform,
+			system: workerScope.system,
+			userAgent: workerScope.userAgent
+		}
+		const workerScopeCanvas = !workerScope ? undefined : {
+			dataURI: workerScope.dataURI
+		}
+
 		// attempt to compute values
-		const navComputed = attempt(() => nav())
+		const navComputed = attempt(() => nav(workerScopeNavigator))
 		const mimeTypes = navComputed ? navComputed.mimeTypes : undefined
 		const plugins = navComputed ? navComputed.plugins : undefined
 		const navVersion = navComputed ? navComputed.version : undefined
 		const windowVersionComputed = attempt(() => windowVersion())
+		const htmlElementVersionComputed = attempt(() => htmlElementVersion())
 		const computedStyleVersionComputed = attempt(() => styleVersion('getComputedStyle'))
 		const htmlElementStyleVersionComputed = attempt(() => styleVersion('HTMLElement.style'))
 		const cssRuleListStyleVersionComputed = attempt(() => styleVersion('CSSRuleList.style'))
@@ -1501,30 +1615,6 @@
 		const cRectsComputed = attempt(() => cRects())
 		const mathsComputed = attempt(() => maths())
 		
-		// await
-		const asyncValues = timer('')
-		const [
-			headers,
-			voices,
-			mediaDevices,
-			highEntropy,
-			offlineAudio,
-			fonts
-		] = await Promise.all([
-			getHeaders(),
-			getVoices(),
-			getMediaDevices(),
-			highEntropyValues(),
-			offlineAudioOscillator(),
-			detectFonts([...fontList, ...notoFonts])
-		]).catch(error => { 
-			console.error(error.message)
-		})
-		asyncValues('Async computation complete')
-
-		const voicesComputed = !voices ? undefined : voices.map(({ name, lang }) => ({ name, lang }))
-		const mediaDevicesComputed = !mediaDevices ? undefined : mediaDevices.map(({ kind }) => ({ kind })) // chrome randomizes groupId
-		
 		// Compile property names sent to the trashBin (exclude trash values)
 		const trashComputed = trashBin.map(trash => trash.name)
 
@@ -1533,16 +1623,17 @@
 			const { name, lieTypes } = lie
 			return { name, lieTypes }
 		})
-
+		
 		// await hash values
 		const hashProcess = timer('')
 		const [
-			headersHash, // order must match
+			cloudflareHash, // order must match
 			navHash, 
 			mimeTypesHash,
 			pluginsHash,
 			navVersionHash,
 			windowVersionHash,
+			htmlElementVersionHash,
 			computedStyleVersionHash,
 			htmlElementStyleVersionHash,
 			cssRuleListStyleVersionHash,
@@ -1560,16 +1651,20 @@
 			fontsHash,
 			mathsHash,
 			canvasHash,
+			bitmapRendererHash,
 			errorsCapturedHash,
 			trashHash,
-			liesHash
+			liesHash,
+			workerScopeNavigatorHash,
+			workerScopeCanvasHash
 		] = await Promise.all([
-			hashify(headers),
+			hashify(cloudflare),
 			hashify(navComputed),
 			hashify(mimeTypes),
 			hashify(plugins),
 			hashify(navVersion),
 			hashify(windowVersionComputed),
+			hashify(htmlElementVersionComputed),
 			hashify(computedStyleVersionComputed),
 			hashify(htmlElementStyleVersionComputed),
 			hashify(cssRuleListStyleVersionComputed),
@@ -1587,9 +1682,12 @@
 			hashify(fonts),
 			hashify(mathsComputed),
 			hashify(canvasComputed),
+			hashify(bitmapRenderer),
 			hashify(errorsCaptured),
 			hashify(trashComputed),
-			hashify(liesComputed)
+			hashify(liesComputed),
+			hashify(workerScopeNavigator),
+			hashify(workerScopeCanvas)
 		]).catch(error => { 
 			console.error(error.message)
 		})
@@ -1602,13 +1700,18 @@
 		}
 
 		const fingerprint = {
-			headers: [headers, headersHash],
+			cloudflare: [cloudflare, cloudflareHash],
 			nav: [navComputed, navHash],
 			highEntropy: [highEntropy, highEntropyHash],
 			window: [windowVersionComputed, windowVersionHash],
-			computedStyle: [computedStyleVersionComputed, computedStyleVersionHash],
-			htmlElementStyle: [htmlElementStyleVersionComputed, htmlElementStyleVersionHash],
+			htmlElement: [htmlElementVersionComputed, htmlElementVersionHash],
+			cssComputedStyle: [computedStyleVersionComputed, computedStyleVersionHash],
+			cssHtmlElementStyle: [htmlElementStyleVersionComputed, htmlElementStyleVersionHash],
 			cssRuleListStyle: [cssRuleListStyleVersionComputed, cssRuleListStyleVersionHash],
+			cssStylesMatch: (
+				''+computedStyleVersionComputed == ''+htmlElementStyleVersionComputed &&
+				''+htmlElementStyleVersionComputed == ''+cssRuleListStyleVersionComputed
+			),
 			timezone: [timezoneComputed, timezoneHash],
 			webgl: [webglComputed, webglHash],
 			voices: [voicesComputed, voicesHash],
@@ -1621,10 +1724,13 @@
 			cRects: [cRectsComputed, cRectsHash],
 			fonts: [fonts, fontsHash],
 			maths: [mathsComputed, mathsHash],
-			canvas: [canvasComputed, canvasHash],
+			canvas2d: [canvasComputed, canvasHash],
+			bitmapRenderer: [bitmapRenderer, bitmapRendererHash],
 			errorsCaptured: [errorsCaptured, errorsCapturedHash],
 			trash: [trashComputed, trashHash],
-			lies: [liesComputed, liesHash]
+			lies: [liesComputed, liesHash],
+			workerScopeNavigator: [workerScopeNavigator, workerScopeNavigatorHash],
+			workerScopeCanvas: [workerScopeCanvas, workerScopeCanvasHash]
 		}
 		return fingerprint
 	}
@@ -1646,9 +1752,12 @@
 				fp.timezone[0].timezoneLie.lies
 			),
 			voices: fp.voices,
-			windowVersion: fp.window,
-			computedStyle: fp.computedStyle,
-			htmlElementStyle: fp.htmlElementStyle,
+			window: fp.window,
+			htmlElement: fp.htmlElement,
+			cssComputedStyle: fp.cssComputedStyle,
+			cssHtmlElementStyle: fp.cssHtmlElementStyle,
+			cssRuleListStyle: fp.cssRuleListStyle,
+			cssStylesMatch: fp.cssStylesMatch,
 			navigatorVersion: fp.nav[0] ? fp.nav[0].version : undefined,
 			webgl: fp.webgl[0],
 			webglDataURL: fp.webglDataURL,
@@ -1667,7 +1776,10 @@
 			fonts: fp.fonts,
 			audio: fp.audio,
 			maths: fp.maths,
-			canvas: fp.canvas
+			canvas2d: fp.canvas2d,
+			bitmapRenderer: fp.bitmapRenderer,
+			workerScopeNavigator: fp.workerScopeNavigator,
+			workerScopeCanvas: fp.workerScopeCanvas
 		}
 		const log = (message, obj) => console.log(message, JSON.stringify(obj, null, '\t'))
 		
@@ -1826,40 +1938,68 @@
 							`
 						})()
 					}
-
-					${
-						!fp.headers[0] ? `<div>headers: ${note.blocked}</div>`: (() => {
-							const [ headers, hash ]  = fp.headers
-							return `
-							<div>
-								<div>headers: ${hash}</div>
-								${
-									Object.keys(headers).map(key => {
-										const value = headers[key]
-										key = (
-											key == 'ip' ? 'ip address' :
-											key == 'uag' ? 'ua system' :
-											key == 'loc' ? 'ip location' :
-											key == 'tls' ? 'tls version' :
-											key
-										)
-										return `<div>${key}: ${value}</div>`
-									}).join('')
-								}
-							</div>
-							`
-						})()
-					}
-
-					<div>canvas: ${identify(fp.canvas, 'identifyBrowser')}</div>
 					<div>
-						<div>webglDataURL: ${identify(fp.webglDataURL, 'identifyBrowser')}</div>
-						<div>webgl2DataURL: ${identify(fp.webgl2DataURL, 'identifyBrowser')}</div>
+						<strong>Cloudflare</strong>
 						${
-							!fp.webgl[0] ? `<div>specs: ${note.blocked}</div>`: (() => {
+							!fp.cloudflare[0] ? `<div>hash: ${note.blocked}</div>`: (() => {
+								const [ cloudflare, hash ]  = fp.cloudflare
+								return `
+								<div>
+									<div>hash: ${hash}</div>
+									${
+										Object.keys(cloudflare).map(key => {
+											const value = cloudflare[key]
+											key = (
+												key == 'ip' ? 'ip address' :
+												key == 'uag' ? 'system' :
+												key == 'loc' ? 'ip location' :
+												key == 'tls' ? 'tls version' :
+												key
+											)
+											return `<div>${key}: ${value ? value : note.blocked}</div>`
+										}).join('')
+									}
+								</div>
+								`
+							})()
+						}
+					</div>
+					<div>
+						<strong>WorkerGlobalScope: WorkerNavigator/OffscreenCanvas</strong>
+						${
+							!fp.workerScopeNavigator[0] ? `<div>navigator: ${note.blocked}</div>`: (() => {
+								const [ data, hash ]  = fp.workerScopeNavigator
+								return `
+								<div>
+									<div>navigator: ${hash}</div>
+									${
+										Object.keys(data).map(key => {
+											const value = data[key]
+											return `<div>${key}: ${value ? value : note.blocked}</div>`
+										}).join('')
+									}
+								</div>
+								`
+							})()
+						}
+						<div>toDataURL: ${identify(fp.workerScopeCanvas, 'identifyBrowser')}</div>
+					</div>
+					<div>
+						<strong>CanvasRenderingContext2D</strong>
+						<div>toDataURL: ${identify(fp.canvas2d, 'identifyBrowser')}</div>
+					</div>
+					<div>
+						<strong>ImageBitmapRenderingContext</strong>
+						<div>toDataURL: ${identify(fp.bitmapRenderer, 'identifyBrowser')}</div>
+					</div>
+					<div>
+						<strong>WebGLRenderingContext/WebGL2RenderingContext</strong>
+						${
+							!fp.webgl[0] ? `<div>parameters/extensions: ${note.blocked}</div>`: (() => {
 								const [ data, hash ] = fp.webgl
 								const { renderer, renderer2, vendor, vendor2, extensions, extensions2, matching, specs } = data
-								const { webglSpecs, webgl2Specs } = specs
+								const webglSpecs = caniuse(specs, ['webglSpecs'])
+								const webgl2Specs = caniuse(specs, ['webgl2Specs'])
 								const validate = (value, checkBrave = false) => {
 									const isObj = typeof extensions == 'object'
 									const isString = typeof renderer == 'string'
@@ -1875,24 +2015,30 @@
 										const validValue = !!value || value === 0
 										return validValue
 									})
-									return `<div>supported ${type} parameters: ${supported.length}</div>`
+									return `<div>${type} supported parameters: ${supported.length}</div>`
 								}
 								return `
 									<div>parameters/extensions: ${hash}</div>
+									<br>
+									<div>v1 toDataURL: ${identify(fp.webglDataURL, 'identifyBrowser')}</div>
 									${
-										!webglSpecs ? `<div>supported webgl1 parameters: ${note.blocked}</div>` :
-										supportedSpecs(webglSpecs, 'webgl1')
+										!webglSpecs ? `<div>v1 supported parameters: ${note.blocked}</div>` :
+										supportedSpecs(webglSpecs, 'v1')
 									}
+									
+									<div>v1 supported extensions: ${validate(extensions)}</div>
+									<div>v1 renderer: ${validate(renderer, true)}</div>
+									<div>v1 vendor: ${validate(vendor, true)}</div>
+									<br>
+									<div>v2 toDataURL: ${identify(fp.webgl2DataURL, 'identifyBrowser')}</div>
 									${
-										!webgl2Specs ? `<div>supported webgl2 parameters: ${note.blocked}</div>` :
-										supportedSpecs(webgl2Specs, 'webgl2')
+										!webgl2Specs ? `<div>v2 supported parameters: ${note.blocked}</div>` :
+										supportedSpecs(webgl2Specs, 'v2')
 									}
-									<div>webgl1 supported extensions: ${validate(extensions)}</div>
-									<div>webgl2 supported extensions: ${validate(extensions2)}</div>
-									<div>webgl1 renderer: ${validate(renderer, true)}</div>
-									<div>webgl2 renderer: ${validate(renderer2, true)}</div>
-									<div>webgl1 vendor: ${validate(vendor, true)}</div>
-									<div>webgl2 vendor: ${validate(vendor2, true)}</div>
+									<div>v2 supported extensions: ${validate(extensions2)}</div>
+									<div>v2 renderer: ${validate(renderer2, true)}</div>
+									<div>v2 vendor: ${validate(vendor2, true)}</div>
+									<br>
 									<div>matching renderer/vendor: ${matching}</div>
 								`
 							})()
@@ -1905,6 +2051,7 @@
 							const { copySample, binsSample, matching, values } = audio
 							return `
 							<div>
+								<strong>OfflineAudioContext</strong>
 								<div>audio hash: ${hash}</div>
 								<div>sample: ${binsSample[0] &&  !isNaN(binsSample[0]) ? binsSample[0] : note.blocked}</div>
 								<div>copy: ${copySample[0] && !isNaN(copySample[0]) ? copySample[0] : note.blocked}</div>
@@ -2032,75 +2179,90 @@
 							`
 						})()
 					}
-					
-					${
-						!fp.window[0] || !fp.window[0].length ? `<div>window API: ${note.blocked}</div>`: (() => {
-							const [ props, hash ]  = fp.window
-							return `
-							<div>
-								<div>window API: ${hash}</div>
-								<div>iframe.contentWindow properties: ${props.length}</div>
-							</div>
-							`
-						})()
-					}
 					<div>
-						<strong>CSSStyleDeclaration</strong>
+						<strong>HTMLIFrameElement.contentWindow</strong>
 						${
-							!fp.computedStyle[0] || !fp.computedStyle[0].keys.length ? `<div>computed style: ${note.blocked} or unsupported</div>`: (() => {
-								const [ style, hash ]  = fp.computedStyle
-								const { methods, properties } = style
+							!fp.window[0] || !fp.window[0].length ? `<div>api version: ${note.blocked}</div>`: (() => {
+								const [ keys, hash ]  = fp.window
 								return `
 								<div>
-									<div>getComputedStyle: ${hash}</div>
-									<div>keys: ${style.keys.length}</div>
-									<div>alias/named attributes: ${style.aliasNamedKeys.length}</div>
-									<div>moz: ${style.moz}</div>
-									<div>webkit: ${style.webkit}</div>
-									<div>properties (${properties.length}): ${properties.join(', ')}</div>
-									<div>methods (${methods.length}): ${methods.join(', ')}</div>
-								</div>
-								`
-							})()
-						}
-						<br>
-						${
-							!fp.htmlElementStyle[0] || !fp.htmlElementStyle[0].keys.length ? `<div>computed style: ${note.blocked} or unsupported</div>`: (() => {
-								const [ style, hash ]  = fp.htmlElementStyle
-								const { methods, properties } = style
-								return `
-								<div>
-									<div>HTMLElement.style: ${hash}</div>
-									<div>keys: ${style.keys.length}</div>
-									<div>alias/named attributes: ${style.aliasNamedKeys.length}</div>
-									<div>moz: ${style.moz}</div>
-									<div>webkit: ${style.webkit}</div>
-									<div>properties (${properties.length}): ${properties.join(', ')}</div>
-									<div>methods (${methods.length}): ${methods.join(', ')}</div>
-								</div>
-								`
-							})()
-						}
-						<br>
-						${
-							!fp.cssRuleListStyle[0] || !fp.cssRuleListStyle[0].keys.length ? `<div>computed style: ${note.blocked} or unsupported</div>`: (() => {
-								const [ style, hash ]  = fp.cssRuleListStyle
-								const { methods, properties } = style
-								return `
-								<div>
-									<div>CSSRuleList.style: ${hash}</div>
-									<div>keys: ${style.keys.length}</div>
-									<div>alias/named attributes: ${style.aliasNamedKeys.length}</div>
-									<div>moz: ${style.moz}</div>
-									<div>webkit: ${style.webkit}</div>
-									<div>properties (${properties.length}): ${properties.join(', ')}</div>
-									<div>methods (${methods.length}): ${methods.join(', ')}</div>
+									<div>api version: ${hash}</div>
+									<div>keys: ${keys.length}</div>
 								</div>
 								`
 							})()
 						}
 					</div>
 
+					<div>
+						<strong>HTMLElement</strong>
+						${
+							!fp.htmlElement[0] || !fp.htmlElement[0].length ? `<div>api version: ${note.blocked}</div>`: (() => {
+								const [ keys, hash ]  = fp.htmlElement
+								return `
+								<div>
+									<div>api version: ${hash}</div>
+									<div>keys: ${keys.length}</div>
+								</div>
+								`
+							})()
+						}
+					</div>
+
+					<div>
+						<strong>CSSStyleDeclaration</strong>
+						<div>matching keys: ${fp.cssStylesMatch}</div>
+						<br>
+						${
+							!fp.cssComputedStyle[0] || !fp.cssComputedStyle[0].keys.length ? `<div>getComputedStyle: ${note.blocked} or unsupported</div>`: (() => {
+								const [ style, hash ]  = fp.cssComputedStyle
+								const { methods, properties } = style
+								return `
+								<div>
+									<div>getComputedStyle: ${hash}</div>
+									<div>prototype: ${style.prototypeName}</div>
+									<div>keys: ${style.keys.length}</div>
+									<div>moz: ${style.moz}</div>
+									<div>webkit: ${style.webkit}</div>
+								</div>
+								`
+							})()
+						}
+						<br>
+						${
+							!fp.cssHtmlElementStyle[0] || !fp.cssHtmlElementStyle[0].keys.length ? `<div>HTMLElement.style: ${note.blocked} or unsupported</div>`: (() => {
+								const [ style, hash ]  = fp.cssHtmlElementStyle
+								const { methods, properties } = style
+								return `
+								<div>
+									<div>HTMLElement.style: ${hash}</div>
+									<div>prototype: ${style.prototypeName}</div>
+									<div>keys: ${style.keys.length}</div>
+									<div>moz: ${style.moz}</div>
+									<div>webkit: ${style.webkit}</div>
+								</div>
+								`
+							})()
+						}
+						<br>
+						${
+							!fp.cssRuleListStyle[0] || !fp.cssRuleListStyle[0].keys.length ? `<div>CSSRuleList.style: ${note.blocked} or unsupported</div>`: (() => {
+								const [ style, hash ]  = fp.cssRuleListStyle
+								const { methods, properties } = style
+								return `
+								<div>
+									<div>CSSRuleList.style: ${hash}</div>
+									<div>prototype: ${style.prototypeName}</div>
+									<div>keys: ${style.keys.length}</div>
+									<div>moz: ${style.moz}</div>
+									<div>webkit: ${style.webkit}</div>
+								</div>
+								`
+							})()
+						}
+					</div>
+					<div>
+						<strong>Navigator</strong>
 					${
 						!fp.nav[0] ? `<div>navigator: ${note.blocked}</div>`: (() => {
 							const [ nav, hash ]  = fp.nav
@@ -2134,7 +2296,7 @@
 									`
 								})()
 							}
-
+							<br>
 							<div>
 								<div>navigator hash: ${hash}</div>
 								<div>platform: ${platform ? platform : `${note.blocked} or other`}</div>
@@ -2147,7 +2309,7 @@
 								<div>userAgent: ${userAgent ? userAgent : note.blocked}</div>
 								<div>appVersion: ${appVersion ? appVersion : note.blocked}</div>
 							</div>
-
+							<br>
 							${
 								mimeTypes === undefined ? `<div>mimeTypes: ${note.blocked}</div>`: (() => {
 									const len = mimeTypes.length
@@ -2160,7 +2322,7 @@
 									`
 								})()
 							}
-
+							<br>
 							${
 								plugins === undefined ? `<div>plugins: ${note.blocked}</div>`: (() => {
 									const pluginsList = Object.keys(plugins).map(key => plugins[key].name)
@@ -2177,14 +2339,14 @@
 							`
 						})()
 					}
-
+					<br>
 					${
-						!fp.highEntropy[0] ? `<div>high entropy: ${note.blocked} or unsupported</div>`: (() => {
+						!fp.highEntropy[0] ? `<div>NavigatorUAData.getHighEntropyValues: ${note.blocked} or unsupported</div>`: (() => {
 							const [ ua, hash ]  = fp.highEntropy
 							const { architecture, model, platform, platformVersion, uaFullVersion } = ua
 							return `
 							<div>
-								<div>high entropy hash: ${hash}</div>
+								<div>NavigatorUAData.getHighEntropyValues: ${hash}</div>
 								<div>ua architecture: ${architecture}</div>
 								<div>ua model: ${model}</div>
 								<div>ua platform: ${platform}</div>
@@ -2194,7 +2356,7 @@
 							`
 						})()
 					}
-
+					</div>
 					${
 						!fp.voices[0] || !fp.voices[0].length ? `<div>voices: ${note.blocked} or unsupported</div>`: (() => {
 							const [ voices, hash ]  = fp.voices
