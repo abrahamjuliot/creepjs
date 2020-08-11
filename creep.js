@@ -78,6 +78,9 @@
 		return ('0000000' + (hash >>> 0).toString(16)).substr(-8)
 	}
 
+	// instance id
+	const instanceId = hashMini(crypto.getRandomValues(new Uint32Array(10)))
+
 	// https://stackoverflow.com/a/53490958
 	// https://stackoverflow.com/a/43383990
 	// https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest
@@ -291,7 +294,7 @@
 	}
 
 	// worker
-	const getWorkerScope = () => {
+	const getWorkerScope = instanceId => {
 		return new Promise(resolve => {
 			try {
 				const worker = new Worker('worker.js')
@@ -310,7 +313,7 @@
 	}
 	
 	// cloudflare
-	const getCloudflare = () => {
+	const getCloudflare = instanceId => {
 		return new Promise(async resolve => {
 			try {
 				const api = 'https://www.cloudflare.com/cdn-cgi/trace'
@@ -335,7 +338,7 @@
 	}
 	
 	// navigator
-	const getNavigator = workerScope => {
+	const getNavigator = (instanceId, workerScope) => {
 		return new Promise(async resolve => {
 			const navigatorPrototype = attempt(() => Navigator.prototype)
 			const detectLies = (name, value) => {
@@ -465,15 +468,15 @@
 	}
 	
 	// iframe.contentWindow
-	const getIframeContentWindowVersion = () => {
+	const getIframeContentWindowVersion = instanceId => {
 		return new Promise(async resolve => {
 			try {
-				const randomId = hashMini(crypto.getRandomValues(new Uint32Array(10)))
+				const id = `${instanceId}-content-window-version-test`
 				const iframeElement = document.createElement('iframe')
-				iframeElement.setAttribute('id', randomId)
+				iframeElement.setAttribute('id', id)
 				iframeElement.setAttribute('style', 'display: none')
 				document.body.appendChild(iframeElement)
-				const iframe = document.getElementById(randomId)
+				const iframe = document.getElementById(id)
 				const contentWindow = iframe.contentWindow
 				const keys = Object.getOwnPropertyNames(contentWindow)
 				iframe.parentNode.removeChild(iframe) 
@@ -488,15 +491,14 @@
 	}
 
 	// HTMLElement	
-	const getHTMLElementVersion = () => {
+	const getHTMLElementVersion = instanceId => {
 		return new Promise(async resolve => {
 			try {
-				const randomValues = crypto.getRandomValues(new Uint32Array(10))
-				const randomId = hashMini(randomValues)
+				const id = `${instanceId}-html-element-version-test`
 				const element = document.createElement('div')
-				element.setAttribute('id', randomId)
+				element.setAttribute('id', id)
 				document.body.appendChild(element) 
-				const htmlElement = document.getElementById(randomId)
+				const htmlElement = document.getElementById(id)
 				const keys = []
 				for (const key in htmlElement) {
 					keys.push(key)
@@ -605,7 +607,7 @@
 		})
 	}
 
-	const getCSSStyleDeclarationVersion = () => {
+	const getCSSStyleDeclarationVersion = instanceId => {
 		return new Promise(async resolve => {
 			try {
 				const [
@@ -639,7 +641,7 @@
 	}
 
 	// screen (allow some discrepancies otherwise lie detection triggers at random)
-	const getScreen = () => {
+	const getScreen = instanceId => {
 		return new Promise(async resolve => {
 			try {
 				const screenPrototype = attempt(() => Screen.prototype)
@@ -678,7 +680,7 @@
 	}
 
 	// voices
-	const getVoices = () => {	
+	const getVoices = instanceId => {	
 		return new Promise(async resolve => {
 			try {
 				let voices = []
@@ -715,7 +717,7 @@
 	}
 
 	// media devices
-	const getMediaDevices = () => {
+	const getMediaDevices = instanceId => {
 		return new Promise(async resolve => {
 			try {
 				if (!('mediaDevices' in navigator)) {
@@ -743,7 +745,7 @@
 	const contextLie = canvasGetContext ? hasLiedAPI(canvasGetContext, 'getContext').lie : false
 	
 	// 2d canvas
-	const getCanvas2d = () => {
+	const getCanvas2d = instanceId => {
 		return new Promise(async resolve => {
 			try {
 				const canvas = document.createElement('canvas')
@@ -792,7 +794,7 @@
 	}
 
 	// bitmaprenderer
-	const getCanvasBitmapRenderer = () => {
+	const getCanvasBitmapRenderer = instanceId => {
 		return new Promise(async resolve => {
 			try {
 				const canvas = document.createElement('canvas')
@@ -840,7 +842,7 @@
 	}
 
 	// webgl
-	const getWebgl = () => {
+	const getCanvasWebgl = instanceId => {
 		return new Promise(async resolve => {
 			try {
 				// detect webgl lies
@@ -1156,7 +1158,7 @@
 	}
 
 	// maths
-	const getMaths = () => {
+	const getMaths = instanceId => {
 		return new Promise(async resolve => {
 			try {
 				const n = 0.123
@@ -1285,7 +1287,7 @@
 		}
 		return errs
 	}
-	const getConsoleErrors = () => {
+	const getConsoleErrors = instanceId => {
 		return new Promise(async resolve => {
 			try {
 				const errorTests = [
@@ -1311,7 +1313,7 @@
 	}
 
 	// timezone
-	const getTimezone = () => {
+	const getTimezone = instanceId => {
 		return new Promise(async resolve => {
 			try {
 				const computeTimezoneOffset = () => {
@@ -1358,7 +1360,7 @@
 	}
 
 	// client rects
-	const getClientRects = () => {
+	const getClientRects = instanceId => {
 		return new Promise(async resolve => {
 			try {
 				const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
@@ -1394,7 +1396,7 @@
 		})
 	}
 
-	const getOfflineAudioContext = () => {
+	const getOfflineAudioContext = instanceId => {
 		return new Promise(resolve => {
 			try {
 				if (!('OfflineAudioContext' in window || 'webkitOfflineAudioContext' in window)) {
@@ -1547,7 +1549,7 @@
 	
 	// inspired by Lalit Patel's fontdetect.js
 	// https://www.lalit.org/wordpress/wp-content/uploads/2008/05/fontdetect.js?ver=0.3
-	const getFonts = fonts => {
+	const getFonts = (instanceId, fonts) => {
 		return new Promise(async resolve => {
 			try {
 				const htmlElementPrototype = attempt(() => HTMLElement.prototype)
@@ -1653,7 +1655,29 @@
 	const scene = html`
 	<fingerprint>
 		<visitor><div id="visitor"><div class="visitor-loader"></div></div></visitor>
-		<div id="fingerprint"></div>
+		<div id="fingerprint">
+			<div id="${instanceId}-worker-scope"></div>
+			<div id="${instanceId}-cloudflare"></div>
+			<div id="${instanceId}-lies"></div>
+			<div id="${instanceId}-trash"></div>
+			<div id="${instanceId}-captured-errors"></div>
+			<div id="${instanceId}-canvas-2d"></div>
+			<div id="${instanceId}-canvas-bitmap-renderer"></div>
+			<div id="${instanceId}-canvas-webgl"></div>
+			<div id="${instanceId}-offline-audio-context"></div>
+			<div id="${instanceId}-client-rects"></div>
+			<div id="${instanceId}-maths"></div>
+			<div id="${instanceId}-console-errors"></div>
+			<div id="${instanceId}-timezone"></div>
+			<div id="${instanceId}-screen"></div>
+			<div id="${instanceId}-media-devices"></div>
+			<div id="${instanceId}-iframe-content-window-version"></div>
+			<div id="${instanceId}-html-element-version"></div>
+			<div id="${instanceId}-css-style-declaration-version"></div>
+			<div id="${instanceId}-navigator"></div>
+			<div id="${instanceId}-voices"></div>
+			<div id="${instanceId}-fonts"></div>
+		</div>
 		<div id="font-detector"><div id="font-detector-stage"></div></div>
 		<div id="rect-container">
 			<style>
@@ -1672,7 +1696,7 @@
 		</div>
 	</fingerprint>
 	`
-	const getLies = (lieRecords) => {
+	const getLies = (instanceId, lieRecords) => {
 		return new Promise(async resolve => {
 			if (!lieRecords.length) {
 				return resolve([])
@@ -1682,7 +1706,7 @@
 			return resolve({data, $hash })
 		})
 	}
-	const getTrash = (trashBin) => {
+	const getTrash = (instanceId, trashBin) => {
 		return new Promise(async resolve => {
 			if (!trashBin.length) {
 				return resolve([])
@@ -1692,7 +1716,7 @@
 			return resolve({data, $hash })
 		})
 	}
-	const getCapturedErrors = (errorsCaptured) => {
+	const getCapturedErrors = (instanceId, errorsCaptured) => {
 		return new Promise(async resolve => {
 			if (!errorsCaptured.length) {
 				return resolve([])
@@ -1705,12 +1729,12 @@
 	
 	// fingerprint
 	const fingerprint = async () => {
-		const workerScopeComputed = await getWorkerScope()
 		// await
+
 		const asyncProcess = timer('')
 		const [
+			workerScopeComputed,
 			cloudflareComputed,
-			navigatorComputed,
 			iframeContentWindowVersionComputed,
 			htmlElementVersionComputed,
 			cssStyleDeclarationVersionComputed,
@@ -1719,7 +1743,7 @@
 			mediaDevicesComputed,
 			canvas2dComputed,
 			canvasBitmapRendererComputed,
-			webglComputed,
+			canvasWebglComputed,
 			mathsComputed,
 			consoleErrorsComputed,
 			timezoneComputed,
@@ -1727,34 +1751,35 @@
 			offlineAudioContextComputed,
 			fontsComputed
 		] = await Promise.all([
-			getCloudflare(),
-			getNavigator(workerScopeComputed),
-			getIframeContentWindowVersion(),
-			getHTMLElementVersion(),
-			getCSSStyleDeclarationVersion(),
-			getScreen(),
-			getVoices(),
-			getMediaDevices(),
-			getCanvas2d(),
-			getCanvasBitmapRenderer(),
-			getWebgl(),
-			getMaths(),
-			getConsoleErrors(),
-			getTimezone(),
-			getClientRects(),
-			getOfflineAudioContext(),
-			getFonts([...fontList, ...notoFonts])
+			getWorkerScope(instanceId),
+			getCloudflare(instanceId),
+			getIframeContentWindowVersion(instanceId),
+			getHTMLElementVersion(instanceId),
+			getCSSStyleDeclarationVersion(instanceId),
+			getScreen(instanceId),
+			getVoices(instanceId),
+			getMediaDevices(instanceId),
+			getCanvas2d(instanceId),
+			getCanvasBitmapRenderer(instanceId),
+			getCanvasWebgl(instanceId),
+			getMaths(instanceId),
+			getConsoleErrors(instanceId),
+			getTimezone(instanceId),
+			getClientRects(instanceId),
+			getOfflineAudioContext(instanceId),
+			getFonts(instanceId, [...fontList, ...notoFonts])
 		]).catch(error => {
 			console.error(error.message)
 		})
+		const navigatorComputed = await getNavigator(instanceId, workerScopeComputed)
 		const [
 			liesComputed,
 			trashComputed,
 			capturedErrorsComputed
 		] = await Promise.all([
-			getLies(lieRecords),
-			getTrash(trashBin),
-			getCapturedErrors(errorsCaptured)
+			getLies(instanceId, lieRecords),
+			getTrash(instanceId, trashBin),
+			getCapturedErrors(instanceId, errorsCaptured)
 		]).catch(error => {
 			console.error(error.message)
 		})
@@ -1772,7 +1797,7 @@
 			mediaDevices: mediaDevicesComputed,
 			canvas2d: canvas2dComputed,
 			canvasBitmapRenderer: canvasBitmapRendererComputed,
-			webgl: webglComputed,
+			canvasWebgl: canvasWebglComputed,
 			maths: mathsComputed,
 			consoleErrors: consoleErrorsComputed,
 			timezone: timezoneComputed,
@@ -1793,7 +1818,7 @@
 	patch(app, scene, async () => {
 		// fingerprint and render
 		const fpElem = document.getElementById('fingerprint')
-		const fp = await fingerprint().catch((e) => console.log(e))
+		const fp = await fingerprint().catch(error => console.error(error))
 		// Trusted Fingerprint
 		const creep = {
 			workerScope: fp.workerScope,
