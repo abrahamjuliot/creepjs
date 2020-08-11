@@ -1674,6 +1674,9 @@
 	`
 	const getLies = (lieRecords) => {
 		return new Promise(async resolve => {
+			if (!lieRecords.length) {
+				return resolve([])
+			}
 			const data = lieRecords.map(lie => ({ name: lie.name, lieTypes: lie.lieTypes }))
 			const $hash = await hashify(data)
 			return resolve({data, $hash })
@@ -1681,6 +1684,9 @@
 	}
 	const getTrash = (trashBin) => {
 		return new Promise(async resolve => {
+			if (!trashBin.length) {
+				return resolve([])
+			}
 			const data =  trashBin.map(trash => trash.name)
 			const $hash = await hashify(data)
 			return resolve({data, $hash })
@@ -1688,6 +1694,9 @@
 	}
 	const getCapturedErrors = (errorsCaptured) => {
 		return new Promise(async resolve => {
+			if (!errorsCaptured.length) {
+				return resolve([])
+			}
 			const data =  errorsCaptured
 			const $hash = await hashify(data)
 			return resolve({data, $hash })
@@ -1804,7 +1813,7 @@
 			fonts: fp.fonts,
 			trash: fp.trash,
 			// avoid random lie fingerprint values
-			lies: fp.lies.data.map(lie => {
+			lies: !('data' in fp.lies) ? [] : fp.lies.data.map(lie => {
 				const { lieTypes, name } = lie
 				const types = Object.keys(lieTypes)
 				const lies = lieTypes.lies
