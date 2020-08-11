@@ -291,392 +291,449 @@
 	}
 
 	// worker
-	const getWorkerScope = async () => {
-		const promiseUndefined = new Promise(resolve => resolve(undefined))
-		try {
-			const worker = new Worker('worker.js')
-			return new Promise(resolve => {
-				const workerPerformance = timer('')
-				worker.addEventListener('message', event => {
+	const getWorkerScope = () => {
+		return new Promise(resolve => {
+			try {
+				const worker = new Worker('worker.js')
+				worker.addEventListener('message', async event => {
 					const { data } = event
 					data.system = getOS(data.userAgent)
-					workerPerformance('worker complete')
-					return resolve(data)
+					const $hash = await hashify(data)
+					return resolve({ ...data, $hash })
 				}, false)
-				return
-			})
-		}
-		catch (error) {
-			captureError(error)
-			return promiseUndefined
-		}
+			}
+			catch (error) {
+				captureError(error)
+				return resolve(undefined)
+			}
+		})
 	}
 	
-	const getCloudflare = async workerScopeNavigator => {
-		const promiseUndefined = new Promise(resolve => resolve(undefined))
-		try {
-			const api = 'https://www.cloudflare.com/cdn-cgi/trace'
-			const res = await fetch(api)
-			const text = await res.text()
-			const lines = text.match(/^(?:ip|uag|loc|tls)=(.*)$/igm)
-			const data = {}
-			lines.forEach(line => {
-				const key = line.split('=')[0]
-				const value = line.substr(line.indexOf('=') + 1)
-				data[key] = value
-			})
-			data.uag = getOS(data.uag)
-			return data
-		}
-		catch (error) {
-			captureError(error, 'cloudflare.com: failed or client blocked')
-			return promiseUndefined
-		}
+	// cloudflare
+	const getCloudflare = () => {
+		return new Promise(async resolve => {
+			try {
+				const api = 'https://www.cloudflare.com/cdn-cgi/trace'
+				const res = await fetch(api)
+				const text = await res.text()
+				const lines = text.match(/^(?:ip|uag|loc|tls)=(.*)$/igm)
+				const data = {}
+				lines.forEach(line => {
+					const key = line.split('=')[0]
+					const value = line.substr(line.indexOf('=') + 1)
+					data[key] = value
+				})
+				data.uag = getOS(data.uag)
+				const $hash = await hashify(data)
+				return resolve({ ...data, $hash })
+			}
+			catch (error) {
+				captureError(error, 'cloudflare.com: failed or client blocked')
+				return resolve(undefined)
+			}
+		})
 	}
-
+	
 	// navigator
-	const nav = workerScopeNavigator => {
-		const navigatorPrototype = attempt(() => Navigator.prototype)
-		const detectLies = (name, value) => {
-			const workerScopeValue = caniuse(workerScopeNavigator, [name])
-			if (workerScopeValue) {
-				if (name == 'userAgent') {
-					const system = getOS(value)
-					if (workerScopeNavigator.system != system) {
-						documentLie(name, system, 'mismatches worker scope')
-						return sendToTrash(name, system)
+	const getNavigator = workerScope => {
+		return new Promise(async resolve => {
+			const navigatorPrototype = attempt(() => Navigator.prototype)
+			const detectLies = (name, value) => {
+				const workerScopeValue = caniuse(workerScope, [name])
+				if (workerScopeValue) {
+					if (name == 'userAgent') {
+						const system = getOS(value)
+						if (workerScope.system != system) {
+							documentLie(name, system, 'mismatches worker scope')
+							return sendToTrash(name, system)
+						}
+					}
+					else if (name != 'userAgent' && workerScopeValue != value) {
+						documentLie(name, value, 'mismatches worker scope')
+						return sendToTrash(name, value)
 					}
 				}
-				else if (name != 'userAgent' && workerScopeValue != value) {
-					documentLie(name, value, 'mismatches worker scope')
+				const lie = navigatorPrototype ? hasLiedAPI(navigatorPrototype, name, navigator).lie : false
+				if (lie) {
+					documentLie(name, value, lie)
 					return sendToTrash(name, value)
 				}
+				return value
 			}
-			const lie = navigatorPrototype ? hasLiedAPI(navigatorPrototype, name, navigator).lie : false
-			if (lie) {
-				documentLie(name, value, lie)
-				return sendToTrash(name, value)
-			}
-			return value
-		}
-		const credibleUserAgent = (
-			'chrome' in window ? navigator.userAgent.includes(navigator.appVersion) : true
-		)
-		return {
-			appVersion: attempt(() => {
-				const appVersion = detectLies('appVersion', navigator.appVersion)
-				return credibleUserAgent ? appVersion : sendToTrash('InvalidAppVersion', 'does not match userAgent')
-			}),
-			deviceMemory: attempt(() => {
-				if ('deviceMemory' in navigator) {
-					const deviceMemory = detectLies('deviceMemory', navigator.deviceMemory)
-					return deviceMemory ? trustInteger('InvalidDeviceMemory', deviceMemory) : undefined
-				}
-				return undefined
-			}),
-			doNotTrack: attempt(() => {
-				const doNotTrack = detectLies('doNotTrack', navigator.doNotTrack)
-				const trusted = {
-					'1': true,
-					'true': true, 
-					'yes': true,
-					'0': true, 
-					'false': true, 
-					'no': true, 
-					'unspecified': true, 
-					'null': true
-				}
-				return trusted[doNotTrack] ? doNotTrack : sendToTrash('InvalidDoNotTrack', doNotTrack)
-			}),
-			hardwareConcurrency: attempt(() => {
-				const hardwareConcurrency = detectLies('hardwareConcurrency', navigator.hardwareConcurrency)
-				return hardwareConcurrency ? trustInteger('InvalidHardwareConcurrency', hardwareConcurrency): undefined
-			}),
-			language: attempt(() => {
-				const languages = detectLies('languages', navigator.languages)
-				const language = detectLies('language', navigator.language)
+			const credibleUserAgent = (
+				'chrome' in window ? navigator.userAgent.includes(navigator.appVersion) : true
+			)
+			const data = {
+				appVersion: attempt(() => {
+					const appVersion = detectLies('appVersion', navigator.appVersion)
+					return credibleUserAgent ? appVersion : sendToTrash('InvalidAppVersion', 'does not match userAgent')
+				}),
+				deviceMemory: attempt(() => {
+					if ('deviceMemory' in navigator) {
+						const deviceMemory = detectLies('deviceMemory', navigator.deviceMemory)
+						return deviceMemory ? trustInteger('InvalidDeviceMemory', deviceMemory) : undefined
+					}
+					return undefined
+				}),
+				doNotTrack: attempt(() => {
+					const doNotTrack = detectLies('doNotTrack', navigator.doNotTrack)
+					const trusted = {
+						'1': true,
+						'true': true, 
+						'yes': true,
+						'0': true, 
+						'false': true, 
+						'no': true, 
+						'unspecified': true, 
+						'null': true
+					}
+					return trusted[doNotTrack] ? doNotTrack : sendToTrash('InvalidDoNotTrack', doNotTrack)
+				}),
+				hardwareConcurrency: attempt(() => {
+					const hardwareConcurrency = detectLies('hardwareConcurrency', navigator.hardwareConcurrency)
+					return hardwareConcurrency ? trustInteger('InvalidHardwareConcurrency', hardwareConcurrency): undefined
+				}),
+				language: attempt(() => {
+					const languages = detectLies('languages', navigator.languages)
+					const language = detectLies('language', navigator.language)
 
-				if (languages && languages) {
-					const langs = /^.{0,2}/g.exec(languages[0])[0]
-					const lang = /^.{0,2}/g.exec(language)[0]
-					const trusted = langs == lang
-					return (
-						trusted ? `${languages.join(', ')} (${language})` : 
-						sendToTrash('InvalidLanguages', [languages, language].join(' '))
+					if (languages && languages) {
+						const langs = /^.{0,2}/g.exec(languages[0])[0]
+						const lang = /^.{0,2}/g.exec(language)[0]
+						const trusted = langs == lang
+						return (
+							trusted ? `${languages.join(', ')} (${language})` : 
+							sendToTrash('InvalidLanguages', [languages, language].join(' '))
+						)
+					}
+
+					return undefined
+				}),
+				maxTouchPoints: attempt(() => {
+					if ('maxTouchPoints' in navigator) {
+						const maxTouchPoints = detectLies('maxTouchPoints', navigator.maxTouchPoints)
+						return maxTouchPoints != undefined ? trustInteger('InvalidMaxTouchPoints', maxTouchPoints) : undefined
+					}
+
+					return null
+				}),
+				platform: attempt(() => {
+					const platform = detectLies('platform', navigator.platform)
+					const systems = ['win', 'linux', 'mac', 'arm', 'pike', 'linux', 'iphone', 'ipad', 'ipod', 'android', 'x11']
+					const trusted = typeof platform == 'string' && systems.filter(val => platform.toLowerCase().includes(val))[0]
+					return trusted ? platform : undefined
+				}),
+				userAgent: attempt(() => {
+					const userAgent = detectLies('userAgent', navigator.userAgent)
+					return credibleUserAgent ? userAgent : sendToTrash('InvalidUserAgent', userAgent)
+				}),
+				vendor: attempt(() => {
+					const vendor = detectLies('vendor', navigator.vendor)
+					return vendor
+				}),
+				mimeTypes: attempt(() => {
+					const mimeTypes = detectLies('mimeTypes', navigator.mimeTypes)
+					return mimeTypes ? [...mimeTypes].map(m => m.type) : undefined
+				}),
+				plugins: attempt(() => {
+					const plugins = detectLies('plugins', navigator.plugins)
+					return plugins ? [...navigator.plugins]
+						.map(p => ({
+							name: p.name,
+							description: p.description,
+							filename: p.filename,
+							version: p.version
+						})) : undefined
+				}),
+				version: attempt(() => {
+					const keys = Object.keys(Object.getPrototypeOf(navigator))
+					return keys
+				}),
+				highEntropyValues: await attempt(async () => { 
+					if (!('userAgentData' in navigator)) {
+						return undefined
+					}
+					const data = await navigator.userAgentData.getHighEntropyValues(
+						['platform', 'platformVersion', 'architecture',  'model', 'uaFullVersion']
 					)
-				}
-
-				return undefined
-			}),
-			maxTouchPoints: attempt(() => {
-				if ('maxTouchPoints' in navigator) {
-					const maxTouchPoints = detectLies('maxTouchPoints', navigator.maxTouchPoints)
-					return maxTouchPoints != undefined ? trustInteger('InvalidMaxTouchPoints', maxTouchPoints) : undefined
-				}
-
-				return null
-			}),
-			platform: attempt(() => {
-				const platform = detectLies('platform', navigator.platform)
-				const systems = ['win', 'linux', 'mac', 'arm', 'pike', 'linux', 'iphone', 'ipad', 'ipod', 'android', 'x11']
-				const trusted = typeof platform == 'string' && systems.filter(val => platform.toLowerCase().includes(val))[0]
-				return trusted ? platform : undefined
-			}),
-			userAgent: attempt(() => {
-				const userAgent = detectLies('userAgent', navigator.userAgent)
-				return credibleUserAgent ? userAgent : sendToTrash('InvalidUserAgent', userAgent)
-			}),
-			vendor: attempt(() => {
-				const vendor = detectLies('vendor', navigator.vendor)
-				return vendor
-			}),
-			mimeTypes: attempt(() => {
-				const mimeTypes = detectLies('mimeTypes', navigator.mimeTypes)
-				return mimeTypes ? [...mimeTypes].map(m => m.type) : undefined
-			}),
-			plugins: attempt(() => {
-				const plugins = detectLies('plugins', navigator.plugins)
-				return plugins ? [...navigator.plugins]
-					.map(p => ({
-						name: p.name,
-						description: p.description,
-						filename: p.filename,
-						version: p.version
-					})) : undefined
-			}),
-			version: attempt(() => {
-				const keys = Object.keys(Object.getPrototypeOf(navigator))
-				return keys
-			})
-		}
+					return data
+				})
+			}
+			const $hash = await hashify(data)
+			return resolve({ ...data, $hash })
+		})
 	}
 	
-	// client hints
-	// https://github.com/WICG/ua-client-hints
-	const highEntropyValues = () => {
-		const promiseUndefined = new Promise(resolve => resolve(undefined))
-		try {
-			if (!('userAgentData' in navigator)) {
-				return promiseUndefined
+	// iframe.contentWindow
+	const getIframeContentWindowVersion = () => {
+		return new Promise(async resolve => {
+			try {
+				const randomId = hashMini(crypto.getRandomValues(new Uint32Array(10)))
+				const iframeElement = document.createElement('iframe')
+				iframeElement.setAttribute('id', randomId)
+				iframeElement.setAttribute('style', 'display: none')
+				document.body.appendChild(iframeElement)
+				const iframe = document.getElementById(randomId)
+				const contentWindow = iframe.contentWindow
+				const keys = Object.getOwnPropertyNames(contentWindow)
+				iframe.parentNode.removeChild(iframe) 
+				const $hash = await hashify(keys)
+				return resolve({ keys, $hash })
 			}
-			return !('userAgentData' in navigator) ? promiseUndefined : 
-				attempt(() => navigator.userAgentData.getHighEntropyValues(
-					['platform', 'platformVersion', 'architecture',  'model', 'uaFullVersion']
-				))
-		}
-		catch (error) {
-			captureError(error)
-			return promiseUndefined
-		}
-	}
-
-	// window version
-	const windowVersion = () => {
-		// create an iframe with a unique id
-		const randomId = hashMini(crypto.getRandomValues(new Uint32Array(10)))
-		const iframeElement = document.createElement('iframe')
-		iframeElement.setAttribute('id', randomId)
-		iframeElement.setAttribute('style', 'display: none') // optional		
-		
-		// append the iframe to the dom
-		document.body.appendChild(iframeElement)
-
-		// get the iframe contentWindow
-		const iframe = document.getElementById(randomId)
-		const contentWindow = iframe.contentWindow
-
-		// get the contentWindow properties
-		const properties = Object.getOwnPropertyNames(contentWindow)
-
-		// remove the iframe from the dom
-		iframe.parentNode.removeChild(iframe) 
-
-		return properties
-	}
-
-	const htmlElementVersion = () => {
-		// create unique element
-		const randomValues = crypto.getRandomValues(new Uint32Array(10))
-		const randomId = hashMini(randomValues)
-		const element = document.createElement('div')
-		element.setAttribute('id', randomId)
-
-		// append element to dom and get html element
-		document.body.appendChild(element) 
-		const htmlElement = document.getElementById(randomId)
-
-		// collect keys in html element
-		const keys = []
-		for (const key in htmlElement) {
-			keys.push(key)
-		}
-
-		return keys
-	}
-
-	// computed style version
-	const styleVersion = type => {
-		// get CSSStyleDeclaration
-		const cssStyleDeclaration = (
-			type == 'getComputedStyle' ? getComputedStyle(document.body) :
-			type == 'HTMLElement.style' ? document.body.style :
-			type == 'CSSRuleList.style' ? document.styleSheets[0].cssRules[0].style :
-			undefined
-		)
-		if (!cssStyleDeclaration) {
-			throw new TypeError('invalid argument string')
-		}
-		// get properties
-		const prototype = Object.getPrototypeOf(cssStyleDeclaration)
-		const prototypeProperties = Object.getOwnPropertyNames(prototype)
-		const ownEnumerablePropertyNames = []
-		const cssVar = /^--.*$/
-		Object.keys(cssStyleDeclaration).forEach(key => {
-			const numericKey = !isNaN(key)
-			const value = cssStyleDeclaration[key]
-			const customPropKey = cssVar.test(key)
-			const customPropValue = cssVar.test(value)
-			if (numericKey && !customPropValue) {
-				return ownEnumerablePropertyNames.push(value)
-			} else if (!numericKey && !customPropKey) {
-				return ownEnumerablePropertyNames.push(key)
+			catch (error) {
+				captureError(error)
+				return resolve(undefined)
 			}
-			return
 		})
-		// get properties in prototype chain (required only in chrome)
-		const propertiesInPrototypeChain = {}
-		const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1)
-		const uncapitalize = str => str.charAt(0).toLowerCase() + str.slice(1)
-		const removeFirstChar = str => str.slice(1)
-		const caps = /[A-Z]/g
-		ownEnumerablePropertyNames.forEach(key => {
-			if (propertiesInPrototypeChain[key]) {
-				return
-			}
-			// determine attribute type
-			const isNamedAttribute = key.indexOf('-') > -1
-			const isAliasAttribute = caps.test(key)
-			// reduce key for computation
-			const firstChar = key.charAt(0)
-			const isPrefixedName = isNamedAttribute && firstChar == '-'
-			const isCapitalizedAlias = isAliasAttribute && firstChar == firstChar.toUpperCase()
-			key = (
-				isPrefixedName ? removeFirstChar(key) :
-				isCapitalizedAlias ? uncapitalize(key) :
-				key
-			)
-			// find counterpart in CSSStyleDeclaration object or its prototype chain
-			if (isNamedAttribute) {
-				const aliasAttribute = key.split('-').map((word, index) => index == 0 ? word : capitalize(word)).join('')
-				if (aliasAttribute in cssStyleDeclaration) {
-					propertiesInPrototypeChain[aliasAttribute] = true
-				} else if (capitalize(aliasAttribute) in cssStyleDeclaration) {
-					propertiesInPrototypeChain[capitalize(aliasAttribute)] = true
+	}
+
+	// HTMLElement	
+	const getHTMLElementVersion = () => {
+		return new Promise(async resolve => {
+			try {
+				const randomValues = crypto.getRandomValues(new Uint32Array(10))
+				const randomId = hashMini(randomValues)
+				const element = document.createElement('div')
+				element.setAttribute('id', randomId)
+				document.body.appendChild(element) 
+				const htmlElement = document.getElementById(randomId)
+				const keys = []
+				for (const key in htmlElement) {
+					keys.push(key)
 				}
-			} else if (isAliasAttribute) {
-				const namedAttribute = key.replace(caps, char => '-' + char.toLowerCase())
-				if (namedAttribute in cssStyleDeclaration) {
-					propertiesInPrototypeChain[namedAttribute] = true
-				} else if (`-${namedAttribute}` in cssStyleDeclaration) {
-					propertiesInPrototypeChain[`-${namedAttribute}`] = true
-				}
+				const $hash = await hashify(keys)
+				return resolve({ keys, $hash })
 			}
-			return
+			catch (error) {
+				captureError(error)
+				return resolve(undefined)
+			}
 		})
-		// compile keys
-		const keys = [
-			...new Set([
-				...prototypeProperties,
-				...ownEnumerablePropertyNames,
-				...Object.keys(propertiesInPrototypeChain)
-			])
-		]
-		// checks
-		const moz = keys.filter(key => (/moz/i).test(key)).length
-		const webkit = keys.filter(key => (/webkit/i).test(key)).length
-		const prototypeName = (''+prototype).match(/\[object (.+)\]/)[1]
-		return { keys: keys.sort(), moz, webkit, prototypeName }
+	}
+
+	// CSSStyleDeclaration
+	const computeStyle = type => {
+		return new Promise(async resolve => {
+			try {
+				// get CSSStyleDeclaration
+				const cssStyleDeclaration = (
+					type == 'getComputedStyle' ? getComputedStyle(document.body) :
+					type == 'HTMLElement.style' ? document.body.style :
+					type == 'CSSRuleList.style' ? document.styleSheets[0].cssRules[0].style :
+					undefined
+				)
+				if (!cssStyleDeclaration) {
+					throw new TypeError('invalid argument string')
+				}
+				// get properties
+				const prototype = Object.getPrototypeOf(cssStyleDeclaration)
+				const prototypeProperties = Object.getOwnPropertyNames(prototype)
+				const ownEnumerablePropertyNames = []
+				const cssVar = /^--.*$/
+				Object.keys(cssStyleDeclaration).forEach(key => {
+					const numericKey = !isNaN(key)
+					const value = cssStyleDeclaration[key]
+					const customPropKey = cssVar.test(key)
+					const customPropValue = cssVar.test(value)
+					if (numericKey && !customPropValue) {
+						return ownEnumerablePropertyNames.push(value)
+					} else if (!numericKey && !customPropKey) {
+						return ownEnumerablePropertyNames.push(key)
+					}
+					return
+				})
+				// get properties in prototype chain (required only in chrome)
+				const propertiesInPrototypeChain = {}
+				const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1)
+				const uncapitalize = str => str.charAt(0).toLowerCase() + str.slice(1)
+				const removeFirstChar = str => str.slice(1)
+				const caps = /[A-Z]/g
+				ownEnumerablePropertyNames.forEach(key => {
+					if (propertiesInPrototypeChain[key]) {
+						return
+					}
+					// determine attribute type
+					const isNamedAttribute = key.indexOf('-') > -1
+					const isAliasAttribute = caps.test(key)
+					// reduce key for computation
+					const firstChar = key.charAt(0)
+					const isPrefixedName = isNamedAttribute && firstChar == '-'
+					const isCapitalizedAlias = isAliasAttribute && firstChar == firstChar.toUpperCase()
+					key = (
+						isPrefixedName ? removeFirstChar(key) :
+						isCapitalizedAlias ? uncapitalize(key) :
+						key
+					)
+					// find counterpart in CSSStyleDeclaration object or its prototype chain
+					if (isNamedAttribute) {
+						const aliasAttribute = key.split('-').map((word, index) => index == 0 ? word : capitalize(word)).join('')
+						if (aliasAttribute in cssStyleDeclaration) {
+							propertiesInPrototypeChain[aliasAttribute] = true
+						} else if (capitalize(aliasAttribute) in cssStyleDeclaration) {
+							propertiesInPrototypeChain[capitalize(aliasAttribute)] = true
+						}
+					} else if (isAliasAttribute) {
+						const namedAttribute = key.replace(caps, char => '-' + char.toLowerCase())
+						if (namedAttribute in cssStyleDeclaration) {
+							propertiesInPrototypeChain[namedAttribute] = true
+						} else if (`-${namedAttribute}` in cssStyleDeclaration) {
+							propertiesInPrototypeChain[`-${namedAttribute}`] = true
+						}
+					}
+					return
+				})
+				// compile keys
+				const keys = [
+					...new Set([
+						...prototypeProperties,
+						...ownEnumerablePropertyNames,
+						...Object.keys(propertiesInPrototypeChain)
+					])
+				]
+				// checks
+				const moz = keys.filter(key => (/moz/i).test(key)).length
+				const webkit = keys.filter(key => (/webkit/i).test(key)).length
+				const prototypeName = (''+prototype).match(/\[object (.+)\]/)[1]
+				const data = { keys: keys.sort(), moz, webkit, prototypeName }
+				const $hash = await hashify(data)
+				return resolve({ ...data, $hash })
+			}
+			catch (error) {
+				captureError(error)
+				return resolve(undefined)
+			}
+		})
+	}
+
+	const getCSSStyleDeclarationVersion = () => {
+		return new Promise(async resolve => {
+			try {
+				const [
+					getComputedStyle,
+					htmlElementStyle,
+					cssRuleListstyle
+				] = await Promise.all([
+					computeStyle('getComputedStyle'),
+					computeStyle('HTMLElement.style'),
+					computeStyle('CSSRuleList.style')
+				]).catch(error => {
+					console.error(error.message)
+				})
+				const data = {
+					['getComputedStyle']: getComputedStyle,
+					['HTMLElement.style']: htmlElementStyle,
+					['CSSRuleList.style']: cssRuleListstyle,
+					matching: (
+						''+getComputedStyle == ''+htmlElementStyle &&
+						''+htmlElementStyle == ''+cssRuleListstyle
+					)
+				}
+				const $hash = await hashify(data)
+				return resolve({ ...data, $hash })
+			}
+			catch (error) {
+				captureError(error)
+				return resolve(undefined)
+			}
+		})
 	}
 
 	// screen (allow some discrepancies otherwise lie detection triggers at random)
-	const screenFp = () => {
-		const screenPrototype = attempt(() => Screen.prototype)
-		const detectLies = (name, value) => {
-			const lie = screenPrototype ? hasLiedAPI(screenPrototype, name, screen).lie : false
-			if (lie) {
-				documentLie(name, value, lie)
-				return sendToTrash(name, value)
+	const getScreen = () => {
+		return new Promise(async resolve => {
+			try {
+				const screenPrototype = attempt(() => Screen.prototype)
+				const detectLies = (name, value) => {
+					const lie = screenPrototype ? hasLiedAPI(screenPrototype, name, screen).lie : false
+					if (lie) {
+						documentLie(name, value, lie)
+						return sendToTrash(name, value)
+					}
+					return value
+				}
+				const width = detectLies('width', screen.width)
+				const height = detectLies('height', screen.height)
+				const availWidth = detectLies('availWidth', screen.availWidth)
+				const availHeight = detectLies('availHeight', screen.availHeight)
+				const colorDepth = detectLies('colorDepth', screen.colorDepth)
+				const pixelDepth = detectLies('pixelDepth', screen.pixelDepth)
+				const data = {
+					width: attempt(() => width ? trustInteger('InvalidWidth', width) : undefined),
+					outerWidth: attempt(() => outerWidth ? trustInteger('InvalidOuterWidth', outerWidth) : undefined),
+					availWidth: attempt(() => availWidth ? trustInteger('InvalidAvailWidth', availWidth) : undefined),
+					height: attempt(() => height ? trustInteger('InvalidHeight', height) : undefined),
+					outerHeight: attempt(() => outerHeight ? trustInteger('InvalidOuterHeight', outerHeight) : undefined),
+					availHeight: attempt(() => availHeight ?  trustInteger('InvalidAvailHeight', availHeight) : undefined),
+					colorDepth: attempt(() => colorDepth ? trustInteger('InvalidColorDepth', colorDepth) : undefined),
+					pixelDepth: attempt(() => pixelDepth ? trustInteger('InvalidPixelDepth', pixelDepth) : undefined)
+				}
+				const $hash = await hashify(data)
+				return resolve({ ...data, $hash })
 			}
-			return value
-		}
-		const width = detectLies('width', screen.width)
-		const height = detectLies('height', screen.height)
-		const availWidth = detectLies('availWidth', screen.availWidth)
-		const availHeight = detectLies('availHeight', screen.availHeight)
-		const colorDepth = detectLies('colorDepth', screen.colorDepth)
-		const pixelDepth = detectLies('pixelDepth', screen.pixelDepth)
-		return {
-			width: attempt(() => width ? trustInteger('InvalidWidth', width) : undefined),
-			outerWidth: attempt(() => outerWidth ? trustInteger('InvalidOuterWidth', outerWidth) : undefined),
-			availWidth: attempt(() => availWidth ? trustInteger('InvalidAvailWidth', availWidth) : undefined),
-			height: attempt(() => height ? trustInteger('InvalidHeight', height) : undefined),
-			outerHeight: attempt(() => outerHeight ? trustInteger('InvalidOuterHeight', outerHeight) : undefined),
-			availHeight: attempt(() => availHeight ?  trustInteger('InvalidAvailHeight', availHeight) : undefined),
-			colorDepth: attempt(() => colorDepth ? trustInteger('InvalidColorDepth', colorDepth) : undefined),
-			pixelDepth: attempt(() => pixelDepth ? trustInteger('InvalidPixelDepth', pixelDepth) : undefined)
-		}
+			catch (error) {
+				captureError(error)
+				return resolve(undefined)
+			}
+		})
 	}
 
 	// voices
-	const getVoices = () => {
-		const promiseUndefined = new Promise(resolve => resolve(undefined))
-		try {
-			if (!('chrome' in window)) {
-				return speechSynthesis.getVoices()
-			}
-			return new Promise(resolve => {
-				try {
-					if (typeof speechSynthesis === 'undefined') {
-						return resolve(undefined)
-					} 
-					else if (!speechSynthesis.getVoices || speechSynthesis.getVoices() == undefined) {
-						return resolve(undefined)
-					}
-					else if (speechSynthesis.getVoices().length) {
-						const voices = speechSynthesis.getVoices()
-						return resolve(voices)
-					} else {
-						speechSynthesis.onvoiceschanged = () => resolve(speechSynthesis.getVoices())
-					}
+	const getVoices = () => {	
+		return new Promise(async resolve => {
+			try {
+				let voices = []
+				const respond = async (resolve, voices) => {
+					voices = voices.map(({ name, lang }) => ({ name, lang }))
+					const $hash = await hashify(voices)
+					return resolve({ voices, $hash })
 				}
-				catch (error) {
-					captureError(error)
+				if (!('speechSynthesis' in window)) {
 					return resolve(undefined)
 				}
-			})
-		}
-		catch (error) {
-			captureError(error)
-			return promiseUndefined
-		}
+				else if (!('chrome' in window)) {
+					voices = await speechSynthesis.getVoices()
+					return respond(resolve, voices)
+				}
+				else if (!speechSynthesis.getVoices || speechSynthesis.getVoices() == undefined) {
+					return resolve(undefined)
+				}
+				else if (speechSynthesis.getVoices().length) {
+					voices = speechSynthesis.getVoices()
+					return respond(resolve, voices)
+				} else {
+					speechSynthesis.onvoiceschanged = () => {
+						voices = speechSynthesis.getVoices()
+						return resolve(new Promise(resolve => respond(resolve, voices)))
+					}
+				}
+			}
+			catch (error) {
+				captureError(error)
+				return resolve(undefined)
+			}
+		})
 	}
 
 	// media devices
 	const getMediaDevices = () => {
-		const promiseUndefined = new Promise(resolve => resolve(undefined))
-		if (!('mediaDevices' in navigator)) {
-			return promiseUndefined
-		}
-		try {
-			if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
-				return promiseUndefined
+		return new Promise(async resolve => {
+			try {
+				if (!('mediaDevices' in navigator)) {
+					return resolve(undefined)
+				}
+				if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+					return resolve(undefined)
+				}
+				const mediaDevicesEnumerated = await navigator.mediaDevices.enumerateDevices()
+				const mediaDevices = mediaDevicesEnumerated.map(({ kind }) => ({ kind }))
+				const $hash = await hashify(mediaDevices)
+				return resolve({ mediaDevices, $hash })
 			}
-			return attempt(() => navigator.mediaDevices.enumerateDevices())
-		}
-		catch (error) {
-			captureError(error)
-			return promiseUndefined
-		}
+			catch (error) {
+				captureError(error)
+				return resolve(undefined)
+			}
+		})
 	}
 
 	// canvas
@@ -684,839 +741,911 @@
 	const canvasGetContext = attempt(() => HTMLCanvasElement.prototype.getContext)
 	const dataLie = canvasToDataURL ? hasLiedAPI(canvasToDataURL, 'toDataURL').lie : false
 	const contextLie = canvasGetContext ? hasLiedAPI(canvasGetContext, 'getContext').lie : false
-	const canvas = () => {
-		const canvas = document.createElement('canvas')
-		let canvas2dDataURI = ''
-		if (!dataLie && !contextLie) {
-			const context = canvas.getContext('2d')
-			const str = '%$%^LGFWE($HIF)'
-			context.font = '20px Arial'
-			context.fillText(str, 100, 100)
-			context.fillStyle = 'red'
-			context.fillRect(100, 30, 80, 50)
-			context.font = '32px Times New Roman'
-			context.fillStyle = 'blue'
-			context.fillText(str, 20, 70)
-			context.font = '20px Arial'
-			context.fillStyle = 'green'
-			context.fillText(str, 10, 50)
-			canvas2dDataURI = canvas.toDataURL()
-			return (
-				isBrave || isFirefox ? sendToTrash('canvas2dDataURI', hashMini(canvas2dDataURI)) : canvas2dDataURI
-			)
-		}
-		// document lie and send to trash
-		canvas2dDataURI = canvas.toDataURL()
-		const hash = hashMini(canvas2dDataURI)
-		if (contextLie) {
-			documentLie('canvas2dContextDataURI', hash, contextLie)
-			sendToTrash('canvas2dContextDataURI', hash)
-		}
-		if (dataLie) {
-			documentLie('canvas2dDataURI', hash, dataLie)
-			sendToTrash('canvas2dDataURI', hash)
-		}
-		
-		// fingerprint lie
-		return { dataLie, contextLie }
+	
+	// 2d canvas
+	const getCanvas2d = () => {
+		return new Promise(async resolve => {
+			try {
+				const canvas = document.createElement('canvas')
+				let canvas2dDataURI = ''
+				if (!dataLie && !contextLie) {
+					const context = canvas.getContext('2d')
+					const str = '%$%^LGFWE($HIF)'
+					context.font = '20px Arial'
+					context.fillText(str, 100, 100)
+					context.fillStyle = 'red'
+					context.fillRect(100, 30, 80, 50)
+					context.font = '32px Times New Roman'
+					context.fillStyle = 'blue'
+					context.fillText(str, 20, 70)
+					context.font = '20px Arial'
+					context.fillStyle = 'green'
+					context.fillText(str, 10, 50)
+					canvas2dDataURI = canvas.toDataURL()
+					const dataURI = (
+						isBrave || isFirefox ? sendToTrash('canvas2dDataURI', hashMini(canvas2dDataURI)) : canvas2dDataURI
+					)
+					const $hash = await hashify(dataURI)
+					return resolve({ dataURI, $hash })
+				}
+				// document lie and send to trash
+				canvas2dDataURI = canvas.toDataURL()
+				const hash = hashMini(canvas2dDataURI)
+				if (contextLie) {
+					documentLie('canvas2dContextDataURI', hash, contextLie)
+					sendToTrash('canvas2dContextDataURI', hash)
+				}
+				if (dataLie) {
+					documentLie('canvas2dDataURI', hash, dataLie)
+					sendToTrash('canvas2dDataURI', hash)
+				}
+				// fingerprint lie
+				const data = { contextLie, dataLie }
+				const $hash = await hashify(data)
+				return resolve({ ...data, $hash })
+			}
+			catch (error) {
+				captureError(error)
+				return resolve(undefined)
+			}
+		})
 	}
 
-
-	const getBitmapRenderer = async () => {
-		const promiseUndefined = new Promise(resolve => resolve(undefined))
-		try {
-			const canvas = document.createElement('canvas')
-			let canvasBMRDataURI = ''
-			if (!dataLie && !contextLie) {
-				const context = canvas.getContext('bitmaprenderer')
-				const image = new Image()
-				image.src = 'bitmap.png'
-				return new Promise(resolve => {
-					try {
+	// bitmaprenderer
+	const getCanvasBitmapRenderer = () => {
+		return new Promise(async resolve => {
+			try {
+				const canvas = document.createElement('canvas')
+				let canvasBMRDataURI = ''
+				if (!dataLie && !contextLie) {
+					const context = canvas.getContext('bitmaprenderer')
+					const image = new Image()
+					image.src = 'bitmap.png'
+					return resolve(new Promise(resolve => {
 						image.onload = async () => {
 							const bitmap = await createImageBitmap(image, 0, 0, image.width, image.height)
 							context.transferFromImageBitmap(bitmap)
 							canvasBMRDataURI = canvas.toDataURL()
-							return (
+							const dataURI = (
 								isBrave || isFirefox ? 
-								resolve(sendToTrash('canvasBMRDataURI', hashMini(canvasBMRDataURI))) :
-								resolve(canvasBMRDataURI)
+								sendToTrash('canvasBMRDataURI', hashMini(canvasBMRDataURI)) :
+								canvasBMRDataURI
 							)
+							const $hash = await hashify(dataURI)
+							return resolve({ dataURI, $hash })
 						}
-					}
-					catch (error) {
-						captureError(error)
-						resolve(undefined)
-					}
-				})
+					}))	
+				}
+				// document lie and send to trash
+				canvasBMRDataURI = canvas.toDataURL()
+				const hash = hashMini(canvasBMRDataURI)
+				if (contextLie) {
+					documentLie('canvasBMRContextDataURI', hash, contextLie)
+					sendToTrash('canvasBMRContextDataURI', hash)
+				}
+				if (dataLie) {
+					documentLie('canvasBMRDataURI', hash, dataLie)
+					sendToTrash('canvasBMRDataURI', hash)
+				}
+				// fingerprint lie
+				const data = { contextLie, dataLie }
+				const $hash = await hashify(data)
+				return resolve({ ...data, $hash })
 			}
-			// document lie and send to trash
-			canvasBMRDataURI = canvas.toDataURL()
-			const hash = hashMini(canvasBMRDataURI)
-			if (contextLie) {
-				documentLie('canvasBMRContextDataURI', hash, contextLie)
-				sendToTrash('canvasBMRContextDataURI', hash)
+			catch (error) {
+				captureError(error)
+				return resolve(undefined)
 			}
-			if (dataLie) {
-				documentLie('canvasBMRDataURI', hash, dataLie)
-				sendToTrash('canvasBMRDataURI', hash)
-			}
-			// fingerprint lie
-			return new Promise(resolve => {
-				resolve({ dataLie, contextLie })
-			})
-		}
-		catch (error) {
-			captureError(error)
-			return promiseUndefined
-		}
+		})
 	}
 
 	// webgl
-	const webgl = () => {
-		// detect webgl lies
-		const gl = 'WebGLRenderingContext' in window
-		const webglGetParameter = gl && attempt(() => WebGLRenderingContext.prototype.getParameter)
-		const webglGetExtension = gl && attempt(() => WebGLRenderingContext.prototype.getExtension)
-		const webglGetSupportedExtensions = gl && attempt(() => WebGLRenderingContext.prototype.getSupportedExtensions)
-		const paramLie = webglGetParameter ? hasLiedAPI(webglGetParameter, 'getParameter').lie : false
-		const extLie = webglGetExtension ? hasLiedAPI(webglGetExtension, 'getExtension').lie : false
-		const supportedExtLie = webglGetSupportedExtensions ? hasLiedAPI(webglGetSupportedExtensions, 'getSupportedExtensions').lie : false
-
-		// detect webgl2 lies
-		const gl2 = 'WebGL2RenderingContext' in window
-		const webgl2GetParameter = gl2 && attempt(() => WebGL2RenderingContext.prototype.getParameter)
-		const webgl2GetExtension = gl2 && attempt(() => WebGL2RenderingContext.prototype.getExtension)
-		const webgl2GetSupportedExtensions = gl2 && attempt(() => WebGL2RenderingContext.prototype.getSupportedExtensions)
-		const param2Lie = webgl2GetParameter ? hasLiedAPI(webgl2GetParameter, 'getParameter').lie : false
-		const ext2Lie = webgl2GetExtension ? hasLiedAPI(webgl2GetExtension, 'getExtension').lie : false
-		const supportedExt2Lie = webgl2GetSupportedExtensions ? hasLiedAPI(webgl2GetSupportedExtensions, 'getSupportedExtensions').lie : false
-
-		// crreate canvas context
-		const canvas = document.createElement('canvas')
-		const canvas2 = document.createElement('canvas')
-		const context = (
-			canvas.getContext('webgl') ||
-			canvas.getContext('experimental-webgl') ||
-			canvas.getContext('moz-webgl') ||
-			canvas.getContext('webkit-3d')
-		)
-		const context2 = canvas2.getContext('webgl2') || canvas2.getContext('experimental-webgl2')
-		const getSupportedExtensions = (context, supportedExtLie, title) => {
-			if (!context) {
-				return { extensions: undefined }
-			}
+	const getWebgl = () => {
+		return new Promise(async resolve => {
 			try {
-				const extensions = caniuse(context, ['getSupportedExtensions'], [], true) || []
-				if (!supportedExtLie) {
-					return {
-						extensions: ( 
-							!proxyBehavior(extensions) ? extensions : 
-							sendToTrash(title, 'proxy behavior detected')
-						)
-					}
-				}
+				// detect webgl lies
+				const gl = 'WebGLRenderingContext' in window
+				const webglGetParameter = gl && attempt(() => WebGLRenderingContext.prototype.getParameter)
+				const webglGetExtension = gl && attempt(() => WebGLRenderingContext.prototype.getExtension)
+				const webglGetSupportedExtensions = gl && attempt(() => WebGLRenderingContext.prototype.getSupportedExtensions)
+				const paramLie = webglGetParameter ? hasLiedAPI(webglGetParameter, 'getParameter').lie : false
+				const extLie = webglGetExtension ? hasLiedAPI(webglGetExtension, 'getExtension').lie : false
+				const supportedExtLie = webglGetSupportedExtensions ? hasLiedAPI(webglGetSupportedExtensions, 'getSupportedExtensions').lie : false
 
-				// document lie and send to trash
-				if (supportedExtLie) { 
-					documentLie(title, extensions, supportedExtLie)
-					sendToTrash(title, extensions)
-				}
-				// Fingerprint lie
-				return {
-					extensions: { supportedExtLie }
-				}
-			}
-			catch (error) {
-				captureError(error)
-				return {
-					extensions: isBrave ? sendToTrash(title, null) : undefined
-				}
-			}
-		}
+				// detect webgl2 lies
+				const gl2 = 'WebGL2RenderingContext' in window
+				const webgl2GetParameter = gl2 && attempt(() => WebGL2RenderingContext.prototype.getParameter)
+				const webgl2GetExtension = gl2 && attempt(() => WebGL2RenderingContext.prototype.getExtension)
+				const webgl2GetSupportedExtensions = gl2 && attempt(() => WebGL2RenderingContext.prototype.getSupportedExtensions)
+				const param2Lie = webgl2GetParameter ? hasLiedAPI(webgl2GetParameter, 'getParameter').lie : false
+				const ext2Lie = webgl2GetExtension ? hasLiedAPI(webgl2GetExtension, 'getExtension').lie : false
+				const supportedExt2Lie = webgl2GetSupportedExtensions ? hasLiedAPI(webgl2GetSupportedExtensions, 'getSupportedExtensions').lie : false
 
-		const getSpecs = ([webgl, webgl2]) => {
-			const getShaderPrecisionFormat = (gl, shaderType) => {
-				const low = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.LOW_FLOAT))
-				const medium = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.MEDIUM_FLOAT))
-				const high = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.HIGH_FLOAT))
-				const highInt = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.HIGH_INT))
-				return { low, medium, high, highInt }
-			}
-			const getMaxAnisotropy = gl => {
-				const ext = (
-					gl.getExtension('EXT_texture_filter_anisotropic') ||
-					gl.getExtension('MOZ_EXT_texture_filter_anisotropic') ||
-					gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic')
+				// crreate canvas context
+				const canvas = document.createElement('canvas')
+				const canvas2 = document.createElement('canvas')
+				const context = (
+					canvas.getContext('webgl') ||
+					canvas.getContext('experimental-webgl') ||
+					canvas.getContext('moz-webgl') ||
+					canvas.getContext('webkit-3d')
 				)
-				return ext ? gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT) : undefined
-			}
-			const camelCaseProps = data => {
-				const renamed = {}
-				Object.keys(data).map(key => {
-					const val = data[key]
-					const name = key.toLowerCase().split('_').map((word, i) => {
-						return i == 0 ? word : word.charAt(0).toUpperCase() + word.slice(1)
-					}).join('')
-					renamed[name] = val
-				})
-				return renamed
-			}
-			const getShaderData = (name, shader) => {
-				const data = {}
-				for (const prop in shader) {
-					const obj = shader[prop]
-					data[name+'_'+prop+'_Precision'] = obj ? attempt(() => obj.precision) : undefined
-					data[name+'_'+prop+'_RangeMax'] = obj ? attempt(() => obj.rangeMax) : undefined
-					data[name+'_'+prop+'_RangeMin'] = obj ? attempt(() => obj.rangeMin) : undefined
-				}
-				return data
-			}
+				const context2 = canvas2.getContext('webgl2') || canvas2.getContext('experimental-webgl2')
+				const getSupportedExtensions = (context, supportedExtLie, title) => {
+					return new Promise(async resolve => {
+						try {
+							if (!context) {
+								return resolve({ extensions: undefined })
+							}
+							const extensions = caniuse(context, ['getSupportedExtensions'], [], true) || []
+							if (!supportedExtLie) {
+								return resolve({
+									extensions: ( 
+										!proxyBehavior(extensions) ? extensions : 
+										sendToTrash(title, 'proxy behavior detected')
+									)
+								})
+							}
 
-			const getWebglSpecs = gl => {
-				if (!caniuse(gl, ['getParameter'])) {
-					return undefined
-				}
-				const data =  {
-					VERSION: attempt(() => gl.getParameter(gl.VERSION)),
-					SHADING_LANGUAGE_VERSION: attempt( () => gl.getParameter(gl.SHADING_LANGUAGE_VERSION)),
-					ANTIALIAS: attempt(() => (gl.getContextAttributes() ? gl.getContextAttributes().antialias : undefined)),
-					RED_BITS: attempt(() => gl.getParameter(gl.RED_BITS)),
-					GREEN_BITS: attempt(() => gl.getParameter(gl.GREEN_BITS)),
-					BLUE_BITS: attempt(() => gl.getParameter(gl.BLUE_BITS)),
-					ALPHA_BITS: attempt(() => gl.getParameter(gl.ALPHA_BITS)),
-					DEPTH_BITS: attempt(() => gl.getParameter(gl.DEPTH_BITS)),
-					STENCIL_BITS: attempt(() => gl.getParameter(gl.STENCIL_BITS)),
-					MAX_RENDERBUFFER_SIZE: attempt(() => gl.getParameter(gl.MAX_RENDERBUFFER_SIZE)),
-					MAX_COMBINED_TEXTURE_IMAGE_UNITS: attempt(() => gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS)),
-					MAX_CUBE_MAP_TEXTURE_SIZE: attempt(() => gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE)),
-					MAX_FRAGMENT_UNIFORM_VECTORS: attempt(() => gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS)),
-					MAX_TEXTURE_IMAGE_UNITS: attempt(() => gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS)),
-					MAX_TEXTURE_SIZE: attempt(() => gl.getParameter(gl.MAX_TEXTURE_SIZE)),
-					MAX_VARYING_VECTORS: attempt(() => gl.getParameter(gl.MAX_VARYING_VECTORS)),
-					MAX_VERTEX_ATTRIBS: attempt(() => gl.getParameter(gl.MAX_VERTEX_ATTRIBS)),
-					MAX_VERTEX_TEXTURE_IMAGE_UNITS: attempt(() => gl.getParameter(gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS)),
-					MAX_VERTEX_UNIFORM_VECTORS: attempt(() => gl.getParameter(gl.MAX_VERTEX_UNIFORM_VECTORS)),
-					ALIASED_LINE_WIDTH_RANGE: attempt(() => [...gl.getParameter(gl.ALIASED_LINE_WIDTH_RANGE)]),
-					ALIASED_POINT_SIZE_RANGE: attempt(() => [...gl.getParameter(gl.ALIASED_POINT_SIZE_RANGE)]),
-					MAX_VIEWPORT_DIMS: attempt(() => [...gl.getParameter(gl.MAX_VIEWPORT_DIMS)]),
-					MAX_TEXTURE_MAX_ANISOTROPY_EXT: attempt(() => getMaxAnisotropy(gl)),
-					...getShaderData('VERTEX_SHADER', getShaderPrecisionFormat(gl, 'VERTEX_SHADER')),
-					...getShaderData('FRAGMENT_SHADER', getShaderPrecisionFormat(gl, 'FRAGMENT_SHADER')),
-					MAX_DRAW_BUFFERS_WEBGL: attempt(() => {
-						const buffers = gl.getExtension('WEBGL_draw_buffers')
-						return buffers ? gl.getParameter(buffers.MAX_DRAW_BUFFERS_WEBGL) : undefined
+							// document lie and send to trash
+							if (supportedExtLie) { 
+								documentLie(title, extensions, supportedExtLie)
+								sendToTrash(title, extensions)
+							}
+							// Fingerprint lie
+							return resolve({
+								extensions: { supportedExtLie }
+							})
+						}
+						catch (error) {
+							captureError(error)
+							return resolve({
+								extensions: isBrave ? sendToTrash(title, null) : undefined
+							})
+						}
 					})
 				}
-				return camelCaseProps(data)
-			}
 
-			const getWebgl2Specs = gl => {
-				if (!caniuse(gl, ['getParameter'])) {
-					return undefined
+				const getSpecs = ([webgl, webgl2]) => {
+					return new Promise(async resolve => {
+						const getShaderPrecisionFormat = (gl, shaderType) => {
+							const low = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.LOW_FLOAT))
+							const medium = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.MEDIUM_FLOAT))
+							const high = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.HIGH_FLOAT))
+							const highInt = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.HIGH_INT))
+							return { low, medium, high, highInt }
+						}
+						const getMaxAnisotropy = gl => {
+							const ext = (
+								gl.getExtension('EXT_texture_filter_anisotropic') ||
+								gl.getExtension('MOZ_EXT_texture_filter_anisotropic') ||
+								gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic')
+							)
+							return ext ? gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT) : undefined
+						}
+						const camelCaseProps = data => {
+							const renamed = {}
+							Object.keys(data).map(key => {
+								const val = data[key]
+								const name = key.toLowerCase().split('_').map((word, i) => {
+									return i == 0 ? word : word.charAt(0).toUpperCase() + word.slice(1)
+								}).join('')
+								renamed[name] = val
+							})
+							return renamed
+						}
+						const getShaderData = (name, shader) => {
+							const data = {}
+							for (const prop in shader) {
+								const obj = shader[prop]
+								data[name+'_'+prop+'_Precision'] = obj ? attempt(() => obj.precision) : undefined
+								data[name+'_'+prop+'_RangeMax'] = obj ? attempt(() => obj.rangeMax) : undefined
+								data[name+'_'+prop+'_RangeMin'] = obj ? attempt(() => obj.rangeMin) : undefined
+							}
+							return data
+						}
+						const getWebglSpecs = gl => {
+							if (!caniuse(gl, ['getParameter'])) {
+								return undefined
+							}
+							const data =  {
+								VERSION: attempt(() => gl.getParameter(gl.VERSION)),
+								SHADING_LANGUAGE_VERSION: attempt( () => gl.getParameter(gl.SHADING_LANGUAGE_VERSION)),
+								ANTIALIAS: attempt(() => (gl.getContextAttributes() ? gl.getContextAttributes().antialias : undefined)),
+								RED_BITS: attempt(() => gl.getParameter(gl.RED_BITS)),
+								GREEN_BITS: attempt(() => gl.getParameter(gl.GREEN_BITS)),
+								BLUE_BITS: attempt(() => gl.getParameter(gl.BLUE_BITS)),
+								ALPHA_BITS: attempt(() => gl.getParameter(gl.ALPHA_BITS)),
+								DEPTH_BITS: attempt(() => gl.getParameter(gl.DEPTH_BITS)),
+								STENCIL_BITS: attempt(() => gl.getParameter(gl.STENCIL_BITS)),
+								MAX_RENDERBUFFER_SIZE: attempt(() => gl.getParameter(gl.MAX_RENDERBUFFER_SIZE)),
+								MAX_COMBINED_TEXTURE_IMAGE_UNITS: attempt(() => gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS)),
+								MAX_CUBE_MAP_TEXTURE_SIZE: attempt(() => gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE)),
+								MAX_FRAGMENT_UNIFORM_VECTORS: attempt(() => gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS)),
+								MAX_TEXTURE_IMAGE_UNITS: attempt(() => gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS)),
+								MAX_TEXTURE_SIZE: attempt(() => gl.getParameter(gl.MAX_TEXTURE_SIZE)),
+								MAX_VARYING_VECTORS: attempt(() => gl.getParameter(gl.MAX_VARYING_VECTORS)),
+								MAX_VERTEX_ATTRIBS: attempt(() => gl.getParameter(gl.MAX_VERTEX_ATTRIBS)),
+								MAX_VERTEX_TEXTURE_IMAGE_UNITS: attempt(() => gl.getParameter(gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS)),
+								MAX_VERTEX_UNIFORM_VECTORS: attempt(() => gl.getParameter(gl.MAX_VERTEX_UNIFORM_VECTORS)),
+								ALIASED_LINE_WIDTH_RANGE: attempt(() => [...gl.getParameter(gl.ALIASED_LINE_WIDTH_RANGE)]),
+								ALIASED_POINT_SIZE_RANGE: attempt(() => [...gl.getParameter(gl.ALIASED_POINT_SIZE_RANGE)]),
+								MAX_VIEWPORT_DIMS: attempt(() => [...gl.getParameter(gl.MAX_VIEWPORT_DIMS)]),
+								MAX_TEXTURE_MAX_ANISOTROPY_EXT: attempt(() => getMaxAnisotropy(gl)),
+								...getShaderData('VERTEX_SHADER', getShaderPrecisionFormat(gl, 'VERTEX_SHADER')),
+								...getShaderData('FRAGMENT_SHADER', getShaderPrecisionFormat(gl, 'FRAGMENT_SHADER')),
+								MAX_DRAW_BUFFERS_WEBGL: attempt(() => {
+									const buffers = gl.getExtension('WEBGL_draw_buffers')
+									return buffers ? gl.getParameter(buffers.MAX_DRAW_BUFFERS_WEBGL) : undefined
+								})
+							}
+							return camelCaseProps(data)
+						}
+
+						const getWebgl2Specs = gl => {
+							if (!caniuse(gl, ['getParameter'])) {
+								return undefined
+							}
+							const data = {
+								MAX_VERTEX_UNIFORM_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_VERTEX_UNIFORM_COMPONENTS)),
+								MAX_VERTEX_UNIFORM_BLOCKS: attempt(() => gl.getParameter(gl.MAX_VERTEX_UNIFORM_BLOCKS)),
+								MAX_VERTEX_OUTPUT_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_VERTEX_OUTPUT_COMPONENTS)),
+								MAX_VARYING_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_VARYING_COMPONENTS)),
+								MAX_FRAGMENT_UNIFORM_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_COMPONENTS)),
+								MAX_FRAGMENT_UNIFORM_BLOCKS: attempt(() => gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_BLOCKS)),
+								MAX_FRAGMENT_INPUT_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_FRAGMENT_INPUT_COMPONENTS)),
+								MIN_PROGRAM_TEXEL_OFFSET: attempt(() => gl.getParameter(gl.MIN_PROGRAM_TEXEL_OFFSET)),
+								MAX_PROGRAM_TEXEL_OFFSET: attempt(() => gl.getParameter(gl.MAX_PROGRAM_TEXEL_OFFSET)),
+								MAX_DRAW_BUFFERS: attempt(() => gl.getParameter(gl.MAX_DRAW_BUFFERS)),
+								MAX_COLOR_ATTACHMENTS: attempt(() => gl.getParameter(gl.MAX_COLOR_ATTACHMENTS)),
+								MAX_SAMPLES: attempt(() => gl.getParameter(gl.MAX_SAMPLES)),
+								MAX_3D_TEXTURE_SIZE: attempt(() => gl.getParameter(gl.MAX_3D_TEXTURE_SIZE)),
+								MAX_ARRAY_TEXTURE_LAYERS: attempt(() => gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS)),
+								MAX_TEXTURE_LOD_BIAS: attempt(() => gl.getParameter(gl.MAX_TEXTURE_LOD_BIAS)),
+								MAX_UNIFORM_BUFFER_BINDINGS: attempt(() => gl.getParameter(gl.MAX_UNIFORM_BUFFER_BINDINGS)),
+								MAX_UNIFORM_BLOCK_SIZE: attempt(() => gl.getParameter(gl.MAX_UNIFORM_BLOCK_SIZE)),
+								UNIFORM_BUFFER_OFFSET_ALIGNMENT: attempt(() => gl.getParameter(gl.UNIFORM_BUFFER_OFFSET_ALIGNMENT)),
+								MAX_COMBINED_UNIFORM_BLOCKS: attempt(() => gl.getParameter(gl.MAX_COMBINED_UNIFORM_BLOCKS)),
+								MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS)),
+								MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS)),
+								MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS)),
+								MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS: attempt(() => gl.getParameter(gl.MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS)),
+								MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS)),
+								MAX_ELEMENT_INDEX: attempt(() => gl.getParameter(gl.MAX_ELEMENT_INDEX)),
+								MAX_SERVER_WAIT_TIMEOUT: attempt(() => gl.getParameter(gl.MAX_SERVER_WAIT_TIMEOUT))
+							}
+							return camelCaseProps(data)
+						}
+						const data = { webglSpecs: getWebglSpecs(webgl), webgl2Specs: getWebgl2Specs(webgl2) }
+						return resolve(data)
+					})
 				}
+
+				const getUnmasked = (context, [paramLie, extLie], [rendererTitle, vendorTitle]) => {
+					return new Promise(async resolve => {
+						try {
+							if (!context) {
+								return resolve({
+									vendor: undefined,
+									renderer: undefined
+								})
+							}
+							const extension = caniuse(context, ['getExtension'], ['WEBGL_debug_renderer_info'], true)
+							const vendor = extension && context.getParameter(extension.UNMASKED_VENDOR_WEBGL)
+							const renderer = extension && context.getParameter(extension.UNMASKED_RENDERER_WEBGL)
+							const validate = (value, title) => {
+								return (
+									isBrave ? sendToTrash(title, value) :
+									!proxyBehavior(value) ? value : 
+									sendToTrash(title, 'proxy behavior detected')
+								)
+							}
+							if (!paramLie && !extLie) {
+								return resolve ({
+									vendor: validate(vendor, vendorTitle),
+									renderer: validate(renderer, rendererTitle)
+								})
+							}
+							// document lie and send to trash
+							const webglVendorAndRenderer = `${vendor}, ${renderer}`
+							const paramTitle = `${vendorTitle}And${rendererTitle}Parameter`
+							const extTitle = `${vendorTitle}And${rendererTitle}Extension`
+							if (paramLie) { 
+								documentLie(paramTitle, webglVendorAndRenderer, paramLie)
+								sendToTrash(paramTitle, webglVendorAndRenderer)
+							}
+							if (extLie) {
+								documentLie(extTitle, webglVendorAndRenderer, extLie)
+								sendToTrash(extTitle, webglVendorAndRenderer)
+							}
+							// Fingerprint lie
+							return resolve({
+								vendor: { paramLie, extLie },
+								renderer: { paramLie, extLie }
+							})
+						}
+						catch (error) {
+							captureError(error)
+							return resolve({
+								vendor: isBrave ? sendToTrash(vendorTitle, null) : undefined,
+								renderer: isBrave ? sendToTrash(rendererTitle, null) : undefined
+							})
+						}
+					})
+				}
+				const getDataURL = (canvas, context, [dataLie, contextLie], [canvasTitle, contextTitle]) => {
+					return new Promise(async resolve => {
+						try {
+							if (!context) {
+								resolve(undefined)
+							}
+							let canvasWebglDataURI = ''
+							if (!dataLie && !contextLie) {
+								const colorBufferBit = caniuse(context, ['COLOR_BUFFER_BIT'])
+								caniuse(context, ['clearColor'], [0.2, 0.4, 0.6, 0.8], true)
+								caniuse(context, ['clear'], [colorBufferBit], true)
+								canvasWebglDataURI = canvas.toDataURL()
+								const dataURI = (
+									isBrave || isFirefox ? sendToTrash(canvasTitle, hashMini(canvasWebglDataURI)) : canvasWebglDataURI
+								)
+								const $hash = await hashify(dataURI)
+								return resolve({ dataURI, $hash })
+							}
+							// document lie and send to trash
+							canvasWebglDataURI = canvas.toDataURL()
+							const hash = hashMini(canvasWebglDataURI)
+							if (contextLie) {
+								documentLie(contextTitle, hash, contextLie)
+								sendToTrash(contextTitle, hash)
+							}
+							if (dataLie) {
+								documentLie(canvasTitle, hash, dataLie)
+								sendToTrash(canvasTitle, hash)
+							}
+							// fingerprint lie
+							const data = { contextLie, dataLie }
+							const $hash = await hashify(data)
+							return resolve({ ...data, $hash })
+						}
+						catch (error) {
+							return captureError(error)
+						}
+					})
+				}
+
+				const [
+					supported,
+					supported2,
+					unmasked,
+					unmasked2,
+					dataURI,
+					dataURI2,
+					specs
+				] = await Promise.all([
+					getSupportedExtensions(context, supportedExtLie, 'webglSupportedExtensions'),
+					getSupportedExtensions(context2, supportedExt2Lie, 'webgl2SupportedExtensions'),
+					getUnmasked(context, [paramLie, extLie], ['webglRenderer', 'webglVendor']),
+					getUnmasked(context2, [param2Lie, ext2Lie], ['webgl2Renderer', 'webgl2Vendor']),
+					getDataURL(canvas, context, [dataLie, contextLie], ['canvasWebglDataURI', 'canvasWebglContextDataURI']),
+					getDataURL(canvas2, context2, [dataLie, contextLie], ['canvasWebgl2DataURI', 'canvasWebgl2ContextDataURI']),
+					getSpecs([context, context2])
+				]).catch(error => {
+					console.error(error.message)
+				})
 				const data = {
-					MAX_VERTEX_UNIFORM_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_VERTEX_UNIFORM_COMPONENTS)),
-					MAX_VERTEX_UNIFORM_BLOCKS: attempt(() => gl.getParameter(gl.MAX_VERTEX_UNIFORM_BLOCKS)),
-					MAX_VERTEX_OUTPUT_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_VERTEX_OUTPUT_COMPONENTS)),
-					MAX_VARYING_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_VARYING_COMPONENTS)),
-					MAX_FRAGMENT_UNIFORM_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_COMPONENTS)),
-					MAX_FRAGMENT_UNIFORM_BLOCKS: attempt(() => gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_BLOCKS)),
-					MAX_FRAGMENT_INPUT_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_FRAGMENT_INPUT_COMPONENTS)),
-					MIN_PROGRAM_TEXEL_OFFSET: attempt(() => gl.getParameter(gl.MIN_PROGRAM_TEXEL_OFFSET)),
-					MAX_PROGRAM_TEXEL_OFFSET: attempt(() => gl.getParameter(gl.MAX_PROGRAM_TEXEL_OFFSET)),
-					MAX_DRAW_BUFFERS: attempt(() => gl.getParameter(gl.MAX_DRAW_BUFFERS)),
-					MAX_COLOR_ATTACHMENTS: attempt(() => gl.getParameter(gl.MAX_COLOR_ATTACHMENTS)),
-					MAX_SAMPLES: attempt(() => gl.getParameter(gl.MAX_SAMPLES)),
-					MAX_3D_TEXTURE_SIZE: attempt(() => gl.getParameter(gl.MAX_3D_TEXTURE_SIZE)),
-					MAX_ARRAY_TEXTURE_LAYERS: attempt(() => gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS)),
-					MAX_TEXTURE_LOD_BIAS: attempt(() => gl.getParameter(gl.MAX_TEXTURE_LOD_BIAS)),
-					MAX_UNIFORM_BUFFER_BINDINGS: attempt(() => gl.getParameter(gl.MAX_UNIFORM_BUFFER_BINDINGS)),
-					MAX_UNIFORM_BLOCK_SIZE: attempt(() => gl.getParameter(gl.MAX_UNIFORM_BLOCK_SIZE)),
-					UNIFORM_BUFFER_OFFSET_ALIGNMENT: attempt(() => gl.getParameter(gl.UNIFORM_BUFFER_OFFSET_ALIGNMENT)),
-					MAX_COMBINED_UNIFORM_BLOCKS: attempt(() => gl.getParameter(gl.MAX_COMBINED_UNIFORM_BLOCKS)),
-					MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS)),
-					MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS)),
-					MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS)),
-					MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS: attempt(() => gl.getParameter(gl.MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS)),
-					MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS)),
-					MAX_ELEMENT_INDEX: attempt(() => gl.getParameter(gl.MAX_ELEMENT_INDEX)),
-					MAX_SERVER_WAIT_TIMEOUT: attempt(() => gl.getParameter(gl.MAX_SERVER_WAIT_TIMEOUT))
+					supported: supported,
+					supported2: supported2,
+					unmasked: unmasked,
+					unmasked2: unmasked2,
+					toDataURL: dataURI,
+					toDataURL2: dataURI2,
+					specs: specs
 				}
-				return camelCaseProps(data)
-			}
-			return { webglSpecs: getWebglSpecs(webgl), webgl2Specs: getWebgl2Specs(webgl2) }
-		}
-
-		const getUnmasked = (context, [paramLie, extLie], [rendererTitle, vendorTitle]) => {
-			if (!context) {
-				return {
-					vendor: undefined,
-					renderer: undefined
-				}
-			}
-			try {
-				const extension = caniuse(context, ['getExtension'], ['WEBGL_debug_renderer_info'], true)
-				const vendor = extension && context.getParameter(extension.UNMASKED_VENDOR_WEBGL)
-				const renderer = extension && context.getParameter(extension.UNMASKED_RENDERER_WEBGL)
-				const validate = (value, title) => {
-					return (
-						isBrave ? sendToTrash(title, value) :
-						!proxyBehavior(value) ? value : 
-						sendToTrash(title, 'proxy behavior detected')
-					)
-				}
-
-				if (!paramLie && !extLie) {
-					return {
-						vendor: validate(vendor, vendorTitle),
-						renderer: validate(renderer, rendererTitle)
-					}
-				}
-
-				// document lie and send to trash
-				const webglVendorAndRenderer = `${vendor}, ${renderer}`
-				const paramTitle = `${vendorTitle}And${rendererTitle}Parameter`
-				const extTitle = `${vendorTitle}And${rendererTitle}Extension`
-				if (paramLie) { 
-					documentLie(paramTitle, webglVendorAndRenderer, paramLie)
-					sendToTrash(paramTitle, webglVendorAndRenderer)
-				}
-				if (extLie) {
-					documentLie(extTitle, webglVendorAndRenderer, extLie)
-					sendToTrash(extTitle, webglVendorAndRenderer)
-				}
-
-				// Fingerprint lie
-				return {
-					vendor: { paramLie, extLie },
-					renderer: { paramLie, extLie }
-				}
+				data.matching = (
+					JSON.stringify(data.unmasked) === JSON.stringify(data.unmasked2) &&
+					data.dataURI === data.dataURI2
+				)
+				const $hash = await hashify(data)
+				return resolve({ ...data, $hash })
 			}
 			catch (error) {
 				captureError(error)
-				return {
-					vendor: isBrave ? sendToTrash(vendorTitle, null) : undefined,
-					renderer: isBrave ? sendToTrash(rendererTitle, null) : undefined
-				}
+				return resolve(undefined)
 			}
-		}
-		const getDataURL = (canvas, context, [dataLie, contextLie], [canvasTitle, contextTitle]) => {
-			if (!context) {
-				return undefined
-			}
-			try {
-				let canvasWebglDataURI = ''
-
-				if (!dataLie && !contextLie) {
-					const colorBufferBit = caniuse(context, ['COLOR_BUFFER_BIT'])
-					caniuse(context, ['clearColor'], [0.2, 0.4, 0.6, 0.8], true)
-					caniuse(context, ['clear'], [colorBufferBit], true)
-					canvasWebglDataURI = canvas.toDataURL()
-					return (
-						isBrave || isFirefox ? sendToTrash(canvasTitle, hashMini(canvasWebglDataURI)) : canvasWebglDataURI
-					)
-				}
-				
-				// document lie and send to trash
-				canvasWebglDataURI = canvas.toDataURL()
-				if (contextLie) {
-					const hash = hashMini(canvasWebglDataURI)
-					documentLie(contextTitle, hash, contextLie)
-					sendToTrash(contextTitle, hash)
-				}
-				if (dataLie) {
-					const hash = hashMini(canvasWebglDataURI)
-					documentLie(canvasTitle, hash, dataLie)
-					sendToTrash(canvasTitle, hash)
-				}
-
-				// fingerprint lie
-				return { dataLie, contextLie }
-			}
-			catch (error) {
-				return captureError(error)
-			}
-		}
-
-		return {
-			supported: getSupportedExtensions(context, supportedExtLie, 'webglSupportedExtensions'),
-			supported2: getSupportedExtensions(context2, supportedExt2Lie, 'webgl2SupportedExtensions'),
-			unmasked: getUnmasked(context, [paramLie, extLie], ['webglRenderer', 'webglVendor']),
-			unmasked2: getUnmasked(context2, [param2Lie, ext2Lie], ['webgl2Renderer', 'webgl2Vendor']),
-			dataURL: getDataURL(canvas, context, [dataLie, contextLie], ['canvasWebglDataURI', 'canvasWebglContextDataURI']),
-			dataURL2: getDataURL(canvas2, context2, [dataLie, contextLie], ['canvasWebgl2DataURI', 'canvasWebgl2ContextDataURI']),
-			matching: function() {
-				return (
-					JSON.stringify(this.unmasked) === JSON.stringify(this.unmasked2) &&
-					this.dataURL === this.dataURL2
-				)
-			},
-			specs: getSpecs([context, context2])
-		}
-		
+		})
 	}
 
 	// maths
-	const maths = () => {
-		const n = 0.123
-		const bigN = 5.860847362277284e+38
-		const fns = [
-			['acos', [n], `acos(${n})`, 1.4474840516030247],
-			['acos', [Math.SQRT1_2], 'acos(Math.SQRT1_2)', 0.7853981633974483],
-			
-			['acosh', [1e308], 'acosh(1e308)', 709.889355822726],
-			['acosh', [Math.PI], 'acosh(Math.PI)', 1.811526272460853],
-			['acosh', [Math.SQRT2], 'acosh(Math.SQRT2)', 0.881373587019543],
+	const getMaths = () => {
+		return new Promise(async resolve => {
+			try {
+				const n = 0.123
+				const bigN = 5.860847362277284e+38
+				const fns = [
+					['acos', [n], `acos(${n})`, 1.4474840516030247],
+					['acos', [Math.SQRT1_2], 'acos(Math.SQRT1_2)', 0.7853981633974483],
+					
+					['acosh', [1e308], 'acosh(1e308)', 709.889355822726],
+					['acosh', [Math.PI], 'acosh(Math.PI)', 1.811526272460853],
+					['acosh', [Math.SQRT2], 'acosh(Math.SQRT2)', 0.881373587019543],
 
-			['asin', [n], `asin(${n})`, 0.12331227519187199],
+					['asin', [n], `asin(${n})`, 0.12331227519187199],
 
-			['asinh', [1e300], 'asinh(1e308)', 691.4686750787736],
-			['asinh', [Math.PI], 'asinh(Math.PI)', 1.8622957433108482],
+					['asinh', [1e300], 'asinh(1e308)', 691.4686750787736],
+					['asinh', [Math.PI], 'asinh(Math.PI)', 1.8622957433108482],
 
-			['atan', [2], 'atan(2)', 1.1071487177940904],
-			['atan', [Math.PI], 'atan(Math.PI)', 1.2626272556789115],
+					['atan', [2], 'atan(2)', 1.1071487177940904],
+					['atan', [Math.PI], 'atan(Math.PI)', 1.2626272556789115],
 
-			['atanh', [0.5], 'atanh(0.5)', 0.5493061443340548],
+					['atanh', [0.5], 'atanh(0.5)', 0.5493061443340548],
 
-			['atan2', [1e-310, 2], 'atan2(1e-310, 2)', 5e-311],
-			['atan2', [Math.PI, 2], 'atan2(Math.PI)', 1.0038848218538872],
+					['atan2', [1e-310, 2], 'atan2(1e-310, 2)', 5e-311],
+					['atan2', [Math.PI, 2], 'atan2(Math.PI)', 1.0038848218538872],
 
-			['cbrt', [100], 'cbrt(100)', 4.641588833612779],
-			['cbrt', [Math.PI], 'cbrt(Math.PI)', 1.4645918875615231],
-			
-			['cos', [n], `cos(${n})`, 0.9924450321351935],
-			['cos', [Math.PI], 'cos(Math.PI)', -1],
-			['cos', [bigN], `cos(${bigN})`, -0.10868049424995659, -0.10868049424995659, -0.9779661551196617], // unique in Tor
+					['cbrt', [100], 'cbrt(100)', 4.641588833612779],
+					['cbrt', [Math.PI], 'cbrt(Math.PI)', 1.4645918875615231],
+					
+					['cos', [n], `cos(${n})`, 0.9924450321351935],
+					['cos', [Math.PI], 'cos(Math.PI)', -1],
+					['cos', [bigN], `cos(${bigN})`, -0.10868049424995659, -0.10868049424995659, -0.9779661551196617], // unique in Tor
 
-			['cosh', [1], 'cosh(1)', 1.5430806348152437],
-			['cosh', [Math.PI], 'cosh(Math.PI)', 11.591953275521519],
+					['cosh', [1], 'cosh(1)', 1.5430806348152437],
+					['cosh', [Math.PI], 'cosh(Math.PI)', 11.591953275521519],
 
-			['expm1', [1], 'expm1(1)', 1.718281828459045],
-			['expm1', [Math.PI], 'expm1(Math.PI)', 22.140692632779267],
+					['expm1', [1], 'expm1(1)', 1.718281828459045],
+					['expm1', [Math.PI], 'expm1(Math.PI)', 22.140692632779267],
 
-			['exp', [n], `exp(${n})`, 1.1308844209474893],
-			['exp', [Math.PI], 'exp(Math.PI)', 23.140692632779267],
+					['exp', [n], `exp(${n})`, 1.1308844209474893],
+					['exp', [Math.PI], 'exp(Math.PI)', 23.140692632779267],
 
-			['hypot', [1, 2, 3, 4, 5, 6], 'hypot(1, 2, 3, 4, 5, 6)', 9.539392014169456],
-			['hypot', [bigN, bigN], `hypot(${bigN}, ${bigN})`, 8.288489826731116e+38, 8.288489826731114e+38],
+					['hypot', [1, 2, 3, 4, 5, 6], 'hypot(1, 2, 3, 4, 5, 6)', 9.539392014169456],
+					['hypot', [bigN, bigN], `hypot(${bigN}, ${bigN})`, 8.288489826731116e+38, 8.288489826731114e+38],
 
-			['log', [n], `log(${n})`, -2.0955709236097197],
-			['log', [Math.PI], 'log(Math.PI)', 1.1447298858494002],
+					['log', [n], `log(${n})`, -2.0955709236097197],
+					['log', [Math.PI], 'log(Math.PI)', 1.1447298858494002],
 
-			['log1p', [n], `log1p(${n})`, 0.11600367575630613],
-			['log1p', [Math.PI], 'log1p(Math.PI)', 1.4210804127942926],
+					['log1p', [n], `log1p(${n})`, 0.11600367575630613],
+					['log1p', [Math.PI], 'log1p(Math.PI)', 1.4210804127942926],
 
-			['log10', [n], `log10(${n})`, -0.9100948885606021],
-			['log10', [Math.PI], 'log10(Math.PI)', 0.4971498726941338, 0.49714987269413385],
-			['log10', [Math.E], 'log10(Math.E])', 0.4342944819032518],
-			['log10', [Math.LN2], 'log10(Math.LN2)', -0.1591745389548616],
-			['log10', [Math.LOG2E], 'log10(Math.LOG2E)', 0.15917453895486158],
-			['log10', [Math.LOG10E], 'log10(Math.LOG10E)', -0.36221568869946325],
-			['log10', [Math.SQRT1_2], 'log10(Math.SQRT1_2)', -0.15051499783199057],
-			['log10', [Math.SQRT2], 'log10(Math.SQRT2)', 0.1505149978319906, 0.15051499783199063],
-			
-			['sin', [bigN], `sin(${bigN})`, 0.994076732536068, 0.994076732536068, -0.20876350121720488], // unique in Tor
-			['sin', [Math.PI], 'sin(Math.PI)', 1.2246467991473532e-16, 1.2246467991473532e-16, 1.2246063538223773e-16], // unique in Tor
-			['sin', [Math.E], 'sin(Math.E])', 0.41078129050290885],
-			['sin', [Math.LN2], 'sin(Math.LN2)', 0.6389612763136348],
-			['sin', [Math.LOG2E], 'sin(Math.LOG2E)', 0.9918062443936637],
-			['sin', [Math.LOG10E], 'sin(Math.LOG10E)', 0.4207704833137573],
-			['sin', [Math.SQRT1_2], 'sin(Math.SQRT1_2)', 0.6496369390800625],
-			['sin', [Math.SQRT2], 'sin(Math.SQRT2)', 0.9877659459927356],
-			
-			['sinh', [1], 'sinh(1)', 1.1752011936438014],
-			['sinh', [Math.PI], 'sinh(Math.PI)', 11.548739357257748],
-			['sinh', [Math.E], 'sinh(Math.E])', 7.544137102816975],
-			['sinh', [Math.LN2], 'sinh(Math.LN2)', 0.75],
-			['sinh', [Math.LOG2E], 'sinh(Math.LOG2E)', 1.9978980091062795],
-			['sinh', [Math.LOG10E], 'sinh(Math.LOG10E)', 0.44807597941469024],
-			['sinh', [Math.SQRT1_2], 'sinh(Math.SQRT1_2)', 0.7675231451261164],
-			['sinh', [Math.SQRT2], 'sinh(Math.SQRT2)', 1.935066822174357],
-			
-			['sqrt', [n], `sqrt(${n})`, 0.3507135583350036],
-			['sqrt', [Math.PI], 'sqrt(Math.PI)', 1.7724538509055159],
-			
-			['tan', [-1e308], 'tan(-1e308)', 0.5086861259107568],
-			['tan', [Math.PI], 'tan(Math.PI)', -1.2246467991473532e-16],
+					['log10', [n], `log10(${n})`, -0.9100948885606021],
+					['log10', [Math.PI], 'log10(Math.PI)', 0.4971498726941338, 0.49714987269413385],
+					['log10', [Math.E], 'log10(Math.E])', 0.4342944819032518],
+					['log10', [Math.LN2], 'log10(Math.LN2)', -0.1591745389548616],
+					['log10', [Math.LOG2E], 'log10(Math.LOG2E)', 0.15917453895486158],
+					['log10', [Math.LOG10E], 'log10(Math.LOG10E)', -0.36221568869946325],
+					['log10', [Math.SQRT1_2], 'log10(Math.SQRT1_2)', -0.15051499783199057],
+					['log10', [Math.SQRT2], 'log10(Math.SQRT2)', 0.1505149978319906, 0.15051499783199063],
+					
+					['sin', [bigN], `sin(${bigN})`, 0.994076732536068, 0.994076732536068, -0.20876350121720488], // unique in Tor
+					['sin', [Math.PI], 'sin(Math.PI)', 1.2246467991473532e-16, 1.2246467991473532e-16, 1.2246063538223773e-16], // unique in Tor
+					['sin', [Math.E], 'sin(Math.E])', 0.41078129050290885],
+					['sin', [Math.LN2], 'sin(Math.LN2)', 0.6389612763136348],
+					['sin', [Math.LOG2E], 'sin(Math.LOG2E)', 0.9918062443936637],
+					['sin', [Math.LOG10E], 'sin(Math.LOG10E)', 0.4207704833137573],
+					['sin', [Math.SQRT1_2], 'sin(Math.SQRT1_2)', 0.6496369390800625],
+					['sin', [Math.SQRT2], 'sin(Math.SQRT2)', 0.9877659459927356],
+					
+					['sinh', [1], 'sinh(1)', 1.1752011936438014],
+					['sinh', [Math.PI], 'sinh(Math.PI)', 11.548739357257748],
+					['sinh', [Math.E], 'sinh(Math.E])', 7.544137102816975],
+					['sinh', [Math.LN2], 'sinh(Math.LN2)', 0.75],
+					['sinh', [Math.LOG2E], 'sinh(Math.LOG2E)', 1.9978980091062795],
+					['sinh', [Math.LOG10E], 'sinh(Math.LOG10E)', 0.44807597941469024],
+					['sinh', [Math.SQRT1_2], 'sinh(Math.SQRT1_2)', 0.7675231451261164],
+					['sinh', [Math.SQRT2], 'sinh(Math.SQRT2)', 1.935066822174357],
+					
+					['sqrt', [n], `sqrt(${n})`, 0.3507135583350036],
+					['sqrt', [Math.PI], 'sqrt(Math.PI)', 1.7724538509055159],
+					
+					['tan', [-1e308], 'tan(-1e308)', 0.5086861259107568],
+					['tan', [Math.PI], 'tan(Math.PI)', -1.2246467991473532e-16],
 
-			['tanh', [n], `tanh(${n})`, 0.12238344189440875],
-			['tanh', [Math.PI], 'tanh(Math.PI)', 0.99627207622075],
+					['tanh', [n], `tanh(${n})`, 0.12238344189440875],
+					['tanh', [Math.PI], 'tanh(Math.PI)', 0.99627207622075],
 
-			['pow', [n, -100], `pow(${n}, -100)`, 1.022089333584519e+91, 1.0220893335845176e+91],
-			['pow', [Math.PI, -100], 'pow(Math.PI, -100)', 1.9275814160560204e-50, 1.9275814160560185e-50],
-			['pow', [Math.E, -100], 'pow(Math.E, -100)', 3.7200759760208555e-44, 3.720075976020851e-44],
-			['pow', [Math.LN2, -100], 'pow(Math.LN2, -100)', 8269017203802394, 8269017203802410],
-			['pow', [Math.LN10, -100], 'pow(Math.LN10, -100)', 6.003867926738829e-37, 6.003867926738811e-37],
-			['pow', [Math.LOG2E, -100], 'pow(Math.LOG2E, -100)', 1.20933355845501e-16, 1.2093335584550061e-16],
-			['pow', [Math.LOG10E, -100], 'pow(Math.LOG10E, -100)', 1.6655929347585958e+36, 1.665592934758592e+36],
-			['pow', [Math.SQRT1_2, -100], 'pow(Math.SQRT1_2, -100)', 1125899906842616.2, 1125899906842611.5],
-			['pow', [Math.SQRT2, -100], 'pow(Math.SQRT2, -100)', 8.881784197001191e-16, 8.881784197001154e-16]
-		]
-		const data = {}
-		fns.forEach(fn => {
-			data[fn[2]] = attempt(() => {
-				const result = Math[fn[0]](...fn[1])
-				const chromeV8 = result == fn[3]
-				const firefoxSpiderMonkey = fn[4] ? result == fn[4] : chromeV8
-				const other = fn[5] ? result != fn[5] : true
-				return { result, chromeV8, firefoxSpiderMonkey, other }
-			})
+					['pow', [n, -100], `pow(${n}, -100)`, 1.022089333584519e+91, 1.0220893335845176e+91],
+					['pow', [Math.PI, -100], 'pow(Math.PI, -100)', 1.9275814160560204e-50, 1.9275814160560185e-50],
+					['pow', [Math.E, -100], 'pow(Math.E, -100)', 3.7200759760208555e-44, 3.720075976020851e-44],
+					['pow', [Math.LN2, -100], 'pow(Math.LN2, -100)', 8269017203802394, 8269017203802410],
+					['pow', [Math.LN10, -100], 'pow(Math.LN10, -100)', 6.003867926738829e-37, 6.003867926738811e-37],
+					['pow', [Math.LOG2E, -100], 'pow(Math.LOG2E, -100)', 1.20933355845501e-16, 1.2093335584550061e-16],
+					['pow', [Math.LOG10E, -100], 'pow(Math.LOG10E, -100)', 1.6655929347585958e+36, 1.665592934758592e+36],
+					['pow', [Math.SQRT1_2, -100], 'pow(Math.SQRT1_2, -100)', 1125899906842616.2, 1125899906842611.5],
+					['pow', [Math.SQRT2, -100], 'pow(Math.SQRT2, -100)', 8.881784197001191e-16, 8.881784197001154e-16]
+				]
+				const data = {}
+				fns.forEach(fn => {
+					data[fn[2]] = attempt(() => {
+						const result = Math[fn[0]](...fn[1])
+						const chromeV8 = result == fn[3]
+						const firefoxSpiderMonkey = fn[4] ? result == fn[4] : chromeV8
+						const other = fn[5] ? result != fn[5] : true
+						return { result, chromeV8, firefoxSpiderMonkey, other }
+					})
+				})
+				const $hash = await hashify(data)
+				return resolve({...data, $hash })
+			}
+			catch (error) {
+				captureError(error)
+				return resolve(undefined)
+			}
 		})
-		return data
 	}
 
 	// browser console errors
-	const consoleErrs = () => {
-		const getErrors = (errs, errFns) => {
-			let i, len = errFns.length
-			for (i = 0; i < len; i++) {
-				try {
-					errFns[i]()
-				} catch (err) {
-					errs.push(err.message)
-				}
+	const getErrors = (errs, errFns) => {
+		let i, len = errFns.length
+		for (i = 0; i < len; i++) {
+			try {
+				errFns[i]()
+			} catch (err) {
+				errs.push(err.message)
 			}
-			return errs
 		}
-		const errFns = [
-			() => eval('alert(")'),
-			() => eval('const foo;foo.bar'),
-			() => eval('null.bar'),
-			() => eval('abc.xyz = 123'),
-			() => eval('const foo;foo.bar'),
-			() => eval('(1).toString(1000)'),
-			() => eval('[...undefined].length'),
-			() => eval('var x = new Array(-1)'),
-			() => eval('const a=1; const a=2;')
-		]
-		return getErrors([], errFns)
+		return errs
+	}
+	const getConsoleErrors = () => {
+		return new Promise(async resolve => {
+			try {
+				const errorTests = [
+					() => eval('alert(")'),
+					() => eval('const foo;foo.bar'),
+					() => eval('null.bar'),
+					() => eval('abc.xyz = 123'),
+					() => eval('const foo;foo.bar'),
+					() => eval('(1).toString(1000)'),
+					() => eval('[...undefined].length'),
+					() => eval('var x = new Array(-1)'),
+					() => eval('const a=1; const a=2;')
+				]
+				const errors = getErrors([], errorTests)
+				const $hash = await hashify(errors)
+				return resolve({errors, $hash })
+			}
+			catch (error) {
+				captureError(error)
+				return resolve(undefined)
+			}
+		})
 	}
 
 	// timezone
-	const timezone = () => {
-		const computeTimezoneOffset = () => {
-			const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
-			const utc = Date.parse(toJSONParsed(new Date()).split`Z`.join``)
-			const now = +new Date()
-			return +(((utc - now)/60000).toFixed(2))
-		}		
-		const dateGetTimezoneOffset = attempt(() => Date.prototype.getTimezoneOffset)
-		const timezoneLie = dateGetTimezoneOffset ? hasLiedAPI(dateGetTimezoneOffset, 'getTimezoneOffset').lie : false
-		const timezoneOffset = new Date().getTimezoneOffset()
-		if (!timezoneLie) {
-			const timezoneOffsetComputed = computeTimezoneOffset()
-			const matching = timezoneOffsetComputed == timezoneOffset
-			const notWithinParentheses = /.*\(|\).*/g
-			const timezoneLocation = Intl.DateTimeFormat().resolvedOptions().timeZone
-			const timezone = (''+new Date()).replace(notWithinParentheses, '')
-			return { timezoneOffsetComputed, timezoneOffset, matching, timezoneLocation, timezone }
-		}
-
-		// document lie and send to trash
-		if (timezoneLie) {
-			documentLie('timezoneOffset', timezoneOffset, timezoneLie)
-		}
-		if (timezoneLie || !trusted) {
-			sendToTrash('timezoneOffset', timezoneOffset)
-		}
-
-		// Fingerprint lie
-		return { timezoneLie }
+	const getTimezone = () => {
+		return new Promise(async resolve => {
+			try {
+				const computeTimezoneOffset = () => {
+					const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
+					const utc = Date.parse(toJSONParsed(new Date()).split`Z`.join``)
+					const now = +new Date()
+					return +(((utc - now)/60000).toFixed(2))
+				}		
+				const dateGetTimezoneOffset = attempt(() => Date.prototype.getTimezoneOffset)
+				const timezoneLie = dateGetTimezoneOffset ? hasLiedAPI(dateGetTimezoneOffset, 'getTimezoneOffset').lie : false
+				const timezoneOffset = new Date().getTimezoneOffset()
+				if (!timezoneLie) {
+					const timezoneOffsetComputed = computeTimezoneOffset()
+					const matching = timezoneOffsetComputed == timezoneOffset
+					const notWithinParentheses = /.*\(|\).*/g
+					const timezoneLocation = Intl.DateTimeFormat().resolvedOptions().timeZone
+					const timezone = (''+new Date()).replace(notWithinParentheses, '')
+					const data =  {
+						timezoneOffsetComputed,
+						timezoneOffset,
+						matching,
+						timezoneLocation,
+						timezone
+					}
+					const $hash = await hashify(data)
+					return resolve({...data, $hash })
+				}
+				// document lie and send to trash
+				if (timezoneLie) {
+					documentLie('timezoneOffset', timezoneOffset, timezoneLie)
+				}
+				if (timezoneLie || !trusted) {
+					sendToTrash('timezoneOffset', timezoneOffset)
+				}
+				// Fingerprint lie
+				const $hash = await hashify(timezoneLie)
+				return resolve({timezoneLie, $hash })
+			}
+			catch (error) {
+				captureError(error)
+				return resolve(undefined)
+			}
+		})
 	}
 
 	// client rects
-	const cRects = () => {
-		const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
-		const rectContainer = document.getElementById('rect-container')
-		const removeRectsFromDom = () => rectContainer.parentNode.removeChild(rectContainer)
-		const elementGetClientRects = attempt(() => Element.prototype.getClientRects)
-		const rectsLie = (
-			elementGetClientRects ? hasLiedAPI(elementGetClientRects, 'getClientRects').lie : false
-		)
-		const rectElems = document.getElementsByClassName('rects')
-		const clientRects = [...rectElems].map(el => {
-			return toJSONParsed(el.getClientRects()[0])
+	const getClientRects = () => {
+		return new Promise(async resolve => {
+			try {
+				const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
+				const rectContainer = document.getElementById('rect-container')
+				const removeRectsFromDom = () => rectContainer.parentNode.removeChild(rectContainer)
+				const elementGetClientRects = attempt(() => Element.prototype.getClientRects)
+				const rectsLie = (
+					elementGetClientRects ? hasLiedAPI(elementGetClientRects, 'getClientRects').lie : false
+				)
+				const rectElems = document.getElementsByClassName('rects')
+				const clientRects = [...rectElems].map(el => {
+					return toJSONParsed(el.getClientRects()[0])
+				})
+				if (!rectsLie) {
+					removeRectsFromDom()
+					const $hash = await hashify(clientRects)
+					return resolve({clientRects, $hash })
+				}
+				// document lie and send to trash
+				if (rectsLie) {
+					documentLie('clientRects', hashMini(clientRects), rectsLie)
+					sendToTrash('clientRects', hashMini(clientRects))
+				}
+				// Fingerprint lie
+				removeRectsFromDom()
+				const $hash = await hashify(rectsLie)
+				return resolve({rectsLie, $hash })
+			}
+			catch (error) {
+				captureError(error)
+				return resolve(undefined)
+			}
 		})
-
-		if (!rectsLie) {
-			removeRectsFromDom()
-			return clientRects
-		}
-		
-		// document lie and send to trash
-		if (rectsLie) {
-			documentLie('clientRects', hashMini(clientRects), rectsLie)
-			sendToTrash('clientRects', hashMini(clientRects))
-		}
-
-		// Fingerprint lie
-		removeRectsFromDom()
-		return { rectsLie }
 	}
 
-	const offlineAudioOscillator = () => {
-		const promiseUndefined = new Promise(resolve => resolve(undefined))
-		const audioProcess = timer('')
-		
-		try {
-			if (!('OfflineAudioContext' in window || 'webkitOfflineAudioContext' in window)) {
-				return promiseUndefined
-			}
-			const audioBuffer = 'AudioBuffer' in window
-			const audioBufferGetChannelData = audioBuffer && attempt(() => AudioBuffer.prototype.getChannelData)
-			const audioBufferCopyFromChannel = audioBuffer && attempt(() => AudioBuffer.prototype.copyFromChannel)
-			const channelDataLie = (
-				audioBufferGetChannelData ? hasLiedAPI(audioBufferGetChannelData, 'getChannelData').lie : false
-			)
-			const copyFromChannelLie = (
-				audioBufferCopyFromChannel ? hasLiedAPI(audioBufferCopyFromChannel, 'copyFromChannel').lie : false
-			)
-			const audioContext = OfflineAudioContext || webkitOfflineAudioContext
-			const context = new audioContext(1, 44100, 44100)
-			const analyser = context.createAnalyser()
-			const oscillator = context.createOscillator()
-			const dynamicsCompressor = context.createDynamicsCompressor()
-			const biquadFilter = context.createBiquadFilter()
+	const getOfflineAudioContext = () => {
+		return new Promise(resolve => {
+			try {
+				if (!('OfflineAudioContext' in window || 'webkitOfflineAudioContext' in window)) {
+					return promiseUndefined
+				}
+				const audioBuffer = 'AudioBuffer' in window
+				const audioBufferGetChannelData = audioBuffer && attempt(() => AudioBuffer.prototype.getChannelData)
+				const audioBufferCopyFromChannel = audioBuffer && attempt(() => AudioBuffer.prototype.copyFromChannel)
+				const channelDataLie = (
+					audioBufferGetChannelData ? hasLiedAPI(audioBufferGetChannelData, 'getChannelData').lie : false
+				)
+				const copyFromChannelLie = (
+					audioBufferCopyFromChannel ? hasLiedAPI(audioBufferCopyFromChannel, 'copyFromChannel').lie : false
+				)
+				const audioContext = OfflineAudioContext || webkitOfflineAudioContext
+				const context = new audioContext(1, 44100, 44100)
+				const analyser = context.createAnalyser()
+				const oscillator = context.createOscillator()
+				const dynamicsCompressor = context.createDynamicsCompressor()
+				const biquadFilter = context.createBiquadFilter()
 
-			oscillator.type = 'triangle'
-			oscillator.frequency.value = 10000
+				oscillator.type = 'triangle'
+				oscillator.frequency.value = 10000
 
-			if (dynamicsCompressor.threshold) { dynamicsCompressor.threshold.value = -50 }
-			if (dynamicsCompressor.knee) { dynamicsCompressor.knee.value = 40 }
-			if (dynamicsCompressor.ratio) { dynamicsCompressor.ratio.value = 12 }
-			if (dynamicsCompressor.reduction) { dynamicsCompressor.reduction.value = -20 }
-			if (dynamicsCompressor.attack) { dynamicsCompressor.attack.value = 0 }
-			if (dynamicsCompressor.release) { dynamicsCompressor.release.value = 0.25 }
+				if (dynamicsCompressor.threshold) { dynamicsCompressor.threshold.value = -50 }
+				if (dynamicsCompressor.knee) { dynamicsCompressor.knee.value = 40 }
+				if (dynamicsCompressor.ratio) { dynamicsCompressor.ratio.value = 12 }
+				if (dynamicsCompressor.reduction) { dynamicsCompressor.reduction.value = -20 }
+				if (dynamicsCompressor.attack) { dynamicsCompressor.attack.value = 0 }
+				if (dynamicsCompressor.release) { dynamicsCompressor.release.value = 0.25 }
 
-			oscillator.connect(dynamicsCompressor)
-			dynamicsCompressor.connect(context.destination)
-			oscillator.start(0)
-			context.startRendering()
+				oscillator.connect(dynamicsCompressor)
+				dynamicsCompressor.connect(context.destination)
+				oscillator.start(0)
+				context.startRendering()
 
-			let copySample = []
-			let binsSample = []
-			let matching = false
-			
-			const values = {
-				['analyserNode.channelCount']: attempt(() => analyser.channelCount),
-				['analyserNode.channelCountMode']: attempt(() => analyser.channelCountMode),
-				['analyserNode.channelInterpretation']: attempt(() => analyser.channelInterpretation),
-				['analyserNode.context.sampleRate']: attempt(() => analyser.context.sampleRate),
-				['analyserNode.fftSize']: attempt(() => analyser.fftSize),
-				['analyserNode.frequencyBinCount']: attempt(() => analyser.frequencyBinCount),
-				['analyserNode.maxDecibels']: attempt(() => analyser.maxDecibels),
-				['analyserNode.minDecibels']: attempt(() => analyser.minDecibels),
-				['analyserNode.numberOfInputs']: attempt(() => analyser.numberOfInputs),
-				['analyserNode.numberOfOutputs']: attempt(() => analyser.numberOfOutputs),
-				['analyserNode.smoothingTimeConstant']: attempt(() => analyser.smoothingTimeConstant),
-				['analyserNode.context.listener.forwardX.maxValue']: attempt(() => {
-					const chain = ['context', 'listener', 'forwardX', 'maxValue']
-					return caniuse(analyser, chain)
-				}),
-				['biquadFilterNode.gain.maxValue']: attempt(() => biquadFilter.gain.maxValue),
-				['biquadFilterNode.frequency.defaultValue']: attempt(() => biquadFilter.frequency.defaultValue),
-				['biquadFilterNode.frequency.maxValue']: attempt(() => biquadFilter.frequency.maxValue),
-				['dynamicsCompressorNode.attack.defaultValue']: attempt(() => dynamicsCompressor.attack.defaultValue),
-				['dynamicsCompressorNode.knee.defaultValue']: attempt(() => dynamicsCompressor.knee.defaultValue),
-				['dynamicsCompressorNode.knee.maxValue']: attempt(() => dynamicsCompressor.knee.maxValue),
-				['dynamicsCompressorNode.ratio.defaultValue']: attempt(() => dynamicsCompressor.ratio.defaultValue),
-				['dynamicsCompressorNode.ratio.maxValue']: attempt(() => dynamicsCompressor.ratio.maxValue),
-				['dynamicsCompressorNode.release.defaultValue']: attempt(() => dynamicsCompressor.release.defaultValue),
-				['dynamicsCompressorNode.release.maxValue']: attempt(() => dynamicsCompressor.release.maxValue),
-				['dynamicsCompressorNode.threshold.defaultValue']: attempt(() => dynamicsCompressor.threshold.defaultValue),
-				['dynamicsCompressorNode.threshold.minValue']: attempt(() => dynamicsCompressor.threshold.minValue),
-				['oscillatorNode.detune.maxValue']: attempt(() => oscillator.detune.maxValue),
-				['oscillatorNode.detune.minValue']: attempt(() => oscillator.detune.minValue),
-				['oscillatorNode.frequency.defaultValue']: attempt(() => oscillator.frequency.defaultValue),
-				['oscillatorNode.frequency.maxValue']: attempt(() => oscillator.frequency.maxValue),
-				['oscillatorNode.frequency.minValue']: attempt(() => oscillator.frequency.minValue)
-			}
-			
-			return new Promise(resolve => {
-				context.oncomplete = event => {
-					try {
-						const copy = new Float32Array(44100)
-						event.renderedBuffer.copyFromChannel(copy, 0)
-						const bins = event.renderedBuffer.getChannelData(0)
-						
-						copySample = copy ? [...copy].slice(4500, 4600) : [sendToTrash('audioCopy', null)]
-						binsSample = bins ? [...bins].slice(4500, 4600) : [sendToTrash('audioSample', null)]
-						
-						const copyJSON = copy && JSON.stringify([...copy].slice(4500, 4600))
-						const binsJSON = bins && JSON.stringify([...bins].slice(4500, 4600))
+				let copySample = []
+				let binsSample = []
+				let matching = false
+				
+				const values = {
+					['analyserNode.channelCount']: attempt(() => analyser.channelCount),
+					['analyserNode.channelCountMode']: attempt(() => analyser.channelCountMode),
+					['analyserNode.channelInterpretation']: attempt(() => analyser.channelInterpretation),
+					['analyserNode.context.sampleRate']: attempt(() => analyser.context.sampleRate),
+					['analyserNode.fftSize']: attempt(() => analyser.fftSize),
+					['analyserNode.frequencyBinCount']: attempt(() => analyser.frequencyBinCount),
+					['analyserNode.maxDecibels']: attempt(() => analyser.maxDecibels),
+					['analyserNode.minDecibels']: attempt(() => analyser.minDecibels),
+					['analyserNode.numberOfInputs']: attempt(() => analyser.numberOfInputs),
+					['analyserNode.numberOfOutputs']: attempt(() => analyser.numberOfOutputs),
+					['analyserNode.smoothingTimeConstant']: attempt(() => analyser.smoothingTimeConstant),
+					['analyserNode.context.listener.forwardX.maxValue']: attempt(() => {
+						const chain = ['context', 'listener', 'forwardX', 'maxValue']
+						return caniuse(analyser, chain)
+					}),
+					['biquadFilterNode.gain.maxValue']: attempt(() => biquadFilter.gain.maxValue),
+					['biquadFilterNode.frequency.defaultValue']: attempt(() => biquadFilter.frequency.defaultValue),
+					['biquadFilterNode.frequency.maxValue']: attempt(() => biquadFilter.frequency.maxValue),
+					['dynamicsCompressorNode.attack.defaultValue']: attempt(() => dynamicsCompressor.attack.defaultValue),
+					['dynamicsCompressorNode.knee.defaultValue']: attempt(() => dynamicsCompressor.knee.defaultValue),
+					['dynamicsCompressorNode.knee.maxValue']: attempt(() => dynamicsCompressor.knee.maxValue),
+					['dynamicsCompressorNode.ratio.defaultValue']: attempt(() => dynamicsCompressor.ratio.defaultValue),
+					['dynamicsCompressorNode.ratio.maxValue']: attempt(() => dynamicsCompressor.ratio.maxValue),
+					['dynamicsCompressorNode.release.defaultValue']: attempt(() => dynamicsCompressor.release.defaultValue),
+					['dynamicsCompressorNode.release.maxValue']: attempt(() => dynamicsCompressor.release.maxValue),
+					['dynamicsCompressorNode.threshold.defaultValue']: attempt(() => dynamicsCompressor.threshold.defaultValue),
+					['dynamicsCompressorNode.threshold.minValue']: attempt(() => dynamicsCompressor.threshold.minValue),
+					['oscillatorNode.detune.maxValue']: attempt(() => oscillator.detune.maxValue),
+					['oscillatorNode.detune.minValue']: attempt(() => oscillator.detune.minValue),
+					['oscillatorNode.frequency.defaultValue']: attempt(() => oscillator.frequency.defaultValue),
+					['oscillatorNode.frequency.maxValue']: attempt(() => oscillator.frequency.maxValue),
+					['oscillatorNode.frequency.minValue']: attempt(() => oscillator.frequency.minValue)
+				}
+				
+				return resolve(new Promise(resolve => {
+					context.oncomplete = async event => {
+						try {
+							const copy = new Float32Array(44100)
+							event.renderedBuffer.copyFromChannel(copy, 0)
+							const bins = event.renderedBuffer.getChannelData(0)
+							
+							copySample = copy ? [...copy].slice(4500, 4600) : [sendToTrash('audioCopy', null)]
+							binsSample = bins ? [...bins].slice(4500, 4600) : [sendToTrash('audioSample', null)]
+							
+							const copyJSON = copy && JSON.stringify([...copy].slice(4500, 4600))
+							const binsJSON = bins && JSON.stringify([...bins].slice(4500, 4600))
 
-						matching = binsJSON === copyJSON
+							matching = binsJSON === copyJSON
 
-						if (!matching) {
-							documentLie('audioSampleAndCopyMatch', hashMini(matching), { audioSampleAndCopyMatch: false })
+							if (!matching) {
+								documentLie('audioSampleAndCopyMatch', hashMini(matching), { audioSampleAndCopyMatch: false })
+							}
+							dynamicsCompressor.disconnect()
+							oscillator.disconnect()
+							if (isBrave) {
+								sendToTrash('audio', binsSample[0])
+								return resolve({
+									copySample: [undefined],
+									binsSample: [undefined],
+									matching,
+									values
+								})
+							}
+							else if (proxyBehavior(binsSample)) {
+								sendToTrash('audio', 'proxy behavior detected')
+								return resolve(undefined)
+							}
+							// document lies and send to trash
+							if (copyFromChannelLie) { 
+								documentLie('audioBufferCopyFromChannel', (copySample[0] || null), copyFromChannelLie)
+								sendToTrash('audioBufferCopyFromChannel', (copySample[0] || null))
+							}
+							if (channelDataLie) { 
+								documentLie('audioBufferGetChannelData', (binsSample[0] || null), channelDataLie)
+								sendToTrash('audioBufferGetChannelData', (binsSample[0] || null))
+							}
+							// Fingerprint lie if it exists
+							const response = {
+								copySample: copyFromChannelLie ? [copyFromChannelLie] : copySample,
+								binsSample: channelDataLie ? [channelDataLie] : binsSample,
+								matching,
+								values
+							}
+							const $hash = await hashify(response)
+							return resolve({...response, $hash })
 						}
-						dynamicsCompressor.disconnect()
-						oscillator.disconnect()
-						audioProcess('Audio complete')
-						if (isBrave) {
-							sendToTrash('audio', binsSample[0])
+						catch (error) {
+							captureError(error)
+							dynamicsCompressor.disconnect()
+							oscillator.disconnect()
 							return resolve({
 								copySample: [undefined],
 								binsSample: [undefined],
 								matching,
 								values
 							})
+							const $hash = await hashify(response)
+							return resolve({...response, $hash })
 						}
-						else if (proxyBehavior(binsSample)) {
-							sendToTrash('audio', 'proxy behavior detected')
-							return resolve(undefined)
-						}
-
-						// document lies and send to trash
-						if (copyFromChannelLie) { 
-							documentLie('audioBufferCopyFromChannel', (copySample[0] || null), copyFromChannelLie)
-							sendToTrash('audioBufferCopyFromChannel', (copySample[0] || null))
-						}
-						if (channelDataLie) { 
-							documentLie('audioBufferGetChannelData', (binsSample[0] || null), channelDataLie)
-							sendToTrash('audioBufferGetChannelData', (binsSample[0] || null))
-						}
-
-						// Fingerprint lie if it exists
-						const response = {
-							copySample: copyFromChannelLie ? [copyFromChannelLie] : copySample,
-							binsSample: channelDataLie ? [channelDataLie] : binsSample,
-							matching,
-							values
-						}
-						return resolve(response)
 					}
-					catch (error) {
-						captureError(error)
-						dynamicsCompressor.disconnect()
-						oscillator.disconnect()
-						return resolve({
-							copySample: [undefined],
-							binsSample: [undefined],
-							matching,
-							values
-						})
-					}
-				}
-			})
-		}
-		catch (error) {
-			audioProcess('Audio failed to complete')
-			captureError(error)
-			return promiseUndefined
-		}
+				}))
+			}
+			catch (error) {
+				captureError(error)
+				return resolve(undefined)
+			}
+		})
 	}
 	
 	// inspired by Lalit Patel's fontdetect.js
 	// https://www.lalit.org/wordpress/wp-content/uploads/2008/05/fontdetect.js?ver=0.3
-	const fontDetector = () => {
-		const htmlElementPrototype = attempt(() => HTMLElement.prototype)
-		const detectLies = (name, value) => {
-			const lie = htmlElementPrototype ? hasLiedAPI(htmlElementPrototype, name).lie : false
-			if (lie) {
-				documentLie(name, value, lie)
-				return sendToTrash(name, value)
-			}
-			return value
-		}
-
-		const toInt = val => ~~val // protect against decimal noise
-		const baseFonts = ['monospace', 'sans-serif', 'serif']
-		const text = 'mmmmmmmmmmlli'
-		const baseOffsetWidth = {}
-		const baseOffsetHeight = {}
-		const style = ` > span {
-			position: absolute!important;
-			left: -9999px!important;
-			font-size: 256px!important;
-			font-style: normal!important;
-			font-weight: normal!important;
-			letter-spacing: normal!important;
-			line-break: auto!important;
-			line-height: normal!important;
-			text-transform: none!important;
-			text-align: left!important;
-			text-decoration: none!important;
-			text-shadow: none!important;
-			white-space: normal!important;
-			word-break: normal!important;
-			word-spacing: normal!important;
-		}`
-		const baseFontSpan = font => {
-			return `<span class="basefont" data-font="${font}" style="font-family: ${font}!important">${text}</span>`
-		}
-		const systemFontSpan = (font, basefont) => {
-			return `<span class="system-font" data-font="${font}" data-basefont="${basefont}" style="font-family: ${`'${font}', ${basefont}`}!important">${text}</span>`
-		}
-		const detect = fonts => {
-			return new Promise(resolve => {
-				const fontsProcess = timer('')
-				try {
-					const fontsElem = document.getElementById('font-detector')
-					const stageElem = document.getElementById('font-detector-stage')
-					const detectedFonts = {}
-					patch(stageElem, html`
-							<div id="font-detector-test">
-								<style>#font-detector-test${style}</style>
-								${baseFonts.map(font => baseFontSpan(font)).join('')}
-								${
-									fonts.map(font => {
-										const template = `
-										${systemFontSpan(font, baseFonts[0])}
-										${systemFontSpan(font, baseFonts[1])}
-										${systemFontSpan(font, baseFonts[2])}
-										`
-										return template
-									}).join('')
-								}
-							</div>
-						`,
-						() => {
-							const testElem = document.getElementById('font-detector-test')
-							const basefontElems = document.querySelectorAll('#font-detector-test .basefont')
-							const systemFontElems = document.querySelectorAll('#font-detector-test .system-font')
-							
-							// detect and document lies
-							const spanLieDetect = [...basefontElems][0]
-							const offsetWidth = detectLies('offsetWidth', spanLieDetect.offsetWidth)
-							const offsetHeight = detectLies('offsetHeight', spanLieDetect.offsetHeight)
-							if (!offsetWidth || !offsetHeight) { return resolve(undefined) }
-							
-							// Compute fingerprint
-							;[...basefontElems].forEach(span => {
-								const { dataset: { font }, offsetWidth, offsetHeight } = span
-								baseOffsetWidth[font] = toInt(offsetWidth)
-								baseOffsetHeight[font] = toInt(offsetHeight)
-								return
-							})
-							;[...systemFontElems].forEach(span => {
-								const { dataset: { font } }= span
-								if (!detectedFonts[font]) {
-									const { dataset: { basefont }, offsetWidth, offsetHeight } = span
-									const widthMatchesBase = toInt(offsetWidth) == baseOffsetWidth[basefont]
-									const heightMatchesBase = toInt(offsetHeight) == baseOffsetHeight[basefont]
-									const detected = !widthMatchesBase || !heightMatchesBase
-									if (detected) { detectedFonts[font] = true }
-								}
-								return
-							})
-							return fontsElem.removeChild(testElem)
+	const getFonts = fonts => {
+		return new Promise(async resolve => {
+			try {
+				const htmlElementPrototype = attempt(() => HTMLElement.prototype)
+				const detectLies = (name, value) => {
+					const lie = htmlElementPrototype ? hasLiedAPI(htmlElementPrototype, name).lie : false
+					if (lie) {
+						documentLie(name, value, lie)
+						return sendToTrash(name, value)
+					}
+					return value
+				}
+				const toInt = val => ~~val // protect against decimal noise
+				const baseFonts = ['monospace', 'sans-serif', 'serif']
+				const text = 'mmmmmmmmmmlli'
+				const baseOffsetWidth = {}
+				const baseOffsetHeight = {}
+				const style = ` > span {
+					position: absolute!important;
+					left: -9999px!important;
+					font-size: 256px!important;
+					font-style: normal!important;
+					font-weight: normal!important;
+					letter-spacing: normal!important;
+					line-break: auto!important;
+					line-height: normal!important;
+					text-transform: none!important;
+					text-align: left!important;
+					text-decoration: none!important;
+					text-shadow: none!important;
+					white-space: normal!important;
+					word-break: normal!important;
+					word-spacing: normal!important;
+				}`
+				const baseFontSpan = font => {
+					return `<span class="basefont" data-font="${font}" style="font-family: ${font}!important">${text}</span>`
+				}
+				const systemFontSpan = (font, basefont) => {
+					return `<span class="system-font" data-font="${font}" data-basefont="${basefont}" style="font-family: ${`'${font}', ${basefont}`}!important">${text}</span>`
+				}
+				const fontsElem = document.getElementById('font-detector')
+				const stageElem = document.getElementById('font-detector-stage')
+				const detectedFonts = {}
+				patch(stageElem, html`
+					<div id="font-detector-test">
+						<style>#font-detector-test${style}</style>
+						${baseFonts.map(font => baseFontSpan(font)).join('')}
+						${
+							fonts.map(font => {
+								const template = `
+								${systemFontSpan(font, baseFonts[0])}
+								${systemFontSpan(font, baseFonts[1])}
+								${systemFontSpan(font, baseFonts[2])}
+								`
+								return template
+							}).join('')
 						}
-					)
-					fontsProcess('Fonts complete')
-					resolve(Object.keys(detectedFonts))
-				}
-				catch (error) {
-					fontsProcess('Fonts complete')
-					captureError(error)
-					return new Promise(resolve => resolve(undefined))
-				}
-			})
-		}
-		return detect
+					</div>
+					`,
+					() => {
+						const testElem = document.getElementById('font-detector-test')
+						const basefontElems = document.querySelectorAll('#font-detector-test .basefont')
+						const systemFontElems = document.querySelectorAll('#font-detector-test .system-font')
+						// detect and document lies
+						const spanLieDetect = [...basefontElems][0]
+						const offsetWidth = detectLies('offsetWidth', spanLieDetect.offsetWidth)
+						const offsetHeight = detectLies('offsetHeight', spanLieDetect.offsetHeight)
+						if (!offsetWidth || !offsetHeight) { return resolve(undefined) }
+						// Compute fingerprint
+						;[...basefontElems].forEach(span => {
+							const { dataset: { font }, offsetWidth, offsetHeight } = span
+							baseOffsetWidth[font] = toInt(offsetWidth)
+							baseOffsetHeight[font] = toInt(offsetHeight)
+							return
+						})
+						;[...systemFontElems].forEach(span => {
+							const { dataset: { font } }= span
+							if (!detectedFonts[font]) {
+								const { dataset: { basefont }, offsetWidth, offsetHeight } = span
+								const widthMatchesBase = toInt(offsetWidth) == baseOffsetWidth[basefont]
+								const heightMatchesBase = toInt(offsetHeight) == baseOffsetHeight[basefont]
+								const detected = !widthMatchesBase || !heightMatchesBase
+								if (detected) { detectedFonts[font] = true }
+							}
+							return
+						})
+						return fontsElem.removeChild(testElem)
+					}
+				)
+				const fontList = Object.keys(detectedFonts)
+				const $hash = await hashify(fontList)
+				return resolve({fonts: fontList, $hash })
+			}
+			catch (error) {
+				captureError(error)
+				return resolve(undefined)
+			}
+		})
 	}
-	const detectFonts = fontDetector()
 
 	const fontList=["Andale Mono","Arial","Arial Black","Arial Hebrew","Arial MT","Arial Narrow","Arial Rounded MT Bold","Arial Unicode MS","Bitstream Vera Sans Mono","Book Antiqua","Bookman Old Style","Calibri","Cambria","Cambria Math","Century","Century Gothic","Century Schoolbook","Comic Sans","Comic Sans MS","Consolas","Courier","Courier New","Geneva","Georgia","Helvetica","Helvetica Neue","Impact","Lucida Bright","Lucida Calligraphy","Lucida Console","Lucida Fax","LUCIDA GRANDE","Lucida Handwriting","Lucida Sans","Lucida Sans Typewriter","Lucida Sans Unicode","Microsoft Sans Serif","Monaco","Monotype Corsiva","MS Gothic","MS Outlook","MS PGothic","MS Reference Sans Serif","MS Sans Serif","MS Serif","MYRIAD","MYRIAD PRO","Palatino","Palatino Linotype","Segoe Print","Segoe Script","Segoe UI","Segoe UI Light","Segoe UI Semibold","Segoe UI Symbol","Tahoma","Times","Times New Roman","Times New Roman PS","Trebuchet MS","Verdana","Wingdings","Wingdings 2","Wingdings 3"],extendedFontList=["Abadi MT Condensed Light","Academy Engraved LET","ADOBE CASLON PRO","Adobe Garamond","ADOBE GARAMOND PRO","Agency FB","Aharoni","Albertus Extra Bold","Albertus Medium","Algerian","Amazone BT","American Typewriter","American Typewriter Condensed","AmerType Md BT","Andalus","Angsana New","AngsanaUPC","Antique Olive","Aparajita","Apple Chancery","Apple Color Emoji","Apple SD Gothic Neo","Arabic Typesetting","ARCHER","ARNO PRO","Arrus BT","Aurora Cn BT","AvantGarde Bk BT","AvantGarde Md BT","AVENIR","Ayuthaya","Bandy","Bangla Sangam MN","Bank Gothic","BankGothic Md BT","Baskerville","Baskerville Old Face","Batang","BatangChe","Bauer Bodoni","Bauhaus 93","Bazooka","Bell MT","Bembo","Benguiat Bk BT","Berlin Sans FB","Berlin Sans FB Demi","Bernard MT Condensed","BernhardFashion BT","BernhardMod BT","Big Caslon","BinnerD","Blackadder ITC","BlairMdITC TT","Bodoni 72","Bodoni 72 Oldstyle","Bodoni 72 Smallcaps","Bodoni MT","Bodoni MT Black","Bodoni MT Condensed","Bodoni MT Poster Compressed","Bookshelf Symbol 7","Boulder","Bradley Hand","Bradley Hand ITC","Bremen Bd BT","Britannic Bold","Broadway","Browallia New","BrowalliaUPC","Brush Script MT","Californian FB","Calisto MT","Calligrapher","Candara","CaslonOpnface BT","Castellar","Centaur","Cezanne","CG Omega","CG Times","Chalkboard","Chalkboard SE","Chalkduster","Charlesworth","Charter Bd BT","Charter BT","Chaucer","ChelthmITC Bk BT","Chiller","Clarendon","Clarendon Condensed","CloisterBlack BT","Cochin","Colonna MT","Constantia","Cooper Black","Copperplate","Copperplate Gothic","Copperplate Gothic Bold","Copperplate Gothic Light","CopperplGoth Bd BT","Corbel","Cordia New","CordiaUPC","Cornerstone","Coronet","Cuckoo","Curlz MT","DaunPenh","Dauphin","David","DB LCD Temp","DELICIOUS","Denmark","DFKai-SB","Didot","DilleniaUPC","DIN","DokChampa","Dotum","DotumChe","Ebrima","Edwardian Script ITC","Elephant","English 111 Vivace BT","Engravers MT","EngraversGothic BT","Eras Bold ITC","Eras Demi ITC","Eras Light ITC","Eras Medium ITC","EucrosiaUPC","Euphemia","Euphemia UCAS","EUROSTILE","Exotc350 Bd BT","FangSong","Felix Titling","Fixedsys","FONTIN","Footlight MT Light","Forte","FrankRuehl","Fransiscan","Freefrm721 Blk BT","FreesiaUPC","Freestyle Script","French Script MT","FrnkGothITC Bk BT","Fruitger","FRUTIGER","Futura","Futura Bk BT","Futura Lt BT","Futura Md BT","Futura ZBlk BT","FuturaBlack BT","Gabriola","Galliard BT","Gautami","Geeza Pro","Geometr231 BT","Geometr231 Hv BT","Geometr231 Lt BT","GeoSlab 703 Lt BT","GeoSlab 703 XBd BT","Gigi","Gill Sans","Gill Sans MT","Gill Sans MT Condensed","Gill Sans MT Ext Condensed Bold","Gill Sans Ultra Bold","Gill Sans Ultra Bold Condensed","Gisha","Gloucester MT Extra Condensed","GOTHAM","GOTHAM BOLD","Goudy Old Style","Goudy Stout","GoudyHandtooled BT","GoudyOLSt BT","Gujarati Sangam MN","Gulim","GulimChe","Gungsuh","GungsuhChe","Gurmukhi MN","Haettenschweiler","Harlow Solid Italic","Harrington","Heather","Heiti SC","Heiti TC","HELV","Herald","High Tower Text","Hiragino Kaku Gothic ProN","Hiragino Mincho ProN","Hoefler Text","Humanst 521 Cn BT","Humanst521 BT","Humanst521 Lt BT","Imprint MT Shadow","Incised901 Bd BT","Incised901 BT","Incised901 Lt BT","INCONSOLATA","Informal Roman","Informal011 BT","INTERSTATE","IrisUPC","Iskoola Pota","JasmineUPC","Jazz LET","Jenson","Jester","Jokerman","Juice ITC","Kabel Bk BT","Kabel Ult BT","Kailasa","KaiTi","Kalinga","Kannada Sangam MN","Kartika","Kaufmann Bd BT","Kaufmann BT","Khmer UI","KodchiangUPC","Kokila","Korinna BT","Kristen ITC","Krungthep","Kunstler Script","Lao UI","Latha","Leelawadee","Letter Gothic","Levenim MT","LilyUPC","Lithograph","Lithograph Light","Long Island","Lydian BT","Magneto","Maiandra GD","Malayalam Sangam MN","Malgun Gothic","Mangal","Marigold","Marion","Marker Felt","Market","Marlett","Matisse ITC","Matura MT Script Capitals","Meiryo","Meiryo UI","Microsoft Himalaya","Microsoft JhengHei","Microsoft New Tai Lue","Microsoft PhagsPa","Microsoft Tai Le","Microsoft Uighur","Microsoft YaHei","Microsoft Yi Baiti","MingLiU","MingLiU_HKSCS","MingLiU_HKSCS-ExtB","MingLiU-ExtB","Minion","Minion Pro","Miriam","Miriam Fixed","Mistral","Modern","Modern No. 20","Mona Lisa Solid ITC TT","Mongolian Baiti","MONO","MoolBoran","Mrs Eaves","MS LineDraw","MS Mincho","MS PMincho","MS Reference Specialty","MS UI Gothic","MT Extra","MUSEO","MV Boli","Nadeem","Narkisim","NEVIS","News Gothic","News GothicMT","NewsGoth BT","Niagara Engraved","Niagara Solid","Noteworthy","NSimSun","Nyala","OCR A Extended","Old Century","Old English Text MT","Onyx","Onyx BT","OPTIMA","Oriya Sangam MN","OSAKA","OzHandicraft BT","Palace Script MT","Papyrus","Parchment","Party LET","Pegasus","Perpetua","Perpetua Titling MT","PetitaBold","Pickwick","Plantagenet Cherokee","Playbill","PMingLiU","PMingLiU-ExtB","Poor Richard","Poster","PosterBodoni BT","PRINCETOWN LET","Pristina","PTBarnum BT","Pythagoras","Raavi","Rage Italic","Ravie","Ribbon131 Bd BT","Rockwell","Rockwell Condensed","Rockwell Extra Bold","Rod","Roman","Sakkal Majalla","Santa Fe LET","Savoye LET","Sceptre","Script","Script MT Bold","SCRIPTINA","Serifa","Serifa BT","Serifa Th BT","ShelleyVolante BT","Sherwood","Shonar Bangla","Showcard Gothic","Shruti","Signboard","SILKSCREEN","SimHei","Simplified Arabic","Simplified Arabic Fixed","SimSun","SimSun-ExtB","Sinhala Sangam MN","Sketch Rockwell","Skia","Small Fonts","Snap ITC","Snell Roundhand","Socket","Souvenir Lt BT","Staccato222 BT","Steamer","Stencil","Storybook","Styllo","Subway","Swis721 BlkEx BT","Swiss911 XCm BT","Sylfaen","Synchro LET","System","Tamil Sangam MN","Technical","Teletype","Telugu Sangam MN","Tempus Sans ITC","Terminal","Thonburi","Traditional Arabic","Trajan","TRAJAN PRO","Tristan","Tubular","Tunga","Tw Cen MT","Tw Cen MT Condensed","Tw Cen MT Condensed Extra Bold","TypoUpright BT","Unicorn","Univers","Univers CE 55 Medium","Univers Condensed","Utsaah","Vagabond","Vani","Vijaya","Viner Hand ITC","VisualUI","Vivaldi","Vladimir Script","Vrinda","Westminster","WHITNEY","Wide Latin","ZapfEllipt BT","ZapfHumnst BT","ZapfHumnst Dm BT","Zapfino","Zurich BlkEx BT","Zurich Ex BT","ZWAdobeF"],googleFonts=["ABeeZee","Abel","Abhaya Libre","Abril Fatface","Aclonica","Acme","Actor","Adamina","Advent Pro","Aguafina Script","Akronim","Aladin","Aldrich","Alef","Alegreya","Alegreya SC","Alegreya Sans","Alegreya Sans SC","Aleo","Alex Brush","Alfa Slab One","Alice","Alike","Alike Angular","Allan","Allerta","Allerta Stencil","Allura","Almarai","Almendra","Almendra Display","Almendra SC","Amarante","Amaranth","Amatic SC","Amethysta","Amiko","Amiri","Amita","Anaheim","Andada","Andika","Angkor","Annie Use Your Telescope","Anonymous Pro","Antic","Antic Didone","Antic Slab","Anton","Arapey","Arbutus","Arbutus Slab","Architects Daughter","Archivo","Archivo Black","Archivo Narrow","Aref Ruqaa","Arima Madurai","Arimo","Arizonia","Armata","Arsenal","Artifika","Arvo","Arya","Asap","Asap Condensed","Asar","Asset","Assistant","Astloch","Asul","Athiti","Atma","Atomic Age","Aubrey","Audiowide","Autour One","Average","Average Sans","Averia Gruesa Libre","Averia Libre","Averia Sans Libre","Averia Serif Libre","B612","B612 Mono","Bad Script","Bahiana","Bahianita","Bai Jamjuree","Baloo","Baloo Bhai","Baloo Bhaijaan","Baloo Bhaina","Baloo Chettan","Baloo Da","Baloo Paaji","Baloo Tamma","Baloo Tammudu","Baloo Thambi","Balthazar","Bangers","Barlow","Barlow Condensed","Barlow Semi Condensed","Barriecito","Barrio","Basic","Battambang","Baumans","Bayon","Be Vietnam","Bebas Neue","Belgrano","Bellefair","Belleza","BenchNine","Bentham","Berkshire Swash","Beth Ellen","Bevan","Big Shoulders Display","Big Shoulders Text","Bigelow Rules","Bigshot One","Bilbo","Bilbo Swash Caps","BioRhyme","BioRhyme Expanded","Biryani","Bitter","Black And White Picture","Black Han Sans","Black Ops One","Blinker","Bokor","Bonbon","Boogaloo","Bowlby One","Bowlby One SC","Brawler","Bree Serif","Bubblegum Sans","Bubbler One","Buda","Buenard","Bungee","Bungee Hairline","Bungee Inline","Bungee Outline","Bungee Shade","Butcherman","Butterfly Kids","Cabin","Cabin Condensed","Cabin Sketch","Caesar Dressing","Cagliostro","Cairo","Calligraffitti","Cambay","Cambo","Candal","Cantarell","Cantata One","Cantora One","Capriola","Cardo","Carme","Carrois Gothic","Carrois Gothic SC","Carter One","Catamaran","Caudex","Caveat","Caveat Brush","Cedarville Cursive","Ceviche One","Chakra Petch","Changa","Changa One","Chango","Charm","Charmonman","Chathura","Chau Philomene One","Chela One","Chelsea Market","Chenla","Cherry Cream Soda","Cherry Swash","Chewy","Chicle","Chilanka","Chivo","Chonburi","Cinzel","Cinzel Decorative","Clicker Script","Coda","Coda Caption","Codystar","Coiny","Combo","Comfortaa","Coming Soon","Concert One","Condiment","Content","Contrail One","Convergence","Cookie","Copse","Corben","Cormorant","Cormorant Garamond","Cormorant Infant","Cormorant SC","Cormorant Unicase","Cormorant Upright","Courgette","Cousine","Coustard","Covered By Your Grace","Crafty Girls","Creepster","Crete Round","Crimson Pro","Crimson Text","Croissant One","Crushed","Cuprum","Cute Font","Cutive","Cutive Mono","DM Sans","DM Serif Display","DM Serif Text","Damion","Dancing Script","Dangrek","Darker Grotesque","David Libre","Dawning of a New Day","Days One","Dekko","Delius","Delius Swash Caps","Delius Unicase","Della Respira","Denk One","Devonshire","Dhurjati","Didact Gothic","Diplomata","Diplomata SC","Do Hyeon","Dokdo","Domine","Donegal One","Doppio One","Dorsa","Dosis","Dr Sugiyama","Duru Sans","Dynalight","EB Garamond","Eagle Lake","East Sea Dokdo","Eater","Economica","Eczar","El Messiri","Electrolize","Elsie","Elsie Swash Caps","Emblema One","Emilys Candy","Encode Sans","Encode Sans Condensed","Encode Sans Expanded","Encode Sans Semi Condensed","Encode Sans Semi Expanded","Engagement","Englebert","Enriqueta","Erica One","Esteban","Euphoria Script","Ewert","Exo","Exo 2","Expletus Sans","Fahkwang","Fanwood Text","Farro","Farsan","Fascinate","Fascinate Inline","Faster One","Fasthand","Fauna One","Faustina","Federant","Federo","Felipa","Fenix","Finger Paint","Fira Code","Fira Mono","Fira Sans","Fira Sans Condensed","Fira Sans Extra Condensed","Fjalla One","Fjord One","Flamenco","Flavors","Fondamento","Fontdiner Swanky","Forum","Francois One","Frank Ruhl Libre","Freckle Face","Fredericka the Great","Fredoka One","Freehand","Fresca","Frijole","Fruktur","Fugaz One","GFS Didot","GFS Neohellenic","Gabriela","Gaegu","Gafata","Galada","Galdeano","Galindo","Gamja Flower","Gayathri","Gentium Basic","Gentium Book Basic","Geo","Geostar","Geostar Fill","Germania One","Gidugu","Gilda Display","Give You Glory","Glass Antiqua","Glegoo","Gloria Hallelujah","Goblin One","Gochi Hand","Gorditas","Gothic A1","Goudy Bookletter 1911","Graduate","Grand Hotel","Gravitas One","Great Vibes","Grenze","Griffy","Gruppo","Gudea","Gugi","Gurajada","Habibi","Halant","Hammersmith One","Hanalei","Hanalei Fill","Handlee","Hanuman","Happy Monkey","Harmattan","Headland One","Heebo","Henny Penny","Hepta Slab","Herr Von Muellerhoff","Hi Melody","Hind","Hind Guntur","Hind Madurai","Hind Siliguri","Hind Vadodara","Holtwood One SC","Homemade Apple","Homenaje","IBM Plex Mono","IBM Plex Sans","IBM Plex Sans Condensed","IBM Plex Serif","IM Fell DW Pica","IM Fell DW Pica SC","IM Fell Double Pica","IM Fell Double Pica SC","IM Fell English","IM Fell English SC","IM Fell French Canon","IM Fell French Canon SC","IM Fell Great Primer","IM Fell Great Primer SC","Iceberg","Iceland","Imprima","Inconsolata","Inder","Indie Flower","Inika","Inknut Antiqua","Irish Grover","Istok Web","Italiana","Italianno","Itim","Jacques Francois","Jacques Francois Shadow","Jaldi","Jim Nightshade","Jockey One","Jolly Lodger","Jomhuria","Jomolhari","Josefin Sans","Josefin Slab","Joti One","Jua","Judson","Julee","Julius Sans One","Junge","Jura","Just Another Hand","Just Me Again Down Here","K2D","Kadwa","Kalam","Kameron","Kanit","Kantumruy","Karla","Karma","Katibeh","Kaushan Script","Kavivanar","Kavoon","Kdam Thmor","Keania One","Kelly Slab","Kenia","Khand","Khmer","Khula","Kirang Haerang","Kite One","Knewave","KoHo","Kodchasan","Kosugi","Kosugi Maru","Kotta One","Koulen","Kranky","Kreon","Kristi","Krona One","Krub","Kulim Park","Kumar One","Kumar One Outline","Kurale","La Belle Aurore","Lacquer","Laila","Lakki Reddy","Lalezar","Lancelot","Lateef","Lato","League Script","Leckerli One","Ledger","Lekton","Lemon","Lemonada","Lexend Deca","Lexend Exa","Lexend Giga","Lexend Mega","Lexend Peta","Lexend Tera","Lexend Zetta","Libre Barcode 128","Libre Barcode 128 Text","Libre Barcode 39","Libre Barcode 39 Extended","Libre Barcode 39 Extended Text","Libre Barcode 39 Text","Libre Baskerville","Libre Caslon Display","Libre Caslon Text","Libre Franklin","Life Savers","Lilita One","Lily Script One","Limelight","Linden Hill","Literata","Liu Jian Mao Cao","Livvic","Lobster","Lobster Two","Londrina Outline","Londrina Shadow","Londrina Sketch","Londrina Solid","Long Cang","Lora","Love Ya Like A Sister","Loved by the King","Lovers Quarrel","Luckiest Guy","Lusitana","Lustria","M PLUS 1p","M PLUS Rounded 1c","Ma Shan Zheng","Macondo","Macondo Swash Caps","Mada","Magra","Maiden Orange","Maitree","Major Mono Display","Mako","Mali","Mallanna","Mandali","Manjari","Mansalva","Manuale","Marcellus","Marcellus SC","Marck Script","Margarine","Markazi Text","Marko One","Marmelad","Martel","Martel Sans","Marvel","Mate","Mate SC","Material Icons","Maven Pro","McLaren","Meddon","MedievalSharp","Medula One","Meera Inimai","Megrim","Meie Script","Merienda","Merienda One","Merriweather","Merriweather Sans","Metal","Metal Mania","Metamorphous","Metrophobic","Michroma","Milonga","Miltonian","Miltonian Tattoo","Mina","Miniver","Miriam Libre","Mirza","Miss Fajardose","Mitr","Modak","Modern Antiqua","Mogra","Molengo","Molle","Monda","Monofett","Monoton","Monsieur La Doulaise","Montaga","Montez","Montserrat","Montserrat Alternates","Montserrat Subrayada","Moul","Moulpali","Mountains of Christmas","Mouse Memoirs","Mr Bedfort","Mr Dafoe","Mr De Haviland","Mrs Saint Delafield","Mrs Sheppards","Mukta","Mukta Mahee","Mukta Malar","Mukta Vaani","Muli","Mystery Quest","NTR","Nanum Brush Script","Nanum Gothic","Nanum Gothic Coding","Nanum Myeongjo","Nanum Pen Script","Neucha","Neuton","New Rocker","News Cycle","Niconne","Niramit","Nixie One","Nobile","Nokora","Norican","Nosifer","Notable","Nothing You Could Do","Noticia Text","Noto Sans","Noto Sans HK","Noto Sans JP","Noto Sans KR","Noto Sans SC","Noto Sans TC","Noto Serif","Noto Serif JP","Noto Serif KR","Noto Serif SC","Noto Serif TC","Nova Cut","Nova Flat","Nova Mono","Nova Oval","Nova Round","Nova Script","Nova Slim","Nova Square","Numans","Nunito","Nunito Sans","Odor Mean Chey","Offside","Old Standard TT","Oldenburg","Oleo Script","Oleo Script Swash Caps","Open Sans","Open Sans Condensed","Oranienbaum","Orbitron","Oregano","Orienta","Original Surfer","Oswald","Over the Rainbow","Overlock","Overlock SC","Overpass","Overpass Mono","Ovo","Oxygen","Oxygen Mono","PT Mono","PT Sans","PT Sans Caption","PT Sans Narrow","PT Serif","PT Serif Caption","Pacifico","Padauk","Palanquin","Palanquin Dark","Pangolin","Paprika","Parisienne","Passero One","Passion One","Pathway Gothic One","Patrick Hand","Patrick Hand SC","Pattaya","Patua One","Pavanam","Paytone One","Peddana","Peralta","Permanent Marker","Petit Formal Script","Petrona","Philosopher","Piedra","Pinyon Script","Pirata One","Plaster","Play","Playball","Playfair Display","Playfair Display SC","Podkova","Poiret One","Poller One","Poly","Pompiere","Pontano Sans","Poor Story","Poppins","Port Lligat Sans","Port Lligat Slab","Pragati Narrow","Prata","Preahvihear","Press Start 2P","Pridi","Princess Sofia","Prociono","Prompt","Prosto One","Proza Libre","Public Sans","Puritan","Purple Purse","Quando","Quantico","Quattrocento","Quattrocento Sans","Questrial","Quicksand","Quintessential","Qwigley","Racing Sans One","Radley","Rajdhani","Rakkas","Raleway","Raleway Dots","Ramabhadra","Ramaraja","Rambla","Rammetto One","Ranchers","Rancho","Ranga","Rasa","Rationale","Ravi Prakash","Red Hat Display","Red Hat Text","Redressed","Reem Kufi","Reenie Beanie","Revalia","Rhodium Libre","Ribeye","Ribeye Marrow","Righteous","Risque","Roboto","Roboto Condensed","Roboto Mono","Roboto Slab","Rochester","Rock Salt","Rokkitt","Romanesco","Ropa Sans","Rosario","Rosarivo","Rouge Script","Rozha One","Rubik","Rubik Mono One","Ruda","Rufina","Ruge Boogie","Ruluko","Rum Raisin","Ruslan Display","Russo One","Ruthie","Rye","Sacramento","Sahitya","Sail","Saira","Saira Condensed","Saira Extra Condensed","Saira Semi Condensed","Saira Stencil One","Salsa","Sanchez","Sancreek","Sansita","Sarabun","Sarala","Sarina","Sarpanch","Satisfy","Sawarabi Gothic","Sawarabi Mincho","Scada","Scheherazade","Schoolbell","Scope One","Seaweed Script","Secular One","Sedgwick Ave","Sedgwick Ave Display","Sevillana","Seymour One","Shadows Into Light","Shadows Into Light Two","Shanti","Share","Share Tech","Share Tech Mono","Shojumaru","Short Stack","Shrikhand","Siemreap","Sigmar One","Signika","Signika Negative","Simonetta","Single Day","Sintony","Sirin Stencil","Six Caps","Skranji","Slabo 13px","Slabo 27px","Slackey","Smokum","Smythe","Sniglet","Snippet","Snowburst One","Sofadi One","Sofia","Song Myung","Sonsie One","Sorts Mill Goudy","Source Code Pro","Source Sans Pro","Source Serif Pro","Space Mono","Special Elite","Spectral","Spectral SC","Spicy Rice","Spinnaker","Spirax","Squada One","Sree Krushnadevaraya","Sriracha","Srisakdi","Staatliches","Stalemate","Stalinist One","Stardos Stencil","Stint Ultra Condensed","Stint Ultra Expanded","Stoke","Strait","Stylish","Sue Ellen Francisco","Suez One","Sumana","Sunflower","Sunshiney","Supermercado One","Sura","Suranna","Suravaram","Suwannaphum","Swanky and Moo Moo","Syncopate","Tajawal","Tangerine","Taprom","Tauri","Taviraj","Teko","Telex","Tenali Ramakrishna","Tenor Sans","Text Me One","Thasadith","The Girl Next Door","Tienne","Tillana","Timmana","Tinos","Titan One","Titillium Web","Tomorrow","Trade Winds","Trirong","Trocchi","Trochut","Trykker","Tulpen One","Turret Road","Ubuntu","Ubuntu Condensed","Ubuntu Mono","Ultra","Uncial Antiqua","Underdog","Unica One","UnifrakturCook","UnifrakturMaguntia","Unkempt","Unlock","Unna","VT323","Vampiro One","Varela","Varela Round","Vast Shadow","Vesper Libre","Vibes","Vibur","Vidaloka","Viga","Voces","Volkhov","Vollkorn","Vollkorn SC","Voltaire","Waiting for the Sunrise","Wallpoet","Walter Turncoat","Warnes","Wellfleet","Wendy One","Wire One","Work Sans","Yanone Kaffeesatz","Yantramanav","Yatra One","Yellowtail","Yeon Sung","Yeseva One","Yesteryear","Yrsa","ZCOOL KuaiLe","ZCOOL QingKe HuangYou","ZCOOL XiaoWei","Zeyada","Zhi Mang Xing","Zilla Slab","Zilla Slab Highlight"],notoFonts=["Noto Naskh Arabic","Noto Sans Armenian","Noto Sans Bengali","Noto Sans Buginese","Noto Sans Canadian Aboriginal","Noto Sans Cherokee","Noto Sans Devanagari","Noto Sans Ethiopic","Noto Sans Georgian","Noto Sans Gujarati","Noto Sans Gurmukhi","Noto Sans Hebrew","Noto Sans JP Regular","Noto Sans KR Regular","Noto Sans Kannada","Noto Sans Khmer","Noto Sans Lao","Noto Sans Malayalam","Noto Sans Mongolian","Noto Sans Myanmar","Noto Sans Oriya","Noto Sans SC Regular","Noto Sans Sinhala","Noto Sans TC Regular","Noto Sans Tamil","Noto Sans Telugu","Noto Sans Thaana","Noto Sans Thai","Noto Sans Tibetan","Noto Sans Yi","Noto Serif Armenian","Noto Serif Khmer","Noto Serif Lao","Noto Serif Thai"];
 
@@ -1543,194 +1672,107 @@
 		</div>
 	</fingerprint>
 	`
+	const getLies = (lieRecords) => {
+		return new Promise(async resolve => {
+			const data = lieRecords.map(lie => ({ name: lie.name, lieTypes: lie.lieTypes }))
+			const $hash = await hashify(data)
+			return resolve({data, $hash })
+		})
+	}
+	const getTrash = (trashBin) => {
+		return new Promise(async resolve => {
+			const data =  trashBin.map(trash => trash.name)
+			const $hash = await hashify(data)
+			return resolve({data, $hash })
+		})
+	}
+	const getCapturedErrors = (errorsCaptured) => {
+		return new Promise(async resolve => {
+			const data =  errorsCaptured
+			const $hash = await hashify(data)
+			return resolve({data, $hash })
+		})
+	}
 	
 	// fingerprint
 	const fingerprint = async () => {
+		const workerScopeComputed = await getWorkerScope()
 		// await
-		const asyncValues = timer('')
+		const asyncProcess = timer('')
 		const [
-			workerScope,
-			cloudflare,
-			voices,
-			mediaDevices,
-			highEntropy,
-			bitmapRenderer,
-			offlineAudio,
-			fonts
+			cloudflareComputed,
+			navigatorComputed,
+			iframeContentWindowVersionComputed,
+			htmlElementVersionComputed,
+			cssStyleDeclarationVersionComputed,
+			screenComputed,
+			voicesComputed,
+			mediaDevicesComputed,
+			canvas2dComputed,
+			canvasBitmapRendererComputed,
+			webglComputed,
+			mathsComputed,
+			consoleErrorsComputed,
+			timezoneComputed,
+			clientRectsComputed,
+			offlineAudioContextComputed,
+			fontsComputed
 		] = await Promise.all([
-			getWorkerScope(),
 			getCloudflare(),
+			getNavigator(workerScopeComputed),
+			getIframeContentWindowVersion(),
+			getHTMLElementVersion(),
+			getCSSStyleDeclarationVersion(),
+			getScreen(),
 			getVoices(),
 			getMediaDevices(),
-			highEntropyValues(),
-			getBitmapRenderer(),
-			offlineAudioOscillator(),
-			detectFonts([...fontList, ...notoFonts])
+			getCanvas2d(),
+			getCanvasBitmapRenderer(),
+			getWebgl(),
+			getMaths(),
+			getConsoleErrors(),
+			getTimezone(),
+			getClientRects(),
+			getOfflineAudioContext(),
+			getFonts([...fontList, ...notoFonts])
 		]).catch(error => {
 			console.error(error.message)
 		})
-		asyncValues('Async computation complete')
-
-		const voicesComputed = !voices ? undefined : voices.map(({ name, lang }) => ({ name, lang }))
-		const mediaDevicesComputed = !mediaDevices ? undefined : mediaDevices.map(({ kind }) => ({ kind })) // chrome randomizes groupId
-		const workerScopeNavigator = !workerScope ? undefined : {
-			hardwareConcurrency: workerScope.hardwareConcurrency,
-			language: workerScope.language,
-			platform: workerScope.platform,
-			system: workerScope.system,
-			userAgent: workerScope.userAgent
-		}
-		const workerScopeCanvas = !workerScope ? undefined : {
-			dataURI: workerScope.dataURI
-		}
-
-		// attempt to compute values
-		const navComputed = attempt(() => nav(workerScopeNavigator))
-		const mimeTypes = navComputed ? navComputed.mimeTypes : undefined
-		const plugins = navComputed ? navComputed.plugins : undefined
-		const navVersion = navComputed ? navComputed.version : undefined
-		const windowVersionComputed = attempt(() => windowVersion())
-		const htmlElementVersionComputed = attempt(() => htmlElementVersion())
-		const computedStyleVersionComputed = attempt(() => styleVersion('getComputedStyle'))
-		const htmlElementStyleVersionComputed = attempt(() => styleVersion('HTMLElement.style'))
-		const cssRuleListStyleVersionComputed = attempt(() => styleVersion('CSSRuleList.style'))
-		
-		const screenComputed = attempt(() => screenFp())
-		const canvasComputed = attempt(() => canvas())
-		const gl = attempt(() => webgl())
-		const webglComputed = {
-			vendor: gl ? gl.unmasked.vendor : undefined,
-			renderer: gl ? gl.unmasked.renderer : undefined,
-			extensions: gl ? gl.supported.extensions : undefined,
-			vendor2: gl ? gl.unmasked2.vendor : undefined,
-			renderer2: gl ? gl.unmasked2.renderer : undefined,
-			extensions2: gl ? gl.supported2.extensions : undefined,
-			matching: gl ? gl.matching() : undefined,
-			specs: gl ? gl.specs : undefined
-		}
-		const webglDataURLComputed = attempt(() => gl ? gl.dataURL : undefined)
-		const webgl2DataURLComputed = attempt(() => gl ? gl.dataURL2 : undefined)
-		const consoleErrorsComputed = attempt(() => consoleErrs())
-		const timezoneComputed = attempt(() => timezone())
-		const cRectsComputed = attempt(() => cRects())
-		const mathsComputed = attempt(() => maths())
-		
-		// Compile property names sent to the trashBin (exclude trash values)
-		const trashComputed = trashBin.map(trash => trash.name)
-
-		// Compile name and lie type values from lie records (exclude random lie results)
-		const liesComputed = lieRecords.map(lie => {
-			const { name, lieTypes } = lie
-			return { name, lieTypes }
-		})
-		
-		// await hash values
-		const hashProcess = timer('')
 		const [
-			cloudflareHash, // order must match
-			navHash, 
-			mimeTypesHash,
-			pluginsHash,
-			navVersionHash,
-			windowVersionHash,
-			htmlElementVersionHash,
-			computedStyleVersionHash,
-			htmlElementStyleVersionHash,
-			cssRuleListStyleVersionHash,
-			voicesHash,
-			mediaDeviceHash,
-			highEntropyHash,
-			audioHash,
-			timezoneHash,
-			webglHash,
-			screenHash,
-			weglDataURLHash,
-			wegl2DataURLHash,
-			consoleErrorsHash,
-			cRectsHash,
-			fontsHash,
-			mathsHash,
-			canvasHash,
-			bitmapRendererHash,
-			errorsCapturedHash,
-			trashHash,
-			liesHash,
-			workerScopeNavigatorHash,
-			workerScopeCanvasHash
+			liesComputed,
+			trashComputed,
+			capturedErrorsComputed
 		] = await Promise.all([
-			hashify(cloudflare),
-			hashify(navComputed),
-			hashify(mimeTypes),
-			hashify(plugins),
-			hashify(navVersion),
-			hashify(windowVersionComputed),
-			hashify(htmlElementVersionComputed),
-			hashify(computedStyleVersionComputed),
-			hashify(htmlElementStyleVersionComputed),
-			hashify(cssRuleListStyleVersionComputed),
-			hashify(voicesComputed),
-			hashify(mediaDevicesComputed),
-			hashify(highEntropy),
-			hashify(offlineAudio),
-			hashify(timezoneComputed),
-			hashify(webglComputed),
-			hashify(screenComputed),
-			hashify(webglDataURLComputed),
-			hashify(webgl2DataURLComputed),
-			hashify(consoleErrorsComputed),
-			hashify(cRectsComputed),
-			hashify(fonts),
-			hashify(mathsComputed),
-			hashify(canvasComputed),
-			hashify(bitmapRenderer),
-			hashify(errorsCaptured),
-			hashify(trashComputed),
-			hashify(liesComputed),
-			hashify(workerScopeNavigator),
-			hashify(workerScopeCanvas)
-		]).catch(error => { 
+			getLies(lieRecords),
+			getTrash(trashBin),
+			getCapturedErrors(errorsCaptured)
+		]).catch(error => {
 			console.error(error.message)
 		})
-		hashProcess('Hashing complete')
-
-		if (navComputed) { 
-			navComputed.mimeTypesHash = mimeTypesHash
-			navComputed.versionHash = navVersionHash
-			navComputed.pluginsHash = pluginsHash
-		}
+		asyncProcess('Async process complete')
 
 		const fingerprint = {
-			cloudflare: [cloudflare, cloudflareHash],
-			nav: [navComputed, navHash],
-			highEntropy: [highEntropy, highEntropyHash],
-			window: [windowVersionComputed, windowVersionHash],
-			htmlElement: [htmlElementVersionComputed, htmlElementVersionHash],
-			cssComputedStyle: [computedStyleVersionComputed, computedStyleVersionHash],
-			cssHtmlElementStyle: [htmlElementStyleVersionComputed, htmlElementStyleVersionHash],
-			cssRuleListStyle: [cssRuleListStyleVersionComputed, cssRuleListStyleVersionHash],
-			cssStylesMatch: (
-				''+computedStyleVersionComputed == ''+htmlElementStyleVersionComputed &&
-				''+htmlElementStyleVersionComputed == ''+cssRuleListStyleVersionComputed
-			),
-			timezone: [timezoneComputed, timezoneHash],
-			webgl: [webglComputed, webglHash],
-			voices: [voicesComputed, voicesHash],
-			mediaDevices: [mediaDevicesComputed, mediaDeviceHash],
-			audio: [offlineAudio, audioHash],
-			screen: [screenComputed, screenHash],
-			webglDataURL: [webglDataURLComputed, weglDataURLHash],
-			webgl2DataURL: [webgl2DataURLComputed, wegl2DataURLHash],
-			consoleErrors: [consoleErrorsComputed, consoleErrorsHash],
-			cRects: [cRectsComputed, cRectsHash],
-			fonts: [fonts, fontsHash],
-			maths: [mathsComputed, mathsHash],
-			canvas2d: [canvasComputed, canvasHash],
-			bitmapRenderer: [bitmapRenderer, bitmapRendererHash],
-			errorsCaptured: [errorsCaptured, errorsCapturedHash],
-			trash: [trashComputed, trashHash],
-			lies: [liesComputed, liesHash],
-			workerScopeNavigator: [workerScopeNavigator, workerScopeNavigatorHash],
-			workerScopeCanvas: [workerScopeCanvas, workerScopeCanvasHash]
+			workerScope: workerScopeComputed,
+			cloudflare: cloudflareComputed,
+			navigator: navigatorComputed,
+			iframeContentWindowVersion: iframeContentWindowVersionComputed,
+			htmlElementVersion: htmlElementVersionComputed,
+			cssStyleDeclarationVersion: cssStyleDeclarationVersionComputed,
+			screen: screenComputed,
+			voices: voicesComputed,
+			mediaDevices: mediaDevicesComputed,
+			canvas2d: canvas2dComputed,
+			canvasBitmapRenderer: canvasBitmapRendererComputed,
+			webgl: webglComputed,
+			maths: mathsComputed,
+			consoleErrors: consoleErrorsComputed,
+			timezone: timezoneComputed,
+			clientRects: clientRectsComputed,
+			offlineAudioContext: offlineAudioContextComputed,
+			fonts: fontsComputed,
+			lies: liesComputed,
+			trash: trashComputed,
+			capturedErrors: capturedErrorsComputed
 		}
 		return fingerprint
 	}
@@ -1743,49 +1785,37 @@
 		// fingerprint and render
 		const fpElem = document.getElementById('fingerprint')
 		const fp = await fingerprint().catch((e) => console.log(e))
-
 		// Trusted Fingerprint
 		const creep = {
+			workerScope: fp.workerScope,
+			mediaDevices: fp.mediaDevices,
+			canvas2d: fp.canvas2d,
+			canvasBitmapRenderer: fp.canvasBitmapRenderer,
+			webgl: fp.webgl,
+			maths: fp.maths,
+			consoleErrors: fp.consoleErrors,
 			// avoid random timezone fingerprint values
 			timezone: (
-				!fp.timezone[0] || !fp.timezone[0].timezoneLie ? fp.timezone :
-				fp.timezone[0].timezoneLie.lies
+				!fp.timezone || !fp.timezone.timezoneLie ? fp.timezone :
+				fp.timezone.timezoneLie.lies
 			),
-			voices: fp.voices,
-			window: fp.window,
-			htmlElement: fp.htmlElement,
-			cssComputedStyle: fp.cssComputedStyle,
-			cssHtmlElementStyle: fp.cssHtmlElementStyle,
-			cssRuleListStyle: fp.cssRuleListStyle,
-			cssStylesMatch: fp.cssStylesMatch,
-			navigatorVersion: fp.nav[0] ? fp.nav[0].version : undefined,
-			webgl: fp.webgl[0],
-			webglDataURL: fp.webglDataURL,
-			webgl2DataURL: fp.webgl2DataURL,
-			consoleErrors: fp.consoleErrors,
+			clientRects: fp.clientRects,
+			offlineAudioContext: fp.offlineAudioContext,
+			fonts: fp.fonts,
 			trash: fp.trash,
 			// avoid random lie fingerprint values
-			lies: fp.lies[0].map(lie => {
+			lies: fp.lies.data.map(lie => {
 				const { lieTypes, name } = lie
 				const types = Object.keys(lieTypes)
 				const lies = lieTypes.lies
 				return { name, types, lies }
-			}),
-			errorsCaptured: fp.errorsCaptured,
-			cRects: fp.cRects,
-			fonts: fp.fonts,
-			audio: fp.audio,
-			maths: fp.maths,
-			canvas2d: fp.canvas2d,
-			bitmapRenderer: fp.bitmapRenderer,
-			workerScopeNavigator: fp.workerScopeNavigator,
-			workerScopeCanvas: fp.workerScopeCanvas
+			})
 		}
 		const log = (message, obj) => console.log(message, JSON.stringify(obj, null, '\t'))
 		
 		console.log('Trusted Fingerprint (Object):', creep)
 		console.log('Loose Id (Object):', fp)
-		log('Loose Id (JSON):', fp)
+		//log('Loose Id (JSON):', fp)
 		
 		const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
 		.catch(error => { 
