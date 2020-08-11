@@ -1654,8 +1654,8 @@
 	// scene
 	const scene = html`
 	<fingerprint>
-		<visitor><div id="visitor"><div class="visitor-loader"></div></div></visitor>
-		<div id="fingerprint">
+		<visitor><div id="${instanceId}-visitor"><div class="visitor-loader"></div></div></visitor>
+		<div id="${instanceId}-fingerprint">
 			<div id="${instanceId}-worker-scope"></div>
 			<div id="${instanceId}-cloudflare"></div>
 			<div id="${instanceId}-lies"></div>
@@ -1817,7 +1817,7 @@
 	const app = document.getElementById('fp-app')
 	patch(app, scene, async () => {
 		// fingerprint and render
-		const fpElem = document.getElementById('fingerprint')
+		const fpElem = document.getElementById(`${instanceId}-fingerprint`)
 		const fp = await fingerprint().catch(error => console.error(error))
 		// Trusted Fingerprint
 		const creep = {
@@ -1857,7 +1857,7 @@
 		})
 
 		// fetch data from server
-		const visitorElem = document.getElementById('visitor')
+		const visitorElem = document.getElementById(`${instanceId}-visitor`)
 		const fetchVisitoDataTimer = timer('Fetching visitor data...')
 		fetch(`${webapp}?id=${creepHash}&subId=${fpHash}`)
 			.then(response => response.json())
