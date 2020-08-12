@@ -119,6 +119,10 @@
 		return templateContent(template) // ie11 fix for template.content
 	}
 
+	// symbol notes
+	const note = { blocked: '<span class="blocked">blocked</span>'}
+	const pluralify = len => len > 1 ? 's' : ''
+
 	// Detect proxy behavior
 	const proxyBehavior = x => typeof x == 'function' ? true : false
 
@@ -274,7 +278,7 @@
 		return trusted ? val : sendToTrash(name, val)
 	}
 
-	// headers
+	// system
 	const getOS = userAgent => {
 		const os = (
 			// order is important
@@ -299,10 +303,30 @@
 			try {
 				const worker = new Worker('worker.js')
 				worker.addEventListener('message', async event => {
-					const { data } = event
+					const { data, data: { canvas2d } } = event
 					data.system = getOS(data.userAgent)
+					data.canvas2d = { dataURI: canvas2d, $hash: await hashify(canvas2d) }
 					const $hash = await hashify(data)
-					return resolve({ ...data, $hash })
+					resolve({ ...data, $hash })
+					const el = document.getElementById(`${instanceId}-worker-scope`)
+					patch(el, html`
+					<div>
+						<strong>WorkerGlobalScope: WorkerNavigator/OffscreenCanvas</strong>
+						<div>
+							<div>hash: ${$hash}</div>
+							${
+								Object.keys(data).map(key => {
+									const value = data[key]
+									return (
+										key != 'canvas2d' ? `<div>${key}: ${value ? value : note.blocked}</div>` : ''
+									)
+								}).join('')
+							}
+						</div>
+						<div>canvas 2d: ${data.canvas2d.$hash}</div>
+					</div>
+					`)
+					return
 				}, false)
 			}
 			catch (error) {
@@ -328,7 +352,28 @@
 				})
 				data.uag = getOS(data.uag)
 				const $hash = await hashify(data)
-				return resolve({ ...data, $hash })
+				resolve({ ...data, $hash })
+				const el = document.getElementById(`${instanceId}-cloudflare`)
+				patch(el, html`
+				<div>
+					<strong>Cloudflare</strong>
+					<div>hash: ${$hash}</div>
+					${
+						Object.keys(data).map(key => {
+							const value = data[key]
+							key = (
+								key == 'ip' ? 'ip address' :
+								key == 'uag' ? 'system' :
+								key == 'loc' ? 'ip location' :
+								key == 'tls' ? 'tls version' :
+								key
+							)
+							return `<div>${key}: ${value ? value : note.blocked}</div>`
+						}).join('')
+					}
+				</div>
+				`)
+				return
 			}
 			catch (error) {
 				captureError(error, 'cloudflare.com: failed or client blocked')
@@ -340,130 +385,168 @@
 	// navigator
 	const getNavigator = (instanceId, workerScope) => {
 		return new Promise(async resolve => {
-			const navigatorPrototype = attempt(() => Navigator.prototype)
-			const detectLies = (name, value) => {
-				const workerScopeValue = caniuse(workerScope, [name])
-				if (workerScopeValue) {
-					if (name == 'userAgent') {
-						const system = getOS(value)
-						if (workerScope.system != system) {
-							documentLie(name, system, 'mismatches worker scope')
-							return sendToTrash(name, system)
+			try {
+				const navigatorPrototype = attempt(() => Navigator.prototype)
+				const detectLies = (name, value) => {
+					const workerScopeValue = caniuse(workerScope, [name])
+					if (workerScopeValue) {
+						if (name == 'userAgent') {
+							const system = getOS(value)
+							if (workerScope.system != system) {
+								documentLie(name, system, 'mismatches worker scope')
+								return sendToTrash(name, system)
+							}
+						}
+						else if (name != 'userAgent' && workerScopeValue != value) {
+							documentLie(name, value, 'mismatches worker scope')
+							return sendToTrash(name, value)
 						}
 					}
-					else if (name != 'userAgent' && workerScopeValue != value) {
-						documentLie(name, value, 'mismatches worker scope')
+					const lie = navigatorPrototype ? hasLiedAPI(navigatorPrototype, name, navigator).lie : false
+					if (lie) {
+						documentLie(name, value, lie)
 						return sendToTrash(name, value)
 					}
+					return value
 				}
-				const lie = navigatorPrototype ? hasLiedAPI(navigatorPrototype, name, navigator).lie : false
-				if (lie) {
-					documentLie(name, value, lie)
-					return sendToTrash(name, value)
-				}
-				return value
-			}
-			const credibleUserAgent = (
-				'chrome' in window ? navigator.userAgent.includes(navigator.appVersion) : true
-			)
-			const data = {
-				appVersion: attempt(() => {
-					const appVersion = detectLies('appVersion', navigator.appVersion)
-					return credibleUserAgent ? appVersion : sendToTrash('InvalidAppVersion', 'does not match userAgent')
-				}),
-				deviceMemory: attempt(() => {
-					if ('deviceMemory' in navigator) {
-						const deviceMemory = detectLies('deviceMemory', navigator.deviceMemory)
-						return deviceMemory ? trustInteger('InvalidDeviceMemory', deviceMemory) : undefined
-					}
-					return undefined
-				}),
-				doNotTrack: attempt(() => {
-					const doNotTrack = detectLies('doNotTrack', navigator.doNotTrack)
-					const trusted = {
-						'1': true,
-						'true': true, 
-						'yes': true,
-						'0': true, 
-						'false': true, 
-						'no': true, 
-						'unspecified': true, 
-						'null': true
-					}
-					return trusted[doNotTrack] ? doNotTrack : sendToTrash('InvalidDoNotTrack', doNotTrack)
-				}),
-				hardwareConcurrency: attempt(() => {
-					const hardwareConcurrency = detectLies('hardwareConcurrency', navigator.hardwareConcurrency)
-					return hardwareConcurrency ? trustInteger('InvalidHardwareConcurrency', hardwareConcurrency): undefined
-				}),
-				language: attempt(() => {
-					const languages = detectLies('languages', navigator.languages)
-					const language = detectLies('language', navigator.language)
-
-					if (languages && languages) {
-						const langs = /^.{0,2}/g.exec(languages[0])[0]
-						const lang = /^.{0,2}/g.exec(language)[0]
-						const trusted = langs == lang
-						return (
-							trusted ? `${languages.join(', ')} (${language})` : 
-							sendToTrash('InvalidLanguages', [languages, language].join(' '))
-						)
-					}
-
-					return undefined
-				}),
-				maxTouchPoints: attempt(() => {
-					if ('maxTouchPoints' in navigator) {
-						const maxTouchPoints = detectLies('maxTouchPoints', navigator.maxTouchPoints)
-						return maxTouchPoints != undefined ? trustInteger('InvalidMaxTouchPoints', maxTouchPoints) : undefined
-					}
-
-					return null
-				}),
-				platform: attempt(() => {
-					const platform = detectLies('platform', navigator.platform)
-					const systems = ['win', 'linux', 'mac', 'arm', 'pike', 'linux', 'iphone', 'ipad', 'ipod', 'android', 'x11']
-					const trusted = typeof platform == 'string' && systems.filter(val => platform.toLowerCase().includes(val))[0]
-					return trusted ? platform : undefined
-				}),
-				userAgent: attempt(() => {
-					const userAgent = detectLies('userAgent', navigator.userAgent)
-					return credibleUserAgent ? userAgent : sendToTrash('InvalidUserAgent', userAgent)
-				}),
-				vendor: attempt(() => {
-					const vendor = detectLies('vendor', navigator.vendor)
-					return vendor
-				}),
-				mimeTypes: attempt(() => {
-					const mimeTypes = detectLies('mimeTypes', navigator.mimeTypes)
-					return mimeTypes ? [...mimeTypes].map(m => m.type) : undefined
-				}),
-				plugins: attempt(() => {
-					const plugins = detectLies('plugins', navigator.plugins)
-					return plugins ? [...navigator.plugins]
-						.map(p => ({
-							name: p.name,
-							description: p.description,
-							filename: p.filename,
-							version: p.version
-						})) : undefined
-				}),
-				version: attempt(() => {
-					const keys = Object.keys(Object.getPrototypeOf(navigator))
-					return keys
-				}),
-				highEntropyValues: await attempt(async () => { 
-					if (!('userAgentData' in navigator)) {
+				const credibleUserAgent = (
+					'chrome' in window ? navigator.userAgent.includes(navigator.appVersion) : true
+				)
+				const data = {
+					appVersion: attempt(() => {
+						const appVersion = detectLies('appVersion', navigator.appVersion)
+						return credibleUserAgent ? appVersion : sendToTrash('InvalidAppVersion', 'does not match userAgent')
+					}),
+					deviceMemory: attempt(() => {
+						if ('deviceMemory' in navigator) {
+							const deviceMemory = detectLies('deviceMemory', navigator.deviceMemory)
+							return deviceMemory ? trustInteger('InvalidDeviceMemory', deviceMemory) : undefined
+						}
 						return undefined
+					}),
+					doNotTrack: attempt(() => {
+						const doNotTrack = detectLies('doNotTrack', navigator.doNotTrack)
+						const trusted = {
+							'1': true,
+							'true': true, 
+							'yes': true,
+							'0': true, 
+							'false': true, 
+							'no': true, 
+							'unspecified': true, 
+							'null': true
+						}
+						return trusted[doNotTrack] ? doNotTrack : sendToTrash('InvalidDoNotTrack', doNotTrack)
+					}),
+					hardwareConcurrency: attempt(() => {
+						const hardwareConcurrency = detectLies('hardwareConcurrency', navigator.hardwareConcurrency)
+						return hardwareConcurrency ? trustInteger('InvalidHardwareConcurrency', hardwareConcurrency): undefined
+					}),
+					language: attempt(() => {
+						const languages = detectLies('languages', navigator.languages)
+						const language = detectLies('language', navigator.language)
+
+						if (languages && languages) {
+							const langs = /^.{0,2}/g.exec(languages[0])[0]
+							const lang = /^.{0,2}/g.exec(language)[0]
+							const trusted = langs == lang
+							return (
+								trusted ? `${languages.join(', ')} (${language})` : 
+								sendToTrash('InvalidLanguages', [languages, language].join(' '))
+							)
+						}
+
+						return undefined
+					}),
+					maxTouchPoints: attempt(() => {
+						if ('maxTouchPoints' in navigator) {
+							const maxTouchPoints = detectLies('maxTouchPoints', navigator.maxTouchPoints)
+							return maxTouchPoints != undefined ? trustInteger('InvalidMaxTouchPoints', maxTouchPoints) : undefined
+						}
+
+						return null
+					}),
+					platform: attempt(() => {
+						const platform = detectLies('platform', navigator.platform)
+						const systems = ['win', 'linux', 'mac', 'arm', 'pike', 'linux', 'iphone', 'ipad', 'ipod', 'android', 'x11']
+						const trusted = typeof platform == 'string' && systems.filter(val => platform.toLowerCase().includes(val))[0]
+						return trusted ? platform : undefined
+					}),
+					userAgent: attempt(() => {
+						const userAgent = detectLies('userAgent', navigator.userAgent)
+						return credibleUserAgent ? userAgent : sendToTrash('InvalidUserAgent', userAgent)
+					}),
+					vendor: attempt(() => {
+						const vendor = detectLies('vendor', navigator.vendor)
+						return vendor
+					}),
+					mimeTypes: attempt(() => {
+						const mimeTypes = detectLies('mimeTypes', navigator.mimeTypes)
+						return mimeTypes ? [...mimeTypes].map(m => m.type) : undefined
+					}),
+					plugins: attempt(() => {
+						const plugins = detectLies('plugins', navigator.plugins)
+						return plugins ? [...navigator.plugins]
+							.map(p => ({
+								name: p.name,
+								description: p.description,
+								filename: p.filename,
+								version: p.version
+							})) : undefined
+					}),
+					version: attempt(() => {
+						const keys = Object.keys(Object.getPrototypeOf(navigator))
+						return keys
+					}),
+					highEntropyValues: await attempt(async () => { 
+						if (!('userAgentData' in navigator)) {
+							return undefined
+						}
+						const data = await navigator.userAgentData.getHighEntropyValues(
+							['platform', 'platformVersion', 'architecture',  'model', 'uaFullVersion']
+						)
+						return data
+					})
+				}
+				const $hash = await hashify(data)
+				resolve({ ...data, $hash })
+				const el = document.getElementById(`${instanceId}-navigator`)
+				const { mimeTypes, plugins, highEntropyValues, version } = data
+				patch(el, html`
+				<div>
+					<strong>Navigator</strong>
+					<div>hash: ${$hash}</div>
+					${
+						Object.keys(data).map(key => {
+							const skip = [
+								'mimeTypes',
+								'plugins',
+								'version',
+								'highEntropyValues'
+							].indexOf(key) > -1
+							const value = data[key]
+							return (
+								!skip ? `<div>${key}: ${value != null || value != undefined ? value : note.blocked}</div>` : ''
+							)
+						}).join('')
 					}
-					const data = await navigator.userAgentData.getHighEntropyValues(
-						['platform', 'platformVersion', 'architecture',  'model', 'uaFullVersion']
-					)
-					return data
-				})
+					<div>plugins (${plugins.length}): ${plugins.map(plugin => plugin.name).join(', ')}</div>
+					<div>mimeTypes (${mimeTypes.length}): ${mimeTypes.join(', ')}</div>
+					${!highEntropyValues ? '' : 
+						Object.keys(highEntropyValues).map(key => {
+							const value = highEntropyValues[key]
+							return `<div>${key}: ${value ? value : note.blocked}</div>`
+						}).join('')
+					}
+					<div>version (${version.length}): ${version.join(', ')}</div>
+				</div>
+				`)
+				return
 			}
-			const $hash = await hashify(data)
-			return resolve({ ...data, $hash })
+			catch (error) {
+				captureError(error)
+				return resolve(undefined)
+			}
 		})
 	}
 	
@@ -481,7 +564,16 @@
 				const keys = Object.getOwnPropertyNames(contentWindow)
 				iframe.parentNode.removeChild(iframe) 
 				const $hash = await hashify(keys)
-				return resolve({ keys, $hash })
+				resolve({ keys, $hash })
+				const el = document.getElementById(`${instanceId}-iframe-content-window-version`)
+				patch(el, html`
+				<div>
+					<strong>HTMLIFrameElement.contentWindow</strong>
+					<div>hash: ${$hash}</div>
+					<div>keys: ${keys.length}</div>
+				</div>
+				`)
+				return
 			}
 			catch (error) {
 				captureError(error)
@@ -504,7 +596,16 @@
 					keys.push(key)
 				}
 				const $hash = await hashify(keys)
-				return resolve({ keys, $hash })
+				resolve({ keys, $hash })
+				const el = document.getElementById(`${instanceId}-html-element-version`)
+				patch(el, html`
+				<div>
+					<strong>HTMLElement</strong>
+					<div>hash: ${$hash}</div>
+					<div>keys: ${keys.length}</div>
+				</div>
+				`)
+				return
 			}
 			catch (error) {
 				captureError(error)
@@ -631,7 +732,29 @@
 					)
 				}
 				const $hash = await hashify(data)
-				return resolve({ ...data, $hash })
+				resolve({ ...data, $hash })
+				const el = document.getElementById(`${instanceId}-css-style-declaration-version`)
+				patch(el, html`
+				<div>
+					<strong>CSSStyleDeclaration</strong>
+					<div>hash: ${$hash}</div>
+					<div>prototype: ${htmlElementStyle.prototypeName}</div>
+					<div>matching: ${data.matching}</div>
+					${
+						Object.keys(data).map(key => {
+							const value = data[key]
+							return key != 'matching' ? `<div>${key}: ${value ? value.$hash : note.blocked}</div>` : ''
+						}).join('')
+					}
+					<div>keys: ${getComputedStyle.keys.length}, ${htmlElementStyle.keys.length}, ${cssRuleListstyle.keys.length}
+					</div>
+					<div>moz: ${''+getComputedStyle.moz}, ${''+htmlElementStyle.moz}, ${''+cssRuleListstyle.moz}
+					</div>
+					<div>webkit: ${''+getComputedStyle.webkit}, ${''+htmlElementStyle.webkit}, ${''+cssRuleListstyle.webkit}
+					</div>
+				</div>
+				`)
+				return
 			}
 			catch (error) {
 				captureError(error)
@@ -687,7 +810,18 @@
 				const respond = async (resolve, voices) => {
 					voices = voices.map(({ name, lang }) => ({ name, lang }))
 					const $hash = await hashify(voices)
-					return resolve({ voices, $hash })
+					resolve({ voices, $hash })
+					const el = document.getElementById(`${instanceId}-voices`)
+					patch(el, html`
+					<div>
+						<strong>SpeechSynthesis</strong>
+						<div>
+							<div>hash: ${$hash}</div>
+							<div>voices (${voices.length}): ${voices.map(voice => `${voice.name} (${voice.lang})`).join(', ')}</div>
+						</div>
+					</div>
+					`)
+					return
 				}
 				if (!('speechSynthesis' in window)) {
 					return resolve(undefined)
@@ -729,7 +863,18 @@
 				const mediaDevicesEnumerated = await navigator.mediaDevices.enumerateDevices()
 				const mediaDevices = mediaDevicesEnumerated.map(({ kind }) => ({ kind }))
 				const $hash = await hashify(mediaDevices)
-				return resolve({ mediaDevices, $hash })
+				resolve({ mediaDevices, $hash })
+				const el = document.getElementById(`${instanceId}-media-devices`)
+				patch(el, html`
+				<div>
+					<strong>MediaDevicesInfo</strong>
+					<div>
+						<div>hash: ${$hash}</div>
+						<div>devices (${mediaDevices.length}): ${mediaDevices.map(device => device.kind).join(', ')}</div>
+					</div>
+				</div>
+				`)
+				return
 			}
 			catch (error) {
 				captureError(error)
@@ -748,6 +893,18 @@
 	const getCanvas2d = instanceId => {
 		return new Promise(async resolve => {
 			try {
+				const patchDom = response => {
+					const { $hash } = response
+					const el = document.getElementById(`${instanceId}-canvas-2d`)
+					return patch(el, html`
+					<div>
+						<strong>CanvasRenderingContext2D</strong>
+						<div>
+							<div>hash: ${$hash}</div>
+						</div>
+					</div>
+					`)
+				}
 				const canvas = document.createElement('canvas')
 				let canvas2dDataURI = ''
 				if (!dataLie && !contextLie) {
@@ -768,7 +925,10 @@
 						isBrave || isFirefox ? sendToTrash('canvas2dDataURI', hashMini(canvas2dDataURI)) : canvas2dDataURI
 					)
 					const $hash = await hashify(dataURI)
-					return resolve({ dataURI, $hash })
+					const response = { dataURI, $hash }
+					resolve(response)
+					patchDom(response)
+					return
 				}
 				// document lie and send to trash
 				canvas2dDataURI = canvas.toDataURL()
@@ -784,7 +944,10 @@
 				// fingerprint lie
 				const data = { contextLie, dataLie }
 				const $hash = await hashify(data)
-				return resolve({ ...data, $hash })
+				const response = { ...data, $hash }
+				resolve(response)
+				patchDom(response)
+				return
 			}
 			catch (error) {
 				captureError(error)
@@ -797,6 +960,18 @@
 	const getCanvasBitmapRenderer = instanceId => {
 		return new Promise(async resolve => {
 			try {
+				const patchDom = response => {
+					const { $hash } = response
+					const el = document.getElementById(`${instanceId}-canvas-bitmap-renderer`)
+					return patch(el, html`
+					<div>
+						<strong>ImageBitmapRenderingContext</strong>
+						<div>
+							<div>hash: ${$hash}</div>
+						</div>
+					</div>
+					`)
+				}
 				const canvas = document.createElement('canvas')
 				let canvasBMRDataURI = ''
 				if (!dataLie && !contextLie) {
@@ -814,7 +989,9 @@
 								canvasBMRDataURI
 							)
 							const $hash = await hashify(dataURI)
-							return resolve({ dataURI, $hash })
+							const response = { dataURI, $hash }
+							resolve(response)
+							patchDom(response)
 						}
 					}))	
 				}
@@ -832,7 +1009,9 @@
 				// fingerprint lie
 				const data = { contextLie, dataLie }
 				const $hash = await hashify(data)
-				return resolve({ ...data, $hash })
+				const response = { ...data, $hash }
+				resolve(response)
+				patchDom(response)
 			}
 			catch (error) {
 				captureError(error)
@@ -1654,30 +1833,35 @@
 	// scene
 	const scene = html`
 	<fingerprint>
-		<visitor><div id="visitor"><div class="visitor-loader"></div></div></visitor>
-		<div id="fingerprint">
-			<div id="${instanceId}-worker-scope"></div>
-			<div id="${instanceId}-cloudflare"></div>
-			<div id="${instanceId}-lies"></div>
-			<div id="${instanceId}-trash"></div>
-			<div id="${instanceId}-captured-errors"></div>
-			<div id="${instanceId}-canvas-2d"></div>
-			<div id="${instanceId}-canvas-bitmap-renderer"></div>
-			<div id="${instanceId}-canvas-webgl"></div>
-			<div id="${instanceId}-offline-audio-context"></div>
-			<div id="${instanceId}-client-rects"></div>
-			<div id="${instanceId}-maths"></div>
-			<div id="${instanceId}-console-errors"></div>
-			<div id="${instanceId}-timezone"></div>
-			<div id="${instanceId}-screen"></div>
-			<div id="${instanceId}-media-devices"></div>
-			<div id="${instanceId}-iframe-content-window-version"></div>
-			<div id="${instanceId}-html-element-version"></div>
-			<div id="${instanceId}-css-style-declaration-version"></div>
-			<div id="${instanceId}-navigator"></div>
-			<div id="${instanceId}-voices"></div>
-			<div id="${instanceId}-fonts"></div>
+		<div id="fingerprint-data">
+			<div>
+				<visitor><div id="visitor"><div class="visitor-loader"></div></div></visitor>
+				Data auto deletes <a href="https://github.com/abrahamjuliot/creepjs/blob/8d6603ee39c9534cad700b899ef221e0ee97a5a4/server.gs#L24" target="_blank">every 7 days</a>
+			</div>
+			<div id="${instanceId}-worker-scope" class="hide"></div>
+			<div id="${instanceId}-cloudflare" class="hide"></div>
+			<div id="${instanceId}-lies" class="hide"></div>
+			<div id="${instanceId}-trash" class="hide"></div>
+			<div id="${instanceId}-captured-errors" class="hide"></div>
+			<div id="${instanceId}-canvas-2d" class="hide"></div>
+			<div id="${instanceId}-canvas-bitmap-renderer" class="hide"></div>
+			<div id="${instanceId}-canvas-webgl" class="hide"></div>
+			<div id="${instanceId}-offline-audio-context" class="hide"></div>
+			<div id="${instanceId}-client-rects" class="hide"></div>
+			<div id="${instanceId}-maths" class="hide"></div>
+			<div id="${instanceId}-console-errors" class="hide"></div>
+			<div id="${instanceId}-timezone" class="hide"></div>
+			<div id="${instanceId}-screen" class="hide"></div>
+			<div id="${instanceId}-media-devices" class="hide"></div>
+			<div id="${instanceId}-iframe-content-window-version" class="hide"></div>
+			<div id="${instanceId}-html-element-version" class="hide"></div>
+			<div id="${instanceId}-css-style-declaration-version" class="hide"></div>
+			<div id="${instanceId}-navigator" class="hide"></div>
+			<div id="${instanceId}-voices" class="hide"></div>
+			<div id="${instanceId}-fonts" class="hide"></div>
+			
 		</div>
+
 		<div id="font-detector"><div id="font-detector-stage"></div></div>
 		<div id="rect-container">
 			<style>
@@ -1891,8 +2075,6 @@
 				return console.error('Error!', err.message)
 			})
 		
-		// symbol notes
-		const note = { blocked: '<span class="blocked">blocked</span>'}
 		const knownStyle = str => `<span class="known">${str}</span>`
 		const knownBrowser = () => {
 			return (
@@ -1910,26 +2092,6 @@
 				}
 			}
 			const known = {
-				'0df25df426d0ce052d04482c0c2cd4d874ae7a4da4feb430be36150a770f3b6b': 'Browser Plugs',
-				'65069db4579c03d49fde85983c905817c8798cad3ad6b39dd93df24bde1449c9': 'Browser Plugs',
-				'3ac278638742f3475dcd69559fd1d12e01eefefffe3df66f9129d35635fc3311': 'Browser Plugs',
-				'e9f96e6b7f0b93f9d7677f0e270c97d6fa12cbbe3134ab5f906d152f57953e72': 'Browser Plugs',
-				'0c3156fbce7624886a6a5485d3fabfb8038f9b656de01100392b2cebf354106d': 'Browser Plugs',
-				'235354122e45f69510264fc45ebd5a161eb15ada33702d85ee96a23b28ba2295': 'CyDec',
-				'94e40669f496f2cef69cc289f3ee50dc442ced21fb42a88bc223270630002556': 'Canvas Fingerprint Defender',
-				'ea43a000cd99bbe3fcd6861a2a5b9da1cba4c75c5ed7756f19562a8b5e034018': 'Privacy Possom',
-				'1a2e56badfca47209ba445811f27e848b4c2dae58224445a4af3d3581ffe7561': 'Privacy Possom',
-				'e5c60fb55b35e96ec8482d4cfccb2e3b8245ef2a148c96a473ee7e526a2f21c5': 'Privacy Badger or similar',
-				'bdcb3de585b3a521cff31e571d854a0bb76c23da7a0105c4806aba01a086f238': 'ScriptSafe',
-				'45f81b1215784751b96b83e2f41cd58dfa5242ba8bc59a4caf6ada3cf7b2391d': 'ScriptSafe',
-				'222fbc5168eb8e1412076d5bfc8694e28be0683a2006fa9c61cfa26925017e46': 'ScriptSafe',
-				'54936993bcf15826da2ee7a4fa5c840d0162790a0ff5a55b1df56f383d7ec9f5': 'ScriptSafe',
-				'e65a4f597969d9a50182053b3e87342e4a620001faea7bd6fc4702ebf735d244': 'ScriptSafe',
-				'785acfe6b266709e167dcc85fdd5697798cfdb1dcb9bed4eab42f422117ebaab': 'Trace',
-				'c53d59bceea14b20c5b2a0680457314fc04f71c240604ced26ff37f42242ff0e': 'Trace',
-				'96fc9e8167ed27c6f45442df78619601955728422a111e02c08cd5af94378d34': 'Trace',
-				'2bc45cdcef8ec09dd0f28ee622c25aac195976d8b1584b2377d0393538f04752': 'Trace',
-				'522ae9e830dc90e334a900f70c276bce794dd28ccacf87df6fedfc35d2fe7268': 'Trace',
 				'7757f7416b78fb8ac1f079b3e0677c0fe179826a63727d809e7d69795e915cd5': 'Chromium',
 				'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': 'Firefox' // errors
 			}
@@ -1942,7 +2104,7 @@
 			)
 		}
 		
-		const pluralify = (len) => len > 1 ? 's' : ''
+		
 		// template
 		const data = `
 			<section>
@@ -2028,26 +2190,7 @@
 							})()
 						}
 					</div>
-					<div>
-						<strong>WorkerGlobalScope: WorkerNavigator/OffscreenCanvas</strong>
-						${
-							!fp.workerScopeNavigator[0] ? `<div>navigator: ${note.blocked}</div>`: (() => {
-								const [ data, hash ]  = fp.workerScopeNavigator
-								return `
-								<div>
-									<div>navigator: ${hash}</div>
-									${
-										Object.keys(data).map(key => {
-											const value = data[key]
-											return `<div>${key}: ${value ? value : note.blocked}</div>`
-										}).join('')
-									}
-								</div>
-								`
-							})()
-						}
-						<div>toDataURL: ${identify(fp.workerScopeCanvas, 'identifyBrowser')}</div>
-					</div>
+					
 					<div>
 						<strong>CanvasRenderingContext2D</strong>
 						<div>toDataURL: ${identify(fp.canvas2d, 'identifyBrowser')}</div>

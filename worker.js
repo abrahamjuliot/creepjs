@@ -19,7 +19,7 @@
 		)
 	}
 
-	let dataURI = undefined
+	let canvas2d = undefined
 	try {
 		const canvas = new OffscreenCanvas(256, 256)
 		const context = canvas.getContext('2d')
@@ -42,7 +42,7 @@
 				reader.onloadend = () => resolve(reader.result)
 			})
 		}
-		dataURI = await getDataURI() 
+		canvas2d = await getDataURI() 
 	}
 	catch (error) { }
     
@@ -51,6 +51,6 @@
 	const platform = caniuse(navigator, ['platform'])
 	const userAgent = caniuse(navigator, ['userAgent'])
 
-	postMessage({ hardwareConcurrency, language, platform, userAgent, dataURI })
+	postMessage({ hardwareConcurrency, language, platform, userAgent, canvas2d })
 	close()
 })()
