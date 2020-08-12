@@ -312,17 +312,15 @@
 					patch(el, html`
 					<div>
 						<strong>WorkerGlobalScope: WorkerNavigator/OffscreenCanvas</strong>
-						<div>
-							<div>hash: ${$hash}</div>
-							${
-								Object.keys(data).map(key => {
-									const value = data[key]
-									return (
-										key != 'canvas2d' ? `<div>${key}: ${value ? value : note.blocked}</div>` : ''
-									)
-								}).join('')
-							}
-						</div>
+						<div>hash: ${$hash}</div>
+						${
+							Object.keys(data).map(key => {
+								const value = data[key]
+								return (
+									key != 'canvas2d' && key != 'userAgent'? `<div>${key}: ${value ? value : note.blocked}</div>` : ''
+								)
+							}).join('')
+						}
 						<div>canvas 2d: ${data.canvas2d.$hash}</div>
 					</div>
 					`)
@@ -1838,28 +1836,89 @@
 				<visitor><div id="visitor"><div class="visitor-loader"></div></div></visitor>
 				Data auto deletes <a href="https://github.com/abrahamjuliot/creepjs/blob/8d6603ee39c9534cad700b899ef221e0ee97a5a4/server.gs#L24" target="_blank">every 7 days</a>
 			</div>
-			<div id="${instanceId}-worker-scope" class="hide"></div>
-			<div id="${instanceId}-cloudflare" class="hide"></div>
-			<div id="${instanceId}-lies" class="hide"></div>
-			<div id="${instanceId}-trash" class="hide"></div>
-			<div id="${instanceId}-captured-errors" class="hide"></div>
-			<div id="${instanceId}-canvas-2d" class="hide"></div>
-			<div id="${instanceId}-canvas-bitmap-renderer" class="hide"></div>
-			<div id="${instanceId}-canvas-webgl" class="hide"></div>
-			<div id="${instanceId}-offline-audio-context" class="hide"></div>
-			<div id="${instanceId}-client-rects" class="hide"></div>
-			<div id="${instanceId}-maths" class="hide"></div>
-			<div id="${instanceId}-console-errors" class="hide"></div>
-			<div id="${instanceId}-timezone" class="hide"></div>
-			<div id="${instanceId}-screen" class="hide"></div>
-			<div id="${instanceId}-media-devices" class="hide"></div>
-			<div id="${instanceId}-iframe-content-window-version" class="hide"></div>
-			<div id="${instanceId}-html-element-version" class="hide"></div>
-			<div id="${instanceId}-css-style-declaration-version" class="hide"></div>
-			<div id="${instanceId}-navigator" class="hide"></div>
-			<div id="${instanceId}-voices" class="hide"></div>
-			<div id="${instanceId}-fonts" class="hide"></div>
-			
+			<div id="${instanceId}-worker-scope">
+				<strong>WorkerGlobalScope: WorkerNavigator/OffscreenCanvas</strong>
+				<div>hash:</div>
+				<div>hardwareConcurrency:</div>
+				<div>language:</div>
+				<div>platform:</div>
+				<div>system:</div>
+				<div>canvas 2d:</div>
+			</div>
+			<div id="${instanceId}-cloudflare">
+				<strong>Cloudflare</strong>
+				<div>hash:</div>
+				<div>ip address:</div>
+				<div>system:</div>
+				<div>ip location:</div>
+				<div>tls version:</div>
+			</div>
+			<div id="${instanceId}-lies"></div>
+			<div id="${instanceId}-trash"></div>
+			<div id="${instanceId}-captured-errors"></div>
+			<div id="${instanceId}-canvas-2d">
+				<strong>CanvasRenderingContext2D</strong>
+				<div>hash:</div>
+			</div>
+			<div id="${instanceId}-canvas-bitmap-renderer">
+				<strong>ImageBitmapRenderingContext</strong>
+				<div>hash:</div>
+			</div>
+			<div id="${instanceId}-canvas-webgl"></div>
+			<div id="${instanceId}-offline-audio-context"></div>
+			<div id="${instanceId}-client-rects"></div>
+			<div id="${instanceId}-maths"></div>
+			<div id="${instanceId}-console-errors"></div>
+			<div id="${instanceId}-timezone"></div>
+			<div id="${instanceId}-screen"></div>
+			<div id="${instanceId}-media-devices">
+				<strong>MediaDevicesInfo</strong>
+				<div>hash:</div>
+				<div>devices (0):</div>
+			</div>
+			<div id="${instanceId}-iframe-content-window-version">
+				<strong>HTMLIFrameElement.contentWindow</strong>
+				<div>hash:</div>
+				<div>keys:</div>
+			</div>
+			<div id="${instanceId}-html-element-version">
+				<strong>HTMLElement</strong>
+				<div>hash:</div>
+				<div>keys:</div>
+			</div>
+			<div id="${instanceId}-css-style-declaration-version">
+				<strong>CSSStyleDeclaration</strong>
+				<div>hash:</div>
+				<div>prototype:</div>
+				<div>matching:</div>
+				<div>getComputedStyle:</div>
+				<div>HTMLElement.style:</div>
+				<div>CSSRuleList.style:</div>
+				<div>keys:</div>
+				<div>moz:</div>
+				<div>webkit:</div>
+			</div>
+			<div id="${instanceId}-navigator">
+				<strong>Navigator</strong>
+				<div>hash:</div>
+				<div>appVersion:</div>
+				<div>deviceMemory:</div>
+				<div>doNotTrack:</div>
+				<div>hardwareConcurrency:</div>
+				<div>language:</div>
+				<div>maxTouchPoints:</div>
+				<div>platform:</div>
+				<div>userAgent:</div>
+				<div>plugins (0):</div>
+				<div>mimeTypes (0):</div>
+				<div>version (0):</div> 
+			</div>
+			<div id="${instanceId}-voices">
+				<strong>SpeechSynthesis</strong>
+				<div>hash:</div>
+				<div>voices (0):</div>
+			</div>
+			<div id="${instanceId}-fonts"></div>
 		</div>
 
 		<div id="font-detector"><div id="font-detector-stage"></div></div>
