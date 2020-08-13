@@ -5,7 +5,8 @@
 		const start = Date.now()
 		return (logEnd) => {
 			const end = Date.now() - start
-			console.log(`${logEnd}: ${end / 1000} seconds`)
+			logEnd && console.log(`${logEnd}: ${end / 1000} seconds`)
+			return end
 		}
 	}
 
@@ -122,6 +123,32 @@
 	// symbol notes
 	const note = { blocked: '<span class="blocked">blocked</span>'}
 	const pluralify = len => len > 1 ? 's' : ''
+
+	// modal component
+	const modal = (name, result) => `
+		<style>
+		.modal-${name}:checked ~ .modal-container {
+			visibility: visible;
+			opacity: 1;
+			animation: show 0.1s linear both;
+		}
+		.modal-${name}:checked ~ .modal-container .modal-content {
+			animation: enter 0.2s 0.1s ease both
+		}
+		.modal-${name}:not(:checked) ~ .modal-container {
+			visibility: hidden;
+		}
+		</style>
+		<input type="radio" id="toggle-open-${name}" class="modal-${name}" name="modal-${name}"/>
+		<label class="modal-open-btn" for="toggle-open-${name}" onclick="">details</label>
+		<label class="modal-container" for="toggle-close-${name}" onclick="">
+			<label class="modal-content" for="toggle-open-${name}" onclick="">
+				<input type="radio" id="toggle-close-${name}" name="modal-${name}"/>
+				<label class="modal-close-btn" for="toggle-close-${name}" onclick="">×</label>
+				<div>${result}</div>
+			</label>
+		</label>
+	`
 
 	// Detect proxy behavior
 	const proxyBehavior = x => typeof x == 'function' ? true : false
@@ -250,11 +277,9 @@
 		return false
 	}
 
-	// Detect Brave Browser and strict fingerprinting blocking
-	const brave = () => 'brave' in navigator ? true : false
-	const firefox = () => typeof InstallTrigger !== 'undefined'
-	const isBrave = brave()
-	const isFirefox = firefox()
+	// Detect Browser
+	const isBrave = 'brave' in navigator ? true : false
+	const isFirefox = typeof InstallTrigger !== 'undefined'
 
 	// Collect trash values
 	const trashBin = []
@@ -301,6 +326,7 @@
 	const getWorkerScope = instanceId => {
 		return new Promise(resolve => {
 			try {
+				const timeStart = timer()
 				const worker = new Worker('worker.js')
 				worker.addEventListener('message', async event => {
 					const { data, data: { canvas2d } } = event
@@ -308,6 +334,7 @@
 					data.canvas2d = { dataURI: canvas2d, $hash: await hashify(canvas2d) }
 					const $hash = await hashify(data)
 					resolve({ ...data, $hash })
+					const timeEnd = timeStart()
 					const el = document.getElementById(`${instanceId}-worker-scope`)
 					patch(el, html`
 					<div>
@@ -322,6 +349,7 @@
 							}).join('')
 						}
 						<div>canvas 2d: ${data.canvas2d.$hash}</div>
+						<div class="time">performance: ${timeEnd} milliseconds</div>
 					</div>
 					`)
 					return
@@ -338,6 +366,7 @@
 	const getCloudflare = instanceId => {
 		return new Promise(async resolve => {
 			try {
+				const timeStart = timer()
 				const api = 'https://www.cloudflare.com/cdn-cgi/trace'
 				const res = await fetch(api)
 				const text = await res.text()
@@ -351,6 +380,7 @@
 				data.uag = getOS(data.uag)
 				const $hash = await hashify(data)
 				resolve({ ...data, $hash })
+				const timeEnd = timeStart()
 				const el = document.getElementById(`${instanceId}-cloudflare`)
 				patch(el, html`
 				<div>
@@ -369,6 +399,7 @@
 							return `<div>${key}: ${value ? value : note.blocked}</div>`
 						}).join('')
 					}
+					<div class="time">performance: ${timeEnd} milliseconds</div>
 				</div>
 				`)
 				return
@@ -384,6 +415,7 @@
 	const getNavigator = (instanceId, workerScope) => {
 		return new Promise(async resolve => {
 			try {
+				const timeStart = timer()
 				const navigatorPrototype = attempt(() => Navigator.prototype)
 				const detectLies = (name, value) => {
 					const workerScopeValue = caniuse(workerScope, [name])
@@ -492,7 +524,7 @@
 								version: p.version
 							})) : undefined
 					}),
-					version: attempt(() => {
+					properties: attempt(() => {
 						const keys = Object.keys(Object.getPrototypeOf(navigator))
 						return keys
 					}),
@@ -508,8 +540,10 @@
 				}
 				const $hash = await hashify(data)
 				resolve({ ...data, $hash })
-				const el = document.getElementById(`${instanceId}-navigator`)
-				const { mimeTypes, plugins, highEntropyValues, version } = data
+				const timeEnd = timeStart()
+				const id = `${instanceId}-navigator`
+				const el = document.getElementById(id)
+				const { mimeTypes, plugins, highEntropyValues, properties } = data
 				patch(el, html`
 				<div>
 					<strong>Navigator</strong>
@@ -519,7 +553,7 @@
 							const skip = [
 								'mimeTypes',
 								'plugins',
-								'version',
+								'properties',
 								'highEntropyValues'
 							].indexOf(key) > -1
 							const value = data[key]
@@ -528,15 +562,21 @@
 							)
 						}).join('')
 					}
-					<div>plugins (${plugins.length}): ${plugins.map(plugin => plugin.name).join(', ')}</div>
-					<div>mimeTypes (${mimeTypes.length}): ${mimeTypes.join(', ')}</div>
-					${!highEntropyValues ? '' : 
+					<div>plugins (${plugins.length}): ${modal(`${id}-plugins`, plugins.map(plugin => plugin.name).join('<br>'))}</div>
+					<div>mimeTypes (${mimeTypes.length}): ${modal(`${id}-mimeTypes`, mimeTypes.join('<br>'))}</div>
+					${highEntropyValues ?  
 						Object.keys(highEntropyValues).map(key => {
 							const value = highEntropyValues[key]
-							return `<div>${key}: ${value ? value : note.blocked}</div>`
-						}).join('')
+							return `<div>ua ${key}: ${value ? value : note.blocked}</div>`
+						}).join('') :
+						`<div>ua architecture:</div>
+						<div>ua model:</div>
+						<div>ua platform:</div>
+						<div>ua platformVersion:</div>
+						<div>ua uaFullVersion:</div>`
 					}
-					<div>version (${version.length}): ${version.join(', ')}</div>
+					<div>properties (${properties.length}): ${modal(`${id}-properties`, properties.join(', '))}</div>
+					<div class="time">performance: ${timeEnd} milliseconds</div>
 				</div>
 				`)
 				return
@@ -552,6 +592,7 @@
 	const getIframeContentWindowVersion = instanceId => {
 		return new Promise(async resolve => {
 			try {
+				const timeStart = timer()
 				const id = `${instanceId}-content-window-version-test`
 				const iframeElement = document.createElement('iframe')
 				iframeElement.setAttribute('id', id)
@@ -563,12 +604,14 @@
 				iframe.parentNode.removeChild(iframe) 
 				const $hash = await hashify(keys)
 				resolve({ keys, $hash })
+				const timeEnd = timeStart()
 				const el = document.getElementById(`${instanceId}-iframe-content-window-version`)
 				patch(el, html`
 				<div>
 					<strong>HTMLIFrameElement.contentWindow</strong>
 					<div>hash: ${$hash}</div>
 					<div>keys: ${keys.length}</div>
+					<div class="time">performance: ${timeEnd} milliseconds</div>
 				</div>
 				`)
 				return
@@ -584,6 +627,7 @@
 	const getHTMLElementVersion = instanceId => {
 		return new Promise(async resolve => {
 			try {
+				const timeStart = timer()
 				const id = `${instanceId}-html-element-version-test`
 				const element = document.createElement('div')
 				element.setAttribute('id', id)
@@ -595,12 +639,14 @@
 				}
 				const $hash = await hashify(keys)
 				resolve({ keys, $hash })
+				const timeEnd = timeStart()
 				const el = document.getElementById(`${instanceId}-html-element-version`)
 				patch(el, html`
 				<div>
 					<strong>HTMLElement</strong>
 					<div>hash: ${$hash}</div>
 					<div>keys: ${keys.length}</div>
+					<div class="time">performance: ${timeEnd} milliseconds</div>
 				</div>
 				`)
 				return
@@ -709,6 +755,7 @@
 	const getCSSStyleDeclarationVersion = instanceId => {
 		return new Promise(async resolve => {
 			try {
+				const timeStart = timer()
 				const [
 					getComputedStyle,
 					htmlElementStyle,
@@ -731,13 +778,13 @@
 				}
 				const $hash = await hashify(data)
 				resolve({ ...data, $hash })
+				const timeEnd = timeStart()
 				const el = document.getElementById(`${instanceId}-css-style-declaration-version`)
 				patch(el, html`
 				<div>
 					<strong>CSSStyleDeclaration</strong>
 					<div>hash: ${$hash}</div>
 					<div>prototype: ${htmlElementStyle.prototypeName}</div>
-					<div>matching: ${data.matching}</div>
 					${
 						Object.keys(data).map(key => {
 							const value = data[key]
@@ -750,6 +797,8 @@
 					</div>
 					<div>webkit: ${''+getComputedStyle.webkit}, ${''+htmlElementStyle.webkit}, ${''+cssRuleListstyle.webkit}
 					</div>
+					<div>matching: ${data.matching}</div>
+					<div class="time">performance: ${timeEnd} milliseconds</div>
 				</div>
 				`)
 				return
@@ -765,6 +814,7 @@
 	const getScreen = instanceId => {
 		return new Promise(async resolve => {
 			try {
+				const timeStart = timer()
 				const screenPrototype = attempt(() => Screen.prototype)
 				const detectLies = (name, value) => {
 					const lie = screenPrototype ? hasLiedAPI(screenPrototype, name, screen).lie : false
@@ -791,7 +841,23 @@
 					pixelDepth: attempt(() => pixelDepth ? trustInteger('InvalidPixelDepth', pixelDepth) : undefined)
 				}
 				const $hash = await hashify(data)
-				return resolve({ ...data, $hash })
+				resolve({ ...data, $hash })
+				const timeEnd = timeStart()
+				const el = document.getElementById(`${instanceId}-screen`)
+				patch(el, html`
+				<div>
+					<strong>Screen</strong>
+					<div>hash: ${$hash}</div>
+					${
+						Object.keys(data).map(key => {
+							const value = data[key]
+							return `<div>${key}: ${value ? value : note.blocked}</div>`
+						}).join('')
+					}
+					<div class="time">performance: ${timeEnd} milliseconds</div>
+				</div>
+				`)
+				return
 			}
 			catch (error) {
 				captureError(error)
@@ -804,19 +870,22 @@
 	const getVoices = instanceId => {	
 		return new Promise(async resolve => {
 			try {
+				const timeStart = timer()
 				let voices = []
-				const respond = async (resolve, voices) => {
+				const respond = async (resolve, voices, timeStart) => {
 					voices = voices.map(({ name, lang }) => ({ name, lang }))
 					const $hash = await hashify(voices)
 					resolve({ voices, $hash })
-					const el = document.getElementById(`${instanceId}-voices`)
+					const timeEnd = timeStart()
+					const id = `${instanceId}-voices`
+					const el = document.getElementById(id)
+					const voiceList = voices.map(voice => `${voice.name} (${voice.lang})`)
 					patch(el, html`
 					<div>
 						<strong>SpeechSynthesis</strong>
-						<div>
-							<div>hash: ${$hash}</div>
-							<div>voices (${voices.length}): ${voices.map(voice => `${voice.name} (${voice.lang})`).join(', ')}</div>
-						</div>
+						<div>hash: ${$hash}</div>
+						<div>voices (${voices.length}): ${modal(id, voiceList.join('<br>'))}</div>
+						<div class="time">performance: ${timeEnd} milliseconds</div>
 					</div>
 					`)
 					return
@@ -826,18 +895,18 @@
 				}
 				else if (!('chrome' in window)) {
 					voices = await speechSynthesis.getVoices()
-					return respond(resolve, voices)
+					return respond(resolve, voices, timeStart)
 				}
 				else if (!speechSynthesis.getVoices || speechSynthesis.getVoices() == undefined) {
 					return resolve(undefined)
 				}
 				else if (speechSynthesis.getVoices().length) {
 					voices = speechSynthesis.getVoices()
-					return respond(resolve, voices)
+					return respond(resolve, voices, timeStart)
 				} else {
 					speechSynthesis.onvoiceschanged = () => {
 						voices = speechSynthesis.getVoices()
-						return resolve(new Promise(resolve => respond(resolve, voices)))
+						return resolve(new Promise(resolve => respond(resolve, voices, timeStart)))
 					}
 				}
 			}
@@ -852,6 +921,7 @@
 	const getMediaDevices = instanceId => {
 		return new Promise(async resolve => {
 			try {
+				const timeStart = timer()
 				if (!('mediaDevices' in navigator)) {
 					return resolve(undefined)
 				}
@@ -862,14 +932,14 @@
 				const mediaDevices = mediaDevicesEnumerated.map(({ kind }) => ({ kind }))
 				const $hash = await hashify(mediaDevices)
 				resolve({ mediaDevices, $hash })
+				const timeEnd = timeStart()
 				const el = document.getElementById(`${instanceId}-media-devices`)
 				patch(el, html`
 				<div>
 					<strong>MediaDevicesInfo</strong>
-					<div>
-						<div>hash: ${$hash}</div>
-						<div>devices (${mediaDevices.length}): ${mediaDevices.map(device => device.kind).join(', ')}</div>
-					</div>
+					<div>hash: ${$hash}</div>
+					<div>devices (${mediaDevices.length}): ${mediaDevices.map(device => device.kind).join(', ')}</div>
+					<div class="time">performance: ${timeEnd} milliseconds</div>
 				</div>
 				`)
 				return
@@ -891,15 +961,15 @@
 	const getCanvas2d = instanceId => {
 		return new Promise(async resolve => {
 			try {
-				const patchDom = response => {
+				const timeStart = timer()
+				const patchDom = (response, timeEnd) => {
 					const { $hash } = response
 					const el = document.getElementById(`${instanceId}-canvas-2d`)
 					return patch(el, html`
 					<div>
 						<strong>CanvasRenderingContext2D</strong>
-						<div>
-							<div>hash: ${$hash}</div>
-						</div>
+						<div>hash: ${$hash}</div>
+						<div class="time">performance: ${timeEnd} milliseconds</div>
 					</div>
 					`)
 				}
@@ -925,7 +995,8 @@
 					const $hash = await hashify(dataURI)
 					const response = { dataURI, $hash }
 					resolve(response)
-					patchDom(response)
+					const timeEnd = timeStart()
+					patchDom(response, timeEnd)
 					return
 				}
 				// document lie and send to trash
@@ -944,7 +1015,8 @@
 				const $hash = await hashify(data)
 				const response = { ...data, $hash }
 				resolve(response)
-				patchDom(response)
+				const timeEnd = timeStart()
+				patchDom(response, timeEnd)
 				return
 			}
 			catch (error) {
@@ -958,15 +1030,15 @@
 	const getCanvasBitmapRenderer = instanceId => {
 		return new Promise(async resolve => {
 			try {
-				const patchDom = response => {
+				const timeStart = timer()
+				const patchDom = (response, timeEnd) => {
 					const { $hash } = response
 					const el = document.getElementById(`${instanceId}-canvas-bitmap-renderer`)
 					return patch(el, html`
 					<div>
 						<strong>ImageBitmapRenderingContext</strong>
-						<div>
-							<div>hash: ${$hash}</div>
-						</div>
+						<div>hash: ${$hash}</div>
+						<div class="time">performance: ${timeEnd} milliseconds</div>
 					</div>
 					`)
 				}
@@ -989,7 +1061,8 @@
 							const $hash = await hashify(dataURI)
 							const response = { dataURI, $hash }
 							resolve(response)
-							patchDom(response)
+							const timeEnd = timeStart()
+							patchDom(response, timeEnd)
 						}
 					}))	
 				}
@@ -1009,7 +1082,8 @@
 				const $hash = await hashify(data)
 				const response = { ...data, $hash }
 				resolve(response)
-				patchDom(response)
+				const timeEnd = timeStart()
+				patchDom(response, timeEnd)
 			}
 			catch (error) {
 				captureError(error)
@@ -1844,6 +1918,7 @@
 				<div>platform:</div>
 				<div>system:</div>
 				<div>canvas 2d:</div>
+				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-cloudflare">
 				<strong>Cloudflare</strong>
@@ -1852,6 +1927,7 @@
 				<div>system:</div>
 				<div>ip location:</div>
 				<div>tls version:</div>
+				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-lies"></div>
 			<div id="${instanceId}-trash"></div>
@@ -1859,44 +1935,74 @@
 			<div id="${instanceId}-canvas-2d">
 				<strong>CanvasRenderingContext2D</strong>
 				<div>hash:</div>
+				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-canvas-bitmap-renderer">
 				<strong>ImageBitmapRenderingContext</strong>
 				<div>hash:</div>
+				<div class="time">performance: 0 milliseconds</div>
 			</div>
-			<div id="${instanceId}-canvas-webgl"></div>
-			<div id="${instanceId}-offline-audio-context"></div>
-			<div id="${instanceId}-client-rects"></div>
-			<div id="${instanceId}-maths"></div>
-			<div id="${instanceId}-console-errors"></div>
-			<div id="${instanceId}-timezone"></div>
-			<div id="${instanceId}-screen"></div>
+			<div id="${instanceId}-canvas-webgl">
+				<div class="time">performance: 0 milliseconds</div>
+			</div>
+			<div id="${instanceId}-offline-audio-context">
+				<div class="time">performance: 0 milliseconds</div>
+			</div>
+			<div id="${instanceId}-client-rects">
+				<div class="time">performance: 0 milliseconds</div>
+			</div>
+			<div id="${instanceId}-maths">
+				<div class="time">performance: 0 milliseconds</div>
+			</div>
+			<div id="${instanceId}-console-errors">
+				<div class="time">performance: 0 milliseconds</div>
+			</div>
+			<div id="${instanceId}-timezone">
+				<div class="time">performance: 0 milliseconds</div>
+			</div>
+			<div id="${instanceId}-screen">
+				<strong>Screen</strong>
+				<div>hash:</div>
+				<div>width:</div>
+				<div>outerWidth:</div>
+				<div>availWidth:</div>
+				<div>height:</div>
+				<div>outerHeight:</div>
+				<div>availHeight:</div>
+				<div>colorDepth:</div>
+				<div>pixelDepth:</div>
+				<div class="time">performance: 0 milliseconds</div>
+			</div>
 			<div id="${instanceId}-media-devices">
 				<strong>MediaDevicesInfo</strong>
 				<div>hash:</div>
 				<div>devices (0):</div>
+				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-iframe-content-window-version">
 				<strong>HTMLIFrameElement.contentWindow</strong>
 				<div>hash:</div>
 				<div>keys:</div>
+				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-html-element-version">
 				<strong>HTMLElement</strong>
 				<div>hash:</div>
 				<div>keys:</div>
+				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-css-style-declaration-version">
 				<strong>CSSStyleDeclaration</strong>
 				<div>hash:</div>
 				<div>prototype:</div>
-				<div>matching:</div>
 				<div>getComputedStyle:</div>
 				<div>HTMLElement.style:</div>
 				<div>CSSRuleList.style:</div>
 				<div>keys:</div>
 				<div>moz:</div>
 				<div>webkit:</div>
+				<div>matching:</div>
+				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-navigator">
 				<strong>Navigator</strong>
@@ -1911,14 +2017,23 @@
 				<div>userAgent:</div>
 				<div>plugins (0):</div>
 				<div>mimeTypes (0):</div>
-				<div>version (0):</div> 
+				<div>ua architecture:</div>
+				<div>ua model:</div>
+				<div>ua platform:</div>
+				<div>ua platformVersion:</div>
+				<div>ua uaFullVersion:</div>
+				<div>properties (0):</div>
+				<div class="time">performance: 0 milliseconds</div> 
 			</div>
 			<div id="${instanceId}-voices">
 				<strong>SpeechSynthesis</strong>
 				<div>hash:</div>
 				<div>voices (0):</div>
+				<div class="time">performance: 0 milliseconds</div>
 			</div>
-			<div id="${instanceId}-fonts"></div>
+			<div id="${instanceId}-fonts">
+				<div class="time">performance: 0 milliseconds</div>
+			</div>
 		</div>
 
 		<div id="font-detector"><div id="font-detector-stage"></div></div>
