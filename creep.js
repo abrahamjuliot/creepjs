@@ -2,11 +2,11 @@
 	// Log performance time
 	const timer = (logStart) => {
 		logStart && console.log(logStart)
-		const start = Date.now()
+		const start = performance.now()
 		return (logEnd) => {
-			const end = Date.now() - start
+			const end = performance.now() - start
 			logEnd && console.log(`${logEnd}: ${end / 1000} seconds`)
-			return end
+			return end.toFixed(2)
 		}
 	}
 
