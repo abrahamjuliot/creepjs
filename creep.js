@@ -1375,36 +1375,40 @@
 				const getDataURL = (canvas, context, [dataLie, contextLie], [canvasTitle, contextTitle]) => {
 					return new Promise(async resolve => {
 						try {
-							if (!context) {
-								resolve(undefined)
+							// document lie and send to trash
+							const documentTrashLies = async (canvas, resolve, [dataLie, contextLie], [canvasTitle, contextTitle]) => {
+								const canvasWebglDataURI = canvas.toDataURL()
+								const hash = hashMini(canvasWebglDataURI)
+								if (contextLie) {
+									documentLie(contextTitle, hash, contextLie)
+									sendToTrash(contextTitle, hash)
+								}
+								if (dataLie) {
+									documentLie(canvasTitle, hash, dataLie)
+									sendToTrash(canvasTitle, hash)
+								}
+								// fingerprint lie
+								const data = { contextLie, dataLie }
+								const $hash = await hashify(data)
+								return resolve({ ...data, $hash })
 							}
-							let canvasWebglDataURI = ''
+							if (dataLie || contextLie) {
+								return documentTrashLies(canvas, resolve, [dataLie, contextLie], [canvasTitle, contextTitle])
+							}
+							else if (!context) {
+								return resolve({ dataURI: undefined, $hash: undefined })
+							}
 							if (!dataLie && !contextLie) {
 								const colorBufferBit = caniuse(context, ['COLOR_BUFFER_BIT'])
 								caniuse(context, ['clearColor'], [0.2, 0.4, 0.6, 0.8], true)
 								caniuse(context, ['clear'], [colorBufferBit], true)
-								canvasWebglDataURI = canvas.toDataURL()
+								const canvasWebglDataURI = canvas.toDataURL()
 								const dataURI = (
 									isBrave || isFirefox ? sendToTrash(canvasTitle, hashMini(canvasWebglDataURI)) : canvasWebglDataURI
 								)
 								const $hash = await hashify(dataURI)
 								return resolve({ dataURI, $hash })
 							}
-							// document lie and send to trash
-							canvasWebglDataURI = canvas.toDataURL()
-							const hash = hashMini(canvasWebglDataURI)
-							if (contextLie) {
-								documentLie(contextTitle, hash, contextLie)
-								sendToTrash(contextTitle, hash)
-							}
-							if (dataLie) {
-								documentLie(canvasTitle, hash, dataLie)
-								sendToTrash(canvasTitle, hash)
-							}
-							// fingerprint lie
-							const data = { contextLie, dataLie }
-							const $hash = await hashify(data)
-							return resolve({ ...data, $hash })
 						}
 						catch (error) {
 							captureError(error)
@@ -1450,8 +1454,8 @@
 				const id = `${instanceId}-canvas-webgl`
 				const el = document.getElementById(id)
 				const { webglSpecs, webgl2Specs } = specs
-				const webglSpecsKeys = Object.keys(webglSpecs)
-				const webgl2SpecsKeys = Object.keys(webgl2Specs)
+				const webglSpecsKeys = caniuse(Object, ['keys'], ['webglSpecs'], true)
+				const webgl2SpecsKeys = caniuse(Object, ['keys'], ['webgl2Specs'], true)
 				const detectStringLie = (val, id) => {
 					if (!val) {
 						return note.blocked
@@ -1459,15 +1463,31 @@
 					return typeof val == 'string' ? val : `lie ${modal(id, toJSONFormat(val))}`
 				}
 				const detectParameterLie = (obj, keys, version, id) => {
-					if (!keys.length) {
+					if (!obj || !keys.length) {
 						return `<div>${version} parameters (0): ${note.blocked}</div>`
 					}
 					id = `${id}-p-${version}`
-					const lied = !!(obj['paramLie'] || obj['param2Lie'])
-					console.log(lied)
+					const lied = !!(
+						obj['paramLie'] ||
+						obj['param2Lie'] ||
+						obj['extLie'] ||
+						obj['ext2Lie']
+					)
 					return `<div>${version} parameters (${lied ? '0' : count(keys)}): ${
 						lied ? `lie ${modal(id, toJSONFormat(obj))}` :
 						modal(id, keys.map(key => `${key}: ${obj[key]}`).join('<br>'))
+					}</div>
+					`
+				}
+				const detectDataURILie = (obj, version, id) => {
+					if (!obj) {
+						return `<div>${version} toDataURL: ${note.blocked}</div>`
+					}
+					id = `${id}-d-${version}`
+					const lied = !!(obj['dataLie'] || obj['contextLie'])
+					return `<div>${version} toDataURL: ${
+						lied ? `lie ${modal(id, toJSONFormat(obj))}` :
+						modal(id, (obj.$hash ? obj.$hash : note.blocked))
 					}</div>
 					`
 				}
@@ -1475,14 +1495,14 @@
 				<div>
 					<strong>WebGLRenderingContext/WebGL2RenderingContext</strong>
 					<div>hash: ${$hash}</div>
-					<div>v1 toDataURL: ${dataURI.$hash ? dataURI.$hash : note.blocked}</div>
+					${detectDataURILie(dataURI, 'v1', id)}
 					${detectParameterLie(webglSpecs, webglSpecsKeys, 'v1', id)}
 					<div>v1 extensions (${count(supported.extensions)}): ${
 						!caniuse(supported, ['extensions', 'length']) ? note.blocked : modal(`${id}-e-v1`, supported.extensions.join('<br>'))
 					}</div>
 					<div>v1 renderer: ${detectStringLie(unmasked.renderer, `${id}-r-v1`)}</div>
 					<div>v1 vendor: ${detectStringLie(unmasked.vendor, `${id}-v-v1`)}</div>
-					<div>v2 toDataURL: ${dataURI2.$hash ? dataURI2.$hash : note.blocked}</div>
+					${detectDataURILie(dataURI2, 'v2', id)}
 					${detectParameterLie(webgl2Specs, webgl2SpecsKeys, 'v2', id)}
 					<div>v2 extensions (${count(supported2.extensions)}): ${
 						!caniuse(supported2, ['extensions', 'length']) ? note.blocked : modal(`${id}-e-v2`, supported2.extensions.join('<br>'))
