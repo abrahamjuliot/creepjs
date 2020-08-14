@@ -120,9 +120,10 @@
 		return templateContent(template) // ie11 fix for template.content
 	}
 
-	// symbol notes
+	// template helpers
 	const note = { blocked: '<span class="blocked">blocked</span>'}
 	const pluralify = len => len > 1 ? 's' : ''
+	const toJSONFormat = obj => JSON.stringify(obj, null, '\t')
 
 	// modal component
 	const modal = (name, result) => {
@@ -1165,7 +1166,7 @@
 					})
 				}
 
-				const getSpecs = ([webgl, webgl2]) => {
+				const getSpecs = ([webgl, webgl2], [paramLie, param2Lie, extLie, ext2Lie]) => {
 					return new Promise(async resolve => {
 						const getShaderPrecisionFormat = (gl, shaderType) => {
 							const low = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.LOW_FLOAT))
@@ -1238,7 +1239,23 @@
 									return buffers ? gl.getParameter(buffers.MAX_DRAW_BUFFERS_WEBGL) : undefined
 								})
 							}
-							return camelCaseProps(data)
+							const response = camelCaseProps(data)
+							if (!paramLie && !extLie) {
+								return response
+							}
+							// document lie and send to trash
+							const paramTitle = `webglGetParameter`
+							const extTitle = `webglGetExtension`
+							if (paramLie) { 
+								documentLie(paramTitle, response, paramLie)
+								sendToTrash(paramTitle, response)
+							}
+							if (extLie) {
+								documentLie(extTitle, response, extLie)
+								sendToTrash(extTitle, response)
+							}
+							// Fingerprint lie
+							return { paramLie, extLie }
 						}
 
 						const getWebgl2Specs = gl => {
@@ -1273,7 +1290,23 @@
 								MAX_ELEMENT_INDEX: attempt(() => gl.getParameter(gl.MAX_ELEMENT_INDEX)),
 								MAX_SERVER_WAIT_TIMEOUT: attempt(() => gl.getParameter(gl.MAX_SERVER_WAIT_TIMEOUT))
 							}
-							return camelCaseProps(data)
+							const response = camelCaseProps(data)
+							if (!param2Lie && !ext2Lie) {
+								return response
+							}
+							// document lie and send to trash
+							const paramTitle = `webgl2GetParameter`
+							const extTitle = `webgl2GetExtension`
+							if (param2Lie) { 
+								documentLie(paramTitle, response, param2Lie)
+								sendToTrash(paramTitle, response)
+							}
+							if (ext2Lie) {
+								documentLie(extTitle, response, ext2Lie)
+								sendToTrash(extTitle, response)
+							}
+							// Fingerprint lie
+							return { param2Lie, ext2Lie }
 						}
 						const data = { webglSpecs: getWebglSpecs(webgl), webgl2Specs: getWebgl2Specs(webgl2) }
 						return resolve(data)
@@ -1367,7 +1400,8 @@
 							return resolve({ ...data, $hash })
 						}
 						catch (error) {
-							return captureError(error)
+							captureError(error)
+							return resolve({ dataURI: undefined, $hash: undefined })
 						}
 					})
 				}
@@ -1387,7 +1421,7 @@
 					getUnmasked(context2, [param2Lie, ext2Lie], ['webgl2Renderer', 'webgl2Vendor']),
 					getDataURL(canvas, context, [dataLie, contextLie], ['canvasWebglDataURI', 'canvasWebglContextDataURI']),
 					getDataURL(canvas2, context2, [dataLie, contextLie], ['canvasWebgl2DataURI', 'canvasWebgl2ContextDataURI']),
-					getSpecs([context, context2])
+					getSpecs([context, context2], [paramLie, param2Lie, extLie, ext2Lie])
 				]).catch(error => {
 					console.error(error.message)
 				})
@@ -1415,24 +1449,32 @@
 				<div>
 					<strong>WebGLRenderingContext/WebGL2RenderingContext</strong>
 					<div>hash: ${$hash}</div>
-					<div>v1 toDataURL: ${dataURI.$hash}</div>
+					<div>v1 toDataURL: ${dataURI.$hash ? dataURI.$hash : note.blocked}</div>
 					<div>v1 parameters (${''+webglSpecsKeys.length}): ${
-						modal(`${id}-parameters-v1`, webglSpecsKeys.map(key => `${key}: ${webglSpecs[key]}`).join('<br>'))
+						modal(`${id}-p-v1`, webglSpecsKeys.map(key => `${key}: ${webglSpecs[key]}`).join('<br>'))
 					}</div>
 					<div>v1 extensions (${''+supported.extensions.length}): ${
-						modal(`${id}-ext-v1`, supported.extensions.join('<br>'))
+						modal(`${id}-e-v1`, supported.extensions.join('<br>'))
 					}</div>
-					<div>v1 renderer: ${unmasked.renderer}</div>
-					<div>v1 vendor: ${unmasked.vendor}</div>
-					<div>v2 toDataURL: ${dataURI2.$hash}</div>
+					<div>v1 renderer: ${
+						typeof unmasked.renderer == 'string' ? unmasked.renderer : `lie ${modal(`${id}-r-v1`, toJSONFormat(unmasked.renderer))}`
+					}</div>
+					<div>v1 vendor: ${
+						typeof unmasked.vendor == 'string' ? unmasked.vendor : `lie ${modal(`${id}-v-v1`, toJSONFormat(unmasked.vendor))}`
+					}</div>
+					<div>v2 toDataURL: ${dataURI2.$hash ? dataURI2.$hash : note.blocked}</div>
 					<div>v2 parameters (${''+webgl2SpecsKeys.length}): ${
-						modal(`${id}-parameters-v2`, webgl2SpecsKeys.map(key => `${key}: ${webgl2Specs[key]}`).join('<br>'))
+						modal(`${id}-p-v2`, webgl2SpecsKeys.map(key => `${key}: ${webgl2Specs[key]}`).join('<br>'))
 					}</div>
 					<div>v2 extensions (${''+supported2.extensions.length}): ${
-						modal(`${id}-ext-v2`, supported2.extensions.join('<br>'))
+						modal(`${id}-e-v2`, supported2.extensions.join('<br>'))
 					}</div>
-					<div>v2 renderer: ${unmasked2.renderer}</div>
-					<div>v2 vendor: ${unmasked2.vendor}</div>
+					<div>v2 renderer: ${
+						typeof unmasked2.renderer == 'string' ? unmasked2.renderer : `lie ${modal(`${id}-r-v2`, toJSONFormat(unmasked2.renderer))}`
+					}</div>
+					<div>v2 vendor: ${
+						typeof unmasked2.vendor == 'string' ? unmasked2.vendor : `lie ${modal(`${id}-v-v2`, toJSONFormat(unmasked2.vendor))}`
+					}</div>
 					<div>matching renderer/vendor: ${''+data.matchingUnmasked}</div>
 					<div>matching data URI: ${''+data.matchingDataURI}</div>
 					<div class="time">performance: ${timeEnd} milliseconds</div>
