@@ -124,6 +124,7 @@
 	const note = { blocked: '<span class="blocked">blocked</span>'}
 	const pluralify = len => len > 1 ? 's' : ''
 	const toJSONFormat = obj => JSON.stringify(obj, null, '\t')
+	const count = arr => arr.constructor.name === 'Array' ? ''+(arr.length) : '0'
 
 	// modal component
 	const modal = (name, result) => {
@@ -518,7 +519,7 @@
 					}),
 					mimeTypes: attempt(() => {
 						const mimeTypes = detectLies('mimeTypes', navigator.mimeTypes)
-						return mimeTypes ? [...mimeTypes].map(m => m.type) : undefined
+						return mimeTypes ? [...mimeTypes].map(m => m.type) : []
 					}),
 					plugins: attempt(() => {
 						const plugins = detectLies('plugins', navigator.plugins)
@@ -528,7 +529,7 @@
 								description: p.description,
 								filename: p.filename,
 								version: p.version
-							})) : undefined
+							})) : []
 					}),
 					properties: attempt(() => {
 						const keys = Object.keys(Object.getPrototypeOf(navigator))
@@ -568,8 +569,8 @@
 							)
 						}).join('')
 					}
-					<div>plugins (${''+(plugins.length)}): ${modal(`${id}-plugins`, plugins.map(plugin => plugin.name).join('<br>'))}</div>
-					<div>mimeTypes (${''+mimeTypes.length}): ${modal(`${id}-mimeTypes`, mimeTypes.join('<br>'))}</div>
+					<div>plugins (${count(plugins)}): ${modal(`${id}-plugins`, plugins.map(plugin => plugin.name).join('<br>'))}</div>
+					<div>mimeTypes (${count(mimeTypes)}): ${modal(`${id}-mimeTypes`, mimeTypes.join('<br>'))}</div>
 					${highEntropyValues ?  
 						Object.keys(highEntropyValues).map(key => {
 							const value = highEntropyValues[key]
@@ -581,7 +582,7 @@
 						<div>ua platformVersion:</div>
 						<div>ua uaFullVersion:</div>`
 					}
-					<div>properties (${''+properties.length}): ${modal(`${id}-properties`, properties.join(', '))}</div>
+					<div>properties (${count(properties)}): ${modal(`${id}-properties`, properties.join(', '))}</div>
 					<div class="time">performance: ${timeEnd} milliseconds</div>
 				</div>
 				`)
@@ -890,7 +891,7 @@
 					<div>
 						<strong>SpeechSynthesis</strong>
 						<div>hash: ${$hash}</div>
-						<div>voices (${''+voices.length}): ${modal(id, voiceList.join('<br>'))}</div>
+						<div>voices (${count(voices)}): ${modal(id, voiceList.join('<br>'))}</div>
 						<div class="time">performance: ${timeEnd} milliseconds</div>
 					</div>
 					`)
@@ -944,7 +945,7 @@
 				<div>
 					<strong>MediaDevicesInfo</strong>
 					<div>hash: ${$hash}</div>
-					<div>devices (${mediaDevices.length}): ${mediaDevices.map(device => device.kind).join(', ')}</div>
+					<div>devices (${count(mediaDevices)}): ${mediaDevices.map(device => device.kind).join(', ')}</div>
 					<div class="time">performance: ${timeEnd} milliseconds</div>
 				</div>
 				`)
@@ -1440,8 +1441,8 @@
 					dataURI2,
 					specs
 				}
-				data.matchingUnmasked = JSON.stringify(data.unmasked) == JSON.stringify(data.unmasked2)
-				data.matchingDataURI = data.dataURI.$hash == data.dataURI2.$hash
+				data.matchingUnmasked = JSON.stringify(data.unmasked) === JSON.stringify(data.unmasked2)
+				data.matchingDataURI = data.dataURI.$hash === data.dataURI2.$hash
 
 				const $hash = await hashify(data)
 				resolve({ ...data, $hash })
@@ -1452,13 +1453,19 @@
 				const webglSpecsKeys = Object.keys(webglSpecs)
 				const webgl2SpecsKeys = Object.keys(webgl2Specs)
 				const detectStringLie = (val, id) => {
+					if (!val) {
+						return note.blocked
+					}
 					return typeof val == 'string' ? val : `lie ${modal(id, toJSONFormat(val))}`
 				}
 				const detectParameterLie = (obj, keys, version, id) => {
+					if (!keys.length) {
+						return `<div>${version} parameters (0): ${note.blocked}</div>`
+					}
 					id = `${id}-p-${version}`
 					const lied = !!(obj['paramLie'] || obj['param2Lie'])
 					console.log(lied)
-					return `<div>${version} parameters (${lied ? '0' : ''+keys.length}): ${
+					return `<div>${version} parameters (${lied ? '0' : count(keys)}): ${
 						lied ? `lie ${modal(id, toJSONFormat(obj))}` :
 						modal(id, keys.map(key => `${key}: ${obj[key]}`).join('<br>'))
 					}</div>
@@ -1470,15 +1477,15 @@
 					<div>hash: ${$hash}</div>
 					<div>v1 toDataURL: ${dataURI.$hash ? dataURI.$hash : note.blocked}</div>
 					${detectParameterLie(webglSpecs, webglSpecsKeys, 'v1', id)}
-					<div>v1 extensions (${''+supported.extensions.length}): ${
-						modal(`${id}-e-v1`, supported.extensions.join('<br>'))
+					<div>v1 extensions (${count(supported.extensions)}): ${
+						!caniuse(supported, ['extensions', 'length']) ? note.blocked : modal(`${id}-e-v1`, supported.extensions.join('<br>'))
 					}</div>
 					<div>v1 renderer: ${detectStringLie(unmasked.renderer, `${id}-r-v1`)}</div>
 					<div>v1 vendor: ${detectStringLie(unmasked.vendor, `${id}-v-v1`)}</div>
 					<div>v2 toDataURL: ${dataURI2.$hash ? dataURI2.$hash : note.blocked}</div>
 					${detectParameterLie(webgl2Specs, webgl2SpecsKeys, 'v2', id)}
-					<div>v2 extensions (${''+supported2.extensions.length}): ${
-						modal(`${id}-e-v2`, supported2.extensions.join('<br>'))
+					<div>v2 extensions (${count(supported2.extensions)}): ${
+						!caniuse(supported2, ['extensions', 'length']) ? note.blocked : modal(`${id}-e-v2`, supported2.extensions.join('<br>'))
 					}</div>
 					<div>v2 renderer: ${detectStringLie(unmasked2.renderer, `${id}-r-v2`)}</div>
 					<div>v2 vendor: ${detectStringLie(unmasked2.vendor, `${id}-v-v2`)}</div>
@@ -2287,7 +2294,7 @@
 			mediaDevices: fp.mediaDevices,
 			canvas2d: fp.canvas2d,
 			canvasBitmapRenderer: fp.canvasBitmapRenderer,
-			webgl: fp.webgl,
+			canvasWebgl: fp.canvasWebgl,
 			maths: fp.maths,
 			consoleErrors: fp.consoleErrors,
 			// avoid random timezone fingerprint values
