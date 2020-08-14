@@ -1454,8 +1454,8 @@
 				const id = `${instanceId}-canvas-webgl`
 				const el = document.getElementById(id)
 				const { webglSpecs, webgl2Specs } = specs
-				const webglSpecsKeys = caniuse(Object, ['keys'], ['webglSpecs'], true)
-				const webgl2SpecsKeys = caniuse(Object, ['keys'], ['webgl2Specs'], true)
+				const webglSpecsKeys = webglSpecs ? Object.keys(webglSpecs) : []
+				const webgl2SpecsKeys = webgl2Specs ? Object.keys(webgl2Specs) : []
 				const detectStringLie = (val, id) => {
 					if (!val) {
 						return note.blocked
@@ -1487,7 +1487,7 @@
 					const lied = !!(obj['dataLie'] || obj['contextLie'])
 					return `<div>${version} toDataURL: ${
 						lied ? `lie ${modal(id, toJSONFormat(obj))}` :
-						modal(id, (obj.$hash ? obj.$hash : note.blocked))
+						(obj.$hash ? obj.$hash : note.blocked)
 					}</div>
 					`
 				}
