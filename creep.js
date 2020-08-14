@@ -6,7 +6,7 @@
 		return (logEnd) => {
 			const end = performance.now() - start
 			logEnd && console.log(`${logEnd}: ${end / 1000} seconds`)
-			return end.toFixed(2)
+			return end
 		}
 	}
 
@@ -125,30 +125,35 @@
 	const pluralify = len => len > 1 ? 's' : ''
 
 	// modal component
-	const modal = (name, result) => `
-		<style>
-		.modal-${name}:checked ~ .modal-container {
-			visibility: visible;
-			opacity: 1;
-			animation: show 0.1s linear both;
+	const modal = (name, result) => {
+		if (!result.length) {
+			return ''
 		}
-		.modal-${name}:checked ~ .modal-container .modal-content {
-			animation: enter 0.2s 0.1s ease both
-		}
-		.modal-${name}:not(:checked) ~ .modal-container {
-			visibility: hidden;
-		}
-		</style>
-		<input type="radio" id="toggle-open-${name}" class="modal-${name}" name="modal-${name}"/>
-		<label class="modal-open-btn" for="toggle-open-${name}" onclick="">details</label>
-		<label class="modal-container" for="toggle-close-${name}" onclick="">
-			<label class="modal-content" for="toggle-open-${name}" onclick="">
-				<input type="radio" id="toggle-close-${name}" name="modal-${name}"/>
-				<label class="modal-close-btn" for="toggle-close-${name}" onclick="">×</label>
-				<div>${result}</div>
+		return `
+			<style>
+			.modal-${name}:checked ~ .modal-container {
+				visibility: visible;
+				opacity: 1;
+				animation: show 0.1s linear both;
+			}
+			.modal-${name}:checked ~ .modal-container .modal-content {
+				animation: enter 0.2s 0.1s ease both
+			}
+			.modal-${name}:not(:checked) ~ .modal-container {
+				visibility: hidden;
+			}
+			</style>
+			<input type="radio" id="toggle-open-${name}" class="modal-${name}" name="modal-${name}"/>
+			<label class="modal-open-btn" for="toggle-open-${name}" onclick="">details</label>
+			<label class="modal-container" for="toggle-close-${name}" onclick="">
+				<label class="modal-content" for="toggle-open-${name}" onclick="">
+					<input type="radio" id="toggle-close-${name}" name="modal-${name}"/>
+					<label class="modal-close-btn" for="toggle-close-${name}" onclick="">×</label>
+					<div>${result}</div>
+				</label>
 			</label>
-		</label>
-	`
+		`
+	}
 
 	// Detect proxy behavior
 	const proxyBehavior = x => typeof x == 'function' ? true : false
@@ -283,11 +288,11 @@
 
 	// Collect trash values
 	const trashBin = []
-	const sendToTrash = (name, val) => {
+	const sendToTrash = (name, val, response = undefined) => {
 		const proxyLike = proxyBehavior(val)
 		const value = !proxyLike ? val : 'proxy behavior detected'
 		trashBin.push({ name, value })
-		return undefined
+		return response
 	}
 
 	// Collect lies detected
@@ -562,8 +567,8 @@
 							)
 						}).join('')
 					}
-					<div>plugins (${plugins.length}): ${modal(`${id}-plugins`, plugins.map(plugin => plugin.name).join('<br>'))}</div>
-					<div>mimeTypes (${mimeTypes.length}): ${modal(`${id}-mimeTypes`, mimeTypes.join('<br>'))}</div>
+					<div>plugins (${''+(plugins.length)}): ${modal(`${id}-plugins`, plugins.map(plugin => plugin.name).join('<br>'))}</div>
+					<div>mimeTypes (${''+mimeTypes.length}): ${modal(`${id}-mimeTypes`, mimeTypes.join('<br>'))}</div>
 					${highEntropyValues ?  
 						Object.keys(highEntropyValues).map(key => {
 							const value = highEntropyValues[key]
@@ -575,7 +580,7 @@
 						<div>ua platformVersion:</div>
 						<div>ua uaFullVersion:</div>`
 					}
-					<div>properties (${properties.length}): ${modal(`${id}-properties`, properties.join(', '))}</div>
+					<div>properties (${''+properties.length}): ${modal(`${id}-properties`, properties.join(', '))}</div>
 					<div class="time">performance: ${timeEnd} milliseconds</div>
 				</div>
 				`)
@@ -884,7 +889,7 @@
 					<div>
 						<strong>SpeechSynthesis</strong>
 						<div>hash: ${$hash}</div>
-						<div>voices (${voices.length}): ${modal(id, voiceList.join('<br>'))}</div>
+						<div>voices (${''+voices.length}): ${modal(id, voiceList.join('<br>'))}</div>
 						<div class="time">performance: ${timeEnd} milliseconds</div>
 					</div>
 					`)
@@ -1096,6 +1101,7 @@
 	const getCanvasWebgl = instanceId => {
 		return new Promise(async resolve => {
 			try {
+				const timeStart = timer()
 				// detect webgl lies
 				const gl = 'WebGLRenderingContext' in window
 				const webglGetParameter = gl && attempt(() => WebGLRenderingContext.prototype.getParameter)
@@ -1128,14 +1134,14 @@
 					return new Promise(async resolve => {
 						try {
 							if (!context) {
-								return resolve({ extensions: undefined })
+								return resolve({ extensions: [] })
 							}
 							const extensions = caniuse(context, ['getSupportedExtensions'], [], true) || []
 							if (!supportedExtLie) {
 								return resolve({
 									extensions: ( 
 										!proxyBehavior(extensions) ? extensions : 
-										sendToTrash(title, 'proxy behavior detected')
+										sendToTrash(title, 'proxy behavior detected', []) 
 									)
 								})
 							}
@@ -1147,13 +1153,13 @@
 							}
 							// Fingerprint lie
 							return resolve({
-								extensions: { supportedExtLie }
+								extensions: [{ supportedExtLie }]
 							})
 						}
 						catch (error) {
 							captureError(error)
 							return resolve({
-								extensions: isBrave ? sendToTrash(title, null) : undefined
+								extensions: isBrave ? sendToTrash(title, null, []) : []
 							})
 						}
 					})
@@ -1386,20 +1392,53 @@
 					console.error(error.message)
 				})
 				const data = {
-					supported: supported,
-					supported2: supported2,
-					unmasked: unmasked,
-					unmasked2: unmasked2,
-					toDataURL: dataURI,
-					toDataURL2: dataURI2,
-					specs: specs
+					supported,
+					supported2,
+					unmasked,
+					unmasked2,
+					dataURI,
+					dataURI2,
+					specs
 				}
-				data.matching = (
-					JSON.stringify(data.unmasked) === JSON.stringify(data.unmasked2) &&
-					data.dataURI === data.dataURI2
-				)
+				data.matchingUnmasked = JSON.stringify(data.unmasked) == JSON.stringify(data.unmasked2)
+				data.matchingDataURI = data.dataURI.$hash == data.dataURI2.$hash
+
 				const $hash = await hashify(data)
-				return resolve({ ...data, $hash })
+				resolve({ ...data, $hash })
+				const timeEnd = timeStart()
+				const id = `${instanceId}-canvas-webgl`
+				const el = document.getElementById(id)
+				const { webglSpecs, webgl2Specs } = specs
+				const webglSpecsKeys = Object.keys(webglSpecs)
+				const webgl2SpecsKeys = Object.keys(webgl2Specs)
+				patch(el, html`
+				<div>
+					<strong>WebGLRenderingContext/WebGL2RenderingContext</strong>
+					<div>hash: ${$hash}</div>
+					<div>v1 toDataURL: ${dataURI.$hash}</div>
+					<div>v1 parameters (${''+webglSpecsKeys.length}): ${
+						modal(`${id}-parameters-v1`, webglSpecsKeys.map(key => `${key}: ${webglSpecs[key]}`).join('<br>'))
+					}</div>
+					<div>v1 extensions (${''+supported.extensions.length}): ${
+						modal(`${id}-ext-v1`, supported.extensions.join('<br>'))
+					}</div>
+					<div>v1 renderer: ${unmasked.renderer}</div>
+					<div>v1 vendor: ${unmasked.vendor}</div>
+					<div>v2 toDataURL: ${dataURI2.$hash}</div>
+					<div>v2 parameters (${''+webgl2SpecsKeys.length}): ${
+						modal(`${id}-parameters-v2`, webgl2SpecsKeys.map(key => `${key}: ${webgl2Specs[key]}`).join('<br>'))
+					}</div>
+					<div>v2 extensions (${''+supported2.extensions.length}): ${
+						modal(`${id}-ext-v2`, supported2.extensions.join('<br>'))
+					}</div>
+					<div>v2 renderer: ${unmasked2.renderer}</div>
+					<div>v2 vendor: ${unmasked2.vendor}</div>
+					<div>matching renderer/vendor: ${''+data.matchingUnmasked}</div>
+					<div>matching data URI: ${''+data.matchingDataURI}</div>
+					<div class="time">performance: ${timeEnd} milliseconds</div>
+				</div>
+				`)
+				return
 			}
 			catch (error) {
 				captureError(error)
@@ -1910,6 +1949,9 @@
 				<visitor><div id="visitor"><div class="visitor-loader"></div></div></visitor>
 				Data auto deletes <a href="https://github.com/abrahamjuliot/creepjs/blob/8d6603ee39c9534cad700b899ef221e0ee97a5a4/server.gs#L24" target="_blank">every 7 days</a>
 			</div>
+			<div id="${instanceId}-lies"></div>
+			<div id="${instanceId}-trash"></div>
+			<div id="${instanceId}-captured-errors"></div>
 			<div id="${instanceId}-worker-scope">
 				<strong>WorkerGlobalScope: WorkerNavigator/OffscreenCanvas</strong>
 				<div>hash:</div>
@@ -1929,9 +1971,6 @@
 				<div>tls version:</div>
 				<div class="time">performance: 0 milliseconds</div>
 			</div>
-			<div id="${instanceId}-lies"></div>
-			<div id="${instanceId}-trash"></div>
-			<div id="${instanceId}-captured-errors"></div>
 			<div id="${instanceId}-canvas-2d">
 				<strong>CanvasRenderingContext2D</strong>
 				<div>hash:</div>
@@ -1943,6 +1982,20 @@
 				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-canvas-webgl">
+				<strong>WebGLRenderingContext/WebGL2RenderingContext</strong>
+					<div>hash:</div>
+					<div>v1 toDataURL:</div>
+					<div>v1 parameters (0):</div>
+					<div>v1 extensions (0):</div>
+					<div>v1 renderer:</div>
+					<div>v1 vendor:</div>
+					<div>v2 toDataURL:</div>
+					<div>v2 parameters (0):</div>
+					<div>v2 extensions (0):</div>
+					<div>v2 renderer:</div>
+					<div>v2 vendor:</div>
+					<div>matching renderer/vendor:</div>
+					<div>matching data URI:</div>
 				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-offline-audio-context">
@@ -2057,7 +2110,9 @@
 	const getLies = (instanceId, lieRecords) => {
 		return new Promise(async resolve => {
 			if (!lieRecords.length) {
-				return resolve([])
+				resolve([])
+				// <span class="none">none</span>
+				// use modal
 			}
 			const data = lieRecords.map(lie => ({ name: lie.name, lieTypes: lie.lieTypes }))
 			const $hash = await hashify(data)

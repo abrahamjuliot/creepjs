@@ -258,7 +258,8 @@ a,
 
 a:after,
 .modal-open-btn:after {
-	border-bottom: 4px solid #247ba026;
+	background: #247ba026;
+	height: 4px;
 	display: inline-block;
 	position: relative;
 	content: '';
@@ -267,14 +268,14 @@ a:after,
 	top: 0px;
 	z-index: -1;
 	transition: all .1s ease;
-	transform: translate(0, 6px);
+	transform: translate(0, 4px);
 }
 a:hover:after,
 a:active:after,
 .modal-open-btn:hover:after,
 .modal-open-btn:active:after {
-	border-bottom: 14px solid #247ba026;
-	transform: translate(0, 3px);
+	height: 12px;
+	transform: translate(0, 2px) scale(1.1, 1.7);
 }
 
 input[type="radio"] {
@@ -312,6 +313,7 @@ input[type="radio"] {
 	font-size: 2em;
 }
 
+.modal-container,
 .modal-open-btn,
 .modal-close-btn {
 	cursor: pointer;
