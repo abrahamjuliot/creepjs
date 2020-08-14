@@ -1350,11 +1350,17 @@
 								documentLie(extTitle, webglVendorAndRenderer, extLie)
 								sendToTrash(extTitle, webglVendorAndRenderer)
 							}
+							const response = (
+								rendererTitle == 'webgl2Renderer' ? {
+									vendor: { param2Lie: paramLie, ext2Lie: extLie },
+									renderer: { param2Lie: paramLie, ext2Lie: extLie }
+								} : {
+									vendor: { paramLie, extLie },
+									renderer: { paramLie, extLie }
+								}
+							)
 							// Fingerprint lie
-							return resolve({
-								vendor: { paramLie, extLie },
-								renderer: { paramLie, extLie }
-							})
+							return resolve(response)
 						}
 						catch (error) {
 							captureError(error)
@@ -1445,36 +1451,37 @@
 				const { webglSpecs, webgl2Specs } = specs
 				const webglSpecsKeys = Object.keys(webglSpecs)
 				const webgl2SpecsKeys = Object.keys(webgl2Specs)
+				const detectStringLie = (val, id) => {
+					return typeof val == 'string' ? val : `lie ${modal(id, toJSONFormat(val))}`
+				}
+				const detectParameterLie = (obj, keys, version, id) => {
+					id = `${id}-p-${version}`
+					const lied = !!(obj['paramLie'] || obj['param2Lie'])
+					console.log(lied)
+					return `<div>${version} parameters (${lied ? '0' : ''+keys.length}): ${
+						lied ? `lie ${modal(id, toJSONFormat(obj))}` :
+						modal(id, keys.map(key => `${key}: ${obj[key]}`).join('<br>'))
+					}</div>
+					`
+				}
 				patch(el, html`
 				<div>
 					<strong>WebGLRenderingContext/WebGL2RenderingContext</strong>
 					<div>hash: ${$hash}</div>
 					<div>v1 toDataURL: ${dataURI.$hash ? dataURI.$hash : note.blocked}</div>
-					<div>v1 parameters (${''+webglSpecsKeys.length}): ${
-						modal(`${id}-p-v1`, webglSpecsKeys.map(key => `${key}: ${webglSpecs[key]}`).join('<br>'))
-					}</div>
+					${detectParameterLie(webglSpecs, webglSpecsKeys, 'v1', id)}
 					<div>v1 extensions (${''+supported.extensions.length}): ${
 						modal(`${id}-e-v1`, supported.extensions.join('<br>'))
 					}</div>
-					<div>v1 renderer: ${
-						typeof unmasked.renderer == 'string' ? unmasked.renderer : `lie ${modal(`${id}-r-v1`, toJSONFormat(unmasked.renderer))}`
-					}</div>
-					<div>v1 vendor: ${
-						typeof unmasked.vendor == 'string' ? unmasked.vendor : `lie ${modal(`${id}-v-v1`, toJSONFormat(unmasked.vendor))}`
-					}</div>
+					<div>v1 renderer: ${detectStringLie(unmasked.renderer, `${id}-r-v1`)}</div>
+					<div>v1 vendor: ${detectStringLie(unmasked.vendor, `${id}-v-v1`)}</div>
 					<div>v2 toDataURL: ${dataURI2.$hash ? dataURI2.$hash : note.blocked}</div>
-					<div>v2 parameters (${''+webgl2SpecsKeys.length}): ${
-						modal(`${id}-p-v2`, webgl2SpecsKeys.map(key => `${key}: ${webgl2Specs[key]}`).join('<br>'))
-					}</div>
+					${detectParameterLie(webgl2Specs, webgl2SpecsKeys, 'v2', id)}
 					<div>v2 extensions (${''+supported2.extensions.length}): ${
 						modal(`${id}-e-v2`, supported2.extensions.join('<br>'))
 					}</div>
-					<div>v2 renderer: ${
-						typeof unmasked2.renderer == 'string' ? unmasked2.renderer : `lie ${modal(`${id}-r-v2`, toJSONFormat(unmasked2.renderer))}`
-					}</div>
-					<div>v2 vendor: ${
-						typeof unmasked2.vendor == 'string' ? unmasked2.vendor : `lie ${modal(`${id}-v-v2`, toJSONFormat(unmasked2.vendor))}`
-					}</div>
+					<div>v2 renderer: ${detectStringLie(unmasked2.renderer, `${id}-r-v2`)}</div>
+					<div>v2 vendor: ${detectStringLie(unmasked2.vendor, `${id}-v-v2`)}</div>
 					<div>matching renderer/vendor: ${''+data.matchingUnmasked}</div>
 					<div>matching data URI: ${''+data.matchingDataURI}</div>
 					<div class="time">performance: ${timeEnd} milliseconds</div>
