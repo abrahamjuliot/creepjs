@@ -2106,11 +2106,13 @@
 				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-maths">
+				<strong>Math</strong>
 				<div>hash:</div>
 				<div>results:</div>
 				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-console-errors">
+				<strong>Error</strong>
 				<div>hash:</div>
 				<div>results:</div>
 				<div class="time">performance: 0 milliseconds</div>
