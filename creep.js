@@ -121,7 +121,10 @@
 	}
 
 	// template helpers
-	const note = { blocked: '<span class="blocked">blocked</span>'}
+	const note = {
+		blocked: '<span class="blocked">blocked</span>',
+		lied: '<span class="blocked">lied</span>'
+	}
 	const pluralify = len => len > 1 ? 's' : ''
 	const toJSONFormat = obj => JSON.stringify(obj, null, '\t')
 	const count = arr => arr.constructor.name === 'Array' ? ''+(arr.length) : '0'
@@ -1447,7 +1450,7 @@
 					if (!val) {
 						return note.blocked
 					}
-					return typeof val == 'string' ? val : `lie ${modal(id, toJSONFormat(val))}`
+					return typeof val == 'string' ? val : `${note.lied} ${modal(id, toJSONFormat(val))}`
 				}
 				const detectParameterLie = (obj, keys, version, id) => {
 					if (!obj || !keys.length) {
@@ -1461,7 +1464,7 @@
 						obj['ext2Lie']
 					)
 					return `<div>${version} parameters (${lied ? '0' : count(keys)}): ${
-						lied ? `lie ${modal(id, toJSONFormat(obj))}` :
+						lied ? `${note.lied} ${modal(id, toJSONFormat(obj))}` :
 						modal(id, keys.map(key => `${key}: ${obj[key]}`).join('<br>'))
 					}</div>
 					`
@@ -1473,7 +1476,7 @@
 					id = `${id}-d-${version}`
 					const lied = !!(obj['dataLie'] || obj['contextLie'])
 					return `<div>${version} toDataURL: ${
-						lied ? `lie ${modal(id, toJSONFormat(obj))}` :
+						lied ? `${note.lied} ${modal(id, toJSONFormat(obj))}` :
 						(obj.$hash ? obj.$hash : note.blocked)
 					}</div>
 					`
@@ -1614,8 +1617,8 @@
 					data[fn[2]] = attempt(() => {
 						const result = Math[fn[0]](...fn[1])
 						const chrome = result == fn[3]
-						const firefox = !isNaN(fn[4]) ? result == fn[4] : chrome
-						const other = !isNaN(fn[5]) ? result == fn[5] : false
+						const firefox = fn[4] ? result == fn[4] : chrome
+						const other = fn[5] ? result == fn[5] : false
 						return { result, chrome, firefox, other }
 					})
 				})
@@ -1710,41 +1713,123 @@
 	const getTimezone = instanceId => {
 		return new Promise(async resolve => {
 			try {
+				const timeStart = timer()
 				const computeTimezoneOffset = () => {
 					const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
 					const utc = Date.parse(toJSONParsed(new Date()).split`Z`.join``)
 					const now = +new Date()
 					return +(((utc - now)/60000).toFixed(2))
+				}
+				const getRelativeTime = () => {
+					const { locale } = new Intl.RelativeTimeFormat().resolvedOptions()
+					const relativeTime = new Intl.RelativeTimeFormat(locale, {
+						localeMatcher: 'best fit',
+						numeric: 'auto',
+						style: 'long'
+					})
+					return {
+						['1 second ago']: relativeTime.format(-1, 'second'),
+						['now']: relativeTime.format(0, 'second'),
+						['in 1 second']: relativeTime.format(1, 'second'),
+						['1 minute ago']: relativeTime.format(-1, 'minute'),
+						['this minute']: relativeTime.format(0, 'minute'),
+						['in 1 minute']: relativeTime.format(1, 'minute'),
+						['1 hour ago']: relativeTime.format(-1, 'hour'),
+						['this hour']: relativeTime.format(0, 'hour'),
+						['in 1 hour']: relativeTime.format(1, 'hour'),
+						['yesterday']: relativeTime.format(-1, 'day'),
+						['today']: relativeTime.format(0, 'day'),
+						['tomorrow']: relativeTime.format(1, 'day'),
+						['last week']: relativeTime.format(-1, 'week'),
+						['this week']: relativeTime.format(0, 'week'),
+						['next week']: relativeTime.format(1, 'week'),
+						['last month']: relativeTime.format(-1, 'month'),
+						['this month']: relativeTime.format(0, 'month'),
+						['next month']: relativeTime.format(1, 'month'),
+						['last quarter']: relativeTime.format(-1, 'quarter'),
+						['this quarter']: relativeTime.format(0, 'quarter'),
+						['next quarter']: relativeTime.format(1, 'quarter'),
+						['last year']: relativeTime.format(-1, 'year'),
+						['this year']: relativeTime.format(0, 'year'),
+						['next year']: relativeTime.format(1, 'year')
+					}
+				}
+				const getLocale = () => {
+					const constructors = [
+						'Collator',
+						'DateTimeFormat',
+						'DisplayNames',
+						'ListFormat',
+						'NumberFormat',
+						'PluralRules',
+						'RelativeTimeFormat',
+					]
+					const languages = []
+					constructors.forEach(name => {
+						try {
+							const obj = caniuse(new Intl[name])
+							if (!obj) {
+								return
+							}
+							const { locale } = obj.resolvedOptions()
+							return languages.push(locale)
+						}
+						catch (error) {
+							return
+						}
+					})
+					const lang = [...new Set(languages)]
+					return { lang, lie: lang.length > 1 ? true : false }
 				}		
 				const dateGetTimezoneOffset = attempt(() => Date.prototype.getTimezoneOffset)
 				const timezoneLie = dateGetTimezoneOffset ? hasLiedAPI(dateGetTimezoneOffset, 'getTimezoneOffset').lie : false
 				const timezoneOffset = new Date().getTimezoneOffset()
-				if (!timezoneLie) {
-					const timezoneOffsetComputed = computeTimezoneOffset()
-					const matching = timezoneOffsetComputed == timezoneOffset
-					const notWithinParentheses = /.*\(|\).*/g
-					const timezoneLocation = Intl.DateTimeFormat().resolvedOptions().timeZone
-					const timezone = (''+new Date()).replace(notWithinParentheses, '')
-					const data =  {
-						timezoneOffsetComputed,
-						timezoneOffset,
-						matching,
-						timezoneLocation,
-						timezone
-					}
-					const $hash = await hashify(data)
-					return resolve({...data, $hash })
+				const timezoneOffsetComputed = computeTimezoneOffset()
+				const matchingOffsets = timezoneOffsetComputed == timezoneOffset
+				const notWithinParentheses = /.*\(|\).*/g
+				const timezoneLocation = Intl.DateTimeFormat().resolvedOptions().timeZone
+				const timezone = (''+new Date()).replace(notWithinParentheses, '')
+				const relativeTime = getRelativeTime()
+				const locale = getLocale()
+				// document lie
+				let localeLie = false
+				if (locale.lie) {
+					localeLie = { ['intlLocalesMatch']: false }
+					documentLie('IntlLocales', locale, localeLie)	
 				}
-				// document lie and send to trash
 				if (timezoneLie) {
 					documentLie('timezoneOffset', timezoneOffset, timezoneLie)
 				}
-				if (timezoneLie || !trusted) {
-					sendToTrash('timezoneOffset', timezoneOffset)
+				const data =  {
+					timezone,
+					timezoneLocation,
+					timezoneOffset: !timezoneLie ? timezoneOffset : timezoneLie,
+					timezoneOffsetComputed,
+					matchingOffsets,
+					relativeTime,
+					locale: !localeLie ? locale : localeLie
 				}
-				// Fingerprint lie
-				const $hash = await hashify(timezoneLie)
-				return resolve({timezoneLie, $hash })
+				
+				const $hash = await hashify(data)
+				resolve({...data, $hash })
+				const timeEnd = timeStart()
+				const id = `${instanceId}-timezone`
+				const el = document.getElementById(id)
+				patch(el, html`
+				<div>
+					<strong>Date/Intl</strong>
+					<div>hash: ${$hash}</div>
+					<div>timezone: ${timezone}</div>
+					<div>timezone location: ${timezoneLocation}</div>
+					<div>timezone offset: ${!timezoneLie ? timezoneOffset : `${note.lied} ${modal(`${id}-timezoneOffset`, toJSONFormat(timezoneLie))}`}</div>
+					<div>timezone offset computed: ${timezoneOffsetComputed}</div>
+					<div>matching offsets: ${matchingOffsets}</div>
+					<div>relativeTimeFormat: ${modal(`${id}-relativeTimeFormat`, Object.keys(relativeTime).sort().map(key => `${key}: ${relativeTime[key]}`).join('<br>'))}</div>
+					<div>locale language: ${!localeLie ? locale.lang.join(', ') : `${note.lied} ${modal(`${id}-locale`, toJSONFormat(localeLie))}`}</div>
+					<div class="time">performance: ${timeEnd} milliseconds</div>
+				</div>
+				`)
+				return
 			}
 			catch (error) {
 				captureError(error)
@@ -1793,7 +1878,7 @@
 		return new Promise(resolve => {
 			try {
 				if (!('OfflineAudioContext' in window || 'webkitOfflineAudioContext' in window)) {
-					return promiseUndefined
+					return resolve(undefined)
 				}
 				const audioBuffer = 'AudioBuffer' in window
 				const audioBufferGetChannelData = audioBuffer && attempt(() => AudioBuffer.prototype.getChannelData)
@@ -2118,6 +2203,15 @@
 				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-timezone">
+				<strong>Date/Intl</strong>
+				<div>hash:</div>
+				<div>timezone:</div>
+				<div>timezone location:</div>
+				<div>timezone offset:</div>
+				<div>timezone offset computed:</div>
+				<div>matching offsets:</div>
+				<div>relativeTimeFormat:</div>
+				<div>locale language:</div>
 				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-screen">
