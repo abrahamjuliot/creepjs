@@ -139,7 +139,7 @@
 				animation: show 0.1s linear both;
 			}
 			.modal-${name}:checked ~ .modal-container .modal-content {
-				animation: enter 0.2s 0.1s ease both
+				animation: enter 0.2s ease both
 			}
 			.modal-${name}:not(:checked) ~ .modal-container {
 				visibility: hidden;
@@ -431,18 +431,18 @@
 							const system = getOS(value)
 							if (workerScope.system != system) {
 								documentLie(name, system, 'mismatches worker scope')
-								return sendToTrash(name, system)
+								return undefined
 							}
 						}
 						else if (name != 'userAgent' && workerScopeValue != value) {
 							documentLie(name, value, 'mismatches worker scope')
-							return sendToTrash(name, value)
+							return undefined
 						}
 					}
 					const lie = navigatorPrototype ? hasLiedAPI(navigatorPrototype, name, navigator).lie : false
 					if (lie) {
 						documentLie(name, value, lie)
-						return sendToTrash(name, value)
+						return undefined
 					}
 					return value
 				}
@@ -827,7 +827,7 @@
 					const lie = screenPrototype ? hasLiedAPI(screenPrototype, name, screen).lie : false
 					if (lie) {
 						documentLie(name, value, lie)
-						return sendToTrash(name, value)
+						return undefined
 					}
 					return value
 				}
@@ -1011,11 +1011,9 @@
 				const hash = hashMini(canvas2dDataURI)
 				if (contextLie) {
 					documentLie('canvas2dContextDataURI', hash, contextLie)
-					sendToTrash('canvas2dContextDataURI', hash)
 				}
 				if (dataLie) {
 					documentLie('canvas2dDataURI', hash, dataLie)
-					sendToTrash('canvas2dDataURI', hash)
 				}
 				// fingerprint lie
 				const data = { contextLie, dataLie }
@@ -1078,11 +1076,9 @@
 				const hash = hashMini(canvasBMRDataURI)
 				if (contextLie) {
 					documentLie('canvasBMRContextDataURI', hash, contextLie)
-					sendToTrash('canvasBMRContextDataURI', hash)
 				}
 				if (dataLie) {
 					documentLie('canvasBMRDataURI', hash, dataLie)
-					sendToTrash('canvasBMRDataURI', hash)
 				}
 				// fingerprint lie
 				const data = { contextLie, dataLie }
@@ -1151,7 +1147,6 @@
 							// document lie and send to trash
 							if (supportedExtLie) { 
 								documentLie(title, extensions, supportedExtLie)
-								sendToTrash(title, extensions)
 							}
 							// Fingerprint lie
 							return resolve({
@@ -1249,11 +1244,9 @@
 							const extTitle = `webglGetExtension`
 							if (paramLie) { 
 								documentLie(paramTitle, response, paramLie)
-								sendToTrash(paramTitle, response)
 							}
 							if (extLie) {
 								documentLie(extTitle, response, extLie)
-								sendToTrash(extTitle, response)
 							}
 							// Fingerprint lie
 							return { paramLie, extLie }
@@ -1300,11 +1293,9 @@
 							const extTitle = `webgl2GetExtension`
 							if (param2Lie) { 
 								documentLie(paramTitle, response, param2Lie)
-								sendToTrash(paramTitle, response)
 							}
 							if (ext2Lie) {
 								documentLie(extTitle, response, ext2Lie)
-								sendToTrash(extTitle, response)
 							}
 							// Fingerprint lie
 							return { param2Lie, ext2Lie }
@@ -1345,11 +1336,9 @@
 							const extTitle = `${vendorTitle}And${rendererTitle}Extension`
 							if (paramLie) { 
 								documentLie(paramTitle, webglVendorAndRenderer, paramLie)
-								sendToTrash(paramTitle, webglVendorAndRenderer)
 							}
 							if (extLie) {
 								documentLie(extTitle, webglVendorAndRenderer, extLie)
-								sendToTrash(extTitle, webglVendorAndRenderer)
 							}
 							const response = (
 								rendererTitle == 'webgl2Renderer' ? {
@@ -1381,11 +1370,9 @@
 								const hash = hashMini(canvasWebglDataURI)
 								if (contextLie) {
 									documentLie(contextTitle, hash, contextLie)
-									sendToTrash(contextTitle, hash)
 								}
 								if (dataLie) {
 									documentLie(canvasTitle, hash, dataLie)
-									sendToTrash(canvasTitle, hash)
 								}
 								// fingerprint lie
 								const data = { contextLie, dataLie }
@@ -1527,6 +1514,7 @@
 	const getMaths = instanceId => {
 		return new Promise(async resolve => {
 			try {
+				const timeStart = timer()
 				const n = 0.123
 				const bigN = 5.860847362277284e+38
 				const fns = [
@@ -1625,14 +1613,38 @@
 				fns.forEach(fn => {
 					data[fn[2]] = attempt(() => {
 						const result = Math[fn[0]](...fn[1])
-						const chromeV8 = result == fn[3]
-						const firefoxSpiderMonkey = fn[4] ? result == fn[4] : chromeV8
-						const other = fn[5] ? result != fn[5] : true
-						return { result, chromeV8, firefoxSpiderMonkey, other }
+						const chrome = result == fn[3]
+						const firefox = !isNaN(fn[4]) ? result == fn[4] : chrome
+						const other = !isNaN(fn[5]) ? result == fn[5] : false
+						return { result, chrome, firefox, other }
 					})
 				})
 				const $hash = await hashify(data)
-				return resolve({...data, $hash })
+				resolve({...data, $hash })
+				const timeEnd = timeStart()
+				const id = `${instanceId}-maths`
+				const el = document.getElementById(id)
+				const header = `<div>Match to 64 bit Chromium (CR64), Firefox (FF64), and Other (OT64)</div>`
+				const results = Object.keys(data).map(key => {
+					const value = data[key]
+					const { result, chrome, firefox, other } = value
+					return `
+					${chrome ? '[CR64]' : '[----]'}
+					${firefox ? '[FF64]' : '[----]'}
+					${other ? '[OT64]' : '[----]'} ${key} => ${result}
+					`
+				})
+				patch(el, html`
+				<div>
+					<strong>Math</strong>
+					<div>hash: ${$hash}</div>
+					<div>results: ${
+						modal(id, header+results.join('<br>'))
+					}
+					<div class="time">performance: ${timeEnd} milliseconds</div>
+				</div>
+				`)
+				return
 			}
 			catch (error) {
 				captureError(error)
@@ -1748,7 +1760,6 @@
 				// document lie and send to trash
 				if (rectsLie) {
 					documentLie('clientRects', hashMini(clientRects), rectsLie)
-					sendToTrash('clientRects', hashMini(clientRects))
 				}
 				// Fingerprint lie
 				removeRectsFromDom()
@@ -1874,11 +1885,9 @@
 							// document lies and send to trash
 							if (copyFromChannelLie) { 
 								documentLie('audioBufferCopyFromChannel', (copySample[0] || null), copyFromChannelLie)
-								sendToTrash('audioBufferCopyFromChannel', (copySample[0] || null))
 							}
 							if (channelDataLie) { 
 								documentLie('audioBufferGetChannelData', (binsSample[0] || null), channelDataLie)
-								sendToTrash('audioBufferGetChannelData', (binsSample[0] || null))
 							}
 							// Fingerprint lie if it exists
 							const response = {
@@ -1923,7 +1932,7 @@
 					const lie = htmlElementPrototype ? hasLiedAPI(htmlElementPrototype, name).lie : false
 					if (lie) {
 						documentLie(name, value, lie)
-						return sendToTrash(name, value)
+						return undefined
 					}
 					return value
 				}
@@ -2081,6 +2090,8 @@
 				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-maths">
+				<div>hash:</div>
+				<div>results:</div>
 				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-console-errors">
