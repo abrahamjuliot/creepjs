@@ -1628,11 +1628,7 @@
 				const results = Object.keys(data).map(key => {
 					const value = data[key]
 					const { result, chrome, firefox, other } = value
-					return `
-					${chrome ? '[CR64]' : '[----]'}
-					${firefox ? '[FF64]' : '[----]'}
-					${other ? '[OT64]' : '[----]'} ${key} => ${result}
-					`
+					return `${chrome ? '[CR64]' : '[----]'}${firefox ? '[FF64]' : '[----]'}${other ? '[OT64]' : '[----]'} ${key} => ${result}`
 				})
 				patch(el, html`
 				<div>

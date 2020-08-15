@@ -304,6 +304,8 @@ input[type="radio"] {
 	left: 0;
 	right: 0;
 	box-shadow: 0px 2px 2px 0px #cfd0d1;
+	cursor: text;
+	-webkit-user-select: text;
 }
 
 .modal-close-btn {
