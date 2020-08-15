@@ -291,6 +291,17 @@
 	const isBrave = 'brave' in navigator ? true : false
 	const isFirefox = typeof InstallTrigger !== 'undefined'
 
+	// id known hash
+	const known = hash => {
+		const id = {
+			'fb4ad71a65a801e6c81c16fd248e41081cc81f853fc4775df812749affb9b3e7': 'Chromium', // math
+			'c60fecd4250b930eac196bc4ec84f60ced4a28e2832d5b54f38a755088dd62b1': 'Firefox', // math
+			'7757f7416b78fb8ac1f079b3e0677c0fe179826a63727d809e7d69795e915cd5': 'Chromium', // errors
+			'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': 'Firefox' // errors
+		}
+		return id[hash] ? id[hash] : 'Other'
+	}
+
 	// Collect trash values
 	const trashBin = []
 	const sendToTrash = (name, val, response = undefined) => {
@@ -1640,6 +1651,7 @@
 					<div>results: ${
 						modal(id, header+results.join('<br>'))
 					}
+					<div>engine: ${known($hash)}</div>
 					<div class="time">performance: ${timeEnd} milliseconds</div>
 				</div>
 				`)
@@ -1697,6 +1709,7 @@
 					<div>results: ${
 						modal(id, results.join('<br>'))
 					}
+					<div>engine: ${known($hash)}</div>
 					<div class="time">performance: ${timeEnd} milliseconds</div>
 				</div>
 				`)
@@ -2194,12 +2207,14 @@
 				<strong>Math</strong>
 				<div>hash:</div>
 				<div>results:</div>
+				<div>engine: </div>
 				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-console-errors">
 				<strong>Error</strong>
 				<div>hash:</div>
 				<div>results:</div>
+				<div>engine: </div>
 				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-timezone">
@@ -2505,34 +2520,7 @@
 				return console.error('Error!', err.message)
 			})
 		
-		const knownStyle = str => `<span class="known">${str}</span>`
-		const knownBrowser = () => {
-			return (
-				isBrave ? knownStyle('Brave Browser') :  
-				isFirefox ? knownStyle('Firefox') : 
-				false
-			)
-		}
-		// identify known hash
-		const identify = (prop, check = null) => {
-			if (check == 'identifyBrowser') {
-				const browser = knownBrowser()
-				if (browser) {
-					return browser
-				}
-			}
-			const known = {
-				'7757f7416b78fb8ac1f079b3e0677c0fe179826a63727d809e7d69795e915cd5': 'Chromium',
-				'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': 'Firefox' // errors
-			}
 
-			const [ data, hash ] = prop
-			const iterable = Symbol.iterator in Object(data)
-			return (
-				!data || (iterable && !data.length) ? note.blocked :
-				known[hash] ? `<span class="known">${known[hash]}</span>` : hash
-			)
-		}
 		
 		
 		// template
