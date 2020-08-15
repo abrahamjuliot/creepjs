@@ -1654,20 +1654,22 @@
 	}
 
 	// browser console errors
-	const getErrors = (errs, errFns) => {
+	const getErrors = errFns => {
+		const errors = []
 		let i, len = errFns.length
 		for (i = 0; i < len; i++) {
 			try {
 				errFns[i]()
 			} catch (err) {
-				errs.push(err.message)
+				errors.push(err.message)
 			}
 		}
-		return errs
+		return errors
 	}
 	const getConsoleErrors = instanceId => {
 		return new Promise(async resolve => {
 			try {
+				const timeStart = timer()
 				const errorTests = [
 					() => eval('alert(")'),
 					() => eval('const foo;foo.bar'),
@@ -1679,9 +1681,27 @@
 					() => eval('var x = new Array(-1)'),
 					() => eval('const a=1; const a=2;')
 				]
-				const errors = getErrors([], errorTests)
+				const errors = getErrors(errorTests)
 				const $hash = await hashify(errors)
-				return resolve({errors, $hash })
+				resolve({errors, $hash })
+				const timeEnd = timeStart()
+				const id = `${instanceId}-console-errors`
+				const el = document.getElementById(id)
+				const results = Object.keys(errors).map(key => {
+					const value = errors[key]
+					return `${+key+1}: ${value}`
+				})
+				patch(el, html`
+				<div>
+					<strong>Error</strong>
+					<div>hash: ${$hash}</div>
+					<div>results: ${
+						modal(id, results.join('<br>'))
+					}
+					<div class="time">performance: ${timeEnd} milliseconds</div>
+				</div>
+				`)
+				return
 			}
 			catch (error) {
 				captureError(error)
@@ -2095,6 +2115,8 @@
 				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-console-errors">
+				<div>hash:</div>
+				<div>results:</div>
 				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-timezone">
