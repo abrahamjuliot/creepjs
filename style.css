@@ -220,6 +220,11 @@ visitor {
     margin: 10px 0;
 }
 
+#fingerprint-data .trusted-fingerprint {
+	font-size: 18px;
+	font-weight: bold;
+}
+
 @keyframes fade-in {
 	0%, 30% {
 		transform: translate(0);
@@ -231,7 +236,7 @@ visitor {
 }
 @keyframes zoom {
 	0%, 30% {
-		transform: scale(1.1);
+		transform: scale(0.9);
 		opacity: 0;
 	}
 	100% {

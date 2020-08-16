@@ -2146,15 +2146,22 @@
 	const scene = html`
 	<fingerprint>
 		<div id="fingerprint-data">
-			<div>
-				<visitor><div id="visitor"><div class="visitor-loader"></div></div></visitor>
-				Data auto deletes <a href="https://github.com/abrahamjuliot/creepjs/blob/8d6603ee39c9534cad700b899ef221e0ee97a5a4/server.gs#L24" target="_blank">every 7 days</a>
-			</div>
 			<div id="${instanceId}-fingerprint">
 				<strong>Fingerprint</strong>
-				<div>trusted id:</div>
+				<div class="trusted-fingerprint" style="color:#fff">.</div>
 				<div>loose id:</div>
 				<div class="time">performance: 0 milliseconds</div>
+			</div>
+			<div id="${instanceId}-browser">
+				<strong>Browser</strong>
+				<div>visits:</div>
+				<div>first:</div>
+				<div>latest:</div>
+				<div>persistence:</div>
+				<div>has trash:</div>
+				<div>has lied:</div>
+				<div>has errors:</div>
+				<div>bot:</div>
 			</div>
 			<div id="${instanceId}-trash">
 				<strong>Trash Bin</strong>
@@ -2323,6 +2330,9 @@
 			<div id="${instanceId}-fonts">
 				<div class="time">performance: 0 milliseconds</div>
 			</div>
+			<div>
+				Data auto deletes <a href="https://github.com/abrahamjuliot/creepjs/blob/8d6603ee39c9534cad700b899ef221e0ee97a5a4/server.gs#L24" target="_blank">every 7 days</a>
+			</div>
 		</div>
 
 		<div id="font-detector"><div id="font-detector-stage"></div></div>
@@ -2487,6 +2497,7 @@
 			maths: mathsComputed,
 			consoleErrors: consoleErrorsComputed,
 			timezone: timezoneComputed,
+			clientRects: clientRectsComputed,
 			offlineAudioContext: offlineAudioContextComputed,
 			fonts: fontsComputed,
 			lies: liesComputed,
@@ -2514,7 +2525,6 @@
 			consoleErrors: fp.consoleErrors,
 			// avoid random timezone fingerprint values
 			timezone: !fp.timezone.lied ? fp.timezone : undefined,
-			clientRects: fp.clientRects,
 			offlineAudioContext: fp.offlineAudioContext,
 			fonts: fp.fonts,
 			trash: fp.trash,
@@ -2537,13 +2547,21 @@
 			console.error(error.message)
 		})
 
+		const hasTrash = !('data' in fp.trash) ? false : !!fp.trash.data.length
+		const hasLied = !('data' in fp.lies) ? false : !!fp.lies.data.length
+		const hasErrors = !('data' in fp.capturedErrors) ? false : !!fp.capturedErrors.data.length
+
+		console.log(hasTrash, hasLied, hasErrors)
+
 		// fetch data from server
-		const visitorElem = document.getElementById('visitor')
+		const id = `${instanceId}-browser`
+		const visitorElem = document.getElementById(id)
 		const fetchVisitoDataTimer = timer('Fetching visitor data...')
-		fetch(`${webapp}?id=${creepHash}&subId=${fpHash}`)
+		fetch(`${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}`)
 			.then(response => response.json())
 			.then(data => {
-				const { firstVisit, latestVisit, subIds, visits } = data
+				console.log(data)
+				const { firstVisit, latestVisit, subIds, visits, hasTrash, hasLied, hasErrors } = data
 				const subIdsLen = Object.keys(subIds).length
 				const toLocaleStr = str => {
 					const date = new Date(str)
@@ -2557,10 +2575,15 @@
 				const hours = hoursAgo(new Date(firstVisit), new Date(latestVisit)).toFixed(1)
 				const template = `
 					<div>
-						<div>First Visit: ${toLocaleStr(firstVisit)} (${hours} hours ago)</div>
-						<div>Latest Visit: ${toLocaleStr(latestVisit)}</div>
-						${subIdsLen ? `<div>${subIdsLen} Loose fingerprint${plural}${subIdsLen > 10 ? ` <span class="lies">[Bot]</span>`: ''}</div>` : ''}
-						<div>Visits: ${visits}</div>
+						<strong>Browser</strong>
+						<div>visits: ${visits}</div>
+						<div>first: ${toLocaleStr(firstVisit)}
+						<div>latest: ${toLocaleStr(latestVisit)}</div>
+						<div>persistence: ${hours} hours</div>
+						<div>has trash: ${!!hasTrash ? 'true' : 'false'}</div>
+						<div>has lied: ${!!hasLied ? 'true' : 'false'}</div>
+						<div>has errors: ${!!hasErrors ? 'true' : 'false'}</div>
+						<div>bot: ${subIdsLen > 10 ? 'true' : 'false'}</div>
 					</div>
 				`
 				fetchVisitoDataTimer('Visitor data received')
@@ -2576,8 +2599,8 @@
 		return patch(el, html`
 		<div>
 			<strong>Fingerprint</strong>
-			<div>trusted id: ${creepHash}</div>
-			<div>loose id: ${fpHash}</div>
+			<div class="trusted-fingerprint">${creepHash}</div>
+			<div>loose fingerprint: ${fpHash}</div>
 			<div class="time">performance: ${timeEnd} milliseconds</div>
 		</div>
 		`)

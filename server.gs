@@ -63,8 +63,22 @@ function doGet(e) {
   const lock = LockService.getScriptLock()
   lock.tryLock(1000)
   try { 
+    
+    //log(JSON.stringify(e.parameter))
+    
     // get params 
     const { parameter: { id: fingerprintId, subId } } = e
+    let hasTrash = false
+    let hasLied = false
+    let hasErrors = false
+    
+    // try server feature
+    try {
+      hasTrash = e.parameter.hasTrash
+      hasLied = e.parameter.hasLied
+      hasErrors = e.parameter.hasErrors
+    }
+    catch (error) { }
          
     // get database
     const db = getData()
@@ -81,6 +95,11 @@ function doGet(e) {
       dbId.visits++
       dbId.subIds = subIds
       db[fingerprintId] = dbId
+      
+      dbId.hasTrash = ('hasTrash' in dbId) && dbId.hasTrash == 'false' && hasTrash == 'true' ? true : false
+      dbId.hasLied = ('hasLied' in dbId) && dbId.hasLied  == 'false' && hasLied == 'true' ? true : false
+      dbId.hasErrors = ('hasErrors' in dbId) && dbId.hasErrors  == 'false' && hasErrors == 'true' ? true : false
+      
     }
     else {
       // create
@@ -88,7 +107,10 @@ function doGet(e) {
         firstVisit: timestamp,
         latestVisit: timestamp,
         visits: 1,
-        subIds: { [subId]: 1 }
+        subIds: { [subId]: 1 },
+        hasTrash,
+        hasLied,
+        hasErrors
       }
     }
     
