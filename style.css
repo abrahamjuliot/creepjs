@@ -159,7 +159,6 @@ strong {
 }
 visitor {
     display: block;
-    padding: 15px 10px;
     min-height: 110px !important;
 }
 #rect-container {
@@ -222,11 +221,12 @@ visitor {
 	background: var(--good);
 }
 
-#fingerprint-data .trash,
-#fingerprint-data .lies,
-#fingerprint-data .errors {
-	animation: zoom 0.3s .6s cubic-bezier(0,1.13,0,1.2) both;
+#fingerprint-data .lie-fingerprint {
+	background: #f9f9f9;
+    padding: 15px;
+    margin: 10px 0;
 }
+
 @keyframes fade-in {
 	0%, 30% {
 		transform: translate(0);

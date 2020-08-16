@@ -440,16 +440,17 @@
 				const navigatorPrototype = attempt(() => Navigator.prototype)
 				const detectLies = (name, value) => {
 					const workerScopeValue = caniuse(workerScope, [name])
+					const workerScopeMatchLie = { lies: [{ ['workerScopeMatch']: false }] }
 					if (workerScopeValue) {
 						if (name == 'userAgent') {
 							const system = getOS(value)
 							if (workerScope.system != system) {
-								documentLie(name, system, 'mismatches worker scope')
+								documentLie(name, system, workerScopeMatchLie)
 								return undefined
 							}
 						}
 						else if (name != 'userAgent' && workerScopeValue != value) {
-							documentLie(name, value, 'mismatches worker scope')
+							documentLie(name, value, workerScopeMatchLie)
 							return undefined
 						}
 					}
@@ -1807,7 +1808,7 @@
 				// document lie
 				let localeLie = false
 				if (locale.lie) {
-					localeLie = { ['intlLocalesMatch']: false }
+					localeLie = { lies: [{ ['intlLocalesMatch']: false }] }
 					documentLie('IntlLocales', locale, localeLie)	
 				}
 				if (timezoneLie) {
@@ -1837,7 +1838,7 @@
 					<div>timezone offset: ${!timezoneLie ? timezoneOffset : `${note.lied} ${modal(`${id}-timezoneOffset`, toJSONFormat(timezoneLie))}`}</div>
 					<div>timezone offset computed: ${timezoneOffsetComputed}</div>
 					<div>matching offsets: ${matchingOffsets}</div>
-					<div>relativeTimeFormat: ${modal(`${id}-relativeTimeFormat`, Object.keys(relativeTime).sort().map(key => `${key}: ${relativeTime[key]}`).join('<br>'))}</div>
+					<div>relativeTimeFormat: ${modal(`${id}-relativeTimeFormat`, Object.keys(relativeTime).sort().map(key => `${relativeTime[key]}`).join('<br>'))}</div>
 					<div>locale language: ${!localeLie ? locale.lang.join(', ') : `${note.lied} ${modal(`${id}-locale`, toJSONFormat(localeLie))}`}</div>
 					<div class="time">performance: ${timeEnd} milliseconds</div>
 				</div>
@@ -1978,8 +1979,9 @@
 
 							matching = binsJSON === copyJSON
 
+							const audioSampleLie = { lies: [{ ['audioSampleAndCopyMatch']: false }] }
 							if (!matching) {
-								documentLie('audioSampleAndCopyMatch', hashMini(matching), { audioSampleAndCopyMatch: false })
+								documentLie('audioSampleAndCopyMatch', hashMini(matching), audioSampleLie)
 							}
 							dynamicsCompressor.disconnect()
 							oscillator.disconnect()
@@ -2148,9 +2150,21 @@
 				<visitor><div id="visitor"><div class="visitor-loader"></div></div></visitor>
 				Data auto deletes <a href="https://github.com/abrahamjuliot/creepjs/blob/8d6603ee39c9534cad700b899ef221e0ee97a5a4/server.gs#L24" target="_blank">every 7 days</a>
 			</div>
-			<div id="${instanceId}-lies"></div>
-			<div id="${instanceId}-trash"></div>
-			<div id="${instanceId}-captured-errors"></div>
+			<div id="${instanceId}-trash">
+				<strong>Trash</strong>
+				<div>hash:</div>
+				<div>trash (0):</div>
+			</div>
+			<div id="${instanceId}-lies">
+				<strong>Lies</strong>
+				<div>hash:</div>
+				<div>lies (0):</div>
+			</div>
+			<div id="${instanceId}-captured-errors">
+				<strong>Captured Errors</strong>
+				<div>hash:</div>
+				<div>errors (0):</div>
+			</div>
 			<div id="${instanceId}-worker-scope">
 				<strong>WorkerGlobalScope: WorkerNavigator/OffscreenCanvas</strong>
 				<div>hash:</div>
@@ -2325,14 +2339,28 @@
 	`
 	const getLies = (instanceId, lieRecords) => {
 		return new Promise(async resolve => {
-			if (!lieRecords.length) {
-				resolve([])
-				// <span class="none">none</span>
-				// use modal
-			}
+			const len = lieRecords.length
 			const data = lieRecords.map(lie => ({ name: lie.name, lieTypes: lie.lieTypes }))
 			const $hash = await hashify(data)
-			return resolve({data, $hash })
+			resolve({data, $hash })
+			const id = `${instanceId}-lies`
+			const el = document.getElementById(id)
+			patch(el, html`
+			<div>
+				<strong>Lies</strong>
+				<div>hash: ${$hash}</div>
+				<div>lies (${!len ? '0' : ''+len }): ${
+					len ? modal(id, '<div>Lies Unmasked</div><br>'+Object.keys(data).map(key => {
+						const { name, lieTypes: { lies, fingerprint } } = data[key]
+						const lieFingerprint = !!fingerprint ? { hash: hashMini(fingerprint), json: toJSONFormat(fingerprint) } : undefined
+						console.log(name, lies)
+						const type = lies[0] ? Object.keys(lies[0])[0] : ''
+						return `<div class="${lieFingerprint ? 'lie-fingerprint' : ''}"><strong>${name}</strong>: ${type}${lieFingerprint ? `<br>code fingerprint: ${lieFingerprint.hash}<br>code: ${lieFingerprint.json}</div>`: '</div>'}`
+					}).join('')) : `<span class="none">none</span>`
+				}</div>
+			</div>
+			`)
+			return
 		})
 	}
 	const getTrash = (instanceId, trashBin) => {
