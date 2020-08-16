@@ -63,14 +63,14 @@ function doGet(e) {
   const lock = LockService.getScriptLock()
   lock.tryLock(1000)
   try { 
-    
-    //log(JSON.stringify(e.parameter))
-    
+       
     // get params 
     const { parameter: { id: fingerprintId, subId } } = e
     let hasTrash = false
     let hasLied = false
     let hasErrors = false
+    
+    //log(JSON.stringify(e.parameter))
     
     // try server feature
     try {
@@ -96,9 +96,15 @@ function doGet(e) {
       dbId.subIds = subIds
       db[fingerprintId] = dbId
       
-      dbId.hasTrash = ('hasTrash' in dbId) && dbId.hasTrash == 'false' && hasTrash == 'true' ? true : false
-      dbId.hasLied = ('hasLied' in dbId) && dbId.hasLied  == 'false' && hasLied == 'true' ? true : false
-      dbId.hasErrors = ('hasErrors' in dbId) && dbId.hasErrors  == 'false' && hasErrors == 'true' ? true : false
+      if (('hasTrash' in dbId) && (''+dbId.hasTrash) == 'false' && (''+hasTrash) == 'true') {
+        dbId.hasTrash = true
+      }
+      if (('hasLied' in dbId) && (''+dbId.hasLied) == 'false' && (''+hasLied) == 'true') {
+        dbId.hasLied = true
+      }
+      if (('hasErrors' in dbId) && (''+dbId.hasErrors) == 'false' && (''+hasErrors) == 'true') {
+        dbId.hasErrors = true
+      }
       
     }
     else {

@@ -2161,6 +2161,7 @@
 				<div>has trash:</div>
 				<div>has lied:</div>
 				<div>has errors:</div>
+				<div>loose fingerprints:</div>
 				<div>bot:</div>
 			</div>
 			<div id="${instanceId}-trash">
@@ -2551,8 +2552,6 @@
 		const hasLied = !('data' in fp.lies) ? false : !!fp.lies.data.length
 		const hasErrors = !('data' in fp.capturedErrors) ? false : !!fp.capturedErrors.data.length
 
-		console.log(hasTrash, hasLied, hasErrors)
-
 		// fetch data from server
 		const id = `${instanceId}-browser`
 		const visitorElem = document.getElementById(id)
@@ -2569,8 +2568,6 @@
 					const timeString = date.toLocaleTimeString()
 					return `${dateString}, ${timeString}`
 				}
-				const pluralify = (len) => len > 1 ? 's' : ''
-				const plural = pluralify(subIdsLen)
 				const hoursAgo = (date1, date2) => Math.abs(date1 - date2) / 36e5
 				const hours = hoursAgo(new Date(firstVisit), new Date(latestVisit)).toFixed(1)
 				const template = `
@@ -2580,9 +2577,10 @@
 						<div>first: ${toLocaleStr(firstVisit)}
 						<div>latest: ${toLocaleStr(latestVisit)}</div>
 						<div>persistence: ${hours} hours</div>
-						<div>has trash: ${!!hasTrash ? 'true' : 'false'}</div>
-						<div>has lied: ${!!hasLied ? 'true' : 'false'}</div>
-						<div>has errors: ${!!hasErrors ? 'true' : 'false'}</div>
+						<div>has trash: ${(''+hasTrash) == 'true' ? 'true' : 'false'}</div>
+						<div>has lied: ${(''+hasLied) == 'true'? 'true' : 'false'}</div>
+						<div>has errors: ${(''+hasErrors) == 'true' ? 'true' : 'false'}</div>
+						<div>loose fingerprints: ${subIdsLen}</div>
 						<div>bot: ${subIdsLen > 10 ? 'true' : 'false'}</div>
 					</div>
 				`
