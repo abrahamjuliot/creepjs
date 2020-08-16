@@ -2486,7 +2486,6 @@
 			maths: mathsComputed,
 			consoleErrors: consoleErrorsComputed,
 			timezone: timezoneComputed,
-			clientRects: clientRectsComputed,
 			offlineAudioContext: offlineAudioContextComputed,
 			fonts: fontsComputed,
 			lies: liesComputed,
