@@ -1806,9 +1806,8 @@
 				const relativeTime = getRelativeTime()
 				const locale = getLocale()
 				// document lie
-				let localeLie = false
-				if (locale.lie) {
-					localeLie = { lies: [{ ['intlLocalesMatch']: false }] }
+				const localeLie = locale.lie ? { lies: [{ ['intlLocalesMatch']: false }] } : false
+				if (localeLie) {
 					documentLie('IntlLocales', locale, localeLie)	
 				}
 				if (timezoneLie) {
@@ -1821,7 +1820,8 @@
 					timezoneOffsetComputed,
 					matchingOffsets,
 					relativeTime,
-					locale: !localeLie ? locale : localeLie
+					locale: !localeLie ? locale : localeLie,
+					lied: localeLie || timezoneLie
 				}
 				
 				const $hash = await hashify(data)
@@ -1971,8 +1971,8 @@
 							event.renderedBuffer.copyFromChannel(copy, 0)
 							const bins = event.renderedBuffer.getChannelData(0)
 							
-							copySample = copy ? [...copy].slice(4500, 4600) : [sendToTrash('audioCopy', null)]
-							binsSample = bins ? [...bins].slice(4500, 4600) : [sendToTrash('audioSample', null)]
+							copySample = copy ? [...copy].slice(4500, 4600) : [sendToTrash('invalideAudioSampleCopy', null)]
+							binsSample = bins ? [...bins].slice(4500, 4600) : [sendToTrash('invalidAudioSample', null)]
 							
 							const copyJSON = copy && JSON.stringify([...copy].slice(4500, 4600))
 							const binsJSON = bins && JSON.stringify([...bins].slice(4500, 4600))
@@ -2150,18 +2150,24 @@
 				<visitor><div id="visitor"><div class="visitor-loader"></div></div></visitor>
 				Data auto deletes <a href="https://github.com/abrahamjuliot/creepjs/blob/8d6603ee39c9534cad700b899ef221e0ee97a5a4/server.gs#L24" target="_blank">every 7 days</a>
 			</div>
+			<div id="${instanceId}-fingerprint">
+				<strong>Fingerprint</strong>
+				<div>trusted id:</div>
+				<div>loose id:</div>
+				<div class="time">performance: 0 milliseconds</div>
+			</div>
 			<div id="${instanceId}-trash">
-				<strong>Trash</strong>
+				<strong>Trash Bin</strong>
 				<div>hash:</div>
 				<div>trash (0):</div>
 			</div>
 			<div id="${instanceId}-lies">
-				<strong>Lies</strong>
+				<strong>Lies Unmasked</strong>
 				<div>hash:</div>
 				<div>lies (0):</div>
 			</div>
 			<div id="${instanceId}-captured-errors">
-				<strong>Captured Errors</strong>
+				<strong>Errors Captured</strong>
 				<div>hash:</div>
 				<div>errors (0):</div>
 			</div>
@@ -2337,6 +2343,28 @@
 		</div>
 	</fingerprint>
 	`
+
+	const getTrash = (instanceId, trashBin) => {
+		return new Promise(async resolve => {
+			const len = trashBin.length
+			const data =  trashBin.map(trash => trash.name)
+			const $hash = await hashify(data)
+			resolve({data, $hash })
+			const id = `${instanceId}-trash`
+			const el = document.getElementById(id)
+			patch(el, html`
+			<div class="${len ? 'trash': ''}">
+				<strong>Trash Bin</strong>
+				<div>hash: ${$hash}</div>
+				<div>trash (${!len ? '0' : ''+len }): ${
+					len ? modal(id, data.map((key,i) => `${i}: ${key}`).join('<br>')) : `<span class="none">none</span>`
+				}</div>
+			</div>
+			`)
+			return
+		})
+	}
+
 	const getLies = (instanceId, lieRecords) => {
 		return new Promise(async resolve => {
 			const len = lieRecords.length
@@ -2346,14 +2374,13 @@
 			const id = `${instanceId}-lies`
 			const el = document.getElementById(id)
 			patch(el, html`
-			<div>
-				<strong>Lies</strong>
+			<div class="${len ? 'lies': ''}">
+				<strong>Lies Unmasked</strong>
 				<div>hash: ${$hash}</div>
 				<div>lies (${!len ? '0' : ''+len }): ${
-					len ? modal(id, '<div>Lies Unmasked</div><br>'+Object.keys(data).map(key => {
+					len ? modal(id, Object.keys(data).map(key => {
 						const { name, lieTypes: { lies, fingerprint } } = data[key]
 						const lieFingerprint = !!fingerprint ? { hash: hashMini(fingerprint), json: toJSONFormat(fingerprint) } : undefined
-						console.log(name, lies)
 						const type = lies[0] ? Object.keys(lies[0])[0] : ''
 						return `<div class="${lieFingerprint ? 'lie-fingerprint' : ''}"><strong>${name}</strong>: ${type}${lieFingerprint ? `<br>code fingerprint: ${lieFingerprint.hash}<br>code: ${lieFingerprint.json}</div>`: '</div>'}`
 					}).join('')) : `<span class="none">none</span>`
@@ -2363,24 +2390,25 @@
 			return
 		})
 	}
-	const getTrash = (instanceId, trashBin) => {
-		return new Promise(async resolve => {
-			if (!trashBin.length) {
-				return resolve([])
-			}
-			const data =  trashBin.map(trash => trash.name)
-			const $hash = await hashify(data)
-			return resolve({data, $hash })
-		})
-	}
+	
 	const getCapturedErrors = (instanceId, errorsCaptured) => {
 		return new Promise(async resolve => {
-			if (!errorsCaptured.length) {
-				return resolve([])
-			}
+			const len = errorsCaptured.length
 			const data =  errorsCaptured
 			const $hash = await hashify(data)
-			return resolve({data, $hash })
+			resolve({data, $hash })
+			const id = `${instanceId}-captured-errors`
+			const el = document.getElementById(id)
+			patch(el, html`
+			<div class="${len ? 'errors': ''}">
+				<strong>Errors Captured</strong>
+				<div>hash: ${$hash}</div>
+				<div>errors (${!len ? '0' : ''+len }): ${
+					len ? modal(id, Object.keys(data).map((key, i) => `${i}: ${data[key].trustedName} - ${data[key].trustedMessage} `).join('<br>')) : `<span class="none">none</span>`
+				}</div>
+			</div>
+			`)
+			return
 		})
 	}
 	
@@ -2388,7 +2416,7 @@
 	const fingerprint = async () => {
 		// await
 
-		const asyncProcess = timer('')
+		const timeStart = timer()
 		const [
 			workerScopeComputed,
 			cloudflareComputed,
@@ -2440,7 +2468,7 @@
 		]).catch(error => {
 			console.error(error.message)
 		})
-		asyncProcess('Async process complete')
+		const timeEnd = timeStart()
 
 		const fingerprint = {
 			workerScope: workerScopeComputed,
@@ -2465,7 +2493,7 @@
 			trash: trashComputed,
 			capturedErrors: capturedErrorsComputed
 		}
-		return fingerprint
+		return { fingerprint, timeEnd }
 	}
 	// get/post request
 	const webapp = 'https://script.google.com/macros/s/AKfycbzKRjt6FPboOEkh1vTXttGyCjp97YBP7z-5bODQmtSkQ9BqDRY/exec'
@@ -2474,8 +2502,7 @@
 	const app = document.getElementById('fp-app')
 	patch(app, scene, async () => {
 		// fingerprint and render
-		const fpElem = document.getElementById('fingerprint')
-		const fp = await fingerprint().catch(error => console.error(error))
+		const { fingerprint: fp, timeEnd } = await fingerprint().catch(error => console.error(error))
 		// Trusted Fingerprint
 		const creep = {
 			workerScope: fp.workerScope,
@@ -2486,10 +2513,7 @@
 			maths: fp.maths,
 			consoleErrors: fp.consoleErrors,
 			// avoid random timezone fingerprint values
-			timezone: (
-				!fp.timezone || !fp.timezone.timezoneLie ? fp.timezone :
-				fp.timezone.timezoneLie.lies
-			),
+			timezone: !fp.timezone.lied ? fp.timezone : undefined,
 			clientRects: fp.clientRects,
 			offlineAudioContext: fp.offlineAudioContext,
 			fonts: fp.fonts,
@@ -2535,8 +2559,8 @@
 					<div>
 						<div>First Visit: ${toLocaleStr(firstVisit)} (${hours} hours ago)</div>
 						<div>Latest Visit: ${toLocaleStr(latestVisit)}</div>
-						${subIdsLen ? `<div>${subIdsLen} Loose fingerprint${plural}</div>` : ''}
-						<div>Visits: ${visits}${subIdsLen > 20 ? ` (<strong>Bot</strong>)`: ''}</div>
+						${subIdsLen ? `<div>${subIdsLen} Loose fingerprint${plural}${subIdsLen > 10 ? ` <span class="lies">[Bot]</span>`: ''}</div>` : ''}
+						<div>Visits: ${visits}</div>
 					</div>
 				`
 				fetchVisitoDataTimer('Visitor data received')
@@ -2547,503 +2571,15 @@
 				patch(visitorElem, html`<div>Error loading visitor data</div>`)
 				return console.error('Error!', err.message)
 			})
-		
 
-		
-		
-		// template
-		const data = `
-			<section>
-				<div id="fingerprint-data">
-
-					<div>
-						<strong>Fingerprint</strong>
-						<div>Trusted Id: ${creepHash}</div>
-						<div>Loose Id: ${fpHash}</div>
-					</div>
-
-					${
-						!trashBin.length ? '<div>trash: <span class="none">none</span></div>': (() => {
-							const plural = pluralify(trashBin.length)
-							const hash = fp.trash[1]
-							return `
-							<div class="trash">
-								<strong>${trashBin.length} API${plural} counted as trash</strong>
-								<div>hash: ${hash}</div>
-								${trashBin.map(item => `<div>${item.name}: ${item.value}</div>`).join('')}
-							</div>
-							`
-						})()
-					}
-
-					${
-						!lieRecords.length ? '<div>lies: <span class="none">none</span></div>': (() => {
-							const plural = pluralify(lieRecords.length)
-							const hash = fp.lies[1]
-							return `
-							<div class="lies">
-								<strong>${lieRecords.length} API lie${plural} detected</strong>
-								<div>hash: ${hash}</div>
-								${lieRecords.map(item => `<div>${item.name} Lie Fingerprint: ${item.lie}</div>`).join('')}
-							</div>
-							`
-						})()
-					}
-
-					${
-						!fp.errorsCaptured[0].length ? `<div>errors captured: <span class="none">none</span></div>`: (() => {
-							const [ errors, hash ]  = fp.errorsCaptured
-							const plural = pluralify(errors.length)
-							return `
-							<div class="errors">
-								<strong>${errors.length} error${plural} captured</strong>
-								<div>hash: ${hash}</div>
-								${
-									errors.map(err => {
-										return `
-										<div>
-											${err.trustedName}: ${err.trustedMessage}
-										</div>`
-									}).join('')
-								}
-							</div>
-							`
-						})()
-					}
-					<div>
-						<strong>Cloudflare</strong>
-						${
-							!fp.cloudflare[0] ? `<div>hash: ${note.blocked}</div>`: (() => {
-								const [ cloudflare, hash ]  = fp.cloudflare
-								return `
-								<div>
-									<div>hash: ${hash}</div>
-									${
-										Object.keys(cloudflare).map(key => {
-											const value = cloudflare[key]
-											key = (
-												key == 'ip' ? 'ip address' :
-												key == 'uag' ? 'system' :
-												key == 'loc' ? 'ip location' :
-												key == 'tls' ? 'tls version' :
-												key
-											)
-											return `<div>${key}: ${value ? value : note.blocked}</div>`
-										}).join('')
-									}
-								</div>
-								`
-							})()
-						}
-					</div>
-					
-					<div>
-						<strong>CanvasRenderingContext2D</strong>
-						<div>toDataURL: ${identify(fp.canvas2d, 'identifyBrowser')}</div>
-					</div>
-					<div>
-						<strong>ImageBitmapRenderingContext</strong>
-						<div>toDataURL: ${identify(fp.bitmapRenderer, 'identifyBrowser')}</div>
-					</div>
-					<div>
-						<strong>WebGLRenderingContext/WebGL2RenderingContext</strong>
-						${
-							!fp.webgl[0] ? `<div>parameters/extensions: ${note.blocked}</div>`: (() => {
-								const [ data, hash ] = fp.webgl
-								const { renderer, renderer2, vendor, vendor2, extensions, extensions2, matching, specs } = data
-								const webglSpecs = caniuse(specs, ['webglSpecs'])
-								const webgl2Specs = caniuse(specs, ['webgl2Specs'])
-								const validate = (value, checkBrave = false) => {
-									const isObj = typeof extensions == 'object'
-									const isString = typeof renderer == 'string'
-									return checkBrave ? (
-										isBrave ? knownStyle('Brave Browser') : 
-										isString && value ? value : 
-										!value ? note.blocked : identify(fp.webgl)
-									) : isObj && value && value.length ? value.length : note.blocked
-								}
-								const supportedSpecs = (specs, type) => {
-									const supported = Object.keys(specs).filter(key => {
-										const value = specs[key]
-										const validValue = !!value || value === 0
-										return validValue
-									})
-									return `<div>${type} supported parameters: ${supported.length}</div>`
-								}
-								return `
-									<div>parameters/extensions: ${hash}</div>
-									<br>
-									<div>v1 toDataURL: ${identify(fp.webglDataURL, 'identifyBrowser')}</div>
-									${
-										!webglSpecs ? `<div>v1 supported parameters: ${note.blocked}</div>` :
-										supportedSpecs(webglSpecs, 'v1')
-									}
-									
-									<div>v1 supported extensions: ${validate(extensions)}</div>
-									<div>v1 renderer: ${validate(renderer, true)}</div>
-									<div>v1 vendor: ${validate(vendor, true)}</div>
-									<br>
-									<div>v2 toDataURL: ${identify(fp.webgl2DataURL, 'identifyBrowser')}</div>
-									${
-										!webgl2Specs ? `<div>v2 supported parameters: ${note.blocked}</div>` :
-										supportedSpecs(webgl2Specs, 'v2')
-									}
-									<div>v2 supported extensions: ${validate(extensions2)}</div>
-									<div>v2 renderer: ${validate(renderer2, true)}</div>
-									<div>v2 vendor: ${validate(vendor2, true)}</div>
-									<br>
-									<div>matching renderer/vendor: ${matching}</div>
-								`
-							})()
-						}
-					</div>
-
-					${
-						!fp.audio[0] ? `<div>audio: ${note.blocked}</div>`: (() => {
-							const [ audio, hash ]  = fp.audio
-							const { copySample, binsSample, matching, values } = audio
-							return `
-							<div>
-								<strong>OfflineAudioContext</strong>
-								<div>audio hash: ${hash}</div>
-								<div>sample: ${binsSample[0] &&  !isNaN(binsSample[0]) ? binsSample[0] : note.blocked}</div>
-								<div>copy: ${copySample[0] && !isNaN(copySample[0]) ? copySample[0] : note.blocked}</div>
-								<div>matching: ${matching}</div>
-								${
-									Object.keys(values).map(key => {
-										const value = values[key]
-										return `<div>${key}: ${value != undefined ? value : `${note.blocked} or unsupported`}</div>`
-									}).join('')
-								}
-							</div>
-							`
-						})()
-					}
-
-					${
-						!fp.cRects[0] ? `<div>client rects: ${note.blocked}</div>`: (() => {
-							const [ rects, hash ]  = fp.cRects
-							return `
-							<div>
-								<div>client rects: ${hash}</div>
-								<div>x samples:</div>
-								${rects && !rects.rectsLie ? rects.map(rect => `<div>${rect.x}</div>`).join('') : note.blocked}
-							</div>
-							`
-						})()
-					}
-					<div>console error messages: ${identify(fp.consoleErrors, 'identifyBrowser')}
-						${
-							(() => {
-								const errors = fp.consoleErrors[0]
-								return Object.keys(errors).map(key => {
-									const value = errors[key]
-									return `<div>${+key+1}: ${value != undefined ? value : note.blocked}</div>`
-								}).join('')
-							})()
-						}
-					</div>	
-
-					${
-						!fp.maths[0] ? `<div>maths: ${note.blocked}</div>`: (() => {
-							const [ maths, hash ]  = fp.maths
-							const createTemplate = (maths, prop) => {
-								let counter = 0
-								return Object.keys(maths).map((key, i) => {
-									const value = maths[key]
-									const result = value ? value.result : `${note.blocked}`
-									const engine = value ? value[prop] : false
-									if (!engine) { counter += 1}
-									return `${!engine ? `<div>${counter}: ${key} => ${result}</div>` : ''}`
-								})
-							}
-							const chromeV8Template = createTemplate(maths, 'chromeV8')
-							const firefoxSpiderMonkeyTemplate = createTemplate(maths, 'firefoxSpiderMonkey')
-							const otherTemplate = createTemplate(maths, 'other')
-							return `
-							<div>
-								<div>maths: ${identify(fp.maths)}</div>
-								${
-									!!chromeV8Template.filter(str => str.length)[0] ?
-									`<br><div>does not match Chrome V8:
-										${chromeV8Template.join('')}
-									</div>` : ''
-								}
-								${
-									!!firefoxSpiderMonkeyTemplate.filter(str => str.length)[0] ?
-									`<br><div>does not match Firefox SpiderMonkey:
-										${firefoxSpiderMonkeyTemplate.join('')}
-									</div>` : ''
-								}
-								${
-									!!otherTemplate.filter(str => str.length)[0] ?
-									`<br><div>does not match Chrome V8 or Firefox SpiderMonkey:
-										${otherTemplate.join('')}
-									</div>` : ''
-								}
-							</div>
-							`
-						})()
-					}
-
-					${
-						!fp.mediaDevices[0] ? `<div>media devices: ${note.blocked}</div>`: (() => {
-							const [ devices, hash ]  = fp.mediaDevices
-							return `
-							<div>
-								<div>media devices: ${hash}</div>
-								<div>devices:</div>
-								${Object.keys(devices).map(key => `<div>${+key+1}: ${devices[key].kind}</div>`).join('')}
-							</div>
-							`
-						})()
-					}
-
-					${
-						!fp.timezone[0] ? `<div>timezone: ${note.blocked}</div>`: (() => {
-							const [ timezone, hash ]  = fp.timezone
-							return `
-							<div>
-								<div>timezone hash: ${identify(fp.timezone)}</div>
-								${
-									Object.keys(timezone).map(key => {
-										const value = timezone[key]
-										return `<div>${key}: ${value != undefined && typeof value != 'object' ? value : note.blocked}</div>`
-									}).join('')
-								}
-							</div>
-							`
-						})()
-					}
-					
-					${
-						!fp.screen[0] ? `<div>screen: ${note.blocked}</div>`: (() => {
-							const [ scrn, hash ]  = fp.screen
-							return `
-							<div>
-								<div>screen hash: ${hash}</div>
-								${
-									Object.keys(scrn).map(key => {
-										const value = scrn[key]
-										return `<div>${key}: ${value ? value : note.blocked}</div>`
-									}).join('')
-								}
-							</div>
-							`
-						})()
-					}
-					<div>
-						<strong>HTMLIFrameElement.contentWindow</strong>
-						${
-							!fp.window[0] || !fp.window[0].length ? `<div>api version: ${note.blocked}</div>`: (() => {
-								const [ keys, hash ]  = fp.window
-								return `
-								<div>
-									<div>api version: ${hash}</div>
-									<div>keys: ${keys.length}</div>
-								</div>
-								`
-							})()
-						}
-					</div>
-
-					<div>
-						<strong>HTMLElement</strong>
-						${
-							!fp.htmlElement[0] || !fp.htmlElement[0].length ? `<div>api version: ${note.blocked}</div>`: (() => {
-								const [ keys, hash ]  = fp.htmlElement
-								return `
-								<div>
-									<div>api version: ${hash}</div>
-									<div>keys: ${keys.length}</div>
-								</div>
-								`
-							})()
-						}
-					</div>
-
-					<div>
-						<strong>CSSStyleDeclaration</strong>
-						<div>matching keys: ${fp.cssStylesMatch}</div>
-						<br>
-						${
-							!fp.cssComputedStyle[0] || !fp.cssComputedStyle[0].keys.length ? `<div>getComputedStyle: ${note.blocked} or unsupported</div>`: (() => {
-								const [ style, hash ]  = fp.cssComputedStyle
-								const { methods, properties } = style
-								return `
-								<div>
-									<div>getComputedStyle: ${hash}</div>
-									<div>prototype: ${style.prototypeName}</div>
-									<div>keys: ${style.keys.length}</div>
-									<div>moz: ${style.moz}</div>
-									<div>webkit: ${style.webkit}</div>
-								</div>
-								`
-							})()
-						}
-						<br>
-						${
-							!fp.cssHtmlElementStyle[0] || !fp.cssHtmlElementStyle[0].keys.length ? `<div>HTMLElement.style: ${note.blocked} or unsupported</div>`: (() => {
-								const [ style, hash ]  = fp.cssHtmlElementStyle
-								const { methods, properties } = style
-								return `
-								<div>
-									<div>HTMLElement.style: ${hash}</div>
-									<div>prototype: ${style.prototypeName}</div>
-									<div>keys: ${style.keys.length}</div>
-									<div>moz: ${style.moz}</div>
-									<div>webkit: ${style.webkit}</div>
-								</div>
-								`
-							})()
-						}
-						<br>
-						${
-							!fp.cssRuleListStyle[0] || !fp.cssRuleListStyle[0].keys.length ? `<div>CSSRuleList.style: ${note.blocked} or unsupported</div>`: (() => {
-								const [ style, hash ]  = fp.cssRuleListStyle
-								const { methods, properties } = style
-								return `
-								<div>
-									<div>CSSRuleList.style: ${hash}</div>
-									<div>prototype: ${style.prototypeName}</div>
-									<div>keys: ${style.keys.length}</div>
-									<div>moz: ${style.moz}</div>
-									<div>webkit: ${style.webkit}</div>
-								</div>
-								`
-							})()
-						}
-					</div>
-					<div>
-						<strong>Navigator</strong>
-					${
-						!fp.nav[0] ? `<div>navigator: ${note.blocked}</div>`: (() => {
-							const [ nav, hash ]  = fp.nav
-							const {
-								platform,
-								deviceMemory,
-								hardwareConcurrency,
-								maxTouchPoints,
-								mimeTypes,
-								mimeTypesHash,
-								version,
-								versionHash,
-								plugins,
-								pluginsHash,
-								userAgent,
-								appVersion,
-								language,
-								vendor,
-								doNotTrack
-							} = nav
-							return `
-							${
-								version === undefined ? `<div>navigator version: ${note.blocked}</div>`: (() => {
-									const len = version.length
-									return `
-									<div>
-										<div>navigator version hash: ${versionHash}</div>
-										<div>total properties: ${len}</div>
-										${len ? `<div>properties:</div>${version.join(', ')}` : ''}
-									</div>
-									`
-								})()
-							}
-							<br>
-							<div>
-								<div>navigator hash: ${hash}</div>
-								<div>platform: ${platform ? platform : `${note.blocked} or other`}</div>
-								<div>deviceMemory: ${deviceMemory ? deviceMemory : note.blocked}</div>
-								<div>hardwareConcurrency: ${hardwareConcurrency ? hardwareConcurrency : note.blocked}</div>
-								<div>maxTouchPoints: ${maxTouchPoints !== undefined ? maxTouchPoints : note.blocked}</div>
-								<div>language: ${language ? language : note.blocked}</div>
-								<div>vendor: ${vendor ? vendor : note.blocked}</div>
-								<div>doNotTrack: ${doNotTrack !== undefined ? doNotTrack : note.blocked}</div>
-								<div>userAgent: ${userAgent ? userAgent : note.blocked}</div>
-								<div>appVersion: ${appVersion ? appVersion : note.blocked}</div>
-							</div>
-							<br>
-							${
-								mimeTypes === undefined ? `<div>mimeTypes: ${note.blocked}</div>`: (() => {
-									const len = mimeTypes.length
-									return `
-									<div>
-										<div>mimeTypes hash: ${mimeTypesHash}</div>
-										<div>total mimeTypes: ${len}</div>
-										${len ? `<div>mimeTypes:</div>${mimeTypes.join(', ')}` : ''}
-									</div>
-									`
-								})()
-							}
-							<br>
-							${
-								plugins === undefined ? `<div>plugins: ${note.blocked}</div>`: (() => {
-									const pluginsList = Object.keys(plugins).map(key => plugins[key].name)
-									const len = pluginsList.length
-									return `
-									<div>
-										<div>plugins hash: ${pluginsHash}</div>
-										<div>total plugins: ${len}</div>
-										${len ? `<div>plugins:</div>${pluginsList.join(', ')}` : ''}
-									</div>
-									`
-								})()
-							}
-							`
-						})()
-					}
-					<br>
-					${
-						!fp.highEntropy[0] ? `<div>NavigatorUAData.getHighEntropyValues: ${note.blocked} or unsupported</div>`: (() => {
-							const [ ua, hash ]  = fp.highEntropy
-							const { architecture, model, platform, platformVersion, uaFullVersion } = ua
-							return `
-							<div>
-								<div>NavigatorUAData.getHighEntropyValues: ${hash}</div>
-								<div>ua architecture: ${architecture}</div>
-								<div>ua model: ${model}</div>
-								<div>ua platform: ${platform}</div>
-								<div>ua platform version: ${platformVersion}</div>
-								<div>ua full version: ${uaFullVersion}</div>
-							</div>
-							`
-						})()
-					}
-					</div>
-					${
-						!fp.voices[0] || !fp.voices[0].length ? `<div>voices: ${note.blocked} or unsupported</div>`: (() => {
-							const [ voices, hash ]  = fp.voices
-							const voiceList = voices.map(voice => voice.name)
-							const len = voices.length
-							return `
-							<div>
-								<div>voices hash: ${hash}</div>
-								<div>total voices: ${len}</div>
-								${len ? `<div>voices:</div>${voiceList.join(', ')}` : ''}
-							</div>
-							`
-						})()
-					}
-
-					${
-						!fp.fonts[0] ? `<div>fonts: ${note.blocked}</div>`: (() => {
-							const [ fonts, hash ]  = fp.fonts
-							const len = fonts.length
-							return `
-							<div>
-								<div>fonts hash: ${hash}</div>
-								<div>total fonts: ${len}</div>
-								${len ? `<div>fonts:</div>${fonts.join(', ')}` : ''}
-							</div>
-							`
-						})()
-					}
-
-					<div>Visitor data auto deletes <a href="https://github.com/abrahamjuliot/creepjs/blob/8d6603ee39c9534cad700b899ef221e0ee97a5a4/server.gs#L24" target="_blank">every 7 days</a>.</div>
-				</div>
-			</section>
-			
-		`
-		return patch(fpElem, html`${data}`)
+		const el = document.getElementById(`${instanceId}-fingerprint`)
+		return patch(el, html`
+		<div>
+			<strong>Fingerprint</strong>
+			<div>trusted id: ${creepHash}</div>
+			<div>loose id: ${fpHash}</div>
+			<div class="time">performance: ${timeEnd} milliseconds</div>
+		</div>
+		`)
 	}).catch((e) => console.log(e))
 })()
