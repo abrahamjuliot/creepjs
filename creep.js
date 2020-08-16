@@ -2347,6 +2347,7 @@
 	const getTrash = (instanceId, trashBin) => {
 		return new Promise(async resolve => {
 			const len = trashBin.length
+			console.log(trashBin)
 			const data =  trashBin.map(trash => trash.name)
 			const $hash = await hashify(data)
 			resolve({data, $hash })
@@ -2357,7 +2358,7 @@
 				<strong>Trash Bin</strong>
 				<div>hash: ${$hash}</div>
 				<div>trash (${!len ? '0' : ''+len }): ${
-					len ? modal(id, data.map((key,i) => `${i}: ${key}`).join('<br>')) : `<span class="none">none</span>`
+					len ? modal(id, trashBin.map((trash,i) => `${i}: ${trash.name}: ${trash.value}`).join('<br>')) : `<span class="none">none</span>`
 				}</div>
 			</div>
 			`)
