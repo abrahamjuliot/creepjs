@@ -2515,7 +2515,7 @@
 						<strong>Browser</strong>
 						<div>visits: ${visits}</div>
 						<div>first: ${toLocaleStr(firstVisit)}
-						<div>latest: ${toLocaleStr(latestVisit)}</div>
+						<div>last: ${toLocaleStr(latestVisit)}</div>
 						<div>persistence: ${hours} hours</div>
 						<div>has trash: ${(''+hasTrash) == 'true' ? 'true' : 'false'}</div>
 						<div>has lied: ${(''+hasLied) == 'true'? 'true' : 'false'}</div>
