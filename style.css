@@ -170,7 +170,7 @@ visitor {
 visitor {
 	box-sizing: border-box;
 	margin: 0 auto;
-	max-width: 700px;
+	max-width: 750px;
 }
 
 #fingerprint-data > div {
@@ -292,7 +292,7 @@ input[type="radio"] {
 	cursor: pointer;
 }
 .modal-content {
-	margin: 50px auto 0;
+	margin: 100px auto 100px;
 	background: #fff;
 	min-height: 100px;
 	padding: 1rem;

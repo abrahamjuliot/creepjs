@@ -1,15 +1,5 @@
 (async function() {
-	// Log performance time
-	const timer = (logStart) => {
-		logStart && console.log(logStart)
-		const start = performance.now()
-		return (logEnd) => {
-			const end = performance.now() - start
-			logEnd && console.log(`${logEnd}: ${end / 1000} seconds`)
-			return end
-		}
-	}
-
+	
 	// Handle Errors
 	const errorsCaptured = []
 	const captureError = (error, customMessage = null) => {
@@ -67,6 +57,30 @@
 			method && !args.length ? chain.apply(api) :
 			chain
 		)
+	}
+
+	// Log performance time
+	const timer = (logStart) => {
+		logStart && console.log(logStart)
+		let start = 0
+		try {
+			start = performance.now()
+		}
+		catch (error) {
+			captureError(error)
+		}
+		return logEnd => {
+			let end = 0
+			try {
+				end = performance.now() - start
+				logEnd && console.log(`${logEnd}: ${end / 1000} seconds`)
+				return end
+			}
+			catch (error) {
+				captureError(error)
+				return 0
+			}
+		}
 	}
 
 	// https://stackoverflow.com/a/22429679
@@ -349,7 +363,6 @@
 	const getWorkerScope = instanceId => {
 		return new Promise(resolve => {
 			try {
-				const timeStart = timer()
 				const worker = new Worker('worker.js')
 				worker.addEventListener('message', async event => {
 					const { data, data: { canvas2d } } = event
@@ -357,7 +370,6 @@
 					data.canvas2d = { dataURI: canvas2d, $hash: await hashify(canvas2d) }
 					const $hash = await hashify(data)
 					resolve({ ...data, $hash })
-					const timeEnd = timeStart()
 					const el = document.getElementById(`${instanceId}-worker-scope`)
 					patch(el, html`
 					<div>
@@ -372,7 +384,6 @@
 							}).join('')
 						}
 						<div>canvas 2d: ${data.canvas2d.$hash}</div>
-						<div class="time">performance: ${timeEnd} milliseconds</div>
 					</div>
 					`)
 					return
@@ -389,7 +400,6 @@
 	const getCloudflare = instanceId => {
 		return new Promise(async resolve => {
 			try {
-				const timeStart = timer()
 				const api = 'https://www.cloudflare.com/cdn-cgi/trace'
 				const res = await fetch(api)
 				const text = await res.text()
@@ -403,7 +413,6 @@
 				data.uag = getOS(data.uag)
 				const $hash = await hashify(data)
 				resolve({ ...data, $hash })
-				const timeEnd = timeStart()
 				const el = document.getElementById(`${instanceId}-cloudflare`)
 				patch(el, html`
 				<div>
@@ -422,7 +431,6 @@
 							return `<div>${key}: ${value ? value : note.blocked}</div>`
 						}).join('')
 					}
-					<div class="time">performance: ${timeEnd} milliseconds</div>
 				</div>
 				`)
 				return
@@ -438,7 +446,6 @@
 	const getNavigator = (instanceId, workerScope) => {
 		return new Promise(async resolve => {
 			try {
-				const timeStart = timer()
 				const navigatorPrototype = attempt(() => Navigator.prototype)
 				const detectLies = (name, value) => {
 					const workerScopeValue = caniuse(workerScope, [name])
@@ -567,7 +574,6 @@
 				}
 				const $hash = await hashify(data)
 				resolve({ ...data, $hash })
-				const timeEnd = timeStart()
 				const id = `${instanceId}-navigator`
 				const el = document.getElementById(id)
 				const { mimeTypes, plugins, highEntropyValues, properties } = data
@@ -603,7 +609,6 @@
 						<div>ua uaFullVersion:</div>`
 					}
 					<div>properties (${count(properties)}): ${modal(`${id}-properties`, properties.join(', '))}</div>
-					<div class="time">performance: ${timeEnd} milliseconds</div>
 				</div>
 				`)
 				return
@@ -619,7 +624,6 @@
 	const getIframeContentWindowVersion = instanceId => {
 		return new Promise(async resolve => {
 			try {
-				const timeStart = timer()
 				const id = `${instanceId}-content-window-version-test`
 				const iframeElement = document.createElement('iframe')
 				iframeElement.setAttribute('id', id)
@@ -631,14 +635,12 @@
 				iframe.parentNode.removeChild(iframe) 
 				const $hash = await hashify(keys)
 				resolve({ keys, $hash })
-				const timeEnd = timeStart()
 				const el = document.getElementById(`${instanceId}-iframe-content-window-version`)
 				patch(el, html`
 				<div>
 					<strong>HTMLIFrameElement.contentWindow</strong>
 					<div>hash: ${$hash}</div>
 					<div>keys: ${keys.length}</div>
-					<div class="time">performance: ${timeEnd} milliseconds</div>
 				</div>
 				`)
 				return
@@ -654,7 +656,6 @@
 	const getHTMLElementVersion = instanceId => {
 		return new Promise(async resolve => {
 			try {
-				const timeStart = timer()
 				const id = `${instanceId}-html-element-version-test`
 				const element = document.createElement('div')
 				element.setAttribute('id', id)
@@ -666,14 +667,12 @@
 				}
 				const $hash = await hashify(keys)
 				resolve({ keys, $hash })
-				const timeEnd = timeStart()
 				const el = document.getElementById(`${instanceId}-html-element-version`)
 				patch(el, html`
 				<div>
 					<strong>HTMLElement</strong>
 					<div>hash: ${$hash}</div>
 					<div>keys: ${keys.length}</div>
-					<div class="time">performance: ${timeEnd} milliseconds</div>
 				</div>
 				`)
 				return
@@ -782,7 +781,6 @@
 	const getCSSStyleDeclarationVersion = instanceId => {
 		return new Promise(async resolve => {
 			try {
-				const timeStart = timer()
 				const [
 					getComputedStyle,
 					htmlElementStyle,
@@ -805,7 +803,6 @@
 				}
 				const $hash = await hashify(data)
 				resolve({ ...data, $hash })
-				const timeEnd = timeStart()
 				const el = document.getElementById(`${instanceId}-css-style-declaration-version`)
 				patch(el, html`
 				<div>
@@ -825,7 +822,6 @@
 					<div>webkit: ${''+getComputedStyle.webkit}, ${''+htmlElementStyle.webkit}, ${''+cssRuleListstyle.webkit}
 					</div>
 					<div>matching: ${data.matching}</div>
-					<div class="time">performance: ${timeEnd} milliseconds</div>
 				</div>
 				`)
 				return
@@ -841,7 +837,6 @@
 	const getScreen = instanceId => {
 		return new Promise(async resolve => {
 			try {
-				const timeStart = timer()
 				const screenPrototype = attempt(() => Screen.prototype)
 				const detectLies = (name, value) => {
 					const lie = screenPrototype ? hasLiedAPI(screenPrototype, name, screen).lie : false
@@ -869,7 +864,6 @@
 				}
 				const $hash = await hashify(data)
 				resolve({ ...data, $hash })
-				const timeEnd = timeStart()
 				const el = document.getElementById(`${instanceId}-screen`)
 				patch(el, html`
 				<div>
@@ -881,7 +875,6 @@
 							return `<div>${key}: ${value ? value : note.blocked}</div>`
 						}).join('')
 					}
-					<div class="time">performance: ${timeEnd} milliseconds</div>
 				</div>
 				`)
 				return
@@ -897,13 +890,11 @@
 	const getVoices = instanceId => {	
 		return new Promise(async resolve => {
 			try {
-				const timeStart = timer()
 				let voices = []
-				const respond = async (resolve, voices, timeStart) => {
+				const respond = async (resolve, voices) => {
 					voices = voices.map(({ name, lang }) => ({ name, lang }))
 					const $hash = await hashify(voices)
 					resolve({ voices, $hash })
-					const timeEnd = timeStart()
 					const id = `${instanceId}-voices`
 					const el = document.getElementById(id)
 					const voiceList = voices.map(voice => `${voice.name} (${voice.lang})`)
@@ -912,7 +903,6 @@
 						<strong>SpeechSynthesis</strong>
 						<div>hash: ${$hash}</div>
 						<div>voices (${count(voices)}): ${modal(id, voiceList.join('<br>'))}</div>
-						<div class="time">performance: ${timeEnd} milliseconds</div>
 					</div>
 					`)
 					return
@@ -922,18 +912,18 @@
 				}
 				else if (!('chrome' in window)) {
 					voices = await speechSynthesis.getVoices()
-					return respond(resolve, voices, timeStart)
+					return respond(resolve, voices)
 				}
 				else if (!speechSynthesis.getVoices || speechSynthesis.getVoices() == undefined) {
 					return resolve(undefined)
 				}
 				else if (speechSynthesis.getVoices().length) {
 					voices = speechSynthesis.getVoices()
-					return respond(resolve, voices, timeStart)
+					return respond(resolve, voices)
 				} else {
 					speechSynthesis.onvoiceschanged = () => {
 						voices = speechSynthesis.getVoices()
-						return resolve(new Promise(resolve => respond(resolve, voices, timeStart)))
+						return resolve(new Promise(resolve => respond(resolve, voices)))
 					}
 				}
 			}
@@ -948,7 +938,6 @@
 	const getMediaDevices = instanceId => {
 		return new Promise(async resolve => {
 			try {
-				const timeStart = timer()
 				if (!('mediaDevices' in navigator)) {
 					return resolve(undefined)
 				}
@@ -959,14 +948,12 @@
 				const mediaDevices = mediaDevicesEnumerated ? mediaDevicesEnumerated.map(({ kind }) => ({ kind })) : undefined
 				const $hash = await hashify(mediaDevices)
 				resolve({ mediaDevices, $hash })
-				const timeEnd = timeStart()
 				const el = document.getElementById(`${instanceId}-media-devices`)
 				patch(el, html`
 				<div>
 					<strong>MediaDevicesInfo</strong>
 					<div>hash: ${$hash}</div>
 					<div>devices (${count(mediaDevices)}): ${mediaDevices ? mediaDevices.map(device => device.kind).join(', ') : note.blocked}</div>
-					<div class="time">performance: ${timeEnd} milliseconds</div>
 				</div>
 				`)
 				return
@@ -988,15 +975,13 @@
 	const getCanvas2d = instanceId => {
 		return new Promise(async resolve => {
 			try {
-				const timeStart = timer()
-				const patchDom = (response, timeEnd) => {
+				const patchDom = (response) => {
 					const { $hash } = response
 					const el = document.getElementById(`${instanceId}-canvas-2d`)
 					return patch(el, html`
 					<div>
 						<strong>CanvasRenderingContext2D</strong>
 						<div>hash: ${$hash}</div>
-						<div class="time">performance: ${timeEnd} milliseconds</div>
 					</div>
 					`)
 				}
@@ -1020,8 +1005,7 @@
 					const $hash = await hashify(dataURI)
 					const response = { dataURI, $hash }
 					resolve(response)
-					const timeEnd = timeStart()
-					patchDom(response, timeEnd)
+					patchDom(response)
 					return
 				}
 				// document lie and send to trash
@@ -1038,8 +1022,7 @@
 				const $hash = await hashify(data)
 				const response = { ...data, $hash }
 				resolve(response)
-				const timeEnd = timeStart()
-				patchDom(response, timeEnd)
+				patchDom(response)
 				return
 			}
 			catch (error) {
@@ -1053,15 +1036,13 @@
 	const getCanvasBitmapRenderer = instanceId => {
 		return new Promise(async resolve => {
 			try {
-				const timeStart = timer()
-				const patchDom = (response, timeEnd) => {
+				const patchDom = (response) => {
 					const { $hash } = response
 					const el = document.getElementById(`${instanceId}-canvas-bitmap-renderer`)
 					return patch(el, html`
 					<div>
 						<strong>ImageBitmapRenderingContext</strong>
 						<div>hash: ${$hash}</div>
-						<div class="time">performance: ${timeEnd} milliseconds</div>
 					</div>
 					`)
 				}
@@ -1080,8 +1061,7 @@
 							const $hash = await hashify(dataURI)
 							const response = { dataURI, $hash }
 							resolve(response)
-							const timeEnd = timeStart()
-							patchDom(response, timeEnd)
+							patchDom(response)
 						}
 					}))	
 				}
@@ -1099,8 +1079,7 @@
 				const $hash = await hashify(data)
 				const response = { ...data, $hash }
 				resolve(response)
-				const timeEnd = timeStart()
-				patchDom(response, timeEnd)
+				patchDom(response)
 			}
 			catch (error) {
 				captureError(error)
@@ -1113,7 +1092,6 @@
 	const getCanvasWebgl = instanceId => {
 		return new Promise(async resolve => {
 			try {
-				const timeStart = timer()
 				// detect webgl lies
 				const gl = 'WebGLRenderingContext' in window
 				const webglGetParameter = gl && attempt(() => WebGLRenderingContext.prototype.getParameter)
@@ -1448,7 +1426,6 @@
 
 				const $hash = await hashify(data)
 				resolve({ ...data, $hash })
-				const timeEnd = timeStart()
 				const id = `${instanceId}-canvas-webgl`
 				const el = document.getElementById(id)
 				const { webglSpecs, webgl2Specs } = specs
@@ -1509,7 +1486,6 @@
 					<div>v2 vendor: ${detectStringLie(unmasked2.vendor, `${id}-v-v2`)}</div>
 					<div>matching renderer/vendor: ${''+data.matchingUnmasked}</div>
 					<div>matching data URI: ${''+data.matchingDataURI}</div>
-					<div class="time">performance: ${timeEnd} milliseconds</div>
 				</div>
 				`)
 				return
@@ -1525,7 +1501,6 @@
 	const getMaths = instanceId => {
 		return new Promise(async resolve => {
 			try {
-				const timeStart = timer()
 				const n = 0.123
 				const bigN = 5.860847362277284e+38
 				const fns = [
@@ -1632,7 +1607,6 @@
 				})
 				const $hash = await hashify(data)
 				resolve({...data, $hash })
-				const timeEnd = timeStart()
 				const id = `${instanceId}-maths`
 				const el = document.getElementById(id)
 				const header = `<div>Match to 64 bit Chromium (CR64), Firefox (FF64), and Other (OT64)</div>`
@@ -1649,7 +1623,6 @@
 						modal(id, header+results.join('<br>'))
 					}
 					<div>engine: ${known($hash)}</div>
-					<div class="time">performance: ${timeEnd} milliseconds</div>
 				</div>
 				`)
 				return
@@ -1677,7 +1650,6 @@
 	const getConsoleErrors = instanceId => {
 		return new Promise(async resolve => {
 			try {
-				const timeStart = timer()
 				const errorTests = [
 					() => eval('alert(")'),
 					() => eval('const foo;foo.bar'),
@@ -1692,7 +1664,6 @@
 				const errors = getErrors(errorTests)
 				const $hash = await hashify(errors)
 				resolve({errors, $hash })
-				const timeEnd = timeStart()
 				const id = `${instanceId}-console-errors`
 				const el = document.getElementById(id)
 				const results = Object.keys(errors).map(key => {
@@ -1707,7 +1678,6 @@
 						modal(id, results.join('<br>'))
 					}
 					<div>engine: ${known($hash)}</div>
-					<div class="time">performance: ${timeEnd} milliseconds</div>
 				</div>
 				`)
 				return
@@ -1723,7 +1693,6 @@
 	const getTimezone = instanceId => {
 		return new Promise(async resolve => {
 			try {
-				const timeStart = timer()
 				const computeTimezoneOffset = () => {
 					const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
 					const utc = Date.parse(toJSONParsed(new Date()).split`Z`.join``)
@@ -1741,30 +1710,30 @@
 						style: 'long'
 					})
 					return {
-						['1 second ago']: relativeTime.format(-1, 'second'),
-						['now']: relativeTime.format(0, 'second'),
-						['in 1 second']: relativeTime.format(1, 'second'),
-						['1 minute ago']: relativeTime.format(-1, 'minute'),
-						['this minute']: relativeTime.format(0, 'minute'),
-						['in 1 minute']: relativeTime.format(1, 'minute'),
-						['1 hour ago']: relativeTime.format(-1, 'hour'),
-						['this hour']: relativeTime.format(0, 'hour'),
-						['in 1 hour']: relativeTime.format(1, 'hour'),
-						['yesterday']: relativeTime.format(-1, 'day'),
-						['today']: relativeTime.format(0, 'day'),
-						['tomorrow']: relativeTime.format(1, 'day'),
-						['last week']: relativeTime.format(-1, 'week'),
-						['this week']: relativeTime.format(0, 'week'),
-						['next week']: relativeTime.format(1, 'week'),
-						['last month']: relativeTime.format(-1, 'month'),
-						['this month']: relativeTime.format(0, 'month'),
-						['next month']: relativeTime.format(1, 'month'),
-						['last quarter']: relativeTime.format(-1, 'quarter'),
-						['this quarter']: relativeTime.format(0, 'quarter'),
-						['next quarter']: relativeTime.format(1, 'quarter'),
-						['last year']: relativeTime.format(-1, 'year'),
-						['this year']: relativeTime.format(0, 'year'),
-						['next year']: relativeTime.format(1, 'year')
+						["format(-1, 'second')"]: relativeTime.format(-1, 'second'),
+						["format(0, 'second')"]: relativeTime.format(0, 'second'),
+						["format(1, 'second')"]: relativeTime.format(1, 'second'),
+						["format(-1, 'minute')"]: relativeTime.format(-1, 'minute'),
+						["format(0, 'minute')"]: relativeTime.format(0, 'minute'),
+						["format(1, 'minute')"]: relativeTime.format(1, 'minute'),
+						["format(-1, 'hour')"]: relativeTime.format(-1, 'hour'),
+						["format(0, 'hour')"]: relativeTime.format(0, 'hour'),
+						["format(1, 'hour')"]: relativeTime.format(1, 'hour'),
+						["format(-1, 'day')"]: relativeTime.format(-1, 'day'),
+						["format(0, 'day')"]: relativeTime.format(0, 'day'),
+						["format(1, 'day')"]: relativeTime.format(1, 'day'),
+						["format(-1, 'week')"]: relativeTime.format(-1, 'week'),
+						["format(0, 'week')"]: relativeTime.format(0, 'week'),
+						["format(1, 'week'),"]: relativeTime.format(1, 'week'),
+						["format(-1, 'month')"]: relativeTime.format(-1, 'month'),
+						["format(0, 'month'),"]: relativeTime.format(0, 'month'),
+						["format(1, 'month')"]: relativeTime.format(1, 'month'),
+						["format(-1, 'quarter')"]: relativeTime.format(-1, 'quarter'),
+						["format(0, 'quarter')"]: relativeTime.format(0, 'quarter'),
+						["format(1, 'quarter')"]: relativeTime.format(1, 'quarter'),
+						["format(-1, 'year')"]: relativeTime.format(-1, 'year'),
+						["format(0, 'year')"]: relativeTime.format(0, 'year'),
+						["format(1, 'year')"]: relativeTime.format(1, 'year')
 					}
 				}
 				const getLocale = () => {
@@ -1825,7 +1794,6 @@
 				
 				const $hash = await hashify(data)
 				resolve({...data, $hash })
-				const timeEnd = timeStart()
 				const id = `${instanceId}-timezone`
 				const el = document.getElementById(id)
 				patch(el, html`
@@ -1837,9 +1805,8 @@
 					<div>timezone offset: ${!timezoneLie ? timezoneOffset : `${note.lied} ${modal(`${id}-timezoneOffset`, toJSONFormat(timezoneLie))}`}</div>
 					<div>timezone offset computed: ${timezoneOffsetComputed}</div>
 					<div>matching offsets: ${matchingOffsets}</div>
-					<div>relativeTimeFormat: ${!relativeTime ? note.blocked : modal(`${id}-relativeTimeFormat`, Object.keys(relativeTime).sort().map(key => `${relativeTime[key]}`).join('<br>'))}</div>
+					<div>relativeTimeFormat: ${!relativeTime ? note.blocked : modal(`${id}-relativeTimeFormat`, Object.keys(relativeTime).sort().map(key => `${key} => ${relativeTime[key]}`).join('<br>'))}</div>
 					<div>locale language: ${!localeLie ? locale.lang.join(', ') : `${note.lied} ${modal(`${id}-locale`, toJSONFormat(localeLie))}`}</div>
-					<div class="time">performance: ${timeEnd} milliseconds</div>
 				</div>
 				`)
 				return
@@ -2177,7 +2144,6 @@
 				<div>platform:</div>
 				<div>system:</div>
 				<div>canvas 2d:</div>
-				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-cloudflare">
 				<strong>Cloudflare</strong>
@@ -2186,17 +2152,14 @@
 				<div>system:</div>
 				<div>ip location:</div>
 				<div>tls version:</div>
-				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-canvas-2d">
 				<strong>CanvasRenderingContext2D</strong>
 				<div>hash:</div>
-				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-canvas-bitmap-renderer">
 				<strong>ImageBitmapRenderingContext</strong>
 				<div>hash:</div>
-				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-canvas-webgl">
 				<strong>WebGLRenderingContext/WebGL2RenderingContext</strong>
@@ -2213,27 +2176,22 @@
 					<div>v2 vendor:</div>
 					<div>matching renderer/vendor:</div>
 					<div>matching data URI:</div>
-				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-offline-audio-context">
-				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-client-rects">
-				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-maths">
 				<strong>Math</strong>
 				<div>hash:</div>
 				<div>results:</div>
 				<div>engine: </div>
-				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-console-errors">
 				<strong>Error</strong>
 				<div>hash:</div>
 				<div>results:</div>
 				<div>engine: </div>
-				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-timezone">
 				<strong>Date/Intl</strong>
@@ -2245,7 +2203,6 @@
 				<div>matching offsets:</div>
 				<div>relativeTimeFormat:</div>
 				<div>locale language:</div>
-				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-screen">
 				<strong>Screen</strong>
@@ -2258,25 +2215,21 @@
 				<div>availHeight:</div>
 				<div>colorDepth:</div>
 				<div>pixelDepth:</div>
-				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-media-devices">
 				<strong>MediaDevicesInfo</strong>
 				<div>hash:</div>
 				<div>devices (0):</div>
-				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-iframe-content-window-version">
 				<strong>HTMLIFrameElement.contentWindow</strong>
 				<div>hash:</div>
 				<div>keys:</div>
-				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-html-element-version">
 				<strong>HTMLElement</strong>
 				<div>hash:</div>
 				<div>keys:</div>
-				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-css-style-declaration-version">
 				<strong>CSSStyleDeclaration</strong>
@@ -2289,7 +2242,6 @@
 				<div>moz:</div>
 				<div>webkit:</div>
 				<div>matching:</div>
-				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-navigator">
 				<strong>Navigator</strong>
@@ -2310,16 +2262,13 @@
 				<div>ua platformVersion:</div>
 				<div>ua uaFullVersion:</div>
 				<div>properties (0):</div>
-				<div class="time">performance: 0 milliseconds</div> 
 			</div>
 			<div id="${instanceId}-voices">
 				<strong>SpeechSynthesis</strong>
 				<div>hash:</div>
 				<div>voices (0):</div>
-				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-fonts">
-				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div>
 				Data auto deletes <a href="https://github.com/abrahamjuliot/creepjs/blob/8d6603ee39c9534cad700b899ef221e0ee97a5a4/server.gs#L24" target="_blank">every 7 days</a>
@@ -2504,17 +2453,18 @@
 		// fingerprint and render
 		const { fingerprint: fp, timeEnd } = await fingerprint().catch(error => console.error(error))
 		// Trusted Fingerprint
+		const distrust = { distrust: { brave: isBrave, firefox: isFirefox } }
 		const creep = {
 			workerScope: fp.workerScope,
-			mediaDevices: fp.mediaDevices,
-			canvas2d: fp.canvas2d,
-			canvasBitmapRenderer: fp.canvasBitmapRenderer,
-			canvasWebgl: fp.canvasWebgl,
+			mediaDevices: !isBrave ? fp.mediaDevices : distrust,
+			canvas2d: !(isBrave || isFirefox) ? fp.canvas2d : distrust,
+			canvasBitmapRenderer: !(isBrave || isFirefox) ? fp.canvasBitmapRenderer : distrust,
+			canvasWebgl: !(isBrave || isFirefox) ? fp.canvasWebgl : distrust,
 			maths: fp.maths,
 			consoleErrors: fp.consoleErrors,
 			// avoid random timezone fingerprint values
 			timezone: !fp.timezone.lied ? fp.timezone : undefined,
-			offlineAudioContext: fp.offlineAudioContext,
+			offlineAudioContext: !isBrave ? fp.offlineAudioContext : distrust,
 			fonts: fp.fonts,
 			// avoid random trash fingerprint
 			trash: fp.trash.trashBin.map(trash => trash.name),
