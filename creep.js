@@ -2114,7 +2114,7 @@
 				<strong>Browser</strong>
 				<div>visits:</div>
 				<div>first:</div>
-				<div>latest:</div>
+				<div>last:</div>
 				<div>persistence:</div>
 				<div>has trash:</div>
 				<div>has lied:</div>
