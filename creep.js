@@ -265,7 +265,7 @@
 				}
 				if (apiToString !== fnToStr || apiToString.toString !== fnToStr) {
 					lies.push({
-						apiToString: !proxyBehavior(apiToString) ? apiToString: true
+						['failed toString test']: !proxyBehavior(apiToString) ? apiToString : true
 					})
 				}
 
@@ -273,7 +273,7 @@
 					try {
 						const definedPropertyValue = Object.getOwnPropertyDescriptor(obj, name).value
 						lies.push({
-							definedPropertyValue: true
+							['failed value test']: true
 						})
 					}
 					catch (error) {
