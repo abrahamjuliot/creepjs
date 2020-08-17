@@ -127,7 +127,7 @@
 	}
 	const pluralify = len => len > 1 ? 's' : ''
 	const toJSONFormat = obj => JSON.stringify(obj, null, '\t')
-	const count = arr => arr.constructor.name === 'Array' ? ''+(arr.length) : '0'
+	const count = arr => arr && arr.constructor.name === 'Array' ? ''+(arr.length) : '0'
 
 	// modal component
 	const modal = (name, result) => {
@@ -178,25 +178,27 @@
 		if (!native(toString, 'toString')) {
 			lies.push({ toString })
 		}
-
+		
 		// The idea of checking new is inspired by https://adtechmadness.wordpress.com/2019/03/23/javascript-tampering-detection-and-stealth/
-		try {
-			const str_1 = new Function.prototype.toString
-			const str_2 = new Function.prototype.toString()
-			const str_3 = new Function.prototype.toString.toString
-			const str_4 = new Function.prototype.toString.toString()
-			lies.push({
-				str_1,
-				str_2,
-				str_3,
-				str_4
-			})
-		} catch (error) {
-			const nativeTypeError = 'TypeError: Function.prototype.toString is not a constructor'
-			if ('' + error != nativeTypeError) {
-				lies.push({ newErr: '' + error.message })
-			}
-		}
+		// Not consistent in Safari: will review
+		// try {
+		// 	const str_1 = new Function.prototype.toString
+		// 	const str_2 = new Function.prototype.toString()
+		// 	const str_3 = new Function.prototype.toString.toString
+		// 	const str_4 = new Function.prototype.toString.toString()
+		// 	lies.push({
+		// 		str_1,
+		// 		str_2,
+		// 		str_3,
+		// 		str_4
+		// 	})
+		// } catch (error) {
+		// 	const nativeTypeError = ''+error == 'TypeError: Function.prototype.toString is not a constructor'
+		// 	const safariNativeTypeError = ''+error == "function is not a constructor (evaluating 'new Function.prototype.toString')"
+		// 	if (!nativeTypeError && !safariNativeTypeError) {
+		// 		lies.push({ newErr: '' + error.message })
+		// 	}
+		// }
 
 		return () => lies
 	}
@@ -440,7 +442,7 @@
 				const navigatorPrototype = attempt(() => Navigator.prototype)
 				const detectLies = (name, value) => {
 					const workerScopeValue = caniuse(workerScope, [name])
-					const workerScopeMatchLie = { lies: [{ ['workerScopeMatch']: false }] }
+					const workerScopeMatchLie = { lies: [{ ['does not match worker scope']: false }] }
 					if (workerScopeValue) {
 						if (name == 'userAgent') {
 							const system = getOS(value)
@@ -450,6 +452,9 @@
 							}
 						}
 						else if (name != 'userAgent' && workerScopeValue != value) {
+							console.log(name+':')
+							console.log('Worker', workerScopeValue)
+							console.log('Window', value)
 							documentLie(name, value, workerScopeMatchLie)
 							return undefined
 						}
@@ -951,7 +956,7 @@
 					return resolve(undefined)
 				}
 				const mediaDevicesEnumerated = await navigator.mediaDevices.enumerateDevices()
-				const mediaDevices = mediaDevicesEnumerated.map(({ kind }) => ({ kind }))
+				const mediaDevices = mediaDevicesEnumerated ? mediaDevicesEnumerated.map(({ kind }) => ({ kind })) : undefined
 				const $hash = await hashify(mediaDevices)
 				resolve({ mediaDevices, $hash })
 				const timeEnd = timeStart()
@@ -960,7 +965,7 @@
 				<div>
 					<strong>MediaDevicesInfo</strong>
 					<div>hash: ${$hash}</div>
-					<div>devices (${count(mediaDevices)}): ${mediaDevices.map(device => device.kind).join(', ')}</div>
+					<div>devices (${count(mediaDevices)}): ${mediaDevices ? mediaDevices.map(device => device.kind).join(', ') : note.blocked}</div>
 					<div class="time">performance: ${timeEnd} milliseconds</div>
 				</div>
 				`)
@@ -1011,9 +1016,7 @@
 					context.fillStyle = 'green'
 					context.fillText(str, 10, 50)
 					canvas2dDataURI = canvas.toDataURL()
-					const dataURI = (
-						isBrave || isFirefox ? sendToTrash('canvas2dDataURI', hashMini(canvas2dDataURI)) : canvas2dDataURI
-					)
+					const dataURI = canvas2dDataURI
 					const $hash = await hashify(dataURI)
 					const response = { dataURI, $hash }
 					resolve(response)
@@ -1073,11 +1076,7 @@
 							const bitmap = await createImageBitmap(image, 0, 0, image.width, image.height)
 							context.transferFromImageBitmap(bitmap)
 							canvasBMRDataURI = canvas.toDataURL()
-							const dataURI = (
-								isBrave || isFirefox ? 
-								sendToTrash('canvasBMRDataURI', hashMini(canvasBMRDataURI)) :
-								canvasBMRDataURI
-							)
+							const dataURI = canvasBMRDataURI
 							const $hash = await hashify(dataURI)
 							const response = { dataURI, $hash }
 							resolve(response)
@@ -1171,7 +1170,7 @@
 						catch (error) {
 							captureError(error)
 							return resolve({
-								extensions: isBrave ? sendToTrash(title, null, []) : []
+								extensions: []
 							})
 						}
 					})
@@ -1334,7 +1333,6 @@
 							const renderer = extension && context.getParameter(extension.UNMASKED_RENDERER_WEBGL)
 							const validate = (value, title) => {
 								return (
-									isBrave ? sendToTrash(title, value) :
 									!proxyBehavior(value) ? value : 
 									sendToTrash(title, 'proxy behavior detected')
 								)
@@ -1370,8 +1368,8 @@
 						catch (error) {
 							captureError(error)
 							return resolve({
-								vendor: isBrave ? sendToTrash(vendorTitle, null) : undefined,
-								renderer: isBrave ? sendToTrash(rendererTitle, null) : undefined
+								vendor: undefined,
+								renderer: undefined
 							})
 						}
 					})
@@ -1405,9 +1403,7 @@
 								caniuse(context, ['clearColor'], [0.2, 0.4, 0.6, 0.8], true)
 								caniuse(context, ['clear'], [colorBufferBit], true)
 								const canvasWebglDataURI = canvas.toDataURL()
-								const dataURI = (
-									isBrave || isFirefox ? sendToTrash(canvasTitle, hashMini(canvasWebglDataURI)) : canvasWebglDataURI
-								)
+								const dataURI = canvasWebglDataURI
 								const $hash = await hashify(dataURI)
 								return resolve({ dataURI, $hash })
 							}
@@ -1735,7 +1731,10 @@
 					return +(((utc - now)/60000).toFixed(2))
 				}
 				const getRelativeTime = () => {
-					const { locale } = new Intl.RelativeTimeFormat().resolvedOptions()
+					if (!caniuse(Intl, ['RelativeTimeFormat'])) {
+						return undefined
+					}
+					const { locale } = (new Intl.RelativeTimeFormat()).resolvedOptions()
 					const relativeTime = new Intl.RelativeTimeFormat(locale, {
 						localeMatcher: 'best fit',
 						numeric: 'auto',
@@ -1838,7 +1837,7 @@
 					<div>timezone offset: ${!timezoneLie ? timezoneOffset : `${note.lied} ${modal(`${id}-timezoneOffset`, toJSONFormat(timezoneLie))}`}</div>
 					<div>timezone offset computed: ${timezoneOffsetComputed}</div>
 					<div>matching offsets: ${matchingOffsets}</div>
-					<div>relativeTimeFormat: ${modal(`${id}-relativeTimeFormat`, Object.keys(relativeTime).sort().map(key => `${relativeTime[key]}`).join('<br>'))}</div>
+					<div>relativeTimeFormat: ${!relativeTime ? note.blocked : modal(`${id}-relativeTimeFormat`, Object.keys(relativeTime).sort().map(key => `${relativeTime[key]}`).join('<br>'))}</div>
 					<div>locale language: ${!localeLie ? locale.lang.join(', ') : `${note.lied} ${modal(`${id}-locale`, toJSONFormat(localeLie))}`}</div>
 					<div class="time">performance: ${timeEnd} milliseconds</div>
 				</div>
@@ -1985,16 +1984,7 @@
 							}
 							dynamicsCompressor.disconnect()
 							oscillator.disconnect()
-							if (isBrave) {
-								sendToTrash('audio', binsSample[0])
-								return resolve({
-									copySample: [undefined],
-									binsSample: [undefined],
-									matching,
-									values
-								})
-							}
-							else if (proxyBehavior(binsSample)) {
+							if (proxyBehavior(binsSample)) {
 								sendToTrash('audio', 'proxy behavior detected')
 								return resolve(undefined)
 							}
@@ -2358,10 +2348,8 @@
 	const getTrash = (instanceId, trashBin) => {
 		return new Promise(async resolve => {
 			const len = trashBin.length
-			console.log(trashBin)
-			const data =  trashBin.map(trash => trash.name)
-			const $hash = await hashify(data)
-			resolve({data, $hash })
+			const $hash = await hashify(trashBin)
+			resolve({ trashBin, $hash })
 			const id = `${instanceId}-trash`
 			const el = document.getElementById(id)
 			patch(el, html`
@@ -2528,8 +2516,9 @@
 			timezone: !fp.timezone.lied ? fp.timezone : undefined,
 			offlineAudioContext: fp.offlineAudioContext,
 			fonts: fp.fonts,
-			trash: fp.trash,
-			// avoid random lie fingerprint values
+			// avoid random trash fingerprint
+			trash: fp.trash.trashBin.map(trash => trash.name),
+			// avoid random lie fingerprint
 			lies: !('data' in fp.lies) ? [] : fp.lies.data.map(lie => {
 				const { lieTypes, name } = lie
 				const types = Object.keys(lieTypes)
