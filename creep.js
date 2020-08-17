@@ -903,7 +903,7 @@
 					<div>
 						<strong>SpeechSynthesis</strong>
 						<div>hash: ${$hash}</div>
-						<div>voices (${count(voices)}): ${modal(id, voiceList.join('<br>'))}</div>
+						<div>voices (${count(voices)}): ${voiceList && voiceList.length ? modal(id, voiceList.join('<br>')) : note.blocked}</div>
 					</div>
 					`)
 					return
