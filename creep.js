@@ -2521,7 +2521,7 @@
 						<div>has lied: ${(''+hasLied) == 'true'? 'true' : 'false'}</div>
 						<div>has errors: ${(''+hasErrors) == 'true' ? 'true' : 'false'}</div>
 						<div>loose fingerprints: ${subIdsLen}</div>
-						<div>bot: ${subIdsLen > 10 ? 'true' : 'false'}</div>
+						<div>bot: ${subIdsLen > 10 && hours < 48 ? 'true' : 'false'}</div>
 					</div>
 				`
 				fetchVisitoDataTimer('Visitor data received')
