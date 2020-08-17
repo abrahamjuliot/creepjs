@@ -498,7 +498,8 @@
 							'false': true, 
 							'no': true, 
 							'unspecified': true, 
-							'null': true
+							'null': true,
+							'undefined': true
 						}
 						return trusted[doNotTrack] ? doNotTrack : sendToTrash('InvalidDoNotTrack', doNotTrack)
 					}),
@@ -591,7 +592,7 @@
 							].indexOf(key) > -1
 							const value = data[key]
 							return (
-								!skip ? `<div>${key}: ${value != null || value != undefined ? value : note.blocked}</div>` : ''
+								!skip ? `<div>${key}: ${value != null || value != undefined ? value : key == 'doNotTrack' ? value : note.blocked}</div>` : ''
 							)
 						}).join('')
 					}
@@ -1802,8 +1803,8 @@
 					<div>hash: ${$hash}</div>
 					<div>timezone: ${timezone}</div>
 					<div>timezone location: ${timezoneLocation}</div>
-					<div>timezone offset: ${!timezoneLie ? timezoneOffset : `${note.lied} ${modal(`${id}-timezoneOffset`, toJSONFormat(timezoneLie))}`}</div>
-					<div>timezone offset computed: ${timezoneOffsetComputed}</div>
+					<div>timezone offset: ${!timezoneLie ? ''+timezoneOffset : `${note.lied} ${modal(`${id}-timezoneOffset`, toJSONFormat(timezoneLie))}`}</div>
+					<div>timezone offset computed: ${''+timezoneOffsetComputed}</div>
 					<div>matching offsets: ${matchingOffsets}</div>
 					<div>relativeTimeFormat: ${!relativeTime ? note.blocked : modal(`${id}-relativeTimeFormat`, Object.keys(relativeTime).sort().map(key => `${key} => ${relativeTime[key]}`).join('<br>'))}</div>
 					<div>locale language: ${!localeLie ? locale.lang.join(', ') : `${note.lied} ${modal(`${id}-locale`, toJSONFormat(localeLie))}`}</div>
