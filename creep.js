@@ -2107,7 +2107,7 @@
 			<div id="${instanceId}-fingerprint">
 				<strong>Fingerprint</strong>
 				<div class="trusted-fingerprint" style="color:#fff">.</div>
-				<div>loose id:</div>
+				<div>loose fingerprint:</div>
 				<div class="time">performance: 0 milliseconds</div>
 			</div>
 			<div id="${instanceId}-browser">
@@ -2479,8 +2479,8 @@
 		}
 		const log = (message, obj) => console.log(message, JSON.stringify(obj, null, '\t'))
 		
-		console.log('Trusted Fingerprint (Object):', creep)
-		console.log('Loose Id (Object):', fp)
+		console.log('Fingerprint (Object):', creep)
+		console.log('Loose Fingerprint (Object):', fp)
 		//log('Loose Id (JSON):', fp)
 		
 		const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
