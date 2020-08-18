@@ -620,7 +620,7 @@
 							].indexOf(key) > -1
 							const value = data[key]
 							return (
-								!skip ? `<div>${key}: ${value ? value : key == 'doNotTrack' ? value : note.blocked}</div>` : ''
+								!skip ? `<div>${key}: ${value != null && value != undefined ? value : key == 'doNotTrack' ? value : note.blocked}</div>` : ''
 							)
 						}).join('')
 					}
