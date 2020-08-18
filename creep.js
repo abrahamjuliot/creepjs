@@ -1900,18 +1900,54 @@
 		return new Promise(async resolve => {
 			try {
 				const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
-				const rectContainer = document.getElementById('rect-container')
-				const removeRectsFromDom = () => rectContainer.parentNode.removeChild(rectContainer)
 				const elementGetClientRects = attempt(() => Element.prototype.getClientRects)
 				const rectsLie = (
 					elementGetClientRects ? hasLiedAPI(elementGetClientRects, 'getClientRects').lie : false
 				)
-				const rectElems = document.getElementsByClassName('rects')
+
+				// create and get rendered iframe
+				const id = `${instanceId}-client-rects-iframe`
+				const rectsId = `${instanceId}-client-rects-div`
+				const iframeElement = document.createElement('iframe')
+				const divElement = document.createElement('div')
+				iframeElement.setAttribute('id', id)
+				divElement.setAttribute('id', rectsId)
+				iframeElement.setAttribute('style', 'visibility: hidden; height: 0')
+				document.body.appendChild(iframeElement)
+				const iframeRendered = document.getElementById(id)
+
+				// create and get rendered div in iframe
+				const doc = iframeRendered.contentDocument
+				doc.body.appendChild(divElement)
+				const divRendered = doc.getElementById(rectsId)
+
+				// patch div
+				patch(divRendered, html`
+				<div id="rect-container">
+					<style>
+					.rects{width:10px;height:10px;max-width:100%}.absolute{position:absolute}#cRect1{border:solid 2.715px;border-color:#F72585;padding:3.98px;margin-left:12.12px}#cRect2{border:solid 2px;border-color:#7209B7;font-size:30px;margin-top:20px;transform:skewY(23.1753218deg)}#cRect3{border:solid 2.89px;border-color:#3A0CA3;font-size:45px;transform:scale(100000000000000000000009999999999999.99, 1.89);margin-top:50px}#cRect4{border:solid 2px;border-color:#4361EE;transform:matrix(1.11, 2.0001, -1.0001, 1.009, 150, 94.4);margin-top:11.1331px;margin-left:12.1212px;padding:4.4545px;left:239.4141px;top:8.5050px}#cRect5{border:solid 2px;border-color:#4CC9F0;margin-left:42.395pt}#cRect6{border:solid 2px;border-color:#F72585;transform:perspective(12890px) translateZ(101.5px);padding:12px}#cRect7{margin-top:-350.552px;margin-left:0.9099rem;border:solid 2px;border-color:#4361EE}#cRect8{margin-top:-150.552px;margin-left:15.9099rem;border:solid 2px;border-color:#3A0CA3}#cRect9{margin-top:-110.552px;margin-left:15.9099rem;border:solid 2px;border-color:#7209B7}#cRect10{margin-top:-315.552px;margin-left:15.9099rem;border:solid 2px;border-color:#F72585}
+					</style>
+					<div id="cRect1" class="rects"></div>
+					<div id="cRect2" class="rects"></div>
+					<div id="cRect3" class="rects"></div>
+					<div id="cRect4" class="rects absolute"></div>
+					<div id="cRect5" class="rects"></div>
+					<div id="cRect6" class="rects"></div>
+					<div id="cRect7" class="rects absolute"></div>
+					<div id="cRect8" class="rects absolute"></div>
+					<div id="cRect9" class="rects absolute"></div>
+					<div id="cRect10" class="rects absolute"></div>
+				</div>
+				`)
+
+				// get clientRects
+				const rectElems = doc.getElementsByClassName('rects')
 				const clientRects = [...rectElems].map(el => {
+					console.log(el.getClientRects())
 					return toJSONParsed(el.getClientRects()[0])
 				})
 				if (!rectsLie) {
-					removeRectsFromDom()
+					iframeRendered.parentNode.removeChild(iframeRendered)
 					const $hash = await hashify(clientRects)
 					return resolve({clientRects, $hash })
 				}
@@ -1920,7 +1956,7 @@
 					documentLie('clientRects', hashMini(clientRects), rectsLie)
 				}
 				// Fingerprint lie
-				removeRectsFromDom()
+				iframeRendered.parentNode.removeChild(iframeRendered)
 				const $hash = await hashify(rectsLie)
 				return resolve({rectsLie, $hash })
 			}
@@ -2355,21 +2391,6 @@
 		</div>
 
 		<div id="font-detector"><div id="font-detector-stage"></div></div>
-		<div id="rect-container">
-			<style>
-			.rects{width:10px;height:10px;max-width:100%}.absolute{position:absolute}#cRect1{border:solid 2.715px;border-color:#F72585;padding:3.98px;margin-left:12.12px}#cRect2{border:solid 2px;border-color:#7209B7;font-size:30px;margin-top:20px;transform:skewY(23.1753218deg)}#cRect3{border:solid 2.89px;border-color:#3A0CA3;font-size:45px;transform:scale(100000000000000000000009999999999999.99, 1.89);margin-top:50px}#cRect4{border:solid 2px;border-color:#4361EE;transform:matrix(1.11, 2.0001, -1.0001, 1.009, 150, 94.4);margin-top:11.1331px;margin-left:12.1212px;padding:4.4545px;left:239.4141px;top:8.5050px}#cRect5{border:solid 2px;border-color:#4CC9F0;margin-left:42.395pt}#cRect6{border:solid 2px;border-color:#F72585;transform:perspective(12890px) translateZ(101.5px);padding:12px}#cRect7{margin-top:-350.552px;margin-left:0.9099rem;border:solid 2px;border-color:#4361EE}#cRect8{margin-top:-150.552px;margin-left:15.9099rem;border:solid 2px;border-color:#3A0CA3}#cRect9{margin-top:-110.552px;margin-left:15.9099rem;border:solid 2px;border-color:#7209B7}#cRect10{margin-top:-315.552px;margin-left:15.9099rem;border:solid 2px;border-color:#F72585}
-			</style>
-			<div id="cRect1" class="rects"></div>
-			<div id="cRect2" class="rects"></div>
-			<div id="cRect3" class="rects"></div>
-			<div id="cRect4" class="rects absolute"></div>
-			<div id="cRect5" class="rects"></div>
-			<div id="cRect6" class="rects"></div>
-			<div id="cRect7" class="rects absolute"></div>
-			<div id="cRect8" class="rects absolute"></div>
-			<div id="cRect9" class="rects absolute"></div>
-			<div id="cRect10" class="rects absolute"></div>
-		</div>
 	</fingerprint>
 	`
 
@@ -2543,6 +2564,7 @@
 			consoleErrors: fp.consoleErrors,
 			// avoid random timezone fingerprint values
 			timezone: !fp.timezone.lied ? fp.timezone : undefined,
+			clientRects: fp.clientRects,
 			offlineAudioContext: !isBrave ? fp.offlineAudioContext : distrust,
 			fonts: fp.fonts,
 			// avoid random trash fingerprint
@@ -2555,11 +2577,11 @@
 				return { name, types, lies }
 			})
 		}
-		const log = (message, obj) => console.log(message, JSON.stringify(obj, null, '\t'))
+		const debugLog = (message, obj) => console.log(message, JSON.stringify(obj, null, '\t'))
 		
 		console.log('Fingerprint (Object):', creep)
 		console.log('Loose Fingerprint (Object):', fp)
-		//log('Loose Id (JSON):', fp)
+		//debugLog('Loose Id (JSON):', fp)
 		
 		const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
 		.catch(error => { 
