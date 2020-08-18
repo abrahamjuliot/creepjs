@@ -592,7 +592,7 @@
 							].indexOf(key) > -1
 							const value = data[key]
 							return (
-								!skip ? `<div>${key}: ${value != null || value != undefined ? value : key == 'doNotTrack' ? value : note.blocked}</div>` : ''
+								!skip ? `<div>${key}: ${value ? value : key == 'doNotTrack' ? value : note.blocked}</div>` : ''
 							)
 						}).join('')
 					}
@@ -603,11 +603,11 @@
 							const value = highEntropyValues[key]
 							return `<div>ua ${key}: ${value ? value : note.blocked}</div>`
 						}).join('') :
-						`<div>ua architecture:</div>
-						<div>ua model:</div>
-						<div>ua platform:</div>
-						<div>ua platformVersion:</div>
-						<div>ua uaFullVersion:</div>`
+						`<div>ua architecture: ${note.blocked}</div>
+						<div>ua model: ${note.blocked}</div>
+						<div>ua platform: ${note.blocked}</div>
+						<div>ua platformVersion: ${note.blocked}</div>
+						<div>ua uaFullVersion: ${note.blocked} </div>`
 					}
 					<div>properties (${count(properties)}): ${modal(`${id}-properties`, properties.join(', '))}</div>
 				</div>
@@ -1698,14 +1698,14 @@
 					const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
 					const utc = Date.parse(toJSONParsed(new Date()).split`Z`.join``)
 					const now = +new Date()
-					return +(((utc - now)/60000).toFixed(2))
+					return +(((utc - now)/60000).toFixed(0))
 				}
 				const getRelativeTime = () => {
 					if (!caniuse(Intl, ['RelativeTimeFormat'])) {
 						return undefined
 					}
 					const { locale } = (new Intl.RelativeTimeFormat()).resolvedOptions()
-					const relativeTime = new Intl.RelativeTimeFormat(locale, {
+					const relativeTime = new Intl.RelativeTimeFormat('locale', {
 						localeMatcher: 'best fit',
 						numeric: 'auto',
 						style: 'long'
@@ -1805,7 +1805,7 @@
 					<div>timezone location: ${timezoneLocation}</div>
 					<div>timezone offset: ${!timezoneLie ? ''+timezoneOffset : `${note.lied} ${modal(`${id}-timezoneOffset`, toJSONFormat(timezoneLie))}`}</div>
 					<div>timezone offset computed: ${''+timezoneOffsetComputed}</div>
-					<div>matching offsets: ${matchingOffsets}</div>
+					<div>matching offsets: ${''+matchingOffsets}</div>
 					<div>relativeTimeFormat: ${!relativeTime ? note.blocked : modal(`${id}-relativeTimeFormat`, Object.keys(relativeTime).sort().map(key => `${key} => ${relativeTime[key]}`).join('<br>'))}</div>
 					<div>locale language: ${!localeLie ? locale.lang.join(', ') : `${note.lied} ${modal(`${id}-locale`, toJSONFormat(localeLie))}`}</div>
 				</div>
