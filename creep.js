@@ -863,6 +863,48 @@
 	}
 
 	// screen (allow some discrepancies otherwise lie detection triggers at random)
+	const getDevice = (width, height) => {
+		// https://gs.statcounter.com/screen-resolution-stats/
+		const resolution = [
+			{ width: 360, height: 640, device: 'phone'},
+			{ width: 360, height: 720, device: 'phone'},
+			{ width: 360, height: 740, device: 'phone'},
+			{ width: 360, height: 760, device: 'phone'},
+			{ width: 360, height: 780, device: 'phone'},
+			{ width: 375, height: 667, device: 'phone'},
+			{ width: 375, height: 812, device: 'phone'},
+			{ width: 412, height: 732, device: 'phone'},
+			{ width: 412, height: 846, device: 'phone'},
+			{ width: 412, height: 869, device: 'phone'},
+			{ width: 412, height: 892, device: 'phone'},
+			{ width: 414, height: 736, device: 'phone'},
+			{ width: 414, height: 896, device: 'phone'},
+			{ width: 600, height: 1024, device: 'tablet'},
+			{ width: 601, height: 962, device: 'tablet'},
+			{ width: 768, height: 1024, device: 'tablet'},
+			{ width: 800, height: 1280, device: 'tablet'},
+			{ width: 834, height: 1112, device: 'tablet'},
+			{ width: 962, height: 601, device: 'tablet'},
+			{ width: 1000, height: 1000, device: 'desktop'},
+			{ width: 1024, height: 768, device: 'desktop or tablet'},
+			{ width: 1024, height: 1366, device: 'tablet'},
+			{ width: 1280, height: 720, device: 'desktop'},
+			{ width: 1280, height: 800, device: 'desktop or tablet'},
+			{ width: 1280, height: 1024, device: 'desktop'},
+			{ width: 1366, height: 768, device: 'desktop'},
+			{ width: 1440, height: 900, device: 'desktop'},
+			{ width: 1536, height: 864, device: 'desktop'},
+			{ width: 1600, height: 900, device: 'desktop'},
+			{ width: 1920, height: 1080, device: 'desktop'}
+		]
+		for (const display of resolution) {
+			if (width == display.width && height == display.height) {
+				return display.device
+			}
+		}
+		return 'other'
+	}
+
 	const getScreen = instanceId => {
 		return new Promise(async resolve => {
 			try {
@@ -882,6 +924,7 @@
 				const colorDepth = detectLies('colorDepth', screen.colorDepth)
 				const pixelDepth = detectLies('pixelDepth', screen.pixelDepth)
 				const data = {
+					device: getDevice(screen.width, screen.height),
 					width: attempt(() => width ? trustInteger('InvalidWidth', width) : undefined),
 					outerWidth: attempt(() => outerWidth ? trustInteger('InvalidOuterWidth', outerWidth) : undefined),
 					availWidth: attempt(() => availWidth ? trustInteger('InvalidAvailWidth', availWidth) : undefined),
@@ -2235,6 +2278,7 @@
 			<div id="${instanceId}-screen">
 				<strong>Screen</strong>
 				<div>hash:</div>
+				<div>device:</div>
 				<div>width:</div>
 				<div>outerWidth:</div>
 				<div>availWidth:</div>
