@@ -183,20 +183,19 @@
 	const gibberish = str => {
 		const clean = str.toLowerCase().replace(/\d|\W|_/g, ' ').replace(/\s+/g,' ').trim()
 		const chunks = clean.split(' ').join('_')
-		let rank = 0
 		const arr = [...chunks]
 		const len = arr.length
-		const sets = arr.map((char, index) => {
+		const gibbers = []
+		arr.forEach((char, index) => {
 			const next = index+1
 			const prev = index-1
 			if (arr[next] == '_' || char == '_' || next == len) { return true }
 			const combo = char+arr[index+1]
 			const acceptable = !!accept[combo]
-			!acceptable && console.log(char+arr[index+1])
-			return acceptable
+			!acceptable && gibbers.push(combo)
+			return 
 		})
-		rank += sets.filter(item => item == false).length
-		return rank > 1
+		return gibbers
 	}
 
 	// detect and fingerprint Function API lies
@@ -561,12 +560,12 @@
 					}),
 					userAgent: attempt(() => {
 						const { userAgent } = navigator
+						const gibbers = gibberish(userAgent)
 						let ua = undefined
 						ua = detectLies('userAgent', userAgent)
-						if (gibberish(userAgent)) {
-							ua = sendToTrash('userAgent contains gibberish', userAgent)
+						if (!!gibbers.length) {
+							ua = sendToTrash(`userAgent contains gibberish [${gibbers.join(', ')}]`, userAgent)
 						}
-						
 						return credibleUserAgent ? ua : sendToTrash('userAgent: appVersion mismatch', userAgent)
 					}),
 					system: attempt(() => getOS(navigator.userAgent)),
@@ -2336,7 +2335,7 @@
 				<strong>Trash Bin</strong>
 				<div>hash: ${$hash}</div>
 				<div>trash (${!len ? '0' : ''+len }): ${
-					len ? modal(id, trashBin.map((trash,i) => `${i}: ${trash.name}: ${trash.value}`).join('<br>')) : `<span class="none">none</span>`
+					len ? modal(id, trashBin.map((trash,i) => `${i+1}: ${trash.name}: ${trash.value}`).join('<br>')) : `<span class="none">none</span>`
 				}</div>
 			</div>
 			`)
@@ -2383,7 +2382,7 @@
 				<strong>Errors Captured</strong>
 				<div>hash: ${$hash}</div>
 				<div>errors (${!len ? '0' : ''+len }): ${
-					len ? modal(id, Object.keys(data).map((key, i) => `${i}: ${data[key].trustedName} - ${data[key].trustedMessage} `).join('<br>')) : `<span class="none">none</span>`
+					len ? modal(id, Object.keys(data).map((key, i) => `${i+1}: ${data[key].trustedName} - ${data[key].trustedMessage} `).join('<br>')) : `<span class="none">none</span>`
 				}</div>
 			</div>
 			`)
@@ -2517,10 +2516,11 @@
 			console.error(error.message)
 		})
 
-		const hasTrash = !('data' in fp.trash) ? false : !!fp.trash.data.length
+		const hasTrash = !('trashBin' in fp.trash) ? false : !!fp.trash.trashBin.length
 		const hasLied = !('data' in fp.lies) ? false : !!fp.lies.data.length
 		const hasErrors = !('data' in fp.capturedErrors) ? false : !!fp.capturedErrors.data.length
 
+		console.log({hasTrash, hasLied, hasErrors})
 		// fetch data from server
 		const id = `${instanceId}-browser`
 		const visitorElem = document.getElementById(id)
