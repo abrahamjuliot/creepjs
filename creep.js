@@ -934,8 +934,14 @@
 					colorDepth: attempt(() => colorDepth ? trustInteger('InvalidColorDepth', colorDepth) : undefined),
 					pixelDepth: attempt(() => pixelDepth ? trustInteger('InvalidPixelDepth', pixelDepth) : undefined)
 				}
-				const $hash = await hashify(data)
-				resolve({ ...data, $hash })
+				// send unknwon screen device to trash bin
+				const unknownDevice = data.device == 'other'
+				if (unknownDevice) {
+					sendToTrash('screen device is unkown', `${data.width}x${data.height}`)
+				}
+				const response =  unknownDevice ? { device: data.device } : data
+				const $hash = await hashify(response)
+				resolve({ ...response, $hash })
 				const el = document.getElementById(`${instanceId}-screen`)
 				patch(el, html`
 				<div>
