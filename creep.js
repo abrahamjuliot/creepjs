@@ -499,8 +499,16 @@
 				)
 				const data = {
 					appVersion: attempt(() => {
-						const appVersion = detectLies('appVersion', navigator.appVersion)
-						return credibleUserAgent ? appVersion : sendToTrash('appVersion: userAgent mismatch', appVersion)
+						const { appVersion } = navigator
+						let av = undefined
+						av = detectLies('appVersion', appVersion)
+						if (!credibleUserAgent) {
+							av = sendToTrash('appVersion: userAgent mismatch', appVersion)
+						}
+						if ('appVersion' in navigator && !appVersion) {
+							av = sendToTrash('appVersion', 'Living Standard property returned falsy value')
+						}
+						return av
 					}),
 					deviceMemory: attempt(() => {
 						if ('deviceMemory' in navigator) {
