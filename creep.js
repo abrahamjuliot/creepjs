@@ -564,7 +564,7 @@
 						let ua = undefined
 						ua = detectLies('userAgent', userAgent)
 						if (!!gibbers.length) {
-							ua = sendToTrash(`userAgent contains gibberish [${gibbers.join(', ')}]`, userAgent)
+							ua = sendToTrash(`userAgent contains gibberish`, `[${gibbers.join(', ')}] ${userAgent}`)
 						}
 						return credibleUserAgent ? ua : sendToTrash('userAgent: appVersion mismatch', userAgent)
 					}),
@@ -902,7 +902,7 @@
 				return display.device
 			}
 		}
-		return 'other'
+		return undefined
 	}
 
 	const getScreen = instanceId => {
@@ -934,10 +934,10 @@
 					colorDepth: attempt(() => colorDepth ? trustInteger('InvalidColorDepth', colorDepth) : undefined),
 					pixelDepth: attempt(() => pixelDepth ? trustInteger('InvalidPixelDepth', pixelDepth) : undefined)
 				}
-				// send unknwon screen device to trash bin
-				const unknownDevice = data.device == 'other'
+				// send unknwon screen resolution to trash bin
+				const unknownDevice = !data.device
 				if (unknownDevice) {
-					sendToTrash('screen device is unknown', `${data.width}x${data.height}`)
+					sendToTrash('screen resolution is unknown', `${data.width}x${data.height}`)
 				}
 				const response =  unknownDevice ? { device: data.device } : data
 				const $hash = await hashify(response)
@@ -950,7 +950,7 @@
 					${
 						Object.keys(data).map(key => {
 							const value = data[key]
-							return `<div>${key}: ${value ? value : note.blocked}</div>`
+							return `<div>${key}: ${value && !unknownDevice ? value : note.blocked}</div>`
 						}).join('')
 					}
 				</div>
