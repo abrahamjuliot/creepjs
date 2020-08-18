@@ -937,7 +937,7 @@
 				// send unknwon screen device to trash bin
 				const unknownDevice = data.device == 'other'
 				if (unknownDevice) {
-					sendToTrash('screen device is unkown', `${data.width}x${data.height}`)
+					sendToTrash('screen device is unknown', `${data.width}x${data.height}`)
 				}
 				const response =  unknownDevice ? { device: data.device } : data
 				const $hash = await hashify(response)
