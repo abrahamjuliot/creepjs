@@ -434,14 +434,15 @@
 						RtpDataChannels: true
 					}]
 				})
+				let success = false
 				connection.onicecandidate = async e => {
 					const candidateEncoding = /((udp|tcp)\s)((\d|\w)+\s)((\d|\w|(\.|\:))+)(?=\s)/ig
 					const connectionLineEncoding = /(c=IN\s)(.+)\s/ig
 					if (!e.candidate) {
 						return
 					}
+					success = true
 					const { candidate } = e.candidate
-
 					const encodingMatch = candidate.match(candidateEncoding)
 					if (encodingMatch) {
 						const {
@@ -469,7 +470,6 @@
 							['connection line']: connectionLineIpAddress,
 							['matching']: matching
 						}
-						console.log(new Set([cloudflareIp, ipAddress, candidateIpAddress, connectionLineIpAddress]))
 						const $hash = await hashify(data)
 						resolve({ ...data, $hash })
 						const el = document.getElementById(`${instanceId}-webrtc`)
@@ -490,8 +490,11 @@
 						return
 					}
 				}
+				setTimeout(() => !success && resolve(undefined), 1000)
 				connection.createDataChannel('bl')
-				connection.createOffer().then(e => connection.setLocalDescription(e))
+				connection.createOffer()
+					.then(e => connection.setLocalDescription(e))
+					.catch(error => console.log(error))
 			}
 			catch (error) {
 				captureError(error, 'RTCPeerConnection failed')
