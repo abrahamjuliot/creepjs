@@ -585,7 +585,7 @@
 						let av = undefined
 						av = detectLies('appVersion', appVersion)
 						if (!credibleUserAgent) {
-							av = sendToTrash('appVersion: userAgent mismatch', appVersion)
+							av = sendToTrash('appVersion does not match userAgent', appVersion)
 						}
 						if ('appVersion' in navigator && !appVersion) {
 							av = sendToTrash('appVersion', 'Living Standard property returned falsy value')
