@@ -209,7 +209,7 @@
 		// detect attempts to rewrite Function.prototype.toString conversion APIs
 		const { toString } = Function.prototype
 		if (!native(toString, 'toString')) {
-			lies.push({ toString })
+			lies.push({ ['failed API toString test']: toString })
 		}
 		
 		// The idea of checking new is inspired by https://adtechmadness.wordpress.com/2019/03/23/javascript-tampering-detection-and-stealth/
@@ -247,12 +247,12 @@
 			const { name: apiName, toString: apiToString } = api
 			if (apiName != name) {
 				lies.push({
-					apiName: !proxyBehavior(apiName) ? apiName: true
+					['failed API name test']: !proxyBehavior(apiName) ? apiName: true
 				})
 			}
 			if (apiToString !== fnToStr || apiToString.toString !== fnToStr) {
 				lies.push({
-					apiToString: !proxyBehavior(apiToString) ? apiToString: true
+					['failed API toString test']: !proxyBehavior(apiToString) ? apiToString: true
 				})
 			}
 
@@ -279,12 +279,12 @@
 				const { name: apiName, toString: apiToString } = apiFunction
 				if (apiName != `get ${name}` && apiName != name) {
 					lies.push({
-						apiName: !proxyBehavior(apiName) ? apiName: true
+						['failed API name test']: !proxyBehavior(apiName) ? apiName: true
 					})
 				}
 				if (apiToString !== fnToStr || apiToString.toString !== fnToStr) {
 					lies.push({
-						['failed toString test']: !proxyBehavior(apiToString) ? apiToString : true
+						['failed API toString test']: !proxyBehavior(apiToString) ? apiToString : true
 					})
 				}
 
@@ -292,7 +292,7 @@
 					try {
 						const definedPropertyValue = Object.getOwnPropertyDescriptor(obj, name).value
 						lies.push({
-							['failed value test']: true
+							['failed API value test']: true
 						})
 					}
 					catch (error) {
