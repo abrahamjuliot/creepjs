@@ -971,14 +971,15 @@
 			{ width: 414, height: 896, device: 'phone'},
 			{ width: 600, height: 1024, device: 'tablet'},
 			{ width: 601, height: 962, device: 'tablet'},
-			{ width: 768, height: 1024, device: 'tablet'},
-			{ width: 800, height: 1280, device: 'tablet'},
-			{ width: 834, height: 1112, device: 'tablet'},
+			{ width: 768, height: 1024, device: 'desktop or tablet'},
+			{ width: 800, height: 1280, device: 'desktop or tablet'},
+			{ width: 834, height: 1112, device: 'desktop or tablet'},
 			{ width: 962, height: 601, device: 'tablet'},
-			{ width: 1000, height: 1000, device: 'desktop'},
+			{ width: 1000, height: 700, device: 'desktop or tablet'},
+			{ width: 1000, height: 1000, device: 'desktop or tablet'},
 			{ width: 1024, height: 768, device: 'desktop or tablet'},
-			{ width: 1024, height: 1366, device: 'tablet'},
-			{ width: 1280, height: 720, device: 'desktop'},
+			{ width: 1024, height: 1366, device: 'desktop or tablet'},
+			{ width: 1280, height: 720, device: 'desktop or tablet'},
 			{ width: 1280, height: 800, device: 'desktop or tablet'},
 			{ width: 1280, height: 1024, device: 'desktop'},
 			{ width: 1366, height: 768, device: 'desktop'},
@@ -988,11 +989,16 @@
 			{ width: 1920, height: 1080, device: 'desktop'}
 		]
 		for (const display of resolution) {
-			if (width == display.width && height == display.height) {
+			if (
+				width == display.width && height == display.height || (
+					(display.device == 'phone' || display.device == 'tablet') &&
+					height == display.width && width == display.height
+				)
+			) {
 				return display.device
 			}
 		}
-		return undefined
+		return 'unknown'
 	}
 
 	const getScreen = instanceId => {
@@ -1024,14 +1030,8 @@
 					colorDepth: attempt(() => colorDepth ? trustInteger('InvalidColorDepth', colorDepth) : undefined),
 					pixelDepth: attempt(() => pixelDepth ? trustInteger('InvalidPixelDepth', pixelDepth) : undefined)
 				}
-				// send unknwon screen resolution to trash bin
-				const unknownDevice = !data.device
-				if (unknownDevice) {
-					sendToTrash('screen resolution is unknown', `${data.width}x${data.height}`)
-				}
-				const response =  unknownDevice ? { device: data.device } : data
-				const $hash = await hashify(response)
-				resolve({ ...response, $hash })
+				const $hash = await hashify(data)
+				resolve({ ...data, $hash })
 				const el = document.getElementById(`${instanceId}-screen`)
 				patch(el, html`
 				<div>
@@ -1040,7 +1040,7 @@
 					${
 						Object.keys(data).map(key => {
 							const value = data[key]
-							return `<div>${key}: ${value && !unknownDevice ? value : note.blocked}</div>`
+							return `<div>${key}: ${value ? value : note.blocked}</div>`
 						}).join('')
 					}
 				</div>
