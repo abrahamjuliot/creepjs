@@ -656,7 +656,7 @@
 						if (!!gibbers.length) {
 							ua = sendToTrash(`userAgent contains gibberish`, `[${gibbers.join(', ')}] ${userAgent}`)
 						}
-						return credibleUserAgent ? ua : sendToTrash('userAgent: appVersion mismatch', userAgent)
+						return credibleUserAgent ? ua : sendToTrash('userAgent does not match appVersion', userAgent)
 					}),
 					system: attempt(() => getOS(navigator.userAgent)),
 					vendor: attempt(() => {
