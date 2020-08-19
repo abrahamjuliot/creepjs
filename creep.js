@@ -416,7 +416,7 @@
 	}
 	
 	// webtrc
-	const getWebRTCData = (instanceId, ip) => {
+	const getWebRTCData = (instanceId, cloudflare) => {
 		return new Promise(resolve => {
 			try {
 				const rtcPeerConnection = (
@@ -457,16 +457,17 @@
 						].filter(ip => ip != undefined)
 						const setSize = new Set(successIpAddresses).size
 						const matching = setSize == 1 || setSize == 0
+						const cloudflareIp = 'ip' in cloudflare ? cloudflare.ip : undefined
 						const data = {
 							['ip address']: ipAddress,
 							['candidate encoding']: candidateIpAddress,
 							['connection line']: connectionLineIpAddress,
 							['matching']: matching,
-							['ip leak']: (
-								(!!ipAddress && ipAddress != ip) ||
-								(!!candidateIpAddress && candidateIpAddress != ip) ||
-								(!!connectionLineIpAddress && connectionLineIpAddress != ip)
-							)
+							['webRTC leak']: cloudflareIp && (
+								(!!ipAddress && ipAddress != cloudflareIp) ||
+								(!!candidateIpAddress && candidateIpAddress != cloudflareIp) ||
+								(!!connectionLineIpAddress && connectionLineIpAddress != cloudflareIp)
+							) ? true : 'unknown'
 						}
 						const $hash = await hashify(data)
 						resolve({ ...data, $hash })
@@ -2602,7 +2603,7 @@
 		]).catch(error => {
 			console.error(error.message)
 		})
-		const webRTCDataComputed = await getWebRTCData(instanceId, cloudflareComputed.ip)
+		const webRTCDataComputed = await getWebRTCData(instanceId, cloudflareComputed)
 		const navigatorComputed = await getNavigator(instanceId, workerScopeComputed)
 		const [
 			liesComputed,
