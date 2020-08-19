@@ -2362,7 +2362,7 @@
 				<div>candidate encoding:</div>
 				<div>connection line:</div>
 				<div>matching:</div>
-				<div>ip leak:</div>
+				<div>webRTC leak:</div>
 			</div>
 			<div id="${instanceId}-canvas-2d">
 				<strong>CanvasRenderingContext2D</strong>
