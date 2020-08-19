@@ -415,6 +415,89 @@
 		})
 	}
 	
+	// webtrc
+	const getWebRTCData = (instanceId, ip) => {
+		return new Promise(resolve => {
+			try {
+				const rtcPeerConnection = (
+					window.RTCPeerConnection ||
+					window.webkitRTCPeerConnection ||
+					window.mozRTCPeerConnection ||
+					window.msRTCPeerConnection
+				)
+				const connection = new rtcPeerConnection({
+					iceServers: [{
+						urls: ["stun:stun.l.google.com:19302?transport=udp"]
+					}]
+				}, {
+					optional: [{
+						RtpDataChannels: !0
+					}]
+				})
+				connection.onicecandidate = async e => {
+					const candidateEncoding = /((udp|tcp)\s)((\d|\w)+\s)((\d|\w|(\.|\:))+)(?=\s)/ig
+					const connectionLineEncoding = /(c=IN\s)(.+)\s/ig
+					if (!e.candidate) {
+						return
+					}
+					const { candidate } = e.candidate
+
+					const encodingMatch = candidate.match(candidateEncoding)
+					if (encodingMatch) {
+						const {
+							sdp
+						} = e.target.localDescription
+						const ipAddress = attempt(() => e.candidate.address)
+						const candidateIpAddress = attempt(() => encodingMatch[0].split(' ')[2])
+						const connectionLineIpAddress = attempt(() => sdp.match(connectionLineEncoding)[0].trim().split(' ')[2])
+						const successIpAddresses = [
+							ipAddress, 
+							candidateIpAddress, 
+							connectionLineIpAddress
+						].filter(ip => ip != undefined)
+						const setSize = new Set(successIpAddresses).size
+						const matching = setSize == 1 || setSize == 0
+						const data = {
+							['ip address']: ipAddress,
+							['candidate encoding']: candidateIpAddress,
+							['connection line']: connectionLineIpAddress,
+							['matching']: matching,
+							['ip leak']: (
+								(!!ipAddress && ipAddress != ip) ||
+								(!!candidateIpAddress && candidateIpAddress != ip) ||
+								(!!connectionLineIpAddress && connectionLineIpAddress != ip)
+							)
+						}
+						const $hash = await hashify(data)
+						resolve({ ...data, $hash })
+						const el = document.getElementById(`${instanceId}-webrtc`)
+						patch(el, html`
+						<div>
+							<strong>RTCDataChannel</strong>
+							<div>hash: ${$hash}</div>
+							${
+								Object.keys(data).map(key => {
+									const value = data[key]
+									return (
+										`<div>${key}: ${value != undefined ? value : note.blocked}</div>`
+									)
+								}).join('')
+							}
+						</div>
+						`)
+						return
+					}
+				}
+				connection.createDataChannel('bl')
+				connection.createOffer().then(e => connection.setLocalDescription(e))
+			}
+			catch (error) {
+				captureError(error)
+				return resolve(undefined)
+			}
+		})
+	}
+
 	// cloudflare
 	const getCloudflare = instanceId => {
 		return new Promise(async resolve => {
@@ -856,7 +939,7 @@
 					</div>
 					<div>webkit: ${''+getComputedStyle.webkit}, ${''+htmlElementStyle.webkit}, ${''+cssRuleListstyle.webkit}
 					</div>
-					<div>matching: ${data.matching}</div>
+					<div>matching: ${''+data.matching}</div>
 				</div>
 				`)
 				return
@@ -1949,7 +2032,6 @@
 				// get clientRects
 				const rectElems = doc.getElementsByClassName('rects')
 				const clientRects = [...rectElems].map(el => {
-					console.log(el.getClientRects())
 					return toJSONParsed(el.getClientRects()[0])
 				})
 				if (!rectsLie) {
@@ -2272,6 +2354,15 @@
 				<div>ip location:</div>
 				<div>tls version:</div>
 			</div>
+			<div id="${instanceId}-webrtc">
+				<strong>RTCDataChannel</strong>
+				<div>hash:</div>
+				<div>ip address:</div>
+				<div>candidate encoding:</div>
+				<div>connection line:</div>
+				<div>matching:</div>
+				<div>ip leak:</div>
+			</div>
 			<div id="${instanceId}-canvas-2d">
 				<strong>CanvasRenderingContext2D</strong>
 				<div>hash:</div>
@@ -2511,6 +2602,7 @@
 		]).catch(error => {
 			console.error(error.message)
 		})
+		const webRTCDataComputed = await getWebRTCData(instanceId, cloudflareComputed.ip)
 		const navigatorComputed = await getNavigator(instanceId, workerScopeComputed)
 		const [
 			liesComputed,
@@ -2528,6 +2620,7 @@
 		const fingerprint = {
 			workerScope: workerScopeComputed,
 			cloudflare: cloudflareComputed,
+			webRTC: webRTCDataComputed,
 			navigator: navigatorComputed,
 			iframeContentWindowVersion: iframeContentWindowVersionComputed,
 			htmlElementVersion: htmlElementVersionComputed,
@@ -2598,7 +2691,6 @@
 		const hasLied = !('data' in fp.lies) ? false : !!fp.lies.data.length
 		const hasErrors = !('data' in fp.capturedErrors) ? false : !!fp.capturedErrors.data.length
 
-		console.log({hasTrash, hasLied, hasErrors})
 		// fetch data from server
 		const id = `${instanceId}-browser`
 		const visitorElem = document.getElementById(id)
