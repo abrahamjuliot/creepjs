@@ -2529,7 +2529,7 @@
 						const { name, lieTypes: { lies, fingerprint } } = data[key]
 						const lieFingerprint = !!fingerprint ? { hash: hashMini(fingerprint), json: toJSONFormat(fingerprint) } : undefined
 						const type = lies[0] ? Object.keys(lies[0])[0] : ''
-						return `<div class="${lieFingerprint ? 'lie-fingerprint' : ''}"><strong>${name}</strong>: ${type}${lieFingerprint ? `<br>code fingerprint: ${lieFingerprint.hash}<br>code: ${lieFingerprint.json}</div>`: '</div>'}`
+						return `<div class="${lieFingerprint ? 'lie-fingerprint' : ''}"><strong>${name}</strong>: ${type}${lieFingerprint ? `<br>tampering code leaked a fingerprint: ${lieFingerprint.hash}<br>code: ${lieFingerprint.json}</div>`: '</div>'}`
 					}).join('')) : `<span class="none">none</span>`
 				}</div>
 			</div>
