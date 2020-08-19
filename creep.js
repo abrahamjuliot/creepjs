@@ -2034,23 +2034,38 @@
 				</div>
 				`)
 				
-
 				// get clientRects
 				const rectElems = doc.getElementsByClassName('rects')
 				const clientRects = [...rectElems].map(el => {
 					return toJSONParsed(el.getClientRects()[0])
 				})
+								
+				// detect failed math calculation lie
+				let mathLie = false
+
+				clientRects.forEach(rect => {
+					const { right, left, width, bottom, top, height, x, y } = rect
+					if (
+						right - left != width ||
+						bottom - top != height ||
+						right - x != width ||
+						bottom - y != height
+					) {
+						mathLie = { lies: [{ ['failed math calculation']: true }] }
+					}
+					return
+				})
 				
+				// detect equal elements mismatch lie
 				let offsetLie = false
 				const { right: right1, left: left1 } = clientRects[10]
 				const { right: right2, left: left2 } = clientRects[11]
 				if (right1 != right2 || left1 != left2) {
-					console.log(right1, right2)
-					console.log(left1, left2)
 					offsetLie = { lies: [{ ['equal elements mismatch']: true }] }
 				}
 				
-				if (!rectsLie && !offsetLie) {
+				// resolve if no lies
+				if (!(rectsLie || offsetLie || mathLie)) {
 					iframeRendered.parentNode.removeChild(iframeRendered)
 					const $hash = await hashify(clientRects)
 					return resolve({clientRects, $hash })
@@ -2062,9 +2077,12 @@
 				if (offsetLie) {
 					documentLie('clientRectsOffsetLie', hashMini(clientRects), offsetLie)
 				}
+				if (mathLie) {
+					documentLie('clientRectsMathLie', hashMini(clientRects), mathLie)
+				}
 				// Fingerprint lie
 				iframeRendered.parentNode.removeChild(iframeRendered)
-				const lies = { rectsLie, offsetLie }
+				const lies = { rectsLie, offsetLie, mathLie }
 				const $hash = await hashify(lies)
 				return resolve({...lies, $hash })
 			}
