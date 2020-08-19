@@ -473,7 +473,7 @@
 						const el = document.getElementById(`${instanceId}-webrtc`)
 						patch(el, html`
 						<div>
-							<strong>RTCDataChannel</strong>
+							<strong>RTCPeerConnection</strong>
 							<div>hash: ${$hash}</div>
 							${
 								Object.keys(data).map(key => {
@@ -492,7 +492,7 @@
 				connection.createOffer().then(e => connection.setLocalDescription(e))
 			}
 			catch (error) {
-				captureError(error)
+				captureError(error, 'RTCPeerConnection failed')
 				return resolve(undefined)
 			}
 		})
@@ -2355,7 +2355,7 @@
 				<div>tls version:</div>
 			</div>
 			<div id="${instanceId}-webrtc">
-				<strong>RTCDataChannel</strong>
+				<strong>RTCPeerConnection</strong>
 				<div>hash:</div>
 				<div>ip address:</div>
 				<div>candidate encoding:</div>
@@ -2662,7 +2662,7 @@
 			maths: fp.maths,
 			consoleErrors: fp.consoleErrors,
 			// avoid random timezone fingerprint values
-			timezone: !fp.timezone.lied ? fp.timezone : undefined,
+			timezone: !fp.timezone || !fp.timezone.lied ? fp.timezone : undefined,
 			clientRects: fp.clientRects,
 			offlineAudioContext: !isBrave ? fp.offlineAudioContext : distrust,
 			fonts: fp.fonts,
