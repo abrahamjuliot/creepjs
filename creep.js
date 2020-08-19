@@ -461,9 +461,7 @@
 						const cloudflareIp = 'ip' in cloudflare ? cloudflare.ip : undefined
 						const data = {
 							['webRTC leak']: cloudflareIp && (
-								(!!ipAddress && ipAddress != cloudflareIp) ||
-								(!!candidateIpAddress && candidateIpAddress != cloudflareIp) ||
-								(!!connectionLineIpAddress && connectionLineIpAddress != cloudflareIp)
+								!!ipAddress && ipAddress != cloudflareIp
 							) ? true : 'unknown',
 							['ip address']: ipAddress,
 							['candidate encoding']: candidateIpAddress,
