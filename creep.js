@@ -431,7 +431,7 @@
 					}]
 				}, {
 					optional: [{
-						RtpDataChannels: !0
+						RtpDataChannels: true
 					}]
 				})
 				connection.onicecandidate = async e => {
@@ -459,16 +459,17 @@
 						const matching = setSize == 1 || setSize == 0
 						const cloudflareIp = 'ip' in cloudflare ? cloudflare.ip : undefined
 						const data = {
-							['ip address']: ipAddress,
-							['candidate encoding']: candidateIpAddress,
-							['connection line']: connectionLineIpAddress,
-							['matching']: matching,
 							['webRTC leak']: cloudflareIp && (
 								(!!ipAddress && ipAddress != cloudflareIp) ||
 								(!!candidateIpAddress && candidateIpAddress != cloudflareIp) ||
 								(!!connectionLineIpAddress && connectionLineIpAddress != cloudflareIp)
-							) ? true : 'unknown'
+							) ? true : 'unknown',
+							['ip address']: ipAddress,
+							['candidate encoding']: candidateIpAddress,
+							['connection line']: connectionLineIpAddress,
+							['matching']: matching
 						}
+						console.log(new Set([cloudflareIp, ipAddress, candidateIpAddress, connectionLineIpAddress]))
 						const $hash = await hashify(data)
 						resolve({ ...data, $hash })
 						const el = document.getElementById(`${instanceId}-webrtc`)
@@ -2375,11 +2376,11 @@
 			<div id="${instanceId}-webrtc">
 				<strong>RTCPeerConnection</strong>
 				<div>hash:</div>
+				<div>webRTC leak:</div>
 				<div>ip address:</div>
 				<div>candidate encoding:</div>
 				<div>connection line:</div>
 				<div>matching:</div>
-				<div>webRTC leak:</div>
 			</div>
 			<div id="${instanceId}-canvas-2d">
 				<strong>CanvasRenderingContext2D</strong>
