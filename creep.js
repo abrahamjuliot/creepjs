@@ -458,7 +458,7 @@
 						].filter(ip => ip != undefined)
 						const setSize = new Set(successIpAddresses).size
 						const matching = setSize == 1 || setSize == 0
-						const cloudflareIp = 'ip' in cloudflare ? cloudflare.ip : undefined
+						const cloudflareIp = cloudflare && 'ip' in cloudflare ? cloudflare.ip : undefined
 						const data = {
 							['webRTC leak']: cloudflareIp && (
 								!!ipAddress && ipAddress != cloudflareIp
