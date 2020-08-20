@@ -1959,7 +1959,7 @@
 					const constructors = [
 						'Collator',
 						'DateTimeFormat',
-						'DisplayNames',
+						//'DisplayNames',
 						'ListFormat',
 						'NumberFormat',
 						'PluralRules',
