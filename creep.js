@@ -1864,10 +1864,60 @@
 		return new Promise(async resolve => {
 			try {
 				const computeTimezoneOffset = () => {
+					const date = new Date().getDate()
+					const month = new Date().getMonth()
+					const year = 1984
+					const dateString = `${month}/${date}/${year}`
 					const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
-					const utc = Date.parse(toJSONParsed(new Date()).split`Z`.join``)
-					const now = +new Date()
+					const utc = Date.parse(toJSONParsed(new Date(dateString)).split`Z`.join``)
+					const now = +new Date(dateString)
 					return +(((utc - now)/60000).toFixed(0))
+				}
+				// concept inspired by https://github.com/ghacksuserjs/TorZillaPrint
+				const measureTimezoneOffset = timezone => {
+					let lie = false
+					const year = 1984
+					const minute = 60000
+					const winter = new Date(`1/1/${year}`)
+					const spring = new Date(`4/1/${year}`)
+					const summer = new Date(`7/1/${year}`)
+					const fall = new Date(`10/1/${year}`)
+					const winterUTCTime = +new Date(`${year}-01-01`)
+					const springUTCTime = +new Date(`${year}-04-01`)
+					const summerUTCTime = +new Date(`${year}-07-01`)
+					const fallUTCTime = +new Date(`${year}-10-01`)
+					const date = {
+						winter: {
+							calculated: (+winter - winterUTCTime)/minute,
+							parsed: (Date.parse(winter) - winterUTCTime)/minute
+						},
+						spring: {
+							calculated: (+spring - springUTCTime)/minute,
+							parsed: (Date.parse(spring) - springUTCTime)/minute
+						},
+						summer: {
+							calculated: (+summer - summerUTCTime)/minute,
+							parsed: (Date.parse(summer) - summerUTCTime)/minute
+						},
+						fall: {
+							calculated: (+fall - fallUTCTime)/minute,
+							parsed: (Date.parse(fall) - fallUTCTime)/minute
+						}
+					}
+					lie = !!Object.keys(date).filter(key => {
+						const season = date[key]
+						return season.calculated != season.parsed
+					}).length
+					const set = new Set(
+						[].concat(
+							...Object.keys(date).map(key => {
+								const season = date[key]
+								return [season.calculated, season.parsed]
+							})
+						)
+					)
+					lie = !set.has(timezone)
+					return { season: [...set], lie }
 				}
 				const getRelativeTime = () => {
 					if (!caniuse(Intl, ['RelativeTimeFormat'])) {
@@ -1936,6 +1986,8 @@
 				const timezoneLie = dateGetTimezoneOffset ? hasLiedAPI(dateGetTimezoneOffset, 'getTimezoneOffset').lie : false
 				const timezoneOffset = new Date().getTimezoneOffset()
 				const timezoneOffsetComputed = computeTimezoneOffset()
+				const timezoneOffsetMeasured = measureTimezoneOffset(timezoneOffset)
+				const measuredTimezones = timezoneOffsetMeasured.season.join(', ')
 				const matchingOffsets = timezoneOffsetComputed == timezoneOffset
 				const notWithinParentheses = /.*\(|\).*/g
 				const timezoneLocation = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -1943,22 +1995,27 @@
 				const relativeTime = getRelativeTime()
 				const locale = getLocale()
 				// document lie
-				const localeLie = locale.lie ? { lies: [{ ['intlLocalesMatch']: false }] } : false
+				const seasonLie = timezoneOffsetMeasured.lie ? { lies: [{ ['timezone seasons disagree']: true }] } : false
+				const localeLie = locale.lie ? { lies: [{ ['Intl locales mismatch']: true }] } : false
 				if (localeLie) {
 					documentLie('IntlLocales', locale, localeLie)	
 				}
 				if (timezoneLie) {
 					documentLie('timezoneOffset', timezoneOffset, timezoneLie)
 				}
+				if (seasonLie) {
+					documentLie('timezoneOffset', measuredTimezones, seasonLie)
+				}
 				const data =  {
 					timezone,
 					timezoneLocation,
 					timezoneOffset: !timezoneLie ? timezoneOffset : timezoneLie,
 					timezoneOffsetComputed,
+					timezoneOffsetMeasured: !seasonLie ? measuredTimezones : seasonLie,
 					matchingOffsets,
 					relativeTime,
 					locale: !localeLie ? locale : localeLie,
-					lied: localeLie || timezoneLie
+					lied: localeLie || timezoneLie || seasonLie
 				}
 				
 				const $hash = await hashify(data)
@@ -1971,9 +2028,10 @@
 					<div>hash: ${$hash}</div>
 					<div>timezone: ${timezone}</div>
 					<div>timezone location: ${timezoneLocation}</div>
-					<div>timezone offset: ${!timezoneLie ? ''+timezoneOffset : `${note.lied} ${modal(`${id}-timezoneOffset`, toJSONFormat(timezoneLie))}`}</div>
+					<div>timezone offset: ${!timezoneLie ? ''+timezoneOffset : `${note.lied} ${modal(`${id}-timezoneOffset`, toJSONFormat({ timezoneLie, timezoneLie }))}`}</div>
 					<div>timezone offset computed: ${''+timezoneOffsetComputed}</div>
 					<div>matching offsets: ${''+matchingOffsets}</div>
+					<div>timezone measured: ${!seasonLie ? measuredTimezones : `${note.lied} ${modal(`${id}-timezone-measured`, toJSONFormat({seasonLie, measuredTimezones}))}`}</div>
 					<div>relativeTimeFormat: ${!relativeTime ? note.blocked : modal(`${id}-relativeTimeFormat`, Object.keys(relativeTime).sort().map(key => `${key} => ${relativeTime[key]}`).join('<br>'))}</div>
 					<div>locale language: ${!localeLie ? locale.lang.join(', ') : `${note.lied} ${modal(`${id}-locale`, toJSONFormat(localeLie))}`}</div>
 				</div>
@@ -2449,6 +2507,7 @@
 				<div>timezone offset:</div>
 				<div>timezone offset computed:</div>
 				<div>matching offsets:</div>
+				<div>timezone measured:</div>
 				<div>relativeTimeFormat:</div>
 				<div>locale language:</div>
 			</div>
