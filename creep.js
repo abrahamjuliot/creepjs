@@ -1968,7 +1968,7 @@
 					const languages = []
 					constructors.forEach(name => {
 						try {
-							const obj = caniuse(new Intl[name])
+							const obj = attempt(() => new Intl[name])
 							if (!obj) {
 								return
 							}
@@ -1997,14 +1997,18 @@
 				// document lie
 				const seasonLie = timezoneOffsetMeasured.lie ? { lies: [{ ['timezone seasons disagree']: true }] } : false
 				const localeLie = locale.lie ? { lies: [{ ['Intl locales mismatch']: true }] } : false
+				const offsetLie = !matchingOffsets ? { lies: [{ ['timezone offsets mismatch']: true }] } : false
 				if (localeLie) {
 					documentLie('IntlLocales', locale, localeLie)	
 				}
 				if (timezoneLie) {
-					documentLie('timezoneOffset', timezoneOffset, timezoneLie)
+					documentLie('timezone', timezoneOffset, timezoneLie)
+				}
+				if (offsetLie) {
+					documentLie('timezoneOffsets', timezoneOffset, offsetLie)
 				}
 				if (seasonLie) {
-					documentLie('timezoneOffset', measuredTimezones, seasonLie)
+					documentLie('timezoneMeasured', measuredTimezones, seasonLie)
 				}
 				const data =  {
 					timezone,
@@ -2015,20 +2019,21 @@
 					matchingOffsets,
 					relativeTime,
 					locale: !localeLie ? locale : localeLie,
-					lied: localeLie || timezoneLie || seasonLie
+					lied: localeLie || timezoneLie || seasonLie || !matchingOffsets
 				}
 				
 				const $hash = await hashify(data)
 				resolve({...data, $hash })
 				const id = `${instanceId}-timezone`
 				const el = document.getElementById(id)
+				console.log(matchingOffsets)
 				patch(el, html`
 				<div>
 					<strong>Date/Intl</strong>
 					<div>hash: ${$hash}</div>
 					<div>timezone: ${timezone}</div>
 					<div>timezone location: ${timezoneLocation}</div>
-					<div>timezone offset: ${!timezoneLie ? ''+timezoneOffset : `${note.lied} ${modal(`${id}-timezoneOffset`, toJSONFormat({ timezoneLie, timezoneLie }))}`}</div>
+					<div>timezone offset: ${!timezoneLie && matchingOffsets ? ''+timezoneOffset : `${note.lied} ${modal(`${id}-timezoneOffset`, toJSONFormat({ timezoneLie, timezoneOffset }))}`}</div>
 					<div>timezone offset computed: ${''+timezoneOffsetComputed}</div>
 					<div>matching offsets: ${''+matchingOffsets}</div>
 					<div>timezone measured: ${!seasonLie ? measuredTimezones : `${note.lied} ${modal(`${id}-timezone-measured`, toJSONFormat({seasonLie, measuredTimezones}))}`}</div>
@@ -2825,7 +2830,7 @@
 			})
 			.catch(err => {
 				fetchVisitoDataTimer('Error fetching visitor data')
-				patch(visitorElem, html`<div>Error loading visitor data</div>`)
+				patch(visitorElem, html`<div>Error fetching data: <a href="https://status.cloud.google.com" target="_blank">status.cloud.google.com</a></div>`)
 				return console.error('Error!', err.message)
 			})
 
