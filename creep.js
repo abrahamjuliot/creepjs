@@ -1917,6 +1917,9 @@
 						)
 					)
 					lie = !set.has(timezone)
+					if (lie) {
+						set.add(timezone) // show in result
+					}
 					return { season: [...set], lie }
 				}
 				const getRelativeTime = () => {
