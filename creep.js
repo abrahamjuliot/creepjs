@@ -724,8 +724,8 @@
 							)
 						}).join('')
 					}
-					<div>plugins (${count(plugins)}): ${modal(`${id}-plugins`, plugins.map(plugin => plugin.name).join('<br>'))}</div>
-					<div>mimeTypes (${count(mimeTypes)}): ${modal(`${id}-mimeTypes`, mimeTypes.join('<br>'))}</div>
+					<div>plugins (${count(plugins)}): ${!blocked[''+plugins] ? modal(`${id}-plugins`, plugins.map(plugin => plugin.name).join('<br>')) : note.blocked}</div>
+					<div>mimeTypes (${count(mimeTypes)}): ${!blocked[''+mimeTypes] ? modal(`${id}-mimeTypes`, mimeTypes.join('<br>')): note.blocked}</div>
 					${highEntropyValues ?  
 						Object.keys(highEntropyValues).map(key => {
 							const value = highEntropyValues[key]
@@ -2037,7 +2037,6 @@
 				resolve({...data, $hash })
 				const id = `${instanceId}-timezone`
 				const el = document.getElementById(id)
-				console.log(matchingOffsets)
 				patch(el, html`
 				<div>
 					<strong>Date/Intl</strong>
