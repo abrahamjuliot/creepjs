@@ -38,8 +38,11 @@
 		}
 	}
 
-	const caniuse = (api, objChainList = [], args = [], method = false) => {
-		if (!api) {
+	const caniuse = (fn, objChainList = [], args = [], method = false) => {
+		let api
+		try {
+			api = fn()
+		} catch (error) {
 			return undefined
 		}
 		let i, len = objChainList.length, chain = api
@@ -553,7 +556,7 @@
 			try {
 				const navigatorPrototype = attempt(() => Navigator.prototype)
 				const detectLies = (name, value) => {
-					const workerScopeValue = caniuse(workerScope, [name])
+					const workerScopeValue = caniuse(() => workerScope, [name])
 					const workerScopeMatchLie = { lies: [{ ['does not match worker scope']: false }] }
 					if (workerScopeValue) {
 						if (name == 'userAgent') {
@@ -1296,7 +1299,7 @@
 							if (!context) {
 								return resolve({ extensions: [] })
 							}
-							const extensions = caniuse(context, ['getSupportedExtensions'], [], true) || []
+							const extensions = caniuse(() => context, ['getSupportedExtensions'], [], true) || []
 							if (!supportedExtLie) {
 								return resolve({
 									extensions: ( 
@@ -1363,7 +1366,7 @@
 							return data
 						}
 						const getWebglSpecs = gl => {
-							if (!caniuse(gl, ['getParameter'])) {
+							if (!caniuse(() => gl, ['getParameter'])) {
 								return undefined
 							}
 							const data =  {
@@ -1415,7 +1418,7 @@
 						}
 
 						const getWebgl2Specs = gl => {
-							if (!caniuse(gl, ['getParameter'])) {
+							if (!caniuse(() => gl, ['getParameter'])) {
 								return undefined
 							}
 							const data = {
@@ -1476,7 +1479,7 @@
 									renderer: undefined
 								})
 							}
-							const extension = caniuse(context, ['getExtension'], ['WEBGL_debug_renderer_info'], true)
+							const extension = caniuse(() => context, ['getExtension'], ['WEBGL_debug_renderer_info'], true)
 							const vendor = extension && context.getParameter(extension.UNMASKED_VENDOR_WEBGL)
 							const renderer = extension && context.getParameter(extension.UNMASKED_RENDERER_WEBGL)
 							const validate = (value, title) => {
@@ -1547,9 +1550,9 @@
 								return resolve({ dataURI: undefined, $hash: undefined })
 							}
 							if (!dataLie && !contextLie) {
-								const colorBufferBit = caniuse(context, ['COLOR_BUFFER_BIT'])
-								caniuse(context, ['clearColor'], [0.2, 0.4, 0.6, 0.8], true)
-								caniuse(context, ['clear'], [colorBufferBit], true)
+								const colorBufferBit = caniuse(() => context, ['COLOR_BUFFER_BIT'])
+								caniuse(() => context, ['clearColor'], [0.2, 0.4, 0.6, 0.8], true)
+								caniuse(() => context, ['clear'], [colorBufferBit], true)
 								const canvasWebglDataURI = canvas.toDataURL()
 								const dataURI = canvasWebglDataURI
 								const $hash = await hashify(dataURI)
@@ -1643,14 +1646,14 @@
 					${detectDataURILie(dataURI, 'v1', id)}
 					${detectParameterLie(webglSpecs, webglSpecsKeys, 'v1', id)}
 					<div>v1 extensions (${count(supported.extensions)}): ${
-						!caniuse(supported, ['extensions', 'length']) ? note.blocked : modal(`${id}-e-v1`, supported.extensions.join('<br>'))
+						!caniuse(() => supported, ['extensions', 'length']) ? note.blocked : modal(`${id}-e-v1`, supported.extensions.join('<br>'))
 					}</div>
 					<div>v1 renderer: ${detectStringLie(unmasked.renderer, `${id}-r-v1`)}</div>
 					<div>v1 vendor: ${detectStringLie(unmasked.vendor, `${id}-v-v1`)}</div>
 					${detectDataURILie(dataURI2, 'v2', id)}
 					${detectParameterLie(webgl2Specs, webgl2SpecsKeys, 'v2', id)}
 					<div>v2 extensions (${count(supported2.extensions)}): ${
-						!caniuse(supported2, ['extensions', 'length']) ? note.blocked : modal(`${id}-e-v2`, supported2.extensions.join('<br>'))
+						!caniuse(() => supported2, ['extensions', 'length']) ? note.blocked : modal(`${id}-e-v2`, supported2.extensions.join('<br>'))
 					}</div>
 					<div>v2 renderer: ${detectStringLie(unmasked2.renderer, `${id}-r-v2`)}</div>
 					<div>v2 vendor: ${detectStringLie(unmasked2.vendor, `${id}-v-v2`)}</div>
@@ -1923,7 +1926,7 @@
 					return { season: [...set], lie }
 				}
 				const getRelativeTime = () => {
-					if (!caniuse(Intl, ['RelativeTimeFormat'])) {
+					if (!caniuse(() => Intl, ['RelativeTimeFormat'])) {
 						return undefined
 					}
 					const relativeTime = new Intl.RelativeTimeFormat('locale', {
@@ -1962,7 +1965,7 @@
 					const constructors = [
 						'Collator',
 						'DateTimeFormat',
-						//'DisplayNames',
+						'DisplayNames',
 						'ListFormat',
 						'NumberFormat',
 						'PluralRules',
@@ -1971,7 +1974,7 @@
 					const languages = []
 					constructors.forEach(name => {
 						try {
-							const obj = attempt(() => new Intl[name])
+							const obj = caniuse(() => new Intl[name])
 							if (!obj) {
 								return
 							}
@@ -2214,7 +2217,7 @@
 					['analyserNode.smoothingTimeConstant']: attempt(() => analyser.smoothingTimeConstant),
 					['analyserNode.context.listener.forwardX.maxValue']: attempt(() => {
 						const chain = ['context', 'listener', 'forwardX', 'maxValue']
-						return caniuse(analyser, chain)
+						return caniuse(() => analyser, chain)
 					}),
 					['biquadFilterNode.gain.maxValue']: attempt(() => biquadFilter.gain.maxValue),
 					['biquadFilterNode.frequency.defaultValue']: attempt(() => biquadFilter.frequency.defaultValue),

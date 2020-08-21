@@ -1,6 +1,11 @@
 (async () => {
-	const caniuse = (api, objChainList = [], args = [], method = false) => {
-		if (!api) { return undefined }
+	const caniuse = (fn, objChainList = [], args = [], method = false) => {
+		let api
+		try {
+			api = fn()
+		} catch (error) {
+			return undefined
+		}
 		let i, len = objChainList.length, chain = api
 		try {
 			for (i = 0; i < len; i++) {
@@ -9,7 +14,6 @@
 			}
 		}
 		catch (error) {
-			const prop = `${api.name}`
 			return undefined
 		}
 		return (
@@ -46,10 +50,10 @@
 	}
 	catch (error) { }
     
-	const hardwareConcurrency = caniuse(navigator, ['hardwareConcurrency'])
-	const language = caniuse(navigator, ['language'])
-	const platform = caniuse(navigator, ['platform'])
-	const userAgent = caniuse(navigator, ['userAgent'])
+	const hardwareConcurrency = caniuse(() => navigator, ['hardwareConcurrency'])
+	const language = caniuse(() => navigator, ['language'])
+	const platform = caniuse(() => navigator, ['platform'])
+	const userAgent = caniuse(() => navigator, ['userAgent'])
 
 	postMessage({ hardwareConcurrency, language, platform, userAgent, canvas2d })
 	close()
