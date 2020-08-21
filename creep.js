@@ -385,7 +385,7 @@
 	// https://stackoverflow.com/a/20693860
 	const newWorker = fn => {
 		const blobURL = URL.createObjectURL(new Blob(
-			['(', (''+fn), ')()'],
+			[`(${''+fn})()`],
 			{ type: 'application/javascript' }
 		))
 		const worker = new Worker(blobURL)
