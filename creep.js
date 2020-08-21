@@ -383,14 +383,26 @@
 
 	// worker
 	// https://stackoverflow.com/a/20693860
+	// https://stackoverflow.com/a/10372280
+	// https://stackoverflow.com/a/9239272
 	const newWorker = fn => {
-		const blobURL = URL.createObjectURL(new Blob(
-			[`(${''+fn})()`],
-			{ type: 'application/javascript' }
-		))
-		const worker = new Worker(blobURL)
-		URL.revokeObjectURL(blobURL)
-		return worker
+		const response = `(${''+fn})()`
+		try {
+			const blobURL = URL.createObjectURL(new Blob(
+				[response],
+				{ type: 'application/javascript' }
+			))
+			const worker = new Worker(blobURL)
+			URL.revokeObjectURL(blobURL)
+			return worker
+		}
+		catch (error) {
+			captureError(error)
+			return attempt( () => {
+				const uri = `data:application/javascript,${encodeURIComponent(response)}`
+				return new Worker(uri)
+			})
+		}
 	}
 	// inline worker scope
 	const inlineWorker = async () => {
