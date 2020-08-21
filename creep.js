@@ -2870,7 +2870,8 @@
 				const types = Object.keys(lieTypes)
 				const lies = lieTypes.lies
 				return { name, types, lies }
-			})
+			}),
+			capturedErrors: fp.capturedErrors.data.map(error => error.trustedName)
 		}
 		const debugLog = (message, obj) => console.log(message, JSON.stringify(obj, null, '\t'))
 		
