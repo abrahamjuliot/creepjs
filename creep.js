@@ -701,6 +701,11 @@
 				const id = `${instanceId}-navigator`
 				const el = document.getElementById(id)
 				const { mimeTypes, plugins, highEntropyValues, properties } = data
+				const blocked = {
+					[null]: true,
+					[undefined]: true,
+					['']: true
+				}
 				patch(el, html`
 				<div>
 					<strong>Navigator</strong>
@@ -715,7 +720,7 @@
 							].indexOf(key) > -1
 							const value = data[key]
 							return (
-								!skip ? `<div>${key}: ${value != null && value != undefined ? value : key == 'doNotTrack' ? value : note.blocked}</div>` : ''
+								!skip ? `<div>${key}: ${!blocked[value] ? value : key == 'doNotTrack' ? value : note.blocked}</div>` : ''
 							)
 						}).join('')
 					}
