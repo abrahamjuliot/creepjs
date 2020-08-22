@@ -290,6 +290,7 @@ input[type="radio"] {
 	visibility: hidden;
 	overflow: auto;
 	cursor: pointer;
+	z-index: 1000;
 }
 .modal-content {
 	margin: 100px auto 100px;
