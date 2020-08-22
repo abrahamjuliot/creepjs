@@ -239,7 +239,7 @@
 		return () => lies
 	}
 	const stringAPILieTypes = hasLiedStringAPI() // compute and cache result
-	const hasLiedAPI = (api, name, obj = null) => {
+	const hasLiedAPI = (api, name, obj = undefined) => {
 		const { toString: fnToStr } = Function.prototype
 
 		if (typeof api == 'function') {
@@ -257,6 +257,19 @@
 				lies.push({
 					['failed API toString test']: !proxyBehavior(apiToString) ? apiToString: true
 				})
+			}
+
+			// detect attempts to tamper with getter
+			if (obj) {
+				try {
+					Object.getOwnPropertyDescriptor(obj, name).get.toString()
+					lies.push({
+						['failed API get test']: true
+					})
+				}
+				catch (error) {
+					// Native throws error
+				}
 			}
 
 			// collect string conversion result
@@ -1230,8 +1243,9 @@
 	// canvas
 	const canvasToDataURL = attempt(() => HTMLCanvasElement.prototype.toDataURL)
 	const canvasGetContext = attempt(() => HTMLCanvasElement.prototype.getContext)
-	const dataLie = canvasToDataURL ? hasLiedAPI(canvasToDataURL, 'toDataURL').lie : false
-	const contextLie = canvasGetContext ? hasLiedAPI(canvasGetContext, 'getContext').lie : false
+	const canvasProto = caniuse(() => HTMLCanvasElement, ['prototype'])
+	const dataLie = canvasToDataURL ? hasLiedAPI(canvasToDataURL, 'toDataURL', canvasProto).lie : false
+	const contextLie = canvasGetContext ? hasLiedAPI(canvasGetContext, 'getContext', canvasProto).lie : false
 	
 	// 2d canvas
 	const getCanvas2d = instanceId => {
@@ -1358,19 +1372,21 @@
 				const gl = 'WebGLRenderingContext' in window
 				const webglGetParameter = gl && attempt(() => WebGLRenderingContext.prototype.getParameter)
 				const webglGetExtension = gl && attempt(() => WebGLRenderingContext.prototype.getExtension)
+				const webglProto = caniuse(() => WebGLRenderingContext, ['prototype'])
 				const webglGetSupportedExtensions = gl && attempt(() => WebGLRenderingContext.prototype.getSupportedExtensions)
-				const paramLie = webglGetParameter ? hasLiedAPI(webglGetParameter, 'getParameter').lie : false
-				const extLie = webglGetExtension ? hasLiedAPI(webglGetExtension, 'getExtension').lie : false
-				const supportedExtLie = webglGetSupportedExtensions ? hasLiedAPI(webglGetSupportedExtensions, 'getSupportedExtensions').lie : false
+				const paramLie = webglGetParameter ? hasLiedAPI(webglGetParameter, 'getParameter', webglProto).lie : false
+				const extLie = webglGetExtension ? hasLiedAPI(webglGetExtension, 'getExtension', webglProto).lie : false
+				const supportedExtLie = webglGetSupportedExtensions ? hasLiedAPI(webglGetSupportedExtensions, 'getSupportedExtensions', webglProto).lie : false
 
 				// detect webgl2 lies
 				const gl2 = 'WebGL2RenderingContext' in window
 				const webgl2GetParameter = gl2 && attempt(() => WebGL2RenderingContext.prototype.getParameter)
 				const webgl2GetExtension = gl2 && attempt(() => WebGL2RenderingContext.prototype.getExtension)
+				const webgl2Proto = caniuse(() => WebGL2RenderingContext, ['prototype'])
 				const webgl2GetSupportedExtensions = gl2 && attempt(() => WebGL2RenderingContext.prototype.getSupportedExtensions)
-				const param2Lie = webgl2GetParameter ? hasLiedAPI(webgl2GetParameter, 'getParameter').lie : false
-				const ext2Lie = webgl2GetExtension ? hasLiedAPI(webgl2GetExtension, 'getExtension').lie : false
-				const supportedExt2Lie = webgl2GetSupportedExtensions ? hasLiedAPI(webgl2GetSupportedExtensions, 'getSupportedExtensions').lie : false
+				const param2Lie = webgl2GetParameter ? hasLiedAPI(webgl2GetParameter, 'getParameter', webgl2Proto).lie : false
+				const ext2Lie = webgl2GetExtension ? hasLiedAPI(webgl2GetExtension, 'getExtension', webgl2Proto).lie : false
+				const supportedExt2Lie = webgl2GetSupportedExtensions ? hasLiedAPI(webgl2GetSupportedExtensions, 'getSupportedExtensions', webgl2Proto).lie : false
 
 				// crreate canvas context
 				const canvas = document.createElement('canvas')
@@ -2078,7 +2094,8 @@
 					return { lang, lie: lang.length > 1 ? true : false }
 				}		
 				const dateGetTimezoneOffset = attempt(() => Date.prototype.getTimezoneOffset)
-				const timezoneLie = dateGetTimezoneOffset ? hasLiedAPI(dateGetTimezoneOffset, 'getTimezoneOffset').lie : false
+				const dateProto = Date.prototype
+				const timezoneLie = dateGetTimezoneOffset ? hasLiedAPI(dateGetTimezoneOffset, 'getTimezoneOffset', dateProto).lie : false
 				const timezoneOffset = new Date().getTimezoneOffset()
 				const timezoneOffsetComputed = computeTimezoneOffset()
 				const timezoneOffsetMeasured = measureTimezoneOffset(timezoneOffset)
@@ -2150,8 +2167,9 @@
 			try {
 				const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
 				const elementGetClientRects = attempt(() => Element.prototype.getClientRects)
+				const elementProto = Element.prototype
 				const rectsLie = (
-					elementGetClientRects ? hasLiedAPI(elementGetClientRects, 'getClientRects').lie : false
+					elementGetClientRects ? hasLiedAPI(elementGetClientRects, 'getClientRects', elementProto).lie : false
 				)
 
 				// create and get rendered iframe
@@ -2259,11 +2277,12 @@
 				const audioBuffer = 'AudioBuffer' in window
 				const audioBufferGetChannelData = audioBuffer && attempt(() => AudioBuffer.prototype.getChannelData)
 				const audioBufferCopyFromChannel = audioBuffer && attempt(() => AudioBuffer.prototype.copyFromChannel)
+				const audioBufferProto = caniuse(() => AudioBuffer, ['prototype'])
 				const channelDataLie = (
-					audioBufferGetChannelData ? hasLiedAPI(audioBufferGetChannelData, 'getChannelData').lie : false
+					audioBufferGetChannelData ? hasLiedAPI(audioBufferGetChannelData, 'getChannelData', audioBufferProto).lie : false
 				)
 				const copyFromChannelLie = (
-					audioBufferCopyFromChannel ? hasLiedAPI(audioBufferCopyFromChannel, 'copyFromChannel').lie : false
+					audioBufferCopyFromChannel ? hasLiedAPI(audioBufferCopyFromChannel, 'copyFromChannel', audioBufferProto).lie : false
 				)
 				const audioContext = OfflineAudioContext || webkitOfflineAudioContext
 				const context = new audioContext(1, 44100, 44100)

@@ -250,8 +250,8 @@ a,
 .modal-open-btn  {
 	color: var(--known);
 	text-decoration: none;
-	white-space: nowrap;
 	display: inline-block;
+	position: relative;
 }
 
 a:after,
@@ -259,11 +259,11 @@ a:after,
 	background: #247ba026;
 	height: 4px;
 	display: inline-block;
-	position: relative;
+	position: absolute;
 	content: '';
 	width: 100%;
-	right: 100%;
-	top: 0px;
+	right: 0%;
+	top: 10px;
 	z-index: -1;
 	transition: all .1s ease;
 	transform: translate(0, 4px);
@@ -273,7 +273,7 @@ a:active:after,
 .modal-open-btn:hover:after,
 .modal-open-btn:active:after {
 	height: 12px;
-	transform: translate(0, 2px) scale(1.1, 1.7);
+	transform: translate(0, -6px) scale(1.1, 1.7);
 }
 
 input[type="radio"] {
