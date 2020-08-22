@@ -588,7 +588,7 @@
 						return
 					}
 				}
-				setTimeout(() => !success && resolve(undefined), 100)
+				setTimeout(() => !success && resolve(undefined), 1000)
 				connection.createDataChannel('bl')
 				connection.createOffer()
 					.then(e => connection.setLocalDescription(e))
