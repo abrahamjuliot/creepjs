@@ -1974,7 +1974,7 @@
 				const computeTimezoneOffset = () => {
 					const date = new Date().getDate()
 					const month = new Date().getMonth()
-					const year = 1984
+					const year = Date().split` `[3] // current year
 					const dateString = `${month}/${date}/${year}`
 					const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
 					const utc = Date.parse(toJSONParsed(new Date(dateString)).split`Z`.join``)
@@ -1984,7 +1984,7 @@
 				// concept inspired by https://github.com/ghacksuserjs/TorZillaPrint
 				const measureTimezoneOffset = timezone => {
 					let lie = false
-					const year = 1984
+					const year = Date().split` `[3] // current year
 					const minute = 60000
 					const winter = new Date(`1/1/${year}`)
 					const spring = new Date(`4/1/${year}`)
@@ -2031,7 +2031,7 @@
 					return { season: [...set], lie }
 				}
 				const getRelativeTime = () => {
-					if (!caniuse(() => Intl, ['RelativeTimeFormat'])) {
+					if (!caniuse(() => new Intl.RelativeTimeFormat)) {
 						return undefined
 					}
 					const relativeTime = new Intl.RelativeTimeFormat('locale', {
