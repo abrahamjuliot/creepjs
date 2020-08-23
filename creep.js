@@ -2938,7 +2938,7 @@
 			timezone: !fp.timezone || !fp.timezone.lied ? fp.timezone : undefined,
 			clientRects: fp.clientRects,
 			// node values provide essential entropy (bin samples are just math results and randomized in brave)
-			offlineAudioContext: fp.offlineAudioContext.values,
+			offlineAudioContext: caniuse(() => fp.offlineAudioContext.values),
 			fonts: fp.fonts,
 			// avoid random trash fingerprint
 			trash: fp.trash.trashBin.map(trash => trash.name),
