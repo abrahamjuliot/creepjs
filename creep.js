@@ -398,8 +398,8 @@
 	// https://stackoverflow.com/a/20693860
 	// https://stackoverflow.com/a/10372280
 	// https://stackoverflow.com/a/9239272
-	const newWorker = fn => {
-		const response = `(${''+fn})()`
+	const newWorker = (fn, caniuse) => {
+		const response = `(${''+fn})(${''+caniuse})`
 		try {
 			const blobURL = URL.createObjectURL(new Blob(
 				[response],
@@ -423,31 +423,8 @@
 		}
 	}
 	// inline worker scope
-	const inlineWorker = async () => {
-		const caniuse = (fn, objChainList = [], args = [], method = false) => {
-			let api
-			try {
-				api = fn()
-			} catch (error) {
-				return undefined
-			}
-			let i, len = objChainList.length, chain = api
-			try {
-				for (i = 0; i < len; i++) {
-					const obj = objChainList[i]
-					chain = chain[obj]
-				}
-			}
-			catch (error) {
-				return undefined
-			}
-			return (
-				method && args.length ? chain.apply(api, args) :
-				method && !args.length ? chain.apply(api) :
-				chain
-			)
-		}
-
+	const inlineWorker = async caniuse => {
+		
 		let canvas2d = undefined
 		try {
 			const canvasOffscreen2d = new OffscreenCanvas(256, 256)
@@ -508,7 +485,7 @@
 	const getWorkerScope = instanceId => {
 		return new Promise(resolve => {
 			try {
-				const worker = newWorker(inlineWorker)
+				const worker = newWorker(inlineWorker, caniuse)
 				if (!worker) {
 					return resolve(undefined)
 				}
@@ -527,7 +504,7 @@
 							Object.keys(data).map(key => {
 								const value = data[key]
 								return (
-									key != 'canvas2d' && key != 'userAgent'? `<div>${key}: ${value ? value : note.blocked}</div>` : ''
+									key != 'canvas2d' && key != 'userAgent'? `<div>${key}: ${value != undefined ? value : note.blocked}</div>` : ''
 								)
 							}).join('')
 						}
