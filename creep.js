@@ -445,21 +445,21 @@
 
 		let canvas2d = undefined
 		try {
-			const canvas = new OffscreenCanvas(256, 256)
-			const context = canvas.getContext('2d')
+			const canvasOffscreen2d = new OffscreenCanvas(256, 256)
+			const context2d = canvasOffscreen2d.getContext('2d')
 			const str = '%$%^LGFWE($HIF)'
-			context.font = '20px Arial'
-			context.fillText(str, 100, 100)
-			context.fillStyle = 'red'
-			context.fillRect(100, 30, 80, 50)
-			context.font = '32px Times New Roman'
-			context.fillStyle = 'blue'
-			context.fillText(str, 20, 70)
-			context.font = '20px Arial'
-			context.fillStyle = 'green'
-			context.fillText(str, 10, 50)
+			context2d.font = '20px Arial'
+			context2d.fillText(str, 100, 100)
+			context2d.fillStyle = 'red'
+			context2d.fillRect(100, 30, 80, 50)
+			context2d.font = '32px Times New Roman'
+			context2d.fillStyle = 'blue'
+			context2d.fillText(str, 20, 70)
+			context2d.font = '20px Arial'
+			context2d.fillStyle = 'green'
+			context2d.fillText(str, 10, 50)
 			const getDataURI = async () => {
-				const blob = await canvas.convertToBlob()
+				const blob = await canvasOffscreen2d.convertToBlob()
 				const reader = new FileReader()
 				reader.readAsDataURL(blob)
 				return new Promise(resolve => {
@@ -469,13 +469,23 @@
 			canvas2d = await getDataURI() 
 		}
 		catch (error) { }
-		
+		let webglVendor = undefined
+		let webglRenderer = undefined
+		try {
+			const canvasOffscreenWebgl = new OffscreenCanvas(256, 256)
+			const contextWebgl = canvasOffscreenWebgl.getContext('webgl')
+			const renererInfo = contextWebgl.getExtension('WEBGL_debug_renderer_info')
+    		webglVendor = contextWebgl.getParameter(renererInfo.UNMASKED_VENDOR_WEBGL)
+    		webglRenderer = contextWebgl.getParameter(renererInfo.UNMASKED_RENDERER_WEBGL)
+		}
+		catch (error) { }
+
 		const hardwareConcurrency = caniuse(() => navigator, ['hardwareConcurrency'])
 		const language = caniuse(() => navigator, ['language'])
 		const platform = caniuse(() => navigator, ['platform'])
 		const userAgent = caniuse(() => navigator, ['userAgent'])
 
-		postMessage({ hardwareConcurrency, language, platform, userAgent, canvas2d })
+		postMessage({ hardwareConcurrency, language, platform, userAgent, canvas2d, ['webgl renderer']: webglRenderer, ['webgl vendor']: webglVendor })
 		close()
 	}
 
@@ -589,7 +599,7 @@
 					}
 				}
 				setTimeout(() => !success && resolve(undefined), 1000)
-				connection.createDataChannel('bl')
+				connection.createDataChannel('creep')
 				connection.createOffer()
 					.then(e => connection.setLocalDescription(e))
 					.catch(error => console.log(error))
@@ -2557,6 +2567,8 @@
 				<div>hardwareConcurrency:</div>
 				<div>language:</div>
 				<div>platform:</div>
+				<div>webgl renderer:</div>
+				<div>webgl vendor:</div>
 				<div>system:</div>
 				<div>canvas 2d:</div>
 			</div>
