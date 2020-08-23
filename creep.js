@@ -2041,10 +2041,11 @@
 					return { season: [...set], lie }
 				}
 				const getRelativeTime = () => {
-					if (!caniuse(() => new Intl.RelativeTimeFormat)) {
+					const locale = attempt(() => Intl.DateTimeFormat().resolvedOptions().locale)
+					if (!locale || !caniuse(() => new Intl.RelativeTimeFormat)) {
 						return undefined
 					}
-					const relativeTime = new Intl.RelativeTimeFormat('locale', {
+					const relativeTime = new Intl.RelativeTimeFormat(locale, {
 						localeMatcher: 'best fit',
 						numeric: 'auto',
 						style: 'long'
