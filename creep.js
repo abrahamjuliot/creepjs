@@ -2248,12 +2248,24 @@
 				if (right1 != right2 || left1 != left2) {
 					offsetLie = { lies: [{ ['equal elements mismatch']: true }] }
 				}
-				
+
 				// resolve if no lies
 				if (!(rectsLie || offsetLie || mathLie)) {
 					iframeRendered.parentNode.removeChild(iframeRendered)
 					const $hash = await hashify(clientRects)
-					return resolve({clientRects, $hash })
+					resolve({clientRects, $hash })
+					const templateId = `${instanceId}-client-rects`
+					const templateEl = document.getElementById(templateId)
+					patch(templateEl, html`
+					<div>
+						<strong>DOMRect</strong>
+						<div>hash: ${$hash}</div>
+						<div>results: ${
+							modal(templateId, clientRects.map(domRect => Object.keys(domRect).map(key => `<div>${key}: ${domRect[key]}</div>`).join('')).join('<br>') )
+						}</div>
+					</div>
+					`)
+					return
 				}
 				// document lie and send to trash
 				if (rectsLie) {
@@ -2265,11 +2277,22 @@
 				if (mathLie) {
 					documentLie('clientRectsMathLie', hashMini(clientRects), mathLie)
 				}
+			
 				// Fingerprint lie
 				iframeRendered.parentNode.removeChild(iframeRendered)
 				const lies = { rectsLie, offsetLie, mathLie }
 				const $hash = await hashify(lies)
-				return resolve({...lies, $hash })
+				resolve({...lies, $hash })
+				const templateId = `${instanceId}-client-rects`
+				const templateEl = document.getElementById(templateId)
+				patch(templateEl, html`
+				<div>
+					<strong>DOMRect</strong>
+					<div>hash: ${$hash}</div>
+					<div>results: ${note.lied} ${modal(templateId, toJSONFormat(lies))}</div>
+				</div>
+				`)
+				return
 			}
 			catch (error) {
 				captureError(error)
@@ -2616,18 +2639,21 @@
 			<div id="${instanceId}-offline-audio-context">
 			</div>
 			<div id="${instanceId}-client-rects">
+				<strong>DOMRect</strong>
+				<div>hash:</div>
+				<div>results:</div>
 			</div>
 			<div id="${instanceId}-maths">
 				<strong>Math</strong>
 				<div>hash:</div>
 				<div>results:</div>
-				<div>engine: </div>
+				<div>engine:</div>
 			</div>
 			<div id="${instanceId}-console-errors">
 				<strong>Error</strong>
 				<div>hash:</div>
 				<div>results:</div>
-				<div>engine: </div>
+				<div>engine:</div>
 			</div>
 			<div id="${instanceId}-timezone">
 				<strong>Date/Intl</strong>
