@@ -410,11 +410,16 @@
 			return worker
 		}
 		catch (error) {
-			captureError(error)
-			return attempt( () => {
+			captureError(error, 'worker Blob failed or blocked by client')
+			// try backup
+			try {
 				const uri = `data:application/javascript,${encodeURIComponent(response)}`
 				return new Worker(uri)
-			})
+			}
+			catch (error) {
+				captureError(error, 'worker URI failed or blocked by client')
+				return undefined
+			}
 		}
 	}
 	// inline worker scope
@@ -504,6 +509,9 @@
 		return new Promise(resolve => {
 			try {
 				const worker = newWorker(inlineWorker)
+				if (!worker) {
+					return resolve(undefined)
+				}
 				worker.addEventListener('message', async event => {
 					const { data, data: { canvas2d } } = event
 					data.system = getOS(data.userAgent)
@@ -616,7 +624,7 @@
 					.catch(error => console.log(error))
 			}
 			catch (error) {
-				captureError(error, 'RTCPeerConnection failed')
+				captureError(error, 'RTCPeerConnection failed or blocked by client')
 				return resolve(undefined)
 			}
 		})
