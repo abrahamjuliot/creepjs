@@ -480,12 +480,23 @@
 		}
 		catch (error) { }
 
+		const computeTimezoneOffset = () => {
+			const date = new Date().getDate()
+			const month = new Date().getMonth()
+			const year = Date().split` `[3] // current year
+			const dateString = `${month}/${date}/${year}`
+			const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
+			const utc = Date.parse(toJSONParsed(new Date(dateString)).split`Z`.join``)
+			const now = +new Date(dateString)
+			return +(((utc - now)/60000).toFixed(0))
+		}
+		const timezoneOffset = computeTimezoneOffset()
 		const hardwareConcurrency = caniuse(() => navigator, ['hardwareConcurrency'])
 		const language = caniuse(() => navigator, ['language'])
 		const platform = caniuse(() => navigator, ['platform'])
 		const userAgent = caniuse(() => navigator, ['userAgent'])
 
-		postMessage({ hardwareConcurrency, language, platform, userAgent, canvas2d, ['webgl renderer']: webglRenderer, ['webgl vendor']: webglVendor })
+		postMessage({ ['timezone offset']: timezoneOffset, hardwareConcurrency, language, platform, userAgent, canvas2d, ['webgl renderer']: webglRenderer, ['webgl vendor']: webglVendor })
 		close()
 	}
 
@@ -2604,6 +2615,7 @@
 			<div id="${instanceId}-worker-scope">
 				<strong>WorkerGlobalScope: WorkerNavigator/OffscreenCanvas</strong>
 				<div>hash:</div>
+				<div>timezone offset</div>
 				<div>hardwareConcurrency:</div>
 				<div>language:</div>
 				<div>platform:</div>
