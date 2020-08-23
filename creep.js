@@ -2344,38 +2344,38 @@
 				let matching = false
 				
 				const values = {
-					['analyserNode.channelCount']: attempt(() => analyser.channelCount),
-					['analyserNode.channelCountMode']: attempt(() => analyser.channelCountMode),
-					['analyserNode.channelInterpretation']: attempt(() => analyser.channelInterpretation),
-					['analyserNode.context.sampleRate']: attempt(() => analyser.context.sampleRate),
-					['analyserNode.fftSize']: attempt(() => analyser.fftSize),
-					['analyserNode.frequencyBinCount']: attempt(() => analyser.frequencyBinCount),
-					['analyserNode.maxDecibels']: attempt(() => analyser.maxDecibels),
-					['analyserNode.minDecibels']: attempt(() => analyser.minDecibels),
-					['analyserNode.numberOfInputs']: attempt(() => analyser.numberOfInputs),
-					['analyserNode.numberOfOutputs']: attempt(() => analyser.numberOfOutputs),
-					['analyserNode.smoothingTimeConstant']: attempt(() => analyser.smoothingTimeConstant),
-					['analyserNode.context.listener.forwardX.maxValue']: attempt(() => {
+					['AnalyserNode.channelCount']: attempt(() => analyser.channelCount),
+					['AnalyserNode.channelCountMode']: attempt(() => analyser.channelCountMode),
+					['AnalyserNode.channelInterpretation']: attempt(() => analyser.channelInterpretation),
+					['AnalyserNode.context.sampleRate']: attempt(() => analyser.context.sampleRate),
+					['AnalyserNode.fftSize']: attempt(() => analyser.fftSize),
+					['AnalyserNode.frequencyBinCount']: attempt(() => analyser.frequencyBinCount),
+					['AnalyserNode.maxDecibels']: attempt(() => analyser.maxDecibels),
+					['AnalyserNode.minDecibels']: attempt(() => analyser.minDecibels),
+					['AnalyserNode.numberOfInputs']: attempt(() => analyser.numberOfInputs),
+					['AnalyserNode.numberOfOutputs']: attempt(() => analyser.numberOfOutputs),
+					['AnalyserNode.smoothingTimeConstant']: attempt(() => analyser.smoothingTimeConstant),
+					['AnalyserNode.context.listener.forwardX.maxValue']: attempt(() => {
 						const chain = ['context', 'listener', 'forwardX', 'maxValue']
 						return caniuse(() => analyser, chain)
 					}),
-					['biquadFilterNode.gain.maxValue']: attempt(() => biquadFilter.gain.maxValue),
-					['biquadFilterNode.frequency.defaultValue']: attempt(() => biquadFilter.frequency.defaultValue),
-					['biquadFilterNode.frequency.maxValue']: attempt(() => biquadFilter.frequency.maxValue),
-					['dynamicsCompressorNode.attack.defaultValue']: attempt(() => dynamicsCompressor.attack.defaultValue),
-					['dynamicsCompressorNode.knee.defaultValue']: attempt(() => dynamicsCompressor.knee.defaultValue),
-					['dynamicsCompressorNode.knee.maxValue']: attempt(() => dynamicsCompressor.knee.maxValue),
-					['dynamicsCompressorNode.ratio.defaultValue']: attempt(() => dynamicsCompressor.ratio.defaultValue),
-					['dynamicsCompressorNode.ratio.maxValue']: attempt(() => dynamicsCompressor.ratio.maxValue),
-					['dynamicsCompressorNode.release.defaultValue']: attempt(() => dynamicsCompressor.release.defaultValue),
-					['dynamicsCompressorNode.release.maxValue']: attempt(() => dynamicsCompressor.release.maxValue),
-					['dynamicsCompressorNode.threshold.defaultValue']: attempt(() => dynamicsCompressor.threshold.defaultValue),
-					['dynamicsCompressorNode.threshold.minValue']: attempt(() => dynamicsCompressor.threshold.minValue),
-					['oscillatorNode.detune.maxValue']: attempt(() => oscillator.detune.maxValue),
-					['oscillatorNode.detune.minValue']: attempt(() => oscillator.detune.minValue),
-					['oscillatorNode.frequency.defaultValue']: attempt(() => oscillator.frequency.defaultValue),
-					['oscillatorNode.frequency.maxValue']: attempt(() => oscillator.frequency.maxValue),
-					['oscillatorNode.frequency.minValue']: attempt(() => oscillator.frequency.minValue)
+					['BiquadFilterNode.gain.maxValue']: attempt(() => biquadFilter.gain.maxValue),
+					['BiquadFilterNode.frequency.defaultValue']: attempt(() => biquadFilter.frequency.defaultValue),
+					['BiquadFilterNode.frequency.maxValue']: attempt(() => biquadFilter.frequency.maxValue),
+					['DynamicsCompressorNode.attack.defaultValue']: attempt(() => dynamicsCompressor.attack.defaultValue),
+					['DynamicsCompressorNode.knee.defaultValue']: attempt(() => dynamicsCompressor.knee.defaultValue),
+					['DynamicsCompressorNode.knee.maxValue']: attempt(() => dynamicsCompressor.knee.maxValue),
+					['DynamicsCompressorNode.ratio.defaultValue']: attempt(() => dynamicsCompressor.ratio.defaultValue),
+					['DynamicsCompressorNode.ratio.maxValue']: attempt(() => dynamicsCompressor.ratio.maxValue),
+					['DynamicsCompressorNode.release.defaultValue']: attempt(() => dynamicsCompressor.release.defaultValue),
+					['DynamicsCompressorNode.release.maxValue']: attempt(() => dynamicsCompressor.release.maxValue),
+					['DynamicsCompressorNode.threshold.defaultValue']: attempt(() => dynamicsCompressor.threshold.defaultValue),
+					['DynamicsCompressorNode.threshold.minValue']: attempt(() => dynamicsCompressor.threshold.minValue),
+					['OscillatorNode.detune.maxValue']: attempt(() => oscillator.detune.maxValue),
+					['OscillatorNode.detune.minValue']: attempt(() => oscillator.detune.minValue),
+					['OscillatorNode.frequency.defaultValue']: attempt(() => oscillator.frequency.defaultValue),
+					['OscillatorNode.frequency.maxValue']: attempt(() => oscillator.frequency.maxValue),
+					['OscillatorNode.frequency.minValue']: attempt(() => oscillator.frequency.minValue)
 				}
 				
 				return resolve(new Promise(resolve => {
@@ -2385,7 +2385,7 @@
 							event.renderedBuffer.copyFromChannel(copy, 0)
 							const bins = event.renderedBuffer.getChannelData(0)
 							
-							copySample = copy ? [...copy].slice(4500, 4600) : [sendToTrash('invalideAudioSampleCopy', null)]
+							copySample = copy ? [...copy].slice(4500, 4600) : [sendToTrash('invalidAudioSampleCopy', null)]
 							binsSample = bins ? [...bins].slice(4500, 4600) : [sendToTrash('invalidAudioSample', null)]
 							
 							const copyJSON = copy && JSON.stringify([...copy].slice(4500, 4600))
@@ -2412,13 +2412,29 @@
 							}
 							// Fingerprint lie if it exists
 							const response = {
-								copySample: copyFromChannelLie ? [copyFromChannelLie] : copySample,
 								binsSample: channelDataLie ? [channelDataLie] : binsSample,
+								copySample: copyFromChannelLie ? [copyFromChannelLie] : copySample,
 								matching,
 								values
 							}
 							const $hash = await hashify(response)
-							return resolve({...response, $hash })
+							resolve({...response, $hash })
+
+							const id = `${instanceId}-offline-audio-context`
+							const el = document.getElementById(id)
+							patch(el, html`
+							<div>
+								<strong>OfflineAudioContext</strong>
+								<div>hash: ${$hash}</div>
+								<div>sample: ${binsSample[0]}</div>
+								<div>copy: ${copySample[0]}</div>
+								<div>matching: ${matching}</div>
+								<div>node values: ${
+									modal(id, Object.keys(values).map(key => `<div>${key}: ${values[key]}</div>`).join(''))
+								}</div>
+							</div>
+							`)
+							return
 						}
 						catch (error) {
 							captureError(error)
@@ -2637,6 +2653,12 @@
 					<div>matching data URI:</div>
 			</div>
 			<div id="${instanceId}-offline-audio-context">
+				<strong>OfflineAudioContext</strong>
+				<div>hash:</div>
+				<div>sample:</div>
+				<div>copy:</div>
+				<div>matching:</div>
+				<div>node values:</div>
 			</div>
 			<div id="${instanceId}-client-rects">
 				<strong>DOMRect</strong>
@@ -2917,7 +2939,8 @@
 			// avoid random timezone fingerprint values
 			timezone: !fp.timezone || !fp.timezone.lied ? fp.timezone : undefined,
 			clientRects: fp.clientRects,
-			offlineAudioContext: !isBrave ? fp.offlineAudioContext : distrust,
+			// node values provide essential entropy (bin samples are just math results and randomized in brave)
+			offlineAudioContext: fp.offlineAudioContext.values,
 			fonts: fp.fonts,
 			// avoid random trash fingerprint
 			trash: fp.trash.trashBin.map(trash => trash.name),
