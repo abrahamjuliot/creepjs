@@ -1,5 +1,10 @@
 (async function() {
 	
+	// Detect Browser
+	const isChrome = 'chrome' in window
+	const isBrave = 'brave' in navigator
+	const isFirefox = typeof InstallTrigger !== 'undefined'
+
 	// Handle Errors
 	const errorsCaptured = []
 	const captureError = (error, customMessage = null) => {
@@ -139,6 +144,7 @@
 
 	// template helpers
 	const note = {
+		unsupported: '<span class="blocked">blocked</span> or unsupported',
 		blocked: '<span class="blocked">blocked</span>',
 		lied: '<span class="blocked">lied</span>'
 	}
@@ -199,6 +205,47 @@
 		return gibbers
 	}
 
+	// nested contentWindow context
+	const getNestedContentWindowContext = instanceId => {
+		return new Promise(resolve => {
+			try {
+				const thisSiteCantBeReached = `about:${instanceId}` // url must yield 'this site cant be reached' error
+				const createIframe = (doc, id, contentWindow = false) => {
+					const iframe = doc.createElement('iframe')
+					iframe.setAttribute('id', id)
+					iframe.setAttribute('style', 'visibility: hidden; height: 0')
+					iframe.setAttribute('sandbox', 'allow-same-origin')
+					if (isChrome) {
+						iframe.src = thisSiteCantBeReached 
+					}
+					doc.body.appendChild(iframe)
+					const rendered = doc.getElementById(id)
+					return {
+						el: rendered,
+						context: rendered[contentWindow ? 'contentWindow' : 'contentDocument'],
+						remove: () => rendered.parentNode.removeChild(rendered)
+					}
+				}
+				const parentIframe = createIframe(document, `${instanceId}-parent-iframe`)
+				const {
+					context: contentWindow
+				} = createIframe(parentIframe.context, `${instanceId}-nested-iframe`, true)
+
+				if (isChrome) { contentWindow.location = thisSiteCantBeReached  }
+
+				setTimeout(()=> {
+					resolve({ contentWindow, parentIframe })
+				}, 100) // delay frame load
+				return
+			}
+			catch (error) {
+				captureError(error, 'client blocked nested iframe context')
+				return resolve({contentWindow: undefined, parentIframe: undefined})
+			}
+		})
+	}
+	const { contentWindow, parentIframe  } = await getNestedContentWindowContext(instanceId)
+
 	// detect and fingerprint Function API lies
 	const native = (result, str) => {
 		const chrome = `function ${str}() { [native code] }`
@@ -210,31 +257,14 @@
 		let lies = []
 
 		// detect attempts to rewrite Function.prototype.toString conversion APIs
-		const { toString } = Function.prototype
+		const toString = (
+			contentWindow ? 
+			contentWindow.Function.prototype.toString.call(Function.prototype.toString) : // aggressive test
+			Function.prototype.toString
+		)
 		if (!native(toString, 'toString')) {
 			lies.push({ ['failed API toString test']: toString })
 		}
-		
-		// The idea of checking new is inspired by https://adtechmadness.wordpress.com/2019/03/23/javascript-tampering-detection-and-stealth/
-		// Not consistent in Safari: will review
-		// try {
-		// 	const str_1 = new Function.prototype.toString
-		// 	const str_2 = new Function.prototype.toString()
-		// 	const str_3 = new Function.prototype.toString.toString
-		// 	const str_4 = new Function.prototype.toString.toString()
-		// 	lies.push({
-		// 		str_1,
-		// 		str_2,
-		// 		str_3,
-		// 		str_4
-		// 	})
-		// } catch (error) {
-		// 	const nativeTypeError = ''+error == 'TypeError: Function.prototype.toString is not a constructor'
-		// 	const safariNativeTypeError = ''+error == "function is not a constructor (evaluating 'new Function.prototype.toString')"
-		// 	if (!nativeTypeError && !safariNativeTypeError) {
-		// 		lies.push({ newErr: '' + error.message })
-		// 	}
-		// }
 
 		return () => lies
 	}
@@ -273,7 +303,11 @@
 			}
 
 			// collect string conversion result
-			const result = '' + api
+			const result = (
+				contentWindow ? 
+				contentWindow.Function.prototype.toString.call(api) :
+				'' + api
+			)
 
 			// fingerprint result if it does not match native code
 			if (!native(result, name)) {
@@ -317,7 +351,11 @@
 				}
 
 				// collect string conversion result
-				const result = '' + apiFunction
+				const result = (
+					contentWindow ? 
+					contentWindow.Function.prototype.toString.call(apiFunction) :
+					'' + apiFunction
+				)
 
 				// fingerprint result if it does not match native code
 				if (!native(result, name)) {
@@ -337,10 +375,6 @@
 
 		return false
 	}
-
-	// Detect Browser
-	const isBrave = 'brave' in navigator ? true : false
-	const isFirefox = typeof InstallTrigger !== 'undefined'
 
 	// id known hash
 	const known = hash => {
@@ -405,16 +439,24 @@
 				[response],
 				{ type: 'application/javascript' }
 			))
-			const worker = new Worker(blobURL)
+
+			let worker
+			if (contentWindow) {
+				worker = contentWindow.Worker
+			}
+			else {
+				worker = Worker
+			}
+			const workerInstance = new worker(blobURL)
 			URL.revokeObjectURL(blobURL)
-			return worker
+			return workerInstance
 		}
 		catch (error) {
 			captureError(error, 'worker Blob failed or blocked by client')
 			// try backup
 			try {
 				const uri = `data:application/javascript,${encodeURIComponent(response)}`
-				return new Worker(uri)
+				return new worker(uri)
 			}
 			catch (error) {
 				captureError(error, 'worker URI failed or blocked by client')
@@ -482,7 +524,7 @@
 		close()
 	}
 
-	const getWorkerScope = instanceId => {
+	const getWorkerScope = (instanceId) => {
 		return new Promise(resolve => {
 			try {
 				const worker = newWorker(inlineWorker, caniuse)
@@ -525,21 +567,34 @@
 	const getWebRTCData = (instanceId, cloudflare) => {
 		return new Promise(resolve => {
 			try {
-				const rtcPeerConnection = (
-					window.RTCPeerConnection ||
-					window.webkitRTCPeerConnection ||
-					window.mozRTCPeerConnection ||
-					window.msRTCPeerConnection
-				)
+				let rtcPeerConnection
+				if (contentWindow && !isFirefox) { // FF throws an error in iframes
+					rtcPeerConnection = (
+						contentWindow.RTCPeerConnection ||
+						contentWindow.webkitRTCPeerConnection ||
+						contentWindow.mozRTCPeerConnection ||
+						contentWindow.msRTCPeerConnection
+					)
+				}
+				else {
+					rtcPeerConnection = (
+						window.RTCPeerConnection ||
+						window.webkitRTCPeerConnection ||
+						window.mozRTCPeerConnection ||
+						window.msRTCPeerConnection
+					)
+				}
+				
 				const connection = new rtcPeerConnection({
 					iceServers: [{
-						urls: ["stun:stun.l.google.com:19302?transport=udp"]
+						urls: ['stun:stun.l.google.com:19302?transport=udp']
 					}]
 				}, {
 					optional: [{
 						RtpDataChannels: true
 					}]
 				})
+				
 				let success = false
 				connection.onicecandidate = async e => {
 					const candidateEncoding = /((udp|tcp)\s)((\d|\w)+\s)((\d|\w|(\.|\:))+)(?=\s)/ig
@@ -657,6 +712,7 @@
 	const getNavigator = (instanceId, workerScope) => {
 		return new Promise(async resolve => {
 			try {
+				contentWindowNavigator = contentWindow.navigator
 				const navigatorPrototype = attempt(() => Navigator.prototype)
 				const detectLies = (name, value) => {
 					const workerScopeValue = caniuse(() => workerScope, [name])
@@ -666,7 +722,7 @@
 							const system = getOS(value)
 							if (workerScope.system != system) {
 								documentLie(name, system, workerScopeMatchLie)
-								return undefined
+								return value
 							}
 						}
 						else if (name != 'userAgent' && workerScopeValue != value) {
@@ -674,41 +730,41 @@
 							console.log('Worker', workerScopeValue)
 							console.log('Window', value)
 							documentLie(name, value, workerScopeMatchLie)
-							return undefined
+							return value
 						}
 					}
 					const lie = navigatorPrototype ? hasLiedAPI(navigatorPrototype, name, navigator).lie : false
 					if (lie) {
 						documentLie(name, value, lie)
-						return undefined
+						return value
 					}
 					return value
 				}
 				const credibleUserAgent = (
-					'chrome' in window ? navigator.userAgent.includes(navigator.appVersion) : true
+					'chrome' in window ? contentWindowNavigator.userAgent.includes(contentWindowNavigator.appVersion) : true
 				)
 				const data = {
 					appVersion: attempt(() => {
-						const { appVersion } = navigator
+						const { appVersion } = contentWindowNavigator
 						let av = undefined
 						av = detectLies('appVersion', appVersion)
 						if (!credibleUserAgent) {
 							av = sendToTrash('appVersion does not match userAgent', appVersion)
 						}
-						if ('appVersion' in navigator && !appVersion) {
+						if ('appVersion' in contentWindowNavigator && !appVersion) {
 							av = sendToTrash('appVersion', 'Living Standard property returned falsy value')
 						}
 						return av
 					}),
 					deviceMemory: attempt(() => {
-						if ('deviceMemory' in navigator) {
-							const deviceMemory = detectLies('deviceMemory', navigator.deviceMemory)
+						if ('deviceMemory' in contentWindowNavigator) {
+							const deviceMemory = detectLies('deviceMemory', contentWindowNavigator.deviceMemory)
 							return deviceMemory ? trustInteger('deviceMemory: invalid return type', deviceMemory) : undefined
 						}
 						return undefined
 					}),
 					doNotTrack: attempt(() => {
-						const doNotTrack = detectLies('doNotTrack', navigator.doNotTrack)
+						const doNotTrack = detectLies('doNotTrack', contentWindowNavigator.doNotTrack)
 						const trusted = {
 							'1': true,
 							'true': true, 
@@ -723,12 +779,12 @@
 						return trusted[doNotTrack] ? doNotTrack : sendToTrash('DoNotTrack: invalid return type', doNotTrack)
 					}),
 					hardwareConcurrency: attempt(() => {
-						const hardwareConcurrency = detectLies('hardwareConcurrency', navigator.hardwareConcurrency)
+						const hardwareConcurrency = detectLies('hardwareConcurrency', contentWindowNavigator.hardwareConcurrency)
 						return hardwareConcurrency ? trustInteger('hardwareConcurrency: invalid return type', hardwareConcurrency): undefined
 					}),
 					language: attempt(() => {
-						const languages = detectLies('languages', navigator.languages)
-						const language = detectLies('language', navigator.language)
+						const languages = detectLies('languages', contentWindowNavigator.languages)
+						const language = detectLies('language', contentWindowNavigator.language)
 
 						if (languages && languages) {
 							const langs = /^.{0,2}/g.exec(languages[0])[0]
@@ -743,21 +799,21 @@
 						return undefined
 					}),
 					maxTouchPoints: attempt(() => {
-						if ('maxTouchPoints' in navigator) {
-							const maxTouchPoints = detectLies('maxTouchPoints', navigator.maxTouchPoints)
+						if ('maxTouchPoints' in contentWindowNavigator) {
+							const maxTouchPoints = detectLies('maxTouchPoints', contentWindowNavigator.maxTouchPoints)
 							return maxTouchPoints != undefined ? trustInteger('MaxTouchPoints: invalid return type', maxTouchPoints) : undefined
 						}
 
 						return null
 					}),
 					platform: attempt(() => {
-						const platform = detectLies('platform', navigator.platform)
+						const platform = detectLies('platform', contentWindowNavigator.platform)
 						const systems = ['win', 'linux', 'mac', 'arm', 'pike', 'linux', 'iphone', 'ipad', 'ipod', 'android', 'x11']
 						const trusted = typeof platform == 'string' && systems.filter(val => platform.toLowerCase().includes(val))[0]
 						return trusted ? platform : undefined
 					}),
 					userAgent: attempt(() => {
-						const { userAgent } = navigator
+						const { userAgent } = contentWindowNavigator
 						const gibbers = gibberish(userAgent)
 						let ua = undefined
 						ua = detectLies('userAgent', userAgent)
@@ -766,18 +822,18 @@
 						}
 						return credibleUserAgent ? ua : sendToTrash('userAgent does not match appVersion', userAgent)
 					}),
-					system: attempt(() => getOS(navigator.userAgent)),
+					system: attempt(() => getOS(contentWindowNavigator.userAgent)),
 					vendor: attempt(() => {
-						const vendor = detectLies('vendor', navigator.vendor)
+						const vendor = detectLies('vendor', contentWindowNavigator.vendor)
 						return vendor
 					}),
 					mimeTypes: attempt(() => {
-						const mimeTypes = detectLies('mimeTypes', navigator.mimeTypes)
+						const mimeTypes = detectLies('mimeTypes', contentWindowNavigator.mimeTypes)
 						return mimeTypes ? [...mimeTypes].map(m => m.type) : []
 					}),
 					plugins: attempt(() => {
-						const plugins = detectLies('plugins', navigator.plugins)
-						return plugins ? [...navigator.plugins]
+						const plugins = detectLies('plugins', contentWindowNavigator.plugins)
+						return plugins ? [...contentWindowNavigator.plugins]
 							.map(p => ({
 								name: p.name,
 								description: p.description,
@@ -786,14 +842,14 @@
 							})) : []
 					}),
 					properties: attempt(() => {
-						const keys = Object.keys(Object.getPrototypeOf(navigator))
+						const keys = Object.keys(Object.getPrototypeOf(contentWindowNavigator))
 						return keys
 					}),
 					highEntropyValues: await attempt(async () => { 
-						if (!('userAgentData' in navigator)) {
+						if (!('userAgentData' in contentWindowNavigator)) {
 							return undefined
 						}
-						const data = await navigator.userAgentData.getHighEntropyValues(
+						const data = await contentWindowNavigator.userAgentData.getHighEntropyValues(
 							['platform', 'platformVersion', 'architecture',  'model', 'uaFullVersion']
 						)
 						return data
@@ -834,11 +890,11 @@
 							const value = highEntropyValues[key]
 							return `<div>ua ${key}: ${value ? value : note.blocked}</div>`
 						}).join('') :
-						`<div>ua architecture: ${note.blocked}</div>
-						<div>ua model: ${note.blocked}</div>
-						<div>ua platform: ${note.blocked}</div>
-						<div>ua platformVersion: ${note.blocked}</div>
-						<div>ua uaFullVersion: ${note.blocked} </div>`
+						`<div>ua architecture: ${note.unsupported}</div>
+						<div>ua model: ${note.unsupported}</div>
+						<div>ua platform: ${note.unsupported}</div>
+						<div>ua platformVersion: ${note.unsupported}</div>
+						<div>ua uaFullVersion: ${note.unsupported} </div>`
 					}
 					<div>properties (${count(properties)}): ${modal(`${id}-properties`, properties.join(', '))}</div>
 				</div>
@@ -853,18 +909,11 @@
 	}
 	
 	// iframe.contentWindow
-	const getIframeContentWindowVersion = instanceId => {
+	const getIframeContentWindowVersion = (instanceId) => {
 		return new Promise(async resolve => {
 			try {
-				const id = `${instanceId}-content-window-version-test`
-				const iframeElement = document.createElement('iframe')
-				iframeElement.setAttribute('id', id)
-				iframeElement.setAttribute('style', 'display: none')
-				document.body.appendChild(iframeElement)
-				const iframe = document.getElementById(id)
-				const contentWindow = iframe.contentWindow
-				const keys = Object.getOwnPropertyNames(contentWindow)
-				iframe.parentNode.removeChild(iframe) 
+				
+				const keys = Object.getOwnPropertyNames(contentWindow) 
 				const $hash = await hashify(keys)
 				resolve({ keys, $hash })
 				const el = document.getElementById(`${instanceId}-iframe-content-window-version`)
@@ -1116,24 +1165,25 @@
 
 	const getScreen = instanceId => {
 		return new Promise(async resolve => {
+			const contentWindowScreen = contentWindow.screen
 			try {
 				const screenPrototype = attempt(() => Screen.prototype)
 				const detectLies = (name, value) => {
-					const lie = screenPrototype ? hasLiedAPI(screenPrototype, name, screen).lie : false
+					const lie = screenPrototype ? hasLiedAPI(screenPrototype, name, contentWindowScreen).lie : false
 					if (lie) {
 						documentLie(name, value, lie)
-						return undefined
+						return value
 					}
 					return value
 				}
-				const width = detectLies('width', screen.width)
-				const height = detectLies('height', screen.height)
-				const availWidth = detectLies('availWidth', screen.availWidth)
-				const availHeight = detectLies('availHeight', screen.availHeight)
-				const colorDepth = detectLies('colorDepth', screen.colorDepth)
-				const pixelDepth = detectLies('pixelDepth', screen.pixelDepth)
+				const width = detectLies('width', contentWindowScreen.width)
+				const height = detectLies('height', contentWindowScreen.height)
+				const availWidth = detectLies('availWidth', contentWindowScreen.availWidth)
+				const availHeight = detectLies('availHeight', contentWindowScreen.availHeight)
+				const colorDepth = detectLies('colorDepth', contentWindowScreen.colorDepth)
+				const pixelDepth = detectLies('pixelDepth', contentWindowScreen.pixelDepth)
 				const data = {
-					device: getDevice(screen.width, screen.height),
+					device: getDevice(contentWindowScreen.width, contentWindowScreen.height),
 					width: attempt(() => width ? trustInteger('InvalidWidth', width) : undefined),
 					outerWidth: attempt(() => outerWidth ? trustInteger('InvalidOuterWidth', outerWidth) : undefined),
 					availWidth: attempt(() => availWidth ? trustInteger('InvalidAvailWidth', availWidth) : undefined),
@@ -1719,7 +1769,7 @@
 					if (!val) {
 						return note.blocked
 					}
-					return typeof val == 'string' ? val : `${note.lied} ${modal(id, toJSONFormat(val))}`
+					return typeof val == 'string' ? val : note.lied
 				}
 				const detectParameterLie = (obj, keys, version, id) => {
 					if (!obj || !keys.length) {
@@ -1732,8 +1782,9 @@
 						obj['extLie'] ||
 						obj['ext2Lie']
 					)
-					return `<div>${version} parameters (${lied ? '0' : count(keys)}): ${
-						lied ? `${note.lied} ${modal(id, toJSONFormat(obj))}` :
+					return `
+					<div>${version} parameters (${lied ? '0' : count(keys)}): ${
+						lied ? note.lied :
 						modal(id, keys.map(key => `${key}: ${obj[key]}`).join('<br>'))
 					}</div>
 					`
@@ -1744,8 +1795,9 @@
 					}
 					id = `${id}-d-${version}`
 					const lied = !!(obj['dataLie'] || obj['contextLie'])
-					return `<div>${version} toDataURL: ${
-						lied ? `${note.lied} ${modal(id, toJSONFormat(obj))}` :
+					return `
+					<div>${version} toDataURL: ${
+						lied ? note.lied :
 						(obj.$hash ? obj.$hash : note.blocked)
 					}</div>
 					`
@@ -1977,45 +2029,47 @@
 	const getTimezone = instanceId => {
 		return new Promise(async resolve => {
 			try {
+				const contentWindowDate = contentWindow.Date
+				const contentWindowIntl = contentWindow.Intl
 				const computeTimezoneOffset = () => {
-					const date = new Date().getDate()
-					const month = new Date().getMonth()
-					const year = Date().split` `[3] // current year
+					const date = new contentWindowDate().getDate()
+					const month = new contentWindowDate().getMonth()
+					const year = contentWindowDate().split` `[3] // current year
 					const dateString = `${month}/${date}/${year}`
 					const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
-					const utc = Date.parse(toJSONParsed(new Date(dateString)).split`Z`.join``)
-					const now = +new Date(dateString)
+					const utc = contentWindowDate.parse(toJSONParsed(new contentWindowDate(dateString)).split`Z`.join``)
+					const now = +new contentWindowDate(dateString)
 					return +(((utc - now)/60000).toFixed(0))
 				}
 				// concept inspired by https://github.com/ghacksuserjs/TorZillaPrint
 				const measureTimezoneOffset = timezone => {
 					let lie = false
-					const year = Date().split` `[3] // current year
+					const year = contentWindowDate().split` `[3] // current year
 					const minute = 60000
-					const winter = new Date(`1/1/${year}`)
-					const spring = new Date(`4/1/${year}`)
-					const summer = new Date(`7/1/${year}`)
-					const fall = new Date(`10/1/${year}`)
-					const winterUTCTime = +new Date(`${year}-01-01`)
-					const springUTCTime = +new Date(`${year}-04-01`)
-					const summerUTCTime = +new Date(`${year}-07-01`)
-					const fallUTCTime = +new Date(`${year}-10-01`)
+					const winter = new contentWindowDate(`1/1/${year}`)
+					const spring = new contentWindowDate(`4/1/${year}`)
+					const summer = new contentWindowDate(`7/1/${year}`)
+					const fall = new contentWindowDate(`10/1/${year}`)
+					const winterUTCTime = +new contentWindowDate(`${year}-01-01`)
+					const springUTCTime = +new contentWindowDate(`${year}-04-01`)
+					const summerUTCTime = +new contentWindowDate(`${year}-07-01`)
+					const fallUTCTime = +new contentWindowDate(`${year}-10-01`)
 					const date = {
 						winter: {
 							calculated: (+winter - winterUTCTime)/minute,
-							parsed: (Date.parse(winter) - winterUTCTime)/minute
+							parsed: (contentWindowDate.parse(winter) - winterUTCTime)/minute
 						},
 						spring: {
 							calculated: (+spring - springUTCTime)/minute,
-							parsed: (Date.parse(spring) - springUTCTime)/minute
+							parsed: (contentWindowDate.parse(spring) - springUTCTime)/minute
 						},
 						summer: {
 							calculated: (+summer - summerUTCTime)/minute,
-							parsed: (Date.parse(summer) - summerUTCTime)/minute
+							parsed: (contentWindowDate.parse(summer) - summerUTCTime)/minute
 						},
 						fall: {
 							calculated: (+fall - fallUTCTime)/minute,
-							parsed: (Date.parse(fall) - fallUTCTime)/minute
+							parsed: (contentWindowDate.parse(fall) - fallUTCTime)/minute
 						}
 					}
 					lie = !!Object.keys(date).filter(key => {
@@ -2037,11 +2091,11 @@
 					return { season: [...set], lie }
 				}
 				const getRelativeTime = () => {
-					const locale = attempt(() => Intl.DateTimeFormat().resolvedOptions().locale)
-					if (!locale || !caniuse(() => new Intl.RelativeTimeFormat)) {
+					const locale = attempt(() => contentWindowIntl.DateTimeFormat().resolvedOptions().locale)
+					if (!locale || !caniuse(() => new contentWindowIntl.RelativeTimeFormat)) {
 						return undefined
 					}
-					const relativeTime = new Intl.RelativeTimeFormat(locale, {
+					const relativeTime = new contentWindowIntl.RelativeTimeFormat(locale, {
 						localeMatcher: 'best fit',
 						numeric: 'auto',
 						style: 'long'
@@ -2086,7 +2140,7 @@
 					const languages = []
 					constructors.forEach(name => {
 						try {
-							const obj = caniuse(() => new Intl[name])
+							const obj = caniuse(() => new contentWindowIntl[name])
 							if (!obj) {
 								return
 							}
@@ -2100,17 +2154,17 @@
 					const lang = [...new Set(languages)]
 					return { lang, lie: lang.length > 1 ? true : false }
 				}		
-				const dateGetTimezoneOffset = attempt(() => Date.prototype.getTimezoneOffset)
-				const dateProto = Date.prototype
+				const dateGetTimezoneOffset = attempt(() => contentWindowDate.prototype.getTimezoneOffset)
+				const dateProto = contentWindowDate.prototype
 				const timezoneLie = dateGetTimezoneOffset ? hasLiedAPI(dateGetTimezoneOffset, 'getTimezoneOffset', dateProto).lie : false
-				const timezoneOffset = new Date().getTimezoneOffset()
+				const timezoneOffset = new contentWindowDate().getTimezoneOffset()
 				const timezoneOffsetComputed = computeTimezoneOffset()
 				const timezoneOffsetMeasured = measureTimezoneOffset(timezoneOffset)
 				const measuredTimezones = timezoneOffsetMeasured.season.join(', ')
 				const matchingOffsets = timezoneOffsetComputed == timezoneOffset
 				const notWithinParentheses = /.*\(|\).*/g
-				const timezoneLocation = Intl.DateTimeFormat().resolvedOptions().timeZone
-				const timezone = (''+new Date()).replace(notWithinParentheses, '')
+				const timezoneLocation = contentWindowIntl.DateTimeFormat().resolvedOptions().timeZone
+				const timezone = (''+new contentWindowDate()).replace(notWithinParentheses, '')
 				const relativeTime = getRelativeTime()
 				const locale = getLocale()
 				// document lie
@@ -2151,12 +2205,12 @@
 					<div>hash: ${$hash}</div>
 					<div>timezone: ${timezone}</div>
 					<div>timezone location: ${timezoneLocation}</div>
-					<div>timezone offset: ${!timezoneLie && matchingOffsets ? ''+timezoneOffset : `${note.lied} ${modal(`${id}-timezoneOffset`, toJSONFormat({ timezoneLie, timezoneOffset }))}`}</div>
+					<div>timezone offset: ${!timezoneLie && matchingOffsets ? ''+timezoneOffset : note.lied}</div>
 					<div>timezone offset computed: ${''+timezoneOffsetComputed}</div>
 					<div>matching offsets: ${''+matchingOffsets}</div>
-					<div>timezone measured: ${!seasonLie ? measuredTimezones : `${note.lied} ${modal(`${id}-timezone-measured`, toJSONFormat({seasonLie, measuredTimezones}))}`}</div>
+					<div>timezone measured: ${!seasonLie ? measuredTimezones : note.lied}</div>
 					<div>relativeTimeFormat: ${!relativeTime ? note.blocked : modal(`${id}-relativeTimeFormat`, Object.keys(relativeTime).sort().map(key => `${key} => ${relativeTime[key]}`).join('<br>'))}</div>
-					<div>locale language: ${!localeLie ? locale.lang.join(', ') : `${note.lied} ${modal(`${id}-locale`, toJSONFormat(localeLie))}`}</div>
+					<div>locale language: ${!localeLie ? locale.lang.join(', ') : note.lied}</div>
 				</div>
 				`)
 				return
@@ -2286,7 +2340,7 @@
 				<div>
 					<strong>DOMRect</strong>
 					<div>hash: ${$hash}</div>
-					<div>results: ${note.lied} ${modal(templateId, toJSONFormat(lies))}</div>
+					<div>results: ${note.lied}</div>
 				</div>
 				`)
 				return
@@ -2889,6 +2943,10 @@
 			console.error(error.message)
 		})
 		const timeEnd = timeStart()
+
+		if (parentIframe) {
+			parentIframe.remove()
+		}
 
 		const fingerprint = {
 			workerScope: workerScopeComputed,
