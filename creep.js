@@ -1505,24 +1505,15 @@
 							)
 							return ext ? gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT) : undefined
 						}
-						const camelCaseProps = data => {
-							const renamed = {}
-							Object.keys(data).map(key => {
-								const val = data[key]
-								const name = key.toLowerCase().split('_').map((word, i) => {
-									return i == 0 ? word : word.charAt(0).toUpperCase() + word.slice(1)
-								}).join('')
-								renamed[name] = val
-							})
-							return renamed
-						}
+						
 						const getShaderData = (name, shader) => {
 							const data = {}
+							console.log(shader)
 							for (const prop in shader) {
 								const obj = shader[prop]
-								data[name+'_'+prop+'_Precision'] = obj ? attempt(() => obj.precision) : undefined
-								data[name+'_'+prop+'_RangeMax'] = obj ? attempt(() => obj.rangeMax) : undefined
-								data[name+'_'+prop+'_RangeMin'] = obj ? attempt(() => obj.rangeMin) : undefined
+								data[name+'.'+prop+'.precision'] = obj ? attempt(() => obj.precision) : undefined
+								data[name+'.'+prop+'.rangeMax'] = obj ? attempt(() => obj.rangeMax) : undefined
+								data[name+'.'+prop+'.rangeMin'] = obj ? attempt(() => obj.rangeMin) : undefined
 							}
 							return data
 						}
@@ -1533,7 +1524,7 @@
 							const data =  {
 								VERSION: attempt(() => gl.getParameter(gl.VERSION)),
 								SHADING_LANGUAGE_VERSION: attempt( () => gl.getParameter(gl.SHADING_LANGUAGE_VERSION)),
-								ANTIALIAS: attempt(() => (gl.getContextAttributes() ? gl.getContextAttributes().antialias : undefined)),
+								antialias: attempt(() => (gl.getContextAttributes() ? gl.getContextAttributes().antialias : undefined)),
 								RED_BITS: attempt(() => gl.getParameter(gl.RED_BITS)),
 								GREEN_BITS: attempt(() => gl.getParameter(gl.GREEN_BITS)),
 								BLUE_BITS: attempt(() => gl.getParameter(gl.BLUE_BITS)),
@@ -1561,7 +1552,7 @@
 									return buffers ? gl.getParameter(buffers.MAX_DRAW_BUFFERS_WEBGL) : undefined
 								})
 							}
-							const response = camelCaseProps(data)
+							const response = data
 							if (!paramLie && !extLie) {
 								return response
 							}
@@ -1610,7 +1601,7 @@
 								MAX_ELEMENT_INDEX: attempt(() => gl.getParameter(gl.MAX_ELEMENT_INDEX)),
 								MAX_SERVER_WAIT_TIMEOUT: attempt(() => gl.getParameter(gl.MAX_SERVER_WAIT_TIMEOUT))
 							}
-							const response = camelCaseProps(data)
+							const response = data
 							if (!param2Lie && !ext2Lie) {
 								return response
 							}
