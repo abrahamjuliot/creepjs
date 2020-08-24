@@ -2624,7 +2624,7 @@
 				<div>loose fingerprint:</div>
 				<div class="time">performance: 0 milliseconds</div>
 			</div>
-			<div id="${instanceId}-browser">
+			<div id="${instanceId}-browser" class="visitor-loader">
 				<strong>Browser</strong>
 				<div>visits:</div>
 				<div>first:</div>
@@ -2928,7 +2928,7 @@
 			getTimezone(instanceId),
 			getClientRects(instanceId),
 			getOfflineAudioContext(instanceId),
-			getFonts(instanceId, [...fontList, ...notoFonts])
+			getFonts(instanceId, [...fontList, ...notoFonts, ...extendedFontList, ...googleFonts])
 		]).catch(error => {
 			console.error(error.message)
 		})

@@ -76,22 +76,39 @@ body {
     margin: auto;
     text-align: center;
 }
-#visitor .visitor-loader,
 .app-loader {
-	width: 50px;
-    height: 50px;
-    background-color: var(--aqua);
+	width: 200px;
+    height: 200px;
+    background: rgba(255,255,255, 0.9);
+	border: 1px solid #cfd0d1;
     display: inline-block;
 	border-radius: 5px;
+	position: absolute;
+	right: -30%;
 	transition: height .3s ease;
 }
 
 .app-loader {
 	animation: spin 2s cubic-bezier(0.77, 0, 0.175, 1.5) infinite;
 }
-
-#visitor .visitor-loader {
-    animation: work 2s cubic-bezier(0, 0.78, 0.15, 1.54) infinite;
+.visitor-loader {
+	position: relative;
+}
+.visitor-loader:after {
+	width: 50px;
+    height: 50px;
+	background: rgba(255,255,255, 0.9);
+	border: 1px solid #cfd0d1;
+    display: inline-block;
+	border-radius: 5px;
+	position: absolute;
+	content: '';
+	right: 70%;
+	top: 30%;
+	transition: height .3s ease;
+}
+.visitor-loader:after {
+    animation: spin 2s cubic-bezier(0.77, 0, 0.175, 1.5) infinite;
 }
 
 @keyframes spin {
