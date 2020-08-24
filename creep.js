@@ -2145,7 +2145,7 @@
 					const lang = [...new Set(languages)]
 					return { lang, lie: lang.length > 1 ? true : false }
 				}		
-				const dateGetTimezoneOffset = attempt(() => contentWindowDate.prototype.getTimezoneOffset)
+				const dateGetTimezoneOffset = attempt(() => Date.prototype.getTimezoneOffset)
 				const dateProto = contentWindowDate.prototype
 				const timezoneLie = dateGetTimezoneOffset ? hasLiedAPI(dateGetTimezoneOffset, 'getTimezoneOffset', dateProto).lie : false
 				const timezoneOffset = new contentWindowDate().getTimezoneOffset()
