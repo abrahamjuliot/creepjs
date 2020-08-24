@@ -1509,7 +1509,6 @@
 						
 						const getShaderData = (name, shader) => {
 							const data = {}
-							console.log(shader)
 							for (const prop in shader) {
 								const obj = shader[prop]
 								data[name+'.'+prop+'.precision'] = obj ? attempt(() => obj.precision) : undefined
@@ -2462,7 +2461,6 @@
 							}
 							const $hash = await hashify(response)
 							resolve({...response, $hash })
-
 							const id = `${instanceId}-offline-audio-context`
 							const el = document.getElementById(id)
 							patch(el, html`
@@ -2595,7 +2593,18 @@
 				)
 				const fontList = Object.keys(detectedFonts)
 				const $hash = await hashify(fontList)
-				return resolve({fonts: fontList, $hash })
+				resolve({fonts: fontList, $hash })
+
+				const id = `${instanceId}-fonts`
+				const el = document.getElementById(id)
+				patch(el, html`
+				<div>
+					<strong>HTMLElement (font-family)</strong>
+					<div>hash: ${$hash}</div>
+					<div>results (${count(fontList)}): ${fontList && fontList.length ? modal(id, fontList.join('<br>')) : note.blocked}</div>
+				</div>
+				`)
+				return
 			}
 			catch (error) {
 				captureError(error)
@@ -2800,6 +2809,9 @@
 				<div>voices (0):</div>
 			</div>
 			<div id="${instanceId}-fonts">
+				<strong>HTMLElement (font-family)</strong>
+				<div>hash:</div>
+				<div>results (0):</div>
 			</div>
 			<div>
 				Data auto deletes <a href="https://github.com/abrahamjuliot/creepjs/blob/8d6603ee39c9534cad700b899ef221e0ee97a5a4/server.gs#L24" target="_blank">every 7 days</a>
