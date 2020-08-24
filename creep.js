@@ -441,7 +441,7 @@
 			))
 
 			let worker
-			if (contentWindow) {
+			if (contentWindow && !isFirefox) { // firefox throws an error
 				worker = contentWindow.Worker
 			}
 			else {
@@ -584,7 +584,6 @@
 						window.msRTCPeerConnection
 					)
 				}
-				
 				const connection = new rtcPeerConnection({
 					iceServers: [{
 						urls: ['stun:stun.l.google.com:19302?transport=udp']
@@ -712,7 +711,7 @@
 	const getNavigator = (instanceId, workerScope) => {
 		return new Promise(async resolve => {
 			try {
-				contentWindowNavigator = contentWindow.navigator
+				contentWindowNavigator = contentWindow ? contentWindow.navigator : navigator
 				const navigatorPrototype = attempt(() => Navigator.prototype)
 				const detectLies = (name, value) => {
 					const workerScopeValue = caniuse(() => workerScope, [name])
@@ -1165,7 +1164,7 @@
 
 	const getScreen = instanceId => {
 		return new Promise(async resolve => {
-			const contentWindowScreen = contentWindow.screen
+			const contentWindowScreen = contentWindow && !isFirefox ? contentWindow.screen : screen
 			try {
 				const screenPrototype = attempt(() => Screen.prototype)
 				const detectLies = (name, value) => {
@@ -1269,7 +1268,7 @@
 	const getMediaDevices = instanceId => {
 		return new Promise(async resolve => {
 			try {
-				const contentWindowNavigator = contentWindow.navigator
+				const contentWindowNavigator = contentWindow && !isFirefox ? contentWindow.navigator : navigator
 				if (!('mediaDevices' in contentWindowNavigator)) {
 					return resolve(undefined)
 				}
