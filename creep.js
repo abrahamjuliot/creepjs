@@ -1269,13 +1269,14 @@
 	const getMediaDevices = instanceId => {
 		return new Promise(async resolve => {
 			try {
-				if (!('mediaDevices' in navigator)) {
+				const contentWindowNavigator = contentWindow.navigator
+				if (!('mediaDevices' in contentWindowNavigator)) {
 					return resolve(undefined)
 				}
-				if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+				if (!contentWindowNavigator.mediaDevices || !contentWindowNavigator.mediaDevices.enumerateDevices) {
 					return resolve(undefined)
 				}
-				const mediaDevicesEnumerated = await navigator.mediaDevices.enumerateDevices()
+				const mediaDevicesEnumerated = await contentWindowNavigator.mediaDevices.enumerateDevices()
 				const mediaDevices = mediaDevicesEnumerated ? mediaDevicesEnumerated.map(({ kind }) => ({ kind })) : undefined
 				const $hash = await hashify(mediaDevices)
 				resolve({ mediaDevices, $hash })
