@@ -1164,8 +1164,8 @@
 
 	const getScreen = instanceId => {
 		return new Promise(async resolve => {
-			const contentWindowScreen = contentWindow && !isFirefox ? contentWindow.screen : screen
 			try {
+				const contentWindowScreen = contentWindow && !isFirefox ? contentWindow.screen : screen
 				const screenPrototype = attempt(() => Screen.prototype)
 				const detectLies = (name, value) => {
 					const lie = screenPrototype ? hasLiedAPI(screenPrototype, name, contentWindowScreen).lie : false
@@ -2019,8 +2019,8 @@
 	const getTimezone = instanceId => {
 		return new Promise(async resolve => {
 			try {
-				const contentWindowDate = contentWindow.Date
-				const contentWindowIntl = contentWindow.Intl
+				const contentWindowDate = contentWindow ? contentWindow.Date : Date
+				const contentWindowIntl = contentWindow ? contentWindow.Intl : Date
 				const computeTimezoneOffset = () => {
 					const date = new contentWindowDate().getDate()
 					const month = new contentWindowDate().getMonth()
