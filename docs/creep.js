@@ -2928,7 +2928,7 @@
 			getTimezone(instanceId),
 			getClientRects(instanceId),
 			getOfflineAudioContext(instanceId),
-			getFonts(instanceId, [...fontList, ...notoFonts, ...extendedFontList, ...googleFonts])
+			getFonts(instanceId, [...fontList, ...notoFonts])
 		]).catch(error => {
 			console.error(error.message)
 		})
