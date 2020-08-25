@@ -708,6 +708,7 @@
 	}
 	
 	// navigator
+	// special thanks to https://arh.antoinevastel.com/reports/stats/menu.html for stats
 	const getNavigator = (instanceId, workerScope) => {
 		return new Promise(async resolve => {
 			try {
@@ -725,9 +726,6 @@
 							}
 						}
 						else if (name != 'userAgent' && workerScopeValue != value) {
-							console.log(name+':')
-							console.log('Worker', workerScopeValue)
-							console.log('Window', value)
 							documentLie(name, value, workerScopeMatchLie)
 							return value
 						}
@@ -740,30 +738,46 @@
 					return value
 				}
 				const credibleUserAgent = (
-					'chrome' in window ? contentWindowNavigator.userAgent.includes(contentWindowNavigator.appVersion) : true
+					'chrome' in window ? navigator.userAgent.includes(navigator.appVersion) : true
 				)
+
 				const data = {
 					appVersion: attempt(() => {
 						const { appVersion } = contentWindowNavigator
-						let av = undefined
-						av = detectLies('appVersion', appVersion)
+						const navigatorAppVersion = navigator.appVersion
+						detectLies('appVersion', appVersion)
 						if (!credibleUserAgent) {
-							av = sendToTrash('appVersion does not match userAgent', appVersion)
+							sendToTrash('appVersion', `${navigatorAppVersion} does not match userAgent`)
 						}
-						if ('appVersion' in contentWindowNavigator && !appVersion) {
-							av = sendToTrash('appVersion', 'Living Standard property returned falsy value')
+						if ('appVersion' in navigator && !navigatorAppVersion) {
+							sendToTrash('appVersion', 'Living Standard property returned falsy value')
 						}
-						return av
+						return appVersion
 					}),
 					deviceMemory: attempt(() => {
-						if ('deviceMemory' in contentWindowNavigator) {
-							const deviceMemory = detectLies('deviceMemory', contentWindowNavigator.deviceMemory)
-							return deviceMemory ? trustInteger('deviceMemory: invalid return type', deviceMemory) : undefined
+						if (!('deviceMemory' in navigator)) {
+							return undefined
 						}
-						return undefined
+						const { deviceMemory } = contentWindowNavigator
+						const navigatorDeviceMemory = navigator.deviceMemory
+						const trusted = {
+							'0': true,
+							'1': true, 
+							'2': true,
+							'4': true, 
+							'6': true, 
+							'8': true
+						}
+						detectLies('deviceMemory', navigatorDeviceMemory)
+						trustInteger('deviceMemory - invalid return type', navigatorDeviceMemory)
+						if (!trusted[navigatorDeviceMemory]) {
+							sendToTrash('deviceMemory', `${navigatorDeviceMemory} is not within set [0, 1, 2, 4, 6, 8]`)
+						}
+						return deviceMemory
 					}),
 					doNotTrack: attempt(() => {
-						const doNotTrack = detectLies('doNotTrack', contentWindowNavigator.doNotTrack)
+						const { doNotTrack } = contentWindowNavigator
+						const navigatorDoNotTrack = navigator.doNotTrack
 						const trusted = {
 							'1': true,
 							'true': true, 
@@ -775,55 +789,79 @@
 							'null': true,
 							'undefined': true
 						}
-						return trusted[doNotTrack] ? doNotTrack : sendToTrash('DoNotTrack: invalid return type', doNotTrack)
+						detectLies('doNotTrack', navigatorDoNotTrack)
+						if(!trusted[navigatorDoNotTrack]) {
+							sendToTrash('doNotTrack - unusual result', navigatorDoNotTrack)
+						}
+						return doNotTrack
 					}),
 					hardwareConcurrency: attempt(() => {
-						const hardwareConcurrency = detectLies('hardwareConcurrency', contentWindowNavigator.hardwareConcurrency)
-						return hardwareConcurrency ? trustInteger('hardwareConcurrency: invalid return type', hardwareConcurrency): undefined
+						if (!('hardwareConcurrency' in navigator)) {
+							return undefined
+						}
+						const { hardwareConcurrency } = contentWindowNavigator
+						const navigatorHardwareConcurrency = navigator.hardwareConcurrency
+						detectLies('hardwareConcurrency', navigatorHardwareConcurrency)
+						trustInteger('hardwareConcurrency - invalid return type', navigatorHardwareConcurrency)
+						if (navigatorHardwareConcurrency != -1 && navigatorHardwareConcurrency != 1 && navigatorHardwareConcurrency % 2 != 0) {
+							sendToTrash('hardwareConcurrency', `${navigatorHardwareConcurrency} is not within set [-1, 1, even]`)
+						}
+						return hardwareConcurrency
 					}),
 					language: attempt(() => {
-						const languages = detectLies('languages', contentWindowNavigator.languages)
-						const language = detectLies('language', contentWindowNavigator.language)
-
-						if (languages && languages) {
-							const langs = /^.{0,2}/g.exec(languages[0])[0]
-							const lang = /^.{0,2}/g.exec(language)[0]
-							const trusted = langs == lang
-							return (
-								trusted ? `${languages.join(', ')} (${language})` : 
-								sendToTrash('languages: language/languages mismatch', [languages, language].join(' '))
-							)
+						const { language, languages } = contentWindowNavigator
+						const navigatorLanguage = navigator.language
+						const navigatorLanguages = navigator.languages
+						detectLies('language', navigatorLanguage)
+						detectLies('languages', navigatorLanguages)
+						if (navigatorLanguage && navigatorLanguages) {
+							const lang = /^.{0,2}/g.exec(navigatorLanguage)[0]
+							const langs = /^.{0,2}/g.exec(navigatorLanguages[0])[0]
+							if (langs != lang) {
+								sendToTrash('language/languages', `${[navigatorLanguage, navigatorLanguages].join(' ')} mismatch`)
+							}
+							return `${languages.join(', ')} (${language})`
 						}
-
-						return undefined
+						return `${language} ${languages}`
 					}),
 					maxTouchPoints: attempt(() => {
-						if ('maxTouchPoints' in contentWindowNavigator) {
-							const maxTouchPoints = detectLies('maxTouchPoints', contentWindowNavigator.maxTouchPoints)
-							return maxTouchPoints != undefined ? trustInteger('MaxTouchPoints: invalid return type', maxTouchPoints) : undefined
+						if (!('maxTouchPoints' in navigator)) {
+							return null
 						}
-
-						return null
+						const { maxTouchPoints } = contentWindowNavigator
+						const navigatorMaxTouchPoints = navigator.maxTouchPoints
+						detectLies('maxTouchPoints', navigatorMaxTouchPoints)
+						return maxTouchPoints
 					}),
 					platform: attempt(() => {
-						const platform = detectLies('platform', contentWindowNavigator.platform)
+						const { platform } = contentWindowNavigator
+						const navigatorPlatform = navigator.platform
 						const systems = ['win', 'linux', 'mac', 'arm', 'pike', 'linux', 'iphone', 'ipad', 'ipod', 'android', 'x11']
-						const trusted = typeof platform == 'string' && systems.filter(val => platform.toLowerCase().includes(val))[0]
-						return trusted ? platform : undefined
+						const trusted = typeof navigatorPlatform == 'string' && systems.filter(val => navigatorPlatform.toLowerCase().includes(val))[0]
+						detectLies('platform', navigatorPlatform)
+						if (!trusted) {
+							sendToTrash(`platform`, `${navigatorPlatform} is unusual`)
+						}
+						return platform
 					}),
 					userAgent: attempt(() => {
 						const { userAgent } = contentWindowNavigator
-						const gibbers = gibberish(userAgent)
-						let ua = undefined
-						ua = detectLies('userAgent', userAgent)
+						const navigatorUserAgent = navigator.userAgent
+						const gibbers = gibberish(navigatorUserAgent)
+						detectLies('userAgent', navigatorUserAgent)
 						if (!!gibbers.length) {
-							ua = sendToTrash(`userAgent contains gibberish`, `[${gibbers.join(', ')}] ${userAgent}`)
+							sendToTrash(`userAgent contains gibberish`, `[${gibbers.join(', ')}] ${navigatorUserAgent}`)
 						}
-						return credibleUserAgent ? ua : sendToTrash('userAgent does not match appVersion', userAgent)
+						if (!credibleUserAgent) {
+							sendToTrash('userAgent', `${navigatorUserAgent} does not match appVersion`)
+						}
+						return userAgent
 					}),
 					system: attempt(() => getOS(contentWindowNavigator.userAgent)),
 					vendor: attempt(() => {
-						const vendor = detectLies('vendor', contentWindowNavigator.vendor)
+						const { vendor } = contentWindowNavigator
+						const navigatorVendor = navigator.vendor
+						detectLies('vendor', navigatorVendor)
 						return vendor
 					}),
 					mimeTypes: attempt(() => {
