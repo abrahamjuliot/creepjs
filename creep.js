@@ -829,9 +829,6 @@
 						if (language != navigatorLanguage) {
 							sendToTrash('language', `[${navigatorLanguage}] does not match iframe`)
 						}
-						if (languages != navigatorLanguages) {
-							sendToTrash('languages', `[${navigatorLanguages}] does not match iframe`)
-						}
 						if (navigatorLanguage && navigatorLanguages) {
 							const lang = /^.{0,2}/g.exec(navigatorLanguage)[0]
 							const langs = /^.{0,2}/g.exec(navigatorLanguages[0])[0]
