@@ -540,7 +540,7 @@
 					const el = document.getElementById(`${instanceId}-worker-scope`)
 					patch(el, html`
 					<div>
-						<strong>WorkerGlobalScope: WorkerNavigator/OffscreenCanvas</strong>
+						<strong>WorkerGlobalScope: Date/WorkerNavigator/OffscreenCanvas</strong>
 						<div>hash: ${$hash}</div>
 						${
 							Object.keys(data).map(key => {
@@ -1206,29 +1206,83 @@
 				const contentWindowScreen = contentWindow && !isFirefox ? contentWindow.screen : screen
 				const screenPrototype = attempt(() => Screen.prototype)
 				const detectLies = (name, value) => {
-					const lie = screenPrototype ? hasLiedAPI(screenPrototype, name, contentWindowScreen).lie : false
+					const lie = screenPrototype ? hasLiedAPI(screenPrototype, name, screen).lie : false
 					if (lie) {
 						documentLie(name, value, lie)
 						return value
 					}
 					return value
 				}
-				const width = detectLies('width', contentWindowScreen.width)
-				const height = detectLies('height', contentWindowScreen.height)
-				const availWidth = detectLies('availWidth', contentWindowScreen.availWidth)
-				const availHeight = detectLies('availHeight', contentWindowScreen.availHeight)
-				const colorDepth = detectLies('colorDepth', contentWindowScreen.colorDepth)
-				const pixelDepth = detectLies('pixelDepth', contentWindowScreen.pixelDepth)
+				const { width, height, availWidth, availHeight, colorDepth, pixelDepth } = contentWindowScreen
+				const {
+					width: screenWidth,
+					height: screenHeight,
+					availWidth: screenAvailWidth,
+					availHeight: screenAvailHeight,
+					colorDepth: screenColorDepth,
+					pixelDepth: screenPixelDepth
+				} = screen
+
+				detectLies('width', screenWidth)
+				detectLies('height', screenHeight)
+				detectLies('availWidth', screenAvailWidth)
+				detectLies('availHeight', screenAvailHeight)
+				detectLies('colorDepth', screenColorDepth)
+				detectLies('pixelDepth', screenPixelDepth)
+
+				const matching = (
+					width == screenWidth &&
+					height == screenHeight &&
+					availWidth == screenAvailWidth &&
+					availHeight == screenAvailHeight &&
+					colorDepth == screenColorDepth &&
+					pixelDepth == screenPixelDepth
+				)
+
+				if (!matching) {
+					sendToTrash('screen', `[${
+						[
+							screenWidth,
+							screenHeight,
+							screenAvailWidth,
+							screenAvailHeight,
+							screenColorDepth,
+							screenPixelDepth
+						].join(', ')
+					}] does not match iframe`)
+				}
+
+				if (screenAvailWidth > screenWidth) {
+					sendToTrash('screen', `availWidth (${screenAvailWidth}) is greater than width (${screenWidth})`)
+				}
+
+				if (screenAvailHeight > screenHeight) {
+					sendToTrash('screen', `availHeight (${screenAvailHeight}) is greater than height (${screenHeight})`)
+				}
+				
+				const trusted = {0:!0, 1:!0, 4:!0, 8:!0, 15:!0, 16:!0, 24:!0, 32:!0, 48:!0}
+				if (!trusted[screenColorDepth]) {
+					sendToTrash('screen', `colorDepth (${screenColorDepth}) is not within set [0, 16, 24, 32]`)
+				}
+				
+				if (!trusted[screenPixelDepth]) {
+					sendToTrash('screen', `pixelDepth (${screenPixelDepth}) is not within set [0, 16, 24, 32]`)
+				}
+
+				if (screenPixelDepth != screenColorDepth) {
+					sendToTrash('screen', `pixelDepth (${screenPixelDepth}) and colorDepth (${screenColorDepth}) do not match`)
+				}
+
 				const data = {
-					device: getDevice(contentWindowScreen.width, contentWindowScreen.height),
-					width: attempt(() => width ? trustInteger('InvalidWidth', width) : undefined),
-					outerWidth: attempt(() => outerWidth ? trustInteger('InvalidOuterWidth', outerWidth) : undefined),
-					availWidth: attempt(() => availWidth ? trustInteger('InvalidAvailWidth', availWidth) : undefined),
-					height: attempt(() => height ? trustInteger('InvalidHeight', height) : undefined),
-					outerHeight: attempt(() => outerHeight ? trustInteger('InvalidOuterHeight', outerHeight) : undefined),
-					availHeight: attempt(() => availHeight ?  trustInteger('InvalidAvailHeight', availHeight) : undefined),
-					colorDepth: attempt(() => colorDepth ? trustInteger('InvalidColorDepth', colorDepth) : undefined),
-					pixelDepth: attempt(() => pixelDepth ? trustInteger('InvalidPixelDepth', pixelDepth) : undefined)
+					device: getDevice(width, height),
+					width: attempt(() => width ? trustInteger('width - invalid return type', width) : undefined),
+					outerWidth: attempt(() => outerWidth ? trustInteger('outerWidth - invalid return type', outerWidth) : undefined),
+					availWidth: attempt(() => availWidth ? trustInteger('availWidth - invalid return type', availWidth) : undefined),
+					height: attempt(() => height ? trustInteger('height - invalid return type', height) : undefined),
+					outerHeight: attempt(() => outerHeight ? trustInteger('outerHeight - invalid return type', outerHeight) : undefined),
+					availHeight: attempt(() => availHeight ?  trustInteger('availHeight - invalid return type', availHeight) : undefined),
+					colorDepth: attempt(() => colorDepth ? trustInteger('colorDepth - invalid return type', colorDepth) : undefined),
+					pixelDepth: attempt(() => pixelDepth ? trustInteger('pixelDepth - invalid return type', pixelDepth) : undefined)
 				}
 				const $hash = await hashify(data)
 				resolve({ ...data, $hash })
@@ -2690,7 +2744,7 @@
 				<div>errors (0):</div>
 			</div>
 			<div id="${instanceId}-worker-scope">
-				<strong>WorkerGlobalScope: WorkerNavigator/OffscreenCanvas</strong>
+				<strong>WorkerGlobalScope: Date/WorkerNavigator/OffscreenCanvas</strong>
 				<div>hash:</div>
 				<div>timezone offset</div>
 				<div>hardwareConcurrency:</div>
