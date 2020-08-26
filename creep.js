@@ -3053,16 +3053,9 @@
 			// node values provide essential entropy (bin samples are just math results and randomized in brave)
 			offlineAudioContext: caniuse(() => fp.offlineAudioContext.values),
 			fonts: fp.fonts,
-			// avoid random trash fingerprint
-			trash: fp.trash.trashBin.map(trash => trash.name),
-			// avoid random lie fingerprint
-			lies: !('data' in fp.lies) ? [] : fp.lies.data.map(lie => {
-				const { lieTypes, name } = lie
-				const types = Object.keys(lieTypes)
-				const lies = lieTypes.lies
-				return { name, types, lies }
-			}),
-			capturedErrors: fp.capturedErrors.data.map(error => error.trustedName)
+			trash: !!fp.trash.trashBin.length,
+			lies: !('data' in fp.lies) ? false : !!fp.lies.data.length,
+			capturedErrors: !!fp.capturedErrors.data.length
 		}
 		const debugLog = (message, obj) => console.log(message, JSON.stringify(obj, null, '\t'))
 		
@@ -3075,9 +3068,7 @@
 			console.error(error.message)
 		})
 
-		const hasTrash = !('trashBin' in fp.trash) ? false : !!fp.trash.trashBin.length
-		const hasLied = !('data' in fp.lies) ? false : !!fp.lies.data.length
-		const hasErrors = !('data' in fp.capturedErrors) ? false : !!fp.capturedErrors.data.length
+		const { trash: hasTrash, lies: hasLied, capturedErrors: hasErrors } = creep
 
 		// fetch data from server
 		const id = `${instanceId}-browser`
