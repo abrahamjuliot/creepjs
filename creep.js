@@ -752,6 +752,9 @@
 						if ('appVersion' in navigator && !navigatorAppVersion) {
 							sendToTrash('appVersion', 'Living Standard property returned falsy value')
 						}
+						if (appVersion != navigatorAppVersion) {
+							sendToTrash('appVersion', `[${navigatorAppVersion}] does not match iframe`)
+						}
 						return appVersion
 					}),
 					deviceMemory: attempt(() => {
@@ -773,6 +776,9 @@
 						if (!trusted[navigatorDeviceMemory]) {
 							sendToTrash('deviceMemory', `${navigatorDeviceMemory} is not within set [0, 1, 2, 4, 6, 8]`)
 						}
+						if (deviceMemory != navigatorDeviceMemory) {
+							sendToTrash('deviceMemory', `[${navigatorDeviceMemory}] does not match iframe`)
+						}
 						return deviceMemory
 					}),
 					doNotTrack: attempt(() => {
@@ -790,8 +796,11 @@
 							'undefined': true
 						}
 						detectLies('doNotTrack', navigatorDoNotTrack)
-						if(!trusted[navigatorDoNotTrack]) {
+						if (!trusted[navigatorDoNotTrack]) {
 							sendToTrash('doNotTrack - unusual result', navigatorDoNotTrack)
+						}
+						if (doNotTrack != navigatorDoNotTrack) {
+							sendToTrash('doNotTrack', `[${navigatorDoNotTrack}] does not match iframe`)
 						}
 						return doNotTrack
 					}),
@@ -806,6 +815,9 @@
 						if (navigatorHardwareConcurrency != -1 && navigatorHardwareConcurrency != 1 && navigatorHardwareConcurrency % 2 != 0) {
 							sendToTrash('hardwareConcurrency', `${navigatorHardwareConcurrency} is not within set [-1, 1, even]`)
 						}
+						if (hardwareConcurrency != navigatorHardwareConcurrency) {
+							sendToTrash('hardwareConcurrency', `[${navigatorHardwareConcurrency}] does not match iframe`)
+						}
 						return hardwareConcurrency
 					}),
 					language: attempt(() => {
@@ -814,6 +826,12 @@
 						const navigatorLanguages = navigator.languages
 						detectLies('language', navigatorLanguage)
 						detectLies('languages', navigatorLanguages)
+						if (language != navigatorLanguage) {
+							sendToTrash('language', `[${navigatorLanguage}] does not match iframe`)
+						}
+						if (languages != navigatorLanguages) {
+							sendToTrash('languages', `[${navigatorLanguages}] does not match iframe`)
+						}
 						if (navigatorLanguage && navigatorLanguages) {
 							const lang = /^.{0,2}/g.exec(navigatorLanguage)[0]
 							const langs = /^.{0,2}/g.exec(navigatorLanguages[0])[0]
@@ -831,6 +849,9 @@
 						const { maxTouchPoints } = contentWindowNavigator
 						const navigatorMaxTouchPoints = navigator.maxTouchPoints
 						detectLies('maxTouchPoints', navigatorMaxTouchPoints)
+						if (maxTouchPoints != navigatorMaxTouchPoints) {
+							sendToTrash('maxTouchPoints', `[${navigatorMaxTouchPoints}] does not match iframe`)
+						}
 						return maxTouchPoints
 					}),
 					platform: attempt(() => {
@@ -841,6 +862,9 @@
 						detectLies('platform', navigatorPlatform)
 						if (!trusted) {
 							sendToTrash(`platform`, `${navigatorPlatform} is unusual`)
+						}
+						if (platform != navigatorPlatform) {
+							sendToTrash('platform', `[${navigatorPlatform}] does not match iframe`)
 						}
 						return platform
 					}),
@@ -855,6 +879,9 @@
 						if (!credibleUserAgent) {
 							sendToTrash('userAgent', `${navigatorUserAgent} does not match appVersion`)
 						}
+						if (userAgent != navigatorUserAgent) {
+							sendToTrash('userAgent', `[${navigatorUserAgent}] does not match iframe`)
+						}
 						return userAgent
 					}),
 					system: attempt(() => getOS(contentWindowNavigator.userAgent)),
@@ -862,6 +889,9 @@
 						const { vendor } = contentWindowNavigator
 						const navigatorVendor = navigator.vendor
 						detectLies('vendor', navigatorVendor)
+						if (vendor != navigatorVendor) {
+							sendToTrash('vendor', `[${navigatorVendor}] does not match iframe`)
+						}
 						return vendor
 					}),
 					mimeTypes: attempt(() => {
