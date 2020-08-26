@@ -3030,7 +3030,21 @@
 			mediaDevices: !isBrave ? fp.mediaDevices : distrust,
 			canvas2d: !(isBrave || isFirefox) ? fp.canvas2d : distrust,
 			canvasBitmapRenderer: !(isBrave || isFirefox) ? fp.canvasBitmapRenderer : distrust,
-			canvasWebgl: !(isBrave || isFirefox) ? fp.canvasWebgl : distrust,
+			canvasWebgl: (isBrave || isFirefox) ? distrust : (() => {
+				if (!fp.canvasWebgl) {
+					return undefined
+				}
+				// ignore extensions to avoid fingerprint limited to browser version
+				return {
+					dataURI: fp.canvasWebgl.dataURI,
+					dataURI2: fp.canvasWebgl.dataURI2,
+					matchingDataURI: fp.canvasWebgl.matchingDataURI,
+					matchingUnmasked: fp.canvasWebgl.matchingUnmasked,
+					specs: fp.canvasWebgl.specs,
+					unmasked: fp.canvasWebgl.unmasked,
+					unmasked2: fp.canvasWebgl.unmasked2
+				}
+			})(),
 			maths: fp.maths,
 			consoleErrors: fp.consoleErrors,
 			// avoid random timezone fingerprint values
