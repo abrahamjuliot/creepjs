@@ -11,3 +11,19 @@ The purpose of this project is to shed light on weaknesses and privacy leaks amo
 5. Employ large-scale validation, but allow possible inconsistencies
 6. Feature detect and fingerprint [new APIs](https://www.javascripture.com/) that reveal high entropy
 7. Rely only on APIs that are the most difficult to spoof when generating a pure fingerprint
+
+Tested:
+- Firefox (RFP)
+- Brave Browser (Standard/Strict)
+- Privacy Badger
+- Privacy Possom
+- Random User-Agent
+- User Agent Switcher and Manager
+- CanvasBlocker
+- Trace
+- CyDec
+- Chameleon
+- ScriptSafe
+- Windscribe
+
+

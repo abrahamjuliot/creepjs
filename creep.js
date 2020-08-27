@@ -2323,12 +2323,15 @@
 						'Semicolon',
 						'Slash'
 					]
-					const keyoardLayoutMap = await navigator.keyboard.getLayoutMap()
-					const writingSystemKeys= keys.map(key => {
-						const value = keyoardLayoutMap.get(key)
-						return { [key]: value }
-					})
-					return writingSystemKeys
+					if (caniuse(() => navigator.keyboard.getLayoutMap)) {
+						const keyoardLayoutMap = await navigator.keyboard.getLayoutMap()
+						const writingSystemKeys= keys.map(key => {
+							const value = keyoardLayoutMap.get(key)
+							return { [key]: value }
+						})
+						return writingSystemKeys
+					}
+					return undefined
 				}
 				const writingSystemKeys = await getWritingSystemKeys()		
 				const dateGetTimezoneOffset = attempt(() => Date.prototype.getTimezoneOffset)
@@ -2393,7 +2396,7 @@
 					}</div>
 					<div>locale language: ${!localeLie ? locale.lang.join(', ') : note.lied}</div>
 					<div>writing system keys: ${
-						!writingSystemKeys ? note.blocked :
+						!writingSystemKeys ? note.unsupported :
 						modal(`${id}-writing-system-keys`, writingSystemKeys.map(systemKey => {
 							const key = Object.keys(systemKey)[0]
 							const value = systemKey[key]
