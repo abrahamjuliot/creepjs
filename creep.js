@@ -1806,7 +1806,7 @@
 						try {
 							// document lie and send to trash
 							const documentTrashLies = async (canvas, resolve, [dataLie, contextLie], [canvasTitle, contextTitle]) => {
-								const canvasWebglDataURI = canvas.toDataURL()
+								const canvasWebglDataURI = attempt(() => canvas.toDataURL())
 								const hash = hashMini(canvasWebglDataURI)
 								if (contextLie) {
 									documentLie(contextTitle, hash, contextLie)
