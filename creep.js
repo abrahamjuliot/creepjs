@@ -984,17 +984,23 @@
 	const getIframeContentWindowVersion = (instanceId) => {
 		return new Promise(async resolve => {
 			try {
-				
-				const keys = Object.getOwnPropertyNames(contentWindow) 
-				const $hash = await hashify(keys)
-				resolve({ keys, $hash })
-				const el = document.getElementById(`${instanceId}-iframe-content-window-version`)
+				const keys = Object.getOwnPropertyNames(contentWindow)
+				const moz = keys.filter(key => (/moz/i).test(key)).length
+				const webkit = keys.filter(key => (/webkit/i).test(key)).length
+				const apple = keys.filter(key => (/apple/i).test(key)).length
+				const data = { keys, apple, moz, webkit } 
+				const $hash = await hashify(data)
+				resolve({ ...data, $hash })
+				const id = `${instanceId}-iframe-content-window-version`
+				const el = document.getElementById(id)
 				patch(el, html`
 				<div>
 					<strong>HTMLIFrameElement.contentWindow</strong>
 					<div>hash: ${$hash}</div>
-					<div>keys: ${keys.length}</div>
-				</div>
+					<div>keys (${count(keys)}): ${keys && keys.length ? modal(id, keys.join(', ')) : note.blocked}</div>
+					<div>moz: ${''+moz}</div>
+					<div>webkit: ${''+webkit}</div>
+					<div>apple: ${''+apple}</div>
 				`)
 				return
 			}
@@ -1020,12 +1026,13 @@
 				}
 				const $hash = await hashify(keys)
 				resolve({ keys, $hash })
-				const el = document.getElementById(`${instanceId}-html-element-version`)
+				const elId = `${instanceId}-html-element-version`
+				const el = document.getElementById(elId)
 				patch(el, html`
 				<div>
 					<strong>HTMLElement</strong>
 					<div>hash: ${$hash}</div>
-					<div>keys: ${keys.length}</div>
+					<div>keys (${count(keys)}): ${keys && keys.length ? modal(elId, keys.join(', ')) : note.blocked}</div>
 				</div>
 				`)
 				return
@@ -2986,12 +2993,20 @@
 			<div id="${instanceId}-iframe-content-window-version">
 				<strong>HTMLIFrameElement.contentWindow</strong>
 				<div>hash:</div>
-				<div>keys:</div>
+				<div>keys (0):</div>
+				<div>moz:</div>
+				<div>webkit:</div>
+				<div>apple:</div>
 			</div>
 			<div id="${instanceId}-html-element-version">
 				<strong>HTMLElement</strong>
 				<div>hash:</div>
-				<div>keys:</div>
+				<div>keys (0):</div>
+			</div>
+			<div id="${instanceId}-fonts">
+				<strong>HTMLElement (font-family)</strong>
+				<div>hash:</div>
+				<div>results (0):</div>
 			</div>
 			<div id="${instanceId}-css-style-declaration-version">
 				<strong>CSSStyleDeclaration</strong>
@@ -3031,11 +3046,6 @@
 				<strong>SpeechSynthesis</strong>
 				<div>hash:</div>
 				<div>voices (0):</div>
-			</div>
-			<div id="${instanceId}-fonts">
-				<strong>HTMLElement (font-family)</strong>
-				<div>hash:</div>
-				<div>results (0):</div>
 			</div>
 			<div>
 				Data auto deletes <a href="https://github.com/abrahamjuliot/creepjs/blob/8d6603ee39c9534cad700b899ef221e0ee97a5a4/server.gs#L24" target="_blank">every 7 days</a>
