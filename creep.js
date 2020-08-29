@@ -382,8 +382,8 @@
 	// id known hash
 	const known = hash => {
 		const id = {
-			'fb4ad71a65a801e6c81c16fd248e41081cc81f853fc4775df812749affb9b3e7': 'Chromium', // math
-			'c60fecd4250b930eac196bc4ec84f60ced4a28e2832d5b54f38a755088dd62b1': 'Firefox', // math
+			'a9577e66b31a58e41b41a56e134347683d9bb87757d235e5b5ba587e7f1e5855': 'Chromium', // math
+			'8356feb9253a56ba698e1868905974db482202405b0eec201411bdbfa2abbad0': 'Firefox', // math
 			'd1759815f3bf9947a69c5c90ff5ecaef0a8c2d8c815012db721363df29b59236': 'Safari', // math
 			'7757f7416b78fb8ac1f079b3e0677c0fe179826a63727d809e7d69795e915cd5': 'Chromium', // errors
 			'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': 'Firefox', // errors
