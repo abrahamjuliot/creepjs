@@ -210,13 +210,14 @@
 	// nested contentWindow context
 	const getNestedContentWindowContext = instanceId => {
 		return new Promise(resolve => {
+			const allowScripts = () => !isFirefox && !isChrome ? 'allow-scripts ' : ''
 			try {
 				const thisSiteCantBeReached = `about:${instanceId}` // url must yield 'this site cant be reached' error
 				const createIframe = (doc, id, contentWindow = false) => {
 					const iframe = doc.createElement('iframe')
 					iframe.setAttribute('id', id)
 					iframe.setAttribute('style', 'visibility: hidden; height: 0')
-					iframe.setAttribute('sandbox', 'allow-same-origin')
+					iframe.setAttribute('sandbox', `${allowScripts()}allow-same-origin`)
 					if (isChrome) {
 						iframe.src = thisSiteCantBeReached 
 					}
@@ -321,7 +322,7 @@
 			}
 		}
 
-		if (typeof api == 'object') {
+		if (typeof api == 'object' && caniuse(() => obj[name]) != undefined) {
 			const apiFunction = Object.getOwnPropertyDescriptor(api, name).get
 			let lies = [...stringAPILieTypes()]
 			let fingerprint = ''
@@ -383,8 +384,10 @@
 		const id = {
 			'fb4ad71a65a801e6c81c16fd248e41081cc81f853fc4775df812749affb9b3e7': 'Chromium', // math
 			'c60fecd4250b930eac196bc4ec84f60ced4a28e2832d5b54f38a755088dd62b1': 'Firefox', // math
+			'd1759815f3bf9947a69c5c90ff5ecaef0a8c2d8c815012db721363df29b59236': 'Safari', // math
 			'7757f7416b78fb8ac1f079b3e0677c0fe179826a63727d809e7d69795e915cd5': 'Chromium', // errors
-			'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': 'Firefox' // errors
+			'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': 'Firefox', // errors
+			'd420d594c5a7f7f9a93802eebc3bec3fba0ea2dde91843f6c4746121ef5da140': 'Safari' // errors
 		}
 		return id[hash] ? id[hash] : 'Other'
 	}
@@ -510,10 +513,13 @@
 			const date = new Date().getDate()
 			const month = new Date().getMonth()
 			const year = Date().split` `[3] // current year
-			const dateString = `${month}/${date}/${year}`
-			const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
-			const utc = Date.parse(toJSONParsed(new Date(dateString)).split`Z`.join``)
-			const now = +new Date(dateString)
+			const format = n => (''+n).length == 1 ? `0${n}` : n
+			const dateString = `${month+1}/${format(date)}/${year}`
+			const dateStringUTC = `${year}-${format(month+1)}-${format(date)}`
+			const utc = Date.parse(
+				new Date(dateString)
+			)
+			const now = +new Date(dateStringUTC)
 			return +(((utc - now)/60000).toFixed(0))
 		}
 		const timezoneOffset = computeTimezoneOffset()
@@ -1113,8 +1119,9 @@
 				// checks
 				const moz = keys.filter(key => (/moz/i).test(key)).length
 				const webkit = keys.filter(key => (/webkit/i).test(key)).length
+				const apple = keys.filter(key => (/apple/i).test(key)).length
 				const prototypeName = (''+prototype).match(/\[object (.+)\]/)[1]
-				const data = { keys: keys.sort(), moz, webkit, prototypeName }
+				const data = { keys: keys.sort(), moz, webkit, apple, prototypeName }
 				const $hash = await hashify(data)
 				return resolve({ ...data, $hash })
 			}
@@ -1139,13 +1146,14 @@
 				]).catch(error => {
 					console.error(error.message)
 				})
+				
 				const data = {
 					['getComputedStyle']: getComputedStyle,
 					['HTMLElement.style']: htmlElementStyle,
 					['CSSRuleList.style']: cssRuleListstyle,
 					matching: (
-						''+getComputedStyle == ''+htmlElementStyle &&
-						''+htmlElementStyle == ''+cssRuleListstyle
+						''+getComputedStyle.keys == ''+htmlElementStyle.keys &&
+						''+htmlElementStyle.keys == ''+cssRuleListstyle.keys
 					)
 				}
 				const $hash = await hashify(data)
@@ -1167,6 +1175,8 @@
 					<div>moz: ${''+getComputedStyle.moz}, ${''+htmlElementStyle.moz}, ${''+cssRuleListstyle.moz}
 					</div>
 					<div>webkit: ${''+getComputedStyle.webkit}, ${''+htmlElementStyle.webkit}, ${''+cssRuleListstyle.webkit}
+					</div>
+					<div>apple: ${''+getComputedStyle.apple}, ${''+htmlElementStyle.apple}, ${''+cssRuleListstyle.apple}
 					</div>
 					<div>matching: ${''+data.matching}</div>
 				</div>
@@ -1507,6 +1517,9 @@
 					image.src = 'bitmap.png'
 					return resolve(new Promise(resolve => {
 						image.onload = async () => {
+							if (!caniuse(() => createImageBitmap)) {
+								return resolve(undefined)
+							}
 							const bitmap = await createImageBitmap(image, 0, 0, image.width, image.height)
 							context.transferFromImageBitmap(bitmap)
 							canvasBMRDataURI = canvas.toDataURL()
@@ -1955,96 +1968,96 @@
 				const n = 0.123
 				const bigN = 5.860847362277284e+38
 				const fns = [
-					['acos', [n], `acos(${n})`, 1.4474840516030247],
-					['acos', [Math.SQRT1_2], 'acos(Math.SQRT1_2)', 0.7853981633974483],
+					['acos', [n], `acos(${n})`, 1.4474840516030247, NaN, 1.4474840516030245],
+					['acos', [Math.SQRT1_2], 'acos(Math.SQRT1_2)', 0.7853981633974483, NaN, NaN],
 					
-					['acosh', [1e308], 'acosh(1e308)', 709.889355822726],
-					['acosh', [Math.PI], 'acosh(Math.PI)', 1.811526272460853],
-					['acosh', [Math.SQRT2], 'acosh(Math.SQRT2)', 0.881373587019543],
+					['acosh', [1e308], 'acosh(1e308)', 709.889355822726, NaN, NaN],
+					['acosh', [Math.PI], 'acosh(Math.PI)', 1.811526272460853, NaN, NaN],
+					['acosh', [Math.SQRT2], 'acosh(Math.SQRT2)', 0.881373587019543, NaN, 0.8813735870195432],
 
-					['asin', [n], `asin(${n})`, 0.12331227519187199],
+					['asin', [n], `asin(${n})`, 0.12331227519187199, NaN, NaN],
 
-					['asinh', [1e300], 'asinh(1e308)', 691.4686750787736],
-					['asinh', [Math.PI], 'asinh(Math.PI)', 1.8622957433108482],
+					['asinh', [1e300], 'asinh(1e308)', 691.4686750787736, NaN, NaN],
+					['asinh', [Math.PI], 'asinh(Math.PI)', 1.8622957433108482, NaN, NaN],
 
-					['atan', [2], 'atan(2)', 1.1071487177940904],
-					['atan', [Math.PI], 'atan(Math.PI)', 1.2626272556789115],
+					['atan', [2], 'atan(2)', 1.1071487177940904, NaN, 1.1071487177940906],
+					['atan', [Math.PI], 'atan(Math.PI)', 1.2626272556789115, NaN, NaN],
 
-					['atanh', [0.5], 'atanh(0.5)', 0.5493061443340548],
+					['atanh', [0.5], 'atanh(0.5)', 0.5493061443340548, NaN, 0.5493061443340549],
 
-					['atan2', [1e-310, 2], 'atan2(1e-310, 2)', 5e-311],
-					['atan2', [Math.PI, 2], 'atan2(Math.PI)', 1.0038848218538872],
+					['atan2', [1e-310, 2], 'atan2(1e-310, 2)', 5e-311, NaN, NaN],
+					['atan2', [Math.PI, 2], 'atan2(Math.PI)', 1.0038848218538872, NaN, NaN],
 
-					['cbrt', [100], 'cbrt(100)', 4.641588833612779],
-					['cbrt', [Math.PI], 'cbrt(Math.PI)', 1.4645918875615231],
+					['cbrt', [100], 'cbrt(100)', 4.641588833612779, NaN, NaN],
+					['cbrt', [Math.PI], 'cbrt(Math.PI)', 1.4645918875615231, NaN, 1.4645918875615234],
 					
-					['cos', [n], `cos(${n})`, 0.9924450321351935],
-					['cos', [Math.PI], 'cos(Math.PI)', -1],
-					['cos', [bigN], `cos(${bigN})`, -0.10868049424995659, -0.10868049424995659, -0.9779661551196617], // unique in Tor
+					['cos', [n], `cos(${n})`, 0.9924450321351935, NaN, NaN],
+					['cos', [Math.PI], 'cos(Math.PI)', -1, NaN, NaN],
+					['cos', [bigN], `cos(${bigN})`, -0.10868049424995659, -0.10868049424995659, NaN],
 
-					['cosh', [1], 'cosh(1)', 1.5430806348152437],
-					['cosh', [Math.PI], 'cosh(Math.PI)', 11.591953275521519],
+					['cosh', [1], 'cosh(1)', 1.5430806348152437, NaN, NaN],
+					['cosh', [Math.PI], 'cosh(Math.PI)', 11.591953275521519, NaN, NaN],
 
-					['expm1', [1], 'expm1(1)', 1.718281828459045],
-					['expm1', [Math.PI], 'expm1(Math.PI)', 22.140692632779267],
+					['expm1', [1], 'expm1(1)', 1.718281828459045, NaN, 1.7182818284590453],
+					['expm1', [Math.PI], 'expm1(Math.PI)', 22.140692632779267, NaN, NaN],
 
-					['exp', [n], `exp(${n})`, 1.1308844209474893],
-					['exp', [Math.PI], 'exp(Math.PI)', 23.140692632779267],
+					['exp', [n], `exp(${n})`, 1.1308844209474893, NaN, NaN],
+					['exp', [Math.PI], 'exp(Math.PI)', 23.140692632779267, NaN, NaN],
 
-					['hypot', [1, 2, 3, 4, 5, 6], 'hypot(1, 2, 3, 4, 5, 6)', 9.539392014169456],
-					['hypot', [bigN, bigN], `hypot(${bigN}, ${bigN})`, 8.288489826731116e+38, 8.288489826731114e+38],
+					['hypot', [1, 2, 3, 4, 5, 6], 'hypot(1, 2, 3, 4, 5, 6)', 9.539392014169456, NaN, NaN],
+					['hypot', [bigN, bigN], `hypot(${bigN}, ${bigN})`, 8.288489826731116e+38, 8.288489826731114e+38, NaN],
 
-					['log', [n], `log(${n})`, -2.0955709236097197],
-					['log', [Math.PI], 'log(Math.PI)', 1.1447298858494002],
+					['log', [n], `log(${n})`, -2.0955709236097197, NaN, NaN],
+					['log', [Math.PI], 'log(Math.PI)', 1.1447298858494002, NaN, NaN],
 
-					['log1p', [n], `log1p(${n})`, 0.11600367575630613],
-					['log1p', [Math.PI], 'log1p(Math.PI)', 1.4210804127942926],
+					['log1p', [n], `log1p(${n})`, 0.11600367575630613, NaN, NaN],
+					['log1p', [Math.PI], 'log1p(Math.PI)', 1.4210804127942926, NaN, NaN],
 
-					['log10', [n], `log10(${n})`, -0.9100948885606021],
-					['log10', [Math.PI], 'log10(Math.PI)', 0.4971498726941338, 0.49714987269413385],
-					['log10', [Math.E], 'log10(Math.E])', 0.4342944819032518],
-					['log10', [Math.LN2], 'log10(Math.LN2)', -0.1591745389548616],
-					['log10', [Math.LOG2E], 'log10(Math.LOG2E)', 0.15917453895486158],
-					['log10', [Math.LOG10E], 'log10(Math.LOG10E)', -0.36221568869946325],
-					['log10', [Math.SQRT1_2], 'log10(Math.SQRT1_2)', -0.15051499783199057],
-					['log10', [Math.SQRT2], 'log10(Math.SQRT2)', 0.1505149978319906, 0.15051499783199063],
+					['log10', [n], `log10(${n})`, -0.9100948885606021, NaN, NaN],
+					['log10', [Math.PI], 'log10(Math.PI)', 0.4971498726941338, 0.49714987269413385, NaN],
+					['log10', [Math.E], 'log10(Math.E])', 0.4342944819032518, NaN, NaN],
+					['log10', [Math.LN2], 'log10(Math.LN2)', -0.1591745389548616, NaN, NaN],
+					['log10', [Math.LOG2E], 'log10(Math.LOG2E)', 0.15917453895486158, NaN, NaN],
+					['log10', [Math.LOG10E], 'log10(Math.LOG10E)', -0.36221568869946325, NaN, NaN],
+					['log10', [Math.SQRT1_2], 'log10(Math.SQRT1_2)', -0.15051499783199057, NaN, NaN],
+					['log10', [Math.SQRT2], 'log10(Math.SQRT2)', 0.1505149978319906, 0.15051499783199063, NaN],
 					
-					['sin', [bigN], `sin(${bigN})`, 0.994076732536068, 0.994076732536068, -0.20876350121720488], // unique in Tor
-					['sin', [Math.PI], 'sin(Math.PI)', 1.2246467991473532e-16, 1.2246467991473532e-16, 1.2246063538223773e-16], // unique in Tor
-					['sin', [Math.E], 'sin(Math.E])', 0.41078129050290885],
-					['sin', [Math.LN2], 'sin(Math.LN2)', 0.6389612763136348],
-					['sin', [Math.LOG2E], 'sin(Math.LOG2E)', 0.9918062443936637],
-					['sin', [Math.LOG10E], 'sin(Math.LOG10E)', 0.4207704833137573],
-					['sin', [Math.SQRT1_2], 'sin(Math.SQRT1_2)', 0.6496369390800625],
-					['sin', [Math.SQRT2], 'sin(Math.SQRT2)', 0.9877659459927356],
+					['sin', [bigN], `sin(${bigN})`, 0.994076732536068, 0.994076732536068, NaN],
+					['sin', [Math.PI], 'sin(Math.PI)', 1.2246467991473532e-16, 1.2246467991473532e-16, NaN],
+					['sin', [Math.E], 'sin(Math.E])', 0.41078129050290885, NaN, 0.4107812905029088],
+					['sin', [Math.LN2], 'sin(Math.LN2)', 0.6389612763136348, NaN, NaN],
+					['sin', [Math.LOG2E], 'sin(Math.LOG2E)', 0.9918062443936637, NaN, NaN],
+					['sin', [Math.LOG10E], 'sin(Math.LOG10E)', 0.4207704833137573, NaN, NaN],
+					['sin', [Math.SQRT1_2], 'sin(Math.SQRT1_2)', 0.6496369390800625, NaN, NaN],
+					['sin', [Math.SQRT2], 'sin(Math.SQRT2)', 0.9877659459927356, NaN, NaN],
 					
-					['sinh', [1], 'sinh(1)', 1.1752011936438014],
-					['sinh', [Math.PI], 'sinh(Math.PI)', 11.548739357257748],
-					['sinh', [Math.E], 'sinh(Math.E])', 7.544137102816975],
-					['sinh', [Math.LN2], 'sinh(Math.LN2)', 0.75],
-					['sinh', [Math.LOG2E], 'sinh(Math.LOG2E)', 1.9978980091062795],
-					['sinh', [Math.LOG10E], 'sinh(Math.LOG10E)', 0.44807597941469024],
-					['sinh', [Math.SQRT1_2], 'sinh(Math.SQRT1_2)', 0.7675231451261164],
-					['sinh', [Math.SQRT2], 'sinh(Math.SQRT2)', 1.935066822174357],
+					['sinh', [1], 'sinh(1)', 1.1752011936438014, NaN, NaN],
+					['sinh', [Math.PI], 'sinh(Math.PI)', 11.548739357257748, NaN, 11.548739357257746],
+					['sinh', [Math.E], 'sinh(Math.E])', 7.544137102816975, NaN, NaN],
+					['sinh', [Math.LN2], 'sinh(Math.LN2)', 0.75, NaN, NaN],
+					['sinh', [Math.LOG2E], 'sinh(Math.LOG2E)', 1.9978980091062795, NaN, NaN],
+					['sinh', [Math.LOG10E], 'sinh(Math.LOG10E)', 0.44807597941469024, NaN, NaN],
+					['sinh', [Math.SQRT1_2], 'sinh(Math.SQRT1_2)', 0.7675231451261164, NaN, NaN],
+					['sinh', [Math.SQRT2], 'sinh(Math.SQRT2)', 1.935066822174357, NaN, 1.9350668221743568],
 					
-					['sqrt', [n], `sqrt(${n})`, 0.3507135583350036],
-					['sqrt', [Math.PI], 'sqrt(Math.PI)', 1.7724538509055159],
+					['sqrt', [n], `sqrt(${n})`, 0.3507135583350036, NaN, NaN],
+					['sqrt', [Math.PI], 'sqrt(Math.PI)', 1.7724538509055159, NaN, NaN],
 					
-					['tan', [-1e308], 'tan(-1e308)', 0.5086861259107568],
-					['tan', [Math.PI], 'tan(Math.PI)', -1.2246467991473532e-16],
+					['tan', [-1e308], 'tan(-1e308)', 0.5086861259107568, NaN, 0.5086861259107567],
+					['tan', [Math.PI], 'tan(Math.PI)', -1.2246467991473532e-16, NaN, NaN],
 
-					['tanh', [n], `tanh(${n})`, 0.12238344189440875],
-					['tanh', [Math.PI], 'tanh(Math.PI)', 0.99627207622075],
+					['tanh', [n], `tanh(${n})`, 0.12238344189440875, NaN, 0.12238344189440876],
+					['tanh', [Math.PI], 'tanh(Math.PI)', 0.99627207622075, NaN, NaN],
 
-					['pow', [n, -100], `pow(${n}, -100)`, 1.022089333584519e+91, 1.0220893335845176e+91],
-					['pow', [Math.PI, -100], 'pow(Math.PI, -100)', 1.9275814160560204e-50, 1.9275814160560185e-50],
-					['pow', [Math.E, -100], 'pow(Math.E, -100)', 3.7200759760208555e-44, 3.720075976020851e-44],
-					['pow', [Math.LN2, -100], 'pow(Math.LN2, -100)', 8269017203802394, 8269017203802410],
-					['pow', [Math.LN10, -100], 'pow(Math.LN10, -100)', 6.003867926738829e-37, 6.003867926738811e-37],
-					['pow', [Math.LOG2E, -100], 'pow(Math.LOG2E, -100)', 1.20933355845501e-16, 1.2093335584550061e-16],
-					['pow', [Math.LOG10E, -100], 'pow(Math.LOG10E, -100)', 1.6655929347585958e+36, 1.665592934758592e+36],
-					['pow', [Math.SQRT1_2, -100], 'pow(Math.SQRT1_2, -100)', 1125899906842616.2, 1125899906842611.5],
-					['pow', [Math.SQRT2, -100], 'pow(Math.SQRT2, -100)', 8.881784197001191e-16, 8.881784197001154e-16]
+					['pow', [n, -100], `pow(${n}, -100)`, 1.022089333584519e+91, 1.0220893335845176e+91, NaN],
+					['pow', [Math.PI, -100], 'pow(Math.PI, -100)', 1.9275814160560204e-50, 1.9275814160560185e-50, 1.9275814160560206e-50],
+					['pow', [Math.E, -100], 'pow(Math.E, -100)', 3.7200759760208555e-44, 3.720075976020851e-44, NaN],
+					['pow', [Math.LN2, -100], 'pow(Math.LN2, -100)', 8269017203802394, 8269017203802410, NaN],
+					['pow', [Math.LN10, -100], 'pow(Math.LN10, -100)', 6.003867926738829e-37, 6.003867926738811e-37, NaN],
+					['pow', [Math.LOG2E, -100], 'pow(Math.LOG2E, -100)', 1.20933355845501e-16, 1.2093335584550061e-16, NaN],
+					['pow', [Math.LOG10E, -100], 'pow(Math.LOG10E, -100)', 1.6655929347585958e+36, 1.665592934758592e+36, 1.6655929347585955e+36],
+					['pow', [Math.SQRT1_2, -100], 'pow(Math.SQRT1_2, -100)', 1125899906842616.2, 1125899906842611.5, NaN],
+					['pow', [Math.SQRT2, -100], 'pow(Math.SQRT2, -100)', 8.881784197001191e-16, 8.881784197001154e-16, NaN]
 				]
 				const data = {}
 				fns.forEach(fn => {
@@ -2052,19 +2065,19 @@
 						const result = Math[fn[0]](...fn[1])
 						const chrome = result == fn[3]
 						const firefox = fn[4] ? result == fn[4] : chrome
-						const other = fn[5] ? result == fn[5] : false
-						return { result, chrome, firefox, other }
+						const safari = fn[5] ? result == fn[5] : (firefox || chrome)
+						return { result, chrome, firefox, safari }
 					})
 				})
 				const $hash = await hashify(data)
 				resolve({...data, $hash })
 				const id = `${instanceId}-maths`
 				const el = document.getElementById(id)
-				const header = `<div>Match to 64 bit Chromium (CR64), Firefox (FF64), and Other (OT64)</div>`
+				const header = `<div>Match to 64 bit Chromium (CR64), Firefox (FF64), and Safari (SF64)</div>`
 				const results = Object.keys(data).map(key => {
 					const value = data[key]
-					const { result, chrome, firefox, other } = value
-					return `${chrome ? '[CR64]' : '[----]'}${firefox ? '[FF64]' : '[----]'}${other ? '[OT64]' : '[----]'} ${key} => ${result}`
+					const { result, chrome, firefox, safari } = value
+					return `${chrome ? '[CR64]' : '[----]'}${firefox ? '[FF64]' : '[----]'}${safari ? '[SF64]' : '[----]'} ${key} => ${result}`
 				})
 				patch(el, html`
 				<div>
@@ -2150,10 +2163,13 @@
 					const date = new contentWindowDate().getDate()
 					const month = new contentWindowDate().getMonth()
 					const year = contentWindowDate().split` `[3] // current year
-					const dateString = `${month}/${date}/${year}`
-					const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
-					const utc = contentWindowDate.parse(toJSONParsed(new contentWindowDate(dateString)).split`Z`.join``)
-					const now = +new contentWindowDate(dateString)
+					const format = n => (''+n).length == 1 ? `0${n}` : n
+					const dateString = `${month+1}/${format(date)}/${year}`
+					const dateStringUTC = `${year}-${format(month+1)}-${format(date)}`
+					const utc = contentWindowDate.parse(
+						new contentWindowDate(dateString)
+					)
+					const now = +new contentWindowDate(dateStringUTC)
 					return +(((utc - now)/60000).toFixed(0))
 				}
 				// concept inspired by https://github.com/ghacksuserjs/TorZillaPrint
@@ -2391,7 +2407,7 @@
 					<div>matching offsets: ${''+matchingOffsets}</div>
 					<div>timezone measured: ${!seasonLie ? measuredTimezones : note.lied}</div>
 					<div>relativeTimeFormat: ${
-						!relativeTime ? note.blocked : 
+						!relativeTime ? note.unsupported : 
 						modal(`${id}-relative-time-format`, Object.keys(relativeTime).sort().map(key => `${key} => ${relativeTime[key]}`).join('<br>'))
 					}</div>
 					<div>locale language: ${!localeLie ? locale.lang.join(', ') : note.lied}</div>
@@ -2552,12 +2568,12 @@
 	const getOfflineAudioContext = instanceId => {
 		return new Promise(resolve => {
 			try {
-				if (!('OfflineAudioContext' in window || 'webkitOfflineAudioContext' in window)) {
+				const audioContext = caniuse(() => OfflineAudioContext || webkitOfflineAudioContext)
+				if (!audioContext) {
 					return resolve(undefined)
 				}
-				const audioBuffer = 'AudioBuffer' in window
-				const audioBufferGetChannelData = audioBuffer && attempt(() => AudioBuffer.prototype.getChannelData)
-				const audioBufferCopyFromChannel = audioBuffer && attempt(() => AudioBuffer.prototype.copyFromChannel)
+				const audioBufferGetChannelData = attempt(() => AudioBuffer.prototype.getChannelData)
+				const audioBufferCopyFromChannel = attempt(() => AudioBuffer.prototype.copyFromChannel)
 				const audioBufferProto = caniuse(() => AudioBuffer, ['prototype'])
 				const channelDataLie = (
 					audioBufferGetChannelData ? hasLiedAPI(audioBufferGetChannelData, 'getChannelData', audioBufferProto).lie : false
@@ -2565,7 +2581,7 @@
 				const copyFromChannelLie = (
 					audioBufferCopyFromChannel ? hasLiedAPI(audioBufferCopyFromChannel, 'copyFromChannel', audioBufferProto).lie : false
 				)
-				const audioContext = OfflineAudioContext || webkitOfflineAudioContext
+				
 				const context = new audioContext(1, 44100, 44100)
 				const analyser = context.createAnalyser()
 				const oscillator = context.createOscillator()
@@ -2987,6 +3003,7 @@
 				<div>keys:</div>
 				<div>moz:</div>
 				<div>webkit:</div>
+				<div>apple:</div>
 				<div>matching:</div>
 			</div>
 			<div id="${instanceId}-navigator">
