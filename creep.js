@@ -2115,7 +2115,7 @@
 				resolve({...data, $hash })
 				const id = `${instanceId}-maths`
 				const el = document.getElementById(id)
-				const header = `<div>Match to 64bit Win10 Chromium, Firefox, & Safari (CR64|FF64|SF64)</div>`
+				const header = `<div>Match to 64bit Chromium, Firefox, & Safari (CR64|FF64|SF64)</div>`
 				const results = Object.keys(data).map(key => {
 					const value = data[key]
 					const { result, chrome, firefox, safari } = value
