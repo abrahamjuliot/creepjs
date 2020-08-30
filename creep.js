@@ -2000,10 +2000,23 @@
 					
 					['cos', [n], `cos(${n})`, 0.9924450321351935, NaN, NaN],
 					['cos', [Math.PI], 'cos(Math.PI)', -1, NaN, NaN],
-					['cos', [bigN], `cos(${bigN})`, -0.10868049424995659, -0.10868049424995659, NaN],
+					['cos', [bigN], `cos(${bigN})`, -0.10868049424995659, NaN, NaN],
+					['cos', [-1e308], 'cos(-1e308)', NaN, NaN, NaN],
+					['cos', [13*Math.E], 'cos(13*Math.E)', NaN, NaN, NaN],
+					['cos', [57*Math.E], 'cos(57*Math.E)', NaN, NaN, NaN],
+					['cos', [21*Math.LN2], 'cos(21*Math.LN2)', NaN, NaN, NaN],
+					['cos', [51*Math.LN2], 'cos(51*Math.LN2)', NaN, NaN, NaN],
+					['cos', [21*Math.LOG2E], 'cos(21*Math.LOG2E)', NaN, NaN, NaN],
+					['cos', [25*Math.SQRT2], 'cos(25*Math.SQRT2)', NaN, NaN, NaN],
+					['cos', [50*Math.SQRT1_2], 'cos(50*Math.SQRT1_2)', NaN, NaN, NaN],
+					['cos', [21*Math.SQRT1_2], 'cos(21*Math.SQRT1_2)', NaN, NaN, NaN],
+					['cos', [17*Math.LOG10E], 'cos(17*Math.LOG10E)', NaN, NaN, NaN],
+					['cos', [2*Math.LOG10E], 'cos(2*Math.LOG10E)', NaN, NaN, NaN],
 
 					['cosh', [1], 'cosh(1)', 1.5430806348152437, NaN, NaN],
 					['cosh', [Math.PI], 'cosh(Math.PI)', 11.591953275521519, NaN, NaN],
+					['cosh', [492*Math.LOG2E], 'cosh(492*Math.LOG2E)', NaN, NaN, NaN],
+					['cosh', [502*Math.SQRT2], 'cosh(502*Math.SQRT2)', NaN, NaN, NaN],
 
 					['expm1', [1], 'expm1(1)', 1.718281828459045, NaN, 1.7182818284590453],
 					['expm1', [Math.PI], 'expm1(Math.PI)', 22.140692632779267, NaN, NaN],
@@ -2022,36 +2035,51 @@
 
 					['log10', [n], `log10(${n})`, -0.9100948885606021, NaN, NaN],
 					['log10', [Math.PI], 'log10(Math.PI)', 0.4971498726941338, 0.49714987269413385, NaN],
-					['log10', [Math.E], 'log10(Math.E])', 0.4342944819032518, NaN, NaN],
+					['log10', [Math.E], 'log10(Math.E)', 0.4342944819032518, NaN, NaN],
+					['log10', [34*Math.E], 'log10(34*Math.E)',NaN, NaN, NaN],
 					['log10', [Math.LN2], 'log10(Math.LN2)', -0.1591745389548616, NaN, NaN],
+					['log10', [11*Math.LN2], 'log10(11*Math.LN2)',NaN, NaN, NaN],
 					['log10', [Math.LOG2E], 'log10(Math.LOG2E)', 0.15917453895486158, NaN, NaN],
+					['log10', [43*Math.LOG2E], 'log10(43*Math.LOG2E)',NaN, NaN, NaN],
 					['log10', [Math.LOG10E], 'log10(Math.LOG10E)', -0.36221568869946325, NaN, NaN],
+					['log10', [7*Math.LOG10E], 'log10(7*Math.LOG10E)',NaN, NaN, NaN],
 					['log10', [Math.SQRT1_2], 'log10(Math.SQRT1_2)', -0.15051499783199057, NaN, NaN],
+					['log10', [2*Math.SQRT1_2], 'log10(2*Math.SQRT1_2)',NaN, NaN, NaN],
 					['log10', [Math.SQRT2], 'log10(Math.SQRT2)', 0.1505149978319906, 0.15051499783199063, NaN],
 					
-					['sin', [bigN], `sin(${bigN})`, 0.994076732536068, 0.994076732536068, NaN],
-					['sin', [Math.PI], 'sin(Math.PI)', 1.2246467991473532e-16, 1.2246467991473532e-16, NaN],
-					['sin', [Math.E], 'sin(Math.E])', 0.41078129050290885, NaN, 0.4107812905029088],
-					['sin', [Math.LN2], 'sin(Math.LN2)', 0.6389612763136348, NaN, NaN],
-					['sin', [Math.LOG2E], 'sin(Math.LOG2E)', 0.9918062443936637, NaN, NaN],
-					['sin', [Math.LOG10E], 'sin(Math.LOG10E)', 0.4207704833137573, NaN, NaN],
-					['sin', [Math.SQRT1_2], 'sin(Math.SQRT1_2)', 0.6496369390800625, NaN, NaN],
-					['sin', [Math.SQRT2], 'sin(Math.SQRT2)', 0.9877659459927356, NaN, NaN],
-					
+					['sin', [bigN], `sin(${bigN})`, 0.994076732536068, NaN, NaN],
+					['sin', [Math.PI], 'sin(Math.PI)', 1.2246467991473532e-16, NaN, NaN],
+
+					['sin', [39*Math.E], 'sin(39*Math.E)', -0.7181630308570677, -0.7181630308570678, NaN],
+					['sin', [35*Math.LN2], 'sin(35*Math.LN2)', -0.7659964138980511, -0.765996413898051, NaN],
+					['sin', [110*Math.LOG2E], 'sin(110*Math.LOG2E)', 0.9989410140273756, 0.9989410140273757, NaN],
+					['sin', [7*Math.LOG10E], 'sin(7*Math.LOG10E)', 0.10135692924965616, 0.10135692924965614, NaN],
+					['sin', [35*Math.SQRT1_2], 'sin(35*Math.SQRT1_2)', -0.3746357547858202, -0.37463575478582023, NaN],
+					['sin', [21*Math.SQRT2], 'sin(21*Math.SQRT2)', -0.9892668187780498, -0.9892668187780497, NaN],
+
 					['sinh', [1], 'sinh(1)', 1.1752011936438014, NaN, NaN],
 					['sinh', [Math.PI], 'sinh(Math.PI)', 11.548739357257748, NaN, 11.548739357257746],
-					['sinh', [Math.E], 'sinh(Math.E])', 7.544137102816975, NaN, NaN],
+					['sinh', [Math.E], 'sinh(Math.E)', 7.544137102816975, NaN, NaN],
 					['sinh', [Math.LN2], 'sinh(Math.LN2)', 0.75, NaN, NaN],
 					['sinh', [Math.LOG2E], 'sinh(Math.LOG2E)', 1.9978980091062795, NaN, NaN],
+					['sinh', [492*Math.LOG2E], 'sinh(492*Math.LOG2E)', NaN, NaN, NaN],
 					['sinh', [Math.LOG10E], 'sinh(Math.LOG10E)', 0.44807597941469024, NaN, NaN],
 					['sinh', [Math.SQRT1_2], 'sinh(Math.SQRT1_2)', 0.7675231451261164, NaN, NaN],
 					['sinh', [Math.SQRT2], 'sinh(Math.SQRT2)', 1.935066822174357, NaN, 1.9350668221743568],
-					
+					['sinh', [502*Math.SQRT2], 'sinh(502*Math.SQRT2)', NaN, NaN, NaN],
+
 					['sqrt', [n], `sqrt(${n})`, 0.3507135583350036, NaN, NaN],
 					['sqrt', [Math.PI], 'sqrt(Math.PI)', 1.7724538509055159, NaN, NaN],
 					
 					['tan', [-1e308], 'tan(-1e308)', 0.5086861259107568, NaN, 0.5086861259107567],
 					['tan', [Math.PI], 'tan(Math.PI)', -1.2246467991473532e-16, NaN, NaN],
+
+					['tan', [6*Math.E], 'tan(6*Math.E)', NaN, NaN, NaN],
+					['tan', [6*Math.LN2], 'tan(6*Math.LN2)', NaN, NaN, NaN],
+					['tan', [10*Math.LOG2E], 'tan(10*Math.LOG2E)', NaN, NaN, NaN],
+					['tan', [17*Math.SQRT2], 'tan(17*Math.SQRT2)', NaN, NaN, NaN],
+					['tan', [34*Math.SQRT1_2], 'tan(34*Math.SQRT1_2)', NaN, NaN, NaN],
+					['tan', [10*Math.LOG10E], 'tan(10*Math.LOG10E)', NaN, NaN, NaN],
 
 					['tanh', [n], `tanh(${n})`, 0.12238344189440875, NaN, 0.12238344189440876],
 					['tanh', [Math.PI], 'tanh(Math.PI)', 0.99627207622075, NaN, NaN],
@@ -2071,8 +2099,8 @@
 					data[fn[2]] = attempt(() => {
 						const result = Math[fn[0]](...fn[1])
 						const chrome = result == fn[3]
-						const firefox = fn[4] ? result == fn[4] : chrome
-						const safari = fn[5] ? result == fn[5] : (firefox || chrome)
+						const firefox = fn[4] ? result == fn[4] : false
+						const safari = fn[5] ? result == fn[5] : false
 						return { result, chrome, firefox, safari }
 					})
 				})
