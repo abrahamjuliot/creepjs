@@ -2099,12 +2099,15 @@
 					['pow', [Math.LOG2E, -100], 'pow(Math.LOG2E, -100)', 1.20933355845501e-16, 1.2093335584550061e-16, NaN],
 					['pow', [Math.LOG10E, -100], 'pow(Math.LOG10E, -100)', 1.6655929347585958e+36, 1.665592934758592e+36, 1.6655929347585955e+36],
 					['pow', [Math.SQRT1_2, -100], 'pow(Math.SQRT1_2, -100)', 1125899906842616.2, 1125899906842611.5, NaN],
-					['pow', [Math.SQRT2, -100], 'pow(Math.SQRT2, -100)', 8.881784197001191e-16, 8.881784197001154e-16, NaN]
+					['pow', [Math.SQRT2, -100], 'pow(Math.SQRT2, -100)', 8.881784197001191e-16, 8.881784197001154e-16, NaN],
+					['pow', [Math.SQRT2, -100], 'pow(Math.SQRT2, -100)', 8.881784197001191e-16, 8.881784197001154e-16, NaN],
+					
+					['polyfill', [2e-3 ** -100], 'polyfill pow(2e-3, -100)', NaN, NaN, NaN]
 				]
 				const data = {}
 				fns.forEach(fn => {
 					data[fn[2]] = attempt(() => {
-						const result = Math[fn[0]](...fn[1])
+						const result = fn[0] != 'polyfill' ? Math[fn[0]](...fn[1]) : fn[1]
 						const chrome = result == fn[3]
 						const firefox = fn[4] ? result == fn[4] : false
 						const safari = fn[5] ? result == fn[5] : false
