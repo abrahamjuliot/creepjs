@@ -2026,6 +2026,13 @@
 
 					['hypot', [1, 2, 3, 4, 5, 6], 'hypot(1, 2, 3, 4, 5, 6)', 9.539392014169456, NaN, NaN],
 					['hypot', [bigN, bigN], `hypot(${bigN}, ${bigN})`, 8.288489826731116e+38, 8.288489826731114e+38, NaN],
+					['hypot', [2*Math.E, -100], 'hypot(2*Math.E, -100)', NaN, NaN, NaN],
+					['hypot', [6*Math.PI, -100], 'hypot(6*Math.PI, -100)', NaN, NaN, NaN],
+					['hypot', [2*Math.LN2, -100], 'hypot(2*Math.LN2, -100)', NaN, NaN, NaN],
+					['hypot', [Math.LOG2E, -100], 'hypot(Math.LOG2E, -100)', NaN, NaN, NaN],
+					['hypot', [Math.SQRT2, -100], 'hypot(Math.SQRT2, -100)', NaN, NaN, NaN],
+					['hypot', [Math.SQRT1_2, -100], 'hypot(Math.SQRT1_2, -100)', NaN, NaN, NaN],
+					['hypot', [2*Math.LOG10E, -100], 'hypot(2*Math.LOG10E, -100)', NaN, NaN, NaN],
 
 					['log', [n], `log(${n})`, -2.0955709236097197, NaN, NaN],
 					['log', [Math.PI], 'log(Math.PI)', 1.1447298858494002, NaN, NaN],
@@ -2108,7 +2115,7 @@
 				resolve({...data, $hash })
 				const id = `${instanceId}-maths`
 				const el = document.getElementById(id)
-				const header = `<div>Match to 64 bit Chromium (CR64), Firefox (FF64), and Safari (SF64)</div>`
+				const header = `<div>Match to 64bit Win10 Chromium, Firefox, & Safari (CR64|FF64|SF64)</div>`
 				const results = Object.keys(data).map(key => {
 					const value = data[key]
 					const { result, chrome, firefox, safari } = value
