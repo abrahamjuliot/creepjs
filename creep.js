@@ -383,7 +383,7 @@
 	const known = hash => {
 		const id = {
 			'89455ebb9765644fb98068ec68fbad7fcaaf2768b2cb6e1bd062eee5790c00e8': 'Chromium', // math
-			'8356feb9253a56ba698e1868905974db482202405b0eec201411bdbfa2abbad0': 'Firefox', // math
+			'db3f6704dd3e8feed2b5553a95a8a8575beb904af89ce64aa85d537b36b19319': 'Firefox', // math
 			'c1141e10c4d38a4ca1a49d9c7335fdfdcd7625b4ba04053a2f335434ec7e4d36': 'Safari', // math
 			'09525011e48d69f97b4486a09a7d84dcb702ecb091f28d27b15fdf422960b874': 'Tor Browser (Windows)', // math
 			'ddc8837ab98695120dae774f04dcf295d2414ffc03431360d46b70380224547a': 'Firefox (MacOS)', // math
