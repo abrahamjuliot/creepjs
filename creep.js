@@ -478,8 +478,6 @@
 	}
 	// inline worker scope
 	const inlineWorker = async caniuse => {
-		console.log(self.Intl)
-		
 		let canvas2d = undefined
 		try {
 			const canvasOffscreen2d = new OffscreenCanvas(256, 256)
