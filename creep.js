@@ -382,14 +382,19 @@
 	// id known hash
 	const known = hash => {
 		const id = {
-			'89455ebb9765644fb98068ec68fbad7fcaaf2768b2cb6e1bd062eee5790c00e8': 'Chromium', // math
-			'db3f6704dd3e8feed2b5553a95a8a8575beb904af89ce64aa85d537b36b19319': 'Firefox', // math
-			'c1141e10c4d38a4ca1a49d9c7335fdfdcd7625b4ba04053a2f335434ec7e4d36': 'Safari', // math
-			'09525011e48d69f97b4486a09a7d84dcb702ecb091f28d27b15fdf422960b874': 'Tor Browser (Windows)', // math
-			'ddc8837ab98695120dae774f04dcf295d2414ffc03431360d46b70380224547a': 'Firefox (MacOS)', // math
-			'7757f7416b78fb8ac1f079b3e0677c0fe179826a63727d809e7d69795e915cd5': 'Chromium', // errors
-			'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': 'Firefox', // errors
-			'd420d594c5a7f7f9a93802eebc3bec3fba0ea2dde91843f6c4746121ef5da140': 'Safari' // errors
+			// math
+			'89455ebb9765644fb98068ec68fbad7fcaaf2768b2cb6e1bd062eee5790c00e8': 'Chromium',
+			'db3f6704dd3e8feed2b5553a95a8a8575beb904af89ce64aa85d537b36b19319': 'Firefox (~Windows)',
+			'87b691d273993fb305b44cecf3429cdd5c5f4d387fb0e66bccaaf7670ca46915': 'Firefox (~Android)',
+			'870471782bc768a4dae3198669358f0d199b92d9e1c4441a3399141ff502a486': 'Firefox (~Android/Chrome OS)',
+			'99740c3678fd95585c1bd0b40e2fabfcf4043a7608a4e67fff2786fc3a59cf8a': '~iPhone', 
+			'c1141e10c4d38a4ca1a49d9c7335fdfdcd7625b4ba04053a2f335434ec7e4d36': 'Safari (~MacOS)',
+			'09525011e48d69f97b4486a09a7d84dcb702ecb091f28d27b15fdf422960b874': 'Tor Browser (~Windows)',
+			'ddc8837ab98695120dae774f04dcf295d2414ffc03431360d46b70380224547a': 'Firefox (~MacOS)',
+			// errors
+			'7757f7416b78fb8ac1f079b3e0677c0fe179826a63727d809e7d69795e915cd5': 'Chromium',
+			'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': 'Firefox',
+			'd420d594c5a7f7f9a93802eebc3bec3fba0ea2dde91843f6c4746121ef5da140': 'Safari'
 		}
 		return id[hash] ? id[hash] : 'Other'
 	}
