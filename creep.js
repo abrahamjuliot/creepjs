@@ -478,6 +478,7 @@
 	}
 	// inline worker scope
 	const inlineWorker = async caniuse => {
+		console.log(self.Intl)
 		
 		let canvas2d = undefined
 		try {
@@ -515,7 +516,6 @@
     		webglRenderer = contextWebgl.getParameter(renererInfo.UNMASKED_RENDERER_WEBGL)
 		}
 		catch (error) { }
-
 		const computeTimezoneOffset = () => {
 			const date = new Date().getDate()
 			const month = new Date().getMonth()
@@ -535,7 +535,16 @@
 		const platform = caniuse(() => navigator, ['platform'])
 		const userAgent = caniuse(() => navigator, ['userAgent'])
 
-		postMessage({ ['timezone offset']: timezoneOffset, hardwareConcurrency, language, platform, userAgent, canvas2d, ['webgl renderer']: webglRenderer, ['webgl vendor']: webglVendor })
+		postMessage({
+			['timezone offset']: timezoneOffset,
+			hardwareConcurrency,
+			language,
+			platform,
+			userAgent,
+			canvas2d,
+			['webgl renderer']: webglRenderer,
+			['webgl vendor']: webglVendor
+		})
 		close()
 	}
 
@@ -909,13 +918,25 @@
 					}),
 					plugins: attempt(() => {
 						const plugins = detectLies('plugins', contentWindowNavigator.plugins)
-						return plugins ? [...contentWindowNavigator.plugins]
+						const response = plugins ? [...contentWindowNavigator.plugins]
 							.map(p => ({
 								name: p.name,
 								description: p.description,
 								filename: p.filename,
 								version: p.version
 							})) : []
+						
+						if (!!response.length) {
+							response.forEach(plugin => {
+								const { name } = plugin
+								const gibbers = gibberish(name)
+								if (!!gibbers.length) {
+									sendToTrash(`plugin contains gibberish`, `[${gibbers.join(', ')}] ${name}`)
+								}
+								return
+							})
+						}
+						return response
 					}),
 					properties: attempt(() => {
 						const keys = Object.keys(Object.getPrototypeOf(contentWindowNavigator))
