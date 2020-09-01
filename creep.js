@@ -385,8 +385,8 @@
 			// math
 			'89455ebb9765644fb98068ec68fbad7fcaaf2768b2cb6e1bd062eee5790c00e8': 'Chromium',
 			'db3f6704dd3e8feed2b5553a95a8a8575beb904af89ce64aa85d537b36b19319': 'Firefox (~Windows)',
-			'87b691d273993fb305b44cecf3429cdd5c5f4d387fb0e66bccaaf7670ca46915': 'Firefox (~Android)',
-			'870471782bc768a4dae3198669358f0d199b92d9e1c4441a3399141ff502a486': 'Firefox (~Android/Chrome OS)',
+			'87b691d273993fb305b44cecf3429cdd5c5f4d387fb0e66bccaaf7670ca46915': 'Firefox (~Linux)',
+			'870471782bc768a4dae3198669358f0d199b92d9e1c4441a3399141ff502a486': 'Firefox (~Android)',
 			'99740c3678fd95585c1bd0b40e2fabfcf4043a7608a4e67fff2786fc3a59cf8a': '~iPhone', 
 			'c1141e10c4d38a4ca1a49d9c7335fdfdcd7625b4ba04053a2f335434ec7e4d36': 'Safari (~MacOS)',
 			'09525011e48d69f97b4486a09a7d84dcb702ecb091f28d27b15fdf422960b874': 'Tor Browser (~Windows)',
