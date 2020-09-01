@@ -814,9 +814,6 @@
 						if (!trusted[navigatorDoNotTrack]) {
 							sendToTrash('doNotTrack - unusual result', navigatorDoNotTrack)
 						}
-						if (doNotTrack != navigatorDoNotTrack) {
-							sendToTrash('doNotTrack', `[${navigatorDoNotTrack}] does not match iframe`)
-						}
 						return doNotTrack
 					}),
 					hardwareConcurrency: attempt(() => {
