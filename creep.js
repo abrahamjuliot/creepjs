@@ -1437,7 +1437,11 @@
 					return resolve(undefined)
 				}
 				const mediaDevicesEnumerated = await contentWindowNavigator.mediaDevices.enumerateDevices()
-				const mediaDevices = mediaDevicesEnumerated ? mediaDevicesEnumerated.map(({ kind }) => ({ kind })) : undefined
+				const mediaDevices = (
+					mediaDevicesEnumerated ? mediaDevicesEnumerated
+						.map(({ kind }) => ({ kind })).sort((a, b) => (a.kind > b.kind) ? 1 : -1) :
+					undefined
+				)
 				const $hash = await hashify(mediaDevices)
 				resolve({ mediaDevices, $hash })
 				const el = document.getElementById(`${instanceId}-media-devices`)
