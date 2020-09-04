@@ -3315,6 +3315,9 @@
 			})(),
 			maths: fp.maths,
 			consoleErrors: fp.consoleErrors,
+			iframeContentWindowVersion: fp.iframeContentWindowVersion,
+			htmlElementVersion: fp.htmlElementVersion,
+			cssStyleDeclarationVersion: fp.cssStyleDeclarationVersion,
 			// avoid random timezone fingerprint values
 			timezone: !fp.timezone || !fp.timezone.lied ? fp.timezone : undefined,
 			clientRects: fp.clientRects,
