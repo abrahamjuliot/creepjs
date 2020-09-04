@@ -18,7 +18,8 @@
   },
   "homepage": "https://github.com/abrahamjuliot/CreepJS#readme",
   "dependencies": {
-    "connect": "^3.7.0",
-    "serve-static": "^1.14.1"
+    "express": "^4.17.1",
+    "fs": "0.0.1-security",
+    "path": "^0.12.7"
   }
 }
