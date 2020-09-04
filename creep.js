@@ -397,7 +397,9 @@
 			
 			// errors
 			'7757f7416b78fb8ac1f079b3e0677c0fe179826a63727d809e7d69795e915cd5': 'Chromium',
+			'a8c7362bfa3851b0ea294c075f5708b73b679b484498989d7fde311441ed3322': 'Chromium',
 			'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': 'Firefox',
+			'bec95f2a6f1d2c815b154802467514f7b774ea64667e566acaf903db224c2b38': 'Firefox',
 			'd420d594c5a7f7f9a93802eebc3bec3fba0ea2dde91843f6c4746121ef5da140': 'Safari'
 		}
 		return id[hash] ? id[hash] : 'Other'
