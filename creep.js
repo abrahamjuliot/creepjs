@@ -1501,8 +1501,13 @@
 				let voices = []
 				const respond = async (resolve, voices) => {
 					voices = voices.map(({ name, lang }) => ({ name, lang }))
+					const check = {}
+					check.microsoft = voices.filter(key => (/microsoft/i).test(key.name)).length
+					check.google = voices.filter(key => (/google/i).test(key.name)).length
+					check.chromeOS = voices.filter(key => (/chrome os/i).test(key.name)).length
+					check.android = voices.filter(key => (/android/i).test(key.name)).length
 					const $hash = await hashify(voices)
-					resolve({ voices, $hash })
+					resolve({ voices, ...check, $hash })
 					const id = `${instanceId}-voices`
 					const el = document.getElementById(id)
 					const voiceList = voices.map(voice => `${voice.name} (${voice.lang})`)
@@ -1510,7 +1515,11 @@
 					<div>
 						<strong>SpeechSynthesis</strong>
 						<div>hash: ${$hash}</div>
-						<div>voices (${count(voices)}): ${voiceList && voiceList.length ? modal(id, voiceList.join('<br>')) : note.blocked}</div>
+						<div>voices (${count(voices)}): ${voiceList && voiceList.length ? modal(id, voiceList.join('<br>')) : note.unsupported}</div>
+						<div>microsoft: ${''+check.microsoft}</div>
+						<div>google: ${''+check.google}</div>
+						<div>chrome OS: ${''+check.chromeOS}</div>
+						<div>android: ${''+check.android}</div>
 					</div>
 					`)
 					return
@@ -3230,6 +3239,10 @@
 				<strong>SpeechSynthesis</strong>
 				<div>hash:</div>
 				<div>voices (0):</div>
+				<div>microsoft:</div>
+				<div>google:</div>
+				<div>chrome OS:</div>
+				<div>android:</div>
 			</div>
 			<div>
 				Data auto deletes <a href="https://github.com/abrahamjuliot/creepjs/blob/8d6603ee39c9534cad700b899ef221e0ee97a5a4/server.gs#L24" target="_blank">every 7 days</a>
