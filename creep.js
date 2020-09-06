@@ -3452,7 +3452,8 @@
 			fonts: fp.fonts,
 			trash: !!fp.trash.trashBin.length,
 			lies: !('data' in fp.lies) ? false : !!fp.lies.data.length,
-			capturedErrors: !!fp.capturedErrors.data.length
+			capturedErrors: !!fp.capturedErrors.data.length,
+			voices: fp.voices
 		}
 		const debugLog = (message, obj) => console.log(message, JSON.stringify(obj, null, '\t'))
 		
