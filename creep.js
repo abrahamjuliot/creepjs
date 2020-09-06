@@ -1157,9 +1157,98 @@
 				const webkit = keys.filter(key => (/webkit/i).test(key)).length
 				const apple = keys.filter(key => (/apple/i).test(key)).length
 				const prototypeName = (''+prototype).match(/\[object (.+)\]/)[1]
+			
 				const data = { keys: keys.sort(), moz, webkit, apple, prototypeName }
 				const $hash = await hashify(data)
 				return resolve({ ...data, $hash })
+			}
+			catch (error) {
+				captureError(error)
+				return resolve(undefined)
+			}
+		})
+	}
+
+	const getSystemStyles = instanceId => {
+		return new Promise(async resolve => {
+			try {
+				const colors = [
+					'ActiveBorder',
+					'ActiveCaption',
+					'ActiveText',
+					'AppWorkspace',
+					'Background',
+					'ButtonBorder',
+					'ButtonFace',
+					'ButtonFace',
+					'ButtonHighlight',
+					'ButtonShadow',
+					'ButtonText',
+					'ButtonText',
+					'Canvas',
+					'CanvasText',
+					'CaptionText',
+					'Field',
+					'FieldText',
+					'GrayText',
+					'GrayText',
+					'Highlight',
+					'Highlight',
+					'HighlightText',
+					'HighlightText',
+					'InactiveBorder',
+					'InactiveCaption',
+					'InactiveCaptionText',
+					'InfoBackground',
+					'InfoText',
+					'LinkText',
+					'Mark',
+					'MarkText',
+					'Menu',
+					'MenuText',
+					'Scrollbar',
+					'ThreeDDarkShadow',
+					'ThreeDFace',
+					'ThreeDHighlight',
+					'ThreeDLightShadow',
+					'ThreeDShadow',
+					'VisitedText',
+					'Window',
+					'WindowFrame',
+					'WindowText'
+				]
+				const fonts = [
+					'caption',
+					'icon',
+					'menu',
+					'message-box',
+					'small-caption',
+					'status-bar'
+				]
+				const id = `${instanceId}-system-styles`
+				const el = document.createElement('div')
+				el.setAttribute('id', id)
+				document.body.append(el)
+				const rendered = document.getElementById(id)
+				const system = {
+					colors: [],
+					fonts: []
+				}
+				system.colors = colors.map(color => {
+					rendered.setAttribute('style', `background-color: ${color} !important`)
+					return {
+						[color]: getComputedStyle(rendered).backgroundColor
+					}
+				})
+				fonts.forEach(font => {
+					rendered.setAttribute('style', `font: ${font} !important`)
+					system.fonts.push({
+						[font]: getComputedStyle(rendered).font
+					})
+				})
+				rendered.parentNode.removeChild(rendered)
+				const $hash = await hashify(system)
+				return resolve({...system, $hash})
 			}
 			catch (error) {
 				captureError(error)
@@ -1174,11 +1263,13 @@
 				const [
 					getComputedStyle,
 					htmlElementStyle,
-					cssRuleListstyle
+					cssRuleListstyle,
+					system
 				] = await Promise.all([
 					computeStyle('getComputedStyle'),
 					computeStyle('HTMLElement.style'),
-					computeStyle('CSSRuleList.style')
+					computeStyle('CSSRuleList.style'),
+					getSystemStyles(instanceId)
 				]).catch(error => {
 					console.error(error.message)
 				})
@@ -1187,6 +1278,7 @@
 					['getComputedStyle']: getComputedStyle,
 					['HTMLElement.style']: htmlElementStyle,
 					['CSSRuleList.style']: cssRuleListstyle,
+					system,
 					matching: (
 						''+getComputedStyle.keys == ''+htmlElementStyle.keys &&
 						''+htmlElementStyle.keys == ''+cssRuleListstyle.keys
@@ -1194,7 +1286,8 @@
 				}
 				const $hash = await hashify(data)
 				resolve({ ...data, $hash })
-				const el = document.getElementById(`${instanceId}-css-style-declaration-version`)
+				const id = `${instanceId}-css-style-declaration-version`
+				const el = document.getElementById(id)
 				patch(el, html`
 				<div>
 					<strong>CSSStyleDeclaration</strong>
@@ -1203,7 +1296,7 @@
 					${
 						Object.keys(data).map(key => {
 							const value = data[key]
-							return key != 'matching' ? `<div>${key}: ${value ? value.$hash : note.blocked}</div>` : ''
+							return key != 'matching' && key != 'system' ? `<div>${key}: ${value ? value.$hash : note.blocked}</div>` : ''
 						}).join('')
 					}
 					<div>keys: ${getComputedStyle.keys.length}, ${htmlElementStyle.keys.length}, ${cssRuleListstyle.keys.length}
@@ -1215,6 +1308,29 @@
 					<div>apple: ${''+getComputedStyle.apple}, ${''+htmlElementStyle.apple}, ${''+cssRuleListstyle.apple}
 					</div>
 					<div>matching: ${''+data.matching}</div>
+					<div>system: ${system.$hash}</div>
+					<div>system styles: ${
+						system && system.colors ? modal(
+							`${id}-system-styles`,
+							[
+								...system.colors.map(color => {
+									const key = Object.keys(color)[0]
+									const val = color[key]
+									return `
+										<div><span style="display:inline-block;border:1px solid #eee;border-radius:3px;width:12px;height:12px;background:${val}"></span> ${key}: ${val}</div>
+									`
+								}),
+								...system.fonts.map(font => {
+									const key = Object.keys(font)[0]
+									const val = font[key]
+									return `
+										<div>${key}: <span style="border:1px solid #eee;background:#f9f9f9;padding:0 5px;border-radius:3px;font:${val}">${val}</span></div>
+									`
+								}),
+
+							].join('')
+						) : note.blocked
+					}</div>
 				</div>
 				`)
 				return
@@ -3068,6 +3184,8 @@
 				<div>moz:</div>
 				<div>webkit:</div>
 				<div>apple:</div>
+				<div>system:</div>
+				<div>system styles:</div>
 			</div>
 			<div id="${instanceId}-html-element-version">
 				<strong>HTMLElement</strong>
