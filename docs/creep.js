@@ -3277,8 +3277,6 @@
 				<div>moz:</div>
 				<div>webkit:</div>
 				<div>apple:</div>
-				<div>system:</div>
-				<div>system styles:</div>
 			</div>
 			<div id="${instanceId}-html-element-version">
 				<strong>HTMLElement</strong>
@@ -3302,6 +3300,8 @@
 				<div>webkit:</div>
 				<div>apple:</div>
 				<div>matching:</div>
+				<div>system:</div>
+				<div>system styles:</div>
 			</div>
 			<div id="${instanceId}-navigator">
 				<strong>Navigator</strong>
