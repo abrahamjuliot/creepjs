@@ -3509,7 +3509,16 @@
 		// Trusted Fingerprint
 		const distrust = { distrust: { brave: isBrave, firefox: isFirefox } }
 		const creep = {
-			workerScope: fp.workerScope,
+			workerScope: fp.workerScope ? {
+				canvas2d: fp.workerScope.canvas2d,
+				hardwareConcurrency: fp.workerScope.hardwareConcurrency,
+				language: fp.workerScope.language,
+				platform: fp.workerScope.platform,
+				system: fp.workerScope.system,
+				['timezone offset']: fp.workerScope['timezone offset'],
+				['webgl renderer']: fp.workerScope['webgl renderer'],
+				['webgl vendor']: fp.workerScope['webgl vendor']
+			} : undefined,
 			mediaDevices: !isBrave ? fp.mediaDevices : distrust,
 			canvas2d: !(isBrave || isFirefox) ? fp.canvas2d : distrust,
 			canvasBitmapRenderer: !(isBrave || isFirefox) ? fp.canvasBitmapRenderer : distrust,
