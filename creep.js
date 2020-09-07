@@ -384,6 +384,7 @@
 		const id = {
 			// math
 			'89455ebb9765644fb98068ec68fbad7fcaaf2768b2cb6e1bd062eee5790c00e8': 'Chromium',
+			'2607501c5033cc3ca19e835f701baf381e813f6bacfd5d50955364b078b24ecf': 'Chromium', // pow ** bug
 			"99740c3678fd95585c1bd0b40e2fabfcf4043a7608a4e67fff2786fc3a59cf8a": "iOS",
 			'c1141e10c4d38a4ca1a49d9c7335fdfdcd7625b4ba04053a2f335434ec7e4d36': 'Safari (~MacOS)',
 			'ddc8837ab98695120dae774f04dcf295d2414ffc03431360d46b70380224547a': 'Firefox (~MacOS)',
@@ -2634,6 +2635,7 @@
 	}
 
 	// client rects
+	// inspired by https://privacycheck.sec.lrz.de/active/fp_gcr/fp_getclientrects.html
 	const getClientRects = instanceId => {
 		return new Promise(async resolve => {
 			try {
@@ -2664,7 +2666,93 @@
 				patch(divRendered, html`
 				<div id="rect-container">
 					<style>
-					.rects{width:10px;height:10px;max-width:100%}.absolute{position:absolute}#cRect1{border:solid 2.715px;border-color:#F72585;padding:3.98px;margin-left:12.12px}#cRect2{border:solid 2px;border-color:#7209B7;font-size:30px;margin-top:20px;transform:skewY(23.1753218deg)}#cRect3{border:solid 2.89px;border-color:#3A0CA3;font-size:45px;transform:scale(100000000000000000000009999999999999.99, 1.89);margin-top:50px}#cRect4{border:solid 2px;border-color:#4361EE;transform:matrix(1.11, 2.0001, -1.0001, 1.009, 150, 94.4);margin-top:11.1331px;margin-left:12.1212px;padding:4.4545px;left:239.4141px;top:8.5050px}#cRect5{border:solid 2px;border-color:#4CC9F0;margin-left:42.395pt}#cRect6{border:solid 2px;border-color:#F72585;transform:perspective(12890px) translateZ(101.5px);padding:12px}#cRect7{margin-top:-350.552px;margin-left:0.9099rem;border:solid 2px;border-color:#4361EE}#cRect8{margin-top:-150.552px;margin-left:15.9099rem;border:solid 2px;border-color:#3A0CA3}#cRect9{margin-top:-110.552px;margin-left:15.9099rem;border:solid 2px;border-color:#7209B7}#cRect10{margin-top:-315.552px;margin-left:15.9099rem;border:solid 2px;border-color:#F72585}#cRect11{width:10px;height:10px;margin-left:15.0000009099rem;border:solid 2px;border-color:#F72585}#cRect12{width:10px;height:10px;margin-left:15.0000009099rem;border:solid 2px;border-color:#F72585}
+					.rects {
+						width: 1000%;
+						height: 1000%;
+						max-width: 1000%;
+					}
+					.absolute {
+						position: absolute;
+					}
+					#cRect1 {
+						border: solid 2.715px;
+						border-color: #F72585;
+						padding: 3.98px;
+						margin-left: 12.12px;
+					}
+					#cRect2 {
+						border: solid 2px;
+						border-color: #7209B7;
+						font-size: 30px;
+						margin-top: 20px;
+						transform: skewY(23.1753218deg);
+					}
+					#cRect3 {
+						border: solid 2.89px;
+						border-color: #3A0CA3;
+						font-size: 45px;
+						transform: scale(100000000000000000000009999999999999.99, 1.89);
+						margin-top: 50px;
+					}
+					#cRect4 {
+						border: solid 2px;
+						border-color: #4361EE;
+						transform: matrix(1.11, 2.0001, -1.0001, 1.009, 150, 94.4);
+						margin-top: 11.1331px;
+						margin-left: 12.1212px;
+						padding: 4.4545px;
+						left: 239.4141px;
+						top: 8.5050px;
+					}
+					#cRect5 {
+						border: solid 2px;
+						border-color: #4CC9F0;
+						margin-left: 42.395pt;
+					}
+					#cRect6 {
+						border: solid 2px;
+						border-color: #F72585;
+						transform: perspective(12890px) translateZ(101.5px);
+						padding: 12px;
+					}
+					#cRect7 {
+						margin-top: -350.552px;
+						margin-left: 0.9099rem;
+						border: solid 2px;
+						border-color: #4361EE;
+					}
+					#cRect8 {
+						margin-top: -150.552px;
+						margin-left: 15.9099rem;
+						border: solid 2px;
+						border-color: #3A0CA3;
+					}
+					#cRect9 {
+						margin-top: -110.552px;
+						margin-left: 15.9099rem;
+						border: solid 2px;
+						border-color: #7209B7;
+					}
+					#cRect10 {
+						margin-top: -315.552px;
+						margin-left: 15.9099rem;
+						border: solid 2px;
+						border-color: #F72585;
+					}
+					#cRect11 {
+						width: 10px;
+						height: 10px;
+						margin-left: 15.0000009099rem;
+						border: solid 2px;
+						border-color: #F72585;
+					}
+					#cRect12 {
+						width: 10px;
+						height: 10px;
+						margin-left: 15.0000009099rem;
+						border: solid 2px;
+						border-color: #F72585;
+					}
 					</style>
 					<div id="cRect1" class="rects"></div>
 					<div id="cRect2" class="rects"></div>
