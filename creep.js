@@ -2664,7 +2664,7 @@
 
 				// patch div
 				patch(divRendered, html`
-				<div id="rect-container">
+				<div style="perspective:100px;width:1000.099%;" id="rect-container">
 					<style>
 					.rects {
 						width: 1000%;
@@ -2685,13 +2685,14 @@
 						border-color: #7209B7;
 						font-size: 30px;
 						margin-top: 20px;
-						transform: skewY(23.1753218deg);
+						padding: 3.98px;
+						transform: skewY(23.1753218deg) rotate3d(10.00099, 90, 0.100000000000009, 60000000000008.00000009deg);
 					}
 					#cRect3 {
 						border: solid 2.89px;
 						border-color: #3A0CA3;
 						font-size: 45px;
-						transform: scale(100000000000000000000009999999999999.99, 1.89);
+						transform: skewY(-23.1753218deg) scale(1099.0000000099, 1.89) matrix(1.11, 2.0001, -1.0001, 1.009, 150, 94.4);
 						margin-top: 50px;
 					}
 					#cRect4 {
