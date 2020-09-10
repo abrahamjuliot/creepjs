@@ -3265,7 +3265,7 @@
 				<strong>Math</strong>
 				<div>hash:</div>
 				<div>results:</div>
-				<div>engine:</div>
+				<div>implementation:</div>
 			</div>
 			<div id="${instanceId}-console-errors">
 				<strong>Error</strong>
