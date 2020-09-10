@@ -2834,7 +2834,7 @@
 					<div>
 						<strong>DOMRect</strong>
 						<div>hash: ${$hash}</div>
-						<div>elements: ${$hash}</div>
+						<div>elements: ${clientHash}</div>
 						<div>results: ${
 							modal(`${templateId}-elements`, clientRects.map(domRect => Object.keys(domRect).map(key => `<div>${key}: ${domRect[key]}</div>`).join('')).join('<br>') )
 						}</div>
