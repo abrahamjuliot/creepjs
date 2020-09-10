@@ -4,6 +4,9 @@
 	const isBrave = 'brave' in navigator
 	const isFirefox = typeof InstallTrigger !== 'undefined'
 
+
+	const emojis = '😃🙌👖👧🏻👩🏻‍🦱👩🏻‍🦰👱🏻‍♀️👩🏻‍🦳👧🏼👧🏽👧🏾👧🏿🐉🌊🍧🏄‍♀️🌠🔮♞'
+	
 	// Handle Errors
 	const errorsCaptured = []
 	const captureError = (error, customMessage = null) => {
@@ -487,19 +490,13 @@
 	const inlineWorker = async caniuse => {
 		let canvas2d = undefined
 		try {
-			const canvasOffscreen2d = new OffscreenCanvas(256, 256)
+			const canvasOffscreen2d = new OffscreenCanvas(500, 200)
 			const context2d = canvasOffscreen2d.getContext('2d')
-			const str = '%$%^LGFWE($HIF)'
-			context2d.font = '20px Arial'
-			context2d.fillText(str, 100, 100)
-			context2d.fillStyle = 'red'
+			const str = '!😃🙌🧠👩‍💻👟👧🏻👩🏻‍🦱👩🏻‍🦰👱🏻‍♀️👩🏻‍🦳👧🏼👧🏽👧🏾👧🏿🦄🐉🌊🍧🏄‍♀️🌠🔮♞'
+			context2d.font = '14px Arial'
+			context2d.fillText(str, 0, 50)
+			context2d.fillStyle = 'rgba(100, 200, 99, 0.78)'
 			context2d.fillRect(100, 30, 80, 50)
-			context2d.font = '32px Times New Roman'
-			context2d.fillStyle = 'blue'
-			context2d.fillText(str, 20, 70)
-			context2d.font = '20px Arial'
-			context2d.fillStyle = 'green'
-			context2d.fillText(str, 10, 50)
 			const getDataURI = async () => {
 				const blob = await canvasOffscreen2d.convertToBlob()
 				const reader = new FileReader()
@@ -1613,17 +1610,11 @@
 				let canvas2dDataURI = ''
 				if (!dataLie && !contextLie) {
 					const context = canvas.getContext('2d')
-					const str = '%$%^LGFWE($HIF)'
-					context.font = '20px Arial'
-					context.fillText(str, 100, 100)
-					context.fillStyle = 'red'
+					const str = '!😃🙌🧠👩‍💻👟👧🏻👩🏻‍🦱👩🏻‍🦰👱🏻‍♀️👩🏻‍🦳👧🏼👧🏽👧🏾👧🏿🦄🐉🌊🍧🏄‍♀️🌠🔮♞'
+					context.font = '14px Arial'
+					context.fillText(str, 0, 50)
+					context.fillStyle = 'rgba(100, 200, 99, 0.78)'
 					context.fillRect(100, 30, 80, 50)
-					context.font = '32px Times New Roman'
-					context.fillStyle = 'blue'
-					context.fillText(str, 20, 70)
-					context.font = '20px Arial'
-					context.fillStyle = 'green'
-					context.fillText(str, 10, 50)
 					canvas2dDataURI = canvas.toDataURL()
 					const dataURI = canvas2dDataURI
 					const $hash = await hashify(dataURI)
@@ -3172,6 +3163,7 @@
 				<div>webgl vendor:</div>
 				<div>system:</div>
 				<div>canvas 2d:</div>
+				<div>image:</div>
 			</div>
 			<div id="${instanceId}-cloudflare">
 				<strong>Cloudflare</strong>
