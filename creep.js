@@ -2763,6 +2763,7 @@
 					<div id="emoji-container">
 						<style>
 						#emoji {
+							position: absolute;
 							font-size: 200px;
 							height: auto;
 						}
