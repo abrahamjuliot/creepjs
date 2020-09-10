@@ -3202,7 +3202,6 @@
 				<div>webgl vendor:</div>
 				<div>system:</div>
 				<div>canvas 2d:</div>
-				<div>image:</div>
 			</div>
 			<div id="${instanceId}-cloudflare">
 				<strong>Cloudflare</strong>
