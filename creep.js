@@ -2870,7 +2870,10 @@
 				<div>
 					<strong>DOMRect</strong>
 					<div>hash: ${$hash}</div>
-					<div>results: ${note.lied}</div>
+					<div>elements: ${note.lied}</div>
+					<div>results:</div>
+					<div>emojis v13.0:</div>
+					<div>results:</div>
 				</div>
 				`)
 				return
