@@ -60,7 +60,7 @@ table {
 
 body { 
 	box-sizing: border-box;
-	font-family: monospace;
+	font-family: monospace !important;
 	color: var(--text);
 	height: 100vh;
 }
@@ -237,11 +237,13 @@ visitor {
 .grade-C,
 .grade-D,
 .grade-F {
-	background: #2da568;
 	color: #fff;
 	border-radius: 3px;
 	padding: 5px;
 	animation: fade-in 1s cubic-bezier(0.77, 0, 0.175, 1.5) both;
+}
+.grade-A {
+	background: #2da568;
 }
 .grade-B {
 	background: #65b3ca;

@@ -2,8 +2,8 @@
 	// Detect Browser
 	const isChrome = 'chrome' in window
 	const isBrave = 'brave' in navigator
-	const isFirefox = typeof InstallTrigger !== 'undefined'
-	
+	const isFirefox = typeof InstallTrigger !== 'undefined'	
+		
 	// Handle Errors
 	const errorsCaptured = []
 	const captureError = (error, customMessage = null) => {
@@ -3405,12 +3405,12 @@
 			const hours = hoursAgo(new Date(firstVisit), new Date(latestVisit)).toFixed(1)
 
 			// trust score
-			const score = 100-(
+			const score = (100-(
 				((subIdsLen > 1 ? subIdsLen : 0) * 5) +
 				(errorsLen * 5.2) +
 				(trashLen * 15.5) +
 				(liesLen * 31)
-			)
+			)).toFixed(0)
 			const template = `
 				<div>
 					<strong>Browser</strong>
@@ -3429,7 +3429,7 @@
 						score >= 60 ? `${score}% <span class="grade-D">D-</span>` :
 						score > 55 ? `${score}% <span class="grade-F">F+</span>` :
 						score == 55 ? `${score}% <span class="grade-F">F</span>` :
-						`${score}% <span class="grade-F">F-</span>`
+						`${score < 0 ? 0 : score}% <span class="grade-F">F-</span>`
 					}</div>
 					<div>visits: ${visits}</div>
 					<div>first: ${toLocaleStr(firstVisit)}
