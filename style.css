@@ -65,17 +65,7 @@ body {
 	height: 100vh;
 }
 
-#fp-app {
-    width: 100px;
-    height: 50px;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    margin: auto;
-    text-align: center;
-}
+
 .app-loader {
 	width: 200px;
     height: 200px;
@@ -242,6 +232,30 @@ visitor {
 	font-weight: bold;
 }
 
+.grade-A,
+.grade-B,
+.grade-C,
+.grade-D,
+.grade-F {
+	background: #2da568;
+	color: #fff;
+	border-radius: 3px;
+	padding: 5px;
+	animation: fade-in 1s cubic-bezier(0.77, 0, 0.175, 1.5) both;
+}
+.grade-B {
+	background: #65b3ca;
+}
+.grade-C {
+	background: #657fca;
+}
+.grade-D {
+	background: #9165ca;
+}
+.grade-F {
+	background: #ca656e;
+}
+
 @keyframes fade-in {
 	0%, 30% {
 		transform: translate(0);
@@ -366,6 +380,8 @@ input[type="radio"] {
     visibility: hidden;
   }
 }
+
+
 /*
   --text: var(--grey);
   --error: var(--red);

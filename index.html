@@ -7,7 +7,225 @@
 	<title>CreepJS</title>
 </head>
 <body>
-	<div id="fp-app"><div class="app-loader"></div></div>
+	<div id="fp-app">
+		<fingerprint>
+			<div id="fingerprint-data">
+				<div id="creep-fingerprint">
+					<strong>Fingerprint</strong>
+					<div class="trusted-fingerprint" style="color:#fff">.</div>
+					<div>loose fingerprint:</div>
+					<div class="time">performance: 0 milliseconds</div>
+				</div>
+				<div id="creep-browser" class="visitor-loader">
+					<strong>Browser</strong>
+					<div>trust score:</div>
+					<div>visits:</div>
+					<div>first:</div>
+					<div>last:</div>
+					<div>persistence:</div>
+					<div>has trash:</div>
+					<div>has lied:</div>
+					<div>has errors:</div>
+					<div>loose fingerprints:</div>
+					<div>bot:</div>
+				</div>
+				<div id="creep-trash">
+					<strong>Trash Bin</strong>
+					<div>hash:</div>
+					<div>trash (0):</div>
+				</div>
+				<div id="creep-lies">
+					<strong>Lies Unmasked</strong>
+					<div>hash:</div>
+					<div>lies (0):</div>
+				</div>
+				<div id="creep-captured-errors">
+					<strong>Errors Captured</strong>
+					<div>hash:</div>
+					<div>errors (0):</div>
+				</div>
+				<div id="creep-worker-scope">
+					<strong>WorkerGlobalScope: Date/WorkerNavigator/OffscreenCanvas</strong>
+					<div>hash:</div>
+					<div>timezone offset</div>
+					<div>hardwareConcurrency:</div>
+					<div>language:</div>
+					<div>platform:</div>
+					<div>webgl renderer:</div>
+					<div>webgl vendor:</div>
+					<div>system:</div>
+					<div>canvas 2d:</div>
+				</div>
+				<div id="creep-cloudflare">
+					<strong>Cloudflare</strong>
+					<div>hash:</div>
+					<div>ip address:</div>
+					<div>system:</div>
+					<div>ip location:</div>
+					<div>tls version:</div>
+				</div>
+				<div id="creep-webrtc">
+					<strong>RTCPeerConnection</strong>
+					<div>hash:</div>
+					<div>webRTC leak:</div>
+					<div>ip address:</div>
+					<div>candidate encoding:</div>
+					<div>connection line:</div>
+					<div>matching:</div>
+				</div>
+				<div id="creep-canvas-2d">
+					<strong>CanvasRenderingContext2D</strong>
+					<div>hash:</div>
+				</div>
+				<div id="creep-canvas-bitmap-renderer">
+					<strong>ImageBitmapRenderingContext</strong>
+					<div>hash:</div>
+				</div>
+				<div id="creep-canvas-webgl">
+					<strong>WebGLRenderingContext/WebGL2RenderingContext</strong>
+						<div>hash:</div>
+						<div>v1 toDataURL:</div>
+						<div>v1 parameters (0):</div>
+						<div>v1 extensions (0):</div>
+						<div>v1 renderer:</div>
+						<div>v1 vendor:</div>
+						<div>v2 toDataURL:</div>
+						<div>v2 parameters (0):</div>
+						<div>v2 extensions (0):</div>
+						<div>v2 renderer:</div>
+						<div>v2 vendor:</div>
+						<div>matching renderer/vendor:</div>
+						<div>matching data URI:</div>
+				</div>
+				<div id="creep-offline-audio-context">
+					<strong>OfflineAudioContext</strong>
+					<div>hash:</div>
+					<div>sample:</div>
+					<div>copy:</div>
+					<div>matching:</div>
+					<div>node values:</div>
+				</div>
+				<div id="creep-client-rects">
+					<strong>DOMRect</strong>
+					<div>hash:</div>
+					<div>elements:</div>
+					<div>results:</div>
+					<div>emojis v13.0:</div>
+					<div>results:</div>
+				</div>
+				<div id="creep-maths">
+					<strong>Math</strong>
+					<div>hash:</div>
+					<div>results:</div>
+					<div>implementation:</div>
+				</div>
+				<div id="creep-console-errors">
+					<strong>Error</strong>
+					<div>hash:</div>
+					<div>results:</div>
+					<div>engine:</div>
+				</div>
+				<div id="creep-timezone">
+					<strong>Date/Intl/Keyboard</strong>
+					<div>hash:</div>
+					<div>timezone:</div>
+					<div>timezone location:</div>
+					<div>timezone offset:</div>
+					<div>timezone offset computed:</div>
+					<div>matching offsets:</div>
+					<div>timezone measured:</div>
+					<div>relativeTimeFormat:</div>
+					<div>locale language:</div>
+					<div>writing system keys:</div>
+				</div>
+				<div id="creep-screen">
+					<strong>Screen</strong>
+					<div>hash:</div>
+					<div>device:</div>
+					<div>width:</div>
+					<div>outerWidth:</div>
+					<div>availWidth:</div>
+					<div>height:</div>
+					<div>outerHeight:</div>
+					<div>availHeight:</div>
+					<div>colorDepth:</div>
+					<div>pixelDepth:</div>
+				</div>
+				<div id="creep-media-devices">
+					<strong>MediaDevicesInfo</strong>
+					<div>hash:</div>
+					<div>devices (0):</div>
+				</div>
+				<div id="creep-iframe-content-window-version">
+					<strong>HTMLIFrameElement.contentWindow</strong>
+					<div>hash:</div>
+					<div>keys (0):</div>
+					<div>moz:</div>
+					<div>webkit:</div>
+					<div>apple:</div>
+				</div>
+				<div id="creep-html-element-version">
+					<strong>HTMLElement</strong>
+					<div>hash:</div>
+					<div>keys (0):</div>
+				</div>
+				<div id="creep-fonts">
+					<strong>HTMLElement (font-family)</strong>
+					<div>hash:</div>
+					<div>results (0):</div>
+				</div>
+				<div id="creep-css-style-declaration-version">
+					<strong>CSSStyleDeclaration</strong>
+					<div>hash:</div>
+					<div>prototype:</div>
+					<div>getComputedStyle:</div>
+					<div>HTMLElement.style:</div>
+					<div>CSSRuleList.style:</div>
+					<div>keys:</div>
+					<div>moz:</div>
+					<div>webkit:</div>
+					<div>apple:</div>
+					<div>matching:</div>
+					<div>system:</div>
+					<div>system styles:</div>
+				</div>
+				<div id="creep-navigator">
+					<strong>Navigator</strong>
+					<div>hash:</div>
+					<div>appVersion:</div>
+					<div>deviceMemory:</div>
+					<div>doNotTrack:</div>
+					<div>hardwareConcurrency:</div>
+					<div>language:</div>
+					<div>maxTouchPoints:</div>
+					<div>platform:</div>
+					<div>userAgent:</div>
+					<div>system:</div>
+					<div>plugins (0):</div>
+					<div>mimeTypes (0):</div>
+					<div>ua architecture:</div>
+					<div>ua model:</div>
+					<div>ua platform:</div>
+					<div>ua platformVersion:</div>
+					<div>ua uaFullVersion:</div>
+					<div>properties (0):</div>
+				</div>
+				<div id="creep-voices">
+					<strong>SpeechSynthesis</strong>
+					<div>hash:</div>
+					<div>voices (0):</div>
+					<div>microsoft:</div>
+					<div>google:</div>
+					<div>chrome OS:</div>
+					<div>android:</div>
+				</div>
+				<div>
+					Data auto deletes <a href="https://github.com/abrahamjuliot/creepjs/blob/8d6603ee39c9534cad700b899ef221e0ee97a5a4/server.gs#L24" target="_blank">every 7 days</a>
+				</div>
+			</div>
+			<div id="font-detector"><div id="font-detector-stage"></div></div>
+		</fingerprint>
+	</div>
 	<script src="creep.js"></script>
 </body>
 </html>

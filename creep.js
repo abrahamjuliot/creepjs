@@ -560,7 +560,7 @@
 					data.canvas2d = { dataURI: canvas2d, $hash: await hashify(canvas2d) }
 					const $hash = await hashify(data)
 					resolve({ ...data, $hash })
-					const el = document.getElementById(`${instanceId}-worker-scope`)
+					const el = document.getElementById('creep-worker-scope')
 					patch(el, html`
 					<div>
 						<strong>WorkerGlobalScope: Date/WorkerNavigator/OffscreenCanvas</strong>
@@ -653,7 +653,7 @@
 						}
 						const $hash = await hashify(data)
 						resolve({ ...data, $hash })
-						const el = document.getElementById(`${instanceId}-webrtc`)
+						const el = document.getElementById('creep-webrtc')
 						patch(el, html`
 						<div>
 							<strong>RTCPeerConnection</strong>
@@ -701,7 +701,7 @@
 				data.uag = getOS(data.uag)
 				const $hash = await hashify(data)
 				resolve({ ...data, $hash })
-				const el = document.getElementById(`${instanceId}-cloudflare`)
+				const el = document.getElementById('creep-cloudflare')
 				patch(el, html`
 				<div>
 					<strong>Cloudflare</strong>
@@ -953,7 +953,7 @@
 				}
 				const $hash = await hashify(data)
 				resolve({ ...data, $hash })
-				const id = `${instanceId}-navigator`
+				const id = 'creep-navigator'
 				const el = document.getElementById(id)
 				const { mimeTypes, plugins, highEntropyValues, properties } = data
 				const blocked = {
@@ -1015,7 +1015,7 @@
 				const data = { keys, apple, moz, webkit } 
 				const $hash = await hashify(data)
 				resolve({ ...data, $hash })
-				const id = `${instanceId}-iframe-content-window-version`
+				const id = 'creep-iframe-content-window-version'
 				const el = document.getElementById(id)
 				patch(el, html`
 				<div>
@@ -1050,7 +1050,7 @@
 				}
 				const $hash = await hashify(keys)
 				resolve({ keys, $hash })
-				const elId = `${instanceId}-html-element-version`
+				const elId = 'creep-html-element-version'
 				const el = document.getElementById(elId)
 				patch(el, html`
 				<div>
@@ -1215,7 +1215,7 @@
 					'small-caption',
 					'status-bar'
 				]
-				const id = `${instanceId}-system-styles`
+				const id = 'creep-system-styles'
 				const el = document.createElement('div')
 				el.setAttribute('id', id)
 				document.body.append(el)
@@ -1276,7 +1276,7 @@
 				}
 				const $hash = await hashify(data)
 				resolve({ ...data, $hash })
-				const id = `${instanceId}-css-style-declaration-version`
+				const id = 'creep-css-style-declaration-version'
 				const el = document.getElementById(id)
 				patch(el, html`
 				<div>
@@ -1467,7 +1467,7 @@
 				}
 				const $hash = await hashify(data)
 				resolve({ ...data, $hash })
-				const el = document.getElementById(`${instanceId}-screen`)
+				const el = document.getElementById('creep-screen')
 				patch(el, html`
 				<div>
 					<strong>Screen</strong>
@@ -1503,7 +1503,7 @@
 					check.android = voices.filter(key => (/android/i).test(key.name)).length
 					const $hash = await hashify(voices)
 					resolve({ voices, ...check, $hash })
-					const id = `${instanceId}-voices`
+					const id = 'creep-voices'
 					const el = document.getElementById(id)
 					const voiceList = voices.map(voice => `${voice.name} (${voice.lang})`)
 					patch(el, html`
@@ -1565,7 +1565,7 @@
 				)
 				const $hash = await hashify(mediaDevices)
 				resolve({ mediaDevices, $hash })
-				const el = document.getElementById(`${instanceId}-media-devices`)
+				const el = document.getElementById('creep-media-devices')
 				patch(el, html`
 				<div>
 					<strong>MediaDevicesInfo</strong>
@@ -1595,7 +1595,7 @@
 			try {
 				const patchDom = (response) => {
 					const { $hash } = response
-					const el = document.getElementById(`${instanceId}-canvas-2d`)
+					const el = document.getElementById('creep-canvas-2d')
 					return patch(el, html`
 					<div>
 						<strong>CanvasRenderingContext2D</strong>
@@ -1650,7 +1650,7 @@
 			try {
 				const patchDom = (response) => {
 					const { $hash } = response
-					const el = document.getElementById(`${instanceId}-canvas-bitmap-renderer`)
+					const el = document.getElementById('creep-canvas-bitmap-renderer')
 					return patch(el, html`
 					<div>
 						<strong>ImageBitmapRenderingContext</strong>
@@ -2037,7 +2037,7 @@
 
 				const $hash = await hashify(data)
 				resolve({ ...data, $hash })
-				const id = `${instanceId}-canvas-webgl`
+				const id = 'creep-canvas-webgl'
 				const el = document.getElementById(id)
 				const { webglSpecs, webgl2Specs } = specs
 				const webglSpecsKeys = webglSpecs ? Object.keys(webglSpecs) : []
@@ -2258,7 +2258,7 @@
 				})
 				const $hash = await hashify(data)
 				resolve({...data, $hash })
-				const id = `${instanceId}-maths`
+				const id = 'creep-maths'
 				const el = document.getElementById(id)
 				const header = `<div>Match to Win10 64bit Chromium > Firefox > Tor Browser > Mac10 Safari<br>[CR][FF][TB][SF]</div>`
 				const results = Object.keys(data).map(key => {
@@ -2315,7 +2315,7 @@
 				const errors = getErrors(errorTests)
 				const $hash = await hashify(errors)
 				resolve({errors, $hash })
-				const id = `${instanceId}-console-errors`
+				const id = 'creep-console-errors'
 				const el = document.getElementById(id)
 				const results = Object.keys(errors).map(key => {
 					const value = errors[key]
@@ -2581,7 +2581,7 @@
 				
 				const $hash = await hashify(data)
 				resolve({...data, $hash })
-				const id = `${instanceId}-timezone`
+				const id = 'creep-timezone'
 				const el = document.getElementById(id)
 				patch(el, html`
 				<div>
@@ -2815,6 +2815,9 @@
 					offsetLie = { lies: [{ ['equal elements mismatch']: true }] }
 				}
 
+				const templateId = 'creep-client-rects'
+				const templateEl = document.getElementById(templateId)
+
 				// resolve if no lies
 				if (!(rectsLie || offsetLie || mathLie)) {
 					iframeRendered.parentNode.removeChild(iframeRendered)
@@ -2830,8 +2833,6 @@
 						console.error(error.message)
 					})
 					resolve({emojiRects, emojiHash, clientRects, clientHash, $hash })
-					const templateId = `${instanceId}-client-rects`
-					const templateEl = document.getElementById(templateId)
 					patch(templateEl, html`
 					<div>
 						<strong>DOMRect</strong>
@@ -2864,8 +2865,6 @@
 				const lies = { rectsLie, offsetLie, mathLie }
 				const $hash = await hashify(lies)
 				resolve({...lies, $hash })
-				const templateId = `${instanceId}-client-rects`
-				const templateEl = document.getElementById(templateId)
 				patch(templateEl, html`
 				<div>
 					<strong>DOMRect</strong>
@@ -3003,7 +3002,7 @@
 							}
 							const $hash = await hashify(response)
 							resolve({...response, $hash })
-							const id = `${instanceId}-offline-audio-context`
+							const id = 'creep-offline-audio-context'
 							const el = document.getElementById(id)
 							patch(el, html`
 							<div>
@@ -3047,7 +3046,8 @@
 	const getFonts = (instanceId, fonts) => {
 		return new Promise(async resolve => {
 			try {
-				const htmlElementPrototype = attempt(() => HTMLElement.prototype)
+				const contentWindowHTMLElement = contentWindow ? contentWindow.HTMLElement : HTMLElement
+				const htmlElementPrototype = attempt(() => contentWindowHTMLElement.prototype)
 				const detectLies = (name, value) => {
 					const lie = htmlElementPrototype ? hasLiedAPI(htmlElementPrototype, name).lie : false
 					if (lie) {
@@ -3084,6 +3084,7 @@
 				const systemFontSpan = (font, basefont) => {
 					return `<span class="system-font" data-font="${font}" data-basefont="${basefont}" style="font-family: ${`'${font}', ${basefont}`}!important">${text}</span>`
 				}
+
 				const fontsElem = document.getElementById('font-detector')
 				const stageElem = document.getElementById('font-detector-stage')
 				const detectedFonts = {}
@@ -3137,7 +3138,7 @@
 				const $hash = await hashify(fontList)
 				resolve({fonts: fontList, $hash })
 
-				const id = `${instanceId}-fonts`
+				const id = 'creep-fonts'
 				const el = document.getElementById(id)
 				patch(el, html`
 				<div>
@@ -3157,233 +3158,12 @@
 
 	const fontList=["Andale Mono","Arial","Arial Black","Arial Hebrew","Arial MT","Arial Narrow","Arial Rounded MT Bold","Arial Unicode MS","Bitstream Vera Sans Mono","Book Antiqua","Bookman Old Style","Calibri","Cambria","Cambria Math","Century","Century Gothic","Century Schoolbook","Comic Sans","Comic Sans MS","Consolas","Courier","Courier New","Geneva","Georgia","Helvetica","Helvetica Neue","Impact","Lucida Bright","Lucida Calligraphy","Lucida Console","Lucida Fax","LUCIDA GRANDE","Lucida Handwriting","Lucida Sans","Lucida Sans Typewriter","Lucida Sans Unicode","Microsoft Sans Serif","Monaco","Monotype Corsiva","MS Gothic","MS Outlook","MS PGothic","MS Reference Sans Serif","MS Sans Serif","MS Serif","MYRIAD","MYRIAD PRO","Palatino","Palatino Linotype","Segoe Print","Segoe Script","Segoe UI","Segoe UI Light","Segoe UI Semibold","Segoe UI Symbol","Tahoma","Times","Times New Roman","Times New Roman PS","Trebuchet MS","Verdana","Wingdings","Wingdings 2","Wingdings 3"],extendedFontList=["Abadi MT Condensed Light","Academy Engraved LET","ADOBE CASLON PRO","Adobe Garamond","ADOBE GARAMOND PRO","Agency FB","Aharoni","Albertus Extra Bold","Albertus Medium","Algerian","Amazone BT","American Typewriter","American Typewriter Condensed","AmerType Md BT","Andalus","Angsana New","AngsanaUPC","Antique Olive","Aparajita","Apple Chancery","Apple Color Emoji","Apple SD Gothic Neo","Arabic Typesetting","ARCHER","ARNO PRO","Arrus BT","Aurora Cn BT","AvantGarde Bk BT","AvantGarde Md BT","AVENIR","Ayuthaya","Bandy","Bangla Sangam MN","Bank Gothic","BankGothic Md BT","Baskerville","Baskerville Old Face","Batang","BatangChe","Bauer Bodoni","Bauhaus 93","Bazooka","Bell MT","Bembo","Benguiat Bk BT","Berlin Sans FB","Berlin Sans FB Demi","Bernard MT Condensed","BernhardFashion BT","BernhardMod BT","Big Caslon","BinnerD","Blackadder ITC","BlairMdITC TT","Bodoni 72","Bodoni 72 Oldstyle","Bodoni 72 Smallcaps","Bodoni MT","Bodoni MT Black","Bodoni MT Condensed","Bodoni MT Poster Compressed","Bookshelf Symbol 7","Boulder","Bradley Hand","Bradley Hand ITC","Bremen Bd BT","Britannic Bold","Broadway","Browallia New","BrowalliaUPC","Brush Script MT","Californian FB","Calisto MT","Calligrapher","Candara","CaslonOpnface BT","Castellar","Centaur","Cezanne","CG Omega","CG Times","Chalkboard","Chalkboard SE","Chalkduster","Charlesworth","Charter Bd BT","Charter BT","Chaucer","ChelthmITC Bk BT","Chiller","Clarendon","Clarendon Condensed","CloisterBlack BT","Cochin","Colonna MT","Constantia","Cooper Black","Copperplate","Copperplate Gothic","Copperplate Gothic Bold","Copperplate Gothic Light","CopperplGoth Bd BT","Corbel","Cordia New","CordiaUPC","Cornerstone","Coronet","Cuckoo","Curlz MT","DaunPenh","Dauphin","David","DB LCD Temp","DELICIOUS","Denmark","DFKai-SB","Didot","DilleniaUPC","DIN","DokChampa","Dotum","DotumChe","Ebrima","Edwardian Script ITC","Elephant","English 111 Vivace BT","Engravers MT","EngraversGothic BT","Eras Bold ITC","Eras Demi ITC","Eras Light ITC","Eras Medium ITC","EucrosiaUPC","Euphemia","Euphemia UCAS","EUROSTILE","Exotc350 Bd BT","FangSong","Felix Titling","Fixedsys","FONTIN","Footlight MT Light","Forte","FrankRuehl","Fransiscan","Freefrm721 Blk BT","FreesiaUPC","Freestyle Script","French Script MT","FrnkGothITC Bk BT","Fruitger","FRUTIGER","Futura","Futura Bk BT","Futura Lt BT","Futura Md BT","Futura ZBlk BT","FuturaBlack BT","Gabriola","Galliard BT","Gautami","Geeza Pro","Geometr231 BT","Geometr231 Hv BT","Geometr231 Lt BT","GeoSlab 703 Lt BT","GeoSlab 703 XBd BT","Gigi","Gill Sans","Gill Sans MT","Gill Sans MT Condensed","Gill Sans MT Ext Condensed Bold","Gill Sans Ultra Bold","Gill Sans Ultra Bold Condensed","Gisha","Gloucester MT Extra Condensed","GOTHAM","GOTHAM BOLD","Goudy Old Style","Goudy Stout","GoudyHandtooled BT","GoudyOLSt BT","Gujarati Sangam MN","Gulim","GulimChe","Gungsuh","GungsuhChe","Gurmukhi MN","Haettenschweiler","Harlow Solid Italic","Harrington","Heather","Heiti SC","Heiti TC","HELV","Herald","High Tower Text","Hiragino Kaku Gothic ProN","Hiragino Mincho ProN","Hoefler Text","Humanst 521 Cn BT","Humanst521 BT","Humanst521 Lt BT","Imprint MT Shadow","Incised901 Bd BT","Incised901 BT","Incised901 Lt BT","INCONSOLATA","Informal Roman","Informal011 BT","INTERSTATE","IrisUPC","Iskoola Pota","JasmineUPC","Jazz LET","Jenson","Jester","Jokerman","Juice ITC","Kabel Bk BT","Kabel Ult BT","Kailasa","KaiTi","Kalinga","Kannada Sangam MN","Kartika","Kaufmann Bd BT","Kaufmann BT","Khmer UI","KodchiangUPC","Kokila","Korinna BT","Kristen ITC","Krungthep","Kunstler Script","Lao UI","Latha","Leelawadee","Letter Gothic","Levenim MT","LilyUPC","Lithograph","Lithograph Light","Long Island","Lydian BT","Magneto","Maiandra GD","Malayalam Sangam MN","Malgun Gothic","Mangal","Marigold","Marion","Marker Felt","Market","Marlett","Matisse ITC","Matura MT Script Capitals","Meiryo","Meiryo UI","Microsoft Himalaya","Microsoft JhengHei","Microsoft New Tai Lue","Microsoft PhagsPa","Microsoft Tai Le","Microsoft Uighur","Microsoft YaHei","Microsoft Yi Baiti","MingLiU","MingLiU_HKSCS","MingLiU_HKSCS-ExtB","MingLiU-ExtB","Minion","Minion Pro","Miriam","Miriam Fixed","Mistral","Modern","Modern No. 20","Mona Lisa Solid ITC TT","Mongolian Baiti","MONO","MoolBoran","Mrs Eaves","MS LineDraw","MS Mincho","MS PMincho","MS Reference Specialty","MS UI Gothic","MT Extra","MUSEO","MV Boli","Nadeem","Narkisim","NEVIS","News Gothic","News GothicMT","NewsGoth BT","Niagara Engraved","Niagara Solid","Noteworthy","NSimSun","Nyala","OCR A Extended","Old Century","Old English Text MT","Onyx","Onyx BT","OPTIMA","Oriya Sangam MN","OSAKA","OzHandicraft BT","Palace Script MT","Papyrus","Parchment","Party LET","Pegasus","Perpetua","Perpetua Titling MT","PetitaBold","Pickwick","Plantagenet Cherokee","Playbill","PMingLiU","PMingLiU-ExtB","Poor Richard","Poster","PosterBodoni BT","PRINCETOWN LET","Pristina","PTBarnum BT","Pythagoras","Raavi","Rage Italic","Ravie","Ribbon131 Bd BT","Rockwell","Rockwell Condensed","Rockwell Extra Bold","Rod","Roman","Sakkal Majalla","Santa Fe LET","Savoye LET","Sceptre","Script","Script MT Bold","SCRIPTINA","Serifa","Serifa BT","Serifa Th BT","ShelleyVolante BT","Sherwood","Shonar Bangla","Showcard Gothic","Shruti","Signboard","SILKSCREEN","SimHei","Simplified Arabic","Simplified Arabic Fixed","SimSun","SimSun-ExtB","Sinhala Sangam MN","Sketch Rockwell","Skia","Small Fonts","Snap ITC","Snell Roundhand","Socket","Souvenir Lt BT","Staccato222 BT","Steamer","Stencil","Storybook","Styllo","Subway","Swis721 BlkEx BT","Swiss911 XCm BT","Sylfaen","Synchro LET","System","Tamil Sangam MN","Technical","Teletype","Telugu Sangam MN","Tempus Sans ITC","Terminal","Thonburi","Traditional Arabic","Trajan","TRAJAN PRO","Tristan","Tubular","Tunga","Tw Cen MT","Tw Cen MT Condensed","Tw Cen MT Condensed Extra Bold","TypoUpright BT","Unicorn","Univers","Univers CE 55 Medium","Univers Condensed","Utsaah","Vagabond","Vani","Vijaya","Viner Hand ITC","VisualUI","Vivaldi","Vladimir Script","Vrinda","Westminster","WHITNEY","Wide Latin","ZapfEllipt BT","ZapfHumnst BT","ZapfHumnst Dm BT","Zapfino","Zurich BlkEx BT","Zurich Ex BT","ZWAdobeF"],googleFonts=["ABeeZee","Abel","Abhaya Libre","Abril Fatface","Aclonica","Acme","Actor","Adamina","Advent Pro","Aguafina Script","Akronim","Aladin","Aldrich","Alef","Alegreya","Alegreya SC","Alegreya Sans","Alegreya Sans SC","Aleo","Alex Brush","Alfa Slab One","Alice","Alike","Alike Angular","Allan","Allerta","Allerta Stencil","Allura","Almarai","Almendra","Almendra Display","Almendra SC","Amarante","Amaranth","Amatic SC","Amethysta","Amiko","Amiri","Amita","Anaheim","Andada","Andika","Angkor","Annie Use Your Telescope","Anonymous Pro","Antic","Antic Didone","Antic Slab","Anton","Arapey","Arbutus","Arbutus Slab","Architects Daughter","Archivo","Archivo Black","Archivo Narrow","Aref Ruqaa","Arima Madurai","Arimo","Arizonia","Armata","Arsenal","Artifika","Arvo","Arya","Asap","Asap Condensed","Asar","Asset","Assistant","Astloch","Asul","Athiti","Atma","Atomic Age","Aubrey","Audiowide","Autour One","Average","Average Sans","Averia Gruesa Libre","Averia Libre","Averia Sans Libre","Averia Serif Libre","B612","B612 Mono","Bad Script","Bahiana","Bahianita","Bai Jamjuree","Baloo","Baloo Bhai","Baloo Bhaijaan","Baloo Bhaina","Baloo Chettan","Baloo Da","Baloo Paaji","Baloo Tamma","Baloo Tammudu","Baloo Thambi","Balthazar","Bangers","Barlow","Barlow Condensed","Barlow Semi Condensed","Barriecito","Barrio","Basic","Battambang","Baumans","Bayon","Be Vietnam","Bebas Neue","Belgrano","Bellefair","Belleza","BenchNine","Bentham","Berkshire Swash","Beth Ellen","Bevan","Big Shoulders Display","Big Shoulders Text","Bigelow Rules","Bigshot One","Bilbo","Bilbo Swash Caps","BioRhyme","BioRhyme Expanded","Biryani","Bitter","Black And White Picture","Black Han Sans","Black Ops One","Blinker","Bokor","Bonbon","Boogaloo","Bowlby One","Bowlby One SC","Brawler","Bree Serif","Bubblegum Sans","Bubbler One","Buda","Buenard","Bungee","Bungee Hairline","Bungee Inline","Bungee Outline","Bungee Shade","Butcherman","Butterfly Kids","Cabin","Cabin Condensed","Cabin Sketch","Caesar Dressing","Cagliostro","Cairo","Calligraffitti","Cambay","Cambo","Candal","Cantarell","Cantata One","Cantora One","Capriola","Cardo","Carme","Carrois Gothic","Carrois Gothic SC","Carter One","Catamaran","Caudex","Caveat","Caveat Brush","Cedarville Cursive","Ceviche One","Chakra Petch","Changa","Changa One","Chango","Charm","Charmonman","Chathura","Chau Philomene One","Chela One","Chelsea Market","Chenla","Cherry Cream Soda","Cherry Swash","Chewy","Chicle","Chilanka","Chivo","Chonburi","Cinzel","Cinzel Decorative","Clicker Script","Coda","Coda Caption","Codystar","Coiny","Combo","Comfortaa","Coming Soon","Concert One","Condiment","Content","Contrail One","Convergence","Cookie","Copse","Corben","Cormorant","Cormorant Garamond","Cormorant Infant","Cormorant SC","Cormorant Unicase","Cormorant Upright","Courgette","Cousine","Coustard","Covered By Your Grace","Crafty Girls","Creepster","Crete Round","Crimson Pro","Crimson Text","Croissant One","Crushed","Cuprum","Cute Font","Cutive","Cutive Mono","DM Sans","DM Serif Display","DM Serif Text","Damion","Dancing Script","Dangrek","Darker Grotesque","David Libre","Dawning of a New Day","Days One","Dekko","Delius","Delius Swash Caps","Delius Unicase","Della Respira","Denk One","Devonshire","Dhurjati","Didact Gothic","Diplomata","Diplomata SC","Do Hyeon","Dokdo","Domine","Donegal One","Doppio One","Dorsa","Dosis","Dr Sugiyama","Duru Sans","Dynalight","EB Garamond","Eagle Lake","East Sea Dokdo","Eater","Economica","Eczar","El Messiri","Electrolize","Elsie","Elsie Swash Caps","Emblema One","Emilys Candy","Encode Sans","Encode Sans Condensed","Encode Sans Expanded","Encode Sans Semi Condensed","Encode Sans Semi Expanded","Engagement","Englebert","Enriqueta","Erica One","Esteban","Euphoria Script","Ewert","Exo","Exo 2","Expletus Sans","Fahkwang","Fanwood Text","Farro","Farsan","Fascinate","Fascinate Inline","Faster One","Fasthand","Fauna One","Faustina","Federant","Federo","Felipa","Fenix","Finger Paint","Fira Code","Fira Mono","Fira Sans","Fira Sans Condensed","Fira Sans Extra Condensed","Fjalla One","Fjord One","Flamenco","Flavors","Fondamento","Fontdiner Swanky","Forum","Francois One","Frank Ruhl Libre","Freckle Face","Fredericka the Great","Fredoka One","Freehand","Fresca","Frijole","Fruktur","Fugaz One","GFS Didot","GFS Neohellenic","Gabriela","Gaegu","Gafata","Galada","Galdeano","Galindo","Gamja Flower","Gayathri","Gentium Basic","Gentium Book Basic","Geo","Geostar","Geostar Fill","Germania One","Gidugu","Gilda Display","Give You Glory","Glass Antiqua","Glegoo","Gloria Hallelujah","Goblin One","Gochi Hand","Gorditas","Gothic A1","Goudy Bookletter 1911","Graduate","Grand Hotel","Gravitas One","Great Vibes","Grenze","Griffy","Gruppo","Gudea","Gugi","Gurajada","Habibi","Halant","Hammersmith One","Hanalei","Hanalei Fill","Handlee","Hanuman","Happy Monkey","Harmattan","Headland One","Heebo","Henny Penny","Hepta Slab","Herr Von Muellerhoff","Hi Melody","Hind","Hind Guntur","Hind Madurai","Hind Siliguri","Hind Vadodara","Holtwood One SC","Homemade Apple","Homenaje","IBM Plex Mono","IBM Plex Sans","IBM Plex Sans Condensed","IBM Plex Serif","IM Fell DW Pica","IM Fell DW Pica SC","IM Fell Double Pica","IM Fell Double Pica SC","IM Fell English","IM Fell English SC","IM Fell French Canon","IM Fell French Canon SC","IM Fell Great Primer","IM Fell Great Primer SC","Iceberg","Iceland","Imprima","Inconsolata","Inder","Indie Flower","Inika","Inknut Antiqua","Irish Grover","Istok Web","Italiana","Italianno","Itim","Jacques Francois","Jacques Francois Shadow","Jaldi","Jim Nightshade","Jockey One","Jolly Lodger","Jomhuria","Jomolhari","Josefin Sans","Josefin Slab","Joti One","Jua","Judson","Julee","Julius Sans One","Junge","Jura","Just Another Hand","Just Me Again Down Here","K2D","Kadwa","Kalam","Kameron","Kanit","Kantumruy","Karla","Karma","Katibeh","Kaushan Script","Kavivanar","Kavoon","Kdam Thmor","Keania One","Kelly Slab","Kenia","Khand","Khmer","Khula","Kirang Haerang","Kite One","Knewave","KoHo","Kodchasan","Kosugi","Kosugi Maru","Kotta One","Koulen","Kranky","Kreon","Kristi","Krona One","Krub","Kulim Park","Kumar One","Kumar One Outline","Kurale","La Belle Aurore","Lacquer","Laila","Lakki Reddy","Lalezar","Lancelot","Lateef","Lato","League Script","Leckerli One","Ledger","Lekton","Lemon","Lemonada","Lexend Deca","Lexend Exa","Lexend Giga","Lexend Mega","Lexend Peta","Lexend Tera","Lexend Zetta","Libre Barcode 128","Libre Barcode 128 Text","Libre Barcode 39","Libre Barcode 39 Extended","Libre Barcode 39 Extended Text","Libre Barcode 39 Text","Libre Baskerville","Libre Caslon Display","Libre Caslon Text","Libre Franklin","Life Savers","Lilita One","Lily Script One","Limelight","Linden Hill","Literata","Liu Jian Mao Cao","Livvic","Lobster","Lobster Two","Londrina Outline","Londrina Shadow","Londrina Sketch","Londrina Solid","Long Cang","Lora","Love Ya Like A Sister","Loved by the King","Lovers Quarrel","Luckiest Guy","Lusitana","Lustria","M PLUS 1p","M PLUS Rounded 1c","Ma Shan Zheng","Macondo","Macondo Swash Caps","Mada","Magra","Maiden Orange","Maitree","Major Mono Display","Mako","Mali","Mallanna","Mandali","Manjari","Mansalva","Manuale","Marcellus","Marcellus SC","Marck Script","Margarine","Markazi Text","Marko One","Marmelad","Martel","Martel Sans","Marvel","Mate","Mate SC","Material Icons","Maven Pro","McLaren","Meddon","MedievalSharp","Medula One","Meera Inimai","Megrim","Meie Script","Merienda","Merienda One","Merriweather","Merriweather Sans","Metal","Metal Mania","Metamorphous","Metrophobic","Michroma","Milonga","Miltonian","Miltonian Tattoo","Mina","Miniver","Miriam Libre","Mirza","Miss Fajardose","Mitr","Modak","Modern Antiqua","Mogra","Molengo","Molle","Monda","Monofett","Monoton","Monsieur La Doulaise","Montaga","Montez","Montserrat","Montserrat Alternates","Montserrat Subrayada","Moul","Moulpali","Mountains of Christmas","Mouse Memoirs","Mr Bedfort","Mr Dafoe","Mr De Haviland","Mrs Saint Delafield","Mrs Sheppards","Mukta","Mukta Mahee","Mukta Malar","Mukta Vaani","Muli","Mystery Quest","NTR","Nanum Brush Script","Nanum Gothic","Nanum Gothic Coding","Nanum Myeongjo","Nanum Pen Script","Neucha","Neuton","New Rocker","News Cycle","Niconne","Niramit","Nixie One","Nobile","Nokora","Norican","Nosifer","Notable","Nothing You Could Do","Noticia Text","Noto Sans","Noto Sans HK","Noto Sans JP","Noto Sans KR","Noto Sans SC","Noto Sans TC","Noto Serif","Noto Serif JP","Noto Serif KR","Noto Serif SC","Noto Serif TC","Nova Cut","Nova Flat","Nova Mono","Nova Oval","Nova Round","Nova Script","Nova Slim","Nova Square","Numans","Nunito","Nunito Sans","Odor Mean Chey","Offside","Old Standard TT","Oldenburg","Oleo Script","Oleo Script Swash Caps","Open Sans","Open Sans Condensed","Oranienbaum","Orbitron","Oregano","Orienta","Original Surfer","Oswald","Over the Rainbow","Overlock","Overlock SC","Overpass","Overpass Mono","Ovo","Oxygen","Oxygen Mono","PT Mono","PT Sans","PT Sans Caption","PT Sans Narrow","PT Serif","PT Serif Caption","Pacifico","Padauk","Palanquin","Palanquin Dark","Pangolin","Paprika","Parisienne","Passero One","Passion One","Pathway Gothic One","Patrick Hand","Patrick Hand SC","Pattaya","Patua One","Pavanam","Paytone One","Peddana","Peralta","Permanent Marker","Petit Formal Script","Petrona","Philosopher","Piedra","Pinyon Script","Pirata One","Plaster","Play","Playball","Playfair Display","Playfair Display SC","Podkova","Poiret One","Poller One","Poly","Pompiere","Pontano Sans","Poor Story","Poppins","Port Lligat Sans","Port Lligat Slab","Pragati Narrow","Prata","Preahvihear","Press Start 2P","Pridi","Princess Sofia","Prociono","Prompt","Prosto One","Proza Libre","Public Sans","Puritan","Purple Purse","Quando","Quantico","Quattrocento","Quattrocento Sans","Questrial","Quicksand","Quintessential","Qwigley","Racing Sans One","Radley","Rajdhani","Rakkas","Raleway","Raleway Dots","Ramabhadra","Ramaraja","Rambla","Rammetto One","Ranchers","Rancho","Ranga","Rasa","Rationale","Ravi Prakash","Red Hat Display","Red Hat Text","Redressed","Reem Kufi","Reenie Beanie","Revalia","Rhodium Libre","Ribeye","Ribeye Marrow","Righteous","Risque","Roboto","Roboto Condensed","Roboto Mono","Roboto Slab","Rochester","Rock Salt","Rokkitt","Romanesco","Ropa Sans","Rosario","Rosarivo","Rouge Script","Rozha One","Rubik","Rubik Mono One","Ruda","Rufina","Ruge Boogie","Ruluko","Rum Raisin","Ruslan Display","Russo One","Ruthie","Rye","Sacramento","Sahitya","Sail","Saira","Saira Condensed","Saira Extra Condensed","Saira Semi Condensed","Saira Stencil One","Salsa","Sanchez","Sancreek","Sansita","Sarabun","Sarala","Sarina","Sarpanch","Satisfy","Sawarabi Gothic","Sawarabi Mincho","Scada","Scheherazade","Schoolbell","Scope One","Seaweed Script","Secular One","Sedgwick Ave","Sedgwick Ave Display","Sevillana","Seymour One","Shadows Into Light","Shadows Into Light Two","Shanti","Share","Share Tech","Share Tech Mono","Shojumaru","Short Stack","Shrikhand","Siemreap","Sigmar One","Signika","Signika Negative","Simonetta","Single Day","Sintony","Sirin Stencil","Six Caps","Skranji","Slabo 13px","Slabo 27px","Slackey","Smokum","Smythe","Sniglet","Snippet","Snowburst One","Sofadi One","Sofia","Song Myung","Sonsie One","Sorts Mill Goudy","Source Code Pro","Source Sans Pro","Source Serif Pro","Space Mono","Special Elite","Spectral","Spectral SC","Spicy Rice","Spinnaker","Spirax","Squada One","Sree Krushnadevaraya","Sriracha","Srisakdi","Staatliches","Stalemate","Stalinist One","Stardos Stencil","Stint Ultra Condensed","Stint Ultra Expanded","Stoke","Strait","Stylish","Sue Ellen Francisco","Suez One","Sumana","Sunflower","Sunshiney","Supermercado One","Sura","Suranna","Suravaram","Suwannaphum","Swanky and Moo Moo","Syncopate","Tajawal","Tangerine","Taprom","Tauri","Taviraj","Teko","Telex","Tenali Ramakrishna","Tenor Sans","Text Me One","Thasadith","The Girl Next Door","Tienne","Tillana","Timmana","Tinos","Titan One","Titillium Web","Tomorrow","Trade Winds","Trirong","Trocchi","Trochut","Trykker","Tulpen One","Turret Road","Ubuntu","Ubuntu Condensed","Ubuntu Mono","Ultra","Uncial Antiqua","Underdog","Unica One","UnifrakturCook","UnifrakturMaguntia","Unkempt","Unlock","Unna","VT323","Vampiro One","Varela","Varela Round","Vast Shadow","Vesper Libre","Vibes","Vibur","Vidaloka","Viga","Voces","Volkhov","Vollkorn","Vollkorn SC","Voltaire","Waiting for the Sunrise","Wallpoet","Walter Turncoat","Warnes","Wellfleet","Wendy One","Wire One","Work Sans","Yanone Kaffeesatz","Yantramanav","Yatra One","Yellowtail","Yeon Sung","Yeseva One","Yesteryear","Yrsa","ZCOOL KuaiLe","ZCOOL QingKe HuangYou","ZCOOL XiaoWei","Zeyada","Zhi Mang Xing","Zilla Slab","Zilla Slab Highlight"],notoFonts=["Noto Naskh Arabic","Noto Sans Armenian","Noto Sans Bengali","Noto Sans Buginese","Noto Sans Canadian Aboriginal","Noto Sans Cherokee","Noto Sans Devanagari","Noto Sans Ethiopic","Noto Sans Georgian","Noto Sans Gujarati","Noto Sans Gurmukhi","Noto Sans Hebrew","Noto Sans JP Regular","Noto Sans KR Regular","Noto Sans Kannada","Noto Sans Khmer","Noto Sans Lao","Noto Sans Malayalam","Noto Sans Mongolian","Noto Sans Myanmar","Noto Sans Oriya","Noto Sans SC Regular","Noto Sans Sinhala","Noto Sans TC Regular","Noto Sans Tamil","Noto Sans Telugu","Noto Sans Thaana","Noto Sans Thai","Noto Sans Tibetan","Noto Sans Yi","Noto Serif Armenian","Noto Serif Khmer","Noto Serif Lao","Noto Serif Thai"];
 
-	// scene
-	const scene = html`
-	<fingerprint>
-		<div id="fingerprint-data">
-			<div id="${instanceId}-fingerprint">
-				<strong>Fingerprint</strong>
-				<div class="trusted-fingerprint" style="color:#fff">.</div>
-				<div>loose fingerprint:</div>
-				<div class="time">performance: 0 milliseconds</div>
-			</div>
-			<div id="${instanceId}-browser" class="visitor-loader">
-				<strong>Browser</strong>
-				<div>visits:</div>
-				<div>first:</div>
-				<div>last:</div>
-				<div>persistence:</div>
-				<div>has trash:</div>
-				<div>has lied:</div>
-				<div>has errors:</div>
-				<div>loose fingerprints:</div>
-				<div>bot:</div>
-			</div>
-			<div id="${instanceId}-trash">
-				<strong>Trash Bin</strong>
-				<div>hash:</div>
-				<div>trash (0):</div>
-			</div>
-			<div id="${instanceId}-lies">
-				<strong>Lies Unmasked</strong>
-				<div>hash:</div>
-				<div>lies (0):</div>
-			</div>
-			<div id="${instanceId}-captured-errors">
-				<strong>Errors Captured</strong>
-				<div>hash:</div>
-				<div>errors (0):</div>
-			</div>
-			<div id="${instanceId}-worker-scope">
-				<strong>WorkerGlobalScope: Date/WorkerNavigator/OffscreenCanvas</strong>
-				<div>hash:</div>
-				<div>timezone offset</div>
-				<div>hardwareConcurrency:</div>
-				<div>language:</div>
-				<div>platform:</div>
-				<div>webgl renderer:</div>
-				<div>webgl vendor:</div>
-				<div>system:</div>
-				<div>canvas 2d:</div>
-			</div>
-			<div id="${instanceId}-cloudflare">
-				<strong>Cloudflare</strong>
-				<div>hash:</div>
-				<div>ip address:</div>
-				<div>system:</div>
-				<div>ip location:</div>
-				<div>tls version:</div>
-			</div>
-			<div id="${instanceId}-webrtc">
-				<strong>RTCPeerConnection</strong>
-				<div>hash:</div>
-				<div>webRTC leak:</div>
-				<div>ip address:</div>
-				<div>candidate encoding:</div>
-				<div>connection line:</div>
-				<div>matching:</div>
-			</div>
-			<div id="${instanceId}-canvas-2d">
-				<strong>CanvasRenderingContext2D</strong>
-				<div>hash:</div>
-			</div>
-			<div id="${instanceId}-canvas-bitmap-renderer">
-				<strong>ImageBitmapRenderingContext</strong>
-				<div>hash:</div>
-			</div>
-			<div id="${instanceId}-canvas-webgl">
-				<strong>WebGLRenderingContext/WebGL2RenderingContext</strong>
-					<div>hash:</div>
-					<div>v1 toDataURL:</div>
-					<div>v1 parameters (0):</div>
-					<div>v1 extensions (0):</div>
-					<div>v1 renderer:</div>
-					<div>v1 vendor:</div>
-					<div>v2 toDataURL:</div>
-					<div>v2 parameters (0):</div>
-					<div>v2 extensions (0):</div>
-					<div>v2 renderer:</div>
-					<div>v2 vendor:</div>
-					<div>matching renderer/vendor:</div>
-					<div>matching data URI:</div>
-			</div>
-			<div id="${instanceId}-offline-audio-context">
-				<strong>OfflineAudioContext</strong>
-				<div>hash:</div>
-				<div>sample:</div>
-				<div>copy:</div>
-				<div>matching:</div>
-				<div>node values:</div>
-			</div>
-			<div id="${instanceId}-client-rects">
-				<strong>DOMRect</strong>
-				<div>hash:</div>
-				<div>elements:</div>
-				<div>results:</div>
-				<div>emojis v13.0:</div>
-				<div>results:</div>
-			</div>
-			<div id="${instanceId}-maths">
-				<strong>Math</strong>
-				<div>hash:</div>
-				<div>results:</div>
-				<div>implementation:</div>
-			</div>
-			<div id="${instanceId}-console-errors">
-				<strong>Error</strong>
-				<div>hash:</div>
-				<div>results:</div>
-				<div>engine:</div>
-			</div>
-			<div id="${instanceId}-timezone">
-				<strong>Date/Intl/Keyboard</strong>
-				<div>hash:</div>
-				<div>timezone:</div>
-				<div>timezone location:</div>
-				<div>timezone offset:</div>
-				<div>timezone offset computed:</div>
-				<div>matching offsets:</div>
-				<div>timezone measured:</div>
-				<div>relativeTimeFormat:</div>
-				<div>locale language:</div>
-				<div>writing system keys:</div>
-			</div>
-			<div id="${instanceId}-screen">
-				<strong>Screen</strong>
-				<div>hash:</div>
-				<div>device:</div>
-				<div>width:</div>
-				<div>outerWidth:</div>
-				<div>availWidth:</div>
-				<div>height:</div>
-				<div>outerHeight:</div>
-				<div>availHeight:</div>
-				<div>colorDepth:</div>
-				<div>pixelDepth:</div>
-			</div>
-			<div id="${instanceId}-media-devices">
-				<strong>MediaDevicesInfo</strong>
-				<div>hash:</div>
-				<div>devices (0):</div>
-			</div>
-			<div id="${instanceId}-iframe-content-window-version">
-				<strong>HTMLIFrameElement.contentWindow</strong>
-				<div>hash:</div>
-				<div>keys (0):</div>
-				<div>moz:</div>
-				<div>webkit:</div>
-				<div>apple:</div>
-			</div>
-			<div id="${instanceId}-html-element-version">
-				<strong>HTMLElement</strong>
-				<div>hash:</div>
-				<div>keys (0):</div>
-			</div>
-			<div id="${instanceId}-fonts">
-				<strong>HTMLElement (font-family)</strong>
-				<div>hash:</div>
-				<div>results (0):</div>
-			</div>
-			<div id="${instanceId}-css-style-declaration-version">
-				<strong>CSSStyleDeclaration</strong>
-				<div>hash:</div>
-				<div>prototype:</div>
-				<div>getComputedStyle:</div>
-				<div>HTMLElement.style:</div>
-				<div>CSSRuleList.style:</div>
-				<div>keys:</div>
-				<div>moz:</div>
-				<div>webkit:</div>
-				<div>apple:</div>
-				<div>matching:</div>
-				<div>system:</div>
-				<div>system styles:</div>
-			</div>
-			<div id="${instanceId}-navigator">
-				<strong>Navigator</strong>
-				<div>hash:</div>
-				<div>appVersion:</div>
-				<div>deviceMemory:</div>
-				<div>doNotTrack:</div>
-				<div>hardwareConcurrency:</div>
-				<div>language:</div>
-				<div>maxTouchPoints:</div>
-				<div>platform:</div>
-				<div>userAgent:</div>
-				<div>system:</div>
-				<div>plugins (0):</div>
-				<div>mimeTypes (0):</div>
-				<div>ua architecture:</div>
-				<div>ua model:</div>
-				<div>ua platform:</div>
-				<div>ua platformVersion:</div>
-				<div>ua uaFullVersion:</div>
-				<div>properties (0):</div>
-			</div>
-			<div id="${instanceId}-voices">
-				<strong>SpeechSynthesis</strong>
-				<div>hash:</div>
-				<div>voices (0):</div>
-				<div>microsoft:</div>
-				<div>google:</div>
-				<div>chrome OS:</div>
-				<div>android:</div>
-			</div>
-			<div>
-				Data auto deletes <a href="https://github.com/abrahamjuliot/creepjs/blob/8d6603ee39c9534cad700b899ef221e0ee97a5a4/server.gs#L24" target="_blank">every 7 days</a>
-			</div>
-		</div>
-
-		<div id="font-detector"><div id="font-detector-stage"></div></div>
-	</fingerprint>
-	`
-
 	const getTrash = (instanceId, trashBin) => {
 		return new Promise(async resolve => {
 			const len = trashBin.length
 			const $hash = await hashify(trashBin)
 			resolve({ trashBin, $hash })
-			const id = `${instanceId}-trash`
+			const id = 'creep-trash'
 			const el = document.getElementById(id)
 			patch(el, html`
 			<div class="${len ? 'trash': ''}">
@@ -3404,7 +3184,7 @@
 			const data = lieRecords.map(lie => ({ name: lie.name, lieTypes: lie.lieTypes }))
 			const $hash = await hashify(data)
 			resolve({data, $hash })
-			const id = `${instanceId}-lies`
+			const id = 'creep-lies'
 			const el = document.getElementById(id)
 			patch(el, html`
 			<div class="${len ? 'lies': ''}">
@@ -3430,7 +3210,7 @@
 			const data =  errorsCaptured
 			const $hash = await hashify(data)
 			resolve({data, $hash })
-			const id = `${instanceId}-captured-errors`
+			const id = 'creep-captured-errors'
 			const el = document.getElementById(id)
 			patch(el, html`
 			<div class="${len ? 'errors': ''}">
@@ -3485,7 +3265,7 @@
 			getTimezone(instanceId),
 			getClientRects(instanceId),
 			getOfflineAudioContext(instanceId),
-			getFonts(instanceId, [...fontList, ...notoFonts])
+			getFonts(instanceId, [...fontList, ...extendedFontList, ...googleFonts, ...notoFonts])
 		]).catch(error => {
 			console.error(error.message)
 		})
@@ -3537,122 +3317,147 @@
 	// get/post request
 	const webapp = 'https://script.google.com/macros/s/AKfycbzKRjt6FPboOEkh1vTXttGyCjp97YBP7z-5bODQmtSkQ9BqDRY/exec'
 	
-	// patch
-	const app = document.getElementById('fp-app')
-	patch(app, scene, async () => {
-		// fingerprint and render
-		const { fingerprint: fp, timeEnd } = await fingerprint().catch(error => console.error(error))
-		// Trusted Fingerprint
-		const distrust = { distrust: { brave: isBrave, firefox: isFirefox } }
-		const creep = {
-			workerScope: fp.workerScope ? {
-				canvas2d: fp.workerScope.canvas2d,
-				hardwareConcurrency: fp.workerScope.hardwareConcurrency,
-				language: fp.workerScope.language,
-				platform: fp.workerScope.platform,
-				system: fp.workerScope.system,
-				['timezone offset']: fp.workerScope['timezone offset'],
-				['webgl renderer']: fp.workerScope['webgl renderer'],
-				['webgl vendor']: fp.workerScope['webgl vendor']
-			} : undefined,
-			mediaDevices: !isBrave ? fp.mediaDevices : distrust,
-			canvas2d: !(isBrave || isFirefox) ? fp.canvas2d : distrust,
-			canvasBitmapRenderer: !(isBrave || isFirefox) ? fp.canvasBitmapRenderer : distrust,
-			canvasWebgl: (isBrave || isFirefox) ? distrust : (() => {
-				if (!fp.canvasWebgl) {
-					return undefined
-				}
-				// ignore extensions to avoid fingerprint limited to browser version
-				return {
-					dataURI: fp.canvasWebgl.dataURI,
-					dataURI2: fp.canvasWebgl.dataURI2,
-					matchingDataURI: fp.canvasWebgl.matchingDataURI,
-					matchingUnmasked: fp.canvasWebgl.matchingUnmasked,
-					specs: fp.canvasWebgl.specs,
-					unmasked: fp.canvasWebgl.unmasked,
-					unmasked2: fp.canvasWebgl.unmasked2
-				}
-			})(),
-			maths: fp.maths,
-			consoleErrors: fp.consoleErrors,
-			iframeContentWindowVersion: fp.iframeContentWindowVersion,
-			htmlElementVersion: fp.htmlElementVersion,
-			cssStyleDeclarationVersion: fp.cssStyleDeclarationVersion,
-			// avoid random timezone fingerprint values
-			timezone: !fp.timezone || !fp.timezone.lied ? fp.timezone : undefined,
-			clientRects: fp.clientRects,
-			// node values provide essential entropy (bin samples are just math results and randomized in brave)
-			offlineAudioContext: caniuse(() => fp.offlineAudioContext.values),
-			fonts: fp.fonts,
-			trash: !!fp.trash.trashBin.length,
-			lies: !('data' in fp.lies) ? false : !!fp.lies.data.length,
-			capturedErrors: !!fp.capturedErrors.data.length,
-			voices: fp.voices
-		}
-		const debugLog = (message, obj) => console.log(message, JSON.stringify(obj, null, '\t'))
-		
-		console.log('Fingerprint (Object):', creep)
-		console.log('Loose Fingerprint (Object):', fp)
-		//debugLog('Loose Id (JSON):', fp)
-		
-		const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
-		.catch(error => { 
-			console.error(error.message)
+
+	// fingerprint and render
+	const { fingerprint: fp, timeEnd } = await fingerprint().catch(error => console.error(error))
+	// Trusted Fingerprint
+	const distrust = { distrust: { brave: isBrave, firefox: isFirefox } }
+	const trashLen = fp.trash.trashBin.length
+	const liesLen = !('data' in fp.lies) ? 0 : fp.lies.data.length
+	const errorsLen = fp.capturedErrors.data.length
+	const creep = {
+		workerScope: fp.workerScope ? {
+			canvas2d: fp.workerScope.canvas2d,
+			hardwareConcurrency: fp.workerScope.hardwareConcurrency,
+			language: fp.workerScope.language,
+			platform: fp.workerScope.platform,
+			system: fp.workerScope.system,
+			['timezone offset']: fp.workerScope['timezone offset'],
+			['webgl renderer']: fp.workerScope['webgl renderer'],
+			['webgl vendor']: fp.workerScope['webgl vendor']
+		} : undefined,
+		mediaDevices: !isBrave ? fp.mediaDevices : distrust,
+		canvas2d: !(isBrave || isFirefox) ? fp.canvas2d : distrust,
+		canvasBitmapRenderer: !(isBrave || isFirefox) ? fp.canvasBitmapRenderer : distrust,
+		canvasWebgl: (isBrave || isFirefox) ? distrust : (() => {
+			if (!fp.canvasWebgl) {
+				return undefined
+			}
+			// ignore extensions to avoid fingerprint limited to browser version
+			return {
+				dataURI: fp.canvasWebgl.dataURI,
+				dataURI2: fp.canvasWebgl.dataURI2,
+				matchingDataURI: fp.canvasWebgl.matchingDataURI,
+				matchingUnmasked: fp.canvasWebgl.matchingUnmasked,
+				specs: fp.canvasWebgl.specs,
+				unmasked: fp.canvasWebgl.unmasked,
+				unmasked2: fp.canvasWebgl.unmasked2
+			}
+		})(),
+		maths: fp.maths,
+		consoleErrors: fp.consoleErrors,
+		iframeContentWindowVersion: fp.iframeContentWindowVersion,
+		htmlElementVersion: fp.htmlElementVersion,
+		cssStyleDeclarationVersion: fp.cssStyleDeclarationVersion,
+		// avoid random timezone fingerprint values
+		timezone: !fp.timezone || !fp.timezone.lied ? fp.timezone : undefined,
+		clientRects: fp.clientRects,
+		// node values provide essential entropy (bin samples are just math results and randomized in brave)
+		offlineAudioContext: caniuse(() => fp.offlineAudioContext.values),
+		fonts: fp.fonts,
+		trash: !!trashLen,
+		lies: !('data' in fp.lies) ? false : !!liesLen,
+		capturedErrors: !!errorsLen,
+		voices: fp.voices
+	}
+	const debugLog = (message, obj) => console.log(message, JSON.stringify(obj, null, '\t'))
+	
+	console.log('Fingerprint (Object):', creep)
+	console.log('Loose Fingerprint (Object):', fp)
+	//debugLog('Loose Id (JSON):', fp)
+	
+	const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
+	.catch(error => { 
+		console.error(error.message)
+	})
+	
+	const { trash: hasTrash, lies: hasLied, capturedErrors: hasErrors } = creep
+
+	//fetch(`/?math=${fp.maths.$hash}&ua=${fp.navigator.userAgent}`, { method: 'POST' })
+
+	// fetch data from server
+	const id = 'creep-browser'
+	const visitorElem = document.getElementById(id)
+	const fetchVisitoDataTimer = timer('Fetching visitor data...')
+	fetch(`${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}`)
+		.then(response => response.json())
+		.then(data => {
+			console.log(data)
+			const { firstVisit, latestVisit, subIds, visits, hasTrash, hasLied, hasErrors } = data
+			const subIdsLen = Object.keys(subIds).length
+			const toLocaleStr = str => {
+				const date = new Date(str)
+				const dateString = date.toDateString()
+				const timeString = date.toLocaleTimeString()
+				return `${dateString}, ${timeString}`
+			}
+			const hoursAgo = (date1, date2) => Math.abs(date1 - date2) / 36e5
+			const hours = hoursAgo(new Date(firstVisit), new Date(latestVisit)).toFixed(1)
+
+			// trust score
+			const score = 100-(
+				((subIdsLen > 1 ? subIdsLen : 0) * 5) +
+				(errorsLen * 5.2) +
+				(trashLen * 15.5) +
+				(liesLen * 31)
+			)
+			const template = `
+				<div>
+					<strong>Browser</strong>
+					<div>trust score: ${
+						score > 95 ? `${score}% <span class="grade-A">A+</span>` :
+						score == 95 ? `${score}% <span class="grade-A">A</span>` :
+						score >= 90 ? `${score}% <span class="grade-A">A-</span>` :
+						score > 85 ? `${score}% <span class="grade-B">B+</span>` :
+						score == 85 ? `${score}% <span class="grade-B">B</span>` :
+						score >= 80 ? `${score}% <span class="grade-B">B-</span>` :
+						score > 75 ? `${score}% <span class="grade-C">C+</span>` :
+						score == 75 ? `${score}% <span class="grade-C">C</span>` :
+						score >= 70 ? `${score}% <span class="grade-C">C-</span>` :
+						score > 65 ? `${score}% <span class="grade-D">D+</span>` :
+						score == 65 ? `${score}% <span class="grade-D">D</span>` :
+						score >= 60 ? `${score}% <span class="grade-D">D-</span>` :
+						score > 55 ? `${score}% <span class="grade-F">F+</span>` :
+						score == 55 ? `${score}% <span class="grade-F">F</span>` :
+						`${score}% <span class="grade-F">F-</span>`
+					}</div>
+					<div>visits: ${visits}</div>
+					<div>first: ${toLocaleStr(firstVisit)}
+					<div>last: ${toLocaleStr(latestVisit)}</div>
+					<div>persistence: ${hours} hours</div>
+					<div>has trash: ${(''+hasTrash) == 'true' ? 'true' : 'false'}</div>
+					<div>has lied: ${(''+hasLied) == 'true'? 'true' : 'false'}</div>
+					<div>has errors: ${(''+hasErrors) == 'true' ? 'true' : 'false'}</div>
+					<div>loose fingerprints: ${subIdsLen}</div>
+					<div>bot: ${subIdsLen > 10 && hours < 48 ? 'true [10 loose fingerprints within 48 hours]' : 'false'}</div>
+				</div>
+			`
+			fetchVisitoDataTimer('Visitor data received')
+			return patch(visitorElem, html`${template}`)
+		})
+		.catch(err => {
+			fetchVisitoDataTimer('Error fetching visitor data')
+			patch(visitorElem, html`<div>Error fetching data: <a href="https://status.cloud.google.com" target="_blank">status.cloud.google.com</a></div>`)
+			return console.error('Error!', err.message)
 		})
 
-		const { trash: hasTrash, lies: hasLied, capturedErrors: hasErrors } = creep
-		
-		//fetch(`/?math=${fp.maths.$hash}&ua=${fp.navigator.userAgent}`, { method: 'POST' })
-
-		// fetch data from server
-		const id = `${instanceId}-browser`
-		const visitorElem = document.getElementById(id)
-		const fetchVisitoDataTimer = timer('Fetching visitor data...')
-		fetch(`${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}`)
-			.then(response => response.json())
-			.then(data => {
-				console.log(data)
-				const { firstVisit, latestVisit, subIds, visits, hasTrash, hasLied, hasErrors } = data
-				const subIdsLen = Object.keys(subIds).length
-				const toLocaleStr = str => {
-					const date = new Date(str)
-					const dateString = date.toDateString()
-					const timeString = date.toLocaleTimeString()
-					return `${dateString}, ${timeString}`
-				}
-				const hoursAgo = (date1, date2) => Math.abs(date1 - date2) / 36e5
-				const hours = hoursAgo(new Date(firstVisit), new Date(latestVisit)).toFixed(1)
-				const template = `
-					<div>
-						<strong>Browser</strong>
-						<div>visits: ${visits}</div>
-						<div>first: ${toLocaleStr(firstVisit)}
-						<div>last: ${toLocaleStr(latestVisit)}</div>
-						<div>persistence: ${hours} hours</div>
-						<div>has trash: ${(''+hasTrash) == 'true' ? 'true' : 'false'}</div>
-						<div>has lied: ${(''+hasLied) == 'true'? 'true' : 'false'}</div>
-						<div>has errors: ${(''+hasErrors) == 'true' ? 'true' : 'false'}</div>
-						<div>loose fingerprints: ${subIdsLen}</div>
-						<div>bot: ${subIdsLen > 10 && hours < 48 ? 'true [10 loose fingerprints within 48 hours]' : 'false'}</div>
-					</div>
-				`
-				fetchVisitoDataTimer('Visitor data received')
-				return patch(visitorElem, html`${template}`)
-			})
-			.catch(err => {
-				fetchVisitoDataTimer('Error fetching visitor data')
-				patch(visitorElem, html`<div>Error fetching data: <a href="https://status.cloud.google.com" target="_blank">status.cloud.google.com</a></div>`)
-				return console.error('Error!', err.message)
-			})
-
-		const el = document.getElementById(`${instanceId}-fingerprint`)
-		return patch(el, html`
-		<div>
-			<strong>Fingerprint</strong>
-			<div class="trusted-fingerprint">${creepHash}</div>
-			<div>loose fingerprint: ${fpHash}</div>
-			<div class="time">performance: ${timeEnd} milliseconds</div>
-		</div>
-		`)
-	}).catch((e) => console.log(e))
+	const el = document.getElementById('creep-fingerprint')
+	patch(el, html`
+	<div>
+		<strong>Fingerprint</strong>
+		<div class="trusted-fingerprint">${creepHash}</div>
+		<div>loose fingerprint: ${fpHash}</div>
+		<div class="time">performance: ${timeEnd} milliseconds</div>
+	</div>
+	`)
 })()
