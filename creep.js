@@ -3406,7 +3406,7 @@
 
 			// trust score
 			const score = (100-(
-				((subIdsLen > 1 ? subIdsLen-1 : 0) * 5) +
+				(subIdsLen < 2 ? 0 : subIdsLen-1 < 11 ? (subIdsLen-1) * 1 : (subIdsLen-1) * 5 ) +
 				(errorsLen * 5.2) +
 				(trashLen * 15.5) +
 				(liesLen * 31)
