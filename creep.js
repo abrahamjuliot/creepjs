@@ -2371,15 +2371,15 @@
 		return new Promise(async resolve => {
 			try {
 				const errorTests = [
-					() => eval('alert(")'),
-					() => eval('const foo;foo.bar'),
-					() => eval('null.bar'),
-					() => eval('abc.xyz = 123'),
-					() => eval('const foo;foo.bar'),
-					() => eval('(1).toString(1000)'),
-					() => eval('[...undefined].length'),
-					() => eval('var x = new Array(-1)'),
-					() => eval('const a=1; const a=2;')
+					() => new Function('alert(")')(),
+					() => new Function('const foo;foo.bar')(),
+					() => new Function('null.bar')(),
+					() => new Function('abc.xyz = 123')(),
+					() => new Function('const foo;foo.bar')(),
+					() => new Function('(1).toString(1000)')(),
+					() => new Function('[...undefined].length')(),
+					() => new Function('var x = new Array(-1)')(),
+					() => new Function('const a=1; const a=2;')()
 				]
 				const errors = getErrors(errorTests)
 				const $hash = await hashify(errors)
@@ -2394,9 +2394,7 @@
 				<div>
 					<strong>Error</strong>
 					<div>hash: ${$hash}</div>
-					<div>results: ${
-						modal(id, results.join('<br>'))
-					}
+					<div>results: ${modal(id, results.join('<br>'))}
 					<div>engine: ${known($hash)}</div>
 				</div>
 				`)
