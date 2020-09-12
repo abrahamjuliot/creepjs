@@ -213,7 +213,8 @@
 			const allowScripts = () => !isFirefox && !isChrome ? 'allow-scripts ' : ''
 			try {
 				const thisSiteCantBeReached = `about:${instanceId}` // url must yield 'this site cant be reached' error
-				const createIframe = (doc, id, contentWindow = false) => {
+				const createIframe = (win, id) => {
+					const doc = win.document
 					const iframe = doc.createElement('iframe')
 					iframe.setAttribute('id', id)
 					iframe.setAttribute('style', 'visibility: hidden; height: 0')
@@ -225,14 +226,14 @@
 					const rendered = doc.getElementById(id)
 					return {
 						el: rendered,
-						context: rendered[contentWindow ? 'contentWindow' : 'contentDocument'],
+						context: rendered.contentWindow,
 						remove: () => rendered.parentNode.removeChild(rendered)
 					}
 				}
-				const parentIframe = createIframe(document, `${instanceId}-parent-iframe`)
+				const parentIframe = createIframe(window, `${instanceId}-parent-iframe`)
 				const {
 					context: contentWindow
-				} = createIframe(parentIframe.context, `${instanceId}-nested-iframe`, true)
+				} = createIframe(parentIframe.context, `${instanceId}-nested-iframe`)
 
 				if (isChrome) { contentWindow.location = thisSiteCantBeReached  }
 
