@@ -2342,7 +2342,7 @@
 						!!mathLie ? note.lied :
 						modal(id, header+results.join('<br>'))
 					}
-					<div>implementation: ${known($hash)}</div>
+					<div>implementation: ${!!mathLie ? note.lied : known($hash)}</div>
 				</div>
 				`)
 				return
@@ -3088,8 +3088,8 @@
 							<div>
 								<strong>OfflineAudioContext</strong>
 								<div>hash: ${$hash}</div>
-								<div>sample: ${binsSample[0]}</div>
-								<div>copy: ${copySample[0]}</div>
+								<div>sample: ${!!channelDataLie ? note.lied : binsSample[0]}</div>
+								<div>copy: ${!!copyFromChannelLie ? note.lied : copySample[0]}</div>
 								<div>matching: ${matching}</div>
 								<div>node values: ${
 									modal(id, Object.keys(values).map(key => `<div>${key}: ${values[key]}</div>`).join(''))
@@ -3442,8 +3442,7 @@
 		// avoid random timezone fingerprint values
 		timezone: !fp.timezone || !fp.timezone.lied ? fp.timezone : undefined,
 		clientRects: fp.clientRects,
-		// node values provide essential entropy (bin samples are just math results and randomized in brave)
-		offlineAudioContext: caniuse(() => fp.offlineAudioContext.values),
+		offlineAudioContext: !(isBrave || isFirefox) ? fp.offlineAudioContext : distrust,
 		fonts: fp.fonts,
 		trash: !!trashLen,
 		lies: !('data' in fp.lies) ? false : !!liesLen,
