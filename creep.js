@@ -3437,9 +3437,21 @@
 					<div>first: ${toLocaleStr(firstVisit)}
 					<div>last: ${toLocaleStr(latestVisit)}</div>
 					<div>persistence: ${hours} hours</div>
-					<div>has trash: ${(''+hasTrash) == 'true' ? 'true' : 'false'}</div>
-					<div>has lied: ${(''+hasLied) == 'true'? 'true' : 'false'}</div>
-					<div>has errors: ${(''+hasErrors) == 'true' ? 'true' : 'false'}</div>
+					<div>has trash: ${
+						(''+hasTrash) == 'true' ?
+						`true <span class="grade-D">${hashMini(fp.trash)}</span>` : 
+						'false'
+					}</div>
+					<div>has lied: ${
+						(''+hasLied) == 'true' ? 
+						`true <span class="grade-F">${hashMini(fp.lies)}` : 
+						'false'
+					}</div>
+					<div>has errors: ${
+						(''+hasErrors) == 'true' ? 
+						`true <span class="grade-C">${hashMini(fp.capturedErrors)}` : 
+						'false'
+					}</div>
 					<div>loose fingerprints: ${subIdsLen}</div>
 					<div>bot: ${subIdsLen > 10 && hours < 48 ? 'true [10 loose fingerprints within 48 hours]' : 'false'}</div>
 				</div>

@@ -239,7 +239,7 @@ visitor {
 .grade-F {
 	color: #fff;
 	border-radius: 3px;
-	padding: 5px;
+	padding: 1px 5px;
 	animation: fade-in 1s cubic-bezier(0.77, 0, 0.175, 1.5) both;
 }
 .grade-A {
