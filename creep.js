@@ -2164,16 +2164,17 @@
 				let mathLie
 				check.forEach(prop => {
 					const test = (
+						prop == 'cos' ? [1e308] :
 						prop == 'acos' || prop == 'asin' || prop == 'atanh' ? [0.5] :
-						prop == 'pow' || prop == 'atan2' ? [Math.PI, 1] : 
+						prop == 'pow' || prop == 'atan2' ? [Math.PI, 2] : 
 						[Math.PI]
 					)
 					const res1 = Math[prop](...test)
 					const res2 = Math[prop](...test)
 					const matching = isNaN(res1) && isNaN(res2) ? true : res1 == res2
 					if (!matching) {
-						mathLie = { lies: [{ [`Math.${prop} failed math equality`]: true }] }
-						documentLie('Math Lie', hashMini({res1, res2}), mathLie)
+						mathLie = { lies: [{ [`failed math equality test`]: true }] }
+						documentLie(`Math.${prop}`, hashMini({res1, res2}), mathLie)
 					}
 					return
 				})
@@ -3505,17 +3506,17 @@
 					<div>persistence: ${hours} hours</div>
 					<div>has trash: ${
 						(''+hasTrash) == 'true' ?
-						`true <span class="grade-D">${hashMini(fp.trash)}</span>` : 
+						`true [${hashMini(fp.trash)}]` : 
 						'false'
 					}</div>
 					<div>has lied: ${
 						(''+hasLied) == 'true' ? 
-						`true <span class="grade-F">${hashMini(fp.lies)}` : 
+						`true [${hashMini(fp.lies)}]` : 
 						'false'
 					}</div>
 					<div>has errors: ${
 						(''+hasErrors) == 'true' ? 
-						`true <span class="grade-C">${hashMini(fp.capturedErrors)}` : 
+						`true [${hashMini(fp.capturedErrors)}]` : 
 						'false'
 					}</div>
 					<div>loose fingerprints: ${subIdsLen}</div>
