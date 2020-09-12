@@ -2707,19 +2707,26 @@
 					elementGetClientRects ? hasLiedAPI(elementGetClientRects, 'getClientRects', elementProto).lie : false
 				)
 
-				// create and get rendered iframe
-				const id = `${instanceId}-client-rects-iframe`
 				const rectsId = `${instanceId}-client-rects-div`
-				const iframeElement = document.createElement('iframe')
 				const divElement = document.createElement('div')
-				iframeElement.setAttribute('id', id)
 				divElement.setAttribute('id', rectsId)
-				iframeElement.setAttribute('style', 'visibility: hidden; height: 0')
-				document.body.appendChild(iframeElement)
-				const iframeRendered = document.getElementById(id)
+				let iframeRendered, doc = document
+				try {
+					// create and get rendered iframe
+					const id = `${instanceId}-client-rects-iframe`
+					const iframeElement = document.createElement('iframe')
+					iframeElement.setAttribute('id', id)
+					iframeElement.setAttribute('style', 'visibility: hidden; height: 0')
+					document.body.appendChild(iframeElement)
+					iframeRendered = document.getElementById(id)
 
-				// create and get rendered div in iframe
-				const doc = iframeRendered.contentDocument
+					// create and get rendered div in iframe
+					doc = iframeRendered.contentDocument
+				}
+				catch (error) {
+					captureError(error, 'client blocked getClientRects iframe')
+				}
+
 				doc.body.appendChild(divElement)
 				const divRendered = doc.getElementById(rectsId)
 
@@ -2889,7 +2896,9 @@
 
 				// resolve if no lies
 				if (!(rectsLie || offsetLie || mathLie)) {
-					iframeRendered.parentNode.removeChild(iframeRendered)
+					if (!!iframeRendered) {
+						iframeRendered.parentNode.removeChild(iframeRendered)
+					}
 					const [
 						emojiHash,
 						clientHash,
@@ -2930,7 +2939,9 @@
 				}
 			
 				// Fingerprint lie
-				iframeRendered.parentNode.removeChild(iframeRendered)
+				if (!!iframeRendered) {
+					iframeRendered.parentNode.removeChild(iframeRendered)
+				}
 				const lies = { rectsLie, offsetLie, mathLie }
 				const $hash = await hashify(lies)
 				resolve({...lies, $hash })
@@ -2940,7 +2951,7 @@
 					<div>hash: ${$hash}</div>
 					<div>elements: ${note.lied}</div>
 					<div>results:</div>
-					<div>emojis v13.0:</div>
+					<div>emojis v13.0: ${note.lied}</div>
 					<div>results:</div>
 				</div>
 				`)
