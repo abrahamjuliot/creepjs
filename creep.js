@@ -3,7 +3,7 @@
 	const isChrome = 'chrome' in window
 	const isBrave = 'brave' in navigator
 	const isFirefox = typeof InstallTrigger !== 'undefined'	
-		
+
 	// Handle Errors
 	const errorsCaptured = []
 	const captureError = (error, customMessage = null) => {
@@ -1624,6 +1624,7 @@
 				// document lie and send to trash
 				canvas2dDataURI = canvas.toDataURL()
 				const hash = hashMini(canvas2dDataURI)
+				
 				if (contextLie) {
 					documentLie('canvas2dContextDataURI', hash, contextLie)
 				}
