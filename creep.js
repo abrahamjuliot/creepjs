@@ -293,12 +293,23 @@
 				})
 			}
 
+			// detect prototype tampering
+			try {
+				api.prototype.constructor
+				lies.push({
+					['failed API prototype.constructor test']: true
+				})
+			}
+			catch (error) {
+				// Native throws error
+			}
+			
 			// detect attempts to tamper with getter
 			if (obj) {
 				try {
 					Object.getOwnPropertyDescriptor(obj, name).get.toString()
 					lies.push({
-						['failed API get test']: true
+						['failed API get.toString() test']: true
 					})
 				}
 				catch (error) {
@@ -347,6 +358,15 @@
 						const definedPropertyValue = Object.getOwnPropertyDescriptor(obj, name).value
 						lies.push({
 							['failed API value test']: true
+						})
+					}
+					catch (error) {
+						// Native throws error
+					}
+					try {
+						api[name]
+						lies.push({
+							['failed API call test']: true
 						})
 					}
 					catch (error) {
