@@ -2136,6 +2136,48 @@
 	const getMaths = instanceId => {
 		return new Promise(async resolve => {
 			try {
+				// detect failed math equality lie
+				const check = [
+					'acos',
+					'acosh',
+					'asin',
+					'asinh',
+					'atan',
+					'atanh',
+					'atan2',
+					'cbrt',
+					'cos',
+					'cosh',
+					'expm1',
+					'exp',
+					'hypot',
+					'log',
+					'log1p',
+					'log10',
+					'sin',
+					'sinh',
+					'sqrt',
+					'tan',
+					'tanh',
+					'pow'
+				]
+				let mathLie
+				check.forEach(prop => {
+					const test = (
+						prop == 'acos' || prop == 'asin' || prop == 'atanh' ? [0.5] :
+						prop == 'pow' || prop == 'atan2' ? [Math.PI, 1] : 
+						[Math.PI]
+					)
+					const res1 = Math[prop](...test)
+					const res2 = Math[prop](...test)
+					const matching = isNaN(res1) && isNaN(res2) ? true : res1 == res2
+					if (!matching) {
+						mathLie = { lies: [{ [`Math.${prop} failed math equality`]: true }] }
+						documentLie('Math Lie', hashMini({res1, res2}), mathLie)
+					}
+					return
+				})
+
 				const n = 0.123
 				const bigN = 5.860847362277284e+38
 				const fns = [
@@ -2267,7 +2309,9 @@
 					
 					['polyfill', [2e-3 ** -100], 'polyfill pow(2e-3, -100)', 7.888609052210102e+269, 7.888609052210126e+269, NaN, NaN]
 				]
-				const data = {}
+				const data = {
+					lied: !!mathLie
+				}
 				fns.forEach(fn => {
 					data[fn[2]] = attempt(() => {
 						const result = fn[0] != 'polyfill' ? Math[fn[0]](...fn[1]) : fn[1]
@@ -2278,6 +2322,7 @@
 						return { result, chrome, firefox, torBrowser, safari }
 					})
 				})
+				
 				const $hash = await hashify(data)
 				resolve({...data, $hash })
 				const id = 'creep-maths'
@@ -2293,6 +2338,7 @@
 					<strong>Math</strong>
 					<div>hash: ${$hash}</div>
 					<div>results: ${
+						!!mathLie ? note.lied :
 						modal(id, header+results.join('<br>'))
 					}
 					<div>implementation: ${known($hash)}</div>
@@ -3376,7 +3422,7 @@
 				unmasked2: fp.canvasWebgl.unmasked2
 			}
 		})(),
-		maths: fp.maths,
+		maths: fp.maths.lied ? undefined : fp.maths,
 		consoleErrors: fp.consoleErrors,
 		iframeContentWindowVersion: fp.iframeContentWindowVersion,
 		htmlElementVersion: fp.htmlElementVersion,
