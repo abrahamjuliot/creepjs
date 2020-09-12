@@ -2310,9 +2310,7 @@
 					
 					['polyfill', [2e-3 ** -100], 'polyfill pow(2e-3, -100)', 7.888609052210102e+269, 7.888609052210126e+269, NaN, NaN]
 				]
-				const data = {
-					lied: !!mathLie
-				}
+				const data = {}
 				fns.forEach(fn => {
 					data[fn[2]] = attempt(() => {
 						const result = fn[0] != 'polyfill' ? Math[fn[0]](...fn[1]) : fn[1]
@@ -2325,7 +2323,7 @@
 				})
 				
 				const $hash = await hashify(data)
-				resolve({...data, $hash })
+				resolve({...data, lied: mathLie, $hash })
 				const id = 'creep-maths'
 				const el = document.getElementById(id)
 				const header = `<div>Match to Win10 64bit Chromium > Firefox > Tor Browser > Mac10 Safari<br>[CR][FF][TB][SF]</div>`
