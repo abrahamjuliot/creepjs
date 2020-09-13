@@ -2310,7 +2310,7 @@
 					const { lie } = hasLiedAPI(Math[name], name)
 					if (lie) {
 						mathLie = true
-						documentLie(name, null, lie)
+						documentLie(`Math.${name}`, null, lie)
 						return value
 					}
 					return value
