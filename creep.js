@@ -2,7 +2,7 @@
 	// Detect Browser
 	const isChrome = 'chrome' in window
 	const isBrave = 'brave' in navigator
-	const isFirefox = typeof InstallTrigger !== 'undefined'	
+	const isFirefox = typeof InstallTrigger !== 'undefined'
 
 	// Handle Errors
 	const errorsCaptured = []
@@ -274,11 +274,34 @@
 	}
 	const stringAPILieTypes = hasLiedStringAPI() // compute and cache result
 	const hasLiedAPI = (api, name, obj = undefined) => {
+		
 		const { toString: fnToStr } = Function.prototype
 
 		if (typeof api == 'function') {
 			let lies = [...stringAPILieTypes()]
 			let fingerprint = ''
+
+			// detect failed attempts to tamper with API length
+			const apiLen = {
+				toDataURL: [true, 0],
+				getContext: [true, 1],
+				getParameter: [true, 1],
+				getExtension: [true, 1],
+				getSupportedExtensions: [true, 0],
+				getParameter: [true, 1],
+				getExtension: [true, 1],
+				getSupportedExtensions: [true, 0],
+				getClientRects: [true, 0],
+				getChannelData: [true, 1],
+				copyFromChannel: [true, 2],
+				getTimezoneOffset: [true, 0]
+			}
+
+			if (apiLen[name][0] && api.length != apiLen[name][1]) {
+				lies.push({
+					['failed API length test']: true
+				})
+			}
 
 			// detect attempts to rename the API and/or rewrite toString
 			const { name: apiName, toString: apiToString } = api
@@ -339,6 +362,17 @@
 			let lies = [...stringAPILieTypes()]
 			let fingerprint = ''
 
+			// detect prototype tampering
+			try {
+				api[name]
+				lies.push({
+					['failed API call test']: true
+				})
+			}
+			catch (error) {
+				// Native throws error
+			}
+
 			// detect attempts to rename the API and/or rewrite toString
 			try {
 				const { name: apiName, toString: apiToString } = apiFunction
@@ -358,15 +392,6 @@
 						const definedPropertyValue = Object.getOwnPropertyDescriptor(obj, name).value
 						lies.push({
 							['failed API value test']: true
-						})
-					}
-					catch (error) {
-						// Native throws error
-					}
-					try {
-						api[name]
-						lies.push({
-							['failed API call test']: true
 						})
 					}
 					catch (error) {
@@ -760,7 +785,7 @@
 				const navigatorPrototype = attempt(() => Navigator.prototype)
 				const detectLies = (name, value) => {
 					const workerScopeValue = caniuse(() => workerScope, [name])
-					const workerScopeMatchLie = { lies: [{ ['does not match worker scope']: false }] }
+					const workerScopeMatchLie = { fingerprint: '', lies: [{ ['does not match worker scope']: false }] }
 					if (workerScopeValue) {
 						if (name == 'userAgent') {
 							const system = getOS(value)
@@ -2173,7 +2198,7 @@
 					const res2 = Math[prop](...test)
 					const matching = isNaN(res1) && isNaN(res2) ? true : res1 == res2
 					if (!matching) {
-						mathLie = { lies: [{ [`failed math equality test`]: true }] }
+						mathLie = { fingerprint: '', lies: [{ [`failed math equality test`]: true }] }
 						documentLie(`Math.${prop}`, hashMini({res1, res2}), mathLie)
 					}
 					return
@@ -2616,9 +2641,9 @@
 				const relativeTime = getRelativeTime()
 				const locale = getLocale()
 				// document lie
-				const seasonLie = timezoneOffsetMeasured.lie ? { lies: [{ ['timezone seasons disagree']: true }] } : false
-				const localeLie = locale.lie ? { lies: [{ ['Intl locales mismatch']: true }] } : false
-				const offsetLie = !matchingOffsets ? { lies: [{ ['timezone offsets mismatch']: true }] } : false
+				const seasonLie = timezoneOffsetMeasured.lie ? { fingerprint: '', lies: [{ ['timezone seasons disagree']: true }] } : false
+				const localeLie = locale.lie ? { fingerprint: '', lies: [{ ['Intl locales mismatch']: true }] } : false
+				const offsetLie = !matchingOffsets ? { fingerprint: '', lies: [{ ['timezone offsets mismatch']: true }] } : false
 				if (localeLie) {
 					documentLie('IntlLocales', locale, localeLie)	
 				}
@@ -2725,10 +2750,10 @@
 
 				doc.body.appendChild(divElement)
 				const divRendered = doc.getElementById(rectsId)
-
+				
 				// patch div
 				patch(divRendered, html`
-				<div>
+				<div id="${rectsId}">
 					<div style="perspective:100px;width:1000.099%;" id="rect-container">
 						<style>
 						.rects {
@@ -2874,7 +2899,7 @@
 						right - x != width ||
 						bottom - y != height
 					) {
-						mathLie = { lies: [{ ['failed math calculation']: true }] }
+						mathLie = { fingerprint: '', lies: [{ ['failed math calculation']: true }] }
 					}
 					return
 				})
@@ -2884,7 +2909,7 @@
 				const { right: right1, left: left1 } = clientRects[10]
 				const { right: right2, left: left2 } = clientRects[11]
 				if (right1 != right2 || left1 != left2) {
-					offsetLie = { lies: [{ ['equal elements mismatch']: true }] }
+					offsetLie = { fingerprint: '', lies: [{ ['equal elements mismatch']: true }] }
 				}
 
 				const templateId = 'creep-client-rects'
@@ -2894,6 +2919,10 @@
 				if (!(rectsLie || offsetLie || mathLie)) {
 					if (!!iframeRendered) {
 						iframeRendered.parentNode.removeChild(iframeRendered)
+					}
+					else {
+						const rectsDivRendered = doc.getElementById(rectsId)
+						rectsDivRendered.parentNode.removeChild(rectsDivRendered)
 					}
 					const [
 						emojiHash,
@@ -2937,6 +2966,10 @@
 				// Fingerprint lie
 				if (!!iframeRendered) {
 					iframeRendered.parentNode.removeChild(iframeRendered)
+				}
+				else {
+					const rectsDivRendered = doc.getElementById(rectsId)
+					rectsDivRendered.parentNode.removeChild(rectsDivRendered)
 				}
 				const lies = { rectsLie, offsetLie, mathLie }
 				const $hash = await hashify(lies)
@@ -3052,7 +3085,7 @@
 
 							matching = binsJSON === copyJSON
 
-							const audioSampleLie = { lies: [{ ['audioSampleAndCopyMatch']: false }] }
+							const audioSampleLie = { fingerprint: '', lies: [{ ['audioSampleAndCopyMatch']: false }] }
 							if (!matching) {
 								documentLie('audioSampleAndCopyMatch', hashMini(matching), audioSampleLie)
 							}
@@ -3256,22 +3289,39 @@
 
 	const getLies = (instanceId, lieRecords) => {
 		return new Promise(async resolve => {
-			const len = lieRecords.length
+			let totalLies = 0
+			lieRecords.forEach(lie => {
+				if (!!lie.lieTypes.fingerprint) {
+					totalLies++
+				}
+				if (!!lie.lieTypes.lies) {
+					totalLies += lie.lieTypes.lies.length
+				}
+			})
 			const data = lieRecords.map(lie => ({ name: lie.name, lieTypes: lie.lieTypes }))
 			const $hash = await hashify(data)
 			resolve({data, $hash })
 			const id = 'creep-lies'
 			const el = document.getElementById(id)
 			patch(el, html`
-			<div class="${len ? 'lies': ''}">
+			<div class="${totalLies ? 'lies': ''}">
 				<strong>Lies Unmasked</strong>
 				<div>hash: ${$hash}</div>
-				<div>lies (${!len ? '0' : ''+len }): ${
-					len ? modal(id, Object.keys(data).map(key => {
+				<div>lies (${!totalLies ? '0' : ''+totalLies }): ${
+					totalLies ? modal(id, Object.keys(data).map(key => {
 						const { name, lieTypes: { lies, fingerprint } } = data[key]
 						const lieFingerprint = !!fingerprint ? { hash: hashMini(fingerprint), json: toJSONFormat(fingerprint) } : undefined
-						const type = lies[0] ? Object.keys(lies[0])[0] : ''
-						return `<div class="${lieFingerprint ? 'lie-fingerprint' : ''}"><strong>${name}</strong>: ${type}${lieFingerprint ? `<br>tampering code leaked a fingerprint: ${lieFingerprint.hash}<br>code: ${lieFingerprint.json}</div>`: '</div>'}`
+						const type = !!lies.length ? Object.keys(lies[0])[0] : ''
+						return `
+							<div style="padding:5px">
+								<strong>${name}</strong>:
+								${lies.length ? lies.map(lie => `<br>${Object.keys(lie)[0]}`).join(''): ''}
+								${
+									lieFingerprint ? `<br>tampering code leaked a fingerprint: ${lieFingerprint.hash}`: 
+									''
+								}
+							</div>
+						`
 					}).join('')) : `<span class="none">none</span>`
 				}</div>
 			</div>

@@ -162,7 +162,7 @@ body {
 	display: none;
 }
 strong {
-	font-weight: bold;
+	font-weight: bold !important;
 }
 visitor {
     display: block;
@@ -219,12 +219,6 @@ visitor {
 }
 #fingerprint-data .none {
 	background: #eee;
-}
-
-#fingerprint-data .lie-fingerprint {
-	background: #f9f9f9;
-    padding: 15px;
-    margin: 10px 0;
 }
 
 #fingerprint-data .trusted-fingerprint {
