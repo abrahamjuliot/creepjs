@@ -516,11 +516,7 @@
 						contentWindow.Function.prototype.toString.call(apilookupGetter) :
 						'' + apilookupGetter
 					)
-					result3 = (
-						contentWindow ? 
-						contentWindow.Function.prototype.toString.call(apiProtoLookupGetter) :
-						'' + apiProtoLookupGetter
-					)
+					result3 = '' + apiProtoLookupGetter
 				}
 
 				// fingerprint result if it does not match native code
@@ -531,7 +527,7 @@
 					fingerprint = result2
 				}
 				else if (obj && !native(result3, name)) {
-					fingerprint = result3
+					fingerprint = result3 != 'undefined' ? result3 : ''
 				}
 
 				return {
