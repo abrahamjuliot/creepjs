@@ -299,7 +299,6 @@
 					getTimezoneOffset: [true, 0]
 				}
 
-				console.log(name, api.length)
 				if (apiLen[name] && apiLen[name][0] && api.length != apiLen[name][1]) {
 					lies.push({
 						['failed length test']: true
