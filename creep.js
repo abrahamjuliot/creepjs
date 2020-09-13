@@ -299,7 +299,8 @@
 					getTimezoneOffset: [true, 0]
 				}
 
-				if (apiLen[name][0] && api.length != apiLen[name][1]) {
+				console.log(name, api.length)
+				if (apiLen[name] && apiLen[name][0] && api.length != apiLen[name][1]) {
 					lies.push({
 						['failed length test']: true
 					})
@@ -2308,8 +2309,20 @@
 					'tanh',
 					'pow'
 				]
+				
 				let mathLie
+				const detectLies = (name, value) => {
+					const { lie } = hasLiedAPI(Math[name], name)
+					if (lie) {
+						mathLie = true
+						documentLie(name, null, lie)
+						return value
+					}
+					return value
+				}
+
 				check.forEach(prop => {
+					detectLies(prop, Math[prop])
 					const test = (
 						prop == 'cos' ? [1e308] :
 						prop == 'acos' || prop == 'asin' || prop == 'atanh' ? [0.5] :
