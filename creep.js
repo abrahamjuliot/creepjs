@@ -208,6 +208,10 @@
 	}
 
 	// nested contentWindow context
+	const validateContentWindow = iframe => {
+		if (!iframe.contentWindow) { throw new Error('blocked by client') }
+		return iframe
+	}
 	const getNestedContentWindowContext = instanceId => {
 		return new Promise(resolve => {
 			const allowScripts = () => !isFirefox && !isChrome ? 'allow-scripts ' : ''
@@ -217,13 +221,101 @@
 					const doc = win.document
 					const iframe = doc.createElement('iframe')
 					iframe.setAttribute('id', id)
-					iframe.setAttribute('style', 'visibility: hidden; height: 0')
+					iframe.setAttribute('style', 'display:none')
 					iframe.setAttribute('sandbox', `${allowScripts()}allow-same-origin`)
+					const placeholder = doc.createElement('div')
+					placeholder.setAttribute('style', 'display:none')
+					const placeholderId = `${instanceId}-contentWindow-placeholder`
+					placeholder.setAttribute('id', placeholderId)
+
 					if (isChrome) {
 						iframe.src = thisSiteCantBeReached 
 					}
-					doc.body.appendChild(iframe)
-					const rendered = doc.getElementById(id)
+
+					let rendered = win
+					
+					try {
+						doc.body.append(iframe)
+						rendered = validateContentWindow(iframe)
+					}
+					catch(error) {
+						captureError(error, 'client tampered with append')
+					}
+
+					try {
+						doc.body.prepend(iframe)
+						rendered = validateContentWindow(iframe)
+					}
+					catch(error) {
+						captureError(error, 'client tampered with prepend')
+					}
+
+					try {
+						doc.body.appendChild(iframe)
+						rendered = validateContentWindow(iframe)
+					}
+					catch(error) {
+						captureError(error, 'client tampered with appendChild')
+					}
+
+					try {
+						doc.body.appendChild(placeholder)
+						placeholder.replaceWith(iframe)
+						rendered = validateContentWindow(iframe)
+					}
+					catch(error) {
+						captureError(error, 'client tampered with replaceWith')
+					}
+
+					try {
+						doc.body.insertBefore(iframe, parent.firstChild)
+						rendered = validateContentWindow(iframe)
+					}
+					catch(error) {
+						captureError(error, 'client tampered with insertBefore')
+					}
+
+					try {
+						doc.body.appendChild(placeholder)
+						doc.body.replaceChild(iframe, placeholder)
+						rendered = validateContentWindow(iframe)
+					}
+					catch(error) {
+						captureError(error, 'client tampered with replaceChild')
+					}
+
+					try {
+						doc.body.insertAdjacentElement('afterend', iframe)
+						rendered = validateContentWindow(iframe)
+					}
+					catch(error) {
+						captureError(error, 'client tampered with insertAdjacentElement afterend')
+					}
+
+					try {
+						doc.body.insertAdjacentElement('beforeend', iframe)
+						rendered = validateContentWindow(iframe)
+					}
+					catch(error) {
+						captureError(error, 'client tampered with insertAdjacentElement beforeend')
+					}
+
+					try {
+						doc.body.insertAdjacentElement('beforebegin', iframe)
+						rendered = validateContentWindow(iframe)
+					}
+					catch(error) {
+						captureError(error, 'client tampered with insertAdjacentElement beforebegin')
+					}
+
+					try {
+						doc.body.insertAdjacentElement('afterbegin', iframe)
+						rendered = validateContentWindow(iframe)
+					}
+					catch(error) {
+						captureError(error, 'client tampered with insertAdjacentElement afterbegin')
+					}
+
 					return {
 						el: rendered,
 						context: rendered.contentWindow,
@@ -591,6 +683,55 @@
 		const trusted = isInt(val) 
 		return trusted ? val : sendToTrash(name, val)
 	}
+
+	const elementMethods = Object.getOwnPropertyNames(Element.prototype).filter(item => {
+		const ignore = {
+			constructor: !0,
+			// validate critical methods elsewhere
+			getClientRects: !0
+		}
+		if (ignore[item]) { 
+			return false
+		}
+		try {
+			return typeof Element.prototype[item] === 'function'
+		}
+		catch (error) {
+			return false
+		}
+	})
+	const htmlCanvasElementMethods = Object.getOwnPropertyNames(HTMLCanvasElement.prototype).filter(item => {
+		const ignore = {
+			constructor: !0,
+			// validate critical methods elsewhere
+			toDataURL: !0,
+			getContext: !0
+		}
+		if (ignore[item]) { 
+			return false
+		}
+		try {
+			return typeof HTMLCanvasElement.prototype[item] === 'function'
+		}
+		catch (error) {
+			return false
+		}
+	})
+	elementMethods.forEach(name => {
+		const domManipLie = hasLiedAPI(Element.prototype[name], name, Element.prototype).lie
+		console.log(name, domManipLie)
+		if (domManipLie) {
+			documentLie(name, undefined, domManipLie)
+		}
+	})
+	htmlCanvasElementMethods.forEach(name => {
+		const domManipLie = hasLiedAPI(HTMLCanvasElement.prototype[name], name, HTMLCanvasElement.prototype).lie
+		//console.log(name, domManipLie)
+		if (domManipLie) {
+			documentLie(name, undefined, domManipLie)
+		}
+	})
+
 
 	// system
 	const getOS = userAgent => {
@@ -2857,7 +2998,7 @@
 				const rectsLie = (
 					elementGetClientRects ? hasLiedAPI(elementGetClientRects, 'getClientRects', elementProto).lie : false
 				)
-
+			
 				const rectsId = `${instanceId}-client-rects-div`
 				const divElement = document.createElement('div')
 				divElement.setAttribute('id', rectsId)
@@ -3017,10 +3158,14 @@
 				const clientRects = [...rectElems].map(el => {
 					return toJSONParsed(el.getClientRects()[0])
 				})
-								
+				// detect lies
+				let lied = rectsLie
+				if (rectsLie) {
+					documentLie('getClientRects', hashMini(clientRects), rectsLie)
+				}
+				
 				// detect failed math calculation lie
 				let mathLie = false
-
 				clientRects.forEach(rect => {
 					const { right, left, width, bottom, top, height, x, y } = rect
 					if (
@@ -3029,10 +3174,14 @@
 						right - x != width ||
 						bottom - y != height
 					) {
+						lied = true
 						mathLie = { fingerprint: '', lies: [{ ['failed math calculation']: true }] }
 					}
 					return
 				})
+				if (mathLie) {
+					documentLie('getClientRects', hashMini(clientRects), mathLie)
+				}
 				
 				// detect equal elements mismatch lie
 				let offsetLie = false
@@ -3040,60 +3189,13 @@
 				const { right: right2, left: left2 } = clientRects[11]
 				if (right1 != right2 || left1 != left2) {
 					offsetLie = { fingerprint: '', lies: [{ ['equal elements mismatch']: true }] }
+					documentLie('getClientRects', hashMini(clientRects), offsetLie)
+					lied = true
 				}
 
+				// resolve 
 				const templateId = 'creep-client-rects'
 				const templateEl = document.getElementById(templateId)
-
-				// resolve if no lies
-				if (!(rectsLie || offsetLie || mathLie)) {
-					if (!!iframeRendered) {
-						iframeRendered.parentNode.removeChild(iframeRendered)
-					}
-					else {
-						const rectsDivRendered = doc.getElementById(rectsId)
-						rectsDivRendered.parentNode.removeChild(rectsDivRendered)
-					}
-					const [
-						emojiHash,
-						clientHash,
-						$hash
-					] = await Promise.all([
-						hashify(emojiRects),
-						hashify(clientRects),
-						hashify({emojiRects, clientRects})
-					]).catch(error => {
-						console.error(error.message)
-					})
-					resolve({emojiRects, emojiHash, clientRects, clientHash, $hash })
-					patch(templateEl, html`
-					<div>
-						<strong>DOMRect</strong>
-						<div>hash: ${$hash}</div>
-						<div>elements: ${clientHash}</div>
-						<div>results: ${
-							modal(`${templateId}-elements`, clientRects.map(domRect => Object.keys(domRect).map(key => `<div>${key}: ${domRect[key]}</div>`).join('')).join('<br>') )
-						}</div>
-						<div>emojis v13.0: ${emojiHash}</div>
-						<div>results: ${
-							modal(`${templateId}-emojis`, emojiRects.map(rect => rect.emoji).join('') )
-						}</div>
-					</div>
-					`)
-					return
-				}
-				// document lie and send to trash
-				if (rectsLie) {
-					documentLie('clientRectsAPILie', hashMini(clientRects), rectsLie)
-				}
-				if (offsetLie) {
-					documentLie('clientRectsOffsetLie', hashMini(clientRects), offsetLie)
-				}
-				if (mathLie) {
-					documentLie('clientRectsMathLie', hashMini(clientRects), mathLie)
-				}
-			
-				// Fingerprint lie
 				if (!!iframeRendered) {
 					iframeRendered.parentNode.removeChild(iframeRendered)
 				}
@@ -3101,20 +3203,36 @@
 					const rectsDivRendered = doc.getElementById(rectsId)
 					rectsDivRendered.parentNode.removeChild(rectsDivRendered)
 				}
-				const lies = { rectsLie, offsetLie, mathLie }
-				const $hash = await hashify(lies)
-				resolve({...lies, $hash })
+				const [
+					emojiHash,
+					clientHash,
+					$hash
+				] = await Promise.all([
+					hashify(emojiRects),
+					hashify(clientRects),
+					hashify({emojiRects, clientRects})
+				]).catch(error => {
+					console.error(error.message)
+				})
+				resolve({emojiRects, emojiHash, clientRects, clientHash, lied, $hash })
 				patch(templateEl, html`
 				<div>
 					<strong>DOMRect</strong>
 					<div>hash: ${$hash}</div>
-					<div>elements: ${note.lied}</div>
-					<div>results:</div>
-					<div>emojis v13.0: ${note.lied}</div>
-					<div>results:</div>
+					<div>elements: ${lied ? note.lied : clientHash}</div>
+					<div>results: ${
+						lied ? note.lied : 
+						modal(`${templateId}-elements`, clientRects.map(domRect => Object.keys(domRect).map(key => `<div>${key}: ${domRect[key]}</div>`).join('')).join('<br>') )
+					}</div>
+					<div>emojis v13.0: ${lied ? note.lied : emojiHash}</div>
+					<div>results: ${
+						lied ? note.lied : 
+						modal(`${templateId}-emojis`, emojiRects.map(rect => rect.emoji).join('') )
+					}</div>
 				</div>
 				`)
 				return
+				
 			}
 			catch (error) {
 				captureError(error)
@@ -3420,6 +3538,7 @@
 	const getLies = (instanceId, lieRecords) => {
 		return new Promise(async resolve => {
 			let totalLies = 0
+			const sanitize = str => str.replace(/\</g, '&lt;')
 			lieRecords.forEach(lie => {
 				if (!!lie.lieTypes.fingerprint) {
 					totalLies++
@@ -3440,14 +3559,16 @@
 				<div>lies (${!totalLies ? '0' : ''+totalLies }): ${
 					totalLies ? modal(id, Object.keys(data).map(key => {
 						const { name, lieTypes: { lies, fingerprint } } = data[key]
-						const lieFingerprint = !!fingerprint ? { hash: hashMini(fingerprint), json: toJSONFormat(fingerprint) } : undefined
+						const lieFingerprint = !!fingerprint ? { hash: hashMini(fingerprint), json: sanitize(toJSONFormat(fingerprint)) } : undefined
 						const type = !!lies.length ? Object.keys(lies[0])[0] : ''
 						return `
 							<div style="padding:5px">
 								<strong>${name}</strong>:
 								${lies.length ? lies.map(lie => `<br>${Object.keys(lie)[0]}`).join(''): ''}
 								${
-									lieFingerprint ? `<br>tampering code leaked a fingerprint: ${lieFingerprint.hash}`: 
+									lieFingerprint ? `
+										<br>tampering code leaked a fingerprint: ${lieFingerprint.hash}
+										<br>code: ${lieFingerprint.json}`: 
 									''
 								}
 							</div>
@@ -3617,7 +3738,7 @@
 		cssStyleDeclarationVersion: fp.cssStyleDeclarationVersion,
 		// avoid random timezone fingerprint values
 		timezone: !fp.timezone || !fp.timezone.lied ? fp.timezone : undefined,
-		clientRects: fp.clientRects,
+		clientRects:  fp.clientRects.lied ? undefined : fp.clientRects,
 		offlineAudioContext: !(isBrave || isFirefox) ? fp.offlineAudioContext : distrust,
 		fonts: fp.fonts,
 		trash: !!trashLen,
