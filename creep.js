@@ -267,7 +267,7 @@
 			Function.prototype.toString
 		)
 		if (!native(toString, 'toString')) {
-			lies.push({ ['failed API toString test']: toString })
+			lies.push({ ['failed toString test']: toString })
 		}
 
 		return () => lies
@@ -278,112 +278,206 @@
 		const { toString: fnToStr } = Function.prototype
 
 		if (typeof api == 'function') {
-			let lies = [...stringAPILieTypes()]
-			let fingerprint = ''
-
-			// detect failed attempts to tamper with API length
-			const apiLen = {
-				toDataURL: [true, 0],
-				getContext: [true, 1],
-				getParameter: [true, 1],
-				getExtension: [true, 1],
-				getSupportedExtensions: [true, 0],
-				getParameter: [true, 1],
-				getExtension: [true, 1],
-				getSupportedExtensions: [true, 0],
-				getClientRects: [true, 0],
-				getChannelData: [true, 1],
-				copyFromChannel: [true, 2],
-				getTimezoneOffset: [true, 0]
-			}
-
-			if (apiLen[name][0] && api.length != apiLen[name][1]) {
-				lies.push({
-					['failed API length test']: true
-				})
-			}
-
-			// detect attempts to rename the API and/or rewrite toString
-			const { name: apiName, toString: apiToString } = api
-			if (apiName != name) {
-				lies.push({
-					['failed API name test']: !proxyBehavior(apiName) ? apiName: true
-				})
-			}
-			if (apiToString !== fnToStr || apiToString.toString !== fnToStr) {
-				lies.push({
-					['failed API toString test']: !proxyBehavior(apiToString) ? apiToString: true
-				})
-			}
-
-			// detect prototype tampering
 			try {
-				api.prototype.constructor
-				lies.push({
-					['failed API prototype.constructor test']: true
-				})
-			}
-			catch (error) {
-				// Native throws error
-			}
-			
-			// detect attempts to tamper with getter
-			if (obj) {
-				try {
-					Object.getOwnPropertyDescriptor(obj, name).get.toString()
+
+				let lies = [...stringAPILieTypes()]
+				let fingerprint = ''
+
+				// detect failed attempts to tamper with API length
+				const apiLen = {
+					toDataURL: [true, 0],
+					getContext: [true, 1],
+					getParameter: [true, 1],
+					getExtension: [true, 1],
+					getSupportedExtensions: [true, 0],
+					getParameter: [true, 1],
+					getExtension: [true, 1],
+					getSupportedExtensions: [true, 0],
+					getClientRects: [true, 0],
+					getChannelData: [true, 1],
+					copyFromChannel: [true, 2],
+					getTimezoneOffset: [true, 0]
+				}
+
+				if (apiLen[name][0] && api.length != apiLen[name][1]) {
 					lies.push({
-						['failed API get.toString() test']: true
+						['failed length test']: true
+					})
+				}
+
+				// detect failed attempt to modify object entries
+				if (!!Object.entries(api).length) {
+					lies.push({
+						['failed Object.entries test']: true
+					})
+				}
+				// detect failed attempt to modify object keys
+				if (!!Object.keys(api).length) {
+					lies.push({
+						['failed Object.keys test']: true
+					})
+				}
+				// detect failed attempt to modify object keys
+				if (!!Object.values(api).length) {
+					lies.push({
+						['failed Object.values test']: true
+					})
+				}
+
+				// detect attempts to rename the API and/or rewrite toString
+				const { name: apiName, toString: apiToString } = api
+				if (apiName != name) {
+					lies.push({
+						['failed name test']: !proxyBehavior(apiName) ? apiName: true
+					})
+				}
+				if (apiToString !== fnToStr || apiToString.toString !== fnToStr) {
+					lies.push({
+						['failed toString test']: !proxyBehavior(apiToString) ? apiToString: true
+					})
+				}
+
+				// detect prototype tampering
+				try {
+					api.prototype.constructor
+					lies.push({
+						['failed prototype.constructor test']: true
 					})
 				}
 				catch (error) {
 					// Native throws error
 				}
-			}
 
-			// collect string conversion result
-			const result = (
-				contentWindow ? 
-				contentWindow.Function.prototype.toString.call(api) :
-				'' + api
-			)
+				// detect failed attempts to tamper with discriptors
+				const descriptors = Object.keys(Object.getOwnPropertyDescriptors(api))
+				if (''+descriptors != 'length,name') {
+					lies.push({
+						['failed getOwnPropertyDescriptors [length, name] test']: true
+					})
+				}
 
-			// fingerprint result if it does not match native code
-			if (!native(result, name)) {
-				fingerprint = result
+				// detect failed attempts to tamper with property own property names
+				const ownPropertyNames = Object.getOwnPropertyNames(api)
+				if (''+ownPropertyNames != 'length,name') {
+					lies.push({
+						['failed getOwnPropertyNames [length, name] test']: true
+					})
+				}
+
+				Object.getOwnPropertyNames(HTMLCanvasElement.prototype.toDataURL)
+				
+				if (obj) {
+					// detect attempts to tamper with getter
+					try {
+						Object.getOwnPropertyDescriptor(obj, name).get.toString()
+						lies.push({
+							['failed descriptor.get.toString() test']: true
+						})
+					}
+					catch (error) {
+						// Native throws error
+					}
+
+					// detect attempts to define name
+					if (!!Object.getOwnPropertyDescriptor(obj, name).name) {
+						lies.push({
+							['failed descriptor.name test']: true
+						})
+					}
+				}
+
+				// collect string conversion result
+				const result = (
+					contentWindow ? 
+					contentWindow.Function.prototype.toString.call(api) :
+					'' + api
+				)
+
+				// fingerprint result if it does not match native code
+				if (!native(result, name)) {
+					fingerprint = result
+				}
+				
+				return {
+					lie: lies.length || fingerprint ? { lies, fingerprint } : false 
+				}
 			}
-			
-			return {
-				lie: lies.length || fingerprint ? { lies, fingerprint } : false 
+			catch (error) {
+				captureError(error)
+				return false
 			}
 		}
 
 		if (typeof api == 'object' && caniuse(() => obj[name]) != undefined) {
-			const apiFunction = Object.getOwnPropertyDescriptor(api, name).get
-			let lies = [...stringAPILieTypes()]
-			let fingerprint = ''
-
-			// detect prototype tampering
+				
 			try {
-				api[name]
-				lies.push({
-					['failed API call test']: true
+				const apiFunction = Object.getOwnPropertyDescriptor(api, name).get
+				let lies = [...stringAPILieTypes()]
+				let fingerprint = ''
+
+				// detect invocation tampering
+				try {
+					api[name]
+					lies.push({
+						['failed Illegal invocation test [1]']: true
+					})
+				}
+				catch (error) {
+					// Native throws error
+				}
+				const illegal = [
+					'',
+					'is',
+					'call',
+					'seal',
+					'keys',
+					'bind',
+					'apply',
+					'freeze',
+					'values',
+					'entries',
+					'toString',
+					'isFrozen',
+					'isSealed',
+					'constructor',
+					'isExtensible',
+					'getPrototypeOf',
+					'setPrototypeOf',
+					'preventExtensions',
+					'propertyIsEnumerable',
+					'getOwnPropertySymbols',
+					'getOwnPropertyDescriptors'
+				]
+
+				illegal.forEach((prop, index) => {
+					try {
+						!prop ? Object(api[name]) : Object[prop](api[name])
+						lies.push({
+							[`failed Illegal invocation test [${index+2}]: ${!prop ? 'Object' : prop}`]: true
+						})
+					}
+					catch (error) {
+						// Native throws error
+					}
 				})
-			}
-			catch (error) {
-				// Native throws error
-			}
+				
+				// detect attempts to define name
+				if (!!Object.getOwnPropertyDescriptor(api, name).name) {
+					lies.push({
+						['failed descriptor.name test']: true
+					})
+				}
 
-			// detect attempts to rename the API and/or rewrite toString
-			try {
+				// detect attempts to rename the API and/or rewrite toString
 				const { name: apiName, toString: apiToString } = apiFunction
 				if (apiName != `get ${name}` && apiName != name) {
 					lies.push({
-						['failed API name test']: !proxyBehavior(apiName) ? apiName: true
+						['failed name test']: !proxyBehavior(apiName) ? apiName: true
 					})
 				}
 				if (apiToString !== fnToStr || apiToString.toString !== fnToStr) {
 					lies.push({
-						['failed API toString test']: !proxyBehavior(apiToString) ? apiToString : true
+						['failed toString test']: !proxyBehavior(apiToString) ? apiToString : true
 					})
 				}
 
@@ -391,7 +485,7 @@
 					try {
 						const definedPropertyValue = Object.getOwnPropertyDescriptor(obj, name).value
 						lies.push({
-							['failed API value test']: true
+							['failed descriptor.value test']: true
 						})
 					}
 					catch (error) {
@@ -418,7 +512,6 @@
 			catch (error) {
 				captureError(error)
 				return false
-				
 			}
 		}
 
