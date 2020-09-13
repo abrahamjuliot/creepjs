@@ -719,7 +719,7 @@
 	})
 	elementMethods.forEach(name => {
 		const domManipLie = hasLiedAPI(Element.prototype[name], name, Element.prototype).lie
-		console.log(name, domManipLie)
+		//console.log(name, domManipLie)
 		if (domManipLie) {
 			documentLie(name, undefined, domManipLie)
 		}
