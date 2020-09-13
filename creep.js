@@ -378,10 +378,17 @@
 						// Native throws error
 					}
 
-					// detect attempts to define name
+					// detect failed attempt to tamper with descriptor
 					if (!!Object.getOwnPropertyDescriptor(obj, name).name) {
 						lies.push({
 							['failed descriptor.name test']: true
+						})
+					}
+
+					// detect attempts to define toString
+					if (!!Object.getOwnPropertyDescriptor(api, 'toString')) {
+						lies.push({
+							['failed getOwnPropertyDescriptor toString test']: true
 						})
 					}
 				}
