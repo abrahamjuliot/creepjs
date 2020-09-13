@@ -507,9 +507,31 @@
 					'' + apiFunction
 				)
 
+				let apilookupGetter, apiProtoLookupGetter, result2, result3
+				if (obj) {
+					apilookupGetter = obj.__lookupGetter__(name)
+					apiProtoLookupGetter = api.__proto__.__lookupGetter__(name)
+					result2 = (
+						contentWindow ? 
+						contentWindow.Function.prototype.toString.call(apilookupGetter) :
+						'' + apilookupGetter
+					)
+					result3 = (
+						contentWindow ? 
+						contentWindow.Function.prototype.toString.call(apiProtoLookupGetter) :
+						'' + apiProtoLookupGetter
+					)
+				}
+
 				// fingerprint result if it does not match native code
 				if (!native(result, name)) {
 					fingerprint = result
+				}
+				else if (obj && !native(result2, name)) {
+					fingerprint = result2
+				}
+				else if (obj && !native(result3, name)) {
+					fingerprint = result3
 				}
 
 				return {
