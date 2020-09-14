@@ -716,14 +716,25 @@
 		})
 	}
 	const searchLies = (obj, methods, log = false) => {
+		const isMath = (obj+'' == '[object Math]')
 		return methods.forEach(name => {
-			const domManipLie = hasLiedAPI(obj.prototype[name], name, obj.prototype).lie
+			let domManipLie
+			if (isMath) {
+				domManipLie = hasLiedAPI(obj[name], name, obj).lie
+				if (domManipLie) {
+					documentLie(`${obj}.${name}`, undefined, domManipLie)
+				}
+			}
+			else {
+				domManipLie = hasLiedAPI(obj.prototype[name], name, obj.prototype).lie
+				if (domManipLie) {
+					const objName = /\s(.+)\(\)/g.exec(obj)[1]
+					documentLie(`${objName}.${name}`, undefined, domManipLie)
+				}
+			}
 			if (log) {
 				console.log(name, domManipLie)
-			}
-			if (domManipLie) {
-				documentLie(name, undefined, domManipLie)
-			}
+			}	
 		})
 	}
 	const elementMethods = getMethods(Element.prototype, {
@@ -740,11 +751,108 @@
 	const navigatorMethods = getMethods(Navigator.prototype, {
 		constructor: !0
 	})
-	
+
+	const functionMethods = getMethods(Function.prototype, {
+		constructor: !0
+	})
+
+	const analyserNodeMethods = getMethods(AnalyserNode.prototype, {
+		constructor: !0
+	})
+
+	const svgTextContentElementMethods = getMethods(SVGTextContentElement.prototype, {
+		constructor: !0
+	})
+
+	const canvasRenderingContext2DMethods = getMethods(CanvasRenderingContext2D.prototype, {
+		constructor: !0
+	})
+
+	const webGLRenderingContextMethods = getMethods(WebGLRenderingContext.prototype, {
+		constructor: !0,
+		getParameter: !0,
+		getExtension: !0,
+		getSupportedExtensions: !0,
+		makeXRCompatible: !0, // ignore
+	})
+
+	const mathMethods = getMethods(Math, {
+		constructor: !0,
+		acos: !0,
+		acosh: !0,
+		asin: !0,
+		asinh: !0,
+		atan: !0,
+		atanh: !0,
+		atan2: !0,
+		cbrt: !0,
+		cos: !0,
+		cosh: !0,
+		expm1: !0,
+		exp: !0,
+		hypot: !0,
+		log: !0,
+		log1p: !0,
+		log10: !0,
+		sin: !0,
+		sinh: !0,
+		sqrt: !0,
+		tan: !0,
+		tanh: !0,
+		pow: !0
+	})
+
 	searchLies(Element, elementMethods)
 	searchLies(HTMLCanvasElement, htmlCanvasElementMethods)
 	searchLies(Navigator, navigatorMethods)
+	searchLies(Function, functionMethods)
+	searchLies(AnalyserNode, analyserNodeMethods)
+	searchLies(SVGTextContentElement, svgTextContentElementMethods)
+	searchLies(CanvasRenderingContext2D, canvasRenderingContext2DMethods)
+	searchLies(WebGLRenderingContext, webGLRenderingContextMethods)
+	searchLies(Math, mathMethods, true)
 
+	if ('WebGL2RenderingContext' in window) {
+		const webGL2RenderingContextMethods = getMethods(WebGL2RenderingContext.prototype, {
+			constructor: !0,
+			getParameter: !0,
+			getExtension: !0,
+			getSupportedExtensions: !0,
+			makeXRCompatible: !0, // ignore
+			
+		})
+		searchLies(WebGL2RenderingContext, webGL2RenderingContextMethods)
+	}
+	
+
+	/*
+	Object
+	Object.getOwnPropertyDescriptor
+	Node
+	HTMLElement
+	PluginArray
+	Plugin
+
+	Document
+	Date
+	Intl
+	MediaDevices
+	Geolocation
+	Window.matchMedia
+
+	Screen
+	HTMLCollection
+	NodeList
+
+	Intl.Collator
+	Intl.ListFormat
+	Intl.NumberFormat
+	Intl.RelativeTimeFormat 
+	Intl.PluralRules
+	Intl.DateTimeFormat
+	 */
+
+	
 	// system
 	const getOS = userAgent => {
 		const os = (
