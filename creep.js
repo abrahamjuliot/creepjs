@@ -810,7 +810,7 @@
 	searchLies(SVGTextContentElement, svgTextContentElementMethods)
 	searchLies(CanvasRenderingContext2D, canvasRenderingContext2DMethods)
 	searchLies(WebGLRenderingContext, webGLRenderingContextMethods)
-	searchLies(Math, mathMethods, true)
+	searchLies(Math, mathMethods)
 
 	if ('WebGL2RenderingContext' in window) {
 		const webGL2RenderingContextMethods = getMethods(WebGL2RenderingContext.prototype, {
