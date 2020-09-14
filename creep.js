@@ -684,54 +684,45 @@
 		return trusted ? val : sendToTrash(name, val)
 	}
 
-	const elementMethods = Object.getOwnPropertyNames(Element.prototype).filter(item => {
-		const ignore = {
-			constructor: !0,
-			// validate critical methods elsewhere
-			getClientRects: !0
-		}
-		if (ignore[item]) { 
-			return false
-		}
-		try {
-			return typeof Element.prototype[item] === 'function'
-		}
-		catch (error) {
-			return false
-		}
-	})
-	const htmlCanvasElementMethods = Object.getOwnPropertyNames(HTMLCanvasElement.prototype).filter(item => {
-		const ignore = {
-			constructor: !0,
-			// validate critical methods elsewhere
-			toDataURL: !0,
-			getContext: !0
-		}
-		if (ignore[item]) { 
-			return false
-		}
-		try {
-			return typeof HTMLCanvasElement.prototype[item] === 'function'
-		}
-		catch (error) {
-			return false
-		}
-	})
-	elementMethods.forEach(name => {
-		const domManipLie = hasLiedAPI(Element.prototype[name], name, Element.prototype).lie
-		//console.log(name, domManipLie)
-		if (domManipLie) {
-			documentLie(name, undefined, domManipLie)
-		}
-	})
-	htmlCanvasElementMethods.forEach(name => {
-		const domManipLie = hasLiedAPI(HTMLCanvasElement.prototype[name], name, HTMLCanvasElement.prototype).lie
-		//console.log(name, domManipLie)
-		if (domManipLie) {
-			documentLie(name, undefined, domManipLie)
-		}
+	// deep search lies
+	const getMethods = (obj, ignore) => {
+		return Object.getOwnPropertyNames(obj).filter(item => {
+			if (ignore[item]) {
+				// validate critical methods elsewhere
+				return false
+			}
+			try {
+				return typeof obj[item] === 'function'
+			}
+			catch (error) {
+				return false
+			}
+		})
+	}
+	const searchLies = (obj, methods, log = false) => {
+		return methods.forEach(name => {
+			const domManipLie = hasLiedAPI(obj.prototype[name], name, obj.prototype).lie
+			if (log) {
+				console.log(name, domManipLie)
+			}
+			if (domManipLie) {
+				documentLie(name, undefined, domManipLie)
+			}
+		})
+	}
+	const elementMethods = getMethods(Element.prototype, {
+		constructor: !0,
+		getClientRects: !0
 	})
 
+	const htmlCanvasElementMethods = getMethods(HTMLCanvasElement.prototype, {
+		constructor: !0,
+		toDataURL: !0,
+		getContext: !0
+	})
+	
+	searchLies(Element, elementMethods)
+	searchLies(HTMLCanvasElement, htmlCanvasElementMethods)
 
 	// system
 	const getOS = userAgent => {
