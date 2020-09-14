@@ -343,11 +343,20 @@
 	const { contentWindow, parentIframe  } = await getNestedContentWindowContext(instanceId)
 
 	// detect and fingerprint Function API lies
-	const native = (result, str) => {
+	const native = (result, str, isNavigator = false) => {
 		const chrome = `function ${str}() { [native code] }`
 		const chromeGet = `function get ${str}() { [native code] }`
 		const firefox = `function ${str}() {\n    [native code]\n}`
-		return result == chrome || result == chromeGet || result == firefox
+		const chromeBlank = `function () { [native code] }`
+		const firefoxBlank = `function () {\n    [native code]\n}`
+
+		return (
+			result == chrome ||
+			result == chromeGet ||
+			result == firefox || (
+				isNavigator && (result == chromeBlank || result == firefoxBlank)
+			)
+		)
 	}
 	const hasLiedStringAPI = () => {
 		let lies = []
@@ -368,6 +377,12 @@
 	const hasLiedAPI = (api, name, obj = undefined) => {
 		
 		const { toString: fnToStr } = Function.prototype
+
+		let isNavigator = false
+		try {
+			isNavigator = obj && (obj+'' == '[object Navigator]')
+		}
+		catch (error) { }
 
 		if (typeof api == 'function') {
 			try {
@@ -418,7 +433,7 @@
 
 				// detect attempts to rename the API and/or rewrite toString
 				const { name: apiName, toString: apiToString } = api
-				if (apiName != name) {
+				if (apiName != '' && apiName != name) {
 					lies.push({
 						['failed name test']: !proxyBehavior(apiName) ? apiName: true
 					})
@@ -491,9 +506,9 @@
 					contentWindow.Function.prototype.toString.call(api) :
 					'' + api
 				)
-
+				
 				// fingerprint result if it does not match native code
-				if (!native(result, name)) {
+				if (!native(result, name, isNavigator)) {
 					fingerprint = result
 				}
 				
@@ -612,13 +627,13 @@
 				}
 
 				// fingerprint result if it does not match native code
-				if (!native(result, name)) {
+				if (!native(result, name, isNavigator)) {
 					fingerprint = result
 				}
-				else if (obj && !native(result2, name)) {
+				else if (obj && !native(result2, name, isNavigator)) {
 					fingerprint = result2
 				}
-				else if (obj && !native(result3, name)) {
+				else if (obj && !native(result3, name, isNavigator)) {
 					fingerprint = result3 != 'undefined' ? result3 : ''
 				}
 
@@ -720,9 +735,14 @@
 		toDataURL: !0,
 		getContext: !0
 	})
+
+	const navigatorMethods = getMethods(Navigator.prototype, {
+		constructor: !0
+	})
 	
 	searchLies(Element, elementMethods)
 	searchLies(HTMLCanvasElement, htmlCanvasElementMethods)
+	searchLies(Navigator, navigatorMethods)
 
 	// system
 	const getOS = userAgent => {
