@@ -215,6 +215,7 @@
 	const getNestedContentWindowContext = instanceId => {
 		return new Promise(resolve => {
 			const allowScripts = () => !isFirefox && !isChrome ? 'allow-scripts ' : ''
+			const failed = {}
 			try {
 				const thisSiteCantBeReached = `about:${instanceId}` // url must yield 'this site cant be reached' error
 				const createIframe = (win, id) => {
@@ -3653,7 +3654,7 @@
 			getTimezone(instanceId),
 			getClientRects(instanceId),
 			getOfflineAudioContext(instanceId),
-			getFonts(instanceId, [...fontList, ...extendedFontList, ...googleFonts, ...notoFonts])
+			getFonts(instanceId, [...fontList, ...notoFonts])
 		]).catch(error => {
 			console.error(error.message)
 		})
