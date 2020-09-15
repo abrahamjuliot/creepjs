@@ -606,6 +606,13 @@
 					catch (error) {
 						// Native throws error
 					}
+					// detect tampering with property names
+					const clientPropertyNames = Object.getOwnPropertyNames(obj)
+					if (clientPropertyNames.length && clientPropertyNames.indexOf(name) !== -1) {
+						lies.push({
+							['failed getOwnPropertyNames test']: true
+						})
+					}
 				}
 
 				// collect string conversion result
@@ -619,9 +626,10 @@
 				if (obj) {
 					apilookupGetter = obj.__lookupGetter__(name)
 					apiProtoLookupGetter = api.__proto__.__lookupGetter__(name)
+					const contentWindowResult = attempt(() => contentWindow.Function.prototype.toString.call(apilookupGetter))
 					result2 = (
-						contentWindow ? 
-						contentWindow.Function.prototype.toString.call(apilookupGetter) :
+						contentWindowResult ? 
+						contentWindowResult :
 						'' + apilookupGetter
 					)
 					result3 = '' + apiProtoLookupGetter
