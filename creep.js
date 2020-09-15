@@ -793,29 +793,7 @@
 	})
 
 	const mathMethods = getMethods(Math, {
-		constructor: !0,
-		acos: !0,
-		acosh: !0,
-		asin: !0,
-		asinh: !0,
-		atan: !0,
-		atanh: !0,
-		atan2: !0,
-		cbrt: !0,
-		cos: !0,
-		cosh: !0,
-		expm1: !0,
-		exp: !0,
-		hypot: !0,
-		log: !0,
-		log1p: !0,
-		log10: !0,
-		sin: !0,
-		sinh: !0,
-		sqrt: !0,
-		tan: !0,
-		tanh: !0,
-		pow: !0
+		constructor: !0
 	})
 
 	searchLies(Element, elementMethods)
@@ -2582,20 +2560,9 @@
 					'tanh',
 					'pow'
 				]
-				
-				let mathLie
-				const detectLies = (name, value) => {
-					const { lie } = hasLiedAPI(Math[name], name)
-					if (lie) {
-						mathLie = true
-						documentLie(`Math.${name}`, null, lie)
-						return value
-					}
-					return value
-				}
-
+				let lied
 				check.forEach(prop => {
-					detectLies(prop, Math[prop])
+					lied = lieProps[`Math.${prop}`]
 					const test = (
 						prop == 'cos' ? [1e308] :
 						prop == 'acos' || prop == 'asin' || prop == 'atanh' ? [0.5] :
@@ -2606,7 +2573,8 @@
 					const res2 = Math[prop](...test)
 					const matching = isNaN(res1) && isNaN(res2) ? true : res1 == res2
 					if (!matching) {
-						mathLie = { fingerprint: '', lies: [{ [`failed math equality test`]: true }] }
+						lied = true
+						const mathLie = { fingerprint: '', lies: [{ [`failed math equality test`]: true }] }
 						documentLie(`Math.${prop}`, hashMini({res1, res2}), mathLie)
 					}
 					return
@@ -2756,7 +2724,7 @@
 				})
 				
 				const $hash = await hashify(data)
-				resolve({...data, lied: mathLie, $hash })
+				resolve({...data, lied, $hash })
 				const id = 'creep-maths'
 				const el = document.getElementById(id)
 				const header = `<div>Match to Win10 64bit Chromium > Firefox > Tor Browser > Mac10 Safari<br>[CR][FF][TB][SF]</div>`
@@ -2770,10 +2738,10 @@
 					<strong>Math</strong>
 					<div>hash: ${$hash}</div>
 					<div>results: ${
-						!!mathLie ? note.lied :
+						lied ? note.lied :
 						modal(id, header+results.join('<br>'))
 					}
-					<div>implementation: ${!!mathLie ? note.lied : known($hash)}</div>
+					<div>implementation: ${lied ? note.lied : known($hash)}</div>
 				</div>
 				`)
 				return
