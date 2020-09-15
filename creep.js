@@ -772,6 +772,10 @@
 		constructor: !0
 	})
 
+	const audioBufferMethods = getMethods(AudioBuffer.prototype, {
+		constructor: !0
+	})
+
 	const svgTextContentElementMethods = getMethods(SVGTextContentElement.prototype, {
 		constructor: !0
 	})
@@ -819,6 +823,7 @@
 	searchLies(Navigator, navigatorMethods)
 	searchLies(Function, functionMethods)
 	searchLies(AnalyserNode, analyserNodeMethods)
+	searchLies(AudioBuffer, audioBufferMethods)
 	searchLies(SVGTextContentElement, svgTextContentElementMethods)
 	searchLies(CanvasRenderingContext2D, canvasRenderingContext2DMethods)
 	searchLies(WebGLRenderingContext, webGLRenderingContextMethods)
@@ -3370,15 +3375,10 @@
 				if (!audioContext) {
 					return resolve(undefined)
 				}
-				const audioBufferGetChannelData = attempt(() => AudioBuffer.prototype.getChannelData)
-				const audioBufferCopyFromChannel = attempt(() => AudioBuffer.prototype.copyFromChannel)
-				const audioBufferProto = caniuse(() => AudioBuffer, ['prototype'])
-				const channelDataLie = (
-					audioBufferGetChannelData ? hasLiedAPI(audioBufferGetChannelData, 'getChannelData', audioBufferProto).lie : false
-				)
-				const copyFromChannelLie = (
-					audioBufferCopyFromChannel ? hasLiedAPI(audioBufferCopyFromChannel, 'copyFromChannel', audioBufferProto).lie : false
-				)
+				// detect lies
+				const channelDataLie = lieProps['AudioBuffer.getChannelData']
+				const copyFromChannelLie = lieProps['AudioBuffer.copyFromChannel']
+				let lied = channelDataLie || copyFromChannelLie
 				
 				const context = new audioContext(1, 44100, 44100)
 				const analyser = context.createAnalyser()
@@ -3447,38 +3447,32 @@
 							event.renderedBuffer.copyFromChannel(copy, 0)
 							const bins = event.renderedBuffer.getChannelData(0)
 							
-							copySample = copy ? [...copy].slice(4500, 4600) : [sendToTrash('invalidAudioSampleCopy', null)]
-							binsSample = bins ? [...bins].slice(4500, 4600) : [sendToTrash('invalidAudioSample', null)]
+							copySample = copy ? [...copy].slice(4500, 4600) : [sendToTrash('invalid Audio Sample Copy', null)]
+							binsSample = bins ? [...bins].slice(4500, 4600) : [sendToTrash('invalid Audio Sample', null)]
 							
 							const copyJSON = copy && JSON.stringify([...copy].slice(4500, 4600))
 							const binsJSON = bins && JSON.stringify([...bins].slice(4500, 4600))
 
 							matching = binsJSON === copyJSON
-
-							const audioSampleLie = { fingerprint: '', lies: [{ ['audioSampleAndCopyMatch']: false }] }
+							// detect lie
+							
 							if (!matching) {
-								documentLie('audioSampleAndCopyMatch', hashMini(matching), audioSampleLie)
+								lied = true
+								const audioSampleLie = { fingerprint: '', lies: [{ ['data and copy samples mismatch']: false }] }
+								documentLie('AudioBuffer', hashMini(matching), audioSampleLie)
 							}
+
 							dynamicsCompressor.disconnect()
 							oscillator.disconnect()
-							if (proxyBehavior(binsSample)) {
-								sendToTrash('audio', 'proxy behavior detected')
-								return resolve(undefined)
-							}
-							// document lies and send to trash
-							if (copyFromChannelLie) { 
-								documentLie('audioBufferCopyFromChannel', (copySample[0] || null), copyFromChannelLie)
-							}
-							if (channelDataLie) { 
-								documentLie('audioBufferGetChannelData', (binsSample[0] || null), channelDataLie)
-							}
-							// Fingerprint lie if it exists
+			
 							const response = {
-								binsSample: channelDataLie ? [channelDataLie] : binsSample,
-								copySample: copyFromChannelLie ? [copyFromChannelLie] : copySample,
+								binsSample: binsSample,
+								copySample: copySample,
 								matching,
-								values
+								values,
+								lied
 							}
+
 							const $hash = await hashify(response)
 							resolve({...response, $hash })
 							const id = 'creep-offline-audio-context'
@@ -3487,8 +3481,8 @@
 							<div>
 								<strong>OfflineAudioContext</strong>
 								<div>hash: ${$hash}</div>
-								<div>sample: ${!!channelDataLie ? note.lied : binsSample[0]}</div>
-								<div>copy: ${!!copyFromChannelLie ? note.lied : copySample[0]}</div>
+								<div>sample: ${channelDataLie ? note.lied : binsSample[0]}</div>
+								<div>copy: ${copyFromChannelLie ? note.lied : copySample[0]}</div>
 								<div>matching: ${matching}</div>
 								<div>node values: ${
 									modal(id, Object.keys(values).map(key => `<div>${key}: ${values[key]}</div>`).join(''))
@@ -3860,7 +3854,11 @@
 		// avoid random timezone fingerprint values
 		timezone: !fp.timezone || !fp.timezone.lied ? fp.timezone : undefined,
 		clientRects:  fp.clientRects.lied ? undefined : fp.clientRects,
-		offlineAudioContext: !(isBrave || isFirefox) ? fp.offlineAudioContext : distrust,
+		offlineAudioContext: (
+			isBrave ? distrust :
+			fp.offlineAudioContext.lied ? undefined :
+			fp.offlineAudioContext
+		),
 		fonts: fp.fonts,
 		trash: !!trashLen,
 		lies: !('data' in fp.lies) ? false : !!liesLen,
