@@ -696,6 +696,7 @@
 	}
 
 	// Collect lies detected
+	const lieProps = {}
 	const lieRecords = []
 	const documentLie = (name, lieResult, lieTypes) => {
 		return lieRecords.push({ name, lieTypes, hash: lieResult, lie: hashMini(lieTypes) })
@@ -730,14 +731,18 @@
 			if (isMath) {
 				domManipLie = hasLiedAPI(obj[name], name, obj).lie
 				if (domManipLie) {
-					documentLie(`${obj}.${name}`, undefined, domManipLie)
+					const apiName = `Math.${name}`
+					lieProps[apiName] = true
+					documentLie(apiName, undefined, domManipLie)
 				}
 			}
 			else {
 				domManipLie = hasLiedAPI(obj.prototype[name], name, obj.prototype).lie
 				if (domManipLie) {
 					const objName = /\s(.+)\(\)/g.exec(obj)[1]
-					documentLie(`${objName}.${name}`, undefined, domManipLie)
+					const apiName = `${objName}.${name}`
+					lieProps[apiName] = true
+					documentLie(apiName, undefined, domManipLie)
 				}
 			}
 			if (log) {
@@ -746,8 +751,7 @@
 		})
 	}
 	const elementMethods = getMethods(Element.prototype, {
-		constructor: !0,
-		getClientRects: !0
+		constructor: !0
 	})
 
 	const htmlCanvasElementMethods = getMethods(HTMLCanvasElement.prototype, {
@@ -3121,12 +3125,7 @@
 		return new Promise(async resolve => {
 			try {
 				const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
-				const elementGetClientRects = attempt(() => Element.prototype.getClientRects)
-				const elementProto = Element.prototype
-				const rectsLie = (
-					elementGetClientRects ? hasLiedAPI(elementGetClientRects, 'getClientRects', elementProto).lie : false
-				)
-			
+				let lied = lieProps['Element.getClientRects'] // detect lies
 				const rectsId = `${instanceId}-client-rects-div`
 				const divElement = document.createElement('div')
 				divElement.setAttribute('id', rectsId)
@@ -3286,11 +3285,6 @@
 				const clientRects = [...rectElems].map(el => {
 					return toJSONParsed(el.getClientRects()[0])
 				})
-				// detect lies
-				let lied = rectsLie
-				if (rectsLie) {
-					documentLie('getClientRects', hashMini(clientRects), rectsLie)
-				}
 				
 				// detect failed math calculation lie
 				let mathLie = false
@@ -3688,7 +3682,6 @@
 					totalLies ? modal(id, Object.keys(data).map(key => {
 						const { name, lieTypes: { lies, fingerprint } } = data[key]
 						const lieFingerprint = !!fingerprint ? { hash: hashMini(fingerprint), json: sanitize(toJSONFormat(fingerprint)) } : undefined
-						const type = !!lies.length ? Object.keys(lies[0])[0] : ''
 						return `
 							<div style="padding:5px">
 								<strong>${name}</strong>:
