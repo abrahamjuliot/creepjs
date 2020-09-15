@@ -755,9 +755,7 @@
 	})
 
 	const htmlCanvasElementMethods = getMethods(HTMLCanvasElement.prototype, {
-		constructor: !0,
-		toDataURL: !0,
-		getContext: !0
+		constructor: !0
 	})
 
 	const navigatorMethods = getMethods(Navigator.prototype, {
@@ -2002,60 +2000,39 @@
 		})
 	}
 
-	// canvas
-	const canvasToDataURL = attempt(() => HTMLCanvasElement.prototype.toDataURL)
-	const canvasGetContext = attempt(() => HTMLCanvasElement.prototype.getContext)
-	const canvasProto = caniuse(() => HTMLCanvasElement, ['prototype'])
-	const dataLie = canvasToDataURL ? hasLiedAPI(canvasToDataURL, 'toDataURL', canvasProto).lie : false
-	const contextLie = canvasGetContext ? hasLiedAPI(canvasGetContext, 'getContext', canvasProto).lie : false
+	// canvas2d
+	const dataLie = lieProps['HTMLCanvasElement.toDataURL']
+	const contextLie = lieProps['HTMLCanvasElement.getContext']
 	
 	// 2d canvas
 	const getCanvas2d = instanceId => {
 		return new Promise(async resolve => {
 			try {
-				const patchDom = (response) => {
+				let lied = dataLie || contextLie
+				const patchDom = (lied, response) => {
 					const { $hash } = response
 					const el = document.getElementById('creep-canvas-2d')
 					return patch(el, html`
 					<div>
 						<strong>CanvasRenderingContext2D</strong>
-						<div>hash: ${$hash}</div>
+						<div>hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
 					</div>
 					`)
 				}
 				const canvas = document.createElement('canvas')
 				let canvas2dDataURI = ''
-				if (!dataLie && !contextLie) {
-					const context = canvas.getContext('2d')
-					const str = '!😃🙌🧠👩‍💻👟👧🏻👩🏻‍🦱👩🏻‍🦰👱🏻‍♀️👩🏻‍🦳👧🏼👧🏽👧🏾👧🏿🦄🐉🌊🍧🏄‍♀️🌠🔮♞'
-					context.font = '14px Arial'
-					context.fillText(str, 0, 50)
-					context.fillStyle = 'rgba(100, 200, 99, 0.78)'
-					context.fillRect(100, 30, 80, 50)
-					canvas2dDataURI = canvas.toDataURL()
-					const dataURI = canvas2dDataURI
-					const $hash = await hashify(dataURI)
-					const response = { dataURI, $hash }
-					resolve(response)
-					patchDom(response)
-					return
-				}
-				// document lie and send to trash
+				const context = canvas.getContext('2d')
+				const str = '!😃🙌🧠👩‍💻👟👧🏻👩🏻‍🦱👩🏻‍🦰👱🏻‍♀️👩🏻‍🦳👧🏼👧🏽👧🏾👧🏿🦄🐉🌊🍧🏄‍♀️🌠🔮♞'
+				context.font = '14px Arial'
+				context.fillText(str, 0, 50)
+				context.fillStyle = 'rgba(100, 200, 99, 0.78)'
+				context.fillRect(100, 30, 80, 50)
 				canvas2dDataURI = canvas.toDataURL()
-				const hash = hashMini(canvas2dDataURI)
-				
-				if (contextLie) {
-					documentLie('canvas2dContextDataURI', hash, contextLie)
-				}
-				if (dataLie) {
-					documentLie('canvas2dDataURI', hash, dataLie)
-				}
-				// fingerprint lie
-				const data = { contextLie, dataLie }
-				const $hash = await hashify(data)
-				const response = { ...data, $hash }
+				const dataURI = canvas2dDataURI
+				const $hash = await hashify(dataURI)
+				const response = { dataURI, lied, $hash }
 				resolve(response)
-				patchDom(response)
+				patchDom(lied, response)
 				return
 			}
 			catch (error) {
@@ -2069,53 +2046,37 @@
 	const getCanvasBitmapRenderer = instanceId => {
 		return new Promise(async resolve => {
 			try {
-				const patchDom = (response) => {
+				let lied = dataLie || contextLie
+				const patchDom = (lied, response) => {
 					const { $hash } = response
 					const el = document.getElementById('creep-canvas-bitmap-renderer')
 					return patch(el, html`
 					<div>
 						<strong>ImageBitmapRenderingContext</strong>
-						<div>hash: ${$hash}</div>
+						<div>hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
 					</div>
 					`)
 				}
 				const canvas = document.createElement('canvas')
 				let canvasBMRDataURI = ''
-				if (!dataLie && !contextLie) {
-					const context = canvas.getContext('bitmaprenderer')
-					const image = new Image()
-					image.src = 'bitmap.png'
-					return resolve(new Promise(resolve => {
-						image.onload = async () => {
-							if (!caniuse(() => createImageBitmap)) {
-								return resolve(undefined)
-							}
-							const bitmap = await createImageBitmap(image, 0, 0, image.width, image.height)
-							context.transferFromImageBitmap(bitmap)
-							canvasBMRDataURI = canvas.toDataURL()
-							const dataURI = canvasBMRDataURI
-							const $hash = await hashify(dataURI)
-							const response = { dataURI, $hash }
-							resolve(response)
-							patchDom(response)
+				const context = canvas.getContext('bitmaprenderer')
+				const image = new Image()
+				image.src = 'bitmap.png'
+				return resolve(new Promise(resolve => {
+					image.onload = async () => {
+						if (!caniuse(() => createImageBitmap)) {
+							return resolve(undefined)
 						}
-					}))	
-				}
-				// document lie and send to trash
-				canvasBMRDataURI = canvas.toDataURL()
-				const hash = hashMini(canvasBMRDataURI)
-				if (contextLie) {
-					documentLie('canvasBMRContextDataURI', hash, contextLie)
-				}
-				if (dataLie) {
-					documentLie('canvasBMRDataURI', hash, dataLie)
-				}
-				// fingerprint lie
-				const data = { contextLie, dataLie }
-				const $hash = await hashify(data)
-				const response = { ...data, $hash }
-				resolve(response)
-				patchDom(response)
+						const bitmap = await createImageBitmap(image, 0, 0, image.width, image.height)
+						context.transferFromImageBitmap(bitmap)
+						canvasBMRDataURI = canvas.toDataURL()
+						const dataURI = canvasBMRDataURI
+						const $hash = await hashify(dataURI)
+						const response = { dataURI, lied, $hash }
+						resolve(response)
+						patchDom(lied, response)
+					}
+				}))	
 			}
 			catch (error) {
 				captureError(error)
@@ -2128,25 +2089,17 @@
 	const getCanvasWebgl = instanceId => {
 		return new Promise(async resolve => {
 			try {
-				// detect webgl lies
-				const gl = 'WebGLRenderingContext' in window
-				const webglGetParameter = gl && attempt(() => WebGLRenderingContext.prototype.getParameter)
-				const webglGetExtension = gl && attempt(() => WebGLRenderingContext.prototype.getExtension)
-				const webglProto = caniuse(() => WebGLRenderingContext, ['prototype'])
-				const webglGetSupportedExtensions = gl && attempt(() => WebGLRenderingContext.prototype.getSupportedExtensions)
-				const paramLie = webglGetParameter ? hasLiedAPI(webglGetParameter, 'getParameter', webglProto).lie : false
-				const extLie = webglGetExtension ? hasLiedAPI(webglGetExtension, 'getExtension', webglProto).lie : false
-				const supportedExtLie = webglGetSupportedExtensions ? hasLiedAPI(webglGetSupportedExtensions, 'getSupportedExtensions', webglProto).lie : false
-
-				// detect webgl2 lies
-				const gl2 = 'WebGL2RenderingContext' in window
-				const webgl2GetParameter = gl2 && attempt(() => WebGL2RenderingContext.prototype.getParameter)
-				const webgl2GetExtension = gl2 && attempt(() => WebGL2RenderingContext.prototype.getExtension)
-				const webgl2Proto = caniuse(() => WebGL2RenderingContext, ['prototype'])
-				const webgl2GetSupportedExtensions = gl2 && attempt(() => WebGL2RenderingContext.prototype.getSupportedExtensions)
-				const param2Lie = webgl2GetParameter ? hasLiedAPI(webgl2GetParameter, 'getParameter', webgl2Proto).lie : false
-				const ext2Lie = webgl2GetExtension ? hasLiedAPI(webgl2GetExtension, 'getExtension', webgl2Proto).lie : false
-				const supportedExt2Lie = webgl2GetSupportedExtensions ? hasLiedAPI(webgl2GetSupportedExtensions, 'getSupportedExtensions', webgl2Proto).lie : false
+				// detect lies
+				let lied = (
+					dataLie ||
+					contextLie ||
+					lieProps['WebGLRenderingContext.getParameter'] ||
+					lieProps['WebGL2RenderingContext.getParameter'] ||
+					lieProps['WebGLRenderingContext.getExtension'] ||
+					lieProps['WebGL2RenderingContext.getExtension'] ||
+					lieProps['WebGLRenderingContext.getSupportedExtensions'] ||
+					lieProps['WebGL2RenderingContext.getSupportedExtensions']
+				)
 
 				// crreate canvas context
 				const canvas = document.createElement('canvas')
@@ -2158,29 +2111,15 @@
 					canvas.getContext('webkit-3d')
 				)
 				const context2 = canvas2.getContext('webgl2') || canvas2.getContext('experimental-webgl2')
-				const getSupportedExtensions = (context, supportedExtLie, title) => {
+				const getSupportedExtensions = context => {
 					return new Promise(async resolve => {
 						try {
 							if (!context) {
 								return resolve({ extensions: [] })
 							}
 							const extensions = caniuse(() => context, ['getSupportedExtensions'], [], true) || []
-							if (!supportedExtLie) {
-								return resolve({
-									extensions: ( 
-										!proxyBehavior(extensions) ? extensions : 
-										sendToTrash(title, 'proxy behavior detected', []) 
-									)
-								})
-							}
-
-							// document lie and send to trash
-							if (supportedExtLie) { 
-								documentLie(title, extensions, supportedExtLie)
-							}
-							// Fingerprint lie
 							return resolve({
-								extensions: [{ supportedExtLie }]
+								extensions
 							})
 						}
 						catch (error) {
@@ -2192,7 +2131,7 @@
 					})
 				}
 
-				const getSpecs = ([webgl, webgl2], [paramLie, param2Lie, extLie, ext2Lie]) => {
+				const getSpecs = (webgl, webgl2) => {
 					return new Promise(async resolve => {
 						const getShaderPrecisionFormat = (gl, shaderType) => {
 							const low = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.LOW_FLOAT))
@@ -2256,20 +2195,7 @@
 								})
 							}
 							const response = data
-							if (!paramLie && !extLie) {
-								return response
-							}
-							// document lie and send to trash
-							const paramTitle = `webglGetParameter`
-							const extTitle = `webglGetExtension`
-							if (paramLie) { 
-								documentLie(paramTitle, response, paramLie)
-							}
-							if (extLie) {
-								documentLie(extTitle, response, extLie)
-							}
-							// Fingerprint lie
-							return { paramLie, extLie }
+							return response
 						}
 
 						const getWebgl2Specs = gl => {
@@ -2305,27 +2231,14 @@
 								MAX_SERVER_WAIT_TIMEOUT: attempt(() => gl.getParameter(gl.MAX_SERVER_WAIT_TIMEOUT))
 							}
 							const response = data
-							if (!param2Lie && !ext2Lie) {
-								return response
-							}
-							// document lie and send to trash
-							const paramTitle = `webgl2GetParameter`
-							const extTitle = `webgl2GetExtension`
-							if (param2Lie) { 
-								documentLie(paramTitle, response, param2Lie)
-							}
-							if (ext2Lie) {
-								documentLie(extTitle, response, ext2Lie)
-							}
-							// Fingerprint lie
-							return { param2Lie, ext2Lie }
+							return response
 						}
 						const data = { webglSpecs: getWebglSpecs(webgl), webgl2Specs: getWebgl2Specs(webgl2) }
 						return resolve(data)
 					})
 				}
 
-				const getUnmasked = (context, [paramLie, extLie], [rendererTitle, vendorTitle]) => {
+				const getUnmasked = (context, [rendererTitle, vendorTitle]) => {
 					return new Promise(async resolve => {
 						try {
 							if (!context) {
@@ -2347,33 +2260,10 @@
 									sendToTrash(title, 'proxy behavior detected')
 								)
 							}
-							if (!paramLie && !extLie) {
-								return resolve ({
-									vendor: validate(vendor, vendorTitle),
-									renderer: validate(renderer, rendererTitle)
-								})
-							}
-							// document lie and send to trash
-							const webglVendorAndRenderer = `${vendor}, ${renderer}`
-							const paramTitle = `${vendorTitle}And${rendererTitle}Parameter`
-							const extTitle = `${vendorTitle}And${rendererTitle}Extension`
-							if (paramLie) { 
-								documentLie(paramTitle, webglVendorAndRenderer, paramLie)
-							}
-							if (extLie) {
-								documentLie(extTitle, webglVendorAndRenderer, extLie)
-							}
-							const response = (
-								rendererTitle == 'webgl2Renderer' ? {
-									vendor: { param2Lie: paramLie, ext2Lie: extLie },
-									renderer: { param2Lie: paramLie, ext2Lie: extLie }
-								} : {
-									vendor: { paramLie, extLie },
-									renderer: { paramLie, extLie }
-								}
-							)
-							// Fingerprint lie
-							return resolve(response)
+							return resolve ({
+								vendor: validate(vendor, vendorTitle),
+								renderer: validate(renderer, rendererTitle)
+							})
 						}
 						catch (error) {
 							captureError(error)
@@ -2384,39 +2274,16 @@
 						}
 					})
 				}
-				const getDataURL = (canvas, context, [dataLie, contextLie], [canvasTitle, contextTitle]) => {
+				const getDataURL = (canvas, context) => {
 					return new Promise(async resolve => {
 						try {
-							// document lie and send to trash
-							const documentTrashLies = async (canvas, resolve, [dataLie, contextLie], [canvasTitle, contextTitle]) => {
-								const canvasWebglDataURI = attempt(() => canvas.toDataURL())
-								const hash = hashMini(canvasWebglDataURI)
-								if (contextLie) {
-									documentLie(contextTitle, hash, contextLie)
-								}
-								if (dataLie) {
-									documentLie(canvasTitle, hash, dataLie)
-								}
-								// fingerprint lie
-								const data = { contextLie, dataLie }
-								const $hash = await hashify(data)
-								return resolve({ ...data, $hash })
-							}
-							if (dataLie || contextLie) {
-								return documentTrashLies(canvas, resolve, [dataLie, contextLie], [canvasTitle, contextTitle])
-							}
-							else if (!context) {
-								return resolve({ dataURI: undefined, $hash: undefined })
-							}
-							if (!dataLie && !contextLie) {
-								const colorBufferBit = caniuse(() => context, ['COLOR_BUFFER_BIT'])
-								caniuse(() => context, ['clearColor'], [0.2, 0.4, 0.6, 0.8], true)
-								caniuse(() => context, ['clear'], [colorBufferBit], true)
-								const canvasWebglDataURI = canvas.toDataURL()
-								const dataURI = canvasWebglDataURI
-								const $hash = await hashify(dataURI)
-								return resolve({ dataURI, $hash })
-							}
+							const colorBufferBit = caniuse(() => context, ['COLOR_BUFFER_BIT'])
+							caniuse(() => context, ['clearColor'], [0.2, 0.4, 0.6, 0.8], true)
+							caniuse(() => context, ['clear'], [colorBufferBit], true)
+							const canvasWebglDataURI = canvas.toDataURL()
+							const dataURI = canvasWebglDataURI
+							const $hash = await hashify(dataURI)
+							return resolve({ dataURI, $hash })
 						}
 						catch (error) {
 							captureError(error)
@@ -2434,13 +2301,13 @@
 					dataURI2,
 					specs
 				] = await Promise.all([
-					getSupportedExtensions(context, supportedExtLie, 'webglSupportedExtensions'),
-					getSupportedExtensions(context2, supportedExt2Lie, 'webgl2SupportedExtensions'),
-					getUnmasked(context, [paramLie, extLie], ['webglRenderer', 'webglVendor']),
-					getUnmasked(context2, [param2Lie, ext2Lie], ['webgl2Renderer', 'webgl2Vendor']),
-					getDataURL(canvas, context, [dataLie, contextLie], ['canvasWebglDataURI', 'canvasWebglContextDataURI']),
-					getDataURL(canvas2, context2, [dataLie, contextLie], ['canvasWebgl2DataURI', 'canvasWebgl2ContextDataURI']),
-					getSpecs([context, context2], [paramLie, param2Lie, extLie, ext2Lie])
+					getSupportedExtensions(context),
+					getSupportedExtensions(context2),
+					getUnmasked(context, ['webgl renderer', 'webgl vendor']),
+					getUnmasked(context2, ['webgl2 renderer', 'webgl2 vendor']),
+					getDataURL(canvas, context),
+					getDataURL(canvas2, context2),
+					getSpecs(context, context2)
 				]).catch(error => {
 					console.error(error.message)
 				})
@@ -2451,7 +2318,8 @@
 					unmasked2,
 					dataURI,
 					dataURI2,
-					specs
+					specs,
+					lied
 				}
 				data.matchingUnmasked = JSON.stringify(data.unmasked) === JSON.stringify(data.unmasked2)
 				data.matchingDataURI = data.dataURI.$hash === data.dataURI2.$hash
@@ -2463,23 +2331,12 @@
 				const { webglSpecs, webgl2Specs } = specs
 				const webglSpecsKeys = webglSpecs ? Object.keys(webglSpecs) : []
 				const webgl2SpecsKeys = webgl2Specs ? Object.keys(webgl2Specs) : []
-				const detectStringLie = (val, id) => {
-					if (!val) {
-						return note.blocked
-					}
-					return typeof val == 'string' ? val : note.lied
-				}
+				
 				const detectParameterLie = (obj, keys, version, id) => {
 					if (!obj || !keys.length) {
 						return `<div>${version} parameters (0): ${note.blocked}</div>`
 					}
 					id = `${id}-p-${version}`
-					const lied = !!(
-						obj['paramLie'] ||
-						obj['param2Lie'] ||
-						obj['extLie'] ||
-						obj['ext2Lie']
-					)
 					return `
 					<div>${version} parameters (${lied ? '0' : count(keys)}): ${
 						lied ? note.lied :
@@ -2487,37 +2344,43 @@
 					}</div>
 					`
 				}
-				const detectDataURILie = (obj, version, id) => {
-					if (!obj) {
-						return `<div>${version} toDataURL: ${note.blocked}</div>`
-					}
-					id = `${id}-d-${version}`
-					const lied = !!(obj['dataLie'] || obj['contextLie'])
-					return `
-					<div>${version} toDataURL: ${
-						lied ? note.lied :
-						(obj.$hash ? obj.$hash : note.blocked)
-					}</div>
-					`
-				}
+				
 				patch(el, html`
 				<div>
 					<strong>WebGLRenderingContext/WebGL2RenderingContext</strong>
-					<div>hash: ${$hash}</div>
-					${detectDataURILie(dataURI, 'v1', id)}
-					${detectParameterLie(webglSpecs, webglSpecsKeys, 'v1', id)}
+					<div>hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
+					<div>v1 toDataURL: ${dataURI.$hash}</div>
+					<div>v1 parameters (${count(webglSpecsKeys)}): ${
+						!webglSpecsKeys.length ? note.unsupported :
+						modal(`${id}-p-v1`, webglSpecsKeys.map(key => `${key}: ${webglSpecs[key]}`).join('<br>'))
+					}</div>
 					<div>v1 extensions (${count(supported.extensions)}): ${
-						!caniuse(() => supported, ['extensions', 'length']) ? note.blocked : modal(`${id}-e-v1`, supported.extensions.join('<br>'))
+						!caniuse(() => supported, ['extensions', 'length']) ? note.unsupported : modal(`${id}-e-v1`, supported.extensions.join('<br>'))
 					}</div>
-					<div>v1 renderer: ${detectStringLie(unmasked.renderer, `${id}-r-v1`)}</div>
-					<div>v1 vendor: ${detectStringLie(unmasked.vendor, `${id}-v-v1`)}</div>
-					${detectDataURILie(dataURI2, 'v2', id)}
-					${detectParameterLie(webgl2Specs, webgl2SpecsKeys, 'v2', id)}
+					<div>v1 renderer: ${ 
+						!unmasked.renderer ? note.unsupported :
+						unmasked.renderer
+					}</div>
+					<div>v1 vendor: ${ 
+						!unmasked.vendor ? note.unsupported :
+						unmasked.vendor
+					}</div>
+					<div>v2 toDataURL: ${dataURI2.$hash}</div>
+					<div>v2 parameters (${count(webgl2SpecsKeys)}): ${
+						!webgl2SpecsKeys.length ? note.unsupported :
+						modal(`${id}-p-v2`, webgl2SpecsKeys.map(key => `${key}: ${webgl2Specs[key]}`).join('<br>'))
+					}</div>
 					<div>v2 extensions (${count(supported2.extensions)}): ${
-						!caniuse(() => supported2, ['extensions', 'length']) ? note.blocked : modal(`${id}-e-v2`, supported2.extensions.join('<br>'))
+						!caniuse(() => supported2, ['extensions', 'length']) ? note.unsupported : modal(`${id}-e-v2`, supported2.extensions.join('<br>'))
 					}</div>
-					<div>v2 renderer: ${detectStringLie(unmasked2.renderer, `${id}-r-v2`)}</div>
-					<div>v2 vendor: ${detectStringLie(unmasked2.vendor, `${id}-v-v2`)}</div>
+					<div>v2 renderer: ${
+						!unmasked2.renderer ? note.unsupported :
+						unmasked2.renderer
+					}</div>
+					<div>v2 vendor: ${
+						!unmasked2.vendor ? note.unsupported :
+						unmasked2.vendor
+					}</div>
 					<div>matching renderer/vendor: ${''+data.matchingUnmasked}</div>
 					<div>matching data URI: ${''+data.matchingDataURI}</div>
 				</div>
@@ -2736,12 +2599,11 @@
 				patch(el, html`
 				<div>
 					<strong>Math</strong>
-					<div>hash: ${$hash}</div>
+					<div>hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
 					<div>results: ${
-						lied ? note.lied :
 						modal(id, header+results.join('<br>'))
 					}
-					<div>implementation: ${lied ? note.lied : known($hash)}</div>
+					<div>implementation: ${known($hash)}</div>
 				</div>
 				`)
 				return
@@ -3313,15 +3175,13 @@
 				patch(templateEl, html`
 				<div>
 					<strong>DOMRect</strong>
-					<div>hash: ${$hash}</div>
-					<div>elements: ${lied ? note.lied : clientHash}</div>
+					<div>hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
+					<div>elements: ${clientHash}</div>
 					<div>results: ${
-						lied ? note.lied : 
 						modal(`${templateId}-elements`, clientRects.map(domRect => Object.keys(domRect).map(key => `<div>${key}: ${domRect[key]}</div>`).join('')).join('<br>') )
 					}</div>
-					<div>emojis v13.0: ${lied ? note.lied : emojiHash}</div>
+					<div>emojis v13.0: ${emojiHash}</div>
 					<div>results: ${
-						lied ? note.lied : 
 						modal(`${templateId}-emojis`, emojiRects.map(rect => rect.emoji).join('') )
 					}</div>
 				</div>
@@ -3448,9 +3308,9 @@
 							patch(el, html`
 							<div>
 								<strong>OfflineAudioContext</strong>
-								<div>hash: ${$hash}</div>
-								<div>sample: ${channelDataLie ? note.lied : binsSample[0]}</div>
-								<div>copy: ${copyFromChannelLie ? note.lied : copySample[0]}</div>
+								<div>hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
+								<div>sample: ${binsSample[0]}</div>
+								<div>copy: ${copySample[0]}</div>
 								<div>matching: ${matching}</div>
 								<div>node values: ${
 									modal(id, Object.keys(values).map(key => `<div>${key}: ${values[key]}</div>`).join(''))
@@ -3797,23 +3657,27 @@
 			['webgl vendor']: fp.workerScope['webgl vendor']
 		} : undefined,
 		mediaDevices: !isBrave ? fp.mediaDevices : distrust,
-		canvas2d: !(isBrave || isFirefox) ? fp.canvas2d : distrust,
-		canvasBitmapRenderer: !(isBrave || isFirefox) ? fp.canvasBitmapRenderer : distrust,
-		canvasWebgl: (isBrave || isFirefox) ? distrust : (() => {
-			if (!fp.canvasWebgl) {
-				return undefined
-			}
-			// ignore extensions to avoid fingerprint limited to browser version
-			return {
-				dataURI: fp.canvasWebgl.dataURI,
-				dataURI2: fp.canvasWebgl.dataURI2,
-				matchingDataURI: fp.canvasWebgl.matchingDataURI,
-				matchingUnmasked: fp.canvasWebgl.matchingUnmasked,
-				specs: fp.canvasWebgl.specs,
-				unmasked: fp.canvasWebgl.unmasked,
-				unmasked2: fp.canvasWebgl.unmasked2
-			}
-		})(),
+		canvas2d: (
+			(isBrave || isFirefox) ? distrust : 
+			fp.canvas2d.lied ? undefined : 
+			fp.canvas2d
+		),
+		canvasBitmapRenderer: (
+			(isBrave || isFirefox) ? distrust : 
+			fp.canvasBitmapRenderer.lied ? undefined : 
+			fp.canvasBitmapRenderer
+		),
+		canvasWebgl: isBrave ? distrust : !fp.canvasWebgl || fp.canvasWebgl.lied ? undefined : {
+			supported: fp.canvasWebgl.supported,
+			supported2: fp.canvasWebgl.supported2,
+			dataURI: isFirefox ? distrust : fp.canvasWebgl.dataURI,
+			dataURI2: isFirefox ? distrust : fp.canvasWebgl.dataURI2,
+			matchingDataURI: fp.canvasWebgl.matchingDataURI,
+			matchingUnmasked: fp.canvasWebgl.matchingUnmasked,
+			specs: fp.canvasWebgl.specs,
+			unmasked: fp.canvasWebgl.unmasked,
+			unmasked2: fp.canvasWebgl.unmasked2
+		},
 		maths: fp.maths.lied ? undefined : fp.maths,
 		consoleErrors: fp.consoleErrors,
 		iframeContentWindowVersion: fp.iframeContentWindowVersion,
