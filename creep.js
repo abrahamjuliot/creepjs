@@ -271,7 +271,7 @@
 					}
 
 					try {
-						doc.body.insertBefore(iframe, parent.firstChild)
+						doc.body.insertBefore(iframe, win.parent.firstChild)
 						rendered = validateContentWindow(iframe)
 					}
 					catch(error) {
