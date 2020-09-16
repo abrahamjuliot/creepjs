@@ -713,6 +713,9 @@
 
 	// deep search lies
 	const getMethods = (obj, ignore) => {
+		if (!obj) {
+			return []
+		}
 		return Object.getOwnPropertyNames(obj).filter(item => {
 			if (ignore[item]) {
 				// validate critical methods elsewhere
@@ -726,8 +729,18 @@
 			}
 		})
 	}
-	const searchLies = (obj, methods, log = false) => {
+	const searchLies = (obj, ignore, log = false) => {
+		if (!obj) {
+			return
+		}
+		let methods
 		const isMath = (obj+'' == '[object Math]')
+		if (isMath) {
+			methods = getMethods(obj, ignore)
+		}
+		else {
+			methods = getMethods(obj.prototype, ignore)
+		}
 		return methods.forEach(name => {
 			let domManipLie
 			if (isMath) {
@@ -752,74 +765,44 @@
 			}	
 		})
 	}
-	const elementMethods = getMethods(Element.prototype, {
+	
+	searchLies(Element, {
 		constructor: !0
 	})
-
-	const htmlCanvasElementMethods = getMethods(HTMLCanvasElement.prototype, {
+	searchLies(HTMLCanvasElement, {
 		constructor: !0
 	})
-
-	const navigatorMethods = getMethods(Navigator.prototype, {
+	searchLies(Navigator, {
 		constructor: !0
 	})
-
-	const functionMethods = getMethods(Function.prototype, {
+	searchLies(Function, {
 		constructor: !0
 	})
-
-	const analyserNodeMethods = getMethods(AnalyserNode.prototype, {
+	searchLies(caniuse(() => AnalyserNode), {
 		constructor: !0
 	})
-
-	const audioBufferMethods = getMethods(AudioBuffer.prototype, {
+	searchLies(caniuse(() => AudioBuffer), {
 		constructor: !0
 	})
-
-	const svgTextContentElementMethods = getMethods(SVGTextContentElement.prototype, {
+	searchLies(SVGTextContentElement, {
 		constructor: !0
 	})
-
-	const canvasRenderingContext2DMethods = getMethods(CanvasRenderingContext2D.prototype, {
+	searchLies(CanvasRenderingContext2D, {
 		constructor: !0
 	})
-
-	const webGLRenderingContextMethods = getMethods(WebGLRenderingContext.prototype, {
+	searchLies(caniuse(() => WebGLRenderingContext), {
 		constructor: !0,
-		getParameter: !0,
-		getExtension: !0,
-		getSupportedExtensions: !0,
 		makeXRCompatible: !0, // ignore
 	})
-
-	const mathMethods = getMethods(Math, {
+	searchLies(caniuse(() => WebGL2RenderingContext), {
+		constructor: !0,
+		makeXRCompatible: !0, // ignore
+	})
+	searchLies(Math, {
 		constructor: !0
 	})
 
-	searchLies(Element, elementMethods)
-	searchLies(HTMLCanvasElement, htmlCanvasElementMethods)
-	searchLies(Navigator, navigatorMethods)
-	searchLies(Function, functionMethods)
-	searchLies(AnalyserNode, analyserNodeMethods)
-	searchLies(AudioBuffer, audioBufferMethods)
-	searchLies(SVGTextContentElement, svgTextContentElementMethods)
-	searchLies(CanvasRenderingContext2D, canvasRenderingContext2DMethods)
-	searchLies(WebGLRenderingContext, webGLRenderingContextMethods)
-	searchLies(Math, mathMethods)
-
-	if ('WebGL2RenderingContext' in window) {
-		const webGL2RenderingContextMethods = getMethods(WebGL2RenderingContext.prototype, {
-			constructor: !0,
-			getParameter: !0,
-			getExtension: !0,
-			getSupportedExtensions: !0,
-			makeXRCompatible: !0, // ignore
-			
-		})
-		searchLies(WebGL2RenderingContext, webGL2RenderingContextMethods)
-	}
 	
-
 	/*
 	Object
 	Object.getOwnPropertyDescriptor
