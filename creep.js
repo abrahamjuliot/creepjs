@@ -224,7 +224,7 @@
 					const doc = win.document
 					const iframe = doc.createElement('iframe')
 					iframe.setAttribute('id', id)
-					iframe.setAttribute('style', 'visibility: hidden; height: 0')
+					iframe.setAttribute('style', 'display:none')
 					iframe.setAttribute('sandbox', `${allowScripts()}allow-same-origin`)
 					const placeholder = doc.createElement('div')
 					placeholder.setAttribute('style', 'display:none')
