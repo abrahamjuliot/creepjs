@@ -34,10 +34,13 @@
 		return undefined
 	}
 
-	const attempt = fn => {
+	const attempt = (fn, customMessage = null) => {
 		try {
 			return fn()
 		} catch (error) {
+			if (customMessage) {
+				return captureError(error, customMessage)
+			}
 			return captureError(error)
 		}
 	}
@@ -215,14 +218,13 @@
 	const getNestedContentWindowContext = instanceId => {
 		return new Promise(resolve => {
 			const allowScripts = () => !isFirefox && !isChrome ? 'allow-scripts ' : ''
-			const failed = {}
 			try {
 				const thisSiteCantBeReached = `about:${instanceId}` // url must yield 'this site cant be reached' error
 				const createIframe = (win, id) => {
 					const doc = win.document
 					const iframe = doc.createElement('iframe')
 					iframe.setAttribute('id', id)
-					iframe.setAttribute('style', 'display:none')
+					iframe.setAttribute('style', 'visibility: hidden; height: 0')
 					iframe.setAttribute('sandbox', `${allowScripts()}allow-same-origin`)
 					const placeholder = doc.createElement('div')
 					placeholder.setAttribute('style', 'display:none')
