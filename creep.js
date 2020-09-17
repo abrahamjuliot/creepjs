@@ -626,15 +626,18 @@
 					'' + apiFunction
 				)
 
-				let apilookupGetter, apiProtoLookupGetter, result2, result3
+				let objlookupGetter, apiProtoLookupGetter, result2, result3
 				if (obj) {
-					apilookupGetter = obj.__lookupGetter__(name)
-					apiProtoLookupGetter = api.__proto__.__lookupGetter__(name)
-					const contentWindowResult = attempt(() => contentWindow.Function.prototype.toString.call(apilookupGetter))
+					objlookupGetter = obj.__lookupGetter__(name)
+					apiProtoLookupGetter = api.__lookupGetter__(name)
+					const contentWindowResult = (
+						typeof objlookupGetter != 'function' ? undefined : 
+						attempt(() => contentWindow.Function.prototype.toString.call(objlookupGetter))
+					)
 					result2 = (
 						contentWindowResult ? 
 						contentWindowResult :
-						'' + apilookupGetter
+						'' + objlookupGetter
 					)
 					result3 = '' + apiProtoLookupGetter
 				}
@@ -742,8 +745,8 @@
 			}
 			try {
 				return (
-					typeof obj[item] === 'string' ||
-					typeof obj[item] === 'number' ||
+					typeof obj[item] == 'string' ||
+					typeof obj[item] == 'number' ||
 					!obj[item]
 				)
 			}
@@ -761,7 +764,7 @@
 		'PluralRules': !0,
 		'RelativeTimeFormat': !0
 	}
-	const searchLies = (obj, ignore, log = false) => {
+	const searchLies = (obj, ignore, log = false, proto = null) => {
 		if (!obj) {
 			return
 		}
@@ -772,7 +775,7 @@
 			methods = getMethods(obj, ignore)
 		}
 		else if (isTypeofObject) {
-			methods = getValues(obj.__proto__, ignore)
+			methods = getValues(obj, ignore)
 		}
 		else {
 			methods = getMethods(obj.prototype, ignore)
@@ -788,9 +791,9 @@
 				}
 			}
 			else if (isTypeofObject) {
-				domManipLie = hasLiedAPI(obj.__proto__, name, obj).lie
+				domManipLie = hasLiedAPI(proto, name, obj).lie
 				if (domManipLie) {
-					const objName = /\s(.+)\]/g.exec(obj)[1]
+					const objName = /\s(.+)\]/g.exec(proto)[1]
 					const apiName = `${objName}.${name}`
 					lieProps[apiName] = true
 					documentLie(apiName, undefined, domManipLie)
@@ -828,13 +831,13 @@
 	})
 	searchLies(navigator, {
 		constructor: !0
-	})
+	}, false, Navigator.prototype)
 	searchLies(Screen, {
 		constructor: !0
 	})
 	searchLies(screen, {
 		constructor: !0
-	})
+	}, true, Screen.prototype)
 	searchLies(Date, {
 		constructor: !0,
 		toGMTString: !0
@@ -899,7 +902,7 @@
 		constructor: !0,
 		trimRight: !0,
 		trimLeft: !0
-	}, true)
+	})
 	
 	
 	// system
@@ -1861,16 +1864,15 @@
 	const getScreen = instanceId => {
 		return new Promise(async resolve => {
 			try {
+				let lied = (
+					lieProps['Screen.width'] ||
+					lieProps['Screen.height'] ||
+					lieProps['Screen.availWidth'] ||
+					lieProps['Screen.availHeight'] ||
+					lieProps['Screen.colorDepth'] ||
+					lieProps['Screen.pixelDepth']
+				)
 				const contentWindowScreen = contentWindow && !isFirefox ? contentWindow.screen : screen
-				const screenPrototype = attempt(() => Screen.prototype)
-				const detectLies = (name, value) => {
-					const lie = screenPrototype ? hasLiedAPI(screenPrototype, name, screen).lie : false
-					if (lie) {
-						documentLie(name, value, lie)
-						return value
-					}
-					return value
-				}
 				const { width, height, availWidth, availHeight, colorDepth, pixelDepth } = contentWindowScreen
 				const {
 					width: screenWidth,
@@ -1880,13 +1882,6 @@
 					colorDepth: screenColorDepth,
 					pixelDepth: screenPixelDepth
 				} = screen
-
-				detectLies('width', screenWidth)
-				detectLies('height', screenHeight)
-				detectLies('availWidth', screenAvailWidth)
-				detectLies('availHeight', screenAvailHeight)
-				detectLies('colorDepth', screenColorDepth)
-				detectLies('pixelDepth', screenPixelDepth)
 
 				const matching = (
 					width == screenWidth &&
@@ -1948,7 +1943,7 @@
 				patch(el, html`
 				<div>
 					<strong>Screen</strong>
-					<div>hash: ${$hash}</div>
+					<div>hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
 					${
 						Object.keys(data).map(key => {
 							const value = data[key]
