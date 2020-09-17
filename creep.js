@@ -533,15 +533,7 @@
 				let fingerprint = ''
 
 				// detect invocation tampering
-				try {
-					api[name]
-					lies.push({
-						['failed Illegal invocation test [1]']: true
-					})
-				}
-				catch (error) {
-					// Native throws error
-				}
+				let illegalCount = 0
 				const illegal = [
 					'',
 					'is',
@@ -559,24 +551,34 @@
 					'constructor',
 					'isExtensible',
 					'getPrototypeOf',
-					'setPrototypeOf',
 					'preventExtensions',
 					'propertyIsEnumerable',
 					'getOwnPropertySymbols',
 					'getOwnPropertyDescriptors'
 				]
-
+				try {
+					api[name]
+					illegalCount++
+				}
+				catch (error) {
+					// Native throws error
+				}
 				illegal.forEach((prop, index) => {
 					try {
 						!prop ? Object(api[name]) : Object[prop](api[name])
-						lies.push({
-							[`failed Illegal invocation test [${index+2}]: ${!prop ? 'Object' : prop}`]: true
-						})
+						illegalCount++
 					}
 					catch (error) {
+						console.log(name, prop)
 						// Native throws error
 					}
 				})
+
+				if (illegalCount) {
+					lies.push({
+						[`failed Illegal invocation test ${illegalCount} of ${illegal.length+1}`]: true
+					})
+				}
 				
 				// detect attempts to define name
 				if (!!Object.getOwnPropertyDescriptor(api, name).name) {
