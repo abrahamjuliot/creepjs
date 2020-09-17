@@ -346,7 +346,7 @@
 	const { contentWindow, parentIframe  } = await getNestedContentWindowContext(instanceId)
 
 	// detect and fingerprint Function API lies
-	const native = (result, str, isNavigator = false) => {
+	const native = (result, str, willHaveBlanks = false) => {
 		const chrome = `function ${str}() { [native code] }`
 		const chromeGet = `function get ${str}() { [native code] }`
 		const firefox = `function ${str}() {\n    [native code]\n}`
@@ -357,7 +357,7 @@
 			result == chrome ||
 			result == chromeGet ||
 			result == firefox || (
-				isNavigator && (result == chromeBlank || result == firefoxBlank)
+				willHaveBlanks && (result == chromeBlank || result == firefoxBlank)
 			)
 		)
 	}
@@ -381,9 +381,9 @@
 		
 		const { toString: fnToStr } = Function.prototype
 
-		let isNavigator = false
+		let willHaveBlanks = false
 		try {
-			isNavigator = obj && (obj+'' == '[object Navigator]')
+			willHaveBlanks = obj && (obj+'' == '[object Navigator]' || obj+'' == '[object Document]')
 		}
 		catch (error) { }
 
@@ -511,7 +511,7 @@
 				)
 				
 				// fingerprint result if it does not match native code
-				if (!native(result, name, isNavigator)) {
+				if (!native(result, name, willHaveBlanks)) {
 					fingerprint = result
 				}
 				
@@ -542,6 +542,7 @@
 					'keys',
 					'bind',
 					'apply',
+					'assign',
 					'freeze',
 					'values',
 					'entries',
@@ -569,7 +570,6 @@
 						illegalCount++
 					}
 					catch (error) {
-						console.log(name, prop)
 						// Native throws error
 					}
 				})
@@ -640,13 +640,13 @@
 				}
 
 				// fingerprint result if it does not match native code
-				if (!native(result, name, isNavigator)) {
+				if (!native(result, name, willHaveBlanks)) {
 					fingerprint = result
 				}
-				else if (obj && !native(result2, name, isNavigator)) {
+				else if (obj && !native(result2, name, willHaveBlanks)) {
 					fingerprint = result2
 				}
-				else if (obj && !native(result3, name, isNavigator)) {
+				else if (obj && !native(result3, name, willHaveBlanks)) {
 					fingerprint = result3 != 'undefined' ? result3 : ''
 				}
 
@@ -731,14 +731,48 @@
 			}
 		})
 	}
+	const getValues = (obj, ignore) => {
+		if (!obj) {
+			return []
+		}
+		return Object.getOwnPropertyNames(obj).filter(item => {
+			if (ignore[item]) {
+				// validate critical methods elsewhere
+				return false
+			}
+			try {
+				return (
+					typeof obj[item] === 'string' ||
+					typeof obj[item] === 'number' ||
+					!obj[item]
+				)
+			}
+			catch (error) {
+				return false
+			}
+		})
+	}
+	const intlConstructors = {
+		'Collator': !0,
+		'DateTimeFormat': !0,
+		'DisplayNames': !0,
+		'ListFormat': !0,
+		'NumberFormat': !0,
+		'PluralRules': !0,
+		'RelativeTimeFormat': !0
+	}
 	const searchLies = (obj, ignore, log = false) => {
 		if (!obj) {
 			return
 		}
 		let methods
 		const isMath = (obj+'' == '[object Math]')
+		const isTypeofObject = typeof obj == 'object'
 		if (isMath) {
 			methods = getMethods(obj, ignore)
+		}
+		else if (isTypeofObject) {
+			methods = getValues(obj.__proto__, ignore)
 		}
 		else {
 			methods = getMethods(obj.prototype, ignore)
@@ -753,11 +787,20 @@
 					documentLie(apiName, undefined, domManipLie)
 				}
 			}
+			else if (isTypeofObject) {
+				domManipLie = hasLiedAPI(obj.__proto__, name, obj).lie
+				if (domManipLie) {
+					const objName = /\s(.+)\]/g.exec(obj)[1]
+					const apiName = `${objName}.${name}`
+					lieProps[apiName] = true
+					documentLie(apiName, undefined, domManipLie)
+				}
+			}
 			else {
 				domManipLie = hasLiedAPI(obj.prototype[name], name, obj.prototype).lie
 				if (domManipLie) {
 					const objName = /\s(.+)\(\)/g.exec(obj)[1]
-					const apiName = `${objName}.${name}`
+					const apiName = `${intlConstructors[objName] ? 'Intl.' : ''}${objName}.${name}`
 					lieProps[apiName] = true
 					documentLie(apiName, undefined, domManipLie)
 				}
@@ -768,7 +811,13 @@
 		})
 	}
 	
+	searchLies(Node, {
+		constructor: !0
+	})
 	searchLies(Element, {
+		constructor: !0
+	})
+	searchLies(HTMLElement, {
 		constructor: !0
 	})
 	searchLies(HTMLCanvasElement, {
@@ -777,6 +826,40 @@
 	searchLies(Navigator, {
 		constructor: !0
 	})
+	searchLies(navigator, {
+		constructor: !0
+	})
+	searchLies(Screen, {
+		constructor: !0
+	})
+	searchLies(screen, {
+		constructor: !0
+	})
+	searchLies(Date, {
+		constructor: !0,
+		toGMTString: !0
+	})
+	searchLies(Intl.Collator, {
+		constructor: !0
+	})
+	searchLies(Intl.DateTimeFormat, {
+		constructor: !0
+	})
+	searchLies(caniuse(() => Intl.DisplayNames), {
+		constructor: !0
+	})
+	searchLies(Intl.ListFormat, {
+		constructor: !0
+	})
+	searchLies(Intl.NumberFormat, {
+		constructor: !0
+	})
+	searchLies(Intl.PluralRules, {
+		constructor: !0
+	})
+	searchLies(Intl.RelativeTimeFormat, {
+		constructor: !0
+	})	
 	searchLies(Function, {
 		constructor: !0
 	})
@@ -803,35 +886,21 @@
 	searchLies(Math, {
 		constructor: !0
 	})
-
+	searchLies(PluginArray, {
+		constructor: !0
+	})
+	searchLies(Plugin, {
+		constructor: !0
+	})
+	searchLies(Document, {
+		constructor: !0
+	})
+	searchLies(String, {
+		constructor: !0,
+		trimRight: !0,
+		trimLeft: !0
+	}, true)
 	
-	/*
-	Object
-	Object.getOwnPropertyDescriptor
-	Node
-	HTMLElement
-	PluginArray
-	Plugin
-
-	Document
-	Date
-	Intl
-	MediaDevices
-	Geolocation
-	Window.matchMedia
-
-	Screen
-	HTMLCollection
-	NodeList
-
-	Intl.Collator
-	Intl.ListFormat
-	Intl.NumberFormat
-	Intl.RelativeTimeFormat 
-	Intl.PluralRules
-	Intl.DateTimeFormat
-	 */
-
 	
 	// system
 	const getOS = userAgent => {
