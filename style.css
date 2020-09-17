@@ -201,9 +201,11 @@ visitor {
 	box-shadow: none;
 }
 #fingerprint-data .trash,
-#fingerprint-data .lies,
-#fingerprint-data .blocked {
+#fingerprint-data .lies {
 	background: var(--error);
+}
+#fingerprint-data .blocked {
+	background: #eee;
 }
 #fingerprint-data .errors {
 	background: var(--warn);

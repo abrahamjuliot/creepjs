@@ -148,7 +148,7 @@
 	const note = {
 		unsupported: '<span class="blocked">blocked</span> or unsupported',
 		blocked: '<span class="blocked">blocked</span>',
-		lied: '<span class="blocked">lied</span>'
+		lied: '<span class="lies">lied</span>'
 	}
 	const pluralify = len => len > 1 ? 's' : ''
 	const toJSONFormat = obj => JSON.stringify(obj, null, '\t')
