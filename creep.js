@@ -576,7 +576,7 @@
 
 				if (illegalCount) {
 					lies.push({
-						[`failed Illegal invocation test ${illegalCount} of ${illegal.length+1}`]: true
+						[`failed Illegal invocation tests: ${illegalCount} of ${illegal.length+1}`]: true
 					})
 				}
 				
@@ -3481,7 +3481,9 @@
 					totalLies += lie.lieTypes.lies.length
 				}
 			})
+			
 			const data = lieRecords.map(lie => ({ name: lie.name, lieTypes: lie.lieTypes }))
+			data.sort((a, b) => (a.name > b.name) ? 1 : -1)
 			const $hash = await hashify(data)
 			resolve({data, $hash })
 			const id = 'creep-lies'
