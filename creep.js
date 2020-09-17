@@ -1010,6 +1010,9 @@
 						window.msRTCPeerConnection
 					)
 				}
+				if (!rtcPeerConnection) {
+					return resolve(undefined)
+				}
 				const connection = new rtcPeerConnection({
 					iceServers: [{
 						urls: ['stun:stun.l.google.com:19302?transport=udp']
@@ -3644,12 +3647,12 @@
 		mediaDevices: !isBrave ? fp.mediaDevices : distrust,
 		canvas2d: (
 			(isBrave || isFirefox) ? distrust : 
-			fp.canvas2d.lied ? undefined : 
+			!fp.canvas2d || fp.canvas2d.lied ? undefined : 
 			fp.canvas2d
 		),
 		canvasBitmapRenderer: (
 			(isBrave || isFirefox) ? distrust : 
-			fp.canvasBitmapRenderer.lied ? undefined : 
+			!fp.canvasBitmapRenderer || fp.canvasBitmapRenderer.lied ? undefined : 
 			fp.canvasBitmapRenderer
 		),
 		canvasWebgl: isBrave ? distrust : !fp.canvasWebgl || fp.canvasWebgl.lied ? undefined : {
@@ -3663,17 +3666,17 @@
 			unmasked: fp.canvasWebgl.unmasked,
 			unmasked2: fp.canvasWebgl.unmasked2
 		},
-		maths: fp.maths.lied ? undefined : fp.maths,
+		maths: !fp.maths || fp.maths.lied ? undefined : fp.maths,
 		consoleErrors: fp.consoleErrors,
 		iframeContentWindowVersion: fp.iframeContentWindowVersion,
 		htmlElementVersion: fp.htmlElementVersion,
 		cssStyleDeclarationVersion: fp.cssStyleDeclarationVersion,
 		// avoid random timezone fingerprint values
-		timezone: !fp.timezone || !fp.timezone.lied ? fp.timezone : undefined,
-		clientRects:  fp.clientRects.lied ? undefined : fp.clientRects,
+		timezone: !fp.timezone || fp.timezone.lied ? undefined : fp.timezone,
+		clientRects: !fp.clientRects || fp.clientRects.lied ? undefined : fp.clientRects,
 		offlineAudioContext: (
 			isBrave ? distrust :
-			fp.offlineAudioContext.lied ? undefined :
+			!fp.offlineAudioContext || fp.offlineAudioContext.lied ? undefined :
 			fp.offlineAudioContext
 		),
 		fonts: fp.fonts,
