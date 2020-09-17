@@ -2628,10 +2628,11 @@
 					
 					['polyfill', [2e-3 ** -100], 'polyfill pow(2e-3, -100)', 7.888609052210102e+269, 7.888609052210126e+269, NaN, NaN]
 				]
+				const contentWindowMath = contentWindow ? contentWindow.Math : Math
 				const data = {}
 				fns.forEach(fn => {
 					data[fn[2]] = attempt(() => {
-						const result = fn[0] != 'polyfill' ? Math[fn[0]](...fn[1]) : fn[1]
+						const result = fn[0] != 'polyfill' ? contentWindowMath[fn[0]](...fn[1]) : fn[1]
 						const chrome = result == fn[3]
 						const firefox = fn[4] ? result == fn[4] : false
 						const torBrowser = fn[5] ? result == fn[5] : false
