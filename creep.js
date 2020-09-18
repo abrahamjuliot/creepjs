@@ -2307,7 +2307,7 @@
 							const validate = (value, title) => {
 								const gibbers = gibberish(value)
 								if (!!gibbers.length) {
-									sendToTrash(`webgl ${title} contains gibberish`, `[${gibbers.join(', ')}] ${value}`)
+									sendToTrash(`${title} contains gibberish`, `[${gibbers.join(', ')}] ${value}`)
 								}
 								return (
 									!proxyBehavior(value) ? value : 
@@ -3704,7 +3704,10 @@
 	const errorsLen = fp.capturedErrors.data.length
 	const creep = {
 		workerScope: fp.workerScope ? {
-			canvas2d: fp.workerScope.canvas2d,
+			canvas2d: (
+				(isBrave || isFirefox) ? distrust : 
+				fp.workerScope.canvas2d
+			),
 			hardwareConcurrency: fp.workerScope.hardwareConcurrency,
 			language: fp.workerScope.language,
 			platform: fp.workerScope.platform,
