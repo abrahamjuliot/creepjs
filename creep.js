@@ -354,17 +354,20 @@
 		const firefoxBlank = `function () {\n    [native code]\n}`
 
 		return (
-			result == chrome ||
-			result == chromeGet ||
-			result == firefox || (
-				willHaveBlanks && (result == chromeBlank || result == firefoxBlank)
+			(!isFirefox && result == chrome) ||
+			(!isFirefox && result == chromeGet) ||
+			(isFirefox && result == firefox)|| (
+				willHaveBlanks && (
+					(!isFirefox && result == chromeBlank) ||
+					(isFirefox && result == firefoxBlank)
+				)
 			)
 		)
 	}
 	const hasLiedStringAPI = () => {
 		let lies = []
 
-		// detect attempts to rewrite Function.prototype.toString conversion APIs
+		// detect failed attempts to rewrite Function.prototype.toString conversion APIs
 		const toString = (
 			contentWindow ? 
 			contentWindow.Function.prototype.toString.call(Function.prototype.toString) : // aggressive test
@@ -392,6 +395,13 @@
 
 				let lies = [...stringAPILieTypes()]
 				let fingerprint = ''
+
+				// detect failed attempts to tamper with getter
+				if (obj && obj.__lookupGetter__(name)) {
+					lies.push({
+						['failed prototype.__lookupGetter__ test']: true
+					})
+				}
 
 				// detect failed attempts to tamper with API length
 				const apiLen = {
@@ -433,8 +443,8 @@
 						['failed Object.values test']: true
 					})
 				}
-
-				// detect attempts to rename the API and/or rewrite toString
+				
+				// detect failed attempts to rename the API and/or rewrite toString
 				const { name: apiName, toString: apiToString } = api
 				if (apiName != '' && apiName != name) {
 					lies.push({
@@ -448,14 +458,10 @@
 				}
 
 				// detect prototype tampering
-				try {
-					api.prototype.constructor
+				if (api.prototype) {
 					lies.push({
-						['failed prototype.constructor test']: true
+						['failed function.prototype test']: true
 					})
-				}
-				catch (error) {
-					// Native throws error
 				}
 
 				// detect failed attempts to tamper with discriptors
@@ -473,11 +479,9 @@
 						['failed getOwnPropertyNames [length, name] test']: true
 					})
 				}
-
-				Object.getOwnPropertyNames(HTMLCanvasElement.prototype.toDataURL)
 				
 				if (obj) {
-					// detect attempts to tamper with getter
+					// detect failed attempts to tamper with getter
 					try {
 						Object.getOwnPropertyDescriptor(obj, name).get.toString()
 						lies.push({
@@ -580,14 +584,32 @@
 					})
 				}
 				
-				// detect attempts to define name
+				// detect failed attempts to define name
 				if (!!Object.getOwnPropertyDescriptor(api, name).name) {
 					lies.push({
 						['failed descriptor.name test']: true
 					})
 				}
 
-				// detect attempts to rename the API and/or rewrite toString
+				// detect failed attempts to tamper with property own property names
+				const apiGet = Object.getOwnPropertyDescriptor(api, name).get
+
+				// detect failed attempts to tamper with discriptors
+				const descriptors = Object.keys(Object.getOwnPropertyDescriptors(apiGet))
+				if (''+descriptors != 'length,name') {
+					lies.push({
+						['failed getOwnPropertyDescriptors [length, name] test']: true
+					})
+				}
+
+				const ownPropertyNames = Object.getOwnPropertyNames(apiGet)
+				if (''+ownPropertyNames != 'length,name') {
+					lies.push({
+						['failed getOwnPropertyNames [length, name] test']: true
+					})
+				}
+
+				// detect failed attempts to rename the API and/or rewrite toString
 				const { name: apiName, toString: apiToString } = apiFunction
 				if (apiName != `get ${name}` && apiName != name) {
 					lies.push({
@@ -688,6 +710,7 @@
 			'a8c7362bfa3851b0ea294c075f5708b73b679b484498989d7fde311441ed3322': 'Chromium',
 			'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': 'Firefox',
 			'bec95f2a6f1d2c815b154802467514f7b774ea64667e566acaf903db224c2b38': 'Firefox',
+			'7c95559c6754c42c0d87fa0339f8a7cc5ed092e7e91ae9e50d3212f7486fcbeb': 'Firefox',
 			'd420d594c5a7f7f9a93802eebc3bec3fba0ea2dde91843f6c4746121ef5da140': 'Safari'
 		}
 		return id[hash] ? id[hash] : 'Other'
