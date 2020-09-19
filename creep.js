@@ -1069,7 +1069,7 @@
 							Object.keys(data).map(key => {
 								const value = data[key]
 								return (
-									key != 'canvas2d' && key != 'userAgent'? `<div>${key}: ${value != undefined ? value : note.blocked}</div>` : ''
+									key != 'canvas2d' && key != 'userAgent'? `<div>${key}: ${value != undefined ? value : note.unsupported}</div>` : ''
 								)
 							}).join('')
 						}
