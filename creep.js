@@ -1073,7 +1073,7 @@
 								)
 							}).join('')
 						}
-						<div>canvas 2d: ${data.canvas2d.$hash}</div>
+						<div>canvas 2d: ${!!data.canvas2d.dataURI ? data.canvas2d.$hash : note.unsupported}</div>
 					</div>
 					`)
 					return
@@ -3731,7 +3731,10 @@
 				(isBrave || isFirefox) ? distrust : 
 				fp.workerScope.canvas2d
 			),
-			hardwareConcurrency: fp.workerScope.hardwareConcurrency,
+			hardwareConcurrency: (
+				isBrave ? distrust : 
+				fp.workerScope.hardwareConcurrency
+			),
 			language: fp.workerScope.language,
 			platform: fp.workerScope.platform,
 			system: fp.workerScope.system,
