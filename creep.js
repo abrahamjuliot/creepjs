@@ -365,7 +365,6 @@
 		)
 	}
 
-	const stringAPILieTypes = hasLiedStringAPI() // compute and cache result
 	const hasLiedAPI = (api, name, obj = undefined) => {
 		
 		const fnToStr = (
@@ -383,7 +382,7 @@
 		if (typeof api == 'function') {
 			try {
 
-				let lies = []//[...stringAPILieTypes()]
+				let lies = []
 				let fingerprint = ''
 
 				// detect failed attempts to tamper with getter
@@ -523,7 +522,7 @@
 				
 			try {
 				const apiFunction = Object.getOwnPropertyDescriptor(api, name).get
-				let lies = [...stringAPILieTypes()]
+				let lies = []
 				let fingerprint = ''
 
 				// detect invocation tampering
