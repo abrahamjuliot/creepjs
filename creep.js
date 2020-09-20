@@ -3479,11 +3479,7 @@
 						const testElem = document.getElementById('font-detector-test')
 						const basefontElems = document.querySelectorAll('#font-detector-test .basefont')
 						const systemFontElems = document.querySelectorAll('#font-detector-test .system-font')
-						// detect and document lies
-						const spanLieDetect = [...basefontElems][0]
-						const offsetWidth = detectLies('offsetWidth', spanLieDetect.offsetWidth)
-						const offsetHeight = detectLies('offsetHeight', spanLieDetect.offsetHeight)
-						if (!offsetWidth || !offsetHeight) { return resolve(undefined) }
+
 						// Compute fingerprint
 						;[...basefontElems].forEach(span => {
 							const { dataset: { font }, offsetWidth, offsetHeight } = span
