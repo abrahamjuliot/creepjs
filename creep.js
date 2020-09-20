@@ -364,25 +364,15 @@
 			)
 		)
 	}
-	const hasLiedStringAPI = () => {
-		let lies = []
 
-		// detect failed attempts to rewrite Function.prototype.toString conversion APIs
-		const toString = (
-			contentWindow ? 
-			contentWindow.Function.prototype.toString.call(Function.prototype.toString) : // aggressive test
-			Function.prototype.toString
-		)
-		if (!native(toString, 'toString')) {
-			lies.push({ ['failed toString test']: toString })
-		}
-
-		return () => lies
-	}
 	const stringAPILieTypes = hasLiedStringAPI() // compute and cache result
 	const hasLiedAPI = (api, name, obj = undefined) => {
 		
-		const { toString: fnToStr } = Function.prototype
+		const fnToStr = (
+			contentWindow ? 
+			contentWindow.Function.prototype.toString.call(Function.prototype.toString) : // aggressive test
+			Function.prototype.toString+''
+		)
 
 		let willHaveBlanks = false
 		try {
@@ -393,7 +383,7 @@
 		if (typeof api == 'function') {
 			try {
 
-				let lies = [...stringAPILieTypes()]
+				let lies = []//[...stringAPILieTypes()]
 				let fingerprint = ''
 
 				// detect failed attempts to tamper with getter
@@ -451,7 +441,7 @@
 						['failed name test']: !proxyBehavior(apiName) ? apiName: true
 					})
 				}
-				if (apiToString !== fnToStr || apiToString.toString !== fnToStr) {
+				if (apiToString+'' !== fnToStr || apiToString.toString+'' !== fnToStr) {
 					lies.push({
 						['failed toString test']: !proxyBehavior(apiToString) ? apiToString: true
 					})
@@ -616,7 +606,7 @@
 						['failed name test']: !proxyBehavior(apiName) ? apiName: true
 					})
 				}
-				if (apiToString !== fnToStr || apiToString.toString !== fnToStr) {
+				if (apiToString+'' !== fnToStr || apiToString.toString+'' !== fnToStr) {
 					lies.push({
 						['failed toString test']: !proxyBehavior(apiToString) ? apiToString : true
 					})
