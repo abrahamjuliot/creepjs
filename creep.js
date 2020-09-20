@@ -3217,7 +3217,7 @@
 					return
 				})
 				if (mathLie) {
-					documentLie('getClientRects', hashMini(clientRects), mathLie)
+					documentLie('Element.getClientRects', hashMini(clientRects), mathLie)
 				}
 				
 				// detect equal elements mismatch lie
@@ -3226,7 +3226,7 @@
 				const { right: right2, left: left2 } = clientRects[11]
 				if (right1 != right2 || left1 != left2) {
 					offsetLie = { fingerprint: '', lies: [{ ['equal elements mismatch']: true }] }
-					documentLie('getClientRects', hashMini(clientRects), offsetLie)
+					documentLie('Element.getClientRects', hashMini(clientRects), offsetLie)
 					lied = true
 				}
 
@@ -3427,16 +3427,6 @@
 	const getFonts = (instanceId, fonts) => {
 		return new Promise(async resolve => {
 			try {
-				const contentWindowHTMLElement = contentWindow ? contentWindow.HTMLElement : HTMLElement
-				const htmlElementPrototype = attempt(() => contentWindowHTMLElement.prototype)
-				const detectLies = (name, value) => {
-					const lie = htmlElementPrototype ? hasLiedAPI(htmlElementPrototype, name).lie : false
-					if (lie) {
-						documentLie(name, value, lie)
-						return undefined
-					}
-					return value
-				}
 				const toInt = val => ~~val // protect against decimal noise
 				const baseFonts = ['monospace', 'sans-serif', 'serif']
 				const text = 'mmmmmmmmmmlli'
@@ -3465,7 +3455,7 @@
 				const systemFontSpan = (font, basefont) => {
 					return `<span class="system-font" data-font="${font}" data-basefont="${basefont}" style="font-family: ${`'${font}', ${basefont}`}!important">${text}</span>`
 				}
-
+				
 				const fontsElem = document.getElementById('font-detector')
 				const stageElem = document.getElementById('font-detector-stage')
 				const detectedFonts = {}
