@@ -618,11 +618,18 @@
 					catch (error) {
 						// Native throws error
 					}
-					// detect tampering with property names
+					// detect failed tampering with property names
 					const clientPropertyNames = Object.getOwnPropertyNames(obj)
 					if (clientPropertyNames.length && clientPropertyNames.indexOf(name) !== -1) {
 						lies.push({
 							['failed getOwnPropertyNames test']: true
+						})
+					}
+
+					const clientDescriptorNames = Object.keys(Object.getOwnPropertyDescriptors(obj))
+					if (clientDescriptorNames.length && clientDescriptorNames.indexOf(name) !== -1) {
+						lies.push({
+							['failed getOwnPropertyDescriptors test']: true
 						})
 					}
 				}
@@ -846,7 +853,7 @@
 	})
 	searchLies(screen, {
 		constructor: !0
-	}, true, Screen.prototype)
+	}, false, Screen.prototype)
 	searchLies(Date, {
 		constructor: !0,
 		toGMTString: !0
