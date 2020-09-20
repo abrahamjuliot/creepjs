@@ -439,7 +439,7 @@
 				}
 				if (apiToString+'' !== fnToStr || apiToString.toString+'' !== fnToStr) {
 					lies.push({
-						['failed toString test']: !proxyBehavior(apiToString) ? apiToString: true
+						[`failed ${name}.toString() test`]: !proxyBehavior(apiToString) ? apiToString: true
 					})
 				}
 
@@ -480,6 +480,7 @@
 
 					// detect failed attempt to tamper with descriptor
 					if (!!Object.getOwnPropertyDescriptor(obj, name).name) {
+						console.log(Object.getOwnPropertyDescriptor(obj, name).name)
 						lies.push({
 							['failed descriptor.name test']: true
 						})
@@ -1231,6 +1232,21 @@
 	const getNavigator = (instanceId, workerScope) => {
 		return new Promise(async resolve => {
 			try {
+				let lied = (
+					lieProps['Navigator.appVersion'] ||
+					lieProps['Navigator.deviceMemory'] ||
+					lieProps['Navigator.doNotTrack'] ||
+					lieProps['Navigator.hardwareConcurrency'] ||
+					lieProps['Navigator.language'] ||
+					lieProps['Navigator.languages'] ||
+					lieProps['Navigator.maxTouchPoints'] ||
+					lieProps['Navigator.platform'] ||
+					lieProps['Navigator.userAgent'] ||
+					lieProps['Navigator.vendor'] ||
+					lieProps['Navigator.plugins'] ||
+					lieProps['Navigator.mimeTypes']
+				)
+
 				contentWindowNavigator = contentWindow ? contentWindow.navigator : navigator
 				const navigatorPrototype = attempt(() => Navigator.prototype)
 				const detectLies = (name, value) => {
@@ -1240,19 +1256,16 @@
 						if (name == 'userAgent') {
 							const system = getOS(value)
 							if (workerScope.system != system) {
-								documentLie(name, system, workerScopeMatchLie)
+								lied = true
+								documentLie(`Navigator.${name}`, system, workerScopeMatchLie)
 								return value
 							}
 						}
 						else if (name != 'userAgent' && workerScopeValue != value) {
-							documentLie(name, value, workerScopeMatchLie)
+							lied = true
+							documentLie(`Navigator.${name}`, value, workerScopeMatchLie)
 							return value
 						}
-					}
-					const lie = navigatorPrototype ? hasLiedAPI(navigatorPrototype, name, navigator).lie : false
-					if (lie) {
-						documentLie(name, value, lie)
-						return value
 					}
 					return value
 				}
@@ -1290,7 +1303,6 @@
 							'6': true, 
 							'8': true
 						}
-						detectLies('deviceMemory', navigatorDeviceMemory)
 						trustInteger('deviceMemory - invalid return type', navigatorDeviceMemory)
 						if (!trusted[navigatorDeviceMemory]) {
 							sendToTrash('deviceMemory', `${navigatorDeviceMemory} is not within set [0, 1, 2, 4, 6, 8]`)
@@ -1314,7 +1326,6 @@
 							'null': true,
 							'undefined': true
 						}
-						detectLies('doNotTrack', navigatorDoNotTrack)
 						if (!trusted[navigatorDoNotTrack]) {
 							sendToTrash('doNotTrack - unusual result', navigatorDoNotTrack)
 						}
@@ -1361,7 +1372,6 @@
 						}
 						const { maxTouchPoints } = contentWindowNavigator
 						const navigatorMaxTouchPoints = navigator.maxTouchPoints
-						detectLies('maxTouchPoints', navigatorMaxTouchPoints)
 						if (maxTouchPoints != navigatorMaxTouchPoints) {
 							sendToTrash('maxTouchPoints', `[${navigatorMaxTouchPoints}] does not match iframe`)
 						}
@@ -1401,18 +1411,17 @@
 					vendor: attempt(() => {
 						const { vendor } = contentWindowNavigator
 						const navigatorVendor = navigator.vendor
-						detectLies('vendor', navigatorVendor)
 						if (vendor != navigatorVendor) {
 							sendToTrash('vendor', `[${navigatorVendor}] does not match iframe`)
 						}
 						return vendor
 					}),
 					mimeTypes: attempt(() => {
-						const mimeTypes = detectLies('mimeTypes', contentWindowNavigator.mimeTypes)
+						const mimeTypes = contentWindowNavigator.mimeTypes
 						return mimeTypes ? [...mimeTypes].map(m => m.type) : []
 					}),
 					plugins: attempt(() => {
-						const plugins = detectLies('plugins', contentWindowNavigator.plugins)
+						const plugins = contentWindowNavigator.plugins
 						const response = plugins ? [...contentWindowNavigator.plugins]
 							.map(p => ({
 								name: p.name,
@@ -1460,7 +1469,7 @@
 				patch(el, html`
 				<div>
 					<strong>Navigator</strong>
-					<div>hash: ${$hash}</div>
+					<div>hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
 					${
 						Object.keys(data).map(key => {
 							const skip = [
