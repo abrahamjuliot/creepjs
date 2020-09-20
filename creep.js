@@ -354,13 +354,10 @@
 		const firefoxBlank = `function () {\n    [native code]\n}`
 
 		return (
-			(!isFirefox && result == chrome) ||
-			(!isFirefox && result == chromeGet) ||
-			(isFirefox && result == firefox)|| (
-				willHaveBlanks && (
-					(!isFirefox && result == chromeBlank) ||
-					(isFirefox && result == firefoxBlank)
-				)
+			result == chrome ||
+			result == chromeGet ||
+			result == firefox || (
+				willHaveBlanks && (result == chromeBlank || result == firefoxBlank)
 			)
 		)
 	}
