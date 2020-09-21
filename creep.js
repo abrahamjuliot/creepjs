@@ -385,12 +385,17 @@
 				// detect failed attempts to tamper with getter
 				if (obj && obj.__lookupGetter__(name)) {
 					lies.push({
-						['failed prototype.__lookupGetter__ test']: true
+						[`Expected __lookupGetter__('${name}') to return undefined`]: true
 					})
 				}
 
 				// detect failed attempts to tamper with API length
 				const apiLen = {
+					createElement: [true, 1],
+					createElementNS: [true, 2],
+					toBlob: [true, 1],
+					getImageData: [true, 4],
+					measureText: [true, 1],
 					toDataURL: [true, 0],
 					getContext: [true, 1],
 					getParameter: [true, 1],
@@ -407,26 +412,37 @@
 
 				if (apiLen[name] && apiLen[name][0] && api.length != apiLen[name][1]) {
 					lies.push({
-						['failed length test']: true
+						[`Expected length ${apiLen[name][1]} and got ${api.length}`]: true
 					})
 				}
 
-				// detect failed attempt to modify object entries
-				if (!!Object.entries(api).length) {
-					lies.push({
-						['failed Object.entries test']: true
-					})
+				// detect failed attempt to modify object entries, keys, values
+				const objectFail = {
+					entries: 0,
+					keys: 0,
+					values: 0
 				}
-				// detect failed attempt to modify object keys
-				if (!!Object.keys(api).length) {
-					lies.push({
-						['failed Object.keys test']: true
-					})
+				let totalFail = 0
+				const objEntriesLen = Object.entries(api).length
+				const objKeysLen = Object.keys(api).length
+				const objKeysValues = Object.values(api).length
+				if (!!objEntriesLen) {
+					totalFail++
+					objectFail.entries = objEntriesLen
 				}
-				// detect failed attempt to modify object keys
-				if (!!Object.values(api).length) {
+				if (!!objKeysLen) {
+					totalFail++
+					objectFail.keys = objKeysLen
+				}
+				if (!!objKeysValues) {
+					totalFail++
+					objectFail.values = objKeysValues
+				}
+				if (totalFail) {
 					lies.push({
-						['failed Object.values test']: true
+						[`Expected Object [entries, keys, values] 0, 0, 0 and got 
+							${objectFail.entries}, ${objectFail.keys}, ${objectFail.values}
+						`]: true
 					})
 				}
 				
@@ -434,19 +450,29 @@
 				const { name: apiName, toString: apiToString } = api
 				if (apiName != '' && apiName != name) {
 					lies.push({
-						['failed name test']: !proxyBehavior(apiName) ? apiName: true
+						[`Expected name "${name}" and got "${apiName}"`]: true
 					})
 				}
 				if (apiToString+'' !== fnToStr || apiToString.toString+'' !== fnToStr) {
 					lies.push({
-						[`failed ${name}.toString() test`]: !proxyBehavior(apiToString) ? apiToString: true
+						[`Expected toString to match ${contentWindow ? 'contentWindow.' : ''}Function.toString`]: true
 					})
 				}
-
-				// detect prototype tampering
-				if (api.prototype) {
+				if (api.hasOwnProperty('toString')) {
 					lies.push({
-						['failed function.prototype test']: true
+						[`Expected hasOwnProperty('toString') to return false`]: true
+					})
+				}
+				if (!!Object.getOwnPropertyDescriptor(api, 'toString')) {
+					lies.push({
+						['Expected getOwnPropertyDescriptor "toString" to return undefined']: true
+					})
+				}
+				
+				// detect prototype tampering
+				if (api.hasOwnProperty('prototype')) {
+					lies.push({
+						[`Expected hasOwnProperty('prototype') to return false`]: true
 					})
 				}
 
@@ -454,7 +480,7 @@
 				const descriptors = Object.keys(Object.getOwnPropertyDescriptors(api))
 				if (''+descriptors != 'length,name' && ''+descriptors != 'name,length') {
 					lies.push({
-						['failed getOwnPropertyDescriptors [length, name] test']: true
+						['Expected getOwnPropertyDescriptors to match [length, name]']: true
 					})
 				}
 
@@ -462,36 +488,32 @@
 				const ownPropertyNames = Object.getOwnPropertyNames(api)
 				if (''+ownPropertyNames != 'length,name' && ''+ownPropertyNames != 'name,length') {
 					lies.push({
-						['failed getOwnPropertyNames [length, name] test']: true
+						['Expected getOwnPropertyNames to match [length, name]']: true
 					})
 				}
-				
+
 				if (obj) {
 					// detect failed attempts to tamper with getter
 					try {
 						Object.getOwnPropertyDescriptor(obj, name).get.toString()
 						lies.push({
-							['failed descriptor.get.toString() test']: true
+							['Expected descriptor.get.toString() to throw an error']: true
 						})
 					}
 					catch (error) {
 						// Native throws error
 					}
 
-					// detect failed attempt to tamper with descriptor
-					if (!!Object.getOwnPropertyDescriptor(obj, name).name) {
-						console.log(Object.getOwnPropertyDescriptor(obj, name).name)
+					// detect failed attempts to tamper with descriptor
+					const descriptor = Object.getOwnPropertyDescriptor(obj, name)
+					const ownPropertyLen = Object.getOwnPropertyNames(descriptor).length
+					const keysLen = Object.keys(descriptor).length
+					if (ownPropertyLen != keysLen) {
 						lies.push({
-							['failed descriptor.name test']: true
+							['Expected getOwnPropertyNames and keys to match in length']: true
 						})
 					}
 
-					// detect attempts to define toString
-					if (!!Object.getOwnPropertyDescriptor(api, 'toString')) {
-						lies.push({
-							['failed getOwnPropertyDescriptor toString test']: true
-						})
-					}
 				}
 
 				// collect string conversion result
@@ -600,12 +622,12 @@
 				const { name: apiName, toString: apiToString } = apiFunction
 				if (apiName != `get ${name}` && apiName != name) {
 					lies.push({
-						['failed name test']: !proxyBehavior(apiName) ? apiName: true
+						['failed name test']: true
 					})
 				}
 				if (apiToString+'' !== fnToStr || apiToString.toString+'' !== fnToStr) {
 					lies.push({
-						['failed toString test']: !proxyBehavior(apiToString) ? apiToString : true
+						[`Expected toString to match ${contentWindow ? 'contentWindow.' : ''}Function.toString`]: true
 					})
 				}
 
