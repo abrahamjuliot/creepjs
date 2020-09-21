@@ -452,7 +452,7 @@
 
 				// detect failed attempts to tamper with discriptors
 				const descriptors = Object.keys(Object.getOwnPropertyDescriptors(api))
-				if (''+descriptors != 'length,name') {
+				if (''+descriptors != 'length,name' && ''+descriptors != 'name,length') {
 					lies.push({
 						['failed getOwnPropertyDescriptors [length, name] test']: true
 					})
@@ -460,7 +460,7 @@
 
 				// detect failed attempts to tamper with property own property names
 				const ownPropertyNames = Object.getOwnPropertyNames(api)
-				if (''+ownPropertyNames != 'length,name') {
+				if (''+ownPropertyNames != 'length,name' && ''+ownPropertyNames != 'name,length') {
 					lies.push({
 						['failed getOwnPropertyNames [length, name] test']: true
 					})
