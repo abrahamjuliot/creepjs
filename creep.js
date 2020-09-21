@@ -588,15 +588,19 @@
 				})
 
 				if (illegalCount) {
+					const total = illegal.length+1
 					lies.push({
-						[`failed Illegal invocation tests: ${illegalCount} of ${illegal.length+1}`]: true
+						[`Expected illegal invocation error: ${total-illegalCount} of ${total} passed`]: true
 					})
 				}
 				
-				// detect failed attempts to define name
-				if (!!Object.getOwnPropertyDescriptor(api, name).name) {
+				// detect failed attempts to tamper with descriptor
+				const descriptor = Object.getOwnPropertyDescriptor(api, name)
+				const ownPropertyLen = Object.getOwnPropertyNames(descriptor).length
+				const keysLen = Object.keys(descriptor).length
+				if (ownPropertyLen != keysLen) {
 					lies.push({
-						['failed descriptor.name test']: true
+						['Expected getOwnPropertyNames and keys to match in length']: true
 					})
 				}
 
@@ -607,14 +611,14 @@
 				const descriptors = Object.keys(Object.getOwnPropertyDescriptors(apiGet))
 				if (''+descriptors != 'length,name') {
 					lies.push({
-						['failed getOwnPropertyDescriptors [length, name] test']: true
+						['Expected getOwnPropertyDescriptors to match [length, name]']: true
 					})
 				}
 
 				const ownPropertyNames = Object.getOwnPropertyNames(apiGet)
 				if (''+ownPropertyNames != 'length,name') {
 					lies.push({
-						['failed getOwnPropertyNames [length, name] test']: true
+						['Expected getOwnPropertyNames to match [length, name]']: true
 					})
 				}
 
@@ -622,7 +626,7 @@
 				const { name: apiName, toString: apiToString } = apiFunction
 				if (apiName != `get ${name}` && apiName != name) {
 					lies.push({
-						['failed name test']: true
+						[`Expected name "${name}" and got "${apiName}"`]: true
 					})
 				}
 				if (apiToString+'' !== fnToStr || apiToString.toString+'' !== fnToStr) {
@@ -635,25 +639,11 @@
 					try {
 						const definedPropertyValue = Object.getOwnPropertyDescriptor(obj, name).value
 						lies.push({
-							['failed descriptor.value test']: true
+							['Expected descriptor.value to throw an error']: true
 						})
 					}
 					catch (error) {
 						// Native throws error
-					}
-					// detect failed tampering with property names
-					const clientPropertyNames = Object.getOwnPropertyNames(obj)
-					if (clientPropertyNames.length && clientPropertyNames.indexOf(name) !== -1) {
-						lies.push({
-							['failed getOwnPropertyNames test']: true
-						})
-					}
-
-					const clientDescriptorNames = Object.keys(Object.getOwnPropertyDescriptors(obj))
-					if (clientDescriptorNames.length && clientDescriptorNames.indexOf(name) !== -1) {
-						lies.push({
-							['failed getOwnPropertyDescriptors test']: true
-						})
 					}
 				}
 
@@ -2538,7 +2528,7 @@
 					const matching = isNaN(res1) && isNaN(res2) ? true : res1 == res2
 					if (!matching) {
 						lied = true
-						const mathLie = { fingerprint: '', lies: [{ [`failed math equality test`]: true }] }
+						const mathLie = { fingerprint: '', lies: [{ [`Expected ${res1} and got ${res2}`]: true }] }
 						documentLie(`Math.${prop}`, hashMini({res1, res2}), mathLie)
 					}
 					return
@@ -3600,7 +3590,7 @@
 								${lies.length ? lies.map(lie => `<br>${Object.keys(lie)[0]}`).join(''): ''}
 								${
 									lieFingerprint ? `
-										<br>tampering code leaked a fingerprint: ${lieFingerprint.hash}
+										<br>Tampering code leaked a fingerprint: ${lieFingerprint.hash}
 										<br>code: ${lieFingerprint.json}`: 
 									''
 								}
