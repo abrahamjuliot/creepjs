@@ -385,7 +385,7 @@
 				// detect failed attempts to tamper with getter
 				if (obj && obj.__lookupGetter__(name)) {
 					lies.push({
-						[`Expected __lookupGetter__('${name}') to return undefined`]: true
+						[`Expected __lookupGetter__ to return undefined`]: true
 					})
 				}
 
