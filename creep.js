@@ -458,9 +458,39 @@
 						[`Expected toString to match ${contentWindow ? 'contentWindow.' : ''}Function.toString`]: true
 					})
 				}
+				if (api.hasOwnProperty('arguments')) {
+					lies.push({
+						[`Expected hasOwnProperty('arguments') to return false`]: true
+					})
+				}
+				if (api.hasOwnProperty('caller')) {
+					lies.push({
+						[`Expected hasOwnProperty('caller') to return false`]: true
+					})
+				}
+				if (api.hasOwnProperty('prototype')) {
+					lies.push({
+						[`Expected hasOwnProperty('prototype') to return false`]: true
+					})
+				}
 				if (api.hasOwnProperty('toString')) {
 					lies.push({
 						[`Expected hasOwnProperty('toString') to return false`]: true
+					})
+				}
+				if (!!Object.getOwnPropertyDescriptor(api, 'arguments')) {
+					lies.push({
+						['Expected getOwnPropertyDescriptor "arguments" to return undefined']: true
+					})
+				}
+				if (!!Object.getOwnPropertyDescriptor(api, 'caller')) {
+					lies.push({
+						['Expected getOwnPropertyDescriptor "caller" to return undefined']: true
+					})
+				}
+				if (!!Object.getOwnPropertyDescriptor(api, 'prototype')) {
+					lies.push({
+						['Expected getOwnPropertyDescriptor "prototype" to return undefined']: true
 					})
 				}
 				if (!!Object.getOwnPropertyDescriptor(api, 'toString')) {
@@ -468,23 +498,12 @@
 						['Expected getOwnPropertyDescriptor "toString" to return undefined']: true
 					})
 				}
-				
-				// detect prototype tampering
-				if (api.hasOwnProperty('prototype')) {
-					lies.push({
-						[`Expected hasOwnProperty('prototype') to return false`]: true
-					})
-				}
-
-				// detect failed attempts to tamper with discriptors
 				const descriptors = Object.keys(Object.getOwnPropertyDescriptors(api))
 				if (''+descriptors != 'length,name' && ''+descriptors != 'name,length') {
 					lies.push({
 						['Expected getOwnPropertyDescriptors to match [length, name]']: true
 					})
 				}
-
-				// detect failed attempts to tamper with property own property names
 				const ownPropertyNames = Object.getOwnPropertyNames(api)
 				if (''+ownPropertyNames != 'length,name' && ''+ownPropertyNames != 'name,length') {
 					lies.push({
