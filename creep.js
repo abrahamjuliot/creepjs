@@ -440,9 +440,7 @@
 				}
 				if (totalFail) {
 					lies.push({
-						[`Expected Object [entries, keys, values] 0, 0, 0 and got 
-							${objectFail.entries}, ${objectFail.keys}, ${objectFail.values}
-						`]: true
+						[`Expected Object [entries, keys, values] 0, 0, 0 and got ${objectFail.entries}, ${objectFail.keys}, ${objectFail.values}`]: true
 					})
 				}
 				
@@ -2794,6 +2792,7 @@
 	const getTimezone = instanceId => {
 		return new Promise(async resolve => {
 			try {
+				let lied
 				const contentWindowDate = contentWindow ? contentWindow.Date : Date
 				const contentWindowIntl = contentWindow ? contentWindow.Intl : Date
 				const computeTimezoneOffset = () => {
@@ -2989,7 +2988,6 @@
 				const writingSystemKeys = await getWritingSystemKeys()		
 				const dateGetTimezoneOffset = attempt(() => Date.prototype.getTimezoneOffset)
 				const dateProto = contentWindowDate.prototype
-				const timezoneLie = dateGetTimezoneOffset ? hasLiedAPI(dateGetTimezoneOffset, 'getTimezoneOffset', dateProto).lie : false
 				const timezoneOffset = new contentWindowDate().getTimezoneOffset()
 				const timezoneOffsetComputed = computeTimezoneOffset()
 				const timezoneOffsetMeasured = measureTimezoneOffset(timezoneOffset)
@@ -3000,33 +2998,41 @@
 				const timezone = (''+new contentWindowDate()).replace(notWithinParentheses, '')
 				const relativeTime = getRelativeTime()
 				const locale = getLocale()
-				// document lie
+				// document lies
+				lied = lieProps['Date.getTimezoneOffset']
+				lied = lieProps['Intl.Collator.resolvedOptions']
+				lied = lieProps['Intl.DateTimeFormat.resolvedOptions']
+				lied = lieProps['Intl.DisplayNames.resolvedOptions']
+				lied = lieProps['Intl.ListFormat.resolvedOptions']
+				lied = lieProps['Intl.NumberFormat.resolvedOptions']
+				lied = lieProps['Intl.PluralRules.resolvedOptions']
+				lied = lieProps['Intl.RelativeTimeFormat.resolvedOptions']
 				const seasonLie = timezoneOffsetMeasured.lie ? { fingerprint: '', lies: [{ ['timezone seasons disagree']: true }] } : false
 				const localeLie = locale.lie ? { fingerprint: '', lies: [{ ['Intl locales mismatch']: true }] } : false
 				const offsetLie = !matchingOffsets ? { fingerprint: '', lies: [{ ['timezone offsets mismatch']: true }] } : false
-				if (localeLie) {
-					documentLie('IntlLocales', locale, localeLie)	
+				if (seasonLie) {
+					lied = true
+					documentLie('Date', measuredTimezones, seasonLie)
 				}
-				if (timezoneLie) {
-					documentLie('timezone', timezoneOffset, timezoneLie)
+				if (localeLie) {
+					lied = true
+					documentLie('Intl', locale, localeLie)	
 				}
 				if (offsetLie) {
-					documentLie('timezoneOffsets', timezoneOffset, offsetLie)
-				}
-				if (seasonLie) {
-					documentLie('timezoneMeasured', measuredTimezones, seasonLie)
+					lied = true
+					documentLie('Date', timezoneOffset, offsetLie)
 				}
 				const data =  {
 					timezone,
 					timezoneLocation,
-					timezoneOffset: !timezoneLie ? timezoneOffset : timezoneLie,
+					timezoneOffset: timezoneOffset,
 					timezoneOffsetComputed,
-					timezoneOffsetMeasured: !seasonLie ? measuredTimezones : seasonLie,
+					timezoneOffsetMeasured: measuredTimezones,
 					matchingOffsets,
 					relativeTime,
-					locale: !localeLie ? locale : localeLie,
+					locale,
 					writingSystemKeys,
-					lied: localeLie || timezoneLie || seasonLie || !matchingOffsets
+					lied
 				}
 				
 				const $hash = await hashify(data)
@@ -3035,19 +3041,19 @@
 				const el = document.getElementById(id)
 				patch(el, html`
 				<div>
-					<strong>Date/Intl/Keyboard</strong>
+					<strong>${lied ? `${note.lied} ` : ''}Date/Intl/Keyboard</strong>
 					<div>hash: ${$hash}</div>
 					<div>timezone: ${timezone}</div>
 					<div>timezone location: ${timezoneLocation}</div>
-					<div>timezone offset: ${!timezoneLie && matchingOffsets ? ''+timezoneOffset : note.lied}</div>
+					<div>timezone offset: ${matchingOffsets}</div>
 					<div>timezone offset computed: ${''+timezoneOffsetComputed}</div>
 					<div>matching offsets: ${''+matchingOffsets}</div>
-					<div>timezone measured: ${!seasonLie ? measuredTimezones : note.lied}</div>
+					<div>timezone measured: ${measuredTimezones}</div>
 					<div>relativeTimeFormat: ${
 						!relativeTime ? note.unsupported : 
 						modal(`${id}-relative-time-format`, Object.keys(relativeTime).sort().map(key => `${key} => ${relativeTime[key]}`).join('<br>'))
 					}</div>
-					<div>locale language: ${!localeLie ? locale.lang.join(', ') : note.lied}</div>
+					<div>locale language: ${locale.lang.join(', ')}</div>
 					<div>writing system keys: ${
 						!writingSystemKeys ? note.unsupported :
 						modal(`${id}-writing-system-keys`, writingSystemKeys.map(systemKey => {
