@@ -458,62 +458,58 @@
 						[`Expected toString to match ${contentWindow ? 'contentWindow.' : ''}Function.toString`]: true
 					})
 				}
+				const notOwnProperties = []
 				if (api.hasOwnProperty('arguments')) {
-					lies.push({
-						[`Expected hasOwnProperty('arguments') to return false`]: true
-					})
+					notOwnProperties.push('arguments')
 				}
 				if (api.hasOwnProperty('caller')) {
-					lies.push({
-						[`Expected hasOwnProperty('caller') to return false`]: true
-					})
+					notOwnProperties.push('caller')
 				}
 				if (api.hasOwnProperty('prototype')) {
-					lies.push({
-						[`Expected hasOwnProperty('prototype') to return false`]: true
-					})
+					notOwnProperties.push('prototype')
 				}
 				if (api.hasOwnProperty('toString')) {
+					notOwnProperties.push('toString')
+				}
+				if (!!notOwnProperties.length) {
 					lies.push({
-						[`Expected hasOwnProperty('toString') to return false`]: true
+						[`Expected not own property: ${notOwnProperties.join(', ')}`]: true
 					})
 				}
-				if (!!Object.getOwnPropertyDescriptor(api, 'arguments')) {
-					lies.push({
-						['Expected getOwnPropertyDescriptor "arguments" to return undefined']: true
-					})
+				const notDescriptors = []
+				if (!!Object.getOwnPropertyDescriptor(api, 'arguments') || !!Reflect.getOwnPropertyDescriptor(api, 'arguments')) {
+					notDescriptors.push('arguments')
 				}
-				if (!!Object.getOwnPropertyDescriptor(api, 'caller')) {
-					lies.push({
-						['Expected getOwnPropertyDescriptor "caller" to return undefined']: true
-					})
+				if (!!Object.getOwnPropertyDescriptor(api, 'caller') || !!Reflect.getOwnPropertyDescriptor(api, 'caller')) {
+					notDescriptors.push('caller')
 				}
-				if (!!Object.getOwnPropertyDescriptor(api, 'prototype')) {
-					lies.push({
-						['Expected getOwnPropertyDescriptor "prototype" to return undefined']: true
-					})
+				if (!!Object.getOwnPropertyDescriptor(api, 'prototype') || !!Reflect.getOwnPropertyDescriptor(api, 'prototype')) {
+					notDescriptors.push('prototype')
 				}
-				if (!!Object.getOwnPropertyDescriptor(api, 'toString')) {
+				if (!!Object.getOwnPropertyDescriptor(api, 'toString') || !!Reflect.getOwnPropertyDescriptor(api, 'toString')) {
+					notDescriptors.push('toString')
+				}
+				if (!!notDescriptors.length) {
 					lies.push({
-						['Expected getOwnPropertyDescriptor "toString" to return undefined']: true
+						[`Expected not descriptor: ${notDescriptors.join(', ')}`]: true
 					})
 				}
 				const descriptors = Object.keys(Object.getOwnPropertyDescriptors(api))
 				if (''+descriptors != 'length,name' && ''+descriptors != 'name,length') {
 					lies.push({
-						['Expected getOwnPropertyDescriptors to match [length, name]']: true
+						['Expected own property descriptors to match [length, name]']: true
 					})
 				}
 				const ownPropertyNames = Object.getOwnPropertyNames(api)
 				if (''+ownPropertyNames != 'length,name' && ''+ownPropertyNames != 'name,length') {
 					lies.push({
-						['Expected getOwnPropertyNames to match [length, name]']: true
+						['Expected own property names to match [length, name]']: true
 					})
 				}
 				const ownKeys = Reflect.ownKeys(api)
 				if (''+ownKeys != 'length,name' && ''+ownKeys != 'name,length') {
 					lies.push({
-						['Expected ownKeys to match [length, name]']: true
+						['Expected own keys to match [length, name]']: true
 					})
 				}
 
@@ -521,6 +517,7 @@
 					// detect failed attempts to tamper with getter
 					try {
 						Object.getOwnPropertyDescriptor(obj, name).get.toString()
+						Reflect.getOwnPropertyDescriptor(obj, name).get.toString()
 						lies.push({
 							['Expected descriptor.get.toString() to throw an error']: true
 						})
@@ -535,7 +532,7 @@
 					const keysLen = Object.keys(descriptor).length
 					if (ownPropertyLen != keysLen) {
 						lies.push({
-							['Expected getOwnPropertyNames and keys to match in length']: true
+							['Expected keys and own property names to match in length']: true
 						})
 					}
 
@@ -625,7 +622,7 @@
 				const keysLen = Object.keys(descriptor).length
 				if (ownPropertyLen != keysLen) {
 					lies.push({
-						['Expected getOwnPropertyNames and keys to match in length']: true
+						['Expected keys and own property names to match in length']: true
 					})
 				}
 
@@ -636,7 +633,7 @@
 				const descriptors = Object.keys(Object.getOwnPropertyDescriptors(apiGet))
 				if (''+descriptors != 'length,name') {
 					lies.push({
-						['Expected getOwnPropertyDescriptors to match [length, name]']: true
+						['Expected own property descriptors to match [length, name]']: true
 					})
 				}
 
@@ -668,7 +665,8 @@
 
 				if (obj) {
 					try {
-						const definedPropertyValue = Object.getOwnPropertyDescriptor(obj, name).value
+						Object.getOwnPropertyDescriptor(obj, name).value
+						Reflect.getOwnPropertyDescriptor(obj, name).value
 						lies.push({
 							['Expected descriptor.value to throw an error']: true
 						})
