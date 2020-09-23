@@ -473,7 +473,7 @@
 				}
 				if (!!notOwnProperties.length) {
 					lies.push({
-						[`Expected not own property: ${notOwnProperties.join(', ')}`]: true
+						[`Unexpected own property: ${notOwnProperties.join(', ')}`]: true
 					})
 				}
 				const notDescriptors = []
@@ -491,7 +491,7 @@
 				}
 				if (!!notDescriptors.length) {
 					lies.push({
-						[`Expected not descriptor: ${notDescriptors.join(', ')}`]: true
+						[`Unexpected descriptor: ${notDescriptors.join(', ')}`]: true
 					})
 				}
 				const descriptors = Object.keys(Object.getOwnPropertyDescriptors(api))
