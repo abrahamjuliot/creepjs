@@ -3042,7 +3042,7 @@
 				patch(el, html`
 				<div>
 					<strong>Date/Intl/Keyboard</strong>
-					<div>${lied ? `${note.lied} ` : ''}hash: ${$hash}</div>
+					<div>hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
 					<div>timezone: ${timezone}</div>
 					<div>timezone location: ${timezoneLocation}</div>
 					<div>timezone offset: ${matchingOffsets}</div>
