@@ -3041,8 +3041,8 @@
 				const el = document.getElementById(id)
 				patch(el, html`
 				<div>
-					<strong>${lied ? `${note.lied} ` : ''}Date/Intl/Keyboard</strong>
-					<div>hash: ${$hash}</div>
+					<strong>Date/Intl/Keyboard</strong>
+					<div>${lied ? `${note.lied} ` : ''}hash: ${$hash}</div>
 					<div>timezone: ${timezone}</div>
 					<div>timezone location: ${timezoneLocation}</div>
 					<div>timezone offset: ${matchingOffsets}</div>
