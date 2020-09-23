@@ -528,9 +528,10 @@
 
 					// detect failed attempts to tamper with descriptor
 					const descriptor = Object.getOwnPropertyDescriptor(obj, name)
-					const ownPropertyLen = Object.getOwnPropertyNames(descriptor).length
+					const ownPropLen = Object.getOwnPropertyNames(descriptor).length
+					const ownKeysLen = Reflect.ownKeys(descriptor).length
 					const keysLen = Object.keys(descriptor).length
-					if (ownPropertyLen != keysLen) {
+					if (ownPropLen != keysLen || ownPropLen != ownKeysLen) {
 						lies.push({
 							['Expected keys and own property names to match in length']: true
 						})
