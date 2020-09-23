@@ -510,6 +510,12 @@
 						['Expected getOwnPropertyNames to match [length, name]']: true
 					})
 				}
+				const ownKeys = Reflect.ownKeys(api)
+				if (''+ownKeys != 'length,name' && ''+ownKeys != 'name,length') {
+					lies.push({
+						['Expected ownKeys to match [length, name]']: true
+					})
+				}
 
 				if (obj) {
 					// detect failed attempts to tamper with getter
@@ -638,6 +644,12 @@
 				if (''+ownPropertyNames != 'length,name') {
 					lies.push({
 						['Expected getOwnPropertyNames to match [length, name]']: true
+					})
+				}
+				const ownKeys = Reflect.ownKeys(apiGet)
+				if (''+ownKeys != 'length,name' && ''+ownKeys != 'name,length') {
+					lies.push({
+						['Expected ownKeys to match [length, name]']: true
 					})
 				}
 
