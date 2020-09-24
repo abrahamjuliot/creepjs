@@ -362,6 +362,28 @@
 		)
 	}
 
+	const testDescriptor = (lies, proto, name) => {
+		const descriptor = Object.getOwnPropertyDescriptor(proto, name)
+		const ownPropLen = Object.getOwnPropertyNames(descriptor).length
+		const ownKeysLen = Reflect.ownKeys(descriptor).length
+		const keysLen = Object.keys(descriptor).length
+		if (ownPropLen != keysLen || ownPropLen != ownKeysLen) {
+			return lies.concat([{
+				['Expected keys and own property names to match in length']: true
+			}])
+		}
+		return lies
+	}
+
+	const testLookupGetter = (lies, obj, name) => {
+		if (obj && obj.__lookupGetter__(name)) {
+			return lies.concat([{
+				[`Expected __lookupGetter__ to return undefined`]: true
+			}])
+		}
+		return lies
+	}
+
 	const hasLiedAPI = (api, name, obj = undefined) => {
 		
 		const fnToStr = (
@@ -382,12 +404,7 @@
 				let lies = []
 				let fingerprint = ''
 
-				// __lookupGetter__ test
-				if (obj && obj.__lookupGetter__(name)) {
-					lies.push({
-						[`Expected __lookupGetter__ to return undefined`]: true
-					})
-				}
+				lies = testLookupGetter(lies, obj, name)
 
 				// length test
 				const apiLen = {
@@ -549,16 +566,7 @@
 						// Native throws error
 					}
 
-					// descriptor test
-					const descriptor = Object.getOwnPropertyDescriptor(obj, name)
-					const ownPropLen = Object.getOwnPropertyNames(descriptor).length
-					const ownKeysLen = Reflect.ownKeys(descriptor).length
-					const keysLen = Object.keys(descriptor).length
-					if (ownPropLen != keysLen || ownPropLen != ownKeysLen) {
-						lies.push({
-							['Expected keys and own property names to match in length']: true
-						})
-					}
+					lies = testDescriptor(lies, obj, name)
 
 				}
 
@@ -639,15 +647,7 @@
 					})
 				}
 				
-				// descriptor test
-				const descriptor = Object.getOwnPropertyDescriptor(api, name)
-				const ownPropertyLen = Object.getOwnPropertyNames(descriptor).length
-				const keysLen = Object.keys(descriptor).length
-				if (ownPropertyLen != keysLen) {
-					lies.push({
-						['Expected keys and own property names to match in length']: true
-					})
-				}
+				lies = testDescriptor(lies, api, name)
 
 				// length name tests
 				const descriptors = Object.keys(Object.getOwnPropertyDescriptors(apiFunction))
