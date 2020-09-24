@@ -382,14 +382,14 @@
 				let lies = []
 				let fingerprint = ''
 
-				// detect failed attempts to tamper with getter
+				// __lookupGetter__ test
 				if (obj && obj.__lookupGetter__(name)) {
 					lies.push({
 						[`Expected __lookupGetter__ to return undefined`]: true
 					})
 				}
 
-				// detect failed attempts to tamper with API length
+				// length test
 				const apiLen = {
 					createElement: [true, 1],
 					createElementNS: [true, 2],
@@ -409,14 +409,13 @@
 					copyFromChannel: [true, 2],
 					getTimezoneOffset: [true, 0]
 				}
-
 				if (apiLen[name] && apiLen[name][0] && api.length != apiLen[name][1]) {
 					lies.push({
 						[`Expected length ${apiLen[name][1]} and got ${api.length}`]: true
 					})
 				}
 
-				// detect failed attempt to modify object entries, keys, values
+				// entries, keys, values test
 				const objectFail = {
 					entries: 0,
 					keys: 0,
@@ -462,18 +461,22 @@
 					// Native throws error
 				}
 				
-				// detect failed attempts to define the property
+				// name test
 				const { name: apiName, toString: apiToString } = api
 				if (apiName != '' && apiName != name) {
 					lies.push({
 						[`Expected name "${name}" and got "${apiName}"`]: true
 					})
 				}
+
+				// toString test
 				if (apiToString+'' !== fnToStr || apiToString.toString+'' !== fnToStr) {
 					lies.push({
 						[`Expected toString to match ${contentWindow ? 'contentWindow.' : ''}Function.toString`]: true
 					})
 				}
+
+				// own property test
 				const notOwnProperties = []
 				if (api.hasOwnProperty('arguments')) {
 					notOwnProperties.push('arguments')
@@ -492,6 +495,8 @@
 						[`Unexpected own property: ${notOwnProperties.join(', ')}`]: true
 					})
 				}
+
+				// own property descriptor test
 				const notDescriptors = []
 				if (!!Object.getOwnPropertyDescriptor(api, 'arguments') || !!Reflect.getOwnPropertyDescriptor(api, 'arguments')) {
 					notDescriptors.push('arguments')
@@ -510,6 +515,8 @@
 						[`Unexpected descriptor: ${notDescriptors.join(', ')}`]: true
 					})
 				}
+
+				// length name tests
 				const descriptors = Object.keys(Object.getOwnPropertyDescriptors(api))
 				if (''+descriptors != 'length,name' && ''+descriptors != 'name,length') {
 					lies.push({
@@ -530,7 +537,7 @@
 				}
 
 				if (obj) {
-					// detect failed attempts to tamper with getter
+					// get toString error test
 					try {
 						Object.getOwnPropertyDescriptor(obj, name).get.toString()
 						Reflect.getOwnPropertyDescriptor(obj, name).get.toString()
@@ -542,7 +549,7 @@
 						// Native throws error
 					}
 
-					// detect failed attempts to tamper with descriptor
+					// descriptor test
 					const descriptor = Object.getOwnPropertyDescriptor(obj, name)
 					const ownPropLen = Object.getOwnPropertyNames(descriptor).length
 					const ownKeysLen = Reflect.ownKeys(descriptor).length
@@ -584,7 +591,7 @@
 				let lies = []
 				let fingerprint = ''
 
-				// detect invocation tampering
+				// illegal invocation error test
 				let illegalCount = 0
 				const illegal = [
 					'',
@@ -625,7 +632,6 @@
 						// Native throws error
 					}
 				})
-
 				if (illegalCount) {
 					const total = illegal.length+1
 					lies.push({
@@ -633,7 +639,7 @@
 					})
 				}
 				
-				// detect failed attempts to tamper with descriptor
+				// descriptor test
 				const descriptor = Object.getOwnPropertyDescriptor(api, name)
 				const ownPropertyLen = Object.getOwnPropertyNames(descriptor).length
 				const keysLen = Object.keys(descriptor).length
@@ -643,37 +649,35 @@
 					})
 				}
 
-				// detect failed attempts to tamper with property own property names
-				const apiGet = Object.getOwnPropertyDescriptor(api, name).get
-
-				// detect failed attempts to tamper with discriptors
-				const descriptors = Object.keys(Object.getOwnPropertyDescriptors(apiGet))
+				// length name tests
+				const descriptors = Object.keys(Object.getOwnPropertyDescriptors(apiFunction))
 				if (''+descriptors != 'length,name') {
 					lies.push({
 						['Expected own property descriptors to match [length, name]']: true
 					})
 				}
-
-				const ownPropertyNames = Object.getOwnPropertyNames(apiGet)
+				const ownPropertyNames = Object.getOwnPropertyNames(apiFunction)
 				if (''+ownPropertyNames != 'length,name') {
 					lies.push({
 						['Expected getOwnPropertyNames to match [length, name]']: true
 					})
 				}
-				const ownKeys = Reflect.ownKeys(apiGet)
+				const ownKeys = Reflect.ownKeys(apiFunction)
 				if (''+ownKeys != 'length,name' && ''+ownKeys != 'name,length') {
 					lies.push({
 						['Expected ownKeys to match [length, name]']: true
 					})
 				}
 
-				// detect failed attempts to define the property
+				// name test
 				const { name: apiName, toString: apiToString } = apiFunction
 				if (apiName != `get ${name}` && apiName != name) {
 					lies.push({
 						[`Expected name "${name}" and got "${apiName}"`]: true
 					})
 				}
+
+				// toString test
 				if (apiToString+'' !== fnToStr || apiToString.toString+'' !== fnToStr) {
 					lies.push({
 						[`Expected toString to match ${contentWindow ? 'contentWindow.' : ''}Function.toString`]: true
@@ -687,7 +691,7 @@
 					})
 				} 
 
-				// new test
+				// new error test
 				try {
 					new apiFunction
 					lies.push({
@@ -698,7 +702,48 @@
 					// Native throws error
 				}
 
+				// own property test
+				const notOwnProperties = []
+				if (apiFunction.hasOwnProperty('arguments')) {
+					notOwnProperties.push('arguments')
+				}
+				if (apiFunction.hasOwnProperty('caller')) {
+					notOwnProperties.push('caller')
+				}
+				if (apiFunction.hasOwnProperty('prototype')) {
+					notOwnProperties.push('prototype')
+				}
+				if (apiFunction.hasOwnProperty('toString')) {
+					notOwnProperties.push('toString')
+				}
+				if (!!notOwnProperties.length) {
+					lies.push({
+						[`Unexpected own property: ${notOwnProperties.join(', ')}`]: true
+					})
+				}
+
+				// own property descriptor test
+				const notDescriptors = []
+				if (!!Object.getOwnPropertyDescriptor(apiFunction, 'arguments') || !!Reflect.getOwnPropertyDescriptor(apiFunction, 'arguments')) {
+					notDescriptors.push('arguments')
+				}
+				if (!!Object.getOwnPropertyDescriptor(apiFunction, 'caller') || !!Reflect.getOwnPropertyDescriptor(apiFunction, 'caller')) {
+					notDescriptors.push('caller')
+				}
+				if (!!Object.getOwnPropertyDescriptor(apiFunction, 'prototype') || !!Reflect.getOwnPropertyDescriptor(apiFunction, 'prototype')) {
+					notDescriptors.push('prototype')
+				}
+				if (!!Object.getOwnPropertyDescriptor(apiFunction, 'toString') || !!Reflect.getOwnPropertyDescriptor(apiFunction, 'toString')) {
+					notDescriptors.push('toString')
+				}
+				if (!!notDescriptors.length) {
+					lies.push({
+						[`Unexpected descriptor: ${notDescriptors.join(', ')}`]: true
+					})
+				}
+
 				if (obj) {
+					// value error test
 					try {
 						Object.getOwnPropertyDescriptor(obj, name).value
 						Reflect.getOwnPropertyDescriptor(obj, name).value
