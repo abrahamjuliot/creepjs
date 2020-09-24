@@ -440,11 +440,18 @@
 				}
 				if (totalFail) {
 					lies.push({
-						[`Expected Object [entries, keys, values] 0, 0, 0 and got ${objectFail.entries}, ${objectFail.keys}, ${objectFail.values}`]: true
+						[`Expected entries, keys, values [0, 0, 0] and got [${objectFail.entries}, ${objectFail.keys}, ${objectFail.values}]`]: true
 					})
 				}
+
+				// detect failed attempts to hide prototype in api
+				if ('prototype' in api) {
+					lies.push({
+						[`Unexpected 'prototype' in ${name}`]: true
+					})
+				} 
 				
-				// detect failed attempts to rename the API and/or rewrite toString
+				// detect failed attempts to define the property
 				const { name: apiName, toString: apiToString } = api
 				if (apiName != '' && apiName != name) {
 					lies.push({
@@ -649,7 +656,7 @@
 					})
 				}
 
-				// detect failed attempts to rename the API and/or rewrite toString
+				// detect failed attempts to define the property
 				const { name: apiName, toString: apiToString } = apiFunction
 				if (apiName != `get ${name}` && apiName != name) {
 					lies.push({
@@ -661,6 +668,13 @@
 						[`Expected toString to match ${contentWindow ? 'contentWindow.' : ''}Function.toString`]: true
 					})
 				}
+
+				// detect failed attempts to hide prototype in api
+				if ('prototype' in apiFunction) {
+					lies.push({
+						[`Unexpected 'prototype' in ${name}`]: true
+					})
+				} 
 
 				if (obj) {
 					try {
