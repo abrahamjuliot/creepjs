@@ -444,12 +444,23 @@
 					})
 				}
 
-				// detect failed attempts to hide prototype in api
+				// prototype in test
 				if ('prototype' in api) {
 					lies.push({
 						[`Unexpected 'prototype' in ${name}`]: true
 					})
 				} 
+
+				// new test
+				try {
+					new api
+					lies.push({
+						['Expected new to throw an error']: true
+					})
+				}
+				catch (error) {
+					// Native throws error
+				}
 				
 				// detect failed attempts to define the property
 				const { name: apiName, toString: apiToString } = api
@@ -669,12 +680,23 @@
 					})
 				}
 
-				// detect failed attempts to hide prototype in api
+				// prototype in test
 				if ('prototype' in apiFunction) {
 					lies.push({
 						[`Unexpected 'prototype' in ${name}`]: true
 					})
 				} 
+
+				// new test
+				try {
+					new apiFunction
+					lies.push({
+						['Expected new to throw an error']: true
+					})
+				}
+				catch (error) {
+					// Native throws error
+				}
 
 				if (obj) {
 					try {
