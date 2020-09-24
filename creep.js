@@ -659,13 +659,13 @@
 				const ownPropertyNames = Object.getOwnPropertyNames(apiFunction)
 				if (''+ownPropertyNames != 'length,name') {
 					lies.push({
-						['Expected getOwnPropertyNames to match [length, name]']: true
+						['Expected own property names to match [length, name]']: true
 					})
 				}
 				const ownKeys = Reflect.ownKeys(apiFunction)
 				if (''+ownKeys != 'length,name' && ''+ownKeys != 'name,length') {
 					lies.push({
-						['Expected ownKeys to match [length, name]']: true
+						['Expected own keys to match [length, name]']: true
 					})
 				}
 
