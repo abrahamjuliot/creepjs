@@ -352,7 +352,6 @@
 		const firefox = `function ${str}() {\n    [native code]\n}`
 		const chromeBlank = `function () { [native code] }`
 		const firefoxBlank = `function () {\n    [native code]\n}`
-
 		return (
 			result == chrome ||
 			result == chromeGet ||
@@ -362,26 +361,294 @@
 		)
 	}
 
-	const testDescriptor = (lies, proto, name) => {
+	const testLookupGetter = (obj, name) => {
+		if (!obj) {
+			return false
+		}
+		else if (obj.__lookupGetter__(name)) {
+			return {
+				[`Expected __lookupGetter__ to return undefined`]: true
+			}
+		}
+		return false
+	}
+
+	const testLength = (api, name) => {
+		const apiLen = {
+			createElement: [true, 1],
+			createElementNS: [true, 2],
+			toBlob: [true, 1],
+			getImageData: [true, 4],
+			measureText: [true, 1],
+			toDataURL: [true, 0],
+			getContext: [true, 1],
+			getParameter: [true, 1],
+			getExtension: [true, 1],
+			getSupportedExtensions: [true, 0],
+			getParameter: [true, 1],
+			getExtension: [true, 1],
+			getSupportedExtensions: [true, 0],
+			getClientRects: [true, 0],
+			getChannelData: [true, 1],
+			copyFromChannel: [true, 2],
+			getTimezoneOffset: [true, 0]
+		}
+		if (apiLen[name] && apiLen[name][0] && api.length != apiLen[name][1]) {
+			return {
+				[`Expected length ${apiLen[name][1]} and got ${api.length}`]: true
+			}
+		}
+		return false
+	}
+
+	const testEntries = api => {
+		const objectFail = {
+			entries: 0,
+			keys: 0,
+			values: 0
+		}
+		let totalFail = 0
+		const objEntriesLen = Object.entries(api).length
+		const objKeysLen = Object.keys(api).length
+		const objKeysValues = Object.values(api).length
+		if (!!objEntriesLen) {
+			totalFail++
+			objectFail.entries = objEntriesLen
+		}
+		if (!!objKeysLen) {
+			totalFail++
+			objectFail.keys = objKeysLen
+		}
+		if (!!objKeysValues) {
+			totalFail++
+			objectFail.values = objKeysValues
+		}
+		if (totalFail) {
+			return {
+				[`Expected entries, keys, values [0, 0, 0] and got [${objectFail.entries}, ${objectFail.keys}, ${objectFail.values}]`]: true
+			}
+		}
+		return false
+	}
+
+	const testPrototype = api => {
+		if ('prototype' in api) {
+			return {
+				[`Unexpected 'prototype' in function`]: true
+			}
+		} 
+		return false
+	}
+
+	const testNew = api => {
+		try {
+			new api
+			return {
+				['Expected new to throw an error']: true
+			}
+		}
+		catch (error) {
+			// Native throws error
+			return false
+		}
+	}
+
+	const testName = (api, name) => {
+		const { name: apiName } = api
+		if (apiName != '' && apiName != name) {
+			return {
+				[`Expected name "${name}" and got "${apiName}"`]: true
+			}
+		}
+		return false
+	}
+
+	const testToString = (api, fnToStr, contentWindow) => {
+		const { toString: apiToString } = api
+		if (apiToString+'' !== fnToStr || apiToString.toString+'' !== fnToStr) {
+			return {
+				[`Expected toString to match ${contentWindow ? 'contentWindow.' : ''}Function.toString`]: true
+			}
+		}
+		return false
+	}
+
+	const testOwnProperty = api => {
+		const notOwnProperties = []
+		if (api.hasOwnProperty('arguments')) {
+			notOwnProperties.push('arguments')
+		}
+		if (api.hasOwnProperty('caller')) {
+			notOwnProperties.push('caller')
+		}
+		if (api.hasOwnProperty('prototype')) {
+			notOwnProperties.push('prototype')
+		}
+		if (api.hasOwnProperty('toString')) {
+			notOwnProperties.push('toString')
+		}
+		if (!!notOwnProperties.length) {
+			return {
+				[`Unexpected own property: ${notOwnProperties.join(', ')}`]: true
+			}
+		}
+		return false
+	}
+
+	const testOwnPropertyDescriptor = api => {
+		const notDescriptors = []
+		if (!!Object.getOwnPropertyDescriptor(api, 'arguments') ||
+			!!Reflect.getOwnPropertyDescriptor(api, 'arguments')) {
+			notDescriptors.push('arguments')
+		}
+		if (!!Object.getOwnPropertyDescriptor(api, 'caller') ||
+			!!Reflect.getOwnPropertyDescriptor(api, 'caller')) {
+			notDescriptors.push('caller')
+		}
+		if (!!Object.getOwnPropertyDescriptor(api, 'prototype') ||
+			!!Reflect.getOwnPropertyDescriptor(api, 'prototype')) {
+			notDescriptors.push('prototype')
+		}
+		if (!!Object.getOwnPropertyDescriptor(api, 'toString') ||
+			!!Reflect.getOwnPropertyDescriptor(api, 'toString')) {
+			notDescriptors.push('toString')
+		}
+		if (!!notDescriptors.length) {
+			return {
+				[`Unexpected descriptor: ${notDescriptors.join(', ')}`]: true
+			}
+		}
+		return
+	}
+	
+	const testDescriptorKeys = api => {
+		const descriptorKeys = Object.keys(Object.getOwnPropertyDescriptors(api))
+		if (''+descriptorKeys != 'length,name' && ''+descriptorKeys != 'name,length') {
+			return {
+				['Expected own property descriptor keys [length, name]']: true
+			}
+		}
+		return false
+	}
+
+	const testOwnPropertyNames = api => {
+		const ownPropertyNames = Object.getOwnPropertyNames(api)
+		if (''+ownPropertyNames != 'length,name' && ''+ownPropertyNames != 'name,length') {
+			return {
+				['Expected own property names [length, name]']: true
+			}
+		}
+		return false
+	}
+
+	const testOwnKeys = api => {
+		const ownKeys = Reflect.ownKeys(api)
+		if (''+ownKeys != 'length,name' && ''+ownKeys != 'name,length') {
+			return {
+				['Expected own keys [length, name]']: true
+			}
+		}
+		return false
+	}
+
+	const testDescriptor = (proto, name) => {
+		if (!proto) {
+			return false
+		}
 		const descriptor = Object.getOwnPropertyDescriptor(proto, name)
 		const ownPropLen = Object.getOwnPropertyNames(descriptor).length
 		const ownKeysLen = Reflect.ownKeys(descriptor).length
 		const keysLen = Object.keys(descriptor).length
 		if (ownPropLen != keysLen || ownPropLen != ownKeysLen) {
-			return lies.concat([{
+			return {
 				['Expected keys and own property names to match in length']: true
-			}])
+			}
 		}
-		return lies
+		return false
 	}
 
-	const testLookupGetter = (lies, obj, name) => {
-		if (obj && obj.__lookupGetter__(name)) {
-			return lies.concat([{
-				[`Expected __lookupGetter__ to return undefined`]: true
-			}])
+	const testGetToString = (obj, name) => {
+		if (!obj) {
+			return false
 		}
-		return lies
+		try {
+			Object.getOwnPropertyDescriptor(obj, name).get.toString()
+			Reflect.getOwnPropertyDescriptor(obj, name).get.toString()
+			return {
+				['Expected descriptor.get.toString() to throw an error']: true
+			}
+		}
+		catch (error) {
+			// Native throws error
+			return false
+		}
+	}
+
+	const testIllegal = (api, name) => {
+		let illegalCount = 0
+		const illegal = [
+			'',
+			'is',
+			'call',
+			'seal',
+			'keys',
+			'bind',
+			'apply',
+			'assign',
+			'freeze',
+			'values',
+			'entries',
+			'toString',
+			'isFrozen',
+			'isSealed',
+			'constructor',
+			'isExtensible',
+			'getPrototypeOf',
+			'preventExtensions',
+			'propertyIsEnumerable',
+			'getOwnPropertySymbols',
+			'getOwnPropertyDescriptors'
+		]
+		try {
+			api[name]
+			illegalCount++
+		}
+		catch (error) {
+			// Native throws error
+		}
+		illegal.forEach((prop, index) => {
+			try {
+				!prop ? Object(api[name]) : Object[prop](api[name])
+				illegalCount++
+			}
+			catch (error) {
+				// Native throws error
+			}
+		})
+		if (illegalCount) {
+			const total = illegal.length+1
+			return {
+				[`Expected illegal invocation error: ${total-illegalCount} of ${total} passed`]: true
+			}
+		}
+		return false
+	}
+
+	const testValue = (obj, name) => {
+		if (!obj) {
+			return false
+		}
+		try {
+			Object.getOwnPropertyDescriptor(obj, name).value
+			Reflect.getOwnPropertyDescriptor(obj, name).value
+			return {
+				['Expected descriptor.value to throw an error']: true
+			}
+		}
+		catch (error) {
+			// Native throws error
+			return false
+		}
 	}
 
 	const hasLiedAPI = (api, name, obj = undefined) => {
@@ -400,175 +667,29 @@
 
 		if (typeof api == 'function') {
 			try {
+				const testResults = new Set(
+					[
+						testLookupGetter(obj, name),
+						testLength(api, name),
+						testEntries(api),
+						testGetToString(obj, name),
 
-				let lies = []
-				let fingerprint = ''
-
-				lies = testLookupGetter(lies, obj, name)
-
-				// length test
-				const apiLen = {
-					createElement: [true, 1],
-					createElementNS: [true, 2],
-					toBlob: [true, 1],
-					getImageData: [true, 4],
-					measureText: [true, 1],
-					toDataURL: [true, 0],
-					getContext: [true, 1],
-					getParameter: [true, 1],
-					getExtension: [true, 1],
-					getSupportedExtensions: [true, 0],
-					getParameter: [true, 1],
-					getExtension: [true, 1],
-					getSupportedExtensions: [true, 0],
-					getClientRects: [true, 0],
-					getChannelData: [true, 1],
-					copyFromChannel: [true, 2],
-					getTimezoneOffset: [true, 0]
-				}
-				if (apiLen[name] && apiLen[name][0] && api.length != apiLen[name][1]) {
-					lies.push({
-						[`Expected length ${apiLen[name][1]} and got ${api.length}`]: true
-					})
-				}
-
-				// entries, keys, values test
-				const objectFail = {
-					entries: 0,
-					keys: 0,
-					values: 0
-				}
-				let totalFail = 0
-				const objEntriesLen = Object.entries(api).length
-				const objKeysLen = Object.keys(api).length
-				const objKeysValues = Object.values(api).length
-				if (!!objEntriesLen) {
-					totalFail++
-					objectFail.entries = objEntriesLen
-				}
-				if (!!objKeysLen) {
-					totalFail++
-					objectFail.keys = objKeysLen
-				}
-				if (!!objKeysValues) {
-					totalFail++
-					objectFail.values = objKeysValues
-				}
-				if (totalFail) {
-					lies.push({
-						[`Expected entries, keys, values [0, 0, 0] and got [${objectFail.entries}, ${objectFail.keys}, ${objectFail.values}]`]: true
-					})
-				}
-
-				// prototype in test
-				if ('prototype' in api) {
-					lies.push({
-						[`Unexpected 'prototype' in ${name}`]: true
-					})
-				} 
-
-				// new test
-				try {
-					new api
-					lies.push({
-						['Expected new to throw an error']: true
-					})
-				}
-				catch (error) {
-					// Native throws error
-				}
-				
-				// name test
-				const { name: apiName, toString: apiToString } = api
-				if (apiName != '' && apiName != name) {
-					lies.push({
-						[`Expected name "${name}" and got "${apiName}"`]: true
-					})
-				}
-
-				// toString test
-				if (apiToString+'' !== fnToStr || apiToString.toString+'' !== fnToStr) {
-					lies.push({
-						[`Expected toString to match ${contentWindow ? 'contentWindow.' : ''}Function.toString`]: true
-					})
-				}
-
-				// own property test
-				const notOwnProperties = []
-				if (api.hasOwnProperty('arguments')) {
-					notOwnProperties.push('arguments')
-				}
-				if (api.hasOwnProperty('caller')) {
-					notOwnProperties.push('caller')
-				}
-				if (api.hasOwnProperty('prototype')) {
-					notOwnProperties.push('prototype')
-				}
-				if (api.hasOwnProperty('toString')) {
-					notOwnProperties.push('toString')
-				}
-				if (!!notOwnProperties.length) {
-					lies.push({
-						[`Unexpected own property: ${notOwnProperties.join(', ')}`]: true
-					})
-				}
-
-				// own property descriptor test
-				const notDescriptors = []
-				if (!!Object.getOwnPropertyDescriptor(api, 'arguments') || !!Reflect.getOwnPropertyDescriptor(api, 'arguments')) {
-					notDescriptors.push('arguments')
-				}
-				if (!!Object.getOwnPropertyDescriptor(api, 'caller') || !!Reflect.getOwnPropertyDescriptor(api, 'caller')) {
-					notDescriptors.push('caller')
-				}
-				if (!!Object.getOwnPropertyDescriptor(api, 'prototype') || !!Reflect.getOwnPropertyDescriptor(api, 'prototype')) {
-					notDescriptors.push('prototype')
-				}
-				if (!!Object.getOwnPropertyDescriptor(api, 'toString') || !!Reflect.getOwnPropertyDescriptor(api, 'toString')) {
-					notDescriptors.push('toString')
-				}
-				if (!!notDescriptors.length) {
-					lies.push({
-						[`Unexpected descriptor: ${notDescriptors.join(', ')}`]: true
-					})
-				}
-
-				// length name tests
-				const descriptors = Object.keys(Object.getOwnPropertyDescriptors(api))
-				if (''+descriptors != 'length,name' && ''+descriptors != 'name,length') {
-					lies.push({
-						['Expected own property descriptors to match [length, name]']: true
-					})
-				}
-				const ownPropertyNames = Object.getOwnPropertyNames(api)
-				if (''+ownPropertyNames != 'length,name' && ''+ownPropertyNames != 'name,length') {
-					lies.push({
-						['Expected own property names to match [length, name]']: true
-					})
-				}
-				const ownKeys = Reflect.ownKeys(api)
-				if (''+ownKeys != 'length,name' && ''+ownKeys != 'name,length') {
-					lies.push({
-						['Expected own keys to match [length, name]']: true
-					})
-				}
-
-				if (obj) {
-					// get toString error test
-					try {
-						Object.getOwnPropertyDescriptor(obj, name).get.toString()
-						Reflect.getOwnPropertyDescriptor(obj, name).get.toString()
-						lies.push({
-							['Expected descriptor.get.toString() to throw an error']: true
-						})
-					}
-					catch (error) {
-						// Native throws error
-					}
-
-					lies = testDescriptor(lies, obj, name)
-
-				}
+						// common tests
+						testPrototype(api),
+						testNew(api),
+						testName(api, name),
+						testToString(api, fnToStr, contentWindow),
+						testOwnProperty(api),
+						testOwnPropertyDescriptor(api),
+						testDescriptorKeys(api),
+						testOwnPropertyNames(api),
+						testOwnKeys(api),
+						testDescriptor(obj, name)
+					]
+				)
+				testResults.delete(false)
+				testResults.delete(undefined)
+				const lies = [...testResults]
 
 				// collect string conversion result
 				const result = (
@@ -578,6 +699,7 @@
 				)
 				
 				// fingerprint result if it does not match native code
+				let fingerprint = ''
 				if (!native(result, name, willHaveBlanks)) {
 					fingerprint = result
 				}
@@ -596,166 +718,27 @@
 				
 			try {
 				const apiFunction = Object.getOwnPropertyDescriptor(api, name).get
-				let lies = []
-				let fingerprint = ''
-
-				// illegal invocation error test
-				let illegalCount = 0
-				const illegal = [
-					'',
-					'is',
-					'call',
-					'seal',
-					'keys',
-					'bind',
-					'apply',
-					'assign',
-					'freeze',
-					'values',
-					'entries',
-					'toString',
-					'isFrozen',
-					'isSealed',
-					'constructor',
-					'isExtensible',
-					'getPrototypeOf',
-					'preventExtensions',
-					'propertyIsEnumerable',
-					'getOwnPropertySymbols',
-					'getOwnPropertyDescriptors'
-				]
-				try {
-					api[name]
-					illegalCount++
-				}
-				catch (error) {
-					// Native throws error
-				}
-				illegal.forEach((prop, index) => {
-					try {
-						!prop ? Object(api[name]) : Object[prop](api[name])
-						illegalCount++
-					}
-					catch (error) {
-						// Native throws error
-					}
-				})
-				if (illegalCount) {
-					const total = illegal.length+1
-					lies.push({
-						[`Expected illegal invocation error: ${total-illegalCount} of ${total} passed`]: true
-					})
-				}
-				
-				lies = testDescriptor(lies, api, name)
-
-				// length name tests
-				const descriptors = Object.keys(Object.getOwnPropertyDescriptors(apiFunction))
-				if (''+descriptors != 'length,name') {
-					lies.push({
-						['Expected own property descriptors to match [length, name]']: true
-					})
-				}
-				const ownPropertyNames = Object.getOwnPropertyNames(apiFunction)
-				if (''+ownPropertyNames != 'length,name') {
-					lies.push({
-						['Expected own property names to match [length, name]']: true
-					})
-				}
-				const ownKeys = Reflect.ownKeys(apiFunction)
-				if (''+ownKeys != 'length,name' && ''+ownKeys != 'name,length') {
-					lies.push({
-						['Expected own keys to match [length, name]']: true
-					})
-				}
-
-				// name test
-				const { name: apiName, toString: apiToString } = apiFunction
-				if (apiName != `get ${name}` && apiName != name) {
-					lies.push({
-						[`Expected name "${name}" and got "${apiName}"`]: true
-					})
-				}
-
-				// toString test
-				if (apiToString+'' !== fnToStr || apiToString.toString+'' !== fnToStr) {
-					lies.push({
-						[`Expected toString to match ${contentWindow ? 'contentWindow.' : ''}Function.toString`]: true
-					})
-				}
-
-				// prototype in test
-				if ('prototype' in apiFunction) {
-					lies.push({
-						[`Unexpected 'prototype' in ${name}`]: true
-					})
-				} 
-
-				// new error test
-				try {
-					new apiFunction
-					lies.push({
-						['Expected new to throw an error']: true
-					})
-				}
-				catch (error) {
-					// Native throws error
-				}
-
-				// own property test
-				const notOwnProperties = []
-				if (apiFunction.hasOwnProperty('arguments')) {
-					notOwnProperties.push('arguments')
-				}
-				if (apiFunction.hasOwnProperty('caller')) {
-					notOwnProperties.push('caller')
-				}
-				if (apiFunction.hasOwnProperty('prototype')) {
-					notOwnProperties.push('prototype')
-				}
-				if (apiFunction.hasOwnProperty('toString')) {
-					notOwnProperties.push('toString')
-				}
-				if (!!notOwnProperties.length) {
-					lies.push({
-						[`Unexpected own property: ${notOwnProperties.join(', ')}`]: true
-					})
-				}
-
-				// own property descriptor test
-				const notDescriptors = []
-				if (!!Object.getOwnPropertyDescriptor(apiFunction, 'arguments') || !!Reflect.getOwnPropertyDescriptor(apiFunction, 'arguments')) {
-					notDescriptors.push('arguments')
-				}
-				if (!!Object.getOwnPropertyDescriptor(apiFunction, 'caller') || !!Reflect.getOwnPropertyDescriptor(apiFunction, 'caller')) {
-					notDescriptors.push('caller')
-				}
-				if (!!Object.getOwnPropertyDescriptor(apiFunction, 'prototype') || !!Reflect.getOwnPropertyDescriptor(apiFunction, 'prototype')) {
-					notDescriptors.push('prototype')
-				}
-				if (!!Object.getOwnPropertyDescriptor(apiFunction, 'toString') || !!Reflect.getOwnPropertyDescriptor(apiFunction, 'toString')) {
-					notDescriptors.push('toString')
-				}
-				if (!!notDescriptors.length) {
-					lies.push({
-						[`Unexpected descriptor: ${notDescriptors.join(', ')}`]: true
-					})
-				}
-
-				if (obj) {
-					// value error test
-					try {
-						Object.getOwnPropertyDescriptor(obj, name).value
-						Reflect.getOwnPropertyDescriptor(obj, name).value
-						lies.push({
-							['Expected descriptor.value to throw an error']: true
-						})
-					}
-					catch (error) {
-						// Native throws error
-					}
-				}
-
+				const testResults = new Set(
+					[
+						testIllegal(api, name),
+						testValue(obj, name),
+						
+						// common tests
+						testPrototype(apiFunction),
+						testNew(apiFunction),
+						testName(apiFunction, name),
+						testToString(apiFunction, fnToStr, contentWindow),
+						testOwnProperty(apiFunction),
+						testOwnPropertyDescriptor(apiFunction),
+						testDescriptorKeys(apiFunction),
+						testOwnPropertyNames(apiFunction),
+						testOwnKeys(apiFunction),
+						testDescriptor(api, name)
+					]
+				)
+				testResults.delete(false)
+				testResults.delete(undefined)
+				const lies = [...testResults]
 				// collect string conversion result
 				const result = (
 					contentWindow ? 
@@ -780,6 +763,7 @@
 				}
 
 				// fingerprint result if it does not match native code
+				let fingerprint = ''
 				if (!native(result, name, willHaveBlanks)) {
 					fingerprint = result
 				}
