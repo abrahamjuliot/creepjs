@@ -886,7 +886,7 @@
 		'PluralRules': !0,
 		'RelativeTimeFormat': !0
 	}
-	const searchLies = (obj, ignore, log = false, proto = null) => {
+	const searchLies = (obj, ignoreProps, { logToConsole = false, proto = null } = {}) => {
 		if (!obj) {
 			return
 		}
@@ -894,13 +894,13 @@
 		const isMath = (obj+'' == '[object Math]')
 		const isTypeofObject = typeof obj == 'object'
 		if (isMath) {
-			methods = getMethods(obj, ignore)
+			methods = getMethods(obj, ignoreProps)
 		}
 		else if (isTypeofObject) {
-			methods = getValues(obj, ignore)
+			methods = getValues(obj, ignoreProps)
 		}
 		else {
-			methods = getMethods(obj.prototype, ignore)
+			methods = getMethods(obj.prototype, ignoreProps)
 		}
 		return methods.forEach(name => {
 			let domManipLie
@@ -930,7 +930,7 @@
 					documentLie(apiName, undefined, domManipLie)
 				}
 			}
-			if (log) {
+			if (logToConsole) {
 				console.log(name, domManipLie)
 			}	
 		})
@@ -953,13 +953,13 @@
 	})
 	searchLies(navigator, {
 		constructor: !0
-	}, false, Navigator.prototype)
+	}, { logToConsole: false, proto: Navigator.prototype })
 	searchLies(Screen, {
 		constructor: !0
 	})
 	searchLies(screen, {
 		constructor: !0
-	}, false, Screen.prototype)
+	}, { logToConsole: false, proto: Screen.prototype })
 	searchLies(Date, {
 		constructor: !0,
 		toGMTString: !0
