@@ -362,10 +362,7 @@
 	}
 
 	const testLookupGetter = (obj, name) => {
-		if (!obj) {
-			return false
-		}
-		else if (obj.__lookupGetter__(name)) {
+		if (obj.__lookupGetter__(name)) {
 			return {
 				[`Expected __lookupGetter__ to return undefined`]: true
 			}
@@ -552,9 +549,6 @@
 	}
 
 	const testDescriptor = (proto, name) => {
-		if (!proto) {
-			return false
-		}
 		const descriptor = Object.getOwnPropertyDescriptor(proto, name)
 		const ownPropLen = Object.getOwnPropertyNames(descriptor).length
 		const ownKeysLen = Reflect.ownKeys(descriptor).length
@@ -568,9 +562,6 @@
 	}
 
 	const testGetToString = (obj, name) => {
-		if (!obj) {
-			return false
-		}
 		try {
 			Object.getOwnPropertyDescriptor(obj, name).get.toString()
 			Reflect.getOwnPropertyDescriptor(obj, name).get.toString()
@@ -635,9 +626,6 @@
 	}
 
 	const testValue = (obj, name) => {
-		if (!obj) {
-			return false
-		}
 		try {
 			Object.getOwnPropertyDescriptor(obj, name).value
 			Reflect.getOwnPropertyDescriptor(obj, name).value
@@ -651,7 +639,7 @@
 		}
 	}
 
-	const hasLiedAPI = (api, name, obj = undefined) => {
+	const hasLiedAPI = (api, name, obj) => {
 		
 		const fnToStr = (
 			contentWindow ? 
@@ -666,25 +654,27 @@
 		catch (error) { }
 
 		if (typeof api == 'function') {
+			const proto = obj
+			const apiFunction = api
 			try {
 				const testResults = new Set(
 					[
-						testLookupGetter(obj, name),
-						testLength(api, name),
-						testEntries(api),
-						testGetToString(obj, name),
+						testLookupGetter(proto, name),
+						testLength(apiFunction, name),
+						testEntries(apiFunction),
+						testGetToString(proto, name),
 
 						// common tests
-						testPrototype(api),
-						testNew(api),
-						testName(api, name),
-						testToString(api, fnToStr, contentWindow),
-						testOwnProperty(api),
-						testOwnPropertyDescriptor(api),
-						testDescriptorKeys(api),
-						testOwnPropertyNames(api),
-						testOwnKeys(api),
-						testDescriptor(obj, name)
+						testPrototype(apiFunction),
+						testNew(apiFunction),
+						testName(apiFunction, name),
+						testToString(apiFunction, fnToStr, contentWindow),
+						testOwnProperty(apiFunction),
+						testOwnPropertyDescriptor(apiFunction),
+						testDescriptorKeys(apiFunction),
+						testOwnPropertyNames(apiFunction),
+						testOwnKeys(apiFunction),
+						testDescriptor(proto, name)
 					]
 				)
 				testResults.delete(false)
@@ -694,8 +684,8 @@
 				// collect string conversion result
 				const result = (
 					contentWindow ? 
-					contentWindow.Function.prototype.toString.call(api) :
-					'' + api
+					contentWindow.Function.prototype.toString.call(apiFunction) :
+					'' + apiFunction
 				)
 				
 				// fingerprint result if it does not match native code
@@ -717,6 +707,7 @@
 		if (typeof api == 'object' && caniuse(() => obj[name]) != undefined) {
 				
 			try {
+				const proto = api
 				const apiFunction = Object.getOwnPropertyDescriptor(api, name).get
 				const testResults = new Set(
 					[
@@ -733,7 +724,7 @@
 						testDescriptorKeys(apiFunction),
 						testOwnPropertyNames(apiFunction),
 						testOwnKeys(apiFunction),
-						testDescriptor(api, name)
+						testDescriptor(proto, name)
 					]
 				)
 				testResults.delete(false)
