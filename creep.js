@@ -3291,7 +3291,9 @@
 
 				// get emojis
 				const emojiDiv = doc.getElementById('emoji')
+				
 				const emojiRects = emojis
+					.slice(99, 199) // limit to improve performance
 					.map(emoji => String.fromCodePoint(...emoji))
 					.map(emoji => {
 						emojiDiv.innerHTML = emoji
