@@ -1393,7 +1393,7 @@
 							sendToTrash('appVersion', `[${navigatorAppVersion}] does not match iframe`)
 						}
 						return appVersion
-					}),
+					}, 'appVersion failed'),
 					deviceMemory: attempt(() => {
 						if (!('deviceMemory' in navigator)) {
 							return undefined
@@ -1416,7 +1416,7 @@
 							sendToTrash('deviceMemory', `[${navigatorDeviceMemory}] does not match iframe`)
 						}
 						return deviceMemory
-					}),
+					}, 'deviceMemory failed'),
 					doNotTrack: attempt(() => {
 						const { doNotTrack } = contentWindowNavigator
 						const navigatorDoNotTrack = navigator.doNotTrack
@@ -1435,7 +1435,7 @@
 							sendToTrash('doNotTrack - unusual result', navigatorDoNotTrack)
 						}
 						return doNotTrack
-					}),
+					}, 'doNotTrack failed'),
 					hardwareConcurrency: attempt(() => {
 						if (!('hardwareConcurrency' in navigator)) {
 							return undefined
@@ -1451,7 +1451,7 @@
 							sendToTrash('hardwareConcurrency', `[${navigatorHardwareConcurrency}] does not match iframe`)
 						}
 						return hardwareConcurrency
-					}),
+					}, 'hardwareConcurrency failed'),
 					language: attempt(() => {
 						const { language, languages } = contentWindowNavigator
 						const navigatorLanguage = navigator.language
@@ -1470,7 +1470,7 @@
 							return `${languages.join(', ')} (${language})`
 						}
 						return `${language} ${languages}`
-					}),
+					}, 'language(s) failed'),
 					maxTouchPoints: attempt(() => {
 						if (!('maxTouchPoints' in navigator)) {
 							return null
@@ -1481,7 +1481,7 @@
 							sendToTrash('maxTouchPoints', `[${navigatorMaxTouchPoints}] does not match iframe`)
 						}
 						return maxTouchPoints
-					}),
+					}, 'maxTouchPoints failed'),
 					platform: attempt(() => {
 						const { platform } = contentWindowNavigator
 						const navigatorPlatform = navigator.platform
@@ -1511,8 +1511,8 @@
 							sendToTrash('userAgent', `[${navigatorUserAgent}] does not match iframe`)
 						}
 						return userAgent
-					}),
-					system: attempt(() => getOS(contentWindowNavigator.userAgent)),
+					}, 'userAgent failed'),
+					system: attempt(() => getOS(contentWindowNavigator.userAgent), 'userAgent system failed'),
 					vendor: attempt(() => {
 						const { vendor } = contentWindowNavigator
 						const navigatorVendor = navigator.vendor
@@ -1520,11 +1520,11 @@
 							sendToTrash('vendor', `[${navigatorVendor}] does not match iframe`)
 						}
 						return vendor
-					}),
+					}, 'vendor failed'),
 					mimeTypes: attempt(() => {
 						const mimeTypes = contentWindowNavigator.mimeTypes
 						return mimeTypes ? [...mimeTypes].map(m => m.type) : []
-					}),
+					}, 'mimeTypes failed'),
 					plugins: attempt(() => {
 						const plugins = contentWindowNavigator.plugins
 						const response = plugins ? [...contentWindowNavigator.plugins]
@@ -1546,11 +1546,11 @@
 							})
 						}
 						return response
-					}),
+					}, 'mimeTypes failed'),
 					properties: attempt(() => {
 						const keys = Object.keys(Object.getPrototypeOf(contentWindowNavigator))
 						return keys
-					}),
+					}, 'navigator keys failed'),
 					highEntropyValues: await attempt(async () => { 
 						if (!('userAgentData' in contentWindowNavigator)) {
 							return undefined
@@ -1559,7 +1559,7 @@
 							['platform', 'platformVersion', 'architecture',  'model', 'uaFullVersion']
 						)
 						return data
-					})
+					}, 'highEntropyValues failed')
 				}
 				const $hash = await hashify(data)
 				resolve({ ...data, $hash })
