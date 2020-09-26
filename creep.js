@@ -3692,7 +3692,7 @@
 								${
 									lieFingerprint ? `
 										<br>Tampering code leaked a fingerprint: ${lieFingerprint.hash}
-										<br>code: ${lieFingerprint.json}`: 
+										<br>Unexpected code: ${lieFingerprint.json}`: 
 									''
 								}
 							</div>
