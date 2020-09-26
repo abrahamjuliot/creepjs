@@ -361,8 +361,8 @@
 		)
 	}
 
-	const testLookupGetter = (obj, name) => {
-		if (obj.__lookupGetter__(name)) {
+	const testLookupGetter = (proto, name) => {
+		if (proto.__lookupGetter__(name)) {
 			return {
 				[`Expected __lookupGetter__ to return undefined`]: true
 			}
@@ -370,7 +370,7 @@
 		return false
 	}
 
-	const testLength = (api, name) => {
+	const testLength = (apiFunction, name) => {
 		const apiLen = {
 			createElement: [true, 1],
 			createElementNS: [true, 2],
@@ -390,24 +390,24 @@
 			copyFromChannel: [true, 2],
 			getTimezoneOffset: [true, 0]
 		}
-		if (apiLen[name] && apiLen[name][0] && api.length != apiLen[name][1]) {
+		if (apiLen[name] && apiLen[name][0] && apiFunction.length != apiLen[name][1]) {
 			return {
-				[`Expected length ${apiLen[name][1]} and got ${api.length}`]: true
+				[`Expected length ${apiLen[name][1]} and got ${apiFunction.length}`]: true
 			}
 		}
 		return false
 	}
 
-	const testEntries = api => {
+	const testEntries = apiFunction => {
 		const objectFail = {
 			entries: 0,
 			keys: 0,
 			values: 0
 		}
 		let totalFail = 0
-		const objEntriesLen = Object.entries(api).length
-		const objKeysLen = Object.keys(api).length
-		const objKeysValues = Object.values(api).length
+		const objEntriesLen = Object.entries(apiFunction).length
+		const objKeysLen = Object.keys(apiFunction).length
+		const objKeysValues = Object.values(apiFunction).length
 		if (!!objEntriesLen) {
 			totalFail++
 			objectFail.entries = objEntriesLen
@@ -428,8 +428,8 @@
 		return false
 	}
 
-	const testPrototype = api => {
-		if ('prototype' in api) {
+	const testPrototype = apiFunction => {
+		if ('prototype' in apiFunction) {
 			return {
 				[`Unexpected 'prototype' in function`]: true
 			}
@@ -437,9 +437,9 @@
 		return false
 	}
 
-	const testNew = api => {
+	const testNew = apiFunction => {
 		try {
-			new api
+			new apiFunction
 			return {
 				['Expected new to throw an error']: true
 			}
@@ -450,8 +450,8 @@
 		}
 	}
 
-	const testName = (api, name) => {
-		const { name: apiName } = api
+	const testName = (apiFunction, name) => {
+		const { name: apiName } = apiFunction
 		if (apiName != '' && apiName != name) {
 			return {
 				[`Expected name "${name}" and got "${apiName}"`]: true
@@ -460,8 +460,8 @@
 		return false
 	}
 
-	const testToString = (api, fnToStr, contentWindow) => {
-		const { toString: apiToString } = api
+	const testToString = (apiFunction, fnToStr, contentWindow) => {
+		const { toString: apiToString } = apiFunction
 		if (apiToString+'' !== fnToStr || apiToString.toString+'' !== fnToStr) {
 			return {
 				[`Expected toString to match ${contentWindow ? 'contentWindow.' : ''}Function.toString`]: true
@@ -470,18 +470,18 @@
 		return false
 	}
 
-	const testOwnProperty = api => {
+	const testOwnProperty = apiFunction => {
 		const notOwnProperties = []
-		if (api.hasOwnProperty('arguments')) {
+		if (apiFunction.hasOwnProperty('arguments')) {
 			notOwnProperties.push('arguments')
 		}
-		if (api.hasOwnProperty('caller')) {
+		if (apiFunction.hasOwnProperty('caller')) {
 			notOwnProperties.push('caller')
 		}
-		if (api.hasOwnProperty('prototype')) {
+		if (apiFunction.hasOwnProperty('prototype')) {
 			notOwnProperties.push('prototype')
 		}
-		if (api.hasOwnProperty('toString')) {
+		if (apiFunction.hasOwnProperty('toString')) {
 			notOwnProperties.push('toString')
 		}
 		if (!!notOwnProperties.length) {
@@ -492,22 +492,22 @@
 		return false
 	}
 
-	const testOwnPropertyDescriptor = api => {
+	const testOwnPropertyDescriptor = apiFunction => {
 		const notDescriptors = []
-		if (!!Object.getOwnPropertyDescriptor(api, 'arguments') ||
-			!!Reflect.getOwnPropertyDescriptor(api, 'arguments')) {
+		if (!!Object.getOwnPropertyDescriptor(apiFunction, 'arguments') ||
+			!!Reflect.getOwnPropertyDescriptor(apiFunction, 'arguments')) {
 			notDescriptors.push('arguments')
 		}
-		if (!!Object.getOwnPropertyDescriptor(api, 'caller') ||
-			!!Reflect.getOwnPropertyDescriptor(api, 'caller')) {
+		if (!!Object.getOwnPropertyDescriptor(apiFunction, 'caller') ||
+			!!Reflect.getOwnPropertyDescriptor(apiFunction, 'caller')) {
 			notDescriptors.push('caller')
 		}
-		if (!!Object.getOwnPropertyDescriptor(api, 'prototype') ||
-			!!Reflect.getOwnPropertyDescriptor(api, 'prototype')) {
+		if (!!Object.getOwnPropertyDescriptor(apiFunction, 'prototype') ||
+			!!Reflect.getOwnPropertyDescriptor(apiFunction, 'prototype')) {
 			notDescriptors.push('prototype')
 		}
-		if (!!Object.getOwnPropertyDescriptor(api, 'toString') ||
-			!!Reflect.getOwnPropertyDescriptor(api, 'toString')) {
+		if (!!Object.getOwnPropertyDescriptor(apiFunction, 'toString') ||
+			!!Reflect.getOwnPropertyDescriptor(apiFunction, 'toString')) {
 			notDescriptors.push('toString')
 		}
 		if (!!notDescriptors.length) {
@@ -518,8 +518,8 @@
 		return
 	}
 	
-	const testDescriptorKeys = api => {
-		const descriptorKeys = Object.keys(Object.getOwnPropertyDescriptors(api))
+	const testDescriptorKeys = apiFunction => {
+		const descriptorKeys = Object.keys(Object.getOwnPropertyDescriptors(apiFunction))
 		if (''+descriptorKeys != 'length,name' && ''+descriptorKeys != 'name,length') {
 			return {
 				['Expected own property descriptor keys [length, name]']: true
@@ -528,8 +528,8 @@
 		return false
 	}
 
-	const testOwnPropertyNames = api => {
-		const ownPropertyNames = Object.getOwnPropertyNames(api)
+	const testOwnPropertyNames = apiFunction => {
+		const ownPropertyNames = Object.getOwnPropertyNames(apiFunction)
 		if (''+ownPropertyNames != 'length,name' && ''+ownPropertyNames != 'name,length') {
 			return {
 				['Expected own property names [length, name]']: true
@@ -538,8 +538,8 @@
 		return false
 	}
 
-	const testOwnKeys = api => {
-		const ownKeys = Reflect.ownKeys(api)
+	const testOwnKeys = apiFunction => {
+		const ownKeys = Reflect.ownKeys(apiFunction)
 		if (''+ownKeys != 'length,name' && ''+ownKeys != 'name,length') {
 			return {
 				['Expected own keys [length, name]']: true
@@ -561,10 +561,10 @@
 		return false
 	}
 
-	const testGetToString = (obj, name) => {
+	const testGetToString = (proto, name) => {
 		try {
-			Object.getOwnPropertyDescriptor(obj, name).get.toString()
-			Reflect.getOwnPropertyDescriptor(obj, name).get.toString()
+			Object.getOwnPropertyDescriptor(proto, name).get.toString()
+			Reflect.getOwnPropertyDescriptor(proto, name).get.toString()
 			return {
 				['Expected descriptor.get.toString() to throw an error']: true
 			}
