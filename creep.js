@@ -3043,8 +3043,6 @@
 					return undefined
 				}
 				const writingSystemKeys = await getWritingSystemKeys()		
-				const dateGetTimezoneOffset = attempt(() => Date.prototype.getTimezoneOffset)
-				const dateProto = contentWindowDate.prototype
 				const timezoneOffset = new contentWindowDate().getTimezoneOffset()
 				const timezoneOffsetComputed = computeTimezoneOffset()
 				const timezoneOffsetMeasured = measureTimezoneOffset(timezoneOffset)
@@ -3056,14 +3054,16 @@
 				const relativeTime = getRelativeTime()
 				const locale = getLocale()
 				// document lies
-				lied = lieProps['Date.getTimezoneOffset']
-				lied = lieProps['Intl.Collator.resolvedOptions']
-				lied = lieProps['Intl.DateTimeFormat.resolvedOptions']
-				lied = lieProps['Intl.DisplayNames.resolvedOptions']
-				lied = lieProps['Intl.ListFormat.resolvedOptions']
-				lied = lieProps['Intl.NumberFormat.resolvedOptions']
-				lied = lieProps['Intl.PluralRules.resolvedOptions']
-				lied = lieProps['Intl.RelativeTimeFormat.resolvedOptions']
+				lied = (
+					lieProps['Date.getTimezoneOffset'] ||
+					lieProps['Intl.Collator.resolvedOptions'] ||
+					lieProps['Intl.DateTimeFormat.resolvedOptions'] ||
+					lieProps['Intl.DisplayNames.resolvedOptions'] ||
+					lieProps['Intl.ListFormat.resolvedOptions'] ||
+					lieProps['Intl.NumberFormat.resolvedOptions'] ||
+					lieProps['Intl.PluralRules.resolvedOptions'] ||
+					lieProps['Intl.RelativeTimeFormat.resolvedOptions']
+				)
 				const seasonLie = timezoneOffsetMeasured.lie ? { fingerprint: '', lies: [{ ['timezone seasons disagree']: true }] } : false
 				const localeLie = locale.lie ? { fingerprint: '', lies: [{ ['Intl locales mismatch']: true }] } : false
 				const offsetLie = !matchingOffsets ? { fingerprint: '', lies: [{ ['timezone offsets mismatch']: true }] } : false
@@ -3102,7 +3102,7 @@
 					<div>hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
 					<div>timezone: ${timezone}</div>
 					<div>timezone location: ${timezoneLocation}</div>
-					<div>timezone offset: ${matchingOffsets}</div>
+					<div>timezone offset: ${timezoneOffset}</div>
 					<div>timezone offset computed: ${''+timezoneOffsetComputed}</div>
 					<div>matching offsets: ${''+matchingOffsets}</div>
 					<div>timezone measured: ${measuredTimezones}</div>
