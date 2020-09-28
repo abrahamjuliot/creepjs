@@ -60,22 +60,17 @@ table {
 
 body { 
 	box-sizing: border-box;
-	font-family: monospace;
+	font-family: monospace !important;
 	color: var(--text);
 	height: 100vh;
 }
 
-#fp-app {
-    width: 100px;
-    height: 50px;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    margin: auto;
-    text-align: center;
+.ellipsis {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
+
 .app-loader {
 	width: 200px;
     height: 200px;
@@ -172,7 +167,7 @@ body {
 	display: none;
 }
 strong {
-	font-weight: bold;
+	font-weight: bold !important;
 }
 visitor {
     display: block;
@@ -197,6 +192,22 @@ visitor {
 	margin: 10px 0;
 	box-shadow: 0px 2px 2px 0px #cfd0d1;
 }
+
+#fingerprint-data .fingerprint-header {
+    position: fixed;
+    top: 0;
+    background: #ffffffeb;
+    right: 0;
+    left: 0;
+    z-index: 99;
+    max-width: 730px;
+    margin: 0 auto;
+}
+
+#fingerprint-data .visitor-info {
+	margin-top: 115px;
+}
+
 .time {
 	color: #bbb;
 }
@@ -211,9 +222,11 @@ visitor {
 	box-shadow: none;
 }
 #fingerprint-data .trash,
-#fingerprint-data .lies,
-#fingerprint-data .blocked {
+#fingerprint-data .lies {
 	background: var(--error);
+}
+#fingerprint-data .blocked {
+	background: #eee;
 }
 #fingerprint-data .errors {
 	background: var(--warn);
@@ -231,15 +244,35 @@ visitor {
 	background: #eee;
 }
 
-#fingerprint-data .lie-fingerprint {
-	background: #f9f9f9;
-    padding: 15px;
-    margin: 10px 0;
-}
-
 #fingerprint-data .trusted-fingerprint {
 	font-size: 18px;
 	font-weight: bold;
+}
+
+.grade-A,
+.grade-B,
+.grade-C,
+.grade-D,
+.grade-F {
+	color: #fff;
+	border-radius: 3px;
+	padding: 1px 5px;
+	animation: fade-in 1s cubic-bezier(0.77, 0, 0.175, 1.5) both;
+}
+.grade-A {
+	background: #2da568;
+}
+.grade-B {
+	background: #65b3ca;
+}
+.grade-C {
+	background: #657fca;
+}
+.grade-D {
+	background: #9165ca;
+}
+.grade-F {
+	background: #ca656e;
 }
 
 @keyframes fade-in {
@@ -366,6 +399,8 @@ input[type="radio"] {
     visibility: hidden;
   }
 }
+
+
 /*
   --text: var(--grey);
   --error: var(--red);

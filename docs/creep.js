@@ -34,10 +34,13 @@
 		return undefined
 	}
 
-	const attempt = fn => {
+	const attempt = (fn, customMessage = null) => {
 		try {
 			return fn()
 		} catch (error) {
+			if (customMessage) {
+				return captureError(error, customMessage)
+			}
 			return captureError(error)
 		}
 	}
@@ -145,7 +148,7 @@
 	const note = {
 		unsupported: '<span class="blocked">blocked</span> or unsupported',
 		blocked: '<span class="blocked">blocked</span>',
-		lied: '<span class="blocked">lied</span>'
+		lied: '<span class="lies">lied</span>'
 	}
 	const pluralify = len => len > 1 ? 's' : ''
 	const toJSONFormat = obj => JSON.stringify(obj, null, '\t')
@@ -208,31 +211,124 @@
 	}
 
 	// nested contentWindow context
+	const validateContentWindow = iframe => {
+		if (!iframe.contentWindow) { throw new Error('blocked by client') }
+		return iframe
+	}
 	const getNestedContentWindowContext = instanceId => {
 		return new Promise(resolve => {
 			const allowScripts = () => !isFirefox && !isChrome ? 'allow-scripts ' : ''
 			try {
 				const thisSiteCantBeReached = `about:${instanceId}` // url must yield 'this site cant be reached' error
-				const createIframe = (doc, id, contentWindow = false) => {
+				const createIframe = (win, id) => {
+					const doc = win.document
 					const iframe = doc.createElement('iframe')
 					iframe.setAttribute('id', id)
-					iframe.setAttribute('style', 'visibility: hidden; height: 0')
+					iframe.setAttribute('style', 'display:none')
 					iframe.setAttribute('sandbox', `${allowScripts()}allow-same-origin`)
+					const placeholder = doc.createElement('div')
+					placeholder.setAttribute('style', 'display:none')
+					const placeholderId = `${instanceId}-contentWindow-placeholder`
+					placeholder.setAttribute('id', placeholderId)
+
 					if (isChrome) {
 						iframe.src = thisSiteCantBeReached 
 					}
-					doc.body.appendChild(iframe)
-					const rendered = doc.getElementById(id)
+
+					let rendered = win
+					
+					try {
+						doc.body.append(iframe)
+						rendered = validateContentWindow(iframe)
+					}
+					catch(error) {
+						captureError(error, 'client tampered with append')
+					}
+
+					try {
+						doc.body.prepend(iframe)
+						rendered = validateContentWindow(iframe)
+					}
+					catch(error) {
+						captureError(error, 'client tampered with prepend')
+					}
+
+					try {
+						doc.body.appendChild(iframe)
+						rendered = validateContentWindow(iframe)
+					}
+					catch(error) {
+						captureError(error, 'client tampered with appendChild')
+					}
+
+					try {
+						doc.body.appendChild(placeholder)
+						placeholder.replaceWith(iframe)
+						rendered = validateContentWindow(iframe)
+					}
+					catch(error) {
+						captureError(error, 'client tampered with replaceWith')
+					}
+
+					try {
+						doc.body.insertBefore(iframe, win.parent.firstChild)
+						rendered = validateContentWindow(iframe)
+					}
+					catch(error) {
+						captureError(error, 'client tampered with insertBefore')
+					}
+
+					try {
+						doc.body.appendChild(placeholder)
+						doc.body.replaceChild(iframe, placeholder)
+						rendered = validateContentWindow(iframe)
+					}
+					catch(error) {
+						captureError(error, 'client tampered with replaceChild')
+					}
+
+					try {
+						doc.body.insertAdjacentElement('afterend', iframe)
+						rendered = validateContentWindow(iframe)
+					}
+					catch(error) {
+						captureError(error, 'client tampered with insertAdjacentElement afterend')
+					}
+
+					try {
+						doc.body.insertAdjacentElement('beforeend', iframe)
+						rendered = validateContentWindow(iframe)
+					}
+					catch(error) {
+						captureError(error, 'client tampered with insertAdjacentElement beforeend')
+					}
+
+					try {
+						doc.body.insertAdjacentElement('beforebegin', iframe)
+						rendered = validateContentWindow(iframe)
+					}
+					catch(error) {
+						captureError(error, 'client tampered with insertAdjacentElement beforebegin')
+					}
+
+					try {
+						doc.body.insertAdjacentElement('afterbegin', iframe)
+						rendered = validateContentWindow(iframe)
+					}
+					catch(error) {
+						captureError(error, 'client tampered with insertAdjacentElement afterbegin')
+					}
+
 					return {
 						el: rendered,
-						context: rendered[contentWindow ? 'contentWindow' : 'contentDocument'],
+						context: rendered.contentWindow,
 						remove: () => rendered.parentNode.removeChild(rendered)
 					}
 				}
-				const parentIframe = createIframe(document, `${instanceId}-parent-iframe`)
+				const parentIframe = createIframe(window, `${instanceId}-parent-iframe`)
 				const {
 					context: contentWindow
-				} = createIframe(parentIframe.context, `${instanceId}-nested-iframe`, true)
+				} = createIframe(parentIframe.context, `${instanceId}-nested-iframe`)
 
 				if (isChrome) { contentWindow.location = thisSiteCantBeReached  }
 
@@ -250,108 +346,340 @@
 	const { contentWindow, parentIframe  } = await getNestedContentWindowContext(instanceId)
 
 	// detect and fingerprint Function API lies
-	const native = (result, str) => {
+	const native = (result, str, willHaveBlanks = false) => {
 		const chrome = `function ${str}() { [native code] }`
 		const chromeGet = `function get ${str}() { [native code] }`
 		const firefox = `function ${str}() {\n    [native code]\n}`
-		return result == chrome || result == chromeGet || result == firefox
+		const chromeBlank = `function () { [native code] }`
+		const firefoxBlank = `function () {\n    [native code]\n}`
+		return (
+			result == chrome ||
+			result == chromeGet ||
+			result == firefox || (
+				willHaveBlanks && (result == chromeBlank || result == firefoxBlank)
+			)
+		)
 	}
-	const hasLiedStringAPI = () => {
-		let lies = []
 
-		// detect attempts to rewrite Function.prototype.toString conversion APIs
-		const toString = (
+	const testLookupGetter = (proto, name) => {
+		if (proto.__lookupGetter__(name)) {
+			return {
+				[`Expected __lookupGetter__ to return undefined`]: true
+			}
+		}
+		return false
+	}
+
+	const testLength = (apiFunction, name) => {
+		const apiLen = {
+			createElement: [true, 1],
+			createElementNS: [true, 2],
+			toBlob: [true, 1],
+			getImageData: [true, 4],
+			measureText: [true, 1],
+			toDataURL: [true, 0],
+			getContext: [true, 1],
+			getParameter: [true, 1],
+			getExtension: [true, 1],
+			getSupportedExtensions: [true, 0],
+			getParameter: [true, 1],
+			getExtension: [true, 1],
+			getSupportedExtensions: [true, 0],
+			getClientRects: [true, 0],
+			getChannelData: [true, 1],
+			copyFromChannel: [true, 2],
+			getTimezoneOffset: [true, 0]
+		}
+		if (apiLen[name] && apiLen[name][0] && apiFunction.length != apiLen[name][1]) {
+			return {
+				[`Expected length ${apiLen[name][1]} and got ${apiFunction.length}`]: true
+			}
+		}
+		return false
+	}
+
+	const testEntries = apiFunction => {
+		const objectFail = {
+			entries: 0,
+			keys: 0,
+			values: 0
+		}
+		let totalFail = 0
+		const objEntriesLen = Object.entries(apiFunction).length
+		const objKeysLen = Object.keys(apiFunction).length
+		const objKeysValues = Object.values(apiFunction).length
+		if (!!objEntriesLen) {
+			totalFail++
+			objectFail.entries = objEntriesLen
+		}
+		if (!!objKeysLen) {
+			totalFail++
+			objectFail.keys = objKeysLen
+		}
+		if (!!objKeysValues) {
+			totalFail++
+			objectFail.values = objKeysValues
+		}
+		if (totalFail) {
+			return {
+				[`Expected entries, keys, values [0, 0, 0] and got [${objectFail.entries}, ${objectFail.keys}, ${objectFail.values}]`]: true
+			}
+		}
+		return false
+	}
+
+	const testPrototype = apiFunction => {
+		if ('prototype' in apiFunction) {
+			return {
+				[`Unexpected 'prototype' in function`]: true
+			}
+		} 
+		return false
+	}
+
+	const testNew = apiFunction => {
+		try {
+			new apiFunction
+			return {
+				['Expected new to throw an error']: true
+			}
+		}
+		catch (error) {
+			// Native throws error
+			return false
+		}
+	}
+
+	const testName = (apiFunction, name) => {
+		const { name: apiName } = apiFunction
+		if (apiName != '' && apiName != name) {
+			return {
+				[`Expected name "${name}" and got "${apiName}"`]: true
+			}
+		}
+		return false
+	}
+
+	const testToString = (apiFunction, fnToStr, contentWindow) => {
+		const { toString: apiToString } = apiFunction
+		if (apiToString+'' !== fnToStr || apiToString.toString+'' !== fnToStr) {
+			return {
+				[`Expected toString to match ${contentWindow ? 'contentWindow.' : ''}Function.toString`]: true
+			}
+		}
+		return false
+	}
+
+	const testOwnProperty = apiFunction => {
+		const notOwnProperties = []
+		if (apiFunction.hasOwnProperty('arguments')) {
+			notOwnProperties.push('arguments')
+		}
+		if (apiFunction.hasOwnProperty('caller')) {
+			notOwnProperties.push('caller')
+		}
+		if (apiFunction.hasOwnProperty('prototype')) {
+			notOwnProperties.push('prototype')
+		}
+		if (apiFunction.hasOwnProperty('toString')) {
+			notOwnProperties.push('toString')
+		}
+		if (!!notOwnProperties.length) {
+			return {
+				[`Unexpected own property: ${notOwnProperties.join(', ')}`]: true
+			}
+		}
+		return false
+	}
+
+	const testOwnPropertyDescriptor = apiFunction => {
+		const notDescriptors = []
+		if (!!Object.getOwnPropertyDescriptor(apiFunction, 'arguments') ||
+			!!Reflect.getOwnPropertyDescriptor(apiFunction, 'arguments')) {
+			notDescriptors.push('arguments')
+		}
+		if (!!Object.getOwnPropertyDescriptor(apiFunction, 'caller') ||
+			!!Reflect.getOwnPropertyDescriptor(apiFunction, 'caller')) {
+			notDescriptors.push('caller')
+		}
+		if (!!Object.getOwnPropertyDescriptor(apiFunction, 'prototype') ||
+			!!Reflect.getOwnPropertyDescriptor(apiFunction, 'prototype')) {
+			notDescriptors.push('prototype')
+		}
+		if (!!Object.getOwnPropertyDescriptor(apiFunction, 'toString') ||
+			!!Reflect.getOwnPropertyDescriptor(apiFunction, 'toString')) {
+			notDescriptors.push('toString')
+		}
+		if (!!notDescriptors.length) {
+			return {
+				[`Unexpected descriptor: ${notDescriptors.join(', ')}`]: true
+			}
+		}
+		return
+	}
+	
+	const testDescriptorKeys = apiFunction => {
+		const descriptorKeys = Object.keys(Object.getOwnPropertyDescriptors(apiFunction))
+		if (''+descriptorKeys != 'length,name' && ''+descriptorKeys != 'name,length') {
+			return {
+				['Expected own property descriptor keys [length, name]']: true
+			}
+		}
+		return false
+	}
+
+	const testOwnPropertyNames = apiFunction => {
+		const ownPropertyNames = Object.getOwnPropertyNames(apiFunction)
+		if (''+ownPropertyNames != 'length,name' && ''+ownPropertyNames != 'name,length') {
+			return {
+				['Expected own property names [length, name]']: true
+			}
+		}
+		return false
+	}
+
+	const testOwnKeys = apiFunction => {
+		const ownKeys = Reflect.ownKeys(apiFunction)
+		if (''+ownKeys != 'length,name' && ''+ownKeys != 'name,length') {
+			return {
+				['Expected own keys [length, name]']: true
+			}
+		}
+		return false
+	}
+
+	const testDescriptor = (proto, name) => {
+		const descriptor = Object.getOwnPropertyDescriptor(proto, name)
+		const ownPropLen = Object.getOwnPropertyNames(descriptor).length
+		const ownKeysLen = Reflect.ownKeys(descriptor).length
+		const keysLen = Object.keys(descriptor).length
+		if (ownPropLen != keysLen || ownPropLen != ownKeysLen) {
+			return {
+				['Expected keys and own property names to match in length']: true
+			}
+		}
+		return false
+	}
+
+	const testGetToString = (proto, name) => {
+		try {
+			Object.getOwnPropertyDescriptor(proto, name).get.toString()
+			Reflect.getOwnPropertyDescriptor(proto, name).get.toString()
+			return {
+				['Expected descriptor.get.toString() to throw an error']: true
+			}
+		}
+		catch (error) {
+			// Native throws error
+			return false
+		}
+	}
+
+	const testIllegal = (api, name) => {
+		let illegalCount = 0
+		const illegal = [
+			'',
+			'is',
+			'call',
+			'seal',
+			'keys',
+			'bind',
+			'apply',
+			'assign',
+			'freeze',
+			'values',
+			'entries',
+			'toString',
+			'isFrozen',
+			'isSealed',
+			'constructor',
+			'isExtensible',
+			'getPrototypeOf',
+			'preventExtensions',
+			'propertyIsEnumerable',
+			'getOwnPropertySymbols',
+			'getOwnPropertyDescriptors'
+		]
+		try {
+			api[name]
+			illegalCount++
+		}
+		catch (error) {
+			// Native throws error
+		}
+		illegal.forEach((prop, index) => {
+			try {
+				!prop ? Object(api[name]) : Object[prop](api[name])
+				illegalCount++
+			}
+			catch (error) {
+				// Native throws error
+			}
+		})
+		if (illegalCount) {
+			const total = illegal.length+1
+			return {
+				[`Expected illegal invocation error: ${total-illegalCount} of ${total} passed`]: true
+			}
+		}
+		return false
+	}
+
+	const testValue = (obj, name) => {
+		try {
+			Object.getOwnPropertyDescriptor(obj, name).value
+			Reflect.getOwnPropertyDescriptor(obj, name).value
+			return {
+				['Expected descriptor.value to throw an error']: true
+			}
+		}
+		catch (error) {
+			// Native throws error
+			return false
+		}
+	}
+
+	const hasLiedAPI = (api, name, obj) => {
+		
+		const fnToStr = (
 			contentWindow ? 
 			contentWindow.Function.prototype.toString.call(Function.prototype.toString) : // aggressive test
-			Function.prototype.toString
+			Function.prototype.toString+''
 		)
-		if (!native(toString, 'toString')) {
-			lies.push({ ['failed API toString test']: toString })
-		}
 
-		return () => lies
-	}
-	const stringAPILieTypes = hasLiedStringAPI() // compute and cache result
-	const hasLiedAPI = (api, name, obj = undefined) => {
-		const { toString: fnToStr } = Function.prototype
+		let willHaveBlanks = false
+		try {
+			willHaveBlanks = obj && (obj+'' == '[object Navigator]' || obj+'' == '[object Document]')
+		}
+		catch (error) { }
 
 		if (typeof api == 'function') {
-			let lies = [...stringAPILieTypes()]
-			let fingerprint = ''
-
-			// detect attempts to rename the API and/or rewrite toString
-			const { name: apiName, toString: apiToString } = api
-			if (apiName != name) {
-				lies.push({
-					['failed API name test']: !proxyBehavior(apiName) ? apiName: true
-				})
-			}
-			if (apiToString !== fnToStr || apiToString.toString !== fnToStr) {
-				lies.push({
-					['failed API toString test']: !proxyBehavior(apiToString) ? apiToString: true
-				})
-			}
-
-			// detect attempts to tamper with getter
-			if (obj) {
-				try {
-					Object.getOwnPropertyDescriptor(obj, name).get.toString()
-					lies.push({
-						['failed API get test']: true
-					})
-				}
-				catch (error) {
-					// Native throws error
-				}
-			}
-
-			// collect string conversion result
-			const result = (
-				contentWindow ? 
-				contentWindow.Function.prototype.toString.call(api) :
-				'' + api
-			)
-
-			// fingerprint result if it does not match native code
-			if (!native(result, name)) {
-				fingerprint = result
-			}
-			
-			return {
-				lie: lies.length || fingerprint ? { lies, fingerprint } : false 
-			}
-		}
-
-		if (typeof api == 'object' && caniuse(() => obj[name]) != undefined) {
-			const apiFunction = Object.getOwnPropertyDescriptor(api, name).get
-			let lies = [...stringAPILieTypes()]
-			let fingerprint = ''
-
-			// detect attempts to rename the API and/or rewrite toString
+			const proto = obj
+			const apiFunction = api
 			try {
-				const { name: apiName, toString: apiToString } = apiFunction
-				if (apiName != `get ${name}` && apiName != name) {
-					lies.push({
-						['failed API name test']: !proxyBehavior(apiName) ? apiName: true
-					})
-				}
-				if (apiToString !== fnToStr || apiToString.toString !== fnToStr) {
-					lies.push({
-						['failed API toString test']: !proxyBehavior(apiToString) ? apiToString : true
-					})
-				}
+				const testResults = new Set(
+					[
+						testLookupGetter(proto, name),
+						testLength(apiFunction, name),
+						testEntries(apiFunction),
+						testGetToString(proto, name),
 
-				if (obj) {
-					try {
-						const definedPropertyValue = Object.getOwnPropertyDescriptor(obj, name).value
-						lies.push({
-							['failed API value test']: true
-						})
-					}
-					catch (error) {
-						// Native throws error
-					}
-				}
+						// common tests
+						testPrototype(apiFunction),
+						testNew(apiFunction),
+						testName(apiFunction, name),
+						testToString(apiFunction, fnToStr, contentWindow),
+						testOwnProperty(apiFunction),
+						testOwnPropertyDescriptor(apiFunction),
+						testDescriptorKeys(apiFunction),
+						testOwnPropertyNames(apiFunction),
+						testOwnKeys(apiFunction),
+						testDescriptor(proto, name)
+					]
+				)
+				testResults.delete(false)
+				testResults.delete(undefined)
+				const lies = [...testResults]
 
 				// collect string conversion result
 				const result = (
@@ -359,10 +687,82 @@
 					contentWindow.Function.prototype.toString.call(apiFunction) :
 					'' + apiFunction
 				)
+				
+				// fingerprint result if it does not match native code
+				let fingerprint = ''
+				if (!native(result, name, willHaveBlanks)) {
+					fingerprint = result
+				}
+				
+				return {
+					lie: lies.length || fingerprint ? { lies, fingerprint } : false 
+				}
+			}
+			catch (error) {
+				captureError(error)
+				return false
+			}
+		}
+
+		if (typeof api == 'object' && caniuse(() => obj[name]) != undefined) {
+				
+			try {
+				const proto = api
+				const apiFunction = Object.getOwnPropertyDescriptor(api, name).get
+				const testResults = new Set(
+					[
+						testIllegal(api, name),
+						testValue(obj, name),
+						
+						// common tests
+						testPrototype(apiFunction),
+						testNew(apiFunction),
+						testName(apiFunction, name),
+						testToString(apiFunction, fnToStr, contentWindow),
+						testOwnProperty(apiFunction),
+						testOwnPropertyDescriptor(apiFunction),
+						testDescriptorKeys(apiFunction),
+						testOwnPropertyNames(apiFunction),
+						testOwnKeys(apiFunction),
+						testDescriptor(proto, name)
+					]
+				)
+				testResults.delete(false)
+				testResults.delete(undefined)
+				const lies = [...testResults]
+				// collect string conversion result
+				const result = (
+					contentWindow ? 
+					contentWindow.Function.prototype.toString.call(apiFunction) :
+					'' + apiFunction
+				)
+
+				let objlookupGetter, apiProtoLookupGetter, result2, result3
+				if (obj) {
+					objlookupGetter = obj.__lookupGetter__(name)
+					apiProtoLookupGetter = api.__lookupGetter__(name)
+					const contentWindowResult = (
+						typeof objlookupGetter != 'function' ? undefined : 
+						attempt(() => contentWindow.Function.prototype.toString.call(objlookupGetter))
+					)
+					result2 = (
+						contentWindowResult ? 
+						contentWindowResult :
+						'' + objlookupGetter
+					)
+					result3 = '' + apiProtoLookupGetter
+				}
 
 				// fingerprint result if it does not match native code
-				if (!native(result, name)) {
+				let fingerprint = ''
+				if (!native(result, name, willHaveBlanks)) {
 					fingerprint = result
+				}
+				else if (obj && !native(result2, name, willHaveBlanks)) {
+					fingerprint = result2
+				}
+				else if (obj && !native(result3, name, willHaveBlanks)) {
+					fingerprint = result3 != 'undefined' ? result3 : ''
 				}
 
 				return {
@@ -372,7 +772,6 @@
 			catch (error) {
 				captureError(error)
 				return false
-				
 			}
 		}
 
@@ -401,6 +800,7 @@
 			'a8c7362bfa3851b0ea294c075f5708b73b679b484498989d7fde311441ed3322': 'Chromium',
 			'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': 'Firefox',
 			'bec95f2a6f1d2c815b154802467514f7b774ea64667e566acaf903db224c2b38': 'Firefox',
+			'7c95559c6754c42c0d87fa0339f8a7cc5ed092e7e91ae9e50d3212f7486fcbeb': 'Firefox',
 			'd420d594c5a7f7f9a93802eebc3bec3fba0ea2dde91843f6c4746121ef5da140': 'Safari'
 		}
 		return id[hash] ? id[hash] : 'Other'
@@ -416,6 +816,7 @@
 	}
 
 	// Collect lies detected
+	const lieProps = {}
 	const lieRecords = []
 	const documentLie = (name, lieResult, lieTypes) => {
 		return lieRecords.push({ name, lieTypes, hash: lieResult, lie: hashMini(lieTypes) })
@@ -428,6 +829,196 @@
 		return trusted ? val : sendToTrash(name, val)
 	}
 
+	// deep search lies
+	const getMethods = (obj, ignore) => {
+		if (!obj) {
+			return []
+		}
+		return Object.getOwnPropertyNames(obj).filter(item => {
+			if (ignore[item]) {
+				// validate critical methods elsewhere
+				return false
+			}
+			try {
+				return typeof obj[item] === 'function'
+			}
+			catch (error) {
+				return false
+			}
+		})
+	}
+	const getValues = (obj, ignore) => {
+		if (!obj) {
+			return []
+		}
+		return Object.getOwnPropertyNames(obj).filter(item => {
+			if (ignore[item]) {
+				// validate critical methods elsewhere
+				return false
+			}
+			try {
+				return (
+					typeof obj[item] == 'string' ||
+					typeof obj[item] == 'number' ||
+					!obj[item]
+				)
+			}
+			catch (error) {
+				return false
+			}
+		})
+	}
+	const intlConstructors = {
+		'Collator': !0,
+		'DateTimeFormat': !0,
+		'DisplayNames': !0,
+		'ListFormat': !0,
+		'NumberFormat': !0,
+		'PluralRules': !0,
+		'RelativeTimeFormat': !0
+	}
+	const searchLies = (obj, ignoreProps, { logToConsole = false, proto = null } = {}) => {
+		if (!obj) {
+			return
+		}
+		let methods
+		const isMath = (obj+'' == '[object Math]')
+		const isTypeofObject = typeof obj == 'object'
+		if (isMath) {
+			methods = getMethods(obj, ignoreProps)
+		}
+		else if (isTypeofObject) {
+			methods = getValues(obj, ignoreProps)
+		}
+		else {
+			methods = getMethods(obj.prototype, ignoreProps)
+		}
+		return methods.forEach(name => {
+			let domManipLie
+			if (isMath) {
+				domManipLie = hasLiedAPI(obj[name], name, obj).lie
+				if (domManipLie) {
+					const apiName = `Math.${name}`
+					lieProps[apiName] = true
+					documentLie(apiName, undefined, domManipLie)
+				}
+			}
+			else if (isTypeofObject) {
+				domManipLie = hasLiedAPI(proto, name, obj).lie
+				if (domManipLie) {
+					const objName = /\s(.+)\]/g.exec(proto)[1]
+					const apiName = `${objName}.${name}`
+					lieProps[apiName] = true
+					documentLie(apiName, undefined, domManipLie)
+				}
+			}
+			else {
+				domManipLie = hasLiedAPI(obj.prototype[name], name, obj.prototype).lie
+				if (domManipLie) {
+					const objName = /\s(.+)\(\)/g.exec(obj)[1]
+					const apiName = `${intlConstructors[objName] ? 'Intl.' : ''}${objName}.${name}`
+					lieProps[apiName] = true
+					documentLie(apiName, undefined, domManipLie)
+				}
+			}
+			if (logToConsole) {
+				console.log(name, domManipLie)
+			}	
+		})
+	}
+	
+	searchLies(Node, {
+		constructor: !0
+	})
+	searchLies(Element, {
+		constructor: !0
+	})
+	searchLies(HTMLElement, {
+		constructor: !0,
+		requestFullscreen: !0 // in FF mobile, this does not appear native 
+	})
+	searchLies(HTMLCanvasElement, {
+		constructor: !0
+	})
+	searchLies(Navigator, {
+		constructor: !0
+	})
+	searchLies(navigator, {
+		constructor: !0
+	}, { logToConsole: false, proto: Navigator.prototype })
+	searchLies(Screen, {
+		constructor: !0
+	})
+	searchLies(screen, {
+		constructor: !0
+	}, { logToConsole: false, proto: Screen.prototype })
+	searchLies(Date, {
+		constructor: !0,
+		toGMTString: !0
+	})
+	searchLies(Intl.Collator, {
+		constructor: !0
+	})
+	searchLies(Intl.DateTimeFormat, {
+		constructor: !0
+	})
+	searchLies(caniuse(() => Intl.DisplayNames), {
+		constructor: !0
+	})
+	searchLies(Intl.ListFormat, {
+		constructor: !0
+	})
+	searchLies(Intl.NumberFormat, {
+		constructor: !0
+	})
+	searchLies(Intl.PluralRules, {
+		constructor: !0
+	})
+	searchLies(Intl.RelativeTimeFormat, {
+		constructor: !0
+	})	
+	searchLies(Function, {
+		constructor: !0
+	})
+	searchLies(caniuse(() => AnalyserNode), {
+		constructor: !0
+	})
+	searchLies(caniuse(() => AudioBuffer), {
+		constructor: !0
+	})
+	searchLies(SVGTextContentElement, {
+		constructor: !0
+	})
+	searchLies(CanvasRenderingContext2D, {
+		constructor: !0
+	})
+	searchLies(caniuse(() => WebGLRenderingContext), {
+		constructor: !0,
+		makeXRCompatible: !0, // ignore
+	})
+	searchLies(caniuse(() => WebGL2RenderingContext), {
+		constructor: !0,
+		makeXRCompatible: !0, // ignore
+	})
+	searchLies(Math, {
+		constructor: !0
+	})
+	searchLies(PluginArray, {
+		constructor: !0
+	})
+	searchLies(Plugin, {
+		constructor: !0
+	})
+	searchLies(Document, {
+		constructor: !0
+	})
+	searchLies(String, {
+		constructor: !0,
+		trimRight: !0,
+		trimLeft: !0
+	})
+	
+	
 	// system
 	const getOS = userAgent => {
 		const os = (
@@ -487,19 +1078,13 @@
 	const inlineWorker = async caniuse => {
 		let canvas2d = undefined
 		try {
-			const canvasOffscreen2d = new OffscreenCanvas(256, 256)
+			const canvasOffscreen2d = new OffscreenCanvas(500, 200)
 			const context2d = canvasOffscreen2d.getContext('2d')
-			const str = '%$%^LGFWE($HIF)'
-			context2d.font = '20px Arial'
-			context2d.fillText(str, 100, 100)
-			context2d.fillStyle = 'red'
+			const str = '!😃🙌🧠👩‍💻👟👧🏻👩🏻‍🦱👩🏻‍🦰👱🏻‍♀️👩🏻‍🦳👧🏼👧🏽👧🏾👧🏿🦄🐉🌊🍧🏄‍♀️🌠🔮♞'
+			context2d.font = '14px Arial'
+			context2d.fillText(str, 0, 50)
+			context2d.fillStyle = 'rgba(100, 200, 99, 0.78)'
 			context2d.fillRect(100, 30, 80, 50)
-			context2d.font = '32px Times New Roman'
-			context2d.fillStyle = 'blue'
-			context2d.fillText(str, 20, 70)
-			context2d.font = '20px Arial'
-			context2d.fillStyle = 'green'
-			context2d.fillText(str, 10, 50)
 			const getDataURI = async () => {
 				const blob = await canvasOffscreen2d.convertToBlob()
 				const reader = new FileReader()
@@ -566,20 +1151,20 @@
 					data.canvas2d = { dataURI: canvas2d, $hash: await hashify(canvas2d) }
 					const $hash = await hashify(data)
 					resolve({ ...data, $hash })
-					const el = document.getElementById(`${instanceId}-worker-scope`)
+					const el = document.getElementById('creep-worker-scope')
 					patch(el, html`
 					<div>
-						<strong>WorkerGlobalScope: Date/WorkerNavigator/OffscreenCanvas</strong>
-						<div>hash: ${$hash}</div>
+						<strong>WorkerGlobalScope</strong>
+						<div class="ellipsis">hash: ${$hash}</div>
 						${
 							Object.keys(data).map(key => {
 								const value = data[key]
 								return (
-									key != 'canvas2d' && key != 'userAgent'? `<div>${key}: ${value != undefined ? value : note.blocked}</div>` : ''
+									key != 'canvas2d' && key != 'userAgent'? `<div>${key}: ${value != undefined ? value : note.unsupported}</div>` : ''
 								)
 							}).join('')
 						}
-						<div>canvas 2d: ${data.canvas2d.$hash}</div>
+						<div class="ellipsis">canvas 2d: ${!!data.canvas2d.dataURI ? data.canvas2d.$hash : note.unsupported}</div>
 					</div>
 					`)
 					return
@@ -612,6 +1197,9 @@
 						window.mozRTCPeerConnection ||
 						window.msRTCPeerConnection
 					)
+				}
+				if (!rtcPeerConnection) {
+					return resolve(undefined)
 				}
 				const connection = new rtcPeerConnection({
 					iceServers: [{
@@ -659,16 +1247,16 @@
 						}
 						const $hash = await hashify(data)
 						resolve({ ...data, $hash })
-						const el = document.getElementById(`${instanceId}-webrtc`)
+						const el = document.getElementById('creep-webrtc')
 						patch(el, html`
 						<div>
 							<strong>RTCPeerConnection</strong>
-							<div>hash: ${$hash}</div>
+							<div class="ellipsis">hash: ${$hash}</div>
 							${
 								Object.keys(data).map(key => {
 									const value = data[key]
 									return (
-										`<div>${key}: ${value != undefined ? value : note.blocked}</div>`
+										`<div class="ellipsis">${key}: ${value != undefined ? value : note.blocked}</div>`
 									)
 								}).join('')
 							}
@@ -707,11 +1295,11 @@
 				data.uag = getOS(data.uag)
 				const $hash = await hashify(data)
 				resolve({ ...data, $hash })
-				const el = document.getElementById(`${instanceId}-cloudflare`)
+				const el = document.getElementById('creep-cloudflare')
 				patch(el, html`
 				<div>
 					<strong>Cloudflare</strong>
-					<div>hash: ${$hash}</div>
+					<div class="ellipsis">hash: ${$hash}</div>
 					${
 						Object.keys(data).map(key => {
 							const value = data[key]
@@ -741,28 +1329,40 @@
 	const getNavigator = (instanceId, workerScope) => {
 		return new Promise(async resolve => {
 			try {
+				let lied = (
+					lieProps['Navigator.appVersion'] ||
+					lieProps['Navigator.deviceMemory'] ||
+					lieProps['Navigator.doNotTrack'] ||
+					lieProps['Navigator.hardwareConcurrency'] ||
+					lieProps['Navigator.language'] ||
+					lieProps['Navigator.languages'] ||
+					lieProps['Navigator.maxTouchPoints'] ||
+					lieProps['Navigator.platform'] ||
+					lieProps['Navigator.userAgent'] ||
+					lieProps['Navigator.vendor'] ||
+					lieProps['Navigator.plugins'] ||
+					lieProps['Navigator.mimeTypes']
+				)
+
 				contentWindowNavigator = contentWindow ? contentWindow.navigator : navigator
 				const navigatorPrototype = attempt(() => Navigator.prototype)
 				const detectLies = (name, value) => {
 					const workerScopeValue = caniuse(() => workerScope, [name])
-					const workerScopeMatchLie = { lies: [{ ['does not match worker scope']: false }] }
+					const workerScopeMatchLie = { fingerprint: '', lies: [{ ['does not match worker scope']: false }] }
 					if (workerScopeValue) {
 						if (name == 'userAgent') {
 							const system = getOS(value)
 							if (workerScope.system != system) {
-								documentLie(name, system, workerScopeMatchLie)
+								lied = true
+								documentLie(`Navigator.${name}`, system, workerScopeMatchLie)
 								return value
 							}
 						}
 						else if (name != 'userAgent' && workerScopeValue != value) {
-							documentLie(name, value, workerScopeMatchLie)
+							lied = true
+							documentLie(`Navigator.${name}`, value, workerScopeMatchLie)
 							return value
 						}
-					}
-					const lie = navigatorPrototype ? hasLiedAPI(navigatorPrototype, name, navigator).lie : false
-					if (lie) {
-						documentLie(name, value, lie)
-						return value
 					}
 					return value
 				}
@@ -785,7 +1385,7 @@
 							sendToTrash('appVersion', `[${navigatorAppVersion}] does not match iframe`)
 						}
 						return appVersion
-					}),
+					}, 'appVersion failed'),
 					deviceMemory: attempt(() => {
 						if (!('deviceMemory' in navigator)) {
 							return undefined
@@ -800,7 +1400,6 @@
 							'6': true, 
 							'8': true
 						}
-						detectLies('deviceMemory', navigatorDeviceMemory)
 						trustInteger('deviceMemory - invalid return type', navigatorDeviceMemory)
 						if (!trusted[navigatorDeviceMemory]) {
 							sendToTrash('deviceMemory', `${navigatorDeviceMemory} is not within set [0, 1, 2, 4, 6, 8]`)
@@ -809,7 +1408,7 @@
 							sendToTrash('deviceMemory', `[${navigatorDeviceMemory}] does not match iframe`)
 						}
 						return deviceMemory
-					}),
+					}, 'deviceMemory failed'),
 					doNotTrack: attempt(() => {
 						const { doNotTrack } = contentWindowNavigator
 						const navigatorDoNotTrack = navigator.doNotTrack
@@ -824,12 +1423,11 @@
 							'null': true,
 							'undefined': true
 						}
-						detectLies('doNotTrack', navigatorDoNotTrack)
 						if (!trusted[navigatorDoNotTrack]) {
 							sendToTrash('doNotTrack - unusual result', navigatorDoNotTrack)
 						}
 						return doNotTrack
-					}),
+					}, 'doNotTrack failed'),
 					hardwareConcurrency: attempt(() => {
 						if (!('hardwareConcurrency' in navigator)) {
 							return undefined
@@ -845,7 +1443,7 @@
 							sendToTrash('hardwareConcurrency', `[${navigatorHardwareConcurrency}] does not match iframe`)
 						}
 						return hardwareConcurrency
-					}),
+					}, 'hardwareConcurrency failed'),
 					language: attempt(() => {
 						const { language, languages } = contentWindowNavigator
 						const navigatorLanguage = navigator.language
@@ -864,19 +1462,18 @@
 							return `${languages.join(', ')} (${language})`
 						}
 						return `${language} ${languages}`
-					}),
+					}, 'language(s) failed'),
 					maxTouchPoints: attempt(() => {
 						if (!('maxTouchPoints' in navigator)) {
 							return null
 						}
 						const { maxTouchPoints } = contentWindowNavigator
 						const navigatorMaxTouchPoints = navigator.maxTouchPoints
-						detectLies('maxTouchPoints', navigatorMaxTouchPoints)
 						if (maxTouchPoints != navigatorMaxTouchPoints) {
 							sendToTrash('maxTouchPoints', `[${navigatorMaxTouchPoints}] does not match iframe`)
 						}
 						return maxTouchPoints
-					}),
+					}, 'maxTouchPoints failed'),
 					platform: attempt(() => {
 						const { platform } = contentWindowNavigator
 						const navigatorPlatform = navigator.platform
@@ -906,23 +1503,22 @@
 							sendToTrash('userAgent', `[${navigatorUserAgent}] does not match iframe`)
 						}
 						return userAgent
-					}),
-					system: attempt(() => getOS(contentWindowNavigator.userAgent)),
+					}, 'userAgent failed'),
+					system: attempt(() => getOS(contentWindowNavigator.userAgent), 'userAgent system failed'),
 					vendor: attempt(() => {
 						const { vendor } = contentWindowNavigator
 						const navigatorVendor = navigator.vendor
-						detectLies('vendor', navigatorVendor)
 						if (vendor != navigatorVendor) {
 							sendToTrash('vendor', `[${navigatorVendor}] does not match iframe`)
 						}
 						return vendor
-					}),
+					}, 'vendor failed'),
 					mimeTypes: attempt(() => {
-						const mimeTypes = detectLies('mimeTypes', contentWindowNavigator.mimeTypes)
+						const mimeTypes = contentWindowNavigator.mimeTypes
 						return mimeTypes ? [...mimeTypes].map(m => m.type) : []
-					}),
+					}, 'mimeTypes failed'),
 					plugins: attempt(() => {
-						const plugins = detectLies('plugins', contentWindowNavigator.plugins)
+						const plugins = contentWindowNavigator.plugins
 						const response = plugins ? [...contentWindowNavigator.plugins]
 							.map(p => ({
 								name: p.name,
@@ -942,11 +1538,11 @@
 							})
 						}
 						return response
-					}),
+					}, 'mimeTypes failed'),
 					properties: attempt(() => {
 						const keys = Object.keys(Object.getPrototypeOf(contentWindowNavigator))
 						return keys
-					}),
+					}, 'navigator keys failed'),
 					highEntropyValues: await attempt(async () => { 
 						if (!('userAgentData' in contentWindowNavigator)) {
 							return undefined
@@ -955,11 +1551,11 @@
 							['platform', 'platformVersion', 'architecture',  'model', 'uaFullVersion']
 						)
 						return data
-					})
+					}, 'highEntropyValues failed')
 				}
 				const $hash = await hashify(data)
 				resolve({ ...data, $hash })
-				const id = `${instanceId}-navigator`
+				const id = 'creep-navigator'
 				const el = document.getElementById(id)
 				const { mimeTypes, plugins, highEntropyValues, properties } = data
 				const blocked = {
@@ -970,7 +1566,7 @@
 				patch(el, html`
 				<div>
 					<strong>Navigator</strong>
-					<div>hash: ${$hash}</div>
+					<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
 					${
 						Object.keys(data).map(key => {
 							const skip = [
@@ -1021,12 +1617,12 @@
 				const data = { keys, apple, moz, webkit } 
 				const $hash = await hashify(data)
 				resolve({ ...data, $hash })
-				const id = `${instanceId}-iframe-content-window-version`
+				const id = 'creep-iframe-content-window-version'
 				const el = document.getElementById(id)
 				patch(el, html`
 				<div>
 					<strong>HTMLIFrameElement.contentWindow</strong>
-					<div>hash: ${$hash}</div>
+					<div class="ellipsis">hash: ${$hash}</div>
 					<div>keys (${count(keys)}): ${keys && keys.length ? modal(id, keys.join(', ')) : note.blocked}</div>
 					<div>moz: ${''+moz}</div>
 					<div>webkit: ${''+webkit}</div>
@@ -1056,12 +1652,12 @@
 				}
 				const $hash = await hashify(keys)
 				resolve({ keys, $hash })
-				const elId = `${instanceId}-html-element-version`
+				const elId = 'creep-html-element-version'
 				const el = document.getElementById(elId)
 				patch(el, html`
 				<div>
 					<strong>HTMLElement</strong>
-					<div>hash: ${$hash}</div>
+					<div class="ellipsis">hash: ${$hash}</div>
 					<div>keys (${count(keys)}): ${keys && keys.length ? modal(elId, keys.join(', ')) : note.blocked}</div>
 				</div>
 				`)
@@ -1221,7 +1817,7 @@
 					'small-caption',
 					'status-bar'
 				]
-				const id = `${instanceId}-system-styles`
+				const id = 'creep-system-styles'
 				const el = document.createElement('div')
 				el.setAttribute('id', id)
 				document.body.append(el)
@@ -1282,17 +1878,17 @@
 				}
 				const $hash = await hashify(data)
 				resolve({ ...data, $hash })
-				const id = `${instanceId}-css-style-declaration-version`
+				const id = 'creep-css-style-declaration-version'
 				const el = document.getElementById(id)
 				patch(el, html`
 				<div>
 					<strong>CSSStyleDeclaration</strong>
-					<div>hash: ${$hash}</div>
+					<div class="ellipsis">hash: ${$hash}</div>
 					<div>prototype: ${htmlElementStyle.prototypeName}</div>
 					${
 						Object.keys(data).map(key => {
 							const value = data[key]
-							return key != 'matching' && key != 'system' ? `<div>${key}: ${value ? value.$hash : note.blocked}</div>` : ''
+							return key != 'matching' && key != 'system' ? `<div class="ellipsis">${key}: ${value ? value.$hash : note.blocked}</div>` : ''
 						}).join('')
 					}
 					<div>keys: ${getComputedStyle.keys.length}, ${htmlElementStyle.keys.length}, ${cssRuleListstyle.keys.length}
@@ -1304,7 +1900,7 @@
 					<div>apple: ${''+getComputedStyle.apple}, ${''+htmlElementStyle.apple}, ${''+cssRuleListstyle.apple}
 					</div>
 					<div>matching: ${''+data.matching}</div>
-					<div>system: ${system.$hash}</div>
+					<div class="ellipsis">system: ${system.$hash}</div>
 					<div>system styles: ${
 						system && system.colors ? modal(
 							`${id}-system-styles`,
@@ -1390,16 +1986,15 @@
 	const getScreen = instanceId => {
 		return new Promise(async resolve => {
 			try {
+				let lied = (
+					lieProps['Screen.width'] ||
+					lieProps['Screen.height'] ||
+					lieProps['Screen.availWidth'] ||
+					lieProps['Screen.availHeight'] ||
+					lieProps['Screen.colorDepth'] ||
+					lieProps['Screen.pixelDepth']
+				)
 				const contentWindowScreen = contentWindow && !isFirefox ? contentWindow.screen : screen
-				const screenPrototype = attempt(() => Screen.prototype)
-				const detectLies = (name, value) => {
-					const lie = screenPrototype ? hasLiedAPI(screenPrototype, name, screen).lie : false
-					if (lie) {
-						documentLie(name, value, lie)
-						return value
-					}
-					return value
-				}
 				const { width, height, availWidth, availHeight, colorDepth, pixelDepth } = contentWindowScreen
 				const {
 					width: screenWidth,
@@ -1409,13 +2004,6 @@
 					colorDepth: screenColorDepth,
 					pixelDepth: screenPixelDepth
 				} = screen
-
-				detectLies('width', screenWidth)
-				detectLies('height', screenHeight)
-				detectLies('availWidth', screenAvailWidth)
-				detectLies('availHeight', screenAvailHeight)
-				detectLies('colorDepth', screenColorDepth)
-				detectLies('pixelDepth', screenPixelDepth)
 
 				const matching = (
 					width == screenWidth &&
@@ -1473,11 +2061,11 @@
 				}
 				const $hash = await hashify(data)
 				resolve({ ...data, $hash })
-				const el = document.getElementById(`${instanceId}-screen`)
+				const el = document.getElementById('creep-screen')
 				patch(el, html`
 				<div>
 					<strong>Screen</strong>
-					<div>hash: ${$hash}</div>
+					<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
 					${
 						Object.keys(data).map(key => {
 							const value = data[key]
@@ -1509,13 +2097,13 @@
 					check.android = voices.filter(key => (/android/i).test(key.name)).length
 					const $hash = await hashify(voices)
 					resolve({ voices, ...check, $hash })
-					const id = `${instanceId}-voices`
+					const id = 'creep-voices'
 					const el = document.getElementById(id)
 					const voiceList = voices.map(voice => `${voice.name} (${voice.lang})`)
 					patch(el, html`
 					<div>
 						<strong>SpeechSynthesis</strong>
-						<div>hash: ${$hash}</div>
+						<div class="ellipsis">hash: ${$hash}</div>
 						<div>voices (${count(voices)}): ${voiceList && voiceList.length ? modal(id, voiceList.join('<br>')) : note.unsupported}</div>
 						<div>microsoft: ${''+check.microsoft}</div>
 						<div>google: ${''+check.google}</div>
@@ -1571,11 +2159,11 @@
 				)
 				const $hash = await hashify(mediaDevices)
 				resolve({ mediaDevices, $hash })
-				const el = document.getElementById(`${instanceId}-media-devices`)
+				const el = document.getElementById('creep-media-devices')
 				patch(el, html`
 				<div>
 					<strong>MediaDevicesInfo</strong>
-					<div>hash: ${$hash}</div>
+					<div class="ellipsis">hash: ${$hash}</div>
 					<div>devices (${count(mediaDevices)}): ${mediaDevices ? mediaDevices.map(device => device.kind).join(', ') : note.blocked}</div>
 				</div>
 				`)
@@ -1588,65 +2176,95 @@
 		})
 	}
 
-	// canvas
-	const canvasToDataURL = attempt(() => HTMLCanvasElement.prototype.toDataURL)
-	const canvasGetContext = attempt(() => HTMLCanvasElement.prototype.getContext)
-	const canvasProto = caniuse(() => HTMLCanvasElement, ['prototype'])
-	const dataLie = canvasToDataURL ? hasLiedAPI(canvasToDataURL, 'toDataURL', canvasProto).lie : false
-	const contextLie = canvasGetContext ? hasLiedAPI(canvasGetContext, 'getContext', canvasProto).lie : false
+	// media types
+	const mimeTypes = ['application/mp21','application/mp4','application/octet-stream','application/ogg','application/vnd.apple.mpegurl','application/vnd.ms-ss','application/vnd.ms-sstr+xml','application/x-mpegurl','application/x-mpegURL; codecs="avc1.42E01E"','audio/3gpp','audio/3gpp2','audio/aac','audio/ac-3','audio/ac3','audio/aiff','audio/basic','audio/ec-3','audio/flac','audio/m4a','audio/mid','audio/midi','audio/mp3','audio/mp4','audio/mp4; codecs="a3ds"','audio/mp4; codecs="A52"','audio/mp4; codecs="aac"','audio/mp4; codecs="ac-3"','audio/mp4; codecs="ac-4"','audio/mp4; codecs="ac3"','audio/mp4; codecs="alac"','audio/mp4; codecs="alaw"','audio/mp4; codecs="bogus"','audio/mp4; codecs="dra1"','audio/mp4; codecs="dts-"','audio/mp4; codecs="dts+"','audio/mp4; codecs="dtsc"','audio/mp4; codecs="dtse"','audio/mp4; codecs="dtsh"','audio/mp4; codecs="dtsl"','audio/mp4; codecs="dtsx"','audio/mp4; codecs="ec-3"','audio/mp4; codecs="enca"','audio/mp4; codecs="flac"','audio/mp4; codecs="g719"','audio/mp4; codecs="g726"','audio/mp4; codecs="m4ae"','audio/mp4; codecs="mha1"','audio/mp4; codecs="mha2"','audio/mp4; codecs="mhm1"','audio/mp4; codecs="mhm2"','audio/mp4; codecs="mlpa"','audio/mp4; codecs="mp3"','audio/mp4; codecs="mp4a.40.1"','audio/mp4; codecs="mp4a.40.12"','audio/mp4; codecs="mp4a.40.13"','audio/mp4; codecs="mp4a.40.14"','audio/mp4; codecs="mp4a.40.15"','audio/mp4; codecs="mp4a.40.16"','audio/mp4; codecs="mp4a.40.17"','audio/mp4; codecs="mp4a.40.19"','audio/mp4; codecs="mp4a.40.2"','audio/mp4; codecs="mp4a.40.20"','audio/mp4; codecs="mp4a.40.21"','audio/mp4; codecs="mp4a.40.22"','audio/mp4; codecs="mp4a.40.23"','audio/mp4; codecs="mp4a.40.24"','audio/mp4; codecs="mp4a.40.25"','audio/mp4; codecs="mp4a.40.26"','audio/mp4; codecs="mp4a.40.27"','audio/mp4; codecs="mp4a.40.28"','audio/mp4; codecs="mp4a.40.29"','audio/mp4; codecs="mp4a.40.3"','audio/mp4; codecs="mp4a.40.32"','audio/mp4; codecs="mp4a.40.33"','audio/mp4; codecs="mp4a.40.34"','audio/mp4; codecs="mp4a.40.35"','audio/mp4; codecs="mp4a.40.36"','audio/mp4; codecs="mp4a.40.4"','audio/mp4; codecs="mp4a.40.5"','audio/mp4; codecs="mp4a.40.6"','audio/mp4; codecs="mp4a.40.7"','audio/mp4; codecs="mp4a.40.8"','audio/mp4; codecs="mp4a.40.9"','audio/mp4; codecs="mp4a.40"','audio/mp4; codecs="mp4a.66"','audio/mp4; codecs="mp4a.67"','audio/mp4; codecs="mp4a.68"','audio/mp4; codecs="mp4a.69"','audio/mp4; codecs="mp4a.6B"','audio/mp4; codecs="mp4a"','audio/mp4; codecs="Opus"','audio/mp4; codecs="raw "','audio/mp4; codecs="samr"','audio/mp4; codecs="sawb"','audio/mp4; codecs="sawp"','audio/mp4; codecs="sevc"','audio/mp4; codecs="sqcp"','audio/mp4; codecs="ssmv"','audio/mp4; codecs="twos"','audio/mp4; codecs="ulaw"','audio/mpeg','audio/mpeg; codecs="mp3"','audio/mpegurl','audio/ogg; codecs="flac"','audio/ogg; codecs="opus"','audio/ogg; codecs="speex"','audio/ogg; codecs="vorbis"','audio/vnd.rn-realaudio','audio/vnd.wave','audio/wav','audio/wav; codecs="0"','audio/wav; codecs="1"','audio/wav; codecs="2"','audio/wave','audio/wave; codecs="0"','audio/wave; codecs="1"','audio/wave; codecs="2"','audio/webm','audio/webm; codecs="opus"','audio/webm; codecs="vorbis"','audio/wma','audio/x-aac','audio/x-ac3','audio/x-aiff','audio/x-flac','audio/x-m4a','audio/x-midi','audio/x-mpeg','audio/x-mpegurl','audio/x-pn-realaudio','audio/x-pn-realaudio-plugin','audio/x-pn-wav','audio/x-pn-wav; codecs="0"','audio/x-pn-wav; codecs="1"','audio/x-pn-wav; codecs="2"','audio/x-scpls','audio/x-wav','audio/x-wav; codecs="0"','audio/x-wav; codecs="1"','audio/x-wav; codecs="2"','video/3gpp','video/3gpp; codecs="mp4v.20.8, samr"','video/3gpp2','video/avi','video/h263','video/mp2t','video/mp4','video/mp4; codecs="3gvo"','video/mp4; codecs="a3d1"','video/mp4; codecs="a3d2"','video/mp4; codecs="a3d3"','video/mp4; codecs="a3d4"','video/mp4; codecs="av01.0.08M.08"','video/mp4; codecs="avc1.2c000a"','video/mp4; codecs="avc1.2c000b"','video/mp4; codecs="avc1.2c000c"','video/mp4; codecs="avc1.2c000d"','video/mp4; codecs="avc1.2c0014"','video/mp4; codecs="avc1.2c0015"','video/mp4; codecs="avc1.2c0016"','video/mp4; codecs="avc1.2c001e"','video/mp4; codecs="avc1.2c001f"','video/mp4; codecs="avc1.2c0020"','video/mp4; codecs="avc1.2c0028"','video/mp4; codecs="avc1.2c0029"','video/mp4; codecs="avc1.2c002a"','video/mp4; codecs="avc1.2c0032"','video/mp4; codecs="avc1.2c0033"','video/mp4; codecs="avc1.2c0034"','video/mp4; codecs="avc1.2c003c"','video/mp4; codecs="avc1.2c003d"','video/mp4; codecs="avc1.2c003e"','video/mp4; codecs="avc1.2c003f"','video/mp4; codecs="avc1.2c0040"','video/mp4; codecs="avc1.2c0050"','video/mp4; codecs="avc1.2c006e"','video/mp4; codecs="avc1.2c0085"','video/mp4; codecs="avc1.42000a"','video/mp4; codecs="avc1.42000b"','video/mp4; codecs="avc1.42000c"','video/mp4; codecs="avc1.42000d"','video/mp4; codecs="avc1.420014"','video/mp4; codecs="avc1.420015"','video/mp4; codecs="avc1.420016"','video/mp4; codecs="avc1.42001e"','video/mp4; codecs="avc1.42001f"','video/mp4; codecs="avc1.420020"','video/mp4; codecs="avc1.420028"','video/mp4; codecs="avc1.420029"','video/mp4; codecs="avc1.42002a"','video/mp4; codecs="avc1.420032"','video/mp4; codecs="avc1.420033"','video/mp4; codecs="avc1.420034"','video/mp4; codecs="avc1.42003c"','video/mp4; codecs="avc1.42003d"','video/mp4; codecs="avc1.42003e"','video/mp4; codecs="avc1.42003f"','video/mp4; codecs="avc1.420040"','video/mp4; codecs="avc1.420050"','video/mp4; codecs="avc1.42006e"','video/mp4; codecs="avc1.420085"','video/mp4; codecs="avc1.42400a"','video/mp4; codecs="avc1.42400b"','video/mp4; codecs="avc1.42400c"','video/mp4; codecs="avc1.42400d"','video/mp4; codecs="avc1.424014"','video/mp4; codecs="avc1.424015"','video/mp4; codecs="avc1.424016"','video/mp4; codecs="avc1.42401e"','video/mp4; codecs="avc1.42401f"','video/mp4; codecs="avc1.424020"','video/mp4; codecs="avc1.424028"','video/mp4; codecs="avc1.424029"','video/mp4; codecs="avc1.42402a"','video/mp4; codecs="avc1.424032"','video/mp4; codecs="avc1.424033"','video/mp4; codecs="avc1.424034"','video/mp4; codecs="avc1.42403c"','video/mp4; codecs="avc1.42403d"','video/mp4; codecs="avc1.42403e"','video/mp4; codecs="avc1.42403f"','video/mp4; codecs="avc1.424040"','video/mp4; codecs="avc1.424050"','video/mp4; codecs="avc1.42406e"','video/mp4; codecs="avc1.424085"','video/mp4; codecs="avc1.4d000a"','video/mp4; codecs="avc1.4d000b"','video/mp4; codecs="avc1.4d000c"','video/mp4; codecs="avc1.4d000d"','video/mp4; codecs="avc1.4d0014"','video/mp4; codecs="avc1.4d0015"','video/mp4; codecs="avc1.4d0016"','video/mp4; codecs="avc1.4d001e"','video/mp4; codecs="avc1.4d001f"','video/mp4; codecs="avc1.4d0020"','video/mp4; codecs="avc1.4d0028"','video/mp4; codecs="avc1.4d0029"','video/mp4; codecs="avc1.4d002a"','video/mp4; codecs="avc1.4d0032"','video/mp4; codecs="avc1.4d0033"','video/mp4; codecs="avc1.4d0034"','video/mp4; codecs="avc1.4d003c"','video/mp4; codecs="avc1.4d003d"','video/mp4; codecs="avc1.4d003e"','video/mp4; codecs="avc1.4d003f"','video/mp4; codecs="avc1.4d0040"','video/mp4; codecs="avc1.4d0050"','video/mp4; codecs="avc1.4d006e"','video/mp4; codecs="avc1.4d0085"','video/mp4; codecs="avc1.4d400a"','video/mp4; codecs="avc1.4d400b"','video/mp4; codecs="avc1.4d400c"','video/mp4; codecs="avc1.4d400d"','video/mp4; codecs="avc1.4d4014"','video/mp4; codecs="avc1.4d4015"','video/mp4; codecs="avc1.4d4016"','video/mp4; codecs="avc1.4d401e"','video/mp4; codecs="avc1.4d401f"','video/mp4; codecs="avc1.4d4020"','video/mp4; codecs="avc1.4d4028"','video/mp4; codecs="avc1.4d4029"','video/mp4; codecs="avc1.4d402a"','video/mp4; codecs="avc1.4d4032"','video/mp4; codecs="avc1.4d4033"','video/mp4; codecs="avc1.4d4034"','video/mp4; codecs="avc1.4d403c"','video/mp4; codecs="avc1.4d403d"','video/mp4; codecs="avc1.4d403e"','video/mp4; codecs="avc1.4d403f"','video/mp4; codecs="avc1.4d4040"','video/mp4; codecs="avc1.4d4050"','video/mp4; codecs="avc1.4d406e"','video/mp4; codecs="avc1.4d4085"','video/mp4; codecs="avc1.53000a"','video/mp4; codecs="avc1.53000b"','video/mp4; codecs="avc1.53000c"','video/mp4; codecs="avc1.53000d"','video/mp4; codecs="avc1.530014"','video/mp4; codecs="avc1.530015"','video/mp4; codecs="avc1.530016"','video/mp4; codecs="avc1.53001e"','video/mp4; codecs="avc1.53001f"','video/mp4; codecs="avc1.530020"','video/mp4; codecs="avc1.530028"','video/mp4; codecs="avc1.530029"','video/mp4; codecs="avc1.53002a"','video/mp4; codecs="avc1.530032"','video/mp4; codecs="avc1.530033"','video/mp4; codecs="avc1.530034"','video/mp4; codecs="avc1.53003c"','video/mp4; codecs="avc1.53003d"','video/mp4; codecs="avc1.53003e"','video/mp4; codecs="avc1.53003f"','video/mp4; codecs="avc1.530040"','video/mp4; codecs="avc1.530050"','video/mp4; codecs="avc1.53006e"','video/mp4; codecs="avc1.530085"','video/mp4; codecs="avc1.53040a"','video/mp4; codecs="avc1.53040b"','video/mp4; codecs="avc1.53040c"','video/mp4; codecs="avc1.53040d"','video/mp4; codecs="avc1.530414"','video/mp4; codecs="avc1.530415"','video/mp4; codecs="avc1.530416"','video/mp4; codecs="avc1.53041e"','video/mp4; codecs="avc1.53041f"','video/mp4; codecs="avc1.530420"','video/mp4; codecs="avc1.530428"','video/mp4; codecs="avc1.530429"','video/mp4; codecs="avc1.53042a"','video/mp4; codecs="avc1.530432"','video/mp4; codecs="avc1.530433"','video/mp4; codecs="avc1.530434"','video/mp4; codecs="avc1.53043c"','video/mp4; codecs="avc1.53043d"','video/mp4; codecs="avc1.53043e"','video/mp4; codecs="avc1.53043f"','video/mp4; codecs="avc1.530440"','video/mp4; codecs="avc1.530450"','video/mp4; codecs="avc1.53046e"','video/mp4; codecs="avc1.530485"','video/mp4; codecs="avc1.56000a"','video/mp4; codecs="avc1.56000b"','video/mp4; codecs="avc1.56000c"','video/mp4; codecs="avc1.56000d"','video/mp4; codecs="avc1.560014"','video/mp4; codecs="avc1.560015"','video/mp4; codecs="avc1.560016"','video/mp4; codecs="avc1.56001e"','video/mp4; codecs="avc1.56001f"','video/mp4; codecs="avc1.560020"','video/mp4; codecs="avc1.560028"','video/mp4; codecs="avc1.560029"','video/mp4; codecs="avc1.56002a"','video/mp4; codecs="avc1.560032"','video/mp4; codecs="avc1.560033"','video/mp4; codecs="avc1.560034"','video/mp4; codecs="avc1.56003c"','video/mp4; codecs="avc1.56003d"','video/mp4; codecs="avc1.56003e"','video/mp4; codecs="avc1.56003f"','video/mp4; codecs="avc1.560040"','video/mp4; codecs="avc1.560050"','video/mp4; codecs="avc1.56006e"','video/mp4; codecs="avc1.560085"','video/mp4; codecs="avc1.56040a"','video/mp4; codecs="avc1.56040b"','video/mp4; codecs="avc1.56040c"','video/mp4; codecs="avc1.56040d"','video/mp4; codecs="avc1.560414"','video/mp4; codecs="avc1.560415"','video/mp4; codecs="avc1.560416"','video/mp4; codecs="avc1.56041e"','video/mp4; codecs="avc1.56041f"','video/mp4; codecs="avc1.560420"','video/mp4; codecs="avc1.560428"','video/mp4; codecs="avc1.560429"','video/mp4; codecs="avc1.56042a"','video/mp4; codecs="avc1.560432"','video/mp4; codecs="avc1.560433"','video/mp4; codecs="avc1.560434"','video/mp4; codecs="avc1.56043c"','video/mp4; codecs="avc1.56043d"','video/mp4; codecs="avc1.56043e"','video/mp4; codecs="avc1.56043f"','video/mp4; codecs="avc1.560440"','video/mp4; codecs="avc1.560450"','video/mp4; codecs="avc1.56046e"','video/mp4; codecs="avc1.560485"','video/mp4; codecs="avc1.56100a"','video/mp4; codecs="avc1.56100b"','video/mp4; codecs="avc1.56100c"','video/mp4; codecs="avc1.56100d"','video/mp4; codecs="avc1.561014"','video/mp4; codecs="avc1.561015"','video/mp4; codecs="avc1.561016"','video/mp4; codecs="avc1.56101e"','video/mp4; codecs="avc1.56101f"','video/mp4; codecs="avc1.561020"','video/mp4; codecs="avc1.561028"','video/mp4; codecs="avc1.561029"','video/mp4; codecs="avc1.56102a"','video/mp4; codecs="avc1.561032"','video/mp4; codecs="avc1.561033"','video/mp4; codecs="avc1.561034"','video/mp4; codecs="avc1.56103c"','video/mp4; codecs="avc1.56103d"','video/mp4; codecs="avc1.56103e"','video/mp4; codecs="avc1.56103f"','video/mp4; codecs="avc1.561040"','video/mp4; codecs="avc1.561050"','video/mp4; codecs="avc1.56106e"','video/mp4; codecs="avc1.561085"','video/mp4; codecs="avc1.58000a"','video/mp4; codecs="avc1.58000b"','video/mp4; codecs="avc1.58000c"','video/mp4; codecs="avc1.58000d"','video/mp4; codecs="avc1.580014"','video/mp4; codecs="avc1.580015"','video/mp4; codecs="avc1.580016"','video/mp4; codecs="avc1.58001e"','video/mp4; codecs="avc1.58001f"','video/mp4; codecs="avc1.580020"','video/mp4; codecs="avc1.580028"','video/mp4; codecs="avc1.580029"','video/mp4; codecs="avc1.58002a"','video/mp4; codecs="avc1.580032"','video/mp4; codecs="avc1.580033"','video/mp4; codecs="avc1.580034"','video/mp4; codecs="avc1.58003c"','video/mp4; codecs="avc1.58003d"','video/mp4; codecs="avc1.58003e"','video/mp4; codecs="avc1.58003f"','video/mp4; codecs="avc1.580040"','video/mp4; codecs="avc1.580050"','video/mp4; codecs="avc1.58006e"','video/mp4; codecs="avc1.580085"','video/mp4; codecs="avc1.64000a"','video/mp4; codecs="avc1.64000b"','video/mp4; codecs="avc1.64000c"','video/mp4; codecs="avc1.64000d"','video/mp4; codecs="avc1.640014"','video/mp4; codecs="avc1.640015"','video/mp4; codecs="avc1.640016"','video/mp4; codecs="avc1.64001e"','video/mp4; codecs="avc1.64001f"','video/mp4; codecs="avc1.640020"','video/mp4; codecs="avc1.640028"','video/mp4; codecs="avc1.640029"','video/mp4; codecs="avc1.64002a"','video/mp4; codecs="avc1.640032"','video/mp4; codecs="avc1.640033"','video/mp4; codecs="avc1.640034"','video/mp4; codecs="avc1.64003c"','video/mp4; codecs="avc1.64003d"','video/mp4; codecs="avc1.64003e"','video/mp4; codecs="avc1.64003f"','video/mp4; codecs="avc1.640040"','video/mp4; codecs="avc1.640050"','video/mp4; codecs="avc1.64006e"','video/mp4; codecs="avc1.640085"','video/mp4; codecs="avc1.64080a"','video/mp4; codecs="avc1.64080b"','video/mp4; codecs="avc1.64080c"','video/mp4; codecs="avc1.64080d"','video/mp4; codecs="avc1.640814"','video/mp4; codecs="avc1.640815"','video/mp4; codecs="avc1.640816"','video/mp4; codecs="avc1.64081e"','video/mp4; codecs="avc1.64081f"','video/mp4; codecs="avc1.640820"','video/mp4; codecs="avc1.640828"','video/mp4; codecs="avc1.640829"','video/mp4; codecs="avc1.64082a"','video/mp4; codecs="avc1.640832"','video/mp4; codecs="avc1.640833"','video/mp4; codecs="avc1.640834"','video/mp4; codecs="avc1.64083c"','video/mp4; codecs="avc1.64083d"','video/mp4; codecs="avc1.64083e"','video/mp4; codecs="avc1.64083f"','video/mp4; codecs="avc1.640840"','video/mp4; codecs="avc1.640850"','video/mp4; codecs="avc1.64086e"','video/mp4; codecs="avc1.640885"','video/mp4; codecs="avc1.6e000a"','video/mp4; codecs="avc1.6e000b"','video/mp4; codecs="avc1.6e000c"','video/mp4; codecs="avc1.6e000d"','video/mp4; codecs="avc1.6e0014"','video/mp4; codecs="avc1.6e0015"','video/mp4; codecs="avc1.6e0016"','video/mp4; codecs="avc1.6e001e"','video/mp4; codecs="avc1.6e001f"','video/mp4; codecs="avc1.6e0020"','video/mp4; codecs="avc1.6e0028"','video/mp4; codecs="avc1.6e0029"','video/mp4; codecs="avc1.6e002a"','video/mp4; codecs="avc1.6e0032"','video/mp4; codecs="avc1.6e0033"','video/mp4; codecs="avc1.6e0034"','video/mp4; codecs="avc1.6e003c"','video/mp4; codecs="avc1.6e003d"','video/mp4; codecs="avc1.6e003e"','video/mp4; codecs="avc1.6e003f"','video/mp4; codecs="avc1.6e0040"','video/mp4; codecs="avc1.6e0050"','video/mp4; codecs="avc1.6e006e"','video/mp4; codecs="avc1.6e0085"','video/mp4; codecs="avc1.6e100a"','video/mp4; codecs="avc1.6e100b"','video/mp4; codecs="avc1.6e100c"','video/mp4; codecs="avc1.6e100d"','video/mp4; codecs="avc1.6e1014"','video/mp4; codecs="avc1.6e1015"','video/mp4; codecs="avc1.6e1016"','video/mp4; codecs="avc1.6e101e"','video/mp4; codecs="avc1.6e101f"','video/mp4; codecs="avc1.6e1020"','video/mp4; codecs="avc1.6e1028"','video/mp4; codecs="avc1.6e1029"','video/mp4; codecs="avc1.6e102a"','video/mp4; codecs="avc1.6e1032"','video/mp4; codecs="avc1.6e1033"','video/mp4; codecs="avc1.6e1034"','video/mp4; codecs="avc1.6e103c"','video/mp4; codecs="avc1.6e103d"','video/mp4; codecs="avc1.6e103e"','video/mp4; codecs="avc1.6e103f"','video/mp4; codecs="avc1.6e1040"','video/mp4; codecs="avc1.6e1050"','video/mp4; codecs="avc1.6e106e"','video/mp4; codecs="avc1.6e1085"','video/mp4; codecs="avc1.76000a"','video/mp4; codecs="avc1.76000b"','video/mp4; codecs="avc1.76000c"','video/mp4; codecs="avc1.76000d"','video/mp4; codecs="avc1.760014"','video/mp4; codecs="avc1.760015"','video/mp4; codecs="avc1.760016"','video/mp4; codecs="avc1.76001e"','video/mp4; codecs="avc1.76001f"','video/mp4; codecs="avc1.760020"','video/mp4; codecs="avc1.760028"','video/mp4; codecs="avc1.760029"','video/mp4; codecs="avc1.76002a"','video/mp4; codecs="avc1.760032"','video/mp4; codecs="avc1.760033"','video/mp4; codecs="avc1.760034"','video/mp4; codecs="avc1.76003c"','video/mp4; codecs="avc1.76003d"','video/mp4; codecs="avc1.76003e"','video/mp4; codecs="avc1.76003f"','video/mp4; codecs="avc1.760040"','video/mp4; codecs="avc1.760050"','video/mp4; codecs="avc1.76006e"','video/mp4; codecs="avc1.760085"','video/mp4; codecs="avc1.7a000a"','video/mp4; codecs="avc1.7a000b"','video/mp4; codecs="avc1.7a000c"','video/mp4; codecs="avc1.7a000d"','video/mp4; codecs="avc1.7a0014"','video/mp4; codecs="avc1.7a0015"','video/mp4; codecs="avc1.7a0016"','video/mp4; codecs="avc1.7a001e"','video/mp4; codecs="avc1.7a001f"','video/mp4; codecs="avc1.7a0020"','video/mp4; codecs="avc1.7a0028"','video/mp4; codecs="avc1.7a0029"','video/mp4; codecs="avc1.7a002a"','video/mp4; codecs="avc1.7a0032"','video/mp4; codecs="avc1.7a0033"','video/mp4; codecs="avc1.7a0034"','video/mp4; codecs="avc1.7a003c"','video/mp4; codecs="avc1.7a003d"','video/mp4; codecs="avc1.7a003e"','video/mp4; codecs="avc1.7a003f"','video/mp4; codecs="avc1.7a0040"','video/mp4; codecs="avc1.7a0050"','video/mp4; codecs="avc1.7a006e"','video/mp4; codecs="avc1.7a0085"','video/mp4; codecs="avc1.7a100a"','video/mp4; codecs="avc1.7a100b"','video/mp4; codecs="avc1.7a100c"','video/mp4; codecs="avc1.7a100d"','video/mp4; codecs="avc1.7a1014"','video/mp4; codecs="avc1.7a1015"','video/mp4; codecs="avc1.7a1016"','video/mp4; codecs="avc1.7a101e"','video/mp4; codecs="avc1.7a101f"','video/mp4; codecs="avc1.7a1020"','video/mp4; codecs="avc1.7a1028"','video/mp4; codecs="avc1.7a1029"','video/mp4; codecs="avc1.7a102a"','video/mp4; codecs="avc1.7a1032"','video/mp4; codecs="avc1.7a1033"','video/mp4; codecs="avc1.7a1034"','video/mp4; codecs="avc1.7a103c"','video/mp4; codecs="avc1.7a103d"','video/mp4; codecs="avc1.7a103e"','video/mp4; codecs="avc1.7a103f"','video/mp4; codecs="avc1.7a1040"','video/mp4; codecs="avc1.7a1050"','video/mp4; codecs="avc1.7a106e"','video/mp4; codecs="avc1.7a1085"','video/mp4; codecs="avc1.80000a"','video/mp4; codecs="avc1.80000b"','video/mp4; codecs="avc1.80000c"','video/mp4; codecs="avc1.80000d"','video/mp4; codecs="avc1.800014"','video/mp4; codecs="avc1.800015"','video/mp4; codecs="avc1.800016"','video/mp4; codecs="avc1.80001e"','video/mp4; codecs="avc1.80001f"','video/mp4; codecs="avc1.800020"','video/mp4; codecs="avc1.800028"','video/mp4; codecs="avc1.800029"','video/mp4; codecs="avc1.80002a"','video/mp4; codecs="avc1.800032"','video/mp4; codecs="avc1.800033"','video/mp4; codecs="avc1.800034"','video/mp4; codecs="avc1.80003c"','video/mp4; codecs="avc1.80003d"','video/mp4; codecs="avc1.80003e"','video/mp4; codecs="avc1.80003f"','video/mp4; codecs="avc1.800040"','video/mp4; codecs="avc1.800050"','video/mp4; codecs="avc1.80006e"','video/mp4; codecs="avc1.800085"','video/mp4; codecs="avc1.8a000a"','video/mp4; codecs="avc1.8a000b"','video/mp4; codecs="avc1.8a000c"','video/mp4; codecs="avc1.8a000d"','video/mp4; codecs="avc1.8a0014"','video/mp4; codecs="avc1.8a0015"','video/mp4; codecs="avc1.8a0016"','video/mp4; codecs="avc1.8a001e"','video/mp4; codecs="avc1.8a001f"','video/mp4; codecs="avc1.8a0020"','video/mp4; codecs="avc1.8a0028"','video/mp4; codecs="avc1.8a0029"','video/mp4; codecs="avc1.8a002a"','video/mp4; codecs="avc1.8a0032"','video/mp4; codecs="avc1.8a0033"','video/mp4; codecs="avc1.8a0034"','video/mp4; codecs="avc1.8a003c"','video/mp4; codecs="avc1.8a003d"','video/mp4; codecs="avc1.8a003e"','video/mp4; codecs="avc1.8a003f"','video/mp4; codecs="avc1.8a0040"','video/mp4; codecs="avc1.8a0050"','video/mp4; codecs="avc1.8a006e"','video/mp4; codecs="avc1.8a0085"','video/mp4; codecs="avc1.f4000a"','video/mp4; codecs="avc1.f4000b"','video/mp4; codecs="avc1.f4000c"','video/mp4; codecs="avc1.f4000d"','video/mp4; codecs="avc1.f40014"','video/mp4; codecs="avc1.f40015"','video/mp4; codecs="avc1.f40016"','video/mp4; codecs="avc1.f4001e"','video/mp4; codecs="avc1.f4001f"','video/mp4; codecs="avc1.f40020"','video/mp4; codecs="avc1.f40028"','video/mp4; codecs="avc1.f40029"','video/mp4; codecs="avc1.f4002a"','video/mp4; codecs="avc1.f40032"','video/mp4; codecs="avc1.f40033"','video/mp4; codecs="avc1.f40034"','video/mp4; codecs="avc1.f4003c"','video/mp4; codecs="avc1.f4003d"','video/mp4; codecs="avc1.f4003e"','video/mp4; codecs="avc1.f4003f"','video/mp4; codecs="avc1.f40040"','video/mp4; codecs="avc1.f40050"','video/mp4; codecs="avc1.f4006e"','video/mp4; codecs="avc1.f40085"','video/mp4; codecs="avc1.f4100a"','video/mp4; codecs="avc1.f4100b"','video/mp4; codecs="avc1.f4100c"','video/mp4; codecs="avc1.f4100d"','video/mp4; codecs="avc1.f41014"','video/mp4; codecs="avc1.f41015"','video/mp4; codecs="avc1.f41016"','video/mp4; codecs="avc1.f4101e"','video/mp4; codecs="avc1.f4101f"','video/mp4; codecs="avc1.f41020"','video/mp4; codecs="avc1.f41028"','video/mp4; codecs="avc1.f41029"','video/mp4; codecs="avc1.f4102a"','video/mp4; codecs="avc1.f41032"','video/mp4; codecs="avc1.f41033"','video/mp4; codecs="avc1.f41034"','video/mp4; codecs="avc1.f4103c"','video/mp4; codecs="avc1.f4103d"','video/mp4; codecs="avc1.f4103e"','video/mp4; codecs="avc1.f4103f"','video/mp4; codecs="avc1.f41040"','video/mp4; codecs="avc1.f41050"','video/mp4; codecs="avc1.f4106e"','video/mp4; codecs="avc1.f41085"','video/mp4; codecs="avc1"','video/mp4; codecs="avc2"','video/mp4; codecs="avc3"','video/mp4; codecs="avc4"','video/mp4; codecs="avcp"','video/mp4; codecs="drac"','video/mp4; codecs="dvav"','video/mp4; codecs="dvhe"','video/mp4; codecs="encf"','video/mp4; codecs="encm"','video/mp4; codecs="encs"','video/mp4; codecs="enct"','video/mp4; codecs="encv"','video/mp4; codecs="fdp "','video/mp4; codecs="hev1.1.6.L93.90"','video/mp4; codecs="hev1.1.6.L93.B0"','video/mp4; codecs="hev1"','video/mp4; codecs="hvc1.1.6.L93.90"','video/mp4; codecs="hvc1.1.6.L93.B0"','video/mp4; codecs="hvc1"','video/mp4; codecs="hvt1"','video/mp4; codecs="ixse"','video/mp4; codecs="lhe1"','video/mp4; codecs="lht1"','video/mp4; codecs="lhv1"','video/mp4; codecs="m2ts"','video/mp4; codecs="mett"','video/mp4; codecs="metx"','video/mp4; codecs="mjp2"','video/mp4; codecs="mlix"','video/mp4; codecs="mp4s"','video/mp4; codecs="mp4v"','video/mp4; codecs="mvc1"','video/mp4; codecs="mvc2"','video/mp4; codecs="mvc3"','video/mp4; codecs="mvc4"','video/mp4; codecs="mvd1"','video/mp4; codecs="mvd2"','video/mp4; codecs="mvd3"','video/mp4; codecs="mvd4"','video/mp4; codecs="oksd"','video/mp4; codecs="pm2t"','video/mp4; codecs="prtp"','video/mp4; codecs="resv"','video/mp4; codecs="rm2t"','video/mp4; codecs="rrtp"','video/mp4; codecs="rsrp"','video/mp4; codecs="rtmd"','video/mp4; codecs="rtp "','video/mp4; codecs="s263"','video/mp4; codecs="sm2t"','video/mp4; codecs="srtp"','video/mp4; codecs="STGS"','video/mp4; codecs="stpp"','video/mp4; codecs="svc1"','video/mp4; codecs="svc2"','video/mp4; codecs="svcM"','video/mp4; codecs="tc64"','video/mp4; codecs="tmcd"','video/mp4; codecs="tx3g"','video/mp4; codecs="unid"','video/mp4; codecs="urim"','video/mp4; codecs="vc-1"','video/mp4; codecs="vp08"','video/mp4; codecs="vp09.00.10.08"','video/mp4; codecs="vp09.00.50.08"','video/mp4; codecs="vp09.01.20.08.01.01.01.01.00"','video/mp4; codecs="vp09.01.20.08.01"','video/mp4; codecs="vp09.02.10.10.01.09.16.09.01"','video/mp4; codecs="vp09"','video/mp4; codecs="wvtt"','video/mpeg','video/mpeg2','video/mpeg4','video/msvideo','video/ogg','video/ogg; codecs="dirac, flac"','video/ogg; codecs="dirac, vorbis"','video/ogg; codecs="flac"','video/ogg; codecs="theora, flac"','video/ogg; codecs="theora, speex"','video/ogg; codecs="theora, vorbis"','video/ogg; codecs="theora"','video/quicktime','video/vnd.rn-realvideo','video/wavelet','video/webm','video/webm; codecs="vorbis"','video/webm; codecs="vp8, opus"','video/webm; codecs="vp8, vorbis"','video/webm; codecs="vp8.0, vorbis"','video/webm; codecs="vp8.0"','video/webm; codecs="vp8"','video/webm; codecs="vp9, opus"','video/webm; codecs="vp9, vorbis"','video/webm; codecs="vp9"','video/x-flv','video/x-la-asf','video/x-m4v','video/x-matroska','video/x-matroska; codecs="theora, vorbis"','video/x-matroska; codecs="theora"','video/x-mkv','video/x-mng','video/x-mpeg2','video/x-ms-wmv','video/x-msvideo','video/x-theora']
+
+	// inspired by 
+	// - https://privacycheck.sec.lrz.de/active/fp_cpt/fp_can_play_type.html
+	// - https://arkenfox.github.io/TZP/tzp.html
+	const getMediaTypes = instanceId => {
+		return new Promise(async resolve => {
+			try {
+				const mediaTypes = []
+				const videoEl = document.createElement('video')
+				const audioEl = new Audio()
+				mimeTypes.forEach(type => {
+					const data = {
+						mimeType: type,
+						audioPlayType: audioEl.canPlayType(type),
+						videoPlayType: videoEl.canPlayType(type),
+						mediaSource: MediaSource.isTypeSupported(type),
+						mediaRecorder: MediaRecorder.isTypeSupported(type)
+					}
+					return mediaTypes.push(data)
+				})
+				const $hash = await hashify(mediaTypes)
+				resolve({ mediaTypes, $hash })
+				const id = 'creep-media-types'
+				const el = document.getElementById(id)
+				const header = `<div>
+				<br>Audio play type [AP]
+				<br>Video play type [VP]
+				<br>Media Source support [MS]
+				<br>Media Recorder support [MR]
+				<br><br>[PR]=Probably, [MB]=Maybe, [TR]=True, [--]=False/""
+				<br>[AP][VP][MS][MR]</div>`
+				const results = mediaTypes.map(type => {
+					const { mimeType, audioPlayType, videoPlayType, mediaSource, mediaRecorder } = type
+					return `${audioPlayType == 'probably' ? '[PB]' : audioPlayType == 'maybe' ? '[MB]': '[--]'}${videoPlayType == 'probably' ? '[PB]' : videoPlayType == 'maybe' ? '[MB]': '[--]'}${mediaSource ? '[TR]' : '[--]'}${mediaRecorder ? '[TR]' : '[--]'}: ${mimeType}
+					`
+				})
+				patch(el, html`
+				<div id="creep-media-types">
+					<strong>HTMLMediaElement/MediaSource</strong>
+					<div class="ellipsis">hash: ${$hash}</div>
+					<div>results: ${
+						modal(id, header+results.join('<br>'))
+					}</div>
+				</div>
+				`)
+				return
+			}
+			catch (error) {
+				captureError(error)
+				return resolve(undefined)
+			}
+		})
+	}
+
+	// canvas2d
+	const dataLie = lieProps['HTMLCanvasElement.toDataURL']
+	const contextLie = lieProps['HTMLCanvasElement.getContext']
 	
 	// 2d canvas
 	const getCanvas2d = instanceId => {
 		return new Promise(async resolve => {
 			try {
-				const patchDom = (response) => {
+				let lied = dataLie || contextLie
+				const patchDom = (lied, response) => {
 					const { $hash } = response
-					const el = document.getElementById(`${instanceId}-canvas-2d`)
+					const el = document.getElementById('creep-canvas-2d')
 					return patch(el, html`
 					<div>
 						<strong>CanvasRenderingContext2D</strong>
-						<div>hash: ${$hash}</div>
+						<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
 					</div>
 					`)
 				}
 				const canvas = document.createElement('canvas')
 				let canvas2dDataURI = ''
-				if (!dataLie && !contextLie) {
-					const context = canvas.getContext('2d')
-					const str = '%$%^LGFWE($HIF)'
-					context.font = '20px Arial'
-					context.fillText(str, 100, 100)
-					context.fillStyle = 'red'
-					context.fillRect(100, 30, 80, 50)
-					context.font = '32px Times New Roman'
-					context.fillStyle = 'blue'
-					context.fillText(str, 20, 70)
-					context.font = '20px Arial'
-					context.fillStyle = 'green'
-					context.fillText(str, 10, 50)
-					canvas2dDataURI = canvas.toDataURL()
-					const dataURI = canvas2dDataURI
-					const $hash = await hashify(dataURI)
-					const response = { dataURI, $hash }
-					resolve(response)
-					patchDom(response)
-					return
-				}
-				// document lie and send to trash
+				const context = canvas.getContext('2d')
+				const str = '!😃🙌🧠👩‍💻👟👧🏻👩🏻‍🦱👩🏻‍🦰👱🏻‍♀️👩🏻‍🦳👧🏼👧🏽👧🏾👧🏿🦄🐉🌊🍧🏄‍♀️🌠🔮♞'
+				context.font = '14px Arial'
+				context.fillText(str, 0, 50)
+				context.fillStyle = 'rgba(100, 200, 99, 0.78)'
+				context.fillRect(100, 30, 80, 50)
 				canvas2dDataURI = canvas.toDataURL()
-				const hash = hashMini(canvas2dDataURI)
-				if (contextLie) {
-					documentLie('canvas2dContextDataURI', hash, contextLie)
-				}
-				if (dataLie) {
-					documentLie('canvas2dDataURI', hash, dataLie)
-				}
-				// fingerprint lie
-				const data = { contextLie, dataLie }
-				const $hash = await hashify(data)
-				const response = { ...data, $hash }
+				const dataURI = canvas2dDataURI
+				const $hash = await hashify(dataURI)
+				const response = { dataURI, lied, $hash }
 				resolve(response)
-				patchDom(response)
+				patchDom(lied, response)
 				return
 			}
 			catch (error) {
@@ -1660,53 +2278,37 @@
 	const getCanvasBitmapRenderer = instanceId => {
 		return new Promise(async resolve => {
 			try {
-				const patchDom = (response) => {
+				let lied = dataLie || contextLie
+				const patchDom = (lied, response) => {
 					const { $hash } = response
-					const el = document.getElementById(`${instanceId}-canvas-bitmap-renderer`)
+					const el = document.getElementById('creep-canvas-bitmap-renderer')
 					return patch(el, html`
 					<div>
 						<strong>ImageBitmapRenderingContext</strong>
-						<div>hash: ${$hash}</div>
+						<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
 					</div>
 					`)
 				}
 				const canvas = document.createElement('canvas')
 				let canvasBMRDataURI = ''
-				if (!dataLie && !contextLie) {
-					const context = canvas.getContext('bitmaprenderer')
-					const image = new Image()
-					image.src = 'bitmap.png'
-					return resolve(new Promise(resolve => {
-						image.onload = async () => {
-							if (!caniuse(() => createImageBitmap)) {
-								return resolve(undefined)
-							}
-							const bitmap = await createImageBitmap(image, 0, 0, image.width, image.height)
-							context.transferFromImageBitmap(bitmap)
-							canvasBMRDataURI = canvas.toDataURL()
-							const dataURI = canvasBMRDataURI
-							const $hash = await hashify(dataURI)
-							const response = { dataURI, $hash }
-							resolve(response)
-							patchDom(response)
+				const context = canvas.getContext('bitmaprenderer')
+				const image = new Image()
+				image.src = 'bitmap.png'
+				return resolve(new Promise(resolve => {
+					image.onload = async () => {
+						if (!caniuse(() => createImageBitmap)) {
+							return resolve(undefined)
 						}
-					}))	
-				}
-				// document lie and send to trash
-				canvasBMRDataURI = canvas.toDataURL()
-				const hash = hashMini(canvasBMRDataURI)
-				if (contextLie) {
-					documentLie('canvasBMRContextDataURI', hash, contextLie)
-				}
-				if (dataLie) {
-					documentLie('canvasBMRDataURI', hash, dataLie)
-				}
-				// fingerprint lie
-				const data = { contextLie, dataLie }
-				const $hash = await hashify(data)
-				const response = { ...data, $hash }
-				resolve(response)
-				patchDom(response)
+						const bitmap = await createImageBitmap(image, 0, 0, image.width, image.height)
+						context.transferFromImageBitmap(bitmap)
+						canvasBMRDataURI = canvas.toDataURL()
+						const dataURI = canvasBMRDataURI
+						const $hash = await hashify(dataURI)
+						const response = { dataURI, lied, $hash }
+						resolve(response)
+						patchDom(lied, response)
+					}
+				}))	
 			}
 			catch (error) {
 				captureError(error)
@@ -1719,25 +2321,17 @@
 	const getCanvasWebgl = instanceId => {
 		return new Promise(async resolve => {
 			try {
-				// detect webgl lies
-				const gl = 'WebGLRenderingContext' in window
-				const webglGetParameter = gl && attempt(() => WebGLRenderingContext.prototype.getParameter)
-				const webglGetExtension = gl && attempt(() => WebGLRenderingContext.prototype.getExtension)
-				const webglProto = caniuse(() => WebGLRenderingContext, ['prototype'])
-				const webglGetSupportedExtensions = gl && attempt(() => WebGLRenderingContext.prototype.getSupportedExtensions)
-				const paramLie = webglGetParameter ? hasLiedAPI(webglGetParameter, 'getParameter', webglProto).lie : false
-				const extLie = webglGetExtension ? hasLiedAPI(webglGetExtension, 'getExtension', webglProto).lie : false
-				const supportedExtLie = webglGetSupportedExtensions ? hasLiedAPI(webglGetSupportedExtensions, 'getSupportedExtensions', webglProto).lie : false
-
-				// detect webgl2 lies
-				const gl2 = 'WebGL2RenderingContext' in window
-				const webgl2GetParameter = gl2 && attempt(() => WebGL2RenderingContext.prototype.getParameter)
-				const webgl2GetExtension = gl2 && attempt(() => WebGL2RenderingContext.prototype.getExtension)
-				const webgl2Proto = caniuse(() => WebGL2RenderingContext, ['prototype'])
-				const webgl2GetSupportedExtensions = gl2 && attempt(() => WebGL2RenderingContext.prototype.getSupportedExtensions)
-				const param2Lie = webgl2GetParameter ? hasLiedAPI(webgl2GetParameter, 'getParameter', webgl2Proto).lie : false
-				const ext2Lie = webgl2GetExtension ? hasLiedAPI(webgl2GetExtension, 'getExtension', webgl2Proto).lie : false
-				const supportedExt2Lie = webgl2GetSupportedExtensions ? hasLiedAPI(webgl2GetSupportedExtensions, 'getSupportedExtensions', webgl2Proto).lie : false
+				// detect lies
+				let lied = (
+					dataLie ||
+					contextLie ||
+					lieProps['WebGLRenderingContext.getParameter'] ||
+					lieProps['WebGL2RenderingContext.getParameter'] ||
+					lieProps['WebGLRenderingContext.getExtension'] ||
+					lieProps['WebGL2RenderingContext.getExtension'] ||
+					lieProps['WebGLRenderingContext.getSupportedExtensions'] ||
+					lieProps['WebGL2RenderingContext.getSupportedExtensions']
+				)
 
 				// crreate canvas context
 				const canvas = document.createElement('canvas')
@@ -1749,29 +2343,15 @@
 					canvas.getContext('webkit-3d')
 				)
 				const context2 = canvas2.getContext('webgl2') || canvas2.getContext('experimental-webgl2')
-				const getSupportedExtensions = (context, supportedExtLie, title) => {
+				const getSupportedExtensions = context => {
 					return new Promise(async resolve => {
 						try {
 							if (!context) {
 								return resolve({ extensions: [] })
 							}
 							const extensions = caniuse(() => context, ['getSupportedExtensions'], [], true) || []
-							if (!supportedExtLie) {
-								return resolve({
-									extensions: ( 
-										!proxyBehavior(extensions) ? extensions : 
-										sendToTrash(title, 'proxy behavior detected', []) 
-									)
-								})
-							}
-
-							// document lie and send to trash
-							if (supportedExtLie) { 
-								documentLie(title, extensions, supportedExtLie)
-							}
-							// Fingerprint lie
 							return resolve({
-								extensions: [{ supportedExtLie }]
+								extensions
 							})
 						}
 						catch (error) {
@@ -1783,7 +2363,7 @@
 					})
 				}
 
-				const getSpecs = ([webgl, webgl2], [paramLie, param2Lie, extLie, ext2Lie]) => {
+				const getSpecs = (webgl, webgl2) => {
 					return new Promise(async resolve => {
 						const getShaderPrecisionFormat = (gl, shaderType) => {
 							const low = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.LOW_FLOAT))
@@ -1816,29 +2396,29 @@
 								return undefined
 							}
 							const data =  {
-								VERSION: attempt(() => gl.getParameter(gl.VERSION)),
-								SHADING_LANGUAGE_VERSION: attempt( () => gl.getParameter(gl.SHADING_LANGUAGE_VERSION)),
-								antialias: attempt(() => (gl.getContextAttributes() ? gl.getContextAttributes().antialias : undefined)),
-								RED_BITS: attempt(() => gl.getParameter(gl.RED_BITS)),
-								GREEN_BITS: attempt(() => gl.getParameter(gl.GREEN_BITS)),
-								BLUE_BITS: attempt(() => gl.getParameter(gl.BLUE_BITS)),
-								ALPHA_BITS: attempt(() => gl.getParameter(gl.ALPHA_BITS)),
-								DEPTH_BITS: attempt(() => gl.getParameter(gl.DEPTH_BITS)),
-								STENCIL_BITS: attempt(() => gl.getParameter(gl.STENCIL_BITS)),
-								MAX_RENDERBUFFER_SIZE: attempt(() => gl.getParameter(gl.MAX_RENDERBUFFER_SIZE)),
-								MAX_COMBINED_TEXTURE_IMAGE_UNITS: attempt(() => gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS)),
-								MAX_CUBE_MAP_TEXTURE_SIZE: attempt(() => gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE)),
-								MAX_FRAGMENT_UNIFORM_VECTORS: attempt(() => gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS)),
-								MAX_TEXTURE_IMAGE_UNITS: attempt(() => gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS)),
-								MAX_TEXTURE_SIZE: attempt(() => gl.getParameter(gl.MAX_TEXTURE_SIZE)),
-								MAX_VARYING_VECTORS: attempt(() => gl.getParameter(gl.MAX_VARYING_VECTORS)),
-								MAX_VERTEX_ATTRIBS: attempt(() => gl.getParameter(gl.MAX_VERTEX_ATTRIBS)),
-								MAX_VERTEX_TEXTURE_IMAGE_UNITS: attempt(() => gl.getParameter(gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS)),
-								MAX_VERTEX_UNIFORM_VECTORS: attempt(() => gl.getParameter(gl.MAX_VERTEX_UNIFORM_VECTORS)),
-								ALIASED_LINE_WIDTH_RANGE: attempt(() => [...gl.getParameter(gl.ALIASED_LINE_WIDTH_RANGE)]),
-								ALIASED_POINT_SIZE_RANGE: attempt(() => [...gl.getParameter(gl.ALIASED_POINT_SIZE_RANGE)]),
-								MAX_VIEWPORT_DIMS: attempt(() => [...gl.getParameter(gl.MAX_VIEWPORT_DIMS)]),
-								MAX_TEXTURE_MAX_ANISOTROPY_EXT: attempt(() => getMaxAnisotropy(gl)),
+								VERSION: gl.getParameter(gl.VERSION),
+								SHADING_LANGUAGE_VERSION: gl.getParameter(gl.SHADING_LANGUAGE_VERSION),
+								antialias: gl.getContextAttributes() ? gl.getContextAttributes().antialias : undefined,
+								RED_BITS: gl.getParameter(gl.RED_BITS),
+								GREEN_BITS: gl.getParameter(gl.GREEN_BITS),
+								BLUE_BITS: gl.getParameter(gl.BLUE_BITS),
+								ALPHA_BITS: gl.getParameter(gl.ALPHA_BITS),
+								DEPTH_BITS: gl.getParameter(gl.DEPTH_BITS),
+								STENCIL_BITS: gl.getParameter(gl.STENCIL_BITS),
+								MAX_RENDERBUFFER_SIZE: gl.getParameter(gl.MAX_RENDERBUFFER_SIZE),
+								MAX_COMBINED_TEXTURE_IMAGE_UNITS: gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS),
+								MAX_CUBE_MAP_TEXTURE_SIZE: gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE),
+								MAX_FRAGMENT_UNIFORM_VECTORS: gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS),
+								MAX_TEXTURE_IMAGE_UNITS: gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS),
+								MAX_TEXTURE_SIZE: gl.getParameter(gl.MAX_TEXTURE_SIZE),
+								MAX_VARYING_VECTORS: gl.getParameter(gl.MAX_VARYING_VECTORS),
+								MAX_VERTEX_ATTRIBS: gl.getParameter(gl.MAX_VERTEX_ATTRIBS),
+								MAX_VERTEX_TEXTURE_IMAGE_UNITS: gl.getParameter(gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS),
+								MAX_VERTEX_UNIFORM_VECTORS: gl.getParameter(gl.MAX_VERTEX_UNIFORM_VECTORS),
+								ALIASED_LINE_WIDTH_RANGE: [...gl.getParameter(gl.ALIASED_LINE_WIDTH_RANGE)],
+								ALIASED_POINT_SIZE_RANGE: [...gl.getParameter(gl.ALIASED_POINT_SIZE_RANGE)],
+								MAX_VIEWPORT_DIMS: [...gl.getParameter(gl.MAX_VIEWPORT_DIMS)],
+								MAX_TEXTURE_MAX_ANISOTROPY_EXT: getMaxAnisotropy(gl),
 								...getShaderData('VERTEX_SHADER', getShaderPrecisionFormat(gl, 'VERTEX_SHADER')),
 								...getShaderData('FRAGMENT_SHADER', getShaderPrecisionFormat(gl, 'FRAGMENT_SHADER')),
 								MAX_DRAW_BUFFERS_WEBGL: attempt(() => {
@@ -1847,20 +2427,7 @@
 								})
 							}
 							const response = data
-							if (!paramLie && !extLie) {
-								return response
-							}
-							// document lie and send to trash
-							const paramTitle = `webglGetParameter`
-							const extTitle = `webglGetExtension`
-							if (paramLie) { 
-								documentLie(paramTitle, response, paramLie)
-							}
-							if (extLie) {
-								documentLie(extTitle, response, extLie)
-							}
-							// Fingerprint lie
-							return { paramLie, extLie }
+							return response
 						}
 
 						const getWebgl2Specs = gl => {
@@ -1868,55 +2435,42 @@
 								return undefined
 							}
 							const data = {
-								MAX_VERTEX_UNIFORM_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_VERTEX_UNIFORM_COMPONENTS)),
-								MAX_VERTEX_UNIFORM_BLOCKS: attempt(() => gl.getParameter(gl.MAX_VERTEX_UNIFORM_BLOCKS)),
-								MAX_VERTEX_OUTPUT_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_VERTEX_OUTPUT_COMPONENTS)),
-								MAX_VARYING_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_VARYING_COMPONENTS)),
-								MAX_FRAGMENT_UNIFORM_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_COMPONENTS)),
-								MAX_FRAGMENT_UNIFORM_BLOCKS: attempt(() => gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_BLOCKS)),
-								MAX_FRAGMENT_INPUT_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_FRAGMENT_INPUT_COMPONENTS)),
-								MIN_PROGRAM_TEXEL_OFFSET: attempt(() => gl.getParameter(gl.MIN_PROGRAM_TEXEL_OFFSET)),
-								MAX_PROGRAM_TEXEL_OFFSET: attempt(() => gl.getParameter(gl.MAX_PROGRAM_TEXEL_OFFSET)),
-								MAX_DRAW_BUFFERS: attempt(() => gl.getParameter(gl.MAX_DRAW_BUFFERS)),
-								MAX_COLOR_ATTACHMENTS: attempt(() => gl.getParameter(gl.MAX_COLOR_ATTACHMENTS)),
-								MAX_SAMPLES: attempt(() => gl.getParameter(gl.MAX_SAMPLES)),
-								MAX_3D_TEXTURE_SIZE: attempt(() => gl.getParameter(gl.MAX_3D_TEXTURE_SIZE)),
-								MAX_ARRAY_TEXTURE_LAYERS: attempt(() => gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS)),
-								MAX_TEXTURE_LOD_BIAS: attempt(() => gl.getParameter(gl.MAX_TEXTURE_LOD_BIAS)),
-								MAX_UNIFORM_BUFFER_BINDINGS: attempt(() => gl.getParameter(gl.MAX_UNIFORM_BUFFER_BINDINGS)),
-								MAX_UNIFORM_BLOCK_SIZE: attempt(() => gl.getParameter(gl.MAX_UNIFORM_BLOCK_SIZE)),
-								UNIFORM_BUFFER_OFFSET_ALIGNMENT: attempt(() => gl.getParameter(gl.UNIFORM_BUFFER_OFFSET_ALIGNMENT)),
-								MAX_COMBINED_UNIFORM_BLOCKS: attempt(() => gl.getParameter(gl.MAX_COMBINED_UNIFORM_BLOCKS)),
-								MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS)),
-								MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS)),
-								MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS)),
-								MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS: attempt(() => gl.getParameter(gl.MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS)),
-								MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS: attempt(() => gl.getParameter(gl.MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS)),
-								MAX_ELEMENT_INDEX: attempt(() => gl.getParameter(gl.MAX_ELEMENT_INDEX)),
-								MAX_SERVER_WAIT_TIMEOUT: attempt(() => gl.getParameter(gl.MAX_SERVER_WAIT_TIMEOUT))
+								MAX_VERTEX_UNIFORM_COMPONENTS: gl.getParameter(gl.MAX_VERTEX_UNIFORM_COMPONENTS),
+								MAX_VERTEX_UNIFORM_BLOCKS: gl.getParameter(gl.MAX_VERTEX_UNIFORM_BLOCKS),
+								MAX_VERTEX_OUTPUT_COMPONENTS: gl.getParameter(gl.MAX_VERTEX_OUTPUT_COMPONENTS),
+								MAX_VARYING_COMPONENTS: gl.getParameter(gl.MAX_VARYING_COMPONENTS),
+								MAX_FRAGMENT_UNIFORM_COMPONENTS: gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_COMPONENTS),
+								MAX_FRAGMENT_UNIFORM_BLOCKS: gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_BLOCKS),
+								MAX_FRAGMENT_INPUT_COMPONENTS: gl.getParameter(gl.MAX_FRAGMENT_INPUT_COMPONENTS),
+								MIN_PROGRAM_TEXEL_OFFSET: gl.getParameter(gl.MIN_PROGRAM_TEXEL_OFFSET),
+								MAX_PROGRAM_TEXEL_OFFSET: gl.getParameter(gl.MAX_PROGRAM_TEXEL_OFFSET),
+								MAX_DRAW_BUFFERS: gl.getParameter(gl.MAX_DRAW_BUFFERS),
+								MAX_COLOR_ATTACHMENTS: gl.getParameter(gl.MAX_COLOR_ATTACHMENTS),
+								MAX_SAMPLES: gl.getParameter(gl.MAX_SAMPLES),
+								MAX_3D_TEXTURE_SIZE: gl.getParameter(gl.MAX_3D_TEXTURE_SIZE),
+								MAX_ARRAY_TEXTURE_LAYERS: gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS),
+								MAX_TEXTURE_LOD_BIAS: gl.getParameter(gl.MAX_TEXTURE_LOD_BIAS),
+								MAX_UNIFORM_BUFFER_BINDINGS: gl.getParameter(gl.MAX_UNIFORM_BUFFER_BINDINGS),
+								MAX_UNIFORM_BLOCK_SIZE: gl.getParameter(gl.MAX_UNIFORM_BLOCK_SIZE),
+								UNIFORM_BUFFER_OFFSET_ALIGNMENT: gl.getParameter(gl.UNIFORM_BUFFER_OFFSET_ALIGNMENT),
+								MAX_COMBINED_UNIFORM_BLOCKS: gl.getParameter(gl.MAX_COMBINED_UNIFORM_BLOCKS),
+								MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS: gl.getParameter(gl.MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS),
+								MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS: gl.getParameter(gl.MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS),
+								MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS: gl.getParameter(gl.MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS),
+								MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS: gl.getParameter(gl.MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS),
+								MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS: gl.getParameter(gl.MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS),
+								MAX_ELEMENT_INDEX: gl.getParameter(gl.MAX_ELEMENT_INDEX),
+								MAX_SERVER_WAIT_TIMEOUT: gl.getParameter(gl.MAX_SERVER_WAIT_TIMEOUT)
 							}
 							const response = data
-							if (!param2Lie && !ext2Lie) {
-								return response
-							}
-							// document lie and send to trash
-							const paramTitle = `webgl2GetParameter`
-							const extTitle = `webgl2GetExtension`
-							if (param2Lie) { 
-								documentLie(paramTitle, response, param2Lie)
-							}
-							if (ext2Lie) {
-								documentLie(extTitle, response, ext2Lie)
-							}
-							// Fingerprint lie
-							return { param2Lie, ext2Lie }
+							return response
 						}
 						const data = { webglSpecs: getWebglSpecs(webgl), webgl2Specs: getWebgl2Specs(webgl2) }
 						return resolve(data)
 					})
 				}
 
-				const getUnmasked = (context, [paramLie, extLie], [rendererTitle, vendorTitle]) => {
+				const getUnmasked = (context, [rendererTitle, vendorTitle]) => {
 					return new Promise(async resolve => {
 						try {
 							if (!context) {
@@ -1931,40 +2485,17 @@
 							const validate = (value, title) => {
 								const gibbers = gibberish(value)
 								if (!!gibbers.length) {
-									sendToTrash(`webgl ${title} contains gibberish`, `[${gibbers.join(', ')}] ${value}`)
+									sendToTrash(`${title} contains gibberish`, `[${gibbers.join(', ')}] ${value}`)
 								}
 								return (
 									!proxyBehavior(value) ? value : 
 									sendToTrash(title, 'proxy behavior detected')
 								)
 							}
-							if (!paramLie && !extLie) {
-								return resolve ({
-									vendor: validate(vendor, vendorTitle),
-									renderer: validate(renderer, rendererTitle)
-								})
-							}
-							// document lie and send to trash
-							const webglVendorAndRenderer = `${vendor}, ${renderer}`
-							const paramTitle = `${vendorTitle}And${rendererTitle}Parameter`
-							const extTitle = `${vendorTitle}And${rendererTitle}Extension`
-							if (paramLie) { 
-								documentLie(paramTitle, webglVendorAndRenderer, paramLie)
-							}
-							if (extLie) {
-								documentLie(extTitle, webglVendorAndRenderer, extLie)
-							}
-							const response = (
-								rendererTitle == 'webgl2Renderer' ? {
-									vendor: { param2Lie: paramLie, ext2Lie: extLie },
-									renderer: { param2Lie: paramLie, ext2Lie: extLie }
-								} : {
-									vendor: { paramLie, extLie },
-									renderer: { paramLie, extLie }
-								}
-							)
-							// Fingerprint lie
-							return resolve(response)
+							return resolve ({
+								vendor: validate(vendor, vendorTitle),
+								renderer: validate(renderer, rendererTitle)
+							})
 						}
 						catch (error) {
 							captureError(error)
@@ -1975,39 +2506,16 @@
 						}
 					})
 				}
-				const getDataURL = (canvas, context, [dataLie, contextLie], [canvasTitle, contextTitle]) => {
+				const getDataURL = (canvas, context) => {
 					return new Promise(async resolve => {
 						try {
-							// document lie and send to trash
-							const documentTrashLies = async (canvas, resolve, [dataLie, contextLie], [canvasTitle, contextTitle]) => {
-								const canvasWebglDataURI = attempt(() => canvas.toDataURL())
-								const hash = hashMini(canvasWebglDataURI)
-								if (contextLie) {
-									documentLie(contextTitle, hash, contextLie)
-								}
-								if (dataLie) {
-									documentLie(canvasTitle, hash, dataLie)
-								}
-								// fingerprint lie
-								const data = { contextLie, dataLie }
-								const $hash = await hashify(data)
-								return resolve({ ...data, $hash })
-							}
-							if (dataLie || contextLie) {
-								return documentTrashLies(canvas, resolve, [dataLie, contextLie], [canvasTitle, contextTitle])
-							}
-							else if (!context) {
-								return resolve({ dataURI: undefined, $hash: undefined })
-							}
-							if (!dataLie && !contextLie) {
-								const colorBufferBit = caniuse(() => context, ['COLOR_BUFFER_BIT'])
-								caniuse(() => context, ['clearColor'], [0.2, 0.4, 0.6, 0.8], true)
-								caniuse(() => context, ['clear'], [colorBufferBit], true)
-								const canvasWebglDataURI = canvas.toDataURL()
-								const dataURI = canvasWebglDataURI
-								const $hash = await hashify(dataURI)
-								return resolve({ dataURI, $hash })
-							}
+							const colorBufferBit = caniuse(() => context, ['COLOR_BUFFER_BIT'])
+							caniuse(() => context, ['clearColor'], [0.2, 0.4, 0.6, 0.8], true)
+							caniuse(() => context, ['clear'], [colorBufferBit], true)
+							const canvasWebglDataURI = canvas.toDataURL()
+							const dataURI = canvasWebglDataURI
+							const $hash = await hashify(dataURI)
+							return resolve({ dataURI, $hash })
 						}
 						catch (error) {
 							captureError(error)
@@ -2025,13 +2533,13 @@
 					dataURI2,
 					specs
 				] = await Promise.all([
-					getSupportedExtensions(context, supportedExtLie, 'webglSupportedExtensions'),
-					getSupportedExtensions(context2, supportedExt2Lie, 'webgl2SupportedExtensions'),
-					getUnmasked(context, [paramLie, extLie], ['webglRenderer', 'webglVendor']),
-					getUnmasked(context2, [param2Lie, ext2Lie], ['webgl2Renderer', 'webgl2Vendor']),
-					getDataURL(canvas, context, [dataLie, contextLie], ['canvasWebglDataURI', 'canvasWebglContextDataURI']),
-					getDataURL(canvas2, context2, [dataLie, contextLie], ['canvasWebgl2DataURI', 'canvasWebgl2ContextDataURI']),
-					getSpecs([context, context2], [paramLie, param2Lie, extLie, ext2Lie])
+					getSupportedExtensions(context),
+					getSupportedExtensions(context2),
+					getUnmasked(context, ['webgl renderer', 'webgl vendor']),
+					getUnmasked(context2, ['webgl2 renderer', 'webgl2 vendor']),
+					getDataURL(canvas, context),
+					getDataURL(canvas2, context2),
+					getSpecs(context, context2)
 				]).catch(error => {
 					console.error(error.message)
 				})
@@ -2042,35 +2550,25 @@
 					unmasked2,
 					dataURI,
 					dataURI2,
-					specs
+					specs,
+					lied
 				}
 				data.matchingUnmasked = JSON.stringify(data.unmasked) === JSON.stringify(data.unmasked2)
 				data.matchingDataURI = data.dataURI.$hash === data.dataURI2.$hash
 
 				const $hash = await hashify(data)
 				resolve({ ...data, $hash })
-				const id = `${instanceId}-canvas-webgl`
+				const id = 'creep-canvas-webgl'
 				const el = document.getElementById(id)
 				const { webglSpecs, webgl2Specs } = specs
 				const webglSpecsKeys = webglSpecs ? Object.keys(webglSpecs) : []
 				const webgl2SpecsKeys = webgl2Specs ? Object.keys(webgl2Specs) : []
-				const detectStringLie = (val, id) => {
-					if (!val) {
-						return note.blocked
-					}
-					return typeof val == 'string' ? val : note.lied
-				}
+				
 				const detectParameterLie = (obj, keys, version, id) => {
 					if (!obj || !keys.length) {
 						return `<div>${version} parameters (0): ${note.blocked}</div>`
 					}
 					id = `${id}-p-${version}`
-					const lied = !!(
-						obj['paramLie'] ||
-						obj['param2Lie'] ||
-						obj['extLie'] ||
-						obj['ext2Lie']
-					)
 					return `
 					<div>${version} parameters (${lied ? '0' : count(keys)}): ${
 						lied ? note.lied :
@@ -2078,37 +2576,48 @@
 					}</div>
 					`
 				}
-				const detectDataURILie = (obj, version, id) => {
-					if (!obj) {
-						return `<div>${version} toDataURL: ${note.blocked}</div>`
-					}
-					id = `${id}-d-${version}`
-					const lied = !!(obj['dataLie'] || obj['contextLie'])
-					return `
-					<div>${version} toDataURL: ${
-						lied ? note.lied :
-						(obj.$hash ? obj.$hash : note.blocked)
-					}</div>
-					`
-				}
+				
 				patch(el, html`
 				<div>
-					<strong>WebGLRenderingContext/WebGL2RenderingContext</strong>
-					<div>hash: ${$hash}</div>
-					${detectDataURILie(dataURI, 'v1', id)}
-					${detectParameterLie(webglSpecs, webglSpecsKeys, 'v1', id)}
-					<div>v1 extensions (${count(supported.extensions)}): ${
-						!caniuse(() => supported, ['extensions', 'length']) ? note.blocked : modal(`${id}-e-v1`, supported.extensions.join('<br>'))
+					<strong>WebGLRenderingContext</strong>
+					<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
+					<br>
+					<div>WebGL</div>
+					<div class="ellipsis">toDataURL: ${dataURI.$hash}</div>
+					<div>parameters (${count(webglSpecsKeys)}): ${
+						!webglSpecsKeys.length ? note.unsupported :
+						modal(`${id}-p-v1`, webglSpecsKeys.map(key => `${key}: ${webglSpecs[key]}`).join('<br>'))
 					}</div>
-					<div>v1 renderer: ${detectStringLie(unmasked.renderer, `${id}-r-v1`)}</div>
-					<div>v1 vendor: ${detectStringLie(unmasked.vendor, `${id}-v-v1`)}</div>
-					${detectDataURILie(dataURI2, 'v2', id)}
-					${detectParameterLie(webgl2Specs, webgl2SpecsKeys, 'v2', id)}
-					<div>v2 extensions (${count(supported2.extensions)}): ${
-						!caniuse(() => supported2, ['extensions', 'length']) ? note.blocked : modal(`${id}-e-v2`, supported2.extensions.join('<br>'))
+					<div>extensions (${count(supported.extensions)}): ${
+						!caniuse(() => supported, ['extensions', 'length']) ? note.unsupported : modal(`${id}-e-v1`, supported.extensions.join('<br>'))
 					}</div>
-					<div>v2 renderer: ${detectStringLie(unmasked2.renderer, `${id}-r-v2`)}</div>
-					<div>v2 vendor: ${detectStringLie(unmasked2.vendor, `${id}-v-v2`)}</div>
+					<div>renderer: ${ 
+						!unmasked.renderer ? note.unsupported :
+						unmasked.renderer
+					}</div>
+					<div>vendor: ${ 
+						!unmasked.vendor ? note.unsupported :
+						unmasked.vendor
+					}</div>
+					<br>
+					<div>WebGL2</div>
+					<div class="ellipsis">toDataURL: ${dataURI2.$hash}</div>
+					<div>parameters (${count(webgl2SpecsKeys)}): ${
+						!webgl2SpecsKeys.length ? note.unsupported :
+						modal(`${id}-p-v2`, webgl2SpecsKeys.map(key => `${key}: ${webgl2Specs[key]}`).join('<br>'))
+					}</div>
+					<div>extensions (${count(supported2.extensions)}): ${
+						!caniuse(() => supported2, ['extensions', 'length']) ? note.unsupported : modal(`${id}-e-v2`, supported2.extensions.join('<br>'))
+					}</div>
+					<div>renderer: ${
+						!unmasked2.renderer ? note.unsupported :
+						unmasked2.renderer
+					}</div>
+					<div>vendor: ${
+						!unmasked2.vendor ? note.unsupported :
+						unmasked2.vendor
+					}</div>
+					<br>
 					<div>matching renderer/vendor: ${''+data.matchingUnmasked}</div>
 					<div>matching data URI: ${''+data.matchingDataURI}</div>
 				</div>
@@ -2126,6 +2635,51 @@
 	const getMaths = instanceId => {
 		return new Promise(async resolve => {
 			try {
+				// detect failed math equality lie
+				const check = [
+					'acos',
+					'acosh',
+					'asin',
+					'asinh',
+					'atan',
+					'atanh',
+					'atan2',
+					'cbrt',
+					'cos',
+					'cosh',
+					'expm1',
+					'exp',
+					'hypot',
+					'log',
+					'log1p',
+					'log10',
+					'sin',
+					'sinh',
+					'sqrt',
+					'tan',
+					'tanh',
+					'pow'
+				]
+				let lied
+				check.forEach(prop => {
+					lied = lieProps[`Math.${prop}`]
+					const test = (
+						prop == 'cos' ? [1e308] :
+						prop == 'acos' || prop == 'asin' || prop == 'atanh' ? [0.5] :
+						prop == 'pow' || prop == 'atan2' ? [Math.PI, 2] : 
+						[Math.PI]
+					)
+					const res1 = Math[prop](...test)
+					const res2 = Math[prop](...test)
+					const matching = isNaN(res1) && isNaN(res2) ? true : res1 == res2
+					if (!matching) {
+						lied = true
+						const mathLie = { fingerprint: '', lies: [{ [`Expected ${res1} and got ${res2}`]: true }] }
+						documentLie(`Math.${prop}`, hashMini({res1, res2}), mathLie)
+					}
+					return
+				})
+
 				const n = 0.123
 				const bigN = 5.860847362277284e+38
 				const fns = [
@@ -2257,10 +2811,11 @@
 					
 					['polyfill', [2e-3 ** -100], 'polyfill pow(2e-3, -100)', 7.888609052210102e+269, 7.888609052210126e+269, NaN, NaN]
 				]
+				const contentWindowMath = contentWindow ? contentWindow.Math : Math
 				const data = {}
 				fns.forEach(fn => {
 					data[fn[2]] = attempt(() => {
-						const result = fn[0] != 'polyfill' ? Math[fn[0]](...fn[1]) : fn[1]
+						const result = fn[0] != 'polyfill' ? contentWindowMath[fn[0]](...fn[1]) : fn[1]
 						const chrome = result == fn[3]
 						const firefox = fn[4] ? result == fn[4] : false
 						const torBrowser = fn[5] ? result == fn[5] : false
@@ -2268,9 +2823,10 @@
 						return { result, chrome, firefox, torBrowser, safari }
 					})
 				})
+				
 				const $hash = await hashify(data)
-				resolve({...data, $hash })
-				const id = `${instanceId}-maths`
+				resolve({...data, lied, $hash })
+				const id = 'creep-maths'
 				const el = document.getElementById(id)
 				const header = `<div>Match to Win10 64bit Chromium > Firefox > Tor Browser > Mac10 Safari<br>[CR][FF][TB][SF]</div>`
 				const results = Object.keys(data).map(key => {
@@ -2281,7 +2837,7 @@
 				patch(el, html`
 				<div>
 					<strong>Math</strong>
-					<div>hash: ${$hash}</div>
+					<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
 					<div>results: ${
 						modal(id, header+results.join('<br>'))
 					}
@@ -2314,20 +2870,20 @@
 		return new Promise(async resolve => {
 			try {
 				const errorTests = [
-					() => eval('alert(")'),
-					() => eval('const foo;foo.bar'),
-					() => eval('null.bar'),
-					() => eval('abc.xyz = 123'),
-					() => eval('const foo;foo.bar'),
-					() => eval('(1).toString(1000)'),
-					() => eval('[...undefined].length'),
-					() => eval('var x = new Array(-1)'),
-					() => eval('const a=1; const a=2;')
+					() => new Function('alert(")')(),
+					() => new Function('const foo;foo.bar')(),
+					() => new Function('null.bar')(),
+					() => new Function('abc.xyz = 123')(),
+					() => new Function('const foo;foo.bar')(),
+					() => new Function('(1).toString(1000)')(),
+					() => new Function('[...undefined].length')(),
+					() => new Function('var x = new Array(-1)')(),
+					() => new Function('const a=1; const a=2;')()
 				]
 				const errors = getErrors(errorTests)
 				const $hash = await hashify(errors)
 				resolve({errors, $hash })
-				const id = `${instanceId}-console-errors`
+				const id = 'creep-console-errors'
 				const el = document.getElementById(id)
 				const results = Object.keys(errors).map(key => {
 					const value = errors[key]
@@ -2336,10 +2892,8 @@
 				patch(el, html`
 				<div>
 					<strong>Error</strong>
-					<div>hash: ${$hash}</div>
-					<div>results: ${
-						modal(id, results.join('<br>'))
-					}
+					<div class="ellipsis">hash: ${$hash}</div>
+					<div>results: ${modal(id, results.join('<br>'))}
 					<div>engine: ${known($hash)}</div>
 				</div>
 				`)
@@ -2356,6 +2910,7 @@
 	const getTimezone = instanceId => {
 		return new Promise(async resolve => {
 			try {
+				let lied
 				const contentWindowDate = contentWindow ? contentWindow.Date : Date
 				const contentWindowIntl = contentWindow ? contentWindow.Intl : Date
 				const computeTimezoneOffset = () => {
@@ -2549,9 +3104,6 @@
 					return undefined
 				}
 				const writingSystemKeys = await getWritingSystemKeys()		
-				const dateGetTimezoneOffset = attempt(() => Date.prototype.getTimezoneOffset)
-				const dateProto = contentWindowDate.prototype
-				const timezoneLie = dateGetTimezoneOffset ? hasLiedAPI(dateGetTimezoneOffset, 'getTimezoneOffset', dateProto).lie : false
 				const timezoneOffset = new contentWindowDate().getTimezoneOffset()
 				const timezoneOffsetComputed = computeTimezoneOffset()
 				const timezoneOffsetMeasured = measureTimezoneOffset(timezoneOffset)
@@ -2562,54 +3114,64 @@
 				const timezone = (''+new contentWindowDate()).replace(notWithinParentheses, '')
 				const relativeTime = getRelativeTime()
 				const locale = getLocale()
-				// document lie
-				const seasonLie = timezoneOffsetMeasured.lie ? { lies: [{ ['timezone seasons disagree']: true }] } : false
-				const localeLie = locale.lie ? { lies: [{ ['Intl locales mismatch']: true }] } : false
-				const offsetLie = !matchingOffsets ? { lies: [{ ['timezone offsets mismatch']: true }] } : false
-				if (localeLie) {
-					documentLie('IntlLocales', locale, localeLie)	
+				// document lies
+				lied = (
+					lieProps['Date.getTimezoneOffset'] ||
+					lieProps['Intl.Collator.resolvedOptions'] ||
+					lieProps['Intl.DateTimeFormat.resolvedOptions'] ||
+					lieProps['Intl.DisplayNames.resolvedOptions'] ||
+					lieProps['Intl.ListFormat.resolvedOptions'] ||
+					lieProps['Intl.NumberFormat.resolvedOptions'] ||
+					lieProps['Intl.PluralRules.resolvedOptions'] ||
+					lieProps['Intl.RelativeTimeFormat.resolvedOptions']
+				)
+				const seasonLie = timezoneOffsetMeasured.lie ? { fingerprint: '', lies: [{ ['timezone seasons disagree']: true }] } : false
+				const localeLie = locale.lie ? { fingerprint: '', lies: [{ ['Intl locales mismatch']: true }] } : false
+				const offsetLie = !matchingOffsets ? { fingerprint: '', lies: [{ ['timezone offsets mismatch']: true }] } : false
+				if (seasonLie) {
+					lied = true
+					documentLie('Date', measuredTimezones, seasonLie)
 				}
-				if (timezoneLie) {
-					documentLie('timezone', timezoneOffset, timezoneLie)
+				if (localeLie) {
+					lied = true
+					documentLie('Intl', locale, localeLie)	
 				}
 				if (offsetLie) {
-					documentLie('timezoneOffsets', timezoneOffset, offsetLie)
-				}
-				if (seasonLie) {
-					documentLie('timezoneMeasured', measuredTimezones, seasonLie)
+					lied = true
+					documentLie('Date', timezoneOffset, offsetLie)
 				}
 				const data =  {
 					timezone,
 					timezoneLocation,
-					timezoneOffset: !timezoneLie ? timezoneOffset : timezoneLie,
+					timezoneOffset: timezoneOffset,
 					timezoneOffsetComputed,
-					timezoneOffsetMeasured: !seasonLie ? measuredTimezones : seasonLie,
+					timezoneOffsetMeasured: measuredTimezones,
 					matchingOffsets,
 					relativeTime,
-					locale: !localeLie ? locale : localeLie,
+					locale,
 					writingSystemKeys,
-					lied: localeLie || timezoneLie || seasonLie || !matchingOffsets
+					lied
 				}
 				
 				const $hash = await hashify(data)
 				resolve({...data, $hash })
-				const id = `${instanceId}-timezone`
+				const id = 'creep-timezone'
 				const el = document.getElementById(id)
 				patch(el, html`
 				<div>
 					<strong>Date/Intl/Keyboard</strong>
-					<div>hash: ${$hash}</div>
+					<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
 					<div>timezone: ${timezone}</div>
 					<div>timezone location: ${timezoneLocation}</div>
-					<div>timezone offset: ${!timezoneLie && matchingOffsets ? ''+timezoneOffset : note.lied}</div>
+					<div>timezone offset: ${timezoneOffset}</div>
 					<div>timezone offset computed: ${''+timezoneOffsetComputed}</div>
 					<div>matching offsets: ${''+matchingOffsets}</div>
-					<div>timezone measured: ${!seasonLie ? measuredTimezones : note.lied}</div>
+					<div>timezone measured: ${measuredTimezones}</div>
 					<div>relativeTimeFormat: ${
 						!relativeTime ? note.unsupported : 
 						modal(`${id}-relative-time-format`, Object.keys(relativeTime).sort().map(key => `${key} => ${relativeTime[key]}`).join('<br>'))
 					}</div>
-					<div>locale language: ${!localeLie ? locale.lang.join(', ') : note.lied}</div>
+					<div>locale language: ${locale.lang.join(', ')}</div>
 					<div>writing system keys: ${
 						!writingSystemKeys ? note.unsupported :
 						modal(`${id}-writing-system-keys`, writingSystemKeys.map(systemKey => {
@@ -2635,150 +3197,180 @@
 	}
 
 	// client rects
-	// inspired by https://privacycheck.sec.lrz.de/active/fp_gcr/fp_getclientrects.html
+	// inspired by
+	// https://privacycheck.sec.lrz.de/active/fp_gcr/fp_getclientrects.html
+	// https://privacycheck.sec.lrz.de/active/fp_e/fp_emoji.html
+	const emojis = [[128512],[128515],[128516],[128513],[128518],[128517],[129315],[128514],[128578],[128579],[128521],[128522],[128519],[129392],[128525],[129321],[128536],[128535],[9786],[128538],[128537],[129394],[128523],[128539],[128540],[129322],[128541],[129297],[129303],[129325],[129323],[129300],[129296],[129320],[128528],[128529],[128566],[128527],[128530],[128580],[128556],[129317],[128524],[128532],[128554],[129316],[128564],[128567],[129298],[129301],[129314],[129326],[129319],[129397],[129398],[129396],[128565],[129327],[129312],[129395],[129400],[128526],[129299],[129488],[128533],[128543],[128577],[9785],[128558],[128559],[128562],[128563],[129402],[128550],[128551],[128552],[128560],[128549],[128546],[128557],[128561],[128534],[128547],[128542],[128531],[128553],[128555],[129393],[128548],[128545],[128544],[129324],[128520],[128127],[128128],[9760],[128169],[129313],[128121],[128122],[128123],[128125],[128126],[129302],[128570],[128568],[128569],[128571],[128572],[128573],[128576],[128575],[128574],[128584],[128585],[128586],[128139],[128140],[128152],[128157],[128150],[128151],[128147],[128158],[128149],[128159],[10083],[128148],[10084],[129505],[128155],[128154],[128153],[128156],[129294],[128420],[129293],[128175],[128162],[128165],[128171],[128166],[128168],[128371],[128163],[128172],[128065,65039,8205,128488,65039],[128488],[128495],[128173],[128164],[128075],[129306],[128400],[9995],[128406],[128076],[129292],[129295],[9996],[129310],[129311],[129304],[129305],[128072],[128073],[128070],[128405],[128071],[9757],[128077],[128078],[9994],[128074],[129307],[129308],[128079],[128588],[128080],[129330],[129309],[128591],[9997],[128133],[129331],[128170],[129470],[129471],[129461],[129462],[128066],[129467],[128067],[129504],[129728],[129729],[129463],[129460],[128064],[128065],[128069],[128068],[128118],[129490],[128102],[128103],[129489],[128113],[128104],[129492],[128104,8205,129456],[128104,8205,129457],[128104,8205,129459],[128104,8205,129458],[128105],[128105,8205,129456],[129489,8205,129456],[128105,8205,129457],[129489,8205,129457],[128105,8205,129459],[129489,8205,129459],[128105,8205,129458],[129489,8205,129458],[128113,8205,9792,65039],[128113,8205,9794,65039],[129491],[128116],[128117],[128589],[128589,8205,9794,65039],[128589,8205,9792,65039],[128590],[128590,8205,9794,65039],[128590,8205,9792,65039],[128581],[128581,8205,9794,65039],[128581,8205,9792,65039],[128582],[128582,8205,9794,65039],[128582,8205,9792,65039],[128129],[128129,8205,9794,65039],[128129,8205,9792,65039],[128587],[128587,8205,9794,65039],[128587,8205,9792,65039],[129487],[129487,8205,9794,65039],[129487,8205,9792,65039],[128583],[128583,8205,9794,65039],[128583,8205,9792,65039],[129318],[129318,8205,9794,65039],[129318,8205,9792,65039],[129335],[129335,8205,9794,65039],[129335,8205,9792,65039],[129489,8205,9877,65039],[128104,8205,9877,65039],[128105,8205,9877,65039],[129489,8205,127891],[128104,8205,127891],[128105,8205,127891],[129489,8205,127979],[128104,8205,127979],[128105,8205,127979],[129489,8205,9878,65039],[128104,8205,9878,65039],[128105,8205,9878,65039],[129489,8205,127806],[128104,8205,127806],[128105,8205,127806],[129489,8205,127859],[128104,8205,127859],[128105,8205,127859],[129489,8205,128295],[128104,8205,128295],[128105,8205,128295],[129489,8205,127981],[128104,8205,127981],[128105,8205,127981],[129489,8205,128188],[128104,8205,128188],[128105,8205,128188],[129489,8205,128300],[128104,8205,128300],[128105,8205,128300],[129489,8205,128187],[128104,8205,128187],[128105,8205,128187],[129489,8205,127908],[128104,8205,127908],[128105,8205,127908],[129489,8205,127912],[128104,8205,127912],[128105,8205,127912],[129489,8205,9992,65039],[128104,8205,9992,65039],[128105,8205,9992,65039],[129489,8205,128640],[128104,8205,128640],[128105,8205,128640],[129489,8205,128658],[128104,8205,128658],[128105,8205,128658],[128110],[128110,8205,9794,65039],[128110,8205,9792,65039],[128373],[128373,65039,8205,9794,65039],[128373,65039,8205,9792,65039],[128130],[128130,8205,9794,65039],[128130,8205,9792,65039],[129399],[128119],[128119,8205,9794,65039],[128119,8205,9792,65039],[129332],[128120],[128115],[128115,8205,9794,65039],[128115,8205,9792,65039],[128114],[129493],[129333],[129333,8205,9794,65039],[129333,8205,9792,65039],[128112],[128112,8205,9794,65039],[128112,8205,9792,65039],[129328],[129329],[128105,8205,127868],[128104,8205,127868],[129489,8205,127868],[128124],[127877],[129334],[129489,8205,127876],[129464],[129464,8205,9794,65039],[129464,8205,9792,65039],[129465],[129465,8205,9794,65039],[129465,8205,9792,65039],[129497],[129497,8205,9794,65039],[129497,8205,9792,65039],[129498],[129498,8205,9794,65039],[129498,8205,9792,65039],[129499],[129499,8205,9794,65039],[129499,8205,9792,65039],[129500],[129500,8205,9794,65039],[129500,8205,9792,65039],[129501],[129501,8205,9794,65039],[129501,8205,9792,65039],[129502],[129502,8205,9794,65039],[129502,8205,9792,65039],[129503],[129503,8205,9794,65039],[129503,8205,9792,65039],[128134],[128134,8205,9794,65039],[128134,8205,9792,65039],[128135],[128135,8205,9794,65039],[128135,8205,9792,65039],[128694],[128694,8205,9794,65039],[128694,8205,9792,65039],[129485],[129485,8205,9794,65039],[129485,8205,9792,65039],[129486],[129486,8205,9794,65039],[129486,8205,9792,65039],[129489,8205,129455],[128104,8205,129455],[128105,8205,129455],[129489,8205,129468],[128104,8205,129468],[128105,8205,129468],[129489,8205,129469],[128104,8205,129469],[128105,8205,129469],[127939],[127939,8205,9794,65039],[127939,8205,9792,65039],[128131],[128378],[128372],[128111],[128111,8205,9794,65039],[128111,8205,9792,65039],[129494],[129494,8205,9794,65039],[129494,8205,9792,65039],[129495],[129495,8205,9794,65039],[129495,8205,9792,65039],[129338],[127943],[9975],[127938],[127948],[127948,65039,8205,9794,65039],[127948,65039,8205,9792,65039],[127940],[127940,8205,9794,65039],[127940,8205,9792,65039],[128675],[128675,8205,9794,65039],[128675,8205,9792,65039],[127946],[127946,8205,9794,65039],[127946,8205,9792,65039],[9977],[9977,65039,8205,9794,65039],[9977,65039,8205,9792,65039],[127947],[127947,65039,8205,9794,65039],[127947,65039,8205,9792,65039],[128692],[128692,8205,9794,65039],[128692,8205,9792,65039],[128693],[128693,8205,9794,65039],[128693,8205,9792,65039],[129336],[129336,8205,9794,65039],[129336,8205,9792,65039],[129340],[129340,8205,9794,65039],[129340,8205,9792,65039],[129341],[129341,8205,9794,65039],[129341,8205,9792,65039],[129342],[129342,8205,9794,65039],[129342,8205,9792,65039],[129337],[129337,8205,9794,65039],[129337,8205,9792,65039],[129496],[129496,8205,9794,65039],[129496,8205,9792,65039],[128704],[128716],[129489,8205,129309,8205,129489],[128109],[128107],[128108],[128143],[128105,8205,10084,65039,8205,128139,8205,128104],[128104,8205,10084,65039,8205,128139,8205,128104],[128105,8205,10084,65039,8205,128139,8205,128105],[128145],[128105,8205,10084,65039,8205,128104],[128104,8205,10084,65039,8205,128104],[128105,8205,10084,65039,8205,128105],[128106],[128104,8205,128105,8205,128102],[128104,8205,128105,8205,128103],[128104,8205,128105,8205,128103,8205,128102],[128104,8205,128105,8205,128102,8205,128102],[128104,8205,128105,8205,128103,8205,128103],[128104,8205,128104,8205,128102],[128104,8205,128104,8205,128103],[128104,8205,128104,8205,128103,8205,128102],[128104,8205,128104,8205,128102,8205,128102],[128104,8205,128104,8205,128103,8205,128103],[128105,8205,128105,8205,128102],[128105,8205,128105,8205,128103],[128105,8205,128105,8205,128103,8205,128102],[128105,8205,128105,8205,128102,8205,128102],[128105,8205,128105,8205,128103,8205,128103],[128104,8205,128102],[128104,8205,128102,8205,128102],[128104,8205,128103],[128104,8205,128103,8205,128102],[128104,8205,128103,8205,128103],[128105,8205,128102],[128105,8205,128102,8205,128102],[128105,8205,128103],[128105,8205,128103,8205,128102],[128105,8205,128103,8205,128103],[128483],[128100],[128101],[129730],[128099],[129456],[129457],[129459],[129458],[128053],[128018],[129421],[129447],[128054],[128021],[129454],[128021,8205,129466],[128041],[128058],[129418],[129437],[128049],[128008],[128008,8205,11035],[129409],[128047],[128005],[128006],[128052],[128014],[129412],[129427],[129420],[129452],[128046],[128002],[128003],[128004],[128055],[128022],[128023],[128061],[128015],[128017],[128016],[128042],[128043],[129433],[129426],[128024],[129443],[129423],[129435],[128045],[128001],[128e3],[128057],[128048],[128007],[128063],[129451],[129428],[129415],[128059],[128059,8205,10052,65039],[128040],[128060],[129445],[129446],[129448],[129432],[129441],[128062],[129411],[128020],[128019],[128035],[128036],[128037],[128038],[128039],[128330],[129413],[129414],[129442],[129417],[129444],[129718],[129449],[129434],[129436],[128056],[128010],[128034],[129422],[128013],[128050],[128009],[129429],[129430],[128051],[128011],[128044],[129453],[128031],[128032],[128033],[129416],[128025],[128026],[128012],[129419],[128027],[128028],[128029],[129714],[128030],[129431],[129715],[128375],[128376],[129410],[129439],[129712],[129713],[129440],[128144],[127800],[128174],[127989],[127801],[129344],[127802],[127803],[127804],[127799],[127793],[129716],[127794],[127795],[127796],[127797],[127806],[127807],[9752],[127808],[127809],[127810],[127811],[127815],[127816],[127817],[127818],[127819],[127820],[127821],[129389],[127822],[127823],[127824],[127825],[127826],[127827],[129744],[129373],[127813],[129746],[129381],[129361],[127814],[129364],[129365],[127805],[127798],[129745],[129362],[129388],[129382],[129476],[129477],[127812],[129372],[127792],[127838],[129360],[129366],[129747],[129384],[129391],[129374],[129479],[129472],[127830],[127831],[129385],[129363],[127828],[127839],[127829],[127789],[129386],[127790],[127791],[129748],[129369],[129478],[129370],[127859],[129368],[127858],[129749],[129379],[129367],[127871],[129480],[129474],[129387],[127857],[127832],[127833],[127834],[127835],[127836],[127837],[127840],[127842],[127843],[127844],[127845],[129390],[127841],[129375],[129376],[129377],[129408],[129438],[129424],[129425],[129450],[127846],[127847],[127848],[127849],[127850],[127874],[127856],[129473],[129383],[127851],[127852],[127853],[127854],[127855],[127868],[129371],[9749],[129750],[127861],[127862],[127870],[127863],[127864],[127865],[127866],[127867],[129346],[129347],[129380],[129483],[129475],[129481],[129482],[129378],[127869],[127860],[129348],[128298],[127994],[127757],[127758],[127759],[127760],[128506],[128510],[129517],[127956],[9968],[127755],[128507],[127957],[127958],[127964],[127965],[127966],[127967],[127963],[127959],[129521],[129704],[129717],[128726],[127960],[127962],[127968],[127969],[127970],[127971],[127972],[127973],[127974],[127976],[127977],[127978],[127979],[127980],[127981],[127983],[127984],[128146],[128508],[128509],[9962],[128332],[128725],[128333],[9961],[128331],[9970],[9978],[127745],[127747],[127961],[127748],[127749],[127750],[127751],[127753],[9832],[127904],[127905],[127906],[128136],[127914],[128642],[128643],[128644],[128645],[128646],[128647],[128648],[128649],[128650],[128669],[128670],[128651],[128652],[128653],[128654],[128656],[128657],[128658],[128659],[128660],[128661],[128662],[128663],[128664],[128665],[128763],[128666],[128667],[128668],[127950],[127949],[128757],[129469],[129468],[128762],[128690],[128756],[128761],[128764],[128655],[128739],[128740],[128738],[9981],[128680],[128677],[128678],[128721],[128679],[9875],[9973],[128758],[128676],[128755],[9972],[128741],[128674],[9992],[128745],[128747],[128748],[129666],[128186],[128641],[128671],[128672],[128673],[128752],[128640],[128760],[128718],[129523],[8987],[9203],[8986],[9200],[9201],[9202],[128368],[128347],[128359],[128336],[128348],[128337],[128349],[128338],[128350],[128339],[128351],[128340],[128352],[128341],[128353],[128342],[128354],[128343],[128355],[128344],[128356],[128345],[128357],[128346],[128358],[127761],[127762],[127763],[127764],[127765],[127766],[127767],[127768],[127769],[127770],[127771],[127772],[127777],[9728],[127773],[127774],[129680],[11088],[127775],[127776],[127756],[9729],[9925],[9928],[127780],[127781],[127782],[127783],[127784],[127785],[127786],[127787],[127788],[127744],[127752],[127746],[9730],[9748],[9969],[9889],[10052],[9731],[9924],[9732],[128293],[128167],[127754],[127875],[127876],[127878],[127879],[129512],[10024],[127880],[127881],[127882],[127883],[127885],[127886],[127887],[127888],[127889],[129511],[127872],[127873],[127895],[127903],[127915],[127894],[127942],[127941],[129351],[129352],[129353],[9917],[9918],[129358],[127936],[127952],[127944],[127945],[127934],[129359],[127923],[127951],[127953],[127954],[129357],[127955],[127992],[129354],[129355],[129349],[9971],[9976],[127907],[129343],[127933],[127935],[128759],[129356],[127919],[129664],[129665],[127921],[128302],[129668],[129535],[127918],[128377],[127920],[127922],[129513],[129528],[129669],[129670],[9824],[9829],[9830],[9827],[9823],[127183],[126980],[127924],[127917],[128444],[127912],[129525],[129697],[129526],[129698],[128083],[128374],[129405],[129404],[129466],[128084],[128085],[128086],[129507],[129508],[129509],[129510],[128087],[128088],[129403],[129649],[129650],[129651],[128089],[128090],[128091],[128092],[128093],[128717],[127890],[129652],[128094],[128095],[129406],[129407],[128096],[128097],[129648],[128098],[128081],[128082],[127913],[127891],[129506],[129686],[9937],[128255],[128132],[128141],[128142],[128263],[128264],[128265],[128266],[128226],[128227],[128239],[128276],[128277],[127932],[127925],[127926],[127897],[127898],[127899],[127908],[127911],[128251],[127927],[129687],[127928],[127929],[127930],[127931],[129685],[129345],[129688],[128241],[128242],[9742],[128222],[128223],[128224],[128267],[128268],[128187],[128421],[128424],[9e3],[128433],[128434],[128189],[128190],[128191],[128192],[129518],[127909],[127902],[128253],[127916],[128250],[128247],[128248],[128249],[128252],[128269],[128270],[128367],[128161],[128294],[127982],[129684],[128212],[128213],[128214],[128215],[128216],[128217],[128218],[128211],[128210],[128195],[128220],[128196],[128240],[128478],[128209],[128278],[127991],[128176],[129689],[128180],[128181],[128182],[128183],[128184],[128179],[129534],[128185],[9993],[128231],[128232],[128233],[128228],[128229],[128230],[128235],[128234],[128236],[128237],[128238],[128499],[9999],[10002],[128395],[128394],[128396],[128397],[128221],[128188],[128193],[128194],[128450],[128197],[128198],[128466],[128467],[128199],[128200],[128201],[128202],[128203],[128204],[128205],[128206],[128391],[128207],[128208],[9986],[128451],[128452],[128465],[128274],[128275],[128271],[128272],[128273],[128477],[128296],[129683],[9935],[9874],[128736],[128481],[9876],[128299],[129667],[127993],[128737],[129690],[128295],[129691],[128297],[9881],[128476],[9878],[129455],[128279],[9939],[129693],[129520],[129522],[129692],[9879],[129514],[129515],[129516],[128300],[128301],[128225],[128137],[129656],[128138],[129657],[129658],[128682],[128727],[129694],[129695],[128719],[128715],[129681],[128701],[129696],[128703],[128705],[129700],[129682],[129524],[129527],[129529],[129530],[129531],[129699],[129532],[129701],[129533],[129519],[128722],[128684],[9904],[129702],[9905],[128511],[129703],[127975],[128686],[128688],[9855],[128697],[128698],[128699],[128700],[128702],[128706],[128707],[128708],[128709],[9888],[128696],[9940],[128683],[128691],[128685],[128687],[128689],[128695],[128245],[128286],[9762],[9763],[11014],[8599],[10145],[8600],[11015],[8601],[11013],[8598],[8597],[8596],[8617],[8618],[10548],[10549],[128259],[128260],[128281],[128282],[128283],[128284],[128285],[128720],[9883],[128329],[10017],[9784],[9775],[10013],[9766],[9770],[9774],[128334],[128303],[9800],[9801],[9802],[9803],[9804],[9805],[9806],[9807],[9808],[9809],[9810],[9811],[9934],[128256],[128257],[128258],[9654],[9193],[9197],[9199],[9664],[9194],[9198],[128316],[9195],[128317],[9196],[9208],[9209],[9210],[9167],[127910],[128261],[128262],[128246],[128243],[128244],[9792],[9794],[9895],[10006],[10133],[10134],[10135],[9854],[8252],[8265],[10067],[10068],[10069],[10071],[12336],[128177],[128178],[9877],[9851],[9884],[128305],[128219],[128304],[11093],[9989],[9745],[10004],[10060],[10062],[10160],[10175],[12349],[10035],[10036],[10055],[169],[174],[8482],[35,65039,8419],[42,65039,8419],[48,65039,8419],[49,65039,8419],[50,65039,8419],[51,65039,8419],[52,65039,8419],[53,65039,8419],[54,65039,8419],[55,65039,8419],[56,65039,8419],[57,65039,8419],[128287],[128288],[128289],[128290],[128291],[128292],[127344],[127374],[127345],[127377],[127378],[127379],[8505],[127380],[9410],[127381],[127382],[127358],[127383],[127359],[127384],[127385],[127386],[127489],[127490],[127543],[127542],[127535],[127568],[127545],[127514],[127538],[127569],[127544],[127540],[127539],[12951],[12953],[127546],[127541],[128308],[128992],[128993],[128994],[128309],[128995],[128996],[9899],[9898],[128997],[128999],[129e3],[129001],[128998],[129002],[129003],[11035],[11036],[9724],[9723],[9726],[9725],[9642],[9643],[128310],[128311],[128312],[128313],[128314],[128315],[128160],[128280],[128307],[128306],[127937],[128681],[127884],[127988],[127987],[127987,65039,8205,127752],[127987,65039,8205,9895,65039],[127988,8205,9760,65039],[127462,127464],[127462,127465],[127462,127466],[127462,127467],[127462,127468],[127462,127470],[127462,127473],[127462,127474],[127462,127476],[127462,127478],[127462,127479],[127462,127480],[127462,127481],[127462,127482],[127462,127484],[127462,127485],[127462,127487],[127463,127462],[127463,127463],[127463,127465],[127463,127466],[127463,127467],[127463,127468],[127463,127469],[127463,127470],[127463,127471],[127463,127473],[127463,127474],[127463,127475],[127463,127476],[127463,127478],[127463,127479],[127463,127480],[127463,127481],[127463,127483],[127463,127484],[127463,127486],[127463,127487],[127464,127462],[127464,127464],[127464,127465],[127464,127467],[127464,127468],[127464,127469],[127464,127470],[127464,127472],[127464,127473],[127464,127474],[127464,127475],[127464,127476],[127464,127477],[127464,127479],[127464,127482],[127464,127483],[127464,127484],[127464,127485],[127464,127486],[127464,127487],[127465,127466],[127465,127468],[127465,127471],[127465,127472],[127465,127474],[127465,127476],[127465,127487],[127466,127462],[127466,127464],[127466,127466],[127466,127468],[127466,127469],[127466,127479],[127466,127480],[127466,127481],[127466,127482],[127467,127470],[127467,127471],[127467,127472],[127467,127474],[127467,127476],[127467,127479],[127468,127462],[127468,127463],[127468,127465],[127468,127466],[127468,127467],[127468,127468],[127468,127469],[127468,127470],[127468,127473],[127468,127474],[127468,127475],[127468,127477],[127468,127478],[127468,127479],[127468,127480],[127468,127481],[127468,127482],[127468,127484],[127468,127486],[127469,127472],[127469,127474],[127469,127475],[127469,127479],[127469,127481],[127469,127482],[127470,127464],[127470,127465],[127470,127466],[127470,127473],[127470,127474],[127470,127475],[127470,127476],[127470,127478],[127470,127479],[127470,127480],[127470,127481],[127471,127466],[127471,127474],[127471,127476],[127471,127477],[127472,127466],[127472,127468],[127472,127469],[127472,127470],[127472,127474],[127472,127475],[127472,127477],[127472,127479],[127472,127484],[127472,127486],[127472,127487],[127473,127462],[127473,127463],[127473,127464],[127473,127470],[127473,127472],[127473,127479],[127473,127480],[127473,127481],[127473,127482],[127473,127483],[127473,127486],[127474,127462],[127474,127464],[127474,127465],[127474,127466],[127474,127467],[127474,127468],[127474,127469],[127474,127472],[127474,127473],[127474,127474],[127474,127475],[127474,127476],[127474,127477],[127474,127478],[127474,127479],[127474,127480],[127474,127481],[127474,127482],[127474,127483],[127474,127484],[127474,127485],[127474,127486],[127474,127487],[127475,127462],[127475,127464],[127475,127466],[127475,127467],[127475,127468],[127475,127470],[127475,127473],[127475,127476],[127475,127477],[127475,127479],[127475,127482],[127475,127487],[127476,127474],[127477,127462],[127477,127466],[127477,127467],[127477,127468],[127477,127469],[127477,127472],[127477,127473],[127477,127474],[127477,127475],[127477,127479],[127477,127480],[127477,127481],[127477,127484],[127477,127486],[127478,127462],[127479,127466],[127479,127476],[127479,127480],[127479,127482],[127479,127484],[127480,127462],[127480,127463],[127480,127464],[127480,127465],[127480,127466],[127480,127468],[127480,127469],[127480,127470],[127480,127471],[127480,127472],[127480,127473],[127480,127474],[127480,127475],[127480,127476],[127480,127479],[127480,127480],[127480,127481],[127480,127483],[127480,127485],[127480,127486],[127480,127487],[127481,127462],[127481,127464],[127481,127465],[127481,127467],[127481,127468],[127481,127469],[127481,127471],[127481,127472],[127481,127473],[127481,127474],[127481,127475],[127481,127476],[127481,127479],[127481,127481],[127481,127483],[127481,127484],[127481,127487],[127482,127462],[127482,127468],[127482,127474],[127482,127475],[127482,127480],[127482,127486],[127482,127487],[127483,127462],[127483,127464],[127483,127466],[127483,127468],[127483,127470],[127483,127475],[127483,127482],[127484,127467],[127484,127480],[127485,127472],[127486,127466],[127486,127481],[127487,127462],[127487,127474],[127487,127484],[127988,917607,917602,917605,917614,917607,917631],[127988,917607,917602,917619,917603,917620,917631],[127988,917607,917602,917623,917612,917619,917631]]
+
 	const getClientRects = instanceId => {
 		return new Promise(async resolve => {
 			try {
 				const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
-				const elementGetClientRects = attempt(() => Element.prototype.getClientRects)
-				const elementProto = Element.prototype
-				const rectsLie = (
-					elementGetClientRects ? hasLiedAPI(elementGetClientRects, 'getClientRects', elementProto).lie : false
-				)
-
-				// create and get rendered iframe
-				const id = `${instanceId}-client-rects-iframe`
+				let lied = lieProps['Element.getClientRects'] // detect lies
 				const rectsId = `${instanceId}-client-rects-div`
-				const iframeElement = document.createElement('iframe')
 				const divElement = document.createElement('div')
-				iframeElement.setAttribute('id', id)
 				divElement.setAttribute('id', rectsId)
-				iframeElement.setAttribute('style', 'visibility: hidden; height: 0')
-				document.body.appendChild(iframeElement)
-				const iframeRendered = document.getElementById(id)
+				let iframeRendered, doc = document
+				try {
+					// create and get rendered iframe
+					const id = `${instanceId}-client-rects-iframe`
+					const iframeElement = document.createElement('iframe')
+					iframeElement.setAttribute('id', id)
+					iframeElement.setAttribute('style', 'visibility: hidden; height: 0')
+					document.body.appendChild(iframeElement)
+					iframeRendered = document.getElementById(id)
 
-				// create and get rendered div in iframe
-				const doc = iframeRendered.contentDocument
+					// create and get rendered div in iframe
+					doc = iframeRendered.contentDocument
+				}
+				catch (error) {
+					captureError(error, 'client blocked getClientRects iframe')
+				}
+
 				doc.body.appendChild(divElement)
 				const divRendered = doc.getElementById(rectsId)
-
+				
 				// patch div
 				patch(divRendered, html`
-				<div style="perspective:100px;width:1000.099%;" id="rect-container">
-					<style>
-					.rects {
-						width: 1000%;
-						height: 1000%;
-						max-width: 1000%;
-					}
-					.absolute {
-						position: absolute;
-					}
-					#cRect1 {
-						border: solid 2.715px;
-						border-color: #F72585;
-						padding: 3.98px;
-						margin-left: 12.12px;
-					}
-					#cRect2 {
-						border: solid 2px;
-						border-color: #7209B7;
-						font-size: 30px;
-						margin-top: 20px;
-						padding: 3.98px;
-						transform: skewY(23.1753218deg) rotate3d(10.00099, 90, 0.100000000000009, 60000000000008.00000009deg);
-					}
-					#cRect3 {
-						border: solid 2.89px;
-						border-color: #3A0CA3;
-						font-size: 45px;
-						transform: skewY(-23.1753218deg) scale(1099.0000000099, 1.89) matrix(1.11, 2.0001, -1.0001, 1.009, 150, 94.4);
-						margin-top: 50px;
-					}
-					#cRect4 {
-						border: solid 2px;
-						border-color: #4361EE;
-						transform: matrix(1.11, 2.0001, -1.0001, 1.009, 150, 94.4);
-						margin-top: 11.1331px;
-						margin-left: 12.1212px;
-						padding: 4.4545px;
-						left: 239.4141px;
-						top: 8.5050px;
-					}
-					#cRect5 {
-						border: solid 2px;
-						border-color: #4CC9F0;
-						margin-left: 42.395pt;
-					}
-					#cRect6 {
-						border: solid 2px;
-						border-color: #F72585;
-						transform: perspective(12890px) translateZ(101.5px);
-						padding: 12px;
-					}
-					#cRect7 {
-						margin-top: -350.552px;
-						margin-left: 0.9099rem;
-						border: solid 2px;
-						border-color: #4361EE;
-					}
-					#cRect8 {
-						margin-top: -150.552px;
-						margin-left: 15.9099rem;
-						border: solid 2px;
-						border-color: #3A0CA3;
-					}
-					#cRect9 {
-						margin-top: -110.552px;
-						margin-left: 15.9099rem;
-						border: solid 2px;
-						border-color: #7209B7;
-					}
-					#cRect10 {
-						margin-top: -315.552px;
-						margin-left: 15.9099rem;
-						border: solid 2px;
-						border-color: #F72585;
-					}
-					#cRect11 {
-						width: 10px;
-						height: 10px;
-						margin-left: 15.0000009099rem;
-						border: solid 2px;
-						border-color: #F72585;
-					}
-					#cRect12 {
-						width: 10px;
-						height: 10px;
-						margin-left: 15.0000009099rem;
-						border: solid 2px;
-						border-color: #F72585;
-					}
-					</style>
-					<div id="cRect1" class="rects"></div>
-					<div id="cRect2" class="rects"></div>
-					<div id="cRect3" class="rects"></div>
-					<div id="cRect4" class="rects absolute"></div>
-					<div id="cRect5" class="rects"></div>
-					<div id="cRect6" class="rects"></div>
-					<div id="cRect7" class="rects absolute"></div>
-					<div id="cRect8" class="rects absolute"></div>
-					<div id="cRect9" class="rects absolute"></div>
-					<div id="cRect10" class="rects absolute"></div>
-					<div id="cRect11" class="rects"></div>
-					<div id="cRect12" class="rects"></div>
+				<div id="${rectsId}">
+					<div style="perspective:100px;width:1000.099%;" id="rect-container">
+						<style>
+						.rects {
+							width: 1000%;
+							height: 1000%;
+							max-width: 1000%;
+						}
+						.absolute {
+							position: absolute;
+						}
+						#cRect1 {
+							border: solid 2.715px;
+							border-color: #F72585;
+							padding: 3.98px;
+							margin-left: 12.12px;
+						}
+						#cRect2 {
+							border: solid 2px;
+							border-color: #7209B7;
+							font-size: 30px;
+							margin-top: 20px;
+							padding: 3.98px;
+							transform: skewY(23.1753218deg) rotate3d(10.00099, 90, 0.100000000000009, 60000000000008.00000009deg);
+						}
+						#cRect3 {
+							border: solid 2.89px;
+							border-color: #3A0CA3;
+							font-size: 45px;
+							transform: skewY(-23.1753218deg) scale(1099.0000000099, 1.89) matrix(1.11, 2.0001, -1.0001, 1.009, 150, 94.4);
+							margin-top: 50px;
+						}
+						#cRect4 {
+							border: solid 2px;
+							border-color: #4361EE;
+							transform: matrix(1.11, 2.0001, -1.0001, 1.009, 150, 94.4);
+							margin-top: 11.1331px;
+							margin-left: 12.1212px;
+							padding: 4.4545px;
+							left: 239.4141px;
+							top: 8.5050px;
+						}
+						#cRect5 {
+							border: solid 2px;
+							border-color: #4CC9F0;
+							margin-left: 42.395pt;
+						}
+						#cRect6 {
+							border: solid 2px;
+							border-color: #F72585;
+							transform: perspective(12890px) translateZ(101.5px);
+							padding: 12px;
+						}
+						#cRect7 {
+							margin-top: -350.552px;
+							margin-left: 0.9099rem;
+							border: solid 2px;
+							border-color: #4361EE;
+						}
+						#cRect8 {
+							margin-top: -150.552px;
+							margin-left: 15.9099rem;
+							border: solid 2px;
+							border-color: #3A0CA3;
+						}
+						#cRect9 {
+							margin-top: -110.552px;
+							margin-left: 15.9099rem;
+							border: solid 2px;
+							border-color: #7209B7;
+						}
+						#cRect10 {
+							margin-top: -315.552px;
+							margin-left: 15.9099rem;
+							border: solid 2px;
+							border-color: #F72585;
+						}
+						#cRect11 {
+							width: 10px;
+							height: 10px;
+							margin-left: 15.0000009099rem;
+							border: solid 2px;
+							border-color: #F72585;
+						}
+						#cRect12 {
+							width: 10px;
+							height: 10px;
+							margin-left: 15.0000009099rem;
+							border: solid 2px;
+							border-color: #F72585;
+						}
+						</style>
+						<div id="cRect1" class="rects"></div>
+						<div id="cRect2" class="rects"></div>
+						<div id="cRect3" class="rects"></div>
+						<div id="cRect4" class="rects absolute"></div>
+						<div id="cRect5" class="rects"></div>
+						<div id="cRect6" class="rects"></div>
+						<div id="cRect7" class="rects absolute"></div>
+						<div id="cRect8" class="rects absolute"></div>
+						<div id="cRect9" class="rects absolute"></div>
+						<div id="cRect10" class="rects absolute"></div>
+						<div id="cRect11" class="rects"></div>
+						<div id="cRect12" class="rects"></div>
+						<div id="emoji" class="emojis"></div>
+					</div>
+					<div id="emoji-container">
+						<style>
+						#emoji {
+							position: absolute;
+							font-size: 200px;
+							height: auto;
+						}
+						</style>
+						<div id="emoji" class="emojis"></div>
+					</div>
 				</div>
 				`)
+
+				// get emojis
+				const emojiDiv = doc.getElementById('emoji')
+				
+				const emojiRects = emojis
+					.slice(99, 199) // limit to improve performance
+					.map(emoji => String.fromCodePoint(...emoji))
+					.map(emoji => {
+						emojiDiv.innerHTML = emoji
+						const domRect = emojiDiv.getClientRects()[0]
+						return {emoji,...toJSONParsed(domRect)}
+					})
 				
 				// get clientRects
 				const rectElems = doc.getElementsByClassName('rects')
 				const clientRects = [...rectElems].map(el => {
 					return toJSONParsed(el.getClientRects()[0])
 				})
-								
+				
 				// detect failed math calculation lie
 				let mathLie = false
-
 				clientRects.forEach(rect => {
 					const { right, left, width, bottom, top, height, x, y } = rect
 					if (
@@ -2787,63 +3379,63 @@
 						right - x != width ||
 						bottom - y != height
 					) {
-						mathLie = { lies: [{ ['failed math calculation']: true }] }
+						lied = true
+						mathLie = { fingerprint: '', lies: [{ ['failed math calculation']: true }] }
 					}
 					return
 				})
+				if (mathLie) {
+					documentLie('Element.getClientRects', hashMini(clientRects), mathLie)
+				}
 				
 				// detect equal elements mismatch lie
 				let offsetLie = false
 				const { right: right1, left: left1 } = clientRects[10]
 				const { right: right2, left: left2 } = clientRects[11]
 				if (right1 != right2 || left1 != left2) {
-					offsetLie = { lies: [{ ['equal elements mismatch']: true }] }
+					offsetLie = { fingerprint: '', lies: [{ ['equal elements mismatch']: true }] }
+					documentLie('Element.getClientRects', hashMini(clientRects), offsetLie)
+					lied = true
 				}
 
-				// resolve if no lies
-				if (!(rectsLie || offsetLie || mathLie)) {
-					iframeRendered.parentNode.removeChild(iframeRendered)
-					const $hash = await hashify(clientRects)
-					resolve({clientRects, $hash })
-					const templateId = `${instanceId}-client-rects`
-					const templateEl = document.getElementById(templateId)
-					patch(templateEl, html`
-					<div>
-						<strong>DOMRect</strong>
-						<div>hash: ${$hash}</div>
-						<div>results: ${
-							modal(templateId, clientRects.map(domRect => Object.keys(domRect).map(key => `<div>${key}: ${domRect[key]}</div>`).join('')).join('<br>') )
-						}</div>
-					</div>
-					`)
-					return
-				}
-				// document lie and send to trash
-				if (rectsLie) {
-					documentLie('clientRectsAPILie', hashMini(clientRects), rectsLie)
-				}
-				if (offsetLie) {
-					documentLie('clientRectsOffsetLie', hashMini(clientRects), offsetLie)
-				}
-				if (mathLie) {
-					documentLie('clientRectsMathLie', hashMini(clientRects), mathLie)
-				}
-			
-				// Fingerprint lie
-				iframeRendered.parentNode.removeChild(iframeRendered)
-				const lies = { rectsLie, offsetLie, mathLie }
-				const $hash = await hashify(lies)
-				resolve({...lies, $hash })
-				const templateId = `${instanceId}-client-rects`
+				// resolve 
+				const templateId = 'creep-client-rects'
 				const templateEl = document.getElementById(templateId)
+				if (!!iframeRendered) {
+					iframeRendered.parentNode.removeChild(iframeRendered)
+				}
+				else {
+					const rectsDivRendered = doc.getElementById(rectsId)
+					rectsDivRendered.parentNode.removeChild(rectsDivRendered)
+				}
+				const [
+					emojiHash,
+					clientHash,
+					$hash
+				] = await Promise.all([
+					hashify(emojiRects),
+					hashify(clientRects),
+					hashify({emojiRects, clientRects})
+				]).catch(error => {
+					console.error(error.message)
+				})
+				resolve({emojiRects, emojiHash, clientRects, clientHash, lied, $hash })
 				patch(templateEl, html`
 				<div>
 					<strong>DOMRect</strong>
-					<div>hash: ${$hash}</div>
-					<div>results: ${note.lied}</div>
+					<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
+					<div class="ellipsis">elements: ${clientHash}</div>
+					<div>results: ${
+						modal(`${templateId}-elements`, clientRects.map(domRect => Object.keys(domRect).map(key => `<div>${key}: ${domRect[key]}</div>`).join('')).join('<br>') )
+					}</div>
+					<div class="ellipsis">emojis v13.0: ${emojiHash}</div>
+					<div>results: ${
+						modal(`${templateId}-emojis`, emojiRects.map(rect => rect.emoji).join('') )
+					}</div>
 				</div>
 				`)
 				return
+				
 			}
 			catch (error) {
 				captureError(error)
@@ -2859,15 +3451,10 @@
 				if (!audioContext) {
 					return resolve(undefined)
 				}
-				const audioBufferGetChannelData = attempt(() => AudioBuffer.prototype.getChannelData)
-				const audioBufferCopyFromChannel = attempt(() => AudioBuffer.prototype.copyFromChannel)
-				const audioBufferProto = caniuse(() => AudioBuffer, ['prototype'])
-				const channelDataLie = (
-					audioBufferGetChannelData ? hasLiedAPI(audioBufferGetChannelData, 'getChannelData', audioBufferProto).lie : false
-				)
-				const copyFromChannelLie = (
-					audioBufferCopyFromChannel ? hasLiedAPI(audioBufferCopyFromChannel, 'copyFromChannel', audioBufferProto).lie : false
-				)
+				// detect lies
+				const channelDataLie = lieProps['AudioBuffer.getChannelData']
+				const copyFromChannelLie = lieProps['AudioBuffer.copyFromChannel']
+				let lied = channelDataLie || copyFromChannelLie
 				
 				const context = new audioContext(1, 44100, 44100)
 				const analyser = context.createAnalyser()
@@ -2936,46 +3523,40 @@
 							event.renderedBuffer.copyFromChannel(copy, 0)
 							const bins = event.renderedBuffer.getChannelData(0)
 							
-							copySample = copy ? [...copy].slice(4500, 4600) : [sendToTrash('invalidAudioSampleCopy', null)]
-							binsSample = bins ? [...bins].slice(4500, 4600) : [sendToTrash('invalidAudioSample', null)]
+							copySample = copy ? [...copy].slice(4500, 4600) : [sendToTrash('invalid Audio Sample Copy', null)]
+							binsSample = bins ? [...bins].slice(4500, 4600) : [sendToTrash('invalid Audio Sample', null)]
 							
 							const copyJSON = copy && JSON.stringify([...copy].slice(4500, 4600))
 							const binsJSON = bins && JSON.stringify([...bins].slice(4500, 4600))
 
 							matching = binsJSON === copyJSON
-
-							const audioSampleLie = { lies: [{ ['audioSampleAndCopyMatch']: false }] }
+							// detect lie
+							
 							if (!matching) {
-								documentLie('audioSampleAndCopyMatch', hashMini(matching), audioSampleLie)
+								lied = true
+								const audioSampleLie = { fingerprint: '', lies: [{ ['data and copy samples mismatch']: false }] }
+								documentLie('AudioBuffer', hashMini(matching), audioSampleLie)
 							}
+
 							dynamicsCompressor.disconnect()
 							oscillator.disconnect()
-							if (proxyBehavior(binsSample)) {
-								sendToTrash('audio', 'proxy behavior detected')
-								return resolve(undefined)
-							}
-							// document lies and send to trash
-							if (copyFromChannelLie) { 
-								documentLie('audioBufferCopyFromChannel', (copySample[0] || null), copyFromChannelLie)
-							}
-							if (channelDataLie) { 
-								documentLie('audioBufferGetChannelData', (binsSample[0] || null), channelDataLie)
-							}
-							// Fingerprint lie if it exists
+			
 							const response = {
-								binsSample: channelDataLie ? [channelDataLie] : binsSample,
-								copySample: copyFromChannelLie ? [copyFromChannelLie] : copySample,
+								binsSample: binsSample,
+								copySample: copySample,
 								matching,
-								values
+								values,
+								lied
 							}
+
 							const $hash = await hashify(response)
 							resolve({...response, $hash })
-							const id = `${instanceId}-offline-audio-context`
+							const id = 'creep-offline-audio-context'
 							const el = document.getElementById(id)
 							patch(el, html`
 							<div>
 								<strong>OfflineAudioContext</strong>
-								<div>hash: ${$hash}</div>
+								<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
 								<div>sample: ${binsSample[0]}</div>
 								<div>copy: ${copySample[0]}</div>
 								<div>matching: ${matching}</div>
@@ -3014,15 +3595,6 @@
 	const getFonts = (instanceId, fonts) => {
 		return new Promise(async resolve => {
 			try {
-				const htmlElementPrototype = attempt(() => HTMLElement.prototype)
-				const detectLies = (name, value) => {
-					const lie = htmlElementPrototype ? hasLiedAPI(htmlElementPrototype, name).lie : false
-					if (lie) {
-						documentLie(name, value, lie)
-						return undefined
-					}
-					return value
-				}
 				const toInt = val => ~~val // protect against decimal noise
 				const baseFonts = ['monospace', 'sans-serif', 'serif']
 				const text = 'mmmmmmmmmmlli'
@@ -3051,6 +3623,7 @@
 				const systemFontSpan = (font, basefont) => {
 					return `<span class="system-font" data-font="${font}" data-basefont="${basefont}" style="font-family: ${`'${font}', ${basefont}`}!important">${text}</span>`
 				}
+				
 				const fontsElem = document.getElementById('font-detector')
 				const stageElem = document.getElementById('font-detector-stage')
 				const detectedFonts = {}
@@ -3074,11 +3647,7 @@
 						const testElem = document.getElementById('font-detector-test')
 						const basefontElems = document.querySelectorAll('#font-detector-test .basefont')
 						const systemFontElems = document.querySelectorAll('#font-detector-test .system-font')
-						// detect and document lies
-						const spanLieDetect = [...basefontElems][0]
-						const offsetWidth = detectLies('offsetWidth', spanLieDetect.offsetWidth)
-						const offsetHeight = detectLies('offsetHeight', spanLieDetect.offsetHeight)
-						if (!offsetWidth || !offsetHeight) { return resolve(undefined) }
+
 						// Compute fingerprint
 						;[...basefontElems].forEach(span => {
 							const { dataset: { font }, offsetWidth, offsetHeight } = span
@@ -3104,12 +3673,12 @@
 				const $hash = await hashify(fontList)
 				resolve({fonts: fontList, $hash })
 
-				const id = `${instanceId}-fonts`
+				const id = 'creep-fonts'
 				const el = document.getElementById(id)
 				patch(el, html`
 				<div>
 					<strong>HTMLElement (font-family)</strong>
-					<div>hash: ${$hash}</div>
+					<div class="ellipsis">hash: ${$hash}</div>
 					<div>results (${count(fontList)}): ${fontList && fontList.length ? modal(id, fontList.join('<br>')) : note.blocked}</div>
 				</div>
 				`)
@@ -3124,235 +3693,17 @@
 
 	const fontList=["Andale Mono","Arial","Arial Black","Arial Hebrew","Arial MT","Arial Narrow","Arial Rounded MT Bold","Arial Unicode MS","Bitstream Vera Sans Mono","Book Antiqua","Bookman Old Style","Calibri","Cambria","Cambria Math","Century","Century Gothic","Century Schoolbook","Comic Sans","Comic Sans MS","Consolas","Courier","Courier New","Geneva","Georgia","Helvetica","Helvetica Neue","Impact","Lucida Bright","Lucida Calligraphy","Lucida Console","Lucida Fax","LUCIDA GRANDE","Lucida Handwriting","Lucida Sans","Lucida Sans Typewriter","Lucida Sans Unicode","Microsoft Sans Serif","Monaco","Monotype Corsiva","MS Gothic","MS Outlook","MS PGothic","MS Reference Sans Serif","MS Sans Serif","MS Serif","MYRIAD","MYRIAD PRO","Palatino","Palatino Linotype","Segoe Print","Segoe Script","Segoe UI","Segoe UI Light","Segoe UI Semibold","Segoe UI Symbol","Tahoma","Times","Times New Roman","Times New Roman PS","Trebuchet MS","Verdana","Wingdings","Wingdings 2","Wingdings 3"],extendedFontList=["Abadi MT Condensed Light","Academy Engraved LET","ADOBE CASLON PRO","Adobe Garamond","ADOBE GARAMOND PRO","Agency FB","Aharoni","Albertus Extra Bold","Albertus Medium","Algerian","Amazone BT","American Typewriter","American Typewriter Condensed","AmerType Md BT","Andalus","Angsana New","AngsanaUPC","Antique Olive","Aparajita","Apple Chancery","Apple Color Emoji","Apple SD Gothic Neo","Arabic Typesetting","ARCHER","ARNO PRO","Arrus BT","Aurora Cn BT","AvantGarde Bk BT","AvantGarde Md BT","AVENIR","Ayuthaya","Bandy","Bangla Sangam MN","Bank Gothic","BankGothic Md BT","Baskerville","Baskerville Old Face","Batang","BatangChe","Bauer Bodoni","Bauhaus 93","Bazooka","Bell MT","Bembo","Benguiat Bk BT","Berlin Sans FB","Berlin Sans FB Demi","Bernard MT Condensed","BernhardFashion BT","BernhardMod BT","Big Caslon","BinnerD","Blackadder ITC","BlairMdITC TT","Bodoni 72","Bodoni 72 Oldstyle","Bodoni 72 Smallcaps","Bodoni MT","Bodoni MT Black","Bodoni MT Condensed","Bodoni MT Poster Compressed","Bookshelf Symbol 7","Boulder","Bradley Hand","Bradley Hand ITC","Bremen Bd BT","Britannic Bold","Broadway","Browallia New","BrowalliaUPC","Brush Script MT","Californian FB","Calisto MT","Calligrapher","Candara","CaslonOpnface BT","Castellar","Centaur","Cezanne","CG Omega","CG Times","Chalkboard","Chalkboard SE","Chalkduster","Charlesworth","Charter Bd BT","Charter BT","Chaucer","ChelthmITC Bk BT","Chiller","Clarendon","Clarendon Condensed","CloisterBlack BT","Cochin","Colonna MT","Constantia","Cooper Black","Copperplate","Copperplate Gothic","Copperplate Gothic Bold","Copperplate Gothic Light","CopperplGoth Bd BT","Corbel","Cordia New","CordiaUPC","Cornerstone","Coronet","Cuckoo","Curlz MT","DaunPenh","Dauphin","David","DB LCD Temp","DELICIOUS","Denmark","DFKai-SB","Didot","DilleniaUPC","DIN","DokChampa","Dotum","DotumChe","Ebrima","Edwardian Script ITC","Elephant","English 111 Vivace BT","Engravers MT","EngraversGothic BT","Eras Bold ITC","Eras Demi ITC","Eras Light ITC","Eras Medium ITC","EucrosiaUPC","Euphemia","Euphemia UCAS","EUROSTILE","Exotc350 Bd BT","FangSong","Felix Titling","Fixedsys","FONTIN","Footlight MT Light","Forte","FrankRuehl","Fransiscan","Freefrm721 Blk BT","FreesiaUPC","Freestyle Script","French Script MT","FrnkGothITC Bk BT","Fruitger","FRUTIGER","Futura","Futura Bk BT","Futura Lt BT","Futura Md BT","Futura ZBlk BT","FuturaBlack BT","Gabriola","Galliard BT","Gautami","Geeza Pro","Geometr231 BT","Geometr231 Hv BT","Geometr231 Lt BT","GeoSlab 703 Lt BT","GeoSlab 703 XBd BT","Gigi","Gill Sans","Gill Sans MT","Gill Sans MT Condensed","Gill Sans MT Ext Condensed Bold","Gill Sans Ultra Bold","Gill Sans Ultra Bold Condensed","Gisha","Gloucester MT Extra Condensed","GOTHAM","GOTHAM BOLD","Goudy Old Style","Goudy Stout","GoudyHandtooled BT","GoudyOLSt BT","Gujarati Sangam MN","Gulim","GulimChe","Gungsuh","GungsuhChe","Gurmukhi MN","Haettenschweiler","Harlow Solid Italic","Harrington","Heather","Heiti SC","Heiti TC","HELV","Herald","High Tower Text","Hiragino Kaku Gothic ProN","Hiragino Mincho ProN","Hoefler Text","Humanst 521 Cn BT","Humanst521 BT","Humanst521 Lt BT","Imprint MT Shadow","Incised901 Bd BT","Incised901 BT","Incised901 Lt BT","INCONSOLATA","Informal Roman","Informal011 BT","INTERSTATE","IrisUPC","Iskoola Pota","JasmineUPC","Jazz LET","Jenson","Jester","Jokerman","Juice ITC","Kabel Bk BT","Kabel Ult BT","Kailasa","KaiTi","Kalinga","Kannada Sangam MN","Kartika","Kaufmann Bd BT","Kaufmann BT","Khmer UI","KodchiangUPC","Kokila","Korinna BT","Kristen ITC","Krungthep","Kunstler Script","Lao UI","Latha","Leelawadee","Letter Gothic","Levenim MT","LilyUPC","Lithograph","Lithograph Light","Long Island","Lydian BT","Magneto","Maiandra GD","Malayalam Sangam MN","Malgun Gothic","Mangal","Marigold","Marion","Marker Felt","Market","Marlett","Matisse ITC","Matura MT Script Capitals","Meiryo","Meiryo UI","Microsoft Himalaya","Microsoft JhengHei","Microsoft New Tai Lue","Microsoft PhagsPa","Microsoft Tai Le","Microsoft Uighur","Microsoft YaHei","Microsoft Yi Baiti","MingLiU","MingLiU_HKSCS","MingLiU_HKSCS-ExtB","MingLiU-ExtB","Minion","Minion Pro","Miriam","Miriam Fixed","Mistral","Modern","Modern No. 20","Mona Lisa Solid ITC TT","Mongolian Baiti","MONO","MoolBoran","Mrs Eaves","MS LineDraw","MS Mincho","MS PMincho","MS Reference Specialty","MS UI Gothic","MT Extra","MUSEO","MV Boli","Nadeem","Narkisim","NEVIS","News Gothic","News GothicMT","NewsGoth BT","Niagara Engraved","Niagara Solid","Noteworthy","NSimSun","Nyala","OCR A Extended","Old Century","Old English Text MT","Onyx","Onyx BT","OPTIMA","Oriya Sangam MN","OSAKA","OzHandicraft BT","Palace Script MT","Papyrus","Parchment","Party LET","Pegasus","Perpetua","Perpetua Titling MT","PetitaBold","Pickwick","Plantagenet Cherokee","Playbill","PMingLiU","PMingLiU-ExtB","Poor Richard","Poster","PosterBodoni BT","PRINCETOWN LET","Pristina","PTBarnum BT","Pythagoras","Raavi","Rage Italic","Ravie","Ribbon131 Bd BT","Rockwell","Rockwell Condensed","Rockwell Extra Bold","Rod","Roman","Sakkal Majalla","Santa Fe LET","Savoye LET","Sceptre","Script","Script MT Bold","SCRIPTINA","Serifa","Serifa BT","Serifa Th BT","ShelleyVolante BT","Sherwood","Shonar Bangla","Showcard Gothic","Shruti","Signboard","SILKSCREEN","SimHei","Simplified Arabic","Simplified Arabic Fixed","SimSun","SimSun-ExtB","Sinhala Sangam MN","Sketch Rockwell","Skia","Small Fonts","Snap ITC","Snell Roundhand","Socket","Souvenir Lt BT","Staccato222 BT","Steamer","Stencil","Storybook","Styllo","Subway","Swis721 BlkEx BT","Swiss911 XCm BT","Sylfaen","Synchro LET","System","Tamil Sangam MN","Technical","Teletype","Telugu Sangam MN","Tempus Sans ITC","Terminal","Thonburi","Traditional Arabic","Trajan","TRAJAN PRO","Tristan","Tubular","Tunga","Tw Cen MT","Tw Cen MT Condensed","Tw Cen MT Condensed Extra Bold","TypoUpright BT","Unicorn","Univers","Univers CE 55 Medium","Univers Condensed","Utsaah","Vagabond","Vani","Vijaya","Viner Hand ITC","VisualUI","Vivaldi","Vladimir Script","Vrinda","Westminster","WHITNEY","Wide Latin","ZapfEllipt BT","ZapfHumnst BT","ZapfHumnst Dm BT","Zapfino","Zurich BlkEx BT","Zurich Ex BT","ZWAdobeF"],googleFonts=["ABeeZee","Abel","Abhaya Libre","Abril Fatface","Aclonica","Acme","Actor","Adamina","Advent Pro","Aguafina Script","Akronim","Aladin","Aldrich","Alef","Alegreya","Alegreya SC","Alegreya Sans","Alegreya Sans SC","Aleo","Alex Brush","Alfa Slab One","Alice","Alike","Alike Angular","Allan","Allerta","Allerta Stencil","Allura","Almarai","Almendra","Almendra Display","Almendra SC","Amarante","Amaranth","Amatic SC","Amethysta","Amiko","Amiri","Amita","Anaheim","Andada","Andika","Angkor","Annie Use Your Telescope","Anonymous Pro","Antic","Antic Didone","Antic Slab","Anton","Arapey","Arbutus","Arbutus Slab","Architects Daughter","Archivo","Archivo Black","Archivo Narrow","Aref Ruqaa","Arima Madurai","Arimo","Arizonia","Armata","Arsenal","Artifika","Arvo","Arya","Asap","Asap Condensed","Asar","Asset","Assistant","Astloch","Asul","Athiti","Atma","Atomic Age","Aubrey","Audiowide","Autour One","Average","Average Sans","Averia Gruesa Libre","Averia Libre","Averia Sans Libre","Averia Serif Libre","B612","B612 Mono","Bad Script","Bahiana","Bahianita","Bai Jamjuree","Baloo","Baloo Bhai","Baloo Bhaijaan","Baloo Bhaina","Baloo Chettan","Baloo Da","Baloo Paaji","Baloo Tamma","Baloo Tammudu","Baloo Thambi","Balthazar","Bangers","Barlow","Barlow Condensed","Barlow Semi Condensed","Barriecito","Barrio","Basic","Battambang","Baumans","Bayon","Be Vietnam","Bebas Neue","Belgrano","Bellefair","Belleza","BenchNine","Bentham","Berkshire Swash","Beth Ellen","Bevan","Big Shoulders Display","Big Shoulders Text","Bigelow Rules","Bigshot One","Bilbo","Bilbo Swash Caps","BioRhyme","BioRhyme Expanded","Biryani","Bitter","Black And White Picture","Black Han Sans","Black Ops One","Blinker","Bokor","Bonbon","Boogaloo","Bowlby One","Bowlby One SC","Brawler","Bree Serif","Bubblegum Sans","Bubbler One","Buda","Buenard","Bungee","Bungee Hairline","Bungee Inline","Bungee Outline","Bungee Shade","Butcherman","Butterfly Kids","Cabin","Cabin Condensed","Cabin Sketch","Caesar Dressing","Cagliostro","Cairo","Calligraffitti","Cambay","Cambo","Candal","Cantarell","Cantata One","Cantora One","Capriola","Cardo","Carme","Carrois Gothic","Carrois Gothic SC","Carter One","Catamaran","Caudex","Caveat","Caveat Brush","Cedarville Cursive","Ceviche One","Chakra Petch","Changa","Changa One","Chango","Charm","Charmonman","Chathura","Chau Philomene One","Chela One","Chelsea Market","Chenla","Cherry Cream Soda","Cherry Swash","Chewy","Chicle","Chilanka","Chivo","Chonburi","Cinzel","Cinzel Decorative","Clicker Script","Coda","Coda Caption","Codystar","Coiny","Combo","Comfortaa","Coming Soon","Concert One","Condiment","Content","Contrail One","Convergence","Cookie","Copse","Corben","Cormorant","Cormorant Garamond","Cormorant Infant","Cormorant SC","Cormorant Unicase","Cormorant Upright","Courgette","Cousine","Coustard","Covered By Your Grace","Crafty Girls","Creepster","Crete Round","Crimson Pro","Crimson Text","Croissant One","Crushed","Cuprum","Cute Font","Cutive","Cutive Mono","DM Sans","DM Serif Display","DM Serif Text","Damion","Dancing Script","Dangrek","Darker Grotesque","David Libre","Dawning of a New Day","Days One","Dekko","Delius","Delius Swash Caps","Delius Unicase","Della Respira","Denk One","Devonshire","Dhurjati","Didact Gothic","Diplomata","Diplomata SC","Do Hyeon","Dokdo","Domine","Donegal One","Doppio One","Dorsa","Dosis","Dr Sugiyama","Duru Sans","Dynalight","EB Garamond","Eagle Lake","East Sea Dokdo","Eater","Economica","Eczar","El Messiri","Electrolize","Elsie","Elsie Swash Caps","Emblema One","Emilys Candy","Encode Sans","Encode Sans Condensed","Encode Sans Expanded","Encode Sans Semi Condensed","Encode Sans Semi Expanded","Engagement","Englebert","Enriqueta","Erica One","Esteban","Euphoria Script","Ewert","Exo","Exo 2","Expletus Sans","Fahkwang","Fanwood Text","Farro","Farsan","Fascinate","Fascinate Inline","Faster One","Fasthand","Fauna One","Faustina","Federant","Federo","Felipa","Fenix","Finger Paint","Fira Code","Fira Mono","Fira Sans","Fira Sans Condensed","Fira Sans Extra Condensed","Fjalla One","Fjord One","Flamenco","Flavors","Fondamento","Fontdiner Swanky","Forum","Francois One","Frank Ruhl Libre","Freckle Face","Fredericka the Great","Fredoka One","Freehand","Fresca","Frijole","Fruktur","Fugaz One","GFS Didot","GFS Neohellenic","Gabriela","Gaegu","Gafata","Galada","Galdeano","Galindo","Gamja Flower","Gayathri","Gentium Basic","Gentium Book Basic","Geo","Geostar","Geostar Fill","Germania One","Gidugu","Gilda Display","Give You Glory","Glass Antiqua","Glegoo","Gloria Hallelujah","Goblin One","Gochi Hand","Gorditas","Gothic A1","Goudy Bookletter 1911","Graduate","Grand Hotel","Gravitas One","Great Vibes","Grenze","Griffy","Gruppo","Gudea","Gugi","Gurajada","Habibi","Halant","Hammersmith One","Hanalei","Hanalei Fill","Handlee","Hanuman","Happy Monkey","Harmattan","Headland One","Heebo","Henny Penny","Hepta Slab","Herr Von Muellerhoff","Hi Melody","Hind","Hind Guntur","Hind Madurai","Hind Siliguri","Hind Vadodara","Holtwood One SC","Homemade Apple","Homenaje","IBM Plex Mono","IBM Plex Sans","IBM Plex Sans Condensed","IBM Plex Serif","IM Fell DW Pica","IM Fell DW Pica SC","IM Fell Double Pica","IM Fell Double Pica SC","IM Fell English","IM Fell English SC","IM Fell French Canon","IM Fell French Canon SC","IM Fell Great Primer","IM Fell Great Primer SC","Iceberg","Iceland","Imprima","Inconsolata","Inder","Indie Flower","Inika","Inknut Antiqua","Irish Grover","Istok Web","Italiana","Italianno","Itim","Jacques Francois","Jacques Francois Shadow","Jaldi","Jim Nightshade","Jockey One","Jolly Lodger","Jomhuria","Jomolhari","Josefin Sans","Josefin Slab","Joti One","Jua","Judson","Julee","Julius Sans One","Junge","Jura","Just Another Hand","Just Me Again Down Here","K2D","Kadwa","Kalam","Kameron","Kanit","Kantumruy","Karla","Karma","Katibeh","Kaushan Script","Kavivanar","Kavoon","Kdam Thmor","Keania One","Kelly Slab","Kenia","Khand","Khmer","Khula","Kirang Haerang","Kite One","Knewave","KoHo","Kodchasan","Kosugi","Kosugi Maru","Kotta One","Koulen","Kranky","Kreon","Kristi","Krona One","Krub","Kulim Park","Kumar One","Kumar One Outline","Kurale","La Belle Aurore","Lacquer","Laila","Lakki Reddy","Lalezar","Lancelot","Lateef","Lato","League Script","Leckerli One","Ledger","Lekton","Lemon","Lemonada","Lexend Deca","Lexend Exa","Lexend Giga","Lexend Mega","Lexend Peta","Lexend Tera","Lexend Zetta","Libre Barcode 128","Libre Barcode 128 Text","Libre Barcode 39","Libre Barcode 39 Extended","Libre Barcode 39 Extended Text","Libre Barcode 39 Text","Libre Baskerville","Libre Caslon Display","Libre Caslon Text","Libre Franklin","Life Savers","Lilita One","Lily Script One","Limelight","Linden Hill","Literata","Liu Jian Mao Cao","Livvic","Lobster","Lobster Two","Londrina Outline","Londrina Shadow","Londrina Sketch","Londrina Solid","Long Cang","Lora","Love Ya Like A Sister","Loved by the King","Lovers Quarrel","Luckiest Guy","Lusitana","Lustria","M PLUS 1p","M PLUS Rounded 1c","Ma Shan Zheng","Macondo","Macondo Swash Caps","Mada","Magra","Maiden Orange","Maitree","Major Mono Display","Mako","Mali","Mallanna","Mandali","Manjari","Mansalva","Manuale","Marcellus","Marcellus SC","Marck Script","Margarine","Markazi Text","Marko One","Marmelad","Martel","Martel Sans","Marvel","Mate","Mate SC","Material Icons","Maven Pro","McLaren","Meddon","MedievalSharp","Medula One","Meera Inimai","Megrim","Meie Script","Merienda","Merienda One","Merriweather","Merriweather Sans","Metal","Metal Mania","Metamorphous","Metrophobic","Michroma","Milonga","Miltonian","Miltonian Tattoo","Mina","Miniver","Miriam Libre","Mirza","Miss Fajardose","Mitr","Modak","Modern Antiqua","Mogra","Molengo","Molle","Monda","Monofett","Monoton","Monsieur La Doulaise","Montaga","Montez","Montserrat","Montserrat Alternates","Montserrat Subrayada","Moul","Moulpali","Mountains of Christmas","Mouse Memoirs","Mr Bedfort","Mr Dafoe","Mr De Haviland","Mrs Saint Delafield","Mrs Sheppards","Mukta","Mukta Mahee","Mukta Malar","Mukta Vaani","Muli","Mystery Quest","NTR","Nanum Brush Script","Nanum Gothic","Nanum Gothic Coding","Nanum Myeongjo","Nanum Pen Script","Neucha","Neuton","New Rocker","News Cycle","Niconne","Niramit","Nixie One","Nobile","Nokora","Norican","Nosifer","Notable","Nothing You Could Do","Noticia Text","Noto Sans","Noto Sans HK","Noto Sans JP","Noto Sans KR","Noto Sans SC","Noto Sans TC","Noto Serif","Noto Serif JP","Noto Serif KR","Noto Serif SC","Noto Serif TC","Nova Cut","Nova Flat","Nova Mono","Nova Oval","Nova Round","Nova Script","Nova Slim","Nova Square","Numans","Nunito","Nunito Sans","Odor Mean Chey","Offside","Old Standard TT","Oldenburg","Oleo Script","Oleo Script Swash Caps","Open Sans","Open Sans Condensed","Oranienbaum","Orbitron","Oregano","Orienta","Original Surfer","Oswald","Over the Rainbow","Overlock","Overlock SC","Overpass","Overpass Mono","Ovo","Oxygen","Oxygen Mono","PT Mono","PT Sans","PT Sans Caption","PT Sans Narrow","PT Serif","PT Serif Caption","Pacifico","Padauk","Palanquin","Palanquin Dark","Pangolin","Paprika","Parisienne","Passero One","Passion One","Pathway Gothic One","Patrick Hand","Patrick Hand SC","Pattaya","Patua One","Pavanam","Paytone One","Peddana","Peralta","Permanent Marker","Petit Formal Script","Petrona","Philosopher","Piedra","Pinyon Script","Pirata One","Plaster","Play","Playball","Playfair Display","Playfair Display SC","Podkova","Poiret One","Poller One","Poly","Pompiere","Pontano Sans","Poor Story","Poppins","Port Lligat Sans","Port Lligat Slab","Pragati Narrow","Prata","Preahvihear","Press Start 2P","Pridi","Princess Sofia","Prociono","Prompt","Prosto One","Proza Libre","Public Sans","Puritan","Purple Purse","Quando","Quantico","Quattrocento","Quattrocento Sans","Questrial","Quicksand","Quintessential","Qwigley","Racing Sans One","Radley","Rajdhani","Rakkas","Raleway","Raleway Dots","Ramabhadra","Ramaraja","Rambla","Rammetto One","Ranchers","Rancho","Ranga","Rasa","Rationale","Ravi Prakash","Red Hat Display","Red Hat Text","Redressed","Reem Kufi","Reenie Beanie","Revalia","Rhodium Libre","Ribeye","Ribeye Marrow","Righteous","Risque","Roboto","Roboto Condensed","Roboto Mono","Roboto Slab","Rochester","Rock Salt","Rokkitt","Romanesco","Ropa Sans","Rosario","Rosarivo","Rouge Script","Rozha One","Rubik","Rubik Mono One","Ruda","Rufina","Ruge Boogie","Ruluko","Rum Raisin","Ruslan Display","Russo One","Ruthie","Rye","Sacramento","Sahitya","Sail","Saira","Saira Condensed","Saira Extra Condensed","Saira Semi Condensed","Saira Stencil One","Salsa","Sanchez","Sancreek","Sansita","Sarabun","Sarala","Sarina","Sarpanch","Satisfy","Sawarabi Gothic","Sawarabi Mincho","Scada","Scheherazade","Schoolbell","Scope One","Seaweed Script","Secular One","Sedgwick Ave","Sedgwick Ave Display","Sevillana","Seymour One","Shadows Into Light","Shadows Into Light Two","Shanti","Share","Share Tech","Share Tech Mono","Shojumaru","Short Stack","Shrikhand","Siemreap","Sigmar One","Signika","Signika Negative","Simonetta","Single Day","Sintony","Sirin Stencil","Six Caps","Skranji","Slabo 13px","Slabo 27px","Slackey","Smokum","Smythe","Sniglet","Snippet","Snowburst One","Sofadi One","Sofia","Song Myung","Sonsie One","Sorts Mill Goudy","Source Code Pro","Source Sans Pro","Source Serif Pro","Space Mono","Special Elite","Spectral","Spectral SC","Spicy Rice","Spinnaker","Spirax","Squada One","Sree Krushnadevaraya","Sriracha","Srisakdi","Staatliches","Stalemate","Stalinist One","Stardos Stencil","Stint Ultra Condensed","Stint Ultra Expanded","Stoke","Strait","Stylish","Sue Ellen Francisco","Suez One","Sumana","Sunflower","Sunshiney","Supermercado One","Sura","Suranna","Suravaram","Suwannaphum","Swanky and Moo Moo","Syncopate","Tajawal","Tangerine","Taprom","Tauri","Taviraj","Teko","Telex","Tenali Ramakrishna","Tenor Sans","Text Me One","Thasadith","The Girl Next Door","Tienne","Tillana","Timmana","Tinos","Titan One","Titillium Web","Tomorrow","Trade Winds","Trirong","Trocchi","Trochut","Trykker","Tulpen One","Turret Road","Ubuntu","Ubuntu Condensed","Ubuntu Mono","Ultra","Uncial Antiqua","Underdog","Unica One","UnifrakturCook","UnifrakturMaguntia","Unkempt","Unlock","Unna","VT323","Vampiro One","Varela","Varela Round","Vast Shadow","Vesper Libre","Vibes","Vibur","Vidaloka","Viga","Voces","Volkhov","Vollkorn","Vollkorn SC","Voltaire","Waiting for the Sunrise","Wallpoet","Walter Turncoat","Warnes","Wellfleet","Wendy One","Wire One","Work Sans","Yanone Kaffeesatz","Yantramanav","Yatra One","Yellowtail","Yeon Sung","Yeseva One","Yesteryear","Yrsa","ZCOOL KuaiLe","ZCOOL QingKe HuangYou","ZCOOL XiaoWei","Zeyada","Zhi Mang Xing","Zilla Slab","Zilla Slab Highlight"],notoFonts=["Noto Naskh Arabic","Noto Sans Armenian","Noto Sans Bengali","Noto Sans Buginese","Noto Sans Canadian Aboriginal","Noto Sans Cherokee","Noto Sans Devanagari","Noto Sans Ethiopic","Noto Sans Georgian","Noto Sans Gujarati","Noto Sans Gurmukhi","Noto Sans Hebrew","Noto Sans JP Regular","Noto Sans KR Regular","Noto Sans Kannada","Noto Sans Khmer","Noto Sans Lao","Noto Sans Malayalam","Noto Sans Mongolian","Noto Sans Myanmar","Noto Sans Oriya","Noto Sans SC Regular","Noto Sans Sinhala","Noto Sans TC Regular","Noto Sans Tamil","Noto Sans Telugu","Noto Sans Thaana","Noto Sans Thai","Noto Sans Tibetan","Noto Sans Yi","Noto Serif Armenian","Noto Serif Khmer","Noto Serif Lao","Noto Serif Thai"];
 
-	// scene
-	const scene = html`
-	<fingerprint>
-		<div id="fingerprint-data">
-			<div id="${instanceId}-fingerprint">
-				<strong>Fingerprint</strong>
-				<div class="trusted-fingerprint" style="color:#fff">.</div>
-				<div>loose fingerprint:</div>
-				<div class="time">performance: 0 milliseconds</div>
-			</div>
-			<div id="${instanceId}-browser" class="visitor-loader">
-				<strong>Browser</strong>
-				<div>visits:</div>
-				<div>first:</div>
-				<div>last:</div>
-				<div>persistence:</div>
-				<div>has trash:</div>
-				<div>has lied:</div>
-				<div>has errors:</div>
-				<div>loose fingerprints:</div>
-				<div>bot:</div>
-			</div>
-			<div id="${instanceId}-trash">
-				<strong>Trash Bin</strong>
-				<div>hash:</div>
-				<div>trash (0):</div>
-			</div>
-			<div id="${instanceId}-lies">
-				<strong>Lies Unmasked</strong>
-				<div>hash:</div>
-				<div>lies (0):</div>
-			</div>
-			<div id="${instanceId}-captured-errors">
-				<strong>Errors Captured</strong>
-				<div>hash:</div>
-				<div>errors (0):</div>
-			</div>
-			<div id="${instanceId}-worker-scope">
-				<strong>WorkerGlobalScope: Date/WorkerNavigator/OffscreenCanvas</strong>
-				<div>hash:</div>
-				<div>timezone offset</div>
-				<div>hardwareConcurrency:</div>
-				<div>language:</div>
-				<div>platform:</div>
-				<div>webgl renderer:</div>
-				<div>webgl vendor:</div>
-				<div>system:</div>
-				<div>canvas 2d:</div>
-			</div>
-			<div id="${instanceId}-cloudflare">
-				<strong>Cloudflare</strong>
-				<div>hash:</div>
-				<div>ip address:</div>
-				<div>system:</div>
-				<div>ip location:</div>
-				<div>tls version:</div>
-			</div>
-			<div id="${instanceId}-webrtc">
-				<strong>RTCPeerConnection</strong>
-				<div>hash:</div>
-				<div>webRTC leak:</div>
-				<div>ip address:</div>
-				<div>candidate encoding:</div>
-				<div>connection line:</div>
-				<div>matching:</div>
-			</div>
-			<div id="${instanceId}-canvas-2d">
-				<strong>CanvasRenderingContext2D</strong>
-				<div>hash:</div>
-			</div>
-			<div id="${instanceId}-canvas-bitmap-renderer">
-				<strong>ImageBitmapRenderingContext</strong>
-				<div>hash:</div>
-			</div>
-			<div id="${instanceId}-canvas-webgl">
-				<strong>WebGLRenderingContext/WebGL2RenderingContext</strong>
-					<div>hash:</div>
-					<div>v1 toDataURL:</div>
-					<div>v1 parameters (0):</div>
-					<div>v1 extensions (0):</div>
-					<div>v1 renderer:</div>
-					<div>v1 vendor:</div>
-					<div>v2 toDataURL:</div>
-					<div>v2 parameters (0):</div>
-					<div>v2 extensions (0):</div>
-					<div>v2 renderer:</div>
-					<div>v2 vendor:</div>
-					<div>matching renderer/vendor:</div>
-					<div>matching data URI:</div>
-			</div>
-			<div id="${instanceId}-offline-audio-context">
-				<strong>OfflineAudioContext</strong>
-				<div>hash:</div>
-				<div>sample:</div>
-				<div>copy:</div>
-				<div>matching:</div>
-				<div>node values:</div>
-			</div>
-			<div id="${instanceId}-client-rects">
-				<strong>DOMRect</strong>
-				<div>hash:</div>
-				<div>results:</div>
-			</div>
-			<div id="${instanceId}-maths">
-				<strong>Math</strong>
-				<div>hash:</div>
-				<div>results:</div>
-				<div>engine:</div>
-			</div>
-			<div id="${instanceId}-console-errors">
-				<strong>Error</strong>
-				<div>hash:</div>
-				<div>results:</div>
-				<div>engine:</div>
-			</div>
-			<div id="${instanceId}-timezone">
-				<strong>Date/Intl/Keyboard</strong>
-				<div>hash:</div>
-				<div>timezone:</div>
-				<div>timezone location:</div>
-				<div>timezone offset:</div>
-				<div>timezone offset computed:</div>
-				<div>matching offsets:</div>
-				<div>timezone measured:</div>
-				<div>relativeTimeFormat:</div>
-				<div>locale language:</div>
-				<div>writing system keys:</div>
-			</div>
-			<div id="${instanceId}-screen">
-				<strong>Screen</strong>
-				<div>hash:</div>
-				<div>device:</div>
-				<div>width:</div>
-				<div>outerWidth:</div>
-				<div>availWidth:</div>
-				<div>height:</div>
-				<div>outerHeight:</div>
-				<div>availHeight:</div>
-				<div>colorDepth:</div>
-				<div>pixelDepth:</div>
-			</div>
-			<div id="${instanceId}-media-devices">
-				<strong>MediaDevicesInfo</strong>
-				<div>hash:</div>
-				<div>devices (0):</div>
-			</div>
-			<div id="${instanceId}-iframe-content-window-version">
-				<strong>HTMLIFrameElement.contentWindow</strong>
-				<div>hash:</div>
-				<div>keys (0):</div>
-				<div>moz:</div>
-				<div>webkit:</div>
-				<div>apple:</div>
-			</div>
-			<div id="${instanceId}-html-element-version">
-				<strong>HTMLElement</strong>
-				<div>hash:</div>
-				<div>keys (0):</div>
-			</div>
-			<div id="${instanceId}-fonts">
-				<strong>HTMLElement (font-family)</strong>
-				<div>hash:</div>
-				<div>results (0):</div>
-			</div>
-			<div id="${instanceId}-css-style-declaration-version">
-				<strong>CSSStyleDeclaration</strong>
-				<div>hash:</div>
-				<div>prototype:</div>
-				<div>getComputedStyle:</div>
-				<div>HTMLElement.style:</div>
-				<div>CSSRuleList.style:</div>
-				<div>keys:</div>
-				<div>moz:</div>
-				<div>webkit:</div>
-				<div>apple:</div>
-				<div>matching:</div>
-				<div>system:</div>
-				<div>system styles:</div>
-			</div>
-			<div id="${instanceId}-navigator">
-				<strong>Navigator</strong>
-				<div>hash:</div>
-				<div>appVersion:</div>
-				<div>deviceMemory:</div>
-				<div>doNotTrack:</div>
-				<div>hardwareConcurrency:</div>
-				<div>language:</div>
-				<div>maxTouchPoints:</div>
-				<div>platform:</div>
-				<div>userAgent:</div>
-				<div>system:</div>
-				<div>plugins (0):</div>
-				<div>mimeTypes (0):</div>
-				<div>ua architecture:</div>
-				<div>ua model:</div>
-				<div>ua platform:</div>
-				<div>ua platformVersion:</div>
-				<div>ua uaFullVersion:</div>
-				<div>properties (0):</div>
-			</div>
-			<div id="${instanceId}-voices">
-				<strong>SpeechSynthesis</strong>
-				<div>hash:</div>
-				<div>voices (0):</div>
-				<div>microsoft:</div>
-				<div>google:</div>
-				<div>chrome OS:</div>
-				<div>android:</div>
-			</div>
-			<div>
-				Data auto deletes <a href="https://github.com/abrahamjuliot/creepjs/blob/8d6603ee39c9534cad700b899ef221e0ee97a5a4/server.gs#L24" target="_blank">every 7 days</a>
-			</div>
-		</div>
-
-		<div id="font-detector"><div id="font-detector-stage"></div></div>
-	</fingerprint>
-	`
-
 	const getTrash = (instanceId, trashBin) => {
 		return new Promise(async resolve => {
 			const len = trashBin.length
 			const $hash = await hashify(trashBin)
 			resolve({ trashBin, $hash })
-			const id = `${instanceId}-trash`
+			const id = 'creep-trash'
 			const el = document.getElementById(id)
 			patch(el, html`
 			<div class="${len ? 'trash': ''}">
 				<strong>Trash Bin</strong>
-				<div>hash: ${$hash}</div>
+				<div class="ellipsis">hash: ${$hash}</div>
 				<div>trash (${!len ? '0' : ''+len }): ${
 					len ? modal(id, trashBin.map((trash,i) => `${i+1}: ${trash.name}: ${trash.value}`).join('<br>')) : `<span class="none">none</span>`
 				}</div>
@@ -3364,22 +3715,43 @@
 
 	const getLies = (instanceId, lieRecords) => {
 		return new Promise(async resolve => {
-			const len = lieRecords.length
+			let totalLies = 0
+			const sanitize = str => str.replace(/\</g, '&lt;')
+			lieRecords.forEach(lie => {
+				if (!!lie.lieTypes.fingerprint) {
+					totalLies++
+				}
+				if (!!lie.lieTypes.lies) {
+					totalLies += lie.lieTypes.lies.length
+				}
+			})
+			
 			const data = lieRecords.map(lie => ({ name: lie.name, lieTypes: lie.lieTypes }))
+			data.sort((a, b) => (a.name > b.name) ? 1 : -1)
 			const $hash = await hashify(data)
 			resolve({data, $hash })
-			const id = `${instanceId}-lies`
+			const id = 'creep-lies'
 			const el = document.getElementById(id)
 			patch(el, html`
-			<div class="${len ? 'lies': ''}">
+			<div class="${totalLies ? 'lies': ''}">
 				<strong>Lies Unmasked</strong>
-				<div>hash: ${$hash}</div>
-				<div>lies (${!len ? '0' : ''+len }): ${
-					len ? modal(id, Object.keys(data).map(key => {
+				<div class="ellipsis">hash: ${$hash}</div>
+				<div>lies (${!totalLies ? '0' : ''+totalLies }): ${
+					totalLies ? modal(id, Object.keys(data).map(key => {
 						const { name, lieTypes: { lies, fingerprint } } = data[key]
-						const lieFingerprint = !!fingerprint ? { hash: hashMini(fingerprint), json: toJSONFormat(fingerprint) } : undefined
-						const type = lies[0] ? Object.keys(lies[0])[0] : ''
-						return `<div class="${lieFingerprint ? 'lie-fingerprint' : ''}"><strong>${name}</strong>: ${type}${lieFingerprint ? `<br>tampering code leaked a fingerprint: ${lieFingerprint.hash}<br>code: ${lieFingerprint.json}</div>`: '</div>'}`
+						const lieFingerprint = !!fingerprint ? { hash: hashMini(fingerprint), json: sanitize(toJSONFormat(fingerprint)) } : undefined
+						return `
+							<div style="padding:5px">
+								<strong>${name}</strong>:
+								${lies.length ? lies.map(lie => `<br>${Object.keys(lie)[0]}`).join(''): ''}
+								${
+									lieFingerprint ? `
+										<br>Tampering code leaked a fingerprint: ${lieFingerprint.hash}
+										<br>Unexpected code: ${lieFingerprint.json}`: 
+									''
+								}
+							</div>
+						`
 					}).join('')) : `<span class="none">none</span>`
 				}</div>
 			</div>
@@ -3394,12 +3766,12 @@
 			const data =  errorsCaptured
 			const $hash = await hashify(data)
 			resolve({data, $hash })
-			const id = `${instanceId}-captured-errors`
+			const id = 'creep-captured-errors'
 			const el = document.getElementById(id)
 			patch(el, html`
 			<div class="${len ? 'errors': ''}">
 				<strong>Errors Captured</strong>
-				<div>hash: ${$hash}</div>
+				<div class="ellipsis">hash: ${$hash}</div>
 				<div>errors (${!len ? '0' : ''+len }): ${
 					len ? modal(id, Object.keys(data).map((key, i) => `${i+1}: ${data[key].trustedName} - ${data[key].trustedMessage} `).join('<br>')) : `<span class="none">none</span>`
 				}</div>
@@ -3423,6 +3795,7 @@
 			screenComputed,
 			voicesComputed,
 			mediaDevicesComputed,
+			mediaTypesComputed,
 			canvas2dComputed,
 			canvasBitmapRendererComputed,
 			canvasWebglComputed,
@@ -3441,6 +3814,7 @@
 			getScreen(instanceId),
 			getVoices(instanceId),
 			getMediaDevices(instanceId),
+			getMediaTypes(instanceId),
 			getCanvas2d(instanceId),
 			getCanvasBitmapRenderer(instanceId),
 			getCanvasWebgl(instanceId),
@@ -3466,6 +3840,7 @@
 		]).catch(error => {
 			console.error(error.message)
 		})
+
 		const timeEnd = timeStart()
 
 		if (parentIframe) {
@@ -3483,6 +3858,7 @@
 			screen: screenComputed,
 			voices: voicesComputed,
 			mediaDevices: mediaDevicesComputed,
+			mediaTypes: mediaTypesComputed,
 			canvas2d: canvas2dComputed,
 			canvasBitmapRenderer: canvasBitmapRendererComputed,
 			canvasWebgl: canvasWebglComputed,
@@ -3501,113 +3877,173 @@
 	// get/post request
 	const webapp = 'https://script.google.com/macros/s/AKfycbzKRjt6FPboOEkh1vTXttGyCjp97YBP7z-5bODQmtSkQ9BqDRY/exec'
 	
-	// patch
-	const app = document.getElementById('fp-app')
-	patch(app, scene, async () => {
-		// fingerprint and render
-		const { fingerprint: fp, timeEnd } = await fingerprint().catch(error => console.error(error))
-		// Trusted Fingerprint
-		const distrust = { distrust: { brave: isBrave, firefox: isFirefox } }
-		const creep = {
-			workerScope: fp.workerScope,
-			mediaDevices: !isBrave ? fp.mediaDevices : distrust,
-			canvas2d: !(isBrave || isFirefox) ? fp.canvas2d : distrust,
-			canvasBitmapRenderer: !(isBrave || isFirefox) ? fp.canvasBitmapRenderer : distrust,
-			canvasWebgl: (isBrave || isFirefox) ? distrust : (() => {
-				if (!fp.canvasWebgl) {
-					return undefined
-				}
-				// ignore extensions to avoid fingerprint limited to browser version
-				return {
-					dataURI: fp.canvasWebgl.dataURI,
-					dataURI2: fp.canvasWebgl.dataURI2,
-					matchingDataURI: fp.canvasWebgl.matchingDataURI,
-					matchingUnmasked: fp.canvasWebgl.matchingUnmasked,
-					specs: fp.canvasWebgl.specs,
-					unmasked: fp.canvasWebgl.unmasked,
-					unmasked2: fp.canvasWebgl.unmasked2
-				}
-			})(),
-			maths: fp.maths,
-			consoleErrors: fp.consoleErrors,
-			iframeContentWindowVersion: fp.iframeContentWindowVersion,
-			htmlElementVersion: fp.htmlElementVersion,
-			cssStyleDeclarationVersion: fp.cssStyleDeclarationVersion,
-			// avoid random timezone fingerprint values
-			timezone: !fp.timezone || !fp.timezone.lied ? fp.timezone : undefined,
-			clientRects: fp.clientRects,
-			// node values provide essential entropy (bin samples are just math results and randomized in brave)
-			offlineAudioContext: caniuse(() => fp.offlineAudioContext.values),
-			fonts: fp.fonts,
-			trash: !!fp.trash.trashBin.length,
-			lies: !('data' in fp.lies) ? false : !!fp.lies.data.length,
-			capturedErrors: !!fp.capturedErrors.data.length,
-			voices: fp.voices
-		}
-		const debugLog = (message, obj) => console.log(message, JSON.stringify(obj, null, '\t'))
-		
-		console.log('Fingerprint (Object):', creep)
-		console.log('Loose Fingerprint (Object):', fp)
-		//debugLog('Loose Id (JSON):', fp)
-		
-		const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
-		.catch(error => { 
-			console.error(error.message)
+
+	// fingerprint and render
+	const { fingerprint: fp, timeEnd } = await fingerprint().catch(error => console.error(error))
+	// Trusted Fingerprint
+	const distrust = { distrust: { brave: isBrave, firefox: isFirefox } }
+	const trashLen = fp.trash.trashBin.length
+	const liesLen = !('data' in fp.lies) ? 0 : fp.lies.data.length
+	const errorsLen = fp.capturedErrors.data.length
+	const creep = {
+		workerScope: fp.workerScope ? {
+			canvas2d: (
+				(isBrave || isFirefox) ? distrust : 
+				fp.workerScope.canvas2d
+			),
+			hardwareConcurrency: (
+				isBrave ? distrust : 
+				fp.workerScope.hardwareConcurrency
+			),
+			language: fp.workerScope.language,
+			platform: fp.workerScope.platform,
+			system: fp.workerScope.system,
+			['timezone offset']: fp.workerScope['timezone offset'],
+			['webgl renderer']: fp.workerScope['webgl renderer'],
+			['webgl vendor']: fp.workerScope['webgl vendor']
+		} : undefined,
+		mediaDevices: !isBrave ? fp.mediaDevices : distrust,
+		mediaTypes: fp.mediaTypes,
+		canvas2d: (
+			(isBrave || isFirefox) ? distrust : 
+			!fp.canvas2d || fp.canvas2d.lied ? undefined : 
+			fp.canvas2d
+		),
+		canvasBitmapRenderer: (
+			(isBrave || isFirefox) ? distrust : 
+			!fp.canvasBitmapRenderer || fp.canvasBitmapRenderer.lied ? undefined : 
+			fp.canvasBitmapRenderer
+		),
+		canvasWebgl: isBrave ? distrust : !fp.canvasWebgl || fp.canvasWebgl.lied ? undefined : {
+			supported: fp.canvasWebgl.supported,
+			supported2: fp.canvasWebgl.supported2,
+			dataURI: isFirefox ? distrust : fp.canvasWebgl.dataURI,
+			dataURI2: isFirefox ? distrust : fp.canvasWebgl.dataURI2,
+			matchingDataURI: fp.canvasWebgl.matchingDataURI,
+			matchingUnmasked: fp.canvasWebgl.matchingUnmasked,
+			specs: fp.canvasWebgl.specs,
+			unmasked: fp.canvasWebgl.unmasked,
+			unmasked2: fp.canvasWebgl.unmasked2
+		},
+		maths: !fp.maths || fp.maths.lied ? undefined : fp.maths,
+		consoleErrors: fp.consoleErrors,
+		iframeContentWindowVersion: fp.iframeContentWindowVersion,
+		htmlElementVersion: fp.htmlElementVersion,
+		cssStyleDeclarationVersion: fp.cssStyleDeclarationVersion,
+		// avoid random timezone fingerprint values
+		timezone: !fp.timezone || fp.timezone.lied ? undefined : fp.timezone,
+		clientRects: !fp.clientRects || fp.clientRects.lied ? undefined : fp.clientRects,
+		offlineAudioContext: (
+			isBrave ? distrust :
+			!fp.offlineAudioContext || fp.offlineAudioContext.lied ? undefined :
+			fp.offlineAudioContext
+		),
+		fonts: fp.fonts,
+		trash: !!trashLen,
+		lies: !('data' in fp.lies) ? false : !!liesLen,
+		capturedErrors: !!errorsLen,
+		voices: fp.voices
+	}
+	const debugLog = (message, obj) => console.log(message, JSON.stringify(obj, null, '\t'))
+	
+	console.log('Fingerprint (Object):', creep)
+	console.log('Loose Fingerprint (Object):', fp)
+	//debugLog('Loose Id (JSON):', fp)
+	
+	const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
+	.catch(error => { 
+		console.error(error.message)
+	})
+	
+	const { trash: hasTrash, lies: hasLied, capturedErrors: hasErrors } = creep
+
+	//fetch(`/?math=${fp.maths.$hash}&ua=${fp.navigator.userAgent}`, { method: 'POST' })
+
+	// fetch data from server
+	const id = 'creep-browser'
+	const visitorElem = document.getElementById(id)
+	const fetchVisitoDataTimer = timer('Fetching visitor data...')
+	fetch(`${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}`)
+		.then(response => response.json())
+		.then(data => {
+			console.log(data)
+			const { firstVisit, latestVisit, subIds, visits, hasTrash, hasLied, hasErrors } = data
+			const subIdsLen = Object.keys(subIds).length
+			const toLocaleStr = str => {
+				const date = new Date(str)
+				const dateString = date.toDateString()
+				const timeString = date.toLocaleTimeString()
+				return `${dateString}, ${timeString}`
+			}
+			const hoursAgo = (date1, date2) => Math.abs(date1 - date2) / 36e5
+			const hours = hoursAgo(new Date(firstVisit), new Date(latestVisit)).toFixed(1)
+
+			// trust score
+			const score = (100-(
+				(subIdsLen < 2 ? 0 : subIdsLen-1 < 11 ? (subIdsLen-1) * 1 : (subIdsLen-1) * 5 ) +
+				(errorsLen * 5.2) +
+				(trashLen * 15.5) +
+				(liesLen * 31)
+			)).toFixed(0)
+			const template = `
+				<div class="visitor-info">
+					<strong>Browser</strong>
+					<div>trust score: ${
+						score > 95 ? `${score}% <span class="grade-A">A+</span>` :
+						score == 95 ? `${score}% <span class="grade-A">A</span>` :
+						score >= 90 ? `${score}% <span class="grade-A">A-</span>` :
+						score > 85 ? `${score}% <span class="grade-B">B+</span>` :
+						score == 85 ? `${score}% <span class="grade-B">B</span>` :
+						score >= 80 ? `${score}% <span class="grade-B">B-</span>` :
+						score > 75 ? `${score}% <span class="grade-C">C+</span>` :
+						score == 75 ? `${score}% <span class="grade-C">C</span>` :
+						score >= 70 ? `${score}% <span class="grade-C">C-</span>` :
+						score > 65 ? `${score}% <span class="grade-D">D+</span>` :
+						score == 65 ? `${score}% <span class="grade-D">D</span>` :
+						score >= 60 ? `${score}% <span class="grade-D">D-</span>` :
+						score > 55 ? `${score}% <span class="grade-F">F+</span>` :
+						score == 55 ? `${score}% <span class="grade-F">F</span>` :
+						`${score < 0 ? 0 : score}% <span class="grade-F">F-</span>`
+					}</div>
+					<div>visits: ${visits}</div>
+					<div class="ellipsis">first: ${toLocaleStr(firstVisit)}
+					<div class="ellipsis">last: ${toLocaleStr(latestVisit)}</div>
+					<div>persistence: ${hours} hours</div>
+					<div>has trash: ${
+						(''+hasTrash) == 'true' ?
+						`true [${hashMini(fp.trash)}]` : 
+						'false'
+					}</div>
+					<div>has lied: ${
+						(''+hasLied) == 'true' ? 
+						`true [${hashMini(fp.lies)}]` : 
+						'false'
+					}</div>
+					<div>has errors: ${
+						(''+hasErrors) == 'true' ? 
+						`true [${hashMini(fp.capturedErrors)}]` : 
+						'false'
+					}</div>
+					<div>loose fingerprints: ${subIdsLen}</div>
+					<div>bot: ${subIdsLen > 10 && hours < 48 ? 'true [10 loose fingerprints within 48 hours]' : 'false'}</div>
+				</div>
+			`
+			fetchVisitoDataTimer('Visitor data received')
+			return patch(visitorElem, html`${template}`)
+		})
+		.catch(err => {
+			fetchVisitoDataTimer('Error fetching visitor data')
+			patch(visitorElem, html`<div>Error fetching data: <a href="https://status.cloud.google.com" target="_blank">status.cloud.google.com</a></div>`)
+			return console.error('Error!', err.message)
 		})
 
-		const { trash: hasTrash, lies: hasLied, capturedErrors: hasErrors } = creep
-		
-		//fetch(`/?math=${fp.maths.$hash}&ua=${fp.navigator.userAgent}`, { method: 'POST' })
-
-		// fetch data from server
-		const id = `${instanceId}-browser`
-		const visitorElem = document.getElementById(id)
-		const fetchVisitoDataTimer = timer('Fetching visitor data...')
-		fetch(`${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}`)
-			.then(response => response.json())
-			.then(data => {
-				console.log(data)
-				const { firstVisit, latestVisit, subIds, visits, hasTrash, hasLied, hasErrors } = data
-				const subIdsLen = Object.keys(subIds).length
-				const toLocaleStr = str => {
-					const date = new Date(str)
-					const dateString = date.toDateString()
-					const timeString = date.toLocaleTimeString()
-					return `${dateString}, ${timeString}`
-				}
-				const hoursAgo = (date1, date2) => Math.abs(date1 - date2) / 36e5
-				const hours = hoursAgo(new Date(firstVisit), new Date(latestVisit)).toFixed(1)
-				const template = `
-					<div>
-						<strong>Browser</strong>
-						<div>visits: ${visits}</div>
-						<div>first: ${toLocaleStr(firstVisit)}
-						<div>last: ${toLocaleStr(latestVisit)}</div>
-						<div>persistence: ${hours} hours</div>
-						<div>has trash: ${(''+hasTrash) == 'true' ? 'true' : 'false'}</div>
-						<div>has lied: ${(''+hasLied) == 'true'? 'true' : 'false'}</div>
-						<div>has errors: ${(''+hasErrors) == 'true' ? 'true' : 'false'}</div>
-						<div>loose fingerprints: ${subIdsLen}</div>
-						<div>bot: ${subIdsLen > 10 && hours < 48 ? 'true [10 loose fingerprints within 48 hours]' : 'false'}</div>
-					</div>
-				`
-				fetchVisitoDataTimer('Visitor data received')
-				return patch(visitorElem, html`${template}`)
-			})
-			.catch(err => {
-				fetchVisitoDataTimer('Error fetching visitor data')
-				patch(visitorElem, html`<div>Error fetching data: <a href="https://status.cloud.google.com" target="_blank">status.cloud.google.com</a></div>`)
-				return console.error('Error!', err.message)
-			})
-
-		const el = document.getElementById(`${instanceId}-fingerprint`)
-		return patch(el, html`
-		<div>
-			<strong>Fingerprint</strong>
-			<div class="trusted-fingerprint">${creepHash}</div>
-			<div>loose fingerprint: ${fpHash}</div>
-			<div class="time">performance: ${timeEnd} milliseconds</div>
-		</div>
-		`)
-	}).catch((e) => console.log(e))
+	const el = document.getElementById('creep-fingerprint')
+	patch(el, html`
+	<div class="fingerprint-header">
+		<strong>Fingerprint</strong>
+		<div class="trusted-fingerprint ellipsis">${creepHash}</div>
+		<div class="ellipsis">loose fingerprint: ${fpHash}</div>
+		<div class="time ellipsis">performance: ${timeEnd} milliseconds</div>
+	</div>
+	`)
 })()
