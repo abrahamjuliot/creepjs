@@ -1160,7 +1160,7 @@
 							Object.keys(data).map(key => {
 								const value = data[key]
 								return (
-									key != 'canvas2d' && key != 'userAgent'? `<div>${key}: ${value != undefined ? value : note.unsupported}</div>` : ''
+									key != 'canvas2d' && key != 'userAgent'? `<div class="ellipsis">${key}: ${value != undefined ? value : note.unsupported}</div>` : ''
 								)
 							}).join('')
 						}
@@ -2591,7 +2591,7 @@
 					<div>extensions (${count(supported.extensions)}): ${
 						!caniuse(() => supported, ['extensions', 'length']) ? note.unsupported : modal(`${id}-e-v1`, supported.extensions.join('<br>'))
 					}</div>
-					<div>renderer: ${ 
+					<div class="ellipsis">renderer: ${ 
 						!unmasked.renderer ? note.unsupported :
 						unmasked.renderer
 					}</div>
@@ -2609,7 +2609,7 @@
 					<div>extensions (${count(supported2.extensions)}): ${
 						!caniuse(() => supported2, ['extensions', 'length']) ? note.unsupported : modal(`${id}-e-v2`, supported2.extensions.join('<br>'))
 					}</div>
-					<div>renderer: ${
+					<div class="ellipsis">renderer: ${
 						!unmasked2.renderer ? note.unsupported :
 						unmasked2.renderer
 					}</div>
