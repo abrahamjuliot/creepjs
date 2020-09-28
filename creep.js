@@ -1154,8 +1154,8 @@
 					const el = document.getElementById('creep-worker-scope')
 					patch(el, html`
 					<div>
-						<strong>WorkerGlobalScope: Date/WorkerNavigator/OffscreenCanvas</strong>
-						<div>hash: ${$hash}</div>
+						<strong>WorkerGlobalScope</strong>
+						<div class="ellipsis">hash: ${$hash}</div>
 						${
 							Object.keys(data).map(key => {
 								const value = data[key]
@@ -1164,7 +1164,7 @@
 								)
 							}).join('')
 						}
-						<div>canvas 2d: ${!!data.canvas2d.dataURI ? data.canvas2d.$hash : note.unsupported}</div>
+						<div class="ellipsis">canvas 2d: ${!!data.canvas2d.dataURI ? data.canvas2d.$hash : note.unsupported}</div>
 					</div>
 					`)
 					return
@@ -1251,12 +1251,12 @@
 						patch(el, html`
 						<div>
 							<strong>RTCPeerConnection</strong>
-							<div>hash: ${$hash}</div>
+							<div class="ellipsis">hash: ${$hash}</div>
 							${
 								Object.keys(data).map(key => {
 									const value = data[key]
 									return (
-										`<div>${key}: ${value != undefined ? value : note.blocked}</div>`
+										`<div class="ellipsis">${key}: ${value != undefined ? value : note.blocked}</div>`
 									)
 								}).join('')
 							}
@@ -1299,7 +1299,7 @@
 				patch(el, html`
 				<div>
 					<strong>Cloudflare</strong>
-					<div>hash: ${$hash}</div>
+					<div class="ellipsis">hash: ${$hash}</div>
 					${
 						Object.keys(data).map(key => {
 							const value = data[key]
@@ -1566,7 +1566,7 @@
 				patch(el, html`
 				<div>
 					<strong>Navigator</strong>
-					<div>hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
+					<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
 					${
 						Object.keys(data).map(key => {
 							const skip = [
@@ -1622,7 +1622,7 @@
 				patch(el, html`
 				<div>
 					<strong>HTMLIFrameElement.contentWindow</strong>
-					<div>hash: ${$hash}</div>
+					<div class="ellipsis">hash: ${$hash}</div>
 					<div>keys (${count(keys)}): ${keys && keys.length ? modal(id, keys.join(', ')) : note.blocked}</div>
 					<div>moz: ${''+moz}</div>
 					<div>webkit: ${''+webkit}</div>
@@ -1657,7 +1657,7 @@
 				patch(el, html`
 				<div>
 					<strong>HTMLElement</strong>
-					<div>hash: ${$hash}</div>
+					<div class="ellipsis">hash: ${$hash}</div>
 					<div>keys (${count(keys)}): ${keys && keys.length ? modal(elId, keys.join(', ')) : note.blocked}</div>
 				</div>
 				`)
@@ -1883,12 +1883,12 @@
 				patch(el, html`
 				<div>
 					<strong>CSSStyleDeclaration</strong>
-					<div>hash: ${$hash}</div>
+					<div class="ellipsis">hash: ${$hash}</div>
 					<div>prototype: ${htmlElementStyle.prototypeName}</div>
 					${
 						Object.keys(data).map(key => {
 							const value = data[key]
-							return key != 'matching' && key != 'system' ? `<div>${key}: ${value ? value.$hash : note.blocked}</div>` : ''
+							return key != 'matching' && key != 'system' ? `<div class="ellipsis">${key}: ${value ? value.$hash : note.blocked}</div>` : ''
 						}).join('')
 					}
 					<div>keys: ${getComputedStyle.keys.length}, ${htmlElementStyle.keys.length}, ${cssRuleListstyle.keys.length}
@@ -1900,7 +1900,7 @@
 					<div>apple: ${''+getComputedStyle.apple}, ${''+htmlElementStyle.apple}, ${''+cssRuleListstyle.apple}
 					</div>
 					<div>matching: ${''+data.matching}</div>
-					<div>system: ${system.$hash}</div>
+					<div class="ellipsis">system: ${system.$hash}</div>
 					<div>system styles: ${
 						system && system.colors ? modal(
 							`${id}-system-styles`,
@@ -2065,7 +2065,7 @@
 				patch(el, html`
 				<div>
 					<strong>Screen</strong>
-					<div>hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
+					<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
 					${
 						Object.keys(data).map(key => {
 							const value = data[key]
@@ -2103,7 +2103,7 @@
 					patch(el, html`
 					<div>
 						<strong>SpeechSynthesis</strong>
-						<div>hash: ${$hash}</div>
+						<div class="ellipsis">hash: ${$hash}</div>
 						<div>voices (${count(voices)}): ${voiceList && voiceList.length ? modal(id, voiceList.join('<br>')) : note.unsupported}</div>
 						<div>microsoft: ${''+check.microsoft}</div>
 						<div>google: ${''+check.google}</div>
@@ -2163,7 +2163,7 @@
 				patch(el, html`
 				<div>
 					<strong>MediaDevicesInfo</strong>
-					<div>hash: ${$hash}</div>
+					<div class="ellipsis">hash: ${$hash}</div>
 					<div>devices (${count(mediaDevices)}): ${mediaDevices ? mediaDevices.map(device => device.kind).join(', ') : note.blocked}</div>
 				</div>
 				`)
@@ -2216,8 +2216,8 @@
 				})
 				patch(el, html`
 				<div id="creep-media-types">
-					<strong>HTMLMediaElement.canPlayType/MediaSource.isTypeSupported</strong>
-					<div>hash: ${$hash}</div>
+					<strong>HTMLMediaElement/MediaSource</strong>
+					<div class="ellipsis">hash: ${$hash}</div>
 					<div>results: ${
 						modal(id, header+results.join('<br>'))
 					}</div>
@@ -2247,7 +2247,7 @@
 					return patch(el, html`
 					<div>
 						<strong>CanvasRenderingContext2D</strong>
-						<div>hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
+						<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
 					</div>
 					`)
 				}
@@ -2285,7 +2285,7 @@
 					return patch(el, html`
 					<div>
 						<strong>ImageBitmapRenderingContext</strong>
-						<div>hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
+						<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
 					</div>
 					`)
 				}
@@ -2579,40 +2579,45 @@
 				
 				patch(el, html`
 				<div>
-					<strong>WebGLRenderingContext/WebGL2RenderingContext</strong>
-					<div>hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
-					<div>v1 toDataURL: ${dataURI.$hash}</div>
-					<div>v1 parameters (${count(webglSpecsKeys)}): ${
+					<strong>WebGLRenderingContext</strong>
+					<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
+					<br>
+					<div>WebGL</div>
+					<div class="ellipsis">toDataURL: ${dataURI.$hash}</div>
+					<div>parameters (${count(webglSpecsKeys)}): ${
 						!webglSpecsKeys.length ? note.unsupported :
 						modal(`${id}-p-v1`, webglSpecsKeys.map(key => `${key}: ${webglSpecs[key]}`).join('<br>'))
 					}</div>
-					<div>v1 extensions (${count(supported.extensions)}): ${
+					<div>extensions (${count(supported.extensions)}): ${
 						!caniuse(() => supported, ['extensions', 'length']) ? note.unsupported : modal(`${id}-e-v1`, supported.extensions.join('<br>'))
 					}</div>
-					<div>v1 renderer: ${ 
+					<div>renderer: ${ 
 						!unmasked.renderer ? note.unsupported :
 						unmasked.renderer
 					}</div>
-					<div>v1 vendor: ${ 
+					<div>vendor: ${ 
 						!unmasked.vendor ? note.unsupported :
 						unmasked.vendor
 					}</div>
-					<div>v2 toDataURL: ${dataURI2.$hash}</div>
-					<div>v2 parameters (${count(webgl2SpecsKeys)}): ${
+					<br>
+					<div>WebGL2</div>
+					<div class="ellipsis">toDataURL: ${dataURI2.$hash}</div>
+					<div>parameters (${count(webgl2SpecsKeys)}): ${
 						!webgl2SpecsKeys.length ? note.unsupported :
 						modal(`${id}-p-v2`, webgl2SpecsKeys.map(key => `${key}: ${webgl2Specs[key]}`).join('<br>'))
 					}</div>
-					<div>v2 extensions (${count(supported2.extensions)}): ${
+					<div>extensions (${count(supported2.extensions)}): ${
 						!caniuse(() => supported2, ['extensions', 'length']) ? note.unsupported : modal(`${id}-e-v2`, supported2.extensions.join('<br>'))
 					}</div>
-					<div>v2 renderer: ${
+					<div>renderer: ${
 						!unmasked2.renderer ? note.unsupported :
 						unmasked2.renderer
 					}</div>
-					<div>v2 vendor: ${
+					<div>vendor: ${
 						!unmasked2.vendor ? note.unsupported :
 						unmasked2.vendor
 					}</div>
+					<br>
 					<div>matching renderer/vendor: ${''+data.matchingUnmasked}</div>
 					<div>matching data URI: ${''+data.matchingDataURI}</div>
 				</div>
@@ -2832,7 +2837,7 @@
 				patch(el, html`
 				<div>
 					<strong>Math</strong>
-					<div>hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
+					<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
 					<div>results: ${
 						modal(id, header+results.join('<br>'))
 					}
@@ -2887,7 +2892,7 @@
 				patch(el, html`
 				<div>
 					<strong>Error</strong>
-					<div>hash: ${$hash}</div>
+					<div class="ellipsis">hash: ${$hash}</div>
 					<div>results: ${modal(id, results.join('<br>'))}
 					<div>engine: ${known($hash)}</div>
 				</div>
@@ -3155,7 +3160,7 @@
 				patch(el, html`
 				<div>
 					<strong>Date/Intl/Keyboard</strong>
-					<div>hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
+					<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
 					<div>timezone: ${timezone}</div>
 					<div>timezone location: ${timezoneLocation}</div>
 					<div>timezone offset: ${timezoneOffset}</div>
@@ -3418,12 +3423,12 @@
 				patch(templateEl, html`
 				<div>
 					<strong>DOMRect</strong>
-					<div>hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
-					<div>elements: ${clientHash}</div>
+					<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
+					<div class="ellipsis">elements: ${clientHash}</div>
 					<div>results: ${
 						modal(`${templateId}-elements`, clientRects.map(domRect => Object.keys(domRect).map(key => `<div>${key}: ${domRect[key]}</div>`).join('')).join('<br>') )
 					}</div>
-					<div>emojis v13.0: ${emojiHash}</div>
+					<div class="ellipsis">emojis v13.0: ${emojiHash}</div>
 					<div>results: ${
 						modal(`${templateId}-emojis`, emojiRects.map(rect => rect.emoji).join('') )
 					}</div>
@@ -3551,7 +3556,7 @@
 							patch(el, html`
 							<div>
 								<strong>OfflineAudioContext</strong>
-								<div>hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
+								<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
 								<div>sample: ${binsSample[0]}</div>
 								<div>copy: ${copySample[0]}</div>
 								<div>matching: ${matching}</div>
@@ -3673,7 +3678,7 @@
 				patch(el, html`
 				<div>
 					<strong>HTMLElement (font-family)</strong>
-					<div>hash: ${$hash}</div>
+					<div class="ellipsis">hash: ${$hash}</div>
 					<div>results (${count(fontList)}): ${fontList && fontList.length ? modal(id, fontList.join('<br>')) : note.blocked}</div>
 				</div>
 				`)
@@ -3698,7 +3703,7 @@
 			patch(el, html`
 			<div class="${len ? 'trash': ''}">
 				<strong>Trash Bin</strong>
-				<div>hash: ${$hash}</div>
+				<div class="ellipsis">hash: ${$hash}</div>
 				<div>trash (${!len ? '0' : ''+len }): ${
 					len ? modal(id, trashBin.map((trash,i) => `${i+1}: ${trash.name}: ${trash.value}`).join('<br>')) : `<span class="none">none</span>`
 				}</div>
@@ -3730,7 +3735,7 @@
 			patch(el, html`
 			<div class="${totalLies ? 'lies': ''}">
 				<strong>Lies Unmasked</strong>
-				<div>hash: ${$hash}</div>
+				<div class="ellipsis">hash: ${$hash}</div>
 				<div>lies (${!totalLies ? '0' : ''+totalLies }): ${
 					totalLies ? modal(id, Object.keys(data).map(key => {
 						const { name, lieTypes: { lies, fingerprint } } = data[key]
@@ -3766,7 +3771,7 @@
 			patch(el, html`
 			<div class="${len ? 'errors': ''}">
 				<strong>Errors Captured</strong>
-				<div>hash: ${$hash}</div>
+				<div class="ellipsis">hash: ${$hash}</div>
 				<div>errors (${!len ? '0' : ''+len }): ${
 					len ? modal(id, Object.keys(data).map((key, i) => `${i+1}: ${data[key].trustedName} - ${data[key].trustedMessage} `).join('<br>')) : `<span class="none">none</span>`
 				}</div>
@@ -3981,7 +3986,7 @@
 				(liesLen * 31)
 			)).toFixed(0)
 			const template = `
-				<div>
+				<div class="visitor-info">
 					<strong>Browser</strong>
 					<div>trust score: ${
 						score > 95 ? `${score}% <span class="grade-A">A+</span>` :
@@ -4001,8 +4006,8 @@
 						`${score < 0 ? 0 : score}% <span class="grade-F">F-</span>`
 					}</div>
 					<div>visits: ${visits}</div>
-					<div>first: ${toLocaleStr(firstVisit)}
-					<div>last: ${toLocaleStr(latestVisit)}</div>
+					<div class="ellipsis">first: ${toLocaleStr(firstVisit)}
+					<div class="ellipsis">last: ${toLocaleStr(latestVisit)}</div>
 					<div>persistence: ${hours} hours</div>
 					<div>has trash: ${
 						(''+hasTrash) == 'true' ?
@@ -4034,11 +4039,11 @@
 
 	const el = document.getElementById('creep-fingerprint')
 	patch(el, html`
-	<div>
+	<div class="fingerprint-header">
 		<strong>Fingerprint</strong>
-		<div class="trusted-fingerprint">${creepHash}</div>
-		<div>loose fingerprint: ${fpHash}</div>
-		<div class="time">performance: ${timeEnd} milliseconds</div>
+		<div class="trusted-fingerprint ellipsis">${creepHash}</div>
+		<div class="ellipsis">loose fingerprint: ${fpHash}</div>
+		<div class="time ellipsis">performance: ${timeEnd} milliseconds</div>
 	</div>
 	`)
 })()

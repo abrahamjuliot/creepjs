@@ -65,6 +65,11 @@ body {
 	height: 100vh;
 }
 
+.ellipsis {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
 
 .app-loader {
 	width: 200px;
@@ -187,6 +192,22 @@ visitor {
 	margin: 10px 0;
 	box-shadow: 0px 2px 2px 0px #cfd0d1;
 }
+
+#fingerprint-data .fingerprint-header {
+    position: fixed;
+    top: 0;
+    background: #ffffffeb;
+    right: 0;
+    left: 0;
+    z-index: 99;
+    max-width: 730px;
+    margin: 0 auto;
+}
+
+#fingerprint-data .visitor-info {
+	margin-top: 115px;
+}
+
 .time {
 	color: #bbb;
 }
