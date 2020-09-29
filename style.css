@@ -208,6 +208,18 @@ visitor {
 	margin-top: 115px;
 }
 
+#fingerprint-data  .user-agent {
+    display: flex;
+    justify-content: center;
+    border: 1px solid #eee;
+    padding: 5px;
+    text-align: center;
+    align-items: center;
+    min-height: 85px;
+    border-radius: 3px;
+    margin: 5px auto;
+}
+
 .time {
 	color: #bbb;
 }

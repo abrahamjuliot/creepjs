@@ -1371,6 +1371,37 @@
 				)
 
 				const data = {
+					platform: attempt(() => {
+						const { platform } = contentWindowNavigator
+						const navigatorPlatform = navigator.platform
+						const systems = ['win', 'linux', 'mac', 'arm', 'pike', 'linux', 'iphone', 'ipad', 'ipod', 'android', 'x11']
+						const trusted = typeof navigatorPlatform == 'string' && systems.filter(val => navigatorPlatform.toLowerCase().includes(val))[0]
+						detectLies('platform', navigatorPlatform)
+						if (!trusted) {
+							sendToTrash(`platform`, `${navigatorPlatform} is unusual`)
+						}
+						if (platform != navigatorPlatform) {
+							sendToTrash('platform', `[${navigatorPlatform}] does not match iframe`)
+						}
+						return platform
+					}),
+					system: attempt(() => getOS(contentWindowNavigator.userAgent), 'userAgent system failed'),
+					userAgent: attempt(() => {
+						const { userAgent } = contentWindowNavigator
+						const navigatorUserAgent = navigator.userAgent
+						const gibbers = gibberish(navigatorUserAgent)
+						detectLies('userAgent', navigatorUserAgent)
+						if (!!gibbers.length) {
+							sendToTrash(`userAgent contains gibberish`, `[${gibbers.join(', ')}] ${navigatorUserAgent}`)
+						}
+						if (!credibleUserAgent) {
+							sendToTrash('userAgent', `${navigatorUserAgent} does not match appVersion`)
+						}
+						if (userAgent != navigatorUserAgent) {
+							sendToTrash('userAgent', `[${navigatorUserAgent}] does not match iframe`)
+						}
+						return userAgent
+					}, 'userAgent failed'),
 					appVersion: attempt(() => {
 						const { appVersion } = contentWindowNavigator
 						const navigatorAppVersion = navigator.appVersion
@@ -1474,37 +1505,6 @@
 						}
 						return maxTouchPoints
 					}, 'maxTouchPoints failed'),
-					platform: attempt(() => {
-						const { platform } = contentWindowNavigator
-						const navigatorPlatform = navigator.platform
-						const systems = ['win', 'linux', 'mac', 'arm', 'pike', 'linux', 'iphone', 'ipad', 'ipod', 'android', 'x11']
-						const trusted = typeof navigatorPlatform == 'string' && systems.filter(val => navigatorPlatform.toLowerCase().includes(val))[0]
-						detectLies('platform', navigatorPlatform)
-						if (!trusted) {
-							sendToTrash(`platform`, `${navigatorPlatform} is unusual`)
-						}
-						if (platform != navigatorPlatform) {
-							sendToTrash('platform', `[${navigatorPlatform}] does not match iframe`)
-						}
-						return platform
-					}),
-					userAgent: attempt(() => {
-						const { userAgent } = contentWindowNavigator
-						const navigatorUserAgent = navigator.userAgent
-						const gibbers = gibberish(navigatorUserAgent)
-						detectLies('userAgent', navigatorUserAgent)
-						if (!!gibbers.length) {
-							sendToTrash(`userAgent contains gibberish`, `[${gibbers.join(', ')}] ${navigatorUserAgent}`)
-						}
-						if (!credibleUserAgent) {
-							sendToTrash('userAgent', `${navigatorUserAgent} does not match appVersion`)
-						}
-						if (userAgent != navigatorUserAgent) {
-							sendToTrash('userAgent', `[${navigatorUserAgent}] does not match iframe`)
-						}
-						return userAgent
-					}, 'userAgent failed'),
-					system: attempt(() => getOS(contentWindowNavigator.userAgent), 'userAgent system failed'),
 					vendor: attempt(() => {
 						const { vendor } = contentWindowNavigator
 						const navigatorVendor = navigator.vendor
@@ -1575,9 +1575,19 @@
 								'properties',
 								'highEntropyValues'
 							].indexOf(key) > -1
+							const ua = [
+								'appVersion',
+								'userAgent'
+							].indexOf(key) > -1
 							const value = data[key]
 							return (
-								!skip ? `<div>${key}: ${!blocked[value] ? value : key == 'doNotTrack' ? value : note.blocked}</div>` : ''
+								!skip && !ua ? `<div>${key}: ${!blocked[value] ? value : key == 'doNotTrack' ? value : note.blocked}</div>` : 
+								!skip ? `
+									<div>${key}:</div>
+									<div class="user-agent">
+										<div>${!blocked[value] ? value : note.blocked}</div>
+									</div>
+								` : ''
 							)
 						}).join('')
 					}
@@ -1586,13 +1596,13 @@
 					${highEntropyValues ?  
 						Object.keys(highEntropyValues).map(key => {
 							const value = highEntropyValues[key]
-							return `<div>ua ${key}: ${value ? value : note.blocked}</div>`
+							return `<div class="ellipsis">ua ${key}: ${value ? value : note.blocked}</div>`
 						}).join('') :
-						`<div>ua architecture: ${note.unsupported}</div>
-						<div>ua model: ${note.unsupported}</div>
-						<div>ua platform: ${note.unsupported}</div>
-						<div>ua platformVersion: ${note.unsupported}</div>
-						<div>ua uaFullVersion: ${note.unsupported} </div>`
+						`<div class="ellipsis">ua architecture: ${note.unsupported}</div>
+						<div class="ellipsis">ua model: ${note.unsupported}</div>
+						<div class="ellipsis">ua platform: ${note.unsupported}</div>
+						<div class="ellipsis">ua platformVersion: ${note.unsupported}</div>
+						<div class="ellipsis">ua uaFullVersion: ${note.unsupported} </div>`
 					}
 					<div>properties (${count(properties)}): ${modal(`${id}-properties`, properties.join(', '))}</div>
 				</div>
