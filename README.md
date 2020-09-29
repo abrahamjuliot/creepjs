@@ -15,6 +15,7 @@ The purpose of this project is to shed light on weaknesses and privacy leaks amo
 Tested:
 - Firefox (RFP)
 - Brave Browser (Standard/Strict)
+- uBlock Origin (aopr)
 - Privacy Badger
 - Privacy Possom
 - Random User-Agent

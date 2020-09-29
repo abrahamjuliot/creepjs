@@ -2198,13 +2198,14 @@
 				const mediaTypes = []
 				const videoEl = document.createElement('video')
 				const audioEl = new Audio()
+				const isMediaRecorderSupported = 'MediaRecorder' in window
 				mimeTypes.forEach(type => {
 					const data = {
 						mimeType: type,
 						audioPlayType: audioEl.canPlayType(type),
 						videoPlayType: videoEl.canPlayType(type),
 						mediaSource: MediaSource.isTypeSupported(type),
-						mediaRecorder: MediaRecorder.isTypeSupported(type)
+						mediaRecorder: isMediaRecorderSupported ? MediaRecorder.isTypeSupported(type) : false
 					}
 					return mediaTypes.push(data)
 				})
