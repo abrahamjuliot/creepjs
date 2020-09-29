@@ -3173,7 +3173,7 @@
 					<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
 					<div>timezone: ${timezone}</div>
 					<div>timezone location: ${timezoneLocation}</div>
-					<div>timezone offset: ${timezoneOffset}</div>
+					<div>timezone offset: ${''+timezoneOffset}</div>
 					<div>timezone offset computed: ${''+timezoneOffsetComputed}</div>
 					<div>matching offsets: ${''+matchingOffsets}</div>
 					<div>timezone measured: ${measuredTimezones}</div>
