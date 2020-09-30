@@ -808,26 +808,34 @@
 	const decryptKnown = hash => {
 		const id = {
 			// math
-			'89455ebb9765644fb98068ec68fbad7fcaaf2768b2cb6e1bd062eee5790c00e8': 'Chromium',
-			'2607501c5033cc3ca19e835f701baf381e813f6bacfd5d50955364b078b24ecf': 'Chromium', // pow ** bug
+			'89455ebb9765644fb98068ec68fbad7fcaaf2768b2cb6e1bd062eee5790c00e8': 'Chromium [a]',
+			'2607501c5033cc3ca19e835f701baf381e813f6bacfd5d50955364b078b24ecf': 'Chromium [b]', // pow ** bug
 			"99740c3678fd95585c1bd0b40e2fabfcf4043a7608a4e67fff2786fc3a59cf8a": "iOS",
 			'c1141e10c4d38a4ca1a49d9c7335fdfdcd7625b4ba04053a2f335434ec7e4d36': 'Safari (~MacOS)',
 			'ddc8837ab98695120dae774f04dcf295d2414ffc03431360d46b70380224547a': 'Firefox (~MacOS)',
 			"09525011e48d69f97b4486a09a7d84dcb702ecb091f28d27b15fdf422960b874": "Tor Browser (~Win64)",
-			"41141d85c8cee2ea78ad023124f0ee02e35f509d00742978c7b460e5737919de": "Firefox (~Win64)",
-			'db3f6704dd3e8feed2b5553a95a8a8575beb904af89ce64aa85d537b36b19319': 'Firefox (~Win64)',
+			"41141d85c8cee2ea78ad023124f0ee02e35f509d00742978c7b460e5737919de": "Firefox (~Win64) [a]",
+			'db3f6704dd3e8feed2b5553a95a8a8575beb904af89ce64aa85d537b36b19319': 'Firefox (~Win64) [b]',
 			'87b691d273993fb305b44cecf3429cdd5c5f4d387fb0e66bccaaf7670ca46915': 'Firefox (~Linux)',
-			'870471782bc768a4dae3198669358f0d199b92d9e1c4441a3399141ff502a486': 'Firefox (~Android)', 
-			"7013d0058ae26c73a4f88aca9c292ef7ac3042d8e96fb53c7ba82723bd6ffbee": "Firefox (~Android)",
-			"7868cba1b7206a334ea36b83c59f53cfaff4df2f0ee68f1a3978393195e1c0dc": "Firefox (~Android)",
+			'870471782bc768a4dae3198669358f0d199b92d9e1c4441a3399141ff502a486': 'Firefox (~Android) [a]', 
+			"7013d0058ae26c73a4f88aca9c292ef7ac3042d8e96fb53c7ba82723bd6ffbee": 'Firefox (~Android) [b]',
+			"7868cba1b7206a334ea36b83c59f53cfaff4df2f0ee68f1a3978393195e1c0dc": 'Firefox (~Android) [c]',
 			
 			// errors
-			'7757f7416b78fb8ac1f079b3e0677c0fe179826a63727d809e7d69795e915cd5': 'V8',
-			'a8c7362bfa3851b0ea294c075f5708b73b679b484498989d7fde311441ed3322': 'V8',
-			'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': 'SpiderMonkey',
-			'bec95f2a6f1d2c815b154802467514f7b774ea64667e566acaf903db224c2b38': 'SpiderMonkey',
-			'7c95559c6754c42c0d87fa0339f8a7cc5ed092e7e91ae9e50d3212f7486fcbeb': 'SpiderMonkey',
-			'd420d594c5a7f7f9a93802eebc3bec3fba0ea2dde91843f6c4746121ef5da140': 'JavaScriptCore'
+			'7757f7416b78fb8ac1f079b3e0677c0fe179826a63727d809e7d69795e915cd5': 'V8 [a]',
+			'a8c7362bfa3851b0ea294c075f5708b73b679b484498989d7fde311441ed3322': 'V8 [b]',
+			'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': 'SpiderMonkey [a]',
+			'bec95f2a6f1d2c815b154802467514f7b774ea64667e566acaf903db224c2b38': 'SpiderMonkey [b]',
+			'7c95559c6754c42c0d87fa0339f8a7cc5ed092e7e91ae9e50d3212f7486fcbeb': 'SpiderMonkey [c]',
+			'd420d594c5a7f7f9a93802eebc3bec3fba0ea2dde91843f6c4746121ef5da140': 'JavaScriptCore',
+
+			// computed style on linux, android, macOS, windows 
+			'ab38050de4c1b016b88cbb5c293a08ea7039bd6c307bb4bf8fbaf5c1bf6f8b30': '~Chrome 85', // windows
+			'754d4653b2659982a29b6df071793cf58b37ba74d842b73b6d623777dd709455': '~Edge 85', // windows
+			'e03db0479814195a41344e0ff29d2a28da34c9467df06479c11fa8600a0c6aa7': '~Firefox 82', // windows
+			'bd6b00444b05d7b6746b7f449930513080712b2f263a0fd581412051e5891149': '~Safari 13.0.5', // macOS
+			'f868e64544f7b7e39e95738d1e68af72d60c6c94eccae88b2f99618b4f05368a': '~Tor Browser 10 [a]', // windows
+			'f66c300417a0ac91b7704e7f1c51dde58e4939463b90ed2d6a65cfafa49483f6': '~Tor Browser 10 [b]' // macOS
 		}
 		return id[hash] ? id[hash] : 'Unknown'
 	}
@@ -1928,6 +1936,7 @@
 						prototypeName == 'CSSStyleDeclarationPrototype' ? 'Webkit' :
 						'unknown'
 					}</div>
+					<div>browser: ${decryptKnown(computedStyle.$hash)}</div>
 					${
 						Object.keys(data).map(key => {
 							const value = data[key]
