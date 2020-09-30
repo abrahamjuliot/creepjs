@@ -2923,7 +2923,7 @@
 					<strong>Error</strong>
 					<div class="ellipsis">hash: ${$hash}</div>
 					<div>results: ${modal(id, results.join('<br>'))}
-					<div>engine: ${decryptKnown($hash)}</div>
+					<div>js engine: ${decryptKnown($hash)}</div>
 				</div>
 				`)
 				return
