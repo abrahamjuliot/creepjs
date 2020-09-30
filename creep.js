@@ -801,9 +801,17 @@
 			'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': 'Firefox',
 			'bec95f2a6f1d2c815b154802467514f7b774ea64667e566acaf903db224c2b38': 'Firefox',
 			'7c95559c6754c42c0d87fa0339f8a7cc5ed092e7e91ae9e50d3212f7486fcbeb': 'Firefox',
-			'd420d594c5a7f7f9a93802eebc3bec3fba0ea2dde91843f6c4746121ef5da140': 'Safari'
+			'd420d594c5a7f7f9a93802eebc3bec3fba0ea2dde91843f6c4746121ef5da140': 'Safari',
+
+			// computed style
+			'ab38050de4c1b016b88cbb5c293a08ea7039bd6c307bb4bf8fbaf5c1bf6f8b30': '~Chrome 85',
+			'754d4653b2659982a29b6df071793cf58b37ba74d842b73b6d623777dd709455': '~Edge 85',
+			'e03db0479814195a41344e0ff29d2a28da34c9467df06479c11fa8600a0c6aa7': '~Firefox 82',
+			'bd6b00444b05d7b6746b7f449930513080712b2f263a0fd581412051e5891149': '~Safari 13.0.5',
+			'f868e64544f7b7e39e95738d1e68af72d60c6c94eccae88b2f99618b4f05368a': '~Tor Browser 10',
+			'f66c300417a0ac91b7704e7f1c51dde58e4939463b90ed2d6a65cfafa49483f6': '~Tor Browser 10'
 		}
-		return id[hash] ? id[hash] : 'Other'
+		return id[hash] ? id[hash] : 'Unknown'
 	}
 
 	// Collect trash values
@@ -1863,7 +1871,7 @@
 		return new Promise(async resolve => {
 			try {
 				const [
-					getComputedStyle,
+					computedStyle,
 					htmlElementStyle,
 					cssRuleListstyle,
 					system
@@ -1877,12 +1885,12 @@
 				})
 				
 				const data = {
-					['getComputedStyle']: getComputedStyle,
+					['getComputedStyle']: computedStyle,
 					['HTMLElement.style']: htmlElementStyle,
 					['CSSRuleList.style']: cssRuleListstyle,
 					system,
 					matching: (
-						''+getComputedStyle.keys == ''+htmlElementStyle.keys &&
+						''+computedStyle.keys == ''+htmlElementStyle.keys &&
 						''+htmlElementStyle.keys == ''+cssRuleListstyle.keys
 					)
 				}
@@ -1896,25 +1904,26 @@
 					<strong>CSSStyleDeclaration</strong>
 					<div class="ellipsis">hash: ${$hash}</div>
 					<div>prototype: ${prototypeName}</div>
-					<div>browser: ${
-						prototypeName == 'CSS2Properties' ? '~Firefox' :
-						prototypeName == 'CSSStyleDeclaration' ? '~Chromium' :
-						prototypeName == 'CSSStyleDeclarationPrototype' ? '~Safari' :
+					<div>engine: ${
+						prototypeName == 'CSS2Properties' ? 'Gecko' :
+						prototypeName == 'CSSStyleDeclaration' ? 'Blink' :
+						prototypeName == 'CSSStyleDeclarationPrototype' ? 'Webkit' :
 						'unknown'
 					}</div>
+					<div>browser: ${decryptKnown(computedStyle.$hash)}</div>
 					${
 						Object.keys(data).map(key => {
 							const value = data[key]
 							return key != 'matching' && key != 'system' ? `<div class="ellipsis">${key}: ${value ? value.$hash : note.blocked}</div>` : ''
 						}).join('')
 					}
-					<div>keys: ${getComputedStyle.keys.length}, ${htmlElementStyle.keys.length}, ${cssRuleListstyle.keys.length}
+					<div>keys: ${computedStyle.keys.length}, ${htmlElementStyle.keys.length}, ${cssRuleListstyle.keys.length}
 					</div>
-					<div>moz: ${''+getComputedStyle.moz}, ${''+htmlElementStyle.moz}, ${''+cssRuleListstyle.moz}
+					<div>moz: ${''+computedStyle.moz}, ${''+htmlElementStyle.moz}, ${''+cssRuleListstyle.moz}
 					</div>
-					<div>webkit: ${''+getComputedStyle.webkit}, ${''+htmlElementStyle.webkit}, ${''+cssRuleListstyle.webkit}
+					<div>webkit: ${''+computedStyle.webkit}, ${''+htmlElementStyle.webkit}, ${''+cssRuleListstyle.webkit}
 					</div>
-					<div>apple: ${''+getComputedStyle.apple}, ${''+htmlElementStyle.apple}, ${''+cssRuleListstyle.apple}
+					<div>apple: ${''+computedStyle.apple}, ${''+htmlElementStyle.apple}, ${''+cssRuleListstyle.apple}
 					</div>
 					<div>matching: ${''+data.matching}</div>
 					<div class="ellipsis">system: ${system.$hash}</div>
