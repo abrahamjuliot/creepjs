@@ -779,7 +779,7 @@
 	}
 
 	// id known hash
-	const known = hash => {
+	const decryptKnown = hash => {
 		const id = {
 			// math
 			'89455ebb9765644fb98068ec68fbad7fcaaf2768b2cb6e1bd062eee5790c00e8': 'Chromium',
@@ -1890,11 +1890,18 @@
 				resolve({ ...data, $hash })
 				const id = 'creep-css-style-declaration-version'
 				const el = document.getElementById(id)
+				const { prototypeName } = htmlElementStyle
 				patch(el, html`
 				<div>
 					<strong>CSSStyleDeclaration</strong>
 					<div class="ellipsis">hash: ${$hash}</div>
-					<div>prototype: ${htmlElementStyle.prototypeName}</div>
+					<div>prototype: ${prototypeName}</div>
+					<div>browser: ${
+						prototypeName == 'CSS2Properties' ? '~Firefox' :
+						prototypeName == 'CSSStyleDeclaration' ? '~Chromium' :
+						prototypeName == 'CSSStyleDeclarationPrototype' ? '~Safari' :
+						'unknown'
+					}</div>
 					${
 						Object.keys(data).map(key => {
 							const value = data[key]
@@ -2852,7 +2859,7 @@
 					<div>results: ${
 						modal(id, header+results.join('<br>'))
 					}
-					<div>implementation: ${known($hash)}</div>
+					<div>implementation: ${decryptKnown($hash)}</div>
 				</div>
 				`)
 				return
@@ -2905,7 +2912,7 @@
 					<strong>Error</strong>
 					<div class="ellipsis">hash: ${$hash}</div>
 					<div>results: ${modal(id, results.join('<br>'))}
-					<div>engine: ${known($hash)}</div>
+					<div>engine: ${decryptKnown($hash)}</div>
 				</div>
 				`)
 				return
