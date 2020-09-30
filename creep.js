@@ -807,20 +807,12 @@
 			"7868cba1b7206a334ea36b83c59f53cfaff4df2f0ee68f1a3978393195e1c0dc": "Firefox (~Android)",
 			
 			// errors
-			'7757f7416b78fb8ac1f079b3e0677c0fe179826a63727d809e7d69795e915cd5': 'Chromium',
-			'a8c7362bfa3851b0ea294c075f5708b73b679b484498989d7fde311441ed3322': 'Chromium',
-			'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': 'Firefox',
-			'bec95f2a6f1d2c815b154802467514f7b774ea64667e566acaf903db224c2b38': 'Firefox',
-			'7c95559c6754c42c0d87fa0339f8a7cc5ed092e7e91ae9e50d3212f7486fcbeb': 'Firefox',
-			'd420d594c5a7f7f9a93802eebc3bec3fba0ea2dde91843f6c4746121ef5da140': 'Safari',
-
-			// computed style
-			'ab38050de4c1b016b88cbb5c293a08ea7039bd6c307bb4bf8fbaf5c1bf6f8b30': '~Chrome 85',
-			'754d4653b2659982a29b6df071793cf58b37ba74d842b73b6d623777dd709455': '~Edge 85',
-			'e03db0479814195a41344e0ff29d2a28da34c9467df06479c11fa8600a0c6aa7': '~Firefox 82',
-			'bd6b00444b05d7b6746b7f449930513080712b2f263a0fd581412051e5891149': '~Safari 13.0.5',
-			'f868e64544f7b7e39e95738d1e68af72d60c6c94eccae88b2f99618b4f05368a': '~Tor Browser 10',
-			'f66c300417a0ac91b7704e7f1c51dde58e4939463b90ed2d6a65cfafa49483f6': '~Tor Browser 10'
+			'7757f7416b78fb8ac1f079b3e0677c0fe179826a63727d809e7d69795e915cd5': 'V8',
+			'a8c7362bfa3851b0ea294c075f5708b73b679b484498989d7fde311441ed3322': 'V8',
+			'21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b': 'SpiderMonkey',
+			'bec95f2a6f1d2c815b154802467514f7b774ea64667e566acaf903db224c2b38': 'SpiderMonkey',
+			'7c95559c6754c42c0d87fa0339f8a7cc5ed092e7e91ae9e50d3212f7486fcbeb': 'SpiderMonkey',
+			'd420d594c5a7f7f9a93802eebc3bec3fba0ea2dde91843f6c4746121ef5da140': 'JavaScriptCore'
 		}
 		return id[hash] ? id[hash] : 'Unknown'
 	}
@@ -1921,7 +1913,6 @@
 						prototypeName == 'CSSStyleDeclarationPrototype' ? 'Webkit' :
 						'unknown'
 					}</div>
-					<div>browser: ${decryptKnown(computedStyle.$hash)}</div>
 					${
 						Object.keys(data).map(key => {
 							const value = data[key]
