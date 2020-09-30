@@ -450,6 +450,19 @@
 		}
 	}
 
+	const testClassExtends = apiFunction => {
+		try { 
+			class Fake extends apiFunction { }
+			return {
+				['Expected class extends to throw an error']: true
+			}
+		}
+		catch (error) {
+			// Native throws error
+			return false
+		}
+	}
+
 	const testName = (apiFunction, name) => {
 		const { name: apiName } = apiFunction
 		if (apiName != '' && apiName != name) {
@@ -678,6 +691,7 @@
 						// common tests
 						testPrototype(apiFunction),
 						testNew(apiFunction),
+						testClassExtends(apiFunction),
 						testName(apiFunction, name),
 						testToString(apiFunction, fnToStr, contentWindow),
 						testOwnProperty(apiFunction),
@@ -728,6 +742,7 @@
 						// common tests
 						testPrototype(apiFunction),
 						testNew(apiFunction),
+						testClassExtends(apiFunction),
 						testName(apiFunction, name),
 						testToString(apiFunction, fnToStr, contentWindow),
 						testOwnProperty(apiFunction),
