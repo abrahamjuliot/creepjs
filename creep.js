@@ -808,18 +808,18 @@
 	const decryptKnown = hash => {
 		const id = {
 			// math
-			'89455ebb9765644fb98068ec68fbad7fcaaf2768b2cb6e1bd062eee5790c00e8': 'Chromium [a]',
-			'2607501c5033cc3ca19e835f701baf381e813f6bacfd5d50955364b078b24ecf': 'Chromium [b]', // pow ** bug
-			"99740c3678fd95585c1bd0b40e2fabfcf4043a7608a4e67fff2786fc3a59cf8a": "iOS",
-			'c1141e10c4d38a4ca1a49d9c7335fdfdcd7625b4ba04053a2f335434ec7e4d36': 'Safari (~MacOS)',
-			'ddc8837ab98695120dae774f04dcf295d2414ffc03431360d46b70380224547a': 'Firefox (~MacOS)',
-			"09525011e48d69f97b4486a09a7d84dcb702ecb091f28d27b15fdf422960b874": "Tor Browser (~Win64)",
-			"41141d85c8cee2ea78ad023124f0ee02e35f509d00742978c7b460e5737919de": "Firefox (~Win64) [a]",
-			'db3f6704dd3e8feed2b5553a95a8a8575beb904af89ce64aa85d537b36b19319': 'Firefox (~Win64) [b]',
-			'87b691d273993fb305b44cecf3429cdd5c5f4d387fb0e66bccaaf7670ca46915': 'Firefox (~Linux)',
-			'870471782bc768a4dae3198669358f0d199b92d9e1c4441a3399141ff502a486': 'Firefox (~Android) [a]', 
-			"7013d0058ae26c73a4f88aca9c292ef7ac3042d8e96fb53c7ba82723bd6ffbee": 'Firefox (~Android) [b]',
-			"7868cba1b7206a334ea36b83c59f53cfaff4df2f0ee68f1a3978393195e1c0dc": 'Firefox (~Android) [c]',
+			'2607501c5033cc3ca19e835f701baf381e813f6bacfd5d50955364b078b24ecf': 'V8 [a]', // pow ** bug
+			'89455ebb9765644fb98068ec68fbad7fcaaf2768b2cb6e1bd062eee5790c00e8': 'V8 [b]',
+			"99740c3678fd95585c1bd0b40e2fabfcf4043a7608a4e67fff2786fc3a59cf8a": "JavaScriptCore (iOS)",
+			'c1141e10c4d38a4ca1a49d9c7335fdfdcd7625b4ba04053a2f335434ec7e4d36': 'JavaScriptCore (Safari on MacOS)',
+			'ddc8837ab98695120dae774f04dcf295d2414ffc03431360d46b70380224547a': 'SpiderMonkey (Firefox on MacOS)',
+			"09525011e48d69f97b4486a09a7d84dcb702ecb091f28d27b15fdf422960b874": "SpiderMonkey (Tor Browser on Windows)",
+			"41141d85c8cee2ea78ad023124f0ee02e35f509d00742978c7b460e5737919de": "SpiderMonkey (Firefox on Windows) [a]",
+			'db3f6704dd3e8feed2b5553a95a8a8575beb904af89ce64aa85d537b36b19319': 'SpiderMonkey (Firefox on Windows) [b]',
+			'87b691d273993fb305b44cecf3429cdd5c5f4d387fb0e66bccaaf7670ca46915': 'SpiderMonkey (Firefox on Linux)',
+			'870471782bc768a4dae3198669358f0d199b92d9e1c4441a3399141ff502a486': 'SpiderMonkey (Firefox on Android) [a]', 
+			"7013d0058ae26c73a4f88aca9c292ef7ac3042d8e96fb53c7ba82723bd6ffbee": 'SpiderMonkey (Firefox on Android) [b]',
+			"7868cba1b7206a334ea36b83c59f53cfaff4df2f0ee68f1a3978393195e1c0dc": 'SpiderMonkey (Firefox on Android) [c]',
 			
 			// errors
 			'7757f7416b78fb8ac1f079b3e0677c0fe179826a63727d809e7d69795e915cd5': 'V8 [a]',
@@ -2899,7 +2899,7 @@
 					<div>results: ${
 						modal(id, header+results.join('<br>'))
 					}
-					<div>implementation: ${decryptKnown($hash)}</div>
+					<div>js implementation: ${decryptKnown($hash)}</div>
 				</div>
 				`)
 				return
