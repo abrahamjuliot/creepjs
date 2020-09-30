@@ -548,6 +548,16 @@
 		return false
 	}
 
+	const testSpread = apiFunction => {
+		const ownPropLen = Object.getOwnPropertyNames({...apiFunction}).length
+		if (ownPropLen) {
+			return {
+				[`Expected 0 own property names in spread and got ${ownPropLen}`]: true
+			}
+		}
+		return false
+	}
+
 	const testDescriptor = (proto, name) => {
 		const descriptor = Object.getOwnPropertyDescriptor(proto, name)
 		const ownPropLen = Object.getOwnPropertyNames(descriptor).length
@@ -663,6 +673,7 @@
 						testLength(apiFunction, name),
 						testEntries(apiFunction),
 						testGetToString(proto, name),
+						testSpread(apiFunction),
 
 						// common tests
 						testPrototype(apiFunction),
