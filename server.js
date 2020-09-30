@@ -24,5 +24,5 @@ app.post('/', (req, res) => {
 	})
 })
 
-app.listen(3000, () => console.log('⚡'))
+app.listen(8000, () => console.log('⚡'))
 

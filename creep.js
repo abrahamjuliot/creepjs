@@ -829,6 +829,10 @@
 			'7c95559c6754c42c0d87fa0339f8a7cc5ed092e7e91ae9e50d3212f7486fcbeb': 'SpiderMonkey [c]',
 			'd420d594c5a7f7f9a93802eebc3bec3fba0ea2dde91843f6c4746121ef5da140': 'JavaScriptCore',
 
+			// computed style system
+			'426300eb3654987988da3d36e65fed0a6eca001457efbda1733e30da717aa2e4': 'Firefox on Windows',
+			'65fe5bced08bc5fff3aa5df9c1144f1f14d0d85f4b74a7f98f719a6584fc688e': 'Chromium on Windows',
+
 			// computed style on linux, android, macOS, windows 
 			'ab38050de4c1b016b88cbb5c293a08ea7039bd6c307bb4bf8fbaf5c1bf6f8b30': '~Chrome 85', // windows
 			'754d4653b2659982a29b6df071793cf58b37ba74d842b73b6d623777dd709455': '~Edge 85', // windows
@@ -1929,7 +1933,7 @@
 				<div>
 					<strong>CSSStyleDeclaration</strong>
 					<div class="ellipsis">hash: ${$hash}</div>
-					<div>prototype: ${prototypeName}</div>
+					<div>system: ${decryptKnown(system.$hash)}</div>
 					<div>engine: ${
 						prototypeName == 'CSS2Properties' ? 'Gecko' :
 						prototypeName == 'CSSStyleDeclaration' ? 'Blink' :
@@ -1937,6 +1941,7 @@
 						'unknown'
 					}</div>
 					<div>browser: ${decryptKnown(computedStyle.$hash)}</div>
+					<div>prototype: ${prototypeName}</div>
 					${
 						Object.keys(data).map(key => {
 							const value = data[key]
@@ -1952,8 +1957,8 @@
 					<div>apple: ${''+computedStyle.apple}, ${''+htmlElementStyle.apple}, ${''+cssRuleListstyle.apple}
 					</div>
 					<div>matching: ${''+data.matching}</div>
-					<div class="ellipsis">system: ${system.$hash}</div>
-					<div>system styles: ${
+					<div class="ellipsis">system styles: ${system.$hash}</div>
+					<div>system styles rendered: ${
 						system && system.colors ? modal(
 							`${id}-system-styles`,
 							[
