@@ -9,7 +9,8 @@ app.use(express.static(staticPath))
 app.post('/', (req, res) => {
 	const { distrust, math, html, win, style, system, ua: userAgent } = req.query
 	
-	if (distrust) {
+	if (JSON.parse(distrust.toLowerCase())) {
+		console.log('distrust')
 		return
 	}
 
@@ -23,13 +24,16 @@ app.post('/', (req, res) => {
 		const foundStyle = data.filter(item => item.id == style)[0]
 		const foundSystem = data.filter(item => item.id == system)[0]
 
+		const log = []
+
 		if (!foundMath) {
 			data.push({
-				id: html,
+				id: math,
 				type: 'js Math implementation',
 				isNew: true,
 				userAgent
 			})
+			log.push('math')
 		}
 		if (!foundHTML) {
 			data.push({
@@ -38,6 +42,7 @@ app.post('/', (req, res) => {
 				isNew: true,
 				userAgent
 			})
+			log.push('html')
 		}
 		if (!foundWindow) {
 			data.push({
@@ -46,6 +51,7 @@ app.post('/', (req, res) => {
 				isNew: true,
 				userAgent
 			})
+			log.push('win')
 		}
 		if (!foundStyle) {
 			data.push({
@@ -54,6 +60,7 @@ app.post('/', (req, res) => {
 				isNew: true,
 				userAgent
 			})
+			log.push('style')
 		}
 		if (!foundSystem) {
 			data.push({
@@ -62,6 +69,7 @@ app.post('/', (req, res) => {
 				isNew: true,
 				userAgent
 			})
+			log.push('system')
 		}
 
 		const newHashCaptured = (
@@ -76,7 +84,7 @@ app.post('/', (req, res) => {
 			const json = JSON.stringify(data, null, 2)
 			fs.writeFile('useragent.json', json, err => {
 				if (err) { throw err }
-				console.log('file updated')
+				console.log(`updated ${log.join(', ')}`)
 			})
 		}
 	})
