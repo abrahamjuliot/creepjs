@@ -7,16 +7,74 @@ const app = express()
 app.use(express.static(staticPath))
 
 app.post('/', (req, res) => {
-	const { math: hash, ua: userAgent } = req.query
-	// read
-	fs.readFile('math.json', (err, file) => {
+	const { distrust, math, html, win, style, system, ua: userAgent } = req.query
+	
+	if (distrust) {
+		return
+	}
+
+	fs.readFile('useragent.json', (err, file) => {
 		if (err) { throw err }
 		const data = JSON.parse(file)
-		const found = data.filter(item => item.id == hash)[0]
-		if (!found) {
-			data.push({ id: hash, userAgent }) // update
+
+		const foundMath = data.filter(item => item.id == math)[0]
+		const foundHTML = data.filter(item => item.id == html)[0]
+		const foundWindow = data.filter(item => item.id == win)[0]
+		const foundStyle = data.filter(item => item.id == style)[0]
+		const foundSystem = data.filter(item => item.id == system)[0]
+
+		if (!foundMath) {
+			data.push({
+				id: html,
+				type: 'js Math implementation',
+				isNew: true,
+				userAgent
+			})
+		}
+		if (!foundHTML) {
+			data.push({
+				id: html,
+				type: 'HTMLElement version',
+				isNew: true,
+				userAgent
+			})
+		}
+		if (!foundWindow) {
+			data.push({
+				id: win,
+				type: 'contentWindow version',
+				isNew: true,
+				userAgent
+			})
+		}
+		if (!foundStyle) {
+			data.push(
+				id: style,
+				type: 'CSS style version',
+				isNew: true,
+				userAgent
+			})
+		}
+		if (!foundSystem) {
+			data.push({
+				id: system,
+				type: 'system styles',
+				isNew: true,
+				userAgent
+			})
+		}
+
+		const newHashCaptured = (
+			!foundMath ||
+			!foundHTML ||
+			!foundWindow ||
+			!foundStyle ||
+			!foundSystem
+		)
+
+		if (newHashCaptured) {
 			const json = JSON.stringify(data, null, 2)
-			fs.writeFile('math.json', json, err => {
+			fs.writeFile('useragent.json', json, err => {
 				if (err) { throw err }
 				console.log('file updated')
 			})
@@ -25,4 +83,3 @@ app.post('/', (req, res) => {
 })
 
 app.listen(8000, () => console.log('⚡'))
-

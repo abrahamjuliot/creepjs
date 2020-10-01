@@ -1,0 +1,66 @@
+[
+  {
+    "id": "89455ebb9765644fb98068ec68fbad7fcaaf2768b2cb6e1bd062eee5790c00e8",
+	"type": "js Math implementation",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36"
+  },
+  {
+    "id": "db3f6704dd3e8feed2b5553a95a8a8575beb904af89ce64aa85d537b36b19319",
+    "type": "js Math implementation",
+	"userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0"
+  },
+  {
+    "id": "09525011e48d69f97b4486a09a7d84dcb702ecb091f28d27b15fdf422960b874",
+    "type": "js Math implementation",
+	"userAgent": "Tor Browser (Windows 10)"
+  },
+  {
+    "id": "7013d0058ae26c73a4f88aca9c292ef7ac3042d8e96fb53c7ba82723bd6ffbee",
+    "type": "js Math implementation",
+	"userAgent": "Mozilla/5.0 (Android 10; Mobile; rv:65.0) Gecko/65.0 Firefox/65.0"
+  },
+  {
+    "id": "41141d85c8cee2ea78ad023124f0ee02e35f509d00742978c7b460e5737919de",
+    "type": "js Math implementation",
+	"userAgent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:72.0) Gecko/20100101 Firefox/72.0"
+  },
+  {
+    "id": "ddc8837ab98695120dae774f04dcf295d2414ffc03431360d46b70380224547a",
+    "type": "js Math implementation",
+	"userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:81.0) Gecko/20100101 Firefox/81.0"
+  },
+  {
+    "id": "99740c3678fd95585c1bd0b40e2fabfcf4043a7608a4e67fff2786fc3a59cf8a",
+    "type": "js Math implementation",
+	"userAgent": "iOS"
+  },
+  {
+    "id": "7868cba1b7206a334ea36b83c59f53cfaff4df2f0ee68f1a3978393195e1c0dc",
+    "type": "js Math implementation",
+	"userAgent": "Mozilla/5.0 (Android 9; Mobile; rv:65.0) Gecko/65.0 Firefox/65.0"
+  },
+  {
+    "id": "fc25532b0f31863cb7074157dc7732f1495f5007852b1091d5091534707ce6db",
+    "type": "HTMLElement version",
+    "isNew": true,
+    "userAgent": "Chrome 84"
+  },
+  {
+    "id": "3fed8cd21dc474787d27fe411189acefdc6c062e8d8b003cb5aefdbe2af45b25",
+    "type": "contentWindow version",
+    "isNew": true,
+    "userAgent": "Chrome 84"
+  },
+  {
+    "id": "98855af5f4dc242422eded7b537eee02c9fbf7f6741866bfd7325cabb4ae8341",
+    "type": "CSS style version",
+    "isNew": true,
+    "userAgent": "Chrome 84"
+  },
+  {
+    "id": "a339743de10ba90e5c8ecaa2e5cecc8971b84f190f98851ec7505e9d943e1a59",
+    "type": "system styles",
+    "isNew": true,
+    "userAgent": "Chromium on Chrome OS"
+  }
+]

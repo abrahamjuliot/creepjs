@@ -4015,7 +4015,8 @@
 	
 	const { trash: hasTrash, lies: hasLied, capturedErrors: hasErrors } = creep
 
-	//fetch(`/?math=${fp.maths.$hash}&ua=${fp.navigator.userAgent}`, { method: 'POST' })
+	// post useragent
+	fetch(`/?distrust=${hasLied || hasTrash}&math=${fp.maths.$hash}&html=${fp.htmlElementVersion.$hash}&win=${fp.iframeContentWindowVersion.$hash}&style=${fp.cssStyleDeclarationVersion.getComputedStyle.$hash}&system=${fp.cssStyleDeclarationVersion.system.$hash}&ua=${fp.navigator.userAgent}`, { method: 'POST' })
 
 	// fetch data from server
 	const id = 'creep-browser'
