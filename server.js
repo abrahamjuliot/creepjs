@@ -48,7 +48,7 @@ app.post('/', (req, res) => {
 			})
 		}
 		if (!foundStyle) {
-			data.push(
+			data.push({
 				id: style,
 				type: 'CSS style version',
 				isNew: true,
