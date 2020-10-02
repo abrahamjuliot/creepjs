@@ -865,7 +865,7 @@
 			'577825abd50957fec07390b0785d44d00a53cae86873657eb20eec569145177e': 'Chrome 85 [a]',
 			'3d1b5e815826dbdefb7a8cdbc2b1c31325b9b13111a5a9652b2e9caa9c22dc68': 'Chrome 85 [b]'
 		}
-		return id[hash] ? id[hash] : 'Unknown'
+		return id[hash] ? id[hash] : 'unknown'
 	}
 
 	// Collect trash values
@@ -1962,6 +1962,7 @@
 					<div>system: ${decryptKnown(system.$hash)}</div>
 					<div>engine: ${
 						prototypeName == 'CSS2Properties' ? 'Gecko' :
+						prototypeName == 'CSS2PropertiesPrototype' ? 'Goanna' :
 						prototypeName == 'CSSStyleDeclaration' ? 'Blink' :
 						prototypeName == 'CSSStyleDeclarationPrototype' ? 'Webkit' :
 						'unknown'
@@ -4042,7 +4043,7 @@
 	const { trash: hasTrash, lies: hasLied, capturedErrors: hasErrors } = creep
 
 	// post useragent
-	fetch(`/?distrust=${hasLied}&math=${fp.maths.$hash}&html=${fp.htmlElementVersion.$hash}&win=${fp.iframeContentWindowVersion.$hash}&style=${fp.cssStyleDeclarationVersion.getComputedStyle.$hash}&system=${fp.cssStyleDeclarationVersion.system.$hash}&ua=${fp.navigator.userAgent}&uaSystem=${fp.navigator.system}`, { method: 'POST' })
+	//fetch(`/?distrust=${hasLied}&math=${fp.maths.$hash}&html=${fp.htmlElementVersion.$hash}&win=${fp.iframeContentWindowVersion.$hash}&style=${fp.cssStyleDeclarationVersion.getComputedStyle.$hash}&system=${fp.cssStyleDeclarationVersion.system.$hash}&ua=${fp.navigator.userAgent}&uaSystem=${fp.navigator.system}`, { method: 'POST' })
 
 	// fetch data from server
 	const id = 'creep-browser'
