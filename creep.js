@@ -1963,6 +1963,7 @@
 					<div>engine: ${
 						prototypeName == 'CSS2Properties' ? 'Gecko' :
 						prototypeName == 'CSS2PropertiesPrototype' ? 'Goanna' :
+						prototypeName == 'MSCSSPropertiesPrototype' ? 'Trident' :
 						prototypeName == 'CSSStyleDeclaration' ? 'Blink' :
 						prototypeName == 'CSSStyleDeclarationPrototype' ? 'Webkit' :
 						'unknown'
