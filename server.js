@@ -6,6 +6,7 @@ const app = express()
 
 app.use(express.static(staticPath))
 
+const readUserAgents = false
 
 const updateReport = (report, [uaSystem, userAgent]) => {
 	let updatedReport = false
@@ -31,10 +32,14 @@ const updateReport = (report, [uaSystem, userAgent]) => {
 app.post('/', (req, res) => {
 	const { distrust, math, html, win, style, system, ua: userAgent, uaSystem } = req.query
 	
-	if (JSON.parse(distrust.toLowerCase())) {
+	if (!readUserAgents) {
+		return
+	}
+	else if (JSON.parse(distrust.toLowerCase())) {
 		console.log('distrust')
 		return
 	}
+	
 	try {
 		fs.readFile('useragent.json', (err, file) => {
 			if (err) { throw err }

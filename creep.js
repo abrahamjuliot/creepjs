@@ -830,16 +830,40 @@
 			'd420d594c5a7f7f9a93802eebc3bec3fba0ea2dde91843f6c4746121ef5da140': 'JavaScriptCore',
 
 			// computed style system
-			'426300eb3654987988da3d36e65fed0a6eca001457efbda1733e30da717aa2e4': 'Firefox on Windows',
+			'043b39165047d137bb61cc649e0fd47bc1b48f02507cfdd697f2f0f55f632f0b': 'Firefox on Android [b]',
+			'38b46e11eb3c1c698f3382937783a99b72f55f37958237fdfbc80ccded3c2f30': 'Firefox on Android [a]',
+			'a339743de10ba90e5c8ecaa2e5cecc8971b84f190f98851ec7505e9d943e1a59': 'Chromium on Android',
 			'65fe5bced08bc5fff3aa5df9c1144f1f14d0d85f4b74a7f98f719a6584fc688e': 'Chromium on Windows',
+			'426300eb3654987988da3d36e65fed0a6eca001457efbda1733e30da717aa2e4': 'Firefox on Windows',
 
 			// computed style on linux, android, macOS, windows 
-			'ab38050de4c1b016b88cbb5c293a08ea7039bd6c307bb4bf8fbaf5c1bf6f8b30': '~Chrome 85', // windows
-			'754d4653b2659982a29b6df071793cf58b37ba74d842b73b6d623777dd709455': '~Edge 85', // windows
-			'e03db0479814195a41344e0ff29d2a28da34c9467df06479c11fa8600a0c6aa7': '~Firefox 82', // windows
-			'bd6b00444b05d7b6746b7f449930513080712b2f263a0fd581412051e5891149': '~Safari 13.0.5', // macOS
-			'f868e64544f7b7e39e95738d1e68af72d60c6c94eccae88b2f99618b4f05368a': '~Tor Browser 10 [a]', // windows
-			'f66c300417a0ac91b7704e7f1c51dde58e4939463b90ed2d6a65cfafa49483f6': '~Tor Browser 10 [b]' // macOS
+			'9712080444cbd00431bf795c0b443b61d7edbc6f1a2519d0472a6e6212bbadb7': 'Firefox 68',
+			'e03db0479814195a41344e0ff29d2a28da34c9467df06479c11fa8600a0c6aa7': 'Firefox 81',
+			'f868e64544f7b7e39e95738d1e68af72d60c6c94eccae88b2f99618b4f05368a': 'Tor Browser 10 [a]',
+			'f66c300417a0ac91b7704e7f1c51dde58e4939463b90ed2d6a65cfafa49483f6': 'Tor Browser 10 [b]', // macOS
+			'98855af5f4dc242422eded7b537eee02c9fbf7f6741866bfd7325cabb4ae8341': 'Chrome 84',
+			'754d4653b2659982a29b6df071793cf58b37ba74d842b73b6d623777dd709455': 'Edge 85',
+			'ab38050de4c1b016b88cbb5c293a08ea7039bd6c307bb4bf8fbaf5c1bf6f8b30': 'Chrome 85 [a]',
+			'770834f4903cd6ac1f754976c12eba72099d1fd50a777da86316286c4b6858cc': 'Chrome 85 [b]',
+			'bd6b00444b05d7b6746b7f449930513080712b2f263a0fd581412051e5891149': 'Safari 13.0.5', // macOS
+
+			// HTMLElement version
+			'8ec2ef9d11baa00cea564a87c39e34741443725d5dcb01c49149b3fc13902574': 'Firefox 68',
+			'fd54b7e8981ca7eb04729fb0de2c393ead4fe66f6d2ca15f626970e2ce0140f6': 'Firefox 81 [a]',
+			'a4fb2b96bb73e847ac83613667c1d8274c0d10ae86a0f97f3f3689254b62677c': 'Firefox 81 [b]',
+			'2ecdbbabefa932cceb3884cc2d7fe5ed483fd565c14f801759cbd66a0790a1e9': 'Tor Browser 10',
+			'fc25532b0f31863cb7074157dc7732f1495f5007852b1091d5091534707ce6db': 'Chrome 84-85 [a]',
+			'89d9e9705b19825eda9a78f52705572247d5f8cdc84df55c540c2455eacb2e46': 'Chrome 85 [b]',
+
+			// contentWindow version
+			'03a25e71a4510d75b2bb5fa56342efbf54a8a28091aaf4b1e3bb260b054d1c69': 'Firefox 68',
+			'57af4feca3f4b17b69fdf3ecc7952729d4c13a75563e1bd8f74de3782636e842': 'Firefox 81',
+			'6fdd9c83f546bbdea16ccd038daa5c0048015d481dc7a96240605fc1661ab9be': 'Tor Browser 10',
+			'3fed8cd21dc474787d27fe411189acefdc6c062e8d8b003cb5aefdbe2af45b25': 'Chrome 84',
+			'9bdf4cdc86a28d2e8b17178867a054c340d891943058115519de58c8ff2834c8': 'Brave 85',
+			'd5331d4912e6fbf6f5fb32ee808b4edd65d546ccf140dd2d080c4f255cf1af76': 'Edge 85',
+			'577825abd50957fec07390b0785d44d00a53cae86873657eb20eec569145177e': 'Chrome 85 [a]',
+			'3d1b5e815826dbdefb7a8cdbc2b1c31325b9b13111a5a9652b2e9caa9c22dc68': 'Chrome 85 [b]'
 		}
 		return id[hash] ? id[hash] : 'Unknown'
 	}
@@ -1671,6 +1695,7 @@
 				<div>
 					<strong>HTMLIFrameElement.contentWindow</strong>
 					<div class="ellipsis">hash: ${$hash}</div>
+					<div>browser: ${decryptKnown($hash)}</div>
 					<div>keys (${count(keys)}): ${keys && keys.length ? modal(id, keys.join(', ')) : note.blocked}</div>
 					<div>moz: ${''+moz}</div>
 					<div>webkit: ${''+webkit}</div>
@@ -1706,6 +1731,7 @@
 				<div>
 					<strong>HTMLElement</strong>
 					<div class="ellipsis">hash: ${$hash}</div>
+					<div>browser: ${decryptKnown($hash)}</div>
 					<div>keys (${count(keys)}): ${keys && keys.length ? modal(elId, keys.join(', ')) : note.blocked}</div>
 				</div>
 				`)
