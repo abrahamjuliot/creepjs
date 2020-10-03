@@ -1963,7 +1963,7 @@
 					<div>system: ${decryptKnown(system.$hash)}</div>
 					<div>engine: ${
 						prototypeName == 'CSS2Properties' ? 'Gecko' :
-						prototypeName == 'CSS2PropertiesPrototype' ? 'Goanna' :
+						prototypeName == 'CSS2PropertiesPrototype' ? 'Gecko | Goanna' :
 						prototypeName == 'MSCSSPropertiesPrototype' ? 'Trident' :
 						prototypeName == 'CSSStyleDeclaration' ? 'Blink' :
 						prototypeName == 'CSSStyleDeclarationPrototype' ? 'Webkit' :
@@ -3966,7 +3966,7 @@
 	
 	// fingerprint and render
 	const { fingerprint: fp, timeEnd } = await fingerprint().catch(error => console.error(error))
-
+	
 	// Trusted Fingerprint
 	const distrust = { distrust: { brave: isBrave, firefox: isFirefox } }
 	const trashLen = fp.trash.trashBin.length
@@ -4045,8 +4045,12 @@
 	const { trash: hasTrash, lies: hasLied, capturedErrors: hasErrors } = creep
 
 	// post useragent
-	fetch(`/?distrust=${hasLied}&math=${fp.maths.$hash}&html=${fp.htmlElementVersion.$hash}&win=${fp.iframeContentWindowVersion.$hash}&style=${fp.cssStyleDeclarationVersion.getComputedStyle.$hash}&system=${fp.cssStyleDeclarationVersion.system.$hash}&ua=${fp.navigator.userAgent}&uaSystem=${fp.navigator.system}`, { method: 'POST' })
-		.catch(error => console.log('useragent post failed'))
+	fetch(
+		`/?distrust=${hasLied}&math=${fp.maths.$hash}&html=${fp.htmlElementVersion.$hash}&win=${fp.iframeContentWindowVersion.$hash}&style=${fp.cssStyleDeclarationVersion.getComputedStyle.$hash}&system=${fp.cssStyleDeclarationVersion.system.$hash}&ua=${fp.navigator.userAgent}&uaSystem=${fp.navigator.system}`,
+		{ method: 'POST' }
+	)
+	.then(response => console.log('useragent post success') )
+	.catch(error => console.log('useragent post failed') )
 
 	// fetch data from server
 	const id = 'creep-browser'
