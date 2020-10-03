@@ -732,6 +732,7 @@
 		if (typeof api == 'object' && caniuse(() => obj[name]) != undefined) {
 				
 			try {
+				console.log(api, name)
 				const proto = api
 				const apiFunction = Object.getOwnPropertyDescriptor(api, name).get
 				const testResults = new Set(
@@ -842,9 +843,9 @@
 			'f868e64544f7b7e39e95738d1e68af72d60c6c94eccae88b2f99618b4f05368a': 'Tor Browser 10 [a]',
 			'f66c300417a0ac91b7704e7f1c51dde58e4939463b90ed2d6a65cfafa49483f6': 'Tor Browser 10 [b]', // macOS
 			'98855af5f4dc242422eded7b537eee02c9fbf7f6741866bfd7325cabb4ae8341': 'Chrome 84',
-			'754d4653b2659982a29b6df071793cf58b37ba74d842b73b6d623777dd709455': 'Edge 85',
-			'ab38050de4c1b016b88cbb5c293a08ea7039bd6c307bb4bf8fbaf5c1bf6f8b30': 'Chrome 85 [a]',
-			'770834f4903cd6ac1f754976c12eba72099d1fd50a777da86316286c4b6858cc': 'Chrome 85 [b]',
+			'754d4653b2659982a29b6df071793cf58b37ba74d842b73b6d623777dd709455': 'Chrome 85 (Edge)', // Windows
+			'ab38050de4c1b016b88cbb5c293a08ea7039bd6c307bb4bf8fbaf5c1bf6f8b30': 'Chrome 85 [a]', // Windows
+			'770834f4903cd6ac1f754976c12eba72099d1fd50a777da86316286c4b6858cc': 'Chrome 85 [b]', // Android
 			'bd6b00444b05d7b6746b7f449930513080712b2f263a0fd581412051e5891149': 'Safari 13.0.5', // macOS
 
 			// HTMLElement version
@@ -860,10 +861,10 @@
 			'57af4feca3f4b17b69fdf3ecc7952729d4c13a75563e1bd8f74de3782636e842': 'Firefox 81',
 			'6fdd9c83f546bbdea16ccd038daa5c0048015d481dc7a96240605fc1661ab9be': 'Tor Browser 10',
 			'3fed8cd21dc474787d27fe411189acefdc6c062e8d8b003cb5aefdbe2af45b25': 'Chrome 84',
-			'9bdf4cdc86a28d2e8b17178867a054c340d891943058115519de58c8ff2834c8': 'Brave 85',
-			'd5331d4912e6fbf6f5fb32ee808b4edd65d546ccf140dd2d080c4f255cf1af76': 'Edge 85',
-			'577825abd50957fec07390b0785d44d00a53cae86873657eb20eec569145177e': 'Chrome 85 [a]',
-			'3d1b5e815826dbdefb7a8cdbc2b1c31325b9b13111a5a9652b2e9caa9c22dc68': 'Chrome 85 [b]'
+			'9bdf4cdc86a28d2e8b17178867a054c340d891943058115519de58c8ff2834c8': `Chrome 85 (Brave)`,
+			'd5331d4912e6fbf6f5fb32ee808b4edd65d546ccf140dd2d080c4f255cf1af76': 'Chrome 85 (Edge)',
+			'577825abd50957fec07390b0785d44d00a53cae86873657eb20eec569145177e': 'Chrome 85 [a]', // Windows
+			'3d1b5e815826dbdefb7a8cdbc2b1c31325b9b13111a5a9652b2e9caa9c22dc68': 'Chrome 85 [b]' // Android
 		}
 		return id[hash] ? id[hash] : 'unknown'
 	}
@@ -3963,9 +3964,9 @@
 	// get/post request
 	const webapp = 'https://script.google.com/macros/s/AKfycbzKRjt6FPboOEkh1vTXttGyCjp97YBP7z-5bODQmtSkQ9BqDRY/exec'
 	
-
 	// fingerprint and render
 	const { fingerprint: fp, timeEnd } = await fingerprint().catch(error => console.error(error))
+
 	// Trusted Fingerprint
 	const distrust = { distrust: { brave: isBrave, firefox: isFirefox } }
 	const trashLen = fp.trash.trashBin.length
@@ -4044,7 +4045,8 @@
 	const { trash: hasTrash, lies: hasLied, capturedErrors: hasErrors } = creep
 
 	// post useragent
-	//fetch(`/?distrust=${hasLied}&math=${fp.maths.$hash}&html=${fp.htmlElementVersion.$hash}&win=${fp.iframeContentWindowVersion.$hash}&style=${fp.cssStyleDeclarationVersion.getComputedStyle.$hash}&system=${fp.cssStyleDeclarationVersion.system.$hash}&ua=${fp.navigator.userAgent}&uaSystem=${fp.navigator.system}`, { method: 'POST' })
+	fetch(`/?distrust=${hasLied}&math=${fp.maths.$hash}&html=${fp.htmlElementVersion.$hash}&win=${fp.iframeContentWindowVersion.$hash}&style=${fp.cssStyleDeclarationVersion.getComputedStyle.$hash}&system=${fp.cssStyleDeclarationVersion.system.$hash}&ua=${fp.navigator.userAgent}&uaSystem=${fp.navigator.system}`, { method: 'POST' })
+		.catch(error => console.log('useragent post failed'))
 
 	// fetch data from server
 	const id = 'creep-browser'

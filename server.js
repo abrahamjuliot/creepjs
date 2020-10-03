@@ -6,7 +6,7 @@ const app = express()
 
 app.use(express.static(staticPath))
 
-const readUserAgents = false
+const readUserAgents = true
 
 const updateReport = (report, [uaSystem, userAgent]) => {
 	let updatedReport = false
