@@ -1,5 +1,17 @@
 [
   {
+    "id": "381a42c10874200cbb4158311db977abba54f404de0fed0464f1f856cd113037",
+    "type": "contentWindow version",
+    "uaSystem": [
+      "Windows"
+    ],
+    "userAgent": [
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0"
+    ],
+    "time": "10/3/2020, 5:02:45 AM",
+	"note": "Firefox 81 [a]"
+  },
+  {
     "id": "89455ebb9765644fb98068ec68fbad7fcaaf2768b2cb6e1bd062eee5790c00e8",
     "type": "js Math implementation",
     "userAgent": [
@@ -43,7 +55,7 @@
       "Android"
     ],
     "time": "10/2/2020, 1:11:43 AM",
-	"note": "Chromium on Android"
+    "note": "Chromium on Android"
   },
   {
     "id": "89d9e9705b19825eda9a78f52705572247d5f8cdc84df55c540c2455eacb2e46",
@@ -122,7 +134,7 @@
       "Android"
     ],
     "time": "10/2/2020, 1:08:26 AM",
-    "note": "Firefox 81"
+    "note": "Firefox 81 [b]"
   },
   {
     "id": "043b39165047d137bb61cc649e0fd47bc1b48f02507cfdd697f2f0f55f632f0b",
@@ -413,7 +425,7 @@
       "Chrome OS"
     ],
     "time": "10/1/2020, 5:24:53 PM",
-	"note": "Chrome 84"
+    "note": "Chrome 84"
   },
   {
     "id": "98855af5f4dc242422eded7b537eee02c9fbf7f6741866bfd7325cabb4ae8341",
