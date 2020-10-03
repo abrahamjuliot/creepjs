@@ -9,8 +9,7 @@
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0"
     ],
     "time": "10/3/2020, 8:46:18 AM",
-    "decoded": "SpiderMonkey",
-    "isUpdated": true
+    "decoded": "SpiderMonkey"
   },
   {
     "id": "7757f7416b78fb8ac1f079b3e0677c0fe179826a63727d809e7d69795e915cd5",
@@ -23,8 +22,7 @@
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36"
     ],
     "time": "10/3/2020, 8:42:46 AM",
-    "decoded": "V8",
-    "isUpdated": true
+    "decoded": "V8"
   },
   {
     "id": "a8c7362bfa3851b0ea294c075f5708b73b679b484498989d7fde311441ed3322",
