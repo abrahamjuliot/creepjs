@@ -810,8 +810,8 @@
 	const decryptKnown = hash => {
 		const report = useragentData.filter(report => report.id == hash)[0]
 		if (report && report.decoded) {
-			const { uaSystem, decoded, type } = report
-			return `${decoded}${!uaSystem.length || uaSystem.length > 1 ? '' : ` (like ${uaSystem[0]})`}`
+			const { uaSystem, decoded } = report
+			return `${decoded} (${hashMini(hash)}${!uaSystem.length || uaSystem.length > 1 ? '' : `, like ${uaSystem[0]}`})`
 		}
 		else {
 			return 'unknown'
@@ -3993,9 +3993,9 @@
 	
 	const { trash: hasTrash, lies: hasLied, capturedErrors: hasErrors } = creep
 
-	// post useragent
+	// post useragent 
 	fetch(
-		`/?distrust=${hasLied}&math=${fp.maths.$hash}&html=${fp.htmlElementVersion.$hash}&win=${fp.iframeContentWindowVersion.$hash}&style=${fp.cssStyleDeclarationVersion.getComputedStyle.$hash}&system=${fp.cssStyleDeclarationVersion.system.$hash}&ua=${fp.navigator.userAgent}&uaSystem=${fp.navigator.system}`,
+		`/?distrust=${hasLied}&errors=${fp.consoleErrors.$hash}&math=${fp.maths.$hash}&html=${fp.htmlElementVersion.$hash}&win=${fp.iframeContentWindowVersion.$hash}&style=${fp.cssStyleDeclarationVersion.getComputedStyle.$hash}&system=${fp.cssStyleDeclarationVersion.system.$hash}&ua=${fp.navigator.userAgent}&uaSystem=${fp.navigator.system}`,
 		{ method: 'POST' }
 	)
 	.then(response => console.log('useragent post success') )

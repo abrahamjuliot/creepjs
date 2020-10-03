@@ -30,7 +30,7 @@ const updateReport = (report, [uaSystem, userAgent]) => {
 }
 
 app.post('/', (req, res) => {
-	const { distrust, math, html, win, style, system, ua: userAgent, uaSystem } = req.query
+	const { distrust, errors: consoleErrors, math, html, win, style, system, ua: userAgent, uaSystem } = req.query
 	
 	if (!readUserAgents) {
 		return
@@ -45,6 +45,7 @@ app.post('/', (req, res) => {
 			if (err) { throw err }
 			const data = JSON.parse(file)
 
+			let foundConsoleErrors = data.filter(item => item.id == consoleErrors)[0]
 			let foundMath = data.filter(item => item.id == math)[0]
 			let foundHTML = data.filter(item => item.id == html)[0]
 			let foundWindow = data.filter(item => item.id == win)[0]
@@ -53,6 +54,26 @@ app.post('/', (req, res) => {
 
 			const log = []
 			let updated = false
+
+			if (!foundConsoleErrors) {
+				data.push({
+					id: consoleErrors,
+					type: 'js engine',
+					isNew: true,
+					uaSystem: [uaSystem],
+					userAgent: [userAgent],
+					time: new Date().toLocaleString()
+				})
+				updated = true
+				log.push('errors')
+			}
+			else {
+				const { report, updatedReport } = updateReport(foundConsoleErrors, [uaSystem, userAgent])
+				foundConsoleErrors = report
+				if (updatedReport) {
+					updated = true
+				}
+			}
 
 			if (!foundMath) {
 				data.push({
@@ -68,7 +89,7 @@ app.post('/', (req, res) => {
 			}
 			else {
 				const { report, updatedReport } = updateReport(foundMath, [uaSystem, userAgent])
-				foundMath= report
+				foundMath = report
 				if (updatedReport) {
 					updated = true
 				}
