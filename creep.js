@@ -805,6 +805,9 @@
 	}
 
 	// id known hash
+	const useragentResponse = await fetch('./useragent.json').catch(error => console.error(error))
+	const useragentData = await useragentResponse.json().catch(error => console.error(error))
+	//const useragentData = JSON.parse(useragentJSON)
 	const decryptKnown = hash => {
 		const id = {
 			// math
@@ -866,7 +869,16 @@
 			'577825abd50957fec07390b0785d44d00a53cae86873657eb20eec569145177e': 'Chrome 85 [a]', 
 			'3d1b5e815826dbdefb7a8cdbc2b1c31325b9b13111a5a9652b2e9caa9c22dc68': 'Chrome 85 [b]' // Android
 		}
-		return id[hash] ? id[hash] : 'unknown'
+		//return id[hash] ? id[hash] : 'unknown'
+
+		const report = useragentData.filter(report => report.id == hash)[0]
+		if (report && report.decoded) {
+			const { uaSystem, decoded } = report
+			return `${decoded}${uaSystem.length > 1 ? '' : ` (like ${uaSystem.join('')})`}`
+		}
+		else {
+			return 'unknown'
+		}
 	}
 
 	// Collect trash values

@@ -1,5 +1,76 @@
 [
   {
+    "id": "7757f7416b78fb8ac1f079b3e0677c0fe179826a63727d809e7d69795e915cd5",
+    "type": "js engine:",
+    "uaSystem": [
+      ""
+    ],
+    "userAgent": [],
+    "time": "10/3/2020, 6:14:02 AM",
+    "decoded": "V8 [a]"
+  },
+  {
+    "id": "a8c7362bfa3851b0ea294c075f5708b73b679b484498989d7fde311441ed3322",
+    "type": "js engine:",
+    "uaSystem": [
+      ""
+    ],
+    "userAgent": [],
+    "time": "10/3/2020, 6:14:02 AM",
+    "decoded": "V8 [b]"
+  },
+  {
+    "id": "21f2f6f397db5fa611029154c35cd96eb9a96c4f1c993d4c3a25da765f2dd13b",
+    "type": "js engine:",
+    "uaSystem": [
+      ""
+    ],
+    "userAgent": [],
+    "time": "10/3/2020, 6:14:02 AM",
+    "decoded": "SpiderMonkey [a]"
+  },
+  {
+    "id": "bec95f2a6f1d2c815b154802467514f7b774ea64667e566acaf903db224c2b38",
+    "type": "js engine:",
+    "uaSystem": [
+      ""
+    ],
+    "userAgent": [],
+    "time": "10/3/2020, 6:14:02 AM",
+    "decoded": "SpiderMonkey [b]"
+  },
+  {
+    "id": "7c95559c6754c42c0d87fa0339f8a7cc5ed092e7e91ae9e50d3212f7486fcbeb",
+    "type": "js engine:",
+    "uaSystem": [
+      ""
+    ],
+    "userAgent": [],
+    "time": "10/3/2020, 6:14:02 AM",
+    "decoded": "SpiderMonkey [c]"
+  },
+  {
+    "id": "d420d594c5a7f7f9a93802eebc3bec3fba0ea2dde91843f6c4746121ef5da140",
+    "type": "js engine:",
+    "uaSystem": [
+      ""
+    ],
+    "userAgent": [],
+    "time": "10/3/2020, 6:14:02 AM",
+    "decoded": "JavaScriptCore"
+  },
+  {
+    "id": "2607501c5033cc3ca19e835f701baf381e813f6bacfd5d50955364b078b24ecf",
+    "type": "js Math implementation",
+    "userAgent": [],
+    "uaSystem": [
+      "Windows",
+      "Android"
+    ],
+    "time": "10/3/2020, 6:14:02 AM",
+    "decoded": "V8 [a]"
+  },
+  {
     "id": "89455ebb9765644fb98068ec68fbad7fcaaf2768b2cb6e1bd062eee5790c00e8",
     "type": "js Math implementation",
     "userAgent": [
@@ -15,7 +86,8 @@
       "Windows",
       "Android"
     ],
-    "time": "10/3/2020, 6:14:02 AM"
+    "time": "10/3/2020, 6:14:02 AM",
+    "decoded": "V8 [b]"
   },
   {
     "id": "65fe5bced08bc5fff3aa5df9c1144f1f14d0d85f4b74a7f98f719a6584fc688e",
@@ -31,7 +103,7 @@
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 Edg/85.0.564.68"
     ],
     "time": "10/3/2020, 6:14:02 AM",
-    "note": "Chromium on Windows"
+    "decoded": "Chromium on Windows"
   },
   {
     "id": "fc25532b0f31863cb7074157dc7732f1495f5007852b1091d5091534707ce6db",
@@ -47,7 +119,7 @@
       "Windows"
     ],
     "time": "10/3/2020, 6:14:02 AM",
-    "note": "Chrome 84-85"
+    "decoded": "Chrome 84-85"
   },
   {
     "id": "d5331d4912e6fbf6f5fb32ee808b4edd65d546ccf140dd2d080c4f255cf1af76",
@@ -60,7 +132,7 @@
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 Edg/85.0.564.68"
     ],
     "time": "10/3/2020, 6:14:02 AM",
-    "note": "Edge 85"
+    "decoded": "Edge 85"
   },
   {
     "id": "754d4653b2659982a29b6df071793cf58b37ba74d842b73b6d623777dd709455",
@@ -73,7 +145,7 @@
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 Edg/85.0.564.68"
     ],
     "time": "10/3/2020, 6:14:02 AM",
-    "note": "Edge 85"
+    "decoded": "Edge 85"
   },
   {
     "id": "381a42c10874200cbb4158311db977abba54f404de0fed0464f1f856cd113037",
@@ -85,7 +157,7 @@
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0"
     ],
     "time": "10/3/2020, 5:02:45 AM",
-    "note": "Firefox 81 [a]"
+    "decoded": "Firefox 81 [a]"
   },
   {
     "id": "ab38050de4c1b016b88cbb5c293a08ea7039bd6c307bb4bf8fbaf5c1bf6f8b30",
@@ -101,7 +173,7 @@
       "Mozilla/5.0 (Linux; Android 7.1.2; SM-G955F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.127 Safari/537.36"
     ],
     "time": "10/2/2020, 1:11:43 AM",
-    "note": "Chrome 85 [a]"
+    "decoded": "Chrome 85 [a]"
   },
   {
     "id": "a339743de10ba90e5c8ecaa2e5cecc8971b84f190f98851ec7505e9d943e1a59",
@@ -114,7 +186,7 @@
       "Android"
     ],
     "time": "10/2/2020, 1:11:43 AM",
-    "note": "Chromium on Android"
+    "decoded": "Chromium on Android"
   },
   {
     "id": "89d9e9705b19825eda9a78f52705572247d5f8cdc84df55c540c2455eacb2e46",
@@ -127,7 +199,7 @@
       "Android"
     ],
     "time": "10/2/2020, 1:11:43 AM",
-    "note": "Chrome 85 [b]"
+    "decoded": "Chrome 85 [b]"
   },
   {
     "id": "3d1b5e815826dbdefb7a8cdbc2b1c31325b9b13111a5a9652b2e9caa9c22dc68",
@@ -140,7 +212,7 @@
       "Android"
     ],
     "time": "10/2/2020, 1:11:43 AM",
-    "note": "Chrome 85 [b]"
+    "decoded": "Chrome 85 [b]"
   },
   {
     "id": "87b691d273993fb305b44cecf3429cdd5c5f4d387fb0e66bccaaf7670ca46915",
@@ -152,7 +224,8 @@
       "Mozilla/5.0 (Android 7.1.2; Tablet; rv:68.0) Gecko/68.0 Firefox/68.0",
       "Mozilla/5.0 (Android 7.1.2; Mobile; rv:81.0) Gecko/81.0 Firefox/81.0"
     ],
-    "time": "10/2/2020, 1:08:26 AM"
+    "time": "10/2/2020, 1:08:26 AM",
+    "decoded": "SpiderMonkey (Firefox on Linux)"
   },
   {
     "id": "e03db0479814195a41344e0ff29d2a28da34c9467df06479c11fa8600a0c6aa7",
@@ -167,7 +240,7 @@
       "Windows"
     ],
     "time": "10/2/2020, 1:08:26 AM",
-    "note": "Firefox 81"
+    "decoded": "Firefox 81"
   },
   {
     "id": "a4fb2b96bb73e847ac83613667c1d8274c0d10ae86a0f97f3f3689254b62677c",
@@ -180,7 +253,7 @@
       "Android"
     ],
     "time": "10/2/2020, 1:08:26 AM",
-    "note": "Firefox 81 [b]"
+    "decoded": "Firefox 81 [b]"
   },
   {
     "id": "57af4feca3f4b17b69fdf3ecc7952729d4c13a75563e1bd8f74de3782636e842",
@@ -193,7 +266,7 @@
       "Android"
     ],
     "time": "10/2/2020, 1:08:26 AM",
-    "note": "Firefox 81 [b]"
+    "decoded": "Firefox 81 [b]"
   },
   {
     "id": "043b39165047d137bb61cc649e0fd47bc1b48f02507cfdd697f2f0f55f632f0b",
@@ -206,7 +279,7 @@
       "Android"
     ],
     "time": "10/2/2020, 1:08:26 AM",
-    "note": "Firefox on Android [b]"
+    "decoded": "Firefox on Android [b]"
   },
   {
     "id": "8ec2ef9d11baa00cea564a87c39e34741443725d5dcb01c49149b3fc13902574",
@@ -218,7 +291,7 @@
     "uaSystem": [
       "Android"
     ],
-    "note": "Firefox 68"
+    "decoded": "Firefox 68"
   },
   {
     "id": "9712080444cbd00431bf795c0b443b61d7edbc6f1a2519d0472a6e6212bbadb7",
@@ -231,7 +304,7 @@
       "Android"
     ],
     "time": "10/2/2020, 1:00:33 AM",
-    "note": "Firefox 68"
+    "decoded": "Firefox 68"
   },
   {
     "id": "03a25e71a4510d75b2bb5fa56342efbf54a8a28091aaf4b1e3bb260b054d1c69",
@@ -243,7 +316,7 @@
       "Mozilla/5.0 (Android 7.1.2; Tablet; rv:68.0) Gecko/68.0 Firefox/68.0"
     ],
     "time": "10/2/2020, 1:00:33 AM",
-    "note": "Firefox 68"
+    "decoded": "Firefox 68"
   },
   {
     "id": "38b46e11eb3c1c698f3382937783a99b72f55f37958237fdfbc80ccded3c2f30",
@@ -255,20 +328,19 @@
       "Mozilla/5.0 (Android 7.1.2; Tablet; rv:68.0) Gecko/68.0 Firefox/68.0"
     ],
     "time": "10/2/2020, 1:00:33 AM",
-    "note": "Firefox on Android [a]"
+    "decoded": "Firefox on Android [a]"
   },
   {
     "id": "09525011e48d69f97b4486a09a7d84dcb702ecb091f28d27b15fdf422960b874",
     "type": "js Math implementation",
     "userAgent": [
-      "Tor Browser (Windows 10)",
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0"
     ],
     "uaSystem": [
       "Windows"
     ],
     "time": "10/2/2020, 12:55:17 AM",
-    "note": "Tor Browser (Windows 10)"
+    "decoded": "SpiderMonkey (Tor Browser on Windows)"
   },
   {
     "id": "2ecdbbabefa932cceb3884cc2d7fe5ed483fd565c14f801759cbd66a0790a1e9",
@@ -280,7 +352,7 @@
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0"
     ],
     "time": "10/2/2020, 12:55:17 AM",
-    "note": "Tor Browser 10"
+    "decoded": "Tor Browser 10"
   },
   {
     "id": "6fdd9c83f546bbdea16ccd038daa5c0048015d481dc7a96240605fc1661ab9be",
@@ -292,7 +364,7 @@
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0"
     ],
     "time": "10/2/2020, 12:55:17 AM",
-    "note": "Tor Browser 10"
+    "decoded": "Tor Browser 10"
   },
   {
     "id": "f868e64544f7b7e39e95738d1e68af72d60c6c94eccae88b2f99618b4f05368a",
@@ -304,7 +376,7 @@
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0"
     ],
     "time": "10/2/2020, 12:55:17 AM",
-    "note": "Tor Browser 10"
+    "decoded": "Tor Browser 10"
   },
   {
     "id": "9bdf4cdc86a28d2e8b17178867a054c340d891943058115519de58c8ff2834c8",
@@ -316,7 +388,7 @@
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36"
     ],
     "time": "10/2/2020, 12:50:56 AM",
-    "note": "Brave 85"
+    "decoded": "Brave 85"
   },
   {
     "id": "fd54b7e8981ca7eb04729fb0de2c393ead4fe66f6d2ca15f626970e2ce0140f6",
@@ -328,7 +400,7 @@
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0"
     ],
     "time": "10/2/2020, 12:50:05 AM",
-    "note": "Firefox 81 [a]"
+    "decoded": "Firefox 81 [a]"
   },
   {
     "id": "426300eb3654987988da3d36e65fed0a6eca001457efbda1733e30da717aa2e4",
@@ -340,7 +412,7 @@
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0"
     ],
     "time": "10/2/2020, 12:50:05 AM",
-    "note": "Firefox on Windows"
+    "decoded": "Firefox on Windows"
   },
   {
     "id": "577825abd50957fec07390b0785d44d00a53cae86873657eb20eec569145177e",
@@ -352,7 +424,7 @@
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36"
     ],
     "time": "10/2/2020, 12:47:43 AM",
-    "note": "Chrome 85 [a]"
+    "decoded": "Chrome 85 [a]"
   },
   {
     "id": "db3f6704dd3e8feed2b5553a95a8a8575beb904af89ce64aa85d537b36b19319",
@@ -363,7 +435,8 @@
     "uaSystem": [
       "Windows"
     ],
-    "time": "10/1/2020, 5:24:53 PM"
+    "time": "10/1/2020, 5:24:53 PM",
+    "decoded": "SpiderMonkey (Firefox on Windows) [b]"
   },
   {
     "id": "7013d0058ae26c73a4f88aca9c292ef7ac3042d8e96fb53c7ba82723bd6ffbee",
@@ -374,7 +447,8 @@
     "uaSystem": [
       "Android"
     ],
-    "time": "10/1/2020, 5:24:53 PM"
+    "time": "10/1/2020, 5:24:53 PM",
+    "decoded": "SpiderMonkey (Firefox on Android) [b]"
   },
   {
     "id": "41141d85c8cee2ea78ad023124f0ee02e35f509d00742978c7b460e5737919de",
@@ -385,7 +459,8 @@
     "uaSystem": [
       "Windows"
     ],
-    "time": "10/1/2020, 5:24:53 PM"
+    "time": "10/1/2020, 5:24:53 PM",
+    "decoded": "SpiderMonkey (Firefox on Windows) [a]"
   },
   {
     "id": "ddc8837ab98695120dae774f04dcf295d2414ffc03431360d46b70380224547a",
@@ -396,7 +471,18 @@
     "uaSystem": [
       "Mac"
     ],
-    "time": "10/1/2020, 5:24:53 PM"
+    "time": "10/1/2020, 5:24:53 PM",
+    "decoded": "SpiderMonkey (Firefox on macOS)"
+  },
+  {
+    "id": "c1141e10c4d38a4ca1a49d9c7335fdfdcd7625b4ba04053a2f335434ec7e4d36",
+    "type": "js Math implementation",
+    "userAgent": [],
+    "uaSystem": [
+      "macOS"
+    ],
+    "time": "10/1/2020, 5:24:53 PM",
+    "decoded": "JavaScriptCore (Safari on macOS)"
   },
   {
     "id": "99740c3678fd95585c1bd0b40e2fabfcf4043a7608a4e67fff2786fc3a59cf8a",
@@ -407,7 +493,8 @@
     "uaSystem": [
       "iOS"
     ],
-    "time": "10/1/2020, 5:24:53 PM"
+    "time": "10/1/2020, 5:24:53 PM",
+    "decoded": "JavaScriptCore (iOS)"
   },
   {
     "id": "7868cba1b7206a334ea36b83c59f53cfaff4df2f0ee68f1a3978393195e1c0dc",
@@ -418,7 +505,8 @@
     "uaSystem": [
       "Android"
     ],
-    "time": "10/1/2020, 5:24:53 PM"
+    "time": "10/1/2020, 5:24:53 PM",
+    "decoded": "SpiderMonkey (Firefox on Android) [c]"
   },
   {
     "id": "3fed8cd21dc474787d27fe411189acefdc6c062e8d8b003cb5aefdbe2af45b25",
@@ -430,7 +518,7 @@
       "Chrome OS"
     ],
     "time": "10/1/2020, 5:24:53 PM",
-    "note": "Chrome 84"
+    "decoded": "Chrome 84"
   },
   {
     "id": "98855af5f4dc242422eded7b537eee02c9fbf7f6741866bfd7325cabb4ae8341",
@@ -452,7 +540,8 @@
     "uaSystem": [
       "Android"
     ],
-    "time": "10/1/2020, 5:24:53 PM"
+    "time": "10/1/2020, 5:24:53 PM",
+    "decoded": "SpiderMonkey (Firefox on Android) [a]"
   },
   {
     "id": "770834f4903cd6ac1f754976c12eba72099d1fd50a777da86316286c4b6858cc",
@@ -464,6 +553,6 @@
       "Android"
     ],
     "time": "10/1/2020, 5:24:53 PM",
-    "note": "Chrome 85 [b]"
+    "decoded": "Chrome 85 [b]"
   }
 ]
