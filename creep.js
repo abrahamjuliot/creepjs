@@ -2517,10 +2517,6 @@
 							const vendor = extension && context.getParameter(extension.UNMASKED_VENDOR_WEBGL)
 							const renderer = extension && context.getParameter(extension.UNMASKED_RENDERER_WEBGL)
 							const validate = (value, title) => {
-								const gibbers = gibberish(value)
-								if (!!gibbers.length) {
-									sendToTrash(`${title} contains gibberish`, `[${gibbers.join(', ')}] ${value}`)
-								}
 								return (
 									!proxyBehavior(value) ? value : 
 									sendToTrash(title, 'proxy behavior detected')
