@@ -9,9 +9,10 @@
     "userAgent": [
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36",
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36",
-      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36"
+      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36",
+      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 OPR/71.0.3770.198"
     ],
-    "time": "10/4/2020, 12:41:56 AM",
+    "time": "10/4/2020, 1:03:22 AM",
     "decoded": "V8"
   },
   {
@@ -25,14 +26,15 @@
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 Edg/85.0.564.63",
       "Mozilla/5.0 (Linux; Android 7.1.2; SM-G955F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.127 Safari/537.36",
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 Edg/85.0.564.68",
-      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36"
+      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36",
+      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 OPR/71.0.3770.198"
     ],
     "uaSystem": [
       "Windows",
       "Android",
       "Linux"
     ],
-    "time": "10/4/2020, 12:41:56 AM",
+    "time": "10/4/2020, 1:03:22 AM",
     "decoded": "V8"
   },
   {
@@ -43,14 +45,15 @@
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36",
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 Edg/85.0.564.63",
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 Edg/85.0.564.68",
-      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36"
+      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36",
+      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 OPR/71.0.3770.198"
     ],
     "uaSystem": [
       "Chrome OS",
       "Windows",
       "Linux"
     ],
-    "time": "10/4/2020, 12:41:56 AM",
+    "time": "10/4/2020, 1:03:22 AM",
     "decoded": "Chrome 84-85"
   },
   {
@@ -66,9 +69,10 @@
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.55 Safari/537.36",
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36",
       "Mozilla/5.0 (Linux; Android 7.1.2; SM-G955F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.127 Safari/537.36",
-      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36"
+      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36",
+      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 OPR/71.0.3770.198"
     ],
-    "time": "10/4/2020, 12:41:56 AM",
+    "time": "10/4/2020, 1:03:22 AM",
     "decoded": "Chrome 85"
   },
   {
@@ -76,14 +80,27 @@
     "type": "system styles",
     "userAgent": [
       "Mozilla/5.0 (Linux; Android 7.1.2; SM-G955F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.127 Safari/537.36",
-      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36"
+      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36",
+      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 OPR/71.0.3770.198"
     ],
     "uaSystem": [
       "Android",
       "Linux"
     ],
-    "time": "10/4/2020, 12:41:56 AM",
+    "time": "10/4/2020, 1:03:22 AM",
     "decoded": "Chromium"
+  },
+  {
+    "id": "2758c1fc3d590369454944b7247e7aa1c3cbb86d9f2381ab9a919e963281b648",
+    "type": "contentWindow version",
+    "uaSystem": [
+      "Linux"
+    ],
+    "userAgent": [
+      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 OPR/71.0.3770.198"
+    ],
+    "time": "10/4/2020, 1:03:22 AM",
+    "decoded": "Chrome 85 [Opera]"
   },
   {
     "id": "ff2c0129cbb2efc784560631ffb361ca2ef449b7aaf31c7fe7289ea2848ea81d",
@@ -251,7 +268,7 @@
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 Edg/85.0.564.68"
     ],
     "time": "10/3/2020, 6:14:02 AM",
-    "decoded": "Edge 85"
+    "decoded": "Chrome 85 [Edge]"
   },
   {
     "id": "754d4653b2659982a29b6df071793cf58b37ba74d842b73b6d623777dd709455",
@@ -264,7 +281,7 @@
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 Edg/85.0.564.68"
     ],
     "time": "10/3/2020, 6:14:02 AM",
-    "decoded": "Edge 85"
+    "decoded": "Chrome 85 [Edge]"
   },
   {
     "id": "381a42c10874200cbb4158311db977abba54f404de0fed0464f1f856cd113037",
@@ -450,7 +467,7 @@
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36"
     ],
     "time": "10/2/2020, 12:50:56 AM",
-    "decoded": "Brave 85"
+    "decoded": "Chrome 85 [Brave]"
   },
   {
     "id": "426300eb3654987988da3d36e65fed0a6eca001457efbda1733e30da717aa2e4",

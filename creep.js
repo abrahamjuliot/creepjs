@@ -939,12 +939,15 @@
 			}	
 		})
 	}
-	
+
 	searchLies(Node, {
-		constructor: !0
+		constructor: !0,
+		appendChild: !0 // opera fix
 	})
 	searchLies(Element, {
-		constructor: !0
+		constructor: !0,
+		querySelector: !0, // opera fix
+		setAttribute: !0 // opera fix
 	})
 	searchLies(HTMLElement, {
 		constructor: !0,
@@ -1023,7 +1026,10 @@
 		constructor: !0
 	})
 	searchLies(Document, {
-		constructor: !0
+		constructor: !0,
+		createElement: !0, // opera fix
+		createTextNode: !0, // opera fix
+		querySelector: !0 // opera fix
 	})
 	searchLies(String, {
 		constructor: !0,
