@@ -1916,7 +1916,7 @@
 					<div class="ellipsis">system: ${decryptKnown(system.$hash)}</div>
 					<div>engine: ${
 						prototypeName == 'CSS2Properties' ? 'Gecko' :
-						prototypeName == 'CSS2PropertiesPrototype' ? 'Gecko | Goanna' :
+						prototypeName == 'CSS2PropertiesPrototype' ? 'Gecko (like Goanna)' :
 						prototypeName == 'MSCSSPropertiesPrototype' ? 'Trident' :
 						prototypeName == 'CSSStyleDeclaration' ? 'Blink' :
 						prototypeName == 'CSSStyleDeclarationPrototype' ? 'Webkit' :
