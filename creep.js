@@ -812,7 +812,7 @@
 		const report = useragentData.filter(report => report.id == hash)[0]
 		if (report && report.decoded) {
 			const { uaSystem, decoded } = report
-			return `${decoded} (${hashMini(hash)}${!uaSystem.length || uaSystem.length > 1 ? '' : `, like ${uaSystem[0]}`})`
+			return `${decoded} (${hashMini(hash)}${!uaSystem.length ? '' : `; ${uaSystem.join('|')}`})`
 		}
 		else {
 			return 'unknown'
@@ -1649,7 +1649,7 @@
 				<div>
 					<strong>HTMLIFrameElement.contentWindow</strong>
 					<div class="ellipsis">hash: ${$hash}</div>
-					<div>browser: ${decryptKnown($hash)}</div>
+					<div class="ellipsis">browser: ${decryptKnown($hash)}</div>
 					<div>keys (${count(keys)}): ${keys && keys.length ? modal(id, keys.join(', ')) : note.blocked}</div>
 					<div>moz: ${''+moz}</div>
 					<div>webkit: ${''+webkit}</div>
@@ -1685,7 +1685,7 @@
 				<div>
 					<strong>HTMLElement</strong>
 					<div class="ellipsis">hash: ${$hash}</div>
-					<div>browser: ${decryptKnown($hash)}</div>
+					<div class="ellipsis">browser: ${decryptKnown($hash)}</div>
 					<div>keys (${count(keys)}): ${keys && keys.length ? modal(elId, keys.join(', ')) : note.blocked}</div>
 				</div>
 				`)
@@ -1913,7 +1913,7 @@
 				<div>
 					<strong>CSSStyleDeclaration</strong>
 					<div class="ellipsis">hash: ${$hash}</div>
-					<div>system: ${decryptKnown(system.$hash)}</div>
+					<div class="ellipsis">system: ${decryptKnown(system.$hash)}</div>
 					<div>engine: ${
 						prototypeName == 'CSS2Properties' ? 'Gecko' :
 						prototypeName == 'CSS2PropertiesPrototype' ? 'Gecko | Goanna' :
@@ -1922,7 +1922,7 @@
 						prototypeName == 'CSSStyleDeclarationPrototype' ? 'Webkit' :
 						'unknown'
 					}</div>
-					<div>browser: ${decryptKnown(computedStyle.$hash)}</div>
+					<div class="ellipsis">browser: ${decryptKnown(computedStyle.$hash)}</div>
 					<div>prototype: ${prototypeName}</div>
 					${
 						Object.keys(data).map(key => {
@@ -2877,7 +2877,7 @@
 					<div>results: ${
 						modal(id, header+results.join('<br>'))
 					}
-					<div>js implementation: ${decryptKnown($hash)}</div>
+					<div class="ellipsis">js implementation: ${decryptKnown($hash)}</div>
 				</div>
 				`)
 				return
@@ -2930,7 +2930,7 @@
 					<strong>Error</strong>
 					<div class="ellipsis">hash: ${$hash}</div>
 					<div>results: ${modal(id, results.join('<br>'))}
-					<div>js engine: ${decryptKnown($hash)}</div>
+					<div class="ellipsis">js engine: ${decryptKnown($hash)}</div>
 				</div>
 				`)
 				return
