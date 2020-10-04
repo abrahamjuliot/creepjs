@@ -1,4 +1,5 @@
 (async function() {
+	'use strict';
 	// Detect Browser
 	const isChrome = 'chrome' in window
 	const isBrave = 'brave' in navigator
@@ -1356,7 +1357,7 @@
 					lieProps['Navigator.mimeTypes']
 				)
 
-				contentWindowNavigator = contentWindow ? contentWindow.navigator : navigator
+				const contentWindowNavigator = contentWindow ? contentWindow.navigator : navigator
 				const navigatorPrototype = attempt(() => Navigator.prototype)
 				const detectLies = (name, value) => {
 					const workerScopeValue = caniuse(() => workerScope, [name])
