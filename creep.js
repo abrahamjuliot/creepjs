@@ -1480,9 +1480,6 @@
 						const navigatorHardwareConcurrency = navigator.hardwareConcurrency
 						detectLies('hardwareConcurrency', navigatorHardwareConcurrency)
 						trustInteger('hardwareConcurrency - invalid return type', navigatorHardwareConcurrency)
-						if (navigatorHardwareConcurrency != -1 && navigatorHardwareConcurrency != 1 && navigatorHardwareConcurrency % 2 != 0) {
-							sendToTrash('hardwareConcurrency', `${navigatorHardwareConcurrency} is not within set [-1, 1, even]`)
-						}
 						if (hardwareConcurrency != navigatorHardwareConcurrency) {
 							sendToTrash('hardwareConcurrency', `[${navigatorHardwareConcurrency}] does not match iframe`)
 						}
