@@ -63,11 +63,12 @@ import { getWorkerScope } from './modules/worker.js'
 			trustInteger,
 			// lies
 			documentLie,
-			lieProps: lieProps().props,
+			lieProps: lieProps.getProps(),
 			// collections
 			errorsCaptured,
 			trashBin,
 			lieRecords,
+			// nested contentWindow
 			contentWindow
 		}
 	}

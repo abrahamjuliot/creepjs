@@ -678,10 +678,10 @@ const intlConstructors = {
 	'RelativeTimeFormat': !0
 }
 
-const lieProps = () => {
+const createLieProps = () => {
 	const props = {}
   	return {
-		props,
+		getProps: () => props,
 		searchLies: (obj, ignoreProps, { logToConsole = false, proto = null } = {}) => {
 			if (!obj) {
 				return
@@ -734,7 +734,8 @@ const lieProps = () => {
 	}
 }
 
-const { searchLies } = lieProps()
+const lieProps = createLieProps()
+const { searchLies } = lieProps
 
 searchLies(Node, {
 	constructor: !0,
