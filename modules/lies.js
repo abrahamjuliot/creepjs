@@ -838,27 +838,11 @@ const getLies = imports => {
 
 	const {
 		require: {
-			isChrome, //cwin nest
-			isFirefox, //cwin nest, webrtc, newwork, screen, media
-			getOS, // wrker, cloud nave
-			instanceId,
 			hashMini,
 			hashify,
 			patch,
 			html,
-			note,
-			count, // nav, ver, ver, voice, media, webgl, font
-			modal, // nav, ver, ver, css, voices, gl, math, err, time, rect, audio, fonts, trash, lies, errors
-			decryptKnown, // ver, ver, css, math, errors
-			captureError,
-			attempt,
-			caniuse, // bit, gl, time, audio
-			sendToTrash, // nav, scrn, gl, audio
-			proxyBehavior, // gl
-			gibberish, // nav
-			trustInteger, // nav, scrn
-			documentLie, // nav, math, time, rect, audio
-			lieProps, // nav, screen, canvas x3, audio, rect, math, time
+			modal,
 			lieRecords
 		}
 	} = imports
