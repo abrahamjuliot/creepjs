@@ -1,5 +1,5 @@
 export const decrypt = async ({ require: [ hashMini ] }) => {
-	const useragentResponse = await fetch('./useragent.json').catch(error => console.error(error))
+	const useragentResponse = await fetch('../useragent.json').catch(error => console.error(error))
 	const useragentData = await useragentResponse.json().catch(error => console.error(error))
 	
 	return hash => {

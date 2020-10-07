@@ -116,7 +116,7 @@
 	};
 
 	const decrypt = async ({ require: [ hashMini ] }) => {
-		const useragentResponse = await fetch('./useragent.json').catch(error => console.error(error));
+		const useragentResponse = await fetch('../useragent.json').catch(error => console.error(error));
 		const useragentData = await useragentResponse.json().catch(error => console.error(error));
 		
 		return hash => {
@@ -4419,8 +4419,7 @@
 			`/?distrust=${hasLied}&errors=${fp.consoleErrors.$hash}&math=${fp.maths.$hash}&html=${fp.htmlElementVersion.$hash}&win=${fp.iframeContentWindowVersion.$hash}&style=${fp.cssStyleDeclarationVersion.getComputedStyle.$hash}&system=${fp.cssStyleDeclarationVersion.system.$hash}&ua=${fp.navigator.userAgent}&uaSystem=${fp.navigator.system}`,
 			{ method: 'POST' }
 		)
-		.then(response => console.log('useragent post success') )
-		.catch(error => console.log('useragent post failed') );
+		.catch(error => console.log('[useragent not captured]'));
 
 		// fetch data from server
 		const id = 'creep-browser';
