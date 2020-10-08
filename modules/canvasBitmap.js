@@ -44,7 +44,7 @@ export const getCanvasBitmapRenderer = imports => {
 					const $hash = await hashify(dataURI)
 					const response = { dataURI, lied, $hash }
 					resolve(response)
-					patchDom(lied, response)
+					return patchDom(lied, response)
 				}
 			}))	
 		}

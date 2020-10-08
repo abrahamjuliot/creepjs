@@ -127,7 +127,7 @@ export const getWorkerScope = imports => {
 				const $hash = await hashify(data)
 				resolve({ ...data, $hash })
 				const el = document.getElementById('creep-worker-scope')
-				patch(el, html`
+				return patch(el, html`
 				<div>
 					<strong>WorkerGlobalScope</strong>
 					<div class="ellipsis">hash: ${$hash}</div>
@@ -142,7 +142,6 @@ export const getWorkerScope = imports => {
 					<div class="ellipsis">canvas 2d: ${!!data.canvas2d.dataURI ? data.canvas2d.$hash : note.unsupported}</div>
 				</div>
 				`)
-				return
 			}, false)
 		}
 		catch (error) {

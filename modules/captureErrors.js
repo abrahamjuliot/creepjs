@@ -116,7 +116,7 @@ const getCapturedErrors = imports => {
 		resolve({data, $hash })
 		const id = 'creep-captured-errors'
 		const el = document.getElementById(id)
-		patch(el, html`
+		return patch(el, html`
 		<div class="${len ? 'errors': ''}">
 			<strong>Errors Captured</strong>
 			<div class="ellipsis">hash: ${$hash}</div>
@@ -125,7 +125,6 @@ const getCapturedErrors = imports => {
 			}</div>
 		</div>
 		`)
-		return
 	})
 }
 

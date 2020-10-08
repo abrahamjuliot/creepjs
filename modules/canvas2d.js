@@ -39,8 +39,7 @@ export const getCanvas2d = imports => {
 			const $hash = await hashify(dataURI)
 			const response = { dataURI, lied, $hash }
 			resolve(response)
-			patchDom(lied, response)
-			return
+			return patchDom(lied, response)
 		}
 		catch (error) {
 			captureError(error)

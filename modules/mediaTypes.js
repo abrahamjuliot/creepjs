@@ -10,7 +10,6 @@ export const getMediaTypes = imports => {
 			hashify,
 			patch,
 			html,
-			note,
 			modal,
 			captureError
 		}
@@ -48,7 +47,7 @@ export const getMediaTypes = imports => {
 				return `${audioPlayType == 'probably' ? '[PB]' : audioPlayType == 'maybe' ? '[MB]': '[--]'}${videoPlayType == 'probably' ? '[PB]' : videoPlayType == 'maybe' ? '[MB]': '[--]'}${mediaSource ? '[TR]' : '[--]'}${mediaRecorder ? '[TR]' : '[--]'}: ${mimeType}
 				`
 			})
-			patch(el, html`
+			return patch(el, html`
 			<div id="creep-media-types">
 				<strong>HTMLMediaElement/MediaSource</strong>
 				<div class="ellipsis">hash: ${$hash}</div>
@@ -57,7 +56,6 @@ export const getMediaTypes = imports => {
 				}</div>
 			</div>
 			`)
-			return
 		}
 		catch (error) {
 			captureError(error)

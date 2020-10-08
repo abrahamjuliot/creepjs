@@ -10,7 +10,6 @@ export const getNavigator = (imports, workerScope) => {
 			note,
 			count,
 			modal,
-			decryptKnown,
 			captureError,
 			attempt,
 			caniuse,
@@ -256,7 +255,7 @@ export const getNavigator = (imports, workerScope) => {
 				[undefined]: true,
 				['']: true
 			}
-			patch(el, html`
+			return patch(el, html`
 			<div>
 				<strong>Navigator</strong>
 				<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
@@ -300,7 +299,6 @@ export const getNavigator = (imports, workerScope) => {
 				<div>properties (${count(properties)}): ${modal(`${id}-properties`, properties.join(', '))}</div>
 			</div>
 			`)
-			return
 		}
 		catch (error) {
 			captureError(error)

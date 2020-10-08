@@ -867,7 +867,7 @@ const getLies = imports => {
 		resolve({data, $hash })
 		const id = 'creep-lies'
 		const el = document.getElementById(id)
-		patch(el, html`
+		return patch(el, html`
 		<div class="${totalLies ? 'lies': ''}">
 			<strong>Lies Unmasked</strong>
 			<div class="ellipsis">hash: ${$hash}</div>
@@ -891,7 +891,6 @@ const getLies = imports => {
 			}</div>
 		</div>
 		`)
-		return
 	})
 }
 

@@ -25,7 +25,7 @@ export const getIframeContentWindowVersion = imports => {
 			resolve({ ...data, $hash })
 			const id = 'creep-iframe-content-window-version'
 			const el = document.getElementById(id)
-			patch(el, html`
+			return patch(el, html`
 			<div>
 				<strong>HTMLIFrameElement.contentWindow</strong>
 				<div class="ellipsis">hash: ${$hash}</div>
@@ -35,7 +35,6 @@ export const getIframeContentWindowVersion = imports => {
 				<div>webkit: ${''+webkit}</div>
 				<div>apple: ${''+apple}</div>
 			`)
-			return
 		}
 		catch (error) {
 			captureError(error)

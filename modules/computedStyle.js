@@ -222,7 +222,7 @@ export const getCSSStyleDeclarationVersion = imports => {
 			const id = 'creep-css-style-declaration-version'
 			const el = document.getElementById(id)
 			const { prototypeName } = htmlElementStyle
-			patch(el, html`
+			return patch(el, html`
 			<div>
 				<strong>CSSStyleDeclaration</strong>
 				<div class="ellipsis">hash: ${$hash}</div>
@@ -276,7 +276,6 @@ export const getCSSStyleDeclarationVersion = imports => {
 				}</div>
 			</div>
 			`)
-			return
 		}
 		catch (error) {
 			captureError(error)

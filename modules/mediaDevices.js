@@ -32,14 +32,13 @@ export const getMediaDevices = imports => {
 			const $hash = await hashify(mediaDevices)
 			resolve({ mediaDevices, $hash })
 			const el = document.getElementById('creep-media-devices')
-			patch(el, html`
+			return patch(el, html`
 			<div>
 				<strong>MediaDevicesInfo</strong>
 				<div class="ellipsis">hash: ${$hash}</div>
 				<div>devices (${count(mediaDevices)}): ${mediaDevices ? mediaDevices.map(device => device.kind).join(', ') : note.blocked}</div>
 			</div>
 			`)
-			return
 		}
 		catch (error) {
 			captureError(error)

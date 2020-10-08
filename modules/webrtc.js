@@ -82,7 +82,7 @@ export const getWebRTCData = (imports, cloudflare) => {
 					const $hash = await hashify(data)
 					resolve({ ...data, $hash })
 					const el = document.getElementById('creep-webrtc')
-					patch(el, html`
+					return patch(el, html`
 					<div>
 						<strong>RTCPeerConnection</strong>
 						<div class="ellipsis">hash: ${$hash}</div>
@@ -96,7 +96,6 @@ export const getWebRTCData = (imports, cloudflare) => {
 						}
 					</div>
 					`)
-					return
 				}
 			}
 			setTimeout(() => !success && resolve(undefined), 1000)

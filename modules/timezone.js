@@ -265,7 +265,7 @@ export const getTimezone = imports => {
 			resolve({...data, $hash })
 			const id = 'creep-timezone'
 			const el = document.getElementById(id)
-			patch(el, html`
+			return patch(el, html`
 			<div>
 				<strong>Date/Intl/Keyboard</strong>
 				<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
@@ -295,7 +295,6 @@ export const getTimezone = imports => {
 				}</div>
 			</div>
 			`)
-			return
 		}
 		catch (error) {
 			captureError(error)

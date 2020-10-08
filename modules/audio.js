@@ -125,7 +125,7 @@ export const getOfflineAudioContext = imports => {
 						resolve({...response, $hash })
 						const id = 'creep-offline-audio-context'
 						const el = document.getElementById(id)
-						patch(el, html`
+						return patch(el, html`
 						<div>
 							<strong>OfflineAudioContext</strong>
 							<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
@@ -137,7 +137,6 @@ export const getOfflineAudioContext = imports => {
 							}</div>
 						</div>
 						`)
-						return
 					}
 					catch (error) {
 						captureError(error)

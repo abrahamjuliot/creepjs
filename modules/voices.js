@@ -27,7 +27,7 @@ export const getVoices = imports => {
 				const id = 'creep-voices'
 				const el = document.getElementById(id)
 				const voiceList = voices.map(voice => `${voice.name} (${voice.lang})`)
-				patch(el, html`
+				return patch(el, html`
 				<div>
 					<strong>SpeechSynthesis</strong>
 					<div class="ellipsis">hash: ${$hash}</div>
@@ -38,7 +38,6 @@ export const getVoices = imports => {
 					<div>android: ${''+check.android}</div>
 				</div>
 				`)
-				return
 			}
 			if (!('speechSynthesis' in window)) {
 				return resolve(undefined)

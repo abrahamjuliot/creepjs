@@ -218,7 +218,7 @@ export const getMaths = imports => {
 				const { result, chrome, firefox, torBrowser, safari } = value
 				return `${chrome ? '[CR]' : '[--]'}${firefox ? '[FF]' : '[--]'}${torBrowser ? '[TB]' : '[--]'}${safari ? '[SF]' : '[--]'} ${key} => ${result}`
 			})
-			patch(el, html`
+			return patch(el, html`
 			<div>
 				<strong>Math</strong>
 				<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
@@ -228,7 +228,6 @@ export const getMaths = imports => {
 				<div class="ellipsis">js implementation: ${decryptKnown($hash)}</div>
 			</div>
 			`)
-			return
 		}
 		catch (error) {
 			captureError(error)

@@ -260,20 +260,7 @@ export const getCanvasWebgl = imports => {
 			const webglSpecsKeys = webglSpecs ? Object.keys(webglSpecs) : []
 			const webgl2SpecsKeys = webgl2Specs ? Object.keys(webgl2Specs) : []
 			
-			const detectParameterLie = (obj, keys, version, id) => {
-				if (!obj || !keys.length) {
-					return `<div>${version} parameters (0): ${note.blocked}</div>`
-				}
-				id = `${id}-p-${version}`
-				return `
-				<div>${version} parameters (${lied ? '0' : count(keys)}): ${
-					lied ? note.lied :
-					modal(id, keys.map(key => `${key}: ${obj[key]}`).join('<br>'))
-				}</div>
-				`
-			}
-			
-			patch(el, html`
+			return patch(el, html`
 			<div>
 				<strong>WebGLRenderingContext</strong>
 				<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
@@ -318,7 +305,6 @@ export const getCanvasWebgl = imports => {
 				<div>matching data URI: ${''+data.matchingDataURI}</div>
 			</div>
 			`)
-			return
 		}
 		catch (error) {
 			captureError(error)

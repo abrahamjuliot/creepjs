@@ -66,7 +66,7 @@ const getTrash = imports => {
 		resolve({ trashBin: bin, $hash })
 		const id = 'creep-trash'
 		const el = document.getElementById(id)
-		patch(el, html`
+		return patch(el, html`
 		<div class="${len ? 'trash': ''}">
 			<strong>Trash Bin</strong>
 			<div class="ellipsis">hash: ${$hash}</div>
@@ -75,7 +75,6 @@ const getTrash = imports => {
 			}</div>
 		</div>
 		`)
-		return
 	})
 }
 

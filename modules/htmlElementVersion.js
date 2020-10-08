@@ -29,7 +29,7 @@ export const getHTMLElementVersion = imports => {
 			resolve({ keys, $hash })
 			const elId = 'creep-html-element-version'
 			const el = document.getElementById(elId)
-			patch(el, html`
+			return patch(el, html`
 			<div>
 				<strong>HTMLElement</strong>
 				<div class="ellipsis">hash: ${$hash}</div>
@@ -37,7 +37,6 @@ export const getHTMLElementVersion = imports => {
 				<div>keys (${count(keys)}): ${keys && keys.length ? modal(elId, keys.join(', ')) : note.blocked}</div>
 			</div>
 			`)
-			return
 		}
 		catch (error) {
 			captureError(error)

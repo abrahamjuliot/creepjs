@@ -237,7 +237,7 @@ export const getClientRects = imports => {
 				console.error(error.message)
 			})
 			resolve({emojiRects, emojiHash, clientRects, clientHash, lied, $hash })
-			patch(templateEl, html`
+			return patch(templateEl, html`
 			<div>
 				<strong>DOMRect</strong>
 				<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
@@ -251,8 +251,6 @@ export const getClientRects = imports => {
 				}</div>
 			</div>
 			`)
-			return
-			
 		}
 		catch (error) {
 			captureError(error)

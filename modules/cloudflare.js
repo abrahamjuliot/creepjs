@@ -28,7 +28,7 @@ export const getCloudflare = imports => {
 			const $hash = await hashify(data)
 			resolve({ ...data, $hash })
 			const el = document.getElementById('creep-cloudflare')
-			patch(el, html`
+			return patch(el, html`
 			<div>
 				<strong>Cloudflare</strong>
 				<div class="ellipsis">hash: ${$hash}</div>
@@ -47,7 +47,6 @@ export const getCloudflare = imports => {
 				}
 			</div>
 			`)
-			return
 		}
 		catch (error) {
 			captureError(error, 'cloudflare.com: failed or client blocked')

@@ -45,7 +45,7 @@ export const getConsoleErrors = imports => {
 				const value = errors[key]
 				return `${+key+1}: ${value}`
 			})
-			patch(el, html`
+			return patch(el, html`
 			<div>
 				<strong>Error</strong>
 				<div class="ellipsis">hash: ${$hash}</div>
@@ -53,7 +53,6 @@ export const getConsoleErrors = imports => {
 				<div class="ellipsis">js engine: ${decryptKnown($hash)}</div>
 			</div>
 			`)
-			return
 		}
 		catch (error) {
 			captureError(error)

@@ -143,7 +143,7 @@ export const getScreen = imports => {
 			const $hash = await hashify(data)
 			resolve({ ...data, $hash })
 			const el = document.getElementById('creep-screen')
-			patch(el, html`
+			return patch(el, html`
 			<div>
 				<strong>Screen</strong>
 				<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
@@ -155,7 +155,6 @@ export const getScreen = imports => {
 				}
 			</div>
 			`)
-			return
 		}
 		catch (error) {
 			captureError(error)
