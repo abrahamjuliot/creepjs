@@ -116,6 +116,7 @@ import { getWorkerScope } from './modules/worker.js'
 		]).catch(error => {
 			console.error(error.message)
 		})
+		
 		const webRTCDataComputed = await getWebRTCData(imports, cloudflareComputed)
 		const navigatorComputed = await getNavigator(imports, workerScopeComputed)
 		const [

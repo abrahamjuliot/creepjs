@@ -181,6 +181,7 @@ app.post('/', (req, res) => {
 			if (updated) {
 				data.sort((a, b) => new Date(b.time) - new Date(a.time))
 				const json = JSON.stringify(data, null, 2)
+
 				return fs.writeFile('useragent.json', json, err => {
 					if (err) { throw err }
 					console.log(`updated ${log.join(', ')}`)

@@ -3,6 +3,7 @@
 // https://stackoverflow.com/a/10372280
 // https://stackoverflow.com/a/9239272
 const newWorker = (fn, { require: [ isFirefox, contentWindow, caniuse, captureError ] }) => {
+	
 	const response = `(${''+fn})(${''+caniuse})`
 	try {
 		const blobURL = URL.createObjectURL(new Blob(
@@ -120,6 +121,7 @@ export const getWorkerScope = imports => {
 			if (!worker) {
 				return resolve(undefined)
 			}
+			
 			worker.addEventListener('message', async event => {
 				const { data, data: { canvas2d } } = event
 				data.system = getOS(data.userAgent)
