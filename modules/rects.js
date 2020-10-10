@@ -25,17 +25,15 @@ export const getClientRects = imports => {
 			const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
 			let lied = lieProps['Element.getClientRects'] // detect lies
 			const rectsId = `${instanceId}-client-rects-div`
-			const divElement = document.createElement('div')
-			divElement.setAttribute('id', rectsId)
+			const divRendered = document.createElement('div')
 			let iframeRendered, doc = document
 			try {
 				// create and get rendered iframe
 				const id = `${instanceId}-client-rects-iframe`
-				const iframeElement = document.createElement('iframe')
-				iframeElement.setAttribute('id', id)
-				iframeElement.setAttribute('style', 'visibility: hidden; height: 0')
-				document.body.appendChild(iframeElement)
-				iframeRendered = document.getElementById(id)
+				const iframeRendered = document.createElement('iframe')
+				iframeRendered.setAttribute('id', id)
+				iframeRendered.setAttribute('style', 'visibility: hidden; height: 0')
+				document.body.appendChild(iframeRendered)
 
 				// create and get rendered div in iframe
 				doc = iframeRendered.contentDocument
@@ -44,8 +42,7 @@ export const getClientRects = imports => {
 				captureError(error, 'client blocked getClientRects iframe')
 			}
 
-			doc.body.appendChild(divElement)
-			const divRendered = doc.getElementById(rectsId)
+			doc.body.appendChild(divRendered)
 			
 			// patch div
 			patch(divRendered, html`

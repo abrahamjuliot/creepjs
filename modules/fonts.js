@@ -10,12 +10,43 @@ export const getFonts = (imports, fonts) => {
 			note,
 			count,
 			modal,
-			captureError
+			captureError,
+			instanceId,
+			lieProps
 		}
 	} = imports
 
 	return new Promise(async resolve => {
 		try {
+
+			let lied = (
+				lieProps['Element.offsetWidth'],
+				lieProps['Element.offsetHeight'],
+				lieProps['HTMLElement.offsetWidth'],
+				lieProps['HTMLElement.offsetHeight']
+			)
+
+			const divRendered = document.createElement('div')
+			const divStageRendered = document.createElement('div')
+			divStageRendered.setAttribute('id', 'font-detector-stage')
+			let iframeRendered, doc = document
+			try {
+				// create and get rendered iframe
+				const id = `${instanceId}-fonts-iframe`
+				const iframeRendered = document.createElement('iframe')
+				iframeRendered.setAttribute('id', id)
+				iframeRendered.setAttribute('style', 'visibility: hidden; height: 0')
+				document.body.appendChild(iframeRendered)
+
+				// create and get rendered div in iframe
+				doc = iframeRendered.contentDocument
+			}
+			catch (error) {
+				captureError(error, 'client blocked getClientRects iframe')
+			}
+			doc.body.appendChild(divRendered)
+			divRendered.appendChild(divStageRendered)
+
 			const toInt = val => ~~val // protect against decimal noise
 			const baseFonts = ['monospace', 'sans-serif', 'serif']
 			const text = 'mmmmmmmmmmlli'
@@ -45,8 +76,8 @@ export const getFonts = (imports, fonts) => {
 				return `<span class="system-font" data-font="${font}" data-basefont="${basefont}" style="font-family: ${`'${font}', ${basefont}`}!important">${text}</span>`
 			}
 			
-			const fontsElem = document.getElementById('font-detector')
-			const stageElem = document.getElementById('font-detector-stage')
+			const fontsElem = divRendered //document.getElementById('font-detector')
+			const stageElem = divStageRendered //document.getElementById('font-detector-stage')
 			const detectedFonts = {}
 			patch(stageElem, html`
 				<div id="font-detector-test">
@@ -65,9 +96,9 @@ export const getFonts = (imports, fonts) => {
 				</div>
 				`,
 				() => {
-					const testElem = document.getElementById('font-detector-test')
-					const basefontElems = document.querySelectorAll('#font-detector-test .basefont')
-					const systemFontElems = document.querySelectorAll('#font-detector-test .system-font')
+					const testElem = doc.getElementById('font-detector-test')
+					const basefontElems = doc.querySelectorAll('#font-detector-test .basefont')
+					const systemFontElems = doc.querySelectorAll('#font-detector-test .system-font')
 
 					// Compute fingerprint
 					;[...basefontElems].forEach(span => {
