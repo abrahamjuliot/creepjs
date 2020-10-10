@@ -182,9 +182,14 @@ app.post('/', (req, res) => {
 				data.sort((a, b) => new Date(b.time) - new Date(a.time))
 				const json = JSON.stringify(data, null, 2)
 
+				fs.writeFile('./modules/useragent.js', `export const userAgentData = ${json}`, err => {
+					if (err) { throw err }
+					return console.log(`[updated useragent.js]`)
+				})
+
 				return fs.writeFile('useragent.json', json, err => {
 					if (err) { throw err }
-					console.log(`updated ${log.join(', ')}`)
+					return console.log(`updated ${log.join(', ')}`)
 				})
 			}
 			return (

@@ -1,6 +1,7 @@
 import { isChrome, isBrave, isFirefox, getOS } from './modules/helpers.js'
 import { patch, html, note, count, modal } from './modules/html.js'
 import { hashMini, instanceId, hashify } from './modules/crypto.js'
+import { userAgentData } from './modules/useragent.js'
 import { decrypt } from './modules/decrypt.js'
 
 import { captureError, attempt, caniuse, timer, errorsCaptured, getCapturedErrors } from './modules/captureErrors.js'
@@ -28,62 +29,60 @@ import { getVoices } from './modules/voices.js'
 import { getWebRTCData } from './modules/webrtc.js'
 import { getWorkerScope } from './modules/worker.js'
 
-(async () => {
+const imports = {
+	require: {
+		// helpers
+		isChrome,
+		isBrave,
+		isFirefox,
+		getOS,
+		// crypto
+		instanceId,
+		hashMini,
+		hashify,
+		// html
+		patch,
+		html,
+		note,
+		count,
+		modal,
+		// decrypt
+		decryptKnown: decrypt({ require: [ userAgentData, hashMini ] }),
+		// captureErrors
+		captureError,
+		attempt,
+		caniuse,
+		// trash
+		sendToTrash,
+		proxyBehavior,
+		gibberish,
+		trustInteger,
+		// lies
+		documentLie,
+		lieProps: lieProps.getProps(),
+		// collections
+		errorsCaptured,
+		trashBin,
+		lieRecords,
+		// nested contentWindow
+		contentWindow
+	}
+}
+
+;(async imports => {
 	'use strict';
 
-	const decryptKnown = await decrypt({ require: [ hashMini ] })
-
-	const imports = {
-		require: {
-			// helpers
-			isChrome,
-			isBrave,
-			isFirefox,
-			getOS,
-			// crypto
-			instanceId,
-			hashMini,
-			hashify,
-			// html
-			patch,
-			html,
-			note,
-			count,
-			modal,
-			// decrypt
-			decryptKnown,
-			// captureErrors
-			captureError,
-			attempt,
-			caniuse,
-			// trash
-			sendToTrash,
-			proxyBehavior,
-			gibberish,
-			trustInteger,
-			// lies
-			documentLie,
-			lieProps: lieProps.getProps(),
-			// collections
-			errorsCaptured,
-			trashBin,
-			lieRecords,
-			// nested contentWindow
-			contentWindow
-		}
-	}
+	//const decryptKnown = await decrypt({ require: [ hashMini ] })
 
 	const fingerprint = async () => {
 		const timeStart = timer()
 		const [
-			workerScopeComputed,
 			cloudflareComputed,
 			iframeContentWindowVersionComputed,
 			htmlElementVersionComputed,
 			cssStyleDeclarationVersionComputed,
 			screenComputed,
 			voicesComputed,
-			mediaDevicesComputed,
 			mediaTypesComputed,
 			canvas2dComputed,
 			canvasBitmapRendererComputed,
@@ -95,14 +94,12 @@ import { getWorkerScope } from './modules/worker.js'
 			offlineAudioContextComputed,
 			fontsComputed
 		] = await Promise.all([
-			getWorkerScope(imports),
 			getCloudflare(imports),
 			getIframeContentWindowVersion(imports),
 			getHTMLElementVersion(imports),
 			getCSSStyleDeclarationVersion(imports),
 			getScreen(imports),
 			getVoices(imports),
-			getMediaDevices(imports),
 			getMediaTypes(imports),
 			getCanvas2d(imports),
 			getCanvasBitmapRenderer(imports),
@@ -116,8 +113,19 @@ import { getWorkerScope } from './modules/worker.js'
 		]).catch(error => {
 			console.error(error.message)
 		})
-		
-		const webRTCDataComputed = await getWebRTCData(imports, cloudflareComputed)
+
+		const [
+			mediaDevicesComputed,
+			workerScopeComputed,
+			webRTCDataComputed
+		] = await Promise.all([
+			getMediaDevices(imports),
+			getWorkerScope(imports),
+			getWebRTCData(imports, cloudflareComputed)
+		]).catch(error => {
+			console.error(error.message)
+		})
+
 		const navigatorComputed = await getNavigator(imports, workerScopeComputed)
 		const [
 			liesComputed,
@@ -342,4 +350,4 @@ import { getWorkerScope } from './modules/worker.js'
 		<div class="time ellipsis">performance: ${timeEnd} milliseconds</div>
 	</div>
 	`)
-})()
+})(imports)
