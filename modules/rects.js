@@ -25,15 +25,17 @@ export const getClientRects = imports => {
 			const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
 			let lied = lieProps['Element.getClientRects'] // detect lies
 			const rectsId = `${instanceId}-client-rects-div`
-			const divRendered = document.createElement('div')
+			const divElement = document.createElement('div')
+			divElement.setAttribute('id', rectsId)
 			let iframeRendered, doc = document
 			try {
 				// create and get rendered iframe
 				const id = `${instanceId}-client-rects-iframe`
-				const iframeRendered = document.createElement('iframe')
-				iframeRendered.setAttribute('id', id)
-				iframeRendered.setAttribute('style', 'visibility: hidden; height: 0')
-				document.body.appendChild(iframeRendered)
+				const iframeElement = document.createElement('iframe')
+				iframeElement.setAttribute('id', id)
+				iframeElement.setAttribute('style', 'visibility: hidden; height: 0')
+				document.body.appendChild(iframeElement)
+				iframeRendered = document.getElementById(id)
 
 				// create and get rendered div in iframe
 				doc = iframeRendered.contentDocument
@@ -42,7 +44,8 @@ export const getClientRects = imports => {
 				captureError(error, 'client blocked getClientRects iframe')
 			}
 
-			doc.body.appendChild(divRendered)
+			doc.body.appendChild(divElement)
+			const divRendered = doc.getElementById(rectsId)
 			
 			// patch div
 			patch(divRendered, html`
@@ -215,12 +218,12 @@ export const getClientRects = imports => {
 			// resolve 
 			const templateId = 'creep-client-rects'
 			const templateEl = document.getElementById(templateId)
+
 			if (!!iframeRendered) {
 				iframeRendered.parentNode.removeChild(iframeRendered)
 			}
 			else {
-				const rectsDivRendered = doc.getElementById(rectsId)
-				rectsDivRendered.parentNode.removeChild(rectsDivRendered)
+				divRendered.parentNode.removeChild(divRendered)
 			}
 			const [
 				emojiHash,

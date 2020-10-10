@@ -26,25 +26,32 @@ export const getFonts = (imports, fonts) => {
 				lieProps['HTMLElement.offsetHeight']
 			)
 
-			const divRendered = document.createElement('div')
+
+			const fontsId = `${instanceId}-fonts-div`
+			const divElement = document.createElement('div')
 			const divStageRendered = document.createElement('div')
+			divElement.setAttribute('id', fontsId)
 			divStageRendered.setAttribute('id', 'font-detector-stage')
+			
 			let iframeRendered, doc = document
 			try {
 				// create and get rendered iframe
 				const id = `${instanceId}-fonts-iframe`
-				const iframeRendered = document.createElement('iframe')
-				iframeRendered.setAttribute('id', id)
-				iframeRendered.setAttribute('style', 'visibility: hidden; height: 0')
-				document.body.appendChild(iframeRendered)
+				const iframeElement = document.createElement('iframe')
+				iframeElement.setAttribute('id', id)
+				iframeElement.setAttribute('style', 'visibility: hidden; height: 0')
+				document.body.appendChild(iframeElement)
+				iframeRendered = document.getElementById(id)
 
 				// create and get rendered div in iframe
 				doc = iframeRendered.contentDocument
 			}
 			catch (error) {
-				captureError(error, 'client blocked getClientRects iframe')
+				captureError(error, 'client blocked fonts iframe')
 			}
-			doc.body.appendChild(divRendered)
+
+			doc.body.appendChild(divElement)
+			const divRendered = doc.getElementById(fontsId)
 			divRendered.appendChild(divStageRendered)
 
 			const toInt = val => ~~val // protect against decimal noise
@@ -118,7 +125,13 @@ export const getFonts = (imports, fonts) => {
 						}
 						return
 					})
-					return fontsElem.removeChild(testElem)
+
+					if (!!iframeRendered) {
+						return iframeRendered.parentNode.removeChild(iframeRendered)
+					}
+					else {
+						return divRendered.parentNode.removeChild(divRendered)
+					}
 				}
 			)
 			const fontList = Object.keys(detectedFonts)

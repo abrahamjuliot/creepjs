@@ -17,14 +17,15 @@ export const getHTMLElementVersion = imports => {
 	return new Promise(async resolve => {
 		try {
 			const id = `${instanceId}-html-element-version-test`
-			const element = document.createElement('div')
-			element.setAttribute('id', id)
-			document.body.appendChild(element) 
-			const htmlElement = document.getElementById(id)
+			const htmlElement = document.createElement('div')
+			htmlElement.setAttribute('id', id)
+			document.body.appendChild(htmlElement) 
+			const htmlElementRendered = document.getElementById(id)
 			const keys = []
-			for (const key in htmlElement) {
+			for (const key in htmlElementRendered) {
 				keys.push(key)
 			}
+			htmlElementRendered.parentNode.removeChild(htmlElementRendered)
 			const $hash = await hashify(keys)
 			resolve({ keys, $hash })
 			const elId = 'creep-html-element-version'
