@@ -262,10 +262,10 @@ export const getNavigator = (imports, workerScope) => {
 				<div class="flex-grid">
 					<div class="col-six">
 						<div>deviceMemory: ${!blocked[data.deviceMemory] ? data.deviceMemory : note.blocked}</div>
-						<div>doNotTrack: ${data.doNotTrack}</div>
+						<div>doNotTrack: ${''+data.doNotTrack}</div>
 						<div>hardwareConcurrency: ${!blocked[data.hardwareConcurrency] ? data.hardwareConcurrency : note.blocked}</div>
 						<div>language: ${!blocked[data.language] ? data.language : note.blocked}</div>
-						<div>maxTouchPoints: ${!blocked[data.maxTouchPoints] ? data.maxTouchPoints : note.blocked}</div>
+						<div>maxTouchPoints: ${!blocked[data.maxTouchPoints] ? ''+data.maxTouchPoints : note.blocked}</div>
 						<div>vendor: ${!blocked[data.vendor] ? data.vendor : note.blocked}</div>
 						<div>plugins (${count(plugins)}): ${
 							!blocked[''+plugins] ?
