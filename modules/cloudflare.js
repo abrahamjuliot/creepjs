@@ -3,6 +3,7 @@ export const getCloudflare = imports => {
 	const {
 		require: {
 			getOS,
+			hashMini,
 			hashify,
 			patch,
 			html,
@@ -29,9 +30,8 @@ export const getCloudflare = imports => {
 			resolve({ ...data, $hash })
 			const el = document.getElementById('creep-cloudflare')
 			return patch(el, html`
-			<div>
-				<strong>Cloudflare</strong>
-				<div class="ellipsis">hash: ${$hash}</div>
+			<div class="col-six">
+				<strong>Cloudflare</strong><span class="hash">${hashMini($hash)}</span>
 				${
 					Object.keys(data).map(key => {
 						const value = data[key]

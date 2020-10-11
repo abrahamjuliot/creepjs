@@ -4,6 +4,7 @@ export const getNavigator = (imports, workerScope) => {
 	const {
 		require: {
 			getOS,
+			hashMini,
 			hashify,
 			patch,
 			html,
@@ -257,8 +258,7 @@ export const getNavigator = (imports, workerScope) => {
 			}
 			return patch(el, html`
 			<div>
-				<strong>Navigator</strong>
-				<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
+				<strong>Navigator</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
 				${
 					Object.keys(data).map(key => {
 						const skip = [
@@ -276,7 +276,7 @@ export const getNavigator = (imports, workerScope) => {
 							!skip && !ua ? `<div>${key}: ${!blocked[value] ? value : key == 'doNotTrack' ? value : note.blocked}</div>` : 
 							!skip ? `
 								<div>${key}:</div>
-								<div class="user-agent">
+								<div class="block-text">
 									<div>${!blocked[value] ? value : note.blocked}</div>
 								</div>
 							` : ''

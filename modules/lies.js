@@ -868,9 +868,8 @@ const getLies = imports => {
 		const id = 'creep-lies'
 		const el = document.getElementById(id)
 		return patch(el, html`
-		<div class="${totalLies ? 'lies': ''}">
-			<strong>Lies Unmasked</strong>
-			<div class="ellipsis">hash: ${$hash}</div>
+		<div class="col-four${totalLies ? ' lies': ''}">
+			<strong>Lies</strong><span class="hash">${hashMini($hash)}</span>
 			<div>lies (${!totalLies ? '0' : ''+totalLies }): ${
 				totalLies ? modal(id, Object.keys(data).map(key => {
 					const { name, lieTypes: { lies, fingerprint } } = data[key]
@@ -887,7 +886,7 @@ const getLies = imports => {
 							}
 						</div>
 					`
-				}).join('')) : `<span class="none">none</span>`
+				}).join('')) : ''
 			}</div>
 		</div>
 		`)

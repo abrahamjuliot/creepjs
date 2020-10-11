@@ -2,6 +2,7 @@ export const getCanvas2d = imports => {
 	
 	const {
 		require: {
+			hashMini,
 			hashify,
 			patch,
 			html,
@@ -20,9 +21,8 @@ export const getCanvas2d = imports => {
 				const { $hash } = response
 				const el = document.getElementById('creep-canvas-2d')
 				return patch(el, html`
-				<div>
-					<strong>CanvasRenderingContext2D</strong>
-					<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
+				<div class="col-six">
+					<strong>CanvasRenderingContext2D</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
 				</div>
 				`)
 			}

@@ -13,7 +13,6 @@
 				<div id="creep-fingerprint" class="fingerprint-header">
 					<strong>Fingerprint</strong>
 					<div class="trusted-fingerprint" style="color:#fff">.</div>
-					<div>loose fingerprint:</div>
 					<div class="time">performance: 0 milliseconds</div>
 				</div>
 				<div id="creep-browser" class="visitor-loader visitor-info">
@@ -29,82 +28,106 @@
 					<div>loose fingerprints:</div>
 					<div>bot:</div>
 				</div>
-				<div id="creep-trash">
-					<strong>Trash Bin</strong>
-					<div>hash:</div>
-					<div>trash (0):</div>
+				<div class="flex-grid">
+					<div class="col-four" id="creep-trash">
+						<strong>Trash</strong>
+						<div>trash (0):</div>
+					</div>
+					<div class="col-four" id="creep-lies">
+						<strong>Lies</strong>
+						<div>lies (0):</div>
+					</div>
+					<div class="col-four" id="creep-captured-errors">
+						<strong>Errors</strong>
+						<div>errors (0):</div>
+					</div>
 				</div>
-				<div id="creep-lies">
-					<strong>Lies Unmasked</strong>
-					<div>hash:</div>
-					<div>lies (0):</div>
-				</div>
-				<div id="creep-captured-errors">
-					<strong>Errors Captured</strong>
-					<div>hash:</div>
-					<div>errors (0):</div>
+				<div class="flex-grid">
+					<div class="col-six" id="creep-cloudflare">
+						<strong>Cloudflare</strong>
+						<div>ip address:</div>
+						<div>system:</div>
+						<div>ip location:</div>
+						<div>tls version:</div>
+					</div>
+					<div class="col-six" id="creep-webrtc">
+						<strong>WebRTC</strong>
+						<div>webRTC leak:</div>
+						<div>ip address:</div>
+						<div>candidate:</div>
+						<div>connection:</div>
+						<div>matching:</div>
+					</div>
 				</div>
 				<div id="creep-worker-scope">
 					<strong>WorkerGlobalScope</strong>
-					<div>hash:</div>
-					<div>timezone offset</div>
-					<div>hardwareConcurrency:</div>
-					<div>language:</div>
-					<div>platform:</div>
-					<div>webgl renderer:</div>
-					<div>webgl vendor:</div>
-					<div>system:</div>
-					<div>canvas 2d:</div>
+					<div class="flex-grid">
+						<div class="col-six">
+							<div>timezone offset:</div>
+							<div>language:</div>
+							<div>platform:</div>
+							<div>system:</div>
+							<div>userAgent:</div>
+							<div class="block-text"></div>
+						</div>
+						<div class="col-six">
+							<div>hardwareConcurrency:</div>
+							<div>js math impl:</div>
+							<div>canvas 2d:</div>
+							<div>webgl vendor:</div>
+							<div>webgl renderer:</div>
+							<div class="block-text"></div>
+						</div>
+					</div>
 				</div>
-				<div id="creep-cloudflare">
-					<strong>Cloudflare</strong>
-					<div>hash:</div>
-					<div>ip address:</div>
-					<div>system:</div>
-					<div>ip location:</div>
-					<div>tls version:</div>
+				<div class="flex-grid">
+					<div class="col-six" id="creep-media-devices">
+						<strong>Media Devices</strong>
+						<div>devices (0):</div>
+						<div class="block-text"></div>
+					</div>
+					<div class="col-six" id="creep-media-types">
+						<strong>Media Types</strong>
+						<div>results:</div>
+					</div>
 				</div>
-				<div id="creep-webrtc">
-					<strong>RTCPeerConnection</strong>
-					<div>hash:</div>
-					<div>webRTC leak:</div>
-					<div>ip address:</div>
-					<div>candidate encoding:</div>
-					<div>connection line:</div>
-					<div>matching:</div>
-				</div>
-				<div id="creep-canvas-2d">
-					<strong>CanvasRenderingContext2D</strong>
-					<div>hash:</div>
-				</div>
-				<div id="creep-canvas-bitmap-renderer">
-					<strong>ImageBitmapRenderingContext</strong>
-					<div>hash:</div>
-				</div>
-				<div id="creep-canvas-webgl">
-					<strong>WebGLRenderingContext</strong>
-						<div>hash:</div>
-						<br>
-						<div>WebGL</div>
-						<div>toDataURL:</div>
-						<div>parameters (0):</div>
-						<div>extensions (0):</div>
-						<div>renderer:</div>
-						<div>vendor:</div>
-						<br>
-						<div>WebGL2</div>
-						<div>toDataURL:</div>
-						<div>parameters (0):</div>
-						<div>extensions (0):</div>
-						<div>renderer:</div>
-						<div>vendor:</div>
-						<br>
+				<div>
+					<div id="creep-canvas-webgl">
+						<strong>WebGLRenderingContext</strong>
 						<div>matching renderer/vendor:</div>
 						<div>matching data URI:</div>
+						<div class="flex-grid">
+							<div class="col-six">
+								<strong>WebGL</strong>
+								<div>toDataURL:</div>
+								<div>parameters (0):</div>
+								<div>extensions (0):</div>
+								<div>vendor:</div>
+								<div>renderer:</div>
+								<div class="block-text"></div>
+							</div>
+							<div class="col-six">
+								<strong>WebGL2</strong>
+								<div>toDataURL:</div>
+								<div>parameters (0):</div>
+								<div>extensions (0):</div>
+								<div>vendor:</div>
+								<div>renderer:</div>
+								<div class="block-text"></div>
+							</div>
+						</div>
+					</div>
+					<div class="flex-grid">
+						<div class="col-six" id="creep-canvas-2d">
+							<strong>CanvasRenderingContext2D</strong>
+						</div>
+						<div class="col-six" id="creep-canvas-bitmap-renderer">
+							<strong>ImageBitmapRenderingContext</strong>
+						</div>
+					</div>
 				</div>
 				<div id="creep-offline-audio-context">
-					<strong>OfflineAudioContext</strong>
-					<div>hash:</div>
+					<strong>Audio</strong>
 					<div>sample:</div>
 					<div>copy:</div>
 					<div>matching:</div>
@@ -112,27 +135,13 @@
 				</div>
 				<div id="creep-client-rects">
 					<strong>DOMRect</strong>
-					<div>hash:</div>
 					<div>elements:</div>
 					<div>results:</div>
 					<div>emojis v13.0:</div>
 					<div>results:</div>
 				</div>
-				<div id="creep-maths">
-					<strong>Math</strong>
-					<div>hash:</div>
-					<div>results:</div>
-					<div>js implementation:</div>
-				</div>
-				<div id="creep-console-errors">
-					<strong>Error</strong>
-					<div>hash:</div>
-					<div>results:</div>
-					<div>js engine:</div>
-				</div>
 				<div id="creep-timezone">
-					<strong>Date/Intl/Keyboard</strong>
-					<div>hash:</div>
+					<strong>Timezone</strong>
 					<div>timezone:</div>
 					<div>timezone location:</div>
 					<div>timezone offset:</div>
@@ -145,74 +154,81 @@
 				</div>
 				<div id="creep-screen">
 					<strong>Screen</strong>
-					<div>hash:</div>
-					<div>device:</div>
-					<div>width:</div>
-					<div>outerWidth:</div>
-					<div>availWidth:</div>
-					<div>height:</div>
-					<div>outerHeight:</div>
-					<div>availHeight:</div>
-					<div>colorDepth:</div>
-					<div>pixelDepth:</div>
-				</div>
-				<div id="creep-media-devices">
-					<strong>MediaDevicesInfo</strong>
-					<div>hash:</div>
-					<div>devices (0):</div>
-				</div>
-				<div id="creep-media-types">
-					<strong>HTMLMediaElement/MediaSource</strong>
-					<div>hash:</div>
-					<div>results:</div>
-				</div>
-				<div id="creep-iframe-content-window-version">
-					<strong>HTMLIFrameElement.contentWindow</strong>
-					<div>hash:</div>
-					<div>browser:</div>
-					<div>keys (0):</div>
-					<div>moz:</div>
-					<div>webkit:</div>
-					<div>apple:</div>
-				</div>
-				<div id="creep-html-element-version">
-					<strong>HTMLElement</strong>
-					<div>hash:</div>
-					<div>browser:</div>
-					<div>keys (0):</div>
+					<div class="flex-grid">
+						<div class="col-six">
+							<div>device:</div>
+							<div>width:</div>
+							<div>outerWidth:</div>
+							<div>availWidth:</div>
+							<div>height:</div>
+							<div>outerHeight:</div>
+							<div>availHeight:</div>
+							<div>colorDepth:</div>
+							<div>pixelDepth:</div>
+						</div>
+						<div class="col-six">
+						</div>
+					</div>
 				</div>
 				<div id="creep-fonts">
-					<strong>HTMLElement (font-family)</strong>
-					<div>hash:</div>
+					<strong>Fonts</strong>
 					<div>results (0):</div>
 				</div>
-				<div id="creep-css-style-declaration-version">
-					<strong>CSSStyleDeclaration</strong>
-					<div>hash:</div>
-					<div>system:</div>
-					<div>engine:</div>
-					<div>browser: </div>
-					<div>prototype:</div>
-					<div>getComputedStyle:</div>
-					<div>HTMLElement.style:</div>
-					<div>CSSRuleList.style:</div>
-					<div>keys:</div>
-					<div>moz:</div>
-					<div>webkit:</div>
-					<div>apple:</div>
-					<div>matching:</div>
-					<div>system styles:</div>
-					<div>system styles rendered:</div>
+				<div>
+					<div id="creep-css-style-declaration-version">
+						<strong>CSSStyleDeclaration</strong>
+						<div>system:</div>
+						<div>engine:</div>
+						<div>browser: </div>
+						<div>prototype:</div>
+						<div>getComputedStyle:</div>
+						<div>HTMLElement.style:</div>
+						<div>CSSRuleList.style:</div>
+						<div>keys:</div>
+						<div>moz:</div>
+						<div>webkit:</div>
+						<div>apple:</div>
+						<div>matching:</div>
+						<div>system styles:</div>
+						<div>system styles rendered:</div>
+					</div>
+					<div class="flex-grid">
+						<div class="col-six" id="creep-maths">
+							<strong>Math</strong>
+							<div>results:</div>
+							<div>js impl:</div>
+						</div>
+						<div class="col-six" id="creep-console-errors">
+							<strong>Error</strong>
+							<div>results:</div>
+							<div>js engine:</div>
+						</div>
+					</div>
+					<div class="flex-grid">
+						<div class="col-six" id="creep-iframe-content-window-version">
+							<strong>Window</strong>
+							<div>browser:</div>
+							<div>keys (0):</div>
+							<div>moz:</div>
+							<div>webkit:</div>
+							<div>apple:</div>
+						</div>
+						<div class="col-six" id="creep-html-element-version">
+							<strong>HTMLElement</strong>
+							<div>browser:</div>
+							<div>keys (0):</div>
+						</div>
+					</div>
 				</div>
+				
 				<div id="creep-navigator">
 					<strong>Navigator</strong>
-					<div>hash:</div>
 					<div>platform:</div>
 					<div>system:</div>
 					<div>userAgent:</div>
-					<div class="user-agent"></div>
+					<div class="block-text"></div>
 					<div>appVersion:</div>
-					<div class="user-agent"></div>
+					<div class="block-text"></div>
 					<div>deviceMemory:</div>
 					<div>doNotTrack:</div>
 					<div>hardwareConcurrency:</div>
@@ -230,7 +246,6 @@
 				</div>
 				<div id="creep-voices">
 					<strong>SpeechSynthesis</strong>
-					<div>hash:</div>
 					<div>voices (0):</div>
 					<div>microsoft:</div>
 					<div>google:</div>

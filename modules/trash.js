@@ -51,6 +51,7 @@ const getTrash = imports => {
 
 	const {
 		require: {
+			hashMini,
 			hashify,
 			patch,
 			html,
@@ -58,7 +59,6 @@ const getTrash = imports => {
 			trashBin
 		}
 	} = imports
-
 	const bin = trashBin.getBin()
 	return new Promise(async resolve => {
 		const len = bin.length
@@ -67,11 +67,10 @@ const getTrash = imports => {
 		const id = 'creep-trash'
 		const el = document.getElementById(id)
 		return patch(el, html`
-		<div class="${len ? 'trash': ''}">
-			<strong>Trash Bin</strong>
-			<div class="ellipsis">hash: ${$hash}</div>
+		<div class="col-four${len ? ' trash': ''}">
+			<strong>Trash</strong><span class="hash">${hashMini($hash)}</span>
 			<div>trash (${!len ? '0' : ''+len }): ${
-				len ? modal(id, bin.map((trash,i) => `${i+1}: ${trash.name}: ${trash.value}`).join('<br>')) : `<span class="none">none</span>`
+				len ? modal(id, bin.map((trash,i) => `${i+1}: ${trash.name}: ${trash.value}`).join('<br>')) : ''
 			}</div>
 		</div>
 		`)

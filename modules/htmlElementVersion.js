@@ -3,6 +3,7 @@ export const getHTMLElementVersion = imports => {
 	const {
 		require: {
 			instanceId,
+			hashMini,
 			hashify,
 			patch,
 			html,
@@ -31,9 +32,8 @@ export const getHTMLElementVersion = imports => {
 			const elId = 'creep-html-element-version'
 			const el = document.getElementById(elId)
 			return patch(el, html`
-			<div>
-				<strong>HTMLElement</strong>
-				<div class="ellipsis">hash: ${$hash}</div>
+			<div class="col-six">
+				<strong>HTMLElement</strong><span class="hash">${hashMini($hash)}</span>
 				<div class="ellipsis">browser: ${decryptKnown($hash)}</div>
 				<div>keys (${count(keys)}): ${keys && keys.length ? modal(elId, keys.join(', ')) : note.blocked}</div>
 			</div>

@@ -4,6 +4,7 @@ export const getFonts = (imports, fonts) => {
 
 	const {
 		require: {
+			hashMini,
 			hashify,
 			patch,
 			html,
@@ -83,8 +84,7 @@ export const getFonts = (imports, fonts) => {
 				return `<span class="system-font" data-font="${font}" data-basefont="${basefont}" style="font-family: ${`'${font}', ${basefont}`}!important">${text}</span>`
 			}
 			
-			const fontsElem = divRendered //document.getElementById('font-detector')
-			const stageElem = divStageRendered //document.getElementById('font-detector-stage')
+			const stageElem = divStageRendered 
 			const detectedFonts = {}
 			patch(stageElem, html`
 				<div id="font-detector-test">
@@ -103,7 +103,6 @@ export const getFonts = (imports, fonts) => {
 				</div>
 				`,
 				() => {
-					const testElem = doc.getElementById('font-detector-test')
 					const basefontElems = doc.querySelectorAll('#font-detector-test .basefont')
 					const systemFontElems = doc.querySelectorAll('#font-detector-test .system-font')
 
@@ -142,8 +141,7 @@ export const getFonts = (imports, fonts) => {
 			const el = document.getElementById(id)
 			return patch(el, html`
 			<div>
-				<strong>HTMLElement (font-family)</strong>
-				<div class="ellipsis">hash: ${$hash}</div>
+				<strong>Fonts</strong><span class="hash">${hashMini($hash)}</span>
 				<div>results (${count(fontList)}): ${fontList && fontList.length ? modal(id, fontList.join('<br>')) : note.blocked}</div>
 			</div>
 			`)

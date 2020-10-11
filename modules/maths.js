@@ -219,13 +219,12 @@ export const getMaths = imports => {
 				return `${chrome ? '[CR]' : '[--]'}${firefox ? '[FF]' : '[--]'}${torBrowser ? '[TB]' : '[--]'}${safari ? '[SF]' : '[--]'} ${key} => ${result}`
 			})
 			return patch(el, html`
-			<div>
-				<strong>Math</strong>
-				<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
+			<div class="col-six">
+				<strong>Math</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
 				<div>results: ${
 					modal(id, header+results.join('<br>'))
 				}
-				<div class="ellipsis">js implementation: ${decryptKnown($hash)}</div>
+				<div class="ellipsis">js impl: ${decryptKnown($hash)}</div>
 			</div>
 			`)
 		}

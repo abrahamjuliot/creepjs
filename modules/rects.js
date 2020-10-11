@@ -239,13 +239,12 @@ export const getClientRects = imports => {
 			resolve({emojiRects, emojiHash, clientRects, clientHash, lied, $hash })
 			return patch(templateEl, html`
 			<div>
-				<strong>DOMRect</strong>
-				<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
-				<div class="ellipsis">elements: ${clientHash}</div>
+				<strong>DOMRect</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
+				<div class="ellipsis">elements: ${hashMini(clientHash)}</div>
 				<div>results: ${
 					modal(`${templateId}-elements`, clientRects.map(domRect => Object.keys(domRect).map(key => `<div>${key}: ${domRect[key]}</div>`).join('')).join('<br>') )
 				}</div>
-				<div class="ellipsis">emojis v13.0: ${emojiHash}</div>
+				<div class="ellipsis">emojis v13.0: ${hashMini(emojiHash)}</div>
 				<div>results: ${
 					modal(`${templateId}-emojis`, emojiRects.map(rect => rect.emoji).join('') )
 				}</div>

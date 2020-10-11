@@ -315,21 +315,21 @@ const imports = {
 					<div>persistence: ${hours} hours</div>
 					<div>has trash: ${
 						(''+hasTrash) == 'true' ?
-						`true [${hashMini(fp.trash)}]` : 
+						`true (${hashMini(fp.trash.$hash)})` : 
 						'false'
 					}</div>
 					<div>has lied: ${
 						(''+hasLied) == 'true' ? 
-						`true [${hashMini(fp.lies)}]` : 
+						`true (${hashMini(fp.lies.$hash)})` : 
 						'false'
 					}</div>
 					<div>has errors: ${
 						(''+hasErrors) == 'true' ? 
-						`true [${hashMini(fp.capturedErrors)}]` : 
+						`true (${hashMini(fp.capturedErrors.$hash)})` : 
 						'false'
 					}</div>
-					<div>loose fingerprints: ${subIdsLen}</div>
-					<div>bot: ${subIdsLen > 10 && hours < 48 ? 'true [10 loose fingerprints within 48 hours]' : 'false'}</div>
+					<div class="ellipsis">loose fingerprints: ${subIdsLen} (last: ${hashMini(fpHash)})</div>
+					<div class="ellipsis">bot: ${subIdsLen > 10 && hours < 48 ? 'true [10 loose fingerprints within 48 hours]' : 'false'}</div>
 				</div>
 			`
 			fetchVisitoDataTimer('Visitor data received')
@@ -346,7 +346,6 @@ const imports = {
 	<div class="fingerprint-header">
 		<strong>Fingerprint</strong>
 		<div class="trusted-fingerprint ellipsis">${creepHash}</div>
-		<div class="ellipsis">loose fingerprint: ${fpHash}</div>
 		<div class="time ellipsis">performance: ${timeEnd} milliseconds</div>
 	</div>
 	`)

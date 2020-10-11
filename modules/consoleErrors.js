@@ -14,6 +14,7 @@ export const getConsoleErrors = imports => {
 
 	const {
 		require: {
+			hashMini,
 			hashify,
 			patch,
 			html,
@@ -46,9 +47,8 @@ export const getConsoleErrors = imports => {
 				return `${+key+1}: ${value}`
 			})
 			return patch(el, html`
-			<div>
-				<strong>Error</strong>
-				<div class="ellipsis">hash: ${$hash}</div>
+			<div class="col-six">
+				<strong>Error</strong><span class="hash">${hashMini($hash)}</span>
 				<div>results: ${modal(id, results.join('<br>'))}
 				<div class="ellipsis">js engine: ${decryptKnown($hash)}</div>
 			</div>

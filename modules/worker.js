@@ -85,16 +85,24 @@ const inlineWorker = async caniuse => {
 	const language = caniuse(() => navigator, ['language'])
 	const platform = caniuse(() => navigator, ['platform'])
 	const userAgent = caniuse(() => navigator, ['userAgent'])
+	const jsEngine = {
+		[-3.3537128705376014]: 'V8',
+		[-3.353712870537601]: 'SpiderMonkey',
+		[-3.353712870537602]: 'JavaScriptCore'
+	}
+	const mathResult = Math.tan(10*Math.LOG2E)
+	const jsImplementation = jsEngine[mathResult] || 'unknown'
 
 	postMessage({
-		['timezone offset']: timezoneOffset,
+		jsImplementation,
+		timezoneOffset,
 		hardwareConcurrency,
 		language,
 		platform,
 		userAgent,
 		canvas2d,
-		['webgl renderer']: webglRenderer,
-		['webgl vendor']: webglVendor
+		webglRenderer,
+		webglVendor
 	})
 	close()
 }
@@ -105,6 +113,7 @@ export const getWorkerScope = imports => {
 		require: {
 			isFirefox,
 			getOS,
+			hashMini,
 			hashify,
 			patch,
 			html,
@@ -131,17 +140,29 @@ export const getWorkerScope = imports => {
 				const el = document.getElementById('creep-worker-scope')
 				return patch(el, html`
 				<div>
-					<strong>WorkerGlobalScope</strong>
-					<div class="ellipsis">hash: ${$hash}</div>
-					${
-						Object.keys(data).map(key => {
-							const value = data[key]
-							return (
-								key != 'canvas2d' && key != 'userAgent'? `<div class="ellipsis">${key}: ${value != undefined ? value : note.unsupported}</div>` : ''
-							)
-						}).join('')
-					}
-					<div class="ellipsis">canvas 2d: ${!!data.canvas2d.dataURI ? data.canvas2d.$hash : note.unsupported}</div>
+					<strong>WorkerGlobalScope</strong><span class="hash">${hashMini($hash)}</span>
+					<div class="flex-grid">
+						<div class="col-six">
+							<div>timezone offset: ${data.timezoneOffset != undefined ? ''+data.timezoneOffset : note.unsupported}</div>
+							<div>language: ${data.language || note.unsupported}</div>
+							<div>platform: ${data.platform || note.unsupported}</div>
+							<div>system: ${data.system || note.unsupported}</div>
+							<div>userAgent:</div>
+							<div class="block-text">
+								<div>${data.userAgent || note.unsupported}</div>
+							</div>
+						</div>
+						<div class="col-six">
+							<div>hardwareConcurrency: ${data.hardwareConcurrency || note.unsupported}</div>
+							<div>js math impl: ${data.jsImplementation}</div>
+							<div>canvas 2d: ${!!data.canvas2d.dataURI ? hashMini(data.canvas2d.$hash) : note.unsupported}</div>
+							<div>webgl vendor: ${data.webglVendor || note.unsupported}</div>
+							<div>webgl renderer:</div>
+							<div class="block-text">
+								<div>${data.webglRenderer || note.unsupported}</div>
+							</div>
+						</div>
+					</div>
 				</div>
 				`)
 			}, false)

@@ -52,6 +52,7 @@ export const getScreen = imports => {
 	const {
 		require: {
 			isFirefox,
+			hashMini,
 			hashify,
 			patch,
 			html,
@@ -143,16 +144,28 @@ export const getScreen = imports => {
 			const $hash = await hashify(data)
 			resolve({ ...data, $hash })
 			const el = document.getElementById('creep-screen')
+
+			const aspectRatio = data.width / data.height
+			const elementWidth = 200
+			const elementHeight = elementWidth / aspectRatio
 			return patch(el, html`
 			<div>
-				<strong>Screen</strong>
-				<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
-				${
-					Object.keys(data).map(key => {
-						const value = data[key]
-						return `<div>${key}: ${value ? value : note.blocked}</div>`
-					}).join('')
-				}
+				<strong>Screen</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
+				<div class="flex-grid">
+					<div class="col-six">
+						${
+							Object.keys(data).map(key => {
+								const value = data[key]
+								return `<div>${key}: ${value ? value : note.blocked}</div>`
+							}).join('')
+						}
+					</div>
+					<div class="col-six">
+						<div class="screen-frame" style="width:${elementWidth}px;height:${elementHeight}px;">
+							<div class="screen-glass"></div>
+						</div>
+					</div>
+				</div>
 			</div>
 			`)
 		}

@@ -6,7 +6,6 @@ export const getOfflineAudioContext = imports => {
 			hashify,
 			patch,
 			html,
-			note,
 			modal,
 			captureError,
 			attempt,
@@ -127,8 +126,7 @@ export const getOfflineAudioContext = imports => {
 						const el = document.getElementById(id)
 						return patch(el, html`
 						<div>
-							<strong>OfflineAudioContext</strong>
-							<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
+							<strong>Audio</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
 							<div>sample: ${binsSample[0]}</div>
 							<div>copy: ${copySample[0]}</div>
 							<div>matching: ${matching}</div>

@@ -7,6 +7,7 @@ export const getMediaTypes = imports => {
 
 	const {
 		require: {
+			hashMini,
 			hashify,
 			patch,
 			html,
@@ -48,9 +49,8 @@ export const getMediaTypes = imports => {
 				`
 			})
 			return patch(el, html`
-			<div id="creep-media-types">
-				<strong>HTMLMediaElement/MediaSource</strong>
-				<div class="ellipsis">hash: ${$hash}</div>
+			<div class="col-six" id="creep-media-types">
+				<strong>Media Types</strong><span class="hash">${hashMini($hash)}</span>
 				<div>results: ${
 					modal(id, header+results.join('<br>'))
 				}</div>

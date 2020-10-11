@@ -2,6 +2,7 @@ export const getIframeContentWindowVersion = imports => {
 
 	const {
 		require: {
+			hashMini,
 			hashify,
 			patch,
 			html,
@@ -26,9 +27,8 @@ export const getIframeContentWindowVersion = imports => {
 			const id = 'creep-iframe-content-window-version'
 			const el = document.getElementById(id)
 			return patch(el, html`
-			<div>
-				<strong>HTMLIFrameElement.contentWindow</strong>
-				<div class="ellipsis">hash: ${$hash}</div>
+			<div class="col-six">
+				<strong>Window</strong><span class="hash">${hashMini($hash)}</span>
 				<div class="ellipsis">browser: ${decryptKnown($hash)}</div>
 				<div>keys (${count(keys)}): ${keys && keys.length ? modal(id, keys.join(', ')) : note.blocked}</div>
 				<div>moz: ${''+moz}</div>

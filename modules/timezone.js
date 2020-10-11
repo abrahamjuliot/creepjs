@@ -2,6 +2,7 @@ export const getTimezone = imports => {
 
 	const {
 		require: {
+			hashMini,
 			hashify,
 			patch,
 			html,
@@ -267,8 +268,7 @@ export const getTimezone = imports => {
 			const el = document.getElementById(id)
 			return patch(el, html`
 			<div>
-				<strong>Date/Intl/Keyboard</strong>
-				<div class="ellipsis">hash: ${lied ? `${note.lied} ` : ''}${$hash}</div>
+				<strong>Timezone</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
 				<div>timezone: ${timezone}</div>
 				<div>timezone location: ${timezoneLocation}</div>
 				<div>timezone offset: ${''+timezoneOffset}</div>

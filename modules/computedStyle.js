@@ -181,6 +181,7 @@ export const getCSSStyleDeclarationVersion = imports => {
 	const {
 		require: {
 			instanceId,
+			hashMini,
 			hashify,
 			patch,
 			html,
@@ -224,8 +225,7 @@ export const getCSSStyleDeclarationVersion = imports => {
 			const { prototypeName } = htmlElementStyle
 			return patch(el, html`
 			<div>
-				<strong>CSSStyleDeclaration</strong>
-				<div class="ellipsis">hash: ${$hash}</div>
+				<strong>CSSStyleDeclaration</strong><span class="hash">${hashMini($hash)}</span>
 				<div class="ellipsis">system: ${decryptKnown(system.$hash)}</div>
 				<div>engine: ${
 					prototypeName == 'CSS2Properties' ? 'Gecko' :
@@ -240,7 +240,7 @@ export const getCSSStyleDeclarationVersion = imports => {
 				${
 					Object.keys(data).map(key => {
 						const value = data[key]
-						return key != 'matching' && key != 'system' ? `<div class="ellipsis">${key}: ${value ? value.$hash : note.blocked}</div>` : ''
+						return key != 'matching' && key != 'system' ? `<div class="ellipsis">${key}: ${value ? hashMini(value.$hash) : note.blocked}</div>` : ''
 					}).join('')
 				}
 				<div>keys: ${computedStyle.keys.length}, ${htmlElementStyle.keys.length}, ${cssRuleListstyle.keys.length}
@@ -252,7 +252,7 @@ export const getCSSStyleDeclarationVersion = imports => {
 				<div>apple: ${''+computedStyle.apple}, ${''+htmlElementStyle.apple}, ${''+cssRuleListstyle.apple}
 				</div>
 				<div>matching: ${''+data.matching}</div>
-				<div class="ellipsis">system styles: ${system.$hash}</div>
+				<div class="ellipsis">system styles: ${hashMini(system.$hash)}</div>
 				<div>system styles rendered: ${
 					system && system.colors ? modal(
 						`${id}-system-styles`,

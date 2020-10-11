@@ -2,6 +2,7 @@ export const getVoices = imports => {
 
 	const {
 		require: {
+			hashMini,
 			hashify,
 			patch,
 			html,
@@ -29,8 +30,7 @@ export const getVoices = imports => {
 				const voiceList = voices.map(voice => `${voice.name} (${voice.lang})`)
 				return patch(el, html`
 				<div>
-					<strong>SpeechSynthesis</strong>
-					<div class="ellipsis">hash: ${$hash}</div>
+					<strong>SpeechSynthesis</strong><span class="hash">${hashMini($hash)}</span>
 					<div>voices (${count(voices)}): ${voiceList && voiceList.length ? modal(id, voiceList.join('<br>')) : note.unsupported}</div>
 					<div>microsoft: ${''+check.microsoft}</div>
 					<div>google: ${''+check.google}</div>
