@@ -22,7 +22,7 @@ export const getCanvas2d = imports => {
 				const el = document.getElementById('creep-canvas-2d')
 				return patch(el, html`
 				<div class="col-six">
-					<strong>CanvasRenderingContext2D</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
+					<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
 				</div>
 				`)
 			}

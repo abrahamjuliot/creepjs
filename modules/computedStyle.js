@@ -226,7 +226,7 @@ export const getCSSStyleDeclarationVersion = imports => {
 			return patch(el, html`
 			<div>
 				<strong>CSSStyleDeclaration</strong><span class="hash">${hashMini($hash)}</span>
-				<div class="ellipsis">system: ${decryptKnown(system.$hash)}</div>
+				<div>system: ${decryptKnown(system.$hash)}</div>
 				<div>engine: ${
 					prototypeName == 'CSS2Properties' ? 'Gecko' :
 					prototypeName == 'CSS2PropertiesPrototype' ? 'Gecko (like Goanna)' :
@@ -235,12 +235,18 @@ export const getCSSStyleDeclarationVersion = imports => {
 					prototypeName == 'CSSStyleDeclarationPrototype' ? 'Webkit' :
 					'unknown'
 				}</div>
-				<div class="ellipsis">browser: ${decryptKnown(computedStyle.$hash)}</div>
+				<div>browser: ${decryptKnown(computedStyle.$hash)}</div>
 				<div>prototype: ${prototypeName}</div>
 				${
 					Object.keys(data).map(key => {
 						const value = data[key]
-						return key != 'matching' && key != 'system' ? `<div class="ellipsis">${key}: ${value ? hashMini(value.$hash) : note.blocked}</div>` : ''
+						return (
+							key != 'matching' && key != 'system' ?
+							`<div>${key}:${
+								value ? `<span class="sub-hash">${hashMini(value.$hash)}</span>` : ` ${note.blocked}`
+							}</div>` : 
+							''
+						)
 					}).join('')
 				}
 				<div>keys: ${computedStyle.keys.length}, ${htmlElementStyle.keys.length}, ${cssRuleListstyle.keys.length}
@@ -252,7 +258,7 @@ export const getCSSStyleDeclarationVersion = imports => {
 				<div>apple: ${''+computedStyle.apple}, ${''+htmlElementStyle.apple}, ${''+cssRuleListstyle.apple}
 				</div>
 				<div>matching: ${''+data.matching}</div>
-				<div class="ellipsis">system styles: ${hashMini(system.$hash)}</div>
+				<div>system styles: ${hashMini(system.$hash)}</div>
 				<div>system styles rendered: ${
 					system && system.colors ? modal(
 						`${id}-system-styles`,

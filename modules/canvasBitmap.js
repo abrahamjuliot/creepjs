@@ -23,7 +23,7 @@ export const getCanvasBitmapRenderer = imports => {
 				const el = document.getElementById('creep-canvas-bitmap-renderer')
 				return patch(el, html`
 				<div class="col-six">
-					<strong>ImageBitmapRenderingContext</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
+					<strong>Canvas bitmaprenderer</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
 				</div>
 				`)
 			}

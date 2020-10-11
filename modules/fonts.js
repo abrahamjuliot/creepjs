@@ -140,7 +140,7 @@ export const getFonts = (imports, fonts) => {
 			const id = 'creep-fonts'
 			const el = document.getElementById(id)
 			return patch(el, html`
-			<div>
+			<div class="col-six">
 				<strong>Fonts</strong><span class="hash">${hashMini($hash)}</span>
 				<div>results (${count(fontList)}): ${fontList && fontList.length ? modal(id, fontList.join('<br>')) : note.blocked}</div>
 			</div>

@@ -221,10 +221,10 @@ export const getMaths = imports => {
 			return patch(el, html`
 			<div class="col-six">
 				<strong>Math</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
+				<div>js runtime: ${decryptKnown($hash)}</div>
 				<div>results: ${
 					modal(id, header+results.join('<br>'))
 				}
-				<div class="ellipsis">js impl: ${decryptKnown($hash)}</div>
 			</div>
 			`)
 		}

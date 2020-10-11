@@ -154,8 +154,12 @@ export const getWorkerScope = imports => {
 						</div>
 						<div class="col-six">
 							<div>hardwareConcurrency: ${data.hardwareConcurrency || note.unsupported}</div>
-							<div>js math impl: ${data.jsImplementation}</div>
-							<div>canvas 2d: ${!!data.canvas2d.dataURI ? hashMini(data.canvas2d.$hash) : note.unsupported}</div>
+							<div>js runtime: ${data.jsImplementation}</div>
+							<div>canvas 2d:${
+								!!data.canvas2d.dataURI ?
+								`<span class="sub-hash">${hashMini(data.canvas2d.$hash)}</span>` :
+								` ${note.unsupported}`
+							}</div>
 							<div>webgl vendor: ${data.webglVendor || note.unsupported}</div>
 							<div>webgl renderer:</div>
 							<div class="block-text">

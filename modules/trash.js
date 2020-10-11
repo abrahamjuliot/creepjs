@@ -68,8 +68,8 @@ const getTrash = imports => {
 		const el = document.getElementById(id)
 		return patch(el, html`
 		<div class="col-four${len ? ' trash': ''}">
-			<strong>Trash</strong><span class="hash">${hashMini($hash)}</span>
-			<div>trash (${!len ? '0' : ''+len }): ${
+			<strong>Trash</strong>${len ? `<span class="hash">${hashMini($hash)}</span>` : ''}
+			<div>gathered (${!len ? '0' : ''+len }): ${
 				len ? modal(id, bin.map((trash,i) => `${i+1}: ${trash.name}: ${trash.value}`).join('<br>')) : ''
 			}</div>
 		</div>

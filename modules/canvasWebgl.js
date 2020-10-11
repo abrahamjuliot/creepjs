@@ -268,8 +268,7 @@ export const getCanvasWebgl = imports => {
 				<div>matching data URI: ${''+data.matchingDataURI}</div>
 				<div class="flex-grid">
 					<div class="col-six">
-						<strong>WebGL</strong>
-						<div>toDataURL: ${hashMini(dataURI.$hash)}</div>
+						<strong>webgl</strong><span class="sub-hash">${hashMini(dataURI.$hash)}</span>
 						<div>parameters (${count(webglSpecsKeys)}): ${
 							!webglSpecsKeys.length ? note.unsupported :
 							modal(`${id}-p-v1`, webglSpecsKeys.map(key => `${key}: ${webglSpecs[key]}`).join('<br>'))
@@ -284,8 +283,7 @@ export const getCanvasWebgl = imports => {
 						</div>
 					</div>
 					<div class="col-six">
-						<strong>WebGL2</strong>
-						<div>toDataURL: ${hashMini(dataURI2.$hash)}</div>
+						<strong>webgl2</strong><span class="sub-hash">${hashMini(dataURI2.$hash)}</span>
 						<div>parameters (${count(webgl2SpecsKeys)}): ${
 							!webgl2SpecsKeys.length ? note.unsupported :
 							modal(`${id}-p-v2`, webgl2SpecsKeys.map(key => `${key}: ${webgl2Specs[key]}`).join('<br>'))

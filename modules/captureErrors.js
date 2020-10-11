@@ -118,8 +118,8 @@ const getCapturedErrors = imports => {
 		const el = document.getElementById(id)
 		return patch(el, html`
 		<div class="col-four${len ? ' errors': ''}">
-			<strong>Errors</strong><span class="hash">${hashMini($hash)}</span>
-			<div>errors (${!len ? '0' : ''+len }): ${
+			<strong>Errors</strong>${len ? `<span class="hash">${hashMini($hash)}</span>` : ''}
+			<div>captured (${!len ? '0' : ''+len}): ${
 				len ? modal(id, Object.keys(data).map((key, i) => `${i+1}: ${data[key].trustedName} - ${data[key].trustedMessage} `).join('<br>')) : ''
 			}</div>
 		</div>

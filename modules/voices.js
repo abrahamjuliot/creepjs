@@ -29,7 +29,7 @@ export const getVoices = imports => {
 				const el = document.getElementById(id)
 				const voiceList = voices.map(voice => `${voice.name} (${voice.lang})`)
 				return patch(el, html`
-				<div>
+				<div class="col-six">
 					<strong>SpeechSynthesis</strong><span class="hash">${hashMini($hash)}</span>
 					<div>voices (${count(voices)}): ${voiceList && voiceList.length ? modal(id, voiceList.join('<br>')) : note.unsupported}</div>
 					<div>microsoft: ${''+check.microsoft}</div>

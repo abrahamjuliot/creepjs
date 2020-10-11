@@ -190,7 +190,7 @@ visitor {
 	overflow-wrap: break-word;
 	padding: 10px;
 	margin: 30px 0;
-	box-shadow: 0px 2px 2px 0px #cfd0d1;
+	border: 1px solid #eee;
 }
 
 #fingerprint-data .fingerprint-header {
@@ -211,13 +211,13 @@ visitor {
 #fingerprint-data  .block-text {
     display: flex;
     justify-content: center;
-    border: 1px solid #eee;
     padding: 5px;
     text-align: center;
     align-items: center;
     min-height: 85px;
     border-radius: 3px;
     margin: 5px auto;
+	box-shadow: 0px 1px 1px 0px #cfd0d1;
 }
 #fingerprint-data  .block-text > div {
 	animation: fade-up .7s 1s ease both;
@@ -439,7 +439,7 @@ input[type="radio"] {
 }
 
 .screen-frame {
-    background: #fff;
+    background: linear-gradient(-45deg, #000 0%, rgb(0 0 0 / 19%) 100%);
     border-radius: 3px;
     margin: 0 auto;
     padding: 5px 5px 15px;
@@ -451,7 +451,7 @@ input[type="radio"] {
 .screen-glass {
 	width: 100%;
     height: 100%;
-    background: linear-gradient(-45deg, #000 0%, rgba(0, 0, 0, 0.75) 100%);
+    background: #fff;
 }
 
 .hash {
@@ -463,6 +463,14 @@ input[type="radio"] {
     margin: 0 10px;
 	animation: zoom .3s .7s cubic-bezier(0.77, 0, 0.175, 1.5) both;
 	box-shadow: 0px 1px 1px 0px #cfd0d1;
+}
+
+.sub-hash {
+	display: inline-block;
+    padding: 0 4px;
+    border-radius: 2px;
+    margin: 0 10px;
+    box-shadow: 0px 1px 1px 0px #cfd0d1;
 }
 
 .flex-grid {

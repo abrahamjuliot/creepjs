@@ -49,8 +49,8 @@ export const getConsoleErrors = imports => {
 			return patch(el, html`
 			<div class="col-six">
 				<strong>Error</strong><span class="hash">${hashMini($hash)}</span>
+				<div>js engine: ${decryptKnown($hash)}</div>
 				<div>results: ${modal(id, results.join('<br>'))}
-				<div class="ellipsis">js engine: ${decryptKnown($hash)}</div>
 			</div>
 			`)
 		}

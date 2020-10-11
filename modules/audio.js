@@ -125,7 +125,7 @@ export const getOfflineAudioContext = imports => {
 						const id = 'creep-offline-audio-context'
 						const el = document.getElementById(id)
 						return patch(el, html`
-						<div>
+						<div class="col-six">
 							<strong>Audio</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
 							<div>sample: ${binsSample[0]}</div>
 							<div>copy: ${copySample[0]}</div>

@@ -869,8 +869,8 @@ const getLies = imports => {
 		const el = document.getElementById(id)
 		return patch(el, html`
 		<div class="col-four${totalLies ? ' lies': ''}">
-			<strong>Lies</strong><span class="hash">${hashMini($hash)}</span>
-			<div>lies (${!totalLies ? '0' : ''+totalLies }): ${
+			<strong>Lies</strong>${totalLies ? `<span class="hash">${hashMini($hash)}</span>` : ''}
+			<div>unmasked (${!totalLies ? '0' : ''+totalLies }): ${
 				totalLies ? modal(id, Object.keys(data).map(key => {
 					const { name, lieTypes: { lies, fingerprint } } = data[key]
 					const lieFingerprint = !!fingerprint ? { hash: hashMini(fingerprint), json: sanitize(toJSONFormat(fingerprint)) } : undefined
