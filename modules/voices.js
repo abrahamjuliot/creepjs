@@ -31,11 +31,11 @@ export const getVoices = imports => {
 				return patch(el, html`
 				<div class="col-six">
 					<strong>SpeechSynthesis</strong><span class="hash">${hashMini($hash)}</span>
-					<div>voices (${count(voices)}): ${voiceList && voiceList.length ? modal(id, voiceList.join('<br>')) : note.unsupported}</div>
 					<div>microsoft: ${''+check.microsoft}</div>
 					<div>google: ${''+check.google}</div>
 					<div>chrome OS: ${''+check.chromeOS}</div>
 					<div>android: ${''+check.android}</div>
+					<div>voices (${count(voices)}): ${voiceList && voiceList.length ? modal(id, voiceList.join('<br>')) : note.unsupported}</div>
 				</div>
 				`)
 			}
