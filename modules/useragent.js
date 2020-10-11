@@ -27,8 +27,7 @@ export const userAgentData = [
       "Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Mobile Safari/537.36"
     ],
     "time": "10/11/2020, 4:16:26 AM",
-    "decoded": "V8",
-    "isUpdated": true
+    "decoded": "V8"
   },
   {
     "id": "89455ebb9765644fb98068ec68fbad7fcaaf2768b2cb6e1bd062eee5790c00e8",
@@ -63,15 +62,13 @@ export const userAgentData = [
       "Chrome OS"
     ],
     "time": "10/11/2020, 4:16:26 AM",
-    "decoded": "V8",
-    "isUpdated": true
+    "decoded": "V8"
   },
   {
     "id": "ab38050de4c1b016b88cbb5c293a08ea7039bd6c307bb4bf8fbaf5c1bf6f8b30",
     "type": "CSS style version",
     "uaSystem": [
       "Windows",
-      "Android",
       "Linux",
       "Mac"
     ],
@@ -87,54 +84,23 @@ export const userAgentData = [
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 OPR/71.0.3770.198",
       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36",
       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 OPR/71.0.3770.198",
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.123 Safari/537.36",
-      "Mozilla/5.0 (Linux; Android 8.0; Pixel 2 Build/OPD3.170816.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Mobile Safari/537.36",
-      "Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Mobile Safari/537.36"
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.123 Safari/537.36"
     ],
     "time": "10/11/2020, 4:16:26 AM",
-    "decoded": "Chrome 85",
-    "isUpdated": true
-  },
-  {
-    "id": "9edd467d86207e4209c052783006cbd44a98476ea4b4ac65f7d237383d76ce41",
-    "type": "system styles",
-    "isNew": true,
-    "uaSystem": [
-      "Android"
-    ],
-    "userAgent": [
-      "Mozilla/5.0 (Linux; Android 8.0; Pixel 2 Build/OPD3.170816.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Mobile Safari/537.36",
-      "Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Mobile Safari/537.36"
-    ],
-    "time": "10/11/2020, 4:16:26 AM",
-    "isUpdated": true
+    "decoded": "Chrome 85"
   },
   {
     "id": "89d9e9705b19825eda9a78f52705572247d5f8cdc84df55c540c2455eacb2e46",
     "type": "HTMLElement version",
     "userAgent": [
       "Mozilla/5.0 (Linux; Android 9; ASUS Chromebook Flip C100PA) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.127 Safari/537.36",
-      "Mozilla/5.0 (Linux; Android 7.1.2; SM-G955F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.127 Safari/537.36",
-      "Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Mobile Safari/537.36"
+      "Mozilla/5.0 (Linux; Android 7.1.2; SM-G955F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.127 Safari/537.36"
     ],
     "uaSystem": [
       "Android"
     ],
     "time": "10/11/2020, 4:16:26 AM",
-    "decoded": "Chrome 85",
-    "isUpdated": true
-  },
-  {
-    "id": "44435905297afdc6eef306ef01f9013c71f0d660919f28605bd5afbb6a7a15b3",
-    "type": "contentWindow version",
-    "isNew": true,
-    "uaSystem": [
-      "Android"
-    ],
-    "userAgent": [
-      "Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Mobile Safari/537.36"
-    ],
-    "time": "10/11/2020, 4:16:26 AM"
+    "decoded": "Chrome 85"
   },
   {
     "id": "fc25532b0f31863cb7074157dc7732f1495f5007852b1091d5091534707ce6db",
@@ -152,31 +118,16 @@ export const userAgentData = [
       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36",
       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 OPR/71.0.3770.198",
       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.123 Safari/537.36",
-      "Mozilla/5.0 (X11; CrOS armv7l 13099.48.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.64 Safari/537.36",
-      "Mozilla/5.0 (Linux; Android 8.0; Pixel 2 Build/OPD3.170816.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Mobile Safari/537.36"
+      "Mozilla/5.0 (X11; CrOS armv7l 13099.48.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.64 Safari/537.36"
     ],
     "uaSystem": [
       "Chrome OS",
       "Windows",
       "Linux",
-      "Mac",
-      "Android"
+      "Mac"
     ],
     "time": "10/11/2020, 4:08:34 AM",
-    "decoded": "Chrome 84-85",
-    "isUpdated": true
-  },
-  {
-    "id": "5798c73b80d271ac13d04007b2932dbfa64b4e751383dd30c6e38653bcb1cf49",
-    "type": "contentWindow version",
-    "isNew": true,
-    "uaSystem": [
-      "Android"
-    ],
-    "userAgent": [
-      "Mozilla/5.0 (Linux; Android 8.0; Pixel 2 Build/OPD3.170816.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Mobile Safari/537.36"
-    ],
-    "time": "10/11/2020, 4:08:34 AM"
+    "decoded": "Chrome 84-85"
   },
   {
     "id": "91f98e37bae90d6a32d788e49bc5bcef0400e07b4f6f3ac8fe0ea3fa5f75d878",
