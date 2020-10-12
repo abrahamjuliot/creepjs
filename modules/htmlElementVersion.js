@@ -20,6 +20,7 @@ export const getHTMLElementVersion = imports => {
 			const id = `${instanceId}-html-element-version-test`
 			const htmlElement = document.createElement('div')
 			htmlElement.setAttribute('id', id)
+			htmlElement.setAttribute('style', 'display:none;')
 			document.body.appendChild(htmlElement) 
 			const htmlElementRendered = document.getElementById(id)
 			const keys = []

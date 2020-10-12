@@ -263,7 +263,7 @@ export const getCanvasWebgl = imports => {
 			
 			return patch(el, html`
 			<div>
-				<strong>WebGLRenderingContext</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
+				<strong>Canvas webgl</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
 				<div>matching renderer/vendor: ${''+data.matchingUnmasked}</div>
 				<div>matching data URI: ${''+data.matchingDataURI}</div>
 				<div class="flex-grid">
