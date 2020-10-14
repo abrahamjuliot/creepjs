@@ -1,4 +1,13 @@
 // screen (allow some discrepancies otherwise lie detection triggers at random)
+
+const getDeviceDimensions = (width, height, diameter = 180) => {
+	const aspectRatio = width / height
+	const isPortrait = height > width
+	const deviceHeight = isPortrait ? diameter : diameter / aspectRatio
+	const deviceWidth = isPortrait ? diameter * aspectRatio : diameter
+	return { deviceHeight, deviceWidth }
+}
+
 const getDevice = (width, height) => {
 	// https://gs.statcounter.com/screen-resolution-stats/
 	const resolution = [
@@ -143,11 +152,9 @@ export const getScreen = imports => {
 			}
 			const $hash = await hashify(data)
 			resolve({ ...data, $hash })
-			const el = document.getElementById('creep-screen')
 
-			const aspectRatio = data.width / data.height
-			const elementWidth = 200
-			const elementHeight = elementWidth / aspectRatio
+			const el = document.getElementById('creep-screen')
+			const { deviceHeight, deviceWidth } = getDeviceDimensions(width, height)
 			return patch(el, html`
 			<div>
 				<strong>Screen</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
@@ -160,8 +167,8 @@ export const getScreen = imports => {
 							}).join('')
 						}
 					</div>
-					<div class="col-six">
-						<div class="screen-frame" style="width:${elementWidth}px;height:${elementHeight}px;">
+					<div class="col-six screen-container">
+						<div class="screen-frame" style="width:${deviceWidth}px;height:${deviceHeight}px;">
 							<div class="screen-glass"></div>
 						</div>
 					</div>

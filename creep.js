@@ -256,12 +256,12 @@ const imports = {
 	const { trash: hasTrash, lies: hasLied, capturedErrors: hasErrors } = creep
 
 	// post useragent 
-	fetch(
-		`/?distrust=${hasLied}&errors=${fp.consoleErrors.$hash}&math=${fp.maths.$hash}&html=${fp.htmlElementVersion.$hash}&win=${fp.iframeContentWindowVersion.$hash}&style=${fp.cssStyleDeclarationVersion.getComputedStyle.$hash}&system=${fp.cssStyleDeclarationVersion.system.$hash}&ua=${fp.navigator.userAgent}&uaSystem=${fp.navigator.system}`,
-		{ method: 'POST' }
-	)
-	.then(response => console.log('useragent post success') )
-	.catch(error => console.log('useragent post failed') )
+	// fetch(
+	// 	`/?distrust=${hasLied}&errors=${fp.consoleErrors.$hash}&math=${fp.maths.$hash}&html=${fp.htmlElementVersion.$hash}&win=${fp.iframeContentWindowVersion.$hash}&style=${fp.cssStyleDeclarationVersion.getComputedStyle.$hash}&system=${fp.cssStyleDeclarationVersion.system.$hash}&ua=${fp.navigator.userAgent}&uaSystem=${fp.navigator.system}`,
+	// 	{ method: 'POST' }
+	// )
+	// .then(response => console.log('useragent post success') )
+	// .catch(error => console.log('useragent post failed') )
 
 	// fetch data from server
 	const id = 'creep-browser'

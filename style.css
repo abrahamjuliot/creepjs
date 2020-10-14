@@ -219,6 +219,7 @@ visitor {
     min-height: 85px;
     border-radius: 3px;
     margin: 5px auto;
+	border: 1px solid #f9f9f9;
 	box-shadow: 0px 1px 1px 0px #cfd0d1;
 }
 #fingerprint-data  .block-text > div {
@@ -440,6 +441,9 @@ input[type="radio"] {
   }
 }
 
+.screen-container {
+	height: 200px;
+}
 .screen-frame {
     background: linear-gradient(-45deg, #000 0%, rgb(0 0 0 / 19%) 100%);
     border-radius: 3px;
