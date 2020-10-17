@@ -393,6 +393,34 @@ input[type="radio"] {
     box-shadow: 0px 1px 1px 0px #cfd0d1;
 }
 
+.blurred {
+	filter: blur(2.5px);
+	animation: reveal 5s ease both;
+}
+
+.unblurred {
+	animation: unblur .3s ease both;
+}
+
+@keyframes reveal {
+  0% {
+	opacity: 0.1;
+  }
+  100% {
+    opacity: 0.5;
+  }
+}
+@keyframes unblur {
+  0% {
+	opacity: 0.5;
+	filter: blur(2.5px);
+  }
+  100% {
+	opacity: 1;
+	filter: blur(0);
+  }
+}
+
 .flex-grid {
 	display: flex;
 	flex-direction: column;
