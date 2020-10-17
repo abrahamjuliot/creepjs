@@ -357,6 +357,9 @@ input[type="radio"] {
 
 .screen-container {
 	height: 200px;
+	display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .screen-frame {
     background: linear-gradient(-45deg, #000 0%, rgb(0 0 0 / 19%) 100%);
@@ -376,7 +379,6 @@ input[type="radio"] {
 
 .hash {
 	display: inline-block;
-    background: #f3f3f5;
     padding: 0 4px;
     border-radius: 2px;
     margin: 0 10px;
@@ -389,7 +391,6 @@ input[type="radio"] {
     padding: 0 4px;
     border-radius: 2px;
     margin: 0 10px;
-    box-shadow: 0px 1px 1px 0px #cfd0d1;
 }
 
 .blurred {
