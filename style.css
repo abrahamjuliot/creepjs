@@ -376,8 +376,7 @@ input[type="radio"] {
 
 .hash {
 	display: inline-block;
-    background: #f1f1f1;
-    font-weight: bold;
+    background: #f3f3f5;
     padding: 0 4px;
     border-radius: 2px;
     margin: 0 10px;
