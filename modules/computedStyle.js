@@ -225,7 +225,7 @@ export const getCSSStyleDeclarationVersion = imports => {
 			const { prototypeName } = htmlElementStyle
 			return patch(el, html`
 			<div>
-				<strong>CSSStyleDeclaration</strong><span class="hash">${hashMini($hash)}</span>
+				<strong>Computed Style</strong><span class="hash">${hashMini($hash)}</span>
 				<div>system: ${decryptKnown(system.$hash)}</div>
 				<div>engine: ${
 					prototypeName == 'CSS2Properties' ? 'Gecko' :
