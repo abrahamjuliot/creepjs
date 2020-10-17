@@ -157,9 +157,10 @@ export const getScreen = imports => {
 			const { deviceHeight, deviceWidth } = getDeviceDimensions(width, height)
 			return patch(el, html`
 			<div>
-				<strong>Screen</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
+				
 				<div class="flex-grid">
 					<div class="col-six">
+						<strong>Screen</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
 						${
 							Object.keys(data).map(key => {
 								const value = data[key]
