@@ -30,7 +30,7 @@ export const getVoices = imports => {
 				const voiceList = voices.map(voice => `${voice.name} (${voice.lang})`)
 				return patch(el, html`
 				<div class="col-six">
-					<strong>SpeechSynthesis</strong><span class="hash">${hashMini($hash)}</span>
+					<strong>Speech</strong><span class="hash">${hashMini($hash)}</span>
 					<div>microsoft: ${''+check.microsoft}</div>
 					<div>google: ${''+check.google}</div>
 					<div>chrome OS: ${''+check.chromeOS}</div>
