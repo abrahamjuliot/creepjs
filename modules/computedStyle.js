@@ -225,61 +225,67 @@ export const getCSSStyleDeclarationVersion = imports => {
 			const { prototypeName } = htmlElementStyle
 			return patch(el, html`
 			<div>
-				<strong>Computed Style</strong><span class="hash">${hashMini($hash)}</span>
-				<div>system: ${decryptKnown(system.$hash)}</div>
-				<div>engine: ${
-					prototypeName == 'CSS2Properties' ? 'Gecko' :
-					prototypeName == 'CSS2PropertiesPrototype' ? 'Gecko (like Goanna)' :
-					prototypeName == 'MSCSSPropertiesPrototype' ? 'Trident' :
-					prototypeName == 'CSSStyleDeclaration' ? 'Blink' :
-					prototypeName == 'CSSStyleDeclarationPrototype' ? 'Webkit' :
-					'unknown'
-				}</div>
-				<div>browser: ${decryptKnown(computedStyle.$hash)}</div>
-				<div>prototype: ${prototypeName}</div>
-				${
-					Object.keys(data).map(key => {
-						const value = data[key]
-						return (
-							key != 'matching' && key != 'system' ?
-							`<div>${key}:${
-								value ? `<span class="sub-hash">${hashMini(value.$hash)}</span>` : ` ${note.blocked}`
-							}</div>` : 
-							''
-						)
-					}).join('')
-				}
-				<div>keys: ${computedStyle.keys.length}, ${htmlElementStyle.keys.length}, ${cssRuleListstyle.keys.length}
+				<div class="flex-grid">
+					<div class="col-six">
+						<strong>Computed Style</strong><span class="hash">${hashMini($hash)}</span>
+						<div>system: ${decryptKnown(system.$hash)}</div>
+						<div>engine: ${
+							prototypeName == 'CSS2Properties' ? 'Gecko' :
+							prototypeName == 'CSS2PropertiesPrototype' ? 'Gecko (like Goanna)' :
+							prototypeName == 'MSCSSPropertiesPrototype' ? 'Trident' :
+							prototypeName == 'CSSStyleDeclaration' ? 'Blink' :
+							prototypeName == 'CSSStyleDeclarationPrototype' ? 'Webkit' :
+							'unknown'
+						}</div>
+						<div>browser: ${decryptKnown(computedStyle.$hash)}</div>
+						<div>prototype: ${prototypeName}</div>
+						${
+							Object.keys(data).map(key => {
+								const value = data[key]
+								return (
+									key != 'matching' && key != 'system' ?
+									`<div>${key}:${
+										value ? `<span class="sub-hash">${hashMini(value.$hash)}</span>` : ` ${note.blocked}`
+									}</div>` : 
+									''
+								)
+							}).join('')
+						}
+					</div>
+					<div class="col-six">
+						<div>keys: ${computedStyle.keys.length}, ${htmlElementStyle.keys.length}, ${cssRuleListstyle.keys.length}
+						</div>
+						<div>moz: ${''+computedStyle.moz}, ${''+htmlElementStyle.moz}, ${''+cssRuleListstyle.moz}
+						</div>
+						<div>webkit: ${''+computedStyle.webkit}, ${''+htmlElementStyle.webkit}, ${''+cssRuleListstyle.webkit}
+						</div>
+						<div>apple: ${''+computedStyle.apple}, ${''+htmlElementStyle.apple}, ${''+cssRuleListstyle.apple}
+						</div>
+						<div>matching: ${''+data.matching}</div>
+						<div>system styles:<span class="sub-hash">${hashMini(system.$hash)}</span></div>
+						<div>system styles rendered: ${
+							system && system.colors ? modal(
+								`${id}-system-styles`,
+								[
+									...system.colors.map(color => {
+										const key = Object.keys(color)[0]
+										const val = color[key]
+										return `
+											<div><span style="display:inline-block;border:1px solid #eee;border-radius:3px;width:12px;height:12px;background:${val}"></span> ${key}: ${val}</div>
+										`
+									}),
+									...system.fonts.map(font => {
+										const key = Object.keys(font)[0]
+										const val = font[key]
+										return `
+											<div>${key}: <span style="border:1px solid #eee;background:#f9f9f9;padding:0 5px;border-radius:3px;font:${val}">${val}</span></div>
+										`
+									}),
+								].join('')
+							) : note.blocked
+						}</div>
+					</div>
 				</div>
-				<div>moz: ${''+computedStyle.moz}, ${''+htmlElementStyle.moz}, ${''+cssRuleListstyle.moz}
-				</div>
-				<div>webkit: ${''+computedStyle.webkit}, ${''+htmlElementStyle.webkit}, ${''+cssRuleListstyle.webkit}
-				</div>
-				<div>apple: ${''+computedStyle.apple}, ${''+htmlElementStyle.apple}, ${''+cssRuleListstyle.apple}
-				</div>
-				<div>matching: ${''+data.matching}</div>
-				<div>system styles:<span class="sub-hash">${hashMini(system.$hash)}</span></div>
-				<div>system styles rendered: ${
-					system && system.colors ? modal(
-						`${id}-system-styles`,
-						[
-							...system.colors.map(color => {
-								const key = Object.keys(color)[0]
-								const val = color[key]
-								return `
-									<div><span style="display:inline-block;border:1px solid #eee;border-radius:3px;width:12px;height:12px;background:${val}"></span> ${key}: ${val}</div>
-								`
-							}),
-							...system.fonts.map(font => {
-								const key = Object.keys(font)[0]
-								const val = font[key]
-								return `
-									<div>${key}: <span style="border:1px solid #eee;background:#f9f9f9;padding:0 5px;border-radius:3px;font:${val}">${val}</span></div>
-								`
-							}),
-						].join('')
-					) : note.blocked
-				}</div>
 			</div>
 			`)
 		}
