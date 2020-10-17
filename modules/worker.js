@@ -141,19 +141,13 @@ export const getWorkerScope = imports => {
 				const el = document.getElementById('creep-worker-scope')
 				return patch(el, html`
 				<div>
-					<strong>Worker</strong><span class="hash">${hashMini($hash)}</span>
 					<div class="flex-grid">
 						<div class="col-six">
+							<strong>Worker</strong><span class="hash">${hashMini($hash)}</span>
 							<div>timezone offset: ${data.timezoneOffset != undefined ? ''+data.timezoneOffset : note.unsupported}</div>
 							<div>language: ${data.language || note.unsupported}</div>
 							<div>platform: ${data.platform || note.unsupported}</div>
 							<div>system: ${data.system || note.unsupported}</div>
-							<div>userAgent:</div>
-							<div class="block-text">
-								<div>${data.userAgent || note.unsupported}</div>
-							</div>
-						</div>
-						<div class="col-six">
 							<div>hardwareConcurrency: ${data.hardwareConcurrency || note.unsupported}</div>
 							<div>js runtime: ${data.jsImplementation}</div>
 							<div>canvas 2d:${
@@ -162,6 +156,12 @@ export const getWorkerScope = imports => {
 								` ${note.unsupported}`
 							}</div>
 							<div>webgl vendor: ${data.webglVendor || note.unsupported}</div>
+						</div>
+						<div class="col-six">
+							<div>userAgent:</div>
+							<div class="block-text">
+								<div>${data.userAgent || note.unsupported}</div>
+							</div>
 							<div>webgl renderer:</div>
 							<div class="block-text">
 								<div>${data.webglRenderer || note.unsupported}</div>
