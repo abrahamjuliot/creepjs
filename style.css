@@ -110,8 +110,9 @@ visitor {
 
 #fingerprint-data .fingerprint-header {
     position: fixed;
+	font-size: 18px;
     top: 0;
-    background: #ffffffeb;
+    background: rgba(255, 255, 255, 0.75);
     right: 0;
     left: 0;
     z-index: 99;
@@ -120,7 +121,7 @@ visitor {
 }
 
 #fingerprint-data .visitor-info {
-	margin-top: 95px;
+	margin-top: 80px;
 }
 
 #fingerprint-data  .block-text {
@@ -141,7 +142,12 @@ visitor {
 }
 
 .time {
+	position: absolute;
+    top: 0;
+    right: 5px;
+	font-size: 12px;
 	color: #bbb;
+	background: #fff;
 }
 #fingerprint-data h1,
 #fingerprint-data h2 {
@@ -177,7 +183,6 @@ visitor {
 }
 
 #fingerprint-data .trusted-fingerprint {
-	font-size: 18px;
 	font-weight: bold;
 }
 
@@ -376,9 +381,16 @@ input[type="radio"] {
     height: 100%;
     background: #fff;
 }
+.main-hash {
+	background: #fff;
+    padding: 0 4px;
+    border-radius: 2px;
+    margin: 0 10px;
+}
 
 .hash {
 	display: inline-block;
+	background: #fff;
     padding: 0 4px;
     border-radius: 2px;
     margin: 0 10px;
