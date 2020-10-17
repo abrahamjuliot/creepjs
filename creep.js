@@ -292,9 +292,9 @@ const imports = {
 			const browser = decryptKnown(fp.iframeContentWindowVersion.$hash)
 			const template = `
 				<div class="visitor-info">
-					<strong>${browser != 'unknown' ? browser : 'Browser'}</strong>
 					<div class="flex-grid">
 						<div class="col-six">
+							<strong>${browser != 'unknown' ? browser : 'Browser'}</strong>
 							<div>trust score: <span class="unblurred">${
 								score > 95 ? `${score}% <span class="grade-A">A+</span>` :
 								score == 95 ? `${score}% <span class="grade-A">A</span>` :
