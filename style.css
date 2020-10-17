@@ -66,102 +66,14 @@ body {
 	background: rgba(101, 127, 202, 0.02);
 }
 
+body * { 
+	box-sizing: border-box;
+}
+
 .ellipsis {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-}
-
-.app-loader {
-	width: 200px;
-    height: 200px;
-    background: rgba(255,255,255, 0.9);
-	border: 1px solid #cfd0d1;
-    display: inline-block;
-	border-radius: 5px;
-	position: absolute;
-	right: -30%;
-	transition: height .3s ease;
-}
-
-.app-loader {
-	animation: spin 2s cubic-bezier(0.77, 0, 0.175, 1.5) infinite;
-}
-.visitor-loader {
-	position: relative;
-}
-.visitor-loader:after {
-	width: 50px;
-    height: 50px;
-	background: rgba(255,255,255, 0.9);
-	border: 1px solid #cfd0d1;
-    display: inline-block;
-	border-radius: 5px;
-	position: absolute;
-	content: '';
-	right: 70%;
-	top: 30%;
-	transition: height .3s ease;
-}
-.visitor-loader:after {
-    animation: spin 2s cubic-bezier(0.77, 0, 0.175, 1.5) infinite;
-}
-
-@keyframes spin {
-    0% {
-        transform: translateX(0);
-    }
-    20% {
-        transform: translateY(-10px) rotate(90deg);
-    }
-    40% {
-        transform: translateY(0) rotate(180deg);
-    }
-    60% {
-        transform: translateY(10px) rotate(270deg);
-    }
-    80% {
-        transform: translateY(0px) rotate(360deg);
-    }
-    100% {
-        transform: translateY(0px) rotate(-360deg);
-    }
-}
-
-@keyframes work {
-    0% {
-        transform: translateX(0);
-    }
-    10% {
-        transform: translate(0, 10px);
-    }
-    20% {
-        transform: translate(0, -5px);
-    }
-    30% {
-        transform: translate(0, 15px);
-    }
-    40% {
-        transform: translate(0, 5px);
-    }
-    50% {
-        transform: translate(0) rotate(-720deg);
-    }
-    60% {
-        transform: scale(.9);
-    }
-    70% {
-        transform: scale(.8);
-    }
-    80% {
-        transform: scale(1.1);
-    }
-    90% {
-        transform: scale(1.2);
-    }
-    100% {
-        transform: translate(0);
-    }
 }
 
 .hide {
@@ -188,6 +100,7 @@ visitor {
 
 #fingerprint-data > div {
 	line-height: 1.5;
+	font-size: 14px;
 	overflow-wrap: break-word;
 	padding: 10px;
 	margin: 30px 0;
@@ -202,7 +115,7 @@ visitor {
     right: 0;
     left: 0;
     z-index: 99;
-    max-width: 730px;
+    max-width: 750px;
     margin: 0 auto;
 }
 
@@ -213,6 +126,7 @@ visitor {
 #fingerprint-data  .block-text {
     display: flex;
     justify-content: center;
+	font-size: 12px;
     padding: 5px;
     text-align: center;
     align-items: center;
@@ -355,7 +269,6 @@ a:after,
 	width: 100%;
 	right: 0%;
 	top: 10px;
-	z-index: -1;
 	transition: all .1s ease;
 	transform: translate(0, 4px);
 }
@@ -384,6 +297,7 @@ input[type="radio"] {
 	z-index: 1000;
 }
 .modal-content {
+	font-size: 13px;
 	margin: 100px auto 100px;
 	background: #fff;
 	min-height: 100px;

@@ -29,7 +29,7 @@ export const getIframeContentWindowVersion = imports => {
 			return patch(el, html`
 			<div class="col-six">
 				<strong>Window</strong><span class="hash">${hashMini($hash)}</span>
-				<div class="ellipsis">browser: ${decryptKnown($hash)}</div>
+				<div>browser: ${decryptKnown($hash)}</div>
 				<div>keys (${count(keys)}): ${keys && keys.length ? modal(id, keys.join(', ')) : note.blocked}</div>
 				<div>moz: ${''+moz}</div>
 				<div>webkit: ${''+webkit}</div>

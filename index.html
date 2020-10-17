@@ -15,18 +15,24 @@
 					<div class="trusted-fingerprint" style="color:#fff">.</div>
 					<div class="time">performance: 0 milliseconds</div>
 				</div>
-				<div id="creep-browser" class="visitor-loader visitor-info">
-					<strong>Browser</strong>
-					<div>trust score:</div>
-					<div>visits:</div>
-					<div>first:</div>
-					<div>last:</div>
-					<div>persistence:</div>
-					<div>has trash:</div>
-					<div>has lied:</div>
-					<div>has errors:</div>
-					<div>loose fingerprints:</div>
-					<div>bot:</div>
+				<div id="creep-browser" class="visitor-info">
+					<strong id="loader">Loading...</strong>
+					<div class="flex-grid">
+						<div class="col-six">
+							<div>trust score:</div>
+							<div>visits:</div>
+							<div>first:</div>
+							<div>last:</div>
+							<div>persistence:</div>
+						</div>
+						<div class="col-six">
+							<div>has trash:</div>
+							<div>has lied:</div>
+							<div>has errors:</div>
+							<div>loose fingerprints:</div>
+							<div>bot:</div>
+						</div>
+					</div>
 				</div>
 				<div class="flex-grid">
 					<div class="col-four" id="creep-trash">
@@ -60,7 +66,7 @@
 					</div>
 				</div>
 				<div id="creep-worker-scope">
-					<strong>WorkerGlobalScope</strong>
+					<strong>Worker</strong>
 					<div class="flex-grid">
 						<div class="col-six">
 							<div>timezone offset:</div>

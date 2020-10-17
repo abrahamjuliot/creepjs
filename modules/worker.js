@@ -20,6 +20,7 @@ const newWorker = (fn, { require: [ isFirefox, contentWindow, caniuse, captureEr
 		}
 		const workerInstance = new worker(blobURL)
 		URL.revokeObjectURL(blobURL)
+		
 		return workerInstance
 	}
 	catch (error) {
@@ -140,7 +141,7 @@ export const getWorkerScope = imports => {
 				const el = document.getElementById('creep-worker-scope')
 				return patch(el, html`
 				<div>
-					<strong>WorkerGlobalScope</strong><span class="hash">${hashMini($hash)}</span>
+					<strong>Worker</strong><span class="hash">${hashMini($hash)}</span>
 					<div class="flex-grid">
 						<div class="col-six">
 							<div>timezone offset: ${data.timezoneOffset != undefined ? ''+data.timezoneOffset : note.unsupported}</div>

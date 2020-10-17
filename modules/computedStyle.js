@@ -258,7 +258,7 @@ export const getCSSStyleDeclarationVersion = imports => {
 				<div>apple: ${''+computedStyle.apple}, ${''+htmlElementStyle.apple}, ${''+cssRuleListstyle.apple}
 				</div>
 				<div>matching: ${''+data.matching}</div>
-				<div>system styles: ${hashMini(system.$hash)}</div>
+				<div>system styles:<span class="sub-hash">${hashMini(system.$hash)}</span></div>
 				<div>system styles rendered: ${
 					system && system.colors ? modal(
 						`${id}-system-styles`,

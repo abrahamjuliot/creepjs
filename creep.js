@@ -72,8 +72,6 @@ const imports = {
 ;(async imports => {
 	'use strict';
 
-	//const decryptKnown = await decrypt({ require: [ hashMini ] })
-
 	const fingerprint = async () => {
 		const timeStart = timer()
 		const [
@@ -289,55 +287,65 @@ const imports = {
 				(trashLen * 15.5) +
 				(liesLen * 31)
 			)).toFixed(0)
+
+			const {	require: { decryptKnown } } = imports
+			const browser = decryptKnown(fp.iframeContentWindowVersion.$hash)
 			const template = `
 				<div class="visitor-info">
-					<strong>Browser</strong>
-					<div>trust score: ${
-						score > 95 ? `${score}% <span class="grade-A">A+</span>` :
-						score == 95 ? `${score}% <span class="grade-A">A</span>` :
-						score >= 90 ? `${score}% <span class="grade-A">A-</span>` :
-						score > 85 ? `${score}% <span class="grade-B">B+</span>` :
-						score == 85 ? `${score}% <span class="grade-B">B</span>` :
-						score >= 80 ? `${score}% <span class="grade-B">B-</span>` :
-						score > 75 ? `${score}% <span class="grade-C">C+</span>` :
-						score == 75 ? `${score}% <span class="grade-C">C</span>` :
-						score >= 70 ? `${score}% <span class="grade-C">C-</span>` :
-						score > 65 ? `${score}% <span class="grade-D">D+</span>` :
-						score == 65 ? `${score}% <span class="grade-D">D</span>` :
-						score >= 60 ? `${score}% <span class="grade-D">D-</span>` :
-						score > 55 ? `${score}% <span class="grade-F">F+</span>` :
-						score == 55 ? `${score}% <span class="grade-F">F</span>` :
-						`${score < 0 ? 0 : score}% <span class="grade-F">F-</span>`
-					}</div>
-					<div>visits: ${visits}</div>
-					<div class="ellipsis">first: ${toLocaleStr(firstVisit)}
-					<div class="ellipsis">last: ${toLocaleStr(latestVisit)}</div>
-					<div>persistence: ${hours} hours</div>
-					<div>has trash: ${
-						(''+hasTrash) == 'true' ?
-						`true (${hashMini(fp.trash.$hash)})` : 
-						'false'
-					}</div>
-					<div>has lied: ${
-						(''+hasLied) == 'true' ? 
-						`true (${hashMini(fp.lies.$hash)})` : 
-						'false'
-					}</div>
-					<div>has errors: ${
-						(''+hasErrors) == 'true' ? 
-						`true (${hashMini(fp.capturedErrors.$hash)})` : 
-						'false'
-					}</div>
-					<div class="ellipsis">loose fingerprints: ${subIdsLen} (last: ${hashMini(fpHash)})</div>
-					<div class="ellipsis">bot: ${subIdsLen > 10 && hours < 48 ? 'true [10 loose fingerprints within 48 hours]' : 'false'}</div>
+					<strong>${browser != 'unknown' ? browser : 'Browser'}</strong>
+					<div class="flex-grid">
+						<div class="col-six">
+							<div>trust score: ${
+								score > 95 ? `${score}% <span class="grade-A">A+</span>` :
+								score == 95 ? `${score}% <span class="grade-A">A</span>` :
+								score >= 90 ? `${score}% <span class="grade-A">A-</span>` :
+								score > 85 ? `${score}% <span class="grade-B">B+</span>` :
+								score == 85 ? `${score}% <span class="grade-B">B</span>` :
+								score >= 80 ? `${score}% <span class="grade-B">B-</span>` :
+								score > 75 ? `${score}% <span class="grade-C">C+</span>` :
+								score == 75 ? `${score}% <span class="grade-C">C</span>` :
+								score >= 70 ? `${score}% <span class="grade-C">C-</span>` :
+								score > 65 ? `${score}% <span class="grade-D">D+</span>` :
+								score == 65 ? `${score}% <span class="grade-D">D</span>` :
+								score >= 60 ? `${score}% <span class="grade-D">D-</span>` :
+								score > 55 ? `${score}% <span class="grade-F">F+</span>` :
+								score == 55 ? `${score}% <span class="grade-F">F</span>` :
+								`${score < 0 ? 0 : score}% <span class="grade-F">F-</span>`
+							}</div>
+							<div>visits: ${visits}</div>
+							<div class="ellipsis">first: ${toLocaleStr(firstVisit)}</div>
+							<div class="ellipsis">last: ${toLocaleStr(latestVisit)}</div>
+							<div>persistence: ${hours} hours</div>
+						</div>
+						<div class="col-six">
+							<div>has trash: ${
+								(''+hasTrash) == 'true' ?
+								`true (${hashMini(fp.trash.$hash)})` : 
+								'false'
+							}</div>
+							<div>has lied: ${
+								(''+hasLied) == 'true' ? 
+								`true (${hashMini(fp.lies.$hash)})` : 
+								'false'
+							}</div>
+							<div>has errors: ${
+								(''+hasErrors) == 'true' ? 
+								`true (${hashMini(fp.capturedErrors.$hash)})` : 
+								'false'
+							}</div>
+							<div class="ellipsis">loose fingerprints: ${subIdsLen} (last: ${hashMini(fpHash)})</div>
+							<div>bot: ${subIdsLen > 10 && hours < 48 ? 'true [10 loose fingerprints within 48 hours]' : 'false'}</div>
+						</div>
+					</div>
 				</div>
 			`
+		
 			fetchVisitoDataTimer('Visitor data received')
 			return patch(visitorElem, html`${template}`)
 		})
 		.catch(err => {
 			fetchVisitoDataTimer('Error fetching visitor data')
-			patch(visitorElem, html`<div>Error fetching data: <a href="https://status.cloud.google.com" target="_blank">status.cloud.google.com</a></div>`)
+			patch(document.getElementById('loader'), html`<strong style="color:crimson">${err}</strong>`)
 			return console.error('Error!', err.message)
 		})
 
