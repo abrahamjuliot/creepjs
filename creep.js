@@ -238,11 +238,10 @@ const imports = {
 		capturedErrors: !!errorsLen,
 		voices: isFirefox ? distrust : fp.voices // Firefox is inconsistent
 	}
-	const debugLog = (message, obj) => console.log(message, JSON.stringify(obj, null, '\t'))
-	
+
 	console.log('Fingerprint (Object):', creep)
 	console.log('Loose Fingerprint (Object):', fp)
-	//debugLog('Loose Id (JSON):', fp)
+	//console.log('Loose JSON String:', JSON.stringify(fp, null, '\t'))
 	
 	const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
 	.catch(error => { 
