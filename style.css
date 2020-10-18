@@ -267,8 +267,8 @@ a,
 a:after,
 .modal-open-btn:after {
 	background: #247ba026;
+	border: 1px solid #247ba026;
 	height: 4px;
-	display: inline-block;
 	position: absolute;
 	content: '';
 	width: 100%;

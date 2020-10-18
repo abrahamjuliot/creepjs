@@ -223,8 +223,6 @@ const imports = {
 		},
 		maths: !fp.maths || fp.maths.lied ? undefined : fp.maths,
 		consoleErrors: fp.consoleErrors,
-		iframeContentWindowVersion: fp.iframeContentWindowVersion,
-		htmlElementVersion: fp.htmlElementVersion,
 		cssStyleDeclarationVersion: fp.cssStyleDeclarationVersion,
 		// avoid random timezone fingerprint values
 		timezone: !fp.timezone || fp.timezone.lied ? undefined : fp.timezone,
@@ -238,7 +236,7 @@ const imports = {
 		trash: !!trashLen,
 		lies: !('data' in fp.lies) ? false : !!liesLen,
 		capturedErrors: !!errorsLen,
-		voices: fp.voices
+		voices: isFirefox ? distrust : fp.voices // Firefox is inconsistent
 	}
 	const debugLog = (message, obj) => console.log(message, JSON.stringify(obj, null, '\t'))
 	
