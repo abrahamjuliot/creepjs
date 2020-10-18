@@ -258,9 +258,9 @@ export const getNavigator = (imports, workerScope) => {
 			}
 			return patch(el, html`
 			<div>
-				<strong>Navigator</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
 				<div class="flex-grid">
 					<div class="col-six">
+						<strong>Navigator</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
 						<div>deviceMemory: ${!blocked[data.deviceMemory] ? data.deviceMemory : note.blocked}</div>
 						<div>doNotTrack: ${''+data.doNotTrack}</div>
 						<div>hardwareConcurrency: ${!blocked[data.hardwareConcurrency] ? data.hardwareConcurrency : note.blocked}</div>

@@ -268,31 +268,37 @@ export const getTimezone = imports => {
 			const el = document.getElementById(id)
 			return patch(el, html`
 			<div>
-				<strong>Timezone</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
-				<div>timezone: ${timezone}</div>
-				<div>timezone location: ${timezoneLocation}</div>
-				<div>timezone offset: ${''+timezoneOffset}</div>
-				<div>timezone offset computed: ${''+timezoneOffsetComputed}</div>
-				<div>matching offsets: ${''+matchingOffsets}</div>
-				<div>timezone measured: ${measuredTimezones}</div>
-				<div>relativeTimeFormat: ${
-					!relativeTime ? note.unsupported : 
-					modal(`${id}-relative-time-format`, Object.keys(relativeTime).sort().map(key => `${key} => ${relativeTime[key]}`).join('<br>'))
-				}</div>
-				<div>locale language: ${locale.lang.join(', ')}</div>
-				<div>writing system keys: ${
-					!writingSystemKeys ? note.unsupported :
-					modal(`${id}-writing-system-keys`, writingSystemKeys.map(systemKey => {
-						const key = Object.keys(systemKey)[0]
-						const value = systemKey[key]
-						const style = `
-							background: #f6f6f6;
-							border-radius: 2px;
-							padding: 0px 5px;
-						`
-						return `${key}: <span style="${style}">${value}</span>`
-					}).join('<br>'))
-				}</div>
+				<div class="flex-grid">
+					<div class="col-six">
+						<strong>Timezone</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
+						<div>timezone: ${timezone}</div>
+						<div>timezone location: ${timezoneLocation}</div>
+						<div>timezone offset: ${''+timezoneOffset}</div>
+						<div>timezone offset computed: ${''+timezoneOffsetComputed}</div>
+					</div>
+					<div class="col-six">
+						<div>matching offsets: ${''+matchingOffsets}</div>
+						<div>timezone measured: ${measuredTimezones}</div>
+						<div>relativeTimeFormat: ${
+							!relativeTime ? note.unsupported : 
+							modal(`${id}-relative-time-format`, Object.keys(relativeTime).sort().map(key => `${key} => ${relativeTime[key]}`).join('<br>'))
+						}</div>
+						<div>locale language: ${locale.lang.join(', ')}</div>
+						<div>writing system keys: ${
+							!writingSystemKeys ? note.unsupported :
+							modal(`${id}-writing-system-keys`, writingSystemKeys.map(systemKey => {
+								const key = Object.keys(systemKey)[0]
+								const value = systemKey[key]
+								const style = `
+									background: #f6f6f6;
+									border-radius: 2px;
+									padding: 0px 5px;
+								`
+								return `${key}: <span style="${style}">${value}</span>`
+							}).join('<br>'))
+						}</div>
+					</div>
+				</div>
 			</div>
 			`)
 		}
