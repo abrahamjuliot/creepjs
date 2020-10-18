@@ -69,7 +69,6 @@ export const getWebRTCData = (imports, cloudflare) => {
 						connectionLineIpAddress
 					].filter(ip => ip != undefined)
 					const setSize = new Set(successIpAddresses).size
-					const matching = setSize == 1 || setSize == 0
 					const cloudflareIp = cloudflare && 'ip' in cloudflare ? cloudflare.ip : undefined
 					const data = {
 						['webRTC leak']: cloudflareIp && (
@@ -77,8 +76,7 @@ export const getWebRTCData = (imports, cloudflare) => {
 						) ? true : 'unknown',
 						['ip address']: ipAddress,
 						candidate: candidateIpAddress,
-						connection: connectionLineIpAddress,
-						matching
+						connection: connectionLineIpAddress
 					}
 					const $hash = await hashify(data)
 					resolve({ ...data, $hash })

@@ -60,6 +60,7 @@ const getNestedContentWindowContext = imports => {
 				iframe.src = thisSiteCantBeReached 
 			}
 
+			let isErrorCaught = false
 			let rendered = win
 			
 			try {
@@ -67,80 +68,108 @@ const getNestedContentWindowContext = imports => {
 				rendered = validateContentWindow(iframe)
 			}
 			catch(error) {
+				isErrorCaught = true
 				captureError(error, 'client tampered with append')
 			}
 
 			try {
-				doc.body.prepend(iframe)
-				rendered = validateContentWindow(iframe)
+				if (isErrorCaught) {
+					doc.body.prepend(iframe)
+					rendered = validateContentWindow(iframe)
+				}
 			}
 			catch(error) {
+				isErrorCaught = true
 				captureError(error, 'client tampered with prepend')
 			}
 
 			try {
-				doc.body.appendChild(iframe)
-				rendered = validateContentWindow(iframe)
+				if (isErrorCaught) {
+					doc.body.appendChild(iframe)
+					rendered = validateContentWindow(iframe)
+				}
 			}
 			catch(error) {
+				isErrorCaught = true
 				captureError(error, 'client tampered with appendChild')
 			}
 
 			try {
-				doc.body.appendChild(placeholder)
-				placeholder.replaceWith(iframe)
-				rendered = validateContentWindow(iframe)
+				if (isErrorCaught) {
+					doc.body.appendChild(placeholder)
+					placeholder.replaceWith(iframe)
+					rendered = validateContentWindow(iframe)
+				}
 			}
 			catch(error) {
+				isErrorCaught = true
 				captureError(error, 'client tampered with replaceWith')
 			}
 
 			try {
-				doc.body.insertBefore(iframe, win.parent.firstChild)
-				rendered = validateContentWindow(iframe)
+				if (isErrorCaught) {
+					doc.body.insertBefore(iframe, win.parent.firstChild)
+					rendered = validateContentWindow(iframe)
+				}
 			}
 			catch(error) {
+				isErrorCaught = true
 				captureError(error, 'client tampered with insertBefore')
 			}
 
 			try {
-				doc.body.appendChild(placeholder)
-				doc.body.replaceChild(iframe, placeholder)
-				rendered = validateContentWindow(iframe)
+				if (isErrorCaught) {
+					doc.body.appendChild(placeholder)
+					doc.body.replaceChild(iframe, placeholder)
+					rendered = validateContentWindow(iframe)
+				}
 			}
 			catch(error) {
+				isErrorCaught = true
 				captureError(error, 'client tampered with replaceChild')
 			}
 
 			try {
-				doc.body.insertAdjacentElement('afterend', iframe)
-				rendered = validateContentWindow(iframe)
+				if (isErrorCaught) {
+					doc.body.insertAdjacentElement('afterend', iframe)
+					rendered = validateContentWindow(iframe)
+				}
 			}
 			catch(error) {
+				isErrorCaught = true
 				captureError(error, 'client tampered with insertAdjacentElement afterend')
 			}
 
 			try {
-				doc.body.insertAdjacentElement('beforeend', iframe)
-				rendered = validateContentWindow(iframe)
+				if (isErrorCaught) {
+					doc.body.insertAdjacentElement('beforeend', iframe)
+					rendered = validateContentWindow(iframe)
+				}
 			}
 			catch(error) {
+				isErrorCaught = true
 				captureError(error, 'client tampered with insertAdjacentElement beforeend')
 			}
 
 			try {
-				doc.body.insertAdjacentElement('beforebegin', iframe)
-				rendered = validateContentWindow(iframe)
+				if (isErrorCaught) {
+					doc.body.insertAdjacentElement('beforebegin', iframe)
+					rendered = validateContentWindow(iframe)
+				}
 			}
 			catch(error) {
+				isErrorCaught = true
 				captureError(error, 'client tampered with insertAdjacentElement beforebegin')
 			}
 
 			try {
-				doc.body.insertAdjacentElement('afterbegin', iframe)
-				rendered = validateContentWindow(iframe)
+				if (isErrorCaught) {
+					doc.body.insertAdjacentElement('afterbegin', iframe)
+					rendered = validateContentWindow(iframe)
+				}
 			}
 			catch(error) {
+				isErrorCaught = true
 				captureError(error, 'client tampered with insertAdjacentElement afterbegin')
 			}
 

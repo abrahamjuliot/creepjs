@@ -33,7 +33,7 @@ export const getClientRects = imports => {
 				const id = `${instanceId}-client-rects-iframe`
 				const iframeElement = document.createElement('iframe')
 				iframeElement.setAttribute('id', id)
-				iframeElement.setAttribute('style', 'visibility: hidden; height: 0')
+				iframeElement.setAttribute('style', 'dsiplay:none')
 				document.body.appendChild(iframeElement)
 				iframeRendered = document.getElementById(id)
 

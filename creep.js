@@ -351,7 +351,7 @@ const imports = {
 
 	const el = document.getElementById('creep-fingerprint')
 	patch(el, html`
-	<div title="${creepHash}" class="fingerprint-header">
+	<div class="fingerprint-header">
 		<strong>Your ID:</strong><span class="trusted-fingerprint ellipsis main-hash">${hashMini(creepHash)}</span>
 		<div class="ellipsis"><span class="time">${timeEnd.toFixed(2)} ms</span></div>
 	</div>
