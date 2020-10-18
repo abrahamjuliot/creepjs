@@ -140,12 +140,13 @@ export const getOfflineAudioContext = imports => {
 						captureError(error)
 						dynamicsCompressor.disconnect()
 						oscillator.disconnect()
-						return resolve({
+						const response = {
 							copySample: [undefined],
 							binsSample: [undefined],
 							matching,
-							values
-						})
+							values,
+							lied
+						}
 						const $hash = await hashify(response)
 						return resolve({...response, $hash })
 					}
