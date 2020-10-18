@@ -80,6 +80,7 @@ body * {
 	display: none;
 }
 strong {
+	color: #3e3b3b;
 	font-weight: bold !important;
 }
 visitor {
@@ -101,6 +102,7 @@ visitor {
 #fingerprint-data > div {
 	line-height: 1.5;
 	font-size: 14px;
+	color: #777;
 	overflow-wrap: break-word;
     border-bottom: 1px solid #eee;
     padding: 15px 20px;
