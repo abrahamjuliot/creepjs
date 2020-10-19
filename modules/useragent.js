@@ -18,10 +18,13 @@ export const userAgentData = [
       "Mozilla/5.0 (Android 9; Mobile; rv:80.0) Gecko/80.0 Firefox/80.0",
       "Mozilla/5.0 (Android 10; Mobile; rv:80.0) Gecko/80.0 Firefox/80.0",
       "Mozilla/5.0 (Android 8.1; Mobile; rv:68.0) Gecko/20100101 Firefox/68.0",
-      "Mozilla/5.0 (Android 9; Mobile; rv:81.0) Gecko/81.0 Firefox/81.0"
+      "Mozilla/5.0 (Android 9; Mobile; rv:81.0) Gecko/81.0 Firefox/81.0",
+      "Mozilla/5.0 (Android 9; Mobile; rv:78.0) Gecko/20100101 Firefox/78.0",
+      "Mozilla/5.0 (Android 9; Mobile; rv:82.0) Gecko/82.0 Firefox/82.0"
     ],
-    "time": "10/19/2020, 6:25:24 AM",
-    "decoded": "SpiderMonkey"
+    "time": "10/19/2020, 6:48:05 AM",
+    "decoded": "SpiderMonkey",
+    "isUpdated": true
   },
   {
     "id": "870471782bc768a4dae3198669358f0d199b92d9e1c4441a3399141ff502a486",
@@ -29,13 +32,89 @@ export const userAgentData = [
     "userAgent": [
       "Mozilla/5.0 (Android 8.1; Mobile; rv:68.0) Gecko/20100101 Firefox/68.0",
       "Mozilla/5.0 (Android 10; Mobile; rv:80.0) Gecko/80.0 Firefox/80.0",
-      "Mozilla/5.0 (Android 9; Mobile; rv:81.0) Gecko/81.0 Firefox/81.0"
+      "Mozilla/5.0 (Android 9; Mobile; rv:81.0) Gecko/81.0 Firefox/81.0",
+      "Mozilla/5.0 (Android 9; Mobile; rv:78.0) Gecko/20100101 Firefox/78.0",
+      "Mozilla/5.0 (Android 9; Mobile; rv:82.0) Gecko/82.0 Firefox/82.0"
     ],
     "uaSystem": [
       "Android"
     ],
-    "time": "10/19/2020, 6:25:24 AM",
-    "decoded": "SpiderMonkey"
+    "time": "10/19/2020, 6:48:05 AM",
+    "decoded": "SpiderMonkey",
+    "isUpdated": true
+  },
+  {
+    "id": "e03db0479814195a41344e0ff29d2a28da34c9467df06479c11fa8600a0c6aa7",
+    "type": "CSS style version",
+    "userAgent": [
+      "Mozilla/5.0 (Android 9; Mobile; rv:81.0) Gecko/81.0 Firefox/81.0",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0",
+      "Mozilla/5.0 (Android 7.1.2; Mobile; rv:81.0) Gecko/81.0 Firefox/81.0",
+      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:81.0) Gecko/20100101 Firefox/81.0",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0) Gecko/20100101 Firefox/81.0",
+      "Mozilla/5.0 (Android 9; Mobile; rv:80.0) Gecko/80.0 Firefox/80.0",
+      "Mozilla/5.0 (Android 10; Mobile; rv:80.0) Gecko/80.0 Firefox/80.0",
+      "Mozilla/5.0 (Android 9; Mobile; rv:78.0) Gecko/20100101 Firefox/78.0",
+      "Mozilla/5.0 (Android 9; Mobile; rv:82.0) Gecko/82.0 Firefox/82.0"
+    ],
+    "uaSystem": [
+      "Android",
+      "Windows",
+      "Linux"
+    ],
+    "time": "10/19/2020, 6:48:05 AM",
+    "decoded": "Firefox 80-81"
+  },
+  {
+    "id": "a4fb2b96bb73e847ac83613667c1d8274c0d10ae86a0f97f3f3689254b62677c",
+    "type": "HTMLElement version",
+    "userAgent": [
+      "Mozilla/5.0 (Android 9; Mobile; rv:81.0) Gecko/81.0 Firefox/81.0",
+      "Mozilla/5.0 (Android 7.1.2; Mobile; rv:81.0) Gecko/81.0 Firefox/81.0",
+      "Mozilla/5.0 (Android 9; Mobile; rv:80.0) Gecko/80.0 Firefox/80.0",
+      "Mozilla/5.0 (Android 10; Mobile; rv:80.0) Gecko/80.0 Firefox/80.0",
+      "Mozilla/5.0 (Android 9; Mobile; rv:78.0) Gecko/20100101 Firefox/78.0",
+      "Mozilla/5.0 (Android 9; Mobile; rv:82.0) Gecko/82.0 Firefox/82.0"
+    ],
+    "uaSystem": [
+      "Android"
+    ],
+    "time": "10/19/2020, 6:48:05 AM",
+    "decoded": "Firefox 80-81"
+  },
+  {
+    "id": "043b39165047d137bb61cc649e0fd47bc1b48f02507cfdd697f2f0f55f632f0b",
+    "type": "system styles",
+    "userAgent": [
+      "Mozilla/5.0 (Android 9; Mobile; rv:81.0) Gecko/81.0 Firefox/81.0",
+      "Mozilla/5.0 (Android 7.1.2; Mobile; rv:81.0) Gecko/81.0 Firefox/81.0",
+      "Mozilla/5.0 (Android 9; Mobile; rv:80.0) Gecko/80.0 Firefox/80.0",
+      "Mozilla/5.0 (Android 10; Mobile; rv:80.0) Gecko/80.0 Firefox/80.0",
+      "Mozilla/5.0 (Android 9; Mobile; rv:82.0) Gecko/82.0 Firefox/82.0"
+    ],
+    "uaSystem": [
+      "Android"
+    ],
+    "time": "10/19/2020, 6:48:05 AM",
+    "decoded": "Firefox"
+  },
+  {
+    "id": "426300eb3654987988da3d36e65fed0a6eca001457efbda1733e30da717aa2e4",
+    "type": "system styles",
+    "uaSystem": [
+      "Windows",
+      "Linux",
+      "Mac",
+      "Android"
+    ],
+    "userAgent": [
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0",
+      "Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0",
+      "Mozilla/5.0 (Android 9; Mobile; rv:78.0) Gecko/20100101 Firefox/78.0"
+    ],
+    "time": "10/19/2020, 6:47:01 AM",
+    "decoded": "Firefox"
   },
   {
     "id": "bda2b53e83f108bf09529d2d3cae776ae29b325608dd3af747737fadb364b4a3",
@@ -347,6 +426,18 @@ export const userAgentData = [
     "decoded": "Chrome 86"
   },
   {
+    "id": "8a59e1e25a8672124c07399a62428623a11efbb761ab0e673902810ccc8842ef",
+    "type": "contentWindow version",
+    "uaSystem": [
+      "Android"
+    ],
+    "userAgent": [
+      "Mozilla/5.0 (Linux; Android 9; ASUS Chromebook Flip C100PA) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36"
+    ],
+    "time": "10/14/2020, 4:12:57 AM",
+    "decoded": "Chrome 86"
+  },
+  {
     "id": "770834f4903cd6ac1f754976c12eba72099d1fd50a777da86316286c4b6858cc",
     "type": "CSS style version",
     "userAgent": [
@@ -624,56 +715,6 @@ export const userAgentData = [
     "decoded": "Safari 14"
   },
   {
-    "id": "e03db0479814195a41344e0ff29d2a28da34c9467df06479c11fa8600a0c6aa7",
-    "type": "CSS style version",
-    "userAgent": [
-      "Mozilla/5.0 (Android 9; Mobile; rv:81.0) Gecko/81.0 Firefox/81.0",
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0",
-      "Mozilla/5.0 (Android 7.1.2; Mobile; rv:81.0) Gecko/81.0 Firefox/81.0",
-      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:81.0) Gecko/20100101 Firefox/81.0",
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0) Gecko/20100101 Firefox/81.0",
-      "Mozilla/5.0 (Android 9; Mobile; rv:80.0) Gecko/80.0 Firefox/80.0",
-      "Mozilla/5.0 (Android 10; Mobile; rv:80.0) Gecko/80.0 Firefox/80.0"
-    ],
-    "uaSystem": [
-      "Android",
-      "Windows",
-      "Linux"
-    ],
-    "time": "10/8/2020, 12:19:34 AM",
-    "decoded": "Firefox 80-81"
-  },
-  {
-    "id": "a4fb2b96bb73e847ac83613667c1d8274c0d10ae86a0f97f3f3689254b62677c",
-    "type": "HTMLElement version",
-    "userAgent": [
-      "Mozilla/5.0 (Android 9; Mobile; rv:81.0) Gecko/81.0 Firefox/81.0",
-      "Mozilla/5.0 (Android 7.1.2; Mobile; rv:81.0) Gecko/81.0 Firefox/81.0",
-      "Mozilla/5.0 (Android 9; Mobile; rv:80.0) Gecko/80.0 Firefox/80.0",
-      "Mozilla/5.0 (Android 10; Mobile; rv:80.0) Gecko/80.0 Firefox/80.0"
-    ],
-    "uaSystem": [
-      "Android"
-    ],
-    "time": "10/8/2020, 12:19:34 AM",
-    "decoded": "Firefox 80-81"
-  },
-  {
-    "id": "043b39165047d137bb61cc649e0fd47bc1b48f02507cfdd697f2f0f55f632f0b",
-    "type": "system styles",
-    "userAgent": [
-      "Mozilla/5.0 (Android 9; Mobile; rv:81.0) Gecko/81.0 Firefox/81.0",
-      "Mozilla/5.0 (Android 7.1.2; Mobile; rv:81.0) Gecko/81.0 Firefox/81.0",
-      "Mozilla/5.0 (Android 9; Mobile; rv:80.0) Gecko/80.0 Firefox/80.0",
-      "Mozilla/5.0 (Android 10; Mobile; rv:80.0) Gecko/80.0 Firefox/80.0"
-    ],
-    "uaSystem": [
-      "Android"
-    ],
-    "time": "10/8/2020, 12:19:34 AM",
-    "decoded": "Firefox"
-  },
-  {
     "id": "502ab814e43ae481062c98a9597adba5cab47f0ae044b8351acf0327047c9770",
     "type": "contentWindow version",
     "uaSystem": [
@@ -875,22 +916,6 @@ export const userAgentData = [
     ],
     "time": "10/4/2020, 5:57:01 AM",
     "decoded": "Tor Browser 10"
-  },
-  {
-    "id": "426300eb3654987988da3d36e65fed0a6eca001457efbda1733e30da717aa2e4",
-    "type": "system styles",
-    "uaSystem": [
-      "Windows",
-      "Linux",
-      "Mac"
-    ],
-    "userAgent": [
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0",
-      "Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0",
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0"
-    ],
-    "time": "10/4/2020, 5:57:01 AM",
-    "decoded": "Firefox"
   },
   {
     "id": "88469fbb11e1225292dec26e5a88102c7955e40bc978f4d1048757b006f0ab82",
@@ -1156,16 +1181,64 @@ export const userAgentData = [
     "decoded": "Firefox 68"
   },
   {
-    "id": "8a59e1e25a8672124c07399a62428623a11efbb761ab0e673902810ccc8842ef",
-    "type": "contentWindow version",
+    "id": "5311d4b7dea48bb3b239b398e1f206b242bfab7b8e51dbf4743919266e48a2d2",
+    "type": "js engine",
+    "isNew": true,
     "uaSystem": [
       "Android"
     ],
     "userAgent": [
-      "Mozilla/5.0 (Linux; Android 9; ASUS Chromebook Flip C100PA) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36"
+      "Mozilla/5.0 (Android 9; Mobile; rv:78.0) Gecko/20100101 Firefox/78.0"
     ],
-    "time": "10/14/2020, 4:12:57 AM",
-    "decoded": "Chrome 86"
+    "time": "10/19/2020, 6:49:53 AM"
+  },
+  {
+    "id": "457af91af33227dd7be6683000ec2f86c964015e0431e7a916986591aad848a4",
+    "type": "HTMLElement version",
+    "isNew": true,
+    "uaSystem": [
+      "Android"
+    ],
+    "userAgent": [
+      "Mozilla/5.0 (Android 9; Mobile; rv:78.0) Gecko/20100101 Firefox/78.0"
+    ],
+    "time": "10/19/2020, 6:49:53 AM"
+  },
+  {
+    "id": "86e99254155a7fcff142f8e0ddffa764fe5252728779b5127bb9a9c65ee2d99f",
+    "type": "contentWindow version",
+    "isNew": true,
+    "uaSystem": [
+      "Android"
+    ],
+    "userAgent": [
+      "Mozilla/5.0 (Android 9; Mobile; rv:78.0) Gecko/20100101 Firefox/78.0"
+    ],
+    "time": "10/19/2020, 6:49:53 AM"
+  },
+  {
+    "id": "7e041acc4b9d3f503ab066f0446dd496227ca9777fcae277d2e762f3c43c7c7c",
+    "type": "CSS style version",
+    "isNew": true,
+    "uaSystem": [
+      "Android"
+    ],
+    "userAgent": [
+      "Mozilla/5.0 (Android 9; Mobile; rv:78.0) Gecko/20100101 Firefox/78.0"
+    ],
+    "time": "10/19/2020, 6:49:53 AM"
+  },
+  {
+    "id": "247031281434f088f325f1ce330b1d34a03bff8223010f61d46b12c97eff24c2",
+    "type": "system styles",
+    "isNew": true,
+    "uaSystem": [
+      "Android"
+    ],
+    "userAgent": [
+      "Mozilla/5.0 (Android 9; Mobile; rv:78.0) Gecko/20100101 Firefox/78.0"
+    ],
+    "time": "10/19/2020, 6:49:53 AM"
   },
   {
     "id": "9712080444cbd00431bf795c0b443b61d7edbc6f1a2519d0472a6e6212bbadb7",
