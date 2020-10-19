@@ -744,7 +744,8 @@ export const userAgentData = [
     "uaSystem": [
       "Chrome OS"
     ],
-    "time": "10/7/2020, 5:06:43 AM"
+    "time": "10/7/2020, 5:06:43 AM",
+    "decoded": "Chrome 84"
   },
   {
     "id": "fd54b7e8981ca7eb04729fb0de2c393ead4fe66f6d2ca15f626970e2ce0140f6",

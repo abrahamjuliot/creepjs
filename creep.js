@@ -251,12 +251,20 @@ const imports = {
 	const { trash: hasTrash, lies: hasLied, capturedErrors: hasErrors } = creep
 
 	// post useragent 
+	const controller = new AbortController()
+	const { signal } = controller
 	fetch(
 		`/?distrust=${hasLied}&errors=${fp.consoleErrors.$hash}&math=${fp.maths.$hash}&html=${fp.htmlElementVersion.$hash}&win=${fp.iframeContentWindowVersion.$hash}&style=${fp.cssStyleDeclarationVersion.getComputedStyle.$hash}&system=${fp.cssStyleDeclarationVersion.system.$hash}&ua=${fp.navigator.userAgent}&uaSystem=${fp.navigator.system}`,
-		{ method: 'POST' }
+		{ method: 'POST', signal }
 	)
-	.then(response => console.log('useragent post success') )
-	.catch(error => console.log('useragent post failed') )
+	.then(response => {})
+	.catch(error => {
+		if (error.name == 'AbortError') {
+			return
+		}
+		return console.log(error)
+	})
+	setTimeout(() => controller.abort(), 3000)
 
 	// patch dom
 	const {
