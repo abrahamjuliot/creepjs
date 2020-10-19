@@ -1,13 +1,5 @@
 // screen (allow some discrepancies otherwise lie detection triggers at random)
 
-const getDeviceDimensions = (width, height, diameter = 180) => {
-	const aspectRatio = width / height
-	const isPortrait = height > width
-	const deviceHeight = isPortrait ? diameter : diameter / aspectRatio
-	const deviceWidth = isPortrait ? diameter * aspectRatio : diameter
-	return { deviceHeight, deviceWidth }
-}
-
 const getDevice = (width, height) => {
 	// https://gs.statcounter.com/screen-resolution-stats/
 	const resolution = [
@@ -61,11 +53,7 @@ export const getScreen = imports => {
 	const {
 		require: {
 			isFirefox,
-			hashMini,
 			hashify,
-			patch,
-			html,
-			note,
 			captureError,
 			attempt,
 			sendToTrash,
@@ -151,31 +139,7 @@ export const getScreen = imports => {
 				pixelDepth: attempt(() => pixelDepth ? trustInteger('pixelDepth - invalid return type', pixelDepth) : undefined)
 			}
 			const $hash = await hashify(data)
-			resolve({ ...data, $hash })
-
-			const el = document.getElementById('creep-screen')
-			const { deviceHeight, deviceWidth } = getDeviceDimensions(width, height)
-			return patch(el, html`
-			<div>
-				
-				<div class="flex-grid">
-					<div class="col-six">
-						<strong>Screen</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
-						${
-							Object.keys(data).map(key => {
-								const value = data[key]
-								return `<div>${key}: ${value ? value : note.blocked}</div>`
-							}).join('')
-						}
-					</div>
-					<div class="col-six screen-container">
-						<div class="screen-frame" style="width:${deviceWidth}px;height:${deviceHeight}px;">
-							<div class="screen-glass"></div>
-						</div>
-					</div>
-				</div>
-			</div>
-			`)
+			return resolve({ ...data, $hash })
 		}
 		catch (error) {
 			captureError(error)

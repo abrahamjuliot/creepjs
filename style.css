@@ -63,7 +63,7 @@ body {
 	font-family: monospace !important;
 	color: var(--text);
 	height: 100vh;
-	background: rgba(101, 127, 202, 0.02);
+	background: #657fca0a;
 }
 
 body * { 
@@ -109,7 +109,7 @@ visitor {
 	background: #fff;
 }
 
-#fingerprint-data .fingerprint-header {
+#fingerprint-data .fingerprint-header-container {
     position: fixed;
 	font-size: 18px;
     top: 0;
@@ -117,7 +117,12 @@ visitor {
     right: 0;
     left: 0;
     z-index: 99;
+    margin: 0 auto;
+}
+#fingerprint-data .fingerprint-header {
+	font-size: 18px;
     max-width: 750px;
+	padding: 0 20px;
     margin: 0 auto;
 }
 
@@ -166,7 +171,8 @@ visitor {
 	background: var(--error);
 }
 #fingerprint-data .blocked {
-	background: #eee;
+	background: #f1f1f1;
+    color: #aaa;
 }
 #fingerprint-data .errors {
 	background: var(--warn);
@@ -385,7 +391,7 @@ input[type="radio"] {
     background: #fff;
 }
 .main-hash {
-	background: #fff;
+	background: #ffffff73;
     padding: 0 4px;
     border-radius: 2px;
     margin: 0 10px;
@@ -419,7 +425,7 @@ input[type="radio"] {
 
 @keyframes reveal {
   0% {
-	opacity: 0.1;
+	opacity: 0;
   }
   100% {
     opacity: 0.5;

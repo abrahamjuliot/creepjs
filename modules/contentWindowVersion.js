@@ -2,14 +2,7 @@ export const getIframeContentWindowVersion = imports => {
 
 	const {
 		require: {
-			hashMini,
 			hashify,
-			patch,
-			html,
-			note,
-			count,
-			modal,
-			decryptKnown,
 			captureError,
 			contentWindow
 		}
@@ -23,18 +16,7 @@ export const getIframeContentWindowVersion = imports => {
 			const apple = keys.filter(key => (/apple/i).test(key)).length
 			const data = { keys, apple, moz, webkit } 
 			const $hash = await hashify(data)
-			resolve({ ...data, $hash })
-			const id = 'creep-iframe-content-window-version'
-			const el = document.getElementById(id)
-			return patch(el, html`
-			<div class="col-six">
-				<strong>Window</strong><span class="hash">${hashMini($hash)}</span>
-				<div>browser: ${decryptKnown($hash)}</div>
-				<div>keys (${count(keys)}): ${keys && keys.length ? modal(id, keys.join(', ')) : note.blocked}</div>
-				<div>moz: ${''+moz}</div>
-				<div>webkit: ${''+webkit}</div>
-				<div>apple: ${''+apple}</div>
-			`)
+			return resolve({ ...data, $hash })
 		}
 		catch (error) {
 			captureError(error)

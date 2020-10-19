@@ -7,11 +7,7 @@ export const getMediaTypes = imports => {
 
 	const {
 		require: {
-			hashMini,
 			hashify,
-			patch,
-			html,
-			modal,
 			captureError
 		}
 	} = imports
@@ -33,29 +29,7 @@ export const getMediaTypes = imports => {
 				return mediaTypes.push(data)
 			})
 			const $hash = await hashify(mediaTypes)
-			resolve({ mediaTypes, $hash })
-			const id = 'creep-media-types'
-			const el = document.getElementById(id)
-			const header = `<div>
-			<br>Audio play type [AP]
-			<br>Video play type [VP]
-			<br>Media Source support [MS]
-			<br>Media Recorder support [MR]
-			<br><br>[PR]=Probably, [MB]=Maybe, [TR]=True, [--]=False/""
-			<br>[AP][VP][MS][MR]</div>`
-			const results = mediaTypes.map(type => {
-				const { mimeType, audioPlayType, videoPlayType, mediaSource, mediaRecorder } = type
-				return `${audioPlayType == 'probably' ? '[PB]' : audioPlayType == 'maybe' ? '[MB]': '[--]'}${videoPlayType == 'probably' ? '[PB]' : videoPlayType == 'maybe' ? '[MB]': '[--]'}${mediaSource ? '[TR]' : '[--]'}${mediaRecorder ? '[TR]' : '[--]'}: ${mimeType}
-				`
-			})
-			return patch(el, html`
-			<div class="col-six" id="creep-media-types">
-				<strong>Media Types</strong><span class="hash">${hashMini($hash)}</span>
-				<div>results: ${
-					modal(id, header+results.join('<br>'))
-				}</div>
-			</div>
-			`)
+			return resolve({ mediaTypes, $hash })
 		}
 		catch (error) {
 			captureError(error)

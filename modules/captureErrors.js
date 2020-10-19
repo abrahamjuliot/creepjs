@@ -98,11 +98,7 @@ const getCapturedErrors = imports => {
 
 	const {
 		require: {
-			hashMini,
 			hashify,
-			patch,
-			html,
-			modal,
 			errorsCaptured
 		}
 	} = imports
@@ -110,20 +106,9 @@ const getCapturedErrors = imports => {
 	const errors = errorsCaptured.getErrors()
 
 	return new Promise(async resolve => {
-		const len = errors.length
 		const data =  errors
 		const $hash = await hashify(data)
-		resolve({data, $hash })
-		const id = 'creep-captured-errors'
-		const el = document.getElementById(id)
-		return patch(el, html`
-		<div class="col-four${len ? ' errors': ''}">
-			<strong>Errors</strong>${len ? `<span class="hash">${hashMini($hash)}</span>` : ''}
-			<div>captured (${!len ? '0' : ''+len}): ${
-				len ? modal(id, Object.keys(data).map((key, i) => `${i+1}: ${data[key].trustedName} - ${data[key].trustedMessage} `).join('<br>')) : ''
-			}</div>
-		</div>
-		`)
+		return resolve({data, $hash })
 	})
 }
 

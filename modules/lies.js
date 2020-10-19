@@ -867,11 +867,7 @@ const getLies = imports => {
 
 	const {
 		require: {
-			hashMini,
 			hashify,
-			patch,
-			html,
-			modal,
 			lieRecords
 		}
 	} = imports
@@ -879,8 +875,6 @@ const getLies = imports => {
 	const records = lieRecords.getRecords()
 	return new Promise(async resolve => {
 		let totalLies = 0
-		const toJSONFormat = obj => JSON.stringify(obj, null, '\t')
-		const sanitize = str => str.replace(/\</g, '&lt;')
 		records.forEach(lie => {
 			if (!!lie.lieTypes.fingerprint) {
 				totalLies++
@@ -889,36 +883,11 @@ const getLies = imports => {
 				totalLies += lie.lieTypes.lies.length
 			}
 		})
-		
-		const data = records.map(lie => ({ name: lie.name, lieTypes: lie.lieTypes }))
-		data.sort((a, b) => (a.name > b.name) ? 1 : -1)
+		const data = records
+			.map(lie => ({ name: lie.name, lieTypes: lie.lieTypes }))
+			.sort((a, b) => (a.name > b.name) ? 1 : -1)
 		const $hash = await hashify(data)
-		resolve({data, $hash })
-		const id = 'creep-lies'
-		const el = document.getElementById(id)
-		return patch(el, html`
-		<div class="col-four${totalLies ? ' lies': ''}">
-			<strong>Lies</strong>${totalLies ? `<span class="hash">${hashMini($hash)}</span>` : ''}
-			<div>unmasked (${!totalLies ? '0' : ''+totalLies }): ${
-				totalLies ? modal(id, Object.keys(data).map(key => {
-					const { name, lieTypes: { lies, fingerprint } } = data[key]
-					const lieFingerprint = !!fingerprint ? { hash: hashMini(fingerprint), json: sanitize(toJSONFormat(fingerprint)) } : undefined
-					return `
-						<div style="padding:5px">
-							<strong>${name}</strong>:
-							${lies.length ? lies.map(lie => `<br>${Object.keys(lie)[0]}`).join(''): ''}
-							${
-								lieFingerprint ? `
-									<br>Tampering code leaked a fingerprint: ${lieFingerprint.hash}
-									<br>Unexpected code: ${lieFingerprint.json}`: 
-								''
-							}
-						</div>
-					`
-				}).join('')) : ''
-			}</div>
-		</div>
-		`)
+		return resolve({data, totalLies, $hash })
 	})
 }
 

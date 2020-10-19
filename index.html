@@ -10,52 +10,54 @@
 	<div id="fp-app">
 		<fingerprint>
 			<div id="fingerprint-data">
-				<div id="creep-fingerprint" class="fingerprint-header">
-					<strong>Your ID:</strong><span class="trusted-fingerprint"></span>
-					<div><span class="time">0 ms</span></div>
+				<div class="fingerprint-header-container">
+					<div class="fingerprint-header">
+						<strong>Your ID:</strong><span class="trusted-fingerprint"></span>
+						<div><span class="time">0 ms</span></div>
+					</div>
 				</div>
 				<div id="creep-browser" class="visitor-info">
 					<div class="flex-grid">
 						<div class="col-six">
-							<strong id="loader">Loading...</strong>
-							<div>trust score: <span class="blurred">100%</span></div>
-							<div>visits: <span class="blurred">1</span></div>
-							<div>first: <span class="blurred">ABC ABC ## ####, 00:00:00 AM</span></div>
-							<div>last: <span class="blurred">ABC ABC ## ####, 00:00:00 AM</span></div>
-							<div>persistence: <span class="blurred">0.0 hours/span></div>
+							<strong id="loader">Computing...</strong>
+							<div>trust score:</div>
+							<div>visits:</div>
+							<div>first:</div>
+							<div>last:</div>
+							<div>persistence:</div>
 						</div>
 						<div class="col-six">
-							<div>has trash: <span class="blurred">false</span></div>
-							<div>has lied: <span class="blurred">false</span></div>
-							<div>has errors: <span class="blurred">false</span></div>
-							<div>loose fingerprints: <span class="blurred">1 (last: 00000000)</span></div>
-							<div>bot: <span class="blurred">false</span></div>
+							<div>has trash:</div>
+							<div>has lied:</div>
+							<div>has errors:</div>
+							<div>loose fingerprints:</div>
+							<div>bot:</div>
 						</div>
 					</div>
 				</div>
 				<div class="flex-grid">
-					<div class="col-four" id="creep-trash">
+					<div class="col-four">
 						<strong>Trash</strong>
 						<div>gathered (0):</div>
 					</div>
-					<div class="col-four" id="creep-lies">
+					<div class="col-four">
 						<strong>Lies</strong>
 						<div>unmasked (0):</div>
 					</div>
-					<div class="col-four" id="creep-captured-errors">
+					<div class="col-four">
 						<strong>Errors</strong>
 						<div>captured (0):</div>
 					</div>
 				</div>
 				<div class="flex-grid">
-					<div class="col-six" id="creep-cloudflare">
+					<div class="col-six">
 						<strong>Cloudflare</strong>
 						<div>ip address:</div>
 						<div>system:</div>
 						<div>ip location:</div>
 						<div>tls version:</div>
 					</div>
-					<div class="col-six" id="creep-webrtc">
+					<div class="col-six">
 						<strong>WebRTC</strong>
 						<div>webRTC leak:</div>
 						<div>ip address:</div>
@@ -63,67 +65,63 @@
 						<div>connection:</div>
 					</div>
 				</div>
-				<div id="creep-worker-scope">
-					<div class="flex-grid">
-						<div class="col-six">
-							<strong>Worker</strong>
-							<div>timezone offset:</div>
-							<div>language:</div>
-							<div>platform:</div>
-							<div>system:</div>
-							<div>hardwareConcurrency:</div>
-							<div>js runtime:</div>
-							<div>canvas 2d:</div>
-							<div>webgl vendor:</div>
-						</div>
-						<div class="col-six">
-							<div>userAgent:</div>
-							<div class="block-text"></div>
-							<div>webgl renderer:</div>
-							<div class="block-text"></div>
-						</div>
+				<div class="flex-grid">
+					<div class="col-six">
+						<strong>Worker</strong>
+						<div>timezone offset:</div>
+						<div>language:</div>
+						<div>platform:</div>
+						<div>system:</div>
+						<div>hardwareConcurrency:</div>
+						<div>js runtime:</div>
+						<div>canvas 2d:</div>
+						<div>webgl vendor:</div>
 					</div>
-				</div>
-				<div id="creep-canvas-webgl">
-					<div class="flex-grid">
-						<div class="col-six">
-							<strong>Canvas webgl</strong>
-							<div>matching renderer/vendor:</div>
-							<div>matching data URI:</div>
-							<div>webgl:</div>
-							<div>parameters (0):</div>
-							<div>extensions (0):</div>
-							<div>vendor:</div>
-							<div>renderer:</div>
-							<div class="block-text"></div>
-						</div>
-						<div class="col-six">
-							<div>webgl2:</div>
-							<div>parameters (0):</div>
-							<div>extensions (0):</div>
-							<div>vendor:</div>
-							<div>renderer:</div>
-							<div class="block-text"></div>
-						</div>
+					<div class="col-six">
+						<div>userAgent:</div>
+						<div class="block-text"></div>
+						<div>webgl renderer:</div>
+						<div class="block-text"></div>
 					</div>
 				</div>
 				<div class="flex-grid">
-					<div class="col-six" id="creep-canvas-2d">
+					<div class="col-six">
+						<strong>Canvas webgl</strong>
+						<div>matching renderer/vendor:</div>
+						<div>matching data URI:</div>
+						<div>webgl:</div>
+						<div>parameters (0):</div>
+						<div>extensions (0):</div>
+						<div>vendor:</div>
+						<div>renderer:</div>
+						<div class="block-text"></div>
+					</div>
+					<div class="col-six">
+						<div>webgl2:</div>
+						<div>parameters (0):</div>
+						<div>extensions (0):</div>
+						<div>vendor:</div>
+						<div>renderer:</div>
+						<div class="block-text"></div>
+					</div>
+				</div>
+				<div class="flex-grid">
+					<div class="col-six">
 						<strong>Canvas 2d</strong>
 					</div>
-					<div class="col-six" id="creep-canvas-bitmap-renderer">
+					<div class="col-six">
 						<strong>Canvas bitmaprenderer</strong>
 					</div>
 				</div>
 				<div class="flex-grid">
-					<div class="col-six" id="creep-offline-audio-context">
+					<div class="col-six">
 						<strong>Audio</strong>
 						<div>sample:</div>
 						<div>copy:</div>
 						<div>matching:</div>
 						<div>node values:</div>
 					</div>
-					<div class="col-six" id="creep-voices">
+					<div class="col-six">
 						<strong>Speech</strong>
 						<div>microsoft:</div>
 						<div>google:</div>
@@ -133,102 +131,96 @@
 					</div>
 				</div>
 				<div class="flex-grid">
-					<div class="col-six" id="creep-media-types">
+					<div class="col-six">
 						<strong>Media Types</strong>
 						<div>results:</div>
 					</div>
-					<div class="col-six" id="creep-media-devices">
+					<div class="col-six">
 						<strong>Media Devices</strong>
 						<div>devices (0):</div>
 					</div>
 				</div>
 				<div class="flex-grid">
-					<div class="col-six" id="creep-client-rects">
+					<div class="col-six">
 						<strong>DOMRect</strong>
 						<div>elements:</div>
 						<div>results:</div>
 						<div>emojis v13.0:</div>
 						<div>results:</div>
 					</div>
-					<div class="col-six" id="creep-fonts">
+					<div class="col-six">
 						<strong>Fonts</strong>
 						<div>results (0):</div>
 					</div>
 				</div>
-				<div id="creep-timezone">
-					<div class="flex-grid">
-						<div class="col-six">
-							<strong>Timezone</strong>
-							<div>timezone:</div>
-							<div>timezone location:</div>
-							<div>timezone offset:</div>
-							<div>timezone offset computed:</div>
-						</div>
-						<div class="col-six">
-							<div>matching offsets:</div>
-							<div>timezone measured:</div>
-							<div>relativeTimeFormat:</div>
-							<div>locale language:</div>
-							<div>writing system keys:</div>
-						</div>
+				<div class="flex-grid">
+					<div class="col-six">
+						<strong>Timezone</strong>
+						<div>timezone:</div>
+						<div>timezone location:</div>
+						<div>timezone offset:</div>
+						<div>timezone offset computed:</div>
+					</div>
+					<div class="col-six">
+						<div>matching offsets:</div>
+						<div>timezone measured:</div>
+						<div>relativeTimeFormat:</div>
+						<div>locale language:</div>
+						<div>writing system keys:</div>
 					</div>
 				</div>
-				<div id="creep-screen">
-					<div class="flex-grid">
-						<div class="col-six">
-							<strong>Screen</strong>
-							<div>device:</div>
-							<div>width:</div>
-							<div>outerWidth:</div>
-							<div>availWidth:</div>
-							<div>height:</div>
-							<div>outerHeight:</div>
-							<div>availHeight:</div>
-							<div>colorDepth:</div>
-							<div>pixelDepth:</div>
-						</div>
-						<div class="col-six screen-container">
-						</div>
+				<div class="flex-grid">
+					<div class="col-six">
+						<strong>Screen</strong>
+						<div>device:</div>
+						<div>width:</div>
+						<div>outerWidth:</div>
+						<div>availWidth:</div>
+						<div>height:</div>
+						<div>outerHeight:</div>
+						<div>availHeight:</div>
+						<div>colorDepth:</div>
+						<div>pixelDepth:</div>
+					</div>
+					<div class="col-six screen-container">
 					</div>
 				</div>
-				<div id="creep-css-style-declaration-version">
-					<div class="flex-grid">
-						<div class="col-six">
-							<strong>Computed Style</strong>
-							<div>system:</div>
-							<div>engine:</div>
-							<div>browser: </div>
-							<div>prototype:</div>
-							<div>getComputedStyle:</div>
-							<div>HTMLElement.style:</div>
-							<div>CSSRuleList.style:</div>
-						</div>
-						<div class="col-six">
-							<div>keys:</div>
-							<div>moz:</div>
-							<div>webkit:</div>
-							<div>apple:</div>
-							<div>matching:</div>
-							<div>system styles:</div>
-							<div>system styles rendered:</div>
-						</div>
+				<div class="flex-grid">
+					<div class="col-six">
+						<strong>Computed Style</strong>
+						<div>system:</div>
+						<div>engine:</div>
+						<div>browser: </div>
+						<div>prototype:</div>
+						<div>getComputedStyle:</div>
+						<div>HTMLElement.style:</div>
+						<div>CSSRuleList.style:</div>
+					</div>
+					<div class="col-six">
+						<div>keys:</div>
+						<div>moz:</div>
+						<div>webkit:</div>
+						<div>apple:</div>
+						<div>matching:</div>
+						<div>system styles:</div>
+						<div>system styles rendered:</div>
 					</div>
 				</div>
 				<div>
 					<div class="flex-grid">
-						<div class="col-six" id="creep-maths">
+						<div class="col-six">
 							<strong>Math</strong>
 							<div>js runtime:</div>
 							<div>results:</div>
 						</div>
-						<div class="col-six" id="creep-console-errors">
+						<div class="col-six">
 							<strong>Error</strong>
 							<div>js engine:</div>
 							<div>results:</div>
 						</div>
 					</div>
 					<div class="flex-grid">
-						<div class="col-six" id="creep-iframe-content-window-version">
+						<div class="col-six">
 							<strong>Window</strong>
 							<div>browser:</div>
 							<div>keys (0):</div>
@@ -236,40 +228,38 @@
 							<div>webkit:</div>
 							<div>apple:</div>
 						</div>
-						<div class="col-six" id="creep-html-element-version">
+						<div class="col-six">
 							<strong>HTMLElement</strong>
 							<div>browser:</div>
 							<div>keys (0):</div>
 						</div>
 					</div>
 				</div>
-				<div id="creep-navigator">
-					<div class="flex-grid">
-						<div class="col-six">
-							<strong>Navigator</strong>
-							<div>deviceMemory:</div>
-							<div>doNotTrack:</div>
-							<div>hardwareConcurrency:</div>
-							<div>language:</div>
-							<div>maxTouchPoints:</div>
-							<div>vendor:</div>
-							<div>plugins (0):</div>
-							<div>mimeTypes (0):</div>
-							<div>ua architecture:</div>
-							<div>ua model:</div>
-							<div>ua platform:</div>
-							<div>ua platformVersion:</div>
-							<div>ua uaFullVersion:</div>
-							<div>properties (0):</div>
-						</div>
-						<div class="col-six">
-							<div>platform:</div>
-							<div>system:</div>
-							<div>userAgent:</div>
-							<div class="block-text"></div>
-							<div>appVersion:</div>
-							<div class="block-text"></div>
-						</div>
+				<div class="flex-grid">
+					<div class="col-six">
+						<strong>Navigator</strong>
+						<div>deviceMemory:</div>
+						<div>doNotTrack:</div>
+						<div>hardwareConcurrency:</div>
+						<div>language:</div>
+						<div>maxTouchPoints:</div>
+						<div>vendor:</div>
+						<div>plugins (0):</div>
+						<div>mimeTypes (0):</div>
+						<div>ua architecture:</div>
+						<div>ua model:</div>
+						<div>ua platform:</div>
+						<div>ua platformVersion:</div>
+						<div>ua uaFullVersion:</div>
+						<div>properties (0):</div>
+					</div>
+					<div class="col-six">
+						<div>platform:</div>
+						<div>system:</div>
+						<div>userAgent:</div>
+						<div class="block-text"></div>
+						<div>appVersion:</div>
+						<div class="block-text"></div>
 					</div>
 				</div>
 				<div>

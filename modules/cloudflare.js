@@ -3,13 +3,8 @@ export const getCloudflare = imports => {
 	const {
 		require: {
 			getOS,
-			hashMini,
 			hashify,
-			patch,
-			html,
-			note,
-			captureError,
-			attempt
+			captureError
 		}
 	} = imports
 
@@ -27,26 +22,7 @@ export const getCloudflare = imports => {
 			})
 			data.uag = getOS(data.uag)
 			const $hash = await hashify(data)
-			resolve({ ...data, $hash })
-			const el = document.getElementById('creep-cloudflare')
-			return patch(el, html`
-			<div class="col-six">
-				<strong>Cloudflare</strong><span class="hash">${hashMini($hash)}</span>
-				${
-					Object.keys(data).map(key => {
-						const value = data[key]
-						key = (
-							key == 'ip' ? 'ip address' :
-							key == 'uag' ? 'system' :
-							key == 'loc' ? 'ip location' :
-							key == 'tls' ? 'tls version' :
-							key
-						)
-						return `<div>${key}: ${value ? value : note.blocked}</div>`
-					}).join('')
-				}
-			</div>
-			`)
+			return resolve({ ...data, $hash })
 		}
 		catch (error) {
 			captureError(error, 'cloudflare.com: failed or client blocked')

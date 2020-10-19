@@ -2,13 +2,7 @@ export const getVoices = imports => {
 
 	const {
 		require: {
-			hashMini,
 			hashify,
-			patch,
-			html,
-			note,
-			count,
-			modal,
 			captureError
 		}
 	} = imports
@@ -24,20 +18,7 @@ export const getVoices = imports => {
 				check.chromeOS = voices.filter(key => (/chrome os/i).test(key.name)).length
 				check.android = voices.filter(key => (/android/i).test(key.name)).length
 				const $hash = await hashify(voices)
-				resolve({ voices, ...check, $hash })
-				const id = 'creep-voices'
-				const el = document.getElementById(id)
-				const voiceList = voices.map(voice => `${voice.name} (${voice.lang})`)
-				return patch(el, html`
-				<div class="col-six">
-					<strong>Speech</strong><span class="hash">${hashMini($hash)}</span>
-					<div>microsoft: ${''+check.microsoft}</div>
-					<div>google: ${''+check.google}</div>
-					<div>chrome OS: ${''+check.chromeOS}</div>
-					<div>android: ${''+check.android}</div>
-					<div>voices (${count(voices)}): ${voiceList && voiceList.length ? modal(id, voiceList.join('<br>')) : note.unsupported}</div>
-				</div>
-				`)
+				return resolve({ voices, ...check, $hash })
 			}
 			if (!('speechSynthesis' in window)) {
 				return resolve(undefined)

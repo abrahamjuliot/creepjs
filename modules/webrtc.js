@@ -3,11 +3,7 @@ export const getWebRTCData = (imports, cloudflare) => {
 	const {
 		require: {
 			isFirefox,
-			hashMini,
 			hashify,
-			patch,
-			html,
-			note,
 			captureError,
 			attempt,
 			contentWindow
@@ -79,21 +75,7 @@ export const getWebRTCData = (imports, cloudflare) => {
 						connection: connectionLineIpAddress
 					}
 					const $hash = await hashify(data)
-					resolve({ ...data, $hash })
-					const el = document.getElementById('creep-webrtc')
-					return patch(el, html`
-					<div class="col-six">
-						<strong>WebRTC</strong><span class="hash">${hashMini($hash)}</span>
-						${
-							Object.keys(data).map(key => {
-								const value = data[key]
-								return (
-									`<div class="ellipsis">${key}: ${value != undefined ? value : note.blocked}</div>`
-								)
-							}).join('')
-						}
-					</div>
-					`)
+					return resolve({ ...data, $hash })
 				}
 			}
 			setTimeout(() => !success && resolve(undefined), 1000)

@@ -3,14 +3,7 @@ export const getHTMLElementVersion = imports => {
 	const {
 		require: {
 			instanceId,
-			hashMini,
 			hashify,
-			patch,
-			html,
-			note,
-			count,
-			modal,
-			decryptKnown,
 			captureError
 		}
 	} = imports
@@ -29,16 +22,7 @@ export const getHTMLElementVersion = imports => {
 			}
 			htmlElementRendered.parentNode.removeChild(htmlElementRendered)
 			const $hash = await hashify(keys)
-			resolve({ keys, $hash })
-			const elId = 'creep-html-element-version'
-			const el = document.getElementById(elId)
-			return patch(el, html`
-			<div class="col-six">
-				<strong>HTMLElement</strong><span class="hash">${hashMini($hash)}</span>
-				<div class="ellipsis">browser: ${decryptKnown($hash)}</div>
-				<div>keys (${count(keys)}): ${keys && keys.length ? modal(elId, keys.join(', ')) : note.blocked}</div>
-			</div>
-			`)
+			return resolve({ keys, $hash })
 		}
 		catch (error) {
 			captureError(error)

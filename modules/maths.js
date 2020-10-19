@@ -4,11 +4,6 @@ export const getMaths = imports => {
 		require: {
 			hashMini,
 			hashify,
-			patch,
-			html,
-			note,
-			modal,
-			decryptKnown,
 			captureError,
 			attempt,
 			documentLie,
@@ -209,24 +204,7 @@ export const getMaths = imports => {
 			})
 			
 			const $hash = await hashify(data)
-			resolve({...data, lied, $hash })
-			const id = 'creep-maths'
-			const el = document.getElementById(id)
-			const header = `<div>Match to Win10 64bit Chromium > Firefox > Tor Browser > Mac10 Safari<br>[CR][FF][TB][SF]</div>`
-			const results = Object.keys(data).map(key => {
-				const value = data[key]
-				const { result, chrome, firefox, torBrowser, safari } = value
-				return `${chrome ? '[CR]' : '[--]'}${firefox ? '[FF]' : '[--]'}${torBrowser ? '[TB]' : '[--]'}${safari ? '[SF]' : '[--]'} ${key} => ${result}`
-			})
-			return patch(el, html`
-			<div class="col-six">
-				<strong>Math</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
-				<div>js runtime: ${decryptKnown($hash)}</div>
-				<div>results: ${
-					modal(id, header+results.join('<br>'))
-				}
-			</div>
-			`)
+			return resolve({ data, lied, $hash })
 		}
 		catch (error) {
 			captureError(error)

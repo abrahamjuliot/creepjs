@@ -4,13 +4,7 @@ export const getNavigator = (imports, workerScope) => {
 	const {
 		require: {
 			getOS,
-			hashMini,
 			hashify,
-			patch,
-			html,
-			note,
-			count,
-			modal,
 			captureError,
 			attempt,
 			caniuse,
@@ -41,7 +35,6 @@ export const getNavigator = (imports, workerScope) => {
 			)
 
 			const contentWindowNavigator = contentWindow ? contentWindow.navigator : navigator
-			const navigatorPrototype = attempt(() => Navigator.prototype)
 			const detectLies = (name, value) => {
 				const workerScopeValue = caniuse(() => workerScope, [name])
 				const workerScopeMatchLie = { fingerprint: '', lies: [{ ['does not match worker scope']: false }] }
@@ -247,64 +240,7 @@ export const getNavigator = (imports, workerScope) => {
 				}, 'highEntropyValues failed')
 			}
 			const $hash = await hashify(data)
-			resolve({ ...data, $hash })
-			const id = 'creep-navigator'
-			const el = document.getElementById(id)
-			const { mimeTypes, plugins, highEntropyValues, properties } = data
-			const blocked = {
-				[null]: true,
-				[undefined]: true,
-				['']: true
-			}
-			return patch(el, html`
-			<div>
-				<div class="flex-grid">
-					<div class="col-six">
-						<strong>Navigator</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
-						<div>deviceMemory: ${!blocked[data.deviceMemory] ? data.deviceMemory : note.blocked}</div>
-						<div>doNotTrack: ${''+data.doNotTrack}</div>
-						<div>hardwareConcurrency: ${!blocked[data.hardwareConcurrency] ? data.hardwareConcurrency : note.blocked}</div>
-						<div>language: ${!blocked[data.language] ? data.language : note.blocked}</div>
-						<div>maxTouchPoints: ${!blocked[data.maxTouchPoints] ? ''+data.maxTouchPoints : note.blocked}</div>
-						<div>vendor: ${!blocked[data.vendor] ? data.vendor : note.blocked}</div>
-						<div>plugins (${count(plugins)}): ${
-							!blocked[''+plugins] ?
-							modal(`${id}-plugins`, plugins.map(plugin => plugin.name).join('<br>')) :
-							note.blocked
-						}</div>
-						<div>mimeTypes (${count(mimeTypes)}): ${
-							!blocked[''+mimeTypes] ? 
-							modal(`${id}-mimeTypes`, mimeTypes.join('<br>')) :
-							note.blocked
-						}</div>
-						${highEntropyValues ?  
-							Object.keys(highEntropyValues).map(key => {
-								const value = highEntropyValues[key]
-								return `<div>ua ${key}: ${value ? value : note.blocked}</div>`
-							}).join('') :
-							`<div>ua architecture: ${note.unsupported}</div>
-							<div>ua model: ${note.unsupported}</div>
-							<div>ua platform: ${note.unsupported}</div>
-							<div>ua platformVersion: ${note.unsupported}</div>
-							<div>ua uaFullVersion: ${note.unsupported} </div>`
-						}
-						<div>properties (${count(properties)}): ${modal(`${id}-properties`, properties.join(', '))}</div>
-					</div>
-					<div class="col-six">
-						<div>platform: ${!blocked[data.platform] ? data.platform : note.blocked}</div>
-						<div>system: ${!blocked[data.system] ? data.system : note.blocked}</div>
-						<div>userAgent:</div>
-						<div class="block-text">
-							<div>${!blocked[data.userAgent] ? data.userAgent : note.blocked}</div>
-						</div>
-						<div>appVersion:</div>
-						<div class="block-text">
-							<div>${!blocked[data.appVersion] ? data.appVersion : note.blocked}</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			`)
+			return resolve({ ...data, lied, $hash })
 		}
 		catch (error) {
 			captureError(error)

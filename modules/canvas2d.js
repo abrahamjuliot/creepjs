@@ -2,11 +2,7 @@ export const getCanvas2d = imports => {
 	
 	const {
 		require: {
-			hashMini,
 			hashify,
-			patch,
-			html,
-			note,
 			captureError,
 			lieProps
 		}
@@ -17,15 +13,6 @@ export const getCanvas2d = imports => {
 			const dataLie = lieProps['HTMLCanvasElement.toDataURL']
 			const contextLie = lieProps['HTMLCanvasElement.getContext']
 			let lied = dataLie || contextLie
-			const patchDom = (lied, response) => {
-				const { $hash } = response
-				const el = document.getElementById('creep-canvas-2d')
-				return patch(el, html`
-				<div class="col-six">
-					<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
-				</div>
-				`)
-			}
 			const canvas = document.createElement('canvas')
 			let canvas2dDataURI = ''
 			const context = canvas.getContext('2d')
@@ -38,8 +25,7 @@ export const getCanvas2d = imports => {
 			const dataURI = canvas2dDataURI
 			const $hash = await hashify(dataURI)
 			const response = { dataURI, lied, $hash }
-			resolve(response)
-			return patchDom(lied, response)
+			return resolve(response)
 		}
 		catch (error) {
 			captureError(error)

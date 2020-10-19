@@ -12,8 +12,6 @@ export const getClientRects = imports => {
 			hashify,
 			patch,
 			html,
-			note,
-			modal,
 			captureError,
 			documentLie,
 			lieProps
@@ -214,11 +212,6 @@ export const getClientRects = imports => {
 				documentLie('Element.getClientRects', hashMini(clientRects), offsetLie)
 				lied = true
 			}
-
-			// resolve 
-			const templateId = 'creep-client-rects'
-			const templateEl = document.getElementById(templateId)
-
 			if (!!iframeRendered) {
 				iframeRendered.parentNode.removeChild(iframeRendered)
 			}
@@ -236,20 +229,7 @@ export const getClientRects = imports => {
 			]).catch(error => {
 				console.error(error.message)
 			})
-			resolve({emojiRects, emojiHash, clientRects, clientHash, lied, $hash })
-			return patch(templateEl, html`
-			<div class="col-six">
-				<strong>DOMRect</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
-				<div>elements:<span class="sub-hash">${hashMini(clientHash)}</span></div>
-				<div>results: ${
-					modal(`${templateId}-elements`, clientRects.map(domRect => Object.keys(domRect).map(key => `<div>${key}: ${domRect[key]}</div>`).join('')).join('<br>') )
-				}</div>
-				<div>emojis v13.0:<span class="sub-hash">${hashMini(emojiHash)}</span></div>
-				<div>results: ${
-					modal(`${templateId}-emojis`, emojiRects.map(rect => rect.emoji).join('') )
-				}</div>
-			</div>
-			`)
+			return resolve({emojiRects, emojiHash, clientRects, clientHash, lied, $hash })
 		}
 		catch (error) {
 			captureError(error)

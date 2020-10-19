@@ -4,13 +4,9 @@ export const getFonts = (imports, fonts) => {
 
 	const {
 		require: {
-			hashMini,
 			hashify,
 			patch,
 			html,
-			note,
-			count,
-			modal,
 			captureError,
 			instanceId,
 			lieProps
@@ -26,7 +22,6 @@ export const getFonts = (imports, fonts) => {
 				lieProps['HTMLElement.offsetWidth'],
 				lieProps['HTMLElement.offsetHeight']
 			)
-
 
 			const fontsId = `${instanceId}-fonts-div`
 			const divElement = document.createElement('div')
@@ -135,16 +130,7 @@ export const getFonts = (imports, fonts) => {
 			)
 			const fontList = Object.keys(detectedFonts)
 			const $hash = await hashify(fontList)
-			resolve({fonts: fontList, $hash })
-
-			const id = 'creep-fonts'
-			const el = document.getElementById(id)
-			return patch(el, html`
-			<div class="col-six">
-				<strong>Fonts</strong><span class="hash">${hashMini($hash)}</span>
-				<div>results (${count(fontList)}): ${fontList && fontList.length ? modal(id, fontList.join('<br>')) : note.blocked}</div>
-			</div>
-			`)
+			return resolve({fonts: fontList, $hash })
 		}
 		catch (error) {
 			captureError(error)

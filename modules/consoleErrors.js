@@ -14,12 +14,7 @@ export const getConsoleErrors = imports => {
 
 	const {
 		require: {
-			hashMini,
 			hashify,
-			patch,
-			html,
-			modal,
-			decryptKnown,
 			captureError
 		}
 	} = imports
@@ -39,20 +34,7 @@ export const getConsoleErrors = imports => {
 			]
 			const errors = getErrors(errorTests)
 			const $hash = await hashify(errors)
-			resolve({errors, $hash })
-			const id = 'creep-console-errors'
-			const el = document.getElementById(id)
-			const results = Object.keys(errors).map(key => {
-				const value = errors[key]
-				return `${+key+1}: ${value}`
-			})
-			return patch(el, html`
-			<div class="col-six">
-				<strong>Error</strong><span class="hash">${hashMini($hash)}</span>
-				<div>js engine: ${decryptKnown($hash)}</div>
-				<div>results: ${modal(id, results.join('<br>'))}
-			</div>
-			`)
+			return resolve({errors, $hash })
 		}
 		catch (error) {
 			captureError(error)

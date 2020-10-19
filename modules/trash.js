@@ -48,32 +48,16 @@ const trashBin = createTrashBin()
 const { sendToTrash } = trashBin
 
 const getTrash = imports => {
-
 	const {
 		require: {
-			hashMini,
 			hashify,
-			patch,
-			html,
-			modal,
 			trashBin
 		}
 	} = imports
 	const bin = trashBin.getBin()
 	return new Promise(async resolve => {
-		const len = bin.length
 		const $hash = await hashify(bin)
-		resolve({ trashBin: bin, $hash })
-		const id = 'creep-trash'
-		const el = document.getElementById(id)
-		return patch(el, html`
-		<div class="col-four${len ? ' trash': ''}">
-			<strong>Trash</strong>${len ? `<span class="hash">${hashMini($hash)}</span>` : ''}
-			<div>gathered (${!len ? '0' : ''+len }): ${
-				len ? modal(id, bin.map((trash,i) => `${i+1}: ${trash.name}: ${trash.value}`).join('<br>')) : ''
-			}</div>
-		</div>
-		`)
+		return resolve({ trashBin: bin, $hash })
 	})
 }
 

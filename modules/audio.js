@@ -4,9 +4,6 @@ export const getOfflineAudioContext = imports => {
 		require: {
 			hashMini,
 			hashify,
-			patch,
-			html,
-			modal,
 			captureError,
 			attempt,
 			caniuse,
@@ -111,7 +108,6 @@ export const getOfflineAudioContext = imports => {
 
 						dynamicsCompressor.disconnect()
 						oscillator.disconnect()
-		
 						const response = {
 							binsSample: binsSample,
 							copySample: copySample,
@@ -119,22 +115,8 @@ export const getOfflineAudioContext = imports => {
 							values,
 							lied
 						}
-
 						const $hash = await hashify(response)
-						resolve({...response, $hash })
-						const id = 'creep-offline-audio-context'
-						const el = document.getElementById(id)
-						return patch(el, html`
-						<div class="col-six">
-							<strong>Audio</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
-							<div>sample: ${binsSample[0]}</div>
-							<div>copy: ${copySample[0]}</div>
-							<div>matching: ${matching}</div>
-							<div>node values: ${
-								modal(id, Object.keys(values).map(key => `<div>${key}: ${values[key]}</div>`).join(''))
-							}</div>
-						</div>
-						`)
+						return resolve({...response, $hash })
 					}
 					catch (error) {
 						captureError(error)

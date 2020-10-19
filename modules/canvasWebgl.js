@@ -2,13 +2,7 @@ export const getCanvasWebgl = imports => {
 
 	const {
 		require: {
-			hashMini,
 			hashify,
-			patch,
-			html,
-			note,
-			count,
-			modal,
 			captureError,
 			attempt,
 			caniuse,
@@ -254,52 +248,7 @@ export const getCanvasWebgl = imports => {
 			data.matchingDataURI = data.dataURI.$hash === data.dataURI2.$hash
 
 			const $hash = await hashify(data)
-			resolve({ ...data, $hash })
-			const id = 'creep-canvas-webgl'
-			const el = document.getElementById(id)
-			const { webglSpecs, webgl2Specs } = specs
-			const webglSpecsKeys = webglSpecs ? Object.keys(webglSpecs) : []
-			const webgl2SpecsKeys = webgl2Specs ? Object.keys(webgl2Specs) : []
-			
-			return patch(el, html`
-			<div>
-				<div class="flex-grid">
-					<div class="col-six">
-						<strong>Canvas webgl</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
-						<div>matching renderer/vendor: ${''+data.matchingUnmasked}</div>
-						<div>matching data URI: ${''+data.matchingDataURI}</div>
-						<div>webgl:<span class="sub-hash">${hashMini(dataURI.$hash)}</span></div>
-						<div>parameters (${count(webglSpecsKeys)}): ${
-							!webglSpecsKeys.length ? note.unsupported :
-							modal(`${id}-p-v1`, webglSpecsKeys.map(key => `${key}: ${webglSpecs[key]}`).join('<br>'))
-						}</div>
-						<div>extensions (${count(supported.extensions)}): ${
-							!caniuse(() => supported, ['extensions', 'length']) ? note.unsupported : modal(`${id}-e-v1`, supported.extensions.join('<br>'))
-						}</div>
-						<div>vendor: ${!unmasked.vendor ? note.unsupported : unmasked.vendor}</div>
-						<div>renderer:</div>
-						<div class="block-text">
-							<div>${!unmasked.renderer ? note.unsupported : unmasked.renderer}</div>	
-						</div>
-					</div>
-					<div class="col-six">
-						<div>webgl2:<span class="sub-hash">${hashMini(dataURI2.$hash)}</span></div>
-						<div>parameters (${count(webgl2SpecsKeys)}): ${
-							!webgl2SpecsKeys.length ? note.unsupported :
-							modal(`${id}-p-v2`, webgl2SpecsKeys.map(key => `${key}: ${webgl2Specs[key]}`).join('<br>'))
-						}</div>
-						<div>extensions (${count(supported2.extensions)}): ${
-							!caniuse(() => supported2, ['extensions', 'length']) ? note.unsupported : modal(`${id}-e-v2`, supported2.extensions.join('<br>'))
-						}</div>
-						<div>vendor: ${!unmasked2.vendor ? note.unsupported : unmasked2.vendor }</div>
-						<div>renderer:</div>
-						<div class="block-text">
-							<div>${!unmasked2.renderer ? note.unsupported : unmasked2.renderer}</div>	
-						</div>
-					</div>
-				</div>
-			</div>
-			`)
+			return resolve({ ...data, $hash })
 		}
 		catch (error) {
 			captureError(error)

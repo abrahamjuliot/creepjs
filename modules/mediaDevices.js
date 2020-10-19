@@ -4,14 +4,7 @@ export const getMediaDevices = imports => {
 	const {
 		require: {
 			isFirefox,
-			hashMini,
 			hashify,
-			instanceId,
-			patch,
-			html,
-			modal,
-			note,
-			count,
 			captureError,
 			contentWindow
 		}
@@ -33,15 +26,7 @@ export const getMediaDevices = imports => {
 				undefined
 			)
 			const $hash = await hashify(mediaDevices)
-			resolve({ mediaDevices, $hash })
-			const id = 'creep-media-devices'
-			const el = document.getElementById(id)
-			return patch(el, html`
-			<div class="col-six">
-				<strong>Media Devices</strong><span class="hash">${hashMini($hash)}</span>
-				<div>devices (${count(mediaDevices)}):${mediaDevices && mediaDevices.length ? modal(id, mediaDevices.map(device => device.kind).join('<br>')) : note.blocked}</div>
-			</div>
-			`)
+			return resolve({ mediaDevices, $hash })
 		}
 		catch (error) {
 			captureError(error)
