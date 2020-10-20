@@ -317,6 +317,22 @@ const testClassExtends = apiFunction => {
 	}
 }
 
+const testSetPrototypeNull = apiFunction => {
+	const nativeProto = Object.getPrototypeOf(apiFunction)
+	try { 
+		Object.setPrototypeOf(apiFunction, null)+''
+		Object.setPrototypeOf(apiFunction, nativeProto)
+		return {
+			['Expected set prototype null to throw an error']: true
+		}
+	}
+	catch (error) {
+		// Native throws error
+		Object.setPrototypeOf(apiFunction, nativeProto)
+		return false
+	}
+}
+
 const testName = (apiFunction, name) => {
 	const { name: apiName } = apiFunction
 	if (apiName != '' && apiName != name) {
@@ -541,6 +557,7 @@ const hasLiedAPI = (api, name, obj) => {
 					testEntries(apiFunction),
 					testGetToString(proto, name),
 					testSpread(apiFunction),
+					testSetPrototypeNull(apiFunction),
 
 					// common tests
 					testPrototype(apiFunction),
