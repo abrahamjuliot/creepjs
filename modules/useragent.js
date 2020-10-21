@@ -1,5 +1,125 @@
 export const userAgentData = [
   {
+    "id": "492e03041276e9ce021703864e15315bdfd6a330cbd960a3de8bcac86d857d08",
+    "type": "contentWindow version",
+    "uaSystem": [
+      "Windows",
+      "Mac"
+    ],
+    "userAgent": [
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0"
+    ],
+    "time": "10/21/2020, 3:03:58 AM",
+    "decoded": "Firefox 82 RFP"
+  },
+  {
+    "id": "fd54b7e8981ca7eb04729fb0de2c393ead4fe66f6d2ca15f626970e2ce0140f6",
+    "type": "HTMLElement version",
+    "uaSystem": [
+      "Windows",
+      "Linux",
+      "Mac"
+    ],
+    "userAgent": [
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0",
+      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:81.0) Gecko/20100101 Firefox/81.0",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:81.0) Gecko/20100101 Firefox/81.0",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0) Gecko/20100101 Firefox/81.0",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:82.0) Gecko/20100101 Firefox/82.0",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0",
+      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:82.0) Gecko/20100101 Firefox/82.0",
+      "Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:82.0) Gecko/20100101 Firefox/82.0"
+    ],
+    "time": "10/21/2020, 3:00:05 AM",
+    "decoded": "Firefox 81-82"
+  },
+  {
+    "id": "7c95559c6754c42c0d87fa0339f8a7cc5ed092e7e91ae9e50d3212f7486fcbeb",
+    "type": "js engine",
+    "uaSystem": [
+      "Windows",
+      "Linux",
+      "Mac",
+      "Android"
+    ],
+    "userAgent": [
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0",
+      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:81.0) Gecko/20100101 Firefox/81.0",
+      "Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:81.0) Gecko/20100101 Firefox/81.0",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0) Gecko/20100101 Firefox/81.0",
+      "Mozilla/5.0 (Android 9; Mobile; rv:80.0) Gecko/80.0 Firefox/80.0",
+      "Mozilla/5.0 (Android 10; Mobile; rv:80.0) Gecko/80.0 Firefox/80.0",
+      "Mozilla/5.0 (Android 8.1; Mobile; rv:68.0) Gecko/20100101 Firefox/68.0",
+      "Mozilla/5.0 (Android 9; Mobile; rv:81.0) Gecko/81.0 Firefox/81.0",
+      "Mozilla/5.0 (Android 9; Mobile; rv:78.0) Gecko/20100101 Firefox/78.0",
+      "Mozilla/5.0 (Android 9; Mobile; rv:82.0) Gecko/82.0 Firefox/82.0",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:82.0) Gecko/20100101 Firefox/82.0",
+      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:82.0) Gecko/20100101 Firefox/82.0",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:82.0) Gecko/20100101 Firefox/82.0"
+    ],
+    "time": "10/21/2020, 3:00:05 AM",
+    "decoded": "SpiderMonkey"
+  },
+  {
+    "id": "d3e540b3b7475515b7c806a290d5555b6a00ea087550741e0513835becbf94cb",
+    "type": "CSS style version",
+    "uaSystem": [
+      "Mac"
+    ],
+    "userAgent": [
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:81.0) Gecko/20100101 Firefox/81.0",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:82.0) Gecko/20100101 Firefox/82.0"
+    ],
+    "time": "10/21/2020, 3:00:05 AM",
+    "decoded": "Firefox 81-82"
+  },
+  {
+    "id": "066f812f32d4aa80b6b308f2171c47370a45fc339fc0e649b394f4b6f569e305",
+    "type": "contentWindow version",
+    "uaSystem": [
+      "Windows",
+      "Mac"
+    ],
+    "userAgent": [
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:82.0) Gecko/20100101 Firefox/82.0",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:82.0) Gecko/20100101 Firefox/82.0"
+    ],
+    "time": "10/21/2020, 3:00:05 AM",
+    "decoded": "Firefox 82"
+  },
+  {
+    "id": "ddc8837ab98695120dae774f04dcf295d2414ffc03431360d46b70380224547a",
+    "type": "js Math implementation",
+    "userAgent": [
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:81.0) Gecko/20100101 Firefox/81.0",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:82.0) Gecko/20100101 Firefox/82.0"
+    ],
+    "uaSystem": [
+      "Mac"
+    ],
+    "time": "10/21/2020, 3:00:05 AM",
+    "decoded": "SpiderMonkey"
+  },
+  {
+    "id": "ede9438fe695ad73751a76d1a05891fe1a08aa0dac112951b8dcad7fa3b33e3c",
+    "type": "system styles",
+    "uaSystem": [
+      "Mac"
+    ],
+    "userAgent": [
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:81.0) Gecko/20100101 Firefox/81.0",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:82.0) Gecko/20100101 Firefox/82.0"
+    ],
+    "time": "10/21/2020, 3:00:05 AM",
+    "decoded": "Firefox"
+  },
+  {
     "id": "7757f7416b78fb8ac1f079b3e0677c0fe179826a63727d809e7d69795e915cd5",
     "type": "js engine",
     "uaSystem": [
@@ -172,27 +292,6 @@ export const userAgentData = [
     "decoded": "Chromium"
   },
   {
-    "id": "fd54b7e8981ca7eb04729fb0de2c393ead4fe66f6d2ca15f626970e2ce0140f6",
-    "type": "HTMLElement version",
-    "uaSystem": [
-      "Windows",
-      "Linux",
-      "Mac"
-    ],
-    "userAgent": [
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0",
-      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:81.0) Gecko/20100101 Firefox/81.0",
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:81.0) Gecko/20100101 Firefox/81.0",
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0) Gecko/20100101 Firefox/81.0",
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:82.0) Gecko/20100101 Firefox/82.0",
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0",
-      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:82.0) Gecko/20100101 Firefox/82.0",
-      "Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0"
-    ],
-    "time": "10/21/2020, 12:51:15 AM",
-    "decoded": "Firefox 81-82"
-  },
-  {
     "id": "e03db0479814195a41344e0ff29d2a28da34c9467df06479c11fa8600a0c6aa7",
     "type": "CSS style version",
     "userAgent": [
@@ -228,34 +327,6 @@ export const userAgentData = [
     ],
     "time": "10/21/2020, 12:51:15 AM",
     "decoded": "Firefox 82 RFP"
-  },
-  {
-    "id": "7c95559c6754c42c0d87fa0339f8a7cc5ed092e7e91ae9e50d3212f7486fcbeb",
-    "type": "js engine",
-    "uaSystem": [
-      "Windows",
-      "Linux",
-      "Mac",
-      "Android"
-    ],
-    "userAgent": [
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0",
-      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:81.0) Gecko/20100101 Firefox/81.0",
-      "Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0",
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:81.0) Gecko/20100101 Firefox/81.0",
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0",
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0) Gecko/20100101 Firefox/81.0",
-      "Mozilla/5.0 (Android 9; Mobile; rv:80.0) Gecko/80.0 Firefox/80.0",
-      "Mozilla/5.0 (Android 10; Mobile; rv:80.0) Gecko/80.0 Firefox/80.0",
-      "Mozilla/5.0 (Android 8.1; Mobile; rv:68.0) Gecko/20100101 Firefox/68.0",
-      "Mozilla/5.0 (Android 9; Mobile; rv:81.0) Gecko/81.0 Firefox/81.0",
-      "Mozilla/5.0 (Android 9; Mobile; rv:78.0) Gecko/20100101 Firefox/78.0",
-      "Mozilla/5.0 (Android 9; Mobile; rv:82.0) Gecko/82.0 Firefox/82.0",
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:82.0) Gecko/20100101 Firefox/82.0",
-      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:82.0) Gecko/20100101 Firefox/82.0"
-    ],
-    "time": "10/21/2020, 12:45:35 AM",
-    "decoded": "SpiderMonkey"
   },
   {
     "id": "87b691d273993fb305b44cecf3429cdd5c5f4d387fb0e66bccaaf7670ca46915",
@@ -355,19 +426,6 @@ export const userAgentData = [
     ],
     "time": "10/20/2020, 3:28:55 AM",
     "decoded": "Firefox 81 RFP"
-  },
-  {
-    "id": "d3e540b3b7475515b7c806a290d5555b6a00ea087550741e0513835becbf94cb",
-    "type": "CSS style version",
-    "uaSystem": [
-      "Mac"
-    ],
-    "userAgent": [
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:81.0) Gecko/20100101 Firefox/81.0",
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0"
-    ],
-    "time": "10/20/2020, 3:28:55 AM",
-    "decoded": "Firefox 81"
   },
   {
     "id": "8ff0874a6dfc5389a64936060215a3d893627f99a9f53757fbd41b52d0ee49d9",
@@ -495,18 +553,6 @@ export const userAgentData = [
     "decoded": "Chrome 83"
   },
   {
-    "id": "492e03041276e9ce021703864e15315bdfd6a330cbd960a3de8bcac86d857d08",
-    "type": "contentWindow version",
-    "uaSystem": [
-      "Windows"
-    ],
-    "userAgent": [
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0"
-    ],
-    "time": "10/20/2020, 1:14:39 AM",
-    "decoded": "Firefox 82 RFP"
-  },
-  {
     "id": "db3f6704dd3e8feed2b5553a95a8a8575beb904af89ce64aa85d537b36b19319",
     "type": "js Math implementation",
     "userAgent": [
@@ -532,18 +578,6 @@ export const userAgentData = [
     ],
     "time": "10/20/2020, 12:56:23 AM",
     "decoded": "Firefox"
-  },
-  {
-    "id": "066f812f32d4aa80b6b308f2171c47370a45fc339fc0e649b394f4b6f569e305",
-    "type": "contentWindow version",
-    "uaSystem": [
-      "Windows"
-    ],
-    "userAgent": [
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:82.0) Gecko/20100101 Firefox/82.0"
-    ],
-    "time": "10/20/2020, 12:56:23 AM",
-    "decoded": "Firefox 82"
   },
   {
     "id": "870471782bc768a4dae3198669358f0d199b92d9e1c4441a3399141ff502a486",
@@ -1153,19 +1187,6 @@ export const userAgentData = [
     "decoded": "Tor Browser 10"
   },
   {
-    "id": "ddc8837ab98695120dae774f04dcf295d2414ffc03431360d46b70380224547a",
-    "type": "js Math implementation",
-    "userAgent": [
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:81.0) Gecko/20100101 Firefox/81.0",
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0"
-    ],
-    "uaSystem": [
-      "Mac"
-    ],
-    "time": "10/4/2020, 5:57:01 AM",
-    "decoded": "SpiderMonkey"
-  },
-  {
     "id": "f66c300417a0ac91b7704e7f1c51dde58e4939463b90ed2d6a65cfafa49483f6",
     "type": "CSS style version",
     "uaSystem": [
@@ -1176,18 +1197,6 @@ export const userAgentData = [
     ],
     "time": "10/4/2020, 5:57:01 AM",
     "decoded": "Tor Browser 10"
-  },
-  {
-    "id": "ede9438fe695ad73751a76d1a05891fe1a08aa0dac112951b8dcad7fa3b33e3c",
-    "type": "system styles",
-    "uaSystem": [
-      "Mac"
-    ],
-    "userAgent": [
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:81.0) Gecko/20100101 Firefox/81.0"
-    ],
-    "time": "10/4/2020, 5:23:38 AM",
-    "decoded": "Firefox"
   },
   {
     "id": "8e7f0bc591dbd7d2ad7d58a598e28d7954f28e064472ba3bf20c2292feac6f4c",
