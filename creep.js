@@ -47,7 +47,7 @@ const imports = {
 		count,
 		modal,
 		// decrypt
-		decryptKnown: decrypt({ require: [ userAgentData, hashMini ] }),
+		decryptKnown: decrypt({ require: [ userAgentData, hashMini, getOS ] }),
 		// captureErrors
 		captureError,
 		attempt,
@@ -905,7 +905,7 @@ const imports = {
 			return `
 			<div class="col-six">
 				<strong>Computed Style</strong><span class="hash">${hashMini($hash)}</span>
-				<div>system: ${decryptKnown(system.$hash, { decryptSystem: true })}</div>
+				<div>system: ${decryptKnown(system.$hash)}</div>
 				<div>engine: ${
 					prototypeName == 'CSS2Properties' ? 'Gecko' :
 					prototypeName == 'CSS2PropertiesPrototype' ? 'Gecko (like Goanna)' :
