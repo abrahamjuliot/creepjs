@@ -254,18 +254,21 @@ const imports = {
 	if (!location.hostname.includes('github.io')) {
 		const controller = new AbortController()
 		const { signal } = controller
-		fetch(
-			`/?distrust=${hasLied}&errors=${fp.consoleErrors.$hash}&math=${fp.maths.$hash}&html=${fp.htmlElementVersion.$hash}&win=${fp.iframeContentWindowVersion.$hash}&style=${fp.cssStyleDeclarationVersion.getComputedStyle.$hash}&system=${fp.cssStyleDeclarationVersion.system.$hash}&ua=${fp.navigator.userAgent}&uaSystem=${fp.navigator.system}`,
-			{ method: 'POST', signal }
-		)
-		.then(response => {})
-		.catch(error => {
-			if (error.name == 'AbortError') {
-				return
-			}
-			return console.log(error)
-		})
-		setTimeout(() => controller.abort(), 3000)
+		try {
+			fetch(
+				`/?distrust=${hasLied}&errors=${fp.consoleErrors.$hash}&math=${fp.maths.$hash}&html=${fp.htmlElementVersion.$hash}&win=${fp.iframeContentWindowVersion.$hash}&style=${fp.cssStyleDeclarationVersion.getComputedStyle.$hash}&system=${fp.cssStyleDeclarationVersion.system.$hash}&ua=${fp.navigator.userAgent}&uaSystem=${fp.navigator.system}`,
+				{ method: 'POST', signal }
+			)
+			.then(response => {})
+			.catch(error => {
+				if (error.name == 'AbortError') {
+					return
+				}
+				return console.log(error)
+			})
+			setTimeout(() => controller.abort(), 3000)
+		}
+		catch (error) {}
 	}
 
 	// patch dom
@@ -1209,12 +1212,12 @@ const imports = {
 				(liesLen * 31)
 			)).toFixed(0)
 
-			const browser = decryptKnown(fp.iframeContentWindowVersion.$hash)
+			const browser = decryptKnown(caniuse(() => fp.iframeContentWindowVersion, ['$hash]']))
 			const template = `
 				<div class="visitor-info">
 					<div class="flex-grid">
 						<div class="col-six">
-							<strong>${browser != 'unknown' ? browser : 'Browser'}</strong>
+							<strong>${browser && browser != 'unknown' ? browser : 'Browser'}</strong>
 							<div>trust score: <span class="unblurred">${
 								score > 95 ? `${score}% <span class="grade-A">A+</span>` :
 								score == 95 ? `${score}% <span class="grade-A">A</span>` :

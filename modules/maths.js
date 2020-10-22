@@ -39,9 +39,11 @@ export const getMaths = imports => {
 				'tanh',
 				'pow'
 			]
-			let lied
+			let lied = false
 			check.forEach(prop => {
-				lied = lieProps[`Math.${prop}`]
+				if (!!lieProps[`Math.${prop}`]) {
+					lied = true
+				}
 				const test = (
 					prop == 'cos' ? [1e308] :
 					prop == 'acos' || prop == 'asin' || prop == 'atanh' ? [0.5] :
@@ -58,6 +60,7 @@ export const getMaths = imports => {
 				}
 				return
 			})
+			
 
 			const n = 0.123
 			const bigN = 5.860847362277284e+38
