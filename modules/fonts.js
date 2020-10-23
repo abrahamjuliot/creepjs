@@ -23,29 +23,26 @@ export const getFonts = (imports, fonts) => {
 				lieProps['HTMLElement.offsetHeight']
 			)
 
-			const fontsId = `${instanceId}-fonts-div`
-			const divElement = document.createElement('div')
-			const divStageRendered = document.createElement('div')
-			divElement.setAttribute('id', fontsId)
-			divStageRendered.setAttribute('id', 'font-detector-stage')
-			
-			let iframeRendered, doc = document
+			let iframeContainer, doc = document
 			try {
-				// create and get rendered iframe
-				const id = `${instanceId}-fonts-iframe`
-				const iframeElement = document.createElement('iframe')
-				iframeElement.setAttribute('id', id)
-				iframeElement.setAttribute('style', 'visibility: hidden; height: 0')
-				document.body.appendChild(iframeElement)
-				iframeRendered = document.getElementById(id)
-
-				// create and get rendered div in iframe
-				doc = iframeRendered.contentDocument
+				const len = window.length
+				const div = document.createElement('div')
+				div.setAttribute('style', 'visibility:hidden')
+				document.body.appendChild(div)
+				div.innerHTML = '<iframe></iframe>'
+				const iframeWindow = window[len]
+				iframeContainer = div
+				doc = iframeWindow.document
 			}
 			catch (error) {
 				captureError(error, 'client blocked fonts iframe')
 			}
 
+			const fontsId = `${instanceId}-fonts-div`
+			const divElement = document.createElement('div')
+			const divStageRendered = document.createElement('div')
+			divElement.setAttribute('id', fontsId)
+			divStageRendered.setAttribute('id', 'font-detector-stage')
 			doc.body.appendChild(divElement)
 			const divRendered = doc.getElementById(fontsId)
 			divRendered.appendChild(divStageRendered)
@@ -120,11 +117,11 @@ export const getFonts = (imports, fonts) => {
 						return
 					})
 
-					if (!!iframeRendered) {
-						return iframeRendered.parentNode.removeChild(iframeRendered)
+					if (!!iframeContainer) {
+						iframeContainer.parentNode.removeChild(iframeContainer)
 					}
 					else {
-						return divRendered.parentNode.removeChild(divRendered)
+						divRendered.parentNode.removeChild(divRendered)
 					}
 				}
 			)
