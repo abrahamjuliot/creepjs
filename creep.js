@@ -6,7 +6,7 @@ import { decrypt } from './modules/decrypt.js'
 
 import { captureError, attempt, caniuse, timer, errorsCaptured, getCapturedErrors } from './modules/captureErrors.js'
 import { sendToTrash, proxyBehavior, gibberish, trustInteger, trashBin, getTrash } from './modules/trash.js'
-import { documentLie, contentWindow, parentIframe, lieProps, lieRecords, getLies } from './modules/lies.js'
+import { documentLie, contentWindow, parentNest, lieProps, lieRecords, getLies } from './modules/lies.js'
 
 import { getOfflineAudioContext } from './modules/audio.js'
 import { getCanvas2d } from './modules/canvas2d.js'
@@ -65,7 +65,8 @@ const imports = {
 		trashBin,
 		lieRecords,
 		// nested contentWindow
-		contentWindow
+		contentWindow,
+		parentNest
 	}
 }
 
@@ -139,8 +140,8 @@ const imports = {
 
 		const timeEnd = timeStart()
 
-		if (parentIframe) {
-			parentIframe.remove()
+		if (parentNest) {
+			parentNest.remove()
 		}
 
 		const fingerprint = {

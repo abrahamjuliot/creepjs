@@ -59,19 +59,19 @@ const getNestedContentWindowContext = imports => {
 			}
 		}
 
-		const parentIframe = createIframe(window)
-		const { contentWindow } = parentIframe
+		const parentNest = createIframe(window)
+		const { contentWindow } = parentNest
 		if (isChrome) { contentWindow.location = thisSiteCantBeReached }
 		wait(10) // delay frame load
-		return { contentWindow, parentIframe }
+		return { contentWindow, parentNest }
 	}
 	catch (error) {
 		captureError(error, 'client blocked nested iframe')
-		return { contentWindow: window, parentIframe: undefined }
+		return { contentWindow: window, parentNest: undefined }
 	}
 }
 
-const { contentWindow, parentIframe  } = getNestedContentWindowContext({
+const { contentWindow, parentNest  } = getNestedContentWindowContext({
 	require: { isChrome, isFirefox, instanceId, captureError }
 })
 
@@ -784,4 +784,4 @@ const getLies = imports => {
 	})
 }
 
-export { documentLie, contentWindow, parentIframe, lieProps, lieRecords, getLies }
+export { documentLie, contentWindow, parentNest, lieProps, lieRecords, getLies }
