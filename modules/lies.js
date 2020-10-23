@@ -26,10 +26,6 @@ const wait = ms => {
 	return
 }
 
-const validateContentWindow = iframe => {
-	if (!iframe.contentWindow) { throw new Error('blocked by client') }
-	return iframe
-}
 
 const getNestedContentWindowContext = imports => {
 
@@ -45,153 +41,33 @@ const getNestedContentWindowContext = imports => {
 	const allowScripts = () => !isFirefox && !isChrome ? 'allow-scripts ' : ''
 	try {
 		const thisSiteCantBeReached = `about:${instanceId}` // url must yield 'this site cant be reached' error
-		const createIframe = (win, id) => {
-			const doc = win.document
-			const iframe = doc.createElement('iframe')
-			iframe.setAttribute('id', id)
-			iframe.setAttribute('style', 'display:none')
-			iframe.setAttribute('sandbox', `${allowScripts()}allow-same-origin`)
-			const placeholder = doc.createElement('div')
-			placeholder.setAttribute('style', 'display:none')
-			const placeholderId = `${instanceId}-contentWindow-placeholder`
-			placeholder.setAttribute('id', placeholderId)
 
-			if (isChrome) {
-				iframe.src = thisSiteCantBeReached 
-			}
-
-			let isErrorCaught = false
-			let rendered = win
-			
-			try {
-				doc.body.append(iframe)
-				rendered = validateContentWindow(iframe)
-			}
-			catch(error) {
-				isErrorCaught = true
-				captureError(error, 'client tampered with append')
-			}
-
-			try {
-				if (isErrorCaught) {
-					doc.body.prepend(iframe)
-					rendered = validateContentWindow(iframe)
-				}
-			}
-			catch(error) {
-				isErrorCaught = true
-				captureError(error, 'client tampered with prepend')
-			}
-
-			try {
-				if (isErrorCaught) {
-					doc.body.appendChild(iframe)
-					rendered = validateContentWindow(iframe)
-				}
-			}
-			catch(error) {
-				isErrorCaught = true
-				captureError(error, 'client tampered with appendChild')
-			}
-
-			try {
-				if (isErrorCaught) {
-					doc.body.appendChild(placeholder)
-					placeholder.replaceWith(iframe)
-					rendered = validateContentWindow(iframe)
-				}
-			}
-			catch(error) {
-				isErrorCaught = true
-				captureError(error, 'client tampered with replaceWith')
-			}
-
-			try {
-				if (isErrorCaught) {
-					doc.body.insertBefore(iframe, win.parent.firstChild)
-					rendered = validateContentWindow(iframe)
-				}
-			}
-			catch(error) {
-				isErrorCaught = true
-				captureError(error, 'client tampered with insertBefore')
-			}
-
-			try {
-				if (isErrorCaught) {
-					doc.body.appendChild(placeholder)
-					doc.body.replaceChild(iframe, placeholder)
-					rendered = validateContentWindow(iframe)
-				}
-			}
-			catch(error) {
-				isErrorCaught = true
-				captureError(error, 'client tampered with replaceChild')
-			}
-
-			try {
-				if (isErrorCaught) {
-					doc.body.insertAdjacentElement('afterend', iframe)
-					rendered = validateContentWindow(iframe)
-				}
-			}
-			catch(error) {
-				isErrorCaught = true
-				captureError(error, 'client tampered with insertAdjacentElement afterend')
-			}
-
-			try {
-				if (isErrorCaught) {
-					doc.body.insertAdjacentElement('beforeend', iframe)
-					rendered = validateContentWindow(iframe)
-				}
-			}
-			catch(error) {
-				isErrorCaught = true
-				captureError(error, 'client tampered with insertAdjacentElement beforeend')
-			}
-
-			try {
-				if (isErrorCaught) {
-					doc.body.insertAdjacentElement('beforebegin', iframe)
-					rendered = validateContentWindow(iframe)
-				}
-			}
-			catch(error) {
-				isErrorCaught = true
-				captureError(error, 'client tampered with insertAdjacentElement beforebegin')
-			}
-
-			try {
-				if (isErrorCaught) {
-					doc.body.insertAdjacentElement('afterbegin', iframe)
-					rendered = validateContentWindow(iframe)
-				}
-			}
-			catch(error) {
-				isErrorCaught = true
-				captureError(error, 'client tampered with insertAdjacentElement afterbegin')
-			}
-
+		const createIframe = context => {
+			const len = context.length
+			const div = document.createElement('div')
+			div.setAttribute('style', 'display:none')
+			document.body.appendChild(div)
+			const iframeAttributes = `
+				${isChrome ? ` src=${thisSiteCantBeReached}` : ''}
+				${` sandbox="${allowScripts()}allow-same-origin"`}
+			`
+			div.innerHTML = `<iframe${iframeAttributes}></iframe>`		
 			return {
-				el: rendered,
-				context: rendered.contentWindow,
-				remove: () => rendered.parentNode.removeChild(rendered)
+				el: div,
+				contentWindow: context[len],
+				remove: () => div.parentNode.removeChild(div)
 			}
 		}
-		const parentIframe = createIframe(window, `${instanceId}-parent-iframe`)
-		const {
-			context: contentWindow
-		} = createIframe(parentIframe.context, `${instanceId}-nested-iframe`)
 
-		if (isChrome) { contentWindow.location = thisSiteCantBeReached  }
-
-		wait(100) // delay frame load
+		const parentIframe = createIframe(window)
+		const { contentWindow } = parentIframe
+		if (isChrome) { contentWindow.location = thisSiteCantBeReached }
+		wait(10) // delay frame load
 		return { contentWindow, parentIframe }
 	}
 	catch (error) {
-		captureError(error, 'client blocked nested iframe context')
-		return {contentWindow: undefined, parentIframe: undefined}
+		captureError(error, 'client blocked nested iframe')
+		return { contentWindow: window, parentIframe: undefined }
 	}
 }
 
