@@ -22,26 +22,29 @@ export const getClientRects = imports => {
 		try {
 			const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
 			let lied = lieProps['Element.getClientRects'] // detect lies
-			const rectsId = `${instanceId}-client-rects-div`
-			const divElement = document.createElement('div')
-			divElement.setAttribute('id', rectsId)
-			let iframeRendered, doc = document
+			
+			let iframeContainer, doc = document
 			try {
 				// create and get rendered iframe
-				const id = `${instanceId}-client-rects-iframe`
-				const iframeElement = document.createElement('iframe')
-				iframeElement.setAttribute('id', id)
-				iframeElement.setAttribute('style', 'dsiplay:none')
-				document.body.appendChild(iframeElement)
-				iframeRendered = document.getElementById(id)
+
+				const len = window.length
+				const div = document.createElement('div')
+				div.setAttribute('style', 'visibility:hidden')
+				document.body.appendChild(div)
+				div.innerHTML = '<iframe></iframe>'
+				const iframeWindow = window[len]
 
 				// create and get rendered div in iframe
-				doc = iframeRendered.contentDocument
+				iframeContainer = div
+				doc = iframeWindow.document
 			}
 			catch (error) {
 				captureError(error, 'client blocked getClientRects iframe')
 			}
 
+			const rectsId = `${instanceId}-client-rects-div`
+			const divElement = document.createElement('div')
+			divElement.setAttribute('id', rectsId)
 			doc.body.appendChild(divElement)
 			const divRendered = doc.getElementById(rectsId)
 			
@@ -212,12 +215,14 @@ export const getClientRects = imports => {
 				documentLie('Element.getClientRects', hashMini(clientRects), offsetLie)
 				lied = true
 			}
-			if (!!iframeRendered) {
-				iframeRendered.parentNode.removeChild(iframeRendered)
+			
+			if (!!iframeContainer) {
+				iframeContainer.parentNode.removeChild(iframeContainer)
 			}
 			else {
 				divRendered.parentNode.removeChild(divRendered)
 			}
+			
 			const [
 				emojiHash,
 				clientHash,
