@@ -69,7 +69,7 @@ export const getWebRTCData = (imports, cloudflare) => {
 					const data = {
 						['webRTC leak']: cloudflareIp && (
 							!!ipAddress && ipAddress != cloudflareIp
-						) ? true : 'unknown',
+						) ? 'maybe' : 'unknown',
 						['ip address']: ipAddress,
 						candidate: candidateIpAddress,
 						connection: connectionLineIpAddress
