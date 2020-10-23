@@ -184,7 +184,12 @@ export const getNavigator = (imports, workerScope) => {
 					if (!('maxTouchPoints' in navigator)) {
 						return null
 					}
-					const { maxTouchPoints } = navigator
+					const { maxTouchPoints } = contentWindowNavigator
+					const navigatorMaxTouchPoints = navigator.maxTouchPoints	
+					if (lied && (maxTouchPoints != navigatorMaxTouchPoints)) {	
+						sendToTrash('maxTouchPoints', `[${navigatorMaxTouchPoints}] does not match iframe`)	
+					}
+
 					return maxTouchPoints
 				}, 'maxTouchPoints failed'),
 				vendor: attempt(() => {
