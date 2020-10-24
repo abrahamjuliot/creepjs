@@ -1,5 +1,47 @@
 [
   {
+    "id": "623a48460ec4e748333a287d26522abf1f5782b37c6e64d43f52d08836743378",
+    "type": "contentWindow version",
+    "uaSystem": [
+      "Linux",
+      "Mac",
+      "Windows"
+    ],
+    "userAgent": [
+      "Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0"
+    ],
+    "time": "10/23/2020, 10:49:55 PM",
+    "decoded": "Tor Browser 10"
+  },
+  {
+    "id": "f94bfe4610d2d52c0b5a04bd57c4e8e61f88e6d95b3cab49a0b9275ac9b78358",
+    "type": "system styles",
+    "uaSystem": [
+      "Linux"
+    ],
+    "userAgent": [
+      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:81.0) Gecko/20100101 Firefox/81.0",
+      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:82.0) Gecko/20100101 Firefox/82.0",
+      "Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0"
+    ],
+    "time": "10/23/2020, 10:35:41 PM",
+    "decoded": "Firefox"
+  },
+  {
+    "id": "fc2a40d954dc9f756a768b22844527d573fc9fe2cb2f2e1c0d5bae697a85dea7",
+    "type": "contentWindow version",
+    "uaSystem": [
+      "Linux"
+    ],
+    "userAgent": [
+      "Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0"
+    ],
+    "time": "10/23/2020, 10:35:41 PM",
+    "decoded": "Tor Browser 10"
+  },
+  {
     "id": "3e0c529360f55def91df5d991a67a7b7f14e305b077a76e7524a7dae91e2f8bd",
     "type": "HTMLElement version",
     "uaSystem": [
@@ -444,19 +486,6 @@
     "decoded": "SpiderMonkey"
   },
   {
-    "id": "f94bfe4610d2d52c0b5a04bd57c4e8e61f88e6d95b3cab49a0b9275ac9b78358",
-    "type": "system styles",
-    "uaSystem": [
-      "Linux"
-    ],
-    "userAgent": [
-      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:81.0) Gecko/20100101 Firefox/81.0",
-      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:82.0) Gecko/20100101 Firefox/82.0"
-    ],
-    "time": "10/21/2020, 12:45:35 AM",
-    "decoded": "Firefox"
-  },
-  {
     "id": "98c592a4d8c9f60a1baa1a7ca412744fd2c7e83a060ff5b3892fccc9fff6988e",
     "type": "contentWindow version",
     "uaSystem": [
@@ -467,20 +496,6 @@
     ],
     "time": "10/21/2020, 12:45:35 AM",
     "decoded": "Firefox 82"
-  },
-  {
-    "id": "623a48460ec4e748333a287d26522abf1f5782b37c6e64d43f52d08836743378",
-    "type": "contentWindow version",
-    "uaSystem": [
-      "Linux",
-      "Mac"
-    ],
-    "userAgent": [
-      "Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0",
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0"
-    ],
-    "time": "10/20/2020, 3:39:43 AM",
-    "decoded": "Tor Browser 10"
   },
   {
     "id": "91f98e37bae90d6a32d788e49bc5bcef0400e07b4f6f3ac8fe0ea3fa5f75d878",
