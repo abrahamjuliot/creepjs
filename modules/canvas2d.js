@@ -4,7 +4,8 @@ export const getCanvas2d = imports => {
 		require: {
 			hashify,
 			captureError,
-			lieProps
+			lieProps,
+			contentWindow
 		}
 	} = imports
 	
@@ -13,7 +14,8 @@ export const getCanvas2d = imports => {
 			const dataLie = lieProps['HTMLCanvasElement.toDataURL']
 			const contextLie = lieProps['HTMLCanvasElement.getContext']
 			let lied = dataLie || contextLie
-			const canvas = document.createElement('canvas')
+			const doc = contentWindow ? contentWindow.document : document
+			const canvas = doc.createElement('canvas')
 			let canvas2dDataURI = ''
 			const context = canvas.getContext('2d')
 			const str = '!😃🙌🧠👩‍💻👟👧🏻👩🏻‍🦱👩🏻‍🦰👱🏻‍♀️👩🏻‍🦳👧🏼👧🏽👧🏾👧🏿🦄🐉🌊🍧🏄‍♀️🌠🔮♞'

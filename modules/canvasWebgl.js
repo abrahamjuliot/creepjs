@@ -8,7 +8,8 @@ export const getCanvasWebgl = imports => {
 			caniuse,
 			sendToTrash,
 			proxyBehavior,
-			lieProps
+			lieProps,
+			contentWindow
 		}
 	} = imports
 
@@ -29,8 +30,9 @@ export const getCanvasWebgl = imports => {
 			)
 
 			// crreate canvas context
-			const canvas = document.createElement('canvas')
-			const canvas2 = document.createElement('canvas')
+			const doc = contentWindow ? contentWindow.document : document
+			const canvas = doc.createElement('canvas')
+			const canvas2 = doc.createElement('canvas')
 			const context = (
 				canvas.getContext('webgl') ||
 				canvas.getContext('experimental-webgl') ||

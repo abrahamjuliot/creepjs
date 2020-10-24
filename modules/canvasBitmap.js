@@ -5,7 +5,8 @@ export const getCanvasBitmapRenderer = imports => {
 			hashify,
 			captureError,
 			caniuse,
-			lieProps
+			lieProps,
+			contentWindow
 		}
 	} = imports
 
@@ -14,7 +15,8 @@ export const getCanvasBitmapRenderer = imports => {
 			const dataLie = lieProps['HTMLCanvasElement.toDataURL']
 			const contextLie = lieProps['HTMLCanvasElement.getContext']
 			let lied = dataLie || contextLie
-			const canvas = document.createElement('canvas')
+			const doc = contentWindow ? contentWindow.document : document
+			const canvas = doc.createElement('canvas')
 			let canvasBMRDataURI = ''
 			const context = canvas.getContext('bitmaprenderer')
 			const image = new Image()
