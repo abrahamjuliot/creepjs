@@ -1,6 +1,8 @@
 import { hashMini, instanceId } from './crypto.js'
 import { captureError, attempt, caniuse } from './captureErrors.js'
 import { isChrome, isFirefox } from './helpers.js'
+import { patch, html } from './html.js'
+
 
 // Collect lies detected
 const createlieRecords = () => {
@@ -51,11 +53,12 @@ const getNestedContentWindowContext = imports => {
 				${isChrome ? ` src=${thisSiteCantBeReached}` : ''}
 				${` sandbox="${allowScripts()}allow-same-origin"`}
 			`
-			div.innerHTML = `<iframe${iframeAttributes}></iframe>`		
+			const id = [...Array(10)].map(() => instanceId).join('')
+			patch(div, html`<div id="${id}"><iframe${iframeAttributes}></iframe></div>`)
+			const el = document.getElementById(id)
 			return {
-				el: div,
 				contentWindow: context[len],
-				remove: () => div.parentNode.removeChild(div)
+				remove: () => el.parentNode.removeChild(el)
 			}
 		}
 
