@@ -3,7 +3,6 @@ export const getMediaDevices = imports => {
 
 	const {
 		require: {
-			isFirefox,
 			hashify,
 			captureError,
 			contentWindow
@@ -12,7 +11,7 @@ export const getMediaDevices = imports => {
 
 	return new Promise(async resolve => {
 		try {
-			const contentWindowNavigator = contentWindow && !isFirefox ? contentWindow.navigator : navigator
+			const contentWindowNavigator = contentWindow ? contentWindow.navigator : navigator
 			if (!('mediaDevices' in contentWindowNavigator)) {
 				return resolve(undefined)
 			}

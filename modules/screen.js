@@ -52,7 +52,6 @@ export const getScreen = imports => {
 
 	const {
 		require: {
-			isFirefox,
 			hashify,
 			captureError,
 			attempt,
@@ -73,7 +72,7 @@ export const getScreen = imports => {
 				lieProps['Screen.colorDepth'] ||
 				lieProps['Screen.pixelDepth']
 			)
-			const contentWindowScreen = contentWindow && !isFirefox ? contentWindow.screen : screen
+			const contentWindowScreen = contentWindow ? contentWindow.screen : screen
 			const { width, height, availWidth, availHeight, colorDepth, pixelDepth } = contentWindowScreen
 			const {
 				width: screenWidth,

@@ -13,7 +13,7 @@ export const getHTMLElementVersion = imports => {
 		try {
 			
 			let htmlElementRendered
-			if (parentNest) {
+			if (parentNest &&  parentNest.el) {
 				htmlElementRendered = parentNest.el
 			}
 			else {

@@ -1,17 +1,5 @@
 [
   {
-    "id": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
-    "type": "HTMLElement version",
-    "isNew": true,
-    "uaSystem": [
-      "Chrome OS"
-    ],
-    "userAgent": [
-      "Mozilla/5.0 (X11; CrOS armv7l 13099.48.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.64 Safari/537.36"
-    ],
-    "time": "10/24/2020, 7:10:28 AM"
-  },
-  {
     "id": "623a48460ec4e748333a287d26522abf1f5782b37c6e64d43f52d08836743378",
     "type": "contentWindow version",
     "uaSystem": [

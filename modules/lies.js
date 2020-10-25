@@ -33,30 +33,22 @@ const getNestedContentWindowContext = imports => {
 
 	const {
 		require: {
-			isChrome,
-			isFirefox,
 			instanceId,
 			captureError
 		}
 	} = imports
 
-	const allowScripts = () => !isFirefox && !isChrome ? 'allow-scripts ' : ''
 	try {
-		const thisSiteCantBeReached = `about:${instanceId}` // url must yield 'this site cant be reached' error
-
 		const createIframe = context => {
 			const len = context.length
 			const div = document.createElement('div')
 			div.setAttribute('style', 'display:none')
 			document.body.appendChild(div)
-			const iframeAttributes = `
-				${isChrome ? ` src=${thisSiteCantBeReached}` : ''}
-				${` sandbox="${allowScripts()}allow-same-origin"`}
-			`
 			const id = [...Array(10)].map(() => instanceId).join('')
-			patch(div, html`<div id="${id}"><iframe${iframeAttributes}></iframe></div>`)
+			patch(div, html`<div id="${id}"><iframe></iframe></div>`)
 			const el = document.getElementById(id)
 			return {
+				el,
 				contentWindow: context[len],
 				remove: () => el.parentNode.removeChild(el)
 			}
@@ -64,8 +56,6 @@ const getNestedContentWindowContext = imports => {
 
 		const parentNest = createIframe(window)
 		const { contentWindow } = parentNest
-		if (isChrome) { contentWindow.location = thisSiteCantBeReached }
-		wait(10) // delay frame load
 		return { contentWindow, parentNest }
 	}
 	catch (error) {
