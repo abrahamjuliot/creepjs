@@ -3,12 +3,14 @@ export const getVoices = imports => {
 	const {
 		require: {
 			hashify,
-			captureError
+			captureError,
+			contentWindow
 		}
 	} = imports
 		
 	return new Promise(async resolve => {
 		try {
+			const win = contentWindow ? contentWindow : window
 			let voices = []
 			const respond = async (resolve, voices) => {
 				voices = voices.map(({ name, lang }) => ({ name, lang }))
@@ -20,22 +22,22 @@ export const getVoices = imports => {
 				const $hash = await hashify(voices)
 				return resolve({ voices, ...check, $hash })
 			}
-			if (!('speechSynthesis' in window)) {
+			if (!('speechSynthesis' in win)) {
 				return resolve(undefined)
 			}
-			else if (!('chrome' in window)) {
-				voices = await speechSynthesis.getVoices()
+			else if (!('chrome' in win)) {
+				voices = await win.speechSynthesis.getVoices()
 				return respond(resolve, voices)
 			}
-			else if (!speechSynthesis.getVoices || speechSynthesis.getVoices() == undefined) {
+			else if (!win.speechSynthesis.getVoices || win.speechSynthesis.getVoices() == undefined) {
 				return resolve(undefined)
 			}
-			else if (speechSynthesis.getVoices().length) {
-				voices = speechSynthesis.getVoices()
+			else if (win.speechSynthesis.getVoices().length) {
+				voices = win.speechSynthesis.getVoices()
 				return respond(resolve, voices)
 			} else {
-				speechSynthesis.onvoiceschanged = () => {
-					voices = speechSynthesis.getVoices()
+				win.speechSynthesis.onvoiceschanged = () => {
+					voices = win.speechSynthesis.getVoices()
 					return resolve(new Promise(resolve => respond(resolve, voices)))
 				}
 			}

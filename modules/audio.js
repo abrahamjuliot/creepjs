@@ -9,13 +9,15 @@ export const getOfflineAudioContext = imports => {
 			caniuse,
 			sendToTrash,
 			documentLie,
-			lieProps
+			lieProps,
+			contentWindow
 		}
 	} = imports
 
 	return new Promise(resolve => {
 		try {
-			const audioContext = caniuse(() => OfflineAudioContext || webkitOfflineAudioContext)
+			const win = contentWindow ? contentWindow : window
+			const audioContext = caniuse(() => win.OfflineAudioContext || win.webkitOfflineAudioContext)
 			if (!audioContext) {
 				return resolve(undefined)
 			}

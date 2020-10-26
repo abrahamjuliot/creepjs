@@ -1212,8 +1212,7 @@ const imports = {
 				(trashLen * 15.5) +
 				(liesLen * 31)
 			)).toFixed(0)
-
-			const browser = decryptKnown(caniuse(() => fp.iframeContentWindowVersion, ['$hash]']))
+			const browser = decryptKnown(caniuse(() => fp.iframeContentWindowVersion.$hash))
 			const template = `
 				<div class="visitor-info">
 					<div class="flex-grid">
