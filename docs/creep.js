@@ -117,6 +117,213 @@
 
 	const userAgentData = [
 	  {
+	    "id": "e1f1230c755ee87003b97f12ed6de161d05ecdbcdcd239c433cb2fca01edbddd",
+	    "type": "HTMLElement version",
+	    "uaSystem": [
+	      "Windows",
+	      "Linux"
+	    ],
+	    "userAgent": [
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36 Edg/86.0.622.38",
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36",
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.99 Safari/537.36",
+	      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.99 Safari/537.36",
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36"
+	    ],
+	    "time": "10/26/2020, 1:00:56 AM",
+	    "decoded": "Chrome 86"
+	  },
+	  {
+	    "id": "e5f8055b9f7764f4ca675da33efb60c102839e49f214a8682943110ebef578c4",
+	    "type": "contentWindow version",
+	    "uaSystem": [
+	      "Windows"
+	    ],
+	    "userAgent": [
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36",
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.99 Safari/537.36",
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36"
+	    ],
+	    "time": "10/26/2020, 1:00:56 AM",
+	    "decoded": "Chrome 86 Brave"
+	  },
+	  {
+	    "id": "88e11762ff617bd6ca2702cb47d8e805b117138ab2f39f7b02b0e35da361fea3",
+	    "type": "HTMLElement version",
+	    "uaSystem": [
+	      "Windows"
+	    ],
+	    "userAgent": [
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:83.0) Gecko/20100101 Firefox/83.0",
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0"
+	    ],
+	    "time": "10/26/2020, 12:08:14 AM",
+	    "decoded": "Firefox 83"
+	  },
+	  {
+	    "id": "b2011f4bd311b4d3279dc23bbc934dccaf3e3dde2ae9c75add8de291b822c5c6",
+	    "type": "contentWindow version",
+	    "uaSystem": [
+	      "Windows"
+	    ],
+	    "userAgent": [
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0"
+	    ],
+	    "time": "10/26/2020, 12:08:14 AM",
+	    "decoded": "Firefox 83 RFP"
+	  },
+	  {
+	    "id": "306fdd1fd4d1e1357a2a8f46690c84353d43152c9e1afd32df1b552d1c84c883",
+	    "type": "contentWindow version",
+	    "uaSystem": [
+	      "Windows"
+	    ],
+	    "userAgent": [
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:83.0) Gecko/20100101 Firefox/83.0"
+	    ],
+	    "time": "10/26/2020, 12:04:40 AM",
+	    "decoded": "Firefox 83"
+	  },
+	  {
+	    "id": "7c95559c6754c42c0d87fa0339f8a7cc5ed092e7e91ae9e50d3212f7486fcbeb",
+	    "type": "js engine",
+	    "uaSystem": [
+	      "Windows",
+	      "Linux",
+	      "Mac",
+	      "Android"
+	    ],
+	    "userAgent": [
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0",
+	      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:81.0) Gecko/20100101 Firefox/81.0",
+	      "Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0",
+	      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:81.0) Gecko/20100101 Firefox/81.0",
+	      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0",
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0) Gecko/20100101 Firefox/81.0",
+	      "Mozilla/5.0 (Android 9; Mobile; rv:80.0) Gecko/80.0 Firefox/80.0",
+	      "Mozilla/5.0 (Android 10; Mobile; rv:80.0) Gecko/80.0 Firefox/80.0",
+	      "Mozilla/5.0 (Android 8.1; Mobile; rv:68.0) Gecko/20100101 Firefox/68.0",
+	      "Mozilla/5.0 (Android 9; Mobile; rv:81.0) Gecko/81.0 Firefox/81.0",
+	      "Mozilla/5.0 (Android 9; Mobile; rv:78.0) Gecko/20100101 Firefox/78.0",
+	      "Mozilla/5.0 (Android 9; Mobile; rv:82.0) Gecko/82.0 Firefox/82.0",
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:82.0) Gecko/20100101 Firefox/82.0",
+	      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:82.0) Gecko/20100101 Firefox/82.0",
+	      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:82.0) Gecko/20100101 Firefox/82.0",
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:83.0) Gecko/20100101 Firefox/83.0"
+	    ],
+	    "time": "10/25/2020, 11:54:19 PM",
+	    "decoded": "SpiderMonkey"
+	  },
+	  {
+	    "id": "e03db0479814195a41344e0ff29d2a28da34c9467df06479c11fa8600a0c6aa7",
+	    "type": "CSS style version",
+	    "userAgent": [
+	      "Mozilla/5.0 (Android 9; Mobile; rv:81.0) Gecko/81.0 Firefox/81.0",
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0",
+	      "Mozilla/5.0 (Android 7.1.2; Mobile; rv:81.0) Gecko/81.0 Firefox/81.0",
+	      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:81.0) Gecko/20100101 Firefox/81.0",
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0) Gecko/20100101 Firefox/81.0",
+	      "Mozilla/5.0 (Android 9; Mobile; rv:80.0) Gecko/80.0 Firefox/80.0",
+	      "Mozilla/5.0 (Android 10; Mobile; rv:80.0) Gecko/80.0 Firefox/80.0",
+	      "Mozilla/5.0 (Android 9; Mobile; rv:78.0) Gecko/20100101 Firefox/78.0",
+	      "Mozilla/5.0 (Android 9; Mobile; rv:82.0) Gecko/82.0 Firefox/82.0",
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:82.0) Gecko/20100101 Firefox/82.0",
+	      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:82.0) Gecko/20100101 Firefox/82.0",
+	      "Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0",
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:83.0) Gecko/20100101 Firefox/83.0"
+	    ],
+	    "uaSystem": [
+	      "Android",
+	      "Windows",
+	      "Linux"
+	    ],
+	    "time": "10/25/2020, 11:54:19 PM",
+	    "decoded": "Firefox 80-83"
+	  },
+	  {
+	    "id": "db3f6704dd3e8feed2b5553a95a8a8575beb904af89ce64aa85d537b36b19319",
+	    "type": "js Math implementation",
+	    "userAgent": [
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0",
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0) Gecko/20100101 Firefox/81.0",
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:82.0) Gecko/20100101 Firefox/82.0",
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:83.0) Gecko/20100101 Firefox/83.0"
+	    ],
+	    "uaSystem": [
+	      "Windows"
+	    ],
+	    "time": "10/25/2020, 11:54:19 PM",
+	    "decoded": "SpiderMonkey"
+	  },
+	  {
+	    "id": "29ee4de348ef4f013f7975dbe73273f6c588f423d7d4ad0c18a257bd36e10819",
+	    "type": "system styles",
+	    "uaSystem": [
+	      "Windows"
+	    ],
+	    "userAgent": [
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0) Gecko/20100101 Firefox/81.0",
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:82.0) Gecko/20100101 Firefox/82.0",
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:83.0) Gecko/20100101 Firefox/83.0"
+	    ],
+	    "time": "10/25/2020, 11:54:19 PM",
+	    "decoded": "Firefox"
+	  },
+	  {
+	    "id": "92478c056241e80d71c94e7b37fb3f30c31e406e3337537547e83fe3118e3cea",
+	    "type": "contentWindow version",
+	    "uaSystem": [
+	      "Windows"
+	    ],
+	    "userAgent": [
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:83.0) Gecko/20100101 Firefox/83.0"
+	    ],
+	    "time": "10/25/2020, 11:54:19 PM",
+	    "decoded": "Firefox 83"
+	  },
+	  {
+	    "id": "623a48460ec4e748333a287d26522abf1f5782b37c6e64d43f52d08836743378",
+	    "type": "contentWindow version",
+	    "uaSystem": [
+	      "Linux",
+	      "Mac",
+	      "Windows"
+	    ],
+	    "userAgent": [
+	      "Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0",
+	      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0",
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0"
+	    ],
+	    "time": "10/23/2020, 10:49:55 PM",
+	    "decoded": "Tor Browser 10"
+	  },
+	  {
+	    "id": "f94bfe4610d2d52c0b5a04bd57c4e8e61f88e6d95b3cab49a0b9275ac9b78358",
+	    "type": "system styles",
+	    "uaSystem": [
+	      "Linux"
+	    ],
+	    "userAgent": [
+	      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:81.0) Gecko/20100101 Firefox/81.0",
+	      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:82.0) Gecko/20100101 Firefox/82.0",
+	      "Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0"
+	    ],
+	    "time": "10/23/2020, 10:35:41 PM",
+	    "decoded": "Firefox"
+	  },
+	  {
+	    "id": "fc2a40d954dc9f756a768b22844527d573fc9fe2cb2f2e1c0d5bae697a85dea7",
+	    "type": "contentWindow version",
+	    "uaSystem": [
+	      "Linux"
+	    ],
+	    "userAgent": [
+	      "Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0"
+	    ],
+	    "time": "10/23/2020, 10:35:41 PM",
+	    "decoded": "Tor Browser 10"
+	  },
+	  {
 	    "id": "3e0c529360f55def91df5d991a67a7b7f14e305b077a76e7524a7dae91e2f8bd",
 	    "type": "HTMLElement version",
 	    "uaSystem": [
@@ -336,35 +543,6 @@
 	    "decoded": "Firefox 81-82"
 	  },
 	  {
-	    "id": "7c95559c6754c42c0d87fa0339f8a7cc5ed092e7e91ae9e50d3212f7486fcbeb",
-	    "type": "js engine",
-	    "uaSystem": [
-	      "Windows",
-	      "Linux",
-	      "Mac",
-	      "Android"
-	    ],
-	    "userAgent": [
-	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0",
-	      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:81.0) Gecko/20100101 Firefox/81.0",
-	      "Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0",
-	      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:81.0) Gecko/20100101 Firefox/81.0",
-	      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0",
-	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0) Gecko/20100101 Firefox/81.0",
-	      "Mozilla/5.0 (Android 9; Mobile; rv:80.0) Gecko/80.0 Firefox/80.0",
-	      "Mozilla/5.0 (Android 10; Mobile; rv:80.0) Gecko/80.0 Firefox/80.0",
-	      "Mozilla/5.0 (Android 8.1; Mobile; rv:68.0) Gecko/20100101 Firefox/68.0",
-	      "Mozilla/5.0 (Android 9; Mobile; rv:81.0) Gecko/81.0 Firefox/81.0",
-	      "Mozilla/5.0 (Android 9; Mobile; rv:78.0) Gecko/20100101 Firefox/78.0",
-	      "Mozilla/5.0 (Android 9; Mobile; rv:82.0) Gecko/82.0 Firefox/82.0",
-	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:82.0) Gecko/20100101 Firefox/82.0",
-	      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:82.0) Gecko/20100101 Firefox/82.0",
-	      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:82.0) Gecko/20100101 Firefox/82.0"
-	    ],
-	    "time": "10/21/2020, 3:00:05 AM",
-	    "decoded": "SpiderMonkey"
-	  },
-	  {
 	    "id": "d3e540b3b7475515b7c806a290d5555b6a00ea087550741e0513835becbf94cb",
 	    "type": "CSS style version",
 	    "uaSystem": [
@@ -507,31 +685,6 @@
 	    "decoded": "Chromium"
 	  },
 	  {
-	    "id": "e03db0479814195a41344e0ff29d2a28da34c9467df06479c11fa8600a0c6aa7",
-	    "type": "CSS style version",
-	    "userAgent": [
-	      "Mozilla/5.0 (Android 9; Mobile; rv:81.0) Gecko/81.0 Firefox/81.0",
-	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0",
-	      "Mozilla/5.0 (Android 7.1.2; Mobile; rv:81.0) Gecko/81.0 Firefox/81.0",
-	      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:81.0) Gecko/20100101 Firefox/81.0",
-	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0) Gecko/20100101 Firefox/81.0",
-	      "Mozilla/5.0 (Android 9; Mobile; rv:80.0) Gecko/80.0 Firefox/80.0",
-	      "Mozilla/5.0 (Android 10; Mobile; rv:80.0) Gecko/80.0 Firefox/80.0",
-	      "Mozilla/5.0 (Android 9; Mobile; rv:78.0) Gecko/20100101 Firefox/78.0",
-	      "Mozilla/5.0 (Android 9; Mobile; rv:82.0) Gecko/82.0 Firefox/82.0",
-	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:82.0) Gecko/20100101 Firefox/82.0",
-	      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:82.0) Gecko/20100101 Firefox/82.0",
-	      "Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0"
-	    ],
-	    "uaSystem": [
-	      "Android",
-	      "Windows",
-	      "Linux"
-	    ],
-	    "time": "10/21/2020, 12:51:15 AM",
-	    "decoded": "Firefox 80-82"
-	  },
-	  {
 	    "id": "2c269fee1add44f6ea7a86de91522685102560e87200150c1910ef9f7dffd3da",
 	    "type": "contentWindow version",
 	    "uaSystem": [
@@ -561,19 +714,6 @@
 	    "decoded": "SpiderMonkey"
 	  },
 	  {
-	    "id": "f94bfe4610d2d52c0b5a04bd57c4e8e61f88e6d95b3cab49a0b9275ac9b78358",
-	    "type": "system styles",
-	    "uaSystem": [
-	      "Linux"
-	    ],
-	    "userAgent": [
-	      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:81.0) Gecko/20100101 Firefox/81.0",
-	      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:82.0) Gecko/20100101 Firefox/82.0"
-	    ],
-	    "time": "10/21/2020, 12:45:35 AM",
-	    "decoded": "Firefox"
-	  },
-	  {
 	    "id": "98c592a4d8c9f60a1baa1a7ca412744fd2c7e83a060ff5b3892fccc9fff6988e",
 	    "type": "contentWindow version",
 	    "uaSystem": [
@@ -584,20 +724,6 @@
 	    ],
 	    "time": "10/21/2020, 12:45:35 AM",
 	    "decoded": "Firefox 82"
-	  },
-	  {
-	    "id": "623a48460ec4e748333a287d26522abf1f5782b37c6e64d43f52d08836743378",
-	    "type": "contentWindow version",
-	    "uaSystem": [
-	      "Linux",
-	      "Mac"
-	    ],
-	    "userAgent": [
-	      "Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0",
-	      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0"
-	    ],
-	    "time": "10/20/2020, 3:39:43 AM",
-	    "decoded": "Tor Browser 10"
 	  },
 	  {
 	    "id": "91f98e37bae90d6a32d788e49bc5bcef0400e07b4f6f3ac8fe0ea3fa5f75d878",
@@ -739,33 +865,6 @@
 	    "decoded": "Chrome 83"
 	  },
 	  {
-	    "id": "db3f6704dd3e8feed2b5553a95a8a8575beb904af89ce64aa85d537b36b19319",
-	    "type": "js Math implementation",
-	    "userAgent": [
-	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0",
-	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0) Gecko/20100101 Firefox/81.0",
-	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:82.0) Gecko/20100101 Firefox/82.0"
-	    ],
-	    "uaSystem": [
-	      "Windows"
-	    ],
-	    "time": "10/20/2020, 12:56:23 AM",
-	    "decoded": "SpiderMonkey"
-	  },
-	  {
-	    "id": "29ee4de348ef4f013f7975dbe73273f6c588f423d7d4ad0c18a257bd36e10819",
-	    "type": "system styles",
-	    "uaSystem": [
-	      "Windows"
-	    ],
-	    "userAgent": [
-	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0) Gecko/20100101 Firefox/81.0",
-	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:82.0) Gecko/20100101 Firefox/82.0"
-	    ],
-	    "time": "10/20/2020, 12:56:23 AM",
-	    "decoded": "Firefox"
-	  },
-	  {
 	    "id": "870471782bc768a4dae3198669358f0d199b92d9e1c4441a3399141ff502a486",
 	    "type": "js Math implementation",
 	    "userAgent": [
@@ -857,22 +956,6 @@
 	    "decoded": "Chrome 84"
 	  },
 	  {
-	    "id": "e1f1230c755ee87003b97f12ed6de161d05ecdbcdcd239c433cb2fca01edbddd",
-	    "type": "HTMLElement version",
-	    "uaSystem": [
-	      "Windows",
-	      "Linux"
-	    ],
-	    "userAgent": [
-	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36 Edg/86.0.622.38",
-	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36",
-	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.99 Safari/537.36",
-	      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.99 Safari/537.36"
-	    ],
-	    "time": "10/18/2020, 1:25:20 AM",
-	    "decoded": "Chrome 86"
-	  },
-	  {
 	    "id": "622cd240f4acd4e41717a61a0474fb68da6224857de8e3e001a9a19e993b77e4",
 	    "type": "contentWindow version",
 	    "uaSystem": [
@@ -907,19 +990,6 @@
 	    ],
 	    "time": "10/18/2020, 12:55:47 AM",
 	    "decoded": "Firefox 81"
-	  },
-	  {
-	    "id": "e5f8055b9f7764f4ca675da33efb60c102839e49f214a8682943110ebef578c4",
-	    "type": "contentWindow version",
-	    "uaSystem": [
-	      "Windows"
-	    ],
-	    "userAgent": [
-	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36",
-	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.99 Safari/537.36"
-	    ],
-	    "time": "10/17/2020, 8:25:04 PM",
-	    "decoded": "Chrome 86 Brave"
 	  },
 	  {
 	    "id": "41a657b3421b46fc73998bdd961e2f567956b7c4aaff506f9f96120b8db1a97e",
@@ -1805,186 +1875,43 @@
 	const lieRecords = createlieRecords();
 	const { documentLie } = lieRecords;
 
-	// nested contentWindow context
-	const wait = ms => {
-		const start = new Date().getTime();
-		let end = start;
-		while (end < start + ms) {
-			end = new Date().getTime();
-		}
-		return
-	};
-
-	const validateContentWindow = iframe => {
-		if (!iframe.contentWindow) { throw new Error('blocked by client') }
-		return iframe
-	};
 
 	const getNestedContentWindowContext = imports => {
 
 		const {
 			require: {
-				isChrome,
-				isFirefox,
 				instanceId,
 				captureError
 			}
 		} = imports;
 
-		const allowScripts = () => !isFirefox && !isChrome ? 'allow-scripts ' : '';
 		try {
-			const thisSiteCantBeReached = `about:${instanceId}`; // url must yield 'this site cant be reached' error
-			const createIframe = (win, id) => {
-				const doc = win.document;
-				const iframe = doc.createElement('iframe');
-				iframe.setAttribute('id', id);
-				iframe.setAttribute('style', 'display:none');
-				iframe.setAttribute('sandbox', `${allowScripts()}allow-same-origin`);
-				const placeholder = doc.createElement('div');
-				placeholder.setAttribute('style', 'display:none');
-				const placeholderId = `${instanceId}-contentWindow-placeholder`;
-				placeholder.setAttribute('id', placeholderId);
-
-				if (isChrome) {
-					iframe.src = thisSiteCantBeReached; 
-				}
-
-				let isErrorCaught = false;
-				let rendered = win;
-				
-				try {
-					doc.body.append(iframe);
-					rendered = validateContentWindow(iframe);
-				}
-				catch(error) {
-					isErrorCaught = true;
-					captureError(error, 'client tampered with append');
-				}
-
-				try {
-					if (isErrorCaught) {
-						doc.body.prepend(iframe);
-						rendered = validateContentWindow(iframe);
-					}
-				}
-				catch(error) {
-					isErrorCaught = true;
-					captureError(error, 'client tampered with prepend');
-				}
-
-				try {
-					if (isErrorCaught) {
-						doc.body.appendChild(iframe);
-						rendered = validateContentWindow(iframe);
-					}
-				}
-				catch(error) {
-					isErrorCaught = true;
-					captureError(error, 'client tampered with appendChild');
-				}
-
-				try {
-					if (isErrorCaught) {
-						doc.body.appendChild(placeholder);
-						placeholder.replaceWith(iframe);
-						rendered = validateContentWindow(iframe);
-					}
-				}
-				catch(error) {
-					isErrorCaught = true;
-					captureError(error, 'client tampered with replaceWith');
-				}
-
-				try {
-					if (isErrorCaught) {
-						doc.body.insertBefore(iframe, win.parent.firstChild);
-						rendered = validateContentWindow(iframe);
-					}
-				}
-				catch(error) {
-					isErrorCaught = true;
-					captureError(error, 'client tampered with insertBefore');
-				}
-
-				try {
-					if (isErrorCaught) {
-						doc.body.appendChild(placeholder);
-						doc.body.replaceChild(iframe, placeholder);
-						rendered = validateContentWindow(iframe);
-					}
-				}
-				catch(error) {
-					isErrorCaught = true;
-					captureError(error, 'client tampered with replaceChild');
-				}
-
-				try {
-					if (isErrorCaught) {
-						doc.body.insertAdjacentElement('afterend', iframe);
-						rendered = validateContentWindow(iframe);
-					}
-				}
-				catch(error) {
-					isErrorCaught = true;
-					captureError(error, 'client tampered with insertAdjacentElement afterend');
-				}
-
-				try {
-					if (isErrorCaught) {
-						doc.body.insertAdjacentElement('beforeend', iframe);
-						rendered = validateContentWindow(iframe);
-					}
-				}
-				catch(error) {
-					isErrorCaught = true;
-					captureError(error, 'client tampered with insertAdjacentElement beforeend');
-				}
-
-				try {
-					if (isErrorCaught) {
-						doc.body.insertAdjacentElement('beforebegin', iframe);
-						rendered = validateContentWindow(iframe);
-					}
-				}
-				catch(error) {
-					isErrorCaught = true;
-					captureError(error, 'client tampered with insertAdjacentElement beforebegin');
-				}
-
-				try {
-					if (isErrorCaught) {
-						doc.body.insertAdjacentElement('afterbegin', iframe);
-						rendered = validateContentWindow(iframe);
-					}
-				}
-				catch(error) {
-					isErrorCaught = true;
-					captureError(error, 'client tampered with insertAdjacentElement afterbegin');
-				}
-
+			const createIframe = context => {
+				const len = context.length;
+				const div = document.createElement('div');
+				div.setAttribute('style', 'display:none');
+				document.body.appendChild(div);
+				const id = [...Array(10)].map(() => instanceId).join('');
+				patch(div, html`<div id="${id}"><iframe></iframe></div>`);
+				const el = document.getElementById(id);
 				return {
-					el: rendered,
-					context: rendered.contentWindow,
-					remove: () => rendered.parentNode.removeChild(rendered)
+					el,
+					contentWindow: context[len],
+					remove: () => el.parentNode.removeChild(el)
 				}
 			};
-			const parentIframe = createIframe(window, `${instanceId}-parent-iframe`);
-			const {
-				context: contentWindow
-			} = createIframe(parentIframe.context, `${instanceId}-nested-iframe`);
 
-			if (isChrome) { contentWindow.location = thisSiteCantBeReached;  }
-
-			wait(100); // delay frame load
-			return { contentWindow, parentIframe }
+			const parentNest = createIframe(window);
+			const { contentWindow } = parentNest;
+			return { contentWindow, parentNest }
 		}
 		catch (error) {
-			captureError(error, 'client blocked nested iframe context');
-			return {contentWindow: undefined, parentIframe: undefined}
+			captureError(error, 'client blocked nested iframe');
+			return { contentWindow: window, parentNest: undefined }
 		}
 	};
 
-	const { contentWindow, parentIframe  } = getNestedContentWindowContext({
+	const { contentWindow, parentNest  } = getNestedContentWindowContext({
 		require: { isChrome, isFirefox, instanceId, captureError }
 	});
 
@@ -2708,13 +2635,15 @@
 				caniuse,
 				sendToTrash,
 				documentLie,
-				lieProps
+				lieProps,
+				contentWindow
 			}
 		} = imports;
 
 		return new Promise(resolve => {
 			try {
-				const audioContext = caniuse(() => OfflineAudioContext || webkitOfflineAudioContext);
+				const win = contentWindow ? contentWindow : window;
+				const audioContext = caniuse(() => win.OfflineAudioContext || win.webkitOfflineAudioContext);
 				if (!audioContext) {
 					return resolve(undefined)
 				}
@@ -2847,7 +2776,8 @@
 			require: {
 				hashify,
 				captureError,
-				lieProps
+				lieProps,
+				contentWindow
 			}
 		} = imports;
 		
@@ -2856,7 +2786,8 @@
 				const dataLie = lieProps['HTMLCanvasElement.toDataURL'];
 				const contextLie = lieProps['HTMLCanvasElement.getContext'];
 				let lied = dataLie || contextLie;
-				const canvas = document.createElement('canvas');
+				const doc = contentWindow ? contentWindow.document : document;
+				const canvas = doc.createElement('canvas');
 				let canvas2dDataURI = '';
 				const context = canvas.getContext('2d');
 				const str = '!😃🙌🧠👩‍💻👟👧🏻👩🏻‍🦱👩🏻‍🦰👱🏻‍♀️👩🏻‍🦳👧🏼👧🏽👧🏾👧🏿🦄🐉🌊🍧🏄‍♀️🌠🔮♞';
@@ -2884,7 +2815,8 @@
 				hashify,
 				captureError,
 				caniuse,
-				lieProps
+				lieProps,
+				contentWindow
 			}
 		} = imports;
 
@@ -2893,7 +2825,8 @@
 				const dataLie = lieProps['HTMLCanvasElement.toDataURL'];
 				const contextLie = lieProps['HTMLCanvasElement.getContext'];
 				let lied = dataLie || contextLie;
-				const canvas = document.createElement('canvas');
+				const doc = contentWindow ? contentWindow.document : document;
+				const canvas = doc.createElement('canvas');
 				let canvasBMRDataURI = '';
 				const context = canvas.getContext('bitmaprenderer');
 				const image = new Image();
@@ -2930,7 +2863,8 @@
 				caniuse,
 				sendToTrash,
 				proxyBehavior,
-				lieProps
+				lieProps,
+				contentWindow
 			}
 		} = imports;
 
@@ -2951,8 +2885,9 @@
 				);
 
 				// crreate canvas context
-				const canvas = document.createElement('canvas');
-				const canvas2 = document.createElement('canvas');
+				const doc = contentWindow ? contentWindow.document : document;
+				const canvas = doc.createElement('canvas');
+				const canvas2 = doc.createElement('canvas');
 				const context = (
 					canvas.getContext('webgl') ||
 					canvas.getContext('experimental-webgl') ||
@@ -3533,29 +3468,26 @@
 					lieProps['HTMLElement.offsetHeight']
 				);
 
-				const fontsId = `${instanceId}-fonts-div`;
-				const divElement = document.createElement('div');
-				const divStageRendered = document.createElement('div');
-				divElement.setAttribute('id', fontsId);
-				divStageRendered.setAttribute('id', 'font-detector-stage');
-				
-				let iframeRendered, doc = document;
+				let iframeContainer, doc = document;
 				try {
-					// create and get rendered iframe
-					const id = `${instanceId}-fonts-iframe`;
-					const iframeElement = document.createElement('iframe');
-					iframeElement.setAttribute('id', id);
-					iframeElement.setAttribute('style', 'visibility: hidden; height: 0');
-					document.body.appendChild(iframeElement);
-					iframeRendered = document.getElementById(id);
-
-					// create and get rendered div in iframe
-					doc = iframeRendered.contentDocument;
+					const len = window.length;
+					const div = document.createElement('div');
+					div.setAttribute('style', 'visibility:hidden');
+					document.body.appendChild(div);
+					div.innerHTML = '<iframe></iframe>';
+					const iframeWindow = window[len];
+					iframeContainer = div;
+					doc = iframeWindow.document;
 				}
 				catch (error) {
 					captureError(error, 'client blocked fonts iframe');
 				}
 
+				const fontsId = `${instanceId}-fonts-div`;
+				const divElement = document.createElement('div');
+				const divStageRendered = document.createElement('div');
+				divElement.setAttribute('id', fontsId);
+				divStageRendered.setAttribute('id', 'font-detector-stage');
 				doc.body.appendChild(divElement);
 				const divRendered = doc.getElementById(fontsId);
 				divRendered.appendChild(divStageRendered);
@@ -3630,11 +3562,11 @@
 							return
 						});
 
-						if (!!iframeRendered) {
-							return iframeRendered.parentNode.removeChild(iframeRendered)
+						if (!!iframeContainer) {
+							iframeContainer.parentNode.removeChild(iframeContainer);
 						}
 						else {
-							return divRendered.parentNode.removeChild(divRendered)
+							divRendered.parentNode.removeChild(divRendered);
 						}
 					}
 				);
@@ -3657,25 +3589,38 @@
 
 		const {
 			require: {
-				instanceId,
 				hashify,
-				captureError
+				instanceId,
+				captureError,
+				parentNest
 			}
 		} = imports;
 
 		return new Promise(async resolve => {
 			try {
-				const id = `${instanceId}-html-element-version-test`;
-				const htmlElement = document.createElement('div');
-				htmlElement.setAttribute('id', id);
-				htmlElement.setAttribute('style', 'display:none;');
-				document.body.appendChild(htmlElement); 
-				const htmlElementRendered = document.getElementById(id);
+				
+				let htmlElementRendered;
+				if (parentNest &&  parentNest.el) {
+					htmlElementRendered = parentNest.el;
+				}
+				else {
+					const id = `${instanceId}-html-element-version-test`;
+					const htmlElement = document.createElement('div');
+					htmlElement.setAttribute('id', id);
+					htmlElement.setAttribute('style', 'display:none;');
+					document.body.appendChild(htmlElement);
+					htmlElementRendered = document.getElementById(id);
+				}
+
 				const keys = [];
 				for (const key in htmlElementRendered) {
 					keys.push(key);
 				}
-				htmlElementRendered.parentNode.removeChild(htmlElementRendered);
+
+				if (!parentNest) {
+					htmlElementRendered.parentNode.removeChild(htmlElementRendered);
+				}
+
 				const $hash = await hashify(keys);
 				return resolve({ keys, $hash })
 			}
@@ -3909,7 +3854,6 @@
 
 		const {
 			require: {
-				isFirefox,
 				hashify,
 				captureError,
 				contentWindow
@@ -3918,7 +3862,7 @@
 
 		return new Promise(async resolve => {
 			try {
-				const contentWindowNavigator = contentWindow && !isFirefox ? contentWindow.navigator : navigator;
+				const contentWindowNavigator = contentWindow ? contentWindow.navigator : navigator;
 				if (!('mediaDevices' in contentWindowNavigator)) {
 					return resolve(undefined)
 				}
@@ -4053,7 +3997,7 @@
 							sendToTrash(`platform`, `${navigatorPlatform} is unusual`);
 						}
 						if (platform != navigatorPlatform) {
-							sendToTrash('platform', `[${navigatorPlatform}] does not match iframe`);
+							sendToTrash('platform', `${navigatorPlatform} does not match iframe`);
 						}
 						return platform
 					}),
@@ -4070,7 +4014,7 @@
 							sendToTrash('userAgent', `${navigatorUserAgent} does not match appVersion`);
 						}
 						if (userAgent != navigatorUserAgent) {
-							sendToTrash('userAgent', `[${navigatorUserAgent}] does not match iframe`);
+							sendToTrash('userAgent', `${navigatorUserAgent} does not match iframe`);
 						}
 						return userAgent
 					}, 'userAgent failed'),
@@ -4085,7 +4029,7 @@
 							sendToTrash('appVersion', 'Living Standard property returned falsy value');
 						}
 						if (appVersion != navigatorAppVersion) {
-							sendToTrash('appVersion', `[${navigatorAppVersion}] does not match iframe`);
+							sendToTrash('appVersion', `${navigatorAppVersion} does not match iframe`);
 						}
 						return appVersion
 					}, 'appVersion failed'),
@@ -4108,7 +4052,7 @@
 							sendToTrash('deviceMemory', `${navigatorDeviceMemory} is not within set [0, 1, 2, 4, 6, 8]`);
 						}
 						if (deviceMemory != navigatorDeviceMemory) {
-							sendToTrash('deviceMemory', `[${navigatorDeviceMemory}] does not match iframe`);
+							sendToTrash('deviceMemory', `${navigatorDeviceMemory} does not match iframe`);
 						}
 						return deviceMemory
 					}, 'deviceMemory failed'),
@@ -4140,7 +4084,7 @@
 						detectLies('hardwareConcurrency', navigatorHardwareConcurrency);
 						trustInteger('hardwareConcurrency - invalid return type', navigatorHardwareConcurrency);
 						if (hardwareConcurrency != navigatorHardwareConcurrency) {
-							sendToTrash('hardwareConcurrency', `[${navigatorHardwareConcurrency}] does not match iframe`);
+							sendToTrash('hardwareConcurrency', `${navigatorHardwareConcurrency} does not match iframe`);
 						}
 						return hardwareConcurrency
 					}, 'hardwareConcurrency failed'),
@@ -4151,7 +4095,7 @@
 						detectLies('language', navigatorLanguage);
 						detectLies('languages', navigatorLanguages);
 						if (language != navigatorLanguage) {
-							sendToTrash('language', `[${navigatorLanguage}] does not match iframe`);
+							sendToTrash('language', `${navigatorLanguage} does not match iframe`);
 						}
 						if (navigatorLanguage && navigatorLanguages) {
 							const lang = /^.{0,2}/g.exec(navigatorLanguage)[0];
@@ -4167,14 +4111,19 @@
 						if (!('maxTouchPoints' in navigator)) {
 							return null
 						}
-						const { maxTouchPoints } = navigator;
+						const { maxTouchPoints } = contentWindowNavigator;
+						const navigatorMaxTouchPoints = navigator.maxTouchPoints;	
+						if (lied && (maxTouchPoints != navigatorMaxTouchPoints)) {	
+							sendToTrash('maxTouchPoints', `${navigatorMaxTouchPoints} does not match iframe`);	
+						}
+
 						return maxTouchPoints
 					}, 'maxTouchPoints failed'),
 					vendor: attempt(() => {
 						const { vendor } = contentWindowNavigator;
 						const navigatorVendor = navigator.vendor;
 						if (vendor != navigatorVendor) {
-							sendToTrash('vendor', `[${navigatorVendor}] does not match iframe`);
+							sendToTrash('vendor', `${navigatorVendor} does not match iframe`);
 						}
 						return vendor
 					}, 'vendor failed'),
@@ -4252,26 +4201,29 @@
 			try {
 				const toJSONParsed = (x) => JSON.parse(JSON.stringify(x));
 				let lied = lieProps['Element.getClientRects']; // detect lies
-				const rectsId = `${instanceId}-client-rects-div`;
-				const divElement = document.createElement('div');
-				divElement.setAttribute('id', rectsId);
-				let iframeRendered, doc = document;
+				
+				let iframeContainer, doc = document;
 				try {
 					// create and get rendered iframe
-					const id = `${instanceId}-client-rects-iframe`;
-					const iframeElement = document.createElement('iframe');
-					iframeElement.setAttribute('id', id);
-					iframeElement.setAttribute('style', 'dsiplay:none');
-					document.body.appendChild(iframeElement);
-					iframeRendered = document.getElementById(id);
+
+					const len = window.length;
+					const div = document.createElement('div');
+					div.setAttribute('style', 'visibility:hidden');
+					document.body.appendChild(div);
+					div.innerHTML = '<iframe></iframe>';
+					const iframeWindow = window[len];
 
 					// create and get rendered div in iframe
-					doc = iframeRendered.contentDocument;
+					iframeContainer = div;
+					doc = iframeWindow.document;
 				}
 				catch (error) {
 					captureError(error, 'client blocked getClientRects iframe');
 				}
 
+				const rectsId = `${instanceId}-client-rects-div`;
+				const divElement = document.createElement('div');
+				divElement.setAttribute('id', rectsId);
 				doc.body.appendChild(divElement);
 				const divRendered = doc.getElementById(rectsId);
 				
@@ -4442,12 +4394,14 @@
 					documentLie('Element.getClientRects', hashMini(clientRects), offsetLie);
 					lied = true;
 				}
-				if (!!iframeRendered) {
-					iframeRendered.parentNode.removeChild(iframeRendered);
+				
+				if (!!iframeContainer) {
+					iframeContainer.parentNode.removeChild(iframeContainer);
 				}
 				else {
 					divRendered.parentNode.removeChild(divRendered);
 				}
+				
 				const [
 					emojiHash,
 					clientHash,
@@ -4522,7 +4476,6 @@
 
 		const {
 			require: {
-				isFirefox,
 				hashify,
 				captureError,
 				attempt,
@@ -4543,7 +4496,10 @@
 					lieProps['Screen.colorDepth'] ||
 					lieProps['Screen.pixelDepth']
 				);
-				const contentWindowScreen = contentWindow && !isFirefox ? contentWindow.screen : screen;
+				const contentWindowScreen = contentWindow ? contentWindow.screen : screen;
+				const contentWindowOuterWidth = contentWindow ? contentWindow.outerWidth : outerWidth;
+				const contentWindowOuterHeight = contentWindow ? contentWindow.outerHeight : outerHeight;
+				
 				const { width, height, availWidth, availHeight, colorDepth, pixelDepth } = contentWindowScreen;
 				const {
 					width: screenWidth,
@@ -4600,13 +4556,14 @@
 				const data = {
 					device: getDevice(width, height),
 					width: attempt(() => width ? trustInteger('width - invalid return type', width) : undefined),
-					outerWidth: attempt(() => outerWidth ? trustInteger('outerWidth - invalid return type', outerWidth) : undefined),
+					outerWidth: attempt(() => contentWindowOuterWidth ? trustInteger('outerWidth - invalid return type', contentWindowOuterWidth) : undefined),
 					availWidth: attempt(() => availWidth ? trustInteger('availWidth - invalid return type', availWidth) : undefined),
 					height: attempt(() => height ? trustInteger('height - invalid return type', height) : undefined),
-					outerHeight: attempt(() => outerHeight ? trustInteger('outerHeight - invalid return type', outerHeight) : undefined),
+					outerHeight: attempt(() => contentWindowOuterHeight ? trustInteger('outerHeight - invalid return type', contentWindowOuterHeight) : undefined),
 					availHeight: attempt(() => availHeight ?  trustInteger('availHeight - invalid return type', availHeight) : undefined),
 					colorDepth: attempt(() => colorDepth ? trustInteger('colorDepth - invalid return type', colorDepth) : undefined),
-					pixelDepth: attempt(() => pixelDepth ? trustInteger('pixelDepth - invalid return type', pixelDepth) : undefined)
+					pixelDepth: attempt(() => pixelDepth ? trustInteger('pixelDepth - invalid return type', pixelDepth) : undefined),
+					lied
 				};
 				const $hash = await hashify(data);
 				return resolve({ ...data, $hash })
@@ -4891,12 +4848,14 @@
 		const {
 			require: {
 				hashify,
-				captureError
+				captureError,
+				contentWindow
 			}
 		} = imports;
 			
 		return new Promise(async resolve => {
 			try {
+				const win = contentWindow ? contentWindow : window;
 				let voices = [];
 				const respond = async (resolve, voices) => {
 					voices = voices.map(({ name, lang }) => ({ name, lang }));
@@ -4908,22 +4867,22 @@
 					const $hash = await hashify(voices);
 					return resolve({ voices, ...check, $hash })
 				};
-				if (!('speechSynthesis' in window)) {
+				if (!('speechSynthesis' in win)) {
 					return resolve(undefined)
 				}
-				else if (!('chrome' in window)) {
-					voices = await speechSynthesis.getVoices();
+				else if (!('chrome' in win)) {
+					voices = await win.speechSynthesis.getVoices();
 					return respond(resolve, voices)
 				}
-				else if (!speechSynthesis.getVoices || speechSynthesis.getVoices() == undefined) {
+				else if (!win.speechSynthesis.getVoices || win.speechSynthesis.getVoices() == undefined) {
 					return resolve(undefined)
 				}
-				else if (speechSynthesis.getVoices().length) {
-					voices = speechSynthesis.getVoices();
+				else if (win.speechSynthesis.getVoices().length) {
+					voices = win.speechSynthesis.getVoices();
 					return respond(resolve, voices)
 				} else {
-					speechSynthesis.onvoiceschanged = () => {
-						voices = speechSynthesis.getVoices();
+					win.speechSynthesis.onvoiceschanged = () => {
+						voices = win.speechSynthesis.getVoices();
 						return resolve(new Promise(resolve => respond(resolve, voices)))
 					};
 				}
@@ -5006,7 +4965,7 @@
 						const data = {
 							['webRTC leak']: cloudflareIp && (
 								!!ipAddress && ipAddress != cloudflareIp
-							) ? true : 'unknown',
+							) ? 'maybe' : 'unknown',
 							['ip address']: ipAddress,
 							candidate: candidateIpAddress,
 							connection: connectionLineIpAddress
@@ -5209,7 +5168,8 @@
 			trashBin,
 			lieRecords,
 			// nested contentWindow
-			contentWindow
+			contentWindow,
+			parentNest
 		}
 	}
 
@@ -5282,8 +5242,8 @@
 
 			const timeEnd = timeStart();
 
-			if (parentIframe) {
-				parentIframe.remove();
+			if (parentNest) {
+				parentNest.remove();
 			}
 
 			const fingerprint = {
@@ -6354,8 +6314,7 @@
 					(trashLen * 15.5) +
 					(liesLen * 31)
 				)).toFixed(0);
-
-				const browser = decryptKnown(caniuse(() => fp.iframeContentWindowVersion, ['$hash]']));
+				const browser = decryptKnown(caniuse(() => fp.iframeContentWindowVersion.$hash));
 				const template = `
 				<div class="visitor-info">
 					<div class="flex-grid">
