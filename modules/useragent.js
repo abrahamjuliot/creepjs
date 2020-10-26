@@ -1,5 +1,36 @@
 export const userAgentData = [
   {
+    "id": "e1f1230c755ee87003b97f12ed6de161d05ecdbcdcd239c433cb2fca01edbddd",
+    "type": "HTMLElement version",
+    "uaSystem": [
+      "Windows",
+      "Linux"
+    ],
+    "userAgent": [
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36 Edg/86.0.622.38",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.99 Safari/537.36",
+      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.99 Safari/537.36",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36"
+    ],
+    "time": "10/26/2020, 1:00:56 AM",
+    "decoded": "Chrome 86"
+  },
+  {
+    "id": "e5f8055b9f7764f4ca675da33efb60c102839e49f214a8682943110ebef578c4",
+    "type": "contentWindow version",
+    "uaSystem": [
+      "Windows"
+    ],
+    "userAgent": [
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.99 Safari/537.36",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36"
+    ],
+    "time": "10/26/2020, 1:00:56 AM",
+    "decoded": "Chrome 86 Brave"
+  },
+  {
     "id": "88e11762ff617bd6ca2702cb47d8e805b117138ab2f39f7b02b0e35da361fea3",
     "type": "HTMLElement version",
     "uaSystem": [
@@ -808,22 +839,6 @@ export const userAgentData = [
     "decoded": "Chrome 84"
   },
   {
-    "id": "e1f1230c755ee87003b97f12ed6de161d05ecdbcdcd239c433cb2fca01edbddd",
-    "type": "HTMLElement version",
-    "uaSystem": [
-      "Windows",
-      "Linux"
-    ],
-    "userAgent": [
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36 Edg/86.0.622.38",
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36",
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.99 Safari/537.36",
-      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.99 Safari/537.36"
-    ],
-    "time": "10/18/2020, 1:25:20 AM",
-    "decoded": "Chrome 86"
-  },
-  {
     "id": "622cd240f4acd4e41717a61a0474fb68da6224857de8e3e001a9a19e993b77e4",
     "type": "contentWindow version",
     "uaSystem": [
@@ -858,19 +873,6 @@ export const userAgentData = [
     ],
     "time": "10/18/2020, 12:55:47 AM",
     "decoded": "Firefox 81"
-  },
-  {
-    "id": "e5f8055b9f7764f4ca675da33efb60c102839e49f214a8682943110ebef578c4",
-    "type": "contentWindow version",
-    "uaSystem": [
-      "Windows"
-    ],
-    "userAgent": [
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36",
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.99 Safari/537.36"
-    ],
-    "time": "10/17/2020, 8:25:04 PM",
-    "decoded": "Chrome 86 Brave"
   },
   {
     "id": "41a657b3421b46fc73998bdd961e2f567956b7c4aaff506f9f96120b8db1a97e",
