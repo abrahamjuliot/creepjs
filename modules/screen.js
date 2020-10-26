@@ -73,6 +73,9 @@ export const getScreen = imports => {
 				lieProps['Screen.pixelDepth']
 			)
 			const contentWindowScreen = contentWindow ? contentWindow.screen : screen
+			const contentWindowOuterWidth = contentWindow ? contentWindow.outerWidth : outerWidth
+			const contentWindowOuterHeight = contentWindow ? contentWindow.outerHeight : outerHeight
+			
 			const { width, height, availWidth, availHeight, colorDepth, pixelDepth } = contentWindowScreen
 			const {
 				width: screenWidth,
@@ -129,10 +132,10 @@ export const getScreen = imports => {
 			const data = {
 				device: getDevice(width, height),
 				width: attempt(() => width ? trustInteger('width - invalid return type', width) : undefined),
-				outerWidth: attempt(() => outerWidth ? trustInteger('outerWidth - invalid return type', outerWidth) : undefined),
+				outerWidth: attempt(() => contentWindowOuterWidth ? trustInteger('outerWidth - invalid return type', contentWindowOuterWidth) : undefined),
 				availWidth: attempt(() => availWidth ? trustInteger('availWidth - invalid return type', availWidth) : undefined),
 				height: attempt(() => height ? trustInteger('height - invalid return type', height) : undefined),
-				outerHeight: attempt(() => outerHeight ? trustInteger('outerHeight - invalid return type', outerHeight) : undefined),
+				outerHeight: attempt(() => contentWindowOuterHeight ? trustInteger('outerHeight - invalid return type', contentWindowOuterHeight) : undefined),
 				availHeight: attempt(() => availHeight ?  trustInteger('availHeight - invalid return type', availHeight) : undefined),
 				colorDepth: attempt(() => colorDepth ? trustInteger('colorDepth - invalid return type', colorDepth) : undefined),
 				pixelDepth: attempt(() => pixelDepth ? trustInteger('pixelDepth - invalid return type', pixelDepth) : undefined),
