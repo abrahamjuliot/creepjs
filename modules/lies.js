@@ -1,7 +1,6 @@
 import { hashMini, instanceId } from './crypto.js'
 import { captureError, attempt, caniuse } from './captureErrors.js'
 import { isChrome, isFirefox } from './helpers.js'
-import { patch, html } from './html.js'
 
 
 // Collect lies detected
@@ -18,39 +17,25 @@ const createlieRecords = () => {
 const lieRecords = createlieRecords()
 const { documentLie } = lieRecords
 
-// nested contentWindow context
-const wait = ms => {
-	const start = new Date().getTime()
-	let end = start
-	while (end < start + ms) {
-		end = new Date().getTime()
-	}
-	return
-}
-
-
 const getNestedContentWindowContext = imports => {
 
 	const {
 		require: {
-			instanceId,
 			captureError
 		}
 	} = imports
 
 	try {
 		const createIframe = context => {
-			const len = context.length
+			const numberOfIframes = context.length
 			const div = document.createElement('div')
 			div.setAttribute('style', 'display:none')
 			document.body.appendChild(div)
-			const id = [...Array(10)].map(() => instanceId).join('')
-			patch(div, html`<div id="${id}"><iframe></iframe></div>`)
-			const el = document.getElementById(id)
+			div.innerHTML = '<iframe></iframe>'
 			return {
-				el,
-				contentWindow: context[len],
-				remove: () => el.parentNode.removeChild(el)
+				el: div,
+				contentWindow: context[numberOfIframes],
+				remove: () => div.parentNode.removeChild(div)
 			}
 		}
 
