@@ -1,5 +1,17 @@
 [
   {
+    "id": "21ee4974e15368a9f55614de6b3900f178df5215c46f9bb68a74e04dcd3dceb9",
+    "type": "contentWindow version",
+    "uaSystem": [
+      "Windows"
+    ],
+    "userAgent": [
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:82.0) Gecko/20100101 Firefox/82.0"
+    ],
+    "time": "10/27/2020, 7:40:10 PM",
+    "decoded": "Firefox 82"
+  },
+  {
     "id": "e1f1230c755ee87003b97f12ed6de161d05ecdbcdcd239c433cb2fca01edbddd",
     "type": "HTMLElement version",
     "uaSystem": [

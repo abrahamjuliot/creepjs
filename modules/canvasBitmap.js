@@ -17,7 +17,6 @@ export const getCanvasBitmapRenderer = imports => {
 			let lied = dataLie || contextLie
 			const doc = contentWindow ? contentWindow.document : document
 			const canvas = doc.createElement('canvas')
-			let canvasBMRDataURI = ''
 			const context = canvas.getContext('bitmaprenderer')
 			const image = new Image()
 			image.src = 'bitmap.png'
@@ -28,8 +27,7 @@ export const getCanvasBitmapRenderer = imports => {
 					}
 					const bitmap = await createImageBitmap(image, 0, 0, image.width, image.height)
 					context.transferFromImageBitmap(bitmap)
-					canvasBMRDataURI = canvas.toDataURL()
-					const dataURI = canvasBMRDataURI
+					const dataURI = canvas.toDataURL()
 					const $hash = await hashify(dataURI)
 					const response = { dataURI, lied, $hash }
 					return resolve(response)
