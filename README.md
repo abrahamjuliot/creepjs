@@ -38,4 +38,11 @@ Tested:
 - new features will render fingerprints anew
 - [History](https://github.com/abrahamjuliot/creepjs/commits/master/docs/creep.js)
 
-
+## Trust Score Formula
+- start at `100%`
+- less than 2 loose fingerprints: subtract `0`
+- less than l1 loose fingerprints: subtract `total*1`
+- 11+ loose fingerprints: subtract `total*5`
+- trash: subtract `total*15.5`
+- lies: subtract `total*31`
+- errors: subtract `total*5.2`

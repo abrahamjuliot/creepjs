@@ -1192,7 +1192,7 @@ const imports = {
 		fetch(request)
 		.then(response => response.json())
 		.then(data => {
-			console.log('\n\nserver response: ', JSON.stringify(data, null, '\t'))
+			console.log('\n\n⚡server response: ', JSON.stringify(data, null, '\t'))
 			fetchVisitorDataTimer('server response time')
 			const { firstVisit, lastVisit: latestVisit, looseFingerprints: subIds, visits, hasTrash, hasLied, hasErrors } = data
 			const subIdsLen = Object.keys(subIds).length
