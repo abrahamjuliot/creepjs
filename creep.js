@@ -172,7 +172,7 @@ const imports = {
 		return { fingerprint, timeEnd }
 	}
 	// get/post request
-	const webapp = 'https://script.google.com/macros/s/AKfycbzKRjt6FPboOEkh1vTXttGyCjp97YBP7z-5bODQmtSkQ9BqDRY/exec'
+	const webapp = 'https://creepjs-6bd8e.web.app/fingerprint'
 	
 	// fingerprint and render
 	const { fingerprint: fp, timeEnd } = await fingerprint().catch(error => console.error(error))
@@ -1181,20 +1181,19 @@ const imports = {
 			`
 		})()}
 		</div>
-		<div>
-			Data auto deletes <a href="https://github.com/abrahamjuliot/creepjs/blob/8d6603ee39c9534cad700b899ef221e0ee97a5a4/server.gs#L24" target="_blank">every 7 days</a>
-		</div>
 	</div>
 	`, () => {
 		// fetch data from server
 		const id = 'creep-browser'
 		const visitorElem = document.getElementById(id)
 		const fetchVisitorDataTimer = timer()
-		fetch(`${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}`)
+		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}`
+		console.log(request)
+		fetch(request)
 		.then(response => response.json())
 		.then(data => {
 			console.log(data)
-			const { firstVisit, latestVisit, subIds, visits, hasTrash, hasLied, hasErrors } = data
+			const { firstVisit, lastVisit: latestVisit, looseFingerprints: subIds, visits, hasTrash, hasLied, hasErrors } = data
 			const subIdsLen = Object.keys(subIds).length
 			const toLocaleStr = str => {
 				const date = new Date(str)
