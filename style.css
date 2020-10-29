@@ -70,12 +70,6 @@ body * {
 	box-sizing: border-box;
 }
 
-.ellipsis {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
 .hide {
 	display: none;
 }
@@ -453,6 +447,12 @@ input[type="radio"] {
     padding: 3px;
 }
 
+.ellipsis {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
 @media (min-width: 600px) {
 	.flex-grid {
 		flex-direction: row;
@@ -464,6 +464,11 @@ input[type="radio"] {
 	}
 	.col-four {
 		flex-basis: 30%;
+	}
+	.ellipsis {
+		white-space: initial;
+		overflow: initial;
+		text-overflow: initial;
 	}
 }
 
