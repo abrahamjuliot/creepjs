@@ -38,11 +38,39 @@ Tested:
 - new features will render fingerprints anew
 - [History](https://github.com/abrahamjuliot/creepjs/commits/master/docs/creep.js)
 
-## Trust Score Formula
+## Formulas
+### Trust Score
+A failing trust score is unique and can be used to connect fingerprints.
+
 - start at `100%`
 - less than 2 loose fingerprints: subtract `0`
-- less than l1 loose fingerprints: subtract `total*1`
+- less than 11 loose fingerprints: subtract `total*1`
 - 11+ loose fingerprints: subtract `total*5`
 - trash: subtract `total*15.5`
 - lies: subtract `total*31`
 - errors: subtract `total*5.2`
+
+### Bot Detection
+Bots leak unusual behavior and can be denied service.
+- 10 loose fingerprints within 48 hours
+
+## Definitions
+### Trash Definition
+- unusual results
+- forgivable lies
+
+### Lies Definition
+- prototype tampering
+- failed math calculations
+
+### Errors 
+- invalid results
+- blocked features
+
+### Loose Fingerprint
+- collects as much entropy as possible
+
+### Fingerprint
+- adapts to browsers and distrusts known noise vectors
+- aims to ignore entropy unique to a browser version release
+- gathers compressed and static entropy
