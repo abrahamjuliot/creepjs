@@ -2,14 +2,14 @@ export const userAgentData = [
   {
     "id": "1643e13c601eff9a4b5252f24192d7e0b37562461bd0700bd2b35c9810946773",
     "type": "js Math implementation",
-    "isNew": true,
     "uaSystem": [
       "Android"
     ],
     "userAgent": [
       "Mozilla/5.0 (Android 7.1.2; Mobile; rv:79.0) Gecko/79.0 Firefox/79.0"
     ],
-    "time": "10/29/2020, 2:23:25 PM"
+    "time": "10/29/2020, 2:23:25 PM",
+    "decoded": "SpiderMonkey"
   },
   {
     "id": "7c95559c6754c42c0d87fa0339f8a7cc5ed092e7e91ae9e50d3212f7486fcbeb",
@@ -40,8 +40,7 @@ export const userAgentData = [
       "Mozilla/5.0 (Android 7.1.2; Mobile; rv:79.0) Gecko/79.0 Firefox/79.0"
     ],
     "time": "10/29/2020, 2:19:05 PM",
-    "decoded": "SpiderMonkey",
-    "isUpdated": true
+    "decoded": "SpiderMonkey"
   },
   {
     "id": "870471782bc768a4dae3198669358f0d199b92d9e1c4441a3399141ff502a486",
@@ -58,8 +57,7 @@ export const userAgentData = [
       "Android"
     ],
     "time": "10/29/2020, 2:19:05 PM",
-    "decoded": "SpiderMonkey",
-    "isUpdated": true
+    "decoded": "SpiderMonkey"
   },
   {
     "id": "a4fb2b96bb73e847ac83613667c1d8274c0d10ae86a0f97f3f3689254b62677c",
@@ -77,8 +75,7 @@ export const userAgentData = [
       "Android"
     ],
     "time": "10/29/2020, 2:19:05 PM",
-    "decoded": "Firefox 80-81",
-    "isUpdated": true
+    "decoded": "Firefox 80-81"
   },
   {
     "id": "043b39165047d137bb61cc649e0fd47bc1b48f02507cfdd697f2f0f55f632f0b",
@@ -95,8 +92,7 @@ export const userAgentData = [
       "Android"
     ],
     "time": "10/29/2020, 2:19:05 PM",
-    "decoded": "Firefox",
-    "isUpdated": true
+    "decoded": "Firefox"
   },
   {
     "id": "f868e64544f7b7e39e95738d1e68af72d60c6c94eccae88b2f99618b4f05368a",
@@ -112,20 +108,19 @@ export const userAgentData = [
       "Mozilla/5.0 (Android 7.1.2; Mobile; rv:79.0) Gecko/79.0 Firefox/79.0"
     ],
     "time": "10/29/2020, 2:19:05 PM",
-    "decoded": "Tor Browser 10",
-    "isUpdated": true
+    "decoded": "Tor Browser 10"
   },
   {
     "id": "1e966acc5d178da87f6feb87039309aebbaaceea70732f4862e61866dbd7d674",
     "type": "contentWindow version",
-    "isNew": true,
     "uaSystem": [
       "Android"
     ],
     "userAgent": [
       "Mozilla/5.0 (Android 7.1.2; Mobile; rv:79.0) Gecko/79.0 Firefox/79.0"
     ],
-    "time": "10/29/2020, 2:19:05 PM"
+    "time": "10/29/2020, 2:19:05 PM",
+    "decoded": "Firefox 79"
   },
   {
     "id": "42396b22e13416c3c34d2d49e7bd339b876f00fd6c12a04c2c6d62145209f2f5",
