@@ -54,6 +54,20 @@ A failing trust score is unique and can be used to connect fingerprints.
 Bots leak unusual behavior and can be denied service.
 - 10 loose fingerprints within 48 hours
 
+## Browser detection
+- a guess attempt is made to decrypt browser version and platform on the client side
+- this guess does not affect the fingerprint
+- decoded samples are manually gathered to ensure accuracy and fingerprints with lies are ignored
+- system is identified only when `navigator.userAgent` system has a match in the sample 
+
+### Tests
+1. js Math implementation (SpiderMonkey, JavaScriptCore, V8)
+2. js engine via console errors
+3. HTMLElement version
+4. system styles
+5. CSS style version
+6. contentWindow version
+
 ## Definitions
 ### Trash
 - unusual results
