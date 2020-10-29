@@ -31,7 +31,7 @@ Tested:
 ### Data
 - data collected: encrypted fingerprints and booleans
 - data retention: auto deletes 30 days after last visit
-- visit tracking: limited to data retention rule and new feature scaling
+- visit tracking: limited to data retention and new feature scaling
 
 ### New feature scaling
 - scaling occurs no more than once per week
