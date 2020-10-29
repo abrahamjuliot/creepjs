@@ -117,6 +117,18 @@
 
 	const userAgentData = [
 	  {
+	    "id": "21ee4974e15368a9f55614de6b3900f178df5215c46f9bb68a74e04dcd3dceb9",
+	    "type": "contentWindow version",
+	    "uaSystem": [
+	      "Windows"
+	    ],
+	    "userAgent": [
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:82.0) Gecko/20100101 Firefox/82.0"
+	    ],
+	    "time": "10/27/2020, 7:40:10 PM",
+	    "decoded": "Firefox 82"
+	  },
+	  {
 	    "id": "e1f1230c755ee87003b97f12ed6de161d05ecdbcdcd239c433cb2fca01edbddd",
 	    "type": "HTMLElement version",
 	    "uaSystem": [
@@ -1875,29 +1887,25 @@
 	const lieRecords = createlieRecords();
 	const { documentLie } = lieRecords;
 
-
 	const getNestedContentWindowContext = imports => {
 
 		const {
 			require: {
-				instanceId,
 				captureError
 			}
 		} = imports;
 
 		try {
 			const createIframe = context => {
-				const len = context.length;
+				const numberOfIframes = context.length;
 				const div = document.createElement('div');
 				div.setAttribute('style', 'display:none');
 				document.body.appendChild(div);
-				const id = [...Array(10)].map(() => instanceId).join('');
-				patch(div, html`<div id="${id}"><iframe></iframe></div>`);
-				const el = document.getElementById(id);
+				div.innerHTML = '<iframe></iframe>';
 				return {
-					el,
-					contentWindow: context[len],
-					remove: () => el.parentNode.removeChild(el)
+					el: div,
+					contentWindow: context[numberOfIframes],
+					remove: () => div.parentNode.removeChild(div)
 				}
 			};
 
@@ -2788,15 +2796,13 @@
 				let lied = dataLie || contextLie;
 				const doc = contentWindow ? contentWindow.document : document;
 				const canvas = doc.createElement('canvas');
-				let canvas2dDataURI = '';
 				const context = canvas.getContext('2d');
 				const str = '!😃🙌🧠👩‍💻👟👧🏻👩🏻‍🦱👩🏻‍🦰👱🏻‍♀️👩🏻‍🦳👧🏼👧🏽👧🏾👧🏿🦄🐉🌊🍧🏄‍♀️🌠🔮♞';
 				context.font = '14px Arial';
 				context.fillText(str, 0, 50);
 				context.fillStyle = 'rgba(100, 200, 99, 0.78)';
 				context.fillRect(100, 30, 80, 50);
-				canvas2dDataURI = canvas.toDataURL();
-				const dataURI = canvas2dDataURI;
+				const dataURI = canvas.toDataURL();
 				const $hash = await hashify(dataURI);
 				const response = { dataURI, lied, $hash };
 				return resolve(response)
@@ -2827,7 +2833,6 @@
 				let lied = dataLie || contextLie;
 				const doc = contentWindow ? contentWindow.document : document;
 				const canvas = doc.createElement('canvas');
-				let canvasBMRDataURI = '';
 				const context = canvas.getContext('bitmaprenderer');
 				const image = new Image();
 				image.src = 'bitmap.png';
@@ -2838,8 +2843,7 @@
 						}
 						const bitmap = await createImageBitmap(image, 0, 0, image.width, image.height);
 						context.transferFromImageBitmap(bitmap);
-						canvasBMRDataURI = canvas.toDataURL();
-						const dataURI = canvasBMRDataURI;
+						const dataURI = canvas.toDataURL();
 						const $hash = await hashify(dataURI);
 						const response = { dataURI, lied, $hash };
 						return resolve(response)
@@ -5274,7 +5278,7 @@
 			return { fingerprint, timeEnd }
 		};
 		// get/post request
-		const webapp = 'https://script.google.com/macros/s/AKfycbzKRjt6FPboOEkh1vTXttGyCjp97YBP7z-5bODQmtSkQ9BqDRY/exec';
+		const webapp = 'https://creepjs-6bd8e.web.app/fingerprint';
 		
 		// fingerprint and render
 		const { fingerprint: fp, timeEnd } = await fingerprint().catch(error => console.error(error));
@@ -6283,20 +6287,19 @@
 			`
 		})()}
 		</div>
-		<div>
-			Data auto deletes <a href="https://github.com/abrahamjuliot/creepjs/blob/8d6603ee39c9534cad700b899ef221e0ee97a5a4/server.gs#L24" target="_blank">every 7 days</a>
-		</div>
 	</div>
 	`, () => {
 			// fetch data from server
 			const id = 'creep-browser';
 			const visitorElem = document.getElementById(id);
 			const fetchVisitorDataTimer = timer();
-			fetch(`${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}`)
+			const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}`;
+			console.log(request);
+			fetch(request)
 			.then(response => response.json())
 			.then(data => {
 				console.log(data);
-				const { firstVisit, latestVisit, subIds, visits, hasTrash, hasLied, hasErrors } = data;
+				const { firstVisit, lastVisit: latestVisit, looseFingerprints: subIds, visits, hasTrash, hasLied, hasErrors } = data;
 				const subIdsLen = Object.keys(subIds).length;
 				const toLocaleStr = str => {
 					const date = new Date(str);
