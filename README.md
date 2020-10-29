@@ -55,11 +55,11 @@ Bots leak unusual behavior and can be denied service.
 - 10 loose fingerprints within 48 hours
 
 ## Definitions
-### Trash Definition
+### Trash
 - unusual results
 - forgivable lies
 
-### Lies Definition
+### Lies
 - prototype tampering
 - failed math calculations
 
