@@ -117,6 +117,18 @@
 
 	const userAgentData = [
 	  {
+	    "id": "42396b22e13416c3c34d2d49e7bd339b876f00fd6c12a04c2c6d62145209f2f5",
+	    "type": "contentWindow version",
+	    "uaSystem": [
+	      "Windows"
+	    ],
+	    "userAgent": [
+	      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0"
+	    ],
+	    "time": "10/29/2020, 5:25:17 AM",
+	    "decoded": "Firefox 82"
+	  },
+	  {
 	    "id": "21ee4974e15368a9f55614de6b3900f178df5215c46f9bb68a74e04dcd3dceb9",
 	    "type": "contentWindow version",
 	    "uaSystem": [
@@ -1891,6 +1903,7 @@
 
 		const {
 			require: {
+				instanceId,
 				captureError
 			}
 		} = imports;
@@ -1901,11 +1914,15 @@
 				const div = document.createElement('div');
 				div.setAttribute('style', 'display:none');
 				document.body.appendChild(div);
-				div.innerHTML = '<iframe></iframe>';
+
+				const id = [...Array(10)].map(() => instanceId).join('');
+				patch(div, html`<div id="${id}"><iframe></iframe></div>`);
+				const el = document.getElementById(id);
+
 				return {
-					el: div,
+					el,
 					contentWindow: context[numberOfIframes],
-					remove: () => div.parentNode.removeChild(div)
+					remove: () => el.parentNode.removeChild(el)
 				}
 			};
 
@@ -6294,11 +6311,12 @@
 			const visitorElem = document.getElementById(id);
 			const fetchVisitorDataTimer = timer();
 			const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}`;
-			console.log(request);
+			
 			fetch(request)
 			.then(response => response.json())
 			.then(data => {
-				console.log(data);
+				console.log('\n\nserver response: ', JSON.stringify(data, null, '\t'));
+				fetchVisitorDataTimer('server response time');
 				const { firstVisit, lastVisit: latestVisit, looseFingerprints: subIds, visits, hasTrash, hasLied, hasErrors } = data;
 				const subIdsLen = Object.keys(subIds).length;
 				const toLocaleStr = str => {
@@ -6367,8 +6385,6 @@
 					</div>
 				</div>
 			`;
-			
-				fetchVisitorDataTimer('Visitor data received');
 				return patch(visitorElem, html`${template}`)
 			})
 			.catch(err => {

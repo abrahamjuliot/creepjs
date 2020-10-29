@@ -1188,11 +1188,12 @@ const imports = {
 		const visitorElem = document.getElementById(id)
 		const fetchVisitorDataTimer = timer()
 		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}`
-		console.log(request)
+		
 		fetch(request)
 		.then(response => response.json())
 		.then(data => {
-			console.log(data)
+			console.log('\n\nserver response: ', JSON.stringify(data, null, '\t'))
+			fetchVisitorDataTimer('server response time')
 			const { firstVisit, lastVisit: latestVisit, looseFingerprints: subIds, visits, hasTrash, hasLied, hasErrors } = data
 			const subIdsLen = Object.keys(subIds).length
 			const toLocaleStr = str => {
@@ -1261,8 +1262,6 @@ const imports = {
 					</div>
 				</div>
 			`
-		
-			fetchVisitorDataTimer('Visitor data received')
 			return patch(visitorElem, html`${template}`)
 		})
 		.catch(err => {

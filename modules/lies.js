@@ -1,6 +1,7 @@
 import { hashMini, instanceId } from './crypto.js'
 import { captureError, attempt, caniuse } from './captureErrors.js'
 import { isChrome, isFirefox } from './helpers.js'
+import { patch, html } from './html.js'
 
 
 // Collect lies detected
@@ -21,6 +22,7 @@ const getNestedContentWindowContext = imports => {
 
 	const {
 		require: {
+			instanceId,
 			captureError
 		}
 	} = imports
@@ -31,11 +33,15 @@ const getNestedContentWindowContext = imports => {
 			const div = document.createElement('div')
 			div.setAttribute('style', 'display:none')
 			document.body.appendChild(div)
-			div.innerHTML = '<iframe></iframe>'
+
+			const id = [...Array(10)].map(() => instanceId).join('')
+			patch(div, html`<div id="${id}"><iframe></iframe></div>`)
+			const el = document.getElementById(id)
+
 			return {
-				el: div,
+				el,
 				contentWindow: context[numberOfIframes],
-				remove: () => div.parentNode.removeChild(div)
+				remove: () => el.parentNode.removeChild(el)
 			}
 		}
 

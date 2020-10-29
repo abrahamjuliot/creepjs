@@ -1,5 +1,17 @@
 export const userAgentData = [
   {
+    "id": "42396b22e13416c3c34d2d49e7bd339b876f00fd6c12a04c2c6d62145209f2f5",
+    "type": "contentWindow version",
+    "uaSystem": [
+      "Windows"
+    ],
+    "userAgent": [
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0"
+    ],
+    "time": "10/29/2020, 5:25:17 AM",
+    "decoded": "Firefox 82"
+  },
+  {
     "id": "21ee4974e15368a9f55614de6b3900f178df5215c46f9bb68a74e04dcd3dceb9",
     "type": "contentWindow version",
     "uaSystem": [
