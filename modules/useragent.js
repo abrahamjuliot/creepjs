@@ -1505,14 +1505,14 @@ export const userAgentData = [
   {
     "id": "786a779327c042020dd0907c5b2a0505b08539916c48d1590956772fb7649e66",
     "type": "contentWindow version",
-    "isNew": true,
     "uaSystem": [
       "Android"
     ],
     "userAgent": [
       "Mozilla/5.0 (Android 7.1.2; Mobile; rv:79.0) Gecko/79.0 Firefox/79.0"
     ],
-    "time": "10/29/2020, 2:23:25 PM"
+    "time": "10/29/2020, 2:23:25 PM",
+    "decoded": "Firefox 79"
   },
   {
     "id": "9712080444cbd00431bf795c0b443b61d7edbc6f1a2519d0472a6e6212bbadb7",
