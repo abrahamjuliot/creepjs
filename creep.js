@@ -4,7 +4,7 @@ import { hashMini, instanceId, hashify } from './modules/crypto.js'
 
 import { captureError, attempt, caniuse, timer, errorsCaptured, getCapturedErrors } from './modules/captureErrors.js'
 import { sendToTrash, proxyBehavior, gibberish, trustInteger, trashBin, getTrash } from './modules/trash.js'
-import { documentLie, contentWindow, parentNest, lieProps, lieRecords, getLies } from './modules/lies.js'
+import { documentLie, contentWindow, parentNest, lieProps, lieRecords, getLies, hyperNestedIframeWindow } from './modules/lies.js'
 
 import { getOfflineAudioContext } from './modules/audio.js'
 import { getCanvas2d } from './modules/canvas2d.js'
@@ -62,7 +62,8 @@ const imports = {
 		lieRecords,
 		// nested contentWindow
 		contentWindow,
-		parentNest
+		parentNest,
+		hyperNestedIframeWindow
 	}
 }
 
@@ -197,17 +198,15 @@ const imports = {
 		} : undefined,
 		mediaDevices: !isBrave ? fp.mediaDevices : distrust,
 		mediaTypes: fp.mediaTypes,
-		canvas2d: (
-			(isBrave || isFirefox) ? distrust : 
+		canvas2d: ( 
 			!fp.canvas2d || fp.canvas2d.lied ? undefined : 
 			fp.canvas2d
 		),
 		canvasBitmapRenderer: (
-			(isBrave || isFirefox) ? distrust : 
 			!fp.canvasBitmapRenderer || fp.canvasBitmapRenderer.lied ? undefined : 
 			fp.canvasBitmapRenderer
 		),
-		canvasWebgl: isBrave ? distrust : !fp.canvasWebgl || fp.canvasWebgl.lied ? undefined : {
+		canvasWebgl: !fp.canvasWebgl || fp.canvasWebgl.lied ? undefined : {
 			supported: fp.canvasWebgl.supported,
 			supported2: fp.canvasWebgl.supported2,
 			dataURI: isFirefox ? distrust : fp.canvasWebgl.dataURI,
@@ -1234,7 +1233,7 @@ const imports = {
 			`
 			patch(visitorElem, html`${template}`)
 
-			if (fp.workerScope && !errorsLen && !liesLen) {
+			if (fp.workerScope && !errorsLen) {
 				const decryptRequest = `https://creepjs-6bd8e.web.app/decrypt?${[
 					`mathId=${caniuse(() => fp.maths.$hash)}`,
 					`errorId=${caniuse(() => fp.consoleErrors.$hash)}`,
@@ -1261,32 +1260,32 @@ const imports = {
 					patch(el, html`
 					<div>
 						<strong>Browser Detection</strong>
-						<div>window object: ${
+						<div class="ellipsis">window object: ${
 							windowVersion.system ?
 							`${windowVersion.decrypted} on ${windowVersion.system}` :
 							windowVersion.decrypted
 						}</div>
-						<div>system styles: ${
+						<div class="ellipsis">system styles: ${
 							styleSystem.system ?
 							`${styleSystem.decrypted} on ${styleSystem.system}` :
 							styleSystem.decrypted
 						}</div>
-						<div>computed styles: ${
+						<div class="ellipsis">computed styles: ${
 							styleVersion.system ?
 							`${styleVersion.decrypted} on ${styleVersion.system}` :
 							styleVersion.decrypted
 						}</div>
-						<div>html element object: ${
+						<div class="ellipsis">html element object: ${
 							htmlVersion.system ?
 							`${htmlVersion.decrypted} on ${htmlVersion.system}` :
 							htmlVersion.decrypted
 						}</div>
-						<div>js runtime (math): ${
+						<div class="ellipsis">js runtime (math): ${
 							jsRuntime.system ?
 							`${jsRuntime.decrypted} on ${jsRuntime.system}` :
 							jsRuntime.decrypted
 						}</div>
-						<div>js engine (error): ${
+						<div class="ellipsis">js engine (error): ${
 							jsEngine.system ?
 							`${jsEngine.decrypted} on ${jsEngine.system}` :
 							jsEngine.decrypted

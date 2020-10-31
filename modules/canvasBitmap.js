@@ -6,7 +6,8 @@ export const getCanvasBitmapRenderer = imports => {
 			captureError,
 			caniuse,
 			lieProps,
-			contentWindow
+			contentWindow,
+			hyperNestedIframeWindow
 		}
 	} = imports
 
@@ -15,6 +16,9 @@ export const getCanvasBitmapRenderer = imports => {
 			const dataLie = lieProps['HTMLCanvasElement.toDataURL']
 			const contextLie = lieProps['HTMLCanvasElement.getContext']
 			let lied = dataLie || contextLie
+			if (hyperNestedIframeWindow.document.createElement('canvas').toDataURL() != document.createElement('canvas').toDataURL()) {
+				lied = true
+			}
 			const doc = contentWindow ? contentWindow.document : document
 			const canvas = doc.createElement('canvas')
 			const context = canvas.getContext('bitmaprenderer')

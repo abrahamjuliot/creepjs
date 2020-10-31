@@ -18,7 +18,7 @@ const createlieRecords = () => {
 const lieRecords = createlieRecords()
 const { documentLie } = lieRecords
 
-const getNestedContentWindowContext = imports => {
+const getNestedWindowFrameContext = imports => {
 
 	const {
 		require: {
@@ -55,9 +55,39 @@ const getNestedContentWindowContext = imports => {
 	}
 }
 
-const { contentWindow, parentNest  } = getNestedContentWindowContext({
+const { contentWindow, parentNest  } = getNestedWindowFrameContext({
 	require: { isChrome, isFirefox, instanceId, captureError }
 })
+
+const getHyperNestedIframes = (numberOfNests, context = window) => {
+	let parent, total = numberOfNests
+	return (function getIframeWindow(win, {
+		previous = context
+	} = {}) {
+		if (!win) {
+			console.log(`\nnested iframe is valid up to nest ${total - numberOfNests}`)
+			return previous
+		}
+		const numberOfIframes = win.length
+		const div = win.document.createElement('div')
+		win.document.body.appendChild(div)
+		div.innerHTML = '<iframe></iframe>'
+		const iframeWindow = win[numberOfIframes]
+		if (total == numberOfNests) {
+			parent = div
+			parent.setAttribute('style', 'display:none')
+		}
+		numberOfNests--
+		if (!numberOfNests) {
+			parent.parentNode.removeChild(parent)
+			return iframeWindow
+		}
+		return getIframeWindow(iframeWindow, {
+			previous: win
+		})
+	})(context)
+}
+const hyperNestedIframeWindow = getHyperNestedIframes(20)
 
 // detect and fingerprint Function API lies
 const native = (result, str, willHaveBlanks = false) => {
@@ -768,4 +798,4 @@ const getLies = imports => {
 	})
 }
 
-export { documentLie, contentWindow, parentNest, lieProps, lieRecords, getLies }
+export { documentLie, contentWindow, parentNest, lieProps, lieRecords, getLies, hyperNestedIframeWindow }
