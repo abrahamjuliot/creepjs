@@ -14,7 +14,8 @@ export const getClientRects = imports => {
 			html,
 			captureError,
 			documentLie,
-			lieProps
+			lieProps,
+			hyperNestedIframeWindow
 		}
 	} = imports
 	
@@ -22,6 +23,13 @@ export const getClientRects = imports => {
 		try {
 			const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
 			let lied = lieProps['Element.getClientRects'] // detect lies
+			const result1 = hashMini(hyperNestedIframeWindow.document.body.getClientRects()[0])
+			const result2 = hashMini(document.body.getClientRects()[0])
+			if (result1 != result2) {
+				lied = true
+				const hyperNestedIframeLie = { fingerprint: '', lies: [{ [`Expected ${result1} in nested iframe and got ${result2}`]: true }] }
+				documentLie(`Element.getClientRects`, hashMini({result1, result2}), hyperNestedIframeLie)
+			}
 			
 			let iframeContainer, doc = document
 			try {

@@ -235,9 +235,21 @@ const imports = {
 		voices: isFirefox ? distrust : fp.voices // Firefox is inconsistent
 	}
 
-	console.log('Fingerprint (Object):', creep)
-	console.log('Loose Fingerprint (Object):', fp)
-	//console.log('Loose JSON String:', JSON.stringify(fp, null, '\t'))
+	console.groupCollapsed('Fingerprint')
+	console.log(creep)
+	console.groupEnd()
+
+	console.groupCollapsed('Fingerprint JSON')
+	console.log('diff check at https://www.diffchecker.com/diff\n\n', JSON.stringify(creep, null, '\t'))
+	console.groupEnd()
+
+	console.groupCollapsed('Loose Fingerprint')
+	console.log(fp)
+	console.groupEnd()
+
+	console.groupCollapsed('Loose Fingerprint JSON')
+	console.log('diff check at https://www.diffchecker.com/diff\n\n', JSON.stringify(fp, null, '\t'))
+	console.groupEnd()
 	
 	const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
 	.catch(error => { 
