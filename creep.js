@@ -1234,7 +1234,7 @@ const imports = {
 			`
 			patch(visitorElem, html`${template}`)
 
-			if (fp.workerScope && !errorsLen) {
+			if (fp.workerScope && !errorsLen && !liesLen) {
 				const decryptRequest = `https://creepjs-6bd8e.web.app/decrypt?${[
 					`mathId=${caniuse(() => fp.maths.$hash)}`,
 					`errorId=${caniuse(() => fp.consoleErrors.$hash)}`,
@@ -1298,6 +1298,20 @@ const imports = {
 				.catch(error => {
 					return console.error('Error!', error.message)
 				})
+			}
+			else {
+				const el = document.getElementById('feature-detection')
+				patch(el, html`
+				<div class="distrust">
+					<strong>Feature Detection</strong> [distrust]
+					<div>window object:</div>
+					<div>system styles:</div>
+					<div>computed styles:</div>
+					<div>html element object:</div>
+					<div>js runtime:</div>
+					<div>js engine:</div>
+				</div>
+				`)
 			}
 			return
 		})

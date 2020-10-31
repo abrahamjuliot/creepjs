@@ -169,6 +169,12 @@ visitor {
 	background: #f1f1f1;
     color: #aaa;
 }
+#fingerprint-data .distrust {
+	background: rgba(255, 255, 255, 0);
+    color: #aaa;
+}
+
+
 #fingerprint-data .errors {
 	background: var(--warn);
 }
