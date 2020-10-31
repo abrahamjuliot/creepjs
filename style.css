@@ -62,7 +62,8 @@ body {
 	box-sizing: border-box;
 	font-family: monospace !important;
 	color: var(--text);
-	height: 100vh;
+	/*height: 100vh;*/
+	margin-bottom: 50px;
 	background: #657fca0a;
 }
 

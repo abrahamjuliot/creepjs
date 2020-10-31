@@ -13,6 +13,7 @@ The purpose of this project is to shed light on weaknesses and privacy leaks amo
 7. Rely only on APIs that are the most difficult to spoof when generating a pure fingerprint
 
 Tested:
+- Tor Browser
 - Firefox (RFP)
 - Brave Browser (Standard/Strict)
 - uBlock Origin (aopr)
@@ -29,7 +30,7 @@ Tested:
 
 ## Rules
 ### Data
-- data collected: encrypted fingerprints and booleans
+- data collected: user agent string, encrypted fingerprints and booleans
 - data retention: auto deletes 30 days after last visit
 - visit tracking: limited to data retention and new feature scaling
 
@@ -54,11 +55,12 @@ A failing trust score is unique and can be used to connect fingerprints.
 Bots leak unusual behavior and can be denied service.
 - 10 loose fingerprints within 48 hours
 
-## Browser detection
-- a guess attempt is made to decrypt browser version and platform on the client side
+## Feature Detection
+- a guess attempt is made to decrypt the browser vendor, version and platform
 - this guess does not affect the fingerprint
-- decoded samples are manually gathered to ensure accuracy and fingerprints with lies are ignored
-- system is identified only when `navigator.userAgent` system has a match in the sample 
+- fingerprints with lies are ignored
+- system is guessed only when `WorkerNavigator.userAgent` system is an exact match to the current samples 
+- decoded samples are auto gathered and manually reviewed
 
 ### Tests
 1. js Math implementation (SpiderMonkey, JavaScriptCore, V8)

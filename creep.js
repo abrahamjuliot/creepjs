@@ -1,8 +1,6 @@
 import { isChrome, isBrave, isFirefox, getOS } from './modules/helpers.js'
 import { patch, html, note, count, modal } from './modules/html.js'
 import { hashMini, instanceId, hashify } from './modules/crypto.js'
-import { userAgentData } from './modules/useragent.js'
-import { decrypt } from './modules/decrypt.js'
 
 import { captureError, attempt, caniuse, timer, errorsCaptured, getCapturedErrors } from './modules/captureErrors.js'
 import { sendToTrash, proxyBehavior, gibberish, trustInteger, trashBin, getTrash } from './modules/trash.js'
@@ -46,8 +44,6 @@ const imports = {
 		note,
 		count,
 		modal,
-		// decrypt
-		decryptKnown: decrypt({ require: [ userAgentData, hashMini, getOS ] }),
 		// captureErrors
 		captureError,
 		attempt,
@@ -251,27 +247,6 @@ const imports = {
 	
 	const { trash: hasTrash, lies: hasLied, capturedErrors: hasErrors } = creep
 
-	// post useragent
-	if (!location.hostname.includes('github.io')) {
-		const controller = new AbortController()
-		const { signal } = controller
-		try {
-			fetch(
-				`/?distrust=${hasLied}&errors=${fp.consoleErrors.$hash}&math=${fp.maths.$hash}&html=${fp.htmlElementVersion.$hash}&win=${fp.iframeContentWindowVersion.$hash}&style=${fp.cssStyleDeclarationVersion.getComputedStyle.$hash}&system=${fp.cssStyleDeclarationVersion.system.$hash}&ua=${fp.navigator.userAgent}&uaSystem=${fp.navigator.system}`,
-				{ method: 'POST', signal }
-			)
-			.then(response => {})
-			.catch(error => {
-				if (error.name == 'AbortError') {
-					return
-				}
-				return console.log(error)
-			})
-			setTimeout(() => controller.abort(), 3000)
-		}
-		catch (error) {}
-	}
-
 	// patch dom
 	const {
 		require: {
@@ -282,7 +257,6 @@ const imports = {
 			note,
 			count,
 			modal,
-			decryptKnown,
 			caniuse
 		}
 	} = imports
@@ -875,20 +849,18 @@ const imports = {
 		${!fp.cssStyleDeclarationVersion ?
 			`<div class="col-six">
 				<strong>Computed Style</strong>
-				<div>system: ${note.blocked}</div>
 				<div>engine: ${note.blocked}</div>
-				<div>browser: ${note.blocked}</div>
 				<div>prototype: ${note.blocked}</div>
 				<div>getComputedStyle: ${note.blocked}</div>
 				<div>HTMLElement.style: ${note.blocked}</div>
 				<div>CSSRuleList.style: ${note.blocked}</div>
+				<div>matching: ${note.blocked}</div>
 			</div>
 			<div class="col-six">
 				<div>keys: ${note.blocked}</div>
 				<div>moz: ${note.blocked}</div>
 				<div>webkit: ${note.blocked}</div>
 				<div>apple: ${note.blocked}</div>
-				<div>matching: ${note.blocked}</div>
 				<div>system styles: ${note.blocked}</div>
 				<div>system styles rendered: ${note.blocked}</div>
 			</div>` :
@@ -909,7 +881,6 @@ const imports = {
 			return `
 			<div class="col-six">
 				<strong>Computed Style</strong><span class="hash">${hashMini($hash)}</span>
-				<div>system: ${decryptKnown(system.$hash)}</div>
 				<div>engine: ${
 					prototypeName == 'CSS2Properties' ? 'Gecko' :
 					prototypeName == 'CSS2PropertiesPrototype' ? 'Gecko (like Goanna)' :
@@ -918,7 +889,6 @@ const imports = {
 					prototypeName == 'CSSStyleDeclarationPrototype' ? 'Webkit' :
 					'unknown'
 				}</div>
-				<div>browser: ${decryptKnown(computedStyle.$hash)}</div>
 				<div>prototype: ${prototypeName}</div>
 				${
 					Object.keys(data).map(key => {
@@ -932,6 +902,7 @@ const imports = {
 						)
 					}).join('')
 				}
+				<div>matching: ${''+matching}</div>
 			</div>
 			<div class="col-six">
 				<div>keys: ${computedStyle.keys.length}, ${htmlElementStyle.keys.length}, ${cssRuleListstyle.keys.length}
@@ -942,7 +913,6 @@ const imports = {
 				</div>
 				<div>apple: ${''+computedStyle.apple}, ${''+htmlElementStyle.apple}, ${''+cssRuleListstyle.apple}
 				</div>
-				<div>matching: ${''+data.matching}</div>
 				<div>system styles:<span class="sub-hash">${hashMini(system.$hash)}</span></div>
 				<div>system styles rendered: ${
 					system && system.colors ? modal(
@@ -974,7 +944,6 @@ const imports = {
 			${!fp.maths ?
 				`<div class="col-six">
 					<strong>Math</strong>
-					<div>js runtime: ${note.blocked}</div>
 					<div>results: ${note.blocked}</div>
 				</div>` :
 			(() => {
@@ -995,7 +964,6 @@ const imports = {
 				return `
 				<div class="col-six">
 					<strong>Math</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
-					<div>js runtime: ${decryptKnown($hash)}</div>
 					<div>results: ${modal(id, header+results.join('<br>'))}</div>
 				</div>
 				`
@@ -1003,7 +971,6 @@ const imports = {
 			${!fp.consoleErrors ?
 				`<div class="col-six">
 					<strong>Error</strong>
-					<div>js engine: ${note.blocked}</div>
 					<div>results: ${note.blocked}</div>
 				</div>` :
 			(() => {
@@ -1020,7 +987,6 @@ const imports = {
 				return `
 				<div class="col-six">
 					<strong>Error</strong><span class="hash">${hashMini($hash)}</span>
-					<div>js engine: ${decryptKnown($hash)}</div>
 					<div>results: ${modal('creep-console-errors', results.join('<br>'))}</div>
 				</div>
 				`
@@ -1030,7 +996,6 @@ const imports = {
 			${!fp.iframeContentWindowVersion ?
 				`<div class="col-six">
 					<strong>Window</strong>
-					<div>browser: ${note.blocked}</div>
 					<div>keys (0): ${note.blocked}</div>
 					<div>moz: ${note.blocked}</div>
 					<div>webkit: ${note.blocked}</div>
@@ -1049,7 +1014,6 @@ const imports = {
 				return `
 				<div class="col-six">
 					<strong>Window</strong><span class="hash">${hashMini($hash)}</span>
-					<div>browser: ${decryptKnown($hash)}</div>
 					<div>keys (${count(keys)}): ${keys && keys.length ? modal('creep-iframe-content-window-version', keys.join(', ')) : note.blocked}</div>
 					<div>moz: ${''+moz}</div>
 					<div>webkit: ${''+webkit}</div>
@@ -1060,7 +1024,6 @@ const imports = {
 			${!fp.htmlElementVersion ?
 				`<div class="col-six">
 					<strong>HTMLElement</strong>
-					<div>browser: ${note.blocked}</div>
 					<div>keys (0): ${note.blocked}</div>
 				</div>` :
 			(() => {
@@ -1073,12 +1036,20 @@ const imports = {
 				return `
 				<div class="col-six">
 					<strong>HTMLElement</strong><span class="hash">${hashMini($hash)}</span>
-					<div class="ellipsis">browser: ${decryptKnown($hash)}</div>
 					<div>keys (${count(keys)}): ${keys && keys.length ? modal('creep-html-element-version', keys.join(', ')) : note.blocked}</div>
 				</div>
 				`
 			})()}
 			</div>
+		</div>
+		<div id="feature-detection">
+			<strong>Feature Detection</strong>
+			<div>window object:</div>
+			<div>system styles:</div>
+			<div>computed styles:</div>
+			<div>html element object:</div>
+			<div>js runtime:</div>
+			<div>js engine:</div>
 		</div>
 		<div class="flex-grid">
 		${!fp.navigator ?
@@ -1212,12 +1183,11 @@ const imports = {
 				(trashLen * 15.5) +
 				(liesLen * 31)
 			)).toFixed(0)
-			const browser = decryptKnown(caniuse(() => fp.iframeContentWindowVersion.$hash))
 			const template = `
 				<div class="visitor-info">
 					<div class="flex-grid">
 						<div class="col-six">
-							<strong>${browser && browser != 'unknown' ? browser : 'Browser'}</strong>
+							<strong>Browser</strong>
 							<div>trust score: <span class="unblurred">${
 								score > 95 ? `${score}% <span class="grade-A">A+</span>` :
 								score == 95 ? `${score}% <span class="grade-A">A</span>` :
@@ -1262,12 +1232,79 @@ const imports = {
 					</div>
 				</div>
 			`
-			return patch(visitorElem, html`${template}`)
+			patch(visitorElem, html`${template}`)
+
+			if (fp.workerScope && !errorsLen) {
+				const decryptRequest = `https://creepjs-6bd8e.web.app/decrypt?${[
+					`mathId=${caniuse(() => fp.maths.$hash)}`,
+					`errorId=${caniuse(() => fp.consoleErrors.$hash)}`,
+					`htmlId=${caniuse(() => fp.htmlElementVersion.$hash)}`,
+					`winId=${caniuse(() => fp.iframeContentWindowVersion.$hash)}`,
+					`styleId=${caniuse(() => fp.cssStyleDeclarationVersion.getComputedStyle.$hash)}`,
+					`styleSystemId=${caniuse(() => fp.cssStyleDeclarationVersion.system.$hash)}`,
+					`ua=${encodeURIComponent(caniuse(() => fp.workerScope.userAgent))}`
+				].join('&')}`
+
+				return fetch(decryptRequest)
+				.then(response => response.json())
+				.then(data => {
+					const el = document.getElementById('feature-detection')
+					const {
+						jsRuntime,
+						jsEngine,
+						htmlVersion,
+						windowVersion,
+						styleVersion,
+						styleSystem,
+					} = data
+					
+					patch(el, html`
+					<div>
+						<strong>Feature Detection</strong>
+						<div>window object: ${
+							windowVersion.system ?
+							`${windowVersion.decrypted} on ${windowVersion.system}` :
+							windowVersion.decrypted
+						}</div>
+						<div>system styles: ${
+							styleSystem.system ?
+							`${styleSystem.decrypted} on ${styleSystem.system}` :
+							styleSystem.decrypted
+						}</div>
+						<div>computed styles: ${
+							styleVersion.system ?
+							`${styleVersion.decrypted} on ${styleVersion.system}` :
+							styleVersion.decrypted
+						}</div>
+						<div>html element object: ${
+							htmlVersion.system ?
+							`${htmlVersion.decrypted} on ${htmlVersion.system}` :
+							htmlVersion.decrypted
+						}</div>
+						<div>js runtime: ${
+							jsRuntime.system ?
+							`${jsRuntime.decrypted} on ${jsRuntime.system}` :
+							jsRuntime.decrypted
+						}</div>
+						<div>js engine: ${
+							jsEngine.system ?
+							`${jsEngine.decrypted} on ${jsEngine.system}` :
+							jsEngine.decrypted
+						}</div>
+					</div>
+					`)
+					return console.log('\n\nuser agents pending review: ', data.pendingReview)
+				})
+				.catch(error => {
+					return console.error('Error!', error.message)
+				})
+			}
+			return
 		})
-		.catch(err => {
+		.catch(error => {
 			fetchVisitorDataTimer('Error fetching visitor data')
-			patch(document.getElementById('loader'), html`<strong style="color:crimson">${err}</strong>`)
-			return console.error('Error!', err.message)
+			patch(document.getElementById('loader'), html`<strong style="color:crimson">${error}</strong>`)
+			return console.error('Error!', error.message)
 		})
 	})
 })(imports)
