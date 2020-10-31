@@ -1042,14 +1042,14 @@ const imports = {
 			})()}
 			</div>
 		</div>
-		<div id="feature-detection">
-			<strong>Feature Detection</strong>
+		<div id="browser-detection">
+			<strong>Browser Detection</strong>
 			<div>window object:</div>
 			<div>system styles:</div>
 			<div>computed styles:</div>
 			<div>html element object:</div>
-			<div>js runtime:</div>
-			<div>js engine:</div>
+			<div>js runtime (math):</div>
+			<div>js engine (error):</div>
 		</div>
 		<div class="flex-grid">
 		${!fp.navigator ?
@@ -1248,7 +1248,7 @@ const imports = {
 				return fetch(decryptRequest)
 				.then(response => response.json())
 				.then(data => {
-					const el = document.getElementById('feature-detection')
+					const el = document.getElementById('browser-detection')
 					const {
 						jsRuntime,
 						jsEngine,
@@ -1260,7 +1260,7 @@ const imports = {
 					
 					patch(el, html`
 					<div>
-						<strong>Feature Detection</strong>
+						<strong>Browser Detection</strong>
 						<div>window object: ${
 							windowVersion.system ?
 							`${windowVersion.decrypted} on ${windowVersion.system}` :
@@ -1281,12 +1281,12 @@ const imports = {
 							`${htmlVersion.decrypted} on ${htmlVersion.system}` :
 							htmlVersion.decrypted
 						}</div>
-						<div>js runtime: ${
+						<div>js runtime (math): ${
 							jsRuntime.system ?
 							`${jsRuntime.decrypted} on ${jsRuntime.system}` :
 							jsRuntime.decrypted
 						}</div>
-						<div>js engine: ${
+						<div>js engine (error): ${
 							jsEngine.system ?
 							`${jsEngine.decrypted} on ${jsEngine.system}` :
 							jsEngine.decrypted
@@ -1300,16 +1300,16 @@ const imports = {
 				})
 			}
 			else {
-				const el = document.getElementById('feature-detection')
+				const el = document.getElementById('browser-detection')
 				patch(el, html`
 				<div class="distrust">
-					<strong>Feature Detection</strong> [distrust]
+					<strong>Browser Detection</strong> [distrust]
 					<div>window object:</div>
 					<div>system styles:</div>
 					<div>computed styles:</div>
 					<div>html element object:</div>
-					<div>js runtime:</div>
-					<div>js engine:</div>
+					<div>js runtime (math):</div>
+					<div>js engine (error):</div>
 				</div>
 				`)
 			}

@@ -13,8 +13,9 @@ The purpose of this project is to shed light on weaknesses and privacy leaks amo
 7. Rely only on APIs that are the most difficult to spoof when generating a pure fingerprint
 
 Tested:
-- Tor Browser
+- Tor Browser (SL 1 & 2)
 - Firefox (RFP)
+- ungoogled-chromium (fingerprint deception)
 - Brave Browser (Standard/Strict)
 - uBlock Origin (aopr)
 - Privacy Badger
@@ -55,7 +56,7 @@ A failing trust score is unique and can be used to connect fingerprints.
 Bots leak unusual behavior and can be denied service.
 - 10 loose fingerprints within 48 hours
 
-## Feature Detection
+## Browser Detection
 - a guess attempt is made to decrypt the browser vendor, version and platform
 - this guess does not affect the fingerprint
 - fingerprints with lies are ignored
