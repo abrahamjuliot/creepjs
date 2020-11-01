@@ -37,7 +37,7 @@ Tested:
 
 ### New feature scaling
 - scaling occurs no more than once per week
-- new features will render fingerprints anew
+- new weekly feature may render fingerprints anew
 - [History](https://github.com/abrahamjuliot/creepjs/commits/master/docs/creep.js)
 
 ## Formulas
