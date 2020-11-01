@@ -182,11 +182,11 @@ const imports = {
 	const creep = {
 		workerScope: fp.workerScope ? {
 			canvas2d: (
-				(isBrave || isFirefox) ? distrust : 
+				!!liesLen && (isBrave || isFirefox) ? distrust : 
 				fp.workerScope.canvas2d
 			),
 			hardwareConcurrency: (
-				isBrave ? distrust : 
+				!!liesLen && isBrave ? distrust : 
 				fp.workerScope.hardwareConcurrency
 			),
 			language: fp.workerScope.language,
@@ -224,7 +224,7 @@ const imports = {
 		timezone: !fp.timezone || fp.timezone.lied ? undefined : fp.timezone,
 		clientRects: !fp.clientRects || fp.clientRects.lied ? undefined : fp.clientRects,
 		offlineAudioContext: (
-			isBrave ? distrust :
+			!!liesLen && isBrave ? distrust :
 			!fp.offlineAudioContext || fp.offlineAudioContext.lied ? undefined :
 			fp.offlineAudioContext
 		),
