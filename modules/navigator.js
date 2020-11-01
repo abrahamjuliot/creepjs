@@ -5,6 +5,7 @@ export const getNavigator = (imports, workerScope) => {
 		require: {
 			getOS,
 			hashify,
+			hashMini,
 			captureError,
 			attempt,
 			caniuse,
@@ -70,7 +71,12 @@ export const getNavigator = (imports, workerScope) => {
 						sendToTrash(`platform`, `${navigatorPlatform} is unusual`)
 					}
 					if (platform != navigatorPlatform) {
-						sendToTrash('platform', `${navigatorPlatform} does not match iframe`)
+						lied = true
+						const nestedIframeLie = {
+							fingerprint: '',
+							lies: [{ [`Expected "${navigatorPlatform}" in nested iframe and got "${platform}"`]: true }]
+						}
+						documentLie(`Navigator.platform`, hashMini({platform, navigatorPlatform}), nestedIframeLie)
 					}
 					return platform
 				}),
@@ -83,7 +89,12 @@ export const getNavigator = (imports, workerScope) => {
 						sendToTrash('userAgent', `${navigatorUserAgent} does not match appVersion`)
 					}
 					if (userAgent != navigatorUserAgent) {
-						sendToTrash('userAgent', `${navigatorUserAgent} does not match iframe`)
+						lied = true
+						const nestedIframeLie = {
+							fingerprint: '',
+							lies: [{ [`Expected "${navigatorUserAgent}" in nested iframe and got "${userAgent}"`]: true }]
+						}
+						documentLie(`Navigator.userAgent`, hashMini({userAgent, navigatorUserAgent}), nestedIframeLie)
 					}
 					return userAgent
 				}, 'userAgent failed'),
@@ -98,7 +109,12 @@ export const getNavigator = (imports, workerScope) => {
 						sendToTrash('appVersion', 'Living Standard property returned falsy value')
 					}
 					if (appVersion != navigatorAppVersion) {
-						sendToTrash('appVersion', `${navigatorAppVersion} does not match iframe`)
+						lied = true
+						const nestedIframeLie = {
+							fingerprint: '',
+							lies: [{ [`Expected "${navigatorAppVersion}" in nested iframe and got "${appVersion}"`]: true }]
+						}
+						documentLie(`Navigator.appVersion`, hashMini({appVersion, navigatorAppVersion}), nestedIframeLie)
 					}
 					return appVersion
 				}, 'appVersion failed'),
@@ -121,7 +137,12 @@ export const getNavigator = (imports, workerScope) => {
 						sendToTrash('deviceMemory', `${navigatorDeviceMemory} is not within set [0, 1, 2, 4, 6, 8]`)
 					}
 					if (deviceMemory != navigatorDeviceMemory) {
-						sendToTrash('deviceMemory', `${navigatorDeviceMemory} does not match iframe`)
+						lied = true
+						const nestedIframeLie = {
+							fingerprint: '',
+							lies: [{ [`Expected "${navigatorDeviceMemory}" in nested iframe and got "${deviceMemory}"`]: true }]
+						}
+						documentLie(`Navigator.deviceMemory`, hashMini({deviceMemory, navigatorDeviceMemory}), nestedIframeLie)
 					}
 					return deviceMemory
 				}, 'deviceMemory failed'),
@@ -157,7 +178,12 @@ export const getNavigator = (imports, workerScope) => {
 					detectLies('hardwareConcurrency', navigatorHardwareConcurrency)
 					trustInteger('hardwareConcurrency - invalid return type', navigatorHardwareConcurrency)
 					if (hardwareConcurrency != navigatorHardwareConcurrency) {
-						sendToTrash('hardwareConcurrency', `${navigatorHardwareConcurrency} does not match iframe`)
+						lied = true
+						const nestedIframeLie = {
+							fingerprint: '',
+							lies: [{ [`Expected "${navigatorHardwareConcurrency}" in nested iframe and got "${hardwareConcurrency}"`]: true }]
+						}
+						documentLie(`Navigator.hardwareConcurrency`, hashMini({hardwareConcurrency, navigatorHardwareConcurrency}), nestedIframeLie)
 					}
 					return hardwareConcurrency
 				}, 'hardwareConcurrency failed'),
@@ -168,7 +194,12 @@ export const getNavigator = (imports, workerScope) => {
 					detectLies('language', navigatorLanguage)
 					detectLies('languages', navigatorLanguages)
 					if (language != navigatorLanguage) {
-						sendToTrash('language', `${navigatorLanguage} does not match iframe`)
+						lied = true
+						const nestedIframeLie = {
+							fingerprint: '',
+							lies: [{ [`Expected "${navigatorLanguage}" in nested iframe and got "${language}"`]: true }]
+						}
+						documentLie(`Navigator.language`, hashMini({language, navigatorLanguage}), nestedIframeLie)
 					}
 					if (navigatorLanguage && navigatorLanguages) {
 						const lang = /^.{0,2}/g.exec(navigatorLanguage)[0]
@@ -186,8 +217,13 @@ export const getNavigator = (imports, workerScope) => {
 					}
 					const { maxTouchPoints } = contentWindowNavigator
 					const navigatorMaxTouchPoints = navigator.maxTouchPoints	
-					if (lied && (maxTouchPoints != navigatorMaxTouchPoints)) {	
-						sendToTrash('maxTouchPoints', `${navigatorMaxTouchPoints} does not match iframe`)	
+					if (maxTouchPoints != navigatorMaxTouchPoints) {	
+						lied = true
+						const nestedIframeLie = {
+							fingerprint: '',
+							lies: [{ [`Expected "${navigatorMaxTouchPoints}" in nested iframe and got "${maxTouchPoints}"`]: true }]
+						}
+						documentLie(`Navigator.maxTouchPoints`, hashMini({maxTouchPoints, navigatorMaxTouchPoints}), nestedIframeLie)	
 					}
 
 					return maxTouchPoints
@@ -196,7 +232,12 @@ export const getNavigator = (imports, workerScope) => {
 					const { vendor } = contentWindowNavigator
 					const navigatorVendor = navigator.vendor
 					if (vendor != navigatorVendor) {
-						sendToTrash('vendor', `${navigatorVendor} does not match iframe`)
+						lied = true
+						const nestedIframeLie = {
+							fingerprint: '',
+							lies: [{ [`Expected "${navigatorVendor}" in nested iframe and got "${vendor}"`]: true }]
+						}
+						documentLie(`Navigator.vendor`, hashMini({vendor, navigatorVendor}), nestedIframeLie)
 					}
 					return vendor
 				}, 'vendor failed'),
