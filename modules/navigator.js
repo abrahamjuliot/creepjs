@@ -140,7 +140,7 @@ export const getNavigator = (imports, workerScope) => {
 						lied = true
 						const nestedIframeLie = {
 							fingerprint: '',
-							lies: [{ [`Expected "${navigatorDeviceMemory}" in nested iframe and got "${deviceMemory}"`]: true }]
+							lies: [{ [`Expected ${navigatorDeviceMemory} in nested iframe and got ${deviceMemory}`]: true }]
 						}
 						documentLie(`Navigator.deviceMemory`, hashMini({deviceMemory, navigatorDeviceMemory}), nestedIframeLie)
 					}
@@ -181,7 +181,7 @@ export const getNavigator = (imports, workerScope) => {
 						lied = true
 						const nestedIframeLie = {
 							fingerprint: '',
-							lies: [{ [`Expected "${navigatorHardwareConcurrency}" in nested iframe and got "${hardwareConcurrency}"`]: true }]
+							lies: [{ [`Expected ${navigatorHardwareConcurrency} in nested iframe and got ${hardwareConcurrency}`]: true }]
 						}
 						documentLie(`Navigator.hardwareConcurrency`, hashMini({hardwareConcurrency, navigatorHardwareConcurrency}), nestedIframeLie)
 					}
@@ -221,7 +221,7 @@ export const getNavigator = (imports, workerScope) => {
 						lied = true
 						const nestedIframeLie = {
 							fingerprint: '',
-							lies: [{ [`Expected "${navigatorMaxTouchPoints}" in nested iframe and got "${maxTouchPoints}"`]: true }]
+							lies: [{ [`Expected ${navigatorMaxTouchPoints} in nested iframe and got ${maxTouchPoints}`]: true }]
 						}
 						documentLie(`Navigator.maxTouchPoints`, hashMini({maxTouchPoints, navigatorMaxTouchPoints}), nestedIframeLie)	
 					}
