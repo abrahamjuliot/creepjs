@@ -75,19 +75,23 @@ const getHyperNestedIframes = (numberOfNests, context = window) => {
 		const iframeWindow = win[numberOfIframes]
 		if (total == numberOfNests) {
 			parent = div
-			parent.setAttribute('style', 'display:none')
+			parent.setAttribute('style', 'visibility:hidden')
 		}
 		numberOfNests--
 		if (!numberOfNests) {
-			parent.parentNode.removeChild(parent)
-			return iframeWindow
+			return {
+				iframeWindow,
+				remove: () => parent.parentNode.removeChild(parent)
+			}
 		}
 		return getIframeWindow(iframeWindow, {
 			previous: win
 		})
 	})(context)
 }
-const hyperNestedIframeWindow = getHyperNestedIframes(20)
+
+const { iframeWindow: softNestedIframeWindow, remove: removeSoftParentNest } = getHyperNestedIframes(1)
+const { iframeWindow: hyperNestedIframeWindow, remove: removeHyperParentNest } = getHyperNestedIframes(20)
 
 // detect and fingerprint Function API lies
 const native = (result, str, willHaveBlanks = false) => {
@@ -798,4 +802,15 @@ const getLies = imports => {
 	})
 }
 
-export { documentLie, contentWindow, parentNest, lieProps, lieRecords, getLies, hyperNestedIframeWindow }
+export {
+	documentLie,
+	contentWindow,
+	parentNest,
+	lieProps,
+	lieRecords,
+	getLies,
+	softNestedIframeWindow,
+	hyperNestedIframeWindow,
+	removeSoftParentNest,
+	removeHyperParentNest
+}
