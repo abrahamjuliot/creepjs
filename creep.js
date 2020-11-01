@@ -298,8 +298,8 @@ const imports = {
 					<strong id="loader">Loading...</strong>
 					<div>trust score: <span class="blurred">100%</span></div>
 					<div>visits: <span class="blurred">1</span></div>
-					<div>first: <span class="blurred">ABC ABC ## ####, 00:00:00 AM</span></div>
-					<div>last: <span class="blurred">ABC ABC ## ####, 00:00:00 AM</span></div>
+					<div>first: <span class="blurred">##/##/####, 00:00:00 AM</span></div>
+					<div>last: <span class="blurred">##/##/####, 00:00:00 AM</span></div>
 					<div>persistence: <span class="blurred">0.0 hours/span></div>
 				</div>
 				<div class="col-six">
