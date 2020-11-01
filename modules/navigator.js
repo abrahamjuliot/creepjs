@@ -9,7 +9,6 @@ export const getNavigator = (imports, workerScope) => {
 			attempt,
 			caniuse,
 			sendToTrash,
-			gibberish,
 			trustInteger,
 			documentLie,
 			lieProps,
@@ -78,11 +77,7 @@ export const getNavigator = (imports, workerScope) => {
 				userAgent: attempt(() => {
 					const { userAgent } = contentWindowNavigator
 					const navigatorUserAgent = navigator.userAgent
-					const gibbers = gibberish(navigatorUserAgent)
 					detectLies('userAgent', navigatorUserAgent)
-					if (!!gibbers.length) {
-						sendToTrash(`userAgent contains gibberish`, `[${gibbers.join(', ')}] ${navigatorUserAgent}`)
-					}
 					if (!credibleUserAgent) {
 						sendToTrash('userAgent', `${navigatorUserAgent} does not match appVersion`)
 					}
@@ -213,17 +208,6 @@ export const getNavigator = (imports, workerScope) => {
 							filename: p.filename,
 							version: p.version
 						})) : []
-					
-					if (!!response.length) {
-						response.forEach(plugin => {
-							const { name } = plugin
-							const gibbers = gibberish(name)
-							if (!!gibbers.length) {
-								sendToTrash(`plugin contains gibberish`, `[${gibbers.join(', ')}] ${name}`)
-							}
-							return
-						})
-					}
 					return response
 				}, 'mimeTypes failed'),
 				properties: attempt(() => {
