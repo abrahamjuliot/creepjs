@@ -221,7 +221,18 @@ const imports = {
 		consoleErrors: fp.consoleErrors,
 		cssStyleDeclarationVersion: fp.cssStyleDeclarationVersion,
 		// avoid random timezone fingerprint values
-		timezone: !fp.timezone || fp.timezone.lied ? undefined : fp.timezone,
+		timezone: !fp.timezone || fp.timezone.lied ? undefined : {
+			timezone: fp.timezone.timezone,
+			timezoneLocation: fp.timezone.timezoneLocation,
+			//timezoneOffset: fp.timezone.timezoneOffset,
+			timezoneOffsetComputed: fp.timezone.timezoneOffsetComputed,
+			timezoneOffsetMeasured: fp.timezone.timezoneOffsetMeasured,
+			//matchingOffsets: fp.timezone.matchingOffsets,
+			relativeTime: fp.timezone.relativeTime,
+			locale: fp.timezone.locale,
+			writingSystemKeys: fp.timezone.writingSystemKeys,
+			lied: fp.timezone.lied
+		},
 		clientRects: !fp.clientRects || fp.clientRects.lied ? undefined : fp.clientRects,
 		offlineAudioContext: (
 			!!liesLen && isBrave ? distrust :
@@ -229,7 +240,7 @@ const imports = {
 			fp.offlineAudioContext
 		),
 		fonts: fp.fonts,
-		trash: !!trashLen,
+		// skip trash since it is random
 		lies: !('data' in fp.lies) ? false : !!liesLen,
 		capturedErrors: !!errorsLen,
 		voices: isFirefox ? distrust : fp.voices // Firefox is inconsistent

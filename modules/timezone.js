@@ -231,7 +231,7 @@ export const getTimezone = imports => {
 			)
 			const seasonLie = timezoneOffsetMeasured.lie ? { fingerprint: '', lies: [{ ['timezone seasons disagree']: true }] } : false
 			const localeLie = locale.lie ? { fingerprint: '', lies: [{ ['Intl locales mismatch']: true }] } : false
-			const offsetLie = !matchingOffsets ? { fingerprint: '', lies: [{ ['timezone offsets mismatch']: true }] } : false
+			
 			if (seasonLie) {
 				lied = true
 				documentLie('Date', measuredTimezones, seasonLie)
@@ -240,14 +240,11 @@ export const getTimezone = imports => {
 				lied = true
 				documentLie('Intl', locale, localeLie)	
 			}
-			if (offsetLie) {
-				lied = true
-				documentLie('Date', timezoneOffset, offsetLie)
-			}
+			
 			const data =  {
 				timezone,
 				timezoneLocation,
-				timezoneOffset: timezoneOffset,
+				timezoneOffset,
 				timezoneOffsetComputed,
 				timezoneOffsetMeasured: measuredTimezones,
 				matchingOffsets,
