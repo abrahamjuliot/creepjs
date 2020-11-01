@@ -4,18 +4,7 @@ import { hashMini, instanceId, hashify } from './modules/crypto.js'
 
 import { captureError, attempt, caniuse, timer, errorsCaptured, getCapturedErrors } from './modules/captureErrors.js'
 import { sendToTrash, proxyBehavior, gibberish, trustInteger, trashBin, getTrash } from './modules/trash.js'
-import {
-	documentLie,
-	contentWindow,
-	parentNest,
-	lieProps,
-	lieRecords,
-	getLies,
-	softNestedIframeWindow,
-	hyperNestedIframeWindow,
-	removeSoftParentNest,
-	removeHyperParentNest
-} from './modules/lies.js'
+import { documentLie, contentWindow, parentNest, lieProps, lieRecords, getLies, hyperNestedIframeWindow } from './modules/lies.js'
 
 import { getOfflineAudioContext } from './modules/audio.js'
 import { getCanvas2d } from './modules/canvas2d.js'
@@ -74,10 +63,7 @@ const imports = {
 		// nested contentWindow
 		contentWindow,
 		parentNest,
-		softNestedIframeWindow,
-		hyperNestedIframeWindow,
-		removeSoftParentNest,
-		removeHyperParentNest
+		hyperNestedIframeWindow
 	}
 }
 
@@ -151,19 +137,10 @@ const imports = {
 
 		const timeEnd = timeStart()
 
-		// clear iframes from the dom
 		if (parentNest) {
 			parentNest.remove()
 		}
 
-		if (softNestedIframeWindow) {
-			removeSoftParentNest()
-		}
-
-		if (hyperNestedIframeWindow) {
-			removeHyperParentNest()
-		}
-		
 		const fingerprint = {
 			workerScope: workerScopeComputed,
 			cloudflare: cloudflareComputed,
