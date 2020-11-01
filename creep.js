@@ -196,7 +196,7 @@ const imports = {
 			['webgl renderer']: fp.workerScope['webgl renderer'],
 			['webgl vendor']: fp.workerScope['webgl vendor']
 		} : undefined,
-		mediaDevices: !isBrave ? fp.mediaDevices : distrust,
+		mediaDevices: fp.mediaDevices,
 		mediaTypes: fp.mediaTypes,
 		canvas2d: ( 
 			!fp.canvas2d || fp.canvas2d.lied ? undefined : 
