@@ -26,12 +26,14 @@ export const getCanvas2d = imports => {
 			context.fillStyle = 'rgba(100, 200, 99, 0.78)'
 			context.fillRect(100, 30, 80, 50)
 			const dataURI = canvas.toDataURL()
-			const result1 = hashMini(hyperNestedIframeWindow.document.createElement('canvas').toDataURL())
-			const result2 = hashMini(document.createElement('canvas').toDataURL())
-			if (result1 != result2) {
-				lied = true
-				const hyperNestedIframeLie = { fingerprint: '', lies: [{ [`Expected ${result1} in nested iframe and got ${result2}`]: true }] }
-				documentLie(`HTMLCanvasElement.toDataURL`, hashMini({result1, result2}), hyperNestedIframeLie)
+			if (hyperNestedIframeWindow) {
+				const result1 = hashMini(hyperNestedIframeWindow.document.createElement('canvas').toDataURL())
+				const result2 = hashMini(document.createElement('canvas').toDataURL())
+				if (result1 != result2) {
+					lied = true
+					const hyperNestedIframeLie = { fingerprint: '', lies: [{ [`Expected ${result1} in nested iframe and got ${result2}`]: true }] }
+					documentLie(`HTMLCanvasElement.toDataURL`, hashMini({result1, result2}), hyperNestedIframeLie)
+				}
 			}
 			const $hash = await hashify(dataURI)
 			const response = { dataURI, lied, $hash }

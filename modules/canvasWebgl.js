@@ -29,7 +29,8 @@ export const getCanvasWebgl = imports => {
 				lieProps['WebGLRenderingContext.getSupportedExtensions'] ||
 				lieProps['WebGL2RenderingContext.getSupportedExtensions']
 			)
-			if (hyperNestedIframeWindow.document.createElement('canvas').toDataURL() != document.createElement('canvas').toDataURL()) {
+			if (hyperNestedIframeWindow &&
+				hyperNestedIframeWindow.document.createElement('canvas').toDataURL() != document.createElement('canvas').toDataURL()) {
 				lied = true
 			}
 			// crreate canvas context
