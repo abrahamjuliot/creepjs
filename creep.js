@@ -306,7 +306,8 @@ const imports = {
 					<div>has trash: <span class="blurred">false</span></div>
 					<div>has lied: <span class="blurred">false</span></div>
 					<div>has errors: <span class="blurred">false</span></div>
-					<div>loose fingerprints: <span class="blurred">1 (last: 00000000)</span></div>
+					<div>loose fingerprint: <span class="blurred">00000000</span></div>
+					<div>loose count: <span class="blurred">1</span></div>
 					<div>bot: <span class="blurred">false</span></div>
 				</div>
 			</div>
@@ -1191,7 +1192,7 @@ const imports = {
 			const subIdsLen = Object.keys(subIds).length
 			const toLocaleStr = str => {
 				const date = new Date(str)
-				const dateString = date.toDateString()
+				const dateString = date.toLocaleDateString()
 				const timeString = date.toLocaleTimeString()
 				return `${dateString}, ${timeString}`
 			}
@@ -1248,8 +1249,9 @@ const imports = {
 								`true (${hashMini(fp.capturedErrors.$hash)})` : 
 								'false'
 							}</span></div>
-							<div class="ellipsis">loose fingerprints: <span class="unblurred">${subIdsLen} (last: ${hashMini(fpHash)})</span></div>
-							<div>bot: <span class="unblurred">${subIdsLen > 10 && hours < 48 ? 'true (10 loose in 48 hours)' : 'false'}</span></div>
+							<div class="ellipsis">loose fingerprint: <span class="unblurred">${hashMini(fpHash)}</span></div>
+							<div class="ellipsis">loose count: <span class="unblurred">${subIdsLen}</span></div>
+							<div class="ellipsis">bot: <span class="unblurred">${subIdsLen > 10 && hours < 48 ? 'true (10 loose in 48 hours)' : 'false'}</span></div>
 						</div>
 					</div>
 				</div>

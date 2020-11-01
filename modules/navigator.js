@@ -9,6 +9,7 @@ export const getNavigator = (imports, workerScope) => {
 			captureError,
 			attempt,
 			caniuse,
+			gibberish,
 			sendToTrash,
 			trustInteger,
 			documentLie,
@@ -88,6 +89,12 @@ export const getNavigator = (imports, workerScope) => {
 					if (!credibleUserAgent) {
 						sendToTrash('userAgent', `${navigatorUserAgent} does not match appVersion`)
 					}
+
+					const gibbers = gibberish(navigatorUserAgent)
+					if (!!gibbers.length) {	
+						sendToTrash(`userAgent contains gibberish`, `[${gibbers.join(', ')}] ${navigatorUserAgent}`)	
+					}
+
 					if (userAgent != navigatorUserAgent) {
 						lied = true
 						const nestedIframeLie = {
@@ -254,6 +261,16 @@ export const getNavigator = (imports, workerScope) => {
 							filename: p.filename,
 							version: p.version
 						})) : []
+					if (!!response.length) {	
+						response.forEach(plugin => {	
+							const { name } = plugin	
+							const gibbers = gibberish(name)	
+							if (!!gibbers.length) {	
+								sendToTrash(`plugin contains gibberish`, `[${gibbers.join(', ')}] ${name}`)	
+							}	
+							return	
+						})	
+					}
 					return response
 				}, 'mimeTypes failed'),
 				properties: attempt(() => {
