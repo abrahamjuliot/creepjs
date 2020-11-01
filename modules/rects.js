@@ -24,8 +24,7 @@ export const getClientRects = imports => {
 		try {
 			const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
 			let lied = lieProps['Element.getClientRects'] // detect lies
-			console.log(softNestedIframeWindow.document.body.getClientRects()[0])
-			console.log(hyperNestedIframeWindow.document.body.getClientRects()[0])
+			
 			const result1 = hashMini(softNestedIframeWindow.document.body.getClientRects()[0])
 			const result2 = hashMini(hyperNestedIframeWindow.document.body.getClientRects()[0])
 			if (result1 != result2) {
