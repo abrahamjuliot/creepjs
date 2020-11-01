@@ -12,7 +12,8 @@ export const getNavigator = (imports, workerScope) => {
 			trustInteger,
 			documentLie,
 			lieProps,
-			contentWindow
+			contentWindow,
+			hyperNestedIframeWindow
 		}
 	} = imports
 
@@ -147,7 +148,11 @@ export const getNavigator = (imports, workerScope) => {
 					if (!('hardwareConcurrency' in navigator)) {
 						return undefined
 					}
-					const { hardwareConcurrency } = contentWindowNavigator
+					const hardwareConcurrency = (
+						hyperNestedIframeWindow ?
+						hyperNestedIframeWindow.navigator.hardwareConcurrency :
+						contentWindowNavigator.hardwareConcurrency
+					)
 					const navigatorHardwareConcurrency = navigator.hardwareConcurrency
 					detectLies('hardwareConcurrency', navigatorHardwareConcurrency)
 					trustInteger('hardwareConcurrency - invalid return type', navigatorHardwareConcurrency)
