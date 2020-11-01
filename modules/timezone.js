@@ -228,7 +228,7 @@ export const getTimezone = imports => {
 				lieProps['Intl.NumberFormat.resolvedOptions'] ||
 				lieProps['Intl.PluralRules.resolvedOptions'] ||
 				lieProps['Intl.RelativeTimeFormat.resolvedOptions']
-			)
+			) || false
 			const seasonLie = timezoneOffsetMeasured.lie ? { fingerprint: '', lies: [{ ['timezone seasons disagree']: true }] } : false
 			const localeLie = locale.lie ? { fingerprint: '', lies: [{ ['Intl locales mismatch']: true }] } : false
 			

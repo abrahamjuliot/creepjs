@@ -71,7 +71,7 @@ export const getScreen = imports => {
 				lieProps['Screen.availHeight'] ||
 				lieProps['Screen.colorDepth'] ||
 				lieProps['Screen.pixelDepth']
-			)
+			) || false
 			const contentWindowScreen = contentWindow ? contentWindow.screen : screen
 			const contentWindowOuterWidth = contentWindow ? contentWindow.outerWidth : outerWidth
 			const contentWindowOuterHeight = contentWindow ? contentWindow.outerHeight : outerHeight

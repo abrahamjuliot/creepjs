@@ -24,7 +24,7 @@ export const getOfflineAudioContext = imports => {
 			// detect lies
 			const channelDataLie = lieProps['AudioBuffer.getChannelData']
 			const copyFromChannelLie = lieProps['AudioBuffer.copyFromChannel']
-			let lied = channelDataLie || copyFromChannelLie
+			let lied = (channelDataLie || copyFromChannelLie) || false
 			
 			const context = new audioContext(1, 44100, 44100)
 			const analyser = context.createAnalyser()

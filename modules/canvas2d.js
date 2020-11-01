@@ -16,7 +16,7 @@ export const getCanvas2d = imports => {
 		try {
 			const dataLie = lieProps['HTMLCanvasElement.toDataURL']
 			const contextLie = lieProps['HTMLCanvasElement.getContext']
-			let lied = dataLie || contextLie
+			let lied = (dataLie || contextLie) || false
 			const doc = contentWindow ? contentWindow.document : document
 			const canvas = doc.createElement('canvas')
 			const context = canvas.getContext('2d')

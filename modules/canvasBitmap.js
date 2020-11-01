@@ -15,7 +15,7 @@ export const getCanvasBitmapRenderer = imports => {
 		try {
 			const dataLie = lieProps['HTMLCanvasElement.toDataURL']
 			const contextLie = lieProps['HTMLCanvasElement.getContext']
-			let lied = dataLie || contextLie
+			let lied = (dataLie || contextLie) || false
 			if (hyperNestedIframeWindow &&
 				hyperNestedIframeWindow.document.createElement('canvas').toDataURL() != document.createElement('canvas').toDataURL()) {
 				lied = true

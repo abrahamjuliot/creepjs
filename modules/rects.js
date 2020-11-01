@@ -21,7 +21,7 @@ export const getClientRects = imports => {
 	return new Promise(async resolve => {
 		try {
 			const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
-			let lied = lieProps['Element.getClientRects'] // detect lies
+			let lied = lieProps['Element.getClientRects'] || false // detect lies
 			
 			let iframeContainer, doc = document
 			try {

@@ -33,7 +33,7 @@ export const getNavigator = (imports, workerScope) => {
 				lieProps['Navigator.vendor'] ||
 				lieProps['Navigator.plugins'] ||
 				lieProps['Navigator.mimeTypes']
-			)
+			) || false
 
 			const contentWindowNavigator = contentWindow ? contentWindow.navigator : navigator
 			const detectLies = (name, value) => {
