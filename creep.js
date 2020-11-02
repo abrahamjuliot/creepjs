@@ -1190,7 +1190,7 @@ const imports = {
 		.then(data => {
 			console.log('\n\n⚡server response: ', JSON.stringify(data, null, '\t'))
 			fetchVisitorDataTimer('server response time')
-			const { firstVisit, lastVisit: latestVisit, looseFingerprints: subIds, visits, hasTrash, hasLied, hasErrors } = data
+			const { firstVisit, lastVisit: latestVisit, looseFingerprints: subIds, visits, hasTrash, hasLied, hasErrors, signature } = data
 			const subIdsLen = Object.keys(subIds).length
 			const toLocaleStr = str => {
 				const date = new Date(str)
@@ -1256,33 +1256,58 @@ const imports = {
 							<div class="ellipsis">bot: <span class="unblurred">${subIdsLen > 10 && hours < 48 ? 'true (10 loose in 48 hours)' : 'false'}</span></div>
 						</div>
 					</div>
-					<form id="signature">
-						<input id="signature-input" type="text" placeholder="sign" required minlength="4" maxlength="64">
-						<input type="submit" value="Submit">
-					</form>
+					${
+						signature ? 
+						`
+						<div class="fade-right-in" id="signature">
+							<div class="ellipsis"><strong>signed</strong>: <span>${signature}</span></div>
+						</div>
+						` :
+						`<form class="fade-right-in" id="signature">
+							<input id="signature-input" type="text" placeholder="sign" title="sign your fingerprint" required minlength="4" maxlength="64">
+							<input type="submit" value="Submit">
+						</form>
+						`
+					}
 				</div>
 			`
 			patch(visitorElem, html`${template}`, () => {
+				if (signature) {
+					return
+				}
 				const form = document.getElementById('signature')
 				form.addEventListener('submit', async () => {
 					event.preventDefault()
 					const input = document.getElementById('signature-input').value
-					const submit = confirm(`Add this signature to your fingerprint? Are you sure? This can't be undone.\n\n${input}`)
 					const signatureRequest = `https://creepjs-6bd8e.web.app/sign?id=${creepHash}&signature=${input}`
 
-					if (submit) {
-						// await fetch
-						// animate form out (patch with div containing signature ellipsis)
+					// animate out
+					form.classList.remove('fade-right-in')
+					form.classList.add('fade-down-out')
 
-						//patch if success
+					// fetch/animate in
+					return fetch(signatureRequest)
+					.then(response => response.json())
+					.then(data => {
+						return setTimeout(() => {
+							patch(form, html`
+								<div class="fade-right-in" id="signature">
+									<div class="ellipsis"><strong>signed</strong>: <span>${input}</span></div>
+								</div>
+							`)
+							return console.log('Signed: ', JSON.stringify(data, null, '\t'))
+						}, 300)
+					})
+					.catch(error => {
 						patch(form, html`
-							<div id="signature">
-								<div class="ellipsis"><strong>signed</strong>: <span>${input}</span></div>
+							<div class="fade-right-in" id="signature">
+								<div class="ellipsis"><strong style="color:crimson">${error}</strong></div>
 							</div>
 						`)
-					}
+						return console.error('Error!', error.message)
+					})
 					
-					return console.log('submit: ', submit, input)
+					return console.log('signature cancelled: ', input)
 				})
 			})
 

@@ -289,7 +289,22 @@ visitor {
 	}
 }
 
-@keyframes fade-right {
+.fade-down-out {
+	animation: fade-down-out .3s ease both;
+}
+@keyframes fade-down-out {
+	0% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+		transform: translateY(5px);
+	}
+}
+.fade-right-in {
+	animation: fade-right-in .3s ease both;
+}
+@keyframes fade-right-in {
 	0%, 30% {
 		transform: translateX(15px);
 		opacity: 0;
