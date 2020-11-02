@@ -3905,7 +3905,8 @@
 			console.error(error.message);
 		});
 		
-		const { trash: hasTrash, lies: hasLied, capturedErrors: hasErrors } = creep;
+		const hasTrash = !!trashLen;
+		const { lies: hasLied, capturedErrors: hasErrors } = creep;
 
 		// patch dom
 		const {
