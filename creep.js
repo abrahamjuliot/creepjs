@@ -289,7 +289,7 @@ const imports = {
 		<div class="fingerprint-header-container">
 			<div class="fingerprint-header">
 				<strong>Your ID:</strong><span class="trusted-fingerprint ellipsis main-hash">${hashMini(creepHash)}</span>
-			<div class="ellipsis"><span class="time">${timeEnd.toFixed(2)} ms</span></div>
+				<div class="ellipsis"><span class="time">${timeEnd.toFixed(2)} ms</span></div>
 			</div>
 		</div>
 		<div id="creep-browser" class="visitor-info">
@@ -310,6 +310,8 @@ const imports = {
 					<div>loose count: <span class="blurred">1</span></div>
 					<div>bot: <span class="blurred">false</span></div>
 				</div>
+			</div>
+			<div id="signature">
 			</div>
 		</div>
 		<div class="flex-grid">
@@ -1254,9 +1256,35 @@ const imports = {
 							<div class="ellipsis">bot: <span class="unblurred">${subIdsLen > 10 && hours < 48 ? 'true (10 loose in 48 hours)' : 'false'}</span></div>
 						</div>
 					</div>
+					<form id="signature">
+						<input id="signature-input" type="text" placeholder="sign" required minlength="4" maxlength="64">
+						<input type="submit" value="Submit">
+					</form>
 				</div>
 			`
-			patch(visitorElem, html`${template}`)
+			patch(visitorElem, html`${template}`, () => {
+				const form = document.getElementById('signature')
+				form.addEventListener('submit', async () => {
+					event.preventDefault()
+					const input = document.getElementById('signature-input').value
+					const submit = confirm(`Add this signature to your fingerprint? Are you sure? This can't be undone.\n\n${input}`)
+					const signatureRequest = `https://creepjs-6bd8e.web.app/sign?id=${creepHash}&signature=${input}`
+
+					if (submit) {
+						// await fetch
+						// animate form out (patch with div containing signature ellipsis)
+
+						//patch if success
+						patch(form, html`
+							<div id="signature">
+								<div class="ellipsis"><strong>signed</strong>: <span>${input}</span></div>
+							</div>
+						`)
+					}
+					
+					return console.log('submit: ', submit, input)
+				})
+			})
 
 			if (fp.workerScope && !errorsLen) {
 				const decryptRequest = `https://creepjs-6bd8e.web.app/decrypt?${[

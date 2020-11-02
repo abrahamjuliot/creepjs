@@ -78,6 +78,44 @@ strong {
 	color: #3e3b3b;
 	font-weight: bold !important;
 }
+
+#signature {
+	min-height: 50px;
+	padding: 5px 10px;
+}
+#signature span {
+    margin: 5px;
+    color: #9165ca;
+    background: #f9f9f9;
+    padding: 3px 10px;
+    font-style: italic;
+}
+#signature input[type="submit"] {
+    cursor: pointer;
+	background: #fff;
+}
+#signature input[type="text"] {
+    width: 50%
+}
+#signature input[type="text"],
+#signature input[type="submit"] {
+	padding: 5px 10px;
+    margin: 5px;
+    font-family: monospace !important;
+    color: #777;
+    border: 1px solid #aaaaaa80;
+    font-size: 14px;
+}
+#signature input[type="submit"]:hover,
+#signature input[type="submit"]:focus,
+#signature input[type="text"]:focus {
+    outline: none;
+	background: #657fca0a;
+}
+
+
+
+
 visitor {
     display: block;
     min-height: 110px !important;
