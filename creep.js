@@ -1287,7 +1287,7 @@ const imports = {
 					if (!submit) {
 						return
 					}
-					
+
 					const signatureRequest = `https://creepjs-6bd8e.web.app/sign?id=${creepHash}&signature=${input}`
 
 					// animate out
@@ -1315,8 +1315,6 @@ const imports = {
 						`)
 						return console.error('Error!', error.message)
 					})
-					
-					return console.log('signature cancelled: ', input)
 				})
 			})
 
