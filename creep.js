@@ -192,9 +192,9 @@ const imports = {
 			language: fp.workerScope.language,
 			platform: fp.workerScope.platform,
 			system: fp.workerScope.system,
-			['timezone offset']: fp.workerScope['timezone offset'],
-			['webgl renderer']: fp.workerScope['webgl renderer'],
-			['webgl vendor']: fp.workerScope['webgl vendor']
+			//['timezone offset']: fp.workerScope.timezoneOffset,
+			['webgl renderer']: fp.workerScope.webglRenderer,
+			['webgl vendor']: fp.workerScope.webglVendor
 		} : undefined,
 		mediaDevices: fp.mediaDevices,
 		mediaTypes: fp.mediaTypes,
@@ -225,7 +225,7 @@ const imports = {
 			timezone: fp.timezone.timezone,
 			timezoneLocation: fp.timezone.timezoneLocation,
 			//timezoneOffset: fp.timezone.timezoneOffset,
-			timezoneOffsetComputed: fp.timezone.timezoneOffsetComputed,
+			//timezoneOffsetComputed: fp.timezone.timezoneOffsetComputed,
 			timezoneOffsetMeasured: fp.timezone.timezoneOffsetMeasured,
 			//matchingOffsets: fp.timezone.matchingOffsets,
 			relativeTime: fp.timezone.relativeTime,
@@ -1279,7 +1279,15 @@ const imports = {
 				const form = document.getElementById('signature')
 				form.addEventListener('submit', async () => {
 					event.preventDefault()
+
+					
 					const input = document.getElementById('signature-input').value
+					const submit = confirm(`Are you sure? This cannot be undone.\n\nsignature: ${input}`)
+
+					if (!submit) {
+						return
+					}
+					
 					const signatureRequest = `https://creepjs-6bd8e.web.app/sign?id=${creepHash}&signature=${input}`
 
 					// animate out
