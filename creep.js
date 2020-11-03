@@ -193,8 +193,14 @@ const imports = {
 			platform: fp.workerScope.platform,
 			system: fp.workerScope.system,
 			//['timezone offset']: fp.workerScope.timezoneOffset,
-			['webgl renderer']: fp.workerScope.webglRenderer,
-			['webgl vendor']: fp.workerScope.webglVendor
+			['webgl renderer']: (
+				!!liesLen && isBrave ? distrust : 
+				fp.workerScope.webglRenderer
+			),
+			['webgl vendor']: (
+				!!liesLen && isBrave ? distrust : 
+				fp.workerScope.webglVendor
+			)
 		} : undefined,
 		mediaDevices: fp.mediaDevices,
 		mediaTypes: fp.mediaTypes,
