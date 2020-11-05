@@ -1324,7 +1324,7 @@ const imports = {
 				})
 			})
 
-			if (fp.workerScope && !errorsLen) {
+			if (fp.workerScope) {
 				const decryptRequest = `https://creepjs-6bd8e.web.app/decrypt?${[
 					`mathId=${caniuse(() => fp.maths.$hash)}`,
 					`errorId=${caniuse(() => fp.consoleErrors.$hash)}`,
