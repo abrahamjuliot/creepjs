@@ -94,7 +94,16 @@ const inlineWorker = async caniuse => {
 	const mathResult = Math.tan(10*Math.LOG2E)
 	const jsImplementation = jsEngine[mathResult] || 'unknown'
 
+	const getMaxCallStackSize = () => {
+    	try {
+			return 1+getMaxCallStackSize()
+		} catch (e) { return 1 }
+	}
+	;[...Array(10)].forEach(() => getMaxCallStackSize ())
+	const maxCallStackSize = `${(getMaxCallStackSize ()/1000).toFixed(0)}K`
+
 	postMessage({
+		maxCallStackSize,
 		jsImplementation,
 		timezoneOffset,
 		hardwareConcurrency,
