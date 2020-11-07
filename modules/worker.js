@@ -99,8 +99,8 @@ const inlineWorker = async caniuse => {
 			return 1+getMaxCallStackSize()
 		} catch (e) { return 1 }
 	}
-	;[...Array(10)].forEach(() => getMaxCallStackSize ())
-	const maxCallStackSize = `${(getMaxCallStackSize ()/1000).toFixed(0)}K`
+	;[...Array(10)].forEach(() => getMaxCallStackSize())
+	const maxCallStackSize = `${(getMaxCallStackSize()/1000).toFixed(0)}K`
 
 	postMessage({
 		maxCallStackSize,
