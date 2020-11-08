@@ -433,7 +433,8 @@ const imports = {
 				<div>system: ${note.blocked}</div>
 				<div>hardwareConcurrency: ${note.blocked}</div>
 				<div>js runtime: ${note.blocked}</div>
-				<div>max call stack size: ${note.blocked}</div>
+				<div>stack size (worker): ${note.blocked}</div>
+				<div>stack size (window): ${note.blocked}</div>
 				<div>canvas 2d: ${note.blocked}</div>
 				<div>webgl vendor: ${note.blocked}</div>
 			</div>
@@ -454,7 +455,8 @@ const imports = {
 				<div>system: ${data.system || note.unsupported}</div>
 				<div>hardwareConcurrency: ${data.hardwareConcurrency || note.unsupported}</div>
 				<div>js runtime: ${data.jsImplementation}</div>
-				<div>max call stack size: ~${data.maxCallStackSize}</div>
+				<div>stack size (worker): ~${data.maxCallStackSize}</div>
+				<div>stack size (window): ~${data.windowMaxCallStackSize}</div>
 				<div>canvas 2d:${
 					!!data.canvas2d.dataURI ?
 					`<span class="sub-hash">${hashMini(data.canvas2d.$hash)}</span>` :

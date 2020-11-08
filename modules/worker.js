@@ -100,7 +100,7 @@ const inlineWorker = async caniuse => {
 		} catch (e) { return 1 }
 	}
 	;[...Array(10)].forEach(() => getMaxCallStackSize())
-	const maxCallStackSize = `${(getMaxCallStackSize()/1000).toFixed(0)}K`
+	const maxCallStackSize = (getMaxCallStackSize()/100).toFixed(0)*100
 
 	postMessage({
 		maxCallStackSize,
@@ -136,9 +136,18 @@ export const getWorkerScope = imports => {
 			if (!worker) {
 				return resolve(undefined)
 			}
+
+			const getMaxCallStackSize = () => {
+				try {
+					return 1+getMaxCallStackSize()
+				} catch (e) { return 1 }
+			}
+			;[...Array(10)].forEach(() => getMaxCallStackSize())
+			const maxCallStackSize = (getMaxCallStackSize()/100).toFixed(0)*100
 			
 			worker.addEventListener('message', async event => {
 				const { data, data: { canvas2d } } = event
+				data.windowMaxCallStackSize = maxCallStackSize
 				data.system = getOS(data.userAgent)
 				data.canvas2d = { dataURI: canvas2d, $hash: await hashify(canvas2d) }
 				const $hash = await hashify(data)
