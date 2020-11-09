@@ -3650,7 +3650,6 @@
 				if (!worker) {
 					return resolve(undefined)
 				}
-				
 				worker.addEventListener('message', async event => {
 					const { data, data: { canvas2d } } = event;
 					data.system = getOS(data.userAgent);
@@ -3831,8 +3830,14 @@
 				platform: fp.workerScope.platform,
 				system: fp.workerScope.system,
 				//['timezone offset']: fp.workerScope.timezoneOffset,
-				['webgl renderer']: fp.workerScope.webglRenderer,
-				['webgl vendor']: fp.workerScope.webglVendor
+				['webgl renderer']: (
+					!!liesLen && isBrave ? distrust : 
+					fp.workerScope.webglRenderer
+				),
+				['webgl vendor']: (
+					!!liesLen && isBrave ? distrust : 
+					fp.workerScope.webglVendor
+				)
 			} : undefined,
 			mediaDevices: fp.mediaDevices,
 			mediaTypes: fp.mediaTypes,
@@ -3899,7 +3904,7 @@
 		console.groupCollapsed('Loose Fingerprint JSON');
 		console.log('diff check at https://www.diffchecker.com/diff\n\n', JSON.stringify(fp, null, '\t'));
 		console.groupEnd();
-		
+
 		const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
 		.catch(error => { 
 			console.error(error.message);
@@ -4842,7 +4847,7 @@
 
 				// trust score
 				const score = (100-(
-					(subIdsLen < 2 ? 0 : subIdsLen-1 < 11 ? (subIdsLen-1) * 1 : (subIdsLen-1) * 5 ) +
+					(subIdsLen < 2 ? 0 : subIdsLen-1 < 11 ? (subIdsLen-1) * 0.1 : (subIdsLen-1) * 0.2 ) +
 					(errorsLen * 5.2) +
 					(trashLen * 15.5) +
 					(liesLen * 31)
@@ -4925,7 +4930,7 @@
 						if (!submit) {
 							return
 						}
-						
+
 						const signatureRequest = `https://creepjs-6bd8e.web.app/sign?id=${creepHash}&signature=${input}`;
 
 						// animate out
@@ -4956,7 +4961,7 @@
 					});
 				});
 
-				if (fp.workerScope && !errorsLen) {
+				if (fp.workerScope) {
 					const decryptRequest = `https://creepjs-6bd8e.web.app/decrypt?${[
 					`mathId=${caniuse(() => fp.maths.$hash)}`,
 					`errorId=${caniuse(() => fp.consoleErrors.$hash)}`,
