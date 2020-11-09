@@ -94,17 +94,7 @@ const inlineWorker = async caniuse => {
 	const mathResult = Math.tan(10*Math.LOG2E)
 	const jsImplementation = jsEngine[mathResult] || 'unknown'
 
-	const getMaxCallStackSize = () => {
-    	try {
-			return 1+getMaxCallStackSize()
-		} catch (e) { return 1 }
-	}
-	;[...Array(10)].forEach(() => getMaxCallStackSize())
-	const round = n => 100*(''+(n/100)).replace(/\..+/,'')
-	const maxCallStackSize = round(getMaxCallStackSize())
-
 	postMessage({
-		maxCallStackSize,
 		jsImplementation,
 		timezoneOffset,
 		hardwareConcurrency,
@@ -137,19 +127,8 @@ export const getWorkerScope = imports => {
 			if (!worker) {
 				return resolve(undefined)
 			}
-
-			const getMaxCallStackSize = () => {
-				try {
-					return 1+getMaxCallStackSize()
-				} catch (e) { return 1 }
-			}
-			;[...Array(10)].forEach(() => getMaxCallStackSize())
-			const round = n => 100*(''+(n/100)).replace(/\..+/,'')
-			const maxCallStackSize = round(getMaxCallStackSize())
-			
 			worker.addEventListener('message', async event => {
 				const { data, data: { canvas2d } } = event
-				data.windowMaxCallStackSize = maxCallStackSize
 				data.system = getOS(data.userAgent)
 				data.canvas2d = { dataURI: canvas2d, $hash: await hashify(canvas2d) }
 				const $hash = await hashify(data)
