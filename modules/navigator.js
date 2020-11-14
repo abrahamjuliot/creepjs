@@ -291,7 +291,7 @@ export const getNavigator = (imports, workerScope) => {
 			return resolve({ ...data, lied, $hash })
 		}
 		catch (error) {
-			captureError(error)
+			captureError(error, 'Navigator failed or blocked by client')
 			return resolve(undefined)
 		}
 	})

@@ -121,7 +121,7 @@ export const getOfflineAudioContext = imports => {
 						return resolve({...response, $hash })
 					}
 					catch (error) {
-						captureError(error)
+						captureError(error, 'AudioBuffer failed or blocked by client')
 						dynamicsCompressor.disconnect()
 						oscillator.disconnect()
 						const response = {
@@ -138,7 +138,7 @@ export const getOfflineAudioContext = imports => {
 			}))
 		}
 		catch (error) {
-			captureError(error)
+			captureError(error, 'OfflineAudioContext failed or blocked by client')
 			return resolve(undefined)
 		}
 	})
