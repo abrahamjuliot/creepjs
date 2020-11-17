@@ -1213,7 +1213,7 @@
 							return resolve({...response, $hash })
 						}
 						catch (error) {
-							captureError(error);
+							captureError(error, 'AudioBuffer failed or blocked by client');
 							dynamicsCompressor.disconnect();
 							oscillator.disconnect();
 							const response = {
@@ -1230,7 +1230,7 @@
 				}))
 			}
 			catch (error) {
-				captureError(error);
+				captureError(error, 'OfflineAudioContext failed or blocked by client');
 				return resolve(undefined)
 			}
 		})
@@ -2708,7 +2708,7 @@
 				return resolve({ ...data, lied, $hash })
 			}
 			catch (error) {
-				captureError(error);
+				captureError(error, 'Navigator failed or blocked by client');
 				return resolve(undefined)
 			}
 		})
@@ -3817,6 +3817,27 @@
 		const liesLen = !('data' in fp.lies) ? 0 : fp.lies.data.length;
 		const errorsLen = fp.capturedErrors.data.length;
 		const creep = {
+			navigator: ( 
+				!fp.navigator || fp.navigator.lied ? undefined : {
+					deviceMemory: fp.navigator.deviceMemory,
+					doNotTrack: fp.navigator.doNotTrack,
+					hardwareConcurrency: isBrave ? distrust : fp.navigator.hardwareConcurrency,
+					maxTouchPoints: fp.navigator.maxTouchPoints,
+					mimeTypes: fp.navigator.mimeTypes,
+					plugins: isBrave ? distrust : fp.navigator.plugins,
+					platform: fp.navigator.platform,
+					system: fp.navigator.system,
+					vendor: fp.navigator.vendor
+				}
+			),
+			screen: ( 
+				!fp.screen || fp.screen.lied ? undefined : {
+					height: fp.screen.height,
+					width: fp.screen.width,
+					pixelDepth: fp.screen.pixelDepth,
+					colorDepth: fp.screen.colorDepth
+				}
+			),
 			workerScope: fp.workerScope ? {
 				canvas2d: (
 					!!liesLen && (isBrave || isFirefox) ? distrust : 
@@ -3862,7 +3883,6 @@
 			},
 			maths: !fp.maths || fp.maths.lied ? undefined : fp.maths,
 			consoleErrors: fp.consoleErrors,
-			cssStyleDeclarationVersion: fp.cssStyleDeclarationVersion,
 			// avoid random timezone fingerprint values
 			timezone: !fp.timezone || fp.timezone.lied ? undefined : {
 				timezone: fp.timezone.timezone,
