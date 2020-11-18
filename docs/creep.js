@@ -4983,6 +4983,7 @@
 
 				if (fp.workerScope) {
 					const decryptRequest = `https://creepjs-6bd8e.web.app/decrypt?${[
+					`isBrave=${isBrave}`,
 					`mathId=${caniuse(() => fp.maths.$hash)}`,
 					`errorId=${caniuse(() => fp.consoleErrors.$hash)}`,
 					`htmlId=${caniuse(() => fp.htmlElementVersion.$hash)}`,
