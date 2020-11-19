@@ -53,9 +53,6 @@
         if (chromium) {
             const browser = chromium[1];
             const version = chromium[2];
-            if (!crios && version < 80) {
-                return browser
-            }
             const like = (
                 isOpera ? ' Opera' :
                 isVivaldi ? ' Vivaldi' :
@@ -72,9 +69,6 @@
         } else if (firefox) {
             const browser = paleMoon ? paleMoon[1] : firefox[1];
             const version = paleMoon ? paleMoon[2] : firefox[2];
-            if (!fxios && !paleMoon && version < 80) {
-                return browser
-            }
             return `${browser} ${version}`
         } else if (apple && safari) {
             const browser = 'Safari';
