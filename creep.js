@@ -1,4 +1,4 @@
-import { isChrome, isBrave, isFirefox, getOS } from './modules/helpers.js'
+import { isChrome, isBrave, isFirefox, getOS, decryptUserAgent } from './modules/helpers.js'
 import { patch, html, note, count, modal } from './modules/html.js'
 import { hashMini, instanceId, hashify } from './modules/crypto.js'
 
@@ -34,6 +34,7 @@ const imports = {
 		isBrave,
 		isFirefox,
 		getOS,
+		decryptUserAgent,
 		// crypto
 		instanceId,
 		hashMini,
@@ -1096,6 +1097,7 @@ const imports = {
 		</div>
 		<div id="browser-detection">
 			<strong>Browser Detection</strong>
+			<div>reported browser:</div>
 			<div>window object:</div>
 			<div>system styles:</div>
 			<div>computed styles:</div>
@@ -1367,10 +1369,20 @@ const imports = {
 					styleVersion,
 					styleSystem,
 				} = data
-
+				const reportedUserAgent = caniuse(() => navigator.userAgent)
+				const reportedSystem = getOS(reportedUserAgent)
+				const report = decryptUserAgent({
+					ua: reportedUserAgent,
+					os: reportedSystem,
+					isBrave
+				})
 				patch(el, html`
 				<div>
 					<strong>Browser Detection</strong>
+					<div>reported browser: ${report}${
+						windowVersion.decrypted != 'unknown' &&
+						windowVersion.decrypted != report ?` (fake)` : ''
+					}</div>
 					<div class="ellipsis">window object: ${
 						windowVersion.system ?
 						`${windowVersion.decrypted} on ${windowVersion.system}` :

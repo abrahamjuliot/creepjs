@@ -22,4 +22,63 @@ const getOS = userAgent => {
 	return os
 }
 
-export { isChrome, isBrave, isFirefox, getOS }
+const decryptUserAgent = ({ua, os, isBrave}) => {
+    const apple = /ipad|iphone|ipod|ios|mac/ig.test(os)
+    const isOpera = /OPR\//g.test(ua)
+    const isVivaldi = /Vivaldi/g.test(ua)
+    const isDuckDuckGo = /DuckDuckGo/g.test(ua)
+    const isYandex = /YaBrowser/g.test(ua)
+    const paleMoon = ua.match(/(palemoon)\/(\d+)./i) 
+    const edge = ua.match(/(edgios|edg|edge|edga)\/(\d+)./i)
+    const edgios = edge && /edgios/i.test(edge[1])
+    const chromium = ua.match(/(crios|chrome)\/(\d+)./i)
+    const crios = chromium && /crios/i.test(chromium[1])
+    const firefox = ua.match(/(fxios|firefox)\/(\d+)./i)
+    const fxios = firefox && /fxios/i.test(firefox[1])
+    const likeSafari = (
+        /AppleWebKit/g.test(ua) &&
+        /Safari/g.test(ua)
+    )
+    const safari = (
+        likeSafari &&
+        !firefox &&
+        !chromium &&
+        !edge &&
+        ua.match(/(version)\/(\d+)\.(\d|\.)+\s(mobile|safari)/i)
+    )
+
+    if (chromium) {
+        const browser = chromium[1]
+        const version = chromium[2]
+        if (!crios && version < 80) {
+            return browser
+        }
+        const like = (
+            isOpera ? ' Opera' :
+            isVivaldi ? ' Vivaldi' :
+            isDuckDuckGo ? ' DuckDuckGo' :
+            isYandex ? ' Yandex' :
+            edge ? ' Edge' :
+            isBrave ? ' Brave' : ''
+        )
+        return `${browser} ${version}${like}`
+    } else if (edgios) {
+        const browser = edge[1]
+        const version = edge[2]
+        return `${browser} ${version}`
+    } else if (firefox) {
+        const browser = paleMoon ? paleMoon[1] : firefox[1]
+        const version = paleMoon ? paleMoon[2] : firefox[2]
+        if (!fxios && !paleMoon && version < 80) {
+            return browser
+        }
+        return `${browser} ${version}`
+    } else if (apple && safari) {
+        const browser = 'Safari'
+        const version = safari[2]
+        return `${browser} ${version}`
+    }
+    return 'unknown'
+}
+
+export { isChrome, isBrave, isFirefox, getOS, decryptUserAgent }
