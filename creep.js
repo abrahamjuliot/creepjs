@@ -1344,87 +1344,70 @@ const imports = {
 				})
 			})
 
-			if (fp.workerScope) {
-				const decryptRequest = `https://creepjs-6bd8e.web.app/decrypt?${[
-					`isBrave=${isBrave}`,
-					`mathId=${caniuse(() => fp.maths.$hash)}`,
-					`errorId=${caniuse(() => fp.consoleErrors.$hash)}`,
-					`htmlId=${caniuse(() => fp.htmlElementVersion.$hash)}`,
-					`winId=${caniuse(() => fp.iframeContentWindowVersion.$hash)}`,
-					`styleId=${caniuse(() => fp.cssStyleDeclarationVersion.getComputedStyle.$hash)}`,
-					`styleSystemId=${caniuse(() => fp.cssStyleDeclarationVersion.system.$hash)}`,
-					`ua=${encodeURIComponent(caniuse(() => fp.workerScope.userAgent))}`
-				].join('&')}`
+			const decryptRequest = `https://creepjs-6bd8e.web.app/decrypt?${[
+				`isBrave=${isBrave}`,
+				`mathId=${caniuse(() => fp.maths.$hash)}`,
+				`errorId=${caniuse(() => fp.consoleErrors.$hash)}`,
+				`htmlId=${caniuse(() => fp.htmlElementVersion.$hash)}`,
+				`winId=${caniuse(() => fp.iframeContentWindowVersion.$hash)}`,
+				`styleId=${caniuse(() => fp.cssStyleDeclarationVersion.getComputedStyle.$hash)}`,
+				`styleSystemId=${caniuse(() => fp.cssStyleDeclarationVersion.system.$hash)}`,
+				`ua=${encodeURIComponent(caniuse(() => fp.workerScope.userAgent))}`
+			].join('&')}`
 
-				return fetch(decryptRequest)
-				.then(response => response.json())
-				.then(data => {
-					const el = document.getElementById('browser-detection')
-					const {
-						jsRuntime,
-						jsEngine,
-						htmlVersion,
-						windowVersion,
-						styleVersion,
-						styleSystem,
-					} = data
-					
-					patch(el, html`
-					<div>
-						<strong>Browser Detection</strong>
-						<div class="ellipsis">window object: ${
-							windowVersion.system ?
-							`${windowVersion.decrypted} on ${windowVersion.system}` :
-							windowVersion.decrypted
-						}</div>
-						<div class="ellipsis">system styles: ${
-							styleSystem.system ?
-							`${styleSystem.decrypted} on ${styleSystem.system}` :
-							styleSystem.decrypted
-						}</div>
-						<div class="ellipsis">computed styles: ${
-							styleVersion.system ?
-							`${styleVersion.decrypted} on ${styleVersion.system}` :
-							styleVersion.decrypted
-						}</div>
-						<div class="ellipsis">html element object: ${
-							htmlVersion.system ?
-							`${htmlVersion.decrypted} on ${htmlVersion.system}` :
-							htmlVersion.decrypted
-						}</div>
-						<div class="ellipsis">js runtime (math): ${
-							jsRuntime.system ?
-							`${jsRuntime.decrypted} on ${jsRuntime.system}` :
-							jsRuntime.decrypted
-						}</div>
-						<div class="ellipsis">js engine (error): ${
-							jsEngine.system ?
-							`${jsEngine.decrypted} on ${jsEngine.system}` :
-							jsEngine.decrypted
-						}</div>
-					</div>
-					`)
-					return console.log('\n\nuser agents pending review: ', data.pendingReview)
-				})
-				.catch(error => {
-					return console.error('Error!', error.message)
-				})
-			}
-			else {
+			return fetch(decryptRequest)
+			.then(response => response.json())
+			.then(data => {
 				const el = document.getElementById('browser-detection')
+				const {
+					jsRuntime,
+					jsEngine,
+					htmlVersion,
+					windowVersion,
+					styleVersion,
+					styleSystem,
+				} = data
+
 				patch(el, html`
-				<div class="distrust">
-					<strong>Browser Detection</strong> [distrust]
-					<div>window object:</div>
-					<div>system styles:</div>
-					<div>computed styles:</div>
-					<div>html element object:</div>
-					<div>js runtime (math):</div>
-					<div>js engine (error):</div>
+				<div>
+					<strong>Browser Detection</strong>
+					<div class="ellipsis">window object: ${
+						windowVersion.system ?
+						`${windowVersion.decrypted} on ${windowVersion.system}` :
+						windowVersion.decrypted
+					}</div>
+					<div class="ellipsis">system styles: ${
+						styleSystem.system ?
+						`${styleSystem.decrypted} on ${styleSystem.system}` :
+						styleSystem.decrypted
+					}</div>
+					<div class="ellipsis">computed styles: ${
+						styleVersion.system ?
+						`${styleVersion.decrypted} on ${styleVersion.system}` :
+						styleVersion.decrypted
+					}</div>
+					<div class="ellipsis">html element object: ${
+						htmlVersion.system ?
+						`${htmlVersion.decrypted} on ${htmlVersion.system}` :
+						htmlVersion.decrypted
+					}</div>
+					<div class="ellipsis">js runtime (math): ${
+						jsRuntime.system ?
+						`${jsRuntime.decrypted} on ${jsRuntime.system}` :
+						jsRuntime.decrypted
+					}</div>
+					<div class="ellipsis">js engine (error): ${
+						jsEngine.system ?
+						`${jsEngine.decrypted} on ${jsEngine.system}` :
+						jsEngine.decrypted
+					}</div>
 				</div>
 				`)
-			}
-			return
+				return console.log(`🔮Browser detection: ${JSON.stringify(data, null, '\t')}`)
+			})
+			.catch(error => {
+				return console.error('Error!', error.message)
+			})
 		})
 		.catch(error => {
 			fetchVisitorDataTimer('Error fetching visitor data')
