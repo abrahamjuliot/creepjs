@@ -69,12 +69,15 @@ Bots leak unusual behavior and can be denied service.
 - if the worker scope is blocked and the fingerprint ids exist in the database, the version can still be detected
 
 ### Tests
-1. js Math implementation (SpiderMonkey, JavaScriptCore, V8)
+1. js Math implementation
 2. js engine via console errors
 3. HTMLElement version
 4. system styles
 5. CSS style version
 6. contentWindow version
+
+- renderers: Gecko, Goanna, Blink, WebKit
+- engines: SpiderMonkey, JavaScriptCore, V8
 
 ## Definitions
 ### Trash
