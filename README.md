@@ -76,8 +76,9 @@ Bots leak unusual behavior and can be denied service.
 5. CSS style version
 6. contentWindow version
 
-- renderers: Gecko, Goanna, Blink, WebKit
-- engines: SpiderMonkey, JavaScriptCore, V8
+#### Supported
+- layout rendering engines: Gecko, Goanna, Blink, WebKit
+- JS runtime engines: SpiderMonkey, JavaScriptCore, V8
 
 ## Definitions
 ### Trash
