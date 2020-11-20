@@ -12,11 +12,11 @@
 			<div id="fingerprint-data">
 				<div class="fingerprint-header-container">
 					<div class="fingerprint-header">
-						<strong>Your ID:</strong><span class="trusted-fingerprint"></span>
+						<strong>Your ID:</strong><span class="trusted-fingerprint ellipsis main-hash">Computing...</span>
 						<div><span class="time">0 ms</span></div>
 					</div>
 				</div>
-				<div id="creep-browser" class="visitor-info">
+				<div id="creep-browser" class="visitor-info hidden">
 					<div class="flex-grid">
 						<div class="col-six">
 							<strong id="loader">Computing...</strong>
@@ -38,7 +38,7 @@
 					<div id="signature">
 					</div>
 				</div>
-				<div class="flex-grid">
+				<div class="flex-grid hidden">
 					<div class="col-four">
 						<strong>Trash</strong>
 						<div>gathered (0):</div>
@@ -52,7 +52,7 @@
 						<div>captured (0):</div>
 					</div>
 				</div>
-				<div class="flex-grid">
+				<div class="flex-grid hidden">
 					<div class="col-six">
 						<strong>Cloudflare</strong>
 						<div>ip address:</div>
@@ -68,7 +68,21 @@
 						<div>connection:</div>
 					</div>
 				</div>
-				<div class="flex-grid">
+				<div id="browser-detection" class="flex-grid hidden">
+					<div class="col-eight">
+						<strong>Computing...</strong>
+						<div>client user agent:</div>
+						<div>window object:</div>
+						<div>system styles:</div>
+						<div>computed styles:</div>
+						<div>html element:</div>
+						<div>js runtime (math):</div>
+						<div>js engine (error):</div>
+					</div>
+					<div class="col-four icon-container">
+					</div>
+				</div>
+				<div class="flex-grid hidden">
 					<div class="col-six">
 						<strong>Worker</strong>
 						<div>timezone offset:</div>
@@ -87,7 +101,7 @@
 						<div class="block-text"></div>
 					</div>
 				</div>
-				<div class="flex-grid">
+				<div class="flex-grid hidden">
 					<div class="col-six">
 						<strong>Canvas webgl</strong>
 						<div>matching renderer/vendor:</div>
@@ -108,7 +122,7 @@
 						<div class="block-text"></div>
 					</div>
 				</div>
-				<div class="flex-grid">
+				<div class="flex-grid hidden">
 					<div class="col-six">
 						<strong>Canvas 2d</strong>
 					</div>
@@ -116,7 +130,7 @@
 						<strong>Canvas bitmaprenderer</strong>
 					</div>
 				</div>
-				<div class="flex-grid">
+				<div class="flex-grid hidden">
 					<div class="col-six">
 						<strong>Audio</strong>
 						<div>sample:</div>
@@ -133,7 +147,7 @@
 						<div>voices (0):</div>
 					</div>
 				</div>
-				<div class="flex-grid">
+				<div class="flex-grid hidden">
 					<div class="col-six">
 						<strong>Media Types</strong>
 						<div>results:</div>
@@ -143,7 +157,7 @@
 						<div>devices (0):</div>
 					</div>
 				</div>
-				<div class="flex-grid">
+				<div class="flex-grid hidden">
 					<div class="col-six">
 						<strong>DOMRect</strong>
 						<div>elements:</div>
@@ -156,7 +170,7 @@
 						<div>results (0):</div>
 					</div>
 				</div>
-				<div class="flex-grid">
+				<div class="flex-grid hidden">
 					<div class="col-six">
 						<strong>Timezone</strong>
 						<div>timezone:</div>
@@ -172,7 +186,7 @@
 						<div>writing system keys:</div>
 					</div>
 				</div>
-				<div class="flex-grid">
+				<div class="flex-grid hidden">
 					<div class="col-six">
 						<strong>Screen</strong>
 						<div>device:</div>
@@ -188,7 +202,7 @@
 					<div class="col-six screen-container">
 					</div>
 				</div>
-				<div class="flex-grid">
+				<div class="flex-grid hidden">
 					<div class="col-six">
 						<strong>Computed Style</strong>
 						<div>engine:</div>
@@ -198,7 +212,7 @@
 						<div>CSSRuleList.style:</div>
 						<div>matching:</div>
 					</div>
-					<div class="col-six">
+					<div class="col-six hidden">
 						<div>keys:</div>
 						<div>moz:</div>
 						<div>webkit:</div>
@@ -207,7 +221,7 @@
 						<div>system styles rendered:</div>
 					</div>
 				</div>
-				<div>
+				<div class="hidden">
 					<div class="flex-grid">
 						<div class="col-six">
 							<strong>Math</strong>
@@ -232,21 +246,7 @@
 						</div>
 					</div>
 				</div>
-				<div id="browser-detection" class="flex-grid">
-					<div class="col-eight">
-						<strong>Browser Detection</strong>
-						<div>reported browser:</div>
-						<div>window object:</div>
-						<div>system styles:</div>
-						<div>computed styles:</div>
-						<div>html element:</div>
-						<div>js runtime (math):</div>
-						<div>js engine (error):</div>
-					</div>
-					<div class="col-four icon-container">
-					</div>
-				</div>
-				<div class="flex-grid">
+				<div class="flex-grid" style="visibility:hidden">
 					<div class="col-six">
 						<strong>Navigator</strong>
 						<div>deviceMemory:</div>

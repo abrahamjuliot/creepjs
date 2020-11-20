@@ -4132,6 +4132,20 @@
 				`
 			})()}			
 		</div>
+		<div id="browser-detection" class="flex-grid">
+			<div class="col-eight">
+				<strong>Loading...</strong>
+				<div>client user agent:</div>
+				<div>window object:</div>
+				<div>system styles:</div>
+				<div>computed styles:</div>
+				<div>html element:</div>
+				<div>js runtime (math):</div>
+				<div>js engine (error):</div>
+			</div>
+			<div class="col-four icon-container">
+			</div>
+		</div>
 		<div class="flex-grid">
 		${!fp.workerScope ?
 			`<div class="col-six">
@@ -4783,20 +4797,6 @@
 			})()}
 			</div>
 		</div>
-		<div id="browser-detection" class="flex-grid">
-			<div class="col-eight">
-				<strong>Browser Detection</strong>
-				<div>reported browser:</div>
-				<div>window object:</div>
-				<div>system styles:</div>
-				<div>computed styles:</div>
-				<div>html element:</div>
-				<div>js runtime (math):</div>
-				<div>js engine (error):</div>
-			</div>
-			<div class="col-four icon-container">
-			</div>
-		</div>
 		<div class="flex-grid">
 		${!fp.navigator ?
 			`<div class="col-six">
@@ -5108,13 +5108,11 @@
     					)
     				};
 
-    				console.log(iconSet);
-
     				patch(el, html`
 				<div class="flex-grid">
 					<div class="col-eight">
-						<strong>Browser Detection</strong>
-						<div>reported browser: ${report}${
+						<strong>Version</strong>
+						<div>client user agent: ${report}${
 							windowVersion.decrypted != 'unknown' &&
 							windowVersion.decrypted != report ?` (fake)` : ''
 						}</div>
