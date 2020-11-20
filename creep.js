@@ -1095,15 +1095,19 @@ const imports = {
 			})()}
 			</div>
 		</div>
-		<div id="browser-detection">
-			<strong>Browser Detection</strong>
-			<div>reported browser:</div>
-			<div>window object:</div>
-			<div>system styles:</div>
-			<div>computed styles:</div>
-			<div>html element object:</div>
-			<div>js runtime (math):</div>
-			<div>js engine (error):</div>
+		<div id="browser-detection" class="flex-grid">
+			<div class="col-eight">
+				<strong>Browser Detection</strong>
+				<div>reported browser:</div>
+				<div>window object:</div>
+				<div>system styles:</div>
+				<div>computed styles:</div>
+				<div>html element:</div>
+				<div>js runtime (math):</div>
+				<div>js engine (error):</div>
+			</div>
+			<div class="col-four icon-container">
+			</div>
 		</div>
 		<div class="flex-grid">
 		${!fp.navigator ?
@@ -1376,43 +1380,68 @@ const imports = {
 					os: reportedSystem,
 					isBrave
 				})
+				const iconSet = new Set()
+				const htmlIcon = cssClass => `<span class="icon ${cssClass}"></span>`
+				const getTemplate = agent => {
+					const { decrypted, system } = agent
+					const browserIcon = (
+						/edgios|edge/i.test(decrypted) ? iconSet.add('edge') && htmlIcon('edge') :
+						/brave/i.test(decrypted) ? iconSet.add('brave') && htmlIcon('brave') :
+						/vivaldi/i.test(decrypted) ? iconSet.add('vivaldi') && htmlIcon('vivaldi') :
+						/duckduckgo/i.test(decrypted) ? iconSet.add('duckduckgo') && htmlIcon('duckduckgo') :
+						/yandex/i.test(decrypted) ? iconSet.add('yandex') && htmlIcon('yandex') :
+						/opera/i.test(decrypted) ? iconSet.add('opera') && htmlIcon('opera') :
+						/crios|chrome/i.test(decrypted) ? iconSet.add('chrome') && htmlIcon('chrome') :
+						/tor browser/i.test(decrypted) ? iconSet.add('tor') && htmlIcon('tor') :
+						/palemoon/i.test(decrypted) ? iconSet.add('palemoon') && htmlIcon('palemoon') :
+						/fxios|firefox/i.test(decrypted) ? iconSet.add('firefox') && htmlIcon('firefox') :
+						/v8/i.test(decrypted) ? iconSet.add('v8') && htmlIcon('v8') :
+						/gecko/i.test(decrypted) ? iconSet.add('gecko') && htmlIcon('gecko') :
+						/goanna/i.test(decrypted) ? iconSet.add('goanna') && htmlIcon('goanna') :
+						/spidermonkey/i.test(decrypted) ? iconSet.add('firefox') && htmlIcon('firefox') :
+						/safari/i.test(decrypted) ? iconSet.add('safari') && htmlIcon('safari') :
+						/webkit/i.test(decrypted) ? iconSet.add('webkit') && htmlIcon('webkit') :
+						/blink/i.test(decrypted) ? iconSet.add('blink') && htmlIcon('blink') : ''
+					)
+					const systemIcon = (
+						/chrome os/i.test(system) ? iconSet.add('cros') && htmlIcon('cros') :
+						/linux/i.test(system) ? iconSet.add('linux') && htmlIcon('linux') :
+						/android/i.test(system) ? iconSet.add('android') && htmlIcon('android') :
+						/ipad|iphone|ipod|ios|mac/i.test(system) ? iconSet.add('apple') && htmlIcon('apple') :
+						/windows/i.test(system) ? iconSet.add('windows') && htmlIcon('windows') : ''
+					)
+					const icons = [
+						browserIcon,
+						systemIcon
+					].join('')
+					return (
+						system ? `${icons}${decrypted} on ${system}` :
+						`${icons}${decrypted}`
+					)
+				}
+
+				console.log(iconSet)
+
 				patch(el, html`
-				<div>
-					<strong>Browser Detection</strong>
-					<div>reported browser: ${report}${
-						windowVersion.decrypted != 'unknown' &&
-						windowVersion.decrypted != report ?` (fake)` : ''
-					}</div>
-					<div class="ellipsis">window object: ${
-						windowVersion.system ?
-						`${windowVersion.decrypted} on ${windowVersion.system}` :
-						windowVersion.decrypted
-					}</div>
-					<div class="ellipsis">system styles: ${
-						styleSystem.system ?
-						`${styleSystem.decrypted} on ${styleSystem.system}` :
-						styleSystem.decrypted
-					}</div>
-					<div class="ellipsis">computed styles: ${
-						styleVersion.system ?
-						`${styleVersion.decrypted} on ${styleVersion.system}` :
-						styleVersion.decrypted
-					}</div>
-					<div class="ellipsis">html element object: ${
-						htmlVersion.system ?
-						`${htmlVersion.decrypted} on ${htmlVersion.system}` :
-						htmlVersion.decrypted
-					}</div>
-					<div class="ellipsis">js runtime (math): ${
-						jsRuntime.system ?
-						`${jsRuntime.decrypted} on ${jsRuntime.system}` :
-						jsRuntime.decrypted
-					}</div>
-					<div class="ellipsis">js engine (error): ${
-						jsEngine.system ?
-						`${jsEngine.decrypted} on ${jsEngine.system}` :
-						jsEngine.decrypted
-					}</div>
+				<div class="flex-grid">
+					<div class="col-eight">
+						<strong>Browser Detection</strong>
+						<div>reported browser: ${report}${
+							windowVersion.decrypted != 'unknown' &&
+							windowVersion.decrypted != report ?` (fake)` : ''
+						}</div>
+						<div class="ellipsis">window object: ${getTemplate(windowVersion)}</div>
+						<div class="ellipsis">system styles: ${getTemplate(styleSystem)}</div>
+						<div class="ellipsis">computed styles: ${getTemplate(styleVersion)}</div>
+						<div class="ellipsis">html element: ${getTemplate(htmlVersion)}</div>
+						<div class="ellipsis">js runtime (math): ${getTemplate(jsRuntime)}</div>
+						<div class="ellipsis">js engine (error): ${getTemplate(jsEngine)}</div>
+					</div>
+					<div class="col-four icon-container">
+						${[...iconSet].map(icon => {
+							return `<div class="icon-item ${icon}"></div>`
+						}).join('')}
+					</div>
 				</div>
 				`)
 				return console.log(`🔮Browser detection: ${JSON.stringify(data, null, '\t')}`)
