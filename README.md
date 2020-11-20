@@ -61,8 +61,8 @@ A failing trust score is unique and can be used to connect fingerprints.
 Bots leak unusual behavior and can be denied service.
 - 10 loose fingerprints within 48 hours
 
-## Browser Detection
-- a guess attempt is made to decrypt the browser vendor, version and platform
+## Version Detection
+- a guess attempt is made to decrypt the browser vendor, version, renderer, engine, and platform
 - this guess does not affect the fingerprint
 - system is collected from `WorkerNavigator.userAgent` and matched to fingerprint ids
 - decoded samples are auto gathered and manually reviewed
