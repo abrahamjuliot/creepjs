@@ -1420,8 +1420,6 @@ const imports = {
 					)
 				}
 
-				console.log(iconSet)
-
 				patch(el, html`
 				<div class="flex-grid">
 					<div class="col-eight">
