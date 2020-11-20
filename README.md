@@ -64,9 +64,9 @@ Bots leak unusual behavior and can be denied service.
 ## Version Detection
 - a guess attempt is made to decrypt the browser vendor, version, renderer, engine, and platform
 - this guess does not affect the fingerprint
-- system is collected from `WorkerNavigator.userAgent` and matched to fingerprint ids
-- decoded samples are auto gathered and manually reviewed
-- if the worker scope is blocked and the fingerprint ids exist in the database collection, the browser can still be detected  
+- system is collected from `WorkerNavigator.userAgent` and auto matched to fingerprint ids
+- decoded samples are auto computed and manually reviewed if new
+- if the worker scope is blocked and the fingerprint ids exist in the database, the version can still be detected
 
 ### Tests
 1. js Math implementation (SpiderMonkey, JavaScriptCore, V8)
