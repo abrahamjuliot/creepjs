@@ -32,9 +32,7 @@ const decryptUserAgent = ({ua, os, isBrave}) => {
     const edge = ua.match(/(edgios|edg|edge|edga)\/(\d+)./i)
     const edgios = edge && /edgios/i.test(edge[1])
     const chromium = ua.match(/(crios|chrome)\/(\d+)./i)
-    const crios = chromium && /crios/i.test(chromium[1])
     const firefox = ua.match(/(fxios|firefox)\/(\d+)./i)
-    const fxios = firefox && /fxios/i.test(firefox[1])
     const likeSafari = (
         /AppleWebKit/g.test(ua) &&
         /Safari/g.test(ua)
