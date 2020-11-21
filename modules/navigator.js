@@ -94,8 +94,8 @@ export const getNavigator = (imports, workerScope) => {
 					if (!credibleUserAgent) {
 						sendToTrash('userAgent', `${navigatorUserAgent} does not match appVersion`)
 					}
-					if (/\s{2,}/g.test(navigatorUserAgent)) {
-						sendToTrash('userAgent', `"...${navigatorUserAgent.match(/(.\s{2,})/ig)[0]}" contains extra spaces`)
+					if (/\s{2,}|^\s|\s$/g.test(navigatorUserAgent)) {
+						sendToTrash('userAgent', `extra spaces in "${navigatorUserAgent.replace(/\s{2,}|^\s|\s$/g, '[...]')}"`)
 					}
 					const gibbers = gibberish(navigatorUserAgent)
 					if (!!gibbers.length) {	
@@ -121,8 +121,8 @@ export const getNavigator = (imports, workerScope) => {
 					if ('appVersion' in navigator && !navigatorAppVersion) {
 						sendToTrash('appVersion', 'Living Standard property returned falsy value')
 					}
-					if (/\s{2,}/g.test(navigatorAppVersion)) {
-						sendToTrash('appVersion', `"...${navigatorAppVersion.match(/(.\s{2,})/ig)[0]}" contains extra spaces`)
+					if (/\s{2,}|^\s|\s$/g.test(navigatorAppVersion)) {
+						sendToTrash('appVersion', `extra spaces in "${navigatorAppVersion.replace(/\s{2,}|^\s|\s$/g, '[...]')}"`)
 					}
 					if (appVersion != navigatorAppVersion) {
 						lied = true
