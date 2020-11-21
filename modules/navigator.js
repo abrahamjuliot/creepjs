@@ -50,7 +50,7 @@ export const getNavigator = (imports, workerScope) => {
 						}
 						if (workerScope.userAgent != navigatorUserAgent) {
 							lied = true
-							const workerScopeLie = { fingerprint: '', lies: [{ ['Expected worker scope to not have extra space']: false }] }
+							const workerScopeLie = { fingerprint: '', lies: [{ ['Expected worker scope to not have extra spaces']: false }] }
 							documentLie(`Navigator.${name}`, navigatorUserAgent, workerScopeLie)
 						}
 						return value
