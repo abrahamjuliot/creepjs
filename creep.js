@@ -1419,8 +1419,12 @@ const imports = {
 						`${icons}${decrypted}`
 					)
 				}
-				const fakeUserAgent = windowVersion.decrypted != report
-			
+				
+				const fakeUserAgent = (
+					/\d+/.test(windowVersion.decrypted) &&
+					windowVersion.decrypted != report
+				)
+
 				patch(el, html`
 				<div class="flex-grid">
 					<div class="col-eight">
