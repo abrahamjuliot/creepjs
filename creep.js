@@ -234,17 +234,35 @@ const imports = {
 			!fp.canvasBitmapRenderer || fp.canvasBitmapRenderer.lied ? undefined : 
 			fp.canvasBitmapRenderer
 		),
-		canvasWebgl: !fp.canvasWebgl || fp.canvasWebgl.lied ? undefined : {
-			supported: fp.canvasWebgl.supported,
-			supported2: fp.canvasWebgl.supported2,
-			dataURI: isFirefox ? distrust : fp.canvasWebgl.dataURI,
-			dataURI2: isFirefox ? distrust : fp.canvasWebgl.dataURI2,
-			matchingDataURI: fp.canvasWebgl.matchingDataURI,
-			matchingUnmasked: fp.canvasWebgl.matchingUnmasked,
-			specs: fp.canvasWebgl.specs,
-			unmasked: fp.canvasWebgl.unmasked,
-			unmasked2: fp.canvasWebgl.unmasked2
-		},
+		canvasWebgl: (
+			!!fp.canvasWebgl && !!liesLen && isBrave ? {
+				specs: {
+					webgl2Specs: (() => {
+						const { webgl2Specs } = fp.canvasWebgl.specs || {}
+						const blocked = /vertex|fragment|varying|bindings|combined|interleaved/i
+						Object.keys(webgl2Specs || {}).forEach(key => blocked.test(key) && (delete webgl2Specs[key]))
+						return webgl2Specs
+					})(),
+					webglSpecs: (() => {
+						const { webglSpecs } = fp.canvasWebgl.specs || {}
+						const blocked = /vertex|fragment/i
+						Object.keys(webglSpecs || {}).forEach(key => blocked.test(key) && (delete webglSpecs[key]))
+						return webglSpecs
+					})()
+				}
+			}
+			: !fp.canvasWebgl || fp.canvasWebgl.lied ? undefined : {
+				supported: fp.canvasWebgl.supported,
+				supported2: fp.canvasWebgl.supported2,
+				dataURI: isFirefox ? distrust : fp.canvasWebgl.dataURI,
+				dataURI2: isFirefox ? distrust : fp.canvasWebgl.dataURI2,
+				matchingDataURI: fp.canvasWebgl.matchingDataURI,
+				matchingUnmasked: fp.canvasWebgl.matchingUnmasked,
+				specs: fp.canvasWebgl.specs,
+				unmasked: fp.canvasWebgl.unmasked,
+				unmasked2: fp.canvasWebgl.unmasked2
+			}
+		),
 		maths: !fp.maths || fp.maths.lied ? undefined : fp.maths,
 		consoleErrors: fp.consoleErrors,
 		// avoid random timezone fingerprint values
