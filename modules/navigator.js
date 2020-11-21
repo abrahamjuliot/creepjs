@@ -315,7 +315,7 @@ export const getNavigator = (imports, workerScope) => {
 						})	
 					}
 					return response
-				}, 'mimeTypes failed'),
+				}, 'plugins failed'),
 				properties: attempt(() => {
 					const keys = Object.keys(Object.getPrototypeOf(contentWindowNavigator))
 					return keys
