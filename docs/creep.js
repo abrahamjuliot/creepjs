@@ -291,6 +291,19 @@
     	if (!str) {
     		return gibbers
     	}
+
+    	const tests = [
+    		/([A-Z]{2,}[a-z])/g, // ABc
+    		/([a-z][A-Z]{2,})/g // aBC
+    	];
+    	tests.forEach(regExp => {
+    		const match = str.match(regExp);
+    		if (match) {
+    			return gibbers.push(match.join(', '))
+    		}
+    		return
+    	});
+
     	const clean = str.toLowerCase().replace(/\d|\W|_/g, ' ').replace(/\s+/g,' ').trim().split(' ').join('_');
     	const len = clean.length;
     	const arr = [...clean];
@@ -1419,8 +1432,11 @@
     				hyperNestedIframeWindow.document.createElement('canvas').toDataURL() != document.createElement('canvas').toDataURL()) {
     				lied = true;
     			}
-    			// crreate canvas context
-    			const doc = contentWindow ? contentWindow.document : document;
+    			// create canvas context
+    			const doc = (
+    				contentWindow ? contentWindow.document : 
+    				document
+    			);
     			const canvas = doc.createElement('canvas');
     			const canvas2 = doc.createElement('canvas');
     			const context = (
@@ -2510,12 +2526,18 @@
     				const workerScopeMatchLie = { fingerprint: '', lies: [{ ['does not match worker scope']: false }] };
     				if (workerScopeValue) {
     					if (name == 'userAgent') {
-    						const system = getOS(value);
+    						const navigatorUserAgent = value;
+    						const system = getOS(navigatorUserAgent);
     						if (workerScope.system != system) {
     							lied = true;
     							documentLie(`Navigator.${name}`, system, workerScopeMatchLie);
-    							return value
     						}
+    						if (workerScope.userAgent != navigatorUserAgent) {
+    							lied = true;
+    							const workerScopeLie = { fingerprint: '', lies: [{ ['Expected worker scope to not have extra spaces']: false }] };
+    							documentLie(`Navigator.${name}`, navigatorUserAgent, workerScopeLie);
+    						}
+    						return value
     					}
     					else if (name != 'userAgent' && workerScopeValue != value) {
     						lied = true;
@@ -2553,16 +2575,17 @@
     				userAgent: attempt(() => {
     					const { userAgent } = contentWindowNavigator;
     					const navigatorUserAgent = navigator.userAgent;
-    					detectLies('userAgent', navigatorUserAgent);
+    					detectLies('userAgent', navigatorUserAgent.trim().replace(/\s{2,}/, ' '));
     					if (!credibleUserAgent) {
     						sendToTrash('userAgent', `${navigatorUserAgent} does not match appVersion`);
     					}
-
+    					if (/\s{2,}/g.test(navigatorUserAgent)) {
+    						sendToTrash('userAgent', `"...${navigatorUserAgent.match(/(.\s{2,})/ig)[0]}" contains extra spaces`);
+    					}
     					const gibbers = gibberish(navigatorUserAgent);
     					if (!!gibbers.length) {	
     						sendToTrash(`userAgent contains gibberish`, `[${gibbers.join(', ')}] ${navigatorUserAgent}`);	
     					}
-
     					if (userAgent != navigatorUserAgent) {
     						lied = true;
     						const nestedIframeLie = {
@@ -2576,12 +2599,15 @@
     				appVersion: attempt(() => {
     					const { appVersion } = contentWindowNavigator;
     					const navigatorAppVersion = navigator.appVersion;
-    					detectLies('appVersion', appVersion);
+    					detectLies('appVersion', appVersion.trim().replace(/\s{2,}/, ' '));
     					if (!credibleUserAgent) {
     						sendToTrash('appVersion', `${navigatorAppVersion} does not match userAgent`);
     					}
     					if ('appVersion' in navigator && !navigatorAppVersion) {
     						sendToTrash('appVersion', 'Living Standard property returned falsy value');
+    					}
+    					if (/\s{2,}/g.test(navigatorAppVersion)) {
+    						sendToTrash('appVersion', `"...${navigatorAppVersion.match(/(.\s{2,})/ig)[0]}" contains extra spaces`);
     					}
     					if (appVersion != navigatorAppVersion) {
     						lied = true;
@@ -2625,21 +2651,42 @@
     					const { doNotTrack } = contentWindowNavigator;
     					const navigatorDoNotTrack = navigator.doNotTrack;
     					const trusted = {
-    						'1': true,
-    						'true': true, 
-    						'yes': true,
-    						'0': true, 
-    						'false': true, 
-    						'no': true, 
-    						'unspecified': true, 
-    						'null': true,
-    						'undefined': true
+    						'1': !0,
+    						'true': !0, 
+    						'yes': !0,
+    						'0': !0, 
+    						'false': !0, 
+    						'no': !0, 
+    						'unspecified': !0, 
+    						'null': !0,
+    						'undefined': !0
     					};
     					if (!trusted[navigatorDoNotTrack]) {
     						sendToTrash('doNotTrack - unusual result', navigatorDoNotTrack);
     					}
     					return doNotTrack
     				}, 'doNotTrack failed'),
+    				globalPrivacyControl: attempt(() => {
+    					if (!('globalPrivacyControl' in navigator)) {
+    						return undefined
+    					}
+    					const { globalPrivacyControl } = navigator;
+    					const trusted = {
+    						'1': !0,
+    						'true': !0, 
+    						'yes': !0,
+    						'0': !0, 
+    						'false': !0, 
+    						'no': !0, 
+    						'unspecified': !0, 
+    						'null': !0,
+    						'undefined': !0
+    					};
+    					if (!trusted[globalPrivacyControl]) {
+    						sendToTrash('globalPrivacyControl - unusual result', globalPrivacyControl);
+    					}
+    					return globalPrivacyControl
+    				}, 'globalPrivacyControl failed'),
     				hardwareConcurrency: attempt(() => {
     					if (!('hardwareConcurrency' in navigator)) {
     						return undefined
@@ -3871,7 +3918,7 @@
     	const creep = {
     		navigator: ( 
     			!fp.navigator || fp.navigator.lied ? undefined : {
-    				deviceMemory: fp.navigator.deviceMemory,
+    				deviceMemory: isBrave ? distrust : fp.navigator.deviceMemory,
     				doNotTrack: fp.navigator.doNotTrack,
     				hardwareConcurrency: isBrave ? distrust : fp.navigator.hardwareConcurrency,
     				maxTouchPoints: fp.navigator.maxTouchPoints,
@@ -4823,6 +4870,7 @@
 				<div class="block-text">${note.blocked}</div>
 				<div>appVersion:</div>
 				<div class="block-text">${note.blocked}</div>
+				<div>globalPrivacyControl:${note.blocked}</div>
 			</div>` :
 		(() => {
 			const {
@@ -4831,6 +4879,7 @@
 					appVersion,
 					deviceMemory,
 					doNotTrack,
+					globalPrivacyControl,
 					hardwareConcurrency,
 					highEntropyValues,
 					language,
@@ -4847,9 +4896,9 @@
 			} = fp;
 			const id = 'creep-navigator';
 			const blocked = {
-				[null]: true,
-				[undefined]: true,
-				['']: true
+				[null]: !0,
+				[undefined]: !0,
+				['']: !0
 			};
 			return `
 			<div class="col-six">
@@ -4894,6 +4943,9 @@
 				<div class="block-text">
 					<div>${!blocked[appVersion] ? appVersion : note.blocked}</div>
 				</div>
+				<div>globalPrivacyControl: ${
+					''+globalPrivacyControl == 'undefined' ? note.unsupported : ''+globalPrivacyControl
+				}</div>
 			</div>
 			`
 		})()}
@@ -5107,15 +5159,19 @@
     						`${icons}${decrypted}`
     					)
     				};
+    				
+    				const fakeUserAgent = (
+    					/\d+/.test(windowVersion.decrypted) &&
+    					windowVersion.decrypted != report
+    				);
 
     				patch(el, html`
 				<div class="flex-grid">
 					<div class="col-eight">
 						<strong>Version</strong>
-						<div>client user agent: ${report}${
-							windowVersion.decrypted != 'unknown' &&
-							windowVersion.decrypted != report ?` (fake)` : ''
-						}</div>
+						<div>client user agent:
+							<span class="${fakeUserAgent ? 'lies' : ''}">${report}${fakeUserAgent ?` (fake)` : ''}</span>
+						</div>
 						<div class="ellipsis">window object: ${getTemplate(windowVersion)}</div>
 						<div class="ellipsis">system styles: ${getTemplate(styleSystem)}</div>
 						<div class="ellipsis">computed styles: ${getTemplate(styleVersion)}</div>
