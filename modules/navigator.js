@@ -284,7 +284,7 @@ export const getNavigator = (imports, workerScope) => {
 				}, 'mimeTypes failed'),
 				plugins: attempt(() => {
 					const navigatorPlugins = navigator.plugins
-					const ownProperties = Object.keys(Object.getOwnPropertyDescriptors(navigatorPlugins))
+					const ownProperties = Object.getOwnPropertyNames(navigatorPlugins).filter(name => isNaN(+name))
 					const ownPropertiesSet = new Set(ownProperties)
 					const plugins = contentWindowNavigator.plugins
 					const response = plugins ? [...contentWindowNavigator.plugins]
