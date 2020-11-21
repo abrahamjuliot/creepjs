@@ -283,6 +283,9 @@ export const getNavigator = (imports, workerScope) => {
 					return mimeTypes ? [...mimeTypes].map(m => m.type) : []
 				}, 'mimeTypes failed'),
 				plugins: attempt(() => {
+					const navigatorPlugins = navigator.plugins
+					const ownProperties = Object.keys(Object.getOwnPropertyDescriptors(navigatorPlugins))
+					const ownPropertiesSet = new Set(ownProperties)
 					const plugins = contentWindowNavigator.plugins
 					const response = plugins ? [...contentWindowNavigator.plugins]
 						.map(p => ({
@@ -293,7 +296,17 @@ export const getNavigator = (imports, workerScope) => {
 						})) : []
 					if (!!response.length) {	
 						response.forEach(plugin => {	
-							const { name } = plugin	
+							const { name } = plugin
+
+							if (!ownPropertiesSet.has(name)) {
+								lied = true
+								const pluginsLie = {
+									fingerprint: '',
+									lies: [{ [`Expected name "${name}" in plugins own properties and got [${ownProperties.join(', ')}]`]: true }]
+								}
+								documentLie(`Navigator.plugins`, hashMini(ownProperties), pluginsLie)
+							}
+
 							const gibbers = gibberish(name)	
 							if (!!gibbers.length) {	
 								sendToTrash(`plugin contains gibberish`, `[${gibbers.join(', ')}] ${name}`)	
