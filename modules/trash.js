@@ -11,8 +11,8 @@ const gibberish = str => {
 	}
 
 	const tests = [
-		/([A-Z]{2,}[a-z])/g, // ABc
-		/([a-z][A-Z]{2,})/g // aBC
+		/([A-Z]{3,}[a-z])/g, // ABc
+		/([a-z][A-Z]{3,})/g // aBC
 	]
 	tests.forEach(regExp => {
 		const match = str.match(regExp)
