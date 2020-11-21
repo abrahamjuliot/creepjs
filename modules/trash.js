@@ -9,6 +9,19 @@ const gibberish = str => {
 	if (!str) {
 		return gibbers
 	}
+
+	const tests = [
+		/([A-Z]{2,}[a-z])/g, // ABc
+		/([a-z][A-Z]{2,})/g // aBC
+	]
+	tests.forEach(regExp => {
+		const match = str.match(regExp)
+		if (match) {
+			return gibbers.push(match.join(', '))
+		}
+		return
+	})
+
 	const clean = str.toLowerCase().replace(/\d|\W|_/g, ' ').replace(/\s+/g,' ').trim().split(' ').join('_')
 	const len = clean.length
 	const arr = [...clean]

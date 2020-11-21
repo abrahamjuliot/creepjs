@@ -34,8 +34,11 @@ export const getCanvasWebgl = imports => {
 				hyperNestedIframeWindow.document.createElement('canvas').toDataURL() != document.createElement('canvas').toDataURL()) {
 				lied = true
 			}
-			// crreate canvas context
-			const doc = contentWindow ? contentWindow.document : document
+			// create canvas context
+			const doc = (
+				contentWindow ? contentWindow.document : 
+				document
+			)
 			const canvas = doc.createElement('canvas')
 			const canvas2 = doc.createElement('canvas')
 			const context = (
