@@ -166,21 +166,42 @@ export const getNavigator = (imports, workerScope) => {
 					const { doNotTrack } = contentWindowNavigator
 					const navigatorDoNotTrack = navigator.doNotTrack
 					const trusted = {
-						'1': true,
-						'true': true, 
-						'yes': true,
-						'0': true, 
-						'false': true, 
-						'no': true, 
-						'unspecified': true, 
-						'null': true,
-						'undefined': true
+						'1': !0,
+						'true': !0, 
+						'yes': !0,
+						'0': !0, 
+						'false': !0, 
+						'no': !0, 
+						'unspecified': !0, 
+						'null': !0,
+						'undefined': !0
 					}
 					if (!trusted[navigatorDoNotTrack]) {
 						sendToTrash('doNotTrack - unusual result', navigatorDoNotTrack)
 					}
 					return doNotTrack
 				}, 'doNotTrack failed'),
+				globalPrivacyControl: attempt(() => {
+					if (!('globalPrivacyControl' in navigator)) {
+						return undefined
+					}
+					const { globalPrivacyControl } = navigator
+					const trusted = {
+						'1': !0,
+						'true': !0, 
+						'yes': !0,
+						'0': !0, 
+						'false': !0, 
+						'no': !0, 
+						'unspecified': !0, 
+						'null': !0,
+						'undefined': !0
+					}
+					if (!trusted[globalPrivacyControl]) {
+						sendToTrash('globalPrivacyControl - unusual result', globalPrivacyControl)
+					}
+					return globalPrivacyControl
+				}, 'globalPrivacyControl failed'),
 				hardwareConcurrency: attempt(() => {
 					if (!('hardwareConcurrency' in navigator)) {
 						return undefined

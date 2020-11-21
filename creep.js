@@ -1135,6 +1135,7 @@ const imports = {
 				<div class="block-text">${note.blocked}</div>
 				<div>appVersion:</div>
 				<div class="block-text">${note.blocked}</div>
+				<div>globalPrivacyControl:${note.blocked}</div>
 			</div>` :
 		(() => {
 			const {
@@ -1143,6 +1144,7 @@ const imports = {
 					appVersion,
 					deviceMemory,
 					doNotTrack,
+					globalPrivacyControl,
 					hardwareConcurrency,
 					highEntropyValues,
 					language,
@@ -1159,9 +1161,9 @@ const imports = {
 			} = fp
 			const id = 'creep-navigator'
 			const blocked = {
-				[null]: true,
-				[undefined]: true,
-				['']: true
+				[null]: !0,
+				[undefined]: !0,
+				['']: !0
 			}
 			return `
 			<div class="col-six">
@@ -1206,6 +1208,9 @@ const imports = {
 				<div class="block-text">
 					<div>${!blocked[appVersion] ? appVersion : note.blocked}</div>
 				</div>
+				<div>globalPrivacyControl: ${
+					''+globalPrivacyControl == 'undefined' ? note.unsupported : ''+globalPrivacyControl
+				}</div>
 			</div>
 			`
 		})()}
