@@ -50,7 +50,8 @@ export const getNavigator = (imports, workerScope) => {
 						}
 						if (workerScope.userAgent != navigatorUserAgent) {
 							lied = true
-							documentLie(`Navigator.${name}`, navigatorUserAgent, workerScopeMatchLie)
+							const workerScopeLie = { fingerprint: '', lies: [{ ['Expected worker scope to not have extra space']: false }] }
+							documentLie(`Navigator.${name}`, navigatorUserAgent, workerScopeLie)
 						}
 						return value
 					}
@@ -90,7 +91,7 @@ export const getNavigator = (imports, workerScope) => {
 				userAgent: attempt(() => {
 					const { userAgent } = contentWindowNavigator
 					const navigatorUserAgent = navigator.userAgent
-					detectLies('userAgent', navigatorUserAgent)
+					detectLies('userAgent', navigatorUserAgent.trim().replace(/\s{2,}/, ' '))
 					if (!credibleUserAgent) {
 						sendToTrash('userAgent', `${navigatorUserAgent} does not match appVersion`)
 					}
@@ -114,7 +115,7 @@ export const getNavigator = (imports, workerScope) => {
 				appVersion: attempt(() => {
 					const { appVersion } = contentWindowNavigator
 					const navigatorAppVersion = navigator.appVersion
-					detectLies('appVersion', appVersion)
+					detectLies('appVersion', appVersion.trim().replace(/\s{2,}/, ' '))
 					if (!credibleUserAgent) {
 						sendToTrash('appVersion', `${navigatorAppVersion} does not match userAgent`)
 					}
