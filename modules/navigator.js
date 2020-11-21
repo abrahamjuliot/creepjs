@@ -42,12 +42,17 @@ export const getNavigator = (imports, workerScope) => {
 				const workerScopeMatchLie = { fingerprint: '', lies: [{ ['does not match worker scope']: false }] }
 				if (workerScopeValue) {
 					if (name == 'userAgent') {
-						const system = getOS(value)
+						const navigatorUserAgent = value
+						const system = getOS(navigatorUserAgent)
 						if (workerScope.system != system) {
 							lied = true
 							documentLie(`Navigator.${name}`, system, workerScopeMatchLie)
-							return value
 						}
+						if (workerScope.userAgent != navigatorUserAgent) {
+							lied = true
+							documentLie(`Navigator.${name}`, navigatorUserAgent, workerScopeMatchLie)
+						}
+						return value
 					}
 					else if (name != 'userAgent' && workerScopeValue != value) {
 						lied = true
@@ -89,12 +94,13 @@ export const getNavigator = (imports, workerScope) => {
 					if (!credibleUserAgent) {
 						sendToTrash('userAgent', `${navigatorUserAgent} does not match appVersion`)
 					}
-
+					if (/\s{2,}/g.test(navigatorUserAgent)) {
+						sendToTrash('userAgent', `"...${navigatorUserAgent.match(/(.\s{2,})/ig)[0]}" contains extra spaces`)
+					}
 					const gibbers = gibberish(navigatorUserAgent)
 					if (!!gibbers.length) {	
 						sendToTrash(`userAgent contains gibberish`, `[${gibbers.join(', ')}] ${navigatorUserAgent}`)	
 					}
-
 					if (userAgent != navigatorUserAgent) {
 						lied = true
 						const nestedIframeLie = {
@@ -114,6 +120,9 @@ export const getNavigator = (imports, workerScope) => {
 					}
 					if ('appVersion' in navigator && !navigatorAppVersion) {
 						sendToTrash('appVersion', 'Living Standard property returned falsy value')
+					}
+					if (/\s{2,}/g.test(navigatorAppVersion)) {
+						sendToTrash('appVersion', `"...${navigatorAppVersion.match(/(.\s{2,})/ig)[0]}" contains extra spaces`)
 					}
 					if (appVersion != navigatorAppVersion) {
 						lied = true
