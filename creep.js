@@ -262,7 +262,7 @@ const imports = {
 		},
 		clientRects: !fp.clientRects || fp.clientRects.lied ? undefined : fp.clientRects,
 		offlineAudioContext: (
-			!!liesLen && isBrave ? distrust :
+			!!liesLen && isBrave ? fp.offlineAudioContext.values :
 			!fp.offlineAudioContext || fp.offlineAudioContext.lied ? undefined :
 			fp.offlineAudioContext
 		),

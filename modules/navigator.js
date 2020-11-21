@@ -50,8 +50,7 @@ export const getNavigator = (imports, workerScope) => {
 						}
 						if (workerScope.userAgent != navigatorUserAgent) {
 							lied = true
-							const workerScopeLie = { fingerprint: '', lies: [{ ['Expected worker scope to not have extra spaces']: false }] }
-							documentLie(`Navigator.${name}`, navigatorUserAgent, workerScopeLie)
+							documentLie(`Navigator.${name}`, navigatorUserAgent, workerScopeMatchLie)
 						}
 						return value
 					}
@@ -91,7 +90,7 @@ export const getNavigator = (imports, workerScope) => {
 				userAgent: attempt(() => {
 					const { userAgent } = contentWindowNavigator
 					const navigatorUserAgent = navigator.userAgent
-					detectLies('userAgent', navigatorUserAgent.trim().replace(/\s{2,}/, ' '))
+					detectLies('userAgent', navigatorUserAgent)
 					if (!credibleUserAgent) {
 						sendToTrash('userAgent', `${navigatorUserAgent} does not match appVersion`)
 					}
@@ -110,12 +109,12 @@ export const getNavigator = (imports, workerScope) => {
 						}
 						documentLie(`Navigator.userAgent`, hashMini({userAgent, navigatorUserAgent}), nestedIframeLie)
 					}
-					return userAgent
+					return userAgent.trim().replace(/\s{2,}/, ' ')
 				}, 'userAgent failed'),
 				appVersion: attempt(() => {
 					const { appVersion } = contentWindowNavigator
 					const navigatorAppVersion = navigator.appVersion
-					detectLies('appVersion', appVersion.trim().replace(/\s{2,}/, ' '))
+					detectLies('appVersion', appVersion)
 					if (!credibleUserAgent) {
 						sendToTrash('appVersion', `${navigatorAppVersion} does not match userAgent`)
 					}
@@ -133,7 +132,7 @@ export const getNavigator = (imports, workerScope) => {
 						}
 						documentLie(`Navigator.appVersion`, hashMini({appVersion, navigatorAppVersion}), nestedIframeLie)
 					}
-					return appVersion
+					return appVersion.trim().replace(/\s{2,}/, ' ')
 				}, 'appVersion failed'),
 				deviceMemory: attempt(() => {
 					if (!('deviceMemory' in navigator)) {
