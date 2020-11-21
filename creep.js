@@ -183,7 +183,7 @@ const imports = {
 	const creep = {
 		navigator: ( 
 			!fp.navigator || fp.navigator.lied ? undefined : {
-				deviceMemory: fp.navigator.deviceMemory,
+				deviceMemory: isBrave ? distrust : fp.navigator.deviceMemory,
 				doNotTrack: fp.navigator.doNotTrack,
 				hardwareConcurrency: isBrave ? distrust : fp.navigator.hardwareConcurrency,
 				maxTouchPoints: fp.navigator.maxTouchPoints,
