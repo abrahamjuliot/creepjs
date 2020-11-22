@@ -253,11 +253,16 @@ const imports = {
 					})()
 				}
 			}
+			: !!fp.canvasWebgl && !!liesLen && isFirefox ? {
+				supported: fp.canvasWebgl.supported,
+				supported2: fp.canvasWebgl.supported2,
+				specs: fp.canvasWebgl.specs
+			}
 			: !fp.canvasWebgl || fp.canvasWebgl.lied ? undefined : {
 				supported: fp.canvasWebgl.supported,
 				supported2: fp.canvasWebgl.supported2,
-				dataURI: isFirefox ? distrust : fp.canvasWebgl.dataURI,
-				dataURI2: isFirefox ? distrust : fp.canvasWebgl.dataURI2,
+				dataURI: fp.canvasWebgl.dataURI,
+				dataURI2: fp.canvasWebgl.dataURI2,
 				matchingDataURI: fp.canvasWebgl.matchingDataURI,
 				matchingUnmasked: fp.canvasWebgl.matchingUnmasked,
 				specs: fp.canvasWebgl.specs,
