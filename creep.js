@@ -239,15 +239,17 @@ const imports = {
 				specs: {
 					webgl2Specs: (() => {
 						const { webgl2Specs } = fp.canvasWebgl.specs || {}
+						const clone = {...webgl2Specs}
 						const blocked = /vertex|fragment|varying|bindings|combined|interleaved/i
-						Object.keys(webgl2Specs || {}).forEach(key => blocked.test(key) && (delete webgl2Specs[key]))
-						return webgl2Specs
+						Object.keys(clone || {}).forEach(key => blocked.test(key) && (delete clone[key]))
+						return clone
 					})(),
 					webglSpecs: (() => {
 						const { webglSpecs } = fp.canvasWebgl.specs || {}
+						const clone = {...webglSpecs}
 						const blocked = /vertex|fragment/i
-						Object.keys(webglSpecs || {}).forEach(key => blocked.test(key) && (delete webglSpecs[key]))
-						return webglSpecs
+						Object.keys(clone || {}).forEach(key => blocked.test(key) && (delete clone[key]))
+						return clone
 					})()
 				}
 			}
