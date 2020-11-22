@@ -294,9 +294,76 @@ export const getNavigator = (imports, workerScope) => {
 							filename: p.filename,
 							version: p.version
 						})) : []
+
+					const mimeTypesDescriptions = new Set([...navigator.mimeTypes].map(mime => mime.description))
+					mimeTypesDescriptions.delete('')
+					const mimeTypesDescriptionsString = `${[...mimeTypesDescriptions].join(', ')}`
+					const pluginsList = [...navigator.plugins].filter(plugin => plugin.description != '')
+					const nonMimetypePlugins = pluginsList
+						.filter(plugin => !caniuse(() => plugin[0].description))
+						.map(plugin => plugin.description)
+					const validPluginList = pluginsList.filter(plugin => !!caniuse(() => plugin[0].description))
+					const nonMatchingMimetypePlugins = validPluginList
+						.filter(plugin => plugin[0].description != plugin.description)
+						.map(plugin => [plugin.description, plugin[0].description])
+					const invalidPrototypeMimeTypePlugins = validPluginList
+						.filter(plugin => !mimeTypesDescriptions.has(plugin[0].description))
+						.map(plugin => [plugin[0].description, mimeTypesDescriptionsString])
+					const invalidMimetypePlugins = validPluginList
+						.filter(plugin => !mimeTypesDescriptions.has(plugin.description))
+						.map(plugin => [plugin.description, mimeTypesDescriptionsString])
+
+					if (!!nonMimetypePlugins.length) {
+						lied = true
+						const pluginsLie = {
+							fingerprint: '',
+							lies: [{ [`Expected a MimeType object in plugins [${nonMimetypePlugins.join(', ')}]`]: true }]
+						}
+						documentLie(`Navigator.plugins`, hashMini(nonMimetypePlugins), pluginsLie)
+					}
+
+					if (!!nonMatchingMimetypePlugins.length) {
+						lied = true
+						const pluginsLie = {
+							fingerprint: '',
+							lies: [{ [`Expected plugin MimeType description to match plugin description: ${
+								nonMatchingMimetypePlugins
+									.map(description => `${description[0]} should match ${description[1]}`)
+									.join(', ')
+							}`]: true }]
+						}
+						documentLie(`Navigator.plugins`, hashMini(nonMatchingMimetypePlugins), pluginsLie)
+					}
+
+					if (!!invalidPrototypeMimeTypePlugins.length) {
+						lied = true
+						const pluginsLie = {
+							fingerprint: '',
+							lies: [{ [`Expected plugin MimeType description to match a MimeType description: ${
+								invalidPrototypeMimeTypePlugins
+									.map(description => `${description[0]} is not in [${description[1]}]`)
+									.join(', ')
+							}`]: true }]
+						}
+						documentLie(`Navigator.plugins`, hashMini(invalidPrototypeMimeTypePlugins), pluginsLie)
+					}
+
+					if (!!invalidMimetypePlugins.length) {
+						lied = true
+						const pluginsLie = {
+							fingerprint: '',
+							lies: [{ [`Expected plugin description to match a MimeType description: ${
+								invalidMimetypePlugins
+									.map(description => `${description[0]} is not in [${description[1]}]`)
+									.join(', ')
+							}`]: true }]
+						}
+						documentLie(`Navigator.plugins`, hashMini(invalidMimetypePlugins), pluginsLie)
+					}
+
 					if (!!response.length) {	
 						response.forEach(plugin => {	
-							const { name } = plugin
+							const { name, description } = plugin
 
 							if (!ownPropertiesSet.has(name)) {
 								lied = true
@@ -307,9 +374,13 @@ export const getNavigator = (imports, workerScope) => {
 								documentLie(`Navigator.plugins`, hashMini(ownProperties), pluginsLie)
 							}
 
-							const gibbers = gibberish(name)	
-							if (!!gibbers.length) {	
-								sendToTrash(`plugin contains gibberish`, `[${gibbers.join(', ')}] ${name}`)	
+							const nameGibbers = gibberish(name)
+							const descriptionGibbers = gibberish(description)	
+							if (!!nameGibbers.length) {	
+								sendToTrash(`plugin name contains gibberish`, `[${nameGibbers.join(', ')}] ${name}`)	
+							}
+							if (!!descriptionGibbers.length) {	
+								sendToTrash(`plugin description contains gibberish`, `[${descriptionGibbers.join(', ')}] ${description}`)
 							}	
 							return	
 						})	
