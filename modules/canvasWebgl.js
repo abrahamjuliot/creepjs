@@ -2,6 +2,7 @@ export const getCanvasWebgl = imports => {
 
 	const {
 		require: {
+			hashMini,
 			hashify,
 			captureError,
 			attempt,
@@ -10,6 +11,7 @@ export const getCanvasWebgl = imports => {
 			sendToTrash,
 			proxyBehavior,
 			lieProps,
+			documentLie,
 			contentWindow,
 			hyperNestedIframeWindow
 		}
@@ -250,6 +252,13 @@ export const getCanvasWebgl = imports => {
 			]).catch(error => {
 				console.error(error.message)
 			})
+
+			if (dataURI && dataURI2 && dataURI != dataURI2) {
+				lied = true
+				const dataURILie = { fingerprint: '', lies: [{ [`Expected webgl ${hashMini(dataURI)} to match webgl2 ${hashMini(dataURI2)}`]: true }] }
+				documentLie(`HTMLCanvasElement.toDataURL`, hashMini({dataURI, dataURI2}), dataURILie)
+			}
+
 			const data = {
 				supported,
 				supported2,
