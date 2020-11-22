@@ -253,7 +253,7 @@ export const getCanvasWebgl = imports => {
 				console.error(error.message)
 			})
 
-			if (dataURI && dataURI2 && dataURI != dataURI2) {
+			if (dataURI.dataURI && dataURI2.dataURI && (dataURI.$hash != dataURI2.$hash)) {
 				lied = true
 				const dataURILie = { fingerprint: '', lies: [{ [`Expected webgl ${hashMini(dataURI)} to match webgl2 ${hashMini(dataURI2)}`]: true }] }
 				documentLie(`HTMLCanvasElement.toDataURL`, hashMini({dataURI, dataURI2}), dataURILie)
