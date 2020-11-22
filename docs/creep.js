@@ -292,9 +292,12 @@
     		return gibbers
     	}
 
+    	// test letter case sequence
     	const tests = [
-    		/([A-Z]{3,}[a-z])/g, // ABc
-    		/([a-z][A-Z]{3,})/g // aBC
+    		/([A-Z]{3,}[a-z])/g, // ABCd
+    		/([a-z][A-Z]{3,})/g, // aBCD
+    		/([a-z][A-Z]{2,}[a-z])/g, // aBC...z
+    		/([a-z][\d]{2,}[a-z])/ig // aA##...bB
     	];
     	tests.forEach(regExp => {
     		const match = str.match(regExp);
@@ -304,6 +307,7 @@
     		return
     	});
 
+    	// test letter sequence
     	const clean = str.toLowerCase().replace(/\d|\W|_/g, ' ').replace(/\s+/g,' ').trim().split(' ').join('_');
     	const len = clean.length;
     	const arr = [...clean];
@@ -1400,6 +1404,7 @@
 
     	const {
     		require: {
+    			hashMini,
     			hashify,
     			captureError,
     			attempt,
@@ -1408,6 +1413,7 @@
     			sendToTrash,
     			proxyBehavior,
     			lieProps,
+    			documentLie,
     			contentWindow,
     			hyperNestedIframeWindow
     		}
@@ -1648,6 +1654,13 @@
     			]).catch(error => {
     				console.error(error.message);
     			});
+
+    			if (dataURI.dataURI && dataURI2.dataURI && (dataURI.$hash != dataURI2.$hash)) {
+    				lied = true;
+    				const dataURILie = { fingerprint: '', lies: [{ [`Expected webgl ${hashMini(dataURI)} to match webgl2 ${hashMini(dataURI2)}`]: true }] };
+    				documentLie(`HTMLCanvasElement.toDataURL`, hashMini({dataURI, dataURI2}), dataURILie);
+    			}
+
     			const data = {
     				supported,
     				supported2,
@@ -2578,8 +2591,8 @@
     					if (!credibleUserAgent) {
     						sendToTrash('userAgent', `${navigatorUserAgent} does not match appVersion`);
     					}
-    					if (/\s{2,}/g.test(navigatorUserAgent)) {
-    						sendToTrash('userAgent', `"...${navigatorUserAgent.match(/(.\s{2,})/ig)[0]}" contains extra spaces`);
+    					if (/\s{2,}|^\s|\s$/g.test(navigatorUserAgent)) {
+    						sendToTrash('userAgent', `extra spaces in "${navigatorUserAgent.replace(/\s{2,}|^\s|\s$/g, '[...]')}"`);
     					}
     					const gibbers = gibberish(navigatorUserAgent);
     					if (!!gibbers.length) {	
@@ -2605,8 +2618,8 @@
     					if ('appVersion' in navigator && !navigatorAppVersion) {
     						sendToTrash('appVersion', 'Living Standard property returned falsy value');
     					}
-    					if (/\s{2,}/g.test(navigatorAppVersion)) {
-    						sendToTrash('appVersion', `"...${navigatorAppVersion.match(/(.\s{2,})/ig)[0]}" contains extra spaces`);
+    					if (/\s{2,}|^\s|\s$/g.test(navigatorAppVersion)) {
+    						sendToTrash('appVersion', `extra spaces in "${navigatorAppVersion.replace(/\s{2,}|^\s|\s$/g, '[...]')}"`);
     					}
     					if (appVersion != navigatorAppVersion) {
     						lied = true;
@@ -2767,6 +2780,9 @@
     					return mimeTypes ? [...mimeTypes].map(m => m.type) : []
     				}, 'mimeTypes failed'),
     				plugins: attempt(() => {
+    					const navigatorPlugins = navigator.plugins;
+    					const ownProperties = Object.getOwnPropertyNames(navigatorPlugins).filter(name => isNaN(+name));
+    					const ownPropertiesSet = new Set(ownProperties);
     					const plugins = contentWindowNavigator.plugins;
     					const response = plugins ? [...contentWindowNavigator.plugins]
     						.map(p => ({
@@ -2775,18 +2791,110 @@
     							filename: p.filename,
     							version: p.version
     						})) : [];
+
+    					const mimeTypesDescriptions = new Set([...navigator.mimeTypes].map(mime => mime.description));
+    					mimeTypesDescriptions.delete('');
+    					const mimeTypesDescriptionsString = `${[...mimeTypesDescriptions].join(', ')}`;
+    					const pluginsList = [...navigator.plugins].filter(plugin => plugin.description != '');
+    					const validPluginList = pluginsList.filter(plugin => !!caniuse(() => plugin[0].description));
+    					
+    					const mimeTypePluginNames = ''+[...new Set([...navigator.mimeTypes].map(mimeType => mimeType.enabledPlugin.name))].sort();
+    					const rawPluginNames = ''+[...new Set([...navigator.plugins].map(plugin => plugin.name))].sort();
+    					if (mimeTypePluginNames != rawPluginNames) {
+    						lied = true;
+    						const pluginsLie = {
+    							fingerprint: '',
+    							lies: [{ [`Expected MimeType Plugins to match Plugins: "${mimeTypePluginNames}" should match "${rawPluginNames}"`]: true }]
+    						};
+    						documentLie(`Navigator.plugins`, hashMini({mimeTypePluginNames, rawPluginNames}), pluginsLie);
+    					}
+
+    					const nonMimetypePlugins = pluginsList
+    						.filter(plugin => !caniuse(() => plugin[0].description))
+    						.map(plugin => plugin.description);
+    					if (!!nonMimetypePlugins.length) {
+    						lied = true;
+    						const pluginsLie = {
+    							fingerprint: '',
+    							lies: [{ [`Expected a MimeType object in plugins [${nonMimetypePlugins.join(', ')}]`]: true }]
+    						};
+    						documentLie(`Navigator.plugins`, hashMini(nonMimetypePlugins), pluginsLie);
+    					}
+
+    					const nonMatchingMimetypePlugins = validPluginList
+    						.filter(plugin => plugin[0].description != plugin.description)
+    						.map(plugin => [plugin.description, plugin[0].description]);
+    					if (!!nonMatchingMimetypePlugins.length) {
+    						lied = true;
+    						const pluginsLie = {
+    							fingerprint: '',
+    							lies: [{ [`Expected plugin MimeType description to match plugin description: ${
+								nonMatchingMimetypePlugins
+									.map(description => `${description[0]} should match ${description[1]}`)
+									.join(', ')
+							}`]: true }]
+    						};
+    						documentLie(`Navigator.plugins`, hashMini(nonMatchingMimetypePlugins), pluginsLie);
+    					}
+    					
+    					const invalidPrototypeMimeTypePlugins = validPluginList
+    						.filter(plugin => !mimeTypesDescriptions.has(plugin[0].description))
+    						.map(plugin => [plugin[0].description, mimeTypesDescriptionsString]);
+    					if (!!invalidPrototypeMimeTypePlugins.length) {
+    						lied = true;
+    						const pluginsLie = {
+    							fingerprint: '',
+    							lies: [{ [`Expected plugin MimeType description to match a MimeType description: ${
+								invalidPrototypeMimeTypePlugins
+									.map(description => `${description[0]} is not in [${description[1]}]`)
+									.join(', ')
+							}`]: true }]
+    						};
+    						documentLie(`Navigator.plugins`, hashMini(invalidPrototypeMimeTypePlugins), pluginsLie);
+    					}
+    					
+    					const invalidMimetypePlugins = validPluginList
+    						.filter(plugin => !mimeTypesDescriptions.has(plugin.description))
+    						.map(plugin => [plugin.description, mimeTypesDescriptionsString]);
+    					if (!!invalidMimetypePlugins.length) {
+    						lied = true;
+    						const pluginsLie = {
+    							fingerprint: '',
+    							lies: [{ [`Expected plugin description to match a MimeType description: ${
+								invalidMimetypePlugins
+									.map(description => `${description[0]} is not in [${description[1]}]`)
+									.join(', ')
+							}`]: true }]
+    						};
+    						documentLie(`Navigator.plugins`, hashMini(invalidMimetypePlugins), pluginsLie);
+    					}
+
     					if (!!response.length) {	
     						response.forEach(plugin => {	
-    							const { name } = plugin;	
-    							const gibbers = gibberish(name);	
-    							if (!!gibbers.length) {	
-    								sendToTrash(`plugin contains gibberish`, `[${gibbers.join(', ')}] ${name}`);	
+    							const { name, description } = plugin;
+
+    							if (!ownPropertiesSet.has(name)) {
+    								lied = true;
+    								const pluginsLie = {
+    									fingerprint: '',
+    									lies: [{ [`Expected name "${name}" in plugins own properties and got [${ownProperties.join(', ')}]`]: true }]
+    								};
+    								documentLie(`Navigator.plugins`, hashMini(ownProperties), pluginsLie);
+    							}
+
+    							const nameGibbers = gibberish(name);
+    							const descriptionGibbers = gibberish(description);	
+    							if (!!nameGibbers.length) {	
+    								sendToTrash(`plugin name contains gibberish`, `[${nameGibbers.join(', ')}] ${name}`);	
+    							}
+    							if (!!descriptionGibbers.length) {	
+    								sendToTrash(`plugin description contains gibberish`, `[${descriptionGibbers.join(', ')}] ${description}`);
     							}	
     							return	
     						});	
     					}
     					return response
-    				}, 'mimeTypes failed'),
+    				}, 'plugins failed'),
     				properties: attempt(() => {
     					const keys = Object.keys(Object.getPrototypeOf(contentWindowNavigator));
     					return keys
@@ -3968,17 +4076,42 @@
     			!fp.canvasBitmapRenderer || fp.canvasBitmapRenderer.lied ? undefined : 
     			fp.canvasBitmapRenderer
     		),
-    		canvasWebgl: !fp.canvasWebgl || fp.canvasWebgl.lied ? undefined : {
-    			supported: fp.canvasWebgl.supported,
-    			supported2: fp.canvasWebgl.supported2,
-    			dataURI: isFirefox ? distrust : fp.canvasWebgl.dataURI,
-    			dataURI2: isFirefox ? distrust : fp.canvasWebgl.dataURI2,
-    			matchingDataURI: fp.canvasWebgl.matchingDataURI,
-    			matchingUnmasked: fp.canvasWebgl.matchingUnmasked,
-    			specs: fp.canvasWebgl.specs,
-    			unmasked: fp.canvasWebgl.unmasked,
-    			unmasked2: fp.canvasWebgl.unmasked2
-    		},
+    		canvasWebgl: (
+    			!!fp.canvasWebgl && !!liesLen && isBrave ? {
+    				specs: {
+    					webgl2Specs: (() => {
+    						const { webgl2Specs } = fp.canvasWebgl.specs || {};
+    						const clone = {...webgl2Specs};
+    						const blocked = /vertex|fragment|varying|bindings|combined|interleaved/i;
+    						Object.keys(clone || {}).forEach(key => blocked.test(key) && (delete clone[key]));
+    						return clone
+    					})(),
+    					webglSpecs: (() => {
+    						const { webglSpecs } = fp.canvasWebgl.specs || {};
+    						const clone = {...webglSpecs};
+    						const blocked = /vertex|fragment/i;
+    						Object.keys(clone || {}).forEach(key => blocked.test(key) && (delete clone[key]));
+    						return clone
+    					})()
+    				}
+    			}
+    			: !!fp.canvasWebgl && !!liesLen && isFirefox ? {
+    				supported: fp.canvasWebgl.supported,
+    				supported2: fp.canvasWebgl.supported2,
+    				specs: fp.canvasWebgl.specs
+    			}
+    			: !fp.canvasWebgl || fp.canvasWebgl.lied ? undefined : {
+    				supported: fp.canvasWebgl.supported,
+    				supported2: fp.canvasWebgl.supported2,
+    				dataURI: fp.canvasWebgl.dataURI,
+    				dataURI2: fp.canvasWebgl.dataURI2,
+    				matchingDataURI: fp.canvasWebgl.matchingDataURI,
+    				matchingUnmasked: fp.canvasWebgl.matchingUnmasked,
+    				specs: fp.canvasWebgl.specs,
+    				unmasked: fp.canvasWebgl.unmasked,
+    				unmasked2: fp.canvasWebgl.unmasked2
+    			}
+    		),
     		maths: !fp.maths || fp.maths.lied ? undefined : fp.maths,
     		consoleErrors: fp.consoleErrors,
     		// avoid random timezone fingerprint values
@@ -5036,8 +5169,8 @@
 						</div>
 						` :
 						`<form class="fade-right-in" id="signature">
-							<input id="signature-input" type="text" placeholder="sign" title="sign your fingerprint" required minlength="4" maxlength="64">
-							<input type="submit" value="Submit">
+							<input id="signature-input" type="text" placeholder="add a signature to your fingerprint" title="sign your fingerprint" required minlength="4" maxlength="64">
+							<input type="submit" value="Sign">
 						</form>
 						`
 					}
