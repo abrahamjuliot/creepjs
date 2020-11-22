@@ -1322,8 +1322,8 @@ const imports = {
 						</div>
 						` :
 						`<form class="fade-right-in" id="signature">
-							<input id="signature-input" type="text" placeholder="sign" title="sign your fingerprint" required minlength="4" maxlength="64">
-							<input type="submit" value="Submit">
+							<input id="signature-input" type="text" placeholder="add a signature to your fingerprint" title="sign your fingerprint" required minlength="4" maxlength="64">
+							<input type="submit" value="Sign">
 						</form>
 						`
 					}
