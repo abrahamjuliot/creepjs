@@ -299,20 +299,22 @@ export const getNavigator = (imports, workerScope) => {
 					mimeTypesDescriptions.delete('')
 					const mimeTypesDescriptionsString = `${[...mimeTypesDescriptions].join(', ')}`
 					const pluginsList = [...navigator.plugins].filter(plugin => plugin.description != '')
+					const validPluginList = pluginsList.filter(plugin => !!caniuse(() => plugin[0].description))
+					
+					const mimeTypePluginNames = ''+[...new Set([...navigator.mimeTypes].map(mimeType => mimeType.enabledPlugin.name))].sort()
+					const rawPluginNames = ''+[...new Set([...navigator.plugins].map(plugin => plugin.name))].sort()
+					if (mimeTypePluginNames != rawPluginNames) {
+						lied = true
+						const pluginsLie = {
+							fingerprint: '',
+							lies: [{ [`Expected MimeType Plugins to match Plugins: "${mimeTypePluginNames}" should match "${rawPluginNames}"`]: true }]
+						}
+						documentLie(`Navigator.plugins`, hashMini({mimeTypePluginNames, rawPluginNames}), pluginsLie)
+					}
+
 					const nonMimetypePlugins = pluginsList
 						.filter(plugin => !caniuse(() => plugin[0].description))
 						.map(plugin => plugin.description)
-					const validPluginList = pluginsList.filter(plugin => !!caniuse(() => plugin[0].description))
-					const nonMatchingMimetypePlugins = validPluginList
-						.filter(plugin => plugin[0].description != plugin.description)
-						.map(plugin => [plugin.description, plugin[0].description])
-					const invalidPrototypeMimeTypePlugins = validPluginList
-						.filter(plugin => !mimeTypesDescriptions.has(plugin[0].description))
-						.map(plugin => [plugin[0].description, mimeTypesDescriptionsString])
-					const invalidMimetypePlugins = validPluginList
-						.filter(plugin => !mimeTypesDescriptions.has(plugin.description))
-						.map(plugin => [plugin.description, mimeTypesDescriptionsString])
-
 					if (!!nonMimetypePlugins.length) {
 						lied = true
 						const pluginsLie = {
@@ -322,6 +324,9 @@ export const getNavigator = (imports, workerScope) => {
 						documentLie(`Navigator.plugins`, hashMini(nonMimetypePlugins), pluginsLie)
 					}
 
+					const nonMatchingMimetypePlugins = validPluginList
+						.filter(plugin => plugin[0].description != plugin.description)
+						.map(plugin => [plugin.description, plugin[0].description])
 					if (!!nonMatchingMimetypePlugins.length) {
 						lied = true
 						const pluginsLie = {
@@ -334,7 +339,10 @@ export const getNavigator = (imports, workerScope) => {
 						}
 						documentLie(`Navigator.plugins`, hashMini(nonMatchingMimetypePlugins), pluginsLie)
 					}
-
+					
+					const invalidPrototypeMimeTypePlugins = validPluginList
+						.filter(plugin => !mimeTypesDescriptions.has(plugin[0].description))
+						.map(plugin => [plugin[0].description, mimeTypesDescriptionsString])
 					if (!!invalidPrototypeMimeTypePlugins.length) {
 						lied = true
 						const pluginsLie = {
@@ -347,7 +355,10 @@ export const getNavigator = (imports, workerScope) => {
 						}
 						documentLie(`Navigator.plugins`, hashMini(invalidPrototypeMimeTypePlugins), pluginsLie)
 					}
-
+					
+					const invalidMimetypePlugins = validPluginList
+						.filter(plugin => !mimeTypesDescriptions.has(plugin.description))
+						.map(plugin => [plugin.description, mimeTypesDescriptionsString])
 					if (!!invalidMimetypePlugins.length) {
 						lied = true
 						const pluginsLie = {
