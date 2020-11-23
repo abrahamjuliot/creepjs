@@ -47,6 +47,15 @@ export const getOfflineAudioContext = imports => {
 			oscillator.start(0)
 			context.startRendering()
 
+			const dataArray = new Float32Array(analyser.frequencyBinCount)
+			analyser.getFloatFrequencyData(dataArray)
+			const floatFrequencyUniqueDataSize = new Set(dataArray).size
+			if (floatFrequencyUniqueDataSize > 1) {
+				lied = true
+				const floatFrequencyDataLie = { fingerprint: '', lies: [{ [`Expected 1 unique frequency and got ${floatFrequencyUniqueDataSize}`]: true }] }
+				documentLie(`AnalyserNode.getFloatFrequencyData`, floatFrequencyUniqueDataSize, floatFrequencyDataLie)
+			}
+
 			let copySample = []
 			let binsSample = []
 			let matching = false
