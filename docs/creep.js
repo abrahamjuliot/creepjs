@@ -1404,7 +1404,6 @@
 
     	const {
     		require: {
-    			hashMini,
     			hashify,
     			captureError,
     			attempt,
@@ -1413,7 +1412,6 @@
     			sendToTrash,
     			proxyBehavior,
     			lieProps,
-    			documentLie,
     			contentWindow,
     			hyperNestedIframeWindow
     		}
@@ -1654,12 +1652,6 @@
     			]).catch(error => {
     				console.error(error.message);
     			});
-
-    			if (dataURI.dataURI && dataURI2.dataURI && (dataURI.dataURI.length == dataURI2.dataURI.length) && (dataURI.$hash != dataURI2.$hash)) {
-    				lied = true;
-    				const dataURILie = { fingerprint: '', lies: [{ [`Expected webgl ${hashMini(dataURI)} to match webgl2 ${hashMini(dataURI2)}`]: true }] };
-    				documentLie(`HTMLCanvasElement.toDataURL`, hashMini({dataURI, dataURI2}), dataURILie);
-    			}
 
     			const data = {
     				supported,
