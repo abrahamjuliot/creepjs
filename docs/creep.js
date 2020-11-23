@@ -1250,7 +1250,7 @@
     				context.oncomplete = async event => {
     					try {
     						const copy = new Float32Array(44100);
-    						event.renderedBuffer.copyFromChannel(copy, 0);
+    						caniuse(() => event.renderedBuffer.copyFromChannel(copy, 0));
     						const bins = event.renderedBuffer.getChannelData(0);
     						
     						copySample = copy ? [...copy].slice(4500, 4600) : [sendToTrash('invalid Audio Sample Copy', null)];
@@ -1261,8 +1261,8 @@
 
     						matching = binsJSON === copyJSON;
     						// detect lie
-    						
-    						if (!matching) {
+    						const copyFromChannelSupported = ('copyFromChannel' in AudioBuffer.prototype);
+    						if (copyFromChannelSupported && !matching) {
     							lied = true;
     							const audioSampleLie = { fingerprint: '', lies: [{ ['data and copy samples mismatch']: false }] };
     							documentLie('AudioBuffer', hashMini(matching), audioSampleLie);
@@ -1272,7 +1272,7 @@
     						oscillator.disconnect();
     						const response = {
     							binsSample: binsSample,
-    							copySample: copySample,
+    							copySample: copyFromChannelSupported ? copySample : [undefined],
     							matching,
     							values,
     							lied
@@ -4493,7 +4493,7 @@
 			<div class="col-six">
 				<strong>Audio</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
 				<div>sample: ${binsSample[0]}</div>
-				<div>copy: ${copySample[0]}</div>
+				<div>copy: ${''+copySample[0] == 'undefined' ? note.unsupported : copySample[0]}</div>
 				<div>matching: ${matching}</div>
 				<div>node values: ${
 					modal('creep-offline-audio-context', Object.keys(values).map(key => `<div>${key}: ${values[key]}</div>`).join(''))

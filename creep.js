@@ -659,7 +659,7 @@ const imports = {
 			<div class="col-six">
 				<strong>Audio</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
 				<div>sample: ${binsSample[0]}</div>
-				<div>copy: ${copySample[0]}</div>
+				<div>copy: ${''+copySample[0] == 'undefined' ? note.unsupported : copySample[0]}</div>
 				<div>matching: ${matching}</div>
 				<div>node values: ${
 					modal('creep-offline-audio-context', Object.keys(values).map(key => `<div>${key}: ${values[key]}</div>`).join(''))

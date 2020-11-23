@@ -90,7 +90,7 @@ export const getOfflineAudioContext = imports => {
 				context.oncomplete = async event => {
 					try {
 						const copy = new Float32Array(44100)
-						event.renderedBuffer.copyFromChannel(copy, 0)
+						caniuse(() => event.renderedBuffer.copyFromChannel(copy, 0))
 						const bins = event.renderedBuffer.getChannelData(0)
 						
 						copySample = copy ? [...copy].slice(4500, 4600) : [sendToTrash('invalid Audio Sample Copy', null)]
@@ -101,8 +101,8 @@ export const getOfflineAudioContext = imports => {
 
 						matching = binsJSON === copyJSON
 						// detect lie
-						
-						if (!matching) {
+						const copyFromChannelSupported = ('copyFromChannel' in AudioBuffer.prototype)
+						if (copyFromChannelSupported && !matching) {
 							lied = true
 							const audioSampleLie = { fingerprint: '', lies: [{ ['data and copy samples mismatch']: false }] }
 							documentLie('AudioBuffer', hashMini(matching), audioSampleLie)
@@ -112,7 +112,7 @@ export const getOfflineAudioContext = imports => {
 						oscillator.disconnect()
 						const response = {
 							binsSample: binsSample,
-							copySample: copySample,
+							copySample: copyFromChannelSupported ? copySample : [undefined],
 							matching,
 							values,
 							lied
