@@ -395,7 +395,15 @@
     			const id = [...Array(10)].map(() => instanceId).join('');
 
     			// avoid dead object error
-    			const ghost = `style="height: 0;visibility: hidden;"`;
+    			const ghost = `
+				style="
+				height: 100vh;
+				width: 100vw;
+				position: absolute;
+				left:-10000px;
+				visibility: hidden;
+				"
+			`;
     			const hide = `style="display: none;"`;
     			patch(div, html`<div ${ghost} id="${id}"><iframe ${ isFirefox ? ghost : hide }></iframe></div>`);
     			const el = document.getElementById(id);
@@ -4040,7 +4048,7 @@
     			}
     		),
     		screen: ( 
-    			!fp.screen || fp.screen.lied ? undefined : {
+    			!fp.screen || fp.screen.lied || (!!liesLen && isFirefox) ? undefined : {
     				height: fp.screen.height,
     				width: fp.screen.width,
     				pixelDepth: fp.screen.pixelDepth,
