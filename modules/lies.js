@@ -37,7 +37,15 @@ const getNestedWindowFrameContext = imports => {
 			const id = [...Array(10)].map(() => instanceId).join('')
 
 			// avoid dead object error
-			const ghost = `style="height: 100vh; width: 100vw; visibility: hidden;"`
+			const ghost = `
+				style="
+				height: 100vh;
+				width: 100vw;
+				position: absolute;
+				left:-10000px;
+				visibility: hidden;
+				"
+			`
 			const hide = `style="display: none;"`
 			patch(div, html`<div ${ghost} id="${id}"><iframe ${ isFirefox ? ghost : hide }></iframe></div>`)
 			const el = document.getElementById(id)

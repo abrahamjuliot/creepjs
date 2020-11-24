@@ -195,7 +195,7 @@ const imports = {
 			}
 		),
 		screen: ( 
-			!fp.screen || fp.screen.lied || isFirefox ? undefined : {
+			!fp.screen || fp.screen.lied || (!!liesLen && isFirefox) ? undefined : {
 				height: fp.screen.height,
 				width: fp.screen.width,
 				pixelDepth: fp.screen.pixelDepth,
