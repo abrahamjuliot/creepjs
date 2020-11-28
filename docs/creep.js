@@ -3717,7 +3717,7 @@
     				}
     				const { candidate } = e.candidate;
     				const encodingMatch = candidate.match(candidateEncoding);
-    				if (candidate) {
+    				if (encodingMatch) {
     					success = true;
     					const {
     						sdp
