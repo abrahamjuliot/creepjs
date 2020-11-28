@@ -5,7 +5,7 @@ export const getWebRTCData = (imports, cloudflare) => {
 			isFirefox,
 			hashify,
 			captureError,
-			attempt,
+			caniuse,
 			contentWindow
 		}
 	} = imports
@@ -29,8 +29,10 @@ export const getWebRTCData = (imports, cloudflare) => {
 					window.msRTCPeerConnection
 				)
 			}
+			
 			if (!rtcPeerConnection) {
-				return resolve(undefined)
+				console.log('%c- webrtc failed', 'color:lightcoral')
+				return resolve()
 			}
 			const connection = new rtcPeerConnection({
 				iceServers: [{
@@ -43,22 +45,22 @@ export const getWebRTCData = (imports, cloudflare) => {
 			})
 			
 			let success = false
-			connection.onicecandidate = async e => {
+			connection.onicecandidate = async e => { 
 				const candidateEncoding = /((udp|tcp)\s)((\d|\w)+\s)((\d|\w|(\.|\:))+)(?=\s)/ig
 				const connectionLineEncoding = /(c=IN\s)(.+)\s/ig
 				if (!e.candidate) {
 					return
 				}
-				success = true
 				const { candidate } = e.candidate
 				const encodingMatch = candidate.match(candidateEncoding)
-				if (encodingMatch) {
+				if (candidate) {
+					success = true
 					const {
 						sdp
 					} = e.target.localDescription
-					const ipAddress = attempt(() => e.candidate.address)
-					const candidateIpAddress = attempt(() => encodingMatch[0].split(' ')[2])
-					const connectionLineIpAddress = attempt(() => sdp.match(connectionLineEncoding)[0].trim().split(' ')[2])
+					const ipAddress = caniuse(() => e.candidate.address)
+					const candidateIpAddress = caniuse(() => encodingMatch[0].split(' ')[2])
+					const connectionLineIpAddress = caniuse(() => sdp.match(connectionLineEncoding)[0].trim().split(' ')[2])
 					const successIpAddresses = [
 						ipAddress, 
 						candidateIpAddress, 
@@ -77,17 +79,27 @@ export const getWebRTCData = (imports, cloudflare) => {
 					const $hash = await hashify(data)
 					console.log('%c✔ webrtc passed', 'color:#4cca9f')
 					return resolve({ ...data, $hash })
+				} else {
+					return
 				}
 			}
-			setTimeout(() => !success && resolve(undefined), 1000)
+			
+			setTimeout(() => {
+				if (!success) {
+					console.log('%c- webrtc failed', 'color:lightcoral')
+					captureError(new Error('RTCIceCandidate failed'))
+					return resolve()
+				}
+			}, 1000)
 			connection.createDataChannel('creep')
 			connection.createOffer()
 				.then(e => connection.setLocalDescription(e))
 				.catch(error => console.log(error))
 		}
 		catch (error) {
+			console.log('%c- webrtc failed', 'color:lightcoral')
 			captureError(error, 'RTCPeerConnection failed or blocked by client')
-			return resolve(undefined)
+			return resolve()
 		}
 	})
 }
