@@ -127,6 +127,7 @@ export const getOfflineAudioContext = imports => {
 							lied
 						}
 						const $hash = await hashify(response)
+						console.log('%c✔ audio passed', 'color:#4cca9f')
 						return resolve({...response, $hash })
 					}
 					catch (error) {

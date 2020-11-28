@@ -1297,6 +1297,7 @@
     							lied
     						};
     						const $hash = await hashify(response);
+    						console.log('%c✔ audio passed', 'color:#4cca9f');
     						return resolve({...response, $hash })
     					}
     					catch (error) {
@@ -1362,6 +1363,7 @@
     			}
     			const $hash = await hashify(dataURI);
     			const response = { dataURI, lied, $hash };
+    			console.log('%c✔ canvas 2d passed', 'color:#4cca9f');
     			return resolve(response)
     		}
     		catch (error) {
@@ -1408,6 +1410,7 @@
     					const dataURI = canvas.toDataURL();
     					const $hash = await hashify(dataURI);
     					const response = { dataURI, lied, $hash };
+    					console.log('%c✔ canvas bitmaprenderer passed', 'color:#4cca9f');
     					return resolve(response)
     				};
     			}))	
@@ -1686,6 +1689,7 @@
     			data.matchingDataURI = data.dataURI.$hash === data.dataURI2.$hash;
 
     			const $hash = await hashify(data);
+    			console.log('%c✔ canvas webgl passed', 'color:#4cca9f');
     			return resolve({ ...data, $hash })
     		}
     		catch (error) {
@@ -1719,6 +1723,7 @@
     			});
     			data.uag = getOS(data.uag);
     			const $hash = await hashify(data);
+    			console.log('%c✔ cloudflare passed', 'color:#4cca9f');
     			return resolve({ ...data, $hash })
     		}
     		catch (error) {
@@ -1943,6 +1948,7 @@
     				)
     			};
     			const $hash = await hashify(data);
+    			console.log('%c✔ computed style passed', 'color:#4cca9f');
     			return resolve({ ...data, $hash })
     		}
     		catch (error) {
@@ -1988,6 +1994,7 @@
     			];
     			const errors = getErrors(errorTests);
     			const $hash = await hashify(errors);
+    			console.log('%c✔ console errors passed', 'color:#4cca9f');
     			return resolve({errors, $hash })
     		}
     		catch (error) {
@@ -2015,6 +2022,7 @@
     			const apple = keys.filter(key => (/apple/i).test(key)).length;
     			const data = { keys, apple, moz, webkit }; 
     			const $hash = await hashify(data);
+    			console.log('%c✔ window passed', 'color:#4cca9f');
     			return resolve({ ...data, $hash })
     		}
     		catch (error) {
@@ -2153,6 +2161,7 @@
     			);
     			const fontList = Object.keys(detectedFonts);
     			const $hash = await hashify(fontList);
+    			console.log('%c✔ fonts passed', 'color:#4cca9f');
     			return resolve({fonts: fontList, $hash })
     		}
     		catch (error) {
@@ -2203,6 +2212,7 @@
     			}
 
     			const $hash = await hashify(keys);
+    			console.log('%c✔ html element passed', 'color:#4cca9f');
     			return resolve({ keys, $hash })
     		}
     		catch (error) {
@@ -2421,6 +2431,7 @@
     			});
     			
     			const $hash = await hashify(data);
+    			console.log('%c✔ math passed', 'color:#4cca9f');
     			return resolve({ data, lied, $hash })
     		}
     		catch (error) {
@@ -2457,6 +2468,7 @@
     				undefined
     			);
     			const $hash = await hashify(mediaDevices);
+    			console.log('%c✔ media devices passed', 'color:#4cca9f');
     			return resolve({ mediaDevices, $hash })
     		}
     		catch (error) {
@@ -2497,6 +2509,7 @@
     				return mediaTypes.push(data)
     			});
     			const $hash = await hashify(mediaTypes);
+    			console.log('%c✔ media types passed', 'color:#4cca9f');
     			return resolve({ mediaTypes, $hash })
     		}
     		catch (error) {
@@ -2921,6 +2934,7 @@
     				}, 'highEntropyValues failed')
     			};
     			const $hash = await hashify(data);
+    			console.log('%c✔ navigator passed', 'color:#4cca9f');
     			return resolve({ ...data, lied, $hash })
     		}
     		catch (error) {
@@ -3166,6 +3180,7 @@
     			]).catch(error => {
     				console.error(error.message);
     			});
+    			console.log('%c✔ rects passed', 'color:#4cca9f');
     			return resolve({emojiRects, emojiHash, clientRects, clientHash, lied, $hash })
     		}
     		catch (error) {
@@ -3319,6 +3334,7 @@
     				lied
     			};
     			const $hash = await hashify(data);
+    			console.log('%c✔ screen passed', 'color:#4cca9f');
     			return resolve({ ...data, $hash })
     		}
     		catch (error) {
@@ -3584,6 +3600,7 @@
     				lied
     			};
     			const $hash = await hashify(data);
+    			console.log('%c✔ timezone passed', 'color:#4cca9f');
     			return resolve({...data, $hash })
     		}
     		catch (error) {
@@ -3615,6 +3632,7 @@
     				check.chromeOS = voices.filter(key => (/chrome os/i).test(key.name)).length;
     				check.android = voices.filter(key => (/android/i).test(key.name)).length;
     				const $hash = await hashify(voices);
+    				console.log('%c✔ voices passed', 'color:#4cca9f');
     				return resolve({ voices, ...check, $hash })
     			};
     			if (!('speechSynthesis' in win)) {
@@ -3721,6 +3739,7 @@
     						connection: connectionLineIpAddress
     					};
     					const $hash = await hashify(data);
+    					console.log('%c✔ webrtc passed', 'color:#4cca9f');
     					return resolve({ ...data, $hash })
     				}
     			};
@@ -3871,6 +3890,7 @@
     				data.system = getOS(data.userAgent);
     				data.canvas2d = { dataURI: canvas2d, $hash: await hashify(canvas2d) };
     				const $hash = await hashify(data);
+    				console.log('%c✔ worker passed', 'color:#4cca9f');
     				return resolve({ ...data, $hash })
     			}, false);
     		}
@@ -3923,7 +3943,7 @@
     }
 
     ;(async imports => {
-
+    	
     	const fingerprint = async () => {
     		const timeStart = timer();
     		const [
@@ -3976,7 +3996,10 @@
     			console.error(error.message);
     		});
 
-    		const navigatorComputed = await getNavigator(imports, workerScopeComputed);
+    		const navigatorComputed = await getNavigator(imports, workerScopeComputed)
+    		.catch(error => {
+    			console.error(error.message);
+    		});
     		const [
     			liesComputed,
     			trashComputed,
@@ -4022,11 +4045,19 @@
     		};
     		return { fingerprint, timeEnd }
     	};
-    	// get/post request
-    	const webapp = 'https://creepjs-6bd8e.web.app/fingerprint';
     	
     	// fingerprint and render
     	const { fingerprint: fp, timeEnd } = await fingerprint().catch(error => console.error(error));
+
+    	console.log('%c✔ loose fingerprint passed', 'color:#4cca9f');
+
+    	console.groupCollapsed('Loose Fingerprint');
+    	console.log(fp);
+    	console.groupEnd();
+
+    	console.groupCollapsed('Loose Fingerprint JSON');
+    	console.log('diff check at https://www.diffchecker.com/diff\n\n', JSON.stringify(fp, null, '\t'));
+    	console.groupEnd();
     	
     	// Trusted Fingerprint
     	const distrust = { distrust: { brave: isBrave, firefox: isFirefox } };
@@ -4090,20 +4121,20 @@
     		canvasWebgl: (
     			!!fp.canvasWebgl && !!liesLen && isBrave ? {
     				specs: {
-    					webgl2Specs: (() => {
+    					webgl2Specs: attempt(() => {
     						const { webgl2Specs } = fp.canvasWebgl.specs || {};
     						const clone = {...webgl2Specs};
     						const blocked = /vertex|fragment|varying|bindings|combined|interleaved/i;
     						Object.keys(clone || {}).forEach(key => blocked.test(key) && (delete clone[key]));
     						return clone
-    					})(),
-    					webglSpecs: (() => {
+    					}) || fp.canvasWebgl.specs.webgl2Specs,
+    					webglSpecs: attempt(() => {
     						const { webglSpecs } = fp.canvasWebgl.specs || {};
     						const clone = {...webglSpecs};
     						const blocked = /vertex|fragment/i;
     						Object.keys(clone || {}).forEach(key => blocked.test(key) && (delete clone[key]));
     						return clone
-    					})()
+    					}) || fp.canvasWebgl.specs.webglSpecs
     				}
     			}
     			: !!fp.canvasWebgl && !!liesLen && isFirefox ? {
@@ -4151,21 +4182,18 @@
     		voices: isFirefox ? distrust : fp.voices // Firefox is inconsistent
     	};
 
-    	console.groupCollapsed('Fingerprint');
+    	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f');
+
+    	console.groupCollapsed('Stable Fingerprint');
     	console.log(creep);
     	console.groupEnd();
 
-    	console.groupCollapsed('Fingerprint JSON');
+    	console.groupCollapsed('Stable Fingerprint JSON');
     	console.log('diff check at https://www.diffchecker.com/diff\n\n', JSON.stringify(creep, null, '\t'));
     	console.groupEnd();
 
-    	console.groupCollapsed('Loose Fingerprint');
-    	console.log(fp);
-    	console.groupEnd();
-
-    	console.groupCollapsed('Loose Fingerprint JSON');
-    	console.log('diff check at https://www.diffchecker.com/diff\n\n', JSON.stringify(fp, null, '\t'));
-    	console.groupEnd();
+    	// get/post request
+    	const webapp = 'https://creepjs-6bd8e.web.app/fingerprint';
 
     	const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
     	.catch(error => { 

@@ -265,6 +265,7 @@ export const getCanvasWebgl = imports => {
 			data.matchingDataURI = data.dataURI.$hash === data.dataURI2.$hash
 
 			const $hash = await hashify(data)
+			console.log('%c✔ canvas webgl passed', 'color:#4cca9f')
 			return resolve({ ...data, $hash })
 		}
 		catch (error) {

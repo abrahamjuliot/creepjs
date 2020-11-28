@@ -25,6 +25,7 @@ export const getMediaDevices = imports => {
 				undefined
 			)
 			const $hash = await hashify(mediaDevices)
+			console.log('%c✔ media devices passed', 'color:#4cca9f')
 			return resolve({ mediaDevices, $hash })
 		}
 		catch (error) {

@@ -16,6 +16,7 @@ export const getIframeContentWindowVersion = imports => {
 			const apple = keys.filter(key => (/apple/i).test(key)).length
 			const data = { keys, apple, moz, webkit } 
 			const $hash = await hashify(data)
+			console.log('%c✔ window passed', 'color:#4cca9f')
 			return resolve({ ...data, $hash })
 		}
 		catch (error) {

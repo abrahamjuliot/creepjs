@@ -35,6 +35,7 @@ export const getCanvasBitmapRenderer = imports => {
 					const dataURI = canvas.toDataURL()
 					const $hash = await hashify(dataURI)
 					const response = { dataURI, lied, $hash }
+					console.log('%c✔ canvas bitmaprenderer passed', 'color:#4cca9f')
 					return resolve(response)
 				}
 			}))	

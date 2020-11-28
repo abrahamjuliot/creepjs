@@ -213,6 +213,7 @@ export const getCSSStyleDeclarationVersion = imports => {
 				)
 			}
 			const $hash = await hashify(data)
+			console.log('%c✔ computed style passed', 'color:#4cca9f')
 			return resolve({ ...data, $hash })
 		}
 		catch (error) {

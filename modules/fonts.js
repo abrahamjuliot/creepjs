@@ -127,6 +127,7 @@ export const getFonts = (imports, fonts) => {
 			)
 			const fontList = Object.keys(detectedFonts)
 			const $hash = await hashify(fontList)
+			console.log('%c✔ fonts passed', 'color:#4cca9f')
 			return resolve({fonts: fontList, $hash })
 		}
 		catch (error) {

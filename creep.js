@@ -70,7 +70,7 @@ const imports = {
 
 ;(async imports => {
 	'use strict';
-
+	
 	const fingerprint = async () => {
 		const timeStart = timer()
 		const [
@@ -124,6 +124,9 @@ const imports = {
 		})
 
 		const navigatorComputed = await getNavigator(imports, workerScopeComputed)
+		.catch(error => {
+			console.error(error.message)
+		})
 		const [
 			liesComputed,
 			trashComputed,
@@ -169,11 +172,19 @@ const imports = {
 		}
 		return { fingerprint, timeEnd }
 	}
-	// get/post request
-	const webapp = 'https://creepjs-6bd8e.web.app/fingerprint'
 	
 	// fingerprint and render
 	const { fingerprint: fp, timeEnd } = await fingerprint().catch(error => console.error(error))
+
+	console.log('%c✔ loose fingerprint passed', 'color:#4cca9f')
+
+	console.groupCollapsed('Loose Fingerprint')
+	console.log(fp)
+	console.groupEnd()
+
+	console.groupCollapsed('Loose Fingerprint JSON')
+	console.log('diff check at https://www.diffchecker.com/diff\n\n', JSON.stringify(fp, null, '\t'))
+	console.groupEnd()
 	
 	// Trusted Fingerprint
 	const distrust = { distrust: { brave: isBrave, firefox: isFirefox } }
@@ -237,20 +248,20 @@ const imports = {
 		canvasWebgl: (
 			!!fp.canvasWebgl && !!liesLen && isBrave ? {
 				specs: {
-					webgl2Specs: (() => {
+					webgl2Specs: attempt(() => {
 						const { webgl2Specs } = fp.canvasWebgl.specs || {}
 						const clone = {...webgl2Specs}
 						const blocked = /vertex|fragment|varying|bindings|combined|interleaved/i
 						Object.keys(clone || {}).forEach(key => blocked.test(key) && (delete clone[key]))
 						return clone
-					})(),
-					webglSpecs: (() => {
+					}) || fp.canvasWebgl.specs.webgl2Specs,
+					webglSpecs: attempt(() => {
 						const { webglSpecs } = fp.canvasWebgl.specs || {}
 						const clone = {...webglSpecs}
 						const blocked = /vertex|fragment/i
 						Object.keys(clone || {}).forEach(key => blocked.test(key) && (delete clone[key]))
 						return clone
-					})()
+					}) || fp.canvasWebgl.specs.webglSpecs
 				}
 			}
 			: !!fp.canvasWebgl && !!liesLen && isFirefox ? {
@@ -298,21 +309,18 @@ const imports = {
 		voices: isFirefox ? distrust : fp.voices // Firefox is inconsistent
 	}
 
-	console.groupCollapsed('Fingerprint')
+	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f')
+
+	console.groupCollapsed('Stable Fingerprint')
 	console.log(creep)
 	console.groupEnd()
 
-	console.groupCollapsed('Fingerprint JSON')
+	console.groupCollapsed('Stable Fingerprint JSON')
 	console.log('diff check at https://www.diffchecker.com/diff\n\n', JSON.stringify(creep, null, '\t'))
 	console.groupEnd()
 
-	console.groupCollapsed('Loose Fingerprint')
-	console.log(fp)
-	console.groupEnd()
-
-	console.groupCollapsed('Loose Fingerprint JSON')
-	console.log('diff check at https://www.diffchecker.com/diff\n\n', JSON.stringify(fp, null, '\t'))
-	console.groupEnd()
+	// get/post request
+	const webapp = 'https://creepjs-6bd8e.web.app/fingerprint'
 
 	const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
 	.catch(error => { 

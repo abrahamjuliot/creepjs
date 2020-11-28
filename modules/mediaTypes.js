@@ -29,6 +29,7 @@ export const getMediaTypes = imports => {
 				return mediaTypes.push(data)
 			})
 			const $hash = await hashify(mediaTypes)
+			console.log('%c✔ media types passed', 'color:#4cca9f')
 			return resolve({ mediaTypes, $hash })
 		}
 		catch (error) {

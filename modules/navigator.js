@@ -413,6 +413,7 @@ export const getNavigator = (imports, workerScope) => {
 				}, 'highEntropyValues failed')
 			}
 			const $hash = await hashify(data)
+			console.log('%c✔ navigator passed', 'color:#4cca9f')
 			return resolve({ ...data, lied, $hash })
 		}
 		catch (error) {

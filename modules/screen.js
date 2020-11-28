@@ -142,6 +142,7 @@ export const getScreen = imports => {
 				lied
 			}
 			const $hash = await hashify(data)
+			console.log('%c✔ screen passed', 'color:#4cca9f')
 			return resolve({ ...data, $hash })
 		}
 		catch (error) {

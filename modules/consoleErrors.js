@@ -34,6 +34,7 @@ export const getConsoleErrors = imports => {
 			]
 			const errors = getErrors(errorTests)
 			const $hash = await hashify(errors)
+			console.log('%c✔ console errors passed', 'color:#4cca9f')
 			return resolve({errors, $hash })
 		}
 		catch (error) {

@@ -132,6 +132,7 @@ export const getWorkerScope = imports => {
 				data.system = getOS(data.userAgent)
 				data.canvas2d = { dataURI: canvas2d, $hash: await hashify(canvas2d) }
 				const $hash = await hashify(data)
+				console.log('%c✔ worker passed', 'color:#4cca9f')
 				return resolve({ ...data, $hash })
 			}, false)
 		}

@@ -22,6 +22,7 @@ export const getCloudflare = imports => {
 			})
 			data.uag = getOS(data.uag)
 			const $hash = await hashify(data)
+			console.log('%c✔ cloudflare passed', 'color:#4cca9f')
 			return resolve({ ...data, $hash })
 		}
 		catch (error) {

@@ -37,6 +37,7 @@ export const getCanvas2d = imports => {
 			}
 			const $hash = await hashify(dataURI)
 			const response = { dataURI, lied, $hash }
+			console.log('%c✔ canvas 2d passed', 'color:#4cca9f')
 			return resolve(response)
 		}
 		catch (error) {

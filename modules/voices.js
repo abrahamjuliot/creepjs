@@ -20,6 +20,7 @@ export const getVoices = imports => {
 				check.chromeOS = voices.filter(key => (/chrome os/i).test(key.name)).length
 				check.android = voices.filter(key => (/android/i).test(key.name)).length
 				const $hash = await hashify(voices)
+				console.log('%c✔ voices passed', 'color:#4cca9f')
 				return resolve({ voices, ...check, $hash })
 			}
 			if (!('speechSynthesis' in win)) {

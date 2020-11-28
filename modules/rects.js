@@ -234,6 +234,7 @@ export const getClientRects = imports => {
 			]).catch(error => {
 				console.error(error.message)
 			})
+			console.log('%c✔ rects passed', 'color:#4cca9f')
 			return resolve({emojiRects, emojiHash, clientRects, clientHash, lied, $hash })
 		}
 		catch (error) {

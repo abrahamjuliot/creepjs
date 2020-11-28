@@ -75,6 +75,7 @@ export const getWebRTCData = (imports, cloudflare) => {
 						connection: connectionLineIpAddress
 					}
 					const $hash = await hashify(data)
+					console.log('%c✔ webrtc passed', 'color:#4cca9f')
 					return resolve({ ...data, $hash })
 				}
 			}

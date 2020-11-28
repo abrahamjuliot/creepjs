@@ -207,6 +207,7 @@ export const getMaths = imports => {
 			})
 			
 			const $hash = await hashify(data)
+			console.log('%c✔ math passed', 'color:#4cca9f')
 			return resolve({ data, lied, $hash })
 		}
 		catch (error) {

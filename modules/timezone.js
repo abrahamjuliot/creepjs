@@ -254,6 +254,7 @@ export const getTimezone = imports => {
 				lied
 			}
 			const $hash = await hashify(data)
+			console.log('%c✔ timezone passed', 'color:#4cca9f')
 			return resolve({...data, $hash })
 		}
 		catch (error) {
