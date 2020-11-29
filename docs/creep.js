@@ -4055,7 +4055,7 @@
 			catch (error) {
 				logTestResult({ test: 'worker', passed: false });
 				captureError(error);
-				return resolve(undefined)
+				return resolve()
 			}
 		})
 	};
@@ -4228,6 +4228,7 @@
 		const creep = {
 			navigator: ( 
 				!fp.navigator || fp.navigator.lied ? undefined : {
+					device: fp.navigator.device,
 					deviceMemory: isBrave ? distrust : fp.navigator.deviceMemory,
 					doNotTrack: fp.navigator.doNotTrack,
 					hardwareConcurrency: isBrave ? distrust : fp.navigator.hardwareConcurrency,
