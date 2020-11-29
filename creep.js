@@ -1,4 +1,4 @@
-import { isChrome, isBrave, isFirefox, getOS, decryptUserAgent, logTestResult } from './modules/helpers.js'
+import { isChrome, isBrave, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, logTestResult } from './modules/helpers.js'
 import { patch, html, note, count, modal } from './modules/html.js'
 import { hashMini, instanceId, hashify } from './modules/crypto.js'
 
@@ -35,6 +35,7 @@ const imports = {
 		isFirefox,
 		getOS,
 		decryptUserAgent,
+		getUserAgentPlatform,
 		logTestResult,
 		// crypto
 		instanceId,
@@ -226,7 +227,8 @@ const imports = {
 			language: fp.workerScope.language,
 			platform: fp.workerScope.platform,
 			system: fp.workerScope.system,
-			//['timezone offset']: fp.workerScope.timezoneOffset,
+			device: fp.workerScope.device,
+			seasons1984: fp.workerScope.seasons1984,
 			['webgl renderer']: (
 				!!liesLen && isBrave ? distrust : 
 				fp.workerScope.webglRenderer
@@ -497,17 +499,21 @@ const imports = {
 			`<div class="col-six">
 				<strong>Worker</strong>
 				<div>timezone offset: ${note.blocked}</div>
+				<div>seasons in ${Date().split ` ` [3]}: ${note.blocked}</div>
+				<div>seasons in 1984: ${note.blocked}</div>
 				<div>language: ${note.blocked}</div>
-				<div>platform: ${note.blocked}</div>
-				<div>system: ${note.blocked}</div>
 				<div>hardwareConcurrency: ${note.blocked}</div>
 				<div>js runtime: ${note.blocked}</div>
-				<div>canvas 2d: ${note.blocked}</div>
-				<div>webgl vendor: ${note.blocked}</div>
+				<div>platform: ${note.blocked}</div>
+				<div>system: ${note.blocked}</div>
+				<div>device:</div>
+				<div class="block-text">${note.blocked}</div>
 			</div>
 			<div class="col-six">
 				<div>userAgent:</div>
 				<div class="block-text">${note.blocked}</div>
+				<div>canvas 2d: ${note.blocked}</div>
+				<div>webgl vendor: ${note.blocked}</div>
 				<div>webgl renderer:</div>
 				<div class="block-text">${note.blocked}</div>
 			</div>` :
@@ -517,23 +523,29 @@ const imports = {
 			<div class="col-six">
 				<strong>Worker</strong><span class="hash">${hashMini(data.$hash)}</span>
 				<div>timezone offset: ${data.timezoneOffset != undefined ? ''+data.timezoneOffset : note.unsupported}</div>
+				<div>seasons in ${Date().split ` ` [3]}: ${Object.values(data.seasonsToday).join('|')}</div>
+				<div>seasons in 1984: ${Object.values(data.seasons1984).join('|')}</div>
 				<div>language: ${data.language || note.unsupported}</div>
-				<div>platform: ${data.platform || note.unsupported}</div>
-				<div>system: ${data.system || note.unsupported}</div>
 				<div>hardwareConcurrency: ${data.hardwareConcurrency || note.unsupported}</div>
 				<div>js runtime: ${data.jsImplementation}</div>
-				<div>canvas 2d:${
-					!!data.canvas2d.dataURI ?
-					`<span class="sub-hash">${hashMini(data.canvas2d.$hash)}</span>` :
-					` ${note.unsupported}`
-				}</div>
-				<div>webgl vendor: ${data.webglVendor || note.unsupported}</div>
+				<div>platform: ${data.platform || note.unsupported}</div>
+				<div>system: ${data.system || note.unsupported}</div>
+				<div>device:</div>
+				<div class="block-text">
+					<div>${data.device || note.unsupported}</div>
+				</div>
 			</div>
 			<div class="col-six">
 				<div>userAgent:</div>
 				<div class="block-text">
 					<div>${data.userAgent || note.unsupported}</div>
 				</div>
+				<div>canvas 2d:${
+					!!data.canvas2d.dataURI ?
+					`<span class="sub-hash">${hashMini(data.canvas2d.$hash)}</span>` :
+					` ${note.unsupported}`
+				}</div>
+				<div>webgl vendor: ${data.webglVendor || note.unsupported}</div>
 				<div>webgl renderer:</div>
 				<div class="block-text">
 					<div>${data.webglRenderer || note.unsupported}</div>
@@ -1149,12 +1161,15 @@ const imports = {
 				<strong>Navigator</strong>
 				<div>deviceMemory: ${note.blocked}</div>
 				<div>doNotTrack: ${note.blocked}</div>
+				<div>globalPrivacyControl:${note.blocked}</div>
 				<div>hardwareConcurrency: ${note.blocked}</div>
 				<div>language: ${note.blocked}</div>
 				<div>maxTouchPoints: ${note.blocked}</div>
 				<div>vendor: ${note.blocked}</div>
 				<div>plugins (0): ${note.blocked}</div>
 				<div>mimeTypes (0): ${note.blocked}</div>
+				<div>platform: ${note.blocked}</div>
+				<div>system: ${note.blocked}</div>
 				<div>ua architecture: ${note.blocked}</div>
 				<div>ua model: ${note.blocked}</div>
 				<div>ua platform: ${note.blocked}</div>
@@ -1163,13 +1178,12 @@ const imports = {
 				<div>properties (0): ${note.blocked}</div>
 			</div>
 			<div class="col-six">
-				<div>platform: ${note.blocked}</div>
-				<div>system: ${note.blocked}</div>
+				<div>device:</div>
+				<div class="block-text">${note.blocked}</div>
 				<div>userAgent:</div>
 				<div class="block-text">${note.blocked}</div>
 				<div>appVersion:</div>
 				<div class="block-text">${note.blocked}</div>
-				<div>globalPrivacyControl:${note.blocked}</div>
 			</div>` :
 		(() => {
 			const {
@@ -1188,6 +1202,7 @@ const imports = {
 					plugins,
 					properties,
 					system,
+					device,
 					userAgent,
 					vendor,
 					lied
@@ -1204,6 +1219,9 @@ const imports = {
 				<strong>Navigator</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
 				<div>deviceMemory: ${!blocked[deviceMemory] ? deviceMemory : note.blocked}</div>
 				<div>doNotTrack: ${''+doNotTrack}</div>
+				<div>globalPrivacyControl: ${
+					''+globalPrivacyControl == 'undefined' ? note.unsupported : ''+globalPrivacyControl
+				}</div>
 				<div>hardwareConcurrency: ${!blocked[hardwareConcurrency] ? hardwareConcurrency : note.blocked}</div>
 				<div>language: ${!blocked[language] ? language : note.blocked}</div>
 				<div>maxTouchPoints: ${!blocked[maxTouchPoints] ? ''+maxTouchPoints : note.blocked}</div>
@@ -1218,6 +1236,8 @@ const imports = {
 					modal(`${id}-mimeTypes`, mimeTypes.join('<br>')) :
 					note.blocked
 				}</div>
+				<div>platform: ${!blocked[platform] ? platform : note.blocked}</div>
+				<div>system: ${system}</div>
 				${highEntropyValues ?  
 					Object.keys(highEntropyValues).map(key => {
 						const value = highEntropyValues[key]
@@ -1232,8 +1252,10 @@ const imports = {
 				<div>properties (${count(properties)}): ${modal(`${id}-properties`, properties.join(', '))}</div>
 			</div>
 			<div class="col-six">
-				<div>platform: ${!blocked[platform] ? platform : note.blocked}</div>
-				<div>system: ${system}</div>
+				<div>device:</div>
+				<div class="block-text">
+					<div>${!blocked[device] ? device : note.blocked}</div>
+				</div>
 				<div>userAgent:</div>
 				<div class="block-text">
 					<div>${!blocked[userAgent] ? userAgent : note.blocked}</div>
@@ -1242,9 +1264,6 @@ const imports = {
 				<div class="block-text">
 					<div>${!blocked[appVersion] ? appVersion : note.blocked}</div>
 				</div>
-				<div>globalPrivacyControl: ${
-					''+globalPrivacyControl == 'undefined' ? note.unsupported : ''+globalPrivacyControl
-				}</div>
 			</div>
 			`
 		})()}
@@ -1282,6 +1301,7 @@ const imports = {
 			)).toFixed(0)
 			const template = `
 				<div class="visitor-info">
+					<div class="ellipsis"><span class="modified">script modified 2020-11-29</span></div>
 					<div class="flex-grid">
 						<div class="col-six">
 							<strong>Browser</strong>

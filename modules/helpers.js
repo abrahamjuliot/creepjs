@@ -73,6 +73,74 @@ const decryptUserAgent = ({ua, os, isBrave}) => {
     return 'unknown'
 }
 
+
+const nonPlatformParenthesis = /\((khtml|unlike|vizio|like gec|internal dummy|org\.eclipse|openssl|ipv6|via translate|safari|cardamon).+|xt\d+\)/ig
+const parenthesis = /\((.+)\)/
+const android = /((android).+)/i
+const androidNoise = /^(linux|[a-z]|wv|mobile|[a-z]{2}(-|_)[a-z]{2}|[a-z]{2})$|windows|(rv:|trident|webview|iemobile).+/i
+const androidBuild = /build\/.+\s|\sbuild\/.+/i
+const androidRelease = /android( |-)\d/i
+const windows = /((windows).+)/i
+const windowsNoise = /^(windows|ms(-|)office|microsoft|compatible|[a-z]|x64|[a-z]{2}(-|_)[a-z]{2}|[a-z]{2})$|(rv:|outlook|ms(-|)office|microsoft|trident|\.net|msie|httrack|media center|infopath|aol|opera|iemobile|webbrowser).+/i
+const windows64bitCPU = /w(ow|in)64/i
+const cros = /cros/i
+const crosNoise = /^([a-z]|x11|[a-z]{2}(-|_)[a-z]{2}|[a-z]{2})$|(rv:|trident).+/i
+const crosBuild = /\d+\.\d+\.\d+/i
+const linux = /linux|x11|ubuntu|debian/i
+const linuxNoise = /^([a-z]|x11|unknown|compatible|[a-z]{2}(-|_)[a-z]{2}|[a-z]{2})$|(rv:|java|oracle|\+http|http|unknown|mozilla|konqueror|valve).+/i
+const apple = /(cpu iphone|cpu os|iphone os|mac os|macos|intel os|ppc mac).+/i
+const appleNoise = /^([a-z]|macintosh|compatible|mimic|[a-z]{2}(-|_)[a-z]{2}|[a-z]{2}|rv|\d+\.\d+)$|(rv:|silk|valve).+/i
+const appleRelease = /(ppc |intel |)(mac|mac |)os (x |x|)\d+/i
+const otherOS = /((symbianos|nokia|blackberry|morphos|mac).+)|\/linux|freebsd|symbos|series \d+|win\d+|unix|hp-ux|bsdi|bsd|x86_64/i
+const extraSpace = /\s{2,}/
+
+const isDevice = (list, device) => list.filter(x => device.test(x)).length
+
+const getUserAgentPlatform = ({ userAgent, excludeBuild = true }) => {
+	userAgent = userAgent.trim().replace(/\s{2,}/, ' ').replace(nonPlatformParenthesis, '')
+	if (parenthesis.test(userAgent)) {
+		const platformSection = userAgent.match(parenthesis)[0]
+		const identifiers = platformSection.slice(1, -1).replace(/,/g, ';').split(';').map(x => x.trim())
+
+		if (isDevice(identifiers, android)) {
+			return identifiers
+				.map(x => androidRelease.test(x) ? androidRelease.exec(x)[0].replace('-', ' ') : x)
+				.filter(x => !(androidNoise.test(x)))
+				.join(' ')
+				.replace((excludeBuild ? androidBuild : ''), '')
+		} else if (isDevice(identifiers, windows)) {
+			return identifiers
+				.filter(x => !(windowsNoise.test(x)))
+				.join(' ')
+				.replace(/\sNT|\.0(| )/ig, '')
+				.replace(windows64bitCPU, '(64-bit)')
+		} else if (isDevice(identifiers, cros)) {
+			return identifiers
+				.filter(x => !(crosNoise.test(x)))
+				.join(' ')
+				.replace((excludeBuild ? crosBuild : ''), '')
+		} else if (isDevice(identifiers, linux)) {
+			return identifiers
+				.filter(x => !(linuxNoise.test(x)))
+				.join(' ')
+		} else if (isDevice(identifiers, apple)) {
+			return identifiers
+				.map(x => appleRelease.test(x) ? appleRelease.exec(x)[0] : x)
+				.filter(x => !(appleNoise.test(x)))
+				.join(' ')
+				.replace(/\slike mac.+/ig, '')
+		} else {
+			const other = identifiers.filter(x => otherOS.test(x))
+			if (other.legnth) {
+				return other.join(' ')
+			}
+			return identifiers.join(' ')
+		}
+	} else {
+		return 'unknown'
+	}
+}
+
 const logTestResult = ({ test, passed }) => {
 	const color = passed ? '#4cca9f' : 'lightcoral'
 	const result = passed ? 'passed' : 'failed'
@@ -80,4 +148,4 @@ const logTestResult = ({ test, passed }) => {
 	return console.log(`%c${symbol} ${test} ${result}`, `color:${color}`)
 }
 
-export { isChrome, isBrave, isFirefox, getOS, decryptUserAgent, logTestResult }
+export { isChrome, isBrave, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, logTestResult }

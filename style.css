@@ -161,6 +161,7 @@ visitor {
 
 #fingerprint-data .visitor-info {
 	margin-top: 58px;
+	position: relative;
 }
 
 #fingerprint-data  .block-text {
@@ -177,10 +178,11 @@ visitor {
 	box-shadow: 0px 1px 1px 0px #cfd0d1;
 }
 
-.time {
+.time,
+.modified  {
 	position: absolute;
-    top: 0;
-    right: 5px;
+	top: 0;
+    right: 25px;
 	font-size: 12px;
 	color: #bbb;
 	background: #fff;

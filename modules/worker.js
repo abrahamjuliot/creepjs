@@ -81,6 +81,27 @@ const inlineWorker = async caniuse => {
 		const now = +new Date(dateStringUTC)
 		return +(((utc - now)/60000).toFixed(0))
 	}
+	const getTimezoneSeasons = year => {
+		const minute = 60000
+		const winter = new Date(`1/1/${year}`)
+		const spring = new Date(`4/1/${year}`)
+		const summer = new Date(`7/1/${year}`)
+		const fall = new Date(`10/1/${year}`)
+		const winterUTCTime = +new Date(`${year}-01-01`)
+		const springUTCTime = +new Date(`${year}-04-01`)
+		const summerUTCTime = +new Date(`${year}-07-01`)
+		const fallUTCTime = +new Date(`${year}-10-01`)
+		const seasons = {
+			jan: (+winter - winterUTCTime) / minute,
+			apr: (+spring - springUTCTime) / minute,
+			jul: (+summer - summerUTCTime) / minute,
+			oct: (+fall - fallUTCTime) / minute
+		}
+		return seasons
+	}
+	const currentYear = Date().split ` ` [3]
+	const seasons1984 = getTimezoneSeasons(1984)
+	const seasonsToday = getTimezoneSeasons(currentYear)
 	const timezoneOffset = computeTimezoneOffset()
 	const hardwareConcurrency = caniuse(() => navigator, ['hardwareConcurrency'])
 	const language = caniuse(() => navigator, ['language'])
@@ -97,6 +118,8 @@ const inlineWorker = async caniuse => {
 	postMessage({
 		jsImplementation,
 		timezoneOffset,
+		seasons1984,
+		seasonsToday,
 		hardwareConcurrency,
 		language,
 		platform,
@@ -118,6 +141,7 @@ export const getWorkerScope = imports => {
 			captureError,
 			caniuse,
 			contentWindow,
+			getUserAgentPlatform,
 			logTestResult
 		}
 	} = imports
@@ -132,6 +156,7 @@ export const getWorkerScope = imports => {
 			worker.addEventListener('message', async event => {
 				const { data, data: { canvas2d } } = event
 				data.system = getOS(data.userAgent)
+				data.device = getUserAgentPlatform({ userAgent: data.userAgent })
 				data.canvas2d = { dataURI: canvas2d, $hash: await hashify(canvas2d) }
 				const $hash = await hashify(data)
 				logTestResult({ test: 'worker', passed: true })
@@ -141,7 +166,7 @@ export const getWorkerScope = imports => {
 		catch (error) {
 			logTestResult({ test: 'worker', passed: false })
 			captureError(error)
-			return resolve(undefined)
+			return resolve()
 		}
 	})
 }
