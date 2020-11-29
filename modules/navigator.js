@@ -89,7 +89,7 @@ export const getNavigator = (imports, workerScope) => {
 					return platform
 				}),
 				system: attempt(() => getOS(contentWindowNavigator.userAgent), 'userAgent system failed'),
-				device: attempt(() => getUserAgentPlatform({ userAgent: contentWindowNavigator.userAgent, excludeBuild: false }), 'userAgent device failed'),
+				device: attempt(() => getUserAgentPlatform({ userAgent: contentWindowNavigator.userAgent }), 'userAgent device failed'),
 				userAgent: attempt(() => {
 					const { userAgent } = contentWindowNavigator
 					const navigatorUserAgent = navigator.userAgent
