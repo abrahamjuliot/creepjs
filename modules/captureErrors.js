@@ -93,7 +93,6 @@ const timer = (logStart) => {
 	}
 }
 
-
 const getCapturedErrors = imports => {
 
 	const {

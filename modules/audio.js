@@ -10,7 +10,8 @@ export const getOfflineAudioContext = imports => {
 			sendToTrash,
 			documentLie,
 			lieProps,
-			contentWindow
+			contentWindow,
+			logTestResult
 		}
 	} = imports
 
@@ -19,7 +20,8 @@ export const getOfflineAudioContext = imports => {
 			const win = contentWindow ? contentWindow : window
 			const audioContext = caniuse(() => win.OfflineAudioContext || win.webkitOfflineAudioContext)
 			if (!audioContext) {
-				return resolve(undefined)
+				logTestResult({ test: 'audio', passed: false })
+				return resolve()
 			}
 			// detect lies
 			const channelDataLie = lieProps['AudioBuffer.getChannelData']
@@ -127,7 +129,7 @@ export const getOfflineAudioContext = imports => {
 							lied
 						}
 						const $hash = await hashify(response)
-						console.log('%c✔ audio passed', 'color:#4cca9f')
+						logTestResult({ test: 'audio', passed: true })
 						return resolve({...response, $hash })
 					}
 					catch (error) {
@@ -142,14 +144,16 @@ export const getOfflineAudioContext = imports => {
 							lied
 						}
 						const $hash = await hashify(response)
+						logTestResult({ test: 'audio', passed: false })
 						return resolve({...response, $hash })
 					}
 				}
 			}))
 		}
 		catch (error) {
+			logTestResult({ test: 'audio', passed: false })
 			captureError(error, 'OfflineAudioContext failed or blocked by client')
-			return resolve(undefined)
+			return resolve()
 		}
 	})
 }

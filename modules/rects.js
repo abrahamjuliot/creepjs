@@ -14,7 +14,8 @@ export const getClientRects = imports => {
 			html,
 			captureError,
 			documentLie,
-			lieProps
+			lieProps,
+			logTestResult
 		}
 	} = imports
 	
@@ -234,12 +235,13 @@ export const getClientRects = imports => {
 			]).catch(error => {
 				console.error(error.message)
 			})
-			console.log('%c✔ rects passed', 'color:#4cca9f')
+			logTestResult({ test: 'rects', passed: true })
 			return resolve({emojiRects, emojiHash, clientRects, clientHash, lied, $hash })
 		}
 		catch (error) {
+			logTestResult({ test: 'rects', passed: false })
 			captureError(error)
-			return resolve(undefined)
+			return resolve()
 		}
 	})
 }

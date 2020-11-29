@@ -117,7 +117,8 @@ export const getWorkerScope = imports => {
 			hashify,
 			captureError,
 			caniuse,
-			contentWindow
+			contentWindow,
+			logTestResult
 		}
 	} = imports
 
@@ -125,18 +126,20 @@ export const getWorkerScope = imports => {
 		try {
 			const worker = newWorker(inlineWorker, { require: [ isFirefox, contentWindow, caniuse, captureError ] })
 			if (!worker) {
-				return resolve(undefined)
+				logTestResult({ test: 'worker', passed: false })
+				return resolve()
 			}
 			worker.addEventListener('message', async event => {
 				const { data, data: { canvas2d } } = event
 				data.system = getOS(data.userAgent)
 				data.canvas2d = { dataURI: canvas2d, $hash: await hashify(canvas2d) }
 				const $hash = await hashify(data)
-				console.log('%c✔ worker passed', 'color:#4cca9f')
+				logTestResult({ test: 'worker', passed: true })
 				return resolve({ ...data, $hash })
 			}, false)
 		}
 		catch (error) {
+			logTestResult({ test: 'worker', passed: false })
 			captureError(error)
 			return resolve(undefined)
 		}

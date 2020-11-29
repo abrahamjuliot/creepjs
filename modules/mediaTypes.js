@@ -8,7 +8,8 @@ export const getMediaTypes = imports => {
 	const {
 		require: {
 			hashify,
-			captureError
+			captureError,
+			logTestResult
 		}
 	} = imports
 
@@ -29,12 +30,13 @@ export const getMediaTypes = imports => {
 				return mediaTypes.push(data)
 			})
 			const $hash = await hashify(mediaTypes)
-			console.log('%c✔ media types passed', 'color:#4cca9f')
+			logTestResult({ test: 'media types', passed: true })
 			return resolve({ mediaTypes, $hash })
 		}
 		catch (error) {
+			logTestResult({ test: 'media types', passed: false })
 			captureError(error)
-			return resolve(undefined)
+			return resolve()
 		}
 	})
 }

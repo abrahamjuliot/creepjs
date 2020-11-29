@@ -182,7 +182,8 @@ export const getCSSStyleDeclarationVersion = imports => {
 		require: {
 			instanceId,
 			hashify,
-			captureError
+			captureError,
+			logTestResult
 		}
 	} = imports
 
@@ -213,12 +214,13 @@ export const getCSSStyleDeclarationVersion = imports => {
 				)
 			}
 			const $hash = await hashify(data)
-			console.log('%c✔ computed style passed', 'color:#4cca9f')
+			logTestResult({ test: 'computed style', passed: true })
 			return resolve({ ...data, $hash })
 		}
 		catch (error) {
+			logTestResult({ test: 'computed style', passed: false })
 			captureError(error)
-			return resolve(undefined)
+			return resolve()
 		}
 	})
 }

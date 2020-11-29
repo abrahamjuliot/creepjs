@@ -73,4 +73,11 @@ const decryptUserAgent = ({ua, os, isBrave}) => {
     return 'unknown'
 }
 
-export { isChrome, isBrave, isFirefox, getOS, decryptUserAgent }
+const logTestResult = ({ test, passed }) => {
+	const color = passed ? '#4cca9f' : 'lightcoral'
+	const result = passed ? 'passed' : 'failed'
+	const symbol = passed ? '✔' : '-'
+	return console.log(`%c${symbol} ${test} ${result}`, `color:${color}`)
+}
+
+export { isChrome, isBrave, isFirefox, getOS, decryptUserAgent, logTestResult }

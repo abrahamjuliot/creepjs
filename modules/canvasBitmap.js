@@ -7,7 +7,8 @@ export const getCanvasBitmapRenderer = imports => {
 			caniuse,
 			lieProps,
 			contentWindow,
-			hyperNestedIframeWindow
+			hyperNestedIframeWindow,
+			logTestResult
 		}
 	} = imports
 
@@ -28,21 +29,23 @@ export const getCanvasBitmapRenderer = imports => {
 			return resolve(new Promise(resolve => {
 				image.onload = async () => {
 					if (!caniuse(() => createImageBitmap)) {
-						return resolve(undefined)
+						logTestResult({ test: 'canvas bitmaprenderer', passed: false })
+						return resolve()
 					}
 					const bitmap = await createImageBitmap(image, 0, 0, image.width, image.height)
 					context.transferFromImageBitmap(bitmap)
 					const dataURI = canvas.toDataURL()
 					const $hash = await hashify(dataURI)
 					const response = { dataURI, lied, $hash }
-					console.log('%c✔ canvas bitmaprenderer passed', 'color:#4cca9f')
+					logTestResult({ test: 'canvas bitmaprenderer', passed: true })
 					return resolve(response)
 				}
 			}))	
 		}
 		catch (error) {
+			logTestResult({ test: 'canvas bitmaprenderer', passed: false })
 			captureError(error)
-			return resolve(undefined)
+			return resolve()
 		}
 	})
 }

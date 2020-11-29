@@ -4,7 +4,8 @@ export const getCloudflare = imports => {
 		require: {
 			getOS,
 			hashify,
-			captureError
+			captureError,
+			logTestResult
 		}
 	} = imports
 
@@ -22,12 +23,13 @@ export const getCloudflare = imports => {
 			})
 			data.uag = getOS(data.uag)
 			const $hash = await hashify(data)
-			console.log('%c✔ cloudflare passed', 'color:#4cca9f')
+			logTestResult({ test: 'cloudflare', passed: true })
 			return resolve({ ...data, $hash })
 		}
 		catch (error) {
+			logTestResult({ test: 'cloudflare', passed: false })
 			captureError(error, 'cloudflare.com: failed or client blocked')
-			return resolve(undefined)
+			return resolve()
 		}
 	})
 }

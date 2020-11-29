@@ -8,7 +8,8 @@ export const getMaths = imports => {
 			attempt,
 			documentLie,
 			lieProps,
-			contentWindow						
+			contentWindow,
+			logTestResult						
 		}
 	} = imports
 
@@ -207,12 +208,13 @@ export const getMaths = imports => {
 			})
 			
 			const $hash = await hashify(data)
-			console.log('%c✔ math passed', 'color:#4cca9f')
+			logTestResult({ test: 'math', passed: true })
 			return resolve({ data, lied, $hash })
 		}
 		catch (error) {
+			logTestResult({ test: 'math', passed: false })
 			captureError(error)
-			return resolve(undefined)
+			return resolve()
 		}
 	})
 }

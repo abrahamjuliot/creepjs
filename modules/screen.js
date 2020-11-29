@@ -58,7 +58,8 @@ export const getScreen = imports => {
 			sendToTrash,
 			trustInteger,
 			lieProps,
-			contentWindow
+			contentWindow,
+			logTestResult
 		}
 	} = imports
 	
@@ -142,12 +143,13 @@ export const getScreen = imports => {
 				lied
 			}
 			const $hash = await hashify(data)
-			console.log('%c✔ screen passed', 'color:#4cca9f')
+			logTestResult({ test: 'screen', passed: true })
 			return resolve({ ...data, $hash })
 		}
 		catch (error) {
+			logTestResult({ test: 'screen', passed: false })
 			captureError(error)
-			return resolve(undefined)
+			return resolve()
 		}
 	})
 }

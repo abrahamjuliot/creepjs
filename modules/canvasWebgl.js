@@ -11,7 +11,8 @@ export const getCanvasWebgl = imports => {
 			proxyBehavior,
 			lieProps,
 			contentWindow,
-			hyperNestedIframeWindow
+			hyperNestedIframeWindow,
+			logTestResult
 		}
 	} = imports
 
@@ -265,12 +266,13 @@ export const getCanvasWebgl = imports => {
 			data.matchingDataURI = data.dataURI.$hash === data.dataURI2.$hash
 
 			const $hash = await hashify(data)
-			console.log('%c✔ canvas webgl passed', 'color:#4cca9f')
+			logTestResult({ test: 'webgl', passed: true })
 			return resolve({ ...data, $hash })
 		}
 		catch (error) {
+			logTestResult({ test: 'webgl', passed: false })
 			captureError(error)
-			return resolve(undefined)
+			return resolve()
 		}
 	})
 }

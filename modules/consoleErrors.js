@@ -15,7 +15,8 @@ export const getConsoleErrors = imports => {
 	const {
 		require: {
 			hashify,
-			captureError
+			captureError,
+			logTestResult
 		}
 	} = imports
 
@@ -34,12 +35,13 @@ export const getConsoleErrors = imports => {
 			]
 			const errors = getErrors(errorTests)
 			const $hash = await hashify(errors)
-			console.log('%c✔ console errors passed', 'color:#4cca9f')
+			logTestResult({ test: 'console errors', passed: true })
 			return resolve({errors, $hash })
 		}
 		catch (error) {
+			logTestResult({ test: 'console errors', passed: false })
 			captureError(error)
-			return resolve(undefined)
+			return resolve()
 		}
 	})
 }

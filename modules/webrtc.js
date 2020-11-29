@@ -6,7 +6,8 @@ export const getWebRTCData = (imports, cloudflare) => {
 			hashify,
 			captureError,
 			caniuse,
-			contentWindow
+			contentWindow,
+			logTestResult
 		}
 	} = imports
 	
@@ -31,7 +32,7 @@ export const getWebRTCData = (imports, cloudflare) => {
 			}
 			
 			if (!rtcPeerConnection) {
-				console.log('%c- webrtc failed', 'color:lightcoral')
+				logTestResult({ test: 'webrtc', passed: false })
 				return resolve()
 			}
 			const connection = new rtcPeerConnection({
@@ -77,7 +78,7 @@ export const getWebRTCData = (imports, cloudflare) => {
 						connection: connectionLineIpAddress
 					}
 					const $hash = await hashify(data)
-					console.log('%c✔ webrtc passed', 'color:#4cca9f')
+					logTestResult({ test: 'webrtc', passed: true })
 					return resolve({ ...data, $hash })
 				} else {
 					return
@@ -86,7 +87,7 @@ export const getWebRTCData = (imports, cloudflare) => {
 			
 			setTimeout(() => {
 				if (!success) {
-					console.log('%c- webrtc failed', 'color:lightcoral')
+					logTestResult({ test: 'webrtc', passed: false })
 					captureError(new Error('RTCIceCandidate failed'))
 					return resolve()
 				}
@@ -97,7 +98,7 @@ export const getWebRTCData = (imports, cloudflare) => {
 				.catch(error => console.log(error))
 		}
 		catch (error) {
-			console.log('%c- webrtc failed', 'color:lightcoral')
+			logTestResult({ test: 'webrtc', passed: false })
 			captureError(error, 'RTCPeerConnection failed or blocked by client')
 			return resolve()
 		}

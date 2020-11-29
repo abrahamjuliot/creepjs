@@ -15,7 +15,8 @@ export const getNavigator = (imports, workerScope) => {
 			documentLie,
 			lieProps,
 			contentWindow,
-			hyperNestedIframeWindow
+			hyperNestedIframeWindow,
+			logTestResult
 		}
 	} = imports
 
@@ -413,10 +414,11 @@ export const getNavigator = (imports, workerScope) => {
 				}, 'highEntropyValues failed')
 			}
 			const $hash = await hashify(data)
-			console.log('%c✔ navigator passed', 'color:#4cca9f')
+			logTestResult({ test: 'navigator', passed: true })
 			return resolve({ ...data, lied, $hash })
 		}
 		catch (error) {
+			logTestResult({ test: 'navigator', passed: false })
 			captureError(error, 'Navigator failed or blocked by client')
 			return resolve(undefined)
 		}

@@ -9,7 +9,8 @@ export const getFonts = (imports, fonts) => {
 			html,
 			captureError,
 			instanceId,
-			lieProps
+			lieProps,
+			logTestResult
 		}
 	} = imports
 
@@ -127,12 +128,13 @@ export const getFonts = (imports, fonts) => {
 			)
 			const fontList = Object.keys(detectedFonts)
 			const $hash = await hashify(fontList)
-			console.log('%c✔ fonts passed', 'color:#4cca9f')
+			logTestResult({ test: 'fonts', passed: true })
 			return resolve({fonts: fontList, $hash })
 		}
 		catch (error) {
+			logTestResult({ test: 'fonts', passed: false })
 			captureError(error)
-			return resolve(undefined)
+			return resolve()
 		}
 	})
 }

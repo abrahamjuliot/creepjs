@@ -5,7 +5,8 @@ export const getHTMLElementVersion = imports => {
 			hashify,
 			instanceId,
 			captureError,
-			parentNest
+			parentNest,
+			logTestResult
 		}
 	} = imports
 
@@ -35,12 +36,13 @@ export const getHTMLElementVersion = imports => {
 			}
 
 			const $hash = await hashify(keys)
-			console.log('%c✔ html element passed', 'color:#4cca9f')
+			logTestResult({ test: 'html element', passed: true })
 			return resolve({ keys, $hash })
 		}
 		catch (error) {
+			logTestResult({ test: 'html element', passed: false })
 			captureError(error)
-			return resolve(undefined)
+			return resolve()
 		}
 	})
 }

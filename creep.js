@@ -1,4 +1,4 @@
-import { isChrome, isBrave, isFirefox, getOS, decryptUserAgent } from './modules/helpers.js'
+import { isChrome, isBrave, isFirefox, getOS, decryptUserAgent, logTestResult } from './modules/helpers.js'
 import { patch, html, note, count, modal } from './modules/html.js'
 import { hashMini, instanceId, hashify } from './modules/crypto.js'
 
@@ -35,6 +35,7 @@ const imports = {
 		isFirefox,
 		getOS,
 		decryptUserAgent,
+		logTestResult,
 		// crypto
 		instanceId,
 		hashMini,
@@ -1484,7 +1485,7 @@ const imports = {
 					</div>
 				</div>
 				`)
-				return console.log(`🔮Browser detection: ${JSON.stringify(data, null, '\t')}`)
+				return console.log(`user agents pending review: ${data.pendingReview}`)
 			})
 			.catch(error => {
 				return console.error('Error!', error.message)

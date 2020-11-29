@@ -4,7 +4,8 @@ export const getVoices = imports => {
 		require: {
 			hashify,
 			captureError,
-			contentWindow
+			contentWindow,
+			logTestResult
 		}
 	} = imports
 		
@@ -20,18 +21,20 @@ export const getVoices = imports => {
 				check.chromeOS = voices.filter(key => (/chrome os/i).test(key.name)).length
 				check.android = voices.filter(key => (/android/i).test(key.name)).length
 				const $hash = await hashify(voices)
-				console.log('%c✔ voices passed', 'color:#4cca9f')
+				logTestResult({ test: 'speech', passed: true })
 				return resolve({ voices, ...check, $hash })
 			}
 			if (!('speechSynthesis' in win)) {
-				return resolve(undefined)
+				logTestResult({ test: 'speech', passed: false })
+				return resolve()
 			}
 			else if (!('chrome' in win)) {
 				voices = await win.speechSynthesis.getVoices()
 				return respond(resolve, voices)
 			}
 			else if (!win.speechSynthesis.getVoices || win.speechSynthesis.getVoices() == undefined) {
-				return resolve(undefined)
+				logTestResult({ test: 'speech', passed: false })
+				return resolve()
 			}
 			else if (win.speechSynthesis.getVoices().length) {
 				voices = win.speechSynthesis.getVoices()
@@ -44,6 +47,7 @@ export const getVoices = imports => {
 			}
 		}
 		catch (error) {
+			logTestResult({ test: 'speech', passed: false })
 			captureError(error)
 			return resolve(undefined)
 		}

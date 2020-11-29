@@ -5,7 +5,8 @@ export const getMediaDevices = imports => {
 		require: {
 			hashify,
 			captureError,
-			contentWindow
+			contentWindow,
+			logTestResult
 		}
 	} = imports
 
@@ -13,10 +14,12 @@ export const getMediaDevices = imports => {
 		try {
 			const contentWindowNavigator = contentWindow ? contentWindow.navigator : navigator
 			if (!('mediaDevices' in contentWindowNavigator)) {
-				return resolve(undefined)
+				logTestResult({ test: 'media devices', passed: false })
+				return resolve()
 			}
 			if (!contentWindowNavigator.mediaDevices || !contentWindowNavigator.mediaDevices.enumerateDevices) {
-				return resolve(undefined)
+				logTestResult({ test: 'media devices', passed: false })
+				return resolve()
 			}
 			const mediaDevicesEnumerated = await contentWindowNavigator.mediaDevices.enumerateDevices()
 			const mediaDevices = (
@@ -25,12 +28,13 @@ export const getMediaDevices = imports => {
 				undefined
 			)
 			const $hash = await hashify(mediaDevices)
-			console.log('%c✔ media devices passed', 'color:#4cca9f')
+			logTestResult({ test: 'media devices', passed: true })
 			return resolve({ mediaDevices, $hash })
 		}
 		catch (error) {
+			logTestResult({ test: 'media devices', passed: false })
 			captureError(error)
-			return resolve(undefined)
+			return resolve()
 		}
 	})
 }

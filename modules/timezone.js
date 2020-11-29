@@ -8,7 +8,8 @@ export const getTimezone = imports => {
 			caniuse,
 			documentLie,
 			lieProps,
-			contentWindow
+			contentWindow,
+			logTestResult
 		}
 	} = imports
 	
@@ -254,12 +255,13 @@ export const getTimezone = imports => {
 				lied
 			}
 			const $hash = await hashify(data)
-			console.log('%c✔ timezone passed', 'color:#4cca9f')
+			logTestResult({ test: 'timezone', passed: true })
 			return resolve({...data, $hash })
 		}
 		catch (error) {
+			logTestResult({ test: 'timezone', passed: false })
 			captureError(error)
-			return resolve(undefined)
+			return resolve()
 		}
 	})
 }
