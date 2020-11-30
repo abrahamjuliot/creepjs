@@ -114,7 +114,20 @@
 				return identifiers
 					.filter(x => !(windowsNoise.test(x)))
 					.join(' ')
-					.replace(/\sNT|\.0(| )/ig, '')
+					.replace(/\sNT (\d+\.\d+)/, (match, version) => {
+						return (
+							version == '10.0' ? ' 10' :
+							version == '6.3' ? ' 8.1' :
+							version == '6.2' ? ' 8' :
+							version == '6.1' ? ' 7' :
+							version == '6.0' ? ' Vista' :
+							version == '5.2' ? ' XP Pro' :
+							version == '5.1' ? ' XP' :
+							version == '5.0' ? ' 2000' :
+							version == '4.0' ? match :
+							' ' + version
+						)
+					})
 					.replace(windows64bitCPU, '(64-bit)')
 			} else if (isDevice(identifiers, cros)) {
 				return identifiers
