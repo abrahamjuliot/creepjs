@@ -363,26 +363,34 @@ input[type="radio"] {
 	z-index: 1000;
 }
 .modal-content {
+	border: 1px solid #f9f9f9;
 	font-size: 13px;
-	margin: 100px auto 100px;
-	background: #fff;
-	min-height: 100px;
-	padding: 1rem;
-	max-width: 500px;
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	box-shadow: 0px 2px 2px 0px #cfd0d1;
-	cursor: text;
+    margin: 0 auto;
+    background: #fff;
+    min-height: 100px;
+    padding: 2rem 1rem;
+    max-width: 600px;
+    max-height: 90%;
+    position: absolute;
+    overflow-y: auto;
+    top: 10%;
+    bottom: 10%;
+    left: 0;
+    right: 0;
+    box-shadow: 0px 2px 2px 0px #cfd0d1;
+    cursor: text;
 	-webkit-user-select: text;
 }
 
 .modal-close-btn {
 	position: absolute;
-	top: -0.5rem;
-	right: 0.25rem;
-	font-size: 2em;
+    top: 10px;
+    text-align: center;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    font-size: 30px;
+    line-height: 25px;
 }
 
 .modal-container,
