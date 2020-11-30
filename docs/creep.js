@@ -3551,6 +3551,24 @@
 					}
 					return { season: [...set], lie }
 				};
+				const getTimezoneOffsetSeasons = year => {
+					const minute = 60000;
+					const winter = new contentWindowDate(`1/1/${year}`);
+					const spring = new contentWindowDate(`4/1/${year}`);
+					const summer = new contentWindowDate(`7/1/${year}`);
+					const fall = new contentWindowDate(`10/1/${year}`);
+					const winterUTCTime = +new contentWindowDate(`${year}-01-01`);
+					const springUTCTime = +new contentWindowDate(`${year}-04-01`);
+					const summerUTCTime = +new contentWindowDate(`${year}-07-01`);
+					const fallUTCTime = +new contentWindowDate(`${year}-10-01`);
+					const seasons = [
+						(+winter - winterUTCTime) / minute,
+						(+spring - springUTCTime) / minute,
+						(+summer - summerUTCTime) / minute,
+						(+fall - fallUTCTime) / minute
+					];
+					return seasons
+				};
 				const getRelativeTime = () => {
 					const locale = attempt(() => contentWindowIntl.DateTimeFormat().resolvedOptions().locale);
 					if (!locale || !caniuse(() => new contentWindowIntl.RelativeTimeFormat)) {
@@ -3690,6 +3708,11 @@
 				const timezone = (''+new contentWindowDate()).replace(notWithinParentheses, '');
 				const relativeTime = getRelativeTime();
 				const locale = getLocale();
+				const timezoneOffsetHistory = { };
+				const years = [...Array(50)].map((val, i) => !i ? 1970 : 1970+i);
+				years.forEach(year => {
+					return (timezoneOffsetHistory[year] = getTimezoneOffsetSeasons(year))
+				});
 				// document lies
 				lied = (
 					lieProps['Date.getTimezoneOffset'] ||
@@ -3719,6 +3742,7 @@
 					timezoneOffset,
 					timezoneOffsetComputed,
 					timezoneOffsetMeasured: measuredTimezones,
+					timezoneOffsetHistory,
 					matchingOffsets,
 					relativeTime,
 					locale,
@@ -3983,7 +4007,7 @@
 			const now = +new Date(dateStringUTC);
 			return +(((utc - now)/60000).toFixed(0))
 		};
-		const getTimezoneSeasons = year => {
+		const getTimezoneOffsetSeasons = year => {
 			const minute = 60000;
 			const winter = new Date(`1/1/${year}`);
 			const spring = new Date(`4/1/${year}`);
@@ -4002,8 +4026,8 @@
 			return seasons
 		};
 		const currentYear = Date().split ` ` [3];
-		const seasons1984 = getTimezoneSeasons(1984);
-		const seasonsToday = getTimezoneSeasons(currentYear);
+		const seasons1984 = getTimezoneOffsetSeasons(1984);
+		const seasonsToday = getTimezoneOffsetSeasons(currentYear);
 		const timezoneOffset = computeTimezoneOffset();
 		const hardwareConcurrency = caniuse(() => navigator, ['hardwareConcurrency']);
 		const language = caniuse(() => navigator, ['language']);
@@ -4336,10 +4360,7 @@
 			timezone: !fp.timezone || fp.timezone.lied ? undefined : {
 				timezone: fp.timezone.timezone,
 				timezoneLocation: fp.timezone.timezoneLocation,
-				//timezoneOffset: fp.timezone.timezoneOffset,
-				//timezoneOffsetComputed: fp.timezone.timezoneOffsetComputed,
-				timezoneOffsetMeasured: fp.timezone.timezoneOffsetMeasured,
-				//matchingOffsets: fp.timezone.matchingOffsets,
+				timezoneOffsetHistory: fp.timezone.timezoneOffsetHistory,
 				relativeTime: fp.timezone.relativeTime,
 				locale: fp.timezone.locale,
 				writingSystemKeys: fp.timezone.writingSystemKeys,
@@ -4545,8 +4566,8 @@
 			`<div class="col-six">
 				<strong>Worker</strong>
 				<div>timezone offset: ${note.blocked}</div>
-				<div>seasons in ${Date().split ` ` [3]}: ${note.blocked}</div>
-				<div>seasons in 1984: ${note.blocked}</div>
+				<div>offsets in ${Date().split ` ` [3]}: ${note.blocked}</div>
+				<div>offsets in 1984: ${note.blocked}</div>
 				<div>language: ${note.blocked}</div>
 				<div>hardwareConcurrency: ${note.blocked}</div>
 				<div>js runtime: ${note.blocked}</div>
@@ -4569,8 +4590,8 @@
 			<div class="col-six">
 				<strong>Worker</strong><span class="hash">${hashMini(data.$hash)}</span>
 				<div>timezone offset: ${data.timezoneOffset != undefined ? ''+data.timezoneOffset : note.unsupported}</div>
-				<div>seasons in ${Date().split ` ` [3]}: ${Object.values(data.seasonsToday).join('|')}</div>
-				<div>seasons in 1984: ${Object.values(data.seasons1984).join('|')}</div>
+				<div>offsets in ${Date().split ` ` [3]}: ${Object.values(data.seasonsToday).join('|')}</div>
+				<div>offsets in 1984: ${Object.values(data.seasons1984).join('|')}</div>
 				<div>language: ${data.language || note.unsupported}</div>
 				<div>hardwareConcurrency: ${data.hardwareConcurrency || note.unsupported}</div>
 				<div>js runtime: ${data.jsImplementation}</div>
@@ -4884,6 +4905,7 @@
 				<div>timezone location: ${note.blocked}</div>
 				<div>timezone offset: ${note.blocked}</div>
 				<div>timezone offset computed: ${note.blocked}</div>
+				<div>timezone offset history: ${note.blocked}</div>
 			</div>
 			<div class="col-six">
 				<div>matching offsets: ${note.blocked}</div>
@@ -4901,6 +4923,7 @@
 					timezoneOffset: timezoneOffset,
 					timezoneOffsetComputed,
 					timezoneOffsetMeasured: measuredTimezones,
+					timezoneOffsetHistory,
 					matchingOffsets,
 					relativeTime,
 					locale,
@@ -4916,6 +4939,25 @@
 				<div>timezone location: ${timezoneLocation}</div>
 				<div>timezone offset: ${''+timezoneOffset}</div>
 				<div>timezone offset computed: ${''+timezoneOffsetComputed}</div>
+				<div>timezone offset history: ${
+					modal(`${id}-timezone-offset-history`, `
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>Jan</strong>&nbsp;&nbsp;&nbsp;<strong>Apr</strong>&nbsp;&nbsp;&nbsp;<strong>Jul</strong>&nbsp;&nbsp;&nbsp;<strong>Oct</strong><br>`+Object.keys(timezoneOffsetHistory).map(year => {
+						const baseYear = timezoneOffsetHistory[1970];
+						const seasons = timezoneOffsetHistory[year];
+						const jan = seasons[0];
+						const apr = seasons[1];
+						const jul = seasons[2];
+						const oct = seasons[3];
+						const style = `color: #2da568;background:#2da5681f;`;
+						return `
+							<strong>${year}</strong>: 
+							<span style="${baseYear[0] != jan ? style : ''}">${jan}</span> | 
+							<span style="${baseYear[1] != apr ? style : ''}">${apr}</span> | 
+							<span style="${baseYear[2] != jul ? style : ''}">${jul}</span> | 
+							<span style="${baseYear[3] != oct ? style : ''}">${oct}</span>
+						`
+					}).join('<br>'))
+				}</div>
 			</div>
 			<div class="col-six">
 				<div>matching offsets: ${''+matchingOffsets}</div>

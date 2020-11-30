@@ -291,10 +291,7 @@ const imports = {
 		timezone: !fp.timezone || fp.timezone.lied ? undefined : {
 			timezone: fp.timezone.timezone,
 			timezoneLocation: fp.timezone.timezoneLocation,
-			//timezoneOffset: fp.timezone.timezoneOffset,
-			//timezoneOffsetComputed: fp.timezone.timezoneOffsetComputed,
-			timezoneOffsetMeasured: fp.timezone.timezoneOffsetMeasured,
-			//matchingOffsets: fp.timezone.matchingOffsets,
+			timezoneOffsetHistory: fp.timezone.timezoneOffsetHistory,
 			relativeTime: fp.timezone.relativeTime,
 			locale: fp.timezone.locale,
 			writingSystemKeys: fp.timezone.writingSystemKeys,
@@ -500,8 +497,8 @@ const imports = {
 			`<div class="col-six">
 				<strong>Worker</strong>
 				<div>timezone offset: ${note.blocked}</div>
-				<div>seasons in ${Date().split ` ` [3]}: ${note.blocked}</div>
-				<div>seasons in 1984: ${note.blocked}</div>
+				<div>offsets in ${Date().split ` ` [3]}: ${note.blocked}</div>
+				<div>offsets in 1984: ${note.blocked}</div>
 				<div>language: ${note.blocked}</div>
 				<div>hardwareConcurrency: ${note.blocked}</div>
 				<div>js runtime: ${note.blocked}</div>
@@ -524,8 +521,8 @@ const imports = {
 			<div class="col-six">
 				<strong>Worker</strong><span class="hash">${hashMini(data.$hash)}</span>
 				<div>timezone offset: ${data.timezoneOffset != undefined ? ''+data.timezoneOffset : note.unsupported}</div>
-				<div>seasons in ${Date().split ` ` [3]}: ${Object.values(data.seasonsToday).join('|')}</div>
-				<div>seasons in 1984: ${Object.values(data.seasons1984).join('|')}</div>
+				<div>offsets in ${Date().split ` ` [3]}: ${Object.values(data.seasonsToday).join('|')}</div>
+				<div>offsets in 1984: ${Object.values(data.seasons1984).join('|')}</div>
 				<div>language: ${data.language || note.unsupported}</div>
 				<div>hardwareConcurrency: ${data.hardwareConcurrency || note.unsupported}</div>
 				<div>js runtime: ${data.jsImplementation}</div>
@@ -839,6 +836,7 @@ const imports = {
 				<div>timezone location: ${note.blocked}</div>
 				<div>timezone offset: ${note.blocked}</div>
 				<div>timezone offset computed: ${note.blocked}</div>
+				<div>timezone offset history: ${note.blocked}</div>
 			</div>
 			<div class="col-six">
 				<div>matching offsets: ${note.blocked}</div>
@@ -856,6 +854,7 @@ const imports = {
 					timezoneOffset: timezoneOffset,
 					timezoneOffsetComputed,
 					timezoneOffsetMeasured: measuredTimezones,
+					timezoneOffsetHistory,
 					matchingOffsets,
 					relativeTime,
 					locale,
@@ -871,6 +870,25 @@ const imports = {
 				<div>timezone location: ${timezoneLocation}</div>
 				<div>timezone offset: ${''+timezoneOffset}</div>
 				<div>timezone offset computed: ${''+timezoneOffsetComputed}</div>
+				<div>timezone offset history: ${
+					modal(`${id}-timezone-offset-history`, `
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>Jan</strong>&nbsp;&nbsp;&nbsp;<strong>Apr</strong>&nbsp;&nbsp;&nbsp;<strong>Jul</strong>&nbsp;&nbsp;&nbsp;<strong>Oct</strong><br>`+Object.keys(timezoneOffsetHistory).map(year => {
+						const baseYear = timezoneOffsetHistory[1970]
+						const seasons = timezoneOffsetHistory[year]
+						const jan = seasons[0]
+						const apr = seasons[1]
+						const jul = seasons[2]
+						const oct = seasons[3]
+						const style = `color: #2da568;background:#2da5681f;`
+						return `
+							<strong>${year}</strong>: 
+							<span style="${baseYear[0] != jan ? style : ''}">${jan}</span> | 
+							<span style="${baseYear[1] != apr ? style : ''}">${apr}</span> | 
+							<span style="${baseYear[2] != jul ? style : ''}">${jul}</span> | 
+							<span style="${baseYear[3] != oct ? style : ''}">${oct}</span>
+						`
+					}).join('<br>'))
+				}</div>
 			</div>
 			<div class="col-six">
 				<div>matching offsets: ${''+matchingOffsets}</div>

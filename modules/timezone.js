@@ -80,6 +80,24 @@ export const getTimezone = imports => {
 				}
 				return { season: [...set], lie }
 			}
+			const getTimezoneOffsetSeasons = year => {
+				const minute = 60000
+				const winter = new contentWindowDate(`1/1/${year}`)
+				const spring = new contentWindowDate(`4/1/${year}`)
+				const summer = new contentWindowDate(`7/1/${year}`)
+				const fall = new contentWindowDate(`10/1/${year}`)
+				const winterUTCTime = +new contentWindowDate(`${year}-01-01`)
+				const springUTCTime = +new contentWindowDate(`${year}-04-01`)
+				const summerUTCTime = +new contentWindowDate(`${year}-07-01`)
+				const fallUTCTime = +new contentWindowDate(`${year}-10-01`)
+				const seasons = [
+					(+winter - winterUTCTime) / minute,
+					(+spring - springUTCTime) / minute,
+					(+summer - summerUTCTime) / minute,
+					(+fall - fallUTCTime) / minute
+				]
+				return seasons
+			}
 			const getRelativeTime = () => {
 				const locale = attempt(() => contentWindowIntl.DateTimeFormat().resolvedOptions().locale)
 				if (!locale || !caniuse(() => new contentWindowIntl.RelativeTimeFormat)) {
@@ -219,6 +237,11 @@ export const getTimezone = imports => {
 			const timezone = (''+new contentWindowDate()).replace(notWithinParentheses, '')
 			const relativeTime = getRelativeTime()
 			const locale = getLocale()
+			const timezoneOffsetHistory = { }
+			const years = [...Array(50)].map((val, i) => !i ? 1970 : 1970+i)
+			years.forEach(year => {
+				return (timezoneOffsetHistory[year] = getTimezoneOffsetSeasons(year))
+			})
 			// document lies
 			lied = (
 				lieProps['Date.getTimezoneOffset'] ||
@@ -248,6 +271,7 @@ export const getTimezone = imports => {
 				timezoneOffset,
 				timezoneOffsetComputed,
 				timezoneOffsetMeasured: measuredTimezones,
+				timezoneOffsetHistory,
 				matchingOffsets,
 				relativeTime,
 				locale,

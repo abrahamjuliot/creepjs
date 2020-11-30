@@ -81,7 +81,7 @@ const inlineWorker = async caniuse => {
 		const now = +new Date(dateStringUTC)
 		return +(((utc - now)/60000).toFixed(0))
 	}
-	const getTimezoneSeasons = year => {
+	const getTimezoneOffsetSeasons = year => {
 		const minute = 60000
 		const winter = new Date(`1/1/${year}`)
 		const spring = new Date(`4/1/${year}`)
@@ -100,8 +100,8 @@ const inlineWorker = async caniuse => {
 		return seasons
 	}
 	const currentYear = Date().split ` ` [3]
-	const seasons1984 = getTimezoneSeasons(1984)
-	const seasonsToday = getTimezoneSeasons(currentYear)
+	const seasons1984 = getTimezoneOffsetSeasons(1984)
+	const seasonsToday = getTimezoneOffsetSeasons(currentYear)
 	const timezoneOffset = computeTimezoneOffset()
 	const hardwareConcurrency = caniuse(() => navigator, ['hardwareConcurrency'])
 	const language = caniuse(() => navigator, ['language'])
