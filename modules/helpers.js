@@ -108,6 +108,7 @@ const getUserAgentPlatform = ({ userAgent, excludeBuild = true }) => {
 				.filter(x => !(androidNoise.test(x)))
 				.join(' ')
 				.replace((excludeBuild ? androidBuild : ''), '')
+				.trim().replace(/\s{2,}/, ' ')
 		} else if (isDevice(identifiers, windows)) {
 			return identifiers
 				.filter(x => !(windowsNoise.test(x)))
@@ -127,25 +128,29 @@ const getUserAgentPlatform = ({ userAgent, excludeBuild = true }) => {
 					)
 				})
 				.replace(windows64bitCPU, '(64-bit)')
+				.trim().replace(/\s{2,}/, ' ')
 		} else if (isDevice(identifiers, cros)) {
 			return identifiers
 				.filter(x => !(crosNoise.test(x)))
 				.join(' ')
 				.replace((excludeBuild ? crosBuild : ''), '')
+				.trim().replace(/\s{2,}/, ' ')
 		} else if (isDevice(identifiers, linux)) {
 			return identifiers
 				.filter(x => !(linuxNoise.test(x)))
 				.join(' ')
+				.trim().replace(/\s{2,}/, ' ')
 		} else if (isDevice(identifiers, apple)) {
 			return identifiers
 				.map(x => appleRelease.test(x) ? appleRelease.exec(x)[0] : x)
 				.filter(x => !(appleNoise.test(x)))
 				.join(' ')
 				.replace(/\slike mac.+/ig, '')
+				.trim().replace(/\s{2,}/, ' ')
 		} else {
 			const other = identifiers.filter(x => otherOS.test(x))
 			if (other.legnth) {
-				return other.join(' ')
+				return other.join(' ').trim().replace(/\s{2,}/, ' ')
 			}
 			return identifiers.join(' ')
 		}
