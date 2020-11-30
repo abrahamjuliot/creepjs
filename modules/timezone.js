@@ -238,7 +238,7 @@ export const getTimezone = imports => {
 			const relativeTime = getRelativeTime()
 			const locale = getLocale()
 			const timezoneOffsetHistory = { }
-			const years = [...Array(50)].map((val, i) => !i ? 1970 : 1970+i)
+			const years = [...Array(71)].map((val, i) => !i ? 1950 : 1950+i)
 			years.forEach(year => {
 				return (timezoneOffsetHistory[year] = getTimezoneOffsetSeasons(year))
 			})

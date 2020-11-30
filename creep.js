@@ -873,7 +873,7 @@ const imports = {
 				<div>timezone offset history: ${
 					modal(`${id}-timezone-offset-history`, `
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>Jan</strong>&nbsp;&nbsp;&nbsp;<strong>Apr</strong>&nbsp;&nbsp;&nbsp;<strong>Jul</strong>&nbsp;&nbsp;&nbsp;<strong>Oct</strong><br>`+Object.keys(timezoneOffsetHistory).map(year => {
-						const baseYear = timezoneOffsetHistory[1970]
+						const baseYear = timezoneOffsetHistory[1950]
 						const seasons = timezoneOffsetHistory[year]
 						const jan = seasons[0]
 						const apr = seasons[1]

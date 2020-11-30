@@ -3709,7 +3709,7 @@
 				const relativeTime = getRelativeTime();
 				const locale = getLocale();
 				const timezoneOffsetHistory = { };
-				const years = [...Array(50)].map((val, i) => !i ? 1970 : 1970+i);
+				const years = [...Array(71)].map((val, i) => !i ? 1950 : 1950+i);
 				years.forEach(year => {
 					return (timezoneOffsetHistory[year] = getTimezoneOffsetSeasons(year))
 				});
@@ -4942,7 +4942,7 @@
 				<div>timezone offset history: ${
 					modal(`${id}-timezone-offset-history`, `
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>Jan</strong>&nbsp;&nbsp;&nbsp;<strong>Apr</strong>&nbsp;&nbsp;&nbsp;<strong>Jul</strong>&nbsp;&nbsp;&nbsp;<strong>Oct</strong><br>`+Object.keys(timezoneOffsetHistory).map(year => {
-						const baseYear = timezoneOffsetHistory[1970];
+						const baseYear = timezoneOffsetHistory[1950];
 						const seasons = timezoneOffsetHistory[year];
 						const jan = seasons[0];
 						const apr = seasons[1];
