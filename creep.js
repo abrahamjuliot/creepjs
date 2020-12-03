@@ -527,7 +527,10 @@ const imports = {
 				<div>hardwareConcurrency: ${data.hardwareConcurrency || note.unsupported}</div>
 				<div>js runtime: ${data.jsImplementation}</div>
 				<div>platform: ${data.platform || note.unsupported}</div>
-				<div>system: ${data.system || note.unsupported}</div>
+				<div>system: ${data.system || note.unsupported}${
+					/android/i.test(data.system) && !/arm/i.test(data.platform) && /linux/i.test(data.platform) ?
+					' [emulator]' : ''
+				}</div>
 				<div>device:</div>
 				<div class="block-text">
 					<div>${data.device || note.unsupported}</div>
@@ -1256,7 +1259,10 @@ const imports = {
 					note.blocked
 				}</div>
 				<div>platform: ${!blocked[platform] ? platform : note.blocked}</div>
-				<div>system: ${system}</div>
+				<div>system: ${system}${
+					/android/i.test(system) && !/arm/i.test(platform) && /linux/i.test(platform) ?
+					' [emulator]' : ''
+				}</div>
 				${highEntropyValues ?  
 					Object.keys(highEntropyValues).map(key => {
 						const value = highEntropyValues[key]

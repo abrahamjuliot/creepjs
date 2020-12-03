@@ -3,7 +3,6 @@
 // https://stackoverflow.com/a/10372280
 // https://stackoverflow.com/a/9239272
 const newWorker = (fn, { require: [ isFirefox, contentWindow, caniuse, captureError ] }) => {
-	
 	const response = `(${''+fn})(${''+caniuse})`
 	try {
 		const blobURL = URL.createObjectURL(new Blob(
@@ -20,7 +19,6 @@ const newWorker = (fn, { require: [ isFirefox, contentWindow, caniuse, captureEr
 		}
 		const workerInstance = new worker(blobURL)
 		URL.revokeObjectURL(blobURL)
-		
 		return workerInstance
 	}
 	catch (error) {
