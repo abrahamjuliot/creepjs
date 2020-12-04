@@ -6,4 +6,4 @@ const app = express()
 
 app.use(express.static(staticPath))
 
-app.listen(8000, () => console.log('⚡'))
+app.listen(3000, () => console.log('⚡'))

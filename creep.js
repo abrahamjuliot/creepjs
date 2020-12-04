@@ -229,7 +229,7 @@ const imports = {
 			platform: fp.workerScope.platform,
 			system: fp.workerScope.system,
 			device: fp.workerScope.device,
-			seasons1984: fp.workerScope.seasons1984,
+			timezoneHistoryLocation: fp.workerScope.timezoneHistoryLocation,
 			['webgl renderer']: (
 				!!liesLen && isBrave ? distrust : 
 				fp.workerScope.webglRenderer
@@ -291,6 +291,7 @@ const imports = {
 		timezone: !fp.timezone || fp.timezone.lied ? undefined : {
 			timezone: fp.timezone.timezone,
 			timezoneLocation: fp.timezone.timezoneLocation,
+			timezoneHistoryLocation: fp.timezone.timezoneHistoryLocation,
 			timezoneOffsetHistory: fp.timezone.timezoneOffsetHistory,
 			relativeTime: fp.timezone.relativeTime,
 			locale: fp.timezone.locale,
@@ -497,21 +498,20 @@ const imports = {
 			`<div class="col-six">
 				<strong>Worker</strong>
 				<div>timezone offset: ${note.blocked}</div>
-				<div>offsets in ${Date().split ` ` [3]}: ${note.blocked}</div>
-				<div>offsets in 1984: ${note.blocked}</div>
+				<div>offset location: ${note.blocked}</div>
 				<div>language: ${note.blocked}</div>
 				<div>hardwareConcurrency: ${note.blocked}</div>
 				<div>js runtime: ${note.blocked}</div>
 				<div>platform: ${note.blocked}</div>
 				<div>system: ${note.blocked}</div>
-				<div>device:</div>
-				<div class="block-text">${note.blocked}</div>
-			</div>
-			<div class="col-six">
-				<div>userAgent:</div>
-				<div class="block-text">${note.blocked}</div>
 				<div>canvas 2d: ${note.blocked}</div>
 				<div>webgl vendor: ${note.blocked}</div>
+			</div>
+			<div class="col-six">
+				<div>device:</div>
+				<div class="block-text">${note.blocked}</div>
+				<div>userAgent:</div>
+				<div class="block-text">${note.blocked}</div>
 				<div>webgl renderer:</div>
 				<div class="block-text">${note.blocked}</div>
 			</div>` :
@@ -521,8 +521,7 @@ const imports = {
 			<div class="col-six">
 				<strong>Worker</strong><span class="hash">${hashMini(data.$hash)}</span>
 				<div>timezone offset: ${data.timezoneOffset != undefined ? ''+data.timezoneOffset : note.unsupported}</div>
-				<div>offsets in ${Date().split ` ` [3]}: ${Object.values(data.seasonsToday).join('|')}</div>
-				<div>offsets in 1984: ${Object.values(data.seasons1984).join('|')}</div>
+				<div>offset location:<span class="sub-hash">${hashMini(data.timezoneHistoryLocation)}</span></div>
 				<div>language: ${data.language || note.unsupported}</div>
 				<div>hardwareConcurrency: ${data.hardwareConcurrency || note.unsupported}</div>
 				<div>js runtime: ${data.jsImplementation}</div>
@@ -531,22 +530,22 @@ const imports = {
 					/android/i.test(data.system) && !/arm/i.test(data.platform) && /linux/i.test(data.platform) ?
 					' [emulator]' : ''
 				}</div>
-				<div>device:</div>
-				<div class="block-text">
-					<div>${data.device || note.unsupported}</div>
-				</div>
-			</div>
-			<div class="col-six">
-				<div>userAgent:</div>
-				<div class="block-text">
-					<div>${data.userAgent || note.unsupported}</div>
-				</div>
 				<div>canvas 2d:${
 					!!data.canvas2d.dataURI ?
 					`<span class="sub-hash">${hashMini(data.canvas2d.$hash)}</span>` :
 					` ${note.unsupported}`
 				}</div>
 				<div>webgl vendor: ${data.webglVendor || note.unsupported}</div>
+			</div>
+			<div class="col-six">
+				<div>device:</div>
+				<div class="block-text">
+					<div>${data.device || note.unsupported}</div>
+				</div>
+				<div>userAgent:</div>
+				<div class="block-text">
+					<div>${data.userAgent || note.unsupported}</div>
+				</div>
 				<div>webgl renderer:</div>
 				<div class="block-text">
 					<div>${data.webglRenderer || note.unsupported}</div>
@@ -835,15 +834,16 @@ const imports = {
 		${!fp.timezone ?
 			`<div class="col-six">
 				<strong>Timezone</strong>
-				<div>timezone: ${note.blocked}</div>
-				<div>timezone location: ${note.blocked}</div>
-				<div>timezone offset: ${note.blocked}</div>
-				<div>timezone offset computed: ${note.blocked}</div>
-				<div>timezone offset history: ${note.blocked}</div>
+				<div>zone: ${note.blocked}</div>
+				<div>offset: ${note.blocked}</div>
+				<div>offset computed: ${note.blocked}</div>
+				<div>matching offsets: ${note.blocked}</div>
+				<div>seasonal offsets: ${note.blocked}</div>	
 			</div>
 			<div class="col-six">
-				<div>matching offsets: ${note.blocked}</div>
-				<div>timezone measured: ${note.blocked}</div>
+				<div>location: ${note.blocked}</div>
+				<div>offset location: ${note.blocked}</div>
+				<div>offset history: ${note.blocked}</div>
 				<div>relativeTimeFormat: ${note.blocked}</div>
 				<div>locale language: ${note.blocked}</div>
 				<div>writing system keys: ${note.blocked}</div>
@@ -854,6 +854,7 @@ const imports = {
 					$hash,
 					timezone,
 					timezoneLocation,
+					timezoneHistoryLocation,
 					timezoneOffset: timezoneOffset,
 					timezoneOffsetComputed,
 					timezoneOffsetMeasured: measuredTimezones,
@@ -869,11 +870,16 @@ const imports = {
 			return `
 			<div class="col-six">
 				<strong>Timezone</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
-				<div>timezone: ${timezone}</div>
-				<div>timezone location: ${timezoneLocation}</div>
-				<div>timezone offset: ${''+timezoneOffset}</div>
-				<div>timezone offset computed: ${''+timezoneOffsetComputed}</div>
-				<div>timezone offset history: ${
+				<div>zone: ${timezone}</div>
+				<div>offset: ${''+timezoneOffset}</div>
+				<div>offset computed: ${''+timezoneOffsetComputed}</div>
+				<div>matching offsets: ${''+matchingOffsets}</div>
+				<div>seasonal offsets: ${measuredTimezones}</div>
+			</div>
+			<div class="col-six">
+				<div>location: ${timezoneLocation}</div>
+				<div>offset location:<span class="sub-hash">${hashMini(timezoneHistoryLocation)}</span></div>
+				<div>offset history: ${
 					modal(`${id}-timezone-offset-history`, `
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>Jan</strong>&nbsp;&nbsp;&nbsp;<strong>Apr</strong>&nbsp;&nbsp;&nbsp;<strong>Jul</strong>&nbsp;&nbsp;&nbsp;<strong>Oct</strong><br>`+Object.keys(timezoneOffsetHistory).map(year => {
 						const baseYear = timezoneOffsetHistory[1950]
@@ -892,10 +898,6 @@ const imports = {
 						`
 					}).join('<br>'))
 				}</div>
-			</div>
-			<div class="col-six">
-				<div>matching offsets: ${''+matchingOffsets}</div>
-				<div>timezone measured: ${measuredTimezones}</div>
 				<div>relativeTimeFormat: ${
 					!relativeTime ? note.unsupported : 
 					modal(`${id}-relative-time-format`, Object.keys(relativeTime).sort().map(key => `${key} => ${relativeTime[key]}`).join('<br>'))

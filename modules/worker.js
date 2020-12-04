@@ -89,17 +89,22 @@ const inlineWorker = async caniuse => {
 		const springUTCTime = +new Date(`${year}-04-01`)
 		const summerUTCTime = +new Date(`${year}-07-01`)
 		const fallUTCTime = +new Date(`${year}-10-01`)
-		const seasons = {
-			jan: (+winter - winterUTCTime) / minute,
-			apr: (+spring - springUTCTime) / minute,
-			jul: (+summer - summerUTCTime) / minute,
-			oct: (+fall - fallUTCTime) / minute
-		}
+		const seasons = [
+			(+winter - winterUTCTime) / minute,
+			(+spring - springUTCTime) / minute,
+			(+summer - summerUTCTime) / minute,
+			(+fall - fallUTCTime) / minute
+		]
 		return seasons
 	}
-	const currentYear = Date().split ` ` [3]
-	const seasons1984 = getTimezoneOffsetSeasons(1984)
-	const seasonsToday = getTimezoneOffsetSeasons(currentYear)
+
+	const timezoneOffsetUniqueYearHistory = { }
+	// unique years based work by https://arkenfox.github.io/TZP
+	const uniqueYears = [1879, 1884, 1894, 1900, 1921, 1952, 1957, 1976, 2018]
+	uniqueYears.forEach(year => {
+		return (timezoneOffsetUniqueYearHistory[year] = getTimezoneOffsetSeasons(year))
+	})
+
 	const timezoneOffset = computeTimezoneOffset()
 	const hardwareConcurrency = caniuse(() => navigator, ['hardwareConcurrency'])
 	const language = caniuse(() => navigator, ['language'])
@@ -116,8 +121,7 @@ const inlineWorker = async caniuse => {
 	postMessage({
 		jsImplementation,
 		timezoneOffset,
-		seasons1984,
-		seasonsToday,
+		timezoneHistoryLocation: timezoneOffsetUniqueYearHistory,
 		hardwareConcurrency,
 		language,
 		platform,
@@ -152,10 +156,11 @@ export const getWorkerScope = imports => {
 				return resolve()
 			}
 			worker.addEventListener('message', async event => {
-				const { data, data: { canvas2d } } = event
+				const { data, data: { canvas2d, timezoneHistoryLocation } } = event
 				data.system = getOS(data.userAgent)
 				data.device = getUserAgentPlatform({ userAgent: data.userAgent })
 				data.canvas2d = { dataURI: canvas2d, $hash: await hashify(canvas2d) }
+				data.timezoneHistoryLocation = await hashify(timezoneHistoryLocation)
 				const $hash = await hashify(data)
 				logTestResult({ test: 'worker', passed: true })
 				return resolve({ ...data, $hash })

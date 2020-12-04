@@ -468,10 +468,10 @@ input[type="radio"] {
 }
 
 .sub-hash {
-	display: inline-block;
-    padding: 0 4px;
+	padding: 0 4px;
     border-radius: 2px;
-    margin: 0 10px;
+    margin: 0 5px;
+    border: 1px solid #eee;
 }
 
 .blurred {

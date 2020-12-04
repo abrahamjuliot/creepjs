@@ -238,9 +238,15 @@ export const getTimezone = imports => {
 			const relativeTime = getRelativeTime()
 			const locale = getLocale()
 			const timezoneOffsetHistory = { }
+			const timezoneOffsetUniqueYearHistory = { }
 			const years = [...Array(71)].map((val, i) => !i ? 1950 : 1950+i)
+			// unique years based work by https://arkenfox.github.io/TZP
+			const uniqueYears = [1879, 1884, 1894, 1900, 1921, 1952, 1957, 1976, 2018]
 			years.forEach(year => {
 				return (timezoneOffsetHistory[year] = getTimezoneOffsetSeasons(year))
+			})
+			uniqueYears.forEach(year => {
+				return (timezoneOffsetUniqueYearHistory[year] = getTimezoneOffsetSeasons(year))
 			})
 			// document lies
 			lied = (
@@ -264,10 +270,11 @@ export const getTimezone = imports => {
 				lied = true
 				documentLie('Intl', locale, localeLie)	
 			}
-			
+			const timezoneHistoryLocation = await hashify(timezoneOffsetUniqueYearHistory)
 			const data =  {
 				timezone,
 				timezoneLocation,
+				timezoneHistoryLocation,
 				timezoneOffset,
 				timezoneOffsetComputed,
 				timezoneOffsetMeasured: measuredTimezones,
