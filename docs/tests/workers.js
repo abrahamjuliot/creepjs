@@ -82,7 +82,7 @@ const getServiceWorker = () => {
 	return new Promise(resolve => {
 		try {
 			navigator.serviceWorker.register('worker_service.js', {
-				scope: '/docs/tests/'
+				scope: '../tests/'
 			}).catch(error => {
 				console.log(error)
 				return resolve()
