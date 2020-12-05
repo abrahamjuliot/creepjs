@@ -1299,7 +1299,7 @@ const imports = {
 		<div>
 			<strong>Tests</strong>
 			<div>
-				<a class="tests" href="/tests/workers.html">Workers</a>
+				<a class="tests" href="./tests/workers.html">Workers</a>
 			</div>
 		</div>
 	</div>
