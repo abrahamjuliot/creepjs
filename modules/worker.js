@@ -1,41 +1,26 @@
-// worker
-// https://stackoverflow.com/a/20693860
-// https://stackoverflow.com/a/10372280
-// https://stackoverflow.com/a/9239272
-const newWorker = (fn, { require: [ isFirefox, contentWindow, caniuse, captureError ] }) => {
-	const response = `(${''+fn})(${''+caniuse})`
+// worker blob
+const newWorker = (fn, { require: [ isFirefox, contentWindow, captureError ] }) => {
+	const response = `(${''+fn})()`
 	try {
 		const blobURL = URL.createObjectURL(new Blob(
 			[response],
 			{ type: 'application/javascript' }
 		))
-
-		let worker
-		if (contentWindow && !isFirefox) { // firefox throws an error
-			worker = contentWindow.Worker
-		}
-		else {
-			worker = Worker
-		}
+		const worker = (
+			// firefox throws an error in contentWindow
+			contentWindow && !isFirefox ? contentWindow.Worker : Worker
+		)
 		const workerInstance = new worker(blobURL)
 		URL.revokeObjectURL(blobURL)
 		return workerInstance
 	}
 	catch (error) {
 		captureError(error, 'worker Blob failed or blocked by client')
-		// try backup
-		try {
-			const uri = `data:application/javascript,${encodeURIComponent(response)}`
-			return new worker(uri)
-		}
-		catch (error) {
-			captureError(error, 'worker URI failed or blocked by client')
-			return undefined
-		}
+		return undefined
 	}
 }
 // inline worker scope
-const inlineWorker = async caniuse => {
+const inlineWorker = async () => {
 	let canvas2d = undefined
 	try {
 		const canvasOffscreen2d = new OffscreenCanvas(500, 200)
@@ -56,8 +41,8 @@ const inlineWorker = async caniuse => {
 		canvas2d = await getDataURI() 
 	}
 	catch (error) { }
-	let webglVendor = undefined
-	let webglRenderer = undefined
+	let webglVendor
+	let webglRenderer
 	try {
 		const canvasOffscreenWebgl = new OffscreenCanvas(256, 256)
 		const contextWebgl = canvasOffscreenWebgl.getContext('webgl')
@@ -99,17 +84,14 @@ const inlineWorker = async caniuse => {
 	}
 
 	const timezoneOffsetUniqueYearHistory = { }
-	// unique years based work by https://arkenfox.github.io/TZP
+	// unique years based on work by https://arkenfox.github.io/TZP
 	const uniqueYears = [1879, 1884, 1894, 1900, 1921, 1952, 1957, 1976, 2018]
 	uniqueYears.forEach(year => {
 		return (timezoneOffsetUniqueYearHistory[year] = getTimezoneOffsetSeasons(year))
 	})
 
 	const timezoneOffset = computeTimezoneOffset()
-	const hardwareConcurrency = caniuse(() => navigator, ['hardwareConcurrency'])
-	const language = caniuse(() => navigator, ['language'])
-	const platform = caniuse(() => navigator, ['platform'])
-	const userAgent = caniuse(() => navigator, ['userAgent'])
+	const { hardwareConcurrency, language, platform, userAgent } = navigator
 	const jsEngine = {
 		[-3.3537128705376014]: 'V8',
 		[-3.353712870537601]: 'SpiderMonkey',

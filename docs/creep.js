@@ -3714,9 +3714,15 @@
 				const relativeTime = getRelativeTime();
 				const locale = getLocale();
 				const timezoneOffsetHistory = { };
+				const timezoneOffsetUniqueYearHistory = { };
 				const years = [...Array(71)].map((val, i) => !i ? 1950 : 1950+i);
+				// unique years based work by https://arkenfox.github.io/TZP
+				const uniqueYears = [1879, 1884, 1894, 1900, 1921, 1952, 1957, 1976, 2018];
 				years.forEach(year => {
 					return (timezoneOffsetHistory[year] = getTimezoneOffsetSeasons(year))
+				});
+				uniqueYears.forEach(year => {
+					return (timezoneOffsetUniqueYearHistory[year] = getTimezoneOffsetSeasons(year))
 				});
 				// document lies
 				lied = (
@@ -3740,10 +3746,11 @@
 					lied = true;
 					documentLie('Intl', locale, localeLie);	
 				}
-				
+				const timezoneHistoryLocation = await hashify(timezoneOffsetUniqueYearHistory);
 				const data =  {
 					timezone,
 					timezoneLocation,
+					timezoneHistoryLocation,
 					timezoneOffset,
 					timezoneOffsetComputed,
 					timezoneOffsetMeasured: measuredTimezones,
@@ -3929,44 +3936,29 @@
 		})
 	};
 
-	// worker
-	// https://stackoverflow.com/a/20693860
-	// https://stackoverflow.com/a/10372280
-	// https://stackoverflow.com/a/9239272
-	const newWorker = (fn, { require: [ isFirefox, contentWindow, caniuse, captureError ] }) => {
-		const response = `(${''+fn})(${''+caniuse})`;
+	// worker blob
+	const newWorker = (fn, { require: [ isFirefox, contentWindow, captureError ] }) => {
+		const response = `(${''+fn})()`;
 		try {
 			const blobURL = URL.createObjectURL(new Blob(
 				[response],
 				{ type: 'application/javascript' }
 			));
-
-			let worker;
-			if (contentWindow && !isFirefox) { // firefox throws an error
-				worker = contentWindow.Worker;
-			}
-			else {
-				worker = Worker;
-			}
+			const worker = (
+				// firefox throws an error in contentWindow
+				contentWindow && !isFirefox ? contentWindow.Worker : Worker
+			);
 			const workerInstance = new worker(blobURL);
 			URL.revokeObjectURL(blobURL);
 			return workerInstance
 		}
 		catch (error) {
 			captureError(error, 'worker Blob failed or blocked by client');
-			// try backup
-			try {
-				const uri = `data:application/javascript,${encodeURIComponent(response)}`;
-				return new worker(uri)
-			}
-			catch (error) {
-				captureError(error, 'worker URI failed or blocked by client');
-				return undefined
-			}
+			return undefined
 		}
 	};
 	// inline worker scope
-	const inlineWorker = async caniuse => {
+	const inlineWorker = async () => {
 		let canvas2d = undefined;
 		try {
 			const canvasOffscreen2d = new OffscreenCanvas(500, 200);
@@ -3987,8 +3979,8 @@
 			canvas2d = await getDataURI(); 
 		}
 		catch (error) { }
-		let webglVendor = undefined;
-		let webglRenderer = undefined;
+		let webglVendor;
+		let webglRenderer;
 		try {
 			const canvasOffscreenWebgl = new OffscreenCanvas(256, 256);
 			const contextWebgl = canvasOffscreenWebgl.getContext('webgl');
@@ -4020,22 +4012,24 @@
 			const springUTCTime = +new Date(`${year}-04-01`);
 			const summerUTCTime = +new Date(`${year}-07-01`);
 			const fallUTCTime = +new Date(`${year}-10-01`);
-			const seasons = {
-				jan: (+winter - winterUTCTime) / minute,
-				apr: (+spring - springUTCTime) / minute,
-				jul: (+summer - summerUTCTime) / minute,
-				oct: (+fall - fallUTCTime) / minute
-			};
+			const seasons = [
+				(+winter - winterUTCTime) / minute,
+				(+spring - springUTCTime) / minute,
+				(+summer - summerUTCTime) / minute,
+				(+fall - fallUTCTime) / minute
+			];
 			return seasons
 		};
-		const currentYear = Date().split ` ` [3];
-		const seasons1984 = getTimezoneOffsetSeasons(1984);
-		const seasonsToday = getTimezoneOffsetSeasons(currentYear);
+
+		const timezoneOffsetUniqueYearHistory = { };
+		// unique years based on work by https://arkenfox.github.io/TZP
+		const uniqueYears = [1879, 1884, 1894, 1900, 1921, 1952, 1957, 1976, 2018];
+		uniqueYears.forEach(year => {
+			return (timezoneOffsetUniqueYearHistory[year] = getTimezoneOffsetSeasons(year))
+		});
+
 		const timezoneOffset = computeTimezoneOffset();
-		const hardwareConcurrency = caniuse(() => navigator, ['hardwareConcurrency']);
-		const language = caniuse(() => navigator, ['language']);
-		const platform = caniuse(() => navigator, ['platform']);
-		const userAgent = caniuse(() => navigator, ['userAgent']);
+		const { hardwareConcurrency, language, platform, userAgent } = navigator;
 		const jsEngine = {
 			[-3.3537128705376014]: 'V8',
 			[-3.353712870537601]: 'SpiderMonkey',
@@ -4047,8 +4041,7 @@
 		postMessage({
 			jsImplementation,
 			timezoneOffset,
-			seasons1984,
-			seasonsToday,
+			timezoneHistoryLocation: timezoneOffsetUniqueYearHistory,
 			hardwareConcurrency,
 			language,
 			platform,
@@ -4083,10 +4076,11 @@
 					return resolve()
 				}
 				worker.addEventListener('message', async event => {
-					const { data, data: { canvas2d } } = event;
+					const { data, data: { canvas2d, timezoneHistoryLocation } } = event;
 					data.system = getOS(data.userAgent);
 					data.device = getUserAgentPlatform({ userAgent: data.userAgent });
 					data.canvas2d = { dataURI: canvas2d, $hash: await hashify(canvas2d) };
+					data.timezoneHistoryLocation = await hashify(timezoneHistoryLocation);
 					const $hash = await hashify(data);
 					logTestResult({ test: 'worker', passed: true });
 					return resolve({ ...data, $hash })
@@ -4142,6 +4136,7 @@
 			hyperNestedIframeWindow
 		}
 	}
+	// worker.js
 
 	;(async imports => {
 		
@@ -4301,7 +4296,7 @@
 				platform: fp.workerScope.platform,
 				system: fp.workerScope.system,
 				device: fp.workerScope.device,
-				seasons1984: fp.workerScope.seasons1984,
+				timezoneHistoryLocation: fp.workerScope.timezoneHistoryLocation,
 				['webgl renderer']: (
 					!!liesLen && isBrave ? distrust : 
 					fp.workerScope.webglRenderer
@@ -4363,6 +4358,7 @@
 			timezone: !fp.timezone || fp.timezone.lied ? undefined : {
 				timezone: fp.timezone.timezone,
 				timezoneLocation: fp.timezone.timezoneLocation,
+				timezoneHistoryLocation: fp.timezone.timezoneHistoryLocation,
 				timezoneOffsetHistory: fp.timezone.timezoneOffsetHistory,
 				relativeTime: fp.timezone.relativeTime,
 				locale: fp.timezone.locale,
@@ -4569,21 +4565,20 @@
 			`<div class="col-six">
 				<strong>Worker</strong>
 				<div>timezone offset: ${note.blocked}</div>
-				<div>offsets in ${Date().split ` ` [3]}: ${note.blocked}</div>
-				<div>offsets in 1984: ${note.blocked}</div>
+				<div>offset location: ${note.blocked}</div>
 				<div>language: ${note.blocked}</div>
 				<div>hardwareConcurrency: ${note.blocked}</div>
 				<div>js runtime: ${note.blocked}</div>
 				<div>platform: ${note.blocked}</div>
 				<div>system: ${note.blocked}</div>
-				<div>device:</div>
-				<div class="block-text">${note.blocked}</div>
-			</div>
-			<div class="col-six">
-				<div>userAgent:</div>
-				<div class="block-text">${note.blocked}</div>
 				<div>canvas 2d: ${note.blocked}</div>
 				<div>webgl vendor: ${note.blocked}</div>
+			</div>
+			<div class="col-six">
+				<div>device:</div>
+				<div class="block-text">${note.blocked}</div>
+				<div>userAgent:</div>
+				<div class="block-text">${note.blocked}</div>
 				<div>webgl renderer:</div>
 				<div class="block-text">${note.blocked}</div>
 			</div>` :
@@ -4593,8 +4588,7 @@
 			<div class="col-six">
 				<strong>Worker</strong><span class="hash">${hashMini(data.$hash)}</span>
 				<div>timezone offset: ${data.timezoneOffset != undefined ? ''+data.timezoneOffset : note.unsupported}</div>
-				<div>offsets in ${Date().split ` ` [3]}: ${Object.values(data.seasonsToday).join('|')}</div>
-				<div>offsets in 1984: ${Object.values(data.seasons1984).join('|')}</div>
+				<div>offset location:<span class="sub-hash">${hashMini(data.timezoneHistoryLocation)}</span></div>
 				<div>language: ${data.language || note.unsupported}</div>
 				<div>hardwareConcurrency: ${data.hardwareConcurrency || note.unsupported}</div>
 				<div>js runtime: ${data.jsImplementation}</div>
@@ -4603,22 +4597,22 @@
 					/android/i.test(data.system) && !/arm/i.test(data.platform) && /linux/i.test(data.platform) ?
 					' [emulator]' : ''
 				}</div>
-				<div>device:</div>
-				<div class="block-text">
-					<div>${data.device || note.unsupported}</div>
-				</div>
-			</div>
-			<div class="col-six">
-				<div>userAgent:</div>
-				<div class="block-text">
-					<div>${data.userAgent || note.unsupported}</div>
-				</div>
 				<div>canvas 2d:${
 					!!data.canvas2d.dataURI ?
 					`<span class="sub-hash">${hashMini(data.canvas2d.$hash)}</span>` :
 					` ${note.unsupported}`
 				}</div>
 				<div>webgl vendor: ${data.webglVendor || note.unsupported}</div>
+			</div>
+			<div class="col-six">
+				<div>device:</div>
+				<div class="block-text">
+					<div>${data.device || note.unsupported}</div>
+				</div>
+				<div>userAgent:</div>
+				<div class="block-text">
+					<div>${data.userAgent || note.unsupported}</div>
+				</div>
 				<div>webgl renderer:</div>
 				<div class="block-text">
 					<div>${data.webglRenderer || note.unsupported}</div>
@@ -4907,15 +4901,16 @@
 		${!fp.timezone ?
 			`<div class="col-six">
 				<strong>Timezone</strong>
-				<div>timezone: ${note.blocked}</div>
-				<div>timezone location: ${note.blocked}</div>
-				<div>timezone offset: ${note.blocked}</div>
-				<div>timezone offset computed: ${note.blocked}</div>
-				<div>timezone offset history: ${note.blocked}</div>
+				<div>zone: ${note.blocked}</div>
+				<div>offset: ${note.blocked}</div>
+				<div>offset computed: ${note.blocked}</div>
+				<div>matching offsets: ${note.blocked}</div>
+				<div>seasonal offsets: ${note.blocked}</div>	
 			</div>
 			<div class="col-six">
-				<div>matching offsets: ${note.blocked}</div>
-				<div>timezone measured: ${note.blocked}</div>
+				<div>location: ${note.blocked}</div>
+				<div>offset location: ${note.blocked}</div>
+				<div>offset history: ${note.blocked}</div>
 				<div>relativeTimeFormat: ${note.blocked}</div>
 				<div>locale language: ${note.blocked}</div>
 				<div>writing system keys: ${note.blocked}</div>
@@ -4926,6 +4921,7 @@
 					$hash,
 					timezone,
 					timezoneLocation,
+					timezoneHistoryLocation,
 					timezoneOffset: timezoneOffset,
 					timezoneOffsetComputed,
 					timezoneOffsetMeasured: measuredTimezones,
@@ -4941,11 +4937,16 @@
 			return `
 			<div class="col-six">
 				<strong>Timezone</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
-				<div>timezone: ${timezone}</div>
-				<div>timezone location: ${timezoneLocation}</div>
-				<div>timezone offset: ${''+timezoneOffset}</div>
-				<div>timezone offset computed: ${''+timezoneOffsetComputed}</div>
-				<div>timezone offset history: ${
+				<div>zone: ${timezone}</div>
+				<div>offset: ${''+timezoneOffset}</div>
+				<div>offset computed: ${''+timezoneOffsetComputed}</div>
+				<div>matching offsets: ${''+matchingOffsets}</div>
+				<div>seasonal offsets: ${measuredTimezones}</div>
+			</div>
+			<div class="col-six">
+				<div>location: ${timezoneLocation}</div>
+				<div>offset location:<span class="sub-hash">${hashMini(timezoneHistoryLocation)}</span></div>
+				<div>offset history: ${
 					modal(`${id}-timezone-offset-history`, `
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>Jan</strong>&nbsp;&nbsp;&nbsp;<strong>Apr</strong>&nbsp;&nbsp;&nbsp;<strong>Jul</strong>&nbsp;&nbsp;&nbsp;<strong>Oct</strong><br>`+Object.keys(timezoneOffsetHistory).map(year => {
 						const baseYear = timezoneOffsetHistory[1950];
@@ -4964,10 +4965,6 @@
 						`
 					}).join('<br>'))
 				}</div>
-			</div>
-			<div class="col-six">
-				<div>matching offsets: ${''+matchingOffsets}</div>
-				<div>timezone measured: ${measuredTimezones}</div>
 				<div>relativeTimeFormat: ${
 					!relativeTime ? note.unsupported : 
 					modal(`${id}-relative-time-format`, Object.keys(relativeTime).sort().map(key => `${key} => ${relativeTime[key]}`).join('<br>'))
@@ -5365,6 +5362,12 @@
 			`
 		})()}
 		</div>
+		<div>
+			<strong>Tests</strong>
+			<div>
+				<a class="tests" href="/tests/workers.html">Workers</a>
+			</div>
+		</div>
 	</div>
 	`, () => {
 			// fetch data from server
@@ -5398,7 +5401,7 @@
 				)).toFixed(0);
 				const template = `
 				<div class="visitor-info">
-					<div class="ellipsis"><span class="modified">script modified 2020-11-29</span></div>
+					<div class="ellipsis"><span class="modified">script modified 2020-12-4</span></div>
 					<div class="flex-grid">
 						<div class="col-six">
 							<strong>Browser</strong>

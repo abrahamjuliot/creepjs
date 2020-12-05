@@ -327,8 +327,7 @@ a,
 
 a:after,
 .modal-open-btn:after {
-	background: #247ba026;
-	border: 1px solid #247ba026;
+	border: 1px solid #247ba04d;
 	height: 4px;
 	position: absolute;
 	content: '';

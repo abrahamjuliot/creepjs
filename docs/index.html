@@ -87,21 +87,20 @@
 					<div class="col-six">
 						<strong>Worker</strong>
 						<div>timezone offset:</div>
-						<div>offsets in today:</div>
-						<div>offsets in 1984:</div>
+						<div>offset location:</div>
 						<div>language:</div>
 						<div>hardwareConcurrency:</div>
 						<div>js runtime:</div>
 						<div>platform:</div>
 						<div>system:</div>
-						<div>device:</div>
-						<div class="block-text">${note.blocked}</div>
-					</div>
-					<div class="col-six">
-						<div>userAgent:</div>
-						<div class="block-text"></div>
 						<div>canvas 2d:</div>
 						<div>webgl vendor:</div>
+					</div>
+					<div class="col-six">
+						<div>device:</div>
+						<div class="block-text">${note.blocked}</div>
+						<div>userAgent:</div>
+						<div class="block-text"></div>
 						<div>webgl renderer:</div>
 						<div class="block-text"></div>
 					</div>
@@ -178,15 +177,16 @@
 				<div class="flex-grid hidden">
 					<div class="col-six">
 						<strong>Timezone</strong>
-						<div>timezone:</div>
-						<div>timezone location:</div>
-						<div>timezone offset:</div>
-						<div>timezone offset computed:</div>
-						<div>timezone offset history:</div>
+						<div>zone:</div>
+						<div>offset:</div>
+						<div>offset computed:</div>
+						<div>matching offsets:</div>
+						<div>seasonal offsets:</div>
 					</div>
 					<div class="col-six">
-						<div>matching offsets:</div>
-						<div>timezone measured:</div>
+						<div>location:</div>
+						<div>offset location:</div>
+						<div>offset history:</div>
 						<div>relativeTimeFormat:</div>
 						<div>locale language:</div>
 						<div>writing system keys:</div>
@@ -280,6 +280,12 @@
 						<div class="block-text"></div>
 						<div>appVersion:</div>
 						<div class="block-text"></div>
+					</div>
+				</div>
+				<div class="hidden">
+					<strong>Tests</strong>
+					<div>
+						<a class="tests" href="/tests/workers.html">Workers</a>
 					</div>
 				</div>
 			</div>

@@ -69,6 +69,7 @@ const imports = {
 		hyperNestedIframeWindow
 	}
 }
+// worker.js
 
 ;(async imports => {
 	'use strict';
@@ -1295,6 +1296,12 @@ const imports = {
 			`
 		})()}
 		</div>
+		<div>
+			<strong>Tests</strong>
+			<div>
+				<a class="tests" href="/tests/workers.html">Workers</a>
+			</div>
+		</div>
 	</div>
 	`, () => {
 		// fetch data from server
@@ -1328,7 +1335,7 @@ const imports = {
 			)).toFixed(0)
 			const template = `
 				<div class="visitor-info">
-					<div class="ellipsis"><span class="modified">script modified 2020-11-29</span></div>
+					<div class="ellipsis"><span class="modified">script modified 2020-12-4</span></div>
 					<div class="flex-grid">
 						<div class="col-six">
 							<strong>Browser</strong>
