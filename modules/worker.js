@@ -91,7 +91,8 @@ const inlineWorker = async () => {
 	})
 
 	const timezoneOffset = computeTimezoneOffset()
-	const { hardwareConcurrency, language, platform, userAgent } = navigator
+	const timezoneLocation = Intl.DateTimeFormat().resolvedOptions().timeZone
+	const { hardwareConcurrency, language, platform, userAgent, deviceMemory } = navigator
 	const jsEngine = {
 		[-3.3537128705376014]: 'V8',
 		[-3.353712870537601]: 'SpiderMonkey',
@@ -104,6 +105,8 @@ const inlineWorker = async () => {
 		jsImplementation,
 		timezoneOffset,
 		timezoneHistoryLocation: timezoneOffsetUniqueYearHistory,
+		timezoneLocation,
+		deviceMemory,
 		hardwareConcurrency,
 		language,
 		platform,

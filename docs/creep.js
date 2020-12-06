@@ -4029,7 +4029,8 @@
 		});
 
 		const timezoneOffset = computeTimezoneOffset();
-		const { hardwareConcurrency, language, platform, userAgent } = navigator;
+		const timezoneLocation = Intl.DateTimeFormat().resolvedOptions().timeZone;
+		const { hardwareConcurrency, language, platform, userAgent, deviceMemory } = navigator;
 		const jsEngine = {
 			[-3.3537128705376014]: 'V8',
 			[-3.353712870537601]: 'SpiderMonkey',
@@ -4042,6 +4043,8 @@
 			jsImplementation,
 			timezoneOffset,
 			timezoneHistoryLocation: timezoneOffsetUniqueYearHistory,
+			timezoneLocation,
+			deviceMemory,
 			hardwareConcurrency,
 			language,
 			platform,
@@ -4288,6 +4291,10 @@
 					!!liesLen && (isBrave || isFirefox) ? distrust : 
 					fp.workerScope.canvas2d
 				),
+				deviceMemory: (
+					!!liesLen && isBrave ? distrust : 
+					fp.workerScope.deviceMemory
+				),
 				hardwareConcurrency: (
 					!!liesLen && isBrave ? distrust : 
 					fp.workerScope.hardwareConcurrency
@@ -4296,6 +4303,7 @@
 				platform: fp.workerScope.platform,
 				system: fp.workerScope.system,
 				device: fp.workerScope.device,
+				timezoneLocation: fp.workerScope.timezoneLocation,
 				timezoneHistoryLocation: fp.workerScope.timezoneHistoryLocation,
 				['webgl renderer']: (
 					!!liesLen && isBrave ? distrust : 
@@ -4565,8 +4573,10 @@
 			`<div class="col-six">
 				<strong>Worker</strong>
 				<div>timezone offset: ${note.blocked}</div>
+				<div>location: ${note.blocked}</div>
 				<div>offset location: ${note.blocked}</div>
 				<div>language: ${note.blocked}</div>
+				<div>deviceMemory: ${note.blocked}</div>
 				<div>hardwareConcurrency: ${note.blocked}</div>
 				<div>js runtime: ${note.blocked}</div>
 				<div>platform: ${note.blocked}</div>
@@ -4588,8 +4598,10 @@
 			<div class="col-six">
 				<strong>Worker</strong><span class="hash">${hashMini(data.$hash)}</span>
 				<div>timezone offset: ${data.timezoneOffset != undefined ? ''+data.timezoneOffset : note.unsupported}</div>
+				<div>location: ${data.timezoneLocation}</div>
 				<div>offset location:<span class="sub-hash">${hashMini(data.timezoneHistoryLocation)}</span></div>
 				<div>language: ${data.language || note.unsupported}</div>
+				<div>deviceMemory: ${data.hardwareConcurrency || note.unsupported}</div>
 				<div>hardwareConcurrency: ${data.hardwareConcurrency || note.unsupported}</div>
 				<div>js runtime: ${data.jsImplementation}</div>
 				<div>platform: ${data.platform || note.unsupported}</div>
@@ -5401,7 +5413,7 @@
 				)).toFixed(0);
 				const template = `
 				<div class="visitor-info">
-					<div class="ellipsis"><span class="modified">script modified 2020-12-4</span></div>
+					<div class="ellipsis"><span class="modified">script modified 2020-12-5</span></div>
 					<div class="flex-grid">
 						<div class="col-six">
 							<strong>Browser</strong>
