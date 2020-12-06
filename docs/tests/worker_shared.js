@@ -167,11 +167,6 @@ const getWorkerData = async () => {
 	try {
 		const canvasOffscreen = new OffscreenCanvas(500, 200)
 		const context2d = canvasOffscreen.getContext('2d')
-		const str = '!😃🙌🧠👩‍💻👟👧🏻👩🏻‍🦱👩🏻‍🦰👱🏻‍♀️👩🏻‍🦳👧🏼👧🏽👧🏾👧🏿🦄🐉🌊🍧🏄‍♀️🌠🔮♞'
-		context2d.font = '14px Arial'
-		context2d.fillText(str, 0, 50)
-		context2d.fillStyle = 'rgba(100, 200, 99, 0.78)'
-		context2d.fillRect(100, 30, 80, 50)
 		const getDataURI = async () => {
 			const blob = await canvasOffscreen.convertToBlob()
 			const reader = new FileReader()
