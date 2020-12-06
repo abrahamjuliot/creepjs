@@ -296,9 +296,8 @@ const el = document.getElementById('fingerprint-data')
 
 const workerHash = {}
 const computeTemplate = (worker, name) => {
-	const { userAgent } = worker || {}
+	const { userAgent } = worker
 	const system = userAgent ? getOS(userAgent) : undefined
-	
 	Object.keys(worker).forEach(key => {
 		return (
 			workerHash[name] = {
@@ -315,15 +314,17 @@ const computeTemplate = (worker, name) => {
 			padding: 0 2px;
 		"
 	`
-	Object.keys(hash).forEach(key => {
-		if (hash[key] != workerHash.dedicated[key]) {
-			return (
-				hash[key] = `<span ${style}>${hash[key]}</span>`
-			)
-		}
-		return
-	})
-	return userAgent ?
+	if (workerHash.dedicated && hash) {
+		Object.keys(hash).forEach(key => {
+			if (hash[key] != workerHash.dedicated[key]) {
+				return (
+					hash[key] = `<span ${style}>${hash[key]}</span>`
+				)
+			}
+			return
+		})
+	}
+	return hash ?
 	`
 	<div>deviceMemory: ${hash.deviceMemory}</div>
 	<div>hardwareConcurrency: ${hash.hardwareConcurrency}</div>
@@ -352,6 +353,19 @@ const computeTemplate = (worker, name) => {
 	}</div> 
 	` :
 	`
+	<div>deviceMemory:</div>
+	<div>hardwareConcurrency:</div>
+	<div>userAgent:</div>
+	<div>platform:</div>
+	<div>language:</div>
+	<div>timezone:</div>
+	<div>canvas2d:</div>
+	<div>gl1 renderer:</div>
+	<div>gl2 renderer:</div>
+	<div>gl1 vendor:</div>
+	<div>gl2 vendor:</div>
+	<div>gl1 params:</div>
+	<div>gl2 params:</div>
 	<div>ua version:</div>
 	<div class="block-text"></div>
 	<div>ua device:</div>
