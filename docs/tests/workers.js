@@ -293,6 +293,71 @@ const style = (controlHash, hash) => {
 }
 
 const el = document.getElementById('fingerprint-data')
+
+const workerHash = {}
+const computeTemplate = (worker, name) => {
+	const { userAgent } = worker || {}
+	const system = userAgent ? getOS(userAgent) : undefined
+	
+	Object.keys(worker).forEach(key => {
+		return (
+			workerHash[name] = {
+				...workerHash[name],
+				[key]: hashMini(worker[key])
+			}
+		)
+	})
+	const hash = workerHash[name]
+	const style = `
+		style="
+			color: #fff;
+			background: #ca656eb8;
+			padding: 0 2px;
+		"
+	`
+	Object.keys(hash).forEach(key => {
+		if (hash[key] != workerHash.dedicated[key]) {
+			return (
+				hash[key] = `<span ${style}>${hash[key]}</span>`
+			)
+		}
+		return
+	})
+	return userAgent ?
+	`
+	<div>deviceMemory: ${hash.deviceMemory}</div>
+	<div>hardwareConcurrency: ${hash.hardwareConcurrency}</div>
+	<div>userAgent: ${hash.userAgent}</div>
+	<div>platform: ${hash.platform}</div>
+	<div>language: ${hash.language}</div>
+	<div>timezone: ${hash.timezoneLocation}</div>
+	<div>canvas2d: ${hash.canvas2d}</div>
+	<div>gl1 renderer: ${hash.webglRenderer}</div>
+	<div>gl2 renderer: ${hash.webgl2Renderer}</div>
+	<div>gl1 vendor: ${hash.webglVendor}</div>
+	<div>gl2 vendor: ${hash.webgl2Vendor}</div>
+	<div>gl1 params: ${hash.webglParams}</div>
+	<div>gl2 params: ${hash.webgl2Params}</div>
+	<div>ua version:</div>
+	<div class="block-text">${
+		decryptUserAgent({
+			ua: userAgent,
+			os: system,
+			isBrave: 'brave' in navigator
+		})
+	} on ${system}</div>
+	<div>ua device:</div>
+	<div class="block-text">${
+		getUserAgentPlatform({ userAgent })
+	}</div> 
+	` :
+	`
+	<div>ua version:</div>
+	<div class="block-text"></div>
+	<div>ua device:</div>
+	<div class="block-text"></div> 
+	`
+}
 patch(el, html`
 	<div id="fingerprint-data">
 		<div class="flex-grid visitor-info">
@@ -302,128 +367,17 @@ patch(el, html`
 			<div class="col-four" ${style(dedicatedHash, dedicatedHash)}>
 				<strong>Dedicated</strong>
 				<span class="hash">${dedicatedHash}</span>
-				<div>memory: ${hashMini(dedicatedWorker.deviceMemory)}</div>
-				<div>hardware: ${hashMini(dedicatedWorker.hardwareConcurrency)}</div>
-				<div>user agent: ${hashMini(dedicatedWorker.userAgent)}</div>
-				<div>platform: ${hashMini(dedicatedWorker.platform)}</div>
-				<div>language: ${hashMini(dedicatedWorker.language)}</div>
-				<div>timezone: ${hashMini(dedicatedWorker.timezoneLocation)}</div>
-				<div>canvas 2d: ${hashMini(dedicatedWorker.canvas2d)}</div>
-				<div>gl1 renderer: ${hashMini(dedicatedWorker.webglRenderer)}</div>
-				<div>gl2 renderer: ${hashMini(dedicatedWorker.webgl2Renderer)}</div>
-				<div>gl1 vendor: ${hashMini(dedicatedWorker.webglVendor)}</div>
-				<div>gl2 vendor: ${hashMini(dedicatedWorker.webgl2Vendor)}</div>
-				<div>gl1 params: ${hashMini(dedicatedWorker.webglParams)}</div>
-				<div>gl2 params: ${hashMini(dedicatedWorker.webgl2Params)}</div>
-				${(() => {
-					const { userAgent } = dedicatedWorker || {}
-					const system = userAgent ? getOS(userAgent) : undefined
-					return userAgent ?
-					`
-					<div>ua version:</div>
-					<div class="block-text">${
-						decryptUserAgent({
-							ua: userAgent,
-							os: system,
-							isBrave: 'brave' in navigator
-						})
-					} on ${system}</div>
-					<div>ua device:</div>
-					<div class="block-text">${
-						getUserAgentPlatform({ userAgent })
-					}</div> 
-					` :
-					`
-					<div>ua version:</div>
-					<div class="block-text"></div>
-					<div>ua device:</div>
-					<div class="block-text"></div> 
-					`
-				})()}
+				${computeTemplate(dedicatedWorker, 'dedicated')}
 			</div>
 			<div class="col-four" ${style(dedicatedHash, sharedHash)}>
 				<strong>Shared</strong>
 				<span class="hash">${sharedHash}</span>
-				<div>memory: ${hashMini(sharedWorker.deviceMemory)}</div>
-				<div>hardware: ${hashMini(sharedWorker.hardwareConcurrency)}</div>
-				<div>user agent: ${hashMini(sharedWorker.userAgent)}</div>
-				<div>platform: ${hashMini(sharedWorker.platform)}</div>
-				<div>language: ${hashMini(sharedWorker.language)}</div>
-				<div>timezone: ${hashMini(sharedWorker.timezoneLocation)}</div>
-				<div>canvas 2d: ${hashMini(sharedWorker.canvas2d)}</div>
-				<div>gl1 renderer: ${hashMini(sharedWorker.webglRenderer)}</div>
-				<div>gl2 renderer: ${hashMini(sharedWorker.webgl2Renderer)}</div>
-				<div>gl1 vendor: ${hashMini(sharedWorker.webglVendor)}</div>
-				<div>gl2 vendor: ${hashMini(sharedWorker.webgl2Vendor)}</div>
-				<div>gl1 params: ${hashMini(sharedWorker.webglParams)}</div>
-				<div>gl2 params: ${hashMini(sharedWorker.webgl2Params)}</div>
-				${(() => {
-					const { userAgent } = sharedWorker || {}
-					const system = userAgent ? getOS(userAgent) : undefined
-					return userAgent ?
-					`
-					<div>ua version:</div>
-					<div class="block-text">${
-						decryptUserAgent({
-							ua: userAgent,
-							os: system,
-							isBrave: 'brave' in navigator
-						})
-					} on ${system}</div>
-					<div>ua device:</div>
-					<div class="block-text">${
-						getUserAgentPlatform({ userAgent })
-					}</div> 
-					` :
-					`
-					<div>ua version:</div>
-					<div class="block-text"></div>
-					<div>ua device:</div>
-					<div class="block-text"></div> 
-					`
-				})()}
+				${computeTemplate(sharedWorker, 'shared')}
 			</div>
 			<div class="col-four" ${style(dedicatedHash, serviceHash)}>
 				<strong>Service</strong>
 				<span class="hash">${serviceHash}</span>
-				<div>memory: ${hashMini(serviceWorker.deviceMemory)}</div>
-				<div>hardware: ${hashMini(serviceWorker.hardwareConcurrency)}</div>
-				<div>user agent: ${hashMini(serviceWorker.userAgent)}</div>
-				<div>platform: ${hashMini(sharedWorker.platform)}</div>
-				<div>language: ${hashMini(serviceWorker.language)}</div>
-				<div>timezone: ${hashMini(serviceWorker.timezoneLocation)}</div>
-				<div>canvas 2d: ${hashMini(serviceWorker.canvas2d)}</div>
-				<div>gl1 renderer: ${hashMini(serviceWorker.webglRenderer)}</div>
-				<div>gl2 renderer: ${hashMini(serviceWorker.webgl2Renderer)}</div>
-				<div>gl1 vendor: ${hashMini(serviceWorker.webglVendor)}</div>
-				<div>gl2 vendor: ${hashMini(serviceWorker.webgl2Vendor)}</div>
-				<div>gl1 params: ${hashMini(serviceWorker.webglParams)}</div>
-				<div>gl2 params: ${hashMini(serviceWorker.webgl2Params)}</div>
-				${(() => {
-					const { userAgent } = serviceWorker || {}
-					const system = userAgent ? getOS(userAgent) : undefined
-					return userAgent ?
-					`
-					<div>ua version:</div>
-					<div class="block-text">${
-						decryptUserAgent({
-							ua: userAgent,
-							os: system,
-							isBrave: 'brave' in navigator
-						})
-					} on ${system}</div>
-					<div>ua device:</div>
-					<div class="block-text">${
-						getUserAgentPlatform({ userAgent })
-					}</div> 
-					` :
-					`
-					<div>ua version:</div>
-					<div class="block-text"></div>
-					<div>ua device:</div>
-					<div class="block-text"></div> 
-					`
-				})()}
+				${computeTemplate(serviceWorker, 'service')}
 			</div>
 		</div>
 	</div>
