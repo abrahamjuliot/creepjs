@@ -166,7 +166,7 @@ const getWorkerData = async () => {
 		webgl2Params
 	try {
 		const canvasOffscreen = new OffscreenCanvas(500, 200)
-		const context2d = canvasOffscreen.getContext('2d')
+		canvasOffscreen.getContext('2d')
 		const getDataURI = async () => {
 			const blob = await canvasOffscreen.convertToBlob()
 			const reader = new FileReader()
