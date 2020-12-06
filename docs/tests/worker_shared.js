@@ -157,17 +157,23 @@ const getWebglParams = (context, type) => {
 }
 
 const getWorkerData = async () => {
-	let canvas2d = undefined
+	let canvas2d,
+		webglVendor,
+		webglRenderer,
+		webglParams, 
+		webgl2Vendor,
+		webgl2Renderer,
+		webgl2Params
 	try {
-		const canvasOffscreen2d = new OffscreenCanvas(500, 200)
-		const context2d = canvasOffscreen2d.getContext('2d')
+		const canvasOffscreen = new OffscreenCanvas(500, 200)
+		const context2d = canvasOffscreen.getContext('2d')
 		const str = '!😃🙌🧠👩‍💻👟👧🏻👩🏻‍🦱👩🏻‍🦰👱🏻‍♀️👩🏻‍🦳👧🏼👧🏽👧🏾👧🏿🦄🐉🌊🍧🏄‍♀️🌠🔮♞'
 		context2d.font = '14px Arial'
 		context2d.fillText(str, 0, 50)
 		context2d.fillStyle = 'rgba(100, 200, 99, 0.78)'
 		context2d.fillRect(100, 30, 80, 50)
 		const getDataURI = async () => {
-			const blob = await canvasOffscreen2d.convertToBlob()
+			const blob = await canvasOffscreen.convertToBlob()
 			const reader = new FileReader()
 			reader.readAsDataURL(blob)
 			return new Promise(resolve => {
@@ -175,15 +181,7 @@ const getWorkerData = async () => {
 			})
 		}
 		canvas2d = await getDataURI()
-	}
-	catch (error) { }
-	let webglVendor,
-		webglRenderer,
-		webglParams, 
-		webgl2Vendor,
-		webgl2Renderer,
-		webgl2Params
-	try {
+
 		const canvasOffscreenWebgl = new OffscreenCanvas(256, 256)
 		const contextWebgl = canvasOffscreenWebgl.getContext('webgl')
 		const renererInfo = contextWebgl.getExtension('WEBGL_debug_renderer_info')
@@ -201,6 +199,7 @@ const getWorkerData = async () => {
 		catch (error) { console.error(error) }
 	}
 	catch (error) { console.error(error) }
+
 	const timezoneLocation = Intl.DateTimeFormat().resolvedOptions().timeZone
 	const { deviceMemory, hardwareConcurrency, language, platform, userAgent } = navigator
 	const data = {

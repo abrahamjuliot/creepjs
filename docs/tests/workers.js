@@ -205,6 +205,7 @@ const getDedicatedWorker = () => {
 		try {
 			const dedicatedWorker = new Worker('worker_dedicated.js')
 			dedicatedWorker.onmessage = message => {
+				dedicatedWorker.terminate()
 				return resolve(message.data)
 			}
 		}
@@ -233,7 +234,7 @@ const getSharedWorker = () => {
 }
 
 const getServiceWorker = () => {
-	return new Promise(resolve => {
+	return new Promise(async resolve => {
 		try {
 			navigator.serviceWorker.register('worker_service.js', {
 				scope: '../tests/'
