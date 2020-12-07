@@ -594,12 +594,12 @@ const computeTemplate = (worker, name) => {
 	<div>language: ${hash.language}</div>
 	<div>timezone: ${hash.timezoneLocation}</div>
 	<div>canvas2d: ${hash.canvas2d}</div>
-	<div>gl1 renderer: ${hash.webglRenderer}</div>
-	<div>gl2 renderer: ${hash.webgl2Renderer}</div>
-	<div>gl1 vendor: ${hash.webglVendor}</div>
-	<div>gl2 vendor: ${hash.webgl2Vendor}</div>
-	<div>gl1 params: ${hash.webglParams}</div>
-	<div>gl2 params: ${hash.webgl2Params}</div>
+	<div>webgl renderer: ${hash.webglRenderer}</div>
+	<div>webgl vendor: ${hash.webglVendor}</div>
+	<div>webgl params: ${hash.webglParams}</div>
+	<div>webgl2 renderer: ${hash.webgl2Renderer}</div>
+	<div>webgl2 vendor: ${hash.webgl2Vendor}</div>
+	<div>webgl2 params: ${hash.webgl2Params}</div>
 	<div>ua version:</div>
 	<div class="block-text">${
 		decryptUserAgent({
@@ -621,12 +621,12 @@ const computeTemplate = (worker, name) => {
 	<div>language:</div>
 	<div>timezone:</div>
 	<div>canvas2d:</div>
-	<div>gl1 renderer:</div>
-	<div>gl2 renderer:</div>
-	<div>gl1 vendor:</div>
-	<div>gl2 vendor:</div>
-	<div>gl1 params:</div>
-	<div>gl2 params:</div>
+	<div>webgl renderer:</div>
+	<div>webgl vendor:</div>
+	<div>webgl params:</div>
+	<div>webgl2 renderer:</div>
+	<div>webgl2 vendor:</div>
+	<div>webgl2 params:</div>
 	<div>ua version:</div>
 	<div class="block-text"></div>
 	<div>ua device:</div>
