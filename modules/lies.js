@@ -34,7 +34,8 @@ const getNestedWindowFrameContext = imports => {
 			div.setAttribute('style', 'display:none')
 			document.body.appendChild(div)
 
-			const id = [...Array(10)].map(() => instanceId).join('')
+			const id = [...crypto.getRandomValues(new Uint32Array(10))]
+				.map(n => n.toString(36)).join('')
 
 			// avoid dead object error
 			const ghost = `

@@ -199,70 +199,7 @@ const getUserAgentPlatform = ({ userAgent, excludeBuild = true }) => {
 	}
 }
 
-// Tests
-const getDedicatedWorker = () => {
-	return new Promise(resolve => {
-		try {
-			const dedicatedWorker = new Worker('worker_dedicated.js')
-			dedicatedWorker.onmessage = message => {
-				dedicatedWorker.terminate()
-				return resolve(message.data)
-			}
-		}
-		catch(error) {
-			console.error(error)
-			return resolve({})
-		}
-	})
-}
-
-const getSharedWorker = () => {
-	return new Promise(resolve => {
-		try {
-			const sharedWorker = new SharedWorker('worker_shared.js')
-			sharedWorker.port.start()
-			sharedWorker.port.addEventListener('message', message => {
-				sharedWorker.port.close()
-				return resolve(message.data)
-			})
-		}
-		catch(error) {
-			console.error(error)
-			return resolve({})
-		}
-	})
-}
-
-const getServiceWorker = () => {
-	return new Promise(async resolve => {
-		try {
-			navigator.serviceWorker.register('worker_service.js', {
-				scope: '../tests/'
-			}).catch(error => {
-				console.error(error)
-				return resolve({})
-			})
-			navigator.serviceWorker.ready.then(registration => {
-				const broadcast = new BroadcastChannel('creep_service')
-				broadcast.onmessage = message => {
-					registration.unregister()
-					broadcast.close()
-					return resolve(message.data)
-				}
-				return broadcast.postMessage({ type: 'fingerprint'})
-			}).catch(error => {
-				console.error(error)
-				return resolve({})
-			})
-		}
-		catch(error) {
-			console.error(error)
-			return resolve({})
-		}
-	})
-}
-
-	/* parameter helpers */
+/* parameter helpers */
 // https://developer.mozilla.org/en-US/docs/Web/API/EXT_texture_filter_anisotropic
 const getMaxAnisotropy = context => {
     try {
@@ -479,6 +416,110 @@ const getWorkerData = async () => {
 	return data
 }
 
+// Tests
+const isWorker = !globalThis.document && !!globalThis.WorkerGlobalScope
+const isSharedWorker = !!globalThis.SharedWorkerGlobalScope
+const isServiceWorker = !!globalThis.ServiceWorkerGlobalScope
+
+// WorkerGlobalScope
+const getWorkerGlobalScope = async () => {
+	const data = await getWorkerData()
+	postMessage(data)
+	close()
+}
+
+const getDedicatedWorker = () => {
+	return new Promise(resolve => {
+		try {
+			const dedicatedWorker = new Worker(document.currentScript.src)
+			dedicatedWorker.onmessage = message => {
+				dedicatedWorker.terminate()
+				return resolve(message.data)
+			}
+		}
+		catch(error) {
+			console.error(error)
+			return resolve({})
+		}
+	})
+}
+
+// SharedWorkerGlobalScope
+const getSharedWorkerGlobalScope = () => {
+	onconnect = async message => {
+		const port = message.ports[0]
+		const data = await getWorkerData()
+		port.postMessage(data)
+	}
+}
+
+const getSharedWorker = () => {
+	return new Promise(resolve => {
+		try {
+			const sharedWorker = new SharedWorker(document.currentScript.src)
+			sharedWorker.port.start()
+			sharedWorker.port.addEventListener('message', message => {
+				sharedWorker.port.close()
+				return resolve(message.data)
+			})
+		}
+		catch(error) {
+			console.error(error)
+			return resolve({})
+		}
+	})
+}
+
+// ServiceWorkerGlobalScope
+const getServiceWorkerGlobalScope = () => {
+	const broadcast = new BroadcastChannel('creep_service')
+	broadcast.onmessage = async event => {
+		if (event.data && event.data.type == 'fingerprint') {
+			const data = await getWorkerData()
+			broadcast.postMessage(data)
+		}
+	}
+}
+
+const getServiceWorker = () => {
+	return new Promise(async resolve => {
+		try {
+			navigator.serviceWorker.register(document.currentScript.src, {
+				scope: '../tests/'
+			}).catch(error => {
+				console.error(error)
+				return resolve({})
+			})
+			navigator.serviceWorker.ready.then(registration => {
+				const broadcast = new BroadcastChannel('creep_service')
+				broadcast.onmessage = message => {
+					registration.unregister()
+					broadcast.close()
+					return resolve(message.data)
+				}
+				return broadcast.postMessage({ type: 'fingerprint'})
+			}).catch(error => {
+				console.error(error)
+				return resolve({})
+			})
+		}
+		catch(error) {
+			console.error(error)
+			return resolve({})
+		}
+	})
+}
+
+// WorkerGlobalScope
+if (isWorker) {
+	return (
+		isServiceWorker ? getServiceWorkerGlobalScope() :
+		isSharedWorker ? getSharedWorkerGlobalScope() :
+		getWorkerGlobalScope()
+	)
+}
+
+// Window
 const [
 	windowScope,
 	dedicatedWorker,
@@ -604,19 +645,19 @@ patch(el, html`
 				${computeTemplate(windowScope, 'window')}
 			</div>
 			<div class="col-six" ${style(windowHash, dedicatedHash)}>
-				<strong>DedicatedWorkerGlobalScope</strong>
+				<strong>Dedicated</strong>
 				<span class="hash">${dedicatedHash}</span>
 				${computeTemplate(dedicatedWorker, 'dedicated')}
 			</div>
 		</div>
 		<div class="flex-grid">
 			<div class="col-six" ${style(windowHash, sharedHash)}>
-				<strong>SharedWorkerGlobalScope</strong>
+				<strong>Shared</strong>
 				<span class="hash">${sharedHash}</span>
 				${computeTemplate(sharedWorker, 'shared')}
 			</div>
 			<div class="col-six" ${style(windowHash, serviceHash)}>
-				<strong>ServiceWorkerGlobalScope</strong>
+				<strong>Service</strong>
 				<span class="hash">${serviceHash}</span>
 				${computeTemplate(serviceWorker, 'service')}
 			</div>
