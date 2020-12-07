@@ -132,7 +132,6 @@ export const getWorkerScope = imports => {
 			logTestResult
 		}
 	} = imports
-
 	return new Promise(resolve => {
 		try {
 			const worker = newWorker(inlineWorker, { require: [ isFirefox, contentWindow, caniuse, captureError ] })
