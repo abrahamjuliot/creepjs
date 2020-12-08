@@ -38,18 +38,15 @@ const getSharedWorker = contentWindow => {
 	})
 }
 
-const getServiceWorker = (contentWindow, isFirefox) => {
+const getServiceWorker = contentWindow => {
 	return new Promise(async resolve => {
 		try {
-			const contentWindowNavigator = (
-				contentWindow && !isFirefox ? contentWindow.navigator : navigator
-			)
-			contentWindowNavigator.serviceWorker.register(source).catch(error => {
+			navigator.serviceWorker.register(source).catch(error => {
 				console.error(error)
 				return resolve()
 			})
-			contentWindowNavigator.serviceWorker.ready.then(registration => {
-				const broadcast = new BroadcastChannel('creep_service')
+			navigator.serviceWorker.ready.then(registration => {
+				const broadcast = new BroadcastChannel('creep_service_primary')
 				broadcast.onmessage = message => {
 					registration.unregister()
 					broadcast.close()
@@ -83,7 +80,7 @@ export const getBestWorkerScope = imports => {
 	} = imports
 	return new Promise(async resolve => {
 		try {
-			let type = 'service' // loads fast
+			let type = 'service' // loads fast but is not available in frames
 			let workerScope = await getServiceWorker(contentWindow, isFirefox)
 				.catch(error => console.error(error.message))
 			if (!workerScope) {

@@ -118,7 +118,7 @@ const getSharedWorkerGlobalScope = () => {
 
 // ServiceWorkerGlobalScope
 const getServiceWorkerGlobalScope = () => {
-	const broadcast = new BroadcastChannel('creep_service')
+	const broadcast = new BroadcastChannel('creep_service_primary')
 	broadcast.onmessage = async event => {
 		if (event.data && event.data.type == 'fingerprint') {
 			const data = await getWorkerData()
