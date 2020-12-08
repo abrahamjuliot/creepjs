@@ -25,7 +25,7 @@ import { getScreen } from './modules/screen.js'
 import { getTimezone } from './modules/timezone.js'
 import { getVoices } from './modules/voices.js'
 import { getWebRTCData } from './modules/webrtc.js'
-import { getWorkerScope } from './modules/worker.js'
+import { getBestWorkerScope } from './modules/worker.js'
 
 const imports = {
 	require: {
@@ -115,21 +115,20 @@ const imports = {
 		})
 
 		const [
-			mediaDevicesComputed,
 			workerScopeComputed,
+			mediaDevicesComputed,
 			webRTCDataComputed
 		] = await Promise.all([
+			getBestWorkerScope(imports),
 			getMediaDevices(imports),
-			getWorkerScope(imports),
 			getWebRTCData(imports, cloudflareComputed)
 		]).catch(error => {
 			console.error(error.message)
 		})
 
 		const navigatorComputed = await getNavigator(imports, workerScopeComputed)
-		.catch(error => {
-			console.error(error.message)
-		})
+			.catch(error => console.error(error.message))
+
 		const [
 			liesComputed,
 			trashComputed,
@@ -541,7 +540,7 @@ const imports = {
 					' [emulator]' : ''
 				}</div>
 				<div>canvas 2d:${
-					!!data.canvas2d.dataURI ?
+					data.canvas2d && data.canvas2d.dataURI ?
 					`<span class="sub-hash">${hashMini(data.canvas2d.$hash)}</span>` :
 					` ${note.unsupported}`
 				}</div>
@@ -1321,7 +1320,7 @@ const imports = {
 		
 		fetch(request)
 		.then(response => response.json())
-		.then(data => {
+		.then(async data => {
 			console.log('\n\n⚡server response: ', JSON.stringify(data, null, '\t'))
 			fetchVisitorDataTimer('server response time')
 			const { firstVisit, lastVisit: latestVisit, looseFingerprints: subIds, visits, hasTrash, hasLied, hasErrors, signature } = data
