@@ -3977,7 +3977,7 @@
 		})
 	};
 
-	const getServiceWorker = contentWindow => {
+	const getServiceWorker = () => {
 		return new Promise(async resolve => {
 			try {
 				navigator.serviceWorker.register(source).catch(error => {
@@ -4020,7 +4020,7 @@
 		return new Promise(async resolve => {
 			try {
 				let type = 'service'; // loads fast but is not available in frames
-				let workerScope = await getServiceWorker(contentWindow, isFirefox)
+				let workerScope = await getServiceWorker()
 					.catch(error => console.error(error.message));
 				if (!workerScope) {
 					type = 'shared'; // no support in Safari, iOS, and Chrome Android
