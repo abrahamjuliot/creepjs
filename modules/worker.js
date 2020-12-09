@@ -99,6 +99,7 @@ export const getBestWorkerScope = imports => {
 				workerScope.device = getUserAgentPlatform({ userAgent: workerScope.userAgent })
 				workerScope.canvas2d = { dataURI: canvas2d, $hash: await hashify(canvas2d) }
 				workerScope.timezoneHistoryLocation = await hashify(timezoneHistoryLocation)
+				workerScope.type = type
 				const $hash = await hashify(workerScope)
 				logTestResult({ test: `${type} worker`, passed: true })
 				return resolve({ ...workerScope, $hash })

@@ -498,7 +498,10 @@ const imports = {
 			<div class="col-four icon-container">
 			</div>
 		</div>
-		<div class="flex-grid">
+		<div class="flex-grid relative">
+		<div class="ellipsis"><span class="aside-note">${
+			fp.workerScope && fp.workerScope.type ? fp.workerScope.type : ''
+		} worker</span></div>
 		${!fp.workerScope ?
 			`<div class="col-six">
 				<strong>Worker</strong>
@@ -1343,7 +1346,7 @@ const imports = {
 			)).toFixed(0)
 			const template = `
 				<div class="visitor-info">
-					<div class="ellipsis"><span class="modified">script modified 2020-12-5</span></div>
+					<div class="ellipsis"><span class="aside-note">script modified 2020-12-5</span></div>
 					<div class="flex-grid">
 						<div class="col-six">
 							<strong>Browser</strong>

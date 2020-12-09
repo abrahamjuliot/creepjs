@@ -179,8 +179,13 @@ visitor {
 	box-shadow: 0px 1px 1px 0px #cfd0d1;
 }
 
+
+.relative {
+    position: relative;
+}
+
 .time,
-.modified  {
+.aside-note  {
 	position: absolute;
 	top: 0;
     right: 25px;
