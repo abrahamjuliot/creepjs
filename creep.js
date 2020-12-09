@@ -534,7 +534,7 @@ const imports = {
 				<div>location: ${data.timezoneLocation}</div>
 				<div>offset location:<span class="sub-hash">${hashMini(data.timezoneHistoryLocation)}</span></div>
 				<div>language: ${data.language || note.unsupported}</div>
-				<div>deviceMemory: ${data.hardwareConcurrency || note.unsupported}</div>
+				<div>deviceMemory: ${data.deviceMemory || note.unsupported}</div>
 				<div>hardwareConcurrency: ${data.hardwareConcurrency || note.unsupported}</div>
 				<div>js runtime: ${data.jsImplementation}</div>
 				<div>platform: ${data.platform || note.unsupported}</div>

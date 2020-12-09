@@ -4038,6 +4038,7 @@
 					workerScope.device = getUserAgentPlatform({ userAgent: workerScope.userAgent });
 					workerScope.canvas2d = { dataURI: canvas2d, $hash: await hashify(canvas2d) };
 					workerScope.timezoneHistoryLocation = await hashify(timezoneHistoryLocation);
+					workerScope.type = type;
 					const $hash = await hashify(workerScope);
 					logTestResult({ test: `${type} worker`, passed: true });
 					return resolve({ ...workerScope, $hash })
@@ -4523,7 +4524,10 @@
 			<div class="col-four icon-container">
 			</div>
 		</div>
-		<div class="flex-grid">
+		<div class="flex-grid relative">
+		<div class="ellipsis"><span class="aside-note">${
+			fp.workerScope && fp.workerScope.type ? fp.workerScope.type : ''
+		} worker</span></div>
 		${!fp.workerScope ?
 			`<div class="col-six">
 				<strong>Worker</strong>
@@ -4556,7 +4560,7 @@
 				<div>location: ${data.timezoneLocation}</div>
 				<div>offset location:<span class="sub-hash">${hashMini(data.timezoneHistoryLocation)}</span></div>
 				<div>language: ${data.language || note.unsupported}</div>
-				<div>deviceMemory: ${data.hardwareConcurrency || note.unsupported}</div>
+				<div>deviceMemory: ${data.deviceMemory || note.unsupported}</div>
 				<div>hardwareConcurrency: ${data.hardwareConcurrency || note.unsupported}</div>
 				<div>js runtime: ${data.jsImplementation}</div>
 				<div>platform: ${data.platform || note.unsupported}</div>
@@ -5368,7 +5372,7 @@
 				)).toFixed(0);
 				const template = `
 				<div class="visitor-info">
-					<div class="ellipsis"><span class="modified">script modified 2020-12-5</span></div>
+					<div class="ellipsis"><span class="aside-note">script modified 2020-12-5</span></div>
 					<div class="flex-grid">
 						<div class="col-six">
 							<strong>Browser</strong>
