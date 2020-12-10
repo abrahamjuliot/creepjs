@@ -150,13 +150,6 @@ const computeTemplate = ({name, fingerprints}) => {
 const el = document.getElementById('fingerprint-data')
 patch(el, html`
 	<div id="fingerprint-data">
-		<style>
-		@media (min-width: 600px) {
-			.col-six {
-				flex: 20%;
-			}
-		}
-		</style>
 		<div class="flex-grid visitor-info">
 			<strong>Window Version</strong>
 		</div>
