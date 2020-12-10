@@ -97,6 +97,9 @@ const extraSpace = /\s{2,}/
 const isDevice = (list, device) => list.filter(x => device.test(x)).length
 
 const getUserAgentPlatform = ({ userAgent, excludeBuild = true }) => {
+	if (!userAgent) {
+		return 'unknown'
+	}
 	userAgent = userAgent.trim().replace(/\s{2,}/, ' ').replace(nonPlatformParenthesis, '')
 	if (parenthesis.test(userAgent)) {
 		const platformSection = userAgent.match(parenthesis)[0]

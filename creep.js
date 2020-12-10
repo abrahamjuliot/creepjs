@@ -4,7 +4,7 @@ import { hashMini, instanceId, hashify } from './modules/crypto.js'
 
 import { captureError, attempt, caniuse, timer, errorsCaptured, getCapturedErrors } from './modules/captureErrors.js'
 import { sendToTrash, proxyBehavior, gibberish, trustInteger, trashBin, getTrash } from './modules/trash.js'
-import { documentLie, contentWindow, parentNest, lieProps, lieRecords, getLies, hyperNestedIframeWindow } from './modules/lies.js'
+import { documentLie, contentWindow, parentNest, lieProps, lieRecords, getLies, hyperNestedIframeWindow, getPluginLies } from './modules/lies.js'
 
 import { getOfflineAudioContext } from './modules/audio.js'
 import { getCanvas2d } from './modules/canvas2d.js'
@@ -66,7 +66,8 @@ const imports = {
 		// nested contentWindow
 		contentWindow,
 		parentNest,
-		hyperNestedIframeWindow
+		hyperNestedIframeWindow,
+		getPluginLies
 	}
 }
 // worker.js

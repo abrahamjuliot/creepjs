@@ -17,7 +17,8 @@ export const getNavigator = (imports, workerScope) => {
 			contentWindow,
 			hyperNestedIframeWindow,
 			getUserAgentPlatform,
-			logTestResult
+			logTestResult,
+			getPluginLies
 		}
 	} = imports
 
@@ -298,96 +299,18 @@ export const getNavigator = (imports, workerScope) => {
 							version: p.version
 						})) : []
 
-					const mimeTypesDescriptions = new Set([...navigator.mimeTypes].map(mime => mime.description))
-					mimeTypesDescriptions.delete('')
-					const mimeTypesDescriptionsString = `${[...mimeTypesDescriptions].join(', ')}`
-					const pluginsList = [...navigator.plugins].filter(plugin => plugin.description != '')
-					const validPluginList = pluginsList.filter(plugin => !!caniuse(() => plugin[0].description))
-					
-					const mimeTypePluginNames = ''+[...new Set([...navigator.mimeTypes].map(mimeType => mimeType.enabledPlugin.name))].sort()
-					const rawPluginNames = ''+[...new Set([...navigator.plugins].map(plugin => plugin.name))].sort()
-					if (mimeTypePluginNames != rawPluginNames) {
+					const { lies } = getPluginLies(navigatorPlugins, navigator.mimeTypes)
+					if (lies.length) {
 						lied = true
-						const pluginsLie = {
-							fingerprint: '',
-							lies: [{ [`Expected MimeType Plugins to match Plugins: "${mimeTypePluginNames}" should match "${rawPluginNames}"`]: true }]
-						}
-						documentLie(`Navigator.plugins`, hashMini({mimeTypePluginNames, rawPluginNames}), pluginsLie)
-					}
-
-					const nonMimetypePlugins = pluginsList
-						.filter(plugin => !caniuse(() => plugin[0].description))
-						.map(plugin => plugin.description)
-					if (!!nonMimetypePlugins.length) {
-						lied = true
-						const pluginsLie = {
-							fingerprint: '',
-							lies: [{ [`Expected a MimeType object in plugins [${nonMimetypePlugins.join(', ')}]`]: true }]
-						}
-						documentLie(`Navigator.plugins`, hashMini(nonMimetypePlugins), pluginsLie)
-					}
-
-					const nonMatchingMimetypePlugins = validPluginList
-						.filter(plugin => plugin[0].description != plugin.description)
-						.map(plugin => [plugin.description, plugin[0].description])
-					if (!!nonMatchingMimetypePlugins.length) {
-						lied = true
-						const pluginsLie = {
-							fingerprint: '',
-							lies: [{ [`Expected plugin MimeType description to match plugin description: ${
-								nonMatchingMimetypePlugins
-									.map(description => `${description[0]} should match ${description[1]}`)
-									.join(', ')
-							}`]: true }]
-						}
-						documentLie(`Navigator.plugins`, hashMini(nonMatchingMimetypePlugins), pluginsLie)
-					}
-					
-					const invalidPrototypeMimeTypePlugins = validPluginList
-						.filter(plugin => !mimeTypesDescriptions.has(plugin[0].description))
-						.map(plugin => [plugin[0].description, mimeTypesDescriptionsString])
-					if (!!invalidPrototypeMimeTypePlugins.length) {
-						lied = true
-						const pluginsLie = {
-							fingerprint: '',
-							lies: [{ [`Expected plugin MimeType description to match a MimeType description: ${
-								invalidPrototypeMimeTypePlugins
-									.map(description => `${description[0]} is not in [${description[1]}]`)
-									.join(', ')
-							}`]: true }]
-						}
-						documentLie(`Navigator.plugins`, hashMini(invalidPrototypeMimeTypePlugins), pluginsLie)
-					}
-					
-					const invalidMimetypePlugins = validPluginList
-						.filter(plugin => !mimeTypesDescriptions.has(plugin.description))
-						.map(plugin => [plugin.description, mimeTypesDescriptionsString])
-					if (!!invalidMimetypePlugins.length) {
-						lied = true
-						const pluginsLie = {
-							fingerprint: '',
-							lies: [{ [`Expected plugin description to match a MimeType description: ${
-								invalidMimetypePlugins
-									.map(description => `${description[0]} is not in [${description[1]}]`)
-									.join(', ')
-							}`]: true }]
-						}
-						documentLie(`Navigator.plugins`, hashMini(invalidMimetypePlugins), pluginsLie)
+						lies.forEach(lie => {
+							const pluginsLie = { fingerprint: '', lies: [{ [lie]: true }] }
+							return documentLie(`Navigator.plugins`, hashMini(response), pluginsLie)
+						})
 					}
 
 					if (!!response.length) {	
 						response.forEach(plugin => {	
 							const { name, description } = plugin
-
-							if (!ownPropertiesSet.has(name)) {
-								lied = true
-								const pluginsLie = {
-									fingerprint: '',
-									lies: [{ [`Expected name "${name}" in plugins own properties and got [${ownProperties.join(', ')}]`]: true }]
-								}
-								documentLie(`Navigator.plugins`, hashMini(ownProperties), pluginsLie)
-							}
-
 							const nameGibbers = gibberish(name)
 							const descriptionGibbers = gibberish(description)	
 							if (!!nameGibbers.length) {	

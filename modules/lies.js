@@ -783,6 +783,104 @@ searchLies(String, {
 	trimLeft: !0
 })
 
+const getPluginLies = (plugins, mimeTypes) => {
+	const lies = [] // collect lie types
+	const pluginsOwnPropertyNames = Object.getOwnPropertyNames(plugins).filter(name => isNaN(+name))
+	const mimeTypesOwnPropertyNames = Object.getOwnPropertyNames(mimeTypes).filter(name => isNaN(+name))
+	const pluginsArray = plugins
+
+	// cast to array
+	plugins = [...plugins]
+	mimeTypes = [...mimeTypes]
+
+	// get intitial trusted mimeType names
+	const trustedMimeTypes = new Set(mimeTypesOwnPropertyNames)
+
+	// get initial trusted plugin names
+	const excludeDuplicates = arr => [...new Set(arr)]
+	const mimeTypeEnabledPlugins = excludeDuplicates(
+		mimeTypes.map(mimeType => mimeType.enabledPlugin)
+	)
+	const trustedPluginNames = new Set(pluginsOwnPropertyNames)
+	const mimeTypeEnabledPluginsNames = mimeTypeEnabledPlugins.map(plugin => plugin.name)
+	const trustedPluginNamesArray = [...trustedPluginNames]
+	trustedPluginNamesArray.forEach(name => {
+		const validName = new Set(mimeTypeEnabledPluginsNames).has(name)
+		if (!validName) {
+			trustedPluginNames.delete(name)
+		}
+	})
+
+	// 1. Expect plugin name to be in plugins own property names
+	plugins.forEach(plugin => {
+		if (!trustedPluginNames.has(plugin.name)) {
+			lies.push('missing plugin name')
+		}
+	})
+
+	// 2. Expect MimeType Plugins to match Plugins
+	const getPluginPropertyValues = plugin => {
+		return [
+			plugin.description,
+			plugin.filename,
+			plugin.length,
+			plugin.name
+		]
+	}
+	const pluginList = plugins.map(getPluginPropertyValues).sort()
+	const enabledpluginList = mimeTypeEnabledPlugins.map(getPluginPropertyValues).sort()
+	const mismatchingPlugins = '' + pluginList != '' + enabledpluginList
+	if (mismatchingPlugins) {
+		lies.push('mismatching plugins')
+	}
+
+	// 3. Expect MimeType object in plugins
+	const invalidPlugins = plugins.filter(plugin => {
+		try {
+			const validMimeType = Object.getPrototypeOf(plugin[0]).constructor.name == 'MimeType'
+			if (!validMimeType) {
+				trustedPluginNames.delete(plugin.name)
+			}
+			return !validMimeType
+		} catch (error) {
+			trustedPluginNames.delete(plugin.name)
+			return true // sign of tampering
+		}
+	})
+	if (invalidPlugins.length) {
+		lies.push('missing mimetype')
+	}
+
+	// 4. Expect valid MimeType(s) in plugin
+	const pluginMimeTypes = plugins
+		.map(plugin => Object.values(plugin))
+		.flat()
+	const pluginMimeTypesNames = pluginMimeTypes.map(mimetype => mimetype.type)
+	const trustedMimeTypesArray = [...trustedMimeTypes]
+	pluginMimeTypesNames.forEach(name => {
+		const validName = trustedMimeTypes.has(name)
+		if (!validName) {
+			trustedMimeTypes.delete(name)
+		}
+	})
+
+	plugins.forEach(plugin => {
+		const pluginMimeTypes = Object.values(plugin).map(mimetype => mimetype.type)
+		return pluginMimeTypes.forEach(mimetype => {
+			if (!trustedMimeTypes.has(mimetype)) {
+				lies.push('invalid mimetype')
+				return trustedPluginNames.delete(plugin.name)
+			}
+		})
+	})
+
+	return {
+		validPlugins: plugins.filter(plugin => trustedPluginNames.has(plugin.name)),
+		validMimeTypes: mimeTypes.filter(mimeType => trustedMimeTypes.has(mimeType.type)),
+		lies: [...new Set(lies)] // remove duplicates
+	}
+}
+
 const getLies = imports => {
 
 	const {
@@ -811,4 +909,4 @@ const getLies = imports => {
 	})
 }
 
-export { documentLie, contentWindow, parentNest, lieProps, lieRecords, getLies, hyperNestedIframeWindow }
+export { documentLie, contentWindow, parentNest, lieProps, lieRecords, getLies, hyperNestedIframeWindow, getPluginLies }
