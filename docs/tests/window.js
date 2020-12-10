@@ -1,6 +1,5 @@
 (async () => {
 
-// https://stackoverflow.com/a/22429679
 const hashMini = str => {
 	if (typeof str == 'number') {
 		return str
@@ -14,6 +13,15 @@ const hashMini = str => {
 		hash = Math.imul(31, hash) + json.charCodeAt(i) | 0
 	}
 	return ('0000000' + (hash >>> 0).toString(16)).substr(-8)
+}
+
+const hashify = async (x) => {
+	const json = `${JSON.stringify(x)}`
+	const jsonBuffer = new TextEncoder().encode(json)
+	const hashBuffer = await crypto.subtle.digest('SHA-256', jsonBuffer)
+	const hashArray = Array.from(new Uint8Array(hashBuffer))
+	const hashHex = hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('')
+	return hashHex
 }
 
 // ie11 fix for template.content
@@ -112,46 +120,155 @@ const decryptUserAgent = ({ua, os, isBrave}) => {
     return 'unknown'
 }
 
+// compute window
+const getNestedWindowFrameContext = () => {
+	try {
+		const isFirefox = typeof InstallTrigger !== 'undefined'
+		const createIframe = context => {
+			const numberOfIframes = context.length
+			const div = document.createElement('div')
+			div.setAttribute('style', 'display:none')
+			document.body.appendChild(div)
+
+			const id = [...crypto.getRandomValues(new Uint32Array(10))]
+				.map(n => n.toString(36)).join('')
+
+			// avoid dead object error
+			const ghost = `
+				style="
+				height: 100vh;
+				width: 100vw;
+				position: absolute;
+				left:-10000px;
+				visibility: hidden;
+				"
+			`
+			const hide = `style="display: none;"`
+			patch(div, html`<div ${ghost} id="${id}"><iframe ${ isFirefox ? ghost : hide }></iframe></div>`)
+			const el = document.getElementById(id)
+
+			return {
+				el,
+				iframeWindow: context[numberOfIframes],
+				remove: () => el.parentNode.removeChild(el)
+			}
+		}
+
+		const parentNest = createIframe(window)
+		const { iframeWindow } = parentNest
+		return { iframeWindow, parentNest }
+	}
+	catch (error) {
+		console.error(error)
+		return { iframeWindow: window, parentNest: undefined }
+	}
+}
+
+const { iframeWindow, parentNest  } = getNestedWindowFrameContext()
+
+const getIframeContentWindowVersion = iframeWindow => {
+
+	return new Promise(async resolve => {
+		try {
+			const keys = Object.getOwnPropertyNames(iframeWindow)
+			const moz = keys.filter(key => (/moz/i).test(key)).length
+			const webkit = keys.filter(key => (/webkit/i).test(key)).length
+			const apple = keys.filter(key => (/apple/i).test(key)).length
+			const data = { keys, apple, moz, webkit } 
+			const $hash = await hashify(data)
+			return resolve({ ...data, $hash })
+		}
+		catch (error) {
+			console.error(error)
+			return resolve()
+		}
+	})
+}
+
+const { $hash: hash } = await getIframeContentWindowVersion(iframeWindow)
+	.catch(error => console.error(error))
+
+if (parentNest) {
+	parentNest.remove()
+}
+
 // get data
 const res = await fetch('window.json').catch(error => console.error(error))
 const data = await res.json().catch(error => console.error(error))
-const useragent = data.reduce((useragent, item, index) => {
+const useragent = data.reduce((useragent, item) => {
 	const { decrypted: name, id, systems } = item
 	const version = useragent[name]
 	if (version) {
-		version.push({ id, systems })
+		version.push({ id, systems: systems.sort() })
 	}
 	else {
-		useragent[name] = [{ id, systems }]
+		useragent[name] = [{ id, systems: systems.sort() }]
 	}
 	return useragent
 }, {})
-console.log(useragent)
 
-/*
-Chrome 81: Array(2)
-0:
-id: "1a02dfcde96fc42248891d65840d724eb49482507014f1446ce06b97a6c688d3"
-systems: ["Linux"]
-*/
+// construct template
 const computeTemplate = ({name, fingerprints}) => {
-	return `
-	<div>
-		<strong>${name}</strong>
-		${
-			fingerprints.map(fp => {
-				return `<div>${hashMini(fp.id)}: ${fp.systems.join(', ')}</div>`
-			}).join('')
+	fingerprints = fingerprints.sort((a, b) => (a.systems[0] > b.systems[0]) ? 1 : -1)
+	const style = `
+		style="
+			background: #657fca;
+    		color: #fff;
+    		padding: 2px 4px;
+    		border-radius: 2px;
+		"
+	`
+	let hasMatch
+	const idTemplate = fingerprints.map(fp => {
+		const match = fp.id == hash
+		if (match) {
+			hasMatch = true
 		}
+		return `<div ${match ? style : ''}>${hashMini(fp.id)}: ${fp.systems.join(', ')}</div>`
+	}).join('')
+
+	return `
+	<div ${ hasMatch ? 'style="background: #657fca26;"' : '' }>
+		<strong>${name}</strong>
+		${idTemplate}
 	</div>
 	`
 }
 
+let fingerprintMatch
+Object.keys(useragent).filter(key => {
+    const version = useragent[key]
+    const match = version.filter(fp => fp.id == hash)
+	const found = match.length
+	if (found) {
+		const { systems } = match[0]
+		fingerprintMatch = key
+	}
+    return found ? true : false
+})
+
+const isBrave = 'brave' in navigator
+const { userAgent: reportedUserAgent } = navigator
 const el = document.getElementById('fingerprint-data')
 patch(el, html`
 	<div id="fingerprint-data">
-		<div class="flex-grid visitor-info">
+		<div class="visitor-info">
 			<strong>Window Version</strong>
+		</div>
+		<div>
+			<div>
+				<div>reported user agent: ${
+					decryptUserAgent({
+						ua: reportedUserAgent,
+						os: getOS(reportedUserAgent),
+						isBrave
+					})
+				}</div>
+				<div>our guess:</div>
+				<div class="block-text" style="font-size:30px">${
+					fingerprintMatch ? fingerprintMatch : 'new (unknown)'
+				}</div>
+			</div>
 		</div>
 		<div class="relative">
 			<div class="ellipsis"><span class="aside-note">updated 2020-12-9</span></div>
