@@ -21,7 +21,18 @@ export const getClientRects = imports => {
 	
 	return new Promise(async resolve => {
 		try {
-			const toJSONParsed = (x) => JSON.parse(JSON.stringify(x))
+			const toNativeObject = domRect => {
+				return {
+					bottom: domRect.bottom,
+					height: domRect.height,
+					left: domRect.left,
+					right: domRect.right,
+					width: domRect.width,
+					top: domRect.top,
+					x: domRect.x,
+					y: domRect.y
+				}
+			}
 			let lied = lieProps['Element.getClientRects'] || false // detect lies
 			
 			let iframeContainer, doc = document
@@ -142,6 +153,10 @@ export const getClientRects = imports => {
 						border: solid 2px;
 						border-color: #F72585;
 					}
+					#rect-container .shift-dom-rect {
+						top: 1px !important;
+						left: 1px !important;
+					}
 					</style>
 					<div id="cRect1" class="rects"></div>
 					<div id="cRect2" class="rects"></div>
@@ -172,22 +187,38 @@ export const getClientRects = imports => {
 
 			// get emojis
 			const emojiDiv = doc.getElementById('emoji')
-			
 			const emojiRects = emojis
 				.slice(99, 199) // limit to improve performance
 				.map(emoji => String.fromCodePoint(...emoji))
 				.map(emoji => {
 					emojiDiv.innerHTML = emoji
 					const domRect = emojiDiv.getClientRects()[0]
-					return {emoji,...toJSONParsed(domRect)}
+					return {emoji,...toNativeObject(domRect)}
 				})
 			
 			// get clientRects
 			const rectElems = doc.getElementsByClassName('rects')
 			const clientRects = [...rectElems].map(el => {
-				return toJSONParsed(el.getClientRects()[0])
+				return toNativeObject(el.getClientRects()[0])
 			})
-			
+
+			// detect failed shift calculation
+			// inspired by https://arkenfox.github.io/TZP
+			let shiftLie = false
+			const rect4 = [...rectElems][3]
+			const { top: initialTop } = clientRects[3]
+			rect4.classList.add('shift-dom-rect')
+			const { top: shiftedTop } = toNativeObject(rect4.getClientRects()[0])
+			rect4.classList.remove('shift-dom-rect')
+			const { top: unshiftedTop } = toNativeObject(rect4.getClientRects()[0])
+			const diff = initialTop - shiftedTop
+			shiftLie = diff != (unshiftedTop - shiftedTop)
+			if (shiftLie) {
+				lied = true
+				shiftLie = { fingerprint: '', lies: [{ ['failed shift calculation']: true }] }
+				documentLie('Element.getClientRects', hashMini(clientRects), shiftLie)
+			}
+
 			// detect failed math calculation lie
 			let mathLie = false
 			clientRects.forEach(rect => {
