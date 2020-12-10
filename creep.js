@@ -1325,10 +1325,14 @@ const imports = {
 		fetch(request)
 		.then(response => response.json())
 		.then(async data => {
-			console.log('\n\n⚡server response: ', JSON.stringify(data, null, '\t'))
-			fetchVisitorDataTimer('server response time')
-			const { firstVisit, lastVisit: latestVisit, looseFingerprints: subIds, visits, hasTrash, hasLied, hasErrors, signature } = data
-			const subIdsLen = Object.keys(subIds).length
+
+			console.groupCollapsed('Server Response')
+			console.log(JSON.stringify(data, null, '\t'))
+			fetchVisitorDataTimer('response time')
+			console.groupEnd()
+		
+			const { firstVisit, lastVisit: latestVisit, looseFingerprints: subIds, visits,looseSwitchCount: switchCount,  hasTrash, hasLied, hasErrors, signature } = data
+			
 			const toLocaleStr = str => {
 				const date = new Date(str)
 				const dateString = date.toLocaleDateString()
@@ -1340,7 +1344,7 @@ const imports = {
 
 			// trust score
 			const score = (100-(
-				(subIdsLen < 2 ? 0 : subIdsLen-1 < 11 ? (subIdsLen-1) * 0.1 : (subIdsLen-1) * 0.2 ) +
+				(switchCount < 1 ? 0 : switchCount < 11 ? switchCount * 0.1 : switchCount * 0.2 ) +
 				(errorsLen * 5.2) +
 				(trashLen * 15.5) +
 				(liesLen * 31)
@@ -1390,8 +1394,8 @@ const imports = {
 								'false'
 							}</span></div>
 							<div class="ellipsis">loose fingerprint: <span class="unblurred">${hashMini(fpHash)}</span></div>
-							<div class="ellipsis">loose count: <span class="unblurred">${subIdsLen}</span></div>
-							<div class="ellipsis">bot: <span class="unblurred">${subIdsLen > 10 && hours < 48 ? 'true (10 loose in 48 hours)' : 'false'}</span></div>
+							<div class="ellipsis">loose switched: <span class="unblurred">${switchCount}</span></div>
+							<div class="ellipsis">bot: <span class="unblurred">${switchCount > 10 && hours < 48 ? 'true (10 loose in 48 hours)' : 'false'}</span></div>
 						</div>
 					</div>
 					${
