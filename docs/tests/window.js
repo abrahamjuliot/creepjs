@@ -207,8 +207,9 @@ const useragent = data.reduce((useragent, item) => {
 	return useragent
 }, {})
 
-// construct template
-const computeTemplate = ({name, fingerprints}) => {
+// construct template 
+let matchingIndex
+const computeTemplate = ({name, fingerprints, index}) => {
 	fingerprints = fingerprints.sort((a, b) => (a.systems[0] > b.systems[0]) ? 1 : -1)
 	const style = `
 		style="
@@ -223,6 +224,7 @@ const computeTemplate = ({name, fingerprints}) => {
 		const match = fp.id == hash
 		if (match) {
 			hasMatch = true
+			matchingIndex = index
 		}
 		return `<div ${match ? style : ''}>${hashMini(fp.id)}: ${fp.systems.join(', ')}</div>`
 	}).join('')
@@ -247,6 +249,13 @@ Object.keys(useragent).filter(key => {
     return found ? true : false
 })
 
+
+let uaTemplates = Object.keys(useragent).sort().map((key, index) => {
+	return computeTemplate({ name: key, fingerprints: useragent[key], index })
+})
+const matchingTemplate = uaTemplates[matchingIndex]
+uaTemplates = uaTemplates.filter((item, index) => index != matchingIndex)
+
 const isBrave = 'brave' in navigator
 const { userAgent: reportedUserAgent } = navigator
 const el = document.getElementById('fingerprint-data')
@@ -268,15 +277,12 @@ patch(el, html`
 				<div class="block-text" style="font-size:30px">${
 					fingerprintMatch ? fingerprintMatch : 'new (unknown)'
 				}</div>
+				${matchingTemplate ? matchingTemplate : ''}
 			</div>
 		</div>
 		<div class="relative">
 			<div class="ellipsis"><span class="aside-note">updated 2020-12-9</span></div>
-			${
-				Object.keys(useragent).sort().map(key => {
-					return computeTemplate({ name: key, fingerprints: useragent[key] })
-				}).join('')
-			}
+			${uaTemplates.join('')}
 		</div>
 	</div>
 `)
