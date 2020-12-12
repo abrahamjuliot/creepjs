@@ -702,6 +702,7 @@ searchLies(HTMLElement, {
 searchLies(HTMLCanvasElement, {
 	constructor: !0
 })
+
 searchLies(Navigator, {
 	constructor: !0
 })

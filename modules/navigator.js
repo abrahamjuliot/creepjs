@@ -38,7 +38,6 @@ export const getNavigator = (imports, workerScope) => {
 				lieProps['Navigator.plugins'] ||
 				lieProps['Navigator.mimeTypes']
 			) || false
-
 			const contentWindowNavigator = contentWindow ? contentWindow.navigator : navigator
 			const detectLies = (name, value) => {
 				const workerScopeValue = caniuse(() => workerScope, [name])
