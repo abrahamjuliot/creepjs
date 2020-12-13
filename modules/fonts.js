@@ -39,97 +39,73 @@ export const getFonts = (imports, fonts) => {
 				captureError(error, 'client blocked fonts iframe')
 			}
 
-			const fontsId = `${instanceId}-fonts-div`
-			const divElement = document.createElement('div')
-			const divStageRendered = document.createElement('div')
-			divElement.setAttribute('id', fontsId)
-			divStageRendered.setAttribute('id', 'font-detector-stage')
-			doc.body.appendChild(divElement)
-			const divRendered = doc.getElementById(fontsId)
-			divRendered.appendChild(divStageRendered)
-
-			const toInt = val => ~~val // protect against decimal noise
+			const id = `fonts-${instanceId}`
+			const div = doc.createElement('div')
+			div.setAttribute('id', id)
+			doc.body.appendChild(div)
+			patch(div, html`
+				<style>
+					#${id}-detector {
+						--font: '';
+						position: absolute !important;
+						left: -9999px!important;
+						font-size: 256px !important;
+						font-style: normal !important;
+						font-weight: normal !important;
+						letter-spacing: normal !important;
+						line-break: auto !important;
+						line-height: normal !important;
+						text-transform: none !important;
+						text-align: left !important;
+						text-decoration: none !important;
+						text-shadow: none !important;
+						white-space: normal !important;
+						word-break: normal !important;
+						word-spacing: normal !important;
+					}
+					#${id}-detector::after {
+						font-family: var(--font);
+						content: 'mmmmmmmmmmlli';
+					}
+				</style>
+				<span id="${id}-detector"></span>
+			`)
+			const span = doc.getElementById(`${id}-detector`)
+			const detected = new Set()
 			const baseFonts = ['monospace', 'sans-serif', 'serif']
-			const text = 'mmmmmmmmmmlli'
-			const baseOffsetWidth = {}
-			const baseOffsetHeight = {}
-			const style = ` > span {
-				position: absolute!important;
-				left: -9999px!important;
-				font-size: 256px!important;
-				font-style: normal!important;
-				font-weight: normal!important;
-				letter-spacing: normal!important;
-				line-break: auto!important;
-				line-height: normal!important;
-				text-transform: none!important;
-				text-align: left!important;
-				text-decoration: none!important;
-				text-shadow: none!important;
-				white-space: normal!important;
-				word-break: normal!important;
-				word-spacing: normal!important;
-			}`
-			const baseFontSpan = font => {
-				return `<span class="basefont" data-font="${font}" style="font-family: ${font}!important">${text}</span>`
-			}
-			const systemFontSpan = (font, basefont) => {
-				return `<span class="system-font" data-font="${font}" data-basefont="${basefont}" style="font-family: ${`'${font}', ${basefont}`}!important">${text}</span>`
-			}
-			
-			const stageElem = divStageRendered 
-			const detectedFonts = {}
-			patch(stageElem, html`
-				<div id="font-detector-test">
-					<style>#font-detector-test${style}</style>
-					${baseFonts.map(font => baseFontSpan(font)).join('')}
-					${
-						fonts.map(font => {
-							const template = `
-							${systemFontSpan(font, baseFonts[0])}
-							${systemFontSpan(font, baseFonts[1])}
-							${systemFontSpan(font, baseFonts[2])}
-							`
-							return template
-						}).join('')
-					}
-				</div>
-				`,
-				() => {
-					const basefontElems = doc.querySelectorAll('#font-detector-test .basefont')
-					const systemFontElems = doc.querySelectorAll('#font-detector-test .system-font')
-
-					// Compute fingerprint
-					;[...basefontElems].forEach(span => {
-						const { dataset: { font }, offsetWidth, offsetHeight } = span
-						baseOffsetWidth[font] = toInt(offsetWidth)
-						baseOffsetHeight[font] = toInt(offsetHeight)
-						return
-					})
-					;[...systemFontElems].forEach(span => {
-						const { dataset: { font } }= span
-						if (!detectedFonts[font]) {
-							const { dataset: { basefont }, offsetWidth, offsetHeight } = span
-							const widthMatchesBase = toInt(offsetWidth) == baseOffsetWidth[basefont]
-							const heightMatchesBase = toInt(offsetHeight) == baseOffsetHeight[basefont]
-							const detected = !widthMatchesBase || !heightMatchesBase
-							if (detected) { detectedFonts[font] = true }
-						}
-						return
-					})
-
-					if (!!iframeContainer) {
-						iframeContainer.parentNode.removeChild(iframeContainer)
-					}
-					else {
-						divRendered.parentNode.removeChild(divRendered)
-					}
+			const base = baseFonts.reduce((acc, font) => {
+				span.style.setProperty('--font', font)
+				const { width,height} = span.getClientRects()[0]
+				acc[font] = { width, height }
+				return acc
+			}, {})
+			const families = [...fontList, ...notoFonts].reduce((acc, font) => {
+				baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`))
+				return acc
+			}, [])
+			families.forEach(family => {
+				span.style.setProperty('--font', family)
+				const basefont = /, (.+)/.exec(family)[1]
+				const { width, height } = span.getClientRects()[0]
+				const supported = (
+					width != base[basefont].width || height != base[basefont].height
+				)
+				if (supported) {
+					const font = /\'(.+)\'/i.exec(family)
+					return detected.add(font[1])
 				}
-			)
-			const fontList = Object.keys(detectedFonts)
-			const $hash = await hashify(fontList)
+				return
+			})
+			if (!!iframeContainer) {
+				iframeContainer.parentNode.removeChild(iframeContainer)
+			}
+			else {
+				divRendered.parentNode.removeChild(divRendered)
+			}
+			const fonts = [...detected]
+			const $hash = await hashify(fonts)
 			logTestResult({ test: 'fonts', passed: true })
-			return resolve({fonts: fontList, $hash })
+			return resolve({fonts, $hash })
 		}
 		catch (error) {
 			logTestResult({ test: 'fonts', passed: false })
