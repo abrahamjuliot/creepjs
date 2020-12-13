@@ -827,9 +827,9 @@ const imports = {
 			`<div class="col-six">
 				<strong>Fonts</strong>
 				<div>results (0): ${note.blocked}</div>
-				<div>scroll: ${note.blocked}</div>
-				<div>offset: ${note.blocked}</div>
-				<div>client: ${note.blocked}</div>
+				<div>scrollWidth/Height: ${note.blocked}</div>
+				<div>offsetWidth/Height: ${note.blocked}</div>
+				<div>clientWidth/Height: ${note.blocked}</div>
 			</div>` :
 		(() => {
 			const {
@@ -843,9 +843,9 @@ const imports = {
 			<div class="col-six">
 				<strong>Fonts</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
 				<div>results (${fonts && fonts.scroll ? count(fonts.scroll) : '0'}): ${fonts && fonts.scroll && fonts.scroll.length ? modal('creep-fonts', fonts.scroll.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>')) : note.blocked}</div>
-				<div>scroll:<span class="sub-hash">${hashMini(fonts.scroll)}</span></div>
-				<div>offset:<span class="sub-hash">${hashMini(fonts.offset)}</span></div>
-				<div>client:<span class="sub-hash">${hashMini(fonts.client)}</span></div>
+				<div>scrollWidth/Height:<span class="sub-hash">${hashMini(fonts.scroll)}</span></div>
+				<div>offsetWidth/Height:<span class="sub-hash">${hashMini(fonts.offset)}</span></div>
+				<div>clientWidth/Height:<span class="sub-hash">${hashMini(fonts.client)}</span></div>
 			</div>
 			`
 		})()}

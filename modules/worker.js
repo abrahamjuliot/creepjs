@@ -68,7 +68,6 @@ const getServiceWorker = () => {
 export const getBestWorkerScope = imports => {	
 	const {
 		require: {
-			isFirefox,
 			getOS,
 			hashify,
 			captureError,
