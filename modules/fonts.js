@@ -10,35 +10,51 @@ export const getFonts = (imports, fonts) => {
 			captureError,
 			instanceId,
 			lieProps,
+			documentLie,
+			hashMini,
+			contentWindow,
 			logTestResult
 		}
 	} = imports
 
 	return new Promise(async resolve => {
 		try {
-
 			let lied = (
 				lieProps['Element.offsetWidth'],
 				lieProps['Element.offsetHeight'],
 				lieProps['HTMLElement.offsetWidth'],
 				lieProps['HTMLElement.offsetHeight']
 			)
-
-			let iframeContainer, doc = document
-			try {
-				const len = window.length
-				const div = document.createElement('div')
-				div.setAttribute('style', 'visibility:hidden')
-				document.body.appendChild(div)
-				div.innerHTML = '<iframe></iframe>'
-				const iframeWindow = window[len]
-				iframeContainer = div
-				doc = iframeWindow.document
+			const createLieDetector = () => {
+				let invalidDimensions = []
+				return {
+					getInvalidDimensions: () => invalidDimensions,
+					compute: ({
+						scrollWidth,
+						scrollHeight,
+						offsetWidth,
+						offsetHeight,
+						clientWidth,
+						clientHeight
+					}) => {
+						const invalid = (
+							scrollWidth != offsetWidth ||
+							scrollWidth != clientWidth ||
+							scrollHeight != offsetHeight ||
+							scrollHeight != clientHeight
+						)
+						if (invalid) {
+							invalidDimensions.push({
+								width: [scrollWidth, offsetWidth, clientWidth],
+								height: [scrollHeight, offsetHeight, clientHeight]
+							})
+						}
+						return
+					}
+				}
 			}
-			catch (error) {
-				captureError(error, 'client blocked fonts iframe')
-			}
-
+			const detectLies = createLieDetector()
+			const doc = contentWindow ? contentWindow.document : document
 			const id = `fonts-${instanceId}`
 			const div = doc.createElement('div')
 			div.setAttribute('id', id)
@@ -62,6 +78,9 @@ export const getFonts = (imports, fonts) => {
 						white-space: normal !important;
 						word-break: normal !important;
 						word-spacing: normal !important;
+						/* in order to test scrollWidth, clientWidth, etc. */
+						padding: 0 !important;
+						margin: 0 !important;
 					}
 					#${id}-detector::after {
 						font-family: var(--font);
@@ -71,12 +90,22 @@ export const getFonts = (imports, fonts) => {
 				<span id="${id}-detector"></span>
 			`)
 			const span = doc.getElementById(`${id}-detector`)
-			const detected = new Set()
+			const detectedViaScroll = new Set()
+			const detectedViaOffset = new Set()
+			const detectedViaClient = new Set()
 			const baseFonts = ['monospace', 'sans-serif', 'serif']
 			const base = baseFonts.reduce((acc, font) => {
 				span.style.setProperty('--font', font)
-				const { width,height} = span.getClientRects()[0]
-				acc[font] = { width, height }
+				const dimensions = {
+					scrollWidth: span.scrollWidth,
+					scrollHeight: span.scrollHeight,
+					offsetWidth: span.offsetWidth,
+					offsetHeight: span.offsetHeight,
+					clientWidth: span.clientWidth,
+					clientHeight: span.clientHeight
+				}
+				detectLies.compute(dimensions)
+				acc[font] = dimensions
 				return acc
 			}, {})
 			const families = [...fontList, ...notoFonts].reduce((acc, font) => {
@@ -86,26 +115,44 @@ export const getFonts = (imports, fonts) => {
 			families.forEach(family => {
 				span.style.setProperty('--font', family)
 				const basefont = /, (.+)/.exec(family)[1]
-				const { width, height } = span.getClientRects()[0]
-				const supported = (
-					width != base[basefont].width || height != base[basefont].height
-				)
-				if (supported) {
-					const font = /\'(.+)\'/i.exec(family)
-					return detected.add(font[1])
+				const dimensions = {
+					scrollWidth: span.scrollWidth,
+					scrollHeight: span.scrollHeight,
+					offsetWidth: span.offsetWidth,
+					offsetHeight: span.offsetHeight,
+					clientWidth: span.clientWidth,
+					clientHeight: span.clientHeight
+				}
+				detectLies.compute(dimensions)
+				const font = /\'(.+)\'/i.exec(family)[1]
+				if (dimensions.scrollWidth != base[basefont].scrollWidth ||
+					dimensions.scrollHeight != base[basefont].scrollHeight) {
+					detectedViaScroll.add(font)
+				}
+				if (dimensions.offsetWidth != base[basefont].offsetWidth ||
+					dimensions.offsetHeight != base[basefont].offsetHeight) {
+					detectedViaOffset.add(font)
+				}
+				if (dimensions.clientWidth != base[basefont].clientWidth ||
+					dimensions.clientHeight != base[basefont].clientHeight) {
+					detectedViaClient.add(font)
 				}
 				return
 			})
-			if (!!iframeContainer) {
-				iframeContainer.parentNode.removeChild(iframeContainer)
+			//console.log(detectLies.getInvalidDimensions())
+			if (detectLies.getInvalidDimensions().length) {
+				lied = true
+				const fontLie = { fingerprint: '', lies: [{ [`mismatching dimensions`]: true }] }
+				documentLie(`HTMLElement`, hashMini(base), fontLie)
 			}
-			else {
-				divRendered.parentNode.removeChild(divRendered)
+			const fonts = {
+				scroll: [...detectedViaScroll],
+				offset: [...detectedViaOffset],
+				client: [...detectedViaClient]
 			}
-			const fonts = [...detected]
 			const $hash = await hashify(fonts)
 			logTestResult({ test: 'fonts', passed: true })
-			return resolve({fonts, $hash })
+			return resolve({fonts, lied, $hash })
 		}
 		catch (error) {
 			logTestResult({ test: 'fonts', passed: false })

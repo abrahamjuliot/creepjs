@@ -17,4 +17,4 @@ app.use('*', (req, res, next) => {
 
 app.use(express.static(staticPath))
 
-app.listen(3000, () => console.log('⚡'))
+app.listen(8000, () => console.log('⚡'))

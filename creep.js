@@ -310,7 +310,7 @@ const imports = {
 			!fp.offlineAudioContext || fp.offlineAudioContext.lied ? undefined :
 			fp.offlineAudioContext
 		),
-		fonts: fp.fonts,
+		fonts: !fp.fonts || fp.fonts.lied ? undefined : fp.fonts,
 		// skip trash since it is random
 		lies: !('data' in fp.lies) ? false : !!liesLen,
 		capturedErrors: !!errorsLen,
@@ -827,18 +827,25 @@ const imports = {
 			`<div class="col-six">
 				<strong>Fonts</strong>
 				<div>results (0): ${note.blocked}</div>
+				<div>scroll: ${note.blocked}</div>
+				<div>offset: ${note.blocked}</div>
+				<div>client: ${note.blocked}</div>
 			</div>` :
 		(() => {
 			const {
 				fonts: {
 					$hash,
 					fonts,
+					lied
 				}
 			} = fp
 			return `
 			<div class="col-six">
-				<strong>Fonts</strong><span class="hash">${hashMini($hash)}</span>
-				<div>results (${count(fonts)}): ${fonts && fonts.length ? modal('creep-fonts', fonts.join('<br>')) : note.blocked}</div>
+				<strong>Fonts</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
+				<div>results (${fonts && fonts.scroll ? count(fonts.scroll) : '0'}): ${fonts && fonts.scroll && fonts.scroll.length ? modal('creep-fonts', fonts.scroll.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>')) : note.blocked}</div>
+				<div>scroll:<span class="sub-hash">${hashMini(fonts.scroll)}</span></div>
+				<div>offset:<span class="sub-hash">${hashMini(fonts.offset)}</span></div>
+				<div>client:<span class="sub-hash">${hashMini(fonts.client)}</span></div>
 			</div>
 			`
 		})()}

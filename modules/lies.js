@@ -47,8 +47,7 @@ const getNestedWindowFrameContext = imports => {
 				visibility: hidden;
 				"
 			`
-			const hide = `style="display: none;"`
-			patch(div, html`<div ${ghost} id="${id}"><iframe ${ isFirefox ? ghost : hide }></iframe></div>`)
+			patch(div, html`<div ${ghost} id="${id}"><iframe></iframe></div>`)
 			const el = document.getElementById(id)
 
 			return {
