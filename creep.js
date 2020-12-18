@@ -74,6 +74,19 @@ const imports = {
 
 ;(async imports => {
 	'use strict';
+
+	const {
+		require: {
+			instanceId,
+			hashMini,
+			patch,
+			html,
+			note,
+			count,
+			modal,
+			caniuse
+		}
+	} = imports
 	
 	const fingerprint = async () => {
 		const timeStart = timer()
@@ -291,6 +304,10 @@ const imports = {
 				unmasked2: fp.canvasWebgl.unmasked2
 			}
 		),
+		css: !fp.cssStyleDeclarationVersion ? undefined : {
+			prototype: caniuse(() => fp.cssStyleDeclarationVersion.getComputedStyle.prototypeName),
+			system: caniuse(() => fp.cssStyleDeclarationVersion.system)
+		},
 		maths: !fp.maths || fp.maths.lied ? undefined : fp.maths,
 		consoleErrors: fp.consoleErrors,
 		// avoid random timezone fingerprint values
@@ -338,20 +355,7 @@ const imports = {
 	const hasTrash = !!trashLen
 	const { lies: hasLied, capturedErrors: hasErrors } = creep
 
-	// patch dom
-	const {
-		require: {
-			instanceId,
-			hashMini,
-			patch,
-			html,
-			note,
-			count,
-			modal,
-			caniuse
-		}
-	} = imports
-	
+	// patch dom	
 	const el = document.getElementById('fingerprint-data')
 	patch(el, html`
 	<div id="fingerprint-data">
