@@ -27,41 +27,46 @@ export const getFonts = (imports, fonts) => {
 				lieProps['HTMLElement.clientHeight']
 			)
 			const createLieDetector = () => {
-				let invalidDimensions = []
-				return {
-					getInvalidDimensions: () => invalidDimensions,
-					compute: ({
-						width,
-						height,
-						sizeWidth,
-						sizeHeight,
-						scrollWidth,
-						scrollHeight,
-						offsetWidth,
-						offsetHeight,
-						clientWidth,
-						clientHeight
-					}) => {
-						const invalid = (
-							width != sizeWidth ||
-							width != scrollWidth ||
-							width != offsetWidth ||
-							width != clientWidth ||
+                let invalidDimensions = []
+                return {
+                    getInvalidDimensions: () => invalidDimensions,
+                    compute: ({
+                        width,
+                        height,
+						originWidth,
+						originHeight,
+                        sizeWidth,
+                        sizeHeight,
+                        scrollWidth,
+                        scrollHeight,
+                        offsetWidth,
+                        offsetHeight,
+                        clientWidth,
+                        clientHeight
+                    }) => {
+                        const invalid = (
+							width != originWidth ||
+                            width != sizeWidth ||
+                            width != scrollWidth ||
+                            width != offsetWidth ||
+                            width != clientWidth ||
+
+							height != originHeight ||
                             height != sizeHeight ||
-							height != scrollHeight ||
-							height != offsetHeight ||
-							height != clientHeight
+                            height != scrollHeight ||
+                            height != offsetHeight ||
+                            height != clientHeight
                         )
-						if (invalid) {
+                        if (invalid) {
                             invalidDimensions.push({
-                                width: [width, sizeWidth, scrollWidth, offsetWidth, clientWidth],
-                                height: [height, sizeHeight, scrollHeight, offsetHeight, clientHeight]
+                                width: [width, originWidth, sizeWidth, scrollWidth, offsetWidth, clientWidth],
+                                height: [height, originHeight, sizeHeight, scrollHeight, offsetHeight, clientHeight]
                             })
                         }
-						return
-					}
-				}
-			}
+                        return
+                    }
+                }
+            }
 			const detectLies = createLieDetector()
 			const doc = contentWindow ? contentWindow.document : document
 			const id = `fonts-${instanceId}`
@@ -92,6 +97,8 @@ export const getFonts = (imports, fonts) => {
 						margin: 0 !important;
 						/* in order to test inlineSize and blockSize */
 						writing-mode: horizontal-tb !important;
+						/* in order to test perspective-origin */
+						perspective-origin: unset !important;
 					}
 					#${id}-detector::after {
 						font-family: var(--font);
@@ -102,18 +109,23 @@ export const getFonts = (imports, fonts) => {
 			`)
 			const span = doc.getElementById(`${id}-detector`)
 			const pixelsToInt = pixels => Math.round(+pixels.replace('px',''))
+			const originPixelsToInt = pixels => Math.round(2*pixels.replace('px', ''))
 			const detectedViaPixel = new Set()
+			const detectedViaOrigin = new Set()
 			const detectedViaPixelSize = new Set()
 			const detectedViaScroll = new Set()
 			const detectedViaOffset = new Set()
 			const detectedViaClient = new Set()
 			const baseFonts = ['monospace', 'sans-serif', 'serif']
+			const style = getComputedStyle(span)
 			const base = baseFonts.reduce((acc, font) => {
 				span.style.setProperty('--font', font)
-				const style = getComputedStyle(span)
-				const dimensions = {
-					width: pixelsToInt(style.width),
-					height: pixelsToInt(style.height),
+				const origins = style.perspectiveOrigin.split(' ')
+                const dimensions = {
+                    width: pixelsToInt(style.width),
+                    height: pixelsToInt(style.height),
+					originWidth: originPixelsToInt(origins[0]),
+					originHeight: originPixelsToInt(origins[1]),
 					sizeWidth: pixelsToInt(style.inlineSize),
 					sizeHeight: pixelsToInt(style.blockSize),
 					scrollWidth: span.scrollWidth,
@@ -134,10 +146,12 @@ export const getFonts = (imports, fonts) => {
 			families.forEach(family => {
 				span.style.setProperty('--font', family)
 				const basefont = /, (.+)/.exec(family)[1]
-				const style = getComputedStyle(span)
-				const dimensions = {
-					width: pixelsToInt(style.width),
-					height: pixelsToInt(style.height),
+				const origins = style.perspectiveOrigin.split(' ')
+                const dimensions = {
+                    width: pixelsToInt(style.width),
+                    height: pixelsToInt(style.height),
+					originWidth: originPixelsToInt(origins[0]),
+					originHeight: originPixelsToInt(origins[1]),
 					sizeWidth: pixelsToInt(style.inlineSize),
 					sizeHeight: pixelsToInt(style.blockSize),
 					scrollWidth: span.scrollWidth,
@@ -152,6 +166,10 @@ export const getFonts = (imports, fonts) => {
 				if (dimensions.width != base[basefont].width ||
                     dimensions.height != base[basefont].height) {
                     detectedViaPixel.add(font)
+                }
+				if (dimensions.originWidth != base[basefont].originWidth ||
+                    dimensions.originHeight != base[basefont].originHeight) {
+                    detectedViaOrigin.add(font)
                 }
 				if (dimensions.sizeWidth != base[basefont].sizeWidth ||
                     dimensions.sizeHeight != base[basefont].sizeHeight) {
@@ -179,6 +197,7 @@ export const getFonts = (imports, fonts) => {
 			}
 			const fonts = {
 				pixel: [...detectedViaPixel],
+				origin: [...detectedViaOrigin],
 				size: [...detectedViaPixelSize],
 				scroll: [...detectedViaScroll],
 				offset: [...detectedViaOffset],
