@@ -275,7 +275,7 @@ patch(el, html`
 				}</div>
 				<div>our guess:</div>
 				<div class="block-text" style="font-size:30px">${
-					fingerprintMatch ? fingerprintMatch : 'new (unknown)'
+					fingerprintMatch ? fingerprintMatch : `new (${hashMini(hash)})`
 				}</div>
 				${matchingTemplate ? matchingTemplate : ''}
 			</div>
