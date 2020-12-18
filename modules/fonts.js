@@ -33,8 +33,10 @@ export const getFonts = (imports, fonts) => {
                     compute: ({
                         width,
                         height,
-						originWidth,
-						originHeight,
+						transformWidth,
+						transformHeight,
+						perspectiveWidth,
+						perspectiveHeight,
                         sizeWidth,
                         sizeHeight,
                         scrollWidth,
@@ -45,13 +47,15 @@ export const getFonts = (imports, fonts) => {
                         clientHeight
                     }) => {
                         const invalid = (
-							width != originWidth ||
+							width != transformWidth ||
+							width != perspectiveWidth ||
                             width != sizeWidth ||
                             width != scrollWidth ||
                             width != offsetWidth ||
                             width != clientWidth ||
 
-							height != originHeight ||
+							height != transformHeight ||
+							height != perspectiveHeight ||
                             height != sizeHeight ||
                             height != scrollHeight ||
                             height != offsetHeight ||
@@ -59,8 +63,8 @@ export const getFonts = (imports, fonts) => {
                         )
                         if (invalid) {
                             invalidDimensions.push({
-                                width: [width, originWidth, sizeWidth, scrollWidth, offsetWidth, clientWidth],
-                                height: [height, originHeight, sizeHeight, scrollHeight, offsetHeight, clientHeight]
+                                width: [width, transformWidth, perspectiveWidth, sizeWidth, scrollWidth, offsetWidth, clientWidth],
+                                height: [height, transformHeight, perspectiveHeight, sizeHeight, scrollHeight, offsetHeight, clientHeight]
                             })
                         }
                         return
@@ -97,7 +101,8 @@ export const getFonts = (imports, fonts) => {
 						margin: 0 !important;
 						/* in order to test inlineSize and blockSize */
 						writing-mode: horizontal-tb !important;
-						/* in order to test perspective-origin */
+						/* in order to test origins */
+						transform-origin: unset !important;
 						perspective-origin: unset !important;
 					}
 					#${id}-detector::after {
@@ -111,21 +116,25 @@ export const getFonts = (imports, fonts) => {
 			const pixelsToInt = pixels => Math.round(+pixels.replace('px',''))
 			const originPixelsToInt = pixels => Math.round(2*pixels.replace('px', ''))
 			const detectedViaPixel = new Set()
-			const detectedViaOrigin = new Set()
+			const detectedViaTransform = new Set()
+			const detectedViaPerspective = new Set()
 			const detectedViaPixelSize = new Set()
 			const detectedViaScroll = new Set()
 			const detectedViaOffset = new Set()
 			const detectedViaClient = new Set()
 			const baseFonts = ['monospace', 'sans-serif', 'serif']
 			const style = getComputedStyle(span)
-			const base = baseFonts.reduce((acc, font) => {
-				span.style.setProperty('--font', font)
-				const origins = style.perspectiveOrigin.split(' ')
+
+			const getDimensions = (span, style) => {
+				const transform = style.transformOrigin.split(' ')
+				const perspective = style.perspectiveOrigin.split(' ')
                 const dimensions = {
                     width: pixelsToInt(style.width),
                     height: pixelsToInt(style.height),
-					originWidth: originPixelsToInt(origins[0]),
-					originHeight: originPixelsToInt(origins[1]),
+					transformWidth: originPixelsToInt(transform[0]),
+					transformHeight: originPixelsToInt(transform[1]),
+					perspectiveWidth: originPixelsToInt(perspective[0]),
+					perspectiveHeight: originPixelsToInt(perspective[1]),
 					sizeWidth: pixelsToInt(style.inlineSize),
 					sizeHeight: pixelsToInt(style.blockSize),
 					scrollWidth: span.scrollWidth,
@@ -135,6 +144,11 @@ export const getFonts = (imports, fonts) => {
 					clientWidth: span.clientWidth,
 					clientHeight: span.clientHeight
 				}
+				return dimensions
+			}
+			const base = baseFonts.reduce((acc, font) => {
+				span.style.setProperty('--font', font)
+                const dimensions = getDimensions(span, style)
 				detectLies.compute(dimensions)
 				acc[font] = dimensions
 				return acc
@@ -146,30 +160,20 @@ export const getFonts = (imports, fonts) => {
 			families.forEach(family => {
 				span.style.setProperty('--font', family)
 				const basefont = /, (.+)/.exec(family)[1]
-				const origins = style.perspectiveOrigin.split(' ')
-                const dimensions = {
-                    width: pixelsToInt(style.width),
-                    height: pixelsToInt(style.height),
-					originWidth: originPixelsToInt(origins[0]),
-					originHeight: originPixelsToInt(origins[1]),
-					sizeWidth: pixelsToInt(style.inlineSize),
-					sizeHeight: pixelsToInt(style.blockSize),
-					scrollWidth: span.scrollWidth,
-					scrollHeight: span.scrollHeight,
-					offsetWidth: span.offsetWidth,
-					offsetHeight: span.offsetHeight,
-					clientWidth: span.clientWidth,
-					clientHeight: span.clientHeight
-				}
+				const dimensions = getDimensions(span, style)
 				detectLies.compute(dimensions)
 				const font = /\'(.+)\'/i.exec(family)[1]
 				if (dimensions.width != base[basefont].width ||
                     dimensions.height != base[basefont].height) {
                     detectedViaPixel.add(font)
                 }
-				if (dimensions.originWidth != base[basefont].originWidth ||
-                    dimensions.originHeight != base[basefont].originHeight) {
-                    detectedViaOrigin.add(font)
+				if (dimensions.transformWidth != base[basefont].transformWidth ||
+                    dimensions.transformHeight != base[basefont].transformHeight) {
+                    detectedViaTransform.add(font)
+                }
+				if (dimensions.perspectiveWidth != base[basefont].perspectiveWidth ||
+                    dimensions.perspectiveHeight != base[basefont].perspectiveHeight) {
+                    detectedViaPerspective.add(font)
                 }
 				if (dimensions.sizeWidth != base[basefont].sizeWidth ||
                     dimensions.sizeHeight != base[basefont].sizeHeight) {
@@ -197,7 +201,8 @@ export const getFonts = (imports, fonts) => {
 			}
 			const fonts = {
 				pixel: [...detectedViaPixel],
-				origin: [...detectedViaOrigin],
+				transform: [...detectedViaTransform],
+				perspective: [...detectedViaPerspective],
 				size: [...detectedViaPixelSize],
 				scroll: [...detectedViaScroll],
 				offset: [...detectedViaOffset],

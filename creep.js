@@ -847,7 +847,8 @@ const imports = {
 			`<div class="col-six">
 				<strong>Fonts</strong>
 				<div>results (0): ${note.blocked}</div>
-				<div>origin: ${note.blocked}</div>
+				<div>transform: ${note.blocked}</div>
+				<div>perspective: ${note.blocked}</div>
 				<div>pixel: ${note.blocked}</div>
 				<div>size: ${note.blocked}</div>
 				<div>scroll: ${note.blocked}</div>
@@ -865,8 +866,9 @@ const imports = {
 			return `
 			<div class="col-six">
 				<strong>Fonts</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
-				<div>results (${fonts && fonts.origin ? count(fonts.origin) : '0'}): ${fonts && fonts.origin && fonts.origin.length ? modal('creep-fonts', fonts.origin.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>')) : note.blocked}</div>
-				<div>origin:<span class="sub-hash">${hashMini(fonts.origin)}</span></div>
+				<div>results (${fonts && fonts.perspective ? count(fonts.perspective) : '0'}): ${fonts && fonts.perspective && fonts.perspective.length ? modal('creep-fonts', fonts.perspective.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>')) : note.blocked}</div>
+				<div>transform:<span class="sub-hash">${hashMini(fonts.transform)}</span></div>
+				<div>perspective:<span class="sub-hash">${hashMini(fonts.perspective)}</span></div>
 				<div>pixel:<span class="sub-hash">${hashMini(fonts.pixel)}</span></div>
 				<div>size:<span class="sub-hash">${hashMini(fonts.size)}</span></div>
 				<div>scroll:<span class="sub-hash">${hashMini(fonts.scroll)}</span></div>
