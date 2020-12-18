@@ -327,7 +327,15 @@ const imports = {
 			!fp.offlineAudioContext || fp.offlineAudioContext.lied ? undefined :
 			fp.offlineAudioContext
 		),
-		fonts: !fp.fonts || fp.fonts.lied ? undefined : fp.fonts,
+		fonts: !fp.fonts ? undefined : (
+			// lied, has blocked and has unblocked
+			fp.fonts.lied &&
+			!!Object.keys(fp.fonts.fonts).filter(name => !fp.fonts.fonts[name].length).length &&
+			!!Object.keys(fp.fonts.fonts).filter(name => !!fp.fonts.fonts[name].length)
+		) ?
+		// get the first unblocked
+		fp.fonts.fonts[Object.keys(fp.fonts.fonts).filter(name => !!fp.fonts.fonts[name].length)[0]] :
+		fp.fonts.lied ? undefined : fp.fonts,
 		// skip trash since it is random
 		lies: !('data' in fp.lies) ? false : !!liesLen,
 		capturedErrors: !!errorsLen,
