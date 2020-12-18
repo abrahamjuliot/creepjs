@@ -19,13 +19,11 @@ const lieRecords = createlieRecords()
 const { documentLie } = lieRecords
 
 const ghost = () => `
-	style="
 	height: 100vh;
 	width: 100vw;
 	position: absolute;
 	left:-10000px;
 	visibility: hidden;
-	"
 `
 const getNestedWindowFrameContext = imports => {
 
@@ -46,7 +44,7 @@ const getNestedWindowFrameContext = imports => {
 			const id = [...crypto.getRandomValues(new Uint32Array(10))]
 				.map(n => n.toString(36)).join('')
 
-			patch(div, html`<div ${ghost()} id="${id}"><iframe></iframe></div>`)
+			patch(div, html`<div style="${ghost()}" id="${id}"><iframe></iframe></div>`)
 			const el = document.getElementById(id)
 
 			return {
@@ -86,13 +84,7 @@ const getHyperNestedIframes = (numberOfNests, context = window) => {
 		const iframeWindow = win[numberOfIframes]
 		if (total == numberOfNests) {
 			parent = div
-			parent.setAttribute('style', `
-				height: 100vh;
-				width: 100vw;
-				position: absolute;
-				left:-10000px;
-				visibility: hidden;
-			`)
+			parent.setAttribute('style', ghost())
 		}
 		numberOfNests--
 		if (!numberOfNests) {
@@ -105,8 +97,6 @@ const getHyperNestedIframes = (numberOfNests, context = window) => {
 	})(context)
 }
 const hyperNestedIframeWindow = getHyperNestedIframes(20)
-
-console.log(hyperNestedIframeWindow)
 
 // detect and fingerprint Function API lies
 const native = (result, str, willHaveBlanks = false) => {
