@@ -16,7 +16,6 @@ export const getFonts = (imports, fonts) => {
 			logTestResult
 		}
 	} = imports
-
 	return new Promise(async resolve => {
 		try {
 			let lied = (

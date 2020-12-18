@@ -323,7 +323,7 @@ const imports = {
 		maths: !fp.maths || fp.maths.lied ? undefined : fp.maths,
 		consoleErrors: fp.consoleErrors,
 		// avoid random timezone fingerprint values
-		timezone: !fp.timezone || fp.timezone.lied ? undefined : {
+		timezone: !fp.timezone ? undefined : !fp.timezone.lied ? {
 			timezone: fp.timezone.timezone,
 			timezoneLocation: fp.timezone.timezoneLocation,
 			timezoneHistoryLocation: fp.timezone.timezoneHistoryLocation,
@@ -332,6 +332,8 @@ const imports = {
 			locale: fp.timezone.locale,
 			writingSystemKeys: fp.timezone.writingSystemKeys,
 			lied: fp.timezone.lied
+		} : {
+			offsetLocation: fp.timezone.timezoneHistoryLocation
 		},
 		clientRects: !fp.clientRects || fp.clientRects.lied ? undefined : fp.clientRects,
 		offlineAudioContext: (
