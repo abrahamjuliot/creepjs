@@ -87,6 +87,7 @@ export const getWebRTCData = (imports, cloudflare) => {
 			
 			setTimeout(() => {
 				if (!success) {
+					
 					logTestResult({ test: 'webrtc', passed: false })
 					captureError(new Error('RTCIceCandidate failed'))
 					return resolve()

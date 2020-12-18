@@ -20,16 +20,22 @@ export const getFonts = (imports, fonts) => {
 	return new Promise(async resolve => {
 		try {
 			let lied = (
-				lieProps['Element.offsetWidth'],
-				lieProps['Element.offsetHeight'],
+				lieProps['HTMLElement.scrollWidth'],
+				lieProps['HTMLElement.scrollHeight'],
 				lieProps['HTMLElement.offsetWidth'],
-				lieProps['HTMLElement.offsetHeight']
+				lieProps['HTMLElement.offsetHeight'],
+				lieProps['HTMLElement.clientWidth'],
+				lieProps['HTMLElement.clientHeight']
 			)
 			const createLieDetector = () => {
 				let invalidDimensions = []
 				return {
 					getInvalidDimensions: () => invalidDimensions,
 					compute: ({
+						width,
+						height,
+						sizeWidth,
+						sizeHeight,
 						scrollWidth,
 						scrollHeight,
 						offsetWidth,
@@ -38,17 +44,21 @@ export const getFonts = (imports, fonts) => {
 						clientHeight
 					}) => {
 						const invalid = (
-							scrollWidth != offsetWidth ||
-							scrollWidth != clientWidth ||
-							scrollHeight != offsetHeight ||
-							scrollHeight != clientHeight
-						)
+							width != sizeWidth ||
+							width != scrollWidth ||
+							width != offsetWidth ||
+							width != clientWidth ||
+                            height != sizeHeight ||
+							height != scrollHeight ||
+							height != offsetHeight ||
+							height != clientHeight
+                        )
 						if (invalid) {
-							invalidDimensions.push({
-								width: [scrollWidth, offsetWidth, clientWidth],
-								height: [scrollHeight, offsetHeight, clientHeight]
-							})
-						}
+                            invalidDimensions.push({
+                                width: [width, sizeWidth, scrollWidth, offsetWidth, clientWidth],
+                                height: [height, sizeHeight, scrollHeight, offsetHeight, clientHeight]
+                            })
+                        }
 						return
 					}
 				}
@@ -81,6 +91,8 @@ export const getFonts = (imports, fonts) => {
 						/* in order to test scrollWidth, clientWidth, etc. */
 						padding: 0 !important;
 						margin: 0 !important;
+						/* in order to test inlineSize and blockSize */
+						writing-mode: horizontal-tb !important;
 					}
 					#${id}-detector::after {
 						font-family: var(--font);
@@ -90,13 +102,21 @@ export const getFonts = (imports, fonts) => {
 				<span id="${id}-detector"></span>
 			`)
 			const span = doc.getElementById(`${id}-detector`)
+			const pixelsToInt = pixels => Math.round(+pixels.replace('px',''))
+			const detectedViaPixel = new Set()
+			const detectedViaPixelSize = new Set()
 			const detectedViaScroll = new Set()
 			const detectedViaOffset = new Set()
 			const detectedViaClient = new Set()
 			const baseFonts = ['monospace', 'sans-serif', 'serif']
 			const base = baseFonts.reduce((acc, font) => {
 				span.style.setProperty('--font', font)
+				const style = getComputedStyle(span)
 				const dimensions = {
+					width: pixelsToInt(style.width),
+					height: pixelsToInt(style.height),
+					sizeWidth: pixelsToInt(style.inlineSize),
+					sizeHeight: pixelsToInt(style.blockSize),
 					scrollWidth: span.scrollWidth,
 					scrollHeight: span.scrollHeight,
 					offsetWidth: span.offsetWidth,
@@ -115,7 +135,12 @@ export const getFonts = (imports, fonts) => {
 			families.forEach(family => {
 				span.style.setProperty('--font', family)
 				const basefont = /, (.+)/.exec(family)[1]
+				const style = getComputedStyle(span)
 				const dimensions = {
+					width: pixelsToInt(style.width),
+					height: pixelsToInt(style.height),
+					sizeWidth: pixelsToInt(style.inlineSize),
+					sizeHeight: pixelsToInt(style.blockSize),
 					scrollWidth: span.scrollWidth,
 					scrollHeight: span.scrollHeight,
 					offsetWidth: span.offsetWidth,
@@ -125,6 +150,14 @@ export const getFonts = (imports, fonts) => {
 				}
 				detectLies.compute(dimensions)
 				const font = /\'(.+)\'/i.exec(family)[1]
+				if (dimensions.width != base[basefont].width ||
+                    dimensions.height != base[basefont].height) {
+                    detectedViaPixel.add(font)
+                }
+				if (dimensions.sizeWidth != base[basefont].sizeWidth ||
+                    dimensions.sizeHeight != base[basefont].sizeHeight) {
+                    detectedViaPixelSize.add(font)
+                }
 				if (dimensions.scrollWidth != base[basefont].scrollWidth ||
 					dimensions.scrollHeight != base[basefont].scrollHeight) {
 					detectedViaScroll.add(font)
@@ -146,6 +179,8 @@ export const getFonts = (imports, fonts) => {
 				documentLie(`HTMLElement`, hashMini(base), fontLie)
 			}
 			const fonts = {
+				pixel: [...detectedViaPixel],
+				size: [...detectedViaPixelSize],
 				scroll: [...detectedViaScroll],
 				offset: [...detectedViaOffset],
 				client: [...detectedViaClient]
