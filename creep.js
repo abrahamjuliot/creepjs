@@ -207,6 +207,18 @@ const imports = {
 	const trashLen = fp.trash.trashBin.length
 	const liesLen = !('data' in fp.lies) ? 0 : fp.lies.data.length
 	const errorsLen = fp.capturedErrors.data.length
+	const hasBlockedFonts = (
+		fp.fonts ? 
+		!!Object.keys(fp.fonts.fonts).filter(name => !fp.fonts.fonts[name].length).length : false
+	)
+	const unblockedFonts = (
+		fp.fonts ? 
+		Object.keys(fp.fonts.fonts).filter(name => !!fp.fonts.fonts[name].length) : []
+	)
+	const hasUnblockedFonts = fp.fonts ? !!unblockedFonts : false
+	const firstUnblockedFontList = (
+		fp.fonts && hasUnblockedFonts ? fp.fonts.fonts[unblockedFonts[0]] : []
+	)
 	const creep = {
 		navigator: ( 
 			!fp.navigator || fp.navigator.lied ? undefined : {
@@ -328,14 +340,8 @@ const imports = {
 			fp.offlineAudioContext
 		),
 		fonts: !fp.fonts ? undefined : (
-			// lied, has blocked and has unblocked
-			fp.fonts.lied &&
-			!!Object.keys(fp.fonts.fonts).filter(name => !fp.fonts.fonts[name].length).length &&
-			!!Object.keys(fp.fonts.fonts).filter(name => !!fp.fonts.fonts[name].length)
-		) ?
-		// get the first unblocked
-		fp.fonts.fonts[Object.keys(fp.fonts.fonts).filter(name => !!fp.fonts.fonts[name].length)[0]] :
-		fp.fonts.lied ? undefined : fp.fonts,
+			fp.fonts.lied && hasBlockedFonts && hasUnblockedFonts
+		) ? firstUnblockedFontList : fp.fonts.lied ? undefined : fp.fonts,
 		// skip trash since it is random
 		lies: !('data' in fp.lies) ? false : !!liesLen,
 		capturedErrors: !!errorsLen,
