@@ -333,7 +333,7 @@ const imports = {
 			writingSystemKeys: fp.timezone.writingSystemKeys,
 			lied: fp.timezone.lied
 		} : {
-			offsetLocation: fp.timezone.timezoneHistoryLocation
+			timezoneHistoryLocation: fp.timezone.timezoneHistoryLocation
 		},
 		clientRects: !fp.clientRects || fp.clientRects.lied ? undefined : fp.clientRects,
 		offlineAudioContext: (
