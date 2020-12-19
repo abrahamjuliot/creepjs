@@ -383,9 +383,11 @@ const getRectFonts = ({baseFonts, families}) => {
 				clientRange: [...detectedClientRange],
                 boundingRange: [...detectedViaBoundingRange]
             }
+			const hasBlocking = !!Object.keys(fonts).filter(type => !fonts[type].length).length 
+			const hasMismatch = !!Object.keys(fonts).filter(type => ''+fonts[type] != ''+fonts.client).length
             return resolve({
 				fonts,
-				lied: !!Object.keys(fonts).filter(type => ''+fonts[type] != ''+fonts.client).length,
+				lied: !hasBlocking && hasMismatch,
 				perf: performance.now() - start
 			})
         } catch (error) {
@@ -504,9 +506,12 @@ const getPixelFonts = ({baseFonts, families}) => {
                 perspective: [...detectedViaPerspective],
                 size: [...detectedViaPixelSize]
             }
+
+			const hasBlocking = !!Object.keys(fonts).filter(type => !fonts[type].length).length 
+			const hasMismatch = !!Object.keys(fonts).filter(type => ''+fonts[type] != ''+fonts.pixel).length
             return resolve({
 				fonts,
-				lied: !!Object.keys(fonts).filter(type => ''+fonts[type] != ''+fonts.pixel).length,
+				lied: !hasBlocking && hasMismatch,
 				perf: performance.now() - start
 			})
         } catch (error) {
@@ -606,9 +611,11 @@ const getLengthFonts = ({baseFonts, families}) => {
                 offset: [...detectedViaOffset],
                 client: [...detectedViaClient]
             }
+			const hasBlocking = !!Object.keys(fonts).filter(type => !fonts[type].length).length 
+			const hasMismatch = !!Object.keys(fonts).filter(type => ''+fonts[type] != ''+fonts.scroll).length
             return resolve({
 				fonts,
-				lied: !!Object.keys(fonts).filter(type => ''+fonts[type] != ''+fonts.scroll).length,
+				lied: !hasBlocking && hasMismatch,
 				perf: performance.now() - start
 			})
         } catch (error) {
