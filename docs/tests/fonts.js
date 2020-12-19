@@ -185,6 +185,7 @@ const getTextMetricsFonts = ({context, baseFonts, families}) => {
 				fonts: {
 					combined: [],
 					ascent: [],
+					descent: [],
 					left: [],
 					right: [],
 					width: [],
