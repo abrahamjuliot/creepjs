@@ -200,10 +200,18 @@ const getTextMetricsFonts = ({context, baseFonts, families}) => {
 
 const getSVGDimensions = svgText => {
 	const { width, height, y } = svgText.getBBox()
+	const { width: charWidth, height: charHeight, y: charY } = svgText.getExtentOfChar(getChars()[0])
+	const subString = svgText.getSubStringLength(1, 2)
+	const textLen = svgText.getComputedTextLength()
 	const dimensions = {
 		width: Math.round(width),
 		height: Math.round(height),
 		y: Math.round(y),
+		charWidth: Math.round(charWidth),
+		charHeight: Math.round(charHeight),
+		charY: Math.round(charY),
+		subString: Math.round(subString),
+		textLen: Math.round(textLen)
 	}
 	return dimensions
 }
@@ -245,6 +253,12 @@ const getSVGFonts = ({baseFonts, families}) => {
 			const detectedViaWidth = new Set()
 			const detectedViaHeight = new Set()
 			const detectedViaY = new Set()
+			const detectedViaCharWidth = new Set()
+			const detectedViaCharHeight = new Set()
+			const detectedViaCharY = new Set()
+			const detectedViaSubString = new Set()
+			const detectedViaTextLen = new Set()
+
 			const base = baseFonts.reduce((acc, font) => {
 				svgText.style.setProperty('--font', font)
 				const dimensions = getSVGDimensions(svgText)
@@ -259,26 +273,51 @@ const getSVGFonts = ({baseFonts, families}) => {
 				if (
 					dimensions.width != base[basefont].width ||
 					dimensions.height != base[basefont].height ||
-					dimensions.y != base[basefont].y
+					dimensions.y != base[basefont].y ||
+					dimensions.charWidth != base[basefont].charWidth ||
+					dimensions.charHeight != base[basefont].charHeight ||
+					dimensions.charY != base[basefont].charY ||
+					dimensions.subString != base[basefont].subString ||
+					dimensions.textLen != base[basefont].textLen
 				) {
                     detectedCombined.add(font)
                 }
 				if (!isNaN(dimensions.width) && dimensions.width != base[basefont].width) {
-                    detectedViaWidth.add(font)
-                }
-                if (!isNaN(dimensions.height) && dimensions.height != base[basefont].height) {
-                    detectedViaHeight.add(font)
-                }
-                if (!isNaN(dimensions.y) && dimensions.y != base[basefont].y) {
-                    detectedViaY.add(font)
-                }
+					detectedViaWidth.add(font)
+				}
+				if (!isNaN(dimensions.height) && dimensions.height != base[basefont].height) {
+					detectedViaHeight.add(font)
+				}
+				if (!isNaN(dimensions.y) && dimensions.y != base[basefont].y) {
+					detectedViaY.add(font)
+				}
+				if (!isNaN(dimensions.charWidth) && dimensions.charWidth != base[basefont].charWidth) {
+					detectedViaCharWidth.add(font)
+				}
+				if (!isNaN(dimensions.charHeight) && dimensions.charHeight != base[basefont].charHeight) {
+					detectedViaCharHeight.add(font)
+				}
+				if (!isNaN(dimensions.charY) && dimensions.charY != base[basefont].charY) {
+					detectedViaCharY.add(font)
+				}
+				if (!isNaN(dimensions.subString) && dimensions.subString != base[basefont].subString) {
+					detectedViaSubString.add(font)
+				}
+				if (!isNaN(dimensions.textLen) && dimensions.textLen != base[basefont].textLen) {
+					detectedViaTextLen.add(font)
+				}
 				return
 			})
 			const fonts = {
 				combined: [...detectedCombined],
                 width: [...detectedViaWidth],
-                height: [...detectedViaHeight],
-                y: [...detectedViaY]
+				height: [...detectedViaHeight],
+				y: [...detectedViaY],
+				charWidth: [...detectedViaCharWidth],
+				charHeight: [...detectedViaCharHeight],
+				charY: [...detectedViaCharY],
+				subString: [...detectedViaSubString],
+				textLen: [...detectedViaTextLen]
             }
 			return resolve({
 				fonts,
@@ -291,7 +330,12 @@ const getSVGFonts = ({baseFonts, families}) => {
 					combined: [],
 					width: [],
 					height: [],
-					y: []
+					y: [],
+					charWidth: [],
+					charHeight: [],
+					charY: [],
+					subString: [],
+					textLen: []
 				},
 				perf: 0
 			})
@@ -682,7 +726,8 @@ patch(el, html`
 	<div id="fingerprint-data">
 		<style>
 			.total {
-				border: 1px solid #eee;
+				border: 1px solid #aaa6;
+    			padding: 0 2px;
 			}
 		</style>
 		<div class="visitor-info">
@@ -841,6 +886,43 @@ patch(el, html`
 						note.blocked
 					}
 					<span class="aside-note">${''+svgFonts.fonts.y.length}/${listLen}</span>
+				</div>
+				<div class="relative">char width: ${
+						!!svgFonts.fonts.charWidth.length ? 
+						hashMini(svgFonts.fonts.charWidth) :
+						note.blocked
+					}
+					<span class="aside-note">${''+svgFonts.fonts.charWidth.length}/${listLen}</span>
+				</div>
+				<div class="relative">char height: ${
+						!!svgFonts.fonts.charHeight.length ? 
+						hashMini(svgFonts.fonts.charHeight) :
+						note.blocked
+					}
+					<span class="aside-note">${''+svgFonts.fonts.charHeight.length}/${listLen}</span>
+				</div>
+				<div class="relative">char y: ${
+						!!svgFonts.fonts.charY.length ? 
+						hashMini(svgFonts.fonts.charY) :
+						note.blocked
+					}
+					<span class="aside-note">${''+svgFonts.fonts.charY.length}/${listLen}</span>
+				</div>
+
+
+				<div class="relative">sub string: ${
+						!!svgFonts.fonts.subString.length ? 
+						hashMini(svgFonts.fonts.subString) :
+						note.blocked
+					}
+					<span class="aside-note">${''+svgFonts.fonts.subString.length}/${listLen}</span>
+				</div>
+				<div class="relative">text length: ${
+						!!svgFonts.fonts.textLen.length ? 
+						hashMini(svgFonts.fonts.textLen) :
+						note.blocked
+					}
+					<span class="aside-note">${''+svgFonts.fonts.textLen.length}/${listLen}</span>
 				</div>
 			</div>
 			<div class="col-six relative${rectFonts.lied ? ' lies': ''}">
