@@ -85,6 +85,7 @@ const getTextMetrics = (context, font) => {
 	const metrics = context.measureText(getChars())
 	return {
 		ascent: Math.round(metrics.actualBoundingBoxAscent),
+		descent: Math.round(metrics.actualBoundingBoxDescent),
 		left: Math.round(metrics.actualBoundingBoxLeft),
 		right: Math.round(metrics.actualBoundingBoxRight),
 		width: Math.round(metrics.width),
@@ -102,6 +103,7 @@ const getTextMetricsFonts = ({context, baseFonts, families}) => {
 			const start = performance.now()
 			const detectedCombined = new Set()
 			const detectedViaAscent = new Set()
+			const detectedViaDescent = new Set()
 			const detectedViaLeft = new Set()
 			const detectedViaRight = new Set()
 			const detectedViaWidth = new Set()
@@ -117,6 +119,7 @@ const getTextMetricsFonts = ({context, baseFonts, families}) => {
 				const font = /\'(.+)\'/.exec(family)[1]
 				const support = (
 					dimensions.ascent != base[basefont].ascent ||
+					dimensions.descent != base[basefont].descent ||
 					dimensions.left != base[basefont].left ||
 					dimensions.right != base[basefont].right ||
 					dimensions.width != base[basefont].width
@@ -132,6 +135,10 @@ const getTextMetricsFonts = ({context, baseFonts, families}) => {
 				if (!isNaN(dimensions.ascent) &&
 					dimensions.ascent != base[basefont].ascent) {
                     detectedViaAscent.add(font)
+                }
+				if (!isNaN(dimensions.descent) &&
+					dimensions.descent != base[basefont].descent) {
+                    detectedViaDescent.add(font)
                 }
                 if (!isNaN(dimensions.left) &&
 					dimensions.left != base[basefont].left) {
@@ -161,6 +168,7 @@ const getTextMetricsFonts = ({context, baseFonts, families}) => {
 			const fonts = {
 				combined: [...detectedCombined],
                 ascent: [...detectedViaAscent],
+				descent: [...detectedViaDescent],
                 left: [...detectedViaLeft],
                 right: [...detectedViaRight],
                 width: [...detectedViaWidth],
@@ -635,13 +643,21 @@ const getLengthFonts = ({baseFonts, families}) => {
 
 const context = document.createElement('canvas').getContext('2d')
 const contextOffscreen = ('OffscreenCanvas' in window) ? new OffscreenCanvas(500, 200).getContext('2d') : undefined
-
-const textMetricsFonts = await getTextMetricsFonts({context, baseFonts, families})
-const textMetricsFontsOffscreen = await getTextMetricsFonts({context: contextOffscreen, baseFonts, families})
-const svgFonts = await getSVGFonts({baseFonts, families})
-const rectFonts = await getRectFonts({baseFonts, families})
-const pixelFonts = await getPixelFonts({baseFonts, families})
-const lengthFonts = await getLengthFonts({baseFonts, families})
+const [
+	textMetricsFonts,
+	textMetricsFontsOffscreen,
+	svgFonts,
+	rectFonts,
+	pixelFonts,
+	lengthFonts
+] = await Promise.all([
+	getTextMetricsFonts({context, baseFonts, families}),
+	getTextMetricsFonts({context: contextOffscreen, baseFonts, families}),
+	getSVGFonts({baseFonts, families}),
+	getRectFonts({baseFonts, families}),
+	getPixelFonts({baseFonts, families}),
+	getLengthFonts({baseFonts, families})
+]).catch(error => console.error(error))
 
 const fingerprint = await hashify({
 	textMetricsFonts: {...textMetricsFonts, perf: undefined },
@@ -688,6 +704,13 @@ patch(el, html`
 						note.blocked
 					}
 					<span class="aside-note">${''+textMetricsFonts.fonts.ascent.length}/${listLen}</span>
+				</div>
+				<div class="relative">descent: ${
+						!!textMetricsFonts.fonts.descent.length ? 
+						hashMini(textMetricsFonts.fonts.descent) :
+						note.blocked
+					}
+					<span class="aside-note">${''+textMetricsFonts.fonts.descent.length}/${listLen}</span>
 				</div>
 				<div class="relative">left: ${
 						!!textMetricsFonts.fonts.left.length ? 
@@ -741,6 +764,13 @@ patch(el, html`
 						note.blocked
 					}
 					<span class="aside-note">${''+textMetricsFontsOffscreen.fonts.ascent.length}/${listLen}</span>
+				</div>
+				<div class="relative">descent: ${
+						!!textMetricsFontsOffscreen.fonts.descent.length ? 
+						hashMini(textMetricsFontsOffscreen.fonts.descent) :
+						note.blocked
+					}
+					<span class="aside-note">${''+textMetricsFontsOffscreen.fonts.descent.length}/${listLen}</span>
 				</div>
 				<div class="relative">left: ${
 						!!textMetricsFontsOffscreen.fonts.left.length ? 
