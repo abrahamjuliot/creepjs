@@ -99,6 +99,7 @@ const getTextMetricsFonts = ({baseFonts, families}) => {
 			const start = performance.now()
 			const canvas = document.createElement('canvas')
 			const context = canvas.getContext('2d')
+			const detectedCombined = new Set()
 			const detectedViaAscent = new Set()
 			const detectedViaLeft = new Set()
 			const detectedViaRight = new Set()
@@ -113,6 +114,20 @@ const getTextMetricsFonts = ({baseFonts, families}) => {
 				const basefont = /, (.+)/.exec(family)[1]
 				const dimensions = getTextMetrics(context, family) 
 				const font = /\'(.+)\'/.exec(family)[1]
+				const support = (
+					dimensions.ascent != base[basefont].ascent ||
+					dimensions.left != base[basefont].left ||
+					dimensions.right != base[basefont].right ||
+					dimensions.width != base[basefont].width
+				)
+				const extraSupport = (
+					dimensions.fontAscent != base[basefont].fontAscent ||
+					dimensions.fontDescent != base[basefont].fontDescent
+				)
+				if (((!isNaN(dimensions.ascent) && !isNaN(dimensions.fontAscent)) && (support || extraSupport)) ||
+					(!isNaN(dimensions.ascent) && support)) {
+                    detectedCombined.add(font)
+                }
 				if (!isNaN(dimensions.ascent) &&
 					dimensions.ascent != base[basefont].ascent) {
                     detectedViaAscent.add(font)
@@ -129,7 +144,7 @@ const getTextMetricsFonts = ({baseFonts, families}) => {
 					(dimensions.width != base[basefont].width)) {
                     detectedViaWidth.add(font)
                 }
-				if (!isNaN(dimensions.fontDescent) && 
+				if (!isNaN(dimensions.fontAscent) && 
 					(dimensions.fontAscent != base[basefont].fontAscent)
 				) {
                     detectedViaFontAscent.add(font)
@@ -143,6 +158,7 @@ const getTextMetricsFonts = ({baseFonts, families}) => {
 				return
 			})
 			const fonts = {
+				combined: [...detectedCombined],
                 ascent: [...detectedViaAscent],
                 left: [...detectedViaLeft],
                 right: [...detectedViaRight],
@@ -158,6 +174,7 @@ const getTextMetricsFonts = ({baseFonts, families}) => {
 			console.error(error)
 			return resolve({
 				fonts: {
+					combined: [],
 					ascent: [],
 					left: [],
 					right: [],
@@ -191,6 +208,21 @@ const getSVGFonts = ({baseFonts, families}) => {
 				<style>
 					#${id}-svg-detector {
 						font-size: 256px !important;
+						position: absolute !important;
+						left: -9999px!important;
+						font-size: 256px !important;
+						font-style: normal !important;
+						font-weight: normal !important;
+						letter-spacing: normal !important;
+						line-break: auto !important;
+						line-height: normal !important;
+						text-transform: none !important;
+						text-align: left !important;
+						text-decoration: none !important;
+						text-shadow: none !important;
+						white-space: normal !important;
+						word-break: normal !important;
+						word-spacing: normal !important;
 						font-family: var(--font);
 					}
 				</style>
@@ -199,6 +231,7 @@ const getSVGFonts = ({baseFonts, families}) => {
 				</svg>
 			`
 			const svgText = document.getElementById(`${id}-svg-detector`)
+			const detectedCombined = new Set()
 			const detectedViaWidth = new Set()
 			const detectedViaHeight = new Set()
 			const detectedViaY = new Set()
@@ -213,21 +246,26 @@ const getSVGFonts = ({baseFonts, families}) => {
 				const basefont = /, (.+)/.exec(family)[1]
 				const dimensions = getSVGDimensions(svgText)
 				const font = /\'(.+)\'/.exec(family)[1]
-				if (!isNaN(dimensions.width) &&
-					(dimensions.width != base[basefont].width)) {
+				if (
+					dimensions.width != base[basefont].width ||
+					dimensions.height != base[basefont].height ||
+					dimensions.y != base[basefont].y
+				) {
+                    detectedCombined.add(font)
+                }
+				if (!isNaN(dimensions.width) && dimensions.width != base[basefont].width) {
                     detectedViaWidth.add(font)
                 }
-                if (!isNaN(dimensions.height) &&
-					(dimensions.height != base[basefont].height)) {
+                if (!isNaN(dimensions.height) && dimensions.height != base[basefont].height) {
                     detectedViaHeight.add(font)
                 }
-                if (!isNaN(dimensions.y) &&
-					(dimensions.y != base[basefont].y)) {
+                if (!isNaN(dimensions.y) && dimensions.y != base[basefont].y) {
                     detectedViaY.add(font)
                 }
 				return
 			})
 			const fonts = {
+				combined: [...detectedCombined],
                 width: [...detectedViaWidth],
                 height: [...detectedViaHeight],
                 y: [...detectedViaY]
@@ -240,6 +278,7 @@ const getSVGFonts = ({baseFonts, families}) => {
 			console.error(error)
 			return resolve({
 				fonts: {
+					combined: [],
 					width: [],
 					height: [],
 					y: []
@@ -603,6 +642,11 @@ const listLen = list.length
 const el = document.getElementById('fingerprint-data')
 patch(el, html`
 	<div id="fingerprint-data">
+		<style>
+			.total {
+				border: 1px solid #eee;
+			}
+		</style>
 		<div class="visitor-info">
 			<strong>Fonts</strong><span class="hash">${hashMini(fingerprint)}</span>
 		</div>
@@ -610,6 +654,13 @@ patch(el, html`
 			<div class="col-six relative">
 				<span class="aside-note">${textMetricsFonts.perf.toFixed(2)}ms</span>
 				<strong>TextMetrics</strong>
+				<div class="relative">combined: ${
+						!!textMetricsFonts.fonts.combined.length ? 
+						hashMini(textMetricsFonts.fonts.combined) :
+						note.blocked
+					}
+					<span class="aside-note total">${''+textMetricsFonts.fonts.combined.length}/${listLen}</span>
+				</div>
 				<div class="relative">ascent: ${
 						!!textMetricsFonts.fonts.ascent.length ? 
 						hashMini(textMetricsFonts.fonts.ascent) :
@@ -656,6 +707,13 @@ patch(el, html`
 			<div class="col-six relative">
 				<span class="aside-note">${svgFonts.perf.toFixed(2)}ms</span>
 				<strong>SVGRect</strong>
+				<div class="relative">combined: ${
+						!!svgFonts.fonts.combined.length ? 
+						hashMini(svgFonts.fonts.combined) :
+						note.blocked
+					}
+					<span class="aside-note total">${''+svgFonts.fonts.combined.length}/${listLen}</span>
+				</div>
 				<div class="relative">width: ${
 						!!svgFonts.fonts.width.length ? 
 						hashMini(svgFonts.fonts.width) :
