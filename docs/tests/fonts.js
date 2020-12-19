@@ -93,12 +93,13 @@ const getTextMetrics = (context, font) => {
 	}
 }
 
-const getTextMetricsFonts = ({baseFonts, families}) => {
+const getTextMetricsFonts = ({context, baseFonts, families}) => {
 	return new Promise(resolve => {
 		try {
+			if (!context) {
+				throw new Error(`Context blocked or not supported`) 
+			}
 			const start = performance.now()
-			const canvas = document.createElement('canvas')
-			const context = canvas.getContext('2d')
 			const detectedCombined = new Set()
 			const detectedViaAscent = new Set()
 			const detectedViaLeft = new Set()
@@ -182,7 +183,7 @@ const getTextMetricsFonts = ({baseFonts, families}) => {
 					fontAscent: [],
 					fontDescent: []
 				},
-				perf: performance.now() - start
+				perf: 0
 			})
 		}
 	})
@@ -283,7 +284,7 @@ const getSVGFonts = ({baseFonts, families}) => {
 					height: [],
 					y: []
 				},
-				perf: performance.now() - start
+				perf: 0
 			})
 		}
 	})
@@ -396,7 +397,7 @@ const getRectFonts = ({baseFonts, families}) => {
 					clientRange: [],
 					boundingRange: []
 				},
-				perf: performance.now() - start
+				perf: 0
 			})
         }
     })
@@ -517,7 +518,7 @@ const getPixelFonts = ({baseFonts, families}) => {
 					perspective: [],
 					size: []
 				},
-				perf: performance.now() - start
+				perf: 0
 			})
         }
     })
@@ -612,12 +613,24 @@ const getLengthFonts = ({baseFonts, families}) => {
 			})
         } catch (error) {
             console.error(error)
-            return resolve()
+            return resolve({
+				fonts: {
+					scroll: [],
+					offset: [],
+					client: []
+				},
+				perf: 0
+			})
         }
     })
 }
 
-const textMetricsFonts = await getTextMetricsFonts({baseFonts, families})
+
+const context = document.createElement('canvas').getContext('2d')
+const contextOffscreen = ('OffscreenCanvas' in window) ? new OffscreenCanvas(500, 200).getContext('2d') : undefined
+
+const textMetricsFonts = await getTextMetricsFonts({context, baseFonts, families})
+const textMetricsFontsOffscreen = await getTextMetricsFonts({context: contextOffscreen, baseFonts, families})
 const svgFonts = await getSVGFonts({baseFonts, families})
 const rectFonts = await getRectFonts({baseFonts, families})
 const pixelFonts = await getPixelFonts({baseFonts, families})
@@ -632,6 +645,7 @@ const fingerprint = await hashify({
 })
 
 console.log('TextMetrics:\n', textMetricsFonts)
+console.log('TextMetricsOffscreen:\n', textMetricsFontsOffscreen)
 console.log('SVGRect:\n', svgFonts)
 console.log('DOMRect:\n', rectFonts)
 console.log('Pixels:\n', pixelFonts)
@@ -705,6 +719,61 @@ patch(el, html`
 				</div>
 			</div>
 			<div class="col-six relative">
+				<span class="aside-note">${textMetricsFontsOffscreen.perf.toFixed(2)}ms</span>
+				<strong>TextMetrics Offscreen</strong>
+				<div class="relative">combined: ${
+						!!textMetricsFontsOffscreen.fonts.combined.length ? 
+						hashMini(textMetricsFontsOffscreen.fonts.combined) :
+						note.blocked
+					}
+					<span class="aside-note total">${''+textMetricsFontsOffscreen.fonts.combined.length}/${listLen}</span>
+				</div>
+				<div class="relative">ascent: ${
+						!!textMetricsFontsOffscreen.fonts.ascent.length ? 
+						hashMini(textMetricsFontsOffscreen.fonts.ascent) :
+						note.blocked
+					}
+					<span class="aside-note">${''+textMetricsFontsOffscreen.fonts.ascent.length}/${listLen}</span>
+				</div>
+				<div class="relative">left: ${
+						!!textMetricsFontsOffscreen.fonts.left.length ? 
+						hashMini(textMetricsFontsOffscreen.fonts.left) :
+						note.blocked
+					}
+					<span class="aside-note">${''+textMetricsFontsOffscreen.fonts.left.length}/${listLen}</span>
+				</div>
+				<div class="relative">right: ${
+						!!textMetricsFontsOffscreen.fonts.right.length ? 
+						hashMini(textMetricsFontsOffscreen.fonts.right) :
+						note.blocked
+					}
+					<span class="aside-note">${''+textMetricsFontsOffscreen.fonts.right.length}/${listLen}</span>
+				</div>
+				<div class="relative">width: ${
+						!!textMetricsFontsOffscreen.fonts.width.length ? 
+						hashMini(textMetricsFontsOffscreen.fonts.width) :
+						note.blocked
+					}
+					<span class="aside-note">${''+textMetricsFontsOffscreen.fonts.width.length}/${listLen}</span>
+				</div>
+				<div class="relative">font ascent: ${
+						!!textMetricsFontsOffscreen.fonts.fontAscent.length ? 
+						hashMini(textMetricsFontsOffscreen.fonts.fontAscent) :
+						note.unsupported
+					}
+					<span class="aside-note">${''+textMetricsFontsOffscreen.fonts.fontAscent.length}/${listLen}</span>
+				</div>
+				<div class="relative">font descent: ${
+						!!textMetricsFontsOffscreen.fonts.fontDescent.length ? 
+						hashMini(textMetricsFontsOffscreen.fonts.fontDescent) :
+						note.unsupported
+					}
+					<span class="aside-note">${''+textMetricsFontsOffscreen.fonts.fontDescent.length}/${listLen}</span>
+				</div>
+			</div>
+		</div>
+		<div class="flex-grid">
+			<div class="col-six relative">
 				<span class="aside-note">${svgFonts.perf.toFixed(2)}ms</span>
 				<strong>SVGRect</strong>
 				<div class="relative">combined: ${
@@ -736,8 +805,6 @@ patch(el, html`
 					<span class="aside-note">${''+svgFonts.fonts.y.length}/${listLen}</span>
 				</div>
 			</div>
-		</div>
-		<div class="flex-grid">
 			<div class="col-six relative${rectFonts.lied ? ' lies': ''}">
 				<span class="aside-note">${rectFonts.perf.toFixed(2)}ms</span>
 				<strong>DOMRect</strong>
@@ -770,6 +837,8 @@ patch(el, html`
 					<span class="aside-note">${''+rectFonts.fonts.boundingRange.length}/${listLen}</span>
 				</div>
 			</div>
+		</div>
+		<div class="flex-grid">
 			<div class="col-six relative${pixelFonts.lied ? ' lies': ''}">
 				<span class="aside-note">${pixelFonts.perf.toFixed(2)}ms</span>
 				<strong>Pixels</strong>
@@ -802,8 +871,6 @@ patch(el, html`
 					<span class="aside-note">${''+pixelFonts.fonts.transform.length}/${listLen}</span>
 				</div>
 			</div>
-		</div>
-		<div class="flex-grid">
 			<div class="col-six relative${lengthFonts.lied ? ' lies': ''}">
 				<span class="aside-note">${lengthFonts.perf.toFixed(2)}ms</span>
 				<strong>Lengths</strong>
