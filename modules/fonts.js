@@ -1,218 +1,87 @@
 // inspired by Lalit Patel's fontdetect.js
 // https://www.lalit.org/wordpress/wp-content/uploads/2008/05/fontdetect.js?ver=0.3
+
+const getTextMetrics = (context, font) => {
+	context.font = `256px ${font}`
+	const metrics = context.measureText('mmmmmmmmmmlli')
+	return {
+		ascent: Math.round(metrics.actualBoundingBoxAscent),
+		descent: Math.round(metrics.actualBoundingBoxDescent),
+		left: Math.round(metrics.actualBoundingBoxLeft),
+		right: Math.round(metrics.actualBoundingBoxRight),
+		width: Math.round(metrics.width),
+		fontAscent: Math.round(metrics.fontBoundingBoxAscent),
+		fontDescent: Math.round(metrics.fontBoundingBoxDescent)
+	}
+}
 export const getFonts = (imports, fonts) => {
 
 	const {
 		require: {
 			hashify,
-			patch,
-			html,
 			captureError,
-			instanceId,
 			lieProps,
 			documentLie,
-			hashMini,
 			contentWindow,
 			logTestResult
 		}
 	} = imports
+
 	return new Promise(async resolve => {
 		try {
-			let lied = (
-				lieProps['HTMLElement.scrollWidth'],
-				lieProps['HTMLElement.scrollHeight'],
-				lieProps['HTMLElement.offsetWidth'],
-				lieProps['HTMLElement.offsetHeight'],
-				lieProps['HTMLElement.clientWidth'],
-				lieProps['HTMLElement.clientHeight']
+			const win = contentWindow ? contentWindow : window
+			const doc = win.document
+			const offscreenCanvas = win.OffscreenCanvas
+			const context = (
+				('OffscreenCanvas' in window) ?
+				new offscreenCanvas(500, 200).getContext('2d') :
+				doc.createElement('canvas').getContext('2d')
 			)
-			const createLieDetector = () => {
-				let invalidDimensions = []
-				return {
-					getInvalidDimensions: () => invalidDimensions,
-					compute: ({
-						width,
-						height,
-						transformWidth,
-						transformHeight,
-						perspectiveWidth,
-						perspectiveHeight,
-						sizeWidth,
-						sizeHeight,
-						scrollWidth,
-						scrollHeight,
-						offsetWidth,
-						offsetHeight,
-						clientWidth,
-						clientHeight
-					}) => {
-						const invalid = (
-							width != transformWidth ||
-							width != perspectiveWidth ||
-							width != sizeWidth ||
-							width != scrollWidth ||
-							width != offsetWidth ||
-							width != clientWidth ||
 
-							height != transformHeight ||
-							height != perspectiveHeight ||
-							height != sizeHeight ||
-							height != scrollHeight ||
-							height != offsetHeight ||
-							height != clientHeight
-						)
-						if (invalid) {
-							invalidDimensions.push({
-								width: [width, transformWidth, perspectiveWidth, sizeWidth, scrollWidth, offsetWidth, clientWidth],
-								height: [height, transformHeight, perspectiveHeight, sizeHeight, scrollHeight, offsetHeight, clientHeight]
-							})
-						}
-						return
-					}
-				}
+			if (!context) {
+				throw new Error(`Context blocked or not supported`) 
 			}
-			const detectLies = createLieDetector()
-			const doc = contentWindow ? contentWindow.document : document
-			const id = `fonts-${instanceId}`
-			const div = doc.createElement('div')
-			div.setAttribute('id', id)
-			doc.body.appendChild(div)
-			patch(div, html`
-				<style>
-					#${id}-detector {
-						--font: '';
-						position: absolute !important;
-						left: -9999px!important;
-						font-size: 256px !important;
-						font-style: normal !important;
-						font-weight: normal !important;
-						letter-spacing: normal !important;
-						line-break: auto !important;
-						line-height: normal !important;
-						text-transform: none !important;
-						text-align: left !important;
-						text-decoration: none !important;
-						text-shadow: none !important;
-						white-space: normal !important;
-						word-break: normal !important;
-						word-spacing: normal !important;
-						/* in order to test scrollWidth, clientWidth, etc. */
-						padding: 0 !important;
-						margin: 0 !important;
-						/* in order to test inlineSize and blockSize */
-						writing-mode: horizontal-tb !important;
-						/* in order to test origins */
-						transform-origin: unset !important;
-						perspective-origin: unset !important;
-					}
-					#${id}-detector::after {
-						font-family: var(--font);
-						content: 'mmmmmmmmmmlli';
-					}
-				</style>
-				<span id="${id}-detector"></span>
-			`)
-			const span = doc.getElementById(`${id}-detector`)
-			const pixelsToInt = pixels => Math.round(+pixels.replace('px', ''))
-			const originPixelsToInt = pixels => Math.round(2 * pixels.replace('px', ''))
-			const detectedViaPixel = new Set()
-			const detectedViaTransform = new Set()
-			const detectedViaPerspective = new Set()
-			const detectedViaPixelSize = new Set()
-			const detectedViaScroll = new Set()
-			const detectedViaOffset = new Set()
-			const detectedViaClient = new Set()
+
 			const baseFonts = ['monospace', 'sans-serif', 'serif']
-			const style = getComputedStyle(span)
-
-			const getDimensions = (span, style) => {
-				const transform = style.transformOrigin.split(' ')
-				const perspective = style.perspectiveOrigin.split(' ')
-				const dimensions = {
-					width: pixelsToInt(style.width),
-					height: pixelsToInt(style.height),
-					transformWidth: originPixelsToInt(transform[0]),
-					transformHeight: originPixelsToInt(transform[1]),
-					perspectiveWidth: originPixelsToInt(perspective[0]),
-					perspectiveHeight: originPixelsToInt(perspective[1]),
-					sizeWidth: pixelsToInt(style.inlineSize),
-					sizeHeight: pixelsToInt(style.blockSize),
-					scrollWidth: span.scrollWidth,
-					scrollHeight: span.scrollHeight,
-					offsetWidth: span.offsetWidth,
-					offsetHeight: span.offsetHeight,
-					clientWidth: span.clientWidth,
-					clientHeight: span.clientHeight
-				}
-				return dimensions
-			}
-			const base = baseFonts.reduce((acc, font) => {
-				span.style.setProperty('--font', font)
-				const dimensions = getDimensions(span, style)
-				detectLies.compute(dimensions)
-				acc[font] = dimensions
-				return acc
-			}, {})
-			const families = [...fontList, ...notoFonts].reduce((acc, font) => {
+			const families = fonts.reduce((acc, font) => {
 				baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`))
 				return acc
 			}, [])
+
+			const detected = new Set()
+			const base = baseFonts.reduce((acc, font) => {
+				acc[font] = getTextMetrics(context, font) 
+				return acc
+			}, {})
 			families.forEach(family => {
-				span.style.setProperty('--font', family)
 				const basefont = /, (.+)/.exec(family)[1]
-				const dimensions = getDimensions(span, style)
-				detectLies.compute(dimensions)
-				const font = /\'(.+)\'/i.exec(family)[1]
-				if (dimensions.width != base[basefont].width ||
-					dimensions.height != base[basefont].height) {
-					detectedViaPixel.add(font)
-				}
-				if (dimensions.transformWidth != base[basefont].transformWidth ||
-					dimensions.transformHeight != base[basefont].transformHeight) {
-					detectedViaTransform.add(font)
-				}
-				if (dimensions.perspectiveWidth != base[basefont].perspectiveWidth ||
-					dimensions.perspectiveHeight != base[basefont].perspectiveHeight) {
-					detectedViaPerspective.add(font)
-				}
-				if (dimensions.sizeWidth != base[basefont].sizeWidth ||
-					dimensions.sizeHeight != base[basefont].sizeHeight) {
-					detectedViaPixelSize.add(font)
-				}
-				if (dimensions.scrollWidth != base[basefont].scrollWidth ||
-					dimensions.scrollHeight != base[basefont].scrollHeight) {
-					detectedViaScroll.add(font)
-				}
-				if (dimensions.offsetWidth != base[basefont].offsetWidth ||
-					dimensions.offsetHeight != base[basefont].offsetHeight) {
-					detectedViaOffset.add(font)
-				}
-				if (dimensions.clientWidth != base[basefont].clientWidth ||
-					dimensions.clientHeight != base[basefont].clientHeight) {
-					detectedViaClient.add(font)
-				}
+				const dimensions = getTextMetrics(context, family) 
+				const font = /\'(.+)\'/.exec(family)[1]
+				const support = (
+					dimensions.ascent != base[basefont].ascent ||
+					dimensions.descent != base[basefont].descent ||
+					dimensions.left != base[basefont].left ||
+					dimensions.right != base[basefont].right ||
+					dimensions.width != base[basefont].width
+				)
+				const extraSupport = (
+					dimensions.fontAscent != base[basefont].fontAscent ||
+					dimensions.fontDescent != base[basefont].fontDescent
+				)
+				if (((!isNaN(dimensions.ascent) && !isNaN(dimensions.fontAscent)) && (support || extraSupport)) ||
+					(!isNaN(dimensions.ascent) && support)) {
+                    detected.add(font)
+                }
 				return
 			})
-			//console.log(detectLies.getInvalidDimensions())
-			if (detectLies.getInvalidDimensions().length) {
-				lied = true
-				const fontLie = { fingerprint: '', lies: [{ [`mismatching dimensions`]: true }] }
-				documentLie(`HTMLElement`, hashMini(base), fontLie)
-			}
-			const fonts = {
-				pixel: [...detectedViaPixel],
-				transform: [...detectedViaTransform],
-				perspective: [...detectedViaPerspective],
-				size: [...detectedViaPixelSize],
-				scroll: [...detectedViaScroll],
-				offset: [...detectedViaOffset],
-				client: [...detectedViaClient]
-			}
+			const lied = (
+				(('OffscreenCanvas' in window) && lieProps['OffscreenCanvasRenderingContext2D.measureText']) ||
+				(!('OffscreenCanvas' in window) && lieProps['CanvasRenderingContext2D.measureText'])
+			)
 			const $hash = await hashify(fonts)
 			logTestResult({ test: 'fonts', passed: true })
-			return resolve({ fonts, lied, $hash })
-		}
-		catch (error) {
+			return resolve({ fonts: [...detected], lied, $hash })
+		} catch (error) {
 			logTestResult({ test: 'fonts', passed: false })
 			captureError(error)
 			return resolve()

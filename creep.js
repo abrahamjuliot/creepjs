@@ -123,7 +123,7 @@ const imports = {
 			getTimezone(imports),
 			getClientRects(imports),
 			getOfflineAudioContext(imports),
-			getFonts(imports, [...fontList, ...notoFonts])
+			getFonts(imports, [...fontList, ...extendedFontList])
 		]).catch(error => {
 			console.error(error.message)
 		})
@@ -207,18 +207,6 @@ const imports = {
 	const trashLen = fp.trash.trashBin.length
 	const liesLen = !('data' in fp.lies) ? 0 : fp.lies.data.length
 	const errorsLen = fp.capturedErrors.data.length
-	const hasBlockedFonts = (
-		fp.fonts ? 
-		!!Object.keys(fp.fonts.fonts).filter(name => !fp.fonts.fonts[name].length).length : false
-	)
-	const unblockedFonts = (
-		fp.fonts ? 
-		Object.keys(fp.fonts.fonts).filter(name => !!fp.fonts.fonts[name].length) : []
-	)
-	const hasUnblockedFonts = fp.fonts ? !!unblockedFonts : false
-	const firstUnblockedFontList = (
-		fp.fonts && hasUnblockedFonts ? fp.fonts.fonts[unblockedFonts[0]] : []
-	)
 	const creep = {
 		navigator: ( 
 			!fp.navigator || fp.navigator.lied ? undefined : {
@@ -341,9 +329,7 @@ const imports = {
 			!fp.offlineAudioContext || fp.offlineAudioContext.lied ? undefined :
 			fp.offlineAudioContext
 		),
-		fonts: !fp.fonts ? undefined : (
-			fp.fonts.lied && hasBlockedFonts && hasUnblockedFonts
-		) ? firstUnblockedFontList : fp.fonts.lied ? undefined : fp.fonts,
+		fonts: !fp.fonts || fp.fonts.lied ? undefined : fp.fonts,
 		// skip trash since it is random
 		lies: !('data' in fp.lies) ? false : !!liesLen,
 		capturedErrors: !!errorsLen,
@@ -847,13 +833,6 @@ const imports = {
 			`<div class="col-six">
 				<strong>Fonts</strong>
 				<div>results (0): ${note.blocked}</div>
-				<div>transform: ${note.blocked}</div>
-				<div>perspective: ${note.blocked}</div>
-				<div>pixel: ${note.blocked}</div>
-				<div>size: ${note.blocked}</div>
-				<div>scroll: ${note.blocked}</div>
-				<div>offset: ${note.blocked}</div>
-				<div>client: ${note.blocked}</div>
 			</div>` :
 		(() => {
 			const {
@@ -866,14 +845,7 @@ const imports = {
 			return `
 			<div class="col-six">
 				<strong>Fonts</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
-				<div>results (${fonts && fonts.perspective ? count(fonts.perspective) : '0'}): ${fonts && fonts.perspective && fonts.perspective.length ? modal('creep-fonts', fonts.perspective.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>')) : note.blocked}</div>
-				<div>transform:<span class="sub-hash">${hashMini(fonts.transform)}</span></div>
-				<div>perspective:<span class="sub-hash">${hashMini(fonts.perspective)}</span></div>
-				<div>pixel:<span class="sub-hash">${hashMini(fonts.pixel)}</span></div>
-				<div>size:<span class="sub-hash">${hashMini(fonts.size)}</span></div>
-				<div>scroll:<span class="sub-hash">${hashMini(fonts.scroll)}</span></div>
-				<div>offset:<span class="sub-hash">${hashMini(fonts.offset)}</span></div>
-				<div>client:<span class="sub-hash">${hashMini(fonts.client)}</span></div>
+				<div>results (${fonts ? count(fonts) : '0'}): ${fonts.length ? modal('creep-fonts', fonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>')) : note.blocked}</div>
 			</div>
 			`
 		})()}

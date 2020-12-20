@@ -84,7 +84,7 @@ const getHyperNestedIframes = (numberOfNests, context = window) => {
 		const iframeWindow = win[numberOfIframes]
 		if (total == numberOfNests) {
 			parent = div
-			parent.setAttribute('style', ghost())
+			parent.setAttribute('style', 'display:none')
 		}
 		numberOfNests--
 		if (!numberOfNests) {
@@ -749,6 +749,9 @@ searchLies(SVGTextContentElement, {
 	constructor: !0
 })
 searchLies(CanvasRenderingContext2D, {
+	constructor: !0
+})
+searchLies(caniuse(() => OffscreenCanvasRenderingContext2D), {
 	constructor: !0
 })
 searchLies(caniuse(() => WebGLRenderingContext), {
