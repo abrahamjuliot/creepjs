@@ -204,14 +204,14 @@ const getSVGDimensions = svgText => {
 	const subString = svgText.getSubStringLength(1, 2)
 	const textLen = svgText.getComputedTextLength()
 	const dimensions = {
-		width: Math.round(width),
-		height: Math.round(height),
-		y: Math.round(y),
-		charWidth: Math.round(charWidth),
-		charHeight: Math.round(charHeight),
-		charY: Math.round(charY),
-		subString: Math.round(subString),
-		textLen: Math.round(textLen)
+		width: Math.round(width), // SVGRect
+		height: Math.round(height), // SVGRect
+		y: Math.round(y), // SVGRect
+		charWidth: Math.round(charWidth), // DOMRect
+		charHeight: Math.round(charHeight), // DOMRect
+		charY: Math.round(charY), // DOMRect
+		subString: Math.round(subString), // Float
+		textLen: Math.round(textLen) // Float
 	}
 	return dimensions
 }
@@ -685,6 +685,28 @@ const getLengthFonts = ({baseFonts, families}) => {
     })
 }
 
+const getFontFaceSetFonts = list => {
+    return new Promise(async resolve => {
+        try {
+            const start = performance.now()
+            // real world usage should use iframe document instead of window document
+            await document.fonts.ready
+            //console.log([...document.fonts.values()].map(fontFace => fontFace.family)) // show fonts loaded on the page
+            document.fonts.clear() // clear loaded fonts
+            const fonts = list.filter(font => document.fonts.check(`12px '${font}'`))
+            return resolve({
+                fonts,
+                perf: performance.now() - start
+            })
+        } catch (error) {
+            console.error(error)
+            return resolve({
+				fonts: [],
+				perf: 0
+			})
+        }
+    })
+}
 
 const context = document.createElement('canvas').getContext('2d')
 const contextOffscreen = ('OffscreenCanvas' in window) ? new OffscreenCanvas(500, 200).getContext('2d') : undefined
@@ -694,14 +716,16 @@ const [
 	svgFonts,
 	rectFonts,
 	pixelFonts,
-	lengthFonts
+	lengthFonts,
+	fontFaceSetFonts
 ] = await Promise.all([
 	getTextMetricsFonts({context, baseFonts, families}),
 	getTextMetricsFonts({context: contextOffscreen, baseFonts, families}),
 	getSVGFonts({baseFonts, families}),
 	getRectFonts({baseFonts, families}),
 	getPixelFonts({baseFonts, families}),
-	getLengthFonts({baseFonts, families})
+	getLengthFonts({baseFonts, families}),
+	getFontFaceSetFonts(list)
 ]).catch(error => console.error(error))
 
 const fingerprint = await hashify({
@@ -709,7 +733,8 @@ const fingerprint = await hashify({
 	svgFonts: {...svgFonts, perf: undefined },
 	rectFonts: !rectFonts.lied ? {...rectFonts, perf: undefined } : undefined,
 	pixelFonts: !pixelFonts.lied ? {...pixelFonts, perf: undefined } : undefined,
-	lengthFonts: !lengthFonts.lied ? {...lengthFonts, perf: undefined } : undefined
+	lengthFonts: !lengthFonts.lied ? {...lengthFonts, perf: undefined } : undefined,
+	fontFaceSetFonts: {...fontFaceSetFonts, perf: undefined },
 })
 
 console.log('TextMetrics:\n', textMetricsFonts)
@@ -718,6 +743,7 @@ console.log('SVGRect:\n', svgFonts)
 console.log('DOMRect:\n', rectFonts)
 console.log('Pixels:\n', pixelFonts)
 console.log('Lengths:\n', lengthFonts)
+console.log('FontFaceSet:\n', fontFaceSetFonts)
 
 div.parentNode.removeChild(div) // remove font-fingerprint element
 const listLen = list.length
@@ -1014,6 +1040,19 @@ patch(el, html`
 						note.blocked
 					}
 					<span class="aside-note">${''+lengthFonts.fonts.scroll.length}/${listLen}</span>
+				</div>
+			</div>
+		</div>
+		<div class="flex-grid">
+			<div class="col-six relative${fontFaceSetFonts.lied ? ' lies': ''}">
+				<span class="aside-note">${fontFaceSetFonts.perf.toFixed(2)}ms</span>
+				<strong>FontFaceSet</strong>
+				<div class="relative">check: ${
+						!!fontFaceSetFonts.fonts.length ? 
+						hashMini(fontFaceSetFonts.fonts) :
+						note.blocked
+					}
+					<span class="aside-note">${''+fontFaceSetFonts.fonts.length}/${listLen}</span>
 				</div>
 			</div>
 		</div>
