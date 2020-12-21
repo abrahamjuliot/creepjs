@@ -431,6 +431,12 @@ const getWorkerGlobalScope = async () => {
 const getDedicatedWorker = () => {
 	return new Promise(resolve => {
 		try {
+			if (!Worker) {
+				return resolve({})
+			}
+			else if (Worker.prototype.constructor.name != 'Worker') {
+				throw new Error('Worker tampered with by client')
+			}
 			const dedicatedWorker = new Worker(document.currentScript.src)
 			dedicatedWorker.onmessage = message => {
 				dedicatedWorker.terminate()
@@ -456,6 +462,12 @@ const getSharedWorkerGlobalScope = () => {
 const getSharedWorker = () => {
 	return new Promise(resolve => {
 		try {
+			if (!SharedWorker) {
+				return resolve()
+			}
+			else if (SharedWorker.prototype.constructor.name != 'SharedWorker') {
+				throw new Error('SharedWorker tampered with by client')
+			}
 			const sharedWorker = new SharedWorker(document.currentScript.src)
 			sharedWorker.port.start()
 			sharedWorker.port.addEventListener('message', message => {
@@ -484,6 +496,12 @@ const getServiceWorkerGlobalScope = () => {
 const getServiceWorker = () => {
 	return new Promise(async resolve => {
 		try {
+			if (!('serviceWorker' in navigator)) {
+				return resolve({})
+			}
+			else if (navigator.serviceWorker.__proto__.constructor.name != 'ServiceWorkerContainer') {
+				throw new Error('ServiceWorkerContainer tampered with by client')
+			}
 			navigator.serviceWorker.register(document.currentScript.src, {
 				scope: '../tests/'
 			}).catch(error => {

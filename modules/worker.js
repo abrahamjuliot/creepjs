@@ -1,8 +1,15 @@
+import { captureError, attempt, caniuse } from './captureErrors.js'
 const source = 'creepworker.js'
 
 const getDedicatedWorker = contentWindow => {
 	return new Promise(resolve => {
 		try {
+			if (!Worker) {
+				return resolve()
+			}
+			else if (Worker.prototype.constructor.name != 'Worker') {
+				throw new Error('Worker tampered with by client')
+			}
 			const worker = (
 				contentWindow ? contentWindow.Worker : Worker
 			)
@@ -13,6 +20,8 @@ const getDedicatedWorker = contentWindow => {
 			}
 		}
 		catch(error) {
+			console.error(error)
+			captureError(error)
 			return resolve()
 		}
 	})
@@ -21,6 +30,12 @@ const getDedicatedWorker = contentWindow => {
 const getSharedWorker = contentWindow => {
 	return new Promise(resolve => {
 		try {
+			if (!SharedWorker) {
+				return resolve()
+			}
+			else if (SharedWorker.prototype.constructor.name != 'SharedWorker') {
+				throw new Error('SharedWorker tampered with by client')
+			}
 			const worker = (
 				contentWindow ? contentWindow.SharedWorker : SharedWorker
 			)
@@ -33,6 +48,7 @@ const getSharedWorker = contentWindow => {
 		}
 		catch(error) {
 			console.error(error)
+			captureError(error)
 			return resolve()
 		}
 	})
@@ -41,6 +57,12 @@ const getSharedWorker = contentWindow => {
 const getServiceWorker = () => {
 	return new Promise(async resolve => {
 		try {
+			if (!('serviceWorker' in navigator)) {
+				return resolve()
+			}
+			else if (navigator.serviceWorker.__proto__.constructor.name != 'ServiceWorkerContainer') {
+				throw new Error('ServiceWorkerContainer tampered with by client')
+			}
 			navigator.serviceWorker.register(source).catch(error => {
 				console.error(error)
 				return resolve()
@@ -60,6 +82,7 @@ const getServiceWorker = () => {
 		}
 		catch(error) {
 			console.error(error)
+			captureError(error)
 			return resolve()
 		}
 	})
