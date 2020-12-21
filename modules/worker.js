@@ -87,12 +87,12 @@ export const getBestWorkerScope = imports => {
 				workerScope = await getSharedWorker(contentWindow)
 				.catch(error => console.error(error.message))
 			}
-			if (!caniuse(() => workerScope.userAgent))) {
+			if (!caniuse(() => workerScope.userAgent)) {
 				type = 'dedicated' // simulators & extensions can spoof userAgent
 				workerScope = await getDedicatedWorker(contentWindow)
 				.catch(error => console.error(error.message))
 			}
-			if (caniuse(() => workerScope.userAgent))) {
+			if (caniuse(() => workerScope.userAgent)) {
 				const { canvas2d, timezoneHistoryLocation } = workerScope || {}
 				workerScope.system = getOS(workerScope.userAgent)
 				workerScope.device = getUserAgentPlatform({ userAgent: workerScope.userAgent })
