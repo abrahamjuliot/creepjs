@@ -83,17 +83,16 @@ export const getBestWorkerScope = imports => {
 			let workerScope = await getServiceWorker()
 				.catch(error => console.error(error.message))
 			if (!caniuse(() => workerScope.userAgent)) {
-				console.log('trying..')
 				type = 'shared' // no support in Safari, iOS, and Chrome Android
 				workerScope = await getSharedWorker(contentWindow)
 				.catch(error => console.error(error.message))
 			}
-			if (!caniuse(() => workerScope.userAgent)) {
+			if (!caniuse(() => workerScope.userAgent))) {
 				type = 'dedicated' // simulators & extensions can spoof userAgent
 				workerScope = await getDedicatedWorker(contentWindow)
 				.catch(error => console.error(error.message))
 			}
-			if (!caniuse(() => workerScope.userAgent)) {
+			if (caniuse(() => workerScope.userAgent))) {
 				const { canvas2d, timezoneHistoryLocation } = workerScope || {}
 				workerScope.system = getOS(workerScope.userAgent)
 				workerScope.device = getUserAgentPlatform({ userAgent: workerScope.userAgent })
