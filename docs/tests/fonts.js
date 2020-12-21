@@ -690,6 +690,10 @@ const getFontFaceSetFonts = list => {
         try {
             const start = performance.now()
             // real world usage should use iframe document instead of window document
+			const gibberish = '&WY2tR*^ftCiMX9LD5m%iZSWCVSg'
+			if (document.fonts.check(`12px '${gibberish}'`)) {
+				throw new Error('FontFaceSet.check blocked or not supported')
+			}
             await document.fonts.ready
             //console.log([...document.fonts.values()].map(fontFace => fontFace.family)) // show fonts loaded on the page
             document.fonts.clear() // clear loaded or added fonts
