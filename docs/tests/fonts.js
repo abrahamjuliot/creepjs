@@ -692,7 +692,7 @@ const getFontFaceSetFonts = list => {
             // real world usage should use iframe document instead of window document
             await document.fonts.ready
             //console.log([...document.fonts.values()].map(fontFace => fontFace.family)) // show fonts loaded on the page
-            //document.fonts.clear() // clear loaded fonts (not required)
+            document.fonts.clear() // clear loaded or added fonts
             const fonts = list.filter(font => document.fonts.check(`12px '${font}'`))
             return resolve({
                 fonts,
