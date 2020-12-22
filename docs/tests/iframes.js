@@ -202,19 +202,44 @@ const getHyperNestedIframe = ({ numberOfNests, kill = false, context = window })
 	}
 }
 
+const wait = ms => {
+    const start = new Date().getTime()
+    let end = start
+    while (end < start + ms) {
+        end = new Date().getTime()
+    }
+    return
+}
+const getRejectedIframe = () => {
+    try {
+        const iframe = document.createElement('iframe')
+        iframe.setAttribute('style', 'display:none')
+        iframe.src = `about:${getRandomValues()}`
+        wait(10) // let the src error
+        document.body.append(iframe)
+		const data = getData(iframe.contentWindow)
+		iframe.parentNode.removeChild(iframe)
+        return data
+    } catch (error) {
+        console.error(error)
+        return
+    }
+}
 
 const windowFrame = getData(window)
 const iframeContentWindow = getIframeContentWindow()
 const iframeWindow = createIframeWindow()
 const hyperNestedIframe = getHyperNestedIframe({ numberOfNests: 20 })
 const deadNestedIframe = getHyperNestedIframe({ numberOfNests: 3, kill: true})
+const rejectedIframe = getRejectedIframe()
 
 console.table({
 	windowFrame,
 	iframeContentWindow,
 	iframeWindow,
 	hyperNestedIframe,
-	deadNestedIframe
+	deadNestedIframe,
+	rejectedIframe
 })
 
 })()
