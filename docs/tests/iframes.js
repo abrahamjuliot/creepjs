@@ -99,6 +99,15 @@ const getRandomValues = () => {
 	return id
 }
 
+const wait = ms => {
+    const start = new Date().getTime()
+    let end = start
+    while (end < start + ms) {
+        end = new Date().getTime()
+    }
+    return
+}
+
 const getData = frameWindow => {
 	if (!frameWindow) {
 		return
@@ -135,6 +144,7 @@ const getIframeContentWindow = () => {
 		return
 	}
 }
+
 
 const createIframeWindow = () => {
 	try {
@@ -201,14 +211,6 @@ const getHyperNestedIframe = ({ numberOfNests, kill = false, context = window })
 	}
 }
 
-const wait = ms => {
-    const start = new Date().getTime()
-    let end = start
-    while (end < start + ms) {
-        end = new Date().getTime()
-    }
-    return
-}
 const getRejectedIframe = () => {
     try {
         const iframe = document.createElement('iframe')
