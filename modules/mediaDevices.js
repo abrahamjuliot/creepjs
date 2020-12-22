@@ -5,23 +5,23 @@ export const getMediaDevices = imports => {
 		require: {
 			hashify,
 			captureError,
-			contentWindow,
+			phantomDarkness,
 			logTestResult
 		}
 	} = imports
 
 	return new Promise(async resolve => {
 		try {
-			const contentWindowNavigator = contentWindow ? contentWindow.navigator : navigator
-			if (!('mediaDevices' in contentWindowNavigator)) {
+			const phantomNavigator = phantomDarkness ? phantomDarkness.navigator : navigator
+			if (!('mediaDevices' in phantomNavigator)) {
 				logTestResult({ test: 'media devices', passed: false })
 				return resolve()
 			}
-			if (!contentWindowNavigator.mediaDevices || !contentWindowNavigator.mediaDevices.enumerateDevices) {
+			if (!phantomNavigator.mediaDevices || !phantomNavigator.mediaDevices.enumerateDevices) {
 				logTestResult({ test: 'media devices', passed: false })
 				return resolve()
 			}
-			const mediaDevicesEnumerated = await contentWindowNavigator.mediaDevices.enumerateDevices()
+			const mediaDevicesEnumerated = await phantomNavigator.mediaDevices.enumerateDevices()
 			const mediaDevices = (
 				mediaDevicesEnumerated ? mediaDevicesEnumerated
 					.map(({ kind }) => ({ kind })).sort((a, b) => (a.kind > b.kind) ? 1 : -1) :

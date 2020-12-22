@@ -6,7 +6,7 @@ export const getWebRTCData = (imports, cloudflare) => {
 			hashify,
 			captureError,
 			caniuse,
-			contentWindow,
+			phantomDarkness,
 			logTestResult
 		}
 	} = imports
@@ -14,12 +14,12 @@ export const getWebRTCData = (imports, cloudflare) => {
 	return new Promise(resolve => {
 		try {
 			let rtcPeerConnection
-			if (contentWindow && !isFirefox) { // FF throws an error in iframes
+			if (phantomDarkness && !isFirefox) { // FF throws an error in iframes
 				rtcPeerConnection = (
-					contentWindow.RTCPeerConnection ||
-					contentWindow.webkitRTCPeerConnection ||
-					contentWindow.mozRTCPeerConnection ||
-					contentWindow.msRTCPeerConnection
+					phantomDarkness.RTCPeerConnection ||
+					phantomDarkness.webkitRTCPeerConnection ||
+					phantomDarkness.mozRTCPeerConnection ||
+					phantomDarkness.msRTCPeerConnection
 				)
 			}
 			else {

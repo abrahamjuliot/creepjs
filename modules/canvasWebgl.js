@@ -10,8 +10,8 @@ export const getCanvasWebgl = imports => {
 			sendToTrash,
 			proxyBehavior,
 			lieProps,
-			contentWindow,
-			hyperNestedIframeWindow,
+			phantomDarkness,
+			dragonFire,
 			logTestResult
 		}
 	} = imports
@@ -31,13 +31,13 @@ export const getCanvasWebgl = imports => {
 				lieProps['WebGLRenderingContext.getSupportedExtensions'] ||
 				lieProps['WebGL2RenderingContext.getSupportedExtensions']
 			) || false
-			if (hyperNestedIframeWindow &&
-				hyperNestedIframeWindow.document.createElement('canvas').toDataURL() != document.createElement('canvas').toDataURL()) {
+			if (phantomDarkness &&
+				phantomDarkness.document.createElement('canvas').toDataURL() != document.createElement('canvas').toDataURL()) {
 				lied = true
 			}
 			// create canvas context
 			const doc = (
-				contentWindow ? contentWindow.document : 
+				phantomDarkness ? phantomDarkness.document : 
 				document
 			)
 			const canvas = doc.createElement('canvas')

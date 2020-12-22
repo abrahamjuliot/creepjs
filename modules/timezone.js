@@ -8,7 +8,7 @@ export const getTimezone = imports => {
 			caniuse,
 			documentLie,
 			lieProps,
-			contentWindow,
+			phantomDarkness,
 			logTestResult
 		}
 	} = imports
@@ -16,50 +16,50 @@ export const getTimezone = imports => {
 	return new Promise(async resolve => {
 		try {
 			let lied
-			const contentWindowDate = contentWindow ? contentWindow.Date : Date
-			const contentWindowIntl = contentWindow ? contentWindow.Intl : Date
+			const phantomDate = phantomDarkness ? phantomDarkness.Date : Date
+			const phantomIntl = phantomDarkness ? phantomDarkness.Intl : Date
 			const computeTimezoneOffset = () => {
-				const date = new contentWindowDate().getDate()
-				const month = new contentWindowDate().getMonth()
-				const year = contentWindowDate().split` `[3] // current year
+				const date = new phantomDate().getDate()
+				const month = new phantomDate().getMonth()
+				const year = phantomDate().split` `[3] // current year
 				const format = n => (''+n).length == 1 ? `0${n}` : n
 				const dateString = `${month+1}/${format(date)}/${year}`
 				const dateStringUTC = `${year}-${format(month+1)}-${format(date)}`
-				const utc = contentWindowDate.parse(
-					new contentWindowDate(dateString)
+				const utc = phantomDate.parse(
+					new phantomDate(dateString)
 				)
-				const now = +new contentWindowDate(dateStringUTC)
+				const now = +new phantomDate(dateStringUTC)
 				return +(((utc - now)/60000).toFixed(0))
 			}
 			// concept inspired by https://arkenfox.github.io/TZP
 			const measureTimezoneOffset = timezone => {
 				let lie = false
-				const year = contentWindowDate().split` `[3] // current year
+				const year = phantomDate().split` `[3] // current year
 				const minute = 60000
-				const winter = new contentWindowDate(`1/1/${year}`)
-				const spring = new contentWindowDate(`4/1/${year}`)
-				const summer = new contentWindowDate(`7/1/${year}`)
-				const fall = new contentWindowDate(`10/1/${year}`)
-				const winterUTCTime = +new contentWindowDate(`${year}-01-01`)
-				const springUTCTime = +new contentWindowDate(`${year}-04-01`)
-				const summerUTCTime = +new contentWindowDate(`${year}-07-01`)
-				const fallUTCTime = +new contentWindowDate(`${year}-10-01`)
+				const winter = new phantomDate(`1/1/${year}`)
+				const spring = new phantomDate(`4/1/${year}`)
+				const summer = new phantomDate(`7/1/${year}`)
+				const fall = new phantomDate(`10/1/${year}`)
+				const winterUTCTime = +new phantomDate(`${year}-01-01`)
+				const springUTCTime = +new phantomDate(`${year}-04-01`)
+				const summerUTCTime = +new phantomDate(`${year}-07-01`)
+				const fallUTCTime = +new phantomDate(`${year}-10-01`)
 				const date = {
 					winter: {
 						calculated: (+winter - winterUTCTime)/minute,
-						parsed: (contentWindowDate.parse(winter) - winterUTCTime)/minute
+						parsed: (phantomDate.parse(winter) - winterUTCTime)/minute
 					},
 					spring: {
 						calculated: (+spring - springUTCTime)/minute,
-						parsed: (contentWindowDate.parse(spring) - springUTCTime)/minute
+						parsed: (phantomDate.parse(spring) - springUTCTime)/minute
 					},
 					summer: {
 						calculated: (+summer - summerUTCTime)/minute,
-						parsed: (contentWindowDate.parse(summer) - summerUTCTime)/minute
+						parsed: (phantomDate.parse(summer) - summerUTCTime)/minute
 					},
 					fall: {
 						calculated: (+fall - fallUTCTime)/minute,
-						parsed: (contentWindowDate.parse(fall) - fallUTCTime)/minute
+						parsed: (phantomDate.parse(fall) - fallUTCTime)/minute
 					}
 				}
 				lie = !!Object.keys(date).filter(key => {
@@ -82,14 +82,14 @@ export const getTimezone = imports => {
 			}
 			const getTimezoneOffsetSeasons = year => {
 				const minute = 60000
-				const winter = new contentWindowDate(`1/1/${year}`)
-				const spring = new contentWindowDate(`4/1/${year}`)
-				const summer = new contentWindowDate(`7/1/${year}`)
-				const fall = new contentWindowDate(`10/1/${year}`)
-				const winterUTCTime = +new contentWindowDate(`${year}-01-01`)
-				const springUTCTime = +new contentWindowDate(`${year}-04-01`)
-				const summerUTCTime = +new contentWindowDate(`${year}-07-01`)
-				const fallUTCTime = +new contentWindowDate(`${year}-10-01`)
+				const winter = new phantomDate(`1/1/${year}`)
+				const spring = new phantomDate(`4/1/${year}`)
+				const summer = new phantomDate(`7/1/${year}`)
+				const fall = new phantomDate(`10/1/${year}`)
+				const winterUTCTime = +new phantomDate(`${year}-01-01`)
+				const springUTCTime = +new phantomDate(`${year}-04-01`)
+				const summerUTCTime = +new phantomDate(`${year}-07-01`)
+				const fallUTCTime = +new phantomDate(`${year}-10-01`)
 				const seasons = [
 					(+winter - winterUTCTime) / minute,
 					(+spring - springUTCTime) / minute,
@@ -99,11 +99,11 @@ export const getTimezone = imports => {
 				return seasons
 			}
 			const getRelativeTime = () => {
-				const locale = attempt(() => contentWindowIntl.DateTimeFormat().resolvedOptions().locale)
-				if (!locale || !caniuse(() => new contentWindowIntl.RelativeTimeFormat)) {
+				const locale = attempt(() => phantomIntl.DateTimeFormat().resolvedOptions().locale)
+				if (!locale || !caniuse(() => new phantomIntl.RelativeTimeFormat)) {
 					return undefined
 				}
-				const relativeTime = new contentWindowIntl.RelativeTimeFormat(locale, {
+				const relativeTime = new phantomIntl.RelativeTimeFormat(locale, {
 					localeMatcher: 'best fit',
 					numeric: 'auto',
 					style: 'long'
@@ -148,7 +148,7 @@ export const getTimezone = imports => {
 				const languages = []
 				constructors.forEach(name => {
 					try {
-						const obj = caniuse(() => new contentWindowIntl[name])
+						const obj = caniuse(() => new phantomIntl[name])
 						if (!obj) {
 							return
 						}
@@ -227,14 +227,14 @@ export const getTimezone = imports => {
 				return undefined
 			}
 			const writingSystemKeys = await getWritingSystemKeys()		
-			const timezoneOffset = new contentWindowDate().getTimezoneOffset()
+			const timezoneOffset = new phantomDate().getTimezoneOffset()
 			const timezoneOffsetComputed = computeTimezoneOffset()
 			const timezoneOffsetMeasured = measureTimezoneOffset(timezoneOffset)
 			const measuredTimezones = timezoneOffsetMeasured.season.join(', ')
 			const matchingOffsets = timezoneOffsetComputed == timezoneOffset
 			const notWithinParentheses = /.*\(|\).*/g
-			const timezoneLocation = contentWindowIntl.DateTimeFormat().resolvedOptions().timeZone
-			const timezone = (''+new contentWindowDate()).replace(notWithinParentheses, '')
+			const timezoneLocation = phantomIntl.DateTimeFormat().resolvedOptions().timeZone
+			const timezone = (''+new phantomDate()).replace(notWithinParentheses, '')
 			const relativeTime = getRelativeTime()
 			const locale = getLocale()
 			const timezoneOffsetHistory = { }

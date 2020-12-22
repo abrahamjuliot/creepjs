@@ -1,17 +1,19 @@
 import { captureError, attempt, caniuse } from './captureErrors.js'
 const source = 'creepworker.js'
 
-const getDedicatedWorker = contentWindow => {
+const getDedicatedWorker = phantomDarkness => {
 	return new Promise(resolve => {
 		try {
-			if (!Worker) {
+			if (phantomDarkness && !phantomDarkness.Worker) {
 				return resolve()
 			}
-			else if (Worker.prototype.constructor.name != 'Worker') {
+			else if (
+				phantomDarkness && phantomDarkness.Worker.prototype.constructor.name != 'Worker'
+			) {
 				throw new Error('Worker tampered with by client')
 			}
 			const worker = (
-				contentWindow ? contentWindow.Worker : Worker
+				phantomDarkness ? phantomDarkness.Worker : Worker
 			)
 			const dedicatedWorker = new worker(source)
 			dedicatedWorker.onmessage = message => {
@@ -27,17 +29,20 @@ const getDedicatedWorker = contentWindow => {
 	})
 }
 
-const getSharedWorker = contentWindow => {
+const getSharedWorker = phantomDarkness => {
 	return new Promise(resolve => {
 		try {
-			if (!SharedWorker) {
+			if (phantomDarkness && !phantomDarkness.SharedWorker) {
 				return resolve()
 			}
-			else if (SharedWorker.prototype.constructor.name != 'SharedWorker') {
+			else if (
+				phantomDarkness && phantomDarkness.SharedWorker.prototype.constructor.name != 'SharedWorker'
+			) {
 				throw new Error('SharedWorker tampered with by client')
 			}
+
 			const worker = (
-				contentWindow ? contentWindow.SharedWorker : SharedWorker
+				phantomDarkness ? phantomDarkness.SharedWorker : SharedWorker
 			)
 			const sharedWorker = new worker(source)
 			sharedWorker.port.start()
@@ -63,6 +68,7 @@ const getServiceWorker = () => {
 			else if (navigator.serviceWorker.__proto__.constructor.name != 'ServiceWorkerContainer') {
 				throw new Error('ServiceWorkerContainer tampered with by client')
 			}
+
 			navigator.serviceWorker.register(source).catch(error => {
 				console.error(error)
 				return resolve()
@@ -95,7 +101,7 @@ export const getBestWorkerScope = imports => {
 			hashify,
 			captureError,
 			caniuse,
-			contentWindow,
+			phantomDarkness,
 			getUserAgentPlatform,
 			logTestResult
 		}
@@ -107,12 +113,12 @@ export const getBestWorkerScope = imports => {
 				.catch(error => console.error(error.message))
 			if (!caniuse(() => workerScope.userAgent)) {
 				type = 'shared' // no support in Safari, iOS, and Chrome Android
-				workerScope = await getSharedWorker(contentWindow)
+				workerScope = await getSharedWorker(phantomDarkness)
 				.catch(error => console.error(error.message))
 			}
 			if (!caniuse(() => workerScope.userAgent)) {
 				type = 'dedicated' // simulators & extensions can spoof userAgent
-				workerScope = await getDedicatedWorker(contentWindow)
+				workerScope = await getDedicatedWorker(phantomDarkness)
 				.catch(error => console.error(error.message))
 			}
 			if (caniuse(() => workerScope.userAgent)) {

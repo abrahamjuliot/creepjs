@@ -4,14 +4,14 @@ export const getIframeContentWindowVersion = imports => {
 		require: {
 			hashify,
 			captureError,
-			contentWindow,
+			phantomDarkness,
 			logTestResult
 		}
 	} = imports
 
 	return new Promise(async resolve => {
 		try {
-			const keys = Object.getOwnPropertyNames(contentWindow)
+			const keys = Object.getOwnPropertyNames(phantomDarkness)
 			const moz = keys.filter(key => (/moz/i).test(key)).length
 			const webkit = keys.filter(key => (/webkit/i).test(key)).length
 			const apple = keys.filter(key => (/apple/i).test(key)).length

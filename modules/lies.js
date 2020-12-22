@@ -25,78 +25,66 @@ const ghost = () => `
 	left:-10000px;
 	visibility: hidden;
 `
-const getNestedWindowFrameContext = imports => {
+const getRandomValues = () => {
+	const id = [...crypto.getRandomValues(new Uint32Array(10))]
+		.map(n => n.toString(36)).join('')
+	return id
+}
 
-	const {
-		require: {
-			instanceId,
-			captureError
-		}
-	} = imports
-
+const getPhantomIframe = () => {
 	try {
-		const createIframe = context => {
-			const numberOfIframes = context.length
-			const div = document.createElement('div')
-			div.setAttribute('style', 'display:none')
-			document.body.appendChild(div)
-
-			const id = [...crypto.getRandomValues(new Uint32Array(10))]
-				.map(n => n.toString(36)).join('')
-
-			patch(div, html`<div style="${ghost()}" id="${id}"><iframe></iframe></div>`)
-			const el = document.getElementById(id)
-
-			return {
-				el,
-				contentWindow: context[numberOfIframes],
-				remove: () => el.parentNode.removeChild(el)
-			}
-		}
-
-		const parentNest = createIframe(window)
-		const { contentWindow } = parentNest
-		return { contentWindow, parentNest }
+		const numberOfIframes = window.length
+		const frag = new DocumentFragment()
+		const div = document.createElement('div')
+		const id = getRandomValues()
+		div.setAttribute('id', id)
+		frag.appendChild(div)
+		div.innerHTML = `<div style="${ghost()}"><iframe></iframe></div>`
+		document.body.appendChild(frag)
+		const iframeWindow = window[numberOfIframes]
+		return { iframeWindow, div }
 	}
 	catch (error) {
-		captureError(error, 'client blocked nested iframe')
-		return { contentWindow: window, parentNest: undefined }
+		captureError(error, 'client blocked phantom iframe')
+		return { iframeWindow: window, div: undefined }
 	}
 }
+const { iframeWindow: phantomDarkness, div: parentPhantom } = getPhantomIframe()
 
-const { contentWindow, parentNest  } = getNestedWindowFrameContext({
-	require: { isChrome, isFirefox, instanceId, captureError }
-})
-
-const getHyperNestedIframes = (numberOfNests, context = window) => {
-	let parent, total = numberOfNests
-	return (function getIframeWindow(win, {
-		previous = context
-	} = {}) {
-		if (!win) {
-			console.log(`\nnested iframe is valid up to nest ${total - numberOfNests}`)
-			return previous
-		}
-		const numberOfIframes = win.length
-		const div = win.document.createElement('div')
-		win.document.body.appendChild(div)
-		div.innerHTML = '<iframe></iframe>'
-		const iframeWindow = win[numberOfIframes]
-		if (total == numberOfNests) {
-			parent = div
-			parent.setAttribute('style', 'display:none')
-		}
-		numberOfNests--
-		if (!numberOfNests) {
-			parent.parentNode.removeChild(parent)
-			return iframeWindow
-		}
-		return getIframeWindow(iframeWindow, {
-			previous: win
-		})
-	})(context)
+const getDragonIframe = (numberOfNests, context = window) => {
+	try {
+		let parent, total = numberOfNests
+		return (function getIframeWindow(win, {
+			previous = context
+		} = {}) {
+			if (!win) {
+				console.log(`\ndragon fire is valid up to ${total - numberOfNests} fiery flames`)
+				return { iframeWindow: previous, parent }
+			}
+			const numberOfIframes = win.length
+			const div = win.document.createElement('div')
+			win.document.body.appendChild(div)
+			div.innerHTML = '<iframe></iframe>'
+			const iframeWindow = win[numberOfIframes]
+			if (total == numberOfNests) {
+				parent = div
+				parent.setAttribute('style', 'display:none')
+			}
+			numberOfNests--
+			if (!numberOfNests) {
+				return { iframeWindow, parent }
+			}
+			return getIframeWindow(iframeWindow, {
+				previous: win
+			})
+		})(context)
+	}
+	catch (error) {
+		captureError(error, 'client blocked dragon iframe')
+		return { iframeWindow: window, parent: undefined }
+	}
 }
-const hyperNestedIframeWindow = getHyperNestedIframes(20)
+const { iframeWindow: dragonFire, parent: parentDragon } = getDragonIframe(20)
 
 // detect and fingerprint Function API lies
 const native = (result, str, willHaveBlanks = false) => {
@@ -242,11 +230,11 @@ const testName = (apiFunction, name) => {
 	return false
 }
 
-const testToString = (apiFunction, fnToStr, contentWindow) => {
+const testToString = (apiFunction, fnToStr, phantomDarkness) => {
 	const { toString: apiToString } = apiFunction
 	if (apiToString+'' !== fnToStr || apiToString.toString+'' !== fnToStr) {
 		return {
-			[`Expected toString to match ${contentWindow ? 'contentWindow.' : ''}Function.toString`]: true
+			[`Expected toString to match ${phantomDarkness ? 'iframe.' : ''}Function.toString`]: true
 		}
 	}
 	return false
@@ -434,8 +422,8 @@ const testValue = (obj, name) => {
 const hasLiedAPI = (api, name, obj) => {
 	
 	const fnToStr = (
-		contentWindow ? 
-		contentWindow.Function.prototype.toString.call(Function.prototype.toString) : // aggressive test
+		phantomDarkness ? 
+		phantomDarkness.Function.prototype.toString.call(Function.prototype.toString) : // aggressive test
 		Function.prototype.toString+''
 	)
 
@@ -463,7 +451,7 @@ const hasLiedAPI = (api, name, obj) => {
 					testNew(apiFunction),
 					testClassExtends(apiFunction),
 					testName(apiFunction, name),
-					testToString(apiFunction, fnToStr, contentWindow),
+					testToString(apiFunction, fnToStr, phantomDarkness),
 					testOwnProperty(apiFunction),
 					testOwnPropertyDescriptor(apiFunction),
 					testDescriptorKeys(apiFunction),
@@ -478,8 +466,8 @@ const hasLiedAPI = (api, name, obj) => {
 
 			// collect string conversion result
 			const result = (
-				contentWindow ? 
-				contentWindow.Function.prototype.toString.call(apiFunction) :
+				phantomDarkness ? 
+				phantomDarkness.Function.prototype.toString.call(apiFunction) :
 				'' + apiFunction
 			)
 			
@@ -514,7 +502,7 @@ const hasLiedAPI = (api, name, obj) => {
 					testNew(apiFunction),
 					testClassExtends(apiFunction),
 					testName(apiFunction, name),
-					testToString(apiFunction, fnToStr, contentWindow),
+					testToString(apiFunction, fnToStr, phantomDarkness),
 					testOwnProperty(apiFunction),
 					testOwnPropertyDescriptor(apiFunction),
 					testDescriptorKeys(apiFunction),
@@ -528,8 +516,8 @@ const hasLiedAPI = (api, name, obj) => {
 			const lies = [...testResults]
 			// collect string conversion result
 			const result = (
-				contentWindow ? 
-				contentWindow.Function.prototype.toString.call(apiFunction) :
+				phantomDarkness ? 
+				phantomDarkness.Function.prototype.toString.call(apiFunction) :
 				'' + apiFunction
 			)
 
@@ -537,13 +525,13 @@ const hasLiedAPI = (api, name, obj) => {
 			if (obj) {
 				objlookupGetter = obj.__lookupGetter__(name)
 				apiProtoLookupGetter = api.__lookupGetter__(name)
-				const contentWindowResult = (
+				const iframeResult = (
 					typeof objlookupGetter != 'function' ? undefined : 
-					attempt(() => contentWindow.Function.prototype.toString.call(objlookupGetter))
+					attempt(() => phantomDarkness.Function.prototype.toString.call(objlookupGetter))
 				)
 				result2 = (
-					contentWindowResult ? 
-					contentWindowResult :
+					iframeResult ? 
+					iframeResult :
 					'' + objlookupGetter
 				)
 				result3 = '' + apiProtoLookupGetter
@@ -909,4 +897,4 @@ const getLies = imports => {
 	})
 }
 
-export { documentLie, contentWindow, parentNest, lieProps, lieRecords, getLies, hyperNestedIframeWindow, getPluginLies }
+export { documentLie, phantomDarkness, parentPhantom, lieProps, lieRecords, getLies, dragonFire, parentDragon, getPluginLies }

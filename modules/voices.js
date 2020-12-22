@@ -4,14 +4,14 @@ export const getVoices = imports => {
 		require: {
 			hashify,
 			captureError,
-			contentWindow,
+			phantomDarkness,
 			logTestResult
 		}
 	} = imports
 		
 	return new Promise(async resolve => {
 		try {
-			const win = contentWindow ? contentWindow : window
+			const win = phantomDarkness ? phantomDarkness : window
 			let voices = []
 			const respond = async (resolve, voices) => {
 				voices = voices.map(({ name, lang }) => ({ name, lang }))

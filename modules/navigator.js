@@ -14,8 +14,8 @@ export const getNavigator = (imports, workerScope) => {
 			trustInteger,
 			documentLie,
 			lieProps,
-			contentWindow,
-			hyperNestedIframeWindow,
+			phantomDarkness,
+			dragonFire,
 			getUserAgentPlatform,
 			logTestResult,
 			getPluginLies
@@ -38,7 +38,7 @@ export const getNavigator = (imports, workerScope) => {
 				lieProps['Navigator.plugins'] ||
 				lieProps['Navigator.mimeTypes']
 			) || false
-			const contentWindowNavigator = contentWindow ? contentWindow.navigator : navigator
+			const phantomNavigator = phantomDarkness ? phantomDarkness.navigator : navigator
 			const detectLies = (name, value) => {
 				const workerScopeValue = caniuse(() => workerScope, [name])
 				const workerScopeMatchLie = { fingerprint: '', lies: [{ ['does not match worker scope']: false }] }
@@ -70,7 +70,7 @@ export const getNavigator = (imports, workerScope) => {
 
 			const data = {
 				platform: attempt(() => {
-					const { platform } = contentWindowNavigator
+					const { platform } = phantomNavigator
 					const navigatorPlatform = navigator.platform
 					const systems = ['win', 'linux', 'mac', 'arm', 'pike', 'linux', 'iphone', 'ipad', 'ipod', 'android', 'x11']
 					const trusted = typeof navigatorPlatform == 'string' && systems.filter(val => navigatorPlatform.toLowerCase().includes(val))[0]
@@ -88,10 +88,10 @@ export const getNavigator = (imports, workerScope) => {
 					}
 					return platform
 				}),
-				system: attempt(() => getOS(contentWindowNavigator.userAgent), 'userAgent system failed'),
-				device: attempt(() => getUserAgentPlatform({ userAgent: contentWindowNavigator.userAgent }), 'userAgent device failed'),
+				system: attempt(() => getOS(phantomNavigator.userAgent), 'userAgent system failed'),
+				device: attempt(() => getUserAgentPlatform({ userAgent: phantomNavigator.userAgent }), 'userAgent device failed'),
 				userAgent: attempt(() => {
-					const { userAgent } = contentWindowNavigator
+					const { userAgent } = phantomNavigator
 					const navigatorUserAgent = navigator.userAgent
 					detectLies('userAgent', navigatorUserAgent)
 					if (!credibleUserAgent) {
@@ -115,7 +115,7 @@ export const getNavigator = (imports, workerScope) => {
 					return userAgent.trim().replace(/\s{2,}/, ' ')
 				}, 'userAgent failed'),
 				appVersion: attempt(() => {
-					const { appVersion } = contentWindowNavigator
+					const { appVersion } = phantomNavigator
 					const navigatorAppVersion = navigator.appVersion
 					detectLies('appVersion', appVersion)
 					if (!credibleUserAgent) {
@@ -141,7 +141,7 @@ export const getNavigator = (imports, workerScope) => {
 					if (!('deviceMemory' in navigator)) {
 						return undefined
 					}
-					const { deviceMemory } = contentWindowNavigator
+					const { deviceMemory } = phantomNavigator
 					const navigatorDeviceMemory = navigator.deviceMemory
 					const trusted = {
 						'0': true,
@@ -166,7 +166,7 @@ export const getNavigator = (imports, workerScope) => {
 					return deviceMemory
 				}, 'deviceMemory failed'),
 				doNotTrack: attempt(() => {
-					const { doNotTrack } = contentWindowNavigator
+					const { doNotTrack } = phantomNavigator
 					const navigatorDoNotTrack = navigator.doNotTrack
 					const trusted = {
 						'1': !0,
@@ -210,9 +210,9 @@ export const getNavigator = (imports, workerScope) => {
 						return undefined
 					}
 					const hardwareConcurrency = (
-						hyperNestedIframeWindow ?
-						hyperNestedIframeWindow.navigator.hardwareConcurrency :
-						contentWindowNavigator.hardwareConcurrency
+						dragonFire ?
+						dragonFire.navigator.hardwareConcurrency :
+						phantomNavigator.hardwareConcurrency
 					)
 					const navigatorHardwareConcurrency = navigator.hardwareConcurrency
 					detectLies('hardwareConcurrency', navigatorHardwareConcurrency)
@@ -228,7 +228,7 @@ export const getNavigator = (imports, workerScope) => {
 					return hardwareConcurrency
 				}, 'hardwareConcurrency failed'),
 				language: attempt(() => {
-					const { language, languages } = contentWindowNavigator
+					const { language, languages } = phantomNavigator
 					const navigatorLanguage = navigator.language
 					const navigatorLanguages = navigator.languages
 					detectLies('language', navigatorLanguage)
@@ -255,7 +255,7 @@ export const getNavigator = (imports, workerScope) => {
 					if (!('maxTouchPoints' in navigator)) {
 						return null
 					}
-					const { maxTouchPoints } = contentWindowNavigator
+					const { maxTouchPoints } = phantomNavigator
 					const navigatorMaxTouchPoints = navigator.maxTouchPoints	
 					if (maxTouchPoints != navigatorMaxTouchPoints) {	
 						lied = true
@@ -269,7 +269,7 @@ export const getNavigator = (imports, workerScope) => {
 					return maxTouchPoints
 				}, 'maxTouchPoints failed'),
 				vendor: attempt(() => {
-					const { vendor } = contentWindowNavigator
+					const { vendor } = phantomNavigator
 					const navigatorVendor = navigator.vendor
 					if (vendor != navigatorVendor) {
 						lied = true
@@ -282,15 +282,15 @@ export const getNavigator = (imports, workerScope) => {
 					return vendor
 				}, 'vendor failed'),
 				mimeTypes: attempt(() => {
-					const mimeTypes = contentWindowNavigator.mimeTypes
+					const mimeTypes = phantomNavigator.mimeTypes
 					return mimeTypes ? [...mimeTypes].map(m => m.type) : []
 				}, 'mimeTypes failed'),
 				plugins: attempt(() => {
 					const navigatorPlugins = navigator.plugins
 					const ownProperties = Object.getOwnPropertyNames(navigatorPlugins).filter(name => isNaN(+name))
 					const ownPropertiesSet = new Set(ownProperties)
-					const plugins = contentWindowNavigator.plugins
-					const response = plugins ? [...contentWindowNavigator.plugins]
+					const plugins = phantomNavigator.plugins
+					const response = plugins ? [...phantomNavigator.plugins]
 						.map(p => ({
 							name: p.name,
 							description: p.description,
@@ -324,14 +324,14 @@ export const getNavigator = (imports, workerScope) => {
 					return response
 				}, 'plugins failed'),
 				properties: attempt(() => {
-					const keys = Object.keys(Object.getPrototypeOf(contentWindowNavigator))
+					const keys = Object.keys(Object.getPrototypeOf(phantomNavigator))
 					return keys
 				}, 'navigator keys failed'),
 				highEntropyValues: await attempt(async () => { 
-					if (!('userAgentData' in contentWindowNavigator)) {
+					if (!('userAgentData' in phantomNavigator)) {
 						return undefined
 					}
-					const data = await contentWindowNavigator.userAgentData.getHighEntropyValues(
+					const data = await phantomNavigator.userAgentData.getHighEntropyValues(
 						['platform', 'platformVersion', 'architecture',  'model', 'uaFullVersion']
 					)
 					return data

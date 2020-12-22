@@ -10,14 +10,14 @@ export const getOfflineAudioContext = imports => {
 			sendToTrash,
 			documentLie,
 			lieProps,
-			contentWindow,
+			phantomDarkness,
 			logTestResult
 		}
 	} = imports
 
 	return new Promise(resolve => {
 		try {
-			const win = contentWindow ? contentWindow : window
+			const win = phantomDarkness ? phantomDarkness : window
 			const audioContext = caniuse(() => win.OfflineAudioContext || win.webkitOfflineAudioContext)
 			if (!audioContext) {
 				logTestResult({ test: 'audio', passed: false })

@@ -22,14 +22,14 @@ export const getFonts = (imports, fonts) => {
 			captureError,
 			lieProps,
 			documentLie,
-			contentWindow,
+			phantomDarkness,
 			logTestResult
 		}
 	} = imports
 
 	return new Promise(async resolve => {
 		try {
-			const win = contentWindow ? contentWindow : window
+			const win = phantomDarkness ? phantomDarkness : window
 			const doc = win.document
 			const offscreenCanvas = win.OffscreenCanvas
 			const context = (
