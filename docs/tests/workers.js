@@ -428,16 +428,21 @@ const getWorkerGlobalScope = async () => {
 	close()
 }
 
-const getDedicatedWorker = () => {
+const getDedicatedWorker = phantomDarkness => {
 	return new Promise(resolve => {
 		try {
-			if (!Worker) {
+			if (phantomDarkness && !phantomDarkness.Worker) {
 				return resolve({})
 			}
-			else if (Worker.prototype.constructor.name != 'Worker') {
+			else if (
+				phantomDarkness && phantomDarkness.Worker.prototype.constructor.name != 'Worker'
+			) {
 				throw new Error('Worker tampered with by client')
 			}
-			const dedicatedWorker = new Worker(document.currentScript.src)
+			const worker = (
+				phantomDarkness ? phantomDarkness.Worker : Worker
+			)
+			const dedicatedWorker = new worker(document.currentScript.src)
 			dedicatedWorker.onmessage = message => {
 				dedicatedWorker.terminate()
 				return resolve(message.data)
@@ -459,16 +464,21 @@ const getSharedWorkerGlobalScope = () => {
 	}
 }
 
-const getSharedWorker = () => {
+const getSharedWorker = phantomDarkness => {
 	return new Promise(resolve => {
 		try {
-			if (!SharedWorker) {
+			if (phantomDarkness && !phantomDarkness.SharedWorker) {
 				return resolve()
 			}
-			else if (SharedWorker.prototype.constructor.name != 'SharedWorker') {
+			else if (
+				phantomDarkness && phantomDarkness.SharedWorker.prototype.constructor.name != 'SharedWorker'
+			) {
 				throw new Error('SharedWorker tampered with by client')
 			}
-			const sharedWorker = new SharedWorker(document.currentScript.src)
+			const worker = (
+				phantomDarkness ? phantomDarkness.SharedWorker : SharedWorker
+			)
+			const sharedWorker = new worker(document.currentScript.src)
 			sharedWorker.port.start()
 			sharedWorker.port.addEventListener('message', message => {
 				sharedWorker.port.close()
@@ -538,6 +548,39 @@ if (isWorker) {
 }
 
 // Window
+// frame 
+const ghost = () => `
+	height: 100vh;
+	width: 100vw;
+	position: absolute;
+	left:-10000px;
+	visibility: hidden;
+`
+const getRandomValues = () => {
+	const id = [...crypto.getRandomValues(new Uint32Array(10))]
+		.map(n => n.toString(36)).join('')
+	return id
+}
+const getPhantomIframe = () => {
+	try {
+		const numberOfIframes = window.length
+		const frag = new DocumentFragment()
+		const div = document.createElement('div')
+		const id = getRandomValues()
+		div.setAttribute('id', id)
+		frag.appendChild(div)
+		div.innerHTML = `<div style="${ghost()}"><iframe></iframe></div>`
+		document.body.appendChild(frag)
+		const iframeWindow = window[numberOfIframes]
+		return { iframeWindow, div }
+	}
+	catch (error) {
+		console.error(error)
+		return { iframeWindow: window, div: undefined }
+	}
+}
+const { iframeWindow: phantomDarkness, div: parentPhantom } = getPhantomIframe()
+
 const [
 	windowScope,
 	dedicatedWorker,
@@ -545,12 +588,16 @@ const [
 	serviceWorker
 ] = await Promise.all([
 	getWorkerData(),
-	getDedicatedWorker(),
-	getSharedWorker(),
+	getDedicatedWorker(phantomDarkness),
+	getSharedWorker(phantomDarkness),
 	getServiceWorker()
 ]).catch(error => {
 	console.error(error.message)
 })
+
+if (parentPhantom) {
+	parentPhantom.parentNode.removeChild(parentPhantom)
+}
 
 const json = x => JSON.stringify(x, null, '\t')
 //console.log(`\nWorker: ${json(dedicatedWorker)}`)
