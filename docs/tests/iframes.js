@@ -100,62 +100,35 @@ const getRandomValues = () => {
 }
 
 const getData = frameWindow => {
-	const { userAgent, platform, hardwareConcurrency: hardware, deviceMemory: mem } = frameWindow.navigator || {}
+	if (!frameWindow) {
+		return
+	}
+	const { userAgent, platform, hardwareConcurrency: hardware, deviceMemory: mem, language: lang, vendor} = frameWindow.navigator || {}
 	const canvas = frameWindow.document.createElement('canvas').toDataURL()
 	return  {
 		ua: userAgent ? hashMini(userAgent) : undefined,
 		uaVer: userAgent ? decryptUserAgent({ua: userAgent, os: getOS(userAgent), isBrave}) : undefined,
 		mem,
+		lang,
 		hardware,
 		platform,
+		vendor,
 		canvas: hashMini(canvas)
 	}
 }
 
-const createIframeContentWindow = () => {
+const getIframeContentWindow = () => {
 	try {
 		const iframe = document.createElement('iframe')
 		const id = getRandomValues()
 		iframe.setAttribute('id', id)
 		document.body.appendChild(iframe)
-		return console.log('Iframe contentWindow: ', getData(iframe.contentWindow))
-	}
-	catch (error) {
-		console.error(error)
-		return
-	}
-}
-
-const createFragmentIframeContentWindow = () => {
-	try {
-		const frag = new DocumentFragment()
-		const div = document.createElement('div')
-		const id = getRandomValues()
-		div.setAttribute('id', id)
-		frag.appendChild(div)
-		div.innerHTML = '<div><iframe id="iframe"></iframe></div>'
-		const iframe = frag.getElementById('iframe')
-		document.body.appendChild(frag)
-		return console.log('Fragment Iframe contentWindow: ', getData(iframe.contentWindow))
-	}
-	catch (error) {
-		console.error(error)
-		return
-	}
-}
-
-const createFragmentIframeWindow = () => {
-	try {
-		const numberOfIframes = window.length
-		const frag = new DocumentFragment()
-		const div = document.createElement('div')
-		const id = getRandomValues()
-		div.setAttribute('id', id)
-		frag.appendChild(div)
-		div.innerHTML = `<div><iframe></iframe></div>`
-		document.body.appendChild(frag)
-		const iframeWindow = window[numberOfIframes]
-		return console.log('Fragment Iframe Window: ', getData(iframeWindow))
+		const data = getData(iframe.contentWindow)
+		if (!iframe || !iframe.parentNode) {
+			return
+		}
+		iframe.parentNode.removeChild(iframe)
+		return data
 	}
 	catch (error) {
 		console.error(error)
@@ -167,15 +140,14 @@ const createIframeWindow = () => {
 	try {
 		const numberOfIframes = window.length
 		const div = document.createElement('div')
-		//div.setAttribute('style', 'display:none')
+		div.setAttribute('style', 'display:none')
 		document.body.appendChild(div)
 		const id = getRandomValues()
-		div.innerHTML = `<div style="${ghost()}" id="${id}"><iframe></iframe></div>`
-		
+		div.innerHTML = `<div style="${ghost()}"><iframe></iframe></div>`
 		const iframeWindow = window[numberOfIframes]
 		const data = getData(iframeWindow)
 		div.parentNode.removeChild(div)
-		return console.log('Iframe Window: ', data)
+		return data
 	}
 	catch (error) {
 		console.error(error)
@@ -183,15 +155,21 @@ const createIframeWindow = () => {
 	}
 }
 
-const getHyperNestedIframes = (numberOfNests, context = window) => {
+const getHyperNestedIframe = ({ numberOfNests, kill = false, context = window }) => {
 	try {
 		let parent, total = numberOfNests
-		const nestedIframeWindow = (function getIframeWindow(win, {
+		return (function getIframeWindow(win, {
 			previous = context
 		} = {}) {
 			if (!win) {
-				console.log(`\nnested iframe is valid up to nest ${total - numberOfNests}`)
-				return previous
+				const iframeWindow = previous
+				if (kill) {
+					parent.parentNode.removeChild(parent)
+					const data = getData(previous)
+					return data
+				}
+				const data = getData(iframeWindow)
+				return data
 			}
 			const numberOfIframes = win.length
 			const div = win.document.createElement('div')
@@ -200,20 +178,23 @@ const getHyperNestedIframes = (numberOfNests, context = window) => {
 			const iframeWindow = win[numberOfIframes]
 			if (total == numberOfNests) {
 				parent = div
-				//parent.setAttribute('style', 'display:none')
+				parent.setAttribute('style', 'display:none')
 			}
 			numberOfNests--
 			if (!numberOfNests) {
-				parent.parentNode.removeChild(parent)
-				return iframeWindow
+				if (kill) {
+					parent.parentNode.removeChild(parent)
+					console.log(iframeWindow)
+					const data = getData(iframeWindow)
+					return data
+				}
+				const data = getData(iframeWindow)
+				return data
 			}
 			return getIframeWindow(iframeWindow, {
 				previous: win
 			})
 		})(context)
-
-		const data = getData(nestedIframeWindow)
-		return console.log('Nested Iframe Window: ', data)
 	}
 	catch (error) {
 		console.error(error)
@@ -221,10 +202,19 @@ const getHyperNestedIframes = (numberOfNests, context = window) => {
 	}
 }
 
-console.log('Window: ', getData(window))
-createFragmentIframeContentWindow()
-createFragmentIframeWindow()
-createIframeWindow()
-getHyperNestedIframes(20)
+
+const windowFrame = getData(window)
+const iframeContentWindow = getIframeContentWindow()
+const iframeWindow = createIframeWindow()
+const hyperNestedIframe = getHyperNestedIframe({ numberOfNests: 20 })
+const deadNestedIframe = getHyperNestedIframe({ numberOfNests: 3, kill: true})
+
+console.table({
+	windowFrame,
+	iframeContentWindow,
+	iframeWindow,
+	hyperNestedIframe,
+	deadNestedIframe
+})
 
 })()
