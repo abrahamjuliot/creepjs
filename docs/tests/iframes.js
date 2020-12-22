@@ -184,7 +184,6 @@ const getHyperNestedIframe = ({ numberOfNests, kill = false, context = window })
 			if (!numberOfNests) {
 				if (kill) {
 					parent.parentNode.removeChild(parent)
-					console.log(iframeWindow)
 					const data = getData(iframeWindow)
 					return data
 				}
