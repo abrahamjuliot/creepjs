@@ -132,10 +132,10 @@ const getIframeContentWindow = () => {
 		const id = getRandomValues()
 		iframe.setAttribute('id', id)
 		document.body.appendChild(iframe)
-		const data = getData(iframe.contentWindow)
 		if (!iframe || !iframe.parentNode) {
 			return
 		}
+		const data = getData(iframe.contentWindow)
 		iframe.parentNode.removeChild(iframe)
 		return data
 	}
