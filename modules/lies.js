@@ -1,8 +1,5 @@
-import { hashMini, instanceId } from './crypto.js'
+import { hashMini } from './crypto.js'
 import { captureError, attempt, caniuse } from './captureErrors.js'
-import { isChrome, isFirefox } from './helpers.js'
-import { patch, html } from './html.js'
-
 
 // Collect lies detected
 const createlieRecords = () => {
@@ -51,13 +48,16 @@ const getPhantomIframe = () => {
 }
 const { iframeWindow: phantomDarkness, div: parentPhantom } = getPhantomIframe()
 
-const getDragonIframe = (numberOfNests, context = window) => {
+const getDragonIframe = ({ numberOfNests, kill = false, context = window }) => {
 	try {
 		let parent, total = numberOfNests
 		return (function getIframeWindow(win, {
 			previous = context
 		} = {}) {
 			if (!win) {
+				if (kill) {
+					parent.parentNode.removeChild(parent)
+				}
 				console.log(`\ndragon fire is valid up to ${total - numberOfNests} fiery flames`)
 				return { iframeWindow: previous, parent }
 			}
@@ -72,6 +72,9 @@ const getDragonIframe = (numberOfNests, context = window) => {
 			}
 			numberOfNests--
 			if (!numberOfNests) {
+				if (kill) {
+					parent.parentNode.removeChild(parent)
+				}
 				return { iframeWindow, parent }
 			}
 			return getIframeWindow(iframeWindow, {
@@ -84,7 +87,9 @@ const getDragonIframe = (numberOfNests, context = window) => {
 		return { iframeWindow: window, parent: undefined }
 	}
 }
-const { iframeWindow: dragonFire, parent: parentDragon } = getDragonIframe(20)
+const { iframeWindow: dragonFire, parent: parentDragon } = getDragonIframe({ numberOfNests: 20 })
+
+const { iframeWindow: dragonOfDeath } = getDragonIframe({ numberOfNests: 3, kill: true})
 
 // detect and fingerprint Function API lies
 const native = (result, str, willHaveBlanks = false) => {
@@ -897,4 +902,4 @@ const getLies = imports => {
 	})
 }
 
-export { documentLie, phantomDarkness, parentPhantom, lieProps, lieRecords, getLies, dragonFire, parentDragon, getPluginLies }
+export { documentLie, phantomDarkness, parentPhantom, lieProps, lieRecords, getLies, dragonFire, parentDragon, dragonOfDeath, getPluginLies }

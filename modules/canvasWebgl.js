@@ -11,7 +11,6 @@ export const getCanvasWebgl = imports => {
 			proxyBehavior,
 			lieProps,
 			phantomDarkness,
-			dragonFire,
 			logTestResult
 		}
 	} = imports

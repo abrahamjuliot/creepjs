@@ -8,7 +8,7 @@ export const getCanvas2d = imports => {
 			lieProps,
 			documentLie,
 			phantomDarkness,
-			dragonFire,
+			dragonOfDeath,
 			logTestResult
 		}
 	} = imports
@@ -27,8 +27,8 @@ export const getCanvas2d = imports => {
 			context.fillStyle = 'rgba(100, 200, 99, 0.78)'
 			context.fillRect(100, 30, 80, 50)
 			const dataURI = canvas.toDataURL()
-			if (dragonFire) {
-				const result1 = hashMini(dragonFire.document.createElement('canvas').toDataURL())
+			if (dragonOfDeath) {
+				const result1 = hashMini(dragonOfDeath.document.createElement('canvas').toDataURL())
 				const result2 = hashMini(document.createElement('canvas').toDataURL())
 				if (result1 != result2) {
 					lied = true

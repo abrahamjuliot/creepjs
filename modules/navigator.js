@@ -15,7 +15,7 @@ export const getNavigator = (imports, workerScope) => {
 			documentLie,
 			lieProps,
 			phantomDarkness,
-			dragonFire,
+			dragonOfDeath,
 			getUserAgentPlatform,
 			logTestResult,
 			getPluginLies
@@ -210,8 +210,8 @@ export const getNavigator = (imports, workerScope) => {
 						return undefined
 					}
 					const hardwareConcurrency = (
-						dragonFire ?
-						dragonFire.navigator.hardwareConcurrency :
+						dragonOfDeath ?
+						dragonOfDeath.navigator.hardwareConcurrency :
 						phantomNavigator.hardwareConcurrency
 					)
 					const navigatorHardwareConcurrency = navigator.hardwareConcurrency

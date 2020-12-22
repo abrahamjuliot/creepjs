@@ -7,7 +7,7 @@ export const getCanvasBitmapRenderer = imports => {
 			caniuse,
 			lieProps,
 			phantomDarkness,
-			dragonFire,
+			dragonOfDeath,
 			logTestResult
 		}
 	} = imports
@@ -17,8 +17,8 @@ export const getCanvasBitmapRenderer = imports => {
 			const dataLie = lieProps['HTMLCanvasElement.toDataURL']
 			const contextLie = lieProps['HTMLCanvasElement.getContext']
 			let lied = (dataLie || contextLie) || false
-			if (dragonFire &&
-				dragonFire.document.createElement('canvas').toDataURL() != document.createElement('canvas').toDataURL()) {
+			if (dragonOfDeath &&
+				dragonOfDeath.document.createElement('canvas').toDataURL() != document.createElement('canvas').toDataURL()) {
 				lied = true
 			}
 			const doc = phantomDarkness ? phantomDarkness.document : document
