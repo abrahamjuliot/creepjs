@@ -828,7 +828,7 @@ const imports = {
 				}</div>
 				<div>emojis v13.0:<span class="sub-hash">${hashMini(emojiHash)}</span></div>
 				<div>results: ${
-					modal(`${id}-emojis`, emojiRects.map(rect => rect.emoji).join('') )
+					modal(`${id}-emojis`, `<span style="font-size: 32px;">${emojiRects.map(rect => rect.emoji).join('')}</span>` )
 				}</div>
 			</div>
 			`
