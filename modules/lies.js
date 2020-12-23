@@ -87,9 +87,10 @@ const getDragonIframe = ({ numberOfNests, kill = false, context = window }) => {
 		return { iframeWindow: window, parent: undefined }
 	}
 }
-const { iframeWindow: dragonFire, parent: parentDragon } = getDragonIframe({ numberOfNests: 20 })
 
-const { iframeWindow: dragonOfDeath } = getDragonIframe({ numberOfNests: 3, kill: true})
+const { iframeWindow: dragonFire, parent: parentDragon } = getDragonIframe({ numberOfNests: 2 })
+
+const { iframeWindow: dragonOfDeath } = getDragonIframe({ numberOfNests: 4, kill: true})
 
 // detect and fingerprint Function API lies
 const native = (result, str, willHaveBlanks = false) => {

@@ -1323,8 +1323,9 @@ const imports = {
 			<strong>Tests</strong>
 			<div>
 				<a class="tests" href="./tests/workers.html">Workers</a>
+				<br><a class="tests" href="./tests/iframes.html">Iframes</a>
 				<br><a class="tests" href="./tests/fonts.html">Fonts</a>
-				<br><a class="tests" href="./tests/window.html">Window</a>
+				<br><a class="tests" href="./tests/window.html">Window Version</a>
 			</div>
 		</div>
 	</div>
