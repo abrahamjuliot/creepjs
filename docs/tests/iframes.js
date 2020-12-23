@@ -367,6 +367,13 @@ const label = {
 	canvas: 'canvas'
 }
 
+const valid = {
+	pass: (str) => `<span class="pass">&#10004; ${str}</span>`,
+	fail: (str) => `<span class="fail">&#10006; ${str}</span>`,
+	features: true,
+	restoredUA: true
+}
+
 const el = document.getElementById('fingerprint-data')
 patch(el, html`
 	<div id="fingerprint-data">
@@ -399,6 +406,11 @@ patch(el, html`
 								platformBase = platform
 								canvasBase = canvas
 							}
+							const knownFeatures = /\s/.test(features)
+							const featuresMatchWindow = features == verBase
+							if (knownFeatures && valid.features && !featuresMatchWindow) {
+								valid.features = false
+							}
 							return `
 								<tr>
 									<td data-label="${label.context}">${contextLabels[i]}</td>
@@ -409,13 +421,13 @@ patch(el, html`
 										!verReported ? 'undefined' : verReported != verBase ? 'lies' : ''
 									}" data-label="${label.verReported}">${verReported}</td>
 									<td class="${
-										!uaRestored ? 'undefined' : uaRestored != uaBase ? 'lies' : ''
+										!uaRestored ? 'undefined' : uaRestored != uaReported ? 'lies' : ''
 									}" data-label="${label.uaRestored}">${uaRestored}</td>
 									<td class="${
-										!verRestored ? 'undefined' : verRestored != verBase ? 'lies' : ''
+										!verRestored ? 'undefined' : verRestored != verReported ? 'lies' : ''
 									}" data-label="${label.verRestored}">${verRestored}</td>
 									<td class="${
-										!features ? 'undefined' : /\s/.test(features) && features != verBase ? 'lies' : ''
+										!features ? 'undefined' : knownFeatures && !featuresMatchWindow ? 'lies' : ''
 									}" data-label="${label.features}">${features}</td>
 									<td class="${
 										!platform ? 'undefined' : platform != platformBase ? 'lies' : ''
@@ -429,6 +441,14 @@ patch(el, html`
 					})()}
 				</tbody>
 			</table>
+		</div>
+		<div>
+			${valid.features && valid.restoredUA ? valid.pass('passed') : (() => {
+				const invalid = []
+				!valid.features && invalid.push(valid.fail('expect known features to match window reported version'))
+				return invalid.join('<br>')
+
+			})()}
 		</div>
 	</div>
 `)
