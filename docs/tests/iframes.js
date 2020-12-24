@@ -460,23 +460,23 @@ patch(el, html`
 								canvasBase = canvas
 							}
 
-							const validUAReported = (uaReported && uaReported == uaBase)
-							if (!validUAReported) {
+							const validUAReported = uaReported == uaBase
+							if (uaReported && !validUAReported) {
 								valid.uaReported = false
 							}
 
-							const validVerReported = (verReported && verReported == verBase)
-							if (!validVerReported) {
+							const validVerReported =  verReported == verBase
+							if (verReported && !validVerReported) {
 								valid.verReported = false
 							}
 
-							const validUARestored = uaRestored && (uaRestored == uaReported && uaRestored == uaBase)
-							if (!validUARestored) {
+							const validUARestored = uaRestored == uaReported && uaRestored == uaBase
+							if (uaRestored && !validUARestored) {
 								valid.uaRestored = false
 							}
 
-							const validVerRestored = verRestored && (verRestored == verReported && verRestored == verBase)
-							if (!validVerRestored) {
+							const validVerRestored =  verRestored == verReported && verRestored == verBase
+							if (verRestored && !validVerRestored) {
 								valid.verRestored = false
 							}
 
@@ -486,18 +486,17 @@ patch(el, html`
 								valid.features = false
 							}
 
-							const validPlatform = (platform && platform == platformBase)
-							if (!validPlatform) {
+							const validPlatform = platform == platformBase
+							if (platform && !validPlatform) {
 								valid.platform = false
 							}
-							const validCanvas = (canvas && canvas == canvasBase)
-							if (!validCanvas) {
+							const validCanvas = canvas == canvasBase
+							if (canvas && !validCanvas) {
 								valid.canvas = false
 							}
 
 							const validConnection = !!context
 							if (contextLabels[i] != 'dead' && !validConnection) {
-								console.log(contextLabels[i], context)
 								valid.connection = false
 							}
 
@@ -550,7 +549,7 @@ patch(el, html`
 				</tbody>
 			</table>
 		</div>
-		<div>
+		<div class="test-output">
 			${valid.passed ? valid.pass('passed') : (() => {
 				const invalid = []
 				!valid.contentWindowErrors && invalid.push(valid.fail('expect valid error message in HTMLIFrameElement.prototype.contentWindow'))
