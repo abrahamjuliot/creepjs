@@ -287,13 +287,13 @@ const imports = {
 			timezone: fp.timezone.timezone,
 			timezoneLocation: fp.timezone.timezoneLocation,
 			timezoneHistoryLocation: fp.timezone.timezoneHistoryLocation,
-			timezoneOffsetHistory: fp.timezone.timezoneOffsetHistory,
 			relativeTime: fp.timezone.relativeTime,
 			locale: fp.timezone.locale,
 			writingSystemKeys: fp.timezone.writingSystemKeys,
 			lied: fp.timezone.lied
 		} : {
-			timezoneHistoryLocation: fp.timezone.timezoneHistoryLocation
+			encrypted: fp.timezone.encrypted,
+			decrypted: fp.timezone.encrypted
 		},
 		clientRects: !fp.clientRects || fp.clientRects.lied ? undefined : fp.clientRects,
 		offlineAudioContext: (
@@ -834,8 +834,8 @@ const imports = {
 			</div>
 			<div class="col-six">
 				<div>location: ${note.blocked}</div>
-				<div>offset location: ${note.blocked}</div>
-				<div>offset history: ${note.blocked}</div>
+				<div>encrypted history: ${note.blocked}</div>
+				<div>decrypted: ${note.blocked}</div>
 				<div>relativeTimeFormat: ${note.blocked}</div>
 				<div>locale language: ${note.blocked}</div>
 				<div>writing system keys: ${note.blocked}</div>
@@ -846,15 +846,15 @@ const imports = {
 					$hash,
 					timezone,
 					timezoneLocation,
-					timezoneHistoryLocation,
 					timezoneOffset: timezoneOffset,
 					timezoneOffsetComputed,
 					timezoneOffsetMeasured: measuredTimezones,
-					timezoneOffsetHistory,
 					matchingOffsets,
 					relativeTime,
 					locale,
 					writingSystemKeys,
+					encrypted,
+					decrypted,
 					lied
 				}
 			} = fp
@@ -870,25 +870,9 @@ const imports = {
 			</div>
 			<div class="col-six">
 				<div>location: ${timezoneLocation}</div>
-				<div>offset location:<span class="sub-hash">${hashMini(timezoneHistoryLocation)}</span></div>
-				<div>offset history: ${
-					modal(`${id}-timezone-offset-history`, `
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>Jan</strong>&nbsp;&nbsp;&nbsp;<strong>Apr</strong>&nbsp;&nbsp;&nbsp;<strong>Jul</strong>&nbsp;&nbsp;&nbsp;<strong>Oct</strong><br>`+Object.keys(timezoneOffsetHistory).map(year => {
-						const baseYear = timezoneOffsetHistory[1950]
-						const seasons = timezoneOffsetHistory[year]
-						const jan = seasons[0]
-						const apr = seasons[1]
-						const jul = seasons[2]
-						const oct = seasons[3]
-						const style = `color: #2da568;background:#2da5681f;`
-						return `
-							<strong>${year}</strong>: 
-							<span style="${baseYear[0] != jan ? style : ''}">${jan}</span> | 
-							<span style="${baseYear[1] != apr ? style : ''}">${apr}</span> | 
-							<span style="${baseYear[2] != jul ? style : ''}">${jul}</span> | 
-							<span style="${baseYear[3] != oct ? style : ''}">${oct}</span>
-						`
-					}).join('<br>'))
+				<div>encrypted history:<span class="sub-hash">${hashMini(encrypted)}</span></div>
+				<div>decrypted: ${
+					!decrypted ? 'Fake/Uniqueville': decrypted.length == 1 ? decrypted[0] : modal(`${id}-decrypted`, `<strong>1 of ${decrypted.length}</strong><br>${decrypted.join('<br>')}`)
 				}</div>
 				<div>relativeTimeFormat: ${
 					!relativeTime ? note.unsupported : 
