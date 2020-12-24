@@ -259,7 +259,8 @@ export const getTimezone = imports => {
 				documentLie('Intl', locale, localeLie)	
 			}
 			const encrypted = await hashify(timezoneOffsetUniqueYearHistory)
-			const decrypted = hashMap[encrypted]
+			const decryption = undefined//hashMap[encrypted]
+			const decrypted = !decryption ? ['Fake/Uniqueville'] : decryption
 			const data =  {
 				timezone,
 				timezoneLocation,

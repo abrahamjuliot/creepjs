@@ -292,8 +292,7 @@ const imports = {
 			writingSystemKeys: fp.timezone.writingSystemKeys,
 			lied: fp.timezone.lied
 		} : {
-			encrypted: fp.timezone.encrypted,
-			decrypted: fp.timezone.encrypted
+			decrypted: fp.timezone.decrypted
 		},
 		clientRects: !fp.clientRects || fp.clientRects.lied ? undefined : fp.clientRects,
 		offlineAudioContext: (
@@ -872,7 +871,7 @@ const imports = {
 				<div>location: ${timezoneLocation}</div>
 				<div>encrypted history:<span class="sub-hash">${hashMini(encrypted)}</span></div>
 				<div>decrypted: ${
-					!decrypted ? 'Fake/Uniqueville': decrypted.length == 1 ? decrypted[0] : modal(`${id}-decrypted`, `<strong>1 of ${decrypted.length}</strong><br>${decrypted.join('<br>')}`)
+					decrypted.length == 1 ? decrypted[0] : modal(`${id}-decrypted`, `<strong>1 of ${decrypted.length}</strong><br>${decrypted.join('<br>')}`)
 				}</div>
 				<div>relativeTimeFormat: ${
 					!relativeTime ? note.unsupported : 
