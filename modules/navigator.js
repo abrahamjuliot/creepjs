@@ -50,7 +50,7 @@ export const getNavigator = (imports, workerScope) => {
 							lied = true
 							documentLie(`Navigator.${name}`, system, workerScopeMatchLie)
 						}
-						if (workerScope.userAgent != navigatorUserAgent) {
+						else if (workerScope.userAgent != navigatorUserAgent) {
 							lied = true
 							documentLie(`Navigator.${name}`, navigatorUserAgent, workerScopeMatchLie)
 						}

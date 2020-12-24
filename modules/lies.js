@@ -522,7 +522,7 @@ const hasLiedAPI = (api, name, obj) => {
 					testPrototype(apiFunction),
 					testNew(apiFunction),
 					testClassExtends(apiFunction),
-					testName(apiFunction, name),
+					testName(apiFunction, `get ${name}`),
 					testToString(apiFunction, fnToStr, phantomDarkness),
 					testOwnProperty(apiFunction),
 					testOwnPropertyDescriptor(apiFunction),
@@ -605,7 +605,7 @@ const getValues = (obj, ignore) => {
 	if (!obj) {
 		return []
 	}
-	return Object.getOwnPropertyNames(obj).filter(item => {
+	return Object.getOwnPropertyNames(Object.getPrototypeOf(obj)).filter(item => {
 		if (ignore[item]) {
 			// validate critical methods elsewhere
 			return false
