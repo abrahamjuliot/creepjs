@@ -483,6 +483,20 @@ patch(el, html`
 								valid.canvas = false
 							}
 
+							const validUAReported = (uaReported && uaReported == uaBase)
+							if (!validUAReported) {
+								valid.uaReported = false
+							}
+
+							const validVerReported = (verReported && verReported == verBase)
+							if (!validVerReported) {
+								valid.verReported = false
+							}
+
+							if (contextLabels[i] != 'dead') {
+								//
+							}
+
 							// re-confirm passing
 							if (valid.passed) {
 								valid.passed = (
@@ -507,10 +521,10 @@ patch(el, html`
 										valid.contentWindowErrors && valid.appendChildErrors ? '' : 'lies'
 									}" data-label="${label.context}">${contextLabels[i]}</td>
 									<td class="${
-										!uaReported ? 'undefined' : uaReported != uaBase ? 'lies' : ''
+										!uaReported ? 'undefined' : !validUAReported ? 'lies' : ''
 									}" data-label="${label.uaReported}">${uaReported}</td>
 									<td class="${
-										!verReported ? 'undefined' : verReported != verBase ? 'lies' : ''
+										!verReported ? 'undefined' : !validVerReported ? 'lies' : ''
 									}" data-label="${label.verReported}">${verReported}</td>
 									<td class="${
 										!uaRestored ? 'undefined' : !validUARestored ? 'lies' : ''
@@ -537,10 +551,10 @@ patch(el, html`
 		<div>
 			${valid.passed ? valid.pass('passed') : (() => {
 				const invalid = []
-				
 				!valid.contentWindowErrors && invalid.push(valid.fail('expect valid error message in HTMLIFrameElement.prototype.contentWindow'))
 				!valid.appendChildErrors && invalid.push(valid.fail('expect valid error message in Element.prototype.appendChild'))
-
+				!valid.uaReported && invalid.push(valid.fail('expect reported userAgent to match window'))
+				!valid.verReported && invalid.push(valid.fail('expect reported version to match window'))
 				!valid.uaRestored && invalid.push(valid.fail('expect restored userAgent to match each reported userAgent'))
 				!valid.verRestored && invalid.push(valid.fail('expect restored version to match each reported version'))
 				!valid.features && invalid.push(valid.fail('expect known features to match window reported version'))
