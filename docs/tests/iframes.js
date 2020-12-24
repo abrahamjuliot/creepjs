@@ -366,9 +366,9 @@ const label = {
 	canvas: 'canvas'
 }
 
-const isContentWindowValid = (win) => {
+const isContentWindowValid = () => {
 	try {	
-		win.HTMLIFrameElement.prototype.contentWindow
+		HTMLIFrameElement.prototype.contentWindow
 		// new (Object.getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow').get) // 'not a constructor' TypeError
 		return false
 	}
@@ -380,7 +380,7 @@ const isContentWindowValid = (win) => {
 	}
 }
 
-const appendChildHasValidNewError = (win) => {
+const appendChildHasValidNewError = () => {
 	try {
 		new Element.prototype.appendChild
 		return false
@@ -393,7 +393,7 @@ const appendChildHasValidNewError = (win) => {
 	}
 }
 
-const appendChildHasValidClassExtendsError = (win) => {
+const appendChildHasValidClassExtendsError = () => {
 	try { 
 		class Fake extends Element.prototype.appendChild { }
 		return false
@@ -413,10 +413,15 @@ const valid = {
 	pass: (str) => `<span class="pass">&#10004; ${str}</span>`,
 	fail: (str) => `<span class="fail">&#10006; ${str}</span>`,
 	passed: true,
-	contentWindowErrors: isContentWindowValid(window),
-	appendChildErrors: appendChildHasValidNewError(window) && appendChildHasValidClassExtendsError(window),
+	contentWindowErrors: isContentWindowValid(),
+	appendChildErrors: appendChildHasValidNewError() && appendChildHasValidClassExtendsError(),
+	uaReported: true,
+	verReported: true,
+	uaRestored: true,
+	verRestored: true,
 	features: true,
-	restoredUA: true
+	platform: true,
+	canvas: true
 }
 
 const el = document.getElementById('fingerprint-data')
@@ -451,6 +456,21 @@ patch(el, html`
 								platformBase = platform
 								canvasBase = canvas
 							}
+							
+							if (uaRestored && (uaRestored != uaReported)) {
+								valid.uaRestored = false
+							}
+							else if (uaRestored && (uaRestored != uaBase)) {
+								valid.uaRestored = false
+							}
+
+							if (verRestored && (verRestored != verReported)) {
+								valid.verRestored = false
+							}
+							else if (verRestored && (verRestored != verBase)) {
+								valid.verRestored = false
+							}
+
 							const knownFeatures = /\s/.test(features)
 							const featuresMatchWindow = features == verBase
 							if (knownFeatures && valid.features && !featuresMatchWindow) {
@@ -460,16 +480,33 @@ patch(el, html`
 							// re-confirm passing
 							if (valid.passed) {
 								valid.passed = (
-									valid.contentWindowErrors &&
-									valid.appendChildErrors &&
-									valid.features &&
-									valid.restoredUA
+									valid.contentWindowErrors && // done
+									valid.appendChildErrors && // done
+									valid.uaReported &&
+									valid.verReported &&
+									valid.uaRestored && // done
+									valid.verRestored &&
+									valid.features && // done
+									valid.platform &&
+									valid.canvas
 								)
 							}
+							/*
+								
+								expect undefined userAgent in dead iframe
+								expect platform to match window
+								expect valid platform and userAgent operating system
+								expect canvas to match window
+								expect canvas to be empty
+								expect user-friendly 1st-party-iframe connections
+								expect unblocked output
+							*/
 							
 							return `
 								<tr>
-									<td class="${ valid.contentWindowErrors && valid.appendChildErrors ? '' : 'lies'}" data-label="${label.context}">${contextLabels[i]}</td>
+									<td class="${
+										valid.contentWindowErrors && valid.appendChildErrors ? '' : 'lies'
+									}" data-label="${label.context}">${contextLabels[i]}</td>
 									<td class="${
 										!uaReported ? 'undefined' : uaReported != uaBase ? 'lies' : ''
 									}" data-label="${label.uaReported}">${uaReported}</td>
@@ -477,10 +514,10 @@ patch(el, html`
 										!verReported ? 'undefined' : verReported != verBase ? 'lies' : ''
 									}" data-label="${label.verReported}">${verReported}</td>
 									<td class="${
-										!uaRestored ? 'undefined' : uaRestored != uaReported ? 'lies' : ''
+										!uaRestored ? 'undefined' : !valid.uaRestored ? 'lies' : ''
 									}" data-label="${label.uaRestored}">${uaRestored}</td>
 									<td class="${
-										!verRestored ? 'undefined' : verRestored != verReported ? 'lies' : ''
+										!verRestored ? 'undefined' : !valid.verRestored ? 'lies' : ''
 									}" data-label="${label.verRestored}">${verRestored}</td>
 									<td class="${
 										!features ? 'undefined' : knownFeatures && !featuresMatchWindow ? 'lies' : ''
@@ -501,9 +538,13 @@ patch(el, html`
 		<div>
 			${valid.passed ? valid.pass('passed') : (() => {
 				const invalid = []
-				!valid.features && invalid.push(valid.fail('expect known features to match window reported version'))
+				
 				!valid.contentWindowErrors && invalid.push(valid.fail('expect valid error message in HTMLIFrameElement.prototype.contentWindow'))
-				!valid.appendChildErrors && invalid.push(valid.fail('expect valid error message in Element.prototype.appendChild')) 
+				!valid.appendChildErrors && invalid.push(valid.fail('expect valid error message in Element.prototype.appendChild'))
+
+				!valid.uaRestored && invalid.push(valid.fail('expect restored userAgent to match reported userAgents'))
+				!valid.verRestored && invalid.push(valid.fail('expect restored version to match reported versions'))
+				!valid.features && invalid.push(valid.fail('expect known features to match window reported version'))
 				return invalid.join('<br>')
 			})()}
 		</div>
