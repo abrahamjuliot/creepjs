@@ -450,56 +450,55 @@ patch(el, html`
 						let uaBase, verBase, platformBase, canvasBase
 						return contexts.map((context, i) => {
 							const { uaReported, verReported, uaRestored, verRestored, features, platform, canvas } = context || {}
+							
+							// set base values
 							if (i == 0) {
 								uaBase = uaReported
 								verBase = verReported
 								platformBase = platform
 								canvasBase = canvas
 							}
-							
-							if (uaRestored && (uaRestored != uaReported)) {
-								valid.uaRestored = false
-							}
-							else if (uaRestored && (uaRestored != uaBase)) {
+							const validUARestored = uaRestored && (uaRestored == uaReported && uaRestored == uaBase)
+							if (!validUARestored) {
 								valid.uaRestored = false
 							}
 
-							if (verRestored && (verRestored != verReported)) {
-								valid.verRestored = false
-							}
-							else if (verRestored && (verRestored != verBase)) {
+							const validVerRestored = verRestored && (verRestored == verReported && verRestored == verBase)
+							if (!validVerRestored) {
 								valid.verRestored = false
 							}
 
 							const knownFeatures = /\s/.test(features)
-							const featuresMatchWindow = features == verBase
-							if (knownFeatures && valid.features && !featuresMatchWindow) {
+							const validFeatures = features == verBase
+							if (knownFeatures && !validFeatures) {
 								valid.features = false
+							}
+
+							const validPlatform = (platform && platform == platformBase)
+							if (!validPlatform) {
+								valid.platform = false
+							}
+							const validCanvas = (canvas && canvas == canvasBase)
+							if (!validCanvas) {
+								valid.canvas = false
 							}
 
 							// re-confirm passing
 							if (valid.passed) {
 								valid.passed = (
-									valid.contentWindowErrors && // done
-									valid.appendChildErrors && // done
+									valid.contentWindowErrors &&
+									valid.appendChildErrors &&
 									valid.uaReported &&
 									valid.verReported &&
-									valid.uaRestored && // done
+									valid.uaRestored &&
 									valid.verRestored &&
-									valid.features && // done
+									valid.features &&
 									valid.platform &&
 									valid.canvas
 								)
 							}
 							/*
-								
-								expect undefined userAgent in dead iframe
-								expect platform to match window
-								expect valid platform and userAgent operating system
-								expect canvas to match window
-								expect canvas to be empty
 								expect user-friendly 1st-party-iframe connections
-								expect unblocked output
 							*/
 							
 							return `
@@ -514,19 +513,19 @@ patch(el, html`
 										!verReported ? 'undefined' : verReported != verBase ? 'lies' : ''
 									}" data-label="${label.verReported}">${verReported}</td>
 									<td class="${
-										!uaRestored ? 'undefined' : !valid.uaRestored ? 'lies' : ''
+										!uaRestored ? 'undefined' : !validUARestored ? 'lies' : ''
 									}" data-label="${label.uaRestored}">${uaRestored}</td>
 									<td class="${
-										!verRestored ? 'undefined' : !valid.verRestored ? 'lies' : ''
+										!verRestored ? 'undefined' : !validVerRestored? 'lies' : ''
 									}" data-label="${label.verRestored}">${verRestored}</td>
 									<td class="${
-										!features ? 'undefined' : knownFeatures && !featuresMatchWindow ? 'lies' : ''
+										!features ? 'undefined' : knownFeatures && !validFeatures ? 'lies' : ''
 									}" data-label="${label.features}">${features}</td>
 									<td class="${
-										!platform ? 'undefined' : platform != platformBase ? 'lies' : ''
+										!platform ? 'undefined' : !validPlatform ? 'lies' : ''
 									}" data-label="${label.platform}">${platform}</td>
 									<td class="${
-										!canvas ? 'undefined' : canvas != canvasBase ? 'lies' : ''
+										!canvas ? 'undefined' : !validCanvas ? 'lies' : ''
 									}" data-label="${label.canvas}">${canvas}</td>
 								</tr>
 							`
@@ -542,9 +541,11 @@ patch(el, html`
 				!valid.contentWindowErrors && invalid.push(valid.fail('expect valid error message in HTMLIFrameElement.prototype.contentWindow'))
 				!valid.appendChildErrors && invalid.push(valid.fail('expect valid error message in Element.prototype.appendChild'))
 
-				!valid.uaRestored && invalid.push(valid.fail('expect restored userAgent to match reported userAgents'))
-				!valid.verRestored && invalid.push(valid.fail('expect restored version to match reported versions'))
+				!valid.uaRestored && invalid.push(valid.fail('expect restored userAgent to match each reported userAgent'))
+				!valid.verRestored && invalid.push(valid.fail('expect restored version to match each reported version'))
 				!valid.features && invalid.push(valid.fail('expect known features to match window reported version'))
+				!valid.platform && invalid.push(valid.fail('expect platform to match window'))
+				!valid.canvas && invalid.push(valid.fail('expect canvas to match window'))
 				return invalid.join('<br>')
 			})()}
 		</div>
