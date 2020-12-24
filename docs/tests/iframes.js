@@ -421,7 +421,8 @@ const valid = {
 	verRestored: true,
 	features: true,
 	platform: true,
-	canvas: true
+	canvas: true,
+	connection: true
 }
 
 const el = document.getElementById('fingerprint-data')
@@ -458,6 +459,17 @@ patch(el, html`
 								platformBase = platform
 								canvasBase = canvas
 							}
+
+							const validUAReported = (uaReported && uaReported == uaBase)
+							if (!validUAReported) {
+								valid.uaReported = false
+							}
+
+							const validVerReported = (verReported && verReported == verBase)
+							if (!validVerReported) {
+								valid.verReported = false
+							}
+
 							const validUARestored = uaRestored && (uaRestored == uaReported && uaRestored == uaBase)
 							if (!validUARestored) {
 								valid.uaRestored = false
@@ -483,18 +495,10 @@ patch(el, html`
 								valid.canvas = false
 							}
 
-							const validUAReported = (uaReported && uaReported == uaBase)
-							if (!validUAReported) {
-								valid.uaReported = false
-							}
-
-							const validVerReported = (verReported && verReported == verBase)
-							if (!validVerReported) {
-								valid.verReported = false
-							}
-
-							if (contextLabels[i] != 'dead') {
-								//
+							const validConnection = !!context
+							if (contextLabels[i] != 'dead' && !validConnection) {
+								console.log(contextLabels[i], context)
+								valid.connection = false
 							}
 
 							// re-confirm passing
@@ -508,12 +512,10 @@ patch(el, html`
 									valid.verRestored &&
 									valid.features &&
 									valid.platform &&
-									valid.canvas
+									valid.canvas &&
+									valid.connection
 								)
 							}
-							/*
-								expect user-friendly 1st-party-iframe connections
-							*/
 							
 							return `
 								<tr>
@@ -560,6 +562,7 @@ patch(el, html`
 				!valid.features && invalid.push(valid.fail('expect known features to match window reported version'))
 				!valid.platform && invalid.push(valid.fail('expect platform to match window'))
 				!valid.canvas && invalid.push(valid.fail('expect canvas to match window'))
+				!valid.connection && invalid.push(valid.fail('expect connections in each iframe'))
 				return invalid.join('<br>')
 			})()}
 		</div>
