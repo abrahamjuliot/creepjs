@@ -272,41 +272,9 @@ const imports = {
 			!fp.canvasBitmapRenderer || fp.canvasBitmapRenderer.lied ? undefined : 
 			fp.canvasBitmapRenderer
 		),
-		canvasWebgl: (
-			!!fp.canvasWebgl && !!liesLen && isBrave ? {
-				specs: {
-					webgl2Specs: attempt(() => {
-						const { webgl2Specs } = fp.canvasWebgl.specs || {}
-						const clone = {...webgl2Specs}
-						const blocked = /vertex|fragment|varying|bindings|combined|interleaved/i
-						Object.keys(clone || {}).forEach(key => blocked.test(key) && (delete clone[key]))
-						return clone
-					}) || fp.canvasWebgl.specs.webgl2Specs,
-					webglSpecs: attempt(() => {
-						const { webglSpecs } = fp.canvasWebgl.specs || {}
-						const clone = {...webglSpecs}
-						const blocked = /vertex|fragment/i
-						Object.keys(clone || {}).forEach(key => blocked.test(key) && (delete clone[key]))
-						return clone
-					}) || fp.canvasWebgl.specs.webglSpecs
-				}
-			}
-			: !!fp.canvasWebgl && !!liesLen && isFirefox ? {
-				supported: fp.canvasWebgl.supported,
-				supported2: fp.canvasWebgl.supported2,
-				specs: fp.canvasWebgl.specs
-			}
-			: !fp.canvasWebgl || fp.canvasWebgl.lied ? undefined : {
-				supported: fp.canvasWebgl.supported,
-				supported2: fp.canvasWebgl.supported2,
-				dataURI: fp.canvasWebgl.dataURI,
-				dataURI2: fp.canvasWebgl.dataURI2,
-				matchingDataURI: fp.canvasWebgl.matchingDataURI,
-				matchingUnmasked: fp.canvasWebgl.matchingUnmasked,
-				specs: fp.canvasWebgl.specs,
-				unmasked: fp.canvasWebgl.unmasked,
-				unmasked2: fp.canvasWebgl.unmasked2
-			}
+		canvasWebgl: ( 
+			!fp.canvasWebgl || fp.canvasWebgl.lied ? undefined : 
+			fp.canvasWebgl
 		),
 		css: !fp.cssStyleDeclarationVersion ? undefined : {
 			prototype: caniuse(() => fp.cssStyleDeclarationVersion.getComputedStyle.prototypeName),

@@ -234,7 +234,6 @@ const getIframeContentWindow = async () => {
 	}
 }
 
-
 const getIframeWindow = async ({ kill }) => {
 	try {
 		const numberOfIframes = window.length
@@ -367,9 +366,55 @@ const label = {
 	canvas: 'canvas'
 }
 
+const isContentWindowValid = (win) => {
+	try {	
+		win.HTMLIFrameElement.prototype.contentWindow
+		// new (Object.getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow').get) // 'not a constructor' TypeError
+		return false
+	}
+	catch (error) {
+		if (error.constructor.name != 'TypeError') {
+			return false
+		}
+		return true
+	}
+}
+
+const appendChildHasValidNewError = (win) => {
+	try {
+		new Element.prototype.appendChild
+		return false
+	}
+	catch (error) {
+		if (error.constructor.name != 'TypeError') {
+			return false
+		}
+		return true
+	}
+}
+
+const appendChildHasValidClassExtendsError = (win) => {
+	try { 
+		class Fake extends Element.prototype.appendChild { }
+		return false
+	}
+	catch (error) {
+		if (error.constructor.name != 'TypeError') {
+			return false
+		}
+		else if (!/not a constructor/i.test(error.message)) {
+			return false
+		}
+		return true
+	}
+}
+
 const valid = {
 	pass: (str) => `<span class="pass">&#10004; ${str}</span>`,
 	fail: (str) => `<span class="fail">&#10006; ${str}</span>`,
+	passed: true,
+	contentWindowErrors: isContentWindowValid(window),
+	appendChildErrors: appendChildHasValidNewError(window) && appendChildHasValidClassExtendsError(window),
 	features: true,
 	restoredUA: true
 }
@@ -411,9 +456,20 @@ patch(el, html`
 							if (knownFeatures && valid.features && !featuresMatchWindow) {
 								valid.features = false
 							}
+
+							// re-confirm passing
+							if (valid.passed) {
+								valid.passed = (
+									valid.contentWindowErrors &&
+									valid.appendChildErrors &&
+									valid.features &&
+									valid.restoredUA
+								)
+							}
+							
 							return `
 								<tr>
-									<td data-label="${label.context}">${contextLabels[i]}</td>
+									<td class="${ valid.contentWindowErrors && valid.appendChildErrors ? '' : 'lies'}" data-label="${label.context}">${contextLabels[i]}</td>
 									<td class="${
 										!uaReported ? 'undefined' : uaReported != uaBase ? 'lies' : ''
 									}" data-label="${label.uaReported}">${uaReported}</td>
@@ -443,11 +499,12 @@ patch(el, html`
 			</table>
 		</div>
 		<div>
-			${valid.features && valid.restoredUA ? valid.pass('passed') : (() => {
+			${valid.passed ? valid.pass('passed') : (() => {
 				const invalid = []
 				!valid.features && invalid.push(valid.fail('expect known features to match window reported version'))
+				!valid.contentWindowErrors && invalid.push(valid.fail('expect valid error message in HTMLIFrameElement.prototype.contentWindow'))
+				!valid.appendChildErrors && invalid.push(valid.fail('expect valid error message in Element.prototype.appendChild')) 
 				return invalid.join('<br>')
-
 			})()}
 		</div>
 	</div>

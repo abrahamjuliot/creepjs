@@ -188,11 +188,16 @@ const testNew = apiFunction => {
 	try {
 		new apiFunction
 		return {
-			['Expected new to throw an error']: true
+			['Expected new to throw an Error']: true
 		}
 	}
 	catch (error) {
-		// Native throws error
+		// Native throws TypeError
+		if (error.constructor.name != 'TypeError') {
+			return {
+				['Expected new to throw a TypeError']: true
+			}
+		}
 		return false
 	}
 }
@@ -201,11 +206,21 @@ const testClassExtends = apiFunction => {
 	try { 
 		class Fake extends apiFunction { }
 		return {
-			['Expected class extends to throw an error']: true
+			['Expected class extends to throw an Error']: true
 		}
 	}
 	catch (error) {
 		// Native throws error
+		if (error.constructor.name != 'TypeError') {
+			return {
+				['Expected class extends to throw a TypeError']: true
+			}
+		}
+		else if (!/not a constructor/i.test(error.message)) {
+			return {
+				['Expected class extends to throw TypeError "not a constructor"']: true
+			}
+		}
 		return false
 	}
 }
@@ -689,10 +704,15 @@ searchLies(HTMLElement, {
 	constructor: !0,
 	requestFullscreen: !0 // in FF mobile, this does not appear native 
 })
+searchLies(HTMLIFrameElement, {
+	constructor: !0
+})
+searchLies(HTMLFrameElement, {
+	constructor: !0
+})
 searchLies(HTMLCanvasElement, {
 	constructor: !0
 })
-
 searchLies(Navigator, {
 	constructor: !0
 })
