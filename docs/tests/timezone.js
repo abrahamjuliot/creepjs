@@ -307,6 +307,7 @@ const cities = [
 	"Asia/Beirut",
 	"Asia/Bishkek",
 	"Asia/Brunei",
+	"Asia/Calcutta",
 	"Asia/Chita",
 	"Asia/Choibalsan",
 	"Asia/Colombo",
@@ -330,7 +331,7 @@ const cities = [
 	"Asia/Karachi",
 	"Asia/Kathmandu",
 	"Asia/Khandyga",
-	"Asia/Calcutta",
+	"Asia/Kolkata",
 	"Asia/Krasnoyarsk",
 	"Asia/Kuala_Lumpur",
 	"Asia/Kuching",
@@ -592,21 +593,32 @@ const decryption = hashMap[encrypted]
 ]
 */
 
-const decrypted = !decryption ? 'Earth/UniqueVille' : decryption.length == 1 ? decryption[0] : `1 of ${decryption.length}: ${decryption.join(', ')}`
-console.log(`Your Location: ${decrypted}`)
+const valid = {
+	location: true,
+	invalidDate: true,
+	matchingOffset: true,
+}
 
 // tests
 const { timeZone } = Intl.DateTimeFormat().resolvedOptions()
 if (!(new Set(decryption).has(timeZone))) {
+	valid.location = false
 	console.log(`✖ expect timezone to match location history`)
 }
 
 const invalidDate = new Date(10000000000000000000000000)
 if (!/^Invalid Date$/.test(invalidDate)) {
+	valid.invalidDate = false
 	console.log(`✖ expect only Invalid Date`)
 }
 
 const timezoneOffset = getTimezoneOffset()
-if (timezoneOffset.raw != timezoneOffset.computed)
+if (timezoneOffset.raw != timezoneOffset.computed) {
+	invalidDate.matchingOffset = false
 	console.log(`✖ expect matching offset history`)
+}
+
+const decrypted = !decryption ? `Earth/UniqueVille/${hashMini(valid)}` : decryption.length == 1 ? decryption[0] : `1 of ${decryption.length}: ${decryption.join(', ')}`
+console.log(`${decrypted.replace(/_/, ' ').split('/').join('\n')}`)
+
 })()
