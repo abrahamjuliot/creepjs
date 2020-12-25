@@ -524,20 +524,42 @@ const getTimezoneOffset = () => {
 	return { computed: ~~computed, raw: ~~raw } 
 }
 
+const format = {
+	timeZone: '',
+	year: 'numeric',
+	month: 'numeric',
+	day: 'numeric',
+	hour: 'numeric',
+	minute: 'numeric',
+	second: 'numeric'
+}
+
+const start = performance.now()
 const getTimezoneOffsetSeasons = (year, city = null) => {
 	const minute = 60000
+	/*
 	const summer = (
 		city ? new Date(new Date(`7/1/${year}`).toLocaleString('en', {
 			timeZone: city
 		})) : new Date(`7/1/${year}`)
-	)
+	)*/
+
+	let formatter, summer
+	if (city) {
+		const options = {...format, timeZone: city }
+		formatter = new Intl.DateTimeFormat('en', options)
+		summer = new Date(formatter.format(new Date(`7/1/${year}`)))
+	}
+	else {
+		summer = new Date(`7/1/${year}`)
+	}
 
 	const summerUTCTime = +new Date(`${year}-07-01`)
 	const offset = (+summer - summerUTCTime) / minute
 	return offset
 }
 
-const years = [1879, 1921, 1952, 1976, 2018]
+const years = [1113] //[1879, 1921, 1952, 1976, 2018]
 const timezoneOffsetUniqueYearHistory = years.reduce((acc, year) => {
 	acc[year] = getTimezoneOffsetSeasons(year)
 	return acc
@@ -598,10 +620,11 @@ const valid = {
 	invalidDate: true,
 	matchingOffset: true,
 }
-
+console.log(`${(performance.now() - start).toFixed(2)}ms`)
 // tests
 const { timeZone } = Intl.DateTimeFormat().resolvedOptions()
-if (!(new Set(decryption).has(timeZone))) {
+const decriptionSet = new Set(decryption)
+if (!(decriptionSet.has(timeZone))) {
 	valid.location = false
 	console.log(`✖ expect timezone to match location history`)
 }
@@ -618,7 +641,8 @@ if (timezoneOffset.raw != timezoneOffset.computed) {
 	console.log(`✖ expect matching offset history`)
 }
 
-const decrypted = !decryption ? `Earth/UniqueVille/${hashMini(valid)}` : decryption.length == 1 ? decryption[0] : `1 of ${decryption.length}: ${decryption.join(', ')}`
+const decrypted = !valid.location ? `Earth/UniqueVille/${hashMini(valid)}` : timeZone
+console.log(`${hashMini(decryption)}`, decryption)
 console.log(`${decrypted.replace(/_/, ' ').split('/').join('\n')}`)
 
 })()
