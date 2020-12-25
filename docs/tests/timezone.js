@@ -635,10 +635,10 @@ if (timezoneOffset.raw != timezoneOffset.computed) {
 	console.log(`✖ expect matching offset history`)
 }
 
-const decrypted = !valid.location ? `Earth/UniqueVille/${hashMini(valid)}` : timeZone
+const decrypted = !valid.location ? `Earth/UniqueVille` : timeZone
 console.log(`unix epoch location: ${hashMini(+new Date(new Date(`7/1/1113`)))}`)
-console.log(`region: ${hashMini(decryption)}`, decryption)
-console.log(`${decrypted.replace(/_/, ' ').split('/').join('\n')}`)
+console.log(`computed city: ${hashMini({ decryption, valid })}`)
+console.log(`decrypted: ${decrypted.replace(/_/, ' ').split('/').join(', ')}`)
 
 
 })()
