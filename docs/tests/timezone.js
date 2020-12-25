@@ -1,12 +1,6 @@
 (() => {
 
 const hashMini = str => {
-	if (typeof str == 'number') {
-		return str
-	}
-	else if (!str || JSON.stringify(str) =='{}') {
-		return 'undefined'
-	}
 	const json = `${JSON.stringify(str)}`
 	let i, len, hash = 0x811c9dc5
 	for (i = 0, len = json.length; i < len; i++) {
