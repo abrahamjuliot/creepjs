@@ -330,7 +330,7 @@ const cities = [
 	"Asia/Karachi",
 	"Asia/Kathmandu",
 	"Asia/Khandyga",
-	"Asia/Kolkata",
+	"Asia/Calcutta",
 	"Asia/Krasnoyarsk",
 	"Asia/Kuala_Lumpur",
 	"Asia/Kuching",
