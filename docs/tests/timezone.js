@@ -636,7 +636,9 @@ if (timezoneOffset.raw != timezoneOffset.computed) {
 }
 
 const decrypted = !valid.location ? `Earth/UniqueVille/${hashMini(valid)}` : timeZone
-console.log(`${hashMini(decryption)}`, decryption)
+console.log(`unix epoch location: ${hashMini(+new Date(new Date(`7/1/1113`)))}`)
+console.log(`region: ${hashMini(decryption)}`, decryption)
 console.log(`${decrypted.replace(/_/, ' ').split('/').join('\n')}`)
+
 
 })()
