@@ -592,7 +592,7 @@ const decryption = hashMap[encrypted]
 ]
 */
 
-const decrypted = !decryption ? 'Fake/UniqueVille' : decryption.length == 1 ? decryption[0] : `1 of ${decryption.length}: ${decryption.join(', ')}`
+const decrypted = !decryption ? 'Earth/UniqueVille' : decryption.length == 1 ? decryption[0] : `1 of ${decryption.length}: ${decryption.join(', ')}`
 console.log(`Your Location: ${decrypted}`)
 
 // tests
@@ -607,8 +607,6 @@ if (!/^Invalid Date$/.test(invalidDate)) {
 }
 
 const timezoneOffset = getTimezoneOffset()
-const offset = timezoneOffset.raw
-const offsetComputed = timezoneOffset.computed
 if (timezoneOffset.raw != timezoneOffset.computed)
 	console.log(`✖ expect matching offset history`)
 })()
