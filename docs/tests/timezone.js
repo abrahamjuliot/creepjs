@@ -507,6 +507,22 @@ const cities = [
 	"Pacific/Wallis"
 ]
 
+const getTimezoneOffset = () => {
+	const date = new Date().getDate()
+	const month = new Date().getMonth()
+	const year = 1850
+	const format = n => (''+n).length == 1 ? `0${n}` : n
+	const dateString = `${month+1}/${format(date)}/${year}`
+	const dateStringUTC = `${year}-${format(month+1)}-${format(date)}`
+	const utc = Date.parse(
+		new Date(dateString)
+	)
+	const now = +new Date(dateStringUTC)
+	const computed = +(((utc - now)/60000).toFixed(0))
+	const raw = new Date(dateString).getTimezoneOffset()
+	return { computed: ~~computed, raw: ~~raw } 
+}
+
 const getTimezoneOffsetSeasons = (year, city = null) => {
 	const minute = 60000
 	const summer = (
@@ -526,8 +542,6 @@ const timezoneOffsetUniqueYearHistory = years.reduce((acc, year) => {
 	return acc
 }, {})
 
-
-const start = performance.now()
 const timezoneHistory = cities.map( city => {
 	const timezoneHistory = years.reduce((acc, year) => {
 		acc[year] = getTimezoneOffsetSeasons(year, city)
@@ -577,11 +591,24 @@ const decryption = hashMap[encrypted]
 	"Pacific/Wallis"
 ]
 */
+
 const decrypted = !decryption ? 'Fake/UniqueVille' : decryption.length == 1 ? decryption[0] : `1 of ${decryption.length}: ${decryption.join(', ')}`
+console.log(`Your Location: ${decrypted}`)
 
-console.log(`resolvedOptions: ${Intl.DateTimeFormat().resolvedOptions().timeZone}`)
-console.log(`toLocaleString: ${decrypted}`)
-console.log(`perf: ${performance.now() - start}`)
+// tests
+const { timeZone } = Intl.DateTimeFormat().resolvedOptions()
+if (!(new Set(decryption).has(timeZone))) {
+	console.log(`✖ expect timezone to match location history`)
+}
 
+const invalidDate = new Date(10000000000000000000000000)
+if (!/^Invalid Date$/.test(invalidDate)) {
+	console.log(`✖ expect only Invalid Date`)
+}
 
+const timezoneOffset = getTimezoneOffset()
+const offset = timezoneOffset.raw
+const offsetComputed = timezoneOffset.computed
+if (timezoneOffset.raw != timezoneOffset.computed)
+	console.log(`✖ expect matching offset history`)
 })()

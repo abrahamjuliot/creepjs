@@ -281,7 +281,13 @@ const imports = {
 		},
 		maths: !fp.maths || fp.maths.lied ? undefined : fp.maths,
 		consoleErrors: fp.consoleErrors,
-		timezone: !fp.timezone || fp.timezone.lied ? undefined : fp.timezone,
+		timezone: !fp.timezone || fp.timezone.lied ? undefined : {
+			lang: caniuse(() => fp.timezone.locale.lang),
+			relativeTime: fp.timezone.relativeTime,
+			timezone: fp.timezone.timezone,
+			timezoneLocation: fp.timezone.timezoneLocation,
+			writingSystemKeys: fp.timezone.writingSystemKeys
+		},
 		clientRects: !fp.clientRects || fp.clientRects.lied ? undefined : fp.clientRects,
 		offlineAudioContext: (
 			!!liesLen && isBrave ? fp.offlineAudioContext.values :
