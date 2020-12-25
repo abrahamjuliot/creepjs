@@ -122,11 +122,10 @@ export const getBestWorkerScope = imports => {
 				.catch(error => console.error(error.message))
 			}
 			if (caniuse(() => workerScope.userAgent)) {
-				const { canvas2d, timezoneHistoryLocation } = workerScope || {}
+				const { canvas2d } = workerScope || {}
 				workerScope.system = getOS(workerScope.userAgent)
 				workerScope.device = getUserAgentPlatform({ userAgent: workerScope.userAgent })
 				workerScope.canvas2d = { dataURI: canvas2d, $hash: await hashify(canvas2d) }
-				workerScope.timezoneHistoryLocation = await hashify(timezoneHistoryLocation)
 				workerScope.type = type
 				const $hash = await hashify(workerScope)
 				logTestResult({ test: `${type} worker`, passed: true })

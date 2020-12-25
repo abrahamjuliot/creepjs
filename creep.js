@@ -252,7 +252,6 @@ const imports = {
 			system: fp.workerScope.system,
 			device: fp.workerScope.device,
 			timezoneLocation: fp.workerScope.timezoneLocation,
-			timezoneHistoryLocation: fp.workerScope.timezoneHistoryLocation,
 			['webgl renderer']: (
 				!!liesLen && isBrave ? distrust : 
 				fp.workerScope.webglRenderer
@@ -282,18 +281,7 @@ const imports = {
 		},
 		maths: !fp.maths || fp.maths.lied ? undefined : fp.maths,
 		consoleErrors: fp.consoleErrors,
-		// avoid random timezone fingerprint values
-		timezone: !fp.timezone ? undefined : !fp.timezone.lied ? {
-			timezone: fp.timezone.timezone,
-			timezoneLocation: fp.timezone.timezoneLocation,
-			timezoneHistoryLocation: fp.timezone.timezoneHistoryLocation,
-			relativeTime: fp.timezone.relativeTime,
-			locale: fp.timezone.locale,
-			writingSystemKeys: fp.timezone.writingSystemKeys,
-			lied: fp.timezone.lied
-		} : {
-			decrypted: fp.timezone.decrypted
-		},
+		timezone: !fp.timezone || fp.timezone.lied ? undefined : fp.timezone,
 		clientRects: !fp.clientRects || fp.clientRects.lied ? undefined : fp.clientRects,
 		offlineAudioContext: (
 			!!liesLen && isBrave ? fp.offlineAudioContext.values :
@@ -485,7 +473,6 @@ const imports = {
 				<strong>Worker</strong>
 				<div>timezone offset: ${note.blocked}</div>
 				<div>location: ${note.blocked}</div>
-				<div>offset location: ${note.blocked}</div>
 				<div>language: ${note.blocked}</div>
 				<div>deviceMemory: ${note.blocked}</div>
 				<div>hardwareConcurrency: ${note.blocked}</div>
@@ -510,7 +497,6 @@ const imports = {
 				<strong>Worker</strong><span class="hash">${hashMini(data.$hash)}</span>
 				<div>timezone offset: ${data.timezoneOffset != undefined ? ''+data.timezoneOffset : note.unsupported}</div>
 				<div>location: ${data.timezoneLocation}</div>
-				<div>offset location:<span class="sub-hash">${hashMini(data.timezoneHistoryLocation)}</span></div>
 				<div>language: ${data.language || note.unsupported}</div>
 				<div>deviceMemory: ${data.deviceMemory || note.unsupported}</div>
 				<div>hardwareConcurrency: ${data.hardwareConcurrency || note.unsupported}</div>
@@ -828,13 +814,10 @@ const imports = {
 				<div>zone: ${note.blocked}</div>
 				<div>offset: ${note.blocked}</div>
 				<div>offset computed: ${note.blocked}</div>
-				<div>matching offsets: ${note.blocked}</div>
 				<div>seasonal offsets: ${note.blocked}</div>	
 			</div>
 			<div class="col-six">
 				<div>location: ${note.blocked}</div>
-				<div>encrypted history: ${note.blocked}</div>
-				<div>decrypted: ${note.blocked}</div>
 				<div>relativeTimeFormat: ${note.blocked}</div>
 				<div>locale language: ${note.blocked}</div>
 				<div>writing system keys: ${note.blocked}</div>
@@ -848,12 +831,9 @@ const imports = {
 					timezoneOffset: timezoneOffset,
 					timezoneOffsetComputed,
 					timezoneOffsetMeasured: measuredTimezones,
-					matchingOffsets,
 					relativeTime,
 					locale,
 					writingSystemKeys,
-					encrypted,
-					decrypted,
 					lied
 				}
 			} = fp
@@ -864,15 +844,10 @@ const imports = {
 				<div>zone: ${timezone}</div>
 				<div>offset: ${''+timezoneOffset}</div>
 				<div>offset computed: ${''+timezoneOffsetComputed}</div>
-				<div>matching offsets: ${''+matchingOffsets}</div>
 				<div>seasonal offsets: ${measuredTimezones}</div>
 			</div>
 			<div class="col-six">
 				<div>location: ${timezoneLocation}</div>
-				<div>encrypted history:<span class="sub-hash">${hashMini(encrypted)}</span></div>
-				<div>decrypted: ${
-					decrypted.length == 1 ? decrypted[0] : modal(`${id}-decrypted`, `<strong>1 of ${decrypted.length}</strong><br>${decrypted.join('<br>')}`)
-				}</div>
 				<div>relativeTimeFormat: ${
 					!relativeTime ? note.unsupported : 
 					modal(`${id}-relative-time-format`, Object.keys(relativeTime).sort().map(key => `${key} => ${relativeTime[key]}`).join('<br>'))
