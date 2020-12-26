@@ -562,7 +562,7 @@ const getTimezoneOffsetHistory = (year, city = null) => {
         formatter = new Intl.DateTimeFormat('en', options)
         summer = +new Date(formatter.format(new Date(`7/1/${year}`)))
     } else {
-        summer = new Date(`7/1/${year}`)
+        summer = +new Date(`7/1/${year}`)
     }
     const summerUTCTime = +new Date(`${year}-07-01`)
     const offset = (summer - summerUTCTime) / minute
