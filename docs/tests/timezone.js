@@ -503,19 +503,27 @@ const cities = [
 ]
 
 const getTimezoneOffset = () => {
-	const date = new Date().getDate()
-	const month = new Date().getMonth()
-	const year = 1850
-	const format = n => (''+n).length == 1 ? `0${n}` : n
-	const dateString = `${month+1}/${format(date)}/${year}`
-	const dateStringUTC = `${year}-${format(month+1)}-${format(date)}`
-	const utc = Date.parse(
-		new Date(dateString)
-	)
-	const now = +new Date(dateStringUTC)
-	const computed = +(((utc - now)/60000).toFixed(0))
-	const raw = new Date(dateString).getTimezoneOffset()
-	return { computed: ~~computed, raw: ~~raw } 
+	const [year, month, day ] = JSON.stringify(new Date())
+		.slice(1,11)
+		.split('-')
+	const dateString = `${month}/${day}/${year}`
+	const dateStringUTC = `${year}-${month}-${day}`
+	const now = +new Date(dateString)
+	const utc = +new Date(dateStringUTC)
+	const computed = +((now - utc)/60000)
+	const key = new Date(dateString).getTimezoneOffset()
+	return { computed: ~~computed, key: ~~key } 
+}
+
+const getUTCTime = () => {
+	const pad = n => n < 10 ? '0' + n : n
+	const date = new Date() 
+	const hh = date.getUTCHours()
+	const mm = date.getUTCMinutes()
+	const ss = date.getUTCSeconds()
+	const utcReport = `${pad(hh)}:${pad(mm)}:${pad(ss)}`
+	const utcExtract = JSON.stringify(date).slice(12,20)
+	return { report, extract }
 }
 
 const format = {
@@ -612,7 +620,8 @@ const decryption = hashMap[encrypted]
 const valid = {
 	location: true,
 	invalidDate: true,
-	matchingOffset: true,
+	matchingOffset: true,,
+	utcTime: true
 }
 console.log(`${(performance.now() - start).toFixed(2)}ms`)
 // tests
@@ -630,15 +639,27 @@ if (!/^Invalid Date$/.test(invalidDate)) {
 }
 
 const timezoneOffset = getTimezoneOffset()
-if (timezoneOffset.raw != timezoneOffset.computed) {
+if (timezoneOffset.key != timezoneOffset.computed) {
 	invalidDate.matchingOffset = false
 	console.log(`✖ expect matching offset history`)
 }
 
+const { report: utcReport, extract: utcExtract } = getUTCTime()
+if (utcReport != utcExtract) {
+	invalidDate.utcTime = false
+	console.log(`✖ expect valid UTC time`)
+}
+
+const formatLocation = x => x.replace(/_/, ' ').split('/').join(', ') 
 const decrypted = !valid.location ? `Earth/UniqueVille` : timeZone
 console.log(`unix epoch location: ${hashMini(+new Date(new Date(`7/1/1113`)))}`)
-console.log(`computed city: ${hashMini({ decryption, valid })}`)
-console.log(`decrypted: ${decrypted.replace(/_/, ' ').split('/').join(', ')}`)
+console.log(`reported utc time: ${utcReport}`)
+console.log(`extracted utc time: ${utcExtract}`)
+console.log(`reported offset: ${timezoneOffset.key}`)
+console.log(`computed offset: ${timezoneOffset.computed}`)
+console.log(`reported location: ${formatLocation(timeZone)}`)
+console.log(`computed region: ${hashMini({ decryption, valid })}`, decryption)
+console.log(`measured location: ${formatLocation(decrypted)}`)
 
 
 })()
