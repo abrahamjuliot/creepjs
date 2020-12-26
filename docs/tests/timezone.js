@@ -515,15 +515,25 @@ const getTimezoneOffset = () => {
 	return { computed: ~~computed, key: ~~key } 
 }
 
+const pad = (x, n = 1) => {
+	if (n == 2) {
+		return x < 10 ? `00${x}` : x < 100 ? `0${x}` :  x
+	}
+	return x < 10 ? `0${x}` : x
+}
+
 const getUTCTime = () => {
-	const pad = n => n < 10 ? '0' + n : n
-	const date = new Date() 
-	const hh = date.getUTCHours()
-	const mm = date.getUTCMinutes()
-	const ss = date.getUTCSeconds()
-	const utcReport = `${pad(hh)}:${pad(mm)}:${pad(ss)}`
-	const utcExtract = JSON.stringify(date).slice(12,20)
-	return { utcReport, utcExtract }
+	const now = new Date() 
+	const year = now.getUTCFullYear()
+	const month = now.getUTCMonth()+1
+	const date = now.getUTCDate()
+	const hh = now.getUTCHours()
+	const mm = now.getUTCMinutes()
+	const ss = now.getUTCSeconds()
+	const ms = now.getUTCMilliseconds()
+	const methods = `${pad(year)}-${pad(month)}-${pad(date)}T${pad(hh)}:${pad(mm)}:${pad(ss)}.${pad(ms, 2)}Z`
+	const json = JSON.stringify(now).slice(1,-1)
+	return { methods, json }
 }
 
 const format = {
@@ -537,15 +547,8 @@ const format = {
 }
 
 const start = performance.now()
-const getTimezoneOffsetSeasons = (year, city = null) => {
+const getTimezoneOffsetHistory = (year, city = null) => {
 	const minute = 60000
-	/*
-	const summer = (
-		city ? new Date(new Date(`7/1/${year}`).toLocaleString('en', {
-			timeZone: city
-		})) : new Date(`7/1/${year}`)
-	)*/
-
 	let formatter, summer
 	if (city) {
 		const options = {...format, timeZone: city }
@@ -555,7 +558,6 @@ const getTimezoneOffsetSeasons = (year, city = null) => {
 	else {
 		summer = new Date(`7/1/${year}`)
 	}
-
 	const summerUTCTime = +new Date(`${year}-07-01`)
 	const offset = (+summer - summerUTCTime) / minute
 	return offset
@@ -563,13 +565,13 @@ const getTimezoneOffsetSeasons = (year, city = null) => {
 
 const years = [1113] //[1879, 1921, 1952, 1976, 2018]
 const timezoneOffsetUniqueYearHistory = years.reduce((acc, year) => {
-	acc[year] = getTimezoneOffsetSeasons(year)
+	acc[year] = getTimezoneOffsetHistory(year)
 	return acc
 }, {})
 
 const timezoneHistory = cities.map( city => {
 	const timezoneHistory = years.reduce((acc, year) => {
-		acc[year] = getTimezoneOffsetSeasons(year, city)
+		acc[year] = getTimezoneOffsetHistory(year, city)
 		return acc
 	}, {})
 	const encrypted = ''+Object.values(timezoneHistory)
@@ -589,7 +591,7 @@ const hashMap = timezoneHistory.reduce((acc, timezone) => {
 }, {})
 /*
 const test = years.reduce((acc, year) => {
-	acc[year] = getTimezoneOffsetSeasons(year)
+	acc[year] = getTimezoneOffsetHistory(year)
 	return acc
 }, {})
 const encrypted = await hashify(test)
@@ -644,8 +646,8 @@ if (timezoneOffset.key != timezoneOffset.computed) {
 	console.log(`✖ expect matching offset history`)
 }
 
-const { utcReport, utcExtract } = getUTCTime()
-if (utcReport != utcExtract) {
+const { methods: utcMethods, json: utcJSON } = getUTCTime()
+if (utcMethods != utcJSON) {
 	invalidDate.utcTime = false
 	console.log(`✖ expect valid UTC time`)
 }
@@ -653,8 +655,8 @@ if (utcReport != utcExtract) {
 const formatLocation = x => x.replace(/_/, ' ').split('/').join(', ') 
 const decrypted = !valid.location ? `Earth/UniqueVille` : timeZone
 console.log(`unix epoch location: ${hashMini(+new Date(new Date(`7/1/1113`)))}`)
-console.log(`reported utc time: ${utcReport}`)
-console.log(`extracted utc time: ${utcExtract}`)
+console.log(`utc time methods: ${utcMethods}`)
+console.log(`utc time json: ${utcJSON}`)
 console.log(`reported offset: ${timezoneOffset.key}`)
 console.log(`computed offset: ${timezoneOffset.computed}`)
 console.log(`reported location: ${formatLocation(timeZone)}`)
