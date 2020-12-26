@@ -523,7 +523,7 @@ const getUTCTime = () => {
 	const ss = date.getUTCSeconds()
 	const utcReport = `${pad(hh)}:${pad(mm)}:${pad(ss)}`
 	const utcExtract = JSON.stringify(date).slice(12,20)
-	return { report, extract }
+	return { utcReport, utcExtract }
 }
 
 const format = {
@@ -620,7 +620,7 @@ const decryption = hashMap[encrypted]
 const valid = {
 	location: true,
 	invalidDate: true,
-	matchingOffset: true,,
+	matchingOffset: true,
 	utcTime: true
 }
 console.log(`${(performance.now() - start).toFixed(2)}ms`)
@@ -644,7 +644,7 @@ if (timezoneOffset.key != timezoneOffset.computed) {
 	console.log(`✖ expect matching offset history`)
 }
 
-const { report: utcReport, extract: utcExtract } = getUTCTime()
+const { utcReport, utcExtract } = getUTCTime()
 if (utcReport != utcExtract) {
 	invalidDate.utcTime = false
 	console.log(`✖ expect valid UTC time`)
