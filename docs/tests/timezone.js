@@ -503,7 +503,7 @@ const cities = [
 ]
 
 const getTimezoneOffset = () => {
-	const [year, month, day ] = JSON.stringify(new Date())
+	const [year, month, day] = JSON.stringify(new Date())
 		.slice(1,11)
 		.split('-')
 	const dateString = `${month}/${day}/${year}`
@@ -517,9 +517,9 @@ const getTimezoneOffset = () => {
 
 const pad = (x, n = 1) => {
 	if (n == 2) {
-		return x < 10 ? `00${x}` : x < 100 ? `0${x}` :  x
+		return (x / 1000).toFixed(3).slice(2, 5)
 	}
-	return x < 10 ? `0${x}` : x
+	return (x / 100).toFixed(2).slice(2, 4)
 }
 
 const getUTCTime = () => {
@@ -531,101 +531,62 @@ const getUTCTime = () => {
 	const mm = now.getUTCMinutes()
 	const ss = now.getUTCSeconds()
 	const ms = now.getUTCMilliseconds()
-	const methods = `${pad(year)}-${pad(month)}-${pad(date)}T${pad(hh)}:${pad(mm)}:${pad(ss)}.${pad(ms, 2)}Z`
-	const json = JSON.stringify(now).slice(1,-1)
-	return { methods, json }
-}
 
-const format = {
-	timeZone: '',
-	year: 'numeric',
-	month: 'numeric',
-	day: 'numeric',
-	hour: 'numeric',
-	minute: 'numeric',
-	second: 'numeric'
+	const methods = `${year}-${pad(month)}-${pad(date)}T${pad(hh)}:${pad(mm)}:${pad(ss)}.${pad(ms, 2)}Z`
+	const stringify = JSON.stringify(now).slice(1,-1)
+	const toISOString = now.toISOString()
+	const toJSON = now.toJSON()
+	return { methods, stringify, toISOString, toJSON }
 }
 
 const start = performance.now()
-const getTimezoneOffsetHistory = (year, city = null) => {
-	const minute = 60000
-	let formatter, summer
-	if (city) {
-		const options = {...format, timeZone: city }
-		formatter = new Intl.DateTimeFormat('en', options)
-		summer = new Date(formatter.format(new Date(`7/1/${year}`)))
-	}
-	else {
-		summer = new Date(`7/1/${year}`)
-	}
-	const summerUTCTime = +new Date(`${year}-07-01`)
-	const offset = (+summer - summerUTCTime) / minute
-	return offset
+
+const year = 1113
+const format = {
+    timeZone: '',
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric'
 }
+const getTimezoneOffsetHistory = (year, city = null) => {
+    const minute = 60000
+    let formatter, summer
+    if (city) {
+        const options = {
+            ...format,
+            timeZone: city
+        }
+        formatter = new Intl.DateTimeFormat('en', options)
+        summer = +new Date(formatter.format(new Date(`7/1/${year}`)))
+    } else {
+        summer = new Date(`7/1/${year}`)
+    }
+    const summerUTCTime = +new Date(`${year}-07-01`)
+    const offset = (summer - summerUTCTime) / minute
+    return offset
+}
+const system = getTimezoneOffsetHistory(year)
+const binarySearch = (list, fn) => {
+    const end = list.length
+    const middle = Math.floor(end / 2)
+    const [left, right] = [list.slice(0, middle), list.slice(middle, end)]
+    const found = fn(left)
+    return end == 1 || found.length ? found : binarySearch(right, fn)
+}
+const filter = (cities) => cities.filter(city => system == getTimezoneOffsetHistory(year, city))
+const decryption = binarySearch(cities, filter)
 
-const years = [1113] //[1879, 1921, 1952, 1976, 2018]
-const timezoneOffsetUniqueYearHistory = years.reduce((acc, year) => {
-	acc[year] = getTimezoneOffsetHistory(year)
-	return acc
-}, {})
-
-const timezoneHistory = cities.map( city => {
-	const timezoneHistory = years.reduce((acc, year) => {
-		acc[year] = getTimezoneOffsetHistory(year, city)
-		return acc
-	}, {})
-	const encrypted = ''+Object.values(timezoneHistory)
-	return {
-		city,
-		encrypted
-	}
-})
-
-const hashMap = timezoneHistory.reduce((acc, timezone) => {
-	if (!acc[timezone.encrypted]) {
-		acc[timezone.encrypted] = [timezone.city]
-		return acc
-	}
-	acc[timezone.encrypted].push(timezone.city)
-	return acc
-}, {})
-/*
-const test = years.reduce((acc, year) => {
-	acc[year] = getTimezoneOffsetHistory(year)
-	return acc
-}, {})
-const encrypted = await hashify(test)
-
-const len = Object.keys(hashMap).map(key => {
-	return [key, hashMap[key].length]
-}).sort(function (a, b) {
-	return b[1] - a[1]
-})
-*/
-
-//console.log(len)
-
-const encrypted = ''+Object.values(timezoneOffsetUniqueYearHistory)
-const decryption = hashMap[encrypted]
-/*
-["Pacific/Port_Moresby",
-	"Pacific/Rarotonga",
-	"Pacific/Saipan",
-	"Pacific/Tahiti",
-	"Pacific/Tarawa",
-	"Pacific/Tongatapu",
-	"Pacific/Wake",
-	"Pacific/Wallis"
-]
-*/
-
+const unixEpochLocation = hashMini(+new Date(new Date(`7/1/1113`)))
 const valid = {
 	location: true,
 	invalidDate: true,
 	matchingOffset: true,
 	utcTime: true
 }
-console.log(`${(performance.now() - start).toFixed(2)}ms`)
+const perf = performance.now() - start
 // tests
 const { timeZone } = Intl.DateTimeFormat().resolvedOptions()
 const decriptionSet = new Set(decryption)
@@ -646,22 +607,44 @@ if (timezoneOffset.key != timezoneOffset.computed) {
 	console.log(`✖ expect matching offset history`)
 }
 
-const { methods: utcMethods, json: utcJSON } = getUTCTime()
-if (utcMethods != utcJSON) {
+const { methods: utcMethods, stringify, toJSON, toISOString } = getUTCTime()
+if (utcMethods != stringify || utcMethods != toJSON || utcMethods != toISOString) {
 	invalidDate.utcTime = false
 	console.log(`✖ expect valid UTC time`)
 }
 
 const formatLocation = x => x.replace(/_/, ' ').split('/').join(', ') 
-const decrypted = !valid.location ? `Earth/UniqueVille` : timeZone
-console.log(`unix epoch location: ${hashMini(+new Date(new Date(`7/1/1113`)))}`)
+const decrypted = decriptionSet.size == 1 ? decryption[0] : !valid.location ? `Earth/UniqueVille` : timeZone
+console.log(`unix epoch location: ${unixEpochLocation}`)
 console.log(`utc time methods: ${utcMethods}`)
-console.log(`utc time to json: ${utcJSON}`)
+console.log(`utc time stringify: ${stringify}`)
+console.log(`utc time toJSON: ${toJSON}`)
+console.log(`utc time toISOString: ${toISOString}`)
+
 console.log(`reported offset: ${timezoneOffset.key}`)
 console.log(`computed offset: ${timezoneOffset.computed}`)
 console.log(`reported location: ${formatLocation(timeZone)}`)
 console.log(`computed region: ${hashMini({ decryption, valid })}`, decryption)
 console.log(`measured location: ${formatLocation(decrypted)}`)
 
-
+const el = document.getElementById('fingerprint-data')
+patch(el, html`
+	<style>
+		#fingerprint-data > .jumbo {
+			font-size: 32px;
+		}
+	</style>
+	<div id="fingerprint-data">
+		<div class="visitor-info">
+			<span class="aside-note">${perf.toFixed(2)}ms</span>
+			<strong>Timezone</strong>
+		</div>
+		<div>
+			<div>${unixEpochLocation}</div>
+			<div>${formatLocation(decrypted)}</div>
+			<div>${''+timezoneOffset.computed}</div>
+		</div>
+	</div>
+	`		
+)
 })()
