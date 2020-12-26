@@ -656,7 +656,7 @@ const formatLocation = x => x.replace(/_/, ' ').split('/').join(', ')
 const decrypted = !valid.location ? `Earth/UniqueVille` : timeZone
 console.log(`unix epoch location: ${hashMini(+new Date(new Date(`7/1/1113`)))}`)
 console.log(`utc time methods: ${utcMethods}`)
-console.log(`utc time json: ${utcJSON}`)
+console.log(`utc time to json: ${utcJSON}`)
 console.log(`reported offset: ${timezoneOffset.key}`)
 console.log(`computed offset: ${timezoneOffset.computed}`)
 console.log(`reported location: ${formatLocation(timeZone)}`)
