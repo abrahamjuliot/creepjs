@@ -569,6 +569,8 @@ const getTimezoneOffsetHistory = (year, city = null) => {
     return offset
 }
 const system = getTimezoneOffsetHistory(year)
+const { timeZone } = Intl.DateTimeFormat().resolvedOptions()
+const resolvedOptions = getTimezoneOffsetHistory(year, timeZone)
 const binarySearch = (list, fn) => {
     const end = list.length
     const middle = Math.floor(end / 2)
@@ -576,19 +578,21 @@ const binarySearch = (list, fn) => {
     const found = fn(left)
     return end == 1 || found.length ? found : binarySearch(right, fn)
 }
-const filter = (cities) => cities.filter(city => system == getTimezoneOffsetHistory(year, city))
-const decryption = binarySearch(cities, filter)
+const filter = cities => cities.filter(city => system == getTimezoneOffsetHistory(year, city))
+const decryption = (
+	system == getTimezoneOffsetHistory(year, timeZone) ? [timeZone] : binarySearch(cities, filter)
+)
+const perf = performance.now() - start
 
-const unixEpochLocation = hashMini(+new Date(new Date(`7/1/1113`)))
+const unixEpochLocation = +new Date(new Date(`7/1/1113`))
 const valid = {
 	location: true,
 	invalidDate: true,
 	matchingOffset: true,
 	utcTime: true
 }
-const perf = performance.now() - start
+
 // tests
-const { timeZone } = Intl.DateTimeFormat().resolvedOptions()
 const decriptionSet = new Set(decryption)
 if (!(decriptionSet.has(timeZone))) {
 	valid.location = false
@@ -615,7 +619,6 @@ if (utcMethods != stringify || utcMethods != toJSON || utcMethods != toISOString
 
 const formatLocation = x => x.replace(/_/, ' ').split('/').join(', ') 
 const decrypted = decriptionSet.size == 1 ? decryption[0] : !valid.location ? `Earth/UniqueVille` : timeZone
-console.log(`unix epoch location: ${unixEpochLocation}`)
 console.log(`utc time methods: ${utcMethods}`)
 console.log(`utc time stringify: ${stringify}`)
 console.log(`utc time toJSON: ${toJSON}`)
@@ -644,6 +647,11 @@ patch(el, html`
 			<div>${formatLocation(decrypted)}</div>
 			<div>${''+timezoneOffset.computed}</div>
 		</div>
+		<div>
+			<div>unix epoch: ${unixEpochLocation}</div>
+		</div>
+
+
 	</div>
 	`		
 )
