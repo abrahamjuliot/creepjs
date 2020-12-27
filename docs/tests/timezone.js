@@ -587,48 +587,29 @@ const perf = performance.now() - start
 const unixEpochLocation = +new Date(new Date(`7/1/1113`))
 const valid = {
 	location: true,
-	invalidDate: true,
 	matchingOffset: true,
 	utcTime: true
 }
 
-// tests
 const decriptionSet = new Set(decryption)
+const timezoneOffset = getTimezoneOffset()
+
+// tests
 if (!(decriptionSet.has(timeZone))) {
 	valid.location = false
-	console.log(`✖ expect timezone to match location history`)
 }
 
-const invalidDate = new Date(10000000000000000000000000)
-if (!/^Invalid Date$/.test(invalidDate)) {
-	valid.invalidDate = false
-	console.log(`✖ expect only Invalid Date`)
-}
-
-const timezoneOffset = getTimezoneOffset()
 if (timezoneOffset.key != timezoneOffset.computed) {
-	invalidDate.matchingOffset = false
-	console.log(`✖ expect matching offset history`)
+	valid.matchingOffset = false
 }
 
 const { methods: utcMethods, stringify, toJSON, toISOString } = getUTCTime()
 if (utcMethods != stringify || utcMethods != toJSON || utcMethods != toISOString) {
-	invalidDate.utcTime = false
-	console.log(`✖ expect valid UTC time`)
+	valid.utcTime = false
 }
 
 const formatLocation = x => x.replace(/_/, ' ').split('/').join(', ') 
 const decrypted = decriptionSet.size == 1 ? decryption[0] : !valid.location ? `Earth/UniqueVille` : timeZone
-console.log(`utc time methods: ${utcMethods}`)
-console.log(`utc time stringify: ${stringify}`)
-console.log(`utc time toJSON: ${toJSON}`)
-console.log(`utc time toISOString: ${toISOString}`)
-
-console.log(`reported offset: ${timezoneOffset.key}`)
-console.log(`computed offset: ${timezoneOffset.computed}`)
-console.log(`reported location: ${formatLocation(timeZone)}`)
-console.log(`computed region: ${hashMini({ decryption, valid })}`, decryption)
-console.log(`measured location: ${formatLocation(decrypted)}`)
 
 const el = document.getElementById('fingerprint-data')
 patch(el, html`
@@ -642,13 +623,28 @@ patch(el, html`
 			<span class="aside-note">${perf.toFixed(2)}ms</span>
 			<strong>Timezone</strong>
 		</div>
-		<div>
-			<div>${unixEpochLocation}</div>
-			<div>${formatLocation(decrypted)}</div>
-			<div>${''+timezoneOffset.computed}</div>
+		<div class="jumbo">
+			<div>${hashMini(formatLocation(decrypted))}</div>
 		</div>
 		<div>
+			<div>reported location: ${
+				!valid.location ? `${formatLocation(timeZone)} [fake]` : formatLocation(timeZone)
+			}</div>
+			<div>measured location: ${
+				!valid.location && !decriptionSet.size ? `${formatLocation(decrypted)} [high entropy]`: formatLocation(decrypted)
+			}</div>
 			<div>unix epoch: ${unixEpochLocation}</div>
+			<div>reported offset: ${
+				!valid.matchingOffset ? `${''+timezoneOffset.key} [fake]` : ''+timezoneOffset.key
+			}</div>
+			<div>computed offset: ${''+timezoneOffset.computed}</div>
+			<div>utc time: ${!valid.utcTime ? '[fake]' : ''}
+				<br>${utcMethods} [methods]
+				<br>${stringify} [stringify]
+				<br>${toJSON} [toJSON]
+				<br>${toISOString} [toISOString]
+			</div>
+			${decriptionSet.size > 1 ? `<div>computed region: ${decryption.join(', ')}</div>` : '' }
 		</div>
 
 
