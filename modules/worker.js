@@ -98,7 +98,6 @@ export const getBestWorkerScope = imports => {
 	const {
 		require: {
 			getOS,
-			hashify,
 			captureError,
 			caniuse,
 			phantomDarkness,
@@ -108,6 +107,7 @@ export const getBestWorkerScope = imports => {
 	} = imports
 	return new Promise(async resolve => {
 		try {
+			const start = performance.now()
 			let type = 'service' // loads fast but is not available in frames
 			let workerScope = await getServiceWorker()
 				.catch(error => console.error(error.message))
@@ -125,11 +125,10 @@ export const getBestWorkerScope = imports => {
 				const { canvas2d } = workerScope || {}
 				workerScope.system = getOS(workerScope.userAgent)
 				workerScope.device = getUserAgentPlatform({ userAgent: workerScope.userAgent })
-				workerScope.canvas2d = { dataURI: canvas2d, $hash: await hashify(canvas2d) }
+				workerScope.canvas2d = { dataURI: canvas2d }
 				workerScope.type = type
-				const $hash = await hashify(workerScope)
-				logTestResult({ test: `${type} worker`, passed: true })
-				return resolve({ ...workerScope, $hash })
+				logTestResult({ start, test: `${type} worker`, passed: true })
+				return resolve({ ...workerScope })
 			}
 			return resolve()
 		}

@@ -3,7 +3,6 @@ export const getMaths = imports => {
 	const {
 		require: {
 			hashMini,
-			hashify,
 			captureError,
 			attempt,
 			documentLie,
@@ -15,6 +14,7 @@ export const getMaths = imports => {
 
 	return new Promise(async resolve => {
 		try {
+			const start = performance.now()
 			// detect failed math equality lie
 			const check = [
 				'acos',
@@ -207,9 +207,8 @@ export const getMaths = imports => {
 				})
 			})
 			
-			const $hash = await hashify(data)
-			logTestResult({ test: 'math', passed: true })
-			return resolve({ data, lied, $hash })
+			logTestResult({ start, test: 'math', passed: true })
+			return resolve({ data, lied })
 		}
 		catch (error) {
 			logTestResult({ test: 'math', passed: false })

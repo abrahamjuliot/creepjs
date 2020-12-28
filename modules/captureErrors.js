@@ -105,9 +105,7 @@ const getCapturedErrors = imports => {
 	const errors = errorsCaptured.getErrors()
 
 	return new Promise(async resolve => {
-		const data =  errors
-		const $hash = await hashify(data)
-		return resolve({data, $hash })
+		return resolve({data: errors })
 	})
 }
 

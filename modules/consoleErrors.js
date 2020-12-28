@@ -22,6 +22,7 @@ export const getConsoleErrors = imports => {
 
 	return new Promise(async resolve => {
 		try {
+			const start = performance.now()
 			const errorTests = [
 				() => new Function('alert(")')(),
 				() => new Function('const foo;foo.bar')(),
@@ -34,9 +35,8 @@ export const getConsoleErrors = imports => {
 				() => new Function('const a=1; const a=2;')()
 			]
 			const errors = getErrors(errorTests)
-			const $hash = await hashify(errors)
-			logTestResult({ test: 'console errors', passed: true })
-			return resolve({errors, $hash })
+			logTestResult({ start, test: 'console errors', passed: true })
+			return resolve({ errors })
 		}
 		catch (error) {
 			logTestResult({ test: 'console errors', passed: false })

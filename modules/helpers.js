@@ -162,11 +162,15 @@ const getUserAgentPlatform = ({ userAgent, excludeBuild = true }) => {
 	}
 }
 
-const logTestResult = ({ test, passed }) => {
+const logTestResult = ({ test, passed, start = false }) => {
 	const color = passed ? '#4cca9f' : 'lightcoral'
 	const result = passed ? 'passed' : 'failed'
 	const symbol = passed ? '✔' : '-'
-	return console.log(`%c${symbol} ${test} ${result}`, `color:${color}`)
+	return console.log(
+		`%c${symbol}${
+			start ? ` (${(performance.now() - start).toFixed(2)}ms)` : ''
+		} ${test} ${result}`, `color:${color}`
+	)
 }
 
 export { isChrome, isBrave, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, logTestResult }

@@ -4,7 +4,6 @@ export const getNavigator = (imports, workerScope) => {
 	const {
 		require: {
 			getOS,
-			hashify,
 			hashMini,
 			captureError,
 			attempt,
@@ -24,6 +23,7 @@ export const getNavigator = (imports, workerScope) => {
 
 	return new Promise(async resolve => {
 		try {
+			const start = performance.now()
 			let lied = (
 				lieProps['Navigator.appVersion'] ||
 				lieProps['Navigator.deviceMemory'] ||
@@ -337,9 +337,8 @@ export const getNavigator = (imports, workerScope) => {
 					return data
 				}, 'highEntropyValues failed')
 			}
-			const $hash = await hashify(data)
-			logTestResult({ test: 'navigator', passed: true })
-			return resolve({ ...data, lied, $hash })
+			logTestResult({ start, test: 'navigator', passed: true })
+			return resolve({ ...data, lied })
 		}
 		catch (error) {
 			logTestResult({ test: 'navigator', passed: false })

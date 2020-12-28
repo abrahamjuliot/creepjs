@@ -440,8 +440,9 @@ const testValue = (obj, name) => {
 	}
 }
 
+let counter = 0
 const hasLiedAPI = (api, name, obj) => {
-	
+	counter++
 	const fnToStr = (
 		phantomDarkness ? 
 		phantomDarkness.Function.prototype.toString.call(Function.prototype.toString) : // aggressive test
@@ -691,6 +692,7 @@ const createLieProps = () => {
 const lieProps = createLieProps()
 const { searchLies } = lieProps
 
+const start = performance.now()
 searchLies(Node, {
 	constructor: !0,
 	appendChild: !0 // opera fix
@@ -703,12 +705,6 @@ searchLies(Element, {
 searchLies(HTMLElement, {
 	constructor: !0,
 	requestFullscreen: !0 // in FF mobile, this does not appear native 
-})
-searchLies(HTMLIFrameElement, {
-	constructor: !0
-})
-searchLies(HTMLFrameElement, {
-	constructor: !0
 })
 searchLies(HTMLCanvasElement, {
 	constructor: !0
@@ -729,28 +725,10 @@ searchLies(Date, {
 	constructor: !0,
 	toGMTString: !0
 })
-searchLies(Intl.Collator, {
-	constructor: !0
-})
 searchLies(Intl.DateTimeFormat, {
 	constructor: !0
 })
-searchLies(caniuse(() => Intl.DisplayNames), {
-	constructor: !0
-})
-searchLies(Intl.ListFormat, {
-	constructor: !0
-})
-searchLies(Intl.NumberFormat, {
-	constructor: !0
-})
-searchLies(Intl.PluralRules, {
-	constructor: !0
-})
 searchLies(Intl.RelativeTimeFormat, {
-	constructor: !0
-})	
-searchLies(Function, {
 	constructor: !0
 })
 searchLies(caniuse(() => AnalyserNode), {
@@ -791,11 +769,8 @@ searchLies(Document, {
 	createTextNode: !0, // opera fix
 	querySelector: !0 // opera fix
 })
-searchLies(String, {
-	constructor: !0,
-	trimRight: !0,
-	trimLeft: !0
-})
+
+console.log(`${counter} API properties analyzed in ${(performance.now() - start).toFixed(2)}ms (${Object.keys(lieProps.getProps()).length} corrupted)`)
 
 const getPluginLies = (plugins, mimeTypes) => {
 	const lies = [] // collect lie types
@@ -899,7 +874,6 @@ const getLies = imports => {
 
 	const {
 		require: {
-			hashify,
 			lieRecords
 		}
 	} = imports
@@ -918,8 +892,7 @@ const getLies = imports => {
 		const data = records
 			.map(lie => ({ name: lie.name, lieTypes: lie.lieTypes }))
 			.sort((a, b) => (a.name > b.name) ? 1 : -1)
-		const $hash = await hashify(data)
-		return resolve({data, totalLies, $hash })
+		return resolve({ data, totalLies })
 	})
 }
 

@@ -1,9 +1,8 @@
-export const getWebRTCData = (imports, cloudflare) => {
+export const getWebRTCData = imports => {
 
 	const {
 		require: {
 			isFirefox,
-			hashify,
 			captureError,
 			caniuse,
 			phantomDarkness,
@@ -13,6 +12,7 @@ export const getWebRTCData = (imports, cloudflare) => {
 	
 	return new Promise(resolve => {
 		try {
+			const start = performance.now()
 			let rtcPeerConnection
 			if (phantomDarkness && !isFirefox) { // FF throws an error in iframes
 				rtcPeerConnection = (
@@ -68,18 +68,13 @@ export const getWebRTCData = (imports, cloudflare) => {
 						connectionLineIpAddress
 					].filter(ip => ip != undefined)
 					const setSize = new Set(successIpAddresses).size
-					const cloudflareIp = cloudflare && 'ip' in cloudflare ? cloudflare.ip : undefined
 					const data = {
-						['webRTC leak']: cloudflareIp && (
-							!!ipAddress && ipAddress != cloudflareIp
-						) ? 'maybe' : 'unknown',
 						['ip address']: ipAddress,
 						candidate: candidateIpAddress,
 						connection: connectionLineIpAddress
 					}
-					const $hash = await hashify(data)
-					logTestResult({ test: 'webrtc', passed: true })
-					return resolve({ ...data, $hash })
+					logTestResult({ start, test: 'webrtc', passed: true })
+					return resolve({ ...data })
 				} else {
 					return
 				}

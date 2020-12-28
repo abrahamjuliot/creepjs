@@ -580,7 +580,7 @@ const binarySearch = (list, fn) => {
 }
 const filter = cities => cities.filter(city => system == getTimezoneOffsetHistory(year, city))
 const decryption = (
-	system == getTimezoneOffsetHistory(year, timeZone) ? [timeZone] : binarySearch(cities, filter)
+	system == resolvedOptions ? [timeZone] : binarySearch(cities, filter)
 )
 const perf = performance.now() - start
 

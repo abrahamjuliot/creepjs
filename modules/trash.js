@@ -69,14 +69,12 @@ const { sendToTrash } = trashBin
 const getTrash = imports => {
 	const {
 		require: {
-			hashify,
 			trashBin
 		}
 	} = imports
 	const bin = trashBin.getBin()
 	return new Promise(async resolve => {
-		const $hash = await hashify(bin)
-		return resolve({ trashBin: bin, $hash })
+		return resolve({ trashBin: bin })
 	})
 }
 

@@ -1,12 +1,537 @@
+// inspired by https://arkenfox.github.io/TZP
+// https://github.com/vvo/tzdb/blob/master/time-zones-names.json
+const cities = [
+	"UTC",
+	"GMT",
+	"Etc/GMT+0",
+	"Etc/GMT+1",
+	"Etc/GMT+10",
+	"Etc/GMT+11",
+	"Etc/GMT+12",
+	"Etc/GMT+2",
+	"Etc/GMT+3",
+	"Etc/GMT+4",
+	"Etc/GMT+5",
+	"Etc/GMT+6",
+	"Etc/GMT+7",
+	"Etc/GMT+8",
+	"Etc/GMT+9",
+	"Etc/GMT-1",
+	"Etc/GMT-10",
+	"Etc/GMT-11",
+	"Etc/GMT-12",
+	"Etc/GMT-13",
+	"Etc/GMT-14",
+	"Etc/GMT-2",
+	"Etc/GMT-3",
+	"Etc/GMT-4",
+	"Etc/GMT-5",
+	"Etc/GMT-6",
+	"Etc/GMT-7",
+	"Etc/GMT-8",
+	"Etc/GMT-9",
+	"Etc/GMT",
+	"Africa/Abidjan",
+	"Africa/Accra",
+	"Africa/Addis_Ababa",
+	"Africa/Algiers",
+	"Africa/Asmara",
+	"Africa/Bamako",
+	"Africa/Bangui",
+	"Africa/Banjul",
+	"Africa/Bissau",
+	"Africa/Blantyre",
+	"Africa/Brazzaville",
+	"Africa/Bujumbura",
+	"Africa/Cairo",
+	"Africa/Casablanca",
+	"Africa/Ceuta",
+	"Africa/Conakry",
+	"Africa/Dakar",
+	"Africa/Dar_es_Salaam",
+	"Africa/Djibouti",
+	"Africa/Douala",
+	"Africa/El_Aaiun",
+	"Africa/Freetown",
+	"Africa/Gaborone",
+	"Africa/Harare",
+	"Africa/Johannesburg",
+	"Africa/Juba",
+	"Africa/Kampala",
+	"Africa/Khartoum",
+	"Africa/Kigali",
+	"Africa/Kinshasa",
+	"Africa/Lagos",
+	"Africa/Libreville",
+	"Africa/Lome",
+	"Africa/Luanda",
+	"Africa/Lubumbashi",
+	"Africa/Lusaka",
+	"Africa/Malabo",
+	"Africa/Maputo",
+	"Africa/Maseru",
+	"Africa/Mbabane",
+	"Africa/Mogadishu",
+	"Africa/Monrovia",
+	"Africa/Nairobi",
+	"Africa/Ndjamena",
+	"Africa/Niamey",
+	"Africa/Nouakchott",
+	"Africa/Ouagadougou",
+	"Africa/Porto-Novo",
+	"Africa/Sao_Tome",
+	"Africa/Tripoli",
+	"Africa/Tunis",
+	"Africa/Windhoek",
+	"America/Adak",
+	"America/Anchorage",
+	"America/Anguilla",
+	"America/Antigua",
+	"America/Araguaina",
+	"America/Argentina/Buenos_Aires",
+	"America/Argentina/Catamarca",
+	"America/Argentina/Cordoba",
+	"America/Argentina/Jujuy",
+	"America/Argentina/La_Rioja",
+	"America/Argentina/Mendoza",
+	"America/Argentina/Rio_Gallegos",
+	"America/Argentina/Salta",
+	"America/Argentina/San_Juan",
+	"America/Argentina/San_Luis",
+	"America/Argentina/Tucuman",
+	"America/Argentina/Ushuaia",
+	"America/Aruba",
+	"America/Asuncion",
+	"America/Atikokan",
+	"America/Bahia",
+	"America/Bahia_Banderas",
+	"America/Barbados",
+	"America/Belem",
+	"America/Belize",
+	"America/Blanc-Sablon",
+	"America/Boa_Vista",
+	"America/Bogota",
+	"America/Boise",
+	"America/Cambridge_Bay",
+	"America/Campo_Grande",
+	"America/Cancun",
+	"America/Caracas",
+	"America/Cayenne",
+	"America/Cayman",
+	"America/Chicago",
+	"America/Chihuahua",
+	"America/Costa_Rica",
+	"America/Creston",
+	"America/Cuiaba",
+	"America/Curacao",
+	"America/Danmarkshavn",
+	"America/Dawson",
+	"America/Dawson_Creek",
+	"America/Denver",
+	"America/Detroit",
+	"America/Dominica",
+	"America/Edmonton",
+	"America/Eirunepe",
+	"America/El_Salvador",
+	"America/Fort_Nelson",
+	"America/Fortaleza",
+	"America/Glace_Bay",
+	"America/Godthab",
+	"America/Goose_Bay",
+	"America/Grand_Turk",
+	"America/Grenada",
+	"America/Guadeloupe",
+	"America/Guatemala",
+	"America/Guayaquil",
+	"America/Guyana",
+	"America/Halifax",
+	"America/Havana",
+	"America/Hermosillo",
+	"America/Indiana/Indianapolis",
+	"America/Indiana/Knox",
+	"America/Indiana/Marengo",
+	"America/Indiana/Petersburg",
+	"America/Indiana/Tell_City",
+	"America/Indiana/Vevay",
+	"America/Indiana/Vincennes",
+	"America/Indiana/Winamac",
+	"America/Inuvik",
+	"America/Iqaluit",
+	"America/Jamaica",
+	"America/Juneau",
+	"America/Kentucky/Louisville",
+	"America/Kentucky/Monticello",
+	"America/Kralendijk",
+	"America/La_Paz",
+	"America/Lima",
+	"America/Los_Angeles",
+	"America/Lower_Princes",
+	"America/Maceio",
+	"America/Managua",
+	"America/Manaus",
+	"America/Marigot",
+	"America/Martinique",
+	"America/Matamoros",
+	"America/Mazatlan",
+	"America/Menominee",
+	"America/Merida",
+	"America/Metlakatla",
+	"America/Mexico_City",
+	"America/Miquelon",
+	"America/Moncton",
+	"America/Monterrey",
+	"America/Montevideo",
+	"America/Montserrat",
+	"America/Nassau",
+	"America/New_York",
+	"America/Nipigon",
+	"America/Nome",
+	"America/Noronha",
+	"America/North_Dakota/Beulah",
+	"America/North_Dakota/Center",
+	"America/North_Dakota/New_Salem",
+	"America/Ojinaga",
+	"America/Panama",
+	"America/Pangnirtung",
+	"America/Paramaribo",
+	"America/Phoenix",
+	"America/Port-au-Prince",
+	"America/Port_of_Spain",
+	"America/Porto_Velho",
+	"America/Puerto_Rico",
+	"America/Punta_Arenas",
+	"America/Rainy_River",
+	"America/Rankin_Inlet",
+	"America/Recife",
+	"America/Regina",
+	"America/Resolute",
+	"America/Rio_Branco",
+	"America/Santarem",
+	"America/Santiago",
+	"America/Santo_Domingo",
+	"America/Sao_Paulo",
+	"America/Scoresbysund",
+	"America/Sitka",
+	"America/St_Barthelemy",
+	"America/St_Johns",
+	"America/St_Kitts",
+	"America/St_Lucia",
+	"America/St_Thomas",
+	"America/St_Vincent",
+	"America/Swift_Current",
+	"America/Tegucigalpa",
+	"America/Thule",
+	"America/Thunder_Bay",
+	"America/Tijuana",
+	"America/Toronto",
+	"America/Tortola",
+	"America/Vancouver",
+	"America/Whitehorse",
+	"America/Winnipeg",
+	"America/Yakutat",
+	"America/Yellowknife",
+	"Antarctica/Casey",
+	"Antarctica/Davis",
+	"Antarctica/DumontDUrville",
+	"Antarctica/Macquarie",
+	"Antarctica/Mawson",
+	"Antarctica/McMurdo",
+	"Antarctica/Palmer",
+	"Antarctica/Rothera",
+	"Antarctica/Syowa",
+	"Antarctica/Troll",
+	"Antarctica/Vostok",
+	"Arctic/Longyearbyen",
+	"Asia/Aden",
+	"Asia/Almaty",
+	"Asia/Amman",
+	"Asia/Anadyr",
+	"Asia/Aqtau",
+	"Asia/Aqtobe",
+	"Asia/Ashgabat",
+	"Asia/Atyrau",
+	"Asia/Baghdad",
+	"Asia/Bahrain",
+	"Asia/Baku",
+	"Asia/Bangkok",
+	"Asia/Barnaul",
+	"Asia/Beirut",
+	"Asia/Bishkek",
+	"Asia/Brunei",
+	"Asia/Calcutta",
+	"Asia/Chita",
+	"Asia/Choibalsan",
+	"Asia/Colombo",
+	"Asia/Damascus",
+	"Asia/Dhaka",
+	"Asia/Dili",
+	"Asia/Dubai",
+	"Asia/Dushanbe",
+	"Asia/Famagusta",
+	"Asia/Gaza",
+	"Asia/Hebron",
+	"Asia/Ho_Chi_Minh",
+	"Asia/Hong_Kong",
+	"Asia/Hovd",
+	"Asia/Irkutsk",
+	"Asia/Jakarta",
+	"Asia/Jayapura",
+	"Asia/Jerusalem",
+	"Asia/Kabul",
+	"Asia/Kamchatka",
+	"Asia/Karachi",
+	"Asia/Kathmandu",
+	"Asia/Khandyga",
+	"Asia/Kolkata",
+	"Asia/Krasnoyarsk",
+	"Asia/Kuala_Lumpur",
+	"Asia/Kuching",
+	"Asia/Kuwait",
+	"Asia/Macau",
+	"Asia/Magadan",
+	"Asia/Makassar",
+	"Asia/Manila",
+	"Asia/Muscat",
+	"Asia/Nicosia",
+	"Asia/Novokuznetsk",
+	"Asia/Novosibirsk",
+	"Asia/Omsk",
+	"Asia/Oral",
+	"Asia/Phnom_Penh",
+	"Asia/Pontianak",
+	"Asia/Pyongyang",
+	"Asia/Qatar",
+	"Asia/Qostanay",
+	"Asia/Qyzylorda",
+	"Asia/Riyadh",
+	"Asia/Sakhalin",
+	"Asia/Samarkand",
+	"Asia/Seoul",
+	"Asia/Shanghai",
+	"Asia/Singapore",
+	"Asia/Srednekolymsk",
+	"Asia/Taipei",
+	"Asia/Tashkent",
+	"Asia/Tbilisi",
+	"Asia/Tehran",
+	"Asia/Thimphu",
+	"Asia/Tokyo",
+	"Asia/Tomsk",
+	"Asia/Ulaanbaatar",
+	"Asia/Urumqi",
+	"Asia/Ust-Nera",
+	"Asia/Vientiane",
+	"Asia/Vladivostok",
+	"Asia/Yakutsk",
+	"Asia/Yangon",
+	"Asia/Yekaterinburg",
+	"Asia/Yerevan",
+	"Atlantic/Azores",
+	"Atlantic/Bermuda",
+	"Atlantic/Canary",
+	"Atlantic/Cape_Verde",
+	"Atlantic/Faroe",
+	"Atlantic/Madeira",
+	"Atlantic/Reykjavik",
+	"Atlantic/South_Georgia",
+	"Atlantic/St_Helena",
+	"Atlantic/Stanley",
+	"Australia/Adelaide",
+	"Australia/Brisbane",
+	"Australia/Broken_Hill",
+	"Australia/Currie",
+	"Australia/Darwin",
+	"Australia/Eucla",
+	"Australia/Hobart",
+	"Australia/Lindeman",
+	"Australia/Lord_Howe",
+	"Australia/Melbourne",
+	"Australia/Perth",
+	"Australia/Sydney",
+	"Europe/Amsterdam",
+	"Europe/Andorra",
+	"Europe/Astrakhan",
+	"Europe/Athens",
+	"Europe/Belgrade",
+	"Europe/Berlin",
+	"Europe/Bratislava",
+	"Europe/Brussels",
+	"Europe/Bucharest",
+	"Europe/Budapest",
+	"Europe/Busingen",
+	"Europe/Chisinau",
+	"Europe/Copenhagen",
+	"Europe/Dublin",
+	"Europe/Gibraltar",
+	"Europe/Guernsey",
+	"Europe/Helsinki",
+	"Europe/Isle_of_Man",
+	"Europe/Istanbul",
+	"Europe/Jersey",
+	"Europe/Kaliningrad",
+	"Europe/Kiev",
+	"Europe/Kirov",
+	"Europe/Lisbon",
+	"Europe/Ljubljana",
+	"Europe/London",
+	"Europe/Luxembourg",
+	"Europe/Madrid",
+	"Europe/Malta",
+	"Europe/Mariehamn",
+	"Europe/Minsk",
+	"Europe/Monaco",
+	"Europe/Moscow",
+	"Europe/Oslo",
+	"Europe/Paris",
+	"Europe/Podgorica",
+	"Europe/Prague",
+	"Europe/Riga",
+	"Europe/Rome",
+	"Europe/Samara",
+	"Europe/San_Marino",
+	"Europe/Sarajevo",
+	"Europe/Saratov",
+	"Europe/Simferopol",
+	"Europe/Skopje",
+	"Europe/Sofia",
+	"Europe/Stockholm",
+	"Europe/Tallinn",
+	"Europe/Tirane",
+	"Europe/Ulyanovsk",
+	"Europe/Uzhgorod",
+	"Europe/Vaduz",
+	"Europe/Vatican",
+	"Europe/Vienna",
+	"Europe/Vilnius",
+	"Europe/Volgograd",
+	"Europe/Warsaw",
+	"Europe/Zagreb",
+	"Europe/Zaporozhye",
+	"Europe/Zurich",
+	"Indian/Antananarivo",
+	"Indian/Chagos",
+	"Indian/Christmas",
+	"Indian/Cocos",
+	"Indian/Comoro",
+	"Indian/Kerguelen",
+	"Indian/Mahe",
+	"Indian/Maldives",
+	"Indian/Mauritius",
+	"Indian/Mayotte",
+	"Indian/Reunion",
+	"Pacific/Apia",
+	"Pacific/Auckland",
+	"Pacific/Bougainville",
+	"Pacific/Chatham",
+	"Pacific/Chuuk",
+	"Pacific/Easter",
+	"Pacific/Efate",
+	"Pacific/Enderbury",
+	"Pacific/Fakaofo",
+	"Pacific/Fiji",
+	"Pacific/Funafuti",
+	"Pacific/Galapagos",
+	"Pacific/Gambier",
+	"Pacific/Guadalcanal",
+	"Pacific/Guam",
+	"Pacific/Honolulu",
+	"Pacific/Kiritimati",
+	"Pacific/Kosrae",
+	"Pacific/Kwajalein",
+	"Pacific/Majuro",
+	"Pacific/Marquesas",
+	"Pacific/Midway",
+	"Pacific/Nauru",
+	"Pacific/Niue",
+	"Pacific/Norfolk",
+	"Pacific/Noumea",
+	"Pacific/Pago_Pago",
+	"Pacific/Palau",
+	"Pacific/Pitcairn",
+	"Pacific/Pohnpei",
+	"Pacific/Port_Moresby",
+	"Pacific/Rarotonga",
+	"Pacific/Saipan",
+	"Pacific/Tahiti",
+	"Pacific/Tarawa",
+	"Pacific/Tongatapu",
+	"Pacific/Wake",
+	"Pacific/Wallis"
+]
+
+const getTimezoneOffset = phantomDate => {
+	const [year, month, day] = JSON.stringify(new phantomDate())
+		.slice(1,11)
+		.split('-')
+	const dateString = `${month}/${day}/${year}`
+	const dateStringUTC = `${year}-${month}-${day}`
+	const now = +new phantomDate(dateString)
+	const utc = +new phantomDate(dateStringUTC)
+	const offset = +((now - utc)/60000)
+	return ~~offset 
+}
+
+const getTimezoneOffsetHistory = ({ year, phantomIntl, phantomDate, city = null }) => {
+	const format = {
+		timeZone: '',
+		year: 'numeric',
+		month: 'numeric',
+		day: 'numeric',
+		hour: 'numeric',
+		minute: 'numeric',
+		second: 'numeric'
+	}
+    const minute = 60000
+    let formatter, summer
+    if (city) {
+        const options = {
+            ...format,
+            timeZone: city
+        }
+        formatter = new phantomIntl.DateTimeFormat('en', options)
+        summer = +new phantomDate(formatter.format(new phantomDate(`7/1/${year}`)))
+    } else {
+        summer = +new phantomDate(`7/1/${year}`)
+    }
+    const summerUTCTime = +new phantomDate(`${year}-07-01`)
+    const offset = (summer - summerUTCTime) / minute
+    return offset
+}
+
+const binarySearch = (list, fn) => {
+    const end = list.length
+    const middle = Math.floor(end / 2)
+    const [left, right] = [list.slice(0, middle), list.slice(middle, end)]
+    const found = fn(left)
+    return end == 1 || found.length ? found : binarySearch(right, fn)
+}
+
+const decryptLocation = ({ year, timeZone, phantomIntl, phantomDate }) => {
+	const system = getTimezoneOffsetHistory({ year, phantomIntl, phantomDate})
+	const resolvedOptions = getTimezoneOffsetHistory({ year, phantomIntl, phantomDate, city: timeZone})
+	const filter = cities => cities
+		.filter(city => system == getTimezoneOffsetHistory({ year, phantomIntl, phantomDate, city }))
+
+	// get city region set
+	const decryption = (
+		system == resolvedOptions ? [timeZone] : binarySearch(cities, filter)
+	)
+
+	// reduce set to one city
+	const decrypted = (
+		decryption.length == 1 ? decryption[0] :
+		!new Set(decryption).has(timeZone) ? `Earth/UniqueVille` : timeZone
+	)
+	return decrypted
+}
+
+const formatLocation = x => x.replace(/_/, ' ').split('/').join(', ') 
+
 export const getTimezone = imports => {
 
 	const {
 		require: {
-			hashify,
 			captureError,
-			attempt,
-			caniuse,
-			documentLie,
 			lieProps,
 			phantomDarkness,
 			logTestResult
@@ -15,248 +540,31 @@ export const getTimezone = imports => {
 
 	return new Promise(async resolve => {
 		try {
-			let lied
-			const phantomDate = phantomDarkness ? phantomDarkness.Date : Date
-			const phantomIntl = phantomDarkness ? phantomDarkness.Intl : Date
-			const computeTimezoneOffset = () => {
-				const date = new phantomDate().getDate()
-				const month = new phantomDate().getMonth()
-				const year = phantomDate().split` `[3] // current year
-				const format = n => (''+n).length == 1 ? `0${n}` : n
-				const dateString = `${month+1}/${format(date)}/${year}`
-				const dateStringUTC = `${year}-${format(month+1)}-${format(date)}`
-				const utc = phantomDate.parse(
-					new phantomDate(dateString)
-				)
-				const now = +new phantomDate(dateStringUTC)
-				return +(((utc - now)/60000).toFixed(0))
-			}
-			// concept inspired by https://arkenfox.github.io/TZP
-			const measureTimezoneOffset = timezone => {
-				let lie = false
-				const year = phantomDate().split` `[3] // current year
-				const minute = 60000
-				const winter = new phantomDate(`1/1/${year}`)
-				const spring = new phantomDate(`4/1/${year}`)
-				const summer = new phantomDate(`7/1/${year}`)
-				const fall = new phantomDate(`10/1/${year}`)
-				const winterUTCTime = +new phantomDate(`${year}-01-01`)
-				const springUTCTime = +new phantomDate(`${year}-04-01`)
-				const summerUTCTime = +new phantomDate(`${year}-07-01`)
-				const fallUTCTime = +new phantomDate(`${year}-10-01`)
-				const date = {
-					winter: {
-						calculated: (+winter - winterUTCTime)/minute,
-						parsed: (phantomDate.parse(winter) - winterUTCTime)/minute
-					},
-					spring: {
-						calculated: (+spring - springUTCTime)/minute,
-						parsed: (phantomDate.parse(spring) - springUTCTime)/minute
-					},
-					summer: {
-						calculated: (+summer - summerUTCTime)/minute,
-						parsed: (phantomDate.parse(summer) - summerUTCTime)/minute
-					},
-					fall: {
-						calculated: (+fall - fallUTCTime)/minute,
-						parsed: (phantomDate.parse(fall) - fallUTCTime)/minute
-					}
-				}
-				lie = !!Object.keys(date).filter(key => {
-					const season = date[key]
-					return season.calculated != season.parsed
-				}).length
-				const set = new Set(
-					[].concat(
-						...Object.keys(date).map(key => {
-							const season = date[key]
-							return [season.calculated, season.parsed]
-						})
-					)
-				)
-				lie = !set.has(timezone)
-				if (lie) {
-					set.add(timezone) // show in result
-				}
-				return { season: [...set], lie }
-			}
-
-			const getRelativeTime = () => {
-				const locale = attempt(() => phantomIntl.DateTimeFormat().resolvedOptions().locale)
-				if (!locale || !caniuse(() => new phantomIntl.RelativeTimeFormat)) {
-					return undefined
-				}
-				const relativeTime = new phantomIntl.RelativeTimeFormat(locale, {
-					localeMatcher: 'best fit',
-					numeric: 'auto',
-					style: 'long'
-				})
-				return {
-					["format(-1, 'second')"]: relativeTime.format(-1, 'second'),
-					["format(0, 'second')"]: relativeTime.format(0, 'second'),
-					["format(1, 'second')"]: relativeTime.format(1, 'second'),
-					["format(-1, 'minute')"]: relativeTime.format(-1, 'minute'),
-					["format(0, 'minute')"]: relativeTime.format(0, 'minute'),
-					["format(1, 'minute')"]: relativeTime.format(1, 'minute'),
-					["format(-1, 'hour')"]: relativeTime.format(-1, 'hour'),
-					["format(0, 'hour')"]: relativeTime.format(0, 'hour'),
-					["format(1, 'hour')"]: relativeTime.format(1, 'hour'),
-					["format(-1, 'day')"]: relativeTime.format(-1, 'day'),
-					["format(0, 'day')"]: relativeTime.format(0, 'day'),
-					["format(1, 'day')"]: relativeTime.format(1, 'day'),
-					["format(-1, 'week')"]: relativeTime.format(-1, 'week'),
-					["format(0, 'week')"]: relativeTime.format(0, 'week'),
-					["format(1, 'week'),"]: relativeTime.format(1, 'week'),
-					["format(-1, 'month')"]: relativeTime.format(-1, 'month'),
-					["format(0, 'month'),"]: relativeTime.format(0, 'month'),
-					["format(1, 'month')"]: relativeTime.format(1, 'month'),
-					["format(-1, 'quarter')"]: relativeTime.format(-1, 'quarter'),
-					["format(0, 'quarter')"]: relativeTime.format(0, 'quarter'),
-					["format(1, 'quarter')"]: relativeTime.format(1, 'quarter'),
-					["format(-1, 'year')"]: relativeTime.format(-1, 'year'),
-					["format(0, 'year')"]: relativeTime.format(0, 'year'),
-					["format(1, 'year')"]: relativeTime.format(1, 'year')
-				}
-			}
-			const getLocale = () => {
-				const constructors = [
-					'Collator',
-					'DateTimeFormat',
-					'DisplayNames',
-					'ListFormat',
-					'NumberFormat',
-					'PluralRules',
-					'RelativeTimeFormat',
-				]
-				const languages = []
-				constructors.forEach(name => {
-					try {
-						const obj = caniuse(() => new phantomIntl[name])
-						if (!obj) {
-							return
-						}
-						const { locale } = obj.resolvedOptions()
-						return languages.push(locale)
-					}
-					catch (error) {
-						return
-					}
-				})
-				const lang = [...new Set(languages)]
-				return { lang, lie: lang.length > 1 ? true : false }
-			}
-			const getWritingSystemKeys = async () => {
-				const keys = [
-					'Backquote',
-					'Backslash',
-					'Backspace',
-					'BracketLeft',
-					'BracketRight',
-					'Comma',
-					'Digit0',
-					'Digit1',
-					'Digit2',
-					'Digit3',
-					'Digit4',
-					'Digit5',
-					'Digit6',
-					'Digit7',
-					'Digit8',
-					'Digit9',
-					'Equal',
-					'IntlBackslash',
-					'IntlRo',
-					'IntlYen',
-					'KeyA',
-					'KeyB',
-					'KeyC',
-					'KeyD',
-					'KeyE',
-					'KeyF',
-					'KeyG',
-					'KeyH',
-					'KeyI',
-					'KeyJ',
-					'KeyK',
-					'KeyL',
-					'KeyM',
-					'KeyN',
-					'KeyO',
-					'KeyP',
-					'KeyQ',
-					'KeyR',
-					'KeyS',
-					'KeyT',
-					'KeyU',
-					'KeyV',
-					'KeyW',
-					'KeyX',
-					'KeyY',
-					'KeyZ',
-					'Minus',
-					'Period',
-					'Quote',
-					'Semicolon',
-					'Slash'
-				]
-				if (caniuse(() => navigator.keyboard.getLayoutMap)) {
-					const keyoardLayoutMap = await navigator.keyboard.getLayoutMap()
-					const writingSystemKeys= keys.map(key => {
-						const value = keyoardLayoutMap.get(key)
-						return { [key]: value }
-					})
-					return writingSystemKeys
-				}
-				return undefined
-			}
-			const writingSystemKeys = await getWritingSystemKeys()		
-			const timezoneOffset = new phantomDate().getTimezoneOffset()
-			const timezoneOffsetComputed = computeTimezoneOffset()
-			const timezoneOffsetMeasured = measureTimezoneOffset(timezoneOffset)
-			const measuredTimezones = timezoneOffsetMeasured.season.join(', ')
-			const notWithinParentheses = /.*\(|\).*/g
-			const timezoneLocation = phantomIntl.DateTimeFormat().resolvedOptions().timeZone
-			const timezone = (''+new phantomDate()).replace(notWithinParentheses, '')
-			const relativeTime = getRelativeTime()
-			const locale = getLocale()
-
-			// document lies
-			lied = (
+			const start = performance.now()
+			let lied = (
 				lieProps['Date.getTimezoneOffset'] ||
-				lieProps['Intl.Collator.resolvedOptions'] ||
 				lieProps['Intl.DateTimeFormat.resolvedOptions'] ||
-				lieProps['Intl.DisplayNames.resolvedOptions'] ||
-				lieProps['Intl.ListFormat.resolvedOptions'] ||
-				lieProps['Intl.NumberFormat.resolvedOptions'] ||
-				lieProps['Intl.PluralRules.resolvedOptions'] ||
 				lieProps['Intl.RelativeTimeFormat.resolvedOptions']
 			) || false
-			const seasonLie = timezoneOffsetMeasured.lie ? { fingerprint: '', lies: [{ ['timezone seasons disagree']: true }] } : false
-			const localeLie = locale.lie ? { fingerprint: '', lies: [{ ['Intl locales mismatch']: true }] } : false
-			
-			if (seasonLie) {
-				lied = true
-				documentLie('Date', measuredTimezones, seasonLie)
-			}
-			if (localeLie) {
-				lied = true
-				documentLie('Intl', locale, localeLie)	
-			}
+			const phantomDate = phantomDarkness ? phantomDarkness.Date : Date
+			const phantomIntl = phantomDarkness ? phantomDarkness.Intl : Date
 
+			const year = 1113
+			const { timeZone } = phantomIntl.DateTimeFormat().resolvedOptions()
+			const decrypted = decryptLocation({ year, timeZone, phantomIntl, phantomDate })
+			const locationUnixEpoch = +new Date(new Date(`7/1/${year}`))
+			const notWithinParentheses = /.*\(|\).*/g
 			const data =  {
-				timezone,
-				timezoneLocation,
-				timezoneOffset,
-				timezoneOffsetComputed,
-				timezoneOffsetMeasured: measuredTimezones,
-				relativeTime,
-				locale,
-				writingSystemKeys,
+				zone: (''+new phantomDate()).replace(notWithinParentheses, ''),
+				location: formatLocation(timeZone),
+				locationMeasured: formatLocation(decrypted),
+				locationUnixEpoch,
+				offset: new phantomDate().getTimezoneOffset(),
+				offsetComputed: getTimezoneOffset(phantomDate),
 				lied
 			}
-			const $hash = await hashify(data)
-			logTestResult({ test: 'timezone', passed: true })
-			return resolve({...data, $hash })
+			logTestResult({ start, test: 'timezone', passed: true })
+			return resolve({ ...data })
 		}
 		catch (error) {
 			logTestResult({ test: 'timezone', passed: false })

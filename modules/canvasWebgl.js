@@ -2,7 +2,6 @@ export const getCanvasWebgl = imports => {
 
 	const {
 		require: {
-			hashify,
 			captureError,
 			attempt,
 			caniuse,
@@ -17,6 +16,7 @@ export const getCanvasWebgl = imports => {
 
 	return new Promise(async resolve => {
 		try {
+			const start = performance.now()
 			// detect lies
 			const dataLie = lieProps['HTMLCanvasElement.toDataURL']
 			const contextLie = lieProps['HTMLCanvasElement.getContext']
@@ -221,12 +221,11 @@ export const getCanvasWebgl = imports => {
 						caniuse(() => context, ['clear'], [colorBufferBit], true)
 						const canvasWebglDataURI = canvas.toDataURL()
 						const dataURI = canvasWebglDataURI
-						const $hash = await hashify(dataURI)
-						return resolve({ dataURI, $hash })
+						return resolve(dataURI)
 					}
 					catch (error) {
 						captureError(error)
-						return resolve({ dataURI: undefined, $hash: undefined })
+						return resolve()
 					}
 				})
 			}
@@ -262,11 +261,9 @@ export const getCanvasWebgl = imports => {
 				lied
 			}
 			data.matchingUnmasked = JSON.stringify(data.unmasked) === JSON.stringify(data.unmasked2)
-			data.matchingDataURI = data.dataURI.$hash === data.dataURI2.$hash
-
-			const $hash = await hashify(data)
-			logTestResult({ test: 'webgl', passed: true })
-			return resolve({ ...data, $hash })
+			data.matchingDataURI = data.dataURI === data.dataURI2
+			logTestResult({ start, test: 'webgl', passed: true })
+			return resolve({ ...data })
 		}
 		catch (error) {
 			logTestResult({ test: 'webgl', passed: false })

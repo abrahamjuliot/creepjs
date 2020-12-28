@@ -9,18 +9,19 @@ export const getClientRects = imports => {
 		require: {
 			instanceId,
 			hashMini,
-			hashify,
 			patch,
 			html,
 			captureError,
 			documentLie,
 			lieProps,
-			logTestResult
+			logTestResult,
+			phantomDarkness
 		}
 	} = imports
 	
 	return new Promise(async resolve => {
 		try {
+			const start = performance.now()
 			const toNativeObject = domRect => {
 				return {
 					bottom: domRect.bottom,
@@ -34,25 +35,8 @@ export const getClientRects = imports => {
 				}
 			}
 			let lied = lieProps['Element.getClientRects'] || false // detect lies
-			
-			let iframeContainer, doc = document
-			try {
-				// create and get rendered iframe
-
-				const len = window.length
-				const div = document.createElement('div')
-				div.setAttribute('style', 'visibility:hidden')
-				document.body.appendChild(div)
-				div.innerHTML = '<iframe></iframe>'
-				const iframeWindow = window[len]
-
-				// create and get rendered div in iframe
-				iframeContainer = div
-				doc = iframeWindow.document
-			}
-			catch (error) {
-				captureError(error, 'client blocked getClientRects iframe')
-			}
+						
+			const doc = phantomDarkness ? phantomDarkness.document : document
 
 			const rectsId = `${instanceId}-client-rects-div`
 			const divElement = document.createElement('div')
@@ -247,27 +231,9 @@ export const getClientRects = imports => {
 				documentLie('Element.getClientRects', hashMini(clientRects), offsetLie)
 				lied = true
 			}
-			
-			if (!!iframeContainer) {
-				iframeContainer.parentNode.removeChild(iframeContainer)
-			}
-			else {
-				divRendered.parentNode.removeChild(divRendered)
-			}
-			
-			const [
-				emojiHash,
-				clientHash,
-				$hash
-			] = await Promise.all([
-				hashify(emojiRects),
-				hashify(clientRects),
-				hashify({emojiRects, clientRects})
-			]).catch(error => {
-				console.error(error.message)
-			})
-			logTestResult({ test: 'rects', passed: true })
-			return resolve({emojiRects, emojiHash, clientRects, clientHash, lied, $hash })
+						
+			logTestResult({ start, test: 'rects', passed: true })
+			return resolve({ emojiRects, clientRects, lied })
 		}
 		catch (error) {
 			logTestResult({ test: 'rects', passed: false })

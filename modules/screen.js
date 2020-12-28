@@ -52,7 +52,6 @@ export const getScreen = imports => {
 
 	const {
 		require: {
-			hashify,
 			captureError,
 			attempt,
 			sendToTrash,
@@ -65,6 +64,7 @@ export const getScreen = imports => {
 	
 	return new Promise(async resolve => {
 		try {
+			const start = performance.now()
 			let lied = (
 				lieProps['Screen.width'] ||
 				lieProps['Screen.height'] ||
@@ -142,9 +142,8 @@ export const getScreen = imports => {
 				pixelDepth: attempt(() => pixelDepth ? trustInteger('pixelDepth - invalid return type', pixelDepth) : undefined),
 				lied
 			}
-			const $hash = await hashify(data)
-			logTestResult({ test: 'screen', passed: true })
-			return resolve({ ...data, $hash })
+			logTestResult({ start, test: 'screen', passed: true })
+			return resolve({ ...data })
 		}
 		catch (error) {
 			logTestResult({ test: 'screen', passed: false })

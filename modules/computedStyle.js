@@ -1,4 +1,4 @@
-const computeStyle = (type, { require: [ hashify, captureError ] }) => {
+const computeStyle = (type, { require: [ captureError ] }) => {
 	return new Promise(async resolve => {
 		try {
 			// get CSSStyleDeclaration
@@ -83,8 +83,7 @@ const computeStyle = (type, { require: [ hashify, captureError ] }) => {
 			const prototypeName = (''+prototype).match(/\[object (.+)\]/)[1]
 		
 			const data = { keys: keys.sort(), moz, webkit, apple, prototypeName }
-			const $hash = await hashify(data)
-			return resolve({ ...data, $hash })
+			return resolve({ ...data })
 		}
 		catch (error) {
 			captureError(error)
@@ -93,7 +92,7 @@ const computeStyle = (type, { require: [ hashify, captureError ] }) => {
 	})
 }
 
-const getSystemStyles = (instanceId, { require: [ hashify, captureError ] }) => {
+const getSystemStyles = (instanceId, { require: [ captureError, parentPhantom ] }) => {
 	return new Promise(async resolve => {
 		try {
 			const colors = [
@@ -144,11 +143,18 @@ const getSystemStyles = (instanceId, { require: [ hashify, captureError ] }) => 
 				'small-caption',
 				'status-bar'
 			]
-			const id = 'creep-system-styles'
-			const el = document.createElement('div')
-			el.setAttribute('id', id)
-			document.body.append(el)
-			const rendered = document.getElementById(id)
+
+			let rendered
+			if (!parentPhantom) {
+				const id = 'creep-system-styles'
+				const el = document.createElement('div')
+				el.setAttribute('id', id)
+				document.body.append(el)
+				rendered = document.getElementById(id)
+			}
+			else {
+				rendered = parentPhantom
+			}
 			const system = {
 				colors: [],
 				fonts: []
@@ -165,9 +171,10 @@ const getSystemStyles = (instanceId, { require: [ hashify, captureError ] }) => 
 					[font]: getComputedStyle(rendered).font
 				})
 			})
-			rendered.parentNode.removeChild(rendered)
-			const $hash = await hashify(system)
-			return resolve({...system, $hash})
+			if (!parentPhantom) {
+				rendered.parentNode.removeChild(rendered)
+			}
+			return resolve({...system })
 		}
 		catch (error) {
 			captureError(error)
@@ -176,46 +183,34 @@ const getSystemStyles = (instanceId, { require: [ hashify, captureError ] }) => 
 	})
 }
 
-export const getCSSStyleDeclarationVersion = imports => {
+export const getCSS = imports => {
 
 	const {
 		require: {
 			instanceId,
-			hashify,
 			captureError,
-			logTestResult
+			logTestResult,
+			parentPhantom
 		}
 	} = imports
 
 	return new Promise(async resolve => {
 		try {
+			const start = performance.now()
 			const [
 				computedStyle,
-				htmlElementStyle,
-				cssRuleListstyle,
 				system
 			] = await Promise.all([
-				computeStyle('getComputedStyle', { require: [ hashify, captureError ] }),
-				computeStyle('HTMLElement.style', { require: [ hashify, captureError ] }),
-				computeStyle('CSSRuleList.style', { require: [ hashify, captureError ] }),
-				getSystemStyles(instanceId, { require: [ hashify, captureError ] })
-			]).catch(error => {
-				console.error(error.message)
-			})
+				computeStyle('getComputedStyle', { require: [ captureError ] }),
+				getSystemStyles(instanceId, { require: [ captureError, parentPhantom ] })
+			])
 			
 			const data = {
 				['getComputedStyle']: computedStyle,
-				['HTMLElement.style']: htmlElementStyle,
-				['CSSRuleList.style']: cssRuleListstyle,
-				system,
-				matching: (
-					''+computedStyle.keys == ''+htmlElementStyle.keys &&
-					''+htmlElementStyle.keys == ''+cssRuleListstyle.keys
-				)
+				system
 			}
-			const $hash = await hashify(data)
-			logTestResult({ test: 'computed style', passed: true })
-			return resolve({ ...data, $hash })
+			logTestResult({ start, test: 'computed style', passed: true })
+			return resolve({ ...data })
 		}
 		catch (error) {
 			logTestResult({ test: 'computed style', passed: false })

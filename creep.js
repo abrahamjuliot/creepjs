@@ -8,13 +8,11 @@ import { documentLie, phantomDarkness, parentPhantom, lieProps, lieRecords, getL
 
 import { getOfflineAudioContext } from './modules/audio.js'
 import { getCanvas2d } from './modules/canvas2d.js'
-import { getCanvasBitmapRenderer } from './modules/canvasBitmap.js'
 import { getCanvasWebgl } from './modules/canvasWebgl.js'
-import { getCloudflare } from './modules/cloudflare.js'
-import { getCSSStyleDeclarationVersion } from './modules/computedStyle.js'
+import { getCSS } from './modules/computedStyle.js'
 import { getConsoleErrors } from './modules/consoleErrors.js'
-import { getIframeContentWindowVersion } from './modules/contentWindowVersion.js'
-import { getFonts, fontList, extendedFontList, notoFonts } from './modules/fonts.js'
+import { getWindowFeatures } from './modules/contentWindowVersion.js'
+import { getFonts, fontList } from './modules/fonts.js'
 import { getHTMLElementVersion } from './modules/htmlElementVersion.js'
 import { getMaths } from './modules/maths.js'
 import { getMediaDevices } from './modules/mediaDevices.js'
@@ -91,59 +89,71 @@ const imports = {
 	
 	const fingerprint = async () => {
 		const timeStart = timer()
+		
+		/*
+		const windowFeaturesComputed = await getWindowFeatures(imports)
+		const htmlElementVersionComputed = await getHTMLElementVersion(imports)
+		const cssComputed = await getCSS(imports)
+		const screenComputed = await getScreen(imports)
+		const voicesComputed = await getVoices(imports)
+		const mediaTypesComputed = await getMediaTypes(imports)
+		const canvas2dComputed = await getCanvas2d(imports)
+		const canvasWebglComputed = await getCanvasWebgl(imports)
+		const mathsComputed = await getMaths(imports)
+		const consoleErrorsComputed = await getConsoleErrors(imports)
+		const timezoneComputed = await getTimezone(imports)
+		const clientRectsComputed = await getClientRects(imports)
+		const offlineAudioContextComputed = await getOfflineAudioContext(imports)
+		const fontsComputed = await getFonts(imports, [...fontList])
+			.catch(error => { console.error(error.message)})
+		const workerScopeComputed = await getBestWorkerScope(imports)
+		const mediaDevicesComputed = await getMediaDevices(imports)
+		const webRTCDataComputed = await getWebRTCData(imports)
+		const navigatorComputed = await getNavigator(imports, workerScopeComputed)
+			.catch(error => console.error(error.message))
+		*/
+		
 		const [
-			cloudflareComputed,
-			iframeContentWindowVersionComputed,
+			windowFeaturesComputed,
 			htmlElementVersionComputed,
-			cssStyleDeclarationVersionComputed,
+			cssComputed,
 			screenComputed,
 			voicesComputed,
 			mediaTypesComputed,
 			canvas2dComputed,
-			canvasBitmapRendererComputed,
 			canvasWebglComputed,
 			mathsComputed,
 			consoleErrorsComputed,
 			timezoneComputed,
 			clientRectsComputed,
 			offlineAudioContextComputed,
-			fontsComputed
+			fontsComputed,
+			workerScopeComputed,
+			mediaDevicesComputed,
+			webRTCDataComputed
 		] = await Promise.all([
-			getCloudflare(imports),
-			getIframeContentWindowVersion(imports),
+			getWindowFeatures(imports),
 			getHTMLElementVersion(imports),
-			getCSSStyleDeclarationVersion(imports),
+			getCSS(imports),
 			getScreen(imports),
 			getVoices(imports),
 			getMediaTypes(imports),
 			getCanvas2d(imports),
-			getCanvasBitmapRenderer(imports),
 			getCanvasWebgl(imports),
 			getMaths(imports),
 			getConsoleErrors(imports),
 			getTimezone(imports),
 			getClientRects(imports),
 			getOfflineAudioContext(imports),
-			getFonts(imports, [...fontList, ...extendedFontList])
-		]).catch(error => {
-			console.error(error.message)
-		})
-
-		const [
-			workerScopeComputed,
-			mediaDevicesComputed,
-			webRTCDataComputed
-		] = await Promise.all([
+			getFonts(imports, [...fontList]),
 			getBestWorkerScope(imports),
 			getMediaDevices(imports),
-			getWebRTCData(imports, cloudflareComputed)
-		]).catch(error => {
-			console.error(error.message)
-		})
+			getWebRTCData(imports)
+		]).catch(error => console.error(error.message))
 
 		const navigatorComputed = await getNavigator(imports, workerScopeComputed)
 			.catch(error => console.error(error.message))
-
+		
 		const [
 			liesComputed,
 			trashComputed,
@@ -152,9 +162,55 @@ const imports = {
 			getLies(imports),
 			getTrash(imports),
 			getCapturedErrors(imports)
-		]).catch(error => {
-			console.error(error.message)
-		})
+		]).catch(error => console.error(error.message))
+
+		//const start = performance.now()
+		const [
+			windowHash,
+			htmlHash,
+			cssHash,
+			screenHash,
+			voicesHash,
+			mediaTypesHash,
+			canvas2dHash,
+			canvasWebglHash,
+			mathsHash,
+			consoleErrorsHash,
+			timezoneHash,
+			rectsHash,
+			audioHash,
+			fontsHash,
+			workerHash,
+			mediaDevicesHash,
+			webRTCHash,
+			navigatorHash,
+			liesHash,
+			trashHash,
+			errorsHash
+		] = await Promise.all([
+			hashify(windowFeaturesComputed),
+			hashify(htmlElementVersionComputed.keys),
+			hashify(cssComputed),
+			hashify(screenComputed),
+			hashify(voicesComputed),
+			hashify(mediaTypesComputed),
+			hashify(canvas2dComputed),
+			hashify(canvasWebglComputed),
+			hashify(mathsComputed.data),
+			hashify(consoleErrorsComputed.errors),
+			hashify(timezoneComputed),
+			hashify(clientRectsComputed),
+			hashify(offlineAudioContextComputed),
+			hashify(fontsComputed),
+			hashify(workerScopeComputed),
+			hashify(mediaDevicesComputed),
+			hashify(webRTCDataComputed),
+			hashify(navigatorComputed),
+			hashify(liesComputed),
+			hashify(trashComputed),
+			hashify(capturedErrorsComputed)
+		]).catch(error => console.error(error.message))
+		//console.log(performance.now()-start)
 
 		const timeEnd = timeStart()
 
@@ -166,29 +222,27 @@ const imports = {
 		}
 
 		const fingerprint = {
-			workerScope: workerScopeComputed,
-			cloudflare: cloudflareComputed,
-			webRTC: webRTCDataComputed,
-			navigator: navigatorComputed,
-			iframeContentWindowVersion: iframeContentWindowVersionComputed,
-			htmlElementVersion: htmlElementVersionComputed,
-			cssStyleDeclarationVersion: cssStyleDeclarationVersionComputed,
-			screen: screenComputed,
-			voices: voicesComputed,
-			mediaDevices: mediaDevicesComputed,
-			mediaTypes: mediaTypesComputed,
-			canvas2d: canvas2dComputed,
-			canvasBitmapRenderer: canvasBitmapRendererComputed,
-			canvasWebgl: canvasWebglComputed,
-			maths: mathsComputed,
-			consoleErrors: consoleErrorsComputed,
-			timezone: timezoneComputed,
-			clientRects: clientRectsComputed,
-			offlineAudioContext: offlineAudioContextComputed,
-			fonts: fontsComputed,
-			lies: liesComputed,
-			trash: trashComputed,
-			capturedErrors: capturedErrorsComputed
+			workerScope: { ...workerScopeComputed, $hash: workerHash },
+			webRTC: {...webRTCDataComputed, $hash: webRTCHash },
+			navigator: {...navigatorComputed, $hash: navigatorHash },
+			windowFeatures: {...windowFeaturesComputed, $hash: windowHash },
+			htmlElementVersion: {...htmlElementVersionComputed, $hash: htmlHash },
+			css: {...cssComputed, $hash: cssHash },
+			screen: {...screenComputed, $hash: screenHash },
+			voices: {...voicesComputed, $hash: voicesHash },
+			mediaDevices: {...mediaDevicesComputed, $hash: mediaDevicesHash },
+			mediaTypes: {...mediaTypesComputed, $hash: mediaTypesHash },
+			canvas2d: {...canvas2dComputed, $hash: canvas2dHash },
+			canvasWebgl: {...canvasWebglComputed, $hash: canvasWebglHash },
+			maths: {...mathsComputed, $hash: mathsHash },
+			consoleErrors: {...consoleErrorsComputed, $hash: consoleErrorsHash },
+			timezone: {...timezoneComputed, $hash: timezoneHash },
+			clientRects: {...clientRectsComputed, $hash: rectsHash },
+			offlineAudioContext: {...offlineAudioContextComputed, $hash: audioHash },
+			fonts: {...fontsComputed, $hash: fontsHash },
+			lies: {...liesComputed, $hash: liesHash },
+			trash: {...trashComputed, $hash: trashHash },
+			capturedErrors: {...capturedErrorsComputed, $hash: errorsHash },
 		}
 		return { fingerprint, timeEnd }
 	}
@@ -267,26 +321,19 @@ const imports = {
 			!fp.canvas2d || fp.canvas2d.lied ? undefined : 
 			fp.canvas2d
 		),
-		canvasBitmapRenderer: (
-			!fp.canvasBitmapRenderer || fp.canvasBitmapRenderer.lied ? undefined : 
-			fp.canvasBitmapRenderer
-		),
 		canvasWebgl: ( 
 			!fp.canvasWebgl || fp.canvasWebgl.lied ? undefined : 
 			fp.canvasWebgl
 		),
-		css: !fp.cssStyleDeclarationVersion ? undefined : {
-			prototype: caniuse(() => fp.cssStyleDeclarationVersion.getComputedStyle.prototypeName),
-			system: caniuse(() => fp.cssStyleDeclarationVersion.system)
+		css: !fp.css ? undefined : {
+			prototype: caniuse(() => fp.css.getComputedStyle.prototypeName),
+			system: caniuse(() => fp.css.system)
 		},
 		maths: !fp.maths || fp.maths.lied ? undefined : fp.maths,
 		consoleErrors: fp.consoleErrors,
 		timezone: !fp.timezone || fp.timezone.lied ? undefined : {
-			lang: caniuse(() => fp.timezone.locale.lang),
-			relativeTime: fp.timezone.relativeTime,
-			timezone: fp.timezone.timezone,
-			timezoneLocation: fp.timezone.timezoneLocation,
-			writingSystemKeys: fp.timezone.writingSystemKeys
+			locationMeasured: fp.timezone.locationMeasured,
+			locationUnixEpoch: fp.timezone.locationUnixEpoch
 		},
 		clientRects: !fp.clientRects || fp.clientRects.lied ? undefined : fp.clientRects,
 		offlineAudioContext: (
@@ -298,7 +345,7 @@ const imports = {
 		// skip trash since it is random
 		lies: !('data' in fp.lies) ? false : !!liesLen,
 		capturedErrors: !!errorsLen,
-		voices: isFirefox ? distrust : fp.voices // Firefox is inconsistent
+		voices: fp.voices
 	}
 
 	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f')
@@ -356,12 +403,12 @@ const imports = {
 		</div>
 		<div class="flex-grid">
 			${(() => {
-				const { trash: { trashBin, $hash } } = fp
+				const { trash: { trashBin } } = fp
 				const trashLen = trashBin.length
 				return `
 				<div class="col-four${trashLen ? ' trash': ''}">
 					<strong>Trash</strong>${
-						trashLen ? `<span class="hash">${hashMini($hash)}</span>` : ''
+						trashLen ? `<span class="hash">${hashMini(trashBin)}</span>` : ''
 					}
 					<div>gathered (${!trashLen ? '0' : ''+trashLen }): ${
 						trashLen ? modal(
@@ -372,12 +419,12 @@ const imports = {
 				</div>`
 			})()}
 			${(() => {
-				const { lies: { data, totalLies, $hash } } = fp 
+				const { lies: { data, totalLies } } = fp 
 				const toJSONFormat = obj => JSON.stringify(obj, null, '\t')
 				const sanitize = str => str.replace(/\</g, '&lt;')
 				return `
 				<div class="col-four${totalLies ? ' lies': ''}">
-					<strong>Lies</strong>${totalLies ? `<span class="hash">${hashMini($hash)}</span>` : ''}
+					<strong>Lies</strong>${totalLies ? `<span class="hash">${hashMini(data)}</span>` : ''}
 					<div>unmasked (${!totalLies ? '0' : ''+totalLies }): ${
 						totalLies ? modal('creep-lies', Object.keys(data).map(key => {
 							const { name, lieTypes: { lies, fingerprint } } = data[key]
@@ -399,11 +446,11 @@ const imports = {
 				</div>`
 			})()}
 			${(() => {
-				const { capturedErrors: { data, $hash } } = fp
+				const { capturedErrors: { data } } = fp
 				const len = data.length
 				return `
 				<div class="col-four${len ? ' errors': ''}">
-					<strong>Errors</strong>${len ? `<span class="hash">${hashMini($hash)}</span>` : ''}
+					<strong>Errors</strong>${len ? `<span class="hash">${hashMini(data)}</span>` : ''}
 					<div>captured (${!len ? '0' : ''+len}): ${
 						len ? modal('creep-captured-errors', Object.keys(data).map((key, i) => `${i+1}: ${data[key].trustedName} - ${data[key].trustedMessage} `).join('<br>')) : ''
 					}</div>
@@ -412,30 +459,9 @@ const imports = {
 			})()}
 		</div>
 		<div class="flex-grid">
-			${!fp.cloudflare ?
-				`<div class="col-six">
-					<strong>Cloudflare</strong>
-					<div>ip address: ${note.blocked}</div>
-					<div>system: ${note.blocked}</div>
-					<div>ip location: ${note.blocked}</div>
-					<div>tls version: ${note.blocked}</div>
-				</div>` :
-			(() => {
-				const { cloudflare: { ip, uag, loc, tls, $hash } } = fp
-				return `
-				<div class="col-six">
-					<strong>Cloudflare</strong><span class="hash">${hashMini($hash)}</span>
-					<div>ip address: ${ip ? ip : note.blocked}</div>
-					<div>system: ${uag ? uag : note.blocked}</div>
-					<div>ip location: ${loc ? loc : note.blocked}</div>
-					<div>tls version: ${tls ? tls : note.blocked}</div>
-				</div>
-				`
-			})()}
 			${!fp.webRTC ?
 				`<div class="col-six">
 					<strong>WebRTC</strong>
-					<div>webRTC leak: ${note.blocked}</div>
 					<div>ip address: ${note.blocked}</div>
 					<div>candidate: ${note.blocked}</div>
 					<div>connection: ${note.blocked}</div>
@@ -448,13 +474,14 @@ const imports = {
 				return `
 				<div class="col-six">
 					<strong>WebRTC</strong><span class="hash">${hashMini($hash)}</span>
-					<div>webRTC leak: ${leak}</div>
 					<div>ip address: ${ip ? ip : note.blocked}</div>
 					<div>candidate: ${candidate ? candidate : note.blocked}</div>
 					<div>connection: ${connection ? connection : note.blocked}</div>
 				</div>
 				`
-			})()}			
+			})()}
+			<div class="col-six">
+			</div>			
 		</div>
 		<div id="browser-detection" class="flex-grid">
 			<div class="col-eight">
@@ -514,7 +541,7 @@ const imports = {
 				}</div>
 				<div>canvas 2d:${
 					data.canvas2d && data.canvas2d.dataURI ?
-					`<span class="sub-hash">${hashMini(data.canvas2d.$hash)}</span>` :
+					`<span class="sub-hash">${hashMini(data.canvas2d.dataURI)}</span>` :
 					` ${note.unsupported}`
 				}</div>
 				<div>webgl vendor: ${data.webglVendor || note.unsupported}</div>
@@ -580,7 +607,7 @@ const imports = {
 				<strong>Canvas webgl</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
 				<div>matching renderer/vendor: ${''+matchingUnmasked}</div>
 				<div>matching data URI: ${''+matchingDataURI}</div>
-				<div>webgl:<span class="sub-hash">${hashMini(dataURI.$hash)}</span></div>
+				<div>webgl:<span class="sub-hash">${hashMini(dataURI)}</span></div>
 				<div>parameters (${count(webglSpecsKeys)}): ${
 					!webglSpecsKeys.length ? note.unsupported :
 					modal(`${id}-p-v1`, webglSpecsKeys.map(key => `${key}: ${webglSpecs[key]}`).join('<br>'))
@@ -595,7 +622,7 @@ const imports = {
 				</div>
 			</div>
 			<div class="col-six">
-				<div>webgl2:<span class="sub-hash">${hashMini(dataURI2.$hash)}</span></div>
+				<div>webgl2:<span class="sub-hash">${hashMini(dataURI2)}</span></div>
 				<div>parameters (${count(webgl2SpecsKeys)}): ${
 					!webgl2SpecsKeys.length ? note.unsupported :
 					modal(`${id}-p-v2`, webgl2SpecsKeys.map(key => `${key}: ${webgl2Specs[key]}`).join('<br>'))
@@ -625,18 +652,8 @@ const imports = {
 			</div>
 			`
 		})()}
-		${!fp.canvasBitmapRenderer ?
-			`<div class="col-six">
-				<strong>Canvas bitmaprenderer</strong> <span>${note.blocked}</span>
-			</div>` :
-		(() => {
-			const { canvasBitmapRenderer: { lied, $hash } } = fp
-			return `
 			<div class="col-six">
-				<strong>Canvas bitmaprenderer</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
 			</div>
-			`
-		})()}
 		</div>
 		<div class="flex-grid">
 		${!fp.offlineAudioContext ?
@@ -712,9 +729,9 @@ const imports = {
 		(() => {
 			const {
 				mediaTypes: {
-					$hash,
-					mediaTypes
-				} 
+					mediaTypes,
+					$hash
+				}
 			} = fp
 			const header = `<div>
 			<br>Audio play type [AP]
@@ -745,8 +762,8 @@ const imports = {
 		(() => {
 			const {
 				mediaDevices: {
-					$hash,
-					mediaDevices
+					mediaDevices,
+					$hash
 				}
 			} = fp
 			return `
@@ -770,9 +787,7 @@ const imports = {
 			const {
 				clientRects: {
 					$hash,
-					clientHash,
 					clientRects,
-					emojiHash,
 					emojiRects,
 					lied
 				}
@@ -781,11 +796,11 @@ const imports = {
 			return `
 			<div class="col-six">
 				<strong>DOMRect</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
-				<div>elements:<span class="sub-hash">${hashMini(clientHash)}</span></div>
+				<div>elements:<span class="sub-hash">${hashMini(clientRects)}</span></div>
 				<div>results: ${
 					modal(`${id}-elements`, clientRects.map(domRect => Object.keys(domRect).map(key => `<div>${key}: ${domRect[key]}</div>`).join('')).join('<br>') )
 				}</div>
-				<div>emojis v13.0:<span class="sub-hash">${hashMini(emojiHash)}</span></div>
+				<div>emojis v13.0:<span class="sub-hash">${hashMini(emojiRects)}</span></div>
 				<div>results: ${
 					modal(`${id}-emojis`, `<span style="font-size: 32px;">${emojiRects.map(rect => rect.emoji).join('')}</span>` )
 				}</div>
@@ -820,26 +835,22 @@ const imports = {
 				<div>zone: ${note.blocked}</div>
 				<div>offset: ${note.blocked}</div>
 				<div>offset computed: ${note.blocked}</div>
-				<div>seasonal offsets: ${note.blocked}</div>	
 			</div>
 			<div class="col-six">
 				<div>location: ${note.blocked}</div>
-				<div>relativeTimeFormat: ${note.blocked}</div>
-				<div>locale language: ${note.blocked}</div>
-				<div>writing system keys: ${note.blocked}</div>
+				<div>measured: ${note.blocked}</div>
+				<div>unix epoch: ${note.blocked}</div>
 			</div>` :
 		(() => {
 			const {
 				timezone: {
 					$hash,
-					timezone,
-					timezoneLocation,
-					timezoneOffset: timezoneOffset,
-					timezoneOffsetComputed,
-					timezoneOffsetMeasured: measuredTimezones,
-					relativeTime,
-					locale,
-					writingSystemKeys,
+					zone,
+					location,
+					locationMeasured,
+					locationUnixEpoch,
+					offset,
+					offsetComputed,
 					lied
 				}
 			} = fp
@@ -847,31 +858,14 @@ const imports = {
 			return `
 			<div class="col-six">
 				<strong>Timezone</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
-				<div>zone: ${timezone}</div>
-				<div>offset: ${''+timezoneOffset}</div>
-				<div>offset computed: ${''+timezoneOffsetComputed}</div>
-				<div>seasonal offsets: ${measuredTimezones}</div>
+				<div>zone: ${zone}</div>
+				<div>offset: ${''+offset}</div>
+				<div>offset computed: ${''+offsetComputed}</div>
 			</div>
 			<div class="col-six">
-				<div>location: ${timezoneLocation}</div>
-				<div>relativeTimeFormat: ${
-					!relativeTime ? note.unsupported : 
-					modal(`${id}-relative-time-format`, Object.keys(relativeTime).sort().map(key => `${key} => ${relativeTime[key]}`).join('<br>'))
-				}</div>
-				<div>locale language: ${locale.lang.join(', ')}</div>
-				<div>writing system keys: ${
-					!writingSystemKeys ? note.unsupported :
-					modal(`${id}-writing-system-keys`, writingSystemKeys.map(systemKey => {
-						const key = Object.keys(systemKey)[0]
-						const value = systemKey[key]
-						const style = `
-							background: #f6f6f6;
-							border-radius: 2px;
-							padding: 0px 5px;
-						`
-						return `${key}: <span style="${style}">${value}</span>`
-					}).join('<br>'))
-				}</div>
+				<div>location: ${location}</div>
+				<div>measured: ${locationMeasured}</div>
+				<div>unix epoch: ${locationUnixEpoch}</div>
 			</div>
 			`
 		})()}
@@ -939,38 +933,32 @@ const imports = {
 		})()}
 		</div>
 		<div class="flex-grid">
-		${!fp.cssStyleDeclarationVersion ?
+		${!fp.css ?
 			`<div class="col-six">
 				<strong>Computed Style</strong>
 				<div>engine: ${note.blocked}</div>
 				<div>prototype: ${note.blocked}</div>
 				<div>getComputedStyle: ${note.blocked}</div>
-				<div>HTMLElement.style: ${note.blocked}</div>
-				<div>CSSRuleList.style: ${note.blocked}</div>
-				<div>matching: ${note.blocked}</div>
-			</div>
-			<div class="col-six">
 				<div>keys: ${note.blocked}</div>
 				<div>moz: ${note.blocked}</div>
 				<div>webkit: ${note.blocked}</div>
 				<div>apple: ${note.blocked}</div>
+			</div>
+			<div class="col-six">
 				<div>system styles: ${note.blocked}</div>
 				<div>system styles rendered: ${note.blocked}</div>
 			</div>` :
 		(() => {
 			const {
-				cssStyleDeclarationVersion: data
+				css: data
 			} = fp
 			const {
 				$hash,
 				getComputedStyle: computedStyle,
-				matching,
 				system
 			} = data
-			const cssRuleListstyle = data['CSSRuleList.style']
-			const htmlElementStyle = data['HTMLElement.style']
 			const id = 'creep-css-style-declaration-version'
-			const { prototypeName } = htmlElementStyle
+			const { prototypeName } = computedStyle
 			return `
 			<div class="col-six">
 				<strong>Computed Style</strong><span class="hash">${hashMini($hash)}</span>
@@ -983,30 +971,14 @@ const imports = {
 					'unknown'
 				}</div>
 				<div>prototype: ${prototypeName}</div>
-				${
-					Object.keys(data).map(key => {
-						const value = data[key]
-						return (
-							key != 'matching' && key != 'system' && key != '$hash' ?
-							`<div>${key}:${
-								value ? `<span class="sub-hash">${hashMini(value.$hash)}</span>` : ` ${note.blocked}`
-							}</div>` : 
-							''
-						)
-					}).join('')
-				}
-				<div>matching: ${''+matching}</div>
+				<div>getComputedStyle:<span class="sub-hash">${hashMini(computedStyle.keys)}</span></div>
+				<div>keys: ${computedStyle.keys.length}</div>
+				<div>moz: ${''+computedStyle.moz}</div>
+				<div>webkit: ${''+computedStyle.webkit}</div>
+				<div>apple: ${''+computedStyle.apple}</div>
 			</div>
 			<div class="col-six">
-				<div>keys: ${computedStyle.keys.length}, ${htmlElementStyle.keys.length}, ${cssRuleListstyle.keys.length}
-				</div>
-				<div>moz: ${''+computedStyle.moz}, ${''+htmlElementStyle.moz}, ${''+cssRuleListstyle.moz}
-				</div>
-				<div>webkit: ${''+computedStyle.webkit}, ${''+htmlElementStyle.webkit}, ${''+cssRuleListstyle.webkit}
-				</div>
-				<div>apple: ${''+computedStyle.apple}, ${''+htmlElementStyle.apple}, ${''+cssRuleListstyle.apple}
-				</div>
-				<div>system styles:<span class="sub-hash">${hashMini(system.$hash)}</span></div>
+				<div>system styles:<span class="sub-hash">${hashMini(system)}</span></div>
 				<div>system styles rendered: ${
 					system && system.colors ? modal(
 						`${id}-system-styles`,
@@ -1086,7 +1058,7 @@ const imports = {
 			})()}
 			</div>
 			<div class="flex-grid">
-			${!fp.iframeContentWindowVersion ?
+			${!fp.windowFeatures?
 				`<div class="col-six">
 					<strong>Window</strong>
 					<div>keys (0): ${note.blocked}</div>
@@ -1096,7 +1068,7 @@ const imports = {
 				</div>` :
 			(() => {
 				const {
-					iframeContentWindowVersion: {
+					windowFeatures: {
 						$hash,
 						apple,
 						keys,
@@ -1405,15 +1377,35 @@ const imports = {
 					})
 				})
 			})
+			
+			const {
+				maths,
+				consoleErrors,
+				htmlElementVersion,
+				windowFeatures,
+				css
+			} = fp || {}
+			const {
+				getComputedStyle,
+				system
+			} = css || {}
 
+			const [
+				styleHash,
+				systemHash
+			] = await Promise.all([
+				hashify(getComputedStyle),
+				hashify(system)
+			])
+				
 			const decryptRequest = `https://creepjs-6bd8e.web.app/decrypt?${[
 				`isBrave=${isBrave}`,
-				`mathId=${caniuse(() => fp.maths.$hash)}`,
-				`errorId=${caniuse(() => fp.consoleErrors.$hash)}`,
-				`htmlId=${caniuse(() => fp.htmlElementVersion.$hash)}`,
-				`winId=${caniuse(() => fp.iframeContentWindowVersion.$hash)}`,
-				`styleId=${caniuse(() => fp.cssStyleDeclarationVersion.getComputedStyle.$hash)}`,
-				`styleSystemId=${caniuse(() => fp.cssStyleDeclarationVersion.system.$hash)}`,
+				`mathId=${maths.$hash}`,
+				`errorId=${consoleErrors.$hash}`,
+				`htmlId=${htmlElementVersion.$hash}`,
+				`winId=${windowFeatures.$hash}`,
+				`styleId=${styleHash}`,
+				`styleSystemId=${systemHash}`,
 				`ua=${encodeURIComponent(caniuse(() => fp.workerScope.userAgent))}`
 			].join('&')}`
 
@@ -1509,7 +1501,7 @@ const imports = {
 			})
 		})
 		.catch(error => {
-			fetchVisitorDataTimer('Error fetching visitor data')
+			fetchVisitorDataTimer('Error fetching version data')
 			patch(document.getElementById('loader'), html`<strong style="color:crimson">${error}</strong>`)
 			return console.error('Error!', error.message)
 		})

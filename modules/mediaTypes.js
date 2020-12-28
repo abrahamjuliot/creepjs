@@ -7,7 +7,6 @@ export const getMediaTypes = imports => {
 
 	const {
 		require: {
-			hashify,
 			captureError,
 			logTestResult
 		}
@@ -15,11 +14,11 @@ export const getMediaTypes = imports => {
 
 	return new Promise(async resolve => {
 		try {
-			const mediaTypes = []
+			const start = performance.now()
 			const videoEl = document.createElement('video')
 			const audioEl = new Audio()
 			const isMediaRecorderSupported = 'MediaRecorder' in window
-			mimeTypes.forEach(type => {
+			const mediaTypes = mimeTypes.reduce((acc, type) => {
 				const data = {
 					mimeType: type,
 					audioPlayType: audioEl.canPlayType(type),
@@ -27,11 +26,11 @@ export const getMediaTypes = imports => {
 					mediaSource: MediaSource.isTypeSupported(type),
 					mediaRecorder: isMediaRecorderSupported ? MediaRecorder.isTypeSupported(type) : false
 				}
-				return mediaTypes.push(data)
-			})
-			const $hash = await hashify(mediaTypes)
-			logTestResult({ test: 'media types', passed: true })
-			return resolve({ mediaTypes, $hash })
+				acc.push(data)
+				return acc
+			}, [])
+			logTestResult({ start, test: 'media types', passed: true })
+			return resolve({ mediaTypes })
 		}
 		catch (error) {
 			logTestResult({ test: 'media types', passed: false })

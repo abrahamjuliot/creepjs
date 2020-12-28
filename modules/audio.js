@@ -3,7 +3,6 @@ export const getOfflineAudioContext = imports => {
 	const {
 		require: {
 			hashMini,
-			hashify,
 			captureError,
 			attempt,
 			caniuse,
@@ -17,10 +16,10 @@ export const getOfflineAudioContext = imports => {
 
 	return new Promise(resolve => {
 		try {
+			const start = performance.now()
 			const win = phantomDarkness ? phantomDarkness : window
 			const audioContext = caniuse(() => win.OfflineAudioContext || win.webkitOfflineAudioContext)
 			if (!audioContext) {
-				logTestResult({ test: 'audio', passed: false })
 				return resolve()
 			}
 			// detect lies
@@ -128,9 +127,8 @@ export const getOfflineAudioContext = imports => {
 							values,
 							lied
 						}
-						const $hash = await hashify(response)
-						logTestResult({ test: 'audio', passed: true })
-						return resolve({...response, $hash })
+						logTestResult({ start, test: 'audio', passed: true })
+						return resolve({ ...response })
 					}
 					catch (error) {
 						captureError(error, 'AudioBuffer failed or blocked by client')
@@ -143,9 +141,8 @@ export const getOfflineAudioContext = imports => {
 							values,
 							lied
 						}
-						const $hash = await hashify(response)
 						logTestResult({ test: 'audio', passed: false })
-						return resolve({...response, $hash })
+						return resolve({ ...response })
 					}
 				}
 			}))
