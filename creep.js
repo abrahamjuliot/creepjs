@@ -332,8 +332,7 @@ const imports = {
 		maths: !fp.maths || fp.maths.lied ? undefined : fp.maths,
 		consoleErrors: fp.consoleErrors,
 		timezone: !fp.timezone || fp.timezone.lied ? undefined : {
-			locationMeasured: fp.timezone.locationMeasured,
-			locationUnixEpoch: fp.timezone.locationUnixEpoch
+			locationMeasured: fp.timezone.locationMeasured
 		},
 		clientRects: !fp.clientRects || fp.clientRects.lied ? undefined : fp.clientRects,
 		offlineAudioContext: (
