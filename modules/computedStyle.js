@@ -1,186 +1,182 @@
 const computeStyle = (type, { require: [ captureError ] }) => {
-	return new Promise(async resolve => {
-		try {
-			// get CSSStyleDeclaration
-			const cssStyleDeclaration = (
-				type == 'getComputedStyle' ? getComputedStyle(document.body) :
-				type == 'HTMLElement.style' ? document.body.style :
-				type == 'CSSRuleList.style' ? document.styleSheets[0].cssRules[0].style :
-				undefined
-			)
-			if (!cssStyleDeclaration) {
-				throw new TypeError('invalid argument string')
+	try {
+		// get CSSStyleDeclaration
+		const cssStyleDeclaration = (
+			type == 'getComputedStyle' ? getComputedStyle(document.body) :
+			type == 'HTMLElement.style' ? document.body.style :
+			type == 'CSSRuleList.style' ? document.styleSheets[0].cssRules[0].style :
+			undefined
+		)
+		if (!cssStyleDeclaration) {
+			throw new TypeError('invalid argument string')
+		}
+		// get properties
+		const prototype = Object.getPrototypeOf(cssStyleDeclaration)
+		const prototypeProperties = Object.getOwnPropertyNames(prototype)
+		const ownEnumerablePropertyNames = []
+		const cssVar = /^--.*$/
+		Object.keys(cssStyleDeclaration).forEach(key => {
+			const numericKey = !isNaN(key)
+			const value = cssStyleDeclaration[key]
+			const customPropKey = cssVar.test(key)
+			const customPropValue = cssVar.test(value)
+			if (numericKey && !customPropValue) {
+				return ownEnumerablePropertyNames.push(value)
+			} else if (!numericKey && !customPropKey) {
+				return ownEnumerablePropertyNames.push(key)
 			}
-			// get properties
-			const prototype = Object.getPrototypeOf(cssStyleDeclaration)
-			const prototypeProperties = Object.getOwnPropertyNames(prototype)
-			const ownEnumerablePropertyNames = []
-			const cssVar = /^--.*$/
-			Object.keys(cssStyleDeclaration).forEach(key => {
-				const numericKey = !isNaN(key)
-				const value = cssStyleDeclaration[key]
-				const customPropKey = cssVar.test(key)
-				const customPropValue = cssVar.test(value)
-				if (numericKey && !customPropValue) {
-					return ownEnumerablePropertyNames.push(value)
-				} else if (!numericKey && !customPropKey) {
-					return ownEnumerablePropertyNames.push(key)
-				}
+			return
+		})
+		// get properties in prototype chain (required only in chrome)
+		const propertiesInPrototypeChain = {}
+		const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1)
+		const uncapitalize = str => str.charAt(0).toLowerCase() + str.slice(1)
+		const removeFirstChar = str => str.slice(1)
+		const caps = /[A-Z]/g
+		ownEnumerablePropertyNames.forEach(key => {
+			if (propertiesInPrototypeChain[key]) {
 				return
-			})
-			// get properties in prototype chain (required only in chrome)
-			const propertiesInPrototypeChain = {}
-			const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1)
-			const uncapitalize = str => str.charAt(0).toLowerCase() + str.slice(1)
-			const removeFirstChar = str => str.slice(1)
-			const caps = /[A-Z]/g
-			ownEnumerablePropertyNames.forEach(key => {
-				if (propertiesInPrototypeChain[key]) {
-					return
+			}
+			// determine attribute type
+			const isNamedAttribute = key.indexOf('-') > -1
+			const isAliasAttribute = caps.test(key)
+			// reduce key for computation
+			const firstChar = key.charAt(0)
+			const isPrefixedName = isNamedAttribute && firstChar == '-'
+			const isCapitalizedAlias = isAliasAttribute && firstChar == firstChar.toUpperCase()
+			key = (
+				isPrefixedName ? removeFirstChar(key) :
+				isCapitalizedAlias ? uncapitalize(key) :
+				key
+			)
+			// find counterpart in CSSStyleDeclaration object or its prototype chain
+			if (isNamedAttribute) {
+				const aliasAttribute = key.split('-').map((word, index) => index == 0 ? word : capitalize(word)).join('')
+				if (aliasAttribute in cssStyleDeclaration) {
+					propertiesInPrototypeChain[aliasAttribute] = true
+				} else if (capitalize(aliasAttribute) in cssStyleDeclaration) {
+					propertiesInPrototypeChain[capitalize(aliasAttribute)] = true
 				}
-				// determine attribute type
-				const isNamedAttribute = key.indexOf('-') > -1
-				const isAliasAttribute = caps.test(key)
-				// reduce key for computation
-				const firstChar = key.charAt(0)
-				const isPrefixedName = isNamedAttribute && firstChar == '-'
-				const isCapitalizedAlias = isAliasAttribute && firstChar == firstChar.toUpperCase()
-				key = (
-					isPrefixedName ? removeFirstChar(key) :
-					isCapitalizedAlias ? uncapitalize(key) :
-					key
-				)
-				// find counterpart in CSSStyleDeclaration object or its prototype chain
-				if (isNamedAttribute) {
-					const aliasAttribute = key.split('-').map((word, index) => index == 0 ? word : capitalize(word)).join('')
-					if (aliasAttribute in cssStyleDeclaration) {
-						propertiesInPrototypeChain[aliasAttribute] = true
-					} else if (capitalize(aliasAttribute) in cssStyleDeclaration) {
-						propertiesInPrototypeChain[capitalize(aliasAttribute)] = true
-					}
-				} else if (isAliasAttribute) {
-					const namedAttribute = key.replace(caps, char => '-' + char.toLowerCase())
-					if (namedAttribute in cssStyleDeclaration) {
-						propertiesInPrototypeChain[namedAttribute] = true
-					} else if (`-${namedAttribute}` in cssStyleDeclaration) {
-						propertiesInPrototypeChain[`-${namedAttribute}`] = true
-					}
+			} else if (isAliasAttribute) {
+				const namedAttribute = key.replace(caps, char => '-' + char.toLowerCase())
+				if (namedAttribute in cssStyleDeclaration) {
+					propertiesInPrototypeChain[namedAttribute] = true
+				} else if (`-${namedAttribute}` in cssStyleDeclaration) {
+					propertiesInPrototypeChain[`-${namedAttribute}`] = true
 				}
-				return
-			})
-			// compile keys
-			const keys = [
-				...new Set([
-					...prototypeProperties,
-					...ownEnumerablePropertyNames,
-					...Object.keys(propertiesInPrototypeChain)
-				])
-			]
-			// checks
-			const moz = keys.filter(key => (/moz/i).test(key)).length
-			const webkit = keys.filter(key => (/webkit/i).test(key)).length
-			const apple = keys.filter(key => (/apple/i).test(key)).length
-			const prototypeName = (''+prototype).match(/\[object (.+)\]/)[1]
-		
-			const data = { keys: keys.sort(), moz, webkit, apple, prototypeName }
-			return resolve({ ...data })
-		}
-		catch (error) {
-			captureError(error)
-			return resolve(undefined)
-		}
-	})
+			}
+			return
+		})
+		// compile keys
+		const keys = [
+			...new Set([
+				...prototypeProperties,
+				...ownEnumerablePropertyNames,
+				...Object.keys(propertiesInPrototypeChain)
+			])
+		]
+		// checks
+		const moz = keys.filter(key => (/moz/i).test(key)).length
+		const webkit = keys.filter(key => (/webkit/i).test(key)).length
+		const apple = keys.filter(key => (/apple/i).test(key)).length
+		const prototypeName = (''+prototype).match(/\[object (.+)\]/)[1]
+	
+		const data = { keys: keys.sort(), moz, webkit, apple, prototypeName }
+		return { ...data }
+	}
+	catch (error) {
+		captureError(error)
+		return
+	}
 }
 
 const getSystemStyles = (instanceId, { require: [ captureError, parentPhantom ] }) => {
-	return new Promise(async resolve => {
-		try {
-			const colors = [
-				'ActiveBorder',
-				'ActiveCaption',
-				'ActiveText',
-				'AppWorkspace',
-				'Background',
-				'ButtonBorder',
-				'ButtonFace',
-				'ButtonHighlight',
-				'ButtonShadow',
-				'ButtonText',
-				'Canvas',
-				'CanvasText',
-				'CaptionText',
-				'Field',
-				'FieldText',
-				'GrayText',
-				'Highlight',
-				'HighlightText',
-				'InactiveBorder',
-				'InactiveCaption',
-				'InactiveCaptionText',
-				'InfoBackground',
-				'InfoText',
-				'LinkText',
-				'Mark',
-				'MarkText',
-				'Menu',
-				'MenuText',
-				'Scrollbar',
-				'ThreeDDarkShadow',
-				'ThreeDFace',
-				'ThreeDHighlight',
-				'ThreeDLightShadow',
-				'ThreeDShadow',
-				'VisitedText',
-				'Window',
-				'WindowFrame',
-				'WindowText'
-			]
-			const fonts = [
-				'caption',
-				'icon',
-				'menu',
-				'message-box',
-				'small-caption',
-				'status-bar'
-			]
+	try {
+		const colors = [
+			'ActiveBorder',
+			'ActiveCaption',
+			'ActiveText',
+			'AppWorkspace',
+			'Background',
+			'ButtonBorder',
+			'ButtonFace',
+			'ButtonHighlight',
+			'ButtonShadow',
+			'ButtonText',
+			'Canvas',
+			'CanvasText',
+			'CaptionText',
+			'Field',
+			'FieldText',
+			'GrayText',
+			'Highlight',
+			'HighlightText',
+			'InactiveBorder',
+			'InactiveCaption',
+			'InactiveCaptionText',
+			'InfoBackground',
+			'InfoText',
+			'LinkText',
+			'Mark',
+			'MarkText',
+			'Menu',
+			'MenuText',
+			'Scrollbar',
+			'ThreeDDarkShadow',
+			'ThreeDFace',
+			'ThreeDHighlight',
+			'ThreeDLightShadow',
+			'ThreeDShadow',
+			'VisitedText',
+			'Window',
+			'WindowFrame',
+			'WindowText'
+		]
+		const fonts = [
+			'caption',
+			'icon',
+			'menu',
+			'message-box',
+			'small-caption',
+			'status-bar'
+		]
 
-			let rendered
-			if (!parentPhantom) {
-				const id = 'creep-system-styles'
-				const el = document.createElement('div')
-				el.setAttribute('id', id)
-				document.body.append(el)
-				rendered = document.getElementById(id)
-			}
-			else {
-				rendered = parentPhantom
-			}
-			const system = {
-				colors: [],
-				fonts: []
-			}
-			system.colors = colors.map(color => {
-				rendered.setAttribute('style', `background-color: ${color} !important`)
-				return {
-					[color]: getComputedStyle(rendered).backgroundColor
-				}
-			})
-			fonts.forEach(font => {
-				rendered.setAttribute('style', `font: ${font} !important`)
-				system.fonts.push({
-					[font]: getComputedStyle(rendered).font
-				})
-			})
-			if (!parentPhantom) {
-				rendered.parentNode.removeChild(rendered)
-			}
-			return resolve({...system })
+		let rendered
+		if (!parentPhantom) {
+			const id = 'creep-system-styles'
+			const el = document.createElement('div')
+			el.setAttribute('id', id)
+			document.body.append(el)
+			rendered = document.getElementById(id)
 		}
-		catch (error) {
-			captureError(error)
-			return resolve(undefined)
+		else {
+			rendered = parentPhantom
 		}
-	})
+		const system = {
+			colors: [],
+			fonts: []
+		}
+		system.colors = colors.map(color => {
+			rendered.setAttribute('style', `background-color: ${color} !important`)
+			return {
+				[color]: getComputedStyle(rendered).backgroundColor
+			}
+		})
+		fonts.forEach(font => {
+			rendered.setAttribute('style', `font: ${font} !important`)
+			system.fonts.push({
+				[font]: getComputedStyle(rendered).font
+			})
+		})
+		if (!parentPhantom) {
+			rendered.parentNode.removeChild(rendered)
+		}
+		return { ...system }
+	}
+	catch (error) {
+		captureError(error)
+		return
+	}
 }
 
 export const getCSS = imports => {
@@ -197,14 +193,8 @@ export const getCSS = imports => {
 	return new Promise(async resolve => {
 		try {
 			const start = performance.now()
-			const [
-				computedStyle,
-				system
-			] = await Promise.all([
-				computeStyle('getComputedStyle', { require: [ captureError ] }),
-				getSystemStyles(instanceId, { require: [ captureError, parentPhantom ] })
-			])
-			
+			const computedStyle = computeStyle('getComputedStyle', { require: [ captureError ] })
+			const system = getSystemStyles(instanceId, { require: [ captureError, parentPhantom ] })
 			const data = {
 				['getComputedStyle']: computedStyle,
 				system
