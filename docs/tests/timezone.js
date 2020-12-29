@@ -502,7 +502,7 @@ const cities = [
 	"Pacific/Wallis"
 ]
 
-const unixEpochCities = {
+const epochCities = {
 	[-27028641600000]: "Etc/GMT+12",
 	[-27028645200000]: "Etc/GMT+11",
 	[-27028646914000]: "Pacific/Honolulu",
@@ -723,7 +723,7 @@ const decryption = (
 )
 const perf = performance.now() - start
 
-const unixEpochLocation = +new Date(new Date(`7/1/1113`))
+const epochLocation = +new Date(new Date(`7/1/1113`))
 const notWithinParentheses = /.*\(|\).*/g
 const zone = (''+new Date()).replace(notWithinParentheses, '')
 
@@ -788,7 +788,7 @@ patch(el, html`
 			<div>measured location: ${
 				!valid.location && !decriptionSet.size ? `${formatLocation(decrypted)}${entropy('high entropy')}`: formatLocation(decrypted)
 			}</div>
-			<div>unix epoch: ${unixEpochCities[unixEpochLocation] ? formatLocation(unixEpochCities[unixEpochLocation]) : unixEpochLocation}</div>
+			<div>epoch: ${epochCities[epochLocation] ? formatLocation(epochCities[epochLocation]) : epochLocation}</div>
 			<div>reported offset: ${
 				!valid.matchingOffset ? `${''+timezoneOffset.key}${fake('fake')}` : ''+timezoneOffset.key
 			}</div>

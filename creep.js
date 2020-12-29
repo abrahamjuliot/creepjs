@@ -795,7 +795,7 @@ const imports = {
 			<div class="col-six">
 				<div>location: ${note.blocked}</div>
 				<div>measured: ${note.blocked}</div>
-				<div>unix epoch: ${note.blocked}</div>
+				<div>epoch: ${note.blocked}</div>
 			</div>` :
 		(() => {
 			const {
@@ -804,7 +804,7 @@ const imports = {
 					zone,
 					location,
 					locationMeasured,
-					locationUnixEpoch,
+					locationEpoch,
 					offset,
 					offsetComputed,
 					lied
@@ -821,7 +821,7 @@ const imports = {
 			<div class="col-six">
 				<div>location: ${location}</div>
 				<div>measured: ${locationMeasured}</div>
-				<div>unix epoch: ${locationUnixEpoch}</div>
+				<div>epoch: ${locationEpoch}</div>
 			</div>
 			`
 		})()}

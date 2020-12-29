@@ -552,13 +552,13 @@ export const getTimezone = imports => {
 			const year = 1113
 			const { timeZone } = phantomIntl.DateTimeFormat().resolvedOptions()
 			const decrypted = decryptLocation({ year, timeZone, phantomIntl, phantomDate })
-			const locationUnixEpoch = +new Date(new Date(`7/1/${year}`))
+			const locationEpoch = +new Date(new Date(`7/1/${year}`))
 			const notWithinParentheses = /.*\(|\).*/g
 			const data =  {
 				zone: (''+new phantomDate()).replace(notWithinParentheses, ''),
 				location: formatLocation(timeZone),
 				locationMeasured: formatLocation(decrypted),
-				locationUnixEpoch,
+				locationEpoch,
 				offset: new phantomDate().getTimezoneOffset(),
 				offsetComputed: getTimezoneOffset(phantomDate),
 				lied
