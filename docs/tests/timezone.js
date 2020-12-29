@@ -724,7 +724,12 @@ const decryption = (
 const perf = performance.now() - start
 
 const unixEpochLocation = +new Date(new Date(`7/1/1113`))
+const notWithinParentheses = /.*\(|\).*/g
+const zone = (''+new Date()).replace(notWithinParentheses, '')
+
 const valid = {
+	date: true,
+	invalidDate: true,
 	location: true,
 	matchingOffset: true,
 	utcTime: true
@@ -734,6 +739,17 @@ const decriptionSet = new Set(decryption)
 const timezoneOffset = getTimezoneOffset()
 
 // tests
+if (new Date() != Date()) {
+	valid.date = false
+}
+
+const invalidDate = new Date(10000000000000000000000000)
+if (!/^Invalid Date$/.test(invalidDate)) {
+	valid.invalidDate = false
+}
+
+new Date(Date.parse(+new Date()))
+
 if (!(decriptionSet.has(timeZone))) {
 	valid.location = false
 }
@@ -749,12 +765,24 @@ if (utcMethods != stringify || utcMethods != toJSON || utcMethods != toISOString
 
 const formatLocation = x => x.replace(/_/, ' ').split('/').join(', ') 
 const decrypted = decriptionSet.size == 1 ? decryption[0] : !valid.location ? `Earth/UniqueVille` : timeZone
-
+const fake = x => `<span class="fake">${x}</span>`
+const entropy = x => `<span class="entropy">${x}</span>`
 const el = document.getElementById('fingerprint-data')
 patch(el, html`
 	<style>
 		#fingerprint-data > .jumbo {
 			font-size: 32px;
+		}
+		.fake, .entropy {
+			border-radius: 2px;
+			margin: 0 5px;
+			padding: 2px 3px;
+		}
+		.fake {
+			background: #e281a92e;
+		}
+		.entropy {
+			background: #e8d48c3d;
 		}
 	</style>
 	<div id="fingerprint-data">
@@ -766,18 +794,20 @@ patch(el, html`
 			<div>${hashMini(formatLocation(decrypted))}</div>
 		</div>
 		<div>
+			<div>date: ${!valid.date ? `${new Date()}${fake('fake')}` : new Date() }</div>
+			<div>zone: ${!valid.invalidDate ? `${zone}${fake('fake')}` : zone }</div>
 			<div>reported location: ${
-				!valid.location ? `${formatLocation(timeZone)} [fake]` : formatLocation(timeZone)
+				!valid.location ? `${formatLocation(timeZone)}${fake('fake')}` : formatLocation(timeZone)
 			}</div>
 			<div>measured location: ${
-				!valid.location && !decriptionSet.size ? `${formatLocation(decrypted)} [high entropy]`: formatLocation(decrypted)
+				!valid.location && !decriptionSet.size ? `${formatLocation(decrypted)}${entropy('high entropy')}`: formatLocation(decrypted)
 			}</div>
 			<div>unix epoch: ${unixEpochCities[unixEpochLocation] ? formatLocation(unixEpochCities[unixEpochLocation]) : unixEpochLocation}</div>
 			<div>reported offset: ${
-				!valid.matchingOffset ? `${''+timezoneOffset.key} [fake]` : ''+timezoneOffset.key
+				!valid.matchingOffset ? `${''+timezoneOffset.key}${fake('fake')}` : ''+timezoneOffset.key
 			}</div>
 			<div>computed offset: ${''+timezoneOffset.computed}</div>
-			<div>utc time: ${!valid.utcTime ? '[fake]' : ''}
+			<div>utc time: ${!valid.utcTime ? fake('erratic') : ''}
 				<br>${utcMethods} [methods]
 				<br>${stringify} [stringify]
 				<br>${toJSON} [toJSON]
