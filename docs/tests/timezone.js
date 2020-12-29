@@ -737,7 +737,8 @@ const valid = {
 		/^function Date\(\) {(\n    | )\[native code\](\n| )}$/.test(Date+'') &&
 		Date.length == 7 && 
 		Date.name == 'Date' && 
-		new Date() == Date()
+		new Date() == Date() &&
+		''+new Date(Date.parse(new Date())) == ''+new Date()
 	),
 	invalidDate: /^Invalid Date$/.test(new Date(10000000000000000000000000)),
 	location: decriptionSet.has(timeZone),
