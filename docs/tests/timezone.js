@@ -678,6 +678,16 @@ const getUTCTime = () => {
 	return { methods, stringify, toISOString, toJSON }
 }
 
+const getNowTime = () => {
+	const d = new Date(), now = Date.now()
+	return {
+		now,
+		dateValue: +d,
+		valueOf: d.getTime(),
+		getTime: d.valueOf()
+	}
+}
+
 const start = performance.now()
 
 const year = 1113
@@ -729,6 +739,8 @@ const zone = (''+new Date()).replace(notWithinParentheses, '')
 
 // tests
 const { methods: utcMethods, stringify, toJSON, toISOString } = getUTCTime()
+const { now, dateValue, valueOf, getTime } = getNowTime()
+
 const decriptionSet = new Set(decryption)
 const timezoneOffset = getTimezoneOffset()
 
@@ -743,6 +755,9 @@ const valid = {
 	invalidDate: /^Invalid Date$/.test(new Date(10000000000000000000000000)),
 	location: decriptionSet.has(timeZone),
 	matchingOffset: timezoneOffset.key == timezoneOffset.computed,
+	nowTime: (
+		dateValue == getTime && dateValue == now && dateValue == valueOf
+	),
 	utcTime: (
 		utcMethods == stringify && utcMethods == toJSON && utcMethods == toISOString
 	)
@@ -757,7 +772,6 @@ const decrypted = (
 	!valid.location ? 'Earth/UniqueMachine' : timeZone
 )
 const fake = x => `<span class="fake">${x}</span>`
-const entropy = x => `<span class="entropy">${x}</span>`
 const el = document.getElementById('fingerprint-data')
 patch(el, html`
 	<style>
@@ -785,9 +799,6 @@ patch(el, html`
 			margin: 0 5px;
 			padding: 1px 3px;
 		}
-		.entropy {
-			background: #e8d48c3d;
-		}
 	</style>
 	<div id="fingerprint-data">
 		<div class="visitor-info">
@@ -799,7 +810,7 @@ patch(el, html`
 		</div>
 		<div>
 			<div>${styleResult(valid.date)}date: ${!valid.date ? `${new Date()}${fake('fake')}` : new Date() }</div>
-			<div>${styleResult(valid.invalidDate)}zone: ${!valid.invalidDate ? `${zone}${fake('fake')}` : zone }</div>
+			<div>${styleResult(valid.invalidDate && valid.date)}zone: ${!valid.invalidDate || !valid.date ? `${zone}${fake('fake')}` : zone }</div>
 			<div>${styleResult(valid.location)}reported location: ${
 				!valid.location ? `${formatLocation(timeZone)}${fake('fake')}` : formatLocation(timeZone)
 			}</div>
@@ -809,19 +820,31 @@ patch(el, html`
 			}</div>
 			<div>${styleResult(true)}computed offset: ${''+timezoneOffset.computed}</div>
 			${(() => {
+				const base = (''+dateValue).split('')
+				const style = (a, b) => b.map((char,i) => char != a[i] ? `<span class="erratic">${char}</span>` : char).join('')
+				return `
+					<div>${styleResult(valid.nowTime)}now time: ${!valid.nowTime ? fake('erratic') : ''}
+						<br>${dateValue} [+new Date()]
+						<br>${style(base, (''+now).split(''))} [Date.now()]
+						<br>${style(base, (''+getTime).split(''))} [new Date().getTime()]
+						<br>${style(base, (''+valueOf).split(''))} [new Date().valueOf()]
+					</div>
+				`
+			})()}
+			${(() => {
 				const base = utcMethods.split('')
 				const style = (a, b) => b.map((char,i) => char != a[i] ? `<span class="erratic">${char}</span>` : char).join('')
 				return `
 					<div>${styleResult(valid.utcTime)}utc time: ${!valid.utcTime ? fake('erratic') : ''}
-						<br>${utcMethods} [methods]
-						<br>${style(base, stringify.split(''))} [stringify]
-						<br>${style(base, toJSON.split(''))} [toJSON]
-						<br>${style(base, toISOString.split(''))} [toISOString]
+						<br>${utcMethods} [getUTC... Methods]
+						<br>${style(base, toJSON.split(''))} [new Date().toJSON]
+						<br>${style(base, toISOString.split(''))} [new Date().toISOString]
+						<br>${style(base, stringify.split(''))} [JSON.stringify(new Date()).slice(1,-1)]
 					</div>
 				`
 			})()}
 			<div>${styleResult(true)}measured location: ${
-				!valid.location ? `${formatLocation(decrypted)}${entropy('high entropy')}`: formatLocation(decrypted)
+				!valid.location ? `${formatLocation(decrypted)}`: formatLocation(decrypted)
 			}</div>
 			<div>${styleResult(true)}measured region set:<br>${decryption.join('<br>')}</div>
 		</div>
