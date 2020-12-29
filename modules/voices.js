@@ -4,7 +4,8 @@ export const getVoices = imports => {
 		require: {
 			captureError,
 			phantomDarkness,
-			logTestResult
+			logTestResult,
+			isChrome,
 		}
 	} = imports
 		
@@ -12,14 +13,17 @@ export const getVoices = imports => {
 		try {
 			const start = performance.now()
 			const win = phantomDarkness ? phantomDarkness : window
-			if (!('speechSynthesis' in win)) {
+			if (!('speechSynthesis' in win && 'onvoiceschanged' in speechSynthesis)) {
+				logTestResult({ test: 'speech', passed: false })
 				return resolve()
 			}
+			let success = false
 			const awaitVoices = () => {
 				const data = win.speechSynthesis.getVoices()
 				if (!data.length) {
 					return
 				}
+				success = true
 				const voices = data.map(({ name, lang }) => ({ name, lang }))
 				const check = {
 					microsoft: voices.filter(key => (/microsoft/i).test(key.name)).length,
@@ -30,13 +34,17 @@ export const getVoices = imports => {
 				logTestResult({ start, test: 'speech', passed: true })
 				return resolve({ voices, ...check, })
 			}
+			
 			awaitVoices()
 			win.speechSynthesis.onvoiceschanged = awaitVoices
+			setTimeout(() => {
+				return !success ? resolve() : undefined
+			}, 10)
 		}
 		catch (error) {
 			logTestResult({ test: 'speech', passed: false })
 			captureError(error)
-			return resolve(undefined)
+			return resolve()
 		}
 	})
 }

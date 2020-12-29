@@ -14,7 +14,7 @@ export const getWebRTCData = imports => {
 		try {
 			const start = performance.now()
 			let rtcPeerConnection
-			if (phantomDarkness && !isFirefox) { // FF throws an error in iframes
+			try {
 				rtcPeerConnection = (
 					phantomDarkness.RTCPeerConnection ||
 					phantomDarkness.webkitRTCPeerConnection ||
@@ -22,12 +22,12 @@ export const getWebRTCData = imports => {
 					phantomDarkness.msRTCPeerConnection
 				)
 			}
-			else {
+			catch (error) {
 				rtcPeerConnection = (
-					window.RTCPeerConnection ||
-					window.webkitRTCPeerConnection ||
-					window.mozRTCPeerConnection ||
-					window.msRTCPeerConnection
+					RTCPeerConnection ||
+					webkitRTCPeerConnection ||
+					mozRTCPeerConnection ||
+					msRTCPeerConnection
 				)
 			}
 			

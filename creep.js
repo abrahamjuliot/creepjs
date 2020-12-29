@@ -15,8 +15,7 @@ import { getWindowFeatures } from './modules/contentWindowVersion.js'
 import { getFonts, fontList } from './modules/fonts.js'
 import { getHTMLElementVersion } from './modules/htmlElementVersion.js'
 import { getMaths } from './modules/maths.js'
-import { getMediaDevices } from './modules/mediaDevices.js'
-import { getMediaTypes } from './modules/mediaTypes.js'
+import { getMedia } from './modules/media.js'
 import { getNavigator } from './modules/navigator.js'
 import { getClientRects } from './modules/rects.js'
 import { getScreen } from './modules/screen.js'
@@ -96,7 +95,6 @@ const imports = {
 		const cssComputed = await getCSS(imports)
 		const screenComputed = await getScreen(imports)
 		const voicesComputed = await getVoices(imports)
-		const mediaTypesComputed = await getMediaTypes(imports)
 		const canvas2dComputed = await getCanvas2d(imports)
 		const canvasWebglComputed = await getCanvasWebgl(imports)
 		const mathsComputed = await getMaths(imports)
@@ -107,7 +105,7 @@ const imports = {
 		const fontsComputed = await getFonts(imports, [...fontList])
 			.catch(error => { console.error(error.message)})
 		const workerScopeComputed = await getBestWorkerScope(imports)
-		const mediaDevicesComputed = await getMediaDevices(imports)
+		const mediaComputed = await getMedia(imports)
 		const webRTCDataComputed = await getWebRTCData(imports)
 		const navigatorComputed = await getNavigator(imports, workerScopeComputed)
 			.catch(error => console.error(error.message))
@@ -119,7 +117,6 @@ const imports = {
 			cssComputed,
 			screenComputed,
 			voicesComputed,
-			mediaTypesComputed,
 			canvas2dComputed,
 			canvasWebglComputed,
 			mathsComputed,
@@ -129,7 +126,7 @@ const imports = {
 			offlineAudioContextComputed,
 			fontsComputed,
 			workerScopeComputed,
-			mediaDevicesComputed,
+			mediaComputed,
 			webRTCDataComputed
 		] = await Promise.all([
 			getWindowFeatures(imports),
@@ -137,7 +134,6 @@ const imports = {
 			getCSS(imports),
 			getScreen(imports),
 			getVoices(imports),
-			getMediaTypes(imports),
 			getCanvas2d(imports),
 			getCanvasWebgl(imports),
 			getMaths(imports),
@@ -147,7 +143,7 @@ const imports = {
 			getOfflineAudioContext(imports),
 			getFonts(imports, [...fontList]),
 			getBestWorkerScope(imports),
-			getMediaDevices(imports),
+			getMedia(imports),
 			getWebRTCData(imports)
 		]).catch(error => console.error(error.message))
 
@@ -171,7 +167,6 @@ const imports = {
 			cssHash,
 			screenHash,
 			voicesHash,
-			mediaTypesHash,
 			canvas2dHash,
 			canvasWebglHash,
 			mathsHash,
@@ -181,7 +176,7 @@ const imports = {
 			audioHash,
 			fontsHash,
 			workerHash,
-			mediaDevicesHash,
+			mediaHash,
 			webRTCHash,
 			navigatorHash,
 			liesHash,
@@ -193,7 +188,6 @@ const imports = {
 			hashify(cssComputed),
 			hashify(screenComputed),
 			hashify(voicesComputed),
-			hashify(mediaTypesComputed),
 			hashify(canvas2dComputed),
 			hashify(canvasWebglComputed),
 			hashify(mathsComputed.data),
@@ -203,7 +197,7 @@ const imports = {
 			hashify(offlineAudioContextComputed),
 			hashify(fontsComputed),
 			hashify(workerScopeComputed),
-			hashify(mediaDevicesComputed),
+			hashify(mediaComputed),
 			hashify(webRTCDataComputed),
 			hashify(navigatorComputed),
 			hashify(liesComputed),
@@ -220,33 +214,31 @@ const imports = {
 		if (parentDragon) {
 			parentDragon.parentNode.removeChild(parentDragon)
 		}
-
+		
 		const fingerprint = {
-			workerScope: { ...workerScopeComputed, $hash: workerHash },
-			webRTC: {...webRTCDataComputed, $hash: webRTCHash },
-			navigator: {...navigatorComputed, $hash: navigatorHash },
-			windowFeatures: {...windowFeaturesComputed, $hash: windowHash },
-			htmlElementVersion: {...htmlElementVersionComputed, $hash: htmlHash },
-			css: {...cssComputed, $hash: cssHash },
-			screen: {...screenComputed, $hash: screenHash },
-			voices: {...voicesComputed, $hash: voicesHash },
-			mediaDevices: {...mediaDevicesComputed, $hash: mediaDevicesHash },
-			mediaTypes: {...mediaTypesComputed, $hash: mediaTypesHash },
-			canvas2d: {...canvas2dComputed, $hash: canvas2dHash },
-			canvasWebgl: {...canvasWebglComputed, $hash: canvasWebglHash },
-			maths: {...mathsComputed, $hash: mathsHash },
-			consoleErrors: {...consoleErrorsComputed, $hash: consoleErrorsHash },
-			timezone: {...timezoneComputed, $hash: timezoneHash },
-			clientRects: {...clientRectsComputed, $hash: rectsHash },
-			offlineAudioContext: {...offlineAudioContextComputed, $hash: audioHash },
-			fonts: {...fontsComputed, $hash: fontsHash },
-			lies: {...liesComputed, $hash: liesHash },
-			trash: {...trashComputed, $hash: trashHash },
-			capturedErrors: {...capturedErrorsComputed, $hash: errorsHash },
+			workerScope: !workerScopeComputed ? undefined : { ...workerScopeComputed, $hash: workerHash },
+			webRTC: !webRTCDataComputed ? undefined : {...webRTCDataComputed, $hash: webRTCHash },
+			navigator: !navigatorComputed ? undefined : {...navigatorComputed, $hash: navigatorHash },
+			windowFeatures: !windowFeaturesComputed ? undefined : {...windowFeaturesComputed, $hash: windowHash },
+			htmlElementVersion: !htmlElementVersionComputed ? undefined : {...htmlElementVersionComputed, $hash: htmlHash },
+			css: !cssComputed ? undefined : {...cssComputed, $hash: cssHash },
+			screen: !screenComputed ? undefined : {...screenComputed, $hash: screenHash },
+			voices: !voicesComputed ? undefined : {...voicesComputed, $hash: voicesHash },
+			media: !mediaComputed ? undefined : {...mediaComputed, $hash: mediaHash },
+			canvas2d: !canvas2dComputed ? undefined : {...canvas2dComputed, $hash: canvas2dHash },
+			canvasWebgl: !canvasWebglComputed ? undefined : {...canvasWebglComputed, $hash: canvasWebglHash },
+			maths: !mathsComputed ? undefined : {...mathsComputed, $hash: mathsHash },
+			consoleErrors: !consoleErrorsComputed ? undefined : {...consoleErrorsComputed, $hash: consoleErrorsHash },
+			timezone: !timezoneComputed ? undefined : {...timezoneComputed, $hash: timezoneHash },
+			clientRects: !clientRectsComputed ? undefined : {...clientRectsComputed, $hash: rectsHash },
+			offlineAudioContext: !offlineAudioContextComputed ? undefined : {...offlineAudioContextComputed, $hash: audioHash },
+			fonts: !fontsComputed ? undefined : {...fontsComputed, $hash: fontsHash },
+			lies: !liesComputed ? undefined : {...liesComputed, $hash: liesHash },
+			trash: !trashComputed ? undefined : {...trashComputed, $hash: trashHash },
+			capturedErrors: !capturedErrorsComputed ? undefined : {...capturedErrorsComputed, $hash: errorsHash },
 		}
 		return { fingerprint, timeEnd }
 	}
-	
 	// fingerprint and render
 	const { fingerprint: fp, timeEnd } = await fingerprint().catch(error => console.error(error))
 
@@ -315,8 +307,7 @@ const imports = {
 				fp.workerScope.webglVendor
 			)
 		} : undefined,
-		mediaDevices: fp.mediaDevices,
-		mediaTypes: fp.mediaTypes,
+		media: fp.media,
 		canvas2d: ( 
 			!fp.canvas2d || fp.canvas2d.lied ? undefined : 
 			fp.canvas2d
@@ -336,7 +327,7 @@ const imports = {
 		},
 		clientRects: !fp.clientRects || fp.clientRects.lied ? undefined : fp.clientRects,
 		offlineAudioContext: (
-			!!liesLen && isBrave ? fp.offlineAudioContext.values :
+			!!liesLen && isBrave && !!fp.offlineAudioContext ? fp.offlineAudioContext.values :
 			!fp.offlineAudioContext || fp.offlineAudioContext.lied ? undefined :
 			fp.offlineAudioContext
 		),
@@ -656,12 +647,12 @@ const imports = {
 		</div>
 		<div class="flex-grid">
 		${!fp.offlineAudioContext ?
-			`<div class="col-six">
+			`<div class="col-four">
 				<strong>Audio</strong>
 				<div>sample: ${note.blocked}</div>
 				<div>copy: ${note.blocked}</div>
 				<div>matching: ${note.blocked}</div>
-				<div>node values: ${note.blocked}</div>
+				<div>values: ${note.blocked}</div>
 			</div>` :
 		(() => {
 			const {
@@ -675,19 +666,18 @@ const imports = {
 				}
 			} = fp
 			return `
-			<div class="col-six">
+			<div class="col-four">
 				<strong>Audio</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
-				<div>sample: ${binsSample[0]}</div>
-				<div>copy: ${''+copySample[0] == 'undefined' ? note.unsupported : copySample[0]}</div>
-				<div>matching: ${matching}</div>
-				<div>node values: ${
+				<div>sample:${''+binsSample[0] == 'undefined' ? ` ${note.unsupported}` : `<span class="sub-hash">${hashMini(binsSample[0])}</span>`}</div>
+				<div>copy:${''+copySample[0] == 'undefined' ? ` ${note.unsupported}`  : `<span class="sub-hash">${hashMini(copySample[0])}</span>`}</div>
+				<div>values: ${
 					modal('creep-offline-audio-context', Object.keys(values).map(key => `<div>${key}: ${values[key]}</div>`).join(''))
 				}</div>
 			</div>
 			`
 		})()}
 		${!fp.voices ?
-			`<div class="col-six">
+			`<div class="col-four">
 				<strong>Speech</strong>
 				<div>microsoft: ${note.blocked}</div>
 				<div>google: ${note.blocked}</div>
@@ -708,7 +698,7 @@ const imports = {
 			} = fp
 			const voiceList = voices.map(voice => `${voice.name} (${voice.lang})`)
 			return `
-			<div class="col-six">
+			<div class="col-four">
 				<strong>Speech</strong><span class="hash">${hashMini($hash)}</span>
 				<div>microsoft: ${''+microsoft}</div>
 				<div>google: ${''+google}</div>
@@ -718,61 +708,28 @@ const imports = {
 			</div>
 			`
 		})()}
-		</div>
-		<div class="flex-grid">
-		${!fp.mediaTypes ?
-			`<div class="col-six">
-				<strong>Media Types</strong>
-				<div>results: ${note.blocked}</div>
-			</div>` :
-		(() => {
-			const {
-				mediaTypes: {
-					mediaTypes,
-					$hash
-				}
-			} = fp
-			const header = `<div>
-			<br>Audio play type [AP]
-			<br>Video play type [VP]
-			<br>Media Source support [MS]
-			<br>Media Recorder support [MR]
-			<br><br>[PR]=Probably, [MB]=Maybe, [TR]=True, [--]=False/""
-			<br>[AP][VP][MS][MR]</div>`
-			const results = mediaTypes.map(type => {
-				const { mimeType, audioPlayType, videoPlayType, mediaSource, mediaRecorder } = type
-				return `${audioPlayType == 'probably' ? '[PB]' : audioPlayType == 'maybe' ? '[MB]': '[--]'}${videoPlayType == 'probably' ? '[PB]' : videoPlayType == 'maybe' ? '[MB]': '[--]'}${mediaSource ? '[TR]' : '[--]'}${mediaRecorder ? '[TR]' : '[--]'}: ${mimeType}
-				`
-			})
-			return `
-			<div class="col-six" id="creep-media-types">
-				<strong>Media Types</strong><span class="hash">${hashMini($hash)}</span>
-				<div>results: ${
-					modal('creep-media-types', header+results.join('<br>'))
-				}</div>
-			</div>
-			`
-		})()}
-		${!fp.mediaDevices ?
-			`<div class="col-six">
-				<strong>Media Devices</strong>
+		${!fp.media ?
+			`<div class="col-four">
+				<strong>Media</strong>
 				<div>devices (0): ${note.blocked}</div>
 			</div>` :
 		(() => {
 			const {
-				mediaDevices: {
+				media: {
 					mediaDevices,
 					$hash
 				}
 			} = fp
+
 			return `
-			<div class="col-six">
-				<strong>Media Devices</strong><span class="hash">${hashMini($hash)}</span>
+			<div class="col-four">
+				<strong>Media</strong><span class="hash">${hashMini($hash)}</span>
 				<div>devices (${count(mediaDevices)}):${mediaDevices && mediaDevices.length ? modal('creep-media-devices', mediaDevices.map(device => device.kind).join('<br>')) : note.blocked}</div>
 			</div>
 			`
 		})()}
 		</div>
+		
 		<div class="flex-grid">
 		${!fp.clientRects ?
 			`<div class="col-six">

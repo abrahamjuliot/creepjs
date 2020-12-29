@@ -20,6 +20,7 @@ export const getOfflineAudioContext = imports => {
 			const win = phantomDarkness ? phantomDarkness : window
 			const audioContext = caniuse(() => win.OfflineAudioContext || win.webkitOfflineAudioContext)
 			if (!audioContext) {
+				logTestResult({ test: 'audio', passed: false })
 				return resolve()
 			}
 			// detect lies
@@ -115,7 +116,7 @@ export const getOfflineAudioContext = imports => {
 						if (copyFromChannelSupported && !matching) {
 							lied = true
 							const audioSampleLie = { fingerprint: '', lies: [{ ['data and copy samples mismatch']: false }] }
-							documentLie('AudioBuffer', hashMini(matching), audioSampleLie)
+							documentLie('AudioBuffer', matching, audioSampleLie)
 						}
 
 						dynamicsCompressor.disconnect()
@@ -123,7 +124,6 @@ export const getOfflineAudioContext = imports => {
 						const response = {
 							binsSample: binsSample,
 							copySample: copyFromChannelSupported ? copySample : [undefined],
-							matching,
 							values,
 							lied
 						}
@@ -134,15 +134,8 @@ export const getOfflineAudioContext = imports => {
 						captureError(error, 'AudioBuffer failed or blocked by client')
 						dynamicsCompressor.disconnect()
 						oscillator.disconnect()
-						const response = {
-							copySample: [undefined],
-							binsSample: [undefined],
-							matching,
-							values,
-							lied
-						}
 						logTestResult({ test: 'audio', passed: false })
-						return resolve({ ...response })
+						return resolve()
 					}
 				}
 			}))

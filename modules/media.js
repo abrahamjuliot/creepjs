@@ -1,5 +1,4 @@
-// media devices
-export const getMediaDevices = imports => {
+export const getMedia = imports => {
 
 	const {
 		require: {
@@ -15,6 +14,7 @@ export const getMediaDevices = imports => {
 			const phantomNavigator = phantomDarkness ? phantomDarkness.navigator : navigator
 			if (!phantomNavigator.mediaDevices ||
 				!phantomNavigator.mediaDevices.enumerateDevices) {
+				logTestResult({ test: 'media devices', passed: false })
 				return resolve()
 			}
 			let mediaDevicesEnumerated 
@@ -30,7 +30,6 @@ export const getMediaDevices = imports => {
 					return resolve()
 				})
 			}
-			
 			const mediaDevices = (
 				mediaDevicesEnumerated ? 
 				mediaDevicesEnumerated
@@ -38,11 +37,12 @@ export const getMediaDevices = imports => {
 					.sort((a, b) => (a.kind > b.kind) ? 1 : -1) :
 				undefined
 			)
-			logTestResult({ start, test: 'media devices', passed: true })
+			
+			logTestResult({ start, test: 'media', passed: true })
 			return resolve({ mediaDevices })
 		}
 		catch (error) {
-			logTestResult({ test: 'media devices', passed: false })
+			logTestResult({ test: 'media', passed: false })
 			captureError(error)
 			return resolve()
 		}
