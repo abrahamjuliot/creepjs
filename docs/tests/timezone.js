@@ -727,42 +727,27 @@ const unixEpochLocation = +new Date(new Date(`7/1/1113`))
 const notWithinParentheses = /.*\(|\).*/g
 const zone = (''+new Date()).replace(notWithinParentheses, '')
 
-const valid = {
-	date: true,
-	invalidDate: true,
-	location: true,
-	matchingOffset: true,
-	utcTime: true
-}
-
+// tests
+const { methods: utcMethods, stringify, toJSON, toISOString } = getUTCTime()
 const decriptionSet = new Set(decryption)
 const timezoneOffset = getTimezoneOffset()
 
-// tests
-if (new Date() != Date()) {
-	valid.date = false
+const valid = {
+	date: (
+		/^function Date\(\) {(\n    | )\[native code\](\n| )}$/.test(Date+'') &&
+		Date.length == 7 && 
+		Date.name == 'Date' && 
+		new Date() == Date()
+	),
+	invalidDate: /^Invalid Date$/.test(new Date(10000000000000000000000000)),
+	location: decriptionSet.has(timeZone),
+	matchingOffset: timezoneOffset.key == timezoneOffset.computed,
+	utcTime: (
+		utcMethods == stringify && utcMethods == toJSON && utcMethods == toISOString
+	)
 }
 
-const invalidDate = new Date(10000000000000000000000000)
-if (!/^Invalid Date$/.test(invalidDate)) {
-	valid.invalidDate = false
-}
-
-new Date(Date.parse(+new Date()))
-
-if (!(decriptionSet.has(timeZone))) {
-	valid.location = false
-}
-
-if (timezoneOffset.key != timezoneOffset.computed) {
-	valid.matchingOffset = false
-}
-
-const { methods: utcMethods, stringify, toJSON, toISOString } = getUTCTime()
-if (utcMethods != stringify || utcMethods != toJSON || utcMethods != toISOString) {
-	valid.utcTime = false
-}
-
+// template
 const formatLocation = x => x.replace(/_/, ' ').split('/').join(', ') 
 const decrypted = decriptionSet.size == 1 ? decryption[0] : !valid.location ? `Earth/UniqueVille` : timeZone
 const fake = x => `<span class="fake">${x}</span>`
