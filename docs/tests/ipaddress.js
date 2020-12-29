@@ -1,4 +1,4 @@
-export const getWebRTCData = imports => {
+const getWebRTCData = imports => {
 
 	const {
 		require: {
@@ -13,6 +13,22 @@ export const getWebRTCData = imports => {
 	return new Promise(async resolve => {
 		try {
 			const start = performance.now()
+
+
+			const api = 'https://www.cloudflare.com/cdn-cgi/trace'
+			const res = await fetch(api)
+			const text = await res.text()
+			const lines = text.match(/^(?:ip|uag|loc|tls)=(.*)$/igm)
+			const data = {}
+			const cloudflare = lines.reduce((acc, line) => {
+				const key = line.split('=')[0]
+				const value = line.substr(line.indexOf('=') + 1)
+				acc[key] = value
+				return acc
+			}, {})
+
+			console.log(performance.now() - start, cloudflare)
+
 			let rtcPeerConnection
 			try {
 				rtcPeerConnection = (
