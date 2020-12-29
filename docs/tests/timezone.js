@@ -749,8 +749,9 @@ const valid = {
 }
 
 // template
+const styleResult = (valid) => valid ? `<span class="pass">&#10004;</span>` : `<span class="fail">&#10006;</span>`
 const formatLocation = x => x.replace(/_/, ' ').split('/').join(', ') 
-const decrypted = decriptionSet.size == 1 ? decryption[0] : !valid.location ? `Earth/UniqueVille` : timeZone
+const decrypted = decriptionSet.size == 1 ? decryption[0] : !valid.location ? `Earth/UniqueMachine` : timeZone
 const fake = x => `<span class="fake">${x}</span>`
 const entropy = x => `<span class="entropy">${x}</span>`
 const el = document.getElementById('fingerprint-data')
@@ -759,13 +760,26 @@ patch(el, html`
 		#fingerprint-data > .jumbo {
 			font-size: 32px;
 		}
+		.pass, .fail {
+			margin: 0 10px 0 0;
+			padding: 1px 5px;
+			border-radius: 3px;
+		}
+		.pass {
+			color: #2da568;
+			background: #2da5681a;
+		}
+		.fail, .fake, .erratic {
+			color: #ca656e;
+			background: #ca656e0d;
+		}
+		.erratic {
+			font-weight: bold;
+		}
 		.fake, .entropy {
 			border-radius: 2px;
 			margin: 0 5px;
-			padding: 2px 3px;
-		}
-		.fake {
-			background: #e281a92e;
+			padding: 1px 3px;
 		}
 		.entropy {
 			background: #e8d48c3d;
@@ -780,26 +794,32 @@ patch(el, html`
 			<div>${hashMini(formatLocation(decrypted))}</div>
 		</div>
 		<div>
-			<div>date: ${!valid.date ? `${new Date()}${fake('fake')}` : new Date() }</div>
-			<div>zone: ${!valid.invalidDate ? `${zone}${fake('fake')}` : zone }</div>
-			<div>reported location: ${
+			<div>${styleResult(valid.date)}date: ${!valid.date ? `${new Date()}${fake('fake')}` : new Date() }</div>
+			<div>${styleResult(valid.invalidDate)}zone: ${!valid.invalidDate ? `${zone}${fake('fake')}` : zone }</div>
+			<div>${styleResult(valid.location)}reported location: ${
 				!valid.location ? `${formatLocation(timeZone)}${fake('fake')}` : formatLocation(timeZone)
 			}</div>
-			<div>measured location: ${
-				!valid.location && !decriptionSet.size ? `${formatLocation(decrypted)}${entropy('high entropy')}`: formatLocation(decrypted)
-			}</div>
-			<div>epoch: ${epochCities[epochLocation] ? formatLocation(epochCities[epochLocation]) : epochLocation}</div>
-			<div>reported offset: ${
+			<div>${styleResult(true)}epoch: ${epochCities[epochLocation] ? formatLocation(epochCities[epochLocation]) : epochLocation}</div>
+			<div>${styleResult(valid.matchingOffset)}reported offset: ${
 				!valid.matchingOffset ? `${''+timezoneOffset.key}${fake('fake')}` : ''+timezoneOffset.key
 			}</div>
-			<div>computed offset: ${''+timezoneOffset.computed}</div>
-			<div>utc time: ${!valid.utcTime ? fake('erratic') : ''}
-				<br>${utcMethods} [methods]
-				<br>${stringify} [stringify]
-				<br>${toJSON} [toJSON]
-				<br>${toISOString} [toISOString]
-			</div>
-			${decriptionSet.size > 1 ? `<div>computed region: ${decryption.join(', ')}</div>` : '' }
+			<div>${styleResult(true)}computed offset: ${''+timezoneOffset.computed}</div>
+			${(() => {
+				const base = utcMethods.split('')
+				const style = (a, b) => b.map((char,i) => char != a[i] ? `<span class="erratic">${char}</span>` : char).join('')
+				return `
+					<div>${styleResult(valid.utcTime)}utc time: ${!valid.utcTime ? fake('erratic') : ''}
+						<br>${utcMethods} [methods]
+						<br>${style(base, stringify.split(''))} [stringify]
+						<br>${style(base, toJSON.split(''))} [toJSON]
+						<br>${style(base, toISOString.split(''))} [toISOString]
+					</div>
+				`
+			})()}
+			<div>${styleResult(true)}measured location: ${
+				!valid.location && !decriptionSet.size ? `Twilight Zone${entropy('high entropy')}`: formatLocation(decrypted)
+			}</div>
+			<div>${styleResult(true)}measured region set:<br>${decryption.join('<br>')}</div>
 		</div>
 
 
