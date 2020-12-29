@@ -751,7 +751,11 @@ const valid = {
 // template
 const styleResult = (valid) => valid ? `<span class="pass">&#10004;</span>` : `<span class="fail">&#10006;</span>`
 const formatLocation = x => x.replace(/_/, ' ').split('/').join(', ') 
-const decrypted = decriptionSet.size == 1 ? decryption[0] : !valid.location ? `Earth/UniqueMachine` : timeZone
+const decrypted = (
+	decriptionSet.size == 1 ? decryption[0] : 
+	!valid.location && !decriptionSet.size ? `Twilight Zone` : 
+	!valid.location ? 'Earth/UniqueMachine' : timeZone
+)
 const fake = x => `<span class="fake">${x}</span>`
 const entropy = x => `<span class="entropy">${x}</span>`
 const el = document.getElementById('fingerprint-data')
@@ -817,7 +821,7 @@ patch(el, html`
 				`
 			})()}
 			<div>${styleResult(true)}measured location: ${
-				!valid.location && !decriptionSet.size ? `Twilight Zone${entropy('high entropy')}`: formatLocation(decrypted)
+				!valid.location ? `${formatLocation(decrypted)}${entropy('high entropy')}`: formatLocation(decrypted)
 			}</div>
 			<div>${styleResult(true)}measured region set:<br>${decryption.join('<br>')}</div>
 		</div>
