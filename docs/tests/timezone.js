@@ -907,8 +907,8 @@ patch(el, html`
 				return `
 					<div>${styleResult(valid.utcTime)}utc ISO time: ${!valid.utcTime ? fake('erratic') : ''}
 						<br>${utcMethods} <span class="lighten">[getUTC... Methods]</span>
-						<br>${style(base, toJSON.split(''))} <span class="lighten">[new Date().toJSON]</span>
-						<br>${style(base, toISOString.split(''))} <span class="lighten">[new Date().toISOString]</span>
+						<br>${style(base, toJSON.split(''))} <span class="lighten">[new Date().toJSON()]</span>
+						<br>${style(base, toISOString.split(''))} <span class="lighten">[new Date().toISOString()]</span>
 						<br>${style(base, stringify.split(''))} <span class="lighten">[JSON.stringify(new Date()).slice(1,-1)]</span>
 					</div>
 				`
