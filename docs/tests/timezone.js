@@ -679,7 +679,8 @@ const getUTCTime = () => {
 }
 
 const getNowTime = () => {
-	const d = new Date(), now = Date.now()
+	const d = new Date()
+	const now = Date.now()
 	return {
 		now,
 		dateValue: +d,
@@ -788,13 +789,31 @@ const notWithinParentheses = /.*\(|\).*/g
 const zone = (''+new Date()).replace(notWithinParentheses, '')
 
 // tests
+const getRand = (min, max) => ~~(Math.random() * (max - min + 1)) + min
+const rand = getRand(0, 23)
 const { methods: utcMethods, stringify, toJSON, toISOString } = getUTCTime()
 const { now, dateValue, valueOf, getTime } = getNowTime()
+const time = new Date()
 const midnight = new Date('7, 1 1970')
 const decriptionSet = new Set(decryption)
 const timezoneOffset = getTimezoneOffset()
+const hours = ''+time.getHours()
+const minutes = ''+pad(time.getMinutes())
+const seconds = ''+pad(time.getSeconds())
+const localeTimeString1 = `${hours > 12 ? hours-12 : hours}:${minutes}:${seconds} ${hours< 12 ? 'AM' : 'PM'}`
+const localeTimeString2 = time.toLocaleTimeString()
+time.setHours(rand)
+time.setMinutes(rand)
+time.setSeconds(rand)
+
 
 const valid = {
+	localeTimeString: localeTimeString1 == localeTimeString2,
+	time: (
+		time.getHours() == rand &&
+		time.getMinutes() == rand &&
+		time.getSeconds() == rand
+	),
 	clock: (
 		midnight.getHours() == 0 &&
 		midnight.getMinutes() == 0 &&
@@ -826,8 +845,8 @@ const styleResult = (valid) => valid ? `<span class="pass">&#10004;</span>` : `<
 //const formatLocation = x => x.replace(/_/, ' ').split('/').join(', ') 
 const decrypted = (
 	decriptionSet.size == 1 ? decryption[0] : 
-	!valid.location && !decriptionSet.size ? 'Earth/DysfunctionalMachine' : 
-	!valid.location ? 'Earth/UniqueMachine' : timeZone
+	!valid.location && !decriptionSet.size ? 'Dysfunctional Machine' : 
+	!valid.location ? 'Unhealthy Machine' : timeZone
 )
 const fake = x => `<span class="fake">${x}</span>`
 const el = document.getElementById('fingerprint-data')
@@ -836,7 +855,7 @@ patch(el, html`
 		#fingerprint-data > .jumbo {
 			font-size: 32px;
 		}
-		.pass, .fail {
+		.pass, .fail, .entropy {
 			margin: 0 10px 0 0;
 			padding: 1px 5px;
 			border-radius: 3px;
@@ -866,6 +885,10 @@ patch(el, html`
 			padding: 10px 15px;
 			margin: 10px auto;
 		}
+		.entropy {
+			color: #94653da3;
+    		background: #ffe06624;
+		}
 	</style>
 	<div id="fingerprint-data">
 		<div class="visitor-info">
@@ -878,6 +901,9 @@ patch(el, html`
 		<div>
 			<div>${styleResult(valid.date && valid.clock)}date: ${
 				!valid.date || !valid.clock ? `${new Date()}${fake('fake')}` : new Date()
+			}</div>
+			<div>${styleResult(valid.time && valid.localeTimeString)}time: ${
+				!valid.time || !valid.localeTimeString ? `${localeTimeString1}${fake('fake')}` : localeTimeString1
 			}</div>
 			<div>${styleResult(valid.invalidDate && valid.date && valid.clock)}zone: ${
 				!valid.invalidDate || !valid.date || !valid.clock ? `${zone}${fake('fake')}` : zone
@@ -918,7 +944,7 @@ patch(el, html`
 				epochCities[epochLocation] ? epochCities[epochLocation] : epochLocation
 			}</div>
 			<div>${styleResult(true)}measured location: ${
-				!valid.location ? `${decrypted}`: decrypted
+				!valid.location ? `<span class="entropy">${decrypted}</span>`: decrypted
 			}</div>
 			${
 				decryption.length ? `
