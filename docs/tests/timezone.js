@@ -740,11 +740,17 @@ const zone = (''+new Date()).replace(notWithinParentheses, '')
 // tests
 const { methods: utcMethods, stringify, toJSON, toISOString } = getUTCTime()
 const { now, dateValue, valueOf, getTime } = getNowTime()
-
+const midnight = new Date('7, 1 1970')
 const decriptionSet = new Set(decryption)
 const timezoneOffset = getTimezoneOffset()
 
 const valid = {
+	clock: (
+		midnight.getHours() == 0 &&
+		midnight.getMinutes() == 0 &&
+		midnight.getSeconds() == 0 &&
+		midnight.getMilliseconds() == 0
+	),
 	date: (
 		/^function Date\(\) {(\n    | )\[native code\](\n| )}$/.test(Date+'') &&
 		Date.length == 7 && 
@@ -765,10 +771,10 @@ const valid = {
 
 // template
 const styleResult = (valid) => valid ? `<span class="pass">&#10004;</span>` : `<span class="fail">&#10006;</span>`
-const formatLocation = x => x.replace(/_/, ' ').split('/').join(', ') 
+//const formatLocation = x => x.replace(/_/, ' ').split('/').join(', ') 
 const decrypted = (
 	decriptionSet.size == 1 ? decryption[0] : 
-	!valid.location && !decriptionSet.size ? `Twilight Zone` : 
+	!valid.location && !decriptionSet.size ? 'Earth/DysfunctionalMachine' : 
 	!valid.location ? 'Earth/UniqueMachine' : timeZone
 )
 const fake = x => `<span class="fake">${x}</span>`
@@ -794,10 +800,13 @@ patch(el, html`
 		.erratic {
 			font-weight: bold;
 		}
-		.fake, .entropy {
+		.fake {
 			border-radius: 2px;
 			margin: 0 5px;
 			padding: 1px 3px;
+		}
+		.lighten {
+			color: #bbb
 		}
 	</style>
 	<div id="fingerprint-data">
@@ -806,28 +815,31 @@ patch(el, html`
 			<strong>Timezone</strong>
 		</div>
 		<div class="jumbo">
-			<div>${hashMini(formatLocation(decrypted))}</div>
+			<div>${hashMini(decrypted)}</div>
 		</div>
 		<div>
-			<div>${styleResult(valid.date)}date: ${!valid.date ? `${new Date()}${fake('fake')}` : new Date() }</div>
-			<div>${styleResult(valid.invalidDate && valid.date)}zone: ${!valid.invalidDate || !valid.date ? `${zone}${fake('fake')}` : zone }</div>
-			<div>${styleResult(valid.location)}reported location: ${
-				!valid.location ? `${formatLocation(timeZone)}${fake('fake')}` : formatLocation(timeZone)
+			<div>${styleResult(valid.date && valid.clock)}date: ${
+				!valid.date || !valid.clock ? `${new Date()}${fake('fake')}` : new Date()
 			}</div>
-			<div>${styleResult(true)}epoch: ${epochCities[epochLocation] ? formatLocation(epochCities[epochLocation]) : epochLocation}</div>
+			<div>${styleResult(valid.invalidDate && valid.date && valid.clock)}zone: ${
+				!valid.invalidDate || !valid.date || !valid.clock ? `${zone}${fake('fake')}` : zone
+			}</div>
+			<div>${styleResult(valid.location)}reported location: ${
+				!valid.location ? `${timeZone}${fake('fake')}` : timeZone
+			}</div>
+			
 			<div>${styleResult(valid.matchingOffset)}reported offset: ${
 				!valid.matchingOffset ? `${''+timezoneOffset.key}${fake('fake')}` : ''+timezoneOffset.key
 			}</div>
-			<div>${styleResult(true)}computed offset: ${''+timezoneOffset.computed}</div>
 			${(() => {
 				const base = (''+dateValue).split('')
 				const style = (a, b) => b.map((char,i) => char != a[i] ? `<span class="erratic">${char}</span>` : char).join('')
 				return `
-					<div>${styleResult(valid.nowTime)}now time: ${!valid.nowTime ? fake('erratic') : ''}
-						<br>${dateValue} [+new Date()]
-						<br>${style(base, (''+now).split(''))} [Date.now()]
-						<br>${style(base, (''+getTime).split(''))} [new Date().getTime()]
-						<br>${style(base, (''+valueOf).split(''))} [new Date().valueOf()]
+					<div>${styleResult(valid.nowTime)}now epoch time: ${!valid.nowTime ? fake('erratic') : ''}
+						<br>${dateValue} <span class="lighten">[+new Date()]</span>
+						<br>${style(base, (''+now).split(''))} <span class="lighten">[Date.now()]</span>
+						<br>${style(base, (''+getTime).split(''))} <span class="lighten">[new Date().getTime()]</span>
+						<br>${style(base, (''+valueOf).split(''))} <span class="lighten">[new Date().valueOf()]</span>
 					</div>
 				`
 			})()}
@@ -835,18 +847,29 @@ patch(el, html`
 				const base = utcMethods.split('')
 				const style = (a, b) => b.map((char,i) => char != a[i] ? `<span class="erratic">${char}</span>` : char).join('')
 				return `
-					<div>${styleResult(valid.utcTime)}utc time: ${!valid.utcTime ? fake('erratic') : ''}
-						<br>${utcMethods} [getUTC... Methods]
-						<br>${style(base, toJSON.split(''))} [new Date().toJSON]
-						<br>${style(base, toISOString.split(''))} [new Date().toISOString]
-						<br>${style(base, stringify.split(''))} [JSON.stringify(new Date()).slice(1,-1)]
+					<div>${styleResult(valid.utcTime)}utc ISO time: ${!valid.utcTime ? fake('erratic') : ''}
+						<br>${utcMethods} <span class="lighten">[getUTC... Methods]</span>
+						<br>${style(base, toJSON.split(''))} <span class="lighten">[new Date().toJSON]</span>
+						<br>${style(base, toISOString.split(''))} <span class="lighten">[new Date().toISOString]</span>
+						<br>${style(base, stringify.split(''))} <span class="lighten">[JSON.stringify(new Date()).slice(1,-1)]</span>
 					</div>
 				`
 			})()}
-			<div>${styleResult(true)}measured location: ${
-				!valid.location ? `${formatLocation(decrypted)}`: formatLocation(decrypted)
+			<div>${styleResult(true)}computed offset: ${''+timezoneOffset.computed}</div>
+			<div>${styleResult(true)}epoch: ${
+				epochCities[epochLocation] ? epochCities[epochLocation] : epochLocation
 			}</div>
-			<div>${styleResult(true)}measured region set:<br>${decryption.join('<br>')}</div>
+			<div>${styleResult(true)}measured location: ${
+				!valid.location ? `${decrypted}`: decrypted
+			}</div>
+			${
+				decryption.length ? `
+				<div>${styleResult(true)}measured region set:${decryption.length > 1 ? '<br>' : ' '}${
+					decryption.map(city => city == epochCities[epochLocation] ? city : `<span class="lighten">${city}</span>`).join('<br>')
+				}</div>
+				` : ''
+			}
+			
 		</div>
 
 
