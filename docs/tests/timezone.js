@@ -800,15 +800,13 @@ const timezoneOffset = getTimezoneOffset()
 const hours = ''+time.getHours()
 const minutes = ''+pad(time.getMinutes())
 const seconds = ''+pad(time.getSeconds())
-const localeTimeString1 = `${hours > 12 ? hours-12 : hours}:${minutes}:${seconds} ${hours< 12 ? 'AM' : 'PM'}`
-const localeTimeString2 = time.toLocaleTimeString()
+const timeString = `${hours > 12 ? hours-12 : hours}:${minutes}:${seconds} ${hours< 12 ? 'AM' : 'PM'}`
+
 time.setHours(rand)
 time.setMinutes(rand)
 time.setSeconds(rand)
 
-
 const valid = {
-	localeTimeString: localeTimeString1 == localeTimeString2,
 	time: (
 		time.getHours() == rand &&
 		time.getMinutes() == rand &&
@@ -902,8 +900,8 @@ patch(el, html`
 			<div>${styleResult(valid.date && valid.clock)}date: ${
 				!valid.date || !valid.clock ? `${new Date()}${fake('fake')}` : new Date()
 			}</div>
-			<div>${styleResult(valid.time && valid.localeTimeString)}time: ${
-				!valid.time || !valid.localeTimeString ? `${localeTimeString1}${fake('fake')}` : localeTimeString1
+			<div>${styleResult(valid.time)}time: ${
+				!valid.time ? `${timeString}${fake('fake')}` : timeString
 			}</div>
 			<div>${styleResult(valid.invalidDate && valid.date && valid.clock)}zone: ${
 				!valid.invalidDate || !valid.date || !valid.clock ? `${zone}${fake('fake')}` : zone
