@@ -1,4 +1,4 @@
-(() => {
+(async () => {
 
 const hashMini = str => {
 	const json = `${JSON.stringify(str)}`
@@ -731,6 +731,56 @@ const filter = cities => cities.filter(city => system == getTimezoneOffsetHistor
 const decryption = (
 	system == resolvedOptions ? [timeZone] : binarySearch(cities, filter)
 )
+const detectPrivacy = async () => {
+	let n = 0
+	const regex = n => new RegExp(`${n}+$`)
+	const a = await new Promise(resolve => setTimeout(() => {
+		const date = +new Date()
+		n = +(''+date).slice(-1)
+		const res = regex(n).test(date) ? regex(n).exec(date)[0] : date
+		return resolve(res)
+	}, 1))
+	const b = await new Promise(resolve => setTimeout(() => {
+		const date = +new Date()
+		const res = regex(n).test(date) ? regex(n).exec(date)[0] : date
+		return resolve(res)
+	}, 2))
+	const c = await new Promise(resolve => setTimeout(() => {
+		const date = +new Date()
+		const res = regex(n).test(date) ? regex(n).exec(date)[0] : date
+		return resolve(res)
+	}, 3))
+	const d = await new Promise(resolve => setTimeout(() => {
+		const date = +new Date()
+		const res = regex(n).test(date) ? regex(n).exec(date)[0] : date
+		return resolve(res)
+	}, 4))
+	const e = await new Promise(resolve => setTimeout(() => {
+		const date = +new Date()
+		const res = regex(n).test(date) ? regex(n).exec(date)[0] : date
+		return resolve(res)
+	}, 5))
+	
+	const lastCharA = (''+a).slice(-1)
+	const lastCharB = (''+b).slice(-1)
+	const lastCharC = (''+c).slice(-1)
+	const lastCharD = (''+d).slice(-1)
+	const lastCharE = (''+e).slice(-1)
+	const resist = (
+		lastCharA == lastCharB &&
+		lastCharB == lastCharC &&
+		lastCharC == lastCharD &&
+		lastCharD == lastCharE
+	)
+	const baseLen = (''+a).length
+	return {
+		resist,
+		delays: [a, b, c, d, e].map(n => (''+n).length > baseLen ? (''+n).slice(-baseLen) : n),
+		precision: resist ? Math.min(...[''+a, ''+b, ''+c, ''+d, ''+e].map(str => str.length)) : undefined,
+		precisionValue: resist ? lastCharA : undefined
+	}
+}
+
 const perf = performance.now() - start
 
 const epochLocation = +new Date(new Date(`7/1/1113`))
@@ -768,6 +818,8 @@ const valid = {
 		utcMethods == stringify && utcMethods == toJSON && utcMethods == toISOString
 	)
 }
+
+const { resist, delays, precision, precisionValue } = await detectPrivacy()
 
 // template
 const styleResult = (valid) => valid ? `<span class="pass">&#10004;</span>` : `<span class="fail">&#10006;</span>`
@@ -807,6 +859,12 @@ patch(el, html`
 		}
 		.lighten {
 			color: #bbb
+		}
+		.privacy {
+			border: 1px solid #eee;
+			border-radius: 3px;
+			padding: 10px 15px;
+			margin: 10px auto;
 		}
 	</style>
 	<div id="fingerprint-data">
@@ -869,10 +927,14 @@ patch(el, html`
 				}</div>
 				` : ''
 			}
-			
+			<div class="privacy">
+				<div>reduced timer precision: ${!resist ? 'unknown' : `${''+resist} <span class="fail">protection detected</span>`}</div>
+				<div>delays: ${delays.join(', ')}</div>
+				<div>precision level: ${''+precision}</div>
+				<div>microseconds: ${resist ? ''+(1000*Math.pow(10,precision)) : 'undefined'}</div>
+				<div>repeat value: ${''+precisionValue}</div>
+			</div>
 		</div>
-
-
 	</div>
 	`		
 )
