@@ -844,7 +844,7 @@ const styleResult = (valid) => valid ? `<span class="pass">&#10004;</span>` : `<
 const decrypted = (
 	decriptionSet.size == 1 ? decryption[0] : 
 	!valid.location && !decriptionSet.size ? 'Dysfunctional Machine' : 
-	!valid.location ? 'Unhealthy Machine' : timeZone
+	!valid.location ? 'Deceptive Machine' : timeZone
 )
 const fake = x => `<span class="fake">${x}</span>`
 const el = document.getElementById('fingerprint-data')
@@ -884,7 +884,7 @@ patch(el, html`
 			margin: 10px auto;
 		}
 		.entropy {
-			color: #94653da3;
+			color: #94653dc9;
     		background: #ffe06624;
 		}
 	</style>
@@ -942,7 +942,7 @@ patch(el, html`
 				epochCities[epochLocation] ? epochCities[epochLocation] : epochLocation
 			}</div>
 			<div>${styleResult(true)}measured location: ${
-				!valid.location ? `<span class="entropy">${decrypted}</span>`: decrypted
+				/machine/i.test(decrypted) ? `<span class="entropy">${decrypted}</span>`: decrypted
 			}</div>
 			${
 				decryption.length ? `
