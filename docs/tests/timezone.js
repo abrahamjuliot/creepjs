@@ -701,6 +701,7 @@ const valid = {
 const { protection, delays, precision, precisionValue } = await detectProtection()
 console.log([...epochCitySet])
 // template
+const locationHash = hashMini([...epochCitySet])
 const styleWarn = valid => valid ? `<span class="pass">&#10004;</span>` : `<span class="warn">&#9888;</span>`
 const styleResult = valid => valid ? `<span class="pass">&#10004;</span>` : `<span class="fail">&#10006;</span>`
 const fake = x => `<span class="fake">${x}</span>`
@@ -755,7 +756,7 @@ patch(el, html`
 			<strong>Timezone</strong>
 		</div>
 		<div class="jumbo">
-			<div>${hashMini([...epochCitySet])}</div>
+			<div>${locationHash}</div>
 		</div>
 		<div>
 			<div>${styleWarn(valid.time && valid.clock)}system health: ${
@@ -779,11 +780,13 @@ patch(el, html`
 			}</div>
 			${
 				epochCitySet.size ? `
-				<div>${styleResult(true)}computed location:${epochCitySet.size > 1 ? '<br>' : ' '}${
+				<div>${styleResult(true)}computed location: ${epochCitySet.size > 1 ? locationHash : ''}${
 					[...epochCitySet].map(city => {
 						city = city.replace(/\/.+\//,'/')
-						return city == timeZone || epochCitySet.size == 1 ? `<span class="location">${city}</span>` : `<span class="lighten">${city}</span>`
-					}).join('<br>')
+						return city == timeZone || epochCitySet.size == 1 ? 
+						`<div><span class="location">${city}</span></div>` : 
+						`<div><span class="lighten">${city}</span></div>`
+					}).join('')
 				}</div>
 				` : ''
 			}
