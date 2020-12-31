@@ -759,7 +759,7 @@ patch(el, html`
 		</div>
 		<div>
 			<div>${styleWarn(valid.time && valid.clock)}system health: ${
-				valid.time && valid.clock ? 'functional' :  '<span class="entropy">dysfunctional/span>'
+				valid.time && valid.clock ? 'functional' :  '<span class="entropy">dysfunctional</span>'
 			}</div>
 			<div>${styleResult(valid.date && valid.clock)}date: ${
 				!valid.date || !valid.clock ? `${new Date()}${fake('fake')}` : new Date()
