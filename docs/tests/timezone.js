@@ -564,7 +564,7 @@ const format = {
     minute: 'numeric',
     second: 'numeric'
 }
-const getTimezoneOffsetHistory = (year, city = null) => {
+const getTimezoneOffsetHistory = (year, city = null, epoch = false) => {
     const minute = 60000
     let formatter, summer
     if (city) {
@@ -574,6 +574,9 @@ const getTimezoneOffsetHistory = (year, city = null) => {
         }
         formatter = new Intl.DateTimeFormat('en', options)
         summer = +new Date(formatter.format(new Date(`7/1/${year}`)))
+		if (epoch) {
+			return summer
+		}
     } else {
         summer = +new Date(`7/1/${year}`)
     }
@@ -584,6 +587,7 @@ const getTimezoneOffsetHistory = (year, city = null) => {
 const system = getTimezoneOffsetHistory(year)
 const { timeZone } = Intl.DateTimeFormat().resolvedOptions()
 const resolvedOptions = getTimezoneOffsetHistory(year, timeZone)
+const resolvedOptionsEpoch = getTimezoneOffsetHistory(year, timeZone, true)
 const binarySearch = (list, fn) => {
     const end = list.length
     const middle = Math.floor(end / 2)
@@ -598,7 +602,10 @@ const decryption = (
 )
 const systemEpoch = +new Date(new Date(`7/1/${year}`))
 const epochCities = cities.filter(city => city[1] == systemEpoch)
-const epochCitySet = epochCities.length ? new Set(epochCities.map(city => city[0])) : new Set([])
+const epochCitySet = (
+	resolvedOptionsEpoch == systemEpoch ? new Set([timeZone]) : 
+	epochCities.length ? new Set(epochCities.map(city => city[0])) : new Set([])
+)
 
 const detectPrivacy = async () => {
 	let n = 0
