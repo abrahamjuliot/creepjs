@@ -758,7 +758,7 @@ patch(el, html`
 		}
 		.location {
 			color: #643c98fa;
-    		background: #643c981f;
+    		background: #643c980f;
 		}
 	</style>
 	<div id="fingerprint-data">
