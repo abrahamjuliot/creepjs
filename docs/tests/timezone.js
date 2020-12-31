@@ -763,20 +763,20 @@ patch(el, html`
 				valid.time && valid.clock ? 'functional' :  '<span class="entropy">dysfunctional</span>'
 			}</div>
 			<div>${styleResult(valid.date && valid.clock)}date: ${
-				!valid.date || !valid.clock ? `${new Date()}${fake('fake')}` : new Date()
+				valid.date && valid.clock ? new Date() : `${new Date()}${fake('fake')}`
 			}</div>
-			<div>${styleResult(valid.time)}time: ${
-				!valid.time ? `${timeString}${fake('fake')}` : timeString
+			<div>${styleResult(valid.time && valid.clock)}time: ${
+				valid.time && valid.clock ? timeString : `${timeString}${fake('fake')}`
 			}</div>
 			<div>${styleResult(valid.invalidDate && valid.date && valid.clock)}zone: ${
-				!valid.invalidDate || !valid.date || !valid.clock ? `${zone}${fake('fake')}` : zone
+				valid.invalidDate && valid.date && valid.clock ? zone : `${zone}${fake('fake')}`
 			}</div>
 			<div>${styleResult(valid.matchingOffset)}reported offset: ${
-				!valid.matchingOffset ? `${''+timezoneOffset.key}${fake('fake')}` : ''+timezoneOffset.key
+				valid.matchingOffset ? ''+timezoneOffset.key : `${''+timezoneOffset.key}${fake('fake')}`
 			}</div>
 			<div>${styleResult(true)}computed offset: ${''+timezoneOffset.computed}</div>
 			<div>${styleResult(valid.location)}reported location: ${
-				!valid.location ? `${timeZone}${fake('fake')}` : timeZone
+				valid.location ? timeZone : `${timeZone}${fake('fake')}`
 			}</div>
 			${
 				epochCitySet.size ? `
