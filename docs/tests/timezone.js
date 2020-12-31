@@ -784,7 +784,7 @@ patch(el, html`
 					[...epochCitySet].map(city => {
 						city = city.replace(/\/.+\//,'/')
 						return city == timeZone || epochCitySet.size == 1 ? 
-						`<div><span class="location">${city}</span></div>` : 
+						`<span class="location">${city}</span>` : 
 						`<div><span class="lighten">${city}</span></div>`
 					}).join('')
 				}</div>
