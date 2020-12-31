@@ -699,7 +699,6 @@ const valid = {
 }
 
 const { protection, delays, precision, precisionValue } = await detectProtection()
-console.log([...epochCitySet])
 // template
 const locationHash = hashMini([...epochCitySet])
 const styleWarn = valid => valid ? `<span class="pass">&#10004;</span>` : `<span class="warn">&#9888;</span>`
