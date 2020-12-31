@@ -591,12 +591,11 @@ const binarySearch = (list, fn) => {
     const found = fn(left)
     return end == 1 || found.length ? found : binarySearch(right, fn)
 }
-const filter = cities => cities.filter(city => system == getTimezoneOffsetHistory(year, city[0]))
+const filter = cities => cities.filter(city => system == getTimezoneOffsetHistory(year, city))
 const trustedSystem = system == resolvedOptions
 const decryption = (
-	trustedSystem ? [timeZone] : binarySearch(cities, filter)
+	trustedSystem ? [timeZone] : binarySearch(cities.map(city => city[0]), filter)
 )
-
 const systemEpoch = +new Date(new Date(`7/1/${year}`))
 const epochCities = cities.filter(city => city[1] == systemEpoch)
 const epochCitySet = epochCities.length ? new Set(epochCities.map(city => city[0].replace(/\/.+\//,'/'))) : new Set([])
@@ -817,7 +816,13 @@ patch(el, html`
 			${
 				decryption.length ? `
 				<div>${styleResult(true)}measured location:${decryption.length > 1 ? '<br>' : ' '}${
-					decryption.map(city => (epochCitySet.size == 1 && city == [...epochCitySet][0]) || decryption.length == 1 ?  `<span class="location">${city}</span>` : `<span class="lighten">${city}</span>`).join('<br>')
+					decryption.map(city => {
+						return (
+							(epochCitySet.size == 1 && city == [...epochCitySet][0]) || decryption.length == 1 ? 
+							`<span class="location">${city}</span>` : 
+							`<span class="lighten">${city}</span>`
+						)
+					}).join('<br>')
 				}</div>
 				` : ''
 			}
