@@ -598,7 +598,7 @@ const decryption = (
 )
 const systemEpoch = +new Date(new Date(`7/1/${year}`))
 const epochCities = cities.filter(city => city[1] == systemEpoch)
-const epochCitySet = epochCities.length ? new Set(epochCities.map(city => city[0].replace(/\/.+\//,'/'))) : new Set([])
+const epochCitySet = epochCities.length ? new Set(epochCities.map(city => city[0])) : new Set([])
 
 const detectPrivacy = async () => {
 	let n = 0
@@ -817,6 +817,7 @@ patch(el, html`
 				decryption.length ? `
 				<div>${styleResult(true)}measured location:${decryption.length > 1 ? '<br>' : ' '}${
 					decryption.map(city => {
+						city = city.replace(/\/.+\//,'/')
 						return (
 							(epochCitySet.size == 1 && city == [...epochCitySet][0]) || decryption.length == 1 ? 
 							`<span class="location">${city}</span>` : 
@@ -830,7 +831,10 @@ patch(el, html`
 			${
 				epochCitySet.size ? `
 				<div>${styleResult(true)}epoch location:${epochCitySet.size > 1 ? '<br>' : ' '}${
-					[...epochCitySet].map(city => city == timeZone || epochCitySet.size == 1 ? `<span class="location">${city}</span>` : `<span class="lighten">${city}</span>`).join('<br>')
+					[...epochCitySet].map(city => {
+						city = city.replace(/\/.+\//,'/')
+						return city == timeZone || epochCitySet.size == 1 ? `<span class="location">${city}</span>` : `<span class="lighten">${city}</span>`
+					}).join('<br>')
 				}</div>
 				` : ''
 			}
