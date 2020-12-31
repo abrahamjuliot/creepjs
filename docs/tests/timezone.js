@@ -552,42 +552,60 @@ const getNowTime = () => {
 	}
 }
 
-const start = performance.now()
+// detect precision protection
+const regex = n => new RegExp(`${n}+$`)
+const delay = (ms, baseNumber, baseDate = null) => new Promise(resolve => setTimeout(() => {
+	const date = baseDate ? baseDate : +new Date()
+	const value = regex(baseNumber).test(date) ? regex(baseNumber).exec(date)[0] : date
+	return resolve(value)
+}, ms))
+const detectProtection = async () => {
+	const baseDate = +new Date()
+	const baseNumber = +(''+baseDate).slice(-1)
+	
+	const a = await delay(0, baseNumber, baseDate)
+	const b = await delay(1, baseNumber)
+	const c = await delay(2, baseNumber)
+	const d = await delay(3, baseNumber)
+	const e = await delay(4, baseNumber)
+	const f = await delay(5, baseNumber)
+	const g = await delay(6, baseNumber)
+	const h = await delay(7, baseNumber)
+	const i = await delay(8, baseNumber)
+	const j = await delay(9, baseNumber)
+	
+	const lastCharA = (''+a).slice(-1)
+	const lastCharB = (''+b).slice(-1)
+	const lastCharC = (''+c).slice(-1)
+	const lastCharD = (''+d).slice(-1)
+	const lastCharE = (''+e).slice(-1)
+	const lastCharF = (''+f).slice(-1)
+	const lastCharG = (''+g).slice(-1)
+	const lastCharH = (''+h).slice(-1)
+	const lastCharI = (''+i).slice(-1)
+	const lastCharJ = (''+j).slice(-1)
 
-const year = 1113
-const format = {
-    timeZone: '',
-    year: 'numeric',
-    month: 'numeric',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-    second: 'numeric'
+	const protection = (
+		lastCharA == lastCharB &&
+		lastCharA == lastCharC &&
+		lastCharA == lastCharD &&
+		lastCharA == lastCharE &&
+		lastCharA == lastCharF &&
+		lastCharA == lastCharG &&
+		lastCharA == lastCharH &&
+		lastCharA == lastCharI &&
+		lastCharA == lastCharJ
+	)
+	const baseLen = (''+a).length
+	const collection = [a, b, c, d, e, f, g, h, i, j]
+	return {
+		protection,
+		delays: collection.map(n => (''+n).length > baseLen ? (''+n).slice(-baseLen) : n),
+		precision: protection ? Math.min(...collection.map(val => (''+val).length)) : undefined,
+		precisionValue: protection ? lastCharA : undefined
+	}
 }
-const getTimezoneOffsetHistory = (year, city = null, epoch = false) => {
-    const minute = 60000
-    let formatter, summer
-    if (city) {
-        const options = {
-            ...format,
-            timeZone: city
-        }
-        formatter = new Intl.DateTimeFormat('en', options)
-        summer = +new Date(formatter.format(new Date(`7/1/${year}`)))
-		if (epoch) {
-			return summer
-		}
-    } else {
-        summer = +new Date(`7/1/${year}`)
-    }
-    const summerUTCTime = +new Date(`${year}-07-01`)
-    const offset = (summer - summerUTCTime) / minute
-    return offset
-}
-const system = getTimezoneOffsetHistory(year)
-const { timeZone } = Intl.DateTimeFormat().resolvedOptions()
-const resolvedOptions = getTimezoneOffsetHistory(year, timeZone)
-const resolvedOptionsEpoch = getTimezoneOffsetHistory(year, timeZone, true)
+
 const binarySearch = (list, fn) => {
     const end = list.length
     const middle = Math.floor(end / 2)
@@ -595,67 +613,38 @@ const binarySearch = (list, fn) => {
     const found = fn(left)
     return end == 1 || found.length ? found : binarySearch(right, fn)
 }
-const filter = cities => cities.filter(city => system == getTimezoneOffsetHistory(year, city))
-const trustedSystem = system == resolvedOptions
-const decryption = (
-	trustedSystem ? [timeZone] : binarySearch(cities.map(city => city[0]), filter)
-)
+
+const getTimezoneHistory = ({ year, city = null, getEpoch = false }) => {
+	const options = {
+		timeZone: city,
+		year: 'numeric',
+		month: 'numeric',
+		day: 'numeric',
+		hour: 'numeric',
+		minute: 'numeric',
+		second: 'numeric'
+	}
+	const formatter = new Intl.DateTimeFormat('en', options)
+	const epoch = +new Date(formatter.format(new Date(`7/1/${year}`)))
+	return epoch
+}
+
+const start = performance.now()
+
+// base year
+const year = 1113
+
+// get reported location
+const { timeZone } = Intl.DateTimeFormat().resolvedOptions()
+
+// get epoch location
+const resolvedOptionsEpoch = getTimezoneHistory({ year, city: timeZone })
 const systemEpoch = +new Date(new Date(`7/1/${year}`))
 const epochCities = cities.filter(city => city[1] == systemEpoch)
 const epochCitySet = (
 	resolvedOptionsEpoch == systemEpoch ? new Set([timeZone]) : 
 	epochCities.length ? new Set(epochCities.map(city => city[0])) : new Set([])
 )
-
-const detectPrivacy = async () => {
-	let n = 0
-	const regex = n => new RegExp(`${n}+$`)
-	const a = await new Promise(resolve => setTimeout(() => {
-		const date = +new Date()
-		n = +(''+date).slice(-1)
-		const res = regex(n).test(date) ? regex(n).exec(date)[0] : date
-		return resolve(res)
-	}, 1))
-	const b = await new Promise(resolve => setTimeout(() => {
-		const date = +new Date()
-		const res = regex(n).test(date) ? regex(n).exec(date)[0] : date
-		return resolve(res)
-	}, 2))
-	const c = await new Promise(resolve => setTimeout(() => {
-		const date = +new Date()
-		const res = regex(n).test(date) ? regex(n).exec(date)[0] : date
-		return resolve(res)
-	}, 3))
-	const d = await new Promise(resolve => setTimeout(() => {
-		const date = +new Date()
-		const res = regex(n).test(date) ? regex(n).exec(date)[0] : date
-		return resolve(res)
-	}, 4))
-	const e = await new Promise(resolve => setTimeout(() => {
-		const date = +new Date()
-		const res = regex(n).test(date) ? regex(n).exec(date)[0] : date
-		return resolve(res)
-	}, 5))
-	
-	const lastCharA = (''+a).slice(-1)
-	const lastCharB = (''+b).slice(-1)
-	const lastCharC = (''+c).slice(-1)
-	const lastCharD = (''+d).slice(-1)
-	const lastCharE = (''+e).slice(-1)
-	const resist = (
-		lastCharA == lastCharB &&
-		lastCharB == lastCharC &&
-		lastCharC == lastCharD &&
-		lastCharD == lastCharE
-	)
-	const baseLen = (''+a).length
-	return {
-		resist,
-		delays: [a, b, c, d, e].map(n => (''+n).length > baseLen ? (''+n).slice(-baseLen) : n),
-		precision: resist ? Math.min(...[''+a, ''+b, ''+c, ''+d, ''+e].map(str => str.length)) : undefined,
-		precisionValue: resist ? lastCharA : undefined
-	}
-}
 
 const perf = performance.now() - start
 
@@ -669,7 +658,6 @@ const { methods: utcMethods, stringify, toJSON, toISOString } = getUTCTime()
 const { now, dateValue, valueOf, getTime } = getNowTime()
 const time = new Date()
 const midnight = new Date('7, 1 1970')
-const decriptionSet = new Set(decryption)
 const timezoneOffset = getTimezoneOffset()
 const hours = ''+time.getHours()
 const minutes = ''+pad(time.getMinutes())
@@ -700,7 +688,7 @@ const valid = {
 		''+new Date(Date.parse(new Date())) == ''+new Date()
 	),
 	invalidDate: /^Invalid Date$/.test(new Date(10000000000000000000000000)),
-	location: decriptionSet.has(timeZone),
+	location: epochCitySet.has(timeZone),
 	matchingOffset: timezoneOffset.key == timezoneOffset.computed,
 	nowTime: (
 		dateValue == getTime && dateValue == now && dateValue == valueOf
@@ -710,17 +698,11 @@ const valid = {
 	)
 }
 
-const { resist, delays, precision, precisionValue } = await detectPrivacy()
-
+const { protection, delays, precision, precisionValue } = await detectProtection()
+console.log([...epochCitySet])
 // template
 const styleWarn = valid => valid ? `<span class="pass">&#10004;</span>` : `<span class="warn">&#9888;</span>`
 const styleResult = valid => valid ? `<span class="pass">&#10004;</span>` : `<span class="fail">&#10006;</span>`
-//const formatLocation = x => x.replace(/_/, ' ').split('/').join(', ') 
-const decrypted = (
-	decriptionSet.size == 1 ? decryption[0] : 
-	!valid.location && !decriptionSet.size ? 'Dysfunctional Machine' : 
-	!valid.location ? 'Deceptive Machine' : timeZone
-)
 const fake = x => `<span class="fake">${x}</span>`
 const el = document.getElementById('fingerprint-data')
 patch(el, html`
@@ -752,7 +734,7 @@ patch(el, html`
 		.lighten {
 			color: #bbb
 		}
-		.privacy {
+		.group {
 			border: 1px solid #eee;
 			border-radius: 3px;
 			padding: 10px 15px;
@@ -773,11 +755,11 @@ patch(el, html`
 			<strong>Timezone</strong>
 		</div>
 		<div class="jumbo">
-			<div>${hashMini(decrypted)}</div>
+			<div>${hashMini([...epochCitySet])}</div>
 		</div>
 		<div>
-			<div>${styleWarn(!/machine/i.test(decrypted))}system health: ${
-				/machine/i.test(decrypted) ? `<span class="entropy">${decrypted}</span>`: 'good'
+			<div>${styleWarn(valid.time && valid.clock)}system health: ${
+				valid.time && valid.clock ? 'functional' :  '<span class="entropy">dysfunctional/span>'
 			}</div>
 			<div>${styleResult(valid.date && valid.clock)}date: ${
 				!valid.date || !valid.clock ? `${new Date()}${fake('fake')}` : new Date()
@@ -788,56 +770,16 @@ patch(el, html`
 			<div>${styleResult(valid.invalidDate && valid.date && valid.clock)}zone: ${
 				!valid.invalidDate || !valid.date || !valid.clock ? `${zone}${fake('fake')}` : zone
 			}</div>
-			<div>${styleResult(valid.location)}reported location: ${
-				!valid.location ? `${timeZone}${fake('fake')}` : timeZone
-			}</div>
-			
 			<div>${styleResult(valid.matchingOffset)}reported offset: ${
 				!valid.matchingOffset ? `${''+timezoneOffset.key}${fake('fake')}` : ''+timezoneOffset.key
 			}</div>
-			${(() => {
-				const base = (''+dateValue).split('')
-				const style = (a, b) => b.map((char,i) => char != a[i] ? `<span class="erratic">${char}</span>` : char).join('')
-				return `
-					<div>${styleResult(valid.nowTime)}now epoch time: ${!valid.nowTime ? fake('erratic') : ''}
-						<br>${dateValue} <span class="lighten">[+new Date()]</span>
-						<br>${style(base, (''+now).split(''))} <span class="lighten">[Date.now()]</span>
-						<br>${style(base, (''+getTime).split(''))} <span class="lighten">[new Date().getTime()]</span>
-						<br>${style(base, (''+valueOf).split(''))} <span class="lighten">[new Date().valueOf()]</span>
-					</div>
-				`
-			})()}
-			${(() => {
-				const base = utcMethods.split('')
-				const style = (a, b) => b.map((char,i) => char != a[i] ? `<span class="erratic">${char}</span>` : char).join('')
-				return `
-					<div>${styleResult(valid.utcTime)}utc ISO time: ${!valid.utcTime ? fake('erratic') : ''}
-						<br>${utcMethods} <span class="lighten">[getUTC... Methods]</span>
-						<br>${style(base, toJSON.split(''))} <span class="lighten">[new Date().toJSON()]</span>
-						<br>${style(base, toISOString.split(''))} <span class="lighten">[new Date().toISOString()]</span>
-						<br>${style(base, stringify.split(''))} <span class="lighten">[JSON.stringify(new Date()).slice(1,-1)]</span>
-					</div>
-				`
-			})()}
 			<div>${styleResult(true)}computed offset: ${''+timezoneOffset.computed}</div>
-			${
-				decryption.length ? `
-				<div>${styleResult(true)}measured location:${decryption.length > 1 ? '<br>' : ' '}${
-					decryption.map(city => {
-						city = city.replace(/\/.+\//,'/')
-						return (
-							(epochCitySet.size == 1 && city == [...epochCitySet][0]) || decryption.length == 1 ? 
-							`<span class="location">${city}</span>` : 
-							`<span class="lighten">${city}</span>`
-						)
-					}).join('<br>')
-				}</div>
-				` : ''
-			}
-			<div>${styleResult(true)}epoch time: ${systemEpoch}</div>
+			<div>${styleResult(valid.location)}reported location: ${
+				!valid.location ? `${timeZone}${fake('fake')}` : timeZone
+			}</div>
 			${
 				epochCitySet.size ? `
-				<div>${styleResult(true)}epoch location:${epochCitySet.size > 1 ? '<br>' : ' '}${
+				<div>${styleResult(true)}computed location:${epochCitySet.size > 1 ? '<br>' : ' '}${
 					[...epochCitySet].map(city => {
 						city = city.replace(/\/.+\//,'/')
 						return city == timeZone || epochCitySet.size == 1 ? `<span class="location">${city}</span>` : `<span class="lighten">${city}</span>`
@@ -845,11 +787,37 @@ patch(el, html`
 				}</div>
 				` : ''
 			}
-			<div class="privacy">
-				<div>reduced timer precision: ${!resist ? 'unknown' : `${''+resist} <span class="fail">protection detected</span>`}</div>
+			${(() => {
+				const base = (''+dateValue).split('')
+				const style = (a, b) => b.map((char,i) => char != a[i] ? `<span class="erratic">${char}</span>` : char).join('')
+				return `
+					<div>${styleResult(valid.nowTime)}now epoch time: ${!valid.nowTime ? fake('erratic') : ''}</div>
+					<div class="group">
+						<div>${dateValue} <span class="lighten">[+new Date()]</span></div>
+						<div>${style(base, (''+now).split(''))} <span class="lighten">[Date.now()]</span></div>
+						<div>${style(base, (''+getTime).split(''))} <span class="lighten">[new Date().getTime()]</span></div>
+						<div>${style(base, (''+valueOf).split(''))} <span class="lighten">[new Date().valueOf()]</span></div>
+					</div>
+				`
+			})()}
+			${(() => {
+				const base = utcMethods.split('')
+				const style = (a, b) => b.map((char,i) => char != a[i] ? `<span class="erratic">${char}</span>` : char).join('')
+				return `
+					<div>${styleResult(valid.utcTime)}utc ISO time: ${!valid.utcTime ? fake('erratic') : ''}</div>
+					<div class="group">
+						<div>${utcMethods} <span class="lighten">[getUTC... Methods]</span></div>
+						<div>${style(base, toJSON.split(''))} <span class="lighten">[new Date().toJSON()]</span></div>
+						<div>${style(base, toISOString.split(''))} <span class="lighten">[new Date().toISOString()]</span></div>
+						<div>${style(base, stringify.split(''))} <span class="lighten">[JSON.stringify(new Date()).slice(1,-1)]</span></div>
+					</div>
+				`
+			})()}
+			<div>${styleWarn(!protection)}reduced timer precision: ${!protection ? 'unknown' : '<span class="entropy">protection detected</span>'}</div>
+			<div class="group">
 				<div>delays: ${delays.join(', ')}</div>
 				<div>precision level: ${''+precision}</div>
-				<div>microseconds: ${resist ? ''+(1000*Math.pow(10,precision)) : 'undefined'}</div>
+				<div>microseconds: ${protection ? ''+(1000*Math.pow(10,precision)) : 'undefined'}</div>
 				<div>repeat value: ${''+precisionValue}</div>
 			</div>
 		</div>
