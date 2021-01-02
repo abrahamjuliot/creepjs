@@ -689,6 +689,20 @@ const valid = {
 	),
 	invalidDate: /^Invalid Date$/.test(new Date(10000000000000000000000000)),
 	location: epochCitySet.has(timeZone),
+	offset: (() => {
+		try {
+			new Date.prototype.getTimezoneOffset
+			return false
+		}
+		catch (error) {
+			const { name, message } = error
+			return (
+				name == 'TypeError' && /not a constructor/.test(message) &&
+				/^function getTimezoneOffset\(\) {(\n    | )\[native code\](\n| )}$/.test(Date.prototype.getTimezoneOffset+'') ?
+				true : false
+			)
+		}
+	})(),
 	matchingOffset: timezoneOffset.key == timezoneOffset.computed,
 	nowTime: (
 		dateValue == getTime && dateValue == now && dateValue == valueOf
@@ -770,8 +784,8 @@ patch(el, html`
 			<div>${styleResult(valid.invalidDate && valid.date && valid.clock)}zone: ${
 				valid.invalidDate && valid.date && valid.clock ? zone : `${zone}${fake('fake')}`
 			}</div>
-			<div>${styleResult(valid.matchingOffset)}reported offset: ${
-				valid.matchingOffset ? ''+timezoneOffset.key : `${''+timezoneOffset.key}${fake('fake')}`
+			<div>${styleResult(valid.matchingOffset && valid.offset)}reported offset: ${
+				valid.matchingOffset && valid.offset ? ''+timezoneOffset.key : `${''+timezoneOffset.key}${fake('fake')}`
 			}</div>
 			<div>${styleResult(true)}computed offset: ${''+timezoneOffset.computed}</div>
 			<div>${styleResult(valid.location)}reported location: ${
