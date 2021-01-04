@@ -5688,7 +5688,7 @@
 				)).toFixed(0);
 				const template = `
 				<div class="visitor-info">
-					<div class="ellipsis"><span class="aside-note">script modified 2020-1-3</span></div>
+					<div class="ellipsis"><span class="aside-note">script modified 2021-1-3</span></div>
 					<div class="flex-grid">
 						<div class="col-six">
 							<strong>Browser</strong>
