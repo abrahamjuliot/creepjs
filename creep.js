@@ -476,8 +476,42 @@ const imports = {
 				</div>
 				`
 			})()}
-			<div class="col-six">
-			</div>			
+			${!fp.timezone ?
+				`<div class="col-six">
+					<strong>Timezone</strong>
+					<div>zone: ${note.blocked}</div>
+					<div>offset: ${note.blocked}</div>
+					<div>offset computed: ${note.blocked}</div>
+					<div>location: ${note.blocked}</div>
+					<div>measured: ${note.blocked}</div>
+					<div>epoch: ${note.blocked}</div>
+				</div>` :
+			(() => {
+				const {
+					timezone: {
+						$hash,
+						zone,
+						location,
+						locationMeasured,
+						locationEpoch,
+						offset,
+						offsetComputed,
+						lied
+					}
+				} = fp
+				const id = 'creep-timezone'
+				return `
+				<div class="col-six">
+					<strong>Timezone</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
+					<div>zone: ${zone}</div>
+					<div>offset: ${''+offset}</div>
+					<div>offset computed: ${''+offsetComputed}</div>
+					<div>location: ${location}</div>
+					<div>measured: ${locationMeasured}</div>
+					<div>epoch: ${locationEpoch}</div>
+				</div>
+				`
+			})()}			
 		</div>
 		<div id="browser-detection" class="flex-grid">
 			<div class="col-eight">
@@ -791,48 +825,6 @@ const imports = {
 		})()}
 		</div>
 		<div class="flex-grid">
-		${!fp.timezone ?
-			`<div class="col-six">
-				<strong>Timezone</strong>
-				<div>zone: ${note.blocked}</div>
-				<div>offset: ${note.blocked}</div>
-				<div>offset computed: ${note.blocked}</div>
-			</div>
-			<div class="col-six">
-				<div>location: ${note.blocked}</div>
-				<div>measured: ${note.blocked}</div>
-				<div>epoch: ${note.blocked}</div>
-			</div>` :
-		(() => {
-			const {
-				timezone: {
-					$hash,
-					zone,
-					location,
-					locationMeasured,
-					locationEpoch,
-					offset,
-					offsetComputed,
-					lied
-				}
-			} = fp
-			const id = 'creep-timezone'
-			return `
-			<div class="col-six">
-				<strong>Timezone</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
-				<div>zone: ${zone}</div>
-				<div>offset: ${''+offset}</div>
-				<div>offset computed: ${''+offsetComputed}</div>
-			</div>
-			<div class="col-six">
-				<div>location: ${location}</div>
-				<div>measured: ${locationMeasured}</div>
-				<div>epoch: ${locationEpoch}</div>
-			</div>
-			`
-		})()}
-		</div>
-		<div class="flex-grid">
 		${!fp.screen ?
 			`<div class="col-six">
 				<strong>Screen</strong>
@@ -898,8 +890,6 @@ const imports = {
 		${!fp.css ?
 			`<div class="col-six">
 				<strong>Computed Style</strong>
-				<div>engine: ${note.blocked}</div>
-				<div>prototype: ${note.blocked}</div>
 				<div>getComputedStyle: ${note.blocked}</div>
 				<div>keys: ${note.blocked}</div>
 				<div>moz: ${note.blocked}</div>
@@ -907,6 +897,8 @@ const imports = {
 				<div>apple: ${note.blocked}</div>
 			</div>
 			<div class="col-six">
+				<div>engine: ${note.blocked}</div>
+				<div>prototype: ${note.blocked}</div>
 				<div>system styles: ${note.blocked}</div>
 				<div>system styles rendered: ${note.blocked}</div>
 			</div>` :
@@ -924,6 +916,13 @@ const imports = {
 			return `
 			<div class="col-six">
 				<strong>Computed Style</strong><span class="hash">${hashMini($hash)}</span>
+				<div>getComputedStyle:<span class="sub-hash">${hashMini(computedStyle.keys)}</span></div>
+				<div>keys: ${computedStyle.keys.length}</div>
+				<div>moz: ${''+computedStyle.moz}</div>
+				<div>webkit: ${''+computedStyle.webkit}</div>
+				<div>apple: ${''+computedStyle.apple}</div>
+			</div>
+			<div class="col-six">
 				<div>engine: ${
 					prototypeName == 'CSS2Properties' ? 'Gecko' :
 					prototypeName == 'CSS2PropertiesPrototype' ? 'Gecko (like Goanna)' :
@@ -933,13 +932,6 @@ const imports = {
 					'unknown'
 				}</div>
 				<div>prototype: ${prototypeName}</div>
-				<div>getComputedStyle:<span class="sub-hash">${hashMini(computedStyle.keys)}</span></div>
-				<div>keys: ${computedStyle.keys.length}</div>
-				<div>moz: ${''+computedStyle.moz}</div>
-				<div>webkit: ${''+computedStyle.webkit}</div>
-				<div>apple: ${''+computedStyle.apple}</div>
-			</div>
-			<div class="col-six">
 				<div>system styles:<span class="sub-hash">${hashMini(system)}</span></div>
 				<div>system styles rendered: ${
 					system && system.colors ? modal(
