@@ -455,18 +455,24 @@ const imports = {
 					<div>ip address: ${note.blocked}</div>
 					<div>candidate: ${note.blocked}</div>
 					<div>connection: ${note.blocked}</div>
+					<div>type: ${note.blocked}</div>
+					<div>foundation: ${note.blocked}</div>
+					<div>protocol: ${note.blocked}</div>
 				</div>` :
 			(() => {
 				const { webRTC } = fp
-				const { candidate, connection, $hash } = webRTC
+				const { candidate, connection, type, foundation, protocol, $hash } = webRTC
 				const ip = webRTC['ip address']
 				const leak = webRTC['webRTC leak']
 				return `
 				<div class="col-six">
 					<strong>WebRTC</strong><span class="hash">${hashMini($hash)}</span>
-					<div>ip address: ${ip ? ip : note.blocked}</div>
-					<div>candidate: ${candidate ? candidate : note.blocked}</div>
-					<div>connection: ${connection ? connection : note.blocked}</div>
+					<div>ip address: ${ip ? ip : note.unsupported}</div>
+					<div>candidate: ${candidate ? candidate : note.unsupported}</div>
+					<div>connection: ${connection ? connection : note.unsupported}</div>
+					<div>type: ${type ? type : note.unsupported}</div>
+					<div>foundation: ${foundation ? foundation : note.unsupported}</div>
+					<div>protocol: ${protocol ? protocol : note.unsupported}</div>
 				</div>
 				`
 			})()}

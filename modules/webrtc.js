@@ -62,17 +62,20 @@ export const getWebRTCData = imports => {
 					const ipAddress = caniuse(() => e.candidate.address)
 					const candidateIpAddress = caniuse(() => encodingMatch[0].split(' ')[2])
 					const connectionLineIpAddress = caniuse(() => sdp.match(connectionLineEncoding)[0].trim().split(' ')[2])
-					const successIpAddresses = [
-						ipAddress, 
-						candidateIpAddress, 
-						connectionLineIpAddress
-					].filter(ip => ip != undefined)
-					const setSize = new Set(successIpAddresses).size
+
+					const type = caniuse(() => /typ ([a-z]+)/.exec(candidate)[1])
+					const foundation = caniuse(() => /candidate:(\d+)\s/.exec(candidate)[1])
+					const protocol = caniuse(() => /candidate:\d+ \w+ (\w+)/.exec(candidate)[1])
+
 					const data = {
 						['ip address']: ipAddress,
 						candidate: candidateIpAddress,
-						connection: connectionLineIpAddress
+						connection: connectionLineIpAddress,
+						type,
+						foundation,
+						protocol
 					}
+					
 					logTestResult({ start, test: 'webrtc', passed: true })
 					return resolve({ ...data })
 				} else {
