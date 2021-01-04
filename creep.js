@@ -909,7 +909,7 @@ const imports = {
 			
 		${!fp.css ?
 			`<div class="col-six">
-				<strong>@Media</strong>
+				<strong>@media</strong>
 				<div>screen query: ${note.blocked}</div>
 				<div>device aspect ratio: ${note.blocked}</div>
 				<div>device screen: ${note.blocked}</div>
@@ -927,7 +927,7 @@ const imports = {
 				<div>inverted colors: ${note.unsupported}</div>
 			</div>
 			<div class="col-six">
-				<strong>matchMedia</strong>
+				<strong>MediaQueryList</strong>
 				<div>screen query: ${note.blocked}</div>
 				<div>device aspect ratio: ${note.blocked}</div>
 				<div>device screen: ${note.blocked}</div>
@@ -955,7 +955,7 @@ const imports = {
 			} = data
 			return `
 			<div class="col-six">
-				<strong>@Media</strong><span class="hash">${hashMini(mediaCSS)}</span>
+				<strong>@media</strong><span class="hash">${hashMini(mediaCSS)}</span>
 				<div>screen query: ${''+mediaCSS.screenQuery.width} x ${''+mediaCSS.screenQuery.height}</div>
 				<div>screen match: ${mediaCSS.deviceScreen || note.blocked}</div>
 				<div>device aspect ratio: ${mediaCSS.deviceAspectRatio || note.blocked}</div>
@@ -973,7 +973,7 @@ const imports = {
 				<div>inverted colors: ${mediaCSS.invertedColors || note.unsupported}</div>
 			</div>
 			<div class="col-six">
-				<strong>matchMedia</strong><span class="hash">${hashMini(matchMediaCSS)}</span>
+				<strong>MediaQueryList</strong><span class="hash">${hashMini(matchMediaCSS)}</span>
 				<div>screen query: ${''+matchMediaCSS.screenQuery.width} x ${''+matchMediaCSS.screenQuery.height}</div>
 				<div>screen match: ${matchMediaCSS.deviceScreen || note.blocked}</div>
 				<div>device aspect ratio: ${matchMediaCSS.deviceAspectRatio || note.blocked}</div>
