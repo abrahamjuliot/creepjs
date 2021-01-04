@@ -167,8 +167,8 @@ const {
 	orientation: { type: orientationType }
 } = screen
 
-
-const { width: viewportWidth, height: viewportHeight } = visualViewport
+const viewport = 'visualViewport' in window ? visualViewport : {}
+const { width: viewportWidth, height: viewportHeight } = viewport || {}
 const { width: mediaWidth, height: mediaHeight } = getScreenMedia()
 const { width: matchMediaWidth, height: matchMediaHeight } = getScreenMatchMedia()
 const {
