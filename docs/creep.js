@@ -99,6 +99,9 @@
 	const isDevice = (list, device) => list.filter(x => device.test(x)).length;
 
 	const getUserAgentPlatform = ({ userAgent, excludeBuild = true }) => {
+		if (!userAgent) {
+			return 'unknown'
+		}
 		userAgent = userAgent.trim().replace(/\s{2,}/, ' ').replace(nonPlatformParenthesis, '');
 		if (parenthesis.test(userAgent)) {
 			const platformSection = userAgent.match(parenthesis)[0];
@@ -161,11 +164,15 @@
 		}
 	};
 
-	const logTestResult = ({ test, passed }) => {
+	const logTestResult = ({ test, passed, start = false }) => {
 		const color = passed ? '#4cca9f' : 'lightcoral';
 		const result = passed ? 'passed' : 'failed';
 		const symbol = passed ? '✔' : '-';
-		return console.log(`%c${symbol} ${test} ${result}`, `color:${color}`)
+		return console.log(
+			`%c${symbol}${
+			start ? ` (${(performance.now() - start).toFixed(2)}ms)` : ''
+		} ${test} ${result}`, `color:${color}`
+		)
 	};
 
 	// ie11 fix for template.content
@@ -365,9 +372,7 @@
 		const errors = errorsCaptured.getErrors();
 
 		return new Promise(async resolve => {
-			const data =  errors;
-			const $hash = await hashify(data);
-			return resolve({data, $hash })
+			return resolve({data: errors })
 		})
 	};
 
@@ -442,14 +447,12 @@
 	const getTrash = imports => {
 		const {
 			require: {
-				hashify,
 				trashBin
 			}
 		} = imports;
 		const bin = trashBin.getBin();
 		return new Promise(async resolve => {
-			const $hash = await hashify(bin);
-			return resolve({ trashBin: bin, $hash })
+			return resolve({ trashBin: bin })
 		})
 	};
 
@@ -467,89 +470,82 @@
 	const lieRecords = createlieRecords();
 	const { documentLie } = lieRecords;
 
-	const getNestedWindowFrameContext = imports => {
+	const ghost = () => `
+	height: 100vh;
+	width: 100vw;
+	position: absolute;
+	left:-10000px;
+	visibility: hidden;
+`;
+	const getRandomValues = () => {
+		const id = [...crypto.getRandomValues(new Uint32Array(10))]
+			.map(n => n.toString(36)).join('');
+		return id
+	};
 
-		const {
-			require: {
-				instanceId,
-				captureError
-			}
-		} = imports;
-
+	const getPhantomIframe = () => {
 		try {
-			const createIframe = context => {
-				const numberOfIframes = context.length;
-				const div = document.createElement('div');
-				div.setAttribute('style', 'display:none');
-				document.body.appendChild(div);
-
-				const id = [...crypto.getRandomValues(new Uint32Array(10))]
-					.map(n => n.toString(36)).join('');
-
-				// avoid dead object error
-				const ghost = `
-				style="
-				height: 100vh;
-				width: 100vw;
-				position: absolute;
-				left:-10000px;
-				visibility: hidden;
-				"
-			`;
-				const hide = `style="display: none;"`;
-				patch(div, html`<div ${ghost} id="${id}"><iframe ${ isFirefox ? ghost : hide }></iframe></div>`);
-				const el = document.getElementById(id);
-
-				return {
-					el,
-					contentWindow: context[numberOfIframes],
-					remove: () => el.parentNode.removeChild(el)
-				}
-			};
-
-			const parentNest = createIframe(window);
-			const { contentWindow } = parentNest;
-			return { contentWindow, parentNest }
+			const numberOfIframes = window.length;
+			const frag = new DocumentFragment();
+			const div = document.createElement('div');
+			const id = getRandomValues();
+			div.setAttribute('id', id);
+			frag.appendChild(div);
+			div.innerHTML = `<div style="${ghost()}"><iframe></iframe></div>`;
+			document.body.appendChild(frag);
+			const iframeWindow = window[numberOfIframes];
+			return { iframeWindow, div }
 		}
 		catch (error) {
-			captureError(error, 'client blocked nested iframe');
-			return { contentWindow: window, parentNest: undefined }
+			captureError(error, 'client blocked phantom iframe');
+			return { iframeWindow: window, div: undefined }
+		}
+	};
+	const { iframeWindow: phantomDarkness, div: parentPhantom } = getPhantomIframe();
+
+	const getDragonIframe = ({ numberOfNests, kill = false, context = window }) => {
+		try {
+			let parent, total = numberOfNests;
+			return (function getIframeWindow(win, {
+				previous = context
+			} = {}) {
+				if (!win) {
+					if (kill) {
+						parent.parentNode.removeChild(parent);
+					}
+					console.log(`\ndragon fire is valid up to ${total - numberOfNests} fiery flames`);
+					return { iframeWindow: previous, parent }
+				}
+				const numberOfIframes = win.length;
+				const div = win.document.createElement('div');
+				win.document.body.appendChild(div);
+				div.innerHTML = '<iframe></iframe>';
+				const iframeWindow = win[numberOfIframes];
+				if (total == numberOfNests) {
+					parent = div;
+					parent.setAttribute('style', 'display:none');
+				}
+				numberOfNests--;
+				if (!numberOfNests) {
+					if (kill) {
+						parent.parentNode.removeChild(parent);
+					}
+					return { iframeWindow, parent }
+				}
+				return getIframeWindow(iframeWindow, {
+					previous: win
+				})
+			})(context)
+		}
+		catch (error) {
+			captureError(error, 'client blocked dragon iframe');
+			return { iframeWindow: window, parent: undefined }
 		}
 	};
 
-	const { contentWindow, parentNest  } = getNestedWindowFrameContext({
-		require: { isChrome, isFirefox, instanceId, captureError }
-	});
+	const { iframeWindow: dragonFire, parent: parentDragon } = getDragonIframe({ numberOfNests: 2 });
 
-	const getHyperNestedIframes = (numberOfNests, context = window) => {
-		let parent, total = numberOfNests;
-		return (function getIframeWindow(win, {
-			previous = context
-		} = {}) {
-			if (!win) {
-				console.log(`\nnested iframe is valid up to nest ${total - numberOfNests}`);
-				return previous
-			}
-			const numberOfIframes = win.length;
-			const div = win.document.createElement('div');
-			win.document.body.appendChild(div);
-			div.innerHTML = '<iframe></iframe>';
-			const iframeWindow = win[numberOfIframes];
-			if (total == numberOfNests) {
-				parent = div;
-				parent.setAttribute('style', 'display:none');
-			}
-			numberOfNests--;
-			if (!numberOfNests) {
-				parent.parentNode.removeChild(parent);
-				return iframeWindow
-			}
-			return getIframeWindow(iframeWindow, {
-				previous: win
-			})
-		})(context)
-	};
-	const hyperNestedIframeWindow = getHyperNestedIframes(20);
+	const { iframeWindow: dragonOfDeath } = getDragonIframe({ numberOfNests: 4, kill: true});
 
 	// detect and fingerprint Function API lies
 	const native = (result, str, willHaveBlanks = false) => {
@@ -647,11 +643,16 @@
 		try {
 			new apiFunction;
 			return {
-				['Expected new to throw an error']: true
+				['Expected new to throw an Error']: true
 			}
 		}
 		catch (error) {
-			// Native throws error
+			// Native throws TypeError
+			if (error.constructor.name != 'TypeError') {
+				return {
+					['Expected new to throw a TypeError']: true
+				}
+			}
 			return false
 		}
 	};
@@ -660,11 +661,21 @@
 		try { 
 			class Fake extends apiFunction { }
 			return {
-				['Expected class extends to throw an error']: true
+				['Expected class extends to throw an Error']: true
 			}
 		}
 		catch (error) {
 			// Native throws error
+			if (error.constructor.name != 'TypeError') {
+				return {
+					['Expected class extends to throw a TypeError']: true
+				}
+			}
+			else if (!/not a constructor/i.test(error.message)) {
+				return {
+					['Expected class extends to throw TypeError "not a constructor"']: true
+				}
+			}
 			return false
 		}
 	};
@@ -695,11 +706,11 @@
 		return false
 	};
 
-	const testToString = (apiFunction, fnToStr, contentWindow) => {
+	const testToString = (apiFunction, fnToStr, phantomDarkness) => {
 		const { toString: apiToString } = apiFunction;
 		if (apiToString+'' !== fnToStr || apiToString.toString+'' !== fnToStr) {
 			return {
-				[`Expected toString to match ${contentWindow ? 'contentWindow.' : ''}Function.toString`]: true
+				[`Expected toString to match ${phantomDarkness ? 'iframe.' : ''}Function.toString`]: true
 			}
 		}
 		return false
@@ -884,11 +895,12 @@
 		}
 	};
 
+	let counter = 0;
 	const hasLiedAPI = (api, name, obj) => {
-		
+		counter++;
 		const fnToStr = (
-			contentWindow ? 
-			contentWindow.Function.prototype.toString.call(Function.prototype.toString) : // aggressive test
+			phantomDarkness ? 
+			phantomDarkness.Function.prototype.toString.call(Function.prototype.toString) : // aggressive test
 			Function.prototype.toString+''
 		);
 
@@ -916,7 +928,7 @@
 						testNew(apiFunction),
 						testClassExtends(apiFunction),
 						testName(apiFunction, name),
-						testToString(apiFunction, fnToStr, contentWindow),
+						testToString(apiFunction, fnToStr, phantomDarkness),
 						testOwnProperty(apiFunction),
 						testOwnPropertyDescriptor(apiFunction),
 						testDescriptorKeys(apiFunction),
@@ -931,8 +943,8 @@
 
 				// collect string conversion result
 				const result = (
-					contentWindow ? 
-					contentWindow.Function.prototype.toString.call(apiFunction) :
+					phantomDarkness ? 
+					phantomDarkness.Function.prototype.toString.call(apiFunction) :
 					'' + apiFunction
 				);
 				
@@ -966,8 +978,8 @@
 						testPrototype(apiFunction),
 						testNew(apiFunction),
 						testClassExtends(apiFunction),
-						testName(apiFunction, name),
-						testToString(apiFunction, fnToStr, contentWindow),
+						testName(apiFunction, `get ${name}`),
+						testToString(apiFunction, fnToStr, phantomDarkness),
 						testOwnProperty(apiFunction),
 						testOwnPropertyDescriptor(apiFunction),
 						testDescriptorKeys(apiFunction),
@@ -981,8 +993,8 @@
 				const lies = [...testResults];
 				// collect string conversion result
 				const result = (
-					contentWindow ? 
-					contentWindow.Function.prototype.toString.call(apiFunction) :
+					phantomDarkness ? 
+					phantomDarkness.Function.prototype.toString.call(apiFunction) :
 					'' + apiFunction
 				);
 
@@ -990,13 +1002,13 @@
 				if (obj) {
 					objlookupGetter = obj.__lookupGetter__(name);
 					apiProtoLookupGetter = api.__lookupGetter__(name);
-					const contentWindowResult = (
+					const iframeResult = (
 						typeof objlookupGetter != 'function' ? undefined : 
-						attempt(() => contentWindow.Function.prototype.toString.call(objlookupGetter))
+						attempt(() => phantomDarkness.Function.prototype.toString.call(objlookupGetter))
 					);
 					result2 = (
-						contentWindowResult ? 
-						contentWindowResult :
+						iframeResult ? 
+						iframeResult :
 						'' + objlookupGetter
 					);
 					result3 = '' + apiProtoLookupGetter;
@@ -1049,7 +1061,7 @@
 		if (!obj) {
 			return []
 		}
-		return Object.getOwnPropertyNames(obj).filter(item => {
+		return Object.getOwnPropertyNames(Object.getPrototypeOf(obj)).filter(item => {
 			if (ignore[item]) {
 				// validate critical methods elsewhere
 				return false
@@ -1135,6 +1147,7 @@
 	const lieProps = createLieProps();
 	const { searchLies } = lieProps;
 
+	const start = performance.now();
 	searchLies(Node, {
 		constructor: !0,
 		appendChild: !0 // opera fix
@@ -1167,28 +1180,10 @@
 		constructor: !0,
 		toGMTString: !0
 	});
-	searchLies(Intl.Collator, {
-		constructor: !0
-	});
 	searchLies(Intl.DateTimeFormat, {
 		constructor: !0
 	});
-	searchLies(caniuse(() => Intl.DisplayNames), {
-		constructor: !0
-	});
-	searchLies(Intl.ListFormat, {
-		constructor: !0
-	});
-	searchLies(Intl.NumberFormat, {
-		constructor: !0
-	});
-	searchLies(Intl.PluralRules, {
-		constructor: !0
-	});
 	searchLies(Intl.RelativeTimeFormat, {
-		constructor: !0
-	});	
-	searchLies(Function, {
 		constructor: !0
 	});
 	searchLies(caniuse(() => AnalyserNode), {
@@ -1201,6 +1196,9 @@
 		constructor: !0
 	});
 	searchLies(CanvasRenderingContext2D, {
+		constructor: !0
+	});
+	searchLies(caniuse(() => OffscreenCanvasRenderingContext2D), {
 		constructor: !0
 	});
 	searchLies(caniuse(() => WebGLRenderingContext), {
@@ -1226,17 +1224,109 @@
 		createTextNode: !0, // opera fix
 		querySelector: !0 // opera fix
 	});
-	searchLies(String, {
-		constructor: !0,
-		trimRight: !0,
-		trimLeft: !0
-	});
+
+	console.log(`${counter} API properties analyzed in ${(performance.now() - start).toFixed(2)}ms (${Object.keys(lieProps.getProps()).length} corrupted)`);
+
+	const getPluginLies = (plugins, mimeTypes) => {
+		const lies = []; // collect lie types
+		const pluginsOwnPropertyNames = Object.getOwnPropertyNames(plugins).filter(name => isNaN(+name));
+		const mimeTypesOwnPropertyNames = Object.getOwnPropertyNames(mimeTypes).filter(name => isNaN(+name));
+
+		// cast to array
+		plugins = [...plugins];
+		mimeTypes = [...mimeTypes];
+
+		// get intitial trusted mimeType names
+		const trustedMimeTypes = new Set(mimeTypesOwnPropertyNames);
+
+		// get initial trusted plugin names
+		const excludeDuplicates = arr => [...new Set(arr)];
+		const mimeTypeEnabledPlugins = excludeDuplicates(
+			mimeTypes.map(mimeType => mimeType.enabledPlugin)
+		);
+		const trustedPluginNames = new Set(pluginsOwnPropertyNames);
+		const mimeTypeEnabledPluginsNames = mimeTypeEnabledPlugins.map(plugin => plugin.name);
+		const trustedPluginNamesArray = [...trustedPluginNames];
+		trustedPluginNamesArray.forEach(name => {
+			const validName = new Set(mimeTypeEnabledPluginsNames).has(name);
+			if (!validName) {
+				trustedPluginNames.delete(name);
+			}
+		});
+
+		// 1. Expect plugin name to be in plugins own property names
+		plugins.forEach(plugin => {
+			if (!trustedPluginNames.has(plugin.name)) {
+				lies.push('missing plugin name');
+			}
+		});
+
+		// 2. Expect MimeType Plugins to match Plugins
+		const getPluginPropertyValues = plugin => {
+			return [
+				plugin.description,
+				plugin.filename,
+				plugin.length,
+				plugin.name
+			]
+		};
+		const pluginList = plugins.map(getPluginPropertyValues).sort();
+		const enabledpluginList = mimeTypeEnabledPlugins.map(getPluginPropertyValues).sort();
+		const mismatchingPlugins = '' + pluginList != '' + enabledpluginList;
+		if (mismatchingPlugins) {
+			lies.push('mismatching plugins');
+		}
+
+		// 3. Expect MimeType object in plugins
+		const invalidPlugins = plugins.filter(plugin => {
+			try {
+				const validMimeType = Object.getPrototypeOf(plugin[0]).constructor.name == 'MimeType';
+				if (!validMimeType) {
+					trustedPluginNames.delete(plugin.name);
+				}
+				return !validMimeType
+			} catch (error) {
+				trustedPluginNames.delete(plugin.name);
+				return true // sign of tampering
+			}
+		});
+		if (invalidPlugins.length) {
+			lies.push('missing mimetype');
+		}
+
+		// 4. Expect valid MimeType(s) in plugin
+		const pluginMimeTypes = plugins
+			.map(plugin => Object.values(plugin))
+			.flat();
+		const pluginMimeTypesNames = pluginMimeTypes.map(mimetype => mimetype.type);
+		pluginMimeTypesNames.forEach(name => {
+			const validName = trustedMimeTypes.has(name);
+			if (!validName) {
+				trustedMimeTypes.delete(name);
+			}
+		});
+
+		plugins.forEach(plugin => {
+			const pluginMimeTypes = Object.values(plugin).map(mimetype => mimetype.type);
+			return pluginMimeTypes.forEach(mimetype => {
+				if (!trustedMimeTypes.has(mimetype)) {
+					lies.push('invalid mimetype');
+					return trustedPluginNames.delete(plugin.name)
+				}
+			})
+		});
+
+		return {
+			validPlugins: plugins.filter(plugin => trustedPluginNames.has(plugin.name)),
+			validMimeTypes: mimeTypes.filter(mimeType => trustedMimeTypes.has(mimeType.type)),
+			lies: [...new Set(lies)] // remove duplicates
+		}
+	};
 
 	const getLies = imports => {
 
 		const {
 			require: {
-				hashify,
 				lieRecords
 			}
 		} = imports;
@@ -1255,8 +1345,7 @@
 			const data = records
 				.map(lie => ({ name: lie.name, lieTypes: lie.lieTypes }))
 				.sort((a, b) => (a.name > b.name) ? 1 : -1);
-			const $hash = await hashify(data);
-			return resolve({data, totalLies, $hash })
+			return resolve({ data, totalLies })
 		})
 	};
 
@@ -1265,21 +1354,21 @@
 		const {
 			require: {
 				hashMini,
-				hashify,
 				captureError,
 				attempt,
 				caniuse,
 				sendToTrash,
 				documentLie,
 				lieProps,
-				contentWindow,
+				phantomDarkness,
 				logTestResult
 			}
 		} = imports;
 
 		return new Promise(resolve => {
 			try {
-				const win = contentWindow ? contentWindow : window;
+				const start = performance.now();
+				const win = phantomDarkness ? phantomDarkness : window;
 				const audioContext = caniuse(() => win.OfflineAudioContext || win.webkitOfflineAudioContext);
 				if (!audioContext) {
 					logTestResult({ test: 'audio', passed: false });
@@ -1378,7 +1467,7 @@
 							if (copyFromChannelSupported && !matching) {
 								lied = true;
 								const audioSampleLie = { fingerprint: '', lies: [{ ['data and copy samples mismatch']: false }] };
-								documentLie('AudioBuffer', hashMini(matching), audioSampleLie);
+								documentLie('AudioBuffer', matching, audioSampleLie);
 							}
 
 							dynamicsCompressor.disconnect();
@@ -1386,28 +1475,18 @@
 							const response = {
 								binsSample: binsSample,
 								copySample: copyFromChannelSupported ? copySample : [undefined],
-								matching,
 								values,
 								lied
 							};
-							const $hash = await hashify(response);
-							logTestResult({ test: 'audio', passed: true });
-							return resolve({...response, $hash })
+							logTestResult({ start, test: 'audio', passed: true });
+							return resolve({ ...response })
 						}
 						catch (error) {
 							captureError(error, 'AudioBuffer failed or blocked by client');
 							dynamicsCompressor.disconnect();
 							oscillator.disconnect();
-							const response = {
-								copySample: [undefined],
-								binsSample: [undefined],
-								matching,
-								values,
-								lied
-							};
-							const $hash = await hashify(response);
 							logTestResult({ test: 'audio', passed: false });
-							return resolve({...response, $hash })
+							return resolve()
 						}
 					};
 				}))
@@ -1424,23 +1503,23 @@
 		
 		const {
 			require: {
-				hashify,
 				hashMini,
 				captureError,
 				lieProps,
 				documentLie,
-				contentWindow,
-				hyperNestedIframeWindow,
+				phantomDarkness,
+				dragonOfDeath,
 				logTestResult
 			}
 		} = imports;
 		
 		return new Promise(async resolve => {
 			try {
+				const start = performance.now();
 				const dataLie = lieProps['HTMLCanvasElement.toDataURL'];
 				const contextLie = lieProps['HTMLCanvasElement.getContext'];
 				let lied = (dataLie || contextLie) || false;
-				const doc = contentWindow ? contentWindow.document : document;
+				const doc = phantomDarkness ? phantomDarkness.document : document;
 				const canvas = doc.createElement('canvas');
 				const context = canvas.getContext('2d');
 				const str = '!😃🙌🧠👩‍💻👟👧🏻👩🏻‍🦱👩🏻‍🦰👱🏻‍♀️👩🏻‍🦳👧🏼👧🏽👧🏾👧🏿🦄🐉🌊🍧🏄‍♀️🌠🔮♞';
@@ -1449,18 +1528,17 @@
 				context.fillStyle = 'rgba(100, 200, 99, 0.78)';
 				context.fillRect(100, 30, 80, 50);
 				const dataURI = canvas.toDataURL();
-				if (hyperNestedIframeWindow) {
-					const result1 = hashMini(hyperNestedIframeWindow.document.createElement('canvas').toDataURL());
-					const result2 = hashMini(document.createElement('canvas').toDataURL());
+				if (dragonOfDeath) {
+					const result1 = dragonOfDeath.document.createElement('canvas').toDataURL();
+					const result2 = document.createElement('canvas').toDataURL();
 					if (result1 != result2) {
 						lied = true;
-						const hyperNestedIframeLie = { fingerprint: '', lies: [{ [`Expected ${result1} in nested iframe and got ${result2}`]: true }] };
-						documentLie(`HTMLCanvasElement.toDataURL`, hashMini({result1, result2}), hyperNestedIframeLie);
+						const iframeLie = { fingerprint: '', lies: [{ [`Expected ${result1} in nested iframe and got ${result2}`]: true }] };
+						documentLie(`HTMLCanvasElement.toDataURL`, undefined, iframeLie);
 					}
 				}
-				const $hash = await hashify(dataURI);
-				const response = { dataURI, lied, $hash };
-				logTestResult({ test: 'canvas 2d', passed: true });
+				const response = { dataURI, lied };
+				logTestResult({ start, test: 'canvas 2d', passed: true });
 				return resolve(response)
 			}
 			catch (error) {
@@ -1471,63 +1549,10 @@
 		})
 	};
 
-	const getCanvasBitmapRenderer = imports => {
-
-		const {
-			require: {
-				hashify,
-				captureError,
-				caniuse,
-				lieProps,
-				contentWindow,
-				hyperNestedIframeWindow,
-				logTestResult
-			}
-		} = imports;
-
-		return new Promise(async resolve => {
-			try {
-				const dataLie = lieProps['HTMLCanvasElement.toDataURL'];
-				const contextLie = lieProps['HTMLCanvasElement.getContext'];
-				let lied = (dataLie || contextLie) || false;
-				if (hyperNestedIframeWindow &&
-					hyperNestedIframeWindow.document.createElement('canvas').toDataURL() != document.createElement('canvas').toDataURL()) {
-					lied = true;
-				}
-				const doc = contentWindow ? contentWindow.document : document;
-				const canvas = doc.createElement('canvas');
-				const context = canvas.getContext('bitmaprenderer');
-				const image = new Image();
-				image.src = 'bitmap.png';
-				return resolve(new Promise(resolve => {
-					image.onload = async () => {
-						if (!caniuse(() => createImageBitmap)) {
-							logTestResult({ test: 'canvas bitmaprenderer', passed: false });
-							return resolve()
-						}
-						const bitmap = await createImageBitmap(image, 0, 0, image.width, image.height);
-						context.transferFromImageBitmap(bitmap);
-						const dataURI = canvas.toDataURL();
-						const $hash = await hashify(dataURI);
-						const response = { dataURI, lied, $hash };
-						logTestResult({ test: 'canvas bitmaprenderer', passed: true });
-						return resolve(response)
-					};
-				}))	
-			}
-			catch (error) {
-				logTestResult({ test: 'canvas bitmaprenderer', passed: false });
-				captureError(error);
-				return resolve()
-			}
-		})
-	};
-
 	const getCanvasWebgl = imports => {
 
 		const {
 			require: {
-				hashify,
 				captureError,
 				attempt,
 				caniuse,
@@ -1535,14 +1560,14 @@
 				sendToTrash,
 				proxyBehavior,
 				lieProps,
-				contentWindow,
-				hyperNestedIframeWindow,
+				phantomDarkness,
 				logTestResult
 			}
 		} = imports;
 
 		return new Promise(async resolve => {
 			try {
+				const start = performance.now();
 				// detect lies
 				const dataLie = lieProps['HTMLCanvasElement.toDataURL'];
 				const contextLie = lieProps['HTMLCanvasElement.getContext'];
@@ -1556,13 +1581,13 @@
 					lieProps['WebGLRenderingContext.getSupportedExtensions'] ||
 					lieProps['WebGL2RenderingContext.getSupportedExtensions']
 				) || false;
-				if (hyperNestedIframeWindow &&
-					hyperNestedIframeWindow.document.createElement('canvas').toDataURL() != document.createElement('canvas').toDataURL()) {
+				if (phantomDarkness &&
+					phantomDarkness.document.createElement('canvas').toDataURL() != document.createElement('canvas').toDataURL()) {
 					lied = true;
 				}
 				// create canvas context
 				const doc = (
-					contentWindow ? contentWindow.document : 
+					phantomDarkness ? phantomDarkness.document : 
 					document
 				);
 				const canvas = doc.createElement('canvas');
@@ -1575,207 +1600,184 @@
 				);
 				const context2 = canvas2.getContext('webgl2') || canvas2.getContext('experimental-webgl2');
 				const getSupportedExtensions = context => {
-					return new Promise(async resolve => {
-						try {
-							if (!context) {
-								return resolve({ extensions: [] })
-							}
-							const extensions = caniuse(() => context, ['getSupportedExtensions'], [], true) || [];
-							return resolve({
-								extensions
-							})
+					try {
+						if (!context) {
+							return { extensions: [] }
 						}
-						catch (error) {
-							captureError(error);
-							return resolve({
-								extensions: []
-							})
+						const extensions = caniuse(() => context, ['getSupportedExtensions'], [], true) || [];
+						return {
+							extensions
 						}
-					})
+					}
+					catch (error) {
+						captureError(error);
+						return {
+							extensions: []
+						}
+					}
 				};
 
 				const getSpecs = (webgl, webgl2) => {
-					return new Promise(async resolve => {
-						const getShaderPrecisionFormat = (gl, shaderType) => {
-							const low = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.LOW_FLOAT));
-							const medium = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.MEDIUM_FLOAT));
-							const high = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.HIGH_FLOAT));
-							const highInt = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.HIGH_INT));
-							return { low, medium, high, highInt }
+					const getShaderPrecisionFormat = (gl, shaderType) => {
+						const low = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.LOW_FLOAT));
+						const medium = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.MEDIUM_FLOAT));
+						const high = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.HIGH_FLOAT));
+						const highInt = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.HIGH_INT));
+						return { low, medium, high, highInt }
+					};
+					const getMaxAnisotropy = gl => {
+						const ext = (
+							gl.getExtension('EXT_texture_filter_anisotropic') ||
+							gl.getExtension('MOZ_EXT_texture_filter_anisotropic') ||
+							gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic')
+						);
+						return ext ? gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT) : undefined
+					};
+					
+					const getShaderData = (name, shader) => {
+						const data = {};
+						for (const prop in shader) {
+							const obj = shader[prop];
+							data[name+'.'+prop+'.precision'] = obj ? attempt(() => obj.precision) : undefined;
+							data[name+'.'+prop+'.rangeMax'] = obj ? attempt(() => obj.rangeMax) : undefined;
+							data[name+'.'+prop+'.rangeMin'] = obj ? attempt(() => obj.rangeMin) : undefined;
+						}
+						return data
+					};
+					const getWebglSpecs = gl => {
+						if (!caniuse(() => gl, ['getParameter'])) {
+							return undefined
+						}
+						const data =  {
+							VERSION: gl.getParameter(gl.VERSION),
+							SHADING_LANGUAGE_VERSION: gl.getParameter(gl.SHADING_LANGUAGE_VERSION),
+							antialias: gl.getContextAttributes() ? gl.getContextAttributes().antialias : undefined,
+							RED_BITS: gl.getParameter(gl.RED_BITS),
+							GREEN_BITS: gl.getParameter(gl.GREEN_BITS),
+							BLUE_BITS: gl.getParameter(gl.BLUE_BITS),
+							ALPHA_BITS: gl.getParameter(gl.ALPHA_BITS),
+							DEPTH_BITS: gl.getParameter(gl.DEPTH_BITS),
+							STENCIL_BITS: gl.getParameter(gl.STENCIL_BITS),
+							MAX_RENDERBUFFER_SIZE: gl.getParameter(gl.MAX_RENDERBUFFER_SIZE),
+							MAX_COMBINED_TEXTURE_IMAGE_UNITS: gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS),
+							MAX_CUBE_MAP_TEXTURE_SIZE: gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE),
+							MAX_FRAGMENT_UNIFORM_VECTORS: gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS),
+							MAX_TEXTURE_IMAGE_UNITS: gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS),
+							MAX_TEXTURE_SIZE: gl.getParameter(gl.MAX_TEXTURE_SIZE),
+							MAX_VARYING_VECTORS: gl.getParameter(gl.MAX_VARYING_VECTORS),
+							MAX_VERTEX_ATTRIBS: gl.getParameter(gl.MAX_VERTEX_ATTRIBS),
+							MAX_VERTEX_TEXTURE_IMAGE_UNITS: gl.getParameter(gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS),
+							MAX_VERTEX_UNIFORM_VECTORS: gl.getParameter(gl.MAX_VERTEX_UNIFORM_VECTORS),
+							ALIASED_LINE_WIDTH_RANGE: [...gl.getParameter(gl.ALIASED_LINE_WIDTH_RANGE)],
+							ALIASED_POINT_SIZE_RANGE: [...gl.getParameter(gl.ALIASED_POINT_SIZE_RANGE)],
+							MAX_VIEWPORT_DIMS: attempt(() => [...gl.getParameter(gl.MAX_VIEWPORT_DIMS)]),
+							MAX_TEXTURE_MAX_ANISOTROPY_EXT: getMaxAnisotropy(gl),
+							...getShaderData('VERTEX_SHADER', getShaderPrecisionFormat(gl, 'VERTEX_SHADER')),
+							...getShaderData('FRAGMENT_SHADER', getShaderPrecisionFormat(gl, 'FRAGMENT_SHADER')),
+							MAX_DRAW_BUFFERS_WEBGL: attempt(() => {
+								const buffers = gl.getExtension('WEBGL_draw_buffers');
+								return buffers ? gl.getParameter(buffers.MAX_DRAW_BUFFERS_WEBGL) : undefined
+							})
 						};
-						const getMaxAnisotropy = gl => {
-							const ext = (
-								gl.getExtension('EXT_texture_filter_anisotropic') ||
-								gl.getExtension('MOZ_EXT_texture_filter_anisotropic') ||
-								gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic')
-							);
-							return ext ? gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT) : undefined
-						};
-						
-						const getShaderData = (name, shader) => {
-							const data = {};
-							for (const prop in shader) {
-								const obj = shader[prop];
-								data[name+'.'+prop+'.precision'] = obj ? attempt(() => obj.precision) : undefined;
-								data[name+'.'+prop+'.rangeMax'] = obj ? attempt(() => obj.rangeMax) : undefined;
-								data[name+'.'+prop+'.rangeMin'] = obj ? attempt(() => obj.rangeMin) : undefined;
-							}
-							return data
-						};
-						const getWebglSpecs = gl => {
-							if (!caniuse(() => gl, ['getParameter'])) {
-								return undefined
-							}
-							const data =  {
-								VERSION: gl.getParameter(gl.VERSION),
-								SHADING_LANGUAGE_VERSION: gl.getParameter(gl.SHADING_LANGUAGE_VERSION),
-								antialias: gl.getContextAttributes() ? gl.getContextAttributes().antialias : undefined,
-								RED_BITS: gl.getParameter(gl.RED_BITS),
-								GREEN_BITS: gl.getParameter(gl.GREEN_BITS),
-								BLUE_BITS: gl.getParameter(gl.BLUE_BITS),
-								ALPHA_BITS: gl.getParameter(gl.ALPHA_BITS),
-								DEPTH_BITS: gl.getParameter(gl.DEPTH_BITS),
-								STENCIL_BITS: gl.getParameter(gl.STENCIL_BITS),
-								MAX_RENDERBUFFER_SIZE: gl.getParameter(gl.MAX_RENDERBUFFER_SIZE),
-								MAX_COMBINED_TEXTURE_IMAGE_UNITS: gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS),
-								MAX_CUBE_MAP_TEXTURE_SIZE: gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE),
-								MAX_FRAGMENT_UNIFORM_VECTORS: gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS),
-								MAX_TEXTURE_IMAGE_UNITS: gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS),
-								MAX_TEXTURE_SIZE: gl.getParameter(gl.MAX_TEXTURE_SIZE),
-								MAX_VARYING_VECTORS: gl.getParameter(gl.MAX_VARYING_VECTORS),
-								MAX_VERTEX_ATTRIBS: gl.getParameter(gl.MAX_VERTEX_ATTRIBS),
-								MAX_VERTEX_TEXTURE_IMAGE_UNITS: gl.getParameter(gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS),
-								MAX_VERTEX_UNIFORM_VECTORS: gl.getParameter(gl.MAX_VERTEX_UNIFORM_VECTORS),
-								ALIASED_LINE_WIDTH_RANGE: [...gl.getParameter(gl.ALIASED_LINE_WIDTH_RANGE)],
-								ALIASED_POINT_SIZE_RANGE: [...gl.getParameter(gl.ALIASED_POINT_SIZE_RANGE)],
-								MAX_VIEWPORT_DIMS: attempt(() => [...gl.getParameter(gl.MAX_VIEWPORT_DIMS)]),
-								MAX_TEXTURE_MAX_ANISOTROPY_EXT: getMaxAnisotropy(gl),
-								...getShaderData('VERTEX_SHADER', getShaderPrecisionFormat(gl, 'VERTEX_SHADER')),
-								...getShaderData('FRAGMENT_SHADER', getShaderPrecisionFormat(gl, 'FRAGMENT_SHADER')),
-								MAX_DRAW_BUFFERS_WEBGL: attempt(() => {
-									const buffers = gl.getExtension('WEBGL_draw_buffers');
-									return buffers ? gl.getParameter(buffers.MAX_DRAW_BUFFERS_WEBGL) : undefined
-								})
-							};
-							const response = data;
-							return response
-						};
+						const response = data;
+						return response
+					};
 
-						const getWebgl2Specs = gl => {
-							if (!caniuse(() => gl, ['getParameter'])) {
-								return undefined
-							}
-							const data = {
-								MAX_VERTEX_UNIFORM_COMPONENTS: gl.getParameter(gl.MAX_VERTEX_UNIFORM_COMPONENTS),
-								MAX_VERTEX_UNIFORM_BLOCKS: gl.getParameter(gl.MAX_VERTEX_UNIFORM_BLOCKS),
-								MAX_VERTEX_OUTPUT_COMPONENTS: gl.getParameter(gl.MAX_VERTEX_OUTPUT_COMPONENTS),
-								MAX_VARYING_COMPONENTS: gl.getParameter(gl.MAX_VARYING_COMPONENTS),
-								MAX_FRAGMENT_UNIFORM_COMPONENTS: gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_COMPONENTS),
-								MAX_FRAGMENT_UNIFORM_BLOCKS: gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_BLOCKS),
-								MAX_FRAGMENT_INPUT_COMPONENTS: gl.getParameter(gl.MAX_FRAGMENT_INPUT_COMPONENTS),
-								MIN_PROGRAM_TEXEL_OFFSET: gl.getParameter(gl.MIN_PROGRAM_TEXEL_OFFSET),
-								MAX_PROGRAM_TEXEL_OFFSET: gl.getParameter(gl.MAX_PROGRAM_TEXEL_OFFSET),
-								MAX_DRAW_BUFFERS: gl.getParameter(gl.MAX_DRAW_BUFFERS),
-								MAX_COLOR_ATTACHMENTS: gl.getParameter(gl.MAX_COLOR_ATTACHMENTS),
-								MAX_SAMPLES: gl.getParameter(gl.MAX_SAMPLES),
-								MAX_3D_TEXTURE_SIZE: gl.getParameter(gl.MAX_3D_TEXTURE_SIZE),
-								MAX_ARRAY_TEXTURE_LAYERS: gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS),
-								MAX_TEXTURE_LOD_BIAS: gl.getParameter(gl.MAX_TEXTURE_LOD_BIAS),
-								MAX_UNIFORM_BUFFER_BINDINGS: gl.getParameter(gl.MAX_UNIFORM_BUFFER_BINDINGS),
-								MAX_UNIFORM_BLOCK_SIZE: gl.getParameter(gl.MAX_UNIFORM_BLOCK_SIZE),
-								UNIFORM_BUFFER_OFFSET_ALIGNMENT: gl.getParameter(gl.UNIFORM_BUFFER_OFFSET_ALIGNMENT),
-								MAX_COMBINED_UNIFORM_BLOCKS: gl.getParameter(gl.MAX_COMBINED_UNIFORM_BLOCKS),
-								MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS: gl.getParameter(gl.MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS),
-								MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS: gl.getParameter(gl.MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS),
-								MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS: gl.getParameter(gl.MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS),
-								MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS: gl.getParameter(gl.MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS),
-								MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS: gl.getParameter(gl.MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS),
-								MAX_ELEMENT_INDEX: gl.getParameter(gl.MAX_ELEMENT_INDEX),
-								MAX_SERVER_WAIT_TIMEOUT: gl.getParameter(gl.MAX_SERVER_WAIT_TIMEOUT)
-							};
-							const response = data;
-							return response
+					const getWebgl2Specs = gl => {
+						if (!caniuse(() => gl, ['getParameter'])) {
+							return undefined
+						}
+						const data = {
+							MAX_VERTEX_UNIFORM_COMPONENTS: gl.getParameter(gl.MAX_VERTEX_UNIFORM_COMPONENTS),
+							MAX_VERTEX_UNIFORM_BLOCKS: gl.getParameter(gl.MAX_VERTEX_UNIFORM_BLOCKS),
+							MAX_VERTEX_OUTPUT_COMPONENTS: gl.getParameter(gl.MAX_VERTEX_OUTPUT_COMPONENTS),
+							MAX_VARYING_COMPONENTS: gl.getParameter(gl.MAX_VARYING_COMPONENTS),
+							MAX_FRAGMENT_UNIFORM_COMPONENTS: gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_COMPONENTS),
+							MAX_FRAGMENT_UNIFORM_BLOCKS: gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_BLOCKS),
+							MAX_FRAGMENT_INPUT_COMPONENTS: gl.getParameter(gl.MAX_FRAGMENT_INPUT_COMPONENTS),
+							MIN_PROGRAM_TEXEL_OFFSET: gl.getParameter(gl.MIN_PROGRAM_TEXEL_OFFSET),
+							MAX_PROGRAM_TEXEL_OFFSET: gl.getParameter(gl.MAX_PROGRAM_TEXEL_OFFSET),
+							MAX_DRAW_BUFFERS: gl.getParameter(gl.MAX_DRAW_BUFFERS),
+							MAX_COLOR_ATTACHMENTS: gl.getParameter(gl.MAX_COLOR_ATTACHMENTS),
+							MAX_SAMPLES: gl.getParameter(gl.MAX_SAMPLES),
+							MAX_3D_TEXTURE_SIZE: gl.getParameter(gl.MAX_3D_TEXTURE_SIZE),
+							MAX_ARRAY_TEXTURE_LAYERS: gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS),
+							MAX_TEXTURE_LOD_BIAS: gl.getParameter(gl.MAX_TEXTURE_LOD_BIAS),
+							MAX_UNIFORM_BUFFER_BINDINGS: gl.getParameter(gl.MAX_UNIFORM_BUFFER_BINDINGS),
+							MAX_UNIFORM_BLOCK_SIZE: gl.getParameter(gl.MAX_UNIFORM_BLOCK_SIZE),
+							UNIFORM_BUFFER_OFFSET_ALIGNMENT: gl.getParameter(gl.UNIFORM_BUFFER_OFFSET_ALIGNMENT),
+							MAX_COMBINED_UNIFORM_BLOCKS: gl.getParameter(gl.MAX_COMBINED_UNIFORM_BLOCKS),
+							MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS: gl.getParameter(gl.MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS),
+							MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS: gl.getParameter(gl.MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS),
+							MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS: gl.getParameter(gl.MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS),
+							MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS: gl.getParameter(gl.MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS),
+							MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS: gl.getParameter(gl.MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS),
+							MAX_ELEMENT_INDEX: gl.getParameter(gl.MAX_ELEMENT_INDEX),
+							MAX_SERVER_WAIT_TIMEOUT: gl.getParameter(gl.MAX_SERVER_WAIT_TIMEOUT)
 						};
-						const data = { webglSpecs: getWebglSpecs(webgl), webgl2Specs: getWebgl2Specs(webgl2) };
-						return resolve(data)
-					})
+						const response = data;
+						return response
+					};
+					const data = { webglSpecs: getWebglSpecs(webgl), webgl2Specs: getWebgl2Specs(webgl2) };
+					return data
 				};
 
 				const getUnmasked = (context, [rendererTitle, vendorTitle]) => {
-					return new Promise(async resolve => {
-						try {
-							if (!context) {
-								return resolve({
-									vendor: undefined,
-									renderer: undefined
-								})
-							}
-							const extension = caniuse(() => context, ['getExtension'], ['WEBGL_debug_renderer_info'], true);
-							const vendor = extension && context.getParameter(extension.UNMASKED_VENDOR_WEBGL);
-							const renderer = extension && context.getParameter(extension.UNMASKED_RENDERER_WEBGL);
-							const validate = (value, title) => {
-
-								const gibbers = gibberish(value);
-								if (!!gibbers.length) {	
-									sendToTrash(`${title} contains gibberish`, `[${gibbers.join(', ')}] ${value}`);	
-								}
-
-								return (
-									!proxyBehavior(value) ? value : 
-									sendToTrash(title, 'proxy behavior detected')
-								)
-							};
-							return resolve ({
-								vendor: validate(vendor, vendorTitle),
-								renderer: validate(renderer, rendererTitle)
-							})
-						}
-						catch (error) {
-							captureError(error);
-							return resolve({
+					try {
+						if (!context) {
+							return {
 								vendor: undefined,
 								renderer: undefined
-							})
+							}
 						}
-					})
+						const extension = caniuse(() => context, ['getExtension'], ['WEBGL_debug_renderer_info'], true);
+						const vendor = extension && context.getParameter(extension.UNMASKED_VENDOR_WEBGL);
+						const renderer = extension && context.getParameter(extension.UNMASKED_RENDERER_WEBGL);
+						const validate = (value, title) => {
+							const gibbers = gibberish(value);
+							if (!!gibbers.length) {	
+								sendToTrash(`${title} contains gibberish`, `[${gibbers.join(', ')}] ${value}`);	
+							}
+							return (
+								!proxyBehavior(value) ? value : 
+								sendToTrash(title, 'proxy behavior detected')
+							)
+						};
+						return {
+							vendor: validate(vendor, vendorTitle),
+							renderer: validate(renderer, rendererTitle)
+						}
+					}
+					catch (error) {
+						captureError(error);
+						return {
+							vendor: undefined,
+							renderer: undefined
+						}
+					}
 				};
 				const getDataURL = (canvas, context) => {
-					return new Promise(async resolve => {
-						try {
-							const colorBufferBit = caniuse(() => context, ['COLOR_BUFFER_BIT']);
-							caniuse(() => context, ['clearColor'], [0.2, 0.4, 0.6, 0.8], true);
-							caniuse(() => context, ['clear'], [colorBufferBit], true);
-							const canvasWebglDataURI = canvas.toDataURL();
-							const dataURI = canvasWebglDataURI;
-							const $hash = await hashify(dataURI);
-							return resolve({ dataURI, $hash })
-						}
-						catch (error) {
-							captureError(error);
-							return resolve({ dataURI: undefined, $hash: undefined })
-						}
-					})
+					try {
+						const colorBufferBit = caniuse(() => context, ['COLOR_BUFFER_BIT']);
+						caniuse(() => context, ['clearColor'], [0.2, 0.4, 0.6, 0.8], true);
+						caniuse(() => context, ['clear'], [colorBufferBit], true);
+						const canvasWebglDataURI = canvas.toDataURL();
+						const dataURI = canvasWebglDataURI;
+						return dataURI
+					}
+					catch (error) {
+						captureError(error);
+						return
+					}
 				};
 
-				const [
-					supported,
-					supported2,
-					unmasked,
-					unmasked2,
-					dataURI,
-					dataURI2,
-					specs
-				] = await Promise.all([
-					getSupportedExtensions(context),
-					getSupportedExtensions(context2),
-					getUnmasked(context, ['webgl renderer', 'webgl vendor']),
-					getUnmasked(context2, ['webgl2 renderer', 'webgl2 vendor']),
-					getDataURL(canvas, context),
-					getDataURL(canvas2, context2),
-					getSpecs(context, context2)
-				]).catch(error => {
-					console.error(error.message);
-				});
+				const supported = getSupportedExtensions(context);
+				const supported2 = getSupportedExtensions(context2);
+				const unmasked = getUnmasked(context, ['webgl renderer', 'webgl vendor']);
+				const unmasked2 = getUnmasked(context2, ['webgl2 renderer', 'webgl2 vendor']);
+				const dataURI = getDataURL(canvas, context);
+				const dataURI2 = getDataURL(canvas2, context2);
+				const specs = getSpecs(context, context2);
 
 				const data = {
 					supported,
@@ -1788,11 +1790,9 @@
 					lied
 				};
 				data.matchingUnmasked = JSON.stringify(data.unmasked) === JSON.stringify(data.unmasked2);
-				data.matchingDataURI = data.dataURI.$hash === data.dataURI2.$hash;
-
-				const $hash = await hashify(data);
-				logTestResult({ test: 'webgl', passed: true });
-				return resolve({ ...data, $hash })
+				data.matchingDataURI = data.dataURI === data.dataURI2;
+				logTestResult({ start, test: 'webgl', passed: true });
+				return resolve({ ...data })
 			}
 			catch (error) {
 				logTestResult({ test: 'webgl', passed: false });
@@ -1802,263 +1802,489 @@
 		})
 	};
 
-	const getCloudflare = imports => {
+	const computeStyle = (type, { require: [ captureError ] }) => {
+		try {
+			// get CSSStyleDeclaration
+			const cssStyleDeclaration = (
+				type == 'getComputedStyle' ? getComputedStyle(document.body) :
+				type == 'HTMLElement.style' ? document.body.style :
+				type == 'CSSRuleList.style' ? document.styleSheets[0].cssRules[0].style :
+				undefined
+			);
+			if (!cssStyleDeclaration) {
+				throw new TypeError('invalid argument string')
+			}
+			// get properties
+			const prototype = Object.getPrototypeOf(cssStyleDeclaration);
+			const prototypeProperties = Object.getOwnPropertyNames(prototype);
+			const ownEnumerablePropertyNames = [];
+			const cssVar = /^--.*$/;
+			Object.keys(cssStyleDeclaration).forEach(key => {
+				const numericKey = !isNaN(key);
+				const value = cssStyleDeclaration[key];
+				const customPropKey = cssVar.test(key);
+				const customPropValue = cssVar.test(value);
+				if (numericKey && !customPropValue) {
+					return ownEnumerablePropertyNames.push(value)
+				} else if (!numericKey && !customPropKey) {
+					return ownEnumerablePropertyNames.push(key)
+				}
+				return
+			});
+			// get properties in prototype chain (required only in chrome)
+			const propertiesInPrototypeChain = {};
+			const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1);
+			const uncapitalize = str => str.charAt(0).toLowerCase() + str.slice(1);
+			const removeFirstChar = str => str.slice(1);
+			const caps = /[A-Z]/g;
+			ownEnumerablePropertyNames.forEach(key => {
+				if (propertiesInPrototypeChain[key]) {
+					return
+				}
+				// determine attribute type
+				const isNamedAttribute = key.indexOf('-') > -1;
+				const isAliasAttribute = caps.test(key);
+				// reduce key for computation
+				const firstChar = key.charAt(0);
+				const isPrefixedName = isNamedAttribute && firstChar == '-';
+				const isCapitalizedAlias = isAliasAttribute && firstChar == firstChar.toUpperCase();
+				key = (
+					isPrefixedName ? removeFirstChar(key) :
+					isCapitalizedAlias ? uncapitalize(key) :
+					key
+				);
+				// find counterpart in CSSStyleDeclaration object or its prototype chain
+				if (isNamedAttribute) {
+					const aliasAttribute = key.split('-').map((word, index) => index == 0 ? word : capitalize(word)).join('');
+					if (aliasAttribute in cssStyleDeclaration) {
+						propertiesInPrototypeChain[aliasAttribute] = true;
+					} else if (capitalize(aliasAttribute) in cssStyleDeclaration) {
+						propertiesInPrototypeChain[capitalize(aliasAttribute)] = true;
+					}
+				} else if (isAliasAttribute) {
+					const namedAttribute = key.replace(caps, char => '-' + char.toLowerCase());
+					if (namedAttribute in cssStyleDeclaration) {
+						propertiesInPrototypeChain[namedAttribute] = true;
+					} else if (`-${namedAttribute}` in cssStyleDeclaration) {
+						propertiesInPrototypeChain[`-${namedAttribute}`] = true;
+					}
+				}
+				return
+			});
+			// compile keys
+			const keys = [
+				...new Set([
+					...prototypeProperties,
+					...ownEnumerablePropertyNames,
+					...Object.keys(propertiesInPrototypeChain)
+				])
+			];
+			// checks
+			const moz = keys.filter(key => (/moz/i).test(key)).length;
+			const webkit = keys.filter(key => (/webkit/i).test(key)).length;
+			const apple = keys.filter(key => (/apple/i).test(key)).length;
+			const prototypeName = (''+prototype).match(/\[object (.+)\]/)[1];
+		
+			const data = { keys: keys.sort(), moz, webkit, apple, prototypeName };
+			return { ...data }
+		}
+		catch (error) {
+			captureError(error);
+			return
+		}
+	};
+
+	const getSystemStyles = (instanceId, { require: [ captureError, parentPhantom ] }) => {
+		try {
+			const colors = [
+				'ActiveBorder',
+				'ActiveCaption',
+				'ActiveText',
+				'AppWorkspace',
+				'Background',
+				'ButtonBorder',
+				'ButtonFace',
+				'ButtonHighlight',
+				'ButtonShadow',
+				'ButtonText',
+				'Canvas',
+				'CanvasText',
+				'CaptionText',
+				'Field',
+				'FieldText',
+				'GrayText',
+				'Highlight',
+				'HighlightText',
+				'InactiveBorder',
+				'InactiveCaption',
+				'InactiveCaptionText',
+				'InfoBackground',
+				'InfoText',
+				'LinkText',
+				'Mark',
+				'MarkText',
+				'Menu',
+				'MenuText',
+				'Scrollbar',
+				'ThreeDDarkShadow',
+				'ThreeDFace',
+				'ThreeDHighlight',
+				'ThreeDLightShadow',
+				'ThreeDShadow',
+				'VisitedText',
+				'Window',
+				'WindowFrame',
+				'WindowText'
+			];
+			const fonts = [
+				'caption',
+				'icon',
+				'menu',
+				'message-box',
+				'small-caption',
+				'status-bar'
+			];
+
+			let rendered;
+			if (!parentPhantom) {
+				const id = 'creep-system-styles';
+				const el = document.createElement('div');
+				el.setAttribute('id', id);
+				document.body.append(el);
+				rendered = document.getElementById(id);
+			}
+			else {
+				rendered = parentPhantom;
+			}
+			const system = {
+				colors: [],
+				fonts: []
+			};
+			system.colors = colors.map(color => {
+				rendered.setAttribute('style', `background-color: ${color} !important`);
+				return {
+					[color]: getComputedStyle(rendered).backgroundColor
+				}
+			});
+			fonts.forEach(font => {
+				rendered.setAttribute('style', `font: ${font} !important`);
+				system.fonts.push({
+					[font]: getComputedStyle(rendered).font
+				});
+			});
+			if (!parentPhantom) {
+				rendered.parentNode.removeChild(rendered);
+			}
+			return { ...system }
+		}
+		catch (error) {
+			captureError(error);
+			return
+		}
+	};
+
+	const getCSS = imports => {
 
 		const {
 			require: {
-				getOS,
-				hashify,
+				instanceId,
 				captureError,
-				logTestResult
+				logTestResult,
+				parentPhantom
 			}
 		} = imports;
 
 		return new Promise(async resolve => {
 			try {
-				const api = 'https://www.cloudflare.com/cdn-cgi/trace';
-				const res = await fetch(api);
-				const text = await res.text();
-				const lines = text.match(/^(?:ip|uag|loc|tls)=(.*)$/igm);
-				const data = {};
-				lines.forEach(line => {
-					const key = line.split('=')[0];
-					const value = line.substr(line.indexOf('=') + 1);
-					data[key] = value;
-				});
-				data.uag = getOS(data.uag);
-				const $hash = await hashify(data);
-				logTestResult({ test: 'cloudflare', passed: true });
-				return resolve({ ...data, $hash })
+				const start = performance.now();
+				const computedStyle = computeStyle('getComputedStyle', { require: [ captureError ] });
+				const system = getSystemStyles(instanceId, { require: [ captureError, parentPhantom ] });
+				const data = {
+					['getComputedStyle']: computedStyle,
+					system
+				};
+				logTestResult({ start, test: 'computed style', passed: true });
+				return resolve({ ...data })
 			}
 			catch (error) {
-				logTestResult({ test: 'cloudflare', passed: false });
-				captureError(error, 'cloudflare.com: failed or client blocked');
+				logTestResult({ test: 'computed style', passed: false });
+				captureError(error);
 				return resolve()
 			}
 		})
 	};
 
-	const computeStyle = (type, { require: [ hashify, captureError ] }) => {
-		return new Promise(async resolve => {
-			try {
-				// get CSSStyleDeclaration
-				const cssStyleDeclaration = (
-					type == 'getComputedStyle' ? getComputedStyle(document.body) :
-					type == 'HTMLElement.style' ? document.body.style :
-					type == 'CSSRuleList.style' ? document.styleSheets[0].cssRules[0].style :
-					undefined
-				);
-				if (!cssStyleDeclaration) {
-					throw new TypeError('invalid argument string')
+	const gcd = (a, b) => b == 0 ? a : gcd(b, a%b);
+
+	const getAspectRatio = (width, height) => {
+		const r = gcd(width, height);
+		const aspectRatio = `${width/r}/${height/r}`;
+		return aspectRatio
+	};
+
+	const query = ({ body, type, rangeStart, rangeLen }) => {
+		body.innerHTML = `
+		<style>
+			${[...Array(rangeLen)].map((slot,i) => {
+				i += rangeStart;
+				return `
+					@media (device-${type}: ${i}px) {body {--device-${type}: ${i};}}
+				`
+			}).join('')}
+		</style>
+	`;
+		const style = getComputedStyle(body);
+		return style.getPropertyValue(`--device-${type}`).trim()
+	};
+
+	const getScreenMedia = body => {
+		let i, widthMatched, heightMatched;
+		for (i = 0; i < 10; i++) {
+			let resWidth, resHeight;
+			if (!widthMatched) {
+				resWidth = query({ body, type: 'width', rangeStart: i*1000, rangeLen: 1000});
+				if (resWidth) {
+					widthMatched = resWidth;
 				}
-				// get properties
-				const prototype = Object.getPrototypeOf(cssStyleDeclaration);
-				const prototypeProperties = Object.getOwnPropertyNames(prototype);
-				const ownEnumerablePropertyNames = [];
-				const cssVar = /^--.*$/;
-				Object.keys(cssStyleDeclaration).forEach(key => {
-					const numericKey = !isNaN(key);
-					const value = cssStyleDeclaration[key];
-					const customPropKey = cssVar.test(key);
-					const customPropValue = cssVar.test(value);
-					if (numericKey && !customPropValue) {
-						return ownEnumerablePropertyNames.push(value)
-					} else if (!numericKey && !customPropKey) {
-						return ownEnumerablePropertyNames.push(key)
-					}
-					return
-				});
-				// get properties in prototype chain (required only in chrome)
-				const propertiesInPrototypeChain = {};
-				const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1);
-				const uncapitalize = str => str.charAt(0).toLowerCase() + str.slice(1);
-				const removeFirstChar = str => str.slice(1);
-				const caps = /[A-Z]/g;
-				ownEnumerablePropertyNames.forEach(key => {
-					if (propertiesInPrototypeChain[key]) {
-						return
-					}
-					// determine attribute type
-					const isNamedAttribute = key.indexOf('-') > -1;
-					const isAliasAttribute = caps.test(key);
-					// reduce key for computation
-					const firstChar = key.charAt(0);
-					const isPrefixedName = isNamedAttribute && firstChar == '-';
-					const isCapitalizedAlias = isAliasAttribute && firstChar == firstChar.toUpperCase();
-					key = (
-						isPrefixedName ? removeFirstChar(key) :
-						isCapitalizedAlias ? uncapitalize(key) :
-						key
-					);
-					// find counterpart in CSSStyleDeclaration object or its prototype chain
-					if (isNamedAttribute) {
-						const aliasAttribute = key.split('-').map((word, index) => index == 0 ? word : capitalize(word)).join('');
-						if (aliasAttribute in cssStyleDeclaration) {
-							propertiesInPrototypeChain[aliasAttribute] = true;
-						} else if (capitalize(aliasAttribute) in cssStyleDeclaration) {
-							propertiesInPrototypeChain[capitalize(aliasAttribute)] = true;
-						}
-					} else if (isAliasAttribute) {
-						const namedAttribute = key.replace(caps, char => '-' + char.toLowerCase());
-						if (namedAttribute in cssStyleDeclaration) {
-							propertiesInPrototypeChain[namedAttribute] = true;
-						} else if (`-${namedAttribute}` in cssStyleDeclaration) {
-							propertiesInPrototypeChain[`-${namedAttribute}`] = true;
-						}
-					}
-					return
-				});
-				// compile keys
-				const keys = [
-					...new Set([
-						...prototypeProperties,
-						...ownEnumerablePropertyNames,
-						...Object.keys(propertiesInPrototypeChain)
-					])
-				];
-				// checks
-				const moz = keys.filter(key => (/moz/i).test(key)).length;
-				const webkit = keys.filter(key => (/webkit/i).test(key)).length;
-				const apple = keys.filter(key => (/apple/i).test(key)).length;
-				const prototypeName = (''+prototype).match(/\[object (.+)\]/)[1];
-			
-				const data = { keys: keys.sort(), moz, webkit, apple, prototypeName };
-				const $hash = await hashify(data);
-				return resolve({ ...data, $hash })
 			}
-			catch (error) {
-				captureError(error);
-				return resolve(undefined)
+			if (!heightMatched) {
+				resHeight = query({ body, type: 'height', rangeStart: i*1000, rangeLen: 1000});
+				if (resHeight) {
+					heightMatched = resHeight;
+				}
 			}
-		})
+			if (widthMatched && heightMatched) {
+				break
+			}	
+		}
+		return { width: +widthMatched, height: +heightMatched }
 	};
 
-	const getSystemStyles = (instanceId, { require: [ hashify, captureError ] }) => {
-		return new Promise(async resolve => {
-			try {
-				const colors = [
-					'ActiveBorder',
-					'ActiveCaption',
-					'ActiveText',
-					'AppWorkspace',
-					'Background',
-					'ButtonBorder',
-					'ButtonFace',
-					'ButtonHighlight',
-					'ButtonShadow',
-					'ButtonText',
-					'Canvas',
-					'CanvasText',
-					'CaptionText',
-					'Field',
-					'FieldText',
-					'GrayText',
-					'Highlight',
-					'HighlightText',
-					'InactiveBorder',
-					'InactiveCaption',
-					'InactiveCaptionText',
-					'InfoBackground',
-					'InfoText',
-					'LinkText',
-					'Mark',
-					'MarkText',
-					'Menu',
-					'MenuText',
-					'Scrollbar',
-					'ThreeDDarkShadow',
-					'ThreeDFace',
-					'ThreeDHighlight',
-					'ThreeDLightShadow',
-					'ThreeDShadow',
-					'VisitedText',
-					'Window',
-					'WindowFrame',
-					'WindowText'
-				];
-				const fonts = [
-					'caption',
-					'icon',
-					'menu',
-					'message-box',
-					'small-caption',
-					'status-bar'
-				];
-				const id = 'creep-system-styles';
-				const el = document.createElement('div');
-				el.setAttribute('id', id);
-				document.body.append(el);
-				const rendered = document.getElementById(id);
-				const system = {
-					colors: [],
-					fonts: []
-				};
-				system.colors = colors.map(color => {
-					rendered.setAttribute('style', `background-color: ${color} !important`);
-					return {
-						[color]: getComputedStyle(rendered).backgroundColor
+	const getScreenMatchMedia = win => {
+		let widthMatched, heightMatched;
+		for (let i = 0; i < 10; i++) {
+			let resWidth, resHeight;
+			if (!widthMatched) {
+				let rangeStart = i*1000;
+				const rangeLen = 1000;
+				for (let i = 0; i < rangeLen; i++) {
+					if (win.matchMedia(`(device-width:${rangeStart}px)`).matches) {
+						resWidth = rangeStart;
+						break
 					}
-				});
-				fonts.forEach(font => {
-					rendered.setAttribute('style', `font: ${font} !important`);
-					system.fonts.push({
-						[font]: getComputedStyle(rendered).font
-					});
-				});
-				rendered.parentNode.removeChild(rendered);
-				const $hash = await hashify(system);
-				return resolve({...system, $hash})
+					rangeStart++;
+				}
+				if (resWidth) {
+					widthMatched = resWidth;
+				}
 			}
-			catch (error) {
-				captureError(error);
-				return resolve(undefined)
+			if (!heightMatched) {
+				let rangeStart = i*1000;
+				const rangeLen = 1000;
+				for (let i = 0; i < rangeLen; i++) {
+					if (win.matchMedia(`(device-height:${rangeStart}px)`).matches) {
+						resHeight = rangeStart;
+						break
+					}
+					rangeStart++;
+				}
+				if (resHeight) {
+					heightMatched = resHeight;
+				}
 			}
-		})
+			if (widthMatched && heightMatched) {
+				break
+			}	
+		}
+		return { width: widthMatched, height: heightMatched }
 	};
 
-	const getCSSStyleDeclarationVersion = imports => {
+	const getCSSMedia = imports => {
 
 		const {
 			require: {
-				instanceId,
-				hashify,
 				captureError,
+				phantomDarkness,
 				logTestResult
 			}
 		} = imports;
 
 		return new Promise(async resolve => {
 			try {
-				const [
-					computedStyle,
-					htmlElementStyle,
-					cssRuleListstyle,
-					system
-				] = await Promise.all([
-					computeStyle('getComputedStyle', { require: [ hashify, captureError ] }),
-					computeStyle('HTMLElement.style', { require: [ hashify, captureError ] }),
-					computeStyle('CSSRuleList.style', { require: [ hashify, captureError ] }),
-					getSystemStyles(instanceId, { require: [ hashify, captureError ] })
-				]).catch(error => {
-					console.error(error.message);
-				});
+				const start = performance.now();
+				const win = phantomDarkness.window;
 				
-				const data = {
-					['getComputedStyle']: computedStyle,
-					['HTMLElement.style']: htmlElementStyle,
-					['CSSRuleList.style']: cssRuleListstyle,
-					system,
-					matching: (
-						''+computedStyle.keys == ''+htmlElementStyle.keys &&
-						''+htmlElementStyle.keys == ''+cssRuleListstyle.keys
-					)
+				const { body } = win.document;
+				const { width, height } = win.screen;
+				
+				const deviceAspectRatio = getAspectRatio(width, height);
+				body.innerHTML = `
+			<style>
+			/* device */
+			@media (prefers-reduced-motion: no-preference) {body {--prefers-reduced-motion: no-preference;}}
+			@media (prefers-reduced-motion: reduce) {body {--prefers-reduced-motion: reduce;}}
+
+			@media (prefers-color-scheme: light) {body {--prefers-color-scheme: light;}}
+			@media (prefers-color-scheme: dark) {body {--prefers-color-scheme: dark;}}
+			
+			@media (monochrome) {body {--monochrome: monochrome;}}
+			@media (monochrome: 0) {body {--monochrome: non-monochrome;}}
+
+			@media (inverted-colors: inverted) {body {--inverted-colors: inverted;}}
+			@media (inverted-colors: none) {body {--inverted-colors: none;}}
+
+			@media (forced-colors: none) {body {--forced-colors: none;}}
+			@media (forced-colors: active) {body {--forced-colors: active;}}
+
+			/* input mechanisms */
+			@media (any-hover: hover) {body {--any-hover: hover;}}
+			@media (any-hover: none) {body {--any-hover: none;}}
+			
+			@media (hover: hover) {body {--hover: hover;}}
+			@media (hover: none) {body {--hover: none;}}
+			
+			@media (any-pointer: fine) {body {--any-pointer: fine;}}
+			@media (any-pointer: coarse) {body {--any-pointer: coarse;}}
+			@media (any-pointer: none) {body {--any-pointer: none;}}
+			
+			@media (pointer: fine) {body {--pointer: fine;}}
+			@media (pointer: coarse) {body {--pointer: coarse;}}
+			@media (pointer: none) {body {--pointer: none;}}
+
+			@media (device-aspect-ratio: ${deviceAspectRatio}) {body {--device-aspect-ratio: ${deviceAspectRatio};}}
+			@media (device-width: ${width}px) and (device-height: ${height}px) {body {--device-screen: ${width} x ${height};}}
+			@media (display-mode: fullscreen) {body {--display-mode: fullscreen;}}
+			@media (display-mode: standalone) {body {--display-mode: standalone;}}
+			@media (display-mode: minimal-ui) {body {--display-mode: minimal-ui;}}
+			@media (display-mode: browser) {body {--display-mode: browser;}}
+
+			@media (color-gamut: srgb) {body {--color-gamut: srgb;}}
+			@media (color-gamut: p3) {body {--color-gamut: p3;}}
+			@media (color-gamut: rec2020) {body {--color-gamut: rec2020;}}
+
+			@media (orientation: landscape) {body {--orientation: landscape;}}
+			@media (orientation: portrait) {body {--orientation: portrait;}}
+
+			</style>
+			`;
+				const matchMediaCSS = {
+					reducedMotion: (
+						win.matchMedia('(prefers-reduced-motion: no-preference)').matches ?
+						'no-preference' :
+						win.matchMedia('(prefers-reduced-motion: reduce)').matches ?
+						'reduce' : undefined
+					),
+					colorScheme: (
+						win.matchMedia('(prefers-color-scheme: light)').matches ?
+						'light' :
+						win.matchMedia('(prefers-color-scheme: dark)').matches ?
+						'dark' : undefined
+					),
+					monochrome: (
+						win.matchMedia('(monochrome)').matches ?
+						'monochrome' :
+						win.matchMedia('(monochrome: 0)').matches ?
+						'non-monochrome' : undefined
+					),
+					invertedColors: (
+						win.matchMedia('(inverted-colors: inverted)').matches ?
+						'inverted' :
+						win.matchMedia('(inverted-colors: none)').matches ?
+						'none' : undefined
+					),
+					forcedColors: (
+						win.matchMedia('(forced-colors: none)').matches ?
+						'none' :
+						win.matchMedia('(forced-colors: active)').matches ?
+						'active' : undefined
+					),
+					anyHover: (
+						win.matchMedia('(any-hover: hover)').matches ?
+						'hover' :
+						win.matchMedia('(any-hover: none)').matches ?
+						'none' : undefined
+					),
+					hover: (
+						win.matchMedia('(hover: hover)').matches ?
+						'hover' :
+						win.matchMedia('(hover: none)').matches ?
+						'none' : undefined
+					),
+					anyPointer: (
+						win.matchMedia('(any-pointer: fine)').matches ?
+						'fine' :
+						win.matchMedia('(any-pointer: coarse)').matches ?
+						'coarse' :
+						win.matchMedia('(any-pointer: none)').matches ?
+						'none' : undefined
+					),
+					pointer: (
+						win.matchMedia('(pointer: fine)').matches ?
+						'fine' :
+						win.matchMedia('(pointer: coarse)').matches ?
+						'coarse' :
+						win.matchMedia('(pointer: none)').matches ?
+						'none' : undefined
+					),
+					deviceAspectRatio: (
+						win.matchMedia(`(device-aspect-ratio: ${deviceAspectRatio})`).matches ?
+						deviceAspectRatio : undefined
+					),
+					deviceScreen: (
+						win.matchMedia(`(device-width: ${width}px) and (device-height: ${height}px)`).matches ?
+						`${width} x ${height}` : undefined
+					),
+					displayMode: (
+						win.matchMedia('(display-mode: fullscreen)').matches ?
+						'fullscreen' :
+						win.matchMedia('(display-mode: standalone)').matches ?
+						'standalone' :
+						win.matchMedia('(display-mode: minimal-ui)').matches ?
+						'minimal-ui' :
+						win.matchMedia('(display-mode: browser)').matches ?
+						'browser' : undefined
+					),
+					colorGamut: (
+						win.matchMedia('(color-gamut: srgb)').matches ?
+						'srgb' :
+						win.matchMedia('(color-gamut: p3)').matches ?
+						'p3' :
+						win.matchMedia('(color-gamut: rec2020)').matches ?
+						'rec2020' : undefined
+					),
+					orientation: (
+						win.matchMedia('(orientation: landscape)').matches ?
+						'landscape' :
+						win.matchMedia('(orientation: portrait)').matches ?
+						'portrait' : undefined
+					),
+					screenQuery: getScreenMatchMedia(win)
 				};
-				const $hash = await hashify(data);
-				logTestResult({ test: 'computed style', passed: true });
-				return resolve({ ...data, $hash })
+
+				const style = getComputedStyle(body);
+				const mediaCSS = {
+					reducedMotion: style.getPropertyValue('--prefers-reduced-motion').trim() || undefined,
+					colorScheme: style.getPropertyValue('--prefers-color-scheme').trim() || undefined,
+					monochrome: style.getPropertyValue('--monochrome').trim() || undefined,
+					invertedColors: style.getPropertyValue('--inverted-colors').trim() || undefined,
+					forcedColors: style.getPropertyValue('--forced-colors').trim() || undefined,
+					anyHover: style.getPropertyValue('--any-hover').trim() || undefined,
+					hover: style.getPropertyValue('--hover').trim() || undefined,
+					anyPointer: style.getPropertyValue('--any-pointer').trim() || undefined,
+					pointer: style.getPropertyValue('--pointer').trim() || undefined,
+					deviceAspectRatio: style.getPropertyValue('--device-aspect-ratio').trim() || undefined,
+					deviceScreen: style.getPropertyValue('--device-screen').trim() || undefined,
+					displayMode: style.getPropertyValue('--display-mode').trim() || undefined,
+					colorGamut: style.getPropertyValue('--color-gamut').trim() || undefined,
+					orientation: style.getPropertyValue('--orientation').trim() || undefined,
+					screenQuery: getScreenMedia(body)
+				};
+
+				logTestResult({ start, test: 'css media', passed: true });
+				return resolve({ mediaCSS, matchMediaCSS })
 			}
 			catch (error) {
-				logTestResult({ test: 'computed style', passed: false });
+				logTestResult({ test: 'css media', passed: false });
 				captureError(error);
 				return resolve()
 			}
@@ -2089,6 +2315,7 @@
 
 		return new Promise(async resolve => {
 			try {
+				const start = performance.now();
 				const errorTests = [
 					() => new Function('alert(")')(),
 					() => new Function('const foo;foo.bar')(),
@@ -2101,9 +2328,8 @@
 					() => new Function('const a=1; const a=2;')()
 				];
 				const errors = getErrors(errorTests);
-				const $hash = await hashify(errors);
-				logTestResult({ test: 'console errors', passed: true });
-				return resolve({errors, $hash })
+				logTestResult({ start, test: 'console errors', passed: true });
+				return resolve({ errors })
 			}
 			catch (error) {
 				logTestResult({ test: 'console errors', passed: false });
@@ -2113,27 +2339,27 @@
 		})
 	};
 
-	const getIframeContentWindowVersion = imports => {
+	const getWindowFeatures = imports => {
 
 		const {
 			require: {
 				hashify,
 				captureError,
-				contentWindow,
+				phantomDarkness,
 				logTestResult
 			}
 		} = imports;
 
 		return new Promise(async resolve => {
 			try {
-				const keys = Object.getOwnPropertyNames(contentWindow);
+				const start = performance.now();
+				const keys = Object.getOwnPropertyNames(phantomDarkness);
 				const moz = keys.filter(key => (/moz/i).test(key)).length;
 				const webkit = keys.filter(key => (/webkit/i).test(key)).length;
 				const apple = keys.filter(key => (/apple/i).test(key)).length;
 				const data = { keys, apple, moz, webkit }; 
-				const $hash = await hashify(data);
-				logTestResult({ test: 'window', passed: true });
-				return resolve({ ...data, $hash })
+				logTestResult({ start, test: 'window', passed: true });
+				return resolve({ ...data })
 			}
 			catch (error) {
 				logTestResult({ test: 'window', passed: false });
@@ -2145,138 +2371,87 @@
 
 	// inspired by Lalit Patel's fontdetect.js
 	// https://www.lalit.org/wordpress/wp-content/uploads/2008/05/fontdetect.js?ver=0.3
+
+	const getTextMetrics = (context, font) => {
+		context.font = `256px ${font}`;
+		const metrics = context.measureText('mmmmmmmmmmlli');
+		return {
+			ascent: Math.round(metrics.actualBoundingBoxAscent),
+			descent: Math.round(metrics.actualBoundingBoxDescent),
+			left: Math.round(metrics.actualBoundingBoxLeft),
+			right: Math.round(metrics.actualBoundingBoxRight),
+			width: Math.round(metrics.width),
+			fontAscent: Math.round(metrics.fontBoundingBoxAscent),
+			fontDescent: Math.round(metrics.fontBoundingBoxDescent)
+		}
+	};
 	const getFonts = (imports, fonts) => {
 
 		const {
 			require: {
-				hashify,
-				patch,
-				html,
 				captureError,
-				instanceId,
 				lieProps,
+				documentLie,
+				phantomDarkness,
 				logTestResult
 			}
 		} = imports;
 
 		return new Promise(async resolve => {
 			try {
-
-				let lied = (
-					lieProps['Element.offsetWidth'],
-					lieProps['Element.offsetHeight'],
-					lieProps['HTMLElement.offsetWidth'],
-					lieProps['HTMLElement.offsetHeight']
+				const start = performance.now();
+				const win = phantomDarkness ? phantomDarkness : window;
+				const doc = win.document;
+				const offscreenCanvas = win.OffscreenCanvas;
+				const context = (
+					('OffscreenCanvas' in window) ?
+					new offscreenCanvas(500, 200).getContext('2d') :
+					doc.createElement('canvas').getContext('2d')
 				);
 
-				let iframeContainer, doc = document;
-				try {
-					const len = window.length;
-					const div = document.createElement('div');
-					div.setAttribute('style', 'visibility:hidden');
-					document.body.appendChild(div);
-					div.innerHTML = '<iframe></iframe>';
-					const iframeWindow = window[len];
-					iframeContainer = div;
-					doc = iframeWindow.document;
-				}
-				catch (error) {
-					captureError(error, 'client blocked fonts iframe');
+				if (!context) {
+					throw new Error(`Context blocked or not supported`) 
 				}
 
-				const fontsId = `${instanceId}-fonts-div`;
-				const divElement = document.createElement('div');
-				const divStageRendered = document.createElement('div');
-				divElement.setAttribute('id', fontsId);
-				divStageRendered.setAttribute('id', 'font-detector-stage');
-				doc.body.appendChild(divElement);
-				const divRendered = doc.getElementById(fontsId);
-				divRendered.appendChild(divStageRendered);
-
-				const toInt = val => ~~val; // protect against decimal noise
 				const baseFonts = ['monospace', 'sans-serif', 'serif'];
-				const text = 'mmmmmmmmmmlli';
-				const baseOffsetWidth = {};
-				const baseOffsetHeight = {};
-				const style = ` > span {
-				position: absolute!important;
-				left: -9999px!important;
-				font-size: 256px!important;
-				font-style: normal!important;
-				font-weight: normal!important;
-				letter-spacing: normal!important;
-				line-break: auto!important;
-				line-height: normal!important;
-				text-transform: none!important;
-				text-align: left!important;
-				text-decoration: none!important;
-				text-shadow: none!important;
-				white-space: normal!important;
-				word-break: normal!important;
-				word-spacing: normal!important;
-			}`;
-				const baseFontSpan = font => {
-					return `<span class="basefont" data-font="${font}" style="font-family: ${font}!important">${text}</span>`
-				};
-				const systemFontSpan = (font, basefont) => {
-					return `<span class="system-font" data-font="${font}" data-basefont="${basefont}" style="font-family: ${`'${font}', ${basefont}`}!important">${text}</span>`
-				};
-				
-				const stageElem = divStageRendered; 
-				const detectedFonts = {};
-				patch(stageElem, html`
-				<div id="font-detector-test">
-					<style>#font-detector-test${style}</style>
-					${baseFonts.map(font => baseFontSpan(font)).join('')}
-					${
-						fonts.map(font => {
-							const template = `
-							${systemFontSpan(font, baseFonts[0])}
-							${systemFontSpan(font, baseFonts[1])}
-							${systemFontSpan(font, baseFonts[2])}
-							`;
-							return template
-						}).join('')
-					}
-				</div>
-				`,
-					() => {
-						const basefontElems = doc.querySelectorAll('#font-detector-test .basefont');
-						const systemFontElems = doc.querySelectorAll('#font-detector-test .system-font')
+				const families = fonts.reduce((acc, font) => {
+					baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`));
+					return acc
+				}, []);
 
-						// Compute fingerprint
-						;[...basefontElems].forEach(span => {
-							const { dataset: { font }, offsetWidth, offsetHeight } = span;
-							baseOffsetWidth[font] = toInt(offsetWidth);
-							baseOffsetHeight[font] = toInt(offsetHeight);
-							return
-						})
-						;[...systemFontElems].forEach(span => {
-							const { dataset: { font } }= span;
-							if (!detectedFonts[font]) {
-								const { dataset: { basefont }, offsetWidth, offsetHeight } = span;
-								const widthMatchesBase = toInt(offsetWidth) == baseOffsetWidth[basefont];
-								const heightMatchesBase = toInt(offsetHeight) == baseOffsetHeight[basefont];
-								const detected = !widthMatchesBase || !heightMatchesBase;
-								if (detected) { detectedFonts[font] = true; }
-							}
-							return
-						});
-
-						if (!!iframeContainer) {
-							iframeContainer.parentNode.removeChild(iframeContainer);
-						}
-						else {
-							divRendered.parentNode.removeChild(divRendered);
-						}
-					}
+				const detected = new Set();
+				const base = baseFonts.reduce((acc, font) => {
+					acc[font] = getTextMetrics(context, font); 
+					return acc
+				}, {});
+				families.forEach(family => {
+					const basefont = /, (.+)/.exec(family)[1];
+					const dimensions = getTextMetrics(context, family); 
+					const font = /\'(.+)\'/.exec(family)[1];
+					const support = (
+						dimensions.ascent != base[basefont].ascent ||
+						dimensions.descent != base[basefont].descent ||
+						dimensions.left != base[basefont].left ||
+						dimensions.right != base[basefont].right ||
+						dimensions.width != base[basefont].width
+					);
+					const extraSupport = (
+						dimensions.fontAscent != base[basefont].fontAscent ||
+						dimensions.fontDescent != base[basefont].fontDescent
+					);
+					if (((!isNaN(dimensions.ascent) && !isNaN(dimensions.fontAscent)) && (support || extraSupport)) ||
+						(!isNaN(dimensions.ascent) && support)) {
+	                    detected.add(font);
+	                }
+					return
+				});
+				const lied = (
+					(('OffscreenCanvas' in window) && lieProps['OffscreenCanvasRenderingContext2D.measureText']) ||
+					(!('OffscreenCanvas' in window) && lieProps['CanvasRenderingContext2D.measureText'])
 				);
-				const fontList = Object.keys(detectedFonts);
-				const $hash = await hashify(fontList);
-				logTestResult({ test: 'fonts', passed: true });
-				return resolve({fonts: fontList, $hash })
-			}
-			catch (error) {
+				logTestResult({ start, test: 'fonts', passed: true });
+				return resolve({ fonts: [...detected], lied })
+			} catch (error) {
 				logTestResult({ test: 'fonts', passed: false });
 				captureError(error);
 				return resolve()
@@ -2284,50 +2459,26 @@
 		})
 	};
 
-	const fontList = ["Andale Mono","Arial","Arial Black","Arial Hebrew","Arial MT","Arial Narrow","Arial Rounded MT Bold","Arial Unicode MS","Bitstream Vera Sans Mono","Book Antiqua","Bookman Old Style","Calibri","Cambria","Cambria Math","Century","Century Gothic","Century Schoolbook","Comic Sans","Comic Sans MS","Consolas","Courier","Courier New","Geneva","Georgia","Helvetica","Helvetica Neue","Impact","Lucida Bright","Lucida Calligraphy","Lucida Console","Lucida Fax","LUCIDA GRANDE","Lucida Handwriting","Lucida Sans","Lucida Sans Typewriter","Lucida Sans Unicode","Microsoft Sans Serif","Monaco","Monotype Corsiva","MS Gothic","MS Outlook","MS PGothic","MS Reference Sans Serif","MS Sans Serif","MS Serif","MYRIAD","MYRIAD PRO","Palatino","Palatino Linotype","Segoe Print","Segoe Script","Segoe UI","Segoe UI Light","Segoe UI Semibold","Segoe UI Symbol","Tahoma","Times","Times New Roman","Times New Roman PS","Trebuchet MS","Verdana","Wingdings","Wingdings 2","Wingdings 3"];
-
-	const notoFonts = ["Noto Naskh Arabic","Noto Sans Armenian","Noto Sans Bengali","Noto Sans Buginese","Noto Sans Canadian Aboriginal","Noto Sans Cherokee","Noto Sans Devanagari","Noto Sans Ethiopic","Noto Sans Georgian","Noto Sans Gujarati","Noto Sans Gurmukhi","Noto Sans Hebrew","Noto Sans JP Regular","Noto Sans KR Regular","Noto Sans Kannada","Noto Sans Khmer","Noto Sans Lao","Noto Sans Malayalam","Noto Sans Mongolian","Noto Sans Myanmar","Noto Sans Oriya","Noto Sans SC Regular","Noto Sans Sinhala","Noto Sans TC Regular","Noto Sans Tamil","Noto Sans Telugu","Noto Sans Thaana","Noto Sans Thai","Noto Sans Tibetan","Noto Sans Yi","Noto Serif Armenian","Noto Serif Khmer","Noto Serif Lao","Noto Serif Thai"];
+	const fontList = ["Andale Mono", "Arial", "Arial Black", "Arial Hebrew", "Arial MT", "Arial Narrow", "Arial Rounded MT Bold", "Arial Unicode MS", "Bitstream Vera Sans Mono", "Book Antiqua", "Bookman Old Style", "Calibri", "Cambria", "Cambria Math", "Century", "Century Gothic", "Century Schoolbook", "Comic Sans", "Comic Sans MS", "Consolas", "Courier", "Courier New", "Geneva", "Georgia", "Helvetica", "Helvetica Neue", "Impact", "Lucida Bright", "Lucida Calligraphy", "Lucida Console", "Lucida Fax", "LUCIDA GRANDE", "Lucida Handwriting", "Lucida Sans", "Lucida Sans Typewriter", "Lucida Sans Unicode", "Microsoft Sans Serif", "Monaco", "Monotype Corsiva", "MS Gothic", "MS Outlook", "MS PGothic", "MS Reference Sans Serif", "MS Sans Serif", "MS Serif", "MYRIAD", "MYRIAD PRO", "Palatino", "Palatino Linotype", "Segoe Print", "Segoe Script", "Segoe UI", "Segoe UI Light", "Segoe UI Semibold", "Segoe UI Symbol", "Tahoma", "Times", "Times New Roman", "Times New Roman PS", "Trebuchet MS", "Verdana", "Wingdings", "Wingdings 2", "Wingdings 3"];
 
 	const getHTMLElementVersion = imports => {
 
 		const {
 			require: {
-				hashify,
-				instanceId,
 				captureError,
-				parentNest,
 				logTestResult
 			}
 		} = imports;
 
 		return new Promise(async resolve => {
 			try {
-				
-				let htmlElementRendered;
-				if (parentNest &&  parentNest.el) {
-					htmlElementRendered = parentNest.el;
-				}
-				else {
-					const id = `${instanceId}-html-element-version-test`;
-					const htmlElement = document.createElement('div');
-					htmlElement.setAttribute('id', id);
-					htmlElement.setAttribute('style', 'display:none;');
-					document.body.appendChild(htmlElement);
-					htmlElementRendered = document.getElementById(id);
-				}
-
+				const start = performance.now();
 				const keys = [];
-				for (const key in htmlElementRendered) {
+				for (const key in document.documentElement) {
 					keys.push(key);
 				}
-
-				if (!parentNest) {
-					htmlElementRendered.parentNode.removeChild(htmlElementRendered);
-				}
-
-				const $hash = await hashify(keys);
-				logTestResult({ test: 'html element', passed: true });
-				return resolve({ keys, $hash })
+				logTestResult({ start, test: 'html element', passed: true });
+				return resolve({ keys })
 			}
 			catch (error) {
 				logTestResult({ test: 'html element', passed: false });
@@ -2342,18 +2493,18 @@
 		const {
 			require: {
 				hashMini,
-				hashify,
 				captureError,
 				attempt,
 				documentLie,
 				lieProps,
-				contentWindow,
+				phantomDarkness,
 				logTestResult						
 			}
 		} = imports;
 
 		return new Promise(async resolve => {
 			try {
+				const start = performance.now();
 				// detect failed math equality lie
 				const check = [
 					'acos',
@@ -2533,11 +2684,11 @@
 					
 					['polyfill', [2e-3 ** -100], 'polyfill pow(2e-3, -100)', 7.888609052210102e+269, 7.888609052210126e+269, NaN, NaN]
 				];
-				const contentWindowMath = contentWindow ? contentWindow.Math : Math;
+				const phantomMath = phantomDarkness ? phantomDarkness.Math : Math;
 				const data = {};
 				fns.forEach(fn => {
 					data[fn[2]] = attempt(() => {
-						const result = fn[0] != 'polyfill' ? contentWindowMath[fn[0]](...fn[1]) : fn[1];
+						const result = fn[0] != 'polyfill' ? phantomMath[fn[0]](...fn[1]) : fn[1];
 						const chrome = result == fn[3];
 						const firefox = fn[4] ? result == fn[4] : false;
 						const torBrowser = fn[5] ? result == fn[5] : false;
@@ -2546,9 +2697,8 @@
 					});
 				});
 				
-				const $hash = await hashify(data);
-				logTestResult({ test: 'math', passed: true });
-				return resolve({ data, lied, $hash })
+				logTestResult({ start, test: 'math', passed: true });
+				return resolve({ data, lied })
 			}
 			catch (error) {
 				logTestResult({ test: 'math', passed: false });
@@ -2558,84 +2708,51 @@
 		})
 	};
 
-	// media devices
-	const getMediaDevices = imports => {
+	const getMedia = imports => {
 
 		const {
 			require: {
-				hashify,
 				captureError,
-				contentWindow,
+				phantomDarkness,
 				logTestResult
 			}
 		} = imports;
 
 		return new Promise(async resolve => {
 			try {
-				const contentWindowNavigator = contentWindow ? contentWindow.navigator : navigator;
-				if (!('mediaDevices' in contentWindowNavigator)) {
+				const start = performance.now();
+				const phantomNavigator = phantomDarkness ? phantomDarkness.navigator : navigator;
+				if (!phantomNavigator.mediaDevices ||
+					!phantomNavigator.mediaDevices.enumerateDevices) {
 					logTestResult({ test: 'media devices', passed: false });
 					return resolve()
 				}
-				if (!contentWindowNavigator.mediaDevices || !contentWindowNavigator.mediaDevices.enumerateDevices) {
-					logTestResult({ test: 'media devices', passed: false });
-					return resolve()
+				let mediaDevicesEnumerated; 
+				try {
+					mediaDevicesEnumerated = await phantomNavigator.mediaDevices.enumerateDevices();
 				}
-				const mediaDevicesEnumerated = await contentWindowNavigator.mediaDevices.enumerateDevices();
+				catch (error) {
+					// since Firefox returns a dead object, try in window context
+					mediaDevicesEnumerated = await navigator.mediaDevices.enumerateDevices()
+					.catch(error => {
+						logTestResult({ test: 'media devices', passed: false });
+						captureError(error);
+						return resolve()
+					});
+				}
 				const mediaDevices = (
-					mediaDevicesEnumerated ? mediaDevicesEnumerated
-						.map(({ kind }) => ({ kind })).sort((a, b) => (a.kind > b.kind) ? 1 : -1) :
+					mediaDevicesEnumerated ? 
+					mediaDevicesEnumerated
+						.map(({ kind }) => ({ kind }))
+						.sort((a, b) => (a.kind > b.kind) ? 1 : -1) :
 					undefined
 				);
-				const $hash = await hashify(mediaDevices);
-				logTestResult({ test: 'media devices', passed: true });
-				return resolve({ mediaDevices, $hash })
+				
+				logTestResult({ start, test: 'media', passed: true });
+				return resolve({ mediaDevices })
 			}
 			catch (error) {
-				logTestResult({ test: 'media devices', passed: false });
-				captureError(error);
-				return resolve()
-			}
-		})
-	};
-
-	// inspired by 
-	// - https://privacycheck.sec.lrz.de/active/fp_cpt/fp_can_play_type.html
-	// - https://arkenfox.github.io/TZP/tzp.html
-	const mimeTypes = ['application/mp21','application/mp4','application/octet-stream','application/ogg','application/vnd.apple.mpegurl','application/vnd.ms-ss','application/vnd.ms-sstr+xml','application/x-mpegurl','application/x-mpegURL; codecs="avc1.42E01E"','audio/3gpp','audio/3gpp2','audio/aac','audio/ac-3','audio/ac3','audio/aiff','audio/basic','audio/ec-3','audio/flac','audio/m4a','audio/mid','audio/midi','audio/mp3','audio/mp4','audio/mp4; codecs="a3ds"','audio/mp4; codecs="A52"','audio/mp4; codecs="aac"','audio/mp4; codecs="ac-3"','audio/mp4; codecs="ac-4"','audio/mp4; codecs="ac3"','audio/mp4; codecs="alac"','audio/mp4; codecs="alaw"','audio/mp4; codecs="bogus"','audio/mp4; codecs="dra1"','audio/mp4; codecs="dts-"','audio/mp4; codecs="dts+"','audio/mp4; codecs="dtsc"','audio/mp4; codecs="dtse"','audio/mp4; codecs="dtsh"','audio/mp4; codecs="dtsl"','audio/mp4; codecs="dtsx"','audio/mp4; codecs="ec-3"','audio/mp4; codecs="enca"','audio/mp4; codecs="flac"','audio/mp4; codecs="g719"','audio/mp4; codecs="g726"','audio/mp4; codecs="m4ae"','audio/mp4; codecs="mha1"','audio/mp4; codecs="mha2"','audio/mp4; codecs="mhm1"','audio/mp4; codecs="mhm2"','audio/mp4; codecs="mlpa"','audio/mp4; codecs="mp3"','audio/mp4; codecs="mp4a.40.1"','audio/mp4; codecs="mp4a.40.12"','audio/mp4; codecs="mp4a.40.13"','audio/mp4; codecs="mp4a.40.14"','audio/mp4; codecs="mp4a.40.15"','audio/mp4; codecs="mp4a.40.16"','audio/mp4; codecs="mp4a.40.17"','audio/mp4; codecs="mp4a.40.19"','audio/mp4; codecs="mp4a.40.2"','audio/mp4; codecs="mp4a.40.20"','audio/mp4; codecs="mp4a.40.21"','audio/mp4; codecs="mp4a.40.22"','audio/mp4; codecs="mp4a.40.23"','audio/mp4; codecs="mp4a.40.24"','audio/mp4; codecs="mp4a.40.25"','audio/mp4; codecs="mp4a.40.26"','audio/mp4; codecs="mp4a.40.27"','audio/mp4; codecs="mp4a.40.28"','audio/mp4; codecs="mp4a.40.29"','audio/mp4; codecs="mp4a.40.3"','audio/mp4; codecs="mp4a.40.32"','audio/mp4; codecs="mp4a.40.33"','audio/mp4; codecs="mp4a.40.34"','audio/mp4; codecs="mp4a.40.35"','audio/mp4; codecs="mp4a.40.36"','audio/mp4; codecs="mp4a.40.4"','audio/mp4; codecs="mp4a.40.5"','audio/mp4; codecs="mp4a.40.6"','audio/mp4; codecs="mp4a.40.7"','audio/mp4; codecs="mp4a.40.8"','audio/mp4; codecs="mp4a.40.9"','audio/mp4; codecs="mp4a.40"','audio/mp4; codecs="mp4a.66"','audio/mp4; codecs="mp4a.67"','audio/mp4; codecs="mp4a.68"','audio/mp4; codecs="mp4a.69"','audio/mp4; codecs="mp4a.6B"','audio/mp4; codecs="mp4a"','audio/mp4; codecs="Opus"','audio/mp4; codecs="raw "','audio/mp4; codecs="samr"','audio/mp4; codecs="sawb"','audio/mp4; codecs="sawp"','audio/mp4; codecs="sevc"','audio/mp4; codecs="sqcp"','audio/mp4; codecs="ssmv"','audio/mp4; codecs="twos"','audio/mp4; codecs="ulaw"','audio/mpeg','audio/mpeg; codecs="mp3"','audio/mpegurl','audio/ogg; codecs="flac"','audio/ogg; codecs="opus"','audio/ogg; codecs="speex"','audio/ogg; codecs="vorbis"','audio/vnd.rn-realaudio','audio/vnd.wave','audio/wav','audio/wav; codecs="0"','audio/wav; codecs="1"','audio/wav; codecs="2"','audio/wave','audio/wave; codecs="0"','audio/wave; codecs="1"','audio/wave; codecs="2"','audio/webm','audio/webm; codecs="opus"','audio/webm; codecs="vorbis"','audio/wma','audio/x-aac','audio/x-ac3','audio/x-aiff','audio/x-flac','audio/x-m4a','audio/x-midi','audio/x-mpeg','audio/x-mpegurl','audio/x-pn-realaudio','audio/x-pn-realaudio-plugin','audio/x-pn-wav','audio/x-pn-wav; codecs="0"','audio/x-pn-wav; codecs="1"','audio/x-pn-wav; codecs="2"','audio/x-scpls','audio/x-wav','audio/x-wav; codecs="0"','audio/x-wav; codecs="1"','audio/x-wav; codecs="2"','video/3gpp','video/3gpp; codecs="mp4v.20.8, samr"','video/3gpp2','video/avi','video/h263','video/mp2t','video/mp4','video/mp4; codecs="3gvo"','video/mp4; codecs="a3d1"','video/mp4; codecs="a3d2"','video/mp4; codecs="a3d3"','video/mp4; codecs="a3d4"','video/mp4; codecs="av01.0.08M.08"','video/mp4; codecs="avc1.2c000a"','video/mp4; codecs="avc1.2c000b"','video/mp4; codecs="avc1.2c000c"','video/mp4; codecs="avc1.2c000d"','video/mp4; codecs="avc1.2c0014"','video/mp4; codecs="avc1.2c0015"','video/mp4; codecs="avc1.2c0016"','video/mp4; codecs="avc1.2c001e"','video/mp4; codecs="avc1.2c001f"','video/mp4; codecs="avc1.2c0020"','video/mp4; codecs="avc1.2c0028"','video/mp4; codecs="avc1.2c0029"','video/mp4; codecs="avc1.2c002a"','video/mp4; codecs="avc1.2c0032"','video/mp4; codecs="avc1.2c0033"','video/mp4; codecs="avc1.2c0034"','video/mp4; codecs="avc1.2c003c"','video/mp4; codecs="avc1.2c003d"','video/mp4; codecs="avc1.2c003e"','video/mp4; codecs="avc1.2c003f"','video/mp4; codecs="avc1.2c0040"','video/mp4; codecs="avc1.2c0050"','video/mp4; codecs="avc1.2c006e"','video/mp4; codecs="avc1.2c0085"','video/mp4; codecs="avc1.42000a"','video/mp4; codecs="avc1.42000b"','video/mp4; codecs="avc1.42000c"','video/mp4; codecs="avc1.42000d"','video/mp4; codecs="avc1.420014"','video/mp4; codecs="avc1.420015"','video/mp4; codecs="avc1.420016"','video/mp4; codecs="avc1.42001e"','video/mp4; codecs="avc1.42001f"','video/mp4; codecs="avc1.420020"','video/mp4; codecs="avc1.420028"','video/mp4; codecs="avc1.420029"','video/mp4; codecs="avc1.42002a"','video/mp4; codecs="avc1.420032"','video/mp4; codecs="avc1.420033"','video/mp4; codecs="avc1.420034"','video/mp4; codecs="avc1.42003c"','video/mp4; codecs="avc1.42003d"','video/mp4; codecs="avc1.42003e"','video/mp4; codecs="avc1.42003f"','video/mp4; codecs="avc1.420040"','video/mp4; codecs="avc1.420050"','video/mp4; codecs="avc1.42006e"','video/mp4; codecs="avc1.420085"','video/mp4; codecs="avc1.42400a"','video/mp4; codecs="avc1.42400b"','video/mp4; codecs="avc1.42400c"','video/mp4; codecs="avc1.42400d"','video/mp4; codecs="avc1.424014"','video/mp4; codecs="avc1.424015"','video/mp4; codecs="avc1.424016"','video/mp4; codecs="avc1.42401e"','video/mp4; codecs="avc1.42401f"','video/mp4; codecs="avc1.424020"','video/mp4; codecs="avc1.424028"','video/mp4; codecs="avc1.424029"','video/mp4; codecs="avc1.42402a"','video/mp4; codecs="avc1.424032"','video/mp4; codecs="avc1.424033"','video/mp4; codecs="avc1.424034"','video/mp4; codecs="avc1.42403c"','video/mp4; codecs="avc1.42403d"','video/mp4; codecs="avc1.42403e"','video/mp4; codecs="avc1.42403f"','video/mp4; codecs="avc1.424040"','video/mp4; codecs="avc1.424050"','video/mp4; codecs="avc1.42406e"','video/mp4; codecs="avc1.424085"','video/mp4; codecs="avc1.4d000a"','video/mp4; codecs="avc1.4d000b"','video/mp4; codecs="avc1.4d000c"','video/mp4; codecs="avc1.4d000d"','video/mp4; codecs="avc1.4d0014"','video/mp4; codecs="avc1.4d0015"','video/mp4; codecs="avc1.4d0016"','video/mp4; codecs="avc1.4d001e"','video/mp4; codecs="avc1.4d001f"','video/mp4; codecs="avc1.4d0020"','video/mp4; codecs="avc1.4d0028"','video/mp4; codecs="avc1.4d0029"','video/mp4; codecs="avc1.4d002a"','video/mp4; codecs="avc1.4d0032"','video/mp4; codecs="avc1.4d0033"','video/mp4; codecs="avc1.4d0034"','video/mp4; codecs="avc1.4d003c"','video/mp4; codecs="avc1.4d003d"','video/mp4; codecs="avc1.4d003e"','video/mp4; codecs="avc1.4d003f"','video/mp4; codecs="avc1.4d0040"','video/mp4; codecs="avc1.4d0050"','video/mp4; codecs="avc1.4d006e"','video/mp4; codecs="avc1.4d0085"','video/mp4; codecs="avc1.4d400a"','video/mp4; codecs="avc1.4d400b"','video/mp4; codecs="avc1.4d400c"','video/mp4; codecs="avc1.4d400d"','video/mp4; codecs="avc1.4d4014"','video/mp4; codecs="avc1.4d4015"','video/mp4; codecs="avc1.4d4016"','video/mp4; codecs="avc1.4d401e"','video/mp4; codecs="avc1.4d401f"','video/mp4; codecs="avc1.4d4020"','video/mp4; codecs="avc1.4d4028"','video/mp4; codecs="avc1.4d4029"','video/mp4; codecs="avc1.4d402a"','video/mp4; codecs="avc1.4d4032"','video/mp4; codecs="avc1.4d4033"','video/mp4; codecs="avc1.4d4034"','video/mp4; codecs="avc1.4d403c"','video/mp4; codecs="avc1.4d403d"','video/mp4; codecs="avc1.4d403e"','video/mp4; codecs="avc1.4d403f"','video/mp4; codecs="avc1.4d4040"','video/mp4; codecs="avc1.4d4050"','video/mp4; codecs="avc1.4d406e"','video/mp4; codecs="avc1.4d4085"','video/mp4; codecs="avc1.53000a"','video/mp4; codecs="avc1.53000b"','video/mp4; codecs="avc1.53000c"','video/mp4; codecs="avc1.53000d"','video/mp4; codecs="avc1.530014"','video/mp4; codecs="avc1.530015"','video/mp4; codecs="avc1.530016"','video/mp4; codecs="avc1.53001e"','video/mp4; codecs="avc1.53001f"','video/mp4; codecs="avc1.530020"','video/mp4; codecs="avc1.530028"','video/mp4; codecs="avc1.530029"','video/mp4; codecs="avc1.53002a"','video/mp4; codecs="avc1.530032"','video/mp4; codecs="avc1.530033"','video/mp4; codecs="avc1.530034"','video/mp4; codecs="avc1.53003c"','video/mp4; codecs="avc1.53003d"','video/mp4; codecs="avc1.53003e"','video/mp4; codecs="avc1.53003f"','video/mp4; codecs="avc1.530040"','video/mp4; codecs="avc1.530050"','video/mp4; codecs="avc1.53006e"','video/mp4; codecs="avc1.530085"','video/mp4; codecs="avc1.53040a"','video/mp4; codecs="avc1.53040b"','video/mp4; codecs="avc1.53040c"','video/mp4; codecs="avc1.53040d"','video/mp4; codecs="avc1.530414"','video/mp4; codecs="avc1.530415"','video/mp4; codecs="avc1.530416"','video/mp4; codecs="avc1.53041e"','video/mp4; codecs="avc1.53041f"','video/mp4; codecs="avc1.530420"','video/mp4; codecs="avc1.530428"','video/mp4; codecs="avc1.530429"','video/mp4; codecs="avc1.53042a"','video/mp4; codecs="avc1.530432"','video/mp4; codecs="avc1.530433"','video/mp4; codecs="avc1.530434"','video/mp4; codecs="avc1.53043c"','video/mp4; codecs="avc1.53043d"','video/mp4; codecs="avc1.53043e"','video/mp4; codecs="avc1.53043f"','video/mp4; codecs="avc1.530440"','video/mp4; codecs="avc1.530450"','video/mp4; codecs="avc1.53046e"','video/mp4; codecs="avc1.530485"','video/mp4; codecs="avc1.56000a"','video/mp4; codecs="avc1.56000b"','video/mp4; codecs="avc1.56000c"','video/mp4; codecs="avc1.56000d"','video/mp4; codecs="avc1.560014"','video/mp4; codecs="avc1.560015"','video/mp4; codecs="avc1.560016"','video/mp4; codecs="avc1.56001e"','video/mp4; codecs="avc1.56001f"','video/mp4; codecs="avc1.560020"','video/mp4; codecs="avc1.560028"','video/mp4; codecs="avc1.560029"','video/mp4; codecs="avc1.56002a"','video/mp4; codecs="avc1.560032"','video/mp4; codecs="avc1.560033"','video/mp4; codecs="avc1.560034"','video/mp4; codecs="avc1.56003c"','video/mp4; codecs="avc1.56003d"','video/mp4; codecs="avc1.56003e"','video/mp4; codecs="avc1.56003f"','video/mp4; codecs="avc1.560040"','video/mp4; codecs="avc1.560050"','video/mp4; codecs="avc1.56006e"','video/mp4; codecs="avc1.560085"','video/mp4; codecs="avc1.56040a"','video/mp4; codecs="avc1.56040b"','video/mp4; codecs="avc1.56040c"','video/mp4; codecs="avc1.56040d"','video/mp4; codecs="avc1.560414"','video/mp4; codecs="avc1.560415"','video/mp4; codecs="avc1.560416"','video/mp4; codecs="avc1.56041e"','video/mp4; codecs="avc1.56041f"','video/mp4; codecs="avc1.560420"','video/mp4; codecs="avc1.560428"','video/mp4; codecs="avc1.560429"','video/mp4; codecs="avc1.56042a"','video/mp4; codecs="avc1.560432"','video/mp4; codecs="avc1.560433"','video/mp4; codecs="avc1.560434"','video/mp4; codecs="avc1.56043c"','video/mp4; codecs="avc1.56043d"','video/mp4; codecs="avc1.56043e"','video/mp4; codecs="avc1.56043f"','video/mp4; codecs="avc1.560440"','video/mp4; codecs="avc1.560450"','video/mp4; codecs="avc1.56046e"','video/mp4; codecs="avc1.560485"','video/mp4; codecs="avc1.56100a"','video/mp4; codecs="avc1.56100b"','video/mp4; codecs="avc1.56100c"','video/mp4; codecs="avc1.56100d"','video/mp4; codecs="avc1.561014"','video/mp4; codecs="avc1.561015"','video/mp4; codecs="avc1.561016"','video/mp4; codecs="avc1.56101e"','video/mp4; codecs="avc1.56101f"','video/mp4; codecs="avc1.561020"','video/mp4; codecs="avc1.561028"','video/mp4; codecs="avc1.561029"','video/mp4; codecs="avc1.56102a"','video/mp4; codecs="avc1.561032"','video/mp4; codecs="avc1.561033"','video/mp4; codecs="avc1.561034"','video/mp4; codecs="avc1.56103c"','video/mp4; codecs="avc1.56103d"','video/mp4; codecs="avc1.56103e"','video/mp4; codecs="avc1.56103f"','video/mp4; codecs="avc1.561040"','video/mp4; codecs="avc1.561050"','video/mp4; codecs="avc1.56106e"','video/mp4; codecs="avc1.561085"','video/mp4; codecs="avc1.58000a"','video/mp4; codecs="avc1.58000b"','video/mp4; codecs="avc1.58000c"','video/mp4; codecs="avc1.58000d"','video/mp4; codecs="avc1.580014"','video/mp4; codecs="avc1.580015"','video/mp4; codecs="avc1.580016"','video/mp4; codecs="avc1.58001e"','video/mp4; codecs="avc1.58001f"','video/mp4; codecs="avc1.580020"','video/mp4; codecs="avc1.580028"','video/mp4; codecs="avc1.580029"','video/mp4; codecs="avc1.58002a"','video/mp4; codecs="avc1.580032"','video/mp4; codecs="avc1.580033"','video/mp4; codecs="avc1.580034"','video/mp4; codecs="avc1.58003c"','video/mp4; codecs="avc1.58003d"','video/mp4; codecs="avc1.58003e"','video/mp4; codecs="avc1.58003f"','video/mp4; codecs="avc1.580040"','video/mp4; codecs="avc1.580050"','video/mp4; codecs="avc1.58006e"','video/mp4; codecs="avc1.580085"','video/mp4; codecs="avc1.64000a"','video/mp4; codecs="avc1.64000b"','video/mp4; codecs="avc1.64000c"','video/mp4; codecs="avc1.64000d"','video/mp4; codecs="avc1.640014"','video/mp4; codecs="avc1.640015"','video/mp4; codecs="avc1.640016"','video/mp4; codecs="avc1.64001e"','video/mp4; codecs="avc1.64001f"','video/mp4; codecs="avc1.640020"','video/mp4; codecs="avc1.640028"','video/mp4; codecs="avc1.640029"','video/mp4; codecs="avc1.64002a"','video/mp4; codecs="avc1.640032"','video/mp4; codecs="avc1.640033"','video/mp4; codecs="avc1.640034"','video/mp4; codecs="avc1.64003c"','video/mp4; codecs="avc1.64003d"','video/mp4; codecs="avc1.64003e"','video/mp4; codecs="avc1.64003f"','video/mp4; codecs="avc1.640040"','video/mp4; codecs="avc1.640050"','video/mp4; codecs="avc1.64006e"','video/mp4; codecs="avc1.640085"','video/mp4; codecs="avc1.64080a"','video/mp4; codecs="avc1.64080b"','video/mp4; codecs="avc1.64080c"','video/mp4; codecs="avc1.64080d"','video/mp4; codecs="avc1.640814"','video/mp4; codecs="avc1.640815"','video/mp4; codecs="avc1.640816"','video/mp4; codecs="avc1.64081e"','video/mp4; codecs="avc1.64081f"','video/mp4; codecs="avc1.640820"','video/mp4; codecs="avc1.640828"','video/mp4; codecs="avc1.640829"','video/mp4; codecs="avc1.64082a"','video/mp4; codecs="avc1.640832"','video/mp4; codecs="avc1.640833"','video/mp4; codecs="avc1.640834"','video/mp4; codecs="avc1.64083c"','video/mp4; codecs="avc1.64083d"','video/mp4; codecs="avc1.64083e"','video/mp4; codecs="avc1.64083f"','video/mp4; codecs="avc1.640840"','video/mp4; codecs="avc1.640850"','video/mp4; codecs="avc1.64086e"','video/mp4; codecs="avc1.640885"','video/mp4; codecs="avc1.6e000a"','video/mp4; codecs="avc1.6e000b"','video/mp4; codecs="avc1.6e000c"','video/mp4; codecs="avc1.6e000d"','video/mp4; codecs="avc1.6e0014"','video/mp4; codecs="avc1.6e0015"','video/mp4; codecs="avc1.6e0016"','video/mp4; codecs="avc1.6e001e"','video/mp4; codecs="avc1.6e001f"','video/mp4; codecs="avc1.6e0020"','video/mp4; codecs="avc1.6e0028"','video/mp4; codecs="avc1.6e0029"','video/mp4; codecs="avc1.6e002a"','video/mp4; codecs="avc1.6e0032"','video/mp4; codecs="avc1.6e0033"','video/mp4; codecs="avc1.6e0034"','video/mp4; codecs="avc1.6e003c"','video/mp4; codecs="avc1.6e003d"','video/mp4; codecs="avc1.6e003e"','video/mp4; codecs="avc1.6e003f"','video/mp4; codecs="avc1.6e0040"','video/mp4; codecs="avc1.6e0050"','video/mp4; codecs="avc1.6e006e"','video/mp4; codecs="avc1.6e0085"','video/mp4; codecs="avc1.6e100a"','video/mp4; codecs="avc1.6e100b"','video/mp4; codecs="avc1.6e100c"','video/mp4; codecs="avc1.6e100d"','video/mp4; codecs="avc1.6e1014"','video/mp4; codecs="avc1.6e1015"','video/mp4; codecs="avc1.6e1016"','video/mp4; codecs="avc1.6e101e"','video/mp4; codecs="avc1.6e101f"','video/mp4; codecs="avc1.6e1020"','video/mp4; codecs="avc1.6e1028"','video/mp4; codecs="avc1.6e1029"','video/mp4; codecs="avc1.6e102a"','video/mp4; codecs="avc1.6e1032"','video/mp4; codecs="avc1.6e1033"','video/mp4; codecs="avc1.6e1034"','video/mp4; codecs="avc1.6e103c"','video/mp4; codecs="avc1.6e103d"','video/mp4; codecs="avc1.6e103e"','video/mp4; codecs="avc1.6e103f"','video/mp4; codecs="avc1.6e1040"','video/mp4; codecs="avc1.6e1050"','video/mp4; codecs="avc1.6e106e"','video/mp4; codecs="avc1.6e1085"','video/mp4; codecs="avc1.76000a"','video/mp4; codecs="avc1.76000b"','video/mp4; codecs="avc1.76000c"','video/mp4; codecs="avc1.76000d"','video/mp4; codecs="avc1.760014"','video/mp4; codecs="avc1.760015"','video/mp4; codecs="avc1.760016"','video/mp4; codecs="avc1.76001e"','video/mp4; codecs="avc1.76001f"','video/mp4; codecs="avc1.760020"','video/mp4; codecs="avc1.760028"','video/mp4; codecs="avc1.760029"','video/mp4; codecs="avc1.76002a"','video/mp4; codecs="avc1.760032"','video/mp4; codecs="avc1.760033"','video/mp4; codecs="avc1.760034"','video/mp4; codecs="avc1.76003c"','video/mp4; codecs="avc1.76003d"','video/mp4; codecs="avc1.76003e"','video/mp4; codecs="avc1.76003f"','video/mp4; codecs="avc1.760040"','video/mp4; codecs="avc1.760050"','video/mp4; codecs="avc1.76006e"','video/mp4; codecs="avc1.760085"','video/mp4; codecs="avc1.7a000a"','video/mp4; codecs="avc1.7a000b"','video/mp4; codecs="avc1.7a000c"','video/mp4; codecs="avc1.7a000d"','video/mp4; codecs="avc1.7a0014"','video/mp4; codecs="avc1.7a0015"','video/mp4; codecs="avc1.7a0016"','video/mp4; codecs="avc1.7a001e"','video/mp4; codecs="avc1.7a001f"','video/mp4; codecs="avc1.7a0020"','video/mp4; codecs="avc1.7a0028"','video/mp4; codecs="avc1.7a0029"','video/mp4; codecs="avc1.7a002a"','video/mp4; codecs="avc1.7a0032"','video/mp4; codecs="avc1.7a0033"','video/mp4; codecs="avc1.7a0034"','video/mp4; codecs="avc1.7a003c"','video/mp4; codecs="avc1.7a003d"','video/mp4; codecs="avc1.7a003e"','video/mp4; codecs="avc1.7a003f"','video/mp4; codecs="avc1.7a0040"','video/mp4; codecs="avc1.7a0050"','video/mp4; codecs="avc1.7a006e"','video/mp4; codecs="avc1.7a0085"','video/mp4; codecs="avc1.7a100a"','video/mp4; codecs="avc1.7a100b"','video/mp4; codecs="avc1.7a100c"','video/mp4; codecs="avc1.7a100d"','video/mp4; codecs="avc1.7a1014"','video/mp4; codecs="avc1.7a1015"','video/mp4; codecs="avc1.7a1016"','video/mp4; codecs="avc1.7a101e"','video/mp4; codecs="avc1.7a101f"','video/mp4; codecs="avc1.7a1020"','video/mp4; codecs="avc1.7a1028"','video/mp4; codecs="avc1.7a1029"','video/mp4; codecs="avc1.7a102a"','video/mp4; codecs="avc1.7a1032"','video/mp4; codecs="avc1.7a1033"','video/mp4; codecs="avc1.7a1034"','video/mp4; codecs="avc1.7a103c"','video/mp4; codecs="avc1.7a103d"','video/mp4; codecs="avc1.7a103e"','video/mp4; codecs="avc1.7a103f"','video/mp4; codecs="avc1.7a1040"','video/mp4; codecs="avc1.7a1050"','video/mp4; codecs="avc1.7a106e"','video/mp4; codecs="avc1.7a1085"','video/mp4; codecs="avc1.80000a"','video/mp4; codecs="avc1.80000b"','video/mp4; codecs="avc1.80000c"','video/mp4; codecs="avc1.80000d"','video/mp4; codecs="avc1.800014"','video/mp4; codecs="avc1.800015"','video/mp4; codecs="avc1.800016"','video/mp4; codecs="avc1.80001e"','video/mp4; codecs="avc1.80001f"','video/mp4; codecs="avc1.800020"','video/mp4; codecs="avc1.800028"','video/mp4; codecs="avc1.800029"','video/mp4; codecs="avc1.80002a"','video/mp4; codecs="avc1.800032"','video/mp4; codecs="avc1.800033"','video/mp4; codecs="avc1.800034"','video/mp4; codecs="avc1.80003c"','video/mp4; codecs="avc1.80003d"','video/mp4; codecs="avc1.80003e"','video/mp4; codecs="avc1.80003f"','video/mp4; codecs="avc1.800040"','video/mp4; codecs="avc1.800050"','video/mp4; codecs="avc1.80006e"','video/mp4; codecs="avc1.800085"','video/mp4; codecs="avc1.8a000a"','video/mp4; codecs="avc1.8a000b"','video/mp4; codecs="avc1.8a000c"','video/mp4; codecs="avc1.8a000d"','video/mp4; codecs="avc1.8a0014"','video/mp4; codecs="avc1.8a0015"','video/mp4; codecs="avc1.8a0016"','video/mp4; codecs="avc1.8a001e"','video/mp4; codecs="avc1.8a001f"','video/mp4; codecs="avc1.8a0020"','video/mp4; codecs="avc1.8a0028"','video/mp4; codecs="avc1.8a0029"','video/mp4; codecs="avc1.8a002a"','video/mp4; codecs="avc1.8a0032"','video/mp4; codecs="avc1.8a0033"','video/mp4; codecs="avc1.8a0034"','video/mp4; codecs="avc1.8a003c"','video/mp4; codecs="avc1.8a003d"','video/mp4; codecs="avc1.8a003e"','video/mp4; codecs="avc1.8a003f"','video/mp4; codecs="avc1.8a0040"','video/mp4; codecs="avc1.8a0050"','video/mp4; codecs="avc1.8a006e"','video/mp4; codecs="avc1.8a0085"','video/mp4; codecs="avc1.f4000a"','video/mp4; codecs="avc1.f4000b"','video/mp4; codecs="avc1.f4000c"','video/mp4; codecs="avc1.f4000d"','video/mp4; codecs="avc1.f40014"','video/mp4; codecs="avc1.f40015"','video/mp4; codecs="avc1.f40016"','video/mp4; codecs="avc1.f4001e"','video/mp4; codecs="avc1.f4001f"','video/mp4; codecs="avc1.f40020"','video/mp4; codecs="avc1.f40028"','video/mp4; codecs="avc1.f40029"','video/mp4; codecs="avc1.f4002a"','video/mp4; codecs="avc1.f40032"','video/mp4; codecs="avc1.f40033"','video/mp4; codecs="avc1.f40034"','video/mp4; codecs="avc1.f4003c"','video/mp4; codecs="avc1.f4003d"','video/mp4; codecs="avc1.f4003e"','video/mp4; codecs="avc1.f4003f"','video/mp4; codecs="avc1.f40040"','video/mp4; codecs="avc1.f40050"','video/mp4; codecs="avc1.f4006e"','video/mp4; codecs="avc1.f40085"','video/mp4; codecs="avc1.f4100a"','video/mp4; codecs="avc1.f4100b"','video/mp4; codecs="avc1.f4100c"','video/mp4; codecs="avc1.f4100d"','video/mp4; codecs="avc1.f41014"','video/mp4; codecs="avc1.f41015"','video/mp4; codecs="avc1.f41016"','video/mp4; codecs="avc1.f4101e"','video/mp4; codecs="avc1.f4101f"','video/mp4; codecs="avc1.f41020"','video/mp4; codecs="avc1.f41028"','video/mp4; codecs="avc1.f41029"','video/mp4; codecs="avc1.f4102a"','video/mp4; codecs="avc1.f41032"','video/mp4; codecs="avc1.f41033"','video/mp4; codecs="avc1.f41034"','video/mp4; codecs="avc1.f4103c"','video/mp4; codecs="avc1.f4103d"','video/mp4; codecs="avc1.f4103e"','video/mp4; codecs="avc1.f4103f"','video/mp4; codecs="avc1.f41040"','video/mp4; codecs="avc1.f41050"','video/mp4; codecs="avc1.f4106e"','video/mp4; codecs="avc1.f41085"','video/mp4; codecs="avc1"','video/mp4; codecs="avc2"','video/mp4; codecs="avc3"','video/mp4; codecs="avc4"','video/mp4; codecs="avcp"','video/mp4; codecs="drac"','video/mp4; codecs="dvav"','video/mp4; codecs="dvhe"','video/mp4; codecs="encf"','video/mp4; codecs="encm"','video/mp4; codecs="encs"','video/mp4; codecs="enct"','video/mp4; codecs="encv"','video/mp4; codecs="fdp "','video/mp4; codecs="hev1.1.6.L93.90"','video/mp4; codecs="hev1.1.6.L93.B0"','video/mp4; codecs="hev1"','video/mp4; codecs="hvc1.1.6.L93.90"','video/mp4; codecs="hvc1.1.6.L93.B0"','video/mp4; codecs="hvc1"','video/mp4; codecs="hvt1"','video/mp4; codecs="ixse"','video/mp4; codecs="lhe1"','video/mp4; codecs="lht1"','video/mp4; codecs="lhv1"','video/mp4; codecs="m2ts"','video/mp4; codecs="mett"','video/mp4; codecs="metx"','video/mp4; codecs="mjp2"','video/mp4; codecs="mlix"','video/mp4; codecs="mp4s"','video/mp4; codecs="mp4v"','video/mp4; codecs="mvc1"','video/mp4; codecs="mvc2"','video/mp4; codecs="mvc3"','video/mp4; codecs="mvc4"','video/mp4; codecs="mvd1"','video/mp4; codecs="mvd2"','video/mp4; codecs="mvd3"','video/mp4; codecs="mvd4"','video/mp4; codecs="oksd"','video/mp4; codecs="pm2t"','video/mp4; codecs="prtp"','video/mp4; codecs="resv"','video/mp4; codecs="rm2t"','video/mp4; codecs="rrtp"','video/mp4; codecs="rsrp"','video/mp4; codecs="rtmd"','video/mp4; codecs="rtp "','video/mp4; codecs="s263"','video/mp4; codecs="sm2t"','video/mp4; codecs="srtp"','video/mp4; codecs="STGS"','video/mp4; codecs="stpp"','video/mp4; codecs="svc1"','video/mp4; codecs="svc2"','video/mp4; codecs="svcM"','video/mp4; codecs="tc64"','video/mp4; codecs="tmcd"','video/mp4; codecs="tx3g"','video/mp4; codecs="unid"','video/mp4; codecs="urim"','video/mp4; codecs="vc-1"','video/mp4; codecs="vp08"','video/mp4; codecs="vp09.00.10.08"','video/mp4; codecs="vp09.00.50.08"','video/mp4; codecs="vp09.01.20.08.01.01.01.01.00"','video/mp4; codecs="vp09.01.20.08.01"','video/mp4; codecs="vp09.02.10.10.01.09.16.09.01"','video/mp4; codecs="vp09"','video/mp4; codecs="wvtt"','video/mpeg','video/mpeg2','video/mpeg4','video/msvideo','video/ogg','video/ogg; codecs="dirac, flac"','video/ogg; codecs="dirac, vorbis"','video/ogg; codecs="flac"','video/ogg; codecs="theora, flac"','video/ogg; codecs="theora, speex"','video/ogg; codecs="theora, vorbis"','video/ogg; codecs="theora"','video/quicktime','video/vnd.rn-realvideo','video/wavelet','video/webm','video/webm; codecs="vorbis"','video/webm; codecs="vp8, opus"','video/webm; codecs="vp8, vorbis"','video/webm; codecs="vp8.0, vorbis"','video/webm; codecs="vp8.0"','video/webm; codecs="vp8"','video/webm; codecs="vp9, opus"','video/webm; codecs="vp9, vorbis"','video/webm; codecs="vp9"','video/x-flv','video/x-la-asf','video/x-m4v','video/x-matroska','video/x-matroska; codecs="theora, vorbis"','video/x-matroska; codecs="theora"','video/x-mkv','video/x-mng','video/x-mpeg2','video/x-ms-wmv','video/x-msvideo','video/x-theora'];
-
-	const getMediaTypes = imports => {
-
-		const {
-			require: {
-				hashify,
-				captureError,
-				logTestResult
-			}
-		} = imports;
-
-		return new Promise(async resolve => {
-			try {
-				const mediaTypes = [];
-				const videoEl = document.createElement('video');
-				const audioEl = new Audio();
-				const isMediaRecorderSupported = 'MediaRecorder' in window;
-				mimeTypes.forEach(type => {
-					const data = {
-						mimeType: type,
-						audioPlayType: audioEl.canPlayType(type),
-						videoPlayType: videoEl.canPlayType(type),
-						mediaSource: MediaSource.isTypeSupported(type),
-						mediaRecorder: isMediaRecorderSupported ? MediaRecorder.isTypeSupported(type) : false
-					};
-					return mediaTypes.push(data)
-				});
-				const $hash = await hashify(mediaTypes);
-				logTestResult({ test: 'media types', passed: true });
-				return resolve({ mediaTypes, $hash })
-			}
-			catch (error) {
-				logTestResult({ test: 'media types', passed: false });
+				logTestResult({ test: 'media', passed: false });
 				captureError(error);
 				return resolve()
 			}
@@ -2648,7 +2765,6 @@
 		const {
 			require: {
 				getOS,
-				hashify,
 				hashMini,
 				captureError,
 				attempt,
@@ -2658,15 +2774,17 @@
 				trustInteger,
 				documentLie,
 				lieProps,
-				contentWindow,
-				hyperNestedIframeWindow,
+				phantomDarkness,
+				dragonOfDeath,
 				getUserAgentPlatform,
-				logTestResult
+				logTestResult,
+				getPluginLies
 			}
 		} = imports;
 
 		return new Promise(async resolve => {
 			try {
+				const start = performance.now();
 				let lied = (
 					lieProps['Navigator.appVersion'] ||
 					lieProps['Navigator.deviceMemory'] ||
@@ -2681,8 +2799,7 @@
 					lieProps['Navigator.plugins'] ||
 					lieProps['Navigator.mimeTypes']
 				) || false;
-
-				const contentWindowNavigator = contentWindow ? contentWindow.navigator : navigator;
+				const phantomNavigator = phantomDarkness ? phantomDarkness.navigator : navigator;
 				const detectLies = (name, value) => {
 					const workerScopeValue = caniuse(() => workerScope, [name]);
 					const workerScopeMatchLie = { fingerprint: '', lies: [{ ['does not match worker scope']: false }] };
@@ -2694,7 +2811,7 @@
 								lied = true;
 								documentLie(`Navigator.${name}`, system, workerScopeMatchLie);
 							}
-							if (workerScope.userAgent != navigatorUserAgent) {
+							else if (workerScope.userAgent != navigatorUserAgent) {
 								lied = true;
 								documentLie(`Navigator.${name}`, navigatorUserAgent, workerScopeMatchLie);
 							}
@@ -2714,7 +2831,7 @@
 
 				const data = {
 					platform: attempt(() => {
-						const { platform } = contentWindowNavigator;
+						const { platform } = phantomNavigator;
 						const navigatorPlatform = navigator.platform;
 						const systems = ['win', 'linux', 'mac', 'arm', 'pike', 'linux', 'iphone', 'ipad', 'ipod', 'android', 'x11'];
 						const trusted = typeof navigatorPlatform == 'string' && systems.filter(val => navigatorPlatform.toLowerCase().includes(val))[0];
@@ -2732,10 +2849,10 @@
 						}
 						return platform
 					}),
-					system: attempt(() => getOS(contentWindowNavigator.userAgent), 'userAgent system failed'),
-					device: attempt(() => getUserAgentPlatform({ userAgent: contentWindowNavigator.userAgent }), 'userAgent device failed'),
+					system: attempt(() => getOS(phantomNavigator.userAgent), 'userAgent system failed'),
+					device: attempt(() => getUserAgentPlatform({ userAgent: phantomNavigator.userAgent }), 'userAgent device failed'),
 					userAgent: attempt(() => {
-						const { userAgent } = contentWindowNavigator;
+						const { userAgent } = phantomNavigator;
 						const navigatorUserAgent = navigator.userAgent;
 						detectLies('userAgent', navigatorUserAgent);
 						if (!credibleUserAgent) {
@@ -2759,7 +2876,7 @@
 						return userAgent.trim().replace(/\s{2,}/, ' ')
 					}, 'userAgent failed'),
 					appVersion: attempt(() => {
-						const { appVersion } = contentWindowNavigator;
+						const { appVersion } = phantomNavigator;
 						const navigatorAppVersion = navigator.appVersion;
 						detectLies('appVersion', appVersion);
 						if (!credibleUserAgent) {
@@ -2785,7 +2902,7 @@
 						if (!('deviceMemory' in navigator)) {
 							return undefined
 						}
-						const { deviceMemory } = contentWindowNavigator;
+						const { deviceMemory } = phantomNavigator;
 						const navigatorDeviceMemory = navigator.deviceMemory;
 						const trusted = {
 							'0': true,
@@ -2810,7 +2927,7 @@
 						return deviceMemory
 					}, 'deviceMemory failed'),
 					doNotTrack: attempt(() => {
-						const { doNotTrack } = contentWindowNavigator;
+						const { doNotTrack } = phantomNavigator;
 						const navigatorDoNotTrack = navigator.doNotTrack;
 						const trusted = {
 							'1': !0,
@@ -2854,9 +2971,9 @@
 							return undefined
 						}
 						const hardwareConcurrency = (
-							hyperNestedIframeWindow ?
-							hyperNestedIframeWindow.navigator.hardwareConcurrency :
-							contentWindowNavigator.hardwareConcurrency
+							dragonOfDeath ?
+							dragonOfDeath.navigator.hardwareConcurrency :
+							phantomNavigator.hardwareConcurrency
 						);
 						const navigatorHardwareConcurrency = navigator.hardwareConcurrency;
 						detectLies('hardwareConcurrency', navigatorHardwareConcurrency);
@@ -2872,7 +2989,7 @@
 						return hardwareConcurrency
 					}, 'hardwareConcurrency failed'),
 					language: attempt(() => {
-						const { language, languages } = contentWindowNavigator;
+						const { language, languages } = phantomNavigator;
 						const navigatorLanguage = navigator.language;
 						const navigatorLanguages = navigator.languages;
 						detectLies('language', navigatorLanguage);
@@ -2899,7 +3016,7 @@
 						if (!('maxTouchPoints' in navigator)) {
 							return null
 						}
-						const { maxTouchPoints } = contentWindowNavigator;
+						const { maxTouchPoints } = phantomNavigator;
 						const navigatorMaxTouchPoints = navigator.maxTouchPoints;	
 						if (maxTouchPoints != navigatorMaxTouchPoints) {	
 							lied = true;
@@ -2913,7 +3030,7 @@
 						return maxTouchPoints
 					}, 'maxTouchPoints failed'),
 					vendor: attempt(() => {
-						const { vendor } = contentWindowNavigator;
+						const { vendor } = phantomNavigator;
 						const navigatorVendor = navigator.vendor;
 						if (vendor != navigatorVendor) {
 							lied = true;
@@ -2926,15 +3043,15 @@
 						return vendor
 					}, 'vendor failed'),
 					mimeTypes: attempt(() => {
-						const mimeTypes = contentWindowNavigator.mimeTypes;
+						const mimeTypes = phantomNavigator.mimeTypes;
 						return mimeTypes ? [...mimeTypes].map(m => m.type) : []
 					}, 'mimeTypes failed'),
 					plugins: attempt(() => {
 						const navigatorPlugins = navigator.plugins;
 						const ownProperties = Object.getOwnPropertyNames(navigatorPlugins).filter(name => isNaN(+name));
 						const ownPropertiesSet = new Set(ownProperties);
-						const plugins = contentWindowNavigator.plugins;
-						const response = plugins ? [...contentWindowNavigator.plugins]
+						const plugins = phantomNavigator.plugins;
+						const response = plugins ? [...phantomNavigator.plugins]
 							.map(p => ({
 								name: p.name,
 								description: p.description,
@@ -2942,96 +3059,18 @@
 								version: p.version
 							})) : [];
 
-						const mimeTypesDescriptions = new Set([...navigator.mimeTypes].map(mime => mime.description));
-						mimeTypesDescriptions.delete('');
-						const mimeTypesDescriptionsString = `${[...mimeTypesDescriptions].join(', ')}`;
-						const pluginsList = [...navigator.plugins].filter(plugin => plugin.description != '');
-						const validPluginList = pluginsList.filter(plugin => !!caniuse(() => plugin[0].description));
-						
-						const mimeTypePluginNames = ''+[...new Set([...navigator.mimeTypes].map(mimeType => mimeType.enabledPlugin.name))].sort();
-						const rawPluginNames = ''+[...new Set([...navigator.plugins].map(plugin => plugin.name))].sort();
-						if (mimeTypePluginNames != rawPluginNames) {
+						const { lies } = getPluginLies(navigatorPlugins, navigator.mimeTypes);
+						if (lies.length) {
 							lied = true;
-							const pluginsLie = {
-								fingerprint: '',
-								lies: [{ [`Expected MimeType Plugins to match Plugins: "${mimeTypePluginNames}" should match "${rawPluginNames}"`]: true }]
-							};
-							documentLie(`Navigator.plugins`, hashMini({mimeTypePluginNames, rawPluginNames}), pluginsLie);
-						}
-
-						const nonMimetypePlugins = pluginsList
-							.filter(plugin => !caniuse(() => plugin[0].description))
-							.map(plugin => plugin.description);
-						if (!!nonMimetypePlugins.length) {
-							lied = true;
-							const pluginsLie = {
-								fingerprint: '',
-								lies: [{ [`Expected a MimeType object in plugins [${nonMimetypePlugins.join(', ')}]`]: true }]
-							};
-							documentLie(`Navigator.plugins`, hashMini(nonMimetypePlugins), pluginsLie);
-						}
-
-						const nonMatchingMimetypePlugins = validPluginList
-							.filter(plugin => plugin[0].description != plugin.description)
-							.map(plugin => [plugin.description, plugin[0].description]);
-						if (!!nonMatchingMimetypePlugins.length) {
-							lied = true;
-							const pluginsLie = {
-								fingerprint: '',
-								lies: [{ [`Expected plugin MimeType description to match plugin description: ${
-								nonMatchingMimetypePlugins
-									.map(description => `${description[0]} should match ${description[1]}`)
-									.join(', ')
-							}`]: true }]
-							};
-							documentLie(`Navigator.plugins`, hashMini(nonMatchingMimetypePlugins), pluginsLie);
-						}
-						
-						const invalidPrototypeMimeTypePlugins = validPluginList
-							.filter(plugin => !mimeTypesDescriptions.has(plugin[0].description))
-							.map(plugin => [plugin[0].description, mimeTypesDescriptionsString]);
-						if (!!invalidPrototypeMimeTypePlugins.length) {
-							lied = true;
-							const pluginsLie = {
-								fingerprint: '',
-								lies: [{ [`Expected plugin MimeType description to match a MimeType description: ${
-								invalidPrototypeMimeTypePlugins
-									.map(description => `${description[0]} is not in [${description[1]}]`)
-									.join(', ')
-							}`]: true }]
-							};
-							documentLie(`Navigator.plugins`, hashMini(invalidPrototypeMimeTypePlugins), pluginsLie);
-						}
-						
-						const invalidMimetypePlugins = validPluginList
-							.filter(plugin => !mimeTypesDescriptions.has(plugin.description))
-							.map(plugin => [plugin.description, mimeTypesDescriptionsString]);
-						if (!!invalidMimetypePlugins.length) {
-							lied = true;
-							const pluginsLie = {
-								fingerprint: '',
-								lies: [{ [`Expected plugin description to match a MimeType description: ${
-								invalidMimetypePlugins
-									.map(description => `${description[0]} is not in [${description[1]}]`)
-									.join(', ')
-							}`]: true }]
-							};
-							documentLie(`Navigator.plugins`, hashMini(invalidMimetypePlugins), pluginsLie);
+							lies.forEach(lie => {
+								const pluginsLie = { fingerprint: '', lies: [{ [lie]: true }] };
+								return documentLie(`Navigator.plugins`, hashMini(response), pluginsLie)
+							});
 						}
 
 						if (!!response.length) {	
 							response.forEach(plugin => {	
 								const { name, description } = plugin;
-
-								if (!ownPropertiesSet.has(name)) {
-									lied = true;
-									const pluginsLie = {
-										fingerprint: '',
-										lies: [{ [`Expected name "${name}" in plugins own properties and got [${ownProperties.join(', ')}]`]: true }]
-									};
-									documentLie(`Navigator.plugins`, hashMini(ownProperties), pluginsLie);
-								}
-
 								const nameGibbers = gibberish(name);
 								const descriptionGibbers = gibberish(description);	
 								if (!!nameGibbers.length) {	
@@ -3046,22 +3085,21 @@
 						return response
 					}, 'plugins failed'),
 					properties: attempt(() => {
-						const keys = Object.keys(Object.getPrototypeOf(contentWindowNavigator));
+						const keys = Object.keys(Object.getPrototypeOf(phantomNavigator));
 						return keys
 					}, 'navigator keys failed'),
 					highEntropyValues: await attempt(async () => { 
-						if (!('userAgentData' in contentWindowNavigator)) {
+						if (!('userAgentData' in phantomNavigator)) {
 							return undefined
 						}
-						const data = await contentWindowNavigator.userAgentData.getHighEntropyValues(
+						const data = await phantomNavigator.userAgentData.getHighEntropyValues(
 							['platform', 'platformVersion', 'architecture',  'model', 'uaFullVersion']
 						);
 						return data
 					}, 'highEntropyValues failed')
 				};
-				const $hash = await hashify(data);
-				logTestResult({ test: 'navigator', passed: true });
-				return resolve({ ...data, lied, $hash })
+				logTestResult({ start, test: 'navigator', passed: true });
+				return resolve({ ...data, lied })
 			}
 			catch (error) {
 				logTestResult({ test: 'navigator', passed: false });
@@ -3082,39 +3120,34 @@
 			require: {
 				instanceId,
 				hashMini,
-				hashify,
 				patch,
 				html,
 				captureError,
 				documentLie,
 				lieProps,
-				logTestResult
+				logTestResult,
+				phantomDarkness
 			}
 		} = imports;
 		
 		return new Promise(async resolve => {
 			try {
-				const toJSONParsed = (x) => JSON.parse(JSON.stringify(x));
+				const start = performance.now();
+				const toNativeObject = domRect => {
+					return {
+						bottom: domRect.bottom,
+						height: domRect.height,
+						left: domRect.left,
+						right: domRect.right,
+						width: domRect.width,
+						top: domRect.top,
+						x: domRect.x,
+						y: domRect.y
+					}
+				};
 				let lied = lieProps['Element.getClientRects'] || false; // detect lies
-				
-				let iframeContainer, doc = document;
-				try {
-					// create and get rendered iframe
-
-					const len = window.length;
-					const div = document.createElement('div');
-					div.setAttribute('style', 'visibility:hidden');
-					document.body.appendChild(div);
-					div.innerHTML = '<iframe></iframe>';
-					const iframeWindow = window[len];
-
-					// create and get rendered div in iframe
-					iframeContainer = div;
-					doc = iframeWindow.document;
-				}
-				catch (error) {
-					captureError(error, 'client blocked getClientRects iframe');
-				}
+							
+				const doc = phantomDarkness ? phantomDarkness.document : document;
 
 				const rectsId = `${instanceId}-client-rects-div`;
 				const divElement = document.createElement('div');
@@ -3215,6 +3248,10 @@
 						border: solid 2px;
 						border-color: #F72585;
 					}
+					#rect-container .shift-dom-rect {
+						top: 1px !important;
+						left: 1px !important;
+					}
 					</style>
 					<div id="cRect1" class="rects"></div>
 					<div id="cRect2" class="rects"></div>
@@ -3245,22 +3282,38 @@
 
 				// get emojis
 				const emojiDiv = doc.getElementById('emoji');
-				
 				const emojiRects = emojis
 					.slice(99, 199) // limit to improve performance
 					.map(emoji => String.fromCodePoint(...emoji))
 					.map(emoji => {
 						emojiDiv.innerHTML = emoji;
 						const domRect = emojiDiv.getClientRects()[0];
-						return {emoji,...toJSONParsed(domRect)}
+						return {emoji,...toNativeObject(domRect)}
 					});
 				
 				// get clientRects
 				const rectElems = doc.getElementsByClassName('rects');
 				const clientRects = [...rectElems].map(el => {
-					return toJSONParsed(el.getClientRects()[0])
+					return toNativeObject(el.getClientRects()[0])
 				});
-				
+
+				// detect failed shift calculation
+				// inspired by https://arkenfox.github.io/TZP
+				let shiftLie = false;
+				const rect4 = [...rectElems][3];
+				const { top: initialTop } = clientRects[3];
+				rect4.classList.add('shift-dom-rect');
+				const { top: shiftedTop } = toNativeObject(rect4.getClientRects()[0]);
+				rect4.classList.remove('shift-dom-rect');
+				const { top: unshiftedTop } = toNativeObject(rect4.getClientRects()[0]);
+				const diff = initialTop - shiftedTop;
+				shiftLie = diff != (unshiftedTop - shiftedTop);
+				if (shiftLie) {
+					lied = true;
+					shiftLie = { fingerprint: '', lies: [{ ['failed shift calculation']: true }] };
+					documentLie('Element.getClientRects', hashMini(clientRects), shiftLie);
+				}
+
 				// detect failed math calculation lie
 				let mathLie = false;
 				clientRects.forEach(rect => {
@@ -3289,27 +3342,9 @@
 					documentLie('Element.getClientRects', hashMini(clientRects), offsetLie);
 					lied = true;
 				}
-				
-				if (!!iframeContainer) {
-					iframeContainer.parentNode.removeChild(iframeContainer);
-				}
-				else {
-					divRendered.parentNode.removeChild(divRendered);
-				}
-				
-				const [
-					emojiHash,
-					clientHash,
-					$hash
-				] = await Promise.all([
-					hashify(emojiRects),
-					hashify(clientRects),
-					hashify({emojiRects, clientRects})
-				]).catch(error => {
-					console.error(error.message);
-				});
-				logTestResult({ test: 'rects', passed: true });
-				return resolve({emojiRects, emojiHash, clientRects, clientHash, lied, $hash })
+							
+				logTestResult({ start, test: 'rects', passed: true });
+				return resolve({ emojiRects, clientRects, lied })
 			}
 			catch (error) {
 				logTestResult({ test: 'rects', passed: false });
@@ -3373,19 +3408,19 @@
 
 		const {
 			require: {
-				hashify,
 				captureError,
 				attempt,
 				sendToTrash,
 				trustInteger,
 				lieProps,
-				contentWindow,
+				phantomDarkness,
 				logTestResult
 			}
 		} = imports;
 		
 		return new Promise(async resolve => {
 			try {
+				const start = performance.now();
 				let lied = (
 					lieProps['Screen.width'] ||
 					lieProps['Screen.height'] ||
@@ -3394,11 +3429,11 @@
 					lieProps['Screen.colorDepth'] ||
 					lieProps['Screen.pixelDepth']
 				) || false;
-				const contentWindowScreen = contentWindow ? contentWindow.screen : screen;
-				const contentWindowOuterWidth = contentWindow ? contentWindow.outerWidth : outerWidth;
-				const contentWindowOuterHeight = contentWindow ? contentWindow.outerHeight : outerHeight;
+				const phantomScreen = phantomDarkness ? phantomDarkness.screen : screen;
+				const phantomOuterWidth = phantomDarkness ? phantomDarkness.outerWidth : outerWidth;
+				const phantomOuterHeight = phantomDarkness ? phantomDarkness.outerHeight : outerHeight;
 				
-				const { width, height, availWidth, availHeight, colorDepth, pixelDepth } = contentWindowScreen;
+				const { width, height, availWidth, availHeight, colorDepth, pixelDepth } = phantomScreen;
 				const {
 					width: screenWidth,
 					height: screenHeight,
@@ -3454,18 +3489,17 @@
 				const data = {
 					device: getDevice(width, height),
 					width: attempt(() => width ? trustInteger('width - invalid return type', width) : undefined),
-					outerWidth: attempt(() => contentWindowOuterWidth ? trustInteger('outerWidth - invalid return type', contentWindowOuterWidth) : undefined),
+					outerWidth: attempt(() => phantomOuterWidth ? trustInteger('outerWidth - invalid return type', phantomOuterWidth) : undefined),
 					availWidth: attempt(() => availWidth ? trustInteger('availWidth - invalid return type', availWidth) : undefined),
 					height: attempt(() => height ? trustInteger('height - invalid return type', height) : undefined),
-					outerHeight: attempt(() => contentWindowOuterHeight ? trustInteger('outerHeight - invalid return type', contentWindowOuterHeight) : undefined),
+					outerHeight: attempt(() => phantomOuterHeight ? trustInteger('outerHeight - invalid return type', phantomOuterHeight) : undefined),
 					availHeight: attempt(() => availHeight ?  trustInteger('availHeight - invalid return type', availHeight) : undefined),
 					colorDepth: attempt(() => colorDepth ? trustInteger('colorDepth - invalid return type', colorDepth) : undefined),
 					pixelDepth: attempt(() => pixelDepth ? trustInteger('pixelDepth - invalid return type', pixelDepth) : undefined),
 					lied
 				};
-				const $hash = await hashify(data);
-				logTestResult({ test: 'screen', passed: true });
-				return resolve({ ...data, $hash })
+				logTestResult({ start, test: 'screen', passed: true });
+				return resolve({ ...data })
 			}
 			catch (error) {
 				logTestResult({ test: 'screen', passed: false });
@@ -3475,296 +3509,573 @@
 		})
 	};
 
+	// inspired by https://arkenfox.github.io/TZP
+	// https://github.com/vvo/tzdb/blob/master/time-zones-names.json
+	const cities = [
+		"UTC",
+		"GMT",
+		"Etc/GMT+0",
+		"Etc/GMT+1",
+		"Etc/GMT+10",
+		"Etc/GMT+11",
+		"Etc/GMT+12",
+		"Etc/GMT+2",
+		"Etc/GMT+3",
+		"Etc/GMT+4",
+		"Etc/GMT+5",
+		"Etc/GMT+6",
+		"Etc/GMT+7",
+		"Etc/GMT+8",
+		"Etc/GMT+9",
+		"Etc/GMT-1",
+		"Etc/GMT-10",
+		"Etc/GMT-11",
+		"Etc/GMT-12",
+		"Etc/GMT-13",
+		"Etc/GMT-14",
+		"Etc/GMT-2",
+		"Etc/GMT-3",
+		"Etc/GMT-4",
+		"Etc/GMT-5",
+		"Etc/GMT-6",
+		"Etc/GMT-7",
+		"Etc/GMT-8",
+		"Etc/GMT-9",
+		"Etc/GMT",
+		"Africa/Abidjan",
+		"Africa/Accra",
+		"Africa/Addis_Ababa",
+		"Africa/Algiers",
+		"Africa/Asmara",
+		"Africa/Bamako",
+		"Africa/Bangui",
+		"Africa/Banjul",
+		"Africa/Bissau",
+		"Africa/Blantyre",
+		"Africa/Brazzaville",
+		"Africa/Bujumbura",
+		"Africa/Cairo",
+		"Africa/Casablanca",
+		"Africa/Ceuta",
+		"Africa/Conakry",
+		"Africa/Dakar",
+		"Africa/Dar_es_Salaam",
+		"Africa/Djibouti",
+		"Africa/Douala",
+		"Africa/El_Aaiun",
+		"Africa/Freetown",
+		"Africa/Gaborone",
+		"Africa/Harare",
+		"Africa/Johannesburg",
+		"Africa/Juba",
+		"Africa/Kampala",
+		"Africa/Khartoum",
+		"Africa/Kigali",
+		"Africa/Kinshasa",
+		"Africa/Lagos",
+		"Africa/Libreville",
+		"Africa/Lome",
+		"Africa/Luanda",
+		"Africa/Lubumbashi",
+		"Africa/Lusaka",
+		"Africa/Malabo",
+		"Africa/Maputo",
+		"Africa/Maseru",
+		"Africa/Mbabane",
+		"Africa/Mogadishu",
+		"Africa/Monrovia",
+		"Africa/Nairobi",
+		"Africa/Ndjamena",
+		"Africa/Niamey",
+		"Africa/Nouakchott",
+		"Africa/Ouagadougou",
+		"Africa/Porto-Novo",
+		"Africa/Sao_Tome",
+		"Africa/Tripoli",
+		"Africa/Tunis",
+		"Africa/Windhoek",
+		"America/Adak",
+		"America/Anchorage",
+		"America/Anguilla",
+		"America/Antigua",
+		"America/Araguaina",
+		"America/Argentina/Buenos_Aires",
+		"America/Argentina/Catamarca",
+		"America/Argentina/Cordoba",
+		"America/Argentina/Jujuy",
+		"America/Argentina/La_Rioja",
+		"America/Argentina/Mendoza",
+		"America/Argentina/Rio_Gallegos",
+		"America/Argentina/Salta",
+		"America/Argentina/San_Juan",
+		"America/Argentina/San_Luis",
+		"America/Argentina/Tucuman",
+		"America/Argentina/Ushuaia",
+		"America/Aruba",
+		"America/Asuncion",
+		"America/Atikokan",
+		"America/Bahia",
+		"America/Bahia_Banderas",
+		"America/Barbados",
+		"America/Belem",
+		"America/Belize",
+		"America/Blanc-Sablon",
+		"America/Boa_Vista",
+		"America/Bogota",
+		"America/Boise",
+		"America/Cambridge_Bay",
+		"America/Campo_Grande",
+		"America/Cancun",
+		"America/Caracas",
+		"America/Cayenne",
+		"America/Cayman",
+		"America/Chicago",
+		"America/Chihuahua",
+		"America/Costa_Rica",
+		"America/Creston",
+		"America/Cuiaba",
+		"America/Curacao",
+		"America/Danmarkshavn",
+		"America/Dawson",
+		"America/Dawson_Creek",
+		"America/Denver",
+		"America/Detroit",
+		"America/Dominica",
+		"America/Edmonton",
+		"America/Eirunepe",
+		"America/El_Salvador",
+		"America/Fort_Nelson",
+		"America/Fortaleza",
+		"America/Glace_Bay",
+		"America/Godthab",
+		"America/Goose_Bay",
+		"America/Grand_Turk",
+		"America/Grenada",
+		"America/Guadeloupe",
+		"America/Guatemala",
+		"America/Guayaquil",
+		"America/Guyana",
+		"America/Halifax",
+		"America/Havana",
+		"America/Hermosillo",
+		"America/Indiana/Indianapolis",
+		"America/Indiana/Knox",
+		"America/Indiana/Marengo",
+		"America/Indiana/Petersburg",
+		"America/Indiana/Tell_City",
+		"America/Indiana/Vevay",
+		"America/Indiana/Vincennes",
+		"America/Indiana/Winamac",
+		"America/Inuvik",
+		"America/Iqaluit",
+		"America/Jamaica",
+		"America/Juneau",
+		"America/Kentucky/Louisville",
+		"America/Kentucky/Monticello",
+		"America/Kralendijk",
+		"America/La_Paz",
+		"America/Lima",
+		"America/Los_Angeles",
+		"America/Lower_Princes",
+		"America/Maceio",
+		"America/Managua",
+		"America/Manaus",
+		"America/Marigot",
+		"America/Martinique",
+		"America/Matamoros",
+		"America/Mazatlan",
+		"America/Menominee",
+		"America/Merida",
+		"America/Metlakatla",
+		"America/Mexico_City",
+		"America/Miquelon",
+		"America/Moncton",
+		"America/Monterrey",
+		"America/Montevideo",
+		"America/Montserrat",
+		"America/Nassau",
+		"America/New_York",
+		"America/Nipigon",
+		"America/Nome",
+		"America/Noronha",
+		"America/North_Dakota/Beulah",
+		"America/North_Dakota/Center",
+		"America/North_Dakota/New_Salem",
+		"America/Ojinaga",
+		"America/Panama",
+		"America/Pangnirtung",
+		"America/Paramaribo",
+		"America/Phoenix",
+		"America/Port-au-Prince",
+		"America/Port_of_Spain",
+		"America/Porto_Velho",
+		"America/Puerto_Rico",
+		"America/Punta_Arenas",
+		"America/Rainy_River",
+		"America/Rankin_Inlet",
+		"America/Recife",
+		"America/Regina",
+		"America/Resolute",
+		"America/Rio_Branco",
+		"America/Santarem",
+		"America/Santiago",
+		"America/Santo_Domingo",
+		"America/Sao_Paulo",
+		"America/Scoresbysund",
+		"America/Sitka",
+		"America/St_Barthelemy",
+		"America/St_Johns",
+		"America/St_Kitts",
+		"America/St_Lucia",
+		"America/St_Thomas",
+		"America/St_Vincent",
+		"America/Swift_Current",
+		"America/Tegucigalpa",
+		"America/Thule",
+		"America/Thunder_Bay",
+		"America/Tijuana",
+		"America/Toronto",
+		"America/Tortola",
+		"America/Vancouver",
+		"America/Whitehorse",
+		"America/Winnipeg",
+		"America/Yakutat",
+		"America/Yellowknife",
+		"Antarctica/Casey",
+		"Antarctica/Davis",
+		"Antarctica/DumontDUrville",
+		"Antarctica/Macquarie",
+		"Antarctica/Mawson",
+		"Antarctica/McMurdo",
+		"Antarctica/Palmer",
+		"Antarctica/Rothera",
+		"Antarctica/Syowa",
+		"Antarctica/Troll",
+		"Antarctica/Vostok",
+		"Arctic/Longyearbyen",
+		"Asia/Aden",
+		"Asia/Almaty",
+		"Asia/Amman",
+		"Asia/Anadyr",
+		"Asia/Aqtau",
+		"Asia/Aqtobe",
+		"Asia/Ashgabat",
+		"Asia/Atyrau",
+		"Asia/Baghdad",
+		"Asia/Bahrain",
+		"Asia/Baku",
+		"Asia/Bangkok",
+		"Asia/Barnaul",
+		"Asia/Beirut",
+		"Asia/Bishkek",
+		"Asia/Brunei",
+		"Asia/Calcutta",
+		"Asia/Chita",
+		"Asia/Choibalsan",
+		"Asia/Colombo",
+		"Asia/Damascus",
+		"Asia/Dhaka",
+		"Asia/Dili",
+		"Asia/Dubai",
+		"Asia/Dushanbe",
+		"Asia/Famagusta",
+		"Asia/Gaza",
+		"Asia/Hebron",
+		"Asia/Ho_Chi_Minh",
+		"Asia/Hong_Kong",
+		"Asia/Hovd",
+		"Asia/Irkutsk",
+		"Asia/Jakarta",
+		"Asia/Jayapura",
+		"Asia/Jerusalem",
+		"Asia/Kabul",
+		"Asia/Kamchatka",
+		"Asia/Karachi",
+		"Asia/Kathmandu",
+		"Asia/Khandyga",
+		"Asia/Kolkata",
+		"Asia/Krasnoyarsk",
+		"Asia/Kuala_Lumpur",
+		"Asia/Kuching",
+		"Asia/Kuwait",
+		"Asia/Macau",
+		"Asia/Magadan",
+		"Asia/Makassar",
+		"Asia/Manila",
+		"Asia/Muscat",
+		"Asia/Nicosia",
+		"Asia/Novokuznetsk",
+		"Asia/Novosibirsk",
+		"Asia/Omsk",
+		"Asia/Oral",
+		"Asia/Phnom_Penh",
+		"Asia/Pontianak",
+		"Asia/Pyongyang",
+		"Asia/Qatar",
+		"Asia/Qostanay",
+		"Asia/Qyzylorda",
+		"Asia/Riyadh",
+		"Asia/Sakhalin",
+		"Asia/Samarkand",
+		"Asia/Seoul",
+		"Asia/Shanghai",
+		"Asia/Singapore",
+		"Asia/Srednekolymsk",
+		"Asia/Taipei",
+		"Asia/Tashkent",
+		"Asia/Tbilisi",
+		"Asia/Tehran",
+		"Asia/Thimphu",
+		"Asia/Tokyo",
+		"Asia/Tomsk",
+		"Asia/Ulaanbaatar",
+		"Asia/Urumqi",
+		"Asia/Ust-Nera",
+		"Asia/Vientiane",
+		"Asia/Vladivostok",
+		"Asia/Yakutsk",
+		"Asia/Yangon",
+		"Asia/Yekaterinburg",
+		"Asia/Yerevan",
+		"Atlantic/Azores",
+		"Atlantic/Bermuda",
+		"Atlantic/Canary",
+		"Atlantic/Cape_Verde",
+		"Atlantic/Faroe",
+		"Atlantic/Madeira",
+		"Atlantic/Reykjavik",
+		"Atlantic/South_Georgia",
+		"Atlantic/St_Helena",
+		"Atlantic/Stanley",
+		"Australia/Adelaide",
+		"Australia/Brisbane",
+		"Australia/Broken_Hill",
+		"Australia/Currie",
+		"Australia/Darwin",
+		"Australia/Eucla",
+		"Australia/Hobart",
+		"Australia/Lindeman",
+		"Australia/Lord_Howe",
+		"Australia/Melbourne",
+		"Australia/Perth",
+		"Australia/Sydney",
+		"Europe/Amsterdam",
+		"Europe/Andorra",
+		"Europe/Astrakhan",
+		"Europe/Athens",
+		"Europe/Belgrade",
+		"Europe/Berlin",
+		"Europe/Bratislava",
+		"Europe/Brussels",
+		"Europe/Bucharest",
+		"Europe/Budapest",
+		"Europe/Busingen",
+		"Europe/Chisinau",
+		"Europe/Copenhagen",
+		"Europe/Dublin",
+		"Europe/Gibraltar",
+		"Europe/Guernsey",
+		"Europe/Helsinki",
+		"Europe/Isle_of_Man",
+		"Europe/Istanbul",
+		"Europe/Jersey",
+		"Europe/Kaliningrad",
+		"Europe/Kiev",
+		"Europe/Kirov",
+		"Europe/Lisbon",
+		"Europe/Ljubljana",
+		"Europe/London",
+		"Europe/Luxembourg",
+		"Europe/Madrid",
+		"Europe/Malta",
+		"Europe/Mariehamn",
+		"Europe/Minsk",
+		"Europe/Monaco",
+		"Europe/Moscow",
+		"Europe/Oslo",
+		"Europe/Paris",
+		"Europe/Podgorica",
+		"Europe/Prague",
+		"Europe/Riga",
+		"Europe/Rome",
+		"Europe/Samara",
+		"Europe/San_Marino",
+		"Europe/Sarajevo",
+		"Europe/Saratov",
+		"Europe/Simferopol",
+		"Europe/Skopje",
+		"Europe/Sofia",
+		"Europe/Stockholm",
+		"Europe/Tallinn",
+		"Europe/Tirane",
+		"Europe/Ulyanovsk",
+		"Europe/Uzhgorod",
+		"Europe/Vaduz",
+		"Europe/Vatican",
+		"Europe/Vienna",
+		"Europe/Vilnius",
+		"Europe/Volgograd",
+		"Europe/Warsaw",
+		"Europe/Zagreb",
+		"Europe/Zaporozhye",
+		"Europe/Zurich",
+		"Indian/Antananarivo",
+		"Indian/Chagos",
+		"Indian/Christmas",
+		"Indian/Cocos",
+		"Indian/Comoro",
+		"Indian/Kerguelen",
+		"Indian/Mahe",
+		"Indian/Maldives",
+		"Indian/Mauritius",
+		"Indian/Mayotte",
+		"Indian/Reunion",
+		"Pacific/Apia",
+		"Pacific/Auckland",
+		"Pacific/Bougainville",
+		"Pacific/Chatham",
+		"Pacific/Chuuk",
+		"Pacific/Easter",
+		"Pacific/Efate",
+		"Pacific/Enderbury",
+		"Pacific/Fakaofo",
+		"Pacific/Fiji",
+		"Pacific/Funafuti",
+		"Pacific/Galapagos",
+		"Pacific/Gambier",
+		"Pacific/Guadalcanal",
+		"Pacific/Guam",
+		"Pacific/Honolulu",
+		"Pacific/Kiritimati",
+		"Pacific/Kosrae",
+		"Pacific/Kwajalein",
+		"Pacific/Majuro",
+		"Pacific/Marquesas",
+		"Pacific/Midway",
+		"Pacific/Nauru",
+		"Pacific/Niue",
+		"Pacific/Norfolk",
+		"Pacific/Noumea",
+		"Pacific/Pago_Pago",
+		"Pacific/Palau",
+		"Pacific/Pitcairn",
+		"Pacific/Pohnpei",
+		"Pacific/Port_Moresby",
+		"Pacific/Rarotonga",
+		"Pacific/Saipan",
+		"Pacific/Tahiti",
+		"Pacific/Tarawa",
+		"Pacific/Tongatapu",
+		"Pacific/Wake",
+		"Pacific/Wallis"
+	];
+
+	const getTimezoneOffset = phantomDate => {
+		const [year, month, day] = JSON.stringify(new phantomDate())
+			.slice(1,11)
+			.split('-');
+		const dateString = `${month}/${day}/${year}`;
+		const dateStringUTC = `${year}-${month}-${day}`;
+		const now = +new phantomDate(dateString);
+		const utc = +new phantomDate(dateStringUTC);
+		const offset = +((now - utc)/60000);
+		return ~~offset 
+	};
+
+	const getTimezoneOffsetHistory = ({ year, phantomIntl, phantomDate, city = null }) => {
+		const format = {
+			timeZone: '',
+			year: 'numeric',
+			month: 'numeric',
+			day: 'numeric',
+			hour: 'numeric',
+			minute: 'numeric',
+			second: 'numeric'
+		};
+	    const minute = 60000;
+	    let formatter, summer;
+	    if (city) {
+	        const options = {
+	            ...format,
+	            timeZone: city
+	        };
+	        formatter = new phantomIntl.DateTimeFormat('en', options);
+	        summer = +new phantomDate(formatter.format(new phantomDate(`7/1/${year}`)));
+	    } else {
+	        summer = +new phantomDate(`7/1/${year}`);
+	    }
+	    const summerUTCTime = +new phantomDate(`${year}-07-01`);
+	    const offset = (summer - summerUTCTime) / minute;
+	    return offset
+	};
+
+	const binarySearch = (list, fn) => {
+	    const end = list.length;
+	    const middle = Math.floor(end / 2);
+	    const [left, right] = [list.slice(0, middle), list.slice(middle, end)];
+	    const found = fn(left);
+	    return end == 1 || found.length ? found : binarySearch(right, fn)
+	};
+
+	const decryptLocation = ({ year, timeZone, phantomIntl, phantomDate }) => {
+		const system = getTimezoneOffsetHistory({ year, phantomIntl, phantomDate});
+		const resolvedOptions = getTimezoneOffsetHistory({ year, phantomIntl, phantomDate, city: timeZone});
+		const filter = cities => cities
+			.filter(city => system == getTimezoneOffsetHistory({ year, phantomIntl, phantomDate, city }));
+
+		// get city region set
+		const decryption = (
+			system == resolvedOptions ? [timeZone] : binarySearch(cities, filter)
+		);
+
+		// reduce set to one city
+		const decrypted = (
+			decryption.length == 1 ? decryption[0] :
+			!new Set(decryption).has(timeZone) ? `Earth/UniqueVille` : timeZone
+		);
+		return decrypted
+	};
+
+	const formatLocation = x => x.replace(/_/, ' ').split('/').join(', '); 
+
 	const getTimezone = imports => {
 
 		const {
 			require: {
-				hashify,
 				captureError,
-				attempt,
-				caniuse,
-				documentLie,
 				lieProps,
-				contentWindow,
+				phantomDarkness,
 				logTestResult
 			}
 		} = imports;
-		
+
 		return new Promise(async resolve => {
 			try {
-				let lied;
-				const contentWindowDate = contentWindow ? contentWindow.Date : Date;
-				const contentWindowIntl = contentWindow ? contentWindow.Intl : Date;
-				const computeTimezoneOffset = () => {
-					const date = new contentWindowDate().getDate();
-					const month = new contentWindowDate().getMonth();
-					const year = contentWindowDate().split` `[3]; // current year
-					const format = n => (''+n).length == 1 ? `0${n}` : n;
-					const dateString = `${month+1}/${format(date)}/${year}`;
-					const dateStringUTC = `${year}-${format(month+1)}-${format(date)}`;
-					const utc = contentWindowDate.parse(
-						new contentWindowDate(dateString)
-					);
-					const now = +new contentWindowDate(dateStringUTC);
-					return +(((utc - now)/60000).toFixed(0))
-				};
-				// concept inspired by https://arkenfox.github.io/TZP
-				const measureTimezoneOffset = timezone => {
-					let lie = false;
-					const year = contentWindowDate().split` `[3]; // current year
-					const minute = 60000;
-					const winter = new contentWindowDate(`1/1/${year}`);
-					const spring = new contentWindowDate(`4/1/${year}`);
-					const summer = new contentWindowDate(`7/1/${year}`);
-					const fall = new contentWindowDate(`10/1/${year}`);
-					const winterUTCTime = +new contentWindowDate(`${year}-01-01`);
-					const springUTCTime = +new contentWindowDate(`${year}-04-01`);
-					const summerUTCTime = +new contentWindowDate(`${year}-07-01`);
-					const fallUTCTime = +new contentWindowDate(`${year}-10-01`);
-					const date = {
-						winter: {
-							calculated: (+winter - winterUTCTime)/minute,
-							parsed: (contentWindowDate.parse(winter) - winterUTCTime)/minute
-						},
-						spring: {
-							calculated: (+spring - springUTCTime)/minute,
-							parsed: (contentWindowDate.parse(spring) - springUTCTime)/minute
-						},
-						summer: {
-							calculated: (+summer - summerUTCTime)/minute,
-							parsed: (contentWindowDate.parse(summer) - summerUTCTime)/minute
-						},
-						fall: {
-							calculated: (+fall - fallUTCTime)/minute,
-							parsed: (contentWindowDate.parse(fall) - fallUTCTime)/minute
-						}
-					};
-					lie = !!Object.keys(date).filter(key => {
-						const season = date[key];
-						return season.calculated != season.parsed
-					}).length;
-					const set = new Set(
-						[].concat(
-							...Object.keys(date).map(key => {
-								const season = date[key];
-								return [season.calculated, season.parsed]
-							})
-						)
-					);
-					lie = !set.has(timezone);
-					if (lie) {
-						set.add(timezone); // show in result
-					}
-					return { season: [...set], lie }
-				};
-				const getTimezoneOffsetSeasons = year => {
-					const minute = 60000;
-					const winter = new contentWindowDate(`1/1/${year}`);
-					const spring = new contentWindowDate(`4/1/${year}`);
-					const summer = new contentWindowDate(`7/1/${year}`);
-					const fall = new contentWindowDate(`10/1/${year}`);
-					const winterUTCTime = +new contentWindowDate(`${year}-01-01`);
-					const springUTCTime = +new contentWindowDate(`${year}-04-01`);
-					const summerUTCTime = +new contentWindowDate(`${year}-07-01`);
-					const fallUTCTime = +new contentWindowDate(`${year}-10-01`);
-					const seasons = [
-						(+winter - winterUTCTime) / minute,
-						(+spring - springUTCTime) / minute,
-						(+summer - summerUTCTime) / minute,
-						(+fall - fallUTCTime) / minute
-					];
-					return seasons
-				};
-				const getRelativeTime = () => {
-					const locale = attempt(() => contentWindowIntl.DateTimeFormat().resolvedOptions().locale);
-					if (!locale || !caniuse(() => new contentWindowIntl.RelativeTimeFormat)) {
-						return undefined
-					}
-					const relativeTime = new contentWindowIntl.RelativeTimeFormat(locale, {
-						localeMatcher: 'best fit',
-						numeric: 'auto',
-						style: 'long'
-					});
-					return {
-						["format(-1, 'second')"]: relativeTime.format(-1, 'second'),
-						["format(0, 'second')"]: relativeTime.format(0, 'second'),
-						["format(1, 'second')"]: relativeTime.format(1, 'second'),
-						["format(-1, 'minute')"]: relativeTime.format(-1, 'minute'),
-						["format(0, 'minute')"]: relativeTime.format(0, 'minute'),
-						["format(1, 'minute')"]: relativeTime.format(1, 'minute'),
-						["format(-1, 'hour')"]: relativeTime.format(-1, 'hour'),
-						["format(0, 'hour')"]: relativeTime.format(0, 'hour'),
-						["format(1, 'hour')"]: relativeTime.format(1, 'hour'),
-						["format(-1, 'day')"]: relativeTime.format(-1, 'day'),
-						["format(0, 'day')"]: relativeTime.format(0, 'day'),
-						["format(1, 'day')"]: relativeTime.format(1, 'day'),
-						["format(-1, 'week')"]: relativeTime.format(-1, 'week'),
-						["format(0, 'week')"]: relativeTime.format(0, 'week'),
-						["format(1, 'week'),"]: relativeTime.format(1, 'week'),
-						["format(-1, 'month')"]: relativeTime.format(-1, 'month'),
-						["format(0, 'month'),"]: relativeTime.format(0, 'month'),
-						["format(1, 'month')"]: relativeTime.format(1, 'month'),
-						["format(-1, 'quarter')"]: relativeTime.format(-1, 'quarter'),
-						["format(0, 'quarter')"]: relativeTime.format(0, 'quarter'),
-						["format(1, 'quarter')"]: relativeTime.format(1, 'quarter'),
-						["format(-1, 'year')"]: relativeTime.format(-1, 'year'),
-						["format(0, 'year')"]: relativeTime.format(0, 'year'),
-						["format(1, 'year')"]: relativeTime.format(1, 'year')
-					}
-				};
-				const getLocale = () => {
-					const constructors = [
-						'Collator',
-						'DateTimeFormat',
-						'DisplayNames',
-						'ListFormat',
-						'NumberFormat',
-						'PluralRules',
-						'RelativeTimeFormat',
-					];
-					const languages = [];
-					constructors.forEach(name => {
-						try {
-							const obj = caniuse(() => new contentWindowIntl[name]);
-							if (!obj) {
-								return
-							}
-							const { locale } = obj.resolvedOptions();
-							return languages.push(locale)
-						}
-						catch (error) {
-							return
-						}
-					});
-					const lang = [...new Set(languages)];
-					return { lang, lie: lang.length > 1 ? true : false }
-				};
-				const getWritingSystemKeys = async () => {
-					const keys = [
-						'Backquote',
-						'Backslash',
-						'Backspace',
-						'BracketLeft',
-						'BracketRight',
-						'Comma',
-						'Digit0',
-						'Digit1',
-						'Digit2',
-						'Digit3',
-						'Digit4',
-						'Digit5',
-						'Digit6',
-						'Digit7',
-						'Digit8',
-						'Digit9',
-						'Equal',
-						'IntlBackslash',
-						'IntlRo',
-						'IntlYen',
-						'KeyA',
-						'KeyB',
-						'KeyC',
-						'KeyD',
-						'KeyE',
-						'KeyF',
-						'KeyG',
-						'KeyH',
-						'KeyI',
-						'KeyJ',
-						'KeyK',
-						'KeyL',
-						'KeyM',
-						'KeyN',
-						'KeyO',
-						'KeyP',
-						'KeyQ',
-						'KeyR',
-						'KeyS',
-						'KeyT',
-						'KeyU',
-						'KeyV',
-						'KeyW',
-						'KeyX',
-						'KeyY',
-						'KeyZ',
-						'Minus',
-						'Period',
-						'Quote',
-						'Semicolon',
-						'Slash'
-					];
-					if (caniuse(() => navigator.keyboard.getLayoutMap)) {
-						const keyoardLayoutMap = await navigator.keyboard.getLayoutMap();
-						const writingSystemKeys= keys.map(key => {
-							const value = keyoardLayoutMap.get(key);
-							return { [key]: value }
-						});
-						return writingSystemKeys
-					}
-					return undefined
-				};
-				const writingSystemKeys = await getWritingSystemKeys();		
-				const timezoneOffset = new contentWindowDate().getTimezoneOffset();
-				const timezoneOffsetComputed = computeTimezoneOffset();
-				const timezoneOffsetMeasured = measureTimezoneOffset(timezoneOffset);
-				const measuredTimezones = timezoneOffsetMeasured.season.join(', ');
-				const matchingOffsets = timezoneOffsetComputed == timezoneOffset;
-				const notWithinParentheses = /.*\(|\).*/g;
-				const timezoneLocation = contentWindowIntl.DateTimeFormat().resolvedOptions().timeZone;
-				const timezone = (''+new contentWindowDate()).replace(notWithinParentheses, '');
-				const relativeTime = getRelativeTime();
-				const locale = getLocale();
-				const timezoneOffsetHistory = { };
-				const timezoneOffsetUniqueYearHistory = { };
-				const years = [...Array(71)].map((val, i) => !i ? 1950 : 1950+i);
-				// unique years based work by https://arkenfox.github.io/TZP
-				const uniqueYears = [1879, 1884, 1894, 1900, 1921, 1952, 1957, 1976, 2018];
-				years.forEach(year => {
-					return (timezoneOffsetHistory[year] = getTimezoneOffsetSeasons(year))
-				});
-				uniqueYears.forEach(year => {
-					return (timezoneOffsetUniqueYearHistory[year] = getTimezoneOffsetSeasons(year))
-				});
-				// document lies
-				lied = (
+				const start = performance.now();
+				let lied = (
 					lieProps['Date.getTimezoneOffset'] ||
-					lieProps['Intl.Collator.resolvedOptions'] ||
 					lieProps['Intl.DateTimeFormat.resolvedOptions'] ||
-					lieProps['Intl.DisplayNames.resolvedOptions'] ||
-					lieProps['Intl.ListFormat.resolvedOptions'] ||
-					lieProps['Intl.NumberFormat.resolvedOptions'] ||
-					lieProps['Intl.PluralRules.resolvedOptions'] ||
 					lieProps['Intl.RelativeTimeFormat.resolvedOptions']
 				) || false;
-				const seasonLie = timezoneOffsetMeasured.lie ? { fingerprint: '', lies: [{ ['timezone seasons disagree']: true }] } : false;
-				const localeLie = locale.lie ? { fingerprint: '', lies: [{ ['Intl locales mismatch']: true }] } : false;
-				
-				if (seasonLie) {
-					lied = true;
-					documentLie('Date', measuredTimezones, seasonLie);
-				}
-				if (localeLie) {
-					lied = true;
-					documentLie('Intl', locale, localeLie);	
-				}
-				const timezoneHistoryLocation = await hashify(timezoneOffsetUniqueYearHistory);
+				const phantomDate = phantomDarkness ? phantomDarkness.Date : Date;
+				const phantomIntl = phantomDarkness ? phantomDarkness.Intl : Date;
+
+				const year = 1113;
+				const { timeZone } = phantomIntl.DateTimeFormat().resolvedOptions();
+				const decrypted = decryptLocation({ year, timeZone, phantomIntl, phantomDate });
+				const locationEpoch = +new Date(new Date(`7/1/${year}`));
+				const notWithinParentheses = /.*\(|\).*/g;
 				const data =  {
-					timezone,
-					timezoneLocation,
-					timezoneHistoryLocation,
-					timezoneOffset,
-					timezoneOffsetComputed,
-					timezoneOffsetMeasured: measuredTimezones,
-					timezoneOffsetHistory,
-					matchingOffsets,
-					relativeTime,
-					locale,
-					writingSystemKeys,
+					zone: (''+new phantomDate()).replace(notWithinParentheses, ''),
+					location: formatLocation(timeZone),
+					locationMeasured: formatLocation(decrypted),
+					locationEpoch,
+					offset: new phantomDate().getTimezoneOffset(),
+					offsetComputed: getTimezoneOffset(phantomDate),
 					lied
 				};
-				const $hash = await hashify(data);
-				logTestResult({ test: 'timezone', passed: true });
-				return resolve({...data, $hash })
+				logTestResult({ start, test: 'timezone', passed: true });
+				return resolve({ ...data })
 			}
 			catch (error) {
 				logTestResult({ test: 'timezone', passed: false });
@@ -3778,88 +4089,83 @@
 
 		const {
 			require: {
-				hashify,
 				captureError,
-				contentWindow,
-				logTestResult
+				phantomDarkness,
+				logTestResult,
+				isChrome,
 			}
 		} = imports;
 			
 		return new Promise(async resolve => {
 			try {
-				const win = contentWindow ? contentWindow : window;
-				let voices = [];
-				const respond = async (resolve, voices) => {
-					voices = voices.map(({ name, lang }) => ({ name, lang }));
-					const check = {};
-					check.microsoft = voices.filter(key => (/microsoft/i).test(key.name)).length;
-					check.google = voices.filter(key => (/google/i).test(key.name)).length;
-					check.chromeOS = voices.filter(key => (/chrome os/i).test(key.name)).length;
-					check.android = voices.filter(key => (/android/i).test(key.name)).length;
-					const $hash = await hashify(voices);
-					logTestResult({ test: 'speech', passed: true });
-					return resolve({ voices, ...check, $hash })
-				};
-				if (!('speechSynthesis' in win)) {
+				const start = performance.now();
+				const win = phantomDarkness ? phantomDarkness : window;
+				if (!('speechSynthesis' in win && 'onvoiceschanged' in speechSynthesis)) {
 					logTestResult({ test: 'speech', passed: false });
 					return resolve()
 				}
-				else if (!('chrome' in win)) {
-					voices = await win.speechSynthesis.getVoices();
-					return respond(resolve, voices)
-				}
-				else if (!win.speechSynthesis.getVoices || win.speechSynthesis.getVoices() == undefined) {
-					logTestResult({ test: 'speech', passed: false });
-					return resolve()
-				}
-				else if (win.speechSynthesis.getVoices().length) {
-					voices = win.speechSynthesis.getVoices();
-					return respond(resolve, voices)
-				} else {
-					win.speechSynthesis.onvoiceschanged = () => {
-						voices = win.speechSynthesis.getVoices();
-						return resolve(new Promise(resolve => respond(resolve, voices)))
+				let success = false;
+				const awaitVoices = () => {
+					const data = win.speechSynthesis.getVoices();
+					if (!data.length) {
+						return
+					}
+					success = true;
+					const voices = data.map(({ name, lang }) => ({ name, lang }));
+					const check = {
+						microsoft: voices.filter(key => (/microsoft/i).test(key.name)).length,
+						google: voices.filter(key => (/google/i).test(key.name)).length,
+						chromeOS: voices.filter(key => (/chrome os/i).test(key.name)).length,
+						android: voices.filter(key => (/android/i).test(key.name)).length
 					};
-				}
+					logTestResult({ start, test: 'speech', passed: true });
+					return resolve({ voices, ...check, })
+				};
+				
+				awaitVoices();
+				win.speechSynthesis.onvoiceschanged = awaitVoices;
+				setTimeout(() => {
+					return !success ? resolve() : undefined
+				}, 10);
 			}
 			catch (error) {
 				logTestResult({ test: 'speech', passed: false });
 				captureError(error);
-				return resolve(undefined)
+				return resolve()
 			}
 		})
 	};
 
-	const getWebRTCData = (imports, cloudflare) => {
+	const getWebRTCData = imports => {
 
 		const {
 			require: {
 				isFirefox,
-				hashify,
 				captureError,
 				caniuse,
-				contentWindow,
+				phantomDarkness,
 				logTestResult
 			}
 		} = imports;
 		
-		return new Promise(resolve => {
+		return new Promise(async resolve => {
 			try {
+				const start = performance.now();
 				let rtcPeerConnection;
-				if (contentWindow && !isFirefox) { // FF throws an error in iframes
+				try {
 					rtcPeerConnection = (
-						contentWindow.RTCPeerConnection ||
-						contentWindow.webkitRTCPeerConnection ||
-						contentWindow.mozRTCPeerConnection ||
-						contentWindow.msRTCPeerConnection
+						phantomDarkness.RTCPeerConnection ||
+						phantomDarkness.webkitRTCPeerConnection ||
+						phantomDarkness.mozRTCPeerConnection ||
+						phantomDarkness.msRTCPeerConnection
 					);
 				}
-				else {
+				catch (error) {
 					rtcPeerConnection = (
-						window.RTCPeerConnection ||
-						window.webkitRTCPeerConnection ||
-						window.mozRTCPeerConnection ||
-						window.msRTCPeerConnection
+						RTCPeerConnection ||
+						webkitRTCPeerConnection ||
+						mozRTCPeerConnection ||
+						msRTCPeerConnection
 					);
 				}
 				
@@ -3894,24 +4200,22 @@
 						const ipAddress = caniuse(() => e.candidate.address);
 						const candidateIpAddress = caniuse(() => encodingMatch[0].split(' ')[2]);
 						const connectionLineIpAddress = caniuse(() => sdp.match(connectionLineEncoding)[0].trim().split(' ')[2]);
-						const successIpAddresses = [
-							ipAddress, 
-							candidateIpAddress, 
-							connectionLineIpAddress
-						].filter(ip => ip != undefined);
-						const setSize = new Set(successIpAddresses).size;
-						const cloudflareIp = cloudflare && 'ip' in cloudflare ? cloudflare.ip : undefined;
+
+						const type = caniuse(() => /typ ([a-z]+)/.exec(candidate)[1]);
+						const foundation = caniuse(() => /candidate:(\d+)\s/.exec(candidate)[1]);
+						const protocol = caniuse(() => /candidate:\d+ \w+ (\w+)/.exec(candidate)[1]);
+
 						const data = {
-							['webRTC leak']: cloudflareIp && (
-								!!ipAddress && ipAddress != cloudflareIp
-							) ? 'maybe' : 'unknown',
 							['ip address']: ipAddress,
 							candidate: candidateIpAddress,
-							connection: connectionLineIpAddress
+							connection: connectionLineIpAddress,
+							type,
+							foundation,
+							protocol
 						};
-						const $hash = await hashify(data);
-						logTestResult({ test: 'webrtc', passed: true });
-						return resolve({ ...data, $hash })
+						
+						logTestResult({ start, test: 'webrtc', passed: true });
+						return resolve({ ...data })
 					} else {
 						return
 					}
@@ -3919,6 +4223,7 @@
 				
 				setTimeout(() => {
 					if (!success) {
+						
 						logTestResult({ test: 'webrtc', passed: false });
 						captureError(new Error('RTCIceCandidate failed'));
 						return resolve()
@@ -3939,11 +4244,19 @@
 
 	const source = 'creepworker.js';
 
-	const getDedicatedWorker = contentWindow => {
+	const getDedicatedWorker = phantomDarkness => {
 		return new Promise(resolve => {
 			try {
+				if (phantomDarkness && !phantomDarkness.Worker) {
+					return resolve()
+				}
+				else if (
+					phantomDarkness && phantomDarkness.Worker.prototype.constructor.name != 'Worker'
+				) {
+					throw new Error('Worker tampered with by client')
+				}
 				const worker = (
-					contentWindow ? contentWindow.Worker : Worker
+					phantomDarkness ? phantomDarkness.Worker : Worker
 				);
 				const dedicatedWorker = new worker(source);
 				dedicatedWorker.onmessage = message => {
@@ -3952,16 +4265,27 @@
 				};
 			}
 			catch(error) {
+				console.error(error);
+				captureError(error);
 				return resolve()
 			}
 		})
 	};
 
-	const getSharedWorker = contentWindow => {
+	const getSharedWorker = phantomDarkness => {
 		return new Promise(resolve => {
 			try {
+				if (phantomDarkness && !phantomDarkness.SharedWorker) {
+					return resolve()
+				}
+				else if (
+					phantomDarkness && phantomDarkness.SharedWorker.prototype.constructor.name != 'SharedWorker'
+				) {
+					throw new Error('SharedWorker tampered with by client')
+				}
+
 				const worker = (
-					contentWindow ? contentWindow.SharedWorker : SharedWorker
+					phantomDarkness ? phantomDarkness.SharedWorker : SharedWorker
 				);
 				const sharedWorker = new worker(source);
 				sharedWorker.port.start();
@@ -3972,6 +4296,7 @@
 			}
 			catch(error) {
 				console.error(error);
+				captureError(error);
 				return resolve()
 			}
 		})
@@ -3980,6 +4305,13 @@
 	const getServiceWorker = () => {
 		return new Promise(async resolve => {
 			try {
+				if (!('serviceWorker' in navigator)) {
+					return resolve()
+				}
+				else if (navigator.serviceWorker.__proto__.constructor.name != 'ServiceWorkerContainer') {
+					throw new Error('ServiceWorkerContainer tampered with by client')
+				}
+
 				navigator.serviceWorker.register(source).catch(error => {
 					console.error(error);
 					return resolve()
@@ -3999,6 +4331,7 @@
 			}
 			catch(error) {
 				console.error(error);
+				captureError(error);
 				return resolve()
 			}
 		})
@@ -4007,44 +4340,40 @@
 	const getBestWorkerScope = imports => {	
 		const {
 			require: {
-				isFirefox,
 				getOS,
-				hashify,
 				captureError,
 				caniuse,
-				contentWindow,
+				phantomDarkness,
 				getUserAgentPlatform,
 				logTestResult
 			}
 		} = imports;
 		return new Promise(async resolve => {
 			try {
+				const start = performance.now();
 				let type = 'service'; // loads fast but is not available in frames
 				let workerScope = await getServiceWorker()
 					.catch(error => console.error(error.message));
-				if (!workerScope) {
+				if (!caniuse(() => workerScope.userAgent)) {
 					type = 'shared'; // no support in Safari, iOS, and Chrome Android
-					workerScope = await getSharedWorker(contentWindow)
+					workerScope = await getSharedWorker(phantomDarkness)
 					.catch(error => console.error(error.message));
 				}
-				if (!workerScope) {
+				if (!caniuse(() => workerScope.userAgent)) {
 					type = 'dedicated'; // simulators & extensions can spoof userAgent
-					workerScope = await getDedicatedWorker(contentWindow)
+					workerScope = await getDedicatedWorker(phantomDarkness)
 					.catch(error => console.error(error.message));
 				}
-				if (workerScope) {
-					const { canvas2d, timezoneHistoryLocation } = workerScope || {};
+				if (caniuse(() => workerScope.userAgent)) {
+					const { canvas2d } = workerScope || {};
 					workerScope.system = getOS(workerScope.userAgent);
 					workerScope.device = getUserAgentPlatform({ userAgent: workerScope.userAgent });
-					workerScope.canvas2d = { dataURI: canvas2d, $hash: await hashify(canvas2d) };
-					workerScope.timezoneHistoryLocation = await hashify(timezoneHistoryLocation);
+					workerScope.canvas2d = { dataURI: canvas2d };
 					workerScope.type = type;
-					const $hash = await hashify(workerScope);
-					logTestResult({ test: `${type} worker`, passed: true });
-					return resolve({ ...workerScope, $hash })
+					logTestResult({ start, test: `${type} worker`, passed: true });
+					return resolve({ ...workerScope })
 				}
 				return resolve()
-				
 			}
 			catch (error) {
 				logTestResult({ test: 'worker', passed: false });
@@ -4090,71 +4419,97 @@
 			errorsCaptured,
 			trashBin,
 			lieRecords,
-			// nested contentWindow
-			contentWindow,
-			parentNest,
-			hyperNestedIframeWindow
+			phantomDarkness,
+			parentPhantom,
+			dragonFire,
+			dragonOfDeath,
+			parentDragon,
+			getPluginLies
 		}
 	}
 	// worker.js
 
 	;(async imports => {
+
+		const {
+			require: {
+				instanceId,
+				hashMini,
+				patch,
+				html,
+				note,
+				count,
+				modal,
+				caniuse
+			}
+		} = imports;
 		
 		const fingerprint = async () => {
 			const timeStart = timer();
+			
+			/*
+			const windowFeaturesComputed = await getWindowFeatures(imports)
+			const htmlElementVersionComputed = await getHTMLElementVersion(imports)
+			const cssComputed = await getCSS(imports)
+			const screenComputed = await getScreen(imports)
+			const voicesComputed = await getVoices(imports)
+			const canvas2dComputed = await getCanvas2d(imports)
+			const canvasWebglComputed = await getCanvasWebgl(imports)
+			const mathsComputed = await getMaths(imports)
+			const consoleErrorsComputed = await getConsoleErrors(imports)
+			const timezoneComputed = await getTimezone(imports)
+			const clientRectsComputed = await getClientRects(imports)
+			const offlineAudioContextComputed = await getOfflineAudioContext(imports)
+			const fontsComputed = await getFonts(imports, [...fontList])
+				.catch(error => { console.error(error.message)})
+			const workerScopeComputed = await getBestWorkerScope(imports)
+			const mediaComputed = await getMedia(imports)
+			const webRTCDataComputed = await getWebRTCData(imports)
+			const navigatorComputed = await getNavigator(imports, workerScopeComputed)
+				.catch(error => console.error(error.message))
+			*/
+			
 			const [
-				cloudflareComputed,
-				iframeContentWindowVersionComputed,
+				windowFeaturesComputed,
 				htmlElementVersionComputed,
-				cssStyleDeclarationVersionComputed,
+				cssComputed,
+				cssMediaComputed,
 				screenComputed,
 				voicesComputed,
-				mediaTypesComputed,
 				canvas2dComputed,
-				canvasBitmapRendererComputed,
 				canvasWebglComputed,
 				mathsComputed,
 				consoleErrorsComputed,
 				timezoneComputed,
 				clientRectsComputed,
 				offlineAudioContextComputed,
-				fontsComputed
+				fontsComputed,
+				workerScopeComputed,
+				mediaComputed,
+				webRTCDataComputed
 			] = await Promise.all([
-				getCloudflare(imports),
-				getIframeContentWindowVersion(imports),
+				getWindowFeatures(imports),
 				getHTMLElementVersion(imports),
-				getCSSStyleDeclarationVersion(imports),
+				getCSS(imports),
+				getCSSMedia(imports),
 				getScreen(imports),
 				getVoices(imports),
-				getMediaTypes(imports),
 				getCanvas2d(imports),
-				getCanvasBitmapRenderer(imports),
 				getCanvasWebgl(imports),
 				getMaths(imports),
 				getConsoleErrors(imports),
 				getTimezone(imports),
 				getClientRects(imports),
 				getOfflineAudioContext(imports),
-				getFonts(imports, [...fontList, ...notoFonts])
-			]).catch(error => {
-				console.error(error.message);
-			});
-
-			const [
-				workerScopeComputed,
-				mediaDevicesComputed,
-				webRTCDataComputed
-			] = await Promise.all([
+				getFonts(imports, [...fontList]),
 				getBestWorkerScope(imports),
-				getMediaDevices(imports),
-				getWebRTCData(imports, cloudflareComputed)
-			]).catch(error => {
-				console.error(error.message);
-			});
+				getMedia(imports),
+				getWebRTCData(imports)
+			]).catch(error => console.error(error.message));
 
 			const navigatorComputed = await getNavigator(imports, workerScopeComputed)
 				.catch(error => console.error(error.message));
-
+			
 			const [
 				liesComputed,
 				trashComputed,
@@ -4163,44 +4518,90 @@
 				getLies(imports),
 				getTrash(imports),
 				getCapturedErrors(imports)
-			]).catch(error => {
-				console.error(error.message);
-			});
+			]).catch(error => console.error(error.message));
+
+			//const start = performance.now()
+			const [
+				windowHash,
+				htmlHash,
+				cssMediaHash,
+				cssHash,
+				screenHash,
+				voicesHash,
+				canvas2dHash,
+				canvasWebglHash,
+				mathsHash,
+				consoleErrorsHash,
+				timezoneHash,
+				rectsHash,
+				audioHash,
+				fontsHash,
+				workerHash,
+				mediaHash,
+				webRTCHash,
+				navigatorHash,
+				liesHash,
+				trashHash,
+				errorsHash
+			] = await Promise.all([
+				hashify(windowFeaturesComputed),
+				hashify(htmlElementVersionComputed.keys),
+				hashify(cssMediaComputed),
+				hashify(cssComputed),
+				hashify(screenComputed),
+				hashify(voicesComputed),
+				hashify(canvas2dComputed),
+				hashify(canvasWebglComputed),
+				hashify(mathsComputed.data),
+				hashify(consoleErrorsComputed.errors),
+				hashify(timezoneComputed),
+				hashify(clientRectsComputed),
+				hashify(offlineAudioContextComputed),
+				hashify(fontsComputed),
+				hashify(workerScopeComputed),
+				hashify(mediaComputed),
+				hashify(webRTCDataComputed),
+				hashify(navigatorComputed),
+				hashify(liesComputed),
+				hashify(trashComputed),
+				hashify(capturedErrorsComputed)
+			]).catch(error => console.error(error.message));
+			//console.log(performance.now()-start)
 
 			const timeEnd = timeStart();
 
-			if (parentNest) {
-				parentNest.remove();
+			if (parentPhantom) {
+				parentPhantom.parentNode.removeChild(parentPhantom);
 			}
-
+			if (parentDragon) {
+				parentDragon.parentNode.removeChild(parentDragon);
+			}
+			
 			const fingerprint = {
-				workerScope: workerScopeComputed,
-				cloudflare: cloudflareComputed,
-				webRTC: webRTCDataComputed,
-				navigator: navigatorComputed,
-				iframeContentWindowVersion: iframeContentWindowVersionComputed,
-				htmlElementVersion: htmlElementVersionComputed,
-				cssStyleDeclarationVersion: cssStyleDeclarationVersionComputed,
-				screen: screenComputed,
-				voices: voicesComputed,
-				mediaDevices: mediaDevicesComputed,
-				mediaTypes: mediaTypesComputed,
-				canvas2d: canvas2dComputed,
-				canvasBitmapRenderer: canvasBitmapRendererComputed,
-				canvasWebgl: canvasWebglComputed,
-				maths: mathsComputed,
-				consoleErrors: consoleErrorsComputed,
-				timezone: timezoneComputed,
-				clientRects: clientRectsComputed,
-				offlineAudioContext: offlineAudioContextComputed,
-				fonts: fontsComputed,
-				lies: liesComputed,
-				trash: trashComputed,
-				capturedErrors: capturedErrorsComputed
+				workerScope: !workerScopeComputed ? undefined : { ...workerScopeComputed, $hash: workerHash },
+				webRTC: !webRTCDataComputed ? undefined : {...webRTCDataComputed, $hash: webRTCHash },
+				navigator: !navigatorComputed ? undefined : {...navigatorComputed, $hash: navigatorHash },
+				windowFeatures: !windowFeaturesComputed ? undefined : {...windowFeaturesComputed, $hash: windowHash },
+				htmlElementVersion: !htmlElementVersionComputed ? undefined : {...htmlElementVersionComputed, $hash: htmlHash },
+				cssMedia: !cssMediaComputed ? undefined : {...cssMediaComputed, $hash: cssMediaHash },
+				css: !cssComputed ? undefined : {...cssComputed, $hash: cssHash },
+				screen: !screenComputed ? undefined : {...screenComputed, $hash: screenHash },
+				voices: !voicesComputed ? undefined : {...voicesComputed, $hash: voicesHash },
+				media: !mediaComputed ? undefined : {...mediaComputed, $hash: mediaHash },
+				canvas2d: !canvas2dComputed ? undefined : {...canvas2dComputed, $hash: canvas2dHash },
+				canvasWebgl: !canvasWebglComputed ? undefined : {...canvasWebglComputed, $hash: canvasWebglHash },
+				maths: !mathsComputed ? undefined : {...mathsComputed, $hash: mathsHash },
+				consoleErrors: !consoleErrorsComputed ? undefined : {...consoleErrorsComputed, $hash: consoleErrorsHash },
+				timezone: !timezoneComputed ? undefined : {...timezoneComputed, $hash: timezoneHash },
+				clientRects: !clientRectsComputed ? undefined : {...clientRectsComputed, $hash: rectsHash },
+				offlineAudioContext: !offlineAudioContextComputed ? undefined : {...offlineAudioContextComputed, $hash: audioHash },
+				fonts: !fontsComputed ? undefined : {...fontsComputed, $hash: fontsHash },
+				lies: !liesComputed ? undefined : {...liesComputed, $hash: liesHash },
+				trash: !trashComputed ? undefined : {...trashComputed, $hash: trashHash },
+				capturedErrors: !capturedErrorsComputed ? undefined : {...capturedErrorsComputed, $hash: errorsHash },
 			};
 			return { fingerprint, timeEnd }
 		};
-		
 		// fingerprint and render
 		const { fingerprint: fp, timeEnd } = await fingerprint().catch(error => console.error(error));
 
@@ -4260,7 +4661,6 @@
 				system: fp.workerScope.system,
 				device: fp.workerScope.device,
 				timezoneLocation: fp.workerScope.timezoneLocation,
-				timezoneHistoryLocation: fp.workerScope.timezoneHistoryLocation,
 				['webgl renderer']: (
 					!!liesLen && isBrave ? distrust : 
 					fp.workerScope.webglRenderer
@@ -4270,76 +4670,48 @@
 					fp.workerScope.webglVendor
 				)
 			} : undefined,
-			mediaDevices: fp.mediaDevices,
-			mediaTypes: fp.mediaTypes,
+			media: fp.media,
 			canvas2d: ( 
 				!fp.canvas2d || fp.canvas2d.lied ? undefined : 
 				fp.canvas2d
 			),
-			canvasBitmapRenderer: (
-				!fp.canvasBitmapRenderer || fp.canvasBitmapRenderer.lied ? undefined : 
-				fp.canvasBitmapRenderer
+			canvasWebgl: ( 
+				!fp.canvasWebgl || fp.canvasWebgl.lied ? undefined : 
+				fp.canvasWebgl
 			),
-			canvasWebgl: (
-				!!fp.canvasWebgl && !!liesLen && isBrave ? {
-					specs: {
-						webgl2Specs: attempt(() => {
-							const { webgl2Specs } = fp.canvasWebgl.specs || {};
-							const clone = {...webgl2Specs};
-							const blocked = /vertex|fragment|varying|bindings|combined|interleaved/i;
-							Object.keys(clone || {}).forEach(key => blocked.test(key) && (delete clone[key]));
-							return clone
-						}) || fp.canvasWebgl.specs.webgl2Specs,
-						webglSpecs: attempt(() => {
-							const { webglSpecs } = fp.canvasWebgl.specs || {};
-							const clone = {...webglSpecs};
-							const blocked = /vertex|fragment/i;
-							Object.keys(clone || {}).forEach(key => blocked.test(key) && (delete clone[key]));
-							return clone
-						}) || fp.canvasWebgl.specs.webglSpecs
-					}
-				}
-				: !!fp.canvasWebgl && !!liesLen && isFirefox ? {
-					supported: fp.canvasWebgl.supported,
-					supported2: fp.canvasWebgl.supported2,
-					specs: fp.canvasWebgl.specs
-				}
-				: !fp.canvasWebgl || fp.canvasWebgl.lied ? undefined : {
-					supported: fp.canvasWebgl.supported,
-					supported2: fp.canvasWebgl.supported2,
-					dataURI: fp.canvasWebgl.dataURI,
-					dataURI2: fp.canvasWebgl.dataURI2,
-					matchingDataURI: fp.canvasWebgl.matchingDataURI,
-					matchingUnmasked: fp.canvasWebgl.matchingUnmasked,
-					specs: fp.canvasWebgl.specs,
-					unmasked: fp.canvasWebgl.unmasked,
-					unmasked2: fp.canvasWebgl.unmasked2
-				}
-			),
+			cssMedia: !fp.cssMedia ? undefined : {
+				reducedMotion: caniuse(() => fp.cssMedia.mediaCSS.reducedMotion),
+				colorScheme: caniuse(() => fp.cssMedia.mediaCSS.colorScheme),
+				monochrome: caniuse(() => fp.cssMedia.mediaCSS.monochrome),
+				invertedColors: caniuse(() => fp.cssMedia.mediaCSS.invertedColors),
+				forcedColors: caniuse(() => fp.cssMedia.mediaCSS.forcedColors),
+				anyHover: caniuse(() => fp.cssMedia.mediaCSS.anyHover),
+				hover: caniuse(() => fp.cssMedia.mediaCSS.hover),
+				anyPointer: caniuse(() => fp.cssMedia.mediaCSS.anyPointer),
+				pointer: caniuse(() => fp.cssMedia.mediaCSS.pointer),
+				colorGamut: caniuse(() => fp.cssMedia.mediaCSS.colorGamut),
+				screenQuery: caniuse(() => fp.cssMedia.mediaCSS.screenQuery),
+			},
+			css: !fp.css ? undefined : {
+				prototype: caniuse(() => fp.css.getComputedStyle.prototypeName),
+				system: caniuse(() => fp.css.system)
+			},
 			maths: !fp.maths || fp.maths.lied ? undefined : fp.maths,
 			consoleErrors: fp.consoleErrors,
-			// avoid random timezone fingerprint values
 			timezone: !fp.timezone || fp.timezone.lied ? undefined : {
-				timezone: fp.timezone.timezone,
-				timezoneLocation: fp.timezone.timezoneLocation,
-				timezoneHistoryLocation: fp.timezone.timezoneHistoryLocation,
-				timezoneOffsetHistory: fp.timezone.timezoneOffsetHistory,
-				relativeTime: fp.timezone.relativeTime,
-				locale: fp.timezone.locale,
-				writingSystemKeys: fp.timezone.writingSystemKeys,
-				lied: fp.timezone.lied
+				locationMeasured: fp.timezone.locationMeasured
 			},
 			clientRects: !fp.clientRects || fp.clientRects.lied ? undefined : fp.clientRects,
 			offlineAudioContext: (
-				!!liesLen && isBrave ? fp.offlineAudioContext.values :
+				!!liesLen && isBrave && !!fp.offlineAudioContext ? fp.offlineAudioContext.values :
 				!fp.offlineAudioContext || fp.offlineAudioContext.lied ? undefined :
 				fp.offlineAudioContext
 			),
-			fonts: fp.fonts,
+			fonts: !fp.fonts || fp.fonts.lied ? undefined : fp.fonts,
 			// skip trash since it is random
 			lies: !('data' in fp.lies) ? false : !!liesLen,
 			capturedErrors: !!errorsLen,
-			voices: isFirefox ? distrust : fp.voices // Firefox is inconsistent
+			voices: fp.voices
 		};
 
 		console.log('%c✔ stable fingerprint passed', 'color:#4cca9f');
@@ -4363,20 +4735,7 @@
 		const hasTrash = !!trashLen;
 		const { lies: hasLied, capturedErrors: hasErrors } = creep;
 
-		// patch dom
-		const {
-			require: {
-				instanceId,
-				hashMini,
-				patch,
-				html,
-				note,
-				count,
-				modal,
-				caniuse
-			}
-		} = imports;
-		
+		// patch dom	
 		const el = document.getElementById('fingerprint-data');
 		patch(el, html`
 	<div id="fingerprint-data">
@@ -4410,12 +4769,12 @@
 		</div>
 		<div class="flex-grid">
 			${(() => {
-				const { trash: { trashBin, $hash } } = fp;
+				const { trash: { trashBin } } = fp;
 				const trashLen = trashBin.length;
 				return `
 				<div class="col-four${trashLen ? ' trash': ''}">
 					<strong>Trash</strong>${
-						trashLen ? `<span class="hash">${hashMini($hash)}</span>` : ''
+						trashLen ? `<span class="hash">${hashMini(trashBin)}</span>` : ''
 					}
 					<div>gathered (${!trashLen ? '0' : ''+trashLen }): ${
 						trashLen ? modal(
@@ -4426,12 +4785,12 @@
 				</div>`
 			})()}
 			${(() => {
-				const { lies: { data, totalLies, $hash } } = fp; 
+				const { lies: { data, totalLies } } = fp; 
 				const toJSONFormat = obj => JSON.stringify(obj, null, '\t');
 				const sanitize = str => str.replace(/\</g, '&lt;');
 				return `
 				<div class="col-four${totalLies ? ' lies': ''}">
-					<strong>Lies</strong>${totalLies ? `<span class="hash">${hashMini($hash)}</span>` : ''}
+					<strong>Lies</strong>${totalLies ? `<span class="hash">${hashMini(data)}</span>` : ''}
 					<div>unmasked (${!totalLies ? '0' : ''+totalLies }): ${
 						totalLies ? modal('creep-lies', Object.keys(data).map(key => {
 							const { name, lieTypes: { lies, fingerprint } } = data[key];
@@ -4453,11 +4812,11 @@
 				</div>`
 			})()}
 			${(() => {
-				const { capturedErrors: { data, $hash } } = fp;
+				const { capturedErrors: { data } } = fp;
 				const len = data.length;
 				return `
 				<div class="col-four${len ? ' errors': ''}">
-					<strong>Errors</strong>${len ? `<span class="hash">${hashMini($hash)}</span>` : ''}
+					<strong>Errors</strong>${len ? `<span class="hash">${hashMini(data)}</span>` : ''}
 					<div>captured (${!len ? '0' : ''+len}): ${
 						len ? modal('creep-captured-errors', Object.keys(data).map((key, i) => `${i+1}: ${data[key].trustedName} - ${data[key].trustedMessage} `).join('<br>')) : ''
 					}</div>
@@ -4466,46 +4825,65 @@
 			})()}
 		</div>
 		<div class="flex-grid">
-			${!fp.cloudflare ?
-				`<div class="col-six">
-					<strong>Cloudflare</strong>
-					<div>ip address: ${note.blocked}</div>
-					<div>system: ${note.blocked}</div>
-					<div>ip location: ${note.blocked}</div>
-					<div>tls version: ${note.blocked}</div>
-				</div>` :
-			(() => {
-				const { cloudflare: { ip, uag, loc, tls, $hash } } = fp;
-				return `
-				<div class="col-six">
-					<strong>Cloudflare</strong><span class="hash">${hashMini($hash)}</span>
-					<div>ip address: ${ip ? ip : note.blocked}</div>
-					<div>system: ${uag ? uag : note.blocked}</div>
-					<div>ip location: ${loc ? loc : note.blocked}</div>
-					<div>tls version: ${tls ? tls : note.blocked}</div>
-				</div>
-				`
-			})()}
 			${!fp.webRTC ?
 				`<div class="col-six">
 					<strong>WebRTC</strong>
-					<div>webRTC leak: ${note.blocked}</div>
 					<div>ip address: ${note.blocked}</div>
 					<div>candidate: ${note.blocked}</div>
 					<div>connection: ${note.blocked}</div>
+					<div>type: ${note.blocked}</div>
+					<div>foundation: ${note.blocked}</div>
+					<div>protocol: ${note.blocked}</div>
 				</div>` :
 			(() => {
 				const { webRTC } = fp;
-				const { candidate, connection, $hash } = webRTC;
+				const { candidate, connection, type, foundation, protocol, $hash } = webRTC;
 				const ip = webRTC['ip address'];
 				const leak = webRTC['webRTC leak'];
 				return `
 				<div class="col-six">
 					<strong>WebRTC</strong><span class="hash">${hashMini($hash)}</span>
-					<div>webRTC leak: ${leak}</div>
-					<div>ip address: ${ip ? ip : note.blocked}</div>
-					<div>candidate: ${candidate ? candidate : note.blocked}</div>
-					<div>connection: ${connection ? connection : note.blocked}</div>
+					<div>ip address: ${ip ? ip : note.unsupported}</div>
+					<div>candidate: ${candidate ? candidate : note.unsupported}</div>
+					<div>connection: ${connection ? connection : note.unsupported}</div>
+					<div>type: ${type ? type : note.unsupported}</div>
+					<div>foundation: ${foundation ? foundation : note.unsupported}</div>
+					<div>protocol: ${protocol ? protocol : note.unsupported}</div>
+				</div>
+				`
+			})()}
+			${!fp.timezone ?
+				`<div class="col-six">
+					<strong>Timezone</strong>
+					<div>zone: ${note.blocked}</div>
+					<div>offset: ${note.blocked}</div>
+					<div>offset computed: ${note.blocked}</div>
+					<div>location: ${note.blocked}</div>
+					<div>measured: ${note.blocked}</div>
+					<div>epoch: ${note.blocked}</div>
+				</div>` :
+			(() => {
+				const {
+					timezone: {
+						$hash,
+						zone,
+						location,
+						locationMeasured,
+						locationEpoch,
+						offset,
+						offsetComputed,
+						lied
+					}
+				} = fp;
+				return `
+				<div class="col-six">
+					<strong>Timezone</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
+					<div>zone: ${zone}</div>
+					<div>offset: ${''+offset}</div>
+					<div>offset computed: ${''+offsetComputed}</div>
+					<div>location: ${location}</div>
+					<div>measured: ${locationMeasured}</div>
+					<div>epoch: ${locationEpoch}</div>
 				</div>
 				`
 			})()}			
@@ -4533,7 +4911,6 @@
 				<strong>Worker</strong>
 				<div>timezone offset: ${note.blocked}</div>
 				<div>location: ${note.blocked}</div>
-				<div>offset location: ${note.blocked}</div>
 				<div>language: ${note.blocked}</div>
 				<div>deviceMemory: ${note.blocked}</div>
 				<div>hardwareConcurrency: ${note.blocked}</div>
@@ -4558,7 +4935,6 @@
 				<strong>Worker</strong><span class="hash">${hashMini(data.$hash)}</span>
 				<div>timezone offset: ${data.timezoneOffset != undefined ? ''+data.timezoneOffset : note.unsupported}</div>
 				<div>location: ${data.timezoneLocation}</div>
-				<div>offset location:<span class="sub-hash">${hashMini(data.timezoneHistoryLocation)}</span></div>
 				<div>language: ${data.language || note.unsupported}</div>
 				<div>deviceMemory: ${data.deviceMemory || note.unsupported}</div>
 				<div>hardwareConcurrency: ${data.hardwareConcurrency || note.unsupported}</div>
@@ -4570,7 +4946,7 @@
 				}</div>
 				<div>canvas 2d:${
 					data.canvas2d && data.canvas2d.dataURI ?
-					`<span class="sub-hash">${hashMini(data.canvas2d.$hash)}</span>` :
+					`<span class="sub-hash">${hashMini(data.canvas2d.dataURI)}</span>` :
 					` ${note.unsupported}`
 				}</div>
 				<div>webgl vendor: ${data.webglVendor || note.unsupported}</div>
@@ -4636,7 +5012,7 @@
 				<strong>Canvas webgl</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
 				<div>matching renderer/vendor: ${''+matchingUnmasked}</div>
 				<div>matching data URI: ${''+matchingDataURI}</div>
-				<div>webgl:<span class="sub-hash">${hashMini(dataURI.$hash)}</span></div>
+				<div>webgl:<span class="sub-hash">${hashMini(dataURI)}</span></div>
 				<div>parameters (${count(webglSpecsKeys)}): ${
 					!webglSpecsKeys.length ? note.unsupported :
 					modal(`${id}-p-v1`, webglSpecsKeys.map(key => `${key}: ${webglSpecs[key]}`).join('<br>'))
@@ -4651,7 +5027,7 @@
 				</div>
 			</div>
 			<div class="col-six">
-				<div>webgl2:<span class="sub-hash">${hashMini(dataURI2.$hash)}</span></div>
+				<div>webgl2:<span class="sub-hash">${hashMini(dataURI2)}</span></div>
 				<div>parameters (${count(webgl2SpecsKeys)}): ${
 					!webgl2SpecsKeys.length ? note.unsupported :
 					modal(`${id}-p-v2`, webgl2SpecsKeys.map(key => `${key}: ${webgl2Specs[key]}`).join('<br>'))
@@ -4681,27 +5057,17 @@
 			</div>
 			`
 		})()}
-		${!fp.canvasBitmapRenderer ?
-			`<div class="col-six">
-				<strong>Canvas bitmaprenderer</strong> <span>${note.blocked}</span>
-			</div>` :
-		(() => {
-			const { canvasBitmapRenderer: { lied, $hash } } = fp;
-			return `
 			<div class="col-six">
-				<strong>Canvas bitmaprenderer</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
 			</div>
-			`
-		})()}
 		</div>
 		<div class="flex-grid">
 		${!fp.offlineAudioContext ?
-			`<div class="col-six">
+			`<div class="col-four">
 				<strong>Audio</strong>
 				<div>sample: ${note.blocked}</div>
 				<div>copy: ${note.blocked}</div>
 				<div>matching: ${note.blocked}</div>
-				<div>node values: ${note.blocked}</div>
+				<div>values: ${note.blocked}</div>
 			</div>` :
 		(() => {
 			const {
@@ -4715,19 +5081,18 @@
 				}
 			} = fp;
 			return `
-			<div class="col-six">
+			<div class="col-four">
 				<strong>Audio</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
-				<div>sample: ${binsSample[0]}</div>
-				<div>copy: ${''+copySample[0] == 'undefined' ? note.unsupported : copySample[0]}</div>
-				<div>matching: ${matching}</div>
-				<div>node values: ${
+				<div>sample:${''+binsSample[0] == 'undefined' ? ` ${note.unsupported}` : `<span class="sub-hash">${hashMini(binsSample[0])}</span>`}</div>
+				<div>copy:${''+copySample[0] == 'undefined' ? ` ${note.unsupported}`  : `<span class="sub-hash">${hashMini(copySample[0])}</span>`}</div>
+				<div>values: ${
 					modal('creep-offline-audio-context', Object.keys(values).map(key => `<div>${key}: ${values[key]}</div>`).join(''))
 				}</div>
 			</div>
 			`
 		})()}
 		${!fp.voices ?
-			`<div class="col-six">
+			`<div class="col-four">
 				<strong>Speech</strong>
 				<div>microsoft: ${note.blocked}</div>
 				<div>google: ${note.blocked}</div>
@@ -4748,7 +5113,7 @@
 			} = fp;
 			const voiceList = voices.map(voice => `${voice.name} (${voice.lang})`);
 			return `
-			<div class="col-six">
+			<div class="col-four">
 				<strong>Speech</strong><span class="hash">${hashMini($hash)}</span>
 				<div>microsoft: ${''+microsoft}</div>
 				<div>google: ${''+google}</div>
@@ -4758,61 +5123,28 @@
 			</div>
 			`
 		})()}
-		</div>
-		<div class="flex-grid">
-		${!fp.mediaTypes ?
-			`<div class="col-six">
-				<strong>Media Types</strong>
-				<div>results: ${note.blocked}</div>
-			</div>` :
-		(() => {
-			const {
-				mediaTypes: {
-					$hash,
-					mediaTypes
-				} 
-			} = fp;
-			const header = `<div>
-			<br>Audio play type [AP]
-			<br>Video play type [VP]
-			<br>Media Source support [MS]
-			<br>Media Recorder support [MR]
-			<br><br>[PR]=Probably, [MB]=Maybe, [TR]=True, [--]=False/""
-			<br>[AP][VP][MS][MR]</div>`;
-			const results = mediaTypes.map(type => {
-				const { mimeType, audioPlayType, videoPlayType, mediaSource, mediaRecorder } = type;
-				return `${audioPlayType == 'probably' ? '[PB]' : audioPlayType == 'maybe' ? '[MB]': '[--]'}${videoPlayType == 'probably' ? '[PB]' : videoPlayType == 'maybe' ? '[MB]': '[--]'}${mediaSource ? '[TR]' : '[--]'}${mediaRecorder ? '[TR]' : '[--]'}: ${mimeType}
-				`
-			});
-			return `
-			<div class="col-six" id="creep-media-types">
-				<strong>Media Types</strong><span class="hash">${hashMini($hash)}</span>
-				<div>results: ${
-					modal('creep-media-types', header+results.join('<br>'))
-				}</div>
-			</div>
-			`
-		})()}
-		${!fp.mediaDevices ?
-			`<div class="col-six">
-				<strong>Media Devices</strong>
+		${!fp.media ?
+			`<div class="col-four">
+				<strong>Media</strong>
 				<div>devices (0): ${note.blocked}</div>
 			</div>` :
 		(() => {
 			const {
-				mediaDevices: {
-					$hash,
-					mediaDevices
+				media: {
+					mediaDevices,
+					$hash
 				}
 			} = fp;
+
 			return `
-			<div class="col-six">
-				<strong>Media Devices</strong><span class="hash">${hashMini($hash)}</span>
+			<div class="col-four">
+				<strong>Media</strong><span class="hash">${hashMini($hash)}</span>
 				<div>devices (${count(mediaDevices)}):${mediaDevices && mediaDevices.length ? modal('creep-media-devices', mediaDevices.map(device => device.kind).join('<br>')) : note.blocked}</div>
 			</div>
 			`
 		})()}
 		</div>
+		
 		<div class="flex-grid">
 		${!fp.clientRects ?
 			`<div class="col-six">
@@ -4826,9 +5158,7 @@
 			const {
 				clientRects: {
 					$hash,
-					clientHash,
 					clientRects,
-					emojiHash,
 					emojiRects,
 					lied
 				}
@@ -4837,13 +5167,13 @@
 			return `
 			<div class="col-six">
 				<strong>DOMRect</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
-				<div>elements:<span class="sub-hash">${hashMini(clientHash)}</span></div>
+				<div>elements:<span class="sub-hash">${hashMini(clientRects)}</span></div>
 				<div>results: ${
 					modal(`${id}-elements`, clientRects.map(domRect => Object.keys(domRect).map(key => `<div>${key}: ${domRect[key]}</div>`).join('')).join('<br>') )
 				}</div>
-				<div>emojis v13.0:<span class="sub-hash">${hashMini(emojiHash)}</span></div>
+				<div>emojis v13.0:<span class="sub-hash">${hashMini(emojiRects)}</span></div>
 				<div>results: ${
-					modal(`${id}-emojis`, emojiRects.map(rect => rect.emoji).join('') )
+					modal(`${id}-emojis`, `<span style="font-size: 32px;">${emojiRects.map(rect => rect.emoji).join('')}</span>` )
 				}</div>
 			</div>
 			`
@@ -4858,102 +5188,13 @@
 				fonts: {
 					$hash,
 					fonts,
-				}
-			} = fp;
-			return `
-			<div class="col-six">
-				<strong>Fonts</strong><span class="hash">${hashMini($hash)}</span>
-				<div>results (${count(fonts)}): ${fonts && fonts.length ? modal('creep-fonts', fonts.join('<br>')) : note.blocked}</div>
-			</div>
-			`
-		})()}
-		</div>
-		<div class="flex-grid">
-		${!fp.timezone ?
-			`<div class="col-six">
-				<strong>Timezone</strong>
-				<div>zone: ${note.blocked}</div>
-				<div>offset: ${note.blocked}</div>
-				<div>offset computed: ${note.blocked}</div>
-				<div>matching offsets: ${note.blocked}</div>
-				<div>seasonal offsets: ${note.blocked}</div>	
-			</div>
-			<div class="col-six">
-				<div>location: ${note.blocked}</div>
-				<div>offset location: ${note.blocked}</div>
-				<div>offset history: ${note.blocked}</div>
-				<div>relativeTimeFormat: ${note.blocked}</div>
-				<div>locale language: ${note.blocked}</div>
-				<div>writing system keys: ${note.blocked}</div>
-			</div>` :
-		(() => {
-			const {
-				timezone: {
-					$hash,
-					timezone,
-					timezoneLocation,
-					timezoneHistoryLocation,
-					timezoneOffset: timezoneOffset,
-					timezoneOffsetComputed,
-					timezoneOffsetMeasured: measuredTimezones,
-					timezoneOffsetHistory,
-					matchingOffsets,
-					relativeTime,
-					locale,
-					writingSystemKeys,
 					lied
 				}
 			} = fp;
-			const id = 'creep-timezone';
 			return `
 			<div class="col-six">
-				<strong>Timezone</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
-				<div>zone: ${timezone}</div>
-				<div>offset: ${''+timezoneOffset}</div>
-				<div>offset computed: ${''+timezoneOffsetComputed}</div>
-				<div>matching offsets: ${''+matchingOffsets}</div>
-				<div>seasonal offsets: ${measuredTimezones}</div>
-			</div>
-			<div class="col-six">
-				<div>location: ${timezoneLocation}</div>
-				<div>offset location:<span class="sub-hash">${hashMini(timezoneHistoryLocation)}</span></div>
-				<div>offset history: ${
-					modal(`${id}-timezone-offset-history`, `
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>Jan</strong>&nbsp;&nbsp;&nbsp;<strong>Apr</strong>&nbsp;&nbsp;&nbsp;<strong>Jul</strong>&nbsp;&nbsp;&nbsp;<strong>Oct</strong><br>`+Object.keys(timezoneOffsetHistory).map(year => {
-						const baseYear = timezoneOffsetHistory[1950];
-						const seasons = timezoneOffsetHistory[year];
-						const jan = seasons[0];
-						const apr = seasons[1];
-						const jul = seasons[2];
-						const oct = seasons[3];
-						const style = `color: #2da568;background:#2da5681f;`;
-						return `
-							<strong>${year}</strong>: 
-							<span style="${baseYear[0] != jan ? style : ''}">${jan}</span> | 
-							<span style="${baseYear[1] != apr ? style : ''}">${apr}</span> | 
-							<span style="${baseYear[2] != jul ? style : ''}">${jul}</span> | 
-							<span style="${baseYear[3] != oct ? style : ''}">${oct}</span>
-						`
-					}).join('<br>'))
-				}</div>
-				<div>relativeTimeFormat: ${
-					!relativeTime ? note.unsupported : 
-					modal(`${id}-relative-time-format`, Object.keys(relativeTime).sort().map(key => `${key} => ${relativeTime[key]}`).join('<br>'))
-				}</div>
-				<div>locale language: ${locale.lang.join(', ')}</div>
-				<div>writing system keys: ${
-					!writingSystemKeys ? note.unsupported :
-					modal(`${id}-writing-system-keys`, writingSystemKeys.map(systemKey => {
-						const key = Object.keys(systemKey)[0];
-						const value = systemKey[key];
-						const style = `
-							background: #f6f6f6;
-							border-radius: 2px;
-							padding: 0px 5px;
-						`;
-						return `${key}: <span style="${style}">${value}</span>`
-					}).join('<br>'))
-				}</div>
+				<strong>Fonts</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
+				<div>results (${fonts ? count(fonts) : '0'}): ${fonts.length ? modal('creep-fonts', fonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>')) : note.blocked}</div>
 			</div>
 			`
 		})()}
@@ -5021,41 +5262,130 @@
 		})()}
 		</div>
 		<div class="flex-grid">
-		${!fp.cssStyleDeclarationVersion ?
+			
+		${!fp.css ?
 			`<div class="col-six">
-				<strong>Computed Style</strong>
-				<div>engine: ${note.blocked}</div>
-				<div>prototype: ${note.blocked}</div>
-				<div>getComputedStyle: ${note.blocked}</div>
-				<div>HTMLElement.style: ${note.blocked}</div>
-				<div>CSSRuleList.style: ${note.blocked}</div>
-				<div>matching: ${note.blocked}</div>
+				<strong>@media</strong>
+				<div>screen query: ${note.blocked}</div>
+				<div>device aspect ratio: ${note.blocked}</div>
+				<div>device screen: ${note.blocked}</div>
+				<div>display mode: ${note.unsupported}</div>
+				<div>orientation: ${note.unsupported}</div>
+				<div>motion: ${note.unsupported}</div>
+				<div>hover: ${note.unsupported}</div>
+				<div>any hover: ${note.unsupported}</div>
+				<div>pointer: ${note.unsupported}</div>
+				<div>any pointer: ${note.unsupported}</div>
+				<div>monochrome: ${note.unsupported}</div>
+				<div>color scheme: ${note.unsupported}</div>
+				<div>color gamut: ${note.unsupported}</div>
+				<div>forced colors: ${note.unsupported}</div>
+				<div>inverted colors: ${note.unsupported}</div>
 			</div>
 			<div class="col-six">
+				<strong>MediaQueryList</strong>
+				<div>screen query: ${note.blocked}</div>
+				<div>device aspect ratio: ${note.blocked}</div>
+				<div>device screen: ${note.blocked}</div>
+				<div>display mode: ${note.unsupported}</div>
+				<div>orientation: ${note.unsupported}</div>
+				<div>motion: ${note.unsupported}</div>
+				<div>hover: ${note.unsupported}</div>
+				<div>any hover: ${note.unsupported}</div>
+				<div>pointer: ${note.unsupported}</div>
+				<div>any pointer: ${note.unsupported}</div>
+				<div>monochrome: ${note.unsupported}</div>
+				<div>color scheme: ${note.unsupported}</div>
+				<div>color gamut: ${note.unsupported}</div>
+				<div>forced colors: ${note.unsupported}</div>
+				<div>inverted colors: ${note.unsupported}</div>
+			</div>` :
+		(() => {
+			const {
+				cssMedia: data
+			} = fp;
+			const {
+				$hash,
+				mediaCSS,
+				matchMediaCSS
+			} = data;
+			return `
+			<div class="col-six">
+				<strong>@media</strong><span class="hash">${hashMini(mediaCSS)}</span>
+				<div>screen query: ${''+mediaCSS.screenQuery.width} x ${''+mediaCSS.screenQuery.height}</div>
+				<div>screen match: ${mediaCSS.deviceScreen || note.blocked}</div>
+				<div>device aspect ratio: ${mediaCSS.deviceAspectRatio || note.blocked}</div>
+				<div>display mode: ${mediaCSS.displayMode || note.unsupported}</div>
+				<div>orientation: ${mediaCSS.orientation  || note.unsupported}</div>
+				<div>motion: ${mediaCSS.reducedMotion || note.unsupported}</div>
+				<div>hover: ${mediaCSS.hover || note.unsupported}</div>
+				<div>any hover: ${mediaCSS.anyHover || note.unsupported}</div>
+				<div>pointer: ${mediaCSS.pointer || note.unsupported}</div>
+				<div>any pointer: ${mediaCSS.anyPointer || note.unsupported}</div>
+				<div>monochrome: ${mediaCSS.monochrome || note.unsupported}</div>
+				<div>color scheme: ${mediaCSS.colorScheme || note.unsupported}</div>
+				<div>color gamut: ${mediaCSS.colorGamut || note.unsupported}</div>
+				<div>forced colors: ${mediaCSS.forcedColors || note.unsupported}</div>
+				<div>inverted colors: ${mediaCSS.invertedColors || note.unsupported}</div>
+			</div>
+			<div class="col-six">
+				<strong>MediaQueryList</strong><span class="hash">${hashMini(matchMediaCSS)}</span>
+				<div>screen query: ${''+matchMediaCSS.screenQuery.width} x ${''+matchMediaCSS.screenQuery.height}</div>
+				<div>screen match: ${matchMediaCSS.deviceScreen || note.blocked}</div>
+				<div>device aspect ratio: ${matchMediaCSS.deviceAspectRatio || note.blocked}</div>
+				<div>display mode: ${matchMediaCSS.displayMode || note.unsupported}</div>
+				<div>orientation: ${matchMediaCSS.orientation || note.unsupported}</div>
+				<div>motion: ${matchMediaCSS.reducedMotion || note.unsupported}</div>
+				<div>hover: ${matchMediaCSS.hover || note.unsupported}</div>
+				<div>any hover: ${matchMediaCSS.anyHover || note.unsupported}</div>
+				<div>pointer: ${matchMediaCSS.pointer || note.unsupported}</div>
+				<div>any pointer: ${matchMediaCSS.anyPointer || note.unsupported}</div>
+				<div>monochrome: ${matchMediaCSS.monochrome || note.unsupported}</div>
+				<div>color scheme: ${matchMediaCSS.colorScheme || note.unsupported}</div>
+				<div>color gamut: ${matchMediaCSS.colorGamut || note.unsupported}</div>
+				<div>forced colors: ${matchMediaCSS.forcedColors || note.unsupported}</div>
+				<div>inverted colors: ${matchMediaCSS.invertedColors || note.unsupported}</div>
+			</div>
+			`
+		})()}
+		</div>
+		<div class="flex-grid">
+		${!fp.css ?
+			`<div class="col-six">
+				<strong>Computed Style</strong>
+				<div>getComputedStyle: ${note.blocked}</div>
 				<div>keys: ${note.blocked}</div>
 				<div>moz: ${note.blocked}</div>
 				<div>webkit: ${note.blocked}</div>
 				<div>apple: ${note.blocked}</div>
+			</div>
+			<div class="col-six">
+				<div>engine: ${note.blocked}</div>
+				<div>prototype: ${note.blocked}</div>
 				<div>system styles: ${note.blocked}</div>
 				<div>system styles rendered: ${note.blocked}</div>
 			</div>` :
 		(() => {
 			const {
-				cssStyleDeclarationVersion: data
+				css: data
 			} = fp;
 			const {
 				$hash,
 				getComputedStyle: computedStyle,
-				matching,
 				system
 			} = data;
-			const cssRuleListstyle = data['CSSRuleList.style'];
-			const htmlElementStyle = data['HTMLElement.style'];
 			const id = 'creep-css-style-declaration-version';
-			const { prototypeName } = htmlElementStyle;
+			const { prototypeName } = computedStyle;
 			return `
 			<div class="col-six">
 				<strong>Computed Style</strong><span class="hash">${hashMini($hash)}</span>
+				<div>getComputedStyle:<span class="sub-hash">${hashMini(computedStyle.keys)}</span></div>
+				<div>keys: ${computedStyle.keys.length}</div>
+				<div>moz: ${''+computedStyle.moz}</div>
+				<div>webkit: ${''+computedStyle.webkit}</div>
+				<div>apple: ${''+computedStyle.apple}</div>
+			</div>
+			<div class="col-six">
 				<div>engine: ${
 					prototypeName == 'CSS2Properties' ? 'Gecko' :
 					prototypeName == 'CSS2PropertiesPrototype' ? 'Gecko (like Goanna)' :
@@ -5065,30 +5395,7 @@
 					'unknown'
 				}</div>
 				<div>prototype: ${prototypeName}</div>
-				${
-					Object.keys(data).map(key => {
-						const value = data[key];
-						return (
-							key != 'matching' && key != 'system' && key != '$hash' ?
-							`<div>${key}:${
-								value ? `<span class="sub-hash">${hashMini(value.$hash)}</span>` : ` ${note.blocked}`
-							}</div>` : 
-							''
-						)
-					}).join('')
-				}
-				<div>matching: ${''+matching}</div>
-			</div>
-			<div class="col-six">
-				<div>keys: ${computedStyle.keys.length}, ${htmlElementStyle.keys.length}, ${cssRuleListstyle.keys.length}
-				</div>
-				<div>moz: ${''+computedStyle.moz}, ${''+htmlElementStyle.moz}, ${''+cssRuleListstyle.moz}
-				</div>
-				<div>webkit: ${''+computedStyle.webkit}, ${''+htmlElementStyle.webkit}, ${''+cssRuleListstyle.webkit}
-				</div>
-				<div>apple: ${''+computedStyle.apple}, ${''+htmlElementStyle.apple}, ${''+cssRuleListstyle.apple}
-				</div>
-				<div>system styles:<span class="sub-hash">${hashMini(system.$hash)}</span></div>
+				<div>system styles:<span class="sub-hash">${hashMini(system)}</span></div>
 				<div>system styles rendered: ${
 					system && system.colors ? modal(
 						`${id}-system-styles`,
@@ -5168,7 +5475,7 @@
 			})()}
 			</div>
 			<div class="flex-grid">
-			${!fp.iframeContentWindowVersion ?
+			${!fp.windowFeatures?
 				`<div class="col-six">
 					<strong>Window</strong>
 					<div>keys (0): ${note.blocked}</div>
@@ -5178,7 +5485,7 @@
 				</div>` :
 			(() => {
 				const {
-					iframeContentWindowVersion: {
+					windowFeatures: {
 						$hash,
 						apple,
 						keys,
@@ -5337,6 +5644,11 @@
 			<strong>Tests</strong>
 			<div>
 				<a class="tests" href="./tests/workers.html">Workers</a>
+				<br><a class="tests" href="./tests/iframes.html">Iframes</a>
+				<br><a class="tests" href="./tests/fonts.html">Fonts</a>
+				<br><a class="tests" href="./tests/timezone.html">Timezone</a>
+				<br><a class="tests" href="./tests/window.html">Window Version</a>
+				<br><a class="tests" href="./tests/screen.html">Screen</a>
 			</div>
 		</div>
 	</div>
@@ -5350,10 +5662,14 @@
 			fetch(request)
 			.then(response => response.json())
 			.then(async data => {
-				console.log('\n\n⚡server response: ', JSON.stringify(data, null, '\t'));
-				fetchVisitorDataTimer('server response time');
-				const { firstVisit, lastVisit: latestVisit, looseFingerprints: subIds, visits, hasTrash, hasLied, hasErrors, signature } = data;
-				const subIdsLen = Object.keys(subIds).length;
+
+				console.groupCollapsed('Server Response');
+				console.log(JSON.stringify(data, null, '\t'));
+				fetchVisitorDataTimer('response time');
+				console.groupEnd();
+			
+				const { firstVisit, lastVisit: latestVisit, looseFingerprints: subIds, visits,looseSwitchCount: switchCount,  hasTrash, hasLied, hasErrors, signature } = data;
+				
 				const toLocaleStr = str => {
 					const date = new Date(str);
 					const dateString = date.toLocaleDateString();
@@ -5365,7 +5681,7 @@
 
 				// trust score
 				const score = (100-(
-					(subIdsLen < 2 ? 0 : subIdsLen-1 < 11 ? (subIdsLen-1) * 0.1 : (subIdsLen-1) * 0.2 ) +
+					(switchCount < 1 ? 0 : switchCount < 11 ? switchCount * 0.1 : switchCount * 0.2 ) +
 					(errorsLen * 5.2) +
 					(trashLen * 15.5) +
 					(liesLen * 31)
@@ -5415,8 +5731,8 @@
 								'false'
 							}</span></div>
 							<div class="ellipsis">loose fingerprint: <span class="unblurred">${hashMini(fpHash)}</span></div>
-							<div class="ellipsis">loose count: <span class="unblurred">${subIdsLen}</span></div>
-							<div class="ellipsis">bot: <span class="unblurred">${subIdsLen > 10 && hours < 48 ? 'true (10 loose in 48 hours)' : 'false'}</span></div>
+							<div class="ellipsis">loose switched: <span class="unblurred">${switchCount}x</span></div>
+							<div class="ellipsis">bot: <span class="unblurred">${switchCount > 9 && hours < 48 ? 'true (10 loose in 48 hours)' : 'false'}</span></div>
 						</div>
 					</div>
 					${
@@ -5479,15 +5795,35 @@
 						})
 					});
 				});
+				
+				const {
+					maths,
+					consoleErrors,
+					htmlElementVersion,
+					windowFeatures,
+					css
+				} = fp || {};
+				const {
+					getComputedStyle,
+					system
+				} = css || {};
 
+				const [
+					styleHash,
+					systemHash
+				] = await Promise.all([
+					hashify(getComputedStyle),
+					hashify(system)
+				]);
+					
 				const decryptRequest = `https://creepjs-6bd8e.web.app/decrypt?${[
 				`isBrave=${isBrave}`,
-				`mathId=${caniuse(() => fp.maths.$hash)}`,
-				`errorId=${caniuse(() => fp.consoleErrors.$hash)}`,
-				`htmlId=${caniuse(() => fp.htmlElementVersion.$hash)}`,
-				`winId=${caniuse(() => fp.iframeContentWindowVersion.$hash)}`,
-				`styleId=${caniuse(() => fp.cssStyleDeclarationVersion.getComputedStyle.$hash)}`,
-				`styleSystemId=${caniuse(() => fp.cssStyleDeclarationVersion.system.$hash)}`,
+				`mathId=${maths.$hash}`,
+				`errorId=${consoleErrors.$hash}`,
+				`htmlId=${htmlElementVersion.$hash}`,
+				`winId=${windowFeatures.$hash}`,
+				`styleId=${styleHash}`,
+				`styleSystemId=${systemHash}`,
 				`ua=${encodeURIComponent(caniuse(() => fp.workerScope.userAgent))}`
 			].join('&')}`;
 
@@ -5583,7 +5919,7 @@
 				})
 			})
 			.catch(error => {
-				fetchVisitorDataTimer('Error fetching visitor data');
+				fetchVisitorDataTimer('Error fetching version data');
 				patch(document.getElementById('loader'), html`<strong style="color:crimson">${error}</strong>`);
 				return console.error('Error!', error.message)
 			});
