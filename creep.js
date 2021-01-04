@@ -10,6 +10,7 @@ import { getOfflineAudioContext } from './modules/audio.js'
 import { getCanvas2d } from './modules/canvas2d.js'
 import { getCanvasWebgl } from './modules/canvasWebgl.js'
 import { getCSS } from './modules/computedStyle.js'
+import { getCSSMedia } from './modules/css.js'
 import { getConsoleErrors } from './modules/consoleErrors.js'
 import { getWindowFeatures } from './modules/contentWindowVersion.js'
 import { getFonts, fontList } from './modules/fonts.js'
@@ -115,6 +116,7 @@ const imports = {
 			windowFeaturesComputed,
 			htmlElementVersionComputed,
 			cssComputed,
+			cssMediaComputed,
 			screenComputed,
 			voicesComputed,
 			canvas2dComputed,
@@ -132,6 +134,7 @@ const imports = {
 			getWindowFeatures(imports),
 			getHTMLElementVersion(imports),
 			getCSS(imports),
+			getCSSMedia(imports),
 			getScreen(imports),
 			getVoices(imports),
 			getCanvas2d(imports),
@@ -164,6 +167,7 @@ const imports = {
 		const [
 			windowHash,
 			htmlHash,
+			cssMediaHash,
 			cssHash,
 			screenHash,
 			voicesHash,
@@ -185,6 +189,7 @@ const imports = {
 		] = await Promise.all([
 			hashify(windowFeaturesComputed),
 			hashify(htmlElementVersionComputed.keys),
+			hashify(cssMediaComputed),
 			hashify(cssComputed),
 			hashify(screenComputed),
 			hashify(voicesComputed),
@@ -221,6 +226,7 @@ const imports = {
 			navigator: !navigatorComputed ? undefined : {...navigatorComputed, $hash: navigatorHash },
 			windowFeatures: !windowFeaturesComputed ? undefined : {...windowFeaturesComputed, $hash: windowHash },
 			htmlElementVersion: !htmlElementVersionComputed ? undefined : {...htmlElementVersionComputed, $hash: htmlHash },
+			cssMedia: !cssMediaComputed ? undefined : {...cssMediaComputed, $hash: cssMediaHash },
 			css: !cssComputed ? undefined : {...cssComputed, $hash: cssHash },
 			screen: !screenComputed ? undefined : {...screenComputed, $hash: screenHash },
 			voices: !voicesComputed ? undefined : {...voicesComputed, $hash: voicesHash },
@@ -316,6 +322,19 @@ const imports = {
 			!fp.canvasWebgl || fp.canvasWebgl.lied ? undefined : 
 			fp.canvasWebgl
 		),
+		cssMedia: !fp.cssMedia ? undefined : {
+			reducedMotion: caniuse(() => fp.cssMedia.mediaCSS.reducedMotion),
+			colorScheme: caniuse(() => fp.cssMedia.mediaCSS.colorScheme),
+			monochrome: caniuse(() => fp.cssMedia.mediaCSS.monochrome),
+			invertedColors: caniuse(() => fp.cssMedia.mediaCSS.invertedColors),
+			forcedColors: caniuse(() => fp.cssMedia.mediaCSS.forcedColors),
+			anyHover: caniuse(() => fp.cssMedia.mediaCSS.anyHover),
+			hover: caniuse(() => fp.cssMedia.mediaCSS.hover),
+			anyPointer: caniuse(() => fp.cssMedia.mediaCSS.anyPointer),
+			pointer: caniuse(() => fp.cssMedia.mediaCSS.pointer),
+			colorGamut: caniuse(() => fp.cssMedia.mediaCSS.colorGamut),
+			screenQuery: caniuse(() => fp.cssMedia.mediaCSS.screenQuery),
+		},
 		css: !fp.css ? undefined : {
 			prototype: caniuse(() => fp.css.getComputedStyle.prototypeName),
 			system: caniuse(() => fp.css.system)
@@ -882,6 +901,94 @@ const imports = {
 				<div class="screen-frame" style="width:${deviceWidth}px;height:${deviceHeight}px;">
 					<div class="screen-glass"></div>
 				</div>
+			</div>
+			`
+		})()}
+		</div>
+		<div class="flex-grid">
+			
+		${!fp.css ?
+			`<div class="col-six">
+				<strong>@Media</strong>
+				<div>screen query: ${note.blocked}</div>
+				<div>device aspect ratio: ${note.blocked}</div>
+				<div>device screen: ${note.blocked}</div>
+				<div>display mode: ${note.unsupported}</div>
+				<div>orientation: ${note.unsupported}</div>
+				<div>motion: ${note.unsupported}</div>
+				<div>hover: ${note.unsupported}</div>
+				<div>any hover: ${note.unsupported}</div>
+				<div>pointer: ${note.unsupported}</div>
+				<div>any pointer: ${note.unsupported}</div>
+				<div>monochrome: ${note.unsupported}</div>
+				<div>color scheme: ${note.unsupported}</div>
+				<div>color gamut: ${note.unsupported}</div>
+				<div>forced colors: ${note.unsupported}</div>
+				<div>inverted colors: ${note.unsupported}</div>
+			</div>
+			<div class="col-six">
+				<strong>matchMedia</strong>
+				<div>screen query: ${note.blocked}</div>
+				<div>device aspect ratio: ${note.blocked}</div>
+				<div>device screen: ${note.blocked}</div>
+				<div>display mode: ${note.unsupported}</div>
+				<div>orientation: ${note.unsupported}</div>
+				<div>motion: ${note.unsupported}</div>
+				<div>hover: ${note.unsupported}</div>
+				<div>any hover: ${note.unsupported}</div>
+				<div>pointer: ${note.unsupported}</div>
+				<div>any pointer: ${note.unsupported}</div>
+				<div>monochrome: ${note.unsupported}</div>
+				<div>color scheme: ${note.unsupported}</div>
+				<div>color gamut: ${note.unsupported}</div>
+				<div>forced colors: ${note.unsupported}</div>
+				<div>inverted colors: ${note.unsupported}</div>
+			</div>` :
+		(() => {
+			const {
+				cssMedia: data
+			} = fp
+			const {
+				$hash,
+				mediaCSS,
+				matchMediaCSS
+			} = data
+			return `
+			<div class="col-six">
+				<strong>@Media</strong><span class="hash">${hashMini(mediaCSS)}</span>
+				<div>screen query: ${''+mediaCSS.screenQuery.width} x ${''+mediaCSS.screenQuery.height}</div>
+				<div>screen match: ${mediaCSS.deviceScreen || note.blocked}</div>
+				<div>device aspect ratio: ${mediaCSS.deviceAspectRatio || note.blocked}</div>
+				<div>display mode: ${mediaCSS.displayMode || note.unsupported}</div>
+				<div>orientation: ${mediaCSS.orientation  || note.unsupported}</div>
+				<div>monochrome: ${mediaCSS.monochrome || note.unsupported}</div>
+				<div>motion: ${mediaCSS.reducedMotion || note.unsupported}</div>
+				<div>hover: ${mediaCSS.hover || note.unsupported}</div>
+				<div>any hover: ${mediaCSS.anyHover || note.unsupported}</div>
+				<div>pointer: ${mediaCSS.pointer || note.unsupported}</div>
+				<div>any pointer: ${mediaCSS.anyPointer || note.unsupported}</div>
+				<div>color scheme: ${mediaCSS.colorScheme || note.unsupported}</div>
+				<div>color gamut: ${mediaCSS.colorGamut || note.unsupported}</div>
+				<div>forced colors: ${mediaCSS.forcedColors || note.unsupported}</div>
+				<div>inverted colors: ${mediaCSS.invertedColors || note.unsupported}</div>
+			</div>
+			<div class="col-six">
+				<strong>matchMedia</strong><span class="hash">${hashMini(matchMediaCSS)}</span>
+				<div>screen query: ${''+matchMediaCSS.screenQuery.width} x ${''+matchMediaCSS.screenQuery.height}</div>
+				<div>screen match: ${matchMediaCSS.deviceScreen || note.blocked}</div>
+				<div>device aspect ratio: ${matchMediaCSS.deviceAspectRatio || note.blocked}</div>
+				<div>display mode: ${matchMediaCSS.displayMode || note.unsupported}</div>
+				<div>orientation: ${matchMediaCSS.orientation || note.unsupported}</div>
+				<div>motion: ${matchMediaCSS.reducedMotion || note.unsupported}</div>
+				<div>hover: ${matchMediaCSS.hover || note.unsupported}</div>
+				<div>any hover: ${matchMediaCSS.anyHover || note.unsupported}</div>
+				<div>pointer: ${matchMediaCSS.pointer || note.unsupported}</div>
+				<div>any pointer: ${matchMediaCSS.anyPointer || note.unsupported}</div>
+				<div>monochrome: ${matchMediaCSS.monochrome || note.unsupported}</div>
+				<div>color scheme: ${matchMediaCSS.colorScheme || note.unsupported}</div>
+				<div>color gamut: ${matchMediaCSS.colorGamut || note.unsupported}</div>
+				<div>forced colors: ${matchMediaCSS.forcedColors || note.unsupported}</div>
+				<div>inverted colors: ${matchMediaCSS.invertedColors || note.unsupported}</div>
 			</div>
 			`
 		})()}
