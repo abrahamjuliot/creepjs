@@ -1187,6 +1187,7 @@ const imports = {
 				<br><a class="tests" href="./tests/fonts.html">Fonts</a>
 				<br><a class="tests" href="./tests/timezone.html">Timezone</a>
 				<br><a class="tests" href="./tests/window.html">Window Version</a>
+				<br><a class="tests" href="./tests/screen.html">Screen</a>
 			</div>
 		</div>
 	</div>
