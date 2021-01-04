@@ -961,12 +961,12 @@ const imports = {
 				<div>device aspect ratio: ${mediaCSS.deviceAspectRatio || note.blocked}</div>
 				<div>display mode: ${mediaCSS.displayMode || note.unsupported}</div>
 				<div>orientation: ${mediaCSS.orientation  || note.unsupported}</div>
-				<div>monochrome: ${mediaCSS.monochrome || note.unsupported}</div>
 				<div>motion: ${mediaCSS.reducedMotion || note.unsupported}</div>
 				<div>hover: ${mediaCSS.hover || note.unsupported}</div>
 				<div>any hover: ${mediaCSS.anyHover || note.unsupported}</div>
 				<div>pointer: ${mediaCSS.pointer || note.unsupported}</div>
 				<div>any pointer: ${mediaCSS.anyPointer || note.unsupported}</div>
+				<div>monochrome: ${mediaCSS.monochrome || note.unsupported}</div>
 				<div>color scheme: ${mediaCSS.colorScheme || note.unsupported}</div>
 				<div>color gamut: ${mediaCSS.colorGamut || note.unsupported}</div>
 				<div>forced colors: ${mediaCSS.forcedColors || note.unsupported}</div>
