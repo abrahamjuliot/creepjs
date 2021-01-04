@@ -614,7 +614,7 @@ const binarySearch = (list, fn) => {
     return end == 1 || found.length ? found : binarySearch(right, fn)
 }
 
-const getTimezoneHistory = ({ year, city = null }) => {
+const getTimezoneHistory = ({ year, city }) => {
 	const options = {
 		timeZone: city,
 		year: 'numeric',
