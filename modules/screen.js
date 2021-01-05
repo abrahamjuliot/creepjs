@@ -117,19 +117,6 @@ export const getScreen = imports => {
 				sendToTrash('screen', `availHeight (${screenAvailHeight}) is greater than height (${screenHeight})`)
 			}
 			
-			const trusted = {0:!0, 1:!0, 4:!0, 8:!0, 15:!0, 16:!0, 24:!0, 32:!0, 48:!0}
-			if (!trusted[screenColorDepth]) {
-				sendToTrash('screen', `colorDepth (${screenColorDepth}) is not within set [0, 16, 24, 32]`)
-			}
-			
-			if (!trusted[screenPixelDepth]) {
-				sendToTrash('screen', `pixelDepth (${screenPixelDepth}) is not within set [0, 16, 24, 32]`)
-			}
-
-			if (screenPixelDepth != screenColorDepth) {
-				sendToTrash('screen', `pixelDepth (${screenPixelDepth}) and colorDepth (${screenColorDepth}) do not match`)
-			}
-
 			const data = {
 				device: getDevice(width, height),
 				width: attempt(() => width ? trustInteger('width - invalid return type', width) : undefined),
