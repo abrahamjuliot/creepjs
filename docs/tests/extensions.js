@@ -35,8 +35,25 @@ const html = (stringSet, ...expressionSet) => {
 	return templateContent(template) // ie11 fix for template.content
 }
 
+
+const getFile = async (id, path) => {
+	if (!('chrome' in window)) {
+		return false
+	}
+	const res = await fetch(`chrome-extension://${id}/${path}`)
+	.then(() => path) 
+	.catch(error => false)
+	return res
+}
+
 const extension = {
+	googleTranslate: {
+		active: false,
+		id: 'aapbdbdomjkkjkaonfhkkikfgjllcleb',
+		filePaths: [ 'popup_css_compiled.css', 'options.html' ]
+	},
 	trace: {
+		active: false,
 		id: 'njkmjblmcfiobddjgebnoeldkjcplfjb',
 		filePaths: [
 			'html/blocked.html',
@@ -45,34 +62,74 @@ const extension = {
 			'js/common/shared.js',
 			'js/libraries/jquery.js'
 		]
+	},
+	cydec: {
+		active: false,
+		id: 'becfjfjckdhngmmpkhakoknnkgpgfelk'
 	}
 }
-const getFile = async (id, path) => {
-	const res = await fetch(`chrome-extension://${id}/${path}`)
-	.then(() => path) 
-	.catch(error => false)
-	return res
+
+// google translate
+const googleTranslateFiles = await Promise.all(
+	extension.googleTranslate.filePaths.map(path => getFile(extension.googleTranslate.id, path))
+)
+if (!!googleTranslateFiles.filter(file => !!file).length) {
+	console.log('googleTranslate files detected')
+	extension.googleTranslate.active ||= true
 }
-const trace = await Promise.all(
+
+// trace
+const traceFiles = await Promise.all(
 	extension.trace.filePaths.map(path => getFile(extension.trace.id, path))
 )
+if (!!traceFiles.filter(file => !!file).length) {
+	console.log('trace files detected')
+	extension.trace.active ||= true
+}
 
-console.log(trace.filter(file => !!file))
+if (!!Object.getOwnPropertyNames(window)
+	.filter(prop => /^tp_.+_func$/.test(prop)).length) {
+	console.log('trace window detected')
+	extension.trace.active ||= true
+}
 
-const cydec = [
-	'hdcd_date_ts',	
-	'hdcd_date_js',	
-	'hdcd_date_gt',	
-	'hdcd_date_ms',	
-	'hdcd_date_ls',	
-	'hdcd_date_ds',	
-	'hdcd_date_zo',	
-	'hdcd_date_pr',	
-	'hdcd_date_tz',	
-	'hdcd_canvas_getctx'
-]
-const win = new Set(Object.getOwnPropertyNames(window))
+// cydec
+if (!!Object.getOwnPropertyNames(window)
+	.filter(prop => /^hdcd_(date_(ts|js|gt|ms|ls|ds|zo|pr|tz)|canvas_getctx)$/.test(prop)).length) {
+	console.log('cydec window detected')
+	extension.cydec.active ||= true
+}
 
-console.log(cydec.filter(prop => win.has(prop)))
+// trap logs
+const old = console.log
+console.log = function log() {
+	if (/possible fingerprinting detected/i.test(arguments[0])) {
+		console.log('cydec console detected')
+		extension.cydec.active ||= true
+	}
+	this.apply(console, arguments)
+}.bind(console.log)
+navigator.userAgent // trigger
+//console.log = old // restore
+
+/*
+// trap messages
+const oldSend = chrome.runtime.sendMessage
+await new Promise(resolve => {
+	chrome.runtime.sendMessage = function sendMessage() {
+		console.log(arguments)
+		if (arguments[0] == extension.cydec.id) {
+			console.log('cydec message detected')
+			resolve(extension.cydec.active ||= true)
+		}
+		this.apply(chrome.runtime, arguments)
+	}.bind(chrome.runtime.sendMessage)
+})
+//chrome.runtime.sendMessage = oldSend // restore
+*/
+
+console.log(`googleTranslate: ${extension.googleTranslate.active}`)
+console.log(`trace: ${extension.trace.active}`)
+console.log(`cydec: ${extension.cydec.active}`)
 
 })()
