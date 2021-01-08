@@ -496,7 +496,11 @@ patch(el, html`
 							}
 
 							const validConnection = !!context
-							if (contextLabels[i] != 'dead' && !validConnection) {
+							if (
+								contextLabels[i] != 'dead' &&
+								contextLabels[i] != 'rejected url' &&
+								!validConnection
+							) {
 								valid.connection = false
 							}
 
@@ -561,7 +565,7 @@ patch(el, html`
 				!valid.features && invalid.push(valid.fail('expect known features to match window reported version'))
 				!valid.platform && invalid.push(valid.fail('expect platform to match window'))
 				!valid.canvas && invalid.push(valid.fail('expect canvas to match window'))
-				!valid.connection && invalid.push(valid.fail('expect connections in each iframe'))
+				!valid.connection && invalid.push(valid.fail('expect connections in accepted iframes'))
 				return invalid.join('<br>')
 			})()}
 		</div>
