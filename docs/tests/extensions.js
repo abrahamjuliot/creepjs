@@ -52,6 +52,11 @@ const extension = {
 		id: 'aapbdbdomjkkjkaonfhkkikfgjllcleb',
 		filePaths: [ 'popup_css_compiled.css', 'options.html' ]
 	},
+	metamask: {
+		active: false,
+		id: 'nkbihfbeogaeaoehlefnkodbefgpgknn',
+		filePaths: [ 'inpage.js', 'phishing.html' ]
+	},
 	trace: {
 		active: false,
 		id: 'njkmjblmcfiobddjgebnoeldkjcplfjb',
@@ -67,6 +72,19 @@ const extension = {
 		active: false,
 		id: 'becfjfjckdhngmmpkhakoknnkgpgfelk'
 	}
+}
+
+// metamask
+const metamaskFiles = await Promise.all(
+	extension.metamask.filePaths.map(path => getFile(extension.metamask.id, path))
+)
+if (!!metamaskFiles.filter(file => !!file).length) {
+	console.log('metamask files detected')
+	extension.metamask.active ||= true
+}
+if ('web3' in window && web3.currentProvider.isMetaMask) {
+	console.log('metamask web3 detected')
+	extension.metamask.active ||= true
 }
 
 // google translate
@@ -129,6 +147,7 @@ await new Promise(resolve => {
 */
 
 console.log(`googleTranslate: ${extension.googleTranslate.active}`)
+console.log(`metamask: ${extension.metamask.active}`)
 console.log(`trace: ${extension.trace.active}`)
 console.log(`cydec: ${extension.cydec.active}`)
 
