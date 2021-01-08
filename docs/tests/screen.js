@@ -164,8 +164,9 @@ const {
 	availHeight,
 	colorDepth,
 	pixelDepth,
-	orientation: { type: orientationType }
 } = screen
+
+const { orientation: orientationType } = screen.type || {}
 
 const viewport = 'visualViewport' in window ? visualViewport : {}
 const { width: viewportWidth, height: viewportHeight } = viewport || {}
