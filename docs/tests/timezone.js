@@ -1,5 +1,10 @@
 (async () => {
 
+// Safari's implementation of toLocaleString and DateTimeFormat
+// is not consistent with Chrome anf Firefox
+const isChrome = 'chrome' in window
+const isFirefox = typeof InstallTrigger !== 'undefined'
+
 const hashMini = str => {
 	const json = `${JSON.stringify(str)}`
 	let i, len, hash = 0x811c9dc5
@@ -788,17 +793,23 @@ patch(el, html`
 				valid.matchingOffset && valid.offset ? ''+timezoneOffset.key : `${''+timezoneOffset.key}${fake('fake')}`
 			}</div>
 			<div>${styleResult(true)}computed offset: ${''+timezoneOffset.computed}</div>
-			<div>${styleResult(valid.location)}reported location: ${
-				valid.location ? timeZone : `${timeZone}${fake('fake')}`
+			<div>${styleResult(isChrome || isFirefox ? valid.location : true)}reported location: ${
+				valid.location ? timeZone : (isChrome || isFirefox) ? `${timeZone}${fake('fake')}` : timeZone
 			}</div>
 			${
 				epochCitySet.size ? `
-				<div>${styleResult(true)}computed location: ${epochCitySet.size > 1 ? locationHash : ''}${
+				<div>${styleResult(true)}computed location: ${
+					(epochCitySet.size == 1 && [...epochCitySet][0] != timeZone) ||
+					epochCitySet.size > 1 ? locationHash : ''}${
 					[...epochCitySet].map(city => {
 						city = city.replace(/\/.+\//,'/')
-						return city == timeZone || epochCitySet.size == 1 ? 
-						`<span class="location">${city}</span>` : 
-						`<div><span class="lighten">${city}</span></div>`
+						return (
+							city == timeZone || (
+								epochCitySet.size == 1 && [...epochCitySet][0] == timeZone
+							) ? 
+							`<span class="location">${city}</span>` : 
+							`<div><span class="lighten">${city}</span></div>`
+						)
 					}).join('')
 				}</div>
 				` : ''

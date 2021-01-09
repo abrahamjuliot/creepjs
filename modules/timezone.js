@@ -1,3 +1,5 @@
+import { hashMini } from './crypto.js'
+
 // inspired by https://arkenfox.github.io/TZP
 // https://github.com/vvo/tzdb/blob/master/time-zones-names.json
 const cities = [
@@ -519,8 +521,7 @@ const decryptLocation = ({ year, timeZone, phantomIntl, phantomDate }) => {
 
 	// reduce set to one city
 	const decrypted = (
-		decryption.length == 1 ? decryption[0] :
-		!new Set(decryption).has(timeZone) ? `Earth/UniqueVille` : timeZone
+		decryption.length == 1 && decryption[0] == timeZone ? timeZone : hashMini(decryption)
 	)
 	return decrypted
 }
