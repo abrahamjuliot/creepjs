@@ -13,7 +13,7 @@ export const getVoices = imports => {
 		try {
 			const start = performance.now()
 			const win = phantomDarkness ? phantomDarkness : window
-			if (!('speechSynthesis' in win && 'onvoiceschanged' in speechSynthesis)) {
+			if (!('speechSynthesis' in win)) {
 				logTestResult({ test: 'speech', passed: false })
 				return resolve()
 			}
