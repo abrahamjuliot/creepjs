@@ -117,24 +117,27 @@ const getScreenMatchMedia = () => {
 
 const getCSS = () => {
 	const gcd = (a, b) => b == 0 ? a : gcd(b, a%b)
-	const { innerWidth: w, innerHeight: h } = window
-	const { width: sw, height: sh } = screen
-	const r = gcd(w, h)
-	const sr = gcd(sw, sh)
-	const aspectRatio = `${w/r}/${h/r}`
-	const deviceAspectRatio = `${sw/sr}/${sh/sr}`
+	const { innerWidth, innerHeight } = window
+	const { width: screenWidth, height: screenHeight } = screen
+	const ratio = gcd(innerWidth, innerHeight)
+	const screenRatio = gcd(screenWidth, screenHeight)
+	const aspectRatio = `${innerWidth/ratio}/${innerHeight/ratio}`
+	const deviceAspectRatio = `${screenWidth/screenRatio}/${screenHeight/screenRatio}`
 	const el = document.getElementById('fingerprint-data')
 	patch(el, html`
 		<div id="fingerprint-data">
 			<style>
+				@media (height: ${innerHeight}px) and (width: ${innerWidth}px) {
+					body {--viewport: ${innerWidth} x ${innerHeight};}
+				}
 				@media (aspect-ratio: ${aspectRatio}) {
 					body {--viewport-aspect-ratio: ${aspectRatio};}
 				}
 				@media (device-aspect-ratio: ${deviceAspectRatio}) {
 					body {--device-aspect-ratio: ${deviceAspectRatio};}
 				}
-				@media (device-width: ${sw}px) and (device-height: ${sh}px) {
-					body {--device-screen: ${sw} x ${sh};}
+				@media (device-width: ${screenWidth}px) and (device-height: ${screenHeight}px) {
+					body {--device-screen: ${screenWidth} x ${screenHeight};}
 				}
 				@media (display-mode: fullscreen) {body {--display-mode: fullscreen;}}
 				@media (display-mode: standalone) {body {--display-mode: standalone;}}
@@ -147,6 +150,7 @@ const getCSS = () => {
 	`)
 	const style = getComputedStyle(document.body)
 	return {
+		viewport: style.getPropertyValue('--viewport').trim() || undefined,
 		viewportAspectRatio: style.getPropertyValue('--viewport-aspect-ratio').trim() || undefined,
 		deviceAspectRatio: style.getPropertyValue('--device-aspect-ratio').trim() || undefined,
 		deviceScreen: style.getPropertyValue('--device-screen').trim() || undefined,
@@ -168,11 +172,12 @@ const {
 
 const { orientation: orientationType } = screen.type || {}
 
-const viewport = 'visualViewport' in window ? visualViewport : {}
-const { width: viewportWidth, height: viewportHeight } = viewport || {}
+const vViewport = 'visualViewport' in window ? visualViewport : {}
+const { width: viewportWidth, height: viewportHeight } = vViewport || {}
 const { width: mediaWidth, height: mediaHeight } = getScreenMedia()
 const { width: matchMediaWidth, height: matchMediaHeight } = getScreenMatchMedia()
 const {
+	viewport,
 	viewportAspectRatio,
 	deviceAspectRatio,
 	deviceScreen,
@@ -188,6 +193,12 @@ const validScreen = (
 	deviceAspectRatio
 )
 
+
+const note = {
+	unsupported: '<span class="blocked">unsupported</span>',
+	blocked: '<span class="blocked">blocked</span>',
+	lied: '<span class="lies">lied</span>'
+}
 const fake = () => `<span class="fake">fake screen</span>`
 const el = document.getElementById('fingerprint-data')
 patch(el, html`
@@ -215,7 +226,6 @@ patch(el, html`
 				<span class="aside-note">${(performance.now() - start).toFixed(2)}ms</span>
 				<div>@media: ${''+mediaWidth} x ${''+mediaHeight}</div>
 
-				
 				<div>@media aspect-ratio: ${
 					viewportAspectRatio ? ''+viewportAspectRatio : fake()
 				}</div>
@@ -223,14 +233,15 @@ patch(el, html`
 					deviceAspectRatio ? ''+deviceAspectRatio : fake()
 				}</div>
 
-				
 				<div>matchMedia: ${''+matchMediaWidth} x ${''+matchMediaHeight}</div>
 				
 				<div>screen: ${''+width} x ${''+height}${!validScreen ? fake() : ''}</div>
 				<div>avail: ${''+availWidth} x ${''+availHeight}</div>
 				<div>outer: ${''+outerWidth} x ${''+outerHeight}</div>
 				<div>inner: ${''+innerWidth} x ${''+innerHeight}</div>
-				
+				<div>@media viewport: ${viewport}</div>
+				<div>visualViewport: ${viewportWidth && viewportHeight ? `${''+viewportWidth} x ${''+viewportHeight}` : note.unsupported}</div>
+
 				<div>colorDepth: ${''+colorDepth}</div>
 				<div>pixelDepth: ${''+pixelDepth}</div>
 				<div>devicePixelRatio: ${''+devicePixelRatio}</div>
@@ -238,8 +249,6 @@ patch(el, html`
 				<div>@media orientation: ${''+orientation}</div>
 				<div>@media display-mode: ${''+displayMode}</div>
 
-				<div>viewport: ${''+viewportWidth} x ${''+viewportHeight}</div>
-				
 			</div>
 		</div>
 	</div>
