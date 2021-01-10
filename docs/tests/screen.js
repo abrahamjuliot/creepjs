@@ -170,7 +170,7 @@ const {
 	pixelDepth,
 } = screen
 
-const { orientation: orientationType } = screen.type || {}
+const { type: orientationType } = screen.orientation
 
 const vViewport = 'visualViewport' in window ? visualViewport : {}
 const { width: viewportWidth, height: viewportHeight } = vViewport || {}
@@ -245,7 +245,7 @@ patch(el, html`
 				<div>colorDepth: ${''+colorDepth}</div>
 				<div>pixelDepth: ${''+pixelDepth}</div>
 				<div>devicePixelRatio: ${''+devicePixelRatio}</div>
-				<div>orientation: ${''+orientationType}</div>
+				<div>orientation type: ${''+orientationType}</div>
 				<div>@media orientation: ${''+orientation}</div>
 				<div>@media display-mode: ${''+displayMode}</div>
 
