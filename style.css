@@ -15,7 +15,7 @@ time, mark, audio, video {
 	margin: 0;
 	padding: 0;
 	border: 0;
-	font-size: 100%;
+	font-size: 100% !important;
 	font: inherit;
 	vertical-align: baseline;
 }
@@ -104,7 +104,7 @@ strong {
     font-family: monospace !important;
     color: #777;
     border: 1px solid #aaaaaa80;
-    font-size: 14px;
+    font-size: 14px !important;
 }
 #signature input[type="submit"]:hover,
 #signature input[type="submit"]:focus,
@@ -134,7 +134,7 @@ visitor {
 
 #fingerprint-data > div {
 	line-height: 1.5;
-	font-size: 14px;
+	font-size: 14px !important;
 	color: #777;
 	overflow-wrap: break-word;
     border-bottom: 1px solid #eee;
@@ -144,7 +144,7 @@ visitor {
 
 #fingerprint-data .fingerprint-header-container {
     position: fixed;
-	font-size: 18px;
+	font-size: 18px !important;
     top: 0;
     background: rgba(255, 255, 255, 0.75);
     right: 0;
@@ -153,7 +153,7 @@ visitor {
     margin: 0 auto;
 }
 #fingerprint-data .fingerprint-header {
-	font-size: 18px;
+	font-size: 18px !important;
     max-width: 750px;
 	padding: 0 20px;
     margin: 0 auto;
@@ -167,7 +167,7 @@ visitor {
 #fingerprint-data  .block-text {
     display: flex;
     justify-content: center;
-	font-size: 12px;
+	font-size: 12px !important;
     padding: 5px;
     text-align: center;
     align-items: center;
@@ -189,7 +189,7 @@ visitor {
 	position: absolute;
 	top: 0;
     right: 25px;
-	font-size: 12px;
+	font-size: 12px !important;
 	color: #bbb;
 	background: #fff;
 }
@@ -369,7 +369,7 @@ input[type="radio"] {
 }
 .modal-content {
 	border: 1px solid #f9f9f9;
-	font-size: 13px;
+	font-size: 13px !important;
     margin: 0 auto;
     background: #fff;
     min-height: 100px;
@@ -394,7 +394,7 @@ input[type="radio"] {
     right: 10px;
     width: 30px;
     height: 30px;
-    font-size: 30px;
+    font-size: 30px !important;
     line-height: 25px;
 }
 

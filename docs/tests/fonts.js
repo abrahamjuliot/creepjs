@@ -225,7 +225,6 @@ const getSVGFonts = ({baseFonts, families}) => {
 			document.getElementById(id).innerHTML = `
 				<style>
 					#${id}-svg-detector {
-						font-size: 256px !important;
 						position: absolute !important;
 						left: -9999px!important;
 						font-size: 256px !important;
