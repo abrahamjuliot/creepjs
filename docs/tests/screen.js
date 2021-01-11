@@ -170,10 +170,15 @@ const {
 	pixelDepth,
 } = screen
 
+const {
+	clientHeight,
+	clientWidth
+} = document.documentElement
+
 const { type: orientationType } = screen.orientation
 
 const vViewport = 'visualViewport' in window ? visualViewport : {}
-const { width: viewportWidth, height: viewportHeight } = vViewport || {}
+const { width: viewportWidth, height: viewportHeight } = vViewport
 const { width: mediaWidth, height: mediaHeight } = getScreenMedia()
 const { width: matchMediaWidth, height: matchMediaHeight } = getScreenMatchMedia()
 const {
@@ -188,9 +193,7 @@ const {
 const validScreen = (
 	matchMedia(`(device-width:${width}px)`).matches &&
 	matchMedia(`(device-height:${height}px)`).matches &&
-	deviceScreen &&
-	viewportAspectRatio &&
-	deviceAspectRatio
+	deviceScreen
 )
 
 
@@ -224,23 +227,21 @@ patch(el, html`
 		<div class="flex-grid">
 			<div class="col-six relative">
 				<span class="aside-note">${(performance.now() - start).toFixed(2)}ms</span>
-				<div>@media: ${''+mediaWidth} x ${''+mediaHeight}</div>
-
-				<div>@media aspect-ratio: ${
-					viewportAspectRatio ? ''+viewportAspectRatio : fake()
-				}</div>
-				<div>@media device-aspect-ratio: ${
-					deviceAspectRatio ? ''+deviceAspectRatio : fake()
-				}</div>
-
-				<div>matchMedia: ${''+matchMediaWidth} x ${''+matchMediaHeight}</div>
+				<div>@media search: ${''+mediaWidth} x ${''+mediaHeight}</div>
+				<div>@media device: ${''+deviceScreen}</div>
+				<div>@media aspect-ratio: ${''+viewportAspectRatio}</div>
+				<div>@media device-aspect-ratio: ${''+deviceAspectRatio}</div>
 				
-				<div>screen: ${''+width} x ${''+height}${!validScreen ? fake() : ''}</div>
+
+				<div>matchMedia search: ${''+matchMediaWidth} x ${''+matchMediaHeight}</div>
+				
+				<div>screen: ${!validScreen ? `${''+width} x ${''+height} ${fake()}` : `${''+width} x ${''+height}`}</div>
 				<div>avail: ${''+availWidth} x ${''+availHeight}</div>
 				<div>outer: ${''+outerWidth} x ${''+outerHeight}</div>
 				<div>inner: ${''+innerWidth} x ${''+innerHeight}</div>
-				<div>@media viewport: ${viewport}</div>
-				<div>visualViewport: ${viewportWidth && viewportHeight ? `${''+viewportWidth} x ${''+viewportHeight}` : note.unsupported}</div>
+				<div>client: ${''+clientWidth} x ${''+clientHeight}</div>
+				<div>@media viewport: ${''+viewport}</div>
+				<div>visualViewport: ${viewportWidth && viewportHeight ? `${''+Math.round(viewportWidth)} x ${''+Math.round(viewportHeight)}` : note.unsupported}</div>
 
 				<div>colorDepth: ${''+colorDepth}</div>
 				<div>pixelDepth: ${''+pixelDepth}</div>
