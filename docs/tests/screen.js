@@ -42,9 +42,7 @@ const query = ({ type, rangeStart, rangeLen }) => {
 			<style>
 				${[...Array(rangeLen)].map((slot,i) => {
 					i += rangeStart
-					return `
-						@media (device-${type}: ${i}px) {body {--device-${type}: ${i};}}
-					`
+					return `@media(device-${type}:${i}px){body{--device-${type}:${i};}}`
 				}).join('')}
 			</style>
 		</div>
@@ -115,7 +113,6 @@ const getScreenMatchMedia = () => {
 	return { width: widthMatched, height: heightMatched }
 }
 
-//947.3333129882812
 const getCSS = () => {
 	const gcd = (a, b) => b == 0 ? a : gcd(b, a%b)
 	const { innerWidth, innerHeight } = window
@@ -136,6 +133,9 @@ const getCSS = () => {
 					body {--viewport: ${innerWidth} x ${innerHeight};}
 				}
 				@media (min-width: ${innerWidth}px) and (min-height: ${innerHeight}px) {
+					body {--viewport: ${innerWidth} x ${innerHeight};}
+				}
+				@media (max-width: ${innerWidth}px) and (max-height: ${innerHeight}px) {
 					body {--viewport: ${innerWidth} x ${innerHeight};}
 				}
 				@media (aspect-ratio: ${aspectRatio}) {

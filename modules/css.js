@@ -11,9 +11,7 @@ const query = ({ body, type, rangeStart, rangeLen }) => {
 		<style>
 			${[...Array(rangeLen)].map((slot,i) => {
 				i += rangeStart
-				return `
-					@media (device-${type}: ${i}px) {body {--device-${type}: ${i};}}
-				`
+				return `@media(device-${type}:${i}px){body{--device-${type}:${i};}}`
 			}).join('')}
 		</style>
 	`
