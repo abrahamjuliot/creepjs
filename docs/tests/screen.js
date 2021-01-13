@@ -115,6 +115,7 @@ const getScreenMatchMedia = () => {
 	return { width: widthMatched, height: heightMatched }
 }
 
+//947.3333129882812
 const getCSS = () => {
 	const gcd = (a, b) => b == 0 ? a : gcd(b, a%b)
 	const { innerWidth, innerHeight } = window
@@ -127,7 +128,14 @@ const getCSS = () => {
 	patch(el, html`
 		<div id="fingerprint-data">
 			<style>
-				@media (height: ${innerHeight}px) and (width: ${innerWidth}px) {
+				body {
+					width: 100vw;
+					height: 100vh;
+				}
+				@media (width: ${innerWidth}px) and (height: ${innerHeight}px) {
+					body {--viewport: ${innerWidth} x ${innerHeight};}
+				}
+				@media (min-width: ${innerWidth}px) and (min-height: ${innerHeight}px) {
 					body {--viewport: ${innerWidth} x ${innerHeight};}
 				}
 				@media (aspect-ratio: ${aspectRatio}) {
@@ -148,8 +156,10 @@ const getCSS = () => {
 			</style>
 		</div>
 	`)
+	const { width: domRectWidth, height: domRectHeight } = document.body.getBoundingClientRect()
 	const style = getComputedStyle(document.body)
 	return {
+		domRectViewport: `${domRectWidth} x ${domRectHeight}`,
 		viewport: style.getPropertyValue('--viewport').trim() || undefined,
 		viewportAspectRatio: style.getPropertyValue('--viewport-aspect-ratio').trim() || undefined,
 		deviceAspectRatio: style.getPropertyValue('--device-aspect-ratio').trim() || undefined,
@@ -182,6 +192,7 @@ const { width: viewportWidth, height: viewportHeight } = vViewport
 const { width: mediaWidth, height: mediaHeight } = getScreenMedia()
 const { width: matchMediaWidth, height: matchMediaHeight } = getScreenMatchMedia()
 const {
+	domRectViewport,
 	viewport,
 	viewportAspectRatio,
 	deviceAspectRatio,
@@ -241,7 +252,8 @@ patch(el, html`
 				<div>inner: ${''+innerWidth} x ${''+innerHeight}</div>
 				<div>client: ${''+clientWidth} x ${''+clientHeight}</div>
 				<div>@media viewport: ${''+viewport}</div>
-				<div>visualViewport: ${viewportWidth && viewportHeight ? `${''+Math.round(viewportWidth)} x ${''+Math.round(viewportHeight)}` : note.unsupported}</div>
+				<div>dom rect viewport: ${''+domRectViewport}</div>
+				<div>visualViewport: ${viewportWidth && viewportHeight ? `${''+Math.round(viewportWidth)} x ${''+viewportHeight}` : note.unsupported}</div>
 
 				<div>colorDepth: ${''+colorDepth}</div>
 				<div>pixelDepth: ${''+pixelDepth}</div>
