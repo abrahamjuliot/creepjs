@@ -201,12 +201,6 @@ const {
 	displayMode
 } = getCSS()
 
-const validScreen = (
-	matchMedia(`(device-width:${width}px)`).matches &&
-	matchMedia(`(device-height:${height}px)`).matches &&
-	deviceScreen
-)
-
 
 const note = {
 	unsupported: '<span class="blocked">unsupported</span>',
@@ -243,10 +237,9 @@ patch(el, html`
 				<div>@media aspect-ratio: ${''+viewportAspectRatio}</div>
 				<div>@media device-aspect-ratio: ${''+deviceAspectRatio}</div>
 				
-
 				<div>matchMedia search: ${''+matchMediaWidth} x ${''+matchMediaHeight}</div>
 				
-				<div>screen: ${!validScreen ? `${''+width} x ${''+height} ${fake()}` : `${''+width} x ${''+height}`}</div>
+				<div>screen: ${''+width} x ${''+height}</div>
 				<div>avail: ${''+availWidth} x ${''+availHeight}</div>
 				<div>outer: ${''+outerWidth} x ${''+outerHeight}</div>
 				<div>inner: ${''+innerWidth} x ${''+innerHeight}</div>
