@@ -1294,6 +1294,7 @@ const imports = {
 				<br><a class="tests" href="./tests/window.html">Window Version</a>
 				<br><a class="tests" href="./tests/screen.html">Screen</a>
 				<br><a class="tests" href="./tests/extensions.html">Extensions</a>
+				<br><a class="tests" href="./tests/prototype.html">Prototype</a>
 			</div>
 		</div>
 	</div>
