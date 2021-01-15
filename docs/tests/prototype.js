@@ -35,10 +35,42 @@ const html = (stringSet, ...expressionSet) => {
 	return templateContent(template) // ie11 fix for template.content
 }
 
+const ghost = () => `
+	height: 100vh;
+	width: 100vw;
+	position: absolute;
+	left:-10000px;
+	visibility: hidden;
+`
 
-const getPrototypeLies = () => {
+const getRandomValues = () => {
+	const id = [...crypto.getRandomValues(new Uint32Array(10))]
+		.map(n => n.toString(36)).join('')
+	return id
+}
+
+const getPhantomIframe = () => {
+	try {
+		const numberOfIframes = window.length
+		const frag = new DocumentFragment()
+		const div = document.createElement('div')
+		const id = getRandomValues()
+		div.setAttribute('id', id)
+		frag.appendChild(div)
+		div.innerHTML = `<div style="${ghost()}"><iframe></iframe></div>`
+		document.body.appendChild(frag)
+		const iframeWindow = window[numberOfIframes]
+		return { iframeWindow, div }
+	}
+	catch (error) {
+		captureError(error, 'client blocked phantom iframe')
+		return { iframeWindow: window, div: undefined }
+	}
+}
+const { iframeWindow: phantomDarkness, div: parentPhantom } = getPhantomIframe()
+
+const getPrototypeLies = phantomDarkness => {
     // Lie Tests
-
     // object constructor descriptor should return undefined properties
     const getUndefinedValueLie = (obj, name) => {
         const objName = obj.name
@@ -87,7 +119,7 @@ const getPrototypeLies = () => {
     }
 
     // toString() and toString.toString() should return a native string
-    const getToStringLie = (apiFunction, name) => {
+    const getToStringLie = (apiFunction, name, phantomDarkness) => {
         /*
         Accepted strings:
         'function name() { [native code] }'
@@ -97,6 +129,16 @@ const getPrototypeLies = () => {
         'function () { [native code] }'
         `function () {\n    [native code]\n}`
         */
+		const apiFunctionToString = (
+			phantomDarkness ? 
+			phantomDarkness.Function.prototype.toString.call(apiFunction) :
+			apiFunction.toString()
+		)
+		const apiFunctionToStringToString = (
+			phantomDarkness ? 
+			phantomDarkness.Function.prototype.toString.call(apiFunction.toString) :
+			apiFunction.toString.toString()
+		)
 		const trust = name => ({
 			[`function ${name}() { [native code] }`]: true,
 			[`function get ${name}() { [native code] }`]: true,
@@ -106,8 +148,8 @@ const getPrototypeLies = () => {
 			[`function () {${'\n'}     [native code]${'\n'} }`]: true
 		})
         return (
-            !trust(name)[apiFunction.toString()] ||
-            !trust('toString')[apiFunction.toString.toString()]
+            !trust(name)[apiFunctionToString] ||
+            !trust('toString')[apiFunctionToStringToString]
         )
     }
 
@@ -178,7 +220,7 @@ const getPrototypeLies = () => {
             'failed new instance type error': getNewInstanceTypeErrorLie(apiFunction),
             'failed class extends type error': getClassExtendsTypeErrorLie(apiFunction),
             'failed null conversion type error': getNullConversionTypeErrorLie(apiFunction),
-            'failed to string': getToStringLie(apiFunction, name),
+            'failed to string': getToStringLie(apiFunction, name, phantomDarkness),
         	'failed prototype in function': getPrototypeInFunctionLie(apiFunction),
             'failed descriptor': getDescriptorLie(apiFunction),
             'failed own property': getOwnPropertyLie(apiFunction),
@@ -288,7 +330,10 @@ const getPrototypeLies = () => {
 
 // start program
 const start = performance.now()
-const { lieList, lieDetail, lieCount, totalPropCount } = getPrototypeLies() // execute and destructure the list and detail
+const { lieList, lieDetail, lieCount, totalPropCount } = getPrototypeLies(phantomDarkness) // execute and destructure the list and detail
+if (parentPhantom) {
+	parentPhantom.parentNode.removeChild(parentPhantom)
+}
 const perf = performance.now() - start
 
 // check lies later in any function
@@ -302,7 +347,7 @@ const el = document.getElementById('fingerprint-data')
 			<style>
 				.failure {
 					padding: 20px;
-					font-size: 11px !important
+					font-size: 12px !important
 				}
 			</style>
 			<div class="visitor-info">
