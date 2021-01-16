@@ -232,7 +232,7 @@ const getPrototypeLies = iframeWindow => {
     // Lie Detector
     const createLieDetector = () => {
         const props = {} // lie list and detail
-		let totalPropCount = 0
+		let totalPropCount = 0 // total properties searched
         return {
             getProps: () => props,
 			getCount: () => totalPropCount,
@@ -298,6 +298,9 @@ const getPrototypeLies = iframeWindow => {
     searchLies(Document)
 	
     // if supported
+	if ('MediaDevices' in window) {
+        searchLies(WebGLRenderingContext)
+    }
     if ('WebGLRenderingContext' in window) {
         searchLies(WebGLRenderingContext)
     }
