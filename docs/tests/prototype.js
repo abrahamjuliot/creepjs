@@ -35,28 +35,22 @@ const html = (stringSet, ...expressionSet) => {
 	return templateContent(template) // ie11 fix for template.content
 }
 
-const ghost = () => `
-	height: 100vh;
-	width: 100vw;
-	position: absolute;
-	left:-10000px;
-	visibility: hidden;
-`
 
-const getRandomValues = () => {
-	const id = [...crypto.getRandomValues(new Uint32Array(10))]
-		.map(n => n.toString(36)).join('')
-	return id
-}
+/* Prototype lies */
 
-const getPhantomIframe = () => {
+const getIframe = () => {
 	try {
 		const numberOfIframes = window.length
 		const frag = new DocumentFragment()
 		const div = document.createElement('div')
-		const id = getRandomValues()
-		div.setAttribute('id', id)
 		frag.appendChild(div)
+		const ghost = () => `
+			height: 100vh;
+			width: 100vw;
+			position: absolute;
+			left:-10000px;
+			visibility: hidden;
+		`
 		div.innerHTML = `<div style="${ghost()}"><iframe></iframe></div>`
 		document.body.appendChild(frag)
 		const iframeWindow = window[numberOfIframes]
@@ -67,9 +61,9 @@ const getPhantomIframe = () => {
 		return { iframeWindow: window, div: undefined }
 	}
 }
-const { iframeWindow: phantomDarkness, div: parentPhantom } = getPhantomIframe()
+const { iframeWindow, div: iframeContainerDiv } = getIframe()
 
-const getPrototypeLies = phantomDarkness => {
+const getPrototypeLies = iframeWindow => {
     // Lie Tests
     // object constructor descriptor should return undefined properties
     const getUndefinedValueLie = (obj, name) => {
@@ -119,7 +113,7 @@ const getPrototypeLies = phantomDarkness => {
     }
 
     // toString() and toString.toString() should return a native string
-    const getToStringLie = (apiFunction, name, phantomDarkness) => {
+    const getToStringLie = (apiFunction, name, iframeWindow) => {
         /*
         Accepted strings:
         'function name() { [native code] }'
@@ -130,13 +124,13 @@ const getPrototypeLies = phantomDarkness => {
         `function () {\n    [native code]\n}`
         */
 		const apiFunctionToString = (
-			phantomDarkness ? 
-			phantomDarkness.Function.prototype.toString.call(apiFunction) :
+			iframeWindow ? 
+			iframeWindow.Function.prototype.toString.call(apiFunction) :
 			apiFunction.toString()
 		)
 		const apiFunctionToStringToString = (
-			phantomDarkness ? 
-			phantomDarkness.Function.prototype.toString.call(apiFunction.toString) :
+			iframeWindow ? 
+			iframeWindow.Function.prototype.toString.call(apiFunction.toString) :
 			apiFunction.toString.toString()
 		)
 		const trust = name => ({
@@ -220,7 +214,7 @@ const getPrototypeLies = phantomDarkness => {
             'failed new instance type error': getNewInstanceTypeErrorLie(apiFunction),
             'failed class extends type error': getClassExtendsTypeErrorLie(apiFunction),
             'failed null conversion type error': getNullConversionTypeErrorLie(apiFunction),
-            'failed to string': getToStringLie(apiFunction, name, phantomDarkness),
+            'failed to string': getToStringLie(apiFunction, name, iframeWindow),
         	'failed prototype in function': getPrototypeInFunctionLie(apiFunction),
             'failed descriptor': getDescriptorLie(apiFunction),
             'failed own property': getOwnPropertyLie(apiFunction),
@@ -244,14 +238,17 @@ const getPrototypeLies = phantomDarkness => {
 			getCount: () => totalPropCount,
             searchLies: (obj, {
                 ignore
-            } = {}) => Object.getOwnPropertyNames(obj.prototype).forEach(name => {
+            } = {}) => Object.getOwnPropertyNames(!!obj && !!obj.prototype ? obj.prototype : !!obj ? obj : {}).forEach(name => {
                 if (name == 'constructor' || (ignore && new Set(ignore).has(name))) {
                     return
                 }
-                const apiName = `${obj.name}.${name}`
+				const objectNameString = /\s(.+)\]/
+                const apiName = `${
+					obj.name ? obj.name : objectNameString.test(obj) ? objectNameString.exec(obj)[1] : undefined
+				}.${name}`
 				totalPropCount++
                 try {
-                    const proto = obj.prototype
+                    const proto = obj.prototype ? obj.prototype : obj
                     let res // response from getPrototypeLies
 
                     // search if function
@@ -260,7 +257,7 @@ const getPrototypeLies = phantomDarkness => {
                         if (typeof apiFunction == 'function') {
                             res = getPrototypeLies(proto[name])
                             if (res.lied) {
-                                return (props[`${obj.name}.${name}`] = res.lieTypes)
+                                return (props[apiName] = res.lieTypes)
                             }
                             return
                         }
@@ -292,14 +289,14 @@ const getPrototypeLies = phantomDarkness => {
     searchLies(HTMLCanvasElement)
     searchLies(Navigator)
     searchLies(Screen)
+	searchLies(Math)
     searchLies(Date)
     searchLies(Intl.DateTimeFormat)
     searchLies(Intl.RelativeTimeFormat)
     searchLies(CanvasRenderingContext2D)
-    searchLies(PluginArray)
-    searchLies(Plugin)
+	searchLies(MediaDevices)
     searchLies(Document)
-
+	
     // if supported
     if ('WebGLRenderingContext' in window) {
         searchLies(WebGLRenderingContext)
@@ -317,6 +314,16 @@ const getPrototypeLies = phantomDarkness => {
         searchLies(AudioBuffer)
     }
 
+	/* potential targets:
+		RTCPeerConnection
+		TextMetrics
+		Plugin
+		PluginArray
+		MimeType
+		MimeTypeArray
+		Worker
+	*/
+
     // return lies list and detail 
     const props = lieDetector.getProps()
 	const totalPropCount = lieDetector.getCount()
@@ -330,9 +337,9 @@ const getPrototypeLies = phantomDarkness => {
 
 // start program
 const start = performance.now()
-const { lieList, lieDetail, lieCount, totalPropCount } = getPrototypeLies(phantomDarkness) // execute and destructure the list and detail
-if (parentPhantom) {
-	parentPhantom.parentNode.removeChild(parentPhantom)
+const { lieList, lieDetail, lieCount, totalPropCount } = getPrototypeLies(iframeWindow) // execute and destructure the list and detail
+if (iframeContainerDiv) {
+	iframeContainerDiv.parentNode.removeChild(iframeContainerDiv)
 }
 const perf = performance.now() - start
 
