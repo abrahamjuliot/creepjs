@@ -285,6 +285,7 @@ const getPrototypeLies = iframeWindow => {
     // search for lies: add properties to ignore if desired
     searchLies(Node)
     searchLies(Element)
+	searchLies(Range)
     searchLies(HTMLElement)
     searchLies(HTMLCanvasElement)
     searchLies(Navigator)

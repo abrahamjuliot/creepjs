@@ -702,6 +702,10 @@ searchLies(Element, {
 	querySelector: !0, // opera fix
 	setAttribute: !0 // opera fix
 })
+searchLies(Range, {
+	constructor: !0
+})
+
 searchLies(HTMLElement, {
 	constructor: !0,
 	requestFullscreen: !0 // in FF mobile, this does not appear native 
