@@ -173,4 +173,18 @@ const logTestResult = ({ test, passed, start = false }) => {
 	)
 }
 
-export { isChrome, isBrave, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, logTestResult }
+const getPromiseRaceFulfilled = async ({
+    promise,
+    responseType,
+    limit = 100
+}) => {
+    const slowPromise = new Promise(resolve => setTimeout(resolve, limit))
+    const response = await Promise.race([slowPromise, promise])
+        .then(response => response instanceof responseType ? response : 'pending')
+        .catch(error => 'rejected')
+    return (
+        response == 'rejected' || response == 'pending' ? undefined : response
+    )
+}
+
+export { isChrome, isBrave, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, logTestResult, getPromiseRaceFulfilled }

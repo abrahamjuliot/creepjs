@@ -1,4 +1,4 @@
-import { isChrome, isBrave, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, logTestResult } from './modules/helpers.js'
+import { isChrome, isBrave, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, logTestResult, getPromiseRaceFulfilled } from './modules/helpers.js'
 import { patch, html, note, count, modal } from './modules/html.js'
 import { hashMini, instanceId, hashify } from './modules/crypto.js'
 
@@ -35,6 +35,7 @@ const imports = {
 		decryptUserAgent,
 		getUserAgentPlatform,
 		logTestResult,
+		getPromiseRaceFulfilled,
 		// crypto
 		instanceId,
 		hashMini,
