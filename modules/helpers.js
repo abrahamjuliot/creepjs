@@ -176,7 +176,7 @@ const logTestResult = ({ test, passed, start = false }) => {
 const getPromiseRaceFulfilled = async ({
     promise,
     responseType,
-    limit = 100
+    limit = 1000
 }) => {
     const slowPromise = new Promise(resolve => setTimeout(resolve, limit))
     const response = await Promise.race([slowPromise, promise])

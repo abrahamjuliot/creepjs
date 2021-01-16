@@ -14,17 +14,21 @@ export const getMedia = imports => {
 		try {
 			const start = performance.now()
 			const phantomNavigator = phantomDarkness ? phantomDarkness.navigator : navigator
-			if (!caniuse(() => phantomNavigator.mediaDevices.enumerateDevices)) {
+			if (!caniuse(() => navigator.mediaDevices.enumerateDevices)) {
 				logTestResult({ test: 'media devices', passed: false })
 				return resolve()
 			}
 			let mediaDevicesEnumerated
-			mediaDevicesEnumerated = await getPromiseRaceFulfilled({
-				promise: phantomNavigator.mediaDevices.enumerateDevices(),
-				responseType: Array
-			})
-			if (!mediaDevicesEnumerated) {
-				// try window.navigator
+			try {
+				mediaDevicesEnumerated = await getPromiseRaceFulfilled({
+					promise: phantomNavigator.mediaDevices.enumerateDevices(),
+					responseType: Array
+				})
+				if (!mediaDevicesEnumerated) {
+					throw 'try window context'
+				}
+			}
+			catch (_) {
 				mediaDevicesEnumerated = await getPromiseRaceFulfilled({
 					promise: navigator.mediaDevices.enumerateDevices(),
 					responseType: Array
