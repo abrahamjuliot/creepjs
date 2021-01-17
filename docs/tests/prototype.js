@@ -9,6 +9,15 @@ const hashMini = str => {
 	return ('0000000' + (hash >>> 0).toString(16)).substr(-8)
 }
 
+const hashify = async (x) => {
+	const json = `${JSON.stringify(x)}`
+	const jsonBuffer = new TextEncoder().encode(json)
+	const hashBuffer = await crypto.subtle.digest('SHA-256', jsonBuffer)
+	const hashArray = Array.from(new Uint8Array(hashBuffer))
+	const hashHex = hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('')
+	return hashHex
+}
+
 // ie11 fix for template.content
 function templateContent(template) {
 	// template {display: none !important} /* add css if template is in dom */
@@ -57,7 +66,6 @@ const getIframe = () => {
 		return { iframeWindow, div }
 	}
 	catch (error) {
-		captureError(error, 'client blocked phantom iframe')
 		return { iframeWindow: window, div: undefined }
 	}
 }
@@ -232,10 +240,10 @@ const getPrototypeLies = iframeWindow => {
     // Lie Detector
     const createLieDetector = () => {
         const props = {} // lie list and detail
-		let totalPropCount = 0 // total properties searched
+		let propsSearched = [] // list of properties searched
         return {
             getProps: () => props,
-			getCount: () => totalPropCount,
+			getPropsSearched: () => propsSearched,
             searchLies: (obj, {
                 ignore
             } = {}) => Object.getOwnPropertyNames(!!obj && !!obj.prototype ? obj.prototype : !!obj ? obj : {}).forEach(name => {
@@ -246,7 +254,7 @@ const getPrototypeLies = iframeWindow => {
                 const apiName = `${
 					obj.name ? obj.name : objectNameString.test(obj) ? objectNameString.exec(obj)[1] : undefined
 				}.${name}`
-				totalPropCount++
+				propsSearched.push(apiName)
                 try {
                     const proto = obj.prototype ? obj.prototype : obj
                     let res // response from getPrototypeLies
@@ -330,62 +338,90 @@ const getPrototypeLies = iframeWindow => {
 
     // return lies list and detail 
     const props = lieDetector.getProps()
-	const totalPropCount = lieDetector.getCount()
+	const propsSearched = lieDetector.getPropsSearched()
     return {
         lieList: Object.keys(props),
         lieDetail: props,
 		lieCount: Object.keys(props).reduce((acc, key) => acc+props[key].length, 0),
-		totalPropCount,
+		propsSearched,
     }
 }
 
 // start program
 const start = performance.now()
-const { lieList, lieDetail, lieCount, totalPropCount } = getPrototypeLies(iframeWindow) // execute and destructure the list and detail
+const { lieList, lieDetail, lieCount, propsSearched } = getPrototypeLies(iframeWindow) // execute and destructure the list and detail
 if (iframeContainerDiv) {
 	iframeContainerDiv.parentNode.removeChild(iframeContainerDiv)
 }
 const perf = performance.now() - start
 
 // check lies later in any function
-lieList.includes('HTMLCanvasElement.toDataURL') // returns true or false
-lieDetail['HTMLCanvasElement.toDataURL'] // returns the list of lies
+//lieList.includes('HTMLCanvasElement.toDataURL') // returns true or false
+//lieDetail['HTMLCanvasElement.toDataURL'] // returns the list of lies
 
-const lieLen = lieList.length 
+//console.log(propsSearched)
+//console.log(lieList)
+//console.log(lieDetail)
+
+const [
+	searchedHash,
+	corruptedHash,
+	lieHash
+] = await Promise.all([
+	hashify(propsSearched),
+	hashify(lieList),
+	hashify(lieDetail)
+])
+
+const pluralify = (len, options) => len == 1 ? options[0] : options[1]
+const lieLen = lieList.length
+const propsSearchLen = propsSearched.length
 const el = document.getElementById('fingerprint-data')
-	patch(el, html`
-		<div id="fingerprint-data">
-			<style>
-				.failure {
-					padding: 20px;
-					font-size: 12px !important
-				}
-			</style>
-			<div class="visitor-info">
-				<span class="aside-note">${perf.toFixed(2)}ms</span>
-				<strong>Prototype</strong>
-				<div>${''+lieCount} lies detected in ${lieLen ? `${''+lieLen} of ` : '' }${''+totalPropCount} properties</div>
-			</div>
-			<div>
-			${
-				lieLen ? Object.keys(lieDetail).map(key => {
-					return `${key}`
-				}).join('<br>') :
-				'passed'
+patch(el, html`
+	<div id="fingerprint-data">
+		<style>
+			.failure {
+				padding: 20px;
+				font-size: 12px !important
 			}
-			</div>
-			<div>
+			.pass {
+				color: #2da568;
+				background: #2da5681a;
+				padding: 2px 6px;
+			}
+		</style>
+		<div class="visitor-info">
+			<span class="aside-note">${perf.toFixed(2)}ms</span>
+			<strong>Prototype</strong>
+			<div>${''+lieCount} lies detected in ${lieLen ? `${''+lieLen} of ` : ''}${''+propsSearchLen} propert${pluralify(propsSearchLen, ['y', 'ies'])}</div>
 			${
-				lieLen ? Object.keys(lieDetail).map(key => {
-					return `${key}:
-						<div class="failure">
-							${lieDetail[key].map(lie => `<div>${lie}</div>`).join('')}
-						</div>
-					`
-				}).join('<br>') :
+				lieLen ?
+				`<div>lies: ${lieHash.slice(0,8)}</div>
+				<div>corrupted: ${corruptedHash.slice(0,8)}</div>` : 
 				''
 			}
-			</div>
+			<div>searched: ${searchedHash.slice(0,8)}</div>
 		</div>
-	`)
+		<div>
+		${
+			lieLen ? Object.keys(lieDetail).map(key => {
+				return `${key}`
+			}).join('<br>') :
+			'<span class="pass">&#10004; passed</span>'
+		}
+		</div>
+		<div>
+		${
+			lieLen ? Object.keys(lieDetail).map(key => {
+				return `${key}:
+					<div class="failure">
+						${lieDetail[key].map(lie => `<div>${lie}</div>`).join('')}
+					</div>
+				`
+			}).join('<br>') :
+			''
+		}
+		</div>
+	</div>
+`)
 })()

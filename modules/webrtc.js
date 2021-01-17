@@ -35,15 +35,10 @@ export const getWebRTCData = imports => {
 				logTestResult({ test: 'webrtc', passed: false })
 				return resolve()
 			}
-			const connection = new rtcPeerConnection({
-				iceServers: [{
-					urls: ['stun:stun.l.google.com:19302?transport=udp']
-				}]
-			}, {
-				optional: [{
-					RtpDataChannels: true
-				}]
-			})
+			const connection = new rtcPeerConnection(
+				{ iceServers: [{ urls: ['stun:stun.l.google.com:19302?transport=udp'] }] }, 
+				{ optional: [{ RtpDataChannels: true }] }
+			)
 			
 			let success = false
 			connection.onicecandidate = async e => { 
