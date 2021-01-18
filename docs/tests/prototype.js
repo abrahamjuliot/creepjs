@@ -525,8 +525,8 @@ const getPrototypeLies = iframeWindow => {
 	})
 	searchLies(() => Range, {
 		target: [
-			'Range.getBoundingClientRect',
-			'Range.getClientRects',
+			'getBoundingClientRect',
+			'getClientRects',
 		]
 	})
 	searchLies(() => Intl.RelativeTimeFormat, {
