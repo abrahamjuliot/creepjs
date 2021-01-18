@@ -508,9 +508,9 @@ const getPrototypeLies = iframeWindow => {
 	})
 	searchLies(() => Node, {
 		target: [
-			'Node.appendChild',
-			'Node.insertBefore',
-			'Node.replaceChild'
+			'appendChild',
+			'insertBefore',
+			'replaceChild'
 		]
 	})
 	searchLies(() => OffscreenCanvasRenderingContext2D, {
