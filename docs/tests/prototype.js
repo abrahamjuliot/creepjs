@@ -407,6 +407,14 @@ patch(el, html`
 				background: #2da5681a;
 				padding: 2px 6px;
 			}
+			.fail {
+				background: #ca656e30;
+				width: 30px;
+				text-align: center;
+				padding: 0 7px;
+				color: #b5434d;
+				border-radius: 3px;
+			}
 		</style>
 		<div class="visitor-info">
 			<span class="aside-note">${perf.toFixed(2)}ms</span>
@@ -425,7 +433,7 @@ patch(el, html`
 		<div>
 		${
 			lieLen ? Object.keys(lieDetail).map(key => {
-				return `${key}`
+				return `<span class="fail">${lieDetail[key].length}</span> ${key}`
 			}).join('<br>') :
 			'<span class="pass">&#10004; passed</span>'
 		}
