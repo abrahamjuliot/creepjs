@@ -289,7 +289,7 @@ const imports = {
 		),
 		workerScope: fp.workerScope ? {
 			canvas2d: (
-				!!liesLen && (isBrave || isFirefox) ? distrust : 
+				(fp.canvas2d && fp.canvas2d.lied) ? undefined : // distrust ungoogled-chromium, brave, firefox, tor browser 
 				fp.workerScope.canvas2d
 			),
 			deviceMemory: (

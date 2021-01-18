@@ -263,49 +263,64 @@ const getPrototypeLies = iframeWindow => {
 
     // Lie Detector
     const createLieDetector = () => {
+		const isSupported = obj => typeof obj != 'undefined' && !!obj
         const props = {} // lie list and detail
 		let propsSearched = [] // list of properties searched
         return {
             getProps: () => props,
 			getPropsSearched: () => propsSearched,
-            searchLies: (obj, {
-                ignore
-            } = {}) => Object.getOwnPropertyNames(!!obj && !!obj.prototype ? obj.prototype : !!obj ? obj : {}).forEach(name => {
-                if (name == 'constructor' || (ignore && new Set(ignore).has(name))) {
-                    return
-                }
-				const objectNameString = /\s(.+)\]/
-                const apiName = `${
-					obj.name ? obj.name : objectNameString.test(obj) ? objectNameString.exec(obj)[1] : undefined
-				}.${name}`
-				propsSearched.push(apiName)
-                try {
-                    const proto = obj.prototype ? obj.prototype : obj
-                    let res // response from getLies
+            searchLies: (fn, { target = [] } = { }) => {
+				let obj
+				// check if api is blocked or not supported
+				try {
+					obj = fn()
+					if (!isSupported(obj)) {
+						return
+					}
+				}
+				catch (error) {
+					return
+				}
+				
+				const interfaceObject = !!obj.prototype ? obj.prototype : obj
+				Object.getOwnPropertyNames(interfaceObject)
+				.forEach(name => {
+					if (name == 'constructor' || (target.length && !new Set(target).has(name))) {
+						return
+					}
+					const objectNameString = /\s(.+)\]/
+					const apiName = `${
+						obj.name ? obj.name : objectNameString.test(obj) ? objectNameString.exec(obj)[1] : undefined
+					}.${name}`
+					propsSearched.push(apiName)
+					try {
+						const proto = obj.prototype ? obj.prototype : obj
+						let res // response from getLies
 
-                    // search if function
-                    try {
-                        const apiFunction = proto[name] // may trigger TypeError
-                        if (typeof apiFunction == 'function') {
-                            res = getLies(proto[name], proto)
-                            if (res.lied) {
-                                return (props[apiName] = res.lieTypes)
-                            }
-                            return
-                        }
-                    } catch (error) {}
-                    // else search getter function
-                    const getterFunction = Object.getOwnPropertyDescriptor(proto, name).get
-                    res = getLies(getterFunction, proto, obj) // send the obj for special tests
-                    if (res.lied) {
-                        return (props[apiName] = res.lieTypes)
-                    }
-                    return
-                } catch (error) {
-                    // API may be blocked or unsupported
-                    return console.error(`${apiName} test failed`)
-                }
-            })
+						// search if function
+						try {
+							const apiFunction = proto[name] // may trigger TypeError
+							if (typeof apiFunction == 'function') {
+								res = getLies(proto[name], proto)
+								if (res.lied) {
+									return (props[apiName] = res.lieTypes)
+								}
+								return
+							}
+						} catch (error) {}
+						// else search getter function
+						const getterFunction = Object.getOwnPropertyDescriptor(proto, name).get
+						res = getLies(getterFunction, proto, obj) // send the obj for special tests
+						if (res.lied) {
+							return (props[apiName] = res.lieTypes)
+						}
+						return
+					} catch (error) {
+						// API may be blocked or unsupported
+						return console.error(`${apiName} test failed`)
+					}
+				})
+			}
         }
     }
 
@@ -314,35 +329,228 @@ const getPrototypeLies = iframeWindow => {
         searchLies
     } = lieDetector
 
-    // search for lies: add properties to ignore if desired
-    
-	if ('AnalyserNode' in window) { searchLies(AnalyserNode) }
-    if ('AudioBuffer' in window) {  searchLies(AudioBuffer) }
-	if ('BiquadFilterNode' in window) { searchLies(BiquadFilterNode) }
-	searchLies(CanvasRenderingContext2D)
-	searchLies(Date)
-	searchLies(Intl.DateTimeFormat)
-	searchLies(Document)
-	searchLies(DOMRect)
-	searchLies(DOMRectReadOnly)
-	searchLies(Element)
-	searchLies(Function)
-	searchLies(HTMLCanvasElement)
-    searchLies(HTMLElement)
-	searchLies(HTMLIFrameElement)
-	if ('IntersectionObserverEntry' in window) { searchLies(IntersectionObserverEntry) }
-    searchLies(Math)
-	if ('MediaDevices' in window) { searchLies(MediaDevices) }
-    searchLies(Navigator)
-	searchLies(Node)
-	if ('OffscreenCanvasRenderingContext2D' in window) { searchLies(OffscreenCanvasRenderingContext2D) }
-	searchLies(Range)
-	searchLies(Intl.RelativeTimeFormat)
-    searchLies(Screen)
-	if ('SVGRect' in window) { searchLies(SVGRect) }
-	searchLies(TextMetrics)
-	if ('WebGLRenderingContext' in window) { searchLies(WebGLRenderingContext) }
-    if ('WebGL2RenderingContext' in window) { searchLies(WebGL2RenderingContext) }
+    // search for lies: remove target to search all properties
+	searchLies(() => AnalyserNode)
+    searchLies(() => AudioBuffer, {
+		target: [
+			'copyFromChannel',
+			'getChannelData'
+		]
+	})
+	searchLies(() => BiquadFilterNode, {
+		target: [
+			'getFrequencyResponse'
+		]
+	})
+	searchLies(() => CanvasRenderingContext2D, {
+		target: [
+			'getImageData',
+			'getLineDash',
+			'isPointInPath',
+			'isPointInStroke',
+			'measureText',
+			'quadraticCurveTo'
+		]
+	})
+	searchLies(() => Date, {
+		target: [
+			'getDate',
+			'getDay',
+			'getFullYear',
+			'getHours',
+			'getMinutes',
+			'getMonth',
+			'getTime',
+			'getTimezoneOffset',
+			'setDate',
+			'setFullYear',
+			'setHours',
+			'setMilliseconds',
+			'setMonth',
+			'setSeconds',
+			'setTime',
+			'toDateString',
+			'toJSON',
+			'toLocaleDateString',
+			'toLocaleString',
+			'toLocaleTimeString',
+			'toString',
+			'toTimeString',
+			'valueOf'
+		]
+	})
+	searchLies(() => Intl.DateTimeFormat, {
+		target: [
+			'format',
+			'formatRange',
+			'formatToParts',
+			'resolvedOptions'
+		]
+	})
+	searchLies(() => Document, {
+		target: [
+			'createElement',
+			'createElementNS',
+			'getElementById',
+			'getElementsByClassName',
+			'getElementsByName',
+			'getElementsByTagName',
+			'getElementsByTagNameNS',
+			'referrer',
+			'write',
+			'writeln'
+		]
+	})
+	searchLies(() => DOMRect)
+	searchLies(() => DOMRectReadOnly)
+	searchLies(() => Element, {
+		target: [
+			'append',
+			'appendChild',
+			'getBoundingClientRect',
+			'getClientRects',
+			'insertAdjacentElement',
+			'insertAdjacentHTML',
+			'insertAdjacentText',
+			'insertBefore',
+			'prepend',
+			'replaceChild',
+			'replaceWith',
+			'setAttribute'
+		]
+	})
+	searchLies(() => Function, {
+		target: [
+			'toString',
+		]
+	})
+	searchLies(() => HTMLCanvasElement)
+    searchLies(() => HTMLElement, {
+		target: [
+			'clientHeight',
+			'clientWidth',
+			'offsetHeight',
+			'offsetWidth',
+			'scrollHeight',
+			'scrollWidth'
+		]
+	})
+	searchLies(() => HTMLIFrameElement, {
+		target: [
+			'contentDocument',
+			'contentWindow',
+		]
+	})
+	searchLies(() => IntersectionObserverEntry, {
+		target: [
+			'boundingClientRect',
+			'intersectionRect',
+			'rootBounds'
+		]
+	})
+    searchLies(() => Math, {
+		target: [
+			'acos',
+			'acosh',
+			'asinh',
+			'atan',
+			'atan2',
+			'atanh',
+			'cbrt',
+			'cos',
+			'cosh',
+			'exp',
+			'expm1',
+			'log',
+			'log10',
+			'log1p',
+			'sin',
+			'sinh',
+			'sqrt',
+			'tan',
+			'tanh'
+		]
+	})
+	searchLies(() => MediaDevices, {
+		target: [
+			'enumerateDevices',
+			'getDisplayMedia',
+			'getUserMedia'
+		]
+	})
+    searchLies(() => Navigator, {
+		target: [
+			'appCodeName',
+			'appName',
+			'appVersion',
+			'buildID',
+			'connection',
+			'deviceMemory',
+			'getBattery',
+			'getGamepads',
+			'getVRDisplays',
+			'hardwareConcurrency',
+			'language',
+			'languages',
+			'maxTouchPoints',
+			'mimeTypes',
+			'oscpu',
+			'platform',
+			'plugins',
+			'product',
+			'productSub',
+			'sendBeacon',
+			'serviceWorker',
+			'userAgent',
+			'vendor',
+			'vendorSub'
+		]
+	})
+	searchLies(() => Node, {
+		target: [
+			'Node.appendChild',
+			'Node.insertBefore',
+			'Node.replaceChild'
+		]
+	})
+	searchLies(() => OffscreenCanvasRenderingContext2D, {
+		target: [
+			'getImageData',
+			'getLineDash',
+			'isPointInPath',
+			'isPointInStroke',
+			'measureText',
+			'quadraticCurveTo'
+		]
+	})
+	searchLies(() => Range, {
+		target: [
+			'Range.getBoundingClientRect',
+			'Range.getClientRects',
+		]
+	})
+	searchLies(() => Intl.RelativeTimeFormat, {
+		target: [
+			'resolvedOptions'
+		]
+	})
+    searchLies(() => Screen)
+	searchLies(() => SVGRect)
+	searchLies(() => TextMetrics)
+	searchLies(() => WebGLRenderingContext, {
+		target: [
+			'bufferData',
+			'getParameter',
+			'readPixels'
+		]
+	})
+    searchLies(() => WebGL2RenderingContext, {
+		target: [
+			'bufferData',
+			'getParameter',
+			'readPixels'
+		]
+	})
 
 	/* potential targets:
 		RTCPeerConnection
