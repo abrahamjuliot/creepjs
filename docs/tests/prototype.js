@@ -168,9 +168,10 @@ const getPrototypeLies = iframeWindow => {
 			[`function get ${name}() { [native code] }`]: true,
 			[`function () { [native code] }`]: true,
 			[`function ${name}() {${'\n'}    [native code]${'\n'}}`]: true,
-			[`function get ${name}() {${'\n'}     [native code]${'\n'} }`]: true,
-			[`function () {${'\n'}     [native code]${'\n'} }`]: true
+			[`function get ${name}() {${'\n'}    [native code]${'\n'}}`]: true,
+			[`function () {${'\n'}    [native code]${'\n'}}`]: true
 		})
+		console.log(trust(name)[apiFunctionToString] || apiFunctionToString)
         return (
             !trust(name)[apiFunctionToString] ||
             !trust('toString')[apiFunctionToStringToString]
