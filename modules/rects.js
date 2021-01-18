@@ -172,9 +172,9 @@ export const getClientRects = imports => {
 			// get emojis
 			const emojiDiv = doc.getElementById('emoji')
 			const emojiRects = emojis
-				.slice(99, 199) // limit to improve performance
-				.map(emoji => String.fromCodePoint(...emoji))
-				.map(emoji => {
+				.slice(151, 200) // limit to improve performance
+				.map(emojiCode => {
+					const emoji = String.fromCodePoint(...emojiCode)
 					emojiDiv.innerHTML = emoji
 					const domRect = emojiDiv.getClientRects()[0]
 					return {emoji,...toNativeObject(domRect)}

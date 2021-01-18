@@ -809,6 +809,10 @@ const imports = {
 				}
 			} = fp
 			const id = 'creep-client-rects'
+			const getRectHash = rect => {
+				const {emoji,...excludeEmoji} = rect
+				return hashMini(excludeEmoji)
+			}
 			return `
 			<div class="col-six">
 				<strong>DOMRect</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
@@ -818,7 +822,7 @@ const imports = {
 				}</div>
 				<div>emojis v13.0:<span class="sub-hash">${hashMini(emojiRects)}</span></div>
 				<div>results: ${
-					modal(`${id}-emojis`, `<span style="font-size: 32px;">${emojiRects.map(rect => rect.emoji).join('')}</span>` )
+					modal(`${id}-emojis`, `<div>${emojiRects.map(rect => `${rect.emoji}: ${getRectHash(rect)}`).join('<br>')}</div>` )
 				}</div>
 			</div>
 			`
