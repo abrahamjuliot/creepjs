@@ -355,7 +355,13 @@ const imports = {
 		// skip trash since it is random
 		lies: !('data' in fp.lies) ? false : !!liesLen,
 		capturedErrors: !!errorsLen,
-		voices: fp.voices
+		voices: fp.voices,
+		webRTC: !fp.webRTC ? undefined : {
+			capabilities: fp.webRTC.capabilities,
+			foundation: fp.webRTC.foundation,
+			protocol: fp.webRTC.protocol,
+			type: fp.webRTC.type,
+		}
 	}
 
 	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f')
@@ -479,6 +485,8 @@ const imports = {
 					<div>foundation: ${note.blocked}</div>
 					<div>protocol: ${note.blocked}</div>
 					<div>capabilities: ${note.blocked}</div>
+					<div>sender: ${note.blocked}</div>
+					<div>receiver: ${note.blocked}</div>
 				</div>` :
 			(() => {
 				const { webRTC } = fp
@@ -510,8 +518,6 @@ const imports = {
 								const mode = capabilities[modeKey]
 								return `
 									<br><div>mimeType [channels] (clockRate) * sdpFmtpLine</div>
-									<br>
-									<div><strong>${modeKey}</strong>:<span class="sub-hash">${hashMini(mode)}</span></div>
 									${
 										Object.keys(mode).map(media => Object.keys(mode[media])
 											.map(key => {
@@ -542,6 +548,12 @@ const imports = {
 							}).join('')
 						)
 					}</div>
+					<div>sender:<span class="sub-hash">${
+						!capabilities.sender ? note.unsupported : hashMini(capabilities.sender)
+					}</span></div>
+					<div>receiver:<span class="sub-hash">${
+						!capabilities.receiver ? note.unsupported : hashMini(capabilities.receiver)
+					}</span></div>
 				</div>
 				`
 			})()}
