@@ -10,6 +10,7 @@ export const getCanvasWebgl = imports => {
 			proxyBehavior,
 			lieProps,
 			phantomDarkness,
+			dragonOfDeath,
 			logTestResult
 		}
 	} = imports
@@ -30,8 +31,8 @@ export const getCanvasWebgl = imports => {
 				lieProps['WebGLRenderingContext.getSupportedExtensions'] ||
 				lieProps['WebGL2RenderingContext.getSupportedExtensions']
 			) || false
-			if (phantomDarkness &&
-				phantomDarkness.document.createElement('canvas').toDataURL() != document.createElement('canvas').toDataURL()) {
+			if (dragonOfDeath &&
+				dragonOfDeath.document.createElement('canvas').toDataURL() != document.createElement('canvas').toDataURL()) {
 				lied = true
 			}
 			// create canvas context
