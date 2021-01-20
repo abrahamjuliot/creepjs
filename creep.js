@@ -357,6 +357,7 @@ const imports = {
 		capturedErrors: !!errorsLen,
 		voices: fp.voices,
 		webRTC: !fp.webRTC ? undefined : {
+			sdpcapabilities: fp.webRTC.sdpcapabilities,
 			capabilities: fp.webRTC.capabilities,
 			foundation: fp.webRTC.foundation,
 			protocol: fp.webRTC.protocol,
@@ -484,9 +485,8 @@ const imports = {
 					<div>type: ${note.blocked}</div>
 					<div>foundation: ${note.blocked}</div>
 					<div>protocol: ${note.blocked}</div>
-					<div>capabilities: ${note.blocked}</div>
-					<div>sender: ${note.blocked}</div>
-					<div>receiver: ${note.blocked}</div>
+					<div>sdp capabilities: ${note.blocked}</div>
+					<div>get capabilities: ${note.blocked}</div>
 				</div>` :
 			(() => {
 				const { webRTC } = fp
@@ -498,6 +498,7 @@ const imports = {
 					foundation,
 					protocol,
 					capabilities,
+					sdpcapabilities,
 					$hash
 				} = webRTC
 				const id = 'creep-webrtc'
@@ -510,10 +511,17 @@ const imports = {
 					<div>type: ${type ? type : note.unsupported}</div>
 					<div>foundation: ${foundation ? foundation : note.unsupported}</div>
 					<div>protocol: ${protocol ? protocol : note.unsupported}</div>
-					<div>capabilities: ${
+					<div>sdp capabilities: ${
+						!sdpcapabilities ? note.unsupported :
+						modal(
+							`${id}-sdpcapabilities`,
+							sdpcapabilities.join('<br>')
+						)
+					}</div>
+					<div>get capabilities: ${
 						!capabilities.sender && !capabilities.receiver ? note.unsupported :
 						modal(
-							`${id}`,
+							`${id}-capabilities`,
 							Object.keys(capabilities).map(modeKey => {
 								const mode = capabilities[modeKey]
 								return `
@@ -548,8 +556,6 @@ const imports = {
 							}).join('')
 						)
 					}</div>
-					<div>sender:<span class="sub-hash">${hashMini(capabilities.sender)}</span></div>
-					<div>receiver:<span class="sub-hash">${hashMini(capabilities.receiver)}</span></div>
 				</div>
 				`
 			})()}

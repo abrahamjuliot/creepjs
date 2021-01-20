@@ -40,7 +40,8 @@ export const getWebRTCData = imports => {
 				{ optional: [{ RtpDataChannels: true }] }
 			)
 			
-			let success = false
+			let success
+			let sdpcapabilities
 			connection.onicecandidate = async e => { 
 				const candidateEncoding = /((udp|tcp)\s)((\d|\w)+\s)((\d|\w|(\.|\:))+)(?=\s)/ig
 				const connectionLineEncoding = /(c=IN\s)(.+)\s/ig
@@ -79,7 +80,8 @@ export const getWebRTCData = imports => {
 						type,
 						foundation,
 						protocol,
-						capabilities
+						capabilities,
+						sdpcapabilities
 					}
 					
 					logTestResult({ start, test: 'webrtc', passed: true })
@@ -98,9 +100,20 @@ export const getWebRTCData = imports => {
 			}, 2000)
 
 			connection.createDataChannel('creep')
+
+			await connection.createOffer({
+				offerToReceiveAudio: 1,
+				offerToReceiveVideo: 1
+			})
+			.then(offer => (
+				sdpcapabilities = offer.sdp.match(/((ext|rtp)map|fmtp|rtcp-fb):.+ (.+)/gm).sort()
+			))
+			.catch(error => console.error(error))
+			
 			await connection.createOffer()
 			.then(offer => connection.setLocalDescription(offer))
 			.catch(error => console.error(error))
+			
 		}
 		catch (error) {
 			logTestResult({ test: 'webrtc', passed: false })
