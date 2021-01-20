@@ -548,12 +548,8 @@ const imports = {
 							}).join('')
 						)
 					}</div>
-					<div>sender:<span class="sub-hash">${
-						!capabilities.sender ? note.unsupported : hashMini(capabilities.sender)
-					}</span></div>
-					<div>receiver:<span class="sub-hash">${
-						!capabilities.receiver ? note.unsupported : hashMini(capabilities.receiver)
-					}</span></div>
+					<div>sender:<span class="sub-hash">${hashMini(capabilities.sender)}</span></div>
+					<div>receiver:<span class="sub-hash">${hashMini(capabilities.receiver)}</span></div>
 				</div>
 				`
 			})()}
