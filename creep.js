@@ -473,26 +473,75 @@ const imports = {
 				`<div class="col-six">
 					<strong>WebRTC</strong>
 					<div>ip address: ${note.blocked}</div>
-					<div>candidate: ${note.blocked}</div>
-					<div>connection: ${note.blocked}</div>
+					<div>ip candidate: ${note.blocked}</div>
+					<div>ip connection: ${note.blocked}</div>
 					<div>type: ${note.blocked}</div>
 					<div>foundation: ${note.blocked}</div>
 					<div>protocol: ${note.blocked}</div>
+					<div>capabilities: ${note.blocked}</div>
 				</div>` :
 			(() => {
 				const { webRTC } = fp
-				const { candidate, connection, type, foundation, protocol, $hash } = webRTC
-				const ip = webRTC['ip address']
-				const leak = webRTC['webRTC leak']
+				const {
+					ipaddress,
+					candidate,
+					connection,
+					type,
+					foundation,
+					protocol,
+					capabilities,
+					$hash
+				} = webRTC
+				const id = 'creep-webrtc'
 				return `
 				<div class="col-six">
 					<strong>WebRTC</strong><span class="hash">${hashMini($hash)}</span>
-					<div>ip address: ${ip ? ip : note.unsupported}</div>
-					<div>candidate: ${candidate ? candidate : note.unsupported}</div>
-					<div>connection: ${connection ? connection : note.unsupported}</div>
+					<div>ip address: ${ipaddress ? ipaddress : note.unsupported}</div>
+					<div>ip candidate: ${candidate ? candidate : note.unsupported}</div>
+					<div>ip connection: ${connection ? connection : note.unsupported}</div>
 					<div>type: ${type ? type : note.unsupported}</div>
 					<div>foundation: ${foundation ? foundation : note.unsupported}</div>
 					<div>protocol: ${protocol ? protocol : note.unsupported}</div>
+					<div>capabilities: ${
+						!capabilities.sender && !capabilities.receiver ? note.unsupported :
+						modal(
+							`${id}`,
+							Object.keys(capabilities).map(modeKey => {
+								const mode = capabilities[modeKey]
+								return `
+									<br><div>mimeType [channels] (clockRate) * sdpFmtpLine</div>
+									<br>
+									<div><strong>${modeKey}</strong>:<span class="sub-hash">${hashMini(mode)}</span></div>
+									${
+										Object.keys(mode).map(media => Object.keys(mode[media])
+											.map(key => {
+												return `<br><div><strong>${modeKey} ${media} ${key}</strong>:</div>${
+													mode[media][key].map(obj => {
+														const {
+															channels,
+															clockRate,
+															mimeType,
+															sdpFmtpLine,
+															uri
+														} = obj
+														return `
+															<div>
+															${mimeType||''}
+															${channels ? `[${channels}]`: ''}
+															${clockRate ? `(${clockRate})`: ''}
+															${sdpFmtpLine ? `<br>* ${sdpFmtpLine}` : ''}
+															${uri||''}
+															</div>
+														`
+													}).join('')
+												}`
+											}).join('')
+										).join('')
+									}
+								`
+							}).join('')
+						)
+					}</div>
 				</div>
 				`
 			})()}
@@ -519,7 +568,6 @@ const imports = {
 						lied
 					}
 				} = fp
-				const id = 'creep-timezone'
 				return `
 				<div class="col-six">
 					<strong>Timezone</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>

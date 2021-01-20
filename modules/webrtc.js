@@ -2,11 +2,11 @@ export const getWebRTCData = imports => {
 
 	const {
 		require: {
-			isFirefox,
 			captureError,
 			caniuse,
 			phantomDarkness,
-			logTestResult
+			logTestResult,
+			hashMini
 		}
 	} = imports
 	
@@ -54,21 +54,32 @@ export const getWebRTCData = imports => {
 					const {
 						sdp
 					} = e.target.localDescription
-					const ipAddress = caniuse(() => e.candidate.address)
+					const ipaddress = caniuse(() => e.candidate.address)
 					const candidateIpAddress = caniuse(() => encodingMatch[0].split(' ')[2])
 					const connectionLineIpAddress = caniuse(() => sdp.match(connectionLineEncoding)[0].trim().split(' ')[2])
 
 					const type = caniuse(() => /typ ([a-z]+)/.exec(candidate)[1])
 					const foundation = caniuse(() => /candidate:(\d+)\s/.exec(candidate)[1])
 					const protocol = caniuse(() => /candidate:\d+ \w+ (\w+)/.exec(candidate)[1])
+					const capabilities = {
+						sender: !caniuse(() => RTCRtpSender.getCapabilities) ? undefined : {
+							audio: RTCRtpSender.getCapabilities('audio'),
+							video: RTCRtpSender.getCapabilities('video')
+						},
+						receiver: !caniuse(() => RTCRtpReceiver.getCapabilities) ? undefined : {
+							audio: RTCRtpReceiver.getCapabilities('audio'),
+							video: RTCRtpReceiver.getCapabilities('video')
+						}
+					}
 
 					const data = {
-						['ip address']: ipAddress,
+						ipaddress,
 						candidate: candidateIpAddress,
 						connection: connectionLineIpAddress,
 						type,
 						foundation,
-						protocol
+						protocol,
+						capabilities
 					}
 					
 					logTestResult({ start, test: 'webrtc', passed: true })
@@ -80,16 +91,16 @@ export const getWebRTCData = imports => {
 			
 			setTimeout(() => {
 				if (!success) {
-					
 					logTestResult({ test: 'webrtc', passed: false })
 					captureError(new Error('RTCIceCandidate failed'))
 					return resolve()
 				}
-			}, 1000)
+			}, 2000)
+
 			connection.createDataChannel('creep')
-			connection.createOffer()
-				.then(e => connection.setLocalDescription(e))
-				.catch(error => console.log(error))
+			await connection.createOffer()
+			.then(offer => connection.setLocalDescription(offer))
+			.catch(error => console.error(error))
 		}
 		catch (error) {
 			logTestResult({ test: 'webrtc', passed: false })
