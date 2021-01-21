@@ -46,16 +46,8 @@ const getWorkerData = async () => {
 	const timezoneOffset = computeTimezoneOffset()
 	const timezoneLocation = Intl.DateTimeFormat().resolvedOptions().timeZone
 	const { hardwareConcurrency, language, platform, userAgent, deviceMemory } = navigator
-	const jsEngine = {
-		[-3.3537128705376014]: 'V8',
-		[-3.353712870537601]: 'SpiderMonkey',
-		[-3.353712870537602]: 'JavaScriptCore'
-	}
-	const mathResult = Math.tan(10*Math.LOG2E)
-	const jsImplementation = jsEngine[mathResult] || 'unknown'
 
 	return {
-		jsImplementation,
 		timezoneOffset,
 		timezoneLocation,
 		deviceMemory,

@@ -624,7 +624,6 @@ const imports = {
 				<div>language: ${note.blocked}</div>
 				<div>deviceMemory: ${note.blocked}</div>
 				<div>hardwareConcurrency: ${note.blocked}</div>
-				<div>js runtime: ${note.blocked}</div>
 				<div>platform: ${note.blocked}</div>
 				<div>system: ${note.blocked}</div>
 				<div>canvas 2d: ${note.blocked}</div>
@@ -648,7 +647,6 @@ const imports = {
 				<div>language: ${data.language || note.unsupported}</div>
 				<div>deviceMemory: ${data.deviceMemory || note.unsupported}</div>
 				<div>hardwareConcurrency: ${data.hardwareConcurrency || note.unsupported}</div>
-				<div>js runtime: ${data.jsImplementation}</div>
 				<div>platform: ${data.platform || note.unsupported}</div>
 				<div>system: ${data.system || note.unsupported}${
 					/android/i.test(data.system) && !/arm/i.test(data.platform) && /linux/i.test(data.platform) ?

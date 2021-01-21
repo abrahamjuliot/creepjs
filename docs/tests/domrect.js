@@ -80,7 +80,7 @@ const getKnownEngine = ({ x, y, top, left }) => {
 	let known = 'unknown'
 	const blink = -2.0710678100585938
 	const gecko = -2.0666656494140625
-	// webkit: 
+	
 	const jsEngine = {
 		[-3.353712870537601]: 'SpiderMonkey',
 		[-3.353712870537602]: 'JavaScriptCore'
