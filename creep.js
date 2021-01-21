@@ -519,7 +519,7 @@ const imports = {
 						)
 					}</div>
 					<div>get capabilities: ${
-						!capabilities ? note.unsupported :
+						!capabilities.receiver && !capabilities.sender ? note.unsupported :
 						modal(
 							`${id}-capabilities`,
 							Object.keys(capabilities).map(modeKey => {
