@@ -93,7 +93,6 @@ const getKnownEngine = ({ x, y, top, left }) => {
 	)
 	
 	const mathResult = Math.tan(10*Math.LOG2E)
-	alert(jsEngine[mathResult], jsRenderer)
 	const browser = jsEngine[mathResult] || jsRenderer || 'unknown'
 	
 	if (browser == 'V8' || browser == 'Blink') {
