@@ -45,11 +45,11 @@ patch(el, html`
 		height: 10px;
 	}
 	#rect1 {
-		position: fixed;
+		position: absolute;
 		top:0;
 		left:0;
-		background: #9165ca;
 		transform: rotate(45deg);
+		visibility: hidden;
 	}
 	.shift {
 		margin-left: 1px;
