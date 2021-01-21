@@ -1098,11 +1098,11 @@ const imports = {
 			</div>
 			<div class="col-six">
 				<div>engine: ${
-					prototypeName == 'CSS2Properties' ? 'Gecko' :
+					prototypeName == 'CSS2Properties' ? 'like Gecko' :
 					prototypeName == 'CSS2PropertiesPrototype' ? 'Gecko (like Goanna)' :
-					prototypeName == 'MSCSSPropertiesPrototype' ? 'Trident' :
-					prototypeName == 'CSSStyleDeclaration' ? 'Blink' :
-					prototypeName == 'CSSStyleDeclarationPrototype' ? 'Webkit' :
+					prototypeName == 'MSCSSPropertiesPrototype' ? 'like Trident' :
+					prototypeName == 'CSSStyleDeclaration' ? 'like Blink' :
+					prototypeName == 'CSSStyleDeclarationPrototype' ? 'like Webkit' :
 					'unknown'
 				}</div>
 				<div>prototype: ${prototypeName}</div>
@@ -1362,6 +1362,7 @@ const imports = {
 				<br><a class="tests" href="./tests/screen.html">Screen</a>
 				<br><a class="tests" href="./tests/extensions.html">Extensions</a>
 				<br><a class="tests" href="./tests/prototype.html">Prototype</a>
+				<br><a class="tests" href="./tests/domrect.html">DOMRect</a>
 			</div>
 		</div>
 	</div>
