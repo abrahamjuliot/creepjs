@@ -519,11 +519,14 @@ const imports = {
 						)
 					}</div>
 					<div>get capabilities: ${
-						!capabilities.sender && !capabilities.receiver ? note.unsupported :
+						!capabilities ? note.unsupported :
 						modal(
 							`${id}-capabilities`,
 							Object.keys(capabilities).map(modeKey => {
 								const mode = capabilities[modeKey]
+								if (!mode) {
+									return ''
+								}
 								return `
 									<br><div>mimeType [channels] (clockRate) * sdpFmtpLine</div>
 									${
