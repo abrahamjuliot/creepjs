@@ -40,22 +40,39 @@ const el = document.getElementById('fingerprint-data')
 patch(el, html`
 <div id="rect-test">
 	<style>
-	.rects {
+	#rect1 {
 		width: 10px;
 		height: 10px;
-	}
-	#rect1 {
 		position: absolute;
-		top:0;
-		left:0;
+		top: 0;
+		left: 0;
 		transform: rotate(45deg);
-		visibility: hidden;
+		background: #9165ca87;
 	}
-	.shift {
+	#rect1.shift {
 		margin-left: 1px;
 	}
+	#rect1.matrix {
+		transform: matrix(1.11, 2.0001, -1.0001, 1.009, 150, 94.4);
+	}
+	/*
+	width: 1000%;
+	height: 1000%;
+	max-width: 1000%;
+	padding: 3.98px;
+	transform: skewY(23.1753218deg) rotate3d(10.00099, 90, 0.100000000000009, 60000000000008.00000009deg);
+	border: solid 2.89px;
+	transform: skewY(-23.1753218deg) scale(1099.0000000099, 1.89) matrix(1.11, 2.0001, -1.0001, 1.009, 150, 94.4);
+	transform: matrix(1.11, 2.0001, -1.0001, 1.009, 150, 94.4);
+	padding: 4.4545px;
+	margin-left: 42.395pt;
+	transform: perspective(12890px) translateZ(101.5px);
+	margin-top: -150.552px;
+	margin-top: -110.552px;
+	margin-left: 15.0000009099rem;
+	*/
 	</style>
-	<div id="rect1" class="rects"></div>
+	<div id="rect1"></div>
 </div>
 `)
 
@@ -74,52 +91,27 @@ const {
 	height: unShiftHeight,
 	width: unShiftWidth
 } = document.getElementById('rect1').getClientRects()[0]
-
-
-const getKnownEngine = ({ x, y, top, left }) => {
-	let known = 'unknown'
-	const blink = -2.0710678100585938
-	const gecko = -2.0666656494140625
-	
-	const jsEngine = {
-		[-3.353712870537601]: 'SpiderMonkey',
-		[-3.353712870537602]: 'JavaScriptCore'
-	}
-
-	const jsRenderer = (
-		typeof InstallTrigger != 'undefined' ? 'Gecko' :
-		typeof chrome != 'undefined' ? 'Blink' :
-		undefined
-	)
-	
-	const mathResult = Math.tan(10*Math.LOG2E)
-	const browser = jsEngine[mathResult] || jsRenderer || 'unknown'
-	
-	if (browser == 'V8' || browser == 'Blink') {
-		known = (
-			x == blink && y == blink && top == blink && left == blink ? true : false
-		)
-	}
-
-	if (browser == 'SpiderMonkey' || browser == 'Gecko') {
-		known = (
-			x == gecko && y == gecko && top == gecko && left == gecko ? true : false
-		)
-	}
-
-	return known
-}
+rectElem.classList.add('matrix')
+const {
+	x: matrixX,
+	y: matrixY,
+	top: matrixTop,
+	bottom: matrixBottom,
+	right: matrixRight,
+	left: matrixLeft,
+	height: matrixHeight,
+	width: matrixWidth
+} = document.getElementById('rect1').getClientRects()[0]
 
 const valid = {
-	coordinates: (
-		(right - left) == width && (right - x) == width &&
-		(bottom - top) == height && (bottom - y) == height
+	matrix: (
+		(matrixRight - matrixLeft) == matrixWidth && (matrixRight - matrixX) == matrixWidth &&
+		(matrixBottom - matrixTop) == matrixHeight && (matrixBottom - matrixY) == matrixHeight
 	),
 	dimensions: (
 		x == y && x == top && x == left &&
 		bottom == right && height == width
 	),
-	engine: getKnownEngine({ x, y, top, left }),
 	unshift: (
 		unShiftX == x &&
 		unShiftY == y &&
@@ -179,10 +171,9 @@ patch(rectEl, html`
 		<div class="results">
 			<div>rect: ${rectHash}</div>
 			<div>lie pattern: <span class="${!lieLen ? 'pass' : 'fail'}">${lieLen ? lieHash : 'none'}</span></div>
-			<div>${styleResult(valid.engine)}valid engine</div>
 			<div>${styleResult(valid.unshift)}valid unshift</div>
 			<div>${styleResult(valid.dimensions)}valid dimensions</div>
-			<div>${styleResult(valid.coordinates)}valid coordinates</div>
+			<div>${styleResult(valid.matrix)}valid matrix coordinates</div>
 			<div>${'x'.padStart(10,'.')}: ${''+x}</div>
 			<div>${'y'.padStart(10,'.')}: ${''+y}</div>
 			<div>${'top'.padStart(10,'.')}: ${''+top}</div>
