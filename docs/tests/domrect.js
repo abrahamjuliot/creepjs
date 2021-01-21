@@ -82,16 +82,18 @@ const getKnownEngine = ({ x, y, top, left }) => {
 	const gecko = -2.0666656494140625
 	// webkit: 
 	const jsEngine = {
-		[-3.3537128705376014]: 'V8',
 		[-3.353712870537601]: 'SpiderMonkey',
 		[-3.353712870537602]: 'JavaScriptCore'
 	}
+
 	const jsRenderer = (
 		typeof InstallTrigger != 'undefined' ? 'Gecko' :
 		typeof chrome != 'undefined' ? 'Blink' :
 		undefined
 	)
+	
 	const mathResult = Math.tan(10*Math.LOG2E)
+	alert(jsEngine[mathResult], jsRenderer)
 	const browser = jsEngine[mathResult] || jsRenderer || 'unknown'
 	
 	if (browser == 'V8' || browser == 'Blink') {
