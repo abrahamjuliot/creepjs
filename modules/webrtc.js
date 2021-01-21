@@ -101,6 +101,12 @@ export const getWebRTCData = imports => {
 
 			connection.createDataChannel('creep')
 
+			
+			
+			await connection.createOffer()
+			.then(offer => connection.setLocalDescription(offer))
+			.catch(error => console.error(error))
+
 			await connection.createOffer({
 				offerToReceiveAudio: 1,
 				offerToReceiveVideo: 1
@@ -108,10 +114,6 @@ export const getWebRTCData = imports => {
 			.then(offer => (
 				sdpcapabilities = offer.sdp.match(/((ext|rtp)map|fmtp|rtcp-fb):.+ (.+)/gm).sort()
 			))
-			.catch(error => console.error(error))
-			
-			await connection.createOffer()
-			.then(offer => connection.setLocalDescription(offer))
 			.catch(error => console.error(error))
 			
 		}
