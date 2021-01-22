@@ -78,9 +78,10 @@ patch(el, html`
 
 const rectElem = document.getElementById('rect1')
 const rect = rectElem.getClientRects()[0]
-const { x, y, top, bottom, right, left, height, width } = rect
+const { x, y, top, bottom, right, left, width, height } = rect
 rectElem.classList.add('shift')
 rectElem.classList.remove('shift')
+const unShiftRect = document.getElementById('rect1').getClientRects()[0]
 const {
 	x: unShiftX,
 	y: unShiftY,
@@ -90,8 +91,9 @@ const {
 	left: unShiftLeft,
 	height: unShiftHeight,
 	width: unShiftWidth
-} = document.getElementById('rect1').getClientRects()[0]
+} = unShiftRect
 rectElem.classList.add('matrix')
+const matrixRect = document.getElementById('rect1').getClientRects()[0]
 const {
 	x: matrixX,
 	y: matrixY,
@@ -101,7 +103,7 @@ const {
 	left: matrixLeft,
 	height: matrixHeight,
 	width: matrixWidth
-} = document.getElementById('rect1').getClientRects()[0]
+} = matrixRect
 
 const valid = {
 	matrix: (
@@ -127,7 +129,7 @@ const valid = {
 const lieLen = Object.keys(valid).filter(key => !valid[key]).length
 const score = (100/(1+lieLen)).toFixed(0)
 const lieHash = hashMini(valid)
-const rectHash = hashMini({ x, y, top, bottom, right, left, height, width })
+const rectHash = hashMini({ x, y, top, bottom, right, left, width, height })
 
 const perf = performance.now() - start 
 
@@ -152,6 +154,9 @@ patch(rectEl, html`
 			color: #ca656e;
 			background: #ca656e0d;
 		}
+		.erratic {
+			color: #ca656e;
+		}
 		.rect {
 			margin-left: 10px;
 			display: inline-block;
@@ -162,6 +167,15 @@ patch(rectEl, html`
 			background: #9165ca87;
 			transform: rotate(45deg);
 		}
+		.matrix {
+			transform: matrix(1.11, 2.0001, -1.0001, 1.009, 150, 94.4);
+		}
+		.group {
+			border: 1px solid #eee;
+			border-radius: 3px;
+			padding: 10px 15px;
+			margin: 10px auto;
+		}
 		</style>
 		<div class="visitor-info">
 			<span class="aside-note">${perf.toFixed(2)}ms</span>
@@ -171,19 +185,117 @@ patch(rectEl, html`
 		<div class="results">
 			<div>rect: ${rectHash}</div>
 			<div>lie pattern: <span class="${!lieLen ? 'pass' : 'fail'}">${lieLen ? lieHash : 'none'}</span></div>
-			<div>${styleResult(valid.unshift)}valid unshift</div>
+			
 			<div>${styleResult(valid.dimensions)}valid dimensions</div>
+			${(({ x, y, top, bottom, right, left, width, height }) => {
+				const chars = {
+					x: (''+x).split(''),
+					y: (''+y).split(''),
+					top: (''+top).split(''),
+					bottom: (''+bottom).split(''),
+					right: (''+right).split(''),
+					left: (''+left).split(''),
+					width: (''+width).split(''),
+					height: (''+height).split('')
+				}
+				const base = {
+					dimension1: chars.x,
+					dimension2: chars.right,
+					dimension3: chars.width
+				}
+				const style = (a, b) => b.map(
+					(char, i) => char != a[i] ? `<span class="erratic">${char}</span>` : char
+				)
+				.join('')
+				
+				return `
+				<div>${'x'.padStart(10,'.')}: ${style(base.dimension1, chars.x)}</div>
+				<div>${'y'.padStart(10,'.')}: ${style(base.dimension1, chars.y)}</div>
+				<div>${'top'.padStart(10,'.')}: ${style(base.dimension1, chars.top)}</div>
+				<div>${'left'.padStart(10,'.')}: ${style(base.dimension1, chars.left)}</div>
+				<div>${'right'.padStart(10,'.')}: ${style(base.dimension2, chars.right)}</div>
+				<div>${'bottom'.padStart(10,'.')}: ${style(base.dimension2, chars.bottom)}</div>
+				<div>${'width'.padStart(10,'.')}: ${style(base.dimension3, chars.width)}</div>
+				<div>${'height'.padStart(10,'.')}: ${style(base.dimension3, chars.height)}</div>
+				`
+			})(rect)}
 			<div>${styleResult(valid.matrix)}valid matrix coordinates</div>
-			<div>${'x'.padStart(10,'.')}: ${''+x}</div>
-			<div>${'y'.padStart(10,'.')}: ${''+y}</div>
-			<div>${'top'.padStart(10,'.')}: ${''+top}</div>
-			<div>${'left'.padStart(10,'.')}: ${''+left}</div>
-			<div>${'bottom'.padStart(10,'.')}: ${''+bottom}</div>
-			<div>${'right'.padStart(10,'.')}: ${''+right}</div>
-			<div>${'height'.padStart(10,'.')}: ${''+height}</div>
-			<div>${'width'.padStart(10,'.')}: ${''+width}</div>
+			${(({ x, y, top, bottom, right, left, width, height }) => {
+
+				const calc = (x, expression) => !expression ? `<span class="erratic">${x}</span>` : x
+				
+				return `
+				<div class="group"> + ${''+right} (r)
+				<br> - ${''+left} (l)
+				<br> = ${calc(''+width, right-left==width)} (w)</div>
+
+				<div class="group"> + ${''+right} (r)
+				<br> - ${''+x} (x)
+				<br> = ${calc(''+width, right-x==width)} (w)</div>
+
+				<div class="group"> + ${''+bottom} (b)
+				<br> - ${''+top} (t)
+				<br> = ${calc(''+height, bottom-top==height)} (h)</div>
+
+				<div class="group"> + ${''+bottom} (b)
+				<br> - ${''+y} (y)
+				<br> = ${calc(''+height, bottom-y==height)} (h)</div>
+				`
+			})(matrixRect)}
+
+			<div>${styleResult(valid.unshift)}valid unshift</div>
+
+			${((unShiftRect, rect) => {
+
+				const { x, y, top, bottom, right, left, width, height } = rect
+				const {
+					x: unShiftX,
+					y: unShiftY,
+					top: unShiftTop,
+					bottom: unShiftBottom,
+					right: unShiftRight,
+					left: unShiftLeft,
+					height: unShiftHeight,
+					width: unShiftWidth
+				} = unShiftRect
+
+				const chars = {
+					x: (''+x).split(''),
+					y: (''+y).split(''),
+					top: (''+top).split(''),
+					bottom: (''+bottom).split(''),
+					right: (''+right).split(''),
+					left: (''+left).split(''),
+					width: (''+width).split(''),
+					height: (''+height).split('')
+				}
+				const base = {
+					dimension1: chars.x,
+					dimension2: chars.y,
+					dimension3: chars.top,
+					dimension4: chars.left,
+					dimension5: chars.right,
+					dimension6: chars.bottom,
+					dimension7: chars.width,
+					dimension8: chars.height
+				}
+				const style = (a, b) => b.map(
+					(char, i) => char != a[i] ? `<span class="erratic">${char}</span>` : char
+				)
+				.join('')
+				
+				return `
+				<div>${'x'.padStart(10,'.')}: ${style(base.dimension1, (''+unShiftX).split(''))}</div>
+				<div>${'y'.padStart(10,'.')}: ${style(base.dimension2, (''+unShiftY).split(''))}</div>
+				<div>${'top'.padStart(10,'.')}: ${style(base.dimension3, (''+unShiftTop).split(''))}</div>
+				<div>${'left'.padStart(10,'.')}: ${style(base.dimension4, (''+unShiftLeft).split(''))}</div>
+				<div>${'right'.padStart(10,'.')}: ${style(base.dimension5, (''+unShiftRight).split(''))}</div>
+				<div>${'bottom'.padStart(10,'.')}: ${style(base.dimension6, (''+unShiftBottom).split(''))}</div>
+				<div>${'width'.padStart(10,'.')}: ${style(base.dimension7, (''+unShiftWidth).split(''))}</div>
+				<div>${'height'.padStart(10,'.')}: ${style(base.dimension8, (''+unShiftHeight).split(''))}</div>
+				`
+			})(unShiftRect, rect)}
 		</div>
 	</div>
 `)
-
 })()
