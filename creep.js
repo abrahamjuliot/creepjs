@@ -420,12 +420,12 @@ const imports = {
 		</div>
 		<div class="flex-grid">
 			${(() => {
-				const { trash: { trashBin } } = fp
+				const { trash: { trashBin, $hash  } } = fp
 				const trashLen = trashBin.length
 				return `
 				<div class="col-four${trashLen ? ' trash': ''}">
 					<strong>Trash</strong>${
-						trashLen ? `<span class="hash">${hashMini(trashBin)}</span>` : ''
+						trashLen ? `<span class="hash">${hashMini($hash)}</span>` : ''
 					}
 					<div>gathered (${!trashLen ? '0' : ''+trashLen }): ${
 						trashLen ? modal(
@@ -436,12 +436,12 @@ const imports = {
 				</div>`
 			})()}
 			${(() => {
-				const { lies: { data, totalLies } } = fp 
+				const { lies: { data, totalLies, $hash } } = fp 
 				const toJSONFormat = obj => JSON.stringify(obj, null, '\t')
 				const sanitize = str => str.replace(/\</g, '&lt;')
 				return `
 				<div class="col-four${totalLies ? ' lies': ''}">
-					<strong>Lies</strong>${totalLies ? `<span class="hash">${hashMini(data)}</span>` : ''}
+					<strong>Lies</strong>${totalLies ? `<span class="hash">${hashMini($hash)}</span>` : ''}
 					<div>unmasked (${!totalLies ? '0' : ''+totalLies }): ${
 						totalLies ? modal('creep-lies', Object.keys(data).map(key => {
 							const { name, lieTypes: { lies, fingerprint } } = data[key]
@@ -463,11 +463,11 @@ const imports = {
 				</div>`
 			})()}
 			${(() => {
-				const { capturedErrors: { data } } = fp
+				const { capturedErrors: { data, $hash  } } = fp
 				const len = data.length
 				return `
 				<div class="col-four${len ? ' errors': ''}">
-					<strong>Errors</strong>${len ? `<span class="hash">${hashMini(data)}</span>` : ''}
+					<strong>Errors</strong>${len ? `<span class="hash">${hashMini($hash)}</span>` : ''}
 					<div>captured (${!len ? '0' : ''+len}): ${
 						len ? modal('creep-captured-errors', Object.keys(data).map((key, i) => `${i+1}: ${data[key].trustedName} - ${data[key].trustedMessage} `).join('<br>')) : ''
 					}</div>
