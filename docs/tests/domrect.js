@@ -157,20 +157,80 @@ patch(rectEl, html`
 		.erratic {
 			color: #ca656e;
 		}
+		.rect-box {
+			position: relative;
+			padding: 50px;
+			text-align: center;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+		}
 		.rect {
+			background: #9165ca87;
 			margin-left: 10px;
 			display: inline-block;
 			width: 10px;
 			height: 10px;
 			top:0;
 			left:0;
-			background: #9165ca87;
-			transform: rotate(45deg);
 		}
-		.matrix {
-			transform: matrix(1.11, 2.0001, -1.0001, 1.009, 150, 94.4);
+		.rect-unshift,
+		.rect-dimensions {
+			width: 100px;
+			height: 100px;
+		}
+		.rect,
+		.rect-dimensions {
+			animation: dimensions 1s 0.3s ease both;
+		}
+		.rect-unshift,
+		.rect-dimensions  {
+			background: #9165ca26;
+    		border: 1px solid #9165ca26;
+		}
+		.rect-matrix {
+			position: absolute;
+			top: 0;
+			left: -25px;
+			background: #70c1b324;
+			border: 1px solid #70c1b352;
+			width: 75px;
+			height: 75px;
+			animation: matrix 1s 0.3s ease both;
+		}
+		.rect-unshift {
+			animation: unshift 1s 0.3s ease both;
+		}
+		@keyframes dimensions {
+			0% { opacity: 0 }
+			25% { opacity: 0 }
+			50% { opacity: 1 }
+			100% {
+				transform: rotate(45deg);
+			}
+		}
+		@keyframes matrix {
+			0% { opacity: 0 }
+			25% { opacity: 0 }
+			50% { opacity: 1 }
+			100% {
+				transform: matrix(1.11, 2.0001, -1.0001, 1.009, 150, 94.4);
+			}
+		}
+		@keyframes unshift {
+			0% { opacity: 0 }
+			25% { opacity: 0 }
+			50% { opacity: 1 }
+			90% {
+				transform: translateX(-50px) rotate(45deg);
+			}
+			100% {
+				transform: translateX(0px) rotate(45deg);
+			}
 		}
 		.group {
+			font-size: 12px !important;
 			border: 1px solid #eee;
 			border-radius: 3px;
 			padding: 10px 15px;
@@ -181,120 +241,151 @@ patch(rectEl, html`
 			<span class="aside-note">${perf.toFixed(2)}ms</span>
 			<strong>DOMRect</strong><span class="rect"></span>
 			<div>score: <span class="${score == 100 ? 'pass' : 'fail'}">${score}%</span></div>
-		</div>
-		<div class="results">
 			<div>rect: ${rectHash}</div>
 			<div>lie pattern: <span class="${!lieLen ? 'pass' : 'fail'}">${lieLen ? lieHash : 'none'}</span></div>
-			
-			<div>${styleResult(valid.dimensions)}valid dimensions</div>
-			${(({ x, y, top, bottom, right, left, width, height }) => {
-				const chars = {
-					x: (''+x).split(''),
-					y: (''+y).split(''),
-					top: (''+top).split(''),
-					bottom: (''+bottom).split(''),
-					right: (''+right).split(''),
-					left: (''+left).split(''),
-					width: (''+width).split(''),
-					height: (''+height).split('')
-				}
-				const base = {
-					dimension1: chars.x,
-					dimension2: chars.right,
-					dimension3: chars.width
-				}
-				const style = (a, b) => b.map(
-					(char, i) => char != a[i] ? `<span class="erratic">${char}</span>` : char
-				)
-				.join('')
-				
-				return `
-				<div>${'x'.padStart(10,'.')}: ${style(base.dimension1, chars.x)}</div>
-				<div>${'y'.padStart(10,'.')}: ${style(base.dimension1, chars.y)}</div>
-				<div>${'top'.padStart(10,'.')}: ${style(base.dimension1, chars.top)}</div>
-				<div>${'left'.padStart(10,'.')}: ${style(base.dimension1, chars.left)}</div>
-				<div>${'right'.padStart(10,'.')}: ${style(base.dimension2, chars.right)}</div>
-				<div>${'bottom'.padStart(10,'.')}: ${style(base.dimension2, chars.bottom)}</div>
-				<div>${'width'.padStart(10,'.')}: ${style(base.dimension3, chars.width)}</div>
-				<div>${'height'.padStart(10,'.')}: ${style(base.dimension3, chars.height)}</div>
-				`
-			})(rect)}
-			<div>${styleResult(valid.matrix)}valid matrix coordinates</div>
-			${(({ x, y, top, bottom, right, left, width, height }) => {
+		</div>
+		<div class="flex-grid">
+			<div class="col-six">
+				<div>${styleResult(valid.dimensions)}valid dimensions</div>
+				${(({ x, y, top, bottom, right, left, width, height }) => {
+					const chars = {
+						x: (''+x).split(''),
+						y: (''+y).split(''),
+						top: (''+top).split(''),
+						bottom: (''+bottom).split(''),
+						right: (''+right).split(''),
+						left: (''+left).split(''),
+						width: (''+width).split(''),
+						height: (''+height).split('')
+					}
+					const base = {
+						dimension1: chars.x,
+						dimension2: chars.right,
+						dimension3: chars.width
+					}
+					const style = (a, b) => b.map(
+						(char, i) => char != a[i] ? `<span class="erratic">${char}</span>` : char
+					)
+					.join('')
+					
+					return `
+					<div>${'x'.padStart(10,'.')}: ${style(base.dimension1, chars.x)}</div>
+					<div>${'y'.padStart(10,'.')}: ${style(base.dimension1, chars.y)}</div>
+					<div>${'top'.padStart(10,'.')}: ${style(base.dimension1, chars.top)}</div>
+					<div>${'left'.padStart(10,'.')}: ${style(base.dimension1, chars.left)}</div>
+					<div>${'right'.padStart(10,'.')}: ${style(base.dimension2, chars.right)}</div>
+					<div>${'bottom'.padStart(10,'.')}: ${style(base.dimension2, chars.bottom)}</div>
+					<div>${'width'.padStart(10,'.')}: ${style(base.dimension3, chars.width)}</div>
+					<div>${'height'.padStart(10,'.')}: ${style(base.dimension3, chars.height)}</div>
+					`
+				})(rect)}
+			</div>
+			<div class="col-six rect-box">
+				<div class="rect-dimensions"></div>
+			</div>
+		</div>
+		<div class="flex-grid">
+			<div class="col-six">
+				<div>${styleResult(valid.matrix)}valid matrix coordinates</div>
+				${(({ x, y, top, bottom, right, left, width, height }) => {
+					const chars = {
+						width: (''+width).split(''),
+						height: (''+height).split('')
+					}
+					const base = {
+						dimension1: ''+(right - left),
+						dimension2: ''+(right - x),
+						dimension3: ''+(bottom - top),
+						dimension4: ''+(bottom - y)
+					}
+					const style = (a, b) => b.map(
+						(char, i) => char != a[i] ? `<span class="erratic">${char}</span>` : char
+					)
+					.join('')
 
-				const calc = (x, expression) => !expression ? `<span class="erratic">${x}</span>` : x
-				
-				return `
-				<div class="group"> + ${''+right} (r)
-				<br> - ${''+left} (l)
-				<br> = ${calc(''+width, right-left==width)} (w)</div>
+					const calc = (x, expression) => !expression ? `<span class="erratic">${x}</span>` : x
+					
+					return `
+					<div class="group"> + ${''+right} (r)
+					<br> - ${''+left} (l)
+					<br> = ${style(base.dimension1, chars.width)} (w)</div>
 
-				<div class="group"> + ${''+right} (r)
-				<br> - ${''+x} (x)
-				<br> = ${calc(''+width, right-x==width)} (w)</div>
+					<div class="group"> + ${''+right} (r)
+					<br> - ${''+x} (x)
+					<br> = ${style(base.dimension2, chars.width)} (w)</div>
 
-				<div class="group"> + ${''+bottom} (b)
-				<br> - ${''+top} (t)
-				<br> = ${calc(''+height, bottom-top==height)} (h)</div>
+					<div class="group"> + ${''+bottom} (b)
+					<br> - ${''+top} (t)
+					<br> = ${style(base.dimension3, chars.height)} (h)</div>
 
-				<div class="group"> + ${''+bottom} (b)
-				<br> - ${''+y} (y)
-				<br> = ${calc(''+height, bottom-y==height)} (h)</div>
-				`
-			})(matrixRect)}
+					<div class="group"> + ${''+bottom} (b)
+					<br> - ${''+y} (y)
+					<br> = ${style(base.dimension4, chars.height)} (h)</div>
+					`
+				})(matrixRect)}
+			</div>
+			<div class="col-six rect-box">
+				<div class="rect-matrix"></div>
+			</div>
+		</div>
+		<div class="flex-grid">
+			<div class="col-six">
+				<div>${styleResult(valid.unshift)}valid unshift</div>
 
-			<div>${styleResult(valid.unshift)}valid unshift</div>
+				${((unShiftRect, rect) => {
 
-			${((unShiftRect, rect) => {
+					const { x, y, top, bottom, right, left, width, height } = rect
+					const {
+						x: unShiftX,
+						y: unShiftY,
+						top: unShiftTop,
+						bottom: unShiftBottom,
+						right: unShiftRight,
+						left: unShiftLeft,
+						height: unShiftHeight,
+						width: unShiftWidth
+					} = unShiftRect
 
-				const { x, y, top, bottom, right, left, width, height } = rect
-				const {
-					x: unShiftX,
-					y: unShiftY,
-					top: unShiftTop,
-					bottom: unShiftBottom,
-					right: unShiftRight,
-					left: unShiftLeft,
-					height: unShiftHeight,
-					width: unShiftWidth
-				} = unShiftRect
-
-				const chars = {
-					x: (''+x).split(''),
-					y: (''+y).split(''),
-					top: (''+top).split(''),
-					bottom: (''+bottom).split(''),
-					right: (''+right).split(''),
-					left: (''+left).split(''),
-					width: (''+width).split(''),
-					height: (''+height).split('')
-				}
-				const base = {
-					dimension1: chars.x,
-					dimension2: chars.y,
-					dimension3: chars.top,
-					dimension4: chars.left,
-					dimension5: chars.right,
-					dimension6: chars.bottom,
-					dimension7: chars.width,
-					dimension8: chars.height
-				}
-				const style = (a, b) => b.map(
-					(char, i) => char != a[i] ? `<span class="erratic">${char}</span>` : char
-				)
-				.join('')
-				
-				return `
-				<div>${'x'.padStart(10,'.')}: ${style(base.dimension1, (''+unShiftX).split(''))}</div>
-				<div>${'y'.padStart(10,'.')}: ${style(base.dimension2, (''+unShiftY).split(''))}</div>
-				<div>${'top'.padStart(10,'.')}: ${style(base.dimension3, (''+unShiftTop).split(''))}</div>
-				<div>${'left'.padStart(10,'.')}: ${style(base.dimension4, (''+unShiftLeft).split(''))}</div>
-				<div>${'right'.padStart(10,'.')}: ${style(base.dimension5, (''+unShiftRight).split(''))}</div>
-				<div>${'bottom'.padStart(10,'.')}: ${style(base.dimension6, (''+unShiftBottom).split(''))}</div>
-				<div>${'width'.padStart(10,'.')}: ${style(base.dimension7, (''+unShiftWidth).split(''))}</div>
-				<div>${'height'.padStart(10,'.')}: ${style(base.dimension8, (''+unShiftHeight).split(''))}</div>
-				`
-			})(unShiftRect, rect)}
+					const chars = {
+						x: (''+x).split(''),
+						y: (''+y).split(''),
+						top: (''+top).split(''),
+						bottom: (''+bottom).split(''),
+						right: (''+right).split(''),
+						left: (''+left).split(''),
+						width: (''+width).split(''),
+						height: (''+height).split('')
+					}
+					const base = {
+						dimension1: chars.x,
+						dimension2: chars.y,
+						dimension3: chars.top,
+						dimension4: chars.left,
+						dimension5: chars.right,
+						dimension6: chars.bottom,
+						dimension7: chars.width,
+						dimension8: chars.height
+					}
+					const style = (a, b) => b.map(
+						(char, i) => char != a[i] ? `<span class="erratic">${char}</span>` : char
+					)
+					.join('')
+					
+					return `
+					<div>${'x'.padStart(10,'.')}: ${style(base.dimension1, (''+unShiftX).split(''))}</div>
+					<div>${'y'.padStart(10,'.')}: ${style(base.dimension2, (''+unShiftY).split(''))}</div>
+					<div>${'top'.padStart(10,'.')}: ${style(base.dimension3, (''+unShiftTop).split(''))}</div>
+					<div>${'left'.padStart(10,'.')}: ${style(base.dimension4, (''+unShiftLeft).split(''))}</div>
+					<div>${'right'.padStart(10,'.')}: ${style(base.dimension5, (''+unShiftRight).split(''))}</div>
+					<div>${'bottom'.padStart(10,'.')}: ${style(base.dimension6, (''+unShiftBottom).split(''))}</div>
+					<div>${'width'.padStart(10,'.')}: ${style(base.dimension7, (''+unShiftWidth).split(''))}</div>
+					<div>${'height'.padStart(10,'.')}: ${style(base.dimension8, (''+unShiftHeight).split(''))}</div>
+					`
+				})(unShiftRect, rect)}
+			</div>
+			<div class="col-six rect-box">
+				<div class="rect-unshift"></div>
+			</div>
 		</div>
 	</div>
 `)
