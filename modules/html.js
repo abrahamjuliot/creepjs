@@ -34,7 +34,7 @@ const pluralify = len => len > 1 ? 's' : ''
 const count = arr => arr && arr.constructor.name === 'Array' ? ''+(arr.length) : '0'
 
 // modal component
-const modal = (name, result) => {
+const modal = (name, result, linkname = 'details') => {
 	if (!result.length) {
 		return ''
 	}
@@ -53,7 +53,7 @@ const modal = (name, result) => {
 		}
 		</style>
 		<input type="radio" id="toggle-open-${name}" class="modal-${name}" name="modal-${name}"/>
-		<label class="modal-open-btn" for="toggle-open-${name}" onclick="">details</label>
+		<label class="modal-open-btn" for="toggle-open-${name}" onclick="">${linkname}</label>
 		<label class="modal-container" for="toggle-close-${name}" onclick="">
 			<label class="modal-content" for="toggle-open-${name}" onclick="">
 				<input type="radio" id="toggle-close-${name}" name="modal-${name}"/>

@@ -515,7 +515,8 @@ const imports = {
 						!sdpcapabilities ? note.unsupported :
 						modal(
 							`${id}-sdpcapabilities`,
-							sdpcapabilities.join('<br>')
+							sdpcapabilities.join('<br>'),
+							hashMini(sdpcapabilities)
 						)
 					}</div>
 					<div>get capabilities: ${
@@ -556,7 +557,8 @@ const imports = {
 										).join('')
 									}
 								`
-							}).join('')
+							}).join(''),
+							hashMini(capabilities)
 						)
 					}</div>
 				</div>
@@ -723,10 +725,19 @@ const imports = {
 				<div>webgl:<span class="sub-hash">${hashMini(dataURI)}</span></div>
 				<div>parameters (${count(webglSpecsKeys)}): ${
 					!webglSpecsKeys.length ? note.unsupported :
-					modal(`${id}-p-v1`, webglSpecsKeys.map(key => `${key}: ${webglSpecs[key]}`).join('<br>'))
+					modal(
+						`${id}-p-v1`,
+						webglSpecsKeys.map(key => `${key}: ${webglSpecs[key]}`).join('<br>'),
+						hashMini(webglSpecs)
+					)
 				}</div>
 				<div>extensions (${count(supported.extensions)}): ${
-					!caniuse(() => supported, ['extensions', 'length']) ? note.unsupported : modal(`${id}-e-v1`, supported.extensions.join('<br>'))
+					!caniuse(() => supported, ['extensions', 'length']) ? note.unsupported : 
+					modal(
+						`${id}-e-v1`,
+						supported.extensions.join('<br>'),
+						hashMini(supported.extensions)
+					)
 				}</div>
 				<div>vendor: ${!unmasked.vendor ? note.unsupported : unmasked.vendor}</div>
 				<div>renderer:</div>
@@ -738,10 +749,19 @@ const imports = {
 				<div>webgl2:<span class="sub-hash">${hashMini(dataURI2)}</span></div>
 				<div>parameters (${count(webgl2SpecsKeys)}): ${
 					!webgl2SpecsKeys.length ? note.unsupported :
-					modal(`${id}-p-v2`, webgl2SpecsKeys.map(key => `${key}: ${webgl2Specs[key]}`).join('<br>'))
+					modal(
+						`${id}-p-v2`,
+						webgl2SpecsKeys.map(key => `${key}: ${webgl2Specs[key]}`).join('<br>'),
+						hashMini(webgl2Specs)
+					)
 				}</div>
 				<div>extensions (${count(supported2.extensions)}): ${
-					!caniuse(() => supported2, ['extensions', 'length']) ? note.unsupported : modal(`${id}-e-v2`, supported2.extensions.join('<br>'))
+					!caniuse(() => supported2, ['extensions', 'length']) ? note.unsupported : 
+					modal(
+						`${id}-e-v2`,
+						supported2.extensions.join('<br>'),
+						hashMini(supported2.extensions)
+					)
 				}</div>
 				<div>vendor: ${!unmasked2.vendor ? note.unsupported : unmasked2.vendor }</div>
 				<div>renderer:</div>
@@ -794,7 +814,11 @@ const imports = {
 				<div>sample:${''+binsSample[0] == 'undefined' ? ` ${note.unsupported}` : `<span class="sub-hash">${hashMini(binsSample[0])}</span>`}</div>
 				<div>copy:${''+copySample[0] == 'undefined' ? ` ${note.unsupported}`  : `<span class="sub-hash">${hashMini(copySample[0])}</span>`}</div>
 				<div>values: ${
-					modal('creep-offline-audio-context', Object.keys(values).map(key => `<div>${key}: ${values[key]}</div>`).join(''))
+					modal(
+						'creep-offline-audio-context',
+						Object.keys(values).map(key => `<div>${key}: ${values[key]}</div>`).join(''),
+						hashMini(values)
+					)
 				}</div>
 			</div>
 			`
@@ -858,9 +882,7 @@ const imports = {
 			`<div class="col-six">
 				<strong>DOMRect</strong>
 				<div>elements: ${note.blocked}</div>
-				<div>results: ${note.blocked}</div>
 				<div>emojis v13.0: ${note.blocked}</div>
-				<div>results: ${note.blocked}</div>
 			</div>` :
 		(() => {
 			const {
@@ -879,13 +901,19 @@ const imports = {
 			return `
 			<div class="col-six">
 				<strong>DOMRect</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
-				<div>elements:<span class="sub-hash">${hashMini(clientRects)}</span></div>
-				<div>results: ${
-					modal(`${id}-elements`, clientRects.map(domRect => Object.keys(domRect).map(key => `<div>${key}: ${domRect[key]}</div>`).join('')).join('<br>') )
+				<div>elements: ${
+					modal(
+						`${id}-elements`,
+						clientRects.map(domRect => Object.keys(domRect).map(key => `<div>${key}: ${domRect[key]}</div>`).join('')).join('<br>'),
+						hashMini(clientRects)
+					)
 				}</div>
-				<div>emojis v13.0:<span class="sub-hash">${hashMini(emojiRects)}</span></div>
-				<div>results: ${
-					modal(`${id}-emojis`, `<div>${emojiRects.map(rect => `${rect.emoji}: ${getRectHash(rect)}`).join('<br>')}</div>` )
+				<div>emojis v13.0: ${
+					modal(
+						`${id}-emojis`,
+						`<div>${emojiRects.map(rect => `${rect.emoji}: ${getRectHash(rect)}`).join('<br>')}</div>`,
+						hashMini(emojiRects)
+					)
 				}</div>
 			</div>
 			`
@@ -1072,10 +1100,9 @@ const imports = {
 				<div>apple: ${note.blocked}</div>
 			</div>
 			<div class="col-six">
-				<div>engine: ${note.blocked}</div>
 				<div>prototype: ${note.blocked}</div>
 				<div>system styles: ${note.blocked}</div>
-				<div>system styles rendered: ${note.blocked}</div>
+				<div class="gradient"></div>
 			</div>` :
 		(() => {
 			const {
@@ -1086,6 +1113,15 @@ const imports = {
 				getComputedStyle: computedStyle,
 				system
 			} = data
+			const colorsLen = system.colors.length
+			const gradientColors = system.colors.map((color, index) => {
+				const name = Object.values(color)[0]
+				return (
+					index == 0 ? `${name}, ${name} ${((index+1)/colorsLen*100).toFixed(2)}%` : 
+					index == colorsLen-1 ? `${name} 100%` : 
+					`${name} ${(index/colorsLen*100).toFixed(2)}%, ${name} ${((index+1)/colorsLen*100).toFixed(2)}%`
+				)
+			})
 			const id = 'creep-css-style-declaration-version'
 			const { prototypeName } = computedStyle
 			return `
@@ -1098,17 +1134,8 @@ const imports = {
 				<div>apple: ${''+computedStyle.apple}</div>
 			</div>
 			<div class="col-six">
-				<div>engine: ${
-					prototypeName == 'CSS2Properties' ? 'like Gecko' :
-					prototypeName == 'CSS2PropertiesPrototype' ? 'Gecko (like Goanna)' :
-					prototypeName == 'MSCSSPropertiesPrototype' ? 'like Trident' :
-					prototypeName == 'CSSStyleDeclaration' ? 'like Blink' :
-					prototypeName == 'CSSStyleDeclarationPrototype' ? 'like Webkit' :
-					'unknown'
-				}</div>
 				<div>prototype: ${prototypeName}</div>
-				<div>system styles:<span class="sub-hash">${hashMini(system)}</span></div>
-				<div>system styles rendered: ${
+				<div>system styles: ${
 					system && system.colors ? modal(
 						`${id}-system-styles`,
 						[
@@ -1123,12 +1150,15 @@ const imports = {
 								const key = Object.keys(font)[0]
 								const val = font[key]
 								return `
-									<div>${key}: <span style="border:1px solid #eee;background:#f9f9f9;padding:0 5px;border-radius:3px;font:${val}">${val}</span></div>
+									<div>${key}: <span style="padding:0 5px;border-radius:3px;font:${val}">${val}</span></div>
 								`
 							}),
-						].join('')
+						].join(''),
+						hashMini(system)
 					) : note.blocked
 				}</div>
+				<style>.gradient { background: repeating-linear-gradient(to right, ${gradientColors.join(', ')}); }</style>
+				<div class="gradient"></div>
 			</div>
 			`
 		})()}
@@ -1309,12 +1339,20 @@ const imports = {
 				<div>vendor: ${!blocked[vendor] ? vendor : note.blocked}</div>
 				<div>plugins (${count(plugins)}): ${
 					!blocked[''+plugins] ?
-					modal(`${id}-plugins`, plugins.map(plugin => plugin.name).join('<br>')) :
+					modal(
+						`${id}-plugins`,
+						plugins.map(plugin => plugin.name).join('<br>'),
+						hashMini(plugins)
+					) :
 					note.blocked
 				}</div>
 				<div>mimeTypes (${count(mimeTypes)}): ${
 					!blocked[''+mimeTypes] ? 
-					modal(`${id}-mimeTypes`, mimeTypes.join('<br>')) :
+					modal(
+						`${id}-mimeTypes`,
+						mimeTypes.join('<br>'),
+						hashMini(mimeTypes)
+					) :
 					note.blocked
 				}</div>
 				<div>platform: ${!blocked[platform] ? platform : note.blocked}</div>
@@ -1333,7 +1371,13 @@ const imports = {
 					<div>ua platformVersion: ${note.unsupported}</div>
 					<div>ua uaFullVersion: ${note.unsupported} </div>`
 				}
-				<div>properties (${count(properties)}): ${modal(`${id}-properties`, properties.join(', '))}</div>
+				<div>properties (${count(properties)}): ${
+					modal(
+						`${id}-properties`,
+						properties.join(', '),
+						hashMini(properties)
+					)
+				}</div>
 			</div>
 			<div class="col-six">
 				<div>device:</div>

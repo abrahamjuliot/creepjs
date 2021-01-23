@@ -571,13 +571,19 @@ input[type="radio"] {
 	height: 75px;
 }
 
+.gradient {
+	border: 1px solid #eee;
+	height: 50px;
+	margin: 15px auto;
+}
+
 /* prefers dark */
 
 @media (prefers-color-scheme: dark) {
 	:root {
 		--dark-sky: #24242b;
 		--dark-sky-transparent: #24242be0;
-		--light-grey: #5b5b61;
+		--light-grey: #69696f;
 		--white-purple: #bebeca;
 		--transparent-blue: #96c0d247;
 		--blue: #96c0d2;
