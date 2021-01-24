@@ -49,6 +49,7 @@ export const getOfflineAudioContext = imports => {
 			oscillator.start(0)
 			context.startRendering()
 
+			// detect lie
 			const dataArray = new Float32Array(analyser.frequencyBinCount)
 			analyser.getFloatFrequencyData(dataArray)
 			const floatFrequencyUniqueDataSize = new Set(dataArray).size
@@ -58,10 +59,6 @@ export const getOfflineAudioContext = imports => {
 				documentLie(`AnalyserNode.getFloatFrequencyData`, floatFrequencyUniqueDataSize, floatFrequencyDataLie)
 			}
 
-			let copySample = []
-			let binsSample = []
-			let matching = false
-			
 			const values = {
 				['AnalyserNode.channelCount']: attempt(() => analyser.channelCount),
 				['AnalyserNode.channelCountMode']: attempt(() => analyser.channelCountMode),
@@ -97,48 +94,43 @@ export const getOfflineAudioContext = imports => {
 				['OscillatorNode.frequency.minValue']: attempt(() => oscillator.frequency.minValue)
 			}
 			
-			return resolve(new Promise(resolve => {
-				context.oncomplete = async event => {
-					try {
-						const copy = new Float32Array(44100)
-						caniuse(() => event.renderedBuffer.copyFromChannel(copy, 0))
-						const bins = event.renderedBuffer.getChannelData(0)
-						
-						copySample = copy ? [...copy].slice(4500, 4600) : [sendToTrash('invalid Audio Sample Copy', null)]
-						binsSample = bins ? [...bins].slice(4500, 4600) : [sendToTrash('invalid Audio Sample', null)]
-						
-						const copyJSON = copy && JSON.stringify([...copy].slice(4500, 4600))
-						const binsJSON = bins && JSON.stringify([...bins].slice(4500, 4600))
-
-						matching = binsJSON === copyJSON
-						// detect lie
-						const copyFromChannelSupported = ('copyFromChannel' in AudioBuffer.prototype)
-						if (copyFromChannelSupported && !matching) {
-							lied = true
-							const audioSampleLie = { fingerprint: '', lies: [{ ['data and copy samples mismatch']: false }] }
-							documentLie('AudioBuffer', matching, audioSampleLie)
-						}
-
-						dynamicsCompressor.disconnect()
-						oscillator.disconnect()
-						const response = {
-							binsSample: binsSample,
-							copySample: copyFromChannelSupported ? copySample : [undefined],
-							values,
-							lied
-						}
-						logTestResult({ start, test: 'audio', passed: true })
-						return resolve({ ...response })
+			context.oncomplete = event => {
+				try {
+					const copy = new Float32Array(44100)
+					caniuse(() => event.renderedBuffer.copyFromChannel(copy, 0))
+					const bins = event.renderedBuffer.getChannelData(0)
+					
+					const copySample = copy ? [...copy].slice(4500, 4600) : [sendToTrash('invalid Audio Sample Copy', null)]
+					const binsSample = bins ? [...bins].slice(4500, 4600) : [sendToTrash('invalid Audio Sample', null)]
+					
+					// detect lie
+					const matching = ''+binsSample == ''+copySample
+					const copyFromChannelSupported = ('copyFromChannel' in AudioBuffer.prototype)
+					if (copyFromChannelSupported && !matching) {
+						lied = true
+						const audioSampleLie = { fingerprint: '', lies: [{ ['data and copy samples mismatch']: false }] }
+						documentLie('AudioBuffer', matching, audioSampleLie)
 					}
-					catch (error) {
-						captureError(error, 'AudioBuffer failed or blocked by client')
-						dynamicsCompressor.disconnect()
-						oscillator.disconnect()
-						logTestResult({ test: 'audio', passed: false })
-						return resolve()
-					}
+
+					dynamicsCompressor.disconnect()
+					oscillator.disconnect()
+					
+					logTestResult({ start, test: 'audio', passed: true })
+					return resolve({
+						binsSample,
+						copySample: copyFromChannelSupported ? copySample : [undefined],
+						values,
+						lied
+					})
 				}
-			}))
+				catch (error) {
+					captureError(error, 'AudioBuffer failed or blocked by client')
+					dynamicsCompressor.disconnect()
+					oscillator.disconnect()
+					logTestResult({ test: 'audio', passed: false })
+					return resolve()
+				}
+			}
 		}
 		catch (error) {
 			logTestResult({ test: 'audio', passed: false })
