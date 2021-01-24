@@ -1118,7 +1118,7 @@ const imports = {
 				const name = Object.values(color)[0]
 				return (
 					index == 0 ? `${name}, ${name} ${((index+1)/colorsLen*100).toFixed(2)}%` : 
-					index == colorsLen-1 ? `${name} 100%` : 
+					index == colorsLen-1 ? `${name} ${((index-1)/colorsLen*100).toFixed(2)}%, ${name} 100%` : 
 					`${name} ${(index/colorsLen*100).toFixed(2)}%, ${name} ${((index+1)/colorsLen*100).toFixed(2)}%`
 				)
 			})
