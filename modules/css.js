@@ -68,11 +68,11 @@ export const getCSSMedia = imports => {
 			const deviceAspectRatio = getAspectRatio(width, height)
 
 			const matchMediaCSS = {
-				reducedMotion: (
+				['prefers-reduced-motion']: (
 					win.matchMedia('(prefers-reduced-motion: no-preference)').matches ? 'no-preference' :
 					win.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'reduce' : undefined
 				),
-				colorScheme: (
+				['prefers-color-scheme']: (
 					win.matchMedia('(prefers-color-scheme: light)').matches ? 'light' :
 					win.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : undefined
 				),
@@ -80,15 +80,15 @@ export const getCSSMedia = imports => {
 					win.matchMedia('(monochrome)').matches ? 'monochrome' :
 					win.matchMedia('(monochrome: 0)').matches ? 'non-monochrome' : undefined
 				),
-				invertedColors: (
+				['inverted-colors']: (
 					win.matchMedia('(inverted-colors: inverted)').matches ? 'inverted' :
 					win.matchMedia('(inverted-colors: none)').matches ? 'none' : undefined
 				),
-				forcedColors: (
+				['forced-colors']: (
 					win.matchMedia('(forced-colors: none)').matches ? 'none' :
 					win.matchMedia('(forced-colors: active)').matches ? 'active' : undefined
 				),
-				anyHover: (
+				['any-hover']: (
 					win.matchMedia('(any-hover: hover)').matches ? 'hover' :
 					win.matchMedia('(any-hover: none)').matches ? 'none' : undefined
 				),
@@ -96,7 +96,7 @@ export const getCSSMedia = imports => {
 					win.matchMedia('(hover: hover)').matches ? 'hover' :
 					win.matchMedia('(hover: none)').matches ? 'none' : undefined
 				),
-				anyPointer: (
+				['any-pointer']: (
 					win.matchMedia('(any-pointer: fine)').matches ? 'fine' :
 					win.matchMedia('(any-pointer: coarse)').matches ? 'coarse' :
 					win.matchMedia('(any-pointer: none)').matches ? 'none' : undefined
@@ -106,19 +106,19 @@ export const getCSSMedia = imports => {
 					win.matchMedia('(pointer: coarse)').matches ? 'coarse' :
 					win.matchMedia('(pointer: none)').matches ? 'none' : undefined
 				),
-				deviceAspectRatio: (
+				['device-aspect-ratio']: (
 					win.matchMedia(`(device-aspect-ratio: ${deviceAspectRatio})`).matches ? deviceAspectRatio : undefined
 				),
-				deviceScreen: (
+				['device-screen']: (
 					win.matchMedia(`(device-width: ${width}px) and (device-height: ${height}px)`).matches ? `${width} x ${height}` : undefined
 				),
-				displayMode: (
+				['display-mode']: (
 					win.matchMedia('(display-mode: fullscreen)').matches ? 'fullscreen' :
 					win.matchMedia('(display-mode: standalone)').matches ? 'standalone' :
 					win.matchMedia('(display-mode: minimal-ui)').matches ? 'minimal-ui' :
 					win.matchMedia('(display-mode: browser)').matches ? 'browser' : undefined
 				),
-				colorGamut: (
+				['color-gamut']: (
 					win.matchMedia('(color-gamut: srgb)').matches ? 'srgb' :
 					win.matchMedia('(color-gamut: p3)').matches ? 'p3' :
 					win.matchMedia('(color-gamut: rec2020)').matches ? 'rec2020' : undefined
@@ -167,19 +167,19 @@ export const getCSSMedia = imports => {
 
 			let style = getComputedStyle(body)
 			const mediaCSS = {
-				reducedMotion: style.getPropertyValue('--prefers-reduced-motion').trim() || undefined,
-				colorScheme: style.getPropertyValue('--prefers-color-scheme').trim() || undefined,
+				['prefers-reduced-motion']: style.getPropertyValue('--prefers-reduced-motion').trim() || undefined,
+				['prefers-color-scheme']: style.getPropertyValue('--prefers-color-scheme').trim() || undefined,
 				monochrome: style.getPropertyValue('--monochrome').trim() || undefined,
-				invertedColors: style.getPropertyValue('--inverted-colors').trim() || undefined,
-				forcedColors: style.getPropertyValue('--forced-colors').trim() || undefined,
-				anyHover: style.getPropertyValue('--any-hover').trim() || undefined,
+				['inverted-colors']: style.getPropertyValue('--inverted-colors').trim() || undefined,
+				['forced-colors']: style.getPropertyValue('--forced-colors').trim() || undefined,
+				['any-hover']: style.getPropertyValue('--any-hover').trim() || undefined,
 				hover: style.getPropertyValue('--hover').trim() || undefined,
-				anyPointer: style.getPropertyValue('--any-pointer').trim() || undefined,
+				['any-pointer']: style.getPropertyValue('--any-pointer').trim() || undefined,
 				pointer: style.getPropertyValue('--pointer').trim() || undefined,
-				deviceAspectRatio: style.getPropertyValue('--device-aspect-ratio').trim() || undefined,
-				deviceScreen: style.getPropertyValue('--device-screen').trim() || undefined,
-				displayMode: style.getPropertyValue('--display-mode').trim() || undefined,
-				colorGamut: style.getPropertyValue('--color-gamut').trim() || undefined,
+				['device-aspect-ratio']: style.getPropertyValue('--device-aspect-ratio').trim() || undefined,
+				['device-screen']: style.getPropertyValue('--device-screen').trim() || undefined,
+				['display-mode']: style.getPropertyValue('--display-mode').trim() || undefined,
+				['color-gamut']: style.getPropertyValue('--color-gamut').trim() || undefined,
 				orientation: style.getPropertyValue('--orientation').trim() || undefined,
 			}
 
@@ -220,19 +220,19 @@ export const getCSSMedia = imports => {
 			`
 			style = getComputedStyle(body)
 			const importCSS = {
-				reducedMotion: style.getPropertyValue('--import-prefers-reduced-motion').trim() || undefined,
-				colorScheme: style.getPropertyValue('--import-prefers-color-scheme').trim() || undefined,
+				['prefers-reduced-motion']: style.getPropertyValue('--import-prefers-reduced-motion').trim() || undefined,
+				['prefers-color-scheme']: style.getPropertyValue('--import-prefers-color-scheme').trim() || undefined,
 				monochrome: style.getPropertyValue('--import-monochrome').trim() || undefined,
-				invertedColors: style.getPropertyValue('--import-inverted-colors').trim() || undefined,
-				forcedColors: style.getPropertyValue('--import-forced-colors').trim() || undefined,
-				anyHover: style.getPropertyValue('--import-any-hover').trim() || undefined,
+				['inverted-colors']: style.getPropertyValue('--import-inverted-colors').trim() || undefined,
+				['forced-colors']: style.getPropertyValue('--import-forced-colors').trim() || undefined,
+				['any-hover']: style.getPropertyValue('--import-any-hover').trim() || undefined,
 				hover: style.getPropertyValue('--import-hover').trim() || undefined,
-				anyPointer: style.getPropertyValue('--import-any-pointer').trim() || undefined,
+				['any-pointer']: style.getPropertyValue('--import-any-pointer').trim() || undefined,
 				pointer: style.getPropertyValue('--import-pointer').trim() || undefined,
-				deviceAspectRatio: style.getPropertyValue('--import-device-aspect-ratio').trim() || undefined,
-				deviceScreen: style.getPropertyValue('--import-device-screen').trim() || undefined,
-				displayMode: style.getPropertyValue('--import-display-mode').trim() || undefined,
-				colorGamut: style.getPropertyValue('--import-color-gamut').trim() || undefined,
+				['device-aspect-ratio']: style.getPropertyValue('--import-device-aspect-ratio').trim() || undefined,
+				['device-screen']: style.getPropertyValue('--import-device-screen').trim() || undefined,
+				['display-mode']: style.getPropertyValue('--import-display-mode').trim() || undefined,
+				['color-gamut']: style.getPropertyValue('--import-color-gamut').trim() || undefined,
 				orientation: style.getPropertyValue('--import-orientation').trim() || undefined
 			}
 
