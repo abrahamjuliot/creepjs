@@ -811,8 +811,22 @@ const imports = {
 			return `
 			<div class="col-four">
 				<strong>Audio</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
-				<div>sample:${''+binsSample[0] == 'undefined' ? ` ${note.unsupported}` : `<span class="sub-hash">${hashMini(binsSample[0])}</span>`}</div>
-				<div>copy:${''+copySample[0] == 'undefined' ? ` ${note.unsupported}`  : `<span class="sub-hash">${hashMini(copySample[0])}</span>`}</div>
+				<div>sample: ${
+					''+binsSample[0] == 'undefined' ? note.unsupported :
+					modal(
+						'creep-audio-bin-sample',
+						binsSample.join('<br>'),
+						hashMini(binsSample)
+					)
+				}</div>
+				<div>copy: ${
+					''+copySample[0] == 'undefined' ? note.unsupported :
+					modal(
+						'creep-audio-copy-sample',
+						copySample.join('<br>'),
+						hashMini(copySample)
+					)
+				}</div>
 				<div>values: ${
 					modal(
 						'creep-offline-audio-context',
