@@ -67,73 +67,6 @@ export const getCSSMedia = imports => {
 			
 			const deviceAspectRatio = getAspectRatio(width, height)
 
-			body.innerHTML = `
-			<style>
-			/* device */
-			@import '${getCSSDataURI('--import-prefers-reduced-motion: no-preference')}' (prefers-reduced-motion: no-preference);
-			@import '${getCSSDataURI('--import-prefers-reduced-motion: reduce')}' (prefers-reduced-motion: reduce);
-			@import '${getCSSDataURI('--import-prefers-color-scheme: light')}' (prefers-color-scheme: light);
-			@import '${getCSSDataURI('--import-prefers-color-scheme: dark')}' (prefers-color-scheme: dark);
-			@import '${getCSSDataURI('--import-monochrome: monochrome')}' (monochrome);
-			@import '${getCSSDataURI('--import-monochrome: non-monochrome')}' (monochrome: 0);
-			@import '${getCSSDataURI('--import-inverted-colors: inverted')}' (inverted-colors: inverted);
-			@import '${getCSSDataURI('--import-inverted-colors: none')}' (inverted-colors: 0);
-			@import '${getCSSDataURI('--import-forced-colors: none')}' (forced-colors: none);
-			@import '${getCSSDataURI('--import-forced-colors: active')}' (forced-colors: active);
-			@import '${getCSSDataURI('--import-any-hover: hover')}' (any-hover: hover);
-			@import '${getCSSDataURI('--import-any-hover: none')}' (any-hover: none);
-			@import '${getCSSDataURI('--import-hover: hover')}' (hover: hover);
-			@import '${getCSSDataURI('--import-hover: none')}' (hover: none);
-			@import '${getCSSDataURI('--import-any-pointer: fine')}' (any-pointer: fine);
-			@import '${getCSSDataURI('--import-any-pointer: coarse')}' (any-pointer: coarse);
-			@import '${getCSSDataURI('--import-any-pointer: none')}' (any-pointer: none);
-			@import '${getCSSDataURI('--import-pointer: fine')}' (pointer: fine);
-			@import '${getCSSDataURI('--import-pointer: coarse')}' (pointer: coarse);
-			@import '${getCSSDataURI('--import-pointer: none')}' (pointer: none);
-			@import '${getCSSDataURI(`--import-device-aspect-ratio: ${deviceAspectRatio}`)}' (device-aspect-ratio: ${deviceAspectRatio});
-			@import '${getCSSDataURI(`--import-device-screen: ${width} x ${height}`)}' (device-width: ${width}px) and (device-height: ${height}px);
-			@import '${getCSSDataURI('--import-display-mode: fullscreen')}' (display-mode: fullscreen);
-			@import '${getCSSDataURI('--import-display-mode: standalone')}' (display-mode: standalone);
-			@import '${getCSSDataURI('--import-display-mode: minimal-ui')}' (display-mode: minimal-ui);
-			@import '${getCSSDataURI('--import-display-mode: browser')}' (display-mode: browser);
-			@import '${getCSSDataURI('--import-color-gamut: srgb')}' (color-gamut: srgb);
-			@import '${getCSSDataURI('--import-color-gamut: p3')}' (color-gamut: p3);
-			@import '${getCSSDataURI('--import-color-gamut: rec2020')}' (color-gamut: rec2020);
-			@import '${getCSSDataURI('--import-orientation: landscape')}' (orientation: landscape);
-			@import '${getCSSDataURI('--import-orientation: portrait')}' (orientation: portrait);
-			@media (prefers-reduced-motion: no-preference) {body {--prefers-reduced-motion: no-preference}}
-			@media (prefers-reduced-motion: reduce) {body {--prefers-reduced-motion: reduce}}
-			@media (prefers-color-scheme: light) {body {--prefers-color-scheme: light}}
-			@media (prefers-color-scheme: dark) {body {--prefers-color-scheme: dark}}
-			@media (monochrome) {body {--monochrome: monochrome}}
-			@media (monochrome: 0) {body {--monochrome: non-monochrome}}
-			@media (inverted-colors: inverted) {body {--inverted-colors: inverted}}
-			@media (inverted-colors: none) {body {--inverted-colors: none}}
-			@media (forced-colors: none) {body {--forced-colors: none}}
-			@media (forced-colors: active) {body {--forced-colors: active}}
-			@media (any-hover: hover) {body {--any-hover: hover}}
-			@media (any-hover: none) {body {--any-hover: none}}
-			@media (hover: hover) {body {--hover: hover}}
-			@media (hover: none) {body {--hover: none}}
-			@media (any-pointer: fine) {body {--any-pointer: fine}}
-			@media (any-pointer: coarse) {body {--any-pointer: coarse}}
-			@media (any-pointer: none) {body {--any-pointer: none}}
-			@media (pointer: fine) {body {--pointer: fine}}
-			@media (pointer: coarse) {body {--pointer: coarse}}
-			@media (pointer: none) {body {--pointer: none}}
-			@media (device-aspect-ratio: ${deviceAspectRatio}) {body {--device-aspect-ratio: ${deviceAspectRatio}}}
-			@media (device-width: ${width}px) and (device-height: ${height}px) {body {--device-screen: ${width} x ${height}}}
-			@media (display-mode: fullscreen) {body {--display-mode: fullscreen}}
-			@media (display-mode: standalone) {body {--display-mode: standalone}}
-			@media (display-mode: minimal-ui) {body {--display-mode: minimal-ui}}
-			@media (display-mode: browser) {body {--display-mode: browser}}
-			@media (color-gamut: srgb) {body {--color-gamut: srgb}}
-			@media (color-gamut: p3) {body {--color-gamut: p3}}
-			@media (color-gamut: rec2020) {body {--color-gamut: rec2020}}
-			@media (orientation: landscape) {body {--orientation: landscape}}
-			@media (orientation: portrait) {body {--orientation: portrait}}
-			</style>
-			`
 			const matchMediaCSS = {
 				reducedMotion: (
 					win.matchMedia('(prefers-reduced-motion: no-preference)').matches ? 'no-preference' :
@@ -196,8 +129,43 @@ export const getCSSMedia = imports => {
 				)
 			}
 
-			const style = getComputedStyle(body)
+			body.innerHTML = `
+			<style>
+			@media (prefers-reduced-motion: no-preference) {body {--prefers-reduced-motion: no-preference}}
+			@media (prefers-reduced-motion: reduce) {body {--prefers-reduced-motion: reduce}}
+			@media (prefers-color-scheme: light) {body {--prefers-color-scheme: light}}
+			@media (prefers-color-scheme: dark) {body {--prefers-color-scheme: dark}}
+			@media (monochrome) {body {--monochrome: monochrome}}
+			@media (monochrome: 0) {body {--monochrome: non-monochrome}}
+			@media (inverted-colors: inverted) {body {--inverted-colors: inverted}}
+			@media (inverted-colors: none) {body {--inverted-colors: none}}
+			@media (forced-colors: none) {body {--forced-colors: none}}
+			@media (forced-colors: active) {body {--forced-colors: active}}
+			@media (any-hover: hover) {body {--any-hover: hover}}
+			@media (any-hover: none) {body {--any-hover: none}}
+			@media (hover: hover) {body {--hover: hover}}
+			@media (hover: none) {body {--hover: none}}
+			@media (any-pointer: fine) {body {--any-pointer: fine}}
+			@media (any-pointer: coarse) {body {--any-pointer: coarse}}
+			@media (any-pointer: none) {body {--any-pointer: none}}
+			@media (pointer: fine) {body {--pointer: fine}}
+			@media (pointer: coarse) {body {--pointer: coarse}}
+			@media (pointer: none) {body {--pointer: none}}
+			@media (device-aspect-ratio: ${deviceAspectRatio}) {body {--device-aspect-ratio: ${deviceAspectRatio}}}
+			@media (device-width: ${width}px) and (device-height: ${height}px) {body {--device-screen: ${width} x ${height}}}
+			@media (display-mode: fullscreen) {body {--display-mode: fullscreen}}
+			@media (display-mode: standalone) {body {--display-mode: standalone}}
+			@media (display-mode: minimal-ui) {body {--display-mode: minimal-ui}}
+			@media (display-mode: browser) {body {--display-mode: browser}}
+			@media (color-gamut: srgb) {body {--color-gamut: srgb}}
+			@media (color-gamut: p3) {body {--color-gamut: p3}}
+			@media (color-gamut: rec2020) {body {--color-gamut: rec2020}}
+			@media (orientation: landscape) {body {--orientation: landscape}}
+			@media (orientation: portrait) {body {--orientation: portrait}}
+			</style>
+			`
 
+			let style = getComputedStyle(body)
 			const mediaCSS = {
 				reducedMotion: style.getPropertyValue('--prefers-reduced-motion').trim() || undefined,
 				colorScheme: style.getPropertyValue('--prefers-color-scheme').trim() || undefined,
@@ -215,6 +183,42 @@ export const getCSSMedia = imports => {
 				orientation: style.getPropertyValue('--orientation').trim() || undefined,
 			}
 
+			body.innerHTML = `
+			<style>
+			@import '${getCSSDataURI('--import-prefers-reduced-motion: no-preference')}' (prefers-reduced-motion: no-preference);
+			@import '${getCSSDataURI('--import-prefers-reduced-motion: reduce')}' (prefers-reduced-motion: reduce);
+			@import '${getCSSDataURI('--import-prefers-color-scheme: light')}' (prefers-color-scheme: light);
+			@import '${getCSSDataURI('--import-prefers-color-scheme: dark')}' (prefers-color-scheme: dark);
+			@import '${getCSSDataURI('--import-monochrome: monochrome')}' (monochrome);
+			@import '${getCSSDataURI('--import-monochrome: non-monochrome')}' (monochrome: 0);
+			@import '${getCSSDataURI('--import-inverted-colors: inverted')}' (inverted-colors: inverted);
+			@import '${getCSSDataURI('--import-inverted-colors: none')}' (inverted-colors: 0);
+			@import '${getCSSDataURI('--import-forced-colors: none')}' (forced-colors: none);
+			@import '${getCSSDataURI('--import-forced-colors: active')}' (forced-colors: active);
+			@import '${getCSSDataURI('--import-any-hover: hover')}' (any-hover: hover);
+			@import '${getCSSDataURI('--import-any-hover: none')}' (any-hover: none);
+			@import '${getCSSDataURI('--import-hover: hover')}' (hover: hover);
+			@import '${getCSSDataURI('--import-hover: none')}' (hover: none);
+			@import '${getCSSDataURI('--import-any-pointer: fine')}' (any-pointer: fine);
+			@import '${getCSSDataURI('--import-any-pointer: coarse')}' (any-pointer: coarse);
+			@import '${getCSSDataURI('--import-any-pointer: none')}' (any-pointer: none);
+			@import '${getCSSDataURI('--import-pointer: fine')}' (pointer: fine);
+			@import '${getCSSDataURI('--import-pointer: coarse')}' (pointer: coarse);
+			@import '${getCSSDataURI('--import-pointer: none')}' (pointer: none);
+			@import '${getCSSDataURI(`--import-device-aspect-ratio: ${deviceAspectRatio}`)}' (device-aspect-ratio: ${deviceAspectRatio});
+			@import '${getCSSDataURI(`--import-device-screen: ${width} x ${height}`)}' (device-width: ${width}px) and (device-height: ${height}px);
+			@import '${getCSSDataURI('--import-display-mode: fullscreen')}' (display-mode: fullscreen);
+			@import '${getCSSDataURI('--import-display-mode: standalone')}' (display-mode: standalone);
+			@import '${getCSSDataURI('--import-display-mode: minimal-ui')}' (display-mode: minimal-ui);
+			@import '${getCSSDataURI('--import-display-mode: browser')}' (display-mode: browser);
+			@import '${getCSSDataURI('--import-color-gamut: srgb')}' (color-gamut: srgb);
+			@import '${getCSSDataURI('--import-color-gamut: p3')}' (color-gamut: p3);
+			@import '${getCSSDataURI('--import-color-gamut: rec2020')}' (color-gamut: rec2020);
+			@import '${getCSSDataURI('--import-orientation: landscape')}' (orientation: landscape);
+			@import '${getCSSDataURI('--import-orientation: portrait')}' (orientation: portrait);
+			</style>
+			`
+			style = getComputedStyle(body)
 			const importCSS = {
 				reducedMotion: style.getPropertyValue('--import-prefers-reduced-motion').trim() || undefined,
 				colorScheme: style.getPropertyValue('--import-prefers-color-scheme').trim() || undefined,
