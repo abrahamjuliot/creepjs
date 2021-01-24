@@ -1044,7 +1044,7 @@ const imports = {
 					!mediaCSS ? note.blocked :
 					modal(
 						'creep-css-media',
-						Object.keys(mediaCSS).map(key => `${key}: ${mediaCSS[key] || note.unsupported}`).join('<br>'),
+						`<strong>@media</strong><br><br>${Object.keys(mediaCSS).map(key => `${key}: ${mediaCSS[key] || note.unsupported}`).join('<br>')}`,
 						hashMini(mediaCSS)
 					)
 				}</div>
@@ -1052,7 +1052,7 @@ const imports = {
 					!importCSS ? note.blocked : 
 					modal(
 						'creep-css-import',
-						Object.keys(importCSS).map(key => `${key}: ${importCSS[key] || note.unsupported}`).join('<br>'),
+						`<strong>@import</strong><br><br>${Object.keys(importCSS).map(key => `${key}: ${importCSS[key] || note.unsupported}`).join('<br>')}`,
 						hashMini(importCSS)
 					)
 				}</div>
@@ -1060,7 +1060,7 @@ const imports = {
 					!matchMediaCSS ? note.blocked : 
 					modal(
 						'creep-css-match-media',
-						Object.keys(matchMediaCSS).map(key => `${key}: ${matchMediaCSS[key] || note.unsupported}`).join('<br>'),
+						`<strong>matchMedia</strong><br><br>${Object.keys(matchMediaCSS).map(key => `${key}: ${matchMediaCSS[key] || note.unsupported}`).join('<br>')}`,
 						hashMini(matchMediaCSS)
 					)
 				}</div>
