@@ -994,7 +994,8 @@ const imports = {
 				<div>pixelDepth: ${pixelDepth ? pixelDepth : note.blocked}</div>
 			</div>
 			<div class="col-six screen-container">
-				<div class="screen-frame" style="width:${deviceWidth}px;height:${deviceHeight}px;">
+				<style>.screen-frame { width:${deviceWidth}px;height:${deviceHeight}px; }</style>
+				<div class="screen-frame">
 					<div class="screen-glass"></div>
 				</div>
 			</div>
