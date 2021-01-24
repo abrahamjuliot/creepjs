@@ -5,6 +5,7 @@ export const getMedia = imports => {
 			captureError,
 			phantomDarkness,
 			caniuse,
+			attempt,
 			logTestResult,
 			getPromiseRaceFulfilled
 		}
@@ -46,8 +47,10 @@ export const getMedia = imports => {
 					.sort((a, b) => (a.kind > b.kind) ? 1 : -1) :
 				undefined
 			)
+			const constraints = attempt(() => Object.keys(navigator.mediaDevices.getSupportedConstraints()))
+
 			logTestResult({ start, test: 'media', passed: true })
-			return resolve({ mediaDevices })
+			return resolve({ mediaDevices, constraints })
 		}
 		catch (error) {
 			logTestResult({ test: 'media', passed: false })

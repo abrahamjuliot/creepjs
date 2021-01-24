@@ -873,11 +873,13 @@ const imports = {
 			`<div class="col-four">
 				<strong>Media</strong>
 				<div>devices (0): ${note.blocked}</div>
+				<div>constraints: ${note.blocked}</div>
 			</div>` :
 		(() => {
 			const {
 				media: {
 					mediaDevices,
+					constraints,
 					$hash
 				}
 			} = fp
@@ -885,7 +887,22 @@ const imports = {
 			return `
 			<div class="col-four">
 				<strong>Media</strong><span class="hash">${hashMini($hash)}</span>
-				<div>devices (${count(mediaDevices)}):${mediaDevices && mediaDevices.length ? modal('creep-media-devices', mediaDevices.map(device => device.kind).join('<br>')) : note.blocked}</div>
+				<div>devices (${count(mediaDevices)}): ${
+					!mediaDevices || !mediaDevices.length ? note.blocked : 
+					modal(
+						'creep-media-devices',
+						mediaDevices.map(device => device.kind).join('<br>'),
+						hashMini(mediaDevices)
+					)
+				}</div>
+				<div>constraints: ${
+					!constraints ? note.blocked : 
+					modal(
+						'creep-media-constraints',
+						constraints.join('<br>'),
+						hashMini(constraints)
+					)
+				}</div>
 			</div>
 			`
 		})()}
