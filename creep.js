@@ -334,7 +334,7 @@ const imports = {
 			anyPointer: caniuse(() => fp.cssMedia.mediaCSS.anyPointer),
 			pointer: caniuse(() => fp.cssMedia.mediaCSS.pointer),
 			colorGamut: caniuse(() => fp.cssMedia.mediaCSS.colorGamut),
-			screenQuery: caniuse(() => fp.cssMedia.mediaCSS.screenQuery),
+			screenQuery: caniuse(() => fp.cssMedia.screenQuery),
 		},
 		css: !fp.css ? undefined : {
 			prototype: caniuse(() => fp.css.getComputedStyle.prototypeName),
@@ -1002,43 +1002,13 @@ const imports = {
 		})()}
 		</div>
 		<div class="flex-grid">
-			
 		${!fp.css ?
 			`<div class="col-six">
-				<strong>@media</strong>
+				<strong>CSS Media Queries</strong><
+				<div>@media: ${note.blocked}</div>
+				<div>@import: ${note.blocked}</div>
+				<div>matchMedia: ${note.blocked}</div>
 				<div>screen query: ${note.blocked}</div>
-				<div>device aspect ratio: ${note.blocked}</div>
-				<div>device screen: ${note.blocked}</div>
-				<div>display mode: ${note.unsupported}</div>
-				<div>orientation: ${note.unsupported}</div>
-				<div>motion: ${note.unsupported}</div>
-				<div>hover: ${note.unsupported}</div>
-				<div>any hover: ${note.unsupported}</div>
-				<div>pointer: ${note.unsupported}</div>
-				<div>any pointer: ${note.unsupported}</div>
-				<div>monochrome: ${note.unsupported}</div>
-				<div>color scheme: ${note.unsupported}</div>
-				<div>color gamut: ${note.unsupported}</div>
-				<div>forced colors: ${note.unsupported}</div>
-				<div>inverted colors: ${note.unsupported}</div>
-			</div>
-			<div class="col-six">
-				<strong>MediaQueryList</strong>
-				<div>screen query: ${note.blocked}</div>
-				<div>device aspect ratio: ${note.blocked}</div>
-				<div>device screen: ${note.blocked}</div>
-				<div>display mode: ${note.unsupported}</div>
-				<div>orientation: ${note.unsupported}</div>
-				<div>motion: ${note.unsupported}</div>
-				<div>hover: ${note.unsupported}</div>
-				<div>any hover: ${note.unsupported}</div>
-				<div>pointer: ${note.unsupported}</div>
-				<div>any pointer: ${note.unsupported}</div>
-				<div>monochrome: ${note.unsupported}</div>
-				<div>color scheme: ${note.unsupported}</div>
-				<div>color gamut: ${note.unsupported}</div>
-				<div>forced colors: ${note.unsupported}</div>
-				<div>inverted colors: ${note.unsupported}</div>
 			</div>` :
 		(() => {
 			const {
@@ -1046,60 +1016,47 @@ const imports = {
 			} = fp
 			const {
 				$hash,
+				importCSS,
 				mediaCSS,
-				matchMediaCSS
+				matchMediaCSS,
+				screenQuery
 			} = data
+
 			return `
 			<div class="col-six">
-				<strong>@media</strong><span class="hash">${hashMini(mediaCSS)}</span>
-				<div>screen query: ${''+mediaCSS.screenQuery.width} x ${''+mediaCSS.screenQuery.height}</div>
-				<div>screen match: ${mediaCSS.deviceScreen || note.blocked}</div>
-				<div>device aspect ratio: ${mediaCSS.deviceAspectRatio || note.blocked}</div>
-				<div>display mode: ${mediaCSS.displayMode || note.unsupported}</div>
-				<div>orientation: ${mediaCSS.orientation  || note.unsupported}</div>
-				<div>motion: ${mediaCSS.reducedMotion || note.unsupported}</div>
-				<div>hover: ${mediaCSS.hover || note.unsupported}</div>
-				<div>any hover: ${mediaCSS.anyHover || note.unsupported}</div>
-				<div>pointer: ${mediaCSS.pointer || note.unsupported}</div>
-				<div>any pointer: ${mediaCSS.anyPointer || note.unsupported}</div>
-				<div>monochrome: ${mediaCSS.monochrome || note.unsupported}</div>
-				<div>color scheme: ${mediaCSS.colorScheme || note.unsupported}</div>
-				<div>color gamut: ${mediaCSS.colorGamut || note.unsupported}</div>
-				<div>forced colors: ${mediaCSS.forcedColors || note.unsupported}</div>
-				<div>inverted colors: ${mediaCSS.invertedColors || note.unsupported}</div>
-			</div>
-			<div class="col-six">
-				<strong>MediaQueryList</strong><span class="hash">${hashMini(matchMediaCSS)}</span>
-				<div>screen query: ${''+matchMediaCSS.screenQuery.width} x ${''+matchMediaCSS.screenQuery.height}</div>
-				<div>screen match: ${matchMediaCSS.deviceScreen || note.blocked}</div>
-				<div>device aspect ratio: ${matchMediaCSS.deviceAspectRatio || note.blocked}</div>
-				<div>display mode: ${matchMediaCSS.displayMode || note.unsupported}</div>
-				<div>orientation: ${matchMediaCSS.orientation || note.unsupported}</div>
-				<div>motion: ${matchMediaCSS.reducedMotion || note.unsupported}</div>
-				<div>hover: ${matchMediaCSS.hover || note.unsupported}</div>
-				<div>any hover: ${matchMediaCSS.anyHover || note.unsupported}</div>
-				<div>pointer: ${matchMediaCSS.pointer || note.unsupported}</div>
-				<div>any pointer: ${matchMediaCSS.anyPointer || note.unsupported}</div>
-				<div>monochrome: ${matchMediaCSS.monochrome || note.unsupported}</div>
-				<div>color scheme: ${matchMediaCSS.colorScheme || note.unsupported}</div>
-				<div>color gamut: ${matchMediaCSS.colorGamut || note.unsupported}</div>
-				<div>forced colors: ${matchMediaCSS.forcedColors || note.unsupported}</div>
-				<div>inverted colors: ${matchMediaCSS.invertedColors || note.unsupported}</div>
+				<strong>CSS Media Queries</strong><span class="hash">${hashMini($hash)}</span>
+				<div>@media: ${
+					!mediaCSS ? note.blocked :
+					modal(
+						'creep-css-media',
+						Object.keys(mediaCSS).map(key => `${key}: ${mediaCSS[key] || note.unsupported}`).join('<br>'),
+						hashMini(mediaCSS)
+					)
+				}</div>
+				<div>@import: ${
+					!importCSS ? note.blocked : 
+					modal(
+						'creep-css-import',
+						Object.keys(importCSS).map(key => `${key}: ${importCSS[key] || note.unsupported}`).join('<br>'),
+						hashMini(importCSS)
+					)
+				}</div>
+				<div>matchMedia: ${
+					!matchMediaCSS ? note.blocked : 
+					modal(
+						'creep-css-match-media',
+						Object.keys(matchMediaCSS).map(key => `${key}: ${matchMediaCSS[key] || note.unsupported}`).join('<br>'),
+						hashMini(matchMediaCSS)
+					)
+				}</div>
+				<div>screen query: ${!screenQuery ? note.blocked : `${screenQuery.width} x ${screenQuery.height}`}</div>
 			</div>
 			`
 		})()}
-		</div>
-		<div class="flex-grid">
 		${!fp.css ?
 			`<div class="col-six">
 				<strong>Computed Style</strong>
-				<div>getComputedStyle: ${note.blocked}</div>
-				<div>keys: ${note.blocked}</div>
-				<div>moz: ${note.blocked}</div>
-				<div>webkit: ${note.blocked}</div>
-				<div>apple: ${note.blocked}</div>
-			</div>
-			<div class="col-six">
+				<div>keys (0): ${note.blocked}</div>
 				<div>prototype: ${note.blocked}</div>
 				<div>system styles: ${note.blocked}</div>
 				<div class="gradient"></div>
@@ -1110,7 +1067,7 @@ const imports = {
 			} = fp
 			const {
 				$hash,
-				getComputedStyle: computedStyle,
+				computedStyle,
 				system
 			} = data
 			const colorsLen = system.colors.length
@@ -1127,13 +1084,14 @@ const imports = {
 			return `
 			<div class="col-six">
 				<strong>Computed Style</strong><span class="hash">${hashMini($hash)}</span>
-				<div>getComputedStyle:<span class="sub-hash">${hashMini(computedStyle.keys)}</span></div>
-				<div>keys: ${computedStyle.keys.length}</div>
-				<div>moz: ${''+computedStyle.moz}</div>
-				<div>webkit: ${''+computedStyle.webkit}</div>
-				<div>apple: ${''+computedStyle.apple}</div>
-			</div>
-			<div class="col-six">
+				<div>keys (${!computedStyle ? '0' : count(computedStyle.keys)}): ${
+					!computedStyle ? note.blocked : 
+					modal(
+						'creep-computed-style',
+						computedStyle.keys.join(', '),
+						hashMini(computedStyle)
+					)
+				}</div>
 				<div>prototype: ${prototypeName}</div>
 				<div>system styles: ${
 					system && system.colors ? modal(

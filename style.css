@@ -573,8 +573,8 @@ input[type="radio"] {
 
 .gradient {
 	border: 1px solid #eee;
-	height: 50px;
-	margin: 15px auto;
+	height: 11px;
+    margin: 5px auto;
 }
 
 /* prefers dark */

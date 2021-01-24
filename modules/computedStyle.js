@@ -75,14 +75,9 @@ const computeStyle = (type, { require: [ captureError ] }) => {
 				...Object.keys(propertiesInPrototypeChain)
 			])
 		]
-		// checks
-		const moz = keys.filter(key => (/moz/i).test(key)).length
-		const webkit = keys.filter(key => (/webkit/i).test(key)).length
-		const apple = keys.filter(key => (/apple/i).test(key)).length
 		const prototypeName = (''+prototype).match(/\[object (.+)\]/)[1]
 	
-		const data = { keys: keys.sort(), moz, webkit, apple, prototypeName }
-		return { ...data }
+		return { keys, prototypeName }
 	}
 	catch (error) {
 		captureError(error)
@@ -195,12 +190,11 @@ export const getCSS = imports => {
 			const start = performance.now()
 			const computedStyle = computeStyle('getComputedStyle', { require: [ captureError ] })
 			const system = getSystemStyles(instanceId, { require: [ captureError, parentPhantom ] })
-			const data = {
-				['getComputedStyle']: computedStyle,
-				system
-			}
 			logTestResult({ start, test: 'computed style', passed: true })
-			return resolve({ ...data })
+			return resolve({
+				computedStyle,
+				system
+			})
 		}
 		catch (error) {
 			logTestResult({ test: 'computed style', passed: false })
