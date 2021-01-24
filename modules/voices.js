@@ -5,7 +5,7 @@ export const getVoices = imports => {
 			captureError,
 			phantomDarkness,
 			logTestResult,
-			isChrome,
+			caniuse,
 		}
 	} = imports
 		
@@ -25,21 +25,16 @@ export const getVoices = imports => {
 				}
 				success = true
 				const voices = data.map(({ name, lang }) => ({ name, lang }))
-				const check = {
-					microsoft: voices.filter(key => (/microsoft/i).test(key.name)).length,
-					google: voices.filter(key => (/google/i).test(key.name)).length,
-					chromeOS: voices.filter(key => (/chrome os/i).test(key.name)).length,
-					android: voices.filter(key => (/android/i).test(key.name)).length
-				}
+				const defaultVoice = caniuse(() => data.find(voice => voice.default).name)
 				logTestResult({ start, test: 'speech', passed: true })
-				return resolve({ voices, ...check, })
+				return resolve({ voices, defaultVoice })
 			}
 			
 			awaitVoices()
 			win.speechSynthesis.onvoiceschanged = awaitVoices
 			setTimeout(() => {
 				return !success ? resolve() : undefined
-			}, 10)
+			}, 100)
 		}
 		catch (error) {
 			logTestResult({ test: 'speech', passed: false })

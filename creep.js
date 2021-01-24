@@ -840,20 +840,14 @@ const imports = {
 		${!fp.voices ?
 			`<div class="col-four">
 				<strong>Speech</strong>
-				<div>microsoft: ${note.blocked}</div>
-				<div>google: ${note.blocked}</div>
-				<div>chrome OS: ${note.blocked}</div>
-				<div>android: ${note.blocked}</div>
 				<div>voices (0): ${note.blocked}</div>
+				<div>default: ${note.blocked}</div>
 			</div>` :
 		(() => {
 			const {
 				voices: {
 					$hash,
-					android,
-					chromeOS,
-					google,
-					microsoft,
+					defaultVoice,
 					voices
 				}
 			} = fp
@@ -861,11 +855,15 @@ const imports = {
 			return `
 			<div class="col-four">
 				<strong>Speech</strong><span class="hash">${hashMini($hash)}</span>
-				<div>microsoft: ${''+microsoft}</div>
-				<div>google: ${''+google}</div>
-				<div>chrome OS: ${''+chromeOS}</div>
-				<div>android: ${''+android}</div>
-				<div>voices (${count(voices)}): ${voiceList && voiceList.length ? modal('creep-voices', voiceList.join('<br>')) : note.unsupported}</div>
+				<div>voices (${count(voices)}): ${
+					!voiceList || !voiceList.length ? note.unsupported :
+					modal(
+						'creep-voices',
+						voiceList.join('<br>'),
+						hashMini(voices)
+					)
+				}</div>
+				<div>default: ${defaultVoice || note.unsupported}</div>
 			</div>
 			`
 		})()}
