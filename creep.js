@@ -324,16 +324,16 @@ const imports = {
 			fp.canvasWebgl
 		),
 		cssMedia: !fp.cssMedia ? undefined : {
-			reducedMotion: caniuse(() => fp.cssMedia.mediaCSS.reducedMotion),
-			colorScheme: caniuse(() => fp.cssMedia.mediaCSS.colorScheme),
+			reducedMotion: caniuse(() => fp.cssMedia.mediaCSS['prefers-reduced-motion']),
+			colorScheme: caniuse(() => fp.cssMedia.mediaCSS['prefers-color-scheme']),
 			monochrome: caniuse(() => fp.cssMedia.mediaCSS.monochrome),
-			invertedColors: caniuse(() => fp.cssMedia.mediaCSS.invertedColors),
-			forcedColors: caniuse(() => fp.cssMedia.mediaCSS.forcedColors),
-			anyHover: caniuse(() => fp.cssMedia.mediaCSS.anyHover),
+			invertedColors: caniuse(() => fp.cssMedia.mediaCSS['inverted-colors']),
+			forcedColors: caniuse(() => fp.cssMedia.mediaCSS['forced-colors']),
+			anyHover: caniuse(() => fp.cssMedia.mediaCSS['any-hover']),
 			hover: caniuse(() => fp.cssMedia.mediaCSS.hover),
-			anyPointer: caniuse(() => fp.cssMedia.mediaCSS.anyPointer),
+			anyPointer: caniuse(() => fp.cssMedia.mediaCSS['any-pointer']),
 			pointer: caniuse(() => fp.cssMedia.mediaCSS.pointer),
-			colorGamut: caniuse(() => fp.cssMedia.mediaCSS.colorGamut),
+			colorGamut: caniuse(() => fp.cssMedia.mediaCSS['color-gamut']),
 			screenQuery: caniuse(() => fp.cssMedia.screenQuery),
 		},
 		css: !fp.css ? undefined : {
