@@ -11,8 +11,8 @@ const computeStyle = (type, { require: [ captureError ] }) => {
 			throw new TypeError('invalid argument string')
 		}
 		// get properties
-		const prototype = Object.getPrototypeOf(cssStyleDeclaration)
-		const prototypeProperties = Object.getOwnPropertyNames(prototype)
+		const proto = Object.getPrototypeOf(cssStyleDeclaration)
+		const prototypeProperties = Object.getOwnPropertyNames(proto)
 		const ownEnumerablePropertyNames = []
 		const cssVar = /^--.*$/
 		Object.keys(cssStyleDeclaration).forEach(key => {
@@ -75,9 +75,9 @@ const computeStyle = (type, { require: [ captureError ] }) => {
 				...Object.keys(propertiesInPrototypeChain)
 			])
 		]
-		const prototypeName = (''+prototype).match(/\[object (.+)\]/)[1]
+		const interfaceName = (''+proto).match(/\[object (.+)\]/)[1]
 	
-		return { keys, prototypeName }
+		return { keys, interfaceName }
 	}
 	catch (error) {
 		captureError(error)

@@ -337,7 +337,7 @@ const imports = {
 			screenQuery: caniuse(() => fp.cssMedia.screenQuery),
 		},
 		css: !fp.css ? undefined : {
-			prototype: caniuse(() => fp.css.computedStyle.prototypeName),
+			interfaceName: caniuse(() => fp.css.computedStyle.interfaceName),
 			system: caniuse(() => fp.css.system)
 		},
 		maths: !fp.maths || fp.maths.lied ? undefined : fp.maths,
@@ -1072,7 +1072,7 @@ const imports = {
 			`<div class="col-six">
 				<strong>Computed Style</strong>
 				<div>keys (0): ${note.blocked}</div>
-				<div>prototype: ${note.blocked}</div>
+				<div>interface: ${note.blocked}</div>
 				<div>system styles: ${note.blocked}</div>
 				<div class="gradient"></div>
 			</div>` :
@@ -1095,7 +1095,7 @@ const imports = {
 				)
 			})
 			const id = 'creep-css-style-declaration-version'
-			const { prototypeName } = computedStyle
+			const { interfaceName } = computedStyle
 			return `
 			<div class="col-six">
 				<strong>Computed Style</strong><span class="hash">${hashMini($hash)}</span>
@@ -1107,7 +1107,7 @@ const imports = {
 						hashMini(computedStyle)
 					)
 				}</div>
-				<div>prototype: ${prototypeName}</div>
+				<div>interface: ${interfaceName}</div>
 				<div>system styles: ${
 					system && system.colors ? modal(
 						`${id}-system-styles`,
