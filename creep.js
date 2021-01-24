@@ -337,7 +337,7 @@ const imports = {
 			screenQuery: caniuse(() => fp.cssMedia.screenQuery),
 		},
 		css: !fp.css ? undefined : {
-			prototype: caniuse(() => fp.css.getComputedStyle.prototypeName),
+			prototype: caniuse(() => fp.css.computedStyle.prototypeName),
 			system: caniuse(() => fp.css.system)
 		},
 		maths: !fp.maths || fp.maths.lied ? undefined : fp.maths,
@@ -1521,7 +1521,7 @@ const imports = {
 				css
 			} = fp || {}
 			const {
-				getComputedStyle,
+				computedStyle,
 				system
 			} = css || {}
 
@@ -1529,7 +1529,7 @@ const imports = {
 				styleHash,
 				systemHash
 			] = await Promise.all([
-				hashify(getComputedStyle),
+				hashify(computedStyle),
 				hashify(system)
 			])
 				
