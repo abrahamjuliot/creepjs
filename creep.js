@@ -1647,7 +1647,7 @@ const imports = {
 					<div class="col-eight">
 						<strong>Version</strong>
 						<div>client user agent:
-							<span class="${fakeUserAgent ? 'lies' : ''}">${report}${fakeUserAgent ?` (fake)` : ''}</span>
+							<span class="${fakeUserAgent ? 'lies' : ''}">${report}</span>
 						</div>
 						<div class="ellipsis">window object: ${getTemplate(windowVersion)}</div>
 						<div class="ellipsis">system styles: ${getTemplate(styleSystem)}</div>
