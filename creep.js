@@ -357,8 +357,6 @@ const imports = {
 		capturedErrors: !!errorsLen,
 		voices: fp.voices,
 		webRTC: !fp.webRTC ? undefined : {
-			sdpcapabilities: fp.webRTC.sdpcapabilities,
-			capabilities: fp.webRTC.capabilities,
 			foundation: fp.webRTC.foundation,
 			protocol: fp.webRTC.protocol,
 			type: fp.webRTC.type,
