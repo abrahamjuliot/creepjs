@@ -391,7 +391,7 @@ const imports = {
 	<div id="fingerprint-data">
 		<div class="fingerprint-header-container">
 			<div class="fingerprint-header">
-				<strong>Your ID:</strong><span class="trusted-fingerprint ellipsis main-hash">${hashMini(creepHash)}</span>
+				<strong>Your ID:</strong><span class="trusted-fingerprint ellipsis main-hash">${hashSlice(creepHash)}</span>
 				<div class="ellipsis"><span class="time">${timeEnd.toFixed(2)} ms</span></div>
 			</div>
 		</div>
@@ -642,7 +642,7 @@ const imports = {
 			const { workerScope: data } = fp
 			return `
 			<div class="col-six">
-				<strong>Worker</strong><span class="hash">${hashMini(data.$hash)}</span>
+				<strong>Worker</strong><span class="hash">${hashSlice(data.$hash)}</span>
 				<div>timezone offset: ${data.timezoneOffset != undefined ? ''+data.timezoneOffset : note.unsupported}</div>
 				<div>location: ${data.timezoneLocation}</div>
 				<div>language: ${data.language || note.unsupported}</div>
@@ -1466,20 +1466,20 @@ const imports = {
 						<div class="col-six">
 							<div>has trash: <span class="unblurred">${
 								(''+hasTrash) == 'true' ?
-								`true (${hashMini(fp.trash.$hash)})` : 
+								`true (${hashSlice(fp.trash.$hash)})` : 
 								'false'
 							}</span></div>
 							<div>has lied: <span class="unblurred">${
 								(''+hasLied) == 'true' ? 
-								`true (${hashMini(fp.lies.$hash)})` : 
+								`true (${hashSlice(fp.lies.$hash)})` : 
 								'false'
 							}</span></div>
 							<div>has errors: <span class="unblurred">${
 								(''+hasErrors) == 'true' ? 
-								`true (${hashMini(fp.capturedErrors.$hash)})` : 
+								`true (${hashSlice(fp.capturedErrors.$hash)})` : 
 								'false'
 							}</span></div>
-							<div class="ellipsis">loose fingerprint: <span class="unblurred">${hashMini(fpHash)}</span></div>
+							<div class="ellipsis">loose fingerprint: <span class="unblurred">${hashSlice(fpHash)}</span></div>
 							<div class="ellipsis">loose switched: <span class="unblurred">${switchCount}x</span></div>
 							<div class="ellipsis">bot: <span class="unblurred">${switchCount > 9 && hours < 48 ? 'true (10 loose in 48 hours)' : 'false'}</span></div>
 						</div>
