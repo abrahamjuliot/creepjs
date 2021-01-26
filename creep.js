@@ -384,6 +384,7 @@ const imports = {
 	const hasTrash = !!trashLen
 	const { lies: hasLied, capturedErrors: hasErrors } = creep
 
+	const hashSlice = x => x.slice(0, 8)
 	// patch dom	
 	const el = document.getElementById('fingerprint-data')
 	patch(el, html`
@@ -423,7 +424,7 @@ const imports = {
 				return `
 				<div class="col-four${trashLen ? ' trash': ''}">
 					<strong>Trash</strong>${
-						trashLen ? `<span class="hash">${hashMini($hash)}</span>` : ''
+						trashLen ? `<span class="hash">${hashSlice($hash)}</span>` : ''
 					}
 					<div>gathered (${!trashLen ? '0' : ''+trashLen }): ${
 						trashLen ? modal(
@@ -439,7 +440,7 @@ const imports = {
 				const sanitize = str => str.replace(/\</g, '&lt;')
 				return `
 				<div class="col-four${totalLies ? ' lies': ''}">
-					<strong>Lies</strong>${totalLies ? `<span class="hash">${hashMini($hash)}</span>` : ''}
+					<strong>Lies</strong>${totalLies ? `<span class="hash">${hashSlice($hash)}</span>` : ''}
 					<div>unmasked (${!totalLies ? '0' : ''+totalLies }): ${
 						totalLies ? modal('creep-lies', Object.keys(data).map(key => {
 							const { name, lieTypes: { lies, fingerprint } } = data[key]
@@ -465,7 +466,7 @@ const imports = {
 				const len = data.length
 				return `
 				<div class="col-four${len ? ' errors': ''}">
-					<strong>Errors</strong>${len ? `<span class="hash">${hashMini($hash)}</span>` : ''}
+					<strong>Errors</strong>${len ? `<span class="hash">${hashSlice($hash)}</span>` : ''}
 					<div>captured (${!len ? '0' : ''+len}): ${
 						len ? modal('creep-captured-errors', Object.keys(data).map((key, i) => `${i+1}: ${data[key].trustedName} - ${data[key].trustedMessage} `).join('<br>')) : ''
 					}</div>
@@ -502,7 +503,7 @@ const imports = {
 				const id = 'creep-webrtc'
 				return `
 				<div class="col-six">
-					<strong>WebRTC</strong><span class="hash">${hashMini($hash)}</span>
+					<strong>WebRTC</strong><span class="hash">${hashSlice($hash)}</span>
 					<div>ip address: ${ipaddress ? ipaddress : note.unsupported}</div>
 					<div>ip candidate: ${candidate ? candidate : note.unsupported}</div>
 					<div>ip connection: ${connection ? connection : note.unsupported}</div>
@@ -587,7 +588,7 @@ const imports = {
 				} = fp
 				return `
 				<div class="col-six">
-					<strong>Timezone</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
+					<strong>Timezone</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 					<div>zone: ${zone}</div>
 					<div>offset: ${''+offset}</div>
 					<div>offset computed: ${''+offsetComputed}</div>
@@ -717,7 +718,7 @@ const imports = {
 			const webgl2SpecsKeys = webgl2Specs ? Object.keys(webgl2Specs) : []
 			return `
 			<div class="col-six">
-				<strong>Canvas webgl</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
+				<strong>Canvas webgl</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 				<div>matching renderer/vendor: ${''+matchingUnmasked}</div>
 				<div>matching data URI: ${''+matchingDataURI}</div>
 				<div>webgl:<span class="sub-hash">${hashMini(dataURI)}</span></div>
@@ -779,7 +780,7 @@ const imports = {
 			const { canvas2d: { lied, $hash } } = fp
 			return `
 			<div class="col-six">
-				<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
+				<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 			</div>
 			`
 		})()}
@@ -808,7 +809,7 @@ const imports = {
 			} = fp
 			return `
 			<div class="col-four">
-				<strong>Audio</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
+				<strong>Audio</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 				<div>sample: ${
 					''+binsSample[0] == 'undefined' ? note.unsupported :
 					modal(
@@ -852,7 +853,7 @@ const imports = {
 			const voiceList = voices.map(voice => `${voice.name} (${voice.lang})`)
 			return `
 			<div class="col-four">
-				<strong>Speech</strong><span class="hash">${hashMini($hash)}</span>
+				<strong>Speech</strong><span class="hash">${hashSlice($hash)}</span>
 				<div>voices (${count(voices)}): ${
 					!voiceList || !voiceList.length ? note.unsupported :
 					modal(
@@ -885,7 +886,7 @@ const imports = {
 
 			return `
 			<div class="col-four">
-				<strong>Media</strong><span class="hash">${hashMini($hash)}</span>
+				<strong>Media</strong><span class="hash">${hashSlice($hash)}</span>
 				<div>devices (${count(mediaDevices)}): ${
 					!mediaDevices || !mediaDevices.length ? note.blocked : 
 					modal(
@@ -930,7 +931,7 @@ const imports = {
 			}
 			return `
 			<div class="col-six">
-				<strong>DOMRect</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
+				<strong>DOMRect</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 				<div>elements: ${
 					modal(
 						`${id}-elements`,
@@ -963,7 +964,7 @@ const imports = {
 			} = fp
 			return `
 			<div class="col-six">
-				<strong>Fonts</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
+				<strong>Fonts</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 				<div>results (${fonts ? count(fonts) : '0'}): ${fonts.length ? modal('creep-fonts', fonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>')) : note.blocked}</div>
 			</div>
 			`
@@ -1012,7 +1013,7 @@ const imports = {
 			const { deviceHeight, deviceWidth } = getDeviceDimensions(width, height)
 			return `
 			<div class="col-six">
-				<strong>Screen</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
+				<strong>Screen</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 				<div>device: ${device ? device : note.blocked}</div>
 				<div>width: ${width ? width : note.blocked}</div>
 				<div>outerWidth: ${outerWidth ? outerWidth : note.blocked}</div>
@@ -1055,7 +1056,7 @@ const imports = {
 
 			return `
 			<div class="col-six">
-				<strong>CSS Media Queries</strong><span class="hash">${hashMini($hash)}</span>
+				<strong>CSS Media Queries</strong><span class="hash">${hashSlice($hash)}</span>
 				<div>@media: ${
 					!mediaCSS ? note.blocked :
 					modal(
@@ -1114,7 +1115,7 @@ const imports = {
 			const { interfaceName } = computedStyle
 			return `
 			<div class="col-six">
-				<strong>Computed Style</strong><span class="hash">${hashMini($hash)}</span>
+				<strong>Computed Style</strong><span class="hash">${hashSlice($hash)}</span>
 				<div>keys (${!computedStyle ? '0' : count(computedStyle.keys)}): ${
 					!computedStyle ? note.blocked : 
 					modal(
@@ -1176,7 +1177,7 @@ const imports = {
 				})
 				return `
 				<div class="col-six">
-					<strong>Math</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
+					<strong>Math</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 					<div>results: ${modal(id, header+results.join('<br>'))}</div>
 				</div>
 				`
@@ -1199,7 +1200,7 @@ const imports = {
 				})
 				return `
 				<div class="col-six">
-					<strong>Error</strong><span class="hash">${hashMini($hash)}</span>
+					<strong>Error</strong><span class="hash">${hashSlice($hash)}</span>
 					<div>results: ${modal('creep-console-errors', results.join('<br>'))}</div>
 				</div>
 				`
@@ -1226,7 +1227,7 @@ const imports = {
 				} = fp
 				return `
 				<div class="col-six">
-					<strong>Window</strong><span class="hash">${hashMini($hash)}</span>
+					<strong>Window</strong><span class="hash">${hashSlice($hash)}</span>
 					<div>keys (${count(keys)}): ${keys && keys.length ? modal('creep-iframe-content-window-version', keys.join(', ')) : note.blocked}</div>
 					<div>moz: ${''+moz}</div>
 					<div>webkit: ${''+webkit}</div>
@@ -1248,7 +1249,7 @@ const imports = {
 				} = fp
 				return `
 				<div class="col-six">
-					<strong>HTMLElement</strong><span class="hash">${hashMini($hash)}</span>
+					<strong>HTMLElement</strong><span class="hash">${hashSlice($hash)}</span>
 					<div>keys (${count(keys)}): ${keys && keys.length ? modal('creep-html-element-version', keys.join(', ')) : note.blocked}</div>
 				</div>
 				`
@@ -1316,7 +1317,7 @@ const imports = {
 			}
 			return `
 			<div class="col-six">
-				<strong>Navigator</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
+				<strong>Navigator</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 				<div>deviceMemory: ${!blocked[deviceMemory] ? deviceMemory : note.blocked}</div>
 				<div>doNotTrack: ${''+doNotTrack}</div>
 				<div>globalPrivacyControl: ${
