@@ -36,8 +36,7 @@ export const getWebRTCData = imports => {
 				return resolve()
 			}
 			const connection = new rtcPeerConnection(
-				{ iceServers: [{ urls: ['stun:stun.l.google.com:19302?transport=udp'] }] }, 
-				{ optional: [{ RtpDataChannels: true }] }
+				{ iceServers: [{ urls: ['stun:stun.l.google.com:19302?transport=udp'] }] }
 			)
 			
 			let success
