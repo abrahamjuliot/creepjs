@@ -486,8 +486,8 @@ const imports = {
 					<div>type: ${note.blocked}</div>
 					<div>foundation: ${note.blocked}</div>
 					<div>protocol: ${note.blocked}</div>
-					<div>sdp capabilities: ${note.blocked}</div>
 					<div>get capabilities: ${note.blocked}</div>
+					<div>sdp capabilities: ${note.blocked}</div>
 				</div>` :
 			(() => {
 				const { webRTC } = fp
@@ -512,14 +512,6 @@ const imports = {
 					<div>type: ${type ? type : note.unsupported}</div>
 					<div>foundation: ${foundation ? foundation : note.unsupported}</div>
 					<div>protocol: ${protocol ? protocol : note.unsupported}</div>
-					<div>sdp capabilities: ${
-						!sdpcapabilities ? note.unsupported :
-						modal(
-							`${id}-sdpcapabilities`,
-							sdpcapabilities.join('<br>'),
-							hashMini(sdpcapabilities)
-						)
-					}</div>
 					<div>get capabilities: ${
 						!capabilities.receiver && !capabilities.sender ? note.unsupported :
 						modal(
@@ -560,6 +552,14 @@ const imports = {
 								`
 							}).join(''),
 							hashMini(capabilities)
+						)
+					}</div>
+					<div>sdp capabilities: ${
+						!sdpcapabilities ? note.unsupported :
+						modal(
+							`${id}-sdpcapabilities`,
+							sdpcapabilities.join('<br>'),
+							hashMini(sdpcapabilities)
 						)
 					}</div>
 				</div>
