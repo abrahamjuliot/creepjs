@@ -41,7 +41,13 @@ export const getWebRTCData = imports => {
 			)
 			
 			let success
-			let sdpcapabilities
+			
+			connection.createDataChannel('creep')
+
+			await connection.createOffer()
+			.then(offer => connection.setLocalDescription(offer))
+			.catch(error => console.error(error))
+
 			connection.onicecandidate = async e => { 
 				const candidateEncoding = /((udp|tcp)\s)((\d|\w)+\s)((\d|\w|(\.|\:))+)(?=\s)/ig
 				const connectionLineEncoding = /(c=IN\s)(.+)\s/ig
@@ -62,6 +68,8 @@ export const getWebRTCData = imports => {
 					const type = caniuse(() => /typ ([a-z]+)/.exec(candidate)[1])
 					const foundation = caniuse(() => /candidate:(\d+)\s/.exec(candidate)[1])
 					const protocol = caniuse(() => /candidate:\d+ \w+ (\w+)/.exec(candidate)[1])
+					
+					// get capabilities
 					const capabilities = {
 						sender: !caniuse(() => RTCRtpSender.getCapabilities) ? undefined : {
 							audio: RTCRtpSender.getCapabilities('audio'),
@@ -72,6 +80,17 @@ export const getWebRTCData = imports => {
 							video: RTCRtpReceiver.getCapabilities('video')
 						}
 					}
+
+					// get sdp capabilities
+					let sdpcapabilities
+					await connection.createOffer({
+						offerToReceiveAudio: 1,
+						offerToReceiveVideo: 1
+					})
+					.then(offer => (
+						sdpcapabilities = offer.sdp.match(/((ext|rtp)map|fmtp|rtcp-fb):.+ (.+)/gm).sort()
+					))
+					.catch(error => console.error(error))
 
 					const data = {
 						ipaddress,
@@ -99,22 +118,6 @@ export const getWebRTCData = imports => {
 				}
 			}, 2000)
 
-			connection.createDataChannel('creep')
-
-			
-			
-			await connection.createOffer()
-			.then(offer => connection.setLocalDescription(offer))
-			.catch(error => console.error(error))
-
-			await connection.createOffer({
-				offerToReceiveAudio: 1,
-				offerToReceiveVideo: 1
-			})
-			.then(offer => (
-				sdpcapabilities = offer.sdp.match(/((ext|rtp)map|fmtp|rtcp-fb):.+ (.+)/gm).sort()
-			))
-			.catch(error => console.error(error))
 			
 		}
 		catch (error) {
