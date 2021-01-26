@@ -861,7 +861,10 @@ const imports = {
 						hashMini(voices)
 					)
 				}</div>
-				<div>default: ${defaultVoice || note.unsupported}</div>
+				<div>default:${
+					!defaultVoice ? ` ${note.unsupported}` :
+					`<span class="sub-hash">${hashMini(defaultVoice)}</span>`
+				}</div>
 			</div>
 			`
 		})()}
