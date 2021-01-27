@@ -400,7 +400,13 @@
 		searchLies(() => DOMRect)
 		searchLies(() => DOMRectReadOnly)
 		searchLies(() => Element)
-		searchLies(() => Function)
+		searchLies(() => Function, {
+			ignore : [
+				// Chrome false positive on getIllegalTypeErrorLie test
+				'caller',
+				'arguments'
+			]
+		})
 		searchLies(() => HTMLCanvasElement)
 		searchLies(() => HTMLElement, {
 			ignore: [

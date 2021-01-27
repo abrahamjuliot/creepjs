@@ -511,7 +511,11 @@ const getPrototypeLies = iframeWindow => {
     searchLies(() => Function, {
         target: [
             'toString',
-        ]
+        ],
+		ignore : [
+			'caller',
+			'arguments'
+		]
     })
     searchLies(() => HTMLCanvasElement)
     searchLies(() => HTMLElement, {
