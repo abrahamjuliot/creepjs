@@ -55,8 +55,8 @@ export const getOfflineAudioContext = imports => {
 			const floatFrequencyUniqueDataSize = new Set(dataArray).size
 			if (floatFrequencyUniqueDataSize > 1) {
 				lied = true
-				const floatFrequencyDataLie = { fingerprint: '', lies: [{ [`Expected 1 unique frequency and got ${floatFrequencyUniqueDataSize}`]: true }] }
-				documentLie(`AnalyserNode.getFloatFrequencyData`, floatFrequencyUniqueDataSize, floatFrequencyDataLie)
+				const floatFrequencyDataLie = `expected 1 unique frequency and got ${floatFrequencyUniqueDataSize}`
+				documentLie(`AnalyserNode.getFloatFrequencyData`, floatFrequencyDataLie)
 			}
 
 			const values = {
@@ -108,8 +108,8 @@ export const getOfflineAudioContext = imports => {
 					const copyFromChannelSupported = ('copyFromChannel' in AudioBuffer.prototype)
 					if (copyFromChannelSupported && !matching) {
 						lied = true
-						const audioSampleLie = { fingerprint: '', lies: [{ ['data and copy samples mismatch']: false }] }
-						documentLie('AudioBuffer', matching, audioSampleLie)
+						const audioSampleLie = 'getChannelData and copyFromChannel samples mismatch'
+						documentLie('AudioBuffer', audioSampleLie)
 					}
 
 					dynamicsCompressor.disconnect()

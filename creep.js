@@ -262,7 +262,7 @@ const imports = {
 	// Trusted Fingerprint
 	const distrust = { distrust: { brave: isBrave, firefox: isFirefox } }
 	const trashLen = fp.trash.trashBin.length
-	const liesLen = !('data' in fp.lies) ? 0 : fp.lies.data.length
+	const liesLen = !('totalLies' in fp.lies) ? 0 : fp.lies.totalLies
 	const errorsLen = fp.capturedErrors.data.length
 	const creep = {
 		navigator: ( 
@@ -353,7 +353,7 @@ const imports = {
 		),
 		fonts: !fp.fonts || fp.fonts.lied ? undefined : fp.fonts,
 		// skip trash since it is random
-		lies: !('data' in fp.lies) ? false : !!liesLen,
+		lies: !!liesLen,
 		capturedErrors: !!errorsLen,
 		voices: fp.voices,
 		webRTC: !fp.webRTC ? undefined : {
@@ -438,25 +438,17 @@ const imports = {
 			})()}
 			${(() => {
 				const { lies: { data, totalLies, $hash } } = fp 
-				const toJSONFormat = obj => JSON.stringify(obj, null, '\t')
-				const sanitize = str => str.replace(/\</g, '&lt;')
 				return `
 				<div class="col-four${totalLies ? ' lies': ''}">
 					<strong>Lies</strong>${totalLies ? `<span class="hash">${hashSlice($hash)}</span>` : ''}
 					<div>unmasked (${!totalLies ? '0' : ''+totalLies }): ${
-						totalLies ? modal('creep-lies', Object.keys(data).map(key => {
-							const { name, lieTypes: { lies, fingerprint } } = data[key]
-							const lieFingerprint = !!fingerprint ? { hash: hashMini(fingerprint), json: sanitize(toJSONFormat(fingerprint)) } : undefined
+						totalLies ? modal('creep-lies', Object.keys(data).sort().map(key => {
+							const lies = data[key]
 							return `
+							<br>
 							<div style="padding:5px">
-								<strong>${name}</strong>:
-								${lies.length ? lies.map(lie => `<br>${Object.keys(lie)[0]}`).join(''): ''}
-								${
-									lieFingerprint ? `
-										<br>Tampering code leaked a fingerprint: ${lieFingerprint.hash}
-										<br>Unexpected code: ${lieFingerprint.json}`: 
-									''
-								}
+								<strong>${key}</strong>:
+								${lies.map(lie => `<div>- ${lie}</div>`).join('')}
 							</div>
 							`
 						}).join('')) : ''

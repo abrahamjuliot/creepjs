@@ -78,7 +78,9 @@ strong {
 	color: #3e3b3b;
 	font-weight: bold !important;
 }
-
+.small {
+	font-size: 11px !important;
+}
 #signature {
 	min-height: 50px;
 	padding: 5px 10px;

@@ -41,24 +41,24 @@ export const getNavigator = (imports, workerScope) => {
 			const phantomNavigator = phantomDarkness ? phantomDarkness.navigator : navigator
 			const detectLies = (name, value) => {
 				const workerScopeValue = caniuse(() => workerScope, [name])
-				const workerScopeMatchLie = { fingerprint: '', lies: [{ ['does not match worker scope']: false }] }
+				const workerScopeMatchLie = 'does not match worker scope'
 				if (workerScopeValue) {
 					if (name == 'userAgent') {
 						const navigatorUserAgent = value
 						const system = getOS(navigatorUserAgent)
 						if (workerScope.system != system) {
 							lied = true
-							documentLie(`Navigator.${name}`, system, workerScopeMatchLie)
+							documentLie(`Navigator.${name}`, workerScopeMatchLie)
 						}
 						else if (workerScope.userAgent != navigatorUserAgent) {
 							lied = true
-							documentLie(`Navigator.${name}`, navigatorUserAgent, workerScopeMatchLie)
+							documentLie(`Navigator.${name}`, workerScopeMatchLie)
 						}
 						return value
 					}
 					else if (name != 'userAgent' && workerScopeValue != value) {
 						lied = true
-						documentLie(`Navigator.${name}`, value, workerScopeMatchLie)
+						documentLie(`Navigator.${name}`, workerScopeMatchLie)
 						return value
 					}
 				}
@@ -80,11 +80,8 @@ export const getNavigator = (imports, workerScope) => {
 					}
 					if (platform != navigatorPlatform) {
 						lied = true
-						const nestedIframeLie = {
-							fingerprint: '',
-							lies: [{ [`Expected "${navigatorPlatform}" in nested iframe and got "${platform}"`]: true }]
-						}
-						documentLie(`Navigator.platform`, hashMini({platform, navigatorPlatform}), nestedIframeLie)
+						const nestedIframeLie = `Expected "${navigatorPlatform}" in nested iframe and got "${platform}"`
+						documentLie(`Navigator.platform`, nestedIframeLie)
 					}
 					return platform
 				}),
@@ -106,11 +103,8 @@ export const getNavigator = (imports, workerScope) => {
 					}
 					if (userAgent != navigatorUserAgent) {
 						lied = true
-						const nestedIframeLie = {
-							fingerprint: '',
-							lies: [{ [`Expected "${navigatorUserAgent}" in nested iframe and got "${userAgent}"`]: true }]
-						}
-						documentLie(`Navigator.userAgent`, hashMini({userAgent, navigatorUserAgent}), nestedIframeLie)
+						const nestedIframeLie = `Expected "${navigatorUserAgent}" in nested iframe and got "${userAgent}"`
+						documentLie(`Navigator.userAgent`, nestedIframeLie)
 					}
 					return userAgent.trim().replace(/\s{2,}/, ' ')
 				}, 'userAgent failed'),
@@ -129,11 +123,8 @@ export const getNavigator = (imports, workerScope) => {
 					}
 					if (appVersion != navigatorAppVersion) {
 						lied = true
-						const nestedIframeLie = {
-							fingerprint: '',
-							lies: [{ [`Expected "${navigatorAppVersion}" in nested iframe and got "${appVersion}"`]: true }]
-						}
-						documentLie(`Navigator.appVersion`, hashMini({appVersion, navigatorAppVersion}), nestedIframeLie)
+						const nestedIframeLie = `Expected "${navigatorAppVersion}" in nested iframe and got "${appVersion}"`
+						documentLie(`Navigator.appVersion`, nestedIframeLie)
 					}
 					return appVersion.trim().replace(/\s{2,}/, ' ')
 				}, 'appVersion failed'),
@@ -157,11 +148,8 @@ export const getNavigator = (imports, workerScope) => {
 					}
 					if (deviceMemory != navigatorDeviceMemory) {
 						lied = true
-						const nestedIframeLie = {
-							fingerprint: '',
-							lies: [{ [`Expected ${navigatorDeviceMemory} in nested iframe and got ${deviceMemory}`]: true }]
-						}
-						documentLie(`Navigator.deviceMemory`, hashMini({deviceMemory, navigatorDeviceMemory}), nestedIframeLie)
+						const nestedIframeLie = `Expected ${navigatorDeviceMemory} in nested iframe and got ${deviceMemory}`
+						documentLie(`Navigator.deviceMemory`, nestedIframeLie)
 					}
 					return deviceMemory
 				}, 'deviceMemory failed'),
@@ -219,11 +207,8 @@ export const getNavigator = (imports, workerScope) => {
 					trustInteger('hardwareConcurrency - invalid return type', navigatorHardwareConcurrency)
 					if (hardwareConcurrency != navigatorHardwareConcurrency) {
 						lied = true
-						const nestedIframeLie = {
-							fingerprint: '',
-							lies: [{ [`Expected ${navigatorHardwareConcurrency} in nested iframe and got ${hardwareConcurrency}`]: true }]
-						}
-						documentLie(`Navigator.hardwareConcurrency`, hashMini({hardwareConcurrency, navigatorHardwareConcurrency}), nestedIframeLie)
+						const nestedIframeLie = `Expected ${navigatorHardwareConcurrency} in nested iframe and got ${hardwareConcurrency}`
+						documentLie(`Navigator.hardwareConcurrency`, nestedIframeLie)
 					}
 					return hardwareConcurrency
 				}, 'hardwareConcurrency failed'),
@@ -235,11 +220,8 @@ export const getNavigator = (imports, workerScope) => {
 					detectLies('languages', navigatorLanguages)
 					if (language != navigatorLanguage) {
 						lied = true
-						const nestedIframeLie = {
-							fingerprint: '',
-							lies: [{ [`Expected "${navigatorLanguage}" in nested iframe and got "${language}"`]: true }]
-						}
-						documentLie(`Navigator.language`, hashMini({language, navigatorLanguage}), nestedIframeLie)
+						const nestedIframeLie = `Expected "${navigatorLanguage}" in nested iframe and got "${language}"`
+						documentLie(`Navigator.language`, nestedIframeLie)
 					}
 					if (navigatorLanguage && navigatorLanguages) {
 						const lang = /^.{0,2}/g.exec(navigatorLanguage)[0]
@@ -259,11 +241,8 @@ export const getNavigator = (imports, workerScope) => {
 					const navigatorMaxTouchPoints = navigator.maxTouchPoints	
 					if (maxTouchPoints != navigatorMaxTouchPoints) {	
 						lied = true
-						const nestedIframeLie = {
-							fingerprint: '',
-							lies: [{ [`Expected ${navigatorMaxTouchPoints} in nested iframe and got ${maxTouchPoints}`]: true }]
-						}
-						documentLie(`Navigator.maxTouchPoints`, hashMini({maxTouchPoints, navigatorMaxTouchPoints}), nestedIframeLie)	
+						const nestedIframeLie = `Expected ${navigatorMaxTouchPoints} in nested iframe and got ${maxTouchPoints}`
+						documentLie(`Navigator.maxTouchPoints`, nestedIframeLie)	
 					}
 
 					return maxTouchPoints
@@ -273,11 +252,8 @@ export const getNavigator = (imports, workerScope) => {
 					const navigatorVendor = navigator.vendor
 					if (vendor != navigatorVendor) {
 						lied = true
-						const nestedIframeLie = {
-							fingerprint: '',
-							lies: [{ [`Expected "${navigatorVendor}" in nested iframe and got "${vendor}"`]: true }]
-						}
-						documentLie(`Navigator.vendor`, hashMini({vendor, navigatorVendor}), nestedIframeLie)
+						const nestedIframeLie = `Expected "${navigatorVendor}" in nested iframe and got "${vendor}"`
+						documentLie(`Navigator.vendor`, nestedIframeLie)
 					}
 					return vendor
 				}, 'vendor failed'),
@@ -302,8 +278,7 @@ export const getNavigator = (imports, workerScope) => {
 					if (lies.length) {
 						lied = true
 						lies.forEach(lie => {
-							const pluginsLie = { fingerprint: '', lies: [{ [lie]: true }] }
-							return documentLie(`Navigator.plugins`, hashMini(response), pluginsLie)
+							return documentLie(`Navigator.plugins`, lie)
 						})
 					}
 

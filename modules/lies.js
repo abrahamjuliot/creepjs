@@ -1,13 +1,19 @@
-import { hashMini } from './crypto.js'
-import { captureError, attempt, caniuse } from './captureErrors.js'
+import { captureError } from './captureErrors.js'
 
 // Collect lies detected
 const createlieRecords = () => {
-	const records = []
+	const records = { }
   	return {
 		getRecords: () => records,
-		documentLie: (name, lieResult, lieTypes) => {
-			return records.push({ name, lieTypes, hash: lieResult, lie: hashMini(lieTypes) })
+		documentLie: (name, lie) => {
+			const isArray = lie instanceof Array
+			if (records[name]) {
+				if (isArray) {
+					return (records[name] = [...records[name], ...lie])
+				}
+				return records[name].push(lie)
+			}
+			return isArray ? (records[name] = lie) : (records[name] = [lie])
 		}
 	}
 }
@@ -92,685 +98,572 @@ const { iframeWindow: dragonFire, parent: parentDragon } = getDragonIframe({ num
 
 const { iframeWindow: dragonOfDeath } = getDragonIframe({ numberOfNests: 4, kill: true})
 
-// detect and fingerprint Function API lies
-const native = (result, str, willHaveBlanks = false) => {
-	const chrome = `function ${str}() { [native code] }`
-	const chromeGet = `function get ${str}() { [native code] }`
-	const firefox = `function ${str}() {\n    [native code]\n}`
-	const chromeBlank = `function () { [native code] }`
-	const firefoxBlank = `function () {\n    [native code]\n}`
-	return (
-		result == chrome ||
-		result == chromeGet ||
-		result == firefox || (
-			willHaveBlanks && (result == chromeBlank || result == firefoxBlank)
-		)
-	)
+const getPrototypeLies = iframeWindow => {
+    // Lie Tests
+    // object constructor descriptor should return undefined properties
+    const getUndefinedValueLie = (obj, name) => {
+        const objName = obj.name
+        const objNameUncapitalized = window[objName.charAt(0).toLowerCase() + objName.slice(1)]
+        const hasInvalidValue = !!objNameUncapitalized && (
+            typeof Object.getOwnPropertyDescriptor(objNameUncapitalized, name) != 'undefined' ||
+            typeof Reflect.getOwnPropertyDescriptor(objNameUncapitalized, name) != 'undefined'
+        )
+        return hasInvalidValue ? true : false
+    }
+
+    // accessing the property from the prototype should throw a TypeError
+    const getIllegalTypeErrorLie = (obj, name) => {
+        const proto = obj.prototype
+        try {
+            proto[name]
+            return true
+        } catch (error) {
+            return error.constructor.name != 'TypeError' ? true : false
+        }
+        const illegal = [
+            '',
+            'is',
+            'call',
+            'seal',
+            'keys',
+            'bind',
+            'apply',
+            'assign',
+            'freeze',
+            'values',
+            'entries',
+            'toString',
+            'isFrozen',
+            'isSealed',
+            'constructor',
+            'isExtensible',
+            'getPrototypeOf',
+            'preventExtensions',
+            'propertyIsEnumerable',
+            'getOwnPropertySymbols',
+            'getOwnPropertyDescriptors'
+        ]
+        const lied = !!illegal.find(prop => {
+            try {
+                prop == '' ? Object(proto[name]) : Object[prop](proto[name])
+                return true
+            } catch (error) {
+                return error.constructor.name != 'TypeError' ? true : false
+            }
+        })
+        return lied
+    }
+
+    // calling the interface prototype on the function should throw a TypeError
+    const getCallInterfaceTypeErrorLie = (apiFunction, proto) => {
+        try {
+            new apiFunction()
+            apiFunction.call(proto)
+            return true
+        } catch (error) {
+            return error.constructor.name != 'TypeError' ? true : false
+        }
+    }
+
+    // applying the interface prototype on the function should throw a TypeError
+    const getApplyInterfaceTypeErrorLie = (apiFunction, proto) => {
+        try {
+            new apiFunction()
+            apiFunction.apply(proto)
+            return true
+        } catch (error) {
+            return error.constructor.name != 'TypeError' ? true : false
+        }
+    }
+
+    // creating a new instance of the function should throw a TypeError
+    const getNewInstanceTypeErrorLie = apiFunction => {
+        try {
+            new apiFunction()
+            return true
+        } catch (error) {
+            return error.constructor.name != 'TypeError' ? true : false
+        }
+    }
+
+    // extending the function on a fake class should throw a TypeError and message "not a constructor"
+    const getClassExtendsTypeErrorLie = apiFunction => {
+        try {
+            class Fake extends apiFunction {}
+            return true
+        } catch (error) {
+            // Native has TypeError and 'not a constructor' message in FF & Chrome
+            return error.constructor.name != 'TypeError' ? true :
+                !/not a constructor/i.test(error.message) ? true : false
+        }
+    }
+
+    // setting prototype to null and converting to a string should throw a TypeError
+    const getNullConversionTypeErrorLie = apiFunction => {
+        const nativeProto = Object.getPrototypeOf(apiFunction)
+        try {
+            Object.setPrototypeOf(apiFunction, null) + ''
+            return true
+        } catch (error) {
+            return error.constructor.name != 'TypeError' ? true : false
+        } finally {
+            // restore proto
+            Object.setPrototypeOf(apiFunction, nativeProto)
+        }
+    }
+
+    // toString() and toString.toString() should return a native string in all frames
+    const getToStringLie = (apiFunction, name, iframeWindow) => {
+        /*
+        Accepted strings:
+        'function name() { [native code] }'
+        'function name() {\n    [native code]\n}'
+        'function get name() { [native code] }'
+        'function get name() {\n    [native code]\n}'
+        'function () { [native code] }'
+        `function () {\n    [native code]\n}`
+        */
+        const apiFunctionToString = (
+            iframeWindow ?
+            iframeWindow.Function.prototype.toString.call(apiFunction) :
+            apiFunction.toString()
+        )
+        const apiFunctionToStringToString = (
+            iframeWindow ?
+            iframeWindow.Function.prototype.toString.call(apiFunction.toString) :
+            apiFunction.toString.toString()
+        )
+        const trust = name => ({
+            [`function ${name}() { [native code] }`]: true,
+            [`function get ${name}() { [native code] }`]: true,
+            [`function () { [native code] }`]: true,
+            [`function ${name}() {${'\n'}    [native code]${'\n'}}`]: true,
+            [`function get ${name}() {${'\n'}    [native code]${'\n'}}`]: true,
+            [`function () {${'\n'}    [native code]${'\n'}}`]: true
+        })
+        return (
+            !trust(name)[apiFunctionToString] ||
+            !trust('toString')[apiFunctionToStringToString]
+        )
+    }
+
+    // "prototype" in function should not exist
+    const getPrototypeInFunctionLie = apiFunction => 'prototype' in apiFunction ? true : false
+
+    // "arguments", "caller", "prototype", "toString"  should not exist in descriptor
+    const getDescriptorLie = apiFunction => {
+        const hasInvalidDescriptor = (
+            !!Object.getOwnPropertyDescriptor(apiFunction, 'arguments') ||
+            !!Reflect.getOwnPropertyDescriptor(apiFunction, 'arguments') ||
+            !!Object.getOwnPropertyDescriptor(apiFunction, 'caller') ||
+            !!Reflect.getOwnPropertyDescriptor(apiFunction, 'caller') ||
+            !!Object.getOwnPropertyDescriptor(apiFunction, 'prototype') ||
+            !!Reflect.getOwnPropertyDescriptor(apiFunction, 'prototype') ||
+            !!Object.getOwnPropertyDescriptor(apiFunction, 'toString') ||
+            !!Reflect.getOwnPropertyDescriptor(apiFunction, 'toString')
+        )
+        return hasInvalidDescriptor ? true : false
+    }
+
+    // "arguments", "caller", "prototype", "toString" should not exist as own property
+    const getOwnPropertyLie = apiFunction => {
+        const hasInvalidOwnProperty = (
+            apiFunction.hasOwnProperty('arguments') ||
+            apiFunction.hasOwnProperty('caller') ||
+            apiFunction.hasOwnProperty('prototype') ||
+            apiFunction.hasOwnProperty('toString')
+        )
+        return hasInvalidOwnProperty ? true : false
+    }
+
+    // descriptor keys should only contain "name" and "length"
+    const getDescriptorKeysLie = apiFunction => {
+        const descriptorKeys = Object.keys(Object.getOwnPropertyDescriptors(apiFunction))
+        const hasInvalidKeys = '' + descriptorKeys != 'length,name' && '' + descriptorKeys != 'name,length'
+        return hasInvalidKeys ? true : false
+    }
+
+    // own property names should only contain "name" and "length"
+    const getOwnPropertyNamesLie = apiFunction => {
+        const ownPropertyNames = Object.getOwnPropertyNames(apiFunction)
+        const hasInvalidNames = (
+            '' + ownPropertyNames != 'length,name' && '' + ownPropertyNames != 'name,length'
+        )
+        return hasInvalidNames ? true : false
+    }
+
+    // own keys names should only contain "name" and "length"
+    const getOwnKeysLie = apiFunction => {
+        const ownKeys = Reflect.ownKeys(apiFunction)
+        const hasInvalidKeys = '' + ownKeys != 'length,name' && '' + ownKeys != 'name,length'
+        return hasInvalidKeys ? true : false
+    }
+
+    // API Function Test
+    const getLies = (apiFunction, proto, obj = null) => {
+        if (typeof apiFunction != 'function') {
+            return {
+                lied: false,
+                lieTypes: []
+            }
+        }
+        const name = apiFunction.name.replace(/get\s/, '')
+        const lies = {
+            // custom lie string names
+            [`failed illegal error`]: obj ? getIllegalTypeErrorLie(obj, name) : false,
+            [`failed undefined properties`]: obj ? getUndefinedValueLie(obj, name) : false,
+            [`failed call interface error`]: getCallInterfaceTypeErrorLie(apiFunction, proto),
+            [`failed apply interface error`]: getApplyInterfaceTypeErrorLie(apiFunction, proto),
+            [`failed new instance error`]: getNewInstanceTypeErrorLie(apiFunction),
+            [`failed class extends error`]: getClassExtendsTypeErrorLie(apiFunction),
+            [`failed null conversion error`]: getNullConversionTypeErrorLie(apiFunction),
+            [`failed toString`]: getToStringLie(apiFunction, name, iframeWindow),
+            [`failed "prototype" in function`]: getPrototypeInFunctionLie(apiFunction),
+            [`failed descriptor`]: getDescriptorLie(apiFunction),
+            [`failed own property`]: getOwnPropertyLie(apiFunction),
+            [`failed descriptor keys`]: getDescriptorKeysLie(apiFunction),
+            [`failed own property names`]: getOwnPropertyNamesLie(apiFunction),
+            [`failed own keys names`]: getOwnKeysLie(apiFunction)
+        }
+        const lieTypes = Object.keys(lies).filter(key => !!lies[key])
+        return {
+            lied: lieTypes.length,
+            lieTypes
+        }
+    }
+
+    // Lie Detector
+    const createLieDetector = () => {
+        const isSupported = obj => typeof obj != 'undefined' && !!obj
+        const props = {} // lie list and detail
+        let propsSearched = [] // list of properties searched
+        return {
+            getProps: () => props,
+            getPropsSearched: () => propsSearched,
+            searchLies: (fn, {
+                target = []
+            } = {}) => {
+                let obj
+                // check if api is blocked or not supported
+                try {
+                    obj = fn()
+                    if (!isSupported(obj)) {
+                        return
+                    }
+                } catch (error) {
+                    return
+                }
+
+                const interfaceObject = !!obj.prototype ? obj.prototype : obj
+                Object.getOwnPropertyNames(interfaceObject)
+                    .forEach(name => {
+                        if (name == 'constructor' || (target.length && !new Set(target).has(name))) {
+                            return
+                        }
+                        const objectNameString = /\s(.+)\]/
+                        const apiName = `${
+							obj.name ? obj.name : objectNameString.test(obj) ? objectNameString.exec(obj)[1] : undefined
+						}.${name}`
+                        propsSearched.push(apiName)
+                        try {
+                            const proto = obj.prototype ? obj.prototype : obj
+                            let res // response from getLies
+
+                            // search if function
+                            try {
+                                const apiFunction = proto[name] // may trigger TypeError
+                                if (typeof apiFunction == 'function') {
+                                    res = getLies(proto[name], proto)
+                                    if (res.lied) {
+										documentLie(apiName, res.lieTypes)
+                                        return (props[apiName] = res.lieTypes)
+                                    }
+                                    return
+                                }
+                            } catch (error) {}
+                            // else search getter function
+                            const getterFunction = Object.getOwnPropertyDescriptor(proto, name).get
+                            res = getLies(getterFunction, proto, obj) // send the obj for special tests
+                            if (res.lied) {
+								documentLie(apiName, res.lieTypes)
+                                return (props[apiName] = res.lieTypes)
+                            }
+                            return
+                        } catch (error) {
+							const lie = `failed prototype test execution`
+							documentLie(apiName, lie)
+                            return (
+                                props[apiName] = [lie]
+                            )
+                        }
+                    })
+            }
+        }
+    }
+
+    const lieDetector = createLieDetector()
+    const {
+        searchLies
+    } = lieDetector
+
+    // search for lies: remove target to search all properties
+    searchLies(() => AnalyserNode)
+    searchLies(() => AudioBuffer, {
+        target: [
+            'copyFromChannel',
+            'getChannelData'
+        ]
+    })
+    searchLies(() => BiquadFilterNode, {
+        target: [
+            'getFrequencyResponse'
+        ]
+    })
+    searchLies(() => CanvasRenderingContext2D, {
+        target: [
+            'getImageData',
+            'getLineDash',
+            'isPointInPath',
+            'isPointInStroke',
+            'measureText',
+            'quadraticCurveTo'
+        ]
+    })
+    searchLies(() => Date, {
+        target: [
+            'getDate',
+            'getDay',
+            'getFullYear',
+            'getHours',
+            'getMinutes',
+            'getMonth',
+            'getTime',
+            'getTimezoneOffset',
+            'setDate',
+            'setFullYear',
+            'setHours',
+            'setMilliseconds',
+            'setMonth',
+            'setSeconds',
+            'setTime',
+            'toDateString',
+            'toJSON',
+            'toLocaleDateString',
+            'toLocaleString',
+            'toLocaleTimeString',
+            'toString',
+            'toTimeString',
+            'valueOf'
+        ]
+    })
+    searchLies(() => Intl.DateTimeFormat, {
+        target: [
+            'format',
+            'formatRange',
+            'formatToParts',
+            'resolvedOptions'
+        ]
+    })
+    searchLies(() => Document, {
+        target: [
+            'createElement',
+            'createElementNS',
+            'getElementById',
+            'getElementsByClassName',
+            'getElementsByName',
+            'getElementsByTagName',
+            'getElementsByTagNameNS',
+            'referrer',
+            'write',
+            'writeln'
+        ]
+    })
+    searchLies(() => DOMRect)
+    searchLies(() => DOMRectReadOnly)
+    searchLies(() => Element, {
+        target: [
+            'append',
+            'appendChild',
+            'getBoundingClientRect',
+            'getClientRects',
+            'insertAdjacentElement',
+            'insertAdjacentHTML',
+            'insertAdjacentText',
+            'insertBefore',
+            'prepend',
+            'replaceChild',
+            'replaceWith',
+            'setAttribute'
+        ]
+    })
+    searchLies(() => Function, {
+        target: [
+            'toString',
+        ]
+    })
+    searchLies(() => HTMLCanvasElement)
+    searchLies(() => HTMLElement, {
+        target: [
+            'clientHeight',
+            'clientWidth',
+            'offsetHeight',
+            'offsetWidth',
+            'scrollHeight',
+            'scrollWidth'
+        ]
+    })
+    searchLies(() => HTMLIFrameElement, {
+        target: [
+            'contentDocument',
+            'contentWindow',
+        ]
+    })
+    searchLies(() => IntersectionObserverEntry, {
+        target: [
+            'boundingClientRect',
+            'intersectionRect',
+            'rootBounds'
+        ]
+    })
+    searchLies(() => Math, {
+        target: [
+            'acos',
+            'acosh',
+            'asinh',
+            'atan',
+            'atan2',
+            'atanh',
+            'cbrt',
+            'cos',
+            'cosh',
+            'exp',
+            'expm1',
+            'log',
+            'log10',
+            'log1p',
+            'sin',
+            'sinh',
+            'sqrt',
+            'tan',
+            'tanh'
+        ]
+    })
+    searchLies(() => MediaDevices, {
+        target: [
+            'enumerateDevices',
+            'getDisplayMedia',
+            'getUserMedia'
+        ]
+    })
+    searchLies(() => Navigator, {
+        target: [
+            'appCodeName',
+            'appName',
+            'appVersion',
+            'buildID',
+            'connection',
+            'deviceMemory',
+            'getBattery',
+            'getGamepads',
+            'getVRDisplays',
+            'hardwareConcurrency',
+            'language',
+            'languages',
+            'maxTouchPoints',
+            'mimeTypes',
+            'oscpu',
+            'platform',
+            'plugins',
+            'product',
+            'productSub',
+            'sendBeacon',
+            'serviceWorker',
+            'userAgent',
+            'vendor',
+            'vendorSub'
+        ]
+    })
+    searchLies(() => Node, {
+        target: [
+            'appendChild',
+            'insertBefore',
+            'replaceChild'
+        ]
+    })
+    searchLies(() => OffscreenCanvasRenderingContext2D, {
+        target: [
+            'getImageData',
+            'getLineDash',
+            'isPointInPath',
+            'isPointInStroke',
+            'measureText',
+            'quadraticCurveTo'
+        ]
+    })
+    searchLies(() => Range, {
+        target: [
+            'getBoundingClientRect',
+            'getClientRects',
+        ]
+    })
+    searchLies(() => Intl.RelativeTimeFormat, {
+        target: [
+            'resolvedOptions'
+        ]
+    })
+    searchLies(() => Screen)
+    searchLies(() => SVGRect)
+    searchLies(() => TextMetrics)
+    searchLies(() => WebGLRenderingContext, {
+        target: [
+            'bufferData',
+            'getParameter',
+            'readPixels'
+        ]
+    })
+    searchLies(() => WebGL2RenderingContext, {
+        target: [
+            'bufferData',
+            'getParameter',
+            'readPixels'
+        ]
+    })
+
+    /* potential targets:
+    	RTCPeerConnection
+    	Plugin
+    	PluginArray
+    	MimeType
+    	MimeTypeArray
+    	Worker
+    	History
+    */
+
+    // return lies list and detail 
+    const props = lieDetector.getProps()
+    const propsSearched = lieDetector.getPropsSearched()
+    return {
+		lieDetector,
+        lieList: Object.keys(props).sort(),
+        lieDetail: props,
+        lieCount: Object.keys(props).reduce((acc, key) => acc + props[key].length, 0),
+        propsSearched
+    }
 }
 
-const testLookupGetter = (proto, name) => {
-	if (proto.__lookupGetter__(name)) {
-		return {
-			[`Expected __lookupGetter__ to return undefined`]: true
-		}
-	}
-	return false
-}
-
-const testLength = (apiFunction, name) => {
-	const apiLen = {
-		createElement: [true, 1],
-		createElementNS: [true, 2],
-		toBlob: [true, 1],
-		getImageData: [true, 4],
-		measureText: [true, 1],
-		toDataURL: [true, 0],
-		getContext: [true, 1],
-		getParameter: [true, 1],
-		getExtension: [true, 1],
-		getSupportedExtensions: [true, 0],
-		getParameter: [true, 1],
-		getExtension: [true, 1],
-		getSupportedExtensions: [true, 0],
-		getClientRects: [true, 0],
-		getChannelData: [true, 1],
-		copyFromChannel: [true, 2],
-		getTimezoneOffset: [true, 0]
-	}
-	if (apiLen[name] && apiLen[name][0] && apiFunction.length != apiLen[name][1]) {
-		return {
-			[`Expected length ${apiLen[name][1]} and got ${apiFunction.length}`]: true
-		}
-	}
-	return false
-}
-
-const testEntries = apiFunction => {
-	const objectFail = {
-		entries: 0,
-		keys: 0,
-		values: 0
-	}
-	let totalFail = 0
-	const objEntriesLen = Object.entries(apiFunction).length
-	const objKeysLen = Object.keys(apiFunction).length
-	const objKeysValues = Object.values(apiFunction).length
-	if (!!objEntriesLen) {
-		totalFail++
-		objectFail.entries = objEntriesLen
-	}
-	if (!!objKeysLen) {
-		totalFail++
-		objectFail.keys = objKeysLen
-	}
-	if (!!objKeysValues) {
-		totalFail++
-		objectFail.values = objKeysValues
-	}
-	if (totalFail) {
-		return {
-			[`Expected entries, keys, values [0, 0, 0] and got [${objectFail.entries}, ${objectFail.keys}, ${objectFail.values}]`]: true
-		}
-	}
-	return false
-}
-
-const testPrototype = apiFunction => {
-	if ('prototype' in apiFunction) {
-		return {
-			[`Unexpected 'prototype' in function`]: true
-		}
-	} 
-	return false
-}
-
-const testNew = apiFunction => {
-	try {
-		new apiFunction
-		return {
-			['Expected new to throw an Error']: true
-		}
-	}
-	catch (error) {
-		// Native throws TypeError
-		if (error.constructor.name != 'TypeError') {
-			return {
-				['Expected new to throw a TypeError']: true
-			}
-		}
-		return false
-	}
-}
-
-const testClassExtends = apiFunction => {
-	try { 
-		class Fake extends apiFunction { }
-		return {
-			['Expected class extends to throw an Error']: true
-		}
-	}
-	catch (error) {
-		// Native throws error
-		if (error.constructor.name != 'TypeError') {
-			return {
-				['Expected class extends to throw a TypeError']: true
-			}
-		}
-		else if (!/not a constructor/i.test(error.message)) {
-			return {
-				['Expected class extends to throw TypeError "not a constructor"']: true
-			}
-		}
-		return false
-	}
-}
-
-const testSetPrototypeNull = apiFunction => {
-	const nativeProto = Object.getPrototypeOf(apiFunction)
-	try { 
-		Object.setPrototypeOf(apiFunction, null)+''
-		Object.setPrototypeOf(apiFunction, nativeProto)
-		return {
-			['Expected set prototype null to throw an error']: true
-		}
-	}
-	catch (error) {
-		// Native throws error
-		Object.setPrototypeOf(apiFunction, nativeProto)
-		return false
-	}
-}
-
-const testName = (apiFunction, name) => {
-	const { name: apiName } = apiFunction
-	if (apiName != '' && apiName != name) {
-		return {
-			[`Expected name "${name}" and got "${apiName}"`]: true
-		}
-	}
-	return false
-}
-
-const testToString = (apiFunction, fnToStr, phantomDarkness) => {
-	const { toString: apiToString } = apiFunction
-	if (apiToString+'' !== fnToStr || apiToString.toString+'' !== fnToStr) {
-		return {
-			[`Expected toString to match ${phantomDarkness ? 'iframe.' : ''}Function.toString`]: true
-		}
-	}
-	return false
-}
-
-const testOwnProperty = apiFunction => {
-	const notOwnProperties = []
-	if (apiFunction.hasOwnProperty('arguments')) {
-		notOwnProperties.push('arguments')
-	}
-	if (apiFunction.hasOwnProperty('caller')) {
-		notOwnProperties.push('caller')
-	}
-	if (apiFunction.hasOwnProperty('prototype')) {
-		notOwnProperties.push('prototype')
-	}
-	if (apiFunction.hasOwnProperty('toString')) {
-		notOwnProperties.push('toString')
-	}
-	if (!!notOwnProperties.length) {
-		return {
-			[`Unexpected own property: ${notOwnProperties.join(', ')}`]: true
-		}
-	}
-	return false
-}
-
-const testOwnPropertyDescriptor = apiFunction => {
-	const notDescriptors = []
-	if (!!Object.getOwnPropertyDescriptor(apiFunction, 'arguments') ||
-		!!Reflect.getOwnPropertyDescriptor(apiFunction, 'arguments')) {
-		notDescriptors.push('arguments')
-	}
-	if (!!Object.getOwnPropertyDescriptor(apiFunction, 'caller') ||
-		!!Reflect.getOwnPropertyDescriptor(apiFunction, 'caller')) {
-		notDescriptors.push('caller')
-	}
-	if (!!Object.getOwnPropertyDescriptor(apiFunction, 'prototype') ||
-		!!Reflect.getOwnPropertyDescriptor(apiFunction, 'prototype')) {
-		notDescriptors.push('prototype')
-	}
-	if (!!Object.getOwnPropertyDescriptor(apiFunction, 'toString') ||
-		!!Reflect.getOwnPropertyDescriptor(apiFunction, 'toString')) {
-		notDescriptors.push('toString')
-	}
-	if (!!notDescriptors.length) {
-		return {
-			[`Unexpected descriptor: ${notDescriptors.join(', ')}`]: true
-		}
-	}
-	return
-}
-
-const testDescriptorKeys = apiFunction => {
-	const descriptorKeys = Object.keys(Object.getOwnPropertyDescriptors(apiFunction))
-	if (''+descriptorKeys != 'length,name' && ''+descriptorKeys != 'name,length') {
-		return {
-			['Expected own property descriptor keys [length, name]']: true
-		}
-	}
-	return false
-}
-
-const testOwnPropertyNames = apiFunction => {
-	const ownPropertyNames = Object.getOwnPropertyNames(apiFunction)
-	if (''+ownPropertyNames != 'length,name' && ''+ownPropertyNames != 'name,length') {
-		return {
-			['Expected own property names [length, name]']: true
-		}
-	}
-	return false
-}
-
-const testOwnKeys = apiFunction => {
-	const ownKeys = Reflect.ownKeys(apiFunction)
-	if (''+ownKeys != 'length,name' && ''+ownKeys != 'name,length') {
-		return {
-			['Expected own keys [length, name]']: true
-		}
-	}
-	return false
-}
-
-const testSpread = apiFunction => {
-	const ownPropLen = Object.getOwnPropertyNames({...apiFunction}).length
-	if (ownPropLen) {
-		return {
-			[`Expected 0 own property names in spread and got ${ownPropLen}`]: true
-		}
-	}
-	return false
-}
-
-const testDescriptor = (proto, name) => {
-	const descriptor = Object.getOwnPropertyDescriptor(proto, name)
-	const ownPropLen = Object.getOwnPropertyNames(descriptor).length
-	const ownKeysLen = Reflect.ownKeys(descriptor).length
-	const keysLen = Object.keys(descriptor).length
-	if (ownPropLen != keysLen || ownPropLen != ownKeysLen) {
-		return {
-			['Expected keys and own property names to match in length']: true
-		}
-	}
-	return false
-}
-
-const testGetToString = (proto, name) => {
-	try {
-		Object.getOwnPropertyDescriptor(proto, name).get.toString()
-		Reflect.getOwnPropertyDescriptor(proto, name).get.toString()
-		return {
-			['Expected descriptor.get.toString() to throw an error']: true
-		}
-	}
-	catch (error) {
-		// Native throws error
-		return false
-	}
-}
-
-const testIllegal = (api, name) => {
-	let illegalCount = 0
-	const illegal = [
-		'',
-		'is',
-		'call',
-		'seal',
-		'keys',
-		'bind',
-		'apply',
-		'assign',
-		'freeze',
-		'values',
-		'entries',
-		'toString',
-		'isFrozen',
-		'isSealed',
-		'constructor',
-		'isExtensible',
-		'getPrototypeOf',
-		'preventExtensions',
-		'propertyIsEnumerable',
-		'getOwnPropertySymbols',
-		'getOwnPropertyDescriptors'
-	]
-	try {
-		api[name]
-		illegalCount++
-	}
-	catch (error) {
-		// Native throws error
-	}
-	illegal.forEach((prop, index) => {
-		try {
-			!prop ? Object(api[name]) : Object[prop](api[name])
-			illegalCount++
-		}
-		catch (error) {
-			// Native throws error
-		}
-	})
-	if (illegalCount) {
-		const total = illegal.length+1
-		return {
-			[`Expected illegal invocation error: ${total-illegalCount} of ${total} passed`]: true
-		}
-	}
-	return false
-}
-
-const testValue = (obj, name) => {
-	try {
-		Object.getOwnPropertyDescriptor(obj, name).value
-		Reflect.getOwnPropertyDescriptor(obj, name).value
-		return {
-			['Expected descriptor.value to throw an error']: true
-		}
-	}
-	catch (error) {
-		// Native throws error
-		return false
-	}
-}
-
-let counter = 0
-const hasLiedAPI = (api, name, obj) => {
-	counter++
-	const fnToStr = (
-		phantomDarkness ? 
-		phantomDarkness.Function.prototype.toString.call(Function.prototype.toString) : // aggressive test
-		Function.prototype.toString+''
-	)
-
-	let willHaveBlanks = false
-	try {
-		willHaveBlanks = obj && (obj+'' == '[object Navigator]' || obj+'' == '[object Document]')
-	}
-	catch (error) { }
-
-	if (typeof api == 'function') {
-		const proto = obj
-		const apiFunction = api
-		try {
-			const testResults = new Set(
-				[
-					testLookupGetter(proto, name),
-					testLength(apiFunction, name),
-					testEntries(apiFunction),
-					testGetToString(proto, name),
-					testSpread(apiFunction),
-					testSetPrototypeNull(apiFunction),
-
-					// common tests
-					testPrototype(apiFunction),
-					testNew(apiFunction),
-					testClassExtends(apiFunction),
-					testName(apiFunction, name),
-					testToString(apiFunction, fnToStr, phantomDarkness),
-					testOwnProperty(apiFunction),
-					testOwnPropertyDescriptor(apiFunction),
-					testDescriptorKeys(apiFunction),
-					testOwnPropertyNames(apiFunction),
-					testOwnKeys(apiFunction),
-					testDescriptor(proto, name)
-				]
-			)
-			testResults.delete(false)
-			testResults.delete(undefined)
-			const lies = [...testResults]
-
-			// collect string conversion result
-			const result = (
-				phantomDarkness ? 
-				phantomDarkness.Function.prototype.toString.call(apiFunction) :
-				'' + apiFunction
-			)
-			
-			// fingerprint result if it does not match native code
-			let fingerprint = ''
-			if (!native(result, name, willHaveBlanks)) {
-				fingerprint = result
-			}
-			
-			return {
-				lie: lies.length || fingerprint ? { lies, fingerprint } : false 
-			}
-		}
-		catch (error) {
-			captureError(error)
-			return false
-		}
-	}
-
-	if (typeof api == 'object' && caniuse(() => obj[name]) != undefined) {
-			
-		try {
-			const proto = api
-			const apiFunction = Object.getOwnPropertyDescriptor(api, name).get
-			const testResults = new Set(
-				[
-					testIllegal(api, name),
-					testValue(obj, name),
-					
-					// common tests
-					testPrototype(apiFunction),
-					testNew(apiFunction),
-					testClassExtends(apiFunction),
-					testName(apiFunction, `get ${name}`),
-					testToString(apiFunction, fnToStr, phantomDarkness),
-					testOwnProperty(apiFunction),
-					testOwnPropertyDescriptor(apiFunction),
-					testDescriptorKeys(apiFunction),
-					testOwnPropertyNames(apiFunction),
-					testOwnKeys(apiFunction),
-					testDescriptor(proto, name)
-				]
-			)
-			testResults.delete(false)
-			testResults.delete(undefined)
-			const lies = [...testResults]
-			// collect string conversion result
-			const result = (
-				phantomDarkness ? 
-				phantomDarkness.Function.prototype.toString.call(apiFunction) :
-				'' + apiFunction
-			)
-
-			let objlookupGetter, apiProtoLookupGetter, result2, result3
-			if (obj) {
-				objlookupGetter = obj.__lookupGetter__(name)
-				apiProtoLookupGetter = api.__lookupGetter__(name)
-				const iframeResult = (
-					typeof objlookupGetter != 'function' ? undefined : 
-					attempt(() => phantomDarkness.Function.prototype.toString.call(objlookupGetter))
-				)
-				result2 = (
-					iframeResult ? 
-					iframeResult :
-					'' + objlookupGetter
-				)
-				result3 = '' + apiProtoLookupGetter
-			}
-
-			// fingerprint result if it does not match native code
-			let fingerprint = ''
-			if (!native(result, name, willHaveBlanks)) {
-				fingerprint = result
-			}
-			else if (obj && !native(result2, name, willHaveBlanks)) {
-				fingerprint = result2
-			}
-			else if (obj && !native(result3, name, willHaveBlanks)) {
-				fingerprint = result3 != 'undefined' ? result3 : ''
-			}
-
-			return {
-				lie: lies.length || fingerprint ? { lies, fingerprint } : false
-			}
-		}
-		catch (error) {
-			captureError(error)
-			return false
-		}
-	}
-
-	return false
-}
-
-// deep search lies
-const getMethods = (obj, ignore) => {
-	if (!obj) {
-		return []
-	}
-	return Object.getOwnPropertyNames(obj).filter(item => {
-		if (ignore[item]) {
-			// validate critical methods elsewhere
-			return false
-		}
-		try {
-			return typeof obj[item] === 'function'
-		}
-		catch (error) {
-			return false
-		}
-	})
-}
-const getValues = (obj, ignore) => {
-	if (!obj) {
-		return []
-	}
-	return Object.getOwnPropertyNames(Object.getPrototypeOf(obj)).filter(item => {
-		if (ignore[item]) {
-			// validate critical methods elsewhere
-			return false
-		}
-		try {
-			return (
-				typeof obj[item] == 'string' ||
-				typeof obj[item] == 'number' ||
-				!obj[item]
-			)
-		}
-		catch (error) {
-			return false
-		}
-	})
-}
-const intlConstructors = {
-	'Collator': !0,
-	'DateTimeFormat': !0,
-	'DisplayNames': !0,
-	'ListFormat': !0,
-	'NumberFormat': !0,
-	'PluralRules': !0,
-	'RelativeTimeFormat': !0
-}
-
-const createLieProps = () => {
-	const props = {}
-  	return {
-		getProps: () => props,
-		searchLies: (obj, ignoreProps, { logToConsole = false, proto = null } = {}) => {
-			if (!obj) {
-				return
-			}
-			let methods
-			const isMath = (obj+'' == '[object Math]')
-			const isTypeofObject = typeof obj == 'object'
-			if (isMath) {
-				methods = getMethods(obj, ignoreProps)
-			}
-			else if (isTypeofObject) {
-				methods = getValues(obj, ignoreProps)
-			}
-			else {
-				methods = getMethods(obj.prototype, ignoreProps)
-			}
-			return methods.forEach(name => {
-				let domManipLie
-				if (isMath) {
-					domManipLie = hasLiedAPI(obj[name], name, obj).lie
-					if (domManipLie) {
-						const apiName = `Math.${name}`
-						props[apiName] = true
-						documentLie(apiName, undefined, domManipLie)
-					}
-				}
-				else if (isTypeofObject) {
-					domManipLie = hasLiedAPI(proto, name, obj).lie
-					if (domManipLie) {
-						const objName = /\s(.+)\]/g.exec(proto)[1]
-						const apiName = `${objName}.${name}`
-						props[apiName] = true
-						documentLie(apiName, undefined, domManipLie)
-					}
-				}
-				else {
-					domManipLie = hasLiedAPI(obj.prototype[name], name, obj.prototype).lie
-					if (domManipLie) {
-						const objName = /\s(.+)\(\)/g.exec(obj)[1]
-						const apiName = `${intlConstructors[objName] ? 'Intl.' : ''}${objName}.${name}`
-						props[apiName] = true
-						documentLie(apiName, undefined, domManipLie)
-					}
-				}
-				if (logToConsole) {
-					console.log(name, domManipLie)
-				}	
-			})
-		}
-	}
-}
-
-const lieProps = createLieProps()
-const { searchLies } = lieProps
-
+// start program
 const start = performance.now()
-searchLies(Node, {
-	constructor: !0,
-	appendChild: !0 // opera fix
-})
-searchLies(Element, {
-	constructor: !0,
-	querySelector: !0, // opera fix
-	setAttribute: !0 // opera fix
-})
-searchLies(HTMLElement, {
-	constructor: !0,
-	requestFullscreen: !0 // in FF mobile, this does not appear native 
-})
-searchLies(HTMLCanvasElement, {
-	constructor: !0
-})
-searchLies(Navigator, {
-	constructor: !0
-})
-searchLies(navigator, {
-	constructor: !0
-}, { logToConsole: false, proto: Navigator.prototype })
-searchLies(Screen, {
-	constructor: !0
-})
-searchLies(screen, {
-	constructor: !0
-}, { logToConsole: false, proto: Screen.prototype })
-searchLies(Date, {
-	constructor: !0,
-	toGMTString: !0
-})
-searchLies(Intl.DateTimeFormat, {
-	constructor: !0
-})
-searchLies(Intl.RelativeTimeFormat, {
-	constructor: !0
-})
-searchLies(caniuse(() => AnalyserNode), {
-	constructor: !0
-})
-searchLies(caniuse(() => AudioBuffer), {
-	constructor: !0
-})
-searchLies(SVGTextContentElement, {
-	constructor: !0
-})
-searchLies(CanvasRenderingContext2D, {
-	constructor: !0
-})
-searchLies(caniuse(() => OffscreenCanvasRenderingContext2D), {
-	constructor: !0
-})
-searchLies(caniuse(() => WebGLRenderingContext), {
-	constructor: !0,
-	makeXRCompatible: !0, // ignore
-})
-searchLies(caniuse(() => WebGL2RenderingContext), {
-	constructor: !0,
-	makeXRCompatible: !0, // ignore
-})
-searchLies(Math, {
-	constructor: !0
-})
-searchLies(PluginArray, {
-	constructor: !0
-})
-searchLies(Plugin, {
-	constructor: !0
-})
-searchLies(Document, {
-	constructor: !0,
-	createElement: !0, // opera fix
-	createTextNode: !0, // opera fix
-	querySelector: !0 // opera fix
-})
+const {
+	lieDetector: lieProps,
+    lieList,
+    lieDetail,
+    lieCount,
+    propsSearched
+} = getPrototypeLies(phantomDarkness) // execute and destructure the list and detail
 
-console.log(`${counter} API properties analyzed in ${(performance.now() - start).toFixed(2)}ms (${Object.keys(lieProps.getProps()).length} corrupted)`)
+const perf = performance.now() - start
+
+console.log(`${propsSearched.length} API properties analyzed in ${(perf).toFixed(2)}ms (${lieList.length} corrupted)`)
 
 const getPluginLies = (plugins, mimeTypes) => {
 	const lies = [] // collect lie types
@@ -877,20 +770,12 @@ const getLies = imports => {
 	} = imports
 
 	const records = lieRecords.getRecords()
-	return new Promise(async resolve => {
-		let totalLies = 0
-		records.forEach(lie => {
-			if (!!lie.lieTypes.fingerprint) {
-				totalLies++
-			}
-			if (!!lie.lieTypes.lies) {
-				totalLies += lie.lieTypes.lies.length
-			}
-		})
-		const data = records
-			.map(lie => ({ name: lie.name, lieTypes: lie.lieTypes }))
-			.sort((a, b) => (a.name > b.name) ? 1 : -1)
-		return resolve({ data, totalLies })
+	return new Promise(resolve => {
+		const totalLies = Object.keys(records).reduce((acc, key) => {
+			acc += records[key].length
+			return acc
+		}, 0)
+		return resolve({ data: records, totalLies })
 	})
 }
 

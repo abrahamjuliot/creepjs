@@ -56,8 +56,8 @@ export const getMaths = imports => {
 				const matching = isNaN(res1) && isNaN(res2) ? true : res1 == res2
 				if (!matching) {
 					lied = true
-					const mathLie = { fingerprint: '', lies: [{ [`Expected ${res1} and got ${res2}`]: true }] }
-					documentLie(`Math.${prop}`, hashMini({res1, res2}), mathLie)
+					const mathLie = `expected x and got y`
+					documentLie(`Math.${prop}`, mathLie)
 				}
 				return
 			})

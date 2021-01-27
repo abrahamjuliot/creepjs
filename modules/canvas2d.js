@@ -32,8 +32,8 @@ export const getCanvas2d = imports => {
 				const result2 = document.createElement('canvas').toDataURL()
 				if (result1 != result2) {
 					lied = true
-					const iframeLie = { fingerprint: '', lies: [{ [`Expected ${result1} in nested iframe and got ${result2}`]: true }] }
-					documentLie(`HTMLCanvasElement.toDataURL`, undefined, iframeLie)
+					const iframeLie = `expected x in nested iframe and got y`
+					documentLie(`HTMLCanvasElement.toDataURL`, iframeLie)
 				}
 			}
 			const response = { dataURI, lied }

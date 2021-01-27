@@ -188,7 +188,6 @@ export const getClientRects = imports => {
 
 			// detect failed shift calculation
 			// inspired by https://arkenfox.github.io/TZP
-			let shiftLie = false
 			const rect4 = [...rectElems][3]
 			const { top: initialTop } = clientRects[3]
 			rect4.classList.add('shift-dom-rect')
@@ -196,11 +195,10 @@ export const getClientRects = imports => {
 			rect4.classList.remove('shift-dom-rect')
 			const { top: unshiftedTop } = toNativeObject(rect4.getClientRects()[0])
 			const diff = initialTop - shiftedTop
-			shiftLie = diff != (unshiftedTop - shiftedTop)
-			if (shiftLie) {
+			const unshiftLie = diff != (unshiftedTop - shiftedTop)
+			if (unshiftLie) {
 				lied = true
-				shiftLie = { fingerprint: '', lies: [{ ['failed shift calculation']: true }] }
-				documentLie('Element.getClientRects', hashMini(clientRects), shiftLie)
+				documentLie('Element.getClientRects', 'failed unshift calculation')
 			}
 
 			// detect failed math calculation lie
@@ -214,21 +212,19 @@ export const getClientRects = imports => {
 					bottom - y != height
 				) {
 					lied = true
-					mathLie = { fingerprint: '', lies: [{ ['failed math calculation']: true }] }
+					mathLie = true
 				}
 				return
 			})
 			if (mathLie) {
-				documentLie('Element.getClientRects', hashMini(clientRects), mathLie)
+				documentLie('Element.getClientRects', 'failed math calculation')
 			}
 			
 			// detect equal elements mismatch lie
-			let offsetLie = false
 			const { right: right1, left: left1 } = clientRects[10]
 			const { right: right2, left: left2 } = clientRects[11]
 			if (right1 != right2 || left1 != left2) {
-				offsetLie = { fingerprint: '', lies: [{ ['equal elements mismatch']: true }] }
-				documentLie('Element.getClientRects', hashMini(clientRects), offsetLie)
+				documentLie('Element.getClientRects', 'equal elements mismatch')
 				lied = true
 			}
 						

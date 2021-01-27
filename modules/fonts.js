@@ -20,7 +20,6 @@ export const getFonts = (imports, fonts) => {
 		require: {
 			captureError,
 			lieProps,
-			documentLie,
 			phantomDarkness,
 			logTestResult
 		}
