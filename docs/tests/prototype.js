@@ -316,7 +316,7 @@
 			return {
 				getProps: () => props,
 				getPropsSearched: () => propsSearched,
-				searchLies: (fn, { target = [] } = {}) => {
+				searchLies: (fn, { target = [], ignore = [] } = {}) => {
 					let obj
 					// check if api is blocked or not supported
 					try {
@@ -332,7 +332,12 @@
 					const interfaceObject = !!obj.prototype ? obj.prototype : obj
 					Object.getOwnPropertyNames(interfaceObject)
 						.forEach(name => {
-							if (name == 'constructor' || (target.length && !new Set(target).has(name))) {
+							const skip = (
+								name == 'constructor' ||
+								(target.length && !new Set(target).has(name)) ||
+								(ignore.length && new Set(ignore).has(name))
+							)
+							if (skip) {
 								return
 							}
 							const objectNameString = /\s(.+)\]/
@@ -379,226 +384,45 @@
 
 		// search for lies: remove target to search all properties
 		searchLies(() => AnalyserNode)
-		searchLies(() => AudioBuffer, {
-			target: [
-				'copyFromChannel',
-				'getChannelData'
-			]
-		})
-		searchLies(() => BiquadFilterNode, {
-			target: [
-				'getFrequencyResponse'
-			]
-		})
-		searchLies(() => CanvasRenderingContext2D, {
-			target: [
-				'getImageData',
-				'getLineDash',
-				'isPointInPath',
-				'isPointInStroke',
-				'measureText',
-				'quadraticCurveTo'
-			]
-		})
-		searchLies(() => Date, {
-			target: [
-				'getDate',
-				'getDay',
-				'getFullYear',
-				'getHours',
-				'getMinutes',
-				'getMonth',
-				'getTime',
-				'getTimezoneOffset',
-				'setDate',
-				'setFullYear',
-				'setHours',
-				'setMilliseconds',
-				'setMonth',
-				'setSeconds',
-				'setTime',
-				'toDateString',
-				'toJSON',
-				'toLocaleDateString',
-				'toLocaleString',
-				'toLocaleTimeString',
-				'toString',
-				'toTimeString',
-				'valueOf'
-			]
-		})
-		searchLies(() => Intl.DateTimeFormat, {
-			target: [
-				'format',
-				'formatRange',
-				'formatToParts',
-				'resolvedOptions'
-			]
-		})
+		searchLies(() => AudioBuffer)
+		searchLies(() => BiquadFilterNode)
+		searchLies(() => CanvasRenderingContext2D)
+		searchLies(() => Date)
+		searchLies(() => Intl.DateTimeFormat)
 		searchLies(() => Document, {
-			target: [
-				'createElement',
-				'createElementNS',
-				'getElementById',
-				'getElementsByClassName',
-				'getElementsByName',
-				'getElementsByTagName',
-				'getElementsByTagNameNS',
-				'referrer',
-				'write',
-				'writeln'
+			ignore: [
+				// Firefox false positive on getIllegalTypeErrorLie test
+				'onreadystatechange',
+				'onmouseenter',
+				'onmouseleave'
 			]
 		})
 		searchLies(() => DOMRect)
 		searchLies(() => DOMRectReadOnly)
-		searchLies(() => Element, {
-			target: [
-				'append',
-				'appendChild',
-				'getBoundingClientRect',
-				'getClientRects',
-				'insertAdjacentElement',
-				'insertAdjacentHTML',
-				'insertAdjacentText',
-				'insertBefore',
-				'prepend',
-				'replaceChild',
-				'replaceWith',
-				'setAttribute'
-			]
-		})
-		searchLies(() => Function, {
-			target: [
-				'toString',
-			]
-		})
+		searchLies(() => Element)
+		searchLies(() => Function)
 		searchLies(() => HTMLCanvasElement)
 		searchLies(() => HTMLElement, {
-			target: [
-				'clientHeight',
-				'clientWidth',
-				'offsetHeight',
-				'offsetWidth',
-				'scrollHeight',
-				'scrollWidth'
+			ignore: [
+				// Firefox false positive on getIllegalTypeErrorLie test
+				'onmouseenter',
+				'onmouseleave'
 			]
 		})
-		searchLies(() => HTMLIFrameElement, {
-			target: [
-				'contentDocument',
-				'contentWindow',
-			]
-		})
-		searchLies(() => IntersectionObserverEntry, {
-			target: [
-				'boundingClientRect',
-				'intersectionRect',
-				'rootBounds'
-			]
-		})
-		searchLies(() => Math, {
-			target: [
-				'acos',
-				'acosh',
-				'asinh',
-				'atan',
-				'atan2',
-				'atanh',
-				'cbrt',
-				'cos',
-				'cosh',
-				'exp',
-				'expm1',
-				'log',
-				'log10',
-				'log1p',
-				'sin',
-				'sinh',
-				'sqrt',
-				'tan',
-				'tanh'
-			]
-		})
-		searchLies(() => MediaDevices, {
-			target: [
-				'enumerateDevices',
-				'getDisplayMedia',
-				'getUserMedia'
-			]
-		})
-		searchLies(() => Navigator, {
-			target: [
-				'appCodeName',
-				'appName',
-				'appVersion',
-				'buildID',
-				'connection',
-				'deviceMemory',
-				'getBattery',
-				'getGamepads',
-				'getVRDisplays',
-				'hardwareConcurrency',
-				'language',
-				'languages',
-				'maxTouchPoints',
-				'mimeTypes',
-				'oscpu',
-				'platform',
-				'plugins',
-				'product',
-				'productSub',
-				'sendBeacon',
-				'serviceWorker',
-				'userAgent',
-				'vendor',
-				'vendorSub'
-			]
-		})
-		searchLies(() => Node, {
-			target: [
-				'appendChild',
-				'insertBefore',
-				'replaceChild'
-			]
-		})
-		searchLies(() => OffscreenCanvasRenderingContext2D, {
-			target: [
-				'getImageData',
-				'getLineDash',
-				'isPointInPath',
-				'isPointInStroke',
-				'measureText',
-				'quadraticCurveTo'
-			]
-		})
-		searchLies(() => Range, {
-			target: [
-				'getBoundingClientRect',
-				'getClientRects',
-			]
-		})
-		searchLies(() => Intl.RelativeTimeFormat, {
-			target: [
-				'resolvedOptions'
-			]
-		})
+		searchLies(() => HTMLIFrameElement)
+		searchLies(() => IntersectionObserverEntry)
+		searchLies(() => Math)
+		searchLies(() => MediaDevices)
+		searchLies(() => Navigator)
+		searchLies(() => Node)
+		searchLies(() => OffscreenCanvasRenderingContext2D)
+		searchLies(() => Range)
+		searchLies(() => Intl.RelativeTimeFormat)
 		searchLies(() => Screen)
 		searchLies(() => SVGRect)
 		searchLies(() => TextMetrics)
-		searchLies(() => WebGLRenderingContext, {
-			target: [
-				'bufferData',
-				'getParameter',
-				'readPixels'
-			]
-		})
-		searchLies(() => WebGL2RenderingContext, {
-			target: [
-				'bufferData',
-				'getParameter',
-				'readPixels'
-			]
-		})
+		searchLies(() => WebGLRenderingContext)
+		searchLies(() => WebGL2RenderingContext)
 
 		/* potential targets:
 			RTCPeerConnection
@@ -608,6 +432,7 @@
 			MimeTypeArray
 			Worker
 			History
+			SpeechSynthesis 
 		*/
 
 		// return lies list and detail 
