@@ -199,14 +199,23 @@
 			'function () { [native code] }'
 			`function () {\n    [native code]\n}`
 			*/
+
+			let iframeToString, iframeToStringToString
+			try {
+				iframeToString = iframeWindow.Function.prototype.toString.call(apiFunction)
+			} catch (e) { }
+			try {
+				iframeToStringToString = iframeWindow.Function.prototype.toString.call(apiFunction.toString)
+			} catch (e) { }
+
 			const apiFunctionToString = (
-				iframeWindow ?
-					iframeWindow.Function.prototype.toString.call(apiFunction) :
+				iframeToString ?
+					iframeToString :
 					apiFunction.toString()
 			)
 			const apiFunctionToStringToString = (
-				iframeWindow ?
-					iframeWindow.Function.prototype.toString.call(apiFunction.toString) :
+				iframeToStringToString ?
+					iframeToStringToString :
 					apiFunction.toString.toString()
 			)
 			const trust = name => ({
@@ -401,7 +410,7 @@
 		searchLies(() => DOMRectReadOnly)
 		searchLies(() => Element)
 		searchLies(() => Function, {
-			ignore : [
+			ignore: [
 				// Chrome false positive on getIllegalTypeErrorLie test
 				'caller',
 				'arguments'

@@ -223,16 +223,24 @@ const getPrototypeLies = iframeWindow => {
         'function () { [native code] }'
         `function () {\n    [native code]\n}`
         */
-        const apiFunctionToString = (
-            iframeWindow ?
-            iframeWindow.Function.prototype.toString.call(apiFunction) :
-            apiFunction.toString()
-        )
-        const apiFunctionToStringToString = (
-            iframeWindow ?
-            iframeWindow.Function.prototype.toString.call(apiFunction.toString) :
-            apiFunction.toString.toString()
-        )
+        let iframeToString, iframeToStringToString
+		try {
+			iframeToString = iframeWindow.Function.prototype.toString.call(apiFunction)
+		} catch (e) { }
+		try {
+			iframeToStringToString = iframeWindow.Function.prototype.toString.call(apiFunction.toString)
+		} catch (e) { }
+
+		const apiFunctionToString = (
+			iframeToString ?
+				iframeToString :
+				apiFunction.toString()
+		)
+		const apiFunctionToStringToString = (
+			iframeToStringToString ?
+				iframeToStringToString :
+				apiFunction.toString.toString()
+		)
         const trust = name => ({
             [`function ${name}() { [native code] }`]: true,
             [`function get ${name}() { [native code] }`]: true,
