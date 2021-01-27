@@ -776,7 +776,6 @@ const getPluginLies = (plugins, mimeTypes) => {
 	const lies = [] // collect lie types
 	const pluginsOwnPropertyNames = Object.getOwnPropertyNames(plugins).filter(name => isNaN(+name))
 	const mimeTypesOwnPropertyNames = Object.getOwnPropertyNames(mimeTypes).filter(name => isNaN(+name))
-	const pluginsArray = plugins
 
 	// cast to array
 	plugins = [...plugins]
@@ -845,7 +844,6 @@ const getPluginLies = (plugins, mimeTypes) => {
 		.map(plugin => Object.values(plugin))
 		.flat()
 	const pluginMimeTypesNames = pluginMimeTypes.map(mimetype => mimetype.type)
-	const trustedMimeTypesArray = [...trustedMimeTypes]
 	pluginMimeTypesNames.forEach(name => {
 		const validName = trustedMimeTypes.has(name)
 		if (!validName) {
