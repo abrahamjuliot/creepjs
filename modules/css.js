@@ -273,8 +273,7 @@ export const getCSSMedia = imports => {
 			}
 
 			// get screen query
-			let screenQuery
-			screenQuery = getScreenMatchMedia(win)
+			let screenQuery = getScreenMatchMedia(win)
 			if (!screenQuery.width || !screenQuery.height) {
 				screenQuery = getScreenMedia(body)
 			}
