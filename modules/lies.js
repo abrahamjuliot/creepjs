@@ -341,7 +341,8 @@ const getPrototypeLies = iframeWindow => {
             getProps: () => props,
             getPropsSearched: () => propsSearched,
             searchLies: (fn, {
-                target = []
+                target = [],
+				ignore = []
             } = {}) => {
                 let obj
                 // check if api is blocked or not supported
@@ -357,9 +358,14 @@ const getPrototypeLies = iframeWindow => {
                 const interfaceObject = !!obj.prototype ? obj.prototype : obj
                 Object.getOwnPropertyNames(interfaceObject)
                     .forEach(name => {
-                        if (name == 'constructor' || (target.length && !new Set(target).has(name))) {
-                            return
-                        }
+                        const skip = (
+							name == 'constructor' ||
+							(target.length && !new Set(target).has(name)) ||
+							(ignore.length && new Set(ignore).has(name))
+						)
+						if (skip) {
+							return
+						}
                         const objectNameString = /\s(.+)\]/
                         const apiName = `${
 							obj.name ? obj.name : objectNameString.test(obj) ? objectNameString.exec(obj)[1] : undefined
@@ -476,7 +482,13 @@ const getPrototypeLies = iframeWindow => {
             'referrer',
             'write',
             'writeln'
-        ]
+        ],
+		ignore: [
+			// Firefox returns undefined on getIllegalTypeErrorLie test
+			'onreadystatechange',
+			'onmouseenter',
+			'onmouseleave'
+		]
     })
     searchLies(() => DOMRect)
     searchLies(() => DOMRectReadOnly)
@@ -510,7 +522,12 @@ const getPrototypeLies = iframeWindow => {
             'offsetWidth',
             'scrollHeight',
             'scrollWidth'
-        ]
+        ],
+		ignore: [
+			// Firefox returns undefined on getIllegalTypeErrorLie test
+			'onmouseenter',
+			'onmouseleave'
+		]
     })
     searchLies(() => HTMLIFrameElement, {
         target: [
