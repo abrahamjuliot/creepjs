@@ -6,6 +6,42 @@ const getAspectRatio = (width, height) => {
 	return aspectRatio
 }
 
+const query = ({ body, type, rangeStart, rangeLen }) => {
+	body.innerHTML = `
+		<style>
+			${[...Array(rangeLen)].map((slot,i) => {
+				i += rangeStart
+				return `@media(device-${type}:${i}px){body{--device-${type}:${i};}}`
+			}).join('')}
+		</style>
+	`
+	const style = getComputedStyle(body)
+	return style.getPropertyValue(`--device-${type}`).trim()
+}
+
+const getScreenMedia = body => {
+	let i, widthMatched, heightMatched
+	for (i = 0; i < 10; i++) {
+		let resWidth, resHeight
+		if (!widthMatched) {
+			resWidth = query({ body, type: 'width', rangeStart: i*1000, rangeLen: 1000})
+			if (resWidth) {
+				widthMatched = resWidth
+			}
+		}
+		if (!heightMatched) {
+			resHeight = query({ body, type: 'height', rangeStart: i*1000, rangeLen: 1000})
+			if (resHeight) {
+				heightMatched = resHeight
+			}
+		}
+		if (widthMatched && heightMatched) {
+			break
+		}	
+	}
+	return { width: +widthMatched, height: +heightMatched }
+}
+
 const getScreenMatchMedia = win => {
 	let widthMatched, heightMatched
 	for (let i = 0; i < 10; i++) {
@@ -236,7 +272,12 @@ export const getCSSMedia = imports => {
 				orientation: style.getPropertyValue('--import-orientation').trim() || undefined
 			}
 
-			const screenQuery = getScreenMatchMedia(win)
+			// get screen query
+			let screenQuery
+			screenQuery = getScreenMatchMedia(win)
+			if (!screenQuery.width || !screenQuery.height) {
+				screenQuery = getScreenMedia(body)
+			}
 
 			logTestResult({ start, test: 'css media', passed: true })
 			return resolve({ importCSS, mediaCSS, matchMediaCSS, screenQuery })
