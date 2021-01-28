@@ -234,6 +234,28 @@ const getIframeContentWindow = async () => {
 	}
 }
 
+const getIframeContentWindowNested = async () => {
+	try {
+		const iframe = document.createElement('iframe')
+		iframe.setAttribute('id', getRandomValues())
+		iframe.setAttribute('style', ghost())
+		document.body.appendChild(iframe)
+		if (!iframe || !iframe.parentNode) {
+			return
+		}
+		const win = iframe.contentWindow
+		const iframe2 = win.document.createElement('iframe')
+		win.document.body.appendChild(iframe2)
+		const data = await getData(iframe2.contentWindow)
+		iframe.parentNode.removeChild(iframe)
+		return data
+	}
+	catch (error) {
+		console.error(error)
+		return
+	}
+}
+
 const getIframeWindow = async ({ kill }) => {
 	try {
 		const numberOfIframes = window.length
@@ -308,6 +330,7 @@ const start = performance.now()
 const [
 	windowFrame,
 	iframeContentWindow,
+	iframeContentWindowNested,
 	iframeWindow,
 	deadIframeWindow,
 	rejectedIframe,
@@ -316,6 +339,7 @@ const [
 ] = await Promise.all([
 	getData(window),
 	getIframeContentWindow(),
+	getIframeContentWindowNested(),
 	getIframeWindow({ kill: false }),
 	getIframeWindow({ kill: true }),
 	getRejectedIframe(),
@@ -328,6 +352,7 @@ const perf = performance.now() - start
 console.table({
 	windowFrame,
 	iframeContentWindow,
+	iframeContentWindowNested,
 	iframeWindow,
 	deadIframeWindow,
 	rejectedIframe,
@@ -338,6 +363,7 @@ console.table({
 const contexts = [
 	windowFrame,
 	iframeContentWindow,
+	iframeContentWindowNested,
 	iframeWindow,
 	deadIframeWindow,
 	rejectedIframe,
@@ -348,6 +374,7 @@ const contexts = [
 const contextLabels = [
 	'window',
 	'contentWindow',
+	'nested',
 	'window[n]',
 	'dead',
 	'rejected url',
