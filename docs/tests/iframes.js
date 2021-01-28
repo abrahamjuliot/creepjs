@@ -1,5 +1,4 @@
 (async () => {
-
 const hashMini = str => {
 	if (typeof str == 'number') {
 		return str
