@@ -18,6 +18,8 @@ Tested:
 - ungoogled-chromium (fingerprint deception)
 - Brave Browser (Standard/Strict)
 - uBlock Origin (aopr)
+- NoScript
+- DuckDuckGo Privacy Essentials
 - Privacy Badger
 - Privacy Possom
 - Random User-Agent
