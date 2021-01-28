@@ -86,14 +86,16 @@ Bots leak unusual behavior and can be denied service.
 ### Trash
 - unusual results
 - forgivable lies
+- failed calculations that may reasonably occur at random (loose fingerprint metrics)
 
 ### Lies
 - prototype tampering
+- mismatch in worker scope or iframe
 - failed math calculations
 
 ### Errors 
-- invalid results
-- blocked features
+- ungracefully blocked features that break the web
+- failed executions
 
 ### Loose Fingerprint
 - collects as much entropy as possible
