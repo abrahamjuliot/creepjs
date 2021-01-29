@@ -409,7 +409,7 @@ const isContentWindowValid = () => {
 const isContentWindowNotProxyLike = () => {
 	try {
 		const iframe = document.createElement('iframe')
-		/* // test
+		/*// test
 		const proxy = new Proxy(window, {
 			get(target, key) {
 				return Reflect.get(target, key)
@@ -420,6 +420,9 @@ const isContentWindowNotProxyLike = () => {
 				return proxy
 			}
 		})*/
+		if (iframe.contentWindow+'' != 'null') {
+			return false
+		}
 		Object.create(iframe.contentWindow).toString()
 		return false
 	}
@@ -610,7 +613,7 @@ patch(el, html`
 			${valid.passed ? valid.pass('passed') : (() => {
 				const invalid = []
 				!valid.contentWindowErrors && invalid.push(valid.fail('expect valid error message in HTMLIFrameElement.prototype.contentWindow'))
-				!valid.contentWindowProxy && invalid.push(valid.fail('expect contentWindow to not react like a Proxy'))
+				!valid.contentWindowProxy && invalid.push(valid.fail('expect contentWindow to be null on creation (not a window Proxy)'))
 				!valid.appendChildErrors && invalid.push(valid.fail('expect valid error message in Element.prototype.appendChild'))
 				!valid.uaReported && invalid.push(valid.fail('expect reported userAgent to match window'))
 				!valid.verReported && invalid.push(valid.fail('expect reported version to match window'))
