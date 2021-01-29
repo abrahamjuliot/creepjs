@@ -296,10 +296,20 @@
 				Object.create(apiFunction).toString()
 				return true
 			} catch (error) {
-				return error.constructor.name != 'TypeError' ? true : false
+				const stackLines = error.stack.split('\n')
+				// Stack must be valid
+				const validStack = (
+					error.constructor.name == 'TypeError' && stackLines.length > 1
+				)
+				// Chromium must throw error 'at Function.toString'
+				const isChrome = 'chrome' in window
+				if (validStack && isChrome && !stackLines[1].includes('at Function.toString')) {
+					return true
+				}
+				return !validStack
 			}
 		}
-		
+			
 		// API Function Test
 		const getLies = (apiFunction, proto, obj = null) => {
 			if (typeof apiFunction != 'function') {
