@@ -284,6 +284,16 @@
 			return hasInvalidKeys ? true : false
 		}
 
+		// calling toString() on an object created from the function should throw a TypeError
+		const getNewObjectToStringTypeErrorLie = apiFunction => {
+			try {
+				Object.create(apiFunction).toString()
+				return true
+			} catch (error) {
+				return error.constructor.name != 'TypeError' ? true : false
+			}
+		}
+
 		// API Function Test
 		const getLies = (apiFunction, proto, obj = null) => {
 			if (typeof apiFunction != 'function') {
@@ -308,7 +318,8 @@
 				[`k: "arguments", "caller", "prototype", "toString" should not exist as own property`]: getOwnPropertyLie(apiFunction),
 				[`l: descriptor keys should only contain "name" and "length"`]: getDescriptorKeysLie(apiFunction),
 				[`m: own property names should only contain "name" and "length"`]: getOwnPropertyNamesLie(apiFunction),
-				[`n: own keys names should only contain "name" and "length"`]: getOwnKeysLie(apiFunction)
+				[`n: own keys names should only contain "name" and "length"`]: getOwnKeysLie(apiFunction),
+				[`o: calling toString() on an object created from the function should throw a TypeError`]: getNewObjectToStringTypeErrorLie(apiFunction)
 			}
 			const lieTypes = Object.keys(lies).filter(key => !!lies[key])
 			return {

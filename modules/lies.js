@@ -307,6 +307,16 @@ const getPrototypeLies = iframeWindow => {
         return hasInvalidKeys ? true : false
     }
 
+	// calling toString() on an object created from the function should throw a TypeError
+	const getNewObjectToStringTypeErrorLie = apiFunction => {
+		try {
+			Object.create(apiFunction).toString()
+			return true
+		} catch (error) {
+			return error.constructor.name != 'TypeError' ? true : false
+		}
+	}
+
     // API Function Test
     const getLies = (apiFunction, proto, obj = null) => {
         if (typeof apiFunction != 'function') {
@@ -331,7 +341,8 @@ const getPrototypeLies = iframeWindow => {
             [`failed own property`]: getOwnPropertyLie(apiFunction),
             [`failed descriptor keys`]: getDescriptorKeysLie(apiFunction),
             [`failed own property names`]: getOwnPropertyNamesLie(apiFunction),
-            [`failed own keys names`]: getOwnKeysLie(apiFunction)
+            [`failed own keys names`]: getOwnKeysLie(apiFunction),
+			[`failed object toString error`]: getNewObjectToStringTypeErrorLie(apiFunction)
         }
         const lieTypes = Object.keys(lies).filter(key => !!lies[key])
         return {
