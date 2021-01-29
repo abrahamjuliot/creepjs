@@ -264,6 +264,12 @@
 		// descriptor keys should only contain "name" and "length"
 		const getDescriptorKeysLie = apiFunction => {
 			const descriptorKeys = Object.keys(Object.getOwnPropertyDescriptors(apiFunction))
+
+			/* // backdoor path
+			const createDescriptorKeys = Object.keys(
+				Object.getOwnPropertyDescriptors(Object.create(apiFunction).__proto__)
+			) */
+
 			const hasInvalidKeys = '' + descriptorKeys != 'length,name' && '' + descriptorKeys != 'name,length'
 			return hasInvalidKeys ? true : false
 		}
@@ -293,7 +299,7 @@
 				return error.constructor.name != 'TypeError' ? true : false
 			}
 		}
-
+		
 		// API Function Test
 		const getLies = (apiFunction, proto, obj = null) => {
 			if (typeof apiFunction != 'function') {
@@ -332,7 +338,7 @@
 		const createLieDetector = () => {
 			const isSupported = obj => typeof obj != 'undefined' && !!obj
 			const props = {} // lie list and detail
-			let propsSearched = [] // list of properties searched
+			const propsSearched = [] // list of properties searched
 			return {
 				getProps: () => props,
 				getPropsSearched: () => propsSearched,

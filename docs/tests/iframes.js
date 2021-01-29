@@ -406,6 +406,31 @@ const isContentWindowValid = () => {
 	}
 }
 
+const isContentWindowNotProxyLike = () => {
+	try {
+		const iframe = document.createElement('iframe')
+		/* // test
+		const proxy = new Proxy(window, {
+			get(target, key) {
+				return Reflect.get(target, key)
+			}
+		})
+		Object.defineProperty(iframe, 'contentWindow', {
+			get() {
+				return proxy
+			}
+		})*/
+		Object.create(iframe.contentWindow).toString()
+		return false
+	}
+	catch (error) {
+		if (error.constructor.name != 'TypeError') {
+			return false
+		}
+		return true
+	}
+}
+
 const appendChildHasValidNewError = () => {
 	try {
 		new Element.prototype.appendChild
@@ -440,6 +465,7 @@ const valid = {
 	fail: (str) => `<span class="fail">&#10006; ${str}</span>`,
 	passed: true,
 	contentWindowErrors: isContentWindowValid(),
+	contentWindowProxy: isContentWindowNotProxyLike(),
 	appendChildErrors: appendChildHasValidNewError() && appendChildHasValidClassExtendsError(),
 	uaReported: true,
 	verReported: true,
@@ -534,6 +560,7 @@ patch(el, html`
 							if (valid.passed) {
 								valid.passed = (
 									valid.contentWindowErrors &&
+									valid.contentWindowProxy &&
 									valid.appendChildErrors &&
 									valid.uaReported &&
 									valid.verReported &&
@@ -549,7 +576,7 @@ patch(el, html`
 							return `
 								<tr>
 									<td class="${
-										valid.contentWindowErrors && valid.appendChildErrors ? '' : 'lies'
+										valid.contentWindowErrors && valid.contentWindowProxy &&valid.appendChildErrors ? '' : 'lies'
 									}" data-label="${label.context}">${contextLabels[i]}</td>
 									<td class="${
 										!uaReported ? 'undefined' : !validUAReported ? 'lies' : ''
@@ -583,6 +610,7 @@ patch(el, html`
 			${valid.passed ? valid.pass('passed') : (() => {
 				const invalid = []
 				!valid.contentWindowErrors && invalid.push(valid.fail('expect valid error message in HTMLIFrameElement.prototype.contentWindow'))
+				!valid.contentWindowProxy && invalid.push(valid.fail('expect contentWindow to not react like a Proxy'))
 				!valid.appendChildErrors && invalid.push(valid.fail('expect valid error message in Element.prototype.appendChild'))
 				!valid.uaReported && invalid.push(valid.fail('expect reported userAgent to match window'))
 				!valid.verReported && invalid.push(valid.fail('expect reported version to match window'))
