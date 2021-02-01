@@ -62,6 +62,8 @@ A failing trust score is unique and can be used to connect fingerprints.
 ### Bot Detection
 Bots leak unusual behavior and can be denied service.
 - 10 loose fingerprints within 48 hours
+- Headless rating > 0
+- Stealth rating > 0
 
 ## Version Detection
 - a guess attempt is made to decrypt the browser vendor, version, renderer, engine, and platform
