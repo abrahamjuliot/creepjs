@@ -2542,7 +2542,13 @@
 				};
 
 				const { headless, stealth } = data;
-				const headlessTests = Object.keys(headless).map(key => headless[key]);
+				const headlessTests = Object.keys(headless).reduce((acc, key) => {
+					if (key != 'plugins' && key != 'mimeTypes') {
+						// ignore plugins and mimeTypes since these are absent in android
+						acc.push(headless[key]);
+					}
+					return acc
+				}, []);
 				const stealthTests = Object.keys(stealth).map(key => stealth[key]);
 				const headlessRating = (headlessTests.filter(test => test).length / headlessTests.length) * 100;
 				const stealthRating = (stealthTests.filter(test => test).length / stealthTests.length) * 100; 
