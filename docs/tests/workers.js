@@ -613,7 +613,7 @@ const serviceHash = hashMini(serviceWorker)
 const style = (controlHash, hash) => {
 	return `
 		style="
-			background: ${hash == 'undefined' ? '#eee' : hash != controlHash ? red : 'none'}
+			background: ${hash == 'undefined' ? '#bbbbbb1f' : hash != controlHash ? red : 'none'}
 		"
 	`
 }

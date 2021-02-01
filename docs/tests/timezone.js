@@ -767,6 +767,22 @@ patch(el, html`
 			color: #643c98fa;
     		background: #643c980f;
 		}
+		@media (prefers-color-scheme: dark) { 
+			.entropy, .warn {
+				color: #d28c50;
+				background: #ffe06624;
+			}
+			.group {
+				border: 1px solid #eeeeee54;
+			}
+			.location {
+				color: #baaacefa;
+				background: #643c984f;
+			}
+			.lighten {
+				color: #bbbbbb7a;
+			}
+		}
 	</style>
 	<div id="fingerprint-data">
 		<div class="visitor-info">

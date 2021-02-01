@@ -236,6 +236,11 @@ patch(rectEl, html`
 			padding: 10px 15px;
 			margin: 10px auto;
 		}
+		@media (prefers-color-scheme: dark) {
+			.group {
+				border: 1px solid #eeeeee54;
+			}
+		}
 		</style>
 		<div class="visitor-info">
 			<span class="aside-note">${perf.toFixed(2)}ms</span>

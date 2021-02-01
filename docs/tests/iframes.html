@@ -34,7 +34,7 @@
 			table-layout: fixed;
 		}
 		table tr {
-			border-bottom: 1px solid #eee;
+			border-bottom: 1px solid #eeeeee;
 		}
 		table tr:last-child {
 			border-bottom: none;
@@ -56,7 +56,7 @@
 			text-align: left;
 		}
 		.undefined {
-			background: #f9f9f9;
+			background: #bbbbbb1f;
 			color: #ccc;
 		}
 		@media (max-width: 650px) {
@@ -90,6 +90,11 @@
 				float: left;
 				font-weight: bold;
 				text-transform: uppercase;
+			}
+		}
+		@media (prefers-color-scheme: dark) {
+			table tr {
+				border-bottom: 1px solid #eeeeee87;
 			}
 		}
 	</style>

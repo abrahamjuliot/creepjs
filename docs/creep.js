@@ -175,6 +175,20 @@
 		)
 	};
 
+	const getPromiseRaceFulfilled = async ({
+	    promise,
+	    responseType,
+	    limit = 1000
+	}) => {
+	    const slowPromise = new Promise(resolve => setTimeout(resolve, limit));
+	    const response = await Promise.race([slowPromise, promise])
+	        .then(response => response instanceof responseType ? response : 'pending')
+	        .catch(error => 'rejected');
+	    return (
+	        response == 'rejected' || response == 'pending' ? undefined : response
+	    )
+	};
+
 	// ie11 fix for template.content
 	function templateContent(template) {
 		// template {display: none !important} /* add css if template is in dom */
@@ -210,7 +224,7 @@
 	const count = arr => arr && arr.constructor.name === 'Array' ? ''+(arr.length) : '0';
 
 	// modal component
-	const modal = (name, result) => {
+	const modal = (name, result, linkname = 'details') => {
 		if (!result.length) {
 			return ''
 		}
@@ -229,7 +243,7 @@
 		}
 		</style>
 		<input type="radio" id="toggle-open-${name}" class="modal-${name}" name="modal-${name}"/>
-		<label class="modal-open-btn" for="toggle-open-${name}" onclick="">details</label>
+		<label class="modal-open-btn" for="toggle-open-${name}" onclick="">${linkname}</label>
 		<label class="modal-container" for="toggle-close-${name}" onclick="">
 			<label class="modal-content" for="toggle-open-${name}" onclick="">
 				<input type="radio" id="toggle-close-${name}" name="modal-${name}"/>
@@ -458,11 +472,18 @@
 
 	// Collect lies detected
 	const createlieRecords = () => {
-		const records = [];
+		const records = { };
 	  	return {
 			getRecords: () => records,
-			documentLie: (name, lieResult, lieTypes) => {
-				return records.push({ name, lieTypes, hash: lieResult, lie: hashMini(lieTypes) })
+			documentLie: (name, lie) => {
+				const isArray = lie instanceof Array;
+				if (records[name]) {
+					if (isArray) {
+						return (records[name] = [...records[name], ...lie])
+					}
+					return records[name].push(lie)
+				}
+				return isArray ? (records[name] = lie) : (records[name] = [lie])
 			}
 		}
 	};
@@ -547,685 +568,644 @@
 
 	const { iframeWindow: dragonOfDeath } = getDragonIframe({ numberOfNests: 4, kill: true});
 
-	// detect and fingerprint Function API lies
-	const native = (result, str, willHaveBlanks = false) => {
-		const chrome = `function ${str}() { [native code] }`;
-		const chromeGet = `function get ${str}() { [native code] }`;
-		const firefox = `function ${str}() {\n    [native code]\n}`;
-		const chromeBlank = `function () { [native code] }`;
-		const firefoxBlank = `function () {\n    [native code]\n}`;
-		return (
-			result == chrome ||
-			result == chromeGet ||
-			result == firefox || (
-				willHaveBlanks && (result == chromeBlank || result == firefoxBlank)
-			)
-		)
-	};
+	const chromium = (
+		Math.acos(0.123) == 1.4474840516030247 &&
+		Math.acosh(Math.SQRT2) == 0.881373587019543 &&
+		Math.atan(2) == 1.1071487177940904 &&
+		Math.atanh(0.5) == 0.5493061443340548 &&
+		Math.cbrt(Math.PI) == 1.4645918875615231 &&
+		Math.cos(21*Math.LN2) == -0.4067775970251724 &&
+		Math.cosh(492*Math.LOG2E) == 9.199870313877772e+307 &&
+		Math.expm1(1) == 1.718281828459045 &&
+		Math.hypot(6*Math.PI, -100) == 101.76102278593319 &&
+		Math.log10(Math.PI) == 0.4971498726941338 &&
+		Math.sin(Math.PI) == 1.2246467991473532e-16 &&
+		Math.sinh(Math.PI) == 11.548739357257748 &&
+		Math.tan(10*Math.LOG2E) == -3.3537128705376014 &&
+		Math.tanh(0.123) == 0.12238344189440875 &&
+		Math.pow(Math.PI, -100) == 1.9275814160560204e-50
+	);
 
-	const testLookupGetter = (proto, name) => {
-		if (proto.__lookupGetter__(name)) {
-			return {
-				[`Expected __lookupGetter__ to return undefined`]: true
+	const getPrototypeLies = iframeWindow => {
+	    // Lie Tests
+	    // object constructor descriptor should return undefined properties
+	    const getUndefinedValueLie = (obj, name) => {
+	        const objName = obj.name;
+	        const objNameUncapitalized = window[objName.charAt(0).toLowerCase() + objName.slice(1)];
+	        const hasInvalidValue = !!objNameUncapitalized && (
+	            typeof Object.getOwnPropertyDescriptor(objNameUncapitalized, name) != 'undefined' ||
+	            typeof Reflect.getOwnPropertyDescriptor(objNameUncapitalized, name) != 'undefined'
+	        );
+	        return hasInvalidValue ? true : false
+	    };
+
+	    // accessing the property from the prototype should throw a TypeError
+	    const getIllegalTypeErrorLie = (obj, name) => {
+	        const proto = obj.prototype;
+	        try {
+	            proto[name];
+	            return true
+	        } catch (error) {
+	            return error.constructor.name != 'TypeError' ? true : false
+	        }
+	        const illegal = [
+	            '',
+	            'is',
+	            'call',
+	            'seal',
+	            'keys',
+	            'bind',
+	            'apply',
+	            'assign',
+	            'freeze',
+	            'values',
+	            'entries',
+	            'toString',
+	            'isFrozen',
+	            'isSealed',
+	            'constructor',
+	            'isExtensible',
+	            'getPrototypeOf',
+	            'preventExtensions',
+	            'propertyIsEnumerable',
+	            'getOwnPropertySymbols',
+	            'getOwnPropertyDescriptors'
+	        ];
+	        const lied = !!illegal.find(prop => {
+	            try {
+	                prop == '' ? Object(proto[name]) : Object[prop](proto[name]);
+	                return true
+	            } catch (error) {
+	                return error.constructor.name != 'TypeError' ? true : false
+	            }
+	        });
+	        return lied
+	    };
+
+	    // calling the interface prototype on the function should throw a TypeError
+	    const getCallInterfaceTypeErrorLie = (apiFunction, proto) => {
+	        try {
+	            new apiFunction();
+	            apiFunction.call(proto);
+	            return true
+	        } catch (error) {
+	            return error.constructor.name != 'TypeError' ? true : false
+	        }
+	    };
+
+	    // applying the interface prototype on the function should throw a TypeError
+	    const getApplyInterfaceTypeErrorLie = (apiFunction, proto) => {
+	        try {
+	            new apiFunction();
+	            apiFunction.apply(proto);
+	            return true
+	        } catch (error) {
+	            return error.constructor.name != 'TypeError' ? true : false
+	        }
+	    };
+
+	    // creating a new instance of the function should throw a TypeError
+	    const getNewInstanceTypeErrorLie = apiFunction => {
+	        try {
+	            new apiFunction();
+	            return true
+	        } catch (error) {
+	            return error.constructor.name != 'TypeError' ? true : false
+	        }
+	    };
+
+	    // extending the function on a fake class should throw a TypeError and message "not a constructor"
+	    const getClassExtendsTypeErrorLie = apiFunction => {
+	        try {
+	            class Fake extends apiFunction {}
+	            return true
+	        } catch (error) {
+	            // Native has TypeError and 'not a constructor' message in FF & Chrome
+	            return error.constructor.name != 'TypeError' ? true :
+	                !/not a constructor/i.test(error.message) ? true : false
+	        }
+	    };
+
+	    // setting prototype to null and converting to a string should throw a TypeError
+	    const getNullConversionTypeErrorLie = apiFunction => {
+	        const nativeProto = Object.getPrototypeOf(apiFunction);
+	        try {
+	            Object.setPrototypeOf(apiFunction, null) + '';
+	            return true
+	        } catch (error) {
+	            return error.constructor.name != 'TypeError' ? true : false
+	        } finally {
+	            // restore proto
+	            Object.setPrototypeOf(apiFunction, nativeProto);
+	        }
+	    };
+
+	    // toString() and toString.toString() should return a native string in all frames
+	    const getToStringLie = (apiFunction, name, iframeWindow) => {
+	        /*
+	        Accepted strings:
+	        'function name() { [native code] }'
+	        'function name() {\n    [native code]\n}'
+	        'function get name() { [native code] }'
+	        'function get name() {\n    [native code]\n}'
+	        'function () { [native code] }'
+	        `function () {\n    [native code]\n}`
+	        */
+	        let iframeToString, iframeToStringToString;
+			try {
+				iframeToString = iframeWindow.Function.prototype.toString.call(apiFunction);
+			} catch (e) { }
+			try {
+				iframeToStringToString = iframeWindow.Function.prototype.toString.call(apiFunction.toString);
+			} catch (e) { }
+
+			const apiFunctionToString = (
+				iframeToString ?
+					iframeToString :
+					apiFunction.toString()
+			);
+			const apiFunctionToStringToString = (
+				iframeToStringToString ?
+					iframeToStringToString :
+					apiFunction.toString.toString()
+			);
+	        const trust = name => ({
+	            [`function ${name}() { [native code] }`]: true,
+	            [`function get ${name}() { [native code] }`]: true,
+	            [`function () { [native code] }`]: true,
+	            [`function ${name}() {${'\n'}    [native code]${'\n'}}`]: true,
+	            [`function get ${name}() {${'\n'}    [native code]${'\n'}}`]: true,
+	            [`function () {${'\n'}    [native code]${'\n'}}`]: true
+	        });
+	        return (
+	            !trust(name)[apiFunctionToString] ||
+	            !trust('toString')[apiFunctionToStringToString]
+	        )
+	    };
+
+	    // "prototype" in function should not exist
+	    const getPrototypeInFunctionLie = apiFunction => 'prototype' in apiFunction ? true : false;
+
+	    // "arguments", "caller", "prototype", "toString"  should not exist in descriptor
+	    const getDescriptorLie = apiFunction => {
+	        const hasInvalidDescriptor = (
+	            !!Object.getOwnPropertyDescriptor(apiFunction, 'arguments') ||
+	            !!Reflect.getOwnPropertyDescriptor(apiFunction, 'arguments') ||
+	            !!Object.getOwnPropertyDescriptor(apiFunction, 'caller') ||
+	            !!Reflect.getOwnPropertyDescriptor(apiFunction, 'caller') ||
+	            !!Object.getOwnPropertyDescriptor(apiFunction, 'prototype') ||
+	            !!Reflect.getOwnPropertyDescriptor(apiFunction, 'prototype') ||
+	            !!Object.getOwnPropertyDescriptor(apiFunction, 'toString') ||
+	            !!Reflect.getOwnPropertyDescriptor(apiFunction, 'toString')
+	        );
+	        return hasInvalidDescriptor ? true : false
+	    };
+
+	    // "arguments", "caller", "prototype", "toString" should not exist as own property
+	    const getOwnPropertyLie = apiFunction => {
+	        const hasInvalidOwnProperty = (
+	            apiFunction.hasOwnProperty('arguments') ||
+	            apiFunction.hasOwnProperty('caller') ||
+	            apiFunction.hasOwnProperty('prototype') ||
+	            apiFunction.hasOwnProperty('toString')
+	        );
+	        return hasInvalidOwnProperty ? true : false
+	    };
+
+	    // descriptor keys should only contain "name" and "length"
+	    const getDescriptorKeysLie = apiFunction => {
+	        const descriptorKeys = Object.keys(Object.getOwnPropertyDescriptors(apiFunction));
+	        const hasInvalidKeys = '' + descriptorKeys != 'length,name' && '' + descriptorKeys != 'name,length';
+	        return hasInvalidKeys ? true : false
+	    };
+
+	    // own property names should only contain "name" and "length"
+	    const getOwnPropertyNamesLie = apiFunction => {
+	        const ownPropertyNames = Object.getOwnPropertyNames(apiFunction);
+	        const hasInvalidNames = (
+	            '' + ownPropertyNames != 'length,name' && '' + ownPropertyNames != 'name,length'
+	        );
+	        return hasInvalidNames ? true : false
+	    };
+
+	    // own keys names should only contain "name" and "length"
+	    const getOwnKeysLie = apiFunction => {
+	        const ownKeys = Reflect.ownKeys(apiFunction);
+	        const hasInvalidKeys = '' + ownKeys != 'length,name' && '' + ownKeys != 'name,length';
+	        return hasInvalidKeys ? true : false
+	    };
+
+		// calling toString() on an object created from the function should throw a TypeError
+		const getNewObjectToStringTypeErrorLie = apiFunction => {
+			try {
+				Object.create(apiFunction).toString();
+				return true
+			} catch (error) {
+				const stackLines = error.stack.split('\n');
+				const traceLines = stackLines.slice(1);
+				const objectApply = /at Object\.apply/;
+				const functionToString = /at Function\.toString/;
+				const validLines = !traceLines.find(line => objectApply.test(line));
+				// Stack must be valid
+				const validStack = (
+					error.constructor.name == 'TypeError' && stackLines.length > 1
+				);
+				// Chromium must throw error 'at Function.toString' and not 'at Object.apply'
+				const isChrome = 'chrome' in window || chromium;
+				if (validStack && isChrome && (!functionToString.test(stackLines[1]) || !validLines)) {
+					return true
+				}
+				return !validStack
 			}
-		}
-		return false
-	};
-
-	const testLength = (apiFunction, name) => {
-		const apiLen = {
-			createElement: [true, 1],
-			createElementNS: [true, 2],
-			toBlob: [true, 1],
-			getImageData: [true, 4],
-			measureText: [true, 1],
-			toDataURL: [true, 0],
-			getContext: [true, 1],
-			getParameter: [true, 1],
-			getExtension: [true, 1],
-			getSupportedExtensions: [true, 0],
-			getParameter: [true, 1],
-			getExtension: [true, 1],
-			getSupportedExtensions: [true, 0],
-			getClientRects: [true, 0],
-			getChannelData: [true, 1],
-			copyFromChannel: [true, 2],
-			getTimezoneOffset: [true, 0]
 		};
-		if (apiLen[name] && apiLen[name][0] && apiFunction.length != apiLen[name][1]) {
-			return {
-				[`Expected length ${apiLen[name][1]} and got ${apiFunction.length}`]: true
-			}
-		}
-		return false
+
+	    // API Function Test
+	    const getLies = (apiFunction, proto, obj = null) => {
+	        if (typeof apiFunction != 'function') {
+	            return {
+	                lied: false,
+	                lieTypes: []
+	            }
+	        }
+	        const name = apiFunction.name.replace(/get\s/, '');
+	        const lies = {
+	            // custom lie string names
+	            [`failed illegal error`]: obj ? getIllegalTypeErrorLie(obj, name) : false,
+	            [`failed undefined properties`]: obj ? getUndefinedValueLie(obj, name) : false,
+	            [`failed call interface error`]: getCallInterfaceTypeErrorLie(apiFunction, proto),
+	            [`failed apply interface error`]: getApplyInterfaceTypeErrorLie(apiFunction, proto),
+	            [`failed new instance error`]: getNewInstanceTypeErrorLie(apiFunction),
+	            [`failed class extends error`]: getClassExtendsTypeErrorLie(apiFunction),
+	            [`failed null conversion error`]: getNullConversionTypeErrorLie(apiFunction),
+	            [`failed toString`]: getToStringLie(apiFunction, name, iframeWindow),
+	            [`failed "prototype" in function`]: getPrototypeInFunctionLie(apiFunction),
+	            [`failed descriptor`]: getDescriptorLie(apiFunction),
+	            [`failed own property`]: getOwnPropertyLie(apiFunction),
+	            [`failed descriptor keys`]: getDescriptorKeysLie(apiFunction),
+	            [`failed own property names`]: getOwnPropertyNamesLie(apiFunction),
+	            [`failed own keys names`]: getOwnKeysLie(apiFunction),
+				[`failed object toString error`]: getNewObjectToStringTypeErrorLie(apiFunction)
+	        };
+	        const lieTypes = Object.keys(lies).filter(key => !!lies[key]);
+	        return {
+	            lied: lieTypes.length,
+	            lieTypes
+	        }
+	    };
+
+	    // Lie Detector
+	    const createLieDetector = () => {
+	        const isSupported = obj => typeof obj != 'undefined' && !!obj;
+	        const props = {}; // lie list and detail
+	        let propsSearched = []; // list of properties searched
+	        return {
+	            getProps: () => props,
+	            getPropsSearched: () => propsSearched,
+	            searchLies: (fn, {
+	                target = [],
+					ignore = []
+	            } = {}) => {
+	                let obj;
+	                // check if api is blocked or not supported
+	                try {
+	                    obj = fn();
+	                    if (!isSupported(obj)) {
+	                        return
+	                    }
+	                } catch (error) {
+	                    return
+	                }
+
+	                const interfaceObject = !!obj.prototype ? obj.prototype : obj;
+	                Object.getOwnPropertyNames(interfaceObject)
+	                    .forEach(name => {
+	                        const skip = (
+								name == 'constructor' ||
+								(target.length && !new Set(target).has(name)) ||
+								(ignore.length && new Set(ignore).has(name))
+							);
+							if (skip) {
+								return
+							}
+	                        const objectNameString = /\s(.+)\]/;
+	                        const apiName = `${
+							obj.name ? obj.name : objectNameString.test(obj) ? objectNameString.exec(obj)[1] : undefined
+						}.${name}`;
+	                        propsSearched.push(apiName);
+	                        try {
+	                            const proto = obj.prototype ? obj.prototype : obj;
+	                            let res; // response from getLies
+
+	                            // search if function
+	                            try {
+	                                const apiFunction = proto[name]; // may trigger TypeError
+	                                if (typeof apiFunction == 'function') {
+	                                    res = getLies(proto[name], proto);
+	                                    if (res.lied) {
+											documentLie(apiName, res.lieTypes);
+	                                        return (props[apiName] = res.lieTypes)
+	                                    }
+	                                    return
+	                                }
+	                            } catch (error) {}
+	                            // else search getter function
+	                            const getterFunction = Object.getOwnPropertyDescriptor(proto, name).get;
+	                            res = getLies(getterFunction, proto, obj); // send the obj for special tests
+	                            if (res.lied) {
+									documentLie(apiName, res.lieTypes);
+	                                return (props[apiName] = res.lieTypes)
+	                            }
+	                            return
+	                        } catch (error) {
+								const lie = `failed prototype test execution`;
+								documentLie(apiName, lie);
+	                            return (
+	                                props[apiName] = [lie]
+	                            )
+	                        }
+	                    });
+	            }
+	        }
+	    };
+
+	    const lieDetector = createLieDetector();
+	    const {
+	        searchLies
+	    } = lieDetector;
+
+	    // search for lies: remove target to search all properties
+	    searchLies(() => AnalyserNode);
+	    searchLies(() => AudioBuffer, {
+	        target: [
+	            'copyFromChannel',
+	            'getChannelData'
+	        ]
+	    });
+	    searchLies(() => BiquadFilterNode, {
+	        target: [
+	            'getFrequencyResponse'
+	        ]
+	    });
+	    searchLies(() => CanvasRenderingContext2D, {
+	        target: [
+	            'getImageData',
+	            'getLineDash',
+	            'isPointInPath',
+	            'isPointInStroke',
+	            'measureText',
+	            'quadraticCurveTo'
+	        ]
+	    });
+	    searchLies(() => Date, {
+	        target: [
+	            'getDate',
+	            'getDay',
+	            'getFullYear',
+	            'getHours',
+	            'getMinutes',
+	            'getMonth',
+	            'getTime',
+	            'getTimezoneOffset',
+	            'setDate',
+	            'setFullYear',
+	            'setHours',
+	            'setMilliseconds',
+	            'setMonth',
+	            'setSeconds',
+	            'setTime',
+	            'toDateString',
+	            'toJSON',
+	            'toLocaleDateString',
+	            'toLocaleString',
+	            'toLocaleTimeString',
+	            'toString',
+	            'toTimeString',
+	            'valueOf'
+	        ]
+	    });
+	    searchLies(() => Intl.DateTimeFormat, {
+	        target: [
+	            'format',
+	            'formatRange',
+	            'formatToParts',
+	            'resolvedOptions'
+	        ]
+	    });
+	    searchLies(() => Document, {
+	        target: [
+	            'createElement',
+	            'createElementNS',
+	            'getElementById',
+	            'getElementsByClassName',
+	            'getElementsByName',
+	            'getElementsByTagName',
+	            'getElementsByTagNameNS',
+	            'referrer',
+	            'write',
+	            'writeln'
+	        ],
+			ignore: [
+				// Firefox returns undefined on getIllegalTypeErrorLie test
+				'onreadystatechange',
+				'onmouseenter',
+				'onmouseleave'
+			]
+	    });
+	    searchLies(() => DOMRect);
+	    searchLies(() => DOMRectReadOnly);
+	    searchLies(() => Element, {
+	        target: [
+	            'append',
+	            'appendChild',
+	            'getBoundingClientRect',
+	            'getClientRects',
+	            'insertAdjacentElement',
+	            'insertAdjacentHTML',
+	            'insertAdjacentText',
+	            'insertBefore',
+	            'prepend',
+	            'replaceChild',
+	            'replaceWith',
+	            'setAttribute'
+	        ]
+	    });
+	    searchLies(() => Function, {
+	        target: [
+	            'toString',
+	        ],
+			ignore : [
+				'caller',
+				'arguments'
+			]
+	    });
+	    searchLies(() => HTMLCanvasElement);
+	    searchLies(() => HTMLElement, {
+	        target: [
+	            'clientHeight',
+	            'clientWidth',
+	            'offsetHeight',
+	            'offsetWidth',
+	            'scrollHeight',
+	            'scrollWidth'
+	        ],
+			ignore: [
+				// Firefox returns undefined on getIllegalTypeErrorLie test
+				'onmouseenter',
+				'onmouseleave'
+			]
+	    });
+	    searchLies(() => HTMLIFrameElement, {
+	        target: [
+	            'contentDocument',
+	            'contentWindow',
+	        ]
+	    });
+	    searchLies(() => IntersectionObserverEntry, {
+	        target: [
+	            'boundingClientRect',
+	            'intersectionRect',
+	            'rootBounds'
+	        ]
+	    });
+	    searchLies(() => Math, {
+	        target: [
+	            'acos',
+	            'acosh',
+	            'asinh',
+	            'atan',
+	            'atan2',
+	            'atanh',
+	            'cbrt',
+	            'cos',
+	            'cosh',
+	            'exp',
+	            'expm1',
+	            'log',
+	            'log10',
+	            'log1p',
+	            'sin',
+	            'sinh',
+	            'sqrt',
+	            'tan',
+	            'tanh'
+	        ]
+	    });
+	    searchLies(() => MediaDevices, {
+	        target: [
+	            'enumerateDevices',
+	            'getDisplayMedia',
+	            'getUserMedia'
+	        ]
+	    });
+	    searchLies(() => Navigator, {
+	        target: [
+	            'appCodeName',
+	            'appName',
+	            'appVersion',
+	            'buildID',
+	            'connection',
+	            'deviceMemory',
+	            'getBattery',
+	            'getGamepads',
+	            'getVRDisplays',
+	            'hardwareConcurrency',
+	            'language',
+	            'languages',
+	            'maxTouchPoints',
+	            'mimeTypes',
+	            'oscpu',
+	            'platform',
+	            'plugins',
+	            'product',
+	            'productSub',
+	            'sendBeacon',
+	            'serviceWorker',
+	            'userAgent',
+	            'vendor',
+	            'vendorSub'
+	        ]
+	    });
+	    searchLies(() => Node, {
+	        target: [
+	            'appendChild',
+	            'insertBefore',
+	            'replaceChild'
+	        ]
+	    });
+	    searchLies(() => OffscreenCanvasRenderingContext2D, {
+	        target: [
+	            'getImageData',
+	            'getLineDash',
+	            'isPointInPath',
+	            'isPointInStroke',
+	            'measureText',
+	            'quadraticCurveTo'
+	        ]
+	    });
+	    searchLies(() => Range, {
+	        target: [
+	            'getBoundingClientRect',
+	            'getClientRects',
+	        ]
+	    });
+	    searchLies(() => Intl.RelativeTimeFormat, {
+	        target: [
+	            'resolvedOptions'
+	        ]
+	    });
+	    searchLies(() => Screen);
+	    searchLies(() => SVGRect);
+	    searchLies(() => TextMetrics);
+	    searchLies(() => WebGLRenderingContext, {
+	        target: [
+	            'bufferData',
+	            'getParameter',
+	            'readPixels'
+	        ]
+	    });
+	    searchLies(() => WebGL2RenderingContext, {
+	        target: [
+	            'bufferData',
+	            'getParameter',
+	            'readPixels'
+	        ]
+	    });
+
+	    /* potential targets:
+	    	RTCPeerConnection
+	    	Plugin
+	    	PluginArray
+	    	MimeType
+	    	MimeTypeArray
+	    	Worker
+	    	History
+	    */
+
+	    // return lies list and detail 
+	    const props = lieDetector.getProps();
+	    const propsSearched = lieDetector.getPropsSearched();
+	    return {
+			lieDetector,
+	        lieList: Object.keys(props).sort(),
+	        lieDetail: props,
+	        lieCount: Object.keys(props).reduce((acc, key) => acc + props[key].length, 0),
+	        propsSearched
+	    }
 	};
 
-	const testEntries = apiFunction => {
-		const objectFail = {
-			entries: 0,
-			keys: 0,
-			values: 0
-		};
-		let totalFail = 0;
-		const objEntriesLen = Object.entries(apiFunction).length;
-		const objKeysLen = Object.keys(apiFunction).length;
-		const objKeysValues = Object.values(apiFunction).length;
-		if (!!objEntriesLen) {
-			totalFail++;
-			objectFail.entries = objEntriesLen;
-		}
-		if (!!objKeysLen) {
-			totalFail++;
-			objectFail.keys = objKeysLen;
-		}
-		if (!!objKeysValues) {
-			totalFail++;
-			objectFail.values = objKeysValues;
-		}
-		if (totalFail) {
-			return {
-				[`Expected entries, keys, values [0, 0, 0] and got [${objectFail.entries}, ${objectFail.keys}, ${objectFail.values}]`]: true
-			}
-		}
-		return false
-	};
-
-	const testPrototype = apiFunction => {
-		if ('prototype' in apiFunction) {
-			return {
-				[`Unexpected 'prototype' in function`]: true
-			}
-		} 
-		return false
-	};
-
-	const testNew = apiFunction => {
-		try {
-			new apiFunction;
-			return {
-				['Expected new to throw an Error']: true
-			}
-		}
-		catch (error) {
-			// Native throws TypeError
-			if (error.constructor.name != 'TypeError') {
-				return {
-					['Expected new to throw a TypeError']: true
-				}
-			}
-			return false
-		}
-	};
-
-	const testClassExtends = apiFunction => {
-		try { 
-			class Fake extends apiFunction { }
-			return {
-				['Expected class extends to throw an Error']: true
-			}
-		}
-		catch (error) {
-			// Native throws error
-			if (error.constructor.name != 'TypeError') {
-				return {
-					['Expected class extends to throw a TypeError']: true
-				}
-			}
-			else if (!/not a constructor/i.test(error.message)) {
-				return {
-					['Expected class extends to throw TypeError "not a constructor"']: true
-				}
-			}
-			return false
-		}
-	};
-
-	const testSetPrototypeNull = apiFunction => {
-		const nativeProto = Object.getPrototypeOf(apiFunction);
-		try { 
-			Object.setPrototypeOf(apiFunction, null)+'';
-			Object.setPrototypeOf(apiFunction, nativeProto);
-			return {
-				['Expected set prototype null to throw an error']: true
-			}
-		}
-		catch (error) {
-			// Native throws error
-			Object.setPrototypeOf(apiFunction, nativeProto);
-			return false
-		}
-	};
-
-	const testName = (apiFunction, name) => {
-		const { name: apiName } = apiFunction;
-		if (apiName != '' && apiName != name) {
-			return {
-				[`Expected name "${name}" and got "${apiName}"`]: true
-			}
-		}
-		return false
-	};
-
-	const testToString = (apiFunction, fnToStr, phantomDarkness) => {
-		const { toString: apiToString } = apiFunction;
-		if (apiToString+'' !== fnToStr || apiToString.toString+'' !== fnToStr) {
-			return {
-				[`Expected toString to match ${phantomDarkness ? 'iframe.' : ''}Function.toString`]: true
-			}
-		}
-		return false
-	};
-
-	const testOwnProperty = apiFunction => {
-		const notOwnProperties = [];
-		if (apiFunction.hasOwnProperty('arguments')) {
-			notOwnProperties.push('arguments');
-		}
-		if (apiFunction.hasOwnProperty('caller')) {
-			notOwnProperties.push('caller');
-		}
-		if (apiFunction.hasOwnProperty('prototype')) {
-			notOwnProperties.push('prototype');
-		}
-		if (apiFunction.hasOwnProperty('toString')) {
-			notOwnProperties.push('toString');
-		}
-		if (!!notOwnProperties.length) {
-			return {
-				[`Unexpected own property: ${notOwnProperties.join(', ')}`]: true
-			}
-		}
-		return false
-	};
-
-	const testOwnPropertyDescriptor = apiFunction => {
-		const notDescriptors = [];
-		if (!!Object.getOwnPropertyDescriptor(apiFunction, 'arguments') ||
-			!!Reflect.getOwnPropertyDescriptor(apiFunction, 'arguments')) {
-			notDescriptors.push('arguments');
-		}
-		if (!!Object.getOwnPropertyDescriptor(apiFunction, 'caller') ||
-			!!Reflect.getOwnPropertyDescriptor(apiFunction, 'caller')) {
-			notDescriptors.push('caller');
-		}
-		if (!!Object.getOwnPropertyDescriptor(apiFunction, 'prototype') ||
-			!!Reflect.getOwnPropertyDescriptor(apiFunction, 'prototype')) {
-			notDescriptors.push('prototype');
-		}
-		if (!!Object.getOwnPropertyDescriptor(apiFunction, 'toString') ||
-			!!Reflect.getOwnPropertyDescriptor(apiFunction, 'toString')) {
-			notDescriptors.push('toString');
-		}
-		if (!!notDescriptors.length) {
-			return {
-				[`Unexpected descriptor: ${notDescriptors.join(', ')}`]: true
-			}
-		}
-		return
-	};
-
-	const testDescriptorKeys = apiFunction => {
-		const descriptorKeys = Object.keys(Object.getOwnPropertyDescriptors(apiFunction));
-		if (''+descriptorKeys != 'length,name' && ''+descriptorKeys != 'name,length') {
-			return {
-				['Expected own property descriptor keys [length, name]']: true
-			}
-		}
-		return false
-	};
-
-	const testOwnPropertyNames = apiFunction => {
-		const ownPropertyNames = Object.getOwnPropertyNames(apiFunction);
-		if (''+ownPropertyNames != 'length,name' && ''+ownPropertyNames != 'name,length') {
-			return {
-				['Expected own property names [length, name]']: true
-			}
-		}
-		return false
-	};
-
-	const testOwnKeys = apiFunction => {
-		const ownKeys = Reflect.ownKeys(apiFunction);
-		if (''+ownKeys != 'length,name' && ''+ownKeys != 'name,length') {
-			return {
-				['Expected own keys [length, name]']: true
-			}
-		}
-		return false
-	};
-
-	const testSpread = apiFunction => {
-		const ownPropLen = Object.getOwnPropertyNames({...apiFunction}).length;
-		if (ownPropLen) {
-			return {
-				[`Expected 0 own property names in spread and got ${ownPropLen}`]: true
-			}
-		}
-		return false
-	};
-
-	const testDescriptor = (proto, name) => {
-		const descriptor = Object.getOwnPropertyDescriptor(proto, name);
-		const ownPropLen = Object.getOwnPropertyNames(descriptor).length;
-		const ownKeysLen = Reflect.ownKeys(descriptor).length;
-		const keysLen = Object.keys(descriptor).length;
-		if (ownPropLen != keysLen || ownPropLen != ownKeysLen) {
-			return {
-				['Expected keys and own property names to match in length']: true
-			}
-		}
-		return false
-	};
-
-	const testGetToString = (proto, name) => {
-		try {
-			Object.getOwnPropertyDescriptor(proto, name).get.toString();
-			Reflect.getOwnPropertyDescriptor(proto, name).get.toString();
-			return {
-				['Expected descriptor.get.toString() to throw an error']: true
-			}
-		}
-		catch (error) {
-			// Native throws error
-			return false
-		}
-	};
-
-	const testIllegal = (api, name) => {
-		let illegalCount = 0;
-		const illegal = [
-			'',
-			'is',
-			'call',
-			'seal',
-			'keys',
-			'bind',
-			'apply',
-			'assign',
-			'freeze',
-			'values',
-			'entries',
-			'toString',
-			'isFrozen',
-			'isSealed',
-			'constructor',
-			'isExtensible',
-			'getPrototypeOf',
-			'preventExtensions',
-			'propertyIsEnumerable',
-			'getOwnPropertySymbols',
-			'getOwnPropertyDescriptors'
-		];
-		try {
-			api[name];
-			illegalCount++;
-		}
-		catch (error) {
-			// Native throws error
-		}
-		illegal.forEach((prop, index) => {
-			try {
-				!prop ? Object(api[name]) : Object[prop](api[name]);
-				illegalCount++;
-			}
-			catch (error) {
-				// Native throws error
-			}
-		});
-		if (illegalCount) {
-			const total = illegal.length+1;
-			return {
-				[`Expected illegal invocation error: ${total-illegalCount} of ${total} passed`]: true
-			}
-		}
-		return false
-	};
-
-	const testValue = (obj, name) => {
-		try {
-			Object.getOwnPropertyDescriptor(obj, name).value;
-			Reflect.getOwnPropertyDescriptor(obj, name).value;
-			return {
-				['Expected descriptor.value to throw an error']: true
-			}
-		}
-		catch (error) {
-			// Native throws error
-			return false
-		}
-	};
-
-	let counter = 0;
-	const hasLiedAPI = (api, name, obj) => {
-		counter++;
-		const fnToStr = (
-			phantomDarkness ? 
-			phantomDarkness.Function.prototype.toString.call(Function.prototype.toString) : // aggressive test
-			Function.prototype.toString+''
-		);
-
-		let willHaveBlanks = false;
-		try {
-			willHaveBlanks = obj && (obj+'' == '[object Navigator]' || obj+'' == '[object Document]');
-		}
-		catch (error) { }
-
-		if (typeof api == 'function') {
-			const proto = obj;
-			const apiFunction = api;
-			try {
-				const testResults = new Set(
-					[
-						testLookupGetter(proto, name),
-						testLength(apiFunction, name),
-						testEntries(apiFunction),
-						testGetToString(proto, name),
-						testSpread(apiFunction),
-						testSetPrototypeNull(apiFunction),
-
-						// common tests
-						testPrototype(apiFunction),
-						testNew(apiFunction),
-						testClassExtends(apiFunction),
-						testName(apiFunction, name),
-						testToString(apiFunction, fnToStr, phantomDarkness),
-						testOwnProperty(apiFunction),
-						testOwnPropertyDescriptor(apiFunction),
-						testDescriptorKeys(apiFunction),
-						testOwnPropertyNames(apiFunction),
-						testOwnKeys(apiFunction),
-						testDescriptor(proto, name)
-					]
-				);
-				testResults.delete(false);
-				testResults.delete(undefined);
-				const lies = [...testResults];
-
-				// collect string conversion result
-				const result = (
-					phantomDarkness ? 
-					phantomDarkness.Function.prototype.toString.call(apiFunction) :
-					'' + apiFunction
-				);
-				
-				// fingerprint result if it does not match native code
-				let fingerprint = '';
-				if (!native(result, name, willHaveBlanks)) {
-					fingerprint = result;
-				}
-				
-				return {
-					lie: lies.length || fingerprint ? { lies, fingerprint } : false 
-				}
-			}
-			catch (error) {
-				captureError(error);
-				return false
-			}
-		}
-
-		if (typeof api == 'object' && caniuse(() => obj[name]) != undefined) {
-				
-			try {
-				const proto = api;
-				const apiFunction = Object.getOwnPropertyDescriptor(api, name).get;
-				const testResults = new Set(
-					[
-						testIllegal(api, name),
-						testValue(obj, name),
-						
-						// common tests
-						testPrototype(apiFunction),
-						testNew(apiFunction),
-						testClassExtends(apiFunction),
-						testName(apiFunction, `get ${name}`),
-						testToString(apiFunction, fnToStr, phantomDarkness),
-						testOwnProperty(apiFunction),
-						testOwnPropertyDescriptor(apiFunction),
-						testDescriptorKeys(apiFunction),
-						testOwnPropertyNames(apiFunction),
-						testOwnKeys(apiFunction),
-						testDescriptor(proto, name)
-					]
-				);
-				testResults.delete(false);
-				testResults.delete(undefined);
-				const lies = [...testResults];
-				// collect string conversion result
-				const result = (
-					phantomDarkness ? 
-					phantomDarkness.Function.prototype.toString.call(apiFunction) :
-					'' + apiFunction
-				);
-
-				let objlookupGetter, apiProtoLookupGetter, result2, result3;
-				if (obj) {
-					objlookupGetter = obj.__lookupGetter__(name);
-					apiProtoLookupGetter = api.__lookupGetter__(name);
-					const iframeResult = (
-						typeof objlookupGetter != 'function' ? undefined : 
-						attempt(() => phantomDarkness.Function.prototype.toString.call(objlookupGetter))
-					);
-					result2 = (
-						iframeResult ? 
-						iframeResult :
-						'' + objlookupGetter
-					);
-					result3 = '' + apiProtoLookupGetter;
-				}
-
-				// fingerprint result if it does not match native code
-				let fingerprint = '';
-				if (!native(result, name, willHaveBlanks)) {
-					fingerprint = result;
-				}
-				else if (obj && !native(result2, name, willHaveBlanks)) {
-					fingerprint = result2;
-				}
-				else if (obj && !native(result3, name, willHaveBlanks)) {
-					fingerprint = result3 != 'undefined' ? result3 : '';
-				}
-
-				return {
-					lie: lies.length || fingerprint ? { lies, fingerprint } : false
-				}
-			}
-			catch (error) {
-				captureError(error);
-				return false
-			}
-		}
-
-		return false
-	};
-
-	// deep search lies
-	const getMethods = (obj, ignore) => {
-		if (!obj) {
-			return []
-		}
-		return Object.getOwnPropertyNames(obj).filter(item => {
-			if (ignore[item]) {
-				// validate critical methods elsewhere
-				return false
-			}
-			try {
-				return typeof obj[item] === 'function'
-			}
-			catch (error) {
-				return false
-			}
-		})
-	};
-	const getValues = (obj, ignore) => {
-		if (!obj) {
-			return []
-		}
-		return Object.getOwnPropertyNames(Object.getPrototypeOf(obj)).filter(item => {
-			if (ignore[item]) {
-				// validate critical methods elsewhere
-				return false
-			}
-			try {
-				return (
-					typeof obj[item] == 'string' ||
-					typeof obj[item] == 'number' ||
-					!obj[item]
-				)
-			}
-			catch (error) {
-				return false
-			}
-		})
-	};
-	const intlConstructors = {
-		'Collator': !0,
-		'DateTimeFormat': !0,
-		'DisplayNames': !0,
-		'ListFormat': !0,
-		'NumberFormat': !0,
-		'PluralRules': !0,
-		'RelativeTimeFormat': !0
-	};
-
-	const createLieProps = () => {
-		const props = {};
-	  	return {
-			getProps: () => props,
-			searchLies: (obj, ignoreProps, { logToConsole = false, proto = null } = {}) => {
-				if (!obj) {
-					return
-				}
-				let methods;
-				const isMath = (obj+'' == '[object Math]');
-				const isTypeofObject = typeof obj == 'object';
-				if (isMath) {
-					methods = getMethods(obj, ignoreProps);
-				}
-				else if (isTypeofObject) {
-					methods = getValues(obj, ignoreProps);
-				}
-				else {
-					methods = getMethods(obj.prototype, ignoreProps);
-				}
-				return methods.forEach(name => {
-					let domManipLie;
-					if (isMath) {
-						domManipLie = hasLiedAPI(obj[name], name, obj).lie;
-						if (domManipLie) {
-							const apiName = `Math.${name}`;
-							props[apiName] = true;
-							documentLie(apiName, undefined, domManipLie);
-						}
-					}
-					else if (isTypeofObject) {
-						domManipLie = hasLiedAPI(proto, name, obj).lie;
-						if (domManipLie) {
-							const objName = /\s(.+)\]/g.exec(proto)[1];
-							const apiName = `${objName}.${name}`;
-							props[apiName] = true;
-							documentLie(apiName, undefined, domManipLie);
-						}
-					}
-					else {
-						domManipLie = hasLiedAPI(obj.prototype[name], name, obj.prototype).lie;
-						if (domManipLie) {
-							const objName = /\s(.+)\(\)/g.exec(obj)[1];
-							const apiName = `${intlConstructors[objName] ? 'Intl.' : ''}${objName}.${name}`;
-							props[apiName] = true;
-							documentLie(apiName, undefined, domManipLie);
-						}
-					}
-					if (logToConsole) {
-						console.log(name, domManipLie);
-					}	
-				})
-			}
-		}
-	};
-
-	const lieProps = createLieProps();
-	const { searchLies } = lieProps;
-
+	// start program
 	const start = performance.now();
-	searchLies(Node, {
-		constructor: !0,
-		appendChild: !0 // opera fix
-	});
-	searchLies(Element, {
-		constructor: !0,
-		querySelector: !0, // opera fix
-		setAttribute: !0 // opera fix
-	});
-	searchLies(HTMLElement, {
-		constructor: !0,
-		requestFullscreen: !0 // in FF mobile, this does not appear native 
-	});
-	searchLies(HTMLCanvasElement, {
-		constructor: !0
-	});
-	searchLies(Navigator, {
-		constructor: !0
-	});
-	searchLies(navigator, {
-		constructor: !0
-	}, { logToConsole: false, proto: Navigator.prototype });
-	searchLies(Screen, {
-		constructor: !0
-	});
-	searchLies(screen, {
-		constructor: !0
-	}, { logToConsole: false, proto: Screen.prototype });
-	searchLies(Date, {
-		constructor: !0,
-		toGMTString: !0
-	});
-	searchLies(Intl.DateTimeFormat, {
-		constructor: !0
-	});
-	searchLies(Intl.RelativeTimeFormat, {
-		constructor: !0
-	});
-	searchLies(caniuse(() => AnalyserNode), {
-		constructor: !0
-	});
-	searchLies(caniuse(() => AudioBuffer), {
-		constructor: !0
-	});
-	searchLies(SVGTextContentElement, {
-		constructor: !0
-	});
-	searchLies(CanvasRenderingContext2D, {
-		constructor: !0
-	});
-	searchLies(caniuse(() => OffscreenCanvasRenderingContext2D), {
-		constructor: !0
-	});
-	searchLies(caniuse(() => WebGLRenderingContext), {
-		constructor: !0,
-		makeXRCompatible: !0, // ignore
-	});
-	searchLies(caniuse(() => WebGL2RenderingContext), {
-		constructor: !0,
-		makeXRCompatible: !0, // ignore
-	});
-	searchLies(Math, {
-		constructor: !0
-	});
-	searchLies(PluginArray, {
-		constructor: !0
-	});
-	searchLies(Plugin, {
-		constructor: !0
-	});
-	searchLies(Document, {
-		constructor: !0,
-		createElement: !0, // opera fix
-		createTextNode: !0, // opera fix
-		querySelector: !0 // opera fix
-	});
+	const {
+		lieDetector: lieProps,
+	    lieList,
+	    lieDetail,
+	    lieCount,
+	    propsSearched
+	} = getPrototypeLies(phantomDarkness); // execute and destructure the list and detail
 
-	console.log(`${counter} API properties analyzed in ${(performance.now() - start).toFixed(2)}ms (${Object.keys(lieProps.getProps()).length} corrupted)`);
+	const perf = performance.now() - start;
+
+	console.log(`${propsSearched.length} API properties analyzed in ${(perf).toFixed(2)}ms (${lieList.length} corrupted)`);
 
 	const getPluginLies = (plugins, mimeTypes) => {
 		const lies = []; // collect lie types
@@ -1332,20 +1312,12 @@
 		} = imports;
 
 		const records = lieRecords.getRecords();
-		return new Promise(async resolve => {
-			let totalLies = 0;
-			records.forEach(lie => {
-				if (!!lie.lieTypes.fingerprint) {
-					totalLies++;
-				}
-				if (!!lie.lieTypes.lies) {
-					totalLies += lie.lieTypes.lies.length;
-				}
-			});
-			const data = records
-				.map(lie => ({ name: lie.name, lieTypes: lie.lieTypes }))
-				.sort((a, b) => (a.name > b.name) ? 1 : -1);
-			return resolve({ data, totalLies })
+		return new Promise(resolve => {
+			const totalLies = Object.keys(records).reduce((acc, key) => {
+				acc += records[key].length;
+				return acc
+			}, 0);
+			return resolve({ data: records, totalLies })
 		})
 	};
 
@@ -1400,19 +1372,16 @@
 				oscillator.start(0);
 				context.startRendering();
 
+				// detect lie
 				const dataArray = new Float32Array(analyser.frequencyBinCount);
 				analyser.getFloatFrequencyData(dataArray);
 				const floatFrequencyUniqueDataSize = new Set(dataArray).size;
 				if (floatFrequencyUniqueDataSize > 1) {
 					lied = true;
-					const floatFrequencyDataLie = { fingerprint: '', lies: [{ [`Expected 1 unique frequency and got ${floatFrequencyUniqueDataSize}`]: true }] };
-					documentLie(`AnalyserNode.getFloatFrequencyData`, floatFrequencyUniqueDataSize, floatFrequencyDataLie);
+					const floatFrequencyDataLie = `expected 1 unique frequency and got ${floatFrequencyUniqueDataSize}`;
+					documentLie(`AnalyserNode.getFloatFrequencyData`, floatFrequencyDataLie);
 				}
 
-				let copySample = [];
-				let binsSample = [];
-				let matching = false;
-				
 				const values = {
 					['AnalyserNode.channelCount']: attempt(() => analyser.channelCount),
 					['AnalyserNode.channelCountMode']: attempt(() => analyser.channelCountMode),
@@ -1448,48 +1417,43 @@
 					['OscillatorNode.frequency.minValue']: attempt(() => oscillator.frequency.minValue)
 				};
 				
-				return resolve(new Promise(resolve => {
-					context.oncomplete = async event => {
-						try {
-							const copy = new Float32Array(44100);
-							caniuse(() => event.renderedBuffer.copyFromChannel(copy, 0));
-							const bins = event.renderedBuffer.getChannelData(0);
-							
-							copySample = copy ? [...copy].slice(4500, 4600) : [sendToTrash('invalid Audio Sample Copy', null)];
-							binsSample = bins ? [...bins].slice(4500, 4600) : [sendToTrash('invalid Audio Sample', null)];
-							
-							const copyJSON = copy && JSON.stringify([...copy].slice(4500, 4600));
-							const binsJSON = bins && JSON.stringify([...bins].slice(4500, 4600));
-
-							matching = binsJSON === copyJSON;
-							// detect lie
-							const copyFromChannelSupported = ('copyFromChannel' in AudioBuffer.prototype);
-							if (copyFromChannelSupported && !matching) {
-								lied = true;
-								const audioSampleLie = { fingerprint: '', lies: [{ ['data and copy samples mismatch']: false }] };
-								documentLie('AudioBuffer', matching, audioSampleLie);
-							}
-
-							dynamicsCompressor.disconnect();
-							oscillator.disconnect();
-							const response = {
-								binsSample: binsSample,
-								copySample: copyFromChannelSupported ? copySample : [undefined],
-								values,
-								lied
-							};
-							logTestResult({ start, test: 'audio', passed: true });
-							return resolve({ ...response })
+				context.oncomplete = event => {
+					try {
+						const copy = new Float32Array(44100);
+						caniuse(() => event.renderedBuffer.copyFromChannel(copy, 0));
+						const bins = event.renderedBuffer.getChannelData(0);
+						
+						const copySample = copy ? [...copy].slice(4500, 4600) : [sendToTrash('invalid Audio Sample Copy', null)];
+						const binsSample = bins ? [...bins].slice(4500, 4600) : [sendToTrash('invalid Audio Sample', null)];
+						
+						// detect lie
+						const matching = ''+binsSample == ''+copySample;
+						const copyFromChannelSupported = ('copyFromChannel' in AudioBuffer.prototype);
+						if (copyFromChannelSupported && !matching) {
+							lied = true;
+							const audioSampleLie = 'getChannelData and copyFromChannel samples mismatch';
+							documentLie('AudioBuffer', audioSampleLie);
 						}
-						catch (error) {
-							captureError(error, 'AudioBuffer failed or blocked by client');
-							dynamicsCompressor.disconnect();
-							oscillator.disconnect();
-							logTestResult({ test: 'audio', passed: false });
-							return resolve()
-						}
-					};
-				}))
+
+						dynamicsCompressor.disconnect();
+						oscillator.disconnect();
+						
+						logTestResult({ start, test: 'audio', passed: true });
+						return resolve({
+							binsSample,
+							copySample: copyFromChannelSupported ? copySample : [undefined],
+							values,
+							lied
+						})
+					}
+					catch (error) {
+						captureError(error, 'AudioBuffer failed or blocked by client');
+						dynamicsCompressor.disconnect();
+						oscillator.disconnect();
+						logTestResult({ test: 'audio', passed: false });
+						return resolve()
+					}
+				};
 			}
 			catch (error) {
 				logTestResult({ test: 'audio', passed: false });
@@ -1533,8 +1497,8 @@
 					const result2 = document.createElement('canvas').toDataURL();
 					if (result1 != result2) {
 						lied = true;
-						const iframeLie = { fingerprint: '', lies: [{ [`Expected ${result1} in nested iframe and got ${result2}`]: true }] };
-						documentLie(`HTMLCanvasElement.toDataURL`, undefined, iframeLie);
+						const iframeLie = `expected x in nested iframe and got y`;
+						documentLie(`HTMLCanvasElement.toDataURL`, iframeLie);
 					}
 				}
 				const response = { dataURI, lied };
@@ -1561,6 +1525,7 @@
 				proxyBehavior,
 				lieProps,
 				phantomDarkness,
+				dragonOfDeath,
 				logTestResult
 			}
 		} = imports;
@@ -1581,8 +1546,8 @@
 					lieProps['WebGLRenderingContext.getSupportedExtensions'] ||
 					lieProps['WebGL2RenderingContext.getSupportedExtensions']
 				) || false;
-				if (phantomDarkness &&
-					phantomDarkness.document.createElement('canvas').toDataURL() != document.createElement('canvas').toDataURL()) {
+				if (dragonOfDeath &&
+					dragonOfDeath.document.createElement('canvas').toDataURL() != document.createElement('canvas').toDataURL()) {
 					lied = true;
 				}
 				// create canvas context
@@ -1815,8 +1780,8 @@
 				throw new TypeError('invalid argument string')
 			}
 			// get properties
-			const prototype = Object.getPrototypeOf(cssStyleDeclaration);
-			const prototypeProperties = Object.getOwnPropertyNames(prototype);
+			const proto = Object.getPrototypeOf(cssStyleDeclaration);
+			const prototypeProperties = Object.getOwnPropertyNames(proto);
 			const ownEnumerablePropertyNames = [];
 			const cssVar = /^--.*$/;
 			Object.keys(cssStyleDeclaration).forEach(key => {
@@ -1879,14 +1844,9 @@
 					...Object.keys(propertiesInPrototypeChain)
 				])
 			];
-			// checks
-			const moz = keys.filter(key => (/moz/i).test(key)).length;
-			const webkit = keys.filter(key => (/webkit/i).test(key)).length;
-			const apple = keys.filter(key => (/apple/i).test(key)).length;
-			const prototypeName = (''+prototype).match(/\[object (.+)\]/)[1];
+			const interfaceName = (''+proto).match(/\[object (.+)\]/)[1];
 		
-			const data = { keys: keys.sort(), moz, webkit, apple, prototypeName };
-			return { ...data }
+			return { keys, interfaceName }
 		}
 		catch (error) {
 			captureError(error);
@@ -1999,12 +1959,11 @@
 				const start = performance.now();
 				const computedStyle = computeStyle('getComputedStyle', { require: [ captureError ] });
 				const system = getSystemStyles(instanceId, { require: [ captureError, parentPhantom ] });
-				const data = {
-					['getComputedStyle']: computedStyle,
-					system
-				};
 				logTestResult({ start, test: 'computed style', passed: true });
-				return resolve({ ...data })
+				return resolve({
+					computedStyle,
+					system
+				})
 			}
 			catch (error) {
 				logTestResult({ test: 'computed style', passed: false });
@@ -2027,9 +1986,7 @@
 		<style>
 			${[...Array(rangeLen)].map((slot,i) => {
 				i += rangeStart;
-				return `
-					@media (device-${type}: ${i}px) {body {--device-${type}: ${i};}}
-				`
+				return `@media(device-${type}:${i}px){body{--device-${type}:${i};}}`
 			}).join('')}
 		</style>
 	`;
@@ -2099,6 +2056,8 @@
 		return { width: widthMatched, height: heightMatched }
 	};
 
+	const getCSSDataURI = x => `data:text/css,body {${x}}`;
+
 	const getCSSMedia = imports => {
 
 		const {
@@ -2118,170 +2077,184 @@
 				const { width, height } = win.screen;
 				
 				const deviceAspectRatio = getAspectRatio(width, height);
-				body.innerHTML = `
-			<style>
-			/* device */
-			@media (prefers-reduced-motion: no-preference) {body {--prefers-reduced-motion: no-preference;}}
-			@media (prefers-reduced-motion: reduce) {body {--prefers-reduced-motion: reduce;}}
 
-			@media (prefers-color-scheme: light) {body {--prefers-color-scheme: light;}}
-			@media (prefers-color-scheme: dark) {body {--prefers-color-scheme: dark;}}
-			
-			@media (monochrome) {body {--monochrome: monochrome;}}
-			@media (monochrome: 0) {body {--monochrome: non-monochrome;}}
-
-			@media (inverted-colors: inverted) {body {--inverted-colors: inverted;}}
-			@media (inverted-colors: none) {body {--inverted-colors: none;}}
-
-			@media (forced-colors: none) {body {--forced-colors: none;}}
-			@media (forced-colors: active) {body {--forced-colors: active;}}
-
-			/* input mechanisms */
-			@media (any-hover: hover) {body {--any-hover: hover;}}
-			@media (any-hover: none) {body {--any-hover: none;}}
-			
-			@media (hover: hover) {body {--hover: hover;}}
-			@media (hover: none) {body {--hover: none;}}
-			
-			@media (any-pointer: fine) {body {--any-pointer: fine;}}
-			@media (any-pointer: coarse) {body {--any-pointer: coarse;}}
-			@media (any-pointer: none) {body {--any-pointer: none;}}
-			
-			@media (pointer: fine) {body {--pointer: fine;}}
-			@media (pointer: coarse) {body {--pointer: coarse;}}
-			@media (pointer: none) {body {--pointer: none;}}
-
-			@media (device-aspect-ratio: ${deviceAspectRatio}) {body {--device-aspect-ratio: ${deviceAspectRatio};}}
-			@media (device-width: ${width}px) and (device-height: ${height}px) {body {--device-screen: ${width} x ${height};}}
-			@media (display-mode: fullscreen) {body {--display-mode: fullscreen;}}
-			@media (display-mode: standalone) {body {--display-mode: standalone;}}
-			@media (display-mode: minimal-ui) {body {--display-mode: minimal-ui;}}
-			@media (display-mode: browser) {body {--display-mode: browser;}}
-
-			@media (color-gamut: srgb) {body {--color-gamut: srgb;}}
-			@media (color-gamut: p3) {body {--color-gamut: p3;}}
-			@media (color-gamut: rec2020) {body {--color-gamut: rec2020;}}
-
-			@media (orientation: landscape) {body {--orientation: landscape;}}
-			@media (orientation: portrait) {body {--orientation: portrait;}}
-
-			</style>
-			`;
 				const matchMediaCSS = {
-					reducedMotion: (
-						win.matchMedia('(prefers-reduced-motion: no-preference)').matches ?
-						'no-preference' :
-						win.matchMedia('(prefers-reduced-motion: reduce)').matches ?
-						'reduce' : undefined
+					['prefers-reduced-motion']: (
+						win.matchMedia('(prefers-reduced-motion: no-preference)').matches ? 'no-preference' :
+						win.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'reduce' : undefined
 					),
-					colorScheme: (
-						win.matchMedia('(prefers-color-scheme: light)').matches ?
-						'light' :
-						win.matchMedia('(prefers-color-scheme: dark)').matches ?
-						'dark' : undefined
+					['prefers-color-scheme']: (
+						win.matchMedia('(prefers-color-scheme: light)').matches ? 'light' :
+						win.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : undefined
 					),
 					monochrome: (
-						win.matchMedia('(monochrome)').matches ?
-						'monochrome' :
-						win.matchMedia('(monochrome: 0)').matches ?
-						'non-monochrome' : undefined
+						win.matchMedia('(monochrome)').matches ? 'monochrome' :
+						win.matchMedia('(monochrome: 0)').matches ? 'non-monochrome' : undefined
 					),
-					invertedColors: (
-						win.matchMedia('(inverted-colors: inverted)').matches ?
-						'inverted' :
-						win.matchMedia('(inverted-colors: none)').matches ?
-						'none' : undefined
+					['inverted-colors']: (
+						win.matchMedia('(inverted-colors: inverted)').matches ? 'inverted' :
+						win.matchMedia('(inverted-colors: none)').matches ? 'none' : undefined
 					),
-					forcedColors: (
-						win.matchMedia('(forced-colors: none)').matches ?
-						'none' :
-						win.matchMedia('(forced-colors: active)').matches ?
-						'active' : undefined
+					['forced-colors']: (
+						win.matchMedia('(forced-colors: none)').matches ? 'none' :
+						win.matchMedia('(forced-colors: active)').matches ? 'active' : undefined
 					),
-					anyHover: (
-						win.matchMedia('(any-hover: hover)').matches ?
-						'hover' :
-						win.matchMedia('(any-hover: none)').matches ?
-						'none' : undefined
+					['any-hover']: (
+						win.matchMedia('(any-hover: hover)').matches ? 'hover' :
+						win.matchMedia('(any-hover: none)').matches ? 'none' : undefined
 					),
 					hover: (
-						win.matchMedia('(hover: hover)').matches ?
-						'hover' :
-						win.matchMedia('(hover: none)').matches ?
-						'none' : undefined
+						win.matchMedia('(hover: hover)').matches ? 'hover' :
+						win.matchMedia('(hover: none)').matches ? 'none' : undefined
 					),
-					anyPointer: (
-						win.matchMedia('(any-pointer: fine)').matches ?
-						'fine' :
-						win.matchMedia('(any-pointer: coarse)').matches ?
-						'coarse' :
-						win.matchMedia('(any-pointer: none)').matches ?
-						'none' : undefined
+					['any-pointer']: (
+						win.matchMedia('(any-pointer: fine)').matches ? 'fine' :
+						win.matchMedia('(any-pointer: coarse)').matches ? 'coarse' :
+						win.matchMedia('(any-pointer: none)').matches ? 'none' : undefined
 					),
 					pointer: (
-						win.matchMedia('(pointer: fine)').matches ?
-						'fine' :
-						win.matchMedia('(pointer: coarse)').matches ?
-						'coarse' :
-						win.matchMedia('(pointer: none)').matches ?
-						'none' : undefined
+						win.matchMedia('(pointer: fine)').matches ? 'fine' :
+						win.matchMedia('(pointer: coarse)').matches ? 'coarse' :
+						win.matchMedia('(pointer: none)').matches ? 'none' : undefined
 					),
-					deviceAspectRatio: (
-						win.matchMedia(`(device-aspect-ratio: ${deviceAspectRatio})`).matches ?
-						deviceAspectRatio : undefined
+					['device-aspect-ratio']: (
+						win.matchMedia(`(device-aspect-ratio: ${deviceAspectRatio})`).matches ? deviceAspectRatio : undefined
 					),
-					deviceScreen: (
-						win.matchMedia(`(device-width: ${width}px) and (device-height: ${height}px)`).matches ?
-						`${width} x ${height}` : undefined
+					['device-screen']: (
+						win.matchMedia(`(device-width: ${width}px) and (device-height: ${height}px)`).matches ? `${width} x ${height}` : undefined
 					),
-					displayMode: (
-						win.matchMedia('(display-mode: fullscreen)').matches ?
-						'fullscreen' :
-						win.matchMedia('(display-mode: standalone)').matches ?
-						'standalone' :
-						win.matchMedia('(display-mode: minimal-ui)').matches ?
-						'minimal-ui' :
-						win.matchMedia('(display-mode: browser)').matches ?
-						'browser' : undefined
+					['display-mode']: (
+						win.matchMedia('(display-mode: fullscreen)').matches ? 'fullscreen' :
+						win.matchMedia('(display-mode: standalone)').matches ? 'standalone' :
+						win.matchMedia('(display-mode: minimal-ui)').matches ? 'minimal-ui' :
+						win.matchMedia('(display-mode: browser)').matches ? 'browser' : undefined
 					),
-					colorGamut: (
-						win.matchMedia('(color-gamut: srgb)').matches ?
-						'srgb' :
-						win.matchMedia('(color-gamut: p3)').matches ?
-						'p3' :
-						win.matchMedia('(color-gamut: rec2020)').matches ?
-						'rec2020' : undefined
+					['color-gamut']: (
+						win.matchMedia('(color-gamut: srgb)').matches ? 'srgb' :
+						win.matchMedia('(color-gamut: p3)').matches ? 'p3' :
+						win.matchMedia('(color-gamut: rec2020)').matches ? 'rec2020' : undefined
 					),
 					orientation: (
-						win.matchMedia('(orientation: landscape)').matches ?
-						'landscape' :
-						win.matchMedia('(orientation: portrait)').matches ?
-						'portrait' : undefined
-					),
-					screenQuery: getScreenMatchMedia(win)
+						win.matchMedia('(orientation: landscape)').matches ? 'landscape' :
+						win.matchMedia('(orientation: portrait)').matches ? 'portrait' : undefined
+					)
 				};
 
-				const style = getComputedStyle(body);
+				body.innerHTML = `
+			<style>
+			@media (prefers-reduced-motion: no-preference) {body {--prefers-reduced-motion: no-preference}}
+			@media (prefers-reduced-motion: reduce) {body {--prefers-reduced-motion: reduce}}
+			@media (prefers-color-scheme: light) {body {--prefers-color-scheme: light}}
+			@media (prefers-color-scheme: dark) {body {--prefers-color-scheme: dark}}
+			@media (monochrome) {body {--monochrome: monochrome}}
+			@media (monochrome: 0) {body {--monochrome: non-monochrome}}
+			@media (inverted-colors: inverted) {body {--inverted-colors: inverted}}
+			@media (inverted-colors: none) {body {--inverted-colors: none}}
+			@media (forced-colors: none) {body {--forced-colors: none}}
+			@media (forced-colors: active) {body {--forced-colors: active}}
+			@media (any-hover: hover) {body {--any-hover: hover}}
+			@media (any-hover: none) {body {--any-hover: none}}
+			@media (hover: hover) {body {--hover: hover}}
+			@media (hover: none) {body {--hover: none}}
+			@media (any-pointer: fine) {body {--any-pointer: fine}}
+			@media (any-pointer: coarse) {body {--any-pointer: coarse}}
+			@media (any-pointer: none) {body {--any-pointer: none}}
+			@media (pointer: fine) {body {--pointer: fine}}
+			@media (pointer: coarse) {body {--pointer: coarse}}
+			@media (pointer: none) {body {--pointer: none}}
+			@media (device-aspect-ratio: ${deviceAspectRatio}) {body {--device-aspect-ratio: ${deviceAspectRatio}}}
+			@media (device-width: ${width}px) and (device-height: ${height}px) {body {--device-screen: ${width} x ${height}}}
+			@media (display-mode: fullscreen) {body {--display-mode: fullscreen}}
+			@media (display-mode: standalone) {body {--display-mode: standalone}}
+			@media (display-mode: minimal-ui) {body {--display-mode: minimal-ui}}
+			@media (display-mode: browser) {body {--display-mode: browser}}
+			@media (color-gamut: srgb) {body {--color-gamut: srgb}}
+			@media (color-gamut: p3) {body {--color-gamut: p3}}
+			@media (color-gamut: rec2020) {body {--color-gamut: rec2020}}
+			@media (orientation: landscape) {body {--orientation: landscape}}
+			@media (orientation: portrait) {body {--orientation: portrait}}
+			</style>
+			`;
+
+				let style = getComputedStyle(body);
 				const mediaCSS = {
-					reducedMotion: style.getPropertyValue('--prefers-reduced-motion').trim() || undefined,
-					colorScheme: style.getPropertyValue('--prefers-color-scheme').trim() || undefined,
+					['prefers-reduced-motion']: style.getPropertyValue('--prefers-reduced-motion').trim() || undefined,
+					['prefers-color-scheme']: style.getPropertyValue('--prefers-color-scheme').trim() || undefined,
 					monochrome: style.getPropertyValue('--monochrome').trim() || undefined,
-					invertedColors: style.getPropertyValue('--inverted-colors').trim() || undefined,
-					forcedColors: style.getPropertyValue('--forced-colors').trim() || undefined,
-					anyHover: style.getPropertyValue('--any-hover').trim() || undefined,
+					['inverted-colors']: style.getPropertyValue('--inverted-colors').trim() || undefined,
+					['forced-colors']: style.getPropertyValue('--forced-colors').trim() || undefined,
+					['any-hover']: style.getPropertyValue('--any-hover').trim() || undefined,
 					hover: style.getPropertyValue('--hover').trim() || undefined,
-					anyPointer: style.getPropertyValue('--any-pointer').trim() || undefined,
+					['any-pointer']: style.getPropertyValue('--any-pointer').trim() || undefined,
 					pointer: style.getPropertyValue('--pointer').trim() || undefined,
-					deviceAspectRatio: style.getPropertyValue('--device-aspect-ratio').trim() || undefined,
-					deviceScreen: style.getPropertyValue('--device-screen').trim() || undefined,
-					displayMode: style.getPropertyValue('--display-mode').trim() || undefined,
-					colorGamut: style.getPropertyValue('--color-gamut').trim() || undefined,
+					['device-aspect-ratio']: style.getPropertyValue('--device-aspect-ratio').trim() || undefined,
+					['device-screen']: style.getPropertyValue('--device-screen').trim() || undefined,
+					['display-mode']: style.getPropertyValue('--display-mode').trim() || undefined,
+					['color-gamut']: style.getPropertyValue('--color-gamut').trim() || undefined,
 					orientation: style.getPropertyValue('--orientation').trim() || undefined,
-					screenQuery: getScreenMedia(body)
 				};
+
+				body.innerHTML = `
+			<style>
+			@import '${getCSSDataURI('--import-prefers-reduced-motion: no-preference')}' (prefers-reduced-motion: no-preference);
+			@import '${getCSSDataURI('--import-prefers-reduced-motion: reduce')}' (prefers-reduced-motion: reduce);
+			@import '${getCSSDataURI('--import-prefers-color-scheme: light')}' (prefers-color-scheme: light);
+			@import '${getCSSDataURI('--import-prefers-color-scheme: dark')}' (prefers-color-scheme: dark);
+			@import '${getCSSDataURI('--import-monochrome: monochrome')}' (monochrome);
+			@import '${getCSSDataURI('--import-monochrome: non-monochrome')}' (monochrome: 0);
+			@import '${getCSSDataURI('--import-inverted-colors: inverted')}' (inverted-colors: inverted);
+			@import '${getCSSDataURI('--import-inverted-colors: none')}' (inverted-colors: 0);
+			@import '${getCSSDataURI('--import-forced-colors: none')}' (forced-colors: none);
+			@import '${getCSSDataURI('--import-forced-colors: active')}' (forced-colors: active);
+			@import '${getCSSDataURI('--import-any-hover: hover')}' (any-hover: hover);
+			@import '${getCSSDataURI('--import-any-hover: none')}' (any-hover: none);
+			@import '${getCSSDataURI('--import-hover: hover')}' (hover: hover);
+			@import '${getCSSDataURI('--import-hover: none')}' (hover: none);
+			@import '${getCSSDataURI('--import-any-pointer: fine')}' (any-pointer: fine);
+			@import '${getCSSDataURI('--import-any-pointer: coarse')}' (any-pointer: coarse);
+			@import '${getCSSDataURI('--import-any-pointer: none')}' (any-pointer: none);
+			@import '${getCSSDataURI('--import-pointer: fine')}' (pointer: fine);
+			@import '${getCSSDataURI('--import-pointer: coarse')}' (pointer: coarse);
+			@import '${getCSSDataURI('--import-pointer: none')}' (pointer: none);
+			@import '${getCSSDataURI(`--import-device-aspect-ratio: ${deviceAspectRatio}`)}' (device-aspect-ratio: ${deviceAspectRatio});
+			@import '${getCSSDataURI(`--import-device-screen: ${width} x ${height}`)}' (device-width: ${width}px) and (device-height: ${height}px);
+			@import '${getCSSDataURI('--import-display-mode: fullscreen')}' (display-mode: fullscreen);
+			@import '${getCSSDataURI('--import-display-mode: standalone')}' (display-mode: standalone);
+			@import '${getCSSDataURI('--import-display-mode: minimal-ui')}' (display-mode: minimal-ui);
+			@import '${getCSSDataURI('--import-display-mode: browser')}' (display-mode: browser);
+			@import '${getCSSDataURI('--import-color-gamut: srgb')}' (color-gamut: srgb);
+			@import '${getCSSDataURI('--import-color-gamut: p3')}' (color-gamut: p3);
+			@import '${getCSSDataURI('--import-color-gamut: rec2020')}' (color-gamut: rec2020);
+			@import '${getCSSDataURI('--import-orientation: landscape')}' (orientation: landscape);
+			@import '${getCSSDataURI('--import-orientation: portrait')}' (orientation: portrait);
+			</style>
+			`;
+				style = getComputedStyle(body);
+				const importCSS = {
+					['prefers-reduced-motion']: style.getPropertyValue('--import-prefers-reduced-motion').trim() || undefined,
+					['prefers-color-scheme']: style.getPropertyValue('--import-prefers-color-scheme').trim() || undefined,
+					monochrome: style.getPropertyValue('--import-monochrome').trim() || undefined,
+					['inverted-colors']: style.getPropertyValue('--import-inverted-colors').trim() || undefined,
+					['forced-colors']: style.getPropertyValue('--import-forced-colors').trim() || undefined,
+					['any-hover']: style.getPropertyValue('--import-any-hover').trim() || undefined,
+					hover: style.getPropertyValue('--import-hover').trim() || undefined,
+					['any-pointer']: style.getPropertyValue('--import-any-pointer').trim() || undefined,
+					pointer: style.getPropertyValue('--import-pointer').trim() || undefined,
+					['device-aspect-ratio']: style.getPropertyValue('--import-device-aspect-ratio').trim() || undefined,
+					['device-screen']: style.getPropertyValue('--import-device-screen').trim() || undefined,
+					['display-mode']: style.getPropertyValue('--import-display-mode').trim() || undefined,
+					['color-gamut']: style.getPropertyValue('--import-color-gamut').trim() || undefined,
+					orientation: style.getPropertyValue('--import-orientation').trim() || undefined
+				};
+
+				// get screen query
+				let screenQuery = getScreenMatchMedia(win);
+				if (!screenQuery.width || !screenQuery.height) {
+					screenQuery = getScreenMedia(body);
+				}
 
 				logTestResult({ start, test: 'css media', passed: true });
-				return resolve({ mediaCSS, matchMediaCSS })
+				return resolve({ importCSS, mediaCSS, matchMediaCSS, screenQuery })
 			}
 			catch (error) {
 				logTestResult({ test: 'css media', passed: false });
@@ -2391,7 +2364,6 @@
 			require: {
 				captureError,
 				lieProps,
-				documentLie,
 				phantomDarkness,
 				logTestResult
 			}
@@ -2460,6 +2432,126 @@
 	};
 
 	const fontList = ["Andale Mono", "Arial", "Arial Black", "Arial Hebrew", "Arial MT", "Arial Narrow", "Arial Rounded MT Bold", "Arial Unicode MS", "Bitstream Vera Sans Mono", "Book Antiqua", "Bookman Old Style", "Calibri", "Cambria", "Cambria Math", "Century", "Century Gothic", "Century Schoolbook", "Comic Sans", "Comic Sans MS", "Consolas", "Courier", "Courier New", "Geneva", "Georgia", "Helvetica", "Helvetica Neue", "Impact", "Lucida Bright", "Lucida Calligraphy", "Lucida Console", "Lucida Fax", "LUCIDA GRANDE", "Lucida Handwriting", "Lucida Sans", "Lucida Sans Typewriter", "Lucida Sans Unicode", "Microsoft Sans Serif", "Monaco", "Monotype Corsiva", "MS Gothic", "MS Outlook", "MS PGothic", "MS Reference Sans Serif", "MS Sans Serif", "MS Serif", "MYRIAD", "MYRIAD PRO", "Palatino", "Palatino Linotype", "Segoe Print", "Segoe Script", "Segoe UI", "Segoe UI Light", "Segoe UI Semibold", "Segoe UI Symbol", "Tahoma", "Times", "Times New Roman", "Times New Roman PS", "Trebuchet MS", "Verdana", "Wingdings", "Wingdings 2", "Wingdings 3"];
+
+	const detectChromium = () => (
+		Math.acos(0.123) == 1.4474840516030247 &&
+		Math.acosh(Math.SQRT2) == 0.881373587019543 &&
+		Math.atan(2) == 1.1071487177940904 &&
+		Math.atanh(0.5) == 0.5493061443340548 &&
+		Math.cbrt(Math.PI) == 1.4645918875615231 &&
+		Math.cos(21*Math.LN2) == -0.4067775970251724 &&
+		Math.cosh(492*Math.LOG2E) == 9.199870313877772e+307 &&
+		Math.expm1(1) == 1.718281828459045 &&
+		Math.hypot(6*Math.PI, -100) == 101.76102278593319 &&
+		Math.log10(Math.PI) == 0.4971498726941338 &&
+		Math.sin(Math.PI) == 1.2246467991473532e-16 &&
+		Math.sinh(Math.PI) == 11.548739357257748 &&
+		Math.tan(10*Math.LOG2E) == -3.3537128705376014 &&
+		Math.tanh(0.123) == 0.12238344189440875 &&
+		Math.pow(Math.PI, -100) == 1.9275814160560204e-50
+	);
+
+	const getNewObjectToStringTypeErrorLie = apiFunction => {
+		try {
+			Object.create(apiFunction).toString();
+			return true
+		} catch (error) {
+			const stackLines = error.stack.split('\n');
+			const traceLines = stackLines.slice(1);
+			const objectApply = /at Object\.apply/;
+			const functionToString = /at Function\.toString/;
+			const validLines = !traceLines.find(line => objectApply.test(line));
+			// Stack must be valid
+			const validStack = (
+				error.constructor.name == 'TypeError' && stackLines.length > 1
+			);
+			// Chromium must throw error 'at Function.toString' and not 'at Object.apply'
+			const isChrome = 'chrome' in window || detectChromium();
+			if (validStack && isChrome && (!functionToString.test(stackLines[1]) || !validLines)) {
+				return true
+			}
+			return !validStack
+		}
+	};
+
+
+	const getHeadlessFeatures = imports => {
+
+		const {
+			require: {
+				hashMini,
+				captureError,
+				logTestResult
+			}
+		} = imports;
+
+		return new Promise(async resolve => {
+			try {
+				const start = performance.now();
+				const isChrome = detectChromium();
+				const permissionStatus = await navigator.permissions.query({ name:'notifications' });
+				const headlessPermissions = (
+					Notification.permission == 'denied' && permissionStatus.state === 'prompt'
+				);
+				const mimeTypes = Object.keys({...navigator.mimeTypes});
+				const data = {
+					chromium: isChrome,
+					hasTrustToken: 'hasTrustToken' in document,
+					webdriver: 'webdriver' in navigator,
+					headless: {
+						chrome: isChrome && !('chrome' in window),
+						permissions: isChrome && headlessPermissions,
+						plugins: isChrome && navigator.plugins.length === 0,
+						mimeTypes: isChrome && mimeTypes.length === 0
+					},
+					stealth: {
+						srcdocError: (() => {
+							try {
+								const { srcdoc } = document.createElement('iframe');
+								return !!srcdoc
+							}
+							catch (error) {
+								return true
+							}
+						})(),
+						srcdocProxy: (() => {
+							const iframe = document.createElement('iframe');
+							iframe.srcdoc = '' + hashMini(crypto.getRandomValues(new Uint32Array(10)));
+							return !!iframe.contentWindow
+						})(),
+						invalidChromeIndex: (() => {
+							const propsInWindow = [];
+							for (const prop in window) { propsInWindow.push(prop); }
+							const chromeIndex = propsInWindow.indexOf('chrome');
+							const controlIndex = propsInWindow.indexOf('cookieStore');
+							return chromeIndex > controlIndex
+						})(),
+						toStringProxy: (() => {
+							const liedToString = (
+								getNewObjectToStringTypeErrorLie(Function.prototype.toString) ||
+								getNewObjectToStringTypeErrorLie(() => {})
+							);
+							return liedToString
+						})()
+					}
+				};
+
+				const { headless, stealth } = data;
+				const headlessTests = Object.keys(headless).map(key => headless[key]);
+				const stealthTests = Object.keys(stealth).map(key => stealth[key]);
+				const headlessRating = (headlessTests.filter(test => test).length / headlessTests.length) * 100;
+				const stealthRating = (stealthTests.filter(test => test).length / stealthTests.length) * 100; 
+
+				logTestResult({ start, test: 'headless', passed: true });
+				return resolve({ ...data, headlessRating, stealthRating })
+			}
+			catch (error) {
+				logTestResult({ test: 'headless', passed: false });
+				captureError(error);
+				return resolve()
+			}
+		})
+	};
 
 	const getHTMLElementVersion = imports => {
 
@@ -2546,8 +2638,8 @@
 					const matching = isNaN(res1) && isNaN(res2) ? true : res1 == res2;
 					if (!matching) {
 						lied = true;
-						const mathLie = { fingerprint: '', lies: [{ [`Expected ${res1} and got ${res2}`]: true }] };
-						documentLie(`Math.${prop}`, hashMini({res1, res2}), mathLie);
+						const mathLie = `expected x and got y`;
+						documentLie(`Math.${prop}`, mathLie);
 					}
 					return
 				});
@@ -2714,7 +2806,10 @@
 			require: {
 				captureError,
 				phantomDarkness,
-				logTestResult
+				caniuse,
+				attempt,
+				logTestResult,
+				getPromiseRaceFulfilled
 			}
 		} = imports;
 
@@ -2722,23 +2817,30 @@
 			try {
 				const start = performance.now();
 				const phantomNavigator = phantomDarkness ? phantomDarkness.navigator : navigator;
-				if (!phantomNavigator.mediaDevices ||
-					!phantomNavigator.mediaDevices.enumerateDevices) {
+				if (!caniuse(() => navigator.mediaDevices.enumerateDevices)) {
 					logTestResult({ test: 'media devices', passed: false });
 					return resolve()
 				}
-				let mediaDevicesEnumerated; 
+				let mediaDevicesEnumerated;
 				try {
-					mediaDevicesEnumerated = await phantomNavigator.mediaDevices.enumerateDevices();
-				}
-				catch (error) {
-					// since Firefox returns a dead object, try in window context
-					mediaDevicesEnumerated = await navigator.mediaDevices.enumerateDevices()
-					.catch(error => {
-						logTestResult({ test: 'media devices', passed: false });
-						captureError(error);
-						return resolve()
+					mediaDevicesEnumerated = await getPromiseRaceFulfilled({
+						promise: phantomNavigator.mediaDevices.enumerateDevices(),
+						responseType: Array
 					});
+					if (!mediaDevicesEnumerated) {
+						throw 'try window context'
+					}
+				}
+				catch (_) {
+					mediaDevicesEnumerated = await getPromiseRaceFulfilled({
+						promise: navigator.mediaDevices.enumerateDevices(),
+						responseType: Array
+					});
+					if (!mediaDevicesEnumerated) {
+						logTestResult({ test: 'media devices', passed: false });
+						captureError(new Error('Promise failed'), `enumerateDevices blocked or failed to fulfill`);
+						return resolve()
+					}
 				}
 				const mediaDevices = (
 					mediaDevicesEnumerated ? 
@@ -2747,9 +2849,10 @@
 						.sort((a, b) => (a.kind > b.kind) ? 1 : -1) :
 					undefined
 				);
-				
+				const constraints = attempt(() => Object.keys(navigator.mediaDevices.getSupportedConstraints()));
+
 				logTestResult({ start, test: 'media', passed: true });
-				return resolve({ mediaDevices })
+				return resolve({ mediaDevices, constraints })
 			}
 			catch (error) {
 				logTestResult({ test: 'media', passed: false });
@@ -2802,24 +2905,24 @@
 				const phantomNavigator = phantomDarkness ? phantomDarkness.navigator : navigator;
 				const detectLies = (name, value) => {
 					const workerScopeValue = caniuse(() => workerScope, [name]);
-					const workerScopeMatchLie = { fingerprint: '', lies: [{ ['does not match worker scope']: false }] };
+					const workerScopeMatchLie = 'does not match worker scope';
 					if (workerScopeValue) {
 						if (name == 'userAgent') {
 							const navigatorUserAgent = value;
 							const system = getOS(navigatorUserAgent);
 							if (workerScope.system != system) {
 								lied = true;
-								documentLie(`Navigator.${name}`, system, workerScopeMatchLie);
+								documentLie(`Navigator.${name}`, workerScopeMatchLie);
 							}
 							else if (workerScope.userAgent != navigatorUserAgent) {
 								lied = true;
-								documentLie(`Navigator.${name}`, navigatorUserAgent, workerScopeMatchLie);
+								documentLie(`Navigator.${name}`, workerScopeMatchLie);
 							}
 							return value
 						}
 						else if (name != 'userAgent' && workerScopeValue != value) {
 							lied = true;
-							documentLie(`Navigator.${name}`, value, workerScopeMatchLie);
+							documentLie(`Navigator.${name}`, workerScopeMatchLie);
 							return value
 						}
 					}
@@ -2841,11 +2944,8 @@
 						}
 						if (platform != navigatorPlatform) {
 							lied = true;
-							const nestedIframeLie = {
-								fingerprint: '',
-								lies: [{ [`Expected "${navigatorPlatform}" in nested iframe and got "${platform}"`]: true }]
-							};
-							documentLie(`Navigator.platform`, hashMini({platform, navigatorPlatform}), nestedIframeLie);
+							const nestedIframeLie = `Expected "${navigatorPlatform}" in nested iframe and got "${platform}"`;
+							documentLie(`Navigator.platform`, nestedIframeLie);
 						}
 						return platform
 					}),
@@ -2867,11 +2967,8 @@
 						}
 						if (userAgent != navigatorUserAgent) {
 							lied = true;
-							const nestedIframeLie = {
-								fingerprint: '',
-								lies: [{ [`Expected "${navigatorUserAgent}" in nested iframe and got "${userAgent}"`]: true }]
-							};
-							documentLie(`Navigator.userAgent`, hashMini({userAgent, navigatorUserAgent}), nestedIframeLie);
+							const nestedIframeLie = `Expected "${navigatorUserAgent}" in nested iframe and got "${userAgent}"`;
+							documentLie(`Navigator.userAgent`, nestedIframeLie);
 						}
 						return userAgent.trim().replace(/\s{2,}/, ' ')
 					}, 'userAgent failed'),
@@ -2890,11 +2987,8 @@
 						}
 						if (appVersion != navigatorAppVersion) {
 							lied = true;
-							const nestedIframeLie = {
-								fingerprint: '',
-								lies: [{ [`Expected "${navigatorAppVersion}" in nested iframe and got "${appVersion}"`]: true }]
-							};
-							documentLie(`Navigator.appVersion`, hashMini({appVersion, navigatorAppVersion}), nestedIframeLie);
+							const nestedIframeLie = `Expected "${navigatorAppVersion}" in nested iframe and got "${appVersion}"`;
+							documentLie(`Navigator.appVersion`, nestedIframeLie);
 						}
 						return appVersion.trim().replace(/\s{2,}/, ' ')
 					}, 'appVersion failed'),
@@ -2918,11 +3012,8 @@
 						}
 						if (deviceMemory != navigatorDeviceMemory) {
 							lied = true;
-							const nestedIframeLie = {
-								fingerprint: '',
-								lies: [{ [`Expected ${navigatorDeviceMemory} in nested iframe and got ${deviceMemory}`]: true }]
-							};
-							documentLie(`Navigator.deviceMemory`, hashMini({deviceMemory, navigatorDeviceMemory}), nestedIframeLie);
+							const nestedIframeLie = `Expected ${navigatorDeviceMemory} in nested iframe and got ${deviceMemory}`;
+							documentLie(`Navigator.deviceMemory`, nestedIframeLie);
 						}
 						return deviceMemory
 					}, 'deviceMemory failed'),
@@ -2980,11 +3071,8 @@
 						trustInteger('hardwareConcurrency - invalid return type', navigatorHardwareConcurrency);
 						if (hardwareConcurrency != navigatorHardwareConcurrency) {
 							lied = true;
-							const nestedIframeLie = {
-								fingerprint: '',
-								lies: [{ [`Expected ${navigatorHardwareConcurrency} in nested iframe and got ${hardwareConcurrency}`]: true }]
-							};
-							documentLie(`Navigator.hardwareConcurrency`, hashMini({hardwareConcurrency, navigatorHardwareConcurrency}), nestedIframeLie);
+							const nestedIframeLie = `Expected ${navigatorHardwareConcurrency} in nested iframe and got ${hardwareConcurrency}`;
+							documentLie(`Navigator.hardwareConcurrency`, nestedIframeLie);
 						}
 						return hardwareConcurrency
 					}, 'hardwareConcurrency failed'),
@@ -2996,11 +3084,8 @@
 						detectLies('languages', navigatorLanguages);
 						if (language != navigatorLanguage) {
 							lied = true;
-							const nestedIframeLie = {
-								fingerprint: '',
-								lies: [{ [`Expected "${navigatorLanguage}" in nested iframe and got "${language}"`]: true }]
-							};
-							documentLie(`Navigator.language`, hashMini({language, navigatorLanguage}), nestedIframeLie);
+							const nestedIframeLie = `Expected "${navigatorLanguage}" in nested iframe and got "${language}"`;
+							documentLie(`Navigator.language`, nestedIframeLie);
 						}
 						if (navigatorLanguage && navigatorLanguages) {
 							const lang = /^.{0,2}/g.exec(navigatorLanguage)[0];
@@ -3020,11 +3105,8 @@
 						const navigatorMaxTouchPoints = navigator.maxTouchPoints;	
 						if (maxTouchPoints != navigatorMaxTouchPoints) {	
 							lied = true;
-							const nestedIframeLie = {
-								fingerprint: '',
-								lies: [{ [`Expected ${navigatorMaxTouchPoints} in nested iframe and got ${maxTouchPoints}`]: true }]
-							};
-							documentLie(`Navigator.maxTouchPoints`, hashMini({maxTouchPoints, navigatorMaxTouchPoints}), nestedIframeLie);	
+							const nestedIframeLie = `Expected ${navigatorMaxTouchPoints} in nested iframe and got ${maxTouchPoints}`;
+							documentLie(`Navigator.maxTouchPoints`, nestedIframeLie);	
 						}
 
 						return maxTouchPoints
@@ -3034,11 +3116,8 @@
 						const navigatorVendor = navigator.vendor;
 						if (vendor != navigatorVendor) {
 							lied = true;
-							const nestedIframeLie = {
-								fingerprint: '',
-								lies: [{ [`Expected "${navigatorVendor}" in nested iframe and got "${vendor}"`]: true }]
-							};
-							documentLie(`Navigator.vendor`, hashMini({vendor, navigatorVendor}), nestedIframeLie);
+							const nestedIframeLie = `Expected "${navigatorVendor}" in nested iframe and got "${vendor}"`;
+							documentLie(`Navigator.vendor`, nestedIframeLie);
 						}
 						return vendor
 					}, 'vendor failed'),
@@ -3063,8 +3142,7 @@
 						if (lies.length) {
 							lied = true;
 							lies.forEach(lie => {
-								const pluginsLie = { fingerprint: '', lies: [{ [lie]: true }] };
-								return documentLie(`Navigator.plugins`, hashMini(response), pluginsLie)
+								return documentLie(`Navigator.plugins`, lie)
 							});
 						}
 
@@ -3283,9 +3361,9 @@
 				// get emojis
 				const emojiDiv = doc.getElementById('emoji');
 				const emojiRects = emojis
-					.slice(99, 199) // limit to improve performance
-					.map(emoji => String.fromCodePoint(...emoji))
-					.map(emoji => {
+					.slice(151, 200) // limit to improve performance
+					.map(emojiCode => {
+						const emoji = String.fromCodePoint(...emojiCode);
 						emojiDiv.innerHTML = emoji;
 						const domRect = emojiDiv.getClientRects()[0];
 						return {emoji,...toNativeObject(domRect)}
@@ -3299,7 +3377,6 @@
 
 				// detect failed shift calculation
 				// inspired by https://arkenfox.github.io/TZP
-				let shiftLie = false;
 				const rect4 = [...rectElems][3];
 				const { top: initialTop } = clientRects[3];
 				rect4.classList.add('shift-dom-rect');
@@ -3307,11 +3384,10 @@
 				rect4.classList.remove('shift-dom-rect');
 				const { top: unshiftedTop } = toNativeObject(rect4.getClientRects()[0]);
 				const diff = initialTop - shiftedTop;
-				shiftLie = diff != (unshiftedTop - shiftedTop);
-				if (shiftLie) {
+				const unshiftLie = diff != (unshiftedTop - shiftedTop);
+				if (unshiftLie) {
 					lied = true;
-					shiftLie = { fingerprint: '', lies: [{ ['failed shift calculation']: true }] };
-					documentLie('Element.getClientRects', hashMini(clientRects), shiftLie);
+					documentLie('Element.getClientRects', 'failed unshift calculation');
 				}
 
 				// detect failed math calculation lie
@@ -3325,21 +3401,19 @@
 						bottom - y != height
 					) {
 						lied = true;
-						mathLie = { fingerprint: '', lies: [{ ['failed math calculation']: true }] };
+						mathLie = true;
 					}
 					return
 				});
 				if (mathLie) {
-					documentLie('Element.getClientRects', hashMini(clientRects), mathLie);
+					documentLie('Element.getClientRects', 'failed math calculation');
 				}
 				
 				// detect equal elements mismatch lie
-				let offsetLie = false;
 				const { right: right1, left: left1 } = clientRects[10];
 				const { right: right2, left: left2 } = clientRects[11];
 				if (right1 != right2 || left1 != left2) {
-					offsetLie = { fingerprint: '', lies: [{ ['equal elements mismatch']: true }] };
-					documentLie('Element.getClientRects', hashMini(clientRects), offsetLie);
+					documentLie('Element.getClientRects', 'equal elements mismatch');
 					lied = true;
 				}
 							
@@ -4017,8 +4091,7 @@
 
 		// reduce set to one city
 		const decrypted = (
-			decryption.length == 1 ? decryption[0] :
-			!new Set(decryption).has(timeZone) ? `Earth/UniqueVille` : timeZone
+			decryption.length == 1 && decryption[0] == timeZone ? timeZone : hashMini(decryption)
 		);
 		return decrypted
 	};
@@ -4079,7 +4152,7 @@
 				captureError,
 				phantomDarkness,
 				logTestResult,
-				isChrome,
+				caniuse,
 			}
 		} = imports;
 			
@@ -4087,7 +4160,7 @@
 			try {
 				const start = performance.now();
 				const win = phantomDarkness ? phantomDarkness : window;
-				if (!('speechSynthesis' in win && 'onvoiceschanged' in speechSynthesis)) {
+				if (!('speechSynthesis' in win)) {
 					logTestResult({ test: 'speech', passed: false });
 					return resolve()
 				}
@@ -4099,21 +4172,16 @@
 					}
 					success = true;
 					const voices = data.map(({ name, lang }) => ({ name, lang }));
-					const check = {
-						microsoft: voices.filter(key => (/microsoft/i).test(key.name)).length,
-						google: voices.filter(key => (/google/i).test(key.name)).length,
-						chromeOS: voices.filter(key => (/chrome os/i).test(key.name)).length,
-						android: voices.filter(key => (/android/i).test(key.name)).length
-					};
+					const defaultVoice = caniuse(() => data.find(voice => voice.default).name);
 					logTestResult({ start, test: 'speech', passed: true });
-					return resolve({ voices, ...check, })
+					return resolve({ voices, defaultVoice })
 				};
 				
 				awaitVoices();
 				win.speechSynthesis.onvoiceschanged = awaitVoices;
 				setTimeout(() => {
 					return !success ? resolve() : undefined
-				}, 10);
+				}, 100);
 			}
 			catch (error) {
 				logTestResult({ test: 'speech', passed: false });
@@ -4127,11 +4195,11 @@
 
 		const {
 			require: {
-				isFirefox,
 				captureError,
 				caniuse,
 				phantomDarkness,
-				logTestResult
+				logTestResult,
+				hashMini
 			}
 		} = imports;
 		
@@ -4160,17 +4228,18 @@
 					logTestResult({ test: 'webrtc', passed: false });
 					return resolve()
 				}
-				const connection = new rtcPeerConnection({
-					iceServers: [{
-						urls: ['stun:stun.l.google.com:19302?transport=udp']
-					}]
-				}, {
-					optional: [{
-						RtpDataChannels: true
-					}]
-				});
+				const connection = new rtcPeerConnection(
+					{ iceServers: [{ urls: ['stun:stun.l.google.com:19302?transport=udp'] }] }
+				);
 				
-				let success = false;
+				let success;
+				
+				connection.createDataChannel('creep');
+
+				await connection.createOffer()
+				.then(offer => connection.setLocalDescription(offer))
+				.catch(error => console.error(error));
+
 				connection.onicecandidate = async e => { 
 					const candidateEncoding = /((udp|tcp)\s)((\d|\w)+\s)((\d|\w|(\.|\:))+)(?=\s)/ig;
 					const connectionLineEncoding = /(c=IN\s)(.+)\s/ig;
@@ -4184,21 +4253,46 @@
 						const {
 							sdp
 						} = e.target.localDescription;
-						const ipAddress = caniuse(() => e.candidate.address);
+						const ipaddress = caniuse(() => e.candidate.address);
 						const candidateIpAddress = caniuse(() => encodingMatch[0].split(' ')[2]);
 						const connectionLineIpAddress = caniuse(() => sdp.match(connectionLineEncoding)[0].trim().split(' ')[2]);
 
 						const type = caniuse(() => /typ ([a-z]+)/.exec(candidate)[1]);
 						const foundation = caniuse(() => /candidate:(\d+)\s/.exec(candidate)[1]);
 						const protocol = caniuse(() => /candidate:\d+ \w+ (\w+)/.exec(candidate)[1]);
+						
+						// get capabilities
+						const capabilities = {
+							sender: !caniuse(() => RTCRtpSender.getCapabilities) ? undefined : {
+								audio: RTCRtpSender.getCapabilities('audio'),
+								video: RTCRtpSender.getCapabilities('video')
+							},
+							receiver: !caniuse(() => RTCRtpReceiver.getCapabilities) ? undefined : {
+								audio: RTCRtpReceiver.getCapabilities('audio'),
+								video: RTCRtpReceiver.getCapabilities('video')
+							}
+						};
+
+						// get sdp capabilities
+						let sdpcapabilities;
+						await connection.createOffer({
+							offerToReceiveAudio: 1,
+							offerToReceiveVideo: 1
+						})
+						.then(offer => (
+							sdpcapabilities = offer.sdp.match(/((ext|rtp)map|fmtp|rtcp-fb):.+ (.+)/gm).sort()
+						))
+						.catch(error => console.error(error));
 
 						const data = {
-							['ip address']: ipAddress,
+							ipaddress,
 							candidate: candidateIpAddress,
 							connection: connectionLineIpAddress,
 							type,
 							foundation,
-							protocol
+							protocol,
+							capabilities,
+							sdpcapabilities
 						};
 						
 						logTestResult({ start, test: 'webrtc', passed: true });
@@ -4210,16 +4304,13 @@
 				
 				setTimeout(() => {
 					if (!success) {
-						
 						logTestResult({ test: 'webrtc', passed: false });
 						captureError(new Error('RTCIceCandidate failed'));
 						return resolve()
 					}
-				}, 1000);
-				connection.createDataChannel('creep');
-				connection.createOffer()
-					.then(e => connection.setLocalDescription(e))
-					.catch(error => console.log(error));
+				}, 2000);
+
+				
 			}
 			catch (error) {
 				logTestResult({ test: 'webrtc', passed: false });
@@ -4380,6 +4471,7 @@
 			decryptUserAgent,
 			getUserAgentPlatform,
 			logTestResult,
+			getPromiseRaceFulfilled,
 			// crypto
 			instanceId,
 			hashMini,
@@ -4434,30 +4526,9 @@
 		const fingerprint = async () => {
 			const timeStart = timer();
 			
-			/*
-			const windowFeaturesComputed = await getWindowFeatures(imports)
-			const htmlElementVersionComputed = await getHTMLElementVersion(imports)
-			const cssComputed = await getCSS(imports)
-			const screenComputed = await getScreen(imports)
-			const voicesComputed = await getVoices(imports)
-			const canvas2dComputed = await getCanvas2d(imports)
-			const canvasWebglComputed = await getCanvasWebgl(imports)
-			const mathsComputed = await getMaths(imports)
-			const consoleErrorsComputed = await getConsoleErrors(imports)
-			const timezoneComputed = await getTimezone(imports)
-			const clientRectsComputed = await getClientRects(imports)
-			const offlineAudioContextComputed = await getOfflineAudioContext(imports)
-			const fontsComputed = await getFonts(imports, [...fontList])
-				.catch(error => { console.error(error.message)})
-			const workerScopeComputed = await getBestWorkerScope(imports)
-			const mediaComputed = await getMedia(imports)
-			const webRTCDataComputed = await getWebRTCData(imports)
-			const navigatorComputed = await getNavigator(imports, workerScopeComputed)
-				.catch(error => console.error(error.message))
-			*/
-			
 			const [
 				windowFeaturesComputed,
+				headlessComputed,
 				htmlElementVersionComputed,
 				cssComputed,
 				cssMediaComputed,
@@ -4476,6 +4547,7 @@
 				webRTCDataComputed
 			] = await Promise.all([
 				getWindowFeatures(imports),
+				getHeadlessFeatures(imports),
 				getHTMLElementVersion(imports),
 				getCSS(imports),
 				getCSSMedia(imports),
@@ -4510,6 +4582,7 @@
 			//const start = performance.now()
 			const [
 				windowHash,
+				headlessHash,
 				htmlHash,
 				cssMediaHash,
 				cssHash,
@@ -4532,6 +4605,7 @@
 				errorsHash
 			] = await Promise.all([
 				hashify(windowFeaturesComputed),
+				hashify(headlessComputed),
 				hashify(htmlElementVersionComputed.keys),
 				hashify(cssMediaComputed),
 				hashify(cssComputed),
@@ -4569,6 +4643,7 @@
 				webRTC: !webRTCDataComputed ? undefined : {...webRTCDataComputed, $hash: webRTCHash },
 				navigator: !navigatorComputed ? undefined : {...navigatorComputed, $hash: navigatorHash },
 				windowFeatures: !windowFeaturesComputed ? undefined : {...windowFeaturesComputed, $hash: windowHash },
+				headless: !headlessComputed ? undefined : {...headlessComputed, $hash: headlessHash },
 				htmlElementVersion: !htmlElementVersionComputed ? undefined : {...htmlElementVersionComputed, $hash: htmlHash },
 				cssMedia: !cssMediaComputed ? undefined : {...cssMediaComputed, $hash: cssMediaHash },
 				css: !cssComputed ? undefined : {...cssComputed, $hash: cssHash },
@@ -4605,7 +4680,7 @@
 		// Trusted Fingerprint
 		const distrust = { distrust: { brave: isBrave, firefox: isFirefox } };
 		const trashLen = fp.trash.trashBin.length;
-		const liesLen = !('data' in fp.lies) ? 0 : fp.lies.data.length;
+		const liesLen = !('totalLies' in fp.lies) ? 0 : fp.lies.totalLies;
 		const errorsLen = fp.capturedErrors.data.length;
 		const creep = {
 			navigator: ( 
@@ -4632,7 +4707,7 @@
 			),
 			workerScope: fp.workerScope ? {
 				canvas2d: (
-					!!liesLen && (isBrave || isFirefox) ? distrust : 
+					(fp.canvas2d && fp.canvas2d.lied) ? undefined : // distrust ungoogled-chromium, brave, firefox, tor browser 
 					fp.workerScope.canvas2d
 				),
 				deviceMemory: (
@@ -4667,20 +4742,20 @@
 				fp.canvasWebgl
 			),
 			cssMedia: !fp.cssMedia ? undefined : {
-				reducedMotion: caniuse(() => fp.cssMedia.mediaCSS.reducedMotion),
-				colorScheme: caniuse(() => fp.cssMedia.mediaCSS.colorScheme),
+				reducedMotion: caniuse(() => fp.cssMedia.mediaCSS['prefers-reduced-motion']),
+				colorScheme: caniuse(() => fp.cssMedia.mediaCSS['prefers-color-scheme']),
 				monochrome: caniuse(() => fp.cssMedia.mediaCSS.monochrome),
-				invertedColors: caniuse(() => fp.cssMedia.mediaCSS.invertedColors),
-				forcedColors: caniuse(() => fp.cssMedia.mediaCSS.forcedColors),
-				anyHover: caniuse(() => fp.cssMedia.mediaCSS.anyHover),
+				invertedColors: caniuse(() => fp.cssMedia.mediaCSS['inverted-colors']),
+				forcedColors: caniuse(() => fp.cssMedia.mediaCSS['forced-colors']),
+				anyHover: caniuse(() => fp.cssMedia.mediaCSS['any-hover']),
 				hover: caniuse(() => fp.cssMedia.mediaCSS.hover),
-				anyPointer: caniuse(() => fp.cssMedia.mediaCSS.anyPointer),
+				anyPointer: caniuse(() => fp.cssMedia.mediaCSS['any-pointer']),
 				pointer: caniuse(() => fp.cssMedia.mediaCSS.pointer),
-				colorGamut: caniuse(() => fp.cssMedia.mediaCSS.colorGamut),
-				screenQuery: caniuse(() => fp.cssMedia.mediaCSS.screenQuery),
+				colorGamut: caniuse(() => fp.cssMedia.mediaCSS['color-gamut']),
+				screenQuery: caniuse(() => fp.cssMedia.screenQuery),
 			},
 			css: !fp.css ? undefined : {
-				prototype: caniuse(() => fp.css.getComputedStyle.prototypeName),
+				interfaceName: caniuse(() => fp.css.computedStyle.interfaceName),
 				system: caniuse(() => fp.css.system)
 			},
 			maths: !fp.maths || fp.maths.lied ? undefined : fp.maths,
@@ -4696,9 +4771,16 @@
 			),
 			fonts: !fp.fonts || fp.fonts.lied ? undefined : fp.fonts,
 			// skip trash since it is random
-			lies: !('data' in fp.lies) ? false : !!liesLen,
+			lies: !!liesLen,
 			capturedErrors: !!errorsLen,
-			voices: fp.voices
+			voices: fp.voices,
+			webRTC: !fp.webRTC ? undefined : {
+				sdpcapabilities: fp.webRTC.sdpcapabilities,	
+				capabilities: fp.webRTC.capabilities,
+				foundation: fp.webRTC.foundation,
+				protocol: fp.webRTC.protocol,
+				type: fp.webRTC.type,
+			}
 		};
 
 		console.log('%c✔ stable fingerprint passed', 'color:#4cca9f');
@@ -4722,13 +4804,14 @@
 		const hasTrash = !!trashLen;
 		const { lies: hasLied, capturedErrors: hasErrors } = creep;
 
+		const hashSlice = x => x.slice(0, 8);
 		// patch dom	
 		const el = document.getElementById('fingerprint-data');
 		patch(el, html`
 	<div id="fingerprint-data">
 		<div class="fingerprint-header-container">
 			<div class="fingerprint-header">
-				<strong>Your ID:</strong><span class="trusted-fingerprint ellipsis main-hash">${hashMini(creepHash)}</span>
+				<strong>Your ID:</strong><span class="trusted-fingerprint ellipsis main-hash">${hashSlice(creepHash)}</span>
 				<div class="ellipsis"><span class="time">${timeEnd.toFixed(2)} ms</span></div>
 			</div>
 		</div>
@@ -4756,12 +4839,12 @@
 		</div>
 		<div class="flex-grid">
 			${(() => {
-				const { trash: { trashBin } } = fp;
+				const { trash: { trashBin, $hash  } } = fp;
 				const trashLen = trashBin.length;
 				return `
 				<div class="col-four${trashLen ? ' trash': ''}">
 					<strong>Trash</strong>${
-						trashLen ? `<span class="hash">${hashMini(trashBin)}</span>` : ''
+						trashLen ? `<span class="hash">${hashSlice($hash)}</span>` : ''
 					}
 					<div>gathered (${!trashLen ? '0' : ''+trashLen }): ${
 						trashLen ? modal(
@@ -4772,26 +4855,18 @@
 				</div>`
 			})()}
 			${(() => {
-				const { lies: { data, totalLies } } = fp; 
-				const toJSONFormat = obj => JSON.stringify(obj, null, '\t');
-				const sanitize = str => str.replace(/\</g, '&lt;');
+				const { lies: { data, totalLies, $hash } } = fp; 
 				return `
 				<div class="col-four${totalLies ? ' lies': ''}">
-					<strong>Lies</strong>${totalLies ? `<span class="hash">${hashMini(data)}</span>` : ''}
+					<strong>Lies</strong>${totalLies ? `<span class="hash">${hashSlice($hash)}</span>` : ''}
 					<div>unmasked (${!totalLies ? '0' : ''+totalLies }): ${
-						totalLies ? modal('creep-lies', Object.keys(data).map(key => {
-							const { name, lieTypes: { lies, fingerprint } } = data[key];
-							const lieFingerprint = !!fingerprint ? { hash: hashMini(fingerprint), json: sanitize(toJSONFormat(fingerprint)) } : undefined;
+						totalLies ? modal('creep-lies', Object.keys(data).sort().map(key => {
+							const lies = data[key];
 							return `
+							<br>
 							<div style="padding:5px">
-								<strong>${name}</strong>:
-								${lies.length ? lies.map(lie => `<br>${Object.keys(lie)[0]}`).join(''): ''}
-								${
-									lieFingerprint ? `
-										<br>Tampering code leaked a fingerprint: ${lieFingerprint.hash}
-										<br>Unexpected code: ${lieFingerprint.json}`: 
-									''
-								}
+								<strong>${key}</strong>:
+								${lies.map(lie => `<div>- ${lie}</div>`).join('')}
 							</div>
 							`
 						}).join('')) : ''
@@ -4799,11 +4874,11 @@
 				</div>`
 			})()}
 			${(() => {
-				const { capturedErrors: { data } } = fp;
+				const { capturedErrors: { data, $hash  } } = fp;
 				const len = data.length;
 				return `
 				<div class="col-four${len ? ' errors': ''}">
-					<strong>Errors</strong>${len ? `<span class="hash">${hashMini(data)}</span>` : ''}
+					<strong>Errors</strong>${len ? `<span class="hash">${hashSlice($hash)}</span>` : ''}
 					<div>captured (${!len ? '0' : ''+len}): ${
 						len ? modal('creep-captured-errors', Object.keys(data).map((key, i) => `${i+1}: ${data[key].trustedName} - ${data[key].trustedMessage} `).join('<br>')) : ''
 					}</div>
@@ -4816,26 +4891,87 @@
 				`<div class="col-six">
 					<strong>WebRTC</strong>
 					<div>ip address: ${note.blocked}</div>
-					<div>candidate: ${note.blocked}</div>
-					<div>connection: ${note.blocked}</div>
+					<div>ip candidate: ${note.blocked}</div>
+					<div>ip connection: ${note.blocked}</div>
 					<div>type: ${note.blocked}</div>
 					<div>foundation: ${note.blocked}</div>
 					<div>protocol: ${note.blocked}</div>
+					<div>get capabilities: ${note.blocked}</div>
+					<div>sdp capabilities: ${note.blocked}</div>
 				</div>` :
 			(() => {
 				const { webRTC } = fp;
-				const { candidate, connection, type, foundation, protocol, $hash } = webRTC;
-				const ip = webRTC['ip address'];
-				const leak = webRTC['webRTC leak'];
+				const {
+					ipaddress,
+					candidate,
+					connection,
+					type,
+					foundation,
+					protocol,
+					capabilities,
+					sdpcapabilities,
+					$hash
+				} = webRTC;
+				const id = 'creep-webrtc';
 				return `
 				<div class="col-six">
-					<strong>WebRTC</strong><span class="hash">${hashMini($hash)}</span>
-					<div>ip address: ${ip ? ip : note.unsupported}</div>
-					<div>candidate: ${candidate ? candidate : note.unsupported}</div>
-					<div>connection: ${connection ? connection : note.unsupported}</div>
+					<strong>WebRTC</strong><span class="hash">${hashSlice($hash)}</span>
+					<div>ip address: ${ipaddress ? ipaddress : note.unsupported}</div>
+					<div>ip candidate: ${candidate ? candidate : note.unsupported}</div>
+					<div>ip connection: ${connection ? connection : note.unsupported}</div>
 					<div>type: ${type ? type : note.unsupported}</div>
 					<div>foundation: ${foundation ? foundation : note.unsupported}</div>
 					<div>protocol: ${protocol ? protocol : note.unsupported}</div>
+					<div>get capabilities: ${
+						!capabilities.receiver && !capabilities.sender ? note.unsupported :
+						modal(
+							`${id}-capabilities`,
+							Object.keys(capabilities).map(modeKey => {
+								const mode = capabilities[modeKey];
+								if (!mode) {
+									return ''
+								}
+								return `
+									<br><div>mimeType [channels] (clockRate) * sdpFmtpLine</div>
+									${
+										Object.keys(mode).map(media => Object.keys(mode[media])
+											.map(key => {
+												return `<br><div><strong>${modeKey} ${media} ${key}</strong>:</div>${
+													mode[media][key].map(obj => {
+														const {
+															channels,
+															clockRate,
+															mimeType,
+															sdpFmtpLine,
+															uri
+														} = obj;
+														return `
+															<div>
+															${mimeType||''}
+															${channels ? `[${channels}]`: ''}
+															${clockRate ? `(${clockRate})`: ''}
+															${sdpFmtpLine ? `<br>* ${sdpFmtpLine}` : ''}
+															${uri||''}
+															</div>
+														`
+													}).join('')
+												}`
+											}).join('')
+										).join('')
+									}
+								`
+							}).join(''),
+							hashMini(capabilities)
+						)
+					}</div>
+					<div>sdp capabilities: ${
+						!sdpcapabilities ? note.unsupported :
+						modal(
+							`${id}-sdpcapabilities`,
+							sdpcapabilities.join('<br>'),
+							hashMini(sdpcapabilities)
+						)
+					}</div>
 				</div>
 				`
 			})()}
@@ -4864,7 +5000,7 @@
 				} = fp;
 				return `
 				<div class="col-six">
-					<strong>Timezone</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
+					<strong>Timezone</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 					<div>zone: ${zone}</div>
 					<div>offset: ${''+offset}</div>
 					<div>offset computed: ${''+offsetComputed}</div>
@@ -4889,10 +5025,67 @@
 			<div class="col-four icon-container">
 			</div>
 		</div>
+
+		<div id="headless-detection-results" class="flex-grid">
+			${!fp.headless ?
+				`<div class="col-six">
+					<strong>Headless</strong>
+					<div>chromium: ${note.blocked}</div>
+					<div>hasTrustToken: ${note.blocked}</div>
+					<div>webdriver: ${note.blocked}</div>
+					<div>headless: ${note.blocked}</div>
+					<div>0% detected</div>
+					<div>stealth: ${note.blocked}</div>
+					<div>0% detected</div>
+				</div>
+				<div class="col-six">
+					<div>headless: ${note.blocked}</div>
+					<div>0% detected</div>
+					<div>stealth: ${note.blocked}</div>
+					<div>0% detected</div>
+				</div>` :
+			(() => {
+				const {
+					headless: data
+				} = fp;
+				const {
+					$hash,
+					chromium,
+					hasTrustToken,
+					headlessRating,
+					stealthRating,
+					webdriver
+				} = data || {};
+				
+				return `
+				<div class="col-six">
+					<style>
+						.headless-rating {
+							background: linear-gradient(90deg, var(--error) ${headlessRating}%, #fff0 ${headlessRating}%, #fff0 100%);
+						}
+						.stealth-rating {
+							background: linear-gradient(90deg, var(--error) ${stealthRating}%, #fff0 ${stealthRating}%, #fff0 100%);
+						}
+					</style>
+					<strong>Headless</strong><span class="hash">${hashSlice($hash)}</span>
+					<div>chromium: ${''+chromium}</div>
+					<div>hasTrustToken: ${hasTrustToken || note.unsupported}</div>
+					<div>webdriver: ${webdriver || note.unsupported}</div>
+				</div>
+				<div class="col-six">
+					<div>headless:</div>
+					<div class="headless-rating">${''+headlessRating}% detected</div>
+					<div>stealth:</div>
+					<div class="stealth-rating">${''+stealthRating}% detected</div>
+				</div>
+				`
+			})()}
+		</div>
+
 		<div class="flex-grid relative">
-		<div class="ellipsis"><span class="aside-note">${
-			fp.workerScope && fp.workerScope.type ? fp.workerScope.type : ''
-		} worker</span></div>
+			<div class="ellipsis"><span class="aside-note">${
+				fp.workerScope && fp.workerScope.type ? fp.workerScope.type : ''
+			} worker</span></div>
 		${!fp.workerScope ?
 			`<div class="col-six">
 				<strong>Worker</strong>
@@ -4901,7 +5094,6 @@
 				<div>language: ${note.blocked}</div>
 				<div>deviceMemory: ${note.blocked}</div>
 				<div>hardwareConcurrency: ${note.blocked}</div>
-				<div>js runtime: ${note.blocked}</div>
 				<div>platform: ${note.blocked}</div>
 				<div>system: ${note.blocked}</div>
 				<div>canvas 2d: ${note.blocked}</div>
@@ -4919,13 +5111,12 @@
 			const { workerScope: data } = fp;
 			return `
 			<div class="col-six">
-				<strong>Worker</strong><span class="hash">${hashMini(data.$hash)}</span>
+				<strong>Worker</strong><span class="hash">${hashSlice(data.$hash)}</span>
 				<div>timezone offset: ${data.timezoneOffset != undefined ? ''+data.timezoneOffset : note.unsupported}</div>
 				<div>location: ${data.timezoneLocation}</div>
 				<div>language: ${data.language || note.unsupported}</div>
 				<div>deviceMemory: ${data.deviceMemory || note.unsupported}</div>
 				<div>hardwareConcurrency: ${data.hardwareConcurrency || note.unsupported}</div>
-				<div>js runtime: ${data.jsImplementation}</div>
 				<div>platform: ${data.platform || note.unsupported}</div>
 				<div>system: ${data.system || note.unsupported}${
 					/android/i.test(data.system) && !/arm/i.test(data.platform) && /linux/i.test(data.platform) ?
@@ -4996,16 +5187,25 @@
 			const webgl2SpecsKeys = webgl2Specs ? Object.keys(webgl2Specs) : [];
 			return `
 			<div class="col-six">
-				<strong>Canvas webgl</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
+				<strong>Canvas webgl</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 				<div>matching renderer/vendor: ${''+matchingUnmasked}</div>
 				<div>matching data URI: ${''+matchingDataURI}</div>
 				<div>webgl:<span class="sub-hash">${hashMini(dataURI)}</span></div>
 				<div>parameters (${count(webglSpecsKeys)}): ${
 					!webglSpecsKeys.length ? note.unsupported :
-					modal(`${id}-p-v1`, webglSpecsKeys.map(key => `${key}: ${webglSpecs[key]}`).join('<br>'))
+					modal(
+						`${id}-p-v1`,
+						webglSpecsKeys.map(key => `${key}: ${webglSpecs[key]}`).join('<br>'),
+						hashMini(webglSpecs)
+					)
 				}</div>
 				<div>extensions (${count(supported.extensions)}): ${
-					!caniuse(() => supported, ['extensions', 'length']) ? note.unsupported : modal(`${id}-e-v1`, supported.extensions.join('<br>'))
+					!caniuse(() => supported, ['extensions', 'length']) ? note.unsupported : 
+					modal(
+						`${id}-e-v1`,
+						supported.extensions.join('<br>'),
+						hashMini(supported.extensions)
+					)
 				}</div>
 				<div>vendor: ${!unmasked.vendor ? note.unsupported : unmasked.vendor}</div>
 				<div>renderer:</div>
@@ -5017,10 +5217,19 @@
 				<div>webgl2:<span class="sub-hash">${hashMini(dataURI2)}</span></div>
 				<div>parameters (${count(webgl2SpecsKeys)}): ${
 					!webgl2SpecsKeys.length ? note.unsupported :
-					modal(`${id}-p-v2`, webgl2SpecsKeys.map(key => `${key}: ${webgl2Specs[key]}`).join('<br>'))
+					modal(
+						`${id}-p-v2`,
+						webgl2SpecsKeys.map(key => `${key}: ${webgl2Specs[key]}`).join('<br>'),
+						hashMini(webgl2Specs)
+					)
 				}</div>
 				<div>extensions (${count(supported2.extensions)}): ${
-					!caniuse(() => supported2, ['extensions', 'length']) ? note.unsupported : modal(`${id}-e-v2`, supported2.extensions.join('<br>'))
+					!caniuse(() => supported2, ['extensions', 'length']) ? note.unsupported : 
+					modal(
+						`${id}-e-v2`,
+						supported2.extensions.join('<br>'),
+						hashMini(supported2.extensions)
+					)
 				}</div>
 				<div>vendor: ${!unmasked2.vendor ? note.unsupported : unmasked2.vendor }</div>
 				<div>renderer:</div>
@@ -5040,7 +5249,7 @@
 			const { canvas2d: { lied, $hash } } = fp;
 			return `
 			<div class="col-six">
-				<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
+				<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 			</div>
 			`
 		})()}
@@ -5069,11 +5278,29 @@
 			} = fp;
 			return `
 			<div class="col-four">
-				<strong>Audio</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
-				<div>sample:${''+binsSample[0] == 'undefined' ? ` ${note.unsupported}` : `<span class="sub-hash">${hashMini(binsSample[0])}</span>`}</div>
-				<div>copy:${''+copySample[0] == 'undefined' ? ` ${note.unsupported}`  : `<span class="sub-hash">${hashMini(copySample[0])}</span>`}</div>
+				<strong>Audio</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+				<div>sample: ${
+					''+binsSample[0] == 'undefined' ? note.unsupported :
+					modal(
+						'creep-audio-bin-sample',
+						binsSample.join('<br>'),
+						hashMini(binsSample)
+					)
+				}</div>
+				<div>copy: ${
+					''+copySample[0] == 'undefined' ? note.unsupported :
+					modal(
+						'creep-audio-copy-sample',
+						copySample.join('<br>'),
+						hashMini(copySample)
+					)
+				}</div>
 				<div>values: ${
-					modal('creep-offline-audio-context', Object.keys(values).map(key => `<div>${key}: ${values[key]}</div>`).join(''))
+					modal(
+						'creep-offline-audio-context',
+						Object.keys(values).map(key => `<div>${key}: ${values[key]}</div>`).join(''),
+						hashMini(values)
+					)
 				}</div>
 			</div>
 			`
@@ -5081,32 +5308,33 @@
 		${!fp.voices ?
 			`<div class="col-four">
 				<strong>Speech</strong>
-				<div>microsoft: ${note.blocked}</div>
-				<div>google: ${note.blocked}</div>
-				<div>chrome OS: ${note.blocked}</div>
-				<div>android: ${note.blocked}</div>
 				<div>voices (0): ${note.blocked}</div>
+				<div>default: ${note.blocked}</div>
 			</div>` :
 		(() => {
 			const {
 				voices: {
 					$hash,
-					android,
-					chromeOS,
-					google,
-					microsoft,
+					defaultVoice,
 					voices
 				}
 			} = fp;
 			const voiceList = voices.map(voice => `${voice.name} (${voice.lang})`);
 			return `
 			<div class="col-four">
-				<strong>Speech</strong><span class="hash">${hashMini($hash)}</span>
-				<div>microsoft: ${''+microsoft}</div>
-				<div>google: ${''+google}</div>
-				<div>chrome OS: ${''+chromeOS}</div>
-				<div>android: ${''+android}</div>
-				<div>voices (${count(voices)}): ${voiceList && voiceList.length ? modal('creep-voices', voiceList.join('<br>')) : note.unsupported}</div>
+				<strong>Speech</strong><span class="hash">${hashSlice($hash)}</span>
+				<div>voices (${count(voices)}): ${
+					!voiceList || !voiceList.length ? note.unsupported :
+					modal(
+						'creep-voices',
+						voiceList.join('<br>'),
+						hashMini(voices)
+					)
+				}</div>
+				<div>default:${
+					!defaultVoice ? ` ${note.unsupported}` :
+					`<span class="sub-hash">${hashMini(defaultVoice)}</span>`
+				}</div>
 			</div>
 			`
 		})()}
@@ -5114,19 +5342,36 @@
 			`<div class="col-four">
 				<strong>Media</strong>
 				<div>devices (0): ${note.blocked}</div>
+				<div>constraints: ${note.blocked}</div>
 			</div>` :
 		(() => {
 			const {
 				media: {
 					mediaDevices,
+					constraints,
 					$hash
 				}
 			} = fp;
 
 			return `
 			<div class="col-four">
-				<strong>Media</strong><span class="hash">${hashMini($hash)}</span>
-				<div>devices (${count(mediaDevices)}):${mediaDevices && mediaDevices.length ? modal('creep-media-devices', mediaDevices.map(device => device.kind).join('<br>')) : note.blocked}</div>
+				<strong>Media</strong><span class="hash">${hashSlice($hash)}</span>
+				<div>devices (${count(mediaDevices)}): ${
+					!mediaDevices || !mediaDevices.length ? note.blocked : 
+					modal(
+						'creep-media-devices',
+						mediaDevices.map(device => device.kind).join('<br>'),
+						hashMini(mediaDevices)
+					)
+				}</div>
+				<div>constraints: ${
+					!constraints ? note.blocked : 
+					modal(
+						'creep-media-constraints',
+						constraints.join('<br>'),
+						hashMini(constraints)
+					)
+				}</div>
 			</div>
 			`
 		})()}
@@ -5137,9 +5382,7 @@
 			`<div class="col-six">
 				<strong>DOMRect</strong>
 				<div>elements: ${note.blocked}</div>
-				<div>results: ${note.blocked}</div>
 				<div>emojis v13.0: ${note.blocked}</div>
-				<div>results: ${note.blocked}</div>
 			</div>` :
 		(() => {
 			const {
@@ -5151,16 +5394,26 @@
 				}
 			} = fp;
 			const id = 'creep-client-rects';
+			const getRectHash = rect => {
+				const {emoji,...excludeEmoji} = rect;
+				return hashMini(excludeEmoji)
+			};
 			return `
 			<div class="col-six">
-				<strong>DOMRect</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
-				<div>elements:<span class="sub-hash">${hashMini(clientRects)}</span></div>
-				<div>results: ${
-					modal(`${id}-elements`, clientRects.map(domRect => Object.keys(domRect).map(key => `<div>${key}: ${domRect[key]}</div>`).join('')).join('<br>') )
+				<strong>DOMRect</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+				<div>elements: ${
+					modal(
+						`${id}-elements`,
+						clientRects.map(domRect => Object.keys(domRect).map(key => `<div>${key}: ${domRect[key]}</div>`).join('')).join('<br>'),
+						hashMini(clientRects)
+					)
 				}</div>
-				<div>emojis v13.0:<span class="sub-hash">${hashMini(emojiRects)}</span></div>
-				<div>results: ${
-					modal(`${id}-emojis`, `<span style="font-size: 32px;">${emojiRects.map(rect => rect.emoji).join('')}</span>` )
+				<div>emojis v13.0: ${
+					modal(
+						`${id}-emojis`,
+						`<div>${emojiRects.map(rect => `${rect.emoji}: ${getRectHash(rect)}`).join('<br>')}</div>`,
+						hashMini(emojiRects)
+					)
 				}</div>
 			</div>
 			`
@@ -5180,7 +5433,7 @@
 			} = fp;
 			return `
 			<div class="col-six">
-				<strong>Fonts</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
+				<strong>Fonts</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 				<div>results (${fonts ? count(fonts) : '0'}): ${fonts.length ? modal('creep-fonts', fonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>')) : note.blocked}</div>
 			</div>
 			`
@@ -5229,7 +5482,7 @@
 			const { deviceHeight, deviceWidth } = getDeviceDimensions(width, height);
 			return `
 			<div class="col-six">
-				<strong>Screen</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
+				<strong>Screen</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 				<div>device: ${device ? device : note.blocked}</div>
 				<div>width: ${width ? width : note.blocked}</div>
 				<div>outerWidth: ${outerWidth ? outerWidth : note.blocked}</div>
@@ -5241,7 +5494,8 @@
 				<div>pixelDepth: ${pixelDepth ? pixelDepth : note.blocked}</div>
 			</div>
 			<div class="col-six screen-container">
-				<div class="screen-frame" style="width:${deviceWidth}px;height:${deviceHeight}px;">
+				<style>.screen-frame { width:${deviceWidth}px;height:${deviceHeight}px; }</style>
+				<div class="screen-frame">
 					<div class="screen-glass"></div>
 				</div>
 			</div>
@@ -5249,43 +5503,13 @@
 		})()}
 		</div>
 		<div class="flex-grid">
-			
 		${!fp.css ?
 			`<div class="col-six">
-				<strong>@media</strong>
+				<strong>CSS Media Queries</strong><
+				<div>@media: ${note.blocked}</div>
+				<div>@import: ${note.blocked}</div>
+				<div>matchMedia: ${note.blocked}</div>
 				<div>screen query: ${note.blocked}</div>
-				<div>device aspect ratio: ${note.blocked}</div>
-				<div>device screen: ${note.blocked}</div>
-				<div>display mode: ${note.unsupported}</div>
-				<div>orientation: ${note.unsupported}</div>
-				<div>motion: ${note.unsupported}</div>
-				<div>hover: ${note.unsupported}</div>
-				<div>any hover: ${note.unsupported}</div>
-				<div>pointer: ${note.unsupported}</div>
-				<div>any pointer: ${note.unsupported}</div>
-				<div>monochrome: ${note.unsupported}</div>
-				<div>color scheme: ${note.unsupported}</div>
-				<div>color gamut: ${note.unsupported}</div>
-				<div>forced colors: ${note.unsupported}</div>
-				<div>inverted colors: ${note.unsupported}</div>
-			</div>
-			<div class="col-six">
-				<strong>MediaQueryList</strong>
-				<div>screen query: ${note.blocked}</div>
-				<div>device aspect ratio: ${note.blocked}</div>
-				<div>device screen: ${note.blocked}</div>
-				<div>display mode: ${note.unsupported}</div>
-				<div>orientation: ${note.unsupported}</div>
-				<div>motion: ${note.unsupported}</div>
-				<div>hover: ${note.unsupported}</div>
-				<div>any hover: ${note.unsupported}</div>
-				<div>pointer: ${note.unsupported}</div>
-				<div>any pointer: ${note.unsupported}</div>
-				<div>monochrome: ${note.unsupported}</div>
-				<div>color scheme: ${note.unsupported}</div>
-				<div>color gamut: ${note.unsupported}</div>
-				<div>forced colors: ${note.unsupported}</div>
-				<div>inverted colors: ${note.unsupported}</div>
 			</div>` :
 		(() => {
 			const {
@@ -5293,64 +5517,50 @@
 			} = fp;
 			const {
 				$hash,
+				importCSS,
 				mediaCSS,
-				matchMediaCSS
+				matchMediaCSS,
+				screenQuery
 			} = data;
+
 			return `
 			<div class="col-six">
-				<strong>@media</strong><span class="hash">${hashMini(mediaCSS)}</span>
-				<div>screen query: ${''+mediaCSS.screenQuery.width} x ${''+mediaCSS.screenQuery.height}</div>
-				<div>screen match: ${mediaCSS.deviceScreen || note.blocked}</div>
-				<div>device aspect ratio: ${mediaCSS.deviceAspectRatio || note.blocked}</div>
-				<div>display mode: ${mediaCSS.displayMode || note.unsupported}</div>
-				<div>orientation: ${mediaCSS.orientation  || note.unsupported}</div>
-				<div>motion: ${mediaCSS.reducedMotion || note.unsupported}</div>
-				<div>hover: ${mediaCSS.hover || note.unsupported}</div>
-				<div>any hover: ${mediaCSS.anyHover || note.unsupported}</div>
-				<div>pointer: ${mediaCSS.pointer || note.unsupported}</div>
-				<div>any pointer: ${mediaCSS.anyPointer || note.unsupported}</div>
-				<div>monochrome: ${mediaCSS.monochrome || note.unsupported}</div>
-				<div>color scheme: ${mediaCSS.colorScheme || note.unsupported}</div>
-				<div>color gamut: ${mediaCSS.colorGamut || note.unsupported}</div>
-				<div>forced colors: ${mediaCSS.forcedColors || note.unsupported}</div>
-				<div>inverted colors: ${mediaCSS.invertedColors || note.unsupported}</div>
-			</div>
-			<div class="col-six">
-				<strong>MediaQueryList</strong><span class="hash">${hashMini(matchMediaCSS)}</span>
-				<div>screen query: ${''+matchMediaCSS.screenQuery.width} x ${''+matchMediaCSS.screenQuery.height}</div>
-				<div>screen match: ${matchMediaCSS.deviceScreen || note.blocked}</div>
-				<div>device aspect ratio: ${matchMediaCSS.deviceAspectRatio || note.blocked}</div>
-				<div>display mode: ${matchMediaCSS.displayMode || note.unsupported}</div>
-				<div>orientation: ${matchMediaCSS.orientation || note.unsupported}</div>
-				<div>motion: ${matchMediaCSS.reducedMotion || note.unsupported}</div>
-				<div>hover: ${matchMediaCSS.hover || note.unsupported}</div>
-				<div>any hover: ${matchMediaCSS.anyHover || note.unsupported}</div>
-				<div>pointer: ${matchMediaCSS.pointer || note.unsupported}</div>
-				<div>any pointer: ${matchMediaCSS.anyPointer || note.unsupported}</div>
-				<div>monochrome: ${matchMediaCSS.monochrome || note.unsupported}</div>
-				<div>color scheme: ${matchMediaCSS.colorScheme || note.unsupported}</div>
-				<div>color gamut: ${matchMediaCSS.colorGamut || note.unsupported}</div>
-				<div>forced colors: ${matchMediaCSS.forcedColors || note.unsupported}</div>
-				<div>inverted colors: ${matchMediaCSS.invertedColors || note.unsupported}</div>
+				<strong>CSS Media Queries</strong><span class="hash">${hashSlice($hash)}</span>
+				<div>@media: ${
+					!mediaCSS ? note.blocked :
+					modal(
+						'creep-css-media',
+						`<strong>@media</strong><br><br>${Object.keys(mediaCSS).map(key => `${key}: ${mediaCSS[key] || note.unsupported}`).join('<br>')}`,
+						hashMini(mediaCSS)
+					)
+				}</div>
+				<div>@import: ${
+					!importCSS ? note.blocked : 
+					modal(
+						'creep-css-import',
+						`<strong>@import</strong><br><br>${Object.keys(importCSS).map(key => `${key}: ${importCSS[key] || note.unsupported}`).join('<br>')}`,
+						hashMini(importCSS)
+					)
+				}</div>
+				<div>matchMedia: ${
+					!matchMediaCSS ? note.blocked : 
+					modal(
+						'creep-css-match-media',
+						`<strong>matchMedia</strong><br><br>${Object.keys(matchMediaCSS).map(key => `${key}: ${matchMediaCSS[key] || note.unsupported}`).join('<br>')}`,
+						hashMini(matchMediaCSS)
+					)
+				}</div>
+				<div>screen query: ${!screenQuery ? note.blocked : `${screenQuery.width} x ${screenQuery.height}`}</div>
 			</div>
 			`
 		})()}
-		</div>
-		<div class="flex-grid">
 		${!fp.css ?
 			`<div class="col-six">
 				<strong>Computed Style</strong>
-				<div>getComputedStyle: ${note.blocked}</div>
-				<div>keys: ${note.blocked}</div>
-				<div>moz: ${note.blocked}</div>
-				<div>webkit: ${note.blocked}</div>
-				<div>apple: ${note.blocked}</div>
-			</div>
-			<div class="col-six">
-				<div>engine: ${note.blocked}</div>
-				<div>prototype: ${note.blocked}</div>
+				<div>keys (0): ${note.blocked}</div>
+				<div>interface: ${note.blocked}</div>
 				<div>system styles: ${note.blocked}</div>
-				<div>system styles rendered: ${note.blocked}</div>
+				<div class="gradient"></div>
 			</div>` :
 		(() => {
 			const {
@@ -5358,32 +5568,33 @@
 			} = fp;
 			const {
 				$hash,
-				getComputedStyle: computedStyle,
+				computedStyle,
 				system
 			} = data;
+			const colorsLen = system.colors.length;
+			const gradientColors = system.colors.map((color, index) => {
+				const name = Object.values(color)[0];
+				return (
+					index == 0 ? `${name}, ${name} ${((index+1)/colorsLen*100).toFixed(2)}%` : 
+					index == colorsLen-1 ? `${name} ${((index-1)/colorsLen*100).toFixed(2)}%, ${name} 100%` : 
+					`${name} ${(index/colorsLen*100).toFixed(2)}%, ${name} ${((index+1)/colorsLen*100).toFixed(2)}%`
+				)
+			});
 			const id = 'creep-css-style-declaration-version';
-			const { prototypeName } = computedStyle;
+			const { interfaceName } = computedStyle;
 			return `
 			<div class="col-six">
-				<strong>Computed Style</strong><span class="hash">${hashMini($hash)}</span>
-				<div>getComputedStyle:<span class="sub-hash">${hashMini(computedStyle.keys)}</span></div>
-				<div>keys: ${computedStyle.keys.length}</div>
-				<div>moz: ${''+computedStyle.moz}</div>
-				<div>webkit: ${''+computedStyle.webkit}</div>
-				<div>apple: ${''+computedStyle.apple}</div>
-			</div>
-			<div class="col-six">
-				<div>engine: ${
-					prototypeName == 'CSS2Properties' ? 'Gecko' :
-					prototypeName == 'CSS2PropertiesPrototype' ? 'Gecko (like Goanna)' :
-					prototypeName == 'MSCSSPropertiesPrototype' ? 'Trident' :
-					prototypeName == 'CSSStyleDeclaration' ? 'Blink' :
-					prototypeName == 'CSSStyleDeclarationPrototype' ? 'Webkit' :
-					'unknown'
+				<strong>Computed Style</strong><span class="hash">${hashSlice($hash)}</span>
+				<div>keys (${!computedStyle ? '0' : count(computedStyle.keys)}): ${
+					!computedStyle ? note.blocked : 
+					modal(
+						'creep-computed-style',
+						computedStyle.keys.join(', '),
+						hashMini(computedStyle)
+					)
 				}</div>
-				<div>prototype: ${prototypeName}</div>
-				<div>system styles:<span class="sub-hash">${hashMini(system)}</span></div>
-				<div>system styles rendered: ${
+				<div>interface: ${interfaceName}</div>
+				<div>system styles: ${
 					system && system.colors ? modal(
 						`${id}-system-styles`,
 						[
@@ -5398,12 +5609,15 @@
 								const key = Object.keys(font)[0];
 								const val = font[key];
 								return `
-									<div>${key}: <span style="border:1px solid #eee;background:#f9f9f9;padding:0 5px;border-radius:3px;font:${val}">${val}</span></div>
+									<div>${key}: <span style="padding:0 5px;border-radius:3px;font:${val}">${val}</span></div>
 								`
 							}),
-						].join('')
+						].join(''),
+						hashMini(system)
 					) : note.blocked
 				}</div>
+				<style>.gradient { background: repeating-linear-gradient(to right, ${gradientColors.join(', ')}); }</style>
+				<div class="gradient"></div>
 			</div>
 			`
 		})()}
@@ -5432,7 +5646,7 @@
 				});
 				return `
 				<div class="col-six">
-					<strong>Math</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
+					<strong>Math</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 					<div>results: ${modal(id, header+results.join('<br>'))}</div>
 				</div>
 				`
@@ -5455,7 +5669,7 @@
 				});
 				return `
 				<div class="col-six">
-					<strong>Error</strong><span class="hash">${hashMini($hash)}</span>
+					<strong>Error</strong><span class="hash">${hashSlice($hash)}</span>
 					<div>results: ${modal('creep-console-errors', results.join('<br>'))}</div>
 				</div>
 				`
@@ -5482,7 +5696,7 @@
 				} = fp;
 				return `
 				<div class="col-six">
-					<strong>Window</strong><span class="hash">${hashMini($hash)}</span>
+					<strong>Window</strong><span class="hash">${hashSlice($hash)}</span>
 					<div>keys (${count(keys)}): ${keys && keys.length ? modal('creep-iframe-content-window-version', keys.join(', ')) : note.blocked}</div>
 					<div>moz: ${''+moz}</div>
 					<div>webkit: ${''+webkit}</div>
@@ -5504,7 +5718,7 @@
 				} = fp;
 				return `
 				<div class="col-six">
-					<strong>HTMLElement</strong><span class="hash">${hashMini($hash)}</span>
+					<strong>HTMLElement</strong><span class="hash">${hashSlice($hash)}</span>
 					<div>keys (${count(keys)}): ${keys && keys.length ? modal('creep-html-element-version', keys.join(', ')) : note.blocked}</div>
 				</div>
 				`
@@ -5572,7 +5786,7 @@
 			};
 			return `
 			<div class="col-six">
-				<strong>Navigator</strong><span class="${lied ? 'lies ' : ''}hash">${hashMini($hash)}</span>
+				<strong>Navigator</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 				<div>deviceMemory: ${!blocked[deviceMemory] ? deviceMemory : note.blocked}</div>
 				<div>doNotTrack: ${''+doNotTrack}</div>
 				<div>globalPrivacyControl: ${
@@ -5584,12 +5798,20 @@
 				<div>vendor: ${!blocked[vendor] ? vendor : note.blocked}</div>
 				<div>plugins (${count(plugins)}): ${
 					!blocked[''+plugins] ?
-					modal(`${id}-plugins`, plugins.map(plugin => plugin.name).join('<br>')) :
+					modal(
+						`${id}-plugins`,
+						plugins.map(plugin => plugin.name).join('<br>'),
+						hashMini(plugins)
+					) :
 					note.blocked
 				}</div>
 				<div>mimeTypes (${count(mimeTypes)}): ${
 					!blocked[''+mimeTypes] ? 
-					modal(`${id}-mimeTypes`, mimeTypes.join('<br>')) :
+					modal(
+						`${id}-mimeTypes`,
+						mimeTypes.join('<br>'),
+						hashMini(mimeTypes)
+					) :
 					note.blocked
 				}</div>
 				<div>platform: ${!blocked[platform] ? platform : note.blocked}</div>
@@ -5608,7 +5830,13 @@
 					<div>ua platformVersion: ${note.unsupported}</div>
 					<div>ua uaFullVersion: ${note.unsupported} </div>`
 				}
-				<div>properties (${count(properties)}): ${modal(`${id}-properties`, properties.join(', '))}</div>
+				<div>properties (${count(properties)}): ${
+					modal(
+						`${id}-properties`,
+						properties.join(', '),
+						hashMini(properties)
+					)
+				}</div>
 			</div>
 			<div class="col-six">
 				<div>device:</div>
@@ -5636,6 +5864,8 @@
 				<br><a class="tests" href="./tests/timezone.html">Timezone</a>
 				<br><a class="tests" href="./tests/window.html">Window Version</a>
 				<br><a class="tests" href="./tests/screen.html">Screen</a>
+				<br><a class="tests" href="./tests/prototype.html">Prototype</a>
+				<br><a class="tests" href="./tests/domrect.html">DOMRect</a>
 			</div>
 		</div>
 	</div>
@@ -5704,22 +5934,26 @@
 						<div class="col-six">
 							<div>has trash: <span class="unblurred">${
 								(''+hasTrash) == 'true' ?
-								`true (${hashMini(fp.trash.$hash)})` : 
+								`true (${hashSlice(fp.trash.$hash)})` : 
 								'false'
 							}</span></div>
 							<div>has lied: <span class="unblurred">${
 								(''+hasLied) == 'true' ? 
-								`true (${hashMini(fp.lies.$hash)})` : 
+								`true (${hashSlice(fp.lies.$hash)})` : 
 								'false'
 							}</span></div>
 							<div>has errors: <span class="unblurred">${
 								(''+hasErrors) == 'true' ? 
-								`true (${hashMini(fp.capturedErrors.$hash)})` : 
+								`true (${hashSlice(fp.capturedErrors.$hash)})` : 
 								'false'
 							}</span></div>
-							<div class="ellipsis">loose fingerprint: <span class="unblurred">${hashMini(fpHash)}</span></div>
+							<div class="ellipsis">loose fingerprint: <span class="unblurred">${hashSlice(fpHash)}</span></div>
 							<div class="ellipsis">loose switched: <span class="unblurred">${switchCount}x</span></div>
-							<div class="ellipsis">bot: <span class="unblurred">${switchCount > 9 && hours < 48 ? 'true (10 loose in 48 hours)' : 'false'}</span></div>
+							<div class="ellipsis">bot: <span class="unblurred">${
+								caniuse(() => fp.headless.headlessRating) ? 'true (headless)' :
+								caniuse(() => fp.headless.stealthRating) ? 'true (stealth)' :
+								switchCount > 9 && hours < 48 ? 'true (10 loose in 48 hours)' : 'false'
+							}</span></div>
 						</div>
 					</div>
 					${
@@ -5791,7 +6025,7 @@
 					css
 				} = fp || {};
 				const {
-					getComputedStyle,
+					computedStyle,
 					system
 				} = css || {};
 
@@ -5799,7 +6033,7 @@
 					styleHash,
 					systemHash
 				] = await Promise.all([
-					hashify(getComputedStyle),
+					hashify(computedStyle),
 					hashify(system)
 				]);
 					
@@ -5883,7 +6117,7 @@
 					<div class="col-eight">
 						<strong>Version</strong>
 						<div>client user agent:
-							<span class="${fakeUserAgent ? 'lies' : ''}">${report}${fakeUserAgent ?` (fake)` : ''}</span>
+							<span class="${fakeUserAgent ? 'lies' : ''}">${report}</span>
 						</div>
 						<div class="ellipsis">window object: ${getTemplate(windowVersion)}</div>
 						<div class="ellipsis">system styles: ${getTemplate(styleSystem)}</div>
