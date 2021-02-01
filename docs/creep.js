@@ -2520,10 +2520,15 @@
 							return !!iframe.contentWindow
 						})(),
 						invalidChromeIndex: (() => {
+							const control = (
+								'cookieStore' in window ? 'cookieStore' :
+								'ondevicemotion' in window ? 'ondevicemotion' :
+								'speechSynthesis'
+							);
 							const propsInWindow = [];
 							for (const prop in window) { propsInWindow.push(prop); }
 							const chromeIndex = propsInWindow.indexOf('chrome');
-							const controlIndex = propsInWindow.indexOf('cookieStore');
+							const controlIndex = propsInWindow.indexOf(control);
 							return chromeIndex > controlIndex
 						})(),
 						toStringProxy: (() => {
