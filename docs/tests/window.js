@@ -281,7 +281,7 @@ patch(el, html`
 			</div>
 		</div>
 		<div class="relative">
-			<div class="ellipsis"><span class="aside-note">updated 2021-1-4</span></div>
+			<div class="ellipsis"><span class="aside-note">updated 2021-1-31</span></div>
 			${uaTemplates.join('')}
 		</div>
 	</div>
