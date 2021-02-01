@@ -478,6 +478,7 @@ input[type="radio"] {
     border: 1px solid #eee;
 }
 
+
 .blurred {
 	filter: blur(2.5px);
 	animation: reveal 5s ease both;

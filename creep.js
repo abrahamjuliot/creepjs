@@ -14,6 +14,7 @@ import { getCSSMedia } from './modules/css.js'
 import { getConsoleErrors } from './modules/consoleErrors.js'
 import { getWindowFeatures } from './modules/contentWindowVersion.js'
 import { getFonts, fontList } from './modules/fonts.js'
+import { getHeadlessFeatures } from './modules/headless.js'
 import { getHTMLElementVersion } from './modules/htmlElementVersion.js'
 import { getMaths } from './modules/maths.js'
 import { getMedia } from './modules/media.js'
@@ -91,30 +92,9 @@ const imports = {
 	const fingerprint = async () => {
 		const timeStart = timer()
 		
-		/*
-		const windowFeaturesComputed = await getWindowFeatures(imports)
-		const htmlElementVersionComputed = await getHTMLElementVersion(imports)
-		const cssComputed = await getCSS(imports)
-		const screenComputed = await getScreen(imports)
-		const voicesComputed = await getVoices(imports)
-		const canvas2dComputed = await getCanvas2d(imports)
-		const canvasWebglComputed = await getCanvasWebgl(imports)
-		const mathsComputed = await getMaths(imports)
-		const consoleErrorsComputed = await getConsoleErrors(imports)
-		const timezoneComputed = await getTimezone(imports)
-		const clientRectsComputed = await getClientRects(imports)
-		const offlineAudioContextComputed = await getOfflineAudioContext(imports)
-		const fontsComputed = await getFonts(imports, [...fontList])
-			.catch(error => { console.error(error.message)})
-		const workerScopeComputed = await getBestWorkerScope(imports)
-		const mediaComputed = await getMedia(imports)
-		const webRTCDataComputed = await getWebRTCData(imports)
-		const navigatorComputed = await getNavigator(imports, workerScopeComputed)
-			.catch(error => console.error(error.message))
-		*/
-		
 		const [
 			windowFeaturesComputed,
+			headlessComputed,
 			htmlElementVersionComputed,
 			cssComputed,
 			cssMediaComputed,
@@ -133,6 +113,7 @@ const imports = {
 			webRTCDataComputed
 		] = await Promise.all([
 			getWindowFeatures(imports),
+			getHeadlessFeatures(imports),
 			getHTMLElementVersion(imports),
 			getCSS(imports),
 			getCSSMedia(imports),
@@ -167,6 +148,7 @@ const imports = {
 		//const start = performance.now()
 		const [
 			windowHash,
+			headlessHash,
 			htmlHash,
 			cssMediaHash,
 			cssHash,
@@ -189,6 +171,7 @@ const imports = {
 			errorsHash
 		] = await Promise.all([
 			hashify(windowFeaturesComputed),
+			hashify(headlessComputed),
 			hashify(htmlElementVersionComputed.keys),
 			hashify(cssMediaComputed),
 			hashify(cssComputed),
@@ -226,6 +209,7 @@ const imports = {
 			webRTC: !webRTCDataComputed ? undefined : {...webRTCDataComputed, $hash: webRTCHash },
 			navigator: !navigatorComputed ? undefined : {...navigatorComputed, $hash: navigatorHash },
 			windowFeatures: !windowFeaturesComputed ? undefined : {...windowFeaturesComputed, $hash: windowHash },
+			headless: !headlessComputed ? undefined : {...headlessComputed, $hash: headlessHash },
 			htmlElementVersion: !htmlElementVersionComputed ? undefined : {...htmlElementVersionComputed, $hash: htmlHash },
 			cssMedia: !cssMediaComputed ? undefined : {...cssMediaComputed, $hash: cssMediaHash },
 			css: !cssComputed ? undefined : {...cssComputed, $hash: cssHash },
@@ -607,10 +591,67 @@ const imports = {
 			<div class="col-four icon-container">
 			</div>
 		</div>
+
+		<div id="headless-detection-results" class="flex-grid">
+			${!fp.headless ?
+				`<div class="col-six">
+					<strong>Headless</strong>
+					<div>chromium: ${note.blocked}</div>
+					<div>hasTrustToken: ${note.blocked}</div>
+					<div>webdriver: ${note.blocked}</div>
+					<div>headless: ${note.blocked}</div>
+					<div>0% detected</div>
+					<div>stealth: ${note.blocked}</div>
+					<div>0% detected</div>
+				</div>
+				<div class="col-six">
+					<div>headless: ${note.blocked}</div>
+					<div>0% detected</div>
+					<div>stealth: ${note.blocked}</div>
+					<div>0% detected</div>
+				</div>` :
+			(() => {
+				const {
+					headless: data
+				} = fp
+				const {
+					$hash,
+					chromium,
+					hasTrustToken,
+					headlessRating,
+					stealthRating,
+					webdriver
+				} = data || {}
+				
+				return `
+				<div class="col-six">
+					<style>
+						.headless-rating {
+							background: linear-gradient(90deg, var(--error) ${headlessRating}%, #fff0 ${headlessRating}%, #fff0 100%);
+						}
+						.stealth-rating {
+							background: linear-gradient(90deg, var(--error) ${stealthRating}%, #fff0 ${stealthRating}%, #fff0 100%);
+						}
+					</style>
+					<strong>Headless</strong><span class="hash">${hashSlice($hash)}</span>
+					<div>chromium: ${''+chromium}</div>
+					<div>hasTrustToken: ${hasTrustToken || note.unsupported}</div>
+					<div>webdriver: ${webdriver || note.unsupported}</div>
+				</div>
+				<div class="col-six">
+					<div>headless:</div>
+					<div class="headless-rating">${''+headlessRating}% detected</div>
+					<div>stealth:</div>
+					<div class="stealth-rating">${''+stealthRating}% detected</div>
+				</div>
+				`
+			})()}
+		</div>
+
 		<div class="flex-grid relative">
-		<div class="ellipsis"><span class="aside-note">${
-			fp.workerScope && fp.workerScope.type ? fp.workerScope.type : ''
-		} worker</span></div>
+			<div class="ellipsis"><span class="aside-note">${
+				fp.workerScope && fp.workerScope.type ? fp.workerScope.type : ''
+			} worker</span></div>
 		${!fp.workerScope ?
 			`<div class="col-six">
 				<strong>Worker</strong>
@@ -1389,7 +1430,6 @@ const imports = {
 				<br><a class="tests" href="./tests/timezone.html">Timezone</a>
 				<br><a class="tests" href="./tests/window.html">Window Version</a>
 				<br><a class="tests" href="./tests/screen.html">Screen</a>
-				<br><a class="tests" href="./tests/extensions.html">Extensions</a>
 				<br><a class="tests" href="./tests/prototype.html">Prototype</a>
 				<br><a class="tests" href="./tests/domrect.html">DOMRect</a>
 			</div>
@@ -1475,7 +1515,11 @@ const imports = {
 							}</span></div>
 							<div class="ellipsis">loose fingerprint: <span class="unblurred">${hashSlice(fpHash)}</span></div>
 							<div class="ellipsis">loose switched: <span class="unblurred">${switchCount}x</span></div>
-							<div class="ellipsis">bot: <span class="unblurred">${switchCount > 9 && hours < 48 ? 'true (10 loose in 48 hours)' : 'false'}</span></div>
+							<div class="ellipsis">bot: <span class="unblurred">${
+								caniuse(() => fp.headless.headlessRating) ? 'true (headless)' :
+								caniuse(() => fp.headless.stealthRating) ? 'true (stealth)' :
+								switchCount > 9 && hours < 48 ? 'true (10 loose in 48 hours)' : 'false'
+							}</span></div>
 						</div>
 					</div>
 					${
