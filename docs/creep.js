@@ -2553,7 +2553,33 @@
 							const controlIndex = propsInWindow.indexOf(control);
 							return chromeIndex > controlIndex
 						})(),
-						['toString Proxy exposes an invalid TypeError']: (() => {
+						['chrome.runtime functions are invalid']: (() => {
+							if (!('chrome' in window && 'runtime' in chrome)) {
+								return false
+							}
+							try {
+								if ('prototype' in chrome.runtime.sendMessage ||
+									'prototype' in chrome.runtime.connect) {
+									return true
+								}
+								new chrome.runtime.sendMessage;
+								new chrome.runtime.connect;
+								return true
+							}
+							catch (error) {
+								return error.constructor.name != 'TypeError' ? true : false
+							}
+						})(),
+						['toString Proxy trapped with [object Function] TypeError']: (() => {
+							try {
+								class Blah extends Function.prototype.toString {}
+								return true
+							}
+							catch (error) {
+								return /\[object Function\]/.test(error.message)
+							}
+						})(),
+						['toString Proxy exposed by invalid TypeError']: (() => {
 							const liedToString = (
 								getNewObjectToStringTypeErrorLie(Function.prototype.toString) ||
 								getNewObjectToStringTypeErrorLie(() => {})
@@ -2568,9 +2594,9 @@
 				const headlessKeys = Object.keys(headless);
 				const stealthKeys = Object.keys(stealth);
 				
-				const likeHeadlessRating = ((likeHeadlessKeys.filter(key => likeHeadless[key]).length / likeHeadlessKeys.length) * 100).toFixed(0);
-				const headlessRating = ((headlessKeys.filter(key => headless[key]).length / headlessKeys.length) * 100).toFixed(0);
-				const stealthRating = ((stealthKeys.filter(key => stealth[key]).length / stealthKeys.length) * 100).toFixed(0);
+				const likeHeadlessRating = +((likeHeadlessKeys.filter(key => likeHeadless[key]).length / likeHeadlessKeys.length) * 100).toFixed(0);
+				const headlessRating = +((headlessKeys.filter(key => headless[key]).length / headlessKeys.length) * 100).toFixed(0);
+				const stealthRating = +((stealthKeys.filter(key => stealth[key]).length / stealthKeys.length) * 100).toFixed(0);
 
 				logTestResult({ start, test: 'headless', passed: true });
 				return resolve({ ...data, likeHeadlessRating, headlessRating, stealthRating })

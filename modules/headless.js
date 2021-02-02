@@ -159,9 +159,9 @@ export const getHeadlessFeatures = imports => {
 			const headlessKeys = Object.keys(headless)
 			const stealthKeys = Object.keys(stealth)
 			
-			const likeHeadlessRating = ((likeHeadlessKeys.filter(key => likeHeadless[key]).length / likeHeadlessKeys.length) * 100).toFixed(0)
-			const headlessRating = ((headlessKeys.filter(key => headless[key]).length / headlessKeys.length) * 100).toFixed(0)
-			const stealthRating = ((stealthKeys.filter(key => stealth[key]).length / stealthKeys.length) * 100).toFixed(0)
+			const likeHeadlessRating = +((likeHeadlessKeys.filter(key => likeHeadless[key]).length / likeHeadlessKeys.length) * 100).toFixed(0)
+			const headlessRating = +((headlessKeys.filter(key => headless[key]).length / headlessKeys.length) * 100).toFixed(0)
+			const stealthRating = +((stealthKeys.filter(key => stealth[key]).length / stealthKeys.length) * 100).toFixed(0)
 
 			logTestResult({ start, test: 'headless', passed: true })
 			return resolve({ ...data, likeHeadlessRating, headlessRating, stealthRating })
