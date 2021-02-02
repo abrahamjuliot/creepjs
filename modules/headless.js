@@ -118,7 +118,33 @@ export const getHeadlessFeatures = imports => {
 						const controlIndex = propsInWindow.indexOf(control)
 						return chromeIndex > controlIndex
 					})(),
-					['toString Proxy exposes an invalid TypeError']: (() => {
+					['chrome.runtime functions are invalid']: (() => {
+						if (!('chrome' in window && 'runtime' in chrome)) {
+							return false
+						}
+						try {
+							if ('prototype' in chrome.runtime.sendMessage ||
+								'prototype' in chrome.runtime.connect) {
+								return true
+							}
+							new chrome.runtime.sendMessage
+							new chrome.runtime.connect
+							return true
+						}
+						catch (error) {
+							return error.constructor.name != 'TypeError' ? true : false
+						}
+					})(),
+					['toString Proxy trapped with [object Function] TypeError']: (() => {
+						try {
+							class Blah extends Function.prototype.toString {}
+							return true
+						}
+						catch (error) {
+							return /\[object Function\]/.test(error.message)
+						}
+					})(),
+					['toString Proxy exposed by invalid TypeError']: (() => {
 						const liedToString = (
 							getNewObjectToStringTypeErrorLie(Function.prototype.toString) ||
 							getNewObjectToStringTypeErrorLie(() => {})
