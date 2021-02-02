@@ -44,6 +44,7 @@ export const getHeadlessFeatures = imports => {
 
 	const {
 		require: {
+			parentPhantom,
 			hashMini,
 			captureError,
 			logTestResult
@@ -54,23 +55,44 @@ export const getHeadlessFeatures = imports => {
 		try {
 			const start = performance.now()
 			const isChrome = detectChromium()
-			const permissionStatus = await navigator.permissions.query({ name:'notifications' })
-			const headlessPermissions = (
-				Notification.permission == 'denied' && permissionStatus.state === 'prompt'
-			)
 			const mimeTypes = Object.keys({...navigator.mimeTypes})
 			const data = {
 				chromium: isChrome,
-				hasTrustToken: 'hasTrustToken' in document,
-				webdriver: 'webdriver' in navigator,
+				likeHeadless: {
+					['trust token is unsupported']: (
+						!('hasTrustToken' in document) ||
+						!('trustTokenOperationError' in XMLHttpRequest.prototype) ||
+						!('setTrustToken' in XMLHttpRequest.prototype) ||
+						!('trustToken' in HTMLIFrameElement.prototype)
+					),
+					['navigator.webdriver is on']: 'webdriver' in navigator && !!navigator.webdriver,
+					['chrome plugins is empty']: isChrome && navigator.plugins.length === 0,
+					['chrome mimeTypes is empty']: isChrome && mimeTypes.length === 0,
+					['notification permission is denied']: Notification.permission == 'denied',
+					['system color ActiveText is rgb(255, 0, 0)']: (() => {
+						let rendered = parentPhantom
+						if (!parentPhantom) {
+							rendered = document.createElement('div')
+							document.body.appendChild(rendered)
+						}
+						rendered.setAttribute('style', `background-color: ActiveText`)
+						const { backgroundColor: activeText } = getComputedStyle(rendered)
+						if (!parentPhantom) {
+							rendered.parentNode.removeChild(rendered)
+						}
+						return isChrome && activeText === 'rgb(255, 0, 0)'
+					})(parentPhantom),
+					['prefers light color scheme']: matchMedia('(prefers-color-scheme: light)').matches
+				},
 				headless: {
-					chrome: isChrome && !('chrome' in window),
-					permissions: isChrome && headlessPermissions,
-					plugins: isChrome && navigator.plugins.length === 0,
-					mimeTypes: isChrome && mimeTypes.length === 0
+					['chrome window.chrome is undefined']: isChrome && !('chrome' in window),
+					['userAgent HeadlessChrome']: (
+						/HeadlessChrome/.test(navigator.userAgent) ||
+						/HeadlessChrome/.test(navigator.appVersion)
+					)
 				},
 				stealth: {
-					srcdocError: (() => {
+					['srcdoc throws an error']: (() => {
 						try {
 							const { srcdoc } = document.createElement('iframe')
 							return !!srcdoc
@@ -79,12 +101,12 @@ export const getHeadlessFeatures = imports => {
 							return true
 						}
 					})(),
-					srcdocProxy: (() => {
+					['srcdoc triggers a window Proxy']: (() => {
 						const iframe = document.createElement('iframe')
 						iframe.srcdoc = '' + hashMini(crypto.getRandomValues(new Uint32Array(10)))
 						return !!iframe.contentWindow
 					})(),
-					invalidChromeIndex: (() => {
+					['index of chrome is too high']: (() => {
 						const control = (
 							'cookieStore' in window ? 'cookieStore' :
 							'ondevicemotion' in window ? 'ondevicemotion' :
@@ -96,7 +118,7 @@ export const getHeadlessFeatures = imports => {
 						const controlIndex = propsInWindow.indexOf(control)
 						return chromeIndex > controlIndex
 					})(),
-					toStringProxy: (() => {
+					['toString Proxy exposes an invalid TypeError']: (() => {
 						const liedToString = (
 							getNewObjectToStringTypeErrorLie(Function.prototype.toString) ||
 							getNewObjectToStringTypeErrorLie(() => {})
@@ -106,20 +128,17 @@ export const getHeadlessFeatures = imports => {
 				}
 			}
 
-			const { headless, stealth } = data
-			const headlessTests = Object.keys(headless).reduce((acc, key) => {
-				if (key != 'plugins' && key != 'mimeTypes') {
-					// ignore plugins and mimeTypes since these are absent in android
-					acc.push(headless[key])
-				}
-				return acc
-			}, [])
-			const stealthTests = Object.keys(stealth).map(key => stealth[key])
-			const headlessRating = (headlessTests.filter(test => test).length / headlessTests.length) * 100
-			const stealthRating = (stealthTests.filter(test => test).length / stealthTests.length) * 100 
+			const { likeHeadless, headless, stealth } = data
+			const likeHeadlessKeys = Object.keys(likeHeadless)
+			const headlessKeys = Object.keys(headless)
+			const stealthKeys = Object.keys(stealth)
+			
+			const likeHeadlessRating = ((likeHeadlessKeys.filter(key => likeHeadless[key]).length / likeHeadlessKeys.length) * 100).toFixed(0)
+			const headlessRating = ((headlessKeys.filter(key => headless[key]).length / headlessKeys.length) * 100).toFixed(0)
+			const stealthRating = ((stealthKeys.filter(key => stealth[key]).length / stealthKeys.length) * 100).toFixed(0)
 
 			logTestResult({ start, test: 'headless', passed: true })
-			return resolve({ ...data, headlessRating, stealthRating })
+			return resolve({ ...data, likeHeadlessRating, headlessRating, stealthRating })
 		}
 		catch (error) {
 			logTestResult({ test: 'headless', passed: false })

@@ -47,6 +47,7 @@ table {
 
 :root {
   --grey: #50514F;
+  --grey-glass: #7f7f7f30;
   --red: rgba(242, 95, 92, 0.13);
   --yellow: rgba(255,224,102,0.48);
   --blue: #247BA0;

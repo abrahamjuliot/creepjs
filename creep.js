@@ -597,12 +597,8 @@ const imports = {
 				`<div class="col-six">
 					<strong>Headless</strong>
 					<div>chromium: ${note.blocked}</div>
-					<div>hasTrustToken: ${note.blocked}</div>
-					<div>webdriver: ${note.blocked}</div>
-					<div>headless: ${note.blocked}</div>
-					<div>0% detected</div>
-					<div>stealth: ${note.blocked}</div>
-					<div>0% detected</div>
+					<div>like headless: ${note.blocked}</div>
+					<div>0% matched</div>
 				</div>
 				<div class="col-six">
 					<div>headless: ${note.blocked}</div>
@@ -617,15 +613,20 @@ const imports = {
 				const {
 					$hash,
 					chromium,
-					hasTrustToken,
+					likeHeadless,
+					likeHeadlessRating,
+					headless,
 					headlessRating,
-					stealthRating,
-					webdriver
+					stealth,
+					stealthRating
 				} = data || {}
 				
 				return `
 				<div class="col-six">
 					<style>
+						.like-headless-rating {
+							background: linear-gradient(90deg, var(--grey-glass) ${likeHeadlessRating}%, #fff0 ${likeHeadlessRating}%, #fff0 100%);
+						}
 						.headless-rating {
 							background: linear-gradient(90deg, var(--error) ${headlessRating}%, #fff0 ${headlessRating}%, #fff0 100%);
 						}
@@ -635,13 +636,34 @@ const imports = {
 					</style>
 					<strong>Headless</strong><span class="hash">${hashSlice($hash)}</span>
 					<div>chromium: ${''+chromium}</div>
-					<div>hasTrustToken: ${hasTrustToken || note.unsupported}</div>
-					<div>webdriver: ${webdriver || note.unsupported}</div>
+					<div>like headless: ${
+						modal(
+							'creep-like-headless',
+							'<strong>Like Headless</strong><br><br>'
+							+Object.keys(likeHeadless).map(key => `${key}: ${''+likeHeadless[key]}`).join('<br>'),
+							hashMini(likeHeadless)
+						)
+					}</div>
+					<div class="like-headless-rating">${''+likeHeadlessRating}% matched</div>
 				</div>
 				<div class="col-six">
-					<div>headless:</div>
+					<div>headless: ${
+						modal(
+							'creep-headless',
+							'<strong>Headless</strong><br><br>'
+							+Object.keys(headless).map(key => `${key}: ${''+headless[key]}`).join('<br>'),
+							hashMini(headless)
+						)
+					}</div>
 					<div class="headless-rating">${''+headlessRating}% detected</div>
-					<div>stealth:</div>
+					<div>stealth: ${
+						modal(
+							'creep-stealth',
+							'<strong>Stealth</strong><br><br>'
+							+Object.keys(stealth).map(key => `${key}: ${''+stealth[key]}`).join('<br>'),
+							hashMini(stealth)
+						)
+					}</div>
 					<div class="stealth-rating">${''+stealthRating}% detected</div>
 				</div>
 				`
