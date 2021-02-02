@@ -625,7 +625,7 @@ const imports = {
 				<div class="col-six">
 					<style>
 						.like-headless-rating {
-							background: linear-gradient(90deg, var(--grey-glass) ${likeHeadlessRating}%, #fff0 ${likeHeadlessRating}%, #fff0 100%);
+							background: linear-gradient(90deg, var(${likeHeadlessRating < 70 ? '--grey-glass' : '--error'}) ${likeHeadlessRating}%, #fff0 ${likeHeadlessRating}%, #fff0 100%);
 						}
 						.headless-rating {
 							background: linear-gradient(90deg, var(--error) ${headlessRating}%, #fff0 ${headlessRating}%, #fff0 100%);
