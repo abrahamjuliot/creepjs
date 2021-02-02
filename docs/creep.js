@@ -2521,7 +2521,7 @@
 					},
 					headless: {
 						['chrome window.chrome is undefined']: isChrome && !('chrome' in window),
-						['userAgent HeadlessChrome']: (
+						['userAgent contains HeadlessChrome']: (
 							/HeadlessChrome/.test(navigator.userAgent) ||
 							/HeadlessChrome/.test(navigator.appVersion)
 						)
