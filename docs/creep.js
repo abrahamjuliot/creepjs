@@ -2517,16 +2517,7 @@
 							}
 							return activeText === 'rgb(255, 0, 0)'
 						})(parentPhantom),
-						['prefers light color scheme']: matchMedia('(prefers-color-scheme: light)').matches,
-						['chrome wakeLock failed']: isChrome && await (async () => {
-							try {
-								const res = await navigator.wakeLock.request('screen');
-								return false
-							}
-							catch (error) {
-								return true
-							}
-						})()
+						['prefers light color scheme']: matchMedia('(prefers-color-scheme: light)').matches
 					},
 					headless: {
 						['chrome window.chrome is undefined']: isChrome && !('chrome' in window),
