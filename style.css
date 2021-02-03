@@ -247,7 +247,7 @@ visitor {
 	border-radius: 3px;
 	padding: 0 5px;
     display: inline-block;
-	animation: zoom .7s .3s cubic-bezier(0.77, 0, 0.175, 1.5) both;
+	animation: fade-in .3s .3s cubic-bezier(0.77, 0, 0.175, 1.5) both;
 }
 .grade-A {
 	background: #2da568;
