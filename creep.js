@@ -94,7 +94,6 @@ const imports = {
 		
 		const [
 			windowFeaturesComputed,
-			headlessComputed,
 			htmlElementVersionComputed,
 			cssComputed,
 			cssMediaComputed,
@@ -113,7 +112,6 @@ const imports = {
 			webRTCDataComputed
 		] = await Promise.all([
 			getWindowFeatures(imports),
-			getHeadlessFeatures(imports),
 			getHTMLElementVersion(imports),
 			getCSS(imports),
 			getCSSMedia(imports),
@@ -132,8 +130,13 @@ const imports = {
 			getWebRTCData(imports)
 		]).catch(error => console.error(error.message))
 
-		const navigatorComputed = await getNavigator(imports, workerScopeComputed)
-			.catch(error => console.error(error.message))
+		const [
+			navigatorComputed,
+			headlessComputed
+		] = await Promise.all([
+			getNavigator(imports, workerScopeComputed),
+			getHeadlessFeatures(imports, workerScopeComputed)
+		]).catch(error => console.error(error.message))
 		
 		const [
 			liesComputed,

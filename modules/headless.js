@@ -40,7 +40,7 @@ const getNewObjectToStringTypeErrorLie = apiFunction => {
 }
 
 
-export const getHeadlessFeatures = imports => {
+export const getHeadlessFeatures = (imports, workerScope) => {
 
 	const {
 		require: {
@@ -69,7 +69,7 @@ export const getHeadlessFeatures = imports => {
 					['chrome plugins array is empty']: isChrome && navigator.plugins.length === 0,
 					['chrome mimeTypes array is empty']: isChrome && mimeTypes.length === 0,
 					['notification permission is denied']: Notification.permission == 'denied',
-					['system color ActiveText is rgb(255, 0, 0)']: (() => {
+					['chrome system color ActiveText is rgb(255, 0, 0)']: isChrome && (() => {
 						let rendered = parentPhantom
 						if (!parentPhantom) {
 							rendered = document.createElement('div')
@@ -80,15 +80,33 @@ export const getHeadlessFeatures = imports => {
 						if (!parentPhantom) {
 							rendered.parentNode.removeChild(rendered)
 						}
-						return isChrome && activeText === 'rgb(255, 0, 0)'
+						return activeText === 'rgb(255, 0, 0)'
 					})(parentPhantom),
-					['prefers light color scheme']: matchMedia('(prefers-color-scheme: light)').matches
+					['prefers light color scheme']: matchMedia('(prefers-color-scheme: light)').matches,
+					['chrome wakeLock failed']: isChrome && await (async () => {
+						try {
+							const res = await navigator.wakeLock.request('screen')
+							return false
+						}
+						catch (error) {
+							return true
+						}
+					})()
 				},
 				headless: {
 					['chrome window.chrome is undefined']: isChrome && !('chrome' in window),
+					['chrome permission state is inconsistent:']: isChrome && await (async () => {
+						const res = await navigator.permissions.query({ name: 'notifications' })
+						return (
+							res.state == 'prompt' && Notification.permission === 'denied'
+						) 
+					})(),
 					['userAgent contains HeadlessChrome']: (
 						/HeadlessChrome/.test(navigator.userAgent) ||
 						/HeadlessChrome/.test(navigator.appVersion)
+					),
+					['worker userAgent contains HeadlessChrome']: (
+						/HeadlessChrome/.test(workerScope.userAgent)
 					)
 				},
 				stealth: {
