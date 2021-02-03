@@ -12,11 +12,12 @@ The purpose of this project is to shed light on weaknesses and privacy leaks amo
 6. Feature detect and fingerprint [new APIs](https://www.javascripture.com/) that reveal high entropy
 7. Rely only on APIs that are the most difficult to spoof when generating a pure fingerprint
 
-Tested:
+Tests are focused on:
 - Tor Browser (SL 1 & 2)
 - Firefox (RFP)
 - ungoogled-chromium (fingerprint deception)
 - Brave Browser (Standard/Strict)
+- puppeteer-extra
 - uBlock Origin (aopr)
 - NoScript
 - DuckDuckGo Privacy Essentials
