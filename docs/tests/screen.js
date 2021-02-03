@@ -207,6 +207,7 @@ const note = {
 	blocked: '<span class="blocked">blocked</span>',
 	lied: '<span class="lies">lied</span>'
 }
+const pad = x => x.padStart(22,'.')
 const fake = () => `<span class="fake">fake screen</span>`
 const el = document.getElementById('fingerprint-data')
 patch(el, html`
@@ -232,28 +233,31 @@ patch(el, html`
 		<div class="flex-grid">
 			<div class="col-six relative">
 				<span class="aside-note">${(performance.now() - start).toFixed(2)}ms</span>
-				<div>@media search: ${''+mediaWidth} x ${''+mediaHeight}</div>
-				<div>@media device: ${''+deviceScreen}</div>
-				<div>@media aspect-ratio: ${''+viewportAspectRatio}</div>
-				<div>@media device-aspect-ratio: ${''+deviceAspectRatio}</div>
-				
-				<div>matchMedia search: ${''+matchMediaWidth} x ${''+matchMediaHeight}</div>
-				
-				<div>screen: ${''+width} x ${''+height}</div>
-				<div>avail: ${''+availWidth} x ${''+availHeight}</div>
-				<div>outer: ${''+outerWidth} x ${''+outerHeight}</div>
-				<div>inner: ${''+innerWidth} x ${''+innerHeight}</div>
-				<div>client: ${''+clientWidth} x ${''+clientHeight}</div>
-				<div>@media viewport: ${''+viewport}</div>
-				<div>dom rect viewport: ${''+domRectViewport}</div>
-				<div>visualViewport: ${viewportWidth && viewportHeight ? `${''+Math.round(viewportWidth)} x ${''+viewportHeight}` : note.unsupported}</div>
+				<div>${pad('@media search')}: ${''+mediaWidth} x ${''+mediaHeight}</div>
+				<div>${pad('matchMedia search')}: ${''+matchMediaWidth} x ${''+matchMediaHeight}</div>
 
-				<div>colorDepth: ${''+colorDepth}</div>
-				<div>pixelDepth: ${''+pixelDepth}</div>
-				<div>devicePixelRatio: ${''+devicePixelRatio}</div>
-				<div>orientation type: ${''+orientationType}</div>
-				<div>@media orientation: ${''+orientation}</div>
-				<div>@media display-mode: ${''+displayMode}</div>
+				<div>${pad('@media device')}: ${''+deviceScreen}</div>
+				
+				<div>${pad('@media device-aspect-ratio')}: ${''+deviceAspectRatio}</div>
+				
+				
+				
+				<div>${pad('screen')}: ${''+width} x ${''+height}</div>
+				<div>${pad('avail')}: ${''+availWidth} x ${''+availHeight}</div>
+				<div>${pad('outer')}: ${''+outerWidth} x ${''+outerHeight}</div>
+				<div>${pad('inner')}: ${''+innerWidth} x ${''+innerHeight}</div>
+				<div>${pad('client')}: ${''+clientWidth} x ${''+clientHeight}</div>
+				<div>${pad('@media aspect-ratio')}: ${''+viewportAspectRatio}</div>
+				<div>${pad('@media viewport')}: ${''+viewport}</div>
+				<div>${pad('dom rect viewport')}: ${''+domRectViewport}</div>
+				<div>${pad('visualViewport')}: ${viewportWidth && viewportHeight ? `${''+Math.round(viewportWidth)} x ${''+viewportHeight}` : note.unsupported}</div>
+
+				<div>${pad('colorDepth')}: ${''+colorDepth}</div>
+				<div>${pad('pixelDepth')}: ${''+pixelDepth}</div>
+				<div>${pad('devicePixelRatio')}: ${''+devicePixelRatio}</div>
+				<div>${pad('orientation type')}: ${''+orientationType}</div>
+				<div>${pad('@media orientation')}: ${''+orientation}</div>
+				<div>${pad('@media display-mode')}: ${''+displayMode}</div>
 
 			</div>
 		</div>
