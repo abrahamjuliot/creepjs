@@ -96,7 +96,7 @@ export const getHeadlessFeatures = (imports, workerScope) => {
 						/HeadlessChrome/.test(navigator.userAgent) ||
 						/HeadlessChrome/.test(navigator.appVersion)
 					),
-					['worker userAgent contains HeadlessChrome']: (
+					['worker userAgent contains HeadlessChrome']: !!workerScope && (
 						/HeadlessChrome/.test(workerScope.userAgent)
 					)
 				},
