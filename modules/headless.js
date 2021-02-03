@@ -95,7 +95,7 @@ export const getHeadlessFeatures = (imports, workerScope) => {
 				},
 				headless: {
 					['chrome window.chrome is undefined']: isChrome && !('chrome' in window),
-					['chrome permission state is inconsistent:']: isChrome && await (async () => {
+					['chrome permission state is inconsistent']: isChrome && await (async () => {
 						const res = await navigator.permissions.query({ name: 'notifications' })
 						return (
 							res.state == 'prompt' && Notification.permission === 'denied'
