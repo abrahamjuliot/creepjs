@@ -153,7 +153,16 @@ export const getHeadlessFeatures = (imports, workerScope) => {
 							return error.constructor.name != 'TypeError' ? true : false
 						}
 					})(),
-					['toString Proxy trapped with [object Function] TypeError']: (() => {
+					['navigator.permissions.query leaks Proxy behavior']: (() => {
+						try {
+							class Blah extends navigator.permissions.query {}
+							return true
+						}
+						catch (error) {
+							return /\[object Function\]/.test(error.message)
+						}
+					})(),
+					['Function.prototype.toString leaks Proxy behavior']: (() => {
 						try {
 							class Blah extends Function.prototype.toString {}
 							return true
@@ -162,7 +171,7 @@ export const getHeadlessFeatures = (imports, workerScope) => {
 							return /\[object Function\]/.test(error.message)
 						}
 					})(),
-					['toString Proxy exposed by invalid TypeError']: (() => {
+					['Function.prototype.toString has invalid TypeError']: (() => {
 						const liedToString = (
 							getNewObjectToStringTypeErrorLie(Function.prototype.toString) ||
 							getNewObjectToStringTypeErrorLie(() => {})
