@@ -245,8 +245,9 @@ visitor {
 .grade-F {
 	color: #fff;
 	border-radius: 3px;
-	padding: 1px 5px;
-	animation: fade-in 1s cubic-bezier(0.77, 0, 0.175, 1.5) both;
+	padding: 0 5px;
+    display: inline-block;
+	animation: zoom .7s .3s cubic-bezier(0.77, 0, 0.175, 1.5) both;
 }
 .grade-A {
 	background: #2da568;
@@ -266,7 +267,7 @@ visitor {
 
 @keyframes fade-in {
 	0%, 30% {
-		transform: translate(0);
+		transform: translateX(-5px);
 		opacity: 0;
 	}
 	100% {
@@ -486,7 +487,7 @@ input[type="radio"] {
 }
 
 .unblurred {
-	animation: unblur .3s ease both;
+	animation: unblur 0s ease both; /*revist*/
 }
 
 @keyframes reveal {
@@ -500,11 +501,9 @@ input[type="radio"] {
 @keyframes unblur {
   0% {
 	opacity: 0.5;
-	filter: blur(2.5px);
   }
   100% {
 	opacity: 1;
-	filter: blur(0);
   }
 }
 

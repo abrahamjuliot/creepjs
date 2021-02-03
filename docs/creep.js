@@ -2475,7 +2475,7 @@
 	};
 
 
-	const getHeadlessFeatures = imports => {
+	const getHeadlessFeatures = (imports, workerScope) => {
 
 		const {
 			require: {
@@ -2494,17 +2494,17 @@
 				const data = {
 					chromium: isChrome,
 					likeHeadless: {
-						['trust token is unsupported']: (
+						['trust token feature is disabled']: (
 							!('hasTrustToken' in document) ||
 							!('trustTokenOperationError' in XMLHttpRequest.prototype) ||
 							!('setTrustToken' in XMLHttpRequest.prototype) ||
 							!('trustToken' in HTMLIFrameElement.prototype)
 						),
 						['navigator.webdriver is on']: 'webdriver' in navigator && !!navigator.webdriver,
-						['chrome plugins is empty']: isChrome && navigator.plugins.length === 0,
-						['chrome mimeTypes is empty']: isChrome && mimeTypes.length === 0,
+						['chrome plugins array is empty']: isChrome && navigator.plugins.length === 0,
+						['chrome mimeTypes array is empty']: isChrome && mimeTypes.length === 0,
 						['notification permission is denied']: Notification.permission == 'denied',
-						['system color ActiveText is rgb(255, 0, 0)']: (() => {
+						['chrome system color ActiveText is rgb(255, 0, 0)']: isChrome && (() => {
 							let rendered = parentPhantom;
 							if (!parentPhantom) {
 								rendered = document.createElement('div');
@@ -2515,15 +2515,33 @@
 							if (!parentPhantom) {
 								rendered.parentNode.removeChild(rendered);
 							}
-							return isChrome && activeText === 'rgb(255, 0, 0)'
+							return activeText === 'rgb(255, 0, 0)'
 						})(parentPhantom),
-						['prefers light color scheme']: matchMedia('(prefers-color-scheme: light)').matches
+						['prefers light color scheme']: matchMedia('(prefers-color-scheme: light)').matches,
+						['chrome wakeLock failed']: isChrome && await (async () => {
+							try {
+								const res = await navigator.wakeLock.request('screen');
+								return false
+							}
+							catch (error) {
+								return true
+							}
+						})()
 					},
 					headless: {
 						['chrome window.chrome is undefined']: isChrome && !('chrome' in window),
+						['chrome permission state is inconsistent']: isChrome && await (async () => {
+							const res = await navigator.permissions.query({ name: 'notifications' });
+							return (
+								res.state == 'prompt' && Notification.permission === 'denied'
+							) 
+						})(),
 						['userAgent contains HeadlessChrome']: (
 							/HeadlessChrome/.test(navigator.userAgent) ||
 							/HeadlessChrome/.test(navigator.appVersion)
+						),
+						['worker userAgent contains HeadlessChrome']: (
+							/HeadlessChrome/.test(workerScope.userAgent)
 						)
 					},
 					stealth: {
@@ -2570,7 +2588,16 @@
 								return error.constructor.name != 'TypeError' ? true : false
 							}
 						})(),
-						['toString Proxy trapped with [object Function] TypeError']: (() => {
+						['Permissions.prototype.query leaks Proxy behavior']: (() => {
+							try {
+								class Blah extends Permissions.prototype.query {}
+								return true
+							}
+							catch (error) {
+								return /\[object Function\]/.test(error.message)
+							}
+						})(),
+						['Function.prototype.toString leaks Proxy behavior']: (() => {
 							try {
 								class Blah extends Function.prototype.toString {}
 								return true
@@ -2579,7 +2606,7 @@
 								return /\[object Function\]/.test(error.message)
 							}
 						})(),
-						['toString Proxy exposed by invalid TypeError']: (() => {
+						['Function.prototype.toString has invalid TypeError']: (() => {
 							const liedToString = (
 								getNewObjectToStringTypeErrorLie(Function.prototype.toString) ||
 								getNewObjectToStringTypeErrorLie(() => {})
@@ -4584,7 +4611,6 @@
 			
 			const [
 				windowFeaturesComputed,
-				headlessComputed,
 				htmlElementVersionComputed,
 				cssComputed,
 				cssMediaComputed,
@@ -4603,7 +4629,6 @@
 				webRTCDataComputed
 			] = await Promise.all([
 				getWindowFeatures(imports),
-				getHeadlessFeatures(imports),
 				getHTMLElementVersion(imports),
 				getCSS(imports),
 				getCSSMedia(imports),
@@ -4622,8 +4647,13 @@
 				getWebRTCData(imports)
 			]).catch(error => console.error(error.message));
 
-			const navigatorComputed = await getNavigator(imports, workerScopeComputed)
-				.catch(error => console.error(error.message));
+			const [
+				navigatorComputed,
+				headlessComputed
+			] = await Promise.all([
+				getNavigator(imports, workerScopeComputed),
+				getHeadlessFeatures(imports, workerScopeComputed)
+			]).catch(error => console.error(error.message));
 			
 			const [
 				liesComputed,
@@ -5944,6 +5974,7 @@
 				<br><a class="tests" href="./tests/screen.html">Screen</a>
 				<br><a class="tests" href="./tests/prototype.html">Prototype</a>
 				<br><a class="tests" href="./tests/domrect.html">DOMRect</a>
+				<br><a class="tests" href="./tests/emojis.html">Emojis</a>
 			</div>
 		</div>
 	</div>
