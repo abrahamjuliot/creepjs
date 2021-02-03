@@ -59,15 +59,15 @@ export const getHeadlessFeatures = imports => {
 			const data = {
 				chromium: isChrome,
 				likeHeadless: {
-					['trust token is unsupported']: (
+					['trust token feature is disabled']: (
 						!('hasTrustToken' in document) ||
 						!('trustTokenOperationError' in XMLHttpRequest.prototype) ||
 						!('setTrustToken' in XMLHttpRequest.prototype) ||
 						!('trustToken' in HTMLIFrameElement.prototype)
 					),
 					['navigator.webdriver is on']: 'webdriver' in navigator && !!navigator.webdriver,
-					['chrome plugins is empty']: isChrome && navigator.plugins.length === 0,
-					['chrome mimeTypes is empty']: isChrome && mimeTypes.length === 0,
+					['chrome plugins array is empty']: isChrome && navigator.plugins.length === 0,
+					['chrome mimeTypes array is empty']: isChrome && mimeTypes.length === 0,
 					['notification permission is denied']: Notification.permission == 'denied',
 					['system color ActiveText is rgb(255, 0, 0)']: (() => {
 						let rendered = parentPhantom
