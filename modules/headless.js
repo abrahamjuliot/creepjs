@@ -153,9 +153,9 @@ export const getHeadlessFeatures = (imports, workerScope) => {
 							return error.constructor.name != 'TypeError' ? true : false
 						}
 					})(),
-					['navigator.permissions.query leaks Proxy behavior']: (() => {
+					['Permissions.prototype.query leaks Proxy behavior']: (() => {
 						try {
-							class Blah extends navigator.permissions.query {}
+							class Blah extends Permissions.prototype.query {}
 							return true
 						}
 						catch (error) {
