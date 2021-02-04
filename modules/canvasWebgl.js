@@ -276,13 +276,16 @@ export const getCanvasWebgl = imports => {
 			}
 
 			const getParams = gl => {
+				if (!gl) {
+					return {}
+				}
 				const data = Object
 					.getOwnPropertyNames(Object.getPrototypeOf(gl))
 					//.filter(prop => prop.toUpperCase() == prop) // global test
 					.filter(name => pnames.has(name))
 					.reduce((acc, name) => {
-						const val = gl.getParameter(gl[name])
-						if ('buffer' in Object.getPrototypeOf(val)) {
+						let val = gl.getParameter(gl[name])
+						if (!!val && 'buffer' in Object.getPrototypeOf(val)) {
 							acc[name] = [...val]
 						} else {
 							acc[name] = val
@@ -322,7 +325,7 @@ export const getCanvasWebgl = imports => {
 				draw(gl)
 				const pixels = new Uint8Array(gl.drawingBufferWidth * gl.drawingBufferHeight * 4)
 				gl.readPixels(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels)
-				return [...pixels.slice(99950,100000)]
+				return [...pixels]
 			}
 
 			// get data
