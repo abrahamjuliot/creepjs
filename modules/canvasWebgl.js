@@ -135,6 +135,9 @@ const pnames = new Set([
 ])
 
 const draw = gl => {
+	//gl.clearColor(0.2, 0.4, 0.6, 0.8)
+	//gl.clear(gl.COLOR_BUFFER_BIT)
+	
 	// based on https://github.com/Valve/fingerprintjs2/blob/master/fingerprint2.js
 	const vertexShaderTemplate = `attribute vec2 attrVertex;varying vec2 varyinTexCoordinate;uniform vec2 uniformOffset;void main(){varyinTexCoordinate=attrVertex+uniformOffset;gl_Position=vec4(attrVertex,0,1);}`
 	const fragmentShaderTemplate = `precision mediump float;varying vec2 varyinTexCoordinate;void main() {gl_FragColor=vec4(varyinTexCoordinate,0,1);}`
