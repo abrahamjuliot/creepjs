@@ -211,7 +211,7 @@ export const getCanvasWebgl = imports => {
 				dragonOfDeath.document.createElement('canvas').toDataURL() != document.createElement('canvas').toDataURL()) {
 				lied = true
 			}
-
+			
 			// create canvas context
 			const win = phantomDarkness ? phantomDarkness : window
 			const doc = win.document
@@ -223,26 +223,38 @@ export const getCanvasWebgl = imports => {
 				canvas = doc.createElement('canvas')
 				canvas2 = doc.createElement('canvas')
 			}
+		
 			const getContext = (canvas, contextType) => {
-				if (contextType == 'webgl2') {
+				try {
+					if (contextType == 'webgl2') {
+						return (
+							canvas.getContext('webgl2') ||
+							canvas.getContext('experimental-webgl2')
+						)
+					}
 					return (
-						canvas2.getContext('webgl2') ||
-						canvas2.getContext('experimental-webgl2')
+						canvas.getContext('webgl') ||
+						canvas.getContext('experimental-webgl') ||
+						canvas.getContext('moz-webgl') ||
+						canvas.getContext('webkit-3d')
 					)
-
 				}
-				return (
-					canvas.getContext('webgl') ||
-					canvas.getContext('experimental-webgl') ||
-					canvas.getContext('moz-webgl') ||
-					canvas.getContext('webkit-3d')
-				)
+				catch (error) {
+					return
+				}
 			}
 			const gl = getContext(canvas, 'webgl')
-			const gl2 = getContext(canvas, 'webgl2')
+			const gl2 = getContext(canvas2, 'webgl2')
+			if (!gl) {
+				logTestResult({ test: 'webgl', passed: false })
+				return resolve()
+			}
 
 			// helpers
 			const getShaderPrecisionFormat = (gl, shaderType) => {
+				if (!gl) {
+					return
+				}
 				const low = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.LOW_FLOAT))
 				const medium = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.MEDIUM_FLOAT))
 				const high = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.HIGH_FLOAT))
@@ -256,6 +268,9 @@ export const getCanvasWebgl = imports => {
 			}
 
 			const getMaxAnisotropy = gl => {
+				if (!gl) {
+					return
+				}
 				const ext = (
 					gl.getExtension('EXT_texture_filter_anisotropic') ||
 					gl.getExtension('MOZ_EXT_texture_filter_anisotropic') ||
@@ -296,7 +311,10 @@ export const getCanvasWebgl = imports => {
 			}
 
 			const getUnmasked = gl => {
-				const ext = gl.getExtension('WEBGL_debug_renderer_info')
+				const ext = !!gl ? gl.getExtension('WEBGL_debug_renderer_info') : null
+				if (!ext) {
+					return {}
+				}
 				const UNMASKED_VENDOR_WEBGL = gl.getParameter(ext.UNMASKED_VENDOR_WEBGL)
 				const UNMASKED_RENDERER_WEBGL = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)
 				const vendorGibbers = gibberish(UNMASKED_VENDOR_WEBGL)
@@ -314,18 +332,38 @@ export const getCanvasWebgl = imports => {
 				}
 			}
 
+			const getSupportedExtensions = gl => {
+				if (!gl) {
+					return []
+				}
+				return gl.getSupportedExtensions()
+			}
+
 			const getDataURI = contextType => {
-				const canvas = doc.createElement('canvas')
-				const gl = getContext(canvas, contextType)
-				draw(gl)
-				return canvas.toDataURL()
+				try {
+					const canvas = doc.createElement('canvas')
+					const gl = getContext(canvas, contextType)
+					draw(gl)
+					return canvas.toDataURL()
+				}
+				catch (error) {
+					return
+				}
 			}
 
 			const getPixels = gl => {
-				draw(gl)
-				const pixels = new Uint8Array(gl.drawingBufferWidth * gl.drawingBufferHeight * 4)
-				gl.readPixels(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels)
-				return [...pixels]
+				if (!gl) {
+					return []
+				}
+				try {
+					draw(gl)
+					const pixels = new Uint8Array(gl.drawingBufferWidth * gl.drawingBufferHeight * 4)
+					gl.readPixels(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels)
+					return [...pixels]
+				}
+				catch (error) {
+					return []
+				}
 			}
 
 			// get data
@@ -340,7 +378,7 @@ export const getCanvasWebgl = imports => {
 			}
 			
 			const data = {
-				extensions: [...gl.getSupportedExtensions(),...gl2.getSupportedExtensions()],
+				extensions: [...getSupportedExtensions(gl),...getSupportedExtensions(gl2)],
 				pixels: getPixels(gl),
 				pixels2: getPixels(gl2),
 				dataURI: getDataURI('webgl'),

@@ -80,7 +80,8 @@ const getServiceWorker = () => {
 					broadcast.close()
 					return resolve(message.data)
 				}
-				return broadcast.postMessage({ type: 'fingerprint'})
+				broadcast.postMessage({ type: 'fingerprint'})
+				return setTimeout(() => resolve(), 1000)
 			}).catch(error => {
 				console.error(error)
 				return resolve()

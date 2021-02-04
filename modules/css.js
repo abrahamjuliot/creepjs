@@ -277,7 +277,7 @@ export const getCSSMedia = imports => {
 			if (!screenQuery.width || !screenQuery.height) {
 				screenQuery = getScreenMedia(body)
 			}
-
+			
 			logTestResult({ start, test: 'css media', passed: true })
 			return resolve({ importCSS, mediaCSS, matchMediaCSS, screenQuery })
 		}

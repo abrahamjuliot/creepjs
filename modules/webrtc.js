@@ -101,7 +101,6 @@ export const getWebRTCData = imports => {
 						capabilities,
 						sdpcapabilities
 					}
-					
 					logTestResult({ start, test: 'webrtc', passed: true })
 					return resolve({ ...data })
 				} else {

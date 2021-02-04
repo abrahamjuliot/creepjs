@@ -77,6 +77,7 @@ export const getFonts = (imports, fonts) => {
 				(('OffscreenCanvas' in window) && lieProps['OffscreenCanvasRenderingContext2D.measureText']) ||
 				(!('OffscreenCanvas' in window) && lieProps['CanvasRenderingContext2D.measureText'])
 			)
+			
 			logTestResult({ start, test: 'fonts', passed: true })
 			return resolve({ fonts: [...detected], lied })
 		} catch (error) {

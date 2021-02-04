@@ -129,7 +129,7 @@ const imports = {
 			getMedia(imports),
 			getWebRTCData(imports)
 		]).catch(error => console.error(error.message))
-
+		
 		const [
 			navigatorComputed,
 			headlessComputed
@@ -147,7 +147,7 @@ const imports = {
 			getTrash(imports),
 			getCapturedErrors(imports)
 		]).catch(error => console.error(error.message))
-
+		
 		//const start = performance.now()
 		const [
 			windowHash,
@@ -159,6 +159,8 @@ const imports = {
 			voicesHash,
 			canvas2dHash,
 			canvasWebglHash,
+			pixelsHash,
+			pixels2Hash,
 			mathsHash,
 			consoleErrorsHash,
 			timezoneHash,
@@ -182,6 +184,8 @@ const imports = {
 			hashify(voicesComputed),
 			hashify(canvas2dComputed),
 			hashify(canvasWebglComputed),
+			caniuse(() => canvasWebglComputed.pixels.length) ? hashify(canvasWebglComputed.pixels) : undefined,
+			caniuse(() => canvasWebglComputed.pixels2.length) ? hashify(canvasWebglComputed.pixels2) : undefined,
 			hashify(mathsComputed.data),
 			hashify(consoleErrorsComputed.errors),
 			hashify(timezoneComputed),
@@ -220,7 +224,7 @@ const imports = {
 			voices: !voicesComputed ? undefined : {...voicesComputed, $hash: voicesHash },
 			media: !mediaComputed ? undefined : {...mediaComputed, $hash: mediaHash },
 			canvas2d: !canvas2dComputed ? undefined : {...canvas2dComputed, $hash: canvas2dHash },
-			canvasWebgl: !canvasWebglComputed ? undefined : {...canvasWebglComputed, $hash: canvasWebglHash },
+			canvasWebgl: !canvasWebglComputed ? undefined : {...canvasWebglComputed, pixels: pixelsHash, pixels2: pixels2Hash, $hash: canvasWebglHash },
 			maths: !mathsComputed ? undefined : {...mathsComputed, $hash: mathsHash },
 			consoleErrors: !consoleErrorsComputed ? undefined : {...consoleErrorsComputed, $hash: consoleErrorsHash },
 			timezone: !timezoneComputed ? undefined : {...timezoneComputed, $hash: timezoneHash },
@@ -755,6 +759,7 @@ const imports = {
 		(() => {
 			const { canvasWebgl: data } = fp
 			const id = 'creep-canvas-webgl'
+			
 			const {
 				$hash,
 				dataURI,
@@ -765,14 +770,23 @@ const imports = {
 				extensions,
 				parameters
 			} = data
+			
 			const paramKeys = parameters ? Object.keys(parameters).sort() : []
 			return `
 			<div class="col-six">
 				<strong>Canvas webgl</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-				<div>webgl image:<span class="sub-hash">${hashMini(dataURI)}</span></div>
-				<div>webgl2 image:<span class="sub-hash">${hashMini(dataURI2)}</span></div>
-				<div>webgl pixels:<span class="sub-hash">${hashMini(pixels)}</span></div>
-				<div>webgl2 pixels:<span class="sub-hash">${hashMini(pixels2)}</span></div>
+				<div>image 1:${
+					!dataURI ? ' '+note.blocked : `<span class="sub-hash">${hashMini(dataURI)}</span></div>`
+				}
+				<div>image 2:${
+					!dataURI2 ? ' '+note.unsupported : `<span class="sub-hash">${hashMini(dataURI2)}</span></div>`
+				}
+				<div>pixels 1:${
+					!pixels ? ' '+note.unsupported : `<span class="sub-hash">${hashSlice(pixels)}</span></div>`
+				}
+				<div>pixels 2:${
+					!pixels2 ? ' '+note.unsupported : `<span class="sub-hash">${hashSlice(pixels)}</span></div>`
+				}
 				<div>parameters (${count(paramKeys)}): ${
 					!paramKeys.length ? note.unsupported :
 					modal(
