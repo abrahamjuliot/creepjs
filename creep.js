@@ -741,21 +741,15 @@ const imports = {
 		${!fp.canvasWebgl ?
 			`<div class="col-six">
 				<strong>Canvas webgl</strong>
-				<div>matching renderer/vendor: ${note.blocked}</div>
-				<div>matching data URI: ${note.blocked}</div>
-				<div>webgl: ${note.blocked}</div>
+				<div>webgl image: ${note.blocked}</div>
+				<div>webgl2 image: ${note.blocked}</div>
+				<div>webgl pixels: ${note.blocked}</div>
+				<div>webgl2 pixels: ${note.blocked}</div>
 				<div>parameters (0): ${note.blocked}</div>
 				<div>extensions (0): ${note.blocked}</div>
-				<div>vendor: ${note.blocked}</div>
-				<div>renderer: ${note.blocked}</div>
-				<div class="block-text">${note.blocked}</div>
 			</div>
 			<div class="col-six">
-				<div>webgl2: ${note.blocked}</div>
-				<div>parameters (0): ${note.blocked}</div>
-				<div>extensions (0): ${note.blocked}</div>
-				<div>vendor: ${note.blocked}</div>
-				<div>renderer: ${note.blocked}</div>
+				<div>unmasked renderer: ${note.blocked}</div>
 				<div class="block-text">${note.blocked}</div>
 			</div>` :
 		(() => {
@@ -765,67 +759,45 @@ const imports = {
 				$hash,
 				dataURI,
 				dataURI2,
+				pixels,
+				pixels2,
 				lied,
-				matchingDataURI,
-				matchingUnmasked,
-				specs: { webglSpecs, webgl2Specs },
-				supported,
-				supported2,
-				unmasked,
-				unmasked2
+				extensions,
+				parameters
 			} = data
-			const webglSpecsKeys = webglSpecs ? Object.keys(webglSpecs) : []
-			const webgl2SpecsKeys = webgl2Specs ? Object.keys(webgl2Specs) : []
+			const paramKeys = parameters ? Object.keys(parameters).sort() : []
 			return `
 			<div class="col-six">
 				<strong>Canvas webgl</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-				<div>matching renderer/vendor: ${''+matchingUnmasked}</div>
-				<div>matching data URI: ${''+matchingDataURI}</div>
-				<div>webgl:<span class="sub-hash">${hashMini(dataURI)}</span></div>
-				<div>parameters (${count(webglSpecsKeys)}): ${
-					!webglSpecsKeys.length ? note.unsupported :
+				<div>webgl image:<span class="sub-hash">${hashMini(dataURI)}</span></div>
+				<div>webgl2 image:<span class="sub-hash">${hashMini(dataURI2)}</span></div>
+				<div>webgl pixels:<span class="sub-hash">${hashMini(pixels)}</span></div>
+				<div>webgl2 pixels:<span class="sub-hash">${hashMini(pixels2)}</span></div>
+				<div>parameters (${count(paramKeys)}): ${
+					!paramKeys.length ? note.unsupported :
 					modal(
-						`${id}-p-v1`,
-						webglSpecsKeys.map(key => `${key}: ${webglSpecs[key]}`).join('<br>'),
-						hashMini(webglSpecs)
+						`${id}-parameters`,
+						paramKeys.map(key => `${key}: ${parameters[key]}`).join('<br>'),
+						hashMini(parameters)
 					)
 				}</div>
-				<div>extensions (${count(supported.extensions)}): ${
-					!caniuse(() => supported, ['extensions', 'length']) ? note.unsupported : 
+				<div>extensions (${count(extensions)}): ${
+					!extensions.length ? note.unsupported : 
 					modal(
-						`${id}-e-v1`,
-						supported.extensions.join('<br>'),
-						hashMini(supported.extensions)
+						`${id}-extensions`,
+						extensions.sort().join('<br>'),
+						hashMini(extensions)
 					)
 				}</div>
-				<div>vendor: ${!unmasked.vendor ? note.unsupported : unmasked.vendor}</div>
-				<div>renderer:</div>
-				<div class="block-text">
-					<div>${!unmasked.renderer ? note.unsupported : unmasked.renderer}</div>	
-				</div>
 			</div>
 			<div class="col-six">
-				<div>webgl2:<span class="sub-hash">${hashMini(dataURI2)}</span></div>
-				<div>parameters (${count(webgl2SpecsKeys)}): ${
-					!webgl2SpecsKeys.length ? note.unsupported :
-					modal(
-						`${id}-p-v2`,
-						webgl2SpecsKeys.map(key => `${key}: ${webgl2Specs[key]}`).join('<br>'),
-						hashMini(webgl2Specs)
-					)
-				}</div>
-				<div>extensions (${count(supported2.extensions)}): ${
-					!caniuse(() => supported2, ['extensions', 'length']) ? note.unsupported : 
-					modal(
-						`${id}-e-v2`,
-						supported2.extensions.join('<br>'),
-						hashMini(supported2.extensions)
-					)
-				}</div>
-				<div>vendor: ${!unmasked2.vendor ? note.unsupported : unmasked2.vendor }</div>
-				<div>renderer:</div>
+				<div>unmasked renderer:</div>
 				<div class="block-text">
-					<div>${!unmasked2.renderer ? note.unsupported : unmasked2.renderer}</div>	
+					<div>${
+						!parameters.UNMASKED_RENDERER_WEBGL ?
+						note.unsupported :
+						parameters.UNMASKED_RENDERER_WEBGL
+					}</div>	
 				</div>
 			</div>
 			`
