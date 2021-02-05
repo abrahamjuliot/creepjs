@@ -10,7 +10,7 @@ export const getVoices = imports => {
 	} = imports
 		
 	return new Promise(async resolve => {
-		try {
+		try { 
 			const start = performance.now()
 			const win = phantomDarkness ? phantomDarkness : window
 			if (!('speechSynthesis' in win)) {
@@ -18,8 +18,8 @@ export const getVoices = imports => {
 				return resolve()
 			}
 			let success = false
-			const awaitVoices = () => {
-				const data = win.speechSynthesis.getVoices()
+			const getVoices = async () => {
+				const data = await win.speechSynthesis.getVoices()
 				if (!data.length) {
 					return
 				}
@@ -30,8 +30,8 @@ export const getVoices = imports => {
 				return resolve({ voices, defaultVoice })
 			}
 			
-			awaitVoices()
-			win.speechSynthesis.onvoiceschanged = awaitVoices
+			await getVoices()
+			win.speechSynthesis.onvoiceschanged = getVoices
 			setTimeout(() => {
 				return !success ? resolve() : undefined
 			}, 100)

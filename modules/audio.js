@@ -14,7 +14,7 @@ export const getOfflineAudioContext = imports => {
 		}
 	} = imports
 
-	return new Promise(resolve => {
+	return new Promise(async resolve => {
 		try {
 			const start = performance.now()
 			const win = phantomDarkness ? phantomDarkness : window

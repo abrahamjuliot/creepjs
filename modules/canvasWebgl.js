@@ -258,16 +258,27 @@ export const getCanvasWebgl = imports => {
 				if (!gl) {
 					return
 				}
-				const low = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.LOW_FLOAT))
-				const medium = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.MEDIUM_FLOAT))
-				const high = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.HIGH_FLOAT))
-				const highInt = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.HIGH_INT))
+				const LOW_FLOAT = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.LOW_FLOAT))
+				const MEDIUM_FLOAT = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.MEDIUM_FLOAT))
+				const HIGH_FLOAT = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.HIGH_FLOAT))
+				const HIGH_INT = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.HIGH_INT))
 				return {
-					low,
-					medium,
-					high,
-					highInt
+					LOW_FLOAT,
+					MEDIUM_FLOAT,
+					HIGH_FLOAT,
+					HIGH_INT
 				}
+			}
+
+			const getShaderData = (name, shader) => {
+				const data = {}
+				for (const prop in shader) {
+					const obj = shader[prop]
+					data[name + '.' + prop + '.precision'] = obj ? attempt(() => obj.precision) : undefined
+					data[name + '.' + prop + '.rangeMax'] = obj ? attempt(() => obj.rangeMax) : undefined
+					data[name + '.' + prop + '.rangeMin'] = obj ? attempt(() => obj.rangeMin) : undefined
+				}
+				return data
 			}
 
 			const getMaxAnisotropy = gl => {
@@ -280,17 +291,6 @@ export const getCanvasWebgl = imports => {
 					gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic')
 				)
 				return ext ? gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT) : undefined
-			}
-
-			const getShaderData = (name, shader) => {
-				const data = {}
-				for (const prop in shader) {
-					const obj = shader[prop]
-					data[name + '.' + prop + '.precision'] = obj ? attempt(() => obj.precision) : undefined
-					data[name + '.' + prop + '.rangeMax'] = obj ? attempt(() => obj.rangeMax) : undefined
-					data[name + '.' + prop + '.rangeMin'] = obj ? attempt(() => obj.rangeMin) : undefined
-				}
-				return data
 			}
 
 			const getParams = gl => {
@@ -336,10 +336,11 @@ export const getCanvasWebgl = imports => {
 			}
 
 			const getSupportedExtensions = gl => {
-				if (!gl) {
+				const extensions = attempt(() => gl.getSupportedExtensions())
+				if (!extensions) {
 					return []
 				}
-				return gl.getSupportedExtensions()
+				return extensions
 			}
 
 			const getDataURI = contextType => {
@@ -358,10 +359,12 @@ export const getCanvasWebgl = imports => {
 				if (!gl) {
 					return []
 				}
+				const width = gl.drawingBufferWidth
+				const height = gl.drawingBufferHeight
 				try {
 					draw(gl)
-					const pixels = new Uint8Array(gl.drawingBufferWidth * gl.drawingBufferHeight * 4)
-					gl.readPixels(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels)
+					const pixels = new Uint8Array(width * height * 4)
+					gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels)
 					return [...pixels]
 				}
 				catch (error) {
