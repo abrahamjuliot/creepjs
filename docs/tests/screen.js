@@ -233,6 +233,7 @@ patch(el, html`
 		<div class="flex-grid">
 			<div class="col-six relative">
 				<span class="aside-note">${(performance.now() - start).toFixed(2)}ms</span>
+				<br>
 				<div>${pad('@media search')}: ${''+mediaWidth} x ${''+mediaHeight}</div>
 				<div>${pad('matchMedia search')}: ${''+matchMediaWidth} x ${''+matchMediaHeight}</div>
 
