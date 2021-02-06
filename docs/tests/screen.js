@@ -239,16 +239,15 @@ patch(el, html`
 
 				<div>${pad('@media device')}: ${''+deviceScreen}</div>
 				
-				<div>${pad('@media device-aspect-ratio')}: ${''+deviceAspectRatio}</div>
-				
-				
+				<div>${pad('device-aspect-ratio')}: ${''+deviceAspectRatio}</div>
+				<div>${pad('aspect-ratio')}: ${''+viewportAspectRatio}</div>
 				
 				<div>${pad('screen')}: ${''+width} x ${''+height}</div>
 				<div>${pad('avail')}: ${''+availWidth} x ${''+availHeight}</div>
 				<div>${pad('outer')}: ${''+outerWidth} x ${''+outerHeight}</div>
 				<div>${pad('inner')}: ${''+innerWidth} x ${''+innerHeight}</div>
 				<div>${pad('client')}: ${''+clientWidth} x ${''+clientHeight}</div>
-				<div>${pad('@media aspect-ratio')}: ${''+viewportAspectRatio}</div>
+				
 				<div>${pad('@media viewport')}: ${''+viewport}</div>
 				<div>${pad('dom rect viewport')}: ${''+domRectViewport}</div>
 				<div>${pad('visualViewport')}: ${viewportWidth && viewportHeight ? `${''+Math.round(viewportWidth)} x ${''+viewportHeight}` : note.unsupported}</div>

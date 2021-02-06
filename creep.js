@@ -744,7 +744,7 @@ const imports = {
 		<div class="flex-grid">
 		${!fp.canvasWebgl ?
 			`<div class="col-four">
-				<strong>Canvas webgl</strong>
+				<strong>WebGL</strong>
 				<div>images: ${note.blocked}</div>
 				<div>pixels: ${note.blocked}</div>
 				<div>params (0): ${note.blocked}</div>
@@ -773,7 +773,7 @@ const imports = {
 			const paramKeys = parameters ? Object.keys(parameters).sort() : []
 			return `
 			<div class="col-four">
-				<strong>Canvas webgl</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+				<strong>WebGL</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 				<div>images:${
 					!dataURI ? ' '+note.blocked : `<span class="sub-hash">${hashMini(dataURI)}</span>${!dataURI2 || dataURI == dataURI2 ? '' : `<span class="sub-hash">${hashMini(dataURI2)}</span>`}`
 				}</div>
