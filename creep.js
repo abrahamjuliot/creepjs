@@ -632,7 +632,7 @@ const imports = {
 				<div class="col-six">
 					<style>
 						.like-headless-rating {
-							background: linear-gradient(90deg, var(${likeHeadlessRating < 70 ? '--grey-glass' : '--error'}) ${likeHeadlessRating}%, #fff0 ${likeHeadlessRating}%, #fff0 100%);
+							background: linear-gradient(90deg, var(${likeHeadlessRating < 100 ? '--grey-glass' : '--error'}) ${likeHeadlessRating}%, #fff0 ${likeHeadlessRating}%, #fff0 100%);
 						}
 						.headless-rating {
 							background: linear-gradient(90deg, var(--error) ${headlessRating}%, #fff0 ${headlessRating}%, #fff0 100%);
@@ -733,7 +733,7 @@ const imports = {
 				<div class="block-text">
 					<div>${data.userAgent || note.unsupported}</div>
 				</div>
-				<div>webgl renderer:</div>
+				<div>unmasked renderer:</div>
 				<div class="block-text">
 					<div>${data.webglRenderer || note.unsupported}</div>
 				</div>
@@ -743,19 +743,18 @@ const imports = {
 		</div>
 		<div class="flex-grid">
 		${!fp.canvasWebgl ?
-			`<div class="col-six">
+			`<div class="col-four">
 				<strong>Canvas webgl</strong>
-				<div>webgl image: ${note.blocked}</div>
-				<div>webgl2 image: ${note.blocked}</div>
-				<div>webgl pixels: ${note.blocked}</div>
-				<div>webgl2 pixels: ${note.blocked}</div>
-				<div>parameters (0): ${note.blocked}</div>
-				<div>extensions (0): ${note.blocked}</div>
+				<div>images: ${note.blocked}</div>
+				<div>pixels: ${note.blocked}</div>
+				<div>params (0): ${note.blocked}</div>
+				<div>exts (0): ${note.blocked}</div>
 			</div>
-			<div class="col-six">
+			<div class="col-four">
 				<div>unmasked renderer: ${note.blocked}</div>
 				<div class="block-text">${note.blocked}</div>
-			</div>` :
+			</div>
+			<div class="col-four"><image /></div>` :
 		(() => {
 			const { canvasWebgl: data } = fp
 			const id = 'creep-canvas-webgl'
@@ -773,21 +772,15 @@ const imports = {
 			
 			const paramKeys = parameters ? Object.keys(parameters).sort() : []
 			return `
-			<div class="col-six">
+			<div class="col-four">
 				<strong>Canvas webgl</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-				<div>image 1:${
-					!dataURI ? ' '+note.blocked : `<span class="sub-hash">${hashMini(dataURI)}</span></div>`
-				}
-				<div>image 2:${
-					!dataURI2 ? ' '+note.unsupported : `<span class="sub-hash">${hashMini(dataURI2)}</span></div>`
-				}
-				<div>pixels 1:${
-					!pixels ? ' '+note.unsupported : `<span class="sub-hash">${hashSlice(pixels)}</span></div>`
-				}
-				<div>pixels 2:${
-					!pixels2 ? ' '+note.unsupported : `<span class="sub-hash">${hashSlice(pixels)}</span></div>`
-				}
-				<div>parameters (${count(paramKeys)}): ${
+				<div>images:${
+					!dataURI ? ' '+note.blocked : `<span class="sub-hash">${hashMini(dataURI)}</span>${!dataURI2 || dataURI == dataURI2 ? '' : `<span class="sub-hash">${hashMini(dataURI2)}</span>`}`
+				}</div>
+				<div>pixels:${
+					!pixels ? ' '+note.unsupported : `<span class="sub-hash">${hashSlice(pixels)}</span>${!pixels2 || pixels == pixels2 ? '' : `<span class="sub-hash">${hashSlice(pixels2)}</span>`}`
+				}</div>
+				<div>params (${count(paramKeys)}): ${
 					!paramKeys.length ? note.unsupported :
 					modal(
 						`${id}-parameters`,
@@ -795,7 +788,7 @@ const imports = {
 						hashMini(parameters)
 					)
 				}</div>
-				<div>extensions (${count(extensions)}): ${
+				<div>exts (${count(extensions)}): ${
 					!extensions.length ? note.unsupported : 
 					modal(
 						`${id}-extensions`,
@@ -804,16 +797,16 @@ const imports = {
 					)
 				}</div>
 			</div>
-			<div class="col-six">
+			<div class="col-four">
 				<div>unmasked renderer:</div>
 				<div class="block-text">
 					<div>${
-						!parameters.UNMASKED_RENDERER_WEBGL ?
-						note.unsupported :
+						!parameters.UNMASKED_RENDERER_WEBGL ? note.unsupported :
 						parameters.UNMASKED_RENDERER_WEBGL
 					}</div>	
 				</div>
 			</div>
+			<div class="col-four"><image width="100%" src="${dataURI}"/></div>
 			`
 		})()}
 		</div>

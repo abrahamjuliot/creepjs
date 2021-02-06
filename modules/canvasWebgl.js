@@ -135,32 +135,44 @@ const pnames = new Set([
 ])
 
 const draw = gl => {
-	//gl.clearColor(0.2, 0.4, 0.6, 0.8)
-	//gl.clear(gl.COLOR_BUFFER_BIT)
+	//gl.clearColor(0.47, 0.7, 0.78, 1)
+	gl.clear(gl.COLOR_BUFFER_BIT)
 	
 	// based on https://github.com/Valve/fingerprintjs2/blob/master/fingerprint2.js
-	const vertexShaderTemplate = `attribute vec2 attrVertex;varying vec2 varyinTexCoordinate;uniform vec2 uniformOffset;void main(){varyinTexCoordinate=attrVertex+uniformOffset;gl_Position=vec4(attrVertex,0,1);}`
-	const fragmentShaderTemplate = `precision mediump float;varying vec2 varyinTexCoordinate;void main() {gl_FragColor=vec4(varyinTexCoordinate,0,1);}`
-
 	const vertexPosBuffer = gl.createBuffer()
 	gl.bindBuffer(gl.ARRAY_BUFFER, vertexPosBuffer)
-	const vertices = new Float32Array([-0.2, -0.9, 0, 0.4, -0.26, 0, 0, 0.732134444, 0])
+	const vertices = new Float32Array([-0.9, -0.7, 0, 0.8, -0.7, 0, 0, 0.5, 0])
 	gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW)
 
 	vertexPosBuffer.itemSize = 3
 	vertexPosBuffer.numItems = 3
 
+	// create program
 	const program = gl.createProgram()
 
-	// vertex shader
+	// compile and attach vertex shader
 	const vertexShader = gl.createShader(gl.VERTEX_SHADER)
-	gl.shaderSource(vertexShader, vertexShaderTemplate)
+	gl.shaderSource(vertexShader, `
+		attribute vec2 attrVertex;
+		varying vec2 varyinTexCoordinate;
+		uniform vec2 uniformOffset;
+		void main(){
+			varyinTexCoordinate = attrVertex + uniformOffset;
+			gl_Position = vec4(attrVertex, 0, 1);
+		}
+	`)
 	gl.compileShader(vertexShader)
 	gl.attachShader(program, vertexShader)
 
-	// fragment shader
+	// compile and attach fragment shader
 	const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER)
-	gl.shaderSource(fragmentShader, fragmentShaderTemplate)
+	gl.shaderSource(fragmentShader, `
+		precision mediump float;
+		varying vec2 varyinTexCoordinate;
+		void main() {
+			gl_FragColor = vec4(varyinTexCoordinate, 1, 1);
+		}
+	`)
 	gl.compileShader(fragmentShader)
 	gl.attachShader(program, fragmentShader)
 
@@ -170,11 +182,11 @@ const draw = gl => {
 	program.vertexPosAttrib = gl.getAttribLocation(program, 'attrVertex')
 	program.offsetUniform = gl.getUniformLocation(program, 'uniformOffset')
 	gl.enableVertexAttribArray(program.vertexPosArray)
-	gl.vertexAttribPointer(program.vertexPosAttrib, vertexPosBuffer.itemSize, gl.FLOAT, !1, 0, 0)
+	gl.vertexAttribPointer(program.vertexPosAttrib, vertexPosBuffer.itemSize, gl.FLOAT, false, 0, 0)
 	gl.uniform2f(program.offsetUniform, 1, 1)
 
 	// draw
-	gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertexPosBuffer.numItems)
+	gl.drawArrays(gl.LINE_LOOP, 0, vertexPosBuffer.numItems)
 
 	return gl
 }
