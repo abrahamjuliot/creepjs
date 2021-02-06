@@ -108,6 +108,7 @@ export const getBestWorkerScope = imports => {
 	} = imports
 	return new Promise(async resolve => {
 		try {
+			await new Promise(setTimeout)
 			const start = performance.now()
 			let type = 'service' // loads fast but is not available in frames
 			let workerScope = await getServiceWorker()

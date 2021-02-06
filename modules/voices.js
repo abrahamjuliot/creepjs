@@ -10,7 +10,8 @@ export const getVoices = imports => {
 	} = imports
 		
 	return new Promise(async resolve => {
-		try { 
+		try {
+			await new Promise(setTimeout) 
 			const start = performance.now()
 			const win = phantomDarkness ? phantomDarkness : window
 			if (!('speechSynthesis' in win)) {
