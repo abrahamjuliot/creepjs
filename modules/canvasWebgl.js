@@ -348,11 +348,14 @@ export const getCanvasWebgl = imports => {
 			}
 
 			const getSupportedExtensions = gl => {
-				const extensions = attempt(() => gl.getSupportedExtensions())
-				if (!extensions) {
+				if (!gl) {
 					return []
 				}
-				return extensions
+				const ext = attempt(() => gl.getSupportedExtensions())
+				if (!ext) {
+					return []
+				}
+				return ext
 			}
 
 			const getDataURI = contextType => {
