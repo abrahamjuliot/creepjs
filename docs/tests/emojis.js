@@ -70,14 +70,14 @@ patch(el, html`
 
 const emojiDiv = document.getElementById('emoji')
 const toNativeObject = domRect => ({
-	b: ~~domRect.bottom,
-	h: ~~domRect.height,
-	l: ~~domRect.left,
-	r: ~~domRect.right,
-	w: ~~domRect.width,
-	t: ~~domRect.top,
-	x: ~~domRect.x,
-	y: ~~domRect.y
+	b: domRect.bottom,
+	h: domRect.height,
+	l: domRect.left,
+	r: domRect.right,
+	w: domRect.width,
+	t: domRect.top,
+	x: domRect.x,
+	y: domRect.y
 })
 
 //console.log(emojis.length)
@@ -99,6 +99,9 @@ console.log(`hash: ${$hash}`)
 console.groupCollapsed('emojis')
 console.log(emojiRects.map(rect => `${rect.hash}: [${rect.domRect.b}, ${rect.domRect.h}, ${rect.domRect.l}, ${rect.domRect.r}, ${rect.domRect.w}, ${rect.domRect.t}, ${rect.domRect.x}, ${rect.domRect.y}] ${rect.emoji} (${rect.emojiCode})`).join('\n'))
 console.groupEnd()
+
+
+const unique = new Set(emojiRects.map(rect => rect.hash))
 
 patch(document.getElementById('emoji-container'), html`
 	<div id="fingerprint-data">
@@ -144,8 +147,12 @@ patch(document.getElementById('emoji-container'), html`
 			<div>${hashSlice($hash)}</div>
 		</div>
 		<div>
+		<div>${unique.size} of ${emojiRects.length} unique:</div>
+		<br>${emojiRects.filter(rect => unique.has(rect.hash) && unique.delete(rect.hash)).map(rect => `<span>${rect.emoji}</span>`).join('')}
+		</div>
+		<div>
 		<div>hash... : ...(emoji code)</div>
-		${emojiRects.map(rects => `<div class="${control != rects.hash ? 'unique': ''}">${rects.hash}: ${rects.emoji} (${rects.emojiCode})</div>`).join('')}
+		${emojiRects.map(rect => `<div class="${control != rect.hash ? 'unique': ''}">${rect.hash}: ${rect.emoji} (${rect.emojiCode})</div>`).join('')}
 		</div>
 	</div>
 `)
