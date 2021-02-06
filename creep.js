@@ -806,7 +806,7 @@ const imports = {
 					}</div>	
 				</div>
 			</div>
-			<div class="col-four"><image width="100%" src="${dataURI}"/></div>
+			<div class="col-four"><image ${!dataURI ? '' : `width="100%" src="${dataURI}"`}/></div>
 			`
 		})()}
 		</div>
