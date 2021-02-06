@@ -90,9 +90,19 @@ const emojiRects = emojis
 	return { emoji, emojiCode, hash: hashMini(domRect), domRect }
 })
 
-const hashSlice = x => x.slice(0, 8)
-const $hash = await hashify(emojiRects)
+
 const control = emojiRects[0].hash
+
+const unique = new Set(emojiRects.map(rect => rect.hash))
+
+// fingerprint the unique emojis (not DOMRects)
+const uniqueFingerprintSet = new Set([...unique])
+const fingerprint = emojiRects
+	.filter(rect => uniqueFingerprintSet.has(rect.hash) && uniqueFingerprintSet.delete(rect.hash))
+	.map(rect => rect.emoji)
+
+const $hash = await hashify(fingerprint)
+
 const perf = performance.now() - start 
 
 console.log(`hash: ${$hash}`)
@@ -101,8 +111,7 @@ console.log(emojiRects.map(rect => `${rect.hash}: [${rect.domRect.b}, ${rect.dom
 console.groupEnd()
 
 
-const unique = new Set(emojiRects.map(rect => rect.hash))
-
+const hashSlice = x => x.slice(0, 8)
 patch(document.getElementById('emoji-container'), html`
 	<div id="fingerprint-data">
 		<style>
