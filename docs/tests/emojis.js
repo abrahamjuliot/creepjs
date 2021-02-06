@@ -132,7 +132,7 @@ patch(document.getElementById('emoji-container'), html`
 			padding: 10px 15px;
 			margin: 10px auto;
 		}
-		.unique {
+		.isolate {
 			background: #657fca1a
 		}
 		@media (prefers-color-scheme: dark) {
@@ -152,7 +152,7 @@ patch(document.getElementById('emoji-container'), html`
 		</div>
 		<div>
 		<div>hash... : ...(emoji code)</div>
-		${emojiRects.map(rect => `<div class="${control != rect.hash ? 'unique': ''}">${rect.hash}: ${rect.emoji} (${rect.emojiCode})</div>`).join('')}
+		${emojiRects.map(rect => `<div class="${control != rect.hash ? 'isolate': ''}">${rect.hash}: ${rect.emoji} (${rect.emojiCode})</div>`).join('')}
 		</div>
 	</div>
 `)
