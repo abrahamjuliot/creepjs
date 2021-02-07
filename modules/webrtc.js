@@ -11,8 +11,8 @@ export const getWebRTCData = imports => {
 	} = imports
 	
 	return new Promise(async resolve => {
-		await new Promise(setTimeout)
 		try {
+			await new Promise(setTimeout)
 			const start = performance.now()
 			let rtcPeerConnection
 			try {
@@ -48,7 +48,7 @@ export const getWebRTCData = imports => {
 			.then(offer => connection.setLocalDescription(offer))
 			.catch(error => console.error(error))
 
-			connection.onicecandidate = async e => { 
+			connection.onicecandidate = async e => {
 				const candidateEncoding = /((udp|tcp)\s)((\d|\w)+\s)((\d|\w|(\.|\:))+)(?=\s)/ig
 				const connectionLineEncoding = /(c=IN\s)(.+)\s/ig
 				if (!e.candidate) {
@@ -68,7 +68,6 @@ export const getWebRTCData = imports => {
 					const type = caniuse(() => /typ ([a-z]+)/.exec(candidate)[1])
 					const foundation = caniuse(() => /candidate:(\d+)\s/.exec(candidate)[1])
 					const protocol = caniuse(() => /candidate:\d+ \w+ (\w+)/.exec(candidate)[1])
-					
 					// get capabilities
 					const capabilities = {
 						sender: !caniuse(() => RTCRtpSender.getCapabilities) ? undefined : {
@@ -104,9 +103,8 @@ export const getWebRTCData = imports => {
 					}
 					logTestResult({ start, test: 'webrtc', passed: true })
 					return resolve({ ...data })
-				} else {
-					return
 				}
+				return
 			}
 			
 			setTimeout(() => {
@@ -115,9 +113,7 @@ export const getWebRTCData = imports => {
 					captureError(new Error('RTCIceCandidate failed'))
 					return resolve()
 				}
-			}, 2000)
-
-			
+			}, 1000)
 		}
 		catch (error) {
 			logTestResult({ test: 'webrtc', passed: false })

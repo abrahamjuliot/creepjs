@@ -174,7 +174,7 @@ const getSystemStyles = (instanceId, { require: [ captureError, parentPhantom ] 
 	}
 }
 
-export const getCSS = imports => {
+export const getCSS = async imports => {
 
 	const {
 		require: {
@@ -185,21 +185,19 @@ export const getCSS = imports => {
 		}
 	} = imports
 
-	return new Promise(async resolve => {
-		try {
-			const start = performance.now()
-			const computedStyle = computeStyle('getComputedStyle', { require: [ captureError ] })
-			const system = getSystemStyles(instanceId, { require: [ captureError, parentPhantom ] })
-			logTestResult({ start, test: 'computed style', passed: true })
-			return resolve({
-				computedStyle,
-				system
-			})
+	try {
+		const start = performance.now()
+		const computedStyle = computeStyle('getComputedStyle', { require: [ captureError ] })
+		const system = getSystemStyles(instanceId, { require: [ captureError, parentPhantom ] })
+		logTestResult({ start, test: 'computed style', passed: true })
+		return {
+			computedStyle,
+			system
 		}
-		catch (error) {
-			logTestResult({ test: 'computed style', passed: false })
-			captureError(error)
-			return resolve()
-		}
-	})
+	}
+	catch (error) {
+		logTestResult({ test: 'computed style', passed: false })
+		captureError(error)
+		return
+	}
 }

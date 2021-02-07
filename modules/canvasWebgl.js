@@ -191,7 +191,7 @@ const draw = gl => {
 	return gl
 }
 
-export const getCanvasWebgl = imports => {
+export const getCanvasWebgl = async imports => {
 
 	const {
 		require: {
@@ -206,228 +206,226 @@ export const getCanvasWebgl = imports => {
 		}
 	} = imports
 
-	return new Promise(async resolve => {
-		try {
-			const start = performance.now()
-			// detect lies
-			const dataLie = lieProps['HTMLCanvasElement.toDataURL']
-			const contextLie = lieProps['HTMLCanvasElement.getContext']
-			let lied = (
-				dataLie ||
-				contextLie ||
-				lieProps['WebGLRenderingContext.getParameter'] ||
-				lieProps['WebGL2RenderingContext.getParameter'] ||
-				lieProps['WebGLRenderingContext.getExtension'] ||
-				lieProps['WebGL2RenderingContext.getExtension'] ||
-				lieProps['WebGLRenderingContext.getSupportedExtensions'] ||
-				lieProps['WebGL2RenderingContext.getSupportedExtensions']
-			) || false
-			if (dragonOfDeath &&
-				dragonOfDeath.document.createElement('canvas').toDataURL() != document.createElement('canvas').toDataURL()) {
-				lied = true
-			}
-			
-			// create canvas context
-			const win = phantomDarkness ? phantomDarkness : window
-			const doc = win.document
-			let canvas, canvas2
-			if ('OffscreenCanvas' in window) {
-				canvas = new win.OffscreenCanvas(256, 256)
-				canvas2 = new win.OffscreenCanvas(256, 256)
-			} else {
-				canvas = doc.createElement('canvas')
-				canvas2 = doc.createElement('canvas')
-			}
+	try {
+		const start = performance.now()
+		// detect lies
+		const dataLie = lieProps['HTMLCanvasElement.toDataURL']
+		const contextLie = lieProps['HTMLCanvasElement.getContext']
+		let lied = (
+			dataLie ||
+			contextLie ||
+			lieProps['WebGLRenderingContext.getParameter'] ||
+			lieProps['WebGL2RenderingContext.getParameter'] ||
+			lieProps['WebGLRenderingContext.getExtension'] ||
+			lieProps['WebGL2RenderingContext.getExtension'] ||
+			lieProps['WebGLRenderingContext.getSupportedExtensions'] ||
+			lieProps['WebGL2RenderingContext.getSupportedExtensions']
+		) || false
+		if (dragonOfDeath &&
+			dragonOfDeath.document.createElement('canvas').toDataURL() != document.createElement('canvas').toDataURL()) {
+			lied = true
+		}
 		
-			const getContext = (canvas, contextType) => {
-				try {
-					if (contextType == 'webgl2') {
-						return (
-							canvas.getContext('webgl2') ||
-							canvas.getContext('experimental-webgl2')
-						)
-					}
+		// create canvas context
+		const win = phantomDarkness ? phantomDarkness : window
+		const doc = win.document
+		let canvas, canvas2
+		if ('OffscreenCanvas' in window) {
+			canvas = new win.OffscreenCanvas(256, 256)
+			canvas2 = new win.OffscreenCanvas(256, 256)
+		} else {
+			canvas = doc.createElement('canvas')
+			canvas2 = doc.createElement('canvas')
+		}
+	
+		const getContext = (canvas, contextType) => {
+			try {
+				if (contextType == 'webgl2') {
 					return (
-						canvas.getContext('webgl') ||
-						canvas.getContext('experimental-webgl') ||
-						canvas.getContext('moz-webgl') ||
-						canvas.getContext('webkit-3d')
+						canvas.getContext('webgl2') ||
+						canvas.getContext('experimental-webgl2')
 					)
 				}
-				catch (error) {
-					return
-				}
-			}
-			const gl = getContext(canvas, 'webgl')
-			const gl2 = getContext(canvas2, 'webgl2')
-			if (!gl) {
-				logTestResult({ test: 'webgl', passed: false })
-				return resolve()
-			}
-
-			// helpers
-			const getShaderPrecisionFormat = (gl, shaderType) => {
-				if (!gl) {
-					return
-				}
-				const LOW_FLOAT = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.LOW_FLOAT))
-				const MEDIUM_FLOAT = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.MEDIUM_FLOAT))
-				const HIGH_FLOAT = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.HIGH_FLOAT))
-				const HIGH_INT = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.HIGH_INT))
-				return {
-					LOW_FLOAT,
-					MEDIUM_FLOAT,
-					HIGH_FLOAT,
-					HIGH_INT
-				}
-			}
-
-			const getShaderData = (name, shader) => {
-				const data = {}
-				for (const prop in shader) {
-					const obj = shader[prop]
-					data[name + '.' + prop + '.precision'] = obj ? attempt(() => obj.precision) : undefined
-					data[name + '.' + prop + '.rangeMax'] = obj ? attempt(() => obj.rangeMax) : undefined
-					data[name + '.' + prop + '.rangeMin'] = obj ? attempt(() => obj.rangeMin) : undefined
-				}
-				return data
-			}
-
-			const getMaxAnisotropy = gl => {
-				if (!gl) {
-					return
-				}
-				const ext = (
-					gl.getExtension('EXT_texture_filter_anisotropic') ||
-					gl.getExtension('MOZ_EXT_texture_filter_anisotropic') ||
-					gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic')
+				return (
+					canvas.getContext('webgl') ||
+					canvas.getContext('experimental-webgl') ||
+					canvas.getContext('moz-webgl') ||
+					canvas.getContext('webkit-3d')
 				)
-				return ext ? gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT) : undefined
 			}
-
-			const getParams = gl => {
-				if (!gl) {
-					return {}
-				}
-				const data = Object
-					.getOwnPropertyNames(Object.getPrototypeOf(gl))
-					//.filter(prop => prop.toUpperCase() == prop) // global test
-					.filter(name => pnames.has(name))
-					.reduce((acc, name) => {
-						let val = gl.getParameter(gl[name])
-						if (!!val && 'buffer' in Object.getPrototypeOf(val)) {
-							acc[name] = [...val]
-						} else {
-							acc[name] = val
-						}
-						return acc
-					}, {})
-				return data
+			catch (error) {
+				return
 			}
-
-			const getUnmasked = gl => {
-				const ext = !!gl ? gl.getExtension('WEBGL_debug_renderer_info') : null
-				if (!ext) {
-					return {}
-				}
-				const UNMASKED_VENDOR_WEBGL = gl.getParameter(ext.UNMASKED_VENDOR_WEBGL)
-				const UNMASKED_RENDERER_WEBGL = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)
-				const vendorGibbers = gibberish(UNMASKED_VENDOR_WEBGL)
-				const rendererGibbers = gibberish(UNMASKED_RENDERER_WEBGL)
-				const { name } = Object.getPrototypeOf(gl).constructor
-				if (vendorGibbers.length) {
-					sendToTrash(`${name} vendor is gibberish`, `[${vendorGibbers.join(', ')}] ${UNMASKED_VENDOR_WEBGL}`)
-				}
-				if (rendererGibbers.length) {
-					sendToTrash(`${name} renderer is gibberish`, `[${rendererGibbers.join(', ')}] ${UNMASKED_RENDERER_WEBGL}`)
-				}
-				return {
-					UNMASKED_VENDOR_WEBGL,
-					UNMASKED_RENDERER_WEBGL
-				}
-			}
-
-			const getSupportedExtensions = gl => {
-				if (!gl) {
-					return []
-				}
-				const ext = attempt(() => gl.getSupportedExtensions())
-				if (!ext) {
-					return []
-				}
-				return ext
-			}
-
-			const getDataURI = contextType => {
-				try {
-					const canvas = doc.createElement('canvas')
-					const gl = getContext(canvas, contextType)
-					draw(gl)
-					return canvas.toDataURL()
-				}
-				catch (error) {
-					return
-				}
-			}
-
-			const getPixels = gl => {
-				if (!gl) {
-					return []
-				}
-				const width = gl.drawingBufferWidth
-				const height = gl.drawingBufferHeight
-				try {
-					draw(gl)
-					const pixels = new Uint8Array(width * height * 4)
-					gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels)
-					return [...pixels]
-				}
-				catch (error) {
-					return []
-				}
-			}
-
-			// get data
-			const params = {...getParams(gl), ...getUnmasked(gl)}
-			const params2 = {...getParams(gl2), ...getUnmasked(gl2)}
-			const mismatch = Object.keys(params2)
-				.filter(key => !!params[key] && ''+params[key] != ''+params2[key])
-				.toString()
-				.replace('SHADING_LANGUAGE_VERSION,VERSION', '')
-			if (mismatch) {
-				sendToTrash('webgl/webgl2 mirrored params mismatch', mismatch)
-			}
-			
-			const data = {
-				extensions: [...getSupportedExtensions(gl),...getSupportedExtensions(gl2)],
-				pixels: getPixels(gl),
-				pixels2: getPixels(gl2),
-				dataURI: getDataURI('webgl'),
-				dataURI2: getDataURI('webgl2'),
-				parameters: {
-					...{...params, ...params2},
-					...{
-						antialias: gl.getContextAttributes() ? gl.getContextAttributes().antialias : undefined,
-						MAX_VIEWPORT_DIMS: attempt(() => [...gl.getParameter(gl.MAX_VIEWPORT_DIMS)]),
-						MAX_TEXTURE_MAX_ANISOTROPY_EXT: getMaxAnisotropy(gl),
-						...getShaderData('VERTEX_SHADER', getShaderPrecisionFormat(gl, 'VERTEX_SHADER')),
-						...getShaderData('FRAGMENT_SHADER', getShaderPrecisionFormat(gl, 'FRAGMENT_SHADER')),
-						MAX_DRAW_BUFFERS_WEBGL: attempt(() => {
-							const buffers = gl.getExtension('WEBGL_draw_buffers')
-							return buffers ? gl.getParameter(buffers.MAX_DRAW_BUFFERS_WEBGL) : undefined
-						})
-					}
-				},
-				lied
-			}
-
-			logTestResult({ start, test: 'webgl', passed: true })
-			return resolve({ ...data })
 		}
-		catch (error) {
+		const gl = getContext(canvas, 'webgl')
+		const gl2 = getContext(canvas2, 'webgl2')
+		if (!gl) {
 			logTestResult({ test: 'webgl', passed: false })
-			captureError(error)
-			return resolve()
+			return
 		}
-	})
+
+		// helpers
+		const getShaderPrecisionFormat = (gl, shaderType) => {
+			if (!gl) {
+				return
+			}
+			const LOW_FLOAT = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.LOW_FLOAT))
+			const MEDIUM_FLOAT = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.MEDIUM_FLOAT))
+			const HIGH_FLOAT = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.HIGH_FLOAT))
+			const HIGH_INT = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.HIGH_INT))
+			return {
+				LOW_FLOAT,
+				MEDIUM_FLOAT,
+				HIGH_FLOAT,
+				HIGH_INT
+			}
+		}
+
+		const getShaderData = (name, shader) => {
+			const data = {}
+			for (const prop in shader) {
+				const obj = shader[prop]
+				data[name + '.' + prop + '.precision'] = obj ? attempt(() => obj.precision) : undefined
+				data[name + '.' + prop + '.rangeMax'] = obj ? attempt(() => obj.rangeMax) : undefined
+				data[name + '.' + prop + '.rangeMin'] = obj ? attempt(() => obj.rangeMin) : undefined
+			}
+			return data
+		}
+
+		const getMaxAnisotropy = gl => {
+			if (!gl) {
+				return
+			}
+			const ext = (
+				gl.getExtension('EXT_texture_filter_anisotropic') ||
+				gl.getExtension('MOZ_EXT_texture_filter_anisotropic') ||
+				gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic')
+			)
+			return ext ? gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT) : undefined
+		}
+
+		const getParams = gl => {
+			if (!gl) {
+				return {}
+			}
+			const data = Object
+				.getOwnPropertyNames(Object.getPrototypeOf(gl))
+				//.filter(prop => prop.toUpperCase() == prop) // global test
+				.filter(name => pnames.has(name))
+				.reduce((acc, name) => {
+					let val = gl.getParameter(gl[name])
+					if (!!val && 'buffer' in Object.getPrototypeOf(val)) {
+						acc[name] = [...val]
+					} else {
+						acc[name] = val
+					}
+					return acc
+				}, {})
+			return data
+		}
+
+		const getUnmasked = gl => {
+			const ext = !!gl ? gl.getExtension('WEBGL_debug_renderer_info') : null
+			if (!ext) {
+				return {}
+			}
+			const UNMASKED_VENDOR_WEBGL = gl.getParameter(ext.UNMASKED_VENDOR_WEBGL)
+			const UNMASKED_RENDERER_WEBGL = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)
+			const vendorGibbers = gibberish(UNMASKED_VENDOR_WEBGL)
+			const rendererGibbers = gibberish(UNMASKED_RENDERER_WEBGL)
+			const { name } = Object.getPrototypeOf(gl).constructor
+			if (vendorGibbers.length) {
+				sendToTrash(`${name} vendor is gibberish`, `[${vendorGibbers.join(', ')}] ${UNMASKED_VENDOR_WEBGL}`)
+			}
+			if (rendererGibbers.length) {
+				sendToTrash(`${name} renderer is gibberish`, `[${rendererGibbers.join(', ')}] ${UNMASKED_RENDERER_WEBGL}`)
+			}
+			return {
+				UNMASKED_VENDOR_WEBGL,
+				UNMASKED_RENDERER_WEBGL
+			}
+		}
+
+		const getSupportedExtensions = gl => {
+			if (!gl) {
+				return []
+			}
+			const ext = attempt(() => gl.getSupportedExtensions())
+			if (!ext) {
+				return []
+			}
+			return ext
+		}
+
+		const getDataURI = contextType => {
+			try {
+				const canvas = doc.createElement('canvas')
+				const gl = getContext(canvas, contextType)
+				draw(gl)
+				return canvas.toDataURL()
+			}
+			catch (error) {
+				return
+			}
+		}
+
+		const getPixels = gl => {
+			if (!gl) {
+				return []
+			}
+			const width = gl.drawingBufferWidth
+			const height = gl.drawingBufferHeight
+			try {
+				draw(gl)
+				const pixels = new Uint8Array(width * height * 4)
+				gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels)
+				return [...pixels]
+			}
+			catch (error) {
+				return []
+			}
+		}
+
+		// get data
+		const params = {...getParams(gl), ...getUnmasked(gl)}
+		const params2 = {...getParams(gl2), ...getUnmasked(gl2)}
+		const mismatch = Object.keys(params2)
+			.filter(key => !!params[key] && ''+params[key] != ''+params2[key])
+			.toString()
+			.replace('SHADING_LANGUAGE_VERSION,VERSION', '')
+		if (mismatch) {
+			sendToTrash('webgl/webgl2 mirrored params mismatch', mismatch)
+		}
+		
+		const data = {
+			extensions: [...getSupportedExtensions(gl),...getSupportedExtensions(gl2)],
+			pixels: getPixels(gl),
+			pixels2: getPixels(gl2),
+			dataURI: getDataURI('webgl'),
+			dataURI2: getDataURI('webgl2'),
+			parameters: {
+				...{...params, ...params2},
+				...{
+					antialias: gl.getContextAttributes() ? gl.getContextAttributes().antialias : undefined,
+					MAX_VIEWPORT_DIMS: attempt(() => [...gl.getParameter(gl.MAX_VIEWPORT_DIMS)]),
+					MAX_TEXTURE_MAX_ANISOTROPY_EXT: getMaxAnisotropy(gl),
+					...getShaderData('VERTEX_SHADER', getShaderPrecisionFormat(gl, 'VERTEX_SHADER')),
+					...getShaderData('FRAGMENT_SHADER', getShaderPrecisionFormat(gl, 'FRAGMENT_SHADER')),
+					MAX_DRAW_BUFFERS_WEBGL: attempt(() => {
+						const buffers = gl.getExtension('WEBGL_draw_buffers')
+						return buffers ? gl.getParameter(buffers.MAX_DRAW_BUFFERS_WEBGL) : undefined
+					})
+				}
+			},
+			lied
+		}
+
+		logTestResult({ start, test: 'webgl', passed: true })
+		return { ...data }
+	}
+	catch (error) {
+		logTestResult({ test: 'webgl', passed: false })
+		captureError(error)
+		return
+	}
 }

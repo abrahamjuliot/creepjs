@@ -528,7 +528,7 @@ const decryptLocation = ({ year, timeZone, phantomIntl, phantomDate }) => {
 
 const formatLocation = x => x.replace(/_/, ' ').split('/').join(', ') 
 
-export const getTimezone = imports => {
+export const getTimezone = async imports => {
 
 	const {
 		require: {
@@ -539,38 +539,36 @@ export const getTimezone = imports => {
 		}
 	} = imports
 
-	return new Promise(async resolve => {
-		try {
-			const start = performance.now()
-			let lied = (
-				lieProps['Date.getTimezoneOffset'] ||
-				lieProps['Intl.DateTimeFormat.resolvedOptions'] ||
-				lieProps['Intl.RelativeTimeFormat.resolvedOptions']
-			) || false
-			const phantomDate = phantomDarkness ? phantomDarkness.Date : Date
-			const phantomIntl = phantomDarkness ? phantomDarkness.Intl : Date
+	try {
+		const start = performance.now()
+		let lied = (
+			lieProps['Date.getTimezoneOffset'] ||
+			lieProps['Intl.DateTimeFormat.resolvedOptions'] ||
+			lieProps['Intl.RelativeTimeFormat.resolvedOptions']
+		) || false
+		const phantomDate = phantomDarkness ? phantomDarkness.Date : Date
+		const phantomIntl = phantomDarkness ? phantomDarkness.Intl : Date
 
-			const year = 1113
-			const { timeZone } = phantomIntl.DateTimeFormat().resolvedOptions()
-			const decrypted = decryptLocation({ year, timeZone, phantomIntl, phantomDate })
-			const locationEpoch = +new Date(new Date(`7/1/${year}`))
-			const notWithinParentheses = /.*\(|\).*/g
-			const data =  {
-				zone: (''+new phantomDate()).replace(notWithinParentheses, ''),
-				location: formatLocation(timeZone),
-				locationMeasured: formatLocation(decrypted),
-				locationEpoch,
-				offset: new phantomDate().getTimezoneOffset(),
-				offsetComputed: getTimezoneOffset(phantomDate),
-				lied
-			}
-			logTestResult({ start, test: 'timezone', passed: true })
-			return resolve({ ...data })
+		const year = 1113
+		const { timeZone } = phantomIntl.DateTimeFormat().resolvedOptions()
+		const decrypted = decryptLocation({ year, timeZone, phantomIntl, phantomDate })
+		const locationEpoch = +new Date(new Date(`7/1/${year}`))
+		const notWithinParentheses = /.*\(|\).*/g
+		const data =  {
+			zone: (''+new phantomDate()).replace(notWithinParentheses, ''),
+			location: formatLocation(timeZone),
+			locationMeasured: formatLocation(decrypted),
+			locationEpoch,
+			offset: new phantomDate().getTimezoneOffset(),
+			offsetComputed: getTimezoneOffset(phantomDate),
+			lied
 		}
-		catch (error) {
-			logTestResult({ test: 'timezone', passed: false })
-			captureError(error)
-			return resolve()
-		}
-	})
+		logTestResult({ start, test: 'timezone', passed: true })
+		return { ...data }
+	}
+	catch (error) {
+		logTestResult({ test: 'timezone', passed: false })
+		captureError(error)
+		return
+	}
 }

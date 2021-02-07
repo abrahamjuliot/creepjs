@@ -66,16 +66,14 @@ const createTrashBin = () => {
 const trashBin = createTrashBin()
 const { sendToTrash } = trashBin
 
-const getTrash = imports => {
+const getTrash = async imports => {
 	const {
 		require: {
 			trashBin
 		}
 	} = imports
 	const bin = trashBin.getBin()
-	return new Promise(async resolve => {
-		return resolve({ trashBin: bin })
-	})
+	return { trashBin: bin }
 }
 
 export { sendToTrash, proxyBehavior, gibberish, trustInteger, trashBin, getTrash }

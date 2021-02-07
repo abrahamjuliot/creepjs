@@ -10,7 +10,7 @@ const getErrors = errFns => {
 	}
 	return errors
 }
-export const getConsoleErrors = imports => {
+export const getConsoleErrors = async imports => {
 
 	const {
 		require: {
@@ -20,28 +20,26 @@ export const getConsoleErrors = imports => {
 		}
 	} = imports
 
-	return new Promise(async resolve => {
-		try {
-			const start = performance.now()
-			const errorTests = [
-				() => new Function('alert(")')(),
-				() => new Function('const foo;foo.bar')(),
-				() => new Function('null.bar')(),
-				() => new Function('abc.xyz = 123')(),
-				() => new Function('const foo;foo.bar')(),
-				() => new Function('(1).toString(1000)')(),
-				() => new Function('[...undefined].length')(),
-				() => new Function('var x = new Array(-1)')(),
-				() => new Function('const a=1; const a=2;')()
-			]
-			const errors = getErrors(errorTests)
-			logTestResult({ start, test: 'console errors', passed: true })
-			return resolve({ errors })
-		}
-		catch (error) {
-			logTestResult({ test: 'console errors', passed: false })
-			captureError(error)
-			return resolve()
-		}
-	})
+	try {
+		const start = performance.now()
+		const errorTests = [
+			() => new Function('alert(")')(),
+			() => new Function('const foo;foo.bar')(),
+			() => new Function('null.bar')(),
+			() => new Function('abc.xyz = 123')(),
+			() => new Function('const foo;foo.bar')(),
+			() => new Function('(1).toString(1000)')(),
+			() => new Function('[...undefined].length')(),
+			() => new Function('var x = new Array(-1)')(),
+			() => new Function('const a=1; const a=2;')()
+		]
+		const errors = getErrors(errorTests)
+		logTestResult({ start, test: 'console errors', passed: true })
+		return { errors }
+	}
+	catch (error) {
+		logTestResult({ test: 'console errors', passed: false })
+		captureError(error)
+		return
+	}
 }

@@ -1,4 +1,4 @@
-export const getHTMLElementVersion = imports => {
+export const getHTMLElementVersion = async imports => {
 
 	const {
 		require: {
@@ -7,20 +7,18 @@ export const getHTMLElementVersion = imports => {
 		}
 	} = imports
 
-	return new Promise(async resolve => {
-		try {
-			const start = performance.now()
-			const keys = []
-			for (const key in document.documentElement) {
-				keys.push(key)
-			}
-			logTestResult({ start, test: 'html element', passed: true })
-			return resolve({ keys })
+	try {
+		const start = performance.now()
+		const keys = []
+		for (const key in document.documentElement) {
+			keys.push(key)
 		}
-		catch (error) {
-			logTestResult({ test: 'html element', passed: false })
-			captureError(error)
-			return resolve()
-		}
-	})
+		logTestResult({ start, test: 'html element', passed: true })
+		return { keys }
+	}
+	catch (error) {
+		logTestResult({ test: 'html element', passed: false })
+		captureError(error)
+		return
+	}
 }

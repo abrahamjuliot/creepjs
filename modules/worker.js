@@ -95,7 +95,7 @@ const getServiceWorker = () => {
 	})
 }
 
-export const getBestWorkerScope = imports => {	
+export const getBestWorkerScope = async imports => {	
 	const {
 		require: {
 			getOS,
@@ -106,38 +106,36 @@ export const getBestWorkerScope = imports => {
 			logTestResult
 		}
 	} = imports
-	return new Promise(async resolve => {
-		try {
-			await new Promise(setTimeout)
-			const start = performance.now()
-			let type = 'service' // loads fast but is not available in frames
-			let workerScope = await getServiceWorker()
-				.catch(error => console.error(error.message))
-			if (!caniuse(() => workerScope.userAgent)) {
-				type = 'shared' // no support in Safari, iOS, and Chrome Android
-				workerScope = await getSharedWorker(phantomDarkness)
-				.catch(error => console.error(error.message))
-			}
-			if (!caniuse(() => workerScope.userAgent)) {
-				type = 'dedicated' // simulators & extensions can spoof userAgent
-				workerScope = await getDedicatedWorker(phantomDarkness)
-				.catch(error => console.error(error.message))
-			}
-			if (caniuse(() => workerScope.userAgent)) {
-				const { canvas2d } = workerScope || {}
-				workerScope.system = getOS(workerScope.userAgent)
-				workerScope.device = getUserAgentPlatform({ userAgent: workerScope.userAgent })
-				workerScope.canvas2d = { dataURI: canvas2d }
-				workerScope.type = type
-				logTestResult({ start, test: `${type} worker`, passed: true })
-				return resolve({ ...workerScope })
-			}
-			return resolve()
+	try {
+		await new Promise(setTimeout)
+		const start = performance.now()
+		let type = 'service' // loads fast but is not available in frames
+		let workerScope = await getServiceWorker()
+			.catch(error => console.error(error.message))
+		if (!caniuse(() => workerScope.userAgent)) {
+			type = 'shared' // no support in Safari, iOS, and Chrome Android
+			workerScope = await getSharedWorker(phantomDarkness)
+			.catch(error => console.error(error.message))
 		}
-		catch (error) {
-			logTestResult({ test: 'worker', passed: false })
-			captureError(error, 'workers failed or blocked by client')
-			return resolve()
+		if (!caniuse(() => workerScope.userAgent)) {
+			type = 'dedicated' // simulators & extensions can spoof userAgent
+			workerScope = await getDedicatedWorker(phantomDarkness)
+			.catch(error => console.error(error.message))
 		}
-	})
+		if (caniuse(() => workerScope.userAgent)) {
+			const { canvas2d } = workerScope || {}
+			workerScope.system = getOS(workerScope.userAgent)
+			workerScope.device = getUserAgentPlatform({ userAgent: workerScope.userAgent })
+			workerScope.canvas2d = { dataURI: canvas2d }
+			workerScope.type = type
+			logTestResult({ start, test: `${type} worker`, passed: true })
+			return { ...workerScope }
+		}
+		return
+	}
+	catch (error) {
+		logTestResult({ test: 'worker', passed: false })
+		captureError(error, 'workers failed or blocked by client')
+		return
+	}
 }

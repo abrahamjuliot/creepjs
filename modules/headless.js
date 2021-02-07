@@ -40,7 +40,7 @@ const getNewObjectToStringTypeErrorLie = apiFunction => {
 }
 
 
-export const getHeadlessFeatures = (imports, workerScope) => {
+export const getHeadlessFeatures = async (imports, workerScope) => {
 
 	const {
 		require: {
@@ -51,143 +51,141 @@ export const getHeadlessFeatures = (imports, workerScope) => {
 		}
 	} = imports
 
-	return new Promise(async resolve => {
-		try {
-			const start = performance.now()
-			const isChrome = detectChromium()
-			const mimeTypes = Object.keys({...navigator.mimeTypes})
-			const data = {
-				chromium: isChrome,
-				likeHeadless: {
-					['trust token feature is disabled']: (
-						!('hasTrustToken' in document) ||
-						!('trustTokenOperationError' in XMLHttpRequest.prototype) ||
-						!('setTrustToken' in XMLHttpRequest.prototype) ||
-						!('trustToken' in HTMLIFrameElement.prototype)
-					),
-					['navigator.webdriver is on']: 'webdriver' in navigator && !!navigator.webdriver,
-					['chrome plugins array is empty']: isChrome && navigator.plugins.length === 0,
-					['chrome mimeTypes array is empty']: isChrome && mimeTypes.length === 0,
-					['notification permission is denied']: Notification.permission == 'denied',
-					['chrome system color ActiveText is rgb(255, 0, 0)']: isChrome && (() => {
-						let rendered = parentPhantom
-						if (!parentPhantom) {
-							rendered = document.createElement('div')
-							document.body.appendChild(rendered)
-						}
-						rendered.setAttribute('style', `background-color: ActiveText`)
-						const { backgroundColor: activeText } = getComputedStyle(rendered)
-						if (!parentPhantom) {
-							rendered.parentNode.removeChild(rendered)
-						}
-						return activeText === 'rgb(255, 0, 0)'
-					})(parentPhantom),
-					['prefers light color scheme']: matchMedia('(prefers-color-scheme: light)').matches
-				},
-				headless: {
-					['chrome window.chrome is undefined']: isChrome && !('chrome' in window),
-					['chrome permission state is inconsistent']: isChrome && await (async () => {
-						const res = await navigator.permissions.query({ name: 'notifications' })
-						return (
-							res.state == 'prompt' && Notification.permission === 'denied'
-						) 
-					})(),
-					['userAgent contains HeadlessChrome']: (
-						/HeadlessChrome/.test(navigator.userAgent) ||
-						/HeadlessChrome/.test(navigator.appVersion)
-					),
-					['worker userAgent contains HeadlessChrome']: !!workerScope && (
-						/HeadlessChrome/.test(workerScope.userAgent)
+	try {
+		const start = performance.now()
+		const isChrome = detectChromium()
+		const mimeTypes = Object.keys({...navigator.mimeTypes})
+		const data = {
+			chromium: isChrome,
+			likeHeadless: {
+				['trust token feature is disabled']: (
+					!('hasTrustToken' in document) ||
+					!('trustTokenOperationError' in XMLHttpRequest.prototype) ||
+					!('setTrustToken' in XMLHttpRequest.prototype) ||
+					!('trustToken' in HTMLIFrameElement.prototype)
+				),
+				['navigator.webdriver is on']: 'webdriver' in navigator && !!navigator.webdriver,
+				['chrome plugins array is empty']: isChrome && navigator.plugins.length === 0,
+				['chrome mimeTypes array is empty']: isChrome && mimeTypes.length === 0,
+				['notification permission is denied']: Notification.permission == 'denied',
+				['chrome system color ActiveText is rgb(255, 0, 0)']: isChrome && (() => {
+					let rendered = parentPhantom
+					if (!parentPhantom) {
+						rendered = document.createElement('div')
+						document.body.appendChild(rendered)
+					}
+					rendered.setAttribute('style', `background-color: ActiveText`)
+					const { backgroundColor: activeText } = getComputedStyle(rendered)
+					if (!parentPhantom) {
+						rendered.parentNode.removeChild(rendered)
+					}
+					return activeText === 'rgb(255, 0, 0)'
+				})(parentPhantom),
+				['prefers light color scheme']: matchMedia('(prefers-color-scheme: light)').matches
+			},
+			headless: {
+				['chrome window.chrome is undefined']: isChrome && !('chrome' in window),
+				['chrome permission state is inconsistent']: isChrome && await (async () => {
+					const res = await navigator.permissions.query({ name: 'notifications' })
+					return (
+						res.state == 'prompt' && Notification.permission === 'denied'
+					) 
+				})(),
+				['userAgent contains HeadlessChrome']: (
+					/HeadlessChrome/.test(navigator.userAgent) ||
+					/HeadlessChrome/.test(navigator.appVersion)
+				),
+				['worker userAgent contains HeadlessChrome']: !!workerScope && (
+					/HeadlessChrome/.test(workerScope.userAgent)
+				)
+			},
+			stealth: {
+				['srcdoc throws an error']: (() => {
+					try {
+						const { srcdoc } = document.createElement('iframe')
+						return !!srcdoc
+					}
+					catch (error) {
+						return true
+					}
+				})(),
+				['srcdoc triggers a window Proxy']: (() => {
+					const iframe = document.createElement('iframe')
+					iframe.srcdoc = '' + hashMini(crypto.getRandomValues(new Uint32Array(10)))
+					return !!iframe.contentWindow
+				})(),
+				['index of chrome is too high']: (() => {
+					const control = (
+						'cookieStore' in window ? 'cookieStore' :
+						'ondevicemotion' in window ? 'ondevicemotion' :
+						'speechSynthesis'
 					)
-				},
-				stealth: {
-					['srcdoc throws an error']: (() => {
-						try {
-							const { srcdoc } = document.createElement('iframe')
-							return !!srcdoc
-						}
-						catch (error) {
+					const propsInWindow = []
+					for (const prop in window) { propsInWindow.push(prop) }
+					const chromeIndex = propsInWindow.indexOf('chrome')
+					const controlIndex = propsInWindow.indexOf(control)
+					return chromeIndex > controlIndex
+				})(),
+				['chrome.runtime functions are invalid']: (() => {
+					if (!('chrome' in window && 'runtime' in chrome)) {
+						return false
+					}
+					try {
+						if ('prototype' in chrome.runtime.sendMessage ||
+							'prototype' in chrome.runtime.connect) {
 							return true
 						}
-					})(),
-					['srcdoc triggers a window Proxy']: (() => {
-						const iframe = document.createElement('iframe')
-						iframe.srcdoc = '' + hashMini(crypto.getRandomValues(new Uint32Array(10)))
-						return !!iframe.contentWindow
-					})(),
-					['index of chrome is too high']: (() => {
-						const control = (
-							'cookieStore' in window ? 'cookieStore' :
-							'ondevicemotion' in window ? 'ondevicemotion' :
-							'speechSynthesis'
-						)
-						const propsInWindow = []
-						for (const prop in window) { propsInWindow.push(prop) }
-						const chromeIndex = propsInWindow.indexOf('chrome')
-						const controlIndex = propsInWindow.indexOf(control)
-						return chromeIndex > controlIndex
-					})(),
-					['chrome.runtime functions are invalid']: (() => {
-						if (!('chrome' in window && 'runtime' in chrome)) {
-							return false
-						}
-						try {
-							if ('prototype' in chrome.runtime.sendMessage ||
-								'prototype' in chrome.runtime.connect) {
-								return true
-							}
-							new chrome.runtime.sendMessage
-							new chrome.runtime.connect
-							return true
-						}
-						catch (error) {
-							return error.constructor.name != 'TypeError' ? true : false
-						}
-					})(),
-					['Permissions.prototype.query leaks Proxy behavior']: (() => {
-						try {
-							class Blah extends Permissions.prototype.query {}
-							return true
-						}
-						catch (error) {
-							return /\[object Function\]/.test(error.message)
-						}
-					})(),
-					['Function.prototype.toString leaks Proxy behavior']: (() => {
-						try {
-							class Blah extends Function.prototype.toString {}
-							return true
-						}
-						catch (error) {
-							return /\[object Function\]/.test(error.message)
-						}
-					})(),
-					['Function.prototype.toString has invalid TypeError']: (() => {
-						const liedToString = (
-							getNewObjectToStringTypeErrorLie(Function.prototype.toString) ||
-							getNewObjectToStringTypeErrorLie(() => {})
-						)
-						return liedToString
-					})()
-				}
+						new chrome.runtime.sendMessage
+						new chrome.runtime.connect
+						return true
+					}
+					catch (error) {
+						return error.constructor.name != 'TypeError' ? true : false
+					}
+				})(),
+				['Permissions.prototype.query leaks Proxy behavior']: (() => {
+					try {
+						class Blah extends Permissions.prototype.query {}
+						return true
+					}
+					catch (error) {
+						return /\[object Function\]/.test(error.message)
+					}
+				})(),
+				['Function.prototype.toString leaks Proxy behavior']: (() => {
+					try {
+						class Blah extends Function.prototype.toString {}
+						return true
+					}
+					catch (error) {
+						return /\[object Function\]/.test(error.message)
+					}
+				})(),
+				['Function.prototype.toString has invalid TypeError']: (() => {
+					const liedToString = (
+						getNewObjectToStringTypeErrorLie(Function.prototype.toString) ||
+						getNewObjectToStringTypeErrorLie(() => {})
+					)
+					return liedToString
+				})()
 			}
+		}
 
-			const { likeHeadless, headless, stealth } = data
-			const likeHeadlessKeys = Object.keys(likeHeadless)
-			const headlessKeys = Object.keys(headless)
-			const stealthKeys = Object.keys(stealth)
-			
-			const likeHeadlessRating = +((likeHeadlessKeys.filter(key => likeHeadless[key]).length / likeHeadlessKeys.length) * 100).toFixed(0)
-			const headlessRating = +((headlessKeys.filter(key => headless[key]).length / headlessKeys.length) * 100).toFixed(0)
-			const stealthRating = +((stealthKeys.filter(key => stealth[key]).length / stealthKeys.length) * 100).toFixed(0)
-			
-			logTestResult({ start, test: 'headless', passed: true })
-			return resolve({ ...data, likeHeadlessRating, headlessRating, stealthRating })
-		}
-		catch (error) {
-			logTestResult({ test: 'headless', passed: false })
-			captureError(error)
-			return resolve()
-		}
-	})
+		const { likeHeadless, headless, stealth } = data
+		const likeHeadlessKeys = Object.keys(likeHeadless)
+		const headlessKeys = Object.keys(headless)
+		const stealthKeys = Object.keys(stealth)
+		
+		const likeHeadlessRating = +((likeHeadlessKeys.filter(key => likeHeadless[key]).length / likeHeadlessKeys.length) * 100).toFixed(0)
+		const headlessRating = +((headlessKeys.filter(key => headless[key]).length / headlessKeys.length) * 100).toFixed(0)
+		const stealthRating = +((stealthKeys.filter(key => stealth[key]).length / stealthKeys.length) * 100).toFixed(0)
+		
+		logTestResult({ start, test: 'headless', passed: true })
+		return { ...data, likeHeadlessRating, headlessRating, stealthRating }
+	}
+	catch (error) {
+		logTestResult({ test: 'headless', passed: false })
+		captureError(error)
+		return
+	}
 }

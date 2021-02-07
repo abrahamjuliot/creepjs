@@ -93,20 +93,17 @@ const timer = (logStart) => {
 	}
 }
 
-const getCapturedErrors = imports => {
+const getCapturedErrors = async imports => {
 
 	const {
 		require: {
-			hashify,
 			errorsCaptured
 		}
 	} = imports
 
-	const errors = errorsCaptured.getErrors()
+	const data = errorsCaptured.getErrors()
 
-	return new Promise(async resolve => {
-		return resolve({data: errors })
-	})
+	return { data }
 }
 
 export { captureError, attempt, caniuse, timer, errorsCaptured, getCapturedErrors }

@@ -48,7 +48,7 @@ const getDevice = (width, height) => {
 	return 'unknown'
 }
 
-export const getScreen = imports => {
+export const getScreen = async imports => {
 
 	const {
 		require: {
@@ -62,80 +62,78 @@ export const getScreen = imports => {
 		}
 	} = imports
 	
-	return new Promise(async resolve => {
-		try {
-			const start = performance.now()
-			let lied = (
-				lieProps['Screen.width'] ||
-				lieProps['Screen.height'] ||
-				lieProps['Screen.availWidth'] ||
-				lieProps['Screen.availHeight'] ||
-				lieProps['Screen.colorDepth'] ||
-				lieProps['Screen.pixelDepth']
-			) || false
-			const phantomScreen = phantomDarkness ? phantomDarkness.screen : screen
-			const phantomOuterWidth = phantomDarkness ? phantomDarkness.outerWidth : outerWidth
-			const phantomOuterHeight = phantomDarkness ? phantomDarkness.outerHeight : outerHeight
-			
-			const { width, height, availWidth, availHeight, colorDepth, pixelDepth } = phantomScreen
-			const {
-				width: screenWidth,
-				height: screenHeight,
-				availWidth: screenAvailWidth,
-				availHeight: screenAvailHeight,
-				colorDepth: screenColorDepth,
-				pixelDepth: screenPixelDepth
-			} = screen
+	try {
+		const start = performance.now()
+		let lied = (
+			lieProps['Screen.width'] ||
+			lieProps['Screen.height'] ||
+			lieProps['Screen.availWidth'] ||
+			lieProps['Screen.availHeight'] ||
+			lieProps['Screen.colorDepth'] ||
+			lieProps['Screen.pixelDepth']
+		) || false
+		const phantomScreen = phantomDarkness ? phantomDarkness.screen : screen
+		const phantomOuterWidth = phantomDarkness ? phantomDarkness.outerWidth : outerWidth
+		const phantomOuterHeight = phantomDarkness ? phantomDarkness.outerHeight : outerHeight
+		
+		const { width, height, availWidth, availHeight, colorDepth, pixelDepth } = phantomScreen
+		const {
+			width: screenWidth,
+			height: screenHeight,
+			availWidth: screenAvailWidth,
+			availHeight: screenAvailHeight,
+			colorDepth: screenColorDepth,
+			pixelDepth: screenPixelDepth
+		} = screen
 
-			const matching = (
-				width == screenWidth &&
-				height == screenHeight &&
-				availWidth == screenAvailWidth &&
-				availHeight == screenAvailHeight &&
-				colorDepth == screenColorDepth &&
-				pixelDepth == screenPixelDepth
-			)
+		const matching = (
+			width == screenWidth &&
+			height == screenHeight &&
+			availWidth == screenAvailWidth &&
+			availHeight == screenAvailHeight &&
+			colorDepth == screenColorDepth &&
+			pixelDepth == screenPixelDepth
+		)
 
-			if (!matching) {
-				sendToTrash('screen', `[${
-					[
-						screenWidth,
-						screenHeight,
-						screenAvailWidth,
-						screenAvailHeight,
-						screenColorDepth,
-						screenPixelDepth
-					].join(', ')
-				}] does not match iframe`)
-			}
-
-			if (screenAvailWidth > screenWidth) {
-				sendToTrash('screen', `availWidth (${screenAvailWidth}) is greater than width (${screenWidth})`)
-			}
-
-			if (screenAvailHeight > screenHeight) {
-				sendToTrash('screen', `availHeight (${screenAvailHeight}) is greater than height (${screenHeight})`)
-			}
-			
-			const data = {
-				device: getDevice(width, height),
-				width: attempt(() => width ? trustInteger('width - invalid return type', width) : undefined),
-				outerWidth: attempt(() => phantomOuterWidth ? trustInteger('outerWidth - invalid return type', phantomOuterWidth) : undefined),
-				availWidth: attempt(() => availWidth ? trustInteger('availWidth - invalid return type', availWidth) : undefined),
-				height: attempt(() => height ? trustInteger('height - invalid return type', height) : undefined),
-				outerHeight: attempt(() => phantomOuterHeight ? trustInteger('outerHeight - invalid return type', phantomOuterHeight) : undefined),
-				availHeight: attempt(() => availHeight ?  trustInteger('availHeight - invalid return type', availHeight) : undefined),
-				colorDepth: attempt(() => colorDepth ? trustInteger('colorDepth - invalid return type', colorDepth) : undefined),
-				pixelDepth: attempt(() => pixelDepth ? trustInteger('pixelDepth - invalid return type', pixelDepth) : undefined),
-				lied
-			}
-			logTestResult({ start, test: 'screen', passed: true })
-			return resolve({ ...data })
+		if (!matching) {
+			sendToTrash('screen', `[${
+				[
+					screenWidth,
+					screenHeight,
+					screenAvailWidth,
+					screenAvailHeight,
+					screenColorDepth,
+					screenPixelDepth
+				].join(', ')
+			}] does not match iframe`)
 		}
-		catch (error) {
-			logTestResult({ test: 'screen', passed: false })
-			captureError(error)
-			return resolve()
+
+		if (screenAvailWidth > screenWidth) {
+			sendToTrash('screen', `availWidth (${screenAvailWidth}) is greater than width (${screenWidth})`)
 		}
-	})
+
+		if (screenAvailHeight > screenHeight) {
+			sendToTrash('screen', `availHeight (${screenAvailHeight}) is greater than height (${screenHeight})`)
+		}
+		
+		const data = {
+			device: getDevice(width, height),
+			width: attempt(() => width ? trustInteger('width - invalid return type', width) : undefined),
+			outerWidth: attempt(() => phantomOuterWidth ? trustInteger('outerWidth - invalid return type', phantomOuterWidth) : undefined),
+			availWidth: attempt(() => availWidth ? trustInteger('availWidth - invalid return type', availWidth) : undefined),
+			height: attempt(() => height ? trustInteger('height - invalid return type', height) : undefined),
+			outerHeight: attempt(() => phantomOuterHeight ? trustInteger('outerHeight - invalid return type', phantomOuterHeight) : undefined),
+			availHeight: attempt(() => availHeight ?  trustInteger('availHeight - invalid return type', availHeight) : undefined),
+			colorDepth: attempt(() => colorDepth ? trustInteger('colorDepth - invalid return type', colorDepth) : undefined),
+			pixelDepth: attempt(() => pixelDepth ? trustInteger('pixelDepth - invalid return type', pixelDepth) : undefined),
+			lied
+		}
+		logTestResult({ start, test: 'screen', passed: true })
+		return { ...data }
+	}
+	catch (error) {
+		logTestResult({ test: 'screen', passed: false })
+		captureError(error)
+		return
+	}
 }
