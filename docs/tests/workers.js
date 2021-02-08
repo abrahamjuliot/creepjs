@@ -622,9 +622,9 @@ const el = document.getElementById('fingerprint-data')
 
 const workerHash = {}
 const computeTemplate = (worker, name) => {
-	const { userAgent } = worker
+	const { userAgent } = worker || {}
 	const system = userAgent ? getOS(userAgent) : undefined
-	Object.keys(worker).forEach(key => {
+	Object.keys(worker || []).forEach(key => {
 		return (
 			workerHash[name] = {
 				...workerHash[name],
