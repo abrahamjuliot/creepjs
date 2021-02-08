@@ -185,7 +185,7 @@ const {
 	clientWidth
 } = document.documentElement
 
-const { type: orientationType } = screen.orientation
+const { type: orientationType } = screen.orientation || {}
 
 const vViewport = 'visualViewport' in window ? visualViewport : {}
 const { width: viewportWidth, height: viewportHeight } = vViewport
