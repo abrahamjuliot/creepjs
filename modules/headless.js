@@ -18,24 +18,31 @@ const detectChromium = () => (
 
 const getNewObjectToStringTypeErrorLie = apiFunction => {
 	try {
-		Object.create(apiFunction).toString()
+		const you = () => Object.create(apiFunction).toString()
+		const cant = () => you()
+		const hide = () => cant()
+		hide()
+		// error must throw
 		return true
 	} catch (error) {
 		const stackLines = error.stack.split('\n')
-		const traceLines = stackLines.slice(1)
-		const objectApply = /at Object\.apply/
-		const functionToString = /at Function\.toString/
-		const validLines = !traceLines.find(line => objectApply.test(line))
+		const validScope = !/at Object\.apply/.test(stackLines[1])
 		// Stack must be valid
-		const validStack = (
-			error.constructor.name == 'TypeError' && stackLines.length > 1
+		const validStackSize = (
+			error.constructor.name == 'TypeError' && stackLines.length >= 5
 		)
-		// Chromium must throw error 'at Function.toString' and not 'at Object.apply'
+		// Chromium must throw error 'at Function.toString'... and not 'at Object.apply'
 		const isChrome = 'chrome' in window || detectChromium()
-		if (validStack && isChrome && (!functionToString.test(stackLines[1]) || !validLines)) {
+		if (validStackSize && isChrome && (
+			!validScope ||
+			!/at Function\.toString/.test(stackLines[1]) ||
+			!/at you/.test(stackLines[2]) ||
+			!/at cant/.test(stackLines[3]) ||
+			!/at hide/.test(stackLines[4])
+		)) {
 			return true
 		}
-		return !validStack
+		return !validStackSize
 	}
 }
 
