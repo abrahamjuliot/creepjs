@@ -69,23 +69,24 @@ const getServiceWorker = () => {
 				throw new Error('ServiceWorkerContainer tampered with by client')
 			}
 
-			navigator.serviceWorker.register(source).catch(error => {
+			await navigator.serviceWorker.register(source)
+			.catch(error => {
 				console.error(error)
 				return resolve()
 			})
-			navigator.serviceWorker.ready.then(registration => {
-				const broadcast = new BroadcastChannel('creep_service_primary')
-				broadcast.onmessage = message => {
-					registration.unregister()
-					broadcast.close()
-					return resolve(message.data)
-				}
-				broadcast.postMessage({ type: 'fingerprint'})
-				return setTimeout(() => resolve(), 1000)
-			}).catch(error => {
+			const registration = await navigator.serviceWorker.ready
+			.catch(error => {
 				console.error(error)
 				return resolve()
 			})
+			const broadcast = new BroadcastChannel('creep_service_primary')
+			broadcast.onmessage = message => {
+				registration.unregister()
+				broadcast.close()
+				return resolve(message.data)
+			}
+			broadcast.postMessage({ type: 'fingerprint'})
+			return setTimeout(() => resolve(), 1000)
 		}
 		catch(error) {
 			console.error(error)
