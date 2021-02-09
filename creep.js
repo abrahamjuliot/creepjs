@@ -1288,10 +1288,10 @@ const imports = {
 					}
 				</style>
 				<div>
-				<br><span class="math-chromium">Chromium</span>
-				<br><span class="math-firefox">Firefox</span>
-				<br><span class="math-tor-browser">Tor Browser</span>
-				<br><span class="math-safari">Safari</span>
+				<br><span class="math-chromium">C - Chromium</span>
+				<br><span class="math-firefox">F - Firefox</span>
+				<br><span class="math-tor-browser">T - Tor Browser</span>
+				<br><span class="math-safari">S - Safari</span>
 				</div>`
 
 				const results = Object.keys(data).map(key => {
