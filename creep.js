@@ -1260,17 +1260,57 @@ const imports = {
 						lied
 					}
 				} = fp
-				const id = 'creep-maths'
-				const header = `<div>Match to Win10 64bit Chromium > Firefox > Tor Browser > Mac10 Safari<br>[CR][FF][TB][SF]</div>`
+
+				const header = `
+				<style>
+					.math-chromium,
+					.math-firefox,
+					.math-tor-browser,
+					.math-safari,
+					.math-blank-false {
+						padding: 2px 8px;
+					}
+					.math-chromium {
+						background: #657fca26;
+						color: #8f8ff1 !important;
+					}
+					.math-firefox {
+						background: #657fca54;
+						color: #8f8ff1 !important;
+					}
+					.math-tor-browser {
+						background: #ca65b424;
+						color: #8f8ff1 !important;
+					}
+					.math-safari {
+						background: #ca65b459;
+						color: #8f8ff1 !important;
+					}
+				</style>
+				<div>
+				<br><span class="math-chromium">Chromium</span>
+				<br><span class="math-firefox">Firefox</span>
+				<br><span class="math-tor-browser">Tor Browser</span>
+				<br><span class="math-safari">Safari</span>
+				</div>`
+
 				const results = Object.keys(data).map(key => {
 					const value = data[key]
 					const { result, chrome, firefox, torBrowser, safari } = value
-					return `${chrome ? '[CR]' : '[--]'}${firefox ? '[FF]' : '[--]'}${torBrowser ? '[TB]' : '[--]'}${safari ? '[SF]' : '[--]'} ${key} => ${result}`
+					return `
+					${chrome ? '<span class="math-chromium">C</span>' : '<span class="math-blank-false">-</span>'}${firefox ? '<span class="math-firefox">F</span>' : '<span class="math-blank-false">-</span>'}${torBrowser ? '<span class="math-tor-browser">T</span>' : '<span class="math-blank-false">-</span>'}${safari ? '<span class="math-safari">S</span>' : '<span class="math-blank-false">-</span>'} ${key}`
 				})
+
 				return `
 				<div class="col-six">
 					<strong>Math</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-					<div>results: ${modal(id, header+results.join('<br>'))}</div>
+					<div>results: ${
+						!data ? note.blocked : 
+						modal(
+							'creep-maths',
+							header+results.join('<br>')
+						)
+					}</div>
 				</div>
 				`
 			})()}
