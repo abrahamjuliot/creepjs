@@ -1438,6 +1438,7 @@ const imports = {
 					device,
 					userAgent,
 					vendor,
+					keyboard,
 					lied
 				}
 			} = fp
@@ -1498,6 +1499,14 @@ const imports = {
 						`${id}-properties`,
 						properties.join(', '),
 						hashMini(properties)
+					)
+				}</div>
+				<div>keyboard: ${
+					!keyboard ? note.unsupported :
+					modal(
+						`${id}-keyboard`,
+						Object.keys(keyboard).map(key => `${key}: ${keyboard[key]}`).join('<br>'),
+						hashMini(keyboard)
 					)
 				}</div>
 			</div>

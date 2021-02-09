@@ -309,7 +309,72 @@ export const getNavigator = async (imports, workerScope) => {
 					['platform', 'platformVersion', 'architecture',  'model', 'uaFullVersion']
 				)
 				return data
-			}, 'highEntropyValues failed')
+			}, 'highEntropyValues failed'),
+			keyboard: await attempt(async () => {
+				if (!('keyboard' in navigator)) {
+					return
+				}
+				const keys = [
+					'Backquote',
+					'Backslash',
+					'Backspace',
+					'BracketLeft',
+					'BracketRight',
+					'Comma',
+					'Digit0',
+					'Digit1',
+					'Digit2',
+					'Digit3',
+					'Digit4',
+					'Digit5',
+					'Digit6',
+					'Digit7',
+					'Digit8',
+					'Digit9',
+					'Equal',
+					'IntlBackslash',
+					'IntlRo',
+					'IntlYen',
+					'KeyA',
+					'KeyB',
+					'KeyC',
+					'KeyD',
+					'KeyE',
+					'KeyF',
+					'KeyG',
+					'KeyH',
+					'KeyI',
+					'KeyJ',
+					'KeyK',
+					'KeyL',
+					'KeyM',
+					'KeyN',
+					'KeyO',
+					'KeyP',
+					'KeyQ',
+					'KeyR',
+					'KeyS',
+					'KeyT',
+					'KeyU',
+					'KeyV',
+					'KeyW',
+					'KeyX',
+					'KeyY',
+					'KeyZ',
+					'Minus',
+					'Period',
+					'Quote',
+					'Semicolon',
+					'Slash'
+				]
+				const keyoardLayoutMap = await navigator.keyboard.getLayoutMap()
+				const writingSystemKeys = keys
+				.reduce((acc, key) => {
+					acc[key] = keyoardLayoutMap.get(key)
+					return acc
+				}, {})
+				return writingSystemKeys
+			})
 		}
 		logTestResult({ start, test: 'navigator', passed: true })
 		return { ...data, lied }
