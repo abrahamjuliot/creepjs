@@ -1150,7 +1150,8 @@ const imports = {
 			<div class="col-six">
 				<strong>CSS Media Queries</strong><span class="hash">${hashSlice($hash)}</span>
 				<div>@media: ${
-					!mediaCSS ? note.blocked :
+					!mediaCSS || !Object.keys(mediaCSS).filter(key => !!mediaCSS[key]).length ? 
+					note.blocked :
 					modal(
 						'creep-css-media',
 						`<strong>@media</strong><br><br>${Object.keys(mediaCSS).map(key => `${key}: ${mediaCSS[key] || note.unsupported}`).join('<br>')}`,
@@ -1158,7 +1159,8 @@ const imports = {
 					)
 				}</div>
 				<div>@import: ${
-					!importCSS ? note.blocked : 
+					!importCSS || !Object.keys(importCSS).filter(key => !!importCSS[key]).length ? 
+					note.blocked :
 					modal(
 						'creep-css-import',
 						`<strong>@import</strong><br><br>${Object.keys(importCSS).map(key => `${key}: ${importCSS[key] || note.unsupported}`).join('<br>')}`,
@@ -1166,7 +1168,8 @@ const imports = {
 					)
 				}</div>
 				<div>matchMedia: ${
-					!matchMediaCSS ? note.blocked : 
+					!matchMediaCSS || !Object.keys(matchMediaCSS).filter(key => !!matchMediaCSS[key]).length ? 
+					note.blocked : 
 					modal(
 						'creep-css-match-media',
 						`<strong>matchMedia</strong><br><br>${Object.keys(matchMediaCSS).map(key => `${key}: ${matchMediaCSS[key] || note.unsupported}`).join('<br>')}`,
@@ -1272,19 +1275,15 @@ const imports = {
 					}
 					.math-chromium {
 						background: #657fca26;
-						color: #8f8ff1 !important;
 					}
 					.math-firefox {
 						background: #657fca54;
-						color: #8f8ff1 !important;
 					}
 					.math-tor-browser {
 						background: #ca65b424;
-						color: #8f8ff1 !important;
 					}
 					.math-safari {
 						background: #ca65b459;
-						color: #8f8ff1 !important;
 					}
 				</style>
 				<div>
