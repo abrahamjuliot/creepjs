@@ -373,12 +373,37 @@ const imports = {
 	.catch(error => { 
 		console.error(error.message)
 	})
+
+	// session
+	const currentFingerprint = Object.keys(fp)
+	.reduce((acc, key) => {
+		if (!fp[key]) {
+			return acc
+		}
+		acc[key] = fp[key].$hash
+		return acc
+	}, {})
+	const previousFingerprint = JSON.parse(sessionStorage.getItem('fingerprint'))
+	if (previousFingerprint) {
+		const loads = 1+(+sessionStorage.getItem('loads'))
+		sessionStorage.setItem('loads', loads)
+		const trapKeys = Object.keys(currentFingerprint)
+		.filter(key => currentFingerprint[key] != previousFingerprint[key])
+		if (trapKeys.length) {
+			console.log(`session loads: ${loads}\nfingerprint change:\n - ${trapKeys.join('\n - ')}`)
+		}
+	}
+	else {
+		sessionStorage.setItem('fingerprint', JSON.stringify(currentFingerprint))
+		sessionStorage.setItem('loads', 1)
+	}
 	
+	// patch dom
 	const hasTrash = !!trashLen
 	const { lies: hasLied, capturedErrors: hasErrors } = creep
 
 	const hashSlice = x => x.slice(0, 8)
-	// patch dom	
+	
 	const el = document.getElementById('fingerprint-data')
 	patch(el, html`
 	<div id="fingerprint-data">
