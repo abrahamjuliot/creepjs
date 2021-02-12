@@ -375,27 +375,36 @@ const imports = {
 	})
 
 	// session
-	const currentFingerprint = Object.keys(fp)
-	.reduce((acc, key) => {
-		if (!fp[key]) {
+	const computeSession = () => {
+		const data = {
+			revisedKeys: []
+		}
+		const currentFingerprint = Object.keys(fp)
+		.reduce((acc, key) => {
+			if (!fp[key]) {
+				return acc
+			}
+			acc[key] = fp[key].$hash
 			return acc
+		}, {})
+		const initialFingerprint = JSON.parse(sessionStorage.getItem('initialFingerprint'))
+		if (initialFingerprint) {
+			data.initial = hashMini(initialFingerprint)
+			data.loads = 1+(+sessionStorage.getItem('loads'))
+			sessionStorage.setItem('loads', data.loads)
+			const revisedKeys = Object.keys(currentFingerprint)
+				.filter(key => currentFingerprint[key] != initialFingerprint[key])
+			if (revisedKeys.length) {
+				data.revisedKeys = revisedKeys
+			}
 		}
-		acc[key] = fp[key].$hash
-		return acc
-	}, {})
-	const previousFingerprint = JSON.parse(sessionStorage.getItem('fingerprint'))
-	if (previousFingerprint) {
-		const loads = 1+(+sessionStorage.getItem('loads'))
-		sessionStorage.setItem('loads', loads)
-		const trapKeys = Object.keys(currentFingerprint)
-		.filter(key => currentFingerprint[key] != previousFingerprint[key])
-		if (trapKeys.length) {
-			console.log(`session loads: ${loads}\nfingerprint change:\n - ${trapKeys.join('\n - ')}`)
+		else {
+			sessionStorage.setItem('initialFingerprint', JSON.stringify(currentFingerprint))
+			sessionStorage.setItem('loads', 1)
+			data.initial = hashMini(currentFingerprint)
+			data.loads = 1
 		}
-	}
-	else {
-		sessionStorage.setItem('fingerprint', JSON.stringify(currentFingerprint))
-		sessionStorage.setItem('loads', 1)
+		return data
 	}
 	
 	// patch dom
@@ -1551,6 +1560,26 @@ const imports = {
 			`
 		})()}
 		</div>
+		${
+			(() => {
+				const { initial, loads, revisedKeys } = computeSession()
+				
+				return `
+					<div>
+						<div>session:<span class="sub-hash">${initial}</span></div>
+						<div>loads: ${loads}</div>
+						<div>revisions: ${
+							!revisedKeys.length ? 'none' :
+							modal(
+								`creep-revisions`,
+								revisedKeys.join('<br>'),
+								hashMini(revisedKeys)
+							)
+						}</div>
+					</div>
+				`	
+			})()
+		}
 		<div>
 			<strong>Tests</strong>
 			<div>
