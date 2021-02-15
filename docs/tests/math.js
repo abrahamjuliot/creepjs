@@ -123,14 +123,15 @@ const maths = {
 	],
 	['Math.cos(21*Math.LN2)']: [
 		'-0.', {
-			['4067775970251724']: css.chromium,
+			['40677759702517240']: css.chromium,
 			['40677759702517235']: css.firefox,
-			['6534063185820197']: css.torBrowser
+			['65340631858201970']: css.torBrowser
 		}
 	],
 	['Math.cos(21*Math.SQRT1_2)']: [
-		'-0.6534063185820198', {
-			['']: css.crossBrowser
+		'-0.6534063185820', {
+			['198']: css.chromium,
+			['197']: css.torBrowser
 		}
 	],
 	['Math.cosh(Math.PI)']: [
@@ -271,6 +272,7 @@ const maths = {
 
 const browser = new Set() // collect browser matches to determine engine
 const validMath = [] // collect valid fingerprints
+const invalidMath = [] // collect invalid results
 
 const style = (a, b) => b.map((char,i) => char != a[i] ? `<span class="bold-fail">${char}</span>` : char).join('')
 
@@ -316,6 +318,8 @@ const template = Object.keys(maths).map(key => {
 	if (stablePass && lenPass) {
 		browserName = knownEntropy[entropyComputed] || css.unknown
 		validMath.push(mathComputed) // fingerprint colelction
+	} else {
+		invalidMath.push(mathComputed)
 	}
 	browser.add(browserName)
 
@@ -340,6 +344,8 @@ const template = Object.keys(maths).map(key => {
 
 const perf = performance.now() - start 
 const $hash = await hashify(validMath)
+const invalidLen = invalidMath.length
+const pluralify = len => len > 1 ? 's' : '' 
 const hashSlice = x => x.slice(0, 8)
 patch(document.getElementById('fingerprint-data'), html`
 	<div id="fingerprint-data">
@@ -364,6 +370,7 @@ patch(document.getElementById('fingerprint-data'), html`
 		}
 		.bold-fail {
 			font-weight: bold;
+			border-bottom: 1px solid;
 		}
 		.group {
 			font-size: 12px !important;
@@ -406,6 +413,7 @@ patch(document.getElementById('fingerprint-data'), html`
 			<span class="aside-note">${perf.toFixed(2)}ms</span>
 			<strong>Math</strong>
 			<div>${hashSlice($hash)}</div>
+			<div>${invalidLen ? `<span class="erratic">${invalidLen} calculation${pluralify(invalidLen)} discarded</span>` : ''}</div>
 
 			<div>JS Engine: ${
 				browser.has('tor-browser') ? 'SpiderMonkey (Tor Browser)' :
@@ -414,6 +422,8 @@ patch(document.getElementById('fingerprint-data'), html`
 				browser.has('chromium') ? 'V8' :
 				'unknown'
 			}</div>
+
+			
 			
 			<br><span class="math-chromium">Chromium</span>
 			<br><span class="math-firefox">Firefox</span>
