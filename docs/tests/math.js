@@ -406,6 +406,7 @@ patch(document.getElementById('fingerprint-data'), html`
 			<span class="aside-note">${perf.toFixed(2)}ms</span>
 			<strong>Math</strong>
 			<div>${hashSlice($hash)}</div>
+
 			<div>JS Engine: ${
 				browser.has('tor-browser') ? 'SpiderMonkey (Tor Browser)' :
 				browser.has('firefox') && !browser.has('safari') ? 'SpiderMonkey' :
@@ -413,6 +414,7 @@ patch(document.getElementById('fingerprint-data'), html`
 				browser.has('chromium') ? 'V8' :
 				'unknown'
 			}</div>
+			
 			<br><span class="math-chromium">Chromium</span>
 			<br><span class="math-firefox">Firefox</span>
 			<br><span class="math-tor-browser">Tor Browser</span>
