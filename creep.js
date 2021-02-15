@@ -1592,6 +1592,7 @@ const imports = {
 				<br><a class="tests" href="./tests/prototype.html">Prototype</a>
 				<br><a class="tests" href="./tests/domrect.html">DOMRect</a>
 				<br><a class="tests" href="./tests/emojis.html">Emojis</a>
+				<br><a class="tests" href="./tests/math.html">Math</a>
 			</div>
 		</div>
 	</div>
