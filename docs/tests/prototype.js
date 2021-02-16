@@ -417,6 +417,16 @@
 										}
 										return
 									}
+									// since there is no TypeError and the typeof is not a function,
+									// handle invalid values and ingnore name, length, and constants
+									if (
+										name != 'name' &&
+										name != 'length' &&
+										name[0] !== name[0].toUpperCase()) {
+										return (
+											props[apiName] = [`y: descriptor.value should remain undefined`]
+										)
+									}
 								} catch (error) { }
 								// else search getter function
 								const getterFunction = Object.getOwnPropertyDescriptor(proto, name).get
