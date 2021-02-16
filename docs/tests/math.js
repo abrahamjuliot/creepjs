@@ -396,17 +396,20 @@ patch(document.getElementById('fingerprint-data'), html`
 		}
 		.math-firefox {
 			background: #657fca54;
-			color: #c778ba !important;
 		}
 		.math-tor-browser {
 			background: #ca65b424;
-			color: #c778ba !important;
 		}
 		.math-safari {
 			background: #ca65b459;
 		}
 		@media (prefers-color-scheme: dark) {
-			
+			.math-firefox {
+				color: #c778ba !important;
+			}
+			.math-tor-browser {
+				color: #c778ba !important;
+			}
 		}
 		</style>
 		<div class="visitor-info">
