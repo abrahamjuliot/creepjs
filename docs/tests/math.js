@@ -44,6 +44,64 @@ const html = (stringSet, ...expressionSet) => {
 	return templateContent(template) // ie11 fix for template.content
 }
 
+const poly = {
+	acosh: x => Math.log(x + Math.sqrt(x * x - 1)),
+	asinh: x => {
+		const absX = Math.abs(x)
+		if (absX < Math.pow(2, -28)) {
+			return x
+		}
+		const w = (
+			absX > Math.pow(2, 28) ? Math.log(absX) + Math.LN2 :
+			absX > 2 ? Math.log(2 * absX + 1 / Math.sqrt(x * x + 1)) :
+			Math.log1p(absX + (x * x) / (1 + Math.sqrt(1 + (x * x))))
+		)
+		return x > 0 ? w : -w
+	},
+	atanh: x => Math.log((1 + x) / (1 - x)) / 2,
+	cbrt: x => {
+		let y = Math.pow(Math.abs(x), 1 / 3)
+		return x < 0 ? -y : y
+	},
+	cosh: x => (Math.exp(x) + Math.exp(-x)) / 2,
+	expm1: x => Math.exp(x) - 1,
+	hypot: array => {
+		let i, s = 0,
+			max = 0,
+			isInfinity = false,
+			len = array.length
+		for (i = 0; i < len; ++i) {
+			const arg = Math.abs(+array[i])
+			if (arg === Infinity) {
+				isInfinity = true
+			}
+			if (arg > max) {
+				s *= (max / arg) * (max / arg)
+				max = arg
+			}
+			s += arg === 0 && max === 0 ? 0 : (arg / max) * (arg / max)
+		}
+		return isInfinity ? Infinity : (max === Infinity ? Infinity : max * Math.sqrt(s))
+	},
+	log1p: x => {
+		const nearX = (x + 1) - 1
+		return (
+			x < -1 || x !== x ? NaN :
+			x === 0 || x === Infinity ? x :
+			nearX === 0 ? x :
+			x * (Math.log(x + 1) / nearX)
+		)
+	},
+	log2: x => Math.log(x) * Math.LOG2E,
+	log10: x => Math.log(x) * Math.LOG10E,
+	sinh: x => (Math.exp(x) - Math.exp(-x)) / 2,
+	tanh: x => {
+		const a = Math.exp(+x)
+		const b = Math.exp(-x)
+		return a == Infinity ? 1 : b == Infinity ? -1 : (a - b) / (a + b)
+	}
+}
+
 const start = performance.now()
 
 const css = {
