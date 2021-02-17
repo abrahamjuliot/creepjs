@@ -44,6 +44,22 @@ const html = (stringSet, ...expressionSet) => {
 	return templateContent(template) // ie11 fix for template.content
 }
 
+const poly = `const poly = {
+	atanh: x => Math.log((1 + x) / (1 - x)) / 2,
+	expm1: x => Math.exp(x) - 1,
+	log1p: x => {
+		const nearX = (x + 1) - 1
+		return (
+			x < -1 || x !== x ? NaN :
+			x === 0 || x === Infinity ? x :
+			nearX === 0 ? x :
+			x * (Math.log(x + 1) / nearX)
+		)
+	},
+	log2: x => Math.log(x) * Math.LOG2E,
+	pow: (x, y) => x ** y
+}`
+
 const start = performance.now()
 
 const css = {
@@ -193,6 +209,19 @@ const maths = {
 			['357']: css.firefox
 		}
 	],
+	['Math.pow(Math.PI, -100)']: [
+		'1.9275814160560', {
+			['204e-50']: css.chromium,
+			['185e-50']: css.firefox,
+			['206e-50']: css.safari
+		}
+	],
+	['Math.pow(2e-3, -100)']: [
+		'7.8886090522101', {
+			['02e+269']: css.chromium,
+			['26e+269']: css.firefox
+		}
+	],
 	['Math.sin(Math.PI)']: [
 		'1.2246', {
 			['467991473532e-16']: css.chromium,
@@ -254,19 +283,6 @@ const maths = {
 		'0.99627207622075', {
 			['']: css.crossBrowser
 		}
-	],
-	['Math.pow(Math.PI, -100)']: [
-		'1.9275814160560', {
-			['204e-50']: css.chromium,
-			['185e-50']: css.firefox,
-			['206e-50']: css.safari
-		}
-	],
-	['(2e-3 ** -100)']: [
-		'7.8886090522101', {
-			['02e+269']: css.chromium,
-			['26e+269']: css.firefox
-		}
 	]
 }
 
@@ -276,16 +292,31 @@ const invalidMath = [] // collect invalid results
 
 const style = (a, b) => b.map((char,i) => char != a[i] ? `<span class="bold-fail">${char}</span>` : char).join('')
 
-const template = Object.keys(maths).map(key => {
+const polyMaths = Object.keys(maths).reduce((acc, key) => {
+	const methodName = /Math\.(.+)\(/.exec(key)[1]
+	return !new RegExp(`(\t|\s|\n)${methodName}:`, 'gm').test(poly) ? {
+		...acc,
+		[key]: maths[key]
+	} : {
+		...acc,
+		[key]: maths[key],
+		[key.replace(/Math\./,'poly.')]: maths[key]
+	}
+},{})
+
+const template = Object.keys(polyMaths).map(key => {
 	// compute the math result
-	const mathComputed = ''+new Function(`return ${key}`)()
+	const mathComputed = ''+new Function(`
+		${poly}
+		return ${key}
+	`)()
 
 	// get known entropy and its length
-	const knownEntropy = maths[key][1]
+	const knownEntropy = polyMaths[key][1]
 	const knownEntropyLen = Object.keys(knownEntropy)[0].length
 
 	// get known stability
-	const knownStability = ''+maths[key][0]
+	const knownStability = ''+polyMaths[key][0]
 
 	// get the expected char length
 	const expectedCharLen = knownStability.length + knownEntropyLen
