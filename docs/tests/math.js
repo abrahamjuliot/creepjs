@@ -44,45 +44,9 @@ const html = (stringSet, ...expressionSet) => {
 	return templateContent(template) // ie11 fix for template.content
 }
 
-const poly = {
-	acosh: x => Math.log(x + Math.sqrt(x * x - 1)),
-	asinh: x => {
-		const absX = Math.abs(x)
-		if (absX < Math.pow(2, -28)) {
-			return x
-		}
-		const w = (
-			absX > Math.pow(2, 28) ? Math.log(absX) + Math.LN2 :
-			absX > 2 ? Math.log(2 * absX + 1 / Math.sqrt(x * x + 1)) :
-			Math.log1p(absX + (x * x) / (1 + Math.sqrt(1 + (x * x))))
-		)
-		return x > 0 ? w : -w
-	},
+const poly = `const poly = {
 	atanh: x => Math.log((1 + x) / (1 - x)) / 2,
-	cbrt: x => {
-		let y = Math.pow(Math.abs(x), 1 / 3)
-		return x < 0 ? -y : y
-	},
-	cosh: x => (Math.exp(x) + Math.exp(-x)) / 2,
 	expm1: x => Math.exp(x) - 1,
-	hypot: array => {
-		let i, s = 0,
-			max = 0,
-			isInfinity = false,
-			len = array.length
-		for (i = 0; i < len; ++i) {
-			const arg = Math.abs(+array[i])
-			if (arg === Infinity) {
-				isInfinity = true
-			}
-			if (arg > max) {
-				s *= (max / arg) * (max / arg)
-				max = arg
-			}
-			s += arg === 0 && max === 0 ? 0 : (arg / max) * (arg / max)
-		}
-		return isInfinity ? Infinity : (max === Infinity ? Infinity : max * Math.sqrt(s))
-	},
 	log1p: x => {
 		const nearX = (x + 1) - 1
 		return (
@@ -93,14 +57,8 @@ const poly = {
 		)
 	},
 	log2: x => Math.log(x) * Math.LOG2E,
-	log10: x => Math.log(x) * Math.LOG10E,
-	sinh: x => (Math.exp(x) - Math.exp(-x)) / 2,
-	tanh: x => {
-		const a = Math.exp(+x)
-		const b = Math.exp(-x)
-		return a == Infinity ? 1 : b == Infinity ? -1 : (a - b) / (a + b)
-	}
-}
+	pow: (x, y) => x ** y
+}`
 
 const start = performance.now()
 
@@ -251,6 +209,19 @@ const maths = {
 			['357']: css.firefox
 		}
 	],
+	['Math.pow(Math.PI, -100)']: [
+		'1.9275814160560', {
+			['204e-50']: css.chromium,
+			['185e-50']: css.firefox,
+			['206e-50']: css.safari
+		}
+	],
+	['Math.pow(2e-3, -100)']: [
+		'7.8886090522101', {
+			['02e+269']: css.chromium,
+			['26e+269']: css.firefox
+		}
+	],
 	['Math.sin(Math.PI)']: [
 		'1.2246', {
 			['467991473532e-16']: css.chromium,
@@ -312,19 +283,6 @@ const maths = {
 		'0.99627207622075', {
 			['']: css.crossBrowser
 		}
-	],
-	['Math.pow(Math.PI, -100)']: [
-		'1.9275814160560', {
-			['204e-50']: css.chromium,
-			['185e-50']: css.firefox,
-			['206e-50']: css.safari
-		}
-	],
-	['(2e-3 ** -100)']: [
-		'7.8886090522101', {
-			['02e+269']: css.chromium,
-			['26e+269']: css.firefox
-		}
 	]
 }
 
@@ -334,16 +292,31 @@ const invalidMath = [] // collect invalid results
 
 const style = (a, b) => b.map((char,i) => char != a[i] ? `<span class="bold-fail">${char}</span>` : char).join('')
 
-const template = Object.keys(maths).map(key => {
+const polyMaths = Object.keys(maths).reduce((acc, key) => {
+	const methodName = /Math\.(.+)\(/.exec(key)[1]
+	return !new RegExp(`(\t|\s|\n)${methodName}:`, 'gm').test(poly) ? {
+		...acc,
+		[key]: maths[key]
+	} : {
+		...acc,
+		[key]: maths[key],
+		[key.replace(/Math\./,'poly.')]: maths[key]
+	}
+},{})
+
+const template = Object.keys(polyMaths).map(key => {
 	// compute the math result
-	const mathComputed = ''+new Function(`return ${key}`)()
+	const mathComputed = ''+new Function(`
+		${poly}
+		return ${key}
+	`)()
 
 	// get known entropy and its length
-	const knownEntropy = maths[key][1]
+	const knownEntropy = polyMaths[key][1]
 	const knownEntropyLen = Object.keys(knownEntropy)[0].length
 
 	// get known stability
-	const knownStability = ''+maths[key][0]
+	const knownStability = ''+polyMaths[key][0]
 
 	// get the expected char length
 	const expectedCharLen = knownStability.length + knownEntropyLen
