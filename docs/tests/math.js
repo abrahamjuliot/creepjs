@@ -449,7 +449,7 @@ patch(document.getElementById('fingerprint-data'), html`
 			<div>${hashSlice($hash)}</div>
 			<div>${invalidLen ? `<span class="erratic">${invalidLen} calculation${pluralify(invalidLen)} discarded</span>` : ''}</div>
 
-			<div>JS Engine: ${
+			<div>JS Runtime: ${
 				browser.has('tor-browser') ? 'SpiderMonkey (Tor Browser)' :
 				browser.has('firefox') && !browser.has('safari') ? 'SpiderMonkey' :
 				browser.has('safari') ? 'JavaScriptCore' :
