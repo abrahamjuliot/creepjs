@@ -4,7 +4,6 @@ export const getWebRTCData = imports => {
 		require: {
 			captureError,
 			caniuse,
-			phantomDarkness,
 			logTestResult,
 			hashMini
 		}
@@ -14,28 +13,31 @@ export const getWebRTCData = imports => {
 		try {
 			await new Promise(setTimeout)
 			const start = performance.now()
-			let rtcPeerConnection
-			try {
-				rtcPeerConnection = (
-					phantomDarkness.RTCPeerConnection ||
-					phantomDarkness.webkitRTCPeerConnection ||
-					phantomDarkness.mozRTCPeerConnection ||
-					phantomDarkness.msRTCPeerConnection
-				)
-			}
-			catch (error) {
-				rtcPeerConnection = (
-					RTCPeerConnection ||
-					webkitRTCPeerConnection ||
-					mozRTCPeerConnection ||
-					msRTCPeerConnection
-				)
+			let rtcPeerConnection = (
+				RTCPeerConnection ||
+				webkitRTCPeerConnection ||
+				mozRTCPeerConnection ||
+				msRTCPeerConnection
+			)
+
+			const getCapabilities = () => {
+				let capabilities
+				try {
+					capabilities = {
+						sender: !caniuse(() => RTCRtpSender.getCapabilities) ? undefined : {
+							audio: RTCRtpSender.getCapabilities('audio'),
+							video: RTCRtpSender.getCapabilities('video')
+						},
+						receiver: !caniuse(() => RTCRtpReceiver.getCapabilities) ? undefined : {
+							audio: RTCRtpReceiver.getCapabilities('audio'),
+							video: RTCRtpReceiver.getCapabilities('video')
+						}
+					}
+				}
+				catch (error) {}
+				return capabilities
 			}
 			
-			if (!rtcPeerConnection) {
-				logTestResult({ test: 'webrtc', passed: false })
-				return resolve()
-			}
 			const connection = new rtcPeerConnection(
 				{ iceServers: [{ urls: ['stun:stun.l.google.com:19302?transport=udp'] }] }
 			)
@@ -48,7 +50,18 @@ export const getWebRTCData = imports => {
 			.then(offer => connection.setLocalDescription(offer))
 			.catch(error => console.error(error))
 
-			connection.onicecandidate = async e => {
+			// get sdp capabilities
+			let sdpcapabilities
+			await connection.createOffer({
+				offerToReceiveAudio: 1,
+				offerToReceiveVideo: 1
+			})
+			.then(offer => (
+				sdpcapabilities = offer.sdp.match(/((ext|rtp)map|fmtp|rtcp-fb):.+ (.+)/gm).sort()
+			))
+			.catch(error => console.error(error))
+			
+			connection.onicecandidate = e => {
 				const candidateEncoding = /((udp|tcp)\s)((\d|\w)+\s)((\d|\w|(\.|\:))+)(?=\s)/ig
 				const connectionLineEncoding = /(c=IN\s)(.+)\s/ig
 				if (!e.candidate) {
@@ -68,29 +81,7 @@ export const getWebRTCData = imports => {
 					const type = caniuse(() => /typ ([a-z]+)/.exec(candidate)[1])
 					const foundation = caniuse(() => /candidate:(\d+)\s/.exec(candidate)[1])
 					const protocol = caniuse(() => /candidate:\d+ \w+ (\w+)/.exec(candidate)[1])
-					// get capabilities
-					const capabilities = {
-						sender: !caniuse(() => RTCRtpSender.getCapabilities) ? undefined : {
-							audio: RTCRtpSender.getCapabilities('audio'),
-							video: RTCRtpSender.getCapabilities('video')
-						},
-						receiver: !caniuse(() => RTCRtpReceiver.getCapabilities) ? undefined : {
-							audio: RTCRtpReceiver.getCapabilities('audio'),
-							video: RTCRtpReceiver.getCapabilities('video')
-						}
-					}
-
-					// get sdp capabilities
-					let sdpcapabilities
-					await connection.createOffer({
-						offerToReceiveAudio: 1,
-						offerToReceiveVideo: 1
-					})
-					.then(offer => (
-						sdpcapabilities = offer.sdp.match(/((ext|rtp)map|fmtp|rtcp-fb):.+ (.+)/gm).sort()
-					))
-					.catch(error => console.error(error))
-
+					
 					const data = {
 						ipaddress,
 						candidate: candidateIpAddress,
@@ -98,7 +89,7 @@ export const getWebRTCData = imports => {
 						type,
 						foundation,
 						protocol,
-						capabilities,
+						capabilities: getCapabilities(),
 						sdpcapabilities
 					}
 					logTestResult({ start, test: 'webrtc', passed: true })
@@ -110,7 +101,7 @@ export const getWebRTCData = imports => {
 			setTimeout(() => {
 				if (!success) {
 					logTestResult({ test: 'webrtc', passed: false })
-					captureError(new Error('RTCIceCandidate failed'))
+					captureError(new Error('RTCIceCandidate connection failed'))
 					return resolve()
 				}
 			}, 1000)
