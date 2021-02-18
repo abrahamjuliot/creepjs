@@ -14,10 +14,10 @@ export const getWebRTCData = imports => {
 			await new Promise(setTimeout)
 			const start = performance.now()
 			let rtcPeerConnection = (
-				RTCPeerConnection ||
-				webkitRTCPeerConnection ||
-				mozRTCPeerConnection ||
-				msRTCPeerConnection
+				window.RTCPeerConnection ||
+				window.webkitRTCPeerConnection ||
+				window.mozRTCPeerConnection ||
+				window.msRTCPeerConnection
 			)
 
 			const getCapabilities = () => {
@@ -50,7 +50,7 @@ export const getWebRTCData = imports => {
 			)
 			
 			// create channel
-			let icecandidateSuccess
+			let success
 			connection.createDataChannel('creep')
 
 			// set local description
@@ -73,13 +73,28 @@ export const getWebRTCData = imports => {
 			connection.onicecandidate = e => {
 				const candidateEncoding = /((udp|tcp)\s)((\d|\w)+\s)((\d|\w|(\.|\:))+)(?=\s)/ig
 				const connectionLineEncoding = /(c=IN\s)(.+)\s/ig
+
+				// handle null candidate and resolve early
 				if (!e.candidate) {
-					return
+					if (sdpcapabilities) {
+						// resolve partial success
+						success = true 
+						logTestResult({ start, test: 'webrtc', passed: true })
+						return resolve({
+							capabilities,
+							sdpcapabilities
+						})
+					}
+					// resolve error
+					logTestResult({ test: 'webrtc', passed: false })
+					captureError(new Error('RTCIceCandidate connection failed'))
+					return resolve()
 				}
+
 				const { candidate } = e.candidate
 				const encodingMatch = candidate.match(candidateEncoding)
 				if (encodingMatch) {
-					icecandidateSuccess = true
+					success = true
 					const {
 						sdp
 					} = e.target.localDescription
@@ -107,15 +122,9 @@ export const getWebRTCData = imports => {
 				return
 			}
 
+			// resolve when Timeout is reached
 			setTimeout(() => {
-				if (!icecandidateSuccess) {
-					if (sdpcapabilities) {
-						logTestResult({ start, test: 'webrtc', passed: true })
-						return resolve({
-							capabilities,
-							sdpcapabilities
-						})
-					}
+				if (!success) {
 					logTestResult({ test: 'webrtc', passed: false })
 					captureError(new Error('RTCIceCandidate connection failed'))
 					return resolve()
