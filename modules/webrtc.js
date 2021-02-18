@@ -101,7 +101,7 @@ export const getWebRTCData = imports => {
 			setTimeout(() => {
 				if (!success) {
 					if (sdpcapabilities) {
-						return resolve({
+						const data = {
 							ipaddress: undefined,
 							candidate: undefined,
 							connection: undefined,
@@ -110,7 +110,9 @@ export const getWebRTCData = imports => {
 							protocol: undefined,
 							capabilities: getCapabilities(),
 							sdpcapabilities
-						})
+						}
+						logTestResult({ start, test: 'webrtc', passed: true })
+						return resolve({ ...data })
 					}
 
 					logTestResult({ test: 'webrtc', passed: false })
