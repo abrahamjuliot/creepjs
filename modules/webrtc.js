@@ -37,13 +37,20 @@ export const getWebRTCData = imports => {
 				catch (error) {}
 				return capabilities
 			}
+
+			// check support
+			if (!rtcPeerConnection) {
+				logTestResult({ test: 'webrtc', passed: false })
+				return resolve()
+			}
 			
+			// get connection
 			const connection = new rtcPeerConnection(
 				{ iceServers: [{ urls: ['stun:stun.l.google.com:19302?transport=udp'] }] }
 			)
 			
+			// create channel
 			let success
-			
 			connection.createDataChannel('creep')
 
 			await connection.createOffer()
@@ -60,7 +67,7 @@ export const getWebRTCData = imports => {
 				sdpcapabilities = offer.sdp.match(/((ext|rtp)map|fmtp|rtcp-fb):.+ (.+)/gm).sort()
 			))
 			.catch(error => console.error(error))
-			
+	
 			connection.onicecandidate = e => {
 				const candidateEncoding = /((udp|tcp)\s)((\d|\w)+\s)((\d|\w|(\.|\:))+)(?=\s)/ig
 				const connectionLineEncoding = /(c=IN\s)(.+)\s/ig
