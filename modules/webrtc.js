@@ -100,6 +100,19 @@ export const getWebRTCData = imports => {
 			
 			setTimeout(() => {
 				if (!success) {
+					if (sdpcapabilities) {
+						return resolve({
+							ipaddress: undefined,
+							candidate: undefined,
+							connection: undefined,
+							type: undefined,
+							foundation: undefined,
+							protocol: undefined,
+							capabilities: getCapabilities(),
+							sdpcapabilities
+						})
+					}
+
 					logTestResult({ test: 'webrtc', passed: false })
 					captureError(new Error('RTCIceCandidate connection failed'))
 					return resolve()
