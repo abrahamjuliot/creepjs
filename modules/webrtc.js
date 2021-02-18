@@ -50,15 +50,17 @@ export const getWebRTCData = imports => {
 			)
 			
 			// create channel
-			let success
+			let icecandidateSuccess
 			connection.createDataChannel('creep')
 
+			// set local description
 			await connection.createOffer()
 			.then(offer => connection.setLocalDescription(offer))
 			.catch(error => console.error(error))
 
 			// get sdp capabilities
 			let sdpcapabilities
+			const capabilities = getCapabilities()
 			await connection.createOffer({
 				offerToReceiveAudio: 1,
 				offerToReceiveVideo: 1
@@ -77,7 +79,7 @@ export const getWebRTCData = imports => {
 				const { candidate } = e.candidate
 				const encodingMatch = candidate.match(candidateEncoding)
 				if (encodingMatch) {
-					success = true
+					icecandidateSuccess = true
 					const {
 						sdp
 					} = e.target.localDescription
@@ -96,7 +98,7 @@ export const getWebRTCData = imports => {
 						type,
 						foundation,
 						protocol,
-						capabilities: getCapabilities(),
+						capabilities,
 						sdpcapabilities
 					}
 					logTestResult({ start, test: 'webrtc', passed: true })
@@ -104,24 +106,16 @@ export const getWebRTCData = imports => {
 				}
 				return
 			}
-			
-			setTimeout(() => {
-				if (!success) {
-					if (sdpcapabilities) {
-						const data = {
-							ipaddress: undefined,
-							candidate: undefined,
-							connection: undefined,
-							type: undefined,
-							foundation: undefined,
-							protocol: undefined,
-							capabilities: getCapabilities(),
-							sdpcapabilities
-						}
-						logTestResult({ start, test: 'webrtc', passed: true })
-						return resolve({ ...data })
-					}
 
+			setTimeout(() => {
+				if (!icecandidateSuccess) {
+					if (sdpcapabilities) {
+						logTestResult({ start, test: 'webrtc', passed: true })
+						return resolve({
+							capabilities,
+							sdpcapabilities
+						})
+					}
 					logTestResult({ test: 'webrtc', passed: false })
 					captureError(new Error('RTCIceCandidate connection failed'))
 					return resolve()
