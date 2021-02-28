@@ -159,7 +159,7 @@ const getCSS = () => {
 	const { width: domRectWidth, height: domRectHeight } = document.body.getBoundingClientRect()
 	const style = getComputedStyle(document.body)
 	return {
-		domRectViewport: `${domRectWidth} x ${domRectHeight}`,
+		domRectViewport: [domRectWidth, domRectHeight],
 		viewport: style.getPropertyValue('--viewport').trim() || undefined,
 		viewportAspectRatio: style.getPropertyValue('--viewport-aspect-ratio').trim() || undefined,
 		deviceAspectRatio: style.getPropertyValue('--device-aspect-ratio').trim() || undefined,
@@ -201,7 +201,7 @@ const {
 	displayMode
 } = getCSS()
 
-
+const style = (a, b) => b.map((char,i) => char != a[i] ? `<span class="bold-fail">${char}</span>` : char).join('')
 const note = {
 	unsupported: '<span class="blocked">unsupported</span>',
 	blocked: '<span class="blocked">blocked</span>',
@@ -223,6 +223,11 @@ patch(el, html`
 				margin: 0 5px;
 				padding: 1px 3px;
 			}
+			
+			.bold-fail {
+				color: #ca656e;
+				font-weight: bold;
+			}
 		</style>
 		<div class="visitor-info">
 			<strong>Screen</strong>
@@ -234,22 +239,42 @@ patch(el, html`
 			<div class="col-six relative">
 				<span class="aside-note">${(performance.now() - start).toFixed(2)}ms</span>
 				<br>
-				<div>${pad('@media search')}: ${''+mediaWidth} x ${''+mediaHeight}</div>
-				<div>${pad('matchMedia search')}: ${''+matchMediaWidth} x ${''+matchMediaHeight}</div>
+				<div>${pad('@media search')}: ${
+					mediaWidth && mediaHeight ? `${''+mediaWidth} x ${''+mediaHeight}` : '<span class="fake">failed</span>'
+				}</div>
+				<div>${pad('matchMedia search')}: ${
+					matchMediaWidth && matchMediaHeight ? `${''+matchMediaWidth} x ${''+matchMediaHeight}` : '<span class="fake">failed</span>'
+				}</div>
 
-				<div>${pad('@media device')}: ${''+deviceScreen}</div>
+				<div>${pad('@media device')}: ${deviceScreen ? ''+deviceScreen : '<span class="fake">failed</span>'}</div>
 				
-				<div>${pad('device-aspect-ratio')}: ${''+deviceAspectRatio}</div>
-				<div>${pad('aspect-ratio')}: ${''+viewportAspectRatio}</div>
+				<div>${pad('device-aspect-ratio')}: ${deviceAspectRatio ? ''+deviceAspectRatio : '<span class="fake">failed</span>'}</div>
+				<div>${pad('aspect-ratio')}: ${viewportAspectRatio ? ''+viewportAspectRatio : '<span class="fake">failed</span>'}</div>
+
+				<div>${pad('screen')}: ${
+					style((''+mediaWidth).split(''), (''+width).split(''))} x ${style((''+mediaHeight).split(''), (''+height).split(''))
+				}</div>
 				
-				<div>${pad('screen')}: ${''+width} x ${''+height}</div>
-				<div>${pad('avail')}: ${''+availWidth} x ${''+availHeight}</div>
-				<div>${pad('outer')}: ${''+outerWidth} x ${''+outerHeight}</div>
-				<div>${pad('inner')}: ${''+innerWidth} x ${''+innerHeight}</div>
-				<div>${pad('client')}: ${''+clientWidth} x ${''+clientHeight}</div>
+				<div>${pad('avail')}: ${''+availWidth} x ${''+availHeight}${
+					availWidth > width || availHeight > height ? '<span class="fake">out of bounds</span>' : ''
+				}</div>
+				<div>${pad('client')}: ${
+					style((''+domRectViewport[0]).split(''), (''+clientWidth).split(''))} x ${style((''+domRectViewport[1]).split(''), (''+clientHeight).split(''))
+				}${
+					clientWidth > width || clientHeight > height ? '<span class="fake">out of bounds</span>' : ''
+				}</div>
+				<div>${pad('inner')}: ${
+					style((''+domRectViewport[0]).split(''), (''+innerWidth).split(''))} x ${style((''+domRectViewport[1]).split(''), (''+innerHeight).split(''))
+				}${
+					innerWidth > width || innerHeight > height ? '<span class="fake">out of bounds</span>' : ''
+				}</div>
+				<div>${pad('outer')}: ${''+outerWidth} x ${''+outerHeight}${
+					outerWidth > width ? '<span class="fake">out of bounds</span>' : ''
+				}</div>
+
 				
 				<div>${pad('@media viewport')}: ${''+viewport}</div>
-				<div>${pad('dom rect viewport')}: ${''+domRectViewport}</div>
+				<div>${pad('dom rect viewport')}: ${''+domRectViewport.join(' x ')}</div>
 				<div>${pad('visualViewport')}: ${viewportWidth && viewportHeight ? `${''+Math.round(viewportWidth)} x ${''+viewportHeight}` : note.unsupported}</div>
 
 				<div>${pad('colorDepth')}: ${''+colorDepth}</div>
