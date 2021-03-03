@@ -259,12 +259,12 @@ patch(el, html`
 					availWidth > width || availHeight > height ? '<span class="fake">out of bounds</span>' : ''
 				}</div>
 				<div>${pad('client')}: ${
-					style((''+domRectViewport[0]).split(''), (''+clientWidth).split(''))} x ${style((''+domRectViewport[1]).split(''), (''+clientHeight).split(''))
+					style((''+Math.round(domRectViewport[0])).split(''), (''+clientWidth).split(''))} x ${style((''+Math.round(domRectViewport[1])).split(''), (''+clientHeight).split(''))
 				}${
 					clientWidth > width || clientHeight > height ? '<span class="fake">out of bounds</span>' : ''
 				}</div>
 				<div>${pad('inner')}: ${
-					style((''+domRectViewport[0]).split(''), (''+innerWidth).split(''))} x ${style((''+domRectViewport[1]).split(''), (''+innerHeight).split(''))
+					style((''+Math.round(domRectViewport[0])).split(''), (''+innerWidth).split(''))} x ${style((''+Math.round(domRectViewport[1])).split(''), (''+innerHeight).split(''))
 				}${
 					innerWidth > width || innerHeight > height ? '<span class="fake">out of bounds</span>' : ''
 				}</div>
@@ -275,7 +275,7 @@ patch(el, html`
 				
 				<div>${pad('@media viewport')}: ${''+viewport}</div>
 				<div>${pad('dom rect viewport')}: ${''+domRectViewport.join(' x ')}</div>
-				<div>${pad('visualViewport')}: ${viewportWidth && viewportHeight ? `${''+Math.round(viewportWidth)} x ${''+viewportHeight}` : note.unsupported}</div>
+				<div>${pad('visualViewport')}: ${viewportWidth && viewportHeight ? `${''+viewportWidth} x ${''+viewportHeight}` : note.unsupported}</div>
 
 				<div>${pad('colorDepth')}: ${''+colorDepth}</div>
 				<div>${pad('pixelDepth')}: ${''+pixelDepth}</div>
