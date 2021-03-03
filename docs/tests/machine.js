@@ -44,9 +44,12 @@ const html = (stringSet, ...expressionSet) => {
 	return templateContent(template) // ie11 fix for template.content
 }
 
+const pass = () => `<span class="pass">&#10004;</span>`
+const fail = () => `<span class="fail">&#10006;</span>`
+
 // system
 // https://stackoverflow.com/a/23736334
-const getOS = ({userAgent, platform}) => {
+const getOSLie = ({userAgent, platform}) => {
 	const userAgentOS = (
 		// order is important
 		/win(dows|16|32|64|95|98|nt)|wow64/ig.test(userAgent) ? 'Windows' :
@@ -63,7 +66,14 @@ const getOS = ({userAgent, platform}) => {
 		/mac/i.test(platform) ? 'Mac' :
 		'Other'
 	)
-	return { userAgentOS, platformOS }
+	const invalidWindows64bitCPU = (
+		(/w(in|ow)64/ig.test(userAgent) && /win16/ig.test(platform)) ||
+		(/win(16|32)/ig.test(userAgent) && !/win(16|32)/ig.test(platform))
+	)
+	return {
+		platformLie: userAgentOS != platformOS || invalidWindows64bitCPU,
+		touchLie: !!navigator.maxTouchPoints && /mac/ig.test(userAgent) || /mac/ig.test(platform)
+	}
 }
 
 
@@ -93,9 +103,10 @@ const getUserAgentPlatform = ({ userAgent, platform, excludeBuild = true }) => {
 	if (!userAgent) {
 		return
 	}
-
+	const { platformLie, touchLie } = getOSLie({userAgent, platform})
 	const ua = {
-		...getOS({userAgent, platform}),
+		platformLie,
+		touchLie,
 		trimmed: userAgent.trim().replace(/\s{2,}/, ' ')
 	}
 	
@@ -194,13 +205,14 @@ patch(document.getElementById('fingerprint-data'), html`
 			color: #2da568;
 			background: #2da5681a;
 		}
+		.fail {
+			background: #ca656e0d;
+		}
 		.fail, .bold-fail, .erratic {
 			color: #ca656e;
 		}
-		.fail, .bold-fail {
-			background: #ca656e0d;
-		}
 		.bold-fail {
+			background: #ca656e0d;
 			font-weight: bold;
 			border-bottom: 1px solid;
 		}
@@ -226,12 +238,11 @@ patch(document.getElementById('fingerprint-data'), html`
 			<strong>Machine</strong>
 		</div>
 		<div class="ua-container">
-			<div>user agent: ${res.identifiers.reduce((ua, x) => ua.replace(x, `<span class="identifier">${x}</span>`), res.trimmed)}</div>
-			<div>platform: ${navigator.platform}</div>
-			<div>machine: ${res.parsed}</div>
-			<div>${
-				res.userAgentOS != res.platformOS ? `<span class="fail">${res.platformOS} platform does not match ${res.userAgentOS} user agent</span>` : '<span class="pass">passed</span>'
-			}</div>
+			<div class="group">${res.identifiers.reduce((ua, x) => ua.replace(x, `<span class="identifier">${x}</span>`), res.trimmed)}</div>
+
+			<div>${!res.parsed ? fail() : pass()}machine: ${!res.parsed ? 'unknown' : res.parsed}</div>
+			<div>${res.platformLie ? fail() : pass()}platform: ${navigator.platform}</div>
+			<div>${res.touchLie ? fail() : pass()}maxTouchPoints: ${''+navigator.maxTouchPoints}</div>
 		</div>
 	</div>
 `)
