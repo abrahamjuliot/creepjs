@@ -243,7 +243,7 @@ patch(document.getElementById('fingerprint-data'), html`
 		<div class="ua-container">
 			<div class="group">${res.trimmed}</div>
 			<div>${!res.identifiers || !res.identifiers.length ? fail() : pass()}identifiers: ${res.identifiers && res.identifiers.length ? res.identifiers.join(', ') : 'undefined'}</div>
-			<div>${!res.parsed ? fail() : pass()}machine: ${!res.parsed ? 'unknown' : res.parsed}</div>
+			<div>${!res.parsed ? fail() : pass()}device: ${!res.parsed ? 'unknown' : res.parsed}</div>
 			<div>${res.platformLie ? fail() : pass()}platform: ${navigator.platform}</div>
 			<div>${res.macTouchLie ? fail() : pass()}maxTouchPoints: ${''+navigator.maxTouchPoints}</div>
 		</div>
