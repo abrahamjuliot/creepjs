@@ -249,7 +249,7 @@ patch(el, html`
 				<div>${pad('@media device')}: ${deviceScreen ? ''+deviceScreen : '<span class="fake">failed</span>'}</div>
 				
 				<div>${pad('device-aspect-ratio')}: ${deviceAspectRatio ? ''+deviceAspectRatio : '<span class="fake">failed</span>'}</div>
-				<div>${pad('aspect-ratio')}: ${viewportAspectRatio ? ''+viewportAspectRatio : '<span class="fake">failed</span>'}</div>
+				<div>${pad('aspect-ratio')}: ${''+viewportAspectRatio}</div>
 
 				<div>${pad('screen')}: ${
 					style((''+mediaWidth).split(''), (''+width).split(''))} x ${style((''+mediaHeight).split(''), (''+height).split(''))
