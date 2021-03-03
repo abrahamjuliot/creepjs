@@ -72,7 +72,10 @@ const getOSLie = ({userAgent, platform}) => {
 	)
 	return {
 		platformLie: userAgentOS != platformOS || invalidWindows64bitCPU,
-		touchLie: !!navigator.maxTouchPoints && /mac/ig.test(userAgent) || /mac/ig.test(platform)
+		macTouchLie: (
+			!!navigator.maxTouchPoints && (/mac/ig.test(userAgent) && !/like mac/ig.test(userAgent)) || /mac/ig.test(platform)
+			// note: touch can be disabled on Android, iOS, and emulators
+		)
 	}
 }
 
@@ -103,10 +106,10 @@ const getUserAgentPlatform = ({ userAgent, platform, excludeBuild = true }) => {
 	if (!userAgent) {
 		return
 	}
-	const { platformLie, touchLie } = getOSLie({userAgent, platform})
+	const { platformLie, macTouchLie } = getOSLie({userAgent, platform})
 	const ua = {
 		platformLie,
-		touchLie,
+		macTouchLie,
 		trimmed: userAgent.trim().replace(/\s{2,}/, ' ')
 	}
 	
@@ -238,11 +241,11 @@ patch(document.getElementById('fingerprint-data'), html`
 			<strong>Machine</strong>
 		</div>
 		<div class="ua-container">
-			<div class="group">${res.identifiers.reduce((ua, x) => ua.replace(x, `<span class="identifier">${x}</span>`), res.trimmed)}</div>
-
+			<div class="group">${res.trimmed}</div>
+			<div>${!res.identifiers || !res.identifiers.length ? fail() : pass()}identifiers: ${res.identifiers && res.identifiers.length ? res.identifiers.join(', ') : 'undefined'}</div>
 			<div>${!res.parsed ? fail() : pass()}machine: ${!res.parsed ? 'unknown' : res.parsed}</div>
 			<div>${res.platformLie ? fail() : pass()}platform: ${navigator.platform}</div>
-			<div>${res.touchLie ? fail() : pass()}maxTouchPoints: ${''+navigator.maxTouchPoints}</div>
+			<div>${res.macTouchLie ? fail() : pass()}maxTouchPoints: ${''+navigator.maxTouchPoints}</div>
 		</div>
 	</div>
 `)
