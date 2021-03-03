@@ -49,7 +49,8 @@ const fail = () => `<span class="fail">&#10006;</span>`
 
 // system
 // https://stackoverflow.com/a/23736334
-const getOSLie = ({userAgent, platform}) => {
+const getOSLie = () => {
+	const { userAgent, platform, maxTouchPoints } = navigator
 	const userAgentOS = (
 		// order is important
 		/win(dows|16|32|64|95|98|nt)|wow64/ig.test(userAgent) ? 'Windows' :
@@ -71,9 +72,10 @@ const getOSLie = ({userAgent, platform}) => {
 		(/win(16|32)/ig.test(userAgent) && !/win(16|32)/ig.test(platform))
 	)
 	return {
+		kind: userAgentOS,
 		platformLie: userAgentOS != platformOS || invalidWindows64bitCPU,
 		macTouchLie: (
-			!!navigator.maxTouchPoints && (/mac/ig.test(userAgent) && !/like mac/ig.test(userAgent)) || /mac/ig.test(platform)
+			!!maxTouchPoints && (/mac/ig.test(userAgent) && !/like mac/ig.test(userAgent)) || /mac/ig.test(platform)
 			// note: touch can be disabled on Android, iOS, and emulators
 		)
 	}
@@ -102,12 +104,13 @@ const otherOS = /((symbianos|nokia|blackberry|morphos|mac).+)|\/linux|freebsd|sy
 
 const isDevice = (list, device) => list.filter(x => device.test(x)).length
 
-const getUserAgentPlatform = ({ userAgent, platform, excludeBuild = true }) => {
+const getUserAgentPlatform = ({ userAgent, excludeBuild = true }) => {
 	if (!userAgent) {
 		return
 	}
-	const { platformLie, macTouchLie } = getOSLie({userAgent, platform})
+	const { platformLie, macTouchLie, kind } = getOSLie({userAgent})
 	const ua = {
+		kind,
 		platformLie,
 		macTouchLie,
 		trimmed: userAgent.trim().replace(/\s{2,}/, ' ')
@@ -187,8 +190,8 @@ const getUserAgentPlatform = ({ userAgent, platform, excludeBuild = true }) => {
 
 const start = performance.now()
 
-const { userAgent, platform } = navigator
-const res = getUserAgentPlatform({ userAgent, platform, excludeBuild: true })
+const { userAgent } = navigator
+const res = getUserAgentPlatform({ userAgent, excludeBuild: true })
 
 console.log(res)
 
@@ -243,6 +246,7 @@ patch(document.getElementById('fingerprint-data'), html`
 		<div class="ua-container">
 			<div class="group">${res.trimmed}</div>
 			<div>${!res.identifiers || !res.identifiers.length ? fail() : pass()}identifiers: ${res.identifiers && res.identifiers.length ? res.identifiers.join(', ') : 'undefined'}</div>
+			<div>${!res.kind ? fail() : pass()}kind: ${!res.kind ? 'unknown' : res.kind}</div>
 			<div>${!res.parsed ? fail() : pass()}device: ${!res.parsed ? 'unknown' : res.parsed}</div>
 			<div>${res.platformLie ? fail() : pass()}platform: ${navigator.platform}</div>
 			<div>${res.macTouchLie ? fail() : pass()}maxTouchPoints: ${''+navigator.maxTouchPoints}</div>
