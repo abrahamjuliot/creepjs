@@ -245,12 +245,14 @@ const getUserAgentPlatform = ({ userAgent, excludeBuild = true }) => {
 
 const start = performance.now()
 
-const { userAgent } = navigator
+const { userAgent, hardwareConcurrency, deviceMemory, maxTouchPoints } = navigator
 const res = getUserAgentPlatform({ userAgent, excludeBuild: true }) || {}
 const voiceSystem = await getVoices()
 const system = getOS()
 const voiceSystemLie = voiceSystem && (voiceSystem != system)
-console.log(res)
+const testMobile = (n, system, limit = 8) => n > limit && system && /Windows Phone|Android|iPad|iPhone|iPod|iOS/.test(system)
+const memoryLie = testMobile(deviceMemory, system)
+const coresLie = testMobile(hardwareConcurrency, system)
 const perf = performance.now() - start 
 patch(document.getElementById('fingerprint-data'), html`
 	<div id="fingerprint-data">
@@ -307,16 +309,26 @@ patch(document.getElementById('fingerprint-data'), html`
 			<div>${!system ? fail() : pass()}system: ${!system ? 'unknown' : system}</div>
 			<div>${!res.parsed ? fail() : pass()}device: ${!res.parsed ? 'unknown' : res.parsed}</div>
 			<div>${res.platformLie ? fail() : pass()}platform: ${navigator.platform}</div>
-			<div>${res.macTouchLie ? fail() : pass()}maxTouchPoints: ${''+navigator.maxTouchPoints}</div>
+			<div>${res.macTouchLie ? fail() : pass()}maxTouchPoints: ${''+maxTouchPoints}</div>
+			<div>${memoryLie ? fail() : pass()}deviceMemory: ${''+deviceMemory}</div>
+			<div>${coresLie ? fail() : pass()}hardwareConcurrency: ${''+hardwareConcurrency}</div>
 			<div>${voiceSystemLie ? fail() : pass()}speechSynthesis: ${voiceSystem || 'unknown'}</div>
 		</div>
 		<div>
 			${
-				JSON.stringify(res) != '{}' && (!res.macTouchLie && !res.platformLie && !voiceSystemLie) ? 
+				JSON.stringify(res) != '{}' && (
+					!res.macTouchLie &&
+					!res.platformLie &&
+					!voiceSystemLie &&
+					!memoryLie &&
+					!coresLie
+				) ? 
 				`<span class="pass">&#10004; passed</span>` : ''
 			}
 			${res.platformLie ? `<div class="erratic">${res.core} core does not support ${navigator.platform}</div>` : ''}
 			${res.macTouchLie ? `<div class="erratic">Macs do not support touch</div>` : ''}
+			${memoryLie ? `<div class="erratic">deviceMemory too high for ${system}</div>` : ''}
+			${coresLie? `<div class="erratic">hardwareConcurrency too high for ${system}</div>` : ''}
 			${voiceSystemLie ? `<div class="erratic">${voiceSystem} speechSynthesis does not match ${system} system</div>` : ''}
 		</div>
 	</div>
