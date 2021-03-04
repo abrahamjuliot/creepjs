@@ -75,7 +75,9 @@ const getOSLie = () => {
 		core: userAgentOS,
 		platformLie: userAgentOS != platformOS || invalidWindows64bitCPU,
 		macTouchLie: (
-			!!maxTouchPoints && (/mac/ig.test(userAgent) && !/like mac/ig.test(userAgent)) || /mac/ig.test(platform)
+			!!maxTouchPoints && (
+				(/mac/ig.test(userAgent) && !/like mac/ig.test(userAgent)) || /mac/ig.test(platform)
+			)
 			// note: touch can be disabled on Android, iOS, and emulators
 		)
 	}
