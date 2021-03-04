@@ -242,6 +242,58 @@ const getUserAgentPlatform = ({ userAgent, excludeBuild = true }) => {
 	}
 }
 
+const getRenderer = gl => {
+	try {
+		const ext = !!gl ? gl.getExtension('WEBGL_debug_renderer_info') : null
+		if (!ext) {
+			return
+		}
+		return gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)
+	}
+	catch (error) {
+		return
+	}
+}
+
+const getGPU = () => {
+	let offscreenCanvas, offscreenCanvas2
+	if ('OffscreenCanvas' in window) {
+		offscreenCanvas = new OffscreenCanvas(256, 256)
+		offscreenCanvas2 = new OffscreenCanvas(256, 256)
+	}
+	const canvas = document.createElement('canvas')
+	const canvas2 = document.createElement('canvas')
+	
+	const getContext = (canvas, contextType) => {
+		try {
+			if (contextType == 'webgl2') {
+				return (
+					canvas.getContext('webgl2') ||
+					canvas.getContext('experimental-webgl2')
+				)
+			}
+			return (
+				canvas.getContext('webgl') ||
+				canvas.getContext('experimental-webgl') ||
+				canvas.getContext('moz-webgl') ||
+				canvas.getContext('webkit-3d')
+			)
+		}
+		catch (error) {
+			return 'blocked'
+		}
+	}
+	const res = new Set([
+		getRenderer(getContext(offscreenCanvas, 'webgl')),
+		getRenderer(getContext(offscreenCanvas2, 'webgl2')),
+		getRenderer(getContext(canvas, 'webgl')),
+		getRenderer(getContext(canvas2, 'webgl2'))
+	])
+	console.log(res)
+	res.delete(undefined)
+	return [...res]
+}
+
 
 const start = performance.now()
 
@@ -250,7 +302,9 @@ const res = getUserAgentPlatform({ userAgent, excludeBuild: true }) || {}
 const voiceSystem = await getVoices()
 const system = getOS()
 const voiceSystemLie = voiceSystem && (voiceSystem != system)
-const testMobile = (n, system, limit = 8) => n > limit && system && /Windows Phone|Android|iPad|iPhone|iPod|iOS/.test(system)
+const gpu = getGPU()
+const gpuLie = gpu.length > 1
+console.log(res)
 const perf = performance.now() - start 
 patch(document.getElementById('fingerprint-data'), html`
 	<div id="fingerprint-data">
@@ -301,27 +355,42 @@ patch(document.getElementById('fingerprint-data'), html`
 			<strong>Machine</strong>
 		</div>
 		<div class="ua-container">
-			<div class="group">${res.trimmed || ''}</div>
-			<div>${!res.identifiers || !res.identifiers.length ? fail() : pass()}identifiers: ${res.identifiers && res.identifiers.length ? res.identifiers.join(', ') : 'undefined'}</div>
+			<div>${!res.identifiers || !res.identifiers.length ? fail() : pass()}ua identifiers: ${res.identifiers && res.identifiers.length ? res.identifiers.join(', ') : 'undefined'}</div>
 			<div>${!res.core ? fail() : pass()}core: ${!res.core ? 'unknown' : res.core}</div>
 			<div>${!system ? fail() : pass()}system: ${!system ? 'unknown' : system}</div>
 			<div>${!res.parsed ? fail() : pass()}device: ${!res.parsed ? 'unknown' : res.parsed}</div>
 			<div>${res.platformLie ? fail() : pass()}platform: ${navigator.platform}</div>
-			<div>${res.macTouchLie ? fail() : pass()}maxTouchPoints: ${''+maxTouchPoints}</div>
+			
 			<div>${voiceSystemLie ? fail() : pass()}speechSynthesis: ${voiceSystem || 'unknown'}</div>
+			<div class="group">
+				<div>${res.macTouchLie ? fail() : pass()}maxTouchPoints: ${''+maxTouchPoints}</div>
+				<div>${deviceMemory === 0 ? fail() : pass()}deviceMemory: ${''+deviceMemory}</div>
+				<div>${hardwareConcurrency === 0 ? fail() : pass()}hardwareConcurrency: ${''+hardwareConcurrency}</div>
+				<div>${gpuLie ? fail() : pass()}gpu: ${
+					gpuLie ?
+					`<div class=group>- ${''+gpu.join('<br>- ')}</div></div>` :
+					(gpu[0] || 'undefined')
+				}
+			</div>
 		</div>
 		<div>
 			${
 				JSON.stringify(res) != '{}' && (
 					!res.macTouchLie &&
 					!res.platformLie &&
-					!voiceSystemLie
+					!voiceSystemLie &&
+					deviceMemory !== 0 &&
+					hardwareConcurrency !== 0
+
 				) ? 
 				`<span class="pass">&#10004; passed</span>` : ''
 			}
 			${res.platformLie ? `<div class="erratic">${res.core} core does not support ${navigator.platform}</div>` : ''}
 			${res.macTouchLie ? `<div class="erratic">Macs do not support touch</div>` : ''}
 			${voiceSystemLie ? `<div class="erratic">${voiceSystem} speechSynthesis does not match ${system} system</div>` : ''}
+			${deviceMemory === 0 ? `<div class="erratic">deviceMemory should not be 0</div>` : ''}
+			${hardwareConcurrency === 0 ? `<div class="erratic">hardwareConcurrency should not be 0</div>` : ''}
+			${gpuLie ? `<div class="erratic">gpu mismatch</div>` : ''}
 		</div>
 	</div>
 `)
