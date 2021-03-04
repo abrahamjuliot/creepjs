@@ -63,7 +63,7 @@ const getOSLie = () => {
 		// order is important
 		/win/ig.test(platform) ? 'Windows' :
 		/android|arm|linux/i.test(platform) ? 'Linux' : 
-		/i(os|p(ad|hone|od))/ig.test(userAgent) ? 'iOS' :
+		/i(os|p(ad|hone|od))/ig.test(platform) ? 'iOS' :
 		/mac/i.test(platform) ? 'Mac' :
 		'Other'
 	)
@@ -72,7 +72,7 @@ const getOSLie = () => {
 		(/win(16|32)/ig.test(userAgent) && !/win(16|32)/ig.test(platform))
 	)
 	return {
-		kind: userAgentOS,
+		core: userAgentOS,
 		platformLie: userAgentOS != platformOS || invalidWindows64bitCPU,
 		macTouchLie: (
 			!!maxTouchPoints && (/mac/ig.test(userAgent) && !/like mac/ig.test(userAgent)) || /mac/ig.test(platform)
@@ -108,9 +108,9 @@ const getUserAgentPlatform = ({ userAgent, excludeBuild = true }) => {
 	if (!userAgent) {
 		return
 	}
-	const { platformLie, macTouchLie, kind } = getOSLie({userAgent})
+	const { platformLie, macTouchLie, core } = getOSLie({userAgent})
 	const ua = {
-		kind,
+		core,
 		platformLie,
 		macTouchLie,
 		trimmed: userAgent.trim().replace(/\s{2,}/, ' ')
@@ -191,7 +191,7 @@ const getUserAgentPlatform = ({ userAgent, excludeBuild = true }) => {
 const start = performance.now()
 
 const { userAgent } = navigator
-const res = getUserAgentPlatform({ userAgent, excludeBuild: true })
+const res = getUserAgentPlatform({ userAgent, excludeBuild: true }) || {}
 
 console.log(res)
 
@@ -226,6 +226,7 @@ patch(document.getElementById('fingerprint-data'), html`
 			font-size: 12px !important;
 			border-radius: 3px;
 			padding: 10px 15px;
+			min-height: 60px;
 		}
 		.identifier {
 			background: #657fca26;
@@ -244,12 +245,17 @@ patch(document.getElementById('fingerprint-data'), html`
 			<strong>Machine</strong>
 		</div>
 		<div class="ua-container">
-			<div class="group">${res.trimmed}</div>
+			<div class="group">${res.trimmed || ''}</div>
 			<div>${!res.identifiers || !res.identifiers.length ? fail() : pass()}identifiers: ${res.identifiers && res.identifiers.length ? res.identifiers.join(', ') : 'undefined'}</div>
-			<div>${!res.kind ? fail() : pass()}kind: ${!res.kind ? 'unknown' : res.kind}</div>
+			<div>${!res.core ? fail() : pass()}core: ${!res.core ? 'unknown' : res.core}</div>
 			<div>${!res.parsed ? fail() : pass()}device: ${!res.parsed ? 'unknown' : res.parsed}</div>
 			<div>${res.platformLie ? fail() : pass()}platform: ${navigator.platform}</div>
 			<div>${res.macTouchLie ? fail() : pass()}maxTouchPoints: ${''+navigator.maxTouchPoints}</div>
+		</div>
+		<div>
+			${JSON.stringify(res) != '{}' && (!res.macTouchLie && !res.platformLie)? `<span class="pass">&#10004; passed</span>` : ''}
+			${res.platformLie ? `<div class="erratic">${res.core} core does not support ${navigator.platform}</div>` : ''}
+			${res.macTouchLie ? `<div class="erratic">Macs do not support touch</div>` : ''}
 		</div>
 	</div>
 `)
