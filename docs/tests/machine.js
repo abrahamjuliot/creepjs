@@ -49,6 +49,28 @@ const fail = () => `<span class="fail">&#10006;</span>`
 
 // system
 // https://stackoverflow.com/a/23736334
+const getOS = () => {
+	const { userAgent } = navigator
+	if (!userAgent) {
+		return
+	}
+	const os = (
+		// order is important
+		/windows phone/ig.test(userAgent) ? 'Windows Phone' :
+		/win(dows|16|32|64|95|98|nt)|wow64/ig.test(userAgent) ? 'Windows' :
+		/android/ig.test(userAgent) ? 'Android' :
+		/cros/ig.test(userAgent) ? 'Chrome OS' :
+		/linux/ig.test(userAgent) ? 'Linux' :
+		/ipad/ig.test(userAgent) ? 'iPad' :
+		/iphone/ig.test(userAgent) ? 'iPhone' :
+		/ipod/ig.test(userAgent) ? 'iPod' :
+		/ios/ig.test(userAgent) ? 'iOS' :
+		/mac/ig.test(userAgent) ? 'Mac' :
+		'Other'
+	)
+	return os
+}
+
 const getOSLie = () => {
 	const { userAgent, platform, maxTouchPoints } = navigator
 	const userAgentOS = (
@@ -82,6 +104,37 @@ const getOSLie = () => {
 		)
 	}
 }
+
+const getVoices = () => new Promise(async resolve => {
+	try {
+		if (!('speechSynthesis' in window)) {
+			return resolve()
+		}
+		let success = false
+		const getVoices = async () => {
+			const data = await speechSynthesis.getVoices()
+			if (!data.length) {
+				return
+			}
+			success = true
+			const voices = data.map(({ name, lang }) => ({ name, lang }))
+			return resolve(
+				voices.find(key => (/microsoft/i).test(key.name)) ? 'Windows' :
+				voices.find(key => (/chrome os/i).test(key.name)) ? 'Chrome OS' :
+				voices.find(key => (/android/i).test(key.name)) ? 'Android' : undefined
+			)
+		}
+		
+		await getVoices()
+		speechSynthesis.onvoiceschanged = getVoices
+		setTimeout(() => {
+			return !success ? resolve() : undefined
+		}, 100)
+	}
+	catch (error) {
+		return resolve()
+	}
+})
 
 
 // get Machine
@@ -194,9 +247,10 @@ const start = performance.now()
 
 const { userAgent } = navigator
 const res = getUserAgentPlatform({ userAgent, excludeBuild: true }) || {}
-
+const voiceSystem = await getVoices()
+const system = getOS()
+const voiceSystemLie = voiceSystem && (voiceSystem != system)
 console.log(res)
-
 const perf = performance.now() - start 
 patch(document.getElementById('fingerprint-data'), html`
 	<div id="fingerprint-data">
@@ -250,14 +304,20 @@ patch(document.getElementById('fingerprint-data'), html`
 			<div class="group">${res.trimmed || ''}</div>
 			<div>${!res.identifiers || !res.identifiers.length ? fail() : pass()}identifiers: ${res.identifiers && res.identifiers.length ? res.identifiers.join(', ') : 'undefined'}</div>
 			<div>${!res.core ? fail() : pass()}core: ${!res.core ? 'unknown' : res.core}</div>
+			<div>${!system ? fail() : pass()}system: ${!system ? 'unknown' : system}</div>
 			<div>${!res.parsed ? fail() : pass()}device: ${!res.parsed ? 'unknown' : res.parsed}</div>
 			<div>${res.platformLie ? fail() : pass()}platform: ${navigator.platform}</div>
 			<div>${res.macTouchLie ? fail() : pass()}maxTouchPoints: ${''+navigator.maxTouchPoints}</div>
+			<div>${voiceSystemLie ? fail() : pass()}speechSynthesis: ${voiceSystem || 'unknown'}</div>
 		</div>
 		<div>
-			${JSON.stringify(res) != '{}' && (!res.macTouchLie && !res.platformLie)? `<span class="pass">&#10004; passed</span>` : ''}
+			${
+				JSON.stringify(res) != '{}' && (!res.macTouchLie && !res.platformLie && !voiceSystemLie) ? 
+				`<span class="pass">&#10004; passed</span>` : ''
+			}
 			${res.platformLie ? `<div class="erratic">${res.core} core does not support ${navigator.platform}</div>` : ''}
 			${res.macTouchLie ? `<div class="erratic">Macs do not support touch</div>` : ''}
+			${voiceSystemLie ? `<div class="erratic">${voiceSystem} speechSynthesis does not match ${system} system</div>` : ''}
 		</div>
 	</div>
 `)
