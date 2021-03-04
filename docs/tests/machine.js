@@ -289,7 +289,6 @@ const getGPU = () => {
 		getRenderer(getContext(canvas, 'webgl')),
 		getRenderer(getContext(canvas2, 'webgl2'))
 	])
-	console.log(res)
 	res.delete(undefined)
 	return [...res]
 }
@@ -380,7 +379,8 @@ patch(document.getElementById('fingerprint-data'), html`
 					!res.platformLie &&
 					!voiceSystemLie &&
 					deviceMemory !== 0 &&
-					hardwareConcurrency !== 0
+					hardwareConcurrency !== 0 &&
+					!gpuLie
 
 				) ? 
 				`<span class="pass">&#10004; passed</span>` : ''
@@ -390,7 +390,7 @@ patch(document.getElementById('fingerprint-data'), html`
 			${voiceSystemLie ? `<div class="erratic">${voiceSystem} speechSynthesis does not match ${system} system</div>` : ''}
 			${deviceMemory === 0 ? `<div class="erratic">deviceMemory should not be 0</div>` : ''}
 			${hardwareConcurrency === 0 ? `<div class="erratic">hardwareConcurrency should not be 0</div>` : ''}
-			${gpuLie ? `<div class="erratic">gpu mismatch</div>` : ''}
+			${gpuLie ? `<div class="erratic">gpus mismatch</div>` : ''}
 		</div>
 	</div>
 `)
