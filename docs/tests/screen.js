@@ -258,14 +258,18 @@ patch(el, html`
 				<div>${pad('avail')}: ${''+availWidth} x ${''+availHeight}${
 					availWidth > width || availHeight > height ? '<span class="fake">out of bounds</span>' : ''
 				}</div>
-				<div>${pad('client')}: ${
-					style((''+Math.round(domRectViewport[0])).split(''), (''+clientWidth).split(''))} x ${style((''+Math.round(domRectViewport[1])).split(''), (''+clientHeight).split(''))
-				}${
+				<div>${pad('client')}: 
+				${
+					style((''+Math.round(domRectViewport[0])).split(''), (''+clientWidth).split(''))
+				} x ${''+clientHeight}
+				${
 					clientWidth > width || clientHeight > height ? '<span class="fake">out of bounds</span>' : ''
 				}</div>
-				<div>${pad('inner')}: ${
-					style((''+Math.round(domRectViewport[0])).split(''), (''+innerWidth).split(''))} x ${style((''+Math.round(domRectViewport[1])).split(''), (''+innerHeight).split(''))
-				}${
+				<div>${pad('inner')}: 
+				${
+					style((''+Math.round(domRectViewport[0])).split(''), (''+innerWidth).split(''))
+				} x ${''+innerHeight}
+				${
 					innerWidth > width || innerHeight > height ? '<span class="fake">out of bounds</span>' : ''
 				}</div>
 				<div>${pad('outer')}: ${''+outerWidth} x ${''+outerHeight}${
