@@ -121,6 +121,7 @@ const getVoices = () => new Promise(async resolve => {
 			success = true
 			const voices = data.map(({ name, lang }) => ({ name, lang }))
 			return resolve(
+				voices.find(key => (/lekha/i).test(key.name)) ? 'Mac' :
 				voices.find(key => (/microsoft/i).test(key.name)) ? 'Windows' :
 				voices.find(key => (/chrome os/i).test(key.name)) ? 'Chrome OS' :
 				voices.find(key => (/android/i).test(key.name)) ? 'Android' : undefined
@@ -306,10 +307,13 @@ const {
 	maxTouchPoints
 } = navigator
 const res = getUserAgentPlatform({ userAgent, excludeBuild: true }) || {}
+const system = getOS()
 
 const voiceSystem = await getVoices()
-const system = getOS()
-const voiceSystemLie = voiceSystem && (voiceSystem != system)
+const voiceSystemLie = voiceSystem && (
+	(/mac|ios/i.test(res.core) && voiceSystem != 'Mac') ||
+	voiceSystem != system
+)
 
 const testMobile = (n, system, limit = 8) => n > limit && system && /Windows Phone|Android|iPad|iPhone|iPod|iOS/.test(system)
 const memoryLie = testMobile(deviceMemory, system)
@@ -404,7 +408,7 @@ patch(document.getElementById('fingerprint-data'), html`
 			}
 			${res.platformLie ? `<div class="erratic">${res.core} core does not support ${navigator.platform}</div>` : ''}
 			${res.touchLie ? `<div class="erratic">${res.parsed} on ${platform} does not support touch</div>` : ''}
-			${voiceSystemLie ? `<div class="erratic">${voiceSystem} speechSynthesis does not match ${system} system</div>` : ''}
+			${voiceSystemLie ? `<div class="erratic">${system} system does not support ${voiceSystem} speechSynthesis</div>` : ''}
 			${deviceMemory < 1 ? `<div class="erratic">deviceMemory should not be less than 1</div>` : ''}
 			${memoryLie ? `<div class="erratic">deviceMemory too high for ${system}</div>` : ''}
 			${hardwareConcurrency < 1 ? `<div class="erratic">hardwareConcurrency should not be less than 1</div>` : ''}
