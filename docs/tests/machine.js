@@ -111,8 +111,8 @@ const getVoices = () => new Promise(async resolve => {
 			return resolve()
 		}
 		let success = false
-		const getVoices = async () => {
-			const data = await speechSynthesis.getVoices()
+		const getVoices = () => {
+			const data = speechSynthesis.getVoices()
 			if (!data.length) {
 				return
 			}
@@ -125,7 +125,7 @@ const getVoices = () => new Promise(async resolve => {
 			)
 		}
 		
-		await getVoices()
+		getVoices()
 		speechSynthesis.onvoiceschanged = getVoices
 		setTimeout(() => {
 			return !success ? resolve() : undefined
@@ -298,11 +298,18 @@ const start = performance.now()
 
 const { userAgent, hardwareConcurrency, deviceMemory, maxTouchPoints } = navigator
 const res = getUserAgentPlatform({ userAgent, excludeBuild: true }) || {}
+
 const voiceSystem = await getVoices()
 const system = getOS()
 const voiceSystemLie = voiceSystem && (voiceSystem != system)
+
+const testMobile = (n, system, limit = 8) => n > limit && system && /Windows Phone|Android|iPad|iPhone|iPod|iOS/.test(system)
+const memoryLie = testMobile(deviceMemory, system)
+const coresLie = testMobile(hardwareConcurrency, system)
+
 const gpu = getGPU()
 const gpuLie = gpu.length > 1
+
 console.log(res)
 const perf = performance.now() - start 
 patch(document.getElementById('fingerprint-data'), html`
@@ -363,8 +370,8 @@ patch(document.getElementById('fingerprint-data'), html`
 			<div>${voiceSystemLie ? fail() : pass()}speechSynthesis: ${voiceSystem || 'unknown'}</div>
 			<div class="group">
 				<div>${res.macTouchLie ? fail() : pass()}maxTouchPoints: ${''+maxTouchPoints}</div>
-				<div>${deviceMemory === 0 ? fail() : pass()}deviceMemory: ${''+deviceMemory}</div>
-				<div>${hardwareConcurrency === 0 ? fail() : pass()}hardwareConcurrency: ${''+hardwareConcurrency}</div>
+				<div>${deviceMemory < 1 || memoryLie ? fail() : pass()}deviceMemory: ${''+deviceMemory}</div>
+				<div>${hardwareConcurrency < 1 || coresLie ? fail() : pass()}hardwareConcurrency: ${''+hardwareConcurrency}</div>
 				<div>${gpuLie ? fail() : pass()}gpu: ${
 					gpuLie ?
 					`<div class=group>- ${''+gpu.join('<br>- ')}</div></div>` :
@@ -378,19 +385,24 @@ patch(document.getElementById('fingerprint-data'), html`
 					!res.macTouchLie &&
 					!res.platformLie &&
 					!voiceSystemLie &&
-					deviceMemory !== 0 &&
-					hardwareConcurrency !== 0 &&
+					deviceMemory > 1 &&
+					!memoryLie &&
+					hardwareConcurrency > 1 &&
+					!coresLie &&
 					!gpuLie
 
 				) ? 
 				`<span class="pass">&#10004; passed</span>` : ''
 			}
 			${res.platformLie ? `<div class="erratic">${res.core} core does not support ${navigator.platform}</div>` : ''}
-			${res.macTouchLie ? `<div class="erratic">Macs do not support touch</div>` : ''}
+			${res.macTouchLie ? `<div class="erratic">Mac does not support touch</div>` : ''}
 			${voiceSystemLie ? `<div class="erratic">${voiceSystem} speechSynthesis does not match ${system} system</div>` : ''}
-			${deviceMemory === 0 ? `<div class="erratic">deviceMemory should not be 0</div>` : ''}
-			${hardwareConcurrency === 0 ? `<div class="erratic">hardwareConcurrency should not be 0</div>` : ''}
+			${deviceMemory < 1 ? `<div class="erratic">deviceMemory should not be less than 1</div>` : ''}
+			${memoryLie ? `<div class="erratic">deviceMemory too high for ${system}</div>` : ''}
+			${hardwareConcurrency < 1 ? `<div class="erratic">hardwareConcurrency should not be less than 1</div>` : ''}
 			${gpuLie ? `<div class="erratic">gpus mismatch</div>` : ''}
+			${coresLie? `<div class="erratic">hardwareConcurrency too high for ${system}</div>` : ''}
+
 		</div>
 	</div>
 `)
