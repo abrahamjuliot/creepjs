@@ -321,6 +321,13 @@ const coresLie = testMobile(hardwareConcurrency, system)
 
 const gpu = getGPU()
 const gpuLie = gpu.length > 1
+const gpuString = ''+gpu[0]
+const iosGPULie = (
+	!gpuLie &&
+	res.core == 'iOS' &&
+	!/apple/i.test(gpuString) &&
+	!/gpu/i.test(gpuString)
+)
 
 console.log(res)
 const perf = performance.now() - start 
@@ -384,7 +391,7 @@ patch(document.getElementById('fingerprint-data'), html`
 				<div>${res.touchLie ? fail() : pass()}maxTouchPoints: ${''+maxTouchPoints}</div>
 				<div>${deviceMemory < 1 || memoryLie ? fail() : pass()}deviceMemory: ${''+deviceMemory}</div>
 				<div>${hardwareConcurrency < 1 || coresLie ? fail() : pass()}hardwareConcurrency: ${''+hardwareConcurrency}</div>
-				<div>${gpuLie ? fail() : pass()}gpu: ${
+				<div>${gpuLie || iosGPULie ? fail() : pass()}gpu: ${
 					gpuLie ?
 					`<div class=group>- ${''+gpu.join('<br>- ')}</div></div>` :
 					(gpu[0] || 'undefined')
@@ -401,7 +408,8 @@ patch(document.getElementById('fingerprint-data'), html`
 					!memoryLie &&
 					hardwareConcurrency > 1 &&
 					!coresLie &&
-					!gpuLie
+					!gpuLie &&
+					!iosGPULie
 
 				) ? 
 				`<span class="pass">&#10004; passed</span>` : ''
@@ -412,8 +420,9 @@ patch(document.getElementById('fingerprint-data'), html`
 			${deviceMemory < 1 ? `<div class="erratic">deviceMemory should not be less than 1</div>` : ''}
 			${memoryLie ? `<div class="erratic">deviceMemory too high for ${system}</div>` : ''}
 			${hardwareConcurrency < 1 ? `<div class="erratic">hardwareConcurrency should not be less than 1</div>` : ''}
-			${gpuLie ? `<div class="erratic">gpus mismatch</div>` : ''}
 			${coresLie? `<div class="erratic">hardwareConcurrency too high for ${system}</div>` : ''}
+			${gpuLie ? `<div class="erratic">gpus mismatch</div>` : ''}
+			${iosGPULie ? `<div class="erratic">${res.core} core does not support ${gpu[0] || 'undefined'} gpu</div>` : ''}
 
 		</div>
 	</div>
