@@ -96,9 +96,11 @@ const getOSLie = () => {
 	return {
 		core: userAgentOS,
 		platformLie: userAgentOS != platformOS || invalidWindows64bitCPU,
-		macTouchLie: (
+		touchLie: (
 			!!maxTouchPoints && (
-				(/mac/ig.test(userAgent) && !/like mac/ig.test(userAgent)) || /mac/ig.test(platform)
+				/NT\s(6.0|5.(0|1|2)|4.0)/ig.test(userAgent) ||
+				(/mac/ig.test(userAgent) && !/like mac/ig.test(userAgent)) ||
+				/mac|win16/ig.test(platform)
 			)
 			// note: touch can be disabled on Android, iOS, and emulators
 		)
@@ -163,11 +165,11 @@ const getUserAgentPlatform = ({ userAgent, excludeBuild = true }) => {
 	if (!userAgent) {
 		return
 	}
-	const { platformLie, macTouchLie, core } = getOSLie({userAgent})
+	const { platformLie, touchLie, core } = getOSLie({userAgent})
 	const ua = {
 		core,
 		platformLie,
-		macTouchLie,
+		touchLie,
 		trimmed: userAgent.trim().replace(/\s{2,}/, ' ')
 	}
 	
@@ -296,7 +298,13 @@ const getGPU = () => {
 
 const start = performance.now()
 
-const { userAgent, hardwareConcurrency, deviceMemory, maxTouchPoints } = navigator
+const {
+	userAgent,
+	platform,
+	hardwareConcurrency,
+	deviceMemory,
+	maxTouchPoints
+} = navigator
 const res = getUserAgentPlatform({ userAgent, excludeBuild: true }) || {}
 
 const voiceSystem = await getVoices()
@@ -365,11 +373,11 @@ patch(document.getElementById('fingerprint-data'), html`
 			<div>${!res.core ? fail() : pass()}core: ${!res.core ? 'unknown' : res.core}</div>
 			<div>${!system ? fail() : pass()}system: ${!system ? 'unknown' : system}</div>
 			<div>${!res.parsed ? fail() : pass()}device: ${!res.parsed ? 'unknown' : res.parsed}</div>
-			<div>${res.platformLie ? fail() : pass()}platform: ${navigator.platform}</div>
+			<div>${res.platformLie ? fail() : pass()}platform: ${platform}</div>
 			
 			<div>${voiceSystemLie ? fail() : pass()}speechSynthesis: ${voiceSystem || 'unknown'}</div>
 			<div class="group">
-				<div>${res.macTouchLie ? fail() : pass()}maxTouchPoints: ${''+maxTouchPoints}</div>
+				<div>${res.touchLie ? fail() : pass()}maxTouchPoints: ${''+maxTouchPoints}</div>
 				<div>${deviceMemory < 1 || memoryLie ? fail() : pass()}deviceMemory: ${''+deviceMemory}</div>
 				<div>${hardwareConcurrency < 1 || coresLie ? fail() : pass()}hardwareConcurrency: ${''+hardwareConcurrency}</div>
 				<div>${gpuLie ? fail() : pass()}gpu: ${
@@ -382,7 +390,7 @@ patch(document.getElementById('fingerprint-data'), html`
 		<div>
 			${
 				JSON.stringify(res) != '{}' && (
-					!res.macTouchLie &&
+					!res.touchLie &&
 					!res.platformLie &&
 					!voiceSystemLie &&
 					deviceMemory > 1 &&
@@ -395,7 +403,7 @@ patch(document.getElementById('fingerprint-data'), html`
 				`<span class="pass">&#10004; passed</span>` : ''
 			}
 			${res.platformLie ? `<div class="erratic">${res.core} core does not support ${navigator.platform}</div>` : ''}
-			${res.macTouchLie ? `<div class="erratic">Mac does not support touch</div>` : ''}
+			${res.touchLie ? `<div class="erratic">${res.parsed} on ${platform} does not support touch</div>` : ''}
 			${voiceSystemLie ? `<div class="erratic">${voiceSystem} speechSynthesis does not match ${system} system</div>` : ''}
 			${deviceMemory < 1 ? `<div class="erratic">deviceMemory should not be less than 1</div>` : ''}
 			${memoryLie ? `<div class="erratic">deviceMemory too high for ${system}</div>` : ''}
