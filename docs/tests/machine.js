@@ -302,12 +302,10 @@ const start = performance.now()
 const {
 	userAgent,
 	platform,
-	//hardwareConcurrency,
-	//deviceMemory,
+	hardwareConcurrency,
+	deviceMemory,
 	maxTouchPoints
 } = navigator
-const hardwareConcurrency = 9,
-	deviceMemory = 9
 const res = getUserAgentPlatform({ userAgent, excludeBuild: true }) || {}
 const system = getOS()
 
