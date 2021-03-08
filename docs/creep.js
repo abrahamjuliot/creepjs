@@ -5152,34 +5152,43 @@
 		// session
 		const computeSession = () => {
 			const data = {
-				revisedKeys: []
+				revisedKeys: [],
+				initial: undefined,
+				loads: undefined
 			};
-			const currentFingerprint = Object.keys(fp)
-			.reduce((acc, key) => {
-				if (!fp[key]) {
+			try {
+				
+				const currentFingerprint = Object.keys(fp)
+				.reduce((acc, key) => {
+					if (!fp[key]) {
+						return acc
+					}
+					acc[key] = fp[key].$hash;
 					return acc
+				}, {});
+				const initialFingerprint = JSON.parse(sessionStorage.getItem('initialFingerprint'));
+				if (initialFingerprint) {
+					data.initial = hashMini(initialFingerprint);
+					data.loads = 1+(+sessionStorage.getItem('loads'));
+					sessionStorage.setItem('loads', data.loads);
+					const revisedKeys = Object.keys(currentFingerprint)
+						.filter(key => currentFingerprint[key] != initialFingerprint[key]);
+					if (revisedKeys.length) {
+						data.revisedKeys = revisedKeys;
+					}
 				}
-				acc[key] = fp[key].$hash;
-				return acc
-			}, {});
-			const initialFingerprint = JSON.parse(sessionStorage.getItem('initialFingerprint'));
-			if (initialFingerprint) {
-				data.initial = hashMini(initialFingerprint);
-				data.loads = 1+(+sessionStorage.getItem('loads'));
-				sessionStorage.setItem('loads', data.loads);
-				const revisedKeys = Object.keys(currentFingerprint)
-					.filter(key => currentFingerprint[key] != initialFingerprint[key]);
-				if (revisedKeys.length) {
-					data.revisedKeys = revisedKeys;
+				else {
+					sessionStorage.setItem('initialFingerprint', JSON.stringify(currentFingerprint));
+					sessionStorage.setItem('loads', 1);
+					data.initial = hashMini(currentFingerprint);
+					data.loads = 1;
 				}
+				return data
 			}
-			else {
-				sessionStorage.setItem('initialFingerprint', JSON.stringify(currentFingerprint));
-				sessionStorage.setItem('loads', 1);
-				data.initial = hashMini(currentFingerprint);
-				data.loads = 1;
+			catch (error) {
+				console.error(error);
+				return data
 			}
-			return data
 		};
 		
 		// patch dom
