@@ -42,47 +42,13 @@ const getWorkerData = async () => {
 		const now = +new Date(dateStringUTC)
 		return +(((utc - now)/60000).toFixed(0))
 	}
-	const getTimezoneOffsetSeasons = year => {
-		const minute = 60000
-		const winter = new Date(`1/1/${year}`)
-		const spring = new Date(`4/1/${year}`)
-		const summer = new Date(`7/1/${year}`)
-		const fall = new Date(`10/1/${year}`)
-		const winterUTCTime = +new Date(`${year}-01-01`)
-		const springUTCTime = +new Date(`${year}-04-01`)
-		const summerUTCTime = +new Date(`${year}-07-01`)
-		const fallUTCTime = +new Date(`${year}-10-01`)
-		const seasons = [
-			(+winter - winterUTCTime) / minute,
-			(+spring - springUTCTime) / minute,
-			(+summer - summerUTCTime) / minute,
-			(+fall - fallUTCTime) / minute
-		]
-		return seasons
-	}
-
-	const timezoneOffsetUniqueYearHistory = { }
-	// unique years based on work by https://arkenfox.github.io/TZP
-	const uniqueYears = [1879, 1884, 1894, 1900, 1921, 1952, 1957, 1976, 2018]
-	uniqueYears.forEach(year => {
-		return (timezoneOffsetUniqueYearHistory[year] = getTimezoneOffsetSeasons(year))
-	})
 
 	const timezoneOffset = computeTimezoneOffset()
 	const timezoneLocation = Intl.DateTimeFormat().resolvedOptions().timeZone
 	const { hardwareConcurrency, language, platform, userAgent, deviceMemory } = navigator
-	const jsEngine = {
-		[-3.3537128705376014]: 'V8',
-		[-3.353712870537601]: 'SpiderMonkey',
-		[-3.353712870537602]: 'JavaScriptCore'
-	}
-	const mathResult = Math.tan(10*Math.LOG2E)
-	const jsImplementation = jsEngine[mathResult] || 'unknown'
 
 	return {
-		jsImplementation,
 		timezoneOffset,
-		timezoneHistoryLocation: timezoneOffsetUniqueYearHistory,
 		timezoneLocation,
 		deviceMemory,
 		hardwareConcurrency,
