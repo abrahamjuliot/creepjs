@@ -655,7 +655,13 @@ input[type="radio"] {
 	#fingerprint-data .fingerprint-header-container {
 		background: var(--dark-sky-transparent);
 	}
-
+	#signature span {
+		color: #d0b0f9;
+		background: #f9f9f90d;
+	}
+	#signature input[type="text"], #signature input[type="submit"] {
+		color: var(--white-purple);
+	}
 }
 
 /* images */
