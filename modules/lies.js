@@ -443,8 +443,10 @@ const getPrototypeLies = iframeWindow => {
 									name != 'name' &&
 									name != 'length' &&
 									name[0] !== name[0].toUpperCase()) {
+									const lie = [`failed descriptor.value undefined`]
+									documentLie(apiName, lie)
 									return (
-										props[apiName] = [`y: descriptor.value should remain undefined`]
+										props[apiName] = lie
 									)
 								}
                             } catch (error) {}
