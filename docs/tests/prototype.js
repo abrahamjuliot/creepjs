@@ -388,8 +388,10 @@
 					}
 
 					const interfaceObject = !!obj.prototype ? obj.prototype : obj
-					Object.getOwnPropertyNames(interfaceObject)
-						.forEach(name => {
+					;[...new Set([
+						...Object.getOwnPropertyNames(interfaceObject),
+						...Object.keys(interfaceObject) // backup
+					])].forEach(name => {
 							const skip = (
 								name == 'constructor' ||
 								(target.length && !new Set(target).has(name)) ||
@@ -532,9 +534,7 @@
 	//lieList.includes('HTMLCanvasElement.toDataURL') // returns true or false
 	//lieDetail['HTMLCanvasElement.toDataURL'] // returns the list of lies
 
-	//console.log(propsSearched)
-	//console.log(lieList)
-	//console.log(lieDetail)
+	console.log(lieDetail)
 
 	const [
 		searchedHash,

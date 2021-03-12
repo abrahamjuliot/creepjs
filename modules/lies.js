@@ -408,7 +408,10 @@ const getPrototypeLies = iframeWindow => {
 
                 const interfaceObject = !!obj.prototype ? obj.prototype : obj
                 Object.getOwnPropertyNames(interfaceObject)
-                    .forEach(name => {
+				;[...new Set([
+					...Object.getOwnPropertyNames(interfaceObject),
+					...Object.keys(interfaceObject) // backup
+				])].forEach(name => {
                         const skip = (
 							name == 'constructor' ||
 							(target.length && !new Set(target).has(name)) ||
