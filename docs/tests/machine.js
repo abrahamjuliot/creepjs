@@ -309,15 +309,19 @@ const {
 const res = getUserAgentPlatform({ userAgent, excludeBuild: true }) || {}
 const system = getOS()
 
+// test voice lies
 const voiceSystem = await getVoices()
 const voiceSystemLie = voiceSystem && (
 	(/Mac|iOS/.test(res.core) && voiceSystem != 'Mac') ||
 	(!/Mac|iOS/.test(res.core) && voiceSystem != system)
 )
 
+// test mobile lies
 const testMobile = (n, system, limit = 8) => n > limit && system && /Windows Phone|Android/.test(system)
 const memoryLie = testMobile(deviceMemory, system)
 const coresLie = testMobile(hardwareConcurrency, system)
+
+// test iOS lies
 const iosMemoryLie = (
 	res.core == 'iOS' &&
 	typeof deviceMemory != 'undefined'
@@ -327,6 +331,7 @@ const iosCoresLie = (
 	typeof hardwareConcurrency != 'undefined'
 )
 
+// test gpu
 const gpu = getGPU()
 const gpuLie = gpu.length > 1
 const gpuString = ''+gpu[0]
@@ -336,6 +341,21 @@ const iosGPULie = (
 	!/apple/i.test(gpuString) &&
 	!/gpu/i.test(gpuString)
 )
+
+// test css touch
+patch(document.getElementById('fingerprint-data'), html`
+	<div id="fingerprint-data">
+		<style>
+			@media (any-pointer: fine) {body {--any-pointer: fine}}
+			@media (any-pointer: coarse) {body {--any-pointer: coarse}}
+			@media (any-pointer: none) {body {--any-pointer: none}}
+		</style>
+	</div>
+`)
+const style = getComputedStyle(document.body)
+const cssTouch = style.getPropertyValue('--any-pointer').trim()
+const cssTouchLie = cssTouch != 'coarse' && maxTouchPoints > 0
+const anyPointerLie = cssTouch == 'coarse' && maxTouchPoints == 0
 
 console.log(res)
 const perf = performance.now() - start 
@@ -396,7 +416,9 @@ patch(document.getElementById('fingerprint-data'), html`
 			
 			<div>${voiceSystemLie ? fail() : pass()}speechSynthesis: ${voiceSystem || 'unknown'}</div>
 			<div class="group">
-				<div>${res.touchLie ? fail() : pass()}maxTouchPoints: ${''+maxTouchPoints}</div>
+				<div>${res.touchLie || cssTouchLie ? fail() : pass()}maxTouchPoints: ${''+maxTouchPoints}</div>
+				<div>${anyPointerLie ? fail() : pass()}any-pointer: ${''+cssTouch}</div>
+
 				<div>${deviceMemory < 1 || memoryLie || iosMemoryLie ? fail() : pass()}deviceMemory: ${''+deviceMemory}</div>
 				<div>${hardwareConcurrency < 1 || coresLie || iosCoresLie ? fail() : pass()}hardwareConcurrency: ${''+hardwareConcurrency}</div>
 				<div>${gpuLie || iosGPULie ? fail() : pass()}gpu: ${
@@ -410,6 +432,8 @@ patch(document.getElementById('fingerprint-data'), html`
 			${
 				JSON.stringify(res) != '{}' && (
 					!res.touchLie &&
+					!cssTouchLie &&
+					!anyPointerLie &&
 					!res.platformLie &&
 					!voiceSystemLie &&
 					deviceMemory > 1 &&
@@ -426,6 +450,8 @@ patch(document.getElementById('fingerprint-data'), html`
 			}
 			${res.platformLie ? `<div class="erratic">${res.core} core does not support ${navigator.platform}</div>` : ''}
 			${res.touchLie ? `<div class="erratic">${res.parsed} on ${platform} does not support touch</div>` : ''}
+			${cssTouchLie ? `<div class="erratic">maxTouchPoints ${maxTouchPoints} is not consistent with any-pointer ${cssTouch}</div>` : ''}
+			${anyPointerLie ? `<div class="erratic">any-pointer ${cssTouch} is not consistent with maxTouchPoints ${maxTouchPoints} </div>` : ''}
 			${voiceSystemLie ? `<div class="erratic">${system} system does not support ${voiceSystem} speechSynthesis</div>` : ''}
 			${deviceMemory < 1 ? `<div class="erratic">deviceMemory should not be less than 1</div>` : ''}
 			${memoryLie ? `<div class="erratic">deviceMemory too high for ${system}</div>` : ''}
