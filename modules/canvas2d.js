@@ -1,6 +1,5 @@
 // inspired by https://arkenfox.github.io/TZP/tests/canvasnoise.html
 const getPixelMods = () => {
-	let rgba, pixels
 	const pattern1 = []
 	const pattern2 = []
 	const len = 20 // canvas dimensions
@@ -63,8 +62,8 @@ const getPixelMods = () => {
 			}
 		})
 
-		rgba = rgbaChannels.size ? [...rgbaChannels].sort().join(', ') : undefined
-		pixels = patternDiffs.length || undefined
+		const rgba = rgbaChannels.size ? [...rgbaChannels].sort().join(', ') : undefined
+		const pixels = patternDiffs.length || undefined
 		return { rgba, pixels }
 	}
 	catch (error) {
