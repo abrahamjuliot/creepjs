@@ -267,7 +267,8 @@ const imports = {
 				plugins: isBrave ? distrust : fp.navigator.plugins,
 				platform: fp.navigator.platform,
 				system: fp.navigator.system,
-				vendor: fp.navigator.vendor
+				vendor: fp.navigator.vendor,
+				lied: fp.navigator.lied
 			}
 		),
 		screen: ( 
@@ -275,7 +276,8 @@ const imports = {
 				height: fp.screen.height,
 				width: fp.screen.width,
 				pixelDepth: fp.screen.pixelDepth,
-				colorDepth: fp.screen.colorDepth
+				colorDepth: fp.screen.colorDepth,
+				lied: fp.screen.lied
 			}
 		),
 		workerScope: fp.workerScope ? {
@@ -307,8 +309,10 @@ const imports = {
 		} : undefined,
 		media: fp.media,
 		canvas2d: ( 
-			!fp.canvas2d || fp.canvas2d.lied ? undefined : 
-			fp.canvas2d
+			!fp.canvas2d || fp.canvas2d.lied ? undefined : {
+				dataURI: fp.canvas2d.dataURI,
+				lied: fp.canvas2d.lied
+			} 
 		),
 		canvasWebgl: ( 
 			!fp.canvasWebgl || fp.canvasWebgl.lied ? undefined : 
@@ -334,7 +338,8 @@ const imports = {
 		maths: !fp.maths || fp.maths.lied ? undefined : fp.maths,
 		consoleErrors: fp.consoleErrors,
 		timezone: !fp.timezone || fp.timezone.lied ? undefined : {
-			locationMeasured: fp.timezone.locationMeasured
+			locationMeasured: fp.timezone.locationMeasured,
+			lied: fp.timezone.lied
 		},
 		clientRects: !fp.clientRects || fp.clientRects.lied ? undefined : fp.clientRects,
 		offlineAudioContext: (
@@ -857,12 +862,21 @@ const imports = {
 		${!fp.canvas2d ?
 			`<div class="col-six">
 				<strong>Canvas 2d</strong> <span>${note.blocked}</span>
+				<div>0% rgba noise</div>
 			</div>` :
 		(() => {
-			const { canvas2d: { lied, $hash } } = fp
+			const { canvas2d: { lied, mods, $hash } } = fp
+			const { pixels, rgba } = mods || {}
+			const modPercent = pixels ? Math.round((pixels/400)*100) : 0
 			return `
 			<div class="col-six">
+				<style>
+					.rgba-noise-rating {
+						background: linear-gradient(90deg, var(${modPercent < 50 ? '--grey-glass' : '--error'}) ${modPercent}%, #fff0 ${modPercent}%, #fff0 100%);
+					}
+				</style>
 				<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+				<div class="rgba-noise-rating">${modPercent}% rgba noise${rgba ? ` (${rgba})` : ''}</div>
 			</div>
 			`
 		})()}
