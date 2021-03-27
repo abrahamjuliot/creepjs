@@ -311,7 +311,7 @@ export const getNavigator = async (imports, workerScope) => {
 				return data
 			}, 'highEntropyValues failed'),
 			keyboard: await attempt(async () => {
-				if (!('keyboard' in navigator)) {
+				if (!('keyboard' in navigator && navigator.keyboard)) {
 					return
 				}
 				const keys = [

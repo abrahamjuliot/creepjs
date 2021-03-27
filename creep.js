@@ -239,7 +239,7 @@ const imports = {
 	}
 	// fingerprint and render
 	const { fingerprint: fp, timeEnd } = await fingerprint().catch(error => console.error(error))
-
+	
 	console.log('%c✔ loose fingerprint passed', 'color:#4cca9f')
 
 	console.groupCollapsed('Loose Fingerprint')
