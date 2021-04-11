@@ -38,15 +38,15 @@ Tests are focused on:
 - data retention: auto deletes 30 days after last visit
 - visit tracking: limited to data retention and new feature scaling
 
-### Signatures
-- you may optionally sign your fingerprint with 4-64 characters
-- signatures can be memorable descriptors 
-- in low entropy browsers, a signature can signal to others that the fingerprint is shared
-
 ### New feature scaling
 - scaling should occur no more than once per week
 - new weekly features may render fingerprints anew
 - view deploy [history](https://github.com/abrahamjuliot/creepjs/commits/master/docs/creep.js)
+
+### Signatures
+- you may optionally sign your fingerprint with 4-64 characters
+- signatures can be memorable descriptors 
+- in low entropy browsers, a signature can signal to others that the fingerprint is shared
 
 ## Formulas
 ### Trust Score
