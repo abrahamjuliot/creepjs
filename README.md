@@ -107,3 +107,6 @@ Bots leak unusual behavior and can be denied service.
 - adapts to browsers and distrusts known noise vectors
 - aims to ignore entropy unique to a browser version release
 - gathers compressed and static entropy
+
+---
+Contributions are welcome.
