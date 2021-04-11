@@ -32,12 +32,12 @@ export const getFonts = async (imports, fonts) => {
 		const offscreenCanvas = win.OffscreenCanvas
 		const context = (
 			('OffscreenCanvas' in window) ?
-			new offscreenCanvas(500, 200).getContext('2d') :
-			doc.createElement('canvas').getContext('2d')
+				new offscreenCanvas(500, 200).getContext('2d') :
+				doc.createElement('canvas').getContext('2d')
 		)
 
 		if (!context) {
-			throw new Error(`Context blocked or not supported`) 
+			throw new Error(`Context blocked or not supported`)
 		}
 
 		const baseFonts = ['monospace', 'sans-serif', 'serif']
@@ -48,12 +48,12 @@ export const getFonts = async (imports, fonts) => {
 
 		const detected = new Set()
 		const base = baseFonts.reduce((acc, font) => {
-			acc[font] = getTextMetrics(context, font) 
+			acc[font] = getTextMetrics(context, font)
 			return acc
 		}, {})
 		families.forEach(family => {
 			const basefont = /, (.+)/.exec(family)[1]
-			const dimensions = getTextMetrics(context, family) 
+			const dimensions = getTextMetrics(context, family)
 			const font = /\'(.+)\'/.exec(family)[1]
 			const support = (
 				dimensions.ascent != base[basefont].ascent ||
@@ -76,7 +76,7 @@ export const getFonts = async (imports, fonts) => {
 			(('OffscreenCanvas' in window) && lieProps['OffscreenCanvasRenderingContext2D.measureText']) ||
 			(!('OffscreenCanvas' in window) && lieProps['CanvasRenderingContext2D.measureText'])
 		)
-		
+
 		logTestResult({ start, test: 'fonts', passed: true })
 		return { fonts: [...detected], lied }
 	} catch (error) {

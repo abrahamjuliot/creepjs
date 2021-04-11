@@ -16,7 +16,7 @@ const getWorkerData = async () => {
 				reader.onloadend = () => resolve(reader.result)
 			})
 		}
-		canvas2d = await getDataURI() 
+		canvas2d = await getDataURI()
 	}
 	catch (error) { }
 	let webglVendor
@@ -33,14 +33,14 @@ const getWorkerData = async () => {
 		const date = new Date().getDate()
 		const month = new Date().getMonth()
 		const year = Date().split` `[3] // current year
-		const format = n => (''+n).length == 1 ? `0${n}` : n
-		const dateString = `${month+1}/${format(date)}/${year}`
-		const dateStringUTC = `${year}-${format(month+1)}-${format(date)}`
+		const format = n => ('' + n).length == 1 ? `0${n}` : n
+		const dateString = `${month + 1}/${format(date)}/${year}`
+		const dateStringUTC = `${year}-${format(month + 1)}-${format(date)}`
 		const utc = Date.parse(
 			new Date(dateString)
 		)
 		const now = +new Date(dateStringUTC)
-		return +(((utc - now)/60000).toFixed(0))
+		return +(((utc - now) / 60000).toFixed(0))
 	}
 
 	const timezoneOffset = computeTimezoneOffset()
@@ -96,6 +96,6 @@ const getServiceWorkerGlobalScope = () => {
 // WorkerGlobalScope
 if (isWorker) {
 	isServiceWorker ? getServiceWorkerGlobalScope() :
-	isSharedWorker ? getSharedWorkerGlobalScope() :
-	getWorkerGlobalScope()
+		isSharedWorker ? getSharedWorkerGlobalScope() :
+			getWorkerGlobalScope()
 }

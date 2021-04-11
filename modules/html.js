@@ -31,7 +31,7 @@ const note = {
 	lied: '<span class="lies">lied</span>'
 }
 const pluralify = len => len > 1 ? 's' : ''
-const count = arr => arr && arr.constructor.name === 'Array' ? ''+(arr.length) : '0'
+const count = arr => arr && arr.constructor.name === 'Array' ? '' + (arr.length) : '0'
 
 // modal component
 const modal = (name, result, linkname = 'details') => {

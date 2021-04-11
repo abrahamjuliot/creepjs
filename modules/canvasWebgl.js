@@ -137,7 +137,7 @@ const pnames = new Set([
 const draw = gl => {
 	//gl.clearColor(0.47, 0.7, 0.78, 1)
 	gl.clear(gl.COLOR_BUFFER_BIT)
-	
+
 	// based on https://github.com/Valve/fingerprintjs2/blob/master/fingerprint2.js
 	const vertexPosBuffer = gl.createBuffer()
 	gl.bindBuffer(gl.ARRAY_BUFFER, vertexPosBuffer)
@@ -225,7 +225,7 @@ export const getCanvasWebgl = async imports => {
 			dragonOfDeath.document.createElement('canvas').toDataURL() != document.createElement('canvas').toDataURL()) {
 			lied = true
 		}
-		
+
 		// create canvas context
 		const win = phantomDarkness ? phantomDarkness : window
 		const doc = win.document
@@ -237,7 +237,7 @@ export const getCanvasWebgl = async imports => {
 			canvas = doc.createElement('canvas')
 			canvas2 = doc.createElement('canvas')
 		}
-	
+
 		const getContext = (canvas, contextType) => {
 			try {
 				if (contextType == 'webgl2') {
@@ -387,24 +387,24 @@ export const getCanvasWebgl = async imports => {
 		}
 
 		// get data
-		const params = {...getParams(gl), ...getUnmasked(gl)}
-		const params2 = {...getParams(gl2), ...getUnmasked(gl2)}
+		const params = { ...getParams(gl), ...getUnmasked(gl) }
+		const params2 = { ...getParams(gl2), ...getUnmasked(gl2) }
 		const mismatch = Object.keys(params2)
-			.filter(key => !!params[key] && ''+params[key] != ''+params2[key])
+			.filter(key => !!params[key] && '' + params[key] != '' + params2[key])
 			.toString()
 			.replace('SHADING_LANGUAGE_VERSION,VERSION', '')
 		if (mismatch) {
 			sendToTrash('webgl/webgl2 mirrored params mismatch', mismatch)
 		}
-		
+
 		const data = {
-			extensions: [...getSupportedExtensions(gl),...getSupportedExtensions(gl2)],
+			extensions: [...getSupportedExtensions(gl), ...getSupportedExtensions(gl2)],
 			pixels: getPixels(gl),
 			pixels2: getPixels(gl2),
 			dataURI: getDataURI('webgl'),
 			dataURI2: getDataURI('webgl2'),
 			parameters: {
-				...{...params, ...params2},
+				...{ ...params, ...params2 },
 				...{
 					antialias: gl.getContextAttributes() ? gl.getContextAttributes().antialias : undefined,
 					MAX_VIEWPORT_DIMS: attempt(() => [...gl.getParameter(gl.MAX_VIEWPORT_DIMS)]),

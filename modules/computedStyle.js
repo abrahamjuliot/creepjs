@@ -1,11 +1,11 @@
-const computeStyle = (type, { require: [ captureError ] }) => {
+const computeStyle = (type, { require: [captureError] }) => {
 	try {
 		// get CSSStyleDeclaration
 		const cssStyleDeclaration = (
 			type == 'getComputedStyle' ? getComputedStyle(document.body) :
-			type == 'HTMLElement.style' ? document.body.style :
-			type == 'CSSRuleList.style' ? document.styleSheets[0].cssRules[0].style :
-			undefined
+				type == 'HTMLElement.style' ? document.body.style :
+					type == 'CSSRuleList.style' ? document.styleSheets[0].cssRules[0].style :
+						undefined
 		)
 		if (!cssStyleDeclaration) {
 			throw new TypeError('invalid argument string')
@@ -46,8 +46,8 @@ const computeStyle = (type, { require: [ captureError ] }) => {
 			const isCapitalizedAlias = isAliasAttribute && firstChar == firstChar.toUpperCase()
 			key = (
 				isPrefixedName ? removeFirstChar(key) :
-				isCapitalizedAlias ? uncapitalize(key) :
-				key
+					isCapitalizedAlias ? uncapitalize(key) :
+						key
 			)
 			// find counterpart in CSSStyleDeclaration object or its prototype chain
 			if (isNamedAttribute) {
@@ -75,8 +75,8 @@ const computeStyle = (type, { require: [ captureError ] }) => {
 				...Object.keys(propertiesInPrototypeChain)
 			])
 		]
-		const interfaceName = (''+proto).match(/\[object (.+)\]/)[1]
-	
+		const interfaceName = ('' + proto).match(/\[object (.+)\]/)[1]
+
 		return { keys, interfaceName }
 	}
 	catch (error) {
@@ -85,7 +85,7 @@ const computeStyle = (type, { require: [ captureError ] }) => {
 	}
 }
 
-const getSystemStyles = (instanceId, { require: [ captureError, parentPhantom ] }) => {
+const getSystemStyles = (instanceId, { require: [captureError, parentPhantom] }) => {
 	try {
 		const colors = [
 			'ActiveBorder',
@@ -187,8 +187,8 @@ export const getCSS = async imports => {
 
 	try {
 		const start = performance.now()
-		const computedStyle = computeStyle('getComputedStyle', { require: [ captureError ] })
-		const system = getSystemStyles(instanceId, { require: [ captureError, parentPhantom ] })
+		const computedStyle = computeStyle('getComputedStyle', { require: [captureError] })
+		const system = getSystemStyles(instanceId, { require: [captureError, parentPhantom] })
 		logTestResult({ start, test: 'computed style', passed: true })
 		return {
 			computedStyle,

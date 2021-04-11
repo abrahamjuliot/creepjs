@@ -1,18 +1,18 @@
-const gcd = (a, b) => b == 0 ? a : gcd(b, a%b)
+const gcd = (a, b) => b == 0 ? a : gcd(b, a % b)
 
 const getAspectRatio = (width, height) => {
 	const r = gcd(width, height)
-	const aspectRatio = `${width/r}/${height/r}`
+	const aspectRatio = `${width / r}/${height / r}`
 	return aspectRatio
 }
 
 const query = ({ body, type, rangeStart, rangeLen }) => {
 	body.innerHTML = `
 		<style>
-			${[...Array(rangeLen)].map((slot,i) => {
-				i += rangeStart
-				return `@media(device-${type}:${i}px){body{--device-${type}:${i};}}`
-			}).join('')}
+			${[...Array(rangeLen)].map((slot, i) => {
+		i += rangeStart
+		return `@media(device-${type}:${i}px){body{--device-${type}:${i};}}`
+	}).join('')}
 		</style>
 	`
 	const style = getComputedStyle(body)
@@ -24,20 +24,20 @@ const getScreenMedia = body => {
 	for (i = 0; i < 10; i++) {
 		let resWidth, resHeight
 		if (!widthMatched) {
-			resWidth = query({ body, type: 'width', rangeStart: i*1000, rangeLen: 1000})
+			resWidth = query({ body, type: 'width', rangeStart: i * 1000, rangeLen: 1000 })
 			if (resWidth) {
 				widthMatched = resWidth
 			}
 		}
 		if (!heightMatched) {
-			resHeight = query({ body, type: 'height', rangeStart: i*1000, rangeLen: 1000})
+			resHeight = query({ body, type: 'height', rangeStart: i * 1000, rangeLen: 1000 })
 			if (resHeight) {
 				heightMatched = resHeight
 			}
 		}
 		if (widthMatched && heightMatched) {
 			break
-		}	
+		}
 	}
 	return { width: +widthMatched, height: +heightMatched }
 }
@@ -47,7 +47,7 @@ const getScreenMatchMedia = win => {
 	for (let i = 0; i < 10; i++) {
 		let resWidth, resHeight
 		if (!widthMatched) {
-			let rangeStart = i*1000
+			let rangeStart = i * 1000
 			const rangeLen = 1000
 			for (let i = 0; i < rangeLen; i++) {
 				if (win.matchMedia(`(device-width:${rangeStart}px)`).matches) {
@@ -61,7 +61,7 @@ const getScreenMatchMedia = win => {
 			}
 		}
 		if (!heightMatched) {
-			let rangeStart = i*1000
+			let rangeStart = i * 1000
 			const rangeLen = 1000
 			for (let i = 0; i < rangeLen; i++) {
 				if (win.matchMedia(`(device-height:${rangeStart}px)`).matches) {
@@ -76,7 +76,7 @@ const getScreenMatchMedia = win => {
 		}
 		if (widthMatched && heightMatched) {
 			break
-		}	
+		}
 	}
 	return { width: widthMatched, height: heightMatched }
 }
@@ -96,50 +96,50 @@ export const getCSSMedia = async imports => {
 	try {
 		const start = performance.now()
 		const win = phantomDarkness.window
-		
+
 		const { body } = win.document
 		const { width, height } = win.screen
-		
+
 		const deviceAspectRatio = getAspectRatio(width, height)
 
 		const matchMediaCSS = {
 			['prefers-reduced-motion']: (
 				win.matchMedia('(prefers-reduced-motion: no-preference)').matches ? 'no-preference' :
-				win.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'reduce' : undefined
+					win.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'reduce' : undefined
 			),
 			['prefers-color-scheme']: (
 				win.matchMedia('(prefers-color-scheme: light)').matches ? 'light' :
-				win.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : undefined
+					win.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : undefined
 			),
 			monochrome: (
 				win.matchMedia('(monochrome)').matches ? 'monochrome' :
-				win.matchMedia('(monochrome: 0)').matches ? 'non-monochrome' : undefined
+					win.matchMedia('(monochrome: 0)').matches ? 'non-monochrome' : undefined
 			),
 			['inverted-colors']: (
 				win.matchMedia('(inverted-colors: inverted)').matches ? 'inverted' :
-				win.matchMedia('(inverted-colors: none)').matches ? 'none' : undefined
+					win.matchMedia('(inverted-colors: none)').matches ? 'none' : undefined
 			),
 			['forced-colors']: (
 				win.matchMedia('(forced-colors: none)').matches ? 'none' :
-				win.matchMedia('(forced-colors: active)').matches ? 'active' : undefined
+					win.matchMedia('(forced-colors: active)').matches ? 'active' : undefined
 			),
 			['any-hover']: (
 				win.matchMedia('(any-hover: hover)').matches ? 'hover' :
-				win.matchMedia('(any-hover: none)').matches ? 'none' : undefined
+					win.matchMedia('(any-hover: none)').matches ? 'none' : undefined
 			),
 			hover: (
 				win.matchMedia('(hover: hover)').matches ? 'hover' :
-				win.matchMedia('(hover: none)').matches ? 'none' : undefined
+					win.matchMedia('(hover: none)').matches ? 'none' : undefined
 			),
 			['any-pointer']: (
 				win.matchMedia('(any-pointer: fine)').matches ? 'fine' :
-				win.matchMedia('(any-pointer: coarse)').matches ? 'coarse' :
-				win.matchMedia('(any-pointer: none)').matches ? 'none' : undefined
+					win.matchMedia('(any-pointer: coarse)').matches ? 'coarse' :
+						win.matchMedia('(any-pointer: none)').matches ? 'none' : undefined
 			),
 			pointer: (
 				win.matchMedia('(pointer: fine)').matches ? 'fine' :
-				win.matchMedia('(pointer: coarse)').matches ? 'coarse' :
-				win.matchMedia('(pointer: none)').matches ? 'none' : undefined
+					win.matchMedia('(pointer: coarse)').matches ? 'coarse' :
+						win.matchMedia('(pointer: none)').matches ? 'none' : undefined
 			),
 			['device-aspect-ratio']: (
 				win.matchMedia(`(device-aspect-ratio: ${deviceAspectRatio})`).matches ? deviceAspectRatio : undefined
@@ -149,18 +149,18 @@ export const getCSSMedia = async imports => {
 			),
 			['display-mode']: (
 				win.matchMedia('(display-mode: fullscreen)').matches ? 'fullscreen' :
-				win.matchMedia('(display-mode: standalone)').matches ? 'standalone' :
-				win.matchMedia('(display-mode: minimal-ui)').matches ? 'minimal-ui' :
-				win.matchMedia('(display-mode: browser)').matches ? 'browser' : undefined
+					win.matchMedia('(display-mode: standalone)').matches ? 'standalone' :
+						win.matchMedia('(display-mode: minimal-ui)').matches ? 'minimal-ui' :
+							win.matchMedia('(display-mode: browser)').matches ? 'browser' : undefined
 			),
 			['color-gamut']: (
 				win.matchMedia('(color-gamut: srgb)').matches ? 'srgb' :
-				win.matchMedia('(color-gamut: p3)').matches ? 'p3' :
-				win.matchMedia('(color-gamut: rec2020)').matches ? 'rec2020' : undefined
+					win.matchMedia('(color-gamut: p3)').matches ? 'p3' :
+						win.matchMedia('(color-gamut: rec2020)').matches ? 'rec2020' : undefined
 			),
 			orientation: (
 				win.matchMedia('(orientation: landscape)').matches ? 'landscape' :
-				win.matchMedia('(orientation: portrait)').matches ? 'portrait' : undefined
+					win.matchMedia('(orientation: portrait)').matches ? 'portrait' : undefined
 			)
 		}
 
@@ -276,7 +276,7 @@ export const getCSSMedia = async imports => {
 		if (!screenQuery.width || !screenQuery.height) {
 			screenQuery = getScreenMedia(body)
 		}
-		
+
 		logTestResult({ start, test: 'css media', passed: true })
 		return { importCSS, mediaCSS, matchMediaCSS, screenQuery }
 	}

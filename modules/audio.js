@@ -1,5 +1,5 @@
 export const getOfflineAudioContext = async imports => {
-	
+
 	const {
 		require: {
 			captureError,
@@ -13,7 +13,7 @@ export const getOfflineAudioContext = async imports => {
 		}
 	} = imports
 
-	
+
 	try {
 		await new Promise(setTimeout)
 		const start = performance.now()
@@ -27,7 +27,7 @@ export const getOfflineAudioContext = async imports => {
 		const channelDataLie = lieProps['AudioBuffer.getChannelData']
 		const copyFromChannelLie = lieProps['AudioBuffer.copyFromChannel']
 		let lied = (channelDataLie || copyFromChannelLie) || false
-		
+
 		const context = new audioContext(1, 44100, 44100)
 		const analyser = context.createAnalyser()
 		const oscillator = context.createOscillator()
@@ -100,12 +100,12 @@ export const getOfflineAudioContext = async imports => {
 					const copy = new Float32Array(44100)
 					caniuse(() => event.renderedBuffer.copyFromChannel(copy, 0))
 					const bins = event.renderedBuffer.getChannelData(0)
-					
+
 					const copySample = copy ? [...copy].slice(4500, 4600) : [sendToTrash('invalid Audio Sample Copy', null)]
 					const binsSample = bins ? [...bins].slice(4500, 4600) : [sendToTrash('invalid Audio Sample', null)]
-					
+
 					// detect lie
-					const matching = ''+binsSample == ''+copySample
+					const matching = '' + binsSample == '' + copySample
 					const copyFromChannelSupported = ('copyFromChannel' in AudioBuffer.prototype)
 					if (copyFromChannelSupported && !matching) {
 						lied = true
@@ -115,7 +115,7 @@ export const getOfflineAudioContext = async imports => {
 
 					dynamicsCompressor.disconnect()
 					oscillator.disconnect()
-					
+
 					logTestResult({ start, test: 'audio', passed: true })
 					return resolve({
 						binsSample,
