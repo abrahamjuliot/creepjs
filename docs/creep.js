@@ -221,7 +221,7 @@
 		blocked: '<span class="blocked">blocked</span>',
 		lied: '<span class="lies">lied</span>'
 	};
-	const count = arr => arr && arr.constructor.name === 'Array' ? ''+(arr.length) : '0';
+	const count = arr => arr && arr.constructor.name === 'Array' ? '' + (arr.length) : '0';
 
 	// modal component
 	const modal = (name, result, linkname = 'details') => {
@@ -281,12 +281,12 @@
 
 	const createErrorsCaptured = () => {
 		const errors = [];
-	  	return {
+		return {
 			getErrors: () => errors,
 			captureError: (error, customMessage = null) => {
 				const type = {
 					Error: true,
-					EvalError: true, 
+					EvalError: true,
 					InternalError: true,
 					RangeError: true,
 					ReferenceError: true,
@@ -301,8 +301,8 @@
 				const { name, message } = error;
 				const trustedMessage = (
 					!hasInnerSpace(message) ? undefined :
-					!customMessage ? message :
-					`${message} [${customMessage}]`
+						!customMessage ? message :
+							`${message} [${customMessage}]`
 				);
 				const trustedName = type[name] ? name : undefined;
 				errors.push(
@@ -345,8 +345,8 @@
 		}
 		return (
 			method && args.length ? chain.apply(api, args) :
-			method && !args.length ? chain.apply(api) :
-			chain
+				method && !args.length ? chain.apply(api) :
+					chain
 		)
 	};
 
@@ -876,8 +876,10 @@
 	                }
 
 	                const interfaceObject = !!obj.prototype ? obj.prototype : obj;
-	                Object.getOwnPropertyNames(interfaceObject)
-	                    .forEach(name => {
+	[...new Set([
+						...Object.getOwnPropertyNames(interfaceObject),
+						...Object.keys(interfaceObject) // backup
+					])].sort().forEach(name => {
 	                        const skip = (
 								name == 'constructor' ||
 								(target.length && !new Set(target).has(name)) ||
@@ -912,8 +914,10 @@
 										name != 'name' &&
 										name != 'length' &&
 										name[0] !== name[0].toUpperCase()) {
+										const lie = [`failed descriptor.value undefined`];
+										documentLie(apiName, lie);
 										return (
-											props[apiName] = [`y: descriptor.value should remain undefined`]
+											props[apiName] = lie
 										)
 									}
 	                            } catch (error) {}
@@ -1331,7 +1335,7 @@
 	};
 
 	const getOfflineAudioContext = async imports => {
-		
+
 		const {
 			require: {
 				captureError,
@@ -1345,7 +1349,7 @@
 			}
 		} = imports;
 
-		
+
 		try {
 			await new Promise(setTimeout);
 			const start = performance.now();
@@ -1359,7 +1363,7 @@
 			const channelDataLie = lieProps['AudioBuffer.getChannelData'];
 			const copyFromChannelLie = lieProps['AudioBuffer.copyFromChannel'];
 			let lied = (channelDataLie || copyFromChannelLie) || false;
-			
+
 			const context = new audioContext(1, 44100, 44100);
 			const analyser = context.createAnalyser();
 			const oscillator = context.createOscillator();
@@ -1432,12 +1436,12 @@
 						const copy = new Float32Array(44100);
 						caniuse(() => event.renderedBuffer.copyFromChannel(copy, 0));
 						const bins = event.renderedBuffer.getChannelData(0);
-						
+
 						const copySample = copy ? [...copy].slice(4500, 4600) : [sendToTrash('invalid Audio Sample Copy', null)];
 						const binsSample = bins ? [...bins].slice(4500, 4600) : [sendToTrash('invalid Audio Sample', null)];
-						
+
 						// detect lie
-						const matching = ''+binsSample == ''+copySample;
+						const matching = '' + binsSample == '' + copySample;
 						const copyFromChannelSupported = ('copyFromChannel' in AudioBuffer.prototype);
 						if (copyFromChannelSupported && !matching) {
 							lied = true;
@@ -1447,7 +1451,7 @@
 
 						dynamicsCompressor.disconnect();
 						oscillator.disconnect();
-						
+
 						logTestResult({ start, test: 'audio', passed: true });
 						return resolve({
 							binsSample,
@@ -1474,8 +1478,82 @@
 
 	};
 
+	// inspired by https://arkenfox.github.io/TZP/tests/canvasnoise.html
+	const getPixelMods = () => {
+		const pattern1 = [];
+		const pattern2 = [];
+		const len = 20; // canvas dimensions
+		const alpha = 255;
+
+		try {
+			// create 2 canvas contexts
+			const canvas1 = document.createElement('canvas');
+			const canvas2 = document.createElement('canvas');
+			const context1 = canvas1.getContext('2d');
+			const context2 = canvas2.getContext('2d');
+
+			// set the dimensions
+			canvas1.width = len;
+			canvas1.height = len;
+			canvas2.width = len;
+			canvas2.height = len
+
+				// fill canvas1 with random image data
+				;[...Array(len)].forEach((e, x) => [...Array(len)].forEach((e, y) => {
+					const red = ~~(Math.random() * 256);
+					const green = ~~(Math.random() * 256);
+					const blue = ~~(Math.random() * 256);
+					const colors = `${red}, ${green}, ${blue}, ${alpha}`;
+					context1.fillStyle = `rgba(${colors})`;
+					context1.fillRect(x, y, 1, 1);
+					pattern1.push(colors); // collect the pixel pattern
+				}))
+
+				// fill canvas2 with canvas1 image data
+				;[...Array(len)].forEach((e, x) => [...Array(len)].forEach((e, y) => {
+					const pixel = context1.getImageData(x, y, 1, 1);
+					const red = pixel.data[0];
+					const green = pixel.data[1];
+					const blue = pixel.data[2];
+					const alpha = pixel.data[3];
+					const colors = `${red}, ${green}, ${blue}, ${alpha}`;
+					context2.fillStyle = `rgba(${colors})`;
+					context2.fillRect(x, y, 1, 1);
+					return pattern2.push(colors) // collect the pixel pattern
+				}));
+
+			// compare the pattern collections and collect diffs
+			const patternDiffs = [];
+			const rgbaChannels = new Set()
+				;[...Array(pattern1.length)].forEach((e, i) => {
+					const pixelColor1 = pattern1[i];
+					const pixelColor2 = pattern2[i];
+					if (pixelColor1 != pixelColor2) {
+						const rgbaValues1 = pixelColor1.split(',');
+						const rgbaValues2 = pixelColor2.split(',');
+						const colors = [
+							rgbaValues1[0] != rgbaValues2[0] ? 'r' : '',
+							rgbaValues1[1] != rgbaValues2[1] ? 'g' : '',
+							rgbaValues1[2] != rgbaValues2[2] ? 'b' : '',
+							rgbaValues1[3] != rgbaValues2[3] ? 'a' : ''
+						].join('');
+						rgbaChannels.add(colors);
+						patternDiffs.push([i, colors]);
+					}
+				});
+
+			const rgba = rgbaChannels.size ? [...rgbaChannels].sort().join(', ') : undefined;
+			const pixels = patternDiffs.length || undefined;
+			return { rgba, pixels }
+		}
+		catch (error) {
+			console.error(error);
+			return
+		}
+	};
+
 	const getCanvas2d = async imports => {
-		
+
 		const {
 			require: {
 				hashMini,
@@ -1487,7 +1565,7 @@
 				logTestResult
 			}
 		} = imports;
-		
+
 		try {
 			const start = performance.now();
 			const dataLie = lieProps['HTMLCanvasElement.toDataURL'];
@@ -1511,8 +1589,14 @@
 					documentLie(`HTMLCanvasElement.toDataURL`, iframeLie);
 				}
 			}
+			const mods = getPixelMods();
+			if (mods && mods.pixels) {
+				lied = true;
+				const iframeLie = `pixel data modified`;
+				documentLie(`CanvasRenderingContext2D.getImageData`, iframeLie);
+			}
 			logTestResult({ start, test: 'canvas 2d', passed: true });
-			return { dataURI, lied }
+			return { dataURI, mods, lied }
 		}
 		catch (error) {
 			logTestResult({ test: 'canvas 2d', passed: false });
@@ -1660,7 +1744,7 @@
 	const draw = gl => {
 		//gl.clearColor(0.47, 0.7, 0.78, 1)
 		gl.clear(gl.COLOR_BUFFER_BIT);
-		
+
 		// based on https://github.com/Valve/fingerprintjs2/blob/master/fingerprint2.js
 		const vertexPosBuffer = gl.createBuffer();
 		gl.bindBuffer(gl.ARRAY_BUFFER, vertexPosBuffer);
@@ -1748,7 +1832,7 @@
 				dragonOfDeath.document.createElement('canvas').toDataURL() != document.createElement('canvas').toDataURL()) {
 				lied = true;
 			}
-			
+
 			// create canvas context
 			const win = phantomDarkness ? phantomDarkness : window;
 			const doc = win.document;
@@ -1760,7 +1844,7 @@
 				canvas = doc.createElement('canvas');
 				canvas2 = doc.createElement('canvas');
 			}
-		
+
 			const getContext = (canvas, contextType) => {
 				try {
 					if (contextType == 'webgl2') {
@@ -1910,24 +1994,24 @@
 			};
 
 			// get data
-			const params = {...getParams(gl), ...getUnmasked(gl)};
-			const params2 = {...getParams(gl2), ...getUnmasked(gl2)};
+			const params = { ...getParams(gl), ...getUnmasked(gl) };
+			const params2 = { ...getParams(gl2), ...getUnmasked(gl2) };
 			const mismatch = Object.keys(params2)
-				.filter(key => !!params[key] && ''+params[key] != ''+params2[key])
+				.filter(key => !!params[key] && '' + params[key] != '' + params2[key])
 				.toString()
 				.replace('SHADING_LANGUAGE_VERSION,VERSION', '');
 			if (mismatch) {
 				sendToTrash('webgl/webgl2 mirrored params mismatch', mismatch);
 			}
-			
+
 			const data = {
-				extensions: [...getSupportedExtensions(gl),...getSupportedExtensions(gl2)],
+				extensions: [...getSupportedExtensions(gl), ...getSupportedExtensions(gl2)],
 				pixels: getPixels(gl),
 				pixels2: getPixels(gl2),
 				dataURI: getDataURI('webgl'),
 				dataURI2: getDataURI('webgl2'),
 				parameters: {
-					...{...params, ...params2},
+					...{ ...params, ...params2 },
 					...{
 						antialias: gl.getContextAttributes() ? gl.getContextAttributes().antialias : undefined,
 						MAX_VIEWPORT_DIMS: attempt(() => [...gl.getParameter(gl.MAX_VIEWPORT_DIMS)]),
@@ -1953,14 +2037,14 @@
 		}
 	};
 
-	const computeStyle = (type, { require: [ captureError ] }) => {
+	const computeStyle = (type, { require: [captureError] }) => {
 		try {
 			// get CSSStyleDeclaration
 			const cssStyleDeclaration = (
 				type == 'getComputedStyle' ? getComputedStyle(document.body) :
-				type == 'HTMLElement.style' ? document.body.style :
-				type == 'CSSRuleList.style' ? document.styleSheets[0].cssRules[0].style :
-				undefined
+					type == 'HTMLElement.style' ? document.body.style :
+						type == 'CSSRuleList.style' ? document.styleSheets[0].cssRules[0].style :
+							undefined
 			);
 			if (!cssStyleDeclaration) {
 				throw new TypeError('invalid argument string')
@@ -2001,8 +2085,8 @@
 				const isCapitalizedAlias = isAliasAttribute && firstChar == firstChar.toUpperCase();
 				key = (
 					isPrefixedName ? removeFirstChar(key) :
-					isCapitalizedAlias ? uncapitalize(key) :
-					key
+						isCapitalizedAlias ? uncapitalize(key) :
+							key
 				);
 				// find counterpart in CSSStyleDeclaration object or its prototype chain
 				if (isNamedAttribute) {
@@ -2030,8 +2114,8 @@
 					...Object.keys(propertiesInPrototypeChain)
 				])
 			];
-			const interfaceName = (''+proto).match(/\[object (.+)\]/)[1];
-		
+			const interfaceName = ('' + proto).match(/\[object (.+)\]/)[1];
+
 			return { keys, interfaceName }
 		}
 		catch (error) {
@@ -2040,7 +2124,7 @@
 		}
 	};
 
-	const getSystemStyles = (instanceId, { require: [ captureError, parentPhantom ] }) => {
+	const getSystemStyles = (instanceId, { require: [captureError, parentPhantom] }) => {
 		try {
 			const colors = [
 				'ActiveBorder',
@@ -2142,8 +2226,8 @@
 
 		try {
 			const start = performance.now();
-			const computedStyle = computeStyle('getComputedStyle', { require: [ captureError ] });
-			const system = getSystemStyles(instanceId, { require: [ captureError, parentPhantom ] });
+			const computedStyle = computeStyle('getComputedStyle', { require: [captureError] });
+			const system = getSystemStyles(instanceId, { require: [captureError, parentPhantom] });
 			logTestResult({ start, test: 'computed style', passed: true });
 			return {
 				computedStyle,
@@ -2157,21 +2241,21 @@
 		}
 	};
 
-	const gcd = (a, b) => b == 0 ? a : gcd(b, a%b);
+	const gcd = (a, b) => b == 0 ? a : gcd(b, a % b);
 
 	const getAspectRatio = (width, height) => {
 		const r = gcd(width, height);
-		const aspectRatio = `${width/r}/${height/r}`;
+		const aspectRatio = `${width / r}/${height / r}`;
 		return aspectRatio
 	};
 
 	const query = ({ body, type, rangeStart, rangeLen }) => {
 		body.innerHTML = `
 		<style>
-			${[...Array(rangeLen)].map((slot,i) => {
-				i += rangeStart;
-				return `@media(device-${type}:${i}px){body{--device-${type}:${i};}}`
-			}).join('')}
+			${[...Array(rangeLen)].map((slot, i) => {
+		i += rangeStart;
+		return `@media(device-${type}:${i}px){body{--device-${type}:${i};}}`
+	}).join('')}
 		</style>
 	`;
 		const style = getComputedStyle(body);
@@ -2183,20 +2267,20 @@
 		for (i = 0; i < 10; i++) {
 			let resWidth, resHeight;
 			if (!widthMatched) {
-				resWidth = query({ body, type: 'width', rangeStart: i*1000, rangeLen: 1000});
+				resWidth = query({ body, type: 'width', rangeStart: i * 1000, rangeLen: 1000 });
 				if (resWidth) {
 					widthMatched = resWidth;
 				}
 			}
 			if (!heightMatched) {
-				resHeight = query({ body, type: 'height', rangeStart: i*1000, rangeLen: 1000});
+				resHeight = query({ body, type: 'height', rangeStart: i * 1000, rangeLen: 1000 });
 				if (resHeight) {
 					heightMatched = resHeight;
 				}
 			}
 			if (widthMatched && heightMatched) {
 				break
-			}	
+			}
 		}
 		return { width: +widthMatched, height: +heightMatched }
 	};
@@ -2206,7 +2290,7 @@
 		for (let i = 0; i < 10; i++) {
 			let resWidth, resHeight;
 			if (!widthMatched) {
-				let rangeStart = i*1000;
+				let rangeStart = i * 1000;
 				const rangeLen = 1000;
 				for (let i = 0; i < rangeLen; i++) {
 					if (win.matchMedia(`(device-width:${rangeStart}px)`).matches) {
@@ -2220,7 +2304,7 @@
 				}
 			}
 			if (!heightMatched) {
-				let rangeStart = i*1000;
+				let rangeStart = i * 1000;
 				const rangeLen = 1000;
 				for (let i = 0; i < rangeLen; i++) {
 					if (win.matchMedia(`(device-height:${rangeStart}px)`).matches) {
@@ -2235,7 +2319,7 @@
 			}
 			if (widthMatched && heightMatched) {
 				break
-			}	
+			}
 		}
 		return { width: widthMatched, height: heightMatched }
 	};
@@ -2255,50 +2339,50 @@
 		try {
 			const start = performance.now();
 			const win = phantomDarkness.window;
-			
+
 			const { body } = win.document;
 			const { width, height } = win.screen;
-			
+
 			const deviceAspectRatio = getAspectRatio(width, height);
 
 			const matchMediaCSS = {
 				['prefers-reduced-motion']: (
 					win.matchMedia('(prefers-reduced-motion: no-preference)').matches ? 'no-preference' :
-					win.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'reduce' : undefined
+						win.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'reduce' : undefined
 				),
 				['prefers-color-scheme']: (
 					win.matchMedia('(prefers-color-scheme: light)').matches ? 'light' :
-					win.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : undefined
+						win.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : undefined
 				),
 				monochrome: (
 					win.matchMedia('(monochrome)').matches ? 'monochrome' :
-					win.matchMedia('(monochrome: 0)').matches ? 'non-monochrome' : undefined
+						win.matchMedia('(monochrome: 0)').matches ? 'non-monochrome' : undefined
 				),
 				['inverted-colors']: (
 					win.matchMedia('(inverted-colors: inverted)').matches ? 'inverted' :
-					win.matchMedia('(inverted-colors: none)').matches ? 'none' : undefined
+						win.matchMedia('(inverted-colors: none)').matches ? 'none' : undefined
 				),
 				['forced-colors']: (
 					win.matchMedia('(forced-colors: none)').matches ? 'none' :
-					win.matchMedia('(forced-colors: active)').matches ? 'active' : undefined
+						win.matchMedia('(forced-colors: active)').matches ? 'active' : undefined
 				),
 				['any-hover']: (
 					win.matchMedia('(any-hover: hover)').matches ? 'hover' :
-					win.matchMedia('(any-hover: none)').matches ? 'none' : undefined
+						win.matchMedia('(any-hover: none)').matches ? 'none' : undefined
 				),
 				hover: (
 					win.matchMedia('(hover: hover)').matches ? 'hover' :
-					win.matchMedia('(hover: none)').matches ? 'none' : undefined
+						win.matchMedia('(hover: none)').matches ? 'none' : undefined
 				),
 				['any-pointer']: (
 					win.matchMedia('(any-pointer: fine)').matches ? 'fine' :
-					win.matchMedia('(any-pointer: coarse)').matches ? 'coarse' :
-					win.matchMedia('(any-pointer: none)').matches ? 'none' : undefined
+						win.matchMedia('(any-pointer: coarse)').matches ? 'coarse' :
+							win.matchMedia('(any-pointer: none)').matches ? 'none' : undefined
 				),
 				pointer: (
 					win.matchMedia('(pointer: fine)').matches ? 'fine' :
-					win.matchMedia('(pointer: coarse)').matches ? 'coarse' :
-					win.matchMedia('(pointer: none)').matches ? 'none' : undefined
+						win.matchMedia('(pointer: coarse)').matches ? 'coarse' :
+							win.matchMedia('(pointer: none)').matches ? 'none' : undefined
 				),
 				['device-aspect-ratio']: (
 					win.matchMedia(`(device-aspect-ratio: ${deviceAspectRatio})`).matches ? deviceAspectRatio : undefined
@@ -2308,18 +2392,18 @@
 				),
 				['display-mode']: (
 					win.matchMedia('(display-mode: fullscreen)').matches ? 'fullscreen' :
-					win.matchMedia('(display-mode: standalone)').matches ? 'standalone' :
-					win.matchMedia('(display-mode: minimal-ui)').matches ? 'minimal-ui' :
-					win.matchMedia('(display-mode: browser)').matches ? 'browser' : undefined
+						win.matchMedia('(display-mode: standalone)').matches ? 'standalone' :
+							win.matchMedia('(display-mode: minimal-ui)').matches ? 'minimal-ui' :
+								win.matchMedia('(display-mode: browser)').matches ? 'browser' : undefined
 				),
 				['color-gamut']: (
 					win.matchMedia('(color-gamut: srgb)').matches ? 'srgb' :
-					win.matchMedia('(color-gamut: p3)').matches ? 'p3' :
-					win.matchMedia('(color-gamut: rec2020)').matches ? 'rec2020' : undefined
+						win.matchMedia('(color-gamut: p3)').matches ? 'p3' :
+							win.matchMedia('(color-gamut: rec2020)').matches ? 'rec2020' : undefined
 				),
 				orientation: (
 					win.matchMedia('(orientation: landscape)').matches ? 'landscape' :
-					win.matchMedia('(orientation: portrait)').matches ? 'portrait' : undefined
+						win.matchMedia('(orientation: portrait)').matches ? 'portrait' : undefined
 				)
 			};
 
@@ -2435,7 +2519,7 @@
 			if (!screenQuery.width || !screenQuery.height) {
 				screenQuery = getScreenMedia(body);
 			}
-			
+
 			logTestResult({ start, test: 'css media', passed: true });
 			return { importCSS, mediaCSS, matchMediaCSS, screenQuery }
 		}
@@ -2509,7 +2593,7 @@
 			const moz = keys.filter(key => (/moz/i).test(key)).length;
 			const webkit = keys.filter(key => (/webkit/i).test(key)).length;
 			const apple = keys.filter(key => (/apple/i).test(key)).length;
-			const data = { keys, apple, moz, webkit }; 
+			const data = { keys, apple, moz, webkit };
 			logTestResult({ start, test: 'window', passed: true });
 			return { ...data }
 		}
@@ -2554,12 +2638,12 @@
 			const offscreenCanvas = win.OffscreenCanvas;
 			const context = (
 				('OffscreenCanvas' in window) ?
-				new offscreenCanvas(500, 200).getContext('2d') :
-				doc.createElement('canvas').getContext('2d')
+					new offscreenCanvas(500, 200).getContext('2d') :
+					doc.createElement('canvas').getContext('2d')
 			);
 
 			if (!context) {
-				throw new Error(`Context blocked or not supported`) 
+				throw new Error(`Context blocked or not supported`)
 			}
 
 			const baseFonts = ['monospace', 'sans-serif', 'serif'];
@@ -2570,12 +2654,12 @@
 
 			const detected = new Set();
 			const base = baseFonts.reduce((acc, font) => {
-				acc[font] = getTextMetrics(context, font); 
+				acc[font] = getTextMetrics(context, font);
 				return acc
 			}, {});
 			families.forEach(family => {
 				const basefont = /, (.+)/.exec(family)[1];
-				const dimensions = getTextMetrics(context, family); 
+				const dimensions = getTextMetrics(context, family);
 				const font = /\'(.+)\'/.exec(family)[1];
 				const support = (
 					dimensions.ascent != base[basefont].ascent ||
@@ -2598,7 +2682,7 @@
 				(('OffscreenCanvas' in window) && lieProps['OffscreenCanvasRenderingContext2D.measureText']) ||
 				(!('OffscreenCanvas' in window) && lieProps['CanvasRenderingContext2D.measureText'])
 			);
-			
+
 			logTestResult({ start, test: 'fonts', passed: true });
 			return { fonts: [...detected], lied }
 		} catch (error) {
@@ -2617,14 +2701,14 @@
 		Math.atan(2) == 1.1071487177940904 &&
 		Math.atanh(0.5) == 0.5493061443340548 &&
 		Math.cbrt(Math.PI) == 1.4645918875615231 &&
-		Math.cos(21*Math.LN2) == -0.4067775970251724 &&
-		Math.cosh(492*Math.LOG2E) == 9.199870313877772e+307 &&
+		Math.cos(21 * Math.LN2) == -0.4067775970251724 &&
+		Math.cosh(492 * Math.LOG2E) == 9.199870313877772e+307 &&
 		Math.expm1(1) == 1.718281828459045 &&
-		Math.hypot(6*Math.PI, -100) == 101.76102278593319 &&
+		Math.hypot(6 * Math.PI, -100) == 101.76102278593319 &&
 		Math.log10(Math.PI) == 0.4971498726941338 &&
 		Math.sin(Math.PI) == 1.2246467991473532e-16 &&
 		Math.sinh(Math.PI) == 11.548739357257748 &&
-		Math.tan(10*Math.LOG2E) == -3.3537128705376014 &&
+		Math.tan(10 * Math.LOG2E) == -3.3537128705376014 &&
 		Math.tanh(0.123) == 0.12238344189440875 &&
 		Math.pow(Math.PI, -100) == 1.9275814160560204e-50
 	);
@@ -2674,7 +2758,7 @@
 		try {
 			const start = performance.now();
 			const isChrome = detectChromium();
-			const mimeTypes = Object.keys({...navigator.mimeTypes});
+			const mimeTypes = Object.keys({ ...navigator.mimeTypes });
 			const data = {
 				chromium: isChrome,
 				likeHeadless: {
@@ -2709,7 +2793,7 @@
 						const res = await navigator.permissions.query({ name: 'notifications' });
 						return (
 							res.state == 'prompt' && Notification.permission === 'denied'
-						) 
+						)
 					})(),
 					['userAgent contains HeadlessChrome']: (
 						/HeadlessChrome/.test(navigator.userAgent) ||
@@ -2737,8 +2821,8 @@
 					['index of chrome is too high']: (() => {
 						const control = (
 							'cookieStore' in window ? 'cookieStore' :
-							'ondevicemotion' in window ? 'ondevicemotion' :
-							'speechSynthesis'
+								'ondevicemotion' in window ? 'ondevicemotion' :
+									'speechSynthesis'
 						);
 						const propsInWindow = [];
 						for (const prop in window) { propsInWindow.push(prop); }
@@ -2765,7 +2849,7 @@
 					})(),
 					['Permissions.prototype.query leaks Proxy behavior']: (() => {
 						try {
-							class Blah extends Permissions.prototype.query {}
+							class Blah extends Permissions.prototype.query { }
 							return true
 						}
 						catch (error) {
@@ -2774,7 +2858,7 @@
 					})(),
 					['Function.prototype.toString leaks Proxy behavior']: (() => {
 						try {
-							class Blah extends Function.prototype.toString {}
+							class Blah extends Function.prototype.toString { }
 							return true
 						}
 						catch (error) {
@@ -2784,7 +2868,7 @@
 					['Function.prototype.toString has invalid TypeError']: (() => {
 						const liedToString = (
 							getNewObjectToStringTypeErrorLie(Function.prototype.toString) ||
-							getNewObjectToStringTypeErrorLie(() => {})
+							getNewObjectToStringTypeErrorLie(() => { })
 						);
 						return liedToString
 					})()
@@ -2795,11 +2879,11 @@
 			const likeHeadlessKeys = Object.keys(likeHeadless);
 			const headlessKeys = Object.keys(headless);
 			const stealthKeys = Object.keys(stealth);
-			
+
 			const likeHeadlessRating = +((likeHeadlessKeys.filter(key => likeHeadless[key]).length / likeHeadlessKeys.length) * 100).toFixed(0);
 			const headlessRating = +((headlessKeys.filter(key => headless[key]).length / headlessKeys.length) * 100).toFixed(0);
 			const stealthRating = +((stealthKeys.filter(key => stealth[key]).length / stealthKeys.length) * 100).toFixed(0);
-			
+
 			logTestResult({ start, test: 'headless', passed: true });
 			return { ...data, likeHeadlessRating, headlessRating, stealthRating }
 		}
@@ -3445,7 +3529,7 @@
 					return data
 				}, 'highEntropyValues failed'),
 				keyboard: await attempt(async () => {
-					if (!('keyboard' in navigator)) {
+					if (!('keyboard' in navigator && navigator.keyboard)) {
 						return
 					}
 					const keys = [
@@ -5014,7 +5098,7 @@
 		};
 		// fingerprint and render
 		const { fingerprint: fp, timeEnd } = await fingerprint().catch(error => console.error(error));
-
+		
 		console.log('%c✔ loose fingerprint passed', 'color:#4cca9f');
 
 		console.groupCollapsed('Loose Fingerprint');
@@ -5042,7 +5126,8 @@
 					plugins: isBrave ? distrust : fp.navigator.plugins,
 					platform: fp.navigator.platform,
 					system: fp.navigator.system,
-					vendor: fp.navigator.vendor
+					vendor: fp.navigator.vendor,
+					lied: fp.navigator.lied
 				}
 			),
 			screen: ( 
@@ -5050,7 +5135,8 @@
 					height: fp.screen.height,
 					width: fp.screen.width,
 					pixelDepth: fp.screen.pixelDepth,
-					colorDepth: fp.screen.colorDepth
+					colorDepth: fp.screen.colorDepth,
+					lied: fp.screen.lied
 				}
 			),
 			workerScope: fp.workerScope ? {
@@ -5082,8 +5168,10 @@
 			} : undefined,
 			media: fp.media,
 			canvas2d: ( 
-				!fp.canvas2d || fp.canvas2d.lied ? undefined : 
-				fp.canvas2d
+				!fp.canvas2d || fp.canvas2d.lied ? undefined : {
+					dataURI: fp.canvas2d.dataURI,
+					lied: fp.canvas2d.lied
+				} 
 			),
 			canvasWebgl: ( 
 				!fp.canvasWebgl || fp.canvasWebgl.lied ? undefined : 
@@ -5109,7 +5197,8 @@
 			maths: !fp.maths || fp.maths.lied ? undefined : fp.maths,
 			consoleErrors: fp.consoleErrors,
 			timezone: !fp.timezone || fp.timezone.lied ? undefined : {
-				locationMeasured: fp.timezone.locationMeasured
+				locationMeasured: fp.timezone.locationMeasured,
+				lied: fp.timezone.lied
 			},
 			clientRects: !fp.clientRects || fp.clientRects.lied ? undefined : fp.clientRects,
 			offlineAudioContext: (
@@ -5632,12 +5721,21 @@
 		${!fp.canvas2d ?
 			`<div class="col-six">
 				<strong>Canvas 2d</strong> <span>${note.blocked}</span>
+				<div>0% rgba noise</div>
 			</div>` :
 		(() => {
-			const { canvas2d: { lied, $hash } } = fp;
+			const { canvas2d: { lied, mods, $hash } } = fp;
+			const { pixels, rgba } = mods || {};
+			const modPercent = pixels ? Math.round((pixels/400)*100) : 0;
 			return `
 			<div class="col-six">
+				<style>
+					.rgba-noise-rating {
+						background: linear-gradient(90deg, var(${modPercent < 50 ? '--grey-glass' : '--error'}) ${modPercent}%, #fff0 ${modPercent}%, #fff0 100%);
+					}
+				</style>
 				<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+				<div class="rgba-noise-rating">${modPercent}% rgba noise${rgba ? ` (${rgba})` : ''}</div>
 			</div>
 			`
 		})()}
@@ -6417,7 +6515,7 @@
 				)).toFixed(0);
 				const template = `
 				<div class="visitor-info">
-					<div class="ellipsis"><span class="aside-note">script modified 2021-3-7</span></div>
+					<div class="ellipsis"><span class="aside-note">script modified 2021-4-11</span></div>
 					<div class="flex-grid">
 						<div class="col-six">
 							<strong>Browser</strong>
