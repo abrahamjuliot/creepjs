@@ -5,8 +5,7 @@ export const getWebRTCData = imports => {
 			captureError,
 			caniuse,
 			logTestResult,
-			hashMini,
-			attempt
+			hashMini
 		}
 	} = imports
 	
@@ -67,7 +66,7 @@ export const getWebRTCData = imports => {
 				offerToReceiveVideo: 1
 			})
 			.then(offer => (
-				sdpcapabilities = attempt(
+				sdpcapabilities = caniuse(
 					() => offer.sdp
 						.match(/((ext|rtp)map|fmtp|rtcp-fb):.+ (.+)/gm)
 						.sort()
