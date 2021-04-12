@@ -1018,7 +1018,8 @@ const imports = {
 			<br><span class="guide mb">M (Maybe)</span>
 			<br><span class="guide tr">T (True)</span>
 			</div>`
-			const mimes = mimeTypes.map(type => {
+			const invalidMimeTypes = !mimeTypes || !mimeTypes.length
+			const mimes = invalidMimeTypes ? undefined : mimeTypes.map(type => {
 				const { mimeType, audioPlayType, videoPlayType, mediaSource, mediaRecorder } = type
 				return `
 					${audioPlayType == 'probably' ? '<span class="audiop pb">P</span>' : audioPlayType == 'maybe' ? '<span class="audiop mb">M</span>': '<span class="blank-false">-</span>'}${videoPlayType == 'probably' ? '<span class="videop pb">P</span>' : videoPlayType == 'maybe' ? '<span class="videop mb">M</span>': '<span class="blank-false">-</span>'}${mediaSource ? '<span class="medias tr">T</span>'  : '<span class="blank-false">-</span>'}${mediaRecorder ? '<span class="mediar tr">T</span>'  : '<span class="blank-false">-</span>'}: ${mimeType}
@@ -1045,7 +1046,7 @@ const imports = {
 					)
 				}</div>
 				<div>mimes (${count(mimeTypes)}): ${
-					!mimeTypes || !mimeTypes.length ? note.blocked : 
+					invalidMimeTypes ? note.blocked : 
 					modal(
 						'creep-media-mimeTypes',
 						header+mimes.join('<br>'),
