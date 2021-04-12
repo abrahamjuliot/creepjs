@@ -79,6 +79,11 @@ const getServiceWorker = () => {
 				console.error(error)
 				return resolve()
 			})
+
+			if (!('BroadcastChannel' in window)) {
+				return resolve() // no support in Safari and iOS
+			}
+
 			const broadcast = new BroadcastChannel('creep_service_primary')
 			broadcast.onmessage = message => {
 				registration.unregister()
