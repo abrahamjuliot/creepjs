@@ -74,7 +74,7 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 				['navigator.webdriver is on']: 'webdriver' in navigator && !!navigator.webdriver,
 				['chrome plugins array is empty']: isChrome && navigator.plugins.length === 0,
 				['chrome mimeTypes array is empty']: isChrome && mimeTypes.length === 0,
-				['notification permission is denied']: Notification.permission == 'denied',
+				['notification permission is denied']: isChrome && Notification.permission == 'denied',
 				['chrome system color ActiveText is rgb(255, 0, 0)']: isChrome && (() => {
 					let rendered = parentPhantom
 					if (!parentPhantom) {
