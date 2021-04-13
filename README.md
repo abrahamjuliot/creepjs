@@ -100,10 +100,15 @@ Bots leak unusual behavior and can be denied service.
 - ungracefully blocked features that break the web
 - failed executions
 
-### Loose Fingerprint
-- collects as much entropy as possible
+### Interact with the fingerprint objects
+- `window.Fingerprint`
+- `window.Creep`
 
-### Fingerprint
+#### Fingerprint
+- collects as much entropy as possible
+- permits loose metrics
+
+#### Creep
 - adapts to browsers and distrusts known noise vectors
 - aims to ignore entropy unique to a browser version release
 - gathers compressed and static entropy
