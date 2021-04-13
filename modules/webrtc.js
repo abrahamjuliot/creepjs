@@ -91,7 +91,6 @@ export const getWebRTCData = imports => {
 					}
 					// resolve error
 					logTestResult({ test: 'webrtc', passed: false })
-					captureError(new Error('RTCIceCandidate connection failed'))
 					return resolve()
 				}
 
@@ -130,7 +129,6 @@ export const getWebRTCData = imports => {
 			setTimeout(() => {
 				if (!success) {
 					logTestResult({ test: 'webrtc', passed: false })
-					captureError(new Error('RTCIceCandidate connection failed'))
 					return resolve()
 				}
 			}, 1000)
