@@ -379,8 +379,12 @@ const imports = {
 		console.error(error.message)
 	})
 
+	// expose results to the window
+	window.Fingerprint = fp
+	window.Creep = creep
+
 	// session
-	const computeSession = () => {
+	const computeSession = fp => {
 		const data = {
 			revisedKeys: [],
 			initial: undefined,
@@ -1586,7 +1590,7 @@ const imports = {
 		</div>
 		${
 			(() => {
-				const { initial, loads, revisedKeys } = computeSession()
+				const { initial, loads, revisedKeys } = computeSession(fp)
 				
 				return `
 					<div>
