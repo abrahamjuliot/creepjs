@@ -2771,7 +2771,7 @@
 					['navigator.webdriver is on']: 'webdriver' in navigator && !!navigator.webdriver,
 					['chrome plugins array is empty']: isChrome && navigator.plugins.length === 0,
 					['chrome mimeTypes array is empty']: isChrome && mimeTypes.length === 0,
-					['notification permission is denied']: Notification.permission == 'denied',
+					['notification permission is denied']: isChrome && Notification.permission == 'denied',
 					['chrome system color ActiveText is rgb(255, 0, 0)']: isChrome && (() => {
 						let rendered = parentPhantom;
 						if (!parentPhantom) {
@@ -4671,7 +4671,11 @@
 					offerToReceiveVideo: 1
 				})
 				.then(offer => (
-					sdpcapabilities = offer.sdp.match(/((ext|rtp)map|fmtp|rtcp-fb):.+ (.+)/gm).sort()
+					sdpcapabilities = caniuse(
+						() => offer.sdp
+							.match(/((ext|rtp)map|fmtp|rtcp-fb):.+ (.+)/gm)
+							.sort()
+					)
 				))
 				.catch(error => console.error(error));
 		
@@ -4692,7 +4696,6 @@
 						}
 						// resolve error
 						logTestResult({ test: 'webrtc', passed: false });
-						captureError(new Error('RTCIceCandidate connection failed'));
 						return resolve()
 					}
 
@@ -4731,7 +4734,6 @@
 				setTimeout(() => {
 					if (!success) {
 						logTestResult({ test: 'webrtc', passed: false });
-						captureError(new Error('RTCIceCandidate connection failed'));
 						return resolve()
 					}
 				}, 1000);
@@ -4824,6 +4826,11 @@
 					console.error(error);
 					return resolve()
 				});
+
+				if (!('BroadcastChannel' in window)) {
+					return resolve() // no support in Safari and iOS
+				}
+
 				const broadcast = new BroadcastChannel('creep_service_primary');
 				broadcast.onmessage = message => {
 					registration.unregister();
@@ -5877,7 +5884,8 @@
 			<br><span class="guide mb">M (Maybe)</span>
 			<br><span class="guide tr">T (True)</span>
 			</div>`;
-			const mimes = mimeTypes.map(type => {
+			const invalidMimeTypes = !mimeTypes || !mimeTypes.length;
+			const mimes = invalidMimeTypes ? undefined : mimeTypes.map(type => {
 				const { mimeType, audioPlayType, videoPlayType, mediaSource, mediaRecorder } = type;
 				return `
 					${audioPlayType == 'probably' ? '<span class="audiop pb">P</span>' : audioPlayType == 'maybe' ? '<span class="audiop mb">M</span>': '<span class="blank-false">-</span>'}${videoPlayType == 'probably' ? '<span class="videop pb">P</span>' : videoPlayType == 'maybe' ? '<span class="videop mb">M</span>': '<span class="blank-false">-</span>'}${mediaSource ? '<span class="medias tr">T</span>'  : '<span class="blank-false">-</span>'}${mediaRecorder ? '<span class="mediar tr">T</span>'  : '<span class="blank-false">-</span>'}: ${mimeType}
@@ -5904,7 +5912,7 @@
 					)
 				}</div>
 				<div>mimes (${count(mimeTypes)}): ${
-					!mimeTypes || !mimeTypes.length ? note.blocked : 
+					invalidMimeTypes ? note.blocked : 
 					modal(
 						'creep-media-mimeTypes',
 						header+mimes.join('<br>'),
