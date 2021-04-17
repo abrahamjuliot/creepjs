@@ -189,7 +189,7 @@
 					.trim().replace(/\s{2,}/, ' ')
 			} else {
 				const other = identifiers.filter(x => otherOS.test(x))
-				if (other.legnth) {
+				if (other.length) {
 					return other.join(' ').trim().replace(/\s{2,}/, ' ')
 				}
 				return identifiers.join(' ')

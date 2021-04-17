@@ -236,7 +236,7 @@
 			return ua
 		} else {
 			const other = ua.identifiers.filter(x => otherOS.test(x))
-			if (other.legnth) {
+			if (other.length) {
 				ua.parsed = other.join(' ').trim().replace(/\s{2,}/, ' ')
 				return ua
 			}
