@@ -9,7 +9,7 @@ const getWebRTCData = imports => {
 			logTestResult
 		}
 	} = imports
-	
+
 	return new Promise(async resolve => {
 		try {
 			const start = performance.now()
@@ -46,7 +46,7 @@ const getWebRTCData = imports => {
 					msRTCPeerConnection
 				)
 			}
-			
+
 			if (!rtcPeerConnection) {
 				logTestResult({ test: 'webrtc', passed: false })
 				return resolve()
@@ -56,13 +56,13 @@ const getWebRTCData = imports => {
 					urls: ['stun:stun.l.google.com:19302?transport=udp']
 				}]
 			}, {
-				optional: [{
-					RtpDataChannels: true
-				}]
-			})
-			
+					optional: [{
+						RtpDataChannels: true
+					}]
+				})
+
 			let success = false
-			connection.onicecandidate = async e => { 
+			connection.onicecandidate = async e => {
 				const candidateEncoding = /((udp|tcp)\s)((\d|\w)+\s)((\d|\w|(\.|\:))+)(?=\s)/ig
 				const connectionLineEncoding = /(c=IN\s)(.+)\s/ig
 				if (!e.candidate) {
@@ -79,8 +79,8 @@ const getWebRTCData = imports => {
 					const candidateIpAddress = caniuse(() => encodingMatch[0].split(' ')[2])
 					const connectionLineIpAddress = caniuse(() => sdp.match(connectionLineEncoding)[0].trim().split(' ')[2])
 					const successIpAddresses = [
-						ipAddress, 
-						candidateIpAddress, 
+						ipAddress,
+						candidateIpAddress,
 						connectionLineIpAddress
 					].filter(ip => ip != undefined)
 					const setSize = new Set(successIpAddresses).size
@@ -95,10 +95,10 @@ const getWebRTCData = imports => {
 					return
 				}
 			}
-			
+
 			setTimeout(() => {
 				if (!success) {
-					
+
 					logTestResult({ test: 'webrtc', passed: false })
 					captureError(new Error('RTCIceCandidate failed'))
 					return resolve()
