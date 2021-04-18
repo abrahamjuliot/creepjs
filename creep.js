@@ -200,6 +200,7 @@ const imports = {
 			hashify(trashComputed),
 			hashify(capturedErrorsComputed)
 		]).catch(error => console.error(error.message))
+		
 		//console.log(performance.now()-start)
 
 		const timeEnd = timeStart()
@@ -237,6 +238,7 @@ const imports = {
 		}
 		return { fingerprint, timeEnd }
 	}
+	
 	// fingerprint and render
 	const { fingerprint: fp, timeEnd } = await fingerprint().catch(error => console.error(error))
 	
