@@ -6520,36 +6520,48 @@
 				const hoursAgo = (date1, date2) => Math.abs(date1 - date2) / 36e5;
 				const hours = hoursAgo(new Date(firstVisit), new Date(latestVisit)).toFixed(1);
 
-				// trust score
-				const score = (100-(
-					(switchCount < 1 ? 0 : switchCount < 11 ? switchCount * 0.1 : switchCount * 0.2 ) +
-					(errorsLen * 5.2) +
-					(trashLen * 15.5) +
-					(liesLen * 31)
-				)).toFixed(0);
+				const computeTrustScore = ({ switchCount, errorsLen, trashLen, liesLen }) => {
+					const score = (100-(
+						// decrease score as loose fingerprint switching increases
+						(!switchCount ? 0 : switchCount < 11 ? switchCount * 0.1 : switchCount * 0.2 ) +
+						// decrease score by error count
+						(errorsLen * 5.2) +
+						// decrease score by trash count
+						(trashLen * 15.5) +
+						// decrease score by lie count
+						(liesLen * 31)
+					)).toFixed(0);
+					const grade = (
+						score > 95 ? 'A+' :
+						score == 95 ? 'A' :
+						score >= 90 ? 'A-' :
+						score > 85 ? 'B+' :
+						score == 85 ? 'B' :
+						score >= 80 ? 'B-' :
+						score > 75 ? 'C+' :
+						score == 75 ? 'C' :
+						score >= 70 ? 'C-' :
+						score > 65 ? 'D+' :
+						score == 65 ? 'D' :
+						score >= 60 ? 'D-' :
+						score > 55 ? 'F+' :
+						score == 55 ? 'F' :
+						'F-'
+					);
+					return { grade, score: score < 0 ? 0 : score }
+				};
+
+				const { grade, score } = computeTrustScore({ switchCount, errorsLen, trashLen, liesLen });
+
 				const template = `
 				<div class="visitor-info">
 					<div class="ellipsis"><span class="aside-note">script modified 2021-4-11</span></div>
 					<div class="flex-grid">
 						<div class="col-six">
 							<strong>Browser</strong>
-							<div>trust score: <span class="unblurred">${
-								score > 95 ? `${score}% <span class="grade-A">A+</span>` :
-								score == 95 ? `${score}% <span class="grade-A">A</span>` :
-								score >= 90 ? `${score}% <span class="grade-A">A-</span>` :
-								score > 85 ? `${score}% <span class="grade-B">B+</span>` :
-								score == 85 ? `${score}% <span class="grade-B">B</span>` :
-								score >= 80 ? `${score}% <span class="grade-B">B-</span>` :
-								score > 75 ? `${score}% <span class="grade-C">C+</span>` :
-								score == 75 ? `${score}% <span class="grade-C">C</span>` :
-								score >= 70 ? `${score}% <span class="grade-C">C-</span>` :
-								score > 65 ? `${score}% <span class="grade-D">D+</span>` :
-								score == 65 ? `${score}% <span class="grade-D">D</span>` :
-								score >= 60 ? `${score}% <span class="grade-D">D-</span>` :
-								score > 55 ? `${score}% <span class="grade-F">F+</span>` :
-								score == 55 ? `${score}% <span class="grade-F">F</span>` :
-								`${score < 0 ? 0 : score}% <span class="grade-F">F-</span>`
-							}</span></div>
+							<div>trust score: <span class="unblurred">
+								${score}% <span class="grade-${grade.charAt(0)}">${grade}</span>
+							</span></div>
 							<div>visits: <span class="unblurred">${visits}</span></div>
 							<div class="ellipsis">first: <span class="unblurred">${toLocaleStr(firstVisit)}</span></div>
 							<div class="ellipsis">last: <span class="unblurred">${toLocaleStr(latestVisit)}</span></div>
