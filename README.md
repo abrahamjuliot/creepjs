@@ -54,7 +54,7 @@ A failing trust score is unique and can be used to connect fingerprints.
 
 - start at `100%`
 - less than 2 loose fingerprints: add `20%` extra credit
-- 3 - 10 loose fingerprints: subtract `total*0.1`
+- 2 - 10 loose fingerprints: subtract `total*0.1`
 - 11+ loose fingerprints: subtract `total*0.2`
 - trash: subtract `total*15.5`
 - lies: subtract `total*31`
