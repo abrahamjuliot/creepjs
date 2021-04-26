@@ -82,8 +82,8 @@ Bots leak unusual behavior and can be denied service.
 6. contentWindow version
 
 #### Supported
-- layout rendering engines: Gecko, Goanna, Blink, WebKit
-- JS runtime engines: SpiderMonkey, JavaScriptCore, V8
+- layout rendering engines: `Gecko`, `Goanna`, `Blink`, `WebKit`
+- JS runtime engines: `SpiderMonkey`, `JavaScriptCore`, `V8`
 
 ## Definitions
 ### Trash
