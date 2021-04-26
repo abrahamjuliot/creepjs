@@ -429,9 +429,9 @@
 			return 
 		});
 		return [
-			// ignore letter sequence gibbers if less than 3 exist
+			// ignore sequence if less than 3 exist
 			...(letterSequenceGibbers.length < 3 ? [] : letterSequenceGibbers),
-			...letterCaseSequenceGibbers
+			...(letterCaseSequenceGibbers.length < 4 ? [] : letterCaseSequenceGibbers)
 		]
 	};
 
@@ -5066,6 +5066,7 @@
 				hashify(trashComputed),
 				hashify(capturedErrorsComputed)
 			]).catch(error => console.error(error.message));
+			
 			//console.log(performance.now()-start)
 
 			const timeEnd = timeStart();
@@ -5103,6 +5104,7 @@
 			};
 			return { fingerprint, timeEnd }
 		};
+		
 		// fingerprint and render
 		const { fingerprint: fp, timeEnd } = await fingerprint().catch(error => console.error(error));
 		

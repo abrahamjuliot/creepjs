@@ -40,9 +40,9 @@ const gibberish = str => {
 		return 
 	})
 	return [
-		// ignore letter sequence gibbers if less than 3 exist
+		// ignore sequence if less than 3 exist
 		...(letterSequenceGibbers.length < 3 ? [] : letterSequenceGibbers),
-		...letterCaseSequenceGibbers
+		...(letterCaseSequenceGibbers.length < 4 ? [] : letterCaseSequenceGibbers)
 	]
 }
 
