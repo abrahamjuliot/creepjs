@@ -6521,9 +6521,9 @@
 				const hours = hoursAgo(new Date(firstVisit), new Date(latestVisit)).toFixed(1);
 
 				const computeTrustScore = ({ switchCount, errorsLen, trashLen, liesLen }) => {
-					const extraCredit = 20;
+					const extraCredit = 20; // reward for low switch count
 					const score = (100-(
-						// provide extra credit for not switching the loose fingerprint morre than 1x
+						// add extra credit
 						// decrease score as loose fingerprint switching increases
 						(switchCount < 2 ? -extraCredit : switchCount < 11 ? switchCount * 0.1 : switchCount * 0.2 ) +
 						// decrease score by error count
@@ -6550,7 +6550,12 @@
 						score == 55 ? 'F' :
 						'F-'
 					);
-					return { grade, score: score < 0 ? 0 : score }
+					return {
+						grade,
+						score: (
+							score < 0 ? 0 : score > 100 ? 100 : score
+						)
+					}
 				};
 
 				const { grade, score } = computeTrustScore({ switchCount, errorsLen, trashLen, liesLen });
