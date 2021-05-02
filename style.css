@@ -268,7 +268,7 @@ visitor {
 	animation: scale-up .3s .3s cubic-bezier(0.77, 0, 0.175, 1.5) both;
 }
 .scale-down {
-	animation: scale-down .6s .3s cubic-bezier(0.77, 0, 0.175, 1.5) both;
+	animation: scale-down .3s .6s cubic-bezier(0.77, 0, 0.175, 1.5) both;
 }
 @keyframes fade-in {
 	0%, 30% {

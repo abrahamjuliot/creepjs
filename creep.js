@@ -393,7 +393,6 @@ const imports = {
 			loads: undefined
 		}
 		try {
-			
 			const currentFingerprint = Object.keys(fp)
 			.reduce((acc, key) => {
 				if (!fp[key]) {
@@ -462,6 +461,20 @@ const imports = {
 				</div>
 			</div>
 			<div id="signature">
+			</div>
+			<div class="flex-grid">
+				<div class="col-four">
+					<strong>Session ID</strong>
+					<div>0</div>
+				</div>
+				<div class="col-four">
+					<strong>Session Loads</strong>
+					<div>0</div>
+				</div>
+				<div class="col-four">
+					<strong>Session Switched</strong>
+					<div>none</div>
+				</div>
 			</div>
 		</div>
 		<div class="flex-grid">
@@ -1590,26 +1603,6 @@ const imports = {
 			`
 		})()}
 		</div>
-		${
-			(() => {
-				const { initial, loads, revisedKeys } = computeSession(fp)
-				
-				return `
-					<div>
-						<div>session:<span class="sub-hash">${initial}</span></div>
-						<div>loads: ${loads}</div>
-						<div>revisions: ${
-							!revisedKeys.length ? 'none' :
-							modal(
-								`creep-revisions`,
-								revisedKeys.join('<br>'),
-								hashMini(revisedKeys)
-							)
-						}</div>
-					</div>
-				`	
-			})()
-		}
 		<div>
 			<strong>Tests</strong>
 			<div>
@@ -1780,6 +1773,35 @@ const imports = {
 							<input type="submit" value="Sign">
 						</form>
 						`
+					}
+					${
+						(() => {
+							const { initial, loads, revisedKeys } = computeSession(fp)
+							
+							return `
+								<div class="flex-grid">
+									<div class="col-four">
+										<strong>Session ID</strong>
+										<div><span class="sub-hash">${initial}</span></div>
+									</div>
+									<div class="col-four">
+										<strong>Session Loads</strong>
+										<div>${loads}</div>
+									</div>
+									<div class="col-four">
+										<strong>Session Switched</strong>
+										<div>${
+											!revisedKeys.length ? 'none' :
+											modal(
+												`creep-revisions`,
+												revisedKeys.join('<br>'),
+												hashMini(revisedKeys)
+											)
+										}</div>
+									</div>
+								</div>
+							`	
+						})()
 					}
 				</div>
 			`
