@@ -1717,8 +1717,8 @@ const imports = {
 				liesLen
 			})
 			const percentify = x => {
-				return `<span class="scale-up grade-${x < 0 ? 'F' : 'A'}">${
-					x > 0 ? `+${x}% reward` : x < 0 ? `${x}%` : `0%`
+				return `<span class="scale-up grade-${x < 0 ? 'F' : x > 0 ? 'A' : ''}">${
+					x > 0 ? `+${x}% reward` : x < 0 ? `${x}%` : ''
 				}</span>`
 			}
 
