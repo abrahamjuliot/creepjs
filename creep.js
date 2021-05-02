@@ -1207,7 +1207,7 @@ const imports = {
 			`<div class="col-six">
 				<strong>CSS Media Queries</strong><
 				<div>@media: ${note.blocked}</div>
-				<div>@import: ${note.unsupported}</div>
+				<div>@import: ${note.blocked}</div>
 				<div>matchMedia: ${note.blocked}</div>
 				<div>screen query: ${note.blocked}</div>
 			</div>` :
@@ -1237,7 +1237,7 @@ const imports = {
 				}</div>
 				<div>@import: ${
 					!importCSS || !Object.keys(importCSS).filter(key => !!importCSS[key]).length ? 
-					note.blocked :
+					note.unsupported :
 					modal(
 						'creep-css-import',
 						`<strong>@import</strong><br><br>${Object.keys(importCSS).map(key => `${key}: ${importCSS[key] || note.unsupported}`).join('<br>')}`,
