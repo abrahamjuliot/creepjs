@@ -1207,7 +1207,7 @@ const imports = {
 			`<div class="col-six">
 				<strong>CSS Media Queries</strong><
 				<div>@media: ${note.blocked}</div>
-				<div>@import: ${note.blocked}</div>
+				<div>@import: ${note.unsupported}</div>
 				<div>matchMedia: ${note.blocked}</div>
 				<div>screen query: ${note.blocked}</div>
 			</div>` :
@@ -1716,7 +1716,7 @@ const imports = {
 				trashLen,
 				liesLen
 			})
-			const percentify = (x, letterGrade) => {
+			const percentify = x => {
 				return `<span class="scale-up grade-${x < 0 ? 'F' : 'A'}">${
 					x > 0 ? `+${x}% reward` : x < 0 ? `${x}%` : `0%`
 				}</span>`
@@ -1739,21 +1739,21 @@ const imports = {
 						<div class="col-six">
 							<div>has trash: <span class="unblurred">${
 								(''+hasTrash) == 'true' ?
-								`true ${percentify(trashPointLoss, grade.charAt(0))}` : 
+								`true ${percentify(trashPointLoss)}` : 
 								'false'
 							}</span></div>
 							<div>has lied: <span class="unblurred">${
 								(''+hasLied) == 'true' ? 
-								`true ${percentify(liesPointLoss, grade.charAt(0))}` : 
+								`true ${percentify(liesPointLoss)}` : 
 								'false'
 							}</span></div>
 							<div>has errors: <span class="unblurred">${
 								(''+hasErrors) == 'true' ? 
-								`true ${percentify(errorsPointLoss, grade.charAt(0))}` : 
+								`true ${percentify(errorsPointLoss)}` : 
 								'false'
 							}</span></div>
 							<div class="ellipsis">loose fingerprint: <span class="unblurred">${hashSlice(fpHash)}</span></div>
-							<div class="ellipsis">loose switched: <span class="unblurred">${switchCount}x ${percentify(switchCountPointLoss, grade.charAt(0))}</span></div>
+							<div class="ellipsis">loose switched: <span class="unblurred">${switchCount}x ${percentify(switchCountPointLoss)}</span></div>
 							<div class="ellipsis">bot: <span class="unblurred">${
 								caniuse(() => fp.headless.headlessRating) ? 'true (headless)' :
 								caniuse(() => fp.headless.stealthRating) ? 'true (stealth)' :

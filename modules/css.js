@@ -89,7 +89,8 @@ export const getCSSMedia = async imports => {
 		require: {
 			captureError,
 			phantomDarkness,
-			logTestResult
+			logTestResult,
+			isFirefox
 		}
 	} = imports
 
@@ -218,57 +219,61 @@ export const getCSSMedia = async imports => {
 			orientation: style.getPropertyValue('--orientation').trim() || undefined,
 		}
 
-		body.innerHTML = `
-		<style>
-		@import '${getCSSDataURI('--import-prefers-reduced-motion: no-preference')}' (prefers-reduced-motion: no-preference);
-		@import '${getCSSDataURI('--import-prefers-reduced-motion: reduce')}' (prefers-reduced-motion: reduce);
-		@import '${getCSSDataURI('--import-prefers-color-scheme: light')}' (prefers-color-scheme: light);
-		@import '${getCSSDataURI('--import-prefers-color-scheme: dark')}' (prefers-color-scheme: dark);
-		@import '${getCSSDataURI('--import-monochrome: monochrome')}' (monochrome);
-		@import '${getCSSDataURI('--import-monochrome: non-monochrome')}' (monochrome: 0);
-		@import '${getCSSDataURI('--import-inverted-colors: inverted')}' (inverted-colors: inverted);
-		@import '${getCSSDataURI('--import-inverted-colors: none')}' (inverted-colors: 0);
-		@import '${getCSSDataURI('--import-forced-colors: none')}' (forced-colors: none);
-		@import '${getCSSDataURI('--import-forced-colors: active')}' (forced-colors: active);
-		@import '${getCSSDataURI('--import-any-hover: hover')}' (any-hover: hover);
-		@import '${getCSSDataURI('--import-any-hover: none')}' (any-hover: none);
-		@import '${getCSSDataURI('--import-hover: hover')}' (hover: hover);
-		@import '${getCSSDataURI('--import-hover: none')}' (hover: none);
-		@import '${getCSSDataURI('--import-any-pointer: fine')}' (any-pointer: fine);
-		@import '${getCSSDataURI('--import-any-pointer: coarse')}' (any-pointer: coarse);
-		@import '${getCSSDataURI('--import-any-pointer: none')}' (any-pointer: none);
-		@import '${getCSSDataURI('--import-pointer: fine')}' (pointer: fine);
-		@import '${getCSSDataURI('--import-pointer: coarse')}' (pointer: coarse);
-		@import '${getCSSDataURI('--import-pointer: none')}' (pointer: none);
-		@import '${getCSSDataURI(`--import-device-aspect-ratio: ${deviceAspectRatio}`)}' (device-aspect-ratio: ${deviceAspectRatio});
-		@import '${getCSSDataURI(`--import-device-screen: ${width} x ${height}`)}' (device-width: ${width}px) and (device-height: ${height}px);
-		@import '${getCSSDataURI('--import-display-mode: fullscreen')}' (display-mode: fullscreen);
-		@import '${getCSSDataURI('--import-display-mode: standalone')}' (display-mode: standalone);
-		@import '${getCSSDataURI('--import-display-mode: minimal-ui')}' (display-mode: minimal-ui);
-		@import '${getCSSDataURI('--import-display-mode: browser')}' (display-mode: browser);
-		@import '${getCSSDataURI('--import-color-gamut: srgb')}' (color-gamut: srgb);
-		@import '${getCSSDataURI('--import-color-gamut: p3')}' (color-gamut: p3);
-		@import '${getCSSDataURI('--import-color-gamut: rec2020')}' (color-gamut: rec2020);
-		@import '${getCSSDataURI('--import-orientation: landscape')}' (orientation: landscape);
-		@import '${getCSSDataURI('--import-orientation: portrait')}' (orientation: portrait);
-		</style>
-		`
-		style = getComputedStyle(body)
-		const importCSS = {
-			['prefers-reduced-motion']: style.getPropertyValue('--import-prefers-reduced-motion').trim() || undefined,
-			['prefers-color-scheme']: style.getPropertyValue('--import-prefers-color-scheme').trim() || undefined,
-			monochrome: style.getPropertyValue('--import-monochrome').trim() || undefined,
-			['inverted-colors']: style.getPropertyValue('--import-inverted-colors').trim() || undefined,
-			['forced-colors']: style.getPropertyValue('--import-forced-colors').trim() || undefined,
-			['any-hover']: style.getPropertyValue('--import-any-hover').trim() || undefined,
-			hover: style.getPropertyValue('--import-hover').trim() || undefined,
-			['any-pointer']: style.getPropertyValue('--import-any-pointer').trim() || undefined,
-			pointer: style.getPropertyValue('--import-pointer').trim() || undefined,
-			['device-aspect-ratio']: style.getPropertyValue('--import-device-aspect-ratio').trim() || undefined,
-			['device-screen']: style.getPropertyValue('--import-device-screen').trim() || undefined,
-			['display-mode']: style.getPropertyValue('--import-display-mode').trim() || undefined,
-			['color-gamut']: style.getPropertyValue('--import-color-gamut').trim() || undefined,
-			orientation: style.getPropertyValue('--import-orientation').trim() || undefined
+		let importCSS
+
+		if (!isFirefox) {
+			body.innerHTML = `
+			<style>
+			@import '${getCSSDataURI('--import-prefers-reduced-motion: no-preference')}' (prefers-reduced-motion: no-preference);
+			@import '${getCSSDataURI('--import-prefers-reduced-motion: reduce')}' (prefers-reduced-motion: reduce);
+			@import '${getCSSDataURI('--import-prefers-color-scheme: light')}' (prefers-color-scheme: light);
+			@import '${getCSSDataURI('--import-prefers-color-scheme: dark')}' (prefers-color-scheme: dark);
+			@import '${getCSSDataURI('--import-monochrome: monochrome')}' (monochrome);
+			@import '${getCSSDataURI('--import-monochrome: non-monochrome')}' (monochrome: 0);
+			@import '${getCSSDataURI('--import-inverted-colors: inverted')}' (inverted-colors: inverted);
+			@import '${getCSSDataURI('--import-inverted-colors: none')}' (inverted-colors: 0);
+			@import '${getCSSDataURI('--import-forced-colors: none')}' (forced-colors: none);
+			@import '${getCSSDataURI('--import-forced-colors: active')}' (forced-colors: active);
+			@import '${getCSSDataURI('--import-any-hover: hover')}' (any-hover: hover);
+			@import '${getCSSDataURI('--import-any-hover: none')}' (any-hover: none);
+			@import '${getCSSDataURI('--import-hover: hover')}' (hover: hover);
+			@import '${getCSSDataURI('--import-hover: none')}' (hover: none);
+			@import '${getCSSDataURI('--import-any-pointer: fine')}' (any-pointer: fine);
+			@import '${getCSSDataURI('--import-any-pointer: coarse')}' (any-pointer: coarse);
+			@import '${getCSSDataURI('--import-any-pointer: none')}' (any-pointer: none);
+			@import '${getCSSDataURI('--import-pointer: fine')}' (pointer: fine);
+			@import '${getCSSDataURI('--import-pointer: coarse')}' (pointer: coarse);
+			@import '${getCSSDataURI('--import-pointer: none')}' (pointer: none);
+			@import '${getCSSDataURI(`--import-device-aspect-ratio: ${deviceAspectRatio}`)}' (device-aspect-ratio: ${deviceAspectRatio});
+			@import '${getCSSDataURI(`--import-device-screen: ${width} x ${height}`)}' (device-width: ${width}px) and (device-height: ${height}px);
+			@import '${getCSSDataURI('--import-display-mode: fullscreen')}' (display-mode: fullscreen);
+			@import '${getCSSDataURI('--import-display-mode: standalone')}' (display-mode: standalone);
+			@import '${getCSSDataURI('--import-display-mode: minimal-ui')}' (display-mode: minimal-ui);
+			@import '${getCSSDataURI('--import-display-mode: browser')}' (display-mode: browser);
+			@import '${getCSSDataURI('--import-color-gamut: srgb')}' (color-gamut: srgb);
+			@import '${getCSSDataURI('--import-color-gamut: p3')}' (color-gamut: p3);
+			@import '${getCSSDataURI('--import-color-gamut: rec2020')}' (color-gamut: rec2020);
+			@import '${getCSSDataURI('--import-orientation: landscape')}' (orientation: landscape);
+			@import '${getCSSDataURI('--import-orientation: portrait')}' (orientation: portrait);
+			</style>
+			`
+			style = getComputedStyle(body)
+			importCSS = {
+				['prefers-reduced-motion']: style.getPropertyValue('--import-prefers-reduced-motion').trim() || undefined,
+				['prefers-color-scheme']: style.getPropertyValue('--import-prefers-color-scheme').trim() || undefined,
+				monochrome: style.getPropertyValue('--import-monochrome').trim() || undefined,
+				['inverted-colors']: style.getPropertyValue('--import-inverted-colors').trim() || undefined,
+				['forced-colors']: style.getPropertyValue('--import-forced-colors').trim() || undefined,
+				['any-hover']: style.getPropertyValue('--import-any-hover').trim() || undefined,
+				hover: style.getPropertyValue('--import-hover').trim() || undefined,
+				['any-pointer']: style.getPropertyValue('--import-any-pointer').trim() || undefined,
+				pointer: style.getPropertyValue('--import-pointer').trim() || undefined,
+				['device-aspect-ratio']: style.getPropertyValue('--import-device-aspect-ratio').trim() || undefined,
+				['device-screen']: style.getPropertyValue('--import-device-screen').trim() || undefined,
+				['display-mode']: style.getPropertyValue('--import-display-mode').trim() || undefined,
+				['color-gamut']: style.getPropertyValue('--import-color-gamut').trim() || undefined,
+				orientation: style.getPropertyValue('--import-orientation').trim() || undefined
+			}
 		}
 
 		// get screen query
