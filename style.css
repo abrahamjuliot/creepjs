@@ -247,7 +247,7 @@ visitor {
 	border-radius: 3px;
 	padding: 0 5px;
     display: inline-block;
-	animation: fade-in .3s .3s cubic-bezier(0.77, 0, 0.175, 1.5) both;
+	line-height: 1.3;
 }
 .grade-A {
 	background: #2da568;
@@ -264,7 +264,12 @@ visitor {
 .grade-F {
 	background: #ca656e;
 }
-
+.scale-up {
+	animation: scale-up .3s .3s cubic-bezier(0.77, 0, 0.175, 1.5) both;
+}
+.scale-down {
+	animation: scale-down .6s .3s cubic-bezier(0.77, 0, 0.175, 1.5) both;
+}
 @keyframes fade-in {
 	0%, 30% {
 		transform: translateX(-5px);
@@ -275,9 +280,19 @@ visitor {
 	}
 }
 
-@keyframes zoom {
+@keyframes scale-up {
 	0%, 30% {
-		transform: scale(0.9);
+		transform: scale(0.5);
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+@keyframes scale-down {
+	0%, 30% {
+		transform: scale(1.5);
 		opacity: 0;
 	}
 	100% {

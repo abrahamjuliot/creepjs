@@ -1655,44 +1655,79 @@ const imports = {
 			const hours = hoursAgo(new Date(firstVisit), new Date(latestVisit)).toFixed(1)
 
 			const computeTrustScore = ({ switchCount, errorsLen, trashLen, liesLen }) => {
-				const extraCredit = 20 // reward for low switch count
-				const score = (100-(
-					// add extra credit
-					// decrease score as loose fingerprint switching increases
-					(switchCount < 2 ? -extraCredit : switchCount < 11 ? switchCount * 0.1 : switchCount * 0.2 ) +
-					// decrease score by error count
-					(errorsLen * 5.2) +
-					// decrease score by trash count
-					(trashLen * 15.5) +
-					// decrease score by lie count
-					(liesLen * 31)
-				)).toFixed(0)
-				const grade = (
-					score > 95 ? 'A+' :
-					score == 95 ? 'A' :
-					score >= 90 ? 'A-' :
-					score > 85 ? 'B+' :
-					score == 85 ? 'B' :
-					score >= 80 ? 'B-' :
-					score > 75 ? 'C+' :
-					score == 75 ? 'C' :
-					score >= 70 ? 'C-' :
-					score > 65 ? 'D+' :
-					score == 65 ? 'D' :
-					score >= 60 ? 'D-' :
-					score > 55 ? 'F+' :
-					score == 55 ? 'F' :
-					'F-'
-				)
-				return {
-					grade,
-					score: (
-						score < 0 ? 0 : score > 100 ? 100 : score
-					)
+				const score = {
+					errorsRisk: 5.2,
+					trashRisk: 15.5,
+					liesRisk: 31,
+					reward: 20,
+					get switchCountPointLoss() {
+						return -Math.round(
+							switchCount < 2 ? -score.reward :
+							switchCount < 11 ? switchCount * 0.1 :
+							switchCount * 0.2
+						)
+					},
+					get errorsPointLoss() {
+						return -Math.round(errorsLen * score.errorsRisk)
+					},
+					get trashPointLoss() {
+						return -Math.round(trashLen * score.trashRisk)
+					},
+					get liesPointLoss() {
+						return -Math.round(liesLen * score.liesRisk)
+					},
+					get total() {
+						const points = Math.round(
+							100 +
+							score.switchCountPointLoss +
+							score.errorsPointLoss +
+							score.trashPointLoss + 
+							score.liesPointLoss
+						)
+						return points < 0 ? 0 : points > 100 ? 100 : points
+					},
+					get grade() {
+						const total = score.total
+						return (
+							total > 95 ? 'A+' :
+							total == 95 ? 'A' :
+							total >= 90 ? 'A-' :
+							total > 85 ? 'B+' :
+							total == 85 ? 'B' :
+							total >= 80 ? 'B-' :
+							total > 75 ? 'C+' :
+							total == 75 ? 'C' :
+							total >= 70 ? 'C-' :
+							total > 65 ? 'D+' :
+							total == 65 ? 'D' :
+							total >= 60 ? 'D-' :
+							total > 55 ? 'F+' :
+							total == 55 ? 'F' :
+							'F-'
+						)
+					}
 				}
+				return score
 			}
 
-			const { grade, score } = computeTrustScore({ switchCount, errorsLen, trashLen, liesLen })
+			const {
+				switchCountPointLoss,
+				errorsPointLoss,
+				trashPointLoss,
+				liesPointLoss,
+				grade,
+				total: scoreTotal
+			} = computeTrustScore({
+				switchCount,
+				errorsLen,
+				trashLen,
+				liesLen
+			})
+			const percentify = (x, letterGrade) => {
+				return `<span class="scale-up grade-${x < 0 ? 'F' : 'A'}">${
+					x > 0 ? `+${x}% reward` : x < 0 ? `${x}%` : `0%`
+				}</span>`
+			}
 
 			const template = `
 				<div class="visitor-info">
@@ -1701,7 +1736,7 @@ const imports = {
 						<div class="col-six">
 							<strong>Browser</strong>
 							<div>trust score: <span class="unblurred">
-								${score}% <span class="grade-${grade.charAt(0)}">${grade}</span>
+								${scoreTotal}% <span class="scale-down grade-${grade.charAt(0)}">${grade}</span>
 							</span></div>
 							<div>visits: <span class="unblurred">${visits}</span></div>
 							<div class="ellipsis">first: <span class="unblurred">${toLocaleStr(firstVisit)}</span></div>
@@ -1711,21 +1746,21 @@ const imports = {
 						<div class="col-six">
 							<div>has trash: <span class="unblurred">${
 								(''+hasTrash) == 'true' ?
-								`true (${hashSlice(fp.trash.$hash)})` : 
+								`true ${percentify(trashPointLoss, grade.charAt(0))}` : 
 								'false'
 							}</span></div>
 							<div>has lied: <span class="unblurred">${
 								(''+hasLied) == 'true' ? 
-								`true (${hashSlice(fp.lies.$hash)})` : 
+								`true ${percentify(liesPointLoss, grade.charAt(0))}` : 
 								'false'
 							}</span></div>
 							<div>has errors: <span class="unblurred">${
 								(''+hasErrors) == 'true' ? 
-								`true (${hashSlice(fp.capturedErrors.$hash)})` : 
+								`true ${percentify(errorsPointLoss, grade.charAt(0))}` : 
 								'false'
 							}</span></div>
 							<div class="ellipsis">loose fingerprint: <span class="unblurred">${hashSlice(fpHash)}</span></div>
-							<div class="ellipsis">loose switched: <span class="unblurred">${switchCount}x</span></div>
+							<div class="ellipsis">loose switched: <span class="unblurred">${switchCount}x ${percentify(switchCountPointLoss, grade.charAt(0))}</span></div>
 							<div class="ellipsis">bot: <span class="unblurred">${
 								caniuse(() => fp.headless.headlessRating) ? 'true (headless)' :
 								caniuse(() => fp.headless.stealthRating) ? 'true (stealth)' :
