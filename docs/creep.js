@@ -2332,7 +2332,8 @@
 			require: {
 				captureError,
 				phantomDarkness,
-				logTestResult
+				logTestResult,
+				isFirefox
 			}
 		} = imports;
 
@@ -2461,58 +2462,62 @@
 				orientation: style.getPropertyValue('--orientation').trim() || undefined,
 			};
 
-			body.innerHTML = `
-		<style>
-		@import '${getCSSDataURI('--import-prefers-reduced-motion: no-preference')}' (prefers-reduced-motion: no-preference);
-		@import '${getCSSDataURI('--import-prefers-reduced-motion: reduce')}' (prefers-reduced-motion: reduce);
-		@import '${getCSSDataURI('--import-prefers-color-scheme: light')}' (prefers-color-scheme: light);
-		@import '${getCSSDataURI('--import-prefers-color-scheme: dark')}' (prefers-color-scheme: dark);
-		@import '${getCSSDataURI('--import-monochrome: monochrome')}' (monochrome);
-		@import '${getCSSDataURI('--import-monochrome: non-monochrome')}' (monochrome: 0);
-		@import '${getCSSDataURI('--import-inverted-colors: inverted')}' (inverted-colors: inverted);
-		@import '${getCSSDataURI('--import-inverted-colors: none')}' (inverted-colors: 0);
-		@import '${getCSSDataURI('--import-forced-colors: none')}' (forced-colors: none);
-		@import '${getCSSDataURI('--import-forced-colors: active')}' (forced-colors: active);
-		@import '${getCSSDataURI('--import-any-hover: hover')}' (any-hover: hover);
-		@import '${getCSSDataURI('--import-any-hover: none')}' (any-hover: none);
-		@import '${getCSSDataURI('--import-hover: hover')}' (hover: hover);
-		@import '${getCSSDataURI('--import-hover: none')}' (hover: none);
-		@import '${getCSSDataURI('--import-any-pointer: fine')}' (any-pointer: fine);
-		@import '${getCSSDataURI('--import-any-pointer: coarse')}' (any-pointer: coarse);
-		@import '${getCSSDataURI('--import-any-pointer: none')}' (any-pointer: none);
-		@import '${getCSSDataURI('--import-pointer: fine')}' (pointer: fine);
-		@import '${getCSSDataURI('--import-pointer: coarse')}' (pointer: coarse);
-		@import '${getCSSDataURI('--import-pointer: none')}' (pointer: none);
-		@import '${getCSSDataURI(`--import-device-aspect-ratio: ${deviceAspectRatio}`)}' (device-aspect-ratio: ${deviceAspectRatio});
-		@import '${getCSSDataURI(`--import-device-screen: ${width} x ${height}`)}' (device-width: ${width}px) and (device-height: ${height}px);
-		@import '${getCSSDataURI('--import-display-mode: fullscreen')}' (display-mode: fullscreen);
-		@import '${getCSSDataURI('--import-display-mode: standalone')}' (display-mode: standalone);
-		@import '${getCSSDataURI('--import-display-mode: minimal-ui')}' (display-mode: minimal-ui);
-		@import '${getCSSDataURI('--import-display-mode: browser')}' (display-mode: browser);
-		@import '${getCSSDataURI('--import-color-gamut: srgb')}' (color-gamut: srgb);
-		@import '${getCSSDataURI('--import-color-gamut: p3')}' (color-gamut: p3);
-		@import '${getCSSDataURI('--import-color-gamut: rec2020')}' (color-gamut: rec2020);
-		@import '${getCSSDataURI('--import-orientation: landscape')}' (orientation: landscape);
-		@import '${getCSSDataURI('--import-orientation: portrait')}' (orientation: portrait);
-		</style>
-		`;
-			style = getComputedStyle(body);
-			const importCSS = {
-				['prefers-reduced-motion']: style.getPropertyValue('--import-prefers-reduced-motion').trim() || undefined,
-				['prefers-color-scheme']: style.getPropertyValue('--import-prefers-color-scheme').trim() || undefined,
-				monochrome: style.getPropertyValue('--import-monochrome').trim() || undefined,
-				['inverted-colors']: style.getPropertyValue('--import-inverted-colors').trim() || undefined,
-				['forced-colors']: style.getPropertyValue('--import-forced-colors').trim() || undefined,
-				['any-hover']: style.getPropertyValue('--import-any-hover').trim() || undefined,
-				hover: style.getPropertyValue('--import-hover').trim() || undefined,
-				['any-pointer']: style.getPropertyValue('--import-any-pointer').trim() || undefined,
-				pointer: style.getPropertyValue('--import-pointer').trim() || undefined,
-				['device-aspect-ratio']: style.getPropertyValue('--import-device-aspect-ratio').trim() || undefined,
-				['device-screen']: style.getPropertyValue('--import-device-screen').trim() || undefined,
-				['display-mode']: style.getPropertyValue('--import-display-mode').trim() || undefined,
-				['color-gamut']: style.getPropertyValue('--import-color-gamut').trim() || undefined,
-				orientation: style.getPropertyValue('--import-orientation').trim() || undefined
-			};
+			let importCSS;
+
+			if (!isFirefox) {
+				body.innerHTML = `
+			<style>
+			@import '${getCSSDataURI('--import-prefers-reduced-motion: no-preference')}' (prefers-reduced-motion: no-preference);
+			@import '${getCSSDataURI('--import-prefers-reduced-motion: reduce')}' (prefers-reduced-motion: reduce);
+			@import '${getCSSDataURI('--import-prefers-color-scheme: light')}' (prefers-color-scheme: light);
+			@import '${getCSSDataURI('--import-prefers-color-scheme: dark')}' (prefers-color-scheme: dark);
+			@import '${getCSSDataURI('--import-monochrome: monochrome')}' (monochrome);
+			@import '${getCSSDataURI('--import-monochrome: non-monochrome')}' (monochrome: 0);
+			@import '${getCSSDataURI('--import-inverted-colors: inverted')}' (inverted-colors: inverted);
+			@import '${getCSSDataURI('--import-inverted-colors: none')}' (inverted-colors: 0);
+			@import '${getCSSDataURI('--import-forced-colors: none')}' (forced-colors: none);
+			@import '${getCSSDataURI('--import-forced-colors: active')}' (forced-colors: active);
+			@import '${getCSSDataURI('--import-any-hover: hover')}' (any-hover: hover);
+			@import '${getCSSDataURI('--import-any-hover: none')}' (any-hover: none);
+			@import '${getCSSDataURI('--import-hover: hover')}' (hover: hover);
+			@import '${getCSSDataURI('--import-hover: none')}' (hover: none);
+			@import '${getCSSDataURI('--import-any-pointer: fine')}' (any-pointer: fine);
+			@import '${getCSSDataURI('--import-any-pointer: coarse')}' (any-pointer: coarse);
+			@import '${getCSSDataURI('--import-any-pointer: none')}' (any-pointer: none);
+			@import '${getCSSDataURI('--import-pointer: fine')}' (pointer: fine);
+			@import '${getCSSDataURI('--import-pointer: coarse')}' (pointer: coarse);
+			@import '${getCSSDataURI('--import-pointer: none')}' (pointer: none);
+			@import '${getCSSDataURI(`--import-device-aspect-ratio: ${deviceAspectRatio}`)}' (device-aspect-ratio: ${deviceAspectRatio});
+			@import '${getCSSDataURI(`--import-device-screen: ${width} x ${height}`)}' (device-width: ${width}px) and (device-height: ${height}px);
+			@import '${getCSSDataURI('--import-display-mode: fullscreen')}' (display-mode: fullscreen);
+			@import '${getCSSDataURI('--import-display-mode: standalone')}' (display-mode: standalone);
+			@import '${getCSSDataURI('--import-display-mode: minimal-ui')}' (display-mode: minimal-ui);
+			@import '${getCSSDataURI('--import-display-mode: browser')}' (display-mode: browser);
+			@import '${getCSSDataURI('--import-color-gamut: srgb')}' (color-gamut: srgb);
+			@import '${getCSSDataURI('--import-color-gamut: p3')}' (color-gamut: p3);
+			@import '${getCSSDataURI('--import-color-gamut: rec2020')}' (color-gamut: rec2020);
+			@import '${getCSSDataURI('--import-orientation: landscape')}' (orientation: landscape);
+			@import '${getCSSDataURI('--import-orientation: portrait')}' (orientation: portrait);
+			</style>
+			`;
+				style = getComputedStyle(body);
+				importCSS = {
+					['prefers-reduced-motion']: style.getPropertyValue('--import-prefers-reduced-motion').trim() || undefined,
+					['prefers-color-scheme']: style.getPropertyValue('--import-prefers-color-scheme').trim() || undefined,
+					monochrome: style.getPropertyValue('--import-monochrome').trim() || undefined,
+					['inverted-colors']: style.getPropertyValue('--import-inverted-colors').trim() || undefined,
+					['forced-colors']: style.getPropertyValue('--import-forced-colors').trim() || undefined,
+					['any-hover']: style.getPropertyValue('--import-any-hover').trim() || undefined,
+					hover: style.getPropertyValue('--import-hover').trim() || undefined,
+					['any-pointer']: style.getPropertyValue('--import-any-pointer').trim() || undefined,
+					pointer: style.getPropertyValue('--import-pointer').trim() || undefined,
+					['device-aspect-ratio']: style.getPropertyValue('--import-device-aspect-ratio').trim() || undefined,
+					['device-screen']: style.getPropertyValue('--import-device-screen').trim() || undefined,
+					['display-mode']: style.getPropertyValue('--import-display-mode').trim() || undefined,
+					['color-gamut']: style.getPropertyValue('--import-color-gamut').trim() || undefined,
+					orientation: style.getPropertyValue('--import-orientation').trim() || undefined
+				};
+			}
 
 			// get screen query
 			let screenQuery = getScreenMatchMedia(win);
@@ -5259,7 +5264,6 @@
 				loads: undefined
 			};
 			try {
-				
 				const currentFingerprint = Object.keys(fp)
 				.reduce((acc, key) => {
 					if (!fp[key]) {
@@ -5328,6 +5332,20 @@
 				</div>
 			</div>
 			<div id="signature">
+			</div>
+			<div class="flex-grid">
+				<div class="col-four">
+					<strong>Session ID</strong>
+					<div>0</div>
+				</div>
+				<div class="col-four">
+					<strong>Session Loads</strong>
+					<div>0</div>
+				</div>
+				<div class="col-four">
+					<strong>Session Switched</strong>
+					<div>none</div>
+				</div>
 			</div>
 		</div>
 		<div class="flex-grid">
@@ -6090,7 +6108,7 @@
 				}</div>
 				<div>@import: ${
 					!importCSS || !Object.keys(importCSS).filter(key => !!importCSS[key]).length ? 
-					note.blocked :
+					note.unsupported :
 					modal(
 						'creep-css-import',
 						`<strong>@import</strong><br><br>${Object.keys(importCSS).map(key => `${key}: ${importCSS[key] || note.unsupported}`).join('<br>')}`,
@@ -6456,26 +6474,6 @@
 			`
 		})()}
 		</div>
-		${
-			(() => {
-				const { initial, loads, revisedKeys } = computeSession(fp);
-				
-				return `
-					<div>
-						<div>session:<span class="sub-hash">${initial}</span></div>
-						<div>loads: ${loads}</div>
-						<div>revisions: ${
-							!revisedKeys.length ? 'none' :
-							modal(
-								`creep-revisions`,
-								revisedKeys.join('<br>'),
-								hashMini(revisedKeys)
-							)
-						}</div>
-					</div>
-				`	
-			})()
-		}
 		<div>
 			<strong>Tests</strong>
 			<div>
@@ -6521,53 +6519,88 @@
 				const hours = hoursAgo(new Date(firstVisit), new Date(latestVisit)).toFixed(1);
 
 				const computeTrustScore = ({ switchCount, errorsLen, trashLen, liesLen }) => {
-					const extraCredit = 20; // reward for low switch count
-					const score = (100-(
-						// add extra credit
-						// decrease score as loose fingerprint switching increases
-						(switchCount < 2 ? -extraCredit : switchCount < 11 ? switchCount * 0.1 : switchCount * 0.2 ) +
-						// decrease score by error count
-						(errorsLen * 5.2) +
-						// decrease score by trash count
-						(trashLen * 15.5) +
-						// decrease score by lie count
-						(liesLen * 31)
-					)).toFixed(0);
-					const grade = (
-						score > 95 ? 'A+' :
-						score == 95 ? 'A' :
-						score >= 90 ? 'A-' :
-						score > 85 ? 'B+' :
-						score == 85 ? 'B' :
-						score >= 80 ? 'B-' :
-						score > 75 ? 'C+' :
-						score == 75 ? 'C' :
-						score >= 70 ? 'C-' :
-						score > 65 ? 'D+' :
-						score == 65 ? 'D' :
-						score >= 60 ? 'D-' :
-						score > 55 ? 'F+' :
-						score == 55 ? 'F' :
-						'F-'
-					);
-					return {
-						grade,
-						score: (
-							score < 0 ? 0 : score > 100 ? 100 : score
-						)
-					}
+					const score = {
+						errorsRisk: 5.2,
+						trashRisk: 15.5,
+						liesRisk: 31,
+						reward: 20,
+						get switchCountPointLoss() {
+							return -Math.round(
+								switchCount < 2 ? -score.reward :
+								switchCount < 11 ? switchCount * 0.1 :
+								switchCount * 0.2
+							)
+						},
+						get errorsPointLoss() {
+							return -Math.round(errorsLen * score.errorsRisk)
+						},
+						get trashPointLoss() {
+							return -Math.round(trashLen * score.trashRisk)
+						},
+						get liesPointLoss() {
+							return -Math.round(liesLen * score.liesRisk)
+						},
+						get total() {
+							const points = Math.round(
+								100 +
+								score.switchCountPointLoss +
+								score.errorsPointLoss +
+								score.trashPointLoss + 
+								score.liesPointLoss
+							);
+							return points < 0 ? 0 : points > 100 ? 100 : points
+						},
+						get grade() {
+							const total = score.total;
+							return (
+								total > 95 ? 'A+' :
+								total == 95 ? 'A' :
+								total >= 90 ? 'A-' :
+								total > 85 ? 'B+' :
+								total == 85 ? 'B' :
+								total >= 80 ? 'B-' :
+								total > 75 ? 'C+' :
+								total == 75 ? 'C' :
+								total >= 70 ? 'C-' :
+								total > 65 ? 'D+' :
+								total == 65 ? 'D' :
+								total >= 60 ? 'D-' :
+								total > 55 ? 'F+' :
+								total == 55 ? 'F' :
+								'F-'
+							)
+						}
+					};
+					return score
 				};
 
-				const { grade, score } = computeTrustScore({ switchCount, errorsLen, trashLen, liesLen });
+				const {
+					switchCountPointLoss,
+					errorsPointLoss,
+					trashPointLoss,
+					liesPointLoss,
+					grade,
+					total: scoreTotal
+				} = computeTrustScore({
+					switchCount,
+					errorsLen,
+					trashLen,
+					liesLen
+				});
+				const percentify = x => {
+					return `<span class="scale-up grade-${x < 0 ? 'F' : x > 0 ? 'A' : ''}">${
+					x > 0 ? `+${x}% reward` : x < 0 ? `${x}%` : ''
+				}</span>`
+				};
 
 				const template = `
 				<div class="visitor-info">
-					<div class="ellipsis"><span class="aside-note">script modified 2021-4-11</span></div>
+					<div class="ellipsis"><span class="aside-note">script modified 2021-5-2</span></div>
 					<div class="flex-grid">
 						<div class="col-six">
 							<strong>Browser</strong>
 							<div>trust score: <span class="unblurred">
-								${score}% <span class="grade-${grade.charAt(0)}">${grade}</span>
+								${scoreTotal}% <span class="scale-down grade-${grade.charAt(0)}">${grade}</span>
 							</span></div>
 							<div>visits: <span class="unblurred">${visits}</span></div>
 							<div class="ellipsis">first: <span class="unblurred">${toLocaleStr(firstVisit)}</span></div>
@@ -6577,21 +6610,21 @@
 						<div class="col-six">
 							<div>has trash: <span class="unblurred">${
 								(''+hasTrash) == 'true' ?
-								`true (${hashSlice(fp.trash.$hash)})` : 
+								`true ${percentify(trashPointLoss)}` : 
 								'false'
 							}</span></div>
 							<div>has lied: <span class="unblurred">${
 								(''+hasLied) == 'true' ? 
-								`true (${hashSlice(fp.lies.$hash)})` : 
+								`true ${percentify(liesPointLoss)}` : 
 								'false'
 							}</span></div>
 							<div>has errors: <span class="unblurred">${
 								(''+hasErrors) == 'true' ? 
-								`true (${hashSlice(fp.capturedErrors.$hash)})` : 
+								`true ${percentify(errorsPointLoss)}` : 
 								'false'
 							}</span></div>
 							<div class="ellipsis">loose fingerprint: <span class="unblurred">${hashSlice(fpHash)}</span></div>
-							<div class="ellipsis">loose switched: <span class="unblurred">${switchCount}x</span></div>
+							<div class="ellipsis">loose switched: <span class="unblurred">${switchCount}x ${percentify(switchCountPointLoss)}</span></div>
 							<div class="ellipsis">bot: <span class="unblurred">${
 								caniuse(() => fp.headless.headlessRating) ? 'true (headless)' :
 								caniuse(() => fp.headless.stealthRating) ? 'true (stealth)' :
@@ -6611,6 +6644,35 @@
 							<input type="submit" value="Sign">
 						</form>
 						`
+					}
+					${
+						(() => {
+							const { initial, loads, revisedKeys } = computeSession(fp);
+							
+							return `
+								<div class="flex-grid">
+									<div class="col-four">
+										<strong>Session ID</strong>
+										<div><span class="sub-hash">${initial}</span></div>
+									</div>
+									<div class="col-four">
+										<strong>Session Loads</strong>
+										<div>${loads}</div>
+									</div>
+									<div class="col-four">
+										<strong>Session Switched</strong>
+										<div>${
+											!revisedKeys.length ? 'none' :
+											modal(
+												`creep-revisions`,
+												revisedKeys.join('<br>'),
+												hashMini(revisedKeys)
+											)
+										}</div>
+									</div>
+								</div>
+							`	
+						})()
 					}
 				</div>
 			`;
