@@ -4574,6 +4574,7 @@
 			
 		return new Promise(async resolve => {
 			try {
+				speechSynthesis.getVoices(); // warm up
 				await new Promise(setTimeout); 
 				const start = performance.now();
 				const win = phantomDarkness ? phantomDarkness : window;
@@ -4581,9 +4582,10 @@
 					logTestResult({ test: 'speech', passed: false });
 					return resolve()
 				}
+
 				let success = false;
-				const getVoices = async () => {
-					const data = await win.speechSynthesis.getVoices();
+				const getVoices = () => {
+					const data = win.speechSynthesis.getVoices();
 					if (!data.length) {
 						return
 					}
@@ -4594,11 +4596,18 @@
 					return resolve({ voices, defaultVoice })
 				};
 				
-				await getVoices();
-				win.speechSynthesis.onvoiceschanged = getVoices;
+				getVoices();
+				win.speechSynthesis.onvoiceschanged = getVoices; // Chrome support
+				
+				// handle pending resolve
+				const wait = 300;
 				setTimeout(() => {
-					return !success ? resolve() : undefined
-				}, 100);
+					if (success) {
+						return
+					}
+					logTestResult({ test: 'speech', passed: false });
+					return resolve()
+				}, wait);
 			}
 			catch (error) {
 				logTestResult({ test: 'speech', passed: false });
