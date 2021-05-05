@@ -352,15 +352,7 @@ const imports = {
 		fonts: !fp.fonts || fp.fonts.lied ? undefined : fp.fonts,
 		// skip trash since it is random
 		lies: !!liesLen,
-		capturedErrors: !!errorsLen,
-		voices: fp.voices,
-		webRTC: !fp.webRTC ? undefined : {
-			sdpcapabilities: fp.webRTC.sdpcapabilities,	
-			capabilities: fp.webRTC.capabilities,
-			foundation: fp.webRTC.foundation,
-			protocol: fp.webRTC.protocol,
-			type: fp.webRTC.type,
-		}
+		capturedErrors: !!errorsLen
 	}
 
 	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f')
