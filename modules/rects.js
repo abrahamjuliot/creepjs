@@ -169,15 +169,36 @@ export const getClientRects = async imports => {
 		`)
 
 		// get emojis
+		const pattern = new Set()
 		const emojiDiv = doc.getElementById('emoji')
 		const emojiRects = emojis
 			.slice(151, 200) // limit to improve performance
 			.map(emojiCode => {
 				const emoji = String.fromCodePoint(...emojiCode)
 				emojiDiv.innerHTML = emoji
-				const domRect = emojiDiv.getClientRects()[0]
-				return {emoji,...toNativeObject(domRect)}
+				const { height, width } = emojiDiv.getClientRects()[0]
+				return { emoji, width: ~~width, height: ~~height }
 			})
+
+		// get emoji set and system
+		const emojiSet = emojiRects
+			.filter(emoji => {
+				const dimensions = `${emoji.width}, ${emoji.heigt}`
+				if (pattern.has(dimensions)) {
+					return false
+				}
+				pattern.add(dimensions)
+				return true
+			})
+			.map(emoji => {
+				return emoji.emoji
+			})
+		const emojiSetHash = hashMini(emojiSet)
+		const systems = {
+			'ef218907' : 'Android Blink',
+			'3b8802f5' : 'Android Gecko'
+		}
+		const emojiSystem = systems[emojiSetHash] || emojiSetHash
 		
 		// get clientRects
 		const rectElems = doc.getElementsByClassName('rects')
@@ -228,7 +249,7 @@ export const getClientRects = async imports => {
 		}
 					
 		logTestResult({ start, test: 'rects', passed: true })
-		return { emojiRects, clientRects, lied }
+		return { emojiRects, emojiSet, emojiSystem, clientRects, lied }
 	}
 	catch (error) {
 		logTestResult({ test: 'rects', passed: false })
