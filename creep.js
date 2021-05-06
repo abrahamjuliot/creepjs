@@ -1111,7 +1111,7 @@ const imports = {
 						hashMini(emojiRects)
 					)
 				}</div>
-				<div>emoji set: ${emojiSet}</div>
+				<div>emoji set: ${emojiSet.join('')}</div>
 				<div>emoji system: ${emojiSystem}</div>
 			</div>
 			`

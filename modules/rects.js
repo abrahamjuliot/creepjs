@@ -195,8 +195,10 @@ export const getClientRects = async imports => {
 			})
 		const emojiSetHash = hashMini(emojiSet)
 		const systems = {
-			'ef218907' : 'Android Blink',
-			'3b8802f5' : 'Android Gecko'
+			'ef218907': 'Blink on Android',
+			'40592bd6': 'Blink on Windows',
+			'3b8802f5': 'Gecko on Android',
+			'80e1cd49': 'Tor Browser'
 		}
 		const emojiSystem = systems[emojiSetHash] || emojiSetHash
 		
