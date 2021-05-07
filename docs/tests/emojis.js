@@ -157,7 +157,7 @@ patch(document.getElementById('emoji-container'), html`
 		</div>
 		<div>
 		<div>${unique.size} of ${emojiRects.length} unique:</div>
-		<br>${emojiRects.filter(rect => unique.has(rect.hash) && unique.delete(rect.hash)).map(rect => `<span>${rect.emoji}</span>`).join('')}
+		<br>${emojiRects.filter(rect => unique.has(rect.hash) && unique.delete(rect.hash)).map(rect => `<span>${rect.emoji} (${rect.emojiCode})</span>`).join('<br>')}
 		</div>
 		<div>
 		<div>hash... : ...(emoji code)</div>
