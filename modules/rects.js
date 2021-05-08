@@ -278,21 +278,7 @@ export const getClientRects = async imports => {
 			.map(emoji => {
 				return emoji.emoji
 			})
-		const emojiSetHash = hashMini(emojiSet)
-		const systems = {
-			'1184f08f': 'Blink on Android',
-			'e7a730b1': 'Blink on Chrome OS',
-			'f6864be8': 'Blink on Chrome OS', // CloudReady
-			'c3e18b8c': 'Gecko on Android',
-			'8ff13414': 'Blink on Windows',
-			'ce1c9851': 'Gecko on Windows',
-			'502234c4': 'Tor Browser on Windows',
-			'906ca515': 'WebKit on Mac',
-			'769cf0ec': 'Blink on Mac',
-			'961d672e': 'Gecko on Mac',
-			'a03514e3': 'Tor Browser on Mac'
-		}
-		const emojiSystem = systems[emojiSetHash] || emojiSetHash
+		const emojiSystem = hashMini(emojiSet)
 		
 		// get clientRects
 		const rectElems = doc.getElementsByClassName('rects')

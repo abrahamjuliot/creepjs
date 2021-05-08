@@ -1095,6 +1095,32 @@ const imports = {
 				const {emoji,...excludeEmoji} = rect
 				return hashMini(excludeEmoji)
 			}
+			const icon = {
+				blink: '<span class="icon blink"></span>',
+				webkit: '<span class="icon webkit"></span>',
+				tor: '<span class="icon tor"></span>',
+				firefox: '<span class="icon firefox"></span>',
+				cros: '<span class="icon cros"></span>',
+				linux: '<span class="icon linux"></span>',
+				apple: '<span class="icon apple"></span>',
+				windows: '<span class="icon windows"></span>',
+				android: '<span class="icon android"></span>'
+			}
+			const systemHash = {
+				'1184f08f': `${icon.blink}${icon.android}Blink on Android`,
+				'e7a730b1': `${icon.blink}${icon.cros}Blink on Chrome OS`,
+				'f6864be8': `${icon.blink}${icon.cros}Blink on Chrome OS`, // CloudReady
+				'c3e18b8c': `${icon.gecko}${icon.android}Gecko on Android`,
+				'8ff13414': `${icon.blink}${icon.windows}Blink on Windows`,
+				'ce1c9851': `${icon.gecko}${icon.windows}Gecko on Windows`,
+				'502234c4': `${icon.tor}${icon.windows}Tor Browser on Windows`,
+				'611b43d6': `${icon.tor}${icon.windows}Tor Browser on Windows`,
+				'906ca515': `${icon.webkit}${icon.apple}WebKit on Mac`,
+				'769cf0ec': `${icon.blink}${icon.apple}Blink on Mac`,
+				'961d672e': `${icon.gecko}${icon.apple}Gecko on Mac`,
+				'a03514e3': `${icon.tor}${icon.apple}Tor Browser on Mac`
+			}
+
 			return `
 			<div class="col-six">
 				<strong>DOMRect</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
@@ -1112,7 +1138,7 @@ const imports = {
 						hashMini(emojiRects)
 					)
 				}</div>
-				<div>emoji system: ${emojiSystem}</div>
+				<div>emoji system: ${systemHash[emojiSystem]}</div>
 				<div>emoji set:</div>
 				<div class="block-text">${emojiSet.join('')}</div>
 			</div>
