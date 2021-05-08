@@ -1075,8 +1075,9 @@ const imports = {
 				<strong>DOMRect</strong>
 				<div>elements: ${note.blocked}</div>
 				<div>emojis v13.0: ${note.blocked}</div>
-				<div>emoji set: ${note.blocked}</div>
 				<div>emoji system: ${note.blocked}</div>
+				<div>emoji set:</div>
+				div class="block-text">${note.blocked}</div>
 			</div>` :
 		(() => {
 			const {
@@ -1111,8 +1112,9 @@ const imports = {
 						hashMini(emojiRects)
 					)
 				}</div>
-				<div>emoji set: ${emojiSet.join('')}</div>
 				<div>emoji system: ${emojiSystem}</div>
+				<div>emoji set:</div>
+				<div class="block-text">${emojiSet.join('')}</div>
 			</div>
 			`
 		})()}
