@@ -1138,7 +1138,7 @@ const imports = {
 						hashMini(emojiRects)
 					)
 				}</div>
-				<div>emoji system: ${systemHash[emojiSystem]}</div>
+				<div>emoji system: ${systemHash[emojiSystem] || emojiSystem}</div>
 				<div>emoji set:</div>
 				<div class="block-text">${emojiSet.join('')}</div>
 			</div>
