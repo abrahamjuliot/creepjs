@@ -262,7 +262,7 @@ export const getClientRects = async imports => {
 				const emoji = String.fromCodePoint(...emojiCode)
 				emojiDiv.innerHTML = emoji
 				const { height, width } = emojiDiv.getClientRects()[0]
-				return { emoji, width: ~~width, height: ~~height }
+				return { emoji, width, height }
 			})
 
 		// get emoji set and system
@@ -280,12 +280,17 @@ export const getClientRects = async imports => {
 			})
 		const emojiSetHash = hashMini(emojiSet)
 		const systems = {
-			'ed5ca079': 'Blink on Android',
-			'962aa291': 'Blink on Chrome OS',
-			'64fd60f9': 'Gecko on Android',
-			'4c9baf72': 'Blink on Windows',
-			'b08c00fd': 'Gecko on Windows',
-			'502234c4': 'Tor Browser on Windows'
+			'1184f08f': 'Blink on Android',
+			'e7a730b1': 'Blink on Chrome OS',
+			'f6864be8': 'Blink on Chrome OS', // CloudReady
+			'c3e18b8c': 'Gecko on Android',
+			'8ff13414': 'Blink on Windows',
+			'ce1c9851': 'Gecko on Windows',
+			'502234c4': 'Tor Browser on Windows',
+			'906ca515': 'WebKit on Mac',
+			'769cf0ec': 'Blink on Mac',
+			'961d672e': 'Gecko on Mac',
+			'a03514e3': 'Tor Browser on Mac'
 		}
 		const emojiSystem = systems[emojiSetHash] || emojiSetHash
 		
