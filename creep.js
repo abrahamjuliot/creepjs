@@ -1073,7 +1073,7 @@ const imports = {
 		${!fp.clientRects ?
 			`<div class="col-six">
 				<strong>DOMRect</strong>
-				<div>rects: ${note.blocked}</div>
+				<div>elements: ${note.blocked}</div>
 				<div>emojis v13.0: ${note.blocked}</div>
 				<div>emoji system: ${note.blocked}</div>
 				<div>emoji set:</div>
@@ -1084,9 +1084,6 @@ const imports = {
 				clientRects: {
 					$hash,
 					clientRects,
-					clientRectsBounding,
-					clientRectsRange,
-					clientRectsRangeBounding,
 					emojiRects,
 					emojiSet,
 					emojiSystem,
@@ -1124,17 +1121,16 @@ const imports = {
 				'a03514e3': `${icon.tor}${icon.apple}Tor Browser on Mac`
 			}
 
-			const rects = [...new Set([
-				hashMini(clientRects),
-				hashMini(clientRectsBounding),
-				hashMini(clientRectsRange),
-				hashMini(clientRectsRangeBounding)
-			])]
-
 			return `
 			<div class="col-six">
 				<strong>DOMRect</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-				<div>rects:${rects.map(rect => `<span class="sub-hash">${rect}</span>`).join('')}</div>
+				<div>elements: ${
+					modal(
+						`${id}-elements`,
+						clientRects.map(domRect => Object.keys(domRect).map(key => `<div>${key}: ${domRect[key]}</div>`).join('')).join('<br>'),
+						hashMini(clientRects)
+					)
+				}</div>
 				<div>emojis v13.0: ${
 					modal(
 						`${id}-emojis`,

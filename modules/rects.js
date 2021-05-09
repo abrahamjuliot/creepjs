@@ -33,7 +33,29 @@ export const getClientRects = async imports => {
 				y: domRect.y
 			}
 		}
-		let lied = lieProps['Element.getClientRects'] || false // detect lies
+		let lied = (
+			lieProps['Element.getClientRects'] ||
+			lieProps['Element.getBoundingClientRect'] ||
+			lieProps['Range.getClientRects'] ||
+			lieProps['Range.getBoundingClientRect']
+		) || false // detect lies
+		const getBestRect = (lieProps, doc, el) => {
+			let range
+			if (!lieProps['Element.getClientRects']) {
+				return el.getClientRects()[0]
+			}
+			else if (!lieProps['Element.getBoundingClientRect']) {
+				return el.getBoundingClientRect()
+			}
+			else if (!lieProps['Range.getClientRects']) {
+				range = doc.createRange()
+				range.selectNode(el)
+				return range.getClientRects()[0]
+			}
+			range = doc.createRange()
+			range.selectNode(el)
+			return range.getBoundingClientRect()
+		}
 					
 		const doc = phantomDarkness ? phantomDarkness.document : document
 
@@ -255,13 +277,14 @@ export const getClientRects = async imports => {
 			[127344],
 			[127359]
 		]
+
 		const pattern = new Set()
 		const emojiDiv = doc.getElementById('emoji')
 		const emojiRects = systemEmojis
 			.map(emojiCode => {
 				const emoji = String.fromCodePoint(...emojiCode)
 				emojiDiv.innerHTML = emoji
-				const { height, width } = emojiDiv.getClientRects()[0]
+				const { height, width } = getBestRect(lieProps, doc, emojiDiv)
 				return { emoji, width, height }
 			})
 
@@ -281,25 +304,9 @@ export const getClientRects = async imports => {
 		const emojiSystem = hashMini(emojiSet)
 		
 		// get clientRects
-		const range = document.createRange()
-
 		const rectElems = doc.getElementsByClassName('rects')
 		const clientRects = [...rectElems].map(el => {
-			return toNativeObject(el.getClientRects()[0])
-		})
-
-		const clientRectsBounding = [...rectElems].map(el => {
-			return toNativeObject(el.getBoundingClientRect())
-		})
-
-		const clientRectsRange = [...rectElems].map(el => {
-			range.selectNode(el)
-			return toNativeObject(range.getClientRects()[0])
-		})
-
-		const clientRectsRangeBounding = [...rectElems].map(el => {
-			range.selectNode(el)
-			return toNativeObject(el.getBoundingClientRect())
+			return toNativeObject(getBestRect(lieProps, doc, el))
 		})
 
 		// detect failed shift calculation
@@ -350,9 +357,6 @@ export const getClientRects = async imports => {
 			emojiSet,
 			emojiSystem,
 			clientRects,
-			clientRectsBounding,
-			clientRectsRange,
-			clientRectsRangeBounding,
 			lied
 		}
 	}
