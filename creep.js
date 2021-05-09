@@ -1876,7 +1876,7 @@ const imports = {
 					})
 				})
 			})
-			
+
 			const {
 				maths,
 				consoleErrors,
@@ -1896,7 +1896,35 @@ const imports = {
 				hashify(computedStyle),
 				hashify(system)
 			])
-				
+			const el = document.getElementById('browser-detection')
+
+			const reportedUserAgent = caniuse(() => navigator.userAgent)
+			const reportedSystem = getOS(reportedUserAgent)
+			const report = decryptUserAgent({
+				ua: reportedUserAgent,
+				os: reportedSystem,
+				isBrave
+			})
+
+			if (!fp.workerScope || !fp.workerScope.userAgent || fp.workerScope.type == 'dedicated') {
+				return patch(el, html`
+					<div class="flex-grid">
+						<div class="col-eight">
+							<strong>Version</strong>
+							<div>client user agent:<span> ${report}</span></div>
+							<div>window object:<span class="sub-hash">${hashSlice(windowFeatures.$hash)}</span></div>
+							<div>system styles:<span class="sub-hash">${hashSlice(systemHash)}</span></div>
+							<div>computed styles:<span class="sub-hash">${hashSlice(styleHash)}</span></div>
+							<div>html element:<span class="sub-hash">${hashSlice(htmlElementVersion.$hash)}</span></div>
+							<div>js runtime (math):<span class="sub-hash">${hashSlice(consoleErrors.$hash)}</span></div>
+							<div>js engine (error):<span class="sub-hash">${hashSlice(maths.$hash)}</span></div>
+						</div>
+						<div class="col-four icon-container">
+						</div>
+					</div>
+				`)
+			}
+
 			const decryptRequest = `https://creepjs-6bd8e.web.app/decrypt?${[
 				`isBrave=${isBrave}`,
 				`mathId=${maths.$hash}`,
@@ -1905,13 +1933,12 @@ const imports = {
 				`winId=${windowFeatures.$hash}`,
 				`styleId=${styleHash}`,
 				`styleSystemId=${systemHash}`,
-				`ua=${encodeURIComponent(caniuse(() => fp.workerScope.userAgent))}`
+				`ua=${encodeURIComponent(fp.workerScope.userAgent)}`
 			].join('&')}`
 
 			return fetch(decryptRequest)
 			.then(response => response.json())
 			.then(data => {
-				const el = document.getElementById('browser-detection')
 				const {
 					jsRuntime,
 					jsEngine,
@@ -1920,13 +1947,7 @@ const imports = {
 					styleVersion,
 					styleSystem,
 				} = data
-				const reportedUserAgent = caniuse(() => navigator.userAgent)
-				const reportedSystem = getOS(reportedUserAgent)
-				const report = decryptUserAgent({
-					ua: reportedUserAgent,
-					os: reportedSystem,
-					isBrave
-				})
+				
 				const iconSet = new Set()
 				const htmlIcon = cssClass => `<span class="icon ${cssClass}"></span>`
 				const getTemplate = agent => {
