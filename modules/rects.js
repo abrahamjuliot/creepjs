@@ -13,6 +13,7 @@ export const getClientRects = async imports => {
 			html,
 			captureError,
 			documentLie,
+			sendToTrash,
 			lieProps,
 			logTestResult,
 			phantomDarkness
@@ -305,10 +306,35 @@ export const getClientRects = async imports => {
 		const emojiSystem = hashMini(emojiSet)
 		
 		// get clientRects
+		const range = document.createRange()
 		const rectElems = doc.getElementsByClassName('rects')
+
 		const clientRects = [...rectElems].map(el => {
 			return toNativeObject(getBestRect(lieProps, doc, el))
 		})
+
+
+		// detect mismatch trash
+		const domrects = new Set([
+			hashMini([...rectElems].map(el => {
+				return toNativeObject(el.getClientRects()[0])
+			})),
+			hashMini([...rectElems].map(el => {
+				return toNativeObject(el.getBoundingClientRect())
+			})),
+			hashMini([...rectElems].map(el => {
+				range.selectNode(el)
+				return toNativeObject(range.getClientRects()[0])
+			})),
+			hashMini([...rectElems].map(el => {
+				range.selectNode(el)
+				return toNativeObject(el.getBoundingClientRect())
+			}))
+		])
+
+		if (domrects.size > 1) {
+			sendToTrash('DOMRect dimensions mismatch', [...domrects].join(', '))
+		}
 
 		// detect failed shift calculation
 		// inspired by https://arkenfox.github.io/TZP
