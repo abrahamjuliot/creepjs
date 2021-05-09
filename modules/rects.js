@@ -39,6 +39,7 @@ export const getClientRects = async imports => {
 			lieProps['Range.getClientRects'] ||
 			lieProps['Range.getBoundingClientRect']
 		) || false // detect lies
+		
 		const getBestRect = (lieProps, doc, el) => {
 			let range
 			if (!lieProps['Element.getClientRects']) {
