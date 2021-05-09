@@ -1920,6 +1920,16 @@ const imports = {
 							<div>js engine (error):<span class="sub-hash">${hashSlice(maths.$hash)}</span></div>
 						</div>
 						<div class="col-four icon-container">
+							<span class="block-text">${
+								hashMini({
+									windowFeatures: windowFeatures.$hash,
+									htmlElementVersion: htmlElementVersion.$hash,
+									consoleErrors: consoleErrors.$hash,
+									maths: maths.$hash,
+									systemHash,
+									styleHash
+								})
+							}</span>
 						</div>
 					</div>
 				`)
