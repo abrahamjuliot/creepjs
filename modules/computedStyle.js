@@ -151,18 +151,22 @@ const getSystemStyles = (instanceId, { require: [captureError, parentPhantom] })
 			colors: [],
 			fonts: []
 		}
+		
 		system.colors = colors.map(color => {
 			rendered.setAttribute('style', `background-color: ${color} !important`)
 			return {
 				[color]: getComputedStyle(rendered).backgroundColor
 			}
 		})
+
 		fonts.forEach(font => {
 			rendered.setAttribute('style', `font: ${font} !important`)
+			const computedStyle = getComputedStyle(rendered)
 			system.fonts.push({
-				[font]: getComputedStyle(rendered).font
+				[font]: `${computedStyle.fontSize} ${computedStyle.fontFamily}`
 			})
 		})
+
 		if (!parentPhantom) {
 			rendered.parentNode.removeChild(rendered)
 		}
