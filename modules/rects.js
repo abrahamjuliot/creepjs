@@ -281,9 +281,25 @@ export const getClientRects = async imports => {
 		const emojiSystem = hashMini(emojiSet)
 		
 		// get clientRects
+		const range = document.createRange()
+
 		const rectElems = doc.getElementsByClassName('rects')
 		const clientRects = [...rectElems].map(el => {
 			return toNativeObject(el.getClientRects()[0])
+		})
+
+		const clientRectsBounding = [...rectElems].map(el => {
+			return toNativeObject(el.getBoundingClientRect())
+		})
+
+		const clientRectsRange = [...rectElems].map(el => {
+			range.selectNode(el)
+			return toNativeObject(range.getClientRects()[0])
+		})
+
+		const clientRectsRangeBounding = [...rectElems].map(el => {
+			range.selectNode(el)
+			return toNativeObject(el.getBoundingClientRect())
 		})
 
 		// detect failed shift calculation
@@ -329,7 +345,16 @@ export const getClientRects = async imports => {
 		}
 					
 		logTestResult({ start, test: 'rects', passed: true })
-		return { emojiRects, emojiSet, emojiSystem, clientRects, lied }
+		return {
+			emojiRects,
+			emojiSet,
+			emojiSystem,
+			clientRects,
+			clientRectsBounding,
+			clientRectsRange,
+			clientRectsRangeBounding,
+			lied
+		}
 	}
 	catch (error) {
 		logTestResult({ test: 'rects', passed: false })
