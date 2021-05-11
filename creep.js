@@ -25,6 +25,7 @@ import { getTimezone } from './modules/timezone.js'
 import { getVoices } from './modules/voices.js'
 import { getWebRTCData } from './modules/webrtc.js'
 import { getBestWorkerScope } from './modules/worker.js'
+import { getSVG } from './modules/svg.js'
 
 const imports = {
 	require: {
@@ -109,7 +110,8 @@ const imports = {
 			fontsComputed,
 			workerScopeComputed,
 			mediaComputed,
-			webRTCDataComputed
+			webRTCDataComputed,
+			svgComputed
 		] = await Promise.all([
 			getWindowFeatures(imports),
 			getHTMLElementVersion(imports),
@@ -127,7 +129,8 @@ const imports = {
 			getFonts(imports, [...fontList]),
 			getBestWorkerScope(imports),
 			getMedia(imports),
-			getWebRTCData(imports)
+			getWebRTCData(imports),
+			getSVG(imports)
 		]).catch(error => console.error(error.message))
 		
 		const [
@@ -173,7 +176,8 @@ const imports = {
 			navigatorHash,
 			liesHash,
 			trashHash,
-			errorsHash
+			errorsHash,
+			svgHash
 		] = await Promise.all([
 			hashify(windowFeaturesComputed),
 			hashify(headlessComputed),
@@ -198,7 +202,8 @@ const imports = {
 			hashify(navigatorComputed),
 			hashify(liesComputed),
 			hashify(trashComputed),
-			hashify(capturedErrorsComputed)
+			hashify(capturedErrorsComputed),
+			hashify(svgComputed)
 		]).catch(error => console.error(error.message))
 		
 		//console.log(performance.now()-start)
@@ -235,6 +240,7 @@ const imports = {
 			lies: !liesComputed ? undefined : {...liesComputed, $hash: liesHash },
 			trash: !trashComputed ? undefined : {...trashComputed, $hash: trashHash },
 			capturedErrors: !capturedErrorsComputed ? undefined : {...capturedErrorsComputed, $hash: errorsHash },
+			svg: !svgComputed ? undefined : {...svgComputed, $hash: svgHash }
 		}
 		return { fingerprint, timeEnd }
 	}
@@ -891,8 +897,26 @@ const imports = {
 			</div>
 			`
 		})()}
+		${!fp.fonts ?
+			`<div class="col-six">
+				<strong>Fonts</strong>
+				<div>results (0): ${note.blocked}</div>
+			</div>` :
+		(() => {
+			const {
+				fonts: {
+					$hash,
+					fonts,
+					lied
+				}
+			} = fp
+			return `
 			<div class="col-six">
+				<strong>Fonts</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+				<div>results (${fonts ? count(fonts) : '0'}): ${fonts.length ? modal('creep-fonts', fonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>')) : note.blocked}</div>
 			</div>
+			`
+		})()}
 		</div>
 		<div class="flex-grid">
 		${!fp.offlineAudioContext ?
@@ -1155,21 +1179,39 @@ const imports = {
 		})()}
 		${!fp.fonts ?
 			`<div class="col-six">
-				<strong>Fonts</strong>
-				<div>results (0): ${note.blocked}</div>
+				<strong>SVG</strong>
+				<div>bBox: ${note.blocked}</div>
+				<div>subStringLength: ${note.blocked}</div>
+				<div>extentOfChar: ${note.blocked}</div>
+				<div>computedTextLength: ${note.blocked}</div>
+				<div>totalLength: ${note.blocked}</div>
+				<div>pointAtLength: ${note.blocked}</div>
 			</div>` :
 		(() => {
 			const {
-				fonts: {
+				svg: {
 					$hash,
-					fonts,
+					bBox,
+					subStringLength,
+					extentOfChar,
+					computedTextLength,
+					totalLength,
+					pointAtLength,
 					lied
 				}
 			} = fp
+			const getHashTemplate = x => {
+				return x ? `<span class="sub-hash">${hashMini(x)}</span>` : ` ${note.blocked}`
+			}
 			return `
 			<div class="col-six">
-				<strong>Fonts</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-				<div>results (${fonts ? count(fonts) : '0'}): ${fonts.length ? modal('creep-fonts', fonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>')) : note.blocked}</div>
+				<strong>SVG</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+				<div>bBox:${getHashTemplate(bBox)}</div>
+				<div>subStringLength:${getHashTemplate(subStringLength)}</div>
+				<div>extentOfChar:${getHashTemplate(extentOfChar)}</div>
+				<div>computedTextLength:${getHashTemplate(computedTextLength)}</div>
+				<div>totalLength:${getHashTemplate(totalLength)}</div>
+				<div>pointAtLength:${getHashTemplate(pointAtLength)}</div>
 			</div>
 			`
 		})()}
