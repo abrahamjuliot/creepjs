@@ -30,7 +30,7 @@
   "devDependencies": {
     "autoprefixer": "^10.0.1",
     "clean-css-cli": "^4.3.0",
-    "postcss": "^8.1.1",
+    "postcss": "^8.2.10",
     "postcss-cli": "^8.0.0"
   }
 }
