@@ -13,7 +13,6 @@ export const getClientRects = async imports => {
 			html,
 			captureError,
 			documentLie,
-			sendToTrash,
 			lieProps,
 			logTestResult,
 			phantomDarkness
@@ -309,37 +308,29 @@ export const getClientRects = async imports => {
 		const range = document.createRange()
 		const rectElems = doc.getElementsByClassName('rects')
 
-		const clientRects = [...rectElems].map(el => {
-			return toNativeObject(getBestRect(lieProps, doc, el))
+		const elementClientRects = [...rectElems].map(el => {
+			return toNativeObject(el.getClientRects()[0])
 		})
 
+		const elementBoundingClientRect = [...rectElems].map(el => {
+			return toNativeObject(el.getBoundingClientRect())
+		})
+		
+		const rangeClientRects = [...rectElems].map(el => {
+			range.selectNode(el)
+			return toNativeObject(range.getClientRects()[0])
+		})
 
-		// detect mismatch trash
-		const domrects = new Set([
-			hashMini([...rectElems].map(el => {
-				return toNativeObject(el.getClientRects()[0])
-			})),
-			hashMini([...rectElems].map(el => {
-				return toNativeObject(el.getBoundingClientRect())
-			})),
-			hashMini([...rectElems].map(el => {
-				range.selectNode(el)
-				return toNativeObject(range.getClientRects()[0])
-			})),
-			hashMini([...rectElems].map(el => {
-				range.selectNode(el)
-				return toNativeObject(el.getBoundingClientRect())
-			}))
-		])
+		const rangeBoundingClientRect = [...rectElems].map(el => {
+			range.selectNode(el)
+			return toNativeObject(el.getBoundingClientRect())
+		})
 
-		if (domrects.size > 1) {
-			sendToTrash('DOMRect dimensions mismatch', [...domrects].join(', '))
-		}
 
 		// detect failed shift calculation
 		// inspired by https://arkenfox.github.io/TZP
 		const rect4 = [...rectElems][3]
-		const { top: initialTop } = clientRects[3]
+		const { top: initialTop } = elementClientRects[3]
 		rect4.classList.add('shift-dom-rect')
 		const { top: shiftedTop } = toNativeObject(rect4.getClientRects()[0])
 		rect4.classList.remove('shift-dom-rect')
@@ -353,7 +344,7 @@ export const getClientRects = async imports => {
 
 		// detect failed math calculation lie
 		let mathLie = false
-		clientRects.forEach(rect => {
+		elementClientRects.forEach(rect => {
 			const { right, left, width, bottom, top, height, x, y } = rect
 			if (
 				right - left != width ||
@@ -371,8 +362,8 @@ export const getClientRects = async imports => {
 		}
 		
 		// detect equal elements mismatch lie
-		const { right: right1, left: left1 } = clientRects[10]
-		const { right: right2, left: left2 } = clientRects[11]
+		const { right: right1, left: left1 } = elementClientRects[10]
+		const { right: right2, left: left2 } = elementClientRects[11]
 		if (right1 != right2 || left1 != left2) {
 			documentLie('Element.getClientRects', 'equal elements mismatch')
 			lied = true
@@ -383,7 +374,10 @@ export const getClientRects = async imports => {
 			emojiRects,
 			emojiSet,
 			emojiSystem,
-			clientRects,
+			elementClientRects,
+			elementBoundingClientRect,
+			rangeClientRects,
+			rangeBoundingClientRect,
 			lied
 		}
 	}

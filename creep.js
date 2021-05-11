@@ -1073,7 +1073,8 @@ const imports = {
 		${!fp.clientRects ?
 			`<div class="col-six">
 				<strong>DOMRect</strong>
-				<div>elements: ${note.blocked}</div>
+				<div>element: ${note.blocked}</div>
+				<div>range: ${note.blocked}</div>
 				<div>emojis v13.0: ${note.blocked}</div>
 				<div>emoji system: ${note.blocked}</div>
 				<div>emoji set:</div>
@@ -1083,7 +1084,10 @@ const imports = {
 			const {
 				clientRects: {
 					$hash,
-					clientRects,
+					elementClientRects,
+					elementBoundingClientRect,
+					rangeClientRects,
+					rangeBoundingClientRect,
 					emojiRects,
 					emojiSet,
 					emojiSystem,
@@ -1124,12 +1128,17 @@ const imports = {
 			return `
 			<div class="col-six">
 				<strong>DOMRect</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-				<div>elements: ${
-					modal(
-						`${id}-elements`,
-						clientRects.map(domRect => Object.keys(domRect).map(key => `<div>${key}: ${domRect[key]}</div>`).join('')).join('<br>'),
-						hashMini(clientRects)
-					)
+				<div>element:${
+					[...new Set([
+						hashMini(elementClientRects),
+						hashMini(elementBoundingClientRect)
+					])].map(hash => `<span class="sub-hash">${hash}</span>`).join('')
+				}</div>
+				<div>range:${
+					[...new Set([
+						hashMini(rangeClientRects),
+						hashMini(rangeBoundingClientRect)
+					])].map(hash => `<span class="sub-hash">${hash}</span>`).join('')
 				}</div>
 				<div>emojis v13.0: ${
 					modal(
