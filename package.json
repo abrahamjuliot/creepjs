@@ -25,12 +25,12 @@
   "homepage": "https://github.com/abrahamjuliot/CreepJS#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "rollup": "^2.28.2"
+    "rollup": "^2.50.4"
   },
   "devDependencies": {
-    "autoprefixer": "^10.0.1",
+    "autoprefixer": "^10.2.6",
     "clean-css-cli": "^4.3.0",
-    "postcss": "^8.2.10",
-    "postcss-cli": "^8.0.0"
+    "postcss": "^8.3.0",
+    "postcss-cli": "^8.3.1"
   }
 }
