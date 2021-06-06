@@ -349,6 +349,7 @@ const imports = {
 			locationMeasured: fp.timezone.locationMeasured,
 			lied: fp.timezone.lied
 		},
+		svg: !fp.svg || fp.svg.lied ? undefined : fp.svg,
 		clientRects: !fp.clientRects || fp.clientRects.lied ? undefined : fp.clientRects,
 		offlineAudioContext: (
 			!!liesLen && isBrave && !!fp.offlineAudioContext ? fp.offlineAudioContext.values :
