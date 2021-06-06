@@ -1138,6 +1138,7 @@ const imports = {
 			}
 			const systemHash = {
 				'1184f08f': `${icon.blink}${icon.android}Blink on Android`,
+				'76104904': `${icon.blink}${icon.android}Blink on Android`, // Android 10
 				'e7a730b1': `${icon.blink}${icon.cros}Blink on Chrome OS`,
 				'f6864be8': `${icon.blink}${icon.cros}Blink on Chrome OS`, // CloudReady
 				'c3e18b8c': `${icon.gecko}${icon.android}Gecko on Android`,
