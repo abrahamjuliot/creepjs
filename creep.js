@@ -1142,6 +1142,7 @@ const imports = {
 				'e7a730b1': `${icon.blink}${icon.cros}Blink on Chrome OS`,
 				'f6864be8': `${icon.blink}${icon.cros}Blink on Chrome OS`, // CloudReady
 				'c3e18b8c': `${icon.gecko}${icon.android}Gecko on Android`,
+				'e7abe267': `${icon.gecko}${icon.android}Gecko on Android`, // Android 10
 				'8ff13414': `${icon.blink}${icon.windows}Blink on Windows`,
 				'ce1c9851': `${icon.gecko}${icon.windows}Gecko on Windows`,
 				'502234c4': `${icon.tor}${icon.windows}Tor Browser on Windows`,
