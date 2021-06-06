@@ -28,7 +28,7 @@ export const getOfflineAudioContext = async imports => {
 		const copyFromChannelLie = lieProps['AudioBuffer.copyFromChannel']
 		let lied = (channelDataLie || copyFromChannelLie) || false
 
-		const context = new audioContext(1, 44100, 44100)
+		const context = new audioContext(1, 5000, 44100)
 		const analyser = context.createAnalyser()
 		const oscillator = context.createOscillator()
 		const dynamicsCompressor = context.createDynamicsCompressor()
@@ -72,8 +72,7 @@ export const getOfflineAudioContext = async imports => {
 			['AnalyserNode.numberOfOutputs']: attempt(() => analyser.numberOfOutputs),
 			['AnalyserNode.smoothingTimeConstant']: attempt(() => analyser.smoothingTimeConstant),
 			['AnalyserNode.context.listener.forwardX.maxValue']: attempt(() => {
-				const chain = ['context', 'listener', 'forwardX', 'maxValue']
-				return caniuse(() => analyser, chain)
+				return caniuse(() => analyser.context.listener.forwardX.maxValue)
 			}),
 			['BiquadFilterNode.gain.maxValue']: attempt(() => biquadFilter.gain.maxValue),
 			['BiquadFilterNode.frequency.defaultValue']: attempt(() => biquadFilter.frequency.defaultValue),
@@ -97,13 +96,15 @@ export const getOfflineAudioContext = async imports => {
 		return new Promise(resolve => {
 			context.oncomplete = event => {
 				try {
-					const copy = new Float32Array(44100)
+					const copy = new Float32Array(5000)
 					caniuse(() => event.renderedBuffer.copyFromChannel(copy, 0))
 					const bins = event.renderedBuffer.getChannelData(0)
 
 					const copySample = copy ? [...copy].slice(4500, 4600) : [sendToTrash('invalid Audio Sample Copy', null)]
 					const binsSample = bins ? [...bins].slice(4500, 4600) : [sendToTrash('invalid Audio Sample', null)]
-
+					
+					const sampleSum = [...bins].slice(4500, 5000).reduce((acc, curr) => (acc += Math.abs(curr)), 0)
+					
 					// detect lie
 					const matching = '' + binsSample == '' + copySample
 					const copyFromChannelSupported = ('copyFromChannel' in AudioBuffer.prototype)
@@ -118,6 +119,7 @@ export const getOfflineAudioContext = async imports => {
 
 					logTestResult({ start, test: 'audio', passed: true })
 					return resolve({
+						sampleSum,
 						binsSample,
 						copySample: copyFromChannelSupported ? copySample : [undefined],
 						values,

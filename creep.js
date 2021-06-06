@@ -923,25 +923,26 @@ const imports = {
 		${!fp.offlineAudioContext ?
 			`<div class="col-four">
 				<strong>Audio</strong>
+				<div>sum: ${note.blocked}</div>
 				<div>sample: ${note.blocked}</div>
 				<div>copy: ${note.blocked}</div>
-				<div>matching: ${note.blocked}</div>
 				<div>values: ${note.blocked}</div>
 			</div>` :
 		(() => {
 			const {
 				offlineAudioContext: {
 					$hash,
+					sampleSum,
 					binsSample,
 					copySample,
 					lied,
-					matching,
 					values
 				}
 			} = fp
 			return `
 			<div class="col-four">
 				<strong>Audio</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+				<div>sum: ${sampleSum}</div>
 				<div>sample: ${
 					''+binsSample[0] == 'undefined' ? note.unsupported :
 					modal(
