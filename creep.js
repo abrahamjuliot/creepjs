@@ -352,7 +352,10 @@ const imports = {
 		svg: !fp.svg || fp.svg.lied ? undefined : fp.svg,
 		clientRects: !fp.clientRects || fp.clientRects.lied ? undefined : fp.clientRects,
 		offlineAudioContext: (
-			!!liesLen && isBrave && !!fp.offlineAudioContext ? fp.offlineAudioContext.values :
+			!!liesLen && isBrave && !!fp.offlineAudioContext ? {
+				values: fp.offlineAudioContext.values,
+				compressorGainReduction: fp.offlineAudioContext.compressorGainReduction
+			} :
 			!fp.offlineAudioContext || fp.offlineAudioContext.lied ? undefined :
 			fp.offlineAudioContext
 		),
@@ -924,7 +927,10 @@ const imports = {
 			`<div class="col-four">
 				<strong>Audio</strong>
 				<div>sum: ${note.blocked}</div>
-				<div>sample: ${note.blocked}</div>
+				<div>gain: ${note.blocked}</div>
+				<div>buffer noise: ${note.blocked}</div>
+				<div>unique: ${note.blocked}</div>
+				<div>data: ${note.blocked}</div>
 				<div>copy: ${note.blocked}</div>
 				<div>values: ${note.blocked}</div>
 			</div>` :
@@ -932,32 +938,46 @@ const imports = {
 			const {
 				offlineAudioContext: {
 					$hash,
+					totalUniqueSamples,
+					compressorGainReduction,
 					sampleSum,
 					binsSample,
 					copySample,
 					lied,
+					noise,
 					values
 				}
 			} = fp
+			const known = {
+				[-20.538286209106445]: 124.04347527516074, // Chrome on Windows/Android
+				[-31.509262084960938]: 35.7383295930922 // Firefox on Windows
+			}
+			const knownSum = known[compressorGainReduction]
+			const style = (a, b) => b.map((char, i) => char != a[i] ? `<span class="bold-fail">${char}</span>` : char).join('')
+
 			return `
 			<div class="col-four">
+				<style>
+					.bold-fail {
+						color: #ca656e;
+					}
+				</style>
 				<strong>Audio</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-				<div>sum: ${sampleSum}</div>
-				<div>sample: ${
-					''+binsSample[0] == 'undefined' ? note.unsupported :
-					modal(
-						'creep-audio-bin-sample',
-						binsSample.join('<br>'),
-						hashMini(binsSample)
-					)
+				<div>sum: ${
+					sampleSum && compressorGainReduction && knownSum ?
+					style((''+knownSum).split(''), (''+sampleSum).split('')) :
+					sampleSum
 				}</div>
-				<div>copy: ${
-					''+copySample[0] == 'undefined' ? note.unsupported :
-					modal(
-						'creep-audio-copy-sample',
-						copySample.join('<br>'),
-						hashMini(copySample)
-					)
+				<div>gain: ${compressorGainReduction}</div>
+				<div>buffer noise: ${!noise ? 0 : `${noise.toFixed(4)}...`}</div>
+				<div>unique: ${totalUniqueSamples}</div>
+				<div>data:${
+					''+binsSample[0] == 'undefined' ? ` ${note.unsupported}` : 
+					`<span class="sub-hash">${hashMini(binsSample)}</span>`
+				}</div>
+				<div>copy:${
+					''+copySample[0] == 'undefined' ? ` ${note.unsupported}` : 
+					`<span class="sub-hash">${hashMini(copySample)}</span>`
 				}</div>
 				<div>values: ${
 					modal(
