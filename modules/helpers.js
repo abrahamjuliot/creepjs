@@ -1,6 +1,47 @@
 // Detect Browser
 const isChrome = 'chrome' in window
-const isBrave = 'brave' in navigator
+const isBrave = (
+	'brave' in navigator &&
+	Object.getPrototypeOf(navigator.brave).constructor.name == 'Brave' &&
+	navigator.brave.isBrave.toString() == 'function isBrave() { [native code] }'
+)
+
+function getBraveMode() {
+	const mode = {
+		unknown: false,
+		allow: false,
+		standard: false,
+		strict: false
+	}
+    try {
+        // strict mode limits supported extensions
+        const canvas = document.createElement('canvas')
+        const gl = canvas.getContext('webgl')
+        const extensions = gl.getSupportedExtensions()
+        if (
+			!extensions || (
+				new Set(extensions).size == 1 && extensions[0] == 'WEBGL_debug_renderer_info')
+			) {
+			mode.strict = true
+            return mode
+        }
+        // standard and strict mode do not have chrome plugins
+        const chromePlugins = /(Chrom(e|ium)|Microsoft Edge) PDF (Plugin|Viewer)/
+        const pluginsList = [...navigator.plugins]
+        const hasChromePlugins = pluginsList
+            .filter(plugin => chromePlugins.test(plugin.name)).length == 2
+        if (!hasChromePlugins) {
+            mode.standard = true
+            return mode
+        }
+        mode.allow = true
+        return mode
+    } catch (e) {
+        mode.unknown = true
+        return mode
+    }
+}
+
 const isFirefox = typeof InstallTrigger !== 'undefined'
 
 // system
@@ -187,4 +228,4 @@ const getPromiseRaceFulfilled = async ({
     )
 }
 
-export { isChrome, isBrave, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, logTestResult, getPromiseRaceFulfilled }
+export { isChrome, isBrave, getBraveMode, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, logTestResult, getPromiseRaceFulfilled }

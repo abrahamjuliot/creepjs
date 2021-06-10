@@ -1,4 +1,4 @@
-import { isChrome, isBrave, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, logTestResult, getPromiseRaceFulfilled } from './modules/helpers.js'
+import { isChrome, isBrave, getBraveMode, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, logTestResult, getPromiseRaceFulfilled } from './modules/helpers.js'
 import { patch, html, note, count, modal } from './modules/html.js'
 import { hashMini, instanceId, hashify } from './modules/crypto.js'
 
@@ -32,6 +32,7 @@ const imports = {
 		// helpers
 		isChrome,
 		isBrave,
+		getBraveMode,
 		isFirefox,
 		getOS,
 		decryptUserAgent,
@@ -259,25 +260,89 @@ const imports = {
 	console.groupEnd()
 	
 	// Trusted Fingerprint
-	const distrust = { distrust: { brave: isBrave, firefox: isFirefox } }
+	const braveMode = getBraveMode()
+	const braveFingerprintingBlocking = isBrave && (braveMode.standard || braveMode.strict)
+	const getBraveUnprotectedParameters = parameters => {
+		const blocked = new Set([			
+			'FRAGMENT_SHADER.HIGH_FLOAT.precision',
+			'FRAGMENT_SHADER.HIGH_FLOAT.rangeMax',
+			'FRAGMENT_SHADER.HIGH_FLOAT.rangeMin',
+			'FRAGMENT_SHADER.HIGH_INT.precision',
+			'FRAGMENT_SHADER.HIGH_INT.rangeMax',
+			'FRAGMENT_SHADER.HIGH_INT.rangeMin',
+			'FRAGMENT_SHADER.LOW_FLOAT.precision',
+			'FRAGMENT_SHADER.LOW_FLOAT.rangeMax',
+			'FRAGMENT_SHADER.LOW_FLOAT.rangeMin',
+			'FRAGMENT_SHADER.MEDIUM_FLOAT.precision',
+			'FRAGMENT_SHADER.MEDIUM_FLOAT.rangeMax',
+			'FRAGMENT_SHADER.MEDIUM_FLOAT.rangeMin',
+			'MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS',
+			'MAX_COMBINED_UNIFORM_BLOCKS',
+			'MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS',
+			'MAX_DRAW_BUFFERS_WEBGL',
+			'MAX_FRAGMENT_INPUT_COMPONENTS',
+			'MAX_FRAGMENT_UNIFORM_BLOCKS',
+			'MAX_FRAGMENT_UNIFORM_COMPONENTS',
+			'MAX_TEXTURE_MAX_ANISOTROPY_EXT',
+			'MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS',
+			'MAX_UNIFORM_BUFFER_BINDINGS',
+			'MAX_VARYING_COMPONENTS',
+			'MAX_VERTEX_OUTPUT_COMPONENTS',
+			'MAX_VERTEX_UNIFORM_BLOCKS',
+			'MAX_VERTEX_UNIFORM_COMPONENTS',
+			'SHADING_LANGUAGE_VERSION',
+			'UNMASKED_RENDERER_WEBGL',
+			'UNMASKED_VENDOR_WEBGL',
+			'VERSION',
+			'VERTEX_SHADER.HIGH_FLOAT.precision',
+			'VERTEX_SHADER.HIGH_FLOAT.rangeMax',
+			'VERTEX_SHADER.HIGH_FLOAT.rangeMin',
+			'VERTEX_SHADER.HIGH_INT.precision',
+			'VERTEX_SHADER.HIGH_INT.rangeMax',
+			'VERTEX_SHADER.HIGH_INT.rangeMin',
+			'VERTEX_SHADER.LOW_FLOAT.precision',
+			'VERTEX_SHADER.LOW_FLOAT.rangeMax',
+			'VERTEX_SHADER.LOW_FLOAT.rangeMin',
+			'VERTEX_SHADER.MEDIUM_FLOAT.precision',
+			'VERTEX_SHADER.MEDIUM_FLOAT.rangeMax',
+			'VERTEX_SHADER.MEDIUM_FLOAT.rangeMin'
+		])
+		const safeParameters = Object.keys(parameters).reduce((acc, curr) => {
+			if (blocked.has(curr)) {
+				return acc
+			}
+			acc[curr] = parameters[curr]
+			return acc
+		}, {})
+		return safeParameters
+	}
 	const trashLen = fp.trash.trashBin.length
 	const liesLen = !('totalLies' in fp.lies) ? 0 : fp.lies.totalLies
 	const errorsLen = fp.capturedErrors.data.length
+	const navigatorHighEntropy = !fp.navigator ? {} : {
+		device: fp.navigator.device,
+		doNotTrack: fp.navigator.doNotTrack,
+		globalPrivacyControl: fp.navigator.globalPrivacyControl,
+		keyboard: fp.navigator.keyboard,
+		language: fp.navigator.language,
+		maxTouchPoints: fp.navigator.maxTouchPoints,
+		mimeTypes: fp.navigator.mimeTypes,
+		platform: fp.navigator.platform,
+		system: fp.navigator.system,
+		vendor: fp.navigator.vendor,
+		lied: fp.navigator.lied
+	}
 	const creep = {
 		navigator: ( 
-			!fp.navigator || fp.navigator.lied ? undefined : {
-				device: fp.navigator.device,
-				deviceMemory: isBrave ? distrust : fp.navigator.deviceMemory,
-				doNotTrack: fp.navigator.doNotTrack,
-				hardwareConcurrency: isBrave ? distrust : fp.navigator.hardwareConcurrency,
-				maxTouchPoints: fp.navigator.maxTouchPoints,
-				mimeTypes: fp.navigator.mimeTypes,
-				plugins: isBrave ? distrust : fp.navigator.plugins,
-				platform: fp.navigator.platform,
-				system: fp.navigator.system,
-				vendor: fp.navigator.vendor,
-				lied: fp.navigator.lied
-			}
+			!fp.navigator ? undefined : (
+				braveFingerprintingBlocking ? navigatorHighEntropy : 
+				fp.navigator.lied ? undefined : {
+					deviceMemory: fp.navigator.deviceMemory,
+					hardwareConcurrency: fp.navigator.hardwareConcurrency,
+					plugins: fp.navigator.plugins,
+					...navigatorHighEntropy
+				}
+			)
 		),
 		screen: ( 
 			!fp.screen || fp.screen.lied || (!!liesLen && isFirefox) ? undefined : {
@@ -294,12 +359,10 @@ const imports = {
 				fp.workerScope.canvas2d
 			),
 			deviceMemory: (
-				!!liesLen && isBrave ? distrust : 
-				fp.workerScope.deviceMemory
+				braveFingerprintingBlocking ? undefined : fp.workerScope.deviceMemory
 			),
 			hardwareConcurrency: (
-				!!liesLen && isBrave ? distrust : 
-				fp.workerScope.hardwareConcurrency
+				braveFingerprintingBlocking ? undefined : fp.workerScope.hardwareConcurrency
 			),
 			language: fp.workerScope.language,
 			platform: fp.workerScope.platform,
@@ -307,12 +370,10 @@ const imports = {
 			device: fp.workerScope.device,
 			timezoneLocation: fp.workerScope.timezoneLocation,
 			['webgl renderer']: (
-				!!liesLen && isBrave ? distrust : 
-				fp.workerScope.webglRenderer
+				braveFingerprintingBlocking ? undefined : fp.workerScope.webglRenderer
 			),
 			['webgl vendor']: (
-				!!liesLen && isBrave ? distrust : 
-				fp.workerScope.webglVendor
+				braveFingerprintingBlocking ? undefined : fp.workerScope.webglVendor
 			)
 		} : undefined,
 		media: fp.media,
@@ -322,13 +383,17 @@ const imports = {
 				lied: fp.canvas2d.lied
 			} 
 		),
-		canvasWebgl: ( 
-			!fp.canvasWebgl || fp.canvasWebgl.lied ? undefined : 
-			fp.canvasWebgl
+		canvasWebgl: !fp.canvasWebgl ? undefined : (
+			braveFingerprintingBlocking ? {
+				parameters: getBraveUnprotectedParameters(fp.canvasWebgl.parameters)
+			} : fp.canvasWebgl.lied ? undefined : fp.canvasWebgl
 		),
 		cssMedia: !fp.cssMedia ? undefined : {
 			reducedMotion: caniuse(() => fp.cssMedia.mediaCSS['prefers-reduced-motion']),
-			colorScheme: caniuse(() => fp.cssMedia.mediaCSS['prefers-color-scheme']),
+			colorScheme: (
+				braveFingerprintingBlocking ? undefined :
+				caniuse(() => fp.cssMedia.mediaCSS['prefers-color-scheme'])
+			),
 			monochrome: caniuse(() => fp.cssMedia.mediaCSS.monochrome),
 			invertedColors: caniuse(() => fp.cssMedia.mediaCSS['inverted-colors']),
 			forcedColors: caniuse(() => fp.cssMedia.mediaCSS['forced-colors']),
@@ -351,13 +416,11 @@ const imports = {
 		},
 		svg: !fp.svg || fp.svg.lied ? undefined : fp.svg,
 		clientRects: !fp.clientRects || fp.clientRects.lied ? undefined : fp.clientRects,
-		offlineAudioContext: (
-			!!liesLen && isBrave && !!fp.offlineAudioContext ? {
+		offlineAudioContext: !fp.offlineAudioContext ? undefined : (
+			braveFingerprintingBlocking ? {
 				values: fp.offlineAudioContext.values,
 				compressorGainReduction: fp.offlineAudioContext.compressorGainReduction
-			} :
-			!fp.offlineAudioContext || fp.offlineAudioContext.lied ? undefined :
-			fp.offlineAudioContext
+			} : fp.offlineAudioContext.lied ? undefined : fp.offlineAudioContext
 		),
 		fonts: !fp.fonts || fp.fonts.lied ? undefined : fp.fonts,
 		// skip trash since it is random
