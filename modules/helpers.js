@@ -13,33 +13,33 @@ function getBraveMode() {
 		standard: false,
 		strict: false
 	}
-    try {
-        // strict mode limits supported extensions
-        const canvas = document.createElement('canvas')
-        const gl = canvas.getContext('webgl')
-        const extensions = gl.getSupportedExtensions()
-        if (
+	try {
+		// strict mode limits supported extensions
+		const canvas = document.createElement('canvas')
+		const gl = canvas.getContext('webgl')
+		const extensions = gl.getSupportedExtensions()
+		if (
 			!extensions || (
 				new Set(extensions).size == 1 && extensions[0] == 'WEBGL_debug_renderer_info')
-			) {
+		) {
 			mode.strict = true
-            return mode
-        }
-        // standard and strict mode do not have chrome plugins
-        const chromePlugins = /(Chrom(e|ium)|Microsoft Edge) PDF (Plugin|Viewer)/
-        const pluginsList = [...navigator.plugins]
-        const hasChromePlugins = pluginsList
-            .filter(plugin => chromePlugins.test(plugin.name)).length == 2
-        if (!hasChromePlugins) {
-            mode.standard = true
-            return mode
-        }
-        mode.allow = true
-        return mode
-    } catch (e) {
-        mode.unknown = true
-        return mode
-    }
+			return mode
+		}
+		// standard and strict mode do not have chrome plugins
+		const chromePlugins = /(Chrom(e|ium)|Microsoft Edge) PDF (Plugin|Viewer)/
+		const pluginsList = [...navigator.plugins]
+		const hasChromePlugins = pluginsList
+			.filter(plugin => chromePlugins.test(plugin.name)).length == 2
+		if (!hasChromePlugins) {
+			mode.standard = true
+			return mode
+		}
+		mode.allow = true
+		return mode
+	} catch (e) {
+		mode.unknown = true
+		return mode
+	}
 }
 
 const isFirefox = typeof InstallTrigger !== 'undefined'
@@ -49,69 +49,69 @@ const getOS = userAgent => {
 	const os = (
 		// order is important
 		/windows phone/ig.test(userAgent) ? 'Windows Phone' :
-		/win(dows|16|32|64|95|98|nt)|wow64/ig.test(userAgent) ? 'Windows' :
-		/android/ig.test(userAgent) ? 'Android' :
-		/cros/ig.test(userAgent) ? 'Chrome OS' :
-		/linux/ig.test(userAgent) ? 'Linux' :
-		/ipad/ig.test(userAgent) ? 'iPad' :
-		/iphone/ig.test(userAgent) ? 'iPhone' :
-		/ipod/ig.test(userAgent) ? 'iPod' :
-		/ios/ig.test(userAgent) ? 'iOS' :
-		/mac/ig.test(userAgent) ? 'Mac' :
-		'Other'
+			/win(dows|16|32|64|95|98|nt)|wow64/ig.test(userAgent) ? 'Windows' :
+				/android/ig.test(userAgent) ? 'Android' :
+					/cros/ig.test(userAgent) ? 'Chrome OS' :
+						/linux/ig.test(userAgent) ? 'Linux' :
+							/ipad/ig.test(userAgent) ? 'iPad' :
+								/iphone/ig.test(userAgent) ? 'iPhone' :
+									/ipod/ig.test(userAgent) ? 'iPod' :
+										/ios/ig.test(userAgent) ? 'iOS' :
+											/mac/ig.test(userAgent) ? 'Mac' :
+												'Other'
 	)
 	return os
 }
 
-const decryptUserAgent = ({ua, os, isBrave}) => {
-    const apple = /ipad|iphone|ipod|ios|mac/ig.test(os)
-    const isOpera = /OPR\//g.test(ua)
-    const isVivaldi = /Vivaldi/g.test(ua)
-    const isDuckDuckGo = /DuckDuckGo/g.test(ua)
-    const isYandex = /YaBrowser/g.test(ua)
-    const paleMoon = ua.match(/(palemoon)\/(\d+)./i) 
-    const edge = ua.match(/(edgios|edg|edge|edga)\/(\d+)./i)
-    const edgios = edge && /edgios/i.test(edge[1])
-    const chromium = ua.match(/(crios|chrome)\/(\d+)./i)
-    const firefox = ua.match(/(fxios|firefox)\/(\d+)./i)
-    const likeSafari = (
-        /AppleWebKit/g.test(ua) &&
-        /Safari/g.test(ua)
-    )
-    const safari = (
-        likeSafari &&
-        !firefox &&
-        !chromium &&
-        !edge &&
-        ua.match(/(version)\/(\d+)\.(\d|\.)+\s(mobile|safari)/i)
-    )
+const decryptUserAgent = ({ ua, os, isBrave }) => {
+	const apple = /ipad|iphone|ipod|ios|mac/ig.test(os)
+	const isOpera = /OPR\//g.test(ua)
+	const isVivaldi = /Vivaldi/g.test(ua)
+	const isDuckDuckGo = /DuckDuckGo/g.test(ua)
+	const isYandex = /YaBrowser/g.test(ua)
+	const paleMoon = ua.match(/(palemoon)\/(\d+)./i)
+	const edge = ua.match(/(edgios|edg|edge|edga)\/(\d+)./i)
+	const edgios = edge && /edgios/i.test(edge[1])
+	const chromium = ua.match(/(crios|chrome)\/(\d+)./i)
+	const firefox = ua.match(/(fxios|firefox)\/(\d+)./i)
+	const likeSafari = (
+		/AppleWebKit/g.test(ua) &&
+		/Safari/g.test(ua)
+	)
+	const safari = (
+		likeSafari &&
+		!firefox &&
+		!chromium &&
+		!edge &&
+		ua.match(/(version)\/(\d+)\.(\d|\.)+\s(mobile|safari)/i)
+	)
 
-    if (chromium) {
-        const browser = chromium[1]
-        const version = chromium[2]
-        const like = (
-            isOpera ? ' Opera' :
-            isVivaldi ? ' Vivaldi' :
-            isDuckDuckGo ? ' DuckDuckGo' :
-            isYandex ? ' Yandex' :
-            edge ? ' Edge' :
-            isBrave ? ' Brave' : ''
-        )
-        return `${browser} ${version}${like}`
-    } else if (edgios) {
-        const browser = edge[1]
-        const version = edge[2]
-        return `${browser} ${version}`
-    } else if (firefox) {
-        const browser = paleMoon ? paleMoon[1] : firefox[1]
-        const version = paleMoon ? paleMoon[2] : firefox[2]
-        return `${browser} ${version}`
-    } else if (apple && safari) {
-        const browser = 'Safari'
-        const version = safari[2]
-        return `${browser} ${version}`
-    }
-    return 'unknown'
+	if (chromium) {
+		const browser = chromium[1]
+		const version = chromium[2]
+		const like = (
+			isOpera ? ' Opera' :
+				isVivaldi ? ' Vivaldi' :
+					isDuckDuckGo ? ' DuckDuckGo' :
+						isYandex ? ' Yandex' :
+							edge ? ' Edge' :
+								isBrave ? ' Brave' : ''
+		)
+		return `${browser} ${version}${like}`
+	} else if (edgios) {
+		const browser = edge[1]
+		const version = edge[2]
+		return `${browser} ${version}`
+	} else if (firefox) {
+		const browser = paleMoon ? paleMoon[1] : firefox[1]
+		const version = paleMoon ? paleMoon[2] : firefox[2]
+		return `${browser} ${version}`
+	} else if (apple && safari) {
+		const browser = 'Safari'
+		const version = safari[2]
+		return `${browser} ${version}`
+	}
+	return 'unknown'
 }
 
 
@@ -160,15 +160,15 @@ const getUserAgentPlatform = ({ userAgent, excludeBuild = true }) => {
 				.replace(/\sNT (\d+\.\d+)/, (match, version) => {
 					return (
 						version == '10.0' ? ' 10' :
-						version == '6.3' ? ' 8.1' :
-						version == '6.2' ? ' 8' :
-						version == '6.1' ? ' 7' :
-						version == '6.0' ? ' Vista' :
-						version == '5.2' ? ' XP Pro' :
-						version == '5.1' ? ' XP' :
-						version == '5.0' ? ' 2000' :
-						version == '4.0' ? match :
-						' ' + version
+							version == '6.3' ? ' 8.1' :
+								version == '6.2' ? ' 8' :
+									version == '6.1' ? ' 7' :
+										version == '6.0' ? ' Vista' :
+											version == '5.2' ? ' XP Pro' :
+												version == '5.1' ? ' XP' :
+													version == '5.0' ? ' 2000' :
+														version == '4.0' ? match :
+															' ' + version
 					)
 				})
 				.replace(windows64bitCPU, '(64-bit)')
@@ -209,23 +209,23 @@ const logTestResult = ({ test, passed, start = false }) => {
 	const symbol = passed ? '✔' : '-'
 	return console.log(
 		`%c${symbol}${
-			start ? ` (${(performance.now() - start).toFixed(2)}ms)` : ''
+		start ? ` (${(performance.now() - start).toFixed(2)}ms)` : ''
 		} ${test} ${result}`, `color:${color}`
 	)
 }
 
 const getPromiseRaceFulfilled = async ({
-    promise,
-    responseType,
-    limit = 1000
+	promise,
+	responseType,
+	limit = 1000
 }) => {
-    const slowPromise = new Promise(resolve => setTimeout(resolve, limit))
-    const response = await Promise.race([slowPromise, promise])
-        .then(response => response instanceof responseType ? response : 'pending')
-        .catch(error => 'rejected')
-    return (
-        response == 'rejected' || response == 'pending' ? undefined : response
-    )
+	const slowPromise = new Promise(resolve => setTimeout(resolve, limit))
+	const response = await Promise.race([slowPromise, promise])
+		.then(response => response instanceof responseType ? response : 'pending')
+		.catch(error => 'rejected')
+	return (
+		response == 'rejected' || response == 'pending' ? undefined : response
+	)
 }
 
 export { isChrome, isBrave, getBraveMode, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, logTestResult, getPromiseRaceFulfilled }
