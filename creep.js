@@ -1,4 +1,4 @@
-import { isChrome, isBrave, getBraveMode, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, logTestResult, getPromiseRaceFulfilled } from './modules/helpers.js'
+import { isChrome, braveBrowser, getBraveMode, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, logTestResult, getPromiseRaceFulfilled } from './modules/helpers.js'
 import { patch, html, note, count, modal } from './modules/html.js'
 import { hashMini, instanceId, hashify } from './modules/crypto.js'
 
@@ -31,7 +31,7 @@ const imports = {
 	require: {
 		// helpers
 		isChrome,
-		isBrave,
+		braveBrowser,
 		getBraveMode,
 		isFirefox,
 		getOS,
@@ -260,6 +260,7 @@ const imports = {
 	console.groupEnd()
 	
 	// Trusted Fingerprint
+	const isBrave = await braveBrowser()
 	const braveMode = getBraveMode()
 	const braveFingerprintingBlocking = isBrave && (braveMode.standard || braveMode.strict)
 	const getBraveUnprotectedParameters = parameters => {

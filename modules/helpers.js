@@ -1,10 +1,19 @@
 // Detect Browser
 const isChrome = 'chrome' in window
-const isBrave = (
-	'brave' in navigator &&
-	Object.getPrototypeOf(navigator.brave).constructor.name == 'Brave' &&
-	navigator.brave.isBrave.toString() == 'function isBrave() { [native code] }'
-)
+
+const braveBrowser = async () => {
+	const brave = (
+		'brave' in navigator &&
+		Object.getPrototypeOf(navigator.brave).constructor.name == 'Brave' &&
+		navigator.brave.isBrave.toString() == 'function isBrave() { [native code] }'
+	)
+	if (brave) {
+		return true
+	}
+	const chromium = 3.141592653589793 ** -100 == 1.9275814160560204e-50
+	const storageQuotaIs2Gb = 2147483648 == (await navigator.storage.estimate()).quota
+	return chromium && storageQuotaIs2Gb
+}
 
 function getBraveMode() {
 	const mode = {
@@ -239,4 +248,4 @@ const getPromiseRaceFulfilled = async ({
 	)
 }
 
-export { isChrome, isBrave, getBraveMode, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, logTestResult, getPromiseRaceFulfilled }
+export { isChrome, braveBrowser, getBraveMode, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, logTestResult, getPromiseRaceFulfilled }
