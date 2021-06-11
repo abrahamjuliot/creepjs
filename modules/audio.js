@@ -56,7 +56,7 @@ export const getOfflineAudioContext = async imports => {
 		const floatFrequencyUniqueDataSize = new Set(dataArray).size
 		if (floatFrequencyUniqueDataSize > 1) {
 			lied = true
-			const floatFrequencyDataLie = `expected 1 unique frequency and got ${floatFrequencyUniqueDataSize}`
+			const floatFrequencyDataLie = `expected -Infinity (silence) and got ${floatFrequencyUniqueDataSize} frequencies`
 			documentLie(`AnalyserNode.getFloatFrequencyData`, floatFrequencyDataLie)
 		}
 
