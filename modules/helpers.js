@@ -14,14 +14,25 @@ function getBraveMode() {
 		strict: false
 	}
 	try {
-		// strict mode limits supported extensions
-		const canvas = document.createElement('canvas')
-		const gl = canvas.getContext('webgl')
-		const extensions = gl.getSupportedExtensions()
-		if (
-			!extensions || (
-				new Set(extensions).size == 1 && extensions[0] == 'WEBGL_debug_renderer_info')
-		) {
+		// strict mode adds float frequency data AnalyserNode
+		const strictMode = () => {
+			const audioContext = (
+				'OfflineAudioContext' in window ? OfflineAudioContext : 
+				'webkitOfflineAudioContext' in window ? webkitOfflineAudioContext :
+				undefined
+			)
+			if (!audioContext) {
+				return false
+			}
+			const context = new audioContext(1, 1, 44100)
+			const analyser = context.createAnalyser()
+			const data = new Float32Array(analyser.frequencyBinCount)
+			analyser.getFloatFrequencyData(data)
+			const strict = new Set(data).size > 1 // native only has -Infinity
+			return strict
+		}
+		
+		if (strictMode()) {
 			mode.strict = true
 			return mode
 		}
