@@ -26,6 +26,7 @@ import { getVoices } from './modules/voices.js'
 import { getWebRTCData } from './modules/webrtc.js'
 import { getBestWorkerScope } from './modules/worker.js'
 import { getSVG } from './modules/svg.js'
+import { getResistance, resistanceHTML } from './modules/resistance.js'
 
 const imports = {
 	require: {
@@ -112,7 +113,8 @@ const imports = {
 			workerScopeComputed,
 			mediaComputed,
 			webRTCDataComputed,
-			svgComputed
+			svgComputed,
+			resistanceComputed
 		] = await Promise.all([
 			getWindowFeatures(imports),
 			getHTMLElementVersion(imports),
@@ -131,7 +133,8 @@ const imports = {
 			getBestWorkerScope(imports),
 			getMedia(imports),
 			getWebRTCData(imports),
-			getSVG(imports)
+			getSVG(imports),
+			getResistance(imports)
 		]).catch(error => console.error(error.message))
 		
 		const [
@@ -178,7 +181,8 @@ const imports = {
 			liesHash,
 			trashHash,
 			errorsHash,
-			svgHash
+			svgHash,
+			resistanceHash
 		] = await Promise.all([
 			hashify(windowFeaturesComputed),
 			hashify(headlessComputed),
@@ -204,7 +208,8 @@ const imports = {
 			hashify(liesComputed),
 			hashify(trashComputed),
 			hashify(capturedErrorsComputed),
-			hashify(svgComputed)
+			hashify(svgComputed),
+			hashify(resistanceComputed)
 		]).catch(error => console.error(error.message))
 		
 		//console.log(performance.now()-start)
@@ -241,7 +246,8 @@ const imports = {
 			lies: !liesComputed ? undefined : {...liesComputed, $hash: liesHash },
 			trash: !trashComputed ? undefined : {...trashComputed, $hash: trashHash },
 			capturedErrors: !capturedErrorsComputed ? undefined : {...capturedErrorsComputed, $hash: errorsHash },
-			svg: !svgComputed ? undefined : {...svgComputed, $hash: svgHash }
+			svg: !svgComputed ? undefined : {...svgComputed, $hash: svgHash },
+			resistance: !resistanceComputed ? undefined : {...resistanceComputed, $hash: resistanceHash },
 		}
 		return { fingerprint, timeEnd }
 	}
@@ -732,15 +738,13 @@ const imports = {
 			</div>
 		</div>
 
-		<div id="headless-detection-results" class="flex-grid">
+		<div id="headless-resistance-detection-results" class="flex-grid">
 			${!fp.headless ?
 				`<div class="col-six">
 					<strong>Headless</strong>
 					<div>chromium: ${note.blocked}</div>
 					<div>like headless: ${note.blocked}</div>
 					<div>0% matched</div>
-				</div>
-				<div class="col-six">
 					<div>headless: ${note.blocked}</div>
 					<div>0% detected</div>
 					<div>stealth: ${note.blocked}</div>
@@ -785,8 +789,6 @@ const imports = {
 						)
 					}</div>
 					<div class="like-headless-rating">${''+likeHeadlessRating}% matched</div>
-				</div>
-				<div class="col-six">
 					<div>headless: ${
 						modal(
 							'creep-headless',
@@ -806,6 +808,7 @@ const imports = {
 					}</div>
 					<div class="stealth-rating">${''+stealthRating}% detected</div>
 				</div>
+				${resistanceHTML({fp, modal, note, hashMini, hashSlice})}
 				`
 			})()}
 		</div>
