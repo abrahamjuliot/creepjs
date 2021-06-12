@@ -79,8 +79,6 @@ export const getOfflineAudioContext = async imports => {
 			['OscillatorNode.frequency.minValue']: attempt(() => oscillator.frequency.minValue)
 		}
 
-		const getSum = arr => arr.reduce((acc, curr) => (acc += Math.abs(curr)), 0)
-
 		const getRenderedBuffer = ({
 			context,
 			floatFrequencyData,
@@ -93,12 +91,9 @@ export const getOfflineAudioContext = async imports => {
 			oscillator.type = 'triangle'
 			oscillator.frequency.value = 10000
 
-			if (dynamicsCompressor.threshold) { dynamicsCompressor.threshold.value = -50 }
-			if (dynamicsCompressor.knee) { dynamicsCompressor.knee.value = 40 }
-			if (dynamicsCompressor.ratio) { dynamicsCompressor.ratio.value = 12 }
-			if (dynamicsCompressor.reduction) { dynamicsCompressor.reduction.value = -20 }
-			if (dynamicsCompressor.attack) { dynamicsCompressor.attack.value = 0 }
-			if (dynamicsCompressor.release) { dynamicsCompressor.release.value = 0.25 }
+			caniuse(() => dynamicsCompressor.threshold.value = -50)
+			caniuse(() => dynamicsCompressor.knee.value = 40)
+			caniuse(() => dynamicsCompressor.attack.value = 0)
 
 			oscillator.connect(dynamicsCompressor)
 
@@ -157,13 +152,15 @@ export const getOfflineAudioContext = async imports => {
 				floatTimeDomainData: true
 			})
 		])
-		const { buffer, compressorGainReduction } = response
+		
+		const getSum = arr => !arr ? 0 : arr.reduce((acc, curr) => (acc += Math.abs(curr)), 0)
+		const { buffer, compressorGainReduction } = response || {}
     	const floatFrequencyDataSum = getSum(floatFrequencyData)
 		const floatTimeDomainDataSum = getSum(floatTimeDomainData)
 
 		const copy = new Float32Array(bufferLen)
 		caniuse(() => buffer.copyFromChannel(copy, 0))
-		const bins = buffer.getChannelData(0)
+		const bins = caniuse(() => buffer.getChannelData(0)) || []
 		const copySample = [...copy].slice(4500, 4600)
 		const binsSample = [...bins].slice(4500, 4600)
 		const sampleSum = getSum([...bins].slice(4500, bufferLen))
