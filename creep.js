@@ -995,12 +995,12 @@ const imports = {
 				<strong>Audio</strong>
 				<div>sum: ${note.blocked}</div>
 				<div>gain: ${note.blocked}</div>
+				<div>freq: ${note.blocked}</div>
+				<div>time: ${note.blocked}</div>
 				<div>buffer noise: ${note.blocked}</div>
 				<div>unique: ${note.blocked}</div>
 				<div>data: ${note.blocked}</div>
 				<div>copy: ${note.blocked}</div>
-				<div>Freq: ${note.blocked}</div>
-				<div>Time: ${note.blocked}</div>
 				<div>values: ${note.blocked}</div>
 			</div>` :
 		(() => {
@@ -1040,6 +1040,8 @@ const imports = {
 					sampleSum
 				}</div>
 				<div>gain: ${compressorGainReduction}</div>
+				<div>freq: ${floatFrequencyDataSum}</div>
+				<div>time: ${floatTimeDomainDataSum}</div>
 				<div>buffer noise: ${!noise ? 0 : `${noise.toFixed(4)}...`}</div>
 				<div>unique: ${totalUniqueSamples}</div>
 				<div>data:${
@@ -1050,8 +1052,6 @@ const imports = {
 					''+copySample[0] == 'undefined' ? ` ${note.unsupported}` : 
 					`<span class="sub-hash">${hashMini(copySample)}</span>`
 				}</div>
-				<div>freq: ${floatFrequencyDataSum}</div>
-				<div>time: ${floatTimeDomainDataSum}</div>
 				<div>values: ${
 					modal(
 						'creep-offline-audio-context',
