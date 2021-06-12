@@ -35,21 +35,6 @@ export const getOfflineAudioContext = async imports => {
 		const dynamicsCompressor = context.createDynamicsCompressor()
 		const biquadFilter = context.createBiquadFilter()
 
-		oscillator.type = 'triangle'
-		oscillator.frequency.value = 10000
-
-		if (dynamicsCompressor.threshold) { dynamicsCompressor.threshold.value = -50 }
-		if (dynamicsCompressor.knee) { dynamicsCompressor.knee.value = 40 }
-		if (dynamicsCompressor.ratio) { dynamicsCompressor.ratio.value = 12 }
-		if (dynamicsCompressor.reduction) { dynamicsCompressor.reduction.value = -20 }
-		if (dynamicsCompressor.attack) { dynamicsCompressor.attack.value = 0 }
-		if (dynamicsCompressor.release) { dynamicsCompressor.release.value = 0.25 }
-		
-		oscillator.connect(dynamicsCompressor)
-		dynamicsCompressor.connect(context.destination)
-		oscillator.start(0)
-		context.startRendering()
-
 		// detect lie
 		const dataArray = new Float32Array(analyser.frequencyBinCount)
 		analyser.getFloatFrequencyData(dataArray)
@@ -94,85 +79,142 @@ export const getOfflineAudioContext = async imports => {
 			['OscillatorNode.frequency.minValue']: attempt(() => oscillator.frequency.minValue)
 		}
 
-		const getRenderedBuffer = context => new Promise(resolve => {
+		const getSum = arr => arr.reduce((acc, curr) => (acc += Math.abs(curr)), 0)
+
+		const getRenderedBuffer = ({
+			context,
+			floatFrequencyData,
+			floatTimeDomainData
+		} = {}) => new Promise(resolve => {
+			let analyser
+			const oscillator = context.createOscillator()
+			const dynamicsCompressor = context.createDynamicsCompressor()
+
+			oscillator.type = 'triangle'
+			oscillator.frequency.value = 10000
+
+			if (dynamicsCompressor.threshold) { dynamicsCompressor.threshold.value = -50 }
+			if (dynamicsCompressor.knee) { dynamicsCompressor.knee.value = 40 }
+			if (dynamicsCompressor.ratio) { dynamicsCompressor.ratio.value = 12 }
+			if (dynamicsCompressor.reduction) { dynamicsCompressor.reduction.value = -20 }
+			if (dynamicsCompressor.attack) { dynamicsCompressor.attack.value = 0 }
+			if (dynamicsCompressor.release) { dynamicsCompressor.release.value = 0.25 }
+
+			oscillator.connect(dynamicsCompressor)
+
+			if (floatFrequencyData || floatTimeDomainData) {
+				analyser = context.createAnalyser()
+				dynamicsCompressor.connect(analyser)
+				analyser.connect(context.destination)
+			} else {
+				dynamicsCompressor.connect(context.destination)
+			}
+
+			oscillator.start(0)
+			context.startRendering()
+
 			context.oncomplete = event => {
 				try {
-					return resolve(event.renderedBuffer)
+					if (floatFrequencyData) {
+						const data = new Float32Array(analyser.frequencyBinCount)
+						analyser.getFloatFrequencyData(data)
+						return resolve(data)
+					}
+					else if (floatTimeDomainData) {
+						const data = new Float32Array(analyser.fftSize)
+						analyser.getFloatTimeDomainData(data)
+						return resolve(data)
+					}
+					return resolve({
+						buffer: event.renderedBuffer,
+						compressorGainReduction: dynamicsCompressor.reduction
+					})
 				}
 				catch (error) {
 					return resolve()
 				}
+				finally {
+					dynamicsCompressor.disconnect()
+					oscillator.disconnect()
+				}
 			}
 		})
 
-		const buffer = await getRenderedBuffer(context)
+		const [
+			response,
+			floatFrequencyData,
+			floatTimeDomainData
+		] = await Promise.all([
+			getRenderedBuffer({
+				context: new audioContext(1, bufferLen, 44100)
+			}),
+			getRenderedBuffer({
+				context: new audioContext(1, bufferLen, 44100),
+				floatFrequencyData: true
+			}),
+			getRenderedBuffer({
+				context: new audioContext(1, bufferLen, 44100),
+				floatTimeDomainData: true
+			})
+		])
+		const { buffer, compressorGainReduction } = response
+    	const floatFrequencyDataSum = getSum(floatFrequencyData)
+		const floatTimeDomainDataSum = getSum(floatTimeDomainData)
+
+		const copy = new Float32Array(bufferLen)
+		caniuse(() => buffer.copyFromChannel(copy, 0))
+		const bins = buffer.getChannelData(0)
+		const copySample = [...copy].slice(4500, 4600)
+		const binsSample = [...bins].slice(4500, 4600)
+		const sampleSum = getSum([...bins].slice(4500, bufferLen))
 		
-		try {
-			const copy = new Float32Array(bufferLen)
-			caniuse(() => buffer.copyFromChannel(copy, 0))
-			const bins = buffer.getChannelData(0)
-			const compressorGainReduction = dynamicsCompressor.reduction
-			const copySample = [...copy].slice(4500, 4600)
-			const binsSample = [...bins].slice(4500, 4600)
-			const sampleSum = [...bins].slice(4500, bufferLen)
-				.reduce((acc, curr) => (acc += Math.abs(curr)), 0)
-			
-			// detect lies
+		// detect lies
 
-			// sample matching
-			const matching = '' + binsSample == '' + copySample
-			const copyFromChannelSupported = ('copyFromChannel' in AudioBuffer.prototype)
-			if (copyFromChannelSupported && !matching) {
-				lied = true
-				const audioSampleLie = 'getChannelData and copyFromChannel samples mismatch'
-				documentLie('AudioBuffer', audioSampleLie)
-			}
-
-			// sample uniqueness
-			const totalUniqueSamples = new Set([...bins]).size
-			if (totalUniqueSamples == bufferLen) {
-				const audioUniquenessTrash = `${totalUniqueSamples} unique samples of ${bufferLen} is too high`
-				sendToTrash('AudioBuffer', audioUniquenessTrash)
-			}
-
-			// sample noise factor
-			const getNoiseFactor = () => {
-				const buffer = new AudioBuffer({
-					length: 1,
-					sampleRate: 44100
-				})
-				buffer.getChannelData(0)[0] = 1
-				return buffer.getChannelData(0)[0]
-			}
-			const noiseFactor = getNoiseFactor()
-			const noise = noiseFactor == 1 ? 0 : noiseFactor
-			if (noise) {
-				lied = true
-				const audioSampleNoiseLie = 'sample noise detected'
-				documentLie('AudioBuffer', audioSampleNoiseLie)
-			}
-
-			dynamicsCompressor.disconnect()
-			oscillator.disconnect()
-
-			logTestResult({ start, test: 'audio', passed: true })
-			return {
-				totalUniqueSamples,
-				compressorGainReduction,
-				sampleSum,
-				binsSample,
-				copySample: copyFromChannelSupported ? copySample : [undefined],
-				values,
-				noise,
-				lied
-			}
+		// sample matching
+		const matching = '' + binsSample == '' + copySample
+		const copyFromChannelSupported = ('copyFromChannel' in AudioBuffer.prototype)
+		if (copyFromChannelSupported && !matching) {
+			lied = true
+			const audioSampleLie = 'getChannelData and copyFromChannel samples mismatch'
+			documentLie('AudioBuffer', audioSampleLie)
 		}
-		catch (error) {
-			captureError(error, 'AudioBuffer failed or blocked by client')
-			dynamicsCompressor.disconnect()
-			oscillator.disconnect()
-			logTestResult({ test: 'audio', passed: false })
-			return
+
+		// sample uniqueness
+		const totalUniqueSamples = new Set([...bins]).size
+		if (totalUniqueSamples == bufferLen) {
+			const audioUniquenessTrash = `${totalUniqueSamples} unique samples of ${bufferLen} is too high`
+			sendToTrash('AudioBuffer', audioUniquenessTrash)
+		}
+
+		// sample noise factor
+		const getNoiseFactor = () => {
+			const buffer = new AudioBuffer({
+				length: 1,
+				sampleRate: 44100
+			})
+			buffer.getChannelData(0)[0] = 1
+			return buffer.getChannelData(0)[0]
+		}
+		const noiseFactor = getNoiseFactor()
+		const noise = noiseFactor == 1 ? 0 : noiseFactor
+		if (noise) {
+			lied = true
+			const audioSampleNoiseLie = 'sample noise detected'
+			documentLie('AudioBuffer', audioSampleNoiseLie)
+		}
+
+		logTestResult({ start, test: 'audio', passed: true })
+		return {
+			totalUniqueSamples,
+			compressorGainReduction,
+			floatFrequencyDataSum,
+			floatTimeDomainDataSum,
+			sampleSum,
+			binsSample,
+			copySample: copyFromChannelSupported ? copySample : [undefined],
+			values,
+			noise,
+			lied
 		}
 			
 	}

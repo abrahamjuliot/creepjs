@@ -999,6 +999,8 @@ const imports = {
 				<div>unique: ${note.blocked}</div>
 				<div>data: ${note.blocked}</div>
 				<div>copy: ${note.blocked}</div>
+				<div>Freq: ${note.blocked}</div>
+				<div>Time: ${note.blocked}</div>
 				<div>values: ${note.blocked}</div>
 			</div>` :
 		(() => {
@@ -1007,6 +1009,8 @@ const imports = {
 					$hash,
 					totalUniqueSamples,
 					compressorGainReduction,
+					floatFrequencyDataSum,
+					floatTimeDomainDataSum,
 					sampleSum,
 					binsSample,
 					copySample,
@@ -1046,6 +1050,8 @@ const imports = {
 					''+copySample[0] == 'undefined' ? ` ${note.unsupported}` : 
 					`<span class="sub-hash">${hashMini(copySample)}</span>`
 				}</div>
+				<div>freq: ${floatFrequencyDataSum}</div>
+				<div>time: ${floatTimeDomainDataSum}</div>
 				<div>values: ${
 					modal(
 						'creep-offline-audio-context',
