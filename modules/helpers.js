@@ -50,7 +50,7 @@ function getBraveMode() {
 		const pluginsList = [...navigator.plugins]
 		const hasChromePlugins = pluginsList
 			.filter(plugin => chromePlugins.test(plugin.name)).length == 2
-		if (!hasChromePlugins) {
+		if (pluginsList.length && !hasChromePlugins) {
 			mode.standard = true
 			return mode
 		}
