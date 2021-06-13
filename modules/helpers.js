@@ -1,5 +1,7 @@
 // Detect Browser
-const isChrome = 'chrome' in window
+const mathPI = 3.141592653589793
+const isChrome = mathPI ** -100 == 1.9275814160560204e-50
+const isFirefox = mathPI ** -100 == 1.9275814160560185e-50
 
 const braveBrowser = async () => {
 	const brave = (
@@ -61,8 +63,6 @@ function getBraveMode() {
 		return mode
 	}
 }
-
-const isFirefox = typeof InstallTrigger !== 'undefined'
 
 // system
 const getOS = userAgent => {
