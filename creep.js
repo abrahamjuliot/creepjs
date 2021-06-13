@@ -849,10 +849,7 @@ const imports = {
 				<div>deviceMemory: ${data.deviceMemory || note.unsupported}</div>
 				<div>hardwareConcurrency: ${data.hardwareConcurrency || note.unsupported}</div>
 				<div>platform: ${data.platform || note.unsupported}</div>
-				<div>system: ${data.system || note.unsupported}${
-					/android/i.test(data.system) && !/arm/i.test(data.platform) && /linux/i.test(data.platform) ?
-					' [emulator]' : ''
-				}</div>
+				<div>system: ${data.system || note.unsupported}</div>
 				<div>canvas 2d:${
 					data.canvas2d && data.canvas2d.dataURI ?
 					`<span class="sub-hash">${hashMini(data.canvas2d.dataURI)}</span>` :
