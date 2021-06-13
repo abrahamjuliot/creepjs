@@ -93,18 +93,21 @@ export const getResistance = async imports => {
 
 		if (isFirefox && protection) {
 			const features = {
-				'OfflineAudioContext': 'OfflineAudioContext' in window,
+				'OfflineAudioContext': 'OfflineAudioContext' in window, // dom.webaudio.enabled
+				'WebGL2RenderingContext': 'WebGL2RenderingContext' in window, // webgl.enable-webgl2
+				'WebAssembly': 'WebAssembly' in window, // javascript.options.wasm
+				'maxTouchPoints': 'maxTouchPoints' in navigator,
 				'RTCRtpTransceiver':  'RTCRtpTransceiver' in window,
 				'MediaDevices': 'MediaDevices' in window,
-				'WebGL2RenderingContext': 'WebGL2RenderingContext' in window,
-				'Credential': 'Credential' in window,
-				'WebAssembly': 'WebAssembly' in window,
-				'maxTouchPoints': 'maxTouchPoints' in navigator
+				'Credential': 'Credential' in window
 			}
 			const featureKeys = Object.keys(features)
-			const torBrowser = (
-				(featureKeys.filter(key => !features[key]).length/featureKeys.length*100) > 50
-			)
+			const targetSet = new Set([
+				'RTCRtpTransceiver',
+				'MediaDevices',
+				'Credential'
+			])
+			const torBrowser = featureKeys.filter(key => targetSet.has(key)).length == targetSet.size
 			const safer = !features.WebAssembly
 			data.privacy = torBrowser ? 'Tor Browser' : 'Firefox'
 			data.security = {
