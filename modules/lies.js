@@ -743,11 +743,11 @@ const start = performance.now()
 const {
 	lieDetector: lieProps,
     lieList,
-    lieDetail: prototypeLies,
+    lieDetail,
     lieCount,
     propsSearched
 } = getPrototypeLies(phantomDarkness) // execute and destructure the list and detail
-
+const prototypeLies = JSON.parse(JSON.stringify(lieDetail))
 const perf = performance.now() - start
 
 

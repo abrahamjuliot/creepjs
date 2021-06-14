@@ -132,7 +132,7 @@ export const getResistance = async imports => {
 
 		// extension
 		// this technique gets a small sample of known lie patterns
-		// patterns vary based on extensions settings, version, and browser
+		// patterns vary based on extensions settings, version, browser, and browser mitigations
 		const prototypeLiesLen = Object.keys(prototypeLies).length
 
 		// patterns based on settings
@@ -146,7 +146,7 @@ export const getResistance = async imports => {
 				contentWindowHash: ['14952998'],
 				createElementHash: ['a3d61a73'],
 				getElementByIdHash: ['a3d61a73'],
-				getImageDataHash: ['cb6efb80'],
+				getImageDataHash: ['cb6efb80', 'a3d61a73'],
 				toBlobHash: ['a3d61a73'],
 				toDataURLHash: ['a3d61a73', '9983cdd9']
 			},
@@ -179,9 +179,9 @@ export const getResistance = async imports => {
 				replaceChildHash: ['a3d61a73']
 			},
 			duckduckgo: {
-				toDataURLHash: ['fd00bf5d', '55e9b959', '26a1c0c3'],
+				toDataURLHash: ['fd00bf5d', '55e9b959', '26a1c0c3', 'af080ebf'],
 				toBlobHash: ['fd00bf5d', '55e9b959'],
-				getImageDataHash: ['209cb4ea', 'a267c9e6'],
+				getImageDataHash: ['209cb4ea', 'a267c9e6', '55e9b959', 'fd00bf5d'],
 				getByteFrequencyDataHash: ['fd00bf5d', '55e9b959'],
 				getByteTimeDomainDataHash: ['fd00bf5d', '55e9b959'],
 				getFloatFrequencyDataHash: ['fd00bf5d', '55e9b959'],
@@ -243,7 +243,8 @@ export const getResistance = async imports => {
 			colorDepthHash: hashMini(prototypeLies['Screen.colorDepth']),
 			pixelDepthHash: hashMini(prototypeLies['Screen.pixelDepth'])
 		}
-		//console.log(hash)
+		console.log(hash)
+		console.log(prototypeLies['HTMLCanvasElement.toDataURL'])
 
 		const getExtension = (pattern, hash) => {
 			const {
