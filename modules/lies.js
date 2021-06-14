@@ -743,12 +743,13 @@ const start = performance.now()
 const {
 	lieDetector: lieProps,
     lieList,
-    lieDetail,
+    lieDetail: prototypeLies,
     lieCount,
     propsSearched
 } = getPrototypeLies(phantomDarkness) // execute and destructure the list and detail
 
 const perf = performance.now() - start
+
 
 console.log(`${propsSearched.length} API properties analyzed in ${(perf).toFixed(2)}ms (${lieList.length} corrupted)`)
 
@@ -866,4 +867,4 @@ const getLies = imports => {
 	})
 }
 
-export { documentLie, phantomDarkness, parentPhantom, lieProps, lieRecords, getLies, dragonFire, parentDragon, dragonOfDeath, getPluginLies }
+export { documentLie, phantomDarkness, parentPhantom, lieProps, prototypeLies, lieRecords, getLies, dragonFire, parentDragon, dragonOfDeath, getPluginLies }

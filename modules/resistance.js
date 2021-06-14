@@ -3,20 +3,29 @@ export const getResistance = async imports => {
 	const {
 		require: {
 			isFirefox,
+			isChrome,
 			getBraveMode,
 			braveBrowser,
+			prototypeLies,
+			hashMini,
 			captureError,
 			logTestResult
 		}
 	} = imports
 
 	try {
-		await new Promise(setTimeout)
+		await new Promise(setTimeout).catch(e => {})
 		const start = performance.now()
 		const data = {
 			privacy: undefined,
 			security: undefined,
-			mode: undefined
+			mode: undefined,
+			extension: undefined,
+			engine: (
+				isChrome ? 'Blink' :
+					isFirefox ? 'Gecko' :
+						''
+			)
 		}
 		// Brave
 		const isBrave = await braveBrowser()
@@ -32,7 +41,7 @@ export const getResistance = async imports => {
 				braveMode.allow ? 'allow' :
 				braveMode.standard ? 'standard' :
 				braveMode.strict ? 'strict' :
-				'unknown'
+				undefined
 			)
 		}
 		
@@ -89,7 +98,7 @@ export const getResistance = async imports => {
 				precisionValue: protection ? lastCharA : undefined
 			}
 		}
-		const { protection } = await getTimerPrecision()
+		const { protection } = isChrome ? {} : await getTimerPrecision()
 
 		if (isFirefox && protection) {
 			const features = {
@@ -107,7 +116,7 @@ export const getResistance = async imports => {
 				'MediaDevices',
 				'Credential'
 			])
-			const torBrowser = featureKeys.filter(key => targetSet.has(key)).length == targetSet.size
+			const torBrowser = featureKeys.filter(key => targetSet.has(key) && !features[key]).length == targetSet.size
 			const safer = !features.WebAssembly
 			data.privacy = torBrowser ? 'Tor Browser' : 'Firefox'
 			data.security = {
@@ -120,6 +129,194 @@ export const getResistance = async imports => {
 						'standard' 
 			)
 		}
+
+		// extension
+		// this technique gets a small sample of known lie patterns
+		// patterns vary based on extensions settings, version, and browser
+		const prototypeLiesLen = Object.keys(prototypeLies).length
+
+		// patterns based on settings
+		const pattern = {
+			noscript: {
+				contentDocumentHash: ['0b637a33'],
+				contentWindowHash: ['0b637a33']
+			},
+			trace: {
+				contentDocumentHash: ['14952998'],
+				contentWindowHash: ['14952998'],
+				createElementHash: ['a3d61a73'],
+				getElementByIdHash: ['a3d61a73'],
+				getImageDataHash: ['cb6efb80'],
+				toBlobHash: ['a3d61a73'],
+				toDataURLHash: ['a3d61a73', '9983cdd9']
+			},
+			cydec: {
+				contentDocumentHash: ['55e9b959', 'ae84b862'],
+				contentWindowHash: ['55e9b959', 'ae84b862'],
+				createElementHash: ['a5df9a1c', '9abf76a5'],
+				getElementByIdHash: ['a5df9a1c', '9abf76a5'],
+				getImageDataHash: ['55e9b959', 'bb4cd3c5', 'e2080b52', 'a267c9e6'],
+				toBlobHash: ['55e9b959', 'ae84b862', 'b2f68fce'],
+				toDataURLHash: ['55e9b959', 'ae84b862', '586998e6', '52ffa2f2', 'af080ebf', '621990c8']
+			},
+			canvasblocker: {
+				contentDocumentHash: ['37e2f32e'],
+				contentWindowHash: ['37e2f32e'],
+				appendHash: ['0b637a33'],
+				getImageDataHash: ['0b637a33', '684e0b40', 'c767712b'],
+				toBlobHash: ['0b637a33', 'c767712b'],
+				toDataURLHash: ['0b637a33', 'c767712b', '98266d99']
+			},
+			chameleon: {
+				appendHash: ['a3d61a73'],
+				insertAdjacentElementHash: ['a3d61a73'],
+				insertAdjacentHTMLHash: ['a3d61a73'],
+				insertAdjacentTextHash: ['a3d61a73'],
+				prependHash: ['a3d61a73'],
+				replaceWithHash: ['a3d61a73'],
+				appendChildHash: ['a3d61a73'],
+				insertBeforeHash: ['a3d61a73'],
+				replaceChildHash: ['a3d61a73']
+			},
+			duckduckgo: {
+				toDataURLHash: ['fd00bf5d', '55e9b959', '26a1c0c3'],
+				toBlobHash: ['fd00bf5d', '55e9b959'],
+				getImageDataHash: ['209cb4ea', 'a267c9e6'],
+				getByteFrequencyDataHash: ['fd00bf5d', '55e9b959'],
+				getByteTimeDomainDataHash: ['fd00bf5d', '55e9b959'],
+				getFloatFrequencyDataHash: ['fd00bf5d', '55e9b959'],
+				getFloatTimeDomainDataHash: ['fd00bf5d', '55e9b959'],
+				copyFromChannelHash: ['fd00bf5d', '55e9b959'],
+				getChannelDataHash: ['fd00bf5d', '55e9b959'],
+				hardwareConcurrencyHash: ['dfd41ab4'],
+				availHeightHash: ['dfd41ab4'],
+				availLeftHash: ['dfd41ab4'],
+				availTopHash: ['dfd41ab4'],
+				availWidthHash: ['dfd41ab4'],
+				colorDepthHash: ['dfd41ab4'],
+				pixelDepthHash: ['dfd41ab4']
+			}
+		}
+		
+		const hash = {
+			// iframes
+			contentDocumentHash: hashMini(prototypeLies['HTMLIFrameElement.contentDocument']),
+			contentWindowHash: hashMini(prototypeLies['HTMLIFrameElement.contentWindow']),
+			createElementHash: hashMini(prototypeLies['Document.createElement']),
+			getElementByIdHash: hashMini(prototypeLies['Document.getElementById']),
+			appendHash: hashMini(prototypeLies['Element.append']),
+			insertAdjacentElementHash: hashMini(prototypeLies['Element.insertAdjacentElement']),
+			insertAdjacentHTMLHash: hashMini(prototypeLies['Element.insertAdjacentHTML']),
+			insertAdjacentTextHash: hashMini(prototypeLies['Element.insertAdjacentText']),
+			prependHash: hashMini(prototypeLies['Element.prepend']),
+			replaceWithHash: hashMini(prototypeLies['Element.replaceWith']),
+			appendChildHash: hashMini(prototypeLies['Node.appendChild']),
+			insertBeforeHash: hashMini(prototypeLies['Node.insertBefore']),
+			replaceChildHash: hashMini(prototypeLies['Node.replaceChild']),
+			// canvas
+			toDataURLHash: hashMini(prototypeLies['HTMLCanvasElement.toDataURL']),
+			toBlobHash: hashMini(prototypeLies['HTMLCanvasElement.toBlob']),
+			getImageDataHash: hashMini(prototypeLies['CanvasRenderingContext2D.getImageData']),
+			// Audio
+			getByteFrequencyDataHash: hashMini(prototypeLies['AnalyserNode.getByteFrequencyData']),
+			getByteTimeDomainDataHash: hashMini(prototypeLies['AnalyserNode.getByteTimeDomainData']),
+			getFloatFrequencyDataHash: hashMini(prototypeLies['AnalyserNode.getFloatFrequencyData']),
+			getFloatTimeDomainDataHash: hashMini(prototypeLies['AnalyserNode.getFloatTimeDomainData']),
+			copyFromChannelHash: hashMini(prototypeLies['AudioBuffer.copyFromChannel']),
+			getChannelDataHash: hashMini(prototypeLies['AudioBuffer.getChannelData']),
+			// Hardware
+			hardwareConcurrencyHash: hashMini(prototypeLies['Navigator.hardwareConcurrency']),
+			// Screen
+			availHeightHash: hashMini(prototypeLies['Screen.availHeight']),
+			availLeftHash: hashMini(prototypeLies['Screen.availLeft']),
+			availTopHash: hashMini(prototypeLies['Screen.availTop']),
+			availWidthHash: hashMini(prototypeLies['Screen.availWidth']),
+			colorDepthHash: hashMini(prototypeLies['Screen.colorDepth']),
+			pixelDepthHash: hashMini(prototypeLies['Screen.pixelDepth'])
+		}
+		console.log(hash)
+
+		const getExtension = (pattern, hash) => {
+			const {
+				noscript,
+				trace,
+				cydec,
+				canvasblocker,
+				chameleon,
+				duckduckgo
+			} = pattern
+			if (prototypeLiesLen) {
+				if (prototypeLiesLen == 2 &&
+					noscript.contentDocumentHash.includes(hash.contentDocumentHash) &&
+					noscript.contentWindowHash.includes(hash.contentDocumentHash)) {
+					return 'NoScript'
+				}
+				if (prototypeLiesLen >= 7 &&
+					trace.contentDocumentHash.includes(hash.contentDocumentHash) &&
+					trace.contentWindowHash.includes(hash.contentWindowHash) &&
+					trace.createElementHash.includes(hash.createElementHash) &&
+					trace.getElementByIdHash.includes(hash.getElementByIdHash) &&
+					trace.toDataURLHash.includes(hash.toDataURLHash) &&
+					trace.toBlobHash.includes(hash.toBlobHash) &&
+					trace.getImageDataHash.includes(hash.getImageDataHash)) {
+					return 'Trace'
+				}
+				if (prototypeLiesLen >= 7 &&
+					cydec.contentDocumentHash.includes(hash.contentDocumentHash) &&
+					cydec.contentWindowHash.includes(hash.contentWindowHash) &&
+					cydec.createElementHash.includes(hash.createElementHash) &&
+					cydec.getElementByIdHash.includes(hash.getElementByIdHash) &&
+					cydec.toDataURLHash.includes(hash.toDataURLHash) &&
+					cydec.toBlobHash.includes(hash.toBlobHash) &&
+					cydec.getImageDataHash.includes(hash.getImageDataHash)) {
+					return 'Cydec'
+				}
+				if (prototypeLiesLen >= 6 &&
+					canvasblocker.contentDocumentHash.includes(hash.contentDocumentHash) &&
+					canvasblocker.contentWindowHash.includes(hash.contentWindowHash)  &&
+					canvasblocker.appendHash.includes(hash.appendHash) &&
+					canvasblocker.toDataURLHash.includes(hash.toDataURLHash) &&
+					canvasblocker.toBlobHash.includes(hash.toBlobHash) &&
+					canvasblocker.getImageDataHash.includes(hash.getImageDataHash)) {
+					return 'CanvasBlocker'
+				}
+				if (prototypeLiesLen >= 9 &&
+					chameleon.appendHash.includes(hash.appendHash) &&
+					chameleon.insertAdjacentElementHash.includes(hash.insertAdjacentElementHash) &&
+					chameleon.insertAdjacentHTMLHash.includes(hash.insertAdjacentHTMLHash) &&
+					chameleon.insertAdjacentTextHash.includes(hash.insertAdjacentTextHash) &&
+					chameleon.prependHash.includes(hash.prependHash) &&
+					chameleon.replaceWithHash.includes(hash.replaceWithHash) &&
+					chameleon.appendChildHash.includes(hash.appendChildHash) &&
+					chameleon.insertBeforeHash.includes(hash.insertBeforeHash) &&
+					chameleon.replaceChildHash.includes(hash.replaceChildHash)) {
+					return 'Chameleon'
+				}
+				if (prototypeLiesLen >= 16 &&
+					duckduckgo.toDataURLHash.includes(hash.toDataURLHash) &&
+					duckduckgo.toBlobHash.includes(hash.toBlobHash) &&
+					duckduckgo.getImageDataHash.includes(hash.getImageDataHash) &&
+					duckduckgo.getByteFrequencyDataHash.includes(hash.getByteFrequencyDataHash) &&
+					duckduckgo.getByteTimeDomainDataHash.includes(hash.getByteTimeDomainDataHash) &&
+					duckduckgo.getFloatFrequencyDataHash.includes(hash.getFloatFrequencyDataHash) &&
+					duckduckgo.getFloatTimeDomainDataHash.includes(hash.getFloatTimeDomainDataHash) &&
+					duckduckgo.copyFromChannelHash.includes(hash.copyFromChannelHash) &&
+					duckduckgo.getChannelDataHash.includes(hash.getChannelDataHash) &&
+					duckduckgo.hardwareConcurrencyHash.includes(hash.hardwareConcurrencyHash) &&
+					duckduckgo.availHeightHash.includes(hash.availHeightHash) &&
+					duckduckgo.availLeftHash.includes(hash.availLeftHash) &&
+					duckduckgo.availTopHash.includes(hash.availTopHash) &&
+					duckduckgo.availWidthHash.includes(hash.availWidthHash) &&
+					duckduckgo.colorDepthHash.includes(hash.colorDepthHash) &&
+					duckduckgo.pixelDepthHash.includes(hash.pixelDepthHash)) {
+					return 'DuckDuckGo'
+				}
+				return
+			}
+			return
+		}
+		
+		data.extension = getExtension(pattern, hash)
 
 		logTestResult({ start, test: 'resistance', passed: true })
 		return data
@@ -147,7 +344,9 @@ export const resistanceHTML = ({fp, modal, note, hashMini, hashSlice}) => `
 			$hash,
 			privacy,
 			security,
-			mode
+			mode,
+			extension,
+			engine
 		} = data || {}
 		
 		const securitySettings = !security || Object.keys(security).reduce((acc, curr) => {
@@ -159,19 +358,25 @@ export const resistanceHTML = ({fp, modal, note, hashMini, hashSlice}) => `
 			return acc
 		}, {})
 
-		const icon = (
+		const browserIcon = (
 			/brave/i.test(privacy) ? '<span class="icon brave"></span>' :
 				/tor/i.test(privacy) ? '<span class="icon tor"></span>' :
 					/firefox/i.test(privacy) ? '<span class="icon firefox"></span>' :
 						''
 		)
-		
+
+		const extensionIcon = (
+			/blink/i.test(engine) ? '<span class="icon chrome-extension"></span>' :
+				/gecko/i.test(engine) ? '<span class="icon firefox-addon"></span>' :
+					''
+		)
+
 		return `
 		<div class="col-six">
 			<strong>Resistance</strong><span class="hash">${hashSlice($hash)}</span>
-			<div>privacy: ${privacy ? `${icon}${privacy}` : 'unknown'}</div>
+			<div>privacy: ${privacy ? `${browserIcon}${privacy}` : note.unknown}</div>
 			<div>security: ${
-				!security ? 'unknown' :
+				!security ? note.unknown :
 				modal(
 					'creep-resistance',
 					'<strong>Security</strong><br><br>'
@@ -179,7 +384,8 @@ export const resistanceHTML = ({fp, modal, note, hashMini, hashSlice}) => `
 					hashMini(security)
 				)
 			}</div>
-			<div>mode: ${mode || 'none'}</div>
+			<div>mode: ${mode || note.unknown}</div>
+			<div>extension: ${extension ? `${extensionIcon}${extension}` : note.unknown}</div>
 		</div>
 		`
 	})()}

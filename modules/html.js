@@ -26,6 +26,7 @@ const html = (stringSet, ...expressionSet) => {
 
 // template helpers
 const note = {
+	unknown: '<span class="blocked">unknown</span>',
 	unsupported: '<span class="blocked">unsupported</span>',
 	blocked: '<span class="blocked">blocked</span>',
 	lied: '<span class="lies">lied</span>'
