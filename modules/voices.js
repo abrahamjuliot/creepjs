@@ -12,7 +12,7 @@ export const getVoices = imports => {
 	return new Promise(async resolve => {
 		try {
 			speechSynthesis.getVoices() // warm up
-			await new Promise(setTimeout) 
+			await new Promise(setTimeout).catch(e => {})
 			const start = performance.now()
 			const win = phantomDarkness ? phantomDarkness : window
 			if (!('speechSynthesis' in win)) {
@@ -23,7 +23,7 @@ export const getVoices = imports => {
 			let success = false
 			const getVoices = () => {
 				const data = win.speechSynthesis.getVoices()
-				if (!data.length) {
+				if (!data || !data.length) {
 					return
 				}
 				success = true
