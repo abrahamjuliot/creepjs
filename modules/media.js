@@ -42,7 +42,7 @@ export const getMedia = async imports => {
 	} = imports
 
 	try {
-		await new Promise(setTimeout)
+		await new Promise(setTimeout).catch(e => {})
 		const start = performance.now()
 		const phantomNavigator = phantomDarkness ? phantomDarkness.navigator : navigator
 		let devices, types

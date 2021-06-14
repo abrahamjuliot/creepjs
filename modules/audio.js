@@ -15,7 +15,7 @@ export const getOfflineAudioContext = async imports => {
 
 
 	try {
-		await new Promise(setTimeout)
+		await new Promise(setTimeout).catch(e => {})
 		const start = performance.now()
 		const win = phantomDarkness ? phantomDarkness : window
 		const audioContext = caniuse(() => win.OfflineAudioContext || win.webkitOfflineAudioContext)

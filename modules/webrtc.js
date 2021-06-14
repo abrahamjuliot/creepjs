@@ -11,7 +11,7 @@ export const getWebRTCData = imports => {
 	
 	return new Promise(async resolve => {
 		try {
-			await new Promise(setTimeout)
+			await new Promise(setTimeout).catch(e => {})
 			const start = performance.now()
 			let rtcPeerConnection = (
 				window.RTCPeerConnection ||
