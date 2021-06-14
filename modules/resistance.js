@@ -243,8 +243,7 @@ export const getResistance = async imports => {
 			colorDepthHash: hashMini(prototypeLies['Screen.colorDepth']),
 			pixelDepthHash: hashMini(prototypeLies['Screen.pixelDepth'])
 		}
-		console.log(hash)
-		console.log(prototypeLies['HTMLCanvasElement.toDataURL'])
+		//console.log(hash)
 
 		const getExtension = (pattern, hash) => {
 			const {
