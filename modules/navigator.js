@@ -302,7 +302,7 @@ export const getNavigator = async (imports, workerScope) => {
 				return keys
 			}, 'navigator keys failed'),
 			highEntropyValues: await attempt(async () => { 
-				if (!('userAgentData' in phantomNavigator)) {
+				if (!('userAgentData' in phantomNavigator) || !phantomNavigator.userAgentData) {
 					return undefined
 				}
 				const data = await phantomNavigator.userAgentData.getHighEntropyValues(
