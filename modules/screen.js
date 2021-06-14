@@ -45,7 +45,7 @@ const getDevice = (width, height) => {
 			return display.device
 		}
 	}
-	return 'unknown'
+	return
 }
 
 export const getScreen = async imports => {

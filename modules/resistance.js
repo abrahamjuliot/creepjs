@@ -197,6 +197,15 @@ export const getResistance = async imports => {
 				pixelDepthHash: ['dfd41ab4']
 			}
 		}
+
+		/*
+		Privacy Badger
+		Privacy Possom
+		Random User-Agent
+		User Agent Switcher and Manager
+		ScriptSafe
+		Windscribe
+		*/
 		
 		const hash = {
 			// iframes
@@ -234,7 +243,7 @@ export const getResistance = async imports => {
 			colorDepthHash: hashMini(prototypeLies['Screen.colorDepth']),
 			pixelDepthHash: hashMini(prototypeLies['Screen.pixelDepth'])
 		}
-		console.log(hash)
+		//console.log(hash)
 
 		const getExtension = (pattern, hash) => {
 			const {

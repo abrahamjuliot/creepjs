@@ -1355,7 +1355,7 @@ const imports = {
 			return `
 			<div class="col-six">
 				<strong>Screen</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-				<div>device: ${device ? device : note.blocked}</div>
+				<div>device: ${device ? device : note.unknown}</div>
 				<div>width: ${width ? width : note.blocked}</div>
 				<div>outerWidth: ${outerWidth ? outerWidth : note.blocked}</div>
 				<div>availWidth: ${availWidth ? availWidth : note.blocked}</div>
