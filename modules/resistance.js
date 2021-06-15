@@ -136,10 +136,12 @@ export const getResistance = async imports => {
 		const prototypeLiesLen = Object.keys(prototypeLies).length
 
 		// patterns based on settings
+		const disabled = 'c767712b'
 		const pattern = {
 			noscript: {
-				contentDocumentHash: ['0b637a33'],
-				contentWindowHash: ['0b637a33']
+				contentDocumentHash: ['0b637a33', '37e2f32e'],
+				contentWindowHash: ['0b637a33', '37e2f32e'],
+				getContextHash: ['0b637a33', disabled]
 			},
 			trace: {
 				contentDocumentHash: ['14952998'],
@@ -163,9 +165,9 @@ export const getResistance = async imports => {
 				contentDocumentHash: ['37e2f32e'],
 				contentWindowHash: ['37e2f32e'],
 				appendHash: ['0b637a33'],
-				getImageDataHash: ['0b637a33', 'c767712b'],
-				toBlobHash: ['0b637a33', 'c767712b'],
-				toDataURLHash: ['0b637a33', 'c767712b']
+				getImageDataHash: ['0b637a33', disabled],
+				toBlobHash: ['0b637a33', disabled],
+				toDataURLHash: ['0b637a33', disabled]
 			},
 			chameleon: {
 				appendHash: ['a3d61a73', '1aadd8cd'],
@@ -231,6 +233,7 @@ export const getResistance = async imports => {
 			insertBeforeHash: hashMini(prototypeLies['Node.insertBefore']),
 			replaceChildHash: hashMini(prototypeLies['Node.replaceChild']),
 			// canvas
+			getContextHash: hashMini(prototypeLies['HTMLCanvasElement.getContext']),
 			toDataURLHash: hashMini(prototypeLies['HTMLCanvasElement.toDataURL']),
 			toBlobHash: hashMini(prototypeLies['HTMLCanvasElement.toBlob']),
 			getImageDataHash: hashMini(prototypeLies['CanvasRenderingContext2D.getImageData']),
@@ -254,7 +257,7 @@ export const getResistance = async imports => {
 		
 		data.extensionHashPattern = Object.keys(hash).reduce((acc, key) => {
 			const val = hash[key]
-			if (val == 'c767712b') {
+			if (val == disabled) {
 				return acc
 			}
 			acc[key.replace('Hash', '')] = val
@@ -344,9 +347,10 @@ export const getResistance = async imports => {
 					privacypossum.colorDepthHash.includes(hash.colorDepthHash)) {
 					return 'Privacy Possum'
 				}
-				if (prototypeLiesLen == 2 &&
+				if (prototypeLiesLen >= 2 &&
 					noscript.contentDocumentHash.includes(hash.contentDocumentHash) &&
-					noscript.contentWindowHash.includes(hash.contentDocumentHash)) {
+					noscript.contentWindowHash.includes(hash.contentDocumentHash) &&
+					noscript.getContextHash.includes(hash.getContextHash)) {
 					return 'NoScript'
 				}
 				return
