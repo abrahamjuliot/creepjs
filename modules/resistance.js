@@ -131,8 +131,8 @@ export const getResistance = async imports => {
 		}
 
 		// extension
-		// this technique gets a small sample of known lie patterns
-		// patterns vary based on extensions settings, version, browser, and browser mitigations
+		// - this technique gets a small sample of known lie patterns
+		// - patterns vary based on extensions settings, version, browser
 		const prototypeLiesLen = Object.keys(prototypeLies).length
 
 		// patterns based on settings
@@ -163,25 +163,25 @@ export const getResistance = async imports => {
 				contentDocumentHash: ['37e2f32e'],
 				contentWindowHash: ['37e2f32e'],
 				appendHash: ['0b637a33'],
-				getImageDataHash: ['0b637a33', '684e0b40', 'c767712b'],
+				getImageDataHash: ['0b637a33', 'c767712b'],
 				toBlobHash: ['0b637a33', 'c767712b'],
-				toDataURLHash: ['0b637a33', 'c767712b', '98266d99']
+				toDataURLHash: ['0b637a33', 'c767712b']
 			},
 			chameleon: {
-				appendHash: ['a3d61a73'],
-				insertAdjacentElementHash: ['a3d61a73'],
-				insertAdjacentHTMLHash: ['a3d61a73'],
-				insertAdjacentTextHash: ['a3d61a73'],
-				prependHash: ['a3d61a73'],
-				replaceWithHash: ['a3d61a73'],
-				appendChildHash: ['a3d61a73'],
-				insertBeforeHash: ['a3d61a73'],
-				replaceChildHash: ['a3d61a73']
+				appendHash: ['a3d61a73', '1aadd8cd'],
+				insertAdjacentElementHash: ['a3d61a73', '1aadd8cd'],
+				insertAdjacentHTMLHash: ['a3d61a73', '1aadd8cd'],
+				insertAdjacentTextHash: ['a3d61a73', '1aadd8cd'],
+				prependHash: ['a3d61a73', '1aadd8cd'],
+				replaceWithHash: ['a3d61a73', '1aadd8cd'],
+				appendChildHash: ['a3d61a73', '1aadd8cd'],
+				insertBeforeHash: ['a3d61a73', '1aadd8cd'],
+				replaceChildHash: ['a3d61a73', '1aadd8cd']
 			},
 			duckduckgo: {
-				toDataURLHash: ['fd00bf5d', '55e9b959', '26a1c0c3', 'af080ebf'],
+				toDataURLHash: ['fd00bf5d', '55e9b959'],
 				toBlobHash: ['fd00bf5d', '55e9b959'],
-				getImageDataHash: ['209cb4ea', 'a267c9e6', '55e9b959', 'fd00bf5d'],
+				getImageDataHash: ['fd00bf5d', '55e9b959'],
 				getByteFrequencyDataHash: ['fd00bf5d', '55e9b959'],
 				getByteTimeDomainDataHash: ['fd00bf5d', '55e9b959'],
 				getFloatFrequencyDataHash: ['fd00bf5d', '55e9b959'],
@@ -195,12 +195,20 @@ export const getResistance = async imports => {
 				availWidthHash: ['dfd41ab4'],
 				colorDepthHash: ['dfd41ab4'],
 				pixelDepthHash: ['dfd41ab4']
+			},
+			// mode: Learn to block new trackers from your browsing
+			privacybadger: {
+				getImageDataHash: ['d2d20b65'],
+				toDataURLHash: ['d2d20b65']
+			},
+			privacypossum: {
+				hardwareConcurrencyHash: ['452924d5'],
+				availWidthHash: ['452924d5'],
+				colorDepthHash: ['452924d5']
 			}
 		}
 
 		/*
-		Privacy Badger
-		Privacy Possom
 		Random User-Agent
 		User Agent Switcher and Manager
 		ScriptSafe
@@ -243,7 +251,15 @@ export const getResistance = async imports => {
 			colorDepthHash: hashMini(prototypeLies['Screen.colorDepth']),
 			pixelDepthHash: hashMini(prototypeLies['Screen.pixelDepth'])
 		}
-		//console.log(hash)
+		
+		data.extensionHashPattern = Object.keys(hash).reduce((acc, key) => {
+			const val = hash[key]
+			if (val == 'c767712b') {
+				return acc
+			}
+			acc[key] = val
+			return acc
+		}, {})
 
 		const getExtension = (pattern, hash) => {
 			const {
@@ -252,7 +268,9 @@ export const getResistance = async imports => {
 				cydec,
 				canvasblocker,
 				chameleon,
-				duckduckgo
+				duckduckgo,
+				privacybadger,
+				privacypossum
 			} = pattern
 			if (prototypeLiesLen) {
 				if (prototypeLiesLen == 2 &&
@@ -278,7 +296,7 @@ export const getResistance = async imports => {
 					cydec.toDataURLHash.includes(hash.toDataURLHash) &&
 					cydec.toBlobHash.includes(hash.toBlobHash) &&
 					cydec.getImageDataHash.includes(hash.getImageDataHash)) {
-					return 'Cydec'
+					return 'CyDec'
 				}
 				if (prototypeLiesLen >= 6 &&
 					canvasblocker.contentDocumentHash.includes(hash.contentDocumentHash) &&
@@ -320,6 +338,17 @@ export const getResistance = async imports => {
 					duckduckgo.pixelDepthHash.includes(hash.pixelDepthHash)) {
 					return 'DuckDuckGo'
 				}
+				if (prototypeLiesLen >= 2 &&
+					privacybadger.getImageDataHash.includes(hash.getImageDataHash) &&
+					privacybadger.toDataURLHash.includes(hash.toDataURLHash)) {
+					return 'Privacy Badger'
+				}
+				if (prototypeLiesLen >= 3 &&
+					privacypossum.hardwareConcurrencyHash.includes(hash.hardwareConcurrencyHash) &&
+					privacypossum.availWidthHash.includes(hash.availWidthHash) &&
+					privacypossum.colorDepthHash.includes(hash.colorDepthHash)) {
+					return 'Privacy Possum'
+				}
 				return
 			}
 			return
@@ -355,6 +384,7 @@ export const resistanceHTML = ({fp, modal, note, hashMini, hashSlice}) => `
 			security,
 			mode,
 			extension,
+			extensionHashPattern,
 			engine
 		} = data || {}
 		
@@ -395,6 +425,15 @@ export const resistanceHTML = ({fp, modal, note, hashMini, hashSlice}) => `
 			}</div>
 			<div>mode: ${mode || note.unknown}</div>
 			<div>extension: ${extension ? `${extensionIcon}${extension}` : note.unknown}</div>
+			<div>lie pattern: ${
+				!Object.keys(extensionHashPattern || {}).length ? note.unknown :
+				modal(
+					'creep-extension',
+					'<strong>Pattern</strong><br><br>'
+					+Object.keys(extensionHashPattern).map(key => `${key}: ${''+extensionHashPattern[key]}`).join('<br>'),
+					(hashMini(extensionHashPattern))
+				)
+			}</div>
 		</div>
 		`
 	})()}
