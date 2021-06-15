@@ -257,7 +257,7 @@ export const getResistance = async imports => {
 			if (val == 'c767712b') {
 				return acc
 			}
-			acc[key] = val
+			acc[key.replace('Hash', '')] = val
 			return acc
 		}, {})
 
