@@ -273,11 +273,6 @@ export const getResistance = async imports => {
 				privacypossum
 			} = pattern
 			if (prototypeLiesLen) {
-				if (prototypeLiesLen == 2 &&
-					noscript.contentDocumentHash.includes(hash.contentDocumentHash) &&
-					noscript.contentWindowHash.includes(hash.contentDocumentHash)) {
-					return 'NoScript'
-				}
 				if (prototypeLiesLen >= 7 &&
 					trace.contentDocumentHash.includes(hash.contentDocumentHash) &&
 					trace.contentWindowHash.includes(hash.contentWindowHash) &&
@@ -348,6 +343,11 @@ export const getResistance = async imports => {
 					privacypossum.availWidthHash.includes(hash.availWidthHash) &&
 					privacypossum.colorDepthHash.includes(hash.colorDepthHash)) {
 					return 'Privacy Possum'
+				}
+				if (prototypeLiesLen == 2 &&
+					noscript.contentDocumentHash.includes(hash.contentDocumentHash) &&
+					noscript.contentWindowHash.includes(hash.contentDocumentHash)) {
+					return 'NoScript'
 				}
 				return
 			}
