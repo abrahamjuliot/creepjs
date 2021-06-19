@@ -32,8 +32,8 @@ const getNewObjectToStringTypeErrorLie = apiFunction => {
 			error.constructor.name == 'TypeError' && stackLines.length >= 5
 		)
 		// Chromium must throw error 'at Function.toString'... and not 'at Object.apply'
-		const isChrome = 'chrome' in window || detectChromium()
-		if (validStackSize && isChrome && (
+		const isChromium = 'chrome' in window || detectChromium()
+		if (validStackSize && isChromium && (
 			!validScope ||
 			!/at Function\.toString/.test(stackLines[1]) ||
 			!/at you/.test(stackLines[2]) ||
@@ -53,6 +53,7 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 		require: {
 			parentPhantom,
 			hashMini,
+			isChrome,
 			captureError,
 			logTestResult
 		}
@@ -60,10 +61,10 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 
 	try {
 		const start = performance.now()
-		const isChrome = detectChromium()
+		const isChromium = detectChromium() || isChrome
 		const mimeTypes = Object.keys({ ...navigator.mimeTypes })
 		const data = {
-			chromium: isChrome,
+			chromium: isChromium,
 			likeHeadless: {
 				['trust token feature is disabled']: (
 					!('hasTrustToken' in document) ||
@@ -72,10 +73,10 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 					!('trustToken' in HTMLIFrameElement.prototype)
 				),
 				['navigator.webdriver is on']: 'webdriver' in navigator && !!navigator.webdriver,
-				['chrome plugins array is empty']: isChrome && navigator.plugins.length === 0,
-				['chrome mimeTypes array is empty']: isChrome && mimeTypes.length === 0,
-				['notification permission is denied']: isChrome && Notification.permission == 'denied',
-				['chrome system color ActiveText is rgb(255, 0, 0)']: isChrome && (() => {
+				['chrome plugins array is empty']: isChromium && navigator.plugins.length === 0,
+				['chrome mimeTypes array is empty']: isChromium && mimeTypes.length === 0,
+				['notification permission is denied']: isChromium && Notification.permission == 'denied',
+				['chrome system color ActiveText is rgb(255, 0, 0)']: isChromium && (() => {
 					let rendered = parentPhantom
 					if (!parentPhantom) {
 						rendered = document.createElement('div')
@@ -91,8 +92,8 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 				['prefers light color scheme']: matchMedia('(prefers-color-scheme: light)').matches
 			},
 			headless: {
-				['chrome window.chrome is undefined']: isChrome && !('chrome' in window),
-				['chrome permission state is inconsistent']: isChrome && await (async () => {
+				['chrome window.chrome is undefined']: isChromium && !('chrome' in window),
+				['chrome permission state is inconsistent']: isChromium && await (async () => {
 					const res = await navigator.permissions.query({ name: 'notifications' })
 					return (
 						res.state == 'prompt' && Notification.permission === 'denied'
