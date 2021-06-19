@@ -291,3 +291,7 @@ export const getCSSMedia = async imports => {
 		return
 	}
 }
+
+export const cssMediaHTML = () => {
+	
+}

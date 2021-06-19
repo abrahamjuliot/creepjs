@@ -145,3 +145,7 @@ export const getBestWorkerScope = async imports => {
 		return
 	}
 }
+
+export const workerScopeHTML = () => {
+	
+}

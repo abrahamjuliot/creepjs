@@ -124,3 +124,7 @@ export const getCanvas2d = async imports => {
 		return
 	}
 }
+
+export const canvasHTML = () => {
+	
+}

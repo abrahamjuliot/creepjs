@@ -196,3 +196,7 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 		return
 	}
 }
+
+export const headlesFeaturesHTML = () => {
+	
+}

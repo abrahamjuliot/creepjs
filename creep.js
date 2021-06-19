@@ -6,26 +6,26 @@ import { captureError, attempt, caniuse, timer, errorsCaptured, getCapturedError
 import { sendToTrash, proxyBehavior, gibberish, trustInteger, trashBin, getTrash, trashHTML } from './modules/trash.js'
 import { documentLie, phantomDarkness, parentPhantom, lieProps, prototypeLies, lieRecords, getLies, dragonFire, parentDragon, dragonOfDeath, getPluginLies, liesHTML } from './modules/lies.js'
 
-import { getOfflineAudioContext } from './modules/audio.js'
-import { getCanvas2d } from './modules/canvas2d.js'
-import { getCanvasWebgl } from './modules/canvasWebgl.js'
-import { getCSS } from './modules/computedStyle.js'
-import { getCSSMedia } from './modules/css.js'
-import { getConsoleErrors } from './modules/consoleErrors.js'
-import { getWindowFeatures } from './modules/contentWindowVersion.js'
-import { getFonts, fontList } from './modules/fonts.js'
-import { getHeadlessFeatures } from './modules/headless.js'
-import { getHTMLElementVersion } from './modules/htmlElementVersion.js'
-import { getMaths } from './modules/maths.js'
-import { getMedia } from './modules/media.js'
-import { getNavigator } from './modules/navigator.js'
-import { getClientRects } from './modules/rects.js'
-import { getScreen } from './modules/screen.js'
-import { getTimezone } from './modules/timezone.js'
-import { getVoices } from './modules/voices.js'
-import { getWebRTCData } from './modules/webrtc.js'
-import { getBestWorkerScope } from './modules/worker.js'
-import { getSVG } from './modules/svg.js'
+import { getOfflineAudioContext, audioHTML } from './modules/audio.js'
+import { getCanvas2d, canvasHTML } from './modules/canvas2d.js'
+import { getCanvasWebgl, webglHTML } from './modules/canvasWebgl.js'
+import { getCSS, cssHTML } from './modules/computedStyle.js'
+import { getCSSMedia, cssMediaHTML } from './modules/css.js'
+import { getConsoleErrors, consoleErrorsHTML } from './modules/consoleErrors.js'
+import { getWindowFeatures, windowFeaturesHTML } from './modules/contentWindowVersion.js'
+import { getFonts, fontList, fontsHTML } from './modules/fonts.js'
+import { getHeadlessFeatures, headlesFeaturesHTML } from './modules/headless.js'
+import { getHTMLElementVersion, htmlElementVersionHTML } from './modules/htmlElementVersion.js'
+import { getMaths, mathsHTML } from './modules/maths.js'
+import { getMedia, mediaHTML } from './modules/media.js'
+import { getNavigator, navigatorHTML } from './modules/navigator.js'
+import { getClientRects, clientRectsHTML } from './modules/rects.js'
+import { getScreen, screenHTML } from './modules/screen.js'
+import { getTimezone, timezoneHTML } from './modules/timezone.js'
+import { getVoices, voicesHTML } from './modules/voices.js'
+import { getWebRTCData, webrtcHTML } from './modules/webrtc.js'
+import { getBestWorkerScope, workerScopeHTML } from './modules/worker.js'
+import { getSVG, svgHTML } from './modules/svg.js'
 import { getResistance, resistanceHTML } from './modules/resistance.js'
 
 const imports = {
@@ -556,129 +556,8 @@ const imports = {
 			${errorsHTML({ fp, hashSlice, modal })}
 		</div>
 		<div class="flex-grid">
-			${!fp.webRTC ?
-				`<div class="col-six">
-					<strong>WebRTC</strong>
-					<div>ip address: ${note.blocked}</div>
-					<div>ip candidate: ${note.blocked}</div>
-					<div>ip connection: ${note.blocked}</div>
-					<div>type: ${note.blocked}</div>
-					<div>foundation: ${note.blocked}</div>
-					<div>protocol: ${note.blocked}</div>
-					<div>get capabilities: ${note.blocked}</div>
-					<div>sdp capabilities: ${note.blocked}</div>
-				</div>` :
-			(() => {
-				const { webRTC } = fp
-				const {
-					ipaddress,
-					candidate,
-					connection,
-					type,
-					foundation,
-					protocol,
-					capabilities,
-					sdpcapabilities,
-					$hash
-				} = webRTC
-				const id = 'creep-webrtc'
-				return `
-				<div class="col-six">
-					<strong>WebRTC</strong><span class="hash">${hashSlice($hash)}</span>
-					<div>ip address: ${ipaddress ? ipaddress : note.unsupported}</div>
-					<div>ip candidate: ${candidate ? candidate : note.unsupported}</div>
-					<div>ip connection: ${connection ? connection : note.unsupported}</div>
-					<div>type: ${type ? type : note.unsupported}</div>
-					<div>foundation: ${foundation ? foundation : note.unsupported}</div>
-					<div>protocol: ${protocol ? protocol : note.unsupported}</div>
-					<div>get capabilities: ${
-						!capabilities.receiver && !capabilities.sender ? note.unsupported :
-						modal(
-							`${id}-capabilities`,
-							Object.keys(capabilities).map(modeKey => {
-								const mode = capabilities[modeKey]
-								if (!mode) {
-									return ''
-								}
-								return `
-									<br><div>mimeType [channels] (clockRate) * sdpFmtpLine</div>
-									${
-										Object.keys(mode).map(media => Object.keys(mode[media])
-											.map(key => {
-												return `<br><div><strong>${modeKey} ${media} ${key}</strong>:</div>${
-													mode[media][key].map(obj => {
-														const {
-															channels,
-															clockRate,
-															mimeType,
-															sdpFmtpLine,
-															uri
-														} = obj
-														return `
-															<div>
-															${mimeType||''}
-															${channels ? `[${channels}]`: ''}
-															${clockRate ? `(${clockRate})`: ''}
-															${sdpFmtpLine ? `<br>* ${sdpFmtpLine}` : ''}
-															${uri||''}
-															</div>
-														`
-													}).join('')
-												}`
-											}).join('')
-										).join('')
-									}
-								`
-							}).join(''),
-							hashMini(capabilities)
-						)
-					}</div>
-					<div>sdp capabilities: ${
-						!sdpcapabilities ? note.unsupported :
-						modal(
-							`${id}-sdpcapabilities`,
-							sdpcapabilities.join('<br>'),
-							hashMini(sdpcapabilities)
-						)
-					}</div>
-				</div>
-				`
-			})()}
-			${!fp.timezone ?
-				`<div class="col-six">
-					<strong>Timezone</strong>
-					<div>zone: ${note.blocked}</div>
-					<div>offset: ${note.blocked}</div>
-					<div>offset computed: ${note.blocked}</div>
-					<div>location: ${note.blocked}</div>
-					<div>measured: ${note.blocked}</div>
-					<div>epoch: ${note.blocked}</div>
-				</div>` :
-			(() => {
-				const {
-					timezone: {
-						$hash,
-						zone,
-						location,
-						locationMeasured,
-						locationEpoch,
-						offset,
-						offsetComputed,
-						lied
-					}
-				} = fp
-				return `
-				<div class="col-six">
-					<strong>Timezone</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-					<div>zone: ${zone}</div>
-					<div>offset: ${''+offset}</div>
-					<div>offset computed: ${''+offsetComputed}</div>
-					<div>location: ${location}</div>
-					<div>measured: ${locationMeasured}</div>
-					<div>epoch: ${locationEpoch}</div>
-				</div>
-				`
-			})()}			
+			${webrtcHTML({ fp, hashSlice, hashMini, note, modal })}
+			${timezoneHTML({ fp, note, hashSlice })}			
 		</div>
 		<div id="browser-detection" class="flex-grid">
 			<div class="col-eight">

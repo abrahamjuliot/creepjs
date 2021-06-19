@@ -385,3 +385,8 @@ export const getNavigator = async (imports, workerScope) => {
 		return
 	}
 }
+
+
+export const navigatorHTML = () => {
+	
+}

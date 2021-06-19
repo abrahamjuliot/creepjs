@@ -25,3 +25,7 @@ export const getWindowFeatures = async imports => {
 		return
 	}
 }
+
+export const windowFeaturesHTML = () => {
+	
+}

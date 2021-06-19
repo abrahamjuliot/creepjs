@@ -215,3 +215,7 @@ export const getMaths = async imports => {
 		return
 	}
 }
+
+export const mathsHTML = () => {
+	
+}

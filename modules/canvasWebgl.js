@@ -429,3 +429,7 @@ export const getCanvasWebgl = async imports => {
 		return
 	}
 }
+
+export const webglHTML = () => {
+	
+}

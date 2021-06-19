@@ -137,3 +137,7 @@ export const getScreen = async imports => {
 		return
 	}
 }
+
+export const screenHTML = () => {
+	
+}

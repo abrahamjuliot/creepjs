@@ -53,3 +53,7 @@ export const getVoices = imports => {
 		}
 	})
 }
+
+export const voicesHTML = () => {
+	
+}

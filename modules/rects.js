@@ -387,3 +387,7 @@ export const getClientRects = async imports => {
 		return
 	}
 }
+
+export const clientRectsHTML = () => {
+	
+}

@@ -140,3 +140,96 @@ export const getWebRTCData = imports => {
 		}
 	})
 }
+
+
+export const webrtcHTML = ({ fp, hashSlice, hashMini, note, modal }) => {
+	if (!fp.webRTC) {
+		return `
+		<div class="col-six">
+			<strong>WebRTC</strong>
+			<div>ip address: ${note.blocked}</div>
+			<div>ip candidate: ${note.blocked}</div>
+			<div>ip connection: ${note.blocked}</div>
+			<div>type: ${note.blocked}</div>
+			<div>foundation: ${note.blocked}</div>
+			<div>protocol: ${note.blocked}</div>
+			<div>get capabilities: ${note.blocked}</div>
+			<div>sdp capabilities: ${note.blocked}</div>
+		</div>`
+	}
+	const { webRTC } = fp
+	const {
+		ipaddress,
+		candidate,
+		connection,
+		type,
+		foundation,
+		protocol,
+		capabilities,
+		sdpcapabilities,
+		$hash
+	} = webRTC
+	const id = 'creep-webrtc'
+
+	return `
+	<div class="col-six">
+		<strong>WebRTC</strong><span class="hash">${hashSlice($hash)}</span>
+		<div>ip address: ${ipaddress ? ipaddress : note.unsupported}</div>
+		<div>ip candidate: ${candidate ? candidate : note.unsupported}</div>
+		<div>ip connection: ${connection ? connection : note.unsupported}</div>
+		<div>type: ${type ? type : note.unsupported}</div>
+		<div>foundation: ${foundation ? foundation : note.unsupported}</div>
+		<div>protocol: ${protocol ? protocol : note.unsupported}</div>
+		<div>get capabilities: ${
+			!capabilities.receiver && !capabilities.sender ? note.unsupported :
+			modal(
+				`${id}-capabilities`,
+				Object.keys(capabilities).map(modeKey => {
+					const mode = capabilities[modeKey]
+					if (!mode) {
+						return ''
+					}
+					return `
+						<br><div>mimeType [channels] (clockRate) * sdpFmtpLine</div>
+						${
+							Object.keys(mode).map(media => Object.keys(mode[media])
+								.map(key => {
+									return `<br><div><strong>${modeKey} ${media} ${key}</strong>:</div>${
+										mode[media][key].map(obj => {
+											const {
+												channels,
+												clockRate,
+												mimeType,
+												sdpFmtpLine,
+												uri
+											} = obj
+											return `
+												<div>
+												${mimeType||''}
+												${channels ? `[${channels}]`: ''}
+												${clockRate ? `(${clockRate})`: ''}
+												${sdpFmtpLine ? `<br>* ${sdpFmtpLine}` : ''}
+												${uri||''}
+												</div>
+											`
+										}).join('')
+									}`
+								}).join('')
+							).join('')
+						}
+					`
+				}).join(''),
+				hashMini(capabilities)
+			)
+		}</div>
+		<div>sdp capabilities: ${
+			!sdpcapabilities ? note.unsupported :
+			modal(
+				`${id}-sdpcapabilities`,
+				sdpcapabilities.join('<br>'),
+				hashMini(sdpcapabilities)
+			)
+		}</div>
+	</div>
+	`	
+}

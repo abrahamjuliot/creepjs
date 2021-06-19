@@ -572,3 +572,41 @@ export const getTimezone = async imports => {
 		return
 	}
 }
+
+export const timezoneHTML = ({ fp, note, hashSlice }) => {
+	if (!fp.timezone) {
+		return `
+		<div class="col-six">
+			<strong>Timezone</strong>
+			<div>zone: ${note.blocked}</div>
+			<div>offset: ${note.blocked}</div>
+			<div>offset computed: ${note.blocked}</div>
+			<div>location: ${note.blocked}</div>
+			<div>measured: ${note.blocked}</div>
+			<div>epoch: ${note.blocked}</div>
+		</div>`
+	}
+	const {
+		timezone: {
+			$hash,
+			zone,
+			location,
+			locationMeasured,
+			locationEpoch,
+			offset,
+			offsetComputed,
+			lied
+		}
+	} = fp
+	return `
+	<div class="col-six">
+		<strong>Timezone</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+		<div>zone: ${zone}</div>
+		<div>offset: ${''+offset}</div>
+		<div>offset computed: ${''+offsetComputed}</div>
+		<div>location: ${location}</div>
+		<div>measured: ${locationMeasured}</div>
+		<div>epoch: ${locationEpoch}</div>
+	</div>
+	`
+}

@@ -43,3 +43,7 @@ export const getConsoleErrors = async imports => {
 		return
 	}
 }
+
+export const consoleErrorsHTML = () => {
+	
+}

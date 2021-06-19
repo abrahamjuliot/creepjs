@@ -22,3 +22,7 @@ export const getHTMLElementVersion = async imports => {
 		return
 	}
 }
+
+export const htmlElementVersionHTML = () => {
+	
+}

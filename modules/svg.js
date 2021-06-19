@@ -121,3 +121,7 @@ export const getSVG = async imports => {
 		return
 	}
 }
+
+export const svgHTML = () => {
+	
+}

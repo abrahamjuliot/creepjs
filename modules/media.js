@@ -77,3 +77,7 @@ export const getMedia = async imports => {
 		return
 	}
 }
+
+export const mediaHTML = () => {
+	
+}

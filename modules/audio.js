@@ -222,3 +222,7 @@ export const getOfflineAudioContext = async imports => {
 	}
 
 }
+
+export const audioHTML = () => {
+	
+}
