@@ -2,9 +2,9 @@ import { isChrome, braveBrowser, getBraveMode, isFirefox, getOS, decryptUserAgen
 import { patch, html, note, count, modal } from './modules/html.js'
 import { hashMini, instanceId, hashify } from './modules/crypto.js'
 
-import { captureError, attempt, caniuse, timer, errorsCaptured, getCapturedErrors } from './modules/captureErrors.js'
-import { sendToTrash, proxyBehavior, gibberish, trustInteger, trashBin, getTrash } from './modules/trash.js'
-import { documentLie, phantomDarkness, parentPhantom, lieProps, prototypeLies, lieRecords, getLies, dragonFire, parentDragon, dragonOfDeath, getPluginLies } from './modules/lies.js'
+import { captureError, attempt, caniuse, timer, errorsCaptured, getCapturedErrors, errorsHTML } from './modules/captureErrors.js'
+import { sendToTrash, proxyBehavior, gibberish, trustInteger, trashBin, getTrash, trashHTML } from './modules/trash.js'
+import { documentLie, phantomDarkness, parentPhantom, lieProps, prototypeLies, lieRecords, getLies, dragonFire, parentDragon, dragonOfDeath, getPluginLies, liesHTML } from './modules/lies.js'
 
 import { getOfflineAudioContext } from './modules/audio.js'
 import { getCanvas2d } from './modules/canvas2d.js'
@@ -551,53 +551,9 @@ const imports = {
 			</div>
 		</div>
 		<div class="flex-grid">
-			${(() => {
-				const { trash: { trashBin, $hash  } } = fp
-				const trashLen = trashBin.length
-				return `
-				<div class="col-four${trashLen ? ' trash': ''}">
-					<strong>Trash</strong>${
-						trashLen ? `<span class="hash">${hashSlice($hash)}</span>` : ''
-					}
-					<div>gathered (${!trashLen ? '0' : ''+trashLen }): ${
-						trashLen ? modal(
-							'creep-trash',
-							trashBin.map((trash,i) => `${i+1}: ${trash.name}: ${trash.value}`).join('<br>')
-						) : ''
-					}</div>
-				</div>`
-			})()}
-			${(() => {
-				const { lies: { data, totalLies, $hash } } = fp 
-				return `
-				<div class="col-four${totalLies ? ' lies': ''}">
-					<strong>Lies</strong>${totalLies ? `<span class="hash">${hashSlice($hash)}</span>` : ''}
-					<div>unmasked (${!totalLies ? '0' : ''+totalLies }): ${
-						totalLies ? modal('creep-lies', Object.keys(data).sort().map(key => {
-							const lies = data[key]
-							return `
-							<br>
-							<div style="padding:5px">
-								<strong>${key}</strong>:
-								${lies.map(lie => `<div>- ${lie}</div>`).join('')}
-							</div>
-							`
-						}).join('')) : ''
-					}</div>
-				</div>`
-			})()}
-			${(() => {
-				const { capturedErrors: { data, $hash  } } = fp
-				const len = data.length
-				return `
-				<div class="col-four${len ? ' errors': ''}">
-					<strong>Errors</strong>${len ? `<span class="hash">${hashSlice($hash)}</span>` : ''}
-					<div>captured (${!len ? '0' : ''+len}): ${
-						len ? modal('creep-captured-errors', Object.keys(data).map((key, i) => `${i+1}: ${data[key].trustedName} - ${data[key].trustedMessage} `).join('<br>')) : ''
-					}</div>
-				</div>
-				`
-			})()}
+			${trashHTML({ fp, hashSlice, modal })}
+			${liesHTML({ fp, hashSlice, modal })}
+			${errorsHTML({ fp, hashSlice, modal })}
 		</div>
 		<div class="flex-grid">
 			${!fp.webRTC ?

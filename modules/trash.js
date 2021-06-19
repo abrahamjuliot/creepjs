@@ -80,4 +80,20 @@ const getTrash = async imports => {
 	return { trashBin: bin }
 }
 
-export { sendToTrash, proxyBehavior, gibberish, trustInteger, trashBin, getTrash }
+const trashHTML = ({ fp, hashSlice, modal }) => {
+	const { trash: { trashBin, $hash  } } = fp
+	const trashLen = trashBin.length
+	return `
+	<div class="col-four${trashLen ? ' trash': ''}">
+		<strong>Trash</strong>${
+			trashLen ? `<span class="hash">${hashSlice($hash)}</span>` : ''
+		}
+		<div>gathered (${!trashLen ? '0' : ''+trashLen }): ${
+			trashLen ? modal(
+				'creep-trash',
+				trashBin.map((trash,i) => `${i+1}: ${trash.name}: ${trash.value}`).join('<br>')
+			) : ''
+		}</div>
+	</div>`
+}
+export { sendToTrash, proxyBehavior, gibberish, trustInteger, trashBin, getTrash, trashHTML }

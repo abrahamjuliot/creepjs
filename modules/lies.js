@@ -867,4 +867,24 @@ const getLies = imports => {
 	})
 }
 
-export { documentLie, phantomDarkness, parentPhantom, lieProps, prototypeLies, lieRecords, getLies, dragonFire, parentDragon, dragonOfDeath, getPluginLies }
+const liesHTML = ({ fp, hashSlice, modal }) => {
+	const { lies: { data, totalLies, $hash } } = fp 
+	return `
+	<div class="col-four${totalLies ? ' lies': ''}">
+		<strong>Lies</strong>${totalLies ? `<span class="hash">${hashSlice($hash)}</span>` : ''}
+		<div>unmasked (${!totalLies ? '0' : ''+totalLies }): ${
+			totalLies ? modal('creep-lies', Object.keys(data).sort().map(key => {
+				const lies = data[key]
+				return `
+				<br>
+				<div style="padding:5px">
+					<strong>${key}</strong>:
+					${lies.map(lie => `<div>- ${lie}</div>`).join('')}
+				</div>
+				`
+			}).join('')) : ''
+		}</div>
+	</div>`
+}
+
+export { documentLie, phantomDarkness, parentPhantom, lieProps, prototypeLies, lieRecords, getLies, dragonFire, parentDragon, dragonOfDeath, getPluginLies, liesHTML }
