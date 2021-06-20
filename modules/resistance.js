@@ -378,6 +378,7 @@ export const resistanceHTML = ({ fp, modal, note, hashMini, hashSlice }) => {
 			<div>privacy: ${note.blocked}</div>
 			<div>security: ${note.blocked}</div>
 			<div>mode: ${note.blocked}</div>
+			<div>extension: ${note.blocked}</div>
 		</div>`
 	}
 	const {
@@ -429,14 +430,13 @@ export const resistanceHTML = ({ fp, modal, note, hashMini, hashSlice }) => {
 			)
 		}</div>
 		<div>mode: ${mode || note.unknown}</div>
-		<div>extension: ${extension ? `${extensionIcon}${extension}` : note.unknown}</div>
-		<div>lie pattern: ${
+		<div>extension: ${
 			!Object.keys(extensionHashPattern || {}).length ? note.unknown :
 			modal(
 				'creep-extension',
 				'<strong>Pattern</strong><br><br>'
 				+Object.keys(extensionHashPattern).map(key => `${key}: ${''+extensionHashPattern[key]}`).join('<br>'),
-				(hashMini(extensionHashPattern))
+				(extension ? `${extensionIcon}${extension}` : hashMini(extensionHashPattern))
 			)
 		}</div>
 	</div>
