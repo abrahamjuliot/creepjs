@@ -292,6 +292,8 @@ export const getCSSMedia = async imports => {
 	}
 }
 
-export const cssMediaHTML = () => {
-	
+
+
+export const cssMediaHTML = async ({ fp, modal, note, hashMini, hashSlice }) => {
+
 }

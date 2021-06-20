@@ -163,6 +163,8 @@ const imports = {
 			htmlHash,
 			cssMediaHash,
 			cssHash,
+			styleHash,
+			systemHash,
 			screenHash,
 			voicesHash,
 			canvas2dHash,
@@ -190,6 +192,8 @@ const imports = {
 			hashify(htmlElementVersionComputed.keys),
 			hashify(cssMediaComputed),
 			hashify(cssComputed),
+			hashify(cssComputed.computedStyle),
+			hashify(cssComputed.system),
 			hashify(screenComputed),
 			hashify(voicesComputed),
 			hashify(canvas2dComputed),
@@ -250,11 +254,11 @@ const imports = {
 			svg: !svgComputed ? undefined : {...svgComputed, $hash: svgHash },
 			resistance: !resistanceComputed ? undefined : {...resistanceComputed, $hash: resistanceHash },
 		}
-		return { fingerprint, timeEnd }
+		return { fingerprint, systemHash, styleHash, timeEnd }
 	}
 	
 	// fingerprint and render
-	const { fingerprint: fp, timeEnd } = await fingerprint().catch(error => console.error(error))
+	const { fingerprint: fp, systemHash, styleHash, timeEnd } = await fingerprint().catch(error => console.error(error))
 	
 	console.log('%c✔ loose fingerprint passed', 'color:#4cca9f')
 
@@ -1201,73 +1205,7 @@ const imports = {
 			</div>
 			`
 		})()}
-		${!fp.css ?
-			`<div class="col-six">
-				<strong>Computed Style</strong>
-				<div>keys (0): ${note.blocked}</div>
-				<div>interface: ${note.blocked}</div>
-				<div>system styles: ${note.blocked}</div>
-				<div class="gradient"></div>
-			</div>` :
-		(() => {
-			const {
-				css: data
-			} = fp
-			const {
-				$hash,
-				computedStyle,
-				system
-			} = data
-			const colorsLen = system.colors.length
-			const gradientColors = system.colors.map((color, index) => {
-				const name = Object.values(color)[0]
-				return (
-					index == 0 ? `${name}, ${name} ${((index+1)/colorsLen*100).toFixed(2)}%` : 
-					index == colorsLen-1 ? `${name} ${((index-1)/colorsLen*100).toFixed(2)}%, ${name} 100%` : 
-					`${name} ${(index/colorsLen*100).toFixed(2)}%, ${name} ${((index+1)/colorsLen*100).toFixed(2)}%`
-				)
-			})
-			const id = 'creep-css-style-declaration-version'
-			const { interfaceName } = computedStyle
-			return `
-			<div class="col-six">
-				<strong>Computed Style</strong><span class="hash">${hashSlice($hash)}</span>
-				<div>keys (${!computedStyle ? '0' : count(computedStyle.keys)}): ${
-					!computedStyle ? note.blocked : 
-					modal(
-						'creep-computed-style',
-						computedStyle.keys.join(', '),
-						hashMini(computedStyle)
-					)
-				}</div>
-				<div>interface: ${interfaceName}</div>
-				<div>system styles: ${
-					system && system.colors ? modal(
-						`${id}-system-styles`,
-						[
-							...system.colors.map(color => {
-								const key = Object.keys(color)[0]
-								const val = color[key]
-								return `
-									<div><span style="display:inline-block;border:1px solid #eee;border-radius:3px;width:12px;height:12px;background:${val}"></span> ${key}: ${val}</div>
-								`
-							}),
-							...system.fonts.map(font => {
-								const key = Object.keys(font)[0]
-								const val = font[key]
-								return `
-									<div>${key}: <span style="padding:0 5px;border-radius:3px;font:${val}">${val}</span></div>
-								`
-							}),
-						].join(''),
-						hashMini(system)
-					) : note.blocked
-				}</div>
-				<style>.gradient { background: repeating-linear-gradient(to right, ${gradientColors.join(', ')}); }</style>
-				<div class="gradient"></div>
-			</div>
-			`
-		})()}
+		${cssHTML(templateImports, systemHash)}
 		</div>
 		<div>
 			<div class="flex-grid">
@@ -1671,13 +1609,6 @@ const imports = {
 				system
 			} = css || {}
 
-			const [
-				styleHash,
-				systemHash
-			] = await Promise.all([
-				hashify(computedStyle),
-				hashify(system)
-			])
 			const el = document.getElementById('browser-detection')
 
 			const reportedUserAgent = caniuse(() => navigator.userAgent)
