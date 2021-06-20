@@ -294,6 +294,59 @@ export const getCSSMedia = async imports => {
 
 
 
-export const cssMediaHTML = async ({ fp, modal, note, hashMini, hashSlice }) => {
+export const cssMediaHTML = ({ fp, modal, note, hashMini, hashSlice }) => {
+	if (!fp.css) {
+		return `
+		<div class="col-six">
+			<strong>CSS Media Queries</strong><
+			<div>@media: ${note.blocked}</div>
+			<div>@import: ${note.blocked}</div>
+			<div>matchMedia: ${note.blocked}</div>
+			<div>screen query: ${note.blocked}</div>
+		</div>`
+	}
+	const {
+		cssMedia: data
+	} = fp
+	const {
+		$hash,
+		importCSS,
+		mediaCSS,
+		matchMediaCSS,
+		screenQuery
+	} = data
 
+	return `
+	<div class="col-six">
+		<strong>CSS Media Queries</strong><span class="hash">${hashSlice($hash)}</span>
+		<div>@media: ${
+			!mediaCSS || !Object.keys(mediaCSS).filter(key => !!mediaCSS[key]).length ? 
+			note.blocked :
+			modal(
+				'creep-css-media',
+				`<strong>@media</strong><br><br>${Object.keys(mediaCSS).map(key => `${key}: ${mediaCSS[key] || note.unsupported}`).join('<br>')}`,
+				hashMini(mediaCSS)
+			)
+		}</div>
+		<div>@import: ${
+			!importCSS || !Object.keys(importCSS).filter(key => !!importCSS[key]).length ? 
+			note.unsupported :
+			modal(
+				'creep-css-import',
+				`<strong>@import</strong><br><br>${Object.keys(importCSS).map(key => `${key}: ${importCSS[key] || note.unsupported}`).join('<br>')}`,
+				hashMini(importCSS)
+			)
+		}</div>
+		<div>matchMedia: ${
+			!matchMediaCSS || !Object.keys(matchMediaCSS).filter(key => !!matchMediaCSS[key]).length ? 
+			note.blocked : 
+			modal(
+				'creep-css-match-media',
+				`<strong>matchMedia</strong><br><br>${Object.keys(matchMediaCSS).map(key => `${key}: ${matchMediaCSS[key] || note.unsupported}`).join('<br>')}`,
+				hashMini(matchMediaCSS)
+			)
+		}</div>
+		<div>screen query: ${!screenQuery ? note.blocked : `${screenQuery.width} x ${screenQuery.height}`}</div>
+	</div>
+	`
 }

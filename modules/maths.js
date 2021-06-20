@@ -338,7 +338,7 @@ export const mathsHTML = ({ fp, modal, note, hashSlice }) => {
 	<div class="col-six">
 		<strong>Math</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div class="math-metric-rating help" title="% in math metric samples">${uniqueMetric}% in samples</div>
-		<div class="math-class-rating help" title="% in matching engine class">${uniqueEngine}% in class</div>
+		<div class="math-class-rating help" title="% in engine class">${uniqueEngine}% in class</div>
 		<div>engine: ${decryption}</div>
 		<div>results: ${
 			!data ? note.blocked : 
