@@ -1182,34 +1182,7 @@ const imports = {
 			})()}
 			</div>
 			<div class="flex-grid">
-			${!fp.windowFeatures?
-				`<div class="col-six">
-					<strong>Window</strong>
-					<div>keys (0): ${note.blocked}</div>
-					<div>moz: ${note.blocked}</div>
-					<div>webkit: ${note.blocked}</div>
-					<div>apple: ${note.blocked}</div>
-				</div>` :
-			(() => {
-				const {
-					windowFeatures: {
-						$hash,
-						apple,
-						keys,
-						moz,
-						webkit
-					}
-				} = fp
-				return `
-				<div class="col-six">
-					<strong>Window</strong><span class="hash">${hashSlice($hash)}</span>
-					<div>keys (${count(keys)}): ${keys && keys.length ? modal('creep-iframe-content-window-version', keys.join(', ')) : note.blocked}</div>
-					<div>moz: ${''+moz}</div>
-					<div>webkit: ${''+webkit}</div>
-					<div>apple: ${''+apple}</div>
-				</div>
-				`
-			})()}
+			${windowFeaturesHTML(templateImports)}
 			${!fp.htmlElementVersion ?
 				`<div class="col-six">
 					<strong>HTMLElement</strong>

@@ -248,7 +248,7 @@ export const cssHTML = ({ fp, modal, note, hashMini, hashSlice, count }, systemH
 			blink: '<span class="icon blink"></span>',
 			webkit: '<span class="icon webkit"></span>',
 			tor: '<span class="icon tor"></span>',
-			gecko: '<span class="icon firefox"></span>',
+			gecko: '<span class="icon gecko"></span>',
 			goanna: '<span class="icon goanna"></span>',
 			cros: '<span class="icon cros"></span>',
 			linux: '<span class="icon linux"></span>',
@@ -266,16 +266,17 @@ export const cssHTML = ({ fp, modal, note, hashMini, hashSlice, count }, systemH
 		)
 		const systemIcon = (
 			!decryption || systems.length != 1 ? '' :
-				/Windows/.test(systems[0]) ? icon.windows :
-					/Linux/.test(systems[0]) ? icon.linux :
-						/Mac|iPad|iPhone/.test(systems[0]) ? icon.apple :
-							/Android/.test(systems[0]) ? icon.android :
-								/Chrome OS/.test(systems[0]) ? icon.cros :
+				/windows/i.test(systems[0]) ? icon.windows :
+					/linux/i.test(systems[0]) ? icon.linux :
+						/ipad|iphone|ipod|ios|mac/i.test(systems[0]) ? icon.apple :
+							/android/.test(systems[0]) ? icon.android :
+								/chrome os/i.test(systems[0]) ? icon.cros :
 									''
 		)
 		const formatPercent = n => n.toFixed(2).replace('.00', '')
 		return {
-			decryption: (
+			engine: decryption || 'unknown',
+			engineSystem: (
 				!decryption ? undefined : 
 					`${engineIcon}${systemIcon}${decryption}${systems.length != 1 ? '' : ` on ${systems[0]}`}`
 			),
@@ -284,7 +285,7 @@ export const cssHTML = ({ fp, modal, note, hashMini, hashSlice, count }, systemH
 		}
 	}
 
-	const { decryption, uniqueMetric, uniqueEngine } = decryptHash(systemHash, decryptionData)
+	const { engine, engineSystem, uniqueMetric, uniqueEngine } = decryptHash(systemHash, decryptionData)
 
 	const colorsLen = system.colors.length
 	const gradientColors = system.colors.map((color, index) => {
@@ -339,9 +340,9 @@ export const cssHTML = ({ fp, modal, note, hashMini, hashSlice, count }, systemH
 				hashMini(system)
 			) : note.blocked
 		}</div>
-		<div class="system-styles-metric-rating help" title="% of system style samples">${uniqueMetric}% of samples</div>
-		<div class="system-styles-class-rating help" title="% of engine class">${uniqueEngine}% of class</div>
-		<div>engine: ${decryption || note.unknown}</div>
+		<div class="system-styles-metric-rating help" title="% of system styles samples">${uniqueMetric}% of samples</div>
+		<div class="system-styles-class-rating help" title="% of ${engine} class">${uniqueEngine}% of class</div>
+		<div>engine: ${engineSystem || note.unknown}</div>
 		<style>.gradient { background: repeating-linear-gradient(to right, ${gradientColors.join(', ')}); }</style>
 		<div class="gradient"></div>
 	</div>

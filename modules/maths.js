@@ -255,7 +255,7 @@ export const mathsHTML = ({ fp, modal, note, hashSlice }) => {
 			blink: '<span class="icon blink"></span>',
 			webkit: '<span class="icon webkit"></span>',
 			tor: '<span class="icon tor"></span>',
-			gecko: '<span class="icon firefox"></span>',
+			firefox: '<span class="icon firefox"></span>',
 			cros: '<span class="icon cros"></span>',
 			linux: '<span class="icon linux"></span>',
 			apple: '<span class="icon apple"></span>',
@@ -264,23 +264,24 @@ export const mathsHTML = ({ fp, modal, note, hashSlice }) => {
 		}
 		const engineIcon = (
 			!decryption ? '' :
-				/SpiderMonkey/.test(decryption) ? icon.gecko :
+				/SpiderMonkey/.test(decryption) ? icon.firefox :
 					/JavaScriptCore/.test(decryption) ? icon.webkit :
 						/V8/.test(decryption) ? icon.blink :
 							''
 		)
 		const systemIcon = (
 			!decryption || systems.length != 1 ? '' :
-				/Windows/.test(systems[0]) ? icon.windows :
-					/Linux/.test(systems[0]) ? icon.linux :
-						/Mac|iPad|iPhone/.test(systems[0]) ? icon.apple :
-							/Android/.test(systems[0]) ? icon.android :
-								/Chrome OS/.test(systems[0]) ? icon.cros :
+				/windows/i.test(systems[0]) ? icon.windows :
+					/linux/i.test(systems[0]) ? icon.linux :
+						/ipad|iphone|ipod|ios|mac/i.test(systems[0]) ? icon.apple :
+							/android/.test(systems[0]) ? icon.android :
+								/chrome os/i.test(systems[0]) ? icon.cros :
 									''
 		)
 		const formatPercent = n => n.toFixed(2).replace('.00', '')
 		return {
-			decryption: (
+			engine: decryption || 'unknown',
+			engineSystem: (
 				!decryption ? undefined : 
 					`${engineIcon}${systemIcon}${decryption}${systems.length != 1 ? '' : ` on ${systems[0]}`}`
 			),
@@ -289,7 +290,7 @@ export const mathsHTML = ({ fp, modal, note, hashSlice }) => {
 		}
 	}
 
-	const { decryption, uniqueMetric, uniqueEngine } = decryptHash($hash, decryptionData)
+	const { engine, engineSystem, uniqueMetric, uniqueEngine } = decryptHash($hash, decryptionData)
 
 	const header = `
 	<style>
@@ -338,8 +339,8 @@ export const mathsHTML = ({ fp, modal, note, hashSlice }) => {
 	<div class="col-six">
 		<strong>Math</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div class="math-metric-rating help" title="% of math samples">${uniqueMetric}% of samples</div>
-		<div class="math-class-rating help" title="% of engine class">${uniqueEngine}% of class</div>
-		<div>engine: ${decryption || note.unknown}</div>
+		<div class="math-class-rating help" title="% of ${engine} class">${uniqueEngine}% of class</div>
+		<div>engine: ${engineSystem || note.unknown}</div>
 		<div>results: ${
 			!data ? note.blocked : 
 			modal(
