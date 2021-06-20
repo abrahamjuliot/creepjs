@@ -221,8 +221,8 @@ export const mathsHTML = ({ fp, modal, note, hashSlice }) => {
 		return `
 		<div class="col-six">
 			<strong>Math</strong>
-			<div>0% in samples</div>
-			<div>0% in class</div>
+			<div>0% of samples</div>
+			<div>0% of class</div>
 			<div>engine: ${note.blocked}</div>
 			<div>results: ${note.blocked}</div>
 		</div>`
@@ -241,7 +241,7 @@ export const mathsHTML = ({ fp, modal, note, hashSlice }) => {
 	const decryptHash = (hash, data) => {
 		let systems = []
 		let poolTotal = 0
-		const metricTotal = Object.keys(data).reduce((acc,item) => acc+= item.length, 0)
+		const metricTotal = Object.keys(data).reduce((acc,item) => acc+= data[item].length, 0)
 		const decryption = Object.keys(data).find(key => data[key].find(item => {
 			if (!(item.id == hash)) {
 				return false
@@ -337,8 +337,8 @@ export const mathsHTML = ({ fp, modal, note, hashSlice }) => {
 	return `
 	<div class="col-six">
 		<strong>Math</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-		<div class="math-metric-rating help" title="% in math metric samples">${uniqueMetric}% in samples</div>
-		<div class="math-class-rating help" title="% in engine class">${uniqueEngine}% in class</div>
+		<div class="math-metric-rating help" title="% of math samples">${uniqueMetric}% of samples</div>
+		<div class="math-class-rating help" title="% of engine class">${uniqueEngine}% of class</div>
 		<div>engine: ${decryption || note.unknown}</div>
 		<div>results: ${
 			!data ? note.blocked : 
