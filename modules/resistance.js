@@ -370,75 +370,75 @@ export const getResistance = async imports => {
 	}
 }
 
-export const resistanceHTML = ({fp, modal, note, hashMini, hashSlice}) => `
-	${!fp.resistance ?
-		`<div class="col-six">
+export const resistanceHTML = ({ fp, modal, note, hashMini, hashSlice }) => {
+	if (!fp.resistance) {
+		return `
+		<div class="col-six">
 			<strong>Resistance</strong>
 			<div>privacy: ${note.blocked}</div>
 			<div>security: ${note.blocked}</div>
 			<div>mode: ${note.blocked}</div>
-		</div>` :
-	(() => {
-		const {
-			resistance: data
-		} = fp
-		const {
-			$hash,
-			privacy,
-			security,
-			mode,
-			extension,
-			extensionHashPattern,
-			engine
-		} = data || {}
-		
-		const securitySettings = !security || Object.keys(security).reduce((acc, curr) => {
-			if (security[curr]) {
-				acc[curr] = 'enabled'
-				return acc
-			}
-			acc[curr] = 'disabled'
+		</div>`
+	}
+	const {
+		resistance: data
+	} = fp
+	const {
+		$hash,
+		privacy,
+		security,
+		mode,
+		extension,
+		extensionHashPattern,
+		engine
+	} = data || {}
+	
+	const securitySettings = !security || Object.keys(security).reduce((acc, curr) => {
+		if (security[curr]) {
+			acc[curr] = 'enabled'
 			return acc
-		}, {})
+		}
+		acc[curr] = 'disabled'
+		return acc
+	}, {})
 
-		const browserIcon = (
-			/brave/i.test(privacy) ? '<span class="icon brave"></span>' :
-				/tor/i.test(privacy) ? '<span class="icon tor"></span>' :
-					/firefox/i.test(privacy) ? '<span class="icon firefox"></span>' :
-						''
-		)
-
-		const extensionIcon = (
-			/blink/i.test(engine) ? '<span class="icon chrome-extension"></span>' :
-				/gecko/i.test(engine) ? '<span class="icon firefox-addon"></span>' :
+	const browserIcon = (
+		/brave/i.test(privacy) ? '<span class="icon brave"></span>' :
+			/tor/i.test(privacy) ? '<span class="icon tor"></span>' :
+				/firefox/i.test(privacy) ? '<span class="icon firefox"></span>' :
 					''
-		)
+	)
 
-		return `
-		<div class="col-six">
-			<strong>Resistance</strong><span class="hash">${hashSlice($hash)}</span>
-			<div>privacy: ${privacy ? `${browserIcon}${privacy}` : note.unknown}</div>
-			<div>security: ${
-				!security ? note.unknown :
-				modal(
-					'creep-resistance',
-					'<strong>Security</strong><br><br>'
-					+Object.keys(securitySettings).map(key => `${key}: ${''+securitySettings[key]}`).join('<br>'),
-					hashMini(security)
-				)
-			}</div>
-			<div>mode: ${mode || note.unknown}</div>
-			<div>extension: ${extension ? `${extensionIcon}${extension}` : note.unknown}</div>
-			<div>lie pattern: ${
-				!Object.keys(extensionHashPattern || {}).length ? note.unknown :
-				modal(
-					'creep-extension',
-					'<strong>Pattern</strong><br><br>'
-					+Object.keys(extensionHashPattern).map(key => `${key}: ${''+extensionHashPattern[key]}`).join('<br>'),
-					(hashMini(extensionHashPattern))
-				)
-			}</div>
-		</div>
-		`
-	})()}
-`
+	const extensionIcon = (
+		/blink/i.test(engine) ? '<span class="icon chrome-extension"></span>' :
+			/gecko/i.test(engine) ? '<span class="icon firefox-addon"></span>' :
+				''
+	)
+
+	return `
+	<div class="col-six">
+		<strong>Resistance</strong><span class="hash">${hashSlice($hash)}</span>
+		<div>privacy: ${privacy ? `${browserIcon}${privacy}` : note.unknown}</div>
+		<div>security: ${
+			!security ? note.unknown :
+			modal(
+				'creep-resistance',
+				'<strong>Security</strong><br><br>'
+				+Object.keys(securitySettings).map(key => `${key}: ${''+securitySettings[key]}`).join('<br>'),
+				hashMini(security)
+			)
+		}</div>
+		<div>mode: ${mode || note.unknown}</div>
+		<div>extension: ${extension ? `${extensionIcon}${extension}` : note.unknown}</div>
+		<div>lie pattern: ${
+			!Object.keys(extensionHashPattern || {}).length ? note.unknown :
+			modal(
+				'creep-extension',
+				'<strong>Pattern</strong><br><br>'
+				+Object.keys(extensionHashPattern).map(key => `${key}: ${''+extensionHashPattern[key]}`).join('<br>'),
+				(hashMini(extensionHashPattern))
+			)
+		}</div>
+	</div>
+	`
+}

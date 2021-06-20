@@ -198,6 +198,69 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 	}
 }
 
-export const headlesFeaturesHTML = () => {
+export const headlesFeaturesHTML = ({ fp, modal, note, hashMini, hashSlice }) => {
+	if (!fp.headless) {
+		return `
+		<div class="col-six">
+			<strong>Headless</strong>
+			<div>chromium: ${note.blocked}</div>
+			<div>0% like headless: ${note.blocked}</div>
+			<div>0% headless: ${note.blocked}</div>
+			<div>0% stealth: ${note.blocked}</div>
+		</div>`
+	}
+	const {
+		headless: data
+	} = fp
+	const {
+		$hash,
+		chromium,
+		likeHeadless,
+		likeHeadlessRating,
+		headless,
+		headlessRating,
+		stealth,
+		stealthRating
+	} = data || {}
 	
+	return `
+	<div class="col-six">
+		<style>
+			.like-headless-rating {
+				background: linear-gradient(90deg, var(${likeHeadlessRating < 100 ? '--grey-glass' : '--error'}) ${likeHeadlessRating}%, #fff0 ${likeHeadlessRating}%, #fff0 100%);
+			}
+			.headless-rating {
+				background: linear-gradient(90deg, var(--error) ${headlessRating}%, #fff0 ${headlessRating}%, #fff0 100%);
+			}
+			.stealth-rating {
+				background: linear-gradient(90deg, var(--error) ${stealthRating}%, #fff0 ${stealthRating}%, #fff0 100%);
+			}
+		</style>
+		<strong>Headless</strong><span class="hash">${hashSlice($hash)}</span>
+		<div>chromium: ${''+chromium}</div>
+		<div class="like-headless-rating">${''+likeHeadlessRating}% like headless: ${
+			modal(
+				'creep-like-headless',
+				'<strong>Like Headless</strong><br><br>'
+				+Object.keys(likeHeadless).map(key => `${key}: ${''+likeHeadless[key]}`).join('<br>'),
+				hashMini(likeHeadless)
+			)
+		}</div>
+		<div class="headless-rating">${''+headlessRating}% headless: ${
+			modal(
+				'creep-headless',
+				'<strong>Headless</strong><br><br>'
+				+Object.keys(headless).map(key => `${key}: ${''+headless[key]}`).join('<br>'),
+				hashMini(headless)
+			)
+		}</div>
+		<div class="stealth-rating">${''+stealthRating}% stealth: ${
+			modal(
+				'creep-stealth',
+				'<strong>Stealth</strong><br><br>'
+				+Object.keys(stealth).map(key => `${key}: ${''+stealth[key]}`).join('<br>'),
+				hashMini(stealth)
+			)
+		}</div>
+	</div>`
 }

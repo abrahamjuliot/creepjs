@@ -582,78 +582,8 @@ const imports = {
 		</div>
 
 		<div id="headless-resistance-detection-results" class="flex-grid">
-			${!fp.headless ?
-				`<div class="col-six">
-					<strong>Headless</strong>
-					<div>chromium: ${note.blocked}</div>
-					<div>like headless: ${note.blocked}</div>
-					<div>0% matched</div>
-					<div>headless: ${note.blocked}</div>
-					<div>0% detected</div>
-					<div>stealth: ${note.blocked}</div>
-					<div>0% detected</div>
-				</div>` :
-			(() => {
-				const {
-					headless: data
-				} = fp
-				const {
-					$hash,
-					chromium,
-					likeHeadless,
-					likeHeadlessRating,
-					headless,
-					headlessRating,
-					stealth,
-					stealthRating
-				} = data || {}
-				
-				return `
-				<div class="col-six">
-					<style>
-						.like-headless-rating {
-							background: linear-gradient(90deg, var(${likeHeadlessRating < 100 ? '--grey-glass' : '--error'}) ${likeHeadlessRating}%, #fff0 ${likeHeadlessRating}%, #fff0 100%);
-						}
-						.headless-rating {
-							background: linear-gradient(90deg, var(--error) ${headlessRating}%, #fff0 ${headlessRating}%, #fff0 100%);
-						}
-						.stealth-rating {
-							background: linear-gradient(90deg, var(--error) ${stealthRating}%, #fff0 ${stealthRating}%, #fff0 100%);
-						}
-					</style>
-					<strong>Headless</strong><span class="hash">${hashSlice($hash)}</span>
-					<div>chromium: ${''+chromium}</div>
-					<div>like headless: ${
-						modal(
-							'creep-like-headless',
-							'<strong>Like Headless</strong><br><br>'
-							+Object.keys(likeHeadless).map(key => `${key}: ${''+likeHeadless[key]}`).join('<br>'),
-							hashMini(likeHeadless)
-						)
-					}</div>
-					<div class="like-headless-rating">${''+likeHeadlessRating}% matched</div>
-					<div>headless: ${
-						modal(
-							'creep-headless',
-							'<strong>Headless</strong><br><br>'
-							+Object.keys(headless).map(key => `${key}: ${''+headless[key]}`).join('<br>'),
-							hashMini(headless)
-						)
-					}</div>
-					<div class="headless-rating">${''+headlessRating}% detected</div>
-					<div>stealth: ${
-						modal(
-							'creep-stealth',
-							'<strong>Stealth</strong><br><br>'
-							+Object.keys(stealth).map(key => `${key}: ${''+stealth[key]}`).join('<br>'),
-							hashMini(stealth)
-						)
-					}</div>
-					<div class="stealth-rating">${''+stealthRating}% detected</div>
-				</div>
-				${resistanceHTML({fp, modal, note, hashMini, hashSlice})}
-				`
-			})()}
+			${headlesFeaturesHTML(templateImports)}
+			${resistanceHTML(templateImports)}
 		</div>
 
 		<div class="flex-grid relative">
