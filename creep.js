@@ -455,8 +455,8 @@ const imports = {
 	})
 
 	// expose results to the window
-	window.Fingerprint = fp
-	window.Creep = creep
+	window.Fingerprint = JSON.parse(JSON.stringify(fp))
+	window.Creep = JSON.parse(JSON.stringify(creep))
 
 	// session
 	const computeSession = fp => {
@@ -500,11 +500,18 @@ const imports = {
 	}
 	
 	// patch dom
+	const hashSlice = x => x.slice(0, 8)
+	const templateImports = {
+		fp,
+		hashSlice,
+		hashMini,
+		note,
+		modal,
+		count
+	}
 	const hasTrash = !!trashLen
 	const { lies: hasLied, capturedErrors: hasErrors } = creep
 
-	const hashSlice = x => x.slice(0, 8)
-	
 	const el = document.getElementById('fingerprint-data')
 	patch(el, html`
 	<div id="fingerprint-data">
@@ -551,13 +558,13 @@ const imports = {
 			</div>
 		</div>
 		<div class="flex-grid">
-			${trashHTML({ fp, hashSlice, modal })}
-			${liesHTML({ fp, hashSlice, modal })}
-			${errorsHTML({ fp, hashSlice, modal })}
+			${trashHTML(templateImports)}
+			${liesHTML(templateImports)}
+			${errorsHTML(templateImports)}
 		</div>
 		<div class="flex-grid">
-			${webrtcHTML({ fp, hashSlice, hashMini, note, modal })}
-			${timezoneHTML({ fp, note, hashSlice })}			
+			${webrtcHTML(templateImports)}
+			${timezoneHTML(templateImports)}			
 		</div>
 		<div id="browser-detection" class="flex-grid">
 			<div class="col-eight">
@@ -1472,140 +1479,7 @@ const imports = {
 			</div>
 		</div>
 		<div class="flex-grid">
-		${!fp.navigator ?
-			`<div class="col-six">
-				<strong>Navigator</strong>
-				<div>deviceMemory: ${note.blocked}</div>
-				<div>doNotTrack: ${note.blocked}</div>
-				<div>globalPrivacyControl:${note.blocked}</div>
-				<div>hardwareConcurrency: ${note.blocked}</div>
-				<div>language: ${note.blocked}</div>
-				<div>maxTouchPoints: ${note.blocked}</div>
-				<div>vendor: ${note.blocked}</div>
-				<div>plugins (0): ${note.blocked}</div>
-				<div>mimeTypes (0): ${note.blocked}</div>
-				<div>platform: ${note.blocked}</div>
-				<div>system: ${note.blocked}</div>
-				<div>ua architecture: ${note.blocked}</div>
-				<div>ua model: ${note.blocked}</div>
-				<div>ua platform: ${note.blocked}</div>
-				<div>ua platformVersion: ${note.blocked}</div>
-				<div>ua uaFullVersion: ${note.blocked}</div>
-				<div>properties (0): ${note.blocked}</div>
-			</div>
-			<div class="col-six">
-				<div>device:</div>
-				<div class="block-text">${note.blocked}</div>
-				<div>userAgent:</div>
-				<div class="block-text">${note.blocked}</div>
-				<div>appVersion:</div>
-				<div class="block-text">${note.blocked}</div>
-			</div>` :
-		(() => {
-			const {
-				navigator: {
-					$hash,
-					appVersion,
-					deviceMemory,
-					doNotTrack,
-					globalPrivacyControl,
-					hardwareConcurrency,
-					highEntropyValues,
-					language,
-					maxTouchPoints,
-					mimeTypes,
-					platform,
-					plugins,
-					properties,
-					system,
-					device,
-					userAgent,
-					vendor,
-					keyboard,
-					lied
-				}
-			} = fp
-			const id = 'creep-navigator'
-			const blocked = {
-				[null]: !0,
-				[undefined]: !0,
-				['']: !0
-			}
-			return `
-			<div class="col-six">
-				<strong>Navigator</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-				<div>deviceMemory: ${!blocked[deviceMemory] ? deviceMemory : note.blocked}</div>
-				<div>doNotTrack: ${''+doNotTrack}</div>
-				<div>globalPrivacyControl: ${
-					''+globalPrivacyControl == 'undefined' ? note.unsupported : ''+globalPrivacyControl
-				}</div>
-				<div>hardwareConcurrency: ${!blocked[hardwareConcurrency] ? hardwareConcurrency : note.blocked}</div>
-				<div>language: ${!blocked[language] ? language : note.blocked}</div>
-				<div>maxTouchPoints: ${!blocked[maxTouchPoints] ? ''+maxTouchPoints : note.blocked}</div>
-				<div>vendor: ${!blocked[vendor] ? vendor : note.blocked}</div>
-				<div>plugins (${count(plugins)}): ${
-					!blocked[''+plugins] ?
-					modal(
-						`${id}-plugins`,
-						plugins.map(plugin => plugin.name).join('<br>'),
-						hashMini(plugins)
-					) :
-					note.blocked
-				}</div>
-				<div>mimeTypes (${count(mimeTypes)}): ${
-					!blocked[''+mimeTypes] ? 
-					modal(
-						`${id}-mimeTypes`,
-						mimeTypes.join('<br>'),
-						hashMini(mimeTypes)
-					) :
-					note.blocked
-				}</div>
-				<div>platform: ${!blocked[platform] ? platform : note.blocked}</div>
-				<div>system: ${system}</div>
-				${highEntropyValues ?  
-					Object.keys(highEntropyValues).map(key => {
-						const value = highEntropyValues[key]
-						return `<div>ua ${key}: ${value ? value : note.unsupported}</div>`
-					}).join('') :
-					`<div>ua architecture: ${note.unsupported}</div>
-					<div>ua model: ${note.unsupported}</div>
-					<div>ua platform: ${note.unsupported}</div>
-					<div>ua platformVersion: ${note.unsupported}</div>
-					<div>ua uaFullVersion: ${note.unsupported} </div>`
-				}
-				<div>properties (${count(properties)}): ${
-					modal(
-						`${id}-properties`,
-						properties.join(', '),
-						hashMini(properties)
-					)
-				}</div>
-				<div>keyboard: ${
-					!keyboard ? note.unsupported :
-					modal(
-						`${id}-keyboard`,
-						Object.keys(keyboard).map(key => `${key}: ${keyboard[key]}`).join('<br>'),
-						hashMini(keyboard)
-					)
-				}</div>
-			</div>
-			<div class="col-six">
-				<div>device:</div>
-				<div class="block-text">
-					<div>${!blocked[device] ? device : note.blocked}</div>
-				</div>
-				<div>userAgent:</div>
-				<div class="block-text">
-					<div>${!blocked[userAgent] ? userAgent : note.blocked}</div>
-				</div>
-				<div>appVersion:</div>
-				<div class="block-text">
-					<div>${!blocked[appVersion] ? appVersion : note.blocked}</div>
-				</div>
-			</div>
-			`
-		})()}
+		${navigatorHTML(templateImports)}
 		</div>
 		<div>
 			<strong>Tests</strong>
