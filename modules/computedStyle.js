@@ -276,7 +276,7 @@ export const cssHTML = ({ fp, modal, note, hashMini, hashSlice, count }, systemH
 		const formatPercent = n => n.toFixed(2).replace('.00', '')
 		return {
 			engine: decryption || 'unknown',
-			engineSystem: (
+			engineHTML: (
 				!decryption ? undefined : 
 					`${engineIcon}${systemIcon}${decryption}${systems.length != 1 ? '' : ` on ${systems[0]}`}`
 			),
@@ -285,7 +285,7 @@ export const cssHTML = ({ fp, modal, note, hashMini, hashSlice, count }, systemH
 		}
 	}
 
-	const { engine, engineSystem, uniqueMetric, uniqueEngine } = decryptHash(systemHash, decryptionData)
+	const { engine, engineHTML, uniqueMetric, uniqueEngine } = decryptHash(systemHash, decryptionData)
 
 	const colorsLen = system.colors.length
 	const gradientColors = system.colors.map((color, index) => {
@@ -342,7 +342,7 @@ export const cssHTML = ({ fp, modal, note, hashMini, hashSlice, count }, systemH
 		}</div>
 		<div class="system-styles-metric-rating help" title="% of system styles samples">${uniqueMetric}% of samples</div>
 		<div class="system-styles-class-rating help" title="% of ${engine} class">${uniqueEngine}% of class</div>
-		<div>engine: ${engineSystem || note.unknown}</div>
+		<div>engine: ${engineHTML || note.unknown}</div>
 		<style>.gradient { background: repeating-linear-gradient(to right, ${gradientColors.join(', ')}); }</style>
 		<div class="gradient"></div>
 	</div>

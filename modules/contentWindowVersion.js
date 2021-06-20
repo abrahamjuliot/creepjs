@@ -78,7 +78,7 @@ export const windowFeaturesHTML = ({ fp, modal, note, hashSlice, count }) => {
 		const formatPercent = n => n.toFixed(2).replace('.00', '')
 		return {
 			browser: decryption || 'unknown',
-			browserVersion: (
+			browserHTML: (
 				!decryption ? undefined : 
 					`${browserIcon}${decryption}`
 			),
@@ -87,7 +87,7 @@ export const windowFeaturesHTML = ({ fp, modal, note, hashSlice, count }) => {
 		}
 	}
 
-	const { browser, browserVersion, uniqueMetric, uniqueEngine } = decryptHash($hash, decryptionData)
+	const { browser, browserHTML, uniqueMetric, uniqueEngine } = decryptHash($hash, decryptionData)
 
 	return `
 	<div class="col-six">
@@ -103,7 +103,7 @@ export const windowFeaturesHTML = ({ fp, modal, note, hashSlice, count }) => {
 		<div>keys (${count(keys)}): ${keys && keys.length ? modal('creep-iframe-content-window-version', keys.join(', ')) : note.blocked}</div>
 		<div class="window-features-metric-rating help" title="% of limited window samples">${uniqueMetric}% of samples</div>
 		<div class="window-features-class-rating help" title="% of ${browser} class">${uniqueEngine}% of class</div>
-		<div>version: ${browserVersion || note.unknown}</div>
+		<div>version: ${browserHTML || note.unknown}</div>
 	</div>
 	`	
 }

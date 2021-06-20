@@ -1157,29 +1157,7 @@ const imports = {
 		<div>
 			<div class="flex-grid">
 			${mathsHTML(templateImports)}
-			${!fp.consoleErrors ?
-				`<div class="col-six">
-					<strong>Error</strong>
-					<div>results: ${note.blocked}</div>
-				</div>` :
-			(() => {
-				const {
-					consoleErrors: {
-						$hash,
-						errors
-					}
-				} = fp
-				const results = Object.keys(errors).map(key => {
-					const value = errors[key]
-					return `${+key+1}: ${value}`
-				})
-				return `
-				<div class="col-six">
-					<strong>Error</strong><span class="hash">${hashSlice($hash)}</span>
-					<div>results: ${modal('creep-console-errors', results.join('<br>'))}</div>
-				</div>
-				`
-			})()}
+			${consoleErrorsHTML(templateImports)}
 			</div>
 			<div class="flex-grid">
 			${windowFeaturesHTML(templateImports)}
