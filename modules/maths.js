@@ -216,6 +216,137 @@ export const getMaths = async imports => {
 	}
 }
 
-export const mathsHTML = () => {
-	
+export const mathsHTML = ({ fp, modal, note, hashSlice }) => {
+	if (!fp.maths) {
+		return `
+		<div class="col-six">
+			<strong>Math</strong>
+			<div>0% in samples</div>
+			<div>0% in class</div>
+			<div>engine: ${note.blocked}</div>
+			<div>results: ${note.blocked}</div>
+		</div>`
+	}
+	const {
+		maths: {
+			data,
+			$hash,
+			lied
+		}
+	} = fp
+
+	const decryptionData = {"SpiderMonkey":[{"id":"03050b59b3b218df396977f314c284d9ebadd3e6b07de6b70d036608335cb8af","systems":["Android"]},{"id":"09525011e48d69f97b4486a09a7d84dcb702ecb091f28d27b15fdf422960b874","systems":["Windows"]},{"id":"2d6e452c59bce6d48f99f74773a0743875ff51654b96a29c1543a1de6e33bc65","systems":["Windows"]},{"id":"30acab98e0dfbe3a0263e5a8d290e363bc18dc2ce55ae2d7ff7b9086986ea896","systems":["Linux"]},{"id":"41141d85c8cee2ea78ad023124f0ee02e35f509d00742978c7b460e5737919de","systems":["Windows"]},{"id":"7eddeeb8f3046d6f473174b0351f4426f3723cd7f50716374ed496dc861b72bb","systems":["Windows"]},{"id":"870471782bc768a4dae3198669358f0d199b92d9e1c4441a3399141ff502a486","systems":["Android"]},{"id":"87b691d273993fb305b44cecf3429cdd5c5f4d387fb0e66bccaaf7670ca46915","systems":["Android","Linux","Mac","Other","Windows"]},{"id":"8edfa16a45b64ecfd3ea19845d5648eb9e54cefa46c0260ebe9f2a24b0aa7bd5","systems":["Android","Linux","Mac","Windows"]},{"id":"97c2c5b24e5a5d8ef9416e8414789e1a62839846ed63f30cfb88b05a9d3e356d","systems":["Android"]},{"id":"9fc36dcbe858faed7f5c285f6e094be4adf7a1c8255c071feec7c3bbb6c5bce6","systems":["Mac"]},{"id":"bfe705e491590fba17e322c91ef54b4993ffc120c4e72138354d0233261961d0","systems":["Windows"]},{"id":"c0cfd6235e1d51d17dff731d7931ec8375b34ac21225e13dca9963bb1541f1f5","systems":["Windows"]},{"id":"c5caa31a8076a8262b01e69e930460874c141ef82e499ca7a32e1f5d32f3744e","systems":["Windows"]},{"id":"db3f6704dd3e8feed2b5553a95a8a8575beb904af89ce64aa85d537b36b19319","systems":["Windows"]},{"id":"ddc8837ab98695120dae774f04dcf295d2414ffc03431360d46b70380224547a","systems":["Mac"]},{"id":"f631e068c862af0d29de6e1f8e26e871026181d87399df2ecec3ca03fdb95697","systems":["Android"]},{"id":"fa16daafee424c0773328418121d7a80cbb3e44909b56f2c6878a37c03c7144c","systems":["Mac"]}],"V8":[{"id":"2607501c5033cc3ca19e835f701baf381e813f6bacfd5d50955364b078b24ecf","systems":["Android","Linux","Other","Windows"]},{"id":"26b503eba678b005dca85ba4925562be0fbb2be9990159bc169d0eb00c0d2ccc","systems":["Windows"]},{"id":"87455ebb9765644fb98068ec68fbad7fcaaf2768b2cb6e1bd062eee5790c00e8","systems":["Windows"]},{"id":"89455ebb9765644fb98068ec68fbad7fcaaf2768b2cb6e1bd062eee5790c00e8","systems":["Android","Chrome OS","Linux","Mac","Windows","Windows Phone","iPhone"]}],"JavaScriptCore":[{"id":"491869fc2170fe88b6170bab918b3736d3d90188e267175a86a33fcdbb1df93f","systems":["Mac","iPhone"]},{"id":"99740c3678fd95585c1bd0b40e2fabfcf4043a7608a4e67fff2786fc3a59cf8a","systems":["Mac","iPad","iPhone"]},{"id":"b7becd10892e09fe9bd2c63a4fee0b74c2abe122f854f9b9a8088fd85c2d5e9f","systems":["Mac"]},{"id":"c1141e10c4d38a4ca1a49d9c7335fdfdcd7625b4ba04053a2f335434ec7e4d36","systems":["Mac"]}]}
+
+
+	const decryptHash = (hash, data) => {
+		let systems = []
+		let poolTotal = 0
+		const metricTotal = Object.keys(data).reduce((acc,item) => acc+= item.length, 0)
+		const decryption = Object.keys(data).find(key => data[key].find(item => {
+			if (!(item.id == hash)) {
+				return false
+			}
+			systems = item.systems
+			poolTotal = data[key].length
+			return true
+		}))
+
+		const icon = {
+			blink: '<span class="icon blink"></span>',
+			webkit: '<span class="icon webkit"></span>',
+			tor: '<span class="icon tor"></span>',
+			gecko: '<span class="icon firefox"></span>',
+			cros: '<span class="icon cros"></span>',
+			linux: '<span class="icon linux"></span>',
+			apple: '<span class="icon apple"></span>',
+			windows: '<span class="icon windows"></span>',
+			android: '<span class="icon android"></span>'
+		}
+		const engineIcon = (
+			!decryption ? '' :
+				/SpiderMonkey/.test(decryption) ? icon.gecko :
+					/JavaScriptCore/.test(decryption) ? icon.webkit :
+						/V8/.test(decryption) ? icon.blink :
+							''
+		)
+		const systemIcon = (
+			!decryption || systems.length != 1 ? '' :
+				/Windows/.test(systems[0]) ? icon.windows :
+					/Linux/.test(systems[0]) ? icon.linux :
+						/Mac|iPad|iPhone/.test(systems[0]) ? icon.apple :
+							/Android/.test(systems[0]) ? icon.android :
+								/Chrome OS/.test(systems[0]) ? icon.cros :
+									''
+		)
+		const formatPercent = n => n.toFixed(2).replace('.00', '')
+		return {
+			decryption: (
+				!decryption ? undefined : 
+					`${engineIcon}${systemIcon}${decryption}${systems.length != 1 ? '' : ` on ${systems[0]}`}`
+			),
+			uniqueMetric: !decryption ? '0' : formatPercent(1/metricTotal*100),
+			uniqueEngine: !decryption ? '0' : formatPercent(1/poolTotal*100)
+		}
+	}
+
+	const { decryption, uniqueMetric, uniqueEngine } = decryptHash($hash, decryptionData)
+
+	const header = `
+	<style>
+		.math-chromium,
+		.math-firefox,
+		.math-tor-browser,
+		.math-safari,
+		.math-blank-false {
+			padding: 2px 8px;
+		}
+		.math-chromium {
+			background: #657fca26;
+		}
+		.math-firefox {
+			background: #657fca54;
+		}
+		.math-tor-browser {
+			background: #ca65b424;
+		}
+		.math-safari {
+			background: #ca65b459;
+		}
+
+		.math-metric-rating {
+			background: linear-gradient(90deg, var(${uniqueMetric < 25 ? '--unique' : '--grey-glass'}) ${uniqueMetric}%, #fff0 ${uniqueMetric}%, #fff0 100%);
+		}
+		.math-class-rating {
+			background: linear-gradient(90deg, var(${uniqueEngine < 25 ? '--unique' : '--grey-glass'}) ${uniqueEngine}%, #fff0 ${uniqueEngine}%, #fff0 100%);
+		}
+	</style>
+	<div>
+	<br><span class="math-chromium">C - Chromium</span>
+	<br><span class="math-firefox">F - Firefox</span>
+	<br><span class="math-tor-browser">T - Tor Browser</span>
+	<br><span class="math-safari">S - Safari</span>
+	</div>`
+
+	const results = Object.keys(data).map(key => {
+		const value = data[key]
+		const { result, chrome, firefox, torBrowser, safari } = value
+		return `
+		${chrome ? '<span class="math-chromium">C</span>' : '<span class="math-blank-false">-</span>'}${firefox ? '<span class="math-firefox">F</span>' : '<span class="math-blank-false">-</span>'}${torBrowser ? '<span class="math-tor-browser">T</span>' : '<span class="math-blank-false">-</span>'}${safari ? '<span class="math-safari">S</span>' : '<span class="math-blank-false">-</span>'} ${key}`
+	})
+
+	return `
+	<div class="col-six">
+		<strong>Math</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+		<div class="math-metric-rating help" title="% in math metric samples">${uniqueMetric}% in samples</div>
+		<div class="math-class-rating help" title="% in matching engine class">${uniqueEngine}% in class</div>
+		<div>engine: ${decryption}</div>
+		<div>results: ${
+			!data ? note.blocked : 
+			modal(
+				'creep-maths',
+				header+results.join('<br>')
+			)
+		}</div>
+	</div>
+	`
 }

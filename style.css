@@ -49,11 +49,13 @@ table {
   --grey: #50514F;
   --grey-glass: #7f7f7f21;
   --red: rgba(242, 95, 92, 0.13);
+  --purple: rgba(132, 92, 242, 0.20);
   --yellow: rgba(255,224,102,0.48);
   --blue: #247BA0;
   --aqua: #70C1B3;
   --text: var(--grey);
   --error: var(--red);
+  --unique: var(--purple);
   --warn: var(--yellow);
   --known: var(--blue);
   --good: var(--aqua);
@@ -74,6 +76,9 @@ body * {
 
 .hide {
 	display: none;
+}
+.help {
+	cursor: help;
 }
 strong {
 	color: #3e3b3b;

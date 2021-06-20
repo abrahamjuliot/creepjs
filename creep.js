@@ -1209,69 +1209,7 @@ const imports = {
 		</div>
 		<div>
 			<div class="flex-grid">
-			${!fp.maths ?
-				`<div class="col-six">
-					<strong>Math</strong>
-					<div>results: ${note.blocked}</div>
-				</div>` :
-			(() => {
-				const {
-					maths: {
-						data,
-						$hash,
-						lied
-					}
-				} = fp
-
-				const header = `
-				<style>
-					.math-chromium,
-					.math-firefox,
-					.math-tor-browser,
-					.math-safari,
-					.math-blank-false {
-						padding: 2px 8px;
-					}
-					.math-chromium {
-						background: #657fca26;
-					}
-					.math-firefox {
-						background: #657fca54;
-					}
-					.math-tor-browser {
-						background: #ca65b424;
-					}
-					.math-safari {
-						background: #ca65b459;
-					}
-				</style>
-				<div>
-				<br><span class="math-chromium">C - Chromium</span>
-				<br><span class="math-firefox">F - Firefox</span>
-				<br><span class="math-tor-browser">T - Tor Browser</span>
-				<br><span class="math-safari">S - Safari</span>
-				</div>`
-
-				const results = Object.keys(data).map(key => {
-					const value = data[key]
-					const { result, chrome, firefox, torBrowser, safari } = value
-					return `
-					${chrome ? '<span class="math-chromium">C</span>' : '<span class="math-blank-false">-</span>'}${firefox ? '<span class="math-firefox">F</span>' : '<span class="math-blank-false">-</span>'}${torBrowser ? '<span class="math-tor-browser">T</span>' : '<span class="math-blank-false">-</span>'}${safari ? '<span class="math-safari">S</span>' : '<span class="math-blank-false">-</span>'} ${key}`
-				})
-
-				return `
-				<div class="col-six">
-					<strong>Math</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-					<div>results: ${
-						!data ? note.blocked : 
-						modal(
-							'creep-maths',
-							header+results.join('<br>')
-						)
-					}</div>
-				</div>
-				`
-			})()}
+			${mathsHTML(templateImports)}
 			${!fp.consoleErrors ?
 				`<div class="col-six">
 					<strong>Error</strong>
