@@ -91,9 +91,9 @@ export const getSVG = async imports => {
 				x: extentOfChar.x,
 				y: extentOfChar.y
 			} = svgText.getExtentOfChar('x')
-		)				
-		const computedTextLength = svgText.getComputedTextLength()
-		
+		)
+			
+		const computedTextLength = svgText.getComputedTextLength()		
 		const svgPath = doc.getElementById('svgPath')
 		const totalLength = svgPath.getTotalLength()
 		const pointAtLength = {} // SVGPoint 
@@ -105,13 +105,15 @@ export const getSVG = async imports => {
 		)
 
 		logTestResult({ start, test: 'svg', passed: true })
+
+		const getSum = obj => Object.keys(obj).reduce((acc, key) => acc += Math.abs(obj[key]), 0)
 		return {
-			bBox,
+			bBox: getSum(bBox),
 			subStringLength,
-			extentOfChar,
+			extentOfChar: getSum(extentOfChar),
 			computedTextLength,
 			totalLength,
-			pointAtLength,
+			pointAtLength: getSum(pointAtLength),
 			lied
 		}
 	}
@@ -122,6 +124,41 @@ export const getSVG = async imports => {
 	}
 }
 
-export const svgHTML = () => {
-	
+export const svgHTML = ({ fp, note, hashSlice }) => {
+	if (!fp.svg) {
+		return `<div class="col-six">
+			<strong>SVG</strong>
+			<div>bBox: ${note.blocked}</div>
+			<div>pointAt: ${note.blocked}</div>
+			<div>total: ${note.blocked}</div>
+			<div>extentOfChar: ${note.blocked}</div>
+			<div>subString: ${note.blocked}</div>
+			<div>computedText: ${note.blocked}</div>
+		</div>`
+	}
+	const {
+		svg: {
+			$hash,
+			bBox,
+			subStringLength,
+			extentOfChar,
+			computedTextLength,
+			totalLength,
+			pointAtLength,
+			lied
+		}
+	} = fp
+
+	return `
+	<div class="col-six">
+		<strong>SVG</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+		<div class="help" title="SVGGraphicsElement.getBBox()">bBox: ${bBox || note.blocked}</div>
+		<div class="help" title="SVGGeometryElement.getPointAtLength()">pointAt: ${pointAtLength || note.blocked}</div>
+		<div class="help" title="SVGGeometryElement.getTotalLength()">total: ${totalLength || note.blocked}</div>
+		<div class="help" title="SVGTextContentElement.getExtentOfChar()">extentOfChar: ${extentOfChar || note.blocked}</div>
+		<div class="help" title="SVGTextContentElement.getSubStringLength()">subString: ${subStringLength || note.blocked}</div>
+		<div class="help" title="SVGTextContentElement.getComputedTextLength()">computedText: ${computedTextLength || note.blocked}</div>
+	</div>
+	`	
 }
+		
