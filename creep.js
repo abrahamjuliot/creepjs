@@ -175,6 +175,7 @@ const imports = {
 			consoleErrorsHash,
 			timezoneHash,
 			rectsHash,
+			emojiHash,
 			audioHash,
 			fontsHash,
 			workerHash,
@@ -204,6 +205,7 @@ const imports = {
 			hashify(consoleErrorsComputed.errors),
 			hashify(timezoneComputed),
 			hashify(clientRectsComputed),
+			hashify(clientRectsComputed.emojiSet),
 			hashify(offlineAudioContextComputed),
 			hashify(fontsComputed),
 			hashify(workerScopeComputed),
@@ -254,11 +256,11 @@ const imports = {
 			svg: !svgComputed ? undefined : {...svgComputed, $hash: svgHash },
 			resistance: !resistanceComputed ? undefined : {...resistanceComputed, $hash: resistanceHash },
 		}
-		return { fingerprint, systemHash, styleHash, timeEnd }
+		return { fingerprint, systemHash, styleHash, emojiHash, timeEnd }
 	}
 	
 	// fingerprint and render
-	const { fingerprint: fp, systemHash, styleHash, timeEnd } = await fingerprint().catch(error => console.error(error))
+	const { fingerprint: fp, systemHash, styleHash, emojiHash, timeEnd } = await fingerprint().catch(error => console.error(error))
 	
 	console.log('%c✔ loose fingerprint passed', 'color:#4cca9f')
 
@@ -580,6 +582,8 @@ const imports = {
 				<div>html element:</div>
 				<div>js runtime (math):</div>
 				<div>js engine (error):</div>
+				<div>emojis:</div>
+				<div>audio:</div>
 			</div>
 			<div class="col-four icon-container">
 			</div>
@@ -1239,7 +1243,9 @@ const imports = {
 				consoleErrors,
 				htmlElementVersion,
 				windowFeatures,
-				css
+				css,
+				clientRects,
+				offlineAudioContext
 			} = fp || {}
 			const {
 				computedStyle,
@@ -1257,6 +1263,7 @@ const imports = {
 			})
 
 			if (!fp.workerScope || !fp.workerScope.userAgent || fp.workerScope.type == 'dedicated') {
+				const audioString = `${offlineAudioContext.sampleSum}_${offlineAudioContext.compressorGainReduction}`
 				return patch(el, html`
 					<div class="flex-grid">
 						<div class="col-eight">
@@ -1268,6 +1275,8 @@ const imports = {
 							<div>html element:<span class="sub-hash">${hashSlice(htmlElementVersion.$hash)}</span></div>
 							<div>js runtime (math):<span class="sub-hash">${hashSlice(consoleErrors.$hash)}</span></div>
 							<div>js engine (error):<span class="sub-hash">${hashSlice(maths.$hash)}</span></div>
+							<div class="ellipsis">emojis: ${hashSlice(maths.$hash)}</div>
+							<div class="ellipsis">audio: ${audioString}</div>
 						</div>
 						<div class="col-four icon-container">
 							<span class="block-text">${
@@ -1277,7 +1286,9 @@ const imports = {
 									consoleErrors: consoleErrors.$hash,
 									maths: maths.$hash,
 									systemHash,
-									styleHash
+									styleHash,
+									emojiHash,
+									audioString
 								})
 							}</span>
 						</div>
@@ -1293,6 +1304,11 @@ const imports = {
 				`winId=${windowFeatures.$hash}`,
 				`styleId=${styleHash}`,
 				`styleSystemId=${systemHash}`,
+				`emojiId=${!clientRects || clientRects.lied ? 'undefined' : emojiHash}`,
+				`audioId=${
+					!offlineAudioContext || offlineAudioContext.lied ? 'undefined' : 
+						`${offlineAudioContext.sampleSum}_${offlineAudioContext.compressorGainReduction}`
+				}`,
 				`ua=${encodeURIComponent(fp.workerScope.userAgent)}`
 			].join('&')}`
 
@@ -1306,12 +1322,14 @@ const imports = {
 					windowVersion,
 					styleVersion,
 					styleSystem,
+					emojiSystem,
+					audioSystem
 				} = data
 				
 				const iconSet = new Set()
 				const htmlIcon = cssClass => `<span class="icon ${cssClass}"></span>`
 				const getTemplate = agent => {
-					const { decrypted, system } = agent
+					const { decrypted, system } = agent || {}
 					const browserIcon = (
 						/edgios|edge/i.test(decrypted) ? iconSet.add('edge') && htmlIcon('edge') :
 						/brave/i.test(decrypted) ? iconSet.add('brave') && htmlIcon('brave') :
@@ -1366,6 +1384,8 @@ const imports = {
 						<div class="ellipsis">html element: ${getTemplate(htmlVersion)}</div>
 						<div class="ellipsis">js runtime (math): ${getTemplate(jsRuntime)}</div>
 						<div class="ellipsis">js engine (error): ${getTemplate(jsEngine)}</div>
+						<div class="ellipsis">emojis: ${!emojiSystem ? note.unknown : getTemplate(emojiSystem)}</div>
+						<div class="ellipsis">audio: ${!audioSystem ? note.unknown : getTemplate(audioSystem)}</div>
 					</div>
 					<div class="col-four icon-container">
 						${[...iconSet].map(icon => {
