@@ -106,7 +106,7 @@ export const getSVG = async imports => {
 
 		logTestResult({ start, test: 'svg', passed: true })
 
-		const getSum = obj => Object.keys(obj).reduce((acc, key) => acc += Math.abs(obj[key]), 0)
+		const getSum = obj => !obj ? 0 : Object.keys(obj).reduce((acc, key) => acc += Math.abs(obj[key]), 0)
 		return {
 			bBox: getSum(bBox),
 			subStringLength,
