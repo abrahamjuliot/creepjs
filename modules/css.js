@@ -302,6 +302,7 @@ export const cssMediaHTML = ({ fp, modal, note, hashMini, hashSlice }) => {
 			<div>@media: ${note.blocked}</div>
 			<div>@import: ${note.blocked}</div>
 			<div>matchMedia: ${note.blocked}</div>
+			<div>touch device: ${note.blocked}</div>
 			<div>screen query: ${note.blocked}</div>
 		</div>`
 	}
@@ -346,6 +347,7 @@ export const cssMediaHTML = ({ fp, modal, note, hashMini, hashSlice }) => {
 				hashMini(matchMediaCSS)
 			)
 		}</div>
+		<div>touch device: ${!mediaCSS ? note.blocked : mediaCSS['any-pointer'] == 'coarse'}</div>
 		<div>screen query: ${!screenQuery ? note.blocked : `${screenQuery.width} x ${screenQuery.height}`}</div>
 	</div>
 	`

@@ -212,7 +212,6 @@ export const cssHTML = ({ fp, modal, note, hashMini, hashSlice, count }, systemH
 		<div class="col-six">
 			<strong>Computed Style</strong>
 			<div>keys (0): ${note.blocked}</div>
-			<div>interface: ${note.blocked}</div>
 			<div>system styles: ${note.blocked}</div>
 			<div>0% of samples</div>
 			<div>0% of class</div>
@@ -297,7 +296,6 @@ export const cssHTML = ({ fp, modal, note, hashMini, hashSlice, count }, systemH
 		)
 	})
 	const id = 'creep-css-style-declaration-version'
-	const { interfaceName } = computedStyle
 	return `
 	<div class="col-six">
 		<style>
@@ -317,7 +315,6 @@ export const cssHTML = ({ fp, modal, note, hashMini, hashSlice, count }, systemH
 				hashMini(computedStyle)
 			)
 		}</div>
-		<div>interface: ${interfaceName}</div>
 		<div>system styles: ${
 			system && system.colors ? modal(
 				`${id}-system-styles`,
