@@ -1161,25 +1161,7 @@ const imports = {
 			</div>
 			<div class="flex-grid">
 			${windowFeaturesHTML(templateImports)}
-			${!fp.htmlElementVersion ?
-				`<div class="col-six">
-					<strong>HTMLElement</strong>
-					<div>keys (0): ${note.blocked}</div>
-				</div>` :
-			(() => {
-				const {
-					htmlElementVersion: {
-						$hash,
-						keys
-					}
-				} = fp
-				return `
-				<div class="col-six">
-					<strong>HTMLElement</strong><span class="hash">${hashSlice($hash)}</span>
-					<div>keys (${count(keys)}): ${keys && keys.length ? modal('creep-html-element-version', keys.join(', ')) : note.blocked}</div>
-				</div>
-				`
-			})()}
+			${htmlElementVersionHTML(templateImports)}
 			</div>
 		</div>
 		<div class="flex-grid">
