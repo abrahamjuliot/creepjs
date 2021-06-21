@@ -315,10 +315,10 @@ export const mathsHTML = ({ fp, modal, note, hashSlice }) => {
 		}
 
 		.math-metric-rating {
-			background: linear-gradient(90deg, var(${uniqueMetric < 25 ? '--unique' : '--grey-glass'}) ${uniqueMetric}%, #fff0 ${uniqueMetric}%, #fff0 100%);
+			background: linear-gradient(90deg, var(${uniqueMetric < 10 ? '--unique' : '--grey-glass'}) ${uniqueMetric}%, #fff0 ${uniqueMetric}%, #fff0 100%);
 		}
 		.math-class-rating {
-			background: linear-gradient(90deg, var(${uniqueEngine < 25 ? '--unique' : '--grey-glass'}) ${uniqueEngine}%, #fff0 ${uniqueEngine}%, #fff0 100%);
+			background: linear-gradient(90deg, var(${uniqueEngine < 10 ? '--unique' : '--grey-glass'}) ${uniqueEngine}%, #fff0 ${uniqueEngine}%, #fff0 100%);
 		}
 	</style>
 	<div>

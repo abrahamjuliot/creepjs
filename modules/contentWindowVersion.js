@@ -93,10 +93,10 @@ export const windowFeaturesHTML = ({ fp, modal, note, hashSlice, count }) => {
 	<div class="col-six">
 		<style>
 			.window-features-metric-rating {
-				background: linear-gradient(90deg, var(${uniqueMetric < 25 ? '--unique' : '--grey-glass'}) ${uniqueMetric}%, #fff0 ${uniqueMetric}%, #fff0 100%);
+				background: linear-gradient(90deg, var(${uniqueMetric < 10 ? '--unique' : '--grey-glass'}) ${uniqueMetric}%, #fff0 ${uniqueMetric}%, #fff0 100%);
 			}
 			.window-features-class-rating {
-				background: linear-gradient(90deg, var(${uniqueEngine < 25 ? '--unique' : '--grey-glass'}) ${uniqueEngine}%, #fff0 ${uniqueEngine}%, #fff0 100%);
+				background: linear-gradient(90deg, var(${uniqueEngine < 10 ? '--unique' : '--grey-glass'}) ${uniqueEngine}%, #fff0 ${uniqueEngine}%, #fff0 100%);
 			}
 		</style>
 		<strong>Window</strong><span class="hash">${hashSlice($hash)}</span>

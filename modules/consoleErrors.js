@@ -114,10 +114,10 @@ export const consoleErrorsHTML = ({ fp, modal, note, hashSlice }) => {
 	<div class="col-six">
 		<style>
 			.console-errors-metric-rating {
-				background: linear-gradient(90deg, var(${uniqueMetric < 25 ? '--unique' : '--grey-glass'}) ${uniqueMetric}%, #fff0 ${uniqueMetric}%, #fff0 100%);
+				background: linear-gradient(90deg, var(${uniqueMetric < 10 ? '--unique' : '--grey-glass'}) ${uniqueMetric}%, #fff0 ${uniqueMetric}%, #fff0 100%);
 			}
 			.console-errors-class-rating {
-				background: linear-gradient(90deg, var(${uniqueEngine < 25 ? '--unique' : '--grey-glass'}) ${uniqueEngine}%, #fff0 ${uniqueEngine}%, #fff0 100%);
+				background: linear-gradient(90deg, var(${uniqueEngine < 10 ? '--unique' : '--grey-glass'}) ${uniqueEngine}%, #fff0 ${uniqueEngine}%, #fff0 100%);
 			}
 		</style>
 		<strong>Error</strong><span class="hash">${hashSlice($hash)}</span>

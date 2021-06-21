@@ -300,10 +300,10 @@ export const cssHTML = ({ fp, modal, note, hashMini, hashSlice, count }, systemH
 	<div class="col-six">
 		<style>
 			.system-styles-metric-rating {
-				background: linear-gradient(90deg, var(${uniqueMetric < 25 ? '--unique' : '--grey-glass'}) ${uniqueMetric}%, #fff0 ${uniqueMetric}%, #fff0 100%);
+				background: linear-gradient(90deg, var(${uniqueMetric < 10 ? '--unique' : '--grey-glass'}) ${uniqueMetric}%, #fff0 ${uniqueMetric}%, #fff0 100%);
 			}
 			.system-styles-class-rating {
-				background: linear-gradient(90deg, var(${uniqueEngine < 25 ? '--unique' : '--grey-glass'}) ${uniqueEngine}%, #fff0 ${uniqueEngine}%, #fff0 100%);
+				background: linear-gradient(90deg, var(${uniqueEngine < 10 ? '--unique' : '--grey-glass'}) ${uniqueEngine}%, #fff0 ${uniqueEngine}%, #fff0 100%);
 			}
 		</style>
 		<strong>Computed Style</strong><span class="hash">${hashSlice($hash)}</span>
