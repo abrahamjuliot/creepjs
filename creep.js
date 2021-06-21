@@ -1088,67 +1088,7 @@ const imports = {
 		})()}
 		</div>
 		<div class="flex-grid">
-		${!fp.screen ?
-			`<div class="col-six">
-				<strong>Screen</strong>
-				<div>device: ${note.blocked}</div>
-				<div>width: ${note.blocked}</div>
-				<div>outerWidth: ${note.blocked}</div>
-				<div>availWidth: ${note.blocked}</div>
-				<div>height: ${note.blocked}</div>
-				<div>outerHeight: ${note.blocked}</div>
-				<div>availHeight: ${note.blocked}</div>
-				<div>colorDepth: ${note.blocked}</div>
-				<div>pixelDepth: ${note.blocked}</div>
-			</div>
-			<div class="col-six screen-container">
-			</div>` :
-		(() => {
-			const {
-				screen: data
-			} = fp
-			const {
-				device,
-				width,
-				outerWidth,
-				availWidth,
-				height,
-				outerHeight,
-				availHeight,
-				colorDepth,
-				pixelDepth,
-				$hash,
-				lied
-			} = data
-			const getDeviceDimensions = (width, height, diameter = 180) => {
-				const aspectRatio = width / height
-				const isPortrait = height > width
-				const deviceHeight = isPortrait ? diameter : diameter / aspectRatio
-				const deviceWidth = isPortrait ? diameter * aspectRatio : diameter
-				return { deviceHeight, deviceWidth }
-			}
-			const { deviceHeight, deviceWidth } = getDeviceDimensions(width, height)
-			return `
-			<div class="col-six">
-				<strong>Screen</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-				<div>device: ${device ? device : note.unknown}</div>
-				<div>width: ${width ? width : note.blocked}</div>
-				<div>outerWidth: ${outerWidth ? outerWidth : note.blocked}</div>
-				<div>availWidth: ${availWidth ? availWidth : note.blocked}</div>
-				<div>height: ${height ? height : note.blocked}</div>
-				<div>outerHeight: ${outerHeight ? outerHeight : note.blocked}</div>
-				<div>availHeight: ${availHeight ? availHeight : note.blocked}</div>
-				<div>colorDepth: ${colorDepth ? colorDepth : note.blocked}</div>
-				<div>pixelDepth: ${pixelDepth ? pixelDepth : note.blocked}</div>
-			</div>
-			<div class="col-six screen-container">
-				<style>.screen-frame { width:${deviceWidth}px;height:${deviceHeight}px; }</style>
-				<div class="screen-frame">
-					<div class="screen-glass"></div>
-				</div>
-			</div>
-			`
-		})()}
+		${screenHTML(templateImports)}
 		</div>
 		<div class="flex-grid">
 		${cssMediaHTML(templateImports)}
