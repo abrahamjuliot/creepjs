@@ -144,6 +144,8 @@ visitor {
 	overflow-wrap: break-word;
     border-bottom: 1px solid #eee;
     padding: 15px 20px;
+	border-radius: 2px;
+	margin-bottom: 20px;
 	background: #fff;
 }
 
@@ -634,7 +636,7 @@ input[type="radio"] {
 	}
 
 	#fingerprint-data > div {
-		border-bottom: 1px solid var(--light-grey);
+		border-bottom: 1px solid var(--grey-glass);
 		background: var(--transparent);
 		color: var(--white-purple);
 	}
