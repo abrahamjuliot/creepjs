@@ -333,30 +333,11 @@ const imports = {
 	const trashLen = fp.trash.trashBin.length
 	const liesLen = !('totalLies' in fp.lies) ? 0 : fp.lies.totalLies
 	const errorsLen = fp.capturedErrors.data.length
-	const navigatorHighEntropy = !fp.navigator ? {} : {
-		device: fp.navigator.device,
-		doNotTrack: fp.navigator.doNotTrack,
-		globalPrivacyControl: fp.navigator.globalPrivacyControl,
-		keyboard: fp.navigator.keyboard,
-		language: fp.navigator.language,
-		maxTouchPoints: fp.navigator.maxTouchPoints,
-		mimeTypes: fp.navigator.mimeTypes,
-		platform: fp.navigator.platform,
-		system: fp.navigator.system,
-		vendor: fp.navigator.vendor,
-		lied: fp.navigator.lied
-	}
+
 	const creep = {
 		navigator: ( 
-			!fp.navigator ? undefined : (
-				braveFingerprintingBlocking ? navigatorHighEntropy : 
-				fp.navigator.lied ? undefined : {
-					deviceMemory: fp.navigator.deviceMemory,
-					hardwareConcurrency: fp.navigator.hardwareConcurrency,
-					plugins: fp.navigator.plugins,
-					...navigatorHighEntropy
-				}
-			)
+			!fp.navigator || fp.navigator.lied ? undefined : 
+				fp.navigator
 		),
 		screen: ( 
 			!fp.screen || fp.screen.lied || (!!liesLen && isFirefox) ? undefined : {
