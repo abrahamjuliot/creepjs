@@ -1,3 +1,14 @@
+const getKnownAudio = () => ({
+	// Chrome
+	[-20.538286209106445]: 124.04347527516074,
+	[-20.538288116455078]: 124.04344884395687,
+	[-20.535268783569336]: 124.080722568091,
+	// Firefox
+	[-31.509262084960938]: 35.7383295930922,
+	[-31.50218963623047]: 35.74996031448245,
+	[-31.502185821533203]: 35.7499681673944
+})
+
 export const getOfflineAudioContext = async imports => {
 
 	const {
@@ -200,6 +211,13 @@ export const getOfflineAudioContext = async imports => {
 			documentLie('AudioBuffer', audioSampleNoiseLie)
 		}
 
+		// Known sum
+		const knownSum = getKnownAudio()[compressorGainReduction]
+		if (knownSum != sampleSum) {
+			lied = true
+			documentLie('DynamicsCompressorNode', 'known gain reduction does not match sum')
+		}
+
 		logTestResult({ start, test: 'audio', passed: true })
 		return {
 			totalUniqueSamples,
@@ -223,6 +241,72 @@ export const getOfflineAudioContext = async imports => {
 
 }
 
-export const audioHTML = () => {
-	
+export const audioHTML = ({ fp, note, modal, hashMini, hashSlice }) => {
+	if (!fp.offlineAudioContext) {
+		return `<div class="col-four">
+			<strong>Audio</strong>
+			<div>sum: ${note.blocked}</div>
+			<div>gain: ${note.blocked}</div>
+			<div>freq: ${note.blocked}</div>
+			<div>time: ${note.blocked}</div>
+			<div>buffer noise: ${note.blocked}</div>
+			<div>unique: ${note.blocked}</div>
+			<div>data: ${note.blocked}</div>
+			<div>copy: ${note.blocked}</div>
+			<div>values: ${note.blocked}</div>
+		</div>`
+	}
+	const {
+		offlineAudioContext: {
+			$hash,
+			totalUniqueSamples,
+			compressorGainReduction,
+			floatFrequencyDataSum,
+			floatTimeDomainDataSum,
+			sampleSum,
+			binsSample,
+			copySample,
+			lied,
+			noise,
+			values
+		}
+	} = fp
+	const knownSum = getKnownAudio()[compressorGainReduction]
+	const style = (a, b) => b.map((char, i) => char != a[i] ? `<span class="bold-fail">${char}</span>` : char).join('')
+
+	return `
+	<div class="col-four">
+		<style>
+			.bold-fail {
+				color: #ca656e;
+			}
+		</style>
+		<strong>Audio</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+		<div>sum: ${
+			sampleSum && compressorGainReduction && knownSum ?
+			style((''+knownSum).split(''), (''+sampleSum).split('')) :
+			sampleSum
+		}</div>
+		<div class="help" title="DynamicsCompressorNode.reduction">gain: ${compressorGainReduction}</div>
+		<div class="help" title="AnalyserNode.getFloatFrequencyData()">freq: ${floatFrequencyDataSum}</div>
+		<div class="help" title="AnalyserNode.getFloatTimeDomainData()">time: ${floatTimeDomainDataSum}</div>
+		<div>buffer noise: ${!noise ? 0 : `${noise.toFixed(4)}...`}</div>
+		<div>unique: ${totalUniqueSamples}</div>
+		<div class="help" title="AudioBuffer.getChannelData()">data:${
+			''+binsSample[0] == 'undefined' ? ` ${note.unsupported}` : 
+			`<span class="sub-hash">${hashMini(binsSample)}</span>`
+		}</div>
+		<div class="help" title="AudioBuffer.copyFromChannel()">copy:${
+			''+copySample[0] == 'undefined' ? ` ${note.unsupported}` : 
+			`<span class="sub-hash">${hashMini(copySample)}</span>`
+		}</div>
+		<div>values: ${
+			modal(
+				'creep-offline-audio-context',
+				Object.keys(values).map(key => `<div>${key}: ${values[key]}</div>`).join(''),
+				hashMini(values)
+			)
+		}</div>
+	</div>
+	`
 }
