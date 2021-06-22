@@ -1614,7 +1614,7 @@
 			
 			const getSum = arr => !arr ? 0 : arr.reduce((acc, curr) => (acc += Math.abs(curr)), 0);
 			const { buffer, compressorGainReduction } = response || {};
-	    	const floatFrequencyDataSum = getSum(floatFrequencyData);
+			const floatFrequencyDataSum = getSum(floatFrequencyData);
 			const floatTimeDomainDataSum = getSum(floatTimeDomainData);
 
 			const copy = new Float32Array(bufferLen);
@@ -1661,7 +1661,7 @@
 
 			// Known sum
 			const knownSum = getKnownAudio()[compressorGainReduction];
-			if (knownSum != sampleSum) {
+			if (knownSum && knownSum != sampleSum) {
 				lied = true;
 				documentLie('DynamicsCompressorNode', 'known gain reduction does not match sum');
 			}
