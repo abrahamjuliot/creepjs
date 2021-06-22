@@ -8174,7 +8174,7 @@
 				});
 				
 				if (!fp.workerScope || !fp.workerScope.userAgent || fp.workerScope.type == 'dedicated') {
-					const audioString = offlineAudioContext ? `${offlineAudioContext.sampleSum}_${offlineAudioContext.compressorGainReduction}` : note.unknown;
+					const audioSum = offlineAudioContext ? offlineAudioContext.sampleSum : note.unknown;
 					return patch(el, html`
 					<div class="flex-grid">
 						<div class="col-eight">
@@ -8187,7 +8187,7 @@
 							<div>js runtime (math):<span class="sub-hash">${hashSlice(consoleErrors.$hash)}</span></div>
 							<div>js engine (error):<span class="sub-hash">${hashSlice(maths.$hash)}</span></div>
 							<div class="ellipsis">emojis: ${hashSlice(emojiHash)}</div>
-							<div class="ellipsis">audio: ${audioString}</div>
+							<div class="ellipsis">audio: ${audioSum}</div>
 						</div>
 						<div class="col-four icon-container">
 							<span class="block-text">${
@@ -8199,7 +8199,7 @@
 									systemHash,
 									styleHash,
 									emojiHash,
-									audioString
+									audioSum
 								})
 							}</span>
 						</div>
@@ -8214,6 +8214,9 @@
 				
 				const isTorBrowser = resistance.privacy == 'Tor Browser';
 
+				const { compressorGainReduction } = offlineAudioContext || {};
+				const knownAudio = getKnownAudio()[compressorGainReduction];
+				
 				const decryptRequest = `https://creepjs-6bd8e.web.app/decrypt?${[
 				`sender=${sender.e}_${sender.l}`,
 				`isTorBrowser=${isTorBrowser}`,
@@ -8226,8 +8229,10 @@
 				`styleSystemId=${systemHash}`,
 				`emojiId=${!clientRects || clientRects.lied ? 'undefined' : emojiHash}`,
 				`audioId=${
-					!offlineAudioContext || offlineAudioContext.lied ? 'undefined' : 
-						`${offlineAudioContext.sampleSum}_${offlineAudioContext.compressorGainReduction}`
+					!offlineAudioContext || !compressorGainReduction ? 'undefined' : 
+						knownAudio ? `${knownAudio}_${compressorGainReduction}` :
+							offlineAudioContext.lied ? 'undefined' :
+								`${offlineAudioContext.sampleSum}_${compressorGainReduction}`
 				}`,
 				`ua=${encodeURIComponent(fp.workerScope.userAgent)}`
 			].join('&')}`;
