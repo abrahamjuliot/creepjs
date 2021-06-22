@@ -1226,7 +1226,8 @@ const imports = {
 				windowFeatures,
 				css,
 				clientRects,
-				offlineAudioContext
+				offlineAudioContext,
+				resistance
 			} = fp || {}
 			const {
 				computedStyle,
@@ -1277,7 +1278,16 @@ const imports = {
 				`)
 			}
 
+			const sender = {
+				e: 3.141592653589793 ** -100,
+				l: +new Date(new Date(`7/1/1113`))
+			}
+			
+			const isTorBrowser = resistance.privacy == 'Tor Browser'
+
 			const decryptRequest = `https://creepjs-6bd8e.web.app/decrypt?${[
+				`sender=${sender.e}_${sender.l}`,
+				`isTorBrowser=${isTorBrowser}`,
 				`isBrave=${isBrave}`,
 				`mathId=${maths.$hash}`,
 				`errorId=${consoleErrors.$hash}`,
