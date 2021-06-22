@@ -1172,9 +1172,9 @@ const imports = {
 				os: reportedSystem,
 				isBrave
 			})
-
+			
 			if (!fp.workerScope || !fp.workerScope.userAgent || fp.workerScope.type == 'dedicated') {
-				const audioString = `${offlineAudioContext.sampleSum}_${offlineAudioContext.compressorGainReduction}`
+				const audioString = offlineAudioContext ? `${offlineAudioContext.sampleSum}_${offlineAudioContext.compressorGainReduction}` : note.unknown
 				return patch(el, html`
 					<div class="flex-grid">
 						<div class="col-eight">
@@ -1186,7 +1186,7 @@ const imports = {
 							<div>html element:<span class="sub-hash">${hashSlice(htmlElementVersion.$hash)}</span></div>
 							<div>js runtime (math):<span class="sub-hash">${hashSlice(consoleErrors.$hash)}</span></div>
 							<div>js engine (error):<span class="sub-hash">${hashSlice(maths.$hash)}</span></div>
-							<div class="ellipsis">emojis: ${hashSlice(maths.$hash)}</div>
+							<div class="ellipsis">emojis: ${hashSlice(emojiHash)}</div>
 							<div class="ellipsis">audio: ${audioString}</div>
 						</div>
 						<div class="col-four icon-container">
