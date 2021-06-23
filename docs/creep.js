@@ -15,7 +15,11 @@
 		if (brave) {
 			return true
 		}
-		const storageQuotaIs2Gb = 2147483648 == (await navigator.storage.estimate()).quota;
+		const storageQuotaIs2Gb = (
+			'storage' in navigator && navigator.storage ?
+			(2147483648 == (await navigator.storage.estimate()).quota) :
+			false
+		);
 		return storageQuotaIs2Gb
 	};
 
@@ -1644,12 +1648,17 @@
 
 			// sample noise factor
 			const getNoiseFactor = () => {
-				const buffer = new AudioBuffer({
-					length: 1,
-					sampleRate: 44100
-				});
-				buffer.getChannelData(0)[0] = 1;
-				return buffer.getChannelData(0)[0]
+				try {
+					const buffer = new AudioBuffer({
+						length: 1,
+						sampleRate: 44100
+					});
+					buffer.getChannelData(0)[0] = 1;
+					return buffer.getChannelData(0)[0]
+				}
+				catch (error) {
+					return 1
+				}
 			};
 			const noiseFactor = getNoiseFactor();
 			const noise = noiseFactor == 1 ? 0 : noiseFactor;

@@ -196,12 +196,17 @@ export const getOfflineAudioContext = async imports => {
 
 		// sample noise factor
 		const getNoiseFactor = () => {
-			const buffer = new AudioBuffer({
-				length: 1,
-				sampleRate: 44100
-			})
-			buffer.getChannelData(0)[0] = 1
-			return buffer.getChannelData(0)[0]
+			try {
+				const buffer = new AudioBuffer({
+					length: 1,
+					sampleRate: 44100
+				})
+				buffer.getChannelData(0)[0] = 1
+				return buffer.getChannelData(0)[0]
+			}
+			catch (error) {
+				return 1
+			}
 		}
 		const noiseFactor = getNoiseFactor()
 		const noise = noiseFactor == 1 ? 0 : noiseFactor

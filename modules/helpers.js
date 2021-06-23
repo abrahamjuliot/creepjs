@@ -13,7 +13,11 @@ const braveBrowser = async () => {
 		return true
 	}
 	const chromium = 3.141592653589793 ** -100 == 1.9275814160560204e-50
-	const storageQuotaIs2Gb = 2147483648 == (await navigator.storage.estimate()).quota
+	const storageQuotaIs2Gb = (
+		'storage' in navigator && navigator.storage ?
+		(2147483648 == (await navigator.storage.estimate()).quota) :
+		false
+	)
 	return chromium && storageQuotaIs2Gb
 }
 
