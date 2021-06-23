@@ -1448,13 +1448,13 @@
 
 	const getKnownAudio = () => ({
 		// Chrome
-		[-20.538286209106445]: 124.04347527516074,
-		[-20.538288116455078]: 124.04344884395687,
-		[-20.535268783569336]: 124.080722568091,
+		[-20.538286209106445]: [124.04347527516074, 124.04347503720783],
+		[-20.538288116455078]: [124.04344884395687],
+		[-20.535268783569336]: [124.080722568091],
 		// Firefox
-		[-31.509262084960938]: 35.7383295930922,
-		[-31.50218963623047]: 35.74996031448245,
-		[-31.502185821533203]: 35.7499681673944
+		[-31.509262084960938]: [35.7383295930922],
+		[-31.50218963623047]: [35.74996031448245],
+		[-31.502185821533203]: [35.7499681673944]
 	});
 
 	const getOfflineAudioContext = async imports => {
@@ -1659,13 +1659,6 @@
 				documentLie('AudioBuffer', audioSampleNoiseLie);
 			}
 
-			// Known sum
-			const knownSum = getKnownAudio()[compressorGainReduction];
-			if (knownSum && knownSum != sampleSum) {
-				lied = true;
-				documentLie('DynamicsCompressorNode', 'known gain reduction does not match sum');
-			}
-
 			logTestResult({ start, test: 'audio', passed: true });
 			return {
 				totalUniqueSamples,
@@ -1731,8 +1724,8 @@
 		</style>
 		<strong>Audio</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div>sum: ${
-			sampleSum && compressorGainReduction && knownSum ?
-			style((''+knownSum).split(''), (''+sampleSum).split('')) :
+			sampleSum && compressorGainReduction && knownSum && !knownSum.includes(sampleSum) ?
+			style((''+knownSum[0]).split(''), (''+sampleSum).split('')) :
 			sampleSum
 		}</div>
 		<div class="help" title="DynamicsCompressorNode.reduction">gain: ${compressorGainReduction}</div>
@@ -8215,7 +8208,6 @@
 				const isTorBrowser = resistance.privacy == 'Tor Browser';
 
 				const { compressorGainReduction } = offlineAudioContext || {};
-				const knownAudio = getKnownAudio()[compressorGainReduction];
 				
 				const decryptRequest = `https://creepjs-6bd8e.web.app/decrypt?${[
 				`sender=${sender.e}_${sender.l}`,
@@ -8229,10 +8221,8 @@
 				`styleSystemId=${systemHash}`,
 				`emojiId=${!clientRects || clientRects.lied ? 'undefined' : emojiHash}`,
 				`audioId=${
-					!offlineAudioContext || !compressorGainReduction ? 'undefined' : 
-						knownAudio ? `${knownAudio}_${compressorGainReduction}` :
-							offlineAudioContext.lied ? 'undefined' :
-								`${offlineAudioContext.sampleSum}_${compressorGainReduction}`
+					!offlineAudioContext || offlineAudioContext.lied ? 'undefined' : 
+						`${offlineAudioContext.sampleSum}_${compressorGainReduction}`
 				}`,
 				`ua=${encodeURIComponent(fp.workerScope.userAgent)}`
 			].join('&')}`;

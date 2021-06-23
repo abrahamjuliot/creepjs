@@ -1215,7 +1215,6 @@ const imports = {
 			const isTorBrowser = resistance.privacy == 'Tor Browser'
 
 			const { compressorGainReduction } = offlineAudioContext || {}
-			const knownAudio = getKnownAudio()[compressorGainReduction]
 			
 			const decryptRequest = `https://creepjs-6bd8e.web.app/decrypt?${[
 				`sender=${sender.e}_${sender.l}`,
@@ -1229,10 +1228,8 @@ const imports = {
 				`styleSystemId=${systemHash}`,
 				`emojiId=${!clientRects || clientRects.lied ? 'undefined' : emojiHash}`,
 				`audioId=${
-					!offlineAudioContext || !compressorGainReduction ? 'undefined' : 
-						knownAudio ? `${knownAudio}_${compressorGainReduction}` :
-							offlineAudioContext.lied ? 'undefined' :
-								`${offlineAudioContext.sampleSum}_${compressorGainReduction}`
+					!offlineAudioContext || offlineAudioContext.lied ? 'undefined' : 
+						`${offlineAudioContext.sampleSum}_${compressorGainReduction}`
 				}`,
 				`ua=${encodeURIComponent(fp.workerScope.userAgent)}`
 			].join('&')}`
