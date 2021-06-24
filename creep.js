@@ -1306,8 +1306,8 @@ const imports = {
 						<div class="ellipsis">html element: ${getTemplate(htmlVersion)}</div>
 						<div class="ellipsis">js runtime (math): ${getTemplate(jsRuntime)}</div>
 						<div class="ellipsis">js engine (error): ${getTemplate(jsEngine)}</div>
-						<div class="ellipsis">emojis: ${!emojiSystem ? note.unknown : getTemplate(emojiSystem)}</div>
-						<div class="ellipsis">audio: ${!audioSystem ? note.unknown : getTemplate(audioSystem)}</div>
+						<div class="ellipsis">emojis: ${!Object.keys(emojiSystem || {}).length ? note.unknown : getTemplate(emojiSystem)}</div>
+						<div class="ellipsis">audio: ${!Object.keys(audioSystem || {}).length ? note.unknown : getTemplate(audioSystem)}</div>
 					</div>
 					<div class="col-four icon-container">
 						${[...iconSet].map(icon => {
