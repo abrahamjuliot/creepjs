@@ -1294,7 +1294,8 @@ const imports = {
 				)
 
 				patch(el, html`
-				<div class="flex-grid">
+				<div class="flex-grid relative">
+					<div class="ellipsis"><span class="aside-note-bottom">pending review: ${data.pendingReview}</span></div>
 					<div class="col-eight">
 						<strong>Version</strong>
 						<div>client user agent:
@@ -1316,7 +1317,7 @@ const imports = {
 					</div>
 				</div>
 				`)
-				return console.log(`user agents pending review: ${data.pendingReview}`)
+				return
 			})
 			.catch(error => {
 				console.error('Error!', error.message)
