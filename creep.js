@@ -1319,7 +1319,30 @@ const imports = {
 				return console.log(`user agents pending review: ${data.pendingReview}`)
 			})
 			.catch(error => {
-				return console.error('Error!', error.message)
+				console.error('Error!', error.message)
+				return patch(el, html`
+					<style>
+						.rejected {
+							background: #ca656e14 !important;
+						}
+					</style>
+					<div class="flex-grid rejected">
+						<div class="col-eight">
+							<strong>Rejected</strong>
+							<div>client user agent:</div>
+							<div>window object:</div>
+							<div>system styles:</div>
+							<div>computed styles:</div>
+							<div>html element:</div>
+							<div>js runtime (math):</div>
+							<div>js engine (error):</div>
+							<div class="ellipsis">emojis:</div>
+							<div class="ellipsis">audio:</div>
+						</div>
+						<div class="col-four icon-container">
+						</div>
+					</div>
+				`)
 			})
 		})
 		.catch(error => {
