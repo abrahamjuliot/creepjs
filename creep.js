@@ -1295,7 +1295,7 @@ const imports = {
 
 				patch(el, html`
 				<div class="flex-grid relative">
-					<div class="ellipsis"><span class="aside-note-bottom">pending review: ${data.pendingReview}</span></div>
+					<div class="ellipsis"><span class="aside-note-bottom">pending review: ${data.pendingReview || '0'}</span></div>
 					<div class="col-eight">
 						<strong>Version</strong>
 						<div>client user agent:
