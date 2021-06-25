@@ -5093,7 +5093,6 @@
 			<div>element: ${note.blocked}</div>
 			<div>range: ${note.blocked}</div>
 			<div>emojis v13.0: ${note.blocked}</div>
-			<div>emoji system: ${note.blocked}</div>
 			<div>emoji set:</div>
 			div class="block-text">${note.blocked}</div>
 		</div>`
@@ -5115,33 +5114,6 @@
 		const getRectHash = rect => {
 			const {emoji,...excludeEmoji} = rect;
 			return hashMini(excludeEmoji)
-		};
-		const icon = {
-			blink: '<span class="icon blink"></span>',
-			webkit: '<span class="icon webkit"></span>',
-			tor: '<span class="icon tor"></span>',
-			gecko: '<span class="icon firefox"></span>',
-			cros: '<span class="icon cros"></span>',
-			linux: '<span class="icon linux"></span>',
-			apple: '<span class="icon apple"></span>',
-			windows: '<span class="icon windows"></span>',
-			android: '<span class="icon android"></span>'
-		};
-		const systemHash = {
-			'1184f08f': `${icon.blink}${icon.android}Blink on Android`,
-			'76104904': `${icon.blink}${icon.android}Blink on Android`, // Android 10
-			'e7a730b1': `${icon.blink}${icon.cros}Blink on Chrome OS`,
-			'f6864be8': `${icon.blink}${icon.cros}Blink on Chrome OS`, // CloudReady
-			'c3e18b8c': `${icon.gecko}${icon.android}Gecko on Android`,
-			'e7abe267': `${icon.gecko}${icon.android}Gecko on Android`, // Android 10
-			'8ff13414': `${icon.blink}${icon.windows}Blink on Windows`,
-			'ce1c9851': `${icon.gecko}${icon.windows}Gecko on Windows`,
-			'502234c4': `${icon.tor}${icon.windows}Tor Browser on Windows`,
-			'611b43d6': `${icon.tor}${icon.windows}Tor Browser on Windows`,
-			'906ca515': `${icon.webkit}${icon.apple}WebKit on Mac`,
-			'769cf0ec': `${icon.blink}${icon.apple}Blink on Mac`,
-			'961d672e': `${icon.gecko}${icon.apple}Gecko on Mac`,
-			'a03514e3': `${icon.tor}${icon.apple}Tor Browser on Mac`
 		};
 
 		return `
@@ -5166,7 +5138,6 @@
 				hashMini(emojiRects)
 			)
 		}</div>
-		<div>emoji system: ${systemHash[emojiSystem] || emojiSystem}</div>
 		<div>emoji set:</div>
 		<div class="block-text">${emojiSet.join('')}</div>
 	</div>
@@ -8174,8 +8145,12 @@
 					os: reportedSystem,
 					isBrave
 				});
-				
-				if (!fp.workerScope || !fp.workerScope.userAgent || fp.workerScope.type == 'dedicated') {
+				 
+				if (
+					!fp.workerScope ||
+					!fp.workerScope.userAgent ||
+					('BroadcastChannel' in window && fp.workerScope.type == 'dedicated')
+				) {
 					const audioSum = offlineAudioContext ? offlineAudioContext.sampleSum : note.unknown;
 					return patch(el, html`
 					<div class="flex-grid">
@@ -8297,7 +8272,7 @@
 
 					patch(el, html`
 				<div class="flex-grid relative">
-					<div class="ellipsis"><span class="aside-note-bottom">pending review: ${data.pendingReview}</span></div>
+					<div class="ellipsis"><span class="aside-note-bottom">pending review: ${data.pendingReview || '0'}</span></div>
 					<div class="col-eight">
 						<strong>Version</strong>
 						<div>client user agent:
