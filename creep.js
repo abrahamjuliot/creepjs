@@ -1333,7 +1333,7 @@ const imports = {
 					</style>
 					<div class="flex-grid rejected">
 						<div class="col-eight">
-							<strong>Rejected</strong>
+							<strong>Sample Rejected</strong>
 							<div>client user agent:</div>
 							<div>window object:</div>
 							<div>system styles:</div>
