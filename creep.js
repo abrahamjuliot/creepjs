@@ -1172,8 +1172,12 @@ const imports = {
 				os: reportedSystem,
 				isBrave
 			})
-			
-			if (!fp.workerScope || !fp.workerScope.userAgent || fp.workerScope.type == 'dedicated') {
+			 
+			if (
+				!fp.workerScope ||
+				!fp.workerScope.userAgent ||
+				('BroadcastChannel' in window && fp.workerScope.type == 'dedicated')
+			) {
 				const audioSum = offlineAudioContext ? offlineAudioContext.sampleSum : note.unknown
 				return patch(el, html`
 					<div class="flex-grid">
