@@ -5969,15 +5969,15 @@
 			
 		return new Promise(async resolve => {
 			try {
-				speechSynthesis.getVoices(); // warm up
+				const win = phantomDarkness ? phantomDarkness : window;
+				const supported = 'speechSynthesis' in win;
+				supported && speechSynthesis.getVoices(); // warm up
 				await new Promise(setTimeout).catch(e => {});
 				const start = performance.now();
-				const win = phantomDarkness ? phantomDarkness : window;
-				if (!('speechSynthesis' in win)) {
+				if (!supported) {
 					logTestResult({ test: 'speech', passed: false });
 					return resolve()
 				}
-
 				let success = false;
 				const getVoices = () => {
 					const data = win.speechSynthesis.getVoices();
