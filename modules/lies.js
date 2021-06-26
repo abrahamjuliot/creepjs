@@ -34,6 +34,26 @@ const getRandomValues = () => {
 	return id
 }
 
+const getBehemothIframe = win => {
+	try {
+		const iframe = win.document.createElement('iframe')
+		iframe.setAttribute('id', getRandomValues())
+		iframe.setAttribute('style', ghost())
+		win.document.body.appendChild(iframe)
+		if (!iframe || !iframe.parentNode) {
+			return
+		}
+		const { contentWindow } = iframe || {}
+		const iframe2 = contentWindow.document.createElement('iframe')
+		contentWindow.document.body.appendChild(iframe2)
+		return iframe2.contentWindow
+	}
+	catch (error) {
+		captureError(error, 'client blocked behemoth iframe')
+		return win
+	}
+}
+
 const getPhantomIframe = () => {
 	try {
 		const numberOfIframes = window.length
@@ -45,7 +65,8 @@ const getPhantomIframe = () => {
 		div.innerHTML = `<div style="${ghost()}"><iframe></iframe></div>`
 		document.body.appendChild(frag)
 		const iframeWindow = window[numberOfIframes]
-		return { iframeWindow, div }
+		const phantomWindow = getBehemothIframe(iframeWindow)
+		return { iframeWindow: phantomWindow, div }
 	}
 	catch (error) {
 		captureError(error, 'client blocked phantom iframe')
