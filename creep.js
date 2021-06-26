@@ -1212,8 +1212,14 @@ const imports = {
 			
 			const isTorBrowser = resistance.privacy == 'Tor Browser'
 
-			const { compressorGainReduction } = offlineAudioContext || {}
-			
+			const {
+				compressorGainReduction: gain,
+				sampleSum,
+				floatFrequencyDataSum: freqSum,
+				floatTimeDomainDataSum: timeSum,
+				values: audioValues
+			} = offlineAudioContext || {}
+			const valuesHash = hashMini(audioValues)
 			const decryptRequest = `https://creepjs-6bd8e.web.app/decrypt?${[
 				`sender=${sender.e}_${sender.l}`,
 				`isTorBrowser=${isTorBrowser}`,
@@ -1227,7 +1233,7 @@ const imports = {
 				`emojiId=${!clientRects || clientRects.lied ? 'undefined' : emojiHash}`,
 				`audioId=${
 					!offlineAudioContext || offlineAudioContext.lied ? 'undefined' : 
-						`${offlineAudioContext.sampleSum}_${compressorGainReduction}`
+						`${sampleSum}_${gain}_${freqSum}_${timeSum}_${valuesHash}`
 				}`,
 				`ua=${encodeURIComponent(fp.workerScope.userAgent)}`
 			].join('&')}`
@@ -1324,7 +1330,20 @@ const imports = {
 		})
 		.catch(error => {
 			fetchVisitorDataTimer('Error fetching version data')
-			patch(document.getElementById('loader'), html`<strong style="color:crimson">${error}</strong>`)
+			patch(document.getElementById('browser-detection'), html`
+				<style>
+					.rejected {
+						background: #ca656e14 !important;
+					}
+				</style>
+				<div class="flex-grid rejected">
+					<div class="col-eight">
+						${error}
+					</div>
+					<div class="col-four icon-container">
+					</div>
+				</div>
+			`)
 			return console.error('Error!', error.message)
 		})
 	})

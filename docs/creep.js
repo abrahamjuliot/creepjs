@@ -8145,43 +8145,37 @@
 					os: reportedSystem,
 					isBrave
 				});
+
+				const rejectSamplePatch = (el, html) => patch(el, html`
+				<style>
+					.rejected {
+						background: #ca656e14 !important;
+					}
+				</style>
+				<div class="flex-grid rejected">
+					<div class="col-eight">
+						<strong>Sample Rejected</strong>
+						<div>client user agent:</div>
+						<div>window object:</div>
+						<div>system styles:</div>
+						<div>computed styles:</div>
+						<div>html element:</div>
+						<div>js runtime (math):</div>
+						<div>js engine (error):</div>
+						<div class="ellipsis">emojis:</div>
+						<div class="ellipsis">audio:</div>
+					</div>
+					<div class="col-four icon-container">
+					</div>
+				</div>
+			`);
 				 
 				if (
 					!fp.workerScope ||
 					!fp.workerScope.userAgent ||
 					('BroadcastChannel' in window && fp.workerScope.type == 'dedicated')
 				) {
-					const audioSum = offlineAudioContext ? offlineAudioContext.sampleSum : note.unknown;
-					return patch(el, html`
-					<div class="flex-grid">
-						<div class="col-eight">
-							<strong>Version</strong>
-							<div>client user agent:<span> ${report}</span></div>
-							<div>window object:<span class="sub-hash">${hashSlice(windowFeatures.$hash)}</span></div>
-							<div>system styles:<span class="sub-hash">${hashSlice(systemHash)}</span></div>
-							<div>computed styles:<span class="sub-hash">${hashSlice(styleHash)}</span></div>
-							<div>html element:<span class="sub-hash">${hashSlice(htmlElementVersion.$hash)}</span></div>
-							<div>js runtime (math):<span class="sub-hash">${hashSlice(consoleErrors.$hash)}</span></div>
-							<div>js engine (error):<span class="sub-hash">${hashSlice(maths.$hash)}</span></div>
-							<div class="ellipsis">emojis: ${hashSlice(emojiHash)}</div>
-							<div class="ellipsis">audio: ${audioSum}</div>
-						</div>
-						<div class="col-four icon-container">
-							<span class="block-text">${
-								hashMini({
-									windowFeatures: windowFeatures.$hash,
-									htmlElementVersion: htmlElementVersion.$hash,
-									consoleErrors: consoleErrors.$hash,
-									maths: maths.$hash,
-									systemHash,
-									styleHash,
-									emojiHash,
-									audioSum
-								})
-							}</span>
-						</div>
-					</div>
-				`)
+					return rejectSamplePatch(el, html)
 				}
 
 				const sender = {
@@ -8191,8 +8185,14 @@
 				
 				const isTorBrowser = resistance.privacy == 'Tor Browser';
 
-				const { compressorGainReduction } = offlineAudioContext || {};
-				
+				const {
+					compressorGainReduction: gain,
+					sampleSum,
+					floatFrequencyDataSum: freqSum,
+					floatTimeDomainDataSum: timeSum,
+					values: audioValues
+				} = offlineAudioContext || {};
+				const valuesHash = hashMini(audioValues);
 				const decryptRequest = `https://creepjs-6bd8e.web.app/decrypt?${[
 				`sender=${sender.e}_${sender.l}`,
 				`isTorBrowser=${isTorBrowser}`,
@@ -8206,7 +8206,7 @@
 				`emojiId=${!clientRects || clientRects.lied ? 'undefined' : emojiHash}`,
 				`audioId=${
 					!offlineAudioContext || offlineAudioContext.lied ? 'undefined' : 
-						`${offlineAudioContext.sampleSum}_${compressorGainReduction}`
+						`${sampleSum}_${gain}_${freqSum}_${timeSum}_${valuesHash}`
 				}`,
 				`ua=${encodeURIComponent(fp.workerScope.userAgent)}`
 			].join('&')}`;
@@ -8298,34 +8298,25 @@
 				})
 				.catch(error => {
 					console.error('Error!', error.message);
-					return patch(el, html`
-					<style>
-						.rejected {
-							background: #ca656e14 !important;
-						}
-					</style>
-					<div class="flex-grid rejected">
-						<div class="col-eight">
-							<strong>Rejected</strong>
-							<div>client user agent:</div>
-							<div>window object:</div>
-							<div>system styles:</div>
-							<div>computed styles:</div>
-							<div>html element:</div>
-							<div>js runtime (math):</div>
-							<div>js engine (error):</div>
-							<div class="ellipsis">emojis:</div>
-							<div class="ellipsis">audio:</div>
-						</div>
-						<div class="col-four icon-container">
-						</div>
-					</div>
-				`)
+					return rejectSamplePatch(el, html)
 				})
 			})
 			.catch(error => {
 				fetchVisitorDataTimer('Error fetching version data');
-				patch(document.getElementById('loader'), html`<strong style="color:crimson">${error}</strong>`);
+				patch(document.getElementById('browser-detection'), html`
+				<style>
+					.rejected {
+						background: #ca656e14 !important;
+					}
+				</style>
+				<div class="flex-grid rejected">
+					<div class="col-eight">
+						${error}
+					</div>
+					<div class="col-four icon-container">
+					</div>
+				</div>
+			`);
 				return console.error('Error!', error.message)
 			});
 		});
