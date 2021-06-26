@@ -646,7 +646,7 @@ const imports = {
 				<div>exts (0): ${note.blocked}</div>
 			</div>
 			<div class="col-four">
-				<div>unmasked renderer: ${note.blocked}</div>
+				<div>unmasked renderer:</div>
 				<div class="block-text">${note.blocked}</div>
 			</div>
 			<div class="col-four"><image /></div>` :
