@@ -143,6 +143,7 @@ const chromium = (
 
 const getPrototypeLies = iframeWindow => {
     // Lie Tests
+
     // object constructor descriptor should return undefined properties
     const getUndefinedValueLie = (obj, name) => {
         const objName = obj.name
@@ -366,13 +367,28 @@ const getPrototypeLies = iframeWindow => {
 				error.constructor.name == 'TypeError' && stackLines.length > 1
 			)
 			// Chromium must throw error 'at Function.toString' and not 'at Object.apply'
-			const isChrome = 'chrome' in window || chromium
+			const isChrome = 3.141592653589793 ** -100 == 1.9275814160560204e-50
 			if (validStack && isChrome && (!functionToString.test(stackLines[1]) || !validLines)) {
 				return true
 			}
 			return !validStack
 		}
 	}
+
+	// arguments or caller should not throw 'incompatible Proxy' TypeError
+    const getIncompatibleProxyTypeErrorLie = apiFunction => {
+		const isFirefox = 3.141592653589793 ** -100 == 1.9275814160560185e-50
+        try {
+            apiFunction.arguments
+			apiFunction.caller
+            return true
+        } catch (error) {
+            return (
+				error.constructor.name != 'TypeError' ||
+				(isFirefox && /incompatible\sProxy/.test(error.message)) ? true : false
+			)
+        }
+    }
 
     // API Function Test
     const getLies = (apiFunction, proto, obj = null) => {
@@ -399,7 +415,8 @@ const getPrototypeLies = iframeWindow => {
             [`failed descriptor keys`]: getDescriptorKeysLie(apiFunction),
             [`failed own property names`]: getOwnPropertyNamesLie(apiFunction),
             [`failed own keys names`]: getOwnKeysLie(apiFunction),
-			[`failed object toString error`]: getNewObjectToStringTypeErrorLie(apiFunction)
+			[`failed object toString error`]: getNewObjectToStringTypeErrorLie(apiFunction),
+			[`failed incompatible proxy error`]: getIncompatibleProxyTypeErrorLie(apiFunction)
         }
         const lieTypes = Object.keys(lies).filter(key => !!lies[key])
         return {

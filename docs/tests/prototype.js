@@ -332,6 +332,21 @@
 			}
 		}
 
+		// arguments or caller should not throw 'incompatible Proxy' TypeError
+		const getIncompatibleProxyTypeErrorLie = apiFunction => {
+			const isFirefox = 3.141592653589793 ** -100 == 1.9275814160560185e-50
+			try {
+				apiFunction.arguments
+				apiFunction.caller
+				return true
+			} catch (error) {
+				return (
+					error.constructor.name != 'TypeError' ||
+					(isFirefox && /incompatible\sProxy/.test(error.message)) ? true : false
+				)
+			}
+		}
+
 		// API Function Test
 		const getLies = (apiFunction, proto, obj = null) => {
 			if (typeof apiFunction != 'function') {
@@ -357,7 +372,8 @@
 				[`l: descriptor keys should only contain "name" and "length"`]: getDescriptorKeysLie(apiFunction),
 				[`m: own property names should only contain "name" and "length"`]: getOwnPropertyNamesLie(apiFunction),
 				[`n: own keys names should only contain "name" and "length"`]: getOwnKeysLie(apiFunction),
-				[`o: calling toString() on an object created from the function should throw a TypeError`]: getNewObjectToStringTypeErrorLie(apiFunction)
+				[`o: calling toString() on an object created from the function should throw a TypeError`]: getNewObjectToStringTypeErrorLie(apiFunction),
+				[`p: arguments or caller should not throw 'incompatible Proxy' TypeError`]: getIncompatibleProxyTypeErrorLie(apiFunction)
 			}
 			const lieTypes = Object.keys(lies).filter(key => !!lies[key])
 			return {
