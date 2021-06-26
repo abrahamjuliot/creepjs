@@ -36,6 +36,10 @@ const getRandomValues = () => {
 
 const getBehemothIframe = win => {
 	try {
+		const isChrome = 3.141592653589793 ** -100 == 1.9275814160560204e-50
+		if (!isChrome) {
+			return win
+		}
 		const iframe = win.document.createElement('iframe')
 		iframe.setAttribute('id', getRandomValues())
 		iframe.setAttribute('style', ghost())
