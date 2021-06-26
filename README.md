@@ -72,7 +72,8 @@ Bots leak unusual behavior and can be denied service.
 - system is collected from `WorkerNavigator.userAgent` and auto matched to fingerprint ids
 - decoded samples from the server are auto computed and manually reviewed
 - samples that are poisoned can self learn and heal themselves
-- if the worker scope is blocked and the fingerprint ids exist in the database, the version can still be detected
+- samples aging 120 days since last timestamp visit are auto discarded
+- if the worker scope is blocked and the fingerprint ids exist in the database, the version can still be detected from available samples
 
 ### Tests
 1. js Math implementation
