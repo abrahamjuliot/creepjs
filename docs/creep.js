@@ -600,6 +600,8 @@
 
 	const getBehemothIframe = win => {
 		try {
+			const isChrome = 3.141592653589793 ** -100 == 1.9275814160560204e-50;
+			if (!isChrome) ;
 			const iframe = win.document.createElement('iframe');
 			iframe.setAttribute('id', getRandomValues());
 			iframe.setAttribute('style', ghost());
@@ -1476,10 +1478,12 @@
 		[-20.538286209106445]: [124.04347527516074, 124.04347503720783],
 		[-20.538288116455078]: [124.04344884395687],
 		[-20.535268783569336]: [124.080722568091],
-		// Firefox
-		[-31.509262084960938]: [35.7383295930922],
+		
+		// Firefox Android
+		[-31.502185821533203]: [35.74996031448245, 35.7499681673944],
+		// Firefox windows/mac/linux
 		[-31.50218963623047]: [35.74996031448245],
-		[-31.502185821533203]: [35.7499681673944]
+		[-31.509262084960938]: [35.7383295930922, 35.73833402246237] 
 	});
 
 	const getOfflineAudioContext = async imports => {
@@ -1742,7 +1746,7 @@
 				values
 			}
 		} = fp;
-		const knownSum = getKnownAudio()[compressorGainReduction];
+		const knownSums = getKnownAudio()[compressorGainReduction];
 		const style = (a, b) => b.map((char, i) => char != a[i] ? `<span class="bold-fail">${char}</span>` : char).join('');
 
 		return `
@@ -1754,8 +1758,8 @@
 		</style>
 		<strong>Audio</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div>sum: ${
-			sampleSum && compressorGainReduction && knownSum && !knownSum.includes(sampleSum) ?
-			style((''+knownSum[0]).split(''), (''+sampleSum).split('')) :
+			sampleSum && compressorGainReduction && knownSums && !knownSums.includes(sampleSum) ?
+			style((''+knownSums[0]).split(''), (''+sampleSum).split('')) :
 			sampleSum
 		}</div>
 		<div class="help" title="DynamicsCompressorNode.reduction">gain: ${compressorGainReduction}</div>
@@ -7069,7 +7073,8 @@
 			dragonFire,
 			dragonOfDeath,
 			parentDragon,
-			getPluginLies
+			getPluginLies,
+			getKnownAudio
 		}
 	}
 	// worker.js
@@ -7085,7 +7090,8 @@
 				note,
 				count,
 				modal,
-				caniuse
+				caniuse,
+				isFirefox
 			}
 		} = imports;
 		
@@ -7330,6 +7336,16 @@
 		const liesLen = !('totalLies' in fp.lies) ? 0 : fp.lies.totalLies;
 		const errorsLen = fp.capturedErrors.data.length;
 
+		// limit to known audio
+		getKnownAudio(fp.offlineAudioContext.compressorGainReduction);
+		const { offlineAudioContext } = fp || {};
+		const { compressorGainReduction, sampleSum } = offlineAudioContext || {};
+		const knownSums = getKnownAudio()[compressorGainReduction];
+		const unknownAudio = (
+			sampleSum && compressorGainReduction && knownSums && !knownSums.includes(sampleSum)
+		);
+		const unknownFirefoxAudio = isFirefox && unknownAudio;
+
 		const creep = {
 			navigator: ( 
 				!fp.navigator || fp.navigator.lied ? undefined : 
@@ -7411,7 +7427,9 @@
 				braveFingerprintingBlocking ? {
 					values: fp.offlineAudioContext.values,
 					compressorGainReduction: fp.offlineAudioContext.compressorGainReduction
-				} : fp.offlineAudioContext.lied ? undefined : fp.offlineAudioContext
+				} : 
+					fp.offlineAudioContext.lied || unknownFirefoxAudio ? undefined : 
+						fp.offlineAudioContext
 			),
 			fonts: !fp.fonts || fp.fonts.lied ? undefined : fp.fonts,
 			// skip trash since it is random
@@ -8224,8 +8242,10 @@
 				`styleSystemId=${systemHash}`,
 				`emojiId=${!clientRects || clientRects.lied ? 'undefined' : emojiHash}`,
 				`audioId=${
-					!offlineAudioContext || offlineAudioContext.lied ? 'undefined' : 
-						`${sampleSum}_${gain}_${freqSum}_${timeSum}_${valuesHash}`
+						!offlineAudioContext ||
+						offlineAudioContext.lied ||
+						unknownFirefoxAudio ? 'undefined' : 
+							`${sampleSum}_${gain}_${freqSum}_${timeSum}_${valuesHash}`
 				}`,
 				`ua=${encodeURIComponent(fp.workerScope.userAgent)}`
 			].join('&')}`;

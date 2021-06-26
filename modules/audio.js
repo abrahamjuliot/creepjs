@@ -3,10 +3,12 @@ export const getKnownAudio = () => ({
 	[-20.538286209106445]: [124.04347527516074, 124.04347503720783],
 	[-20.538288116455078]: [124.04344884395687],
 	[-20.535268783569336]: [124.080722568091],
-	// Firefox
-	[-31.509262084960938]: [35.7383295930922],
+	
+	// Firefox Android
+	[-31.502185821533203]: [35.74996031448245, 35.7499681673944],
+	// Firefox windows/mac/linux
 	[-31.50218963623047]: [35.74996031448245],
-	[-31.502185821533203]: [35.7499681673944]
+	[-31.509262084960938]: [35.7383295930922, 35.73833402246237] 
 })
 
 export const getOfflineAudioContext = async imports => {
@@ -269,7 +271,7 @@ export const audioHTML = ({ fp, note, modal, hashMini, hashSlice }) => {
 			values
 		}
 	} = fp
-	const knownSum = getKnownAudio()[compressorGainReduction]
+	const knownSums = getKnownAudio()[compressorGainReduction]
 	const style = (a, b) => b.map((char, i) => char != a[i] ? `<span class="bold-fail">${char}</span>` : char).join('')
 
 	return `
@@ -281,8 +283,8 @@ export const audioHTML = ({ fp, note, modal, hashMini, hashSlice }) => {
 		</style>
 		<strong>Audio</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div>sum: ${
-			sampleSum && compressorGainReduction && knownSum && !knownSum.includes(sampleSum) ?
-			style((''+knownSum[0]).split(''), (''+sampleSum).split('')) :
+			sampleSum && compressorGainReduction && knownSums && !knownSums.includes(sampleSum) ?
+			style((''+knownSums[0]).split(''), (''+sampleSum).split('')) :
 			sampleSum
 		}</div>
 		<div class="help" title="DynamicsCompressorNode.reduction">gain: ${compressorGainReduction}</div>

@@ -72,7 +72,8 @@ const imports = {
 		dragonFire,
 		dragonOfDeath,
 		parentDragon,
-		getPluginLies
+		getPluginLies,
+		getKnownAudio
 	}
 }
 // worker.js
@@ -89,7 +90,8 @@ const imports = {
 			note,
 			count,
 			modal,
-			caniuse
+			caniuse,
+			isFirefox
 		}
 	} = imports
 	
@@ -334,6 +336,16 @@ const imports = {
 	const liesLen = !('totalLies' in fp.lies) ? 0 : fp.lies.totalLies
 	const errorsLen = fp.capturedErrors.data.length
 
+	// limit to known audio
+	const knownAudio = getKnownAudio(fp.offlineAudioContext.compressorGainReduction)
+	const { offlineAudioContext } = fp || {}
+	const { compressorGainReduction, sampleSum } = offlineAudioContext || {}
+	const knownSums = getKnownAudio()[compressorGainReduction]
+	const unknownAudio = (
+		sampleSum && compressorGainReduction && knownSums && !knownSums.includes(sampleSum)
+	)
+	const unknownFirefoxAudio = isFirefox && unknownAudio
+
 	const creep = {
 		navigator: ( 
 			!fp.navigator || fp.navigator.lied ? undefined : 
@@ -415,7 +427,9 @@ const imports = {
 			braveFingerprintingBlocking ? {
 				values: fp.offlineAudioContext.values,
 				compressorGainReduction: fp.offlineAudioContext.compressorGainReduction
-			} : fp.offlineAudioContext.lied ? undefined : fp.offlineAudioContext
+			} : 
+				fp.offlineAudioContext.lied || unknownFirefoxAudio ? undefined : 
+					fp.offlineAudioContext
 		),
 		fonts: !fp.fonts || fp.fonts.lied ? undefined : fp.fonts,
 		// skip trash since it is random
@@ -1232,8 +1246,10 @@ const imports = {
 				`styleSystemId=${systemHash}`,
 				`emojiId=${!clientRects || clientRects.lied ? 'undefined' : emojiHash}`,
 				`audioId=${
-					!offlineAudioContext || offlineAudioContext.lied ? 'undefined' : 
-						`${sampleSum}_${gain}_${freqSum}_${timeSum}_${valuesHash}`
+						!offlineAudioContext ||
+						offlineAudioContext.lied ||
+						unknownFirefoxAudio ? 'undefined' : 
+							`${sampleSum}_${gain}_${freqSum}_${timeSum}_${valuesHash}`
 				}`,
 				`ua=${encodeURIComponent(fp.workerScope.userAgent)}`
 			].join('&')}`
