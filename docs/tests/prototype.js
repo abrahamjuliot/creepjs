@@ -333,11 +333,9 @@
 		}
 
 		// arguments or caller should not throw 'incompatible Proxy' TypeError
-		const getIncompatibleProxyTypeErrorLie = apiFunction => {
-			const isFirefox = 3.141592653589793 ** -100 == 1.9275814160560185e-50
+		const tryIncompatibleProxy = (isFirefox, fn) => {
 			try {
-				apiFunction.arguments
-				apiFunction.caller
+				fn()
 				return true
 			} catch (error) {
 				return (
@@ -345,6 +343,15 @@
 					(isFirefox && /incompatible\sProxy/.test(error.message)) ? true : false
 				)
 			}
+		}
+		const getIncompatibleProxyTypeErrorLie = apiFunction => {
+			const isFirefox = 3.141592653589793 ** -100 == 1.9275814160560185e-50
+			return (
+				tryIncompatibleProxy(isFirefox, () => apiFunction.toString.arguments) ||
+				tryIncompatibleProxy(isFirefox, () => apiFunction.toString.caller) ||
+				tryIncompatibleProxy(isFirefox, () => apiFunction.arguments) ||
+				tryIncompatibleProxy(isFirefox, () => apiFunction.arguments)
+			)
 		}
 
 		// API Function Test
