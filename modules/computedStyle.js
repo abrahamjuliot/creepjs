@@ -260,7 +260,7 @@ export const cssHTML = ({ fp, modal, note, hashMini, hashSlice, count }, systemH
 				/Gecko/.test(decryption) ? icon.gecko :
 					/WebKit/.test(decryption) ? icon.webkit :
 						/Blink/.test(decryption) ? icon.blink :
-							/Goanna/.test(decryption) ? icon.blink :
+							/Goanna/.test(decryption) ? icon.goanna :
 								''
 		)
 		const systemIcon = (

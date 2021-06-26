@@ -72,7 +72,7 @@ export const htmlElementVersionHTML = ({ fp, modal, note, hashSlice, count }) =>
 				/Gecko/.test(decryption) ? icon.gecko :
 					/WebKit/.test(decryption) ? icon.webkit :
 						/Blink/.test(decryption) ? icon.blink :
-							/Goanna/.test(decryption) ? icon.blink :
+							/Goanna/.test(decryption) ? icon.goanna :
 								''
 		)
 		const formatPercent = n => n.toFixed(2).replace('.00', '')

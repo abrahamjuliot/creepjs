@@ -2582,7 +2582,7 @@
 					/Gecko/.test(decryption) ? icon.gecko :
 						/WebKit/.test(decryption) ? icon.webkit :
 							/Blink/.test(decryption) ? icon.blink :
-								/Goanna/.test(decryption) ? icon.blink :
+								/Goanna/.test(decryption) ? icon.goanna :
 									''
 			);
 			const systemIcon = (
@@ -3103,8 +3103,7 @@
 			const icon = {
 				blink: '<span class="icon blink"></span>',
 				webkit: '<span class="icon webkit"></span>',
-				firefox: '<span class="icon firefox"></span>',
-				goanna: '<span class="icon goanna"></span>',
+				firefox: '<span class="icon firefox"></span>'
 			};
 
 			const engineIcon = (
@@ -3112,7 +3111,6 @@
 					/SpiderMonkey/.test(decryption) ? icon.firefox :
 						/JavaScriptCore/.test(decryption) ? icon.webkit :
 							/V8/.test(decryption) ? icon.blink :
-								/Goanna/.test(decryption) ? icon.goanna :
 									''
 			);
 
@@ -3690,7 +3688,7 @@
 					/Gecko/.test(decryption) ? icon.gecko :
 						/WebKit/.test(decryption) ? icon.webkit :
 							/Blink/.test(decryption) ? icon.blink :
-								/Goanna/.test(decryption) ? icon.blink :
+								/Goanna/.test(decryption) ? icon.goanna :
 									''
 			);
 			const formatPercent = n => n.toFixed(2).replace('.00', '');

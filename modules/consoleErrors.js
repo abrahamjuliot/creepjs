@@ -80,8 +80,7 @@ export const consoleErrorsHTML = ({ fp, modal, note, hashSlice }) => {
 		const icon = {
 			blink: '<span class="icon blink"></span>',
 			webkit: '<span class="icon webkit"></span>',
-			firefox: '<span class="icon firefox"></span>',
-			goanna: '<span class="icon goanna"></span>',
+			firefox: '<span class="icon firefox"></span>'
 		}
 
 		const engineIcon = (
@@ -89,7 +88,6 @@ export const consoleErrorsHTML = ({ fp, modal, note, hashSlice }) => {
 				/SpiderMonkey/.test(decryption) ? icon.firefox :
 					/JavaScriptCore/.test(decryption) ? icon.webkit :
 						/V8/.test(decryption) ? icon.blink :
-							/Goanna/.test(decryption) ? icon.goanna :
 								''
 		)
 
