@@ -70,7 +70,8 @@ Bots leak unusual behavior and can be denied service.
 - a guess attempt is made to decrypt the browser vendor, version, renderer, engine, and platform
 - this guess does not affect the fingerprint
 - system is collected from `WorkerNavigator.userAgent` and auto matched to fingerprint ids
-- decoded samples are auto computed and manually reviewed if new
+- decoded samples from the server are auto computed and manually reviewed
+- samples that are poisoned can self learn and heal themselves
 - if the worker scope is blocked and the fingerprint ids exist in the database, the version can still be detected
 
 ### Tests
