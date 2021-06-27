@@ -138,13 +138,13 @@ export const canvasHTML = ({ fp, note, hashSlice }) => {
 	const modPercent = pixels ? Math.round((pixels/400)*100) : 0
 
 	// rgba: "b, g, gb, r, rb, rg, rgb"
-	const rgbaHTML= rgba.split(', ').map(set => set.split('').map(char => {
+	const rgbaHTML= !rgba ? rgba : rgba.split(', ').map(s => s.split('').map(c => {
 		const css = {
 			r: 'red',
 			g: 'green',
 			b: 'blue',
 		}
-		return `<span class="rgba rgba-${css[char]}"></span>`
+		return `<span class="rgba rgba-${css[c]}"></span>`
 	}).join('')).join(' ')
 	return `
 	<div class="col-six${lied ? ' rejected' : ''}">
