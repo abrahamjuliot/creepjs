@@ -423,7 +423,7 @@ const getPrototypeLies = iframeWindow => {
             [`failed own property names`]: getOwnPropertyNamesLie(apiFunction),
             [`failed own keys names`]: getOwnKeysLie(apiFunction),
 			[`failed object toString error`]: getNewObjectToStringTypeErrorLie(apiFunction),
-			[`failed incompatible proxy error`]: getIncompatibleProxyTypeErrorLie(apiFunction)
+			[`failed at incompatible proxy error`]: getIncompatibleProxyTypeErrorLie(apiFunction)
         }
         const lieTypes = Object.keys(lies).filter(key => !!lies[key])
         return {

@@ -337,7 +337,6 @@ const imports = {
 	const errorsLen = fp.capturedErrors.data.length
 
 	// limit to known audio
-	const knownAudio = getKnownAudio(fp.offlineAudioContext.compressorGainReduction)
 	const { offlineAudioContext } = fp || {}
 	const { compressorGainReduction, sampleSum } = offlineAudioContext || {}
 	const knownSums = getKnownAudio()[compressorGainReduction]

@@ -144,41 +144,41 @@ export const getResistance = async imports => {
 				getContextHash: ['0b637a33', disabled]
 			},
 			trace: {
-				contentDocumentHash: ['14952998'],
-				contentWindowHash: ['14952998'],
-				createElementHash: ['a3d61a73'],
-				getElementByIdHash: ['a3d61a73'],
-				getImageDataHash: ['cb6efb80', 'a3d61a73'],
-				toBlobHash: ['a3d61a73'],
-				toDataURLHash: ['a3d61a73', '9983cdd9']
+				contentDocumentHash: ['ca9d9c2f'],
+				contentWindowHash: ['ca9d9c2f'],
+				createElementHash: ['77dea834'],
+				getElementByIdHash: ['77dea834'],
+				getImageDataHash: ['77dea834'],
+				toBlobHash: ['77dea834'],
+				toDataURLHash: ['77dea834']
 			},
 			cydec: {
-				contentDocumentHash: ['55e9b959', 'ae84b862'],
-				contentWindowHash: ['55e9b959', 'ae84b862'],
-				createElementHash: ['a5df9a1c', '9abf76a5'],
-				getElementByIdHash: ['a5df9a1c', '9abf76a5'],
-				getImageDataHash: ['55e9b959', 'bb4cd3c5', 'e2080b52', 'a267c9e6'],
-				toBlobHash: ['55e9b959', 'ae84b862', 'b2f68fce'],
-				toDataURLHash: ['55e9b959', 'ae84b862', '586998e6', '52ffa2f2', 'af080ebf', '621990c8']
+				contentDocumentHash: ['128e810e', '55e9b959', 'a81e63a5', '128e810e'],
+				contentWindowHash: ['128e810e', '55e9b959', 'a81e63a5', '128e810e'],
+				createElementHash: ['7b8c8ccb', '0cb0c682', '81016342', '72b1ee2b'],
+				getElementByIdHash: ['7b8c8ccb', '0cb0c682', '81016342', '72b1ee2b'],
+				getImageDataHash: ['d1cdba22', '55e9b959', '128e810e'],
+				toBlobHash: ['128e810e', '55e9b959', 'b6b0ffb9'],
+				toDataURLHash: ['945e45a1', 'd19104ec', '6985d315']
 			},
 			canvasblocker: {
-				contentDocumentHash: ['37e2f32e'],
-				contentWindowHash: ['37e2f32e'],
-				appendHash: ['0b637a33'],
-				getImageDataHash: ['0b637a33', disabled],
-				toBlobHash: ['0b637a33', disabled],
-				toDataURLHash: ['0b637a33', disabled]
+				contentDocumentHash: ['7c9aefc0'],
+				contentWindowHash: ['7c9aefc0'],
+				appendHash: ['7c9aefc0'],
+				getImageDataHash: ['7c9aefc0', disabled],
+				toBlobHash: ['7c9aefc0', '52cdad8a', disabled],
+				toDataURLHash: ['7c9aefc0', disabled]
 			},
 			chameleon: {
-				appendHash: ['a3d61a73', '1aadd8cd'],
-				insertAdjacentElementHash: ['a3d61a73', '1aadd8cd'],
-				insertAdjacentHTMLHash: ['a3d61a73', '1aadd8cd'],
-				insertAdjacentTextHash: ['a3d61a73', '1aadd8cd'],
-				prependHash: ['a3d61a73', '1aadd8cd'],
-				replaceWithHash: ['a3d61a73', '1aadd8cd'],
-				appendChildHash: ['a3d61a73', '1aadd8cd'],
-				insertBeforeHash: ['a3d61a73', '1aadd8cd'],
-				replaceChildHash: ['a3d61a73', '1aadd8cd']
+				appendHash: ['77dea834'],
+				insertAdjacentElementHash: ['77dea834'],
+				insertAdjacentHTMLHash: ['77dea834'],
+				insertAdjacentTextHash: ['77dea834'],
+				prependHash: ['77dea834'],
+				replaceWithHash: ['77dea834'],
+				appendChildHash: ['77dea834'],
+				insertBeforeHash: ['77dea834'],
+				replaceChildHash: ['77dea834']
 			},
 			duckduckgo: {
 				toDataURLHash: ['fd00bf5d', '55e9b959'],
@@ -200,8 +200,8 @@ export const getResistance = async imports => {
 			},
 			// mode: Learn to block new trackers from your browsing
 			privacybadger: {
-				getImageDataHash: ['d2d20b65'],
-				toDataURLHash: ['d2d20b65']
+				getImageDataHash: ['0cb0c682'],
+				toDataURLHash: ['0cb0c682']
 			},
 			privacypossum: {
 				hardwareConcurrencyHash: ['452924d5'],
