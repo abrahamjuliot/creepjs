@@ -40,6 +40,8 @@ export const getMaths = async imports => {
 			'pow'
 		]
 		let lied = false
+		let liedCalc = false
+		const phantomMath = phantomDarkness ? phantomDarkness.Math : Math
 		check.forEach(prop => {
 			if (!!lieProps[`Math.${prop}`]) {
 				lied = true
@@ -54,7 +56,7 @@ export const getMaths = async imports => {
 			const res2 = Math[prop](...test)
 			const matching = isNaN(res1) && isNaN(res2) ? true : res1 == res2
 			if (!matching) {
-				lied = true
+				liedCalc = true
 				const mathLie = `expected x and got y`
 				documentLie(`Math.${prop}`, mathLie)
 			}
@@ -193,7 +195,7 @@ export const getMaths = async imports => {
 			
 			['polyfill', [2e-3 ** -100], 'polyfill pow(2e-3, -100)', 7.888609052210102e+269, 7.888609052210126e+269, NaN, NaN]
 		]
-		const phantomMath = phantomDarkness ? phantomDarkness.Math : Math
+		
 		const data = {}
 		fns.forEach(fn => {
 			data[fn[2]] = attempt(() => {
@@ -205,7 +207,7 @@ export const getMaths = async imports => {
 				return { result, chrome, firefox, torBrowser, safari }
 			})
 		})
-		
+
 		logTestResult({ start, test: 'math', passed: true })
 		return { data, lied }
 	}

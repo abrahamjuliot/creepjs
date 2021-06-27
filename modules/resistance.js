@@ -153,21 +153,21 @@ export const getResistance = async imports => {
 				toDataURLHash: ['77dea834']
 			},
 			cydec: {
-				contentDocumentHash: ['128e810e', '55e9b959', 'a81e63a5', '128e810e'],
-				contentWindowHash: ['128e810e', '55e9b959', 'a81e63a5', '128e810e'],
-				createElementHash: ['7b8c8ccb', '0cb0c682', '81016342', '72b1ee2b'],
-				getElementByIdHash: ['7b8c8ccb', '0cb0c682', '81016342', '72b1ee2b'],
-				getImageDataHash: ['d1cdba22', '55e9b959', '128e810e'],
-				toBlobHash: ['128e810e', '55e9b959', 'b6b0ffb9'],
-				toDataURLHash: ['945e45a1', 'd19104ec', '6985d315']
+				contentDocumentHash: ['945b0c78', '15771efa', '55e9b959'],
+				contentWindowHash: ['945b0c78', '15771efa', '55e9b959'],
+				createElementHash: ['cc7cb598', '4237b44c', '7b8c8ccb', '0cb0c682'],
+				getElementByIdHash: ['cc7cb598', '4237b44c', '7b8c8ccb', '0cb0c682'],
+				getImageDataHash: ['db60d7f9', '15771efa', 'd1cdba22', '55e9b959'],
+				toBlobHash: ['044f14c2', '15771efa', '128e810e', '55e9b959'],
+				toDataURLHash: ['ecb498d9', '6b838fb6', '00316d42', 'd19104ec']
 			},
 			canvasblocker: {
-				contentDocumentHash: ['7c9aefc0'],
-				contentWindowHash: ['7c9aefc0'],
-				appendHash: ['7c9aefc0'],
-				getImageDataHash: ['7c9aefc0', disabled],
-				toBlobHash: ['7c9aefc0', '52cdad8a', disabled],
-				toDataURLHash: ['7c9aefc0', disabled]
+				contentDocumentHash: ['6f901c5a'],
+				contentWindowHash: ['6f901c5a'],
+				appendHash: ['6f901c5a'],
+				getImageDataHash: ['6f901c5a', disabled],
+				toBlobHash: ['6f901c5a', '9f1c3dfe', disabled],
+				toDataURLHash: ['6f901c5a', disabled]
 			},
 			chameleon: {
 				appendHash: ['77dea834'],

@@ -685,6 +685,8 @@
 
 	const { iframeWindow: dragonOfDeath } = getDragonIframe({ numberOfNests: 4, kill: true});
 
+	const getFirefox = () => 3.141592653589793 ** -100 == 1.9275814160560185e-50;
+
 	const getPrototypeLies = iframeWindow => {
 	    // Lie Tests
 
@@ -798,6 +800,18 @@
 	            // restore proto
 	            Object.setPrototypeOf(apiFunction, nativeProto);
 	        }
+	    };
+
+		// setting prototype to itself should not throw 'Uncaught InternalError: too much recursion'
+		/*
+			Trying to bypass this? We can also check if empty Proxies return 'Uncaught InternalError: too much recursion'
+			x = new Proxy({}, {})
+			Object.setPrototypeOf(x, x)+''
+		*/
+	    const getTooMuchRecursionLie = apiFunction => {
+			{
+				return false
+			}
 	    };
 
 	    // toString() and toString.toString() should return a native string in all frames
@@ -932,12 +946,17 @@
 	        }
 		};
 	    const getIncompatibleProxyTypeErrorLie = apiFunction => {
-			const isFirefox = 3.141592653589793 ** -100 == 1.9275814160560185e-50;
+			const isFirefox = getFirefox();
 			return (
-				tryIncompatibleProxy(isFirefox, () => apiFunction.toString.arguments) ||
-				tryIncompatibleProxy(isFirefox, () => apiFunction.toString.caller) ||
 				tryIncompatibleProxy(isFirefox, () => apiFunction.arguments) ||
 				tryIncompatibleProxy(isFirefox, () => apiFunction.arguments)
+			)
+	    };
+		const getToStringIncompatibleProxyTypeErrorLie = apiFunction => {
+			const isFirefox = getFirefox();
+			return (
+				tryIncompatibleProxy(isFirefox, () => apiFunction.toString.arguments) ||
+				tryIncompatibleProxy(isFirefox, () => apiFunction.toString.caller)
 			)
 	    };
 
@@ -967,7 +986,9 @@
 	            [`failed own property names`]: getOwnPropertyNamesLie(apiFunction),
 	            [`failed own keys names`]: getOwnKeysLie(apiFunction),
 				[`failed object toString error`]: getNewObjectToStringTypeErrorLie(apiFunction),
-				[`failed at incompatible proxy error`]: getIncompatibleProxyTypeErrorLie(apiFunction)
+				[`failed at incompatible proxy error`]: getIncompatibleProxyTypeErrorLie(apiFunction),
+				[`failed at toString incompatible proxy error`]: getToStringIncompatibleProxyTypeErrorLie(apiFunction),
+				[`failed at too much recursion error`]: getTooMuchRecursionLie()
 	        };
 	        const lieTypes = Object.keys(lies).filter(key => !!lies[key]);
 	        return {
@@ -1441,6 +1462,9 @@
 		}
 	};
 
+	// disregard Function.prototype.toString lies when determining if the API can be trusted
+	const getNonFunctionToStringLies = x => !x ? x : x.filter(x => !/object toString|toString incompatible proxy/.test(x)).length;
+
 	const getLies = imports => {
 
 		const {
@@ -1506,7 +1530,6 @@
 				logTestResult
 			}
 		} = imports;
-
 
 		try {
 			await new Promise(setTimeout).catch(e => {});
@@ -1870,7 +1893,6 @@
 
 		const {
 			require: {
-				hashMini,
 				captureError,
 				lieProps,
 				documentLie,
@@ -1956,7 +1978,18 @@
 				background: #00ff584a;
 			}
 			.rgba-blue {
-				background: #0000ff4a;
+				background: #009fff5e;
+			}
+			@media (prefers-color-scheme: dark) {
+				.rgba-red {
+					background: #e19fa2;
+				}
+				.rgba-green {
+					background: #98dfb1;
+				}
+				.rgba-blue {
+					background: #67b7ff;
+				}
 			}
 		</style>
 		<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
@@ -3825,6 +3858,8 @@
 				'pow'
 			];
 			let lied = false;
+			let liedCalc = false;
+			const phantomMath = phantomDarkness ? phantomDarkness.Math : Math;
 			check.forEach(prop => {
 				if (!!lieProps[`Math.${prop}`]) {
 					lied = true;
@@ -3839,7 +3874,7 @@
 				const res2 = Math[prop](...test);
 				const matching = isNaN(res1) && isNaN(res2) ? true : res1 == res2;
 				if (!matching) {
-					lied = true;
+					liedCalc = true;
 					const mathLie = `expected x and got y`;
 					documentLie(`Math.${prop}`, mathLie);
 				}
@@ -3978,7 +4013,7 @@
 				
 				['polyfill', [2e-3 ** -100], 'polyfill pow(2e-3, -100)', 7.888609052210102e+269, 7.888609052210126e+269, NaN, NaN]
 			];
-			const phantomMath = phantomDarkness ? phantomDarkness.Math : Math;
+			
 			const data = {};
 			fns.forEach(fn => {
 				data[fn[2]] = attempt(() => {
@@ -3990,7 +4025,7 @@
 					return { result, chrome, firefox, torBrowser, safari }
 				});
 			});
-			
+
 			logTestResult({ start, test: 'math', passed: true });
 			return { data, lied }
 		}
@@ -5947,6 +5982,7 @@
 
 		try {
 			const start = performance.now();
+			
 			let lied = (
 				lieProps['Date.getTimezoneOffset'] ||
 				lieProps['Intl.DateTimeFormat.resolvedOptions'] ||
@@ -6776,21 +6812,21 @@
 					toDataURLHash: ['77dea834']
 				},
 				cydec: {
-					contentDocumentHash: ['128e810e', '55e9b959', 'a81e63a5', '128e810e'],
-					contentWindowHash: ['128e810e', '55e9b959', 'a81e63a5', '128e810e'],
-					createElementHash: ['7b8c8ccb', '0cb0c682', '81016342', '72b1ee2b'],
-					getElementByIdHash: ['7b8c8ccb', '0cb0c682', '81016342', '72b1ee2b'],
-					getImageDataHash: ['d1cdba22', '55e9b959', '128e810e'],
-					toBlobHash: ['128e810e', '55e9b959', 'b6b0ffb9'],
-					toDataURLHash: ['945e45a1', 'd19104ec', '6985d315']
+					contentDocumentHash: ['945b0c78', '15771efa', '55e9b959'],
+					contentWindowHash: ['945b0c78', '15771efa', '55e9b959'],
+					createElementHash: ['cc7cb598', '4237b44c', '7b8c8ccb', '0cb0c682'],
+					getElementByIdHash: ['cc7cb598', '4237b44c', '7b8c8ccb', '0cb0c682'],
+					getImageDataHash: ['db60d7f9', '15771efa', 'd1cdba22', '55e9b959'],
+					toBlobHash: ['044f14c2', '15771efa', '128e810e', '55e9b959'],
+					toDataURLHash: ['ecb498d9', '6b838fb6', '00316d42', 'd19104ec']
 				},
 				canvasblocker: {
-					contentDocumentHash: ['7c9aefc0'],
-					contentWindowHash: ['7c9aefc0'],
-					appendHash: ['7c9aefc0'],
-					getImageDataHash: ['7c9aefc0', disabled],
-					toBlobHash: ['7c9aefc0', '52cdad8a', disabled],
-					toDataURLHash: ['7c9aefc0', disabled]
+					contentDocumentHash: ['6f901c5a'],
+					contentWindowHash: ['6f901c5a'],
+					appendHash: ['6f901c5a'],
+					getImageDataHash: ['6f901c5a', disabled],
+					toBlobHash: ['6f901c5a', '9f1c3dfe', disabled],
+					toDataURLHash: ['6f901c5a', disabled]
 				},
 				chameleon: {
 					appendHash: ['77dea834'],
@@ -7099,7 +7135,14 @@
 			trustInteger,
 			// lies
 			documentLie,
-			lieProps: lieProps.getProps(),
+			// filter out lies on Function.prototype.toString (this is a false positive on native APIs void of tampering)
+			lieProps: (() => {
+				const props = lieProps.getProps();
+				return Object.keys(props).reduce((acc, key) => {
+					acc[key] = getNonFunctionToStringLies(props[key]);
+					return acc
+				}, {})
+			})(),
 			prototypeLies,
 			// collections
 			errorsCaptured,
@@ -7642,7 +7685,7 @@
 				<div>canvas 2d: ${note.blocked}</div>
 				<div>webgl vendor: ${note.blocked}</div>
 			</div>
-			<div class="col-six">
+			<div class="col-six undefined">
 				<div>device:</div>
 				<div class="block-text">${note.blocked}</div>
 				<div>userAgent:</div>
@@ -7695,11 +7738,11 @@
 				<div>params (0): ${note.blocked}</div>
 				<div>exts (0): ${note.blocked}</div>
 			</div>
-			<div class="col-four">
+			<div class="col-four undefined">
 				<div>unmasked renderer:</div>
 				<div class="block-text">${note.blocked}</div>
 			</div>
-			<div class="col-four"><image /></div>` :
+			<div class="col-four undefined"><image /></div>` :
 		(() => {
 			const { canvasWebgl: data } = fp;
 			const id = 'creep-canvas-webgl';

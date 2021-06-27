@@ -89,6 +89,8 @@
 		Math.pow(Math.PI, -100) == 1.9275814160560204e-50
 	)
 
+	const getFirefox = () => 3.141592653589793 ** -100 == 1.9275814160560185e-50
+
 	const getPrototypeLies = iframeWindow => {
 		// Lie Tests
 		// object constructor descriptor should return undefined properties
@@ -213,7 +215,7 @@
 			Object.setPrototypeOf(x, x)+''
 		*/
 		const getTooMuchRecursionLie = apiFunction => {
-			const isFirefox = 3.141592653589793 ** -100 == 1.9275814160560185e-50
+			const isFirefox = getFirefox()
 			if (!isFirefox) {
 				return false
 			}
@@ -372,12 +374,17 @@
 			}
 		}
 		const getIncompatibleProxyTypeErrorLie = apiFunction => {
-			const isFirefox = 3.141592653589793 ** -100 == 1.9275814160560185e-50
+			const isFirefox = getFirefox()
 			return (
-				tryIncompatibleProxy(isFirefox, () => apiFunction.toString.arguments) ||
-				tryIncompatibleProxy(isFirefox, () => apiFunction.toString.caller) ||
 				tryIncompatibleProxy(isFirefox, () => apiFunction.arguments) ||
 				tryIncompatibleProxy(isFirefox, () => apiFunction.arguments)
+			)
+		}
+		const getToStringIncompatibleProxyTypeErrorLie = apiFunction => {
+			const isFirefox = getFirefox()
+			return (
+				tryIncompatibleProxy(isFirefox, () => apiFunction.toString.arguments) ||
+				tryIncompatibleProxy(isFirefox, () => apiFunction.toString.caller)
 			)
 		}
 
@@ -408,7 +415,8 @@
 				[`n: own keys names should only contain "name" and "length"`]: getOwnKeysLie(apiFunction),
 				[`o: calling toString() on an object created from the function should throw a TypeError`]: getNewObjectToStringTypeErrorLie(apiFunction),
 				[`p: arguments or caller should not throw 'incompatible Proxy' TypeError`]: getIncompatibleProxyTypeErrorLie(apiFunction),
-				[`q: setting prototype to itself should not throw 'Uncaught InternalError: too much recursion'`]: getTooMuchRecursionLie(apiFunction)
+				[`q: arguments or caller on toString should not throw 'incompatible Proxy' TypeError`]: getToStringIncompatibleProxyTypeErrorLie(apiFunction),
+				[`r: setting prototype to itself should not throw 'Uncaught InternalError: too much recursion'`]: getTooMuchRecursionLie(apiFunction)
 			}
 			const lieTypes = Object.keys(lies).filter(key => !!lies[key])
 			return {

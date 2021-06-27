@@ -541,6 +541,7 @@ export const getTimezone = async imports => {
 
 	try {
 		const start = performance.now()
+		
 		let lied = (
 			lieProps['Date.getTimezoneOffset'] ||
 			lieProps['Intl.DateTimeFormat.resolvedOptions'] ||

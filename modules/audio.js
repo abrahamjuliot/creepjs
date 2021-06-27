@@ -26,7 +26,6 @@ export const getOfflineAudioContext = async imports => {
 		}
 	} = imports
 
-
 	try {
 		await new Promise(setTimeout).catch(e => {})
 		const start = performance.now()

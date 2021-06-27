@@ -141,6 +141,8 @@ const chromium = (
 	Math.pow(Math.PI, -100) == 1.9275814160560204e-50
 )
 
+const getFirefox = () => 3.141592653589793 ** -100 == 1.9275814160560185e-50
+
 const getPrototypeLies = iframeWindow => {
     // Lie Tests
 
@@ -263,7 +265,7 @@ const getPrototypeLies = iframeWindow => {
 		Object.setPrototypeOf(x, x)+''
 	*/
     const getTooMuchRecursionLie = apiFunction => {
-		const isFirefox = 3.141592653589793 ** -100 == 1.9275814160560185e-50
+		const isFirefox = getFirefox()
 		if (!isFirefox) {
 			return false
 		}
@@ -415,12 +417,17 @@ const getPrototypeLies = iframeWindow => {
         }
 	}
     const getIncompatibleProxyTypeErrorLie = apiFunction => {
-		const isFirefox = 3.141592653589793 ** -100 == 1.9275814160560185e-50
+		const isFirefox = getFirefox()
 		return (
-			tryIncompatibleProxy(isFirefox, () => apiFunction.toString.arguments) ||
-			tryIncompatibleProxy(isFirefox, () => apiFunction.toString.caller) ||
 			tryIncompatibleProxy(isFirefox, () => apiFunction.arguments) ||
 			tryIncompatibleProxy(isFirefox, () => apiFunction.arguments)
+		)
+    }
+	const getToStringIncompatibleProxyTypeErrorLie = apiFunction => {
+		const isFirefox = getFirefox()
+		return (
+			tryIncompatibleProxy(isFirefox, () => apiFunction.toString.arguments) ||
+			tryIncompatibleProxy(isFirefox, () => apiFunction.toString.caller)
 		)
     }
 
@@ -451,6 +458,7 @@ const getPrototypeLies = iframeWindow => {
             [`failed own keys names`]: getOwnKeysLie(apiFunction),
 			[`failed object toString error`]: getNewObjectToStringTypeErrorLie(apiFunction),
 			[`failed at incompatible proxy error`]: getIncompatibleProxyTypeErrorLie(apiFunction),
+			[`failed at toString incompatible proxy error`]: getToStringIncompatibleProxyTypeErrorLie(apiFunction),
 			[`failed at too much recursion error`]: getTooMuchRecursionLie(apiFunction)
         }
         const lieTypes = Object.keys(lies).filter(key => !!lies[key])
@@ -926,6 +934,9 @@ const getPluginLies = (plugins, mimeTypes) => {
 	}
 }
 
+// disregard Function.prototype.toString lies when determining if the API can be trusted
+const getNonFunctionToStringLies = x => !x ? x : x.filter(x => !/object toString|toString incompatible proxy/.test(x)).length
+
 const getLies = imports => {
 
 	const {
@@ -964,4 +975,4 @@ const liesHTML = ({ fp, hashSlice, modal }) => {
 	</div>`
 }
 
-export { documentLie, phantomDarkness, parentPhantom, lieProps, prototypeLies, lieRecords, getLies, dragonFire, parentDragon, dragonOfDeath, getPluginLies, liesHTML }
+export { documentLie, phantomDarkness, parentPhantom, lieProps, prototypeLies, lieRecords, getLies, dragonFire, parentDragon, dragonOfDeath, getPluginLies, getNonFunctionToStringLies, liesHTML }

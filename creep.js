@@ -4,7 +4,7 @@ import { hashMini, instanceId, hashify } from './modules/crypto.js'
 
 import { captureError, attempt, caniuse, timer, errorsCaptured, getCapturedErrors, errorsHTML } from './modules/captureErrors.js'
 import { sendToTrash, proxyBehavior, gibberish, trustInteger, trashBin, getTrash, trashHTML } from './modules/trash.js'
-import { documentLie, phantomDarkness, parentPhantom, lieProps, prototypeLies, lieRecords, getLies, dragonFire, parentDragon, dragonOfDeath, getPluginLies, liesHTML } from './modules/lies.js'
+import { documentLie, phantomDarkness, parentPhantom, lieProps, prototypeLies, lieRecords, getLies, dragonFire, parentDragon, dragonOfDeath, getPluginLies, getNonFunctionToStringLies, liesHTML } from './modules/lies.js'
 
 import { getOfflineAudioContext, audioHTML, getKnownAudio } from './modules/audio.js'
 import { getCanvas2d, canvasHTML } from './modules/canvas2d.js'
@@ -61,7 +61,14 @@ const imports = {
 		trustInteger,
 		// lies
 		documentLie,
-		lieProps: lieProps.getProps(),
+		// filter out lies on Function.prototype.toString (this is a false positive on native APIs void of tampering)
+		lieProps: (() => {
+			const props = lieProps.getProps()
+			return Object.keys(props).reduce((acc, key) => {
+				acc[key] = getNonFunctionToStringLies(props[key])
+				return acc
+			}, {})
+		})(),
 		prototypeLies,
 		// collections
 		errorsCaptured,
@@ -605,7 +612,7 @@ const imports = {
 				<div>canvas 2d: ${note.blocked}</div>
 				<div>webgl vendor: ${note.blocked}</div>
 			</div>
-			<div class="col-six">
+			<div class="col-six undefined">
 				<div>device:</div>
 				<div class="block-text">${note.blocked}</div>
 				<div>userAgent:</div>
@@ -658,11 +665,11 @@ const imports = {
 				<div>params (0): ${note.blocked}</div>
 				<div>exts (0): ${note.blocked}</div>
 			</div>
-			<div class="col-four">
+			<div class="col-four undefined">
 				<div>unmasked renderer:</div>
 				<div class="block-text">${note.blocked}</div>
 			</div>
-			<div class="col-four"><image /></div>` :
+			<div class="col-four undefined"><image /></div>` :
 		(() => {
 			const { canvasWebgl: data } = fp
 			const id = 'creep-canvas-webgl'

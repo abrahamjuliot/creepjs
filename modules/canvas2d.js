@@ -76,7 +76,6 @@ export const getCanvas2d = async imports => {
 
 	const {
 		require: {
-			hashMini,
 			captureError,
 			lieProps,
 			documentLie,
@@ -162,7 +161,18 @@ export const canvasHTML = ({ fp, note, hashSlice }) => {
 				background: #00ff584a;
 			}
 			.rgba-blue {
-				background: #0000ff4a;
+				background: #009fff5e;
+			}
+			@media (prefers-color-scheme: dark) {
+				.rgba-red {
+					background: #e19fa2;
+				}
+				.rgba-green {
+					background: #98dfb1;
+				}
+				.rgba-blue {
+					background: #67b7ff;
+				}
 			}
 		</style>
 		<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
