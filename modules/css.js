@@ -277,10 +277,7 @@ export const getCSSMedia = async imports => {
 		}
 
 		// get screen query
-		let screenQuery = getScreenMatchMedia(win)
-		if (!screenQuery.width || !screenQuery.height) {
-			screenQuery = getScreenMedia(body)
-		}
+		let screenQuery = getScreenMedia(body)
 
 		logTestResult({ start, test: 'css media', passed: true })
 		return { importCSS, mediaCSS, matchMediaCSS, screenQuery }

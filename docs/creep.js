@@ -2789,45 +2789,6 @@
 		return { width: +widthMatched, height: +heightMatched }
 	};
 
-	const getScreenMatchMedia = win => {
-		let widthMatched, heightMatched;
-		for (let i = 0; i < 10; i++) {
-			let resWidth, resHeight;
-			if (!widthMatched) {
-				let rangeStart = i * 1000;
-				const rangeLen = 1000;
-				for (let i = 0; i < rangeLen; i++) {
-					if (win.matchMedia(`(device-width:${rangeStart}px)`).matches) {
-						resWidth = rangeStart;
-						break
-					}
-					rangeStart++;
-				}
-				if (resWidth) {
-					widthMatched = resWidth;
-				}
-			}
-			if (!heightMatched) {
-				let rangeStart = i * 1000;
-				const rangeLen = 1000;
-				for (let i = 0; i < rangeLen; i++) {
-					if (win.matchMedia(`(device-height:${rangeStart}px)`).matches) {
-						resHeight = rangeStart;
-						break
-					}
-					rangeStart++;
-				}
-				if (resHeight) {
-					heightMatched = resHeight;
-				}
-			}
-			if (widthMatched && heightMatched) {
-				break
-			}
-		}
-		return { width: widthMatched, height: heightMatched }
-	};
-
 	const getCSSDataURI = x => `data:text/css,body {${x}}`;
 
 	const getCSSMedia = async imports => {
@@ -3024,10 +2985,7 @@
 			}
 
 			// get screen query
-			let screenQuery = getScreenMatchMedia(win);
-			if (!screenQuery.width || !screenQuery.height) {
-				screenQuery = getScreenMedia(body);
-			}
+			let screenQuery = getScreenMedia(body);
 
 			logTestResult({ start, test: 'css media', passed: true });
 			return { importCSS, mediaCSS, matchMediaCSS, screenQuery }
