@@ -719,27 +719,7 @@ const imports = {
 		})()}
 		</div>
 		<div class="flex-grid">
-		${!fp.canvas2d ?
-			`<div class="col-six undefined">
-				<strong>Canvas 2d</strong> <span>${note.blocked}</span>
-				<div>0% rgba noise</div>
-			</div>` :
-		(() => {
-			const { canvas2d: { lied, mods, $hash } } = fp
-			const { pixels, rgba } = mods || {}
-			const modPercent = pixels ? Math.round((pixels/400)*100) : 0
-			return `
-			<div class="col-six${lied ? ' rejected' : ''}">
-				<style>
-					.rgba-noise-rating {
-						background: linear-gradient(90deg, var(${modPercent < 50 ? '--grey-glass' : '--error'}) ${modPercent}%, #fff0 ${modPercent}%, #fff0 100%);
-					}
-				</style>
-				<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-				<div class="rgba-noise-rating">${modPercent}% rgba noise${rgba ? ` (${rgba})` : ''}</div>
-			</div>
-			`
-		})()}
+		${canvasHTML(templateImports)}
 		${fontsHTML(templateImports)}
 		</div>
 		<div class="flex-grid">

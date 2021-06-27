@@ -125,6 +125,48 @@ export const getCanvas2d = async imports => {
 	}
 }
 
-export const canvasHTML = () => {
-	
+export const canvasHTML = ({ fp, note, hashSlice }) => {
+	if (!fp.canvas2d) {
+		return `
+		<div class="col-six undefined">
+			<strong>Canvas 2d</strong> <span>${note.blocked}</span>
+			<div>0% rgba noise</div>
+		</div>`
+	}
+	const { canvas2d: { lied, mods, $hash } } = fp
+	const { pixels, rgba } = mods || {}
+	const modPercent = pixels ? Math.round((pixels/400)*100) : 0
+
+	// rgba: "b, g, gb, r, rb, rg, rgb"
+	const rgbaHTML= rgba.split(', ').map(set => set.split('').map(char => {
+		const css = {
+			r: 'red',
+			g: 'green',
+			b: 'blue',
+		}
+		return `<span class="rgba rgba-${css[char]}"></span>`
+	}).join('')).join(' ')
+	return `
+	<div class="col-six${lied ? ' rejected' : ''}">
+		<style>
+			.rgba {
+				width: 8px;
+				height: 8px;
+				display: inline-block;
+				border-radius: 50%;
+			}
+			.rgba-red {
+				background: #ff000c4a;
+			}
+			.rgba-green {
+				background: #00ff584a;
+			}
+			.rgba-blue {
+				background: #0000ff4a;
+			}
+		</style>
+		<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+		<div>${modPercent}% rgba noise${rgba ? `: ${rgbaHTML}` : ''}</div>
+	</div>
+	`
 }
