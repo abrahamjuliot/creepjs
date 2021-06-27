@@ -740,26 +740,7 @@ const imports = {
 			</div>
 			`
 		})()}
-		${!fp.fonts ?
-			`<div class="col-six undefined">
-				<strong>Fonts</strong>
-				<div>results (0): ${note.blocked}</div>
-			</div>` :
-		(() => {
-			const {
-				fonts: {
-					$hash,
-					fonts,
-					lied
-				}
-			} = fp
-			return `
-			<div class="col-six${lied ? ' rejected' : ''}">
-				<strong>Fonts</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-				<div>results (${fonts ? count(fonts) : '0'}): ${fonts.length ? modal('creep-fonts', fonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>')) : note.blocked}</div>
-			</div>
-			`
-		})()}
+		${fontsHTML(templateImports)}
 		</div>
 		<div class="flex-grid">
 		${audioHTML(templateImports)}

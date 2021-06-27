@@ -467,7 +467,7 @@ input[type="radio"] {
 }
 
 .screen-container {
-	height: 200px;
+	height: 216px;
 	display: flex;
     justify-content: center;
     align-items: center;
