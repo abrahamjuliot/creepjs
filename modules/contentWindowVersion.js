@@ -28,7 +28,7 @@ export const getWindowFeatures = async imports => {
 export const windowFeaturesHTML = ({ fp, modal, note, hashSlice, count }) => {
 	if (!fp.windowFeatures) {
 		return `
-		<div class="col-six">
+		<div class="col-six undefined">
 			<strong>Window</strong>
 			<div>keys (0): ${note.blocked}</div>
 			<div>0% of samples</div>

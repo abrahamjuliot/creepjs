@@ -126,7 +126,8 @@ export const getSVG = async imports => {
 
 export const svgHTML = ({ fp, note, hashSlice }) => {
 	if (!fp.svg) {
-		return `<div class="col-six">
+		return `
+		<div class="col-six undefined">
 			<strong>SVG</strong>
 			<div>bBox: ${note.blocked}</div>
 			<div>pointAt: ${note.blocked}</div>
@@ -150,7 +151,7 @@ export const svgHTML = ({ fp, note, hashSlice }) => {
 	} = fp
 
 	return `
-	<div class="col-six">
+	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>SVG</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div class="help" title="SVGGraphicsElement.getBBox()">bBox: ${bBox || note.blocked}</div>
 		<div class="help" title="SVGGeometryElement.getPointAtLength()">pointAt: ${pointAtLength || note.blocked}</div>

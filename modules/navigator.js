@@ -397,7 +397,7 @@ export const getNavigator = async (imports, workerScope) => {
 export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) => {
 	if (!fp.navigator) {
 		return `
-		<div class="col-six">
+		<div class="col-six undefined">
 			<strong>Navigator</strong>
 			<div>deviceMemory: ${note.blocked}</div>
 			<div>doNotTrack: ${note.blocked}</div>
@@ -459,7 +459,7 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 		['']: !0
 	}
 	return `
-	<div class="col-six">
+	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>Navigator</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div>deviceMemory: ${!blocked[deviceMemory] ? deviceMemory : note.blocked}</div>
 		<div>doNotTrack: ${''+doNotTrack}</div>
@@ -521,7 +521,7 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 			!bluetoothAvailability ? 'unavailable' : 'available'
 		}</div>
 	</div>
-	<div class="col-six">
+	<div class="col-six${lied ? ' rejected' : ''}">
 		<div>device:</div>
 		<div class="block-text">
 			<div>${!blocked[device] ? device : note.blocked}</div>

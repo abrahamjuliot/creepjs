@@ -593,7 +593,7 @@ const imports = {
 				fp.workerScope && fp.workerScope.type ? fp.workerScope.type : ''
 			} worker</span></div>
 		${!fp.workerScope ?
-			`<div class="col-six">
+			`<div class="col-six undefined">
 				<strong>Worker</strong>
 				<div>timezone offset: ${note.blocked}</div>
 				<div>location: ${note.blocked}</div>
@@ -651,7 +651,7 @@ const imports = {
 		</div>
 		<div class="flex-grid">
 		${!fp.canvasWebgl ?
-			`<div class="col-four">
+			`<div class="col-four undefined">
 				<strong>WebGL</strong>
 				<div>images: ${note.blocked}</div>
 				<div>pixels: ${note.blocked}</div>
@@ -680,7 +680,7 @@ const imports = {
 			
 			const paramKeys = parameters ? Object.keys(parameters).sort() : []
 			return `
-			<div class="col-four">
+			<div class="col-four${lied ? ' rejected' : ''}">
 				<strong>WebGL</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 				<div>images:${
 					!dataURI ? ' '+note.blocked : `<span class="sub-hash">${hashMini(dataURI)}</span>${!dataURI2 || dataURI == dataURI2 ? '' : `<span class="sub-hash">${hashMini(dataURI2)}</span>`}`
@@ -705,7 +705,7 @@ const imports = {
 					)
 				}</div>
 			</div>
-			<div class="col-four">
+			<div class="col-four${lied ? ' rejected' : ''}">
 				<div>unmasked renderer:</div>
 				<div class="block-text">
 					<div>${
@@ -714,13 +714,13 @@ const imports = {
 					}</div>	
 				</div>
 			</div>
-			<div class="col-four"><image ${!dataURI ? '' : `width="100%" src="${dataURI}"`}/></div>
+			<div class="col-four${lied ? ' rejected' : ''}"><image ${!dataURI ? '' : `width="100%" src="${dataURI}"`}/></div>
 			`
 		})()}
 		</div>
 		<div class="flex-grid">
 		${!fp.canvas2d ?
-			`<div class="col-six">
+			`<div class="col-six undefined">
 				<strong>Canvas 2d</strong> <span>${note.blocked}</span>
 				<div>0% rgba noise</div>
 			</div>` :
@@ -729,7 +729,7 @@ const imports = {
 			const { pixels, rgba } = mods || {}
 			const modPercent = pixels ? Math.round((pixels/400)*100) : 0
 			return `
-			<div class="col-six">
+			<div class="col-six${lied ? ' rejected' : ''}">
 				<style>
 					.rgba-noise-rating {
 						background: linear-gradient(90deg, var(${modPercent < 50 ? '--grey-glass' : '--error'}) ${modPercent}%, #fff0 ${modPercent}%, #fff0 100%);
@@ -741,7 +741,7 @@ const imports = {
 			`
 		})()}
 		${!fp.fonts ?
-			`<div class="col-six">
+			`<div class="col-six undefined">
 				<strong>Fonts</strong>
 				<div>results (0): ${note.blocked}</div>
 			</div>` :
@@ -754,7 +754,7 @@ const imports = {
 				}
 			} = fp
 			return `
-			<div class="col-six">
+			<div class="col-six${lied ? ' rejected' : ''}">
 				<strong>Fonts</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 				<div>results (${fonts ? count(fonts) : '0'}): ${fonts.length ? modal('creep-fonts', fonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>')) : note.blocked}</div>
 			</div>
@@ -764,7 +764,7 @@ const imports = {
 		<div class="flex-grid">
 		${audioHTML(templateImports)}
 		${!fp.voices ?
-			`<div class="col-four">
+			`<div class="col-four undefined">
 				<strong>Speech</strong>
 				<div>voices (0): ${note.blocked}</div>
 				<div>default: ${note.blocked}</div>
@@ -797,7 +797,7 @@ const imports = {
 			`
 		})()}
 		${!fp.media ?
-			`<div class="col-four">
+			`<div class="col-four undefined">
 				<strong>Media</strong>
 				<div>devices (0): ${note.blocked}</div>
 				<div>constraints: ${note.blocked}</div>
@@ -1187,11 +1187,6 @@ const imports = {
 			})
 
 			const rejectSamplePatch = (el, html) => patch(el, html`
-				<style>
-					.rejected {
-						background: #ca656e14 !important;
-					}
-				</style>
 				<div class="flex-grid rejected">
 					<div class="col-eight">
 						<strong>Sample Rejected</strong>

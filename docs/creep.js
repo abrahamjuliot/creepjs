@@ -1724,7 +1724,7 @@
 
 	const audioHTML = ({ fp, note, modal, hashMini, hashSlice }) => {
 		if (!fp.offlineAudioContext) {
-			return `<div class="col-four">
+			return `<div class="col-four undefined">
 			<strong>Audio</strong>
 			<div>sum: ${note.blocked}</div>
 			<div>gain: ${note.blocked}</div>
@@ -1756,7 +1756,7 @@
 		const style = (a, b) => b.map((char, i) => char != a[i] ? `<span class="bold-fail">${char}</span>` : char).join('');
 
 		return `
-	<div class="col-four">
+	<div class="col-four${lied ? ' rejected' : ''}">
 		<style>
 			.bold-fail {
 				color: #ca656e;
@@ -2562,7 +2562,7 @@
 	const cssHTML = ({ fp, modal, note, hashMini, hashSlice, count }, systemHash) => {
 		if (!fp.css) {
 			return `
-		<div class="col-six">
+		<div class="col-six undefined">
 			<strong>Computed Style</strong>
 			<div>keys (0): ${note.blocked}</div>
 			<div>system styles: ${note.blocked}</div>
@@ -2998,7 +2998,7 @@
 	const cssMediaHTML = ({ fp, modal, note, hashMini, hashSlice }) => {
 		if (!fp.css) {
 			return `
-		<div class="col-six">
+		<div class="col-six undefined">
 			<strong>CSS Media Queries</strong><
 			<div>@media: ${note.blocked}</div>
 			<div>@import: ${note.blocked}</div>
@@ -3103,7 +3103,7 @@
 	const consoleErrorsHTML = ({ fp, modal, note, hashSlice }) => {
 		if (!fp.consoleErrors) {
 			return `
-		<div class="col-six">
+		<div class="col-six undefined">
 			<strong>Error</strong>
 			<div>0% of samples</div>
 			<div>0% of class</div>
@@ -3211,7 +3211,7 @@
 	const windowFeaturesHTML = ({ fp, modal, note, hashSlice, count }) => {
 		if (!fp.windowFeatures) {
 			return `
-		<div class="col-six">
+		<div class="col-six undefined">
 			<strong>Window</strong>
 			<div>keys (0): ${note.blocked}</div>
 			<div>0% of samples</div>
@@ -3674,7 +3674,8 @@
 
 	const htmlElementVersionHTML = ({ fp, modal, note, hashSlice, count }) => {
 		if (!fp.htmlElementVersion) {
-			return `<div class="col-six">
+			return `
+		<div class="col-six undefined">
 			<strong>HTMLElement</strong>
 			<div>keys (0): ${note.blocked}</div>
 			<div>0% of samples</div>
@@ -3976,7 +3977,7 @@
 	const mathsHTML = ({ fp, modal, note, hashSlice }) => {
 		if (!fp.maths) {
 			return `
-		<div class="col-six">
+		<div class="col-six undefined">
 			<strong>Math</strong>
 			<div>0% of samples</div>
 			<div>0% of class</div>
@@ -4093,7 +4094,7 @@
 		});
 
 		return `
-	<div class="col-six">
+	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>Math</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div class="math-metric-rating help" title="% of math samples">${uniqueMetric}% of samples</div>
 		<div class="math-class-rating help" title="% of ${engine} class">${uniqueEngine}% of class</div>
@@ -4587,7 +4588,7 @@
 	const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) => {
 		if (!fp.navigator) {
 			return `
-		<div class="col-six">
+		<div class="col-six undefined">
 			<strong>Navigator</strong>
 			<div>deviceMemory: ${note.blocked}</div>
 			<div>doNotTrack: ${note.blocked}</div>
@@ -4649,7 +4650,7 @@
 			['']: !0
 		};
 		return `
-	<div class="col-six">
+	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>Navigator</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div>deviceMemory: ${!blocked[deviceMemory] ? deviceMemory : note.blocked}</div>
 		<div>doNotTrack: ${''+doNotTrack}</div>
@@ -4711,7 +4712,7 @@
 			!bluetoothAvailability ? 'unavailable' : 'available'
 		}</div>
 	</div>
-	<div class="col-six">
+	<div class="col-six${lied ? ' rejected' : ''}">
 		<div>device:</div>
 		<div class="block-text">
 			<div>${!blocked[device] ? device : note.blocked}</div>
@@ -5117,7 +5118,8 @@
 
 	const clientRectsHTML = ({ fp, note, modal, hashMini, hashSlice }) => {
 		if (!fp.clientRects) {
-			return `<div class="col-six">
+			return `
+		<div class="col-six undefined">
 			<strong>DOMRect</strong>
 			<div>element: ${note.blocked}</div>
 			<div>range: ${note.blocked}</div>
@@ -5146,7 +5148,7 @@
 		};
 
 		return `
-	<div class="col-six">
+	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>DOMRect</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div class="help" title="Element.getClientRects()\nElement.getBoundingClientRect()">element:${
 			[...new Set([
@@ -5315,7 +5317,8 @@
 
 	const screenHTML = ({ fp, note, hashSlice }) => {
 		if (!fp.screen) {
-			return `<div class="col-six">
+			return `
+		<div class="col-six undefined">
 			<strong>Screen</strong>
 			<div>device: ${note.blocked}</div>
 			<div>width: ${note.blocked}</div>
@@ -5355,7 +5358,7 @@
 		};
 		const { deviceHeight, deviceWidth } = getDeviceDimensions(width, height);
 		return `
-	<div class="col-six">
+	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>Screen</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div>device: ${device ? device : note.unknown}</div>
 		<div>width: ${width ? width : note.blocked}</div>
@@ -5367,7 +5370,7 @@
 		<div>colorDepth: ${colorDepth ? colorDepth : note.blocked}</div>
 		<div>pixelDepth: ${pixelDepth ? pixelDepth : note.blocked}</div>
 	</div>
-	<div class="col-six screen-container">
+	<div class="col-six screen-container${lied ? ' rejected' : ''}">
 		<style>.screen-frame { width:${deviceWidth}px;height:${deviceHeight}px; }</style>
 		<div class="screen-frame">
 			<div class="screen-glass"></div>
@@ -5952,7 +5955,7 @@
 	const timezoneHTML = ({ fp, note, hashSlice }) => {
 		if (!fp.timezone) {
 			return `
-		<div class="col-six">
+		<div class="col-six undefined">
 			<strong>Timezone</strong>
 			<div>zone: ${note.blocked}</div>
 			<div>offset: ${note.blocked}</div>
@@ -5975,7 +5978,7 @@
 			}
 		} = fp;
 		return `
-	<div class="col-six">
+	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>Timezone</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div>zone: ${zone}</div>
 		<div>offset: ${''+offset}</div>
@@ -6190,7 +6193,7 @@
 	const webrtcHTML = ({ fp, hashSlice, hashMini, note, modal }) => {
 		if (!fp.webRTC) {
 			return `
-		<div class="col-six">
+		<div class="col-six undefined">
 			<strong>WebRTC</strong>
 			<div>ip address: ${note.blocked}</div>
 			<div>ip candidate: ${note.blocked}</div>
@@ -6554,7 +6557,8 @@
 
 	const svgHTML = ({ fp, note, hashSlice }) => {
 		if (!fp.svg) {
-			return `<div class="col-six">
+			return `
+		<div class="col-six undefined">
 			<strong>SVG</strong>
 			<div>bBox: ${note.blocked}</div>
 			<div>pointAt: ${note.blocked}</div>
@@ -6578,7 +6582,7 @@
 		} = fp;
 
 		return `
-	<div class="col-six">
+	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>SVG</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div class="help" title="SVGGraphicsElement.getBBox()">bBox: ${bBox || note.blocked}</div>
 		<div class="help" title="SVGGeometryElement.getPointAtLength()">pointAt: ${pointAtLength || note.blocked}</div>
@@ -6965,7 +6969,7 @@
 	const resistanceHTML = ({ fp, modal, note, hashMini, hashSlice }) => {
 		if (!fp.resistance) {
 			return `
-		<div class="col-six">
+		<div class="col-six undefined">
 			<strong>Resistance</strong>
 			<div>privacy: ${note.blocked}</div>
 			<div>security: ${note.blocked}</div>
@@ -7599,7 +7603,7 @@
 				fp.workerScope && fp.workerScope.type ? fp.workerScope.type : ''
 			} worker</span></div>
 		${!fp.workerScope ?
-			`<div class="col-six">
+			`<div class="col-six undefined">
 				<strong>Worker</strong>
 				<div>timezone offset: ${note.blocked}</div>
 				<div>location: ${note.blocked}</div>
@@ -7657,7 +7661,7 @@
 		</div>
 		<div class="flex-grid">
 		${!fp.canvasWebgl ?
-			`<div class="col-four">
+			`<div class="col-four undefined">
 				<strong>WebGL</strong>
 				<div>images: ${note.blocked}</div>
 				<div>pixels: ${note.blocked}</div>
@@ -7686,7 +7690,7 @@
 			
 			const paramKeys = parameters ? Object.keys(parameters).sort() : [];
 			return `
-			<div class="col-four">
+			<div class="col-four${lied ? ' rejected' : ''}">
 				<strong>WebGL</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 				<div>images:${
 					!dataURI ? ' '+note.blocked : `<span class="sub-hash">${hashMini(dataURI)}</span>${!dataURI2 || dataURI == dataURI2 ? '' : `<span class="sub-hash">${hashMini(dataURI2)}</span>`}`
@@ -7711,7 +7715,7 @@
 					)
 				}</div>
 			</div>
-			<div class="col-four">
+			<div class="col-four${lied ? ' rejected' : ''}">
 				<div>unmasked renderer:</div>
 				<div class="block-text">
 					<div>${
@@ -7720,13 +7724,13 @@
 					}</div>	
 				</div>
 			</div>
-			<div class="col-four"><image ${!dataURI ? '' : `width="100%" src="${dataURI}"`}/></div>
+			<div class="col-four${lied ? ' rejected' : ''}"><image ${!dataURI ? '' : `width="100%" src="${dataURI}"`}/></div>
 			`
 		})()}
 		</div>
 		<div class="flex-grid">
 		${!fp.canvas2d ?
-			`<div class="col-six">
+			`<div class="col-six undefined">
 				<strong>Canvas 2d</strong> <span>${note.blocked}</span>
 				<div>0% rgba noise</div>
 			</div>` :
@@ -7735,7 +7739,7 @@
 			const { pixels, rgba } = mods || {};
 			const modPercent = pixels ? Math.round((pixels/400)*100) : 0;
 			return `
-			<div class="col-six">
+			<div class="col-six${lied ? ' rejected' : ''}">
 				<style>
 					.rgba-noise-rating {
 						background: linear-gradient(90deg, var(${modPercent < 50 ? '--grey-glass' : '--error'}) ${modPercent}%, #fff0 ${modPercent}%, #fff0 100%);
@@ -7747,7 +7751,7 @@
 			`
 		})()}
 		${!fp.fonts ?
-			`<div class="col-six">
+			`<div class="col-six undefined">
 				<strong>Fonts</strong>
 				<div>results (0): ${note.blocked}</div>
 			</div>` :
@@ -7760,7 +7764,7 @@
 				}
 			} = fp;
 			return `
-			<div class="col-six">
+			<div class="col-six${lied ? ' rejected' : ''}">
 				<strong>Fonts</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 				<div>results (${fonts ? count(fonts) : '0'}): ${fonts.length ? modal('creep-fonts', fonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>')) : note.blocked}</div>
 			</div>
@@ -7770,7 +7774,7 @@
 		<div class="flex-grid">
 		${audioHTML(templateImports)}
 		${!fp.voices ?
-			`<div class="col-four">
+			`<div class="col-four undefined">
 				<strong>Speech</strong>
 				<div>voices (0): ${note.blocked}</div>
 				<div>default: ${note.blocked}</div>
@@ -7803,7 +7807,7 @@
 			`
 		})()}
 		${!fp.media ?
-			`<div class="col-four">
+			`<div class="col-four undefined">
 				<strong>Media</strong>
 				<div>devices (0): ${note.blocked}</div>
 				<div>constraints: ${note.blocked}</div>
@@ -8189,11 +8193,6 @@
 				});
 
 				const rejectSamplePatch = (el, html) => patch(el, html`
-				<style>
-					.rejected {
-						background: #ca656e14 !important;
-					}
-				</style>
 				<div class="flex-grid rejected">
 					<div class="col-eight">
 						<strong>Sample Rejected</strong>

@@ -576,7 +576,7 @@ export const getTimezone = async imports => {
 export const timezoneHTML = ({ fp, note, hashSlice }) => {
 	if (!fp.timezone) {
 		return `
-		<div class="col-six">
+		<div class="col-six undefined">
 			<strong>Timezone</strong>
 			<div>zone: ${note.blocked}</div>
 			<div>offset: ${note.blocked}</div>
@@ -599,7 +599,7 @@ export const timezoneHTML = ({ fp, note, hashSlice }) => {
 		}
 	} = fp
 	return `
-	<div class="col-six">
+	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>Timezone</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div>zone: ${zone}</div>
 		<div>offset: ${''+offset}</div>

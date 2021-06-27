@@ -297,7 +297,7 @@ export const getCSSMedia = async imports => {
 export const cssMediaHTML = ({ fp, modal, note, hashMini, hashSlice }) => {
 	if (!fp.css) {
 		return `
-		<div class="col-six">
+		<div class="col-six undefined">
 			<strong>CSS Media Queries</strong><
 			<div>@media: ${note.blocked}</div>
 			<div>@import: ${note.blocked}</div>

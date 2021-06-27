@@ -47,7 +47,7 @@ export const getConsoleErrors = async imports => {
 export const consoleErrorsHTML = ({ fp, modal, note, hashSlice }) => {
 	if (!fp.consoleErrors) {
 		return `
-		<div class="col-six">
+		<div class="col-six undefined">
 			<strong>Error</strong>
 			<div>0% of samples</div>
 			<div>0% of class</div>

@@ -140,7 +140,8 @@ export const getScreen = async imports => {
 
 export const screenHTML = ({ fp, note, hashSlice }) => {
 	if (!fp.screen) {
-		return `<div class="col-six">
+		return `
+		<div class="col-six undefined">
 			<strong>Screen</strong>
 			<div>device: ${note.blocked}</div>
 			<div>width: ${note.blocked}</div>
@@ -180,7 +181,7 @@ export const screenHTML = ({ fp, note, hashSlice }) => {
 	}
 	const { deviceHeight, deviceWidth } = getDeviceDimensions(width, height)
 	return `
-	<div class="col-six">
+	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>Screen</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div>device: ${device ? device : note.unknown}</div>
 		<div>width: ${width ? width : note.blocked}</div>
@@ -192,7 +193,7 @@ export const screenHTML = ({ fp, note, hashSlice }) => {
 		<div>colorDepth: ${colorDepth ? colorDepth : note.blocked}</div>
 		<div>pixelDepth: ${pixelDepth ? pixelDepth : note.blocked}</div>
 	</div>
-	<div class="col-six screen-container">
+	<div class="col-six screen-container${lied ? ' rejected' : ''}">
 		<style>.screen-frame { width:${deviceWidth}px;height:${deviceHeight}px; }</style>
 		<div class="screen-frame">
 			<div class="screen-glass"></div>

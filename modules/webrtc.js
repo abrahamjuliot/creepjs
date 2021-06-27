@@ -145,7 +145,7 @@ export const getWebRTCData = imports => {
 export const webrtcHTML = ({ fp, hashSlice, hashMini, note, modal }) => {
 	if (!fp.webRTC) {
 		return `
-		<div class="col-six">
+		<div class="col-six undefined">
 			<strong>WebRTC</strong>
 			<div>ip address: ${note.blocked}</div>
 			<div>ip candidate: ${note.blocked}</div>

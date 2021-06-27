@@ -373,7 +373,7 @@ export const getResistance = async imports => {
 export const resistanceHTML = ({ fp, modal, note, hashMini, hashSlice }) => {
 	if (!fp.resistance) {
 		return `
-		<div class="col-six">
+		<div class="col-six undefined">
 			<strong>Resistance</strong>
 			<div>privacy: ${note.blocked}</div>
 			<div>security: ${note.blocked}</div>

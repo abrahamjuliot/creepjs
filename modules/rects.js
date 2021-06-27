@@ -390,7 +390,8 @@ export const getClientRects = async imports => {
 
 export const clientRectsHTML = ({ fp, note, modal, hashMini, hashSlice }) => {
 	if (!fp.clientRects) {
-		return `<div class="col-six">
+		return `
+		<div class="col-six undefined">
 			<strong>DOMRect</strong>
 			<div>element: ${note.blocked}</div>
 			<div>range: ${note.blocked}</div>
@@ -419,7 +420,7 @@ export const clientRectsHTML = ({ fp, note, modal, hashMini, hashSlice }) => {
 	}
 
 	return `
-	<div class="col-six">
+	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>DOMRect</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div class="help" title="Element.getClientRects()\nElement.getBoundingClientRect()">element:${
 			[...new Set([

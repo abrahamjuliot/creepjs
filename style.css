@@ -171,7 +171,7 @@ visitor {
 	position: relative;
 }
 
-#fingerprint-data  .block-text {
+#fingerprint-data .block-text {
     display: flex;
     justify-content: center;
 	font-size: 12px !important;
@@ -179,7 +179,6 @@ visitor {
     text-align: center;
     align-items: center;
     min-height: 85px;
-	background: #fff;
     border-radius: 3px;
     margin: 5px auto;
 	border: 1px solid #f9f9f9;
@@ -286,6 +285,7 @@ visitor {
 .scale-down {
 	animation: scale-down .3s .6s cubic-bezier(0.77, 0, 0.175, 1.5) both;
 }
+
 @keyframes fade-in {
 	0%, 30% {
 		transform: translateX(-5px);
@@ -609,6 +609,13 @@ input[type="radio"] {
 	border: 1px solid #eee;
 	height: 11px;
     margin: 5px 0;
+}
+
+.rejected {
+	background: #ca656e14 !important;
+}
+.undefined {
+	background: #9e929314 !important;
 }
 
 /* prefers dark */

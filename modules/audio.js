@@ -243,7 +243,7 @@ export const getOfflineAudioContext = async imports => {
 
 export const audioHTML = ({ fp, note, modal, hashMini, hashSlice }) => {
 	if (!fp.offlineAudioContext) {
-		return `<div class="col-four">
+		return `<div class="col-four undefined">
 			<strong>Audio</strong>
 			<div>sum: ${note.blocked}</div>
 			<div>gain: ${note.blocked}</div>
@@ -275,7 +275,7 @@ export const audioHTML = ({ fp, note, modal, hashMini, hashSlice }) => {
 	const style = (a, b) => b.map((char, i) => char != a[i] ? `<span class="bold-fail">${char}</span>` : char).join('')
 
 	return `
-	<div class="col-four">
+	<div class="col-four${lied ? ' rejected' : ''}">
 		<style>
 			.bold-fail {
 				color: #ca656e;

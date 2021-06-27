@@ -209,7 +209,7 @@ export const getCSS = async imports => {
 export const cssHTML = ({ fp, modal, note, hashMini, hashSlice, count }, systemHash) => {
 	if (!fp.css) {
 		return `
-		<div class="col-six">
+		<div class="col-six undefined">
 			<strong>Computed Style</strong>
 			<div>keys (0): ${note.blocked}</div>
 			<div>system styles: ${note.blocked}</div>

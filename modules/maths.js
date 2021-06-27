@@ -219,7 +219,7 @@ export const getMaths = async imports => {
 export const mathsHTML = ({ fp, modal, note, hashSlice }) => {
 	if (!fp.maths) {
 		return `
-		<div class="col-six">
+		<div class="col-six undefined">
 			<strong>Math</strong>
 			<div>0% of samples</div>
 			<div>0% of class</div>
@@ -336,7 +336,7 @@ export const mathsHTML = ({ fp, modal, note, hashSlice }) => {
 	})
 
 	return `
-	<div class="col-six">
+	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>Math</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div class="math-metric-rating help" title="% of math samples">${uniqueMetric}% of samples</div>
 		<div class="math-class-rating help" title="% of ${engine} class">${uniqueEngine}% of class</div>

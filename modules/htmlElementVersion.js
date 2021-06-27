@@ -25,7 +25,8 @@ export const getHTMLElementVersion = async imports => {
 
 export const htmlElementVersionHTML = ({ fp, modal, note, hashSlice, count }) => {
 	if (!fp.htmlElementVersion) {
-		return `<div class="col-six">
+		return `
+		<div class="col-six undefined">
 			<strong>HTMLElement</strong>
 			<div>keys (0): ${note.blocked}</div>
 			<div>0% of samples</div>
