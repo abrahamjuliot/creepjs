@@ -206,6 +206,33 @@
 			}
 		}
 
+		// setting prototype to itself should not throw 'Uncaught InternalError: too much recursion'
+		/*
+			Trying to bypass this? We can also check if empty Proxies return 'Uncaught InternalError: too much recursion'
+			x = new Proxy({}, {})
+			Object.setPrototypeOf(x, x)+''
+		*/
+		const getTooMuchRecursionLie = apiFunction => {
+			const isFirefox = 3.141592653589793 ** -100 == 1.9275814160560185e-50
+			if (!isFirefox) {
+				return false
+			}
+			const nativeProto = Object.getPrototypeOf(apiFunction)
+			try {
+				Object.setPrototypeOf(apiFunction, apiFunction) + ''
+				return true
+			} catch (error) {
+				return (
+					error.constructor.name != 'TypeError' ||
+					/too much recursion/.test(error.message) ? true :
+						false
+				)
+			} finally {
+				// restore proto
+				Object.setPrototypeOf(apiFunction, nativeProto)
+			}
+		}
+
 		// toString() and toString.toString() should return a native string in all frames
 		const getToStringLie = (apiFunction, name, iframeWindow) => {
 			/*
@@ -380,7 +407,8 @@
 				[`m: own property names should only contain "name" and "length"`]: getOwnPropertyNamesLie(apiFunction),
 				[`n: own keys names should only contain "name" and "length"`]: getOwnKeysLie(apiFunction),
 				[`o: calling toString() on an object created from the function should throw a TypeError`]: getNewObjectToStringTypeErrorLie(apiFunction),
-				[`p: arguments or caller should not throw 'incompatible Proxy' TypeError`]: getIncompatibleProxyTypeErrorLie(apiFunction)
+				[`p: arguments or caller should not throw 'incompatible Proxy' TypeError`]: getIncompatibleProxyTypeErrorLie(apiFunction),
+				[`q: setting prototype to itself should not throw 'Uncaught InternalError: too much recursion'`]: getTooMuchRecursionLie(apiFunction)
 			}
 			const lieTypes = Object.keys(lies).filter(key => !!lies[key])
 			return {

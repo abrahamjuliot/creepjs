@@ -256,6 +256,33 @@ const getPrototypeLies = iframeWindow => {
         }
     }
 
+	// setting prototype to itself should not throw 'Uncaught InternalError: too much recursion'
+	/*
+		Trying to bypass this? We can also check if empty Proxies return 'Uncaught InternalError: too much recursion'
+		x = new Proxy({}, {})
+		Object.setPrototypeOf(x, x)+''
+	*/
+    const getTooMuchRecursionLie = apiFunction => {
+		const isFirefox = 3.141592653589793 ** -100 == 1.9275814160560185e-50
+		if (!isFirefox) {
+			return false
+		}
+        const nativeProto = Object.getPrototypeOf(apiFunction)
+        try {
+            Object.setPrototypeOf(apiFunction, apiFunction) + ''
+            return true
+        } catch (error) {
+            return (
+				error.constructor.name != 'TypeError' ||
+				/too much recursion/.test(error.message) ? true :
+					false
+			)
+        } finally {
+            // restore proto
+            Object.setPrototypeOf(apiFunction, nativeProto)
+        }
+    }
+
     // toString() and toString.toString() should return a native string in all frames
     const getToStringLie = (apiFunction, name, iframeWindow) => {
         /*
@@ -423,7 +450,8 @@ const getPrototypeLies = iframeWindow => {
             [`failed own property names`]: getOwnPropertyNamesLie(apiFunction),
             [`failed own keys names`]: getOwnKeysLie(apiFunction),
 			[`failed object toString error`]: getNewObjectToStringTypeErrorLie(apiFunction),
-			[`failed at incompatible proxy error`]: getIncompatibleProxyTypeErrorLie(apiFunction)
+			[`failed at incompatible proxy error`]: getIncompatibleProxyTypeErrorLie(apiFunction),
+			[`failed at too much recursion error`]: getTooMuchRecursionLie(apiFunction)
         }
         const lieTypes = Object.keys(lies).filter(key => !!lies[key])
         return {
