@@ -1919,6 +1919,52 @@
 		}
 	};
 
+	const canvasHTML = ({ fp, note, hashSlice }) => {
+		if (!fp.canvas2d) {
+			return `
+		<div class="col-six undefined">
+			<strong>Canvas 2d</strong> <span>${note.blocked}</span>
+			<div>0% rgba noise</div>
+		</div>`
+		}
+		const { canvas2d: { lied, mods, $hash } } = fp;
+		const { pixels, rgba } = mods || {};
+		const modPercent = pixels ? Math.round((pixels/400)*100) : 0;
+
+		// rgba: "b, g, gb, r, rb, rg, rgb"
+		const rgbaHTML= rgba.split(', ').map(set => set.split('').map(char => {
+			const css = {
+				r: 'red',
+				g: 'green',
+				b: 'blue',
+			};
+			return `<span class="rgba rgba-${css[char]}"></span>`
+		}).join('')).join(' ');
+		return `
+	<div class="col-six${lied ? ' rejected' : ''}">
+		<style>
+			.rgba {
+				width: 8px;
+				height: 8px;
+				display: inline-block;
+				border-radius: 50%;
+			}
+			.rgba-red {
+				background: #ff000c4a;
+			}
+			.rgba-green {
+				background: #00ff584a;
+			}
+			.rgba-blue {
+				background: #0000ff4a;
+			}
+		</style>
+		<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+		<div>${modPercent}% rgba noise${rgba ? `: ${rgbaHTML}` : ''}</div>
+	</div>
+	`
+	};
+
 	const pnames = new Set([
 		'BLEND_EQUATION',
 		'BLEND_EQUATION_RGB',
@@ -3379,6 +3425,29 @@
 	};
 
 	const fontList = ["Andale Mono", "Arial", "Arial Black", "Arial Hebrew", "Arial MT", "Arial Narrow", "Arial Rounded MT Bold", "Arial Unicode MS", "Bitstream Vera Sans Mono", "Book Antiqua", "Bookman Old Style", "Calibri", "Cambria", "Cambria Math", "Century", "Century Gothic", "Century Schoolbook", "Comic Sans", "Comic Sans MS", "Consolas", "Courier", "Courier New", "Geneva", "Georgia", "Helvetica", "Helvetica Neue", "Impact", "Lucida Bright", "Lucida Calligraphy", "Lucida Console", "Lucida Fax", "LUCIDA GRANDE", "Lucida Handwriting", "Lucida Sans", "Lucida Sans Typewriter", "Lucida Sans Unicode", "Microsoft Sans Serif", "Monaco", "Monotype Corsiva", "MS Gothic", "MS Outlook", "MS PGothic", "MS Reference Sans Serif", "MS Sans Serif", "MS Serif", "MYRIAD", "MYRIAD PRO", "Palatino", "Palatino Linotype", "Segoe Print", "Segoe Script", "Segoe UI", "Segoe UI Light", "Segoe UI Semibold", "Segoe UI Symbol", "Tahoma", "Times", "Times New Roman", "Times New Roman PS", "Trebuchet MS", "Verdana", "Wingdings", "Wingdings 2", "Wingdings 3"];
+
+	const fontsHTML = ({ fp, note, modal, count, hashSlice }) => {
+		if (!fp.fonts) {
+			return `
+		<div class="col-six undefined">
+			<strong>Fonts</strong>
+			<div>results (0): ${note.blocked}</div>
+		</div>`
+		}
+		const {
+			fonts: {
+				$hash,
+				fonts,
+				lied
+			}
+		} = fp;
+		return `
+	<div class="col-six${lied ? ' rejected' : ''}">
+		<strong>Fonts</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+		<div>results (${fonts ? count(fonts) : '0'}): ${fonts.length ? modal('creep-fonts', fonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>')) : note.blocked}</div>
+	</div>
+	`	
+	};
 
 	const detectChromium = () => (
 		Math.acos(0.123) == 1.4474840516030247 &&
@@ -7729,47 +7798,8 @@
 		})()}
 		</div>
 		<div class="flex-grid">
-		${!fp.canvas2d ?
-			`<div class="col-six undefined">
-				<strong>Canvas 2d</strong> <span>${note.blocked}</span>
-				<div>0% rgba noise</div>
-			</div>` :
-		(() => {
-			const { canvas2d: { lied, mods, $hash } } = fp;
-			const { pixels, rgba } = mods || {};
-			const modPercent = pixels ? Math.round((pixels/400)*100) : 0;
-			return `
-			<div class="col-six${lied ? ' rejected' : ''}">
-				<style>
-					.rgba-noise-rating {
-						background: linear-gradient(90deg, var(${modPercent < 50 ? '--grey-glass' : '--error'}) ${modPercent}%, #fff0 ${modPercent}%, #fff0 100%);
-					}
-				</style>
-				<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-				<div class="rgba-noise-rating">${modPercent}% rgba noise${rgba ? ` (${rgba})` : ''}</div>
-			</div>
-			`
-		})()}
-		${!fp.fonts ?
-			`<div class="col-six undefined">
-				<strong>Fonts</strong>
-				<div>results (0): ${note.blocked}</div>
-			</div>` :
-		(() => {
-			const {
-				fonts: {
-					$hash,
-					fonts,
-					lied
-				}
-			} = fp;
-			return `
-			<div class="col-six${lied ? ' rejected' : ''}">
-				<strong>Fonts</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-				<div>results (${fonts ? count(fonts) : '0'}): ${fonts.length ? modal('creep-fonts', fonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>')) : note.blocked}</div>
-			</div>
-			`
-		})()}
+		${canvasHTML(templateImports)}
+		${fontsHTML(templateImports)}
 		</div>
 		<div class="flex-grid">
 		${audioHTML(templateImports)}
