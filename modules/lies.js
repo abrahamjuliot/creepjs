@@ -269,20 +269,20 @@ const getPrototypeLies = iframeWindow => {
 		if (!isFirefox) {
 			return false
 		}
-        const nativeProto = Object.getPrototypeOf(apiFunction)
-        try {
-            Object.setPrototypeOf(apiFunction, apiFunction) + ''
-            return true
-        } catch (error) {
-            return (
+		const nativeProto = Object.getPrototypeOf(apiFunction)
+		try {
+			Object.setPrototypeOf(apiFunction, apiFunction) + ''
+			return true
+		} catch (error) {
+			return (
 				error.constructor.name != 'TypeError' ||
 				/too much recursion/.test(error.message) ? true :
 					false
 			)
-        } finally {
-            // restore proto
-            Object.setPrototypeOf(apiFunction, nativeProto)
-        }
+		} finally {
+			// restore proto
+			Object.setPrototypeOf(apiFunction, nativeProto)
+		}
     }
 
     // toString() and toString.toString() should return a native string in all frames
