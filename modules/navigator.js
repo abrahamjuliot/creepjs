@@ -31,6 +31,7 @@ export const getNavigator = async (imports, workerScope) => {
 			lieProps['Navigator.language'] ||
 			lieProps['Navigator.languages'] ||
 			lieProps['Navigator.maxTouchPoints'] ||
+			lieProps['Navigator.oscpu'] ||
 			lieProps['Navigator.platform'] ||
 			lieProps['Navigator.userAgent'] ||
 			lieProps['Navigator.vendor'] ||
@@ -260,6 +261,16 @@ export const getNavigator = async (imports, workerScope) => {
 				const mimeTypes = phantomNavigator.mimeTypes
 				return mimeTypes ? [...mimeTypes].map(m => m.type) : []
 			}, 'mimeTypes failed'),
+			oscpu: attempt(() => {
+				const { oscpu } = phantomNavigator
+				const navigatorOscpu = navigator.oscpu
+				if (oscpu != navigatorOscpu) {
+					lied = true
+					const nestedIframeLie = `Expected "${navigatorOscpu}" in nested iframe and got "${oscpu}"`
+					documentLie(`Navigator.oscpu`, nestedIframeLie)
+				}
+				return oscpu
+			}, 'oscpu failed'),
 			plugins: attempt(() => {
 				const navigatorPlugins = navigator.plugins
 				const ownProperties = Object.getOwnPropertyNames(navigatorPlugins).filter(name => isNaN(+name))
@@ -437,6 +448,8 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 			<div class="block-text">${note.blocked}</div>
 			<div>appVersion:</div>
 			<div class="block-text">${note.blocked}</div>
+			<div>oscpu:</div>
+			<div class="block-text">${note.blocked}</div>
 		</div>`
 	}
 	const {
@@ -451,6 +464,7 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 			language,
 			maxTouchPoints,
 			mimeTypes,
+			oscpu,
 			platform,
 			plugins,
 			properties,
@@ -551,6 +565,10 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 		<div>appVersion:</div>
 		<div class="block-text">
 			<div>${!blocked[appVersion] ? appVersion : note.blocked}</div>
+		</div>
+		<div>oscpu:</div>
+		<div class="block-text">
+			<div>${!blocked[oscpu] ? oscpu : note.unsupported}</div>
 		</div>
 	</div>
 	`	
