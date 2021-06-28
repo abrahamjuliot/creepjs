@@ -430,6 +430,72 @@ export const getCanvasWebgl = async imports => {
 	}
 }
 
-export const webglHTML = () => {
+export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
+	if (!fp.canvasWebgl) {
+		return `
+		<div class="col-four undefined">
+			<strong>WebGL</strong>
+			<div>images: ${note.blocked}</div>
+			<div>pixels: ${note.blocked}</div>
+			<div>params (0): ${note.blocked}</div>
+			<div>exts (0): ${note.blocked}</div>
+		</div>
+		<div class="col-four undefined">
+			<div>unmasked renderer:</div>
+			<div class="block-text">${note.blocked}</div>
+		</div>
+		<div class="col-four undefined"><image /></div>`
+	}
+	const { canvasWebgl: data } = fp
+	const id = 'creep-canvas-webgl'
 	
+	const {
+		$hash,
+		dataURI,
+		dataURI2,
+		pixels,
+		pixels2,
+		lied,
+		extensions,
+		parameters
+	} = data
+	
+	const paramKeys = parameters ? Object.keys(parameters).sort() : []
+	return `
+	<div class="col-four${lied ? ' rejected' : ''}">
+		<strong>WebGL</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+		<div>images:${
+			!dataURI ? ' '+note.blocked : `<span class="sub-hash">${hashMini(dataURI)}</span>${!dataURI2 || dataURI == dataURI2 ? '' : `<span class="sub-hash">${hashMini(dataURI2)}</span>`}`
+		}</div>
+		<div>pixels:${
+			!pixels ? ' '+note.unsupported : `<span class="sub-hash">${hashSlice(pixels)}</span>${!pixels2 || pixels == pixels2 ? '' : `<span class="sub-hash">${hashSlice(pixels2)}</span>`}`
+		}</div>
+		<div>params (${count(paramKeys)}): ${
+			!paramKeys.length ? note.unsupported :
+			modal(
+				`${id}-parameters`,
+				paramKeys.map(key => `${key}: ${parameters[key]}`).join('<br>'),
+				hashMini(parameters)
+			)
+		}</div>
+		<div>exts (${count(extensions)}): ${
+			!extensions.length ? note.unsupported : 
+			modal(
+				`${id}-extensions`,
+				extensions.sort().join('<br>'),
+				hashMini(extensions)
+			)
+		}</div>
+	</div>
+	<div class="col-four${lied ? ' rejected' : ''}">
+		<div>unmasked renderer:</div>
+		<div class="block-text">
+			<div>${
+				!parameters.UNMASKED_RENDERER_WEBGL ? note.unsupported :
+				parameters.UNMASKED_RENDERER_WEBGL
+			}</div>	
+		</div>
+	</div>
+	<div class="col-four${lied ? ' rejected' : ''}"><image ${!dataURI ? '' : `width="100%" src="${dataURI}"`}/></div>
+	`
 }
