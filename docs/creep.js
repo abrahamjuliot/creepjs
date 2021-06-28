@@ -4767,7 +4767,7 @@
 				plugins: attempt(() => {
 					const navigatorPlugins = navigator.plugins;
 					const plugins = phantomNavigator.plugins;
-					if (!(plugins instanceof PluginArray)) {
+					if (!(navigatorPlugins instanceof PluginArray)) {
 						return
 					}
 					const response = plugins ? [...phantomNavigator.plugins]
