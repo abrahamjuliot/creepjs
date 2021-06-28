@@ -2430,6 +2430,76 @@
 		}
 	};
 
+	const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
+		if (!fp.canvasWebgl) {
+			return `
+		<div class="col-four undefined">
+			<strong>WebGL</strong>
+			<div>images: ${note.blocked}</div>
+			<div>pixels: ${note.blocked}</div>
+			<div>params (0): ${note.blocked}</div>
+			<div>exts (0): ${note.blocked}</div>
+		</div>
+		<div class="col-four undefined">
+			<div>unmasked renderer:</div>
+			<div class="block-text">${note.blocked}</div>
+		</div>
+		<div class="col-four undefined"><image /></div>`
+		}
+		const { canvasWebgl: data } = fp;
+		const id = 'creep-canvas-webgl';
+		
+		const {
+			$hash,
+			dataURI,
+			dataURI2,
+			pixels,
+			pixels2,
+			lied,
+			extensions,
+			parameters
+		} = data;
+		
+		const paramKeys = parameters ? Object.keys(parameters).sort() : [];
+		return `
+	<div class="col-four${lied ? ' rejected' : ''}">
+		<strong>WebGL</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+		<div>images:${
+			!dataURI ? ' '+note.blocked : `<span class="sub-hash">${hashMini(dataURI)}</span>${!dataURI2 || dataURI == dataURI2 ? '' : `<span class="sub-hash">${hashMini(dataURI2)}</span>`}`
+		}</div>
+		<div>pixels:${
+			!pixels ? ' '+note.unsupported : `<span class="sub-hash">${hashSlice(pixels)}</span>${!pixels2 || pixels == pixels2 ? '' : `<span class="sub-hash">${hashSlice(pixels2)}</span>`}`
+		}</div>
+		<div>params (${count(paramKeys)}): ${
+			!paramKeys.length ? note.unsupported :
+			modal(
+				`${id}-parameters`,
+				paramKeys.map(key => `${key}: ${parameters[key]}`).join('<br>'),
+				hashMini(parameters)
+			)
+		}</div>
+		<div>exts (${count(extensions)}): ${
+			!extensions.length ? note.unsupported : 
+			modal(
+				`${id}-extensions`,
+				extensions.sort().join('<br>'),
+				hashMini(extensions)
+			)
+		}</div>
+	</div>
+	<div class="col-four${lied ? ' rejected' : ''}">
+		<div>unmasked renderer:</div>
+		<div class="block-text">
+			<div>${
+				!parameters.UNMASKED_RENDERER_WEBGL ? note.unsupported :
+				parameters.UNMASKED_RENDERER_WEBGL
+			}</div>	
+		</div>
+	</div>
+	<div class="col-four${lied ? ' rejected' : ''}"><image ${!dataURI ? '' : `width="100%" src="${dataURI}"`}/></div>
+	`
+	};
+
 	const computeStyle = (type, { require: [captureError] }) => {
 		try {
 			// get CSSStyleDeclaration
@@ -4249,6 +4319,100 @@
 			captureError(error);
 			return
 		}
+	};
+
+	const mediaHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
+		if (!fp.media) {
+			return `
+		<div class="col-four undefined">
+			<strong>Media</strong>
+			<div>devices (0): ${note.blocked}</div>
+			<div>constraints: ${note.blocked}</div>
+			<div>mimes (0): ${note.blocked}</div>
+		</div>`
+		}
+		const {
+			media: {
+				mediaDevices,
+				constraints,
+				mimeTypes,
+				$hash
+			}
+		} = fp;
+
+		const header = `
+	<style>
+		.audiop, .videop, .medias, .mediar, .blank-false {
+			padding: 2px 8px;
+		}
+		.audiop {
+			background: #657fca26;
+		}
+		.medias {
+			background: #657fca54;
+		}
+		.videop {
+			background: #ca65b424;
+		}
+		.mediar {
+			background: #ca65b459;
+		}
+		.audiop.pb, .videop.pb, .guide.pr {
+			color: #8f8ff1 !important;
+		}
+		.audiop.mb, .videop.mb, .guide.mb {
+			color: #98cee4 !important;
+		}
+		.medias.tr, .mediar.tr, .guide.tr {
+			color: #c778ba !important;
+		}
+	</style>
+	<div>
+	<br><span class="audiop">audioPlayType</span>
+	<br><span class="videop">videoPlayType</span>
+	<br><span class="medias">mediaSource</span>
+	<br><span class="mediar">mediaRecorder</span>
+	<br><span class="guide pr">P (Probably)</span>
+	<br><span class="guide mb">M (Maybe)</span>
+	<br><span class="guide tr">T (True)</span>
+	</div>`;
+		const invalidMimeTypes = !mimeTypes || !mimeTypes.length;
+		const mimes = invalidMimeTypes ? undefined : mimeTypes.map(type => {
+			const { mimeType, audioPlayType, videoPlayType, mediaSource, mediaRecorder } = type;
+			return `
+			${audioPlayType == 'probably' ? '<span class="audiop pb">P</span>' : audioPlayType == 'maybe' ? '<span class="audiop mb">M</span>': '<span class="blank-false">-</span>'}${videoPlayType == 'probably' ? '<span class="videop pb">P</span>' : videoPlayType == 'maybe' ? '<span class="videop mb">M</span>': '<span class="blank-false">-</span>'}${mediaSource ? '<span class="medias tr">T</span>'  : '<span class="blank-false">-</span>'}${mediaRecorder ? '<span class="mediar tr">T</span>'  : '<span class="blank-false">-</span>'}: ${mimeType}
+		`	
+		});
+
+		return `
+	<div class="col-four">
+		<strong>Media</strong><span class="hash">${hashSlice($hash)}</span>
+		<div>devices (${count(mediaDevices)}): ${
+			!mediaDevices || !mediaDevices.length ? note.blocked : 
+			modal(
+				'creep-media-devices',
+				mediaDevices.join('<br>'),
+				hashMini(mediaDevices)
+			)
+		}</div>
+		<div>constraints: ${
+			!constraints || !constraints.length ? note.blocked : 
+			modal(
+				'creep-media-constraints',
+				constraints.join('<br>'),
+				hashMini(constraints)
+			)
+		}</div>
+		<div>mimes (${count(mimeTypes)}): ${
+			invalidMimeTypes ? note.blocked : 
+			modal(
+				'creep-media-mimeTypes',
+				header+mimes.join('<br>'),
+				hashMini(mimeTypes)
+			)
+		}</div>
+	</div>
+	`	
 	};
 
 	// special thanks to https://arh.antoinevastel.com/reports/stats/menu.html for stats
@@ -6109,6 +6273,42 @@
 		})
 	};
 
+	const voicesHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
+		if (!fp.voices) {
+			return `
+		<div class="col-four undefined">
+			<strong>Speech</strong>
+			<div>voices (0): ${note.blocked}</div>
+			<div>default: ${note.blocked}</div>
+		</div>`
+		}
+		const {
+			voices: {
+				$hash,
+				defaultVoice,
+				voices
+			}
+		} = fp;
+		const voiceList = voices.map(voice => `${voice.name} (${voice.lang})`);
+		return `
+	<div class="col-four">
+		<strong>Speech</strong><span class="hash">${hashSlice($hash)}</span>
+		<div>voices (${count(voices)}): ${
+			!voiceList || !voiceList.length ? note.unsupported :
+			modal(
+				'creep-voices',
+				voiceList.join('<br>'),
+				hashMini(voices)
+			)
+		}</div>
+		<div>default:${
+			!defaultVoice ? ` ${note.unsupported}` :
+			`<span class="sub-hash">${hashMini(defaultVoice)}</span>`
+		}</div>
+	</div>
+	`
+	};
+
 	const getWebRTCData = imports => {
 
 		const {
@@ -6490,6 +6690,66 @@
 			captureError(error, 'workers failed or blocked by client');
 			return
 		}
+	};
+
+	const workerScopeHTML = ({ fp, note, hashMini, hashSlice }) => {
+		if (!fp.workerScope) {
+			return `
+		<div class="col-six undefined">
+			<strong>Worker</strong>
+			<div>timezone offset: ${note.blocked}</div>
+			<div>location: ${note.blocked}</div>
+			<div>language: ${note.blocked}</div>
+			<div>deviceMemory: ${note.blocked}</div>
+			<div>hardwareConcurrency: ${note.blocked}</div>
+			<div>platform: ${note.blocked}</div>
+			<div>system: ${note.blocked}</div>
+			<div>canvas 2d: ${note.blocked}</div>
+			<div>webgl vendor: ${note.blocked}</div>
+		</div>
+		<div class="col-six undefined">
+			<div>device:</div>
+			<div class="block-text">${note.blocked}</div>
+			<div>userAgent:</div>
+			<div class="block-text">${note.blocked}</div>
+			<div>webgl renderer:</div>
+			<div class="block-text">${note.blocked}</div>
+		</div>`
+		}
+		const { workerScope: data } = fp;
+		return `
+	<div class="ellipsis"><span class="aside-note">${data.type || ''} worker</span></div>
+	<div class="col-six">
+		<strong>Worker</strong><span class="hash">${hashSlice(data.$hash)}</span>
+		<div>timezone offset: ${data.timezoneOffset != undefined ? ''+data.timezoneOffset : note.unsupported}</div>
+		<div>location: ${data.timezoneLocation}</div>
+		<div>language: ${data.language || note.unsupported}</div>
+		<div>deviceMemory: ${data.deviceMemory || note.unsupported}</div>
+		<div>hardwareConcurrency: ${data.hardwareConcurrency || note.unsupported}</div>
+		<div>platform: ${data.platform || note.unsupported}</div>
+		<div>system: ${data.system || note.unsupported}</div>
+		<div>canvas 2d:${
+			data.canvas2d && data.canvas2d.dataURI ?
+			`<span class="sub-hash">${hashMini(data.canvas2d.dataURI)}</span>` :
+			` ${note.unsupported}`
+		}</div>
+		<div>webgl vendor: ${data.webglVendor || note.unsupported}</div>
+	</div>
+	<div class="col-six">
+		<div>device:</div>
+		<div class="block-text">
+			<div>${data.device || note.unsupported}</div>
+		</div>
+		<div>userAgent:</div>
+		<div class="block-text">
+			<div>${data.userAgent || note.unsupported}</div>
+		</div>
+		<div>unmasked renderer:</div>
+		<div class="block-text">
+			<div>${data.webglRenderer || note.unsupported}</div>
+		</div>
+	</div>
+	`
 	};
 
 	const getSVG = async imports => {
@@ -7662,298 +7922,41 @@
 			<div class="col-four icon-container">
 			</div>
 		</div>
-
 		<div id="headless-resistance-detection-results" class="flex-grid">
 			${headlesFeaturesHTML(templateImports)}
 			${resistanceHTML(templateImports)}
 		</div>
-
-		<div class="flex-grid relative">
-			<div class="ellipsis"><span class="aside-note">${
-				fp.workerScope && fp.workerScope.type ? fp.workerScope.type : ''
-			} worker</span></div>
-		${!fp.workerScope ?
-			`<div class="col-six undefined">
-				<strong>Worker</strong>
-				<div>timezone offset: ${note.blocked}</div>
-				<div>location: ${note.blocked}</div>
-				<div>language: ${note.blocked}</div>
-				<div>deviceMemory: ${note.blocked}</div>
-				<div>hardwareConcurrency: ${note.blocked}</div>
-				<div>platform: ${note.blocked}</div>
-				<div>system: ${note.blocked}</div>
-				<div>canvas 2d: ${note.blocked}</div>
-				<div>webgl vendor: ${note.blocked}</div>
-			</div>
-			<div class="col-six undefined">
-				<div>device:</div>
-				<div class="block-text">${note.blocked}</div>
-				<div>userAgent:</div>
-				<div class="block-text">${note.blocked}</div>
-				<div>webgl renderer:</div>
-				<div class="block-text">${note.blocked}</div>
-			</div>` :
-		(() => {
-			const { workerScope: data } = fp;
-			return `
-			<div class="col-six">
-				<strong>Worker</strong><span class="hash">${hashSlice(data.$hash)}</span>
-				<div>timezone offset: ${data.timezoneOffset != undefined ? ''+data.timezoneOffset : note.unsupported}</div>
-				<div>location: ${data.timezoneLocation}</div>
-				<div>language: ${data.language || note.unsupported}</div>
-				<div>deviceMemory: ${data.deviceMemory || note.unsupported}</div>
-				<div>hardwareConcurrency: ${data.hardwareConcurrency || note.unsupported}</div>
-				<div>platform: ${data.platform || note.unsupported}</div>
-				<div>system: ${data.system || note.unsupported}</div>
-				<div>canvas 2d:${
-					data.canvas2d && data.canvas2d.dataURI ?
-					`<span class="sub-hash">${hashMini(data.canvas2d.dataURI)}</span>` :
-					` ${note.unsupported}`
-				}</div>
-				<div>webgl vendor: ${data.webglVendor || note.unsupported}</div>
-			</div>
-			<div class="col-six">
-				<div>device:</div>
-				<div class="block-text">
-					<div>${data.device || note.unsupported}</div>
-				</div>
-				<div>userAgent:</div>
-				<div class="block-text">
-					<div>${data.userAgent || note.unsupported}</div>
-				</div>
-				<div>unmasked renderer:</div>
-				<div class="block-text">
-					<div>${data.webglRenderer || note.unsupported}</div>
-				</div>
-			</div>
-			`
-		})()}
+		<div class="flex-grid relative">${workerScopeHTML(templateImports)}</div>
+		<div class="flex-grid">${webglHTML(templateImports)}</div>
+		<div class="flex-grid">
+			${canvasHTML(templateImports)}
+			${fontsHTML(templateImports)}
 		</div>
 		<div class="flex-grid">
-		${!fp.canvasWebgl ?
-			`<div class="col-four undefined">
-				<strong>WebGL</strong>
-				<div>images: ${note.blocked}</div>
-				<div>pixels: ${note.blocked}</div>
-				<div>params (0): ${note.blocked}</div>
-				<div>exts (0): ${note.blocked}</div>
-			</div>
-			<div class="col-four undefined">
-				<div>unmasked renderer:</div>
-				<div class="block-text">${note.blocked}</div>
-			</div>
-			<div class="col-four undefined"><image /></div>` :
-		(() => {
-			const { canvasWebgl: data } = fp;
-			const id = 'creep-canvas-webgl';
-			
-			const {
-				$hash,
-				dataURI,
-				dataURI2,
-				pixels,
-				pixels2,
-				lied,
-				extensions,
-				parameters
-			} = data;
-			
-			const paramKeys = parameters ? Object.keys(parameters).sort() : [];
-			return `
-			<div class="col-four${lied ? ' rejected' : ''}">
-				<strong>WebGL</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-				<div>images:${
-					!dataURI ? ' '+note.blocked : `<span class="sub-hash">${hashMini(dataURI)}</span>${!dataURI2 || dataURI == dataURI2 ? '' : `<span class="sub-hash">${hashMini(dataURI2)}</span>`}`
-				}</div>
-				<div>pixels:${
-					!pixels ? ' '+note.unsupported : `<span class="sub-hash">${hashSlice(pixels)}</span>${!pixels2 || pixels == pixels2 ? '' : `<span class="sub-hash">${hashSlice(pixels2)}</span>`}`
-				}</div>
-				<div>params (${count(paramKeys)}): ${
-					!paramKeys.length ? note.unsupported :
-					modal(
-						`${id}-parameters`,
-						paramKeys.map(key => `${key}: ${parameters[key]}`).join('<br>'),
-						hashMini(parameters)
-					)
-				}</div>
-				<div>exts (${count(extensions)}): ${
-					!extensions.length ? note.unsupported : 
-					modal(
-						`${id}-extensions`,
-						extensions.sort().join('<br>'),
-						hashMini(extensions)
-					)
-				}</div>
-			</div>
-			<div class="col-four${lied ? ' rejected' : ''}">
-				<div>unmasked renderer:</div>
-				<div class="block-text">
-					<div>${
-						!parameters.UNMASKED_RENDERER_WEBGL ? note.unsupported :
-						parameters.UNMASKED_RENDERER_WEBGL
-					}</div>	
-				</div>
-			</div>
-			<div class="col-four${lied ? ' rejected' : ''}"><image ${!dataURI ? '' : `width="100%" src="${dataURI}"`}/></div>
-			`
-		})()}
+			${audioHTML(templateImports)}
+			${voicesHTML(templateImports)}
+			${mediaHTML(templateImports)}
 		</div>
 		<div class="flex-grid">
-		${canvasHTML(templateImports)}
-		${fontsHTML(templateImports)}
+			${clientRectsHTML(templateImports)}
+			${svgHTML(templateImports)}
 		</div>
+		<div class="flex-grid">${screenHTML(templateImports)}</div>
 		<div class="flex-grid">
-		${audioHTML(templateImports)}
-		${!fp.voices ?
-			`<div class="col-four undefined">
-				<strong>Speech</strong>
-				<div>voices (0): ${note.blocked}</div>
-				<div>default: ${note.blocked}</div>
-			</div>` :
-		(() => {
-			const {
-				voices: {
-					$hash,
-					defaultVoice,
-					voices
-				}
-			} = fp;
-			const voiceList = voices.map(voice => `${voice.name} (${voice.lang})`);
-			return `
-			<div class="col-four">
-				<strong>Speech</strong><span class="hash">${hashSlice($hash)}</span>
-				<div>voices (${count(voices)}): ${
-					!voiceList || !voiceList.length ? note.unsupported :
-					modal(
-						'creep-voices',
-						voiceList.join('<br>'),
-						hashMini(voices)
-					)
-				}</div>
-				<div>default:${
-					!defaultVoice ? ` ${note.unsupported}` :
-					`<span class="sub-hash">${hashMini(defaultVoice)}</span>`
-				}</div>
-			</div>
-			`
-		})()}
-		${!fp.media ?
-			`<div class="col-four undefined">
-				<strong>Media</strong>
-				<div>devices (0): ${note.blocked}</div>
-				<div>constraints: ${note.blocked}</div>
-				<div>mimes (0): ${note.blocked}</div>
-			</div>` :
-		(() => {
-			const {
-				media: {
-					mediaDevices,
-					constraints,
-					mimeTypes,
-					$hash
-				}
-			} = fp;
-
-			const header = `
-			<style>
-				.audiop, .videop, .medias, .mediar, .blank-false {
-					padding: 2px 8px;
-				}
-				.audiop {
-					background: #657fca26;
-				}
-				.medias {
-					background: #657fca54;
-				}
-				.videop {
-					background: #ca65b424;
-				}
-				.mediar {
-					background: #ca65b459;
-				}
-				.audiop.pb, .videop.pb, .guide.pr {
-					color: #8f8ff1 !important;
-				}
-				.audiop.mb, .videop.mb, .guide.mb {
-					color: #98cee4 !important;
-				}
-				.medias.tr, .mediar.tr, .guide.tr {
-					color: #c778ba !important;
-				}
-			</style>
-			<div>
-			<br><span class="audiop">audioPlayType</span>
-			<br><span class="videop">videoPlayType</span>
-			<br><span class="medias">mediaSource</span>
-			<br><span class="mediar">mediaRecorder</span>
-			<br><span class="guide pr">P (Probably)</span>
-			<br><span class="guide mb">M (Maybe)</span>
-			<br><span class="guide tr">T (True)</span>
-			</div>`;
-			const invalidMimeTypes = !mimeTypes || !mimeTypes.length;
-			const mimes = invalidMimeTypes ? undefined : mimeTypes.map(type => {
-				const { mimeType, audioPlayType, videoPlayType, mediaSource, mediaRecorder } = type;
-				return `
-					${audioPlayType == 'probably' ? '<span class="audiop pb">P</span>' : audioPlayType == 'maybe' ? '<span class="audiop mb">M</span>': '<span class="blank-false">-</span>'}${videoPlayType == 'probably' ? '<span class="videop pb">P</span>' : videoPlayType == 'maybe' ? '<span class="videop mb">M</span>': '<span class="blank-false">-</span>'}${mediaSource ? '<span class="medias tr">T</span>'  : '<span class="blank-false">-</span>'}${mediaRecorder ? '<span class="mediar tr">T</span>'  : '<span class="blank-false">-</span>'}: ${mimeType}
-				`	
-			});
-
-			return `
-			<div class="col-four">
-				<strong>Media</strong><span class="hash">${hashSlice($hash)}</span>
-				<div>devices (${count(mediaDevices)}): ${
-					!mediaDevices || !mediaDevices.length ? note.blocked : 
-					modal(
-						'creep-media-devices',
-						mediaDevices.join('<br>'),
-						hashMini(mediaDevices)
-					)
-				}</div>
-				<div>constraints: ${
-					!constraints || !constraints.length ? note.blocked : 
-					modal(
-						'creep-media-constraints',
-						constraints.join('<br>'),
-						hashMini(constraints)
-					)
-				}</div>
-				<div>mimes (${count(mimeTypes)}): ${
-					invalidMimeTypes ? note.blocked : 
-					modal(
-						'creep-media-mimeTypes',
-						header+mimes.join('<br>'),
-						hashMini(mimeTypes)
-					)
-				}</div>
-			</div>
-			`
-		})()}
-		</div>
-		
-		<div class="flex-grid">
-		${clientRectsHTML(templateImports)}
-		${svgHTML(templateImports)}
-		</div>
-		<div class="flex-grid">
-		${screenHTML(templateImports)}
-		</div>
-		<div class="flex-grid">
-		${cssMediaHTML(templateImports)}
-		${cssHTML(templateImports, systemHash)}
+			${cssMediaHTML(templateImports)}
+			${cssHTML(templateImports, systemHash)}
 		</div>
 		<div>
 			<div class="flex-grid">
-			${mathsHTML(templateImports)}
-			${consoleErrorsHTML(templateImports)}
+				${mathsHTML(templateImports)}
+				${consoleErrorsHTML(templateImports)}
 			</div>
 			<div class="flex-grid">
-			${windowFeaturesHTML(templateImports)}
-			${htmlElementVersionHTML(templateImports)}
+				${windowFeaturesHTML(templateImports)}
+				${htmlElementVersionHTML(templateImports)}
 			</div>
 		</div>
-		<div class="flex-grid">
-		${navigatorHTML(templateImports)}
-		</div>
+		<div class="flex-grid">${navigatorHTML(templateImports)}</div>
 		<div>
 			<strong>Tests</strong>
 			<div>
