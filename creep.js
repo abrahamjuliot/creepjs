@@ -745,7 +745,7 @@ const imports = {
 
 			const template = `
 				<div class="visitor-info">
-					<div class="ellipsis"><span class="aside-note">script modified 2021-6-20</span></div>
+					<div class="ellipsis"><span class="aside-note">script modified 2021-6-27</span></div>
 					<div class="flex-grid">
 						<div class="col-six">
 							<strong>Browser</strong>
