@@ -146,6 +146,62 @@ export const getBestWorkerScope = async imports => {
 	}
 }
 
-export const workerScopeHTML = () => {
-	
+export const workerScopeHTML = ({ fp, note, hashMini, hashSlice }) => {
+	if (!fp.workerScope) {
+		return `
+		<div class="col-six undefined">
+			<strong>Worker</strong>
+			<div>timezone offset: ${note.blocked}</div>
+			<div>location: ${note.blocked}</div>
+			<div>language: ${note.blocked}</div>
+			<div>deviceMemory: ${note.blocked}</div>
+			<div>hardwareConcurrency: ${note.blocked}</div>
+			<div>platform: ${note.blocked}</div>
+			<div>system: ${note.blocked}</div>
+			<div>canvas 2d: ${note.blocked}</div>
+			<div>webgl vendor: ${note.blocked}</div>
+		</div>
+		<div class="col-six undefined">
+			<div>device:</div>
+			<div class="block-text">${note.blocked}</div>
+			<div>userAgent:</div>
+			<div class="block-text">${note.blocked}</div>
+			<div>webgl renderer:</div>
+			<div class="block-text">${note.blocked}</div>
+		</div>`
+	}
+	const { workerScope: data } = fp
+	return `
+	<div class="ellipsis"><span class="aside-note">${data.type || ''} worker</span></div>
+	<div class="col-six">
+		<strong>Worker</strong><span class="hash">${hashSlice(data.$hash)}</span>
+		<div>timezone offset: ${data.timezoneOffset != undefined ? ''+data.timezoneOffset : note.unsupported}</div>
+		<div>location: ${data.timezoneLocation}</div>
+		<div>language: ${data.language || note.unsupported}</div>
+		<div>deviceMemory: ${data.deviceMemory || note.unsupported}</div>
+		<div>hardwareConcurrency: ${data.hardwareConcurrency || note.unsupported}</div>
+		<div>platform: ${data.platform || note.unsupported}</div>
+		<div>system: ${data.system || note.unsupported}</div>
+		<div>canvas 2d:${
+			data.canvas2d && data.canvas2d.dataURI ?
+			`<span class="sub-hash">${hashMini(data.canvas2d.dataURI)}</span>` :
+			` ${note.unsupported}`
+		}</div>
+		<div>webgl vendor: ${data.webglVendor || note.unsupported}</div>
+	</div>
+	<div class="col-six">
+		<div>device:</div>
+		<div class="block-text">
+			<div>${data.device || note.unsupported}</div>
+		</div>
+		<div>userAgent:</div>
+		<div class="block-text">
+			<div>${data.userAgent || note.unsupported}</div>
+		</div>
+		<div>unmasked renderer:</div>
+		<div class="block-text">
+			<div>${data.webglRenderer || note.unsupported}</div>
+		</div>
+	</div>
+	`
 }
