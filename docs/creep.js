@@ -5034,7 +5034,7 @@
 			Object.keys(highEntropyValues).map(key => {
 				const value = highEntropyValues[key];
 				if (key == 'brands' && value && value.length) {
-					const brands = value.filter(obj => !/Not;A Brand/.test(obj.brand)).map(obj => `${obj.brand} ${obj.version}`);
+					const brands = value.filter(obj => !/Not/.test(obj.brand)).map(obj => `${obj.brand} ${obj.version}`);
 					const primaryBrands = brands.length > 1 ? brands.filter(brand => !/Chromium/.test(brand)) : brands;
 					return `<div>ua brand: ${primaryBrands.join(',')}</div>`
 				}
