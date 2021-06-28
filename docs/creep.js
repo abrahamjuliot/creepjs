@@ -601,7 +601,9 @@
 	const getBehemothIframe = win => {
 		try {
 			const isChrome = 3.141592653589793 ** -100 == 1.9275814160560204e-50;
-			if (!isChrome) ;
+			if (!isChrome) {
+				return win
+			}
 			const iframe = win.document.createElement('iframe');
 			iframe.setAttribute('id', getRandomValues());
 			iframe.setAttribute('style', ghost());
@@ -1548,7 +1550,7 @@
 		try {
 			await new Promise(setTimeout).catch(e => {});
 			const start = performance.now();
-			const win = window;
+			const win = phantomDarkness ? phantomDarkness : window;
 			const audioContext = caniuse(() => win.OfflineAudioContext || win.webkitOfflineAudioContext);
 			if (!audioContext) {
 				logTestResult({ test: 'audio', passed: false });
