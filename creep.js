@@ -930,7 +930,7 @@ const imports = {
 			}
 			
 			const isTorBrowser = resistance.privacy == 'Tor Browser'
-
+			
 			const {
 				compressorGainReduction: gain,
 				sampleSum,
