@@ -319,7 +319,7 @@ export const getNavigator = async (imports, workerScope) => {
 				const data = await phantomNavigator.userAgentData.getHighEntropyValues(
 					['platform', 'platformVersion', 'architecture',  'model', 'uaFullVersion']
 				)
-				const { brands, mobile } = navigator.userAgentData || {}
+				const { brands, mobile } = phantomNavigator.userAgentData || {}
 				if (!data.brands) {
 					data.brands = brands
 				}
