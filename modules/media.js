@@ -78,6 +78,96 @@ export const getMedia = async imports => {
 	}
 }
 
-export const mediaHTML = () => {
-	
+export const mediaHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
+	if (!fp.media) {
+		return `
+		<div class="col-four undefined">
+			<strong>Media</strong>
+			<div>devices (0): ${note.blocked}</div>
+			<div>constraints: ${note.blocked}</div>
+			<div>mimes (0): ${note.blocked}</div>
+		</div>`
+	}
+	const {
+		media: {
+			mediaDevices,
+			constraints,
+			mimeTypes,
+			$hash
+		}
+	} = fp
+
+	const header = `
+	<style>
+		.audiop, .videop, .medias, .mediar, .blank-false {
+			padding: 2px 8px;
+		}
+		.audiop {
+			background: #657fca26;
+		}
+		.medias {
+			background: #657fca54;
+		}
+		.videop {
+			background: #ca65b424;
+		}
+		.mediar {
+			background: #ca65b459;
+		}
+		.audiop.pb, .videop.pb, .guide.pr {
+			color: #8f8ff1 !important;
+		}
+		.audiop.mb, .videop.mb, .guide.mb {
+			color: #98cee4 !important;
+		}
+		.medias.tr, .mediar.tr, .guide.tr {
+			color: #c778ba !important;
+		}
+	</style>
+	<div>
+	<br><span class="audiop">audioPlayType</span>
+	<br><span class="videop">videoPlayType</span>
+	<br><span class="medias">mediaSource</span>
+	<br><span class="mediar">mediaRecorder</span>
+	<br><span class="guide pr">P (Probably)</span>
+	<br><span class="guide mb">M (Maybe)</span>
+	<br><span class="guide tr">T (True)</span>
+	</div>`
+	const invalidMimeTypes = !mimeTypes || !mimeTypes.length
+	const mimes = invalidMimeTypes ? undefined : mimeTypes.map(type => {
+		const { mimeType, audioPlayType, videoPlayType, mediaSource, mediaRecorder } = type
+		return `
+			${audioPlayType == 'probably' ? '<span class="audiop pb">P</span>' : audioPlayType == 'maybe' ? '<span class="audiop mb">M</span>': '<span class="blank-false">-</span>'}${videoPlayType == 'probably' ? '<span class="videop pb">P</span>' : videoPlayType == 'maybe' ? '<span class="videop mb">M</span>': '<span class="blank-false">-</span>'}${mediaSource ? '<span class="medias tr">T</span>'  : '<span class="blank-false">-</span>'}${mediaRecorder ? '<span class="mediar tr">T</span>'  : '<span class="blank-false">-</span>'}: ${mimeType}
+		`	
+	})
+
+	return `
+	<div class="col-four">
+		<strong>Media</strong><span class="hash">${hashSlice($hash)}</span>
+		<div>devices (${count(mediaDevices)}): ${
+			!mediaDevices || !mediaDevices.length ? note.blocked : 
+			modal(
+				'creep-media-devices',
+				mediaDevices.join('<br>'),
+				hashMini(mediaDevices)
+			)
+		}</div>
+		<div>constraints: ${
+			!constraints || !constraints.length ? note.blocked : 
+			modal(
+				'creep-media-constraints',
+				constraints.join('<br>'),
+				hashMini(constraints)
+			)
+		}</div>
+		<div>mimes (${count(mimeTypes)}): ${
+			invalidMimeTypes ? note.blocked : 
+			modal(
+				'creep-media-mimeTypes',
+				header+mimes.join('<br>'),
+				hashMini(mimeTypes)
+			)
+		}</div>
+	</div>
+	`	
 }

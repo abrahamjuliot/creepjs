@@ -589,174 +589,41 @@ const imports = {
 			<div class="col-four icon-container">
 			</div>
 		</div>
-
 		<div id="headless-resistance-detection-results" class="flex-grid">
 			${headlesFeaturesHTML(templateImports)}
 			${resistanceHTML(templateImports)}
 		</div>
-
-		<div class="flex-grid relative">	
-		${workerScopeHTML(templateImports)}
+		<div class="flex-grid relative">${workerScopeHTML(templateImports)}</div>
+		<div class="flex-grid">${webglHTML(templateImports)}</div>
+		<div class="flex-grid">
+			${canvasHTML(templateImports)}
+			${fontsHTML(templateImports)}
 		</div>
 		<div class="flex-grid">
-		${webglHTML(templateImports)}
+			${audioHTML(templateImports)}
+			${voicesHTML(templateImports)}
+			${mediaHTML(templateImports)}
 		</div>
 		<div class="flex-grid">
-		${canvasHTML(templateImports)}
-		${fontsHTML(templateImports)}
+			${clientRectsHTML(templateImports)}
+			${svgHTML(templateImports)}
 		</div>
+		<div class="flex-grid">${screenHTML(templateImports)}</div>
 		<div class="flex-grid">
-		${audioHTML(templateImports)}
-		${!fp.voices ?
-			`<div class="col-four undefined">
-				<strong>Speech</strong>
-				<div>voices (0): ${note.blocked}</div>
-				<div>default: ${note.blocked}</div>
-			</div>` :
-		(() => {
-			const {
-				voices: {
-					$hash,
-					defaultVoice,
-					voices
-				}
-			} = fp
-			const voiceList = voices.map(voice => `${voice.name} (${voice.lang})`)
-			return `
-			<div class="col-four">
-				<strong>Speech</strong><span class="hash">${hashSlice($hash)}</span>
-				<div>voices (${count(voices)}): ${
-					!voiceList || !voiceList.length ? note.unsupported :
-					modal(
-						'creep-voices',
-						voiceList.join('<br>'),
-						hashMini(voices)
-					)
-				}</div>
-				<div>default:${
-					!defaultVoice ? ` ${note.unsupported}` :
-					`<span class="sub-hash">${hashMini(defaultVoice)}</span>`
-				}</div>
-			</div>
-			`
-		})()}
-		${!fp.media ?
-			`<div class="col-four undefined">
-				<strong>Media</strong>
-				<div>devices (0): ${note.blocked}</div>
-				<div>constraints: ${note.blocked}</div>
-				<div>mimes (0): ${note.blocked}</div>
-			</div>` :
-		(() => {
-			const {
-				media: {
-					mediaDevices,
-					constraints,
-					mimeTypes,
-					$hash
-				}
-			} = fp
-
-			const header = `
-			<style>
-				.audiop, .videop, .medias, .mediar, .blank-false {
-					padding: 2px 8px;
-				}
-				.audiop {
-					background: #657fca26;
-				}
-				.medias {
-					background: #657fca54;
-				}
-				.videop {
-					background: #ca65b424;
-				}
-				.mediar {
-					background: #ca65b459;
-				}
-				.audiop.pb, .videop.pb, .guide.pr {
-					color: #8f8ff1 !important;
-				}
-				.audiop.mb, .videop.mb, .guide.mb {
-					color: #98cee4 !important;
-				}
-				.medias.tr, .mediar.tr, .guide.tr {
-					color: #c778ba !important;
-				}
-			</style>
-			<div>
-			<br><span class="audiop">audioPlayType</span>
-			<br><span class="videop">videoPlayType</span>
-			<br><span class="medias">mediaSource</span>
-			<br><span class="mediar">mediaRecorder</span>
-			<br><span class="guide pr">P (Probably)</span>
-			<br><span class="guide mb">M (Maybe)</span>
-			<br><span class="guide tr">T (True)</span>
-			</div>`
-			const invalidMimeTypes = !mimeTypes || !mimeTypes.length
-			const mimes = invalidMimeTypes ? undefined : mimeTypes.map(type => {
-				const { mimeType, audioPlayType, videoPlayType, mediaSource, mediaRecorder } = type
-				return `
-					${audioPlayType == 'probably' ? '<span class="audiop pb">P</span>' : audioPlayType == 'maybe' ? '<span class="audiop mb">M</span>': '<span class="blank-false">-</span>'}${videoPlayType == 'probably' ? '<span class="videop pb">P</span>' : videoPlayType == 'maybe' ? '<span class="videop mb">M</span>': '<span class="blank-false">-</span>'}${mediaSource ? '<span class="medias tr">T</span>'  : '<span class="blank-false">-</span>'}${mediaRecorder ? '<span class="mediar tr">T</span>'  : '<span class="blank-false">-</span>'}: ${mimeType}
-				`	
-			})
-
-			return `
-			<div class="col-four">
-				<strong>Media</strong><span class="hash">${hashSlice($hash)}</span>
-				<div>devices (${count(mediaDevices)}): ${
-					!mediaDevices || !mediaDevices.length ? note.blocked : 
-					modal(
-						'creep-media-devices',
-						mediaDevices.join('<br>'),
-						hashMini(mediaDevices)
-					)
-				}</div>
-				<div>constraints: ${
-					!constraints || !constraints.length ? note.blocked : 
-					modal(
-						'creep-media-constraints',
-						constraints.join('<br>'),
-						hashMini(constraints)
-					)
-				}</div>
-				<div>mimes (${count(mimeTypes)}): ${
-					invalidMimeTypes ? note.blocked : 
-					modal(
-						'creep-media-mimeTypes',
-						header+mimes.join('<br>'),
-						hashMini(mimeTypes)
-					)
-				}</div>
-			</div>
-			`
-		})()}
-		</div>
-		
-		<div class="flex-grid">
-		${clientRectsHTML(templateImports)}
-		${svgHTML(templateImports)}
-		</div>
-		<div class="flex-grid">
-		${screenHTML(templateImports)}
-		</div>
-		<div class="flex-grid">
-		${cssMediaHTML(templateImports)}
-		${cssHTML(templateImports, systemHash)}
+			${cssMediaHTML(templateImports)}
+			${cssHTML(templateImports, systemHash)}
 		</div>
 		<div>
 			<div class="flex-grid">
-			${mathsHTML(templateImports)}
-			${consoleErrorsHTML(templateImports)}
+				${mathsHTML(templateImports)}
+				${consoleErrorsHTML(templateImports)}
 			</div>
 			<div class="flex-grid">
-			${windowFeaturesHTML(templateImports)}
-			${htmlElementVersionHTML(templateImports)}
+				${windowFeaturesHTML(templateImports)}
+				${htmlElementVersionHTML(templateImports)}
 			</div>
 		</div>
-		<div class="flex-grid">
-		${navigatorHTML(templateImports)}
-		</div>
+		<div class="flex-grid">${navigatorHTML(templateImports)}</div>
 		<div>
 			<strong>Tests</strong>
 			<div>

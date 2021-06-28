@@ -54,6 +54,38 @@ export const getVoices = imports => {
 	})
 }
 
-export const voicesHTML = () => {
-	
+export const voicesHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
+	if (!fp.voices) {
+		return `
+		<div class="col-four undefined">
+			<strong>Speech</strong>
+			<div>voices (0): ${note.blocked}</div>
+			<div>default: ${note.blocked}</div>
+		</div>`
+	}
+	const {
+		voices: {
+			$hash,
+			defaultVoice,
+			voices
+		}
+	} = fp
+	const voiceList = voices.map(voice => `${voice.name} (${voice.lang})`)
+	return `
+	<div class="col-four">
+		<strong>Speech</strong><span class="hash">${hashSlice($hash)}</span>
+		<div>voices (${count(voices)}): ${
+			!voiceList || !voiceList.length ? note.unsupported :
+			modal(
+				'creep-voices',
+				voiceList.join('<br>'),
+				hashMini(voices)
+			)
+		}</div>
+		<div>default:${
+			!defaultVoice ? ` ${note.unsupported}` :
+			`<span class="sub-hash">${hashMini(defaultVoice)}</span>`
+		}</div>
+	</div>
+	`
 }
