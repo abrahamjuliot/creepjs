@@ -958,13 +958,13 @@
 			const nativeProto = Object.getPrototypeOf(apiFunction);
 			try {
 				Object.setPrototypeOf(apiFunction, apiFunction) + '';
-	            return true
-	        } catch (error) {
-	            return (
+				return true
+			} catch (error) {
+				return (
 					error.constructor.name != 'TypeError' ||
 					(isFirefox && /too much recursion/.test(error.message)) ? true : false
 				)
-	        } finally {
+			} finally {
 				// restore proto
 				Object.setPrototypeOf(apiFunction, nativeProto);
 			}
