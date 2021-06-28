@@ -412,7 +412,7 @@
 				[`o: calling toString() on an object created from the function should throw a TypeError`]: getNewObjectToStringTypeErrorLie(apiFunction),
 				[`p: arguments or caller should not throw 'incompatible Proxy' TypeError`]: getIncompatibleProxyTypeErrorLie(apiFunction),
 				[`q: arguments or caller on toString should not throw 'incompatible Proxy' TypeError`]: getToStringIncompatibleProxyTypeErrorLie(apiFunction),
-				[`r: setting prototype to itself should not throw 'Uncaught InternalError: too much recursion'`]: getTooMuchRecursionLie(apiFunction)
+				[`r: setting prototype to itself should throw a TypeError not 'InternalError: too much recursion'`]: getTooMuchRecursionLie(apiFunction)
 			}
 			const lieTypes = Object.keys(lies).filter(key => !!lies[key])
 			return {
