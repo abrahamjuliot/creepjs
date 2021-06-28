@@ -1548,7 +1548,7 @@
 		try {
 			await new Promise(setTimeout).catch(e => {});
 			const start = performance.now();
-			const win = phantomDarkness ? phantomDarkness : window;
+			const win = window;
 			const audioContext = caniuse(() => win.OfflineAudioContext || win.webkitOfflineAudioContext);
 			if (!audioContext) {
 				logTestResult({ test: 'audio', passed: false });
