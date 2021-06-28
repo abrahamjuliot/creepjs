@@ -8,7 +8,7 @@
     "start": "node server.js",
     "autoprefixer": "postcss style.css -u autoprefixer -o style.prefix.css",
     "cleancss": "cleancss -o docs/style.min.css style.prefix.css",
-    "rollup": "rollup creep.js --file docs/creep.js --format iife",
+    "rollup": "rollup creep.js --file docs/creep.js --no-treeshake --format iife",
     "build:css": "npm run autoprefixer && npm run cleancss",
     "build": "npm run rollup & npm run build:css",
     "postbuild": "echo 'build complete 🔥'"

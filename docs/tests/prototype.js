@@ -367,25 +367,22 @@
 			x = new Proxy({}, {})
 			Object.setPrototypeOf(x, x)+''
 		*/
-		const tryTooMuchRecursion = (isFirefox, apiFunction) => {
-			const nativeProto = Object.getPrototypeOf(apiFunction);
-			try {
-				Object.setPrototypeOf(apiFunction, apiFunction) + '';
-	            return true
-	        } catch (error) {
-	            return (
-					error.constructor.name != 'TypeError' ||
-					(isFirefox && /too much recursion/.test(error.message)) ? true : false
-				)
-	        } finally {
-				// restore proto
-				Object.setPrototypeOf(apiFunction, nativeProto);
-			}
-		};
 		const getTooMuchRecursionLie = apiFunction => {
-			const isFirefox = getFirefox();
-			return tryTooMuchRecursion(isFirefox, apiFunction)
-		};
+			const isFirefox = getFirefox()
+			const nativeProto = Object.getPrototypeOf(apiFunction)
+			try {
+				Object.setPrototypeOf(apiFunction, apiFunction) + ''
+				return true
+			} catch (error) {
+				return (
+					error.constructor.name != 'TypeError' ||
+						(isFirefox && /too much recursion/.test(error.message)) ? true : false
+				)
+			} finally {
+				// restore proto
+				Object.setPrototypeOf(apiFunction, nativeProto)
+			}
+		}
 
 		// API Function Test
 		const getLies = (apiFunction, proto, obj = null) => {
