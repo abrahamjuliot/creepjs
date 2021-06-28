@@ -273,9 +273,10 @@ export const getNavigator = async (imports, workerScope) => {
 			}, 'oscpu failed'),
 			plugins: attempt(() => {
 				const navigatorPlugins = navigator.plugins
-				const ownProperties = Object.getOwnPropertyNames(navigatorPlugins).filter(name => isNaN(+name))
-				const ownPropertiesSet = new Set(ownProperties)
 				const plugins = phantomNavigator.plugins
+				if (!(plugins instanceof PluginArray)) {
+					return
+				}
 				const response = plugins ? [...phantomNavigator.plugins]
 					.map(p => ({
 						name: p.name,

@@ -388,13 +388,15 @@ export const getClientRects = async imports => {
 	}
 }
 
-export const clientRectsHTML = ({ fp, note, modal, hashMini, hashSlice }) => {
+export const clientRectsHTML = ({ fp, note, modal, getMismatchStyle, hashMini, hashSlice }) => {
 	if (!fp.clientRects) {
 		return `
 		<div class="col-six undefined">
 			<strong>DOMRect</strong>
-			<div>element: ${note.blocked}</div>
-			<div>range: ${note.blocked}</div>
+			<div>elems client: ${note.blocked}</div>
+			<div>range client: ${note.blocked}</div>
+			<div>elems bounding: ${note.blocked}</div>
+			<div>range bounding: ${note.blocked}</div>
 			<div>emojis v13.0: ${note.blocked}</div>
 			<div>emoji set:</div>
 			div class="block-text">${note.blocked}</div>
@@ -419,21 +421,41 @@ export const clientRectsHTML = ({ fp, note, modal, hashMini, hashSlice }) => {
 		return hashMini(excludeEmoji)
 	}
 
+	// compute mismatch syle
+	const getRectSum = rect => Object.keys(rect).reduce((acc, key) => acc += rect[key], 0)
+	const reduceRectSum = n => (''+n).split('.').reduce((acc, s) => acc += +s, 0)
+	const computeMismatchStyle = rects => {
+		if (!rects || !rects.length) {
+			return
+		}
+		const exptectedSum = rects.reduce((acc, rect) => {
+			const { right, left, width, bottom, top, height, x, y } = rect
+			const expected = {
+				width: right - left,
+				height: bottom - top,
+				right: left + width,
+				left: right - width,
+				bottom: top + height,
+				top: bottom - height,
+				x: right - width,
+				y: bottom - height
+			}
+			return acc += getRectSum(expected)
+		}, 0)
+		const actualSum = rects.reduce((acc, rect) => acc += getRectSum(rect), 0)
+		const expected = reduceRectSum(exptectedSum)
+		const actual = reduceRectSum(actualSum)
+		return getMismatchStyle((''+actual).split(''), (''+expected).split(''))
+	}
+	
+
 	return `
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>DOMRect</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-		<div class="help" title="Element.getClientRects()\nElement.getBoundingClientRect()">element:${
-			[...new Set([
-				hashMini(elementClientRects),
-				hashMini(elementBoundingClientRect)
-			])].map(hash => `<span class="sub-hash">${hash}</span>`).join('')
-		}</div>
-		<div class="help" title="Range.getClientRects()\nRange.getBoundingClientRect()">range:${
-			[...new Set([
-				hashMini(rangeClientRects),
-				hashMini(rangeBoundingClientRect)
-			])].map(hash => `<span class="sub-hash">${hash}</span>`).join('')
-		}</div>
+		<div class="help" title="Element.getClientRects()">elems client: ${computeMismatchStyle(elementClientRects)}</div>
+		<div class="help" title="Range.getClientRects()">range client: ${computeMismatchStyle(rangeClientRects)}</div>
+		<div class="help" title="Element.getBoundingClientRect()">elems bounding: ${computeMismatchStyle(elementBoundingClientRect)}</div>
+		<div class="help" title="Range.getBoundingClientRect()">range bounding: ${computeMismatchStyle(rangeBoundingClientRect)}</div>
 		<div>emojis v13.0: ${
 			modal(
 				`${id}-emojis`,

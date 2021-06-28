@@ -34,6 +34,8 @@ const note = {
 const pluralify = len => len > 1 ? 's' : ''
 const count = arr => arr && arr.constructor.name === 'Array' ? '' + (arr.length) : '0'
 
+const getMismatchStyle = (a, b) => b.map((char, i) => char != a[i] ? `<span class="bold-fail">${char}</span>` : char).join('')
+
 // modal component
 const modal = (name, result, linkname = 'details') => {
 	if (!result.length) {
@@ -65,4 +67,4 @@ const modal = (name, result, linkname = 'details') => {
 	`
 }
 
-export { patch, html, note, pluralify, count, modal }
+export { patch, html, note, pluralify, getMismatchStyle, count, modal }

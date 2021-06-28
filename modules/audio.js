@@ -240,7 +240,7 @@ export const getOfflineAudioContext = async imports => {
 
 }
 
-export const audioHTML = ({ fp, note, modal, hashMini, hashSlice }) => {
+export const audioHTML = ({ fp, note, modal, getMismatchStyle, hashMini, hashSlice }) => {
 	if (!fp.offlineAudioContext) {
 		return `<div class="col-four undefined">
 			<strong>Audio</strong>
@@ -271,19 +271,13 @@ export const audioHTML = ({ fp, note, modal, hashMini, hashSlice }) => {
 		}
 	} = fp
 	const knownSums = getKnownAudio()[compressorGainReduction]
-	const style = (a, b) => b.map((char, i) => char != a[i] ? `<span class="bold-fail">${char}</span>` : char).join('')
-
+	
 	return `
 	<div class="col-four${lied ? ' rejected' : ''}">
-		<style>
-			.bold-fail {
-				color: #ca656e;
-			}
-		</style>
 		<strong>Audio</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div>sum: ${
 			sampleSum && compressorGainReduction && knownSums && !knownSums.includes(sampleSum) ?
-			style((''+knownSums[0]).split(''), (''+sampleSum).split('')) :
+			getMismatchStyle((''+knownSums[0]).split(''), (''+sampleSum).split('')) :
 			sampleSum
 		}</div>
 		<div class="help" title="DynamicsCompressorNode.reduction">gain: ${compressorGainReduction}</div>

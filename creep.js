@@ -1,5 +1,5 @@
 import { isChrome, braveBrowser, getBraveMode, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, logTestResult, getPromiseRaceFulfilled } from './modules/helpers.js'
-import { patch, html, note, count, modal } from './modules/html.js'
+import { patch, html, note, count, modal, getMismatchStyle } from './modules/html.js'
 import { hashMini, instanceId, hashify } from './modules/crypto.js'
 
 import { captureError, attempt, caniuse, timer, errorsCaptured, getCapturedErrors, errorsHTML } from './modules/captureErrors.js'
@@ -50,6 +50,7 @@ const imports = {
 		note,
 		count,
 		modal,
+		getMismatchStyle,
 		// captureErrors
 		captureError,
 		attempt,
@@ -514,7 +515,8 @@ const imports = {
 		hashMini,
 		note,
 		modal,
-		count
+		count,
+		getMismatchStyle
 	}
 	const hasTrash = !!trashLen
 	const { lies: hasLied, capturedErrors: hasErrors } = creep

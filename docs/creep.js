@@ -291,6 +291,8 @@
 	const pluralify = len => len > 1 ? 's' : '';
 	const count = arr => arr && arr.constructor.name === 'Array' ? '' + (arr.length) : '0';
 
+	const getMismatchStyle = (a, b) => b.map((char, i) => char != a[i] ? `<span class="bold-fail">${char}</span>` : char).join('');
+
 	// modal component
 	const modal = (name, result, linkname = 'details') => {
 		if (!result.length) {
@@ -1780,7 +1782,7 @@
 
 	};
 
-	const audioHTML = ({ fp, note, modal, hashMini, hashSlice }) => {
+	const audioHTML = ({ fp, note, modal, getMismatchStyle, hashMini, hashSlice }) => {
 		if (!fp.offlineAudioContext) {
 			return `<div class="col-four undefined">
 			<strong>Audio</strong>
@@ -1811,19 +1813,13 @@
 			}
 		} = fp;
 		const knownSums = getKnownAudio()[compressorGainReduction];
-		const style = (a, b) => b.map((char, i) => char != a[i] ? `<span class="bold-fail">${char}</span>` : char).join('');
-
+		
 		return `
 	<div class="col-four${lied ? ' rejected' : ''}">
-		<style>
-			.bold-fail {
-				color: #ca656e;
-			}
-		</style>
 		<strong>Audio</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div>sum: ${
 			sampleSum && compressorGainReduction && knownSums && !knownSums.includes(sampleSum) ?
-			style((''+knownSums[0]).split(''), (''+sampleSum).split('')) :
+			getMismatchStyle((''+knownSums[0]).split(''), (''+sampleSum).split('')) :
 			sampleSum
 		}</div>
 		<div class="help" title="DynamicsCompressorNode.reduction">gain: ${compressorGainReduction}</div>
@@ -4770,9 +4766,10 @@
 				}, 'oscpu failed'),
 				plugins: attempt(() => {
 					const navigatorPlugins = navigator.plugins;
-					const ownProperties = Object.getOwnPropertyNames(navigatorPlugins).filter(name => isNaN(+name));
-					const ownPropertiesSet = new Set(ownProperties);
 					const plugins = phantomNavigator.plugins;
+					if (!(plugins instanceof PluginArray)) {
+						return
+					}
 					const response = plugins ? [...phantomNavigator.plugins]
 						.map(p => ({
 							name: p.name,
@@ -5461,13 +5458,15 @@
 		}
 	};
 
-	const clientRectsHTML = ({ fp, note, modal, hashMini, hashSlice }) => {
+	const clientRectsHTML = ({ fp, note, modal, getMismatchStyle, hashMini, hashSlice }) => {
 		if (!fp.clientRects) {
 			return `
 		<div class="col-six undefined">
 			<strong>DOMRect</strong>
-			<div>element: ${note.blocked}</div>
-			<div>range: ${note.blocked}</div>
+			<div>elems client: ${note.blocked}</div>
+			<div>range client: ${note.blocked}</div>
+			<div>elems bounding: ${note.blocked}</div>
+			<div>range bounding: ${note.blocked}</div>
 			<div>emojis v13.0: ${note.blocked}</div>
 			<div>emoji set:</div>
 			div class="block-text">${note.blocked}</div>
@@ -5492,21 +5491,41 @@
 			return hashMini(excludeEmoji)
 		};
 
+		// compute mismatch syle
+		const getRectSum = rect => Object.keys(rect).reduce((acc, key) => acc += rect[key], 0);
+		const reduceRectSum = n => (''+n).split('.').reduce((acc, s) => acc += +s, 0);
+		const computeMismatchStyle = rects => {
+			if (!rects || !rects.length) {
+				return
+			}
+			const exptectedSum = rects.reduce((acc, rect) => {
+				const { right, left, width, bottom, top, height, x, y } = rect;
+				const expected = {
+					width: right - left,
+					height: bottom - top,
+					right: left + width,
+					left: right - width,
+					bottom: top + height,
+					top: bottom - height,
+					x: right - width,
+					y: bottom - height
+				};
+				return acc += getRectSum(expected)
+			}, 0);
+			const actualSum = rects.reduce((acc, rect) => acc += getRectSum(rect), 0);
+			const expected = reduceRectSum(exptectedSum);
+			const actual = reduceRectSum(actualSum);
+			return getMismatchStyle((''+actual).split(''), (''+expected).split(''))
+		};
+		
+
 		return `
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>DOMRect</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-		<div class="help" title="Element.getClientRects()\nElement.getBoundingClientRect()">element:${
-			[...new Set([
-				hashMini(elementClientRects),
-				hashMini(elementBoundingClientRect)
-			])].map(hash => `<span class="sub-hash">${hash}</span>`).join('')
-		}</div>
-		<div class="help" title="Range.getClientRects()\nRange.getBoundingClientRect()">range:${
-			[...new Set([
-				hashMini(rangeClientRects),
-				hashMini(rangeBoundingClientRect)
-			])].map(hash => `<span class="sub-hash">${hash}</span>`).join('')
-		}</div>
+		<div class="help" title="Element.getClientRects()">elems client: ${computeMismatchStyle(elementClientRects)}</div>
+		<div class="help" title="Range.getClientRects()">range client: ${computeMismatchStyle(rangeClientRects)}</div>
+		<div class="help" title="Element.getBoundingClientRect()">elems bounding: ${computeMismatchStyle(elementBoundingClientRect)}</div>
+		<div class="help" title="Range.getBoundingClientRect()">range bounding: ${computeMismatchStyle(rangeBoundingClientRect)}</div>
 		<div>emojis v13.0: ${
 			modal(
 				`${id}-emojis`,
@@ -7191,13 +7210,14 @@
 					toDataURLHash: ['77dea834']
 				},
 				cydec: {
-					contentDocumentHash: ['945b0c78', '15771efa', '55e9b959'],
-					contentWindowHash: ['945b0c78', '15771efa', '55e9b959'],
-					createElementHash: ['cc7cb598', '4237b44c', '7b8c8ccb', '0cb0c682'],
-					getElementByIdHash: ['cc7cb598', '4237b44c', '7b8c8ccb', '0cb0c682'],
-					getImageDataHash: ['db60d7f9', '15771efa', 'd1cdba22', '55e9b959'],
-					toBlobHash: ['044f14c2', '15771efa', '128e810e', '55e9b959'],
-					toDataURLHash: ['ecb498d9', '6b838fb6', '00316d42', 'd19104ec']
+					// [FF, FF Anti OFF, Chrome, Chrome Anti Off]
+					contentDocumentHash: ['945b0c78', '15771efa', '403a1a21', '55e9b959'],
+					contentWindowHash: ['945b0c78', '15771efa', '403a1a21', '55e9b959'],
+					createElementHash: ['cc7cb598', '4237b44c', '1466aaf0', '0cb0c682'],
+					getElementByIdHash: ['cc7cb598', '4237b44c', '1466aaf0', '0cb0c682'],
+					getImageDataHash: ['db60d7f9', '15771efa', 'db60d7f9', '55e9b959'],
+					toBlobHash: ['044f14c2', '15771efa', 'afec348d', '55e9b959'],
+					toDataURLHash: ['ecb498d9', '6b838fb6', 'ecb498d9', 'd19104ec']
 				},
 				canvasblocker: {
 					contentDocumentHash: ['6f901c5a'],
@@ -7219,15 +7239,15 @@
 					replaceChildHash: ['77dea834']
 				},
 				duckduckgo: {
-					toDataURLHash: ['fd00bf5d', '55e9b959'],
-					toBlobHash: ['fd00bf5d', '55e9b959'],
-					getImageDataHash: ['fd00bf5d', '55e9b959'],
-					getByteFrequencyDataHash: ['fd00bf5d', '55e9b959'],
-					getByteTimeDomainDataHash: ['fd00bf5d', '55e9b959'],
-					getFloatFrequencyDataHash: ['fd00bf5d', '55e9b959'],
-					getFloatTimeDomainDataHash: ['fd00bf5d', '55e9b959'],
-					copyFromChannelHash: ['fd00bf5d', '55e9b959'],
-					getChannelDataHash: ['fd00bf5d', '55e9b959'],
+					toDataURLHash: ['fd00bf5d', '8ee7df22'],
+					toBlobHash: ['fd00bf5d', '8ee7df22'],
+					getImageDataHash: ['fd00bf5d', '8ee7df22'],
+					getByteFrequencyDataHash: ['fd00bf5d', '8ee7df22'],
+					getByteTimeDomainDataHash: ['fd00bf5d', '8ee7df22'],
+					getFloatFrequencyDataHash: ['fd00bf5d', '8ee7df22'],
+					getFloatTimeDomainDataHash: ['fd00bf5d', '8ee7df22'],
+					copyFromChannelHash: ['fd00bf5d', '8ee7df22'],
+					getChannelDataHash: ['fd00bf5d', '8ee7df22'],
 					hardwareConcurrencyHash: ['dfd41ab4'],
 					availHeightHash: ['dfd41ab4'],
 					availLeftHash: ['dfd41ab4'],
@@ -7503,6 +7523,7 @@
 			note,
 			count,
 			modal,
+			getMismatchStyle,
 			// captureErrors
 			captureError,
 			attempt,
@@ -7967,7 +7988,8 @@
 			hashMini,
 			note,
 			modal,
-			count
+			count,
+			getMismatchStyle
 		};
 		const hasTrash = !!trashLen;
 		const { lies: hasLied, capturedErrors: hasErrors } = creep;

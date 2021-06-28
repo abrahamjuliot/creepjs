@@ -153,13 +153,14 @@ export const getResistance = async imports => {
 				toDataURLHash: ['77dea834']
 			},
 			cydec: {
-				contentDocumentHash: ['945b0c78', '15771efa', '55e9b959'],
-				contentWindowHash: ['945b0c78', '15771efa', '55e9b959'],
-				createElementHash: ['cc7cb598', '4237b44c', '7b8c8ccb', '0cb0c682'],
-				getElementByIdHash: ['cc7cb598', '4237b44c', '7b8c8ccb', '0cb0c682'],
-				getImageDataHash: ['db60d7f9', '15771efa', 'd1cdba22', '55e9b959'],
-				toBlobHash: ['044f14c2', '15771efa', '128e810e', '55e9b959'],
-				toDataURLHash: ['ecb498d9', '6b838fb6', '00316d42', 'd19104ec']
+				// [FF, FF Anti OFF, Chrome, Chrome Anti Off]
+				contentDocumentHash: ['945b0c78', '15771efa', '403a1a21', '55e9b959'],
+				contentWindowHash: ['945b0c78', '15771efa', '403a1a21', '55e9b959'],
+				createElementHash: ['cc7cb598', '4237b44c', '1466aaf0', '0cb0c682'],
+				getElementByIdHash: ['cc7cb598', '4237b44c', '1466aaf0', '0cb0c682'],
+				getImageDataHash: ['db60d7f9', '15771efa', 'db60d7f9', '55e9b959'],
+				toBlobHash: ['044f14c2', '15771efa', 'afec348d', '55e9b959'],
+				toDataURLHash: ['ecb498d9', '6b838fb6', 'ecb498d9', 'd19104ec']
 			},
 			canvasblocker: {
 				contentDocumentHash: ['6f901c5a'],
@@ -181,15 +182,15 @@ export const getResistance = async imports => {
 				replaceChildHash: ['77dea834']
 			},
 			duckduckgo: {
-				toDataURLHash: ['fd00bf5d', '55e9b959'],
-				toBlobHash: ['fd00bf5d', '55e9b959'],
-				getImageDataHash: ['fd00bf5d', '55e9b959'],
-				getByteFrequencyDataHash: ['fd00bf5d', '55e9b959'],
-				getByteTimeDomainDataHash: ['fd00bf5d', '55e9b959'],
-				getFloatFrequencyDataHash: ['fd00bf5d', '55e9b959'],
-				getFloatTimeDomainDataHash: ['fd00bf5d', '55e9b959'],
-				copyFromChannelHash: ['fd00bf5d', '55e9b959'],
-				getChannelDataHash: ['fd00bf5d', '55e9b959'],
+				toDataURLHash: ['fd00bf5d', '8ee7df22'],
+				toBlobHash: ['fd00bf5d', '8ee7df22'],
+				getImageDataHash: ['fd00bf5d', '8ee7df22'],
+				getByteFrequencyDataHash: ['fd00bf5d', '8ee7df22'],
+				getByteTimeDomainDataHash: ['fd00bf5d', '8ee7df22'],
+				getFloatFrequencyDataHash: ['fd00bf5d', '8ee7df22'],
+				getFloatTimeDomainDataHash: ['fd00bf5d', '8ee7df22'],
+				copyFromChannelHash: ['fd00bf5d', '8ee7df22'],
+				getChannelDataHash: ['fd00bf5d', '8ee7df22'],
 				hardwareConcurrencyHash: ['dfd41ab4'],
 				availHeightHash: ['dfd41ab4'],
 				availLeftHash: ['dfd41ab4'],

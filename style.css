@@ -232,6 +232,9 @@ visitor {
     color: #aaa;
 }
 
+.bold-fail {
+	color: #ca656e;
+}
 
 #fingerprint-data .errors {
 	background: var(--warn);
