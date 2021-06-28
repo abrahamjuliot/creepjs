@@ -308,7 +308,18 @@ export const getNavigator = async (imports, workerScope) => {
 				const data = await phantomNavigator.userAgentData.getHighEntropyValues(
 					['platform', 'platformVersion', 'architecture',  'model', 'uaFullVersion']
 				)
-				return data
+				const { brands, mobile } = navigator.userAgentData || {}
+				if (!data.brands) {
+					data.brands = brands
+				}
+				if (!data.mobile) {
+					data.mobile = mobile
+				}
+				const dataSorted = Object.keys(data).sort().reduce((acc, key) => {
+					acc[key] = data[key]
+					return acc
+				},{})
+				return dataSorted
 			}, 'highEntropyValues failed'),
 			keyboard: await attempt(async () => {
 				if (!('keyboard' in navigator && navigator.keyboard)) {
@@ -399,25 +410,25 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 		return `
 		<div class="col-six undefined">
 			<strong>Navigator</strong>
+			<div>properties (0): ${note.blocked}</div>
+			<div>bluetooth: ${note.blocked}</div>
 			<div>deviceMemory: ${note.blocked}</div>
 			<div>doNotTrack: ${note.blocked}</div>
 			<div>globalPrivacyControl:${note.blocked}</div>
 			<div>hardwareConcurrency: ${note.blocked}</div>
+			<div>keyboard: ${note.blocked}</div>
 			<div>language: ${note.blocked}</div>
 			<div>maxTouchPoints: ${note.blocked}</div>
-			<div>vendor: ${note.blocked}</div>
-			<div>plugins (0): ${note.blocked}</div>
 			<div>mimeTypes (0): ${note.blocked}</div>
 			<div>platform: ${note.blocked}</div>
+			<div>plugins (0): ${note.blocked}</div>
 			<div>system: ${note.blocked}</div>
 			<div>ua architecture: ${note.blocked}</div>
 			<div>ua model: ${note.blocked}</div>
 			<div>ua platform: ${note.blocked}</div>
 			<div>ua platformVersion: ${note.blocked}</div>
 			<div>ua uaFullVersion: ${note.blocked}</div>
-			<div>properties (0): ${note.blocked}</div>
-			<div>keyboard: ${note.blocked}</div>
-			<div>bluetooth: ${note.blocked}</div>
+			<div>vendor: ${note.blocked}</div>
 		</div>
 		<div class="col-six">
 			<div>device:</div>
@@ -461,24 +472,33 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 	return `
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>Navigator</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+		<div>properties (${count(properties)}): ${
+			modal(
+				`${id}-properties`,
+				properties.join(', '),
+				hashMini(properties)
+			)
+		}</div>
+		<div>bluetooth: ${
+			typeof bluetoothAvailability == 'undefined' ? note.unsupported : 
+			!bluetoothAvailability ? 'unavailable' : 'available'
+		}</div>
 		<div>deviceMemory: ${!blocked[deviceMemory] ? deviceMemory : note.blocked}</div>
 		<div>doNotTrack: ${''+doNotTrack}</div>
 		<div>globalPrivacyControl: ${
 			''+globalPrivacyControl == 'undefined' ? note.unsupported : ''+globalPrivacyControl
 		}</div>
 		<div>hardwareConcurrency: ${!blocked[hardwareConcurrency] ? hardwareConcurrency : note.blocked}</div>
+		<div>keyboard: ${
+			!keyboard ? note.unsupported :
+			modal(
+				`${id}-keyboard`,
+				Object.keys(keyboard).map(key => `${key}: ${keyboard[key]}`).join('<br>'),
+				hashMini(keyboard)
+			)
+		}</div>
 		<div>language: ${!blocked[language] ? language : note.blocked}</div>
 		<div>maxTouchPoints: ${!blocked[maxTouchPoints] ? ''+maxTouchPoints : note.blocked}</div>
-		<div>vendor: ${!blocked[vendor] ? vendor : note.blocked}</div>
-		<div>plugins (${count(plugins)}): ${
-			!blocked[''+plugins] ?
-			modal(
-				`${id}-plugins`,
-				plugins.map(plugin => plugin.name).join('<br>'),
-				hashMini(plugins)
-			) :
-			note.blocked
-		}</div>
 		<div>mimeTypes (${count(mimeTypes)}): ${
 			!blocked[''+mimeTypes] ? 
 			modal(
@@ -489,37 +509,35 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 			note.blocked
 		}</div>
 		<div>platform: ${!blocked[platform] ? platform : note.blocked}</div>
+		<div>plugins (${count(plugins)}): ${
+			!blocked[''+plugins] ?
+			modal(
+				`${id}-plugins`,
+				plugins.map(plugin => plugin.name).join('<br>'),
+				hashMini(plugins)
+			) :
+			note.blocked
+		}</div>
 		<div>system: ${system}</div>
 		${highEntropyValues ?  
 			Object.keys(highEntropyValues).map(key => {
 				const value = highEntropyValues[key]
-				return `<div>ua ${key}: ${value ? value : note.unsupported}</div>`
-			}).join('') :
-			`<div>ua architecture: ${note.unsupported}</div>
+				if (key == 'brands' && value.length) {
+					const brands = value.filter(obj => !/Not;A Brand/.test(obj.brand)).map(obj => `${obj.brand} ${obj.version}`)
+					const primaryBrands = brands.length > 1 ? brands.filter(brand => !/Chromium/.test(brand)) : brands
+					return `<div>ua brand: ${primaryBrands.join(',')}</div>`
+				}
+				return `<div>ua ${key}: ${''+value != 'undefined' && value !== '' ? ''+value : note.unsupported}</div>`
+			}).join('') : `
+			<div>ua architecture: ${note.unsupported}</div>
+			<div>ua brand: ${note.unsupported}</div>
+			<div>ua mobile: ${note.unsupported}</div>
 			<div>ua model: ${note.unsupported}</div>
 			<div>ua platform: ${note.unsupported}</div>
 			<div>ua platformVersion: ${note.unsupported}</div>
 			<div>ua uaFullVersion: ${note.unsupported} </div>`
 		}
-		<div>properties (${count(properties)}): ${
-			modal(
-				`${id}-properties`,
-				properties.join(', '),
-				hashMini(properties)
-			)
-		}</div>
-		<div>keyboard: ${
-			!keyboard ? note.unsupported :
-			modal(
-				`${id}-keyboard`,
-				Object.keys(keyboard).map(key => `${key}: ${keyboard[key]}`).join('<br>'),
-				hashMini(keyboard)
-			)
-		}</div>
-		<div>bluetooth: ${
-			typeof bluetoothAvailability == 'undefined' ? note.unsupported : 
-			!bluetoothAvailability ? 'unavailable' : 'available'
-		}</div>
+		<div>vendor: ${!blocked[vendor] ? vendor : note.blocked}</div>
 	</div>
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<div>device:</div>
