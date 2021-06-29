@@ -7223,7 +7223,7 @@
 					contentDocumentHash: ['6f901c5a'],
 					contentWindowHash: ['6f901c5a'],
 					appendHash: ['6f901c5a'],
-					getImageDataHash: ['6f901c5a', disabled],
+					getImageDataHash: ['6f901c5a', 'a2971888', disabled],
 					toBlobHash: ['6f901c5a', '9f1c3dfe', disabled],
 					toDataURLHash: ['6f901c5a', disabled]
 				},
