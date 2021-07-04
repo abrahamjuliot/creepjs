@@ -94,108 +94,107 @@
 		}
 	}
 
-	const getTextMetricsFonts = ({ context, baseFonts, families }) => {
-		return new Promise(resolve => {
-			try {
-				if (!context) {
-					throw new Error(`Context blocked or not supported`)
-				}
-				const start = performance.now()
-				const detectedCombined = new Set()
-				const detectedViaAscent = new Set()
-				const detectedViaDescent = new Set()
-				const detectedViaLeft = new Set()
-				const detectedViaRight = new Set()
-				const detectedViaWidth = new Set()
-				const detectedViaFontAscent = new Set()
-				const detectedViaFontDescent = new Set()
-				const base = baseFonts.reduce((acc, font) => {
-					acc[font] = getTextMetrics(context, font)
-					return acc
-				}, {})
-				families.forEach(family => {
-					const basefont = /, (.+)/.exec(family)[1]
-					const dimensions = getTextMetrics(context, family)
-					const font = /\'(.+)\'/.exec(family)[1]
-					const support = (
-						dimensions.ascent != base[basefont].ascent ||
-						dimensions.descent != base[basefont].descent ||
-						dimensions.left != base[basefont].left ||
-						dimensions.right != base[basefont].right ||
-						dimensions.width != base[basefont].width
-					)
-					const extraSupport = (
-						dimensions.fontAscent != base[basefont].fontAscent ||
-						dimensions.fontDescent != base[basefont].fontDescent
-					)
-					if (((!isNaN(dimensions.ascent) && !isNaN(dimensions.fontAscent)) && (support || extraSupport)) ||
-						(!isNaN(dimensions.ascent) && support)) {
-						detectedCombined.add(font)
-					}
-					if (!isNaN(dimensions.ascent) &&
-						dimensions.ascent != base[basefont].ascent) {
-						detectedViaAscent.add(font)
-					}
-					if (!isNaN(dimensions.descent) &&
-						dimensions.descent != base[basefont].descent) {
-						detectedViaDescent.add(font)
-					}
-					if (!isNaN(dimensions.left) &&
-						dimensions.left != base[basefont].left) {
-						detectedViaLeft.add(font)
-					}
-					if (!isNaN(dimensions.right) &&
-						dimensions.right != base[basefont].right) {
-						detectedViaRight.add(font)
-					}
-					if (!isNaN(dimensions.width) &&
-						(dimensions.width != base[basefont].width)) {
-						detectedViaWidth.add(font)
-					}
-					if (!isNaN(dimensions.fontAscent) &&
-						(dimensions.fontAscent != base[basefont].fontAscent)
-					) {
-						detectedViaFontAscent.add(font)
-					}
-					if (!isNaN(dimensions.fontDescent) &&
-						(dimensions.fontDescent != base[basefont].fontDescent)
-					) {
-						detectedViaFontDescent.add(font)
-					}
-
-					return
-				})
-				const fonts = {
-					combined: [...detectedCombined],
-					ascent: [...detectedViaAscent],
-					descent: [...detectedViaDescent],
-					left: [...detectedViaLeft],
-					right: [...detectedViaRight],
-					width: [...detectedViaWidth],
-					fontAscent: [...detectedViaFontAscent],
-					fontDescent: [...detectedViaFontDescent]
-				}
-				return resolve({
-					fonts,
-					perf: performance.now() - start
-				})
-			} catch (error) {
-				console.error(error)
-				return resolve({
-					fonts: {
-						combined: [],
-						ascent: [],
-						descent: [],
-						left: [],
-						right: [],
-						width: [],
-						fontAscent: [],
-						fontDescent: []
-					},
-					perf: 0
-				})
+	const getTextMetricsFonts = async ({ context, baseFonts, families }) => {
+		try {
+			if (!context) {
+				throw new Error(`Context blocked or not supported`)
 			}
-		})
+			await new Promise(setTimeout).catch(e => {})
+			const start = performance.now()
+			const detectedCombined = new Set()
+			const detectedViaAscent = new Set()
+			const detectedViaDescent = new Set()
+			const detectedViaLeft = new Set()
+			const detectedViaRight = new Set()
+			const detectedViaWidth = new Set()
+			const detectedViaFontAscent = new Set()
+			const detectedViaFontDescent = new Set()
+			const base = baseFonts.reduce((acc, font) => {
+				acc[font] = getTextMetrics(context, font)
+				return acc
+			}, {})
+			families.forEach(family => {
+				const basefont = /, (.+)/.exec(family)[1]
+				const dimensions = getTextMetrics(context, family)
+				const font = /\'(.+)\'/.exec(family)[1]
+				const support = (
+					dimensions.ascent != base[basefont].ascent ||
+					dimensions.descent != base[basefont].descent ||
+					dimensions.left != base[basefont].left ||
+					dimensions.right != base[basefont].right ||
+					dimensions.width != base[basefont].width
+				)
+				const extraSupport = (
+					dimensions.fontAscent != base[basefont].fontAscent ||
+					dimensions.fontDescent != base[basefont].fontDescent
+				)
+				if (((!isNaN(dimensions.ascent) && !isNaN(dimensions.fontAscent)) && (support || extraSupport)) ||
+					(!isNaN(dimensions.ascent) && support)) {
+					detectedCombined.add(font)
+				}
+				if (!isNaN(dimensions.ascent) &&
+					dimensions.ascent != base[basefont].ascent) {
+					detectedViaAscent.add(font)
+				}
+				if (!isNaN(dimensions.descent) &&
+					dimensions.descent != base[basefont].descent) {
+					detectedViaDescent.add(font)
+				}
+				if (!isNaN(dimensions.left) &&
+					dimensions.left != base[basefont].left) {
+					detectedViaLeft.add(font)
+				}
+				if (!isNaN(dimensions.right) &&
+					dimensions.right != base[basefont].right) {
+					detectedViaRight.add(font)
+				}
+				if (!isNaN(dimensions.width) &&
+					(dimensions.width != base[basefont].width)) {
+					detectedViaWidth.add(font)
+				}
+				if (!isNaN(dimensions.fontAscent) &&
+					(dimensions.fontAscent != base[basefont].fontAscent)
+				) {
+					detectedViaFontAscent.add(font)
+				}
+				if (!isNaN(dimensions.fontDescent) &&
+					(dimensions.fontDescent != base[basefont].fontDescent)
+				) {
+					detectedViaFontDescent.add(font)
+				}
+
+				return
+			})
+			const fonts = {
+				combined: [...detectedCombined],
+				ascent: [...detectedViaAscent],
+				descent: [...detectedViaDescent],
+				left: [...detectedViaLeft],
+				right: [...detectedViaRight],
+				width: [...detectedViaWidth],
+				fontAscent: [...detectedViaFontAscent],
+				fontDescent: [...detectedViaFontDescent]
+			}
+			return {
+				fonts,
+				perf: performance.now() - start
+			}
+		} catch (error) {
+			console.error(error)
+			return {
+				fonts: {
+					combined: [],
+					ascent: [],
+					descent: [],
+					left: [],
+					right: [],
+					width: [],
+					fontAscent: [],
+					fontDescent: []
+				},
+				perf: 0
+			}
+		}
 	}
 
 	const getSVGDimensions = svgText => {
@@ -216,130 +215,129 @@
 		return dimensions
 	}
 
-	const getSVGFonts = ({ baseFonts, families }) => {
-		return new Promise(resolve => {
-			try {
-				const start = performance.now()
-				const chars = getChars()
-				const id = getId()
-				document.getElementById(id).innerHTML = `
-				<style>
-					#${id}-svg-detector {
-						position: absolute !important;
-						left: -9999px!important;
-						font-size: 256px !important;
-						font-style: normal !important;
-						font-weight: normal !important;
-						letter-spacing: normal !important;
-						line-break: auto !important;
-						line-height: normal !important;
-						text-transform: none !important;
-						text-align: left !important;
-						text-decoration: none !important;
-						text-shadow: none !important;
-						white-space: normal !important;
-						word-break: normal !important;
-						word-spacing: normal !important;
-						font-family: var(--font);
-					}
-				</style>
-				<svg viewBox="0 0 200 200">
-					<text id="${id}-svg-detector">${chars}</text>
-				</svg>
-			`
-				const svgText = document.getElementById(`${id}-svg-detector`)
-				const detectedCombined = new Set()
-				const detectedViaWidth = new Set()
-				const detectedViaHeight = new Set()
-				const detectedViaY = new Set()
-				const detectedViaCharWidth = new Set()
-				const detectedViaCharHeight = new Set()
-				const detectedViaCharY = new Set()
-				const detectedViaSubString = new Set()
-				const detectedViaTextLen = new Set()
-
-				const base = baseFonts.reduce((acc, font) => {
-					svgText.style.setProperty('--font', font)
-					const dimensions = getSVGDimensions(svgText)
-					acc[font] = dimensions
-					return acc
-				}, {})
-				families.forEach(family => {
-					svgText.style.setProperty('font-family', family)
-					const basefont = /, (.+)/.exec(family)[1]
-					const dimensions = getSVGDimensions(svgText)
-					const font = /\'(.+)\'/.exec(family)[1]
-					if (
-						dimensions.width != base[basefont].width ||
-						dimensions.height != base[basefont].height ||
-						dimensions.y != base[basefont].y ||
-						dimensions.charWidth != base[basefont].charWidth ||
-						dimensions.charHeight != base[basefont].charHeight ||
-						dimensions.charY != base[basefont].charY ||
-						dimensions.subString != base[basefont].subString ||
-						dimensions.textLen != base[basefont].textLen
-					) {
-						detectedCombined.add(font)
-					}
-					if (!isNaN(dimensions.width) && dimensions.width != base[basefont].width) {
-						detectedViaWidth.add(font)
-					}
-					if (!isNaN(dimensions.height) && dimensions.height != base[basefont].height) {
-						detectedViaHeight.add(font)
-					}
-					if (!isNaN(dimensions.y) && dimensions.y != base[basefont].y) {
-						detectedViaY.add(font)
-					}
-					if (!isNaN(dimensions.charWidth) && dimensions.charWidth != base[basefont].charWidth) {
-						detectedViaCharWidth.add(font)
-					}
-					if (!isNaN(dimensions.charHeight) && dimensions.charHeight != base[basefont].charHeight) {
-						detectedViaCharHeight.add(font)
-					}
-					if (!isNaN(dimensions.charY) && dimensions.charY != base[basefont].charY) {
-						detectedViaCharY.add(font)
-					}
-					if (!isNaN(dimensions.subString) && dimensions.subString != base[basefont].subString) {
-						detectedViaSubString.add(font)
-					}
-					if (!isNaN(dimensions.textLen) && dimensions.textLen != base[basefont].textLen) {
-						detectedViaTextLen.add(font)
-					}
-					return
-				})
-				const fonts = {
-					combined: [...detectedCombined],
-					width: [...detectedViaWidth],
-					height: [...detectedViaHeight],
-					y: [...detectedViaY],
-					charWidth: [...detectedViaCharWidth],
-					charHeight: [...detectedViaCharHeight],
-					charY: [...detectedViaCharY],
-					subString: [...detectedViaSubString],
-					textLen: [...detectedViaTextLen]
+	const getSVGFonts = async ({ baseFonts, families }) => {
+		try {
+			await new Promise(setTimeout).catch(e => {})
+			const start = performance.now()
+			const chars = getChars()
+			const id = getId()
+			document.getElementById(id).innerHTML = `
+			<style>
+				#${id}-svg-detector {
+					position: absolute !important;
+					left: -9999px!important;
+					font-size: 256px !important;
+					font-style: normal !important;
+					font-weight: normal !important;
+					letter-spacing: normal !important;
+					line-break: auto !important;
+					line-height: normal !important;
+					text-transform: none !important;
+					text-align: left !important;
+					text-decoration: none !important;
+					text-shadow: none !important;
+					white-space: normal !important;
+					word-break: normal !important;
+					word-spacing: normal !important;
+					font-family: var(--font);
 				}
-				return resolve({
-					fonts,
-					perf: performance.now() - start
-				})
-			} catch (error) {
-				console.error(error)
-				return resolve({
-					fonts: {
-						combined: [],
-						width: [],
-						height: [],
-						y: [],
-						charWidth: [],
-						charHeight: [],
-						charY: [],
-						subString: [],
-						textLen: []
-					},
-					perf: 0
-				})
+			</style>
+			<svg viewBox="0 0 200 200">
+				<text id="${id}-svg-detector">${chars}</text>
+			</svg>
+		`
+			const svgText = document.getElementById(`${id}-svg-detector`)
+			const detectedCombined = new Set()
+			const detectedViaWidth = new Set()
+			const detectedViaHeight = new Set()
+			const detectedViaY = new Set()
+			const detectedViaCharWidth = new Set()
+			const detectedViaCharHeight = new Set()
+			const detectedViaCharY = new Set()
+			const detectedViaSubString = new Set()
+			const detectedViaTextLen = new Set()
+
+			const base = baseFonts.reduce((acc, font) => {
+				svgText.style.setProperty('--font', font)
+				const dimensions = getSVGDimensions(svgText)
+				acc[font] = dimensions
+				return acc
+			}, {})
+			families.forEach(family => {
+				svgText.style.setProperty('font-family', family)
+				const basefont = /, (.+)/.exec(family)[1]
+				const dimensions = getSVGDimensions(svgText)
+				const font = /\'(.+)\'/.exec(family)[1]
+				if (
+					dimensions.width != base[basefont].width ||
+					dimensions.height != base[basefont].height ||
+					dimensions.y != base[basefont].y ||
+					dimensions.charWidth != base[basefont].charWidth ||
+					dimensions.charHeight != base[basefont].charHeight ||
+					dimensions.charY != base[basefont].charY ||
+					dimensions.subString != base[basefont].subString ||
+					dimensions.textLen != base[basefont].textLen
+				) {
+					detectedCombined.add(font)
+				}
+				if (!isNaN(dimensions.width) && dimensions.width != base[basefont].width) {
+					detectedViaWidth.add(font)
+				}
+				if (!isNaN(dimensions.height) && dimensions.height != base[basefont].height) {
+					detectedViaHeight.add(font)
+				}
+				if (!isNaN(dimensions.y) && dimensions.y != base[basefont].y) {
+					detectedViaY.add(font)
+				}
+				if (!isNaN(dimensions.charWidth) && dimensions.charWidth != base[basefont].charWidth) {
+					detectedViaCharWidth.add(font)
+				}
+				if (!isNaN(dimensions.charHeight) && dimensions.charHeight != base[basefont].charHeight) {
+					detectedViaCharHeight.add(font)
+				}
+				if (!isNaN(dimensions.charY) && dimensions.charY != base[basefont].charY) {
+					detectedViaCharY.add(font)
+				}
+				if (!isNaN(dimensions.subString) && dimensions.subString != base[basefont].subString) {
+					detectedViaSubString.add(font)
+				}
+				if (!isNaN(dimensions.textLen) && dimensions.textLen != base[basefont].textLen) {
+					detectedViaTextLen.add(font)
+				}
+				return
+			})
+			const fonts = {
+				combined: [...detectedCombined],
+				width: [...detectedViaWidth],
+				height: [...detectedViaHeight],
+				y: [...detectedViaY],
+				charWidth: [...detectedViaCharWidth],
+				charHeight: [...detectedViaCharHeight],
+				charY: [...detectedViaCharY],
+				subString: [...detectedViaSubString],
+				textLen: [...detectedViaTextLen]
 			}
-		})
+			return {
+				fonts,
+				perf: performance.now() - start
+			}
+		} catch (error) {
+			console.error(error)
+			return {
+				fonts: {
+					combined: [],
+					width: [],
+					height: [],
+					y: [],
+					charWidth: [],
+					charHeight: [],
+					charY: [],
+					subString: [],
+					textLen: []
+				},
+				perf: 0
+			}
+		}
 	}
 
 	const getRectDimensions = (span, range) => {
@@ -360,101 +358,100 @@
 		return dimensions
 	}
 
-	const getRectFonts = ({ baseFonts, families }) => {
-		return new Promise(resolve => {
-			try {
-				const start = performance.now()
-				const chars = getChars()
-				const id = getId()
-				document.getElementById(id).innerHTML = `
-				<style>
-					#${id}-detector {
-						--font: '';
-						position: absolute !important;
-						left: -9999px!important;
-						font-size: 256px !important;
-						font-style: normal !important;
-						font-weight: normal !important;
-						letter-spacing: normal !important;
-						line-break: auto !important;
-						line-height: normal !important;
-						text-transform: none !important;
-						text-align: left !important;
-						text-decoration: none !important;
-						text-shadow: none !important;
-						white-space: normal !important;
-						word-break: normal !important;
-						word-spacing: normal !important;
-					}
-					#${id}-detector::after {
-						font-family: var(--font);
-						content: '${chars}';
-					}
-				</style>
-				<span id="${id}-detector"></span>
-			`
-				const span = document.getElementById(`${id}-detector`)
-				const range = document.createRange()
-				range.selectNode(span)
-				const detectedClient = new Set()
-				const detectedViaBounding = new Set()
-				const detectedClientRange = new Set()
-				const detectedViaBoundingRange = new Set()
-				const base = baseFonts.reduce((acc, font) => {
-					span.style.setProperty('--font', font)
-					const dimensions = getRectDimensions(span, range)
-					acc[font] = dimensions
-					return acc
-				}, {})
-				families.forEach(family => {
-					span.style.setProperty('--font', family)
-					const basefont = /, (.+)/.exec(family)[1]
-					const dimensions = getRectDimensions(span, range)
-					const font = /\'(.+)\'/.exec(family)[1]
-					if (dimensions.clientWidth != base[basefont].clientWidth ||
-						dimensions.clientHeight != base[basefont].clientHeight) {
-						detectedClient.add(font)
-					}
-					if (dimensions.boundingWidth != base[basefont].boundingWidth ||
-						dimensions.boundingHeight != base[basefont].boundingHeight) {
-						detectedViaBounding.add(font)
-					}
-					if (dimensions.clientRangeWidth != base[basefont].clientRangeWidth ||
-						dimensions.clientRangeHeight != base[basefont].clientRangeHeight) {
-						detectedClientRange.add(font)
-					}
-					if (dimensions.boundingRangeWidth != base[basefont].boundingRangeWidth ||
-						dimensions.boundingRangeHeight != base[basefont].boundingRangeHeight) {
-						detectedViaBoundingRange.add(font)
-					}
-					return
-				})
-				const fonts = {
-					client: [...detectedClient],
-					bounding: [...detectedViaBounding],
-					clientRange: [...detectedClientRange],
-					boundingRange: [...detectedViaBoundingRange]
+	const getRectFonts = async ({ baseFonts, families }) => {
+		try {
+			await new Promise(setTimeout).catch(e => {})
+			const start = performance.now()
+			const chars = getChars()
+			const id = getId()
+			document.getElementById(id).innerHTML = `
+			<style>
+				#${id}-detector {
+					--font: '';
+					position: absolute !important;
+					left: -9999px!important;
+					font-size: 256px !important;
+					font-style: normal !important;
+					font-weight: normal !important;
+					letter-spacing: normal !important;
+					line-break: auto !important;
+					line-height: normal !important;
+					text-transform: none !important;
+					text-align: left !important;
+					text-decoration: none !important;
+					text-shadow: none !important;
+					white-space: normal !important;
+					word-break: normal !important;
+					word-spacing: normal !important;
 				}
-				const hasBlocking = !!Object.keys(fonts).filter(type => !fonts[type].length).length
-				const hasMismatch = !!Object.keys(fonts).filter(type => '' + fonts[type] != '' + fonts.client).length
-				return resolve({
-					fonts,
-					lied: !hasBlocking && hasMismatch,
-					perf: performance.now() - start
-				})
-			} catch (error) {
-				console.error(error)
-				return resolve({
-					fonts: {
-						client: [],
-						bounding: [],
-						clientRange: [],
-						boundingRange: []
-					},
-					perf: 0
-				})
+				#${id}-detector::after {
+					font-family: var(--font);
+					content: '${chars}';
+				}
+			</style>
+			<span id="${id}-detector"></span>
+		`
+			const span = document.getElementById(`${id}-detector`)
+			const range = document.createRange()
+			range.selectNode(span)
+			const detectedClient = new Set()
+			const detectedViaBounding = new Set()
+			const detectedClientRange = new Set()
+			const detectedViaBoundingRange = new Set()
+			const base = baseFonts.reduce((acc, font) => {
+				span.style.setProperty('--font', font)
+				const dimensions = getRectDimensions(span, range)
+				acc[font] = dimensions
+				return acc
+			}, {})
+			families.forEach(family => {
+				span.style.setProperty('--font', family)
+				const basefont = /, (.+)/.exec(family)[1]
+				const dimensions = getRectDimensions(span, range)
+				const font = /\'(.+)\'/.exec(family)[1]
+				if (dimensions.clientWidth != base[basefont].clientWidth ||
+					dimensions.clientHeight != base[basefont].clientHeight) {
+					detectedClient.add(font)
+				}
+				if (dimensions.boundingWidth != base[basefont].boundingWidth ||
+					dimensions.boundingHeight != base[basefont].boundingHeight) {
+					detectedViaBounding.add(font)
+				}
+				if (dimensions.clientRangeWidth != base[basefont].clientRangeWidth ||
+					dimensions.clientRangeHeight != base[basefont].clientRangeHeight) {
+					detectedClientRange.add(font)
+				}
+				if (dimensions.boundingRangeWidth != base[basefont].boundingRangeWidth ||
+					dimensions.boundingRangeHeight != base[basefont].boundingRangeHeight) {
+					detectedViaBoundingRange.add(font)
+				}
+				return
+			})
+			const fonts = {
+				client: [...detectedClient],
+				bounding: [...detectedViaBounding],
+				clientRange: [...detectedClientRange],
+				boundingRange: [...detectedViaBoundingRange]
 			}
-		})
+			const hasBlocking = !!Object.keys(fonts).filter(type => !fonts[type].length).length
+			const hasMismatch = !!Object.keys(fonts).filter(type => '' + fonts[type] != '' + fonts.client).length
+			return {
+				fonts,
+				lied: !hasBlocking && hasMismatch,
+				perf: performance.now() - start
+			}
+		} catch (error) {
+			console.error(error)
+			return {
+				fonts: {
+					client: [],
+					bounding: [],
+					clientRange: [],
+					boundingRange: []
+				},
+				perf: 0
+			}
+		}
 	}
 
 	const pixelsToInt = pixels => Math.round(+pixels.replace('px', ''))
@@ -475,110 +472,109 @@
 		return dimensions
 	}
 
-	const getPixelFonts = ({ baseFonts, families }) => {
-		return new Promise(resolve => {
-			try {
-				const start = performance.now()
-				const chars = getChars()
-				const id = getId()
-				document.getElementById(id).innerHTML = `
-				<style>
-					#${id}-detector {
-						--font: '';
-						position: absolute !important;
-						left: -9999px!important;
-						font-size: 256px !important;
-						font-style: normal !important;
-						font-weight: normal !important;
-						letter-spacing: normal !important;
-						line-break: auto !important;
-						line-height: normal !important;
-						text-transform: none !important;
-						text-align: left !important;
-						text-decoration: none !important;
-						text-shadow: none !important;
-						white-space: normal !important;
-						word-break: normal !important;
-						word-spacing: normal !important;
-						/* in order to test scrollWidth, clientWidth, etc. */
-						padding: 0 !important;
-						margin: 0 !important;
-						/* in order to test inlineSize and blockSize */
-						writing-mode: horizontal-tb !important;
-						/* in order to test perspective-origin */
-						/* in order to test origins */
-						transform-origin: unset !important;
-						perspective-origin: unset !important;
-					}
-					#${id}-detector::after {
-						font-family: var(--font);
-						content: '${chars}';
-					}
-				</style>
-				<span id="${id}-detector"></span>
-			`
-				const span = document.getElementById(`${id}-detector`)
-				const detectedViaPixel = new Set()
-				const detectedViaTransform = new Set()
-				const detectedViaPerspective = new Set()
-				const detectedViaPixelSize = new Set()
-				const style = getComputedStyle(span)
-				const base = baseFonts.reduce((acc, font) => {
-					span.style.setProperty('--font', font)
-					const dimensions = getPixelDimensions(style)
-					acc[font] = dimensions
-					return acc
-				}, {})
-				families.forEach(family => {
-					span.style.setProperty('--font', family)
-					const basefont = /, (.+)/.exec(family)[1]
-					const dimensions = getPixelDimensions(style)
-					const font = /\'(.+)\'/.exec(family)[1]
-					if (dimensions.width != base[basefont].width ||
-						dimensions.height != base[basefont].height) {
-						detectedViaPixel.add(font)
-					}
-					if (dimensions.transformWidth != base[basefont].transformWidth ||
-						dimensions.transformHeight != base[basefont].transformHeight) {
-						detectedViaTransform.add(font)
-					}
-					if (dimensions.perspectiveWidth != base[basefont].perspectiveWidth ||
-						dimensions.perspectiveHeight != base[basefont].perspectiveHeight) {
-						detectedViaPerspective.add(font)
-					}
-					if (dimensions.sizeWidth != base[basefont].sizeWidth ||
-						dimensions.sizeHeight != base[basefont].sizeHeight) {
-						detectedViaPixelSize.add(font)
-					}
-					return
-				})
-				const fonts = {
-					pixel: [...detectedViaPixel],
-					transform: [...detectedViaTransform],
-					perspective: [...detectedViaPerspective],
-					size: [...detectedViaPixelSize]
+	const getPixelFonts = async ({ baseFonts, families }) => {
+		try {
+			await new Promise(setTimeout).catch(e => {})
+			const start = performance.now()
+			const chars = getChars()
+			const id = getId()
+			document.getElementById(id).innerHTML = `
+			<style>
+				#${id}-detector {
+					--font: '';
+					position: absolute !important;
+					left: -9999px!important;
+					font-size: 256px !important;
+					font-style: normal !important;
+					font-weight: normal !important;
+					letter-spacing: normal !important;
+					line-break: auto !important;
+					line-height: normal !important;
+					text-transform: none !important;
+					text-align: left !important;
+					text-decoration: none !important;
+					text-shadow: none !important;
+					white-space: normal !important;
+					word-break: normal !important;
+					word-spacing: normal !important;
+					/* in order to test scrollWidth, clientWidth, etc. */
+					padding: 0 !important;
+					margin: 0 !important;
+					/* in order to test inlineSize and blockSize */
+					writing-mode: horizontal-tb !important;
+					/* in order to test perspective-origin */
+					/* in order to test origins */
+					transform-origin: unset !important;
+					perspective-origin: unset !important;
 				}
-
-				const hasBlocking = !!Object.keys(fonts).filter(type => !fonts[type].length).length
-				const hasMismatch = !!Object.keys(fonts).filter(type => '' + fonts[type] != '' + fonts.pixel).length
-				return resolve({
-					fonts,
-					lied: !hasBlocking && hasMismatch,
-					perf: performance.now() - start
-				})
-			} catch (error) {
-				console.error(error)
-				return resolve({
-					fonts: {
-						pixel: [],
-						transform: [],
-						perspective: [],
-						size: []
-					},
-					perf: 0
-				})
+				#${id}-detector::after {
+					font-family: var(--font);
+					content: '${chars}';
+				}
+			</style>
+			<span id="${id}-detector"></span>
+		`
+			const span = document.getElementById(`${id}-detector`)
+			const detectedViaPixel = new Set()
+			const detectedViaTransform = new Set()
+			const detectedViaPerspective = new Set()
+			const detectedViaPixelSize = new Set()
+			const style = getComputedStyle(span)
+			const base = baseFonts.reduce((acc, font) => {
+				span.style.setProperty('--font', font)
+				const dimensions = getPixelDimensions(style)
+				acc[font] = dimensions
+				return acc
+			}, {})
+			families.forEach(family => {
+				span.style.setProperty('--font', family)
+				const basefont = /, (.+)/.exec(family)[1]
+				const dimensions = getPixelDimensions(style)
+				const font = /\'(.+)\'/.exec(family)[1]
+				if (dimensions.width != base[basefont].width ||
+					dimensions.height != base[basefont].height) {
+					detectedViaPixel.add(font)
+				}
+				if (dimensions.transformWidth != base[basefont].transformWidth ||
+					dimensions.transformHeight != base[basefont].transformHeight) {
+					detectedViaTransform.add(font)
+				}
+				if (dimensions.perspectiveWidth != base[basefont].perspectiveWidth ||
+					dimensions.perspectiveHeight != base[basefont].perspectiveHeight) {
+					detectedViaPerspective.add(font)
+				}
+				if (dimensions.sizeWidth != base[basefont].sizeWidth ||
+					dimensions.sizeHeight != base[basefont].sizeHeight) {
+					detectedViaPixelSize.add(font)
+				}
+				return
+			})
+			const fonts = {
+				pixel: [...detectedViaPixel],
+				transform: [...detectedViaTransform],
+				perspective: [...detectedViaPerspective],
+				size: [...detectedViaPixelSize]
 			}
-		})
+
+			const hasBlocking = !!Object.keys(fonts).filter(type => !fonts[type].length).length
+			const hasMismatch = !!Object.keys(fonts).filter(type => '' + fonts[type] != '' + fonts.pixel).length
+			return {
+				fonts,
+				lied: !hasBlocking && hasMismatch,
+				perf: performance.now() - start
+			}
+		} catch (error) {
+			console.error(error)
+			return {
+				fonts: {
+					pixel: [],
+					transform: [],
+					perspective: [],
+					size: []
+				},
+				perf: 0
+			}
+		}
 	}
 
 	const getLengthDimensions = span => {
@@ -593,122 +589,120 @@
 		return dimensions
 	}
 
-	const getLengthFonts = ({ baseFonts, families }) => {
-		return new Promise(resolve => {
-			try {
-				const start = performance.now()
-				const chars = getChars()
-				const id = getId()
-				document.getElementById(id).innerHTML = `
-				<style>
-					#${id}-detector {
-						--font: '';
-						position: absolute !important;
-						left: -9999px!important;
-						font-size: 256px !important;
-						font-style: normal !important;
-						font-weight: normal !important;
-						letter-spacing: normal !important;
-						line-break: auto !important;
-						line-height: normal !important;
-						text-transform: none !important;
-						text-align: left !important;
-						text-decoration: none !important;
-						text-shadow: none !important;
-						white-space: normal !important;
-						word-break: normal !important;
-						word-spacing: normal !important;
-						/* in order to test scrollWidth, clientWidth, etc. */
-						padding: 0 !important;
-						margin: 0 !important;
-					}
-					#${id}-detector::after {
-						font-family: var(--font);
-						content: '${chars}';
-					}
-				</style>
-				<span id="${id}-detector"></span>
-			`
-				const span = document.getElementById(`${id}-detector`)
-				const detectedViaScroll = new Set()
-				const detectedViaOffset = new Set()
-				const detectedViaClient = new Set()
-				const base = baseFonts.reduce((acc, font) => {
-					span.style.setProperty('--font', font)
-					const dimensions = getLengthDimensions(span)
-					acc[font] = dimensions
-					return acc
-				}, {})
-				families.forEach(family => {
-					span.style.setProperty('--font', family)
-					const basefont = /, (.+)/.exec(family)[1]
-					const dimensions = getLengthDimensions(span)
-					const font = /\'(.+)\'/.exec(family)[1]
-					if (dimensions.scrollWidth != base[basefont].scrollWidth ||
-						dimensions.scrollHeight != base[basefont].scrollHeight) {
-						detectedViaScroll.add(font)
-					}
-					if (dimensions.offsetWidth != base[basefont].offsetWidth ||
-						dimensions.offsetHeight != base[basefont].offsetHeight) {
-						detectedViaOffset.add(font)
-					}
-					if (dimensions.clientWidth != base[basefont].clientWidth ||
-						dimensions.clientHeight != base[basefont].clientHeight) {
-						detectedViaClient.add(font)
-					}
-					return
-				})
-				const fonts = {
-					scroll: [...detectedViaScroll],
-					offset: [...detectedViaOffset],
-					client: [...detectedViaClient]
+	const getLengthFonts = async ({ baseFonts, families }) => {
+		try {
+			await new Promise(setTimeout).catch(e => {})
+			const start = performance.now()
+			const chars = getChars()
+			const id = getId()
+			document.getElementById(id).innerHTML = `
+			<style>
+				#${id}-detector {
+					--font: '';
+					position: absolute !important;
+					left: -9999px!important;
+					font-size: 256px !important;
+					font-style: normal !important;
+					font-weight: normal !important;
+					letter-spacing: normal !important;
+					line-break: auto !important;
+					line-height: normal !important;
+					text-transform: none !important;
+					text-align: left !important;
+					text-decoration: none !important;
+					text-shadow: none !important;
+					white-space: normal !important;
+					word-break: normal !important;
+					word-spacing: normal !important;
+					/* in order to test scrollWidth, clientWidth, etc. */
+					padding: 0 !important;
+					margin: 0 !important;
 				}
-				const hasBlocking = !!Object.keys(fonts).filter(type => !fonts[type].length).length
-				const hasMismatch = !!Object.keys(fonts).filter(type => '' + fonts[type] != '' + fonts.scroll).length
-				return resolve({
-					fonts,
-					lied: !hasBlocking && hasMismatch,
-					perf: performance.now() - start
-				})
-			} catch (error) {
-				console.error(error)
-				return resolve({
-					fonts: {
-						scroll: [],
-						offset: [],
-						client: []
-					},
-					perf: 0
-				})
+				#${id}-detector::after {
+					font-family: var(--font);
+					content: '${chars}';
+				}
+			</style>
+			<span id="${id}-detector"></span>
+		`
+			const span = document.getElementById(`${id}-detector`)
+			const detectedViaScroll = new Set()
+			const detectedViaOffset = new Set()
+			const detectedViaClient = new Set()
+			const base = baseFonts.reduce((acc, font) => {
+				span.style.setProperty('--font', font)
+				const dimensions = getLengthDimensions(span)
+				acc[font] = dimensions
+				return acc
+			}, {})
+			families.forEach(family => {
+				span.style.setProperty('--font', family)
+				const basefont = /, (.+)/.exec(family)[1]
+				const dimensions = getLengthDimensions(span)
+				const font = /\'(.+)\'/.exec(family)[1]
+				if (dimensions.scrollWidth != base[basefont].scrollWidth ||
+					dimensions.scrollHeight != base[basefont].scrollHeight) {
+					detectedViaScroll.add(font)
+				}
+				if (dimensions.offsetWidth != base[basefont].offsetWidth ||
+					dimensions.offsetHeight != base[basefont].offsetHeight) {
+					detectedViaOffset.add(font)
+				}
+				if (dimensions.clientWidth != base[basefont].clientWidth ||
+					dimensions.clientHeight != base[basefont].clientHeight) {
+					detectedViaClient.add(font)
+				}
+				return
+			})
+			const fonts = {
+				scroll: [...detectedViaScroll],
+				offset: [...detectedViaOffset],
+				client: [...detectedViaClient]
 			}
-		})
+			const hasBlocking = !!Object.keys(fonts).filter(type => !fonts[type].length).length
+			const hasMismatch = !!Object.keys(fonts).filter(type => '' + fonts[type] != '' + fonts.scroll).length
+			return {
+				fonts,
+				lied: !hasBlocking && hasMismatch,
+				perf: performance.now() - start
+			}
+		} catch (error) {
+			console.error(error)
+			return {
+				fonts: {
+					scroll: [],
+					offset: [],
+					client: []
+				},
+				perf: 0
+			}
+		}
 	}
 
-	const getFontFaceSetFonts = list => {
-		return new Promise(async resolve => {
-			try {
-				const start = performance.now()
-				// real world usage should use iframe document instead of window document
-				const gibberish = '&WY2tR*^ftCiMX9LD5m%iZSWCVSg'
-				if (document.fonts.check(`12px '${gibberish}'`)) {
-					throw new Error('FontFaceSet.check blocked or not supported')
-				}
-				await document.fonts.ready
-				//console.log([...document.fonts.values()].map(fontFace => fontFace.family)) // show fonts loaded on the page
-				document.fonts.clear() // clear loaded or added fonts
-				const fonts = list.filter(font => document.fonts.check(`12px '${font}'`))
-				return resolve({
-					fonts,
-					perf: performance.now() - start
-				})
-			} catch (error) {
-				console.error(error)
-				return resolve({
-					fonts: [],
-					perf: 0
-				})
+	const getFontFaceSetFonts = async list => {
+		try {
+			await new Promise(setTimeout).catch(e => {})
+			const start = performance.now()
+			// real world usage should use iframe document instead of window document
+			const gibberish = '&WY2tR*^ftCiMX9LD5m%iZSWCVSg'
+			if (document.fonts.check(`12px '${gibberish}'`)) {
+				throw new Error('FontFaceSet.check blocked or not supported')
 			}
-		})
+			await document.fonts.ready
+			//console.log([...document.fonts.values()].map(fontFace => fontFace.family)) // show fonts loaded on the page
+			document.fonts.clear() // clear loaded or added fonts
+			const fonts = list.filter(font => document.fonts.check(`12px '${font}'`))
+			return {
+				fonts,
+				perf: performance.now() - start
+			}
+		} catch (error) {
+			console.error(error)
+			return {
+				fonts: [],
+				perf: 0
+			}
+		}
 	}
 
 	const context = document.createElement('canvas').getContext('2d')
