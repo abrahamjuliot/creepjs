@@ -40,16 +40,20 @@ const getBehemothIframe = win => {
 		if (!isChrome) {
 			return win
 		}
-		const iframe = win.document.createElement('iframe')
-		iframe.setAttribute('id', getRandomValues())
-		iframe.setAttribute('style', ghost())
-		win.document.body.appendChild(iframe)
-		if (!iframe || !iframe.parentNode) {
+		const div = win.document.createElement('div')
+		div.setAttribute('id', getRandomValues())
+		div.setAttribute('style', ghost())
+		div.innerHTML = `<div><iframe></iframe></div>`
+		win.document.body.appendChild(div)
+		const iframe = [...[...div.childNodes][0].childNodes][0]
+		if (!iframe) {
 			return
 		}
 		const { contentWindow } = iframe || {}
-		const iframe2 = contentWindow.document.createElement('iframe')
-		contentWindow.document.body.appendChild(iframe2)
+		const div2 = contentWindow.document.createElement('div')
+		div2.innerHTML = `<div><iframe></iframe></div>`
+		contentWindow.document.body.appendChild(div2)
+		const iframe2 = [...[...div2.childNodes][0].childNodes][0]
 		return iframe2.contentWindow
 	}
 	catch (error) {

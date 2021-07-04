@@ -230,7 +230,7 @@ const imports = {
 		]).catch(error => console.error(error.message))
 		
 		//console.log(performance.now()-start)
-
+		
 		const timeEnd = timeStart()
 
 		if (parentPhantom) {
