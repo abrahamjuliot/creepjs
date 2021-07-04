@@ -68,6 +68,7 @@
 	// https://www.lalit.org/wordpress/wp-content/uploads/2008/05/fontdetect.js?ver=0.3
 
 	const baseFonts = ['monospace', 'sans-serif', 'serif']
+	// ...googleFonts,...notoFonts, ...extendedFontList
 	const list = [...fontList, ...extendedFontList]
 	const families = list.reduce((acc, font) => {
 		baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`))
@@ -725,6 +726,34 @@
 		getFontFaceSetFonts(list)
 	]).catch(error => console.error(error))
 
+	const { combined: textMetricsFontsList } = textMetricsFonts.fonts || []
+	const {
+		combined: textMetricsFontsOffscreenList
+	} = textMetricsFontsOffscreen.fonts || []
+	const { combined: svgFontsList } = svgFonts.fonts || []
+	const { fonts: rectFontsData } = rectFonts || {}
+	const rectFontsList = Object.keys(rectFontsData).reduce((acc, key) => {
+		return [...acc, ...rectFontsData[key]]
+	},[])
+	const { fonts: pixelFontsData } = pixelFonts || {}
+	const pixelFontsList = Object.keys(pixelFontsData).reduce((acc, key) => {
+		return [...acc, ...pixelFontsData[key]]
+	},[])
+	const { fonts: lengthFontsData } = lengthFonts || {}
+	const lengthFontsList = Object.keys(lengthFontsData).reduce((acc, key) => {
+		return [...acc, ...lengthFontsData[key]]
+	},[])
+
+	const supportedFontList = [...new Set([
+		...textMetricsFontsList,
+		...textMetricsFontsOffscreenList,
+		...svgFontsList,
+		...rectFontsList,
+		...pixelFontsList,
+		...lengthFontsList,
+		...(fontFaceSetFonts.fonts || [])
+	])]
+
 	const fingerprint = await hashify({
 		textMetricsFonts: { ...textMetricsFonts, perf: undefined },
 		svgFonts: { ...svgFonts, perf: undefined },
@@ -1052,6 +1081,11 @@
 					<span class="aside-note">${'' + fontFaceSetFonts.fonts.length}/${listLen}</span>
 				</div>
 			</div>
+		</div>
+		<div>
+			${
+				(supportedFontList.map(font => `<div class="relative"><span class="aside-note">${font}</span><span style="font-family:'${font}'">${font}</span></div>`)).join('')
+			}
 		</div>
 	</div>
 `)
