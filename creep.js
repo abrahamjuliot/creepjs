@@ -13,7 +13,7 @@ import { getCSS, cssHTML } from './modules/computedStyle.js'
 import { getCSSMedia, cssMediaHTML } from './modules/css.js'
 import { getConsoleErrors, consoleErrorsHTML } from './modules/consoleErrors.js'
 import { getWindowFeatures, windowFeaturesHTML } from './modules/contentWindowVersion.js'
-import { getFonts, fontList, fontsHTML } from './modules/fonts.js'
+import { getFonts, fontsHTML } from './modules/fonts.js'
 import { getHeadlessFeatures, headlesFeaturesHTML } from './modules/headless.js'
 import { getHTMLElementVersion, htmlElementVersionHTML } from './modules/htmlElementVersion.js'
 import { getMaths, mathsHTML } from './modules/maths.js'
@@ -140,7 +140,7 @@ const imports = {
 			getTimezone(imports),
 			getClientRects(imports),
 			getOfflineAudioContext(imports),
-			getFonts(imports, [...fontList]),
+			getFonts(imports),
 			getBestWorkerScope(imports),
 			getMedia(imports),
 			getWebRTCData(imports),
@@ -932,7 +932,7 @@ const imports = {
 			}
 			
 			const isTorBrowser = resistance.privacy == 'Tor Browser'
-			
+			//console.log(emojiHash) // Tor Browser check
 			const {
 				compressorGainReduction: gain,
 				sampleSum,
