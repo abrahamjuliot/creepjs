@@ -58,7 +58,7 @@ const getWorkerData = async () => {
 		...getGeneralFonts()
 	].sort()
 
-	const getFontFaceSetFonts = async list => {
+	const getFontFaceSetFonts = list => {
 		const controlledErrorMessage = 'FontFaceSet.check blocked or not supported'
 		try {
 			if (!('fonts' in globalThis)) {
@@ -130,13 +130,13 @@ const getWorkerData = async () => {
 	}
 
 	const platformFonts = getPlatformFonts()
+	const fontFaceSetFonts = getFontFaceSetFonts(platformFonts)
+	
 	const [
 		canvas2d,
-		fontFaceSetFonts,
 		userAgentData
 	] = await Promise.all([
 		getDataURI(canvasOffscreen2d),
-		getFontFaceSetFonts(platformFonts),
 		getUserAgentData(navigator)
 	]).catch(error => console.error(error))
 
