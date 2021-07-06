@@ -146,11 +146,13 @@ export const getBestWorkerScope = async imports => {
 	}
 }
 
-export const workerScopeHTML = ({ fp, note, hashMini, hashSlice }) => {
+export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 	if (!fp.workerScope) {
 		return `
 		<div class="col-six undefined">
 			<strong>Worker</strong>
+			<div>canvas 2d: ${note.blocked}</div>
+			<div>fontFaceSet (0): ${note.blocked}</div>
 			<div>timezone offset: ${note.blocked}</div>
 			<div>location: ${note.blocked}</div>
 			<div>language: ${note.blocked}</div>
@@ -158,8 +160,9 @@ export const workerScopeHTML = ({ fp, note, hashMini, hashSlice }) => {
 			<div>hardwareConcurrency: ${note.blocked}</div>
 			<div>platform: ${note.blocked}</div>
 			<div>system: ${note.blocked}</div>
-			<div>canvas 2d: ${note.blocked}</div>
 			<div>webgl vendor: ${note.blocked}</div>
+			<div>userAgentData:</div>
+			<div class="block-text">${note.blocked}</div>
 		</div>
 		<div class="col-six undefined">
 			<div>device:</div>
@@ -171,10 +174,28 @@ export const workerScopeHTML = ({ fp, note, hashMini, hashSlice }) => {
 		</div>`
 	}
 	const { workerScope: data } = fp
+
+	const {
+		userAgentData,
+		fontFaceSetFonts,
+		fontListLen
+	} = data || {}
+
 	return `
 	<div class="ellipsis"><span class="aside-note">${data.type || ''} worker</span></div>
 	<div class="col-six">
 		<strong>Worker</strong><span class="hash">${hashSlice(data.$hash)}</span>
+		<div>canvas 2d:${
+			data.canvas2d && data.canvas2d.dataURI ?
+			`<span class="sub-hash">${hashMini(data.canvas2d.dataURI)}</span>` :
+			` ${note.unsupported}`
+		}</div>
+		<div class="help" title="FontFaceSet.check()">fontFaceSet (${fontFaceSetFonts ? count(fontFaceSetFonts) : '0'}/${''+fontListLen}): ${
+			fontFaceSetFonts.length ? modal(
+				'creep-fonts-check', fontFaceSetFonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>'),
+				hashMini(fontFaceSetFonts)
+			) : note.unsupported
+		}</div>
 		<div>timezone offset: ${data.timezoneOffset != undefined ? ''+data.timezoneOffset : note.unsupported}</div>
 		<div>location: ${data.timezoneLocation}</div>
 		<div>language: ${data.language || note.unsupported}</div>
@@ -182,12 +203,28 @@ export const workerScopeHTML = ({ fp, note, hashMini, hashSlice }) => {
 		<div>hardwareConcurrency: ${data.hardwareConcurrency || note.unsupported}</div>
 		<div>platform: ${data.platform || note.unsupported}</div>
 		<div>system: ${data.system || note.unsupported}</div>
-		<div>canvas 2d:${
-			data.canvas2d && data.canvas2d.dataURI ?
-			`<span class="sub-hash">${hashMini(data.canvas2d.dataURI)}</span>` :
-			` ${note.unsupported}`
-		}</div>
 		<div>webgl vendor: ${data.webglVendor || note.unsupported}</div>
+		<div>userAgentData:</div>
+		<div class="block-text">
+			<div>
+			${((userAgentData) => {
+				const {
+					architecture,
+					brands,
+					mobile,
+					model,
+					platformVersion,
+					platform
+				} = userAgentData || {}
+				return !userAgentData ? note.unsupported : `
+					${(brands || []).join(',')}
+					<br>${platform} ${platformVersion} ${architecture}
+					${model ? `<br>${model}` : ''}
+					${mobile ? '<br>mobile' : ''}
+				`
+			})(userAgentData)}	
+			</div>
+		</div>
 	</div>
 	<div class="col-six">
 		<div>device:</div>

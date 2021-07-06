@@ -388,7 +388,9 @@ const imports = {
 			),
 			['webgl vendor']: (
 				braveFingerprintingBlocking ? undefined : fp.workerScope.webglVendor
-			)
+			),
+			fontFaceSetFonts: fp.workerScope.fontFaceSetFonts,
+			userAgentData: fp.workerScope.userAgentData
 		} : undefined,
 		media: fp.media,
 		canvas2d: ( 

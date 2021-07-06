@@ -714,6 +714,33 @@
 			}
 		}
 	}
+	
+	const getFontFaceLoadFonts = async list => {
+		try {
+			await new Promise(setTimeout).catch(e => {})
+			const start = performance.now()
+			const fontFaceList = list.map(font => new FontFace(font, `local("${font}")`))
+			const responseCollection = await Promise
+				.allSettled(fontFaceList.map(font => font.load()))
+			const fonts = responseCollection.reduce((acc, font) => {
+				if (font.status == 'fulfilled') {
+					return [...acc, font.value.family]
+				}
+				return acc
+			}, [])
+			return {
+				fonts,
+				perf: performance.now() - start
+			}
+		} catch (error) {
+			console.error(error)
+			return {
+				fonts: [],
+				perf: 0
+			}
+		}
+	}
+
 
 	const context = document.createElement('canvas').getContext('2d')
 	const contextOffscreen = ('OffscreenCanvas' in window) ? new OffscreenCanvas(500, 200).getContext('2d') : undefined
@@ -724,7 +751,8 @@
 		rectFonts,
 		pixelFonts,
 		lengthFonts,
-		fontFaceSetFonts
+		fontFaceSetFonts,
+		fontFaceLoadFonts
 	] = await Promise.all([
 		getTextMetricsFonts({ context, baseFonts, families }),
 		getTextMetricsFonts({ context: contextOffscreen, baseFonts, families }),
@@ -732,7 +760,8 @@
 		getRectFonts({ baseFonts, families }),
 		getPixelFonts({ baseFonts, families }),
 		getLengthFonts({ baseFonts, families }),
-		getFontFaceSetFonts(list)
+		getFontFaceSetFonts(list),
+		getFontFaceLoadFonts(list)
 	]).catch(error => console.error(error))
 
 	const { combined: textMetricsFontsList } = textMetricsFonts.fonts || []
@@ -760,7 +789,8 @@
 		...rectFontsList,
 		...pixelFontsList,
 		...lengthFontsList,
-		...(fontFaceSetFonts.fonts || [])
+		...(fontFaceSetFonts.fonts || []),
+		...(fontFaceLoadFonts.fonts || [])
 	])]
 
 	console.log("'"+supportedFontList.join("',\n'")+"'")
@@ -772,6 +802,7 @@
 		pixelFonts: !pixelFonts.lied ? { ...pixelFonts, perf: undefined } : undefined,
 		lengthFonts: !lengthFonts.lied ? { ...lengthFonts, perf: undefined } : undefined,
 		fontFaceSetFonts: { ...fontFaceSetFonts, perf: undefined },
+		fontFaceLoadFonts: { ...fontFaceLoadFonts, perf: undefined },
 	})
 
 	console.log('TextMetrics:\n', textMetricsFonts)
@@ -781,6 +812,7 @@
 	console.log('Pixels:\n', pixelFonts)
 	console.log('Lengths:\n', lengthFonts)
 	console.log('FontFaceSet:\n', fontFaceSetFonts)
+	console.log('FontFaceLoad:\n', fontFaceLoadFonts)
 
 	div.parentNode.removeChild(div) // remove font-fingerprint element
 	const listLen = list.length
@@ -1085,11 +1117,22 @@
 				<span class="aside-note">${fontFaceSetFonts.perf.toFixed(2)}ms</span>
 				<strong>FontFaceSet</strong>
 				<div class="relative">check: ${
-		!!fontFaceSetFonts.fonts.length ?
-			hashMini(fontFaceSetFonts.fonts) :
-			note.blocked
-		}
+					!!fontFaceSetFonts.fonts.length ?
+						hashMini(fontFaceSetFonts.fonts) :
+						note.blocked
+					}
 					<span class="aside-note">${'' + fontFaceSetFonts.fonts.length}/${listLen}</span>
+				</div>
+			</div>
+			<div class="col-six relative${fontFaceLoadFonts.lied ? ' lies' : ''}">
+				<span class="aside-note">${fontFaceLoadFonts.perf.toFixed(2)}ms</span>
+				<strong>FontFace</strong>
+				<div class="relative">load: ${
+					!!fontFaceLoadFonts.fonts.length ?
+						hashMini(fontFaceLoadFonts.fonts) :
+						note.unsupported
+					}
+					<span class="aside-note">${'' + fontFaceLoadFonts.fonts.length}/${listLen}</span>
 				</div>
 			</div>
 		</div>
