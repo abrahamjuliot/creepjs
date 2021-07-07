@@ -176,34 +176,48 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 	const { workerScope: data } = fp
 
 	const {
-		userAgentData,
+		timezoneOffset,
+		timezoneLocation,
+		deviceMemory,
+		hardwareConcurrency,
+		language,
+		platform,
+		userAgent,
+		canvas2d,
+		webglRenderer,
+		webglVendor,
 		fontFaceSetFonts,
-		fontListLen
+		fontListLen,
+		userAgentData,
+		type,
+		system,
+		device,
+		$hash
 	} = data || {}
 
 	return `
-	<div class="ellipsis"><span class="aside-note">${data.type || ''} worker</span></div>
+	<div class="ellipsis"><span class="aside-note">${type || ''} worker</span></div>
 	<div class="col-six">
-		<strong>Worker</strong><span class="hash">${hashSlice(data.$hash)}</span>
+		<strong>Worker</strong><span class="hash">${hashSlice($hash)}</span>
 		<div>canvas 2d:${
-			data.canvas2d && data.canvas2d.dataURI ?
-			`<span class="sub-hash">${hashMini(data.canvas2d.dataURI)}</span>` :
+			canvas2d && canvas2d.dataURI ?
+			`<span class="sub-hash">${hashMini(canvas2d.dataURI)}</span>` :
 			` ${note.unsupported}`
 		}</div>
 		<div class="help" title="FontFaceSet.check()">fontFaceSet (${fontFaceSetFonts ? count(fontFaceSetFonts) : '0'}/${''+fontListLen}): ${
 			fontFaceSetFonts.length ? modal(
-				'creep-fonts-check', fontFaceSetFonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>'),
+				'creep-worker-fonts-check', fontFaceSetFonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>'),
 				hashMini(fontFaceSetFonts)
 			) : note.unsupported
 		}</div>
-		<div>timezone offset: ${data.timezoneOffset != undefined ? ''+data.timezoneOffset : note.unsupported}</div>
-		<div>location: ${data.timezoneLocation}</div>
-		<div>language: ${data.language || note.unsupported}</div>
-		<div>deviceMemory: ${data.deviceMemory || note.unsupported}</div>
-		<div>hardwareConcurrency: ${data.hardwareConcurrency || note.unsupported}</div>
-		<div>platform: ${data.platform || note.unsupported}</div>
-		<div>system: ${data.system || note.unsupported}</div>
-		<div>webgl vendor: ${data.webglVendor || note.unsupported}</div>
+		<div>timezone offset: ${timezoneOffset != undefined ? ''+timezoneOffset : note.unsupported}</div>
+		<div>location: ${timezoneLocation}</div>
+		<div>language: ${language || note.unsupported}</div>
+		<div>deviceMemory: ${deviceMemory || note.unsupported}</div>
+		<div>hardwareConcurrency: ${hardwareConcurrency || note.unsupported}</div>
+		<div>platform: ${platform || note.unsupported}</div>
+		<div>system: ${system || note.unsupported}</div>
+		<div>webgl vendor: ${webglVendor || note.unsupported}</div>
 		<div>userAgentData:</div>
 		<div class="block-text">
 			<div>
