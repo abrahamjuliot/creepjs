@@ -62,7 +62,7 @@ const getGeneralFonts = () => [
 	'Tahoma' // android, mac, windows (not ios, not chrome os 90)
 ]
 
-const getPlatformFonts = () => [
+const getoriginFonts = () => [
 	...getAppleFonts(),
 	...getWindowsFonts(),
 	...getLinuxFonts(),
@@ -199,9 +199,9 @@ export const getFonts = async imports => {
 		const div = doc.createElement('div')
 		div.setAttribute('id', id)
 		doc.body.appendChild(div)
-		const platformFontsList = getPlatformFonts()
+		const originFontsList = getoriginFonts()
 		const baseFonts = ['monospace', 'sans-serif', 'serif']
-		const families = platformFontsList.reduce((acc, font) => {
+		const families = originFontsList.reduce((acc, font) => {
 			baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`))
 			return acc
 		}, [])
@@ -220,13 +220,13 @@ export const getFonts = async imports => {
 		
 		const fontFaceLoadFonts = await getFontFaceLoadFonts(getFontsShortList())
 
-		const platformFonts = [...new Set(compressToList(pixelFonts))]
+		const originFonts = [...new Set(compressToList(pixelFonts))]
 
 		logTestResult({ start, test: 'fonts', passed: true })
 		return {
 			fontFaceLoadFonts,
 			pixelFonts,
-			platformFonts
+			originFonts
 		}
 	} catch (error) {
 		logTestResult({ test: 'fonts', passed: false })
@@ -241,7 +241,7 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini }) => {
 		return `
 		<div class="col-six undefined">
 			<strong>Fonts</strong>
-			<div>platform (0): ${note.blocked}</div>
+			<div>origin (0): ${note.blocked}</div>
 			<div>load (0): ${note.blocked}</div>
 			<div>system: ${note.blocked}</div>
 		</div>`
@@ -250,21 +250,22 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini }) => {
 		fonts: {
 			$hash,
 			fontFaceLoadFonts,
-			platformFonts
+			originFonts
 		}
 	} = fp
 	const icon = {
 		'Linux': '<span class="icon linux"></span>',
 		'Apple': '<span class="icon apple"></span>',
 		'Windows': '<span class="icon windows"></span>',
-		'Android': '<span class="icon android"></span>'
+		'Android': '<span class="icon android"></span>',
+		'CrOS': '<span class="icon cros"></span>'
 	}
 	const apple = new Set(getAppleFonts())
 	const linux = new Set(getLinuxFonts())
 	const windows = new Set(getWindowsFonts())
 	const android = new Set(getAndroidFonts())
 
-	const platform = [...platformFonts.reduce((acc, font) => {
+	const systemClass = [...originFonts.reduce((acc, font) => {
 		if (!acc.has('Apple') && apple.has(font)) {
 			acc.add('Apple')
 			return acc
@@ -284,38 +285,39 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini }) => {
 		return acc
 	}, new Set())]
 	const chromeOnAndroid = (
-		''+((platformFonts || []).sort()) == 'Baskerville,Monaco,Palatino,Tahoma'
+		''+((originFonts || []).sort()) == 'Baskerville,Monaco,Palatino,Tahoma'
 	)
-	if (!platform.length && chromeOnAndroid) {
-		platform.push('Android')
+	if (!systemClass.length && chromeOnAndroid) {
+		systemClass.push('Android')
 	}
-	const platformIcons = platform.map(name => icon[name])
-	const platformHash = hashMini(platformFonts)
+	const systemClassIcons = systemClass.map(name => icon[name])
+	const originHash = hashMini(originFonts)
 
 	const system = {
-		'Lucida Console': 'Windows',
-		'Arimo': 'Linux',
-		'Arimo,Ubuntu': 'Linux Ubuntu',
-		'Arimo,Roboto': 'Chrome OS',
-		'Droid Sans Mono,Roboto': 'Android',
-		'Helvetica Neue': 'iOS',
-		'Geneva,Helvetica Neue': 'Mac'
+		'Lucida Console': [icon.Windows, 'Windows'],
+		'Arimo': [icon.Linux, 'Linux'],
+		'Arimo,Ubuntu': [icon.Linux, 'Linux Ubuntu'],
+		'Arimo,Roboto': [icon.CrOS, 'Chrome OS'],
+		'Droid Sans Mono,Roboto': [icon.Android, 'Android'],
+		'Helvetica Neue': [icon.Apple, 'iOS'],
+		'Geneva,Helvetica Neue': [icon.Apple, 'Mac']
 	} 
 	const fontFaceLoadFontsString = ''+(fontFaceLoadFonts.sort())
 
 	return `
 	<div class="col-six">
 		<strong>Fonts</strong><span class="hash">${hashSlice($hash)}</span>
-		<div class="help" title="CSSStyleDeclaration.setProperty()\ntransform-origin\nperspective-origin">platform (${platformFonts ? count(platformFonts) : '0'}/${''+getPlatformFonts().length}): ${
-			platformFonts.length ? modal(
-				'creep-fonts', platformFonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>'),
-				`${platform.length ? `${platformIcons.join('')}${platformHash}` : platformHash}`
+		<div class="help" title="CSSStyleDeclaration.setProperty()\ntransform-origin\nperspective-origin">origin (${originFonts ? count(originFonts) : '0'}/${''+getoriginFonts().length}): ${
+			originFonts.length ? modal(
+				'creep-fonts', originFonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>'),
+				`${systemClass.length ? `${systemClassIcons.join('')}${originHash}` : originHash}`
 			) : note.unknown
 		}</div>
 		<div class="help" title="FontFace.load()">load (${fontFaceLoadFonts ? count(fontFaceLoadFonts) : '0'}/${''+getFontsShortList().length}): ${
-			fontFaceLoadFonts.length ? fontFaceLoadFontsString : note.unknown
+			fontFaceLoadFonts.length ? `${system[fontFaceLoadFontsString][0]}${fontFaceLoadFontsString}` : 
+				note.unknown
 		}</div>
-		<div>system: ${system[fontFaceLoadFontsString] || note.unknown}</div>
+		<div>system: ${system[fontFaceLoadFontsString][1] || note.unknown}</div>
 	</div>
 	`	
 }
