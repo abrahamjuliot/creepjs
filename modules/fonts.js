@@ -293,7 +293,7 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini }) => {
 	const systemClassIcons = systemClass.map(name => icon[name])
 	const originHash = hashMini(originFonts)
 
-	const system = {
+	const systemMap = {
 		'Lucida Console': [icon.Windows, 'Windows'],
 		'Arimo': [icon.Linux, 'Linux'],
 		'Arimo,Ubuntu': [icon.Linux, 'Linux Ubuntu'],
@@ -302,7 +302,9 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini }) => {
 		'Helvetica Neue': [icon.Apple, 'iOS'],
 		'Geneva,Helvetica Neue': [icon.Apple, 'Mac']
 	} 
+
 	const fontFaceLoadFontsString = ''+(fontFaceLoadFonts.sort())
+	const system = systemMap[fontFaceLoadFontsString] 
 
 	return `
 	<div class="col-six">
@@ -314,10 +316,10 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini }) => {
 			) : note.unknown
 		}</div>
 		<div class="help" title="FontFace.load()">load (${fontFaceLoadFonts ? count(fontFaceLoadFonts) : '0'}/${''+getFontsShortList().length}): ${
-			fontFaceLoadFonts.length ? `${system[fontFaceLoadFontsString][0]}${fontFaceLoadFontsString}` : 
+			fontFaceLoadFonts.length ? `${system ? system[0] : ''}${fontFaceLoadFontsString}` : 
 				note.unknown
 		}</div>
-		<div>system: ${system[fontFaceLoadFontsString][1] || note.unknown}</div>
+		<div>system: ${system ? system[0] : note.unknown}</div>
 	</div>
 	`	
 }
