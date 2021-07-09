@@ -300,7 +300,7 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini }) => {
 		'Noto Color Emoji,Ubuntu': [icon.Linux, 'Linux Ubuntu'],
 		'Noto Color Emoji,Roboto': [icon.CrOS, 'Chrome OS'],
 		'Droid Sans Mono,Roboto': [icon.Android, 'Android'],
-		'Droid Sans Mono,Noto Color Emoji,Roboto': [`${icon.Linux}${icon.Android}`, 'Linux Android'],
+		'Droid Sans Mono,Noto Color Emoji,Roboto': [`${icon.CrOS}${icon.Android}`, 'Chrome OS Android'],
 		'Helvetica Neue': [icon.Apple, 'iOS'],
 		'Geneva,Helvetica Neue': [icon.Apple, 'Mac']
 	} 
