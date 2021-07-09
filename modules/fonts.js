@@ -1,7 +1,6 @@
 // inspired by Lalit Patel's fontdetect.js
 // https://www.lalit.org/wordpress/wp-content/uploads/2008/05/fontdetect.js?ver=0.3
 
-
 const getFontsShortList = () => [
 	'Helvetica Neue', // Apple
 	'Geneva', // mac (not iOS)
@@ -300,7 +299,7 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini }) => {
 		'Noto Color Emoji,Ubuntu': [icon.Linux, 'Linux Ubuntu'],
 		'Noto Color Emoji,Roboto': [icon.CrOS, 'Chrome OS'],
 		'Droid Sans Mono,Roboto': [icon.Android, 'Android'],
-		'Droid Sans Mono,Noto Color Emoji,Roboto': [`${icon.CrOS}${icon.Android}`, 'Chrome OS Android'],
+		'Droid Sans Mono,Noto Color Emoji,Roboto': [`${icon.Linux}${icon.Android}`, 'Linux Android'],
 		'Helvetica Neue': [icon.Apple, 'iOS'],
 		'Geneva,Helvetica Neue': [icon.Apple, 'Mac']
 	} 
