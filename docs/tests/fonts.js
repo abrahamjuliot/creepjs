@@ -74,10 +74,10 @@
 	// ...googleFonts,...notoFonts, ...extendedFontList
 	const list = [...new Set([
 		...fontList,
-		...googleFonts,
-		...platformFonts,
+		//...googleFonts,
+		//...platformFonts,
 		...extendedFontList,
-		...notoFonts
+		//...notoFonts
 	])]
 	const families = list.reduce((acc, font) => {
 		baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`))
