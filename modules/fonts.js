@@ -6,7 +6,7 @@ const getFontsShortList = () => [
 	'Helvetica Neue', // Apple
 	'Geneva', // mac (not iOS)
 	'Lucida Console', // Windows
-	'Arimo', // Linux
+	'Noto Color Emoji', // Linux
 	'Ubuntu', // Ubuntu
 	'Droid Sans Mono', // Android
 	'Roboto', // Android, Chrome OS
@@ -242,8 +242,8 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini }) => {
 		<div class="col-six undefined">
 			<strong>Fonts</strong>
 			<div>origin (0): ${note.blocked}</div>
-			<div>load (0): ${note.blocked}</div>
-			<div>system: ${note.blocked}</div>
+			<div>load (0):</div>
+			<div class="block-text">${note.blocked}</div>
 		</div>`
 	}
 	const {
@@ -296,9 +296,11 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini }) => {
 	const systemMap = {
 		'Lucida Console': [icon.Windows, 'Windows'],
 		'Arimo': [icon.Linux, 'Linux'],
-		'Arimo,Ubuntu': [icon.Linux, 'Linux Ubuntu'],
-		'Arimo,Roboto': [icon.CrOS, 'Chrome OS'],
+		'Noto Color Emoji': [icon.Linux, 'Linux'],
+		'Noto Color Emoji,Ubuntu': [icon.Linux, 'Linux Ubuntu'],
+		'Noto Color Emoji,Roboto': [icon.CrOS, 'Chrome OS'],
 		'Droid Sans Mono,Roboto': [icon.Android, 'Android'],
+		'Droid Sans Mono,Noto Color Emoji,Roboto': [`${icon.Linux}${icon.Android}`, 'Linux Android'],
 		'Helvetica Neue': [icon.Apple, 'iOS'],
 		'Geneva,Helvetica Neue': [icon.Apple, 'Mac']
 	} 
@@ -316,10 +318,14 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini }) => {
 			) : note.unknown
 		}</div>
 		<div class="help" title="FontFace.load()">load (${fontFaceLoadFonts ? count(fontFaceLoadFonts) : '0'}/${''+getFontsShortList().length}): ${
-			fontFaceLoadFonts.length ? `${system ? system[0] : ''}${fontFaceLoadFontsString}` : 
-				note.unknown
+			system ? system[1] : ''
 		}</div>
-		<div>system: ${system ? system[0] : note.unknown}</div>
+		<div class="block-text">
+			<div>${
+				fontFaceLoadFonts.length ? `${system ? system[0] : ''}${fontFaceLoadFontsString}` : 
+					note.unknown
+			}</div>
+		</div>
 	</div>
 	`	
 }

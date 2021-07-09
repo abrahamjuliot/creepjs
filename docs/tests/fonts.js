@@ -74,10 +74,10 @@
 	// ...googleFonts,...notoFonts, ...extendedFontList
 	const list = [...new Set([
 		...fontList,
-		//...googleFonts,
-		//...platformFonts,
+		...googleFonts,
+		...platformFonts,
 		...extendedFontList,
-		//...notoFonts
+		...notoFonts
 	])]
 	const families = list.reduce((acc, font) => {
 		baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`))
@@ -794,6 +794,7 @@
 	])]
 
 	console.log("'"+supportedFontList.join("',\n'")+"'")
+	console.log("Loaded:\n'"+(fontFaceLoadFonts.fonts || []).join("',\n'")+"'")
 
 	const fingerprint = await hashify({
 		textMetricsFonts: { ...textMetricsFonts, perf: undefined },
