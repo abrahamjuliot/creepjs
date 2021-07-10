@@ -8,12 +8,30 @@
 	<title>Fonts | CreepJS</title>
 </head>
 <body>
+	<style>
+		.total {
+			border: 1px solid #aaa6;
+			padding: 0 2px;
+		}
+	</style>
 	<div id="fingerprint-data">
-		<div class="visitor-info">
+		<div id="visitor-fingerprint" class="visitor-info">
 			<strong>Fonts</strong> <span>computing...</span>
 		</div>
 		<div class="flex-grid">
-			<div class="col-six relative">
+			<div id="fontfaceset" class="col-six relative">
+				<span class="aside-note">0ms</span>
+				<strong>FontFaceSet</strong>
+				<div class="relative">check:</div>
+			</div>
+			<div id="fontface" class="col-six relative">
+				<span class="aside-note">0ms</span>
+				<strong>FontFace</strong>
+				<div class="relative">load:</div>
+			</div>
+		</div>
+		<div class="flex-grid">
+			<div id="text-metrics" class="col-six relative">
 				<span class="aside-note">0ms</span>
 				<strong>TextMetrics</strong>
 				<div class="relative">combined:</div>
@@ -25,7 +43,7 @@
 				<div class="relative">font ascent:</div>
 				<div class="relative">font descent:</div>
 			</div>
-			<div class="col-six relative">
+			<div id="text-metrics-offscreen" class="col-six relative">
 				<span class="aside-note">0ms</span>
 				<strong>TextMetrics Offscreen</strong>
 				<div class="relative">combined:</div>
@@ -39,7 +57,7 @@
 			</div>
 		</div>
 		<div class="flex-grid">
-			<div class="col-six relative">
+			<div id="svgrect" class="col-six relative">
 				<span class="aside-note">0ms</span>
 				<strong>SVGRect</strong>
 				<div class="relative">combined:</div>
@@ -52,7 +70,7 @@
 				<div class="relative">sub string:</div>
 				<div class="relative">text length:</div>
 			</div>
-			<div class="col-six relative">
+			<div id="domrect" class="col-six relative">
 				<span class="aside-note">0ms</span>
 				<strong>DOMRect</strong>
 				<div class="relative">client:</div>
@@ -62,7 +80,7 @@
 			</div>
 		</div>
 		<div class="flex-grid">
-			<div class="col-six relative">
+			<div id="pixels" class="col-six relative">
 				<span class="aside-note">0ms</span>
 				<strong>Pixels</strong>
 				<div class="relative">pixel:</div>
@@ -70,7 +88,7 @@
 				<div class="relative">perspective:</div>
 				<div class="relative">transform:</div>
 			</div>
-			<div class="col-six relative">
+			<div id="lengths" class="col-six relative">
 				<span class="aside-note">0ms</span>
 				<strong>Lengths</strong>
 				<div class="relative">offset:</div>
@@ -78,19 +96,7 @@
 				<div class="relative">scroll:</div>
 			</div>
 		</div>
-		<div class="flex-grid">
-			<div class="col-six relative">
-				<span class="aside-note">0ms</span>
-				<strong>FontFaceSet</strong>
-				<div class="relative">check:</div>
-			</div>
-			<div class="col-six relative">
-				<span class="aside-note">0ms</span>
-				<strong>FontFace</strong>
-				<div class="relative">load:</div>
-			</div>
-		</div>
-		<div>Computing...</div>
+		<div id="supported-list">Computing...</div>
 	</div>
 	<script src="fonts.js"></script>
 </body>

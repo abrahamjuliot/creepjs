@@ -172,9 +172,9 @@
 				) {
 					detectedViaFontDescent.add(font)
 				}
-
 				return
 			})
+
 			const fonts = {
 				combined: [...detectedCombined],
 				ascent: [...detectedViaAscent],
@@ -185,9 +185,76 @@
 				fontAscent: [...detectedViaFontAscent],
 				fontDescent: [...detectedViaFontDescent]
 			}
+
+			const perf = performance.now() - start
+			const offscreen = /offscreen/i.test(context.constructor.name)
+			const listLen = families.length
+			patch(document.getElementById(`text-metrics${offscreen ? '-offscreen' : ''}`), html`
+				<div class="col-six relative">
+					<span class="aside-note">${perf.toFixed(2)}ms</span>
+					<strong>TextMetrics${offscreen ? 'Offscreen' : ''}</strong>
+					<div class="relative">combined: ${
+						!!fonts.combined.length ?
+							hashMini(fonts.combined) :
+							note.blocked
+						}
+						<span class="aside-note total">${'' + fonts.combined.length}/${listLen}</span>
+					</div>
+					<div class="relative">ascent: ${
+						!!fonts.ascent.length ?
+							hashMini(fonts.ascent) :
+							note.blocked
+						}
+						<span class="aside-note">${'' + fonts.ascent.length}/${listLen}</span>
+					</div>
+					<div class="relative">descent: ${
+						!!fonts.descent.length ?
+							hashMini(fonts.descent) :
+							note.blocked
+						}
+						<span class="aside-note">${'' + fonts.descent.length}/${listLen}</span>
+					</div>
+					<div class="relative">left: ${
+						!!fonts.left.length ?
+							hashMini(fonts.left) :
+							note.blocked
+						}
+						<span class="aside-note">${'' + fonts.left.length}/${listLen}</span>
+					</div>
+					<div class="relative">right: ${
+						!!fonts.right.length ?
+							hashMini(fonts.right) :
+							note.blocked
+						}
+						<span class="aside-note">${'' + fonts.right.length}/${listLen}</span>
+					</div>
+					<div class="relative">width: ${
+						!!fonts.width.length ?
+							hashMini(fonts.width) :
+							note.blocked
+						}
+						<span class="aside-note">${'' + fonts.width.length}/${listLen}</span>
+					</div>
+					<div class="relative">font ascent: ${
+						!!fonts.fontAscent.length ?
+							hashMini(fonts.fontAscent) :
+							note.unsupported
+						}
+						<span class="aside-note">${'' + fonts.fontAscent.length}/${listLen}</span>
+					</div>
+					<div class="relative">font descent: ${
+						!!fonts.fontDescent.length ?
+							hashMini(fonts.fontDescent) :
+							note.unsupported
+						}
+						<span class="aside-note">${'' + fonts.fontDescent.length}/${listLen}</span>
+					</div>
+				</div>
+			`)
+
 			return {
 				fonts,
-				perf: performance.now() - start
+				perf
 			}
 		} catch (error) {
 			console.error(error)
@@ -327,9 +394,81 @@
 				subString: [...detectedViaSubString],
 				textLen: [...detectedViaTextLen]
 			}
+			const perf = performance.now() - start
+			const listLen = families.length
+			patch(document.getElementById('svgrect'), html`
+				<div class="col-six relative">
+					<span class="aside-note">${perf.toFixed(2)}ms</span>
+					<strong>SVGRect</strong>
+					<div class="relative">combined: ${
+						!!fonts.combined.length ?
+							hashMini(fonts.combined) :
+							note.blocked
+						}
+						<span class="aside-note total">${'' + fonts.combined.length}/${listLen}</span>
+					</div>
+					<div class="relative">width: ${
+						!!fonts.width.length ?
+							hashMini(fonts.width) :
+							note.blocked
+						}
+						<span class="aside-note">${'' + fonts.width.length}/${listLen}</span>
+					</div>
+					<div class="relative">height: ${
+						!!fonts.height.length ?
+							hashMini(fonts.height) :
+							note.blocked
+						}
+						<span class="aside-note">${'' + fonts.height.length}/${listLen}</span>
+					</div>
+					<div class="relative">y: ${
+						!!fonts.y.length ?
+							hashMini(fonts.y) :
+							note.blocked
+						}
+						<span class="aside-note">${'' + fonts.y.length}/${listLen}</span>
+					</div>
+					<div class="relative">char width: ${
+						!!fonts.charWidth.length ?
+							hashMini(fonts.charWidth) :
+							note.blocked
+						}
+						<span class="aside-note">${'' + fonts.charWidth.length}/${listLen}</span>
+					</div>
+					<div class="relative">char height: ${
+						!!fonts.charHeight.length ?
+							hashMini(fonts.charHeight) :
+							note.blocked
+						}
+						<span class="aside-note">${'' + fonts.charHeight.length}/${listLen}</span>
+					</div>
+					<div class="relative">char y: ${
+						!!fonts.charY.length ?
+							hashMini(fonts.charY) :
+							note.blocked
+						}
+						<span class="aside-note">${'' + fonts.charY.length}/${listLen}</span>
+					</div>
+					<div class="relative">sub string: ${
+						!!fonts.subString.length ?
+							hashMini(fonts.subString) :
+							note.blocked
+						}
+						<span class="aside-note">${'' + fonts.subString.length}/${listLen}</span>
+					</div>
+					<div class="relative">text length: ${
+						!!fonts.textLen.length ?
+							hashMini(fonts.textLen) :
+							note.blocked
+						}
+						<span class="aside-note">${'' + fonts.textLen.length}/${listLen}</span>
+					</div>
+				</div>
+			`)
+
 			return {
 				fonts,
-				perf: performance.now() - start
+				perf
 			}
 		} catch (error) {
 			console.error(error)
@@ -445,10 +584,50 @@
 			}
 			const hasBlocking = !!Object.keys(fonts).filter(type => !fonts[type].length).length
 			const hasMismatch = !!Object.keys(fonts).filter(type => '' + fonts[type] != '' + fonts.client).length
+
+			const lied = !hasBlocking && hasMismatch
+			const perf = performance.now() - start
+			const listLen = families.length
+
+			patch(document.getElementById('domrect'), html`
+				<div class="col-six relative${lied ? ' lies' : ''}">
+					<span class="aside-note">${perf.toFixed(2)}ms</span>
+					<strong>DOMRect</strong>
+					<div class="relative">client: ${
+						!!fonts.client.length ?
+							hashMini(fonts.client) :
+							note.blocked
+						}
+						<span class="aside-note">${'' + fonts.client.length}/${listLen}</span>
+					</div>
+					<div class="relative">bounding: ${
+						!!fonts.bounding.length ?
+							hashMini(fonts.bounding) :
+							note.blocked
+						}
+						<span class="aside-note">${'' + fonts.bounding.length}/${listLen}</span>
+					</div>
+					<div class="relative">client range: ${
+						!!fonts.clientRange.length ?
+							hashMini(fonts.clientRange) :
+							note.blocked
+						}
+						<span class="aside-note">${'' + fonts.clientRange.length}/${listLen}</span>
+					</div>
+					<div class="relative">bounding range: ${
+						!!fonts.boundingRange.length ?
+							hashMini(fonts.boundingRange) :
+							note.blocked
+						}
+						<span class="aside-note">${'' + fonts.boundingRange.length}/${listLen}</span>
+					</div>
+				</div>
+			`)
+
 			return {
 				fonts,
-				lied: !hasBlocking && hasMismatch,
-				perf: performance.now() - start
+				lied,
+				perf
 			}
 		} catch (error) {
 			console.error(error)
@@ -568,10 +747,48 @@
 
 			const hasBlocking = !!Object.keys(fonts).filter(type => !fonts[type].length).length
 			const hasMismatch = !!Object.keys(fonts).filter(type => '' + fonts[type] != '' + fonts.pixel).length
+			const lied = !hasBlocking && hasMismatch
+			const perf = performance.now() - start
+			const listLen = families.length
+			patch(document.getElementById('pixels'), html`
+				<div class="col-six relative${lied ? ' lies' : ''}">
+					<span class="aside-note">${perf.toFixed(2)}ms</span>
+					<strong>Pixels</strong>
+					<div class="relative">pixel: ${
+						!!fonts.pixel.length ?
+							hashMini(fonts.pixel) :
+							note.blocked
+						}
+						<span class="aside-note">${'' + fonts.pixel.length}/${listLen}</span>
+					</div>
+					<div class="relative">size: ${
+						!!fonts.size.length ?
+							hashMini(fonts.size) :
+							note.blocked
+						}
+						<span class="aside-note">${'' + fonts.size.length}/${listLen}</span>
+					</div>
+					<div class="relative">perspective: ${
+						!!fonts.perspective.length ?
+							hashMini(fonts.perspective) :
+							note.blocked
+						}
+						<span class="aside-note">${'' + fonts.perspective.length}/${listLen}</span>
+					</div>
+					<div class="relative">transform: ${
+						!!fonts.transform.length ?
+							hashMini(fonts.transform) :
+							note.blocked
+						}
+						<span class="aside-note">${'' + fonts.transform.length}/${listLen}</span>
+					</div>
+				</div>
+			`)
+
 			return {
 				fonts,
-				lied: !hasBlocking && hasMismatch,
-				perf: performance.now() - start
+				lied,
+				perf
 			}
 		} catch (error) {
 			console.error(error)
@@ -671,10 +888,43 @@
 			}
 			const hasBlocking = !!Object.keys(fonts).filter(type => !fonts[type].length).length
 			const hasMismatch = !!Object.keys(fonts).filter(type => '' + fonts[type] != '' + fonts.scroll).length
+
+			const lied = !hasBlocking && hasMismatch
+			const perf = performance.now() - start
+			const listLen = families.length
+
+			patch(document.getElementById('lengths'), html`
+				<div class="col-six relative${lied ? ' lies' : ''}">
+					<span class="aside-note">${perf.toFixed(2)}ms</span>
+					<strong>Lengths</strong>
+					<div class="relative">offset: ${
+						!!fonts.offset.length ?
+							hashMini(fonts.offset) :
+							note.blocked
+						}
+						<span class="aside-note">${'' + fonts.offset.length}/${listLen}</span>
+					</div>
+					<div class="relative">client: ${
+						!!fonts.client.length ?
+							hashMini(fonts.client) :
+							note.blocked
+						}
+						<span class="aside-note">${'' + fonts.client.length}/${listLen}</span>
+					</div>
+					<div class="relative">scroll: ${
+						!!fonts.scroll.length ?
+							hashMini(fonts.scroll) :
+							note.blocked
+						}
+						<span class="aside-note">${'' + fonts.scroll.length}/${listLen}</span>
+					</div>
+				</div>
+			`)
+
 			return {
 				fonts,
-				lied: !hasBlocking && hasMismatch,
-				perf: performance.now() - start
+				lied,
+				perf
 			}
 		} catch (error) {
 			console.error(error)
@@ -702,9 +952,24 @@
 			//console.log([...document.fonts.values()].map(fontFace => fontFace.family)) // show fonts loaded on the page
 			document.fonts.clear() // clear loaded or added fonts
 			const fonts = list.filter(font => document.fonts.check(`12px '${font}'`))
+			const perf = performance.now() - start
+			const listLen = families.length
+			patch(document.getElementById('fontfaceset'), html`
+				<div class="col-six relative">
+					<span class="aside-note">${perf.toFixed(2)}ms</span>
+					<strong>FontFaceSet</strong>
+					<div class="relative">check: ${
+						!!fonts.length ?
+							hashMini(fonts) :
+							note.blocked
+						}
+						<span class="aside-note">${'' + fonts.length}/${listLen}</span>
+					</div>
+				</div>
+			`)
 			return {
 				fonts,
-				perf: performance.now() - start
+				perf
 			}
 		} catch (error) {
 			console.error(error)
@@ -728,9 +993,25 @@
 				}
 				return acc
 			}, [])
+			const perf = performance.now() - start
+			const listLen = families.length
+			patch(document.getElementById('fontface'), html`
+				<div class="col-six relative">
+					<span class="aside-note">${perf.toFixed(2)}ms</span>
+					<strong>FontFace</strong>
+					<div class="relative">load: ${
+						!!fonts.length ?
+							hashMini(fonts) :
+							note.unsupported
+						}
+						<span class="aside-note">${'' + fonts.length}/${listLen}</span>
+					</div>
+				</div>
+			`)
+
 			return {
 				fonts,
-				perf: performance.now() - start
+				perf
 			}
 		} catch (error) {
 			console.error(error)
@@ -816,333 +1097,19 @@
 	console.log('FontFaceLoad:\n', fontFaceLoadFonts)
 
 	div.parentNode.removeChild(div) // remove font-fingerprint element
-	const listLen = list.length
-	const el = document.getElementById('fingerprint-data')
-	patch(el, html`
-	<div id="fingerprint-data">
-		<style>
-			.total {
-				border: 1px solid #aaa6;
-    			padding: 0 2px;
-			}
-		</style>
+
+	patch(document.getElementById('visitor-fingerprint'), html`
 		<div class="visitor-info">
 			<strong>Fonts</strong><span class="hash">${hashMini(fingerprint)}</span>
 		</div>
-		<div class="flex-grid">
-			<div class="col-six relative">
-				<span class="aside-note">${textMetricsFonts.perf.toFixed(2)}ms</span>
-				<strong>TextMetrics</strong>
-				<div class="relative">combined: ${
-		!!textMetricsFonts.fonts.combined.length ?
-			hashMini(textMetricsFonts.fonts.combined) :
-			note.blocked
-		}
-					<span class="aside-note total">${'' + textMetricsFonts.fonts.combined.length}/${listLen}</span>
-				</div>
-				<div class="relative">ascent: ${
-		!!textMetricsFonts.fonts.ascent.length ?
-			hashMini(textMetricsFonts.fonts.ascent) :
-			note.blocked
-		}
-					<span class="aside-note">${'' + textMetricsFonts.fonts.ascent.length}/${listLen}</span>
-				</div>
-				<div class="relative">descent: ${
-		!!textMetricsFonts.fonts.descent.length ?
-			hashMini(textMetricsFonts.fonts.descent) :
-			note.blocked
-		}
-					<span class="aside-note">${'' + textMetricsFonts.fonts.descent.length}/${listLen}</span>
-				</div>
-				<div class="relative">left: ${
-		!!textMetricsFonts.fonts.left.length ?
-			hashMini(textMetricsFonts.fonts.left) :
-			note.blocked
-		}
-					<span class="aside-note">${'' + textMetricsFonts.fonts.left.length}/${listLen}</span>
-				</div>
-				<div class="relative">right: ${
-		!!textMetricsFonts.fonts.right.length ?
-			hashMini(textMetricsFonts.fonts.right) :
-			note.blocked
-		}
-					<span class="aside-note">${'' + textMetricsFonts.fonts.right.length}/${listLen}</span>
-				</div>
-				<div class="relative">width: ${
-		!!textMetricsFonts.fonts.width.length ?
-			hashMini(textMetricsFonts.fonts.width) :
-			note.blocked
-		}
-					<span class="aside-note">${'' + textMetricsFonts.fonts.width.length}/${listLen}</span>
-				</div>
-				<div class="relative">font ascent: ${
-		!!textMetricsFonts.fonts.fontAscent.length ?
-			hashMini(textMetricsFonts.fonts.fontAscent) :
-			note.unsupported
-		}
-					<span class="aside-note">${'' + textMetricsFonts.fonts.fontAscent.length}/${listLen}</span>
-				</div>
-				<div class="relative">font descent: ${
-		!!textMetricsFonts.fonts.fontDescent.length ?
-			hashMini(textMetricsFonts.fonts.fontDescent) :
-			note.unsupported
-		}
-					<span class="aside-note">${'' + textMetricsFonts.fonts.fontDescent.length}/${listLen}</span>
-				</div>
-			</div>
-			<div class="col-six relative">
-				<span class="aside-note">${textMetricsFontsOffscreen.perf.toFixed(2)}ms</span>
-				<strong>TextMetrics Offscreen</strong>
-				<div class="relative">combined: ${
-		!!textMetricsFontsOffscreen.fonts.combined.length ?
-			hashMini(textMetricsFontsOffscreen.fonts.combined) :
-			note.blocked
-		}
-					<span class="aside-note total">${'' + textMetricsFontsOffscreen.fonts.combined.length}/${listLen}</span>
-				</div>
-				<div class="relative">ascent: ${
-		!!textMetricsFontsOffscreen.fonts.ascent.length ?
-			hashMini(textMetricsFontsOffscreen.fonts.ascent) :
-			note.blocked
-		}
-					<span class="aside-note">${'' + textMetricsFontsOffscreen.fonts.ascent.length}/${listLen}</span>
-				</div>
-				<div class="relative">descent: ${
-		!!textMetricsFontsOffscreen.fonts.descent.length ?
-			hashMini(textMetricsFontsOffscreen.fonts.descent) :
-			note.blocked
-		}
-					<span class="aside-note">${'' + textMetricsFontsOffscreen.fonts.descent.length}/${listLen}</span>
-				</div>
-				<div class="relative">left: ${
-		!!textMetricsFontsOffscreen.fonts.left.length ?
-			hashMini(textMetricsFontsOffscreen.fonts.left) :
-			note.blocked
-		}
-					<span class="aside-note">${'' + textMetricsFontsOffscreen.fonts.left.length}/${listLen}</span>
-				</div>
-				<div class="relative">right: ${
-		!!textMetricsFontsOffscreen.fonts.right.length ?
-			hashMini(textMetricsFontsOffscreen.fonts.right) :
-			note.blocked
-		}
-					<span class="aside-note">${'' + textMetricsFontsOffscreen.fonts.right.length}/${listLen}</span>
-				</div>
-				<div class="relative">width: ${
-		!!textMetricsFontsOffscreen.fonts.width.length ?
-			hashMini(textMetricsFontsOffscreen.fonts.width) :
-			note.blocked
-		}
-					<span class="aside-note">${'' + textMetricsFontsOffscreen.fonts.width.length}/${listLen}</span>
-				</div>
-				<div class="relative">font ascent: ${
-		!!textMetricsFontsOffscreen.fonts.fontAscent.length ?
-			hashMini(textMetricsFontsOffscreen.fonts.fontAscent) :
-			note.unsupported
-		}
-					<span class="aside-note">${'' + textMetricsFontsOffscreen.fonts.fontAscent.length}/${listLen}</span>
-				</div>
-				<div class="relative">font descent: ${
-		!!textMetricsFontsOffscreen.fonts.fontDescent.length ?
-			hashMini(textMetricsFontsOffscreen.fonts.fontDescent) :
-			note.unsupported
-		}
-					<span class="aside-note">${'' + textMetricsFontsOffscreen.fonts.fontDescent.length}/${listLen}</span>
-				</div>
-			</div>
-		</div>
-		<div class="flex-grid">
-			<div class="col-six relative">
-				<span class="aside-note">${svgFonts.perf.toFixed(2)}ms</span>
-				<strong>SVGRect</strong>
-				<div class="relative">combined: ${
-		!!svgFonts.fonts.combined.length ?
-			hashMini(svgFonts.fonts.combined) :
-			note.blocked
-		}
-					<span class="aside-note total">${'' + svgFonts.fonts.combined.length}/${listLen}</span>
-				</div>
-				<div class="relative">width: ${
-		!!svgFonts.fonts.width.length ?
-			hashMini(svgFonts.fonts.width) :
-			note.blocked
-		}
-					<span class="aside-note">${'' + svgFonts.fonts.width.length}/${listLen}</span>
-				</div>
-				<div class="relative">height: ${
-		!!svgFonts.fonts.height.length ?
-			hashMini(svgFonts.fonts.height) :
-			note.blocked
-		}
-					<span class="aside-note">${'' + svgFonts.fonts.height.length}/${listLen}</span>
-				</div>
-				<div class="relative">y: ${
-		!!svgFonts.fonts.y.length ?
-			hashMini(svgFonts.fonts.y) :
-			note.blocked
-		}
-					<span class="aside-note">${'' + svgFonts.fonts.y.length}/${listLen}</span>
-				</div>
-				<div class="relative">char width: ${
-		!!svgFonts.fonts.charWidth.length ?
-			hashMini(svgFonts.fonts.charWidth) :
-			note.blocked
-		}
-					<span class="aside-note">${'' + svgFonts.fonts.charWidth.length}/${listLen}</span>
-				</div>
-				<div class="relative">char height: ${
-		!!svgFonts.fonts.charHeight.length ?
-			hashMini(svgFonts.fonts.charHeight) :
-			note.blocked
-		}
-					<span class="aside-note">${'' + svgFonts.fonts.charHeight.length}/${listLen}</span>
-				</div>
-				<div class="relative">char y: ${
-		!!svgFonts.fonts.charY.length ?
-			hashMini(svgFonts.fonts.charY) :
-			note.blocked
-		}
-					<span class="aside-note">${'' + svgFonts.fonts.charY.length}/${listLen}</span>
-				</div>
+	`)
 
-
-				<div class="relative">sub string: ${
-		!!svgFonts.fonts.subString.length ?
-			hashMini(svgFonts.fonts.subString) :
-			note.blocked
-		}
-					<span class="aside-note">${'' + svgFonts.fonts.subString.length}/${listLen}</span>
-				</div>
-				<div class="relative">text length: ${
-		!!svgFonts.fonts.textLen.length ?
-			hashMini(svgFonts.fonts.textLen) :
-			note.blocked
-		}
-					<span class="aside-note">${'' + svgFonts.fonts.textLen.length}/${listLen}</span>
-				</div>
-			</div>
-			<div class="col-six relative${rectFonts.lied ? ' lies' : ''}">
-				<span class="aside-note">${rectFonts.perf.toFixed(2)}ms</span>
-				<strong>DOMRect</strong>
-				<div class="relative">client: ${
-		!!rectFonts.fonts.client.length ?
-			hashMini(rectFonts.fonts.client) :
-			note.blocked
-		}
-					<span class="aside-note">${'' + rectFonts.fonts.client.length}/${listLen}</span>
-				</div>
-				<div class="relative">bounding: ${
-		!!rectFonts.fonts.bounding.length ?
-			hashMini(rectFonts.fonts.bounding) :
-			note.blocked
-		}
-					<span class="aside-note">${'' + rectFonts.fonts.bounding.length}/${listLen}</span>
-				</div>
-				<div class="relative">client range: ${
-		!!rectFonts.fonts.clientRange.length ?
-			hashMini(rectFonts.fonts.clientRange) :
-			note.blocked
-		}
-					<span class="aside-note">${'' + rectFonts.fonts.clientRange.length}/${listLen}</span>
-				</div>
-				<div class="relative">bounding range: ${
-		!!rectFonts.fonts.boundingRange.length ?
-			hashMini(rectFonts.fonts.boundingRange) :
-			note.blocked
-		}
-					<span class="aside-note">${'' + rectFonts.fonts.boundingRange.length}/${listLen}</span>
-				</div>
-			</div>
-		</div>
-		<div class="flex-grid">
-			<div class="col-six relative${pixelFonts.lied ? ' lies' : ''}">
-				<span class="aside-note">${pixelFonts.perf.toFixed(2)}ms</span>
-				<strong>Pixels</strong>
-				<div class="relative">pixel: ${
-		!!pixelFonts.fonts.pixel.length ?
-			hashMini(pixelFonts.fonts.pixel) :
-			note.blocked
-		}
-					<span class="aside-note">${'' + pixelFonts.fonts.pixel.length}/${listLen}</span>
-				</div>
-				<div class="relative">size: ${
-		!!pixelFonts.fonts.size.length ?
-			hashMini(pixelFonts.fonts.size) :
-			note.blocked
-		}
-					<span class="aside-note">${'' + pixelFonts.fonts.size.length}/${listLen}</span>
-				</div>
-				<div class="relative">perspective: ${
-		!!pixelFonts.fonts.perspective.length ?
-			hashMini(pixelFonts.fonts.perspective) :
-			note.blocked
-		}
-					<span class="aside-note">${'' + pixelFonts.fonts.perspective.length}/${listLen}</span>
-				</div>
-				<div class="relative">transform: ${
-		!!pixelFonts.fonts.transform.length ?
-			hashMini(pixelFonts.fonts.transform) :
-			note.blocked
-		}
-					<span class="aside-note">${'' + pixelFonts.fonts.transform.length}/${listLen}</span>
-				</div>
-			</div>
-			<div class="col-six relative${lengthFonts.lied ? ' lies' : ''}">
-				<span class="aside-note">${lengthFonts.perf.toFixed(2)}ms</span>
-				<strong>Lengths</strong>
-				<div class="relative">offset: ${
-		!!lengthFonts.fonts.offset.length ?
-			hashMini(lengthFonts.fonts.offset) :
-			note.blocked
-		}
-					<span class="aside-note">${'' + lengthFonts.fonts.offset.length}/${listLen}</span>
-				</div>
-				<div class="relative">client: ${
-		!!lengthFonts.fonts.client.length ?
-			hashMini(lengthFonts.fonts.client) :
-			note.blocked
-		}
-					<span class="aside-note">${'' + lengthFonts.fonts.client.length}/${listLen}</span>
-				</div>
-				<div class="relative">scroll: ${
-		!!lengthFonts.fonts.scroll.length ?
-			hashMini(lengthFonts.fonts.scroll) :
-			note.blocked
-		}
-					<span class="aside-note">${'' + lengthFonts.fonts.scroll.length}/${listLen}</span>
-				</div>
-			</div>
-		</div>
-		<div class="flex-grid">
-			<div class="col-six relative${fontFaceSetFonts.lied ? ' lies' : ''}">
-				<span class="aside-note">${fontFaceSetFonts.perf.toFixed(2)}ms</span>
-				<strong>FontFaceSet</strong>
-				<div class="relative">check: ${
-					!!fontFaceSetFonts.fonts.length ?
-						hashMini(fontFaceSetFonts.fonts) :
-						note.blocked
-					}
-					<span class="aside-note">${'' + fontFaceSetFonts.fonts.length}/${listLen}</span>
-				</div>
-			</div>
-			<div class="col-six relative${fontFaceLoadFonts.lied ? ' lies' : ''}">
-				<span class="aside-note">${fontFaceLoadFonts.perf.toFixed(2)}ms</span>
-				<strong>FontFace</strong>
-				<div class="relative">load: ${
-					!!fontFaceLoadFonts.fonts.length ?
-						hashMini(fontFaceLoadFonts.fonts) :
-						note.unsupported
-					}
-					<span class="aside-note">${'' + fontFaceLoadFonts.fonts.length}/${listLen}</span>
-				</div>
-			</div>
-		</div>
+	patch(document.getElementById('supported-list'), html`
 		<div>
 			${
 				(supportedFontList.map(font => `<div class="relative"><span class="aside-note">${font}</span><span style="font-family:'${font}'">${font}</span></div>`)).join('')
 			}
 		</div>
-	</div>
-`)
+	`)
 
 })()
