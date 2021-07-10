@@ -72,13 +72,14 @@
 
 	const baseFonts = ['monospace', 'sans-serif', 'serif']
 	// ...googleFonts,...notoFonts, ...extendedFontList
-	const list = [...new Set([
+	const getList = () => [...new Set([
 		...fontList,
 		//...googleFonts,
 		//...platformFonts,
 		...extendedFontList,
 		//...notoFonts
 	])]
+	const list = getList()
 	const families = list.reduce((acc, font) => {
 		baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`))
 		return acc
@@ -188,7 +189,7 @@
 
 			const perf = performance.now() - start
 			const offscreen = /offscreen/i.test(context.constructor.name)
-			const listLen = families.length
+			const listLen = getList().length
 			patch(document.getElementById(`text-metrics${offscreen ? '-offscreen' : ''}`), html`
 				<div class="col-six relative">
 					<span class="aside-note">${perf.toFixed(2)}ms</span>
@@ -395,7 +396,7 @@
 				textLen: [...detectedViaTextLen]
 			}
 			const perf = performance.now() - start
-			const listLen = families.length
+			const listLen = getList().length
 			patch(document.getElementById('svgrect'), html`
 				<div class="col-six relative">
 					<span class="aside-note">${perf.toFixed(2)}ms</span>
@@ -587,7 +588,7 @@
 
 			const lied = !hasBlocking && hasMismatch
 			const perf = performance.now() - start
-			const listLen = families.length
+			const listLen = getList().length
 
 			patch(document.getElementById('domrect'), html`
 				<div class="col-six relative${lied ? ' lies' : ''}">
@@ -749,7 +750,7 @@
 			const hasMismatch = !!Object.keys(fonts).filter(type => '' + fonts[type] != '' + fonts.pixel).length
 			const lied = !hasBlocking && hasMismatch
 			const perf = performance.now() - start
-			const listLen = families.length
+			const listLen = getList().length
 			patch(document.getElementById('pixels'), html`
 				<div class="col-six relative${lied ? ' lies' : ''}">
 					<span class="aside-note">${perf.toFixed(2)}ms</span>
@@ -891,7 +892,7 @@
 
 			const lied = !hasBlocking && hasMismatch
 			const perf = performance.now() - start
-			const listLen = families.length
+			const listLen = getList().length
 
 			patch(document.getElementById('lengths'), html`
 				<div class="col-six relative${lied ? ' lies' : ''}">
@@ -953,7 +954,7 @@
 			document.fonts.clear() // clear loaded or added fonts
 			const fonts = list.filter(font => document.fonts.check(`12px '${font}'`))
 			const perf = performance.now() - start
-			const listLen = families.length
+			const listLen = getList().length
 			patch(document.getElementById('fontfaceset'), html`
 				<div class="col-six relative">
 					<span class="aside-note">${perf.toFixed(2)}ms</span>
@@ -994,7 +995,7 @@
 				return acc
 			}, [])
 			const perf = performance.now() - start
-			const listLen = families.length
+			const listLen = getList().length
 			patch(document.getElementById('fontface'), html`
 				<div class="col-six relative">
 					<span class="aside-note">${perf.toFixed(2)}ms</span>
