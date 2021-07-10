@@ -50,6 +50,37 @@
 		return templateContent(template) // ie11 fix for template.content
 	}
 
+	// modal component
+	const modal = (name, result, linkname = 'details') => {
+		if (!result.length) {
+			return ''
+		}
+		return `
+			<style>
+			.modal-${name}:checked ~ .modal-container {
+				visibility: visible;
+				opacity: 1;
+				animation: show 0.1s linear both;
+			}
+			.modal-${name}:checked ~ .modal-container .modal-content {
+				animation: enter 0.2s ease both
+			}
+			.modal-${name}:not(:checked) ~ .modal-container {
+				visibility: hidden;
+			}
+			</style>
+			<input type="radio" id="toggle-open-${name}" class="modal-${name}" name="modal-${name}"/>
+			<label class="modal-open-btn" for="toggle-open-${name}" onclick="">${linkname}</label>
+			<label class="modal-container" for="toggle-close-${name}" onclick="">
+				<label class="modal-content" for="toggle-open-${name}" onclick="">
+					<input type="radio" id="toggle-close-${name}" name="modal-${name}"/>
+					<label class="modal-close-btn" for="toggle-close-${name}" onclick="">×</label>
+					<div>${result}</div>
+				</label>
+			</label>
+		`
+	}
+
 	const note = {
 		unsupported: '<span class="blocked">unsupported</span>',
 		blocked: '<span class="blocked">blocked</span>',
@@ -79,7 +110,15 @@
 		...extendedFontList,
 		//...notoFonts
 	])]
+	const getListAll = () => [...new Set([
+		...fontList,
+		...googleFonts,
+		...platformFonts,
+		...extendedFontList,
+		...notoFonts
+	])]
 	const list = getList()
+	const listAll = getListAll()
 	const families = list.reduce((acc, font) => {
 		baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`))
 		return acc
@@ -106,6 +145,9 @@
 	}
 
 	const getTextMetricsFonts = async ({ context, baseFonts, families }) => {
+		const { constructor: { name } } = context || {}
+		const offscreen = /offscreen/i.test(''+name)
+		const listLen = getList().length
 		try {
 			if (!context) {
 				throw new Error(`Context blocked or not supported`)
@@ -188,8 +230,6 @@
 			}
 
 			const perf = performance.now() - start
-			const offscreen = /offscreen/i.test(context.constructor.name)
-			const listLen = getList().length
 			patch(document.getElementById(`text-metrics${offscreen ? '-offscreen' : ''}`), html`
 				<div class="col-six relative">
 					<span class="aside-note">${perf.toFixed(2)}ms</span>
@@ -941,12 +981,14 @@
 	}
 
 	const getFontFaceSetFonts = async list => {
+		const listLen = getListAll().length
 		try {
 			await new Promise(setTimeout).catch(e => {})
 			const start = performance.now()
 			// real world usage should use iframe document instead of window document
 			const gibberish = '&WY2tR*^ftCiMX9LD5m%iZSWCVSg'
-			if (document.fonts.check(`12px '${gibberish}'`)) {
+			const { fonts: { check } } = document || {}
+			if (!check || document.fonts.check(`12px '${gibberish}'`)) {
 				throw new Error('FontFaceSet.check blocked or not supported')
 			}
 			await document.fonts.ready
@@ -954,15 +996,16 @@
 			document.fonts.clear() // clear loaded or added fonts
 			const fonts = list.filter(font => document.fonts.check(`12px '${font}'`))
 			const perf = performance.now() - start
-			const listLen = getList().length
 			patch(document.getElementById('fontfaceset'), html`
 				<div class="col-six relative">
 					<span class="aside-note">${perf.toFixed(2)}ms</span>
 					<strong>FontFaceSet</strong>
 					<div class="relative">check: ${
-						!!fonts.length ?
-							hashMini(fonts) :
-							note.blocked
+						!!fonts.length ? modal(
+								'creep-fontfaceset', fonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>'),
+								hashMini(fonts)
+							) :
+							note.unsupported
 						}
 						<span class="aside-note">${'' + fonts.length}/${listLen}</span>
 					</div>
@@ -974,6 +1017,15 @@
 			}
 		} catch (error) {
 			console.error(error)
+			patch(document.getElementById('fontfaceset'), html`
+				<div class="col-six relative">
+					<span class="aside-note">0ms</span>
+					<strong>FontFaceSet</strong>
+					<div class="relative">check: ${note.unsupported}
+						<span class="aside-note">0/${listLen}</span>
+					</div>
+				</div>
+			`)
 			return {
 				fonts: [],
 				perf: 0
@@ -995,14 +1047,16 @@
 				return acc
 			}, [])
 			const perf = performance.now() - start
-			const listLen = getList().length
+			const listLen = getListAll().length
 			patch(document.getElementById('fontface'), html`
 				<div class="col-six relative">
 					<span class="aside-note">${perf.toFixed(2)}ms</span>
 					<strong>FontFace</strong>
 					<div class="relative">load: ${
-						!!fonts.length ?
-							hashMini(fonts) :
+							!!fonts.length ? modal(
+								'creep-fontface', fonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>'),
+								hashMini(fonts)
+							) :
 							note.unsupported
 						}
 						<span class="aside-note">${'' + fonts.length}/${listLen}</span>
@@ -1026,9 +1080,10 @@
 
 	const context = document.createElement('canvas').getContext('2d')
 	const contextOffscreen = ('OffscreenCanvas' in window) ? new OffscreenCanvas(500, 200).getContext('2d') : undefined
+	const start = performance.now()
 	const [
-		textMetricsFonts,
 		textMetricsFontsOffscreen,
+		textMetricsFonts,
 		svgFonts,
 		rectFonts,
 		pixelFonts,
@@ -1036,16 +1091,16 @@
 		fontFaceSetFonts,
 		fontFaceLoadFonts
 	] = await Promise.all([
-		getTextMetricsFonts({ context, baseFonts, families }),
 		getTextMetricsFonts({ context: contextOffscreen, baseFonts, families }),
+		getTextMetricsFonts({ context, baseFonts, families }),
 		getSVGFonts({ baseFonts, families }),
 		getRectFonts({ baseFonts, families }),
 		getPixelFonts({ baseFonts, families }),
 		getLengthFonts({ baseFonts, families }),
-		getFontFaceSetFonts(list),
-		getFontFaceLoadFonts(list)
+		getFontFaceSetFonts(listAll),
+		getFontFaceLoadFonts(listAll)
 	]).catch(error => console.error(error))
-
+	const perf = performance.now() - start
 	const { combined: textMetricsFontsList } = textMetricsFonts.fonts || []
 	const {
 		combined: textMetricsFontsOffscreenList
@@ -1075,8 +1130,8 @@
 		...(fontFaceLoadFonts.fonts || [])
 	])]
 
-	console.log("'"+supportedFontList.join("',\n'")+"'")
-	console.log("Loaded:\n'"+(fontFaceLoadFonts.fonts || []).join("',\n'")+"'")
+	//console.log("'"+supportedFontList.join("',\n'")+"'")
+	//console.log("Loaded:\n'"+(fontFaceLoadFonts.fonts || []).join("',\n'")+"'")
 
 	const fingerprint = await hashify({
 		textMetricsFonts: { ...textMetricsFonts, perf: undefined },
@@ -1100,7 +1155,8 @@
 	div.parentNode.removeChild(div) // remove font-fingerprint element
 
 	patch(document.getElementById('visitor-fingerprint'), html`
-		<div class="visitor-info">
+		<div class="visitor-info relative">
+			<span class="aside-note">${perf.toFixed(2)}ms</span>
 			<strong>Fonts</strong><span class="hash">${hashMini(fingerprint)}</span>
 		</div>
 	`)
