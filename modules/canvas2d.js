@@ -1,18 +1,30 @@
 // inspired by https://arkenfox.github.io/TZP/tests/canvasnoise.html
+
+let pixelImageRandom = ''
+
 const getPixelMods = () => {
 	const pattern1 = []
 	const pattern2 = []
-	const len = 20 // canvas dimensions
+	const len = 8 // canvas dimensions
 	const alpha = 255
+	const visualMultiplier = 5
 
 	try {
 		// create 2 canvas contexts
+		const canvasDisplay1 = document.createElement('canvas')
+		const canvasDisplay2 = document.createElement('canvas')
 		const canvas1 = document.createElement('canvas')
 		const canvas2 = document.createElement('canvas')
+		const contextDisplay1 = canvasDisplay1.getContext('2d')
+		const contextDisplay2 = canvasDisplay2.getContext('2d')
 		const context1 = canvas1.getContext('2d')
 		const context2 = canvas2.getContext('2d')
 
 		// set the dimensions
+		canvasDisplay1.width = len*visualMultiplier
+		canvasDisplay1.height = len*visualMultiplier
+		canvasDisplay2.width = len*visualMultiplier
+		canvasDisplay2.height = len*visualMultiplier
 		canvas1.width = len
 		canvas1.height = len
 		canvas2.width = len
@@ -26,19 +38,44 @@ const getPixelMods = () => {
 			const colors = `${red}, ${green}, ${blue}, ${alpha}`
 			context1.fillStyle = `rgba(${colors})`
 			context1.fillRect(x, y, 1, 1)
-			pattern1.push(colors) // collect the pixel pattern
+			// capture data in visuals
+			contextDisplay1.fillStyle = `rgba(${colors})`
+			contextDisplay1.fillRect(
+				x*visualMultiplier,
+				y*visualMultiplier,
+				1*visualMultiplier,
+				1*visualMultiplier
+			)
+			return pattern1.push(colors) // collect the pixel pattern
 		}))
 
 		// fill canvas2 with canvas1 image data
 		;[...Array(len)].forEach((e, x) => [...Array(len)].forEach((e, y) => {
-			const pixel = context1.getImageData(x, y, 1, 1)
-			const red = pixel.data[0]
-			const green = pixel.data[1]
-			const blue = pixel.data[2]
-			const alpha = pixel.data[3]
+			// get context1 pixel data and mirror to context2
+			const {
+				data: [red, green, blue, alpha]
+			} = context1.getImageData(x, y, 1, 1) || {}
 			const colors = `${red}, ${green}, ${blue}, ${alpha}`
 			context2.fillStyle = `rgba(${colors})`
 			context2.fillRect(x, y, 1, 1)
+
+			// capture noise in visuals
+			const {
+				data: [red2, green2, blue2, alpha2]
+			} = context2.getImageData(x, y, 1, 1) || {}
+			const colorsDisplay = `
+				${red != red2 ? red2 : 255},
+				${green != green2 ? green2 : 255},
+				${blue != blue2 ? blue2 : 255},
+				${alpha != alpha2 ? alpha2 : 1}
+			`
+			contextDisplay2.fillStyle = `rgba(${colorsDisplay})`
+			contextDisplay2.fillRect(
+				x*visualMultiplier,
+				y*visualMultiplier,
+				1*visualMultiplier,
+				1*visualMultiplier
+			)
 			return pattern2.push(colors) // collect the pixel pattern
 		}))
 
@@ -63,15 +100,20 @@ const getPixelMods = () => {
 			}
 		})
 		
+		pixelImageRandom = canvasDisplay1.toDataURL() // template use only
+		const pixelImage = canvasDisplay2.toDataURL()
+
 		const rgba = rgbaChannels.size ? [...rgbaChannels].sort().join(', ') : undefined
 		const pixels = patternDiffs.length || undefined
-		return { rgba, pixels }
+		return { rgba, pixels, pixelImage }
 	}
 	catch (error) {
 		console.error(error)
 		return
 	}
 }
+
+
 
 export const getCanvas2d = async imports => {
 
@@ -126,16 +168,18 @@ export const getCanvas2d = async imports => {
 	}
 }
 
-export const canvasHTML = ({ fp, note, hashSlice }) => {
+export const canvasHTML = ({ fp, note, hashMini, hashSlice }) => {
 	if (!fp.canvas2d) {
 		return `
 		<div class="col-six undefined">
 			<strong>Canvas 2d</strong> <span>${note.blocked}</span>
-			<div>0% rgba noise</div>
+			<div>data:${note.blocked}</div>
+			<div>pixels:</div>
+			<div class="block-text">${note.blocked}</div>
 		</div>`
 	}
-	const { canvas2d: { lied, mods, $hash } } = fp
-	const { pixels, rgba } = mods || {}
+	const { canvas2d: { lied, mods, dataURI, $hash } } = fp
+	const { pixels, rgba, pixelImage } = mods || {}
 	const modPercent = pixels ? Math.round((pixels/400)*100) : 0
 
 	// rgba: "b, g, gb, r, rb, rg, rgb"
@@ -150,6 +194,12 @@ export const canvasHTML = ({ fp, note, hashSlice }) => {
 	return `
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<style>
+			.pixel-image {
+				background-image: url(${pixelImage})
+			}
+			.pixel-image-random {
+				background-image: url(${pixelImageRandom})
+			}
 			.rgba {
 				width: 8px;
 				height: 8px;
@@ -178,7 +228,12 @@ export const canvasHTML = ({ fp, note, hashSlice }) => {
 			}
 		</style>
 		<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-		<div>${modPercent}% rgba noise${rgba ? `: ${rgbaHTML}` : ''}</div>
+		<div class="help" title="HTMLCanvasElement.toDataURL()">data: ${hashMini(dataURI)}</div>
+		<div class="help" title="CanvasRenderingContext2D.getImageData()">pixels: ${rgba ? `${modPercent}% rgba noise ${rgbaHTML}` : ''}</div>
+		<div class="block-text icon-container">
+			<div class="icon-item pixel-image-random"></div>
+			${rgba ? `<div class="icon-item pixel-image"></div>` : ''}
+		</div>
 	</div>
 	`
 }
