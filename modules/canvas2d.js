@@ -175,7 +175,7 @@ export const canvasHTML = ({ fp, note, hashMini, hashSlice }) => {
 			<strong>Canvas 2d</strong> <span>${note.blocked}</span>
 			<div>data:${note.blocked}</div>
 			<div>pixels:</div>
-			<div class="block-text">${note.blocked}</div>
+			<div class="icon-container pixels">${note.blocked}</div>
 		</div>`
 	}
 	const { canvas2d: { lied, mods, dataURI, $hash } } = fp
@@ -194,6 +194,16 @@ export const canvasHTML = ({ fp, note, hashMini, hashSlice }) => {
 	return `
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<style>
+			.pixels {
+				padding: 10px;
+				position: relative;
+				overflow: hidden;
+			}
+			.pixel-image,
+			.pixel-image-random {
+				max-width: 75px;
+    			border-radius: 50%;
+			}
 			.pixel-image {
 				background-image: url(${pixelImage})
 			}
@@ -230,7 +240,7 @@ export const canvasHTML = ({ fp, note, hashMini, hashSlice }) => {
 		<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div class="help" title="HTMLCanvasElement.toDataURL()">data: ${hashMini(dataURI)}</div>
 		<div class="help" title="CanvasRenderingContext2D.getImageData()">pixels: ${rgba ? `${modPercent}% rgba noise ${rgbaHTML}` : ''}</div>
-		<div class="block-text icon-container">
+		<div class="icon-container pixels">
 			<div class="icon-item pixel-image-random"></div>
 			${rgba ? `<div class="icon-item pixel-image"></div>` : ''}
 		</div>

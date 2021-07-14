@@ -595,6 +595,7 @@ input[type="radio"] {
     margin-right: 3px;
 }
 .icon-container {
+	min-height: 85px;
     display: flex;
     flex-direction: row;
 	flex-wrap: wrap;
