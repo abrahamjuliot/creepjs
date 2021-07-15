@@ -142,7 +142,6 @@ export const getCanvas2d = async imports => {
 		context.fillStyle = 'rgba(100, 200, 99, 0.78)'
 		context.fillRect(100, 30, 80, 50)
 		const dataURI = canvas.toDataURL()
-
 		if (dragonOfDeath) {
 			const result1 = dragonOfDeath.document.createElement('canvas').toDataURL()
 			const result2 = document.createElement('canvas').toDataURL()
