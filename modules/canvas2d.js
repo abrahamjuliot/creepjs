@@ -127,8 +127,8 @@ const getPointIn = (canvas, context) => {
 		return context.isPointInStroke(x, y) && isPointInStroke.push([x, y])
 	}))
 	return {
-		isPointInPath,
-		isPointInStroke
+		isPointInPath: isPointInPath.length ? isPointInPath : undefined,
+		isPointInStroke: isPointInStroke.length ? isPointInStroke : undefined
 	}
 }
 
