@@ -557,7 +557,7 @@ export const canvasHTML = ({ fp, note, modal, getMismatchStyle, hashMini, hashSl
 			)
 		}</div>
 		<div class="help" title="CanvasRenderingContext2D.measureText()">textMetrics: ${
-			!textMetrics ? note.blocked : getSum(Object.keys(textMetrics).map(key => textMetrics[key] || 0))
+			!textMetrics ? note.blocked : getSum(Object.keys(textMetrics).map(key => textMetrics[key] || 0)) || note.blocked
 		}</div>
 		<div class="help" title="CanvasRenderingContext2D.getImageData()">pixel trap: ${rgba ? `${modPercent}% rgba noise ${rgbaHTML}` : ''}</div>
 		<div class="icon-container pixels">
