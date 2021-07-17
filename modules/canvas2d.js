@@ -476,7 +476,7 @@ export const canvasHTML = ({ fp, note, modal, getMismatchStyle, hashMini, hashSl
 	const { isPointInPath, isPointInStroke } = points || {}
 	const dataTemplate = `
 		<br>toDataURL: ${!dataURI ? note.blocked : hash.dataURI}
-		<br>imageData: ${!imageData ? note.blocked : hashMini(imageData)}
+		<br>getImageData: ${!imageData ? note.blocked : hashMini(imageData)}
 		<br>isPointInPath: ${!isPointInPath ? note.blocked : hashMini(isPointInPath)}
 		<br>isPointInStroke: ${!isPointInStroke ? note.blocked : hashMini(isPointInStroke)}
 		<br><br><strong>HTMLCanvasElement.toBlob()</strong>
