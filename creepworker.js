@@ -108,13 +108,15 @@ const getWorkerData = async () => {
 	}
 	let canvasOffscreen2d = undefined
 	try {
-		canvasOffscreen2d = new OffscreenCanvas(500, 200)
+		canvasOffscreen2d = new OffscreenCanvas(186, 30)
 		const context2d = canvasOffscreen2d.getContext('2d')
-		const str = '!😃🙌🧠👩‍💻👟👧🏻👩🏻‍🦱👩🏻‍🦰👱🏻‍♀️👩🏻‍🦳👧🏼👧🏽👧🏾👧🏿🦄🐉🌊🍧🏄‍♀️🌠🔮♞'
-		context2d.font = '14px Arial'
-		context2d.fillText(str, 0, 50)
-		context2d.fillStyle = 'rgba(100, 200, 99, 0.78)'
-		context2d.fillRect(100, 30, 80, 50)
+		canvasOffscreen2d.width  = 186
+		canvasOffscreen2d.height = 30
+		const str = `😃🙌🧠🦄🐉🌊🍧🏄‍♀️🌠🔮`
+		context.font = '14px Arial'
+		context.fillText(str, 0, 20)
+		context.fillStyle = 'rgba(0, 0, 0, 0)'
+		context.fillRect(0, 0, 186, 30)
 	}
 	catch (error) { }
 	const getDataURI = async canvasOffscreen2d => {

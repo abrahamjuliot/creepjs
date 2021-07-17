@@ -21,10 +21,10 @@ const getPixelMods = () => {
 		const context2 = canvas2.getContext('2d')
 
 		// set the dimensions
-		canvasDisplay1.width = len*visualMultiplier
-		canvasDisplay1.height = len*visualMultiplier
-		canvasDisplay2.width = len*visualMultiplier
-		canvasDisplay2.height = len*visualMultiplier
+		canvasDisplay1.width = len * visualMultiplier
+		canvasDisplay1.height = len * visualMultiplier
+		canvasDisplay2.width = len * visualMultiplier
+		canvasDisplay2.height = len * visualMultiplier
 		canvas1.width = len
 		canvas1.height = len
 		canvas2.width = len
@@ -41,10 +41,10 @@ const getPixelMods = () => {
 			// capture data in visuals
 			contextDisplay1.fillStyle = `rgba(${colors})`
 			contextDisplay1.fillRect(
-				x*visualMultiplier,
-				y*visualMultiplier,
-				1*visualMultiplier,
-				1*visualMultiplier
+				x * visualMultiplier,
+				y * visualMultiplier,
+				1 * visualMultiplier,
+				1 * visualMultiplier
 			)
 			return pattern1.push(colors) // collect the pixel pattern
 		}))
@@ -71,10 +71,10 @@ const getPixelMods = () => {
 			`
 			contextDisplay2.fillStyle = `rgba(${colorsDisplay})`
 			contextDisplay2.fillRect(
-				x*visualMultiplier,
-				y*visualMultiplier,
-				1*visualMultiplier,
-				1*visualMultiplier
+				x * visualMultiplier,
+				y * visualMultiplier,
+				1 * visualMultiplier,
+				1 * visualMultiplier
 			)
 			return pattern2.push(colors) // collect the pixel pattern
 		}))
@@ -99,7 +99,7 @@ const getPixelMods = () => {
 				patternDiffs.push([i, colors])
 			}
 		})
-		
+
 		pixelImageRandom = canvasDisplay1.toDataURL() // template use only
 		const pixelImage = canvasDisplay2.toDataURL()
 
@@ -113,7 +113,24 @@ const getPixelMods = () => {
 	}
 }
 
-
+const getPointIn = (canvas, context) => {
+	canvas.width = canvas.height
+	context.fillStyle = 'rgba(0, 0, 0, 1)'
+	context.beginPath()
+	context.arc(0, 0, 10, 0, Math.PI * 2)
+	context.closePath()
+	context.fill()
+	const isPointInPath = []
+	const isPointInStroke = []
+	;[...Array(canvas.width)].forEach((e, x) => [...Array(canvas.height)].forEach((e, y) => {
+		context.isPointInPath(x, y) && isPointInPath.push([x, y])
+		return context.isPointInStroke(x, y) && isPointInStroke.push([x, y])
+	}))
+	return {
+		isPointInPath,
+		isPointInStroke
+	}
+}
 
 export const getCanvas2d = async imports => {
 
@@ -128,20 +145,166 @@ export const getCanvas2d = async imports => {
 		}
 	} = imports
 
+	const fillRect = (canvas, context) => {
+		canvas.width = 186
+		canvas.height = 30
+		const str = `😃🙌🧠🦄🐉🌊🍧🏄‍♀️🌠🔮`
+		context.font = '14px Arial'
+		context.fillText(str, 0, 20)
+		context.fillStyle = 'rgba(0, 0, 0, 0)'
+		context.fillRect(0, 0, 186, 30)
+
+		context.beginPath()
+		context.arc(15.49, 15.51, 10.314, 0, Math.PI * 2)
+		context.closePath()
+		context.fill()
+
+		return context
+	}
+
+	const getFileReaderData = async blob => {
+		if (!blob) {
+			return
+		}
+		const reader1 = new FileReader()
+		const reader2 = new FileReader()
+		const reader3 = new FileReader()
+		const reader4 = new FileReader()
+		reader1.readAsArrayBuffer(blob)
+		reader2.readAsDataURL(blob)
+		reader3.readAsBinaryString(blob)
+		reader4.readAsText(blob)
+		const [
+			readAsArrayBuffer,
+			readAsDataURL,
+			readAsBinaryString,
+			readAsText
+		] = await Promise.all([
+			new Promise(resolve => {
+				reader1.onload = () => resolve(reader1.result)
+			}),
+			new Promise(resolve => {
+				reader2.onload = () => resolve(reader2.result)
+			}),
+			new Promise(resolve => {
+				reader3.onload = () => resolve(reader3.result)
+			}),
+			new Promise(resolve => {
+				reader4.onload = () => resolve(reader4.result)
+			})
+		])
+		return {
+			readAsArrayBuffer: String.fromCharCode.apply(null, new Uint8Array(readAsArrayBuffer)),
+			readAsBinaryString,
+			readAsDataURL,
+			readAsText
+		}
+	}
+
+	const systemEmojis = [
+		[128512],
+		[9786],
+		[129333, 8205, 9794, 65039],
+		[9832],
+		[9784],
+		[9895],
+		[8265],
+		[8505],
+		[127987, 65039, 8205, 9895, 65039],
+		[129394],
+		[9785],
+		[9760],
+		[129489, 8205, 129456],
+		[129487, 8205, 9794, 65039],
+		[9975],
+		[129489, 8205, 129309, 8205, 129489],
+		[9752],
+		[9968],
+		[9961],
+		[9972],
+		[9992],
+		[9201],
+		[9928],
+		[9730],
+		[9969],
+		[9731],
+		[9732],
+		[9976],
+		[9823],
+		[9937],
+		[9000],
+		[9993],
+		[9999],
+		[10002],
+		[9986],
+		[9935],
+		[9874],
+		[9876],
+		[9881],
+		[9939],
+		[9879],
+		[9904],
+		[9905],
+		[9888],
+		[9762],
+		[9763],
+		[11014],
+		[8599],
+		[10145],
+		[11013],
+		[9883],
+		[10017],
+		[10013],
+		[9766],
+		[9654],
+		[9197],
+		[9199],
+		[9167],
+		[9792],
+		[9794],
+		[10006],
+		[12336],
+		[9877],
+		[9884],
+		[10004],
+		[10035],
+		[10055],
+		[9724],
+		[9642],
+		[10083],
+		[10084],
+		[9996],
+		[9757],
+		[9997],
+		[10052],
+		[9878],
+		[8618],
+		[9775],
+		[9770],
+		[9774],
+		[9745],
+		[10036],
+		[127344],
+		[127359]
+	].map(emojiCode => String.fromCodePoint(...emojiCode))
+
 	try {
+		await new Promise(setTimeout).catch(e => { })
 		const start = performance.now()
+
 		const dataLie = lieProps['HTMLCanvasElement.toDataURL']
 		const contextLie = lieProps['HTMLCanvasElement.getContext']
-		let lied = (dataLie || contextLie) || false
+		const imageDataLie = lieProps['CanvasRenderingContext2D.getImageData']
+		const textMetricsLie = lieProps['CanvasRenderingContext2D.measureText']
+		let lied = (dataLie || contextLie || imageDataLie || textMetricsLie) || false
+
 		const doc = phantomDarkness ? phantomDarkness.document : document
 		const canvas = doc.createElement('canvas')
 		const context = canvas.getContext('2d')
-		const str = '!😃🙌🧠👩‍💻👟👧🏻👩🏻‍🦱👩🏻‍🦰👱🏻‍♀️👩🏻‍🦳👧🏼👧🏽👧🏾👧🏿🦄🐉🌊🍧🏄‍♀️🌠🔮♞'
-		context.font = '14px Arial'
-		context.fillText(str, 0, 50)
-		context.fillStyle = 'rgba(100, 200, 99, 0.78)'
-		context.fillRect(100, 30, 80, 50)
+		fillRect(canvas, context)
 		const dataURI = canvas.toDataURL()
+		
+
 		if (dragonOfDeath) {
 			const result1 = dragonOfDeath.document.createElement('canvas').toDataURL()
 			const result2 = document.createElement('canvas').toDataURL()
@@ -151,14 +314,98 @@ export const getCanvas2d = async imports => {
 				documentLie(`HTMLCanvasElement.toDataURL`, iframeLie)
 			}
 		}
+
+		const {
+			actualBoundingBoxAscent,
+			actualBoundingBoxDescent,
+			actualBoundingBoxLeft,
+			actualBoundingBoxRight,
+			fontBoundingBoxAscent,
+			fontBoundingBoxDescent,
+			width
+		} = context.measureText(systemEmojis.join('')) || {}
+		const textMetrics = {
+			actualBoundingBoxAscent,
+			actualBoundingBoxDescent,
+			actualBoundingBoxLeft,
+			actualBoundingBoxRight,
+			fontBoundingBoxAscent,
+			fontBoundingBoxDescent,
+			width
+		}
+		const { data: imageData } = context.getImageData(0, 0, canvas.width, canvas.height) || {}
+		
+		let canvasOffscreen
+		try {
+			canvasOffscreen = new OffscreenCanvas(186, 30)
+			const contextOffscreen = canvasOffscreen.getContext('2d')
+			fillRect(canvasOffscreen, contextOffscreen)
+		}
+		catch (error) { }
+
+		const [
+			blob,
+			blobOffscreen
+		] = await Promise.all([
+			new Promise(resolve => canvas.toBlob(async blob => {
+				const data = await getFileReaderData(blob)
+				return resolve(data)
+			})),
+			getFileReaderData(canvasOffscreen && await canvasOffscreen.convertToBlob())
+		])
+
+		const points = getPointIn(canvas, context) // modifies width
 		const mods = getPixelMods()
+
+		// lies
+		const {
+			readAsArrayBuffer,
+			readAsBinaryString,
+			readAsDataURL,
+			readAsText
+		} = blob || {}
+		
+		if (dataURI && readAsDataURL && (dataURI != readAsDataURL)) {
+			lied = true
+			const iframeLie = `file data does not match canvas`
+			documentLie(`FileReader.readAsDataURL`, iframeLie)
+		}
+
+		const {
+			readAsArrayBuffer: readAsArrayBufferOffscreen,
+			readAsBinaryString: readAsBinaryStringOffscreen,
+			readAsDataURL: readAsDataURLOffscreen,
+			readAsText: readAsTextOffscreen
+		} = blobOffscreen || {}
+		const mismatchingFileData = (
+			(readAsArrayBufferOffscreen && readAsArrayBufferOffscreen !== readAsArrayBuffer) ||
+			(readAsBinaryStringOffscreen && readAsBinaryStringOffscreen !== readAsBinaryString) ||
+			(readAsDataURLOffscreen && readAsDataURLOffscreen !== readAsDataURL) ||
+			(readAsTextOffscreen && readAsTextOffscreen !== readAsText)
+		)
+		if (mismatchingFileData) {
+			lied = true
+			const iframeLie = `mismatching file data`
+			documentLie(`FileReader`, iframeLie)
+		}
+
 		if (mods && mods.pixels) {
 			lied = true
 			const iframeLie = `pixel data modified`
 			documentLie(`CanvasRenderingContext2D.getImageData`, iframeLie)
 		}
+
 		logTestResult({ start, test: 'canvas 2d', passed: true })
-		return { dataURI, mods, lied }
+		return {
+			dataURI,
+			imageData: imageData ? String.fromCharCode.apply(null, imageData) : undefined,
+			mods,
+			points,
+			blob,
+			blobOffscreen,
+			textMetrics: new Set(Object.keys(textMetrics)).size != 1 ? textMetrics : undefined,
+			lied
+		}
 	}
 	catch (error) {
 		logTestResult({ test: 'canvas 2d', passed: false })
@@ -167,22 +414,79 @@ export const getCanvas2d = async imports => {
 	}
 }
 
-export const canvasHTML = ({ fp, note, hashMini, hashSlice }) => {
+export const canvasHTML = ({ fp, note, modal, getMismatchStyle, hashMini, hashSlice }) => {
 	if (!fp.canvas2d) {
 		return `
 		<div class="col-six undefined">
 			<strong>Canvas 2d</strong> <span>${note.blocked}</span>
-			<div>data:${note.blocked}</div>
-			<div>pixels:</div>
+			<div>data: ${note.blocked}</div>
+			<div>textMetrics: ${note.blocked}</div>
+			<div>pixel trap:</div>
 			<div class="icon-container pixels">${note.blocked}</div>
 		</div>`
 	}
-	const { canvas2d: { lied, mods, dataURI, $hash } } = fp
+			
+	const {
+		canvas2d: {
+			lied,
+			dataURI,
+			imageData,
+			mods,
+			points,
+			blob,
+			blobOffscreen,
+			textMetrics,
+			$hash
+		}
+	} = fp
 	const { pixels, rgba, pixelImage } = mods || {}
-	const modPercent = pixels ? Math.round((pixels/400)*100) : 0
+	const modPercent = pixels ? Math.round((pixels / 400) * 100) : 0
+
+	const {
+		readAsArrayBuffer,
+		readAsBinaryString,
+		readAsDataURL,
+		readAsText
+	} = blob || {}
+
+	const hash = {
+		dataURI: hashMini(dataURI),
+		readAsArrayBuffer: hashMini(readAsArrayBuffer),
+		readAsBinaryString: hashMini(readAsBinaryString),
+		readAsDataURL: hashMini(readAsDataURL),
+		readAsText: hashMini(readAsText)
+		
+	}
+
+	const getBlobtemplate = blob => {
+		const {
+			readAsArrayBuffer,
+			readAsBinaryString,
+			readAsDataURL,
+			readAsText
+		} = blob || {}
+		
+		return `
+			<br>readAsArrayBuffer: ${!readAsArrayBuffer ? note.unsupported : getMismatchStyle(hash.readAsArrayBuffer.split(''), hashMini(readAsArrayBuffer).split(''))}
+			<br>readAsBinaryString: ${!readAsBinaryString ? note.unsupported : getMismatchStyle(hash.readAsBinaryString.split(''), hashMini(readAsBinaryString).split(''))}
+			<br>readAsDataURL: ${!readAsDataURL ? note.unsupported : getMismatchStyle(hash.dataURI.split(''), hashMini(readAsDataURL).split(''))}
+			<br>readAsText: ${!readAsText ? note.unsupported : getMismatchStyle(hash.readAsText.split(''), hashMini(readAsText).split(''))}
+		`
+	}
+	const { isPointInPath, isPointInStroke } = points || {}
+	const dataTemplate = `
+		<br>toDataURL: ${!dataURI ? note.blocked : hash.dataURI}
+		<br>imageData: ${!imageData ? note.blocked : hashMini(imageData)}
+		<br>isPointInPath: ${!isPointInPath ? note.blocked : hashMini(isPointInPath)}
+		<br>isPointInStroke: ${!isPointInStroke ? note.blocked : hashMini(isPointInStroke)}
+		<br><br><strong>HTMLCanvasElement.toBlob()</strong>
+		${getBlobtemplate(blob)}
+		<br><br><strong>OffscreenCanvas.convertToBlob()</strong>
+		${getBlobtemplate(blobOffscreen)}
+	`
 
 	// rgba: "b, g, gb, r, rb, rg, rgb"
-	const rgbaHTML= !rgba ? rgba : rgba.split(', ').map(s => s.split('').map(c => {
+	const rgbaHTML = !rgba ? rgba : rgba.split(', ').map(s => s.split('').map(c => {
 		const css = {
 			r: 'red',
 			g: 'green',
@@ -190,6 +494,8 @@ export const canvasHTML = ({ fp, note, hashMini, hashSlice }) => {
 		}
 		return `<span class="rgba rgba-${css[c]}"></span>`
 	}).join('')).join(' ')
+
+	const getSum = arr => !arr ? 0 : arr.reduce((acc, curr) => (acc += Math.abs(curr)), 0)
 	return `
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<style>
@@ -237,8 +543,23 @@ export const canvasHTML = ({ fp, note, hashMini, hashSlice }) => {
 			}
 		</style>
 		<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-		<div class="help" title="HTMLCanvasElement.toDataURL()">data: ${hashMini(dataURI)}</div>
-		<div class="help" title="CanvasRenderingContext2D.getImageData()">pixels: ${rgba ? `${modPercent}% rgba noise ${rgbaHTML}` : ''}</div>
+		<div class="help" title="HTMLCanvasElement.toDataURL()\nCanvasRenderingContext2D.getImageData()\nCanvasRenderingContext2D.isPointInPath()\nCanvasRenderingContext2D.isPointInStroke()\nHTMLCanvasElement.toBlob()\nOffscreenCanvas.convertToBlob()\nFileReader.readAsArrayBuffer()\nFileReader.readAsBinaryString()\nFileReader.readAsDataURL()\nFileReader.readAsText()">data: ${
+			modal(
+				'creep-canvas-data',
+				dataTemplate,
+				hashMini({
+					dataURI,
+					imageData,
+					points,
+					blob,
+					blobOffscreen
+				})
+			)
+		}</div>
+		<div class="help" title="CanvasRenderingContext2D.measureText()">textMetrics: ${
+			!textMetrics ? note.blocked : getSum(Object.keys(textMetrics).map(key => textMetrics[key] || 0))
+		}</div>
+		<div class="help" title="CanvasRenderingContext2D.getImageData()">pixel trap: ${rgba ? `${modPercent}% rgba noise ${rgbaHTML}` : ''}</div>
 		<div class="icon-container pixels">
 			<div class="icon-item pixel-image-random"></div>
 			${rgba ? `<div class="icon-item pixel-image"></div>` : ''}
