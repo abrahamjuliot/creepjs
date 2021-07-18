@@ -108,8 +108,7 @@ const getPixelMods = () => {
 		return { rgba, pixels, pixelImage }
 	}
 	catch (error) {
-		console.error(error)
-		return
+		return console.error(error)
 	}
 }
 
