@@ -475,13 +475,14 @@ export const canvasHTML = ({ fp, note, modal, getMismatchStyle, hashMini, hashSl
 	}
 	const { isPointInPath, isPointInStroke } = points || {}
 	const dataTemplate = `
+		${dataURI ? `<div class="icon-item canvas-data"></div>` : ''}
 		<br>toDataURL: ${!dataURI ? note.blocked : hash.dataURI}
 		<br>getImageData: ${!imageData ? note.blocked : hashMini(imageData)}
 		<br>isPointInPath: ${!isPointInPath ? note.blocked : hashMini(isPointInPath)}
 		<br>isPointInStroke: ${!isPointInStroke ? note.blocked : hashMini(isPointInStroke)}
-		<br><br><strong>HTMLCanvasElement.toBlob()</strong>
+		<br><br><strong>HTMLCanvasElement.toBlob</strong>
 		${getBlobtemplate(blob)}
-		<br><br><strong>OffscreenCanvas.convertToBlob()</strong>
+		<br><br><strong>OffscreenCanvas.convertToBlob</strong>
 		${getBlobtemplate(blobOffscreen)}
 	`
 
@@ -503,6 +504,11 @@ export const canvasHTML = ({ fp, note, modal, getMismatchStyle, hashMini, hashSl
 				padding: 10px;
 				position: relative;
 				overflow: hidden;
+			}
+			.canvas-data {
+				max-width: 200px;
+				height: 30px;
+				background-image: url(${dataURI})
 			}
 			.pixel-image,
 			.pixel-image-random {
