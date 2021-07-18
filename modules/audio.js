@@ -280,9 +280,15 @@ export const audioHTML = ({ fp, note, modal, getMismatchStyle, hashMini, hashSli
 			getMismatchStyle((''+knownSums[0]).split(''), (''+sampleSum).split('')) :
 			sampleSum
 		}</div>
-		<div class="help" title="DynamicsCompressorNode.reduction">gain: ${compressorGainReduction}</div>
-		<div class="help" title="AnalyserNode.getFloatFrequencyData()">freq: ${floatFrequencyDataSum}</div>
-		<div class="help" title="AnalyserNode.getFloatTimeDomainData()">time: ${floatTimeDomainDataSum}</div>
+		<div class="help" title="DynamicsCompressorNode.reduction">gain: ${
+			compressorGainReduction || note.blocked
+		}</div>
+		<div class="help" title="AnalyserNode.getFloatFrequencyData()">freq: ${
+			floatFrequencyDataSum || note.blocked
+		}</div>
+		<div class="help" title="AnalyserNode.getFloatTimeDomainData()">time: ${
+			floatTimeDomainDataSum || note.blocked
+		}</div>
 		<div>buffer noise: ${!noise ? 0 : `${noise.toFixed(4)}...`}</div>
 		<div>unique: ${totalUniqueSamples}</div>
 		<div class="help" title="AudioBuffer.getChannelData()">data:${
