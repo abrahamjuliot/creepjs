@@ -390,12 +390,21 @@ const imports = {
 				braveFingerprintingBlocking ? undefined : fp.workerScope.webglVendor
 			),
 			fontFaceSetFonts: fp.workerScope.fontFaceSetFonts,
-			userAgentData: fp.workerScope.userAgentData
+			userAgentData: {
+				...fp.workerScope.userAgentData,
+				// loose
+				brandsVersion: undefined, 
+				uaFullVersion: undefined
+			}
 		} : undefined,
 		media: fp.media,
 		canvas2d: ( 
 			!fp.canvas2d || fp.canvas2d.lied ? undefined : {
 				dataURI: fp.canvas2d.dataURI,
+				blob: fp.canvas2d.blob,
+				blobOffscreen: fp.canvas2d.blobOffscreen,
+				imageData: fp.canvas2d.imageData,
+				textMetrics: fp.canvas2d.textMetrics,
 				lied: fp.canvas2d.lied
 			} 
 		),

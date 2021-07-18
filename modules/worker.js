@@ -224,14 +224,15 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 			${((userAgentData) => {
 				const {
 					architecture,
-					brands,
+					brandsVersion,
+					uaFullVersion,
 					mobile,
 					model,
 					platformVersion,
 					platform
 				} = userAgentData || {}
 				return !userAgentData ? note.unsupported : `
-					${(brands || []).join(',')}
+					${(brandsVersion || []).join(',')}${uaFullVersion ? ` (${uaFullVersion})` : ''}
 					<br>${platform} ${platformVersion} ${architecture}
 					${model ? `<br>${model}` : ''}
 					${mobile ? '<br>mobile' : ''}

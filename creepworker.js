@@ -84,19 +84,24 @@ const getWorkerData = async () => {
 			return
 		}
 		const data = await navigator.userAgentData.getHighEntropyValues(
-			['platform', 'platformVersion', 'architecture',  'model']
+			['platform', 'platformVersion', 'architecture',  'model', 'uaFullVersion']
 		)
 		const { brands, mobile } = navigator.userAgentData || {}
-		const compressedBrands = brands
-			.filter(obj => !/Not/.test(obj.brand)).map(obj => `${obj.brand}`)
-		const primaryBrands = (
-			compressedBrands.length > 1 ? compressedBrands.filter(brand => !/Chromium/.test(brand)) : 
-				compressedBrands
+		const compressedBrands = (brands, captureVersion = false) => brands
+			.filter(obj => !/Not/.test(obj.brand)).map(obj => `${obj.brand}${captureVersion ? ` ${obj.version}` : ''}`)
+		const removeChromium = brands => (
+			brands.length > 1 ? brands.filter(brand => !/Chromium/.test(brand)) : brands
 		)
-
+		
+		// compress brands
 		if (!data.brands) {
-			data.brands = primaryBrands
+			data.brands = brands
 		}
+		data.brandsVersion = compressedBrands(data.brands, true)
+		data.brands = compressedBrands(data.brands)
+		data.brandsVersion = removeChromium(data.brandsVersion)
+		data.brands = removeChromium(data.brands)
+		
 		if (!data.mobile) {
 			data.mobile = mobile
 		}
