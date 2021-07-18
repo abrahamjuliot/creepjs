@@ -105,6 +105,7 @@ export const getBestWorkerScope = async imports => {
 	const {
 		require: {
 			getOS,
+			decryptUserAgent,
 			captureError,
 			caniuse,
 			phantomDarkness,
@@ -141,8 +142,9 @@ export const getBestWorkerScope = async imports => {
 			workerScope.scope = scope
 
 			// detect lies 
+			const { fontSystemClass, system, userAgent, platform } = workerScope || {}
 			
-			const { fontSystemClass, system } = workerScope || {}
+			// font system lie
 			const fontSystemLie = fontSystemClass && (
 				/^((i(pad|phone|os))|mac)$/i.test(system) && fontSystemClass != 'Apple'  ? true :
 					/^(windows)$/i.test(system) && fontSystemClass != 'Windows'  ? true :
@@ -156,9 +158,56 @@ export const getBestWorkerScope = async imports => {
 				documentLie(workerScope.scope, workerScope.lies.system)
 			}
 			
-
+			// locale language lie
 			if (workerScope.lies.locale) {
 				documentLie(workerScope.scope, workerScope.lies.locale)
+			}
+
+			// user agent os lie
+			const userAgentOS = (
+				// order is important
+				/win(dows|16|32|64|95|98|nt)|wow64/ig.test(userAgent) ? 'Windows' :
+					/android|linux|cros/ig.test(userAgent) ? 'Linux' :
+						/(i(os|p(ad|hone|od)))|mac/ig.test(userAgent) ? 'Apple' :
+							'Other'
+			)
+			const platformOS = (
+				// order is important
+				/win/ig.test(platform) ? 'Windows' :
+					/android|arm|linux/ig.test(platform) ? 'Linux' :
+						/(i(os|p(ad|hone|od)))|mac/ig.test(platform) ? 'Apple' :
+							'Other'
+			)
+			const osLie = userAgentOS != platformOS
+			if (osLie) {
+				workerScope.lied = true
+				workerScope.lies.os = `${platformOS} platform and ${userAgentOS} user agent do not match`
+				documentLie(workerScope.scope, workerScope.lies.os)
+			}
+
+			// user agent engine lie
+			const decryptedName = decryptUserAgent({
+				ua: userAgent,
+				os: system,
+				isBrave: false // default false since we are only looking for JS runtime
+			})
+			const reportedEngine = (
+				(/safari/i.test(decryptedName) || /iphone|ipad/i.test(userAgent)) ? 'JavaScriptCore' :
+					/firefox/i.test(userAgent) ? 'SpiderMonkey' :
+						/chrome/i.test(userAgent) ? 'V8' :
+							undefined
+			)
+			const jsRuntimeEngine = {
+				'1.9275814160560204e-50': 'V8',
+				'1.9275814160560185e-50': 'SpiderMonkey',
+				'1.9275814160560206e-50': 'JavaScriptCore'
+			}
+			const mathPI = 3.141592653589793
+			const engine = jsRuntimeEngine[mathPI ** -100]
+			if (reportedEngine != engine) {
+				workerScope.lied = true
+				workerScope.lies.engine = `${engine} JS runtime and ${reportedEngine} user agent do not match`
+				documentLie(workerScope.scope, workerScope.lies.engine)
 			}
 
 			logTestResult({ start, test: `${type} worker`, passed: true })
