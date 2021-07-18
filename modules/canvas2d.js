@@ -365,12 +365,6 @@ export const getCanvas2d = async imports => {
 			readAsText
 		} = blob || {}
 		
-		if (dataURI && readAsDataURL && (dataURI != readAsDataURL)) {
-			lied = true
-			const iframeLie = `file data does not match canvas`
-			documentLie(`FileReader.readAsDataURL`, iframeLie)
-		}
-
 		const {
 			readAsArrayBuffer: readAsArrayBufferOffscreen,
 			readAsBinaryString: readAsBinaryStringOffscreen,
