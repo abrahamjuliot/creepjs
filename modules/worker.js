@@ -109,21 +109,25 @@ export const getBestWorkerScope = async imports => {
 			caniuse,
 			phantomDarkness,
 			getUserAgentPlatform,
+			documentLie,
 			logTestResult
 		}
 	} = imports
 	try {
 		await new Promise(setTimeout).catch(e => {})
 		const start = performance.now()
+		let scope = 'ServiceWorkerGlobalScope'
 		let type = 'service' // loads fast but is not available in frames
 		let workerScope = await getServiceWorker()
 			.catch(error => console.error(error.message))
 		if (!caniuse(() => workerScope.userAgent)) {
+			scope = 'SharedWorkerGlobalScope'
 			type = 'shared' // no support in Safari, iOS, and Chrome Android
 			workerScope = await getSharedWorker(phantomDarkness)
 			.catch(error => console.error(error.message))
 		}
 		if (!caniuse(() => workerScope.userAgent)) {
+			scope = 'WorkerGlobalScope'
 			type = 'dedicated' // simulators & extensions can spoof userAgent
 			workerScope = await getDedicatedWorker(phantomDarkness)
 			.catch(error => console.error(error.message))
@@ -134,6 +138,29 @@ export const getBestWorkerScope = async imports => {
 			workerScope.device = getUserAgentPlatform({ userAgent: workerScope.userAgent })
 			workerScope.canvas2d = { dataURI: canvas2d }
 			workerScope.type = type
+			workerScope.scope = scope
+
+			// detect lies 
+			
+			const { fontSystemClass, system } = workerScope || {}
+			const fontSystemLie = fontSystemClass && (
+				/^((i(pad|phone|os))|mac)$/i.test(system) && fontSystemClass != 'Apple'  ? true :
+					/^(windows)$/i.test(system) && fontSystemClass != 'Windows'  ? true :
+						/^(linux|chrome os)$/i.test(system) && fontSystemClass != 'Linux'  ? true :
+							/^(android)$/i.test(system) && fontSystemClass != 'Android'  ? true :
+								false
+			)
+			if (fontSystemLie) {
+				workerScope.lied = true
+				workerScope.lies.system = `${fontSystemClass} fonts and ${system} user agent do not match`
+				documentLie(workerScope.scope, workerScope.lies.system)
+			}
+			
+
+			if (workerScope.lies.locale) {
+				documentLie(workerScope.scope, workerScope.lies.locale)
+			}
+
 			logTestResult({ start, test: `${type} worker`, passed: true })
 			return { ...workerScope }
 		}
@@ -176,6 +203,8 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 	const { workerScope: data } = fp
 
 	const {
+		lied,
+		locale,
 		timezoneOffset,
 		timezoneLocation,
 		deviceMemory,
@@ -187,6 +216,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 		webglRenderer,
 		webglVendor,
 		fontFaceSetFonts,
+		fontSystemClass,
 		fontListLen,
 		userAgentData,
 		type,
@@ -197,7 +227,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 
 	return `
 	<div class="ellipsis"><span class="aside-note">${type || ''} worker</span></div>
-	<div class="col-six">
+	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>Worker</strong><span class="hash">${hashSlice($hash)}</span>
 		<div>canvas 2d:${
 			canvas2d && canvas2d.dataURI ?
@@ -241,7 +271,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 			</div>
 		</div>
 	</div>
-	<div class="col-six">
+	<div class="col-six${lied ? ' rejected' : ''}">
 		<div>device:</div>
 		<div class="block-text">
 			<div>${data.device || note.unsupported}</div>

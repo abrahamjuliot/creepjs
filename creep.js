@@ -367,7 +367,7 @@ const imports = {
 				lied: fp.screen.lied
 			}
 		),
-		workerScope: fp.workerScope ? {
+		workerScope: !fp.workerScope || fp.workerScope.lied ? undefined : {
 			canvas2d: (
 				(fp.canvas2d && fp.canvas2d.lied) ? undefined : // distrust ungoogled-chromium, brave, firefox, tor browser 
 				fp.workerScope.canvas2d
@@ -396,7 +396,7 @@ const imports = {
 				brandsVersion: undefined, 
 				uaFullVersion: undefined
 			}
-		} : undefined,
+		},
 		media: fp.media,
 		canvas2d: ( 
 			!fp.canvas2d || fp.canvas2d.lied ? undefined : {
@@ -931,6 +931,7 @@ const imports = {
 			 
 			if (
 				!fp.workerScope ||
+				fp.workerScope.lied ||
 				!fp.workerScope.userAgent ||
 				('BroadcastChannel' in window && fp.workerScope.type == 'dedicated')
 			) {

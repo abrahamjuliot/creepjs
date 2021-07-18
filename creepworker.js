@@ -79,6 +79,40 @@ const getWorkerData = async () => {
 		}
 	}
 
+	// fontFaceSetFonts and fontSystemClass
+	const platformFonts = getPlatformFonts()
+	const fontFaceSetFonts = getFontFaceSetFonts(platformFonts)
+	const apple = new Set(getAppleFonts())
+	const linux = new Set(getLinuxFonts())
+	const windows = new Set(getWindowsFonts())
+	const android = new Set(getAndroidFonts())
+	const fontSystemClass = [...fontFaceSetFonts.reduce((acc, font) => {
+		if (!acc.has('Apple') && apple.has(font)) {
+			acc.add('Apple')
+			return acc
+		}
+		if (!acc.has('Linux') && linux.has(font)) {
+			acc.add('Linux')
+			return acc
+		}
+		if (!acc.has('Windows') && windows.has(font)) {
+			acc.add('Windows')
+			return acc
+		}
+		if (!acc.has('Android') && android.has(font)) {
+			acc.add('Android')
+			return acc
+		}
+		return acc
+	}, new Set())]
+	const chromeOnAndroid = (
+		''+((fontFaceSetFonts || []).sort()) == 'Baskerville,Monaco,Palatino,Tahoma'
+	)
+	if (!fontSystemClass.length && chromeOnAndroid) {
+		fontSystemClass.push('Android')
+	}
+
+	// userAgentData
 	const getUserAgentData = async navigator => {
 		if (!('userAgentData' in navigator)) {
 			return
@@ -111,6 +145,8 @@ const getWorkerData = async () => {
 		},{})
 		return dataSorted
 	}
+
+	// canvas2d
 	let canvasOffscreen2d = undefined
 	try {
 		canvasOffscreen2d = new OffscreenCanvas(186, 30)
@@ -118,10 +154,10 @@ const getWorkerData = async () => {
 		canvasOffscreen2d.width  = 186
 		canvasOffscreen2d.height = 30
 		const str = `😃🙌🧠🦄🐉🌊🍧🏄‍♀️🌠🔮`
-		context.font = '14px Arial'
-		context.fillText(str, 0, 20)
-		context.fillStyle = 'rgba(0, 0, 0, 0)'
-		context.fillRect(0, 0, 186, 30)
+		context2d.font = '14px Arial'
+		context2d.fillText(str, 0, 20)
+		context2d.fillStyle = 'rgba(0, 0, 0, 0)'
+		context2d.fillRect(0, 0, 186, 30)
 	}
 	catch (error) { }
 	const getDataURI = async canvasOffscreen2d => {
@@ -135,9 +171,6 @@ const getWorkerData = async () => {
 			reader.onloadend = () => resolve(reader.result)
 		})
 	}
-
-	const platformFonts = getPlatformFonts()
-	const fontFaceSetFonts = getFontFaceSetFonts(platformFonts)
 	
 	const [
 		canvas2d,
@@ -147,6 +180,7 @@ const getWorkerData = async () => {
 		getUserAgentData(navigator)
 	]).catch(error => console.error(error))
 
+	// webglVendor and webglRenderer
 	let webglVendor
 	let webglRenderer
 	try {
@@ -157,6 +191,8 @@ const getWorkerData = async () => {
 		webglRenderer = contextWebgl.getParameter(renererInfo.UNMASKED_RENDERER_WEBGL)
 	}
 	catch (error) { }
+
+	// timezoneOffset
 	const computeTimezoneOffset = () => {
 		const date = new Date().getDate()
 		const month = new Date().getMonth()
@@ -170,12 +206,55 @@ const getWorkerData = async () => {
 		const now = +new Date(dateStringUTC)
 		return +(((utc - now)/60000).toFixed(0))
 	}
-
 	const timezoneOffset = computeTimezoneOffset()
+
+	// timeZone
 	const timezoneLocation = Intl.DateTimeFormat().resolvedOptions().timeZone
+
+	// navigator
 	const { hardwareConcurrency, language, platform, userAgent, deviceMemory } = navigator
 
+	// locale
+	const getLocale = () => {
+		const constructors = [
+			'Collator',
+			'DateTimeFormat',
+			'DisplayNames',
+			'ListFormat',
+			'NumberFormat',
+			'PluralRules',
+			'RelativeTimeFormat'
+		]
+		const locale = constructors.reduce((acc, name) => {
+			try {
+				const obj = new Intl[name]
+				if (!obj) {
+					return acc
+				}
+				const { locale } = obj.resolvedOptions() || {}
+				return [...acc, locale]
+			}
+			catch (error) {
+				return acc
+			}
+		}, [])
+
+		return [...new Set(locale)]
+	}
+	const locale = getLocale()
+
+	const localLie = (
+		(locale.length && locale.length != 1) || 
+		locale[0] != language
+	)
 	return {
+		lied: (
+			localLie
+		),
+		lies: {
+			locale: localLie ? `${''+locale} locale and ${language} language do not match` : undefined
+		},
+		locale: ''+locale,
 		timezoneOffset,
 		timezoneLocation,
 		deviceMemory,
@@ -187,6 +266,7 @@ const getWorkerData = async () => {
 		webglRenderer,
 		webglVendor,
 		fontFaceSetFonts,
+		fontSystemClass: fontSystemClass.length == 1 ? fontSystemClass[0] : undefined,
 		fontListLen: platformFonts.length,
 		userAgentData
 	}
