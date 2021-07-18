@@ -232,10 +232,10 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 			<div>timezone offset: ${note.blocked}</div>
 			<div>location: ${note.blocked}</div>
 			<div>language: ${note.blocked}</div>
+			<div>locale: ${note.blocked}</div>
 			<div>deviceMemory: ${note.blocked}</div>
 			<div>hardwareConcurrency: ${note.blocked}</div>
 			<div>platform: ${note.blocked}</div>
-			<div>system: ${note.blocked}</div>
 			<div>webgl vendor: ${note.blocked}</div>
 			<div>userAgentData:</div>
 			<div class="block-text">${note.blocked}</div>
@@ -274,6 +274,16 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 		$hash
 	} = data || {}
 
+	const icon = {
+		'Linux': '<span class="icon linux"></span>',
+		'Apple': '<span class="icon apple"></span>',
+		'Windows': '<span class="icon windows"></span>',
+		'Android': '<span class="icon android"></span>'
+	}
+
+	const systemClassIcon = icon[fontSystemClass]
+	const fontFaceSetHash = hashMini(fontFaceSetFonts)
+
 	return `
 	<div class="ellipsis"><span class="aside-note">${type || ''} worker</span></div>
 	<div class="col-six${lied ? ' rejected' : ''}">
@@ -286,16 +296,16 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 		<div class="help" title="FontFaceSet.check()">fontFaceSet (${fontFaceSetFonts ? count(fontFaceSetFonts) : '0'}/${''+fontListLen}): ${
 			fontFaceSetFonts.length ? modal(
 				'creep-worker-fonts-check', fontFaceSetFonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>'),
-				hashMini(fontFaceSetFonts)
+				systemClassIcon ? `${systemClassIcon}${fontFaceSetHash}` : fontFaceSetHash
 			) : note.unsupported
 		}</div>
 		<div>timezone offset: ${timezoneOffset != undefined ? ''+timezoneOffset : note.unsupported}</div>
 		<div>location: ${timezoneLocation}</div>
 		<div>language: ${language || note.unsupported}</div>
+		<div>locale: ${locale || note.unsupported}</div>
 		<div>deviceMemory: ${deviceMemory || note.unsupported}</div>
 		<div>hardwareConcurrency: ${hardwareConcurrency || note.unsupported}</div>
 		<div>platform: ${platform || note.unsupported}</div>
-		<div>system: ${system || note.unsupported}</div>
 		<div>webgl vendor: ${webglVendor || note.unsupported}</div>
 		<div>userAgentData:</div>
 		<div class="block-text">
@@ -323,15 +333,16 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<div>device:</div>
 		<div class="block-text">
-			<div>${data.device || note.unsupported}</div>
+			${system ? `${system}` : ''}
+			${device ? `<br>${device}` : note.blocked}
 		</div>
 		<div>userAgent:</div>
 		<div class="block-text">
-			<div>${data.userAgent || note.unsupported}</div>
+			<div>${userAgent || note.unsupported}</div>
 		</div>
 		<div>unmasked renderer:</div>
 		<div class="block-text">
-			<div>${data.webglRenderer || note.unsupported}</div>
+			<div>${webglRenderer || note.unsupported}</div>
 		</div>
 	</div>
 	`

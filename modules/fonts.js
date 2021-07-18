@@ -252,13 +252,7 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini }) => {
 			originFonts
 		}
 	} = fp
-	const icon = {
-		'Linux': '<span class="icon linux"></span>',
-		'Apple': '<span class="icon apple"></span>',
-		'Windows': '<span class="icon windows"></span>',
-		'Android': '<span class="icon android"></span>',
-		'CrOS': '<span class="icon cros"></span>'
-	}
+	
 	const apple = new Set(getAppleFonts())
 	const linux = new Set(getLinuxFonts())
 	const windows = new Set(getWindowsFonts())
@@ -288,6 +282,13 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini }) => {
 	)
 	if (!systemClass.length && chromeOnAndroid) {
 		systemClass.push('Android')
+	}
+	const icon = {
+		'Linux': '<span class="icon linux"></span>',
+		'Apple': '<span class="icon apple"></span>',
+		'Windows': '<span class="icon windows"></span>',
+		'Android': '<span class="icon android"></span>',
+		'CrOS': '<span class="icon cros"></span>'
 	}
 	const systemClassIcons = systemClass.map(name => icon[name])
 	const originHash = hashMini(originFonts)

@@ -83,6 +83,32 @@ export const getNavigator = async (imports, workerScope) => {
 					const nestedIframeLie = `Expected "${navigatorPlatform}" in nested iframe and got "${platform}"`
 					documentLie(`Navigator.platform`, nestedIframeLie)
 				}
+
+				// user agent os lie
+				const { userAgent } = navigator
+				const userAgentOS = (
+					// order is important
+					/win(dows|16|32|64|95|98|nt)|wow64/ig.test(userAgent) ? 'Windows' :
+						/android|linux|cros/ig.test(userAgent) ? 'Linux' :
+							/(i(os|p(ad|hone|od)))|mac/ig.test(userAgent) ? 'Apple' :
+								'Other'
+				)
+				const platformOS = (
+					// order is important
+					/win/ig.test(platform) ? 'Windows' :
+						/android|arm|linux/ig.test(platform) ? 'Linux' :
+							/(i(os|p(ad|hone|od)))|mac/ig.test(platform) ? 'Apple' :
+								'Other'
+				)
+				const osLie = userAgentOS != platformOS
+				if (osLie) {
+					lied = true
+					documentLie(
+						`Navigator.platform`,
+						`${platformOS} platform and ${userAgentOS} user agent do not match`
+					)
+				}
+
 				return platform
 			}),
 			system: attempt(() => getOS(phantomNavigator.userAgent), 'userAgent system failed'),
@@ -434,7 +460,6 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 			<div>mimeTypes (0): ${note.blocked}</div>
 			<div>platform: ${note.blocked}</div>
 			<div>plugins (0): ${note.blocked}</div>
-			<div>system: ${note.blocked}</div>
 			<div>ua architecture: ${note.blocked}</div>
 			<div>ua model: ${note.blocked}</div>
 			<div>ua platform: ${note.blocked}</div>
@@ -533,7 +558,6 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 			) :
 			note.blocked
 		}</div>
-		<div>system: ${system}</div>
 		${highEntropyValues ?  
 			Object.keys(highEntropyValues).map(key => {
 				const value = highEntropyValues[key]
@@ -557,7 +581,8 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<div>device:</div>
 		<div class="block-text">
-			<div>${!blocked[device] ? device : note.blocked}</div>
+			${system ? `${system}` : ''}
+			${device ? `<br>${device}` : note.blocked}
 		</div>
 		<div>userAgent:</div>
 		<div class="block-text">
