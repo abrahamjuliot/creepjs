@@ -548,7 +548,7 @@ export const getTimezone = async imports => {
 			lieProps['Intl.RelativeTimeFormat.resolvedOptions']
 		) || false
 		const phantomDate = phantomDarkness ? phantomDarkness.Date : Date
-		const phantomIntl = phantomDarkness ? phantomDarkness.Intl : Date
+		const phantomIntl = phantomDarkness ? phantomDarkness.Intl : Intl
 
 		const year = 1113
 		const { timeZone } = phantomIntl.DateTimeFormat().resolvedOptions()
@@ -577,14 +577,9 @@ export const getTimezone = async imports => {
 export const timezoneHTML = ({ fp, note, hashSlice }) => {
 	if (!fp.timezone) {
 		return `
-		<div class="col-six undefined">
+		<div class="col-four undefined">
 			<strong>Timezone</strong>
-			<div>zone: ${note.blocked}</div>
-			<div>offset: ${note.blocked}</div>
-			<div>offset computed: ${note.blocked}</div>
-			<div>location: ${note.blocked}</div>
-			<div>measured: ${note.blocked}</div>
-			<div>epoch: ${note.blocked}</div>
+			<div class="block-text">${note.blocked}</div>
 		</div>`
 	}
 	const {
@@ -600,14 +595,14 @@ export const timezoneHTML = ({ fp, note, hashSlice }) => {
 		}
 	} = fp
 	return `
-	<div class="col-six${lied ? ' rejected' : ''}">
+	<div class="col-four${lied ? ' rejected' : ''}">
 		<strong>Timezone</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-		<div>zone: ${zone}</div>
-		<div>offset: ${''+offset}</div>
-		<div>offset computed: ${''+offsetComputed}</div>
-		<div>location: ${location}</div>
-		<div>measured: ${locationMeasured}</div>
-		<div>epoch: ${locationEpoch}</div>
+		<div class="block-text help"  title="Date\nDate.getTimezoneOffset\nIntl.DateTimeFormat">
+			${zone ? zone : ''}
+			<br>${location != locationMeasured ? locationMeasured : location}
+			<br>${locationEpoch}
+			<br>${offset != offsetComputed ? offsetComputed : offset}
+		</div>
 	</div>
 	`
 }

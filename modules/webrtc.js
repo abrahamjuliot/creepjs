@@ -145,11 +145,9 @@ export const getWebRTCData = imports => {
 export const webrtcHTML = ({ fp, hashSlice, hashMini, note, modal }) => {
 	if (!fp.webRTC) {
 		return `
-		<div class="col-six undefined">
+		<div class="col-four undefined">
 			<strong>WebRTC</strong>
-			<div>ip address: ${note.blocked}</div>
-			<div>ip candidate: ${note.blocked}</div>
-			<div>ip connection: ${note.blocked}</div>
+			<div class="block-text">${note.blocked}</div>
 			<div>type: ${note.blocked}</div>
 			<div>foundation: ${note.blocked}</div>
 			<div>protocol: ${note.blocked}</div>
@@ -172,11 +170,13 @@ export const webrtcHTML = ({ fp, hashSlice, hashMini, note, modal }) => {
 	const id = 'creep-webrtc'
 
 	return `
-	<div class="col-six">
+	<div class="col-four">
 		<strong>WebRTC</strong><span class="hash">${hashSlice($hash)}</span>
-		<div>ip address: ${ipaddress ? ipaddress : note.unsupported}</div>
-		<div>ip candidate: ${candidate ? candidate : note.unsupported}</div>
-		<div>ip connection: ${connection ? connection : note.unsupported}</div>
+		<div class="block-text"">
+			${ipaddress ? ipaddress : ''}
+			${candidate ? `<br>${candidate}` : ''}
+			${connection ? `<br>${connection}` : ''}
+		</div>
 		<div>type: ${type ? type : note.unsupported}</div>
 		<div>foundation: ${foundation ? foundation : note.unsupported}</div>
 		<div>protocol: ${protocol ? protocol : note.unsupported}</div>

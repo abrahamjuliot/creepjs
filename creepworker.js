@@ -243,16 +243,37 @@ const getWorkerData = async () => {
 	}
 	const locale = getLocale()
 
+	const lang = (''+language).split(',')[0]
 	const localLie = (
 		(locale.length && locale.length != 1) || 
-		locale[0].toLocaleLowerCase() != language.toLocaleLowerCase()
+		locale[0].toLocaleLowerCase() != lang.toLocaleLowerCase()
 	)
+
+	let currencyLanguage
+	try {
+		currencyLanguage = (1).toLocaleString((lang || undefined), {
+			style: 'currency',
+			currency: 'USD',
+			currencyDisplay: 'name',
+			maximumFractionDigits: 0
+		})
+	} catch (e) {}
+	const currencyLocale = (1).toLocaleString(undefined, {
+		style: 'currency',
+		currency: 'USD',
+		currencyDisplay: 'name',
+		maximumFractionDigits: 0
+	})
+
+	const languageLie = currencyLocale != currencyLanguage
+
 	return {
 		lied: (
 			localLie
 		),
 		lies: {
-			locale: localLie ? `${''+locale} locale and ${language} language do not match` : undefined
+			locale: localLie ? `${''+locale} locale and ${language} language do not match` : false,
+			language: languageLie ? `${currencyLocale} locale and ${currencyLanguage} language do not match` : false
 		},
 		locale: ''+locale,
 		timezoneOffset,

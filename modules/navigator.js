@@ -257,6 +257,33 @@ export const getNavigator = async (imports, workerScope) => {
 					}
 					return `${languages.join(', ')} (${language})`
 				}
+
+				const lang = (''+language).split(',')[0]
+				let currencyLanguage
+				try {
+					currencyLanguage = (1).toLocaleString((lang || undefined), {
+						style: 'currency',
+						currency: 'USD',
+						currencyDisplay: 'name',
+						maximumFractionDigits: 0
+					})
+				} catch (e) {}
+				const currencyLocale = (1).toLocaleString(undefined, {
+					style: 'currency',
+					currency: 'USD',
+					currencyDisplay: 'name',
+					maximumFractionDigits: 0
+				})
+
+				const languageLie = currencyLocale != currencyLanguage
+				if (languageLie) {
+					lied = true
+					documentLie(
+						`Navigator.language`, 
+						`${currencyLocale} locale and ${currencyLanguage} language do not match`
+					)
+				}
+
 				return `${language} ${languages}`
 			}, 'language(s) failed'),
 			maxTouchPoints: attempt(() => {

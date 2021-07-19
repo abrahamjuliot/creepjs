@@ -27,6 +27,7 @@ import { getWebRTCData, webrtcHTML } from './modules/webrtc.js'
 import { getBestWorkerScope, workerScopeHTML } from './modules/worker.js'
 import { getSVG, svgHTML } from './modules/svg.js'
 import { getResistance, resistanceHTML } from './modules/resistance.js'
+import { getIntl, intlHTML } from './modules/intl.js'
 
 const imports = {
 	require: {
@@ -125,7 +126,8 @@ const imports = {
 			mediaComputed,
 			webRTCDataComputed,
 			svgComputed,
-			resistanceComputed
+			resistanceComputed,
+			intlComputed
 		] = await Promise.all([
 			getWindowFeatures(imports),
 			getHTMLElementVersion(imports),
@@ -145,7 +147,8 @@ const imports = {
 			getMedia(imports),
 			getWebRTCData(imports),
 			getSVG(imports),
-			getResistance(imports)
+			getResistance(imports),
+			getIntl(imports)
 		]).catch(error => console.error(error.message))
 		
 		const [
@@ -196,7 +199,8 @@ const imports = {
 			trashHash,
 			errorsHash,
 			svgHash,
-			resistanceHash
+			resistanceHash,
+			intlHash
 		] = await Promise.all([
 			hashify(windowFeaturesComputed),
 			hashify(headlessComputed),
@@ -226,7 +230,8 @@ const imports = {
 			hashify(trashComputed),
 			hashify(capturedErrorsComputed),
 			hashify(svgComputed),
-			hashify(resistanceComputed)
+			hashify(resistanceComputed),
+			hashify(intlComputed)
 		]).catch(error => console.error(error.message))
 		
 		//console.log(performance.now()-start)
@@ -241,30 +246,31 @@ const imports = {
 		}
 		
 		const fingerprint = {
-			workerScope: !workerScopeComputed ? undefined : { ...workerScopeComputed, $hash: workerHash },
-			webRTC: !webRTCDataComputed ? undefined : {...webRTCDataComputed, $hash: webRTCHash },
-			navigator: !navigatorComputed ? undefined : {...navigatorComputed, $hash: navigatorHash },
-			windowFeatures: !windowFeaturesComputed ? undefined : {...windowFeaturesComputed, $hash: windowHash },
-			headless: !headlessComputed ? undefined : {...headlessComputed, $hash: headlessHash },
-			htmlElementVersion: !htmlElementVersionComputed ? undefined : {...htmlElementVersionComputed, $hash: htmlHash },
-			cssMedia: !cssMediaComputed ? undefined : {...cssMediaComputed, $hash: cssMediaHash },
-			css: !cssComputed ? undefined : {...cssComputed, $hash: cssHash },
-			screen: !screenComputed ? undefined : {...screenComputed, $hash: screenHash },
-			voices: !voicesComputed ? undefined : {...voicesComputed, $hash: voicesHash },
-			media: !mediaComputed ? undefined : {...mediaComputed, $hash: mediaHash },
-			canvas2d: !canvas2dComputed ? undefined : {...canvas2dComputed, $hash: canvas2dHash },
-			canvasWebgl: !canvasWebglComputed ? undefined : {...canvasWebglComputed, pixels: pixelsHash, pixels2: pixels2Hash, $hash: canvasWebglHash },
-			maths: !mathsComputed ? undefined : {...mathsComputed, $hash: mathsHash },
-			consoleErrors: !consoleErrorsComputed ? undefined : {...consoleErrorsComputed, $hash: consoleErrorsHash },
-			timezone: !timezoneComputed ? undefined : {...timezoneComputed, $hash: timezoneHash },
-			clientRects: !clientRectsComputed ? undefined : {...clientRectsComputed, $hash: rectsHash },
-			offlineAudioContext: !offlineAudioContextComputed ? undefined : {...offlineAudioContextComputed, $hash: audioHash },
-			fonts: !fontsComputed ? undefined : {...fontsComputed, $hash: fontsHash },
-			lies: !liesComputed ? undefined : {...liesComputed, $hash: liesHash },
-			trash: !trashComputed ? undefined : {...trashComputed, $hash: trashHash },
-			capturedErrors: !capturedErrorsComputed ? undefined : {...capturedErrorsComputed, $hash: errorsHash },
+			workerScope: !workerScopeComputed ? undefined : { ...workerScopeComputed, $hash: workerHash},
+			webRTC: !webRTCDataComputed ? undefined : {...webRTCDataComputed, $hash: webRTCHash},
+			navigator: !navigatorComputed ? undefined : {...navigatorComputed, $hash: navigatorHash},
+			windowFeatures: !windowFeaturesComputed ? undefined : {...windowFeaturesComputed, $hash: windowHash},
+			headless: !headlessComputed ? undefined : {...headlessComputed, $hash: headlessHash},
+			htmlElementVersion: !htmlElementVersionComputed ? undefined : {...htmlElementVersionComputed, $hash: htmlHash},
+			cssMedia: !cssMediaComputed ? undefined : {...cssMediaComputed, $hash: cssMediaHash},
+			css: !cssComputed ? undefined : {...cssComputed, $hash: cssHash},
+			screen: !screenComputed ? undefined : {...screenComputed, $hash: screenHash},
+			voices: !voicesComputed ? undefined : {...voicesComputed, $hash: voicesHash},
+			media: !mediaComputed ? undefined : {...mediaComputed, $hash: mediaHash},
+			canvas2d: !canvas2dComputed ? undefined : {...canvas2dComputed, $hash: canvas2dHash},
+			canvasWebgl: !canvasWebglComputed ? undefined : {...canvasWebglComputed, pixels: pixelsHash, pixels2: pixels2Hash, $hash: canvasWebglHash},
+			maths: !mathsComputed ? undefined : {...mathsComputed, $hash: mathsHash},
+			consoleErrors: !consoleErrorsComputed ? undefined : {...consoleErrorsComputed, $hash: consoleErrorsHash},
+			timezone: !timezoneComputed ? undefined : {...timezoneComputed, $hash: timezoneHash},
+			clientRects: !clientRectsComputed ? undefined : {...clientRectsComputed, $hash: rectsHash},
+			offlineAudioContext: !offlineAudioContextComputed ? undefined : {...offlineAudioContextComputed, $hash: audioHash},
+			fonts: !fontsComputed ? undefined : {...fontsComputed, $hash: fontsHash},
+			lies: !liesComputed ? undefined : {...liesComputed, $hash: liesHash},
+			trash: !trashComputed ? undefined : {...trashComputed, $hash: trashHash},
+			capturedErrors: !capturedErrorsComputed ? undefined : {...capturedErrorsComputed, $hash: errorsHash},
 			svg: !svgComputed ? undefined : {...svgComputed, $hash: svgHash },
-			resistance: !resistanceComputed ? undefined : {...resistanceComputed, $hash: resistanceHash },
+			resistance: !resistanceComputed ? undefined : {...resistanceComputed, $hash: resistanceHash},
+			intl: !intlComputed ? undefined : {...intlComputed, $hash: intlHash}
 		}
 		return { fingerprint, systemHash, styleHash, emojiHash, timeEnd }
 	}
@@ -439,6 +445,7 @@ const imports = {
 			locationMeasured: fp.timezone.locationMeasured,
 			lied: fp.timezone.lied
 		},
+		intl: !fp.intl || fp.intl.lied ? undefined : fp.intl,
 		svg: !fp.svg || fp.svg.lied ? undefined : fp.svg,
 		clientRects: !fp.clientRects || fp.clientRects.lied ? undefined : fp.clientRects,
 		offlineAudioContext: !fp.offlineAudioContext ? undefined : (
@@ -584,7 +591,8 @@ const imports = {
 		</div>
 		<div class="flex-grid">
 			${webrtcHTML(templateImports)}
-			${timezoneHTML(templateImports)}			
+			${timezoneHTML(templateImports)}
+			${intlHTML(templateImports)}			
 		</div>
 		<div id="browser-detection" class="flex-grid">
 			<div class="col-eight">
