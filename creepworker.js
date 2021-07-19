@@ -245,7 +245,7 @@ const getWorkerData = async () => {
 
 	const localLie = (
 		(locale.length && locale.length != 1) || 
-		locale[0] != language
+		locale[0].toLocaleLowerCase() != language.toLocaleLowerCase()
 	)
 	return {
 		lied: (
