@@ -92,12 +92,6 @@ export const getIntl = async imports => {
 
 		const locale = getLocale(phantomIntl)
 
-		const localLie = locale.length && locale.length != 1
-		if (localLie) {
-			lied = true
-			documentLie('Intl', `invalid locale ${''+locale}`)
-		}
-
 		logTestResult({ start, test: 'intl', passed: true })
 		return {
 			dateTimeFormat,
