@@ -265,6 +265,7 @@ export const getNavigator = async (imports, workerScope) => {
 						style: 'currency',
 						currency: 'USD',
 						currencyDisplay: 'name',
+						minimumFractionDigits: 0,
 						maximumFractionDigits: 0
 					})
 				} catch (e) {}
@@ -272,6 +273,7 @@ export const getNavigator = async (imports, workerScope) => {
 					style: 'currency',
 					currency: 'USD',
 					currencyDisplay: 'name',
+					minimumFractionDigits: 0,
 					maximumFractionDigits: 0
 				})
 

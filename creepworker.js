@@ -255,6 +255,7 @@ const getWorkerData = async () => {
 			style: 'currency',
 			currency: 'USD',
 			currencyDisplay: 'name',
+			minimumFractionDigits: 0,
 			maximumFractionDigits: 0
 		})
 	} catch (e) {}
@@ -262,6 +263,7 @@ const getWorkerData = async () => {
 		style: 'currency',
 		currency: 'USD',
 		currencyDisplay: 'name',
+		minimumFractionDigits: 0,
 		maximumFractionDigits: 0
 	})
 
