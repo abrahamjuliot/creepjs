@@ -932,8 +932,8 @@ const imports = {
 			if (
 				!fp.workerScope ||
 				fp.workerScope.lied ||
-				!fp.workerScope.userAgent ||
-				('BroadcastChannel' in window && fp.workerScope.type == 'dedicated')
+				!fp.workerScope.userAgent
+				//|| ('BroadcastChannel' in window && fp.workerScope.type == 'dedicated')
 			) {
 				return rejectSamplePatch(el, html)
 			}
