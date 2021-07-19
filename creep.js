@@ -445,7 +445,6 @@ const imports = {
 			locationMeasured: fp.timezone.locationMeasured,
 			lied: fp.timezone.lied
 		},
-		intl: !fp.intl || fp.intl.lied ? undefined : fp.intl,
 		svg: !fp.svg || fp.svg.lied ? undefined : fp.svg,
 		clientRects: !fp.clientRects || fp.clientRects.lied ? undefined : fp.clientRects,
 		offlineAudioContext: !fp.offlineAudioContext ? undefined : (
