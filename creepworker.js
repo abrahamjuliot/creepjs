@@ -736,8 +736,10 @@ const getWorkerData = async () => {
 
 	const lang = (''+language).split(',')[0]
 	const localLie = (
-		(locale.length && locale.length != 1) || 
-		locale[0].toLocaleLowerCase() != lang.toLocaleLowerCase()
+		(locale.length && locale.length != 1) || (
+			locale[0].toLocaleLowerCase() != lang.toLocaleLowerCase() &&
+			!new RegExp(lang, 'i').test(locale[0])
+		)
 	)
 
 	let currencyLanguage
