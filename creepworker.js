@@ -1,6 +1,6 @@
 const getFirefox = () => 3.141592653589793 ** -100 == 1.9275814160560185e-50
 
-const getPrototypeLies = iframeWindow => {
+const getPrototypeLies = globalScope => {
 	// Lie Tests
 
 	// object constructor descriptor should return undefined properties
@@ -116,7 +116,7 @@ const getPrototypeLies = iframeWindow => {
 	}
 
 	// toString() and toString.toString() should return a native string in all frames
-	const getToStringLie = (apiFunction, name, iframeWindow) => {
+	const getToStringLie = (apiFunction, name, globalScope) => {
         /*
         Accepted strings:
         'function name() { [native code] }'
@@ -128,10 +128,10 @@ const getPrototypeLies = iframeWindow => {
         */
 		let iframeToString, iframeToStringToString
 		try {
-			iframeToString = iframeWindow.Function.prototype.toString.call(apiFunction)
+			iframeToString = globalScope.Function.prototype.toString.call(apiFunction)
 		} catch (e) { }
 		try {
-			iframeToStringToString = iframeWindow.Function.prototype.toString.call(apiFunction.toString)
+			iframeToStringToString = globalScope.Function.prototype.toString.call(apiFunction.toString)
 		} catch (e) { }
 
 		const apiFunctionToString = (
@@ -300,7 +300,7 @@ const getPrototypeLies = iframeWindow => {
 			[`failed new instance error`]: getNewInstanceTypeErrorLie(apiFunction),
 			[`failed class extends error`]: getClassExtendsTypeErrorLie(apiFunction),
 			[`failed null conversion error`]: getNullConversionTypeErrorLie(apiFunction),
-			[`failed toString`]: getToStringLie(apiFunction, name, iframeWindow),
+			[`failed toString`]: getToStringLie(apiFunction, name, globalScope),
 			[`failed "prototype" in function`]: getPrototypeInFunctionLie(apiFunction),
 			[`failed descriptor`]: getDescriptorLie(apiFunction),
 			[`failed own property`]: getOwnPropertyLie(apiFunction),
