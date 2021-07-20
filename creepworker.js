@@ -735,7 +735,7 @@ const getWorkerData = async () => {
 	const locale = getLocale()
 
 	const lang = (''+language).split(',')[0]
-	const localLie = (
+	const localeLie = (
 		(locale.length && locale.length != 1) || (
 			locale[0].toLocaleLowerCase() != lang.toLocaleLowerCase() &&
 			!new RegExp(lang, 'i').test(locale[0])
@@ -775,12 +775,12 @@ const getWorkerData = async () => {
 
 	return {
 		lied: (
-			localLie ||
+			localeLie ||
 			languageLie ||
 			protoLie
 		),
 		lies: {
-			locale: localLie ? `${''+locale} locale and ${language} language do not match` : false,
+			locale: localeLie ? `${''+locale} locale and ${language} language do not match` : false,
 			language: languageLie ? `${currencyLocale} locale and ${currencyLanguage} language do not match` : false,
 			proto: protoLie ? lieDetail : false
 		},
