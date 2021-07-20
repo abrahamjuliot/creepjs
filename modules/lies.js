@@ -410,9 +410,30 @@ const getPrototypeLies = iframeWindow => {
 
 	// setting prototype to itself should not throw 'Uncaught InternalError: too much recursion'
 	/*
+		Designed for Firefox Proxies
+		
 		Trying to bypass this? We can also check if empty Proxies return 'Uncaught InternalError: too much recursion'
+
 		x = new Proxy({}, {})
 		Object.setPrototypeOf(x, x)+''
+
+		This generates the same error:
+		x = new Proxy({}, {})
+		x.__proto__ = x
+		x++
+
+		In Blink, we can force a custom stack trace and then check each line
+		you = () => {
+			const x = Function.prototype.toString
+			return Object.setPrototypeOf(x, x) + 1
+		}
+		can = () => you()
+		run = () => can()
+		but = () => run()
+		u = () => but()
+		cant = () => u()
+		hide = () => cant()
+		hide()
 	*/
 	const getTooMuchRecursionLie = apiFunction => {
 		const isFirefox = getFirefox()
