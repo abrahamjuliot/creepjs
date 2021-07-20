@@ -1,3 +1,494 @@
+const getFirefox = () => 3.141592653589793 ** -100 == 1.9275814160560185e-50
+
+const getPrototypeLies = iframeWindow => {
+	// Lie Tests
+
+	// object constructor descriptor should return undefined properties
+	const getUndefinedValueLie = (obj, name) => {
+		const objName = obj.name
+		const objNameUncapitalized = window[objName.charAt(0).toLowerCase() + objName.slice(1)]
+		const hasInvalidValue = !!objNameUncapitalized && (
+			typeof Object.getOwnPropertyDescriptor(objNameUncapitalized, name) != 'undefined' ||
+			typeof Reflect.getOwnPropertyDescriptor(objNameUncapitalized, name) != 'undefined'
+		)
+		return hasInvalidValue ? true : false
+	}
+
+	// accessing the property from the prototype should throw a TypeError
+	const getIllegalTypeErrorLie = (obj, name) => {
+		const proto = obj.prototype
+		try {
+			proto[name]
+			return true
+		} catch (error) {
+			return error.constructor.name != 'TypeError' ? true : false
+		}
+		const illegal = [
+			'',
+			'is',
+			'call',
+			'seal',
+			'keys',
+			'bind',
+			'apply',
+			'assign',
+			'freeze',
+			'values',
+			'entries',
+			'toString',
+			'isFrozen',
+			'isSealed',
+			'constructor',
+			'isExtensible',
+			'getPrototypeOf',
+			'preventExtensions',
+			'propertyIsEnumerable',
+			'getOwnPropertySymbols',
+			'getOwnPropertyDescriptors'
+		]
+		const lied = !!illegal.find(prop => {
+			try {
+				prop == '' ? Object(proto[name]) : Object[prop](proto[name])
+				return true
+			} catch (error) {
+				return error.constructor.name != 'TypeError' ? true : false
+			}
+		})
+		return lied
+	}
+
+	// calling the interface prototype on the function should throw a TypeError
+	const getCallInterfaceTypeErrorLie = (apiFunction, proto) => {
+		try {
+			new apiFunction()
+			apiFunction.call(proto)
+			return true
+		} catch (error) {
+			return error.constructor.name != 'TypeError' ? true : false
+		}
+	}
+
+	// applying the interface prototype on the function should throw a TypeError
+	const getApplyInterfaceTypeErrorLie = (apiFunction, proto) => {
+		try {
+			new apiFunction()
+			apiFunction.apply(proto)
+			return true
+		} catch (error) {
+			return error.constructor.name != 'TypeError' ? true : false
+		}
+	}
+
+	// creating a new instance of the function should throw a TypeError
+	const getNewInstanceTypeErrorLie = apiFunction => {
+		try {
+			new apiFunction()
+			return true
+		} catch (error) {
+			return error.constructor.name != 'TypeError' ? true : false
+		}
+	}
+
+	// extending the function on a fake class should throw a TypeError and message "not a constructor"
+	const getClassExtendsTypeErrorLie = apiFunction => {
+		try {
+			class Fake extends apiFunction { }
+			return true
+		} catch (error) {
+			// Native has TypeError and 'not a constructor' message in FF & Chrome
+			return error.constructor.name != 'TypeError' ? true :
+				!/not a constructor/i.test(error.message) ? true : false
+		}
+	}
+
+	// setting prototype to null and converting to a string should throw a TypeError
+	const getNullConversionTypeErrorLie = apiFunction => {
+		const nativeProto = Object.getPrototypeOf(apiFunction)
+		try {
+			Object.setPrototypeOf(apiFunction, null) + ''
+			return true
+		} catch (error) {
+			return error.constructor.name != 'TypeError' ? true : false
+		} finally {
+			// restore proto
+			Object.setPrototypeOf(apiFunction, nativeProto)
+		}
+	}
+
+	// toString() and toString.toString() should return a native string in all frames
+	const getToStringLie = (apiFunction, name, iframeWindow) => {
+        /*
+        Accepted strings:
+        'function name() { [native code] }'
+        'function name() {\n    [native code]\n}'
+        'function get name() { [native code] }'
+        'function get name() {\n    [native code]\n}'
+        'function () { [native code] }'
+        `function () {\n    [native code]\n}`
+        */
+		let iframeToString, iframeToStringToString
+		try {
+			iframeToString = iframeWindow.Function.prototype.toString.call(apiFunction)
+		} catch (e) { }
+		try {
+			iframeToStringToString = iframeWindow.Function.prototype.toString.call(apiFunction.toString)
+		} catch (e) { }
+
+		const apiFunctionToString = (
+			iframeToString ?
+				iframeToString :
+				apiFunction.toString()
+		)
+		const apiFunctionToStringToString = (
+			iframeToStringToString ?
+				iframeToStringToString :
+				apiFunction.toString.toString()
+		)
+		const trust = name => ({
+			[`function ${name}() { [native code] }`]: true,
+			[`function get ${name}() { [native code] }`]: true,
+			[`function () { [native code] }`]: true,
+			[`function ${name}() {${'\n'}    [native code]${'\n'}}`]: true,
+			[`function get ${name}() {${'\n'}    [native code]${'\n'}}`]: true,
+			[`function () {${'\n'}    [native code]${'\n'}}`]: true
+		})
+		return (
+			!trust(name)[apiFunctionToString] ||
+			!trust('toString')[apiFunctionToStringToString]
+		)
+	}
+
+	// "prototype" in function should not exist
+	const getPrototypeInFunctionLie = apiFunction => 'prototype' in apiFunction ? true : false
+
+	// "arguments", "caller", "prototype", "toString"  should not exist in descriptor
+	const getDescriptorLie = apiFunction => {
+		const hasInvalidDescriptor = (
+			!!Object.getOwnPropertyDescriptor(apiFunction, 'arguments') ||
+			!!Reflect.getOwnPropertyDescriptor(apiFunction, 'arguments') ||
+			!!Object.getOwnPropertyDescriptor(apiFunction, 'caller') ||
+			!!Reflect.getOwnPropertyDescriptor(apiFunction, 'caller') ||
+			!!Object.getOwnPropertyDescriptor(apiFunction, 'prototype') ||
+			!!Reflect.getOwnPropertyDescriptor(apiFunction, 'prototype') ||
+			!!Object.getOwnPropertyDescriptor(apiFunction, 'toString') ||
+			!!Reflect.getOwnPropertyDescriptor(apiFunction, 'toString')
+		)
+		return hasInvalidDescriptor ? true : false
+	}
+
+	// "arguments", "caller", "prototype", "toString" should not exist as own property
+	const getOwnPropertyLie = apiFunction => {
+		const hasInvalidOwnProperty = (
+			apiFunction.hasOwnProperty('arguments') ||
+			apiFunction.hasOwnProperty('caller') ||
+			apiFunction.hasOwnProperty('prototype') ||
+			apiFunction.hasOwnProperty('toString')
+		)
+		return hasInvalidOwnProperty ? true : false
+	}
+
+	// descriptor keys should only contain "name" and "length"
+	const getDescriptorKeysLie = apiFunction => {
+		const descriptorKeys = Object.keys(Object.getOwnPropertyDescriptors(apiFunction))
+		const hasInvalidKeys = '' + descriptorKeys != 'length,name' && '' + descriptorKeys != 'name,length'
+		return hasInvalidKeys ? true : false
+	}
+
+	// own property names should only contain "name" and "length"
+	const getOwnPropertyNamesLie = apiFunction => {
+		const ownPropertyNames = Object.getOwnPropertyNames(apiFunction)
+		const hasInvalidNames = (
+			'' + ownPropertyNames != 'length,name' && '' + ownPropertyNames != 'name,length'
+		)
+		return hasInvalidNames ? true : false
+	}
+
+	// own keys names should only contain "name" and "length"
+	const getOwnKeysLie = apiFunction => {
+		const ownKeys = Reflect.ownKeys(apiFunction)
+		const hasInvalidKeys = '' + ownKeys != 'length,name' && '' + ownKeys != 'name,length'
+		return hasInvalidKeys ? true : false
+	}
+
+	// calling toString() on an object created from the function should throw a TypeError
+	const getNewObjectToStringTypeErrorLie = apiFunction => {
+		try {
+			Object.create(apiFunction).toString()
+			return true
+		} catch (error) {
+			const stackLines = error.stack.split('\n')
+			const traceLines = stackLines.slice(1)
+			const objectApply = /at Object\.apply/
+			const functionToString = /at Function\.toString/
+			const validLines = !traceLines.find(line => objectApply.test(line))
+			// Stack must be valid
+			const validStack = (
+				error.constructor.name == 'TypeError' && stackLines.length > 1
+			)
+			// Chromium must throw error 'at Function.toString' and not 'at Object.apply'
+			const isChrome = 3.141592653589793 ** -100 == 1.9275814160560204e-50
+			if (validStack && isChrome && (!functionToString.test(stackLines[1]) || !validLines)) {
+				return true
+			}
+			return !validStack
+		}
+	}
+
+	// arguments or caller should not throw 'incompatible Proxy' TypeError
+	const tryIncompatibleProxy = (isFirefox, fn) => {
+		try {
+			fn()
+			return true
+		} catch (error) {
+			return (
+				error.constructor.name != 'TypeError' ||
+					(isFirefox && /incompatible\sProxy/.test(error.message)) ? true : false
+			)
+		}
+	}
+	const getIncompatibleProxyTypeErrorLie = apiFunction => {
+		const isFirefox = getFirefox()
+		return (
+			tryIncompatibleProxy(isFirefox, () => apiFunction.arguments) ||
+			tryIncompatibleProxy(isFirefox, () => apiFunction.arguments)
+		)
+	}
+	const getToStringIncompatibleProxyTypeErrorLie = apiFunction => {
+		const isFirefox = getFirefox()
+		return (
+			tryIncompatibleProxy(isFirefox, () => apiFunction.toString.arguments) ||
+			tryIncompatibleProxy(isFirefox, () => apiFunction.toString.caller)
+		)
+	}
+
+	// setting prototype to itself should not throw 'Uncaught InternalError: too much recursion'
+	/*
+		Designed for Firefox Proxies
+	*/
+	const getTooMuchRecursionLie = apiFunction => {
+		const isFirefox = getFirefox()
+		const nativeProto = Object.getPrototypeOf(apiFunction)
+		try {
+			Object.setPrototypeOf(apiFunction, apiFunction) + ''
+			return true
+		} catch (error) {
+			return (
+				error.constructor.name != 'TypeError' ||
+					(isFirefox && /too much recursion/.test(error.message)) ? true : false
+			)
+		} finally {
+			// restore proto
+			Object.setPrototypeOf(apiFunction, nativeProto)
+		}
+	}
+
+	// API Function Test
+	const getLies = (apiFunction, proto, obj = null) => {
+		if (typeof apiFunction != 'function') {
+			return {
+				lied: false,
+				lieTypes: []
+			}
+		}
+		const name = apiFunction.name.replace(/get\s/, '')
+		const lies = {
+			// custom lie string names
+			[`failed illegal error`]: obj ? getIllegalTypeErrorLie(obj, name) : false,
+			[`failed undefined properties`]: obj ? getUndefinedValueLie(obj, name) : false,
+			[`failed call interface error`]: getCallInterfaceTypeErrorLie(apiFunction, proto),
+			[`failed apply interface error`]: getApplyInterfaceTypeErrorLie(apiFunction, proto),
+			[`failed new instance error`]: getNewInstanceTypeErrorLie(apiFunction),
+			[`failed class extends error`]: getClassExtendsTypeErrorLie(apiFunction),
+			[`failed null conversion error`]: getNullConversionTypeErrorLie(apiFunction),
+			[`failed toString`]: getToStringLie(apiFunction, name, iframeWindow),
+			[`failed "prototype" in function`]: getPrototypeInFunctionLie(apiFunction),
+			[`failed descriptor`]: getDescriptorLie(apiFunction),
+			[`failed own property`]: getOwnPropertyLie(apiFunction),
+			[`failed descriptor keys`]: getDescriptorKeysLie(apiFunction),
+			[`failed own property names`]: getOwnPropertyNamesLie(apiFunction),
+			[`failed own keys names`]: getOwnKeysLie(apiFunction),
+			[`failed object toString error`]: getNewObjectToStringTypeErrorLie(apiFunction),
+			[`failed at incompatible proxy error`]: getIncompatibleProxyTypeErrorLie(apiFunction),
+			[`failed at toString incompatible proxy error`]: getToStringIncompatibleProxyTypeErrorLie(apiFunction),
+			[`failed at too much recursion error`]: getTooMuchRecursionLie(apiFunction)
+		}
+		const lieTypes = Object.keys(lies).filter(key => !!lies[key])
+		return {
+			lied: lieTypes.length,
+			lieTypes
+		}
+	}
+
+	// Lie Detector
+	const createLieDetector = () => {
+		const isSupported = obj => typeof obj != 'undefined' && !!obj
+		const props = {} // lie list and detail
+		let propsSearched = [] // list of properties searched
+		return {
+			getProps: () => props,
+			getPropsSearched: () => propsSearched,
+			searchLies: (fn, {
+				target = [],
+				ignore = []
+			} = {}) => {
+				let obj
+				// check if api is blocked or not supported
+				try {
+					obj = fn()
+					if (!isSupported(obj)) {
+						return
+					}
+				} catch (error) {
+					return
+				}
+
+				const interfaceObject = !!obj.prototype ? obj.prototype : obj
+				Object.getOwnPropertyNames(interfaceObject)
+					;[...new Set([
+						...Object.getOwnPropertyNames(interfaceObject),
+						...Object.keys(interfaceObject) // backup
+					])].sort().forEach(name => {
+						const skip = (
+							name == 'constructor' ||
+							(target.length && !new Set(target).has(name)) ||
+							(ignore.length && new Set(ignore).has(name))
+						)
+						if (skip) {
+							return
+						}
+						const objectNameString = /\s(.+)\]/
+						const apiName = `${
+							obj.name ? obj.name : objectNameString.test(obj) ? objectNameString.exec(obj)[1] : undefined
+							}.${name}`
+						propsSearched.push(apiName)
+						try {
+							const proto = obj.prototype ? obj.prototype : obj
+							let res // response from getLies
+
+							// search if function
+							try {
+								const apiFunction = proto[name] // may trigger TypeError
+								if (typeof apiFunction == 'function') {
+									res = getLies(proto[name], proto)
+									if (res.lied) {
+										return (props[apiName] = res.lieTypes)
+									}
+									return
+								}
+								// since there is no TypeError and the typeof is not a function,
+								// handle invalid values and ingnore name, length, and constants
+								if (
+									name != 'name' &&
+									name != 'length' &&
+									name[0] !== name[0].toUpperCase()) {
+									const lie = [`failed descriptor.value undefined`]
+									return (
+										props[apiName] = lie
+									)
+								}
+							} catch (error) { }
+							// else search getter function
+							const getterFunction = Object.getOwnPropertyDescriptor(proto, name).get
+							res = getLies(getterFunction, proto, obj) // send the obj for special tests
+							if (res.lied) {
+								return (props[apiName] = res.lieTypes)
+							}
+							return
+						} catch (error) {
+							/*
+							const lie = `failed prototype test execution`
+							return (
+								props[apiName] = [lie]
+							)*/
+							// allow fail in worker scope (unsupported properties)
+							return
+						}
+					})
+			}
+		}
+	}
+
+	const lieDetector = createLieDetector()
+	const {
+		searchLies
+	} = lieDetector
+
+	// search for lies: remove target to search all properties
+	searchLies(() => Intl.DateTimeFormat, {
+		target: [
+			'formatRange',
+			'formatToParts',
+			'resolvedOptions'
+		]
+	})
+	searchLies(() => Function, {
+		target: [
+			'toString',
+		],
+		ignore: [
+			'caller',
+			'arguments'
+		]
+	})
+	searchLies(() => WorkerNavigator, {
+		target: [
+			'appVersion',
+			'deviceMemory',
+			'hardwareConcurrency',
+			'language',
+			'languages',
+			'platform',
+			'userAgent'
+		]
+	})
+	searchLies(() => OffscreenCanvasRenderingContext2D, {
+		target: [
+			'getImageData',
+			'getLineDash',
+			'isPointInPath',
+			'isPointInStroke',
+			'measureText',
+			'quadraticCurveTo'
+		]
+	})
+	searchLies(() => OffscreenCanvas, {
+		target: [
+			'convertToBlob',
+			'getContext'
+		]
+	})
+	searchLies(() => Intl.RelativeTimeFormat, {
+		target: [
+			'resolvedOptions'
+		]
+	})
+	searchLies(() => WebGLRenderingContext, {
+		target: [
+			'bufferData',
+			'getParameter',
+			'readPixels'
+		]
+	})
+	searchLies(() => WebGL2RenderingContext, {
+		target: [
+			'bufferData',
+			'getParameter',
+			'readPixels'
+		]
+	})
+
+	// return lies list and detail 
+	const props = lieDetector.getProps()
+	const propsSearched = lieDetector.getPropsSearched()
+	return {
+		lieDetector,
+		lieList: Object.keys(props).sort(),
+		lieDetail: props,
+		lieCount: Object.keys(props).reduce((acc, key) => acc + props[key].length, 0),
+		propsSearched
+	}
+}
+
 const getWorkerData = async () => {
 
 	const getAppleFonts = () => [
@@ -269,13 +760,27 @@ const getWorkerData = async () => {
 
 	const languageLie = currencyLocale != currencyLanguage
 
+	// prototype lies
+	const {
+		lieDetector: lieProps,
+		lieList,
+		lieDetail,
+		lieCount,
+		propsSearched
+	} = getPrototypeLies(globalThis) // execute and destructure the list and detail
+	const prototypeLies = JSON.parse(JSON.stringify(lieDetail))
+	const protoLie = lieList.length
+
 	return {
 		lied: (
-			localLie
+			localLie ||
+			languageLie ||
+			protoLie
 		),
 		lies: {
 			locale: localLie ? `${''+locale} locale and ${language} language do not match` : false,
-			language: languageLie ? `${currencyLocale} locale and ${currencyLanguage} language do not match` : false
+			language: languageLie ? `${currencyLocale} locale and ${currencyLanguage} language do not match` : false,
+			proto: protoLie ? lieDetail : false
 		},
 		locale: ''+locale,
 		timezoneOffset,

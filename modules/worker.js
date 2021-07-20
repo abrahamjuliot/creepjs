@@ -157,6 +157,18 @@ export const getBestWorkerScope = async imports => {
 				workerScope.lies.system = `${fontSystemClass} fonts and ${system} user agent do not match`
 				documentLie(workerScope.scope, workerScope.lies.system)
 			}
+
+			// prototype lies
+			if (workerScope.lies.proto) {
+				const { proto } = workerScope.lies
+				const keys = Object.keys(proto)
+				keys.forEach(key => {
+					const api = `${workerScope.scope}.${key}`
+					const lies = proto[key]
+					lies.forEach(lie => documentLie(api, lie))
+				})
+				
+			}
 			
 			// locale language lie
 			if (workerScope.lies.locale) {
