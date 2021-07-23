@@ -772,7 +772,6 @@ const getWorkerData = async () => {
 			protoLie
 		),
 		lies: {
-			locale: localeLie ? `${''+locale} locale and ${language} language do not match` : false,
 			language: languageLie ? `${currencyLocale} locale and ${currencyLanguage} language do not match` : false,
 			proto: protoLie ? lieDetail : false
 		},
