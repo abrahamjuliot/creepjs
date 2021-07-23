@@ -283,6 +283,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 		fontListLen,
 		userAgentData,
 		type,
+		scope,
 		system,
 		device,
 		$hash
@@ -299,7 +300,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 	const fontFaceSetHash = hashMini(fontFaceSetFonts)
 	const getSum = arr => !arr ? 0 : arr.reduce((acc, curr) => (acc += Math.abs(curr)), 0)
 	return `
-	<div class="ellipsis"><span class="aside-note">${type || ''} worker</span></div>
+	<div class="ellipsis"><span class="aside-note">${scope || ''}</span></div>
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>Worker</strong><span class="hash">${hashSlice($hash)}</span>
 		<div class="help" title="OffscreenCanvas.convertToBlob()\nFileReader.readAsDataURL()">canvas 2d:${
