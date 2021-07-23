@@ -883,6 +883,7 @@ const getWorkerData = async () => {
 			proto: protoLie ? lieDetail : false
 		},
 		locale: ''+locale,
+		currency: currencyLocale,
 		timezoneOffset,
 		timezoneLocation,
 		deviceMemory,

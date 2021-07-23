@@ -240,22 +240,22 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 		<div class="col-six undefined">
 			<strong>Worker</strong>
 			<div>canvas 2d: ${note.blocked}</div>
+			<div>textMetrics: ${note.blocked}</div>
 			<div>fontFaceSet (0): ${note.blocked}</div>
-			<div>timezone offset: ${note.blocked}</div>
-			<div>location: ${note.blocked}</div>
-			<div>language: ${note.blocked}</div>
-			<div>locale: ${note.blocked}</div>
+			<div>timezone: ${note.blocked}</div>
 			<div>deviceMemory: ${note.blocked}</div>
 			<div>hardwareConcurrency: ${note.blocked}</div>
 			<div>platform: ${note.blocked}</div>
 			<div>webgl vendor: ${note.blocked}</div>
-			<div>userAgentData:</div>
+			<div>language:</div>
 			<div class="block-text">${note.blocked}</div>
 		</div>
 		<div class="col-six undefined">
 			<div>device:</div>
 			<div class="block-text">${note.blocked}</div>
 			<div>userAgent:</div>
+			<div class="block-text">${note.blocked}</div>
+			<div>userAgentData:</div>
 			<div class="block-text">${note.blocked}</div>
 			<div>webgl renderer:</div>
 			<div class="block-text">${note.blocked}</div>
@@ -266,6 +266,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 	const {
 		lied,
 		locale,
+		currency,
 		timezoneOffset,
 		timezoneLocation,
 		deviceMemory,
@@ -274,6 +275,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 		platform,
 		userAgent,
 		canvas2d,
+		textMetrics,
 		webglRenderer,
 		webglVendor,
 		fontFaceSetFonts,
@@ -295,15 +297,18 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 
 	const systemClassIcon = icon[fontSystemClass]
 	const fontFaceSetHash = hashMini(fontFaceSetFonts)
-
+	const getSum = arr => !arr ? 0 : arr.reduce((acc, curr) => (acc += Math.abs(curr)), 0)
 	return `
 	<div class="ellipsis"><span class="aside-note">${type || ''} worker</span></div>
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>Worker</strong><span class="hash">${hashSlice($hash)}</span>
-		<div>canvas 2d:${
+		<div class="help" title="OffscreenCanvas.convertToBlob()\nFileReader.readAsDataURL()">canvas 2d:${
 			canvas2d && canvas2d.dataURI ?
 			`<span class="sub-hash">${hashMini(canvas2d.dataURI)}</span>` :
 			` ${note.unsupported}`
+		}</div>
+		<div class="help" title="OffscreenCanvasRenderingContext2D.measureText()">textMetrics: ${
+			!textMetrics ? note.blocked : getSum(Object.keys(textMetrics).map(key => textMetrics[key] || 0)) || note.blocked
 		}</div>
 		<div class="help" title="FontFaceSet.check()">fontFaceSet (${fontFaceSetFonts ? count(fontFaceSetFonts) : '0'}/${''+fontListLen}): ${
 			fontFaceSetFonts.length ? modal(
@@ -311,14 +316,28 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 				systemClassIcon ? `${systemClassIcon}${fontFaceSetHash}` : fontFaceSetHash
 			) : note.unsupported
 		}</div>
-		<div>timezone offset: ${timezoneOffset != undefined ? ''+timezoneOffset : note.unsupported}</div>
-		<div>location: ${timezoneLocation}</div>
-		<div>language: ${language || note.unsupported}</div>
-		<div>locale: ${locale || note.unsupported}</div>
+		<div>timezone: ${timezoneLocation} (${''+timezoneOffset})</div>
 		<div>deviceMemory: ${deviceMemory || note.unsupported}</div>
 		<div>hardwareConcurrency: ${hardwareConcurrency || note.unsupported}</div>
 		<div>platform: ${platform || note.unsupported}</div>
 		<div>webgl vendor: ${webglVendor || note.unsupported}</div>
+		<div>language:</div>
+		<div class="block-text">
+			${language ? `${language}` : ''}
+			${locale ? `<br>${locale}` : ''}
+			${currency ? `<br>${currency}` : ''}
+		</div>
+	</div>
+	<div class="col-six${lied ? ' rejected' : ''}">
+		<div>device:</div>
+		<div class="block-text">
+			${system ? `${system}` : ''}
+			${device ? `<br>${device}` : note.blocked}
+		</div>
+		<div>userAgent:</div>
+		<div class="block-text">
+			<div>${userAgent || note.unsupported}</div>
+		</div>
 		<div>userAgentData:</div>
 		<div class="block-text">
 			<div>
@@ -340,17 +359,6 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 				`
 			})(userAgentData)}	
 			</div>
-		</div>
-	</div>
-	<div class="col-six${lied ? ' rejected' : ''}">
-		<div>device:</div>
-		<div class="block-text">
-			${system ? `${system}` : ''}
-			${device ? `<br>${device}` : note.blocked}
-		</div>
-		<div>userAgent:</div>
-		<div class="block-text">
-			<div>${userAgent || note.unsupported}</div>
 		</div>
 		<div>unmasked renderer:</div>
 		<div class="block-text">
