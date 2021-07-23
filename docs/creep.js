@@ -609,16 +609,20 @@
 			if (!isChrome) {
 				return win
 			}
-			const iframe = win.document.createElement('iframe');
-			iframe.setAttribute('id', getRandomValues());
-			iframe.setAttribute('style', ghost());
-			win.document.body.appendChild(iframe);
-			if (!iframe || !iframe.parentNode) {
+			const div = win.document.createElement('div');
+			div.setAttribute('id', getRandomValues());
+			div.setAttribute('style', ghost());
+			div.innerHTML = `<div><iframe></iframe></div>`;
+			win.document.body.appendChild(div);
+			const iframe = [...[...div.childNodes][0].childNodes][0];
+			if (!iframe) {
 				return
 			}
 			const { contentWindow } = iframe || {};
-			const iframe2 = contentWindow.document.createElement('iframe');
-			contentWindow.document.body.appendChild(iframe2);
+			const div2 = contentWindow.document.createElement('div');
+			div2.innerHTML = `<div><iframe></iframe></div>`;
+			contentWindow.document.body.appendChild(div2);
+			const iframe2 = [...[...div2.childNodes][0].childNodes][0];
 			return iframe2.contentWindow
 		}
 		catch (error) {
@@ -975,9 +979,30 @@
 
 		// setting prototype to itself should not throw 'Uncaught InternalError: too much recursion'
 		/*
+			Designed for Firefox Proxies
+			
 			Trying to bypass this? We can also check if empty Proxies return 'Uncaught InternalError: too much recursion'
+
 			x = new Proxy({}, {})
 			Object.setPrototypeOf(x, x)+''
+
+			This generates the same error:
+			x = new Proxy({}, {})
+			x.__proto__ = x
+			x++
+
+			In Blink, we can force a custom stack trace and then check each line
+			you = () => {
+				const x = Function.prototype.toString
+				return Object.setPrototypeOf(x, x) + 1
+			}
+			can = () => you()
+			run = () => can()
+			but = () => run()
+			u = () => but()
+			cant = () => u()
+			hide = () => cant()
+			hide()
 		*/
 		const getTooMuchRecursionLie = apiFunction => {
 			const isFirefox = getFirefox();
@@ -1822,9 +1847,15 @@
 			getMismatchStyle((''+knownSums[0]).split(''), (''+sampleSum).split('')) :
 			sampleSum
 		}</div>
-		<div class="help" title="DynamicsCompressorNode.reduction">gain: ${compressorGainReduction}</div>
-		<div class="help" title="AnalyserNode.getFloatFrequencyData()">freq: ${floatFrequencyDataSum}</div>
-		<div class="help" title="AnalyserNode.getFloatTimeDomainData()">time: ${floatTimeDomainDataSum}</div>
+		<div class="help" title="DynamicsCompressorNode.reduction">gain: ${
+			compressorGainReduction || note.blocked
+		}</div>
+		<div class="help" title="AnalyserNode.getFloatFrequencyData()">freq: ${
+			floatFrequencyDataSum || note.blocked
+		}</div>
+		<div class="help" title="AnalyserNode.getFloatTimeDomainData()">time: ${
+			floatTimeDomainDataSum || note.blocked
+		}</div>
 		<div>buffer noise: ${!noise ? 0 : `${noise.toFixed(4)}...`}</div>
 		<div>unique: ${totalUniqueSamples}</div>
 		<div class="help" title="AudioBuffer.getChannelData()">data:${
@@ -1847,76 +1878,135 @@
 	};
 
 	// inspired by https://arkenfox.github.io/TZP/tests/canvasnoise.html
+
+	let pixelImageRandom = '';
+
 	const getPixelMods = () => {
 		const pattern1 = [];
 		const pattern2 = [];
-		const len = 20; // canvas dimensions
+		const len = 8; // canvas dimensions
 		const alpha = 255;
+		const visualMultiplier = 5;
 
 		try {
 			// create 2 canvas contexts
+			const canvasDisplay1 = document.createElement('canvas');
+			const canvasDisplay2 = document.createElement('canvas');
 			const canvas1 = document.createElement('canvas');
 			const canvas2 = document.createElement('canvas');
+			const contextDisplay1 = canvasDisplay1.getContext('2d');
+			const contextDisplay2 = canvasDisplay2.getContext('2d');
 			const context1 = canvas1.getContext('2d');
 			const context2 = canvas2.getContext('2d');
 
 			// set the dimensions
+			canvasDisplay1.width = len * visualMultiplier;
+			canvasDisplay1.height = len * visualMultiplier;
+			canvasDisplay2.width = len * visualMultiplier;
+			canvasDisplay2.height = len * visualMultiplier;
 			canvas1.width = len;
 			canvas1.height = len;
 			canvas2.width = len;
 			canvas2.height = len
 
-				// fill canvas1 with random image data
-				;[...Array(len)].forEach((e, x) => [...Array(len)].forEach((e, y) => {
-					const red = ~~(Math.random() * 256);
-					const green = ~~(Math.random() * 256);
-					const blue = ~~(Math.random() * 256);
-					const colors = `${red}, ${green}, ${blue}, ${alpha}`;
-					context1.fillStyle = `rgba(${colors})`;
-					context1.fillRect(x, y, 1, 1);
-					pattern1.push(colors); // collect the pixel pattern
-				}))
+			// fill canvas1 with random image data
+			;[...Array(len)].forEach((e, x) => [...Array(len)].forEach((e, y) => {
+				const red = ~~(Math.random() * 256);
+				const green = ~~(Math.random() * 256);
+				const blue = ~~(Math.random() * 256);
+				const colors = `${red}, ${green}, ${blue}, ${alpha}`;
+				context1.fillStyle = `rgba(${colors})`;
+				context1.fillRect(x, y, 1, 1);
+				// capture data in visuals
+				contextDisplay1.fillStyle = `rgba(${colors})`;
+				contextDisplay1.fillRect(
+					x * visualMultiplier,
+					y * visualMultiplier,
+					1 * visualMultiplier,
+					1 * visualMultiplier
+				);
+				return pattern1.push(colors) // collect the pixel pattern
+			}))
 
-				// fill canvas2 with canvas1 image data
-				;[...Array(len)].forEach((e, x) => [...Array(len)].forEach((e, y) => {
-					const pixel = context1.getImageData(x, y, 1, 1);
-					const red = pixel.data[0];
-					const green = pixel.data[1];
-					const blue = pixel.data[2];
-					const alpha = pixel.data[3];
-					const colors = `${red}, ${green}, ${blue}, ${alpha}`;
-					context2.fillStyle = `rgba(${colors})`;
-					context2.fillRect(x, y, 1, 1);
-					return pattern2.push(colors) // collect the pixel pattern
-				}));
+			// fill canvas2 with canvas1 image data
+			;[...Array(len)].forEach((e, x) => [...Array(len)].forEach((e, y) => {
+				// get context1 pixel data and mirror to context2
+				const {
+					data: [red, green, blue, alpha]
+				} = context1.getImageData(x, y, 1, 1) || {};
+				const colors = `${red}, ${green}, ${blue}, ${alpha}`;
+				context2.fillStyle = `rgba(${colors})`;
+				context2.fillRect(x, y, 1, 1);
+
+				// capture noise in visuals
+				const {
+					data: [red2, green2, blue2, alpha2]
+				} = context2.getImageData(x, y, 1, 1) || {};
+				const colorsDisplay = `
+				${red != red2 ? red2 : 255},
+				${green != green2 ? green2 : 255},
+				${blue != blue2 ? blue2 : 255},
+				${alpha != alpha2 ? alpha2 : 1}
+			`;
+				contextDisplay2.fillStyle = `rgba(${colorsDisplay})`;
+				contextDisplay2.fillRect(
+					x * visualMultiplier,
+					y * visualMultiplier,
+					1 * visualMultiplier,
+					1 * visualMultiplier
+				);
+				return pattern2.push(colors) // collect the pixel pattern
+			}));
 
 			// compare the pattern collections and collect diffs
 			const patternDiffs = [];
 			const rgbaChannels = new Set()
-				;[...Array(pattern1.length)].forEach((e, i) => {
-					const pixelColor1 = pattern1[i];
-					const pixelColor2 = pattern2[i];
-					if (pixelColor1 != pixelColor2) {
-						const rgbaValues1 = pixelColor1.split(',');
-						const rgbaValues2 = pixelColor2.split(',');
-						const colors = [
-							rgbaValues1[0] != rgbaValues2[0] ? 'r' : '',
-							rgbaValues1[1] != rgbaValues2[1] ? 'g' : '',
-							rgbaValues1[2] != rgbaValues2[2] ? 'b' : '',
-							rgbaValues1[3] != rgbaValues2[3] ? 'a' : ''
-						].join('');
-						rgbaChannels.add(colors);
-						patternDiffs.push([i, colors]);
-					}
-				});
+
+			;[...Array(pattern1.length)].forEach((e, i) => {
+				const pixelColor1 = pattern1[i];
+				const pixelColor2 = pattern2[i];
+				if (pixelColor1 != pixelColor2) {
+					const rgbaValues1 = pixelColor1.split(',');
+					const rgbaValues2 = pixelColor2.split(',');
+					const colors = [
+						rgbaValues1[0] != rgbaValues2[0] ? 'r' : '',
+						rgbaValues1[1] != rgbaValues2[1] ? 'g' : '',
+						rgbaValues1[2] != rgbaValues2[2] ? 'b' : '',
+						rgbaValues1[3] != rgbaValues2[3] ? 'a' : ''
+					].join('');
+					rgbaChannels.add(colors);
+					patternDiffs.push([i, colors]);
+				}
+			});
+
+			pixelImageRandom = canvasDisplay1.toDataURL(); // template use only
+			const pixelImage = canvasDisplay2.toDataURL();
 
 			const rgba = rgbaChannels.size ? [...rgbaChannels].sort().join(', ') : undefined;
 			const pixels = patternDiffs.length || undefined;
-			return { rgba, pixels }
+			return { rgba, pixels, pixelImage }
 		}
 		catch (error) {
-			console.error(error);
-			return
+			return console.error(error)
+		}
+	};
+
+	const getPointIn = (canvas, context) => {
+		canvas.width = canvas.height;
+		context.fillStyle = 'rgba(0, 0, 0, 1)';
+		context.beginPath();
+		context.arc(0, 0, 10, 0, Math.PI * 2);
+		context.closePath();
+		context.fill();
+		const isPointInPath = [];
+		const isPointInStroke = []
+		;[...Array(canvas.width)].forEach((e, x) => [...Array(canvas.height)].forEach((e, y) => {
+			context.isPointInPath(x, y) && isPointInPath.push([x, y]);
+			return context.isPointInStroke(x, y) && isPointInStroke.push([x, y])
+		}));
+		return {
+			isPointInPath: isPointInPath.length ? isPointInPath : undefined,
+			isPointInStroke: isPointInStroke.length ? isPointInStroke : undefined
 		}
 	};
 
@@ -1933,20 +2023,166 @@
 			}
 		} = imports;
 
+		const fillRect = (canvas, context) => {
+			canvas.width = 186;
+			canvas.height = 30;
+			const str = `😃🙌🧠🦄🐉🌊🍧🏄‍♀️🌠🔮`;
+			context.font = '14px Arial';
+			context.fillText(str, 0, 20);
+			context.fillStyle = 'rgba(0, 0, 0, 0)';
+			context.fillRect(0, 0, 186, 30);
+
+			context.beginPath();
+			context.arc(15.49, 15.51, 10.314, 0, Math.PI * 2);
+			context.closePath();
+			context.fill();
+
+			return context
+		};
+
+		const getFileReaderData = async blob => {
+			if (!blob) {
+				return
+			}
+			const reader1 = new FileReader();
+			const reader2 = new FileReader();
+			const reader3 = new FileReader();
+			const reader4 = new FileReader();
+			reader1.readAsArrayBuffer(blob);
+			reader2.readAsDataURL(blob);
+			reader3.readAsBinaryString(blob);
+			reader4.readAsText(blob);
+			const [
+				readAsArrayBuffer,
+				readAsDataURL,
+				readAsBinaryString,
+				readAsText
+			] = await Promise.all([
+				new Promise(resolve => {
+					reader1.onload = () => resolve(reader1.result);
+				}),
+				new Promise(resolve => {
+					reader2.onload = () => resolve(reader2.result);
+				}),
+				new Promise(resolve => {
+					reader3.onload = () => resolve(reader3.result);
+				}),
+				new Promise(resolve => {
+					reader4.onload = () => resolve(reader4.result);
+				})
+			]);
+			return {
+				readAsArrayBuffer: String.fromCharCode.apply(null, new Uint8Array(readAsArrayBuffer)),
+				readAsBinaryString,
+				readAsDataURL,
+				readAsText
+			}
+		};
+
+		const systemEmojis = [
+			[128512],
+			[9786],
+			[129333, 8205, 9794, 65039],
+			[9832],
+			[9784],
+			[9895],
+			[8265],
+			[8505],
+			[127987, 65039, 8205, 9895, 65039],
+			[129394],
+			[9785],
+			[9760],
+			[129489, 8205, 129456],
+			[129487, 8205, 9794, 65039],
+			[9975],
+			[129489, 8205, 129309, 8205, 129489],
+			[9752],
+			[9968],
+			[9961],
+			[9972],
+			[9992],
+			[9201],
+			[9928],
+			[9730],
+			[9969],
+			[9731],
+			[9732],
+			[9976],
+			[9823],
+			[9937],
+			[9000],
+			[9993],
+			[9999],
+			[10002],
+			[9986],
+			[9935],
+			[9874],
+			[9876],
+			[9881],
+			[9939],
+			[9879],
+			[9904],
+			[9905],
+			[9888],
+			[9762],
+			[9763],
+			[11014],
+			[8599],
+			[10145],
+			[11013],
+			[9883],
+			[10017],
+			[10013],
+			[9766],
+			[9654],
+			[9197],
+			[9199],
+			[9167],
+			[9792],
+			[9794],
+			[10006],
+			[12336],
+			[9877],
+			[9884],
+			[10004],
+			[10035],
+			[10055],
+			[9724],
+			[9642],
+			[10083],
+			[10084],
+			[9996],
+			[9757],
+			[9997],
+			[10052],
+			[9878],
+			[8618],
+			[9775],
+			[9770],
+			[9774],
+			[9745],
+			[10036],
+			[127344],
+			[127359]
+		].map(emojiCode => String.fromCodePoint(...emojiCode));
+
 		try {
+			await new Promise(setTimeout).catch(e => { });
 			const start = performance.now();
+
 			const dataLie = lieProps['HTMLCanvasElement.toDataURL'];
 			const contextLie = lieProps['HTMLCanvasElement.getContext'];
-			let lied = (dataLie || contextLie) || false;
+			const imageDataLie = lieProps['CanvasRenderingContext2D.getImageData'];
+			const textMetricsLie = lieProps['CanvasRenderingContext2D.measureText'];
+			let lied = (dataLie || contextLie || imageDataLie || textMetricsLie) || false;
+
 			const doc = phantomDarkness ? phantomDarkness.document : document;
 			const canvas = doc.createElement('canvas');
 			const context = canvas.getContext('2d');
-			const str = '!😃🙌🧠👩‍💻👟👧🏻👩🏻‍🦱👩🏻‍🦰👱🏻‍♀️👩🏻‍🦳👧🏼👧🏽👧🏾👧🏿🦄🐉🌊🍧🏄‍♀️🌠🔮♞';
-			context.font = '14px Arial';
-			context.fillText(str, 0, 50);
-			context.fillStyle = 'rgba(100, 200, 99, 0.78)';
-			context.fillRect(100, 30, 80, 50);
+			fillRect(canvas, context);
 			const dataURI = canvas.toDataURL();
+			
+
 			if (dragonOfDeath) {
 				const result1 = dragonOfDeath.document.createElement('canvas').toDataURL();
 				const result2 = document.createElement('canvas').toDataURL();
@@ -1956,14 +2192,92 @@
 					documentLie(`HTMLCanvasElement.toDataURL`, iframeLie);
 				}
 			}
+
+			const {
+				actualBoundingBoxAscent,
+				actualBoundingBoxDescent,
+				actualBoundingBoxLeft,
+				actualBoundingBoxRight,
+				fontBoundingBoxAscent,
+				fontBoundingBoxDescent,
+				width
+			} = context.measureText(systemEmojis.join('')) || {};
+			const textMetrics = {
+				actualBoundingBoxAscent,
+				actualBoundingBoxDescent,
+				actualBoundingBoxLeft,
+				actualBoundingBoxRight,
+				fontBoundingBoxAscent,
+				fontBoundingBoxDescent,
+				width
+			};
+			const { data: imageData } = context.getImageData(0, 0, canvas.width, canvas.height) || {};
+			
+			let canvasOffscreen;
+			try {
+				canvasOffscreen = new OffscreenCanvas(186, 30);
+				const contextOffscreen = canvasOffscreen.getContext('2d');
+				fillRect(canvasOffscreen, contextOffscreen);
+			}
+			catch (error) { }
+
+			const [
+				blob,
+				blobOffscreen
+			] = await Promise.all([
+				new Promise(resolve => canvas.toBlob(async blob => {
+					const data = await getFileReaderData(blob);
+					return resolve(data)
+				})),
+				getFileReaderData(canvasOffscreen && await canvasOffscreen.convertToBlob())
+			]);
+
+			const points = getPointIn(canvas, context); // modifies width
 			const mods = getPixelMods();
+
+			// lies
+			const {
+				readAsArrayBuffer,
+				readAsBinaryString,
+				readAsDataURL,
+				readAsText
+			} = blob || {};
+			
+			const {
+				readAsArrayBuffer: readAsArrayBufferOffscreen,
+				readAsBinaryString: readAsBinaryStringOffscreen,
+				readAsDataURL: readAsDataURLOffscreen,
+				readAsText: readAsTextOffscreen
+			} = blobOffscreen || {};
+			const mismatchingFileData = (
+				(readAsArrayBufferOffscreen && readAsArrayBufferOffscreen !== readAsArrayBuffer) ||
+				(readAsBinaryStringOffscreen && readAsBinaryStringOffscreen !== readAsBinaryString) ||
+				(readAsDataURLOffscreen && readAsDataURLOffscreen !== readAsDataURL) ||
+				(readAsTextOffscreen && readAsTextOffscreen !== readAsText)
+			);
+			if (mismatchingFileData) {
+				lied = true;
+				const iframeLie = `mismatching file data`;
+				documentLie(`FileReader`, iframeLie);
+			}
+
 			if (mods && mods.pixels) {
 				lied = true;
 				const iframeLie = `pixel data modified`;
 				documentLie(`CanvasRenderingContext2D.getImageData`, iframeLie);
 			}
+
 			logTestResult({ start, test: 'canvas 2d', passed: true });
-			return { dataURI, mods, lied }
+			return {
+				dataURI,
+				imageData: imageData ? String.fromCharCode.apply(null, imageData) : undefined,
+				mods,
+				points,
+				blob,
+				blobOffscreen,
+				textMetrics: new Set(Object.keys(textMetrics)).size > 1 ? textMetrics : undefined,
+				lied
+			}
 		}
 		catch (error) {
 			logTestResult({ test: 'canvas 2d', passed: false });
@@ -1972,20 +2286,80 @@
 		}
 	};
 
-	const canvasHTML = ({ fp, note, hashSlice }) => {
+	const canvasHTML = ({ fp, note, modal, getMismatchStyle, hashMini, hashSlice }) => {
 		if (!fp.canvas2d) {
 			return `
 		<div class="col-six undefined">
 			<strong>Canvas 2d</strong> <span>${note.blocked}</span>
-			<div>0% rgba noise</div>
+			<div>data: ${note.blocked}</div>
+			<div>textMetrics: ${note.blocked}</div>
+			<div>pixel trap:</div>
+			<div class="icon-container pixels">${note.blocked}</div>
 		</div>`
 		}
-		const { canvas2d: { lied, mods, $hash } } = fp;
-		const { pixels, rgba } = mods || {};
-		const modPercent = pixels ? Math.round((pixels/400)*100) : 0;
+				
+		const {
+			canvas2d: {
+				lied,
+				dataURI,
+				imageData,
+				mods,
+				points,
+				blob,
+				blobOffscreen,
+				textMetrics,
+				$hash
+			}
+		} = fp;
+		const { pixels, rgba, pixelImage } = mods || {};
+		const modPercent = pixels ? Math.round((pixels / 400) * 100) : 0;
+
+		const {
+			readAsArrayBuffer,
+			readAsBinaryString,
+			readAsDataURL,
+			readAsText
+		} = blob || {};
+
+		const hash = {
+			dataURI: hashMini(dataURI),
+			readAsArrayBuffer: hashMini(readAsArrayBuffer),
+			readAsBinaryString: hashMini(readAsBinaryString),
+			readAsDataURL: hashMini(readAsDataURL),
+			readAsText: hashMini(readAsText)
+			
+		};
+
+		const getBlobtemplate = blob => {
+			const {
+				readAsArrayBuffer,
+				readAsBinaryString,
+				readAsDataURL,
+				readAsText
+			} = blob || {};
+			
+			return `
+			<br>readAsArrayBuffer: ${!readAsArrayBuffer ? note.unsupported : getMismatchStyle(hash.readAsArrayBuffer.split(''), hashMini(readAsArrayBuffer).split(''))}
+			<br>readAsBinaryString: ${!readAsBinaryString ? note.unsupported : getMismatchStyle(hash.readAsBinaryString.split(''), hashMini(readAsBinaryString).split(''))}
+			<br>readAsDataURL: ${!readAsDataURL ? note.unsupported : getMismatchStyle(hash.dataURI.split(''), hashMini(readAsDataURL).split(''))}
+			<br>readAsText: ${!readAsText ? note.unsupported : getMismatchStyle(hash.readAsText.split(''), hashMini(readAsText).split(''))}
+		`
+		};
+		const { isPointInPath, isPointInStroke } = points || {};
+		const dataTemplate = `
+		${dataURI ? `<div class="icon-item canvas-data"></div>` : ''}
+		<br>toDataURL: ${!dataURI ? note.blocked : hash.dataURI}
+		<br>getImageData: ${!imageData ? note.blocked : hashMini(imageData)}
+		<br>isPointInPath: ${!isPointInPath ? note.blocked : hashMini(isPointInPath)}
+		<br>isPointInStroke: ${!isPointInStroke ? note.blocked : hashMini(isPointInStroke)}
+		<br><br><strong>HTMLCanvasElement.toBlob</strong>
+		${getBlobtemplate(blob)}
+		<br><br><strong>OffscreenCanvas.convertToBlob</strong>
+		${getBlobtemplate(blobOffscreen)}
+	`;
 
 		// rgba: "b, g, gb, r, rb, rg, rgb"
-		const rgbaHTML= !rgba ? rgba : rgba.split(', ').map(s => s.split('').map(c => {
+		const rgbaHTML = !rgba ? rgba : rgba.split(', ').map(s => s.split('').map(c => {
 			const css = {
 				r: 'red',
 				g: 'green',
@@ -1993,9 +2367,32 @@
 			};
 			return `<span class="rgba rgba-${css[c]}"></span>`
 		}).join('')).join(' ');
+
+		const getSum = arr => !arr ? 0 : arr.reduce((acc, curr) => (acc += Math.abs(curr)), 0);
 		return `
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<style>
+			.pixels {
+				padding: 10px;
+				position: relative;
+				overflow: hidden;
+			}
+			.canvas-data {
+				max-width: 200px;
+				height: 30px;
+				background-image: url(${dataURI})
+			}
+			.pixel-image,
+			.pixel-image-random {
+				max-width: 75px;
+    			border-radius: 50%;
+			}
+			.pixel-image {
+				background-image: url(${pixelImage})
+			}
+			.pixel-image-random {
+				background-image: url(${pixelImageRandom})
+			}
 			.rgba {
 				width: 8px;
 				height: 8px;
@@ -2024,7 +2421,27 @@
 			}
 		</style>
 		<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-		<div>${modPercent}% rgba noise${rgba ? `: ${rgbaHTML}` : ''}</div>
+		<div class="help" title="HTMLCanvasElement.toDataURL()\nCanvasRenderingContext2D.getImageData()\nCanvasRenderingContext2D.isPointInPath()\nCanvasRenderingContext2D.isPointInStroke()\nHTMLCanvasElement.toBlob()\nOffscreenCanvas.convertToBlob()\nFileReader.readAsArrayBuffer()\nFileReader.readAsBinaryString()\nFileReader.readAsDataURL()\nFileReader.readAsText()">data: ${
+			modal(
+				'creep-canvas-data',
+				dataTemplate,
+				hashMini({
+					dataURI,
+					imageData,
+					points,
+					blob,
+					blobOffscreen
+				})
+			)
+		}</div>
+		<div class="help" title="CanvasRenderingContext2D.measureText()">textMetrics: ${
+			!textMetrics ? note.blocked : getSum(Object.keys(textMetrics).map(key => textMetrics[key] || 0)) || note.blocked
+		}</div>
+		<div class="help" title="CanvasRenderingContext2D.getImageData()">pixel trap: ${rgba ? `${modPercent}% rgba noise ${rgbaHTML}` : ''}</div>
+		<div class="icon-container pixels">
+			<div class="icon-item pixel-image-random"></div>
+			${rgba ? `<div class="icon-item pixel-image"></div>` : ''}
+		</div>
 	</div>
 	`
 	};
@@ -3473,20 +3890,183 @@
 	// inspired by Lalit Patel's fontdetect.js
 	// https://www.lalit.org/wordpress/wp-content/uploads/2008/05/fontdetect.js?ver=0.3
 
-	const getTextMetrics = (context, font) => {
-		context.font = `256px ${font}`;
-		const metrics = context.measureText('mmmmmmmmmmlli');
-		return {
-			ascent: Math.round(metrics.actualBoundingBoxAscent),
-			descent: Math.round(metrics.actualBoundingBoxDescent),
-			left: Math.round(metrics.actualBoundingBoxLeft),
-			right: Math.round(metrics.actualBoundingBoxRight),
-			width: Math.round(metrics.width),
-			fontAscent: Math.round(metrics.fontBoundingBoxAscent),
-			fontDescent: Math.round(metrics.fontBoundingBoxDescent)
+	const getFontsShortList = () => [
+		'Helvetica Neue', // Apple
+		'Geneva', // mac (not iOS)
+		'Lucida Console', // Windows
+		'Noto Color Emoji', // Linux
+		'Ubuntu', // Ubuntu
+		'Droid Sans Mono', // Android
+		'Roboto', // Android, Chrome OS
+	].sort();
+
+	const getAppleFonts = () => [
+		'Helvetica Neue'
+	];
+
+	const getWindowsFonts = () => [
+		'Cambria Math',
+		'Lucida Console',
+		'MS Serif',
+		'Segoe UI',
+	];
+
+	const getLinuxFonts = () => [
+		'Arimo', // ubuntu, chrome os
+		'Cousine', // ubuntu, chrome os
+		'MONO', // ubuntu, chrome os (not TB)
+		'Jomolhari', // chrome os
+		'Ubuntu', // ubuntu (not TB)
+		'Chilanka', // ubuntu (not TB)
+	];
+
+	const getAndroidFonts = () => [
+		'Dancing Script', // android FF
+	];
+
+	const getGeneralFonts = () => [
+		// Windows
+		'Consolas', //FF and Chrome (not TB)
+		'HELV', // FF (not TB)
+		'Marlett', // chrome
+		// Linux 
+		'Noto Sans JP', // TB linux
+		// Apple
+		'Arial Hebrew', // safari + chrome (not FF or TB)
+		'Arial Rounded MT Bold', // not TB
+		'Geneva', // mac
+		'Apple Chancery', // mac (not TB)
+		'Apple Color Emoji', // ios, chrome, safari (TB, not FF)
+		// Android
+		'Roboto', // android FF, Chrome OS
+		'Droid Sans Mono', // FF android
+		'Cutive Mono', // some android FF
+		// Other
+		'Liberation Mono', // Chrome OS
+		'Noto Sans Yi', // TB on linux and windows, chrome OS, FF android, Mac
+		'Monaco', // android + mac
+		'Palatino', // android + mac + ios
+		'Baskerville', // android + mac
+		'Tahoma' // android, mac, windows (not ios, not chrome os 90)
+	];
+
+	const getoriginFonts = () => [
+		...getAppleFonts(),
+		...getWindowsFonts(),
+		...getLinuxFonts(),
+		...getAndroidFonts(),
+		...getGeneralFonts()
+	].sort();
+
+	const originPixelsToInt = pixels => Math.round(2 * pixels.replace('px', ''));
+	const getPixelDimensions = style => {
+		const transform = style.transformOrigin.split(' ');
+		const perspective = style.perspectiveOrigin.split(' ');
+		const dimensions = {
+			transformWidth: originPixelsToInt(transform[0]),
+			transformHeight: originPixelsToInt(transform[1]),
+			perspectiveWidth: originPixelsToInt(perspective[0]),
+			perspectiveHeight: originPixelsToInt(perspective[1])
+		};
+		return dimensions
+	};
+
+	const getPixelFonts = ({ win, id, chars, baseFonts, families }) => {
+		try {
+			win.document.getElementById(id).innerHTML = `
+		<style>
+			#${id}-detector {
+				--font: '';
+				position: absolute !important;
+				left: -9999px!important;
+				font-size: 256px !important;
+				font-style: normal !important;
+				font-weight: normal !important;
+				letter-spacing: normal !important;
+				line-break: auto !important;
+				line-height: normal !important;
+				text-transform: none !important;
+				text-align: left !important;
+				text-decoration: none !important;
+				text-shadow: none !important;
+				white-space: normal !important;
+				word-break: normal !important;
+				word-spacing: normal !important;
+				/* in order to test scrollWidth, clientWidth, etc. */
+				padding: 0 !important;
+				margin: 0 !important;
+				/* in order to test inlineSize and blockSize */
+				writing-mode: horizontal-tb !important;
+				/* in order to test perspective-origin */
+				/* in order to test origins */
+				transform-origin: unset !important;
+				perspective-origin: unset !important;
+			}
+			#${id}-detector::after {
+				font-family: var(--font);
+				content: '${chars}';
+			}
+		</style>
+		<span id="${id}-detector"></span>
+	`;
+			const span = win.document.getElementById(`${id}-detector`);
+			const detectedViaTransform = new Set();
+			const detectedViaPerspective = new Set();
+			const style = getComputedStyle(span);
+			const base = baseFonts.reduce((acc, font) => {
+				span.style.setProperty('--font', font);
+				const dimensions = getPixelDimensions(style);
+				acc[font] = dimensions;
+				return acc
+			}, {});
+			families.forEach(family => {
+				span.style.setProperty('--font', family);
+				const basefont = /, (.+)/.exec(family)[1];
+				const dimensions = getPixelDimensions(style);
+				const font = /\'(.+)\'/.exec(family)[1];
+				if (dimensions.transformWidth != base[basefont].transformWidth ||
+					dimensions.transformHeight != base[basefont].transformHeight) {
+					detectedViaTransform.add(font);
+				}
+				if (dimensions.perspectiveWidth != base[basefont].perspectiveWidth ||
+					dimensions.perspectiveHeight != base[basefont].perspectiveHeight) {
+					detectedViaPerspective.add(font);
+				}
+				return
+			});
+			const fonts = {
+				transform: [...detectedViaTransform],
+				perspective: [...detectedViaPerspective]
+			};
+			return fonts
+		} catch (error) {
+			console.error(error);
+			return {
+				transform: [],
+				perspective: []
+			}
 		}
 	};
-	const getFonts = async (imports, fonts) => {
+
+	const getFontFaceLoadFonts = async list => {
+		try {
+			const fontFaceList = list.map(font => new FontFace(font, `local("${font}")`));
+			const responseCollection = await Promise
+				.allSettled(fontFaceList.map(font => font.load()));
+			const fonts = responseCollection.reduce((acc, font) => {
+				if (font.status == 'fulfilled') {
+					return [...acc, font.value.family]
+				}
+				return acc
+			}, []);
+			return fonts
+		} catch (error) {
+			console.error(error);
+			return []
+		}
+	};
+
+	const getFonts = async imports => {
 
 		const {
 			require: {
@@ -3498,59 +4078,44 @@
 		} = imports;
 
 		try {
+			await new Promise(setTimeout).catch(e => {});
 			const start = performance.now();
 			const win = phantomDarkness ? phantomDarkness : window;
 			const doc = win.document;
-			const offscreenCanvas = win.OffscreenCanvas;
-			const context = (
-				('OffscreenCanvas' in window) ?
-					new offscreenCanvas(500, 200).getContext('2d') :
-					doc.createElement('canvas').getContext('2d')
-			);
-
-			if (!context) {
-				throw new Error(`Context blocked or not supported`)
-			}
-
+			
+			const id = `font-fingerprint`;
+			const div = doc.createElement('div');
+			div.setAttribute('id', id);
+			doc.body.appendChild(div);
+			const originFontsList = getoriginFonts();
 			const baseFonts = ['monospace', 'sans-serif', 'serif'];
-			const families = fonts.reduce((acc, font) => {
+			const families = originFontsList.reduce((acc, font) => {
 				baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`));
 				return acc
 			}, []);
 
-			const detected = new Set();
-			const base = baseFonts.reduce((acc, font) => {
-				acc[font] = getTextMetrics(context, font);
-				return acc
-			}, {});
-			families.forEach(family => {
-				const basefont = /, (.+)/.exec(family)[1];
-				const dimensions = getTextMetrics(context, family);
-				const font = /\'(.+)\'/.exec(family)[1];
-				const support = (
-					dimensions.ascent != base[basefont].ascent ||
-					dimensions.descent != base[basefont].descent ||
-					dimensions.left != base[basefont].left ||
-					dimensions.right != base[basefont].right ||
-					dimensions.width != base[basefont].width
-				);
-				const extraSupport = (
-					dimensions.fontAscent != base[basefont].fontAscent ||
-					dimensions.fontDescent != base[basefont].fontDescent
-				);
-				if (((!isNaN(dimensions.ascent) && !isNaN(dimensions.fontAscent)) && (support || extraSupport)) ||
-					(!isNaN(dimensions.ascent) && support)) {
-					detected.add(font);
-				}
-				return
+			const pixelFonts = getPixelFonts({
+				win,
+				id,
+				chars: `mmmmmmmmmmlli`,
+				baseFonts,
+				families
 			});
-			const lied = (
-				(('OffscreenCanvas' in window) && lieProps['OffscreenCanvasRenderingContext2D.measureText']) ||
-				(!('OffscreenCanvas' in window) && lieProps['CanvasRenderingContext2D.measureText'])
-			);
+
+			const compressToList = fontObject => Object.keys(fontObject).reduce((acc, key) => {
+				return [...acc, ...fontObject[key]]
+			},[]);
+			
+			const fontFaceLoadFonts = await getFontFaceLoadFonts(getFontsShortList());
+
+			const originFonts = [...new Set(compressToList(pixelFonts))];
 
 			logTestResult({ start, test: 'fonts', passed: true });
-			return { fonts: [...detected], lied }
+			return {
+				fontFaceLoadFonts,
+				pixelFonts,
+				originFonts
+			}
 		} catch (error) {
 			logTestResult({ test: 'fonts', passed: false });
 			captureError(error);
@@ -3559,27 +4124,97 @@
 
 	};
 
-	const fontList = ["Andale Mono", "Arial", "Arial Black", "Arial Hebrew", "Arial MT", "Arial Narrow", "Arial Rounded MT Bold", "Arial Unicode MS", "Bitstream Vera Sans Mono", "Book Antiqua", "Bookman Old Style", "Calibri", "Cambria", "Cambria Math", "Century", "Century Gothic", "Century Schoolbook", "Comic Sans", "Comic Sans MS", "Consolas", "Courier", "Courier New", "Geneva", "Georgia", "Helvetica", "Helvetica Neue", "Impact", "Lucida Bright", "Lucida Calligraphy", "Lucida Console", "Lucida Fax", "LUCIDA GRANDE", "Lucida Handwriting", "Lucida Sans", "Lucida Sans Typewriter", "Lucida Sans Unicode", "Microsoft Sans Serif", "Monaco", "Monotype Corsiva", "MS Gothic", "MS Outlook", "MS PGothic", "MS Reference Sans Serif", "MS Sans Serif", "MS Serif", "MYRIAD", "MYRIAD PRO", "Palatino", "Palatino Linotype", "Segoe Print", "Segoe Script", "Segoe UI", "Segoe UI Light", "Segoe UI Semibold", "Segoe UI Symbol", "Tahoma", "Times", "Times New Roman", "Times New Roman PS", "Trebuchet MS", "Verdana", "Wingdings", "Wingdings 2", "Wingdings 3"];
-
-	const fontsHTML = ({ fp, note, modal, count, hashSlice }) => {
+	const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini }) => {
 		if (!fp.fonts) {
 			return `
 		<div class="col-six undefined">
 			<strong>Fonts</strong>
-			<div>results (0): ${note.blocked}</div>
+			<div>origin (0): ${note.blocked}</div>
+			<div>load (0):</div>
+			<div class="block-text">${note.blocked}</div>
 		</div>`
 		}
 		const {
 			fonts: {
 				$hash,
-				fonts,
-				lied
+				fontFaceLoadFonts,
+				originFonts
 			}
 		} = fp;
+		
+		const apple = new Set(getAppleFonts());
+		const linux = new Set(getLinuxFonts());
+		const windows = new Set(getWindowsFonts());
+		const android = new Set(getAndroidFonts());
+
+		const systemClass = [...originFonts.reduce((acc, font) => {
+			if (!acc.has('Apple') && apple.has(font)) {
+				acc.add('Apple');
+				return acc
+			}
+			if (!acc.has('Linux') && linux.has(font)) {
+				acc.add('Linux');
+				return acc
+			}
+			if (!acc.has('Windows') && windows.has(font)) {
+				acc.add('Windows');
+				return acc
+			}
+			if (!acc.has('Android') && android.has(font)) {
+				acc.add('Android');
+				return acc
+			}
+			return acc
+		}, new Set())];
+		const chromeOnAndroid = (
+			''+((originFonts || []).sort()) == 'Baskerville,Monaco,Palatino,Tahoma'
+		);
+		if (!systemClass.length && chromeOnAndroid) {
+			systemClass.push('Android');
+		}
+		const icon = {
+			'Linux': '<span class="icon linux"></span>',
+			'Apple': '<span class="icon apple"></span>',
+			'Windows': '<span class="icon windows"></span>',
+			'Android': '<span class="icon android"></span>',
+			'CrOS': '<span class="icon cros"></span>'
+		};
+		const systemClassIcons = systemClass.map(name => icon[name]);
+		const originHash = hashMini(originFonts);
+
+		const systemMap = {
+			'Lucida Console': [icon.Windows, 'Windows'],
+			'Arimo': [icon.Linux, 'Linux'],
+			'Noto Color Emoji': [icon.Linux, 'Linux'],
+			'Noto Color Emoji,Ubuntu': [icon.Linux, 'Linux Ubuntu'],
+			'Noto Color Emoji,Roboto': [icon.CrOS, 'Chrome OS'],
+			'Droid Sans Mono,Roboto': [icon.Android, 'Android'],
+			'Droid Sans Mono,Noto Color Emoji,Roboto': [`${icon.Linux}${icon.Android}`, 'Linux Android'],
+			'Helvetica Neue': [icon.Apple, 'iOS'],
+			'Geneva,Helvetica Neue': [icon.Apple, 'Mac']
+		}; 
+
+		const fontFaceLoadFontsString = ''+(fontFaceLoadFonts.sort());
+		const system = systemMap[fontFaceLoadFontsString]; 
+
 		return `
-	<div class="col-six${lied ? ' rejected' : ''}">
-		<strong>Fonts</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-		<div>results (${fonts ? count(fonts) : '0'}): ${fonts.length ? modal('creep-fonts', fonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>')) : note.blocked}</div>
+	<div class="col-six">
+		<strong>Fonts</strong><span class="hash">${hashSlice($hash)}</span>
+		<div class="help" title="CSSStyleDeclaration.setProperty()\ntransform-origin\nperspective-origin">origin (${originFonts ? count(originFonts) : '0'}/${''+getoriginFonts().length}): ${
+			originFonts.length ? modal(
+				'creep-fonts', originFonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>'),
+				`${systemClass.length ? `${systemClassIcons.join('')}${originHash}` : originHash}`
+			) : note.unknown
+		}</div>
+		<div class="help" title="FontFace.load()">load (${fontFaceLoadFonts ? count(fontFaceLoadFonts) : '0'}/${''+getFontsShortList().length}): ${
+			system ? system[1] : ''
+		}</div>
+		<div class="block-text">
+			<div>${
+				fontFaceLoadFonts.length ? `${system ? system[0] : ''}${fontFaceLoadFontsString}` : 
+					note.unknown
+			}</div>
+		</div>
 	</div>
 	`	
 	};
@@ -4576,6 +5211,32 @@
 						const nestedIframeLie = `Expected "${navigatorPlatform}" in nested iframe and got "${platform}"`;
 						documentLie(`Navigator.platform`, nestedIframeLie);
 					}
+
+					// user agent os lie
+					const { userAgent } = navigator;
+					const userAgentOS = (
+						// order is important
+						/win(dows|16|32|64|95|98|nt)|wow64/ig.test(userAgent) ? 'Windows' :
+							/android|linux|cros/ig.test(userAgent) ? 'Linux' :
+								/(i(os|p(ad|hone|od)))|mac/ig.test(userAgent) ? 'Apple' :
+									'Other'
+					);
+					const platformOS = (
+						// order is important
+						/win/ig.test(platform) ? 'Windows' :
+							/android|arm|linux/ig.test(platform) ? 'Linux' :
+								/(i(os|p(ad|hone|od)))|mac/ig.test(platform) ? 'Apple' :
+									'Other'
+					);
+					const osLie = userAgentOS != platformOS;
+					if (osLie) {
+						lied = true;
+						documentLie(
+							`Navigator.platform`,
+							`${platformOS} platform and ${userAgentOS} user agent do not match`
+						);
+					}
+
 					return platform
 				}),
 				system: attempt(() => getOS(phantomNavigator.userAgent), 'userAgent system failed'),
@@ -4711,7 +5372,7 @@
 					const navigatorLanguages = navigator.languages;
 					detectLies('language', navigatorLanguage);
 					detectLies('languages', navigatorLanguages);
-					if (language != navigatorLanguage) {
+					if (''+language != ''+navigatorLanguage) {
 						lied = true;
 						const nestedIframeLie = `Expected "${navigatorLanguage}" in nested iframe and got "${language}"`;
 						documentLie(`Navigator.language`, nestedIframeLie);
@@ -4724,6 +5385,35 @@
 						}
 						return `${languages.join(', ')} (${language})`
 					}
+
+					const lang = (''+language).split(',')[0];
+					let currencyLanguage;
+					try {
+						currencyLanguage = (1).toLocaleString((lang || undefined), {
+							style: 'currency',
+							currency: 'USD',
+							currencyDisplay: 'name',
+							minimumFractionDigits: 0,
+							maximumFractionDigits: 0
+						});
+					} catch (e) {}
+					const currencyLocale = (1).toLocaleString(undefined, {
+						style: 'currency',
+						currency: 'USD',
+						currencyDisplay: 'name',
+						minimumFractionDigits: 0,
+						maximumFractionDigits: 0
+					});
+
+					const languageLie = currencyLocale != currencyLanguage;
+					if (languageLie) {
+						lied = true;
+						documentLie(
+							`Navigator.language`, 
+							`${currencyLocale} locale and ${currencyLanguage} language do not match`
+						);
+					}
+
 					return `${language} ${languages}`
 				}, 'language(s) failed'),
 				maxTouchPoints: attempt(() => {
@@ -4927,7 +5617,6 @@
 			<div>mimeTypes (0): ${note.blocked}</div>
 			<div>platform: ${note.blocked}</div>
 			<div>plugins (0): ${note.blocked}</div>
-			<div>system: ${note.blocked}</div>
 			<div>ua architecture: ${note.blocked}</div>
 			<div>ua model: ${note.blocked}</div>
 			<div>ua platform: ${note.blocked}</div>
@@ -5026,7 +5715,6 @@
 			) :
 			note.blocked
 		}</div>
-		<div>system: ${system}</div>
 		${highEntropyValues ?  
 			Object.keys(highEntropyValues).map(key => {
 				const value = highEntropyValues[key];
@@ -5050,7 +5738,8 @@
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<div>device:</div>
 		<div class="block-text">
-			<div>${!blocked[device] ? device : note.blocked}</div>
+			${system ? `${system}` : ''}
+			${device ? `<br>${device}` : note.blocked}
 		</div>
 		<div>userAgent:</div>
 		<div class="block-text">
@@ -6291,7 +6980,7 @@
 				lieProps['Intl.RelativeTimeFormat.resolvedOptions']
 			) || false;
 			const phantomDate = phantomDarkness ? phantomDarkness.Date : Date;
-			const phantomIntl = phantomDarkness ? phantomDarkness.Intl : Date;
+			const phantomIntl = phantomDarkness ? phantomDarkness.Intl : Intl;
 
 			const year = 1113;
 			const { timeZone } = phantomIntl.DateTimeFormat().resolvedOptions();
@@ -6320,14 +7009,9 @@
 	const timezoneHTML = ({ fp, note, hashSlice }) => {
 		if (!fp.timezone) {
 			return `
-		<div class="col-six undefined">
+		<div class="col-four undefined">
 			<strong>Timezone</strong>
-			<div>zone: ${note.blocked}</div>
-			<div>offset: ${note.blocked}</div>
-			<div>offset computed: ${note.blocked}</div>
-			<div>location: ${note.blocked}</div>
-			<div>measured: ${note.blocked}</div>
-			<div>epoch: ${note.blocked}</div>
+			<div class="block-text">${note.blocked}</div>
 		</div>`
 		}
 		const {
@@ -6343,14 +7027,14 @@
 			}
 		} = fp;
 		return `
-	<div class="col-six${lied ? ' rejected' : ''}">
+	<div class="col-four${lied ? ' rejected' : ''}">
 		<strong>Timezone</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-		<div>zone: ${zone}</div>
-		<div>offset: ${''+offset}</div>
-		<div>offset computed: ${''+offsetComputed}</div>
-		<div>location: ${location}</div>
-		<div>measured: ${locationMeasured}</div>
-		<div>epoch: ${locationEpoch}</div>
+		<div class="block-text help"  title="Date\nDate.getTimezoneOffset\nIntl.DateTimeFormat">
+			${zone ? zone : ''}
+			<br>${location != locationMeasured ? locationMeasured : location}
+			<br>${locationEpoch}
+			<br>${offset != offsetComputed ? offsetComputed : offset}
+		</div>
 	</div>
 	`
 	};
@@ -6394,7 +7078,7 @@
 				win.speechSynthesis.onvoiceschanged = getVoices; // Chrome support
 				
 				// handle pending resolve
-				const wait = 300;
+				const wait = 1000;
 				setTimeout(() => {
 					if (success) {
 						return
@@ -6594,11 +7278,9 @@
 	const webrtcHTML = ({ fp, hashSlice, hashMini, note, modal }) => {
 		if (!fp.webRTC) {
 			return `
-		<div class="col-six undefined">
+		<div class="col-four undefined">
 			<strong>WebRTC</strong>
-			<div>ip address: ${note.blocked}</div>
-			<div>ip candidate: ${note.blocked}</div>
-			<div>ip connection: ${note.blocked}</div>
+			<div class="block-text">${note.blocked}</div>
 			<div>type: ${note.blocked}</div>
 			<div>foundation: ${note.blocked}</div>
 			<div>protocol: ${note.blocked}</div>
@@ -6621,15 +7303,17 @@
 		const id = 'creep-webrtc';
 
 		return `
-	<div class="col-six">
+	<div class="col-four">
 		<strong>WebRTC</strong><span class="hash">${hashSlice($hash)}</span>
-		<div>ip address: ${ipaddress ? ipaddress : note.unsupported}</div>
-		<div>ip candidate: ${candidate ? candidate : note.unsupported}</div>
-		<div>ip connection: ${connection ? connection : note.unsupported}</div>
+		<div class="block-text"">
+			${ipaddress ? ipaddress : ''}
+			${candidate ? `<br>${candidate}` : ''}
+			${connection ? `<br>${connection}` : ''}
+		</div>
 		<div>type: ${type ? type : note.unsupported}</div>
 		<div>foundation: ${foundation ? foundation : note.unsupported}</div>
 		<div>protocol: ${protocol ? protocol : note.unsupported}</div>
-		<div>get capabilities: ${
+		<div>codecs: ${
 			!capabilities.receiver && !capabilities.sender ? note.unsupported :
 			modal(
 				`${id}-capabilities`,
@@ -6671,7 +7355,7 @@
 				hashMini(capabilities)
 			)
 		}</div>
-		<div>sdp capabilities: ${
+		<div>codecs sdp: ${
 			!sdpcapabilities ? note.unsupported :
 			modal(
 				`${id}-sdpcapabilities`,
@@ -6789,25 +7473,30 @@
 		const {
 			require: {
 				getOS,
+				decryptUserAgent,
 				captureError,
 				caniuse,
 				phantomDarkness,
 				getUserAgentPlatform,
+				documentLie,
 				logTestResult
 			}
 		} = imports;
 		try {
 			await new Promise(setTimeout).catch(e => {});
 			const start = performance.now();
+			let scope = 'ServiceWorkerGlobalScope';
 			let type = 'service'; // loads fast but is not available in frames
 			let workerScope = await getServiceWorker()
 				.catch(error => console.error(error.message));
 			if (!caniuse(() => workerScope.userAgent)) {
+				scope = 'SharedWorkerGlobalScope';
 				type = 'shared'; // no support in Safari, iOS, and Chrome Android
 				workerScope = await getSharedWorker(phantomDarkness)
 				.catch(error => console.error(error.message));
 			}
 			if (!caniuse(() => workerScope.userAgent)) {
+				scope = 'WorkerGlobalScope';
 				type = 'dedicated'; // simulators & extensions can spoof userAgent
 				workerScope = await getDedicatedWorker(phantomDarkness)
 				.catch(error => console.error(error.message));
@@ -6818,6 +7507,89 @@
 				workerScope.device = getUserAgentPlatform({ userAgent: workerScope.userAgent });
 				workerScope.canvas2d = { dataURI: canvas2d };
 				workerScope.type = type;
+				workerScope.scope = scope;
+
+				// detect lies 
+				const { fontSystemClass, system, userAgent, platform } = workerScope || {};
+				
+				// font system lie
+				const fontSystemLie = fontSystemClass && (
+					/^((i(pad|phone|os))|mac)$/i.test(system) && fontSystemClass != 'Apple'  ? true :
+						/^(windows)$/i.test(system) && fontSystemClass != 'Windows'  ? true :
+							/^(linux|chrome os)$/i.test(system) && fontSystemClass != 'Linux'  ? true :
+								/^(android)$/i.test(system) && fontSystemClass != 'Android'  ? true :
+									false
+				);
+				if (fontSystemLie) {
+					workerScope.lied = true;
+					workerScope.lies.system = `${fontSystemClass} fonts and ${system} user agent do not match`;
+					documentLie(workerScope.scope, workerScope.lies.system);
+				}
+
+				// prototype lies
+				if (workerScope.lies.proto) {
+					const { proto } = workerScope.lies;
+					const keys = Object.keys(proto);
+					keys.forEach(key => {
+						const api = `${workerScope.scope}.${key}`;
+						const lies = proto[key];
+						lies.forEach(lie => documentLie(api, lie));
+					});
+					
+				}
+				
+				// language lie
+				if (workerScope.lies.language) {
+					documentLie(workerScope.scope, workerScope.lies.language);
+				}
+
+				// user agent os lie
+				const userAgentOS = (
+					// order is important
+					/win(dows|16|32|64|95|98|nt)|wow64/ig.test(userAgent) ? 'Windows' :
+						/android|linux|cros/ig.test(userAgent) ? 'Linux' :
+							/(i(os|p(ad|hone|od)))|mac/ig.test(userAgent) ? 'Apple' :
+								'Other'
+				);
+				const platformOS = (
+					// order is important
+					/win/ig.test(platform) ? 'Windows' :
+						/android|arm|linux/ig.test(platform) ? 'Linux' :
+							/(i(os|p(ad|hone|od)))|mac/ig.test(platform) ? 'Apple' :
+								'Other'
+				);
+				const osLie = userAgentOS != platformOS;
+				if (osLie) {
+					workerScope.lied = true;
+					workerScope.lies.os = `${platformOS} platform and ${userAgentOS} user agent do not match`;
+					documentLie(workerScope.scope, workerScope.lies.os);
+				}
+
+				// user agent engine lie
+				const decryptedName = decryptUserAgent({
+					ua: userAgent,
+					os: system,
+					isBrave: false // default false since we are only looking for JS runtime
+				});
+				const reportedEngine = (
+					(/safari/i.test(decryptedName) || /iphone|ipad/i.test(userAgent)) ? 'JavaScriptCore' :
+						/firefox/i.test(userAgent) ? 'SpiderMonkey' :
+							/chrome/i.test(userAgent) ? 'V8' :
+								undefined
+				);
+				const jsRuntimeEngine = {
+					'1.9275814160560204e-50': 'V8',
+					'1.9275814160560185e-50': 'SpiderMonkey',
+					'1.9275814160560206e-50': 'JavaScriptCore'
+				};
+				const mathPI = 3.141592653589793;
+				const engine = jsRuntimeEngine[mathPI ** -100];
+				if (reportedEngine != engine) {
+					workerScope.lied = true;
+					workerScope.lies.engine = `${engine} JS runtime and ${reportedEngine} user agent do not match`;
+					documentLie(workerScope.scope, workerScope.lies.engine);
+				}
+
 				logTestResult({ start, test: `${type} worker`, passed: true });
 				return { ...workerScope }
 			}
@@ -6830,61 +7602,135 @@
 		}
 	};
 
-	const workerScopeHTML = ({ fp, note, hashMini, hashSlice }) => {
+	const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 		if (!fp.workerScope) {
 			return `
 		<div class="col-six undefined">
 			<strong>Worker</strong>
-			<div>timezone offset: ${note.blocked}</div>
-			<div>location: ${note.blocked}</div>
-			<div>language: ${note.blocked}</div>
+			<div>canvas 2d: ${note.blocked}</div>
+			<div>textMetrics: ${note.blocked}</div>
+			<div>fontFaceSet (0): ${note.blocked}</div>
+			<div>timezone: ${note.blocked}</div>
 			<div>deviceMemory: ${note.blocked}</div>
 			<div>hardwareConcurrency: ${note.blocked}</div>
 			<div>platform: ${note.blocked}</div>
-			<div>system: ${note.blocked}</div>
-			<div>canvas 2d: ${note.blocked}</div>
 			<div>webgl vendor: ${note.blocked}</div>
+			<div>language:</div>
+			<div class="block-text">${note.blocked}</div>
 		</div>
 		<div class="col-six undefined">
 			<div>device:</div>
 			<div class="block-text">${note.blocked}</div>
 			<div>userAgent:</div>
 			<div class="block-text">${note.blocked}</div>
+			<div>userAgentData:</div>
+			<div class="block-text">${note.blocked}</div>
 			<div>webgl renderer:</div>
 			<div class="block-text">${note.blocked}</div>
 		</div>`
 		}
 		const { workerScope: data } = fp;
+
+		const {
+			lied,
+			locale,
+			currency,
+			timezoneOffset,
+			timezoneLocation,
+			deviceMemory,
+			hardwareConcurrency,
+			language,
+			platform,
+			userAgent,
+			canvas2d,
+			textMetrics,
+			webglRenderer,
+			webglVendor,
+			fontFaceSetFonts,
+			fontSystemClass,
+			fontListLen,
+			userAgentData,
+			type,
+			system,
+			device,
+			$hash
+		} = data || {};
+
+		const icon = {
+			'Linux': '<span class="icon linux"></span>',
+			'Apple': '<span class="icon apple"></span>',
+			'Windows': '<span class="icon windows"></span>',
+			'Android': '<span class="icon android"></span>'
+		};
+
+		const systemClassIcon = icon[fontSystemClass];
+		const fontFaceSetHash = hashMini(fontFaceSetFonts);
+		const getSum = arr => !arr ? 0 : arr.reduce((acc, curr) => (acc += Math.abs(curr)), 0);
 		return `
-	<div class="ellipsis"><span class="aside-note">${data.type || ''} worker</span></div>
-	<div class="col-six">
-		<strong>Worker</strong><span class="hash">${hashSlice(data.$hash)}</span>
-		<div>timezone offset: ${data.timezoneOffset != undefined ? ''+data.timezoneOffset : note.unsupported}</div>
-		<div>location: ${data.timezoneLocation}</div>
-		<div>language: ${data.language || note.unsupported}</div>
-		<div>deviceMemory: ${data.deviceMemory || note.unsupported}</div>
-		<div>hardwareConcurrency: ${data.hardwareConcurrency || note.unsupported}</div>
-		<div>platform: ${data.platform || note.unsupported}</div>
-		<div>system: ${data.system || note.unsupported}</div>
-		<div>canvas 2d:${
-			data.canvas2d && data.canvas2d.dataURI ?
-			`<span class="sub-hash">${hashMini(data.canvas2d.dataURI)}</span>` :
+	<div class="ellipsis"><span class="aside-note">${type || ''} worker</span></div>
+	<div class="col-six${lied ? ' rejected' : ''}">
+		<strong>Worker</strong><span class="hash">${hashSlice($hash)}</span>
+		<div class="help" title="OffscreenCanvas.convertToBlob()\nFileReader.readAsDataURL()">canvas 2d:${
+			canvas2d && canvas2d.dataURI ?
+			`<span class="sub-hash">${hashMini(canvas2d.dataURI)}</span>` :
 			` ${note.unsupported}`
 		}</div>
-		<div>webgl vendor: ${data.webglVendor || note.unsupported}</div>
+		<div class="help" title="OffscreenCanvasRenderingContext2D.measureText()">textMetrics: ${
+			!textMetrics ? note.blocked : getSum(Object.keys(textMetrics).map(key => textMetrics[key] || 0)) || note.blocked
+		}</div>
+		<div class="help" title="FontFaceSet.check()">fontFaceSet (${fontFaceSetFonts ? count(fontFaceSetFonts) : '0'}/${''+fontListLen}): ${
+			fontFaceSetFonts.length ? modal(
+				'creep-worker-fonts-check', fontFaceSetFonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>'),
+				systemClassIcon ? `${systemClassIcon}${fontFaceSetHash}` : fontFaceSetHash
+			) : note.unsupported
+		}</div>
+		<div>timezone: ${timezoneLocation} (${''+timezoneOffset})</div>
+		<div>deviceMemory: ${deviceMemory || note.unsupported}</div>
+		<div>hardwareConcurrency: ${hardwareConcurrency || note.unsupported}</div>
+		<div>platform: ${platform || note.unsupported}</div>
+		<div>webgl vendor: ${webglVendor || note.unsupported}</div>
+		<div>language:</div>
+		<div class="block-text">
+			${language ? `${language}` : ''}
+			${locale ? `<br>${locale}` : ''}
+			${currency ? `<br>${currency}` : ''}
+		</div>
 	</div>
-	<div class="col-six">
+	<div class="col-six${lied ? ' rejected' : ''}">
 		<div>device:</div>
 		<div class="block-text">
-			<div>${data.device || note.unsupported}</div>
+			${system ? `${system}` : ''}
+			${device ? `<br>${device}` : note.blocked}
 		</div>
 		<div>userAgent:</div>
 		<div class="block-text">
-			<div>${data.userAgent || note.unsupported}</div>
+			<div>${userAgent || note.unsupported}</div>
+		</div>
+		<div>userAgentData:</div>
+		<div class="block-text">
+			<div>
+			${((userAgentData) => {
+				const {
+					architecture,
+					brandsVersion,
+					uaFullVersion,
+					mobile,
+					model,
+					platformVersion,
+					platform
+				} = userAgentData || {};
+				return !userAgentData ? note.unsupported : `
+					${(brandsVersion || []).join(',')}${uaFullVersion ? ` (${uaFullVersion})` : ''}
+					<br>${platform} ${platformVersion} ${architecture}
+					${model ? `<br>${model}` : ''}
+					${mobile ? '<br>mobile' : ''}
+				`
+			})(userAgentData)}	
+			</div>
 		</div>
 		<div>unmasked renderer:</div>
 		<div class="block-text">
-			<div>${data.webglRenderer || note.unsupported}</div>
+			<div>${webglRenderer || note.unsupported}</div>
 		</div>
 	</div>
 	`
@@ -7210,14 +8056,14 @@
 					toDataURLHash: ['77dea834']
 				},
 				cydec: {
-					// [FF, FF Anti OFF, Chrome, Chrome Anti Off]
+					// [FF, FF Anti OFF, Chrome, Chrome Anti Off, no iframe Chrome, no iframe Chrome Anti Off]
 					contentDocumentHash: ['945b0c78', '15771efa', '403a1a21', '55e9b959'],
 					contentWindowHash: ['945b0c78', '15771efa', '403a1a21', '55e9b959'],
-					createElementHash: ['cc7cb598', '4237b44c', '1466aaf0', '0cb0c682'],
-					getElementByIdHash: ['cc7cb598', '4237b44c', '1466aaf0', '0cb0c682'],
+					createElementHash: ['cc7cb598', '4237b44c', '1466aaf0', '0cb0c682', '73c662d9', '72b1ee2b'],
+					getElementByIdHash: ['cc7cb598', '4237b44c', '1466aaf0', '0cb0c682', '73c662d9', '72b1ee2b'],
 					getImageDataHash: ['db60d7f9', '15771efa', 'db60d7f9', '55e9b959'],
-					toBlobHash: ['044f14c2', '15771efa', 'afec348d', '55e9b959'],
-					toDataURLHash: ['ecb498d9', '6b838fb6', 'ecb498d9', 'd19104ec']
+					toBlobHash: ['044f14c2', '15771efa', 'afec348d', '55e9b959', '0dbbf456'],
+					toDataURLHash: ['ecb498d9', '6b838fb6', 'ecb498d9', 'd19104ec', 'ecb498d9', '6985d315']
 				},
 				canvasblocker: {
 					contentDocumentHash: ['6f901c5a'],
@@ -7501,6 +8347,163 @@
 	`
 	};
 
+	const getLocale = intl => {
+		const constructors = [
+			'Collator',
+			'DateTimeFormat',
+			'DisplayNames',
+			'ListFormat',
+			'NumberFormat',
+			'PluralRules',
+			'RelativeTimeFormat'
+		];
+		const locale = constructors.reduce((acc, name) => {
+			try {
+				const obj = new intl[name];
+				if (!obj) {
+					return acc
+				}
+				const { locale } = obj.resolvedOptions() || {};
+				return [...acc, locale]
+			}
+			catch (error) {
+				return acc
+			}
+		}, []);
+
+		return [...new Set(locale)]
+	};
+
+	const getIntl = async imports => {
+
+		const {
+			require: {
+				phantomDarkness,
+				lieProps,
+				caniuse,
+				captureError,
+				logTestResult
+			}
+		} = imports;
+
+		try {
+			const start = performance.now();
+			let lied = (
+				lieProps['Intl.Collator.resolvedOptions'] ||
+				lieProps['Intl.DateTimeFormat.resolvedOptions'] ||
+				lieProps['Intl.DisplayNames.resolvedOptions'] ||
+				lieProps['Intl.ListFormat.resolvedOptions'] ||
+				lieProps['Intl.NumberFormat.resolvedOptions'] ||
+				lieProps['Intl.PluralRules.resolvedOptions'] ||
+				lieProps['Intl.RelativeTimeFormat.resolvedOptions']
+			) || false;
+
+			const phantomIntl = phantomDarkness ? phantomDarkness.Intl : Intl;
+
+			const dateTimeFormat = caniuse(() => {
+				return new phantomIntl.DateTimeFormat(undefined, {
+					month: 'long',
+					timeZoneName: 'long'
+				}).format(963644400000)
+			});
+
+			const displayNames = caniuse(() => {
+				return new phantomIntl.DisplayNames(undefined, {
+					type: 'language'
+				}).of('en-US')
+			});
+
+			const listFormat = caniuse(() => {
+				return new phantomIntl.ListFormat(undefined, {
+					style: 'long',
+					type: 'disjunction'
+				}).format(['0', '1'])
+			});
+			
+			const numberFormat = caniuse(() => {
+				return new phantomIntl.NumberFormat(undefined, {
+					notation: 'compact',
+					compactDisplay: 'long'
+				}).format(21000000)
+			});
+
+			const pluralRules = caniuse(() => {
+				return new phantomIntl.PluralRules().select(1)
+			});
+
+			const relativeTimeFormat = caniuse(() => {
+				return new phantomIntl.RelativeTimeFormat(undefined, {
+					localeMatcher: 'best fit',
+					numeric: 'auto',
+					style: 'long'
+				}).format(1, 'year')
+			});
+
+			const locale = getLocale(phantomIntl);
+
+			logTestResult({ start, test: 'intl', passed: true });
+			return {
+				dateTimeFormat,
+				displayNames,
+				listFormat,
+				numberFormat,
+				pluralRules,
+				relativeTimeFormat,
+				locale: ''+locale,
+				lied
+			}
+		}
+		catch (error) {
+			logTestResult({ test: 'intl', passed: false });
+			captureError(error);
+			return
+		}
+	};
+
+	const intlHTML = ({ fp, modal, note, hashSlice, count }) => {
+		if (!fp.htmlElementVersion) {
+			return `
+		<div class="col-four undefined">
+			<strong>Intl</strong>
+			<div>locale: ${note.blocked}</div>
+			<div>date: ${note.blocked}</div>
+			<div>display: ${note.blocked}</div>
+			<div>list: ${note.blocked}</div>
+			<div>number: ${note.blocked}</div>
+			<div>plural: ${note.blocked}</div>
+			<div>relative: ${note.blocked}</div>
+		</div>`
+		}
+		const {
+			intl: {
+				$hash,
+				dateTimeFormat,
+				displayNames,
+				listFormat,
+				numberFormat,
+				pluralRules,
+				relativeTimeFormat,
+				locale,
+				lied
+			}
+		} = fp;
+
+		return `
+	<div class="col-four${lied ? ' rejected' : ''}">
+		<strong>Intl</strong><span class="hash">${hashSlice($hash)}</span>
+		<div class="block-text help"  title="Intl.Collator\nIntl.DateTimeFormat\nIntl.DisplayNames\nIntl.ListFormat\nIntl.NumberFormat\nIntl.PluralRules\nIntl.RelativeTimeFormat">
+			${locale ? locale : ''}
+			${dateTimeFormat ? `<br>${dateTimeFormat}` : ''}
+			${displayNames ? `<br>${displayNames}` : ''}
+			${numberFormat ? `<br>${numberFormat}` : ''}
+			${relativeTimeFormat ? `<br>${relativeTimeFormat}` : ''}
+			${listFormat ? `<br>${listFormat}` : ''}
+			${pluralRules ? `<br>${pluralRules}` : ''}
+		</div>
+	</div>
+	`
+	};
+
 	const imports = {
 		require: {
 			// helpers
@@ -7598,7 +8601,8 @@
 				mediaComputed,
 				webRTCDataComputed,
 				svgComputed,
-				resistanceComputed
+				resistanceComputed,
+				intlComputed
 			] = await Promise.all([
 				getWindowFeatures(imports),
 				getHTMLElementVersion(imports),
@@ -7613,12 +8617,13 @@
 				getTimezone(imports),
 				getClientRects(imports),
 				getOfflineAudioContext(imports),
-				getFonts(imports, [...fontList]),
+				getFonts(imports),
 				getBestWorkerScope(imports),
 				getMedia(imports),
 				getWebRTCData(imports),
 				getSVG(imports),
-				getResistance(imports)
+				getResistance(imports),
+				getIntl(imports)
 			]).catch(error => console.error(error.message));
 			
 			const [
@@ -7669,7 +8674,8 @@
 				trashHash,
 				errorsHash,
 				svgHash,
-				resistanceHash
+				resistanceHash,
+				intlHash
 			] = await Promise.all([
 				hashify(windowFeaturesComputed),
 				hashify(headlessComputed),
@@ -7699,11 +8705,12 @@
 				hashify(trashComputed),
 				hashify(capturedErrorsComputed),
 				hashify(svgComputed),
-				hashify(resistanceComputed)
+				hashify(resistanceComputed),
+				hashify(intlComputed)
 			]).catch(error => console.error(error.message));
 			
 			//console.log(performance.now()-start)
-
+			
 			const timeEnd = timeStart();
 
 			if (parentPhantom) {
@@ -7714,30 +8721,31 @@
 			}
 			
 			const fingerprint = {
-				workerScope: !workerScopeComputed ? undefined : { ...workerScopeComputed, $hash: workerHash },
-				webRTC: !webRTCDataComputed ? undefined : {...webRTCDataComputed, $hash: webRTCHash },
-				navigator: !navigatorComputed ? undefined : {...navigatorComputed, $hash: navigatorHash },
-				windowFeatures: !windowFeaturesComputed ? undefined : {...windowFeaturesComputed, $hash: windowHash },
-				headless: !headlessComputed ? undefined : {...headlessComputed, $hash: headlessHash },
-				htmlElementVersion: !htmlElementVersionComputed ? undefined : {...htmlElementVersionComputed, $hash: htmlHash },
-				cssMedia: !cssMediaComputed ? undefined : {...cssMediaComputed, $hash: cssMediaHash },
-				css: !cssComputed ? undefined : {...cssComputed, $hash: cssHash },
-				screen: !screenComputed ? undefined : {...screenComputed, $hash: screenHash },
-				voices: !voicesComputed ? undefined : {...voicesComputed, $hash: voicesHash },
-				media: !mediaComputed ? undefined : {...mediaComputed, $hash: mediaHash },
-				canvas2d: !canvas2dComputed ? undefined : {...canvas2dComputed, $hash: canvas2dHash },
-				canvasWebgl: !canvasWebglComputed ? undefined : {...canvasWebglComputed, pixels: pixelsHash, pixels2: pixels2Hash, $hash: canvasWebglHash },
-				maths: !mathsComputed ? undefined : {...mathsComputed, $hash: mathsHash },
-				consoleErrors: !consoleErrorsComputed ? undefined : {...consoleErrorsComputed, $hash: consoleErrorsHash },
-				timezone: !timezoneComputed ? undefined : {...timezoneComputed, $hash: timezoneHash },
-				clientRects: !clientRectsComputed ? undefined : {...clientRectsComputed, $hash: rectsHash },
-				offlineAudioContext: !offlineAudioContextComputed ? undefined : {...offlineAudioContextComputed, $hash: audioHash },
-				fonts: !fontsComputed ? undefined : {...fontsComputed, $hash: fontsHash },
-				lies: !liesComputed ? undefined : {...liesComputed, $hash: liesHash },
-				trash: !trashComputed ? undefined : {...trashComputed, $hash: trashHash },
-				capturedErrors: !capturedErrorsComputed ? undefined : {...capturedErrorsComputed, $hash: errorsHash },
+				workerScope: !workerScopeComputed ? undefined : { ...workerScopeComputed, $hash: workerHash},
+				webRTC: !webRTCDataComputed ? undefined : {...webRTCDataComputed, $hash: webRTCHash},
+				navigator: !navigatorComputed ? undefined : {...navigatorComputed, $hash: navigatorHash},
+				windowFeatures: !windowFeaturesComputed ? undefined : {...windowFeaturesComputed, $hash: windowHash},
+				headless: !headlessComputed ? undefined : {...headlessComputed, $hash: headlessHash},
+				htmlElementVersion: !htmlElementVersionComputed ? undefined : {...htmlElementVersionComputed, $hash: htmlHash},
+				cssMedia: !cssMediaComputed ? undefined : {...cssMediaComputed, $hash: cssMediaHash},
+				css: !cssComputed ? undefined : {...cssComputed, $hash: cssHash},
+				screen: !screenComputed ? undefined : {...screenComputed, $hash: screenHash},
+				voices: !voicesComputed ? undefined : {...voicesComputed, $hash: voicesHash},
+				media: !mediaComputed ? undefined : {...mediaComputed, $hash: mediaHash},
+				canvas2d: !canvas2dComputed ? undefined : {...canvas2dComputed, $hash: canvas2dHash},
+				canvasWebgl: !canvasWebglComputed ? undefined : {...canvasWebglComputed, pixels: pixelsHash, pixels2: pixels2Hash, $hash: canvasWebglHash},
+				maths: !mathsComputed ? undefined : {...mathsComputed, $hash: mathsHash},
+				consoleErrors: !consoleErrorsComputed ? undefined : {...consoleErrorsComputed, $hash: consoleErrorsHash},
+				timezone: !timezoneComputed ? undefined : {...timezoneComputed, $hash: timezoneHash},
+				clientRects: !clientRectsComputed ? undefined : {...clientRectsComputed, $hash: rectsHash},
+				offlineAudioContext: !offlineAudioContextComputed ? undefined : {...offlineAudioContextComputed, $hash: audioHash},
+				fonts: !fontsComputed ? undefined : {...fontsComputed, $hash: fontsHash},
+				lies: !liesComputed ? undefined : {...liesComputed, $hash: liesHash},
+				trash: !trashComputed ? undefined : {...trashComputed, $hash: trashHash},
+				capturedErrors: !capturedErrorsComputed ? undefined : {...capturedErrorsComputed, $hash: errorsHash},
 				svg: !svgComputed ? undefined : {...svgComputed, $hash: svgHash },
-				resistance: !resistanceComputed ? undefined : {...resistanceComputed, $hash: resistanceHash },
+				resistance: !resistanceComputed ? undefined : {...resistanceComputed, $hash: resistanceHash},
+				intl: !intlComputed ? undefined : {...intlComputed, $hash: intlHash}
 			};
 			return { fingerprint, systemHash, styleHash, emojiHash, timeEnd }
 		};
@@ -7840,7 +8848,7 @@
 					lied: fp.screen.lied
 				}
 			),
-			workerScope: fp.workerScope ? {
+			workerScope: !fp.workerScope || fp.workerScope.lied ? undefined : {
 				canvas2d: (
 					(fp.canvas2d && fp.canvas2d.lied) ? undefined : // distrust ungoogled-chromium, brave, firefox, tor browser 
 					fp.workerScope.canvas2d
@@ -7861,12 +8869,23 @@
 				),
 				['webgl vendor']: (
 					braveFingerprintingBlocking ? undefined : fp.workerScope.webglVendor
-				)
-			} : undefined,
+				),
+				fontFaceSetFonts: fp.workerScope.fontFaceSetFonts,
+				userAgentData: {
+					...fp.workerScope.userAgentData,
+					// loose
+					brandsVersion: undefined, 
+					uaFullVersion: undefined
+				}
+			},
 			media: fp.media,
 			canvas2d: ( 
 				!fp.canvas2d || fp.canvas2d.lied ? undefined : {
 					dataURI: fp.canvas2d.dataURI,
+					blob: fp.canvas2d.blob,
+					blobOffscreen: fp.canvas2d.blobOffscreen,
+					imageData: fp.canvas2d.imageData,
+					textMetrics: fp.canvas2d.textMetrics,
 					lied: fp.canvas2d.lied
 				} 
 			),
@@ -8046,7 +9065,8 @@
 		</div>
 		<div class="flex-grid">
 			${webrtcHTML(templateImports)}
-			${timezoneHTML(templateImports)}			
+			${timezoneHTML(templateImports)}
+			${intlHTML(templateImports)}			
 		</div>
 		<div id="browser-detection" class="flex-grid">
 			<div class="col-eight">
@@ -8220,7 +9240,7 @@
 
 				const template = `
 				<div class="visitor-info">
-					<div class="ellipsis"><span class="aside-note">script modified 2021-6-27</span></div>
+					<div class="ellipsis"><span class="aside-note">script modified 2021-7-23</span></div>
 					<div class="flex-grid">
 						<div class="col-six">
 							<strong>Browser</strong>
@@ -8393,8 +9413,9 @@
 				 
 				if (
 					!fp.workerScope ||
-					!fp.workerScope.userAgent ||
-					('BroadcastChannel' in window && fp.workerScope.type == 'dedicated')
+					fp.workerScope.lied ||
+					!fp.workerScope.userAgent
+					//|| ('BroadcastChannel' in window && fp.workerScope.type == 'dedicated')
 				) {
 					return rejectSamplePatch(el, html)
 				}
@@ -8405,7 +9426,7 @@
 				};
 				
 				const isTorBrowser = resistance.privacy == 'Tor Browser';
-				
+				//console.log(emojiHash) // Tor Browser check
 				const {
 					compressorGainReduction: gain,
 					sampleSum,
