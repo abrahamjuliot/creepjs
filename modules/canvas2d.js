@@ -396,7 +396,7 @@ export const getCanvas2d = async imports => {
 			points,
 			blob,
 			blobOffscreen,
-			textMetrics: new Set(Object.keys(textMetrics)).size != 1 ? textMetrics : undefined,
+			textMetrics: new Set(Object.keys(textMetrics)).size > 1 ? textMetrics : undefined,
 			lied
 		}
 	}
