@@ -37,7 +37,7 @@ export const getVoices = imports => {
 			win.speechSynthesis.onvoiceschanged = getVoices // Chrome support
 			
 			// handle pending resolve
-			const wait = 300
+			const wait = 1000
 			setTimeout(() => {
 				if (success) {
 					return

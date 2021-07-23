@@ -131,7 +131,7 @@ export const getWebRTCData = imports => {
 					logTestResult({ test: 'webrtc', passed: false })
 					return resolve()
 				}
-			}, 10000)
+			}, 1000)
 		}
 		catch (error) {
 			logTestResult({ test: 'webrtc', passed: false })
