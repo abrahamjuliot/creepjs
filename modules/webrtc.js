@@ -180,7 +180,7 @@ export const webrtcHTML = ({ fp, hashSlice, hashMini, note, modal }) => {
 		<div>type: ${type ? type : note.unsupported}</div>
 		<div>foundation: ${foundation ? foundation : note.unsupported}</div>
 		<div>protocol: ${protocol ? protocol : note.unsupported}</div>
-		<div>get capabilities: ${
+		<div>codecs: ${
 			!capabilities.receiver && !capabilities.sender ? note.unsupported :
 			modal(
 				`${id}-capabilities`,
@@ -222,7 +222,7 @@ export const webrtcHTML = ({ fp, hashSlice, hashMini, note, modal }) => {
 				hashMini(capabilities)
 			)
 		}</div>
-		<div>sdp capabilities: ${
+		<div>codecs sdp: ${
 			!sdpcapabilities ? note.unsupported :
 			modal(
 				`${id}-sdpcapabilities`,
