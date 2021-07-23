@@ -378,6 +378,7 @@ const imports = {
 				(fp.canvas2d && fp.canvas2d.lied) ? undefined : // distrust ungoogled-chromium, brave, firefox, tor browser 
 				fp.workerScope.canvas2d
 			),
+			textMetrics: fp.workerScope.textMetrics,
 			deviceMemory: (
 				braveFingerprintingBlocking ? undefined : fp.workerScope.deviceMemory
 			),
@@ -385,6 +386,7 @@ const imports = {
 				braveFingerprintingBlocking ? undefined : fp.workerScope.hardwareConcurrency
 			),
 			language: fp.workerScope.language,
+			currency: fp.workerScope.currency,
 			platform: fp.workerScope.platform,
 			system: fp.workerScope.system,
 			device: fp.workerScope.device,
