@@ -489,6 +489,93 @@ const getPrototypeLies = globalScope => {
 	}
 }
 
+const systemEmojis = [
+	[128512],
+	[9786],
+	[129333, 8205, 9794, 65039],
+	[9832],
+	[9784],
+	[9895],
+	[8265],
+	[8505],
+	[127987, 65039, 8205, 9895, 65039],
+	[129394],
+	[9785],
+	[9760],
+	[129489, 8205, 129456],
+	[129487, 8205, 9794, 65039],
+	[9975],
+	[129489, 8205, 129309, 8205, 129489],
+	[9752],
+	[9968],
+	[9961],
+	[9972],
+	[9992],
+	[9201],
+	[9928],
+	[9730],
+	[9969],
+	[9731],
+	[9732],
+	[9976],
+	[9823],
+	[9937],
+	[9000],
+	[9993],
+	[9999],
+	[10002],
+	[9986],
+	[9935],
+	[9874],
+	[9876],
+	[9881],
+	[9939],
+	[9879],
+	[9904],
+	[9905],
+	[9888],
+	[9762],
+	[9763],
+	[11014],
+	[8599],
+	[10145],
+	[11013],
+	[9883],
+	[10017],
+	[10013],
+	[9766],
+	[9654],
+	[9197],
+	[9199],
+	[9167],
+	[9792],
+	[9794],
+	[10006],
+	[12336],
+	[9877],
+	[9884],
+	[10004],
+	[10035],
+	[10055],
+	[9724],
+	[9642],
+	[10083],
+	[10084],
+	[9996],
+	[9757],
+	[9997],
+	[10052],
+	[9878],
+	[8618],
+	[9775],
+	[9770],
+	[9774],
+	[9745],
+	[10036],
+	[127344],
+	[127359]
+].map(emojiCode => String.fromCodePoint(...emojiCode))
+
 const getWorkerData = async () => {
 
 	const getAppleFonts = () => [
@@ -639,6 +726,7 @@ const getWorkerData = async () => {
 
 	// canvas2d
 	let canvasOffscreen2d = undefined
+	let textMetrics = {}
 	try {
 		canvasOffscreen2d = new OffscreenCanvas(186, 30)
 		const context2d = canvasOffscreen2d.getContext('2d')
@@ -649,6 +737,25 @@ const getWorkerData = async () => {
 		context2d.fillText(str, 0, 20)
 		context2d.fillStyle = 'rgba(0, 0, 0, 0)'
 		context2d.fillRect(0, 0, 186, 30)
+
+		const {
+			actualBoundingBoxAscent,
+			actualBoundingBoxDescent,
+			actualBoundingBoxLeft,
+			actualBoundingBoxRight,
+			fontBoundingBoxAscent,
+			fontBoundingBoxDescent,
+			width
+		} = context2d.measureText(systemEmojis.join('')) || {}
+		textMetrics = {
+			actualBoundingBoxAscent,
+			actualBoundingBoxDescent,
+			actualBoundingBoxLeft,
+			actualBoundingBoxRight,
+			fontBoundingBoxAscent,
+			fontBoundingBoxDescent,
+			width
+		}
 	}
 	catch (error) { }
 	const getDataURI = async canvasOffscreen2d => {
@@ -784,6 +891,7 @@ const getWorkerData = async () => {
 		platform,
 		userAgent,
 		canvas2d,
+		textMetrics: new Set(Object.keys(textMetrics)).size > 1 ? textMetrics : undefined,
 		webglRenderer,
 		webglVendor,
 		fontFaceSetFonts,
