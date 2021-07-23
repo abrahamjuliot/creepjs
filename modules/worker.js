@@ -170,10 +170,7 @@ export const getBestWorkerScope = async imports => {
 				
 			}
 			
-			// locale language lie
-			if (workerScope.lies.locale) {
-				documentLie(workerScope.scope, workerScope.lies.locale)
-			}
+			// language lie
 			if (workerScope.lies.language) {
 				documentLie(workerScope.scope, workerScope.lies.language)
 			}

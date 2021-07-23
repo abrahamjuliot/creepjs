@@ -734,15 +734,9 @@ const getWorkerData = async () => {
 	}
 	const locale = getLocale()
 
-	const lang = (''+language).split(',')[0]
-	const localeLie = (
-		(locale.length && locale.length != 1) || (
-			locale[0].toLocaleLowerCase() != lang.toLocaleLowerCase() &&
-			!new RegExp(lang, 'i').test(locale[0])
-		)
-	)
-
+	// language lie
 	let currencyLanguage
+	const lang = (''+language).split(',')[0]
 	try {
 		currencyLanguage = (1).toLocaleString((lang || undefined), {
 			style: 'currency',
@@ -759,7 +753,6 @@ const getWorkerData = async () => {
 		minimumFractionDigits: 0,
 		maximumFractionDigits: 0
 	})
-
 	const languageLie = currencyLocale != currencyLanguage
 
 	// prototype lies
@@ -775,7 +768,6 @@ const getWorkerData = async () => {
 
 	return {
 		lied: (
-			localeLie ||
 			languageLie ||
 			protoLie
 		),
