@@ -386,6 +386,7 @@ const imports = {
 				braveFingerprintingBlocking ? undefined : fp.workerScope.hardwareConcurrency
 			),
 			language: fp.workerScope.language,
+			languages: fp.workerScope.languages,
 			currency: fp.workerScope.currency,
 			platform: fp.workerScope.platform,
 			system: fp.workerScope.system,

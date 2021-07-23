@@ -810,7 +810,10 @@ const getWorkerData = async () => {
 	const timezoneLocation = Intl.DateTimeFormat().resolvedOptions().timeZone
 
 	// navigator
-	const { hardwareConcurrency, language, platform, userAgent, deviceMemory } = navigator
+	const { hardwareConcurrency, language, languages, platform, userAgent, deviceMemory } = navigator
+
+	// scope keys
+	const scopeKeys = Object.getOwnPropertyNames(self)
 
 	// locale
 	const getLocale = () => {
@@ -874,6 +877,7 @@ const getWorkerData = async () => {
 	const protoLie = lieList.length
 
 	return {
+		scopeKeys,
 		lied: (
 			languageLie ||
 			protoLie
@@ -889,6 +893,7 @@ const getWorkerData = async () => {
 		deviceMemory,
 		hardwareConcurrency,
 		language,
+		languages: ''+languages,
 		platform,
 		userAgent,
 		canvas2d,

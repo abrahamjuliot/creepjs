@@ -243,19 +243,11 @@ export const getNavigator = async (imports, workerScope) => {
 				const navigatorLanguage = navigator.language
 				const navigatorLanguages = navigator.languages
 				detectLies('language', navigatorLanguage)
-				detectLies('languages', navigatorLanguages)
+				detectLies('languages', ''+navigatorLanguages)
 				if (''+language != ''+navigatorLanguage) {
 					lied = true
 					const nestedIframeLie = `Expected "${navigatorLanguage}" in nested iframe and got "${language}"`
 					documentLie(`Navigator.language`, nestedIframeLie)
-				}
-				if (navigatorLanguage && navigatorLanguages) {
-					const lang = /^.{0,2}/g.exec(navigatorLanguage)[0]
-					const langs = /^.{0,2}/g.exec(navigatorLanguages[0])[0]
-					if (langs != lang) {
-						sendToTrash('language/languages', `${[navigatorLanguage, navigatorLanguages].join(' ')} mismatch`)
-					}
-					return `${languages.join(', ')} (${language})`
 				}
 
 				const lang = (''+language).split(',')[0]
@@ -284,6 +276,15 @@ export const getNavigator = async (imports, workerScope) => {
 						`Navigator.language`, 
 						`${currencyLocale} locale and ${currencyLanguage} language do not match`
 					)
+				}
+
+				if (navigatorLanguage && navigatorLanguages) {
+					const lang = /^.{0,2}/g.exec(navigatorLanguage)[0]
+					const langs = /^.{0,2}/g.exec(navigatorLanguages[0])[0]
+					if (langs != lang) {
+						sendToTrash('language/languages', `${[navigatorLanguage, navigatorLanguages].join(' ')} mismatch`)
+					}
+					return `${languages.join(', ')} (${language})`
 				}
 
 				return `${language} ${languages}`

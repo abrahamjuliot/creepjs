@@ -242,6 +242,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 			<div>canvas 2d: ${note.blocked}</div>
 			<div>textMetrics: ${note.blocked}</div>
 			<div>fontFaceSet (0): ${note.blocked}</div>
+			<div>keys (0): ${note.blocked}</div>
 			<div>timezone: ${note.blocked}</div>
 			<div>deviceMemory: ${note.blocked}</div>
 			<div>hardwareConcurrency: ${note.blocked}</div>
@@ -264,6 +265,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 	const { workerScope: data } = fp
 
 	const {
+		scopeKeys,
 		lied,
 		locale,
 		currency,
@@ -272,6 +274,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 		deviceMemory,
 		hardwareConcurrency,
 		language,
+		languages,
 		platform,
 		userAgent,
 		canvas2d,
@@ -317,6 +320,13 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 				systemClassIcon ? `${systemClassIcon}${fontFaceSetHash}` : fontFaceSetHash
 			) : note.unsupported
 		}</div>
+		<div>keys (${count(scopeKeys)}): ${
+			scopeKeys && scopeKeys.length ? modal(
+				'creep-worker-scope-version',
+				scopeKeys.join(', '),
+				hashMini(scopeKeys)
+			) : note.blocked
+		}</div>
 		<div>timezone: ${timezoneLocation} (${''+timezoneOffset})</div>
 		<div>deviceMemory: ${deviceMemory || note.unsupported}</div>
 		<div>hardwareConcurrency: ${hardwareConcurrency || note.unsupported}</div>
@@ -324,8 +334,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 		<div>webgl vendor: ${webglVendor || note.unsupported}</div>
 		<div>language:</div>
 		<div class="block-text">
-			${language ? `${language}` : ''}
-			${locale ? `<br>${locale}` : ''}
+			${[...new Set([languages, language, locale])].join(', ')}
 			${currency ? `<br>${currency}` : ''}
 		</div>
 	</div>
