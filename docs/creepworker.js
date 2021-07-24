@@ -577,8 +577,12 @@ const systemEmojis = [
 ].map(emojiCode => String.fromCodePoint(...emojiCode))
 
 const codecs = [
+	'audio/ogg; codecs=vorbis',
+	'audio/ogg; codecs=flac',
 	'audio/mp4; codecs="mp4a.40.2"',
-	'video/ogg; codecs="theora"'
+	'audio/mpeg; codecs="mp3"',
+	'video/ogg; codecs="theora"',
+	'video/mp4; codecs="avc1.42E01E"'
 ]
 
 const getMediaConfig = (codec, video, audio) => ({
@@ -608,12 +612,13 @@ const getMediaCapabilities = async () => {
 	try {
 		const decodingInfo = codecs.map(codec => {
 			const config = getMediaConfig(codec, video, audio)
-			return navigator.mediaCapabilities.decodingInfo(config)
+			const info = navigator.mediaCapabilities.decodingInfo(config)
 				.then(support => ({
 					codec,
 					...support
 				}))
 				.catch(error => console.error(codec, error))
+			return info
 		})
 		const data = await Promise.all(decodingInfo).catch(error => console.error(error))
 		const codecsSupported = data.reduce((acc, support) => {
@@ -623,7 +628,7 @@ const getMediaCapabilities = async () => {
 				...acc,
 				[codec]: [
 					...(smooth ? ['smooth'] : []),
-					...(powerEfficient ? ['powerEfficient'] : [])
+					...(powerEfficient ? ['efficient'] : [])
 				]
 			}
 		}, {})
@@ -872,25 +877,36 @@ const getWorkerData = async () => {
 	const timezoneLocation = Intl.DateTimeFormat().resolvedOptions().timeZone
 
 	// navigator
-	const { hardwareConcurrency, language, languages, platform, userAgent, deviceMemory } = navigator
+	const { hardwareConcurrency, language, languages, platform, userAgent, deviceMemory } = navigator || {}
 
 	// mediaCapabilities
 	const mediaCapabilities = await getMediaCapabilities()
 
 	// permissions
+	// https://w3c.github.io/permissions/#permission-registry
 	const permissions = !('permissions' in navigator) ? undefined : await Promise.all([
+		getPermissionState('accelerometer'),
+		getPermissionState('ambient-light-sensor'),
+		getPermissionState('background-fetch'),
+		getPermissionState('background-sync'),
+		getPermissionState('bluetooth'),
 		getPermissionState('camera'),
 		getPermissionState('clipboard'),
 		getPermissionState('device-info'),
+		getPermissionState('display-capture'),
+		getPermissionState('gamepad'),
 		getPermissionState('geolocation'),
 		getPermissionState('gyroscope'),
 		getPermissionState('magnetometer'),
 		getPermissionState('microphone'),
 		getPermissionState('midi'),
+		getPermissionState('nfc'),
 		getPermissionState('notifications'),
 		getPermissionState('persistent-storage'),
 		getPermissionState('push'),
-		getPermissionState('speaker')
+		getPermissionState('screen-wake-lock'),
+		getPermissionState('speaker'),
+		getPermissionState('speaker-selection')
 	]).then(permissions => permissions.reduce((acc, perm) => {
 		const { state, name } = perm
 		if (acc[state]) {
