@@ -361,8 +361,12 @@ const imports = {
 
 	const creep = {
 		navigator: ( 
-			!fp.navigator || fp.navigator.lied ? undefined : 
-				fp.navigator
+			!fp.navigator || fp.navigator.lied ? undefined : {
+				...fp.navigator,
+				permission: undefined,
+				doNotTrack: undefined,
+				globalPrivacyControl: undefined
+			}
 		),
 		screen: ( 
 			!fp.screen || fp.screen.lied || (!!liesLen && isFirefox) ? undefined : {
