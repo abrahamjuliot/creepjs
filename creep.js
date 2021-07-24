@@ -404,7 +404,8 @@ const imports = {
 				// loose
 				brandsVersion: undefined, 
 				uaFullVersion: undefined
-			}
+			},
+			mediaCapabilities: fp.workerScope.mediaCapabilities,
 		},
 		media: fp.media,
 		canvas2d: ( 

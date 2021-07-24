@@ -243,12 +243,15 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 			<div>textMetrics: ${note.blocked}</div>
 			<div>fontFaceSet (0): ${note.blocked}</div>
 			<div>keys (0): ${note.blocked}</div>
+			<div>permissions (0): ${note.blocked}</div>
 			<div>timezone: ${note.blocked}</div>
 			<div>deviceMemory: ${note.blocked}</div>
 			<div>hardwareConcurrency: ${note.blocked}</div>
 			<div>platform: ${note.blocked}</div>
 			<div>webgl vendor: ${note.blocked}</div>
 			<div>language:</div>
+			<div class="block-text">${note.blocked}</div>
+			<div>codecs:</div>
 			<div class="block-text">${note.blocked}</div>
 		</div>
 		<div class="col-six undefined">
@@ -275,8 +278,10 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 		hardwareConcurrency,
 		language,
 		languages,
+		mediaCapabilities,
 		platform,
 		userAgent,
+		permissions,
 		canvas2d,
 		textMetrics,
 		webglRenderer,
@@ -301,6 +306,11 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 
 	const systemClassIcon = icon[fontSystemClass]
 	const fontFaceSetHash = hashMini(fontFaceSetFonts)
+	const codecKeys = Object.keys(mediaCapabilities || {})
+	const permissionsKeys = Object.keys(permissions)
+	const permissionsGranted = (
+		permissions && permissions.granted ? permissions.granted.length : 0
+	)
 	const getSum = arr => !arr ? 0 : arr.reduce((acc, curr) => (acc += Math.abs(curr)), 0)
 	return `
 	<div class="ellipsis"><span class="aside-note">${scope || ''}</span></div>
@@ -327,6 +337,13 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 				hashMini(scopeKeys)
 			) : note.blocked
 		}</div>
+		<div>permissions (${''+permissionsGranted}): ${
+			!permissions || !permissionsKeys ? note.unsupported : modal(
+				'creep-worker-permissions',
+				permissionsKeys.map(key => `${key}: ${permissions[key].join(', ')}`).join('<br>'),
+				hashMini(permissions)
+			)
+		}</div>
 		<div>timezone: ${timezoneLocation} (${''+timezoneOffset})</div>
 		<div>deviceMemory: ${deviceMemory || note.unsupported}</div>
 		<div>hardwareConcurrency: ${hardwareConcurrency || note.unsupported}</div>
@@ -336,6 +353,12 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 		<div class="block-text">
 			${[...new Set([languages, language, locale])].join(', ')}
 			${currency ? `<br>${currency}` : ''}
+		</div>
+		<div>codecs:</div>
+		<div class="block-text help" title="MediaCapabilities.decodingInfo()">
+			${
+				!mediaCapabilities || !codecKeys.length ? note.unsupported : codecKeys.join('<br>')
+			}
 		</div>
 	</div>
 	<div class="col-six${lied ? ' rejected' : ''}">
