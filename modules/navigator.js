@@ -599,21 +599,17 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 			<strong>Navigator</strong>
 			<div>properties (0): ${note.blocked}</div>
 			<div>bluetooth: ${note.blocked}</div>
-			<div>doNotTrack: ${note.blocked}</div>
-			<div>globalPrivacyControl:${note.blocked}</div>
-			<div>keyboard: ${note.blocked}</div>
-			<div>language: ${note.blocked}</div>
-			<div>maxTouchPoints: ${note.blocked}</div>
 			<div>codecs (0): ${note.blocked}</div>
+			<div>dnt: ${note.blocked}</div>
+			<div>gpc:${note.blocked}</div>
+			<div>keyboard: ${note.blocked}</div>
+			<div>lang: ${note.blocked}</div>
 			<div>mimeTypes (0): ${note.blocked}</div>
 			<div>permissions (0): ${note.blocked}</div>
 			<div>plugins (0): ${note.blocked}</div>
-			<div>ua architecture: ${note.blocked}</div>
-			<div>ua model: ${note.blocked}</div>
-			<div>ua platform: ${note.blocked}</div>
-			<div>ua platformVersion: ${note.blocked}</div>
-			<div>ua uaFullVersion: ${note.blocked}</div>
 			<div>vendor: ${note.blocked}</div>
+			<div>userAgentData:</div>
+			<div class="block-text">${note.blocked}</div>
 		</div>
 		<div class="col-six">
 			<div>device:</div>
@@ -676,8 +672,16 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 		typeof bluetoothAvailability == 'undefined' ? note.unsupported :
 			!bluetoothAvailability ? 'unavailable' : 'available'
 		}</div>
-		<div>doNotTrack: ${'' + doNotTrack}</div>
-		<div>globalPrivacyControl: ${
+		<div class="help" title="MediaCapabilities.decodingInfo()">codecs (${''+codecKeys.length}): ${
+		!mediaCapabilities || !codecKeys.length ? note.unsupported :
+			modal(
+				`${id}-media-codecs`,
+				Object.keys(mediaCapabilities).map(key => `${key}: ${mediaCapabilities[key].join(', ')}`).join('<br>'),
+				hashMini(mediaCapabilities)
+			)
+		}</div>
+		<div class="help" title="Navigator.doNotTrack">dnt: ${'' + doNotTrack}</div>
+		<div class="help" title="Navigator.globalPrivacyControl">gpc: ${
 		'' + globalPrivacyControl == 'undefined' ? note.unsupported : '' + globalPrivacyControl
 		}</div>
 		<div>keyboard: ${
@@ -688,16 +692,7 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 				hashMini(keyboard)
 			)
 		}</div>
-		<div>language: ${!blocked[language] ? language : note.blocked}</div>
-		<div>maxTouchPoints: ${!blocked[maxTouchPoints] ? '' + maxTouchPoints : note.blocked}</div>
-		<div class="help" title="MediaCapabilities.decodingInfo()">codecs (${''+codecKeys.length}): ${
-		!mediaCapabilities || !codecKeys.length ? note.unsupported :
-			modal(
-				`${id}-media-codecs`,
-				Object.keys(mediaCapabilities).map(key => `${key}: ${mediaCapabilities[key].join(', ')}`).join('<br>'),
-				hashMini(mediaCapabilities)
-			)
-		}</div>
+		<div class="help" title="\nNavigator.language\nNavigator.languages">lang: ${!blocked[language] ? language : note.blocked}</div>
 		<div>mimeTypes (${count(mimeTypes)}): ${
 		!blocked['' + mimeTypes] ?
 			modal(
@@ -725,35 +720,35 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 		}</div>
 		<div>vendor: ${!blocked[vendor] ? vendor : note.blocked}</div>
 		<div>userAgentData:</div>
-			<div class="block-text help" title="\nNavigator.userAgentData\nNavigatorUAData.getHighEntropyValues()">
-				<div>
-				${((userAgentData) => {
-					const {
-						architecture,
-						brandsVersion,
-						uaFullVersion,
-						mobile,
-						model,
-						platformVersion,
-						platform
-					} = userAgentData || {}
-					return !userAgentData ? note.unsupported : `
-						${(brandsVersion || []).join(',')}${uaFullVersion ? ` (${uaFullVersion})` : ''}
-						<br>${platform} ${platformVersion} ${architecture}
-						${model ? `<br>${model}` : ''}
-						${mobile ? '<br>mobile' : ''}
-					`
-				})(userAgentData)}	
-				</div>
+		<div class="block-text help" title="\nNavigator.userAgentData\nNavigatorUAData.getHighEntropyValues()">
+			<div>
+			${((userAgentData) => {
+				const {
+					architecture,
+					brandsVersion,
+					uaFullVersion,
+					mobile,
+					model,
+					platformVersion,
+					platform
+				} = userAgentData || {}
+				return !userAgentData ? note.unsupported : `
+					${(brandsVersion || []).join(',')}${uaFullVersion ? ` (${uaFullVersion})` : ''}
+					<br>${platform} ${platformVersion} ${architecture}
+					${model ? `<br>${model}` : ''}
+					${mobile ? '<br>mobile' : ''}
+				`
+			})(userAgentData)}	
 			</div>
 		</div>
+	</div>
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<div>device:</div>
-		<div class="block-text help" title="\nNavigator.deviceMemory\nNavigator.hardwareConcurrency\nNavigator.oscpu\nNavigator.platform\nNavigator.userAgent">
+		<div class="block-text help" title="\nNavigator.deviceMemory\nNavigator.hardwareConcurrency\nNavigator.maxTouchPoints\nNavigator.oscpu\nNavigator.platform\nNavigator.userAgent">
 			${oscpu ? oscpu : ''}
 			${`${oscpu ? '<br>' : ''}${system}${platform ? ` (${platform})` : ''}`}
 			${device ? `<br>${device}` : note.blocked}
-			<br>cores: ${hardwareConcurrency}${deviceMemory ? `, memory: ${deviceMemory}` : ''}
+			<br>cores: ${hardwareConcurrency}${deviceMemory ? `, memory: ${deviceMemory}` : ''}${typeof maxTouchPoints != 'undefined' ? `, touch: ${''+maxTouchPoints}` : ''}
 		</div>
 		<div>userAgent:</div>
 		<div class="block-text">
