@@ -244,14 +244,10 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 			<div>fontFaceSet (0): ${note.blocked}</div>
 			<div>keys (0): ${note.blocked}</div>
 			<div>permissions (0): ${note.blocked}</div>
+			<div>codecs (0):${note.blocked}</div>
 			<div>timezone: ${note.blocked}</div>
-			<div>deviceMemory: ${note.blocked}</div>
-			<div>hardwareConcurrency: ${note.blocked}</div>
-			<div>platform: ${note.blocked}</div>
-			<div>webgl vendor: ${note.blocked}</div>
-			<div>language:</div>
-			<div class="block-text">${note.blocked}</div>
-			<div>codecs:</div>
+			<div>language: ${note.blocked}</div>
+			<div>webgl:</div>
 			<div class="block-text">${note.blocked}</div>
 		</div>
 		<div class="col-six undefined">
@@ -260,8 +256,6 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 			<div>userAgent:</div>
 			<div class="block-text">${note.blocked}</div>
 			<div>userAgentData:</div>
-			<div class="block-text">${note.blocked}</div>
-			<div>webgl renderer:</div>
 			<div class="block-text">${note.blocked}</div>
 		</div>`
 	}
@@ -344,28 +338,30 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 				hashMini(permissions)
 			)
 		}</div>
+		<div class="help" title="MediaCapabilities.decodingInfo()">codecs (${''+codecKeys.length}): ${
+		!mediaCapabilities || !codecKeys.length ? note.unsupported :
+			modal(
+				`creep-worker-media-codecs`,
+				Object.keys(mediaCapabilities).map(key => `${key}: ${mediaCapabilities[key].join(', ')}`).join('<br>'),
+				hashMini(mediaCapabilities)
+			)
+		}</div>
 		<div class="help" title="Intl.DateTimeFormat().resolvedOptions().timeZone\nDate.getDate()\nDate.getMonth()\nDate.parse()">timezone: ${timezoneLocation} (${''+timezoneOffset})</div>
-		<div class="help" title="WorkerNavigator.deviceMemory">deviceMemory: ${deviceMemory || note.unsupported}</div>
-		<div class="help" title="WorkerNavigator.hardwareConcurrency">hardwareConcurrency: ${hardwareConcurrency || note.unsupported}</div>
-		<div class="help" title="WorkerNavigator.platform">platform: ${platform || note.unsupported}</div>
-		<div class="help" title="WebGLRenderingContext.getParameter()">webgl vendor: ${webglVendor || note.unsupported}</div>
-		<div>language:</div>
-		<div class="block-text help" title="WorkerNavigator.language\nWorkerNavigator.languages\nIntl.Collator.resolvedOptions()\nIntl.DateTimeFormat.resolvedOptions()\nIntl.DisplayNames.resolvedOptions()\nIntl.ListFormat.resolvedOptions()\nIntl.NumberFormat.resolvedOptions()\nIntl.PluralRules.resolvedOptions()\nIntl.RelativeTimeFormat.resolvedOptions()\nNumber.toLocaleString()">
-			${[...new Set([languages, language, locale])].join(', ')}
-			${currency ? `<br>${currency}` : ''}
+		<div class="help" title="WorkerNavigator.language\nWorkerNavigator.languages\nIntl.Collator.resolvedOptions()\nIntl.DateTimeFormat.resolvedOptions()\nIntl.DisplayNames.resolvedOptions()\nIntl.ListFormat.resolvedOptions()\nIntl.NumberFormat.resolvedOptions()\nIntl.PluralRules.resolvedOptions()\nIntl.RelativeTimeFormat.resolvedOptions()\nNumber.toLocaleString()">language:
+			${[...new Set([languages, language, locale])].join(',')}${currency ? ` (${currency})` : ''}
 		</div>
-		<div>codecs:</div>
-		<div class="block-text help" title="MediaCapabilities.decodingInfo()">
-			${
-				!mediaCapabilities || !codecKeys.length ? note.unsupported : codecKeys.join('<br>')
-			}
+		<div>webgl:</div>
+		<div class="block-text help" title="\nWebGLRenderingContext.getParameter()">
+			${webglVendor ? `${webglVendor}` : ''}
+			${webglRenderer ? `<br>${webglRenderer}` : note.unsupported}
 		</div>
 	</div>
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<div>device:</div>
-		<div class="block-text help" title="\nWorkerNavigator.userAgent">
-			${system ? `${system}` : ''}
+		<div class="block-text help" title="\nWorkerNavigator.deviceMemory\nWorkerNavigator.hardwareConcurrency\nWorkerNavigator.platform\nWorkerNavigator.userAgent">
+			${`${system}${platform ? ` (${platform})` : ''}`}
 			${device ? `<br>${device}` : note.blocked}
+			<br>cores: ${hardwareConcurrency}, memory: ${deviceMemory}
 		</div>
 		<div>userAgent:</div>
 		<div class="block-text help" title="\nWorkerNavigator.userAgent">
@@ -392,10 +388,6 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 				`
 			})(userAgentData)}	
 			</div>
-		</div>
-		<div>unmasked renderer:</div>
-		<div class="block-text help" title="\nWebGLRenderingContext.getParameter()">
-			<div>${webglRenderer || note.unsupported}</div>
 		</div>
 	</div>
 	`

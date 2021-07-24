@@ -124,8 +124,8 @@ export const getNavigator = async (imports, workerScope) => {
 					sendToTrash('userAgent', `extra spaces in "${navigatorUserAgent.replace(/\s{2,}|^\s|\s$/g, '[...]')}"`)
 				}
 				const gibbers = gibberish(navigatorUserAgent)
-				if (!!gibbers.length) {	
-					sendToTrash(`userAgent contains gibberish`, `[${gibbers.join(', ')}] ${navigatorUserAgent}`)	
+				if (!!gibbers.length) {
+					sendToTrash(`userAgent contains gibberish`, `[${gibbers.join(', ')}] ${navigatorUserAgent}`)
 				}
 				if (userAgent != navigatorUserAgent) {
 					lied = true
@@ -162,10 +162,10 @@ export const getNavigator = async (imports, workerScope) => {
 				const navigatorDeviceMemory = navigator.deviceMemory
 				const trusted = {
 					'0': true,
-					'1': true, 
+					'1': true,
 					'2': true,
-					'4': true, 
-					'6': true, 
+					'4': true,
+					'6': true,
 					'8': true
 				}
 				trustInteger('deviceMemory - invalid return type', navigatorDeviceMemory)
@@ -184,12 +184,12 @@ export const getNavigator = async (imports, workerScope) => {
 				const navigatorDoNotTrack = navigator.doNotTrack
 				const trusted = {
 					'1': !0,
-					'true': !0, 
+					'true': !0,
 					'yes': !0,
-					'0': !0, 
-					'false': !0, 
-					'no': !0, 
-					'unspecified': !0, 
+					'0': !0,
+					'false': !0,
+					'no': !0,
+					'unspecified': !0,
 					'null': !0,
 					'undefined': !0
 				}
@@ -205,12 +205,12 @@ export const getNavigator = async (imports, workerScope) => {
 				const { globalPrivacyControl } = navigator
 				const trusted = {
 					'1': !0,
-					'true': !0, 
+					'true': !0,
 					'yes': !0,
-					'0': !0, 
-					'false': !0, 
-					'no': !0, 
-					'unspecified': !0, 
+					'0': !0,
+					'false': !0,
+					'no': !0,
+					'unspecified': !0,
 					'null': !0,
 					'undefined': !0
 				}
@@ -225,8 +225,8 @@ export const getNavigator = async (imports, workerScope) => {
 				}
 				const hardwareConcurrency = (
 					dragonOfDeath ?
-					dragonOfDeath.navigator.hardwareConcurrency :
-					phantomNavigator.hardwareConcurrency
+						dragonOfDeath.navigator.hardwareConcurrency :
+						phantomNavigator.hardwareConcurrency
 				)
 				const navigatorHardwareConcurrency = navigator.hardwareConcurrency
 				detectLies('hardwareConcurrency', navigatorHardwareConcurrency)
@@ -243,14 +243,14 @@ export const getNavigator = async (imports, workerScope) => {
 				const navigatorLanguage = navigator.language
 				const navigatorLanguages = navigator.languages
 				detectLies('language', navigatorLanguage)
-				detectLies('languages', ''+navigatorLanguages)
-				if (''+language != ''+navigatorLanguage) {
+				detectLies('languages', '' + navigatorLanguages)
+				if ('' + language != '' + navigatorLanguage) {
 					lied = true
 					const nestedIframeLie = `Expected "${navigatorLanguage}" in nested iframe and got "${language}"`
 					documentLie(`Navigator.language`, nestedIframeLie)
 				}
 
-				const lang = (''+language).split(',')[0]
+				const lang = ('' + language).split(',')[0]
 				let currencyLanguage
 				try {
 					currencyLanguage = (1).toLocaleString((lang || undefined), {
@@ -260,7 +260,7 @@ export const getNavigator = async (imports, workerScope) => {
 						minimumFractionDigits: 0,
 						maximumFractionDigits: 0
 					})
-				} catch (e) {}
+				} catch (e) { }
 				const currencyLocale = (1).toLocaleString(undefined, {
 					style: 'currency',
 					currency: 'USD',
@@ -273,7 +273,7 @@ export const getNavigator = async (imports, workerScope) => {
 				if (languageLie) {
 					lied = true
 					documentLie(
-						`Navigator.language`, 
+						`Navigator.language`,
 						`${currencyLocale} locale and ${currencyLanguage} language do not match`
 					)
 				}
@@ -294,11 +294,11 @@ export const getNavigator = async (imports, workerScope) => {
 					return null
 				}
 				const { maxTouchPoints } = phantomNavigator
-				const navigatorMaxTouchPoints = navigator.maxTouchPoints	
-				if (maxTouchPoints != navigatorMaxTouchPoints) {	
+				const navigatorMaxTouchPoints = navigator.maxTouchPoints
+				if (maxTouchPoints != navigatorMaxTouchPoints) {
 					lied = true
 					const nestedIframeLie = `Expected ${navigatorMaxTouchPoints} in nested iframe and got ${maxTouchPoints}`
-					documentLie(`Navigator.maxTouchPoints`, nestedIframeLie)	
+					documentLie(`Navigator.maxTouchPoints`, nestedIframeLie)
 				}
 
 				return maxTouchPoints
@@ -349,19 +349,19 @@ export const getNavigator = async (imports, workerScope) => {
 					})
 				}
 
-				if (!!response.length) {	
-					response.forEach(plugin => {	
+				if (!!response.length) {
+					response.forEach(plugin => {
 						const { name, description } = plugin
 						const nameGibbers = gibberish(name)
-						const descriptionGibbers = gibberish(description)	
-						if (!!nameGibbers.length) {	
-							sendToTrash(`plugin name contains gibberish`, `[${nameGibbers.join(', ')}] ${name}`)	
+						const descriptionGibbers = gibberish(description)
+						if (!!nameGibbers.length) {
+							sendToTrash(`plugin name contains gibberish`, `[${nameGibbers.join(', ')}] ${name}`)
 						}
-						if (!!descriptionGibbers.length) {	
+						if (!!descriptionGibbers.length) {
 							sendToTrash(`plugin description contains gibberish`, `[${descriptionGibbers.join(', ')}] ${description}`)
-						}	
-						return	
-					})	
+						}
+						return
+					})
 				}
 				return response
 			}, 'plugins failed'),
@@ -369,12 +369,12 @@ export const getNavigator = async (imports, workerScope) => {
 				const keys = Object.keys(Object.getPrototypeOf(phantomNavigator))
 				return keys
 			}, 'navigator keys failed'),
-			highEntropyValues: await attempt(async () => { 
+			highEntropyValues: await attempt(async () => {
 				if (!('userAgentData' in phantomNavigator) || !phantomNavigator.userAgentData) {
 					return undefined
 				}
 				const data = await phantomNavigator.userAgentData.getHighEntropyValues(
-					['platform', 'platformVersion', 'architecture',  'model', 'uaFullVersion']
+					['platform', 'platformVersion', 'architecture', 'model', 'uaFullVersion']
 				)
 				const { brands, mobile } = phantomNavigator.userAgentData || {}
 				if (!data.brands) {
@@ -386,7 +386,7 @@ export const getNavigator = async (imports, workerScope) => {
 				const dataSorted = Object.keys(data).sort().reduce((acc, key) => {
 					acc[key] = data[key]
 					return acc
-				},{})
+				}, {})
 				return dataSorted
 			}, 'highEntropyValues failed'),
 			keyboard: await attempt(async () => {
@@ -448,19 +448,127 @@ export const getNavigator = async (imports, workerScope) => {
 				]
 				const keyoardLayoutMap = await navigator.keyboard.getLayoutMap()
 				const writingSystemKeys = keys
-				.reduce((acc, key) => {
-					acc[key] = keyoardLayoutMap.get(key)
-					return acc
-				}, {})
+					.reduce((acc, key) => {
+						acc[key] = keyoardLayoutMap.get(key)
+						return acc
+					}, {})
 				return writingSystemKeys
 			}),
-			bluetoothAvailability: await attempt(async () => { 
+			bluetoothAvailability: await attempt(async () => {
 				if (!('bluetooth' in phantomNavigator) || !phantomNavigator.bluetooth) {
 					return undefined
 				}
 				const available = await navigator.bluetooth.getAvailability()
 				return available
 			}, 'bluetoothAvailability failed'),
+			mediaCapabilities: await attempt(async () => {
+				const codecs = [
+					'audio/ogg; codecs=vorbis',
+					'audio/ogg; codecs=flac',
+					'audio/mp4; codecs="mp4a.40.2"',
+					'audio/mpeg; codecs="mp3"',
+					'video/ogg; codecs="theora"',
+					'video/mp4; codecs="avc1.42E01E"'
+				]
+
+				const getMediaConfig = (codec, video, audio) => ({
+					type: 'file',
+					video: !/^video/.test(codec) ? undefined : {
+						contentType: codec,
+						...video
+					},
+					audio: !/^audio/.test(codec) ? undefined : {
+						contentType: codec,
+						...audio
+					}
+				})
+
+				const getMediaCapabilities = async () => {
+					const video = {
+						width: 1920,
+						height: 1080,
+						bitrate: 120000,
+						framerate: 60
+					}
+					const audio = {
+						channels: 2,
+						bitrate: 300000,
+						samplerate: 5200
+					}
+					try {
+						const decodingInfo = codecs.map(codec => {
+							const config = getMediaConfig(codec, video, audio)
+							const info = navigator.mediaCapabilities.decodingInfo(config)
+								.then(support => ({
+									codec,
+									...support
+								}))
+								.catch(error => console.error(codec, error))
+							return info
+						})
+						const data = await Promise.all(decodingInfo)
+							.catch(error => console.error(error))
+						const codecsSupported = data.reduce((acc, support) => {
+							const { codec, supported, smooth, powerEfficient } = support || {}
+							if (!supported) { return acc }
+							return {
+								...acc,
+								[codec]: [
+									...(smooth ? ['smooth'] : []),
+									...(powerEfficient ? ['efficient'] : [])
+								]
+							}
+						}, {})
+						return codecsSupported
+					}
+					catch (error) {
+						return
+					}
+				}
+				const mediaCapabilities = await getMediaCapabilities()
+				return mediaCapabilities
+			}, 'mediaCapabilities failed'),
+		
+			permissions: await attempt(async () => {
+				const getPermissionState = name => navigator.permissions.query({ name })
+					.then(res => ({ name, state: res.state }))
+					.catch(error => ({ name, state: 'unknown' }))
+
+				// https://w3c.github.io/permissions/#permission-registry
+				const permissions = !('permissions' in navigator) ? undefined : await Promise.all([
+						getPermissionState('accelerometer'),
+						getPermissionState('ambient-light-sensor'),
+						getPermissionState('background-fetch'),
+						getPermissionState('background-sync'),
+						getPermissionState('bluetooth'),
+						getPermissionState('camera'),
+						getPermissionState('clipboard'),
+						getPermissionState('device-info'),
+						getPermissionState('display-capture'),
+						getPermissionState('gamepad'),
+						getPermissionState('geolocation'),
+						getPermissionState('gyroscope'),
+						getPermissionState('magnetometer'),
+						getPermissionState('microphone'),
+						getPermissionState('midi'),
+						getPermissionState('nfc'),
+						getPermissionState('notifications'),
+						getPermissionState('persistent-storage'),
+						getPermissionState('push'),
+						getPermissionState('screen-wake-lock'),
+						getPermissionState('speaker'),
+						getPermissionState('speaker-selection')
+					]).then(permissions => permissions.reduce((acc, perm) => {
+						const { state, name } = perm || {}
+						if (acc[state]) {
+							acc[state].push(name)
+							return acc
+						}
+						acc[state] = [name]
+						return acc
+					}, {})).catch(error => console.error(error))
+				return permissions
+			}, 'permissions failed'),
 		}
 		logTestResult({ start, test: 'navigator', passed: true })
 		return { ...data, lied }
@@ -472,7 +580,6 @@ export const getNavigator = async (imports, workerScope) => {
 	}
 }
 
-
 export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) => {
 	if (!fp.navigator) {
 		return `
@@ -480,15 +587,14 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 			<strong>Navigator</strong>
 			<div>properties (0): ${note.blocked}</div>
 			<div>bluetooth: ${note.blocked}</div>
-			<div>deviceMemory: ${note.blocked}</div>
 			<div>doNotTrack: ${note.blocked}</div>
 			<div>globalPrivacyControl:${note.blocked}</div>
-			<div>hardwareConcurrency: ${note.blocked}</div>
 			<div>keyboard: ${note.blocked}</div>
 			<div>language: ${note.blocked}</div>
 			<div>maxTouchPoints: ${note.blocked}</div>
+			<div>codecs (0): ${note.blocked}</div>
 			<div>mimeTypes (0): ${note.blocked}</div>
-			<div>platform: ${note.blocked}</div>
+			<div>permissions (0): ${note.blocked}</div>
 			<div>plugins (0): ${note.blocked}</div>
 			<div>ua architecture: ${note.blocked}</div>
 			<div>ua model: ${note.blocked}</div>
@@ -519,8 +625,10 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 			highEntropyValues,
 			language,
 			maxTouchPoints,
+			mediaCapabilities,
 			mimeTypes,
 			oscpu,
+			permissions,
 			platform,
 			plugins,
 			properties,
@@ -539,28 +647,31 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 		[undefined]: !0,
 		['']: !0
 	}
+	const codecKeys = Object.keys(mediaCapabilities || {})
+	const permissionsKeys = Object.keys(permissions || {})
+	const permissionsGranted = (
+		permissions && permissions.granted ? permissions.granted.length : 0
+	)
 	return `
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>Navigator</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div>properties (${count(properties)}): ${
-			modal(
-				`${id}-properties`,
-				properties.join(', '),
-				hashMini(properties)
-			)
+		modal(
+			`${id}-properties`,
+			properties.join(', '),
+			hashMini(properties)
+		)
 		}</div>
 		<div>bluetooth: ${
-			typeof bluetoothAvailability == 'undefined' ? note.unsupported : 
+		typeof bluetoothAvailability == 'undefined' ? note.unsupported :
 			!bluetoothAvailability ? 'unavailable' : 'available'
 		}</div>
-		<div>deviceMemory: ${!blocked[deviceMemory] ? deviceMemory : note.blocked}</div>
-		<div>doNotTrack: ${''+doNotTrack}</div>
+		<div>doNotTrack: ${'' + doNotTrack}</div>
 		<div>globalPrivacyControl: ${
-			''+globalPrivacyControl == 'undefined' ? note.unsupported : ''+globalPrivacyControl
+		'' + globalPrivacyControl == 'undefined' ? note.unsupported : '' + globalPrivacyControl
 		}</div>
-		<div>hardwareConcurrency: ${!blocked[hardwareConcurrency] ? hardwareConcurrency : note.blocked}</div>
 		<div>keyboard: ${
-			!keyboard ? note.unsupported :
+		!keyboard ? note.unsupported :
 			modal(
 				`${id}-keyboard`,
 				Object.keys(keyboard).map(key => `${key}: ${keyboard[key]}`).join('<br>'),
@@ -568,9 +679,17 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 			)
 		}</div>
 		<div>language: ${!blocked[language] ? language : note.blocked}</div>
-		<div>maxTouchPoints: ${!blocked[maxTouchPoints] ? ''+maxTouchPoints : note.blocked}</div>
+		<div>maxTouchPoints: ${!blocked[maxTouchPoints] ? '' + maxTouchPoints : note.blocked}</div>
+		<div class="help" title="MediaCapabilities.decodingInfo()">codecs (${''+codecKeys.length}): ${
+		!mediaCapabilities || !codecKeys.length ? note.unsupported :
+			modal(
+				`${id}-media-codecs`,
+				Object.keys(mediaCapabilities).map(key => `${key}: ${mediaCapabilities[key].join(', ')}`).join('<br>'),
+				hashMini(mediaCapabilities)
+			)
+		}</div>
 		<div>mimeTypes (${count(mimeTypes)}): ${
-			!blocked[''+mimeTypes] ? 
+		!blocked['' + mimeTypes] ?
 			modal(
 				`${id}-mimeTypes`,
 				mimeTypes.join('<br>'),
@@ -578,9 +697,15 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 			) :
 			note.blocked
 		}</div>
-		<div>platform: ${!blocked[platform] ? platform : note.blocked}</div>
+		<div class="help" title="Permissions.query()">permissions (${''+permissionsGranted}): ${
+			!permissions || !permissionsKeys ? note.unsupported : modal(
+				'creep-permissions',
+				permissionsKeys.map(key => `${key}: ${permissions[key].join(', ')}`).join('<br>'),
+				hashMini(permissions)
+			)
+		}</div>
 		<div>plugins (${count(plugins)}): ${
-			!blocked[''+plugins] ?
+		!blocked['' + plugins] ?
 			modal(
 				`${id}-plugins`,
 				plugins.map(plugin => plugin.name).join('<br>'),
@@ -588,7 +713,7 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 			) :
 			note.blocked
 		}</div>
-		${highEntropyValues ?  
+		${highEntropyValues ?
 			Object.keys(highEntropyValues).map(key => {
 				const value = highEntropyValues[key]
 				if (key == 'brands' && value && value.length) {
@@ -596,7 +721,7 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 					const primaryBrands = brands.length > 1 ? brands.filter(brand => !/Chromium/.test(brand)) : brands
 					return `<div>ua brand: ${primaryBrands.join(',')}</div>`
 				}
-				return `<div>ua ${key}: ${''+value != 'undefined' && value !== '' ? ''+value : note.unsupported}</div>`
+				return `<div>ua ${key}: ${'' + value != 'undefined' && value !== '' ? '' + value : note.unsupported}</div>`
 			}).join('') : `
 			<div>ua architecture: ${note.unsupported}</div>
 			<div>ua brand: ${note.unsupported}</div>
@@ -610,9 +735,10 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 	</div>
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<div>device:</div>
-		<div class="block-text">
-			${system ? `${system}` : ''}
+		<div class="block-text help" title="\nNavigator.deviceMemory\nNavigator.hardwareConcurrency\nNavigator.platform\nNavigator.userAgent">
+			${`${system}${platform ? ` (${platform})` : ''}`}
 			${device ? `<br>${device}` : note.blocked}
+			<br>cores: ${hardwareConcurrency}, memory: ${deviceMemory}
 		</div>
 		<div>userAgent:</div>
 		<div class="block-text">
@@ -627,5 +753,5 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 			<div>${!blocked[oscpu] ? oscpu : note.unsupported}</div>
 		</div>
 	</div>
-	`	
+	`
 }
