@@ -5371,19 +5371,11 @@
 					const navigatorLanguage = navigator.language;
 					const navigatorLanguages = navigator.languages;
 					detectLies('language', navigatorLanguage);
-					detectLies('languages', navigatorLanguages);
+					detectLies('languages', ''+navigatorLanguages);
 					if (''+language != ''+navigatorLanguage) {
 						lied = true;
 						const nestedIframeLie = `Expected "${navigatorLanguage}" in nested iframe and got "${language}"`;
 						documentLie(`Navigator.language`, nestedIframeLie);
-					}
-					if (navigatorLanguage && navigatorLanguages) {
-						const lang = /^.{0,2}/g.exec(navigatorLanguage)[0];
-						const langs = /^.{0,2}/g.exec(navigatorLanguages[0])[0];
-						if (langs != lang) {
-							sendToTrash('language/languages', `${[navigatorLanguage, navigatorLanguages].join(' ')} mismatch`);
-						}
-						return `${languages.join(', ')} (${language})`
 					}
 
 					const lang = (''+language).split(',')[0];
@@ -5412,6 +5404,15 @@
 							`Navigator.language`, 
 							`${currencyLocale} locale and ${currencyLanguage} language do not match`
 						);
+					}
+
+					if (navigatorLanguage && navigatorLanguages) {
+						const lang = /^.{0,2}/g.exec(navigatorLanguage)[0];
+						const langs = /^.{0,2}/g.exec(navigatorLanguages[0])[0];
+						if (langs != lang) {
+							sendToTrash('language/languages', `${[navigatorLanguage, navigatorLanguages].join(' ')} mismatch`);
+						}
+						return `${languages.join(', ')} (${language})`
 					}
 
 					return `${language} ${languages}`
@@ -7610,12 +7611,16 @@
 			<div>canvas 2d: ${note.blocked}</div>
 			<div>textMetrics: ${note.blocked}</div>
 			<div>fontFaceSet (0): ${note.blocked}</div>
+			<div>keys (0): ${note.blocked}</div>
+			<div>permissions (0): ${note.blocked}</div>
 			<div>timezone: ${note.blocked}</div>
 			<div>deviceMemory: ${note.blocked}</div>
 			<div>hardwareConcurrency: ${note.blocked}</div>
 			<div>platform: ${note.blocked}</div>
 			<div>webgl vendor: ${note.blocked}</div>
 			<div>language:</div>
+			<div class="block-text">${note.blocked}</div>
+			<div>codecs:</div>
 			<div class="block-text">${note.blocked}</div>
 		</div>
 		<div class="col-six undefined">
@@ -7632,6 +7637,7 @@
 		const { workerScope: data } = fp;
 
 		const {
+			scopeKeys,
 			lied,
 			locale,
 			currency,
@@ -7640,8 +7646,11 @@
 			deviceMemory,
 			hardwareConcurrency,
 			language,
+			languages,
+			mediaCapabilities,
 			platform,
 			userAgent,
+			permissions,
 			canvas2d,
 			textMetrics,
 			webglRenderer,
@@ -7651,6 +7660,7 @@
 			fontListLen,
 			userAgentData,
 			type,
+			scope,
 			system,
 			device,
 			$hash
@@ -7665,9 +7675,14 @@
 
 		const systemClassIcon = icon[fontSystemClass];
 		const fontFaceSetHash = hashMini(fontFaceSetFonts);
+		const codecKeys = Object.keys(mediaCapabilities || {});
+		const permissionsKeys = Object.keys(permissions || {});
+		const permissionsGranted = (
+			permissions && permissions.granted ? permissions.granted.length : 0
+		);
 		const getSum = arr => !arr ? 0 : arr.reduce((acc, curr) => (acc += Math.abs(curr)), 0);
 		return `
-	<div class="ellipsis"><span class="aside-note">${type || ''} worker</span></div>
+	<div class="ellipsis"><span class="aside-note">${scope || ''}</span></div>
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>Worker</strong><span class="hash">${hashSlice($hash)}</span>
 		<div class="help" title="OffscreenCanvas.convertToBlob()\nFileReader.readAsDataURL()">canvas 2d:${
@@ -7684,30 +7699,49 @@
 				systemClassIcon ? `${systemClassIcon}${fontFaceSetHash}` : fontFaceSetHash
 			) : note.unsupported
 		}</div>
-		<div>timezone: ${timezoneLocation} (${''+timezoneOffset})</div>
-		<div>deviceMemory: ${deviceMemory || note.unsupported}</div>
-		<div>hardwareConcurrency: ${hardwareConcurrency || note.unsupported}</div>
-		<div>platform: ${platform || note.unsupported}</div>
-		<div>webgl vendor: ${webglVendor || note.unsupported}</div>
+		<div>keys (${count(scopeKeys)}): ${
+			scopeKeys && scopeKeys.length ? modal(
+				'creep-worker-scope-version',
+				scopeKeys.join(', '),
+				hashMini(scopeKeys)
+			) : note.blocked
+		}</div>
+		<div class="help" title="Permissions.query()">permissions (${''+permissionsGranted}): ${
+			!permissions || !permissionsKeys ? note.unsupported : modal(
+				'creep-worker-permissions',
+				permissionsKeys.map(key => `${key}: ${permissions[key].join(', ')}`).join('<br>'),
+				hashMini(permissions)
+			)
+		}</div>
+		<div class="help" title="Intl.DateTimeFormat().resolvedOptions().timeZone\nDate.getDate()\nDate.getMonth()\nDate.parse()">timezone: ${timezoneLocation} (${''+timezoneOffset})</div>
+		<div class="help" title="WorkerNavigator.deviceMemory">deviceMemory: ${deviceMemory || note.unsupported}</div>
+		<div class="help" title="WorkerNavigator.hardwareConcurrency">hardwareConcurrency: ${hardwareConcurrency || note.unsupported}</div>
+		<div class="help" title="WorkerNavigator.platform">platform: ${platform || note.unsupported}</div>
+		<div class="help" title="WebGLRenderingContext.getParameter()">webgl vendor: ${webglVendor || note.unsupported}</div>
 		<div>language:</div>
-		<div class="block-text">
-			${language ? `${language}` : ''}
-			${locale ? `<br>${locale}` : ''}
+		<div class="block-text help" title="WorkerNavigator.language\nWorkerNavigator.languages\nIntl.Collator.resolvedOptions()\nIntl.DateTimeFormat.resolvedOptions()\nIntl.DisplayNames.resolvedOptions()\nIntl.ListFormat.resolvedOptions()\nIntl.NumberFormat.resolvedOptions()\nIntl.PluralRules.resolvedOptions()\nIntl.RelativeTimeFormat.resolvedOptions()\nNumber.toLocaleString()">
+			${[...new Set([languages, language, locale])].join(', ')}
 			${currency ? `<br>${currency}` : ''}
+		</div>
+		<div>codecs:</div>
+		<div class="block-text help" title="MediaCapabilities.decodingInfo()">
+			${
+				!mediaCapabilities || !codecKeys.length ? note.unsupported : codecKeys.join('<br>')
+			}
 		</div>
 	</div>
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<div>device:</div>
-		<div class="block-text">
+		<div class="block-text help" title="\nWorkerNavigator.userAgent">
 			${system ? `${system}` : ''}
 			${device ? `<br>${device}` : note.blocked}
 		</div>
 		<div>userAgent:</div>
-		<div class="block-text">
+		<div class="block-text help" title="\nWorkerNavigator.userAgent">
 			<div>${userAgent || note.unsupported}</div>
 		</div>
 		<div>userAgentData:</div>
-		<div class="block-text">
+		<div class="block-text help" title="\nWorkerNavigator.userAgentData\nNavigatorUAData.getHighEntropyValues()">
 			<div>
 			${((userAgentData) => {
 				const {
@@ -7729,7 +7763,7 @@
 			</div>
 		</div>
 		<div>unmasked renderer:</div>
-		<div class="block-text">
+		<div class="block-text help" title="\nWebGLRenderingContext.getParameter()">
 			<div>${webglRenderer || note.unsupported}</div>
 		</div>
 	</div>
@@ -8853,6 +8887,7 @@
 					(fp.canvas2d && fp.canvas2d.lied) ? undefined : // distrust ungoogled-chromium, brave, firefox, tor browser 
 					fp.workerScope.canvas2d
 				),
+				textMetrics: fp.workerScope.textMetrics,
 				deviceMemory: (
 					braveFingerprintingBlocking ? undefined : fp.workerScope.deviceMemory
 				),
@@ -8860,6 +8895,8 @@
 					braveFingerprintingBlocking ? undefined : fp.workerScope.hardwareConcurrency
 				),
 				language: fp.workerScope.language,
+				languages: fp.workerScope.languages,
+				currency: fp.workerScope.currency,
 				platform: fp.workerScope.platform,
 				system: fp.workerScope.system,
 				device: fp.workerScope.device,
@@ -8876,7 +8913,8 @@
 					// loose
 					brandsVersion: undefined, 
 					uaFullVersion: undefined
-				}
+				},
+				mediaCapabilities: fp.workerScope.mediaCapabilities,
 			},
 			media: fp.media,
 			canvas2d: ( 

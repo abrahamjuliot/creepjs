@@ -576,6 +576,68 @@ const systemEmojis = [
 	[127359]
 ].map(emojiCode => String.fromCodePoint(...emojiCode))
 
+const codecs = [
+	'audio/mp4; codecs="mp4a.40.2"',
+	'video/ogg; codecs="theora"'
+]
+
+const getMediaConfig = (codec, video, audio) => ({
+    type: 'file',
+    video: !/^video/.test(codec) ? undefined : {
+        contentType: codec,
+        ...video
+    },
+    audio: !/^audio/.test(codec) ? undefined : {
+        contentType: codec,
+        ...audio
+    }
+})
+
+const getMediaCapabilities = async () => {
+	const video = {
+		width: 1920,
+		height: 1080,
+		bitrate: 120000,
+		framerate: 60
+	}
+	const audio = {
+		channels: 2,
+		bitrate: 300000,
+		samplerate: 5200
+	}
+	try {
+		const decodingInfo = codecs.map(codec => {
+			const config = getMediaConfig(codec, video, audio)
+			return navigator.mediaCapabilities.decodingInfo(config)
+				.then(support => ({
+					codec,
+					...support
+				}))
+				.catch(error => console.error(codec, error))
+		})
+		const data = await Promise.all(decodingInfo).catch(error => console.error(error))
+		const codecsSupported = data.reduce((acc, support) => {
+			const { codec, supported, smooth, powerEfficient } = support || {}
+			if (!supported) { return acc }
+			return {
+				...acc,
+				[codec]: [
+					...(smooth ? ['smooth'] : []),
+					...(powerEfficient ? ['powerEfficient'] : [])
+				]
+			}
+		}, {})
+		return codecsSupported
+	}
+	catch (error) {
+		return
+	}
+}
+
+const getPermissionState = name => navigator.permissions.query({ name })
+    .then(res => ({ name, state: res.state }))
+    .catch(error => ({ name, state: 'unknown' }))
+
 const getWorkerData = async () => {
 
 	const getAppleFonts = () => [
@@ -810,7 +872,37 @@ const getWorkerData = async () => {
 	const timezoneLocation = Intl.DateTimeFormat().resolvedOptions().timeZone
 
 	// navigator
-	const { hardwareConcurrency, language, platform, userAgent, deviceMemory } = navigator
+	const { hardwareConcurrency, language, languages, platform, userAgent, deviceMemory } = navigator
+
+	// mediaCapabilities
+	const mediaCapabilities = await getMediaCapabilities()
+
+	// permissions
+	const permissions = !('permissions' in navigator) ? undefined : await Promise.all([
+		getPermissionState('camera'),
+		getPermissionState('clipboard'),
+		getPermissionState('device-info'),
+		getPermissionState('geolocation'),
+		getPermissionState('gyroscope'),
+		getPermissionState('magnetometer'),
+		getPermissionState('microphone'),
+		getPermissionState('midi'),
+		getPermissionState('notifications'),
+		getPermissionState('persistent-storage'),
+		getPermissionState('push'),
+		getPermissionState('speaker')
+	]).then(permissions => permissions.reduce((acc, perm) => {
+		const { state, name } = perm
+		if (acc[state]) {
+			acc[state].push(name)
+			return acc
+		}
+		acc[state] = [name]
+		return acc
+	}, {})).catch(error => console.error(error))
+
+	// scope keys
+	const scopeKeys = Object.getOwnPropertyNames(self)
 
 	// locale
 	const getLocale = () => {
@@ -874,6 +966,7 @@ const getWorkerData = async () => {
 	const protoLie = lieList.length
 
 	return {
+		scopeKeys,
 		lied: (
 			languageLie ||
 			protoLie
@@ -889,7 +982,10 @@ const getWorkerData = async () => {
 		deviceMemory,
 		hardwareConcurrency,
 		language,
+		languages: ''+languages,
+		mediaCapabilities,
 		platform,
+		permissions,
 		userAgent,
 		canvas2d,
 		textMetrics: new Set(Object.keys(textMetrics)).size > 1 ? textMetrics : undefined,
