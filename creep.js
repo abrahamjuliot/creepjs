@@ -363,9 +363,18 @@ const imports = {
 		navigator: ( 
 			!fp.navigator || fp.navigator.lied ? undefined : {
 				...fp.navigator,
+				// loose
 				permissions: undefined,
 				doNotTrack: undefined,
-				globalPrivacyControl: undefined
+				globalPrivacyControl: undefined,
+				userAgent: undefined,
+				appVersion: undefined,
+				userAgentData: {
+					...(fp.navigator.userAgentData || {}),
+					// loose
+					brandsVersion: undefined, 
+					uaFullVersion: undefined
+				},
 			}
 		),
 		screen: ( 
