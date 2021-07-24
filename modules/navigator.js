@@ -16,6 +16,8 @@ export const getNavigator = async (imports, workerScope) => {
 			phantomDarkness,
 			dragonOfDeath,
 			getUserAgentPlatform,
+			braveBrowser,
+			decryptUserAgent,
 			logTestResult,
 			getPluginLies
 		}
@@ -112,6 +114,17 @@ export const getNavigator = async (imports, workerScope) => {
 				return platform
 			}),
 			system: attempt(() => getOS(phantomNavigator.userAgent), 'userAgent system failed'),
+			userAgentParsed: await attempt(async () => {
+				const reportedUserAgent = caniuse(() => navigator.userAgent)
+				const reportedSystem = getOS(reportedUserAgent)
+				const isBrave = await braveBrowser()
+				const report = decryptUserAgent({
+					ua: reportedUserAgent,
+					os: reportedSystem,
+					isBrave
+				})
+				return report
+			}),
 			device: attempt(() => getUserAgentPlatform({ userAgent: phantomNavigator.userAgent }), 'userAgent device failed'),
 			userAgent: attempt(() => {
 				const { userAgent } = phantomNavigator
@@ -614,6 +627,7 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 		<div class="col-six">
 			<div>device:</div>
 			<div class="block-text">${note.blocked}</div>
+			<div>ua parsed: ${note.blocked}</div>
 			<div>userAgent:</div>
 			<div class="block-text">${note.blocked}</div>
 			<div>appVersion:</div>
@@ -641,6 +655,7 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 			device,
 			userAgent,
 			userAgentData,
+			userAgentParsed,
 			vendor,
 			keyboard,
 			bluetoothAvailability,
@@ -750,13 +765,14 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 			${device ? `<br>${device}` : note.blocked}
 			<br>cores: ${hardwareConcurrency}${deviceMemory ? `, memory: ${deviceMemory}` : ''}${typeof maxTouchPoints != 'undefined' ? `, touch: ${''+maxTouchPoints}` : ''}
 		</div>
+		<div>ua parsed: ${userAgentParsed || note.blocked}</div>
 		<div>userAgent:</div>
 		<div class="block-text">
-			<div>${!blocked[userAgent] ? userAgent : note.blocked}</div>
+			<div>${userAgent || note.blocked}</div>
 		</div>
 		<div>appVersion:</div>
 		<div class="block-text">
-			<div>${!blocked[appVersion] ? appVersion : note.blocked}</div>
+			<div>${appVersion || note.blocked}</div>
 		</div>
 	</div>
 	`

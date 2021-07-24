@@ -375,6 +375,7 @@ const imports = {
 					brandsVersion: undefined, 
 					uaFullVersion: undefined
 				},
+				userAgentParsed: undefined
 			}
 		),
 		screen: ( 
@@ -917,23 +918,16 @@ const imports = {
 				css,
 				clientRects,
 				offlineAudioContext,
-				resistance
+				resistance,
+				navigator
 			} = fp || {}
 			const {
 				computedStyle,
 				system
 			} = css || {}
+			const { userAgentParsed: report } = navigator || {}
 
 			const el = document.getElementById('browser-detection')
-
-			const reportedUserAgent = caniuse(() => navigator.userAgent)
-			const reportedSystem = getOS(reportedUserAgent)
-			const report = decryptUserAgent({
-				ua: reportedUserAgent,
-				os: reportedSystem,
-				isBrave
-			})
-
 			const rejectSamplePatch = (el, html) => patch(el, html`
 				<div class="flex-grid rejected">
 					<div class="col-eight">
