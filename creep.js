@@ -363,7 +363,7 @@ const imports = {
 		navigator: ( 
 			!fp.navigator || fp.navigator.lied ? undefined : {
 				...fp.navigator,
-				permission: undefined,
+				permissions: undefined,
 				doNotTrack: undefined,
 				globalPrivacyControl: undefined
 			}
