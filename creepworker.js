@@ -878,7 +878,7 @@ const getWorkerData = async () => {
 	const mediaCapabilities = await getMediaCapabilities()
 
 	// permissions
-	const permissions = await Promise.all([
+	const permissions = !('permissions' in navigator) ? undefined : await Promise.all([
 		getPermissionState('camera'),
 		getPermissionState('clipboard'),
 		getPermissionState('device-info'),
@@ -899,7 +899,7 @@ const getWorkerData = async () => {
 		}
 		acc[state] = [name]
 		return acc
-	}, {}))
+	}, {})).catch(error => console.error(error))
 
 	// scope keys
 	const scopeKeys = Object.getOwnPropertyNames(self)

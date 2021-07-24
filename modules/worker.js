@@ -307,7 +307,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 	const systemClassIcon = icon[fontSystemClass]
 	const fontFaceSetHash = hashMini(fontFaceSetFonts)
 	const codecKeys = Object.keys(mediaCapabilities || {})
-	const permissionsKeys = Object.keys(permissions)
+	const permissionsKeys = Object.keys(permissions || {})
 	const permissionsGranted = (
 		permissions && permissions.granted ? permissions.granted.length : 0
 	)
@@ -337,20 +337,20 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 				hashMini(scopeKeys)
 			) : note.blocked
 		}</div>
-		<div>permissions (${''+permissionsGranted}): ${
+		<div class="help" title="Permissions.query()">permissions (${''+permissionsGranted}): ${
 			!permissions || !permissionsKeys ? note.unsupported : modal(
 				'creep-worker-permissions',
 				permissionsKeys.map(key => `${key}: ${permissions[key].join(', ')}`).join('<br>'),
 				hashMini(permissions)
 			)
 		}</div>
-		<div>timezone: ${timezoneLocation} (${''+timezoneOffset})</div>
-		<div>deviceMemory: ${deviceMemory || note.unsupported}</div>
-		<div>hardwareConcurrency: ${hardwareConcurrency || note.unsupported}</div>
-		<div>platform: ${platform || note.unsupported}</div>
-		<div>webgl vendor: ${webglVendor || note.unsupported}</div>
+		<div class="help" title="Intl.DateTimeFormat().resolvedOptions().timeZone\nDate.getDate()\nDate.getMonth()\nDate.parse()">timezone: ${timezoneLocation} (${''+timezoneOffset})</div>
+		<div class="help" title="WorkerNavigator.deviceMemory">deviceMemory: ${deviceMemory || note.unsupported}</div>
+		<div class="help" title="WorkerNavigator.hardwareConcurrency">hardwareConcurrency: ${hardwareConcurrency || note.unsupported}</div>
+		<div class="help" title="WorkerNavigator.platform">platform: ${platform || note.unsupported}</div>
+		<div class="help" title="WebGLRenderingContext.getParameter()">webgl vendor: ${webglVendor || note.unsupported}</div>
 		<div>language:</div>
-		<div class="block-text">
+		<div class="block-text help" title="WorkerNavigator.language\nWorkerNavigator.languages\nIntl.Collator.resolvedOptions()\nIntl.DateTimeFormat.resolvedOptions()\nIntl.DisplayNames.resolvedOptions()\nIntl.ListFormat.resolvedOptions()\nIntl.NumberFormat.resolvedOptions()\nIntl.PluralRules.resolvedOptions()\nIntl.RelativeTimeFormat.resolvedOptions()\nNumber.toLocaleString()">
 			${[...new Set([languages, language, locale])].join(', ')}
 			${currency ? `<br>${currency}` : ''}
 		</div>
@@ -363,16 +363,16 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 	</div>
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<div>device:</div>
-		<div class="block-text">
+		<div class="block-text help" title="\nWorkerNavigator.userAgent">
 			${system ? `${system}` : ''}
 			${device ? `<br>${device}` : note.blocked}
 		</div>
 		<div>userAgent:</div>
-		<div class="block-text">
+		<div class="block-text help" title="\nWorkerNavigator.userAgent">
 			<div>${userAgent || note.unsupported}</div>
 		</div>
 		<div>userAgentData:</div>
-		<div class="block-text">
+		<div class="block-text help" title="\nWorkerNavigator.userAgentData\nNavigatorUAData.getHighEntropyValues()">
 			<div>
 			${((userAgentData) => {
 				const {
@@ -394,7 +394,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 			</div>
 		</div>
 		<div>unmasked renderer:</div>
-		<div class="block-text">
+		<div class="block-text help" title="\nWebGLRenderingContext.getParameter()">
 			<div>${webglRenderer || note.unsupported}</div>
 		</div>
 	</div>
