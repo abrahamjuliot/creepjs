@@ -351,24 +351,24 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 			${[...new Set([languages, language, locale])].join(',')}${currency ? ` (${currency})` : ''}
 		</div>
 		<div>webgl:</div>
-		<div class="block-text help" title="\nWebGLRenderingContext.getParameter()">
+		<div class="block-text help" title="WebGLRenderingContext.getParameter()">
 			${webglVendor ? `${webglVendor}` : ''}
 			${webglRenderer ? `<br>${webglRenderer}` : note.unsupported}
 		</div>
 	</div>
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<div>device:</div>
-		<div class="block-text help" title="\nWorkerNavigator.deviceMemory\nWorkerNavigator.hardwareConcurrency\nWorkerNavigator.platform\nWorkerNavigator.userAgent">
+		<div class="block-text help" title="WorkerNavigator.deviceMemory\nWorkerNavigator.hardwareConcurrency\nWorkerNavigator.platform\nWorkerNavigator.userAgent">
 			${`${system}${platform ? ` (${platform})` : ''}`}
 			${device ? `<br>${device}` : note.blocked}
 			<br>cores: ${hardwareConcurrency}${deviceMemory ? `, memory: ${deviceMemory}` : ''}
 		</div>
 		<div>userAgent:</div>
-		<div class="block-text help" title="\nWorkerNavigator.userAgent">
+		<div class="block-text help" title="WorkerNavigator.userAgent">
 			<div>${userAgent || note.unsupported}</div>
 		</div>
 		<div>userAgentData:</div>
-		<div class="block-text help" title="\nWorkerNavigator.userAgentData\nNavigatorUAData.getHighEntropyValues()">
+		<div class="block-text help" title="WorkerNavigator.userAgentData\nNavigatorUAData.getHighEntropyValues()">
 			<div>
 			${((userAgentData) => {
 				const {

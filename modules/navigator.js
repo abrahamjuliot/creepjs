@@ -707,7 +707,7 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 				hashMini(keyboard)
 			)
 		}</div>
-		<div class="help" title="\nNavigator.language\nNavigator.languages">lang: ${!blocked[language] ? language : note.blocked}</div>
+		<div class="help" title="Navigator.language\nNavigator.languages">lang: ${!blocked[language] ? language : note.blocked}</div>
 		<div>mimeTypes (${count(mimeTypes)}): ${
 		!blocked['' + mimeTypes] ?
 			modal(
@@ -735,7 +735,7 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 		}</div>
 		<div>vendor: ${!blocked[vendor] ? vendor : note.blocked}</div>
 		<div>userAgentData:</div>
-		<div class="block-text help" title="\nNavigator.userAgentData\nNavigatorUAData.getHighEntropyValues()">
+		<div class="block-text help" title="Navigator.userAgentData\nNavigatorUAData.getHighEntropyValues()">
 			<div>
 			${((userAgentData) => {
 				const {
@@ -759,7 +759,7 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 	</div>
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<div>device:</div>
-		<div class="block-text help" title="\nNavigator.deviceMemory\nNavigator.hardwareConcurrency\nNavigator.maxTouchPoints\nNavigator.oscpu\nNavigator.platform\nNavigator.userAgent">
+		<div class="block-text help" title="Navigator.deviceMemory\nNavigator.hardwareConcurrency\nNavigator.maxTouchPoints\nNavigator.oscpu\nNavigator.platform\nNavigator.userAgent">
 			${oscpu ? oscpu : ''}
 			${`${oscpu ? '<br>' : ''}${system}${platform ? ` (${platform})` : ''}`}
 			${device ? `<br>${device}` : note.blocked}
