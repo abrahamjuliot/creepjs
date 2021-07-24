@@ -361,7 +361,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 		<div class="block-text help" title="\nWorkerNavigator.deviceMemory\nWorkerNavigator.hardwareConcurrency\nWorkerNavigator.platform\nWorkerNavigator.userAgent">
 			${`${system}${platform ? ` (${platform})` : ''}`}
 			${device ? `<br>${device}` : note.blocked}
-			<br>cores: ${hardwareConcurrency}, memory: ${deviceMemory}
+			<br>cores: ${hardwareConcurrency}${deviceMemory ? `, memory: ${deviceMemory}` : ''}
 		</div>
 		<div>userAgent:</div>
 		<div class="block-text help" title="\nWorkerNavigator.userAgent">

@@ -369,26 +369,38 @@ export const getNavigator = async (imports, workerScope) => {
 				const keys = Object.keys(Object.getPrototypeOf(phantomNavigator))
 				return keys
 			}, 'navigator keys failed'),
-			highEntropyValues: await attempt(async () => {
-				if (!('userAgentData' in phantomNavigator) || !phantomNavigator.userAgentData) {
-					return undefined
+			userAgentData: await attempt(async () => {
+				if (!('userAgentData' in phantomNavigator)) {
+					return
 				}
 				const data = await phantomNavigator.userAgentData.getHighEntropyValues(
-					['platform', 'platformVersion', 'architecture', 'model', 'uaFullVersion']
+					['platform', 'platformVersion', 'architecture',  'model', 'uaFullVersion']
 				)
 				const { brands, mobile } = phantomNavigator.userAgentData || {}
+				const compressedBrands = (brands, captureVersion = false) => brands
+					.filter(obj => !/Not/.test(obj.brand)).map(obj => `${obj.brand}${captureVersion ? ` ${obj.version}` : ''}`)
+				const removeChromium = brands => (
+					brands.length > 1 ? brands.filter(brand => !/Chromium/.test(brand)) : brands
+				)
+	
+				// compress brands
 				if (!data.brands) {
 					data.brands = brands
 				}
+				data.brandsVersion = compressedBrands(data.brands, true)
+				data.brands = compressedBrands(data.brands)
+				data.brandsVersion = removeChromium(data.brandsVersion)
+				data.brands = removeChromium(data.brands)
+				
 				if (!data.mobile) {
 					data.mobile = mobile
 				}
 				const dataSorted = Object.keys(data).sort().reduce((acc, key) => {
 					acc[key] = data[key]
 					return acc
-				}, {})
+				},{})
 				return dataSorted
-			}, 'highEntropyValues failed'),
+			}, 'userAgentData failed'),
 			keyboard: await attempt(async () => {
 				if (!('keyboard' in navigator && navigator.keyboard)) {
 					return
@@ -610,8 +622,6 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 			<div class="block-text">${note.blocked}</div>
 			<div>appVersion:</div>
 			<div class="block-text">${note.blocked}</div>
-			<div>oscpu:</div>
-			<div class="block-text">${note.blocked}</div>
 		</div>`
 	}
 	const {
@@ -622,7 +632,6 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 			doNotTrack,
 			globalPrivacyControl,
 			hardwareConcurrency,
-			highEntropyValues,
 			language,
 			maxTouchPoints,
 			mediaCapabilities,
@@ -635,6 +644,7 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 			system,
 			device,
 			userAgent,
+			userAgentData,
 			vendor,
 			keyboard,
 			bluetoothAvailability,
@@ -713,32 +723,37 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 			) :
 			note.blocked
 		}</div>
-		${highEntropyValues ?
-			Object.keys(highEntropyValues).map(key => {
-				const value = highEntropyValues[key]
-				if (key == 'brands' && value && value.length) {
-					const brands = value.filter(obj => !/Not/.test(obj.brand)).map(obj => `${obj.brand} ${obj.version}`)
-					const primaryBrands = brands.length > 1 ? brands.filter(brand => !/Chromium/.test(brand)) : brands
-					return `<div>ua brand: ${primaryBrands.join(',')}</div>`
-				}
-				return `<div>ua ${key}: ${'' + value != 'undefined' && value !== '' ? '' + value : note.unsupported}</div>`
-			}).join('') : `
-			<div>ua architecture: ${note.unsupported}</div>
-			<div>ua brand: ${note.unsupported}</div>
-			<div>ua mobile: ${note.unsupported}</div>
-			<div>ua model: ${note.unsupported}</div>
-			<div>ua platform: ${note.unsupported}</div>
-			<div>ua platformVersion: ${note.unsupported}</div>
-			<div>ua uaFullVersion: ${note.unsupported} </div>`
-		}
 		<div>vendor: ${!blocked[vendor] ? vendor : note.blocked}</div>
-	</div>
+		<div>userAgentData:</div>
+			<div class="block-text help" title="\nNavigator.userAgentData\nNavigatorUAData.getHighEntropyValues()">
+				<div>
+				${((userAgentData) => {
+					const {
+						architecture,
+						brandsVersion,
+						uaFullVersion,
+						mobile,
+						model,
+						platformVersion,
+						platform
+					} = userAgentData || {}
+					return !userAgentData ? note.unsupported : `
+						${(brandsVersion || []).join(',')}${uaFullVersion ? ` (${uaFullVersion})` : ''}
+						<br>${platform} ${platformVersion} ${architecture}
+						${model ? `<br>${model}` : ''}
+						${mobile ? '<br>mobile' : ''}
+					`
+				})(userAgentData)}	
+				</div>
+			</div>
+		</div>
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<div>device:</div>
-		<div class="block-text help" title="\nNavigator.deviceMemory\nNavigator.hardwareConcurrency\nNavigator.platform\nNavigator.userAgent">
-			${`${system}${platform ? ` (${platform})` : ''}`}
+		<div class="block-text help" title="\nNavigator.deviceMemory\nNavigator.hardwareConcurrency\nNavigator.oscpu\nNavigator.platform\nNavigator.userAgent">
+			${oscpu ? oscpu : ''}
+			${`${oscpu ? '<br>' : ''}${system}${platform ? ` (${platform})` : ''}`}
 			${device ? `<br>${device}` : note.blocked}
-			<br>cores: ${hardwareConcurrency}, memory: ${deviceMemory}
+			<br>cores: ${hardwareConcurrency}${deviceMemory ? `, memory: ${deviceMemory}` : ''}
 		</div>
 		<div>userAgent:</div>
 		<div class="block-text">
@@ -747,10 +762,6 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 		<div>appVersion:</div>
 		<div class="block-text">
 			<div>${!blocked[appVersion] ? appVersion : note.blocked}</div>
-		</div>
-		<div>oscpu:</div>
-		<div class="block-text">
-			<div>${!blocked[oscpu] ? oscpu : note.unsupported}</div>
 		</div>
 	</div>
 	`
