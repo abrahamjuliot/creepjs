@@ -28,6 +28,7 @@ import { getBestWorkerScope, workerScopeHTML } from './modules/worker.js'
 import { getSVG, svgHTML } from './modules/svg.js'
 import { getResistance, resistanceHTML } from './modules/resistance.js'
 import { getIntl, intlHTML } from './modules/intl.js'
+import { featuresHTML } from './modules/features.js'
 
 const imports = {
 	require: {

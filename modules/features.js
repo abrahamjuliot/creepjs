@@ -1,0 +1,163 @@
+export const featuresHTML = ({ fp, modal, note, hashMini }) => {
+	if (!fp.css || !fp.windowFeatures) {
+		return `
+		<div class="col-four">
+			<div>Features: ${note.unknown}</div>
+		</div>
+		<div class="col-four">
+			<div>CSS: ${note.unknown}</div>
+		</div>
+		<div class="col-four">
+			<div>Window: ${note.unknown}</div>
+		</div>`
+	}
+
+	const {
+		css: {
+			computedStyle: {
+				keys: computedStyleKeys
+			}
+		},
+		windowFeatures: {
+			keys: windowFeaturesKeys
+		}
+	} = fp || {}
+
+	const isNative = (win, x) => (
+		/\[native code\]/.test(win[x]+'') &&
+		'prototype' in win[x] && 
+		win[x].prototype.constructor.name === x
+	)
+
+	const blinkCSS = {
+		'81': ['color-scheme', 'image-orientation'],
+		'83': ['contain-intrinsic-size'],
+		'84': ['appearance', 'ruby-position'],
+		'85-86': ['content-visibility', 'counter-set', 'inherits', 'initial-value', 'page-orientation', 'syntax'],
+		'87': ['ascent-override', 'border-block', 'border-block-color', 'border-block-style', 'border-block-width', 'border-inline', 'border-inline-color', 'border-inline-style', 'border-inline-width', 'descent-override', 'inset', 'inset-block', 'inset-block-end', 'inset-block-start', 'inset-inline', 'inset-inline-end', 'inset-inline-start', 'line-gap-override', 'margin-block', 'margin-inline', 'padding-block', 'padding-inline', 'text-decoration-thickness', 'text-underline-offset'],
+		'88': ['aspect-ratio'],
+		'89': ['border-end-end-radius', 'border-end-start-radius', 'border-start-end-radius', 'border-start-start-radius', 'forced-color-adjust'],
+		'90': ['overflow-clip-margin'],
+		'91': ['additive-symbols', 'fallback', 'negative', 'pad', 'prefix', 'range', 'speak-as', 'suffix', 'symbols', 'system'],
+		'92': ['size-adjust']
+	}
+
+	const blinkWindow = {
+		'80': ['CompressionStream', 'DecompressionStream', 'FeaturePolicy', 'FragmentDirective', 'PeriodicSyncManager', 'VideoPlaybackQuality'],
+		'81': ['SubmitEvent', 'XRHitTestResult', 'XRHitTestSource', 'XRRay', 'XRTransientInputHitTestResult', 'XRTransientInputHitTestSource'],
+		'83': ['BarcodeDetector', 'XRDOMOverlayState', 'XRSystem'],
+		'84': ['AnimationPlaybackEvent', 'AnimationTimeline', 'CSSAnimation', 'CSSTransition', 'DocumentTimeline', 'FinalizationRegistry',  'LayoutShiftAttribution', 'ResizeObserverSize', 'WakeLock', 'WakeLockSentinel', 'WeakRef', 'XRLayer'],
+		'85': ['AggregateError', 'CSSPropertyRule', 'EventCounts',  'PictureInPictureEvent', 'XRAnchor', 'XRAnchorSet'],
+		'86': ['RTCEncodedAudioFrame', 'RTCEncodedVideoFrame', 'showDirectoryPicker', 'showOpenFilePicker', 'showSaveFilePicker', 'FileSystemDirectoryHandle', 'FileSystemFileHandle', 'FileSystemHandle', 'FileSystemWritableFileStream'],
+		'87': ['CookieChangeEvent', 'CookieStore', 'CookieStoreManager', 'Scheduling', 'cookieStore', 'crossOriginIsolated', 'ontransitioncancel', 'ontransitionrun', 'ontransitionstart'],
+		'88': ['!BarcodeDetector'],
+		'89': ['HID', 'HIDConnectionEvent', 'HIDDevice', 'HIDInputReportEvent', 'ReadableByteStreamController', 'ReadableStreamBYOBReader', 'ReadableStreamBYOBRequest', 'ReadableStreamDefaultController', 'Serial', 'SerialPort', 'XRWebGLBinding'],
+		'90': ['AbstractRange', 'CustomStateSet', 'NavigatorUAData', 'XRCPUDepthInformation', 'XRDepthInformation', 'XRLightEstimate', 'XRLightProbe', 'XRWebGLDepthInformation', 'onbeforexrselect', 'originAgentCluster'],
+		'91': ['CSSCounterStyleRule',  'GravitySensor',  'NavigatorManagedData'],
+		'92': ['!SharedArrayBuffer'],
+	}
+
+	const mathPI = 3.141592653589793
+	const blink = (mathPI ** -100) == 1.9275814160560204e-50
+	const gecko = (mathPI ** -100) == 1.9275814160560185e-50
+	const browser = (
+		blink ? 'Chrome' : gecko ? 'Firefox' : ''
+	)
+
+	const versionSort = x => x.sort((a, b) => /\d+/.exec(a)[0] - /\d+/.exec(b)[0]).reverse()
+	const getFeatures = ({allKeys, engineMap, checkNative = false} = {}) => {
+		const allKeysSet = new Set(allKeys)
+		const features = new Set()
+		const match = Object.keys(engineMap || {}).reduce((acc, key, i) => {
+			const version = engineMap[key]
+			const versionLen = version.length
+			const featureLen = version.filter(prop => {
+				const removedFromVersion = prop.charAt(0) == '!'
+				if (removedFromVersion) {
+					const propName = prop.slice(1)
+					return !allKeysSet.has(propName) && features.add(prop)	
+				}
+				return (
+					allKeysSet.has(prop) &&
+					(checkNative ? isNative(window, prop) : true) &&
+					features.add(prop)
+				)
+			}).length
+			return versionLen == featureLen ? [...acc, key] : acc 
+		}, [])
+		const version = versionSort(match)[0]
+		return {
+			version,
+			features
+		}
+	}	
+
+	// modal
+	const getModal = (id, engineMap, features) => {
+		return modal(`creep-${id}`, versionSort(Object.keys(engineMap)).map(key => {
+			return `
+				<strong>${key}</strong>:<br>${
+					engineMap[key].map(prop => {
+						return `<span class="${!features.has(prop) ? 'unsupport' : ''}">${prop}</span>`
+					}).join('<br>')
+				}
+			`
+		}).join('<br>'), hashMini([...features]))
+	}
+
+	// css version
+	const engineMapCSS = blink ? blinkCSS : {}
+	const {
+		version: cssVersion,
+		features: cssFeatures
+	} = getFeatures({allKeys: computedStyleKeys, engineMap: engineMapCSS})
+	const cssModal = getModal('features-css', engineMapCSS, cssFeatures)
+	
+	// window version
+	const engineMapWindow = blink ? blinkWindow : {}
+	const {
+		version: windowVersion,
+		features: windowFeatures
+	} = getFeatures({allKeys: windowFeaturesKeys, engineMap: engineMapWindow, checkNative: true})
+	const windowModal = getModal('features-window', engineMapWindow, windowFeatures)
+	
+	// determine version based on 2 factors
+	const versionSet = new Set([
+		cssVersion,
+		windowVersion
+	])
+	versionSet.delete(undefined)
+	const browserVersion = versionSort([...versionSet])[0]
+	const getIcon = name => `<span class="icon ${name}"></span>`
+	const browserIcon = (
+		!browser ? '' :
+			/chrome/i.test(browser) ? getIcon('chrome') :
+				/firefox/i.test(browser) ? getIcon('firefox') :
+					''
+	)
+	return `
+	<style>
+		.unsupport {
+			background: #f1f1f1;
+			color: #aaa;
+		}
+		@media (prefers-color-scheme: dark) {
+			.unsupport {
+				color: var(--light-grey);
+				background: none;
+			}
+		}
+	</style>
+	<div class="col-four">
+		<div>Features: ${
+			browserVersion ? `${browserIcon}${browser} ${browserVersion}+` : note.unknown
+		}</div>
+	</div>
+	<div class="col-four">
+		<div>CSS: ${cssVersion ? `${cssModal} (v${cssVersion})` : note.unknown}</div>
+	</div>
+	<div class="col-four">
+		<div>Window: ${windowVersion ? `${windowModal} (v${windowVersion})` : note.unknown}</div>
+	</div>
+	`
+}
