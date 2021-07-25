@@ -648,6 +648,7 @@ const imports = {
 			${svgHTML(templateImports)}
 		</div>
 		<div class="flex-grid">${screenHTML(templateImports)}</div>
+		<div class="flex-grid">${featuresHTML(templateImports)}</div>
 		<div class="flex-grid">
 			${cssMediaHTML(templateImports)}
 			${cssHTML(templateImports, systemHash)}
