@@ -142,7 +142,13 @@ export const getBestWorkerScope = async imports => {
 			workerScope.scope = scope
 
 			// detect lies 
-			const { fontSystemClass, system, userAgent, platform } = workerScope || {}
+			const {
+				fontSystemClass,
+				system,
+				userAgent,
+				userAgentData,
+				platform
+			} = workerScope || {}
 			
 			// font system lie
 			const fontSystemLie = fontSystemClass && (
@@ -201,7 +207,7 @@ export const getBestWorkerScope = async imports => {
 			const decryptedName = decryptUserAgent({
 				ua: userAgent,
 				os: system,
-				isBrave: false // default false since we are only looking for JS runtime
+				isBrave: false // default false since we are only looking for JS runtime and version
 			})
 			const reportedEngine = (
 				(/safari/i.test(decryptedName) || /iphone|ipad/i.test(userAgent)) ? 'JavaScriptCore' :
@@ -220,6 +226,23 @@ export const getBestWorkerScope = async imports => {
 				workerScope.lied = true
 				workerScope.lies.engine = `${engine} JS runtime and ${reportedEngine} user agent do not match`
 				documentLie(workerScope.scope, workerScope.lies.engine)
+			}
+			// user agent version lie
+			const getVersion = x => /\s(\d+)/i.test(x) && /\s(\d+)/i.exec(x)[1]
+			const reportedVersion = getVersion(decryptedName)
+			const userAgenDataVersion = (
+				userAgentData &&
+				userAgentData.brandsVersion &&
+				userAgentData.brandsVersion.length ? 
+				getVersion(userAgentData.brandsVersion) :
+				false
+			)
+			const versionSupported = userAgenDataVersion && reportedVersion
+			const versionMatch = userAgenDataVersion == reportedVersion
+			if (versionSupported && !versionMatch) {
+				workerScope.lied = true
+				workerScope.lies.version = `userAgentData version ${userAgenDataVersion} and user agent version ${reportedVersion} do not match`
+				documentLie(workerScope.scope, workerScope.lies.version)
 			}
 
 			logTestResult({ start, test: `${type} worker`, passed: true })
