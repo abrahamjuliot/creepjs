@@ -189,7 +189,7 @@ export const featuresHTML = ({ fp, modal, note, hashMini }) => {
 	</style>
 	<div class="col-four">
 		<div>Features: ${
-			browserVersion ? `${browserIcon}${browser} ${browserVersion}+` : note.unknown
+			browserVersion ? `${browserIcon}${browserVersion}+` : note.unknown
 		}</div>
 	</div>
 	<div class="col-four">
