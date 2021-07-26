@@ -64,7 +64,7 @@ export const featuresHTML = ({ fp, modal, note, hashMini }) => {
 
 	const geckoWindow = {
 		'71': ['MathMLElement', '!SVGZoomAndPan'],
-		'72-73': ['!BatteryManager', 'FormDataEvent', 'Geolocation', 'GeolocationCoordinates', 'GeolocationPosition', 'GeolocationPositionError', 'crossOriginIsolated', '!mozPaintCount', 'onformdata'],
+		'72-73': ['!BatteryManager', 'FormDataEvent', 'Geolocation', 'GeolocationCoordinates', 'GeolocationPosition', 'GeolocationPositionError', '!mozPaintCount'],
 		'74': ['!uneval'],
 		'75': ['AnimationTimeline', 'CSSAnimation', 'CSSTransition', 'DocumentTimeline', 'SubmitEvent'],
 		'76-77': ['AudioParamMap', 'AudioWorklet', 'AudioWorkletNode', 'Worklet'],
@@ -76,8 +76,7 @@ export const featuresHTML = ({ fp, modal, note, hashMini }) => {
 		'85-86': ['!HTMLMenuItemElement', '!onshow'],
 		'87': ['onbeforeinput'],
 		'88': ['!VisualViewport'],
-		'89-90': ['EventCounts', 'PerformanceEventTiming', '!ondevicelight', '!ondeviceproximity', '!onuserproximity'],
-		'91': ['EventCounts', 'PerformanceEventTiming', '!ondevicelight', '!ondeviceproximity', '!onuserproximity', 'VisualViewport'],
+		'89-91': ['EventCounts', 'PerformanceEventTiming', '!ondevicelight', '!ondeviceproximity', '!onuserproximity'],
 		'92': ['DeprecationReportBody', 'ElementInternals', 'FeaturePolicyViolationReportBody', 'GamepadAxisMoveEvent', 'GamepadButtonEvent', 'HTMLDialogElement', '!OfflineResourceList', 'Report', 'ReportBody', 'ReportingObserver', '!applicationCache', '!content', '!sidebar']
 	}
 
@@ -86,14 +85,14 @@ export const featuresHTML = ({ fp, modal, note, hashMini }) => {
 		'81': ['SubmitEvent', 'XRHitTestResult', 'XRHitTestSource', 'XRRay', 'XRTransientInputHitTestResult', 'XRTransientInputHitTestSource'],
 		'83': ['BarcodeDetector', 'XRDOMOverlayState', 'XRSystem'],
 		'84': ['AnimationPlaybackEvent', 'AnimationTimeline', 'CSSAnimation', 'CSSTransition', 'DocumentTimeline', 'FinalizationRegistry',  'LayoutShiftAttribution', 'ResizeObserverSize', 'WakeLock', 'WakeLockSentinel', 'WeakRef', 'XRLayer'],
-		'85': ['AggregateError', 'CSSPropertyRule', 'EventCounts',  'PictureInPictureEvent', 'XRAnchor', 'XRAnchorSet'],
-		'86': ['RTCEncodedAudioFrame', 'RTCEncodedVideoFrame', 'showDirectoryPicker', 'showOpenFilePicker', 'showSaveFilePicker', 'FileSystemDirectoryHandle', 'FileSystemFileHandle', 'FileSystemHandle', 'FileSystemWritableFileStream'],
+		'85': ['AggregateError', 'CSSPropertyRule', 'EventCounts', 'XRAnchor', 'XRAnchorSet'],
+		'86': ['RTCEncodedAudioFrame', 'RTCEncodedVideoFrame'],
 		'87': ['CookieChangeEvent', 'CookieStore', 'CookieStoreManager', 'Scheduling', 'cookieStore', 'crossOriginIsolated', 'ontransitioncancel', 'ontransitionrun', 'ontransitionstart'],
 		'88': ['!BarcodeDetector'],
 		'89': ['HID', 'HIDConnectionEvent', 'HIDDevice', 'HIDInputReportEvent', 'ReadableByteStreamController', 'ReadableStreamBYOBReader', 'ReadableStreamBYOBRequest', 'ReadableStreamDefaultController', 'Serial', 'SerialPort', 'XRWebGLBinding'],
 		'90': ['AbstractRange', 'CustomStateSet', 'NavigatorUAData', 'XRCPUDepthInformation', 'XRDepthInformation', 'XRLightEstimate', 'XRLightProbe', 'XRWebGLDepthInformation', 'onbeforexrselect', 'originAgentCluster'],
 		'91': ['CSSCounterStyleRule',  'GravitySensor',  'NavigatorManagedData'],
-		'92': ['!SharedArrayBuffer'],
+		'92': ['CSSCounterStyleRule',  'GravitySensor',  'NavigatorManagedData','!SharedArrayBuffer'],
 	}
 
 	const mathPI = 3.141592653589793
@@ -166,7 +165,20 @@ export const featuresHTML = ({ fp, modal, note, hashMini }) => {
 		windowVersion
 	])
 	versionSet.delete(undefined)
-	const browserVersion = versionSort([...versionSet])[0]
+	
+	const versionRange = versionSort(
+		[...versionSet].reduce((acc, x) => [...acc, ...x.split('-')], [])
+	)
+	const getVersionFromRange = range => {
+		const len = range.length
+		const first = range[0]
+		const last = range[len-1]
+		return (
+			!len ? '' : 
+				len == 1 ? first :
+					`${last}-${first}`
+		)
+	}
 	const getIcon = name => `<span class="icon ${name}"></span>`
 	const browserIcon = (
 		!browser ? '' :
@@ -189,7 +201,8 @@ export const featuresHTML = ({ fp, modal, note, hashMini }) => {
 	</style>
 	<div class="col-four">
 		<div>Features: ${
-			browserVersion ? `${browserIcon}${browserVersion}+` : note.unknown
+			versionRange.length ? `${browserIcon}${getVersionFromRange(versionRange)}+` : 
+				note.unknown
 		}</div>
 	</div>
 	<div class="col-four">
