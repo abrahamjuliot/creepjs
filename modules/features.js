@@ -23,11 +23,31 @@ export const featuresHTML = ({ fp, modal, note, hashMini }) => {
 		}
 	} = fp || {}
 
+	/*
+	console.groupCollapsed('win')
+	console.log(windowFeaturesKeys.sort().join('\n'))
+	console.groupEnd()
+	console.groupCollapsed('css')
+	console.log(computedStyleKeys.sort().join('\n'))
+	console.groupEnd()
+	*/
+
 	const isNative = (win, x) => (
 		/\[native code\]/.test(win[x]+'') &&
 		'prototype' in win[x] && 
 		win[x].prototype.constructor.name === x
 	)
+
+	const geckoCSS = {
+		'71': ['-moz-column-span'],
+		'72': ['offset', 'offset-anchor', 'offset-distance', 'offset-path', 'offset-rotate', 'rotate', 'scale', 'translate'],
+		'73': ['overscroll-behavior-block', 'overscroll-behavior-inline'],
+		'74-79': ['!-moz-stack-sizing', 'text-underline-position'],
+		'80-88': ['appearance'],
+		'89-90': ['!-moz-outline-radius', '!-moz-outline-radius-bottomleft', '!-moz-outline-radius-bottomright', '!-moz-outline-radius-topleft', '!-moz-outline-radius-topright', 'aspect-ratio'],
+		'91': ['tab-size'],
+		'92': ['accent-color', 'align-tracks', 'd', 'justify-tracks', 'masonry-auto-flow', 'math-style']
+	}
 
 	const blinkCSS = {
 		'81': ['color-scheme', 'image-orientation'],
@@ -40,6 +60,25 @@ export const featuresHTML = ({ fp, modal, note, hashMini }) => {
 		'90': ['overflow-clip-margin'],
 		'91': ['additive-symbols', 'fallback', 'negative', 'pad', 'prefix', 'range', 'speak-as', 'suffix', 'symbols', 'system'],
 		'92': ['size-adjust']
+	}
+
+	const geckoWindow = {
+		'71': ['MathMLElement', '!SVGZoomAndPan'],
+		'72-73': ['!BatteryManager', 'FormDataEvent', 'Geolocation', 'GeolocationCoordinates', 'GeolocationPosition', 'GeolocationPositionError', 'crossOriginIsolated', '!mozPaintCount', 'onformdata'],
+		'74': ['!uneval'],
+		'75': ['AnimationTimeline', 'CSSAnimation', 'CSSTransition', 'DocumentTimeline', 'SubmitEvent'],
+		'76-77': ['AudioParamMap', 'AudioWorklet', 'AudioWorkletNode', 'Worklet'],
+		'78': ['Atomics'],
+		'79-81': ['AggregateError', 'FinalizationRegistry'],
+		'82': ['MediaMetadata', 'MediaSession', 'RTCDtlsTransport', 'Sanitizer'],
+		'83': ['MediaMetadata', 'MediaSession', 'RTCDtlsTransport', '!Sanitizer'],
+		'84': ['PerformancePaintTiming'],
+		'85-86': ['!HTMLMenuItemElement', '!onshow'],
+		'87': ['onbeforeinput'],
+		'88': ['!VisualViewport'],
+		'89-90': ['EventCounts', 'PerformanceEventTiming', '!ondevicelight', '!ondeviceproximity', '!onuserproximity'],
+		'91': ['EventCounts', 'PerformanceEventTiming', '!ondevicelight', '!ondeviceproximity', '!onuserproximity', 'VisualViewport'],
+		'92': ['DeprecationReportBody', 'ElementInternals', 'FeaturePolicyViolationReportBody', 'GamepadAxisMoveEvent', 'GamepadButtonEvent', 'HTMLDialogElement', '!OfflineResourceList', 'Report', 'ReportBody', 'ReportingObserver', '!applicationCache', '!content', '!sidebar']
 	}
 
 	const blinkWindow = {
@@ -106,7 +145,7 @@ export const featuresHTML = ({ fp, modal, note, hashMini }) => {
 	}
 
 	// css version
-	const engineMapCSS = blink ? blinkCSS : {}
+	const engineMapCSS = blink ? blinkCSS : gecko ? geckoCSS : {}
 	const {
 		version: cssVersion,
 		features: cssFeatures
@@ -114,7 +153,7 @@ export const featuresHTML = ({ fp, modal, note, hashMini }) => {
 	const cssModal = getModal('features-css', engineMapCSS, cssFeatures)
 	
 	// window version
-	const engineMapWindow = blink ? blinkWindow : {}
+	const engineMapWindow = blink ? blinkWindow : gecko ? geckoWindow : {}
 	const {
 		version: windowVersion,
 		features: windowFeatures
