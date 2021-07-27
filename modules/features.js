@@ -87,10 +87,10 @@ export const featuresHTML = ({ fp, modal, note, hashMini }) => {
 		'84': ['AnimationPlaybackEvent', 'AnimationTimeline', 'CSSAnimation', 'CSSTransition', 'DocumentTimeline', 'FinalizationRegistry',  'LayoutShiftAttribution', 'ResizeObserverSize', 'WakeLock', 'WakeLockSentinel', 'WeakRef', 'XRLayer'],
 		'85': ['AggregateError', 'CSSPropertyRule', 'EventCounts', 'XRAnchor', 'XRAnchorSet'],
 		'86': ['RTCEncodedAudioFrame', 'RTCEncodedVideoFrame'],
-		'87': ['CookieChangeEvent', 'CookieStore', 'CookieStoreManager', 'Scheduling', 'cookieStore', 'crossOriginIsolated', 'ontransitioncancel', 'ontransitionrun', 'ontransitionstart'],
+		'87': ['CookieChangeEvent', 'CookieStore', 'CookieStoreManager', 'Scheduling'],
 		'88': ['!BarcodeDetector'],
-		'89': ['HID', 'HIDConnectionEvent', 'HIDDevice', 'HIDInputReportEvent', 'ReadableByteStreamController', 'ReadableStreamBYOBReader', 'ReadableStreamBYOBRequest', 'ReadableStreamDefaultController', 'Serial', 'SerialPort', 'XRWebGLBinding'],
-		'90': ['AbstractRange', 'CustomStateSet', 'NavigatorUAData', 'XRCPUDepthInformation', 'XRDepthInformation', 'XRLightEstimate', 'XRLightProbe', 'XRWebGLDepthInformation', 'onbeforexrselect', 'originAgentCluster'],
+		'89': ['ReadableByteStreamController', 'ReadableStreamBYOBReader', 'ReadableStreamBYOBRequest', 'ReadableStreamDefaultController', 'XRWebGLBinding'],
+		'90': ['AbstractRange', 'CustomStateSet', 'NavigatorUAData', 'XRCPUDepthInformation', 'XRDepthInformation', 'XRLightEstimate', 'XRLightProbe', 'XRWebGLDepthInformation'],
 		'91': ['CSSCounterStyleRule',  'GravitySensor',  'NavigatorManagedData'],
 		'92': ['CSSCounterStyleRule',  'GravitySensor',  'NavigatorManagedData','!SharedArrayBuffer'],
 	}
