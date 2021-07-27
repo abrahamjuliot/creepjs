@@ -158,7 +158,7 @@ export const featuresHTML = ({ fp, modal, note, hashMini }) => {
 		features: windowFeatures
 	} = getFeatures({allKeys: windowFeaturesKeys, engineMap: engineMapWindow, checkNative: true})
 	const windowModal = getModal('features-window', engineMapWindow, windowFeatures)
-	
+
 	// determine version based on 2 factors
 	const versionSet = new Set([
 		cssVersion,

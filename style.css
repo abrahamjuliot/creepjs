@@ -440,6 +440,25 @@ input[type="radio"] {
 	-webkit-user-select: none;
 }
 
+/* permissions modal */
+.perm {
+	padding: 5px;
+	border-radius: 3px;
+	margin: 5px auto;
+}
+.perm-denied {
+	background: #f5858a17;
+}
+.perm-prompt {
+	background: #7493ea36;
+}
+.perm-unknown {
+	background: #9498a021;
+}
+.perm-granted {
+	background: #2bb18c24;
+}
+
 @keyframes enter {
 	0%, 30% {
 		transform: translate(0, -15px);

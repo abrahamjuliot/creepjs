@@ -720,7 +720,7 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 		<div class="help" title="Permissions.query()">permissions (${''+permissionsGranted}): ${
 			!permissions || !permissionsKeys ? note.unsupported : modal(
 				'creep-permissions',
-				permissionsKeys.map(key => `${key}: ${permissions[key].join(', ')}`).join('<br>'),
+				permissionsKeys.map(key => `<div class="perm perm-${key}"><strong>${key}</strong>:<br>${permissions[key].join('<br>')}</div>`).join(''),
 				hashMini(permissions)
 			)
 		}</div>

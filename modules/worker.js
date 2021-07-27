@@ -357,7 +357,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 		<div class="help" title="Permissions.query()">permissions (${''+permissionsGranted}): ${
 			!permissions || !permissionsKeys ? note.unsupported : modal(
 				'creep-worker-permissions',
-				permissionsKeys.map(key => `${key}: ${permissions[key].join(', ')}`).join('<br>'),
+				permissionsKeys.map(key => `<div class="perm perm-${key}"><strong>${key}</strong>:<br>${permissions[key].join('<br>')}</div>`).join(''),
 				hashMini(permissions)
 			)
 		}</div>
