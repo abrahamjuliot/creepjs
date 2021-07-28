@@ -88,7 +88,7 @@ export const featuresHTML = ({ fp, modal, note, hashMini }) => {
 		'85': ['AggregateError', 'CSSPropertyRule', 'EventCounts', 'XRAnchor', 'XRAnchorSet'],
 		'86': ['RTCEncodedAudioFrame', 'RTCEncodedVideoFrame'],
 		'87': ['CookieChangeEvent', 'CookieStore', 'CookieStoreManager', 'Scheduling'],
-		'88': ['!BarcodeDetector'],
+		'88': ['CookieChangeEvent', 'CookieStore', 'CookieStoreManager', 'Scheduling', '!BarcodeDetector'],
 		'89': ['ReadableByteStreamController', 'ReadableStreamBYOBReader', 'ReadableStreamBYOBRequest', 'ReadableStreamDefaultController', 'XRWebGLBinding'],
 		'90': ['AbstractRange', 'CustomStateSet', 'NavigatorUAData', 'XRCPUDepthInformation', 'XRDepthInformation', 'XRLightEstimate', 'XRLightProbe', 'XRWebGLDepthInformation'],
 		'91': ['CSSCounterStyleRule',  'GravitySensor',  'NavigatorManagedData'],
