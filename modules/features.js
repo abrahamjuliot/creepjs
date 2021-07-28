@@ -65,7 +65,7 @@ export const featuresHTML = ({ fp, modal, note, hashMini }) => {
 	const geckoWindow = {
 		'71': ['MathMLElement', '!SVGZoomAndPan'],
 		'72-73': ['!BatteryManager', 'FormDataEvent', 'Geolocation', 'GeolocationCoordinates', 'GeolocationPosition', 'GeolocationPositionError', '!mozPaintCount'],
-		'74': ['!uneval'],
+		'74': ['FormDataEvent', '!uneval'],
 		'75': ['AnimationTimeline', 'CSSAnimation', 'CSSTransition', 'DocumentTimeline', 'SubmitEvent'],
 		'76-77': ['AudioParamMap', 'AudioWorklet', 'AudioWorkletNode', 'Worklet'],
 		'78': ['Atomics'],
@@ -75,7 +75,7 @@ export const featuresHTML = ({ fp, modal, note, hashMini }) => {
 		'84': ['PerformancePaintTiming'],
 		'85-86': ['!HTMLMenuItemElement', '!onshow'],
 		'87': ['onbeforeinput'],
-		'88': ['!VisualViewport'],
+		'88': ['onbeforeinput', '!VisualViewport'],
 		'89-91': ['EventCounts', 'PerformanceEventTiming', '!ondevicelight', '!ondeviceproximity', '!onuserproximity'],
 		'92': ['DeprecationReportBody', 'ElementInternals', 'FeaturePolicyViolationReportBody', 'GamepadAxisMoveEvent', 'GamepadButtonEvent', 'HTMLDialogElement', '!OfflineResourceList', 'Report', 'ReportBody', 'ReportingObserver', '!applicationCache', '!content', '!sidebar']
 	}
