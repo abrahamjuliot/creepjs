@@ -363,20 +363,26 @@ const imports = {
 	const creep = {
 		navigator: ( 
 			!fp.navigator || fp.navigator.lied ? undefined : {
-				...fp.navigator,
-				// loose
-				permissions: undefined,
-				doNotTrack: undefined,
-				globalPrivacyControl: undefined,
-				userAgent: undefined,
-				appVersion: undefined,
+				bluetoothAvailability: fp.navigator.device,
+				device: fp.navigator.device,
+				deviceMemory: fp.navigator.deviceMemory,
+				hardwareConcurrency: fp.navigator.hardwareConcurrency,
+				keyboard: fp.navigator.keyboard,
+				language: fp.navigator.language,
+				maxTouchPoints: fp.navigator.maxTouchPoints,
+				mediaCapabilities: fp.navigator.mediaCapabilities,
+				mimeTypes: fp.navigator.mimeTypes,
+				oscpu: fp.navigator.oscpu,
+				platform: fp.navigator.platform,
+				plugins: fp.navigator.plugins,
+				system: fp.navigator.system,
 				userAgentData: {
 					...(fp.navigator.userAgentData || {}),
 					// loose
 					brandsVersion: undefined, 
 					uaFullVersion: undefined
 				},
-				userAgentParsed: undefined
+				vendor: fp.navigator.vendor
 			}
 		),
 		screen: ( 
