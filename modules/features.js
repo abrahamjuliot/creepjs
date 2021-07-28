@@ -88,11 +88,11 @@ export const featuresHTML = ({ fp, modal, note, hashMini }) => {
 		'85': ['AggregateError', 'CSSPropertyRule', 'EventCounts', 'XRAnchor', 'XRAnchorSet'],
 		'86': ['RTCEncodedAudioFrame', 'RTCEncodedVideoFrame'],
 		'87': ['CookieChangeEvent', 'CookieStore', 'CookieStoreManager', 'Scheduling'],
-		'88': ['CookieChangeEvent', 'CookieStore', 'CookieStoreManager', 'Scheduling', '!BarcodeDetector'],
+		'88': ['Scheduling', '!BarcodeDetector'],
 		'89': ['ReadableByteStreamController', 'ReadableStreamBYOBReader', 'ReadableStreamBYOBRequest', 'ReadableStreamDefaultController', 'XRWebGLBinding'],
 		'90': ['AbstractRange', 'CustomStateSet', 'NavigatorUAData', 'XRCPUDepthInformation', 'XRDepthInformation', 'XRLightEstimate', 'XRLightProbe', 'XRWebGLDepthInformation'],
 		'91': ['CSSCounterStyleRule',  'GravitySensor',  'NavigatorManagedData'],
-		'92': ['CSSCounterStyleRule',  'GravitySensor',  'NavigatorManagedData','!SharedArrayBuffer'],
+		'92': ['CSSCounterStyleRule','!SharedArrayBuffer'],
 	}
 
 	const mathPI = 3.141592653589793
