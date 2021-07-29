@@ -73,7 +73,7 @@ export const featuresHTML = ({ fp, modal, note, hashMini }) => {
 		'82': ['MediaMetadata', 'MediaSession', 'Sanitizer'],
 		'83': ['MediaMetadata', 'MediaSession', '!Sanitizer'],
 		'84': ['PerformancePaintTiming'],
-		'85-86': ['!HTMLMenuItemElement', '!onshow'],
+		'85-86': ['PerformancePaintTiming', '!HTMLMenuItemElement', '!onshow'],
 		'87': ['onbeforeinput'],
 		'88': ['onbeforeinput', '!VisualViewport'],
 		'89-91': ['EventCounts', 'PerformanceEventTiming', '!ondevicelight', '!ondeviceproximity', '!onuserproximity'],
