@@ -368,8 +368,12 @@ const imports = {
 				deviceMemory: fp.navigator.deviceMemory,
 				hardwareConcurrency: fp.navigator.hardwareConcurrency,
 				keyboard: fp.navigator.keyboard,
-				// chrome engine locale is simple to switch
-				language: !isChrome ? fp.navigator.language : undefined,
+				// distrust language if worker locale is not trusty
+				language: (
+					!fp.workerScope ? fp.navigator.language : 
+						(fp.workerScope.localeEntropyIsTrusty && fp.workerScope.localeIntlEntropyIsTrusty) ? fp.navigator.language : 
+							undefined
+				),
 				maxTouchPoints: fp.navigator.maxTouchPoints,
 				mediaCapabilities: fp.navigator.mediaCapabilities,
 				mimeTypes: fp.navigator.mimeTypes,
@@ -407,13 +411,17 @@ const imports = {
 			hardwareConcurrency: (
 				braveFingerprintingBlocking ? undefined : fp.workerScope.hardwareConcurrency
 			),
+			// system locale in blink
 			language: fp.workerScope.language,
-			languages: fp.workerScope.languages,
-			currency: fp.workerScope.currency,
+			languages: fp.workerScope.languages, 
 			platform: fp.workerScope.platform,
 			system: fp.workerScope.system,
 			device: fp.workerScope.device,
-			timezoneLocation: fp.workerScope.timezoneLocation,
+			timezoneLocation: (
+				// distrust timezone if worker locale is not trusty
+				fp.workerScope.localeEntropyIsTrusty && fp.workerScope.localeIntlEntropyIsTrusty ? fp.workerScope.timezoneLocation :
+					undefined
+			),
 			['webgl renderer']: (
 				braveFingerprintingBlocking ? undefined : fp.workerScope.webglRenderer
 			),
@@ -468,7 +476,11 @@ const imports = {
 		maths: !fp.maths || fp.maths.lied ? undefined : fp.maths,
 		consoleErrors: fp.consoleErrors,
 		timezone: !fp.timezone || fp.timezone.lied ? undefined : {
-			locationMeasured: fp.timezone.locationMeasured,
+			locationMeasured: (
+				!fp.workerScope ? fp.timezone.locationMeasured : 
+					(fp.workerScope.localeEntropyIsTrusty && fp.workerScope.localeIntlEntropyIsTrusty) ? fp.timezone.locationMeasured : 
+						undefined
+			),
 			lied: fp.timezone.lied
 		},
 		svg: !fp.svg || fp.svg.lied ? undefined : fp.svg,

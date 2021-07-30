@@ -283,7 +283,10 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 		scopeKeys,
 		lied,
 		locale,
-		currency,
+		systemCurrencyLocale,
+		engineCurrencyLocale,
+		localeEntropyIsTrusty,
+		localeIntlEntropyIsTrusty,
 		timezoneOffset,
 		timezoneLocation,
 		deviceMemory,
@@ -365,9 +368,11 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 			)
 		}</div>
 		<div class="help" title="Intl.DateTimeFormat().resolvedOptions().timeZone\nDate.getDate()\nDate.getMonth()\nDate.parse()">timezone: ${timezoneLocation} (${''+timezoneOffset})</div>
-		<div class="help" title="WorkerNavigator.language\nWorkerNavigator.languages\nIntl.Collator.resolvedOptions()\nIntl.DateTimeFormat.resolvedOptions()\nIntl.DisplayNames.resolvedOptions()\nIntl.ListFormat.resolvedOptions()\nIntl.NumberFormat.resolvedOptions()\nIntl.PluralRules.resolvedOptions()\nIntl.RelativeTimeFormat.resolvedOptions()\nNumber.toLocaleString()">lang:
-			${[...new Set([languages, language, locale])].join(',')}${currency ? ` (${currency})` : ''}
-		</div>
+		<div class="help" title="WorkerNavigator.language\nWorkerNavigator.languages\nIntl.Collator.resolvedOptions()\nIntl.DateTimeFormat.resolvedOptions()\nIntl.DisplayNames.resolvedOptions()\nIntl.ListFormat.resolvedOptions()\nIntl.NumberFormat.resolvedOptions()\nIntl.PluralRules.resolvedOptions()\nIntl.RelativeTimeFormat.resolvedOptions()\nNumber.toLocaleString()">lang: ${
+			localeIntlEntropyIsTrusty && localeEntropyIsTrusty ? (
+				locale
+			) : language
+		}</div>
 		<div>webgl:</div>
 		<div class="block-text help" title="WebGLRenderingContext.getParameter()">
 			${webglVendor ? `${webglVendor}` : ''}

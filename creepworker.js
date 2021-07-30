@@ -960,7 +960,7 @@ const getWorkerData = async () => {
 	const prototypeLies = JSON.parse(JSON.stringify(lieDetail))
 	const protoLie = lieList.length
 
-	// match engine locale to system locale
+	// match engine locale to system locale to determine if locale entropy is trusty
 	let systemCurrencyLocale
 	const lang = (''+language).split(',')[0]
 	try {
@@ -979,7 +979,9 @@ const getWorkerData = async () => {
 		minimumFractionDigits: 0,
 		maximumFractionDigits: 0
 	})
-	const entropyIsStable = engineCurrencyLocale == systemCurrencyLocale
+	const localeEntropyIsTrusty = engineCurrencyLocale == systemCurrencyLocale
+	const localeIntlEntropyIsTrusty = new Set((''+language).split(',')).has(''+locale)
+	
 	return {
 		scopeKeys,
 		lied: protoLie,
@@ -987,7 +989,10 @@ const getWorkerData = async () => {
 			proto: protoLie ? lieDetail : false
 		},
 		locale: ''+locale,
-		currency: systemCurrencyLocale,
+		systemCurrencyLocale,
+		engineCurrencyLocale,
+		localeEntropyIsTrusty,
+		localeIntlEntropyIsTrusty,
 		timezoneOffset,
 		timezoneLocation,
 		deviceMemory,
