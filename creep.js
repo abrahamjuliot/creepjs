@@ -368,7 +368,7 @@ const imports = {
 				deviceMemory: fp.navigator.deviceMemory,
 				hardwareConcurrency: fp.navigator.hardwareConcurrency,
 				keyboard: fp.navigator.keyboard,
-				language: fp.navigator.language,
+				language: !isChrome ? fp.navigator.language : undefined,
 				maxTouchPoints: fp.navigator.maxTouchPoints,
 				mediaCapabilities: fp.navigator.mediaCapabilities,
 				mimeTypes: fp.navigator.mimeTypes,
