@@ -949,27 +949,6 @@ const getWorkerData = async () => {
 	}
 	const locale = getLocale()
 
-	// language lie
-	let currencyLanguage
-	const lang = (''+language).split(',')[0]
-	try {
-		currencyLanguage = (1).toLocaleString((lang || undefined), {
-			style: 'currency',
-			currency: 'USD',
-			currencyDisplay: 'name',
-			minimumFractionDigits: 0,
-			maximumFractionDigits: 0
-		})
-	} catch (e) {}
-	const currencyLocale = (1).toLocaleString(undefined, {
-		style: 'currency',
-		currency: 'USD',
-		currencyDisplay: 'name',
-		minimumFractionDigits: 0,
-		maximumFractionDigits: 0
-	})
-	const languageLie = currencyLocale != currencyLanguage
-
 	// prototype lies
 	const {
 		lieDetector: lieProps,
@@ -981,18 +960,34 @@ const getWorkerData = async () => {
 	const prototypeLies = JSON.parse(JSON.stringify(lieDetail))
 	const protoLie = lieList.length
 
+	// match engine locale to system locale
+	let systemCurrencyLocale
+	const lang = (''+language).split(',')[0]
+	try {
+		systemCurrencyLocale = (1).toLocaleString((lang || undefined), {
+			style: 'currency',
+			currency: 'USD',
+			currencyDisplay: 'name',
+			minimumFractionDigits: 0,
+			maximumFractionDigits: 0
+		})
+	} catch (e) {}
+	const engineCurrencyLocale = (1).toLocaleString(undefined, {
+		style: 'currency',
+		currency: 'USD',
+		currencyDisplay: 'name',
+		minimumFractionDigits: 0,
+		maximumFractionDigits: 0
+	})
+	const entropyIsStable = engineCurrencyLocale == systemCurrencyLocale
 	return {
 		scopeKeys,
-		lied: (
-			languageLie ||
-			protoLie
-		),
+		lied: protoLie,
 		lies: {
-			language: languageLie ? `${currencyLocale} locale and ${currencyLanguage} language do not match` : false,
 			proto: protoLie ? lieDetail : false
 		},
 		locale: ''+locale,
-		currency: currencyLocale,
+		currency: systemCurrencyLocale,
 		timezoneOffset,
 		timezoneLocation,
 		deviceMemory,

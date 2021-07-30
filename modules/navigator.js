@@ -255,8 +255,9 @@ export const getNavigator = async (imports, workerScope) => {
 				const { language, languages } = phantomNavigator
 				const navigatorLanguage = navigator.language
 				const navigatorLanguages = navigator.languages
-				detectLies('language', navigatorLanguage)
-				detectLies('languages', '' + navigatorLanguages)
+				// disregard detectLies in workers to respect valid engine language switching
+				//detectLies('language', navigatorLanguage)
+				//detectLies('languages', '' + navigatorLanguages)
 				if ('' + language != '' + navigatorLanguage) {
 					lied = true
 					const nestedIframeLie = `Expected "${navigatorLanguage}" in nested iframe and got "${language}"`

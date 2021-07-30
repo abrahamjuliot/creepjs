@@ -176,11 +176,6 @@ export const getBestWorkerScope = async imports => {
 				
 			}
 			
-			// language lie
-			if (workerScope.lies.language) {
-				documentLie(workerScope.scope, workerScope.lies.language)
-			}
-
 			// user agent os lie
 			const userAgentOS = (
 				// order is important
