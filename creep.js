@@ -368,6 +368,7 @@ const imports = {
 				deviceMemory: fp.navigator.deviceMemory,
 				hardwareConcurrency: fp.navigator.hardwareConcurrency,
 				keyboard: fp.navigator.keyboard,
+				// chrome engine locale is simple to switch
 				language: !isChrome ? fp.navigator.language : undefined,
 				maxTouchPoints: fp.navigator.maxTouchPoints,
 				mediaCapabilities: fp.navigator.mediaCapabilities,
