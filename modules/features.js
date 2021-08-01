@@ -76,8 +76,8 @@ export const featuresHTML = ({ fp, modal, note, hashMini }) => {
 		'85-86': ['PerformancePaintTiming', '!HTMLMenuItemElement', '!onshow'],
 		'87': ['onbeforeinput'],
 		'88': ['onbeforeinput', '!VisualViewport'],
-		'89-91': ['EventCounts', 'PerformanceEventTiming', '!ondevicelight', '!ondeviceproximity', '!onuserproximity'],
-		'92': ['DeprecationReportBody', 'ElementInternals', 'FeaturePolicyViolationReportBody', 'GamepadAxisMoveEvent', 'GamepadButtonEvent', 'HTMLDialogElement', '!OfflineResourceList', 'Report', 'ReportBody', 'ReportingObserver', '!applicationCache', '!content', '!sidebar']
+		'89-91': ['!ondevicelight', '!ondeviceproximity', '!onuserproximity'],
+		'92': ['DeprecationReportBody', 'ElementInternals', 'FeaturePolicyViolationReportBody', 'GamepadAxisMoveEvent', 'GamepadButtonEvent', 'HTMLDialogElement', 'Report', 'ReportBody', 'ReportingObserver', '!content', '!sidebar']
 	}
 
 	const blinkWindow = {
