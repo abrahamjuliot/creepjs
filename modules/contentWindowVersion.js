@@ -14,7 +14,7 @@ export const getWindowFeatures = async imports => {
 		let keys = Object.getOwnPropertyNames(phantomDarkness)
 		
 		// if Firefox, remove the 'Event' key and push to end for consistent order
-		// and disregard key known to be missing in RFP mode
+		// and disregard keys known to be missing in RFP mode
 		const firefoxKeyMovedByInspect = 'Event'
 		const varyingKeysMissingInRFP = ['PerformanceNavigationTiming', 'Performance']
 		if (isFirefox) {
