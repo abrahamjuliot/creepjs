@@ -807,7 +807,9 @@ const imports = {
 
 			const template = `
 				<div class="visitor-info">
-					<div class="ellipsis"><span class="aside-note">script modified 2021-7-24</span></div>
+					<div class="ellipsis">
+						<span class="aside-note">fingerprints renewed <span class="renewed">${new Date('2021-8-1').toLocaleDateString()}</span></span>
+					</div>
 					<div class="flex-grid">
 						<div class="col-six">
 							<strong>Browser</strong>

@@ -208,6 +208,11 @@ visitor {
 	color: #bbb;
 	background: #fff;
 }
+.renewed {
+	background: linear-gradient(45deg, #657fcac2, #a54991a3);
+    color: #fff;
+    padding: 0 5px;
+}
 
 #fingerprint-data h1,
 #fingerprint-data h2 {
