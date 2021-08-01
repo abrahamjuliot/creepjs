@@ -360,6 +360,18 @@ const imports = {
 	)
 	const unknownFirefoxAudio = isFirefox && unknownAudio
 
+	const hardenEntropy = (workerScope, prop) => {
+		return (
+			!workerScope ? prop : 
+				(workerScope.localeEntropyIsTrusty && workerScope.localeIntlEntropyIsTrusty) ? prop : 
+					undefined
+		)
+	}
+
+	const privacyResistFingerprinting = (
+		fp.resistance && /^(tor browser|firefox)$/i.test(fp.resistance.privacy)
+	)
+
 	const creep = {
 		navigator: ( 
 			!fp.navigator || fp.navigator.lied ? undefined : {
@@ -369,11 +381,7 @@ const imports = {
 				hardwareConcurrency: fp.navigator.hardwareConcurrency,
 				keyboard: fp.navigator.keyboard,
 				// distrust language if worker locale is not trusty
-				language: (
-					!fp.workerScope ? fp.navigator.language : 
-						(fp.workerScope.localeEntropyIsTrusty && fp.workerScope.localeIntlEntropyIsTrusty) ? fp.navigator.language : 
-							undefined
-				),
+				language: hardenEntropy(fp.workerScope, fp.navigator.language),
 				maxTouchPoints: fp.navigator.maxTouchPoints,
 				mediaCapabilities: fp.navigator.mediaCapabilities,
 				mimeTypes: fp.navigator.mimeTypes,
@@ -391,13 +399,16 @@ const imports = {
 			}
 		),
 		screen: ( 
-			!fp.screen || fp.screen.lied || (!!liesLen && isFirefox) ? undefined : {
-				height: fp.screen.height,
-				width: fp.screen.width,
-				pixelDepth: fp.screen.pixelDepth,
-				colorDepth: fp.screen.colorDepth,
-				lied: fp.screen.lied
-			}
+			!fp.screen || fp.screen.lied || privacyResistFingerprinting ? undefined : 
+				hardenEntropy(
+					fp.workerScope, {
+						height: fp.screen.height,
+						width: fp.screen.width,
+						pixelDepth: fp.screen.pixelDepth,
+						colorDepth: fp.screen.colorDepth,
+						lied: fp.screen.lied
+					}
+				)
 		),
 		workerScope: !fp.workerScope || fp.workerScope.lied ? undefined : {
 			canvas2d: (
@@ -417,11 +428,7 @@ const imports = {
 			platform: fp.workerScope.platform,
 			system: fp.workerScope.system,
 			device: fp.workerScope.device,
-			timezoneLocation: (
-				// distrust timezone if worker locale is not trusty
-				fp.workerScope.localeEntropyIsTrusty && fp.workerScope.localeIntlEntropyIsTrusty ? fp.workerScope.timezoneLocation :
-					undefined
-			),
+			timezoneLocation: hardenEntropy(fp.workerScope, fp.workerScope.timezoneLocation),
 			['webgl renderer']: (
 				braveFingerprintingBlocking ? undefined : fp.workerScope.webglRenderer
 			),
@@ -467,7 +474,7 @@ const imports = {
 			anyPointer: caniuse(() => fp.cssMedia.mediaCSS['any-pointer']),
 			pointer: caniuse(() => fp.cssMedia.mediaCSS.pointer),
 			colorGamut: caniuse(() => fp.cssMedia.mediaCSS['color-gamut']),
-			screenQuery: caniuse(() => fp.cssMedia.screenQuery),
+			screenQuery: privacyResistFingerprinting ? undefined : hardenEntropy(fp.workerScope, caniuse(() => fp.cssMedia.screenQuery)),
 		},
 		css: !fp.css ? undefined : {
 			interfaceName: caniuse(() => fp.css.computedStyle.interfaceName),
@@ -476,11 +483,7 @@ const imports = {
 		maths: !fp.maths || fp.maths.lied ? undefined : fp.maths,
 		consoleErrors: fp.consoleErrors,
 		timezone: !fp.timezone || fp.timezone.lied ? undefined : {
-			locationMeasured: (
-				!fp.workerScope ? fp.timezone.locationMeasured : 
-					(fp.workerScope.localeEntropyIsTrusty && fp.workerScope.localeIntlEntropyIsTrusty) ? fp.timezone.locationMeasured : 
-						undefined
-			),
+			locationMeasured: hardenEntropy(fp.workerScope, fp.timezone.locationMeasured),
 			lied: fp.timezone.lied
 		},
 		svg: !fp.svg || fp.svg.lied ? undefined : fp.svg,

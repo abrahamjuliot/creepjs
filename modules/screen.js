@@ -118,14 +118,14 @@ export const getScreen = async imports => {
 		
 		const data = {
 			device: getDevice(width, height),
-			width: attempt(() => width ? trustInteger('width - invalid return type', width) : undefined),
-			outerWidth: attempt(() => phantomOuterWidth ? trustInteger('outerWidth - invalid return type', phantomOuterWidth) : undefined),
-			availWidth: attempt(() => availWidth ? trustInteger('availWidth - invalid return type', availWidth) : undefined),
-			height: attempt(() => height ? trustInteger('height - invalid return type', height) : undefined),
-			outerHeight: attempt(() => phantomOuterHeight ? trustInteger('outerHeight - invalid return type', phantomOuterHeight) : undefined),
-			availHeight: attempt(() => availHeight ?  trustInteger('availHeight - invalid return type', availHeight) : undefined),
-			colorDepth: attempt(() => colorDepth ? trustInteger('colorDepth - invalid return type', colorDepth) : undefined),
-			pixelDepth: attempt(() => pixelDepth ? trustInteger('pixelDepth - invalid return type', pixelDepth) : undefined),
+			width: attempt(() => screenWidth ? trustInteger('width - invalid return type', screenWidth) : undefined),
+			outerWidth: attempt(() => outerWidth ? trustInteger('outerWidth - invalid return type', outerWidth) : undefined),
+			availWidth: attempt(() => screenAvailWidth ? trustInteger('availWidth - invalid return type', screenAvailWidth) : undefined),
+			height: attempt(() => screenHeight ? trustInteger('height - invalid return type', screenHeight) : undefined),
+			outerHeight: attempt(() => outerHeight ? trustInteger('outerHeight - invalid return type', outerHeight) : undefined),
+			availHeight: attempt(() => screenAvailHeight ?  trustInteger('availHeight - invalid return type', screenAvailHeight) : undefined),
+			colorDepth: attempt(() => screenColorDepth ? trustInteger('colorDepth - invalid return type', screenColorDepth) : undefined),
+			pixelDepth: attempt(() => screenPixelDepth ? trustInteger('pixelDepth - invalid return type', screenPixelDepth) : undefined),
 			lied
 		}
 		logTestResult({ start, test: 'screen', passed: true })
