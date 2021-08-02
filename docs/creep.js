@@ -9719,10 +9719,24 @@
 				}</span>`
 				};
 
+				const renewedDate = '2021-8-1';
+				const addDays = (date, n) => {
+					const d = new Date(date);
+					d.setDate(d.getDate() + n);
+					return d
+				};
+				const shouldStyle = d => {
+					const endNoticeDate = addDays(renewedDate, 7);
+					const daysRemaining = Math.round((+endNoticeDate - +new Date()) / (1000 * 3600 * 24));
+					return daysRemaining >= 0
+				};
+				
 				const template = `
 				<div class="visitor-info">
 					<div class="ellipsis">
-						<span class="aside-note">fingerprints renewed <span class="renewed">${new Date('2021-8-1').toLocaleDateString()}</span></span>
+						<span class="aside-note">fingerprints renewed <span class="${shouldStyle(renewedDate) ? 'renewed' : ''}">${
+							new Date(renewedDate).toLocaleDateString()
+						}</span></span>
 					</div>
 					<div class="flex-grid">
 						<div class="col-six">
