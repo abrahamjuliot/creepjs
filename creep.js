@@ -375,7 +375,7 @@ const imports = {
 	const creep = {
 		navigator: ( 
 			!fp.navigator || fp.navigator.lied ? undefined : {
-				bluetoothAvailability: fp.navigator.device,
+				bluetoothAvailability: fp.navigator.bluetoothAvailability,
 				device: fp.navigator.device,
 				deviceMemory: fp.navigator.deviceMemory,
 				hardwareConcurrency: fp.navigator.hardwareConcurrency,
