@@ -218,7 +218,7 @@ export const featuresHTML = ({ fp, modal, note, hashMini }) => {
 		features: windowFeatures,
 		browser
 	})
-
+	
 	// determine version based on 2 factors
 	const versionSet = new Set([
 		cssVersion,
