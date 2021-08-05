@@ -28,7 +28,7 @@ import { getBestWorkerScope, workerScopeHTML } from './modules/worker.js'
 import { getSVG, svgHTML } from './modules/svg.js'
 import { getResistance, resistanceHTML } from './modules/resistance.js'
 import { getIntl, intlHTML } from './modules/intl.js'
-import { featuresHTML } from './modules/features.js'
+import { getStableFeatures, getFeaturesBrowser, getEngineFeatures, featuresHTML } from './modules/features.js'
 
 const imports = {
 	require: {
@@ -154,10 +154,16 @@ const imports = {
 		
 		const [
 			navigatorComputed,
-			headlessComputed
+			headlessComputed,
+			featuresComputed
 		] = await Promise.all([
 			getNavigator(imports, workerScopeComputed),
-			getHeadlessFeatures(imports, workerScopeComputed)
+			getHeadlessFeatures(imports, workerScopeComputed),
+			getEngineFeatures({
+				imports,
+				cssComputed, 
+				windowFeaturesComputed
+			})
 		]).catch(error => console.error(error.message))
 		
 		const [
@@ -201,7 +207,8 @@ const imports = {
 			errorsHash,
 			svgHash,
 			resistanceHash,
-			intlHash
+			intlHash,
+			featuresHash
 		] = await Promise.all([
 			hashify(windowFeaturesComputed),
 			hashify(headlessComputed),
@@ -232,7 +239,8 @@ const imports = {
 			hashify(capturedErrorsComputed),
 			hashify(svgComputed),
 			hashify(resistanceComputed),
-			hashify(intlComputed)
+			hashify(intlComputed),
+			hashify(featuresComputed)
 		]).catch(error => console.error(error.message))
 		
 		//console.log(performance.now()-start)
@@ -271,7 +279,8 @@ const imports = {
 			capturedErrors: !capturedErrorsComputed ? undefined : {...capturedErrorsComputed, $hash: errorsHash},
 			svg: !svgComputed ? undefined : {...svgComputed, $hash: svgHash },
 			resistance: !resistanceComputed ? undefined : {...resistanceComputed, $hash: resistanceHash},
-			intl: !intlComputed ? undefined : {...intlComputed, $hash: intlHash}
+			intl: !intlComputed ? undefined : {...intlComputed, $hash: intlHash},
+			features: !featuresComputed ? undefined : {...featuresComputed, $hash: featuresHash},
 		}
 		return { fingerprint, systemHash, styleHash, emojiHash, timeEnd }
 	}
@@ -986,11 +995,37 @@ const imports = {
 					</div>
 				</div>
 			`)
-			 
+			
+			// CSS feature firewall
+			const getCSSFeaturesLie = fp => {
+				const browser = getFeaturesBrowser()
+				const stable = getStableFeatures()
+				const { version: maxVersion } = stable[browser] || {}
+				const { userAgentParsed } = fp.navigator || {}
+				const reportedVersion = (
+					/\s(\d+)/.test(userAgentParsed) ? /\s(\d+)/.exec(userAgentParsed)[1] :
+						undefined
+				)
+				const { cssVersion } = fp.features || {}
+				const versionParts = cssVersion ? cssVersion.split('-') : []
+				const liedVersion = reportedVersion && cssVersion && (+reportedVersion <= maxVersion) && (
+					(
+						versionParts.length == 1 &&
+						(+reportedVersion > +versionParts[0]+1 || +reportedVersion < +versionParts[0]-1)
+					) || (
+						versionParts.length == 2 &&
+						(+reportedVersion > +versionParts[1]+1 || +reportedVersion < +versionParts[0]-1)
+					)
+				)
+				return liedVersion
+			}
+			const liedVersion = getCSSFeaturesLie(fp)
+
 			if (
 				!fp.workerScope ||
 				fp.workerScope.lied ||
-				!fp.workerScope.userAgent
+				!fp.workerScope.userAgent ||
+				liedVersion
 				//|| ('BroadcastChannel' in window && fp.workerScope.type == 'dedicated')
 			) {
 				return rejectSamplePatch(el, html)
