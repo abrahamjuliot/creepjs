@@ -998,10 +998,20 @@ const imports = {
 			
 			// CSS feature firewall
 			const getCSSFeaturesLie = fp => {
+				if (!fp.workerScope || !fp.workerScope.userAgent) {
+					return false
+				}
 				const browser = getFeaturesBrowser()
 				const stable = getStableFeatures()
 				const { version: maxVersion } = stable[browser] || {}
-				const { userAgentParsed } = fp.navigator || {}
+
+				const { userAgent: reportedUserAgent, system: reportedSystem } = fp.workerScope
+				const userAgentParsed = decryptUserAgent({
+					ua: reportedUserAgent,
+					os: reportedSystem,
+					isBrave: false // not important to test version
+				})
+
 				const reportedVersion = (
 					/\s(\d+)/.test(userAgentParsed) ? /\s(\d+)/.exec(userAgentParsed)[1] :
 						undefined
