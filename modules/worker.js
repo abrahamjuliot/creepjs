@@ -230,7 +230,7 @@ export const getBestWorkerScope = async imports => {
 				userAgentData.brandsVersion &&
 				userAgentData.brandsVersion.length ? 
 				getVersion(userAgentData.brandsVersion) :
-				false
+				undefined
 			)
 			const versionSupported = userAgenDataVersion && userAgenVersion
 			const versionMatch = userAgenDataVersion == userAgenVersion
