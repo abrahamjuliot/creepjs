@@ -204,7 +204,7 @@ export const getBestWorkerScope = async imports => {
 				os: system,
 				isBrave: false // default false since we are only looking for JS runtime and version
 			})
-			const reportedEngine = (
+			const userAgentEngine = (
 				(/safari/i.test(decryptedName) || /iphone|ipad/i.test(userAgent)) ? 'JavaScriptCore' :
 					/firefox/i.test(userAgent) ? 'SpiderMonkey' :
 						/chrome/i.test(userAgent) ? 'V8' :
@@ -217,14 +217,14 @@ export const getBestWorkerScope = async imports => {
 			}
 			const mathPI = 3.141592653589793
 			const engine = jsRuntimeEngine[mathPI ** -100]
-			if (reportedEngine != engine) {
+			if (userAgentEngine != engine) {
 				workerScope.lied = true
-				workerScope.lies.engine = `${engine} JS runtime and ${reportedEngine} user agent do not match`
+				workerScope.lies.engine = `${engine} JS runtime and ${userAgentEngine} user agent do not match`
 				documentLie(workerScope.scope, workerScope.lies.engine)
 			}
 			// user agent version lie
 			const getVersion = x => /\s(\d+)/i.test(x) && /\s(\d+)/i.exec(x)[1]
-			const reportedVersion = getVersion(decryptedName)
+			const userAgenVersion = getVersion(decryptedName)
 			const userAgenDataVersion = (
 				userAgentData &&
 				userAgentData.brandsVersion &&
@@ -232,13 +232,18 @@ export const getBestWorkerScope = async imports => {
 				getVersion(userAgentData.brandsVersion) :
 				false
 			)
-			const versionSupported = userAgenDataVersion && reportedVersion
-			const versionMatch = userAgenDataVersion == reportedVersion
+			const versionSupported = userAgenDataVersion && userAgenVersion
+			const versionMatch = userAgenDataVersion == userAgenVersion
 			if (versionSupported && !versionMatch) {
 				workerScope.lied = true
-				workerScope.lies.version = `userAgentData version ${userAgenDataVersion} and user agent version ${reportedVersion} do not match`
+				workerScope.lies.version = `userAgentData version ${userAgenDataVersion} and user agent version ${userAgenVersion} do not match`
 				documentLie(workerScope.scope, workerScope.lies.version)
 			}
+			
+			// capture userAgent version
+			workerScope.userAgenVersion = userAgenVersion
+			workerScope.userAgenDataVersion = userAgenDataVersion
+			workerScope.userAgentEngine = userAgentEngine
 
 			logTestResult({ start, test: `${type} worker`, passed: true })
 			return { ...workerScope }

@@ -28,7 +28,7 @@ import { getBestWorkerScope, workerScopeHTML } from './modules/worker.js'
 import { getSVG, svgHTML } from './modules/svg.js'
 import { getResistance, resistanceHTML } from './modules/resistance.js'
 import { getIntl, intlHTML } from './modules/intl.js'
-import { getStableFeatures, getFeaturesBrowser, getEngineFeatures, featuresHTML } from './modules/features.js'
+import { getCSSFeaturesLie, getEngineFeatures, featuresHTML } from './modules/features.js'
 
 const imports = {
 	require: {
@@ -996,39 +996,6 @@ const imports = {
 				</div>
 			`)
 			
-			// CSS feature firewall
-			const getCSSFeaturesLie = fp => {
-				if (!fp.workerScope || !fp.workerScope.userAgent) {
-					return false
-				}
-				const browser = getFeaturesBrowser()
-				const stable = getStableFeatures()
-				const { version: maxVersion } = stable[browser] || {}
-
-				const { userAgent: reportedUserAgent, system: reportedSystem } = fp.workerScope
-				const userAgentParsed = decryptUserAgent({
-					ua: reportedUserAgent,
-					os: reportedSystem,
-					isBrave: false // not important to test version
-				})
-
-				const reportedVersion = (
-					/\s(\d+)/.test(userAgentParsed) ? /\s(\d+)/.exec(userAgentParsed)[1] :
-						undefined
-				)
-				const { cssVersion } = fp.features || {}
-				const versionParts = cssVersion ? cssVersion.split('-') : []
-				const liedVersion = reportedVersion && cssVersion && (+reportedVersion <= maxVersion) && (
-					(
-						versionParts.length == 1 &&
-						(+reportedVersion > +versionParts[0]+1 || +reportedVersion < +versionParts[0]-1)
-					) || (
-						versionParts.length == 2 &&
-						(+reportedVersion > +versionParts[1]+1 || +reportedVersion < +versionParts[0]-1)
-					)
-				)
-				return liedVersion
-			}
 			const liedVersion = getCSSFeaturesLie(fp)
 
 			if (
