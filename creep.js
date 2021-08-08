@@ -508,7 +508,8 @@ const imports = {
 		fonts: !fp.fonts || fp.fonts.lied ? undefined : fp.fonts,
 		// skip trash since it is random
 		lies: !!liesLen,
-		capturedErrors: !!errorsLen
+		capturedErrors: !!errorsLen,
+		resistance: fp.resistance || undefined
 	}
 
 	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f')
