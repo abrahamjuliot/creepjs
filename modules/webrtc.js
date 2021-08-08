@@ -151,8 +151,8 @@ export const webrtcHTML = ({ fp, hashSlice, hashMini, note, modal }) => {
 			<div>type: ${note.blocked}</div>
 			<div>foundation: ${note.blocked}</div>
 			<div>protocol: ${note.blocked}</div>
-			<div>get capabilities: ${note.blocked}</div>
-			<div>sdp capabilities: ${note.blocked}</div>
+			<div>codecs: ${note.blocked}</div>
+			<div>codecs sdp: ${note.blocked}</div>
 		</div>`
 	}
 	const { webRTC } = fp
