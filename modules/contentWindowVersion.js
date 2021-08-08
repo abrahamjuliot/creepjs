@@ -11,8 +11,10 @@ export const getWindowFeatures = async imports => {
 
 	try {
 		const start = performance.now()
-		let keys = Object.getOwnPropertyNames(phantomDarkness)
-		
+		const win = phantomDarkness || window
+		let keys = Object.getOwnPropertyNames(win)
+			.filter(key => !/_|\d{3,}/.test(key)) // clear out known ddg noise
+
 		// if Firefox, remove the 'Event' key and push to end for consistent order
 		// and disregard keys known to be missing in RFP mode
 		const firefoxKeyMovedByInspect = 'Event'
