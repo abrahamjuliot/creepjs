@@ -11,14 +11,15 @@ const getStableFeatures = () => ({
 	}
 })
 
-const getListDiff = (oldList, newList) => {
+const getListDiff = ({oldList, newList, removeCamelCase = false} = {}) => {
 	const oldSet = new Set(oldList)
 	const newSet = new Set(newList)
 	newList.forEach(x => oldSet.delete(x))
 	oldList.forEach(x => newSet.delete(x))
+	const camelCase = /[a-z][A-Z]/
 	return {
-		removed: [...oldSet],
-		added: [...newSet]
+		removed: !removeCamelCase ? [...oldSet] : [...oldSet].filter(key => !camelCase.test(key)),
+		added: !removeCamelCase ? [...newSet] : [...newSet].filter(key => !camelCase.test(key))
 	}
 }
 
@@ -304,11 +305,17 @@ const featuresHTML = ({ fp, modal, note, hashMini }) => {
 		const { windowKeys, cssKeys, version } = stable[browser] || {}
 		let diff
 		if (id == 'css') {
-			const camelCase = /[a-z][A-Z]/
-			diff = !cssKeys ? undefined : getListDiff(cssKeys.split(', '), computedStyleKeys)
+			diff = !cssKeys ? undefined : getListDiff({
+				oldList: cssKeys.split(', '),
+				newList: computedStyleKeys,
+				removeCamelCase: true
+			})
 		}
 		else if (id == 'window') {
-			diff = !windowKeys ? undefined : getListDiff(windowKeys.split(', '), windowFeaturesKeys)
+			diff = !windowKeys ? undefined : getListDiff({
+				oldList: windowKeys.split(', '),
+				newList: windowFeaturesKeys
+			})
 		}
 
 		const header = !version || !diff || (!diff.added.length && !diff.removed.length) ? '' : `
