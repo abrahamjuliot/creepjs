@@ -114,9 +114,10 @@ const getCSSFeaturesLie = fp => {
 	const stable = getStableFeatures()
 	const { version: maxVersion } = stable[browser] || {}
 	const { userAgenVersion: reportedVersion } = fp.workerScope
-
-	// let RFP version pass
-	if (browser == 'Firefox' && reportedVersion == 78) {
+	
+	// let RFP pass
+	const { privacy } = fp.resistance || {}
+	if (privacy == 'Firefox' || privacy == 'Tor Browser') {
 		return false
 	}
 
