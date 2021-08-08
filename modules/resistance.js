@@ -185,12 +185,12 @@ export const getResistance = async imports => {
 				toDataURLHash: ['fd00bf5d', '8ee7df22'],
 				toBlobHash: ['fd00bf5d', '8ee7df22'],
 				getImageDataHash: ['fd00bf5d', '8ee7df22'],
-				getByteFrequencyDataHash: ['fd00bf5d', '8ee7df22'],
-				getByteTimeDomainDataHash: ['fd00bf5d', '8ee7df22'],
-				getFloatFrequencyDataHash: ['fd00bf5d', '8ee7df22'],
-				getFloatTimeDomainDataHash: ['fd00bf5d', '8ee7df22'],
-				copyFromChannelHash: ['fd00bf5d', '8ee7df22'],
-				getChannelDataHash: ['fd00bf5d', '8ee7df22'],
+				getByteFrequencyDataHash: ['fd00bf5d', '8ee7df22', disabled],
+				getByteTimeDomainDataHash: ['fd00bf5d', '8ee7df22', disabled],
+				getFloatFrequencyDataHash: ['fd00bf5d', '8ee7df22', disabled],
+				getFloatTimeDomainDataHash: ['fd00bf5d', '8ee7df22', disabled],
+				copyFromChannelHash: ['fd00bf5d', '8ee7df22', disabled],
+				getChannelDataHash: ['fd00bf5d', '8ee7df22', disabled],
 				hardwareConcurrencyHash: ['dfd41ab4'],
 				availHeightHash: ['dfd41ab4'],
 				availLeftHash: ['dfd41ab4'],
@@ -318,7 +318,7 @@ export const getResistance = async imports => {
 					chameleon.replaceChildHash.includes(hash.replaceChildHash)) {
 					return 'Chameleon'
 				}
-				if (prototypeLiesLen >= 16 &&
+				if (prototypeLiesLen >= 10 &&
 					duckduckgo.toDataURLHash.includes(hash.toDataURLHash) &&
 					duckduckgo.toBlobHash.includes(hash.toBlobHash) &&
 					duckduckgo.getImageDataHash.includes(hash.getImageDataHash) &&
