@@ -113,8 +113,12 @@ const getCSSFeaturesLie = fp => {
 	const browser = getFeaturesBrowser()
 	const stable = getStableFeatures()
 	const { version: maxVersion } = stable[browser] || {}
-
 	const { userAgenVersion: reportedVersion } = fp.workerScope
+
+	// let RFP version pass
+	if (browser == 'Firefox' && reportedVersion == 78) {
+		return false
+	}
 
 	const { cssVersion } = fp.features || {}
 	const versionParts = cssVersion ? cssVersion.split('-') : []
