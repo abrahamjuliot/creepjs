@@ -225,7 +225,11 @@ const getEngineFeatures = async ({ imports, cssComputed, windowFeaturesComputed 
 		})
 			
 		// determine version based on 2 factors
-		const getVersionFromRange = range => {
+		const getVersionFromRange = (range, versionCollection) => {
+			const exactVersion = versionCollection.find(version => version && !/-/.test(version))
+			if (exactVersion) {
+				return exactVersion
+			}
 			const len = range.length
 			const first = range[0]
 			const last = range[len-1]
@@ -243,7 +247,7 @@ const getEngineFeatures = async ({ imports, cssComputed, windowFeaturesComputed 
 		const versionRange = versionSort(
 			[...versionSet].reduce((acc, x) => [...acc, ...x.split('-')], [])
 		)
-		const version = getVersionFromRange(versionRange)
+		const version = getVersionFromRange(versionRange, [cssVersion, windowVersion])
 		logTestResult({ start, test: 'features', passed: true })
 		return {
 			versionRange,
