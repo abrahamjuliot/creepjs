@@ -144,6 +144,7 @@ export const getBestWorkerScope = async imports => {
 			// detect lies 
 			const {
 				fontSystemClass,
+				textMetricsSystemClass,
 				system,
 				userAgent,
 				userAgentData,
@@ -160,8 +161,22 @@ export const getBestWorkerScope = async imports => {
 			)
 			if (fontSystemLie) {
 				workerScope.lied = true
-				workerScope.lies.system = `${fontSystemClass} fonts and ${system} user agent do not match`
-				documentLie(workerScope.scope, workerScope.lies.system)
+				workerScope.lies.systemFonts = `${fontSystemClass} fonts and ${system} user agent do not match`
+				documentLie(workerScope.scope, workerScope.lies.systemFonts)
+			}
+
+			// text metrics system lie
+			const textMetricsSystemLie = textMetricsSystemClass && (
+				/^((i(pad|phone|os))|mac)$/i.test(system) && textMetricsSystemClass != 'Apple'  ? true :
+					/^(windows)$/i.test(system) && textMetricsSystemClass != 'Windows'  ? true :
+						/^(linux|chrome os)$/i.test(system) && textMetricsSystemClass != 'Linux'  ? true :
+							/^(android)$/i.test(system) && textMetricsSystemClass != 'Android'  ? true :
+								false
+			)
+			if (textMetricsSystemLie) {
+				workerScope.lied = true
+				workerScope.lies.systemTextMetrics = `${textMetricsSystemClass} text metrics and ${system} user agent do not match`
+				documentLie(workerScope.scope, workerScope.lies.systemTextMetrics)
 			}
 
 			// prototype lies
@@ -263,7 +278,8 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 		<div class="col-six undefined">
 			<strong>Worker</strong>
 			<div>canvas 2d: ${note.blocked}</div>
-			<div>textMetrics: ${note.blocked}</div>
+			<div>emoji metrics: ${note.blocked}</div>
+			<div>text metrics: ${note.blocked}</div>
 			<div>fontFaceSet (0): ${note.blocked}</div>
 			<div>keys (0): ${note.blocked}</div>
 			<div>permissions (0): ${note.blocked}</div>
@@ -304,6 +320,8 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 		permissions,
 		canvas2d,
 		textMetrics,
+		textMetricsSystemSum,
+		textMetricsSystemClass,
 		webglRenderer,
 		webglVendor,
 		fontFaceSetFonts,
@@ -323,8 +341,9 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 		'Windows': '<span class="icon windows"></span>',
 		'Android': '<span class="icon android"></span>'
 	}
-
-	const systemClassIcon = icon[fontSystemClass]
+	
+	const systemFontClassIcon = icon[fontSystemClass]
+	const systemTextMetricsClassIcon = icon[textMetricsSystemClass]
 	const fontFaceSetHash = hashMini(fontFaceSetFonts)
 	const codecKeys = Object.keys(mediaCapabilities || {})
 	const permissionsKeys = Object.keys(permissions || {})
@@ -341,13 +360,18 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 			`<span class="sub-hash">${hashMini(canvas2d.dataURI)}</span>` :
 			` ${note.unsupported}`
 		}</div>
-		<div class="help" title="OffscreenCanvasRenderingContext2D.measureText()">textMetrics: ${
+		<div class="help" title="OffscreenCanvasRenderingContext2D.measureText()">emoji metrics: ${
 			!textMetrics ? note.blocked : getSum(Object.keys(textMetrics).map(key => textMetrics[key] || 0)) || note.blocked
+		}</div>
+		<div class="help" title="OffscreenCanvasRenderingContext2D.measureText()">text metrics: ${
+			!textMetricsSystemSum ? note.blocked : 
+				systemFontClassIcon ? `${systemTextMetricsClassIcon}${textMetricsSystemSum}` :
+					textMetricsSystemSum
 		}</div>
 		<div class="help" title="FontFaceSet.check()">fontFaceSet (${fontFaceSetFonts ? count(fontFaceSetFonts) : '0'}/${''+fontListLen}): ${
 			fontFaceSetFonts.length ? modal(
 				'creep-worker-fonts-check', fontFaceSetFonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>'),
-				systemClassIcon ? `${systemClassIcon}${fontFaceSetHash}` : fontFaceSetHash
+				systemFontClassIcon ? `${systemFontClassIcon}${fontFaceSetHash}` : fontFaceSetHash
 			) : note.unsupported
 		}</div>
 		<div>keys (${count(scopeKeys)}): ${

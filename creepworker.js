@@ -792,8 +792,10 @@ const getWorkerData = async () => {
 	}
 
 	// canvas2d
-	let canvasOffscreen2d = undefined
+	let canvasOffscreen2d
 	let textMetrics = {}
+	let textMetricsSystemSum
+	let textMetricsSystemClass
 	try {
 		canvasOffscreen2d = new OffscreenCanvas(186, 30)
 		const context2d = canvasOffscreen2d.getContext('2d')
@@ -804,7 +806,23 @@ const getWorkerData = async () => {
 		context2d.fillText(str, 0, 20)
 		context2d.fillStyle = 'rgba(0, 0, 0, 0)'
 		context2d.fillRect(0, 0, 186, 30)
+		
+		// get system measurements
+		const knownTextMetrics = {
+			'135.5068359375': 'Windows',
+			'134.462890625': 'Apple',
+			'126.99609375': 'Android'
 
+			// linux/ chrome os (ios not support, FF is pref?)
+		}
+		const {
+			actualBoundingBoxRight: systemActualBoundingBoxRight,
+			width: systemWidth
+		} = context2d.measureText('!@#$%^&*') || {}
+		textMetricsSystemSum = ((systemActualBoundingBoxRight || 0) + (systemWidth || 0)) || undefined
+		textMetricsSystemClass = knownTextMetrics[textMetricsSystemSum]
+
+		// get emoji measurements
 		const {
 			actualBoundingBoxAscent,
 			actualBoundingBoxDescent,
@@ -1005,6 +1023,8 @@ const getWorkerData = async () => {
 		userAgent,
 		canvas2d,
 		textMetrics: new Set(Object.keys(textMetrics)).size > 1 ? textMetrics : undefined,
+		textMetricsSystemSum,
+		textMetricsSystemClass,
 		webglRenderer,
 		webglVendor,
 		fontFaceSetFonts,
