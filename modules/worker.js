@@ -278,8 +278,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 		<div class="col-six undefined">
 			<strong>Worker</strong>
 			<div>canvas 2d: ${note.blocked}</div>
-			<div>emoji metrics: ${note.blocked}</div>
-			<div>text metrics: ${note.blocked}</div>
+			<div>textMetrics: ${note.blocked}</div>
 			<div>fontFaceSet (0): ${note.blocked}</div>
 			<div>keys (0): ${note.blocked}</div>
 			<div>permissions (0): ${note.blocked}</div>
@@ -345,12 +344,13 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 	const systemFontClassIcon = icon[fontSystemClass]
 	const systemTextMetricsClassIcon = icon[textMetricsSystemClass]
 	const fontFaceSetHash = hashMini(fontFaceSetFonts)
+	const textMetricsHash = hashMini(textMetrics)
 	const codecKeys = Object.keys(mediaCapabilities || {})
 	const permissionsKeys = Object.keys(permissions || {})
 	const permissionsGranted = (
 		permissions && permissions.granted ? permissions.granted.length : 0
 	)
-	const getSum = arr => !arr ? 0 : arr.reduce((acc, curr) => (acc += Math.abs(curr)), 0)
+
 	return `
 	<div class="ellipsis"><span class="aside-note">${scope || ''}</span></div>
 	<div class="col-six${lied ? ' rejected' : ''}">
@@ -360,17 +360,19 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 			`<span class="sub-hash">${hashMini(canvas2d.dataURI)}</span>` :
 			` ${note.unsupported}`
 		}</div>
-		<div class="help" title="OffscreenCanvasRenderingContext2D.measureText()">emoji metrics: ${
-			!textMetrics ? note.blocked : getSum(Object.keys(textMetrics).map(key => textMetrics[key] || 0)) || note.blocked
-		}</div>
-		<div class="help" title="OffscreenCanvasRenderingContext2D.measureText()">text metrics: ${
-			!textMetricsSystemSum ? note.blocked : 
-				systemFontClassIcon ? `${systemTextMetricsClassIcon}${textMetricsSystemSum}` :
-					textMetricsSystemSum
+		<div class="help" title="OffscreenCanvasRenderingContext2D.measureText()">textMetrics: ${
+			!textMetrics ? note.blocked : modal(
+				'creep-worker-text-metrics',
+				`<div>system: ${textMetricsSystemSum}</div><br>` +
+				Object.keys(textMetrics).map(key => `<span>${key}: ${textMetrics[key]}</span>`).join('<br>'),
+				systemFontClassIcon ? `${systemTextMetricsClassIcon}${textMetricsHash}` :
+					textMetricsHash
+			)	
 		}</div>
 		<div class="help" title="FontFaceSet.check()">fontFaceSet (${fontFaceSetFonts ? count(fontFaceSetFonts) : '0'}/${''+fontListLen}): ${
 			fontFaceSetFonts.length ? modal(
-				'creep-worker-fonts-check', fontFaceSetFonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>'),
+				'creep-worker-fonts-check', 
+				fontFaceSetFonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>'),
 				systemFontClassIcon ? `${systemFontClassIcon}${fontFaceSetHash}` : fontFaceSetHash
 			) : note.unsupported
 		}</div>
