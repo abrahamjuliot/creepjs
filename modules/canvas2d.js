@@ -314,6 +314,46 @@ export const getCanvas2d = async imports => {
 			}
 		}
 
+		// get system measurements
+		const knownTextMetrics = {
+			// Blink
+			'169.9375': 'Linux', // Chrome OS
+			'164.6962890625': 'Linux', // Fedora/Ubuntu
+			'170.4443359375': 'Linux', // Fedora/Ubuntu (onscreen)
+			'173.9521484375': 'Windows', // Windows 10
+			'163.5068359375': 'Windows', // Windows 7-8.1
+			'156.5068359375': 'Windows', // Windows 7-8.1 (onscreen)
+			'159.87109375': 'Android', // Android 8-11
+			'161.93359375': 'Android', // Android 9/Chrome OS
+			'160.021484375': 'Android', // Android 5-7
+			'170.462890625': 'Apple', // Mac Yosemite-Big Sur
+			'172.462890625': 'Apple', // Mac Mojave
+			'162.462890625': 'Apple', // Mac Yosemite-Big Sur (onscreen)
+
+			// Gecko (onscreen)
+			'163.48333384195962': 'Linux', // Fedora/Ubuntu
+			'163': 'Linux', // Ubuntu/Tor Browser
+			'170.38938852945964': 'Windows', // Windows 10
+			'159.9560546875': 'Windows', // Windows 7-8
+			'165.9560546875': 'Windows', // Tor Browser
+			'173.43938852945962': 'Apple', // Mac Yosemite-Big Sur (+Tor Browser)
+			'159.70088922409784': 'Android', // Android 11
+			'159.71331355882728': 'Android', // Android 11
+			'159.59375152587893': 'Android', // Android 11
+			'159.75551515467026': 'Android', // Android 10
+			'161.7770797729492': 'Android', // Android 9
+			
+			// WebKit (onscreen)
+			'172.955078125': 'Apple', // Mac, CriOS
+		}
+
+		const {
+			actualBoundingBoxRight: systemActualBoundingBoxRight,
+			width: systemWidth
+		} = context.measureText('😀!@#$%^&*') || {}
+		const textMetricsSystemSum = ((systemActualBoundingBoxRight || 0) + (systemWidth || 0)) || undefined
+		const textMetricsSystemClass = knownTextMetrics[textMetricsSystemSum]
+		
 		const {
 			actualBoundingBoxAscent,
 			actualBoundingBoxDescent,
@@ -397,6 +437,8 @@ export const getCanvas2d = async imports => {
 			blob,
 			blobOffscreen,
 			textMetrics: new Set(Object.keys(textMetrics)).size > 1 ? textMetrics : undefined,
+			textMetricsSystemSum,
+			textMetricsSystemClass,
 			lied
 		}
 	}
@@ -429,6 +471,8 @@ export const canvasHTML = ({ fp, note, modal, getMismatchStyle, hashMini, hashSl
 			blob,
 			blobOffscreen,
 			textMetrics,
+			textMetricsSystemSum,
+			textMetricsSystemClass,
 			$hash
 		}
 	} = fp
@@ -489,7 +533,16 @@ export const canvasHTML = ({ fp, note, modal, getMismatchStyle, hashMini, hashSl
 		return `<span class="rgba rgba-${css[c]}"></span>`
 	}).join('')).join(' ')
 
-	const getSum = arr => !arr ? 0 : arr.reduce((acc, curr) => (acc += Math.abs(curr)), 0)
+	const icon = {
+		'Linux': '<span class="icon linux"></span>',
+		'Apple': '<span class="icon apple"></span>',
+		'Windows': '<span class="icon windows"></span>',
+		'Android': '<span class="icon android"></span>'
+	}
+	
+	const systemTextMetricsClassIcon = icon[textMetricsSystemClass]
+	const textMetricsHash = hashMini(textMetrics)
+
 	return `
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<style>
@@ -556,7 +609,13 @@ export const canvasHTML = ({ fp, note, modal, getMismatchStyle, hashMini, hashSl
 			)
 		}</div>
 		<div class="help" title="CanvasRenderingContext2D.measureText()">textMetrics: ${
-			!textMetrics ? note.blocked : getSum(Object.keys(textMetrics).map(key => textMetrics[key] || 0)) || note.blocked
+			!textMetrics ? note.blocked : modal(
+				'creep-text-metrics',
+				`<div>system: ${textMetricsSystemSum}</div><br>` +
+				Object.keys(textMetrics).map(key => `<span>${key}: ${typeof textMetrics[key] == 'undefined' ? note.unsupported : textMetrics[key]}</span>`).join('<br>'),
+				systemTextMetricsClassIcon ? `${systemTextMetricsClassIcon}${textMetricsHash}` :
+					textMetricsHash
+			)	
 		}</div>
 		<div class="help" title="CanvasRenderingContext2D.getImageData()">pixel trap: ${rgba ? `${modPercent}% rgba noise ${rgbaHTML}` : ''}</div>
 		<div class="icon-container pixels">

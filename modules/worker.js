@@ -364,8 +364,8 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 			!textMetrics ? note.blocked : modal(
 				'creep-worker-text-metrics',
 				`<div>system: ${textMetricsSystemSum}</div><br>` +
-				Object.keys(textMetrics).map(key => `<span>${key}: ${textMetrics[key]}</span>`).join('<br>'),
-				systemFontClassIcon ? `${systemTextMetricsClassIcon}${textMetricsHash}` :
+				Object.keys(textMetrics).map(key => `<span>${key}: ${typeof textMetrics[key] == 'undefined' ? note.unsupported : textMetrics[key]}</span>`).join('<br>'),
+				systemTextMetricsClassIcon ? `${systemTextMetricsClassIcon}${textMetricsHash}` :
 					textMetricsHash
 			)	
 		}</div>

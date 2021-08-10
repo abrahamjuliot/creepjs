@@ -809,16 +809,40 @@ const getWorkerData = async () => {
 		
 		// get system measurements
 		const knownTextMetrics = {
-			'135.5068359375': 'Windows',
-			'134.462890625': 'Apple',
-			'126.99609375': 'Android'
+			// Blink
+			'169.9375': 'Linux', // Chrome OS
+			'164.6962890625': 'Linux', // Fedora/Ubuntu
+			'170.4443359375': 'Linux', // Fedora/Ubuntu (onscreen)
+			'173.9521484375': 'Windows', // Windows 10
+			'163.5068359375': 'Windows', // Windows 7-8.1
+			'156.5068359375': 'Windows', // Windows 7-8.1 (onscreen)
+			'159.87109375': 'Android', // Android 8-11
+			'161.93359375': 'Android', // Android 9/Chrome OS
+			'160.021484375': 'Android', // Android 5-7
+			'170.462890625': 'Apple', // Mac Yosemite-Big Sur
+			'172.462890625': 'Apple', // Mac Mojave
+			'162.462890625': 'Apple', // Mac Yosemite-Big Sur (onscreen)
 
-			// linux/ chrome os (ios not support, FF is pref?)
+			// Gecko (onscreen)
+			'163.48333384195962': 'Linux', // Fedora/Ubuntu
+			'163': 'Linux', // Ubuntu/Tor Browser
+			'170.38938852945964': 'Windows', // Windows 10
+			'159.9560546875': 'Windows', // Windows 7-8
+			'165.9560546875': 'Windows', // Tor Browser
+			'173.43938852945962': 'Apple', // Mac Yosemite-Big Sur (+Tor Browser)
+			'159.70088922409784': 'Android', // Android 11
+			'159.71331355882728': 'Android', // Android 11
+			'159.59375152587893': 'Android', // Android 11
+			'159.75551515467026': 'Android', // Android 10
+			'161.7770797729492': 'Android', // Android 9
+			
+			// WebKit (onscreen)
+			'172.955078125': 'Apple', // Mac, CriOS
 		}
 		const {
 			actualBoundingBoxRight: systemActualBoundingBoxRight,
 			width: systemWidth
-		} = context2d.measureText('!@#$%^&*') || {}
+		} = context2d.measureText('😃!@#$%^&*') || {}
 		textMetricsSystemSum = ((systemActualBoundingBoxRight || 0) + (systemWidth || 0)) || undefined
 		textMetricsSystemClass = knownTextMetrics[textMetricsSystemSum]
 
