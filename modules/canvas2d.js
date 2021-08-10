@@ -318,6 +318,7 @@ export const getCanvas2d = async imports => {
 		const knownTextMetrics = {
 			// Blink
 			'169.9375': 'Linux', // Chrome OS
+			'169.4443359375': 'Linux', // Chrome OS/CloudReady
 			'164.6962890625': 'Linux', // Fedora/Ubuntu
 			'170.4443359375': 'Linux', // Fedora/Ubuntu (onscreen)
 			'173.9521484375': 'Windows', // Windows 10
