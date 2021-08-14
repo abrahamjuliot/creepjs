@@ -877,7 +877,7 @@ const getPluginLies = (plugins, mimeTypes) => {
 		mimeTypes.map(mimeType => mimeType.enabledPlugin)
 	)
 	const trustedPluginNames = new Set(pluginsOwnPropertyNames)
-	const mimeTypeEnabledPluginsNames = mimeTypeEnabledPlugins.map(plugin => plugin.name)
+	const mimeTypeEnabledPluginsNames = mimeTypeEnabledPlugins.map(plugin => plugin && plugin.name)
 	const trustedPluginNamesArray = [...trustedPluginNames]
 	trustedPluginNamesArray.forEach(name => {
 		const validName = new Set(mimeTypeEnabledPluginsNames).has(name)
