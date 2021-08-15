@@ -828,19 +828,30 @@ const imports = {
 			}
 
 			// Bot Detection
-			const liedVersion = getCSSFeaturesLie(fp)
-			const throttle = (hours/switchCount) <= 7 // reduce the number of excessive samples submitted
-			const excessiveLooseFingerprints = hasLied && throttle
-			const botPatterns = [
-				excessiveLooseFingerprints,
-				!fp.workerScope,
-				fp.workerScope.lied,
-				!fp.workerScope.userAgent,
-				liedVersion
-			]
-			const botProbability = (botPatterns.filter(x => !!x).length) / botPatterns.length
-			const isBot = !!botProbability
-			const botPercentString = `${(botProbability*100).toFixed(0)}%`
+			const getBot = ({fp, hours, hasLied, switchCount}) => {
+				const liedVersion = getCSSFeaturesLie(fp)
+				const throttle = (hours/switchCount) <= 7 // throttle excessive loose samples
+				const excessiveLooseFingerprints = hasLied && throttle
+				const workerScopeIsTrashed = (
+					!fp.workerScope ||
+					!fp.workerScope.userAgent ||
+					fp.workerScope.lied
+				)
+				const botPatterns = [
+					excessiveLooseFingerprints,
+					workerScopeIsTrashed,
+					liedVersion
+				]
+				const botProbability = (botPatterns.filter(x => !!x).length) / botPatterns.length
+				const isBot = !!botProbability
+				const botPercentString = `${(botProbability*100).toFixed(0)}%`
+				return {
+					isBot,
+					botPercentString
+				}
+			}
+			
+			const { isBot, botPercentString } = getBot({fp, hours, hasLied, switchCount}) 
 			
 			const template = `
 				<div class="visitor-info">
