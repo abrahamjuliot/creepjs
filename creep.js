@@ -830,7 +830,7 @@ const imports = {
 			// Bot Detection
 			const getBot = ({fp, hours, hasLied, switchCount}) => {
 				const liedVersion = getCSSFeaturesLie(fp)
-				const throttle = (hours/switchCount) <= 7 // throttle excessive loose samples
+				const throttle = (switchCount > 20) && ((hours/switchCount) <= 7) // throttle excessive loose samples
 				const excessiveLooseFingerprints = hasLied && throttle
 				const workerScopeIsTrashed = (
 					!fp.workerScope ||
