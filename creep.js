@@ -826,6 +826,21 @@ const imports = {
 				const daysRemaining = Math.round((+endNoticeDate - +new Date()) / (1000 * 3600 * 24))
 				return daysRemaining >= 0
 			}
+
+			// Bot Detection
+			const liedVersion = getCSSFeaturesLie(fp)
+			const throttle = (hours/switchCount) <= 7 // reduce the number of excessive samples submitted
+			const excessiveLooseFingerprints = hasLied && throttle
+			const botPatterns = [
+				excessiveLooseFingerprints,
+				!fp.workerScope,
+				fp.workerScope.lied,
+				!fp.workerScope.userAgent,
+				liedVersion
+			]
+			const botProbability = (botPatterns.filter(x => !!x).length) / botPatterns.length
+			const isBot = !!botProbability
+			const botPercentString = `${(botProbability*100).toFixed(0)}%`
 			
 			const template = `
 				<div class="visitor-info">
@@ -863,11 +878,7 @@ const imports = {
 							}</span></div>
 							<div class="ellipsis">loose fingerprint: <span class="unblurred">${hashSlice(fpHash)}</span></div>
 							<div class="ellipsis">loose switched: <span class="unblurred">${switchCount}x ${percentify(switchCountPointLoss)}</span></div>
-							<div class="ellipsis">bot: <span class="unblurred">${
-								caniuse(() => fp.headless.headlessRating) ? 'true (headless)' :
-								caniuse(() => fp.headless.stealthRating) ? 'true (stealth)' :
-								switchCount > 9 && hours < 48 ? 'true (10 loose in 48 hours)' : 'false'
-							}</span></div>
+							<div class="ellipsis">bot: <span class="unblurred">${botPercentString}</span></div>
 						</div>
 					</div>
 					${
@@ -981,7 +992,7 @@ const imports = {
 			const rejectSamplePatch = (el, html) => patch(el, html`
 				<div class="flex-grid rejected">
 					<div class="col-eight">
-						<strong>Sample Rejected</strong>
+						<strong>Sample Rejected: ${botPercentString} Bot</strong>
 						<div>client user agent:</div>
 						<div>window object:</div>
 						<div>system styles:</div>
@@ -997,15 +1008,7 @@ const imports = {
 				</div>
 			`)
 			
-			const liedVersion = getCSSFeaturesLie(fp)
-
-			if (
-				!fp.workerScope ||
-				fp.workerScope.lied ||
-				!fp.workerScope.userAgent ||
-				liedVersion
-				//|| ('BroadcastChannel' in window && fp.workerScope.type == 'dedicated')
-			) {
+			if (isBot) {
 				return rejectSamplePatch(el, html)
 			}
 
