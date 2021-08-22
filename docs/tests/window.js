@@ -195,17 +195,28 @@
 	// get data
 	const res = await fetch('window.json').catch(error => console.error(error))
 	const data = await res.json().catch(error => console.error(error))
-	const useragent = data.reduce((useragent, item) => {
-		const { decrypted: name, id, systems } = item
-		const version = useragent[name]
-		if (version) {
-			version.push({ id, systems: systems.sort() })
-		}
-		else {
-			useragent[name] = [{ id, systems: systems.sort() }]
-		}
-		return useragent
-	}, {})
+
+	const webapp = 'https://script.google.com/macros/s/AKfycbw26MLaK1PwIGzUiStwweOeVfl-sEmIxFIs5Ax7LMoP1Cuw-s0llN-aJYS7F8vxQuVG-A/exec'
+	const samples = await fetch(webapp)
+		.then(response => response.json())
+		.catch(error => {
+			console.error(error)
+			return
+		})
+
+	if (!samples) {
+		const el = document.getElementById('fingerprint-data')
+		return patch(el, html`
+			<div id="fingerprint-data">
+				<div class="visitor-info">
+					<strong>Window Version</strong>
+					<div>Failed sample fetch...</div>
+				</div>
+			</div>
+		`)
+	}
+
+	const { window: windowSamples } = samples || {}
 
 	// construct template 
 	let matchingIndex
@@ -238,8 +249,8 @@
 	}
 
 	let fingerprintMatch
-	Object.keys(useragent).filter(key => {
-		const version = useragent[key]
+	Object.keys(windowSamples).filter(key => {
+		const version = windowSamples[key]
 		const match = version.filter(fp => fp.id == hash)
 		const found = match.length
 		if (found) {
@@ -250,8 +261,8 @@
 	})
 
 
-	let uaTemplates = Object.keys(useragent).sort().map((key, index) => {
-		return computeTemplate({ name: key, fingerprints: useragent[key], index })
+	let uaTemplates = Object.keys(windowSamples).sort().map((key, index) => {
+		return computeTemplate({ name: key, fingerprints: windowSamples[key], index })
 	})
 	const matchingTemplate = uaTemplates[matchingIndex]
 	uaTemplates = uaTemplates.filter((item, index) => index != matchingIndex)
@@ -260,31 +271,31 @@
 	const { userAgent: reportedUserAgent } = navigator
 	const el = document.getElementById('fingerprint-data')
 	patch(el, html`
-	<div id="fingerprint-data">
-		<div class="visitor-info">
-			<strong>Window Version</strong>
-		</div>
-		<div>
+		<div id="fingerprint-data">
+			<div class="visitor-info">
+				<strong>Window Version</strong>
+			</div>
 			<div>
-				<div>reported user agent: ${
-		decryptUserAgent({
-			ua: reportedUserAgent,
-			os: getOS(reportedUserAgent),
-			isBrave
-		})
-		}</div>
-				<div>our guess:</div>
-				<div class="block-text" style="font-size:30px">${
-		fingerprintMatch ? fingerprintMatch : `new (${hashMini(hash)})`
-		}</div>
-				${matchingTemplate ? matchingTemplate : ''}
+				<div>
+					<div>reported user agent: ${
+			decryptUserAgent({
+				ua: reportedUserAgent,
+				os: getOS(reportedUserAgent),
+				isBrave
+			})
+			}</div>
+					<div>our guess:</div>
+					<div class="block-text" style="font-size:30px">${
+			fingerprintMatch ? fingerprintMatch : `new (${hashMini(hash)})`
+			}</div>
+					${matchingTemplate ? matchingTemplate : ''}
+				</div>
+			</div>
+			<div class="relative">
+				<div class="ellipsis"><span class="aside-note">updated 2021-4-11</span></div>
+				${uaTemplates.join('')}
 			</div>
 		</div>
-		<div class="relative">
-			<div class="ellipsis"><span class="aside-note">updated 2021-4-11</span></div>
-			${uaTemplates.join('')}
-		</div>
-	</div>
-`)
+	`)
 
 })()
