@@ -193,9 +193,6 @@
 	}
 
 	// get data
-	const res = await fetch('window.json').catch(error => console.error(error))
-	const data = await res.json().catch(error => console.error(error))
-
 	const webapp = 'https://script.google.com/macros/s/AKfycbw26MLaK1PwIGzUiStwweOeVfl-sEmIxFIs5Ax7LMoP1Cuw-s0llN-aJYS7F8vxQuVG-A/exec'
 	const samples = await fetch(webapp)
 		.then(response => response.json())
