@@ -29,6 +29,7 @@ import { getSVG, svgHTML } from './modules/svg.js'
 import { getResistance, resistanceHTML } from './modules/resistance.js'
 import { getIntl, intlHTML } from './modules/intl.js'
 import { getCSSFeaturesLie, getEngineFeatures, featuresHTML } from './modules/features.js'
+import { renderSamples } from './modules/samples.js'
 
 const imports = {
 	require: {
@@ -184,7 +185,7 @@ const imports = {
 			cssMediaHash,
 			cssHash,
 			styleHash,
-			systemHash,
+			styleSystemHash,
 			screenHash,
 			voicesHash,
 			canvas2dHash,
@@ -282,11 +283,11 @@ const imports = {
 			intl: !intlComputed ? undefined : {...intlComputed, $hash: intlHash},
 			features: !featuresComputed ? undefined : {...featuresComputed, $hash: featuresHash},
 		}
-		return { fingerprint, systemHash, styleHash, emojiHash, timeEnd }
+		return { fingerprint, styleSystemHash, styleHash, emojiHash, timeEnd }
 	}
 	
 	// fingerprint and render
-	const { fingerprint: fp, systemHash, styleHash, emojiHash, timeEnd } = await fingerprint().catch(error => console.error(error))
+	const { fingerprint: fp, styleSystemHash, styleHash, emojiHash, timeEnd } = await fingerprint().catch(error => console.error(error))
 	
 	console.log('%c✔ loose fingerprint passed', 'color:#4cca9f')
 
@@ -584,7 +585,10 @@ const imports = {
 		note,
 		modal,
 		count,
-		getMismatchStyle
+		getMismatchStyle,
+		patch,
+		html,
+		styleSystemHash
 	}
 	const hasTrash = !!trashLen
 	const { lies: hasLied, capturedErrors: hasErrors } = creep
@@ -683,7 +687,7 @@ const imports = {
 		<div class="flex-grid">${featuresHTML(templateImports)}</div>
 		<div class="flex-grid">
 			${cssMediaHTML(templateImports)}
-			${cssHTML(templateImports, systemHash)}
+			${cssHTML(templateImports)}
 		</div>
 		<div>
 			<div class="flex-grid">
@@ -714,7 +718,10 @@ const imports = {
 		</div>
 	</div>
 	`, () => {
-		// fetch data from server
+
+		renderSamples(templateImports)
+
+		// fetch fingerprint data from server
 		const id = 'creep-browser'
 		const visitorElem = document.getElementById(id)
 		const fetchVisitorDataTimer = timer()
@@ -1047,7 +1054,7 @@ const imports = {
 				`htmlId=${htmlElementVersion.$hash}`,
 				`winId=${windowFeatures.$hash}`,
 				`styleId=${styleHash}`,
-				`styleSystemId=${systemHash}`,
+				`styleSystemId=${styleSystemHash}`,
 				`emojiId=${!clientRects || clientRects.lied ? 'undefined' : emojiHash}`,
 				`audioId=${
 						!offlineAudioContext ||
