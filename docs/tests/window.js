@@ -292,7 +292,7 @@
 				</div>
 			</div>
 			<div class="relative">
-				<div class="ellipsis"><span class="aside-note">updated 2021-4-11</span></div>
+				<div class="ellipsis"><span class="aside-note">updated weekly</span></div>
 				${uaTemplates.join('')}
 			</div>
 		</div>
