@@ -30,9 +30,7 @@ export const htmlElementVersionHTML = ({ fp, modal, note, hashSlice, count }) =>
 			<strong>HTMLElement</strong>
 			<div>keys (0): ${note.blocked}</div>
 			<div>
-				<div>0% of samples</div>
-				<div>0% of class</div>
-				<div>engine: ${note.blocked}</div>
+				<div>${note.blocked}</div>
 			</div>
 		</div>`
 	}
@@ -47,10 +45,8 @@ export const htmlElementVersionHTML = ({ fp, modal, note, hashSlice, count }) =>
 	<div class="col-six">
 		<strong>HTMLElement</strong><span class="hash">${hashSlice($hash)}</span>
 		<div>keys (${count(keys)}): ${keys && keys.length ? modal('creep-html-element-version', keys.join(', ')) : note.blocked}</div>
-		<div id="html-element-samples">
-			<div>0% of samples</div>
-			<div>0% of class</div>
-			<div>engine: ${note.unknown}</div>
+		<div class="blurred" id="html-element-samples">
+			<div>0% of engine</div>
 		</div>
 	</div>
 	`

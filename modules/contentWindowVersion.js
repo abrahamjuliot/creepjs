@@ -55,9 +55,7 @@ export const windowFeaturesHTML = ({ fp, modal, note, hashSlice, count }) => {
 			<strong>Window</strong>
 			<div>keys (0): ${note.blocked}</div>
 			<div>
-				<div>0% of samples</div>
-				<div>0% of class</div>
-				<div>version: ${note.blocked}</div>
+				<div>${note.blocked}</div>
 			</div>
 		</div>`
 	}
@@ -72,10 +70,8 @@ export const windowFeaturesHTML = ({ fp, modal, note, hashSlice, count }) => {
 	<div class="col-six">
 		<strong>Window</strong><span class="hash">${hashSlice($hash)}</span>
 		<div>keys (${count(keys)}): ${keys && keys.length ? modal('creep-iframe-content-window-version', keys.join(', ')) : note.blocked}</div>
-		<div id="window-features-samples">
-			<div>0% of samples</div>
-			<div>0% of class</div>
-			<div>version: ${note.unknown}</div>
+		<div class="blurred" id="window-features-samples">
+			<div>0% of version</div>
 		</div>
 	</div>
 	`	

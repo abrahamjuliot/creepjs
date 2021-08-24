@@ -214,9 +214,7 @@ export const cssHTML = ({ fp, modal, note, hashMini, hashSlice, count }) => {
 			<div>keys (0): ${note.blocked}</div>
 			<div>system styles: ${note.blocked}</div>
 			<div>
-				<div>0% of samples</div>
-				<div>0% of class</div>
-				<div>engine: ${note.blocked}</div>
+				<div>${note.blocked}</div>
 			</div>
 			<div class="gradient"></div>
 		</div>`
@@ -273,10 +271,8 @@ export const cssHTML = ({ fp, modal, note, hashMini, hashSlice, count }) => {
 				hashMini(system)
 			) : note.blocked
 		}</div>
-		<div id="system-style-samples">
-			<div>0% of samples</div>
-			<div>0% of class</div>
-			<div>engine: ${note.unknown}</div>
+		<div class="blurred" id="system-style-samples">
+			<div>0% of engine</div>
 		</div>
 		<style>.gradient { background: repeating-linear-gradient(to right, ${gradientColors.join(', ')}); }</style>
 		<div class="gradient"></div>

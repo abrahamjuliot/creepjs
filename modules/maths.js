@@ -223,12 +223,11 @@ export const mathsHTML = ({ fp, modal, note, hashSlice }) => {
 		return `
 		<div class="col-six undefined">
 			<strong>Math</strong>
-			<div>
-				<div>0% of samples</div>
-				<div>0% of class</div>
-				<div>engine: ${note.blocked}</div>
-			</div>
 			<div>results: ${note.blocked}</div>
+			<div>
+				<div>${note.blocked}</div>
+			</div>
+			
 		</div>`
 	}
 	const {
@@ -278,11 +277,6 @@ export const mathsHTML = ({ fp, modal, note, hashSlice }) => {
 	return `
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>Math</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-		<div id="math-samples">
-			<div>0% of samples</div>
-			<div>0% of class</div>
-			<div>engine: ${note.unknown}</div>
-		</div>
 		<div>results: ${
 			!data ? note.blocked : 
 			modal(
@@ -290,6 +284,9 @@ export const mathsHTML = ({ fp, modal, note, hashSlice }) => {
 				header+results.join('<br>')
 			)
 		}</div>
+		<div class="blurred" id="math-samples">
+			<div>0% of engine</div>
+		</div>
 	</div>
 	`
 }

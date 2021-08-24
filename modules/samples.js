@@ -130,20 +130,15 @@ export const renderSamples = async templateImports => {
 			return
 		}
 		const { windowFeatures: { $hash } } = fp
-		const { decryption: browser, browserHTML, uniqueMetric, uniqueEngine } = decryptHash($hash, windowSamples)
+		const { browserHTML, uniqueEngine } = decryptHash($hash, windowSamples)
 		return patch(id, html`
 			<div>
 				<style>
-					.window-features-metric-rating {
-						background: linear-gradient(90deg, var(${uniqueMetric < 10 ? '--unique' : '--grey-glass'}) ${uniqueMetric}%, #fff0 ${uniqueMetric}%, #fff0 100%);
-					}
 					.window-features-class-rating {
 						background: linear-gradient(90deg, var(${uniqueEngine < 10 ? '--unique' : '--grey-glass'}) ${uniqueEngine}%, #fff0 ${uniqueEngine}%, #fff0 100%);
 					}
 				</style>
-				<div class="window-features-metric-rating help" title="% of limited window samples">${uniqueMetric}% of samples</div>
-				<div class="window-features-class-rating help" title="% of ${browser} class">${uniqueEngine}% of class</div>
-				<div>version: ${browserHTML || note.unknown}</div>
+				<div class="window-features-class-rating">${uniqueEngine}% of ${browserHTML || note.unknown}</div>
 			</div>
 		`)
 	}
@@ -154,20 +149,15 @@ export const renderSamples = async templateImports => {
 			return
 		}
 		const { maths: { $hash } } = fp
-		const { decryption: engine, engineSystem, uniqueMetric, uniqueEngine } = decryptHash($hash, mathSamples)
+		const { engineHTML, uniqueEngine } = decryptHash($hash, mathSamples)
 		return patch(id, html`
 			<div>
 				<style>
-					.math-metric-rating {
-						background: linear-gradient(90deg, var(${uniqueMetric < 10 ? '--unique' : '--grey-glass'}) ${uniqueMetric}%, #fff0 ${uniqueMetric}%, #fff0 100%);
-					}
 					.math-class-rating {
 						background: linear-gradient(90deg, var(${uniqueEngine < 10 ? '--unique' : '--grey-glass'}) ${uniqueEngine}%, #fff0 ${uniqueEngine}%, #fff0 100%);
 					}
 				</style>
-				<div class="math-metric-rating help" title="% of math samples">${uniqueMetric}% of samples</div>
-				<div class="math-class-rating help" title="% of ${engine} class">${uniqueEngine}% of class</div>
-				<div>engine: ${engineSystem || note.unknown}</div>
+				<div class="math-class-rating">${uniqueEngine}% of ${engineHTML || note.unknown}</div>
 			</div>
 		`)
 	}
@@ -178,20 +168,15 @@ export const renderSamples = async templateImports => {
 			return
 		}
 		const { consoleErrors: { $hash } } = fp
-		const { decryption: engine, engineHTML, uniqueMetric, uniqueEngine } = decryptHash($hash, errorSamples)
+		const { engineHTML, uniqueEngine } = decryptHash($hash, errorSamples)
 		return patch(id, html`
 			<div>
 				<style>
-					.console-errors-metric-rating {
-						background: linear-gradient(90deg, var(${uniqueMetric < 10 ? '--unique' : '--grey-glass'}) ${uniqueMetric}%, #fff0 ${uniqueMetric}%, #fff0 100%);
-					}
 					.console-errors-class-rating {
 						background: linear-gradient(90deg, var(${uniqueEngine < 10 ? '--unique' : '--grey-glass'}) ${uniqueEngine}%, #fff0 ${uniqueEngine}%, #fff0 100%);
 					}
 				</style>
-				<div class="console-errors-metric-rating help" title="% of console errors samples">${uniqueMetric}% of samples</div>
-				<div class="console-errors-class-rating help" title="% of ${engine} class">${uniqueEngine}% of class</div>
-				<div>engine: ${engineHTML || note.unknown}</div>
+				<div class="console-errors-class-rating">${uniqueEngine}% of ${engineHTML || note.unknown}</div>
 			</div>
 		`)
 	}
@@ -202,20 +187,15 @@ export const renderSamples = async templateImports => {
 			return
 		}
 		const { htmlElementVersion: { $hash } } = fp
-		const { decryption: engineRenderer, engineRendererHTML, uniqueMetric, uniqueEngine } = decryptHash($hash, htmlSamples)
+		const { engineRendererHTML, uniqueEngine } = decryptHash($hash, htmlSamples)
 		return patch(id, html`
 			<div>
 				<style>
-					.html-element-version-metric-rating {
-						background: linear-gradient(90deg, var(${uniqueMetric < 10 ? '--unique' : '--grey-glass'}) ${uniqueMetric}%, #fff0 ${uniqueMetric}%, #fff0 100%);
-					}
 					.html-element-version-class-rating {
 						background: linear-gradient(90deg, var(${uniqueEngine < 10 ? '--unique' : '--grey-glass'}) ${uniqueEngine}%, #fff0 ${uniqueEngine}%, #fff0 100%);
 					}
 				</style>
-				<div class="html-element-version-metric-rating help" title="% of limited html element samples">${uniqueMetric}% of samples</div>
-				<div class="html-element-version-class-rating help" title="% of ${engineRenderer} class">${uniqueEngine}% of class</div>
-				<div>engine: ${engineRendererHTML || note.unknown}</div>
+				<div class="html-element-version-class-rating">${uniqueEngine}% of ${engineRendererHTML || note.unknown}</div>
 			</div>
 		`)
 	}
@@ -225,20 +205,15 @@ export const renderSamples = async templateImports => {
 		if (!fp.css || !id) {
 			return
 		}
-		const { decryption: engineRenderer, engineRendererSystemHTML, uniqueMetric, uniqueEngine } = decryptHash(styleSystemHash, styleSamples)
+		const { decryption: engineRenderer, uniqueEngine } = decryptHash(styleSystemHash, styleSamples)
 		return patch(id, html`
 			<div>
 				<style>
-					.system-styles-metric-rating {
-						background: linear-gradient(90deg, var(${uniqueMetric < 10 ? '--unique' : '--grey-glass'}) ${uniqueMetric}%, #fff0 ${uniqueMetric}%, #fff0 100%);
-					}
 					.system-styles-class-rating {
 						background: linear-gradient(90deg, var(${uniqueEngine < 10 ? '--unique' : '--grey-glass'}) ${uniqueEngine}%, #fff0 ${uniqueEngine}%, #fff0 100%);
 					}
 				</style>
-				<div class="system-styles-metric-rating help" title="% of system styles samples">${uniqueMetric}% of samples</div>
-				<div class="system-styles-class-rating help" title="% of ${engineRenderer} class">${uniqueEngine}% of class</div>
-				<div>engine: ${engineRendererSystemHTML || note.unknown}</div>
+				<div class="system-styles-class-rating">${uniqueEngine}% of ${engineRenderer || note.unknown}</div>
 			</div>
 		`)
 	}

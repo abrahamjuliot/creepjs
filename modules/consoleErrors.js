@@ -49,12 +49,10 @@ export const consoleErrorsHTML = ({ fp, modal, note, hashSlice }) => {
 		return `
 		<div class="col-six undefined">
 			<strong>Error</strong>
-			<div id="error-samples">
-				<div>0% of samples</div>
-				<div>0% of class</div>
-				<div>engine: ${note.blocked}</div>
-			</div>
 			<div>results: ${note.blocked}</div>
+			<div>
+				<div>${note.blocked}</div>
+			</div>
 		</div>`
 	}
 	const {
@@ -71,12 +69,10 @@ export const consoleErrorsHTML = ({ fp, modal, note, hashSlice }) => {
 	return `
 	<div class="col-six">
 		<strong>Error</strong><span class="hash">${hashSlice($hash)}</span>
-		<div id="error-samples">
-			<div>0% of samples</div>
-			<div>0% of class</div>
-			<div>engine: ${note.unknown}</div>
-		</div>
 		<div>results: ${modal('creep-console-errors', results.join('<br>'))}</div>
+		<div class="blurred" id="error-samples">
+			<div>0% of engine</div>
+		</div>
 	</div>
 	`	
 }
