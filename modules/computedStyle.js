@@ -272,7 +272,7 @@ export const cssHTML = ({ fp, modal, note, hashMini, hashSlice, count }) => {
 			) : note.blocked
 		}</div>
 		<div class="blurred" id="system-style-samples">
-			<div>0% of engine</div>
+			<div>system</div>
 		</div>
 		<style>.gradient { background: repeating-linear-gradient(to right, ${gradientColors.join(', ')}); }</style>
 		<div class="gradient"></div>

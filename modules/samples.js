@@ -61,6 +61,8 @@ export const renderSamples = async templateImports => {
 		const icon = {
 			blink: '<span class="icon blink"></span>',
 			webkit: '<span class="icon webkit"></span>',
+			gecko: '<span class="icon gecko"></span>',
+			goanna: '<span class="icon goanna"></span>',
 			tor: '<span class="icon tor"></span>',
 			firefox: '<span class="icon firefox"></span>',
 			cros: '<span class="icon cros"></span>',
@@ -85,11 +87,11 @@ export const renderSamples = async templateImports => {
 								''
 		)
 		const systemIcon = (
-			!decryption || systems.length != 1 ? '' :
+			(!decryption || (systems.length != 1)) ? '' :
 				/windows/i.test(systems[0]) ? icon.windows :
 					/linux/i.test(systems[0]) ? icon.linux :
 						/ipad|iphone|ipod|ios|mac/i.test(systems[0]) ? icon.apple :
-							/android/.test(systems[0]) ? icon.android :
+							/android/i.test(systems[0]) ? icon.android :
 								/chrome os/i.test(systems[0]) ? icon.cros :
 									''
 		)
@@ -205,15 +207,10 @@ export const renderSamples = async templateImports => {
 		if (!fp.css || !id) {
 			return
 		}
-		const { decryption: engineRenderer, uniqueEngine } = decryptHash(styleSystemHash, styleSamples)
+		const { engineRendererSystemHTML, uniqueEngine } = decryptHash(styleSystemHash, styleSamples)
 		return patch(id, html`
 			<div>
-				<style>
-					.system-styles-class-rating {
-						background: linear-gradient(90deg, var(${uniqueEngine < 10 ? '--unique' : '--grey-glass'}) ${uniqueEngine}%, #fff0 ${uniqueEngine}%, #fff0 100%);
-					}
-				</style>
-				<div class="system-styles-class-rating">${uniqueEngine}% of ${engineRenderer || note.unknown}</div>
+				<div>${engineRendererSystemHTML || note.unknown}</div>
 			</div>
 		`)
 	}
