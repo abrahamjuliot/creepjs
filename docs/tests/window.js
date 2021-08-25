@@ -212,7 +212,7 @@
 			</div>
 		`)
 	}
-
+	
 	const { window: windowSamples } = samples || {}
 
 	// construct template 

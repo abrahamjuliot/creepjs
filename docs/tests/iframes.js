@@ -161,22 +161,17 @@
 	}
 
 	// get feature data
-	const featureRes = await fetch('window.json').catch(error => console.error(error))
-	const featureData = await featureRes.json().catch(error => console.error(error))
-	const useragent = featureData.reduce((useragent, item) => {
-		const { decrypted: name, id, systems } = item
-		const version = useragent[name]
-		if (version) {
-			version.push({ id, systems: systems.sort() })
-		}
-		else {
-			useragent[name] = [{ id, systems: systems.sort() }]
-		}
-		return useragent
-	}, {})
+	const webapp = 'https://script.google.com/macros/s/AKfycbw26MLaK1PwIGzUiStwweOeVfl-sEmIxFIs5Ax7LMoP1Cuw-s0llN-aJYS7F8vxQuVG-A/exec'
+	const samples = await fetch(webapp)
+		.then(response => response.json())
+		.catch(error => {
+			console.error(error)
+			return
+		})
+	const { window: windowSamples } = samples || {}
 
-	const hashMapFeatures = Object.keys(useragent).reduce((acc, key) => {
-		const version = useragent[key]
+	const hashMapFeatures = Object.keys(windowSamples).reduce((acc, key) => {
+		const version = windowSamples[key]
 		const ids = version.reduce((acc, fp) => {
 			acc[fp.id] = key
 			return acc
