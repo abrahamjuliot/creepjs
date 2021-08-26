@@ -828,14 +828,14 @@ const imports = {
 				d.setDate(d.getDate() + n)
 				return d
 			}
-			const shouldStyle = d => {
+			const shouldStyle = renewedDate => {
 				const endNoticeDate = addDays(renewedDate, 7)
 				const daysRemaining = Math.round((+endNoticeDate - +new Date()) / (1000 * 3600 * 24))
 				return daysRemaining >= 0
 			}
 
 			// Bot Detection
-			const getBot = ({fp, hours, hasLied, switchCount}) => {
+			const getBot = ({ fp, hours, hasLied, switchCount }) => {
 				const userAgentReportIsOutsideOfCSSVersion = getCSSFeaturesLie(fp)
 				const userShouldGetThrottled = (switchCount > 20) && ((hours/switchCount) <= 7) // 
 				const excessiveLooseFingerprints = hasLied && userShouldGetThrottled
