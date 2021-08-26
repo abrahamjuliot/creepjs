@@ -60,6 +60,7 @@ export const renderSamples = async templateImports => {
 
 		const icon = {
 			blink: '<span class="icon blink"></span>',
+			v8: '<span class="icon v8"></span>',
 			webkit: '<span class="icon webkit"></span>',
 			gecko: '<span class="icon gecko"></span>',
 			goanna: '<span class="icon goanna"></span>',
@@ -75,7 +76,7 @@ export const renderSamples = async templateImports => {
 			!decryption ? '' :
 				/SpiderMonkey/.test(decryption) ? icon.firefox :
 					/JavaScriptCore/.test(decryption) ? icon.webkit :
-						/V8/.test(decryption) ? icon.blink :
+						/V8/.test(decryption) ? icon.v8 :
 							''
 		)
 		const engineRendererIcon = (
