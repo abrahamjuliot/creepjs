@@ -117,7 +117,7 @@ const getCSSFeaturesLie = fp => {
 	const browser = getFeaturesBrowser()
 	const stable = getStableFeatures()
 	const { version: maxVersion } = stable[browser] || {}
-	const { userAgenVersion: reportedVersion } = fp.workerScope
+	const { userAgentVersion: reportedVersion } = fp.workerScope
 	
 	// let RFP pass
 	const { privacy } = fp.resistance || {}

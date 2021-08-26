@@ -239,25 +239,25 @@ export const getBestWorkerScope = async imports => {
 			}
 			// user agent version lie
 			const getVersion = x => /\s(\d+)/i.test(x) && /\s(\d+)/i.exec(x)[1]
-			const userAgenVersion = getVersion(decryptedName)
-			const userAgenDataVersion = (
+			const userAgentVersion = getVersion(decryptedName)
+			const userAgentDataVersion = (
 				userAgentData &&
 				userAgentData.brandsVersion &&
 				userAgentData.brandsVersion.length ? 
 				getVersion(userAgentData.brandsVersion) :
 				undefined
 			)
-			const versionSupported = userAgenDataVersion && userAgenVersion
-			const versionMatch = userAgenDataVersion == userAgenVersion
+			const versionSupported = userAgentDataVersion && userAgentVersion
+			const versionMatch = userAgentDataVersion == userAgentVersion
 			if (versionSupported && !versionMatch) {
 				workerScope.lied = true
-				workerScope.lies.version = `userAgentData version ${userAgenDataVersion} and user agent version ${userAgenVersion} do not match`
+				workerScope.lies.version = `userAgentData version ${userAgentDataVersion} and user agent version ${userAgentVersion} do not match`
 				documentLie(workerScope.scope, workerScope.lies.version)
 			}
 			
 			// capture userAgent version
-			workerScope.userAgenVersion = userAgenVersion
-			workerScope.userAgenDataVersion = userAgenDataVersion
+			workerScope.userAgentVersion = userAgentVersion
+			workerScope.userAgentDataVersion = userAgentDataVersion
 			workerScope.userAgentEngine = userAgentEngine
 
 			logTestResult({ start, test: `${type} worker`, passed: true })
