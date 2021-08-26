@@ -836,18 +836,17 @@ const imports = {
 
 			// Bot Detection
 			const getBot = ({fp, hours, hasLied, switchCount}) => {
-				const liedVersion = getCSSFeaturesLie(fp)
-				const throttle = (switchCount > 20) && ((hours/switchCount) <= 7) // throttle excessive loose samples
-				const excessiveLooseFingerprints = hasLied && throttle
-				const workerScopeIsTrashed = (
-					!fp.workerScope ||
-					!fp.workerScope.userAgent ||
-					fp.workerScope.lied
-				)
+				const userAgentReportIsOutsideOfCSSVersion = getCSSFeaturesLie(fp)
+				const userShouldGetThrottled = (switchCount > 20) && ((hours/switchCount) <= 7) // 
+				const excessiveLooseFingerprints = hasLied && userShouldGetThrottled
+				const workerScopeIsTrashed = !fp.workerScope || !fp.workerScope.userAgent
+				const liedWorkerScope = fp.workerScope.lied
+				// Patern conditions that warrant rejection
 				const botPatterns = [
 					excessiveLooseFingerprints,
+					userAgentReportIsOutsideOfCSSVersion,
 					workerScopeIsTrashed,
-					liedVersion
+					liedWorkerScope
 				]
 				const botProbability = (botPatterns.filter(x => !!x).length) / botPatterns.length
 				const isBot = !!botProbability
