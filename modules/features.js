@@ -127,14 +127,23 @@ const getCSSFeaturesLie = fp => {
 
 	const { cssVersion } = fp.features || {}
 	const versionParts = cssVersion ? cssVersion.split('-') : []
-	const liedVersion = reportedVersion && cssVersion && (+reportedVersion <= maxVersion) && (
-		(
-			versionParts.length == 1 &&
-			(+reportedVersion > +versionParts[0]+1 || +reportedVersion < +versionParts[0]-1)
-		) || (
-			versionParts.length == 2 &&
-			(+reportedVersion > +versionParts[1]+1 || +reportedVersion < +versionParts[0]-1)
+	const versionNotAboveSamples = (+reportedVersion <= maxVersion)
+	const validMetrics = reportedVersion && cssVersion
+	const forgivenessOffset = 0 // 0 is strict (dev and canary builds may fail)
+	const outsideOfVersion = (
+		versionParts.length == 1 && (
+			+reportedVersion > (+versionParts[0]+forgivenessOffset) ||
+			+reportedVersion < (+versionParts[0]-forgivenessOffset)
 		)
+	)
+	const outsideOfVersionRange = (
+		versionParts.length == 2 && (
+			+reportedVersion > (+versionParts[1]+forgivenessOffset) ||
+			+reportedVersion < (+versionParts[0]-forgivenessOffset)
+		)
+	)
+	const liedVersion = validMetrics && versionNotAboveSamples && (
+		outsideOfVersion || outsideOfVersionRange
 	)
 	return liedVersion
 }
