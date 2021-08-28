@@ -9965,7 +9965,7 @@
 				}</span>`
 				};
 
-				const renewedDate = '2021-8-1';
+				const renewedDate = '2021-8-27';
 				const addDays = (date, n) => {
 					const d = new Date(date);
 					d.setDate(d.getDate() + n);
