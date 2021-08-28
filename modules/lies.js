@@ -887,6 +887,7 @@ const getPluginLies = (plugins, mimeTypes) => {
 	})
 
 	// 1. Expect plugin name to be in plugins own property names
+	/* [1-2 are unstable tests as of Chrome 94]
 	plugins.forEach(plugin => {
 		if (!trustedPluginNames.has(plugin.name)) {
 			lies.push('missing plugin name')
@@ -908,6 +909,7 @@ const getPluginLies = (plugins, mimeTypes) => {
 	if (mismatchingPlugins) {
 		lies.push('mismatching plugins')
 	}
+	*/
 
 	// 3. Expect MimeType object in plugins
 	const invalidPlugins = plugins.filter(plugin => {

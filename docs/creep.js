@@ -1456,11 +1456,12 @@
 		});
 
 		// 1. Expect plugin name to be in plugins own property names
+		/* [1-2 are unstable tests as of Chrome 94]
 		plugins.forEach(plugin => {
 			if (!trustedPluginNames.has(plugin.name)) {
-				lies.push('missing plugin name');
+				lies.push('missing plugin name')
 			}
-		});
+		})
 
 		// 2. Expect MimeType Plugins to match Plugins
 		const getPluginPropertyValues = plugin => {
@@ -1470,13 +1471,14 @@
 				plugin.length,
 				plugin.name
 			]
-		};
-		const pluginList = plugins.map(getPluginPropertyValues).sort();
-		const enabledpluginList = mimeTypeEnabledPlugins.map(getPluginPropertyValues).sort();
-		const mismatchingPlugins = '' + pluginList != '' + enabledpluginList;
-		if (mismatchingPlugins) {
-			lies.push('mismatching plugins');
 		}
+		const pluginList = plugins.map(getPluginPropertyValues).sort()
+		const enabledpluginList = mimeTypeEnabledPlugins.map(getPluginPropertyValues).sort()
+		const mismatchingPlugins = '' + pluginList != '' + enabledpluginList
+		if (mismatchingPlugins) {
+			lies.push('mismatching plugins')
+		}
+		*/
 
 		// 3. Expect MimeType object in plugins
 		const invalidPlugins = plugins.filter(plugin => {
