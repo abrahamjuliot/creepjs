@@ -1206,7 +1206,7 @@ const imports = {
 								`${icons}${title}`
 					)
 				}
-				console.log(gpuSystem)
+				
 				const unknownHTML = title => `${getBlankIcons()}${title}: ${note.unknown}`
 				const device = new Set([
 					(jsRuntime || {}).device,

@@ -285,7 +285,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 			<div>codecs (0):${note.blocked}</div>
 			<div>timezone: ${note.blocked}</div>
 			<div>language: ${note.blocked}</div>
-			<div>webgl:</div>
+			<div>gpu:</div>
 			<div class="block-text">${note.blocked}</div>
 		</div>
 		<div class="col-six undefined">
@@ -409,7 +409,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 					` <span class="bold-fail">${locale}</span>`
 			}
 		</div>
-		<div>webgl:</div>
+		<div>gpu:</div>
 		<div class="block-text help" title="WebGLRenderingContext.getParameter()">
 			${webglVendor ? `${webglVendor}` : ''}
 			${webglRenderer ? `<br>${webglRenderer}` : note.unsupported}

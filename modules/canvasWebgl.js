@@ -441,7 +441,7 @@ export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 			<div>exts (0): ${note.blocked}</div>
 		</div>
 		<div class="col-four undefined">
-			<div>unmasked renderer:</div>
+			<div>gpu:</div>
 			<div class="block-text">${note.blocked}</div>
 		</div>
 		<div class="col-four undefined"><image /></div>`
@@ -488,7 +488,7 @@ export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 		}</div>
 	</div>
 	<div class="col-four${lied ? ' rejected' : ''}">
-		<div>unmasked renderer:</div>
+		<div>gpu:</div>
 		<div class="block-text">
 			<div>${
 				!parameters.UNMASKED_RENDERER_WEBGL ? note.unsupported :

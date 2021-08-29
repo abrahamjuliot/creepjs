@@ -2961,7 +2961,7 @@
 			<div>exts (0): ${note.blocked}</div>
 		</div>
 		<div class="col-four undefined">
-			<div>unmasked renderer:</div>
+			<div>gpu:</div>
 			<div class="block-text">${note.blocked}</div>
 		</div>
 		<div class="col-four undefined"><image /></div>`
@@ -3008,7 +3008,7 @@
 		}</div>
 	</div>
 	<div class="col-four${lied ? ' rejected' : ''}">
-		<div>unmasked renderer:</div>
+		<div>gpu:</div>
 		<div class="block-text">
 			<div>${
 				!parameters.UNMASKED_RENDERER_WEBGL ? note.unsupported :
@@ -7608,7 +7608,7 @@
 			<div>codecs (0):${note.blocked}</div>
 			<div>timezone: ${note.blocked}</div>
 			<div>language: ${note.blocked}</div>
-			<div>webgl:</div>
+			<div>gpu:</div>
 			<div class="block-text">${note.blocked}</div>
 		</div>
 		<div class="col-six undefined">
@@ -7732,7 +7732,7 @@
 					` <span class="bold-fail">${locale}</span>`
 			}
 		</div>
-		<div>webgl:</div>
+		<div>gpu:</div>
 		<div class="block-text help" title="WebGLRenderingContext.getParameter()">
 			${webglVendor ? `${webglVendor}` : ''}
 			${webglRenderer ? `<br>${webglRenderer}` : note.unsupported}
@@ -10370,7 +10370,7 @@
 									`${icons}${title}`
 						)
 					};
-					console.log(gpuSystem);
+					
 					const unknownHTML = title => `${getBlankIcons()}${title}: ${note.unknown}`;
 					const device = new Set([
 						(jsRuntime || {}).device,
