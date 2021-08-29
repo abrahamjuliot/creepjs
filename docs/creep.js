@@ -2175,7 +2175,16 @@
 			const dataLie = lieProps['HTMLCanvasElement.toDataURL'];
 			const contextLie = lieProps['HTMLCanvasElement.getContext'];
 			const imageDataLie = lieProps['CanvasRenderingContext2D.getImageData'];
-			const textMetricsLie = lieProps['CanvasRenderingContext2D.measureText'];
+			const textMetricsLie = (
+				lieProps['CanvasRenderingContext2D.measureText'] ||
+				lieProps['TextMetrics.actualBoundingBoxAscent'] ||
+				lieProps['TextMetrics.actualBoundingBoxDescent'] ||
+				lieProps['TextMetrics.actualBoundingBoxLeft'] ||
+				lieProps['TextMetrics.actualBoundingBoxRight'] ||
+				lieProps['TextMetrics.fontBoundingBoxAscent'] ||
+				lieProps['TextMetrics.fontBoundingBoxDescent'] ||
+				lieProps['TextMetrics.width']
+			);
 			let lied = (dataLie || contextLie || imageDataLie || textMetricsLie) || false;
 
 			const doc = phantomDarkness ? phantomDarkness.document : document;
@@ -2321,6 +2330,7 @@
 				textMetrics: new Set(Object.keys(textMetrics)).size > 1 ? textMetrics : undefined,
 				textMetricsSystemSum,
 				textMetricsSystemClass,
+				liedTextMetrics: textMetricsLie,
 				lied
 			}
 		}
@@ -9346,6 +9356,7 @@
 				canvas2dImageHash,
 				canvasWebglHash,
 				canvasWebglImageHash,
+				canvasWebglParametersHash,
 				pixelsHash,
 				pixels2Hash,
 				mathsHash,
@@ -9380,6 +9391,15 @@
 				hashify(canvas2dComputed.dataURI),
 				hashify(canvasWebglComputed),
 				hashify(canvasWebglComputed.dataURI),
+				hashify({
+					...canvasWebglComputed.parameters,
+					RENDERER: undefined,
+					SHADING_LANGUAGE_VERSION: undefined,
+					UNMASKED_RENDERER_WEBGL: undefined,
+					UNMASKED_VENDOR_WEBGL: undefined,
+					VERSION: undefined,
+					VENDOR: undefined
+				}),
 				caniuse(() => canvasWebglComputed.pixels.length) ? hashify(canvasWebglComputed.pixels) : undefined,
 				caniuse(() => canvasWebglComputed.pixels2.length) ? hashify(canvasWebglComputed.pixels2) : undefined,
 				hashify(mathsComputed.data),
@@ -9448,6 +9468,7 @@
 				emojiHash,
 				canvas2dImageHash,
 				canvasWebglImageHash,
+				canvasWebglParametersHash,
 				timeEnd
 			}
 		};
@@ -9460,6 +9481,7 @@
 			emojiHash,
 			canvas2dImageHash,
 			canvasWebglImageHash,
+			canvasWebglParametersHash,
 			timeEnd
 		} = await fingerprint().catch(error => console.error(error));
 		
@@ -9825,20 +9847,22 @@
 		<div id="browser-detection" class="flex-grid">
 			<div class="col-eight">
 				<strong>Loading...</strong>
-				<div>client user agent:</div>
+				<div>${getBlankIcons()}</div>
 				<div>${getBlankIcons()}window object:</div>
-				<div>${getBlankIcons()}system styles:</div>
-				<div>${getBlankIcons()}computed styles:</div>
-				<div>${getBlankIcons()}html element:</div>
-				<div>${getBlankIcons()}js runtime:</div>
-				<div>${getBlankIcons()}js engine:</div>
-				<div>${getBlankIcons()}emojis:</div>
-				<div>${getBlankIcons()}audio:</div>
-				<div>${getBlankIcons()}canvas:</div>
-				<div>${getBlankIcons()}textMetrics:</div>
-				<div>${getBlankIcons()}webgl:</div>
-				<div>${getBlankIcons()}fonts:</div>
-				<div>${getBlankIcons()}voices:</div>
+				<div>${getBlankIcons()}system styles</div>
+				<div>${getBlankIcons()}computed styles</div>
+				<div>${getBlankIcons()}html element</div>
+				<div>${getBlankIcons()}js runtime</div>
+				<div>${getBlankIcons()}js engine</div>
+				<div>${getBlankIcons()}emojis</div>
+				<div>${getBlankIcons()}audio</div>
+				<div>${getBlankIcons()}canvas</div>
+				<div>${getBlankIcons()}textMetrics</div>
+				<div>${getBlankIcons()}webgl</div>
+				<div>${getBlankIcons()}gpu</div>
+				<div>${getBlankIcons()}fonts</div>
+				<div>${getBlankIcons()}voices</div>
+				<div>${getBlankIcons()}screen</div>
 			</div>
 			<div class="col-four icon-container">
 			</div>
@@ -10193,20 +10217,22 @@
 				<div class="flex-grid rejected">
 					<div class="col-eight">
 						<strong>Sample Input Rejected: ${botPercentString} Bot</strong>
-						<div>client user agent:</div>
+						<div>${getBlankIcons()}</div>
 						<div class="ellipsis">${getBlankIcons()}window object:</div>
-						<div>${getBlankIcons()}system styles:</div>
-						<div>${getBlankIcons()}computed styles:</div>
-						<div>${getBlankIcons()}html element:</div>
-						<div>${getBlankIcons()}js runtime:</div>
-						<div>${getBlankIcons()}js engine:</div>
-						<div>${getBlankIcons()}emojis:</div>
-						<div>${getBlankIcons()}audio:</div>
-						<div>${getBlankIcons()}canvas:</div>
-						<div>${getBlankIcons()}textMetrics:</div>
-						<div>${getBlankIcons()}webgl:</div>
-						<div>${getBlankIcons()}fonts:</div>
-						<div>${getBlankIcons()}voices:</div>
+						<div>${getBlankIcons()}system styles</div>
+						<div>${getBlankIcons()}computed styles</div>
+						<div>${getBlankIcons()}html element</div>
+						<div>${getBlankIcons()}js runtime</div>
+						<div>${getBlankIcons()}js engine</div>
+						<div>${getBlankIcons()}emojis</div>
+						<div>${getBlankIcons()}audio</div>
+						<div>${getBlankIcons()}canvas</div>
+						<div>${getBlankIcons()}textMetrics</div>
+						<div>${getBlankIcons()}webgl</div>
+						<div>${getBlankIcons()}gpu</div>
+						<div>${getBlankIcons()}fonts</div>
+						<div>${getBlankIcons()}voices</div>
+						<div>${getBlankIcons()}screen</div>
 					</div>
 					<div class="col-four icon-container">
 					</div>
@@ -10224,6 +10250,7 @@
 				
 				const isTorBrowser = resistance.privacy == 'Tor Browser';
 				const isRFP = resistance.privacy == 'Firefox';
+				const isBraveStrict = resistance.privacy == 'Brave' && resistance.mode == 'strict';
 				//console.log(emojiHash) // Tor Browser check
 				const {
 					compressorGainReduction: gain,
@@ -10256,12 +10283,22 @@
 						canvas2dImageHash
 				}`,
 				`textMetricsId=${
-					!canvas2d || canvas2d.lied ? 'undefined' : 
+					!canvas2d || canvas2d.liedTextMetrics || ((+canvas2d.textMetricsSystemSum) == 0) ? 'undefined' : 
 						canvas2d.textMetricsSystemSum
 				}`,
 				`webglId=${
 					!canvasWebgl || canvas2d.lied || canvasWebgl.lied ? 'undefined' :
 						canvasWebglImageHash
+				}`,
+				`gpuId=${
+					!canvasWebgl || canvas2d.lied || canvasWebgl.lied ? 'undefined' :
+						canvasWebglParametersHash
+				}`,
+				`gpu=${
+					!canvasWebgl || canvas2d.lied || canvasWebgl.lied ? 'undefined' : (
+						fp.workerScope.webglRenderer ? encodeURIComponent(fp.workerScope.webglRenderer) :
+							canvasWebgl.parameters ? encodeURIComponent(canvasWebgl.parameters.UNMASKED_RENDERER_WEBGL) : 'undefined'
+					)
 				}`,
 				`fontsId=${!fonts || fonts.lied ? 'undefined' : fonts.$hash}`,
 				`voicesId=${!voices || voices.lied ? 'undefined' : voices.$hash}`,
@@ -10287,14 +10324,16 @@
 						canvasSystem,
 						textMetricsSystem,
 						webglSystem,
+						gpuSystem,
 						fontsSystem,
-						voicesSystem
+						voicesSystem,
+						screenSystem
 					} = data;
 					
 					const iconSet = new Set();
 					const htmlIcon = cssClass => `<span class="icon ${cssClass}"></span>`;
-					const getTemplate = (title, agent) => {
-						const { decrypted, system } = agent || {};
+					const getTemplate = ({title, agent, showVersion = false}) => {
+						const { decrypted, system, device } = agent || {};
 						const browserIcon = (
 							/edgios|edge/i.test(decrypted) ? iconSet.add('edge') && htmlIcon('edge') :
 							/brave/i.test(decrypted) ? iconSet.add('brave') && htmlIcon('brave') :
@@ -10326,16 +10365,27 @@
 							browserIcon
 						].join('');
 						return (
-							system ? `${icons}${title}: ${decrypted} on ${system}` :
-							`${icons}${title}: ${decrypted}`
+							device ? `${icons}${title}<strong>*</strong>` :
+								showVersion ? `${icons}${title}: ${decrypted}` :
+									`${icons}${title}`
 						)
 					};
 					
-					const fakeUserAgent = (
-						/\d+/.test(windowVersion.decrypted) &&
-						windowVersion.decrypted != report
-					);
 					const unknownHTML = title => `${getBlankIcons()}${title}: ${note.unknown}`;
+					const device = new Set([
+						(jsRuntime || {}).device,
+						(emojiSystem || {}).device,
+						(audioSystem || {}).device,
+						(canvasSystem || {}).device,
+						(textMetricsSystem || {}).device,
+						(webglSystem || {}).device,
+						(gpuSystem || {}).device,
+						(fontsSystem || {}).device,
+						(voicesSystem || {}).device,
+						(screenSystem || {}).device
+					]);
+					device.delete(undefined);
+					const deviceName = device.size == 1 ? [...device][0] : undefined;
 					patch(el, html`
 				<div class="flex-grid relative">
 					<div class="ellipsis">
@@ -10343,60 +10393,67 @@
 					</div>
 					<div class="col-eight">
 						<strong>Prediction</strong>
-						<div>client user agent:
-							<span class="${fakeUserAgent ? 'lies' : ''}">${report}</span>
-						</div>
+						<div>${deviceName ? `<strong>*</strong>${deviceName}` : getBlankIcons()}</div>
 						<div class="ellipsis">${
-							getTemplate('window object', windowVersion)
+							getTemplate({title: 'window object', agent: windowVersion, showVersion: true})
 						}</div>
 						<div class="ellipsis">${
-							getTemplate('system styles', styleSystem)
+							getTemplate({title: 'system styles', agent: styleSystem})
 						}</div>
 						<div class="ellipsis">${
-							getTemplate('computed styles', styleVersion)
+							getTemplate({title: 'computed styles', agent: styleVersion})
 						}</div>
 						<div class="ellipsis">${
-							getTemplate('html element', htmlVersion)
+							getTemplate({title: 'html element', agent: htmlVersion})
 						}</div>
 						<div class="ellipsis">${
-							getTemplate('js runtime', jsRuntime)
+							getTemplate({title: 'js runtime', agent: jsRuntime})
 						}</div>
 						<div class="ellipsis">${
-							getTemplate('js engine', jsEngine)
+							getTemplate({title: 'js engine', agent: jsEngine})
 						}</div>
 						<div class="ellipsis">${
 							!Object.keys(emojiSystem || {}).length ? unknownHTML('emojis') : 
-								getTemplate('emojis', emojiSystem)
+								getTemplate({title: 'emojis', agent: emojiSystem})
 						}</div>
 						<div class="ellipsis">${
 							!Object.keys(audioSystem || {}).length ? unknownHTML('audio') : 
-								getTemplate('audio', audioSystem)
+								getTemplate({title: 'audio', agent: audioSystem})
 						}</div>
 						<div class="ellipsis">${
 							!Object.keys(canvasSystem || {}).length ? unknownHTML('canvas') : 
-								getTemplate('canvas', canvasSystem)
+								getTemplate({title: 'canvas', agent: canvasSystem})
 						}</div>
 						<div class="ellipsis">${
 							!Object.keys(textMetricsSystem || {}).length ? unknownHTML('textMetrics') : 
-								getTemplate('textMetrics', textMetricsSystem)
+								getTemplate({title: 'textMetrics', agent: textMetricsSystem})
 						}</div>
 						<div class="ellipsis">${
 							!Object.keys(webglSystem || {}).length ? unknownHTML('webgl') : 
-								getTemplate('webgl', webglSystem)
+								getTemplate({title: 'webgl', agent: webglSystem})
+						}</div>
+						<div class="ellipsis">${
+							!Object.keys(gpuSystem || {}).length ? unknownHTML('gpu') : 
+								getTemplate({title: 'gpu', agent: gpuSystem})
 						}</div>
 						<div class="ellipsis">${
 							!Object.keys(fontsSystem || {}).length ? unknownHTML('fonts') : 
-								getTemplate('fonts', fontsSystem)
+								getTemplate({title: 'fonts', agent: fontsSystem})
 						}</div>
 						<div class="ellipsis">${
 							!Object.keys(voicesSystem || {}).length ? unknownHTML('voices') : 
-								getTemplate('voices', voicesSystem)
+								getTemplate({title: 'voices', agent: voicesSystem})
+						}</div>
+						<div class="ellipsis">${
+							!Object.keys(screenSystem || {}).length || !screenSystem.system ? unknownHTML('screen') : 
+								getTemplate({title: 'screen', agent: screenSystem})
 						}</div>
 					</div>
 					<div class="col-four icon-container">
 						${[...iconSet].map(icon => {
 							return `<div class="icon-item ${icon}"></div>`
 						}).join('')}
+						${gpuSystem && gpuSystem.gpu ? `<div class="block-text">gpu:<br>${gpuSystem}</div>` : ''}
 					</div>
 				</div>
 				`);

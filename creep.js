@@ -695,6 +695,7 @@ const imports = {
 				<div>${getBlankIcons()}canvas</div>
 				<div>${getBlankIcons()}textMetrics</div>
 				<div>${getBlankIcons()}webgl</div>
+				<div>${getBlankIcons()}gpu</div>
 				<div>${getBlankIcons()}fonts</div>
 				<div>${getBlankIcons()}voices</div>
 				<div>${getBlankIcons()}screen</div>
@@ -1064,6 +1065,7 @@ const imports = {
 						<div>${getBlankIcons()}canvas</div>
 						<div>${getBlankIcons()}textMetrics</div>
 						<div>${getBlankIcons()}webgl</div>
+						<div>${getBlankIcons()}gpu</div>
 						<div>${getBlankIcons()}fonts</div>
 						<div>${getBlankIcons()}voices</div>
 						<div>${getBlankIcons()}screen</div>
@@ -1207,15 +1209,16 @@ const imports = {
 				
 				const unknownHTML = title => `${getBlankIcons()}${title}: ${note.unknown}`
 				const device = new Set([
-					jsRuntime.device,
-					emojiSystem.device,
-					audioSystem.device,
-					canvasSystem.device,
-					textMetricsSystem.device,
-					webglSystem.device,
-					fontsSystem.device,
-					voicesSystem.device,
-					screenSystem.device
+					(jsRuntime || {}).device,
+					(emojiSystem || {}).device,
+					(audioSystem || {}).device,
+					(canvasSystem || {}).device,
+					(textMetricsSystem || {}).device,
+					(webglSystem || {}).device,
+					(gpuSystem || {}).device,
+					(fontsSystem || {}).device,
+					(voicesSystem || {}).device,
+					(screenSystem || {}).device
 				])
 				device.delete(undefined)
 				const deviceName = device.size == 1 ? [...device][0] : undefined
@@ -1264,6 +1267,10 @@ const imports = {
 						<div class="ellipsis">${
 							!Object.keys(webglSystem || {}).length ? unknownHTML('webgl') : 
 								getTemplate({title: 'webgl', agent: webglSystem})
+						}</div>
+						<div class="ellipsis">${
+							!Object.keys(gpuSystem || {}).length ? unknownHTML('gpu') : 
+								getTemplate({title: 'gpu', agent: gpuSystem})
 						}</div>
 						<div class="ellipsis">${
 							!Object.keys(fontsSystem || {}).length ? unknownHTML('fonts') : 
