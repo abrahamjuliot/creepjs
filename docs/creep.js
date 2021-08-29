@@ -5418,7 +5418,10 @@
 					return writingSystemKeys
 				}),
 				bluetoothAvailability: await attempt(async () => {
-					if (!('bluetooth' in phantomNavigator) || !phantomNavigator.bluetooth) {
+					if (
+						!('bluetooth' in phantomNavigator) ||
+						!phantomNavigator.bluetooth ||
+						!phantomNavigator.bluetooth.getAvailability) {
 						return undefined
 					}
 					const available = await navigator.bluetooth.getAvailability();
