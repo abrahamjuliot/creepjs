@@ -671,7 +671,7 @@ const imports = {
 		<div id="browser-detection" class="flex-grid">
 			<div class="col-eight">
 				<strong>Loading...</strong>
-				<div>client user agent:</div>
+				<div>${getBlankIcons()}</div>
 				<div>${getBlankIcons()}window object:</div>
 				<div>${getBlankIcons()}system styles</div>
 				<div>${getBlankIcons()}computed styles</div>
@@ -1040,7 +1040,7 @@ const imports = {
 				<div class="flex-grid rejected">
 					<div class="col-eight">
 						<strong>Sample Input Rejected: ${botPercentString} Bot</strong>
-						<div>client user agent:</div>
+						<div>${getBlankIcons()}</div>
 						<div class="ellipsis">${getBlankIcons()}window object:</div>
 						<div>${getBlankIcons()}system styles</div>
 						<div>${getBlankIcons()}computed styles</div>
@@ -1175,17 +1175,26 @@ const imports = {
 						browserIcon
 					].join('')
 					return (
-						device ? `${icons}${title}: ${device}` :
+						device ? `${icons}${title}<strong>*</strong>` :
 							showVersion ? `${icons}${title}: ${decrypted}` :
 								`${icons}${title}`
 					)
 				}
 				
-				const fakeUserAgent = (
-					/\d+/.test(windowVersion.decrypted) &&
-					windowVersion.decrypted != report
-				)
 				const unknownHTML = title => `${getBlankIcons()}${title}: ${note.unknown}`
+				const device = new Set([
+					jsRuntime.device,
+					emojiSystem.device,
+					audioSystem.device,
+					canvasSystem.device,
+					textMetricsSystem.device,
+					webglSystem.device,
+					fontsSystem.device,
+					voicesSystem.device,
+					screenSystem.device
+				])
+				device.delete(undefined)
+				const deviceName = device.size == 1 ? [...device][0] : undefined
 				patch(el, html`
 				<div class="flex-grid relative">
 					<div class="ellipsis">
@@ -1193,9 +1202,7 @@ const imports = {
 					</div>
 					<div class="col-eight">
 						<strong>Prediction</strong>
-						<div>client user agent:
-							<span class="${fakeUserAgent ? 'lies' : ''}">${report}</span>
-						</div>
+						<div>${deviceName ? `<strong>*</strong>${deviceName}` : getBlankIcons()}</div>
 						<div class="ellipsis">${
 							getTemplate({title: 'window object', agent: windowVersion, showVersion: true})
 						}</div>
