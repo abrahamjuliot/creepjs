@@ -763,8 +763,11 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 		<div class="block-text help" title="Navigator.deviceMemory\nNavigator.hardwareConcurrency\nNavigator.maxTouchPoints\nNavigator.oscpu\nNavigator.platform\nNavigator.userAgent">
 			${oscpu ? oscpu : ''}
 			${`${oscpu ? '<br>' : ''}${system}${platform ? ` (${platform})` : ''}`}
-			${device ? `<br>${device}` : note.blocked}
-			<br>cores: ${hardwareConcurrency}${deviceMemory ? `, memory: ${deviceMemory}` : ''}${typeof maxTouchPoints != 'undefined' ? `, touch: ${''+maxTouchPoints}` : ''}
+			${device ? `<br>${device}` : note.blocked}${
+				hardwareConcurrency && deviceMemory ? `<br>cores: ${hardwareConcurrency}, memory: ${deviceMemory}` :
+				hardwareConcurrency && !deviceMemory ? `<br>cores: ${hardwareConcurrency}` :
+				!hardwareConcurrency && deviceMemory ? `<br>memory: ${deviceMemory}` : ''
+			}${typeof maxTouchPoints != 'undefined' ? `, touch: ${''+maxTouchPoints}` : ''}
 		</div>
 		<div>ua parsed: ${userAgentParsed || note.blocked}</div>
 		<div>userAgent:</div>

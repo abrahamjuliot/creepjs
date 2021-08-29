@@ -1187,7 +1187,7 @@ const imports = {
 						/goanna/i.test(decrypted) ? iconSet.add('goanna') && htmlIcon('goanna') :
 						/spidermonkey/i.test(decrypted) ? iconSet.add('firefox') && htmlIcon('firefox') :
 						/safari/i.test(decrypted) ? iconSet.add('safari') && htmlIcon('safari') :
-						/webkit/i.test(decrypted) ? iconSet.add('webkit') && htmlIcon('webkit') :
+						/webkit|javascriptcore/i.test(decrypted) ? iconSet.add('webkit') && htmlIcon('webkit') :
 						/blink/i.test(decrypted) ? iconSet.add('blink') && htmlIcon('blink') : htmlIcon('')
 					)
 					const systemIcon = (

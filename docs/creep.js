@@ -5700,8 +5700,11 @@
 		<div class="block-text help" title="Navigator.deviceMemory\nNavigator.hardwareConcurrency\nNavigator.maxTouchPoints\nNavigator.oscpu\nNavigator.platform\nNavigator.userAgent">
 			${oscpu ? oscpu : ''}
 			${`${oscpu ? '<br>' : ''}${system}${platform ? ` (${platform})` : ''}`}
-			${device ? `<br>${device}` : note.blocked}
-			<br>cores: ${hardwareConcurrency}${deviceMemory ? `, memory: ${deviceMemory}` : ''}${typeof maxTouchPoints != 'undefined' ? `, touch: ${''+maxTouchPoints}` : ''}
+			${device ? `<br>${device}` : note.blocked}${
+				hardwareConcurrency && deviceMemory ? `<br>cores: ${hardwareConcurrency}, memory: ${deviceMemory}` :
+				hardwareConcurrency && !deviceMemory ? `<br>cores: ${hardwareConcurrency}` :
+				!hardwareConcurrency && deviceMemory ? `<br>memory: ${deviceMemory}` : ''
+			}${typeof maxTouchPoints != 'undefined' ? `, touch: ${''+maxTouchPoints}` : ''}
 		</div>
 		<div>ua parsed: ${userAgentParsed || note.blocked}</div>
 		<div>userAgent:</div>
@@ -7747,7 +7750,11 @@
 		<div class="block-text help" title="WorkerNavigator.deviceMemory\nWorkerNavigator.hardwareConcurrency\nWorkerNavigator.platform\nWorkerNavigator.userAgent">
 			${`${system}${platform ? ` (${platform})` : ''}`}
 			${device ? `<br>${device}` : note.blocked}
-			<br>cores: ${hardwareConcurrency}${deviceMemory ? `, memory: ${deviceMemory}` : ''}
+			${
+				hardwareConcurrency && deviceMemory ? `<br>cores: ${hardwareConcurrency}, memory: ${deviceMemory}` :
+				hardwareConcurrency && !deviceMemory ? `<br>cores: ${hardwareConcurrency}` :
+				!hardwareConcurrency && deviceMemory ? `<br>memory: ${deviceMemory}` : ''
+			}
 		</div>
 		<div>userAgent:</div>
 		<div class="block-text help" title="WorkerNavigator.userAgent">
@@ -10355,7 +10362,7 @@
 							/goanna/i.test(decrypted) ? iconSet.add('goanna') && htmlIcon('goanna') :
 							/spidermonkey/i.test(decrypted) ? iconSet.add('firefox') && htmlIcon('firefox') :
 							/safari/i.test(decrypted) ? iconSet.add('safari') && htmlIcon('safari') :
-							/webkit/i.test(decrypted) ? iconSet.add('webkit') && htmlIcon('webkit') :
+							/webkit|javascriptcore/i.test(decrypted) ? iconSet.add('webkit') && htmlIcon('webkit') :
 							/blink/i.test(decrypted) ? iconSet.add('blink') && htmlIcon('blink') : htmlIcon('')
 						);
 						const systemIcon = (
