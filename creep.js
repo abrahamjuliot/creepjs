@@ -192,6 +192,7 @@ const imports = {
 			canvas2dImageHash,
 			canvasWebglHash,
 			canvasWebglImageHash,
+			canvasWebglParametersHash,
 			pixelsHash,
 			pixels2Hash,
 			mathsHash,
@@ -226,6 +227,15 @@ const imports = {
 			hashify(canvas2dComputed.dataURI),
 			hashify(canvasWebglComputed),
 			hashify(canvasWebglComputed.dataURI),
+			hashify({
+				...canvasWebglComputed.parameters,
+				RENDERER: undefined,
+				SHADING_LANGUAGE_VERSION: undefined,
+				UNMASKED_RENDERER_WEBGL: undefined,
+				UNMASKED_VENDOR_WEBGL: undefined,
+				VERSION: undefined,
+				VENDOR: undefined
+			}),
 			caniuse(() => canvasWebglComputed.pixels.length) ? hashify(canvasWebglComputed.pixels) : undefined,
 			caniuse(() => canvasWebglComputed.pixels2.length) ? hashify(canvasWebglComputed.pixels2) : undefined,
 			hashify(mathsComputed.data),
@@ -294,6 +304,7 @@ const imports = {
 			emojiHash,
 			canvas2dImageHash,
 			canvasWebglImageHash,
+			canvasWebglParametersHash,
 			timeEnd
 		}
 	}
@@ -306,6 +317,7 @@ const imports = {
 		emojiHash,
 		canvas2dImageHash,
 		canvasWebglImageHash,
+		canvasWebglParametersHash,
 		timeEnd
 	} = await fingerprint().catch(error => console.error(error))
 	
@@ -1072,6 +1084,7 @@ const imports = {
 			
 			const isTorBrowser = resistance.privacy == 'Tor Browser'
 			const isRFP = resistance.privacy == 'Firefox'
+			const isBraveStrict = resistance.privacy == 'Brave' && resistance.mode == 'strict'
 			//console.log(emojiHash) // Tor Browser check
 			const {
 				compressorGainReduction: gain,
@@ -1111,6 +1124,16 @@ const imports = {
 					!canvasWebgl || canvas2d.lied || canvasWebgl.lied ? 'undefined' :
 						canvasWebglImageHash
 				}`,
+				`gpuId=${
+					!canvasWebgl || canvas2d.lied || canvasWebgl.lied ? 'undefined' :
+						canvasWebglParametersHash
+				}`,
+				`gpu=${
+					!canvasWebgl || canvas2d.lied || canvasWebgl.lied ? 'undefined' : (
+						fp.workerScope.webglRenderer ? encodeURIComponent(fp.workerScope.webglRenderer) :
+							canvasWebgl.parameters ? encodeURIComponent(canvasWebgl.parameters.UNMASKED_RENDERER_WEBGL) : 'undefined'
+					)
+				}`,
 				`fontsId=${!fonts || fonts.lied ? 'undefined' : fonts.$hash}`,
 				`voicesId=${!voices || voices.lied ? 'undefined' : voices.$hash}`,
 				`screenId=${
@@ -1135,6 +1158,7 @@ const imports = {
 					canvasSystem,
 					textMetricsSystem,
 					webglSystem,
+					gpuSystem,
 					fontsSystem,
 					voicesSystem,
 					screenSystem
@@ -1258,6 +1282,7 @@ const imports = {
 						${[...iconSet].map(icon => {
 							return `<div class="icon-item ${icon}"></div>`
 						}).join('')}
+						${gpuSystem && gpuSystem.gpu ? `<div class="block-text">gpu:<br>${gpuSystem}</div>` : ''}
 					</div>
 				</div>
 				`)
