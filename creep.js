@@ -1222,7 +1222,11 @@ const imports = {
 					(screenSystem || {}).device
 				])
 				device.delete(undefined)
-				const deviceName = device.size == 1 ? [...device][0] : undefined
+				const getBaseDeviceName = devices => {
+					return devices.find(a => devices.filter(b => b.includes(a)).length == devices.length)
+				}
+				
+				const deviceName = getBaseDeviceName([...device])
 				patch(el, html`
 				<div class="flex-grid relative">
 					<div class="ellipsis">
@@ -1290,7 +1294,10 @@ const imports = {
 						${[...iconSet].map(icon => {
 							return `<div class="icon-item ${icon}"></div>`
 						}).join('')}
-						${gpuSystem && gpuSystem.gpu ? `<div class="icon-item block-text">gpu:<br>${gpuSystem.gpu}</div>` : ''}
+						${
+							gpuSystem && ((''+gpuSystem.gpu) != 'undefined') ? 
+							`<div class="icon-item block-text-borderless">gpu:<br>${gpuSystem.gpu}</div>` : ''
+						}
 					</div>
 				</div>
 				`)
