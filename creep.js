@@ -1209,7 +1209,7 @@ const imports = {
 				}
 
 				const unknownHTML = title => `${getBlankIcons()}${title}: ${note.unknown}`
-				const device = new Set([
+				const devices = new Set([
 					(jsRuntime || {}).device,
 					(emojiSystem || {}).device,
 					(audioSystem || {}).device,
@@ -1221,12 +1221,12 @@ const imports = {
 					(voicesSystem || {}).device,
 					(screenSystem || {}).device
 				])
-				device.delete(undefined)
+				devices.delete(undefined)
 				const getBaseDeviceName = devices => {
 					return devices.find(a => devices.filter(b => b.includes(a)).length == devices.length)
 				}
 				
-				const deviceName = getBaseDeviceName([...device])
+				const deviceName = getBaseDeviceName([...devices])
 				patch(el, html`
 				<div class="flex-grid relative">
 					<div class="ellipsis">
