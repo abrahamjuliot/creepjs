@@ -612,7 +612,7 @@ const imports = {
 	}
 	const hasTrash = !!trashLen
 	const { lies: hasLied, capturedErrors: hasErrors } = creep
-
+	const getBlankIcons = () => `<span class="icon"></span><span class="icon"></span>`
 	const el = document.getElementById('fingerprint-data')
 	patch(el, html`
 	<div id="fingerprint-data">
@@ -672,19 +672,19 @@ const imports = {
 			<div class="col-eight">
 				<strong>Loading...</strong>
 				<div>client user agent:</div>
-				<div>window object:</div>
-				<div>system styles:</div>
-				<div>computed styles:</div>
-				<div>html element:</div>
-				<div>js runtime:</div>
-				<div>js engine:</div>
-				<div>emojis:</div>
-				<div>audio:</div>
-				<div>canvas:</div>
-				<div>textMetrics:</div>
-				<div>webgl:</div>
-				<div>fonts:</div>
-				<div>voices:</div>
+				<div>${getBlankIcons()}window object:</div>
+				<div>${getBlankIcons()}system styles:</div>
+				<div>${getBlankIcons()}computed styles:</div>
+				<div>${getBlankIcons()}html element:</div>
+				<div>${getBlankIcons()}js runtime:</div>
+				<div>${getBlankIcons()}js engine:</div>
+				<div>${getBlankIcons()}emojis:</div>
+				<div>${getBlankIcons()}audio:</div>
+				<div>${getBlankIcons()}canvas:</div>
+				<div>${getBlankIcons()}textMetrics:</div>
+				<div>${getBlankIcons()}webgl:</div>
+				<div>${getBlankIcons()}fonts:</div>
+				<div>${getBlankIcons()}voices:</div>
 			</div>
 			<div class="col-four icon-container">
 			</div>
@@ -1040,19 +1040,19 @@ const imports = {
 					<div class="col-eight">
 						<strong>Sample Input Rejected: ${botPercentString} Bot</strong>
 						<div>client user agent:</div>
-						<div>window object:</div>
-						<div>system styles:</div>
-						<div>computed styles:</div>
-						<div>html element:</div>
-						<div>js runtime:</div>
-						<div>js engine:</div>
-						<div>emojis:</div>
-						<div>audio:</div>
-						<div>canvas:</div>
-						<div>textMetrics:</div>
-						<div>webgl:</div>
-						<div>fonts:</div>
-						<div>voices:</div>
+						<div class="ellipsis">${getBlankIcons()}window object:</div>
+						<div>${getBlankIcons()}system styles:</div>
+						<div>${getBlankIcons()}computed styles:</div>
+						<div>${getBlankIcons()}html element:</div>
+						<div>${getBlankIcons()}js runtime:</div>
+						<div>${getBlankIcons()}js engine:</div>
+						<div>${getBlankIcons()}emojis:</div>
+						<div>${getBlankIcons()}audio:</div>
+						<div>${getBlankIcons()}canvas:</div>
+						<div>${getBlankIcons()}textMetrics:</div>
+						<div>${getBlankIcons()}webgl:</div>
+						<div>${getBlankIcons()}fonts:</div>
+						<div>${getBlankIcons()}voices:</div>
 					</div>
 					<div class="col-four icon-container">
 					</div>
@@ -1112,7 +1112,7 @@ const imports = {
 				`fontsId=${!fonts || fonts.lied ? 'undefined' : fonts.$hash}`,
 				`voicesId=${!voices || voices.lied ? 'undefined' : voices.$hash}`,
 				`screenId=${
-					!screen || screen.lied ? 'undefined' : 
+					!screen || screen.lied || isRFP || isTorBrowser ? 'undefined' : 
 						`${screen.width}x${screen.height}`
 				}`,
 				`ua=${encodeURIComponent(fp.workerScope.userAgent)}`
@@ -1158,18 +1158,18 @@ const imports = {
 						/spidermonkey/i.test(decrypted) ? iconSet.add('firefox') && htmlIcon('firefox') :
 						/safari/i.test(decrypted) ? iconSet.add('safari') && htmlIcon('safari') :
 						/webkit/i.test(decrypted) ? iconSet.add('webkit') && htmlIcon('webkit') :
-						/blink/i.test(decrypted) ? iconSet.add('blink') && htmlIcon('blink') : ''
+						/blink/i.test(decrypted) ? iconSet.add('blink') && htmlIcon('blink') : htmlIcon('')
 					)
 					const systemIcon = (
 						/chrome os/i.test(system) ? iconSet.add('cros') && htmlIcon('cros') :
 						/linux/i.test(system) ? iconSet.add('linux') && htmlIcon('linux') :
 						/android/i.test(system) ? iconSet.add('android') && htmlIcon('android') :
 						/ipad|iphone|ipod|ios|mac/i.test(system) ? iconSet.add('apple') && htmlIcon('apple') :
-						/windows/i.test(system) ? iconSet.add('windows') && htmlIcon('windows') : ''
+						/windows/i.test(system) ? iconSet.add('windows') && htmlIcon('windows') : htmlIcon('')
 					)
 					const icons = [
-						browserIcon,
-						systemIcon
+						systemIcon,
+						browserIcon
 					].join('')
 					return (
 						system ? `${icons}${title}: ${decrypted} on ${system}` :
@@ -1181,7 +1181,7 @@ const imports = {
 					/\d+/.test(windowVersion.decrypted) &&
 					windowVersion.decrypted != report
 				)
-
+				const unknownHTML = title => `${getBlankIcons()}${title}: ${note.unknown}`
 				patch(el, html`
 				<div class="flex-grid relative">
 					<div class="ellipsis">
@@ -1211,31 +1211,31 @@ const imports = {
 							getTemplate('js engine', jsEngine)
 						}</div>
 						<div class="ellipsis">${
-							!Object.keys(emojiSystem || {}).length ? `emojis: ${note.unknown}` : 
+							!Object.keys(emojiSystem || {}).length ? unknownHTML('emojis') : 
 								getTemplate('emojis', emojiSystem)
 						}</div>
 						<div class="ellipsis">${
-							!Object.keys(audioSystem || {}).length ? `audio: ${note.unknown}` : 
+							!Object.keys(audioSystem || {}).length ? unknownHTML('audio') : 
 								getTemplate('audio', audioSystem)
 						}</div>
 						<div class="ellipsis">${
-							!Object.keys(canvasSystem || {}).length ? `canvas: ${note.unknown}` : 
+							!Object.keys(canvasSystem || {}).length ? unknownHTML('canvas') : 
 								getTemplate('canvas', canvasSystem)
 						}</div>
 						<div class="ellipsis">${
-							!Object.keys(textMetricsSystem || {}).length ? `textMetrics: ${note.unknown}` : 
+							!Object.keys(textMetricsSystem || {}).length ? unknownHTML('textMetrics') : 
 								getTemplate('textMetrics', textMetricsSystem)
 						}</div>
 						<div class="ellipsis">${
-							!Object.keys(webglSystem || {}).length ? `webgl: ${note.unknown}` : 
+							!Object.keys(webglSystem || {}).length ? unknownHTML('webgl') : 
 								getTemplate('webgl', webglSystem)
 						}</div>
 						<div class="ellipsis">${
-							!Object.keys(fontsSystem || {}).length ? `fonts: ${note.unknown}` : 
+							!Object.keys(fontsSystem || {}).length ? unknownHTML('fonts') : 
 								getTemplate('fonts', fontsSystem)
 						}</div>
 						<div class="ellipsis">${
-							!Object.keys(voicesSystem || {}).length ? `voices: ${note.unknown}` : 
+							!Object.keys(voicesSystem || {}).length ? unknownHTML('voices') : 
 								getTemplate('voices', voicesSystem)
 						}</div>
 					</div>
