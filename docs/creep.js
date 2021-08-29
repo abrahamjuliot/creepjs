@@ -10370,7 +10370,7 @@
 									`${icons}${title}`
 						)
 					};
-					
+					console.log(gpuSystem);
 					const unknownHTML = title => `${getBlankIcons()}${title}: ${note.unknown}`;
 					const device = new Set([
 						(jsRuntime || {}).device,
@@ -10453,7 +10453,7 @@
 						${[...iconSet].map(icon => {
 							return `<div class="icon-item ${icon}"></div>`
 						}).join('')}
-						${gpuSystem && gpuSystem.gpu ? `<div class="block-text">gpu:<br>${gpuSystem}</div>` : ''}
+						${gpuSystem && gpuSystem.gpu ? `<div class="block-text">gpu:<br>${gpuSystem.gpu}</div>` : ''}
 					</div>
 				</div>
 				`);
