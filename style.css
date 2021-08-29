@@ -624,6 +624,7 @@ input[type="radio"] {
     flex-direction: row;
 	flex-wrap: wrap;
     justify-content: space-around;
+	align-items: center;
 }
 .icon-item {
     flex: 1 0 auto;

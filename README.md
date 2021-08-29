@@ -66,8 +66,8 @@ Bots leak unusual behavior and can be denied service.
 - Headless rating > 0
 - Stealth rating > 0
 
-## Version Detection
-- a guess attempt is made to decrypt the browser vendor, version, renderer, engine, and platform
+## Browser Prediction
+- a guess attempt is made to decrypt the browser vendor, version, renderer, engine, and system
 - this guess does not affect the fingerprint
 - system is collected from `WorkerNavigator.userAgent` and auto matched to fingerprint ids
 - decoded samples from the server are auto computed and manually reviewed
