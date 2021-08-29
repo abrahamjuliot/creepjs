@@ -673,18 +673,19 @@ const imports = {
 				<strong>Loading...</strong>
 				<div>client user agent:</div>
 				<div>${getBlankIcons()}window object:</div>
-				<div>${getBlankIcons()}system styles:</div>
-				<div>${getBlankIcons()}computed styles:</div>
-				<div>${getBlankIcons()}html element:</div>
-				<div>${getBlankIcons()}js runtime:</div>
-				<div>${getBlankIcons()}js engine:</div>
-				<div>${getBlankIcons()}emojis:</div>
-				<div>${getBlankIcons()}audio:</div>
-				<div>${getBlankIcons()}canvas:</div>
-				<div>${getBlankIcons()}textMetrics:</div>
-				<div>${getBlankIcons()}webgl:</div>
-				<div>${getBlankIcons()}fonts:</div>
-				<div>${getBlankIcons()}voices:</div>
+				<div>${getBlankIcons()}system styles</div>
+				<div>${getBlankIcons()}computed styles</div>
+				<div>${getBlankIcons()}html element</div>
+				<div>${getBlankIcons()}js runtime</div>
+				<div>${getBlankIcons()}js engine</div>
+				<div>${getBlankIcons()}emojis</div>
+				<div>${getBlankIcons()}audio</div>
+				<div>${getBlankIcons()}canvas</div>
+				<div>${getBlankIcons()}textMetrics</div>
+				<div>${getBlankIcons()}webgl</div>
+				<div>${getBlankIcons()}fonts</div>
+				<div>${getBlankIcons()}voices</div>
+				<div>${getBlankIcons()}screen</div>
 			</div>
 			<div class="col-four icon-container">
 			</div>
@@ -1041,18 +1042,19 @@ const imports = {
 						<strong>Sample Input Rejected: ${botPercentString} Bot</strong>
 						<div>client user agent:</div>
 						<div class="ellipsis">${getBlankIcons()}window object:</div>
-						<div>${getBlankIcons()}system styles:</div>
-						<div>${getBlankIcons()}computed styles:</div>
-						<div>${getBlankIcons()}html element:</div>
-						<div>${getBlankIcons()}js runtime:</div>
-						<div>${getBlankIcons()}js engine:</div>
-						<div>${getBlankIcons()}emojis:</div>
-						<div>${getBlankIcons()}audio:</div>
-						<div>${getBlankIcons()}canvas:</div>
-						<div>${getBlankIcons()}textMetrics:</div>
-						<div>${getBlankIcons()}webgl:</div>
-						<div>${getBlankIcons()}fonts:</div>
-						<div>${getBlankIcons()}voices:</div>
+						<div>${getBlankIcons()}system styles</div>
+						<div>${getBlankIcons()}computed styles</div>
+						<div>${getBlankIcons()}html element</div>
+						<div>${getBlankIcons()}js runtime</div>
+						<div>${getBlankIcons()}js engine</div>
+						<div>${getBlankIcons()}emojis</div>
+						<div>${getBlankIcons()}audio</div>
+						<div>${getBlankIcons()}canvas</div>
+						<div>${getBlankIcons()}textMetrics</div>
+						<div>${getBlankIcons()}webgl</div>
+						<div>${getBlankIcons()}fonts</div>
+						<div>${getBlankIcons()}voices</div>
+						<div>${getBlankIcons()}screen</div>
 					</div>
 					<div class="col-four icon-container">
 					</div>
@@ -1134,13 +1136,14 @@ const imports = {
 					textMetricsSystem,
 					webglSystem,
 					fontsSystem,
-					voicesSystem
+					voicesSystem,
+					screenSystem
 				} = data
 				
 				const iconSet = new Set()
 				const htmlIcon = cssClass => `<span class="icon ${cssClass}"></span>`
-				const getTemplate = (title, agent) => {
-					const { decrypted, system } = agent || {}
+				const getTemplate = ({title, agent, showVersion = false}) => {
+					const { decrypted, system, device } = agent || {}
 					const browserIcon = (
 						/edgios|edge/i.test(decrypted) ? iconSet.add('edge') && htmlIcon('edge') :
 						/brave/i.test(decrypted) ? iconSet.add('brave') && htmlIcon('brave') :
@@ -1172,8 +1175,9 @@ const imports = {
 						browserIcon
 					].join('')
 					return (
-						system ? `${icons}${title}: ${decrypted} on ${system}` :
-						`${icons}${title}: ${decrypted}`
+						device ? `${icons}${title}: ${device}` :
+							showVersion ? `${icons}${title}: ${decrypted}` :
+								`${icons}${title}`
 					)
 				}
 				
@@ -1193,50 +1197,54 @@ const imports = {
 							<span class="${fakeUserAgent ? 'lies' : ''}">${report}</span>
 						</div>
 						<div class="ellipsis">${
-							getTemplate('window object', windowVersion)
+							getTemplate({title: 'window object', agent: windowVersion, showVersion: true})
 						}</div>
 						<div class="ellipsis">${
-							getTemplate('system styles', styleSystem)
+							getTemplate({title: 'system styles', agent: styleSystem})
 						}</div>
 						<div class="ellipsis">${
-							getTemplate('computed styles', styleVersion)
+							getTemplate({title: 'computed styles', agent: styleVersion})
 						}</div>
 						<div class="ellipsis">${
-							getTemplate('html element', htmlVersion)
+							getTemplate({title: 'html element', agent: htmlVersion})
 						}</div>
 						<div class="ellipsis">${
-							getTemplate('js runtime', jsRuntime)
+							getTemplate({title: 'js runtime', agent: jsRuntime})
 						}</div>
 						<div class="ellipsis">${
-							getTemplate('js engine', jsEngine)
+							getTemplate({title: 'js engine', agent: jsEngine})
 						}</div>
 						<div class="ellipsis">${
 							!Object.keys(emojiSystem || {}).length ? unknownHTML('emojis') : 
-								getTemplate('emojis', emojiSystem)
+								getTemplate({title: 'emojis', agent: emojiSystem})
 						}</div>
 						<div class="ellipsis">${
 							!Object.keys(audioSystem || {}).length ? unknownHTML('audio') : 
-								getTemplate('audio', audioSystem)
+								getTemplate({title: 'audio', agent: audioSystem})
 						}</div>
 						<div class="ellipsis">${
 							!Object.keys(canvasSystem || {}).length ? unknownHTML('canvas') : 
-								getTemplate('canvas', canvasSystem)
+								getTemplate({title: 'canvas', agent: canvasSystem})
 						}</div>
 						<div class="ellipsis">${
 							!Object.keys(textMetricsSystem || {}).length ? unknownHTML('textMetrics') : 
-								getTemplate('textMetrics', textMetricsSystem)
+								getTemplate({title: 'textMetrics', agent: textMetricsSystem})
 						}</div>
 						<div class="ellipsis">${
 							!Object.keys(webglSystem || {}).length ? unknownHTML('webgl') : 
-								getTemplate('webgl', webglSystem)
+								getTemplate({title: 'webgl', agent: webglSystem})
 						}</div>
 						<div class="ellipsis">${
 							!Object.keys(fontsSystem || {}).length ? unknownHTML('fonts') : 
-								getTemplate('fonts', fontsSystem)
+								getTemplate({title: 'fonts', agent: fontsSystem})
 						}</div>
 						<div class="ellipsis">${
 							!Object.keys(voicesSystem || {}).length ? unknownHTML('voices') : 
-								getTemplate('voices', voicesSystem)
+								getTemplate({title: 'voices', agent: voicesSystem})
+						}</div>
+						<div class="ellipsis">${
+							!Object.keys(screenSystem || {}).length || !screenSystem.system ? unknownHTML('screen') : 
+								getTemplate({title: 'screen', agent: screenSystem})
 						}</div>
 					</div>
 					<div class="col-four icon-container">
