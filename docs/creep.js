@@ -9343,7 +9343,9 @@
 				screenHash,
 				voicesHash,
 				canvas2dHash,
+				canvas2dImageHash,
 				canvasWebglHash,
+				canvasWebglImageHash,
 				pixelsHash,
 				pixels2Hash,
 				mathsHash,
@@ -9375,7 +9377,9 @@
 				hashify(screenComputed),
 				hashify(voicesComputed),
 				hashify(canvas2dComputed),
+				hashify(canvas2dComputed.dataURI),
 				hashify(canvasWebglComputed),
+				hashify(canvasWebglComputed.dataURI),
 				caniuse(() => canvasWebglComputed.pixels.length) ? hashify(canvasWebglComputed.pixels) : undefined,
 				caniuse(() => canvasWebglComputed.pixels2.length) ? hashify(canvasWebglComputed.pixels2) : undefined,
 				hashify(mathsComputed.data),
@@ -9437,11 +9441,27 @@
 				intl: !intlComputed ? undefined : {...intlComputed, $hash: intlHash},
 				features: !featuresComputed ? undefined : {...featuresComputed, $hash: featuresHash},
 			};
-			return { fingerprint, styleSystemHash, styleHash, emojiHash, timeEnd }
+			return {
+				fingerprint,
+				styleSystemHash,
+				styleHash,
+				emojiHash,
+				canvas2dImageHash,
+				canvasWebglImageHash,
+				timeEnd
+			}
 		};
 		
 		// fingerprint and render
-		const { fingerprint: fp, styleSystemHash, styleHash, emojiHash, timeEnd } = await fingerprint().catch(error => console.error(error));
+		const {
+			fingerprint: fp,
+			styleSystemHash,
+			styleHash,
+			emojiHash,
+			canvas2dImageHash,
+			canvasWebglImageHash,
+			timeEnd
+		} = await fingerprint().catch(error => console.error(error));
 		
 		console.log('%c✔ loose fingerprint passed', 'color:#4cca9f');
 
@@ -9746,7 +9766,7 @@
 		};
 		const hasTrash = !!trashLen;
 		const { lies: hasLied, capturedErrors: hasErrors } = creep;
-
+		const getBlankIcons = () => `<span class="icon"></span><span class="icon"></span>`;
 		const el = document.getElementById('fingerprint-data');
 		patch(el, html`
 	<div id="fingerprint-data">
@@ -9806,14 +9826,19 @@
 			<div class="col-eight">
 				<strong>Loading...</strong>
 				<div>client user agent:</div>
-				<div>window object:</div>
-				<div>system styles:</div>
-				<div>computed styles:</div>
-				<div>html element:</div>
-				<div>js runtime (math):</div>
-				<div>js engine (error):</div>
-				<div>emojis:</div>
-				<div>audio:</div>
+				<div>${getBlankIcons()}window object:</div>
+				<div>${getBlankIcons()}system styles:</div>
+				<div>${getBlankIcons()}computed styles:</div>
+				<div>${getBlankIcons()}html element:</div>
+				<div>${getBlankIcons()}js runtime:</div>
+				<div>${getBlankIcons()}js engine:</div>
+				<div>${getBlankIcons()}emojis:</div>
+				<div>${getBlankIcons()}audio:</div>
+				<div>${getBlankIcons()}canvas:</div>
+				<div>${getBlankIcons()}textMetrics:</div>
+				<div>${getBlankIcons()}webgl:</div>
+				<div>${getBlankIcons()}fonts:</div>
+				<div>${getBlankIcons()}voices:</div>
 			</div>
 			<div class="col-four icon-container">
 			</div>
@@ -10151,7 +10176,11 @@
 					clientRects,
 					offlineAudioContext,
 					resistance,
-					navigator
+					navigator,
+					canvas2d,
+					canvasWebgl,
+					fonts,
+					voices
 				} = fp || {};
 				const {
 					computedStyle,
@@ -10163,16 +10192,21 @@
 				const rejectSamplePatch = (el, html) => patch(el, html`
 				<div class="flex-grid rejected">
 					<div class="col-eight">
-						<strong>Sample Rejected: ${botPercentString} Bot</strong>
+						<strong>Sample Input Rejected: ${botPercentString} Bot</strong>
 						<div>client user agent:</div>
-						<div>window object:</div>
-						<div>system styles:</div>
-						<div>computed styles:</div>
-						<div>html element:</div>
-						<div>js runtime (math):</div>
-						<div>js engine (error):</div>
-						<div class="ellipsis">emojis:</div>
-						<div class="ellipsis">audio:</div>
+						<div class="ellipsis">${getBlankIcons()}window object:</div>
+						<div>${getBlankIcons()}system styles:</div>
+						<div>${getBlankIcons()}computed styles:</div>
+						<div>${getBlankIcons()}html element:</div>
+						<div>${getBlankIcons()}js runtime:</div>
+						<div>${getBlankIcons()}js engine:</div>
+						<div>${getBlankIcons()}emojis:</div>
+						<div>${getBlankIcons()}audio:</div>
+						<div>${getBlankIcons()}canvas:</div>
+						<div>${getBlankIcons()}textMetrics:</div>
+						<div>${getBlankIcons()}webgl:</div>
+						<div>${getBlankIcons()}fonts:</div>
+						<div>${getBlankIcons()}voices:</div>
 					</div>
 					<div class="col-four icon-container">
 					</div>
@@ -10189,6 +10223,7 @@
 				};
 				
 				const isTorBrowser = resistance.privacy == 'Tor Browser';
+				const isRFP = resistance.privacy == 'Firefox';
 				//console.log(emojiHash) // Tor Browser check
 				const {
 					compressorGainReduction: gain,
@@ -10201,6 +10236,7 @@
 				const decryptRequest = `https://creepjs-6bd8e.web.app/decrypt?${[
 				`sender=${sender.e}_${sender.l}`,
 				`isTorBrowser=${isTorBrowser}`,
+				`isRFP=${isRFP}`,
 				`isBrave=${isBrave}`,
 				`mathId=${maths.$hash}`,
 				`errorId=${consoleErrors.$hash}`,
@@ -10214,6 +10250,24 @@
 						offlineAudioContext.lied ||
 						unknownFirefoxAudio ? 'undefined' : 
 							`${sampleSum}_${gain}_${freqSum}_${timeSum}_${valuesHash}`
+				}`,
+				`canvasId=${
+					!canvas2d || canvas2d.lied ? 'undefined' :
+						canvas2dImageHash
+				}`,
+				`textMetricsId=${
+					!canvas2d || canvas2d.lied ? 'undefined' : 
+						canvas2d.textMetricsSystemSum
+				}`,
+				`webglId=${
+					!canvasWebgl || canvas2d.lied || canvasWebgl.lied ? 'undefined' :
+						canvasWebglImageHash
+				}`,
+				`fontsId=${!fonts || fonts.lied ? 'undefined' : fonts.$hash}`,
+				`voicesId=${!voices || voices.lied ? 'undefined' : voices.$hash}`,
+				`screenId=${
+					!screen || screen.lied || isRFP || isTorBrowser ? 'undefined' : 
+						`${screen.width}x${screen.height}`
 				}`,
 				`ua=${encodeURIComponent(fp.workerScope.userAgent)}`
 			].join('&')}`;
@@ -10229,12 +10283,17 @@
 						styleVersion,
 						styleSystem,
 						emojiSystem,
-						audioSystem
+						audioSystem,
+						canvasSystem,
+						textMetricsSystem,
+						webglSystem,
+						fontsSystem,
+						voicesSystem
 					} = data;
 					
 					const iconSet = new Set();
 					const htmlIcon = cssClass => `<span class="icon ${cssClass}"></span>`;
-					const getTemplate = agent => {
+					const getTemplate = (title, agent) => {
 						const { decrypted, system } = agent || {};
 						const browserIcon = (
 							/edgios|edge/i.test(decrypted) ? iconSet.add('edge') && htmlIcon('edge') :
@@ -10253,22 +10312,22 @@
 							/spidermonkey/i.test(decrypted) ? iconSet.add('firefox') && htmlIcon('firefox') :
 							/safari/i.test(decrypted) ? iconSet.add('safari') && htmlIcon('safari') :
 							/webkit/i.test(decrypted) ? iconSet.add('webkit') && htmlIcon('webkit') :
-							/blink/i.test(decrypted) ? iconSet.add('blink') && htmlIcon('blink') : ''
+							/blink/i.test(decrypted) ? iconSet.add('blink') && htmlIcon('blink') : htmlIcon('')
 						);
 						const systemIcon = (
 							/chrome os/i.test(system) ? iconSet.add('cros') && htmlIcon('cros') :
 							/linux/i.test(system) ? iconSet.add('linux') && htmlIcon('linux') :
 							/android/i.test(system) ? iconSet.add('android') && htmlIcon('android') :
 							/ipad|iphone|ipod|ios|mac/i.test(system) ? iconSet.add('apple') && htmlIcon('apple') :
-							/windows/i.test(system) ? iconSet.add('windows') && htmlIcon('windows') : ''
+							/windows/i.test(system) ? iconSet.add('windows') && htmlIcon('windows') : htmlIcon('')
 						);
 						const icons = [
-							browserIcon,
-							systemIcon
+							systemIcon,
+							browserIcon
 						].join('');
 						return (
-							system ? `${icons}${decrypted} on ${system}` :
-							`${icons}${decrypted}`
+							system ? `${icons}${title}: ${decrypted} on ${system}` :
+							`${icons}${title}: ${decrypted}`
 						)
 					};
 					
@@ -10276,25 +10335,63 @@
 						/\d+/.test(windowVersion.decrypted) &&
 						windowVersion.decrypted != report
 					);
-
+					const unknownHTML = title => `${getBlankIcons()}${title}: ${note.unknown}`;
 					patch(el, html`
 				<div class="flex-grid relative">
 					<div class="ellipsis">
 						<span class="aside-note-bottom">pending review: <span class="${data.pendingReview ? 'renewed' : ''}">${data.pendingReview || '0'}</span></span>
 					</div>
 					<div class="col-eight">
-						<strong>Version</strong>
+						<strong>Prediction</strong>
 						<div>client user agent:
 							<span class="${fakeUserAgent ? 'lies' : ''}">${report}</span>
 						</div>
-						<div class="ellipsis">window object: ${getTemplate(windowVersion)}</div>
-						<div class="ellipsis">system styles: ${getTemplate(styleSystem)}</div>
-						<div class="ellipsis">computed styles: ${getTemplate(styleVersion)}</div>
-						<div class="ellipsis">html element: ${getTemplate(htmlVersion)}</div>
-						<div class="ellipsis">js runtime (math): ${getTemplate(jsRuntime)}</div>
-						<div class="ellipsis">js engine (error): ${getTemplate(jsEngine)}</div>
-						<div class="ellipsis">emojis: ${!Object.keys(emojiSystem || {}).length ? note.unknown : getTemplate(emojiSystem)}</div>
-						<div class="ellipsis">audio: ${!Object.keys(audioSystem || {}).length ? note.unknown : getTemplate(audioSystem)}</div>
+						<div class="ellipsis">${
+							getTemplate('window object', windowVersion)
+						}</div>
+						<div class="ellipsis">${
+							getTemplate('system styles', styleSystem)
+						}</div>
+						<div class="ellipsis">${
+							getTemplate('computed styles', styleVersion)
+						}</div>
+						<div class="ellipsis">${
+							getTemplate('html element', htmlVersion)
+						}</div>
+						<div class="ellipsis">${
+							getTemplate('js runtime', jsRuntime)
+						}</div>
+						<div class="ellipsis">${
+							getTemplate('js engine', jsEngine)
+						}</div>
+						<div class="ellipsis">${
+							!Object.keys(emojiSystem || {}).length ? unknownHTML('emojis') : 
+								getTemplate('emojis', emojiSystem)
+						}</div>
+						<div class="ellipsis">${
+							!Object.keys(audioSystem || {}).length ? unknownHTML('audio') : 
+								getTemplate('audio', audioSystem)
+						}</div>
+						<div class="ellipsis">${
+							!Object.keys(canvasSystem || {}).length ? unknownHTML('canvas') : 
+								getTemplate('canvas', canvasSystem)
+						}</div>
+						<div class="ellipsis">${
+							!Object.keys(textMetricsSystem || {}).length ? unknownHTML('textMetrics') : 
+								getTemplate('textMetrics', textMetricsSystem)
+						}</div>
+						<div class="ellipsis">${
+							!Object.keys(webglSystem || {}).length ? unknownHTML('webgl') : 
+								getTemplate('webgl', webglSystem)
+						}</div>
+						<div class="ellipsis">${
+							!Object.keys(fontsSystem || {}).length ? unknownHTML('fonts') : 
+								getTemplate('fonts', fontsSystem)
+						}</div>
+						<div class="ellipsis">${
+							!Object.keys(voicesSystem || {}).length ? unknownHTML('voices') : 
+								getTemplate('voices', voicesSystem)
+						}</div>
 					</div>
 					<div class="col-four icon-container">
 						${[...iconSet].map(icon => {
