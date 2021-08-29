@@ -211,13 +211,16 @@ export const getCanvasWebgl = async imports => {
 		// detect lies
 		const dataLie = lieProps['HTMLCanvasElement.toDataURL']
 		const contextLie = lieProps['HTMLCanvasElement.getContext']
-		let lied = (
-			dataLie ||
-			contextLie ||
+		const parameterOrExtensionLie = (
 			lieProps['WebGLRenderingContext.getParameter'] ||
 			lieProps['WebGL2RenderingContext.getParameter'] ||
 			lieProps['WebGLRenderingContext.getExtension'] ||
-			lieProps['WebGL2RenderingContext.getExtension'] ||
+			lieProps['WebGL2RenderingContext.getExtension']
+		)
+		let lied = (
+			dataLie ||
+			contextLie ||
+			parameterOrExtensionLie ||
 			lieProps['WebGLRenderingContext.getSupportedExtensions'] ||
 			lieProps['WebGL2RenderingContext.getSupportedExtensions']
 		) || false
@@ -417,6 +420,7 @@ export const getCanvasWebgl = async imports => {
 					})
 				}
 			},
+			parameterOrExtensionLie,
 			lied
 		}
 

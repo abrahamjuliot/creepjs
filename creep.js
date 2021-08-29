@@ -1086,7 +1086,7 @@ const imports = {
 			
 			const isTorBrowser = resistance.privacy == 'Tor Browser'
 			const isRFP = resistance.privacy == 'Firefox'
-			const isBraveStrict = resistance.privacy == 'Brave' && resistance.mode == 'strict'
+			const isBravePrivacy = resistance.privacy == 'Brave'
 			//console.log(emojiHash) // Tor Browser check
 			const {
 				compressorGainReduction: gain,
@@ -1127,13 +1127,14 @@ const imports = {
 						canvasWebglImageHash
 				}`,
 				`gpuId=${
-					!canvasWebgl || canvas2d.lied || canvasWebgl.lied ? 'undefined' :
+					!canvasWebgl || canvasWebgl.parameterOrExtensionLie ? 'undefined' :
 						canvasWebglParametersHash
 				}`,
 				`gpu=${
-					!canvasWebgl || canvas2d.lied || canvasWebgl.lied ? 'undefined' : (
-						fp.workerScope.webglRenderer ? encodeURIComponent(fp.workerScope.webglRenderer) :
-							canvasWebgl.parameters ? encodeURIComponent(canvasWebgl.parameters.UNMASKED_RENDERER_WEBGL) : 'undefined'
+					!canvasWebgl || canvasWebgl.parameterOrExtensionLie ? 'undefined' : (
+						((fp.workerScope.type != 'dedicated') && fp.workerScope.webglRenderer) ? encodeURIComponent(fp.workerScope.webglRenderer) :
+							(canvasWebgl.parameters && !isBravePrivacy) ? encodeURIComponent(canvasWebgl.parameters.UNMASKED_RENDERER_WEBGL) : 
+								'undefined'
 					)
 				}`,
 				`fontsId=${!fonts || fonts.lied ? 'undefined' : fonts.$hash}`,
