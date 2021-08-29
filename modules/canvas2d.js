@@ -294,7 +294,16 @@ export const getCanvas2d = async imports => {
 		const dataLie = lieProps['HTMLCanvasElement.toDataURL']
 		const contextLie = lieProps['HTMLCanvasElement.getContext']
 		const imageDataLie = lieProps['CanvasRenderingContext2D.getImageData']
-		const textMetricsLie = lieProps['CanvasRenderingContext2D.measureText']
+		const textMetricsLie = (
+			lieProps['CanvasRenderingContext2D.measureText'] ||
+			lieProps['TextMetrics.actualBoundingBoxAscent'] ||
+			lieProps['TextMetrics.actualBoundingBoxDescent'] ||
+			lieProps['TextMetrics.actualBoundingBoxLeft'] ||
+			lieProps['TextMetrics.actualBoundingBoxRight'] ||
+			lieProps['TextMetrics.fontBoundingBoxAscent'] ||
+			lieProps['TextMetrics.fontBoundingBoxDescent'] ||
+			lieProps['TextMetrics.width']
+		)
 		let lied = (dataLie || contextLie || imageDataLie || textMetricsLie) || false
 
 		const doc = phantomDarkness ? phantomDarkness.document : document
@@ -440,6 +449,7 @@ export const getCanvas2d = async imports => {
 			textMetrics: new Set(Object.keys(textMetrics)).size > 1 ? textMetrics : undefined,
 			textMetricsSystemSum,
 			textMetricsSystemClass,
+			liedTextMetrics: textMetricsLie,
 			lied
 		}
 	}

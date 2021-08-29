@@ -1104,7 +1104,7 @@ const imports = {
 						canvas2dImageHash
 				}`,
 				`textMetricsId=${
-					!canvas2d || canvas2d.lied ? 'undefined' : 
+					!canvas2d || canvas2d.liedTextMetrics || ((+canvas2d.textMetricsSystemSum) == 0) ? 'undefined' : 
 						canvas2d.textMetricsSystemSum
 				}`,
 				`webglId=${
