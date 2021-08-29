@@ -526,7 +526,13 @@ const decryptLocation = ({ year, timeZone, phantomIntl, phantomDate }) => {
 	return decrypted
 }
 
-const formatLocation = x => x.replace(/_/, ' ').split('/').join(', ') 
+const formatLocation = x => {
+	try {
+		return x.replace(/_/, ' ').split('/').join(', ')
+	}
+	catch (error) {}
+	return x
+}
 
 export const getTimezone = async imports => {
 

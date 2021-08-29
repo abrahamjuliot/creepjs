@@ -879,7 +879,7 @@ const imports = {
 				const userShouldGetThrottled = (switchCount > 20) && ((hours/switchCount) <= 7) // 
 				const excessiveLooseFingerprints = hasLied && userShouldGetThrottled
 				const workerScopeIsTrashed = !fp.workerScope || !fp.workerScope.userAgent
-				const liedWorkerScope = fp.workerScope.lied
+				const liedWorkerScope = fp.workerScope && fp.workerScope.lied
 				// Patern conditions that warrant rejection
 				const botPatterns = [
 					excessiveLooseFingerprints,
@@ -1123,7 +1123,7 @@ const imports = {
 						canvas2d.textMetricsSystemSum
 				}`,
 				`webglId=${
-					!canvasWebgl || canvas2d.lied || canvasWebgl.lied ? 'undefined' :
+					!canvasWebgl || (canvas2d || {}).lied || canvasWebgl.lied ? 'undefined' :
 						canvasWebglImageHash
 				}`,
 				`gpuId=${
