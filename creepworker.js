@@ -92,6 +92,13 @@ const getPrototypeLies = globalScope => {
 	// extending the function on a fake class should throw a TypeError and message "not a constructor"
 	const getClassExtendsTypeErrorLie = apiFunction => {
 		try {
+			const shouldExitInSafari13 = (
+				/version\/13/i.test((navigator || {}).userAgent) &&
+				((3.141592653589793 ** -100) == 1.9275814160560206e-50)
+			)
+			if (shouldExitInSafari13) {
+				return false
+			}
 			class Fake extends apiFunction { }
 			return true
 		} catch (error) {

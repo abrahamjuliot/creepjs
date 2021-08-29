@@ -808,6 +808,14 @@
 		// extending the function on a fake class should throw a TypeError and message "not a constructor"
 		const getClassExtendsTypeErrorLie = apiFunction => {
 			try {
+				const shouldExitInSafari13 = (
+					/version\/13/i.test((navigator || {}).userAgent) &&
+					((3.141592653589793 ** -100) == 1.9275814160560206e-50)
+				);
+				if (shouldExitInSafari13) {
+					return false
+				}
+				// begin tests
 				class Fake extends apiFunction { }
 				return true
 			} catch (error) {
@@ -6923,7 +6931,13 @@
 		return decrypted
 	};
 
-	const formatLocation = x => x.replace(/_/, ' ').split('/').join(', '); 
+	const formatLocation = x => {
+		try {
+			return x.replace(/_/, ' ').split('/').join(', ')
+		}
+		catch (error) {}
+		return x
+	};
 
 	const getTimezone = async imports => {
 
@@ -10057,7 +10071,7 @@
 					const userShouldGetThrottled = (switchCount > 20) && ((hours/switchCount) <= 7); // 
 					const excessiveLooseFingerprints = hasLied && userShouldGetThrottled;
 					const workerScopeIsTrashed = !fp.workerScope || !fp.workerScope.userAgent;
-					const liedWorkerScope = fp.workerScope.lied;
+					const liedWorkerScope = fp.workerScope && fp.workerScope.lied;
 					// Patern conditions that warrant rejection
 					const botPatterns = [
 						excessiveLooseFingerprints,
@@ -10301,7 +10315,7 @@
 						canvas2d.textMetricsSystemSum
 				}`,
 				`webglId=${
-					!canvasWebgl || canvas2d.lied || canvasWebgl.lied ? 'undefined' :
+					!canvasWebgl || (canvas2d || {}).lied || canvasWebgl.lied ? 'undefined' :
 						canvasWebglImageHash
 				}`,
 				`gpuId=${
