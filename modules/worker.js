@@ -74,11 +74,15 @@ const getServiceWorker = () => {
 				console.error(error)
 				return resolve()
 			})
-			const registration = await navigator.serviceWorker.ready
+			//const registration = await navigator.serviceWorker.ready
+			const registration = await navigator.serviceWorker.getRegistration(source)
 			.catch(error => {
 				console.error(error)
 				return resolve()
 			})
+			if (!registration) {
+				return resolve()
+			}
 
 			if (!('BroadcastChannel' in window)) {
 				return resolve() // no support in Safari and iOS
