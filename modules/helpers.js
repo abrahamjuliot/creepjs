@@ -68,6 +68,62 @@ function getBraveMode() {
 	}
 }
 
+const getBraveUnprotectedParameters = parameters => {
+	const blocked = new Set([			
+		'FRAGMENT_SHADER.HIGH_FLOAT.precision',
+		'FRAGMENT_SHADER.HIGH_FLOAT.rangeMax',
+		'FRAGMENT_SHADER.HIGH_FLOAT.rangeMin',
+		'FRAGMENT_SHADER.HIGH_INT.precision',
+		'FRAGMENT_SHADER.HIGH_INT.rangeMax',
+		'FRAGMENT_SHADER.HIGH_INT.rangeMin',
+		'FRAGMENT_SHADER.LOW_FLOAT.precision',
+		'FRAGMENT_SHADER.LOW_FLOAT.rangeMax',
+		'FRAGMENT_SHADER.LOW_FLOAT.rangeMin',
+		'FRAGMENT_SHADER.MEDIUM_FLOAT.precision',
+		'FRAGMENT_SHADER.MEDIUM_FLOAT.rangeMax',
+		'FRAGMENT_SHADER.MEDIUM_FLOAT.rangeMin',
+		'MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS',
+		'MAX_COMBINED_UNIFORM_BLOCKS',
+		'MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS',
+		'MAX_DRAW_BUFFERS_WEBGL',
+		'MAX_FRAGMENT_INPUT_COMPONENTS',
+		'MAX_FRAGMENT_UNIFORM_BLOCKS',
+		'MAX_FRAGMENT_UNIFORM_COMPONENTS',
+		'MAX_TEXTURE_MAX_ANISOTROPY_EXT',
+		'MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS',
+		'MAX_UNIFORM_BUFFER_BINDINGS',
+		'MAX_VARYING_COMPONENTS',
+		'MAX_VERTEX_OUTPUT_COMPONENTS',
+		'MAX_VERTEX_UNIFORM_BLOCKS',
+		'MAX_VERTEX_UNIFORM_COMPONENTS',
+		'SHADING_LANGUAGE_VERSION',
+		'UNMASKED_RENDERER_WEBGL',
+		'UNMASKED_VENDOR_WEBGL',
+		'VERSION',
+		'VERTEX_SHADER.HIGH_FLOAT.precision',
+		'VERTEX_SHADER.HIGH_FLOAT.rangeMax',
+		'VERTEX_SHADER.HIGH_FLOAT.rangeMin',
+		'VERTEX_SHADER.HIGH_INT.precision',
+		'VERTEX_SHADER.HIGH_INT.rangeMax',
+		'VERTEX_SHADER.HIGH_INT.rangeMin',
+		'VERTEX_SHADER.LOW_FLOAT.precision',
+		'VERTEX_SHADER.LOW_FLOAT.rangeMax',
+		'VERTEX_SHADER.LOW_FLOAT.rangeMin',
+		'VERTEX_SHADER.MEDIUM_FLOAT.precision',
+		'VERTEX_SHADER.MEDIUM_FLOAT.rangeMax',
+		'VERTEX_SHADER.MEDIUM_FLOAT.rangeMin'
+	])
+	const safeParameters = Object.keys(parameters).reduce((acc, curr) => {
+		if (blocked.has(curr)) {
+			return acc
+		}
+		acc[curr] = parameters[curr]
+		return acc
+	}, {})
+	return safeParameters
+}
+	
+
 // system
 const getOS = userAgent => {
 	const os = (
@@ -252,4 +308,4 @@ const getPromiseRaceFulfilled = async ({
 	)
 }
 
-export { isChrome, braveBrowser, getBraveMode, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, logTestResult, getPromiseRaceFulfilled }
+export { isChrome, braveBrowser, getBraveMode, getBraveUnprotectedParameters, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, logTestResult, getPromiseRaceFulfilled }
