@@ -10621,7 +10621,6 @@
 					return
 				}
 				const decryptionData = await decryptionResponse.json();
-				console.log(decryptionData);
 				return renderPrediction({
 					decryptionData,
 					patch,
