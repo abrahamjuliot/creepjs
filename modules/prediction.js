@@ -8,9 +8,9 @@ export const getPrediction = ({hash, data}) => {
 		if (!(item.id == hash)) {
 			return false
 		}
-		devices = item.devices
-		systems = item.systems
-		gpus = item.gpus
+		devices = item.devices || []
+		systems = item.systems || []
+		gpus = item.gpus || []
 		return true
 	}))
 	const prediction = {
