@@ -9283,6 +9283,222 @@
 		return
 	};
 
+	const getPrediction = ({hash, data}) => {
+		const getBaseDeviceName = devices => {
+			// ex: find Android 10 in [Android 10, Android 10 Blah Blah]
+			return devices.find(a => devices.filter(b => b.includes(a)).length == devices.length)
+		};
+		let systems, devices, gpus;
+		const decrypted = Object.keys(data).find(key => data[key].find(item => {
+			if (!(item.id == hash)) {
+				return false
+			}
+			devices = item.devices;
+			systems = item.systems;
+			gpus = item.gpus;
+			return true
+		}));
+		const prediction = {
+			decrypted,
+			system: systems.length == 1 ? systems[0] : undefined,
+			device: devices.length == 1 ? devices[0] : getBaseDeviceName(devices),
+			gpu: gpus.length == 1 ? gpus[0] : undefined
+		};
+		return prediction
+	};
+
+	const renderPrediction = ({decryptionData, patch, html, note, bot = false}) => {
+		const {
+			jsRuntime,
+			jsEngine,
+			htmlVersion,
+			windowVersion,
+			styleVersion,
+			styleSystem,
+			emojiSystem,
+			audioSystem,
+			canvasSystem,
+			textMetricsSystem,
+			webglSystem,
+			gpuSystem,
+			fontsSystem,
+			voicesSystem,
+			screenSystem,
+			pendingReview
+		} = decryptionData;
+
+		const iconSet = new Set();
+		const getBlankIcons = () => `<span class="icon"></span><span class="icon"></span>`;
+		const htmlIcon = cssClass => `<span class="icon ${cssClass}"></span>`;
+		const getTemplate = ({title, agent, showVersion = false}) => {
+			const { decrypted, system, device } = agent || {};
+			const browserIcon = (
+				/edgios|edge/i.test(decrypted) ? iconSet.add('edge') && htmlIcon('edge') :
+				/brave/i.test(decrypted) ? iconSet.add('brave') && htmlIcon('brave') :
+				/vivaldi/i.test(decrypted) ? iconSet.add('vivaldi') && htmlIcon('vivaldi') :
+				/duckduckgo/i.test(decrypted) ? iconSet.add('duckduckgo') && htmlIcon('duckduckgo') :
+				/yandex/i.test(decrypted) ? iconSet.add('yandex') && htmlIcon('yandex') :
+				/opera/i.test(decrypted) ? iconSet.add('opera') && htmlIcon('opera') :
+				/crios|chrome/i.test(decrypted) ? iconSet.add('chrome') && htmlIcon('chrome') :
+				/tor browser/i.test(decrypted) ? iconSet.add('tor') && htmlIcon('tor') :
+				/palemoon/i.test(decrypted) ? iconSet.add('palemoon') && htmlIcon('palemoon') :
+				/fxios|firefox/i.test(decrypted) ? iconSet.add('firefox') && htmlIcon('firefox') :
+				/v8/i.test(decrypted) ? iconSet.add('v8') && htmlIcon('v8') :
+				/gecko/i.test(decrypted) ? iconSet.add('gecko') && htmlIcon('gecko') :
+				/goanna/i.test(decrypted) ? iconSet.add('goanna') && htmlIcon('goanna') :
+				/spidermonkey/i.test(decrypted) ? iconSet.add('firefox') && htmlIcon('firefox') :
+				/safari/i.test(decrypted) ? iconSet.add('safari') && htmlIcon('safari') :
+				/webkit|javascriptcore/i.test(decrypted) ? iconSet.add('webkit') && htmlIcon('webkit') :
+				/blink/i.test(decrypted) ? iconSet.add('blink') && htmlIcon('blink') : htmlIcon('')
+			);
+			const systemIcon = (
+				/chrome os/i.test(system) ? iconSet.add('cros') && htmlIcon('cros') :
+				/linux/i.test(system) ? iconSet.add('linux') && htmlIcon('linux') :
+				/android/i.test(system) ? iconSet.add('android') && htmlIcon('android') :
+				/ipad|iphone|ipod|ios|mac/i.test(system) ? iconSet.add('apple') && htmlIcon('apple') :
+				/windows/i.test(system) ? iconSet.add('windows') && htmlIcon('windows') : htmlIcon('')
+			);
+			const icons = [
+				systemIcon,
+				browserIcon
+			].join('');
+			return (
+				device ? `${icons}${title}<strong>*</strong>` :
+					showVersion ? `${icons}${title}: ${decrypted}` :
+						`${icons}${title}`
+			)
+		};
+
+		const unknownHTML = title => `${getBlankIcons()}${title}: ${note.unknown}`;
+		const devices = new Set([
+			(jsRuntime || {}).device,
+			(emojiSystem || {}).device,
+			(audioSystem || {}).device,
+			(canvasSystem || {}).device,
+			(textMetricsSystem || {}).device,
+			(webglSystem || {}).device,
+			(gpuSystem || {}).device,
+			(fontsSystem || {}).device,
+			(voicesSystem || {}).device,
+			(screenSystem || {}).device
+		]);
+		devices.delete(undefined);
+		const getBaseDeviceName = devices => {
+			return devices.find(a => devices.filter(b => b.includes(a)).length == devices.length)
+		};
+		
+		const deviceName = getBaseDeviceName([...devices]);
+		const el = document.getElementById('browser-detection');
+		return patch(el, html`
+	<div class="flex-grid relative">
+		<div class="ellipsis">${
+			pendingReview ? `<span class="aside-note-bottom">pending review: <span class="renewed">${pendingReview}</span></span>` : ''
+		}
+		</div>
+		<div class="ellipsis">
+			<span class="aside-note"><span class="${bot ? 'renewed' : ''}">${bot ? 'magic' : ''}</span></span>
+		</div>
+		<div class="col-eight">
+			<strong>Prediction</strong>
+			<div>${deviceName ? `<strong>*</strong>${deviceName}` : getBlankIcons()}</div>
+			<div class="ellipsis">${
+				getTemplate({title: 'window object', agent: windowVersion, showVersion: true})
+			}</div>
+			<div class="ellipsis">${
+				getTemplate({title: 'system styles', agent: styleSystem})
+			}</div>
+			<div class="ellipsis">${
+				getTemplate({title: 'computed styles', agent: styleVersion})
+			}</div>
+			<div class="ellipsis">${
+				getTemplate({title: 'html element', agent: htmlVersion})
+			}</div>
+			<div class="ellipsis">${
+				getTemplate({title: 'js runtime', agent: jsRuntime})
+			}</div>
+			<div class="ellipsis">${
+				getTemplate({title: 'js engine', agent: jsEngine})
+			}</div>
+			<div class="ellipsis">${
+				!Object.keys(emojiSystem || {}).length ? unknownHTML('emojis') : 
+					getTemplate({title: 'emojis', agent: emojiSystem})
+			}</div>
+			<div class="ellipsis">${
+				!Object.keys(audioSystem || {}).length ? unknownHTML('audio') : 
+					getTemplate({title: 'audio', agent: audioSystem})
+			}</div>
+			<div class="ellipsis">${
+				!Object.keys(canvasSystem || {}).length ? unknownHTML('canvas') : 
+					getTemplate({title: 'canvas', agent: canvasSystem})
+			}</div>
+			<div class="ellipsis">${
+				!Object.keys(textMetricsSystem || {}).length ? unknownHTML('textMetrics') : 
+					getTemplate({title: 'textMetrics', agent: textMetricsSystem})
+			}</div>
+			<div class="ellipsis">${
+				!Object.keys(webglSystem || {}).length ? unknownHTML('webgl') : 
+					getTemplate({title: 'webgl', agent: webglSystem})
+			}</div>
+			<div class="ellipsis">${
+				!Object.keys(gpuSystem || {}).length ? unknownHTML('gpu') : 
+					getTemplate({title: 'gpu', agent: gpuSystem})
+			}</div>
+			<div class="ellipsis">${
+				!Object.keys(fontsSystem || {}).length ? unknownHTML('fonts') : 
+					getTemplate({title: 'fonts', agent: fontsSystem})
+			}</div>
+			<div class="ellipsis">${
+				!Object.keys(voicesSystem || {}).length ? unknownHTML('voices') : 
+					getTemplate({title: 'voices', agent: voicesSystem})
+			}</div>
+			<div class="ellipsis">${
+				!Object.keys(screenSystem || {}).length || !screenSystem.system ? unknownHTML('screen') : 
+					getTemplate({title: 'screen', agent: screenSystem})
+			}</div>
+		</div>
+		<div class="col-four icon-container">
+			${[...iconSet].map(icon => {
+				return `<div class="icon-item ${icon}"></div>`
+			}).join('')}
+			${
+				gpuSystem && ((''+gpuSystem.gpu) != 'undefined') ? 
+				`<div class="icon-item block-text-borderless">gpu:<br>${gpuSystem.gpu}</div>` : ''
+			}
+		</div>
+	</div>
+	`)
+	};
+
+	const predictionErrorPatch = ({error, patch, html}) => {
+		const getBlankIcons = () => `<span class="icon"></span><span class="icon"></span>`;
+		const el = document.getElementById('browser-detection');
+		return patch(el, html`
+		<div class="flex-grid rejected">
+			<div class="col-eight">
+				<strong>Prediction Failed: ${error}</strong>
+				<div>${getBlankIcons()}</div>
+				<div class="ellipsis">${getBlankIcons()}window object:</div>
+				<div>${getBlankIcons()}system styles</div>
+				<div>${getBlankIcons()}computed styles</div>
+				<div>${getBlankIcons()}html element</div>
+				<div>${getBlankIcons()}js runtime</div>
+				<div>${getBlankIcons()}js engine</div>
+				<div>${getBlankIcons()}emojis</div>
+				<div>${getBlankIcons()}audio</div>
+				<div>${getBlankIcons()}canvas</div>
+				<div>${getBlankIcons()}textMetrics</div>
+				<div>${getBlankIcons()}webgl</div>
+				<div>${getBlankIcons()}gpu</div>
+				<div>${getBlankIcons()}fonts</div>
+				<div>${getBlankIcons()}voices</div>
+				<div>${getBlankIcons()}screen</div>
+			</div>
+			<div class="col-four icon-container">
+			</div>
+		</div>
+	`)
+	};
+
 	const imports = {
 		require: {
 			// helpers
@@ -10089,17 +10305,24 @@
 					const userShouldGetThrottled = (switchCount > 20) && ((hours/switchCount) <= 7); // 
 					const excessiveLooseFingerprints = hasLied && userShouldGetThrottled;
 					const workerScopeIsTrashed = !fp.workerScope || !fp.workerScope.userAgent;
-					const liedWorkerScope = fp.workerScope && fp.workerScope.lied;
+					const liedWorkerScope = !!(fp.workerScope && fp.workerScope.lied);
 					// Patern conditions that warrant rejection
-					const botPatterns = [
+					const botPatterns = {
 						excessiveLooseFingerprints,
 						userAgentReportIsOutsideOfCSSVersion,
 						workerScopeIsTrashed,
 						liedWorkerScope
-					];
-					const botProbability = (botPatterns.filter(x => !!x).length) / botPatterns.length;
+					};
+					const totalBotPatterns = Object.keys(botPatterns).length;
+					const totalBotTriggers = (
+						Object.keys(botPatterns).filter(key => botPatterns[key]).length
+					);
+					const botProbability = totalBotTriggers / totalBotPatterns;
 					const isBot = !!botProbability;
 					const botPercentString = `${(botProbability*100).toFixed(0)}%`;
+					if (isBot) {
+						console.warn('bot patterns: ', botPatterns);
+					}
 					return {
 						isBot,
 						botPercentString
@@ -10246,9 +10469,9 @@
 					clientRects,
 					offlineAudioContext,
 					resistance,
-					navigator,
 					canvas2d,
 					canvasWebgl,
+					screen: screenFp,
 					fonts,
 					voices
 				} = fp || {};
@@ -10256,48 +10479,14 @@
 					computedStyle,
 					system
 				} = css || {};
-				const { userAgentParsed: report } = navigator || {};
-
-				const el = document.getElementById('browser-detection');
-				const rejectSamplePatch = (el, html) => patch(el, html`
-				<div class="flex-grid rejected">
-					<div class="col-eight">
-						<strong>Sample Input Rejected: ${botPercentString} Bot</strong>
-						<div>${getBlankIcons()}</div>
-						<div class="ellipsis">${getBlankIcons()}window object:</div>
-						<div>${getBlankIcons()}system styles</div>
-						<div>${getBlankIcons()}computed styles</div>
-						<div>${getBlankIcons()}html element</div>
-						<div>${getBlankIcons()}js runtime</div>
-						<div>${getBlankIcons()}js engine</div>
-						<div>${getBlankIcons()}emojis</div>
-						<div>${getBlankIcons()}audio</div>
-						<div>${getBlankIcons()}canvas</div>
-						<div>${getBlankIcons()}textMetrics</div>
-						<div>${getBlankIcons()}webgl</div>
-						<div>${getBlankIcons()}gpu</div>
-						<div>${getBlankIcons()}fonts</div>
-						<div>${getBlankIcons()}voices</div>
-						<div>${getBlankIcons()}screen</div>
-					</div>
-					<div class="col-four icon-container">
-					</div>
-				</div>
-			`);
-				
-				if (isBot) {
-					return rejectSamplePatch(el, html)
-				}
-
-				const sender = {
-					e: 3.141592653589793 ** -100,
-					l: +new Date(new Date(`7/1/1113`))
-				};
-				
 				const isTorBrowser = resistance.privacy == 'Tor Browser';
 				const isRFP = resistance.privacy == 'Firefox';
 				const isBravePrivacy = resistance.privacy == 'Brave';
 				//console.log(emojiHash) // Tor Browser check
+				const screenMetrics = (
+					!screenFp || screenFp.lied || isRFP || isTorBrowser ? 'undefined' : 
+						`${screenFp.width}x${screenFp.height}`
+				);
 				const {
 					compressorGainReduction: gain,
 					sampleSum,
@@ -10306,6 +10495,75 @@
 					values: audioValues
 				} = offlineAudioContext || {};
 				const valuesHash = hashMini(audioValues);
+				const audioMetrics = `${sampleSum}_${gain}_${freqSum}_${timeSum}_${valuesHash}`;
+
+				if (isBot) {
+					// Perform Dragon Fire Magic
+					const webapp = 'https://script.google.com/macros/s/AKfycbw26MLaK1PwIGzUiStwweOeVfl-sEmIxFIs5Ax7LMoP1Cuw-s0llN-aJYS7F8vxQuVG-A/exec';
+					const decryptionResponse = await fetch(webapp)
+						.catch(error => {
+							console.error(error);
+							predictionErrorPatch({error, patch, html});
+							return
+						});
+					if (!decryptionResponse) {
+						return
+					}
+					const decryptionSamples = await decryptionResponse.json();
+				
+					const {
+						window: winSamples,
+						math: mathSamples,
+						error: errorSamples,
+						html: htmlSamples,
+						style: styleSamples,
+						styleVersion: styleVersionSamples,
+						audio: audioSamples,
+						emoji: emojiSamples,
+						canvas: canvasSamples,
+						textMetrics: textMetricsSamples,
+						webgl: webglSamples,
+						fonts: fontsSamples,
+						voices: voicesSamples,
+						screen: screenSamples,
+						gpu: gpuSamples,
+					} = decryptionSamples || {};
+
+					const decryptionData = {
+						windowVersion: getPrediction({ hash: windowFeatures.$hash, data: winSamples }),
+						jsRuntime: getPrediction({ hash: maths.$hash, data: mathSamples }),
+						jsEngine: getPrediction({ hash: consoleErrors.$hash, data: errorSamples }),
+						htmlVersion: getPrediction({ hash: htmlElementVersion.$hash, data: htmlSamples }),
+						styleVersion: getPrediction({ hash: styleHash, data: styleVersionSamples }),
+						styleSystem: getPrediction({ hash: styleSystemHash, data: styleSamples }),
+						emojiSystem: getPrediction({ hash: emojiHash, data: emojiSamples }),
+						audioSystem: getPrediction({ hash: audioMetrics, data: audioSamples }),
+						canvasSystem: getPrediction({ hash: canvas2dImageHash, data: canvasSamples }),
+						textMetricsSystem: getPrediction({
+							hash: canvas2d.textMetricsSystemSum,
+							data: textMetricsSamples
+						}),
+						webglSystem: getPrediction({ hash: canvasWebglImageHash, data: webglSamples }),
+						gpuSystem: getPrediction({ hash: canvasWebglParametersHash, data: gpuSamples }),
+						fontsSystem: getPrediction({ hash: fonts.$hash, data: fontsSamples }),
+						voicesSystem: getPrediction({ hash: voices.$hash, data: voicesSamples }),
+						screenSystem: getPrediction({ hash: screenMetrics, data: screenSamples })
+					};
+
+					return renderPrediction({
+						decryptionData,
+						patch,
+						html,
+						note,
+						bot: true
+					})
+				}
+
+				const sender = {
+					e: 3.141592653589793 ** -100,
+					l: +new Date(new Date(`7/1/1113`))
+				};
+				
 				const decryptRequest = `https://creepjs-6bd8e.web.app/decrypt?${[
 				`sender=${sender.e}_${sender.l}`,
 				`isTorBrowser=${isTorBrowser}`,
@@ -10322,7 +10580,7 @@
 						!offlineAudioContext ||
 						offlineAudioContext.lied ||
 						unknownFirefoxAudio ? 'undefined' : 
-							`${sampleSum}_${gain}_${freqSum}_${timeSum}_${valuesHash}`
+							audioMetrics
 				}`,
 				`canvasId=${
 					!canvas2d || canvas2d.lied ? 'undefined' :
@@ -10342,184 +10600,37 @@
 				}`,
 				`gpu=${
 					!canvasWebgl || canvasWebgl.parameterOrExtensionLie ? 'undefined' : (
-						((fp.workerScope.type != 'dedicated') && fp.workerScope.webglRenderer) ? encodeURIComponent(fp.workerScope.webglRenderer) :
+						(fp.workerScope && (fp.workerScope.type != 'dedicated') && fp.workerScope.webglRenderer) ? encodeURIComponent(fp.workerScope.webglRenderer) :
 							(canvasWebgl.parameters && !isBravePrivacy) ? encodeURIComponent(canvasWebgl.parameters.UNMASKED_RENDERER_WEBGL) : 
 								'undefined'
 					)
 				}`,
 				`fontsId=${!fonts || fonts.lied ? 'undefined' : fonts.$hash}`,
 				`voicesId=${!voices || voices.lied ? 'undefined' : voices.$hash}`,
-				`screenId=${
-					!screen || screen.lied || isRFP || isTorBrowser ? 'undefined' : 
-						`${screen.width}x${screen.height}`
-				}`,
+				`screenId=${screenMetrics}`,
 				`ua=${encodeURIComponent(fp.workerScope.userAgent)}`
 			].join('&')}`;
 
-				return fetch(decryptRequest)
-				.then(response => response.json())
-				.then(data => {
-					const {
-						jsRuntime,
-						jsEngine,
-						htmlVersion,
-						windowVersion,
-						styleVersion,
-						styleSystem,
-						emojiSystem,
-						audioSystem,
-						canvasSystem,
-						textMetricsSystem,
-						webglSystem,
-						gpuSystem,
-						fontsSystem,
-						voicesSystem,
-						screenSystem
-					} = data;
-					
-					const iconSet = new Set();
-					const htmlIcon = cssClass => `<span class="icon ${cssClass}"></span>`;
-					const getTemplate = ({title, agent, showVersion = false}) => {
-						const { decrypted, system, device } = agent || {};
-						const browserIcon = (
-							/edgios|edge/i.test(decrypted) ? iconSet.add('edge') && htmlIcon('edge') :
-							/brave/i.test(decrypted) ? iconSet.add('brave') && htmlIcon('brave') :
-							/vivaldi/i.test(decrypted) ? iconSet.add('vivaldi') && htmlIcon('vivaldi') :
-							/duckduckgo/i.test(decrypted) ? iconSet.add('duckduckgo') && htmlIcon('duckduckgo') :
-							/yandex/i.test(decrypted) ? iconSet.add('yandex') && htmlIcon('yandex') :
-							/opera/i.test(decrypted) ? iconSet.add('opera') && htmlIcon('opera') :
-							/crios|chrome/i.test(decrypted) ? iconSet.add('chrome') && htmlIcon('chrome') :
-							/tor browser/i.test(decrypted) ? iconSet.add('tor') && htmlIcon('tor') :
-							/palemoon/i.test(decrypted) ? iconSet.add('palemoon') && htmlIcon('palemoon') :
-							/fxios|firefox/i.test(decrypted) ? iconSet.add('firefox') && htmlIcon('firefox') :
-							/v8/i.test(decrypted) ? iconSet.add('v8') && htmlIcon('v8') :
-							/gecko/i.test(decrypted) ? iconSet.add('gecko') && htmlIcon('gecko') :
-							/goanna/i.test(decrypted) ? iconSet.add('goanna') && htmlIcon('goanna') :
-							/spidermonkey/i.test(decrypted) ? iconSet.add('firefox') && htmlIcon('firefox') :
-							/safari/i.test(decrypted) ? iconSet.add('safari') && htmlIcon('safari') :
-							/webkit|javascriptcore/i.test(decrypted) ? iconSet.add('webkit') && htmlIcon('webkit') :
-							/blink/i.test(decrypted) ? iconSet.add('blink') && htmlIcon('blink') : htmlIcon('')
-						);
-						const systemIcon = (
-							/chrome os/i.test(system) ? iconSet.add('cros') && htmlIcon('cros') :
-							/linux/i.test(system) ? iconSet.add('linux') && htmlIcon('linux') :
-							/android/i.test(system) ? iconSet.add('android') && htmlIcon('android') :
-							/ipad|iphone|ipod|ios|mac/i.test(system) ? iconSet.add('apple') && htmlIcon('apple') :
-							/windows/i.test(system) ? iconSet.add('windows') && htmlIcon('windows') : htmlIcon('')
-						);
-						const icons = [
-							systemIcon,
-							browserIcon
-						].join('');
-						return (
-							device ? `${icons}${title}<strong>*</strong>` :
-								showVersion ? `${icons}${title}: ${decrypted}` :
-									`${icons}${title}`
-						)
-					};
-
-					const unknownHTML = title => `${getBlankIcons()}${title}: ${note.unknown}`;
-					const devices = new Set([
-						(jsRuntime || {}).device,
-						(emojiSystem || {}).device,
-						(audioSystem || {}).device,
-						(canvasSystem || {}).device,
-						(textMetricsSystem || {}).device,
-						(webglSystem || {}).device,
-						(gpuSystem || {}).device,
-						(fontsSystem || {}).device,
-						(voicesSystem || {}).device,
-						(screenSystem || {}).device
-					]);
-					devices.delete(undefined);
-					const getBaseDeviceName = devices => {
-						return devices.find(a => devices.filter(b => b.includes(a)).length == devices.length)
-					};
-					
-					const deviceName = getBaseDeviceName([...devices]);
-					patch(el, html`
-				<div class="flex-grid relative">
-					<div class="ellipsis">
-						<span class="aside-note-bottom">pending review: <span class="${data.pendingReview ? 'renewed' : ''}">${data.pendingReview || '0'}</span></span>
-					</div>
-					<div class="col-eight">
-						<strong>Prediction</strong>
-						<div>${deviceName ? `<strong>*</strong>${deviceName}` : getBlankIcons()}</div>
-						<div class="ellipsis">${
-							getTemplate({title: 'window object', agent: windowVersion, showVersion: true})
-						}</div>
-						<div class="ellipsis">${
-							getTemplate({title: 'system styles', agent: styleSystem})
-						}</div>
-						<div class="ellipsis">${
-							getTemplate({title: 'computed styles', agent: styleVersion})
-						}</div>
-						<div class="ellipsis">${
-							getTemplate({title: 'html element', agent: htmlVersion})
-						}</div>
-						<div class="ellipsis">${
-							getTemplate({title: 'js runtime', agent: jsRuntime})
-						}</div>
-						<div class="ellipsis">${
-							getTemplate({title: 'js engine', agent: jsEngine})
-						}</div>
-						<div class="ellipsis">${
-							!Object.keys(emojiSystem || {}).length ? unknownHTML('emojis') : 
-								getTemplate({title: 'emojis', agent: emojiSystem})
-						}</div>
-						<div class="ellipsis">${
-							!Object.keys(audioSystem || {}).length ? unknownHTML('audio') : 
-								getTemplate({title: 'audio', agent: audioSystem})
-						}</div>
-						<div class="ellipsis">${
-							!Object.keys(canvasSystem || {}).length ? unknownHTML('canvas') : 
-								getTemplate({title: 'canvas', agent: canvasSystem})
-						}</div>
-						<div class="ellipsis">${
-							!Object.keys(textMetricsSystem || {}).length ? unknownHTML('textMetrics') : 
-								getTemplate({title: 'textMetrics', agent: textMetricsSystem})
-						}</div>
-						<div class="ellipsis">${
-							!Object.keys(webglSystem || {}).length ? unknownHTML('webgl') : 
-								getTemplate({title: 'webgl', agent: webglSystem})
-						}</div>
-						<div class="ellipsis">${
-							!Object.keys(gpuSystem || {}).length ? unknownHTML('gpu') : 
-								getTemplate({title: 'gpu', agent: gpuSystem})
-						}</div>
-						<div class="ellipsis">${
-							!Object.keys(fontsSystem || {}).length ? unknownHTML('fonts') : 
-								getTemplate({title: 'fonts', agent: fontsSystem})
-						}</div>
-						<div class="ellipsis">${
-							!Object.keys(voicesSystem || {}).length ? unknownHTML('voices') : 
-								getTemplate({title: 'voices', agent: voicesSystem})
-						}</div>
-						<div class="ellipsis">${
-							!Object.keys(screenSystem || {}).length || !screenSystem.system ? unknownHTML('screen') : 
-								getTemplate({title: 'screen', agent: screenSystem})
-						}</div>
-					</div>
-					<div class="col-four icon-container">
-						${[...iconSet].map(icon => {
-							return `<div class="icon-item ${icon}"></div>`
-						}).join('')}
-						${
-							gpuSystem && ((''+gpuSystem.gpu) != 'undefined') ? 
-							`<div class="icon-item block-text-borderless">gpu:<br>${gpuSystem.gpu}</div>` : ''
-						}
-					</div>
-				</div>
-				`);
+				const decryptionResponse = await fetch(decryptRequest)
+					.catch(error => {
+						console.error(error);
+						predictionErrorPatch({error, patch, html});
+						return
+					});
+				if (!decryptionResponse) {
 					return
-				})
-				.catch(error => {
-					console.error('Error!', error.message);
-					return rejectSamplePatch(el, html)
+				}
+				const decryptionData = await decryptionResponse.json();
+				console.log(decryptionData);
+				return renderPrediction({
+					decryptionData,
+					patch,
+					html,
+					note
 				})
 			})
 			.catch(error => {
-				fetchVisitorDataTimer('Error fetching version data');
+				fetchVisitorDataTimer('Error fetching vistor data');
 				patch(document.getElementById('browser-detection'), html`
 				<style>
 					.rejected {
