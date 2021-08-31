@@ -9288,7 +9288,7 @@
 			// ex: find Android 10 in [Android 10, Android 10 Blah Blah]
 			return devices.find(a => devices.filter(b => b.includes(a)).length == devices.length)
 		};
-		let systems, devices, gpus;
+		let systems = [], devices = [], gpus = [];
 		const decrypted = Object.keys(data).find(key => data[key].find(item => {
 			if (!(item.id == hash)) {
 				return false
@@ -9362,14 +9362,18 @@
 				systemIcon,
 				browserIcon
 			].join('');
+
+			const unknown = ''+[...new Set([decrypted, system, device])] == '';
+			const renderBlankIfKnown = unknown ? ` ${note.unknown}` : '';
+			const renderIfKnown = unknown ? ` ${note.unknown}` : decrypted;
 			return (
 				device ? `${icons}${title}<strong>*</strong>` :
-					showVersion ? `${icons}${title}: ${decrypted}` :
-						`${icons}${title}`
+					showVersion ? `${icons}${title}: ${renderIfKnown}` :
+						`${icons}${title}${renderBlankIfKnown}`
 			)
 		};
 
-		const unknownHTML = title => `${getBlankIcons()}${title}: ${note.unknown}`;
+		const unknownHTML = title => `${getBlankIcons()}${title} ${note.unknown}`;
 		const devices = new Set([
 			(jsRuntime || {}).device,
 			(emojiSystem || {}).device,
