@@ -1,11 +1,4 @@
-export const renderSamples = async templateImports => {
-	const webapp = 'https://script.google.com/macros/s/AKfycbw26MLaK1PwIGzUiStwweOeVfl-sEmIxFIs5Ax7LMoP1Cuw-s0llN-aJYS7F8vxQuVG-A/exec'
-	const samples = await fetch(webapp)
-		.then(response => response.json())
-		.catch(error => {
-			console.error(error)
-			return
-		})
+export const renderSamples = async ({samples, templateImports}) => {
 
 	if (!samples) {
 		return

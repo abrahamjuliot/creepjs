@@ -717,8 +717,6 @@ const imports = {
 	</div>
 	`, () => {
 
-		renderSamples(templateImports)
-
 		// fetch fingerprint data from server
 		const id = 'creep-browser'
 		const visitorElem = document.getElementById(id)
@@ -1030,10 +1028,60 @@ const imports = {
 			const valuesHash = hashMini(audioValues)
 			const audioMetrics = `${sampleSum}_${gain}_${freqSum}_${timeSum}_${valuesHash}`
 
-			if (isBot) {
-				// Perform Dragon Fire Magic
-				const webapp = 'https://script.google.com/macros/s/AKfycbw26MLaK1PwIGzUiStwweOeVfl-sEmIxFIs5Ax7LMoP1Cuw-s0llN-aJYS7F8vxQuVG-A/exec'
-				const decryptionResponse = await fetch(webapp)
+			if (!isBot) {
+				const sender = {
+					e: 3.141592653589793 ** -100,
+					l: +new Date(new Date(`7/1/1113`))
+				}
+				
+				const decryptRequest = `https://creepjs-6bd8e.web.app/decrypt?${[
+					`sender=${sender.e}_${sender.l}`,
+					`isTorBrowser=${isTorBrowser}`,
+					`isRFP=${isRFP}`,
+					`isBrave=${isBrave}`,
+					`mathId=${maths.$hash}`,
+					`errorId=${consoleErrors.$hash}`,
+					`htmlId=${htmlElementVersion.$hash}`,
+					`winId=${windowFeatures.$hash}`,
+					`styleId=${styleHash}`,
+					`styleSystemId=${styleSystemHash}`,
+					`emojiId=${!clientRects || clientRects.lied ? 'undefined' : emojiHash}`,
+					`audioId=${
+							!offlineAudioContext ||
+							offlineAudioContext.lied ||
+							unknownFirefoxAudio ? 'undefined' : 
+								audioMetrics
+					}`,
+					`canvasId=${
+						!canvas2d || canvas2d.lied ? 'undefined' :
+							canvas2dImageHash
+					}`,
+					`textMetricsId=${
+						!canvas2d || canvas2d.liedTextMetrics || ((+canvas2d.textMetricsSystemSum) == 0) ? 'undefined' : 
+							canvas2d.textMetricsSystemSum
+					}`,
+					`webglId=${
+						!canvasWebgl || (canvas2d || {}).lied || canvasWebgl.lied ? 'undefined' :
+							canvasWebglImageHash
+					}`,
+					`gpuId=${
+						!canvasWebgl || canvasWebgl.parameterOrExtensionLie ? 'undefined' :
+							canvasWebglParametersHash
+					}`,
+					`gpu=${
+						!canvasWebgl || canvasWebgl.parameterOrExtensionLie ? 'undefined' : (
+							(fp.workerScope && (fp.workerScope.type != 'dedicated') && fp.workerScope.webglRenderer) ? encodeURIComponent(fp.workerScope.webglRenderer) :
+								(canvasWebgl.parameters && !isBravePrivacy) ? encodeURIComponent(canvasWebgl.parameters.UNMASKED_RENDERER_WEBGL) : 
+									'undefined'
+						)
+					}`,
+					`fontsId=${!fonts || fonts.lied ? 'undefined' : fonts.$hash}`,
+					`voicesId=${!voices || voices.lied ? 'undefined' : voices.$hash}`,
+					`screenId=${screenMetrics}`,
+					`ua=${encodeURIComponent(fp.workerScope.userAgent)}`
+				].join('&')}`
+
+				const decryptionResponse = await fetch(decryptRequest)
 					.catch(error => {
 						console.error(error)
 						predictionErrorPatch({error, patch, html})
@@ -1042,8 +1090,29 @@ const imports = {
 				if (!decryptionResponse) {
 					return
 				}
-				const decryptionSamples = await decryptionResponse.json()
+				const decryptionData = await decryptionResponse.json()
+				renderPrediction({
+					decryptionData,
+					patch,
+					html,
+					note
+				})
+			}
+		
+
+			// get GCD Samples
+			const webapp = 'https://script.google.com/macros/s/AKfycbw26MLaK1PwIGzUiStwweOeVfl-sEmIxFIs5Ax7LMoP1Cuw-s0llN-aJYS7F8vxQuVG-A/exec'
+			const decryptionResponse = await fetch(webapp)
+				.catch(error => {
+					console.error(error)
+					return
+				})
+			const decryptionSamples = (
+				decryptionResponse ? await decryptionResponse.json() : undefined
+			)
 			
+			if (isBot && decryptionSamples) {
+				// Perform Dragon Fire Magic
 				const {
 					window: winSamples,
 					math: mathSamples,
@@ -1083,7 +1152,7 @@ const imports = {
 					screenSystem: getPrediction({ hash: screenMetrics, data: screenSamples })
 				}
 
-				return renderPrediction({
+				renderPrediction({
 					decryptionData,
 					patch,
 					html,
@@ -1091,75 +1160,10 @@ const imports = {
 					bot: true
 				})
 			}
-
-			const sender = {
-				e: 3.141592653589793 ** -100,
-				l: +new Date(new Date(`7/1/1113`))
+			if (isBot && !decryptionSamples) {
+				predictionErrorPatch({error: 'Failed prediction fetch', patch, html})
 			}
-			
-			const decryptRequest = `https://creepjs-6bd8e.web.app/decrypt?${[
-				`sender=${sender.e}_${sender.l}`,
-				`isTorBrowser=${isTorBrowser}`,
-				`isRFP=${isRFP}`,
-				`isBrave=${isBrave}`,
-				`mathId=${maths.$hash}`,
-				`errorId=${consoleErrors.$hash}`,
-				`htmlId=${htmlElementVersion.$hash}`,
-				`winId=${windowFeatures.$hash}`,
-				`styleId=${styleHash}`,
-				`styleSystemId=${styleSystemHash}`,
-				`emojiId=${!clientRects || clientRects.lied ? 'undefined' : emojiHash}`,
-				`audioId=${
-						!offlineAudioContext ||
-						offlineAudioContext.lied ||
-						unknownFirefoxAudio ? 'undefined' : 
-							audioMetrics
-				}`,
-				`canvasId=${
-					!canvas2d || canvas2d.lied ? 'undefined' :
-						canvas2dImageHash
-				}`,
-				`textMetricsId=${
-					!canvas2d || canvas2d.liedTextMetrics || ((+canvas2d.textMetricsSystemSum) == 0) ? 'undefined' : 
-						canvas2d.textMetricsSystemSum
-				}`,
-				`webglId=${
-					!canvasWebgl || (canvas2d || {}).lied || canvasWebgl.lied ? 'undefined' :
-						canvasWebglImageHash
-				}`,
-				`gpuId=${
-					!canvasWebgl || canvasWebgl.parameterOrExtensionLie ? 'undefined' :
-						canvasWebglParametersHash
-				}`,
-				`gpu=${
-					!canvasWebgl || canvasWebgl.parameterOrExtensionLie ? 'undefined' : (
-						(fp.workerScope && (fp.workerScope.type != 'dedicated') && fp.workerScope.webglRenderer) ? encodeURIComponent(fp.workerScope.webglRenderer) :
-							(canvasWebgl.parameters && !isBravePrivacy) ? encodeURIComponent(canvasWebgl.parameters.UNMASKED_RENDERER_WEBGL) : 
-								'undefined'
-					)
-				}`,
-				`fontsId=${!fonts || fonts.lied ? 'undefined' : fonts.$hash}`,
-				`voicesId=${!voices || voices.lied ? 'undefined' : voices.$hash}`,
-				`screenId=${screenMetrics}`,
-				`ua=${encodeURIComponent(fp.workerScope.userAgent)}`
-			].join('&')}`
-
-			const decryptionResponse = await fetch(decryptRequest)
-				.catch(error => {
-					console.error(error)
-					predictionErrorPatch({error, patch, html})
-					return
-				})
-			if (!decryptionResponse) {
-				return
-			}
-			const decryptionData = await decryptionResponse.json()
-			return renderPrediction({
-				decryptionData,
-				patch,
-				html,
-				note
-			})
+			return renderSamples({samples: decryptionSamples, templateImports })
 		})
 		.catch(error => {
 			fetchVisitorDataTimer('Error fetching vistor data')
