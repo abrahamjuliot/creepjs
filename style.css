@@ -204,13 +204,29 @@ visitor {
 }
 
 .time,
-.aside-note {
+.aside-note,
+.entropy-note {
 	position: absolute;
 	top: 0;
     right: 25px;
 	font-size: 12px !important;
-	color: #bbb;
+}
+.aside-note {
 	background: #fff;
+	color: #bbb;
+}
+.entropy-note {
+	background: #6666661f;
+    padding: 0px 10px;
+    border-radius: 2px;
+}
+.entropy-high {
+	background: #f5567b1f;
+	color: #ce4867;
+}
+.entropy-low {
+	background: #56f5df1f;
+	color: #399a8d;
 }
 
 .aside-note-bottom {
@@ -704,6 +720,18 @@ input[type="radio"] {
 	.aside-note-bottom,
 	#fingerprint-data .blocked {
 		color: var(--light-grey);
+	}
+
+	.entropy-note {
+		background: #6666661f;
+	}
+	.entropy-high {
+		background: #f5567b1f;
+		color: #d68c9d;
+	}
+	.entropy-low {
+		background: #56f5df1f;
+		color: #63bdb1;
 	}
 
 	#fingerprint-data .block-text,

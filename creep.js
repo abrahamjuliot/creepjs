@@ -643,7 +643,7 @@ const imports = {
 			<div class="col-eight">
 				<strong>Loading...</strong>
 				<div>${getBlankIcons()}</div>
-				<div>${getBlankIcons()}window object:</div>
+				<div>${getBlankIcons()}self:</div>
 				<div>${getBlankIcons()}system styles</div>
 				<div>${getBlankIcons()}computed styles</div>
 				<div>${getBlankIcons()}html element</div>
@@ -1110,27 +1110,31 @@ const imports = {
 			const decryptionSamples = (
 				decryptionResponse ? await decryptionResponse.json() : undefined
 			)
+
+			const {
+				window: winSamples,
+				math: mathSamples,
+				error: errorSamples,
+				html: htmlSamples,
+				style: styleSamples,
+				styleVersion: styleVersionSamples,
+				audio: audioSamples,
+				emoji: emojiSamples,
+				canvas: canvasSamples,
+				textMetrics: textMetricsSamples,
+				webgl: webglSamples,
+				fonts: fontsSamples,
+				voices: voicesSamples,
+				screen: screenSamples,
+				gpu: gpuSamples,
+			} = decryptionSamples || {}
+
+			if (isBot && !decryptionSamples) {
+				predictionErrorPatch({error: 'Failed prediction fetch', patch, html})
+			}
 			
 			if (isBot && decryptionSamples) {
 				// Perform Dragon Fire Magic
-				const {
-					window: winSamples,
-					math: mathSamples,
-					error: errorSamples,
-					html: htmlSamples,
-					style: styleSamples,
-					styleVersion: styleVersionSamples,
-					audio: audioSamples,
-					emoji: emojiSamples,
-					canvas: canvasSamples,
-					textMetrics: textMetricsSamples,
-					webgl: webglSamples,
-					fonts: fontsSamples,
-					voices: voicesSamples,
-					screen: screenSamples,
-					gpu: gpuSamples,
-				} = decryptionSamples || {}
-
 				const decryptionData = {
 					windowVersion: getPrediction({ hash: windowFeatures.$hash, data: winSamples }),
 					jsRuntime: getPrediction({ hash: maths.$hash, data: mathSamples }),
@@ -1160,10 +1164,72 @@ const imports = {
 					bot: true
 				})
 			}
-			if (isBot && !decryptionSamples) {
-				predictionErrorPatch({error: 'Failed prediction fetch', patch, html})
+
+			// render entropy notes
+			if (decryptionSamples) {
+				const getEntropy = (hash, data) => {
+					let classTotal = 0
+					const metricTotal = Object.keys(data)
+						.reduce((acc, key) => acc+= data[key].length, 0)
+					const decryption = Object.keys(data).find(key => data[key].find(item => {
+						if (!(item.id == hash)) {
+							return false
+						}
+						classTotal = data[key].length
+						return true
+					}))
+					return {
+						classTotal,
+						decryption,
+						metricTotal
+					}
+				}
+				const entropyHash = {
+					window: windowFeatures.$hash,
+					math: maths.$hash,
+					error: consoleErrors.$hash,
+					html: htmlElementVersion.$hash,
+					style: styleSystemHash,
+					styleVersion: styleHash,
+					audio: audioMetrics,
+					emoji: emojiHash,
+					canvas: canvas2dImageHash,
+					textMetrics: canvas2d.textMetricsSystemSum,
+					webgl: canvasWebglImageHash,
+					fonts: fonts.$hash,
+					voices: voices.$hash,
+					screen: screenMetrics,
+					gpu: canvasWebglParametersHash,
+				}
+				Object.keys(decryptionSamples).forEach((key,i) => {
+					const {
+						classTotal,
+						decryption,
+						metricTotal
+					} = getEntropy(entropyHash[key], decryptionSamples[key])
+					const el = document.getElementById(`${key}-entropy`)
+					const engineMetric = (
+						(key == 'screen') || (key == 'fonts')
+					)
+					const total = (
+						engineMetric ? metricTotal : classTotal
+					)
+					const uniquePercent = !total ? 0 : (1/total)*100
+					const signal = (
+						uniquePercent < 1 ? 'entropy-high' :
+						uniquePercent > 10 ? 'entropy-low' :
+							''
+					)
+					const animate = `style="animation: fade-up .3s ${100*i}ms ease both;"`
+					return patch(el, html`
+						<span ${animate} class="${signal} entropy-note help" title="1 of ${''+total}${engineMetric ? '' : ` in ${decryption || 'unknown'}`}${` (${key})`}">
+							${(uniquePercent).toFixed(2)}%
+						</span>
+					`)
+				})
 			}
-			return renderSamples({samples: decryptionSamples, templateImports })
+			
+			return renderSamples({ samples: decryptionSamples, templateImports })
 		})
 		.catch(error => {
 			fetchVisitorDataTimer('Error fetching vistor data')

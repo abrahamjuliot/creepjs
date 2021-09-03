@@ -9383,72 +9383,88 @@
 		const getBaseDeviceName = devices => {
 			return devices.find(a => devices.filter(b => b.includes(a)).length == devices.length)
 		};
-		
+
 		const deviceName = getBaseDeviceName([...devices]);
 		const el = document.getElementById('browser-detection');
 		return patch(el, html`
 	<div class="flex-grid relative">
-		<div class="ellipsis">${
+		${
 			pendingReview ? `<span class="aside-note-bottom">pending review: <span class="renewed">${pendingReview}</span></span>` : ''
 		}
-		</div>
-		<div class="ellipsis">
-			<span class="aside-note"><span class="${bot ? 'renewed' : ''}">${bot ? 'magic' : ''}</span></span>
-		</div>
+		${
+			bot ? `<span class="aside-note"><span class="renewed">magic</span></span>` : ''
+		}
 		<div class="col-eight">
 			<strong>Prediction</strong>
-			<div>${deviceName ? `<strong>*</strong>${deviceName}` : getBlankIcons()}</div>
-			<div class="ellipsis">${
-				getTemplate({title: 'window object', agent: windowVersion, showVersion: true})
+			<div class="ellipsis relative">${
+				deviceName ? `<strong>*</strong>${deviceName}` : getBlankIcons()
 			}</div>
-			<div class="ellipsis">${
+			<div class="ellipsis relative">
+				<span id="window-entropy"></span>${
+				getTemplate({title: 'self', agent: windowVersion, showVersion: true})
+			}</div>
+			<div class="ellipsis relative">
+				<span id="style-entropy"></span>${
 				getTemplate({title: 'system styles', agent: styleSystem})
 			}</div>
-			<div class="ellipsis">${
+			<div class="ellipsis relative">
+				<span id="styleVersion-entropy"></span>${
 				getTemplate({title: 'computed styles', agent: styleVersion})
 			}</div>
-			<div class="ellipsis">${
+			<div class="ellipsis relative">
+				<span id="html-entropy"></span>${
 				getTemplate({title: 'html element', agent: htmlVersion})
 			}</div>
-			<div class="ellipsis">${
+			<div class="ellipsis relative">
+				<span id="math-entropy"></span>${
 				getTemplate({title: 'js runtime', agent: jsRuntime})
 			}</div>
-			<div class="ellipsis">${
+			<div class="ellipsis relative">
+				<span id="error-entropy"></span>${
 				getTemplate({title: 'js engine', agent: jsEngine})
 			}</div>
-			<div class="ellipsis">${
+			<div class="ellipsis relative">
+				<span id="emoji-entropy"></span>${
 				!Object.keys(emojiSystem || {}).length ? unknownHTML('emojis') : 
 					getTemplate({title: 'emojis', agent: emojiSystem})
 			}</div>
-			<div class="ellipsis">${
+			<div class="ellipsis relative">
+				<span id="audio-entropy"></span>${
 				!Object.keys(audioSystem || {}).length ? unknownHTML('audio') : 
 					getTemplate({title: 'audio', agent: audioSystem})
 			}</div>
-			<div class="ellipsis">${
+			<div class="ellipsis relative">
+				<span id="canvas-entropy"></span>${
 				!Object.keys(canvasSystem || {}).length ? unknownHTML('canvas') : 
 					getTemplate({title: 'canvas', agent: canvasSystem})
 			}</div>
-			<div class="ellipsis">${
+			<div class="ellipsis relative">
+				<span id="textMetrics-entropy"></span>${
 				!Object.keys(textMetricsSystem || {}).length ? unknownHTML('textMetrics') : 
 					getTemplate({title: 'textMetrics', agent: textMetricsSystem})
 			}</div>
-			<div class="ellipsis">${
+			<div class="ellipsis relative">
+				<span id="webgl-entropy"></span>${
 				!Object.keys(webglSystem || {}).length ? unknownHTML('webgl') : 
 					getTemplate({title: 'webgl', agent: webglSystem})
 			}</div>
-			<div class="ellipsis">${
+			<div class="ellipsis relative">
+				<span id="gpu-entropy"></span>${
 				!Object.keys(gpuSystem || {}).length ? unknownHTML('gpu') : 
 					getTemplate({title: 'gpu', agent: gpuSystem})
 			}</div>
-			<div class="ellipsis">${
+			<div class="ellipsis relative">
+				<span id="fonts-entropy"></span>${
 				!Object.keys(fontsSystem || {}).length ? unknownHTML('fonts') : 
 					getTemplate({title: 'fonts', agent: fontsSystem})
 			}</div>
-			<div class="ellipsis">${
+			<div class="ellipsis relative">
+				<span id="voices-entropy"></span>${
 				!Object.keys(voicesSystem || {}).length ? unknownHTML('voices') : 
 					getTemplate({title: 'voices', agent: voicesSystem})
 			}</div>
-			<div class="ellipsis">${
+			<div class="ellipsis relative">
+				<span id="screen-entropy"></span>${
 				!Object.keys(screenSystem || {}).length || !screenSystem.system ? unknownHTML('screen') : 
 					getTemplate({title: 'screen', agent: screenSystem})
 			}</div>
@@ -10107,7 +10123,7 @@
 			<div class="col-eight">
 				<strong>Loading...</strong>
 				<div>${getBlankIcons()}</div>
-				<div>${getBlankIcons()}window object:</div>
+				<div>${getBlankIcons()}self:</div>
 				<div>${getBlankIcons()}system styles</div>
 				<div>${getBlankIcons()}computed styles</div>
 				<div>${getBlankIcons()}html element</div>
@@ -10574,27 +10590,31 @@
 				const decryptionSamples = (
 					decryptionResponse ? await decryptionResponse.json() : undefined
 				);
+
+				const {
+					window: winSamples,
+					math: mathSamples,
+					error: errorSamples,
+					html: htmlSamples,
+					style: styleSamples,
+					styleVersion: styleVersionSamples,
+					audio: audioSamples,
+					emoji: emojiSamples,
+					canvas: canvasSamples,
+					textMetrics: textMetricsSamples,
+					webgl: webglSamples,
+					fonts: fontsSamples,
+					voices: voicesSamples,
+					screen: screenSamples,
+					gpu: gpuSamples,
+				} = decryptionSamples || {};
+
+				if (isBot && !decryptionSamples) {
+					predictionErrorPatch({error: 'Failed prediction fetch', patch, html});
+				}
 				
 				if (isBot && decryptionSamples) {
 					// Perform Dragon Fire Magic
-					const {
-						window: winSamples,
-						math: mathSamples,
-						error: errorSamples,
-						html: htmlSamples,
-						style: styleSamples,
-						styleVersion: styleVersionSamples,
-						audio: audioSamples,
-						emoji: emojiSamples,
-						canvas: canvasSamples,
-						textMetrics: textMetricsSamples,
-						webgl: webglSamples,
-						fonts: fontsSamples,
-						voices: voicesSamples,
-						screen: screenSamples,
-						gpu: gpuSamples,
-					} = decryptionSamples || {};
-
 					const decryptionData = {
 						windowVersion: getPrediction({ hash: windowFeatures.$hash, data: winSamples }),
 						jsRuntime: getPrediction({ hash: maths.$hash, data: mathSamples }),
@@ -10624,10 +10644,72 @@
 						bot: true
 					});
 				}
-				if (isBot && !decryptionSamples) {
-					predictionErrorPatch({error: 'Failed prediction fetch', patch, html});
+
+				// render entropy notes
+				if (decryptionSamples) {
+					const getEntropy = (hash, data) => {
+						let classTotal = 0;
+						const metricTotal = Object.keys(data)
+							.reduce((acc, key) => acc+= data[key].length, 0);
+						const decryption = Object.keys(data).find(key => data[key].find(item => {
+							if (!(item.id == hash)) {
+								return false
+							}
+							classTotal = data[key].length;
+							return true
+						}));
+						return {
+							classTotal,
+							decryption,
+							metricTotal
+						}
+					};
+					const entropyHash = {
+						window: windowFeatures.$hash,
+						math: maths.$hash,
+						error: consoleErrors.$hash,
+						html: htmlElementVersion.$hash,
+						style: styleSystemHash,
+						styleVersion: styleHash,
+						audio: audioMetrics,
+						emoji: emojiHash,
+						canvas: canvas2dImageHash,
+						textMetrics: canvas2d.textMetricsSystemSum,
+						webgl: canvasWebglImageHash,
+						fonts: fonts.$hash,
+						voices: voices.$hash,
+						screen: screenMetrics,
+						gpu: canvasWebglParametersHash,
+					};
+					Object.keys(decryptionSamples).forEach((key,i) => {
+						const {
+							classTotal,
+							decryption,
+							metricTotal
+						} = getEntropy(entropyHash[key], decryptionSamples[key]);
+						const el = document.getElementById(`${key}-entropy`);
+						const engineMetric = (
+							(key == 'screen') || (key == 'fonts')
+						);
+						const total = (
+							engineMetric ? metricTotal : classTotal
+						);
+						const uniquePercent = !total ? 0 : (1/total)*100;
+						const signal = (
+							uniquePercent < 1 ? 'entropy-high' :
+							uniquePercent > 10 ? 'entropy-low' :
+								''
+						);
+						const animate = `style="animation: fade-up .3s ${100*i}ms ease both;"`;
+						return patch(el, html`
+						<span ${animate} class="${signal} entropy-note help" title="1 of ${''+total}${engineMetric ? '' : ` in ${decryption || 'unknown'}`}${` (${key})`}">
+							${(uniquePercent).toFixed(2)}%
+						</span>
+					`)
+					});
 				}
-				return renderSamples({samples: decryptionSamples, templateImports })
+				
+				return renderSamples({ samples: decryptionSamples, templateImports })
 			})
 			.catch(error => {
 				fetchVisitorDataTimer('Error fetching vistor data');
