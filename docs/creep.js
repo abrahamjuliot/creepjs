@@ -2413,7 +2413,7 @@
 			<div>data: ${note.blocked}</div>
 			<div>textMetrics: ${note.blocked}</div>
 			<div>pixel trap:</div>
-			<div class="icon-container pixels">${note.blocked}</div>
+			<div class="icon-pixel-container pixels">${note.blocked}</div>
 		</div>`
 		}
 				
@@ -2468,7 +2468,7 @@
 		};
 		const { isPointInPath, isPointInStroke } = points || {};
 		const dataTemplate = `
-		${dataURI ? `<div class="icon-item canvas-data"></div>` : ''}
+		${dataURI ? `<div class="icon-pixel canvas-data"></div>` : ''}
 		<br>toDataURL: ${!dataURI ? note.blocked : hash.dataURI}
 		<br>getImageData: ${!imageData ? note.blocked : hashMini(imageData)}
 		<br>isPointInPath: ${!isPointInPath ? note.blocked : hashMini(isPointInPath)}
@@ -2574,9 +2574,9 @@
 			)	
 		}</div>
 		<div class="help" title="CanvasRenderingContext2D.getImageData()">pixel trap: ${rgba ? `${modPercent}% rgba noise ${rgbaHTML}` : ''}</div>
-		<div class="icon-container pixels">
-			<div class="icon-item pixel-image-random"></div>
-			${rgba ? `<div class="icon-item pixel-image"></div>` : ''}
+		<div class="icon-pixel-container pixels">
+			<div class="icon-pixel pixel-image-random"></div>
+			${rgba ? `<div class="icon-pixel pixel-image"></div>` : ''}
 		</div>
 	</div>
 	`
@@ -9469,13 +9469,13 @@
 					getTemplate({title: 'screen', agent: screenSystem})
 			}</div>
 		</div>
-		<div class="col-four icon-container">
+		<div class="col-four icon-prediction-container">
 			${[...iconSet].map(icon => {
-				return `<div class="icon-item ${icon}"></div>`
+				return `<div class="icon-prediction ${icon}"></div>`
 			}).join('')}
 			${
 				gpuSystem && ((''+gpuSystem.gpu) != 'undefined') ? 
-				`<div class="icon-item block-text-borderless">gpu:<br>${gpuSystem.gpu}</div>` : ''
+				`<div class="icon-prediction block-text-borderless">gpu:<br>${gpuSystem.gpu}</div>` : ''
 			}
 		</div>
 	</div>
@@ -9506,7 +9506,7 @@
 				<div>${getBlankIcons()}voices</div>
 				<div>${getBlankIcons()}screen</div>
 			</div>
-			<div class="col-four icon-container">
+			<div class="col-four icon-prediction-container">
 			</div>
 		</div>
 	`)

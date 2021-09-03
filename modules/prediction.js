@@ -191,13 +191,13 @@ export const renderPrediction = ({decryptionData, patch, html, note, bot = false
 					getTemplate({title: 'screen', agent: screenSystem})
 			}</div>
 		</div>
-		<div class="col-four icon-container">
+		<div class="col-four icon-prediction-container">
 			${[...iconSet].map(icon => {
-				return `<div class="icon-item ${icon}"></div>`
+				return `<div class="icon-prediction ${icon}"></div>`
 			}).join('')}
 			${
 				gpuSystem && ((''+gpuSystem.gpu) != 'undefined') ? 
-				`<div class="icon-item block-text-borderless">gpu:<br>${gpuSystem.gpu}</div>` : ''
+				`<div class="icon-prediction block-text-borderless">gpu:<br>${gpuSystem.gpu}</div>` : ''
 			}
 		</div>
 	</div>
@@ -228,7 +228,7 @@ export const predictionErrorPatch = ({error, patch, html}) => {
 				<div>${getBlankIcons()}voices</div>
 				<div>${getBlankIcons()}screen</div>
 			</div>
-			<div class="col-four icon-container">
+			<div class="col-four icon-prediction-container">
 			</div>
 		</div>
 	`)

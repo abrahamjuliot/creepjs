@@ -468,7 +468,7 @@ export const canvasHTML = ({ fp, note, modal, getMismatchStyle, hashMini, hashSl
 			<div>data: ${note.blocked}</div>
 			<div>textMetrics: ${note.blocked}</div>
 			<div>pixel trap:</div>
-			<div class="icon-container pixels">${note.blocked}</div>
+			<div class="icon-pixel-container pixels">${note.blocked}</div>
 		</div>`
 	}
 			
@@ -523,7 +523,7 @@ export const canvasHTML = ({ fp, note, modal, getMismatchStyle, hashMini, hashSl
 	}
 	const { isPointInPath, isPointInStroke } = points || {}
 	const dataTemplate = `
-		${dataURI ? `<div class="icon-item canvas-data"></div>` : ''}
+		${dataURI ? `<div class="icon-pixel canvas-data"></div>` : ''}
 		<br>toDataURL: ${!dataURI ? note.blocked : hash.dataURI}
 		<br>getImageData: ${!imageData ? note.blocked : hashMini(imageData)}
 		<br>isPointInPath: ${!isPointInPath ? note.blocked : hashMini(isPointInPath)}
@@ -629,9 +629,9 @@ export const canvasHTML = ({ fp, note, modal, getMismatchStyle, hashMini, hashSl
 			)	
 		}</div>
 		<div class="help" title="CanvasRenderingContext2D.getImageData()">pixel trap: ${rgba ? `${modPercent}% rgba noise ${rgbaHTML}` : ''}</div>
-		<div class="icon-container pixels">
-			<div class="icon-item pixel-image-random"></div>
-			${rgba ? `<div class="icon-item pixel-image"></div>` : ''}
+		<div class="icon-pixel-container pixels">
+			<div class="icon-pixel pixel-image-random"></div>
+			${rgba ? `<div class="icon-pixel pixel-image"></div>` : ''}
 		</div>
 	</div>
 	`

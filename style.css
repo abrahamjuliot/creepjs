@@ -636,7 +636,8 @@ input[type="radio"] {
 }
 
 .icon,
-.icon-item {
+.icon-prediction,
+.icon-pixel  {
 	background-position: center;
   	background-repeat: no-repeat;
   	background-size: contain;
@@ -647,17 +648,29 @@ input[type="radio"] {
     height: 1em;
     margin-right: 3px;
 }
-.icon-container {
-	min-height: 85px;
+.icon-prediction-container,
+.icon-pixel-container {
     display: flex;
     flex-direction: row;
 	flex-wrap: wrap;
     justify-content: space-around;
 	align-items: center;
 }
-.icon-item {
+.icon-prediction-container {
+	min-height: 350px;
+}
+.icon-pixel-container {
+	min-height: 85px;
+}
+.icon-prediction,
+.icon-pixel {
     flex: 1 0 auto;
     width: 50%;
+}
+.icon-prediction {
+	height: 55px;
+}
+.icon-pixel {
 	height: 75px;
 }
 
