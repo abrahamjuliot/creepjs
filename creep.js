@@ -1136,23 +1136,23 @@ const imports = {
 			if (isBot && decryptionSamples) {
 				// Perform Dragon Fire Magic
 				const decryptionData = {
-					windowVersion: getPrediction({ hash: windowFeatures.$hash, data: winSamples }),
-					jsRuntime: getPrediction({ hash: maths.$hash, data: mathSamples }),
-					jsEngine: getPrediction({ hash: consoleErrors.$hash, data: errorSamples }),
-					htmlVersion: getPrediction({ hash: htmlElementVersion.$hash, data: htmlSamples }),
+					windowVersion: getPrediction({ hash: (windowFeatures || {}).$hash, data: winSamples }),
+					jsRuntime: getPrediction({ hash: (maths || {}).$hash, data: mathSamples }),
+					jsEngine: getPrediction({ hash: (consoleErrors || {}).$hash, data: errorSamples }),
+					htmlVersion: getPrediction({ hash: (htmlElementVersion || {}).$hash, data: htmlSamples }),
 					styleVersion: getPrediction({ hash: styleHash, data: styleVersionSamples }),
 					styleSystem: getPrediction({ hash: styleSystemHash, data: styleSamples }),
 					emojiSystem: getPrediction({ hash: emojiHash, data: emojiSamples }),
 					audioSystem: getPrediction({ hash: audioMetrics, data: audioSamples }),
 					canvasSystem: getPrediction({ hash: canvas2dImageHash, data: canvasSamples }),
 					textMetricsSystem: getPrediction({
-						hash: canvas2d.textMetricsSystemSum,
+						hash: (canvas2d || {}).textMetricsSystemSum,
 						data: textMetricsSamples
 					}),
 					webglSystem: getPrediction({ hash: canvasWebglImageHash, data: webglSamples }),
 					gpuSystem: getPrediction({ hash: canvasWebglParametersHash, data: gpuSamples }),
-					fontsSystem: getPrediction({ hash: fonts.$hash, data: fontsSamples }),
-					voicesSystem: getPrediction({ hash: voices.$hash, data: voicesSamples }),
+					fontsSystem: getPrediction({ hash: (fonts || {}).$hash, data: fontsSamples }),
+					voicesSystem: getPrediction({ hash: (voices || {}).$hash, data: voicesSamples }),
 					screenSystem: getPrediction({ hash: screenMetrics, data: screenSamples })
 				}
 
@@ -1164,7 +1164,7 @@ const imports = {
 					bot: true
 				})
 			}
-
+			console.log(decryptionSamples)
 			// render entropy notes
 			if (decryptionSamples) {
 				const getEntropy = (hash, data) => {
@@ -1185,19 +1185,19 @@ const imports = {
 					}
 				}
 				const entropyHash = {
-					window: windowFeatures.$hash,
-					math: maths.$hash,
-					error: consoleErrors.$hash,
-					html: htmlElementVersion.$hash,
+					window: (windowFeatures || {}).$hash,
+					math: (maths || {}).$hash,
+					error: (consoleErrors || {}).$hash,
+					html: (htmlElementVersion || {}).$hash,
 					style: styleSystemHash,
 					styleVersion: styleHash,
 					audio: audioMetrics,
 					emoji: emojiHash,
 					canvas: canvas2dImageHash,
-					textMetrics: canvas2d.textMetricsSystemSum,
+					textMetrics: (canvas2d || {}).textMetricsSystemSum,
 					webgl: canvasWebglImageHash,
-					fonts: fonts.$hash,
-					voices: voices.$hash,
+					fonts: (fonts || {}).$hash,
+					voices: (voices || {}).$hash,
 					screen: screenMetrics,
 					gpu: canvasWebglParametersHash,
 				}
@@ -1239,7 +1239,7 @@ const imports = {
 					)
 					const animate = `style="animation: fade-up .3s ${100*i}ms ease both;"`
 					return patch(el, html`
-						<span ${animate} class="${signal} entropy-note help" title="1 of ${''+total}${engineMetric ? '' : ` in ${decryption || 'unknown'}`}${` (${entropyDescriptors[key]})`}">
+						<span ${animate} class="${signal} entropy-note help" title="1 of ${total || 1}${engineMetric ? '' : ` in ${decryption || 'unknown'}`}${` (${entropyDescriptors[key]})`}">
 							${(uniquePercent).toFixed(2)}%
 						</span>
 					`)
