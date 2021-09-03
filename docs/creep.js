@@ -10719,7 +10719,7 @@
 						);
 						const animate = `style="animation: fade-up .3s ${100*i}ms ease both;"`;
 						return patch(el, html`
-						<span ${animate} class="${signal} entropy-note help" title="1 of ${total || Infinity}${engineMetric ? '' : ` in ${decryption || 'unknown'}`}${` (${entropyDescriptors[key]})`}">
+						<span ${animate} class="${signal} entropy-note help" title="1 of ${total || Infinity}${engineMetric ? ' in x' : ` in ${decryption || 'unknown'}`}${` (${entropyDescriptors[key]})`}">
 							${(uniquePercent).toFixed(2)}%
 						</span>
 					`)
