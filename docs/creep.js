@@ -9360,7 +9360,7 @@
 			const renderBlankIfKnown = unknown ? ` ${note.unknown}` : '';
 			const renderIfKnown = unknown ? ` ${note.unknown}` : decrypted;
 			return (
-				device ? `${icons}${title}<strong>*</strong>` :
+				device ? `<span class="help" title="${device}">${icons}${title}<strong>*</strong></span>` :
 					showVersion ? `${icons}${title}: ${renderIfKnown}` :
 						`${icons}${title}${renderBlankIfKnown}`
 			)
