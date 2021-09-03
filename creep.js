@@ -1201,6 +1201,23 @@ const imports = {
 					screen: screenMetrics,
 					gpu: canvasWebglParametersHash,
 				}
+				const entropyDescriptors = {
+					window: 'window object',
+					math: 'engine math runtime',
+					error: 'engine console errors',
+					html: 'html element',
+					style: 'system styles',
+					styleVersion: 'computed styles',
+					audio: 'audio metrics',
+					emoji: 'domrect emojis',
+					canvas: 'canvas image',
+					textMetrics: 'textMetrics',
+					webgl: 'webgl image',
+					fonts: 'system fonts',
+					voices: 'voices',
+					screen: 'screen metrics',
+					gpu: 'webgl parameters',
+				}
 				Object.keys(decryptionSamples).forEach((key,i) => {
 					const {
 						classTotal,
@@ -1222,7 +1239,7 @@ const imports = {
 					)
 					const animate = `style="animation: fade-up .3s ${100*i}ms ease both;"`
 					return patch(el, html`
-						<span ${animate} class="${signal} entropy-note help" title="1 of ${''+total}${engineMetric ? '' : ` in ${decryption || 'unknown'}`}${` (${key})`}">
+						<span ${animate} class="${signal} entropy-note help" title="1 of ${''+total}${engineMetric ? '' : ` in ${decryption || 'unknown'}`}${` (${entropyDescriptors[key]})`}">
 							${(uniquePercent).toFixed(2)}%
 						</span>
 					`)
