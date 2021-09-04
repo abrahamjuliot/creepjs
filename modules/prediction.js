@@ -88,7 +88,7 @@ export const renderPrediction = ({decryptionData, patch, html, note, bot = false
 		)
 	}
 
-	const unknownHTML = title => `${getBlankIcons()}${title} ${note.unknown}`
+	const unknownHTML = title => `${getBlankIcons()}${title}`
 	const devices = new Set([
 		(jsRuntime || {}).device,
 		(emojiSystem || {}).device,

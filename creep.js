@@ -1233,6 +1233,7 @@ const imports = {
 					)
 					const uniquePercent = !total ? 0 : (1/total)*100
 					const signal = (
+						uniquePercent == 0 ? 'entropy-unknown' :
 						uniquePercent < 1 ? 'entropy-high' :
 						uniquePercent > 10 ? 'entropy-low' :
 							''

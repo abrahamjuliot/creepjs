@@ -227,6 +227,10 @@ visitor {
 	background: #56f5df1f;
 	color: #399a8d;
 }
+.entropy-unknown {
+	background: #f5567b52;
+    color: #ce4867;
+}
 
 .aside-note-bottom {
 	position: absolute;
@@ -744,6 +748,10 @@ input[type="radio"] {
 	.entropy-low {
 		background: #56f5df1f;
 		color: #63bdb1;
+	}
+	.entropy-unknown {
+		background: #f5567b52;
+		color: #fff;
 	}
 
 	#fingerprint-data .block-text,
