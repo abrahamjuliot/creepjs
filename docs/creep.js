@@ -10139,7 +10139,7 @@
 				<div>${getBlankIcons()}voices</div>
 				<div>${getBlankIcons()}screen</div>
 			</div>
-			<div class="col-four icon-container">
+			<div class="col-four icon-prediction-container">
 			</div>
 		</div>
 		<div id="headless-resistance-detection-results" class="flex-grid">
@@ -10740,7 +10740,7 @@
 					<div class="col-eight">
 						${error}
 					</div>
-					<div class="col-four icon-container">
+					<div class="col-four icon-prediction-container">
 					</div>
 				</div>
 			`);

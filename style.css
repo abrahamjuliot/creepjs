@@ -192,7 +192,6 @@ visitor {
     padding: 5px;
     text-align: center;
     align-items: center;
-    min-height: 85px;
     border-radius: 3px;
     margin: 5px auto;
 	border: none;
@@ -657,7 +656,7 @@ input[type="radio"] {
 	align-items: center;
 }
 .icon-prediction-container {
-	min-height: 350px;
+	min-height: 365px;
 }
 .icon-pixel-container {
 	min-height: 85px;
