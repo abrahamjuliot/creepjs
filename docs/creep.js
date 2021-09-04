@@ -9348,7 +9348,7 @@
 				/chrome os/i.test(system) ? iconSet.add('cros') && htmlIcon('cros') :
 				/linux/i.test(system) ? iconSet.add('linux') && htmlIcon('linux') :
 				/android/i.test(system) ? iconSet.add('android') && htmlIcon('android') :
-				/ipad|iphone|ipod|ios|mac/i.test(system) ? iconSet.add('apple') && htmlIcon('apple') :
+				/ipad|iphone|ipod|ios|mac|apple/i.test(system) ? iconSet.add('apple') && htmlIcon('apple') :
 				/windows/i.test(system) ? iconSet.add('windows') && htmlIcon('windows') : htmlIcon('')
 			);
 			const icons = [
