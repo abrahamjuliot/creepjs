@@ -818,7 +818,7 @@ const imports = {
 				}</span>`
 			}
 
-			const renewedDate = '2021-8-27'
+			const renewedDate = '8/27/2021'
 			const addDays = (date, n) => {
 				const d = new Date(date)
 				d.setDate(d.getDate() + n)
