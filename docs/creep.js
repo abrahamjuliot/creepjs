@@ -9465,7 +9465,7 @@
 			}</div>
 			<div class="ellipsis relative">
 				<span id="screen-entropy"></span>${
-				!Object.keys(screenSystem || {}).length || !screenSystem.system ? unknownHTML('screen') : 
+				!Object.keys(screenSystem || {}).length ? unknownHTML('screen') : 
 					getTemplate({title: 'screen', agent: screenSystem})
 			}</div>
 		</div>
