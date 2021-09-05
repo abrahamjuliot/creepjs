@@ -75,7 +75,11 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 				['navigator.webdriver is on']: 'webdriver' in navigator && !!navigator.webdriver,
 				['chrome plugins array is empty']: isChromium && navigator.plugins.length === 0,
 				['chrome mimeTypes array is empty']: isChromium && mimeTypes.length === 0,
-				['notification permission is denied']: isChromium && Notification.permission == 'denied',
+				['notification permission is denied']: (
+					isChromium &&
+					'Notification' in window &&
+					(Notification.permission == 'denied')
+				),
 				['chrome system color ActiveText is rgb(255, 0, 0)']: isChromium && (() => {
 					let rendered = parentPhantom
 					if (!parentPhantom) {
@@ -93,12 +97,18 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 			},
 			headless: {
 				['chrome window.chrome is undefined']: isChromium && !('chrome' in window),
-				['chrome permission state is inconsistent']: isChromium && await (async () => {
-					const res = await navigator.permissions.query({ name: 'notifications' })
-					return (
-						res.state == 'prompt' && Notification.permission === 'denied'
-					)
-				})(),
+				['chrome permission state is inconsistent']: (
+					isChromium &&
+					'permissions' in navigator &&
+					await (async () => {
+						const res = await navigator.permissions.query({ name: 'notifications' })
+						return (
+							res.state == 'prompt' &&
+							'Notification' in window &&
+							Notification.permission === 'denied'
+						)
+					})()
+				),
 				['userAgent contains HeadlessChrome']: (
 					/HeadlessChrome/.test(navigator.userAgent) ||
 					/HeadlessChrome/.test(navigator.appVersion)
