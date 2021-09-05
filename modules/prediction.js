@@ -16,7 +16,9 @@ export const getPrediction = ({hash, data}) => {
 	const prediction = {
 		decrypted,
 		system: systems.length == 1 ? systems[0] : undefined,
-		device: devices.length == 1 ? devices[0] : getBaseDeviceName(devices),
+		device: (
+			devices.length == 1 ? devices[0] : getBaseDeviceName(devices)
+		),
 		gpu: gpus.length == 1 ? gpus[0] : undefined
 	}
 	return prediction
@@ -105,8 +107,32 @@ export const renderPrediction = ({decryptionData, patch, html, note, bot = false
 	const getBaseDeviceName = devices => {
 		return devices.find(a => devices.filter(b => b.includes(a)).length == devices.length)
 	}
-
-	const deviceName = getBaseDeviceName([...devices])
+	const getOldestWindowOS = devices => {
+		// FF RFP is ingnored in samples data since it returns Windows 10
+		// So, if we have multiples versions of Windows, the lowest is the most accurate
+		const windowsCore = (
+			devices.length == devices.filter(x => /windows/i.test(x)).length
+		)
+		if (windowsCore) {
+			return (
+				devices.includes('Windows 7') ? 'Windows 7' :
+				devices.includes('Windows 7 (64-bit)') ? 'Windows 7 (64-bit)' :
+				devices.includes('Windows 8') ? 'Windows 8' :
+				devices.includes('Windows 8 (64-bit)') ? 'Windows 8 (64-bit)' :
+				devices.includes('Windows 8.1') ? 'Windows 8.1' :
+				devices.includes('Windows 8.1 (64-bit)') ? 'Windows 8.1 (64-bit)' :
+				devices.includes('Windows 10') ? 'Windows 10' :
+				devices.includes('Windows 10 (64-bit)') ? 'Windows 10 (64-bit)' :
+					undefined
+			)
+		}
+		return undefined
+	}
+	const deviceCollection = [...devices]
+	const deviceName = (
+		getOldestWindowOS(deviceCollection) ||
+		getBaseDeviceName(deviceCollection)
+	)
 	const el = document.getElementById('browser-detection')
 	return patch(el, html`
 	<div class="flex-grid relative">

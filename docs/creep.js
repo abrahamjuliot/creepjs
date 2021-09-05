@@ -9307,7 +9307,9 @@
 		const prediction = {
 			decrypted,
 			system: systems.length == 1 ? systems[0] : undefined,
-			device: devices.length == 1 ? devices[0] : getBaseDeviceName(devices),
+			device: (
+				devices.length == 1 ? devices[0] : getBaseDeviceName(devices)
+			),
 			gpu: gpus.length == 1 ? gpus[0] : undefined
 		};
 		return prediction
@@ -9396,8 +9398,32 @@
 		const getBaseDeviceName = devices => {
 			return devices.find(a => devices.filter(b => b.includes(a)).length == devices.length)
 		};
-
-		const deviceName = getBaseDeviceName([...devices]);
+		const getOldestWindowOS = devices => {
+			// FF RFP is ingnored in samples data since it returns Windows 10
+			// So, if we have multiples versions of Windows, the lowest is the most accurate
+			const windowsCore = (
+				devices.length == devices.filter(x => /windows/i.test(x)).length
+			);
+			if (windowsCore) {
+				return (
+					devices.includes('Windows 7') ? 'Windows 7' :
+					devices.includes('Windows 7 (64-bit)') ? 'Windows 7 (64-bit)' :
+					devices.includes('Windows 8') ? 'Windows 8' :
+					devices.includes('Windows 8 (64-bit)') ? 'Windows 8 (64-bit)' :
+					devices.includes('Windows 8.1') ? 'Windows 8.1' :
+					devices.includes('Windows 8.1 (64-bit)') ? 'Windows 8.1 (64-bit)' :
+					devices.includes('Windows 10') ? 'Windows 10' :
+					devices.includes('Windows 10 (64-bit)') ? 'Windows 10 (64-bit)' :
+						undefined
+				)
+			}
+			return undefined
+		};
+		const deviceCollection = [...devices];
+		const deviceName = (
+			getOldestWindowOS(deviceCollection) ||
+			getBaseDeviceName(deviceCollection)
+		);
 		const el = document.getElementById('browser-detection');
 		return patch(el, html`
 	<div class="flex-grid relative">
@@ -9733,25 +9759,25 @@
 			] = await Promise.all([
 				hashify(windowFeaturesComputed),
 				hashify(headlessComputed),
-				hashify(htmlElementVersionComputed.keys),
+				hashify((htmlElementVersionComputed || {}).keys),
 				hashify(cssMediaComputed),
 				hashify(cssComputed),
-				hashify(cssComputed.computedStyle),
-				hashify(cssComputed.system),
+				hashify((cssComputed || {}).computedStyle),
+				hashify((cssComputed || {}).system),
 				hashify(screenComputed),
 				hashify(voicesComputed),
 				hashify(canvas2dComputed),
-				hashify(canvas2dComputed.dataURI),
+				hashify((canvas2dComputed || {}).dataURI),
 				hashify(canvasWebglComputed),
-				hashify(canvasWebglComputed.dataURI),
+				hashify((canvasWebglComputed || {}).dataURI),
 				hashify(reducedGPUParameters),
 				caniuse(() => canvasWebglComputed.pixels.length) ? hashify(canvasWebglComputed.pixels) : undefined,
 				caniuse(() => canvasWebglComputed.pixels2.length) ? hashify(canvasWebglComputed.pixels2) : undefined,
-				hashify(mathsComputed.data),
-				hashify(consoleErrorsComputed.errors),
+				hashify((mathsComputed || {}).data),
+				hashify((consoleErrorsComputed || {}).errors),
 				hashify(timezoneComputed),
 				hashify(clientRectsComputed),
-				hashify(clientRectsComputed.emojiSet),
+				hashify((clientRectsComputed || {}).emojiSet),
 				hashify(offlineAudioContextComputed),
 				hashify(fontsComputed),
 				hashify(workerScopeComputed),
