@@ -10644,7 +10644,7 @@
 						bot: true
 					});
 				}
-				console.log(decryptionSamples);
+				
 				// render entropy notes
 				if (decryptionSamples) {
 					const getEntropy = (hash, data) => {
