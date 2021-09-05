@@ -67,13 +67,14 @@ Bots leak unusual behavior and can be denied service.
 - Stealth rating > 0
 
 ## Browser Prediction
-- a guess attempt is made to decrypt the browser vendor, version, renderer, engine, and system
-- this guess does not affect the fingerprint
-- system is collected from `WorkerNavigator.userAgent` and auto matched to fingerprint ids
-- decoded samples from the server are auto computed and manually reviewed
+- a prediction is made to decrypt the browser vendor, version, renderer, engine, system, device and gpu
+- this prediction does not affect the fingerprint
+- data is auto matched to fingerprint ids gathered from `WorkerNavigator.userAgent` and other stable metrics
+- decoded samples from the server are auto computed or manually reviewed
+- each sample goes through a number of client and server checks before it is considered trustworthy
 - samples that are poisoned can self learn and heal themselves
-- samples aging 120 days since last timestamp visit are auto discarded
-- if the worker scope is blocked and the fingerprint ids exist in the database, the version can still be detected from available samples
+- samples aging 120 days since last timestamp visit are auto discarded (random samples that never return are eventually auto removed)
+- if the worker scope is blocked and the fingerprint ids exist in the database, the prediction can still be made
 
 ### Tests
 1. js Math implementation
