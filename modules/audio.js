@@ -134,7 +134,10 @@ export const getOfflineAudioContext = async imports => {
 					}
 					return resolve({
 						buffer: event.renderedBuffer,
-						compressorGainReduction: dynamicsCompressor.reduction
+						compressorGainReduction: (
+							dynamicsCompressor.reduction.value || // webkit
+							dynamicsCompressor.reduction
+						)
 					})
 				}
 				catch (error) {
