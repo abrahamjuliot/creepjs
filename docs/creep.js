@@ -2242,7 +2242,7 @@
 			const dataLie = lieProps['HTMLCanvasElement.toDataURL'];
 			const contextLie = lieProps['HTMLCanvasElement.getContext'];
 			const imageDataLie = lieProps['CanvasRenderingContext2D.getImageData'];
-			const textMetricsLie = (
+			let textMetricsLie = (
 				lieProps['CanvasRenderingContext2D.measureText'] ||
 				lieProps['TextMetrics.actualBoundingBoxAscent'] ||
 				lieProps['TextMetrics.actualBoundingBoxDescent'] ||
@@ -2384,6 +2384,36 @@
 				lied = true;
 				const iframeLie = `pixel data modified`;
 				documentLie(`CanvasRenderingContext2D.getImageData`, iframeLie);
+			}
+
+			const getTextMetricsFloatLie = context => {
+				const isFloat = n => n % 1 !== 0;
+				const {
+					actualBoundingBoxAscent: abba,
+					actualBoundingBoxDescent: abbd,
+					actualBoundingBoxLeft: abbl,
+					actualBoundingBoxRight: abbr,
+					fontBoundingBoxAscent: fbba,
+					fontBoundingBoxDescent: fbbd,
+					width: w
+				} = context.measureText('') || {};
+				const lied = [
+					abba,
+					abbd,
+					abbl,
+					abbr,
+					fbba,
+					fbbd
+				].find(x => isFloat((x || 0)));
+				return lied
+			};
+			if (getTextMetricsFloatLie(context)) {
+				textMetricsLie = true;
+				lied = true;
+				documentLie(
+					'CanvasRenderingContext2D.measureText',
+					'metric noise detected'
+				);
 			}
 
 			logTestResult({ start, test: 'canvas 2d', passed: true });
