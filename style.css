@@ -770,9 +770,12 @@ input[type="radio"] {
 		box-shadow: none;
 	}
 
-	.modal-content,
-	#fingerprint-data .block-text {
+	.modal-content {
 		border: 1px solid var(--light-grey);
+	}
+	#fingerprint-data .block-text {
+		border: 1px solid #ffffff12;
+    	box-shadow: 0px 2px 0px 0px #ffffff17;
 	}
 
 	.sub-hash,
