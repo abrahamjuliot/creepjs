@@ -53,6 +53,8 @@ const getEngineMaps = browser => {
 	}
 
 	const blinkCSS = {
+		'76': ['backdrop-filter'],
+		'77-80': ['overscroll-behavior-block', 'overscroll-behavior-inline'],
 		'81': ['color-scheme', 'image-orientation'],
 		'83': ['contain-intrinsic-size'],
 		'84': ['appearance', 'ruby-position'],
