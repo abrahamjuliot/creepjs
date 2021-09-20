@@ -28,7 +28,7 @@ import { getBestWorkerScope, workerScopeHTML } from './modules/worker.js'
 import { getSVG, svgHTML } from './modules/svg.js'
 import { getResistance, resistanceHTML } from './modules/resistance.js'
 import { getIntl, intlHTML } from './modules/intl.js'
-import { getCSSFeaturesLie, getEngineFeatures, featuresHTML } from './modules/features.js'
+import { getFeaturesLie, getEngineFeatures, featuresHTML } from './modules/features.js'
 import { renderSamples } from './modules/samples.js'
 import { getPrediction, renderPrediction, predictionErrorPatch } from './modules/prediction.js'
 
@@ -832,7 +832,7 @@ const imports = {
 
 			// Bot Detection
 			const getBot = ({ fp, hours, hasLied, switchCount }) => {
-				const userAgentReportIsOutsideOfCSSVersion = getCSSFeaturesLie(fp)
+				const userAgentReportIsOutsideOfFeaturesVersion = getFeaturesLie(fp)
 				const userShouldGetThrottled = (switchCount > 20) && ((hours/switchCount) <= 7) // 
 				const excessiveLooseFingerprints = hasLied && userShouldGetThrottled
 				const workerScopeIsTrashed = !fp.workerScope || !fp.workerScope.userAgent
@@ -840,7 +840,7 @@ const imports = {
 				// Patern conditions that warrant rejection
 				const botPatterns = {
 					excessiveLooseFingerprints,
-					userAgentReportIsOutsideOfCSSVersion,
+					userAgentReportIsOutsideOfFeaturesVersion,
 					workerScopeIsTrashed,
 					liedWorkerScope
 				}
