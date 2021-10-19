@@ -24,7 +24,7 @@ export const getPrediction = ({hash, data}) => {
 	return prediction
 }
 
-export const renderPrediction = ({decryptionData, patch, html, note, bot = false}) => {
+export const renderPrediction = ({decryptionData, crowdBlendScore, patch, html, note, bot = false}) => {
 	const {
 		jsRuntime,
 		jsEngine,
@@ -140,7 +140,8 @@ export const renderPrediction = ({decryptionData, patch, html, note, bot = false
 			pendingReview ? `<span class="aside-note-bottom">pending review: <span class="renewed">${pendingReview}</span></span>` : ''
 		}
 		${
-			bot ? `<span class="aside-note"><span class="renewed">magic</span></span>` : ''
+			bot ? `<span class="aside-note"><span class="renewed">magic</span></span>` :
+				crowdBlendScore ? `<span class="aside-note">crowd blending score: <span class="${crowdBlendScore < 100 ? 'entropy-high' : 'entropy-low'}">${crowdBlendScore}%</span></span>` : ''
 		}
 		<div class="col-eight">
 			<strong>Prediction</strong>

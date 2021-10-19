@@ -1091,8 +1091,20 @@ const imports = {
 					return
 				}
 				const decryptionData = await decryptionResponse.json()
+				
+				const decryptionDataScores = Object.keys(decryptionData).reduce((acc, key) => {
+					const { score } = decryptionData[key] || {}
+					return (
+						acc = score ? [...acc, score] : acc
+					)
+				}, [])
+				const crowdBlendScore = (
+					decryptionDataScores.reduce((acc,x) => acc+=x, 0)/decryptionDataScores.length
+				)
+
 				renderPrediction({
 					decryptionData,
+					crowdBlendScore,
 					patch,
 					html,
 					note
