@@ -1092,6 +1092,23 @@ const imports = {
 				}
 				const decryptionData = await decryptionResponse.json()
 				
+				/*
+				Crowd Blending Score
+
+				- Uniqueness is determined via server-side formulas
+				- Metric scores are reduced by the lack of unique reporters
+				- Blocked or openly poisoned metrics get the lowest score possible
+				- Formula: 100-(4 ** (4-numberOfReporters))
+				- Final score is the average of all metrics
+
+				* Poisoned/Blocked (-100%)
+				* 1 reporter (-64%)
+				* 2 reporters (-16%)
+				* 3 reporters (-4%)
+				* 4+ reporters is considered a perfect score
+
+				*/
+				
 				const decryptionDataScores = Object.keys(decryptionData).reduce((acc, key) => {
 					const { score } = decryptionData[key] || {}
 					return (
