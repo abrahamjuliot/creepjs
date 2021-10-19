@@ -1108,17 +1108,54 @@ const imports = {
 				* 4+ reporters is considered a perfect score
 
 				*/
-				
-				const decryptionDataScores = Object.keys(decryptionData).reduce((acc, key) => {
+				const scoreKeys = [
+					'windowVersion',
+					'jsRuntime',
+					'jsEngine',
+					'htmlVersion',
+					'styleVersion',
+					'styleSystem',
+					'emojiSystem',
+					'audioSystem',
+					'canvasSystem',
+					'textMetricsSystem',
+					'webglSystem',
+					'gpuSystem',
+					'fontsSystem',
+					'voicesSystem',
+					'screenSystem'
+				]
+
+				const decryptionDataScores = scoreKeys.reduce((acc, key) => {
 					const { score } = decryptionData[key] || {}
-					return (
-						acc = score ? [...acc, score] : acc
+					const reporters = (
+						score == 36 ? 1:
+						score == 84 ? 2 :
+						score == 96 ? 3 :
+						score == 100 ? 4 :
+							0
 					)
-				}, [])
-				const totalMetrics = 15 // include blocked/poisoned metrics instead of valid only (decryptionDataScores.length)
+					acc.metrics = [...(acc.metrics||[]), { key, score: (score||0), reporters }]
+					acc.scores = [...(acc.scores||[]), (score||0)]
+					return acc
+				}, {})
+
+				const { metrics: scoreMetrics } = decryptionDataScores
+				const scoreMetricsMap = Object.keys(scoreMetrics).reduce((acc, key) => {
+					const scoreMetricData = scoreMetrics[key]
+					const { score , reporters } = scoreMetricData
+					acc[scoreMetricData.key] = { score, reporters }
+					return acc
+				}, {})
+				
+
 				const crowdBlendingScore = (
-					decryptionDataScores.reduce((acc,x) => acc+=x, 0)/totalMetrics
+					decryptionDataScores.scores.reduce((acc,x) => acc+=x, 0)/scoreKeys.length
 				)
+
+				console.groupCollapsed(`Crowd Blending Score: ${crowdBlendingScore}%`)
+					console.table(scoreMetricsMap)
+				console.groupEnd()
 
 				renderPrediction({
 					decryptionData,
