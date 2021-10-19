@@ -1098,13 +1098,14 @@ const imports = {
 						acc = score ? [...acc, score] : acc
 					)
 				}, [])
-				const crowdBlendScore = (
-					decryptionDataScores.reduce((acc,x) => acc+=x, 0)/decryptionDataScores.length
+				const totalMetrics = 15 // include blocked/poisoned metrics instead of valid only (decryptionDataScores.length)
+				const crowdBlendingScore = (
+					decryptionDataScores.reduce((acc,x) => acc+=x, 0)/totalMetrics
 				)
 
 				renderPrediction({
 					decryptionData,
-					crowdBlendScore,
+					crowdBlendingScore,
 					patch,
 					html,
 					note
