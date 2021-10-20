@@ -501,7 +501,7 @@
 			let uaBase, verBase, platformBase, canvasBase
 			return contexts.map((context, i) => {
 				const { uaReported, verReported, uaRestored, verRestored, features, platform, canvas } = context || {}
-
+				
 				// set base values
 				if (i == 0) {
 					uaBase = uaReported
@@ -530,9 +530,15 @@
 					valid.verRestored = false
 				}
 
-				const knownFeatures = /\s/.test(features)
-				const validFeatures = features == verBase
-				if (knownFeatures && !validFeatures) {
+				const knownVersion = /\s/.test(features) && /\d/.test(features)
+				const featuresVersion = (/\d+/.exec(features)||[])[0]
+				const baseVersion = (/\d+/.exec(verBase)||[])[0]
+				const validFeatures = (
+					baseVersion >= (+featuresVersion-1) &&
+					baseVersion <= (+featuresVersion+1)
+				)
+
+				if (knownVersion && !validFeatures) {
 					valid.features = false
 				}
 
@@ -589,7 +595,7 @@
 					!verRestored ? 'undefined' : !validVerRestored ? 'lies' : ''
 					}" data-label="${label.verRestored}">${verRestored}</td>
 									<td class="${
-					!features ? 'undefined' : knownFeatures && !validFeatures ? 'lies' : ''
+					!features ? 'undefined' : !valid.features ? 'lies' : ''
 					}" data-label="${label.features}">${features}</td>
 									<td class="${
 					!platform ? 'undefined' : !validPlatform ? 'lies' : ''
@@ -614,7 +620,7 @@
 			!valid.verReported && invalid.push(valid.fail('expect reported version to match window'))
 			!valid.uaRestored && invalid.push(valid.fail('expect restored userAgent to match each reported userAgent'))
 			!valid.verRestored && invalid.push(valid.fail('expect restored version to match each reported version'))
-			!valid.features && invalid.push(valid.fail('expect known features to match window reported version'))
+			!valid.features && invalid.push(valid.fail('expect reported window version to closely match known features version'))
 			!valid.platform && invalid.push(valid.fail('expect platform to match window'))
 			!valid.canvas && invalid.push(valid.fail('expect canvas to match window'))
 			!valid.connection && invalid.push(valid.fail('expect connections in accepted iframes'))
