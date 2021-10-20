@@ -133,6 +133,16 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 		getOldestWindowOS(deviceCollection) ||
 		getBaseDeviceName(deviceCollection)
 	)
+
+	// Crowd Blending Score Grade
+	const crowdBlendingScoreGrade = (
+		crowdBlendingScore >= 90 ? 'A' :
+			crowdBlendingScore >= 80 ? 'B' :
+				crowdBlendingScore >= 70 ? 'C' :
+					crowdBlendingScore >= 60 ? 'D' :
+						'F'
+	)
+
 	const el = document.getElementById('browser-detection')
 	return patch(el, html`
 	<div class="flex-grid relative">
@@ -141,7 +151,7 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 		}
 		${
 			bot ? `<span class="aside-note"><span class="renewed">magic</span></span>` :
-				crowdBlendingScore ? `<span class="aside-note">crowd blending score: <span class="${crowdBlendingScore < 100 ? 'entropy-high' : 'entropy-low'}">${crowdBlendingScore}%</span></span>` : ''
+				typeof crowdBlendingScore == 'number' ? `<span class="aside-note">crowd blending score: ${''+crowdBlendingScore}% <span class="scale-up grade-${crowdBlendingScoreGrade}">${crowdBlendingScoreGrade}</span></span>` : ''
 		}
 		<div class="col-eight">
 			<strong>Prediction</strong>

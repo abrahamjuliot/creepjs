@@ -1099,7 +1099,7 @@ const imports = {
 				- Metric scores are reduced by the lack of unique reporters
 				- Blocked or openly poisoned metrics get the lowest score possible
 				- Formula: 100-(4 ** (4-numberOfReporters))
-				- Final score is the average of all metrics
+				- Final score is the lesser of all metrics
 
 				* Poisoned/Blocked (-100%)
 				* 1 reporter (-64%)
@@ -1149,9 +1149,7 @@ const imports = {
 				}, {})
 				
 
-				const crowdBlendingScore = (
-					decryptionDataScores.scores.reduce((acc,x) => acc+=x, 0)/scoreKeys.length
-				)
+				const crowdBlendingScore = Math.min(...decryptionDataScores.scores)
 
 				console.groupCollapsed(`Crowd Blending Score: ${crowdBlendingScore}%`)
 					console.table(scoreMetricsMap)
