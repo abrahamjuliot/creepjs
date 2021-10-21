@@ -70,7 +70,7 @@ A secretly poisoned metric is unique in many environments
 - Final score is the minimum of all metrics scores
 - Scoring formula: `100-(numberOfRequiredReporters ** (numberOfRequiredReporters - numberOfReporters))`
  - Where the number of required reporters is 4:
-	* Poisoned/Blocked `-100%`
+	* Blocked/Openly Poisoned `-100%`
 	* 1 reporter `-64%`
 	* 2 reporters `-16%`
 	* 3 reporters `-4%`
