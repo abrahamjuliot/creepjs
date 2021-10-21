@@ -63,7 +63,7 @@ A failing trust score is unique
 - errors: subtract `total*5.2`
 
 ### Crowd Blending Score [BETA]
-A secretly poisoned metric is unique in many environments
+A metric with only 1 reporter is unique
 
 - Metric scores decline by metric uniqueness
 - Blocked or openly poisoned metrics get the lowest score possible
