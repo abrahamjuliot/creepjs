@@ -49,9 +49,10 @@ Tests are focused on:
 - signatures can be memorable descriptors 
 - in low entropy browsers, a signature can signal to others that the fingerprint is shared
 
-## Formulas
+## Fingerprint Tracing Formulas
+
 ### Trust Score
-A failing trust score is unique and can be used to connect fingerprints.
+A failing trust score is unique
 
 - start at `100%`
 - less than 2 loose fingerprints: reward `20%` extra credit
@@ -60,6 +61,20 @@ A failing trust score is unique and can be used to connect fingerprints.
 - trash: subtract `total*15.5`
 - lies: subtract `total*31`
 - errors: subtract `total*5.2`
+
+### Crowd Blending Score [BETA]
+A secretly poisoned metric is unique in many environments
+
+- Metric scores decline by metric uniqueness
+- Blocked or openly poisoned metrics get the lowest score possible
+- Final score is the minimum of all metrics scores
+- Scoring formula: `100-(numberOfRequiredReporters ** (numberOfRequiredReporters - numberOfReporters))`
+ - Where the number of required reporters is 4:
+	* Poisoned/Blocked `-100%`
+	* 1 reporter `-64%`
+	* 2 reporters `-16%`
+	* 3 reporters `-4%`
+	* 4+ reporters is considered a perfect score
 
 ### Bot Detection
 Bots leak unusual behavior and can be denied service.
