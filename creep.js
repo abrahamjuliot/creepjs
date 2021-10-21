@@ -1092,7 +1092,7 @@ const imports = {
 				}
 				const decryptionData = await decryptionResponse.json()
 				
-				// Crowd Blending Score
+				// Crowd-Blending Score
 				
 				const scoreKeys = [
 					'windowVersion',
@@ -1137,7 +1137,7 @@ const imports = {
 
 				const crowdBlendingScore = Math.min(...decryptionDataScores.scores)
 
-				console.groupCollapsed(`Crowd Blending Score: ${crowdBlendingScore}%`)
+				console.groupCollapsed(`Crowd-Blending Score: ${crowdBlendingScore}%`)
 					console.table(scoreMetricsMap)
 				console.groupEnd()
 

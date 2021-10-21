@@ -151,7 +151,7 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 		}
 		${
 			bot ? `<span class="aside-note"><span class="renewed">magic</span></span>` :
-				typeof crowdBlendingScore == 'number' ? `<span class="aside-note">crowd blending score: ${''+crowdBlendingScore}% <span class="scale-up grade-${crowdBlendingScoreGrade}">${crowdBlendingScoreGrade}</span></span>` : ''
+				typeof crowdBlendingScore == 'number' ? `<span class="aside-note">crowd-blending score: ${''+crowdBlendingScore}% <span class="scale-up grade-${crowdBlendingScoreGrade}">${crowdBlendingScoreGrade}</span></span>` : ''
 		}
 		<div class="col-eight">
 			<strong>Prediction</strong>

@@ -62,7 +62,7 @@ A failing trust score is unique
 - lies: subtract `total*31`
 - errors: subtract `total*5.2`
 
-### Crowd Blending Score [BETA]
+### Crowd-Blending Score [BETA]
 A metric with only 1 reporter is unique
 
 - Metric scores decline by metric uniqueness
