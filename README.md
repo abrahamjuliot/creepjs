@@ -66,8 +66,8 @@ A failing trust score is unique
 A metric with only 1 reporter is unique
 
 - Metric scores decline by metric uniqueness
-- Blocked or openly poisoned metrics get the lowest score possible
 - Final score is the minimum of all metrics scores
+- Blocked or openly poisoned metrics collectively subtract 25% from the final score
 - Scoring formula: `100-(numberOfRequiredReporters ** (numberOfRequiredReporters - numberOfReporters))`
  - Where the number of required reporters is 4:
 	* Blocked/Openly Poisoned `-100%`

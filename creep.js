@@ -1134,8 +1134,9 @@ const imports = {
 					return acc
 				}, {})
 				
-
-				const crowdBlendingScore = Math.min(...decryptionDataScores.scores)
+				const crowdBlendingScoreMax = Math.max(...decryptionDataScores.scores)
+				const crowdBlendingScoreMin = Math.min(...decryptionDataScores.scores)
+				const crowdBlendingScore = !crowdBlendingScoreMin ? (0.75 * crowdBlendingScoreMax) : crowdBlendingScoreMin
 
 				console.groupCollapsed(`Crowd-Blending Score: ${crowdBlendingScore}%`)
 					console.table(scoreMetricsMap)
