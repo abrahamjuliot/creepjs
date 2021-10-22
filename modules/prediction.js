@@ -48,7 +48,7 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 	const getBlankIcons = () => `<span class="icon"></span><span class="icon"></span>`
 	const htmlIcon = cssClass => `<span class="icon ${cssClass}"></span>`
 	const getTemplate = ({title, agent, showVersion = false}) => {
-		const { decrypted, system, device } = agent || {}
+		const { decrypted, system, device, score } = agent || {}
 		const browserIcon = (
 			/edgios|edge/i.test(decrypted) ? iconSet.add('edge') && htmlIcon('edge') :
 			/brave/i.test(decrypted) ? iconSet.add('brave') && htmlIcon('brave') :
@@ -81,16 +81,24 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 		].join('')
 
 		const unknown = ''+[...new Set([decrypted, system, device])] == ''
-		const renderBlankIfKnown = unknown ? ` ${note.unknown}` : ''
-		const renderIfKnown = unknown ? ` ${note.unknown}` : decrypted
+		const renderBlankIfKnown = unknown => unknown ? ` ${note.unknown}` : ''
+		const renderIfKnown = (unknown, decrypted) => unknown ? ` ${note.unknown}` : decrypted
+		const renderFailingScore = (title, score) => {
+			return (
+				(score||0) > 36 ? title : `<span class="bold-fail">${title}</span>` 
+			)
+		}
+		
 		return (
-			device ? `<span class="help" title="${device}">${icons}${title}<strong>*</strong></span>` :
-				showVersion ? `${icons}${title}: ${renderIfKnown}` :
-					`${icons}${title}${renderBlankIfKnown}`
+			device ? `<span class="help" title="${device}">
+				${renderFailingScore(`${icons}${title}`, score)}<strong>*</strong>
+			</span>` :
+				showVersion ? renderFailingScore(`${icons}${title}: ${renderIfKnown(unknown, decrypted)}`, score) :
+					renderFailingScore(`${icons}${title}${renderBlankIfKnown(unknown)}`, score)
 		)
 	}
 
-	const unknownHTML = title => `${getBlankIcons()}${title}`
+	const unknownHTML = title => `${getBlankIcons()}<span class="grade-F">${title}</span>`
 	const devices = new Set([
 		(jsRuntime || {}).device,
 		(emojiSystem || {}).device,
