@@ -98,7 +98,7 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 		)
 	}
 
-	const unknownHTML = title => `${getBlankIcons()}<span class="grade-F">${title}</span>`
+	const unknownHTML = title => `${getBlankIcons()}<span class="blocked">${title}</span>`
 	const devices = new Set([
 		(jsRuntime || {}).device,
 		(emojiSystem || {}).device,
@@ -142,7 +142,7 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 		getBaseDeviceName(deviceCollection)
 	)
 
-	// Crowd Blending Score Grade
+	// Crowd-Blending Score Grade
 	const crowdBlendingScoreGrade = (
 		crowdBlendingScore >= 90 ? 'A' :
 			crowdBlendingScore >= 80 ? 'B' :
