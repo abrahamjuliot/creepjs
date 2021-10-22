@@ -1134,9 +1134,10 @@ const imports = {
 					return acc
 				}, {})
 				
-				const crowdBlendingScoreMax = Math.max(...decryptionDataScores.scores)
-				const crowdBlendingScoreMin = Math.min(...decryptionDataScores.scores)
-				const crowdBlendingScore = !crowdBlendingScoreMin ? (0.75 * crowdBlendingScoreMax) : crowdBlendingScoreMin
+				const blockedOrOpenlyPoisonedMetric = decryptionDataScores.scores.includes(0)
+				const validScores = decryptionDataScores.scores.filter(n => !!n)
+				const crowdBlendingScoreMin = Math.min(...validScores)
+				const crowdBlendingScore = blockedOrOpenlyPoisonedMetric ? (0.75 * crowdBlendingScoreMin) : crowdBlendingScoreMin
 
 				console.groupCollapsed(`Crowd-Blending Score: ${crowdBlendingScore}%`)
 					console.table(scoreMetricsMap)
