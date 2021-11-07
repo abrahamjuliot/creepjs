@@ -9470,7 +9470,7 @@
 		return prediction
 	};
 
-	const renderPrediction = ({decryptionData, patch, html, note, bot = false}) => {
+	const renderPrediction = ({decryptionData, crowdBlendingScore, patch, html, note, bot = false}) => {
 		const {
 			jsRuntime,
 			jsEngine,
@@ -9494,7 +9494,7 @@
 		const getBlankIcons = () => `<span class="icon"></span><span class="icon"></span>`;
 		const htmlIcon = cssClass => `<span class="icon ${cssClass}"></span>`;
 		const getTemplate = ({title, agent, showVersion = false}) => {
-			const { decrypted, system, device } = agent || {};
+			const { decrypted, system, device, score } = agent || {};
 			const browserIcon = (
 				/edgios|edge/i.test(decrypted) ? iconSet.add('edge') && htmlIcon('edge') :
 				/brave/i.test(decrypted) ? iconSet.add('brave') && htmlIcon('brave') :
@@ -9527,16 +9527,24 @@
 			].join('');
 
 			const unknown = ''+[...new Set([decrypted, system, device])] == '';
-			const renderBlankIfKnown = unknown ? ` ${note.unknown}` : '';
-			const renderIfKnown = unknown ? ` ${note.unknown}` : decrypted;
+			const renderBlankIfKnown = unknown => unknown ? ` ${note.unknown}` : '';
+			const renderIfKnown = (unknown, decrypted) => unknown ? ` ${note.unknown}` : decrypted;
+			const renderFailingScore = (title, score) => {
+				return (
+					(score||0) > 36 ? title : `<span class="bold-fail">${title}</span>` 
+				)
+			};
+			
 			return (
-				device ? `<span class="help" title="${device}">${icons}${title}<strong>*</strong></span>` :
-					showVersion ? `${icons}${title}: ${renderIfKnown}` :
-						`${icons}${title}${renderBlankIfKnown}`
+				device ? `<span class="help" title="${device}">
+				${renderFailingScore(`${icons}${title}`, score)}<strong>*</strong>
+			</span>` :
+					showVersion ? renderFailingScore(`${icons}${title}: ${renderIfKnown(unknown, decrypted)}`, score) :
+						renderFailingScore(`${icons}${title}${renderBlankIfKnown(unknown)}`, score)
 			)
 		};
 
-		const unknownHTML = title => `${getBlankIcons()}${title}`;
+		const unknownHTML = title => `${getBlankIcons()}<span class="blocked">${title}</span>`;
 		const devices = new Set([
 			(jsRuntime || {}).device,
 			(emojiSystem || {}).device,
@@ -9579,6 +9587,16 @@
 			getOldestWindowOS(deviceCollection) ||
 			getBaseDeviceName(deviceCollection)
 		);
+
+		// Crowd-Blending Score Grade
+		const crowdBlendingScoreGrade = (
+			crowdBlendingScore >= 90 ? 'A' :
+				crowdBlendingScore >= 80 ? 'B' :
+					crowdBlendingScore >= 70 ? 'C' :
+						crowdBlendingScore >= 60 ? 'D' :
+							'F'
+		);
+
 		const el = document.getElementById('browser-detection');
 		return patch(el, html`
 	<div class="flex-grid relative">
@@ -9586,7 +9604,8 @@
 			pendingReview ? `<span class="aside-note-bottom">pending review: <span class="renewed">${pendingReview}</span></span>` : ''
 		}
 		${
-			bot ? `<span class="aside-note"><span class="renewed">magic</span></span>` : ''
+			bot ? `<span class="aside-note"><span class="renewed">bot pattern detected</span></span>` :
+				typeof crowdBlendingScore == 'number' ? `<span class="aside-note">crowd-blending score: ${''+crowdBlendingScore}% <span class="scale-up grade-${crowdBlendingScoreGrade}">${crowdBlendingScoreGrade}</span></span>` : ''
 		}
 		<div class="col-eight">
 			<strong>Prediction</strong>
@@ -10765,8 +10784,61 @@
 						return
 					}
 					const decryptionData = await decryptionResponse.json();
+					
+					// Crowd-Blending Score
+					
+					const scoreKeys = [
+						'windowVersion',
+						'jsRuntime',
+						'jsEngine',
+						'htmlVersion',
+						'styleVersion',
+						'styleSystem',
+						'emojiSystem',
+						'audioSystem',
+						'canvasSystem',
+						'textMetricsSystem',
+						'webglSystem',
+						'gpuSystem',
+						'fontsSystem',
+						'voicesSystem',
+						'screenSystem'
+					];
+
+					const decryptionDataScores = scoreKeys.reduce((acc, key) => {
+						const { score } = decryptionData[key] || {};
+						const reporters = (
+							score == 36 ? 1:
+							score == 84 ? 2 :
+							score == 96 ? 3 :
+							score == 100 ? 4 :
+								0
+						);
+						acc.metrics = [...(acc.metrics||[]), { key, score: (score||0), reporters }];
+						acc.scores = [...(acc.scores||[]), (score||0)];
+						return acc
+					}, {});
+
+					const { metrics: scoreMetrics } = decryptionDataScores;
+					const scoreMetricsMap = Object.keys(scoreMetrics).reduce((acc, key) => {
+						const scoreMetricData = scoreMetrics[key];
+						const { score , reporters } = scoreMetricData;
+						acc[scoreMetricData.key] = { score, reporters };
+						return acc
+					}, {});
+					
+					const blockedOrOpenlyPoisonedMetric = decryptionDataScores.scores.includes(0);
+					const validScores = decryptionDataScores.scores.filter(n => !!n);
+					const crowdBlendingScoreMin = Math.min(...validScores);
+					const crowdBlendingScore = blockedOrOpenlyPoisonedMetric ? (0.75 * crowdBlendingScoreMin) : crowdBlendingScoreMin;
+
+					console.groupCollapsed(`Crowd-Blending Score: ${crowdBlendingScore}%`);
+						console.table(scoreMetricsMap);
+					console.groupEnd();
+
 					renderPrediction({
 						decryptionData,
+						crowdBlendingScore,
 						patch,
 						html,
 						note
@@ -10846,11 +10918,14 @@
 						const metricTotal = Object.keys(data)
 							.reduce((acc, key) => acc+= data[key].length, 0);
 						const decryption = Object.keys(data).find(key => data[key].find(item => {
-							if (!(item.id == hash)) {
-								return false
+							if ((item.id == hash) && (item.reporterTrustScore > 36)) {
+								const trustedSamples = data[key].filter(sample => {
+									return (sample.reporterTrustScore > 36)
+								});
+								classTotal = trustedSamples.length;
+								return true
 							}
-							classTotal = data[key].length;
-							return true
+							return false
 						}));
 						return {
 							classTotal,
@@ -10914,7 +10989,7 @@
 						);
 						const animate = `style="animation: fade-up .3s ${100*i}ms ease both;"`;
 						return patch(el, html`
-						<span ${animate} class="${signal} entropy-note help" title="1 of ${total || Infinity}${engineMetric ? ' in x' : ` in ${decryption || 'unknown'}`}${` (${entropyDescriptors[key]})`}">
+						<span ${animate} class="${signal} entropy-note help" title="1 of ${total || Infinity}${engineMetric ? ' in x' : ` in ${decryption || 'unknown'}`}${` (trusted ${entropyDescriptors[key]})`}">
 							${(uniquePercent).toFixed(2)}%
 						</span>
 					`)
