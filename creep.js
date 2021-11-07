@@ -1225,11 +1225,14 @@ const imports = {
 					const metricTotal = Object.keys(data)
 						.reduce((acc, key) => acc+= data[key].length, 0)
 					const decryption = Object.keys(data).find(key => data[key].find(item => {
-						if (!(item.id == hash)) {
-							return false
+						if ((item.id == hash) && (item.reporterTrustScore > 36)) {
+							const trustedSamples = data[key].filter(sample => {
+								return (sample.reporterTrustScore > 36)
+							})
+							classTotal = trustedSamples.length
+							return true
 						}
-						classTotal = data[key].length
-						return true
+						return false
 					}))
 					return {
 						classTotal,
@@ -1293,7 +1296,7 @@ const imports = {
 					)
 					const animate = `style="animation: fade-up .3s ${100*i}ms ease both;"`
 					return patch(el, html`
-						<span ${animate} class="${signal} entropy-note help" title="1 of ${total || Infinity}${engineMetric ? ' in x' : ` in ${decryption || 'unknown'}`}${` (${entropyDescriptors[key]})`}">
+						<span ${animate} class="${signal} entropy-note help" title="1 of ${total || Infinity}${engineMetric ? ' in x' : ` in ${decryption || 'unknown'}`}${` (trusted ${entropyDescriptors[key]})`}">
 							${(uniquePercent).toFixed(2)}%
 						</span>
 					`)
