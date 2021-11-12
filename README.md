@@ -89,7 +89,7 @@ Bots leak unusual behavior and can be denied service.
 - decoded samples from the server are auto computed or manually reviewed
 - each sample goes through a number of client and server checks before it is considered trustworthy
 - samples that are poisoned can self learn and heal themselves
-- samples aging 120 days since last timestamp visit are auto discarded (random samples that never return are eventually auto removed)
+- samples aging 45 days since last timestamp visit are auto discarded (random samples that never return are eventually auto removed)
 - if the worker scope is blocked and the fingerprint ids exist in the database, the prediction can still be made
 
 ### Tests
