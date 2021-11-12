@@ -100,14 +100,18 @@ Bots leak unusual behavior and can be denied service.
 5. JS Runtime (Math)
 6. JS Engine (Console Errors)
 7. Emojis (DomRect)
-8. Audio
-9. Canvas
-10. TextMetrics
-11. WebGL
-12. GPU (WebGL Parameters)
-13. Fonts
-14. Voices
-15. Screen
+8. DomRect
+9. SVG
+10. Audio
+11. MimeTypes
+12. Canvas
+13. TextMetrics
+14. WebGL
+15. GPU Params (WebGL Parameters)
+16. GPU Model (WebGL Renderer)
+17. Fonts
+18. Voices
+19. Screen
 
 #### Supported
 - layout rendering engines: `Gecko`, `Goanna`, `Blink`, `WebKit`

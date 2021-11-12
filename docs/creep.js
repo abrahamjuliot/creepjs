@@ -9917,10 +9917,12 @@
 				timezoneHash,
 				rectsHash,
 				emojiHash,
+				domRectHash,
 				audioHash,
 				fontsHash,
 				workerHash,
 				mediaHash,
+				mimeTypesHash,
 				webRTCHash,
 				navigatorHash,
 				liesHash,
@@ -9952,10 +9954,17 @@
 				hashify(timezoneComputed),
 				hashify(clientRectsComputed),
 				hashify((clientRectsComputed || {}).emojiSet),
+				hashify([
+					(clientRectsComputed || {}).elementBoundingClientRect,
+					(clientRectsComputed || {}).elementClientRects,
+					(clientRectsComputed || {}).rangeBoundingClientRect,
+					(clientRectsComputed || {}).rangeClientRects
+				]),
 				hashify(offlineAudioContextComputed),
 				hashify(fontsComputed),
 				hashify(workerScopeComputed),
 				hashify(mediaComputed),
+				hashify((mediaComputed || {}).mimeTypes),
 				hashify(webRTCDataComputed),
 				hashify(navigatorComputed),
 				hashify(liesComputed),
@@ -10011,6 +10020,8 @@
 				styleSystemHash,
 				styleHash,
 				emojiHash,
+				domRectHash,
+				mimeTypesHash,
 				canvas2dImageHash,
 				canvasWebglImageHash,
 				canvasWebglParametersHash,
@@ -10024,6 +10035,8 @@
 			styleSystemHash,
 			styleHash,
 			emojiHash,
+			domRectHash,
+			mimeTypesHash,
 			canvas2dImageHash,
 			canvasWebglImageHash,
 			canvasWebglParametersHash,
@@ -10697,7 +10710,9 @@
 					canvasWebgl,
 					screen: screenFp,
 					fonts,
-					voices
+					voices,
+					svg,
+					media
 				} = fp || {};
 				const {
 					computedStyle,
@@ -10721,6 +10736,7 @@
 				const valuesHash = hashMini(audioValues);
 				const audioMetrics = `${sampleSum}_${gain}_${freqSum}_${timeSum}_${valuesHash}`;
 
+
 				if (!isBot) {
 					const sender = {
 						e: 3.141592653589793 ** -100,
@@ -10732,6 +10748,7 @@
 					`isTorBrowser=${isTorBrowser}`,
 					`isRFP=${isRFP}`,
 					`isBrave=${isBrave}`,
+					`resistanceId=${resistance.$hash}`,
 					`mathId=${maths.$hash}`,
 					`errorId=${consoleErrors.$hash}`,
 					`htmlId=${htmlElementVersion.$hash}`,
@@ -10739,6 +10756,9 @@
 					`styleId=${styleHash}`,
 					`styleSystemId=${styleSystemHash}`,
 					`emojiId=${!clientRects || clientRects.lied ? 'undefined' : emojiHash}`,
+					`domRectId=${!clientRects || clientRects.lied ? 'undefined' : domRectHash}`,
+					`svgId=${!svg || svg.lied ? 'undefined' : svg.$hash}`,
+					`mimeTypesId=${!media || media.lied ? 'undefined' : mimeTypesHash}`,
 					`audioId=${
 							!offlineAudioContext ||
 							offlineAudioContext.lied ||
