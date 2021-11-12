@@ -112,6 +112,7 @@ Bots leak unusual behavior and can be denied service.
 17. Fonts
 18. Voices
 19. Screen
+20. Resistance (Known Patterns)
 
 #### Supported
 - layout rendering engines: `Gecko`, `Goanna`, `Blink`, `WebKit`
