@@ -9845,7 +9845,7 @@
 
 		const fingerprint = async () => {
 			const timeStart = timer();
-			
+			const fingerprintTimeStart = timer();
 			const [
 				windowFeaturesComputed,
 				htmlElementVersionComputed,
@@ -9914,7 +9914,8 @@
 				getCapturedErrors(imports)
 			]).catch(error => console.error(error.message));
 			
-			//const start = performance.now()
+			const fingerprintTimeEnd = fingerprintTimeStart();
+			console.log(`Fingerprinting complete in ${(fingerprintTimeEnd).toFixed(2)}ms`);
 
 			// GPU Prediction
 			const { parameters: gpuParameter } = canvasWebglComputed || {};
@@ -9934,6 +9935,7 @@
 			//console.log(hashMini(reducedGPUParameters))
 
 			// Hashing
+			const hashStartTime = timer();
 			const [
 				windowHash,
 				headlessHash,
@@ -10016,8 +10018,10 @@
 			]).catch(error => console.error(error.message));
 			
 			//console.log(performance.now()-start)
-			
+			const hashTimeEnd = hashStartTime();
 			const timeEnd = timeStart();
+
+			console.log(`Hashing complete in ${(hashTimeEnd).toFixed(2)}ms`);
 
 			if (parentPhantom) {
 				parentPhantom.parentNode.removeChild(parentPhantom);
@@ -10927,8 +10931,9 @@
 					decryptionResponse ? await decryptionResponse.json() : undefined
 				);
 
-				const cleanGPUString = x => x.replace(/\//g,''); // remove path error
-
+				// prevent Error: value for argument "documentPath" must point to a document
+	    		const cleanGPUString = x => !x ? x : (''+x).replace(/\//g,'');
+				
 				const {
 					window: winSamples,
 					math: mathSamples,

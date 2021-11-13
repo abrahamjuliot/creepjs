@@ -1199,8 +1199,9 @@ const imports = {
 				decryptionResponse ? await decryptionResponse.json() : undefined
 			)
 
-			const cleanGPUString = x => x.replace(/\//g,'') // remove path error
-
+			// prevent Error: value for argument "documentPath" must point to a document
+    		const cleanGPUString = x => !x ? x : (''+x).replace(/\//g,'')
+			
 			const {
 				window: winSamples,
 				math: mathSamples,
