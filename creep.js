@@ -113,7 +113,7 @@ const imports = {
 
 	const fingerprint = async () => {
 		const timeStart = timer()
-		
+		const fingerprintTimeStart = timer()
 		const [
 			windowFeaturesComputed,
 			htmlElementVersionComputed,
@@ -182,7 +182,8 @@ const imports = {
 			getCapturedErrors(imports)
 		]).catch(error => console.error(error.message))
 		
-		//const start = performance.now()
+		const fingerprintTimeEnd = fingerprintTimeStart()
+		console.log(`Fingerprinting complete in ${(fingerprintTimeEnd).toFixed(2)}ms`)
 
 		// GPU Prediction
 		const { parameters: gpuParameter } = canvasWebglComputed || {}
@@ -202,6 +203,7 @@ const imports = {
 		//console.log(hashMini(reducedGPUParameters))
 
 		// Hashing
+		const hashStartTime = timer()
 		const [
 			windowHash,
 			headlessHash,
@@ -284,8 +286,10 @@ const imports = {
 		]).catch(error => console.error(error.message))
 		
 		//console.log(performance.now()-start)
-		
+		const hashTimeEnd = hashStartTime()
 		const timeEnd = timeStart()
+
+		console.log(`Hashing complete in ${(hashTimeEnd).toFixed(2)}ms`)
 
 		if (parentPhantom) {
 			parentPhantom.parentNode.removeChild(parentPhantom)
