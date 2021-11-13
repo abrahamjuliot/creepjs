@@ -11044,7 +11044,7 @@
 						resistance: 'resistance patterns',
 						styleVersion: 'computed styles',
 						emoji: 'domrect emojis',
-						domrect: 'domrect metrics',
+						domRect: 'domrect metrics',
 						svg: 'svg metrics',
 						mimeTypes: 'media mimeTypes',
 						audio: 'audio metrics',
