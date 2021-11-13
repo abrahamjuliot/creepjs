@@ -1195,6 +1195,8 @@ const imports = {
 				decryptionResponse ? await decryptionResponse.json() : undefined
 			)
 
+			const cleanGPUString = x => x.replace(/\//g,'') // remove path error
+
 			const {
 				window: winSamples,
 				math: mathSamples,
@@ -1244,7 +1246,7 @@ const imports = {
 					}),
 					webglSystem: getPrediction({ hash: canvasWebglImageHash, data: webglSamples }),
 					gpuSystem: getPrediction({ hash: canvasWebglParametersHash, data: gpuSamples }),
-					gpuModelSystem: getPrediction({ hash: gpuModel, data: gpuModelSamples }),
+					gpuModelSystem: getPrediction({ hash: cleanGPUString(gpuModel), data: gpuModelSamples }),
 					fontsSystem: getPrediction({ hash: (fonts || {}).$hash, data: fontsSamples }),
 					voicesSystem: getPrediction({ hash: (voices || {}).$hash, data: voicesSamples }),
 					screenSystem: getPrediction({ hash: screenMetrics, data: screenSamples })
@@ -1326,11 +1328,15 @@ const imports = {
 					gpuModel: 'webgl renderer'
 				}
 				Object.keys(decryptionSamples).forEach((key,i) => {
+					const hash = (
+						key == 'gpuModel' ? cleanGPUString(entropyHash[key]) :
+							entropyHash[key]
+					)
 					const {
 						classTotal,
 						decryption,
 						metricTotal
-					} = getEntropy(entropyHash[key], decryptionSamples[key])
+					} = getEntropy(hash, decryptionSamples[key])
 					const el = document.getElementById(`${key}-entropy`)
 					const engineMetric = (
 						(key == 'screen') || (key == 'fonts')
