@@ -31,13 +31,18 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 		htmlVersion,
 		windowVersion,
 		styleVersion,
+		resistance,
 		styleSystem,
 		emojiSystem,
+		domRectSystem,
+		svgSystem,
+		mimeTypesSystem,
 		audioSystem,
 		canvasSystem,
 		textMetricsSystem,
 		webglSystem,
 		gpuSystem,
+		gpuModelSystem,
 		fontsSystem,
 		voicesSystem,
 		screenSystem,
@@ -102,11 +107,15 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 	const devices = new Set([
 		(jsRuntime || {}).device,
 		(emojiSystem || {}).device,
+		(domRectSystem || {}).device,
+		(svgSystem || {}).device,
+		(mimeTypesSystem || {}).device,
 		(audioSystem || {}).device,
 		(canvasSystem || {}).device,
 		(textMetricsSystem || {}).device,
 		(webglSystem || {}).device,
 		(gpuSystem || {}).device,
+		(gpuModelSystem || {}).device,
 		(fontsSystem || {}).device,
 		(voicesSystem || {}).device,
 		(screenSystem || {}).device
@@ -196,6 +205,21 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 					getTemplate({title: 'emojis', agent: emojiSystem})
 			}</div>
 			<div class="ellipsis relative">
+				<span id="domRect-entropy"></span>${
+				!Object.keys(domRectSystem || {}).length ? unknownHTML('domRect') : 
+					getTemplate({title: 'domRect', agent: domRectSystem})
+			}</div>
+			<div class="ellipsis relative">
+				<span id="svg-entropy"></span>${
+				!Object.keys(svgSystem || {}).length ? unknownHTML('svg') : 
+					getTemplate({title: 'svg', agent: svgSystem})
+			}</div>
+			<div class="ellipsis relative">
+				<span id="mimeTypes-entropy"></span>${
+				!Object.keys(mimeTypesSystem || {}).length ? unknownHTML('mimeTypes') : 
+					getTemplate({title: 'mimeTypes', agent: mimeTypesSystem})
+			}</div>
+			<div class="ellipsis relative">
 				<span id="audio-entropy"></span>${
 				!Object.keys(audioSystem || {}).length ? unknownHTML('audio') : 
 					getTemplate({title: 'audio', agent: audioSystem})
@@ -217,8 +241,13 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 			}</div>
 			<div class="ellipsis relative">
 				<span id="gpu-entropy"></span>${
-				!Object.keys(gpuSystem || {}).length ? unknownHTML('gpu') : 
-					getTemplate({title: 'gpu', agent: gpuSystem})
+				!Object.keys(gpuSystem || {}).length ? unknownHTML('gpu params') : 
+					getTemplate({title: 'gpu params', agent: gpuSystem})
+			}</div>
+			<div class="ellipsis relative">
+				<span id="gpuModel-entropy"></span>${
+				!Object.keys(gpuModelSystem || {}).length ? unknownHTML('gpu model') : 
+					getTemplate({title: 'gpu model', agent: gpuModelSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="fonts-entropy"></span>${
@@ -234,6 +263,11 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 				<span id="screen-entropy"></span>${
 				!Object.keys(screenSystem || {}).length ? unknownHTML('screen') : 
 					getTemplate({title: 'screen', agent: screenSystem})
+			}</div>
+			<div class="ellipsis relative">
+				<span id="resistance-entropy"></span>${
+				!Object.keys(resistance || {}).length ? unknownHTML('resistance') : 
+					getTemplate({title: 'resistance', agent: resistance})
 			}</div>
 		</div>
 		<div class="col-four icon-prediction-container">
@@ -264,14 +298,19 @@ export const predictionErrorPatch = ({error, patch, html}) => {
 				<div>${getBlankIcons()}js runtime</div>
 				<div>${getBlankIcons()}js engine</div>
 				<div>${getBlankIcons()}emojis</div>
+				<div>${getBlankIcons()}domRect</div>
+				<div>${getBlankIcons()}svg</div>
+				<div>${getBlankIcons()}mimeTypes</div>
 				<div>${getBlankIcons()}audio</div>
 				<div>${getBlankIcons()}canvas</div>
 				<div>${getBlankIcons()}textMetrics</div>
 				<div>${getBlankIcons()}webgl</div>
-				<div>${getBlankIcons()}gpu</div>
+				<div>${getBlankIcons()}gpu params</div>
+				<div>${getBlankIcons()}gpu model</div>
 				<div>${getBlankIcons()}fonts</div>
 				<div>${getBlankIcons()}voices</div>
 				<div>${getBlankIcons()}screen</div>
+				<div>${getBlankIcons()}resistance</div>
 			</div>
 			<div class="col-four icon-prediction-container">
 			</div>

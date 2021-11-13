@@ -663,14 +663,19 @@ const imports = {
 				<div>${getBlankIcons()}js runtime</div>
 				<div>${getBlankIcons()}js engine</div>
 				<div>${getBlankIcons()}emojis</div>
+				<div>${getBlankIcons()}domRect</div>
+				<div>${getBlankIcons()}svg</div>
+				<div>${getBlankIcons()}mimeTypes</div>
 				<div>${getBlankIcons()}audio</div>
 				<div>${getBlankIcons()}canvas</div>
 				<div>${getBlankIcons()}textMetrics</div>
 				<div>${getBlankIcons()}webgl</div>
-				<div>${getBlankIcons()}gpu</div>
+				<div>${getBlankIcons()}gpu params</div>
+				<div>${getBlankIcons()}gpu model</div>
 				<div>${getBlankIcons()}fonts</div>
 				<div>${getBlankIcons()}voices</div>
 				<div>${getBlankIcons()}screen</div>
+				<div>${getBlankIcons()}resistance</div>
 			</div>
 			<div class="col-four icon-prediction-container">
 			</div>
@@ -1043,6 +1048,13 @@ const imports = {
 			const valuesHash = hashMini(audioValues)
 			const audioMetrics = `${sampleSum}_${gain}_${freqSum}_${timeSum}_${valuesHash}`
 
+			const gpuModel = (
+				!canvasWebgl || canvasWebgl.parameterOrExtensionLie ? 'undefined' : (
+					(fp.workerScope && (fp.workerScope.type != 'dedicated') && fp.workerScope.webglRenderer) ? encodeURIComponent(fp.workerScope.webglRenderer) :
+						(canvasWebgl.parameters && !isBravePrivacy) ? encodeURIComponent(canvasWebgl.parameters.UNMASKED_RENDERER_WEBGL) : 
+							'undefined'
+				)
+			)
 
 			if (!isBot) {
 				const sender = {
@@ -1088,13 +1100,7 @@ const imports = {
 						!canvasWebgl || canvasWebgl.parameterOrExtensionLie ? 'undefined' :
 							canvasWebglParametersHash
 					}`,
-					`gpu=${
-						!canvasWebgl || canvasWebgl.parameterOrExtensionLie ? 'undefined' : (
-							(fp.workerScope && (fp.workerScope.type != 'dedicated') && fp.workerScope.webglRenderer) ? encodeURIComponent(fp.workerScope.webglRenderer) :
-								(canvasWebgl.parameters && !isBravePrivacy) ? encodeURIComponent(canvasWebgl.parameters.UNMASKED_RENDERER_WEBGL) : 
-									'undefined'
-						)
-					}`,
+					`gpu=${gpuModel}`,
 					`fontsId=${!fonts || fonts.lied ? 'undefined' : fonts.$hash}`,
 					`voicesId=${!voices || voices.lied ? 'undefined' : voices.$hash}`,
 					`screenId=${screenMetrics}`,
@@ -1120,13 +1126,18 @@ const imports = {
 					'jsEngine',
 					'htmlVersion',
 					'styleVersion',
+					'resistance',
 					'styleSystem',
 					'emojiSystem',
+					'domRectSystem',
+					'svgSystem',
+					'mimeTypesSystem',
 					'audioSystem',
 					'canvasSystem',
 					'textMetricsSystem',
 					'webglSystem',
 					'gpuSystem',
+					'gpuModelSystem',
 					'fontsSystem',
 					'voicesSystem',
 					'screenSystem'
@@ -1190,9 +1201,13 @@ const imports = {
 				error: errorSamples,
 				html: htmlSamples,
 				style: styleSamples,
+				resistance: resistanceSamples,
 				styleVersion: styleVersionSamples,
-				audio: audioSamples,
 				emoji: emojiSamples,
+				domRect: domRectSamples,
+				svg: svgSamples,
+				mimeTypes: mimeTypesSamples,
+				audio: audioSamples,
 				canvas: canvasSamples,
 				textMetrics: textMetricsSamples,
 				webgl: webglSamples,
@@ -1200,6 +1215,7 @@ const imports = {
 				voices: voicesSamples,
 				screen: screenSamples,
 				gpu: gpuSamples,
+				gpuModel: gpuModelSamples
 			} = decryptionSamples || {}
 
 			if (isBot && !decryptionSamples) {
@@ -1215,7 +1231,11 @@ const imports = {
 					htmlVersion: getPrediction({ hash: (htmlElementVersion || {}).$hash, data: htmlSamples }),
 					styleVersion: getPrediction({ hash: styleHash, data: styleVersionSamples }),
 					styleSystem: getPrediction({ hash: styleSystemHash, data: styleSamples }),
+					resistance: getPrediction({ hash: (resistance || {}).$hash, data: resistanceSamples }),
 					emojiSystem: getPrediction({ hash: emojiHash, data: emojiSamples }),
+					domRectSystem: getPrediction({ hash: domRectHash, data: domRectSamples }),
+					svgSystem: getPrediction({ hash: (svg || {}).$hash, data: svgSamples }),
+					mimeTypesSystem: getPrediction({ hash: mimeTypesHash, data: mimeTypesSamples }),
 					audioSystem: getPrediction({ hash: audioMetrics, data: audioSamples }),
 					canvasSystem: getPrediction({ hash: canvas2dImageHash, data: canvasSamples }),
 					textMetricsSystem: getPrediction({
@@ -1224,6 +1244,7 @@ const imports = {
 					}),
 					webglSystem: getPrediction({ hash: canvasWebglImageHash, data: webglSamples }),
 					gpuSystem: getPrediction({ hash: canvasWebglParametersHash, data: gpuSamples }),
+					gpuModelSystem: getPrediction({ hash: gpuModel, data: gpuModelSamples }),
 					fontsSystem: getPrediction({ hash: (fonts || {}).$hash, data: fontsSamples }),
 					voicesSystem: getPrediction({ hash: (voices || {}).$hash, data: voicesSamples }),
 					screenSystem: getPrediction({ hash: screenMetrics, data: screenSamples })
@@ -1266,9 +1287,13 @@ const imports = {
 					error: (consoleErrors || {}).$hash,
 					html: (htmlElementVersion || {}).$hash,
 					style: styleSystemHash,
+					resistance: (resistance || {}).$hash,
 					styleVersion: styleHash,
-					audio: audioMetrics,
 					emoji: emojiHash,
+					domRect: domRectHash,
+					svg: (svg || {}).$hash,
+					mimeTypes: mimeTypesHash,
+					audio: audioMetrics,
 					canvas: canvas2dImageHash,
 					textMetrics: (canvas2d || {}).textMetricsSystemSum,
 					webgl: canvasWebglImageHash,
@@ -1276,6 +1301,7 @@ const imports = {
 					voices: (voices || {}).$hash,
 					screen: screenMetrics,
 					gpu: canvasWebglParametersHash,
+					gpuModel
 				}
 				const entropyDescriptors = {
 					window: 'window object',
@@ -1283,9 +1309,13 @@ const imports = {
 					error: 'engine console errors',
 					html: 'html element',
 					style: 'system styles',
+					resistance: 'resistance patterns',
 					styleVersion: 'computed styles',
-					audio: 'audio metrics',
 					emoji: 'domrect emojis',
+					domrect: 'domrect metrics',
+					svg: 'svg metrics',
+					mimeTypes: 'media mimeTypes',
+					audio: 'audio metrics',
 					canvas: 'canvas image',
 					textMetrics: 'textMetrics',
 					webgl: 'webgl image',
@@ -1293,6 +1323,7 @@ const imports = {
 					voices: 'voices',
 					screen: 'screen metrics',
 					gpu: 'webgl parameters',
+					gpuModel: 'webgl renderer'
 				}
 				Object.keys(decryptionSamples).forEach((key,i) => {
 					const {
