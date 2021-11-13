@@ -75,6 +75,7 @@ A metric with only 1 reporter is unique
 	* 2 reporters `-16%`
 	* 3 reporters `-4%`
 	* 4+ reporters is considered a perfect score
+- Unique metrics get 2 weeks to improve their score before auto-deletion
 
 ### Bot Detection
 Bots leak unusual behavior and can be denied service.
