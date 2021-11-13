@@ -275,7 +275,7 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 				return `<div class="icon-prediction ${icon}"></div>`
 			}).join('')}
 			${
-				gpuSystem && ((''+gpuSystem.gpu) != 'undefined') ? 
+				gpuSystem && !(/^(undefined|false)$/.test(''+gpuSystem.gpu)) ? 
 				`<div class="icon-prediction block-text-borderless">gpu:<br>${gpuSystem.gpu}</div>` : ''
 			}
 		</div>
