@@ -11069,7 +11069,6 @@
 							key == 'gpuModel' ? cleanGPUString(decodeURIComponent(entropyHash[key])) :
 								entropyHash[key]
 						);
-						console.log(hash);
 						const {
 							classTotal,
 							decryption,
