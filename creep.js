@@ -1200,7 +1200,7 @@ const imports = {
 			)
 
 			// prevent Error: value for argument "documentPath" must point to a document
-    		const cleanGPUString = x => !x ? x : (''+x).replace(/\//g,'')
+			const cleanGPUString = x => !x ? x : (''+x).replace(/\//g,'')
 			
 			const {
 				window: winSamples,
@@ -1334,9 +1334,10 @@ const imports = {
 				}
 				Object.keys(decryptionSamples).forEach((key,i) => {
 					const hash = (
-						key == 'gpuModel' ? cleanGPUString(entropyHash[key]) :
+						key == 'gpuModel' ? cleanGPUString(decodeURIComponent(entropyHash[key])) :
 							entropyHash[key]
 					)
+					console.log(hash)
 					const {
 						classTotal,
 						decryption,
