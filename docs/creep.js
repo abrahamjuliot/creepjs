@@ -11075,13 +11075,10 @@
 							metricTotal
 						} = getEntropy(hash, decryptionSamples[key]);
 						const el = document.getElementById(`${key}-entropy`);
-						const engineMetric = (
-							(key == 'screen') || (key == 'fonts')
+						const deviceMetric = (
+							(key == 'screen') || (key == 'fonts') || (key == 'gpuModel')
 						);
-						const total = (
-							engineMetric ? metricTotal : classTotal
-						);
-						const uniquePercent = !total ? 0 : (1/total)*100;
+						const uniquePercent = !classTotal ? 0 : (1/classTotal)*100;
 						const signal = (
 							uniquePercent == 0 ? 'entropy-unknown' :
 							uniquePercent < 1 ? 'entropy-high' :
@@ -11090,7 +11087,7 @@
 						);
 						const animate = `style="animation: fade-up .3s ${100*i}ms ease both;"`;
 						return patch(el, html`
-						<span ${animate} class="${signal} entropy-note help" title="1 of ${total || Infinity}${engineMetric ? ' in x' : ` in ${decryption || 'unknown'}`}${` (trusted ${entropyDescriptors[key]})`}">
+						<span ${animate} class="${signal} entropy-note help" title="1 of ${classTotal || Infinity}${deviceMetric ? ' in x device' : ` in ${decryption || 'unknown'}`}${` (trusted ${entropyDescriptors[key]})`}">
 							${(uniquePercent).toFixed(2)}%
 						</span>
 					`)
