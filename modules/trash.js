@@ -158,13 +158,13 @@ const getWebGLRendererConfidence = x => {
 	const hasKnownParts = parts.length
 	const gibbers = gibberish(x, { strict: true }).join(', ')
 	const confidence =  (
-		hasKnownParts && !gibbers.length ? 'High' :
-		hasKnownParts && gibbers.length ? 'Moderate' :
-			'Low'
+		hasKnownParts && !gibbers.length ? 'high' :
+		hasKnownParts && gibbers.length ? 'moderate' :
+			'low'
 	)
 	const grade = (
-		confidence == 'High' ? 'A' :
-			confidence == 'Moderate' ? 'C' :
+		confidence == 'high' ? 'A' :
+			confidence == 'moderate' ? 'C' :
 				'F'
 	)
 	return {
