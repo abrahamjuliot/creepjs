@@ -308,4 +308,5 @@ const getPromiseRaceFulfilled = async ({
 	)
 }
 
+
 export { isChrome, braveBrowser, getBraveMode, getBraveUnprotectedParameters, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, logTestResult, getPromiseRaceFulfilled }

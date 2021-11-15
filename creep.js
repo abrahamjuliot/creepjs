@@ -3,7 +3,7 @@ import { patch, html, note, count, modal, getMismatchStyle } from './modules/htm
 import { hashMini, instanceId, hashify } from './modules/crypto.js'
 
 import { captureError, attempt, caniuse, timer, errorsCaptured, getCapturedErrors, errorsHTML } from './modules/captureErrors.js'
-import { sendToTrash, proxyBehavior, gibberish, trustInteger, trashBin, getTrash, trashHTML } from './modules/trash.js'
+import { sendToTrash, proxyBehavior, gibberish, trustInteger, compressWebGLRenderer, getWebGLRendererParts, hardenWebGLRenderer, getWebGLRendererConfidence, trashBin, getTrash, trashHTML } from './modules/trash.js'
 import { documentLie, phantomDarkness, parentPhantom, lieProps, prototypeLies, lieRecords, getLies, dragonFire, parentDragon, dragonOfDeath, getPluginLies, getNonFunctionToStringLies, liesHTML } from './modules/lies.js'
 
 import { getOfflineAudioContext, audioHTML, getKnownAudio } from './modules/audio.js'
@@ -44,6 +44,10 @@ const imports = {
 		getUserAgentPlatform,
 		logTestResult,
 		getPromiseRaceFulfilled,
+		compressWebGLRenderer,
+		getWebGLRendererParts,
+		hardenWebGLRenderer,
+		getWebGLRendererConfidence,
 		// crypto
 		instanceId,
 		hashMini,
@@ -448,7 +452,7 @@ const imports = {
 			device: fp.workerScope.device,
 			timezoneLocation: hardenEntropy(fp.workerScope, fp.workerScope.timezoneLocation),
 			['webgl renderer']: (
-				braveFingerprintingBlocking ? undefined : fp.workerScope.webglRenderer
+				braveFingerprintingBlocking ? undefined : hardenWebGLRenderer(fp.workerScope.webglRenderer)
 			),
 			['webgl vendor']: (
 				braveFingerprintingBlocking ? undefined : fp.workerScope.webglVendor
@@ -476,7 +480,13 @@ const imports = {
 		canvasWebgl: !fp.canvasWebgl ? undefined : (
 			braveFingerprintingBlocking ? {
 				parameters: getBraveUnprotectedParameters(fp.canvasWebgl.parameters)
-			} : fp.canvasWebgl.lied ? undefined : fp.canvasWebgl
+			} : fp.canvasWebgl.lied ? undefined : {
+				...fp.canvasWebgl,
+				parameters: {
+					...fp.canvasWebgl.parameters,
+					UNMASKED_RENDERER_WEBGL: hardenWebGLRenderer(fp.canvasWebgl.parameters.UNMASKED_RENDERER_WEBGL)
+				}
+			}
 		),
 		cssMedia: !fp.cssMedia ? undefined : {
 			reducedMotion: caniuse(() => fp.cssMedia.mediaCSS['prefers-reduced-motion']),
@@ -596,7 +606,9 @@ const imports = {
 		getMismatchStyle,
 		patch,
 		html,
-		styleSystemHash
+		styleSystemHash,
+		compressWebGLRenderer,
+		getWebGLRendererConfidence
 	}
 	const hasTrash = !!trashLen
 	const { lies: hasLied, capturedErrors: hasErrors } = creep
@@ -840,7 +852,7 @@ const imports = {
 				}</span>`
 			}
 
-			const renewedDate = '8/27/2021'
+			const renewedDate = '11/14/2021'
 			const addDays = (date, n) => {
 				const d = new Date(date)
 				d.setDate(d.getDate() + n)

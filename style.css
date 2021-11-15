@@ -204,13 +204,22 @@ visitor {
 
 .time,
 .aside-note,
-.entropy-note {
+.entropy-note,
+.confidence-note {
 	position: absolute;
 	top: 0;
-    right: 25px;
 	font-size: 12px !important;
 }
-.aside-note {
+.time,
+.aside-note,
+.entropy-note {
+    right: 25px;
+}
+.confidence-note {
+    right: 3px;
+}
+.aside-note,
+.confidence-note {
 	background: #fff;
 	color: #bbb;
 }
@@ -713,6 +722,7 @@ input[type="radio"] {
 	.hash,
 	.time,
 	.aside-note,
+	.confidence-note,
 	.aside-note-bottom,
 	.modal-content,
 	#signature input[type="text"],
@@ -733,6 +743,7 @@ input[type="radio"] {
 
 	.time,
 	.aside-note,
+	.confidence-note,
 	.aside-note-bottom,
 	#fingerprint-data .blocked {
 		color: var(--light-grey);
@@ -759,6 +770,7 @@ input[type="radio"] {
 	.main-hash,
 	.time,
 	.aside-note,
+	.confidence-note,
 	.aside-note-bottom,
 	.screen-glass  {
 		background: none;

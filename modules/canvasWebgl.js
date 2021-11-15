@@ -434,7 +434,7 @@ export const getCanvasWebgl = async imports => {
 	}
 }
 
-export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
+export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice, compressWebGLRenderer, getWebGLRendererConfidence }) => {
 	if (!fp.canvasWebgl) {
 		return `
 		<div class="col-four undefined">
@@ -463,8 +463,12 @@ export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 		extensions,
 		parameters
 	} = data
+
+	const compressedGPU = compressWebGLRenderer((parameters||{}).UNMASKED_RENDERER_WEBGL)
+	const { parts, gibbers, confidence, grade: confidenceGrade } = getWebGLRendererConfidence((parameters||{}).UNMASKED_RENDERER_WEBGL) || {}
 	
 	const paramKeys = parameters ? Object.keys(parameters).sort() : []
+	
 	return `
 	<div class="col-four${lied ? ' rejected' : ''}">
 		<strong>WebGL</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
@@ -491,13 +495,18 @@ export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 			)
 		}</div>
 	</div>
-	<div class="col-four${lied ? ' rejected' : ''}">
+	<div class="col-four${lied ? ' rejected' : ''} relative">
+		${
+			confidence ? `<span class="confidence-note">confidence: <span class="scale-up grade-${confidenceGrade}">${confidence}</span></span>` : ''
+		}
 		<div>gpu:</div>
-		<div class="block-text">
-			<div>${
-				!parameters.UNMASKED_RENDERER_WEBGL ? note.unsupported :
-				parameters.UNMASKED_RENDERER_WEBGL
-			}</div>	
+		<div class="block-text help" title="${
+			confidence ? `\nWebGLRenderingContext.getParameter()\ngpu compressed: ${compressedGPU}\nknown parts: ${parts || 'none'}\ngibberish: ${gibbers || 'none'}` : 'WebGLRenderingContext.getParameter()'
+		}">
+			<div>
+				${parameters.UNMASKED_VENDOR_WEBGL ? parameters.UNMASKED_VENDOR_WEBGL : ''}
+				${!parameters.UNMASKED_RENDERER_WEBGL ? note.unsupported : `<br>${parameters.UNMASKED_RENDERER_WEBGL}`}
+			</div>
 		</div>
 	</div>
 	<div class="col-four${lied ? ' rejected' : ''}"><image ${!dataURI ? '' : `width="100%" src="${dataURI}"`}/></div>

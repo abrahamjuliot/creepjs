@@ -276,7 +276,7 @@ export const getBestWorkerScope = async imports => {
 	}
 }
 
-export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
+export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, compressWebGLRenderer, getWebGLRendererConfidence }) => {
 	if (!fp.workerScope) {
 		return `
 		<div class="col-six undefined">
@@ -355,6 +355,9 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 		permissions && permissions.granted ? permissions.granted.length : 0
 	)
 
+	const compressedGPU = compressWebGLRenderer(webglRenderer)
+	const { parts, gibbers, confidence, grade: confidenceGrade } = getWebGLRendererConfidence(webglRenderer) || {}
+
 	return `
 	<div class="ellipsis"><span class="aside-note">${scope || ''}</span></div>
 	<div class="col-six${lied ? ' rejected' : ''}">
@@ -413,9 +416,13 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice })
 					` <span class="bold-fail">${locale}</span>`
 			}
 		</div>
-		<div>gpu:</div>
-		<div class="block-text help" title="WebGLRenderingContext.getParameter()">
-			${webglVendor ? `${webglVendor}` : ''}
+		<div class="relative">${
+			confidence ? `<span class="confidence-note">confidence: <span class="scale-up grade-${confidenceGrade}">${confidence}</span></span>` : ''
+		}gpu:</div>
+		<div class="block-text help" title="${
+			confidence ? `\nWebGLRenderingContext.getParameter()\ngpu compressed: ${compressedGPU}\nknown parts: ${parts || 'none'}\ngibberish: ${gibbers || 'none'}` : 'WebGLRenderingContext.getParameter()'
+		}">
+			${webglVendor ? webglVendor : ''}
 			${webglRenderer ? `<br>${webglRenderer}` : note.unsupported}
 		</div>
 	</div>
