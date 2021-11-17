@@ -8922,7 +8922,7 @@
 			'92': ['CSSCounterStyleRule','!SharedArrayBuffer'],
 			'93': ['WritableStreamDefaultController'],
 			'94': ['AudioData', 'AudioDecoder', 'AudioEncoder', 'EncodedAudioChunk', 'EncodedVideoChunk', 'IdleDetector', 'ImageDecoder', 'ImageTrack', 'ImageTrackList', 'VideoColorSpace', 'VideoDecoder', 'VideoEncoder', 'VideoFrame', 'MediaStreamTrackGenerator', 'MediaStreamTrackProcessor', 'Profiler', 'VirtualKeyboard', 'DelegatedInkTrailPresenter', 'Ink', 'Scheduler', 'TaskController', 'TaskPriorityChangeEvent', 'TaskSignal', 'VirtualKeyboardGeometryChangeEvent'],
-			'95-96': ['EyeDropper', 'URLPattern']
+			'95-96': ['URLPattern']
 		};
 
 		const blinkJS = {
