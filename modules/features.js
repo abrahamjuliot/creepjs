@@ -94,6 +94,7 @@ const getEngineMaps = browser => {
 	}
 
 	const blinkWindow = {
+		// disregard: EyeDropper
 		'80': ['CompressionStream', 'DecompressionStream', 'FeaturePolicy', 'FragmentDirective', 'PeriodicSyncManager', 'VideoPlaybackQuality'],
 		'81': ['SubmitEvent', 'XRHitTestResult', 'XRHitTestSource', 'XRRay', 'XRTransientInputHitTestResult', 'XRTransientInputHitTestSource'],
 		'83': ['BarcodeDetector', 'XRDOMOverlayState', 'XRSystem'],
