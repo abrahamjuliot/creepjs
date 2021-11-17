@@ -26,8 +26,6 @@ const getListDiff = ({oldList, newList, removeCamelCase = false} = {}) => {
 	newList.forEach(x => oldSet.delete(x))
 	oldList.forEach(x => newSet.delete(x))
 	const camelCase = /[a-z][A-Z]/
-	console.log('o: '+[...oldSet].find(x => x == 'structuredClone'))
-	console.log('n: '+[...newSet].find(x => x == 'structuredClone'))
 	return {
 		removed: !removeCamelCase ? [...oldSet] : [...oldSet].filter(key => !camelCase.test(key)),
 		added: !removeCamelCase ? [...newSet] : [...newSet].filter(key => !camelCase.test(key))

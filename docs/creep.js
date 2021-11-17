@@ -8840,8 +8840,6 @@
 		newList.forEach(x => oldSet.delete(x));
 		oldList.forEach(x => newSet.delete(x));
 		const camelCase = /[a-z][A-Z]/;
-		console.log('o: '+[...oldSet].find(x => x == 'structuredClone'));
-		console.log('n: '+[...newSet].find(x => x == 'structuredClone'));
 		return {
 			removed: !removeCamelCase ? [...oldSet] : [...oldSet].filter(key => !camelCase.test(key)),
 			added: !removeCamelCase ? [...newSet] : [...newSet].filter(key => !camelCase.test(key))
@@ -8908,6 +8906,7 @@
 		};
 
 		const blinkWindow = {
+			// disregard: EyeDropper
 			'80': ['CompressionStream', 'DecompressionStream', 'FeaturePolicy', 'FragmentDirective', 'PeriodicSyncManager', 'VideoPlaybackQuality'],
 			'81': ['SubmitEvent', 'XRHitTestResult', 'XRHitTestSource', 'XRRay', 'XRTransientInputHitTestResult', 'XRTransientInputHitTestSource'],
 			'83': ['BarcodeDetector', 'XRDOMOverlayState', 'XRSystem'],
