@@ -156,10 +156,14 @@ const getWebGLRendererConfidence = x => {
 	}
 	const parts = getWebGLRendererParts(x)
 	const hasKnownParts = parts.length
+	const hasBlankSpaceNoise = /\s{2,}/.test(x)
 	const gibbers = gibberish(x, { strict: true }).join(', ')
+	const valid = (
+		hasKnownParts && !hasBlankSpaceNoise
+	)
 	const confidence =  (
-		hasKnownParts && !gibbers.length ? 'high' :
-		hasKnownParts && gibbers.length ? 'moderate' :
+		valid && !gibbers.length? 'high' :
+		valid && gibbers.length ? 'moderate' :
 			'low'
 	)
 	const grade = (
