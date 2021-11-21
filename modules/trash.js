@@ -157,9 +157,10 @@ const getWebGLRendererConfidence = x => {
 	const parts = getWebGLRendererParts(x)
 	const hasKnownParts = parts.length
 	const hasBlankSpaceNoise = /\s{2,}/.test(x)
+	const hasBrokenAngleStructure = /^ANGLE/.test(x) && !(/^ANGLE \((.+)\)$/.exec(x)||[])[1]
 	const gibbers = gibberish(x, { strict: true }).join(', ')
 	const valid = (
-		hasKnownParts && !hasBlankSpaceNoise
+		hasKnownParts && !hasBlankSpaceNoise && !hasBrokenAngleStructure
 	)
 	const confidence =  (
 		valid && !gibbers.length? 'high' :
