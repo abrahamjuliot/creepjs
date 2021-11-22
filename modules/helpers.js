@@ -195,33 +195,36 @@ const decryptUserAgent = ({ ua, os, isBrave }) => {
 }
 
 
-const nonPlatformParenthesis = /\((khtml|unlike|vizio|like gec|internal dummy|org\.eclipse|openssl|ipv6|via translate|safari|cardamon).+|xt\d+\)/ig
-const parenthesis = /\((.+)\)/
-const android = /((android).+)/i
-const androidNoise = /^(linux|[a-z]|wv|mobile|[a-z]{2}(-|_)[a-z]{2}|[a-z]{2})$|windows|(rv:|trident|webview|iemobile).+/i
-const androidBuild = /build\/.+\s|\sbuild\/.+/i
-const androidRelease = /android( |-)\d+/i
-const windows = /((windows).+)/i
-const windowsNoise = /^(windows|ms(-|)office|microsoft|compatible|[a-z]|x64|[a-z]{2}(-|_)[a-z]{2}|[a-z]{2})$|(rv:|outlook|ms(-|)office|microsoft|trident|\.net|msie|httrack|media center|infopath|aol|opera|iemobile|webbrowser).+/i
-const windows64bitCPU = /w(ow|in)64/i
-const cros = /cros/i
-const crosNoise = /^([a-z]|x11|[a-z]{2}(-|_)[a-z]{2}|[a-z]{2})$|(rv:|trident).+/i
-const crosBuild = /\d+\.\d+\.\d+/i
-const linux = /linux|x11|ubuntu|debian/i
-const linuxNoise = /^([a-z]|x11|unknown|compatible|[a-z]{2}(-|_)[a-z]{2}|[a-z]{2})$|(rv:|java|oracle|\+http|http|unknown|mozilla|konqueror|valve).+/i
-const apple = /(cpu iphone|cpu os|iphone os|mac os|macos|intel os|ppc mac).+/i
-const appleNoise = /^([a-z]|macintosh|compatible|mimic|[a-z]{2}(-|_)[a-z]{2}|[a-z]{2}|rv|\d+\.\d+)$|(rv:|silk|valve).+/i
-const appleRelease = /(ppc |intel |)(mac|mac |)os (x |x|)\d+/i
-const otherOS = /((symbianos|nokia|blackberry|morphos|mac).+)|\/linux|freebsd|symbos|series \d+|win\d+|unix|hp-ux|bsdi|bsd|x86_64/i
-const extraSpace = /\s{2,}/
-
-const isDevice = (list, device) => list.filter(x => device.test(x)).length
-
 const getUserAgentPlatform = ({ userAgent, excludeBuild = true }) => {
 	if (!userAgent) {
 		return 'unknown'
 	}
+
+	// patterns
+	const nonPlatformParenthesis = /\((khtml|unlike|vizio|like gec|internal dummy|org\.eclipse|openssl|ipv6|via translate|safari|cardamon).+|xt\d+\)/ig
+	const parenthesis = /\((.+)\)/
+	const android = /((android).+)/i
+	const androidNoise = /^(linux|[a-z]|wv|mobile|[a-z]{2}(-|_)[a-z]{2}|[a-z]{2})$|windows|(rv:|trident|webview|iemobile).+/i
+	const androidBuild = /build\/.+\s|\sbuild\/.+/i
+	const androidRelease = /android( |-)\d+/i
+	const windows = /((windows).+)/i
+	const windowsNoise = /^(windows|ms(-|)office|microsoft|compatible|[a-z]|x64|[a-z]{2}(-|_)[a-z]{2}|[a-z]{2})$|(rv:|outlook|ms(-|)office|microsoft|trident|\.net|msie|httrack|media center|infopath|aol|opera|iemobile|webbrowser).+/i
+	const windows64bitCPU = /w(ow|in)64/i
+	const cros = /cros/i
+	const crosNoise = /^([a-z]|x11|[a-z]{2}(-|_)[a-z]{2}|[a-z]{2})$|(rv:|trident).+/i
+	const crosBuild = /\d+\.\d+\.\d+/i
+	const linux = /linux|x11|ubuntu|debian/i
+	const linuxNoise = /^([a-z]|x11|unknown|compatible|[a-z]{2}(-|_)[a-z]{2}|[a-z]{2})$|(rv:|java|oracle|\+http|http|unknown|mozilla|konqueror|valve).+/i
+	const apple = /(cpu iphone|cpu os|iphone os|mac os|macos|intel os|ppc mac).+/i
+	const appleNoise = /^([a-z]|macintosh|compatible|mimic|[a-z]{2}(-|_)[a-z]{2}|[a-z]{2}|rv|\d+\.\d+)$|(rv:|silk|valve).+/i
+	const appleRelease = /(ppc |intel |)(mac|mac |)os (x |x|)\d+/i
+	const otherOS = /((symbianos|nokia|blackberry|morphos|mac).+)|\/linux|freebsd|symbos|series \d+|win\d+|unix|hp-ux|bsdi|bsd|x86_64/i
+	const extraSpace = /\s{2,}/
+
+	const isDevice = (list, device) => list.filter(x => device.test(x)).length
+
 	userAgent = userAgent.trim().replace(/\s{2,}/, ' ').replace(nonPlatformParenthesis, '')
+
 	if (parenthesis.test(userAgent)) {
 		const platformSection = userAgent.match(parenthesis)[0]
 		const identifiers = platformSection.slice(1, -1).replace(/,/g, ';').split(';').map(x => x.trim())
