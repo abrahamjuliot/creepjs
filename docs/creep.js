@@ -7908,12 +7908,12 @@
 				// windows platformVersion lie
 				// https://docs.microsoft.com/en-us/microsoft-edge/web-platform/how-to-detect-win11
 				const getWindowsVersionLie = (device, userAgentData) => {
-					if (!/windows/i.test(device)) {
+					if (!/windows/i.test(device) || !userAgentData) {
 						return false
 					}
 					const reportedVersionNumber = +(/windows ([\d|\.]+)/i.exec(device)||[])[1];
 					const windows1OrHigherReport = reportedVersionNumber == 10;
-					const { platformVersion } = userAgentData || {};
+					const { platformVersion } = userAgentData;
 					const versionNumber = +(/(\d+)\./.exec(''+platformVersion)||[])[1];
 					const windows10OrHigherPlatform = versionNumber > 0;
 					const lied = (
@@ -7925,7 +7925,7 @@
 				const windowsVersionLie  = getWindowsVersionLie(workerScope.device, userAgentData);
 				if (windowsVersionLie) {
 					workerScope.lied = true;
-					workerScope.lies.platformVersion = `Windows platformVersion ${userAgentData.platformVersion} does not match user agent version ${workerScope.device}`;
+					workerScope.lies.platformVersion = `Windows platformVersion ${(userAgentData||{}).platformVersion} does not match user agent version ${workerScope.device}`;
 					documentLie(workerScope.scope, workerScope.lies.platformVersion);
 				}			
 				
