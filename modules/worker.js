@@ -258,6 +258,30 @@ export const getBestWorkerScope = async imports => {
 				workerScope.lies.version = `userAgentData version ${userAgentDataVersion} and user agent version ${userAgentVersion} do not match`
 				documentLie(workerScope.scope, workerScope.lies.version)
 			}
+
+			// windows platformVersion lie
+			// https://docs.microsoft.com/en-us/microsoft-edge/web-platform/how-to-detect-win11
+			const getWindowsVersionLie = (device, userAgentData) => {
+				if (!/windows/i.test(device)) {
+					return false
+				}
+				const reportedVersionNumber = +(/windows ([\d|\.]+)/i.exec(device)||[])[1]
+				const windows1OrHigherReport = reportedVersionNumber == 10
+				const { platformVersion } = userAgentData || {}
+				const versionNumber = +(/(\d+)\./.exec(''+platformVersion)||[])[1]
+				const windows10OrHigherPlatform = versionNumber > 0
+				const lied = (
+					(windows10OrHigherPlatform && !windows1OrHigherReport) ||
+					(!windows10OrHigherPlatform && windows1OrHigherReport)
+				)
+				return lied
+			}
+			const windowsVersionLie  = getWindowsVersionLie(workerScope.device, userAgentData)
+			if (windowsVersionLie) {
+				workerScope.lied = true
+				workerScope.lies.platformVersion = `Windows platformVersion ${userAgentData.platformVersion} does not match user agent version ${workerScope.device}`
+				documentLie(workerScope.scope, workerScope.lies.platformVersion)
+			}			
 			
 			// capture userAgent version
 			workerScope.userAgentVersion = userAgentVersion
