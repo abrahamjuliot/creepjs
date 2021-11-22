@@ -300,7 +300,7 @@ export const getBestWorkerScope = async imports => {
 	}
 }
 
-export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, compressWebGLRenderer, getWebGLRendererConfidence }) => {
+export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, compressWebGLRenderer, getWebGLRendererConfidence, computeWindowsRelease }) => {
 	if (!fp.workerScope) {
 		return `
 		<div class="col-six undefined">
@@ -478,9 +478,12 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 					platformVersion,
 					platform
 				} = userAgentData || {}
+
+				const windowsRelease = computeWindowsRelease(platform, platformVersion) 
+
 				return !userAgentData ? note.unsupported : `
 					${(brandsVersion || []).join(',')}${uaFullVersion ? ` (${uaFullVersion})` : ''}
-					<br>${platform} ${platformVersion} ${architecture}
+					<br>${windowsRelease ? windowsRelease : `${platform} ${platformVersion}`} ${architecture}
 					${model ? `<br>${model}` : ''}
 					${mobile ? '<br>mobile' : ''}
 				`

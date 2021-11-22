@@ -609,7 +609,7 @@ export const getNavigator = async (imports, workerScope) => {
 	}
 }
 
-export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) => {
+export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count, computeWindowsRelease }) => {
 	if (!fp.navigator) {
 		return `
 		<div class="col-six undefined">
@@ -751,9 +751,12 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count }) =
 					platformVersion,
 					platform
 				} = userAgentData || {}
+				
+				const windowsRelease = computeWindowsRelease(platform, platformVersion) 
+				
 				return !userAgentData ? note.unsupported : `
 					${(brandsVersion || []).join(',')}${uaFullVersion ? ` (${uaFullVersion})` : ''}
-					<br>${platform} ${platformVersion} ${architecture}
+					<br>${windowsRelease ? windowsRelease : `${platform} ${platformVersion}`} ${architecture}
 					${model ? `<br>${model}` : ''}
 					${mobile ? '<br>mobile' : ''}
 				`

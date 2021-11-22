@@ -1,4 +1,4 @@
-import { isChrome, braveBrowser, getBraveMode, getBraveUnprotectedParameters, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, logTestResult, getPromiseRaceFulfilled } from './modules/helpers.js'
+import { isChrome, braveBrowser, getBraveMode, getBraveUnprotectedParameters, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, computeWindowsRelease, logTestResult, getPromiseRaceFulfilled } from './modules/helpers.js'
 import { patch, html, note, count, modal, getMismatchStyle } from './modules/html.js'
 import { hashMini, instanceId, hashify } from './modules/crypto.js'
 
@@ -608,7 +608,8 @@ const imports = {
 		html,
 		styleSystemHash,
 		compressWebGLRenderer,
-		getWebGLRendererConfidence
+		getWebGLRendererConfidence,
+		computeWindowsRelease
 	}
 	const hasTrash = !!trashLen
 	const { lies: hasLied, capturedErrors: hasErrors } = creep

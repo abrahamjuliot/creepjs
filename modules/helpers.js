@@ -283,6 +283,30 @@ const getUserAgentPlatform = ({ userAgent, excludeBuild = true }) => {
 	}
 }
 
+const computeWindowsRelease = (platform, platformVersion) => {
+	if (platform != 'Windows') {
+		return false
+	}
+	const platformVersionNumber = +(/(\d+)\./.exec(platformVersion)||[])[1]
+
+	// https://github.com/WICG/ua-client-hints/issues/220#issuecomment-870858413
+	const release = {
+		0: '7/8/8.1',
+		1: '10 (1507)',
+		2: '10 (1511)',
+		3: '10 (1607)',
+		4: '10 (1703)',
+		5: '10 (1709)',
+		6: '10 (1803)',
+		7: '10 (1809)',
+		8: '10 (1903|1909)',
+		10: '10 (2004|20H2|21H1)'
+	}
+	return (
+		`Windows ${platformVersionNumber >= 13 ? '11' : release[platformVersionNumber] || 'Unknown'}`
+	)
+}
+
 const logTestResult = ({ test, passed, start = false }) => {
 	const color = passed ? '#4cca9f' : 'lightcoral'
 	const result = passed ? 'passed' : 'failed'
@@ -309,4 +333,4 @@ const getPromiseRaceFulfilled = async ({
 }
 
 
-export { isChrome, braveBrowser, getBraveMode, getBraveUnprotectedParameters, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, logTestResult, getPromiseRaceFulfilled }
+export { isChrome, braveBrowser, getBraveMode, getBraveUnprotectedParameters, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, computeWindowsRelease, logTestResult, getPromiseRaceFulfilled }
