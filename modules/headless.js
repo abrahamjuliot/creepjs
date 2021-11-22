@@ -66,12 +66,6 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 		const data = {
 			chromium: isChromium,
 			likeHeadless: {
-				['trust token feature is disabled']: (
-					!('hasTrustToken' in document) ||
-					!('trustTokenOperationError' in XMLHttpRequest.prototype) ||
-					!('setTrustToken' in XMLHttpRequest.prototype) ||
-					!('trustToken' in HTMLIFrameElement.prototype)
-				),
 				['navigator.webdriver is on']: 'webdriver' in navigator && !!navigator.webdriver,
 				['chrome plugins array is empty']: isChromium && navigator.plugins.length === 0,
 				['chrome mimeTypes array is empty']: isChromium && mimeTypes.length === 0,
