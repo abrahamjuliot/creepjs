@@ -158,6 +158,38 @@ const getWebGLRendererConfidence = x => {
 	const hasKnownParts = parts.length
 	const hasBlankSpaceNoise = /\s{2,}/.test(x)
 	const hasBrokenAngleStructure = /^ANGLE/.test(x) && !(/^ANGLE \((.+)\)$/.exec(x)||[])[1]
+
+	// https://chromium.googlesource.com/angle/angle/+/83fa18905d8fed4f394e4f30140a83a3e76b1577/src/gpu_info_util/SystemInfo.cpp
+	// https://chromium.googlesource.com/angle/angle/+/83fa18905d8fed4f394e4f30140a83a3e76b1577/src/gpu_info_util/SystemInfo.h
+	// https://chromium.googlesource.com/chromium/src/+/refs/heads/main/ui/gl/gl_version_info.cc
+	/*
+	const knownVendors = [
+		'AMD',
+		'ARM',
+		'Broadcom',
+		'Google',
+		'ImgTec',
+		'Intel',
+		'Kazan',
+		'NVIDIA',
+		'Qualcomm',
+		'VeriSilicon',
+		'Vivante',
+		'VMWare',
+		'Apple',
+		'Unknown'
+	]
+	const angle = {
+		vendorId: (/^ANGLE \(([^,]+),/.exec(x)||[])[1] || knownVendors.find(vendor => x.includes(vendor)),
+		deviceId: (
+			(x.match(/,/g)||[]).length == 2 ? (/^ANGLE \(([^,]+), ([^,]+)[,|\)]/.exec(x)||[])[2] : 
+				(/^ANGLE \(([^,]+), ([^,]+)[,|\)]/.exec(x)||[])[1] || (/^ANGLE \((.+)\)$/.exec(x)||[])[1]
+		).replace(/\sDirect3D.+/, '')
+	}
+	*/
+
+	
+
 	const gibbers = gibberish(x, { strict: true }).join(', ')
 	const valid = (
 		hasKnownParts && !hasBlankSpaceNoise && !hasBrokenAngleStructure
