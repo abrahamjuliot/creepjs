@@ -188,8 +188,6 @@ const getWebGLRendererConfidence = x => {
 	}
 	*/
 
-	
-
 	const gibbers = gibberish(x, { strict: true }).join(', ')
 	const valid = (
 		hasKnownParts && !hasBlankSpaceNoise && !hasBrokenAngleStructure
