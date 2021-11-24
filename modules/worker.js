@@ -471,6 +471,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 			${((userAgentData) => {
 				const {
 					architecture,
+					bitness,
 					brandsVersion,
 					uaFullVersion,
 					mobile,
@@ -483,7 +484,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 
 				return !userAgentData ? note.unsupported : `
 					${(brandsVersion || []).join(',')}${uaFullVersion ? ` (${uaFullVersion})` : ''}
-					<br>${windowsRelease ? windowsRelease : `${platform} ${platformVersion}`} ${architecture}
+					<br>${windowsRelease ? windowsRelease : `${platform} ${platformVersion}`} ${architecture}_${bitness}
 					${model ? `<br>${model}` : ''}
 					${mobile ? '<br>mobile' : ''}
 				`

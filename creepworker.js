@@ -770,7 +770,7 @@ const getWorkerData = async () => {
 			return
 		}
 		const data = await navigator.userAgentData.getHighEntropyValues(
-			['platform', 'platformVersion', 'architecture',  'model', 'uaFullVersion']
+			['platform', 'platformVersion', 'architecture', 'bitness',  'model', 'uaFullVersion']
 		)
 		const { brands, mobile } = navigator.userAgentData || {}
 		const compressedBrands = (brands, captureVersion = false) => brands

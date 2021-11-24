@@ -388,7 +388,7 @@ export const getNavigator = async (imports, workerScope) => {
 					return
 				}
 				const data = await phantomNavigator.userAgentData.getHighEntropyValues(
-					['platform', 'platformVersion', 'architecture',  'model', 'uaFullVersion']
+					['platform', 'platformVersion', 'architecture', 'bitness', 'model', 'uaFullVersion']
 				)
 				const { brands, mobile } = phantomNavigator.userAgentData || {}
 				const compressedBrands = (brands, captureVersion = false) => brands
@@ -744,6 +744,7 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count, com
 			${((userAgentData) => {
 				const {
 					architecture,
+					bitness,
 					brandsVersion,
 					uaFullVersion,
 					mobile,
@@ -756,7 +757,7 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count, com
 				
 				return !userAgentData ? note.unsupported : `
 					${(brandsVersion || []).join(',')}${uaFullVersion ? ` (${uaFullVersion})` : ''}
-					<br>${windowsRelease ? windowsRelease : `${platform} ${platformVersion}`} ${architecture}
+					<br>${windowsRelease ? windowsRelease : `${platform} ${platformVersion}`} ${architecture}_${bitness}
 					${model ? `<br>${model}` : ''}
 					${mobile ? '<br>mobile' : ''}
 				`
