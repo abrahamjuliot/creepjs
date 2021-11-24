@@ -1079,6 +1079,18 @@ const imports = {
 					l: +new Date(new Date(`7/1/1113`))
 				}
 				
+				// attempt windows 11 userAgent
+				const { userAgent, userAgentData } = fp.workerScope || {}
+				const attemptWindows11UserAgent = (userAgent, userAgentData) => {
+					const  { platformVersion, platform } = userAgentData || {}
+					const windowsRelease = computeWindowsRelease(platform, platformVersion)
+					if (windowsRelease == 'Windows 11') {
+						return (''+userAgent).replace('Windows NT 10.0', 'Windows 11')
+					}
+					return userAgent
+				}
+				const workerScopeUserAgent = attemptWindows11UserAgent(userAgent, userAgentData)
+
 				const decryptRequest = `https://creepjs-6bd8e.web.app/decrypt?${[
 					`sender=${sender.e}_${sender.l}`,
 					`isTorBrowser=${isTorBrowser}`,
@@ -1121,7 +1133,7 @@ const imports = {
 					`fontsId=${!fonts || fonts.lied ? 'undefined' : fonts.$hash}`,
 					`voicesId=${!voices || voices.lied ? 'undefined' : voices.$hash}`,
 					`screenId=${screenMetrics}`,
-					`ua=${encodeURIComponent(fp.workerScope.userAgent)}`
+					`ua=${encodeURIComponent(workerScopeUserAgent)}`
 				].join('&')}`
 
 				const decryptionResponse = await fetch(decryptRequest)
