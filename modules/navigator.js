@@ -757,7 +757,7 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count, com
 				
 				return !userAgentData ? note.unsupported : `
 					${(brandsVersion || []).join(',')}${uaFullVersion ? ` (${uaFullVersion})` : ''}
-					<br>${windowsRelease ? windowsRelease : `${platform} ${platformVersion}`} ${architecture}_${bitness}
+					<br>${windowsRelease ? windowsRelease : `${platform} ${platformVersion}`} ${architecture ? `${architecture}${bitness ? `_${bitness}` : ''}` : ''} 
 					${model ? `<br>${model}` : ''}
 					${mobile ? '<br>mobile' : ''}
 				`

@@ -484,7 +484,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 
 				return !userAgentData ? note.unsupported : `
 					${(brandsVersion || []).join(',')}${uaFullVersion ? ` (${uaFullVersion})` : ''}
-					<br>${windowsRelease ? windowsRelease : `${platform} ${platformVersion}`} ${architecture}_${bitness}
+					<br>${windowsRelease ? windowsRelease : `${platform} ${platformVersion}`} ${architecture ? `${architecture}${bitness ? `_${bitness}` : ''}` : ''}
 					${model ? `<br>${model}` : ''}
 					${mobile ? '<br>mobile' : ''}
 				`
