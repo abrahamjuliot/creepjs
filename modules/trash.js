@@ -204,6 +204,8 @@ const getWebGLRendererConfidence = x => {
 	)
 	return {
 		parts,
+		hasBlankSpaceNoise,
+		hasBrokenAngleStructure,
 		gibbers,
 		confidence,
 		grade

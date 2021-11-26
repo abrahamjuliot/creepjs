@@ -380,7 +380,20 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 	)
 
 	const compressedGPU = compressWebGLRenderer(webglRenderer)
-	const { parts, gibbers, confidence, grade: confidenceGrade } = getWebGLRendererConfidence(webglRenderer) || {}
+	const {
+		parts,
+		hasBlankSpaceNoise,
+		hasBrokenAngleStructure,
+		gibbers,
+		confidence,
+		grade: confidenceGrade
+	} = getWebGLRendererConfidence(webglRenderer) || {}
+
+	const warnings = new Set([
+		(hasBlankSpaceNoise ? 'found extra spaces' : undefined),
+		(hasBrokenAngleStructure ? 'broken angle structure' : undefined),
+	])
+	warnings.delete()
 
 	return `
 	<div class="ellipsis"><span class="aside-note">${scope || ''}</span></div>
@@ -444,7 +457,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 			confidence ? `<span class="confidence-note">confidence: <span class="scale-up grade-${confidenceGrade}">${confidence}</span></span>` : ''
 		}gpu:</div>
 		<div class="block-text help" title="${
-			confidence ? `\nWebGLRenderingContext.getParameter()\ngpu compressed: ${compressedGPU}\nknown parts: ${parts || 'none'}\ngibberish: ${gibbers || 'none'}` : 'WebGLRenderingContext.getParameter()'
+			confidence ? `\nWebGLRenderingContext.getParameter()\ngpu compressed: ${compressedGPU}\nknown parts: ${parts || 'none'}\ngibberish: ${gibbers || 'none'}\nwarnings: ${[...warnings].join(', ') || 'none'}` : 'WebGLRenderingContext.getParameter()'
 		}">
 			${webglVendor ? webglVendor : ''}
 			${webglRenderer ? `<br>${webglRenderer}` : note.unsupported}
