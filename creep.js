@@ -1096,7 +1096,7 @@ const imports = {
 					const matcher = /Mozilla\/5\.0 \((Macintosh; Intel Mac OS X 10_15_7|Windows NT 10\.0; Win64; x64|(X11; (CrOS|Linux) x86_64)|(Linux; Android 10(; K|)))\) AppleWebKit\/537\.36 \(KHTML, like Gecko\) Chrome\/\d+\.0\.0\.0( Mobile|) Safari\/537\.36/
 					const unifiedPlatform = (matcher.exec(userAgent)||[])[1]
 					const mathPI = 3.141592653589793
-					const isChrome = mathPI ** -100 == 1.9275814160560204e-50
+					const isChrome = (mathPI ** -100) == 1.9275814160560204e-50
 					return isChrome && !!unifiedPlatform
 				}
 					
