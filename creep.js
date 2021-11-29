@@ -1101,7 +1101,7 @@ const imports = {
 				}
 					
 				const getUserAgentRestored = ({ userAgent, userAgentData }) => {
-					if (!isUAPostReduction(userAgent) || !userAgentData) {
+					if (!userAgentData || !isUAPostReduction(userAgent)) {
 						return
 					}
 					const { brands, uaFullVersion, platformVersion, model: deviceModel, bitness } = userAgentData
