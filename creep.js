@@ -463,10 +463,10 @@ const imports = {
 			system: fp.workerScope.system,
 			device: fp.workerScope.device,
 			timezoneLocation: hardenEntropy(fp.workerScope, fp.workerScope.timezoneLocation),
-			['webgl renderer']: (
+			webglRenderer: (
 				(fp.workerScope.gpu.confidence != 'low') ? fp.workerScope.gpu.compressedGPU : undefined
 			),
-			['webgl vendor']: (
+			webglVendor: (
 				(fp.workerScope.gpu.confidence != 'low') ? fp.workerScope.webglVendor : undefined
 			),
 			fontFaceSetFonts: fp.workerScope.fontFaceSetFonts,
@@ -1078,12 +1078,20 @@ const imports = {
 			const valuesHash = hashMini(audioValues)
 			const audioMetrics = `${sampleSum}_${gain}_${freqSum}_${timeSum}_${valuesHash}`
 
-			const gpuModel = (
-				!canvasWebgl || canvasWebgl.parameterOrExtensionLie ? 'undefined' : (
-					(fp.workerScope && (fp.workerScope.type != 'dedicated') && fp.workerScope.webglRenderer) ? encodeURIComponent(fp.workerScope.webglRenderer) :
-						(canvasWebgl.parameters && !isBravePrivacy) ? encodeURIComponent(canvasWebgl.parameters.UNMASKED_RENDERER_WEBGL) : 
-							'undefined'
-				)
+			const getBestGPUModel = ({ canvasWebgl, workerScope }) => {
+				if (!canvasWebgl || canvasWebgl.parameterOrExtensionLie) {
+					return 'undefined'
+				}
+				else if (workerScope && (workerScope.gpu.confidence != 'low')) {
+					return workerScope.webglRenderer
+				}
+				else if (canvasWebgl && !canvasWebgl.parameterOrExtensionLie) {
+					return ''+((canvasWebgl.parameters || {}).UNMASKED_RENDERER_WEBGL)
+				}
+				return 'undefined'
+			}
+			const gpuModel = encodeURIComponent(
+				getBestGPUModel({ canvasWebgl, workerScope: fp.workerScope })
 			)
 
 			if (!isBot) {
