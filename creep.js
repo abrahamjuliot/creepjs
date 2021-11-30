@@ -394,6 +394,18 @@ const imports = {
 		fp.resistance && /^(tor browser|firefox)$/i.test(fp.resistance.privacy)
 	)
 
+	// harden gpu
+	const hardenGPU = canvasWebgl => {
+		const { gpu: { confidence, compressedGPU } } = canvasWebgl
+		const goodConfidence = confidence != 'low'
+		return (
+			!goodConfidence ? {} : {
+				UNMASKED_RENDERER_WEBGL: compressedGPU,
+				UNMASKED_VENDOR_WEBGL: canvasWebgl.parameters.UNMASKED_VENDOR_WEBGL
+			}
+		)
+	}
+
 	const creep = {
 		navigator: ( 
 			!fp.navigator || fp.navigator.lied ? undefined : {
@@ -452,10 +464,10 @@ const imports = {
 			device: fp.workerScope.device,
 			timezoneLocation: hardenEntropy(fp.workerScope, fp.workerScope.timezoneLocation),
 			['webgl renderer']: (
-				braveFingerprintingBlocking ? undefined : hardenWebGLRenderer(fp.workerScope.webglRenderer)
+				(fp.workerScope.gpu.confidence != 'low') ? fp.workerScope.gpu.compressedGPU : undefined
 			),
 			['webgl vendor']: (
-				braveFingerprintingBlocking ? undefined : fp.workerScope.webglVendor
+				(fp.workerScope.gpu.confidence != 'low') ? fp.workerScope.webglVendor : undefined
 			),
 			fontFaceSetFonts: fp.workerScope.fontFaceSetFonts,
 			userAgentData: {
@@ -479,12 +491,15 @@ const imports = {
 		),
 		canvasWebgl: !fp.canvasWebgl ? undefined : (
 			braveFingerprintingBlocking ? {
-				parameters: getBraveUnprotectedParameters(fp.canvasWebgl.parameters)
+				parameters: {
+					...getBraveUnprotectedParameters(fp.canvasWebgl.parameters),
+					...hardenGPU(fp.canvasWebgl)
+				}
 			} : fp.canvasWebgl.lied ? undefined : {
 				...fp.canvasWebgl,
 				parameters: {
 					...fp.canvasWebgl.parameters,
-					UNMASKED_RENDERER_WEBGL: hardenWebGLRenderer(fp.canvasWebgl.parameters.UNMASKED_RENDERER_WEBGL)
+					...hardenGPU(fp.canvasWebgl)
 				}
 			}
 		),
@@ -607,8 +622,6 @@ const imports = {
 		patch,
 		html,
 		styleSystemHash,
-		compressWebGLRenderer,
-		getWebGLRendererConfidence,
 		computeWindowsRelease
 	}
 	const hasTrash = !!trashLen

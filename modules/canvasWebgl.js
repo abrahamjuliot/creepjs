@@ -202,7 +202,9 @@ export const getCanvasWebgl = async imports => {
 			lieProps,
 			phantomDarkness,
 			dragonOfDeath,
-			logTestResult
+			logTestResult,
+			compressWebGLRenderer,
+			getWebGLRendererConfidence 
 		}
 	} = imports
 
@@ -425,7 +427,13 @@ export const getCanvasWebgl = async imports => {
 		}
 
 		logTestResult({ start, test: 'webgl', passed: true })
-		return { ...data }
+		return {
+			...data,
+			gpu: {
+				...(getWebGLRendererConfidence((data.parameters||{}).UNMASKED_RENDERER_WEBGL) || {}),
+				compressedGPU: compressWebGLRenderer((data.parameters||{}).UNMASKED_RENDERER_WEBGL)
+			}
+		}
 	}
 	catch (error) {
 		logTestResult({ test: 'webgl', passed: false })
@@ -434,7 +442,7 @@ export const getCanvasWebgl = async imports => {
 	}
 }
 
-export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice, compressWebGLRenderer, getWebGLRendererConfidence }) => {
+export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 	if (!fp.canvasWebgl) {
 		return `
 		<div class="col-four undefined">
@@ -461,24 +469,18 @@ export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice, compres
 		pixels2,
 		lied,
 		extensions,
-		parameters
-	} = data
+		parameters,
+		gpu
+	} = data || {}
 
-	const compressedGPU = compressWebGLRenderer((parameters||{}).UNMASKED_RENDERER_WEBGL)
 	const {
 		parts,
-		hasBlankSpaceNoise,
-		hasBrokenAngleStructure,
+		warnings,
 		gibbers,
 		confidence,
-		grade: confidenceGrade
-	} = getWebGLRendererConfidence((parameters||{}).UNMASKED_RENDERER_WEBGL) || {}
-
-	const warnings = new Set([
-		(hasBlankSpaceNoise ? 'found extra spaces' : undefined),
-		(hasBrokenAngleStructure ? 'broken angle structure' : undefined),
-	])
-	warnings.delete()
+		grade: confidenceGrade,
+		compressedGPU
+	} = gpu || {}
 	
 	const paramKeys = parameters ? Object.keys(parameters).sort() : []
 	
@@ -514,7 +516,7 @@ export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice, compres
 		}
 		<div>gpu:</div>
 		<div class="block-text help" title="${
-			confidence ? `\nWebGLRenderingContext.getParameter()\ngpu compressed: ${compressedGPU}\nknown parts: ${parts || 'none'}\ngibberish: ${gibbers || 'none'}\nwarnings: ${[...warnings].join(', ') || 'none'}` : 'WebGLRenderingContext.getParameter()'
+			confidence ? `\nWebGLRenderingContext.getParameter()\ngpu compressed: ${compressedGPU}\nknown parts: ${parts || 'none'}\ngibberish: ${gibbers || 'none'}\nwarnings: ${warnings.join(', ') || 'none'}` : 'WebGLRenderingContext.getParameter()'
 		}">
 			<div>
 				${parameters.UNMASKED_VENDOR_WEBGL ? parameters.UNMASKED_VENDOR_WEBGL : ''}

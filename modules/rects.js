@@ -421,7 +421,7 @@ export const clientRectsHTML = ({ fp, note, modal, getMismatchStyle, hashMini, h
 		return hashMini(excludeEmoji)
 	}
 
-	// compute mismatch syle
+	// compute mismatch style
 	const getRectSum = rect => Object.keys(rect).reduce((acc, key) => acc += rect[key], 0)
 	const reduceRectSum = n => (''+n).split('.').reduce((acc, s) => acc += +s, 0)
 	const computeMismatchStyle = rects => {

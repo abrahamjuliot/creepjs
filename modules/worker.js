@@ -115,7 +115,9 @@ export const getBestWorkerScope = async imports => {
 			phantomDarkness,
 			getUserAgentPlatform,
 			documentLie,
-			logTestResult
+			logTestResult,
+			compressWebGLRenderer,
+			getWebGLRendererConfidence 
 		}
 	} = imports
 	try {
@@ -289,7 +291,13 @@ export const getBestWorkerScope = async imports => {
 			workerScope.userAgentEngine = userAgentEngine
 
 			logTestResult({ start, test: `${type} worker`, passed: true })
-			return { ...workerScope }
+			return {
+				...workerScope,
+				gpu: {
+					...(getWebGLRendererConfidence(workerScope.webglRenderer) || {}),
+					compressedGPU: compressWebGLRenderer(workerScope.webglRenderer)
+				}
+			}
 		}
 		return
 	}
@@ -300,7 +308,7 @@ export const getBestWorkerScope = async imports => {
 	}
 }
 
-export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, compressWebGLRenderer, getWebGLRendererConfidence, computeWindowsRelease }) => {
+export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, computeWindowsRelease }) => {
 	if (!fp.workerScope) {
 		return `
 		<div class="col-six undefined">
@@ -351,6 +359,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 		textMetricsSystemClass,
 		webglRenderer,
 		webglVendor,
+		gpu,
 		fontFaceSetFonts,
 		fontSystemClass,
 		fontListLen,
@@ -379,21 +388,15 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 		permissions && permissions.granted ? permissions.granted.length : 0
 	)
 
-	const compressedGPU = compressWebGLRenderer(webglRenderer)
 	const {
 		parts,
-		hasBlankSpaceNoise,
-		hasBrokenAngleStructure,
+		warnings,
 		gibbers,
 		confidence,
-		grade: confidenceGrade
-	} = getWebGLRendererConfidence(webglRenderer) || {}
+		grade: confidenceGrade,
+		compressedGPU
+	} = gpu || {}
 
-	const warnings = new Set([
-		(hasBlankSpaceNoise ? 'found extra spaces' : undefined),
-		(hasBrokenAngleStructure ? 'broken angle structure' : undefined),
-	])
-	warnings.delete()
 
 	return `
 	<div class="ellipsis"><span class="aside-note">${scope || ''}</span></div>
@@ -457,7 +460,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 			confidence ? `<span class="confidence-note">confidence: <span class="scale-up grade-${confidenceGrade}">${confidence}</span></span>` : ''
 		}gpu:</div>
 		<div class="block-text help" title="${
-			confidence ? `\nWebGLRenderingContext.getParameter()\ngpu compressed: ${compressedGPU}\nknown parts: ${parts || 'none'}\ngibberish: ${gibbers || 'none'}\nwarnings: ${[...warnings].join(', ') || 'none'}` : 'WebGLRenderingContext.getParameter()'
+			confidence ? `\nWebGLRenderingContext.getParameter()\ngpu compressed: ${compressedGPU}\nknown parts: ${parts || 'none'}\ngibberish: ${gibbers || 'none'}\nwarnings: ${warnings.join(', ') || 'none'}` : 'WebGLRenderingContext.getParameter()'
 		}">
 			${webglVendor ? webglVendor : ''}
 			${webglRenderer ? `<br>${webglRenderer}` : note.unsupported}

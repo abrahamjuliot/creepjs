@@ -202,10 +202,16 @@ const getWebGLRendererConfidence = x => {
 			confidence == 'moderate' ? 'C' :
 				'F'
 	)
+
+	const warnings = new Set([
+		(hasBlankSpaceNoise ? 'found extra spaces' : undefined),
+		(hasBrokenAngleStructure ? 'broken angle structure' : undefined),
+	])
+	warnings.delete()
+	
 	return {
 		parts,
-		hasBlankSpaceNoise,
-		hasBrokenAngleStructure,
+		warnings: [...warnings],
 		gibbers,
 		confidence,
 		grade
