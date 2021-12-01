@@ -310,6 +310,52 @@ const computeWindowsRelease = (platform, platformVersion) => {
 	)
 }
 
+// attempt windows 11 userAgent
+const attemptWindows11UserAgent = ({ userAgent, userAgentData }) => {
+	const  { platformVersion, platform } = userAgentData || {}
+	const windowsRelease = computeWindowsRelease(platform, platformVersion)
+	if (windowsRelease == 'Windows 11') {
+		return (''+userAgent).replace('Windows NT 10.0', 'Windows 11')
+	}
+	return userAgent
+}
+
+// attempt restore from User-Agent Reduction
+const isUAPostReduction = userAgent => {
+	const matcher = /Mozilla\/5\.0 \((Macintosh; Intel Mac OS X 10_15_7|Windows NT 10\.0; Win64; x64|(X11; (CrOS|Linux) x86_64)|(Linux; Android 10(; K|)))\) AppleWebKit\/537\.36 \(KHTML, like Gecko\) Chrome\/\d+\.0\.0\.0( Mobile|) Safari\/537\.36/
+	const unifiedPlatform = (matcher.exec(userAgent)||[])[1]
+	const mathPI = 3.141592653589793
+	const isChrome = (mathPI ** -100) == 1.9275814160560204e-50
+	return isChrome && !!unifiedPlatform
+}
+	
+const getUserAgentRestored = ({ userAgent, userAgentData }) => {
+	if (!userAgentData || !isUAPostReduction(userAgent)) {
+		return
+	}
+	const { brands, uaFullVersion, platformVersion, model: deviceModel, bitness } = userAgentData
+	
+	const isGoogleChrome = (
+		/X11; CrOS/.test(userAgent) ||
+		!!(brands || []).find(x => x == 'Google Chrome')
+	)
+	const versionNumber = +(/(\d+)\./.exec(platformVersion)||[])[1]
+	const windowsVersion = (
+		versionNumber >= 13 ? '11' :
+		versionNumber == 0 ? '7/8/8.1' : '10'
+	)
+	const macVersion = platformVersion.replace(/\./g, '_')
+	const userAgentRestored = userAgent
+		.replace(/(Chrome\/)([^\s]+)/, (match, p1, p2) => `${p1}${isGoogleChrome ? uaFullVersion : p2}`)
+		.replace(/Windows NT 10.0/, `Windows ${windowsVersion}`)
+		.replace(/(X11; CrOS x86_64)/, (match, p1) => `${p1} ${platformVersion}`)
+		.replace(/(Linux; Android )(10)(; K|)/, (match, p1) => `${p1}${versionNumber}; ${deviceModel || 'K'}`)
+		.replace(/(Macintosh; Intel Mac OS X )(10_15_7)/, (match, p1) => `${p1}${macVersion}`)
+		.replace(/(; Win64; x64| x86_64)/, (match, p1) => bitness === '64' ? p1 : '')
+	
+	return userAgentRestored
+}
+
 const logTestResult = ({ test, passed, start = false }) => {
 	const color = passed ? '#4cca9f' : 'lightcoral'
 	const result = passed ? 'passed' : 'failed'
@@ -335,5 +381,4 @@ const getPromiseRaceFulfilled = async ({
 	)
 }
 
-
-export { isChrome, braveBrowser, getBraveMode, getBraveUnprotectedParameters, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, computeWindowsRelease, logTestResult, getPromiseRaceFulfilled }
+export { isChrome, braveBrowser, getBraveMode, getBraveUnprotectedParameters, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, computeWindowsRelease, attemptWindows11UserAgent, isUAPostReduction, getUserAgentRestored, logTestResult, getPromiseRaceFulfilled }

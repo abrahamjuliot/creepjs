@@ -19,7 +19,9 @@ export const getNavigator = async (imports, workerScope) => {
 			braveBrowser,
 			decryptUserAgent,
 			logTestResult,
-			getPluginLies
+			getPluginLies,
+			isUAPostReduction,
+			getUserAgentRestored
 		}
 	} = imports
 
@@ -147,6 +149,7 @@ export const getNavigator = async (imports, workerScope) => {
 				}
 				return userAgent.trim().replace(/\s{2,}/, ' ')
 			}, 'userAgent failed'),
+			uaPostReduction: isUAPostReduction((navigator || {}).userAgent),
 			appVersion: attempt(() => {
 				const { appVersion } = phantomNavigator
 				const navigatorAppVersion = navigator.appVersion
@@ -658,6 +661,7 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count, com
 			system,
 			device,
 			userAgent,
+			uaPostReduction,
 			userAgentData,
 			userAgentParsed,
 			vendor,
@@ -778,7 +782,8 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count, com
 		</div>
 		<div>ua parsed: ${userAgentParsed || note.blocked}</div>
 		<div>userAgent:</div>
-		<div class="block-text">
+		<div class="block-text relative">
+			${!uaPostReduction ? '' : `<span class="confidence-note">ua reduction</span>`}
 			<div>${userAgent || note.blocked}</div>
 		</div>
 		<div>appVersion:</div>
