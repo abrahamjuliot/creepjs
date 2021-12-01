@@ -781,9 +781,8 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count, com
 			}${typeof maxTouchPoints != 'undefined' ? `, touch: ${''+maxTouchPoints}` : ''}
 		</div>
 		<div>ua parsed: ${userAgentParsed || note.blocked}</div>
-		<div>userAgent:</div>
-		<div class="block-text relative">
-			${!uaPostReduction ? '' : `<span class="confidence-note">ua reduction</span>`}
+		<div class="relative">userAgent:${!uaPostReduction ? '' : `<span class="confidence-note">ua reduction</span>`}</div>
+		<div class="block-text">
 			<div>${userAgent || note.blocked}</div>
 		</div>
 		<div>appVersion:</div>
