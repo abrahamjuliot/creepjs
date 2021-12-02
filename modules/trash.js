@@ -156,7 +156,7 @@ const getWebGLRendererConfidence = x => {
 	}
 	const parts = getWebGLRendererParts(x)
 	const hasKnownParts = parts.length
-	const hasBlankSpaceNoise = /\s{2,}/.test(x)
+	const hasBlankSpaceNoise = /\s{2,}|^\s|\s$/.test(x)
 	const hasBrokenAngleStructure = /^ANGLE/.test(x) && !(/^ANGLE \((.+)\)$/.exec(x)||[])[1]
 
 	// https://chromium.googlesource.com/angle/angle/+/83fa18905d8fed4f394e4f30140a83a3e76b1577/src/gpu_info_util/SystemInfo.cpp
