@@ -3,16 +3,15 @@ export const getVoices = imports => {
 	const {
 		require: {
 			captureError,
-			phantomDarkness,
 			logTestResult,
-			caniuse,
+			sendToTrash
 		}
 	} = imports
 		
 	return new Promise(async resolve => {
 		try {
-			const win = phantomDarkness ? phantomDarkness : window
-			const supported = 'speechSynthesis' in win
+			// use window since phantomDarkness is unstable in FF
+			const supported = 'speechSynthesis' in window
 			supported && speechSynthesis.getVoices() // warm up
 			await new Promise(setTimeout).catch(e => {})
 			const start = performance.now()
@@ -22,19 +21,32 @@ export const getVoices = imports => {
 			}
 			let success = false
 			const getVoices = () => {
-				const data = win.speechSynthesis.getVoices()
+				const data = speechSynthesis.getVoices()
 				if (!data || !data.length) {
 					return
 				}
 				success = true
-				const voices = data.map(({ name, lang }) => ({ name, lang }))
-				const defaultVoice = caniuse(() => data.find(voice => voice.default).name)
+
+				const filterFirstOccurenceOfUniqueVoiceURIData = ({data, voiceURISet}) => data.filter(x => {
+					const { voiceURI, name } = x
+					if (!voiceURISet.has(voiceURI)) {
+						voiceURISet.add(voiceURI)
+						return true
+					}
+					sendToTrash(`speechSynthesis`, `'${name}' does not have a unique voiceURI`)
+					return false
+				})
+
+				const dataUnique = filterFirstOccurenceOfUniqueVoiceURIData({ data, voiceURISet: new Set() })
+				const voices = dataUnique.map(({ name, lang }) => ({ name, lang }))
+				const defaultVoice = (dataUnique.find(voice => voice.default)||{}).name
+				
 				logTestResult({ start, test: 'speech', passed: true })
 				return resolve({ voices, defaultVoice })
 			}
 			
 			getVoices()
-			win.speechSynthesis.onvoiceschanged = getVoices // Chrome support
+			speechSynthesis.onvoiceschanged = getVoices // Chrome support
 			
 			// handle pending resolve
 			const wait = 1000
