@@ -4,7 +4,8 @@ export const getVoices = imports => {
 		require: {
 			captureError,
 			logTestResult,
-			sendToTrash
+			sendToTrash,
+			lieProps
 		}
 	} = imports
 		
@@ -20,13 +21,14 @@ export const getVoices = imports => {
 				return resolve()
 			}
 			let success = false
+			const voiceslie = !!lieProps['SpeechSynthesis.getVoices']
+
 			const getVoices = () => {
 				const data = speechSynthesis.getVoices()
 				if (!data || !data.length) {
 					return
 				}
 				success = true
-
 				const filterFirstOccurenceOfUniqueVoiceURIData = ({data, voiceURISet}) => data.filter(x => {
 					const { voiceURI, name } = x
 					if (!voiceURISet.has(voiceURI)) {
@@ -38,11 +40,21 @@ export const getVoices = imports => {
 				})
 
 				const dataUnique = filterFirstOccurenceOfUniqueVoiceURIData({ data, voiceURISet: new Set() })
-				const voices = dataUnique.map(({ name, lang }) => ({ name, lang }))
-				const defaultVoice = (dataUnique.find(voice => voice.default)||{}).name
+
+				const local = dataUnique.filter(x => x.localService).map(x => x.name)
+				const remote = dataUnique.filter(x => !x.localService).map(x => x.name)
+				const languages = [...new Set(dataUnique.map(x => x.lang))]
+				const { name: defaultName, lang: defaultLang } = dataUnique.find(voice => voice.default) || {}
 				
 				logTestResult({ start, test: 'speech', passed: true })
-				return resolve({ voices, defaultVoice })
+				return resolve({
+					local,
+					remote,
+					languages,
+					defaultName,
+					defaultLang,
+					lied: voiceslie
+				})
 			}
 			
 			getVoices()
@@ -71,33 +83,56 @@ export const voicesHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 		return `
 		<div class="col-four undefined">
 			<strong>Speech</strong>
-			<div>voices (0): ${note.blocked}</div>
-			<div>default: ${note.blocked}</div>
+			<div>local (0): ${note.blocked}</div>
+			<div>remote (0): ${note.blocked}</div>
+			<div>languages (0): ${note.blocked}</div>
+			<div>default:</div>
+			<div class="block-text">${note.blocked}</div>
 		</div>`
 	}
 	const {
 		voices: {
 			$hash,
-			defaultVoice,
-			voices
+			local,
+			remote,
+			languages,
+			defaultName,
+			defaultLang,
+			lied
 		}
 	} = fp
-	const voiceList = voices.map(voice => `${voice.name} (${voice.lang})`)
+
 	return `
-	<div class="col-four">
-		<strong>Speech</strong><span class="hash">${hashSlice($hash)}</span>
-		<div>voices (${count(voices)}): ${
-			!voiceList || !voiceList.length ? note.unsupported :
+	<div class="col-four${lied ? ' rejected' : ''}">
+		<strong>Speech</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+		<div>local (${count(local)}): ${
+			!local || !local.length ? note.unsupported :
 			modal(
-				'creep-voices',
-				voiceList.join('<br>'),
-				hashMini(voices)
+				'creep-voices-local',
+				local.join('<br>'),
+				hashMini(local)
 			)
 		}</div>
-		<div>default:${
-			!defaultVoice ? ` ${note.unsupported}` :
-			`<span class="sub-hash">${hashMini(defaultVoice)}</span>`
+		<div>remote (${count(remote)}): ${
+			!remote || !remote.length ? note.unsupported :
+			modal(
+				'creep-voices-remote',
+				remote.join('<br>'),
+				hashMini(remote)
+			)
 		}</div>
+		<div>languages (${count(languages)}): ${
+			!languages || !languages.length ? note.blocked :
+				languages.length == 1 ? languages[0] : modal(
+					'creep-voices-languages',
+					languages.join('<br>'),
+					hashMini(languages)
+				)
+		}</div>
+		<div>default:</div>
+		<div class="block-text">
+			${!defaultName ? note.unsupported : `${defaultName} (${defaultLang})`}
+		</div>
 	</div>
 	`
 }

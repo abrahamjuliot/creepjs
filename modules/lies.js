@@ -813,6 +813,11 @@ const getPrototypeLies = iframeWindow => {
 		]
 	})
 	searchLies(() => Screen)
+	searchLies(() => speechSynthesis, {
+		target: [
+			'getVoices'
+		]
+	})
 	searchLies(() => SVGRect)
 	searchLies(() => TextMetrics)
 	searchLies(() => WebGLRenderingContext, {

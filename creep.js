@@ -546,7 +546,8 @@ const imports = {
 		// skip trash since it is random
 		lies: !!liesLen,
 		capturedErrors: !!errorsLen,
-		resistance: fp.resistance || undefined
+		resistance: fp.resistance || undefined,
+		voices: !fp.voices || fp.voices.lied ? undefined : fp.voices,
 	}
 
 	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f')

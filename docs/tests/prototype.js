@@ -557,6 +557,7 @@
 		searchLies(() => Range)
 		searchLies(() => Intl.RelativeTimeFormat)
 		searchLies(() => Screen)
+		searchLies(() => speechSynthesis)
 		searchLies(() => SVGRect)
 		searchLies(() => TextMetrics)
 		searchLies(() => WebGLRenderingContext)
@@ -569,8 +570,7 @@
 			MimeType
 			MimeTypeArray
 			Worker
-			History
-			SpeechSynthesis 
+			History 
 		*/
 
 		// return lies list and detail 
