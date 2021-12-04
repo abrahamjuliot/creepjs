@@ -1082,13 +1082,19 @@ const imports = {
 			const audioMetrics = `${sampleSum}_${gain}_${freqSum}_${timeSum}_${valuesHash}`
 
 			const getBestGPUModel = ({ canvasWebgl, workerScope }) => {
+				const gpuHasGoodConfidence = data => {
+					return (
+						(data.gpu || {}).confidence &&
+						(data.gpu.confidence != 'low')
+					)
+				}
 				if (!canvasWebgl || canvasWebgl.parameterOrExtensionLie) {
 					return 'undefined'
 				}
-				else if (workerScope && (workerScope.gpu || {}).confidence && (workerScope.gpu.confidence != 'low')) {
+				else if (workerScope && gpuHasGoodConfidence(workerScope)) {
 					return workerScope.webglRenderer
 				}
-				else if (canvasWebgl && !canvasWebgl.parameterOrExtensionLie) {
+				else if (canvasWebgl && !canvasWebgl.parameterOrExtensionLie && gpuHasGoodConfidence(canvasWebgl)) {
 					return ''+((canvasWebgl.parameters || {}).UNMASKED_RENDERER_WEBGL)
 				}
 				return 'undefined'
