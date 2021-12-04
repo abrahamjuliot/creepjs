@@ -1085,7 +1085,7 @@ const imports = {
 				if (!canvasWebgl || canvasWebgl.parameterOrExtensionLie) {
 					return 'undefined'
 				}
-				else if (workerScope && (workerScope.gpu.confidence != 'low')) {
+				else if (workerScope && (workerScope.gpu || {}).confidence && (workerScope.gpu.confidence != 'low')) {
 					return workerScope.webglRenderer
 				}
 				else if (canvasWebgl && !canvasWebgl.parameterOrExtensionLie) {
