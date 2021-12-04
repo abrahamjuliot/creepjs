@@ -85,7 +85,7 @@ export const voicesHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 			<strong>Speech</strong>
 			<div>local (0): ${note.blocked}</div>
 			<div>remote (0): ${note.blocked}</div>
-			<div>languages (0): ${note.blocked}</div>
+			<div>langs (0): ${note.blocked}</div>
 			<div>default:</div>
 			<div class="block-text">${note.blocked}</div>
 		</div>`
@@ -137,7 +137,7 @@ export const voicesHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 				hashMini(remote)
 			)
 		}</div>
-		<div>languages (${count(languages)}): ${
+		<div>langs (${count(languages)}): ${
 			!languages || !languages.length ? note.blocked :
 				languages.length == 1 ? languages[0] : modal(
 					'creep-voices-languages',
