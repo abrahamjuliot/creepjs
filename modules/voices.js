@@ -61,7 +61,7 @@ export const getVoices = imports => {
 			speechSynthesis.onvoiceschanged = getVoices // Chrome support
 			
 			// handle pending resolve
-			const wait = 1000
+			const wait = 3000
 			setTimeout(() => {
 				if (success) {
 					return
@@ -102,6 +102,22 @@ export const voicesHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 		}
 	} = fp
 
+	const icon = {
+		'Linux': '<span class="icon linux"></span>',
+		'Apple': '<span class="icon apple"></span>',
+		'Windows': '<span class="icon windows"></span>',
+		'Android': '<span class="icon android"></span>',
+		'CrOS': '<span class="icon cros"></span>'
+	}
+	const system = {
+		'Chrome OS': icon.CrOS,
+		'Maged': icon.Apple,
+		'Microsoft': icon.Windows,
+		'English United States': icon.Android,
+		'English (United States)': icon.Android
+	}
+	const systemVoice = Object.keys(system).find(key => local.find(voice => voice.includes(key)))
+	
 	return `
 	<div class="col-four${lied ? ' rejected' : ''}">
 		<strong>Speech</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
@@ -110,7 +126,7 @@ export const voicesHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 			modal(
 				'creep-voices-local',
 				local.join('<br>'),
-				hashMini(local)
+				`${system[systemVoice] || ''}${hashMini(local)}`
 			)
 		}</div>
 		<div>remote (${count(remote)}): ${
@@ -131,7 +147,7 @@ export const voicesHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 		}</div>
 		<div>default:</div>
 		<div class="block-text">
-			${!defaultName ? note.unsupported : `${defaultName} (${defaultLang})`}
+			${!defaultName ? note.unsupported : `${defaultName}${defaultLang ? ` (${defaultLang})`: ''}`}
 		</div>
 	</div>
 	`
