@@ -510,7 +510,7 @@ export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 			)
 		}</div>
 	</div>
-	<div class="col-four${!parameters.UNMASKED_RENDERER_WEBGL ? 'undefined' : lied ? ' rejected' : ''} relative">
+	<div class="col-four${!parameters.UNMASKED_RENDERER_WEBGL ? ' undefined' : lied ? ' rejected' : ''} relative">
 		${
 			confidence ? `<span class="confidence-note">confidence: <span class="scale-up grade-${confidenceGrade}">${confidence}</span></span>` : ''
 		}
