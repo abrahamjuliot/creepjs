@@ -757,7 +757,11 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count, com
 					platform
 				} = userAgentData || {}
 				
-				const windowsRelease = computeWindowsRelease(platform, platformVersion) 
+				const brandsVersionNumber = +(/\d+/.exec(''+(brandsVersion||[])[0])||[])[0]
+				const windowsRelease = (
+					brandsVersionNumber > 94 ? computeWindowsRelease(platform, platformVersion) :
+						undefined
+				)
 				
 				return !userAgentData ? note.unsupported : `
 					${(brandsVersion || []).join(',')}${uaFullVersion ? ` (${uaFullVersion})` : ''}
