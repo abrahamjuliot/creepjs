@@ -491,10 +491,10 @@ export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 			!dataURI ? ' '+note.blocked : `<span class="sub-hash">${hashMini(dataURI)}</span>${!dataURI2 || dataURI == dataURI2 ? '' : `<span class="sub-hash">${hashMini(dataURI2)}</span>`}`
 		}</div>
 		<div>pixels:${
-			!pixels ? ' '+note.unsupported : `<span class="sub-hash">${hashSlice(pixels)}</span>${!pixels2 || pixels == pixels2 ? '' : `<span class="sub-hash">${hashSlice(pixels2)}</span>`}`
+			!pixels ? ' '+note.blocked : `<span class="sub-hash">${hashSlice(pixels)}</span>${!pixels2 || pixels == pixels2 ? '' : `<span class="sub-hash">${hashSlice(pixels2)}</span>`}`
 		}</div>
 		<div>params (${count(paramKeys)}): ${
-			!paramKeys.length ? note.unsupported :
+			!paramKeys.length ? note.blocked :
 			modal(
 				`${id}-parameters`,
 				paramKeys.map(key => `${key}: ${parameters[key]}`).join('<br>'),
@@ -502,7 +502,7 @@ export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 			)
 		}</div>
 		<div>exts (${count(extensions)}): ${
-			!extensions.length ? note.unsupported : 
+			!extensions.length ? note.blocked : 
 			modal(
 				`${id}-extensions`,
 				extensions.sort().join('<br>'),
@@ -510,7 +510,7 @@ export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 			)
 		}</div>
 	</div>
-	<div class="col-four${lied ? ' rejected' : ''} relative">
+	<div class="col-four${!parameters.UNMASKED_RENDERER_WEBGL ? 'undefined' : lied ? ' rejected' : ''} relative">
 		${
 			confidence ? `<span class="confidence-note">confidence: <span class="scale-up grade-${confidenceGrade}">${confidence}</span></span>` : ''
 		}
@@ -520,7 +520,7 @@ export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 		}">
 			<div>
 				${parameters.UNMASKED_VENDOR_WEBGL ? parameters.UNMASKED_VENDOR_WEBGL : ''}
-				${!parameters.UNMASKED_RENDERER_WEBGL ? note.unsupported : `<br>${parameters.UNMASKED_RENDERER_WEBGL}`}
+				${!parameters.UNMASKED_RENDERER_WEBGL ? note.blocked : `<br>${parameters.UNMASKED_RENDERER_WEBGL}`}
 			</div>
 		</div>
 	</div>
