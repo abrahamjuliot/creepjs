@@ -102,7 +102,7 @@ export const mediaHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 
 	const deviceMap = {
 		'audioinput': 'mic',
-		'audiooutput': 'headphones',
+		'audiooutput': 'audio',
 		'videoinput': 'webcam'
 	}
 
