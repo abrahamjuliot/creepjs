@@ -136,7 +136,7 @@ export const getNavigator = async (imports, workerScope) => {
 					sendToTrash('userAgent', `${navigatorUserAgent} does not match appVersion`)
 				}
 				if (/\s{2,}|^\s|\s$/g.test(navigatorUserAgent)) {
-					sendToTrash('userAgent', `extra spaces in "${navigatorUserAgent.replace(/\s{2,}|^\s|\s$/g, '[...]')}"`)
+					sendToTrash('userAgent', `extra spaces detected`)
 				}
 				const gibbers = gibberish(navigatorUserAgent)
 				if (!!gibbers.length) {
@@ -161,7 +161,7 @@ export const getNavigator = async (imports, workerScope) => {
 					sendToTrash('appVersion', 'Living Standard property returned falsy value')
 				}
 				if (/\s{2,}|^\s|\s$/g.test(navigatorAppVersion)) {
-					sendToTrash('appVersion', `extra spaces in "${navigatorAppVersion.replace(/\s{2,}|^\s|\s$/g, '[...]')}"`)
+					sendToTrash('appVersion', `extra spaces detected`)
 				}
 				if (appVersion != navigatorAppVersion) {
 					lied = true
