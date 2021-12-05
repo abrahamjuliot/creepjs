@@ -41,6 +41,7 @@ export const getVoices = imports => {
 
 				const dataUnique = filterFirstOccurenceOfUniqueVoiceURIData({ data, voiceURISet: new Set() })
 
+				// https://wicg.github.io/speech-api/#speechsynthesisvoice-attributes
 				const local = dataUnique.filter(x => x.localService).map(x => x.name)
 				const remote = dataUnique.filter(x => !x.localService).map(x => x.name)
 				const languages = [...new Set(dataUnique.map(x => x.lang))]
