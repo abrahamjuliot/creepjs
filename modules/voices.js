@@ -29,40 +29,22 @@ export const getVoices = imports => {
 					return
 				}
 				success = true
-				// https://github.com/brave/brave-core/blob/master/chromium_src/third_party/blink/renderer/modules/speech/speech_synthesis.cc#L41-L44
-				const knownFake = [
-					'Hubert',
-					'Vernon',
-					'Rudolph',
-					'Clayton',
-					'Irving',
-            		'Wilson',
-					'Alva',
-					'Harley',
-					'Beauregard',
-					'Cleveland',
-            		'Cecil',
-					'Reuben',
-					'Sylvester',
-					'Jasper'
-				]
-				const getTrustedData = ({data, voiceURISet}) => data.filter(x => {
+				const filterFirstOccurenceOfUniqueVoiceURIData = ({data, voiceURISet}) => data.filter(x => {
 					const { voiceURI, name } = x
-					if (voiceURISet.has(voiceURI) && knownFake.includes(name)) {
-						sendToTrash(`speechSynthesis`, `'${name}' is a known fake name w/o a unique voiceURI`)
-						return false
+					if (!voiceURISet.has(voiceURI)) {
+						voiceURISet.add(voiceURI)
+						return true
 					}
-					voiceURISet.add(voiceURI)
-					return true
+					return false
 				})
 
-				const dataTrusted = getTrustedData({ data, voiceURISet: new Set() })
+				const dataUnique = filterFirstOccurenceOfUniqueVoiceURIData({ data, voiceURISet: new Set() })
 
 				// https://wicg.github.io/speech-api/#speechsynthesisvoice-attributes
-				const local = dataTrusted.filter(x => x.localService).map(x => x.name)
-				const remote = dataTrusted.filter(x => !x.localService).map(x => x.name)
-				const languages = [...new Set(dataTrusted.map(x => x.lang))]
-				const defaults = dataTrusted.filter(x => x.default).map(x => x.name)
+				const local = dataUnique.filter(x => x.localService).map(x => x.name)
+				const remote = dataUnique.filter(x => !x.localService).map(x => x.name)
+				const languages = [...new Set(dataUnique.map(x => x.lang))]
+				const defaults = dataUnique.filter(x => x.default).map(x => x.name)
 				
 				logTestResult({ start, test: 'speech', passed: true })
 				return resolve({
