@@ -157,7 +157,7 @@ export const mediaHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 		...list.slice(index + 1)
 	]
 
-	const mediaDevicesByType = mediaDevices.reduce((acc, x) => {
+	const mediaDevicesByType = (mediaDevices || []).reduce((acc, x) => {
 		const deviceType = deviceMap[x] || x
 		if (!acc.includes(deviceType)) {
 			return (acc = [...acc, deviceType])
