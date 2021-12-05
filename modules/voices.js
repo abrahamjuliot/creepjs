@@ -120,7 +120,7 @@ export const voicesHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 	return `
 	<div class="col-four${lied ? ' rejected' : ''}">
 		<strong>Speech</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-		<div>local (${count(local)}): ${
+		<div class="help" title="SpeechSynthesis.getVoices()\nSpeechSynthesisVoice.localService">local (${count(local)}): ${
 			!local || !local.length ? note.unsupported :
 			modal(
 				'creep-voices-local',
@@ -128,7 +128,7 @@ export const voicesHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 				`${system[systemVoice] || ''}${hashMini(local)}`
 			)
 		}</div>
-		<div>remote (${count(remote)}): ${
+		<div class="help" title="SpeechSynthesis.getVoices()">remote (${count(remote)}): ${
 			!remote || !remote.length ? note.unsupported :
 			modal(
 				'creep-voices-remote',
@@ -136,7 +136,7 @@ export const voicesHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 				hashMini(remote)
 			)
 		}</div>
-		<div>lang (${count(languages)}): ${
+		<div class="help" title="SpeechSynthesis.getVoices()\nSpeechSynthesisVoice.lang">lang (${count(languages)}): ${
 			!languages || !languages.length ? note.blocked :
 				languages.length == 1 ? languages[0] : modal(
 					'creep-voices-languages',
@@ -144,7 +144,7 @@ export const voicesHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 					hashMini(languages)
 				)
 		}</div>
-		<div>default (${count(defaults)}):</div>
+		<div class="help" title="SpeechSynthesis.getVoices()\nSpeechSynthesisVoice.default">default (${count(defaults)}):</div>
 		<div class="block-text">
 			${
 				!defaults || !defaults.length ? note.unsupported :
