@@ -44,15 +44,14 @@ export const getVoices = imports => {
 				const local = dataUnique.filter(x => x.localService).map(x => x.name)
 				const remote = dataUnique.filter(x => !x.localService).map(x => x.name)
 				const languages = [...new Set(dataUnique.map(x => x.lang))]
-				const { name: defaultName, lang: defaultLang } = dataUnique.find(voice => voice.default) || {}
+				const defaults = dataUnique.filter(x => x.default).map(x => x.name)
 				
 				logTestResult({ start, test: 'speech', passed: true })
 				return resolve({
 					local,
 					remote,
 					languages,
-					defaultName,
-					defaultLang,
+					defaults,
 					lied: voiceslie
 				})
 			}
@@ -85,8 +84,8 @@ export const voicesHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 			<strong>Speech</strong>
 			<div>local (0): ${note.blocked}</div>
 			<div>remote (0): ${note.blocked}</div>
-			<div>langs (0): ${note.blocked}</div>
-			<div>default:</div>
+			<div>lang (0): ${note.blocked}</div>
+			<div>default (0):</div>
 			<div class="block-text">${note.blocked}</div>
 		</div>`
 	}
@@ -96,8 +95,7 @@ export const voicesHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 			local,
 			remote,
 			languages,
-			defaultName,
-			defaultLang,
+			defaults,
 			lied
 		}
 	} = fp
@@ -137,7 +135,7 @@ export const voicesHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 				hashMini(remote)
 			)
 		}</div>
-		<div>langs (${count(languages)}): ${
+		<div>lang (${count(languages)}): ${
 			!languages || !languages.length ? note.blocked :
 				languages.length == 1 ? languages[0] : modal(
 					'creep-voices-languages',
@@ -145,9 +143,16 @@ export const voicesHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 					hashMini(languages)
 				)
 		}</div>
-		<div>default:</div>
+		<div>default (${count(defaults)}):</div>
 		<div class="block-text">
-			${!defaultName ? note.unsupported : `${defaultName}${defaultLang ? ` (${defaultLang})`: ''}`}
+			${
+				!defaults || !defaults.length ? note.blocked :
+					defaults.length == 1 ? defaults[0] : modal(
+						'creep-voices-defaults',
+						defaults.join('<br>'),
+						hashMini(defaults)
+					)
+			}
 		</div>
 	</div>
 	`
