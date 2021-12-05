@@ -1054,7 +1054,7 @@ const getWorkerData = async () => {
 		permissions,
 		userAgent,
 		canvas2d,
-		textMetrics: (new Set(Object.keys(textMetrics)).size > 1) && !!Object.values(textMetrics).reduce((acc, x) => acc += x, 0) ? textMetrics : undefined,
+		textMetrics: (new Set(Object.keys(textMetrics)).size > 1) && !!Object.values(textMetrics).reduce((acc, x) => acc += (x||0), 0) ? textMetrics : undefined,
 		textMetricsSystemSum,
 		textMetricsSystemClass,
 		webglRenderer,

@@ -467,7 +467,7 @@ export const getCanvas2d = async imports => {
 				'metric noise detected'
 			)
 		}
-
+		console.log(textMetrics)
 		logTestResult({ start, test: 'canvas 2d', passed: true })
 		return {
 			dataURI,
@@ -476,7 +476,7 @@ export const getCanvas2d = async imports => {
 			points,
 			blob,
 			blobOffscreen,
-			textMetrics: (new Set(Object.keys(textMetrics)).size > 1)  && !!Object.values(textMetrics).reduce((acc, x) => acc += x, 0) ? textMetrics : undefined,
+			textMetrics: (new Set(Object.keys(textMetrics)).size > 1)  && !!Object.values(textMetrics).reduce((acc, x) => acc += (x||0), 0) ? textMetrics : undefined,
 			textMetricsSystemSum,
 			textMetricsSystemClass,
 			liedTextMetrics: textMetricsLie,
