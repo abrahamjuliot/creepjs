@@ -140,7 +140,7 @@ export const getNavigator = async (imports, workerScope) => {
 				}
 				const gibbers = gibberish(navigatorUserAgent)
 				if (!!gibbers.length) {
-					sendToTrash(`userAgent contains gibberish`, `[${gibbers.join(', ')}] ${navigatorUserAgent}`)
+					sendToTrash(`userAgent is gibberish`, navigatorUserAgent)
 				}
 				if (userAgent != navigatorUserAgent) {
 					lied = true
@@ -372,10 +372,10 @@ export const getNavigator = async (imports, workerScope) => {
 						const nameGibbers = gibberish(name)
 						const descriptionGibbers = gibberish(description)
 						if (!!nameGibbers.length) {
-							sendToTrash(`plugin name contains gibberish`, `[${nameGibbers.join(', ')}] ${name}`)
+							sendToTrash(`plugin name is gibberish`, name)
 						}
 						if (!!descriptionGibbers.length) {
-							sendToTrash(`plugin description contains gibberish`, `[${descriptionGibbers.join(', ')}] ${description}`)
+							sendToTrash(`plugin description is gibberish`, description)
 						}
 						return
 					})
