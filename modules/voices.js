@@ -146,7 +146,7 @@ export const voicesHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 		<div>default (${count(defaults)}):</div>
 		<div class="block-text">
 			${
-				!defaults || !defaults.length ? note.blocked :
+				!defaults || !defaults.length ? note.unsupported :
 					defaults.length == 1 ? defaults[0] : modal(
 						'creep-voices-defaults',
 						defaults.join('<br>'),
