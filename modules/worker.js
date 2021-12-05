@@ -270,13 +270,26 @@ export const getBestWorkerScope = async imports => {
 				const reportedVersionNumber = +(/windows ([\d|\.]+)/i.exec(device)||[])[1]
 				const windows1OrHigherReport = reportedVersionNumber == 10
 				const { platformVersion } = userAgentData
-				const versionNumber = +(/(\d+)\./.exec(''+platformVersion)||[])[1]
+				const versionMap = {
+					'6.1': '7',
+					'6.1.0': '7',
+					'6.2': '8',
+					'6.2.0': '8',
+					'6.3': '8.1',
+					'6.3.0': '8.1',
+					'10.0': '10',
+					'10.0.0': '10'
+				}
+				let versionNumber = versionMap[platformVersion]
+				if (versionNumber) {
+					return versionNumber != (''+reportedVersionNumber)
+				}
+				versionNumber = +(/(\d+)\./.exec(''+platformVersion)||[])[1]
 				const windows10OrHigherPlatform = versionNumber > 0
-				const lied = (
+				return (
 					(windows10OrHigherPlatform && !windows1OrHigherReport) ||
 					(!windows10OrHigherPlatform && windows1OrHigherReport)
 				)
-				return lied
 			}
 			const windowsVersionLie  = getWindowsVersionLie(workerScope.device, userAgentData)
 			if (windowsVersionLie) {
