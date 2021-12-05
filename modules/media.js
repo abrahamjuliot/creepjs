@@ -185,8 +185,8 @@ export const mediaHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 				hashMini(mimeTypes)
 			)
 		}</div>
-		<div>devices (${count(mediaDevices)}):</div>
-		<div class="block-text help" title="MediaDevices.enumerateDevices()\nMediaDeviceInfo.kind">
+		<div class="help" title="MediaDevices.enumerateDevices()\nMediaDeviceInfo.kind">devices (${count(mediaDevices)}):</div>
+		<div class="block-text">
 			${
 				!mediaDevices || !mediaDevices.length ? note.blocked : 
 					mediaDevicesByType.join(', ')
