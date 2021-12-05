@@ -87,8 +87,9 @@ export const mediaHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 		return `
 		<div class="col-four undefined">
 			<strong>Media</strong>
-			<div>devices (0): ${note.blocked}</div>
 			<div>mimes (0): ${note.blocked}</div>
+			<div>devices (0): ${note.blocked}</div>
+			<div class="block-text">${note.blocked}</div>
 		</div>`
 	}
 	const {
@@ -98,6 +99,12 @@ export const mediaHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 			$hash
 		}
 	} = fp
+
+	const deviceMap = {
+		'audioinput': 'mic',
+		'audiooutput': 'headphones',
+		'videoinput': 'webcam'
+	}
 
 	const header = `
 	<style>
@@ -144,17 +151,32 @@ export const mediaHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 	})
 	const mimesListLen = getMimeTypeShortList().length
 
+	const replaceIndex = ({ list, index, replacement }) => [
+		...list.slice(0, index),
+		replacement,
+		...list.slice(index + 1)
+	]
+
+	const mediaDevicesByType = mediaDevices.reduce((acc, x) => {
+		const deviceType = deviceMap[x] || x
+		if (!acc.includes(deviceType)) {
+			return (acc = [...acc, deviceType])
+		}
+		else if (!deviceType.includes('dual') && (acc.filter(x => x == deviceType) || []).length == 1) {
+			return (
+				acc = replaceIndex({
+					list: acc,
+					index: acc.indexOf(deviceType),
+					replacement: `dual ${deviceType}`
+				})
+			)
+		}
+		return (acc = [...acc, deviceType])
+	}, [])
+	
 	return `
 	<div class="col-four">
 		<strong>Media</strong><span class="hash">${hashSlice($hash)}</span>
-		<div>devices (${count(mediaDevices)}): ${
-			!mediaDevices || !mediaDevices.length ? note.blocked : 
-			modal(
-				'creep-media-devices',
-				mediaDevices.join('<br>'),
-				hashMini(mediaDevices)
-			)
-		}</div>
 		<div>mimes (${count(mimeTypes)}/${mimesListLen}): ${
 			invalidMimeTypes ? note.blocked : 
 			modal(
@@ -163,6 +185,13 @@ export const mediaHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 				hashMini(mimeTypes)
 			)
 		}</div>
+		<div>devices (${count(mediaDevices)}):</div>
+		<div class="block-text">
+			${
+				!mediaDevices || !mediaDevices.length ? note.blocked : 
+					mediaDevicesByType.join(', ')
+			}
+		</div>
 	</div>
 	`	
 }
