@@ -7920,7 +7920,9 @@
 					}
 					const reportedVersionNumber = +(/windows ([\d|\.]+)/i.exec(device)||[])[1]
 					const windows1OrHigherReport = reportedVersionNumber == 10
-					const { platformVersion } = userAgentData
+					const { platformVersion, brandsVersion } = userAgentData
+
+					const brandsVersionNumber = +(/\d+/.exec(''+(brandsVersion||[])[0])||[])[0]
 					const versionMap = {
 						'6.1': '7',
 						'6.1.0': '7',
@@ -7932,11 +7934,11 @@
 						'10.0.0': '10'
 					}
 					let versionNumber = versionMap[platformVersion]
-					if (versionNumber) {
+					if ((brandsVersionNumber < 95) && versionNumber) {
 						return versionNumber != (''+reportedVersionNumber)
 					}
 					versionNumber = +(/(\d+)\./.exec(''+platformVersion)||[])[1]
-					const windows10OrHigherPlatform = versionNumber > 0;
+					const windows10OrHigherPlatform = versionNumber > 0
 					return (
 						(windows10OrHigherPlatform && !windows1OrHigherReport) ||
 						(!windows10OrHigherPlatform && windows1OrHigherReport)
