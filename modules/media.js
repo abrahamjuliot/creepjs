@@ -177,7 +177,7 @@ export const mediaHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 	return `
 	<div class="col-four">
 		<strong>Media</strong><span class="hash">${hashSlice($hash)}</span>
-		<div>mimes (${count(mimeTypes)}/${mimesListLen}): ${
+		<div class="help" title="HTMLMediaElement.canPlayType()\nMediaRecorder.isTypeSupported()\nMediaSource.isTypeSupported()">mimes (${count(mimeTypes)}/${mimesListLen}): ${
 			invalidMimeTypes ? note.blocked : 
 			modal(
 				'creep-media-mimeTypes',
@@ -186,7 +186,7 @@ export const mediaHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 			)
 		}</div>
 		<div>devices (${count(mediaDevices)}):</div>
-		<div class="block-text">
+		<div class="block-text help" title="MediaDevices.enumerateDevices()\nMediaDeviceInfo.kind">
 			${
 				!mediaDevices || !mediaDevices.length ? note.blocked : 
 					mediaDevicesByType.join(', ')
