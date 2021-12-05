@@ -122,7 +122,7 @@ Bots leak unusual behavior and can be denied service.
 ## Definitions
 ### Trash
 - unusual results
-- forgivable lies
+- forgivable lies (invalid metrics capable of being restored)
 - failed calculations that may reasonably occur at random (loose fingerprint metrics)
 
 ### Lies
