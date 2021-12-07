@@ -618,7 +618,6 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count, com
 		<div class="col-six undefined">
 			<strong>Navigator</strong>
 			<div>properties (0): ${note.blocked}</div>
-			<div>bluetooth: ${note.blocked}</div>
 			<div>codecs (0): ${note.blocked}</div>
 			<div>dnt: ${note.blocked}</div>
 			<div>gpc:${note.blocked}</div>
@@ -628,6 +627,7 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count, com
 			<div>permissions (0): ${note.blocked}</div>
 			<div>plugins (0): ${note.blocked}</div>
 			<div>vendor: ${note.blocked}</div>
+			<div>webgpu: ${note.blocked}</div>
 			<div>userAgentData:</div>
 			<div class="block-text">${note.blocked}</div>
 		</div>
@@ -691,10 +691,6 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count, com
 			hashMini(properties)
 		)
 		}</div>
-		<div>bluetooth: ${
-		typeof bluetoothAvailability == 'undefined' ? note.unsupported :
-			!bluetoothAvailability ? 'unavailable' : 'available'
-		}</div>
 		<div class="help" title="MediaCapabilities.decodingInfo()">codecs (${''+codecKeys.length}): ${
 		!mediaCapabilities || !codecKeys.length ? note.unsupported :
 			modal(
@@ -742,6 +738,7 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count, com
 			note.blocked
 		}</div>
 		<div>vendor: ${!blocked[vendor] ? vendor : note.blocked}</div>
+		<div>webgpu:</div>
 		<div>userAgentData:</div>
 		<div class="block-text help" title="Navigator.userAgentData\nNavigatorUAData.getHighEntropyValues()">
 			<div>
@@ -775,14 +772,16 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count, com
 	</div>
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<div>device:</div>
-		<div class="block-text help" title="Navigator.deviceMemory\nNavigator.hardwareConcurrency\nNavigator.maxTouchPoints\nNavigator.oscpu\nNavigator.platform\nNavigator.userAgent">
+		<div class="block-text help" title="Navigator.deviceMemory\nNavigator.hardwareConcurrency\nNavigator.maxTouchPoints\nNavigator.oscpu\nNavigator.platform\nNavigator.userAgent\nBluetooth.getAvailability()">
 			${oscpu ? oscpu : ''}
 			${`${oscpu ? '<br>' : ''}${system}${platform ? ` (${platform})` : ''}`}
 			${device ? `<br>${device}` : note.blocked}${
 				hardwareConcurrency && deviceMemory ? `<br>cores: ${hardwareConcurrency}, memory: ${deviceMemory}` :
 				hardwareConcurrency && !deviceMemory ? `<br>cores: ${hardwareConcurrency}` :
 				!hardwareConcurrency && deviceMemory ? `<br>memory: ${deviceMemory}` : ''
-			}${typeof maxTouchPoints != 'undefined' ? `, touch: ${''+maxTouchPoints}` : ''}
+			}
+			${typeof maxTouchPoints != 'undefined' ? `, touch: ${''+maxTouchPoints}` : ''}
+			${bluetoothAvailability ? `, bluetooth` : ''}
 		</div>
 		<div>ua parsed: ${userAgentParsed || note.blocked}</div>
 		<div class="relative">userAgent:${!uaPostReduction ? '' : `<span class="confidence-note">ua reduction</span>`}</div>
