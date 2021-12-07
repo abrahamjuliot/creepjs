@@ -291,7 +291,7 @@ export const audioHTML = ({ fp, note, modal, getMismatchStyle, hashMini, hashSli
 	return `
 	<div class="col-four${lied ? ' rejected' : ''}">
 		<strong>Audio</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-		<div>sum: ${
+		<div class="help" title="AudioBuffer.getChannelData()">sum: ${
 			sampleSum && compressorGainReduction && knownSums && !knownSums.includes(sampleSum) ?
 			getMismatchStyle((''+knownSums[0]).split(''), (''+sampleSum).split('')) :
 			sampleSum
