@@ -177,16 +177,16 @@ export const getNavigator = async (imports, workerScope) => {
 				const { deviceMemory } = phantomNavigator
 				const navigatorDeviceMemory = navigator.deviceMemory
 				const trusted = {
-					'0': true,
+					'0.25': true,
+					'0.5': true,
 					'1': true,
 					'2': true,
 					'4': true,
-					'6': true,
 					'8': true
 				}
 				trustInteger('deviceMemory - invalid return type', navigatorDeviceMemory)
 				if (!trusted[navigatorDeviceMemory]) {
-					sendToTrash('deviceMemory', `${navigatorDeviceMemory} is not within set [0, 1, 2, 4, 6, 8]`)
+					sendToTrash('deviceMemory', `${navigatorDeviceMemory} is not a valid value [0.25, 0.5, 1, 2, 4, 8]`)
 				}
 				if (deviceMemory != navigatorDeviceMemory) {
 					lied = true
