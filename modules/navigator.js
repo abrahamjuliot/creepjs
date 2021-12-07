@@ -601,6 +601,24 @@ export const getNavigator = async (imports, workerScope) => {
 					}, {})).catch(error => console.error(error))
 				return permissions
 			}, 'permissions failed'),
+
+			webgpu: await attempt(async () => {
+				if (!('gpu' in navigator)) {
+					return
+				}
+				const { limits, features } = await navigator.gpu.requestAdapter()
+
+				return {
+					features: [...features.values()],
+					limits: (limits => {
+						const data = {}
+						for (const prop in limits) {
+							data[prop] = limits[prop]
+						}
+						return data
+					})(limits)
+				}
+			}, 'webgpu failed')
 		}
 		logTestResult({ start, test: 'navigator', passed: true })
 		return { ...data, lied }
@@ -667,6 +685,7 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count, com
 			vendor,
 			keyboard,
 			bluetoothAvailability,
+			webgpu,
 			lied
 		}
 	} = fp
@@ -738,7 +757,23 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count, com
 			note.blocked
 		}</div>
 		<div>vendor: ${!blocked[vendor] ? vendor : note.blocked}</div>
-		<div>webgpu:</div>
+		<div>webgpu: ${!webgpu ? note.unsupported :
+			modal(
+				`${id}-webgpu`,
+				(webgpu => {
+					const { limits, features } = webgpu
+					return `
+					<div>
+						<strong>Features</strong><br>${features.join('<br>')}
+					</div>
+					<div>
+						<br><strong>Limits</strong><br>${Object.keys(limits).map(x => `${x}: ${limits[x]}`).join('<br>')}
+					</div>
+					`
+				})(webgpu),
+				hashMini(webgpu)
+			)
+		}</div>
 		<div>userAgentData:</div>
 		<div class="block-text help" title="Navigator.userAgentData\nNavigatorUAData.getHighEntropyValues()">
 			<div>
