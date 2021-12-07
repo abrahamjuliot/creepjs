@@ -776,9 +776,9 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count, com
 			${oscpu ? oscpu : ''}
 			${`${oscpu ? '<br>' : ''}${system}${platform ? ` (${platform})` : ''}`}
 			${device ? `<br>${device}` : note.blocked}${
-				hardwareConcurrency && deviceMemory ? `<br>cores: ${hardwareConcurrency}, memory: ${deviceMemory}` :
+				hardwareConcurrency && deviceMemory ? `<br>cores: ${hardwareConcurrency}, ram: ${deviceMemory}` :
 				hardwareConcurrency && !deviceMemory ? `<br>cores: ${hardwareConcurrency}` :
-				!hardwareConcurrency && deviceMemory ? `<br>memory: ${deviceMemory}` : ''
+				!hardwareConcurrency && deviceMemory ? `<br>ram: ${deviceMemory}` : ''
 			}
 			${typeof maxTouchPoints != 'undefined' ? `, touch: ${''+maxTouchPoints}` : ''}
 			${bluetoothAvailability ? `, bluetooth` : ''}

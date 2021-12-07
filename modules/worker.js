@@ -487,9 +487,9 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 			${`${system}${platform ? ` (${platform})` : ''}`}
 			${device ? `<br>${device}` : note.blocked}
 			${
-				hardwareConcurrency && deviceMemory ? `<br>cores: ${hardwareConcurrency}, memory: ${deviceMemory}` :
+				hardwareConcurrency && deviceMemory ? `<br>cores: ${hardwareConcurrency}, ram: ${deviceMemory}` :
 				hardwareConcurrency && !deviceMemory ? `<br>cores: ${hardwareConcurrency}` :
-				!hardwareConcurrency && deviceMemory ? `<br>memory: ${deviceMemory}` : ''
+				!hardwareConcurrency && deviceMemory ? `<br>ram: ${deviceMemory}` : ''
 			}
 		</div>
 		<div>userAgent:</div>
