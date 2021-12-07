@@ -779,9 +779,7 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count, com
 				hardwareConcurrency && deviceMemory ? `<br>cores: ${hardwareConcurrency}, ram: ${deviceMemory}` :
 				hardwareConcurrency && !deviceMemory ? `<br>cores: ${hardwareConcurrency}` :
 				!hardwareConcurrency && deviceMemory ? `<br>ram: ${deviceMemory}` : ''
-			}
-			${typeof maxTouchPoints != 'undefined' ? `, touch: ${''+maxTouchPoints}` : ''}
-			${bluetoothAvailability ? `, bluetooth` : ''}
+			}${typeof maxTouchPoints != 'undefined' ? `, touch: ${''+maxTouchPoints}` : ''}${bluetoothAvailability ? `, bluetooth` : ''}
 		</div>
 		<div>ua parsed: ${userAgentParsed || note.blocked}</div>
 		<div class="relative">userAgent:${!uaPostReduction ? '' : `<span class="confidence-note">ua reduction</span>`}</div>
