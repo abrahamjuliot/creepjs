@@ -184,7 +184,6 @@ export const getNavigator = async (imports, workerScope) => {
 					'4': true,
 					'8': true
 				}
-				trustInteger('deviceMemory - invalid return type', navigatorDeviceMemory)
 				if (!trusted[navigatorDeviceMemory]) {
 					sendToTrash('deviceMemory', `${navigatorDeviceMemory} is not a valid value [0.25, 0.5, 1, 2, 4, 8]`)
 				}
