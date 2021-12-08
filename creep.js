@@ -1424,7 +1424,7 @@ const imports = {
 				</style>
 				<div class="flex-grid rejected">
 					<div class="col-eight">
-						${error}
+						${'prediction service unavailable'}
 					</div>
 					<div class="col-four icon-prediction-container">
 					</div>
