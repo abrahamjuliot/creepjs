@@ -560,7 +560,7 @@ const imports = {
 	console.groupEnd()
 
 	// get/post request
-	const webapp = 'https://creepjs-6bd8e.web.app/fingerprint'
+	const webapp = 'https://creepjs-6bd8e.web.app/fp'
 
 	const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
 	.catch(error => { 
