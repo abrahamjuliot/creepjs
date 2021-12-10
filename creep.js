@@ -560,7 +560,7 @@ const imports = {
 	console.groupEnd()
 
 	// get/post request
-	const webapp = 'https://creepjs-6bd8e.web.app/fp'
+	const webapp = 'https://creepjs-api.web.app/fp'
 
 	const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
 	.catch(error => { 
@@ -1012,7 +1012,7 @@ const imports = {
 						return
 					}
 
-					const signatureRequest = `https://creepjs-6bd8e.web.app/sign?id=${creepHash}&signature=${input}`
+					const signatureRequest = `https://creepjs-api.web.app/sign?id=${creepHash}&signature=${input}`
 
 					// animate out
 					form.classList.remove('fade-right-in')
@@ -1116,7 +1116,7 @@ const imports = {
 					attemptWindows11UserAgent({ userAgent, userAgentData })
 				)
 
-				const decryptRequest = `https://creepjs-6bd8e.web.app/decrypt?${[
+				const decryptRequest = `https://creepjs-api.web.app/decrypt?${[
 					`sender=${sender.e}_${sender.l}`,
 					`isTorBrowser=${isTorBrowser}`,
 					`isRFP=${isRFP}`,
