@@ -120,6 +120,7 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 		(voicesSystem || {}).device,
 		(screenSystem || {}).device
 	])
+
 	devices.delete(undefined)
 	const getBaseDeviceName = devices => {
 		return devices.find(a => devices.filter(b => b.includes(a)).length == devices.length)

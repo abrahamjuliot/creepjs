@@ -1126,12 +1126,14 @@ const imports = {
 				}
 				
 				const { userAgent, userAgentData } = fp.workerScope || {}
+				const { platformVersion: fontPlatformVersion } = fp.fonts || {}
 
 				const workerScopeUserAgent = (
 					getUserAgentRestored({ userAgent, userAgentData }) ||
-					attemptWindows11UserAgent({ userAgent, userAgentData })
+					attemptWindows11UserAgent({ userAgent, userAgentData, fontPlatformVersion })
 				)
-
+				//console.log(workerScopeUserAgent)
+				
 				const decryptRequest = `https://creepjs-api.web.app/decrypt?${[
 					`sender=${sender.e}_${sender.l}`,
 					`isTorBrowser=${isTorBrowser}`,
