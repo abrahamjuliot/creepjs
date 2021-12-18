@@ -788,15 +788,11 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count, com
 					platform
 				} = userAgentData || {}
 				
-				const brandsVersionNumber = +(/\d+/.exec(''+(brandsVersion||[])[0])||[])[0]
-				const windowsRelease = (
-					brandsVersionNumber > 94 ? computeWindowsRelease(platform, platformVersion) :
-						undefined
-				)
+				const windowsRelease = computeWindowsRelease(platform, platformVersion)
 				
 				return !userAgentData ? note.unsupported : `
 					${(brandsVersion || []).join(',')}${uaFullVersion ? ` (${uaFullVersion})` : ''}
-					<br>${windowsRelease ? windowsRelease : `${platform} ${platformVersion}`} ${architecture ? `${architecture}${bitness ? `_${bitness}` : ''}` : ''} 
+					<br>${windowsRelease || `${platform} ${platformVersion}`} ${architecture ? `${architecture}${bitness ? `_${bitness}` : ''}` : ''} 
 					${model ? `<br>${model}` : ''}
 					${mobile ? '<br>mobile' : ''}
 				`

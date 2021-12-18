@@ -287,8 +287,12 @@ const getUserAgentPlatform = ({ userAgent, excludeBuild = true }) => {
 }
 
 const computeWindowsRelease = (platform, platformVersion) => {
-	if (platform != 'Windows') {
-		return false
+	const chrome95Features = (
+		((3.141592653589793 ** -100) == 1.9275814160560204e-50) &&
+		CSS.supports('contain-intrinsic-width', 'initial')
+	)
+	if ((platform != 'Windows') || !chrome95Features) {
+		return
 	}
 	const platformVersionNumber = +(/(\d+)\./.exec(platformVersion)||[])[1]
 
@@ -305,8 +309,11 @@ const computeWindowsRelease = (platform, platformVersion) => {
 		8: '10 (1903|1909)',
 		10: '10 (2004|20H2|21H1)'
 	}
+	const version = (
+		platformVersionNumber >= 13 ? '11' : (release[platformVersionNumber] || 'Unknown')
+	)
 	return (
-		`Windows ${platformVersionNumber >= 13 ? '11' : release[platformVersionNumber] || 'Unknown'}`
+		`Windows ${version} [${platformVersion}]`
 	)
 }
 
