@@ -927,8 +927,8 @@ const imports = {
 				}
 			}
 			
-			const { isBot, botPercentString } = getBot({fp, hours, hasLied, switchCount}) 
-			
+			const { isBot, botPercentString } = getBot({fp, hours, hasLied, switchCount})
+
 			const template = `
 				<div class="visitor-info">
 					<div class="ellipsis">
@@ -1124,15 +1124,20 @@ const imports = {
 					e: 3.141592653589793 ** -100,
 					l: +new Date(new Date(`7/1/1113`))
 				}
-				
+	
 				const { userAgent, userAgentData } = fp.workerScope || {}
 				const { platformVersion: fontPlatformVersion } = fp.fonts || {}
-
-				const workerScopeUserAgent = (
-					getUserAgentRestored({ userAgent, userAgentData }) ||
-					attemptWindows11UserAgent({ userAgent, userAgentData, fontPlatformVersion })
-				)
-				//console.log(workerScopeUserAgent)
+				const restoredUA = getUserAgentRestored({ userAgent, userAgentData })
+				const windows11UA = attemptWindows11UserAgent({
+					userAgent,
+					userAgentData,
+					fontPlatformVersion
+				})
+				
+				const workerScopeUserAgent = restoredUA || windows11UA
+				if (restoredUA) {
+					console.log(`restored: ${restoredUA}`)
+				}
 				
 				const decryptRequest = `https://creepjs-api.web.app/decrypt?${[
 					`sender=${sender.e}_${sender.l}`,
@@ -1255,7 +1260,6 @@ const imports = {
 				})
 			}
 		
-
 			// get GCD Samples
 			const webapp = 'https://script.google.com/macros/s/AKfycbw26MLaK1PwIGzUiStwweOeVfl-sEmIxFIs5Ax7LMoP1Cuw-s0llN-aJYS7F8vxQuVG-A/exec'
 			const decryptionResponse = await fetch(webapp)

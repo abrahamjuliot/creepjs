@@ -324,7 +324,7 @@ const computeWindowsRelease = ({ platform, platformVersion, fontPlatformVersion 
 // attempt windows 11 userAgent
 const attemptWindows11UserAgent = ({ userAgent, userAgentData, fontPlatformVersion }) => {
 	const  { platformVersion, platform } = userAgentData || {}
-	const windowsRelease = computeWindowsRelease(platform, platformVersion)
+	const windowsRelease = computeWindowsRelease({ platform, platformVersion })
 	return (
 		/Windows 11/.test(windowsRelease) || /Windows 11/.test(fontPlatformVersion) ? 
 		(''+userAgent).replace('Windows NT 10.0', 'Windows 11') :
