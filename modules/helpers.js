@@ -286,7 +286,7 @@ const getUserAgentPlatform = ({ userAgent, excludeBuild = true }) => {
 	}
 }
 
-const computeWindowsRelease = (platform, platformVersion) => {
+const computeWindowsRelease = ({ platform, platformVersion, fontPlatformVersion }) => {
 	const chrome95Features = (
 		((3.141592653589793 ** -100) == 1.9275814160560204e-50) &&
 		CSS.supports('contain-intrinsic-width', 'initial')
@@ -309,8 +309,12 @@ const computeWindowsRelease = (platform, platformVersion) => {
 		8: '10 (1903|1909)',
 		10: '10 (2004|20H2|21H1)'
 	}
+	
+	const oldFontPlatformVersionNumber = (/7|8\.1|8/.exec(fontPlatformVersion)||[])[0]
 	const version = (
-		platformVersionNumber >= 13 ? '11' : (release[platformVersionNumber] || 'Unknown')
+		platformVersionNumber >= 13 ? '11' : 
+			platformVersionNumber == 0 && oldFontPlatformVersionNumber ? oldFontPlatformVersionNumber : 
+				(release[platformVersionNumber] || 'Unknown')
 	)
 	return (
 		`Windows ${version} [${platformVersion}]`

@@ -881,19 +881,35 @@ const imports = {
 				return daysRemaining >= 0
 			}
 
-			// Bot Detection
+			// Bot Detection: a final check to keep metric samples pure
 			const getBot = ({ fp, hours, hasLied, switchCount }) => {
 				const userAgentReportIsOutsideOfFeaturesVersion = getFeaturesLie(fp)
 				const userShouldGetThrottled = (switchCount > 20) && ((hours/switchCount) <= 7) // 
 				const excessiveLooseFingerprints = hasLied && userShouldGetThrottled
 				const workerScopeIsTrashed = !fp.workerScope || !fp.workerScope.userAgent
 				const liedWorkerScope = !!(fp.workerScope && fp.workerScope.lied)
+				let liedPlatformVersion = false
+				if (fp.workerScope && fp.fonts) {
+					const { platformVersion, platform } = fp.workerScope.userAgentData || {}
+					const { platformVersion: fontPlatformVersion } = fp.fonts || {}
+					const windowsRelease = computeWindowsRelease({
+						platform,
+						platformVersion,
+						fontPlatformVersion
+					})
+					liedPlatformVersion = (
+						windowsRelease &&
+						fp.fonts.platformVersion &&
+						!(''+windowsRelease).includes(fontPlatformVersion)
+					)
+				}
 				// Patern conditions that warrant rejection
 				const botPatterns = {
 					excessiveLooseFingerprints,
 					userAgentReportIsOutsideOfFeaturesVersion,
 					workerScopeIsTrashed,
-					liedWorkerScope
+					liedWorkerScope,
+					liedPlatformVersion
 				}
 				const totalBotPatterns = Object.keys(botPatterns).length
 				const totalBotTriggers = (

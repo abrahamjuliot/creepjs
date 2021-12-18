@@ -511,7 +511,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 					platform
 				} = userAgentData || {}
 
-				const windowsRelease = computeWindowsRelease(platform, platformVersion)
+				const windowsRelease = computeWindowsRelease({ platform, platformVersion })
 
 				return !userAgentData ? note.unsupported : `
 					${(brandsVersion || []).join(',')}${uaFullVersion ? ` (${uaFullVersion})` : ''}
