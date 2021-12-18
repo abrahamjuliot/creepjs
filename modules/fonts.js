@@ -61,7 +61,7 @@ const getGeneralFonts = () => [
 	'Tahoma' // android, mac, windows (not ios, not chrome os 90)
 ]
 
-const getoriginFonts = () => [
+const getOriginFonts = () => [
 	...getAppleFonts(),
 	...getWindowsFonts(),
 	...getLinuxFonts(),
@@ -177,6 +177,76 @@ const getFontFaceLoadFonts = async list => {
 	}
 }
 
+const getPlatformVersion = async () => {
+	const windowsFonts = {
+		// https://docs.microsoft.com/en-us/typography/fonts/windows_11_font_list
+		'7': [
+			'Cambria Math',
+			'Lucida Console'
+		],
+		'8': [
+			'Aldhabi',
+			'Gadugi',
+			'Myanmar Text',
+			'Nirmala UI'
+		],
+		'8.1': [
+			'Leelawadee UI',
+			'Javanese Text',
+			'Segoe UI Emoji'
+		],
+		'10': [
+			'HoloLens MDL2 Assets', // 10 (v1507) +
+			'Segoe MDL2 Assets', // 10 (v1507) +
+			'Bahnschrift', // 10 (v1709) +-
+			'Ink Free', // 10 (v1803) +-
+		],
+		'11': ['Segoe Fluent Icons']
+	}
+
+	const fontList = [
+		// windows
+		...Object.keys(windowsFonts).map(key => windowsFonts[key]).flat()
+	]
+	const fontFaceList = fontList.map(font => new FontFace(font, `local("${font}")`))
+	const responseCollection = await Promise.allSettled(fontFaceList.map(font => font.load()))
+	const fonts = responseCollection.reduce((acc, font) => {
+		return font.status == 'fulfilled' ? [...acc, font.value.family] : acc
+	}, [])
+
+	const getWindows = fonts => {
+		const fontVersion = {
+			['11']: windowsFonts['11'].find(x => fonts.includes(x)),
+			['10']: windowsFonts['10'].find(x => fonts.includes(x)),
+			['8.1']: windowsFonts['8.1'].find(x => fonts.includes(x)),
+			['8']: windowsFonts['8'].find(x => fonts.includes(x)),
+			// require complete set of Windows 7 fonts
+			['7']: windowsFonts['7'].filter(x => fonts.includes(x)).length == windowsFonts['7'].length
+		}
+		const hash = (
+			'' + Object.keys(fontVersion).sort().filter(key => !!fontVersion[key])
+		)
+		const hashMap = {
+			'10,11,7,8,8.1': '11',
+			'10,7,8,8.1': '10',
+			'7,8,8.1': '8.1',
+			'11,7,8,8.1': '8.1', // missing 10
+			'7,8': '8',
+			'10,7,8': '8', // missing 8.1
+			'10,11,7,8': '8', // missing 8.1
+			'7': '7',
+			'7,8.1': '7',
+			'10,7,8.1': '7', // missing 8
+			'10,11,7,8.1': '7', // missing 8
+		}
+		const version = hashMap[hash]
+		return version ? `Windows ${version}` : undefined
+	}
+
+	return getWindows(fonts)
+}
+
+
 export const getFonts = async imports => {
 
 	const {
@@ -189,16 +259,16 @@ export const getFonts = async imports => {
 	} = imports
 
 	try {
-		await new Promise(setTimeout).catch(e => {})
+		await new Promise(setTimeout).catch(e => { })
 		const start = performance.now()
 		const win = phantomDarkness ? phantomDarkness : window
 		const doc = win.document
-		
+
 		const id = `font-fingerprint`
 		const div = doc.createElement('div')
 		div.setAttribute('id', id)
 		doc.body.appendChild(div)
-		const originFontsList = getoriginFonts()
+		const originFontsList = getOriginFonts()
 		const baseFonts = ['monospace', 'sans-serif', 'serif']
 		const families = originFontsList.reduce((acc, font) => {
 			baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`))
@@ -215,9 +285,15 @@ export const getFonts = async imports => {
 
 		const compressToList = fontObject => Object.keys(fontObject).reduce((acc, key) => {
 			return [...acc, ...fontObject[key]]
-		},[])
-		
-		const fontFaceLoadFonts = await getFontFaceLoadFonts(getFontsShortList())
+		}, [])
+
+		const [
+			fontFaceLoadFonts,
+			platformVersion
+		] = await Promise.all([
+			getFontFaceLoadFonts(getFontsShortList()),
+			getPlatformVersion()
+		])
 
 		const originFonts = [...new Set(compressToList(pixelFonts))]
 
@@ -225,7 +301,8 @@ export const getFonts = async imports => {
 		return {
 			fontFaceLoadFonts,
 			pixelFonts,
-			originFonts
+			originFonts,
+			platformVersion
 		}
 	} catch (error) {
 		logTestResult({ test: 'fonts', passed: false })
@@ -240,6 +317,7 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini }) => {
 		return `
 		<div class="col-six undefined">
 			<strong>Fonts</strong>
+			<div>platform version: ${note.blocked}</div>
 			<div>origin (0): ${note.blocked}</div>
 			<div>load (0):</div>
 			<div class="block-text">${note.blocked}</div>
@@ -249,10 +327,11 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini }) => {
 		fonts: {
 			$hash,
 			fontFaceLoadFonts,
-			originFonts
+			originFonts,
+			platformVersion
 		}
 	} = fp
-	
+
 	const apple = new Set(getAppleFonts())
 	const linux = new Set(getLinuxFonts())
 	const windows = new Set(getWindowsFonts())
@@ -278,7 +357,7 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini }) => {
 		return acc
 	}, new Set())]
 	const chromeOnAndroid = (
-		''+((originFonts || []).sort()) == 'Baskerville,Monaco,Palatino,Tahoma'
+		'' + ((originFonts || []).sort()) == 'Baskerville,Monaco,Palatino,Tahoma'
 	)
 	if (!systemClass.length && chromeOnAndroid) {
 		systemClass.push('Android')
@@ -303,29 +382,30 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini }) => {
 		'Droid Sans Mono,Noto Color Emoji,Roboto': [`${icon.Linux}${icon.Android}`, 'Linux Android'],
 		'Helvetica Neue': [icon.Apple, 'iOS'],
 		'Geneva,Helvetica Neue': [icon.Apple, 'Mac']
-	} 
+	}
 
-	const fontFaceLoadFontsString = ''+(fontFaceLoadFonts.sort())
-	const system = systemMap[fontFaceLoadFontsString] 
+	const fontFaceLoadFontsString = '' + (fontFaceLoadFonts.sort())
+	const system = systemMap[fontFaceLoadFontsString]
 
 	return `
 	<div class="col-six">
 		<strong>Fonts</strong><span class="hash">${hashSlice($hash)}</span>
-		<div class="help" title="CSSStyleDeclaration.setProperty()\ntransform-origin\nperspective-origin">origin (${originFonts ? count(originFonts) : '0'}/${''+getoriginFonts().length}): ${
-			originFonts.length ? modal(
-				'creep-fonts', originFonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>'),
-				`${systemClass.length ? `${systemClassIcons.join('')}${originHash}` : originHash}`
-			) : note.unknown
+		<div>platform version: ${platformVersion || note.unknown}</div>
+		<div class="help" title="CSSStyleDeclaration.setProperty()\ntransform-origin\nperspective-origin">origin (${originFonts ? count(originFonts) : '0'}/${'' + getOriginFonts().length}): ${
+		originFonts.length ? modal(
+			'creep-fonts', originFonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>'),
+			`${systemClass.length ? `${systemClassIcons.join('')}${originHash}` : originHash}`
+		) : note.unknown
 		}</div>
-		<div class="help" title="FontFace.load()">load (${fontFaceLoadFonts ? count(fontFaceLoadFonts) : '0'}/${''+getFontsShortList().length}): ${
-			system ? system[1] : ''
+		<div class="help" title="FontFace.load()">load (${fontFaceLoadFonts ? count(fontFaceLoadFonts) : '0'}/${'' + getFontsShortList().length}): ${
+		system ? system[1] : ''
 		}</div>
 		<div class="block-text">
 			<div>${
-				fontFaceLoadFonts.length ? `${system ? system[0] : ''}${fontFaceLoadFontsString}` : 
-					note.unknown
-			}</div>
+		fontFaceLoadFonts.length ? `${system ? system[0] : ''}${fontFaceLoadFontsString}` :
+			note.unknown
+		}</div>
 		</div>
 	</div>
-	`	
+	`
 }
