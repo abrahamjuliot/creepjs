@@ -318,13 +318,13 @@ const computeWindowsRelease = (platform, platformVersion) => {
 }
 
 // attempt windows 11 userAgent
-const attemptWindows11UserAgent = ({ userAgent, userAgentData }) => {
+const attemptWindows11UserAgent = async ({ userAgent, userAgentData }) => {
 	const  { platformVersion, platform } = userAgentData || {}
 	const windowsRelease = computeWindowsRelease(platform, platformVersion)
-	if (windowsRelease == 'Windows 11') {
-		return (''+userAgent).replace('Windows NT 10.0', 'Windows 11')
-	}
-	return userAgent
+	return (
+		/Windows 11/.test(windowsRelease) ? (''+userAgent).replace('Windows NT 10.0', 'Windows 11') :
+			userAgent
+	)
 }
 
 // attempt restore from User-Agent Reduction
