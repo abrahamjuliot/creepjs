@@ -1261,16 +1261,24 @@ const imports = {
 			}
 		
 			// get GCD Samples
-			const webapp = 'https://script.google.com/macros/s/AKfycbw26MLaK1PwIGzUiStwweOeVfl-sEmIxFIs5Ax7LMoP1Cuw-s0llN-aJYS7F8vxQuVG-A/exec'
-			const decryptionResponse = await fetch(webapp)
-				.catch(error => {
+			const getSamples = async () => {
+				const samples = window.sessionStorage && sessionStorage.getItem('samples')
+				if (samples) {
+					return JSON.parse(samples)
+				}
+				const url = 'https://script.google.com/macros/s/AKfycbw26MLaK1PwIGzUiStwweOeVfl-sEmIxFIs5Ax7LMoP1Cuw-s0llN-aJYS7F8vxQuVG-A/exec'
+				const cloudSamples = await fetch(url).then(res => res.json()).catch(error => {
 					console.error(error)
 					return
 				})
-			const decryptionSamples = (
-				decryptionResponse ? await decryptionResponse.json() : undefined
-			)
-
+				if (cloudSamples && window.sessionStorage) {
+					sessionStorage.setItem('samples', JSON.stringify(cloudSamples))
+				}
+				return cloudSamples
+			}
+			
+			const decryptionSamples = await getSamples()
+			
 			// prevent Error: value for argument "documentPath" must point to a document
 			const cleanGPUString = x => !x ? x : (''+x).replace(/\//g,'')
 			
