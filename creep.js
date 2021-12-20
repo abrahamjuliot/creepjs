@@ -572,25 +572,26 @@ const imports = {
 	window.Creep = JSON.parse(JSON.stringify(creep))
 
 	// session
-	const computeSession = fp => {
+	const computeSession = ({ fingerprint, loading = false }) => {
 		const data = {
 			revisedKeys: [],
 			initial: undefined,
 			loads: undefined
 		}
 		try {
-			const currentFingerprint = Object.keys(fp)
+			const currentFingerprint = Object.keys(fingerprint)
 			.reduce((acc, key) => {
-				if (!fp[key]) {
+				if (!fingerprint[key]) {
 					return acc
 				}
-				acc[key] = fp[key].$hash
+				acc[key] = fingerprint[key].$hash
 				return acc
 			}, {})
+			const loads = (+sessionStorage.getItem('loads'))
 			const initialFingerprint = JSON.parse(sessionStorage.getItem('initialFingerprint'))
 			if (initialFingerprint) {
 				data.initial = hashMini(initialFingerprint)
-				data.loads = 1+(+sessionStorage.getItem('loads'))
+				data.loads = loading ? 1+loads : loads
 				sessionStorage.setItem('loads', data.loads)
 				const revisedKeys = Object.keys(currentFingerprint)
 					.filter(key => currentFingerprint[key] != initialFingerprint[key])
@@ -983,7 +984,7 @@ const imports = {
 					}
 					${
 						(() => {
-							const { initial, loads, revisedKeys } = computeSession(fp)
+							const { initial, loads, revisedKeys } = computeSession({ fingerprint: fp, loading: true }) 
 							
 							return `
 								<div class="flex-grid">
@@ -1152,7 +1153,7 @@ const imports = {
 						webRTC
 					*/
 				]
-				const { revisedKeys } = computeSession(fp)
+				const { revisedKeys } = computeSession({ fingerprint: fp }) 
 				const sessionFingerprintChanged = targetMetrics.find(x => revisedKeys.includes(x))
 					
 				// fetch data
