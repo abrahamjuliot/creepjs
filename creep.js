@@ -1119,84 +1119,122 @@ const imports = {
 				getBestGPUModel({ canvasWebgl, workerScope: fp.workerScope })
 			)
 
-			if (!isBot) {
-				const sender = {
-					e: 3.141592653589793 ** -100,
-					l: +new Date(new Date(`7/1/1113`))
-				}
-	
-				const { userAgent, userAgentData } = fp.workerScope || {}
-				const { platformVersion: fontPlatformVersion } = fp.fonts || {}
-				const restoredUA = getUserAgentRestored({ userAgent, userAgentData })
-				const windows11UA = attemptWindows11UserAgent({
-					userAgent,
-					userAgentData,
-					fontPlatformVersion
-				})
-				
-				const workerScopeUserAgent = restoredUA || windows11UA
-				if (restoredUA) {
-					console.log(`restored: ${restoredUA}`)
-				}
-				
-				const decryptRequest = `https://creepjs-api.web.app/decrypt?${[
-					`sender=${sender.e}_${sender.l}`,
-					`isTorBrowser=${isTorBrowser}`,
-					`isRFP=${isRFP}`,
-					`isBrave=${isBrave}`,
-					`resistanceId=${resistance.$hash}`,
-					`mathId=${maths.$hash}`,
-					`errorId=${consoleErrors.$hash}`,
-					`htmlId=${htmlElementVersion.$hash}`,
-					`winId=${windowFeatures.$hash}`,
-					`styleId=${styleHash}`,
-					`styleSystemId=${styleSystemHash}`,
-					`emojiId=${!clientRects || clientRects.lied ? 'undefined' : emojiHash}`,
-					`domRectId=${!clientRects || clientRects.lied ? 'undefined' : domRectHash}`,
-					`svgId=${!svg || svg.lied ? 'undefined' : svg.$hash}`,
-					`mimeTypesId=${!media || media.lied ? 'undefined' : mimeTypesHash}`,
-					`audioId=${
-							!offlineAudioContext ||
-							offlineAudioContext.lied ||
-							unknownFirefoxAudio ? 'undefined' : 
-								audioMetrics
-					}`,
-					`canvasId=${
-						!canvas2d || canvas2d.lied ? 'undefined' :
-							canvas2dImageHash
-					}`,
-					`textMetricsId=${
-						!canvas2d || canvas2d.liedTextMetrics || ((+canvas2d.textMetricsSystemSum) == 0) ? 'undefined' : 
-							canvas2d.textMetricsSystemSum
-					}`,
-					`webglId=${
-						!canvasWebgl || (canvas2d || {}).lied || canvasWebgl.lied ? 'undefined' :
-							canvasWebglImageHash
-					}`,
-					`gpuId=${
-						!canvasWebgl || canvasWebgl.parameterOrExtensionLie ? 'undefined' :
-							canvasWebglParametersHash
-					}`,
-					`gpu=${gpuModel}`,
-					`fontsId=${!fonts || fonts.lied ? 'undefined' : fonts.$hash}`,
-					`voicesId=${!voices || voices.lied ? 'undefined' : voices.$hash}`,
-					`screenId=${screenMetrics}`,
-					`ua=${encodeURIComponent(workerScopeUserAgent)}`
-				].join('&')}`
-
-				const decryptionResponse = await fetch(decryptRequest)
-					.catch(error => {
-						console.error(error)
-						predictionErrorPatch({error, patch, html})
-						return
+			if (!isBot) {	
+				// get data from session
+				let decryptionData = window.sessionStorage && JSON.parse(sessionStorage.getItem('decryptionData'))
+				const targetMetrics = [
+					'canvas2d',
+					'canvasWebgl',
+					'clientRects',
+					'consoleErrors',
+					'css',
+					'fonts',
+					'htmlElementVersion',
+					'maths',
+					'media',
+					'offlineAudioContext',
+					'resistance',
+					'screen',
+					'svg',
+					'voices',
+					'windowFeatures',
+					'workerScope',
+					/* disregard metrics not in samples:
+						capturedErrors,
+						cssMedia,
+						features, 
+						headless,
+						intl,
+						lies,
+						navigator,
+						timezone,
+						trash,
+						webRTC
+					*/
+				]
+				const { revisedKeys } = computeSession(fp)
+				const sessionFingerprintChanged = targetMetrics.find(x => revisedKeys.includes(x))
+					
+				// fetch data
+				if (!decryptionData || sessionFingerprintChanged) {
+					const sender = {
+						e: 3.141592653589793 ** -100,
+						l: +new Date(new Date(`7/1/1113`))
+					}
+					const { userAgent, userAgentData } = fp.workerScope || {}
+					const { platformVersion: fontPlatformVersion } = fp.fonts || {}
+					const restoredUA = getUserAgentRestored({ userAgent, userAgentData })
+					const windows11UA = attemptWindows11UserAgent({
+						userAgent,
+						userAgentData,
+						fontPlatformVersion
 					})
-				if (!decryptionResponse) {
-					return
+					const workerScopeUserAgent = restoredUA || windows11UA
+					if (restoredUA) {
+						console.log(`restored: ${workerScopeUserAgent}`)
+					}
+					
+					const decryptRequest = `https://creepjs-api.web.app/decrypt?${[
+						`sender=${sender.e}_${sender.l}`,
+						`isTorBrowser=${isTorBrowser}`,
+						`isRFP=${isRFP}`,
+						`isBrave=${isBrave}`,
+						`resistanceId=${resistance.$hash}`,
+						`mathId=${maths.$hash}`,
+						`errorId=${consoleErrors.$hash}`,
+						`htmlId=${htmlElementVersion.$hash}`,
+						`winId=${windowFeatures.$hash}`,
+						`styleId=${styleHash}`,
+						`styleSystemId=${styleSystemHash}`,
+						`emojiId=${!clientRects || clientRects.lied ? 'undefined' : emojiHash}`,
+						`domRectId=${!clientRects || clientRects.lied ? 'undefined' : domRectHash}`,
+						`svgId=${!svg || svg.lied ? 'undefined' : svg.$hash}`,
+						`mimeTypesId=${!media || media.lied ? 'undefined' : mimeTypesHash}`,
+						`audioId=${
+								!offlineAudioContext ||
+								offlineAudioContext.lied ||
+								unknownFirefoxAudio ? 'undefined' : 
+									audioMetrics
+						}`,
+						`canvasId=${
+							!canvas2d || canvas2d.lied ? 'undefined' :
+								canvas2dImageHash
+						}`,
+						`textMetricsId=${
+							!canvas2d || canvas2d.liedTextMetrics || ((+canvas2d.textMetricsSystemSum) == 0) ? 'undefined' : 
+								canvas2d.textMetricsSystemSum
+						}`,
+						`webglId=${
+							!canvasWebgl || (canvas2d || {}).lied || canvasWebgl.lied ? 'undefined' :
+								canvasWebglImageHash
+						}`,
+						`gpuId=${
+							!canvasWebgl || canvasWebgl.parameterOrExtensionLie ? 'undefined' :
+								canvasWebglParametersHash
+						}`,
+						`gpu=${gpuModel}`,
+						`fontsId=${!fonts || fonts.lied ? 'undefined' : fonts.$hash}`,
+						`voicesId=${!voices || voices.lied ? 'undefined' : voices.$hash}`,
+						`screenId=${screenMetrics}`,
+						`ua=${encodeURIComponent(workerScopeUserAgent)}`
+					].join('&')}`
+
+					const decryptionResponse = await fetch(decryptRequest)
+						.catch(error => {
+							console.error(error)
+							predictionErrorPatch({error, patch, html})
+							return
+						})
+					if (!decryptionResponse) {
+						return
+					}
+					decryptionData = await decryptionResponse.json()
+					if (decryptionData && window.sessionStorage) {
+						sessionStorage.setItem('decryptionData', JSON.stringify(decryptionData))
+					}
 				}
-				const decryptionData = await decryptionResponse.json()
 				
 				// Crowd-Blending Score
-				
 				const scoreKeys = [
 					'windowVersion',
 					'jsRuntime',
