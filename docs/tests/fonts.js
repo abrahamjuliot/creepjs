@@ -1101,6 +1101,20 @@
 		getFontFaceLoadFonts(listAll)
 	]).catch(error => console.error(error))
 	const perf = performance.now() - start
+
+	
+	// font logger
+	// await fetch('/font-logger', {
+	// 	method: 'post',
+	// 	headers: {
+	// 		'Accept': 'application/json, text/plain, */*',
+	// 		'Content-Type': 'application/json'
+	// 	},
+	// 	body: JSON.stringify({ fonts: fontFaceLoadFonts.fonts.sort() })
+	// }).then(res => res.json())
+	// .then(res => console.log(res))
+	// .catch(error => console.log(error))
+	
 	const { combined: textMetricsFontsList } = textMetricsFonts.fonts || []
 	const {
 		combined: textMetricsFontsOffscreenList
