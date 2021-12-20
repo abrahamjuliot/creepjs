@@ -204,9 +204,46 @@ const getPlatformVersion = async () => {
 		'11': ['Segoe Fluent Icons']
 	}
 
+	const macOSFonts = {
+		// Mavericks and below
+		'10.9': [
+			'Helvetica Neue',
+			'Geneva'
+		],
+		// Yosemite
+		'10.10': [
+			'Kohinoor Devanagari Medium',
+			'Luminari'
+		],
+		// El Capitan
+		'10.11': [
+			'PingFang HK Light'
+		],
+		// Sierra: https://support.apple.com/en-ie/HT206872
+		'10.12': [
+			'American Typewriter Semibold',
+			'Futura Bold',
+			'SignPainter-HouseScript Semibold'
+		],
+		// High Sierra: https://support.apple.com/en-me/HT207962
+		// Mojave: https://support.apple.com/en-us/HT208968
+		'10.13-10.14': [
+			'InaiMathi Bold'
+		],
+		// Catalina: https://support.apple.com/en-us/HT210192
+		// Big Sur: https://support.apple.com/en-sg/HT211240
+		'10.15-11': [
+			'Galvji',
+			'MuktaMahee Regular'
+		],
+		// Monterey: https://www.apple.com/my/macos/monterey/features/
+		// https://apple.stackexchange.com/questions/429548/request-for-list-of-fonts-folder-contents-on-monterey
+		//'12': []
+	}
+
 	const fontList = [
-		// windows
-		...Object.keys(windowsFonts).map(key => windowsFonts[key]).flat()
+		...Object.keys(windowsFonts).map(key => windowsFonts[key]).flat(),
+		...Object.keys(macOSFonts).map(key => macOSFonts[key]).flat()
 	]
 	const fontFaceList = fontList.map(font => new FontFace(font, `local("${font}")`))
 	const responseCollection = await Promise.allSettled(fontFaceList.map(font => font.load()))
@@ -243,7 +280,35 @@ const getPlatformVersion = async () => {
 		return version ? `Windows ${version}` : undefined
 	}
 
-	return getWindows(fonts)
+	const getMacOS = fonts => {
+		const fontVersion = {
+			['10.15-11']: macOSFonts['10.15-11'].find(x => fonts.includes(x)),
+			['10.13-10.14']: macOSFonts['10.13-10.14'].find(x => fonts.includes(x)),
+			['10.12']: macOSFonts['10.12'].find(x => fonts.includes(x)),
+			['10.11']: macOSFonts['10.11'].find(x => fonts.includes(x)),
+			['10.10']: macOSFonts['10.10'].find(x => fonts.includes(x)),
+			// require complete set of 10.9 fonts
+			['10.9']: macOSFonts['10.9'].filter(x => fonts.includes(x)).length == macOSFonts['10.9'].length
+		}
+		const hash = (
+			'' + Object.keys(fontVersion).sort().filter(key => !!fontVersion[key])
+		)
+		const hashMap = {
+			'10.10,10.11,10.12,10.13-10.14,10.15-11,10.9': '10.15-11',
+			'10.10,10.11,10.12,10.13-10.14,10.9': '10.13-10.14',
+			'10.10,10.11,10.12,10.9': '10.12',
+			'10.10,10.11,10.9': '10.11',
+			'10.10,10.9': '10.10',
+			'10.9': '10.9'
+		}
+		const version = hashMap[hash]
+		return version ? `macOS ${version}` : undefined
+	}
+
+	return {
+		fonts,
+		version: getWindows(fonts) || getMacOS(fonts)
+	}
 }
 
 
@@ -294,7 +359,8 @@ export const getFonts = async imports => {
 			getFontFaceLoadFonts(getFontsShortList()),
 			getPlatformVersion()
 		])
-
+		//console.log(platformVersion.version)
+		//console.log(platformVersion.fonts.join('\n'))
 		const originFonts = [...new Set(compressToList(pixelFonts))]
 
 		logTestResult({ start, test: 'fonts', passed: true })
@@ -302,7 +368,8 @@ export const getFonts = async imports => {
 			fontFaceLoadFonts,
 			pixelFonts,
 			originFonts,
-			platformVersion
+			platformVersion: (platformVersion||{}).version,
+			platformFonts: (platformVersion||{}).fonts
 		}
 	} catch (error) {
 		logTestResult({ test: 'fonts', passed: false })
@@ -317,7 +384,7 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini }) => {
 		return `
 		<div class="col-six undefined">
 			<strong>Fonts</strong>
-			<div>platform version: ${note.blocked}</div>
+			<div>version: ${note.blocked}</div>
 			<div>origin (0): ${note.blocked}</div>
 			<div>load (0):</div>
 			<div class="block-text">${note.blocked}</div>
@@ -390,7 +457,7 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini }) => {
 	return `
 	<div class="col-six">
 		<strong>Fonts</strong><span class="hash">${hashSlice($hash)}</span>
-		<div>platform version: ${platformVersion || note.unknown}</div>
+		<div>version: ${platformVersion || note.unknown}</div>
 		<div class="help" title="CSSStyleDeclaration.setProperty()\ntransform-origin\nperspective-origin">origin (${originFonts ? count(originFonts) : '0'}/${'' + getOriginFonts().length}): ${
 		originFonts.length ? modal(
 			'creep-fonts', originFonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>'),
