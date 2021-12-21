@@ -693,7 +693,7 @@ input[type="radio"] {
     padding: 3px;
 }
 
-.ellipsis {
+.ellipsis, .ellipsis-all {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

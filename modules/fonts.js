@@ -405,6 +405,7 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini }) => {
 		'Noto Color Emoji,Ubuntu': [icon.Linux, 'Linux Ubuntu'],
 		'Noto Color Emoji,Roboto': [icon.CrOS, 'Chrome OS'],
 		'Droid Sans Mono,Roboto': [icon.Android, 'Android'],
+		'Droid Sans Mono,Noto Color Emoji,Roboto': [`${icon.Linux}${icon.Android}`, 'Android'], // Android on Chrome OS
 		'Helvetica Neue': [icon.Apple, 'iOS'],
 		'Geneva,Helvetica Neue': [icon.Apple, 'Mac']
 	}
@@ -416,7 +417,7 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini }) => {
 	return `
 	<div class="col-six">
 		<strong>Fonts</strong><span class="hash">${hashSlice($hash)}</span>
-		<div class="help" title="CSSStyleDeclaration.setProperty()\ntransform-origin\nperspective-origin">origin (${originFonts ? count(originFonts) : '0'}/${'' + getFontsShortList().length}): ${originFontString ? `${system ? system[0] : ''}${originFontString}`: note.unknown }</div>
+		<div class="help ellipsis-all" title="CSSStyleDeclaration.setProperty()\ntransform-origin\nperspective-origin">origin (${originFonts ? count(originFonts) : '0'}/${'' + getFontsShortList().length}): ${originFontString ? `${system ? system[0] : ''}${originFontString}`: note.unknown }</div>
 		<div class="help" title="FontFace.load()">load (${fontFaceLoadFonts ? count(fontFaceLoadFonts) : '0'}/${'' + getFontList().length}): ${
 			!fontFaceLoadFonts.length ? note.unknown : modal(
 				'creep-fonts',
