@@ -572,39 +572,54 @@ const imports = {
 	window.Creep = JSON.parse(JSON.stringify(creep))
 
 	// session
-	const computeSession = ({ fingerprint, loading = false }) => {
+	const computeSession = ({ fingerprint, loading = false, computePreviousLoadRevision = false }) => {
 		const data = {
+			revisedKeysFromPreviousLoad: [],
 			revisedKeys: [],
 			initial: undefined,
 			loads: undefined
 		}
 		try {
-			const currentFingerprint = Object.keys(fingerprint)
-			.reduce((acc, key) => {
+			const currentFingerprint = Object.keys(fingerprint).reduce((acc, key) => {
 				if (!fingerprint[key]) {
 					return acc
 				}
 				acc[key] = fingerprint[key].$hash
 				return acc
 			}, {})
-			const loads = (+sessionStorage.getItem('loads'))
+			const loads = +(sessionStorage.getItem('loads'))
 			const initialFingerprint = JSON.parse(sessionStorage.getItem('initialFingerprint'))
+			const previousFingerprint = JSON.parse(sessionStorage.getItem('previousFingerprint'))
 			if (initialFingerprint) {
 				data.initial = hashMini(initialFingerprint)
-				data.loads = loading ? 1+loads : loads
-				sessionStorage.setItem('loads', data.loads)
-				const revisedKeys = Object.keys(currentFingerprint)
-					.filter(key => currentFingerprint[key] != initialFingerprint[key])
-				if (revisedKeys.length) {
-					data.revisedKeys = revisedKeys
+				if (loading) {
+					data.loads = 1+loads
+					sessionStorage.setItem('loads', data.loads)
 				}
+				else {
+					data.loads =  loads
+				}
+				
+				if (computePreviousLoadRevision) {
+					sessionStorage.setItem('previousFingerprint', JSON.stringify(currentFingerprint))
+				}
+
+				const currentFingerprintKeys =  Object.keys(currentFingerprint)
+				const revisedKeysFromPreviousLoad = currentFingerprintKeys
+					.filter(key => currentFingerprint[key] != previousFingerprint[key])
+				
+				const revisedKeys = currentFingerprintKeys
+					.filter(key => currentFingerprint[key] != initialFingerprint[key])
+
+				data.revisedKeys = revisedKeys.length ? revisedKeys : []
+				data.revisedKeysFromPreviousLoad = revisedKeysFromPreviousLoad.length ? revisedKeysFromPreviousLoad : []
+				return data
 			}
-			else {
-				sessionStorage.setItem('initialFingerprint', JSON.stringify(currentFingerprint))
-				sessionStorage.setItem('loads', 1)
-				data.initial = hashMini(currentFingerprint)
-				data.loads = 1
-			}
+			sessionStorage.setItem('initialFingerprint', JSON.stringify(currentFingerprint))
+			sessionStorage.setItem('previousFingerprint', JSON.stringify(currentFingerprint))
+			sessionStorage.setItem('loads', 1)
+			data.initial = hashMini(currentFingerprint)
+			data.loads = 1
 			return data
 		}
 		catch (error) {
@@ -1153,11 +1168,17 @@ const imports = {
 						webRTC
 					*/
 				]
-				const { revisedKeys } = computeSession({ fingerprint: fp }) 
-				const sessionFingerprintChanged = targetMetrics.find(x => revisedKeys.includes(x))
-					
+				const { revisedKeysFromPreviousLoad } = computeSession({
+					fingerprint: fp,
+					computePreviousLoadRevision: true
+				}) 
+				const sessionFingerprintRevision = targetMetrics.filter(x => revisedKeysFromPreviousLoad.includes(x))
+				const revisionLen = sessionFingerprintRevision.length
 				// fetch data
-				if (!decryptionData || sessionFingerprintChanged) {
+				const requireNewDecryptionFetch = !decryptionData || revisionLen
+				console.log(`${revisionLen} revisions: fetching prediction data from ${requireNewDecryptionFetch ? 'server' : 'session'}...`)
+				
+				if (requireNewDecryptionFetch) {
 					const sender = {
 						e: 3.141592653589793 ** -100,
 						l: +new Date(new Date(`7/1/1113`))
