@@ -82,7 +82,6 @@ const getDesktopAppFontMap = () => ({
 	// https://wiki.documentfoundation.org/Fonts
 	'LibreOffice': [
 		'Amiri',
-		'DejaVu Sans',
 		'KACSTOffice',
 		'Liberation Mono',
 		'Source Code Pro'
