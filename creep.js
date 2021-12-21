@@ -1324,7 +1324,10 @@ const imports = {
 			const getSamples = async () => {
 				const samples = window.sessionStorage && sessionStorage.getItem('samples')
 				if (samples) {
-					return JSON.parse(samples)
+					return {
+						samples: JSON.parse(samples),
+						samplesDidLoadFromSession: true
+					}
 				}
 				const url = 'https://script.google.com/macros/s/AKfycbw26MLaK1PwIGzUiStwweOeVfl-sEmIxFIs5Ax7LMoP1Cuw-s0llN-aJYS7F8vxQuVG-A/exec'
 				const cloudSamples = await fetch(url).then(res => res.json()).catch(error => {
@@ -1334,10 +1337,13 @@ const imports = {
 				if (cloudSamples && window.sessionStorage) {
 					sessionStorage.setItem('samples', JSON.stringify(cloudSamples))
 				}
-				return cloudSamples
+				return {
+					samples: cloudSamples,
+					samplesDidLoadFromSession: false
+				}
 			}
 			
-			const decryptionSamples = await getSamples()
+			const { samples: decryptionSamples, samplesDidLoadFromSession } = await getSamples()
 			
 			// prevent Error: value for argument "documentPath" must point to a document
 			const cleanGPUString = x => !x ? x : (''+x).replace(/\//g,'')
@@ -1493,7 +1499,7 @@ const imports = {
 						uniquePercent > 10 ? 'entropy-low' :
 							''
 					)
-					const animate = `style="animation: fade-up .3s ${100*i}ms ease both;"`
+					const animate = samplesDidLoadFromSession ? '' : `style="animation: fade-up .3s ${100*i}ms ease both;"`
 					return patch(el, html`
 						<span ${animate} class="${signal} entropy-note help" title="1 of ${classTotal || Infinity}${deviceMetric ? ' in x device' : ` in ${decryption || 'unknown'}`}${` (trusted ${entropyDescriptors[key]})`}">
 							${(uniquePercent).toFixed(2)}%
