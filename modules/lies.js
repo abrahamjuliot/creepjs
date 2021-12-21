@@ -688,6 +688,13 @@ const getPrototypeLies = iframeWindow => {
 			'setAttribute'
 		]
 	})
+	searchLies(() => FontFace, {
+		target: [
+			'family',
+			'load',
+			'status'
+		]
+	})
 	searchLies(() => Function, {
 		target: [
 			'toString',

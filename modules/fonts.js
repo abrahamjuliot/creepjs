@@ -355,13 +355,21 @@ export const getFonts = async imports => {
 		const platformVersion = getPlatformVersion(fontFaceLoadFonts)
 		const apps = getDesktopApps(fontFaceLoadFonts)
 
+		// detect lies
+		const lied = (
+			lieProps['FontFace.load'] ||
+			lieProps['FontFace.family'] ||
+			lieProps['FontFace.status']
+		)
+
 		logTestResult({ start, test: 'fonts', passed: true })
 		return {
 			fontFaceLoadFonts,
 			pixelFonts,
 			originFonts,
 			platformVersion,
-			apps
+			apps,
+			lied
 		}
 	} catch (error) {
 		logTestResult({ test: 'fonts', passed: false })

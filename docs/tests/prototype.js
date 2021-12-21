@@ -532,6 +532,11 @@
 		searchLies(() => DOMRect)
 		searchLies(() => DOMRectReadOnly)
 		searchLies(() => Element)
+		searchLies(() => FontFace, {
+			ignore: [
+				'loaded',
+			]
+		})
 		searchLies(() => Function, {
 			ignore: [
 				// Chrome false positive on getIllegalTypeErrorLie test
