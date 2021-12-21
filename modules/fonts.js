@@ -86,6 +86,12 @@ const getDesktopAppFontMap = () => ({
 		'KACSTOffice',
 		'Liberation Mono',
 		'Source Code Pro'
+	],
+	// https://superuser.com/a/611804
+	'OpenOffice': [
+		'DejaVu Sans',
+		'Gentium Book Basic',
+		'OpenSymbol'
 	]
 })
 
