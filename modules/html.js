@@ -1,6 +1,9 @@
 
 // template views
-const patch = (oldEl, newEl) => oldEl.parentNode.replaceChild(newEl, oldEl)
+const patch = (oldEl, newEl, fn = null) => {
+	oldEl.parentNode.replaceChild(newEl, oldEl)
+	return typeof fn === 'function' ? fn() : true
+}
 const html = (str, ...expressionSet) => {
 	const template = document.createElement('template')
 	template.innerHTML = str.map((s, i) => `${s}${expressionSet[i] || ''}`).join('')
