@@ -1,17 +1,11 @@
 (async () => {
 
-	const hashMini = str => {
-		if (typeof str == 'number') {
-			return str
-		}
-		else if (!str || JSON.stringify(str) == '{}') {
-			return 'undefined'
-		}
-		const json = `${JSON.stringify(str)}`
-		let i, len, hash = 0x811c9dc5
-		for (i = 0, len = json.length; i < len; i++) {
-			hash = Math.imul(31, hash) + json.charCodeAt(i) | 0
-		}
+	const hashMini =  x => {
+		if (!x) return x
+		const json = `${JSON.stringify(x)}`
+		const hash = json.split('').reduce((hash, char, i) => {
+			return Math.imul(31, hash) + json.charCodeAt(i) | 0
+		}, 0x811c9dc5)
 		return ('0000000' + (hash >>> 0).toString(16)).substr(-8)
 	}
 

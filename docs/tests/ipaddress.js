@@ -14,7 +14,6 @@ const getWebRTCData = imports => {
 		try {
 			const start = performance.now()
 
-
 			const api = 'https://www.cloudflare.com/cdn-cgi/trace'
 			const res = await fetch(api)
 			const text = await res.text()
