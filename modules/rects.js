@@ -278,7 +278,7 @@ export const getClientRects = async imports => {
 			[127344],
 			[127359]
 		]
-
+		
 		const pattern = new Set()
 		const emojiDiv = doc.getElementById('emoji')
 		const emojiRects = systemEmojis
@@ -299,9 +299,7 @@ export const getClientRects = async imports => {
 				pattern.add(dimensions)
 				return true
 			})
-			.map(emoji => {
-				return emoji.emoji
-			})
+			.map(emoji => emoji.emoji)
 		const emojiSystem = hashMini(emojiSet)
 		
 		// get clientRects
@@ -388,15 +386,15 @@ export const getClientRects = async imports => {
 	}
 }
 
-export const clientRectsHTML = ({ fp, note, modal, getMismatchStyle, hashMini, hashSlice }) => {
+export const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice }) => {
 	if (!fp.clientRects) {
 		return `
 		<div class="col-six undefined">
 			<strong>DOMRect</strong>
-			<div>elems client: ${note.blocked}</div>
-			<div>range client: ${note.blocked}</div>
-			<div>elems bounding: ${note.blocked}</div>
-			<div>range bounding: ${note.blocked}</div>
+			<div>elems A: ${note.blocked}</div>
+			<div>elems B: ${note.blocked}</div>
+			<div>range A: ${note.blocked}</div>
+			<div>range B: ${note.blocked}</div>
 			<div>emojis v13.0: ${note.blocked}</div>
 			<div>emoji set:</div>
 			div class="block-text">${note.blocked}</div>
@@ -422,9 +420,9 @@ export const clientRectsHTML = ({ fp, note, modal, getMismatchStyle, hashMini, h
 	}
 
 	// compute mismatch style
-	const getRectSum = rect => Object.keys(rect).reduce((acc, key) => acc += rect[key], 0)
-	const reduceRectSum = n => (''+n).split('.').reduce((acc, s) => acc += +s, 0)
-	const computeMismatchStyle = rects => {
+	const getRectSum = rect => Object.keys(rect).reduce((acc, key) => acc += rect[key], 0)/100_000_000
+	//const reduceRectSum = n => (''+n).split('.').reduce((acc, s) => acc += +s, 0)
+	const computeDiffs = rects => {
 		if (!rects || !rects.length) {
 			return
 		}
@@ -443,19 +441,22 @@ export const clientRectsHTML = ({ fp, note, modal, getMismatchStyle, hashMini, h
 			return acc += getRectSum(expected)
 		}, 0)
 		const actualSum = rects.reduce((acc, rect) => acc += getRectSum(rect), 0)
-		const expected = reduceRectSum(exptectedSum)
-		const actual = reduceRectSum(actualSum)
-		return getMismatchStyle((''+actual).split(''), (''+expected).split(''))
+		return getDiffs({
+			stringA: actualSum,
+			stringB: exptectedSum,
+			charDiff: true,
+			decorate: diff => `<span class="bold-fail">${diff}</span>`
+		})
 	}
 	
 
 	return `
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>DOMRect</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-		<div class="help" title="Element.getClientRects()">elems client: ${computeMismatchStyle(elementClientRects)}</div>
-		<div class="help" title="Range.getClientRects()">range client: ${computeMismatchStyle(rangeClientRects)}</div>
-		<div class="help" title="Element.getBoundingClientRect()">elems bounding: ${computeMismatchStyle(elementBoundingClientRect)}</div>
-		<div class="help" title="Range.getBoundingClientRect()">range bounding: ${computeMismatchStyle(rangeBoundingClientRect)}</div>
+		<div class="help" title="Element.getClientRects()">elems A: ${computeDiffs(elementClientRects)}</div>
+		<div class="help" title="Element.getBoundingClientRect()">elems B: ${computeDiffs(elementBoundingClientRect)}</div>
+		<div class="help" title="Range.getClientRects()">range A: ${computeDiffs(rangeClientRects)}</div>
+		<div class="help" title="Range.getBoundingClientRect()">range B: ${computeDiffs(rangeBoundingClientRect)}</div>
 		<div>emojis v13.0: ${
 			modal(
 				`${id}-emojis`,

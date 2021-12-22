@@ -1,5 +1,5 @@
 import { isChrome, braveBrowser, getBraveMode, getBraveUnprotectedParameters, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, computeWindowsRelease, attemptWindows11UserAgent, isUAPostReduction, getUserAgentRestored, logTestResult, getPromiseRaceFulfilled } from './modules/helpers.js'
-import { patch, html, note, count, modal, getMismatchStyle } from './modules/html.js'
+import { patch, html, note, count, modal, getDiffs } from './modules/html.js'
 import { hashMini, instanceId, hashify } from './modules/crypto.js'
 
 import { captureError, attempt, caniuse, timer, errorsCaptured, getCapturedErrors, errorsHTML } from './modules/captureErrors.js'
@@ -58,7 +58,7 @@ const imports = {
 		note,
 		count,
 		modal,
-		getMismatchStyle,
+		getDiffs,
 		// captureErrors
 		captureError,
 		attempt,
@@ -637,7 +637,7 @@ const imports = {
 		note,
 		modal,
 		count,
-		getMismatchStyle,
+		getDiffs,
 		patch,
 		html,
 		styleSystemHash,

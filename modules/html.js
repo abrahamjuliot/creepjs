@@ -34,7 +34,17 @@ const note = {
 const pluralify = len => len > 1 ? 's' : ''
 const count = arr => arr && arr.constructor.name === 'Array' ? '' + (arr.length) : '0'
 
-const getMismatchStyle = (a, b) => b.map((char, i) => char != a[i] ? `<span class="bold-fail">${char}</span>` : char).join('')
+const getDiffs = ({ stringA, stringB, charDiff = false, decorate = diff => `[${diff}]` }) => {
+	const splitter = charDiff ? '' : ' '
+	const listA = (''+stringA).split(splitter)
+	const listB = (''+stringB).split(splitter)
+	const listBWithDiffs = listB.map((x, i) => {
+		const matcher = listA[i]
+		const match = x == matcher
+		return !match ? decorate(x) : x
+	})
+	return listBWithDiffs.join(splitter)
+}
 
 // modal component
 const modal = (name, result, linkname = 'details') => {
@@ -67,4 +77,4 @@ const modal = (name, result, linkname = 'details') => {
 	`
 }
 
-export { patch, html, note, pluralify, getMismatchStyle, count, modal }
+export { patch, html, note, pluralify, getDiffs, count, modal }

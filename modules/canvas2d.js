@@ -490,7 +490,7 @@ export const getCanvas2d = async imports => {
 	}
 }
 
-export const canvasHTML = ({ fp, note, modal, getMismatchStyle, hashMini, hashSlice }) => {
+export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice }) => {
 	if (!fp.canvas2d) {
 		return `
 		<div class="col-six undefined">
@@ -543,12 +543,40 @@ export const canvasHTML = ({ fp, note, modal, getMismatchStyle, hashMini, hashSl
 			readAsDataURL,
 			readAsText
 		} = blob || {}
-		
+    	const decorate = diff => `<span class="bold-fail">${diff}</span>`
 		return `
-			<br>readAsArrayBuffer: ${!readAsArrayBuffer ? note.unsupported : getMismatchStyle(hash.readAsArrayBuffer.split(''), hashMini(readAsArrayBuffer).split(''))}
-			<br>readAsBinaryString: ${!readAsBinaryString ? note.unsupported : getMismatchStyle(hash.readAsBinaryString.split(''), hashMini(readAsBinaryString).split(''))}
-			<br>readAsDataURL: ${!readAsDataURL ? note.unsupported : getMismatchStyle(hash.dataURI.split(''), hashMini(readAsDataURL).split(''))}
-			<br>readAsText: ${!readAsText ? note.unsupported : getMismatchStyle(hash.readAsText.split(''), hashMini(readAsText).split(''))}
+			<br>readAsArrayBuffer: ${
+				!readAsArrayBuffer ? note.unsupported : getDiffs({
+					stringA: hash.readAsArrayBuffer,
+					stringB: hashMini(readAsArrayBuffer),
+					charDiff: true,
+					decorate
+				})
+			}
+			<br>readAsBinaryString: ${
+				!readAsBinaryString ? note.unsupported : getDiffs({
+					stringA: hash.readAsBinaryString,
+					stringB: hashMini(readAsBinaryString),
+					charDiff: true,
+					decorate
+				})
+			}
+			<br>readAsDataURL: ${
+				!readAsDataURL ? note.unsupported : getDiffs({
+					stringA: hash.dataURI,
+					stringB: hashMini(readAsDataURL),
+					charDiff: true,
+					decorate
+				})
+			}
+			<br>readAsText: ${
+				!readAsText ? note.unsupported : getDiffs({
+					stringA: hash.readAsText,
+					stringB: hashMini(readAsText),
+					charDiff: true,
+					decorate
+				})
+			}
 		`
 	}
 	const { isPointInPath, isPointInStroke } = points || {}
