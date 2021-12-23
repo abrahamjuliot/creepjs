@@ -279,7 +279,6 @@ const getEngineFeatures = async ({ imports, cssComputed, windowFeaturesComputed 
 		}
 		
 		const jsFeaturesKeys = getJSCoreFeatures(win)
-		//console.log(jsFeaturesKeys.sort().join(', ')) // log features
 		const { keys: computedStyleKeys } = cssComputed.computedStyle || {}
 		const { keys: windowFeaturesKeys } = windowFeaturesComputed || {}
 
@@ -428,7 +427,7 @@ const featuresHTML = ({ fp, modal, note, hashMini }) => {
 
 	const { keys: windowFeaturesKeys } = fp.windowFeatures || {}
 	const { keys: computedStyleKeys } = fp.css.computedStyle || {}
-
+	const { userAgentVersion } = fp.workerScope || {}
 	const browser = getFeaturesBrowser()
 	const {
 		css: engineMapCSS,
@@ -436,30 +435,54 @@ const featuresHTML = ({ fp, modal, note, hashMini }) => {
 		js: engineMapJS
 	} = getEngineMaps(browser)
 		
+
+	// logger
+	const shouldLogFeatures = (browser, version, userAgentVersion) => {
+		const shouldLog = userAgentVersion > version
+		return shouldLog
+	}
+	const log = ({ features, name, diff }) => {
+		console.groupCollapsed(`%c ${name} Features %c-${diff.removed.length} %c+${diff.added.length}`, 'color: #4cc1f9', 'color: Salmon', 'color: MediumAquaMarine')
+		Object.keys(diff).forEach(key => {
+			console.log(`%c${key}:`, `color: ${key == 'added' ? 'MediumAquaMarine' : 'Salmon' }`)
+			return console.log(diff[key].join('\n'))
+		})
+		console.log(features.join(', '))
+		return console.groupEnd()
+	}
 	// modal
-	const getModal = ({id, engineMap, features, browser}) => {
+	const report = { computedStyleKeys, windowFeaturesKeys, jsFeaturesKeys }
+	const getModal = ({id, engineMap, features, browser, report, userAgentVersion }) => {
 		// capture diffs from stable release
 		const stable = getStableFeatures()
 		const { windowKeys, cssKeys, jsKeys, version } = stable[browser] || {}
+		const logger = shouldLogFeatures(browser, version, userAgentVersion)
 		let diff
 		if (id == 'css') {
+			const { computedStyleKeys } = report
 			diff = !cssKeys ? undefined : getListDiff({
 				oldList: cssKeys.split(', '),
 				newList: computedStyleKeys,
 				removeCamelCase: true
 			})
+			logger && console.log(`computing ${browser} ${userAgentVersion} diffs from ${browser} ${version}...`)
+			logger && log({ features: computedStyleKeys, name: 'CSS', diff })
 		}
 		else if (id == 'window') {
+			const { windowFeaturesKeys } = report
 			diff = !windowKeys ? undefined : getListDiff({
 				oldList: windowKeys.split(', '),
 				newList: windowFeaturesKeys
 			})
+			logger && log({ features: windowFeaturesKeys, name: 'Window', diff })
 		}
 		else if (id == 'js') {
+			const { jsFeaturesKeys } = report
 			diff = !jsKeys ? undefined : getListDiff({
 				oldList: jsKeys.split(', '),
 				newList: jsFeaturesKeys
 			})
+			logger && log({ features: jsFeaturesKeys, name: 'JS', diff })
 		}
 
 		const header = !version || !diff || (!diff.added.length && !diff.removed.length) ? '' : `
@@ -492,21 +515,27 @@ const featuresHTML = ({ fp, modal, note, hashMini }) => {
 		id: 'css',
 		engineMap: engineMapCSS,
 		features: new Set(cssFeatures),
-		browser
+		browser,
+		report,
+		userAgentVersion
 	})
 	
 	const windowModal = getModal({
 		id: 'window',
 		engineMap: engineMapWindow,
 		features: new Set(windowFeatures),
-		browser
+		browser,
+		report,
+		userAgentVersion
 	})
 
 	const jsModal = getModal({
 		id: 'js',
 		engineMap: engineMapJS,
 		features: new Set(jsFeatures),
-		browser
+		browser,
+		report,
+		userAgentVersion
 	})
 
 	const getIcon = name => `<span class="icon ${name}"></span>`
