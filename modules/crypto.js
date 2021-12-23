@@ -1,6 +1,5 @@
 // https://stackoverflow.com/a/22429679
 const hashMini =  x => {
-	if (!x) return x
 	const json = `${JSON.stringify(x)}`
 	const hash = json.split('').reduce((hash, char, i) => {
 		return Math.imul(31, hash) + json.charCodeAt(i) | 0
