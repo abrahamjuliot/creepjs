@@ -426,11 +426,6 @@ export const getCanvas2d = async imports => {
 			(readAsDataURLOffscreen && readAsDataURLOffscreen !== readAsDataURL) ||
 			(readAsTextOffscreen && readAsTextOffscreen !== readAsText)
 		)
-		if (mismatchingFileData) {
-			lied = true
-			const iframeLie = `mismatching file data`
-			documentLie(`FileReader`, iframeLie)
-		}
 
 		if (mods && mods.pixels) {
 			lied = true
