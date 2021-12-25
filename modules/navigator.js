@@ -344,6 +344,7 @@ export const getNavigator = async (imports, workerScope) => {
 				return oscpu
 			}, 'oscpu failed'),
 			plugins: attempt(() => {
+				// https://html.spec.whatwg.org/multipage/system-state.html#pdf-viewing-support
 				const navigatorPlugins = navigator.plugins
 				const plugins = phantomNavigator.plugins
 				if (!(navigatorPlugins instanceof PluginArray)) {
