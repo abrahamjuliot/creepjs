@@ -27,8 +27,8 @@ if ('web3' in window && web3.currentProvider.isMetaMask) {
 	source viewer:
 	https://chrome.google.com/webstore/detail/chrome-extension-source-v/jifpbeccnghkjeaalbbjmodiffmgedin
 
-	query ids from store collections
-	[...document.querySelectorAll('.webstore-test-wall-tile a')].map(el => {
+	query ids from store collections:
+	x = [...document.querySelectorAll('.webstore-test-wall-tile a')].map(el => {
 		const { href } = el
 		const id = /[^\/]+$/.exec(href)[0]
 		const name = el.querySelector('div > div:nth-of-type(2) > div:nth-of-type(3) > h3').innerText
@@ -36,29 +36,196 @@ if ('web3' in window && web3.currentProvider.isMetaMask) {
 			id,
 			name
 		}
-	})
+	}).reduce((acc, obj) => {
+		if (!acc[obj.id]) {
+			acc[obj.id] = { name: obj.name, file: '' }
+			return acc
+		}
+		return acc
+	},{})
+	console.log(JSON.stringify(x, null, '\t'))
+
+	query on single page:
+	console.log(
+		JSON.stringify({
+			[/[^\/]+$/.exec(location.href)[0]]: { name: document.querySelector('body div div > h1').innerText, file: '' }
+		}, null, '\t')
+	)
 
 	do:
 	Bitwarden
 
 	Adobe Acrobat
 	Tampermonkey
-	Avast Online Security
-	Adblock Plus
-	Adblock
-	uBlock Origin
 	Pinterest Save Button
 	Cisco Webex
-	Grammarly for Chrome
 	Skype
-	Avast SafePrice
 	Honey
 
 */
+
+// https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/web_accessible_resources
+// https://developer.chrome.com/docs/extensions/mv3/manifest/web_accessible_resources/
 const getExtensions = () => ({
-	'aapbdbdomjkkjkaonfhkkikfgjllcleb': { name: 'Google Translate', file: 'popup_css_compiled.css' },
-	'kbfnbcaeplbcioakkpcpgfkobkghlhen': { name: 'Grammarly', file: 'src/css/Grammarly.styles.css' },
-	'kgjfgplpablkjnlkjmjdecgdpfankdle': { name: 'Zoom Scheduler', file: 'images/icon.svg'}
+
+	// Office
+	"kbfnbcaeplbcioakkpcpgfkobkghlhen": {
+		"name": "Grammarly",
+		"file": "src/css/Grammarly.styles.css"
+	},
+	"kgjfgplpablkjnlkjmjdecgdpfankdle": {
+		"name": "Zoom Scheduler",
+		"file": "images/icon.svg"
+	},
+	"liecbddmkiiihnedobmlmillhodjkdmb": {
+		"name": "Loom",
+		"file": "img/arrow.svg"
+	},
+	"efaidnbmnnnibpcajpcglclefindmkaj": {
+		"name": "Adobe Acrobat",
+		"file": "viewer.html"
+	},
+	"oeopbcgkkoapgobdbedcemjljbihmemj": {
+		"name": "Checker Plus for Gmail",
+		"file": "images/search.png"
+	},
+	
+	// Shopping
+	"eofcbnmajmjmplflapaojjnihcjkigck": {
+		"name": "Avast SafePrice",
+		"file": "common/ui/fonts/fonts.css"
+	},
+	"chhjbpecpncaggjpdakmflnfcopglcmi": {
+		"name": "Rakuten",
+		"file": "img/rakuten/icon-rakuten.svg"
+	},
+	"nenlahapcbofgnanklpelkaejcehkggg": {
+		"name": "Capital One Shopping",
+		"file": "assets/icons/shopping-icon16.png"
+	},
+	"bmnlcjabgnpnenekpadlanbbkooimhnj": {
+		"name": "Honey",
+		"file": "paypal/meta.js"
+	},
+	"hfapbcheiepjppjbnkphkmegjlipojba": {
+		"name": "Klarna",
+		"file": "_locales/en_US/messages.json"
+	},
+
+	// Google
+	"aapbdbdomjkkjkaonfhkkikfgjllcleb": {
+		"name": "Google Translate",
+		"file": "popup_css_compiled.css"
+	},
+	"lpcaedmchfhocbbapmcbpinfpgnhiddi": {
+		"name": "Google Keep",
+		"file": "i18n/symbols_ar.js"
+	},
+	"gbkeegbaiigmenfmjfclcdgdpimamgkj": {
+		"name": "Office Editing for Docs, Sheets & Slides",
+		"file": "views/app.html"
+	},
+	"gmbmikajjgmnabiglmofipeabaddhgne": {
+		"name": "Save to Google Drive",
+		"file": "images/driveicon32.png"
+	},
+	"nckgahadagoaajjgafhacjanaoiihapd": {
+		"name": "Google Hangouts",
+		"file": "images_5/ic_drag.png"
+	},
+	"mclkkofklkfljcocdinagocijmpgbhab": {
+		"name": "Google Input Tools",
+		"file": "_locales/fa/messages.json"
+	},
+	"mgijmajocgfcbeboacabfgobmjgjcoja": {
+		"name": "Google Dictionary",
+		"file": "content.min.css"
+	},
+
+	// Privacy/Security
+	"bkdgflcldnnnapblkhphbgpggdiikppg": {
+		"name": "DuckDuckGo Privacy Essentials",
+		"file": "public/css/autofill.css"
+	},
+	"gcbommkclmclpchllfjekcdonpmejbdp": {
+		"name": "HTTPS Everywhere",
+		"file": "pages/cancel/index.html"
+	},
+	"eiimnmioipafcokbfikbljfdeojpcgbh": {
+		"name": "BlockSite",
+		"file": "public/images/about-on.svg"
+	},
+	"oldceeleldhonbafppcapldpdifcinji": {
+		"name": "LanguageTool",
+		"file": "assets/images/16/special/icon_16_special_switch_active.svg"
+	},
+	"fgddmllnllkalaagkghckoinaemmogpe": {
+		"name": "ExpressVPN",
+		"file": "images/toolbar-icon-16.png"
+	},
+
+	"gomekmidlodglbbmalcneegieacbdmki": {
+		"name": "Avast",
+		"file": "locales/Locale-en.json"
+	},
+
+	// Education
+	"ecnphlgnajanjnkcmbpancdjoidceilk": {
+		"name": "Kami",
+		"file": "delegate.html"
+	},
+
+	// Teaching
+	"mmeijimgabbpbgpdklnllpncmdofkcpn": {
+		"name": "Screencastify",
+		"file": "cam-frame.html"
+	},
+	"nlipoenfbbikpbjkfpfillcgkoblgpmj": {
+		"name": "Awesome Screenshot",
+		"file": "images/clear.png"
+	},
+	
+	// Dev
+	"bhlhnicpbhignbdhedgjhgdocnmhomnp": {
+		"name": "ColorZilla",
+		"file": "css/content-style.css"
+	},
+	"fmkadmapgofadopljbjfkapdkoienihi": {
+		"name": "React Developer Tools",
+		"file": "main.html"
+	},
+	"nhdogjmejiglipccpnnnanhbledajbpd": {
+		"name": "Vue.js devtools",
+		"file": "devtools.html"
+	},
+	"gppongmhjkpfnbhagpmjfkannfbllamg": {
+		"name": "Wappalyzer",
+		"file": "js/dom.js"
+	},
+	"gbmdgpbipfallnflgajpaliibnhdgobh": {
+		"name": "JSON Viewer",
+		"file": "assets/viewer-alert.css"
+	},
+
+	// Password
+	"nngceckbapebfimnlniiiahkandclblb": {
+		"name": "Bitwarden",
+		"file": "notification/bar.html"
+	},
+	"hdokiejnpimakedhajhdlcegeplioahd": {
+		"name": "LastPass",
+		"file": "images/infield/password-light.png"
+	},
+
+	// Other
+	"gpdjojdkbbmdfjfahjcgigfpmkopogic": {
+		"name": "Pinterest Save Button",
+		"file": "html/create.html"
+	},
+	"pioclpoplcdbaefihamjohnefbikjilc": {
+		"name": "Evernote Web Clipper",
+		"file": "OptionsFrame.html"
+	}
 })
 
 const getActiveChromeExtensions = async () => {
@@ -91,7 +258,7 @@ patch(document.getElementById('fingerprint-data'), html`
 		<div class="visitor-info relative">
 			<span class="aside-note">${perf.toFixed(2)}ms</span>
 			<strong>Chrome Extensions</strong><span class="hash">${hashMini(activeExtensions)}</span>
-			<div>${''+activeExtensions.length} detected</div>
+			<div>${''+activeExtensions.length} of ${extensionLibrary.length} detected</div>
 		</div>
 		<div>
 		${
