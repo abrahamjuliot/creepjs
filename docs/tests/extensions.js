@@ -28,7 +28,15 @@ if ('web3' in window && web3.currentProvider.isMetaMask) {
 	https://chrome.google.com/webstore/detail/chrome-extension-source-v/jifpbeccnghkjeaalbbjmodiffmgedin
 
 	query ids from store collections
-	[...document.querySelectorAll('.webstore-test-wall-tile a')].map(x => x.href)
+	[...document.querySelectorAll('.webstore-test-wall-tile a')].map(el => {
+		const { href } = el
+		const id = /[^\/]+$/.exec(href)[0]
+		const name = el.querySelector('div > div:nth-of-type(2) > div:nth-of-type(3) > h3').innerText
+		return {
+			id,
+			name
+		}
+	})
 
 	do:
 	Bitwarden
