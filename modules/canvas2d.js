@@ -420,12 +420,6 @@ export const getCanvas2d = async imports => {
 			readAsDataURL: readAsDataURLOffscreen,
 			readAsText: readAsTextOffscreen
 		} = blobOffscreen || {}
-		const mismatchingFileData = (
-			(readAsArrayBufferOffscreen && readAsArrayBufferOffscreen !== readAsArrayBuffer) ||
-			(readAsBinaryStringOffscreen && readAsBinaryStringOffscreen !== readAsBinaryString) ||
-			(readAsDataURLOffscreen && readAsDataURLOffscreen !== readAsDataURL) ||
-			(readAsTextOffscreen && readAsTextOffscreen !== readAsText)
-		)
 
 		if (mods && mods.pixels) {
 			lied = true
