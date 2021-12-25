@@ -26,9 +26,25 @@ if ('web3' in window && web3.currentProvider.isMetaMask) {
 /* 
 	source viewer:
 	https://chrome.google.com/webstore/detail/chrome-extension-source-v/jifpbeccnghkjeaalbbjmodiffmgedin
-	
+
 	query ids from store collections
 	[...document.querySelectorAll('.webstore-test-wall-tile a')].map(x => x.href)
+
+	do:
+	Bitwarden
+	
+	Adobe Acrobat
+	Tampermonkey
+	Avast Online Security
+	Adblock Plus
+	Adblock
+	uBlock Origin
+	Pinterest Save Button
+	Cisco Webex
+	Grammarly for Chrome
+	Skype
+	Avast SafePrice
+	Honey
 
 */
 const getExtensions = () => ({
