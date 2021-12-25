@@ -32,7 +32,7 @@ if ('web3' in window && web3.currentProvider.isMetaMask) {
 
 	do:
 	Bitwarden
-	
+
 	Adobe Acrobat
 	Tampermonkey
 	Avast Online Security
@@ -70,9 +70,7 @@ const extensions = getExtensions()
 const getStoreAnchorTag = (name, extensions) => {
 	const path = 'https://chrome.google.com/webstore/detail/'
 	const id = Object.keys(extensions).find(key => extensions[key].name == name)
-	
 	return `<a href="${path}${id}" target="_blank">↗️</a>`
-	
 }
 const extensionLibrary = Object.keys(extensions).reduce((acc, key) => [...acc, extensions[key].name], [])
 patch(document.getElementById('fingerprint-data'), html`
@@ -85,6 +83,7 @@ patch(document.getElementById('fingerprint-data'), html`
 		<div class="visitor-info relative">
 			<span class="aside-note">${perf.toFixed(2)}ms</span>
 			<strong>Chrome Extensions</strong><span class="hash">${hashMini(activeExtensions)}</span>
+			<div>${''+activeExtensions.length} detected</div>
 		</div>
 		<div>
 		${
