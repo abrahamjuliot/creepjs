@@ -265,6 +265,10 @@ visitor {
     box-shadow: 0 1px 1px 0 #cfd0d1;
 }
 
+#fingerprint-data .jumbo {
+	font-size: 30px !important;
+}
+
 #fingerprint-data .block-text-borderless {
     display: flex;
     justify-content: center;

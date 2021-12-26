@@ -448,8 +448,15 @@ export const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice
 			decorate: diff => `<span class="bold-fail">${diff}</span>`
 		})
 	}
-	
 
+	const formatEmojiSet = emojiSet => {
+		const emojiStr = emojiSet.join('')
+		return (
+			emojiStr.length > 11 ? `${emojiStr.slice(0, 4)}...${emojiStr.slice(-4)}` :
+				emojiStr
+		)
+	}
+	
 	return `
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>DOMRect</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
@@ -465,7 +472,7 @@ export const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice
 			)
 		}</div>
 		<div>emoji set:</div>
-		<div class="block-text">${emojiSet.join('')}</div>
+		<div class="block-text jumbo">${formatEmojiSet(emojiSet)}</div>
 	</div>
 	`
 }
