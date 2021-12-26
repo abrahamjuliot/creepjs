@@ -125,9 +125,9 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 	const getBaseDeviceName = devices => {
 		return devices.find(a => devices.filter(b => b.includes(a)).length == devices.length)
 	}
-	const getOldestWindowOS = devices => {
+	const getRFPWindowOS = devices => {
 		// FF RFP is ingnored in samples data since it returns Windows 10
-		// So, if we have multiples versions of Windows, the lowest is the most accurate
+		// So, if we have multiples versions of Windows, prefer the lowest then Windows 11
 		const windowsCore = (
 			devices.length == devices.filter(x => /windows/i.test(x)).length
 		)
@@ -139,6 +139,8 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 				devices.includes('Windows 8 (64-bit)') ? 'Windows 8 (64-bit)' :
 				devices.includes('Windows 8.1') ? 'Windows 8.1' :
 				devices.includes('Windows 8.1 (64-bit)') ? 'Windows 8.1 (64-bit)' :
+				devices.includes('Windows 11') ? 'Windows 11' :
+				devices.includes('Windows 11 (64-bit)') ? 'Windows 11 (64-bit)' :
 				devices.includes('Windows 10') ? 'Windows 10' :
 				devices.includes('Windows 10 (64-bit)') ? 'Windows 10 (64-bit)' :
 					undefined
@@ -148,7 +150,7 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 	}
 	const deviceCollection = [...devices]
 	const deviceName = (
-		getOldestWindowOS(deviceCollection) ||
+		getRFPWindowOS(deviceCollection) ||
 		getBaseDeviceName(deviceCollection)
 	)
 
