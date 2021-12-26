@@ -157,8 +157,6 @@ export const svgHTML = ({ fp, note, hashSlice, hashMini }) => {
 			subStringLength,
 			extentOfChar,
 			computedTextLength,
-			totalLength,
-			pointAtLength,
 			emojiSet,
 			lied
 		}
