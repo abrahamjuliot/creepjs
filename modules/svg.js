@@ -138,7 +138,7 @@ export const getSVG = async imports => {
 	}
 }
 
-export const svgHTML = ({ fp, note, hashSlice }) => {
+export const svgHTML = ({ fp, note, hashSlice, hashMini }) => {
 	if (!fp.svg) {
 		return `
 		<div class="col-six undefined">
@@ -171,6 +171,7 @@ export const svgHTML = ({ fp, note, hashSlice }) => {
 				emojiStr
 		)
 	}
+	const helpTitle = `hash: ${hashMini(emojiSet)}\n${emojiSet.map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`
 	return `
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>SVG</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
@@ -178,7 +179,7 @@ export const svgHTML = ({ fp, note, hashSlice }) => {
 		<div class="help" title="SVGTextContentElement.getExtentOfChar()">char: ${extentOfChar ? (extentOfChar/divisor) : note.blocked}</div>
 		<div class="help" title="SVGTextContentElement.getSubStringLength()">subs: ${subStringLength ? (subStringLength/divisor) : note.blocked}</div>
 		<div class="help" title="SVGTextContentElement.getComputedTextLength()">text: ${computedTextLength ? (computedTextLength/divisor) : note.blocked}</div>
-		<div class="block-text jumbo">${formatEmojiSet(emojiSet)}</div>
+		<div class="block-text jumbo help" title="${helpTitle}">${formatEmojiSet(emojiSet)}</div>
 	</div>
 	`	
 }

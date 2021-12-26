@@ -450,7 +450,7 @@ export const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice
 				emojiStr
 		)
 	}
-	
+	const helpTitle = `hash: ${hashMini(emojiSet)}\n${emojiSet.map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`
 	return `
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>DOMRect</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
@@ -458,7 +458,7 @@ export const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice
 		<div class="help" title="Element.getBoundingClientRect()">elems B: ${computeDiffs(elementBoundingClientRect)}</div>
 		<div class="help" title="Range.getClientRects()">range A: ${computeDiffs(rangeClientRects)}</div>
 		<div class="help" title="Range.getBoundingClientRect()">range B: ${computeDiffs(rangeBoundingClientRect)}</div>
-		<div class="block-text jumbo">${formatEmojiSet(emojiSet)}</div>
+		<div class="block-text jumbo help" title="${helpTitle}">${formatEmojiSet(emojiSet)}</div>
 	</div>
 	`
 }

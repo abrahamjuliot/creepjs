@@ -152,7 +152,6 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 		getRFPWindowOS(deviceCollection) ||
 		getBaseDeviceName(deviceCollection)
 	)
-	console.log(deviceCollection)
 	// Crowd-Blending Score Grade
 	const crowdBlendingScoreGrade = (
 		crowdBlendingScore >= 90 ? 'A' :
