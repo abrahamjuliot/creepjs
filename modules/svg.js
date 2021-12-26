@@ -64,7 +64,6 @@ export const getSVG = async imports => {
 					<g id="svgBox">
 						<text id="svgText" x="32" y="32" transform="scale(100)">${emojis.join('')}</text>
 					</g>
-					<path id="svgPath" d="M 10 80 C 50 10, 75 10, 95 80 S 150 110, 150 110 S 80 190, 40 140 Z"/>
 				</svg>
 			</div>
 		</div>
@@ -72,7 +71,6 @@ export const getSVG = async imports => {
 		
 		const svgBox = doc.getElementById('svgBox')
 		const svgText = doc.getElementById('svgText')
-		const svgPath = doc.getElementById('svgPath')
 		
 		const reduceToObject = nativeObj => {
 			const keys = Object.keys(nativeObj.__proto__)
@@ -94,10 +92,6 @@ export const getSVG = async imports => {
 		
 		// SVGRect
 		const bBox = reduceToObject(svgBox.getBBox())
-
-		// SVGPoint
-		const totalLength = svgPath.getTotalLength()
-		const pointAtLength = reduceToObject(svgPath.getPointAtLength(1))
 
 		// compute SVGRect emojis
 		const lengthSet = {
@@ -130,8 +124,6 @@ export const getSVG = async imports => {
 
 		return {
 			bBox: getObjectSum(bBox),
-			pointAtLength: getObjectSum(pointAtLength),
-			totalLength,
 			extentOfChar: getListSum([...lengthSet.extentOfChar]),
 			subStringLength: getListSum([...lengthSet.subStringLength]),
 			computedTextLength: getListSum([...lengthSet.computedTextLength]),
@@ -151,9 +143,7 @@ export const svgHTML = ({ fp, note, hashSlice }) => {
 		return `
 		<div class="col-six undefined">
 			<strong>SVG</strong>
-			<div>pt: ${note.blocked}</div>
 			<div>bBox: ${note.blocked}</div>
-			<div>totl: ${note.blocked}</div>
 			<div>char: ${note.blocked}</div>
 			<div>subs: ${note.blocked}</div>
 			<div>text: ${note.blocked}</div>
@@ -184,9 +174,7 @@ export const svgHTML = ({ fp, note, hashSlice }) => {
 	return `
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>SVG</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-		<div class="help" title="SVGGeometryElement.getPointAtLength()">pt: ${pointAtLength ? (pointAtLength/divisor) : note.blocked}</div>
 		<div class="help" title="SVGGraphicsElement.getBBox()">bBox: ${bBox ? (bBox/divisor) : note.blocked}</div>
-		<div class="help" title="SVGGeometryElement.getTotalLength()">totl: ${totalLength ? (totalLength/divisor) : note.blocked}</div>
 		<div class="help" title="SVGTextContentElement.getExtentOfChar()">char: ${extentOfChar ? (extentOfChar/divisor) : note.blocked}</div>
 		<div class="help" title="SVGTextContentElement.getSubStringLength()">subs: ${subStringLength ? (subStringLength/divisor) : note.blocked}</div>
 		<div class="help" title="SVGTextContentElement.getComputedTextLength()">text: ${computedTextLength ? (computedTextLength/divisor) : note.blocked}</div>

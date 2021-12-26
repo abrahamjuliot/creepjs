@@ -395,8 +395,6 @@ export const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice
 			<div>elems B: ${note.blocked}</div>
 			<div>range A: ${note.blocked}</div>
 			<div>range B: ${note.blocked}</div>
-			<div>emojis v13.0: ${note.blocked}</div>
-			<div>emoji set:</div>
 			div class="block-text">${note.blocked}</div>
 		</div>`
 	}
@@ -414,10 +412,6 @@ export const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice
 		}
 	} = fp
 	const id = 'creep-client-rects'
-	const getRectHash = rect => {
-		const {emoji,...excludeEmoji} = rect
-		return hashMini(excludeEmoji)
-	}
 
 	// compute mismatch style
 	const getRectSum = rect => Object.keys(rect).reduce((acc, key) => acc += rect[key], 0)/100_000_000
@@ -464,14 +458,6 @@ export const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice
 		<div class="help" title="Element.getBoundingClientRect()">elems B: ${computeDiffs(elementBoundingClientRect)}</div>
 		<div class="help" title="Range.getClientRects()">range A: ${computeDiffs(rangeClientRects)}</div>
 		<div class="help" title="Range.getBoundingClientRect()">range B: ${computeDiffs(rangeBoundingClientRect)}</div>
-		<div>emojis v13.0: ${
-			modal(
-				`${id}-emojis`,
-				`<div>${emojiRects.map(rect => `${rect.emoji}: ${getRectHash(rect)}`).join('<br>')}</div>`,
-				hashMini(emojiRects)
-			)
-		}</div>
-		<div>emoji set:</div>
 		<div class="block-text jumbo">${formatEmojiSet(emojiSet)}</div>
 	</div>
 	`
