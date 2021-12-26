@@ -128,9 +128,8 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 	const getRFPWindowOS = devices => {
 		// FF RFP is ingnored in samples data since it returns Windows 10
 		// So, if we have multiples versions of Windows, prefer the lowest then Windows 11
-		const windowsCore = (
-			devices.length == devices.filter(x => /windows/i.test(x)).length
-		)
+		const windowsCoreRatio = devices.filter(x => /windows/i.test(x)).length / devices.length
+		const windowsCore = windowsCoreRatio > 0.5
 		if (windowsCore) {
 			return (
 				devices.includes('Windows 7') ? 'Windows 7' :
@@ -153,7 +152,7 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 		getRFPWindowOS(deviceCollection) ||
 		getBaseDeviceName(deviceCollection)
 	)
-
+	console.log(deviceCollection)
 	// Crowd-Blending Score Grade
 	const crowdBlendingScoreGrade = (
 		crowdBlendingScore >= 90 ? 'A' :
