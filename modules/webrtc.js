@@ -13,12 +13,11 @@ export const getWebRTCData = imports => {
 		try {
 			await new Promise(setTimeout).catch(e => {})
 			const start = performance.now()
-			let rtcPeerConnection = (
-				window.RTCPeerConnection ||
-				window.webkitRTCPeerConnection ||
-				window.mozRTCPeerConnection ||
-				window.msRTCPeerConnection
-			)
+
+			if (!window.RTCPeerConnection) {
+				logTestResult({ test: 'webrtc', passed: false })
+				return resolve()
+			}
 
 			const getCapabilities = () => {
 				let capabilities
@@ -38,16 +37,28 @@ export const getWebRTCData = imports => {
 				return capabilities
 			}
 
-			// check support
-			if (!rtcPeerConnection) {
-				logTestResult({ test: 'webrtc', passed: false })
-				return resolve()
-			}
-			
 			// get connection
-			const connection = new rtcPeerConnection(
-				{ iceServers: [{ urls: ['stun:stun.l.google.com:19302?transport=udp'] }] }
-			)
+			/*
+			stun.l.google.com:19302
+			stun1.l.google.com:19302
+			stun2.l.google.com:19302
+			stun3.l.google.com:19302
+			stun4.l.google.com:19302
+			*/
+			const connection = new RTCPeerConnection({
+				iceServers: [
+					{
+						urls: [
+							'stun:stun4.l.google.com:19302?transport=udp',
+							'stun:stun3.l.google.com:19302?transport=udp',
+							'stun:stun2.l.google.com:19302?transport=udp',
+							//'stun:stun1.l.google.com:19302?transport=udp',
+							//'stun:stun.l.google.com:19302?transport=udp',
+						]
+					}
+				],
+				iceCandidatePoolSize: 1
+			})
 			
 			// create channel
 			let success

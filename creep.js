@@ -784,7 +784,6 @@ const imports = {
 		</div>
 	</div>
 	`, () => {
-
 		// fetch fingerprint data from server
 		const id = 'creep-browser'
 		const visitorElem = document.getElementById(id)
@@ -1036,7 +1035,6 @@ const imports = {
 				const form = document.getElementById('signature')
 				form.addEventListener('submit', async () => {
 					event.preventDefault()
-
 					
 					const input = document.getElementById('signature-input').value
 					const submit = confirm(`Are you sure? This cannot be undone.\n\nsignature: ${input}`)
