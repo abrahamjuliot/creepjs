@@ -444,10 +444,10 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini }) => {
 						((''+fonts).match(/Noto Color Emoji/)||[]).length ? `${icon.Linux}Noto Color Emoji...` :
 						((''+fonts).match(/Arimo/)||[]).length ? `${icon.Linux}Arimo...` :
 						((''+fonts).match(/Helvetica Neue/g)||[]).length == 2 ? `${icon.Apple}Helvetica Neue...` :
-						`${fonts[0]}...`
+						`${(fonts||[])[0]}...`
 					)
 				})(fontFaceLoadFonts)}
-				${''+apps ? `apps: ${apps.join(', ')}` : ''}
+				${''+apps ? `apps: ${(apps||[]).join(', ')}` : ''}
 			</div>
 		</div>
 	</div>
