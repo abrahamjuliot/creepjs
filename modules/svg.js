@@ -172,7 +172,7 @@ export const svgHTML = ({ fp, note, hashSlice, hashMini }) => {
 		<div class="help" title="SVGTextContentElement.getExtentOfChar()">char: ${extentOfChar ? (extentOfChar/divisor) : note.blocked}</div>
 		<div class="help" title="SVGTextContentElement.getSubStringLength()">subs: ${subStringLength ? (subStringLength/divisor) : note.blocked}</div>
 		<div class="help" title="SVGTextContentElement.getComputedTextLength()">text: ${computedTextLength ? (computedTextLength/divisor) : note.blocked}</div>
-		<div class="block-text jumbo help" title="${helpTitle}">${formatEmojiSet(emojiSet)}</div>
+		<div class="block-text jumbo grey help" title="${helpTitle}">${formatEmojiSet(emojiSet)}</div>
 	</div>
 	`	
 }

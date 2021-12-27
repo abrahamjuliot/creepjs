@@ -455,7 +455,7 @@ export const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice
 		<div class="help" title="Element.getBoundingClientRect()">elems B: ${computeDiffs(elementBoundingClientRect)}</div>
 		<div class="help" title="Range.getClientRects()">range A: ${computeDiffs(rangeClientRects)}</div>
 		<div class="help" title="Range.getBoundingClientRect()">range B: ${computeDiffs(rangeBoundingClientRect)}</div>
-		<div class="block-text jumbo help" title="${helpTitle}">${formatEmojiSet(emojiSet)}</div>
+		<div class="block-text jumbo grey help" title="${helpTitle}">${formatEmojiSet(emojiSet)}</div>
 	</div>
 	`
 }

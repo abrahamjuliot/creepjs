@@ -167,6 +167,9 @@ strong {
 .small {
     font-size: 11px !important;
 }
+.grey {
+	filter: grayscale(100%);
+}
 #signature {
     min-height: 50px;
     padding: 5px 10px;
@@ -266,7 +269,7 @@ visitor {
 }
 
 #fingerprint-data .jumbo {
-	font-size: 30px !important;
+	font-size: 28px !important;
 }
 
 #fingerprint-data .block-text-borderless {
