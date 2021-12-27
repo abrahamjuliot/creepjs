@@ -427,7 +427,7 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini }) => {
 		<strong>Fonts</strong><span class="hash">${hashSlice($hash)}</span>
 		<div class="help ellipsis-all" title="CSSStyleDeclaration.setProperty()\ntransform-origin\nperspective-origin">origin (${originFonts ? count(originFonts) : '0'}/${'' + getFontsShortList().length}): ${originFontString ? `${system ? system[0] : ''}${originFontString}`: note.unknown }</div>
 		<div class="help" title="FontFace.load()">load (${fontFaceLoadFonts ? count(fontFaceLoadFonts) : '0'}/${'' + getFontList().length}): ${
-			!fontFaceLoadFonts.length ? note.unknown : modal(
+			!(fontFaceLoadFonts||[]).length ? note.unknown : modal(
 				'creep-fonts',
 				fontFaceLoadFonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>'),
 				fontFaceLoadHash
