@@ -3,9 +3,7 @@ export const getWebRTCData = imports => {
 	const {
 		require: {
 			captureError,
-			caniuse,
-			logTestResult,
-			hashMini
+			logTestResult
 		}
 	} = imports
 	
