@@ -443,13 +443,10 @@ export const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice
 		})
 	}
 
-	const formatEmojiSet = emojiSet => {
-		const emojiStr = emojiSet.join('')
-		return (
-			emojiStr.length > 11 ? `${emojiStr.slice(0, 4)}...${emojiStr.slice(-4)}` :
-				emojiStr
-		)
-	}
+	const formatEmojiSet = emojiSet => (
+		emojiSet.length > 9 ? `${emojiSet.slice(0, 3).join('')}...${emojiSet.slice(-3).join('')}` :
+			emojiSet.join('')
+	)
 	const helpTitle = `hash: ${hashMini(emojiSet)}\n${emojiSet.map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`
 	return `
 	<div class="col-six${lied ? ' rejected' : ''}">
