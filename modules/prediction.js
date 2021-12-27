@@ -202,8 +202,8 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 			}</div>
 			<div class="ellipsis relative">
 				<span id="emoji-entropy"></span>${
-				!Object.keys(emojiSystem || {}).length ? unknownHTML('emojis') : 
-					getTemplate({title: 'emojis', agent: emojiSystem})
+				!Object.keys(emojiSystem || {}).length ? unknownHTML('domRect emojis') : 
+					getTemplate({title: 'domRect emojis', agent: emojiSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="domRect-entropy"></span>${
@@ -212,8 +212,8 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 			}</div>
 			<div class="ellipsis relative">
 				<span id="svg-entropy"></span>${
-				!Object.keys(svgSystem || {}).length ? unknownHTML('svg') : 
-					getTemplate({title: 'svg', agent: svgSystem})
+				!Object.keys(svgSystem || {}).length ? unknownHTML('svg emojis') : 
+					getTemplate({title: 'svg emojis', agent: svgSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="mimeTypes-entropy"></span>${

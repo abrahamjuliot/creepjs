@@ -1465,7 +1465,7 @@ const imports = {
 					styleVersion: 'computed styles',
 					emoji: 'domrect emojis',
 					domRect: 'domrect metrics',
-					svg: 'svg metrics',
+					svg: 'svg emojis',
 					mimeTypes: 'media mimeTypes',
 					audio: 'audio metrics',
 					canvas: 'canvas image',

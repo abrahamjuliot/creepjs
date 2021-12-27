@@ -3,12 +3,10 @@ export const getSVG = async imports => {
 	const {
 		require: {
 			instanceId,
-			hashMini,
 			patch,
 			html,
 			captureError,
 			lieProps,
-			documentLie,
 			logTestResult,
 			phantomDarkness
 		}
@@ -142,7 +140,7 @@ export const svgHTML = ({ fp, note, hashSlice, hashMini }) => {
 	if (!fp.svg) {
 		return `
 		<div class="col-six undefined">
-			<strong>SVG</strong>
+			<strong>SVGRect</strong>
 			<div>bBox: ${note.blocked}</div>
 			<div>char: ${note.blocked}</div>
 			<div>subs: ${note.blocked}</div>
@@ -169,7 +167,7 @@ export const svgHTML = ({ fp, note, hashSlice, hashMini }) => {
 	const helpTitle = `hash: ${hashMini(emojiSet)}\n${emojiSet.map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`
 	return `
 	<div class="col-six${lied ? ' rejected' : ''}">
-		<strong>SVG</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+		<strong>SVGRect</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div class="help" title="SVGGraphicsElement.getBBox()">bBox: ${bBox ? (bBox/divisor) : note.blocked}</div>
 		<div class="help" title="SVGTextContentElement.getExtentOfChar()">char: ${extentOfChar ? (extentOfChar/divisor) : note.blocked}</div>
 		<div class="help" title="SVGTextContentElement.getSubStringLength()">subs: ${subStringLength ? (subStringLength/divisor) : note.blocked}</div>
