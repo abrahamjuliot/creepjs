@@ -19,33 +19,8 @@ export const getWebRTCData = imports => {
 				return resolve()
 			}
 
-			const getCapabilities = () => {
-				let capabilities
-				try {
-					capabilities = {
-						sender: !caniuse(() => RTCRtpSender.getCapabilities) ? undefined : {
-							audio: RTCRtpSender.getCapabilities('audio'),
-							video: RTCRtpSender.getCapabilities('video')
-						},
-						receiver: !caniuse(() => RTCRtpReceiver.getCapabilities) ? undefined : {
-							audio: RTCRtpReceiver.getCapabilities('audio'),
-							video: RTCRtpReceiver.getCapabilities('video')
-						}
-					}
-				}
-				catch (error) {}
-				return capabilities
-			}
-
-			// get connection
-			/*
-			stun.l.google.com:19302
-			stun1.l.google.com:19302
-			stun2.l.google.com:19302
-			stun3.l.google.com:19302
-			stun4.l.google.com:19302
-			*/
 			const connection = new RTCPeerConnection({
+				iceCandidatePoolSize: 1,
 				iceServers: [
 					{
 						urls: [
@@ -56,93 +31,59 @@ export const getWebRTCData = imports => {
 							//'stun:stun.l.google.com:19302?transport=udp',
 						]
 					}
-				],
-				iceCandidatePoolSize: 1
+				]
 			})
 			
-			// create channel
-			let success
-			connection.createDataChannel('creep')
-
-			// set local description
-			await connection.createOffer()
-			.then(offer => connection.setLocalDescription(offer))
-			.catch(error => console.error(error))
-
-			// get sdp capabilities
-			let sdpcapabilities
-			const capabilities = getCapabilities()
-			await connection.createOffer({
-				offerToReceiveAudio: 1,
-				offerToReceiveVideo: 1
-			})
-			.then(offer => (
-				sdpcapabilities = caniuse(
-					() => offer.sdp
-						.match(/((ext|rtp)map|fmtp|rtcp-fb):.+ (.+)/gm)
-						.sort()
-				)
-			))
-			.catch(error => console.error(error))
-	
-			connection.onicecandidate = e => {
+			const getIPAddress = sdp => {
+				const blocked = '0.0.0.0'
 				const candidateEncoding = /((udp|tcp)\s)((\d|\w)+\s)((\d|\w|(\.|\:))+)(?=\s)/ig
 				const connectionLineEncoding = /(c=IN\s)(.+)\s/ig
-
-				// handle null candidate and resolve early
-				if (!e.candidate) {
-					if (sdpcapabilities) {
-						// resolve partial success
-						success = true 
-						logTestResult({ start, test: 'webrtc', passed: true })
-						return resolve({
-							capabilities,
-							sdpcapabilities
-						})
-					}
-					// resolve error
-					logTestResult({ test: 'webrtc', passed: false })
-					return resolve()
-				}
-
-				const { candidate } = e.candidate
-				const encodingMatch = candidate.match(candidateEncoding)
-				if (encodingMatch) {
-					success = true
-					const {
-						sdp
-					} = e.target.localDescription
-					const ipaddress = caniuse(() => e.candidate.address)
-					const candidateIpAddress = caniuse(() => encodingMatch[0].split(' ')[2])
-					const connectionLineIpAddress = caniuse(() => sdp.match(connectionLineEncoding)[0].trim().split(' ')[2])
-
-					const type = caniuse(() => /typ ([a-z]+)/.exec(candidate)[1])
-					const foundation = caniuse(() => /candidate:(\d+)\s/.exec(candidate)[1])
-					const protocol = caniuse(() => /candidate:\d+ \w+ (\w+)/.exec(candidate)[1])
-					
-					const data = {
-						ipaddress,
-						candidate: candidateIpAddress,
-						connection: connectionLineIpAddress,
-						type,
-						foundation,
-						protocol,
-						capabilities,
-						sdpcapabilities
-					}
-					logTestResult({ start, test: 'webrtc', passed: true })
-					return resolve({ ...data })
-				}
-				return
+				const connectionLineIpAddress = ((sdp.match(connectionLineEncoding)||[])[0]||'').trim().split(' ')[2]
+				if (connectionLineIpAddress && (connectionLineIpAddress != blocked)) {
+					return connectionLineIpAddress
+				}	
+				const candidateIpAddress = ((sdp.match(candidateEncoding)||[])[0]||'').split(' ')[2]
+				return candidateIpAddress && (candidateIpAddress != blocked) ? candidateIpAddress : undefined
 			}
 
-			// resolve when Timeout is reached
-			setTimeout(() => {
-				if (!success) {
-					logTestResult({ test: 'webrtc', passed: false })
-					return resolve()
-				}
-			}, 1000)
+			connection.createDataChannel('')
+			return connection.createOffer({offerToReceiveAudio: 1, offerToReceiveVideo: 1}).then(offer => {
+				connection.setLocalDescription(offer)
+				let success = false
+				setTimeout(() => {
+					if (!success) {
+						logTestResult({ test: 'webrtc', passed: false })
+						return resolve()
+					}
+				}, 1000)
+				return connection.addEventListener('icecandidate', event => {
+					const { candidate } = event.candidate || {}
+					if (!candidate) {
+						return
+					}
+					const { sdp } = connection.localDescription
+					const ipaddress = getIPAddress(sdp)
+					if (ipaddress) {
+						success = true
+						connection.close() 
+						logTestResult({ start, test: 'webrtc', passed: true })
+						return resolve({
+							ipaddress,
+							capabilities: {
+								sender: !('getCapabilities' in RTCRtpSender) ? undefined : {
+									audio: RTCRtpSender.getCapabilities('audio'),
+									video: RTCRtpSender.getCapabilities('video')
+								},
+								receiver: !('getCapabilities' in RTCRtpReceiver) ? undefined : {
+									audio: RTCRtpReceiver.getCapabilities('audio'),
+									video: RTCRtpReceiver.getCapabilities('video')
+								}
+							},
+							sdpcapabilities: (offer.sdp.match(/((ext|rtp)map|fmtp|rtcp-fb):.+ (.+)/gm)||[]).sort()
+						})
+					}
+				})
+			})
 		}
 		catch (error) {
 			logTestResult({ test: 'webrtc', passed: false })
@@ -159,9 +100,6 @@ export const webrtcHTML = ({ fp, hashSlice, hashMini, note, modal }) => {
 		<div class="col-four undefined">
 			<strong>WebRTC</strong>
 			<div class="block-text">${note.blocked}</div>
-			<div>type: ${note.blocked}</div>
-			<div>foundation: ${note.blocked}</div>
-			<div>protocol: ${note.blocked}</div>
 			<div>codecs: ${note.blocked}</div>
 			<div>codecs sdp: ${note.blocked}</div>
 		</div>`
@@ -169,11 +107,6 @@ export const webrtcHTML = ({ fp, hashSlice, hashMini, note, modal }) => {
 	const { webRTC } = fp
 	const {
 		ipaddress,
-		candidate,
-		connection,
-		type,
-		foundation,
-		protocol,
 		capabilities,
 		sdpcapabilities,
 		$hash
@@ -183,16 +116,11 @@ export const webrtcHTML = ({ fp, hashSlice, hashMini, note, modal }) => {
 	return `
 	<div class="col-four">
 		<strong>WebRTC</strong><span class="hash">${hashSlice($hash)}</span>
-		<div class="block-text"">
-			${ipaddress ? ipaddress : ''}
-			${candidate ? `<br>${candidate}` : ''}
-			${connection ? `<br>${connection}` : ''}
+		<div class="block-text help" title="RTCSessionDescription.sdp">
+			${ipaddress || note.blocked}
 		</div>
-		<div>type: ${type ? type : note.unsupported}</div>
-		<div>foundation: ${foundation ? foundation : note.unsupported}</div>
-		<div>protocol: ${protocol ? protocol : note.unsupported}</div>
-		<div>codecs: ${
-			!capabilities.receiver && !capabilities.sender ? note.unsupported :
+		<div class="help" title="RTCRtpSender.getCapabilities()\nRTCRtpReceiver.getCapabilities()">codecs: ${
+			!capabilities || (!capabilities.receiver && !capabilities.sender) ? note.unsupported :
 			modal(
 				`${id}-capabilities`,
 				Object.keys(capabilities).map(modeKey => {
@@ -233,7 +161,7 @@ export const webrtcHTML = ({ fp, hashSlice, hashMini, note, modal }) => {
 				hashMini(capabilities)
 			)
 		}</div>
-		<div>codecs sdp: ${
+		<div class="help" title="RTCSessionDescription.sdp">codecs sdp: ${
 			!sdpcapabilities ? note.unsupported :
 			modal(
 				`${id}-sdpcapabilities`,
