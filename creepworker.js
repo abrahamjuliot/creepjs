@@ -646,9 +646,14 @@ const getMediaCapabilities = async () => {
 	}
 }
 
-const getPermissionState = name => navigator.permissions.query({ name })
+const getPermissionState = name => {
+	if (!('permissions' in navigator)) {
+		return
+	}
+	return navigator.permissions.query({ name })
     .then(res => ({ name, state: res.state }))
     .catch(error => ({ name, state: 'unknown' }))
+}
 
 const getWorkerData = async () => {
 
@@ -889,10 +894,38 @@ const getWorkerData = async () => {
 	
 	const [
 		canvas2d,
-		userAgentData
+		userAgentData,
+		mediaCapabilities,
+		// https://w3c.github.io/permissions/#permission-registry
+		permissions
 	] = await Promise.all([
 		getDataURI(canvasOffscreen2d),
-		getUserAgentData(navigator)
+		getUserAgentData(navigator),
+		getMediaCapabilities(),
+		Promise.all([
+			getPermissionState('accelerometer'),
+			getPermissionState('ambient-light-sensor'),
+			getPermissionState('background-fetch'),
+			getPermissionState('background-sync'),
+			getPermissionState('bluetooth'),
+			getPermissionState('camera'),
+			getPermissionState('clipboard'),
+			getPermissionState('device-info'),
+			getPermissionState('display-capture'),
+			getPermissionState('gamepad'),
+			getPermissionState('geolocation'),
+			getPermissionState('gyroscope'),
+			getPermissionState('magnetometer'),
+			getPermissionState('microphone'),
+			getPermissionState('midi'),
+			getPermissionState('nfc'),
+			getPermissionState('notifications'),
+			getPermissionState('persistent-storage'),
+			getPermissionState('push'),
+			getPermissionState('screen-wake-lock'),
+			getPermissionState('speaker'),
+			getPermissionState('speaker-selection')
+		])
 	]).catch(error => console.error(error))
 
 	// webglVendor and webglRenderer
@@ -929,44 +962,6 @@ const getWorkerData = async () => {
 	// navigator
 	const { hardwareConcurrency, language, languages, platform, userAgent, deviceMemory } = navigator || {}
 
-	// mediaCapabilities
-	const mediaCapabilities = await getMediaCapabilities()
-
-	// permissions
-	// https://w3c.github.io/permissions/#permission-registry
-	const permissions = !('permissions' in navigator) ? undefined : await Promise.all([
-		getPermissionState('accelerometer'),
-		getPermissionState('ambient-light-sensor'),
-		getPermissionState('background-fetch'),
-		getPermissionState('background-sync'),
-		getPermissionState('bluetooth'),
-		getPermissionState('camera'),
-		getPermissionState('clipboard'),
-		getPermissionState('device-info'),
-		getPermissionState('display-capture'),
-		getPermissionState('gamepad'),
-		getPermissionState('geolocation'),
-		getPermissionState('gyroscope'),
-		getPermissionState('magnetometer'),
-		getPermissionState('microphone'),
-		getPermissionState('midi'),
-		getPermissionState('nfc'),
-		getPermissionState('notifications'),
-		getPermissionState('persistent-storage'),
-		getPermissionState('push'),
-		getPermissionState('screen-wake-lock'),
-		getPermissionState('speaker'),
-		getPermissionState('speaker-selection')
-	]).then(permissions => permissions.reduce((acc, perm) => {
-		const { state, name } = perm
-		if (acc[state]) {
-			acc[state].push(name)
-			return acc
-		}
-		acc[state] = [name]
-		return acc
-	}, {})).catch(error => console.error(error))
-
 	// scope keys
 	const scopeKeys = Object.getOwnPropertyNames(self)
 
@@ -1000,6 +995,7 @@ const getWorkerData = async () => {
 	const locale = getLocale()
 
 	// prototype lies
+	await new Promise(setTimeout).catch(e => { })
 	const {
 		lieDetector: lieProps,
 		lieList,
@@ -1051,7 +1047,15 @@ const getWorkerData = async () => {
 		languages: ''+languages,
 		mediaCapabilities,
 		platform,
-		permissions,
+		permissions: !('permissions' in navigator) ? undefined : permissions.reduce((acc, perm) => {
+			const { state, name } = perm
+			if (acc[state]) {
+				acc[state].push(name)
+				return acc
+			}
+			acc[state] = [name]
+			return acc
+		}, {}),
 		userAgent,
 		canvas2d,
 		textMetrics: (new Set(Object.keys(textMetrics)).size > 1) && !!Object.values(textMetrics).reduce((acc, x) => acc += (x||0), 0) ? textMetrics : undefined,
