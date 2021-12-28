@@ -22,44 +22,81 @@ export const getWebRTCData = imports => {
 	}
 
 	// https://webrtchacks.com/sdp-anatomy/
+	// https://tools.ietf.org/id/draft-ietf-rtcweb-sdp-08.html
 	const constructDecriptions = ({mediaType, sdp, sdpDescriptors, rtxCounter}) => {
 		if (!(''+sdpDescriptors)) {
 			return
 		}
-		return sdpDescriptors.reduce((acc, descriptor) => {
-			const matcher = `(rtpmap|fmtp):${descriptor} (.+)`
+		return sdpDescriptors.reduce((descriptionAcc, descriptor) => {
+			const matcher = `(rtpmap|fmtp|rtcp-fb):${descriptor} (.+)`
 			const formats = (sdp.match(new RegExp(matcher, 'g')) || [])
 			if (!(''+formats)) {
-				return acc
+				return descriptionAcc
 			}
 			const isRtxCodec = ('' + formats).includes(' rtx/')
 			if (isRtxCodec) {
 				if (rtxCounter.getValue()) {
-					return acc
+					return descriptionAcc
 				}
 				rtxCounter.increment()
 			}
+			const getLineData = x => x.replace(/[^\s]+ /, '')
 			const description = formats.reduce((acc, x) => {
-				const data = x.replace(/[^\s]+ /, '').split('/')
+				const rawData = getLineData(x)
+				const data = rawData.split('/')
 				const codec = data[0]
 				const description = {}
-				if (mediaType == 'audio') {
-					description.channels = (+data[2]) || 1
-				}
-				description.mimeType = `${mediaType}/${codec}`
-				description.clockRate = +data[1]
+				
 				if (x.includes('rtpmap')) {
+					if (mediaType == 'audio') {
+						description.channels = (+data[2]) || 1
+					}
+					description.mimeType = `${mediaType}/${codec}`
+					description.clockRates = [+data[1]]
 					return {
 						...acc,
 						...description
 					}
 				}
+				else if (x.includes('rtcp-fb')) {
+					return {
+						...acc,
+						feedbackSupport: [...(acc.feedbackSupport||[]), rawData]
+					}
+				}
 				else if (isRtxCodec) {
 					return acc // no sdpFmtpLine
 				}
-				return { ...acc, sdpFmtpLine: x.replace(/[^\s]+ /, '') }
+				return { ...acc, sdpFmtpLine: [...rawData.split(';')] }
 			}, {})
-			return [...acc, description]
+
+			let shouldMerge = false
+			const mergerAcc = descriptionAcc.map(x => {
+				shouldMerge = x.mimeType == description.mimeType
+				if (shouldMerge) {
+					if (x.feedbackSupport) {
+						x.feedbackSupport = [
+							...new Set([...x.feedbackSupport, ...description.feedbackSupport])
+						]
+					}
+					if (x.sdpFmtpLine) {
+						x.sdpFmtpLine = [
+							...new Set([...x.sdpFmtpLine, ...description.sdpFmtpLine])
+						]
+					}
+					return {
+						...x,
+						clockRates: [
+							...new Set([...x.clockRates, ...description.clockRates])
+						]
+					}
+				}
+				return x
+			})
+			if (shouldMerge) {
+				return mergerAcc
+			}
+			return [...descriptionAcc, description]
 		}, [])
 	}
 
@@ -182,9 +219,9 @@ export const webrtcHTML = ({ fp, hashSlice, hashMini, note, modal }) => {
 		<div class="col-four undefined">
 			<strong>WebRTC</strong>
 			<div class="block-text">${note.blocked}</div>
-			<div>audio: ${note.blocked}</div>
-			<div>video: ${note.blocked}</div>
-			<div>exts: ${note.blocked}</div>
+			<div>a codecs (0): ${note.blocked}</div>
+			<div>v codecs (0): ${note.blocked}</div>
+			<div>exts (0): ${note.blocked}</div>
 		</div>`
 	}
 	const { webRTC } = fp
@@ -197,21 +234,32 @@ export const webrtcHTML = ({ fp, hashSlice, hashMini, note, modal }) => {
 	} = webRTC
 	const id = 'creep-webrtc'
 
+	const feedbackId = {
+		'ccm fir': 'Codec Control Message Full Intra Request (ccm fir)',
+		'goog-remb': "Google's Receiver Estimated Maximum Bitrate (goog-remb)",
+		'nack': 'Negative ACKs (nack)',
+		'nack pli': 'Picture loss Indication and NACK (nack pli)',
+		'transport-cc': 'Transport Wide Congestion Control (transport-cc)'
+	}
+
 	const getModalTemplate = list => list.map(x => {
 		return `
 			<strong>${x.mimeType}</strong>
-			<br>- clockRate: ${x.clockRate}
-			${x.channels > 1 ? `<br>- channels: ${x.channels}` : ''}
-			${x.sdpFmtpLine ? `<br>${x.sdpFmtpLine.split(';').map(x => `- ${x.replace('=', ': ')}`).join('<br>')}` : ''}
+			<br>Clock Rates: ${x.clockRates.sort((a, b) => b - a).join(', ')}
+			${x.channels > 1 ? `<br>Channels: ${x.channels}` : ''}
+			${x.sdpFmtpLine ? `<br>Format Specific Parameters:<br>- ${x.sdpFmtpLine.sort().map(x => x.replace('=', ': ')).join('<br>- ')}` : ''}
+			${x.feedbackSupport ? `<br>Feedback Support:<br>- ${x.feedbackSupport.map(x => {
+				return feedbackId[x] || x
+			}).sort().join('<br>- ')}` : ''}
 		`
-	}).join('<br>')
+	}).join('<br><br>')
 	return `
 	<div class="col-four">
 		<strong>WebRTC</strong><span class="hash">${hashSlice($hash)}</span>
 		<div class="block-text help" title="RTCSessionDescription.sdp">
 			${ipaddress || note.blocked}
 		</div>
-		<div class="help" title="RTCSessionDescription.sdp">audio: ${
+		<div class="help" title="RTCSessionDescription.sdp">a codecs (${(audio||[]).length}): ${
 		!audio ? note.blocked :
 			modal(
 				`${id}-audio`,
@@ -219,7 +267,7 @@ export const webrtcHTML = ({ fp, hashSlice, hashMini, note, modal }) => {
 				hashMini(audio)
 			)
 		}</div>
-		<div class="help" title="RTCSessionDescription.sdp">video: ${
+		<div class="help" title="RTCSessionDescription.sdp">v codecs (${(video||[]).length}): ${
 		!audio ? note.blocked :
 			modal(
 				`${id}-video`,
@@ -227,7 +275,7 @@ export const webrtcHTML = ({ fp, hashSlice, hashMini, note, modal }) => {
 				hashMini(video)
 			)
 		}</div>
-		<div class="help" title="RTCSessionDescription.sdp">exts: ${
+		<div class="help" title="RTCSessionDescription.sdp">exts (${(extensions||[]).length}): ${
 		!audio ? note.blocked :
 			modal(
 				`${id}-extensions`,
