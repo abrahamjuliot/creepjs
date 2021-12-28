@@ -209,7 +209,9 @@ export const getCanvasWebgl = async imports => {
 	} = imports
 
 	try {
+		await new Promise(setTimeout).catch(e => { })
 		const start = performance.now()
+		
 		// detect lies
 		const dataLie = lieProps['HTMLCanvasElement.toDataURL']
 		const contextLie = lieProps['HTMLCanvasElement.getContext']
@@ -242,7 +244,7 @@ export const getCanvasWebgl = async imports => {
 			canvas = doc.createElement('canvas')
 			canvas2 = doc.createElement('canvas')
 		}
-
+		
 		const getContext = (canvas, contextType) => {
 			try {
 				if (contextType == 'webgl2') {
@@ -262,7 +264,9 @@ export const getCanvasWebgl = async imports => {
 				return
 			}
 		}
+		await new Promise(setTimeout).catch(e => { })
 		const gl = getContext(canvas, 'webgl')
+		await new Promise(setTimeout).catch(e => { })
 		const gl2 = getContext(canvas2, 'webgl2')
 		if (!gl) {
 			logTestResult({ test: 'webgl', passed: false })
@@ -390,9 +394,11 @@ export const getCanvasWebgl = async imports => {
 				return []
 			}
 		}
-
+		
 		// get data
+		await new Promise(setTimeout).catch(e => { })
 		const params = { ...getParams(gl), ...getUnmasked(gl) }
+		await new Promise(setTimeout).catch(e => { })
 		const params2 = { ...getParams(gl2), ...getUnmasked(gl2) }
 		const mismatch = Object.keys(params2)
 			.filter(key => !!params[key] && '' + params[key] != '' + params2[key])
@@ -401,13 +407,23 @@ export const getCanvasWebgl = async imports => {
 		if (mismatch) {
 			sendToTrash('webgl/webgl2 mirrored params mismatch', mismatch)
 		}
-
+		
+		await new Promise(setTimeout).catch(e => { })
+		const pixels = getPixels(gl)
+		
+		await new Promise(setTimeout).catch(e => { })
+		const pixels2 = getPixels(gl2)
+		
+		await new Promise(setTimeout).catch(e => { })
+		const dataURI = getDataURI('webgl')
+		const dataURI2 = getDataURI('webgl2')
+		
 		const data = {
 			extensions: [...getSupportedExtensions(gl), ...getSupportedExtensions(gl2)],
-			pixels: getPixels(gl),
-			pixels2: getPixels(gl2),
-			dataURI: getDataURI('webgl'),
-			dataURI2: getDataURI('webgl2'),
+			pixels,
+			pixels2,
+			dataURI,
+			dataURI2,
 			parameters: {
 				...{ ...params, ...params2 },
 				...{
