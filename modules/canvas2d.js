@@ -152,52 +152,28 @@ export const getCanvas2d = async imports => {
 		context.fillText(str, 0, 20)
 		context.fillStyle = 'rgba(0, 0, 0, 0)'
 		context.fillRect(0, 0, 186, 30)
-
 		context.beginPath()
 		context.arc(15.49, 15.51, 10.314, 0, Math.PI * 2)
 		context.closePath()
 		context.fill()
-
 		return context
 	}
 
-	const getFileReaderData = async blob => {
+	const getFileReaderData = blob => {
 		if (!blob) {
 			return
 		}
-		const reader1 = new FileReader()
-		const reader2 = new FileReader()
-		const reader3 = new FileReader()
-		const reader4 = new FileReader()
-		reader1.readAsArrayBuffer(blob)
-		reader2.readAsDataURL(blob)
-		reader3.readAsBinaryString(blob)
-		reader4.readAsText(blob)
-		const [
-			readAsArrayBuffer,
-			readAsDataURL,
-			readAsBinaryString,
-			readAsText
-		] = await Promise.all([
-			new Promise(resolve => {
-				reader1.onload = () => resolve(reader1.result)
-			}),
-			new Promise(resolve => {
-				reader2.onload = () => resolve(reader2.result)
-			}),
-			new Promise(resolve => {
-				reader3.onload = () => resolve(reader3.result)
-			}),
-			new Promise(resolve => {
-				reader4.onload = () => resolve(reader4.result)
-			})
+		const getRead = (method, blob) => new Promise(resolve => {
+			const reader = new FileReader()
+			reader[method](blob)
+			return reader.addEventListener('loadend', () => resolve(reader.result))
+		})
+		return Promise.all([
+			getRead('readAsArrayBuffer', blob),
+			getRead('readAsBinaryString', blob),
+			getRead('readAsDataURL', blob),
+			getRead('readAsText', blob),
 		])
-		return {
-			readAsArrayBuffer: String.fromCharCode.apply(null, new Uint8Array(readAsArrayBuffer)),
-			readAsBinaryString,
-			readAsDataURL,
-			readAsText
-		}
 	}
 
 	const systemEmojis = [
@@ -305,13 +281,11 @@ export const getCanvas2d = async imports => {
 			lieProps['TextMetrics.width']
 		)
 		let lied = (dataLie || contextLie || imageDataLie || textMetricsLie) || false
-
 		const doc = phantomDarkness ? phantomDarkness.document : document
 		const canvas = doc.createElement('canvas')
 		const context = canvas.getContext('2d')
 		fillRect(canvas, context)
 		const dataURI = canvas.toDataURL()
-		
 
 		if (dragonOfDeath) {
 			const result1 = dragonOfDeath.document.createElement('canvas').toDataURL()
@@ -356,14 +330,13 @@ export const getCanvas2d = async imports => {
 			// WebKit (onscreen)
 			'172.955078125': 'Apple', // Mac, CriOS
 		}
-
+		
 		const {
 			actualBoundingBoxRight: systemActualBoundingBoxRight,
 			width: systemWidth
 		} = context.measureText('😀!@#$%^&*') || {}
 		const textMetricsSystemSum = ((systemActualBoundingBoxRight || 0) + (systemWidth || 0)) || undefined
 		const textMetricsSystemClass = knownTextMetrics[textMetricsSystemSum]
-		
 		const {
 			actualBoundingBoxAscent,
 			actualBoundingBoxDescent,
@@ -382,6 +355,7 @@ export const getCanvas2d = async imports => {
 			fontBoundingBoxDescent,
 			width
 		}
+		
 		const { data: imageData } = context.getImageData(0, 0, canvas.width, canvas.height) || {}
 		
 		let canvasOffscreen
@@ -391,36 +365,42 @@ export const getCanvas2d = async imports => {
 			fillRect(canvasOffscreen, contextOffscreen)
 		}
 		catch (error) { }
-
+		await new Promise(setTimeout).catch(e => { })
 		const [
-			blob,
-			blobOffscreen
+			fileReaderData,
+			fileReaderDataOffscreen
 		] = await Promise.all([
-			new Promise(resolve => canvas.toBlob(async blob => {
-				const data = await getFileReaderData(blob)
-				return resolve(data)
+			new Promise(resolve => canvas.toBlob(blob => {
+				return resolve(getFileReaderData(blob))
 			})),
 			getFileReaderData(canvasOffscreen && await canvasOffscreen.convertToBlob())
 		])
 
+		const [arrayBuffer, binaryString, dataURL, text] = fileReaderData
+		const [
+			arrayBufferOffScreen,
+			binaryStringOffscreen,
+			dataURLOffscreen,
+			textOffscreen
+		] = fileReaderDataOffscreen
+		const blob = {
+			readAsArrayBuffer: String.fromCharCode.apply(null, new Uint8Array(arrayBuffer)),
+			readAsBinaryString: binaryString,
+			readAsDataURL: dataURL,
+			readAsText: text
+		}
+		const blobOffscreen = {
+			readAsArrayBuffer: String.fromCharCode.apply(null, new Uint8Array(arrayBufferOffScreen)),
+			readAsBinaryString: binaryStringOffscreen,
+			readAsDataURL: dataURLOffscreen,
+			readAsText: textOffscreen
+		}
+
+		await new Promise(setTimeout).catch(e => { })
 		const points = getPointIn(canvas, context) // modifies width
 		const mods = getPixelMods()
-
+	
 		// lies
-		const {
-			readAsArrayBuffer,
-			readAsBinaryString,
-			readAsDataURL,
-			readAsText
-		} = blob || {}
-		
-		const {
-			readAsArrayBuffer: readAsArrayBufferOffscreen,
-			readAsBinaryString: readAsBinaryStringOffscreen,
-			readAsDataURL: readAsDataURLOffscreen,
-			readAsText: readAsTextOffscreen
-		} = blobOffscreen || {}
-
 		if (mods && mods.pixels) {
 			lied = true
 			const iframeLie = `pixel data modified`
@@ -456,11 +436,15 @@ export const getCanvas2d = async imports => {
 				'metric noise detected'
 			)
 		}
+
+		const imageDataCompressed = (
+			imageData ? String.fromCharCode.apply(null, imageData) : undefined
+		)
 		
 		logTestResult({ start, test: 'canvas 2d', passed: true })
 		return {
 			dataURI,
-			imageData: imageData ? String.fromCharCode.apply(null, imageData) : undefined,
+			imageData: imageDataCompressed,
 			mods,
 			points,
 			blob,
