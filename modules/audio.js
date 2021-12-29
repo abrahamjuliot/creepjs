@@ -103,7 +103,6 @@ export const getOfflineAudioContext = async imports => {
 			['OscillatorNode.frequency.maxValue']: attempt(() => oscillator.frequency.maxValue),
 			['OscillatorNode.frequency.minValue']: attempt(() => oscillator.frequency.minValue)
 		}
-
 		const getRenderedBuffer = ({
 			context,
 			floatFrequencyData,

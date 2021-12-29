@@ -71,7 +71,6 @@ export const getNavigator = async (imports, workerScope) => {
 		const credibleUserAgent = (
 			'chrome' in window ? navigator.userAgent.includes(navigator.appVersion) : true
 		)
-
 		const data = {
 			platform: attempt(() => {
 				const { platform } = phantomNavigator
@@ -386,161 +385,163 @@ export const getNavigator = async (imports, workerScope) => {
 				const keys = Object.keys(Object.getPrototypeOf(phantomNavigator))
 				return keys
 			}, 'navigator keys failed'),
-			userAgentData: await attempt(async () => {
-				if (!('userAgentData' in phantomNavigator)) {
-					return
-				}
-				const data = await phantomNavigator.userAgentData.getHighEntropyValues(
-					['platform', 'platformVersion', 'architecture', 'bitness', 'model', 'uaFullVersion']
-				)
-				const { brands, mobile } = phantomNavigator.userAgentData || {}
-				const compressedBrands = (brands, captureVersion = false) => brands
-					.filter(obj => !/Not/.test(obj.brand)).map(obj => `${obj.brand}${captureVersion ? ` ${obj.version}` : ''}`)
-				const removeChromium = brands => (
-					brands.length > 1 ? brands.filter(brand => !/Chromium/.test(brand)) : brands
-				)
-	
-				// compress brands
-				if (!data.brands) {
-					data.brands = brands
-				}
-				data.brandsVersion = compressedBrands(data.brands, true)
-				data.brands = compressedBrands(data.brands)
-				data.brandsVersion = removeChromium(data.brandsVersion)
-				data.brands = removeChromium(data.brands)
-				
-				if (!data.mobile) {
-					data.mobile = mobile
-				}
-				const dataSorted = Object.keys(data).sort().reduce((acc, key) => {
-					acc[key] = data[key]
+		}
+
+		const getKeyboard = () => attempt(async () => {
+			if (!('keyboard' in navigator && navigator.keyboard)) {
+				return
+			}
+			const keys = [
+				'Backquote',
+				'Backslash',
+				'Backspace',
+				'BracketLeft',
+				'BracketRight',
+				'Comma',
+				'Digit0',
+				'Digit1',
+				'Digit2',
+				'Digit3',
+				'Digit4',
+				'Digit5',
+				'Digit6',
+				'Digit7',
+				'Digit8',
+				'Digit9',
+				'Equal',
+				'IntlBackslash',
+				'IntlRo',
+				'IntlYen',
+				'KeyA',
+				'KeyB',
+				'KeyC',
+				'KeyD',
+				'KeyE',
+				'KeyF',
+				'KeyG',
+				'KeyH',
+				'KeyI',
+				'KeyJ',
+				'KeyK',
+				'KeyL',
+				'KeyM',
+				'KeyN',
+				'KeyO',
+				'KeyP',
+				'KeyQ',
+				'KeyR',
+				'KeyS',
+				'KeyT',
+				'KeyU',
+				'KeyV',
+				'KeyW',
+				'KeyX',
+				'KeyY',
+				'KeyZ',
+				'Minus',
+				'Period',
+				'Quote',
+				'Semicolon',
+				'Slash'
+			]
+			const keyoardLayoutMap = await navigator.keyboard.getLayoutMap()
+			const writingSystemKeys = keys
+				.reduce((acc, key) => {
+					acc[key] = keyoardLayoutMap.get(key)
 					return acc
-				},{})
-				return dataSorted
-			}, 'userAgentData failed'),
-			keyboard: await attempt(async () => {
-				if (!('keyboard' in navigator && navigator.keyboard)) {
-					return
-				}
-				const keys = [
-					'Backquote',
-					'Backslash',
-					'Backspace',
-					'BracketLeft',
-					'BracketRight',
-					'Comma',
-					'Digit0',
-					'Digit1',
-					'Digit2',
-					'Digit3',
-					'Digit4',
-					'Digit5',
-					'Digit6',
-					'Digit7',
-					'Digit8',
-					'Digit9',
-					'Equal',
-					'IntlBackslash',
-					'IntlRo',
-					'IntlYen',
-					'KeyA',
-					'KeyB',
-					'KeyC',
-					'KeyD',
-					'KeyE',
-					'KeyF',
-					'KeyG',
-					'KeyH',
-					'KeyI',
-					'KeyJ',
-					'KeyK',
-					'KeyL',
-					'KeyM',
-					'KeyN',
-					'KeyO',
-					'KeyP',
-					'KeyQ',
-					'KeyR',
-					'KeyS',
-					'KeyT',
-					'KeyU',
-					'KeyV',
-					'KeyW',
-					'KeyX',
-					'KeyY',
-					'KeyZ',
-					'Minus',
-					'Period',
-					'Quote',
-					'Semicolon',
-					'Slash'
-				]
-				const keyoardLayoutMap = await navigator.keyboard.getLayoutMap()
-				const writingSystemKeys = keys
-					.reduce((acc, key) => {
-						acc[key] = keyoardLayoutMap.get(key)
-						return acc
-					}, {})
-				return writingSystemKeys
-			}),
-			bluetoothAvailability: await attempt(async () => {
-				if (
-					!('bluetooth' in phantomNavigator) ||
-					!phantomNavigator.bluetooth ||
-					!phantomNavigator.bluetooth.getAvailability) {
-					return undefined
-				}
-				const available = await navigator.bluetooth.getAvailability()
-				return available
-			}, 'bluetoothAvailability failed'),
-			mediaCapabilities: await attempt(async () => {
-				const codecs = [
-					'audio/ogg; codecs=vorbis',
-					'audio/ogg; codecs=flac',
-					'audio/mp4; codecs="mp4a.40.2"',
-					'audio/mpeg; codecs="mp3"',
-					'video/ogg; codecs="theora"',
-					'video/mp4; codecs="avc1.42E01E"'
-				]
+				}, {})
+			return writingSystemKeys
+		}, 'keyboard failed')
 
-				const getMediaConfig = (codec, video, audio) => ({
-					type: 'file',
-					video: !/^video/.test(codec) ? undefined : {
-						contentType: codec,
-						...video
-					},
-					audio: !/^audio/.test(codec) ? undefined : {
-						contentType: codec,
-						...audio
-					}
-				})
+		const getUserAgentData = () => attempt(async () => {
+			if (!('userAgentData' in phantomNavigator)) {
+				return
+			}
+			const data = await phantomNavigator.userAgentData.getHighEntropyValues(
+				['platform', 'platformVersion', 'architecture', 'bitness', 'model', 'uaFullVersion']
+			)
+			const { brands, mobile } = phantomNavigator.userAgentData || {}
+			const compressedBrands = (brands, captureVersion = false) => brands
+				.filter(obj => !/Not/.test(obj.brand)).map(obj => `${obj.brand}${captureVersion ? ` ${obj.version}` : ''}`)
+			const removeChromium = brands => (
+				brands.length > 1 ? brands.filter(brand => !/Chromium/.test(brand)) : brands
+			)
 
-				const getMediaCapabilities = async () => {
-					const video = {
-						width: 1920,
-						height: 1080,
-						bitrate: 120000,
-						framerate: 60
-					}
-					const audio = {
-						channels: 2,
-						bitrate: 300000,
-						samplerate: 5200
-					}
-					try {
-						const decodingInfo = codecs.map(codec => {
-							const config = getMediaConfig(codec, video, audio)
-							const info = navigator.mediaCapabilities.decodingInfo(config)
-								.then(support => ({
-									codec,
-									...support
-								}))
-								.catch(error => console.error(codec, error))
-							return info
-						})
-						const data = await Promise.all(decodingInfo)
-							.catch(error => console.error(error))
-						const codecsSupported = data.reduce((acc, support) => {
+			// compress brands
+			if (!data.brands) {
+				data.brands = brands
+			}
+			data.brandsVersion = compressedBrands(data.brands, true)
+			data.brands = compressedBrands(data.brands)
+			data.brandsVersion = removeChromium(data.brandsVersion)
+			data.brands = removeChromium(data.brands)
+			
+			if (!data.mobile) {
+				data.mobile = mobile
+			}
+			const dataSorted = Object.keys(data).sort().reduce((acc, key) => {
+				acc[key] = data[key]
+				return acc
+			},{})
+			return dataSorted
+		}, 'userAgentData failed')
+
+		const getBluetoothAvailability = () => attempt(async () => {
+			if (
+				!('bluetooth' in phantomNavigator) ||
+				!phantomNavigator.bluetooth ||
+				!phantomNavigator.bluetooth.getAvailability) {
+				return undefined
+			}
+			const available = await navigator.bluetooth.getAvailability()
+			return available
+		}, 'bluetoothAvailability failed')
+
+		const getMediaCapabilities = () => attempt(async () => {
+			const codecs = [
+				'audio/ogg; codecs=vorbis',
+				'audio/ogg; codecs=flac',
+				'audio/mp4; codecs="mp4a.40.2"',
+				'audio/mpeg; codecs="mp3"',
+				'video/ogg; codecs="theora"',
+				'video/mp4; codecs="avc1.42E01E"'
+			]
+
+			const getMediaConfig = (codec, video, audio) => ({
+				type: 'file',
+				video: !/^video/.test(codec) ? undefined : {
+					contentType: codec,
+					...video
+				},
+				audio: !/^audio/.test(codec) ? undefined : {
+					contentType: codec,
+					...audio
+				}
+			})
+
+			const computeMediaCapabilities = () => {
+				const video = {
+					width: 1920,
+					height: 1080,
+					bitrate: 120000,
+					framerate: 60
+				}
+				const audio = {
+					channels: 2,
+					bitrate: 300000,
+					samplerate: 5200
+				}
+				try {
+					const decodingInfo = codecs.map(codec => {
+						const config = getMediaConfig(codec, video, audio)
+						return navigator.mediaCapabilities.decodingInfo(config).then(support => ({
+							codec,
+							...support
+						}))
+						.catch(error => console.error(codec, error))
+					})
+					return Promise.all(decodingInfo).then(data => {
+						return data.reduce((acc, support) => {
 							const { codec, supported, smooth, powerEfficient } = support || {}
 							if (!supported) { return acc }
 							return {
@@ -551,77 +552,100 @@ export const getNavigator = async (imports, workerScope) => {
 								]
 							}
 						}, {})
-						return codecsSupported
-					}
-					catch (error) {
-						return
-					}
+					}).catch(error => console.error(error))
 				}
-				const mediaCapabilities = await getMediaCapabilities()
-				return mediaCapabilities
-			}, 'mediaCapabilities failed'),
-		
-			permissions: await attempt(async () => {
-				const getPermissionState = name => navigator.permissions.query({ name })
-					.then(res => ({ name, state: res.state }))
-					.catch(error => ({ name, state: 'unknown' }))
-
-				// https://w3c.github.io/permissions/#permission-registry
-				const permissions = !('permissions' in navigator) ? undefined : await Promise.all([
-						getPermissionState('accelerometer'),
-						getPermissionState('ambient-light-sensor'),
-						getPermissionState('background-fetch'),
-						getPermissionState('background-sync'),
-						getPermissionState('bluetooth'),
-						getPermissionState('camera'),
-						getPermissionState('clipboard'),
-						getPermissionState('device-info'),
-						getPermissionState('display-capture'),
-						getPermissionState('gamepad'),
-						getPermissionState('geolocation'),
-						getPermissionState('gyroscope'),
-						getPermissionState('magnetometer'),
-						getPermissionState('microphone'),
-						getPermissionState('midi'),
-						getPermissionState('nfc'),
-						getPermissionState('notifications'),
-						getPermissionState('persistent-storage'),
-						getPermissionState('push'),
-						getPermissionState('screen-wake-lock'),
-						getPermissionState('speaker'),
-						getPermissionState('speaker-selection')
-					]).then(permissions => permissions.reduce((acc, perm) => {
-						const { state, name } = perm || {}
-						if (acc[state]) {
-							acc[state].push(name)
-							return acc
-						}
-						acc[state] = [name]
-						return acc
-					}, {})).catch(error => console.error(error))
-				return permissions
-			}, 'permissions failed'),
-
-			webgpu: await attempt(async () => {
-				if (!('gpu' in navigator)) {
+				catch (error) {
 					return
 				}
-				const { limits, features } = await navigator.gpu.requestAdapter()
+			}
+			return computeMediaCapabilities()
+		}, 'mediaCapabilities failed')
+	
+		const getPermissions = () => attempt(async () => {
+			const getPermissionState = name => navigator.permissions.query({ name })
+				.then(res => ({ name, state: res.state }))
+				.catch(error => ({ name, state: 'unknown' }))
 
-				return {
-					features: [...features.values()],
-					limits: (limits => {
-						const data = {}
-						for (const prop in limits) {
-							data[prop] = limits[prop]
-						}
-						return data
-					})(limits)
-				}
-			}, 'webgpu failed')
-		}
+			// https://w3c.github.io/permissions/#permission-registry
+			const permissions = !('permissions' in navigator) ? undefined : Promise.all([
+					getPermissionState('accelerometer'),
+					getPermissionState('ambient-light-sensor'),
+					getPermissionState('background-fetch'),
+					getPermissionState('background-sync'),
+					getPermissionState('bluetooth'),
+					getPermissionState('camera'),
+					getPermissionState('clipboard'),
+					getPermissionState('device-info'),
+					getPermissionState('display-capture'),
+					getPermissionState('gamepad'),
+					getPermissionState('geolocation'),
+					getPermissionState('gyroscope'),
+					getPermissionState('magnetometer'),
+					getPermissionState('microphone'),
+					getPermissionState('midi'),
+					getPermissionState('nfc'),
+					getPermissionState('notifications'),
+					getPermissionState('persistent-storage'),
+					getPermissionState('push'),
+					getPermissionState('screen-wake-lock'),
+					getPermissionState('speaker'),
+					getPermissionState('speaker-selection')
+				]).then(permissions => permissions.reduce((acc, perm) => {
+					const { state, name } = perm || {}
+					if (acc[state]) {
+						acc[state].push(name)
+						return acc
+					}
+					acc[state] = [name]
+					return acc
+				}, {})).catch(error => console.error(error))
+			return permissions
+		}, 'permissions failed')
+
+		const getWebgpu = () => attempt(async () => {
+			if (!('gpu' in navigator)) {
+				return
+			}
+			const { limits, features } = await navigator.gpu.requestAdapter()
+
+			return {
+				features: [...features.values()],
+				limits: (limits => {
+					const data = {}
+					for (const prop in limits) {
+						data[prop] = limits[prop]
+					}
+					return data
+				})(limits)
+			}
+		}, 'webgpu failed')
+
+		const [
+			keyboard,
+			userAgentData,
+			bluetoothAvailability,
+			mediaCapabilities,
+			permissions,
+			webgpu
+		] = await Promise.all([
+			getKeyboard(),
+			getUserAgentData(),
+			getBluetoothAvailability(),
+			getMediaCapabilities(),
+			getPermissions(),
+			getWebgpu()
+		])
 		logTestResult({ start, test: 'navigator', passed: true })
-		return { ...data, lied }
+		return {
+			...data,
+			keyboard,
+			userAgentData,
+			bluetoothAvailability,
+			mediaCapabilities,
+			permissions,
+			webgpu,
+			lied
+		}
 	}
 	catch (error) {
 		logTestResult({ test: 'navigator', passed: false })
