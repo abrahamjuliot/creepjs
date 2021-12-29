@@ -1,109 +1,30 @@
-import { captureError, attempt, caniuse } from './captureErrors.js'
-const source = 'creepworker.js'
+const ask = fn => { try { return fn() } catch (e) { return } }
 
-const getDedicatedWorker = phantomDarkness => {
-	return new Promise(resolve => {
-		try {
-			if (phantomDarkness && !phantomDarkness.Worker) {
-				return resolve()
-			}
-			else if (
-				phantomDarkness && phantomDarkness.Worker.prototype.constructor.name != 'Worker'
-			) {
-				throw new Error('Worker tampered with by client')
-			}
-			const worker = (
-				phantomDarkness ? phantomDarkness.Worker : Worker
-			)
-			const dedicatedWorker = new worker(source)
-			dedicatedWorker.onmessage = message => {
-				dedicatedWorker.terminate()
-				return resolve(message.data)
-			}
-		}
-		catch(error) {
-			console.error(error)
-			captureError(error)
-			return resolve()
-		}
+const resolveWorkerData = (target, resolve, fn) => target.addEventListener('message', event => {
+	fn(); return resolve(event.data)
+})
+
+const getDedicatedWorker = ({ scriptSource }) => new Promise(resolve => {
+	const dedicatedWorker = ask(() => new Worker(scriptSource))
+	if (!dedicatedWorker) return resolve()
+	return resolveWorkerData(dedicatedWorker, resolve, () => dedicatedWorker.terminate())
+})
+
+const getSharedWorker = ({ scriptSource }) => new Promise(resolve => {
+	const sharedWorker = ask(() => new SharedWorker(scriptSource))
+	if (!sharedWorker) return resolve()
+	sharedWorker.port.start()
+	return resolveWorkerData(sharedWorker.port, resolve, () => sharedWorker.port.close())
+})
+
+const getServiceWorker = ({ scriptSource, scope }) => new Promise(async resolve => {
+	const registration = await ask(() => navigator.serviceWorker.register(scriptSource, { scope }).catch(e => {}))
+	if (!registration) return resolve()
+	return navigator.serviceWorker.ready.then(registration => {
+		registration.active.postMessage(undefined)
+		return resolveWorkerData(navigator.serviceWorker, resolve, () => registration.unregister())
 	})
-}
-
-const getSharedWorker = phantomDarkness => {
-	return new Promise(resolve => {
-		try {
-			if (phantomDarkness && !phantomDarkness.SharedWorker) {
-				return resolve()
-			}
-			else if (
-				phantomDarkness && phantomDarkness.SharedWorker.prototype.constructor.name != 'SharedWorker'
-			) {
-				throw new Error('SharedWorker tampered with by client')
-			}
-
-			const worker = (
-				phantomDarkness ? phantomDarkness.SharedWorker : SharedWorker
-			)
-			const sharedWorker = new worker(source)
-			sharedWorker.port.start()
-			sharedWorker.port.addEventListener('message', message => {
-				sharedWorker.port.close()
-				return resolve(message.data)
-			})
-		}
-		catch(error) {
-			console.error(error)
-			captureError(error)
-			return resolve()
-		}
-	})
-}
-
-const getServiceWorker = () => {
-	return new Promise(async resolve => {
-		try {
-			if (!('serviceWorker' in navigator)) {
-				return resolve()
-			}
-			else if (navigator.serviceWorker.__proto__.constructor.name != 'ServiceWorkerContainer') {
-				throw new Error('ServiceWorkerContainer tampered with by client')
-			}
-
-			await navigator.serviceWorker.register(source)
-			.catch(error => {
-				console.error(error)
-				return resolve()
-			})
-			//const registration = await navigator.serviceWorker.ready
-			const registration = await navigator.serviceWorker.getRegistration(source)
-			.catch(error => {
-				console.error(error)
-				return resolve()
-			})
-			if (!registration) {
-				return resolve()
-			}
-
-			if (!('BroadcastChannel' in window)) {
-				return resolve() // no support in Safari and iOS
-			}
-
-			const broadcast = new BroadcastChannel('creep_service_primary')
-			broadcast.onmessage = message => {
-				registration.unregister()
-				broadcast.close()
-				return resolve(message.data)
-			}
-			broadcast.postMessage({ type: 'fingerprint'})
-			return setTimeout(() => resolve(), 1000)
-		}
-		catch(error) {
-			console.error(error)
-			captureError(error)
-			return resolve()
-		}
-	})
-}
+})
 
 export const getBestWorkerScope = async imports => {	
 	const {
@@ -111,7 +32,6 @@ export const getBestWorkerScope = async imports => {
 			getOS,
 			decryptUserAgent,
 			captureError,
-			caniuse,
 			phantomDarkness,
 			getUserAgentPlatform,
 			documentLie,
@@ -123,23 +43,33 @@ export const getBestWorkerScope = async imports => {
 	try {
 		await new Promise(setTimeout).catch(e => {})
 		const start = performance.now()
+		const scriptSource = 'creepworker.js'
 		let scope = 'ServiceWorkerGlobalScope'
 		let type = 'service' // loads fast but is not available in frames
-		let workerScope = await getServiceWorker()
-			.catch(error => console.error(error.message))
-		if (!caniuse(() => workerScope.userAgent)) {
+		let workerScope = await getServiceWorker({ scriptSource }).catch(error => {
+			captureError(error)
+			console.error(error.message)
+			return
+		})
+		if (!(workerScope || {}).userAgent) {
 			scope = 'SharedWorkerGlobalScope'
 			type = 'shared' // no support in Safari, iOS, and Chrome Android
-			workerScope = await getSharedWorker(phantomDarkness)
-			.catch(error => console.error(error.message))
+			workerScope = await getSharedWorker({ scriptSource }).catch(error => {
+				captureError(error)
+				console.error(error.message)
+				return
+			})
 		}
-		if (!caniuse(() => workerScope.userAgent)) {
+		if (!(workerScope || {}).userAgent) {
 			scope = 'WorkerGlobalScope'
 			type = 'dedicated' // simulators & extensions can spoof userAgent
-			workerScope = await getDedicatedWorker(phantomDarkness)
-			.catch(error => console.error(error.message))
+			workerScope = await getDedicatedWorker({ scriptSource }).catch(error => {
+				captureError(error)
+				console.error(error.message)
+				return
+			})
 		}
-		if (caniuse(() => workerScope.userAgent)) {
+		if ((workerScope || {}).userAgent) {
 			const { canvas2d } = workerScope || {}
 			workerScope.system = getOS(workerScope.userAgent)
 			workerScope.device = getUserAgentPlatform({ userAgent: workerScope.userAgent })

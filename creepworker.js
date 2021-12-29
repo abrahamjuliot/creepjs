@@ -1108,3 +1108,11 @@ if (isWorker) {
 	isSharedWorker ? getSharedWorkerGlobalScope() :
 	getWorkerGlobalScope()
 }
+
+const onEvent = (eventType, fn) => addEventListener(eventType, fn)
+const send = async source => source.postMessage(await getWorkerData())
+if (!globalThis.document && globalThis.WorkerGlobalScope) {
+	globalThis.ServiceWorkerGlobalScope ? onEvent('message', async e => send(e.source)) :
+	globalThis.SharedWorkerGlobalScope ? onEvent('connect', async e => send(e.ports[0])) :
+	send(self) // DedicatedWorkerGlobalScope
+}
