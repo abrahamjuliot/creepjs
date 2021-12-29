@@ -1070,45 +1070,7 @@ const getWorkerData = async () => {
 	}
 }
 
-// Tests
-const isWorker = !globalThis.document && !!globalThis.WorkerGlobalScope
-const isSharedWorker = !!globalThis.SharedWorkerGlobalScope
-const isServiceWorker = !!globalThis.ServiceWorkerGlobalScope
-
-// WorkerGlobalScope
-const getWorkerGlobalScope = async () => {
-	const data = await getWorkerData()
-	postMessage(data)
-	close()
-}
-
-// SharedWorkerGlobalScope
-const getSharedWorkerGlobalScope = () => {
-	onconnect = async message => {
-		const port = message.ports[0]
-		const data = await getWorkerData()
-		port.postMessage(data)
-	}
-}
-
-// ServiceWorkerGlobalScope
-const getServiceWorkerGlobalScope = () => {
-	const broadcast = new BroadcastChannel('creep_service_primary')
-	broadcast.onmessage = async event => {
-		if (event.data && event.data.type == 'fingerprint') {
-			const data = await getWorkerData()
-			broadcast.postMessage(data)
-		}
-	}
-}
-
-// WorkerGlobalScope
-if (isWorker) {
-	isServiceWorker ? getServiceWorkerGlobalScope() :
-	isSharedWorker ? getSharedWorkerGlobalScope() :
-	getWorkerGlobalScope()
-}
-
+// Compute and communicate from worker scope
 const onEvent = (eventType, fn) => addEventListener(eventType, fn)
 const send = async source => source.postMessage(await getWorkerData())
 if (!globalThis.document && globalThis.WorkerGlobalScope) {
