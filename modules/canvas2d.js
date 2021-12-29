@@ -161,7 +161,7 @@ export const getCanvas2d = async imports => {
 
 	const getFileReaderData = blob => {
 		if (!blob) {
-			return
+			return []
 		}
 		const getRead = (method, blob) => new Promise(resolve => {
 			const reader = new FileReader()
@@ -376,21 +376,21 @@ export const getCanvas2d = async imports => {
 			getFileReaderData(canvasOffscreen && await canvasOffscreen.convertToBlob())
 		])
 
-		const [arrayBuffer, binaryString, dataURL, text] = fileReaderData
+		const [arrayBuffer, binaryString, dataURL, text] = fileReaderData || {}
 		const [
 			arrayBufferOffScreen,
 			binaryStringOffscreen,
 			dataURLOffscreen,
 			textOffscreen
-		] = fileReaderDataOffscreen
+		] = fileReaderDataOffscreen || {}
 		const blob = {
-			readAsArrayBuffer: String.fromCharCode.apply(null, new Uint8Array(arrayBuffer)),
+			readAsArrayBuffer: String.fromCharCode.apply(null, new Uint8Array(arrayBuffer)) || undefined,
 			readAsBinaryString: binaryString,
 			readAsDataURL: dataURL,
 			readAsText: text
 		}
 		const blobOffscreen = {
-			readAsArrayBuffer: String.fromCharCode.apply(null, new Uint8Array(arrayBufferOffScreen)),
+			readAsArrayBuffer: String.fromCharCode.apply(null, new Uint8Array(arrayBufferOffScreen)) || undefined,
 			readAsBinaryString: binaryStringOffscreen,
 			readAsDataURL: dataURLOffscreen,
 			readAsText: textOffscreen
