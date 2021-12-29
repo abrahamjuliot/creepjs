@@ -161,24 +161,21 @@ export const getWebRTCData = imports => {
 			const options = { offerToReceiveAudio: 1, offerToReceiveVideo: 1 }
 			return connection.createOffer(options).then(offer => {
 				connection.setLocalDescription(offer)
-				let success = false
-				setTimeout(() => {
-					if (!success) {
-						const { sdp } = offer || {}
-						if (sdp) {
-							const { audio, video } = getCapabilities(sdp)
-							const extensions = getExtensions(sdp)
-							logTestResult({ test: 'webrtc', passed: true })
-							return resolve({
-								ipaddress: undefined,
-								extensions,
-								audio,
-								video
-							})
-						}
-						logTestResult({ test: 'webrtc', passed: false })
-						return resolve()
+				const giveUpOnGettingIPAddress = setTimeout(() => {
+					const { sdp } = offer || {}
+					if (sdp) {
+						const { audio, video } = getCapabilities(sdp)
+						const extensions = getExtensions(sdp)
+						logTestResult({ start, test: 'webrtc', passed: true })
+						return resolve({
+							ipaddress: undefined,
+							extensions,
+							audio,
+							video
+						})
 					}
+					logTestResult({ test: 'webrtc', passed: false })
+					return resolve()
 				}, 1000)
 				return connection.addEventListener('icecandidate', event => {
 					const { candidate } = event.candidate || {}
@@ -190,7 +187,7 @@ export const getWebRTCData = imports => {
 					if (!ipaddress) {
 						return
 					}
-					success = true
+					clearTimeout(giveUpOnGettingIPAddress)
 					connection.close()
 					const { audio, video } = getCapabilities(sdp)
 					const extensions = getExtensions(sdp)
