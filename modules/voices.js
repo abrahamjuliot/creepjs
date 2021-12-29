@@ -13,24 +13,28 @@ export const getVoices = imports => {
 		try {
 			// use window since phantomDarkness is unstable in FF
 			const supported = 'speechSynthesis' in window
-			supported && speechSynthesis.getVoices() // warm up
 			await new Promise(setTimeout).catch(e => {})
+			supported && speechSynthesis.getVoices() // warm up
 			const start = performance.now()
 			if (!supported) {
 				logTestResult({ test: 'speech', passed: false })
 				return resolve()
 			}
-			let success = false
+			
 			const voiceslie = !!lieProps['SpeechSynthesis.getVoices']
 
 			const getVoices = () => {
+				const giveUpOnVoices = setTimeout(() => {
+					logTestResult({ test: 'speech', passed: false })
+					return resolve()
+				}, 3000)
 				const data = speechSynthesis.getVoices()
 				if (!data || !data.length) {
 					return
 				}
-				success = true
+				clearTimeout(giveUpOnVoices)
 				const filterFirstOccurenceOfUniqueVoiceURIData = ({data, voiceURISet}) => data.filter(x => {
-					const { voiceURI, name } = x
+					const { voiceURI } = x
 					if (!voiceURISet.has(voiceURI)) {
 						voiceURISet.add(voiceURI)
 						return true
@@ -57,17 +61,7 @@ export const getVoices = imports => {
 			}
 			
 			getVoices()
-			speechSynthesis.onvoiceschanged = getVoices // Chrome support
-			
-			// handle pending resolve
-			const wait = 3000
-			setTimeout(() => {
-				if (success) {
-					return
-				}
-				logTestResult({ test: 'speech', passed: false })
-				return resolve()
-			}, wait)
+			return speechSynthesis.addEventListener('voiceschanged', getVoices) // Chrome support
 		}
 		catch (error) {
 			logTestResult({ test: 'speech', passed: false })
