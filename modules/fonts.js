@@ -133,189 +133,12 @@ const getFontList = () => [
 	...getDesktopAppFonts()
 ].sort()
 
-const originPixelsToInt = pixels => Math.round(2 * pixels.replace('px', ''))
-const getPixelDimensions = style => {
-	const transform = style.transformOrigin.split(' ')
-	const perspective = style.perspectiveOrigin.split(' ')
-	const dimensions = {
-		transformWidth: originPixelsToInt(transform[0]),
-		transformHeight: originPixelsToInt(transform[1]),
-		perspectiveWidth: originPixelsToInt(perspective[0]),
-		perspectiveHeight: originPixelsToInt(perspective[1])
-	}
-	return dimensions
-}
-
-const getPixelFonts = ({ win, id, chars, baseFonts, families }) => {
-	try {
-		win.document.getElementById(id).innerHTML = `
-			<style>
-				#${id}-detector {
-					--font: '';
-					position: absolute !important;
-					left: -9999px!important;
-					font-size: 256px !important;
-					font-style: normal !important;
-					font-weight: normal !important;
-					letter-spacing: normal !important;
-					line-break: auto !important;
-					line-height: normal !important;
-					text-transform: none !important;
-					text-align: left !important;
-					text-decoration: none !important;
-					text-shadow: none !important;
-					white-space: normal !important;
-					word-break: normal !important;
-					word-spacing: normal !important;
-					/* in order to test scrollWidth, clientWidth, etc. */
-					padding: 0 !important;
-					margin: 0 !important;
-					/* in order to test inlineSize and blockSize */
-					writing-mode: horizontal-tb !important;
-					/* in order to test perspective-origin */
-					/* in order to test origins */
-					transform-origin: unset !important;
-					perspective-origin: unset !important;
-				}
-				#${id}-detector::after {
-					font-family: var(--font);
-					content: '${chars}';
-				}
-			</style>
-			<span id="${id}-detector"></span>
-		`
-		const span = win.document.getElementById(`${id}-detector`)
-		const detectedViaTransform = new Set()
-		const detectedViaPerspective = new Set()
-		const style = getComputedStyle(span)
-		const base = baseFonts.reduce((acc, font) => {
-			span.style.setProperty('--font', font)
-			const dimensions = getPixelDimensions(style)
-			acc[font] = dimensions
-			return acc
-		}, {})
-		families.forEach(family => {
-			span.style.setProperty('--font', family)
-			const basefont = /, (.+)/.exec(family)[1]
-			const dimensions = getPixelDimensions(style)
-			const font = /\'(.+)\'/.exec(family)[1]
-			if (dimensions.transformWidth != base[basefont].transformWidth ||
-				dimensions.transformHeight != base[basefont].transformHeight) {
-				detectedViaTransform.add(font)
-			}
-			if (dimensions.perspectiveWidth != base[basefont].perspectiveWidth ||
-				dimensions.perspectiveHeight != base[basefont].perspectiveHeight) {
-				detectedViaPerspective.add(font)
-			}
-			return
-		})
-		const fonts = {
-			transform: [...detectedViaTransform],
-			perspective: [...detectedViaPerspective]
-		}
-		return fonts
-	} catch (error) {
-		console.error(error)
-		return {
-			transform: [],
-			perspective: []
-		}
-	}
-}
-
-const getFontFaceLoadFonts = async fontList => {
-	try {
-		const fontFaceList = fontList.map(font => new FontFace(font, `local("${font}")`))
-		const responseCollection = await Promise
-			.allSettled(fontFaceList.map(font => font.load()))
-		const fonts = responseCollection.reduce((acc, font) => {
-			if (font.status == 'fulfilled') {
-				return [...acc, font.value.family]
-			}
-			return acc
-		}, [])
-		return fonts
-	} catch (error) {
-		console.error(error)
-		return []
-	}
-}
-
-const getPlatformVersion = fonts => {
-	const getWindows = ({ fonts, fontMap }) => {
-		const fontVersion = {
-			['11']: fontMap['11'].find(x => fonts.includes(x)),
-			['10']: fontMap['10'].find(x => fonts.includes(x)),
-			['8.1']: fontMap['8.1'].find(x => fonts.includes(x)),
-			['8']: fontMap['8'].find(x => fonts.includes(x)),
-			// require complete set of Windows 7 fonts
-			['7']: fontMap['7'].filter(x => fonts.includes(x)).length == fontMap['7'].length
-		}
-		const hash = (
-			'' + Object.keys(fontVersion).sort().filter(key => !!fontVersion[key])
-		)
-		const hashMap = {
-			'10,11,7,8,8.1': '11',
-			'10,7,8,8.1': '10',
-			'7,8,8.1': '8.1',
-			'11,7,8,8.1': '8.1', // missing 10
-			'7,8': '8',
-			'10,7,8': '8', // missing 8.1
-			'10,11,7,8': '8', // missing 8.1
-			'7': '7',
-			'7,8.1': '7',
-			'10,7,8.1': '7', // missing 8
-			'10,11,7,8.1': '7', // missing 8
-		}
-		const version = hashMap[hash]
-		return version ? `Windows ${version}` : undefined
-	}
-
-	const getMacOS = ({ fonts, fontMap }) => {
-		const fontVersion = {
-			['10.15-11']: fontMap['10.15-11'].find(x => fonts.includes(x)),
-			['10.13-10.14']: fontMap['10.13-10.14'].find(x => fonts.includes(x)),
-			['10.12']: fontMap['10.12'].find(x => fonts.includes(x)),
-			['10.11']: fontMap['10.11'].find(x => fonts.includes(x)),
-			['10.10']: fontMap['10.10'].find(x => fonts.includes(x)),
-			// require complete set of 10.9 fonts
-			['10.9']: fontMap['10.9'].filter(x => fonts.includes(x)).length == fontMap['10.9'].length
-		}
-		const hash = (
-			'' + Object.keys(fontVersion).sort().filter(key => !!fontVersion[key])
-		)
-		const hashMap = {
-			'10.10,10.11,10.12,10.13-10.14,10.15-11,10.9': '10.15-11',
-			'10.10,10.11,10.12,10.13-10.14,10.9': '10.13-10.14',
-			'10.10,10.11,10.12,10.9': '10.12',
-			'10.10,10.11,10.9': '10.11',
-			'10.10,10.9': '10.10',
-			'10.9': '10.9'
-		}
-		const version = hashMap[hash]
-		return version ? `macOS ${version}` : undefined
-	}
-
-	return  (
-		getWindows({ fonts, fontMap: getWindowsFontMap() }) ||
-		getMacOS({ fonts, fontMap: getMacOSFontMap() })
-	)
-}
-
-const getDesktopApps = fonts => {
-	const desktopAppFontMap = getDesktopAppFontMap()
-	const apps = Object.keys(desktopAppFontMap).reduce((acc, key) => {
-		const appFontSet = desktopAppFontMap[key]
-		const match = appFontSet.filter(x => fonts.includes(x)).length == appFontSet.length
-		return match ? [...acc, key] : acc
-	}, [])
-	return apps
-}
-
 export const getFonts = async imports => {
 
 	const {
 		require: {
+			queueEvent,
+			createTimer,
 			captureError,
 			lieProps,
 			phantomDarkness,
@@ -323,9 +146,188 @@ export const getFonts = async imports => {
 		}
 	} = imports
 
+	const originPixelsToInt = pixels => Math.round(2 * pixels.replace('px', ''))
+	const getPixelDimensions = style => {
+		const transform = style.transformOrigin.split(' ')
+		const perspective = style.perspectiveOrigin.split(' ')
+		const dimensions = {
+			transformWidth: originPixelsToInt(transform[0]),
+			transformHeight: originPixelsToInt(transform[1]),
+			perspectiveWidth: originPixelsToInt(perspective[0]),
+			perspectiveHeight: originPixelsToInt(perspective[1])
+		}
+		return dimensions
+	}
+
+	const getPixelFonts = ({ win, id, chars, baseFonts, families }) => {
+		try {
+			win.document.getElementById(id).innerHTML = `
+				<style>
+					#${id}-detector {
+						--font: '';
+						position: absolute !important;
+						left: -9999px!important;
+						font-size: 256px !important;
+						font-style: normal !important;
+						font-weight: normal !important;
+						letter-spacing: normal !important;
+						line-break: auto !important;
+						line-height: normal !important;
+						text-transform: none !important;
+						text-align: left !important;
+						text-decoration: none !important;
+						text-shadow: none !important;
+						white-space: normal !important;
+						word-break: normal !important;
+						word-spacing: normal !important;
+						/* in order to test scrollWidth, clientWidth, etc. */
+						padding: 0 !important;
+						margin: 0 !important;
+						/* in order to test inlineSize and blockSize */
+						writing-mode: horizontal-tb !important;
+						/* in order to test perspective-origin */
+						/* in order to test origins */
+						transform-origin: unset !important;
+						perspective-origin: unset !important;
+					}
+					#${id}-detector::after {
+						font-family: var(--font);
+						content: '${chars}';
+					}
+				</style>
+				<span id="${id}-detector"></span>
+			`
+			const span = win.document.getElementById(`${id}-detector`)
+			const detectedViaTransform = new Set()
+			const detectedViaPerspective = new Set()
+			const style = getComputedStyle(span)
+			const base = baseFonts.reduce((acc, font) => {
+				span.style.setProperty('--font', font)
+				const dimensions = getPixelDimensions(style)
+				acc[font] = dimensions
+				return acc
+			}, {})
+			families.forEach(family => {
+				span.style.setProperty('--font', family)
+				const basefont = /, (.+)/.exec(family)[1]
+				const dimensions = getPixelDimensions(style)
+				const font = /\'(.+)\'/.exec(family)[1]
+				if (dimensions.transformWidth != base[basefont].transformWidth ||
+					dimensions.transformHeight != base[basefont].transformHeight) {
+					detectedViaTransform.add(font)
+				}
+				if (dimensions.perspectiveWidth != base[basefont].perspectiveWidth ||
+					dimensions.perspectiveHeight != base[basefont].perspectiveHeight) {
+					detectedViaPerspective.add(font)
+				}
+				return
+			})
+			const fonts = {
+				transform: [...detectedViaTransform],
+				perspective: [...detectedViaPerspective]
+			}
+			return fonts
+		} catch (error) {
+			console.error(error)
+			return {
+				transform: [],
+				perspective: []
+			}
+		}
+	}
+
+	const getFontFaceLoadFonts = async fontList => {
+		try {
+			const fontFaceList = fontList.map(font => new FontFace(font, `local("${font}")`))
+			const responseCollection = await Promise
+				.allSettled(fontFaceList.map(font => font.load()))
+			const fonts = responseCollection.reduce((acc, font) => {
+				if (font.status == 'fulfilled') {
+					return [...acc, font.value.family]
+				}
+				return acc
+			}, [])
+			return fonts
+		} catch (error) {
+			console.error(error)
+			return []
+		}
+	}
+
+	const getPlatformVersion = fonts => {
+		const getWindows = ({ fonts, fontMap }) => {
+			const fontVersion = {
+				['11']: fontMap['11'].find(x => fonts.includes(x)),
+				['10']: fontMap['10'].find(x => fonts.includes(x)),
+				['8.1']: fontMap['8.1'].find(x => fonts.includes(x)),
+				['8']: fontMap['8'].find(x => fonts.includes(x)),
+				// require complete set of Windows 7 fonts
+				['7']: fontMap['7'].filter(x => fonts.includes(x)).length == fontMap['7'].length
+			}
+			const hash = (
+				'' + Object.keys(fontVersion).sort().filter(key => !!fontVersion[key])
+			)
+			const hashMap = {
+				'10,11,7,8,8.1': '11',
+				'10,7,8,8.1': '10',
+				'7,8,8.1': '8.1',
+				'11,7,8,8.1': '8.1', // missing 10
+				'7,8': '8',
+				'10,7,8': '8', // missing 8.1
+				'10,11,7,8': '8', // missing 8.1
+				'7': '7',
+				'7,8.1': '7',
+				'10,7,8.1': '7', // missing 8
+				'10,11,7,8.1': '7', // missing 8
+			}
+			const version = hashMap[hash]
+			return version ? `Windows ${version}` : undefined
+		}
+
+		const getMacOS = ({ fonts, fontMap }) => {
+			const fontVersion = {
+				['10.15-11']: fontMap['10.15-11'].find(x => fonts.includes(x)),
+				['10.13-10.14']: fontMap['10.13-10.14'].find(x => fonts.includes(x)),
+				['10.12']: fontMap['10.12'].find(x => fonts.includes(x)),
+				['10.11']: fontMap['10.11'].find(x => fonts.includes(x)),
+				['10.10']: fontMap['10.10'].find(x => fonts.includes(x)),
+				// require complete set of 10.9 fonts
+				['10.9']: fontMap['10.9'].filter(x => fonts.includes(x)).length == fontMap['10.9'].length
+			}
+			const hash = (
+				'' + Object.keys(fontVersion).sort().filter(key => !!fontVersion[key])
+			)
+			const hashMap = {
+				'10.10,10.11,10.12,10.13-10.14,10.15-11,10.9': '10.15-11',
+				'10.10,10.11,10.12,10.13-10.14,10.9': '10.13-10.14',
+				'10.10,10.11,10.12,10.9': '10.12',
+				'10.10,10.11,10.9': '10.11',
+				'10.10,10.9': '10.10',
+				'10.9': '10.9'
+			}
+			const version = hashMap[hash]
+			return version ? `macOS ${version}` : undefined
+		}
+
+		return  (
+			getWindows({ fonts, fontMap: getWindowsFontMap() }) ||
+			getMacOS({ fonts, fontMap: getMacOSFontMap() })
+		)
+	}
+
+	const getDesktopApps = fonts => {
+		const desktopAppFontMap = getDesktopAppFontMap()
+		const apps = Object.keys(desktopAppFontMap).reduce((acc, key) => {
+			const appFontSet = desktopAppFontMap[key]
+			const match = appFontSet.filter(x => fonts.includes(x)).length == appFontSet.length
+			return match ? [...acc, key] : acc
+		}, [])
+		return apps
+	}
+
 	try {
-		await new Promise(setTimeout).catch(e => { })
-		const start = performance.now()
+		const timer = createTimer()
+		await queueEvent(timer)
 		const win = phantomDarkness || window
 		const doc = win.document
 		const id = `font-fingerprint`
@@ -349,7 +351,6 @@ export const getFonts = async imports => {
 			return [...acc, ...fontObject[key]]
 		}, [])
 		const originFonts = [...new Set(compressToList(pixelFonts))]
-
 		const fontList = getFontList()
 		const fontFaceLoadFonts = await getFontFaceLoadFonts(fontList)
 		const platformVersion = getPlatformVersion(fontFaceLoadFonts)
@@ -362,7 +363,7 @@ export const getFonts = async imports => {
 			lieProps['FontFace.status']
 		)
 
-		logTestResult({ start, test: 'fonts', passed: true })
+		logTestResult({ time: timer.stop(), test: 'fonts', passed: true })
 		return {
 			fontFaceLoadFonts,
 			pixelFonts,

@@ -2,18 +2,21 @@ export const getHTMLElementVersion = async imports => {
 
 	const {
 		require: {
+			queueEvent,
+			createTimer,
 			captureError,
 			logTestResult
 		}
 	} = imports
 
 	try {
-		const start = performance.now()
+		const timer = createTimer()
+		timer.start()
 		const keys = []
 		for (const key in document.documentElement) {
 			keys.push(key)
 		}
-		logTestResult({ start, test: 'html element', passed: true })
+		logTestResult({ time: timer.stop(), test: 'html element', passed: true })
 		return { keys }
 	}
 	catch (error) {

@@ -368,13 +368,13 @@ const getUserAgentRestored = ({ userAgent, userAgentData }) => {
 	return userAgentRestored
 }
 
-const logTestResult = ({ test, passed, start = false }) => {
+const logTestResult = ({ test, passed, time = 0 }) => {
 	const color = passed ? '#4cca9f' : 'lightcoral'
 	const result = passed ? 'passed' : 'failed'
 	const symbol = passed ? '✔' : '-'
 	return console.log(
 		`%c${symbol}${
-		start ? ` (${(performance.now() - start).toFixed(2)}ms)` : ''
+		time ? ` (${time.toFixed(2)}ms)` : ''
 		} ${test} ${result}`, `color:${color}`
 	)
 }
@@ -393,4 +393,28 @@ const getPromiseRaceFulfilled = async ({
 	)
 }
 
-export { isChrome, braveBrowser, getBraveMode, getBraveUnprotectedParameters, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, computeWindowsRelease, attemptWindows11UserAgent, isUAPostReduction, getUserAgentRestored, logTestResult, getPromiseRaceFulfilled }
+const createTimer = () => {
+	let start = 0
+	const log = []
+	return {
+		stop: () => {
+			if (start) {
+				log.push(performance.now() - start)
+				return log.reduce((acc, n) => acc += n, 0)
+			}
+			return start
+		},
+		start: () => {
+			start = performance.now()
+			return start
+		}
+	}
+}
+
+const queueEvent = (timer, delay = 0) => {
+	timer.stop()
+	return new Promise(resolve => setTimeout(() => resolve(timer.start()), delay))
+		.catch(e => { })
+}
+
+export { isChrome, braveBrowser, getBraveMode, getBraveUnprotectedParameters, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, computeWindowsRelease, attemptWindows11UserAgent, isUAPostReduction, getUserAgentRestored, logTestResult, getPromiseRaceFulfilled, queueEvent, createTimer }

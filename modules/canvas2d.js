@@ -135,6 +135,8 @@ export const getCanvas2d = async imports => {
 
 	const {
 		require: {
+			queueEvent,
+			createTimer,
 			captureError,
 			lieProps,
 			documentLie,
@@ -264,8 +266,8 @@ export const getCanvas2d = async imports => {
 	].map(emojiCode => String.fromCodePoint(...emojiCode))
 
 	try {
-		await new Promise(setTimeout).catch(e => { })
-		const start = performance.now()
+		const timer = createTimer()
+		await queueEvent(timer)
 
 		const dataLie = lieProps['HTMLCanvasElement.toDataURL']
 		const contextLie = lieProps['HTMLCanvasElement.getContext']
@@ -365,7 +367,8 @@ export const getCanvas2d = async imports => {
 			fillRect(canvasOffscreen, contextOffscreen)
 		}
 		catch (error) { }
-		await new Promise(setTimeout).catch(e => { })
+
+		await queueEvent(timer)
 		const [
 			fileReaderData,
 			fileReaderDataOffscreen
@@ -375,7 +378,6 @@ export const getCanvas2d = async imports => {
 			})),
 			getFileReaderData(canvasOffscreen && await canvasOffscreen.convertToBlob())
 		])
-
 		const [arrayBuffer, binaryString, dataURL, text] = fileReaderData || {}
 		const [
 			arrayBufferOffScreen,
@@ -396,7 +398,7 @@ export const getCanvas2d = async imports => {
 			readAsText: textOffscreen
 		}
 
-		await new Promise(setTimeout).catch(e => { })
+		await queueEvent(timer)
 		const points = getPointIn(canvas, context) // modifies width
 		const mods = getPixelMods()
 	
@@ -406,7 +408,7 @@ export const getCanvas2d = async imports => {
 			const iframeLie = `pixel data modified`
 			documentLie(`CanvasRenderingContext2D.getImageData`, iframeLie)
 		}
-
+		
 		const getTextMetricsFloatLie = context => {
 			const isFloat = n => n % 1 !== 0
 			const {
@@ -428,6 +430,7 @@ export const getCanvas2d = async imports => {
 			].find(x => isFloat((x || 0)))
 			return lied
 		}
+		await queueEvent(timer)
 		if (getTextMetricsFloatLie(context)) {
 			textMetricsLie = true
 			lied = true
@@ -436,12 +439,11 @@ export const getCanvas2d = async imports => {
 				'metric noise detected'
 			)
 		}
-
 		const imageDataCompressed = (
 			imageData ? String.fromCharCode.apply(null, imageData) : undefined
 		)
 		
-		logTestResult({ start, test: 'canvas 2d', passed: true })
+		logTestResult({ time: timer.stop(), test: 'canvas 2d', passed: true })
 		return {
 			dataURI,
 			imageData: imageDataCompressed,

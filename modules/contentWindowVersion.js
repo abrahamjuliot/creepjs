@@ -2,6 +2,8 @@ export const getWindowFeatures = async imports => {
 
 	const {
 		require: {
+			queueEvent,
+			createTimer,
 			captureError,
 			phantomDarkness,
 			isFirefox,
@@ -10,7 +12,8 @@ export const getWindowFeatures = async imports => {
 	} = imports
 
 	try {
-		const start = performance.now()
+		const timer = createTimer()
+		timer.start()
 		const win = phantomDarkness || window
 		let keys = Object.getOwnPropertyNames(win)
 			.filter(key => !/_|\d{3,}/.test(key)) // clear out known ddg noise
@@ -38,7 +41,7 @@ export const getWindowFeatures = async imports => {
 		const webkit = keys.filter(key => (/webkit/i).test(key)).length
 		const apple = keys.filter(key => (/apple/i).test(key)).length
 		const data = { keys, apple, moz, webkit }
-		logTestResult({ start, test: 'window', passed: true })
+		logTestResult({ time: timer.stop(), test: 'window', passed: true })
 		return { ...data }
 	}
 	catch (error) {

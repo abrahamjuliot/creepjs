@@ -1,57 +1,9 @@
-// screen (allow some discrepancies otherwise lie detection triggers at random)
-
-const getDevice = (width, height) => {
-	// https://gs.statcounter.com/screen-resolution-stats/
-	const resolution = [
-		{ width: 360, height: 640, device: 'phone'},
-		{ width: 360, height: 720, device: 'phone'},
-		{ width: 360, height: 740, device: 'phone'},
-		{ width: 360, height: 760, device: 'phone'},
-		{ width: 360, height: 780, device: 'phone'},
-		{ width: 375, height: 667, device: 'phone'},
-		{ width: 375, height: 812, device: 'phone'},
-		{ width: 412, height: 732, device: 'phone'},
-		{ width: 412, height: 846, device: 'phone'},
-		{ width: 412, height: 869, device: 'phone'},
-		{ width: 412, height: 892, device: 'phone'},
-		{ width: 414, height: 736, device: 'phone'},
-		{ width: 414, height: 896, device: 'phone'},
-		{ width: 600, height: 1024, device: 'tablet'},
-		{ width: 601, height: 962, device: 'tablet'},
-		{ width: 768, height: 1024, device: 'desktop or tablet'},
-		{ width: 800, height: 1280, device: 'desktop or tablet'},
-		{ width: 834, height: 1112, device: 'desktop or tablet'},
-		{ width: 962, height: 601, device: 'tablet'},
-		{ width: 1000, height: 700, device: 'desktop or tablet'},
-		{ width: 1000, height: 1000, device: 'desktop or tablet'},
-		{ width: 1024, height: 768, device: 'desktop or tablet'},
-		{ width: 1024, height: 1366, device: 'desktop or tablet'},
-		{ width: 1280, height: 720, device: 'desktop or tablet'},
-		{ width: 1280, height: 800, device: 'desktop or tablet'},
-		{ width: 1280, height: 1024, device: 'desktop'},
-		{ width: 1366, height: 768, device: 'desktop'},
-		{ width: 1440, height: 900, device: 'desktop'},
-		{ width: 1536, height: 864, device: 'desktop'},
-		{ width: 1600, height: 900, device: 'desktop'},
-		{ width: 1920, height: 1080, device: 'desktop'}
-	]
-	for (const display of resolution) {
-		if (
-			width == display.width && height == display.height || (
-				(display.device == 'phone' || display.device == 'tablet') &&
-				height == display.width && width == display.height
-			)
-		) {
-			return display.device
-		}
-	}
-	return
-}
-
 export const getScreen = async imports => {
 
 	const {
 		require: {
+			queueEvent,
+			createTimer,
 			captureError,
 			attempt,
 			sendToTrash,
@@ -61,9 +13,58 @@ export const getScreen = async imports => {
 			logTestResult
 		}
 	} = imports
-	
+
+	const getDevice = (width, height) => {
+		// https://gs.statcounter.com/screen-resolution-stats/
+		const resolution = [
+			{ width: 360, height: 640, device: 'phone'},
+			{ width: 360, height: 720, device: 'phone'},
+			{ width: 360, height: 740, device: 'phone'},
+			{ width: 360, height: 760, device: 'phone'},
+			{ width: 360, height: 780, device: 'phone'},
+			{ width: 375, height: 667, device: 'phone'},
+			{ width: 375, height: 812, device: 'phone'},
+			{ width: 412, height: 732, device: 'phone'},
+			{ width: 412, height: 846, device: 'phone'},
+			{ width: 412, height: 869, device: 'phone'},
+			{ width: 412, height: 892, device: 'phone'},
+			{ width: 414, height: 736, device: 'phone'},
+			{ width: 414, height: 896, device: 'phone'},
+			{ width: 600, height: 1024, device: 'tablet'},
+			{ width: 601, height: 962, device: 'tablet'},
+			{ width: 768, height: 1024, device: 'desktop or tablet'},
+			{ width: 800, height: 1280, device: 'desktop or tablet'},
+			{ width: 834, height: 1112, device: 'desktop or tablet'},
+			{ width: 962, height: 601, device: 'tablet'},
+			{ width: 1000, height: 700, device: 'desktop or tablet'},
+			{ width: 1000, height: 1000, device: 'desktop or tablet'},
+			{ width: 1024, height: 768, device: 'desktop or tablet'},
+			{ width: 1024, height: 1366, device: 'desktop or tablet'},
+			{ width: 1280, height: 720, device: 'desktop or tablet'},
+			{ width: 1280, height: 800, device: 'desktop or tablet'},
+			{ width: 1280, height: 1024, device: 'desktop'},
+			{ width: 1366, height: 768, device: 'desktop'},
+			{ width: 1440, height: 900, device: 'desktop'},
+			{ width: 1536, height: 864, device: 'desktop'},
+			{ width: 1600, height: 900, device: 'desktop'},
+			{ width: 1920, height: 1080, device: 'desktop'}
+		]
+		for (const display of resolution) {
+			if (
+				width == display.width && height == display.height || (
+					(display.device == 'phone' || display.device == 'tablet') &&
+					height == display.width && width == display.height
+				)
+			) {
+				return display.device
+			}
+		}
+		return
+	}
+
 	try {
-		const start = performance.now()
+		const timer = createTimer()
+		timer.start()
 		let lied = (
 			lieProps['Screen.width'] ||
 			lieProps['Screen.height'] ||
@@ -128,7 +129,7 @@ export const getScreen = async imports => {
 			pixelDepth: attempt(() => screenPixelDepth ? trustInteger('pixelDepth - invalid return type', screenPixelDepth) : undefined),
 			lied
 		}
-		logTestResult({ start, test: 'screen', passed: true })
+		logTestResult({ time: timer.stop(), test: 'screen', passed: true })
 		return { ...data }
 	}
 	catch (error) {

@@ -2,6 +2,8 @@ export const getVoices = imports => {
 
 	const {
 		require: {
+			queueEvent,
+			createTimer,
 			captureError,
 			logTestResult,
 			sendToTrash,
@@ -11,9 +13,10 @@ export const getVoices = imports => {
 		
 	return new Promise(async resolve => {
 		try {
+			const timer = createTimer()
+			await queueEvent(timer)
 			// use window since phantomDarkness is unstable in FF
 			const supported = 'speechSynthesis' in window
-			await new Promise(setTimeout).catch(e => {})
 			supported && speechSynthesis.getVoices() // warm up
 			const start = performance.now()
 			if (!supported) {
@@ -50,7 +53,7 @@ export const getVoices = imports => {
 				const languages = [...new Set(dataUnique.map(x => x.lang))]
 				const defaults = dataUnique.filter(x => x.default).map(x => x.name)
 				
-				logTestResult({ start, test: 'speech', passed: true })
+				logTestResult({ time: timer.stop(), test: 'speech', passed: true })
 				return resolve({
 					local,
 					remote,

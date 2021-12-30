@@ -1,34 +1,9 @@
-const getLocale = intl => {
-	const constructors = [
-		'Collator',
-		'DateTimeFormat',
-		'DisplayNames',
-		'ListFormat',
-		'NumberFormat',
-		'PluralRules',
-		'RelativeTimeFormat'
-	]
-	const locale = constructors.reduce((acc, name) => {
-		try {
-			const obj = new intl[name]
-			if (!obj) {
-				return acc
-			}
-			const { locale } = obj.resolvedOptions() || {}
-			return [...acc, locale]
-		}
-		catch (error) {
-			return acc
-		}
-	}, [])
-
-	return [...new Set(locale)]
-}
-
 export const getIntl = async imports => {
 
 	const {
 		require: {
+			queueEvent,
+			createTimer,
 			phantomDarkness,
 			lieProps,
 			caniuse,
@@ -37,8 +12,36 @@ export const getIntl = async imports => {
 		}
 	} = imports
 
+	const getLocale = intl => {
+		const constructors = [
+			'Collator',
+			'DateTimeFormat',
+			'DisplayNames',
+			'ListFormat',
+			'NumberFormat',
+			'PluralRules',
+			'RelativeTimeFormat'
+		]
+		const locale = constructors.reduce((acc, name) => {
+			try {
+				const obj = new intl[name]
+				if (!obj) {
+					return acc
+				}
+				const { locale } = obj.resolvedOptions() || {}
+				return [...acc, locale]
+			}
+			catch (error) {
+				return acc
+			}
+		}, [])
+
+		return [...new Set(locale)]
+	}
+
 	try {
-		const start = performance.now()
+		const timer = createTimer()
+		await queueEvent(timer)
 		let lied = (
 			lieProps['Intl.Collator.resolvedOptions'] ||
 			lieProps['Intl.DateTimeFormat.resolvedOptions'] ||
@@ -92,7 +95,7 @@ export const getIntl = async imports => {
 
 		const locale = getLocale(phantomIntl)
 
-		logTestResult({ start, test: 'intl', passed: true })
+		logTestResult({ time: timer.stop(), test: 'intl', passed: true })
 		return {
 			dateTimeFormat,
 			displayNames,

@@ -2,7 +2,8 @@ export const getMaths = async imports => {
 
 	const {
 		require: {
-			hashMini,
+			queueEvent,
+			createTimer,
 			captureError,
 			attempt,
 			documentLie,
@@ -13,7 +14,8 @@ export const getMaths = async imports => {
 	} = imports
 
 	try {
-		const start = performance.now()
+		const timer = createTimer()
+		timer.start()
 		// detect failed math equality lie
 		const check = [
 			'acos',
@@ -208,7 +210,7 @@ export const getMaths = async imports => {
 			})
 		})
 
-		logTestResult({ start, test: 'math', passed: true })
+		logTestResult({ time: timer.stop(), test: 'math', passed: true })
 		return { data, lied }
 	}
 	catch (error) {

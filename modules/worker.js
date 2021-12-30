@@ -1,34 +1,8 @@
-const ask = fn => { try { return fn() } catch (e) { return } }
-
-const resolveWorkerData = (target, resolve, fn) => target.addEventListener('message', event => {
-	fn(); return resolve(event.data)
-})
-
-const getDedicatedWorker = ({ scriptSource }) => new Promise(resolve => {
-	const dedicatedWorker = ask(() => new Worker(scriptSource))
-	if (!dedicatedWorker) return resolve()
-	return resolveWorkerData(dedicatedWorker, resolve, () => dedicatedWorker.terminate())
-})
-
-const getSharedWorker = ({ scriptSource }) => new Promise(resolve => {
-	const sharedWorker = ask(() => new SharedWorker(scriptSource))
-	if (!sharedWorker) return resolve()
-	sharedWorker.port.start()
-	return resolveWorkerData(sharedWorker.port, resolve, () => sharedWorker.port.close())
-})
-
-const getServiceWorker = ({ scriptSource, scope }) => new Promise(async resolve => {
-	const registration = await ask(() => navigator.serviceWorker.register(scriptSource, { scope }).catch(e => {}))
-	if (!registration) return resolve()
-	return navigator.serviceWorker.ready.then(registration => {
-		registration.active.postMessage(undefined)
-		return resolveWorkerData(navigator.serviceWorker, resolve, () => registration.unregister())
-	})
-})
-
 export const getBestWorkerScope = async imports => {	
 	const {
 		require: {
+			queueEvent,
+			createTimer,
 			getOS,
 			decryptUserAgent,
 			captureError,
@@ -41,8 +15,33 @@ export const getBestWorkerScope = async imports => {
 		}
 	} = imports
 	try {
-		await new Promise(setTimeout).catch(e => {})
-		const start = performance.now()
+		const timer = createTimer()
+		await queueEvent(timer)
+
+		const ask = fn => { try { return fn() } catch (e) { return } }
+		const resolveWorkerData = (target, resolve, fn) => target.addEventListener('message', event => {
+			fn(); return resolve(event.data)
+		})
+		const getDedicatedWorker = ({ scriptSource }) => new Promise(resolve => {
+			const dedicatedWorker = ask(() => new Worker(scriptSource))
+			if (!dedicatedWorker) return resolve()
+			return resolveWorkerData(dedicatedWorker, resolve, () => dedicatedWorker.terminate())
+		})
+		const getSharedWorker = ({ scriptSource }) => new Promise(resolve => {
+			const sharedWorker = ask(() => new SharedWorker(scriptSource))
+			if (!sharedWorker) return resolve()
+			sharedWorker.port.start()
+			return resolveWorkerData(sharedWorker.port, resolve, () => sharedWorker.port.close())
+		})
+		const getServiceWorker = ({ scriptSource, scope }) => new Promise(async resolve => {
+			const registration = await ask(() => navigator.serviceWorker.register(scriptSource, { scope }).catch(e => {}))
+			if (!registration) return resolve()
+			return navigator.serviceWorker.ready.then(registration => {
+				registration.active.postMessage(undefined)
+				return resolveWorkerData(navigator.serviceWorker, resolve, () => registration.unregister())
+			})
+		})
+
 		const scriptSource = 'creepworker.js'
 		let scope = 'ServiceWorkerGlobalScope'
 		let type = 'service' // loads fast but is not available in frames
@@ -235,13 +234,15 @@ export const getBestWorkerScope = async imports => {
 			workerScope.userAgentDataVersion = userAgentDataVersion
 			workerScope.userAgentEngine = userAgentEngine
 
-			logTestResult({ start, test: `${type} worker`, passed: true })
+			const gpu = {
+				...(getWebGLRendererConfidence(workerScope.webglRenderer) || {}),
+				compressedGPU: compressWebGLRenderer(workerScope.webglRenderer)
+			}
+			
+			logTestResult({ time: timer.stop(), test: `${type} worker`, passed: true })
 			return {
 				...workerScope,
-				gpu: {
-					...(getWebGLRendererConfidence(workerScope.webglRenderer) || {}),
-					compressedGPU: compressWebGLRenderer(workerScope.webglRenderer)
-				}
+				gpu
 			}
 		}
 		return

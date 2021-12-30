@@ -13,13 +13,14 @@ const instanceId = hashMini(crypto.getRandomValues(new Uint32Array(10)))
 // https://stackoverflow.com/a/53490958
 // https://stackoverflow.com/a/43383990
 // https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest
-const hashify = async (x) => {
+const hashify = x => {
 	const json = `${JSON.stringify(x)}`
 	const jsonBuffer = new TextEncoder().encode(json)
-	const hashBuffer = await crypto.subtle.digest('SHA-256', jsonBuffer)
-	const hashArray = Array.from(new Uint8Array(hashBuffer))
-	const hashHex = hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('')
-	return hashHex
+	return crypto.subtle.digest('SHA-256', jsonBuffer).then(hashBuffer => {
+		const hashArray = Array.from(new Uint8Array(hashBuffer))
+		const hashHex = hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('')
+		return hashHex
+	})
 }
 
 export { hashMini, instanceId, hashify }

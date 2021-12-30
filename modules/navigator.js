@@ -3,8 +3,9 @@ export const getNavigator = async (imports, workerScope) => {
 
 	const {
 		require: {
+			queueEvent,
+			createTimer,
 			getOS,
-			hashMini,
 			captureError,
 			attempt,
 			caniuse,
@@ -26,7 +27,8 @@ export const getNavigator = async (imports, workerScope) => {
 	} = imports
 
 	try {
-		const start = performance.now()
+		const timer = createTimer()
+		await queueEvent(timer)
 		let lied = (
 			lieProps['Navigator.appVersion'] ||
 			lieProps['Navigator.deviceMemory'] ||
@@ -635,7 +637,7 @@ export const getNavigator = async (imports, workerScope) => {
 			getPermissions(),
 			getWebgpu()
 		])
-		logTestResult({ start, test: 'navigator', passed: true })
+		logTestResult({ time: timer.stop(), test: 'navigator', passed: true })
 		return {
 			...data,
 			keyboard,

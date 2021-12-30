@@ -1,11 +1,16 @@
-export const getWebRTCData = imports => {
+export const getWebRTCData = async imports => {
 
 	const {
 		require: {
+			queueEvent,
+			createTimer,
 			captureError,
 			logTestResult
 		}
 	} = imports
+
+	const timer = createTimer()
+	await queueEvent(timer)
 
 	const getExtensions = sdp => {
 		const extensions = (('' + sdp).match(/extmap:\d+ [^\n|\r]+/g) || [])
@@ -122,9 +127,6 @@ export const getWebRTCData = imports => {
 
 	return new Promise(async resolve => {
 		try {
-			await new Promise(setTimeout).catch(e => { })
-			const start = performance.now()
-
 			if (!window.RTCPeerConnection) {
 				logTestResult({ test: 'webrtc', passed: false })
 				return resolve()
@@ -166,7 +168,7 @@ export const getWebRTCData = imports => {
 					if (sdp) {
 						const { audio, video } = getCapabilities(sdp)
 						const extensions = getExtensions(sdp)
-						logTestResult({ start, test: 'webrtc', passed: true })
+						logTestResult({ time: timer.stop(), test: 'webrtc', passed: true })
 						return resolve({
 							ipaddress: undefined,
 							extensions,
@@ -191,7 +193,7 @@ export const getWebRTCData = imports => {
 					connection.close()
 					const { audio, video } = getCapabilities(sdp)
 					const extensions = getExtensions(sdp)
-					logTestResult({ start, test: 'webrtc', passed: true })
+					logTestResult({ time: timer.stop(), test: 'webrtc', passed: true })
 					return resolve({
 						ipaddress,
 						extensions,

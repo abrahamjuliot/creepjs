@@ -2,6 +2,8 @@ export const getSVG = async imports => {
 
 	const {
 		require: {
+			queueEvent,
+			createTimer,
 			instanceId,
 			patch,
 			html,
@@ -13,7 +15,8 @@ export const getSVG = async imports => {
 	} = imports
 	
 	try {
-		const start = performance.now()
+		const timer = createTimer()
+		await queueEvent(timer)
 		let lied = (
 			lieProps['SVGRect.height'] ||
 			lieProps['SVGRect.width'] ||
@@ -97,6 +100,7 @@ export const getSVG = async imports => {
 			subStringLength: new Set(),
 			computedTextLength: new Set()
 		}
+		await queueEvent(timer)
 		const emojiSet = emojis.reduce((emojiSet, emoji) => {
 			svgText.textContent = emoji
 			const extentOfCharSum = reduceToSum(svgText.getExtentOfChar(''))
@@ -118,7 +122,7 @@ export const getSVG = async imports => {
 			return emojiSet
 		}, new Set())
 
-		logTestResult({ start, test: 'svg', passed: true })
+		logTestResult({ time: timer.stop(), test: 'svg', passed: true })
 
 		return {
 			bBox: getObjectSum(bBox),

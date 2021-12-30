@@ -28,6 +28,8 @@ export const getOfflineAudioContext = async imports => {
 
 	const {
 		require: {
+			queueEvent,
+			createTimer,
 			captureError,
 			attempt,
 			caniuse,
@@ -40,8 +42,8 @@ export const getOfflineAudioContext = async imports => {
 	} = imports
 
 	try {
-		await new Promise(setTimeout).catch(e => {})
-		const start = performance.now()
+		const timer = createTimer()
+		await queueEvent(timer)
 		const win = phantomDarkness ? phantomDarkness : window
 		const audioContext = caniuse(() => win.OfflineAudioContext || win.webkitOfflineAudioContext)
 		if (!audioContext) {
@@ -132,7 +134,7 @@ export const getOfflineAudioContext = async imports => {
 			oscillator.start(0)
 			context.startRendering()
 
-			context.oncomplete = event => {
+			return context.addEventListener('complete', event => {
 				try {
 					if (floatFrequencyData) {
 						const data = new Float32Array(analyser.frequencyBinCount)
@@ -159,9 +161,9 @@ export const getOfflineAudioContext = async imports => {
 					dynamicsCompressor.disconnect()
 					oscillator.disconnect()
 				}
-			}
+			})
 		})
-
+		await queueEvent(timer)
 		const [
 			response,
 			floatFrequencyData,
@@ -179,7 +181,7 @@ export const getOfflineAudioContext = async imports => {
 				floatTimeDomainData: true
 			})
 		])
-		
+		await queueEvent(timer)
 		const getSum = arr => !arr ? 0 : arr.reduce((acc, curr) => (acc += Math.abs(curr)), 0)
 		const { buffer, compressorGainReduction } = response || {}
 		const floatFrequencyDataSum = getSum(floatFrequencyData)
@@ -224,6 +226,7 @@ export const getOfflineAudioContext = async imports => {
 				return 1
 			}
 		}
+		
 		const noiseFactor = getNoiseFactor()
 		const noise = noiseFactor == 1 ? 0 : noiseFactor
 		if (noise) {
@@ -231,8 +234,7 @@ export const getOfflineAudioContext = async imports => {
 			const audioSampleNoiseLie = 'sample noise detected'
 			documentLie('AudioBuffer', audioSampleNoiseLie)
 		}
-
-		logTestResult({ start, test: 'audio', passed: true })
+		logTestResult({ time: timer.stop(), test: 'audio', passed: true })
 		return {
 			totalUniqueSamples,
 			compressorGainReduction,

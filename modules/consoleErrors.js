@@ -14,14 +14,16 @@ export const getConsoleErrors = async imports => {
 
 	const {
 		require: {
-			hashify,
+			queueEvent,
+			createTimer,
 			captureError,
 			logTestResult
 		}
 	} = imports
 
 	try {
-		const start = performance.now()
+		const timer = createTimer()
+		timer.start()
 		const errorTests = [
 			() => new Function('alert(")')(),
 			() => new Function('const foo;foo.bar')(),
@@ -34,7 +36,7 @@ export const getConsoleErrors = async imports => {
 			() => new Function('const a=1; const a=2;')()
 		]
 		const errors = getErrors(errorTests)
-		logTestResult({ start, test: 'console errors', passed: true })
+		logTestResult({ time: timer.stop(), test: 'console errors', passed: true })
 		return { errors }
 	}
 	catch (error) {

@@ -1,4 +1,3 @@
-
 // inspired by 
 // - https://privacycheck.sec.lrz.de/active/fp_cpt/fp_can_play_type.html
 // - https://arkenfox.github.io/TZP
@@ -9,60 +8,56 @@ const getMimeTypeShortList = () => [
 	'video/webm'
 ]
 
-const getMimeTypes = async () => {
-    try {
-		const mimeTypes = getMimeTypeShortList()
-        const videoEl = document.createElement('video')
-        const audioEl = new Audio()
-        const isMediaRecorderSupported = 'MediaRecorder' in window
-        const types = mimeTypes.reduce((acc, type) => {
-            const data = {
-                mimeType: type,
-                audioPlayType: audioEl.canPlayType(type),
-                videoPlayType: videoEl.canPlayType(type),
-                mediaSource: MediaSource.isTypeSupported(type),
-                mediaRecorder: isMediaRecorderSupported ? MediaRecorder.isTypeSupported(type) : false
-            }
-			if (!data.audioPlayType && !data.videoPlayType && !data.mediaSource && !data.mediaRecorder) {
-				return acc
-			}
-            acc.push(data)
-            return acc
-        }, [])
-        return types
-    } catch (error) {
-        return
-    }
-}
-
 export const getMedia = async imports => {
 
 	const {
 		require: {
+			queueEvent,
+			createTimer,
 			captureError,
 			phantomDarkness,
 			caniuse,
-			logTestResult,
-			getPromiseRaceFulfilled
+			logTestResult
 		}
 	} = imports
 
-	try {
-		await new Promise(setTimeout).catch(e => {})
-		const start = performance.now()
-		const phantomNavigator = phantomDarkness ? phantomDarkness.navigator : navigator
-		let devices, types
-		if (caniuse(() => navigator.mediaDevices.enumerateDevices)) {
-			const [
-				enumeratedDevices,
-				mimes
-			] = await Promise.all([
-				phantomNavigator.mediaDevices.enumerateDevices(),
-				getMimeTypes()
-			])
-			.catch(error => console.error(error))
+	const getMimeTypes = () => {
+		try {
+			const mimeTypes = getMimeTypeShortList()
+			const videoEl = document.createElement('video')
+			const audioEl = new Audio()
+			const isMediaRecorderSupported = 'MediaRecorder' in window
+			const types = mimeTypes.reduce((acc, type) => {
+				const data = {
+					mimeType: type,
+					audioPlayType: audioEl.canPlayType(type),
+					videoPlayType: videoEl.canPlayType(type),
+					mediaSource: MediaSource.isTypeSupported(type),
+					mediaRecorder: isMediaRecorderSupported ? MediaRecorder.isTypeSupported(type) : false
+				}
+				if (!data.audioPlayType && !data.videoPlayType && !data.mediaSource && !data.mediaRecorder) {
+					return acc
+				}
+				acc.push(data)
+				return acc
+			}, [])
+			return types
+		} catch (error) {
+			return
+		}
+	}
 
-			types = mimes
+	try {
+		const timer = createTimer()
+		await queueEvent(timer)
+		const phantomNavigator = phantomDarkness ? phantomDarkness.navigator : navigator
+		let devices, mimeTypes
+		if (caniuse(() => navigator.mediaDevices.enumerateDevices)) {
+			const enumeratedDevices = await phantomNavigator.mediaDevices.enumerateDevices()
+				.catch(error => console.error(error))
+
+			await queueEvent(timer)
+			mimeTypes = getMimeTypes()
 			devices = (
 				enumeratedDevices ?
 				enumeratedDevices.map(device => device.kind).sort() :
@@ -70,10 +65,11 @@ export const getMedia = async imports => {
 			)
 		}
 		else {
-			types = await getMimeTypes()
+			await queueEvent(timer)
+			mimeTypes = getMimeTypes()
 		}
-		logTestResult({ start, test: 'media', passed: true })
-		return { mediaDevices: devices, mimeTypes: types }
+		logTestResult({ time: timer.stop(), test: 'media', passed: true })
+		return { mediaDevices: devices, mimeTypes }
 	}
 	catch (error) {
 		logTestResult({ test: 'media', passed: false })

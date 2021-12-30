@@ -1,204 +1,11 @@
-const pnames = new Set([
-	'BLEND_EQUATION',
-	'BLEND_EQUATION_RGB',
-	'BLEND_EQUATION_ALPHA',
-	'BLEND_DST_RGB',
-	'BLEND_SRC_RGB',
-	'BLEND_DST_ALPHA',
-	'BLEND_SRC_ALPHA',
-	'BLEND_COLOR',
-	'CULL_FACE',
-	'BLEND',
-	'DITHER',
-	'STENCIL_TEST',
-	'DEPTH_TEST',
-	'SCISSOR_TEST',
-	'POLYGON_OFFSET_FILL',
-	'SAMPLE_ALPHA_TO_COVERAGE',
-	'SAMPLE_COVERAGE',
-	'LINE_WIDTH',
-	'ALIASED_POINT_SIZE_RANGE',
-	'ALIASED_LINE_WIDTH_RANGE',
-	'CULL_FACE_MODE',
-	'FRONT_FACE',
-	'DEPTH_RANGE',
-	'DEPTH_WRITEMASK',
-	'DEPTH_CLEAR_VALUE',
-	'DEPTH_FUNC',
-	'STENCIL_CLEAR_VALUE',
-	'STENCIL_FUNC',
-	'STENCIL_FAIL',
-	'STENCIL_PASS_DEPTH_FAIL',
-	'STENCIL_PASS_DEPTH_PASS',
-	'STENCIL_REF',
-	'STENCIL_VALUE_MASK',
-	'STENCIL_WRITEMASK',
-	'STENCIL_BACK_FUNC',
-	'STENCIL_BACK_FAIL',
-	'STENCIL_BACK_PASS_DEPTH_FAIL',
-	'STENCIL_BACK_PASS_DEPTH_PASS',
-	'STENCIL_BACK_REF',
-	'STENCIL_BACK_VALUE_MASK',
-	'STENCIL_BACK_WRITEMASK',
-	'VIEWPORT',
-	'SCISSOR_BOX',
-	'COLOR_CLEAR_VALUE',
-	'COLOR_WRITEMASK',
-	'UNPACK_ALIGNMENT',
-	'PACK_ALIGNMENT',
-	'MAX_TEXTURE_SIZE',
-	'MAX_VIEWPORT_DIMS',
-	'SUBPIXEL_BITS',
-	'RED_BITS',
-	'GREEN_BITS',
-	'BLUE_BITS',
-	'ALPHA_BITS',
-	'DEPTH_BITS',
-	'STENCIL_BITS',
-	'POLYGON_OFFSET_UNITS',
-	'POLYGON_OFFSET_FACTOR',
-	'SAMPLE_BUFFERS',
-	'SAMPLES',
-	'SAMPLE_COVERAGE_VALUE',
-	'SAMPLE_COVERAGE_INVERT',
-	'COMPRESSED_TEXTURE_FORMATS',
-	'GENERATE_MIPMAP_HINT',
-	'MAX_VERTEX_ATTRIBS',
-	'MAX_VERTEX_UNIFORM_VECTORS',
-	'MAX_VARYING_VECTORS',
-	'MAX_COMBINED_TEXTURE_IMAGE_UNITS',
-	'MAX_VERTEX_TEXTURE_IMAGE_UNITS',
-	'MAX_TEXTURE_IMAGE_UNITS',
-	'MAX_FRAGMENT_UNIFORM_VECTORS',
-	'SHADING_LANGUAGE_VERSION',
-	'VENDOR',
-	'RENDERER',
-	'VERSION',
-	'MAX_CUBE_MAP_TEXTURE_SIZE',
-	'ACTIVE_TEXTURE',
-	'IMPLEMENTATION_COLOR_READ_TYPE',
-	'IMPLEMENTATION_COLOR_READ_FORMAT',
-	'MAX_RENDERBUFFER_SIZE',
-	'UNPACK_FLIP_Y_WEBGL',
-	'UNPACK_PREMULTIPLY_ALPHA_WEBGL',
-	'UNPACK_COLORSPACE_CONVERSION_WEBGL',
-	'READ_BUFFER',
-	'UNPACK_ROW_LENGTH',
-	'UNPACK_SKIP_ROWS',
-	'UNPACK_SKIP_PIXELS',
-	'PACK_ROW_LENGTH',
-	'PACK_SKIP_ROWS',
-	'PACK_SKIP_PIXELS',
-	'UNPACK_SKIP_IMAGES',
-	'UNPACK_IMAGE_HEIGHT',
-	'MAX_3D_TEXTURE_SIZE',
-	'MAX_ELEMENTS_VERTICES',
-	'MAX_ELEMENTS_INDICES',
-	'MAX_TEXTURE_LOD_BIAS',
-	'MAX_DRAW_BUFFERS',
-	'DRAW_BUFFER0',
-	'DRAW_BUFFER1',
-	'DRAW_BUFFER2',
-	'DRAW_BUFFER3',
-	'DRAW_BUFFER4',
-	'DRAW_BUFFER5',
-	'DRAW_BUFFER6',
-	'DRAW_BUFFER7',
-	'MAX_FRAGMENT_UNIFORM_COMPONENTS',
-	'MAX_VERTEX_UNIFORM_COMPONENTS',
-	'FRAGMENT_SHADER_DERIVATIVE_HINT',
-	'MAX_ARRAY_TEXTURE_LAYERS',
-	'MIN_PROGRAM_TEXEL_OFFSET',
-	'MAX_PROGRAM_TEXEL_OFFSET',
-	'MAX_VARYING_COMPONENTS',
-	'MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS',
-	'RASTERIZER_DISCARD',
-	'MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS',
-	'MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS',
-	'MAX_COLOR_ATTACHMENTS',
-	'MAX_SAMPLES',
-	'MAX_VERTEX_UNIFORM_BLOCKS',
-	'MAX_FRAGMENT_UNIFORM_BLOCKS',
-	'MAX_COMBINED_UNIFORM_BLOCKS',
-	'MAX_UNIFORM_BUFFER_BINDINGS',
-	'MAX_UNIFORM_BLOCK_SIZE',
-	'MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS',
-	'MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS',
-	'UNIFORM_BUFFER_OFFSET_ALIGNMENT',
-	'MAX_VERTEX_OUTPUT_COMPONENTS',
-	'MAX_FRAGMENT_INPUT_COMPONENTS',
-	'MAX_SERVER_WAIT_TIMEOUT',
-	'TRANSFORM_FEEDBACK_PAUSED',
-	'TRANSFORM_FEEDBACK_ACTIVE',
-	'MAX_ELEMENT_INDEX',
-	'MAX_CLIENT_WAIT_TIMEOUT_WEBGL'
-])
-
-const draw = gl => {
-	//gl.clearColor(0.47, 0.7, 0.78, 1)
-	gl.clear(gl.COLOR_BUFFER_BIT)
-
-	// based on https://github.com/Valve/fingerprintjs2/blob/master/fingerprint2.js
-	const vertexPosBuffer = gl.createBuffer()
-	gl.bindBuffer(gl.ARRAY_BUFFER, vertexPosBuffer)
-	const vertices = new Float32Array([-0.9, -0.7, 0, 0.8, -0.7, 0, 0, 0.5, 0])
-	gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW)
-
-	vertexPosBuffer.itemSize = 3
-	vertexPosBuffer.numItems = 3
-
-	// create program
-	const program = gl.createProgram()
-
-	// compile and attach vertex shader
-	const vertexShader = gl.createShader(gl.VERTEX_SHADER)
-	gl.shaderSource(vertexShader, `
-		attribute vec2 attrVertex;
-		varying vec2 varyinTexCoordinate;
-		uniform vec2 uniformOffset;
-		void main(){
-			varyinTexCoordinate = attrVertex + uniformOffset;
-			gl_Position = vec4(attrVertex, 0, 1);
-		}
-	`)
-	gl.compileShader(vertexShader)
-	gl.attachShader(program, vertexShader)
-
-	// compile and attach fragment shader
-	const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER)
-	gl.shaderSource(fragmentShader, `
-		precision mediump float;
-		varying vec2 varyinTexCoordinate;
-		void main() {
-			gl_FragColor = vec4(varyinTexCoordinate, 1, 1);
-		}
-	`)
-	gl.compileShader(fragmentShader)
-	gl.attachShader(program, fragmentShader)
-
-	// use program
-	gl.linkProgram(program)
-	gl.useProgram(program)
-	program.vertexPosAttrib = gl.getAttribLocation(program, 'attrVertex')
-	program.offsetUniform = gl.getUniformLocation(program, 'uniformOffset')
-	gl.enableVertexAttribArray(program.vertexPosArray)
-	gl.vertexAttribPointer(program.vertexPosAttrib, vertexPosBuffer.itemSize, gl.FLOAT, false, 0, 0)
-	gl.uniform2f(program.offsetUniform, 1, 1)
-
-	// draw
-	gl.drawArrays(gl.LINE_LOOP, 0, vertexPosBuffer.numItems)
-
-	return gl
-}
-
 export const getCanvasWebgl = async imports => {
 
 	const {
 		require: {
+			queueEvent,
+			createTimer,
 			captureError,
 			attempt,
-			gibberish,
-			sendToTrash,
 			lieProps,
 			phantomDarkness,
 			dragonOfDeath,
@@ -207,11 +14,206 @@ export const getCanvasWebgl = async imports => {
 			getWebGLRendererConfidence 
 		}
 	} = imports
+	
+
+	// use short list to improve performance
+	const getParamNames = () => [
+		//'BLEND_EQUATION',
+		//'BLEND_EQUATION_RGB',
+		//'BLEND_EQUATION_ALPHA',
+		//'BLEND_DST_RGB',
+		//'BLEND_SRC_RGB',
+		//'BLEND_DST_ALPHA',
+		//'BLEND_SRC_ALPHA',
+		//'BLEND_COLOR',
+		//'CULL_FACE',
+		//'BLEND',
+		//'DITHER',
+		//'STENCIL_TEST',
+		//'DEPTH_TEST',
+		//'SCISSOR_TEST',
+		//'POLYGON_OFFSET_FILL',
+		//'SAMPLE_ALPHA_TO_COVERAGE',
+		//'SAMPLE_COVERAGE',
+		//'LINE_WIDTH',
+		'ALIASED_POINT_SIZE_RANGE',
+		'ALIASED_LINE_WIDTH_RANGE',
+		//'CULL_FACE_MODE',
+		//'FRONT_FACE',
+		//'DEPTH_RANGE',
+		//'DEPTH_WRITEMASK',
+		//'DEPTH_CLEAR_VALUE',
+		//'DEPTH_FUNC',
+		//'STENCIL_CLEAR_VALUE',
+		//'STENCIL_FUNC',
+		//'STENCIL_FAIL',
+		//'STENCIL_PASS_DEPTH_FAIL',
+		//'STENCIL_PASS_DEPTH_PASS',
+		//'STENCIL_REF',
+		'STENCIL_VALUE_MASK',
+		'STENCIL_WRITEMASK',
+		//'STENCIL_BACK_FUNC',
+		//'STENCIL_BACK_FAIL',
+		//'STENCIL_BACK_PASS_DEPTH_FAIL',
+		//'STENCIL_BACK_PASS_DEPTH_PASS',
+		//'STENCIL_BACK_REF',
+		'STENCIL_BACK_VALUE_MASK',
+		'STENCIL_BACK_WRITEMASK',
+		//'VIEWPORT',
+		//'SCISSOR_BOX',
+		//'COLOR_CLEAR_VALUE',
+		//'COLOR_WRITEMASK',
+		//'UNPACK_ALIGNMENT',
+		//'PACK_ALIGNMENT',
+		'MAX_TEXTURE_SIZE',
+		'MAX_VIEWPORT_DIMS',
+		'SUBPIXEL_BITS',
+		//'RED_BITS',
+		//'GREEN_BITS',
+		//'BLUE_BITS',
+		//'ALPHA_BITS',
+		//'DEPTH_BITS',
+		//'STENCIL_BITS',
+		//'POLYGON_OFFSET_UNITS',
+		//'POLYGON_OFFSET_FACTOR',
+		//'SAMPLE_BUFFERS',
+		//'SAMPLES',
+		//'SAMPLE_COVERAGE_VALUE',
+		//'SAMPLE_COVERAGE_INVERT',
+		//'COMPRESSED_TEXTURE_FORMATS',
+		//'GENERATE_MIPMAP_HINT',
+		'MAX_VERTEX_ATTRIBS',
+		'MAX_VERTEX_UNIFORM_VECTORS',
+		'MAX_VARYING_VECTORS',
+		'MAX_COMBINED_TEXTURE_IMAGE_UNITS',
+		'MAX_VERTEX_TEXTURE_IMAGE_UNITS',
+		'MAX_TEXTURE_IMAGE_UNITS',
+		'MAX_FRAGMENT_UNIFORM_VECTORS',
+		//'SHADING_LANGUAGE_VERSION',
+		//'VENDOR',
+		//'RENDERER',
+		//'VERSION',
+		'MAX_CUBE_MAP_TEXTURE_SIZE',
+		//'ACTIVE_TEXTURE',
+		//'IMPLEMENTATION_COLOR_READ_TYPE',
+		//'IMPLEMENTATION_COLOR_READ_FORMAT',
+		'MAX_RENDERBUFFER_SIZE',
+		//'UNPACK_FLIP_Y_WEBGL',
+		//'UNPACK_PREMULTIPLY_ALPHA_WEBGL',
+		//'UNPACK_COLORSPACE_CONVERSION_WEBGL',
+		//'READ_BUFFER',
+		//'UNPACK_ROW_LENGTH',
+		//'UNPACK_SKIP_ROWS',
+		//'UNPACK_SKIP_PIXELS',
+		//'PACK_ROW_LENGTH',
+		//'PACK_SKIP_ROWS',
+		//'PACK_SKIP_PIXELS',
+		//'UNPACK_SKIP_IMAGES',
+		//'UNPACK_IMAGE_HEIGHT',
+		'MAX_3D_TEXTURE_SIZE',
+		'MAX_ELEMENTS_VERTICES',
+		'MAX_ELEMENTS_INDICES',
+		'MAX_TEXTURE_LOD_BIAS',
+		'MAX_DRAW_BUFFERS',
+		//'DRAW_BUFFER0',
+		//'DRAW_BUFFER1',
+		//'DRAW_BUFFER2',
+		//'DRAW_BUFFER3',
+		//'DRAW_BUFFER4',
+		//'DRAW_BUFFER5',
+		//'DRAW_BUFFER6',
+		//'DRAW_BUFFER7',
+		'MAX_FRAGMENT_UNIFORM_COMPONENTS',
+		'MAX_VERTEX_UNIFORM_COMPONENTS',
+		//'FRAGMENT_SHADER_DERIVATIVE_HINT',
+		'MAX_ARRAY_TEXTURE_LAYERS',
+		//'MIN_PROGRAM_TEXEL_OFFSET',
+		'MAX_PROGRAM_TEXEL_OFFSET',
+		'MAX_VARYING_COMPONENTS',
+		'MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS',
+		//'RASTERIZER_DISCARD',
+		'MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS',
+		'MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS',
+		'MAX_COLOR_ATTACHMENTS',
+		'MAX_SAMPLES',
+		'MAX_VERTEX_UNIFORM_BLOCKS',
+		'MAX_FRAGMENT_UNIFORM_BLOCKS',
+		'MAX_COMBINED_UNIFORM_BLOCKS',
+		'MAX_UNIFORM_BUFFER_BINDINGS',
+		'MAX_UNIFORM_BLOCK_SIZE',
+		'MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS',
+		'MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS',
+		//'UNIFORM_BUFFER_OFFSET_ALIGNMENT',
+		'MAX_VERTEX_OUTPUT_COMPONENTS',
+		'MAX_FRAGMENT_INPUT_COMPONENTS',
+		'MAX_SERVER_WAIT_TIMEOUT',
+		//'TRANSFORM_FEEDBACK_PAUSED',
+		//'TRANSFORM_FEEDBACK_ACTIVE',
+		'MAX_ELEMENT_INDEX',
+		'MAX_CLIENT_WAIT_TIMEOUT_WEBGL'
+	].sort()
+
+	const draw = gl => {
+		//gl.clearColor(0.47, 0.7, 0.78, 1)
+		gl.clear(gl.COLOR_BUFFER_BIT)
+
+		// based on https://github.com/Valve/fingerprintjs2/blob/master/fingerprint2.js
+		const vertexPosBuffer = gl.createBuffer()
+		gl.bindBuffer(gl.ARRAY_BUFFER, vertexPosBuffer)
+		const vertices = new Float32Array([-0.9, -0.7, 0, 0.8, -0.7, 0, 0, 0.5, 0])
+		gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW)
+
+		vertexPosBuffer.itemSize = 3
+		vertexPosBuffer.numItems = 3
+
+		// create program
+		const program = gl.createProgram()
+
+		// compile and attach vertex shader
+		const vertexShader = gl.createShader(gl.VERTEX_SHADER)
+		gl.shaderSource(vertexShader, `
+			attribute vec2 attrVertex;
+			varying vec2 varyinTexCoordinate;
+			uniform vec2 uniformOffset;
+			void main(){
+				varyinTexCoordinate = attrVertex + uniformOffset;
+				gl_Position = vec4(attrVertex, 0, 1);
+			}
+		`)
+		gl.compileShader(vertexShader)
+		gl.attachShader(program, vertexShader)
+
+		// compile and attach fragment shader
+		const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER)
+		gl.shaderSource(fragmentShader, `
+			precision mediump float;
+			varying vec2 varyinTexCoordinate;
+			void main() {
+				gl_FragColor = vec4(varyinTexCoordinate, 1, 1);
+			}
+		`)
+		gl.compileShader(fragmentShader)
+		gl.attachShader(program, fragmentShader)
+
+		// use program
+		gl.linkProgram(program)
+		gl.useProgram(program)
+		program.vertexPosAttrib = gl.getAttribLocation(program, 'attrVertex')
+		program.offsetUniform = gl.getUniformLocation(program, 'uniformOffset')
+		gl.enableVertexAttribArray(program.vertexPosArray)
+		gl.vertexAttribPointer(program.vertexPosAttrib, vertexPosBuffer.itemSize, gl.FLOAT, false, 0, 0)
+		gl.uniform2f(program.offsetUniform, 1, 1)
+
+		// draw
+		gl.drawArrays(gl.LINE_LOOP, 0, vertexPosBuffer.numItems)
+
+		return gl
+	}
 
 	try {
-		await new Promise(setTimeout).catch(e => { })
-		const start = performance.now()
-		
+		const timer = createTimer()
+		await queueEvent(timer)
+
 		// detect lies
 		const dataLie = lieProps['HTMLCanvasElement.toDataURL']
 		const contextLie = lieProps['HTMLCanvasElement.getContext']
@@ -264,9 +266,8 @@ export const getCanvasWebgl = async imports => {
 				return
 			}
 		}
-		await new Promise(setTimeout).catch(e => { })
+		
 		const gl = getContext(canvas, 'webgl')
-		await new Promise(setTimeout).catch(e => { })
 		const gl2 = getContext(canvas2, 'webgl2')
 		if (!gl) {
 			logTestResult({ test: 'webgl', passed: false })
@@ -317,41 +318,26 @@ export const getCanvasWebgl = async imports => {
 			if (!gl) {
 				return {}
 			}
-			const data = Object
-				.getOwnPropertyNames(Object.getPrototypeOf(gl))
+			const pnamesShortList = new Set(getParamNames())
+			const pnames = Object.getOwnPropertyNames(Object.getPrototypeOf(gl))
 				//.filter(prop => prop.toUpperCase() == prop) // global test
-				.filter(name => pnames.has(name))
-				.reduce((acc, name) => {
-					let val = gl.getParameter(gl[name])
-					if (!!val && 'buffer' in Object.getPrototypeOf(val)) {
-						acc[name] = [...val]
-					} else {
-						acc[name] = val
-					}
-					return acc
-				}, {})
-			return data
+				.filter(name => pnamesShortList.has(name))
+			return pnames.reduce((acc, name) => {
+				let val = gl.getParameter(gl[name])
+				if (!!val && 'buffer' in Object.getPrototypeOf(val)) {
+					acc[name] = [...val]
+				} else {
+					acc[name] = val
+				}
+				return acc
+			}, {})
 		}
 
 		const getUnmasked = gl => {
 			const ext = !!gl ? gl.getExtension('WEBGL_debug_renderer_info') : null
-			if (!ext) {
-				return {}
-			}
-			const UNMASKED_VENDOR_WEBGL = gl.getParameter(ext.UNMASKED_VENDOR_WEBGL)
-			const UNMASKED_RENDERER_WEBGL = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)
-			const vendorGibbers = gibberish(UNMASKED_VENDOR_WEBGL)
-			const rendererGibbers = gibberish(UNMASKED_RENDERER_WEBGL)
-			const { name } = Object.getPrototypeOf(gl).constructor
-			if (vendorGibbers.length) {
-				sendToTrash(`${name} vendor is gibberish`, `[${vendorGibbers.join(', ')}] ${UNMASKED_VENDOR_WEBGL}`)
-			}
-			if (rendererGibbers.length) {
-				sendToTrash(`${name} renderer is gibberish`, `[${rendererGibbers.join(', ')}] ${UNMASKED_RENDERER_WEBGL}`)
-			}
-			return {
-				UNMASKED_VENDOR_WEBGL,
-				UNMASKED_RENDERER_WEBGL
+			return !ext ? {} : {
+				UNMASKED_VENDOR_WEBGL: gl.getParameter(ext.UNMASKED_VENDOR_WEBGL),
+				UNMASKED_RENDERER_WEBGL: gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)
 			}
 		}
 
@@ -366,39 +352,49 @@ export const getCanvasWebgl = async imports => {
 			return ext
 		}
 
-		const getDataURI = contextType => {
+		const getWebGLData = (gl, contextType) => {
 			try {
-				const canvas = doc.createElement('canvas')
-				const gl = getContext(canvas, contextType)
 				draw(gl)
-				return canvas.toDataURL()
-			}
-			catch (error) {
-				return
-			}
-		}
+				const { drawingBufferWidth, drawingBufferHeight } = gl
+				let dataURI = ''
+				if (gl.canvas.constructor.name === 'OffscreenCanvas') {
+					const canvas = document.createElement('canvas')
+					draw(getContext(canvas, contextType))
+					dataURI = canvas.toDataURL()
+				} else {
+					dataURI = gl.canvas.toDataURL()
+				}
 
-		const getPixels = gl => {
-			if (!gl) {
-				return []
-			}
-			const width = gl.drawingBufferWidth
-			const height = gl.drawingBufferHeight
-			try {
-				draw(gl)
-				const pixels = new Uint8Array(width * height * 4)
-				gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels)
-				return [...pixels]
+				// reduce excessive reads to improve performance
+				const width = drawingBufferWidth/15
+				const height = drawingBufferHeight/6
+				const pixels = new Uint8Array(
+					width * height * 4
+				)
+				gl.readPixels(
+					0,
+					0,
+					width,
+					height,
+					gl.RGBA,
+					gl.UNSIGNED_BYTE,
+					pixels
+				)
+				//console.log([...pixels].filter(x => !!x)) // test read
+				return {
+					dataURI,
+					pixels: [...pixels]
+				}
 			}
 			catch (error) {
-				return []
+				console.error(error)
+				return
 			}
 		}
 		
 		// get data
-		await new Promise(setTimeout).catch(e => { })
+		await queueEvent(timer)
 		const params = { ...getParams(gl), ...getUnmasked(gl) }
-		await new Promise(setTimeout).catch(e => { })
 		const params2 = { ...getParams(gl2), ...getUnmasked(gl2) }
 		const mismatch = Object.keys(params2)
 			.filter(key => !!params[key] && '' + params[key] != '' + params2[key])
@@ -407,17 +403,11 @@ export const getCanvasWebgl = async imports => {
 		if (mismatch) {
 			sendToTrash('webgl/webgl2 mirrored params mismatch', mismatch)
 		}
-		
-		await new Promise(setTimeout).catch(e => { })
-		const pixels = getPixels(gl)
-		
-		await new Promise(setTimeout).catch(e => { })
-		const pixels2 = getPixels(gl2)
-		
-		await new Promise(setTimeout).catch(e => { })
-		const dataURI = getDataURI('webgl')
-		const dataURI2 = getDataURI('webgl2')
-		
+
+		await queueEvent(timer)
+		const { dataURI, pixels } = getWebGLData(gl, 'webgl') || {}
+		const { dataURI: dataURI2, pixels: pixels2 } = getWebGLData(gl2, 'webgl2') || {}
+
 		const data = {
 			extensions: [...getSupportedExtensions(gl), ...getSupportedExtensions(gl2)],
 			pixels,
@@ -442,7 +432,7 @@ export const getCanvasWebgl = async imports => {
 			lied
 		}
 
-		logTestResult({ start, test: 'webgl', passed: true })
+		logTestResult({ time: timer.stop(), test: 'webgl', passed: true })
 		return {
 			...data,
 			gpu: {

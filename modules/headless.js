@@ -51,6 +51,8 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 
 	const {
 		require: {
+			queueEvent,
+			createTimer,
 			parentPhantom,
 			hashMini,
 			isChrome,
@@ -60,7 +62,8 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 	} = imports
 
 	try {
-		const start = performance.now()
+		const timer = createTimer()
+		await queueEvent(timer)
 		const isChromium = detectChromium() || isChrome
 		const mimeTypes = Object.keys({ ...navigator.mimeTypes })
 		const data = {
@@ -192,7 +195,7 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 		const headlessRating = +((headlessKeys.filter(key => headless[key]).length / headlessKeys.length) * 100).toFixed(0)
 		const stealthRating = +((stealthKeys.filter(key => stealth[key]).length / stealthKeys.length) * 100).toFixed(0)
 
-		logTestResult({ start, test: 'headless', passed: true })
+		logTestResult({ time: timer.stop(), test: 'headless', passed: true })
 		return { ...data, likeHeadlessRating, headlessRating, stealthRating }
 	}
 	catch (error) {

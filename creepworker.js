@@ -1,3 +1,27 @@
+const createTimer = () => {
+	let start = 0
+	const log = []
+	return {
+		stop: () => {
+			if (start) {
+				log.push(performance.now() - start)
+				return log.reduce((acc, n) => acc += n, 0)
+			}
+			return start
+		},
+		start: () => {
+			start = performance.now()
+			return start
+		}
+	}
+}
+
+const queueEvent = timer => {
+	timer.stop()
+	return new Promise(resolve => setTimeout(() => resolve(timer.start()), 0))
+		.catch(e => { })
+}
+
 const getFirefox = () => 3.141592653589793 ** -100 == 1.9275814160560185e-50
 
 const getPrototypeLies = globalScope => {
@@ -656,6 +680,8 @@ const getPermissionState = name => {
 }
 
 const getWorkerData = async () => {
+	const timer = createTimer()
+	await queueEvent(timer)
 
 	const getAppleFonts = () => [
 		'Helvetica Neue'
@@ -892,6 +918,7 @@ const getWorkerData = async () => {
 		})
 	}
 	
+	await queueEvent(timer)
 	const [
 		canvas2d,
 		userAgentData,
@@ -995,7 +1022,7 @@ const getWorkerData = async () => {
 	const locale = getLocale()
 
 	// prototype lies
-	await new Promise(setTimeout).catch(e => { })
+	await queueEvent(timer)
 	const {
 		lieDetector: lieProps,
 		lieList,
@@ -1027,7 +1054,7 @@ const getWorkerData = async () => {
 	})
 	const localeEntropyIsTrusty = engineCurrencyLocale == systemCurrencyLocale
 	const localeIntlEntropyIsTrusty = new Set((''+language).split(',')).has(''+locale)
-	
+
 	return {
 		scopeKeys,
 		lied: protoLie,

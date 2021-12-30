@@ -264,6 +264,8 @@ const getFeaturesLie = fp => {
 const getEngineFeatures = async ({ imports, cssComputed, windowFeaturesComputed }) => {
 	const {
 		require: {
+			queueEvent,
+			createTimer,
 			captureError,
 			phantomDarkness,
 			logTestResult
@@ -271,7 +273,8 @@ const getEngineFeatures = async ({ imports, cssComputed, windowFeaturesComputed 
 	} = imports
 
 	try {
-		const start = performance.now()
+		const timer = createTimer()
+		await queueEvent(timer)
 		const win = phantomDarkness ? phantomDarkness : window
 		if (!cssComputed || !windowFeaturesComputed) {
 			logTestResult({ test: 'features', passed: false })
@@ -380,7 +383,7 @@ const getEngineFeatures = async ({ imports, cssComputed, windowFeaturesComputed 
 			[...versionSet].reduce((acc, x) => [...acc, ...x.split('-')], [])
 		)
 		const version = getVersionFromRange(versionRange, [cssVersion, windowVersion, jsVersion])
-		logTestResult({ start, test: 'features', passed: true })
+		logTestResult({ time: timer.stop(), test: 'features', passed: true })
 		return {
 			versionRange,
 			version,

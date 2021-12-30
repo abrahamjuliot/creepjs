@@ -2,6 +2,8 @@ export const getResistance = async imports => {
 
 	const {
 		require: {
+			queueEvent,
+			createTimer,
 			isFirefox,
 			isChrome,
 			getBraveMode,
@@ -14,8 +16,8 @@ export const getResistance = async imports => {
 	} = imports
 
 	try {
-		await new Promise(setTimeout).catch(e => {})
-		const start = performance.now()
+		const timer = createTimer()
+		await queueEvent(timer)
 		const data = {
 			privacy: undefined,
 			security: undefined,
@@ -27,24 +29,6 @@ export const getResistance = async imports => {
 						''
 			)
 		}
-		// Brave
-		const isBrave = await braveBrowser()
-		if (isBrave) {
-			const braveMode = getBraveMode()
-			data.privacy = 'Brave'
-			data.security = {
-				'FileSystemWritableFileStream': 'FileSystemWritableFileStream' in window,
-				'Serial': 'Serial' in window,
-				'ReportingObserver': 'ReportingObserver' in window
-			}
-			data.mode = (
-				braveMode.allow ? 'allow' :
-				braveMode.standard ? 'standard' :
-				braveMode.strict ? 'strict' :
-				undefined
-			)
-		}
-		
 		// Firefox/Tor Browser
 		const regex = n => new RegExp(`${n}+$`)
 		const delay = (ms, baseNumber, baseDate = null) => new Promise(resolve => setTimeout(() => {
@@ -98,8 +82,32 @@ export const getResistance = async imports => {
 				precisionValue: protection ? lastCharA : undefined
 			}
 		}
-		const { protection } = isChrome ? {} : await getTimerPrecision()
+		
+		const [
+			isBrave,
+			timerPrecision
+		] = await Promise.all([
+			braveBrowser(),
+			isChrome ? undefined : getTimerPrecision()
+		])
+		
+		if (isBrave) {
+			const braveMode = getBraveMode()
+			data.privacy = 'Brave'
+			data.security = {
+				'FileSystemWritableFileStream': 'FileSystemWritableFileStream' in window,
+				'Serial': 'Serial' in window,
+				'ReportingObserver': 'ReportingObserver' in window
+			}
+			data.mode = (
+				braveMode.allow ? 'allow' :
+				braveMode.standard ? 'standard' :
+				braveMode.strict ? 'strict' :
+				undefined
+			)
+		}
 
+		const { protection } = timerPrecision || {}
 		if (isFirefox && protection) {
 			const features = {
 				'OfflineAudioContext': 'OfflineAudioContext' in window, // dom.webaudio.enabled
@@ -217,7 +225,7 @@ export const getResistance = async imports => {
 		ScriptSafe
 		Windscribe
 		*/
-		
+		await queueEvent(timer)
 		const hash = {
 			// iframes
 			contentDocumentHash: hashMini(prototypeLies['HTMLIFrameElement.contentDocument']),
@@ -361,7 +369,7 @@ export const getResistance = async imports => {
 		
 		data.extension = getExtension(pattern, hash)
 
-		logTestResult({ start, test: 'resistance', passed: true })
+		logTestResult({ time: timer.stop(), test: 'resistance', passed: true })
 		return data
 	}
 	catch (error) {
