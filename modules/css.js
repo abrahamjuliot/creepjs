@@ -29,27 +29,23 @@ export const getCSSMedia = async imports => {
 		return style.getPropertyValue(`--device-${type}`).trim()
 	}
 
-	const getScreenMedia = body => {
-		let i, widthMatched, heightMatched
-		for (i = 0; i < 10; i++) {
-			let resWidth, resHeight
-			if (!widthMatched) {
-				resWidth = query({ body, type: 'width', rangeStart: i * 1000, rangeLen: 1000 })
-				if (resWidth) {
-					widthMatched = resWidth
-				}
-			}
-			if (!heightMatched) {
-				resHeight = query({ body, type: 'height', rangeStart: i * 1000, rangeLen: 1000 })
-				if (resHeight) {
-					heightMatched = resHeight
-				}
-			}
-			if (widthMatched && heightMatched) {
-				break
-			}
+	const getScreenMedia = ({ body, width, height }) => {
+		let widthMatch = query({ body, type: 'width', rangeStart: width, rangeLen: 1 })
+		let heightMatch = query({ body, type: 'height', rangeStart: height, rangeLen: 1 })
+		if (widthMatch && heightMatch) {
+			return { width: +widthMatch, height: +heightMatch }	
 		}
-		return { width: +widthMatched, height: +heightMatched }
+
+		;[...Array(10)].find((slot, i) => {
+			if (!widthMatch) {
+				widthMatch = query({ body, type: 'width', rangeStart: i * 1000, rangeLen: 1000 })
+			}
+			if (!heightMatch) {
+				heightMatch = query({ body, type: 'height', rangeStart: i * 1000, rangeLen: 1000 })
+			}
+			return widthMatch && heightMatch
+		})
+		return { width: +widthMatch, height: +heightMatch }
 	}
 
 	const getScreenMatchMedia = win => {
@@ -274,7 +270,7 @@ export const getCSSMedia = async imports => {
 		}
 
 		// get screen query
-		const screenQuery = getScreenMedia(body)
+		const screenQuery = getScreenMedia({ body, width, height })
 		
 		logTestResult({ time: timer.stop(), test: 'css media', passed: true })
 		return { importCSS, mediaCSS, matchMediaCSS, screenQuery }
