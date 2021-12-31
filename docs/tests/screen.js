@@ -37,10 +37,9 @@
 		let found
 		;[...Array(rangeLen)].find((slot, i) => {
 			i += rangeStart
-			const dimension = i * rangeLen
-			const { matches } = matchMedia(`(device-${type}:${dimension}px)`) || {}
+			const { matches } = matchMedia(`(device-${type}:${i}px)`) || {}
 			if (matches) {
-				found = dimension
+				found = i
 			}
 			return matches
 		})
