@@ -89,10 +89,10 @@ export const getCanvasWebgl = async imports => {
 		'MAX_VERTEX_TEXTURE_IMAGE_UNITS',
 		'MAX_TEXTURE_IMAGE_UNITS',
 		'MAX_FRAGMENT_UNIFORM_VECTORS',
-		//'SHADING_LANGUAGE_VERSION',
-		//'VENDOR',
-		//'RENDERER',
-		//'VERSION',
+		'SHADING_LANGUAGE_VERSION',
+		'VENDOR',
+		'RENDERER',
+		'VERSION',
 		'MAX_CUBE_MAP_TEXTURE_SIZE',
 		//'ACTIVE_TEXTURE',
 		//'IMPLEMENTATION_COLOR_READ_TYPE',
@@ -407,7 +407,7 @@ export const getCanvasWebgl = async imports => {
 		await queueEvent(timer)
 		const { dataURI, pixels } = getWebGLData(gl, 'webgl') || {}
 		const { dataURI: dataURI2, pixels: pixels2 } = getWebGLData(gl2, 'webgl2') || {}
-
+		
 		const data = {
 			extensions: [...getSupportedExtensions(gl), ...getSupportedExtensions(gl2)],
 			pixels,
