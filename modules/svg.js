@@ -45,20 +45,10 @@ export const getSVG = async imports => {
 				}
 				.svgrect-emoji {
 					font-family: monospace !important;
-					font-size: 100px;
-					font-style: normal;
-					font-weight: normal;
-					letter-spacing: normal;
-					line-break: auto;
-					line-height: normal;
-					text-transform: none;
-					text-align: left;
-					text-decoration: none;
-					text-shadow: none;
 					transform: scale(100);
-					white-space: normal;
-					word-break: normal;
-					word-spacing: normal;
+					position: absolute !important;
+					font-size: 200px !important;
+					height: auto;
 				}
 				</style>
 				<svg>
