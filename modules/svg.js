@@ -32,10 +32,9 @@ export const getSVG = async imports => {
 		const divElement = document.createElement('div')
 		divElement.setAttribute('id', svgId)
 		doc.body.appendChild(divElement)
-		const divRendered = doc.getElementById(svgId)
 		
 		// patch div
-		patch(divRendered, html`
+		patch(divElement, html`
 		<div id="${svgId}">
 			<div id="svg-container">
 				<style>
@@ -44,7 +43,7 @@ export const getSVG = async imports => {
 					left: -9999px;
 					height: auto;
 				}
-				#svgText {
+				.svgrect-emoji {
 					font-family: monospace !important;
 					font-size: 100px;
 					font-style: normal;
@@ -56,6 +55,7 @@ export const getSVG = async imports => {
 					text-align: left;
 					text-decoration: none;
 					text-shadow: none;
+					transform: scale(100);
 					white-space: normal;
 					word-break: normal;
 					word-spacing: normal;
@@ -63,15 +63,16 @@ export const getSVG = async imports => {
 				</style>
 				<svg>
 					<g id="svgBox">
-						<text id="svgText" x="32" y="32" transform="scale(100)">${emojis.join('')}</text>
+						${
+							emojis.map(emoji => {
+								return `<text x="32" y="32" class="svgrect-emoji">${emoji}</text>`
+							})
+						}
 					</g>
 				</svg>
 			</div>
 		</div>
 		`)
-		
-		const svgBox = doc.getElementById('svgBox')
-		const svgText = doc.getElementById('svgText')
 		
 		const reduceToObject = nativeObj => {
 			const keys = Object.keys(nativeObj.__proto__)
@@ -92,6 +93,7 @@ export const getSVG = async imports => {
 		const getObjectSum = obj => !obj ? 0 : Object.keys(obj).reduce((acc, key) => acc += Math.abs(obj[key]), 0)
 		
 		// SVGRect
+		const svgBox = doc.getElementById('svgBox')
 		const bBox = reduceToObject(svgBox.getBBox())
 
 		// compute SVGRect emojis
@@ -101,12 +103,12 @@ export const getSVG = async imports => {
 			computedTextLength: new Set()
 		}
 		await queueEvent(timer)
-		const emojiSet = emojis.reduce((emojiSet, emoji) => {
-			svgText.textContent = emoji
-			const extentOfCharSum = reduceToSum(svgText.getExtentOfChar(''))
-			const subStringLength = svgText.getSubStringLength(0, 10)
-			const computedTextLength = svgText.getComputedTextLength()
 
+		const emojiSet = [...svgBox.getElementsByClassName('svgrect-emoji')].reduce((emojiSet, el, i) => {
+			const emoji = emojis[i]
+			const extentOfCharSum = reduceToSum(el.getExtentOfChar(''))
+			const subStringLength = el.getSubStringLength(0, 10)
+			const computedTextLength = el.getComputedTextLength()
 			if (!lengthSet.extentOfChar.has(extentOfCharSum)) {
 				lengthSet.extentOfChar.add(extentOfCharSum)
 				emojiSet.add(emoji)
@@ -122,9 +124,7 @@ export const getSVG = async imports => {
 			return emojiSet
 		}, new Set())
 
-		logTestResult({ time: timer.stop(), test: 'svg', passed: true })
-
-		return {
+		const data = {
 			bBox: getObjectSum(bBox),
 			extentOfChar: getListSum([...lengthSet.extentOfChar]),
 			subStringLength: getListSum([...lengthSet.subStringLength]),
@@ -132,6 +132,9 @@ export const getSVG = async imports => {
 			emojiSet: [...emojiSet],
 			lied
 		}
+		
+		logTestResult({ time: timer.stop(), test: 'svg', passed: true })
+		return data
 	}
 	catch (error) {
 		logTestResult({ test: 'svg', passed: false })

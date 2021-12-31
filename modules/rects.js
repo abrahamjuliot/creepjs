@@ -19,94 +19,6 @@ export const getClientRects = async imports => {
 			phantomDarkness
 		}
 	} = imports
-
-	// get emojis
-	const systemEmojis = [
-		[128512],
-		[9786],
-		[129333,8205,9794,65039],
-		[9832],
-		[9784],
-		[9895],
-		[8265],
-		[8505],
-		[127987,65039,8205,9895,65039],
-		[129394],
-		[9785],
-		[9760],
-		[129489,8205,129456],
-		[129487,8205,9794,65039],
-		[9975],
-		[129489,8205,129309,8205,129489],
-		[9752],
-		[9968],
-		[9961],
-		[9972],
-		[9992],
-		[9201],
-		[9928],
-		[9730],
-		[9969],
-		[9731],
-		[9732],
-		[9976],
-		[9823],
-		[9937],
-		[9000],
-		[9993],
-		[9999],
-		[10002],
-		[9986],
-		[9935],
-		[9874],
-		[9876],
-		[9881],
-		[9939],
-		[9879],
-		[9904],
-		[9905],
-		[9888],
-		[9762],
-		[9763],
-		[11014],
-		[8599],
-		[10145],
-		[11013],
-		[9883],
-		[10017],
-		[10013],
-		[9766],
-		[9654],
-		[9197],
-		[9199],
-		[9167],
-		[9792],
-		[9794],
-		[10006],
-		[12336],
-		[9877],
-		[9884],
-		[10004],
-		[10035],
-		[10055],
-		[9724],
-		[9642],
-		[10083],
-		[10084],
-		[9996],
-		[9757],
-		[9997],
-		[10052],
-		[9878],
-		[8618],
-		[9775],
-		[9770],
-		[9774],
-		[9745],
-		[10036],
-		[127344],
-		[127359]
-	]
 	
 	try {
 		const timer = createTimer()
@@ -155,8 +67,8 @@ export const getClientRects = async imports => {
 		divElement.setAttribute('id', rectsId)
 		doc.body.appendChild(divElement)
 		
-		// patch div
-		const emojiStrings = systemEmojis.map(emojiCode => String.fromCodePoint(...emojiCode))
+		const emojis = [[128512],[9786],[129333, 8205, 9794, 65039],[9832],[9784],[9895],[8265],[8505],[127987, 65039, 8205, 9895, 65039],[129394],[9785],[9760],[129489, 8205, 129456],[129487, 8205, 9794, 65039],[9975],[129489, 8205, 129309, 8205, 129489],[9752],[9968],[9961],[9972],[9992],[9201],[9928],[9730],[9969],[9731],[9732],[9976],[9823],[9937],[9000],[9993],[9999],[10002],[9986],[9935],[9874],[9876],[9881],[9939],[9879],[9904],[9905],[9888],[9762],[9763],[11014],[8599],[10145],[11013],[9883],[10017],[10013],[9766],[9654],[9197],[9199],[9167],[9792],[9794],[10006],[12336],[9877],[9884],[10004],[10035],[10055],[9724],[9642],[10083],[10084],[9996],[9757],[9997],[10052],[9878],[8618],[9775],[9770],[9774],[9745],[10036],[127344],[127359]].map(emojiCode => String.fromCodePoint(...emojiCode))
+
 		patch(divElement, html`
 		<div id="${rectsId}">
 			<div style="perspective:100px;width:1000.099%;" id="rect-container">
@@ -270,15 +182,27 @@ export const getClientRects = async imports => {
 			</div>
 			<div id="emoji-container">
 				<style>
-				.emoji {
-					position: absolute !important;
-					font-size: 200px !important;
-					height: auto;
+				.domrect-emoji {
+					font-family: monospace !important;
+					font-size: 100px;
+					font-style: normal;
+					font-weight: normal;
+					letter-spacing: normal;
+					line-break: auto;
+					line-height: normal;
+					text-transform: none;
+					text-align: left;
+					text-decoration: none;
+					text-shadow: none;
+					transform: scale(100);
+					white-space: normal;
+					word-break: normal;
+					word-spacing: normal;
 				}
 				</style>
 				${
-					emojiStrings.map(emoji => {
-						return `<div data-emoji="${emoji}" class="emoji">${emoji}</div>`
+					emojis.map(emoji => {
+						return `<div class="domrect-emoji">${emoji}</div>`
 					})
 				}
 			</div>
@@ -286,8 +210,9 @@ export const getClientRects = async imports => {
 		`)
 
 		const pattern = new Set()
-		const emojiRects = [...doc.getElementsByClassName('emoji')].map((el, i) => {
-			const emoji = emojiStrings[i]
+		const emojiElems = [...doc.getElementsByClassName('domrect-emoji')]
+		const emojiRects = emojiElems.map((el, i) => {
+			const emoji = emojis[i]
 			const { height, width } = getBestRect(lieProps, doc, el)
 			return { emoji, width, height }
 		})
