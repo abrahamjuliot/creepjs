@@ -51,9 +51,8 @@
 		let widthMatch = query({ type: 'width', rangeStart: width, rangeLen: 1 })
 		let heightMatch = query({ type: 'height', rangeStart: height, rangeLen: 1 })
 		if (widthMatch && heightMatch) {
-			return { width: +widthMatch, height: +heightMatch }	
+			return { width, height }	
 		}
-
 		const rangeLen = 1000
 		;[...Array(10)].find((slot, i) => {
 			if (!widthMatch) {
@@ -71,7 +70,7 @@
 		let widthMatch = matchMedia(`(device-width:${width}px)`).matches
 		let heightMatch = matchMedia(`(device-height:${height}px)`).matches
 		if (widthMatch && heightMatch) {
-			return { width: +widthMatch, height: +heightMatch }	
+			return { width, height }	
 		}
 		const rangeLen = 1000
 		;[...Array(10)].find((slot, i) => {
@@ -83,7 +82,7 @@
 			}
 			return widthMatch && heightMatch
 		})
-		return { width: widthMatch, height: heightMatch }
+		return { width: +widthMatch, height: +heightMatch }
 	}
 
 	const getCSS = () => {

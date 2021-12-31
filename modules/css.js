@@ -33,9 +33,8 @@ export const getCSSMedia = async imports => {
 		let widthMatch = query({ body, type: 'width', rangeStart: width, rangeLen: 1 })
 		let heightMatch = query({ body, type: 'height', rangeStart: height, rangeLen: 1 })
 		if (widthMatch && heightMatch) {
-			return { width: +widthMatch, height: +heightMatch }	
+			return { width, height }	
 		}
-
 		const rangeLen = 1000
 		;[...Array(10)].find((slot, i) => {
 			if (!widthMatch) {
