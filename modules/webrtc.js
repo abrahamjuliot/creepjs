@@ -179,7 +179,8 @@ export const getWebRTCData = async imports => {
 					logTestResult({ test: 'webrtc', passed: false })
 					return resolve()
 				}, 1000)
-				return connection.addEventListener('icecandidate', event => {
+
+				const computeCandidate = event => {
 					const { candidate } = event.candidate || {}
 					if (!candidate) {
 						return
@@ -189,6 +190,7 @@ export const getWebRTCData = async imports => {
 					if (!ipaddress) {
 						return
 					}
+					connection.removeEventListener('icecandidate', computeCandidate)
 					clearTimeout(giveUpOnGettingIPAddress)
 					connection.close()
 					const { audio, video } = getCapabilities(sdp)
@@ -200,7 +202,9 @@ export const getWebRTCData = async imports => {
 						audio,
 						video
 					})
-				})
+				}
+
+				return connection.addEventListener('icecandidate', computeCandidate)
 			})
 		}
 		catch (error) {
