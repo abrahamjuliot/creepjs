@@ -936,16 +936,18 @@ const imports = {
 				const botProbability = totalBotTriggers / totalBotPatterns
 				const isBot = !!botProbability
 				const botPercentString = `${(botProbability*100).toFixed(0)}%`
-				if (isBot) {
-					console.warn('bot patterns: ', botPatterns)
-				}
 				return {
 					isBot,
-					botPercentString
+					botPercentString,
+					botPatterns
 				}
 			}
 			
-			const { isBot, botPercentString } = getBot({fp, hours, hasLied, switchCount})
+			const { isBot, botPercentString, botPatterns } = getBot({fp, hours, hasLied, switchCount})
+
+			const botInfo = Object.keys(botPatterns).map(key => {
+				return `${key}: ${botPatterns[key]}`
+			}).join('\n')
 
 			const template = `
 				<div class="visitor-info">
@@ -983,7 +985,7 @@ const imports = {
 							}</span></div>
 							<div class="ellipsis">loose fingerprint: <span class="unblurred">${hashSlice(fpHash)}</span></div>
 							<div class="ellipsis">loose switched: <span class="unblurred">${switchCount}x ${percentify(switchCountPointLoss)}</span></div>
-							<div class="ellipsis">bot: <span class="unblurred">${botPercentString}</span></div>
+							<div class="help ellipsis" title="${botInfo}">bot: <span class="unblurred">${botPercentString}</span></div>
 						</div>
 					</div>
 					${
