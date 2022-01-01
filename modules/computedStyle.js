@@ -4,7 +4,6 @@ export const getCSS = async imports => {
 		require: {
 			queueEvent,
 			createTimer,
-			instanceId,
 			captureError,
 			logTestResult,
 			parentPhantom
@@ -98,7 +97,7 @@ export const getCSS = async imports => {
 		}
 	}
 
-	const getSystemStyles = (instanceId, { require: [captureError, parentPhantom] }) => {
+	const getSystemStyles = el => {
 		try {
 			const colors = [
 				'ActiveBorder',
@@ -149,44 +148,33 @@ export const getCSS = async imports => {
 				'status-bar'
 			]
 
-			let rendered
-			if (!parentPhantom) {
-				const id = 'creep-system-styles'
-				const el = document.createElement('div')
-				el.setAttribute('id', id)
-				document.body.append(el)
-				rendered = document.getElementById(id)
-			}
-			else {
-				rendered = parentPhantom
-			}
-			const system = {
-				colors: [],
-				fonts: []
-			}
-			
-			system.colors = colors.map(color => {
-				rendered.setAttribute('style', `background-color: ${color} !important`)
-				return {
-					[color]: getComputedStyle(rendered).backgroundColor
-				}
-			})
-
-			fonts.forEach(font => {
-				rendered.setAttribute('style', `font: ${font} !important`)
-				const computedStyle = getComputedStyle(rendered)
-				system.fonts.push({
-					[font]: `${computedStyle.fontSize} ${computedStyle.fontFamily}`
+			const getStyles = el => ({
+				colors: colors.map(color => {
+					el.setAttribute('style', `background-color: ${color} !important`)
+					return {
+						[color]: getComputedStyle(el).backgroundColor
+					}
+				}),
+				fonts: fonts.map(font => {
+					el.setAttribute('style', `font: ${font} !important`)
+					const computedStyle = getComputedStyle(el)
+					return {
+						[font]: `${computedStyle.fontSize} ${computedStyle.fontFamily}`
+					}
 				})
 			})
 
-			if (!parentPhantom) {
-				rendered.parentNode.removeChild(rendered)
+			if (!el) {
+				el = document.createElement('div')
+				document.body.append(el)
+				const systemStyles = getStyles(el)
+				el.parentNode.removeChild(el)
+				return systemStyles
 			}
-			return { ...system }
+			return getStyles(el)
 		}
 		catch (error) {
-			captureError(error)
+			console.error(error)
 			return
 		}
 	}
@@ -194,8 +182,10 @@ export const getCSS = async imports => {
 	try {
 		const timer = createTimer()
 		timer.start()
+		const s = performance.now()
 		const computedStyle = computeStyle('getComputedStyle', { require: [captureError] })
-		const system = getSystemStyles(instanceId, { require: [captureError, parentPhantom] })
+		console.log(performance.now()-s)
+		const system = getSystemStyles(parentPhantom)
 		logTestResult({ time: timer.stop(), test: 'computed style', passed: true })
 		return {
 			computedStyle,
