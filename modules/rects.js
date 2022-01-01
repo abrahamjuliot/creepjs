@@ -217,8 +217,6 @@ export const getClientRects = async imports => {
 		})
 		.map(emoji => emoji.emoji)
 
-		const emojiSystem = hashMini(emojiSet)
-
 		// get clientRects
 		const range = document.createRange()
 		const rectElems = doc.getElementsByClassName('rects')
@@ -286,9 +284,7 @@ export const getClientRects = async imports => {
 					
 		logTestResult({ time: timer.stop(), test: 'rects', passed: true })
 		return {
-			emojiRects,
 			emojiSet,
-			emojiSystem,
 			elementClientRects,
 			elementBoundingClientRect,
 			rangeClientRects,
@@ -303,7 +299,7 @@ export const getClientRects = async imports => {
 	}
 }
 
-export const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice }) => {
+export const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, formatEmojiSet }) => {
 	if (!fp.clientRects) {
 		return `
 		<div class="col-six undefined">
@@ -322,13 +318,10 @@ export const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice
 			elementBoundingClientRect,
 			rangeClientRects,
 			rangeBoundingClientRect,
-			emojiRects,
 			emojiSet,
-			emojiSystem,
 			lied
 		}
 	} = fp
-	const id = 'creep-client-rects'
 
 	// compute mismatch style
 	const getRectSum = rect => Object.keys(rect).reduce((acc, key) => acc += rect[key], 0)/100_000_000
@@ -360,10 +353,6 @@ export const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice
 		})
 	}
 
-	const formatEmojiSet = emojiSet => (
-		emojiSet.length > 9 ? `${emojiSet.slice(0, 3).join('')}...${emojiSet.slice(-3).join('')}` :
-			emojiSet.join('')
-	)
 	const helpTitle = `hash: ${hashMini(emojiSet)}\n${emojiSet.map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`
 	return `
 	<div class="col-six${lied ? ' rejected' : ''}">

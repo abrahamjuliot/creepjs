@@ -1,4 +1,4 @@
-import { isChrome, braveBrowser, getBraveMode, getBraveUnprotectedParameters, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, computeWindowsRelease, attemptWindows11UserAgent, isUAPostReduction, getUserAgentRestored, logTestResult, getPromiseRaceFulfilled, queueEvent, createTimer } from './modules/helpers.js'
+import { isChrome, braveBrowser, getBraveMode, getBraveUnprotectedParameters, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, computeWindowsRelease, attemptWindows11UserAgent, isUAPostReduction, getUserAgentRestored, logTestResult, getPromiseRaceFulfilled, queueEvent, createTimer, formatEmojiSet } from './modules/helpers.js'
 import { patch, html, note, count, modal, getDiffs } from './modules/html.js'
 import { hashMini, instanceId, hashify } from './modules/crypto.js'
 
@@ -50,6 +50,7 @@ const imports = {
 		getWebGLRendererParts,
 		hardenWebGLRenderer,
 		getWebGLRendererConfidence,
+		formatEmojiSet,
 		// crypto
 		instanceId,
 		hashMini,
@@ -643,7 +644,8 @@ const imports = {
 		patch,
 		html,
 		styleSystemHash,
-		computeWindowsRelease
+		computeWindowsRelease,
+		formatEmojiSet
 	}
 	const hasTrash = !!trashLen
 	const { lies: hasLied, capturedErrors: hasErrors } = creep

@@ -417,4 +417,10 @@ const queueEvent = (timer, delay = 0) => {
 		.catch(e => { })
 }
 
-export { isChrome, braveBrowser, getBraveMode, getBraveUnprotectedParameters, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, computeWindowsRelease, attemptWindows11UserAgent, isUAPostReduction, getUserAgentRestored, logTestResult, getPromiseRaceFulfilled, queueEvent, createTimer }
+const formatEmojiSet = (emojiSet, limit = 3) => {
+	const maxLen = (limit * 2) + 3
+	return emojiSet.length > maxLen ? `${emojiSet.slice(0, limit).join('')}...${emojiSet.slice(-limit).join('')}` :
+		emojiSet.join('')
+}
+
+export { isChrome, braveBrowser, getBraveMode, getBraveUnprotectedParameters, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, computeWindowsRelease, attemptWindows11UserAgent, isUAPostReduction, getUserAgentRestored, logTestResult, getPromiseRaceFulfilled, queueEvent, createTimer, formatEmojiSet }
