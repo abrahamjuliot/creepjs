@@ -182,9 +182,7 @@ export const getCSS = async imports => {
 	try {
 		const timer = createTimer()
 		timer.start()
-		const s = performance.now()
 		const computedStyle = computeStyle('getComputedStyle', { require: [captureError] })
-		console.log(performance.now()-s)
 		const system = getSystemStyles(parentPhantom)
 		logTestResult({ time: timer.stop(), test: 'computed style', passed: true })
 		return {
