@@ -174,7 +174,7 @@ export const getCSS = async imports => {
 			return getStyles(el)
 		}
 		catch (error) {
-			console.error(error)
+			captureError(error)
 			return
 		}
 	}
