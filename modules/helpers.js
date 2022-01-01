@@ -368,16 +368,29 @@ const getUserAgentRestored = ({ userAgent, userAgentData }) => {
 	return userAgentRestored
 }
 
-const logTestResult = ({ test, passed, time = 0 }) => {
-	const color = passed ? '#4cca9f' : 'lightcoral'
-	const result = passed ? 'passed' : 'failed'
-	const symbol = passed ? '✔' : '-'
-	return console.log(
-		`%c${symbol}${
-		time ? ` (${time.toFixed(2)}ms)` : ''
-		} ${test} ${result}`, `color:${color}`
-	)
+const createPerformanceLogger = () => {
+	const log = {}
+	let total = 0
+	return {
+		logTestResult: ({ test, passed, time = 0 }) => {
+			total += time
+			const timeString = `${time.toFixed(2)}ms`
+			log[test] = timeString
+			const color = passed ? '#4cca9f' : 'lightcoral'
+			const result = passed ? 'passed' : 'failed'
+			const symbol = passed ? '✔' : '-'
+			return console.log(
+				`%c${symbol}${
+				time ? ` (${timeString})` : ''
+				} ${test} ${result}`, `color:${color}`
+			)
+		},
+		getLog: () => log,
+		getTotal: () => total
+	}
 }
+const performanceLogger = createPerformanceLogger()
+const { logTestResult } = performanceLogger
 
 const getPromiseRaceFulfilled = async ({
 	promise,
@@ -423,4 +436,4 @@ const formatEmojiSet = (emojiSet, limit = 3) => {
 		emojiSet.join('')
 }
 
-export { isChrome, braveBrowser, getBraveMode, getBraveUnprotectedParameters, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, computeWindowsRelease, attemptWindows11UserAgent, isUAPostReduction, getUserAgentRestored, logTestResult, getPromiseRaceFulfilled, queueEvent, createTimer, formatEmojiSet }
+export { isChrome, braveBrowser, getBraveMode, getBraveUnprotectedParameters, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, computeWindowsRelease, attemptWindows11UserAgent, isUAPostReduction, getUserAgentRestored, logTestResult, performanceLogger, getPromiseRaceFulfilled, queueEvent, createTimer, formatEmojiSet }

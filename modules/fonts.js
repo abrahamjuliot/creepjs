@@ -171,8 +171,6 @@ export const getFonts = async imports => {
 	}
 
 	const getPixelFonts = ({ win, id, chars, baseFonts, families }) => {
-		const emojis = [[128512],[9786],[129333, 8205, 9794, 65039],[9832],[9784],[9895],[8265],[8505],[127987, 65039, 8205, 9895, 65039],[129394],[9785],[9760],[129489, 8205, 129456],[129487, 8205, 9794, 65039],[9975],[129489, 8205, 129309, 8205, 129489],[9752],[9968],[9961],[9972],[9992],[9201],[9928],[9730],[9969],[9731],[9732],[9976],[9823],[9937],[9000],[9993],[9999],[10002],[9986],[9935],[9874],[9876],[9881],[9939],[9879],[9904],[9905],[9888],[9762],[9763],[11014],[8599],[10145],[11013],[9883],[10017],[10013],[9766],[9654],[9197],[9199],[9167],[9792],[9794],[10006],[12336],[9877],[9884],[10004],[10035],[10055],[9724],[9642],[10083],[10084],[9996],[9757],[9997],[10052],[9878],[8618],[9775],[9770],[9774],[9745],[10036],[127344],[127359]].map(emojiCode => String.fromCodePoint(...emojiCode))
-
 		const doc = win.document
 		try {
 			patch(doc.getElementById(id), html`
@@ -210,46 +208,10 @@ export const getFonts = async imports => {
 					}
 				</style>
 				<span id="${id}-detector"></span>
-				<div id="pixel-emoji-container">
-				<style>
-					.pixel-emoji {
-						font-family: monospace !important;
-						transform: scale(100);
-						position: absolute !important;
-						font-size: 200px !important;
-						height: auto;
-					}
-					</style>
-					${
-						emojis.map(emoji => {
-							return `<div class="pixel-emoji">${emoji}</div>`
-						})
-					}
-				</div>
 			`)
 
-			// get emojis
-			const pattern = new Set()
-			const emojiElems = [...doc.getElementsByClassName('pixel-emoji')]
-			const emojiPixels = emojiElems.map((el, i) => {
-				const style = getComputedStyle(el)
-				const emoji = emojis[i]
-				const { height, width } = getEmojiDimensions(style)
-				return { emoji, width, height }
-			})
-			// get emoji set and system
-			const emojiSet = emojiPixels.filter(emoji => {
-				const dimensions = `${emoji.width}, ${emoji.heigt}`
-				if (pattern.has(dimensions)) {
-					return false
-				}
-				pattern.add(dimensions)
-				return true
-			})
-			.map(emoji => emoji.emoji)
-
 			// get fonts
-			const span = win.document.getElementById(`${id}-detector`)
+			const span = doc.getElementById(`${id}-detector`)
 			const detectedViaTransform = new Set()
 			const detectedViaPerspective = new Set()
 			const style = getComputedStyle(span)
@@ -276,14 +238,12 @@ export const getFonts = async imports => {
 			})
 
 			return {
-				emojiSet,
 				transform: [...detectedViaTransform],
 				perspective: [...detectedViaPerspective]
 			}
 		} catch (error) {
 			console.error(error)
 			return {
-				emojiSet: [],
 				transform: [],
 				perspective: []
 			}
@@ -395,14 +355,13 @@ export const getFonts = async imports => {
 			return acc
 		}, [])
 
-		const { emojiSet, transform, perspective } = getPixelFonts({
+		const pixelFonts = getPixelFonts({
 			win,
 			id,
 			chars: `mmmmmmmmmmlli`,
 			baseFonts,
 			families
 		}) || {}
-		const pixelFonts = { transform, perspective }
 		const compressToList = fontObject => Object.keys(fontObject).reduce((acc, key) => {
 			return [...acc, ...fontObject[key]]
 		}, [])
@@ -426,7 +385,6 @@ export const getFonts = async imports => {
 			originFonts,
 			platformVersion,
 			apps,
-			emojiSet,
 			lied
 		}
 	} catch (error) {
@@ -436,12 +394,11 @@ export const getFonts = async imports => {
 	}
 }
 
-export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini, formatEmojiSet }) => {
+export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini, performanceLogger }) => {
 	if (!fp.fonts) {
 		return `
 		<div class="col-six undefined">
 			<strong>Fonts</strong>
-			<div>emojis: ${note.blocked}</div>
 			<div>origin (0): ${note.blocked}</div>
 			<div>load (0):</div>
 			<div class="block-text">${note.blocked}</div>
@@ -454,7 +411,6 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini, formatE
 			originFonts,
 			platformVersion,
 			apps,
-			emojiSet,
 			lied
 		}
 	} = fp
@@ -482,12 +438,10 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini, formatE
 	const originFontString = ''+(originFonts.sort())
 	const fontFaceLoadHash = hashMini(fontFaceLoadFonts)
 	const system = systemMap[originFontString]
-	
-	const emojiHelpTitle = `CSSStyleDeclaration.setProperty()\nblock-size\ninline-size\nhash: ${hashMini(emojiSet)}\n${emojiSet.map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`
 	return `
-	<div class="col-six${lied ? ' rejected' : ''}">
+	<div class="relative col-six${lied ? ' rejected' : ''}">
+		<span class="aside-note">${performanceLogger.getLog().fonts}</span>
 		<strong>Fonts</strong><span class="hash">${hashSlice($hash)}</span>
-		<div class="help ellipsis-all grey" title="${emojiHelpTitle}">emojis: ${formatEmojiSet(emojiSet)}</div>
 		<div class="help ellipsis-all" title="CSSStyleDeclaration.setProperty()\ntransform-origin\nperspective-origin">origin (${originFonts ? count(originFonts) : '0'}/${'' + getFontsShortList().length}): ${originFontString ? `${system ? system[0] : ''}${originFontString}`: note.unknown }</div>
 		<div class="help" title="FontFace.load()">load (${fontFaceLoadFonts ? count(fontFaceLoadFonts) : '0'}/${'' + getFontList().length}): ${
 			!(fontFaceLoadFonts||[]).length ? note.unknown : modal(
