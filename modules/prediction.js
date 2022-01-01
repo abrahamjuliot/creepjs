@@ -168,8 +168,8 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 			pendingReview ? `<span class="aside-note-bottom">pending review: <span class="renewed">${pendingReview}</span></span>` : ''
 		}
 		${
-			bot ? `<span class="aside-note"><span class="renewed">bot pattern detected</span></span>` :
-				typeof crowdBlendingScore == 'number' ? `<span class="aside-note">crowd-blending score: ${''+crowdBlendingScore}% <span class="scale-up grade-${crowdBlendingScoreGrade}">${crowdBlendingScoreGrade}</span></span>` : ''
+			bot ? `<span class="time"><span class="renewed">bot pattern detected</span></span>` :
+				typeof crowdBlendingScore == 'number' ? `<span class="time">crowd-blending score: ${''+crowdBlendingScore}% <span class="scale-up grade-${crowdBlendingScoreGrade}">${crowdBlendingScoreGrade}</span></span>` : ''
 		}
 		<div class="col-eight">
 			<strong>Prediction</strong>

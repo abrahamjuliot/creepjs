@@ -46,7 +46,7 @@ export const getConsoleErrors = async imports => {
 	}
 }
 
-export const consoleErrorsHTML = ({ fp, modal, note, hashSlice }) => {
+export const consoleErrorsHTML = ({ fp, modal, note, hashSlice, performanceLogger }) => {
 	if (!fp.consoleErrors) {
 		return `
 		<div class="col-six undefined">
@@ -69,7 +69,8 @@ export const consoleErrorsHTML = ({ fp, modal, note, hashSlice }) => {
 		return `${+key+1}: ${value}`
 	})
 	return `
-	<div class="col-six">
+	<div class="relative col-six">
+		<span class="aside-note">${performanceLogger.getLog()['console errors']}</span>
 		<strong>Error</strong><span class="hash">${hashSlice($hash)}</span>
 		<div>results: ${modal('creep-console-errors', results.join('<br>'))}</div>
 		<div class="blurred" id="error-samples">

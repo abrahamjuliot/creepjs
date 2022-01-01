@@ -51,7 +51,7 @@ export const getWindowFeatures = async imports => {
 	}
 }
 
-export const windowFeaturesHTML = ({ fp, modal, note, hashSlice, count }) => {
+export const windowFeaturesHTML = ({ fp, modal, note, hashSlice, count, performanceLogger }) => {
 	if (!fp.windowFeatures) {
 		return `
 		<div class="col-six undefined">
@@ -70,7 +70,8 @@ export const windowFeaturesHTML = ({ fp, modal, note, hashSlice, count }) => {
 	} = fp
 	
 	return `
-	<div class="col-six">
+	<div class="relative col-six">
+		<span class="aside-note">${performanceLogger.getLog().window}</span>
 		<strong>Window</strong><span class="hash">${hashSlice($hash)}</span>
 		<div>keys (${count(keys)}): ${keys && keys.length ? modal('creep-iframe-content-window-version', keys.join(', ')) : note.blocked}</div>
 		<div class="blurred" id="window-features-samples">

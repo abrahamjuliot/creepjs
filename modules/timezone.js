@@ -582,7 +582,7 @@ export const getTimezone = async imports => {
 	}
 }
 
-export const timezoneHTML = ({ fp, note, hashSlice }) => {
+export const timezoneHTML = ({ fp, note, hashSlice, performanceLogger }) => {
 	if (!fp.timezone) {
 		return `
 		<div class="col-four undefined">
@@ -603,7 +603,8 @@ export const timezoneHTML = ({ fp, note, hashSlice }) => {
 		}
 	} = fp
 	return `
-	<div class="col-four${lied ? ' rejected' : ''}">
+	<div class="relative col-four${lied ? ' rejected' : ''}">
+		<span class="aside-note">${performanceLogger.getLog().timezone}</span>
 		<strong>Timezone</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div class="block-text help"  title="Date\nDate.getTimezoneOffset\nIntl.DateTimeFormat">
 			${zone ? zone : ''}

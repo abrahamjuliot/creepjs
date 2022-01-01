@@ -220,7 +220,7 @@ export const getMaths = async imports => {
 	}
 }
 
-export const mathsHTML = ({ fp, modal, note, hashSlice }) => {
+export const mathsHTML = ({ fp, modal, note, hashSlice, performanceLogger }) => {
 	if (!fp.maths) {
 		return `
 		<div class="col-six undefined">
@@ -277,7 +277,8 @@ export const mathsHTML = ({ fp, modal, note, hashSlice }) => {
 	})
 
 	return `
-	<div class="col-six${lied ? ' rejected' : ''}">
+	<div class="relative col-six${lied ? ' rejected' : ''}">
+		<span class="aside-note">${performanceLogger.getLog().math}</span>
 		<strong>Math</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div>results: ${
 			!data ? note.blocked : 

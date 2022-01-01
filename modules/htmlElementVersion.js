@@ -26,7 +26,7 @@ export const getHTMLElementVersion = async imports => {
 	}
 }
 
-export const htmlElementVersionHTML = ({ fp, modal, note, hashSlice, count }) => {
+export const htmlElementVersionHTML = ({ fp, modal, note, hashSlice, count, performanceLogger }) => {
 	if (!fp.htmlElementVersion) {
 		return `
 		<div class="col-six undefined">
@@ -45,7 +45,8 @@ export const htmlElementVersionHTML = ({ fp, modal, note, hashSlice, count }) =>
 	} = fp
 
 	return `
-	<div class="col-six">
+	<div class="relative col-six">
+		<span class="aside-note">${performanceLogger.getLog()['html element']}</span>
 		<strong>HTMLElement</strong><span class="hash">${hashSlice($hash)}</span>
 		<div>keys (${count(keys)}): ${keys && keys.length ? modal('creep-html-element-version', keys.join(', ')) : note.blocked}</div>
 		<div class="blurred" id="html-element-samples">

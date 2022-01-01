@@ -133,7 +133,7 @@ export const getSVG = async imports => {
 	}
 }
 
-export const svgHTML = ({ fp, note, hashSlice, hashMini, formatEmojiSet }) => {
+export const svgHTML = ({ fp, note, hashSlice, hashMini, formatEmojiSet, performanceLogger }) => {
 	if (!fp.svg) {
 		return `
 		<div class="col-six undefined">
@@ -159,7 +159,8 @@ export const svgHTML = ({ fp, note, hashSlice, hashMini, formatEmojiSet }) => {
 	const divisor = 10000
 	const helpTitle = `hash: ${hashMini(emojiSet)}\n${emojiSet.map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`
 	return `
-	<div class="col-six${lied ? ' rejected' : ''}">
+	<div class="relative col-six${lied ? ' rejected' : ''}">
+		<span class="aside-note">${performanceLogger.getLog().svg}</span>
 		<strong>SVGRect</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div class="help" title="SVGGraphicsElement.getBBox()">bBox: ${bBox ? (bBox/divisor) : note.blocked}</div>
 		<div class="help" title="SVGTextContentElement.getExtentOfChar()">char: ${extentOfChar ? (extentOfChar/divisor) : note.blocked}</div>

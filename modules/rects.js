@@ -299,7 +299,7 @@ export const getClientRects = async imports => {
 	}
 }
 
-export const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, formatEmojiSet }) => {
+export const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, formatEmojiSet, performanceLogger }) => {
 	if (!fp.clientRects) {
 		return `
 		<div class="col-six undefined">
@@ -355,7 +355,8 @@ export const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice
 
 	const helpTitle = `hash: ${hashMini(emojiSet)}\n${emojiSet.map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`
 	return `
-	<div class="col-six${lied ? ' rejected' : ''}">
+	<div class="relative col-six${lied ? ' rejected' : ''}">
+		<span class="aside-note">${performanceLogger.getLog().rects}</span>
 		<strong>DOMRect</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div class="help" title="Element.getClientRects()">elems A: ${computeDiffs(elementClientRects)}</div>
 		<div class="help" title="Element.getBoundingClientRect()">elems B: ${computeDiffs(elementBoundingClientRect)}</div>

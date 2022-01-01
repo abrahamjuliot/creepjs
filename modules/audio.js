@@ -257,7 +257,7 @@ export const getOfflineAudioContext = async imports => {
 
 }
 
-export const audioHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice }) => {
+export const audioHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, performanceLogger }) => {
 	if (!fp.offlineAudioContext) {
 		return `<div class="col-four undefined">
 			<strong>Audio</strong>
@@ -291,7 +291,8 @@ export const audioHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice }) =>
 	const validAudio = sampleSum && compressorGainReduction && knownSums
 	const matchesKnownAudio = knownSums.includes(sampleSum)
 	return `
-	<div class="col-four${lied ? ' rejected' : ''}">
+	<div class="relative col-four${lied ? ' rejected' : ''}">
+		<span class="aside-note">${performanceLogger.getLog().audio}</span>
 		<strong>Audio</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div class="help" title="AudioBuffer.getChannelData()">sum: ${
 			!validAudio || matchesKnownAudio ? sampleSum : getDiffs({

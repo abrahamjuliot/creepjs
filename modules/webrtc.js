@@ -216,7 +216,7 @@ export const getWebRTCData = async imports => {
 }
 
 
-export const webrtcHTML = ({ fp, hashSlice, hashMini, note, modal }) => {
+export const webrtcHTML = ({ fp, hashSlice, hashMini, note, modal, performanceLogger }) => {
 	if (!fp.webRTC) {
 		return `
 		<div class="col-four undefined">
@@ -257,7 +257,8 @@ export const webrtcHTML = ({ fp, hashSlice, hashMini, note, modal }) => {
 		`
 	}).join('<br><br>')
 	return `
-	<div class="col-four">
+	<div class="relative col-four">
+		<span class="aside-note">${performanceLogger.getLog().webrtc}</span>
 		<strong>WebRTC</strong><span class="hash">${hashSlice($hash)}</span>
 		<div class="block-text help" title="RTCSessionDescription.sdp">
 			${ipaddress || note.blocked}

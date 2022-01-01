@@ -403,7 +403,7 @@ const getEngineFeatures = async ({ imports, cssComputed, windowFeaturesComputed 
 	}
 }
 
-const featuresHTML = ({ fp, modal, note, hashMini }) => {
+const featuresHTML = ({ fp, modal, note, hashMini, performanceLogger }) => {
 	if (!fp.features) {
 		return `
 		<div class="col-six undefined">
@@ -570,6 +570,7 @@ const featuresHTML = ({ fp, modal, note, hashMini }) => {
 			}
 		}
 	</style>
+	<span class="aside-note">${performanceLogger.getLog().features}</span>
 	<div class="col-six">
 		<div>Features: ${
 			versionRange.length ? `${browserIcon}${version}+` :

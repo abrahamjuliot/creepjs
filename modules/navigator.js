@@ -656,7 +656,7 @@ export const getNavigator = async (imports, workerScope) => {
 	}
 }
 
-export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count, computeWindowsRelease }) => {
+export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count, computeWindowsRelease, performanceLogger }) => {
 	if (!fp.navigator) {
 		return `
 		<div class="col-six undefined">
@@ -727,6 +727,7 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count, com
 		permissions && permissions.granted ? permissions.granted.length : 0
 	)
 	return `
+	<span class="time">${performanceLogger.getLog().navigator}</span>
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>Navigator</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div>properties (${count(properties)}): ${

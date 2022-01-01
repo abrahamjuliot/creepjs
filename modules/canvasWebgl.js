@@ -448,7 +448,7 @@ export const getCanvasWebgl = async imports => {
 	}
 }
 
-export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
+export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice, performanceLogger }) => {
 	if (!fp.canvasWebgl) {
 		return `
 		<div class="col-four undefined">
@@ -491,6 +491,7 @@ export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 	const paramKeys = parameters ? Object.keys(parameters).sort() : []
 	
 	return `
+	<span class="time">${performanceLogger.getLog().webgl}</span>
 	<div class="col-four${lied ? ' rejected' : ''}">
 		<strong>WebGL</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div>images:${

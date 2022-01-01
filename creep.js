@@ -740,7 +740,7 @@ const imports = {
 			${resistanceHTML(templateImports)}
 		</div>
 		<div class="flex-grid relative">${workerScopeHTML(templateImports)}</div>
-		<div class="flex-grid">${webglHTML(templateImports)}</div>
+		<div class="flex-grid relative">${webglHTML(templateImports)}</div>
 		<div class="flex-grid">
 			${canvasHTML(templateImports)}
 			${fontsHTML(templateImports)}
@@ -754,8 +754,8 @@ const imports = {
 			${clientRectsHTML(templateImports)}
 			${svgHTML(templateImports)}
 		</div>
-		<div class="flex-grid">${screenHTML(templateImports)}</div>
-		<div class="flex-grid">${featuresHTML(templateImports)}</div>
+		<div class="flex-grid relative">${screenHTML(templateImports)}</div>
+		<div class="flex-grid relative">${featuresHTML(templateImports)}</div>
 		<div class="flex-grid">
 			${cssMediaHTML(templateImports)}
 			${cssHTML(templateImports)}
@@ -770,7 +770,7 @@ const imports = {
 				${htmlElementVersionHTML(templateImports)}
 			</div>
 		</div>
-		<div class="flex-grid">${navigatorHTML(templateImports)}</div>
+		<div class="flex-grid relative">${navigatorHTML(templateImports)}</div>
 		<div>
 			<strong>Tests</strong>
 			<div>
@@ -956,7 +956,7 @@ const imports = {
 			const template = `
 				<div class="visitor-info">
 					<div class="ellipsis">
-						<span class="aside-note">fingerprints renewed <span class="${shouldStyle(renewedDate) ? 'renewed' : ''}">${
+						<span class="time">fingerprints renewed <span class="${shouldStyle(renewedDate) ? 'renewed' : ''}">${
 							new Date(renewedDate).toLocaleDateString()
 						}</span></span>
 					</div>

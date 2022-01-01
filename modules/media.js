@@ -2,11 +2,24 @@
 // - https://privacycheck.sec.lrz.de/active/fp_cpt/fp_can_play_type.html
 // - https://arkenfox.github.io/TZP
 const getMimeTypeShortList = () => [
+	'audio/ogg; codecs="vorbis"',
+	'audio/mpeg',
 	'audio/mpegurl',
+	'audio/wav; codecs="1"',
+	'audio/x-m4a',
+	'audio/aac',
 	'video/ogg; codecs="theora"',
 	'video/quicktime',
-	'video/webm'
-]
+	'video/mp4; codecs="avc1.42E01E"',
+	'video/webm; codecs="vp8"',
+	'video/webm; codecs="vp9"',
+	'video/x-matroska'
+].sort()
+
+/*
+
+
+*/
 
 export const getMedia = async imports => {
 
@@ -16,7 +29,7 @@ export const getMedia = async imports => {
 			createTimer,
 			captureError,
 			phantomDarkness,
-			caniuse,
+			attempt,
 			logTestResult
 		}
 	} = imports
@@ -49,25 +62,15 @@ export const getMedia = async imports => {
 
 	try {
 		const timer = createTimer()
-		await queueEvent(timer)
+		timer.start()
 		const phantomNavigator = phantomDarkness ? phantomDarkness.navigator : navigator
-		let devices, mimeTypes
-		if (caniuse(() => navigator.mediaDevices.enumerateDevices)) {
-			const enumeratedDevices = await phantomNavigator.mediaDevices.enumerateDevices()
-				.catch(error => console.error(error))
-
-			await queueEvent(timer)
-			mimeTypes = getMimeTypes()
-			devices = (
-				enumeratedDevices ?
-				enumeratedDevices.map(device => device.kind).sort() :
-				undefined
-			)
-		}
-		else {
-			await queueEvent(timer)
-			mimeTypes = getMimeTypes()
-		}
+		const s = performance.now()
+		const devices = await attempt(() => phantomNavigator.mediaDevices.enumerateDevices())
+			.then(devices => devices.map(device => device.kind).sort()).catch(error => undefined)
+		console.log(performance.now()-s)
+	
+		const mimeTypes = getMimeTypes()
+		
 		logTestResult({ time: timer.stop(), test: 'media', passed: true })
 		return { mediaDevices: devices, mimeTypes }
 	}
@@ -78,7 +81,7 @@ export const getMedia = async imports => {
 	}
 }
 
-export const mediaHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
+export const mediaHTML = ({ fp, note, count, modal, hashMini, hashSlice, performanceLogger }) => {
 	if (!fp.media) {
 		return `
 		<div class="col-four undefined">
@@ -171,7 +174,8 @@ export const mediaHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 	}, [])
 	
 	return `
-	<div class="col-four">
+	<div class="relative col-four">
+		<span class="aside-note">${performanceLogger.getLog().media}</span>
 		<strong>Media</strong><span class="hash">${hashSlice($hash)}</span>
 		<div class="help" title="HTMLMediaElement.canPlayType()\nMediaRecorder.isTypeSupported()\nMediaSource.isTypeSupported()">mimes (${count(mimeTypes)}/${mimesListLen}): ${
 			invalidMimeTypes ? note.blocked : 

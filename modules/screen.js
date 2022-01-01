@@ -139,7 +139,7 @@ export const getScreen = async imports => {
 	}
 }
 
-export const screenHTML = ({ fp, note, hashSlice }) => {
+export const screenHTML = ({ fp, note, hashSlice, performanceLogger }) => {
 	if (!fp.screen) {
 		return `
 		<div class="col-six undefined">
@@ -182,6 +182,7 @@ export const screenHTML = ({ fp, note, hashSlice }) => {
 	}
 	const { deviceHeight, deviceWidth } = getDeviceDimensions(width, height)
 	return `
+	<span class="time">${performanceLogger.getLog().screen}</span>
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>Screen</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div>device: ${device ? device : note.unknown}</div>

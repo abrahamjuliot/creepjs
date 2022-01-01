@@ -465,7 +465,7 @@ export const getCanvas2d = async imports => {
 	}
 }
 
-export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice }) => {
+export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, performanceLogger }) => {
 	if (!fp.canvas2d) {
 		return `
 		<div class="col-six undefined">
@@ -588,7 +588,7 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice }) =
 	const textMetricsHash = hashMini(textMetrics)
 
 	return `
-	<div class="col-six${lied ? ' rejected' : ''}">
+	<div class="relative col-six${lied ? ' rejected' : ''}">
 		<style>
 			.pixels {
 				padding: 10px;
@@ -638,6 +638,7 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice }) =
 				}
 			}
 		</style>
+		<span class="aside-note">${performanceLogger.getLog()['canvas 2d']}</span>
 		<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div class="help" title="HTMLCanvasElement.toDataURL()\nCanvasRenderingContext2D.getImageData()\nCanvasRenderingContext2D.isPointInPath()\nCanvasRenderingContext2D.isPointInStroke()\nHTMLCanvasElement.toBlob()\nOffscreenCanvas.convertToBlob()\nFileReader.readAsArrayBuffer()\nFileReader.readAsBinaryString()\nFileReader.readAsDataURL()\nFileReader.readAsText()">data: ${
 			modal(

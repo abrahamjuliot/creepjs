@@ -205,7 +205,7 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 	}
 }
 
-export const headlesFeaturesHTML = ({ fp, modal, note, hashMini, hashSlice }) => {
+export const headlesFeaturesHTML = ({ fp, modal, note, hashMini, hashSlice, performanceLogger }) => {
 	if (!fp.headless) {
 		return `
 		<div class="col-six">
@@ -231,7 +231,7 @@ export const headlesFeaturesHTML = ({ fp, modal, note, hashMini, hashSlice }) =>
 	} = data || {}
 	
 	return `
-	<div class="col-six">
+	<div class="relative col-six">
 		<style>
 			.like-headless-rating {
 				background: linear-gradient(90deg, var(${likeHeadlessRating < 100 ? '--grey-glass' : '--error'}) ${likeHeadlessRating}%, #fff0 ${likeHeadlessRating}%, #fff0 100%);
@@ -243,6 +243,7 @@ export const headlesFeaturesHTML = ({ fp, modal, note, hashMini, hashSlice }) =>
 				background: linear-gradient(90deg, var(--error) ${stealthRating}%, #fff0 ${stealthRating}%, #fff0 100%);
 			}
 		</style>
+		<span class="aside-note">${performanceLogger.getLog().headless}</span>
 		<strong>Headless</strong><span class="hash">${hashSlice($hash)}</span>
 		<div>chromium: ${''+chromium}</div>
 		<div class="like-headless-rating">${''+likeHeadlessRating}% like headless: ${

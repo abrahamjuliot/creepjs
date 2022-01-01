@@ -74,7 +74,7 @@ export const getVoices = imports => {
 	})
 }
 
-export const voicesHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
+export const voicesHTML = ({ fp, note, count, modal, hashMini, hashSlice, performanceLogger }) => {
 	if (!fp.voices) {
 		return `
 		<div class="col-four undefined">
@@ -114,7 +114,8 @@ export const voicesHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
 	const systemVoice = Object.keys(system).find(key => local.find(voice => voice.includes(key)))
 	
 	return `
-	<div class="col-four${lied ? ' rejected' : ''}">
+	<div class="relative col-four${lied ? ' rejected' : ''}">
+		<span class="aside-note">${performanceLogger.getLog().speech}</span>
 		<strong>Speech</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div class="help" title="SpeechSynthesis.getVoices()\nSpeechSynthesisVoice.localService">local (${count(local)}): ${
 			!local || !local.length ? note.unsupported :

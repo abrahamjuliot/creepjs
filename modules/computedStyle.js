@@ -197,7 +197,7 @@ export const getCSS = async imports => {
 	}
 }
 
-export const cssHTML = ({ fp, modal, note, hashMini, hashSlice, count }) => {
+export const cssHTML = ({ fp, modal, note, hashMini, hashSlice, count, performanceLogger }) => {
 	if (!fp.css) {
 		return `
 		<div class="col-six undefined">
@@ -230,7 +230,8 @@ export const cssHTML = ({ fp, modal, note, hashMini, hashSlice, count }) => {
 	})
 	const id = 'creep-css-style-declaration-version'
 	return `
-	<div class="col-six">
+	<div class="relative col-six">
+		<span class="aside-note">${performanceLogger.getLog()['computed style']}</span>
 		<strong>Computed Style</strong><span class="hash">${hashSlice($hash)}</span>
 		<div>keys (${!computedStyle ? '0' : count(computedStyle.keys)}): ${
 			!computedStyle ? note.blocked : 

@@ -379,7 +379,7 @@ export const getResistance = async imports => {
 	}
 }
 
-export const resistanceHTML = ({ fp, modal, note, hashMini, hashSlice }) => {
+export const resistanceHTML = ({ fp, modal, note, hashMini, hashSlice, performanceLogger }) => {
 	if (!fp.resistance) {
 		return `
 		<div class="col-six undefined">
@@ -426,7 +426,8 @@ export const resistanceHTML = ({ fp, modal, note, hashMini, hashSlice }) => {
 	)
 
 	return `
-	<div class="col-six">
+	<div class="relative col-six">
+		<span class="aside-note">${performanceLogger.getLog().resistance}</span>
 		<strong>Resistance</strong><span class="hash">${hashSlice($hash)}</span>
 		<div>privacy: ${privacy ? `${browserIcon}${privacy}` : note.unknown}</div>
 		<div>security: ${

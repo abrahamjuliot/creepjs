@@ -245,7 +245,7 @@ export const getCSSMedia = async imports => {
 
 
 
-export const cssMediaHTML = ({ fp, modal, note, hashMini, hashSlice }) => {
+export const cssMediaHTML = ({ fp, modal, note, hashMini, hashSlice, performanceLogger }) => {
 	if (!fp.css) {
 		return `
 		<div class="col-six undefined">
@@ -269,7 +269,8 @@ export const cssMediaHTML = ({ fp, modal, note, hashMini, hashSlice }) => {
 	} = data
 
 	return `
-	<div class="col-six">
+	<div class="relative col-six">
+		<span class="aside-note">${performanceLogger.getLog()['css media']}</span>
 		<strong>CSS Media Queries</strong><span class="hash">${hashSlice($hash)}</span>
 		<div>@media: ${
 			!mediaCSS || !Object.keys(mediaCSS).filter(key => !!mediaCSS[key]).length ? 

@@ -296,11 +296,11 @@ visitor {
     top: 0;
     font-size: 12px !important;
 }
-.aside-note,
 .entropy-note,
 .time {
     right: 25px;
 }
+.aside-note,
 .confidence-note {
     right: 3px;
 }

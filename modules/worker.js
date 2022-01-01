@@ -254,7 +254,7 @@ export const getBestWorkerScope = async imports => {
 	}
 }
 
-export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, computeWindowsRelease }) => {
+export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, computeWindowsRelease, performanceLogger }) => {
 	if (!fp.workerScope) {
 		return `
 		<div class="col-six undefined">
@@ -345,8 +345,10 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 
 
 	return `
-	<div class="ellipsis"><span class="aside-note">${scope || ''}</span></div>
-	<div class="col-six${lied ? ' rejected' : ''}">
+	<span class="time">${performanceLogger.getLog()[`${type} worker`]}</span>
+	<span class="aside-note-bottom">${scope || ''}</span>
+	<div class="relative col-six${lied ? ' rejected' : ''}">
+		
 		<strong>Worker</strong><span class="hash">${hashSlice($hash)}</span>
 		<div class="help" title="OffscreenCanvas.convertToBlob()\nFileReader.readAsDataURL()">canvas 2d:${
 			canvas2d && canvas2d.dataURI ?
