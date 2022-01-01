@@ -305,7 +305,8 @@ visitor {
     right: 3px;
 }
 .aside-note,
-.confidence-note {
+.confidence-note,
+.time {
     background: #fff;
     color: #bbb;
 }

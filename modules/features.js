@@ -570,7 +570,7 @@ const featuresHTML = ({ fp, modal, note, hashMini, performanceLogger }) => {
 			}
 		}
 	</style>
-	<span class="aside-note">${performanceLogger.getLog().features}</span>
+	<span class="time">${performanceLogger.getLog().features}</span>
 	<div class="col-six">
 		<div>Features: ${
 			versionRange.length ? `${browserIcon}${version}+` :
