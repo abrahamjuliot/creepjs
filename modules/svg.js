@@ -8,6 +8,7 @@ export const getSVG = async imports => {
 			patch,
 			html,
 			captureError,
+			getEmojis,
 			lieProps,
 			logTestResult,
 			phantomDarkness
@@ -25,13 +26,12 @@ export const getSVG = async imports => {
 		) || false // detect lies
 						
 		const doc = phantomDarkness ? phantomDarkness.document : document
-
-		const emojis = [[128512],[9786],[129333, 8205, 9794, 65039],[9832],[9784],[9895],[8265],[8505],[127987, 65039, 8205, 9895, 65039],[129394],[9785],[9760],[129489, 8205, 129456],[129487, 8205, 9794, 65039],[9975],[129489, 8205, 129309, 8205, 129489],[9752],[9968],[9961],[9972],[9992],[9201],[9928],[9730],[9969],[9731],[9732],[9976],[9823],[9937],[9000],[9993],[9999],[10002],[9986],[9935],[9874],[9876],[9881],[9939],[9879],[9904],[9905],[9888],[9762],[9763],[11014],[8599],[10145],[11013],[9883],[10017],[10013],[9766],[9654],[9197],[9199],[9167],[9792],[9794],[10006],[12336],[9877],[9884],[10004],[10035],[10055],[9724],[9642],[10083],[10084],[9996],[9757],[9997],[10052],[9878],[8618],[9775],[9770],[9774],[9745],[10036],[127344],[127359]].map(emojiCode => String.fromCodePoint(...emojiCode))
-
 		const svgId = `${instanceId}-svg-div`
 		const divElement = document.createElement('div')
 		divElement.setAttribute('id', svgId)
 		doc.body.appendChild(divElement)
+
+		const emojis = getEmojis()
 		
 		// patch div
 		patch(divElement, html`
@@ -44,11 +44,15 @@ export const getSVG = async imports => {
 					height: auto;
 				}
 				.svgrect-emoji {
-					font-family: monospace !important;
-					transform: scale(100);
-					position: absolute !important;
+					font-family:
+					'Segoe UI Emoji', /* Windows */
+					'Apple Color Emoji', /* Apple */
+					'Noto Color Emoji', /* Linux, Android, Chrome OS */
+					sans-serif !important;
 					font-size: 200px !important;
 					height: auto;
+					position: absolute !important;
+					transform: scale(100);
 				}
 				</style>
 				<svg>

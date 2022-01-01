@@ -137,6 +137,7 @@ export const getCanvas2d = async imports => {
 		require: {
 			queueEvent,
 			createTimer,
+			getEmojis,
 			captureError,
 			lieProps,
 			documentLie,
@@ -153,7 +154,7 @@ export const getCanvas2d = async imports => {
 		context.font = '14px Arial'
 		context.fillText(str, 0, 20)
 		context.fillStyle = 'rgba(0, 0, 0, 0)'
-		context.fillRect(0, 0, 186, 30)
+		context.fillRect(0, 0, canvas.width, canvas.height)
 		context.beginPath()
 		context.arc(15.49, 15.51, 10.314, 0, Math.PI * 2)
 		context.closePath()
@@ -177,93 +178,6 @@ export const getCanvas2d = async imports => {
 			getRead('readAsText', blob),
 		])
 	}
-
-	const systemEmojis = [
-		[128512],
-		[9786],
-		[129333, 8205, 9794, 65039],
-		[9832],
-		[9784],
-		[9895],
-		[8265],
-		[8505],
-		[127987, 65039, 8205, 9895, 65039],
-		[129394],
-		[9785],
-		[9760],
-		[129489, 8205, 129456],
-		[129487, 8205, 9794, 65039],
-		[9975],
-		[129489, 8205, 129309, 8205, 129489],
-		[9752],
-		[9968],
-		[9961],
-		[9972],
-		[9992],
-		[9201],
-		[9928],
-		[9730],
-		[9969],
-		[9731],
-		[9732],
-		[9976],
-		[9823],
-		[9937],
-		[9000],
-		[9993],
-		[9999],
-		[10002],
-		[9986],
-		[9935],
-		[9874],
-		[9876],
-		[9881],
-		[9939],
-		[9879],
-		[9904],
-		[9905],
-		[9888],
-		[9762],
-		[9763],
-		[11014],
-		[8599],
-		[10145],
-		[11013],
-		[9883],
-		[10017],
-		[10013],
-		[9766],
-		[9654],
-		[9197],
-		[9199],
-		[9167],
-		[9792],
-		[9794],
-		[10006],
-		[12336],
-		[9877],
-		[9884],
-		[10004],
-		[10035],
-		[10055],
-		[9724],
-		[9642],
-		[10083],
-		[10084],
-		[9996],
-		[9757],
-		[9997],
-		[10052],
-		[9878],
-		[8618],
-		[9775],
-		[9770],
-		[9774],
-		[9745],
-		[10036],
-		[127344],
-		[127359]
-	].map(emojiCode => String.fromCodePoint(...emojiCode))
 
 	try {
 		const timer = createTimer()
@@ -298,66 +212,7 @@ export const getCanvas2d = async imports => {
 				documentLie(`HTMLCanvasElement.toDataURL`, iframeLie)
 			}
 		}
-
-		// get system measurements
-		const knownTextMetrics = {
-			// Blink
-			'169.9375': 'Linux', // Chrome OS
-			'169.4443359375': 'Linux', // Chrome OS/CloudReady
-			'164.6962890625': 'Linux', // Fedora/Ubuntu
-			'170.4443359375': 'Linux', // Fedora/Ubuntu (onscreen)
-			'173.9521484375': 'Windows', // Windows 10
-			'163.5068359375': 'Windows', // Windows 7-8.1
-			'156.5068359375': 'Windows', // Windows 7-8.1 (onscreen)
-			'159.87109375': 'Android', // Android 8-11
-			'161.93359375': 'Android', // Android 9/Chrome OS
-			'160.021484375': 'Android', // Android 5-7
-			'170.462890625': 'Apple', // Mac Yosemite-Big Sur
-			'172.462890625': 'Apple', // Mac Mojave
-			'162.462890625': 'Apple', // Mac Yosemite-Big Sur (onscreen)
-
-			// Gecko (onscreen)
-			'163.48333384195962': 'Linux', // Fedora/Ubuntu
-			'163': 'Linux', // Ubuntu/Tor Browser
-			'170.38938852945964': 'Windows', // Windows 10
-			'159.9560546875': 'Windows', // Windows 7-8
-			'165.9560546875': 'Windows', // Tor Browser
-			'173.43938852945962': 'Apple', // Mac Yosemite-Big Sur (+Tor Browser)
-			'159.70088922409784': 'Android', // Android 11
-			'159.71331355882728': 'Android', // Android 11
-			'159.59375152587893': 'Android', // Android 11
-			'159.75551515467026': 'Android', // Android 10
-			'161.7770797729492': 'Android', // Android 9
 			
-			// WebKit (onscreen)
-			'172.955078125': 'Apple', // Mac, CriOS
-		}
-		
-		const {
-			actualBoundingBoxRight: systemActualBoundingBoxRight,
-			width: systemWidth
-		} = context.measureText('😀!@#$%^&*') || {}
-		const textMetricsSystemSum = ((systemActualBoundingBoxRight || 0) + (systemWidth || 0)) || undefined
-		const textMetricsSystemClass = knownTextMetrics[textMetricsSystemSum]
-		const {
-			actualBoundingBoxAscent,
-			actualBoundingBoxDescent,
-			actualBoundingBoxLeft,
-			actualBoundingBoxRight,
-			fontBoundingBoxAscent,
-			fontBoundingBoxDescent,
-			width
-		} = context.measureText(systemEmojis.join('')) || {}
-		const textMetrics = {
-			actualBoundingBoxAscent,
-			actualBoundingBoxDescent,
-			actualBoundingBoxLeft,
-			actualBoundingBoxRight,
-			fontBoundingBoxAscent,
-			fontBoundingBoxDescent,
-			width
-		}
-		
 		const { data: imageData } = context.getImageData(0, 0, canvas.width, canvas.height) || {}
 		
 		let canvasOffscreen
@@ -401,6 +256,47 @@ export const getCanvas2d = async imports => {
 		await queueEvent(timer)
 		const points = getPointIn(canvas, context) // modifies width
 		const mods = getPixelMods()
+
+		// get emojis
+		const pattern = new Set()
+		const emojis = getEmojis()
+		const emojiMetrics = emojis.map(emoji => {
+			return {
+				emoji,
+				metrics: (context.measureText(emoji) || {})
+			}
+		})
+		// get emoji set and system
+		const emojiSet = emojiMetrics.filter(emoji => {
+			const {
+				actualBoundingBoxAscent,
+				actualBoundingBoxDescent,
+				actualBoundingBoxLeft,
+				actualBoundingBoxRight,
+				fontBoundingBoxAscent,
+				fontBoundingBoxDescent,
+				width
+			} = emoji.metrics
+			const dimensions = [
+				actualBoundingBoxAscent,
+				actualBoundingBoxDescent,
+				actualBoundingBoxLeft,
+				actualBoundingBoxRight,
+				fontBoundingBoxAscent,
+				fontBoundingBoxDescent,
+				width
+			].join(',')
+			if (pattern.has(dimensions)) {
+				return false
+			}
+			pattern.add(dimensions)
+			return true
+		})
+		.map(emoji => emoji.emoji)
+
+		const textMetricsSystemSum = 0.00001 * [...pattern].map(x => {
+			return x.split(',').reduce((acc, x) => acc += (+x||0), 0)
+		}).reduce((acc, x) => acc += x, 0)
 	
 		// lies
 		if (mods && mods.pixels) {
@@ -451,10 +347,9 @@ export const getCanvas2d = async imports => {
 			points,
 			blob,
 			blobOffscreen,
-			textMetrics: (new Set(Object.keys(textMetrics)).size > 1)  && !!Object.values(textMetrics).reduce((acc, x) => acc += (x||0), 0) ? textMetrics : undefined,
 			textMetricsSystemSum,
-			textMetricsSystemClass,
 			liedTextMetrics: textMetricsLie,
+			emojiSet,
 			lied
 		}
 	}
@@ -465,13 +360,14 @@ export const getCanvas2d = async imports => {
 	}
 }
 
-export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, performanceLogger }) => {
+export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, formatEmojiSet, performanceLogger }) => {
 	if (!fp.canvas2d) {
 		return `
 		<div class="col-six undefined">
 			<strong>Canvas 2d</strong> <span>${note.blocked}</span>
+			<div>emojis: ${note.blocked}</div>
+			<div>sum: ${note.blocked}</div>
 			<div>data: ${note.blocked}</div>
-			<div>textMetrics: ${note.blocked}</div>
 			<div>pixel trap:</div>
 			<div class="icon-pixel-container pixels">${note.blocked}</div>
 		</div>`
@@ -486,9 +382,8 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, per
 			points,
 			blob,
 			blobOffscreen,
-			textMetrics,
+			emojiSet,
 			textMetricsSystemSum,
-			textMetricsSystemClass,
 			$hash
 		}
 	} = fp
@@ -577,15 +472,7 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, per
 		return `<span class="rgba rgba-${css[c]}"></span>`
 	}).join('')).join(' ')
 
-	const icon = {
-		'Linux': '<span class="icon linux"></span>',
-		'Apple': '<span class="icon apple"></span>',
-		'Windows': '<span class="icon windows"></span>',
-		'Android': '<span class="icon android"></span>'
-	}
-	
-	const systemTextMetricsClassIcon = icon[textMetricsSystemClass]
-	const textMetricsHash = hashMini(textMetrics)
+	const emojiHelpTitle = `CanvasRenderingContext2D.measureText()\nhash: ${hashMini(emojiSet)}\n${emojiSet.map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`
 
 	return `
 	<div class="relative col-six${lied ? ' rejected' : ''}">
@@ -640,6 +527,8 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, per
 		</style>
 		<span class="aside-note">${performanceLogger.getLog()['canvas 2d']}</span>
 		<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+		<div class="help ellipsis-all grey" title="${emojiHelpTitle}">emojis: ${formatEmojiSet(emojiSet)}</div>
+		<div class="help ellipsis-all" title="CanvasRenderingContext2D.measureText()">sum: ${textMetricsSystemSum}</div>
 		<div class="help" title="HTMLCanvasElement.toDataURL()\nCanvasRenderingContext2D.getImageData()\nCanvasRenderingContext2D.isPointInPath()\nCanvasRenderingContext2D.isPointInStroke()\nHTMLCanvasElement.toBlob()\nOffscreenCanvas.convertToBlob()\nFileReader.readAsArrayBuffer()\nFileReader.readAsBinaryString()\nFileReader.readAsDataURL()\nFileReader.readAsText()">data: ${
 			modal(
 				'creep-canvas-data',
@@ -652,15 +541,6 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, per
 					blobOffscreen
 				})
 			)
-		}</div>
-		<div class="help" title="CanvasRenderingContext2D.measureText()">textMetrics: ${
-			!textMetrics ? note.blocked : modal(
-				'creep-text-metrics',
-				`<div>system: ${textMetricsSystemSum}</div><br>` +
-				Object.keys(textMetrics).map(key => `<span>${key}: ${typeof textMetrics[key] == 'undefined' ? note.unsupported : textMetrics[key]}</span>`).join('<br>'),
-				systemTextMetricsClassIcon ? `${systemTextMetricsClassIcon}${textMetricsHash}` :
-					textMetricsHash
-			)	
 		}</div>
 		<div class="help" title="CanvasRenderingContext2D.getImageData()">pixel trap: ${rgba ? `${modPercent}% rgba noise ${rgbaHTML}` : ''}</div>
 		<div class="icon-pixel-container pixels">

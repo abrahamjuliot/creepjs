@@ -39,9 +39,15 @@ patch(el, html`
 <div id="emoji-container">
 	<style>
 	#emoji {
-		position: absolute;
-		font-size: 200px;
+		font-family:
+		'Segoe UI Emoji', /* Windows */
+		'Apple Color Emoji', /* Apple */
+		'Noto Color Emoji', /* Linux, Android, Chrome OS */
+		sans-serif !important;
+		font-size: 200px !important;
 		height: auto;
+		position: absolute !important;
+		transform: scale(100);
 	}
 	</style>
 	<div id="emoji" class="emojis"></div>
