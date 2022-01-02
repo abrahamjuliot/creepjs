@@ -490,7 +490,7 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini, formatE
 	<div class="relative col-six${lied ? ' rejected' : ''}">
 		<span class="aside-note">${performanceLogger.getLog().fonts}</span>
 		<strong>Fonts</strong><span class="hash">${hashSlice($hash)}</span>
-		<div class="help ellipsis-all grey" title="${emojiHelpTitle}">emojis: ${formatEmojiSet(emojiSet)}</div>
+		<div class="help grey" title="${emojiHelpTitle}">emojis: ${formatEmojiSet(emojiSet)}</div>
 		<div class="help ellipsis-all" title="CSSStyleDeclaration.setProperty()\ntransform-origin\nperspective-origin">origin (${originFonts ? count(originFonts) : '0'}/${'' + getFontsShortList().length}): ${originFontString ? `${system ? system[0] : ''}${originFontString}`: note.unknown }</div>
 		<div class="help" title="FontFace.load()">load (${fontFaceLoadFonts ? count(fontFaceLoadFonts) : '0'}/${'' + getFontList().length}): ${
 			!(fontFaceLoadFonts||[]).length ? note.unknown : modal(

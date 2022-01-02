@@ -16,20 +16,15 @@ const getMimeTypeShortList = () => [
 	'video/x-matroska'
 ].sort()
 
-/*
-
-
-*/
-
 export const getMedia = async imports => {
 
 	const {
 		require: {
 			queueEvent,
 			createTimer,
+			attempt,
 			captureError,
 			phantomDarkness,
-			attempt,
 			logTestResult
 		}
 	} = imports
@@ -64,10 +59,8 @@ export const getMedia = async imports => {
 		const timer = createTimer()
 		timer.start()
 		const phantomNavigator = phantomDarkness ? phantomDarkness.navigator : navigator
-		const s = performance.now()
-		const devices = await attempt(() => phantomNavigator.mediaDevices.enumerateDevices())
+		const devices = !phantomNavigator.mediaDevices ? undefined : await attempt(() => phantomNavigator.mediaDevices.enumerateDevices())
 			.then(devices => devices.map(device => device.kind).sort()).catch(error => undefined)
-		console.log(performance.now()-s)
 	
 		const mimeTypes = getMimeTypes()
 		

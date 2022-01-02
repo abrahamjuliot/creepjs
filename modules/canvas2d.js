@@ -258,6 +258,7 @@ export const getCanvas2d = async imports => {
 		const mods = getPixelMods()
 
 		// get emojis
+		context.font = `200px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`
 		const pattern = new Set()
 		const emojis = getEmojis()
 		const emojiMetrics = emojis.map(emoji => {
@@ -527,8 +528,8 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 		</style>
 		<span class="aside-note">${performanceLogger.getLog()['canvas 2d']}</span>
 		<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-		<div class="help ellipsis-all grey" title="${emojiHelpTitle}">emojis: ${formatEmojiSet(emojiSet)}</div>
-		<div class="help ellipsis-all" title="CanvasRenderingContext2D.measureText()">sum: ${textMetricsSystemSum}</div>
+		<div class="help grey" title="${emojiHelpTitle}">emojis: ${formatEmojiSet(emojiSet)}</div>
+		<div class="help" title="CanvasRenderingContext2D.measureText()">sum: ${textMetricsSystemSum}</div>
 		<div class="help" title="HTMLCanvasElement.toDataURL()\nCanvasRenderingContext2D.getImageData()\nCanvasRenderingContext2D.isPointInPath()\nCanvasRenderingContext2D.isPointInStroke()\nHTMLCanvasElement.toBlob()\nOffscreenCanvas.convertToBlob()\nFileReader.readAsArrayBuffer()\nFileReader.readAsBinaryString()\nFileReader.readAsDataURL()\nFileReader.readAsText()">data: ${
 			modal(
 				'creep-canvas-data',
