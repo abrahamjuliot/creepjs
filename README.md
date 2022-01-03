@@ -79,9 +79,13 @@ A metric with only 1 reporter is unique
 
 ### Bot Detection
 Bots leak unusual behavior and can be denied service.
-- 10 loose fingerprints within 48 hours
-- Headless rating > 0
-- Stealth rating > 0
+- Excessive loose fingerprints
+- User agent version or platform does not match features
+- worker scope tampering
+
+### Breadcrumbs
+Loose metric revision patterns can be used connect stable fingerprints
+- A string of 64 characters is used to signal revised metrics
 
 ## Browser Prediction
 - a prediction is made to decrypt the browser vendor, version, renderer, engine, system, device and gpu
