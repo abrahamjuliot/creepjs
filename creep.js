@@ -998,6 +998,7 @@ const imports = {
 
 			const { initial, loads, revisedKeys } = computeSession({ fingerprint: fp, loading: true }) 
 			const breadcrumbCount = breadcrumb.split('').filter(x => x == '1').length
+			const breadcrumbBits = breadcrumbCount/breadcrumb.length
 			const template = `
 				<div class="visitor-info">
 					<div class="ellipsis">
@@ -1016,9 +1017,9 @@ const imports = {
 							<div class="ellipsis">last: <span class="unblurred">${toLocaleStr(latestVisit)}</span></div>
 							<div>persistence: <span class="unblurred">${hours} hours</span></div>
 							<div class="relative">breadcrumb:${
-								!breadcrumbCount ? ' none' : `<span class="unblurred sub-hash">${hashMini(breadcrumb)}</span>`
+								!breadcrumbCount ? ' clear' : `<span class="unblurred sub-hash">${hashMini(breadcrumb)}</span>`
 							}
-							<span class="confidence-note">${(breadcrumbCount/breadcrumb.length).toFixed(5)}</span>
+							<span class="confidence-note">${ breadcrumbBits ? breadcrumbBits.toFixed(5) : ''}</span>
 							</div>
 							
 							<div class="block-text-small">
@@ -1064,7 +1065,7 @@ const imports = {
 						</div>
 						` :
 						`<form class="fade-right-in" id="signature">
-							<input id="signature-input" type="text" placeholder="sign this fingerprint" title="sign your fingerprint" required minlength="4" maxlength="64">
+							<input id="signature-input" type="text" placeholder="add a signature to this fingerprint" title="sign this fingerprint" required minlength="4" maxlength="64">
 							<input type="submit" value="Sign">
 						</form>
 						`

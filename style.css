@@ -171,6 +171,7 @@ strong {
 	filter: grayscale(100%);
 }
 #signature {
+	width: 100%;
     min-height: 50px;
     padding: 5px 10px;
 }
@@ -186,7 +187,7 @@ strong {
     background: #fff;
 }
 #signature input[type="text"] {
-    width: 70%;
+    width: 50%;
 }
 #signature input[type="text"],
 #signature input[type="submit"] {
