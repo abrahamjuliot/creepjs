@@ -83,19 +83,21 @@ Bots leak unusual behavior and can be denied service.
 - User agent version or platform does not match features
 - worker scope tampering
 
-### Breadcrumbs
-Loose metric revision patterns can be used connect stable fingerprints
+### Breadcrumb
+Per session, metric revision patterns can be used to connect stable fingerprints
 - A string of 64 characters is used to signal revised metrics
+- By default, a breadcrumb is clear or empty until revisions are detected during a session
+- Metric revisions can include browser updates and/or API tampering
 
 ## Browser Prediction
-- a prediction is made to decrypt the browser vendor, version, renderer, engine, system, device and gpu
-- this prediction does not affect the fingerprint
-- data is auto matched to fingerprint ids gathered from `WorkerNavigator.userAgent` and other stable metrics
-- decoded samples from the server are auto computed or manually reviewed
-- each sample goes through a number of client and server checks before it is considered trustworthy
-- samples that are poisoned can self learn and heal themselves
-- samples aging 45 days since last timestamp visit are auto discarded (random samples that never return are eventually auto removed)
-- if the worker scope is blocked and the fingerprint ids exist in the database, the prediction can still be made
+- A prediction is made to decrypt the browser vendor, version, renderer, engine, system, device and gpu
+- This prediction does not affect the fingerprint
+- Data is auto matched to fingerprint ids gathered from `WorkerNavigator.userAgent` and other stable metrics
+- Decoded samples from the server are auto computed or manually reviewed
+- Each sample goes through a number of client and server checks before it is considered trustworthy
+- Samples that are poisoned can self learn and heal themselves
+- Samples aging 45 days since last timestamp visit are auto discarded (random samples that never return are eventually auto removed)
+- If the worker scope is blocked and the fingerprint ids exist in the database, the prediction can still be made
 
 ### Tests
 1. contentWindow (Self) object
