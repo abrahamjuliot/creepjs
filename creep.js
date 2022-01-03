@@ -795,7 +795,36 @@ const imports = {
 		const id = 'creep-browser'
 		const visitorElem = document.getElementById(id)
 		const fetchVisitorDataTimer = timer()
-		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}`
+
+		const computeBreadcrumb = (fingerprint) => {
+			const firstBreadcrumb = [...Array(64)].map(x => 0).join('')
+			const initialFingerprint = JSON.parse(sessionStorage.getItem('initialFingerprint'))
+			const currentFingerprint = Object.keys(fingerprint).reduce((acc, key) => {
+				if (!fingerprint[key]) {
+					acc[key] = ''
+					return acc
+				}
+				acc[key] = fingerprint[key].$hash
+				return acc
+			}, {})
+			
+			if (!initialFingerprint) {
+				return firstBreadcrumb
+			}
+			const breadcrumbList = firstBreadcrumb.split('')
+			const crumb = '1'
+			const breadcrumb = Object.keys(initialFingerprint).sort().reduce((acc, key, i) => {
+				const match = initialFingerprint[key] == currentFingerprint[key]
+				if (!match) {
+					breadcrumbList[i] = crumb
+				}
+				return breadcrumbList
+			}, breadcrumbList).join('')
+			return breadcrumb
+		}
+		const breadcrumb = computeBreadcrumb(fp)
+
+		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&breadcrumb=${breadcrumb}`
 		
 		fetch(request)
 		.then(response => response.json())
@@ -806,7 +835,18 @@ const imports = {
 			fetchVisitorDataTimer('response time')
 			console.groupEnd()
 		
-			const { firstVisit, lastVisit: latestVisit, looseFingerprints: subIds, visits,looseSwitchCount: switchCount,  hasTrash, hasLied, hasErrors, signature } = data
+			const {
+				firstVisit,
+				lastVisit: latestVisit,
+				looseFingerprints: subIds,
+				visits,
+				looseSwitchCount: switchCount,
+				hasTrash,
+				hasLied,
+				hasErrors,
+				signature,
+				breadcrumb
+			} = data || {}
 			
 			const toLocaleStr = str => {
 				const date = new Date(str)
@@ -954,6 +994,14 @@ const imports = {
 				return `${key}: ${botPatterns[key]}`
 			}).join('\n')
 
+			const getChunks = (list, chunkLen) => list.reduce((acc, x, i) => {
+				const chunk = Math.floor(i/chunkLen)
+				acc[chunk] = [...(acc[chunk]||[]), x]
+				return acc
+			}, [])
+
+			const { initial, loads, revisedKeys } = computeSession({ fingerprint: fp, loading: true }) 
+
 			const template = `
 				<div class="visitor-info">
 					<div class="ellipsis">
@@ -971,6 +1019,8 @@ const imports = {
 							<div class="ellipsis">first: <span class="unblurred">${toLocaleStr(firstVisit)}</span></div>
 							<div class="ellipsis">last: <span class="unblurred">${toLocaleStr(latestVisit)}</span></div>
 							<div>persistence: <span class="unblurred">${hours} hours</span></div>
+							<div>breadcrumb:</div>
+							<div class="block-text-small">${getChunks(breadcrumb.split(''), 32).map(x => x.join('')).join('<br>')}</div>
 						</div>
 						<div class="col-six">
 							<div>has trash: <span class="unblurred">${
@@ -990,6 +1040,15 @@ const imports = {
 							}</span></div>
 							<div class="ellipsis">loose fingerprint: <span class="unblurred">${hashSlice(fpHash)}</span></div>
 							<div class="ellipsis">loose switched: <span class="unblurred">${switchCount}x ${percentify(switchCountPointLoss)}</span></div>
+							<div>session (${''+loads}):<span class="sub-hash">${initial}</span></div>
+							<div>switch: ${
+								!revisedKeys.length ? 'none' :
+								modal(
+									`creep-revisions`,
+									revisedKeys.join('<br>'),
+									hashMini(revisedKeys)
+								)
+							}</div>
 							<div class="help ellipsis" title="${botInfo}">bot: <span class="unblurred">${botPercentString}</span></div>
 						</div>
 					</div>
@@ -1005,35 +1064,6 @@ const imports = {
 							<input type="submit" value="Sign">
 						</form>
 						`
-					}
-					${
-						(() => {
-							const { initial, loads, revisedKeys } = computeSession({ fingerprint: fp, loading: true }) 
-							
-							return `
-								<div class="flex-grid">
-									<div class="col-four">
-										<strong>Session ID</strong>
-										<div><span class="sub-hash">${initial}</span></div>
-									</div>
-									<div class="col-four">
-										<strong>Session Loads</strong>
-										<div>${loads}</div>
-									</div>
-									<div class="col-four">
-										<strong>Session Switched</strong>
-										<div>${
-											!revisedKeys.length ? 'none' :
-											modal(
-												`creep-revisions`,
-												revisedKeys.join('<br>'),
-												hashMini(revisedKeys)
-											)
-										}</div>
-									</div>
-								</div>
-							`	
-						})()
 					}
 				</div>
 			`

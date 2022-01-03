@@ -254,18 +254,26 @@ visitor {
     position: relative;
 }
 
-#fingerprint-data .block-text {
+#fingerprint-data .block-text,
+#fingerprint-data .block-text-small {
     display: flex;
     justify-content: center;
     font-size: 12px !important;
     padding: 5px;
     text-align: center;
     align-items: center;
-    min-height: 85px;
     border-radius: 3px;
     margin: 5px auto;
     border: 1px solid #f9f9f9;
     box-shadow: 0 1px 1px 0 #cfd0d1;
+}
+
+#fingerprint-data .block-text {
+	min-height: 85px;
+}
+
+#fingerprint-data .block-text-small {
+	min-height: 50px;
 }
 
 #fingerprint-data .jumbo {
@@ -849,6 +857,7 @@ input[type="radio"] {
     }
 
     #fingerprint-data .block-text,
+	#fingerprint-data .block-text-small,
     #fingerprint-data .blocked,
     .aside-note,
     .aside-note-bottom,
@@ -860,6 +869,7 @@ input[type="radio"] {
     }
 
     #fingerprint-data .block-text,
+	#fingerprint-data .block-text-small,
     .hash,
     .modal-content {
         box-shadow: none;
@@ -868,7 +878,8 @@ input[type="radio"] {
     .modal-content {
         border: 1px solid var(--light-grey);
     }
-    #fingerprint-data .block-text {
+    #fingerprint-data .block-text,
+	#fingerprint-data .block-text-small {
         border: 1px solid #ffffff12;
         box-shadow: 0 2px 0 0 #ffffff17;
     }
