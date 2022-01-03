@@ -1063,7 +1063,7 @@ const imports = {
 						</div>
 						` :
 						`<form class="fade-right-in" id="signature">
-							<input id="signature-input" type="text" placeholder="your signature" title="sign your fingerprint" required minlength="4" maxlength="64">
+							<input id="signature-input" type="text" placeholder="sign this fingerprint" title="sign your fingerprint" required minlength="4" maxlength="64">
 							<input type="submit" value="Sign">
 						</form>
 						`
