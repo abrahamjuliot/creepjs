@@ -257,6 +257,7 @@ visitor {
 #fingerprint-data .block-text,
 #fingerprint-data .block-text-small {
     display: flex;
+	flex-wrap: wrap;
     justify-content: center;
     font-size: 12px !important;
     padding: 5px;
@@ -375,6 +376,9 @@ visitor {
 
 .bold-fail {
     color: #ca656e;
+}
+.blank {
+	color: #bbb;
 }
 
 #fingerprint-data .errors {
@@ -836,7 +840,8 @@ input[type="radio"] {
     .aside-note,
     .aside-note-bottom,
     .confidence-note,
-    .time {
+    .time,
+	.blank {
         color: var(--light-grey);
     }
 

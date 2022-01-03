@@ -671,31 +671,21 @@ const imports = {
 					<div>first: <span class="blurred">##/##/####, 00:00:00 AM</span></div>
 					<div>last: <span class="blurred">##/##/####, 00:00:00 AM</span></div>
 					<div>persistence: <span class="blurred">0.0 hours/span></div>
+					<div>breadcrumbs (0): <span class="blurred">00000000</span></div>
+					<div class="block-text-small"></div>
 				</div>
 				<div class="col-six">
+					<div>bot: <span class="blurred">false</span></div>
 					<div>has trash: <span class="blurred">false</span></div>
 					<div>has lied: <span class="blurred">false</span></div>
 					<div>has errors: <span class="blurred">false</span></div>
-					<div>loose fingerprint: <span class="blurred">00000000</span></div>
-					<div>loose count: <span class="blurred">1</span></div>
-					<div>bot: <span class="blurred">false</span></div>
+					<div>loose fp (0): <span class="blurred">00000000</span></div>
+					<div>session (0): <span class="blurred">00000000</span></div>
+					<div>revisions (0): <span class="blurred">00000000</span></div>
+					<div class="block-text-small"></div>
 				</div>
 			</div>
 			<div id="signature">
-			</div>
-			<div class="flex-grid">
-				<div class="col-four">
-					<strong>Session ID</strong>
-					<div>0</div>
-				</div>
-				<div class="col-four">
-					<strong>Session Loads</strong>
-					<div>0</div>
-				</div>
-				<div class="col-four">
-					<strong>Session Switched</strong>
-					<div>none</div>
-				</div>
 			</div>
 		</div>
 		<div class="flex-grid">
@@ -798,7 +788,7 @@ const imports = {
 
 		const computeBreadcrumb = (fingerprint) => {
 			const firstBreadcrumb = [...Array(64)].map(x => 0).join('')
-			const initialFingerprint = JSON.parse(sessionStorage.getItem('initialFingerprint'))
+			const initialFingerprint = JSON.parse(sessionStorage.getItem('previousFingerprint'))
 			const currentFingerprint = Object.keys(fingerprint).reduce((acc, key) => {
 				if (!fingerprint[key]) {
 					acc[key] = ''
@@ -822,9 +812,9 @@ const imports = {
 			}, breadcrumbList).join('')
 			return breadcrumb
 		}
-		const breadcrumb = computeBreadcrumb(fp)
+		const sessionBreadcrumb = computeBreadcrumb(fp)
 
-		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&breadcrumb=${breadcrumb}`
+		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&breadcrumb=${sessionBreadcrumb}`
 		
 		fetch(request)
 		.then(response => response.json())
@@ -1000,8 +990,14 @@ const imports = {
 				return acc
 			}, [])
 
-			const { initial, loads, revisedKeys } = computeSession({ fingerprint: fp, loading: true }) 
+			const styleChunks = chunks => chunks.map(x => {
+				return `<div>${
+					x.map(x => `<span class="${x == '1' ? 'bold-fail' : 'blank'}">${x}</span>`).join('')
+				}</div>`
+			}).join('')
 
+			const { initial, loads, revisedKeys } = computeSession({ fingerprint: fp, loading: true }) 
+			const breadcrumbCount = breadcrumb.split('').filter(x => x == '1').length
 			const template = `
 				<div class="visitor-info">
 					<div class="ellipsis">
@@ -1019,10 +1015,17 @@ const imports = {
 							<div class="ellipsis">first: <span class="unblurred">${toLocaleStr(firstVisit)}</span></div>
 							<div class="ellipsis">last: <span class="unblurred">${toLocaleStr(latestVisit)}</span></div>
 							<div>persistence: <span class="unblurred">${hours} hours</span></div>
-							<div>breadcrumb:</div>
-							<div class="block-text-small">${getChunks(breadcrumb.split(''), 32).map(x => x.join('')).join('<br>')}</div>
+							<div>breadcrumbs (${''+breadcrumbCount}):${
+								!breadcrumbCount ? ' none' : `
+									<span class="unblurred sub-hash">${hashMini(breadcrumb)}</span></div>
+								`
+							}
+							<div class="block-text-small">${
+								styleChunks(getChunks(breadcrumb.split(''), 32))
+							}</div>
 						</div>
 						<div class="col-six">
+							<div class="help ellipsis" title="${botInfo}">bot: <span class="unblurred">${botPercentString}</span></div>
 							<div>has trash: <span class="unblurred">${
 								(''+hasTrash) == 'true' ?
 								`true ${percentify(trashPointLoss)}` : 
@@ -1038,18 +1041,18 @@ const imports = {
 								`true ${percentify(errorsPointLoss)}` : 
 								'false'
 							}</span></div>
-							<div class="ellipsis">loose fingerprint: <span class="unblurred">${hashSlice(fpHash)}</span></div>
-							<div class="ellipsis">loose switched: <span class="unblurred">${switchCount}x ${percentify(switchCountPointLoss)}</span></div>
-							<div>session (${''+loads}):<span class="sub-hash">${initial}</span></div>
-							<div>switch: ${
-								!revisedKeys.length ? 'none' :
-								modal(
+							<div class="ellipsis">loose fp (${''+switchCount}):<span class="unblurred sub-hash">${hashSlice(fpHash)}</span> ${percentify(switchCountPointLoss)}</div>
+							<div>session (${''+loads}):<span class="unblurred sub-hash">${initial}</span></div>
+							<div>revisions (${''+revisedKeys.length}): ${
+								!revisedKeys.length ? 'none' : modal(
 									`creep-revisions`,
 									revisedKeys.join('<br>'),
 									hashMini(revisedKeys)
 								)
+							}
+							<div class="block-text-small">${
+								styleChunks(getChunks(sessionBreadcrumb.split(''), 32))
 							}</div>
-							<div class="help ellipsis" title="${botInfo}">bot: <span class="unblurred">${botPercentString}</span></div>
 						</div>
 					</div>
 					${

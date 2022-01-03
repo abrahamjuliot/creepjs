@@ -528,7 +528,7 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 		</style>
 		<span class="aside-note">${performanceLogger.getLog()['canvas 2d']}</span>
 		<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-		<div class="help grey" title="${emojiHelpTitle}">emojis: ${formatEmojiSet(emojiSet)}</div>
+		<div class="help" title="${emojiHelpTitle}">emojis: <span class="grey">${formatEmojiSet(emojiSet)}</span></div>
 		<div class="help" title="CanvasRenderingContext2D.measureText()">sum: ${textMetricsSystemSum}</div>
 		<div class="help" title="HTMLCanvasElement.toDataURL()\nCanvasRenderingContext2D.getImageData()\nCanvasRenderingContext2D.isPointInPath()\nCanvasRenderingContext2D.isPointInStroke()\nHTMLCanvasElement.toBlob()\nOffscreenCanvas.convertToBlob()\nFileReader.readAsArrayBuffer()\nFileReader.readAsBinaryString()\nFileReader.readAsDataURL()\nFileReader.readAsText()">data: ${
 			modal(

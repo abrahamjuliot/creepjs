@@ -221,7 +221,7 @@ export const webrtcHTML = ({ fp, hashSlice, hashMini, note, modal, performanceLo
 		return `
 		<div class="col-four undefined">
 			<strong>WebRTC</strong>
-			<div class="block-text">${note.blocked}</div>
+			<div class="block-text-small">${note.blocked}</div>
 			<div>a codecs (0): ${note.blocked}</div>
 			<div>v codecs (0): ${note.blocked}</div>
 			<div>exts (0): ${note.blocked}</div>
@@ -260,7 +260,7 @@ export const webrtcHTML = ({ fp, hashSlice, hashMini, note, modal, performanceLo
 	<div class="relative col-four">
 		<span class="aside-note">${performanceLogger.getLog().webrtc}</span>
 		<strong>WebRTC</strong><span class="hash">${hashSlice($hash)}</span>
-		<div class="block-text help" title="RTCSessionDescription.sdp">
+		<div class="block-text-small help" title="RTCSessionDescription.sdp">
 			${ipaddress || note.blocked}
 		</div>
 		<div class="help" title="RTCSessionDescription.sdp">a codecs (${(audio||[]).length}): ${
