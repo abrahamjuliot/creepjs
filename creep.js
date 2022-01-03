@@ -671,7 +671,7 @@ const imports = {
 					<div>first: <span class="blurred">##/##/####, 00:00:00 AM</span></div>
 					<div>last: <span class="blurred">##/##/####, 00:00:00 AM</span></div>
 					<div>persistence: <span class="blurred">0.0 hours/span></div>
-					<div>breadcrumbs (0): <span class="blurred">00000000</span></div>
+					<div>breadcrumb: <span class="blurred">00000000</span></div>
 					<div class="block-text-small"></div>
 				</div>
 				<div class="col-six">
@@ -787,24 +787,24 @@ const imports = {
 		const fetchVisitorDataTimer = timer()
 
 		const computeBreadcrumb = (fingerprint) => {
+			const fingerprintKeys = Object.keys(fingerprint)
 			const firstBreadcrumb = [...Array(64)].map(x => 0).join('')
-			const initialFingerprint = JSON.parse(sessionStorage.getItem('previousFingerprint'))
-			const currentFingerprint = Object.keys(fingerprint).reduce((acc, key) => {
+			const previousFingerprint = JSON.parse(sessionStorage.getItem('previousFingerprint'))
+			const currentFingerprint = fingerprintKeys.reduce((acc, key) => {
 				if (!fingerprint[key]) {
-					acc[key] = ''
 					return acc
 				}
 				acc[key] = fingerprint[key].$hash
 				return acc
 			}, {})
 			
-			if (!initialFingerprint) {
+			if (!previousFingerprint) {
 				return firstBreadcrumb
 			}
 			const breadcrumbList = firstBreadcrumb.split('')
 			const crumb = '1'
-			const breadcrumb = Object.keys(initialFingerprint).sort().reduce((acc, key, i) => {
-				const match = initialFingerprint[key] == currentFingerprint[key]
+			const breadcrumb = fingerprintKeys.sort().reduce((acc, key, i) => {
+				const match = previousFingerprint[key] == currentFingerprint[key]
 				if (!match) {
 					breadcrumbList[i] = crumb
 				}
@@ -1015,14 +1015,15 @@ const imports = {
 							<div class="ellipsis">first: <span class="unblurred">${toLocaleStr(firstVisit)}</span></div>
 							<div class="ellipsis">last: <span class="unblurred">${toLocaleStr(latestVisit)}</span></div>
 							<div>persistence: <span class="unblurred">${hours} hours</span></div>
-							<div>breadcrumbs (${''+breadcrumbCount}):${
-								!breadcrumbCount ? ' none' : `
-									<span class="unblurred sub-hash">${hashMini(breadcrumb)}</span></div>
-								`
+							<div class="relative">breadcrumb:${
+								!breadcrumbCount ? ' none' : `<span class="unblurred sub-hash">${hashMini(breadcrumb)}</span>`
 							}
-							<div class="block-text-small">${
-								styleChunks(getChunks(breadcrumb.split(''), 32))
-							}</div>
+							<span class="confidence-note">${(breadcrumbCount/breadcrumb.length).toFixed(5)}</span>
+							</div>
+							
+							<div class="block-text-small">
+								${styleChunks(getChunks(breadcrumb.split(''), 32))}
+							</div>
 						</div>
 						<div class="col-six">
 							<div class="help ellipsis" title="${botInfo}">bot: <span class="unblurred">${botPercentString}</span></div>
