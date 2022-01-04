@@ -78,16 +78,19 @@ A metric with only 1 reporter is unique
 - Unique metrics get 2 weeks to improve their score before auto-deletion
 
 ### Bot Detection
-Bots leak unusual behavior and can be denied service.
+Bots leak unusual behavior and can be denied service
+
 - Excessive loose fingerprints
 - User agent version or platform does not match features
 - worker scope tampering
 
 ### Breadcrumb
-Per session, metric revision patterns can be used to connect stable fingerprints
-- A string of 64 characters is used to signal revised metrics
-- By default, a breadcrumb is clear or empty until revisions are detected during a session
-- Metric revisions can include browser updates and/or API tampering
+Session metric revision patterns can connect stable fingerprints
+
+- Metric revision patterns are captured in a session and reduced to a breadcrumb
+- Breadcrumb: a string of 64 characters used to signal revised metrics
+- By default, the breadcrumb is clear or empty until revisions are detected
+- Metric revisions can include browser updates, user settings and/or API tampering
 
 ## Browser Prediction
 - A prediction is made to decrypt the browser vendor, version, renderer, engine, system, device and gpu
