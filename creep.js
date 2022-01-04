@@ -788,24 +788,25 @@ const imports = {
 
 		const computeBreadcrumb = (fingerprint) => {
 			const fingerprintKeys = Object.keys(fingerprint)
-			const firstBreadcrumb = [...Array(64)].map(x => 0).join('')
-			const previousFingerprint = JSON.parse(sessionStorage.getItem('previousFingerprint'))
-			const currentFingerprint = fingerprintKeys.reduce((acc, key) => {
+			const cleanBreadcrumb = [...Array(64)].map(x => 0).join('')
+			const prevFp = JSON.parse(sessionStorage.getItem('prevFP'))
+			const currFp = fingerprintKeys.reduce((acc, key) => {
 				if (!fingerprint[key]) {
-					return acc
+					return acc // disregard undefined
 				}
 				acc[key] = fingerprint[key].$hash
 				return acc
 			}, {})
-			
-			if (!previousFingerprint) {
-				return firstBreadcrumb
+			sessionStorage.setItem('prevFP', JSON.stringify(currFp))
+			if (!prevFp) {
+				return cleanBreadcrumb
 			}
-			const breadcrumbList = firstBreadcrumb.split('')
+			const breadcrumbList = cleanBreadcrumb.split('')
 			const crumb = '1'
 			const breadcrumb = fingerprintKeys.sort().reduce((acc, key, i) => {
-				const match = previousFingerprint[key] == currentFingerprint[key]
+				const match = prevFp[key] == currFp[key]
 				if (!match) {
+					console.log(key)
 					breadcrumbList[i] = crumb
 				}
 				return breadcrumbList
