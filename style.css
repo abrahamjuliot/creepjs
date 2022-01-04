@@ -305,6 +305,9 @@ visitor {
     position: absolute;
     top: 0;
     font-size: 12px !important;
+	border-radius: 3px;
+    padding: 0 3px;
+    margin: 3px 0;
 }
 .entropy-note,
 .time {
