@@ -1053,7 +1053,7 @@ const imports = {
 							</div>
 							
 							<div class="block-text-small">
-								${styleChunks(getChunks(breadcrumb.split(''), 32))}
+								${styleChunks(getChunks(breadcrumb.split(''), 8))}
 							</div>
 						</div>
 						<div class="col-six">

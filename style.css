@@ -259,6 +259,7 @@ visitor {
 #fingerprint-data .block-text-small {
     display: flex;
 	flex-wrap: wrap;
+	flex-direction: column;
     justify-content: center;
     font-size: 12px !important;
     padding: 5px;
