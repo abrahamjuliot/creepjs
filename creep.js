@@ -682,11 +682,10 @@ const imports = {
 					<div>loose fp (0): <span class="blurred">00000000</span></div>
 					<div>session (0): <span class="blurred">00000000</span></div>
 					<div>revisions (0): <span class="blurred">00000000</span></div>
-					<div class="block-text"></div>
+					<div id="signature"></div>
 				</div>
 			</div>
-			<div id="signature">
-			</div>
+			
 		</div>
 		<div class="flex-grid">
 			${trashHTML(templateImports)}
@@ -1019,7 +1018,6 @@ const imports = {
 				acc[chunk] = [...(acc[chunk]||[]), x]
 				return acc
 			}, [])
-
 			const styleChunks = chunks => chunks.map((y,yi) => {
 				const animate = n => `animation: balloon ${3*n}00ms ${6*n}00ms cubic-bezier(.47,.47,.56,1.26) alternate infinite`
 				return `<div>${
@@ -1083,24 +1081,22 @@ const imports = {
 									hashMini(revisedKeys)
 								)
 							}
-							<div class="block-text no-font">${
-								styleChunks(getChunks(sessionBreadcrumb.split(''), 8))
-							}</div>
+							${
+								signature ? 
+								`
+								<div class="fade-right-in" id="signature">
+									<div class="ellipsis"><strong>signed</strong>: <span>${signature}</span></div>
+								</div>
+								` :
+								`<form class="fade-right-in" id="signature">
+									<input id="signature-input" type="text" placeholder="add a signature" title="sign this fingerprint" required minlength="4" maxlength="64">
+									<input type="submit" value="Sign">
+								</form>
+								`
+							}
 						</div>
 					</div>
-					${
-						signature ? 
-						`
-						<div class="fade-right-in" id="signature">
-							<div class="ellipsis"><strong>signed</strong>: <span>${signature}</span></div>
-						</div>
-						` :
-						`<form class="fade-right-in" id="signature">
-							<input id="signature-input" type="text" placeholder="add a signature to this fingerprint" title="sign this fingerprint" required minlength="4" maxlength="64">
-							<input type="submit" value="Sign">
-						</form>
-						`
-					}
+					
 				</div>
 			`
 			patch(visitorElem, html`${template}`, () => {

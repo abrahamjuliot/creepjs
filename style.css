@@ -272,7 +272,7 @@ visitor {
 }
 
 #fingerprint-data .block-text {
-	min-height: 95px;
+	min-height: 85px;
 }
 
 #fingerprint-data .block-text-small {
@@ -394,8 +394,8 @@ visitor {
 .breadcrumb,
 .blank {
 	display: inline-block;
-    height: 10px;
-    width: 10px;
+    height: 7px;
+    width: 7px;
 }
 @keyframes balloon {
 	0% {
