@@ -780,40 +780,69 @@ const imports = {
 			</div>
 		</div>
 	</div>
-	`, () => {
+	`, async () => {
 		// fetch fingerprint data from server
 		const id = 'creep-browser'
 		const visitorElem = document.getElementById(id)
 		const fetchVisitorDataTimer = timer()
 
-		const computeBreadcrumb = (fingerprint) => {
-			const fingerprintKeys = Object.keys(fingerprint)
-			const cleanBreadcrumb = [...Array(64)].map(x => 0).join('')
-			const prevFp = JSON.parse(sessionStorage.getItem('prevFP'))
-			const currFp = fingerprintKeys.reduce((acc, key) => {
-				if (!fingerprint[key]) {
-					return acc // disregard undefined
+		const computeBreadcrumb = async fingerprint => {
+			// construct map of all metrics
+			const metricsAll = Object.keys(Fingerprint).sort().reduce((acc, sectionKey) => {
+				const section = Fingerprint[sectionKey]
+				const sectionMetrics = Object.keys(section || {}).sort().reduce((acc, key) => {
+					if (key == '$hash' || key == 'lied') {
+						return acc
+					}
+					return {...acc, [`${sectionKey}.${key}`]: section[key] }
+				}, {})
+				return {...acc, ...sectionMetrics}
+			}, {})
+
+			// reduce to 64 bins
+			const maxBins = 64
+			const metricKeys = Object.keys(metricsAll)
+			const binSize = Math.ceil(metricKeys.length/maxBins)
+
+			// compute current breadcrumb fingerprint
+			const currFp = metricKeys.reduce((acc, key, index) => {
+				if (!index || (index % binSize == 0)) {
+					const keySet = metricKeys.slice(index, index + binSize)
+					return {...acc, [''+keySet]: keySet.map(key => metricsAll[key]) }
 				}
-				acc[key] = fingerprint[key].$hash
 				return acc
 			}, {})
+
+			// hash each bin
+			await Promise.all(
+				Object.keys(currFp).map(key => (async () => hashMini(currFp[key]))().then(hash => {
+					currFp[key] = hash // swap values for hash
+					return hash
+				}))
+			)
+
+			// compute breadcrumb from session
+			const fingerprintKeys = Object.keys(currFp)
+			const cleanBreadcrumb = [...Array(maxBins)].map(x => 0).join('')
+			const prevFp = JSON.parse(sessionStorage.getItem('prevFP'))
 			sessionStorage.setItem('prevFP', JSON.stringify(currFp))
 			if (!prevFp) {
 				return cleanBreadcrumb
 			}
+
 			const breadcrumbList = cleanBreadcrumb.split('')
 			const crumb = '1'
 			const breadcrumb = fingerprintKeys.sort().reduce((acc, key, i) => {
 				const match = prevFp[key] == currFp[key]
 				if (!match) {
-					console.log(key)
+					//console.log(key)
 					breadcrumbList[i] = crumb
 				}
 				return breadcrumbList
 			}, breadcrumbList).join('')
 			return breadcrumb
 		}
-		const sessionBreadcrumb = computeBreadcrumb(fp)
+		const sessionBreadcrumb = await computeBreadcrumb(fp)
 
 		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&breadcrumb=${sessionBreadcrumb}`
 		
