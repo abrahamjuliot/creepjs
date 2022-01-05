@@ -352,7 +352,6 @@
 				})
 			}
 			canvas2d = await getDataURI()
-
 			const canvasOffscreenWebgl = new OffscreenCanvas(256, 256)
 			const contextWebgl = canvasOffscreenWebgl.getContext('webgl')
 			const renererInfo = contextWebgl.getExtension('WEBGL_debug_renderer_info')
@@ -370,7 +369,6 @@
 			catch (error) { console.error(error) }
 		}
 		catch (error) { console.error(error) }
-
 		const timezoneLocation = Intl.DateTimeFormat().resolvedOptions().timeZone
 		const { deviceMemory, hardwareConcurrency, language, platform, userAgent } = navigator
 		const data = {
@@ -594,7 +592,6 @@
 	}
 
 	const el = document.getElementById('fingerprint-data')
-
 	const workerHash = {}
 	const computeTemplate = (worker, name) => {
 		const { userAgent } = worker || {}

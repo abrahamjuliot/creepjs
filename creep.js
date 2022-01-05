@@ -549,8 +549,8 @@ const imports = {
 		),
 		fonts: !fp.fonts || fp.fonts.lied ? undefined : fp.fonts,
 		// skip trash since it is random
-		lies: !!liesLen,
 		capturedErrors: !!errorsLen,
+		lies: !!liesLen,
 		resistance: fp.resistance || undefined
 	}
 
