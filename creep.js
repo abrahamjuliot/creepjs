@@ -672,7 +672,7 @@ const imports = {
 					<div>last: <span class="blurred">##/##/####, 00:00:00 AM</span></div>
 					<div>persistence: <span class="blurred">0.0 hours/span></div>
 					<div>breadcrumb: <span class="blurred">00000000</span></div>
-					<div class="block-text-small"></div>
+					<div class="block-text"></div>
 				</div>
 				<div class="col-six">
 					<div>bot: <span class="blurred">false</span></div>
@@ -682,7 +682,7 @@ const imports = {
 					<div>loose fp (0): <span class="blurred">00000000</span></div>
 					<div>session (0): <span class="blurred">00000000</span></div>
 					<div>revisions (0): <span class="blurred">00000000</span></div>
-					<div class="block-text-small"></div>
+					<div class="block-text"></div>
 				</div>
 			</div>
 			<div id="signature">
@@ -1020,9 +1020,10 @@ const imports = {
 				return acc
 			}, [])
 
-			const styleChunks = chunks => chunks.map(x => {
+			const styleChunks = chunks => chunks.map((y,yi) => {
+				const animate = n => `animation: balloon ${3*n}00ms ${6*n}00ms cubic-bezier(.47,.47,.56,1.26) alternate infinite`
 				return `<div>${
-					x.map(x => `<span class="${x == '1' ? 'bold-fail' : 'blank'}">${x}</span>`).join('')
+					y.map((x,  xi) => `<span class="${x == '1' ? 'breadcrumb' : 'blank'}" style="${x == 1 ? animate(xi+yi): ''}"></span>`).join('')
 				}</div>`
 			}).join('')
 
@@ -1052,7 +1053,7 @@ const imports = {
 							<span class="confidence-note">${ breadcrumbBits ? breadcrumbBits.toFixed(5) : ''}</span>
 							</div>
 							
-							<div class="block-text-small">
+							<div class="block-text no-font">
 								${styleChunks(getChunks(breadcrumb.split(''), 8))}
 							</div>
 						</div>
@@ -1082,8 +1083,8 @@ const imports = {
 									hashMini(revisedKeys)
 								)
 							}
-							<div class="block-text-small">${
-								styleChunks(getChunks(sessionBreadcrumb.split(''), 32))
+							<div class="block-text no-font">${
+								styleChunks(getChunks(sessionBreadcrumb.split(''), 8))
 							}</div>
 						</div>
 					</div>

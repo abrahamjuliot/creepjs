@@ -272,7 +272,7 @@ visitor {
 }
 
 #fingerprint-data .block-text {
-	min-height: 85px;
+	min-height: 95px;
 }
 
 #fingerprint-data .block-text-small {
@@ -382,8 +382,29 @@ visitor {
 .bold-fail {
     color: #ca656e;
 }
+.breadcrumb {
+	background: #ca656e;
+}
 .blank {
-	color: #bbb;
+	background: #bbbbbb14;
+}
+#fingerprint-data .no-font {
+	font-size: 0 !important;
+}
+.breadcrumb,
+.blank {
+	display: inline-block;
+    height: 10px;
+    width: 10px;
+}
+@keyframes balloon {
+	0% {
+		
+	}
+	100% {
+		transform: scale(1.2);
+		background: #ca656e90;
+	}
 }
 
 #fingerprint-data .errors {
