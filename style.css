@@ -382,16 +382,18 @@ visitor {
 .bold-fail {
     color: #ca656e;
 }
-.breadcrumb {
+.shadow {
 	background: #ca656e;
 }
 .blank {
 	background: #bbbbbb14;
 }
-#fingerprint-data .no-font {
+#fingerprint-data .shadow-icon {
 	font-size: 0 !important;
+	border: none !important;
+    box-shadow: none !important;
 }
-.breadcrumb,
+.shadow,
 .blank {
 	display: inline-block;
     height: 7px;

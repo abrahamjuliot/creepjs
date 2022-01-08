@@ -672,7 +672,7 @@ const imports = {
 					<div>last: <span class="blurred">##/##/####, 00:00:00 AM</span></div>
 					<div>persistence: <span class="blurred">0.0 hours/span></div>
 					<div>shadow: <span class="blurred">00000000</span></div>
-					<div class="block-text"></div>
+					<div class="block-text shadow-icon"></div>
 				</div>
 				<div class="col-six">
 					<div>bot: <span class="blurred">false</span></div>
@@ -1051,7 +1051,7 @@ const imports = {
 							<span class="confidence-note">${ shadowBits ? shadowBits.toFixed(5) : ''}</span>
 							</div>
 							
-							<div class="block-text no-font">
+							<div class="block-text shadow-icon">
 								${styleChunks(getChunks(shadow.split(''), 8))}
 							</div>
 						</div>
