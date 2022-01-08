@@ -943,7 +943,6 @@ const imports = {
 						)
 					}
 				}
-				console.log(shadowBits, score.shadowBitsPointLoss, score.total)
 				return score
 			}
 			const shadowCount = shadow.split('').filter(x => x == '1').length
