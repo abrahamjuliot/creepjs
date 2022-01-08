@@ -383,6 +383,7 @@ visitor {
     color: #ca656e;
 }
 .shadow {
+	filter: grayscale(100%);
 	background: #ca656e;
 }
 .blank {
