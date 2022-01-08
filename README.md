@@ -69,7 +69,7 @@ A metric with only 1 reporter is unique
 
 - Metric scores decline by metric uniqueness
 - Final score is the minimum of all metrics scores
-- Blocked or openly poisoned metrics collectively subtract 25% from the final score
+- Blocked or openly poisoned metrics collectively reduce the final score by 25%
 - Scoring formula: `100-(numberOfRequiredReporters ** (numberOfRequiredReporters - numberOfReporters))`
  - Where the number of required reporters is 4:
 	* Blocked/Openly Poisoned `-100`
