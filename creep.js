@@ -884,20 +884,20 @@ const imports = {
 				shadowBits
 			}) => {
 				const score = {
-					errorsRisk: 5.2,
-					trashRisk: 15.5,
+					errorsRisk: 3.5,
+					trashRisk: 5.5,
 					liesRisk: 31,
 					shadowRisk: 31,
-					reward: 20,
+					maxReward: 20,
 					get shadowBitsPointLoss() {
 						return -Math.round(
-							!shadowBits ? -(score.reward/2) :
+							!shadowBits ? -(score.maxReward/2) :
 								shadowBits * score.shadowRisk
 						)
 					},
 					get switchCountPointLoss() {
 						return -Math.round(
-							switchCount < 2 ? -score.reward :
+							switchCount < 2 ? -(score.maxReward/4) :
 								switchCount < 11 ? switchCount * 0.1 :
 									switchCount * 0.2
 						)

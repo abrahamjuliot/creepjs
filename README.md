@@ -55,14 +55,14 @@ Tests are focused on:
 A failing trust score is unique
 
 - start at `100`
-- less than 2 loose fingerprints: reward `20` extra credit
-- 0 shadow bits: reward `10` extra credit
+- less than 2 loose fingerprints: reward `5` extra credit
+- 0 shadow bits (session metric revisions): reward `10` extra credit
 - 2 - 10 loose fingerprints: subtract `total*0.1`
 - 11+ loose fingerprints: subtract `total*0.2`
 - shadow bits: subtract `(total/64)*31`
-- trash: subtract `total*15.5`
+- trash: subtract `total*5.5`
 - lies: subtract `total*31`
-- errors: subtract `total*5.2`
+- errors: subtract `total*3.5`
 
 ### Crowd-Blending Score
 A metric with only 1 reporter is unique
