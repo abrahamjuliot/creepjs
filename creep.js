@@ -1066,9 +1066,12 @@ const imports = {
 							<div class="ellipsis">first: <span class="unblurred">${toLocaleStr(firstVisit)}</span></div>
 							<div class="ellipsis">last: <span class="unblurred">${toLocaleStr(latestVisit)}</span></div>
 							<div>persistence: <span class="unblurred">${hours} hours</span></div>
-							<div>shadow: <span class="unblurred">${!shadowBits ? '0' : shadowBits.toFixed(5)}</span>  ${computePoints(shadowBitsPointLoss)}
+							<div class="relative">shadow: <span class="unblurred">${!shadowBits ? '0' : shadowBits.toFixed(5)}</span>  ${computePoints(shadowBitsPointLoss)}
+							${
+								!shadowBits ? '' : `<span class="confidence-note">${hashMini(shadow)}</span>`
+							}
 							</div>
-							<div class="block-text shadow-icon help" title="${hashMini(shadow)}">
+							<div class="block-text shadow-icon help" title="session metric revision pattern">
 								${styleChunks(getChunks(shadow.split(''), 8))}
 							</div>
 						</div>
