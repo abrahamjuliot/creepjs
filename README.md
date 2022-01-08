@@ -54,10 +54,12 @@ Tests are focused on:
 ### Trust Score
 A failing trust score is unique
 
-- start at `100%`
-- less than 2 loose fingerprints: reward `20%` extra credit
+- start at `100`
+- less than 2 loose fingerprints: reward `20` extra credit
+- 0 shadow bits: reward `10` extra credit
 - 2 - 10 loose fingerprints: subtract `total*0.1`
 - 11+ loose fingerprints: subtract `total*0.2`
+- shadow bits: subtract `(total/64)*31`
 - trash: subtract `total*15.5`
 - lies: subtract `total*31`
 - errors: subtract `total*5.2`
@@ -70,10 +72,10 @@ A metric with only 1 reporter is unique
 - Blocked or openly poisoned metrics collectively subtract 25% from the final score
 - Scoring formula: `100-(numberOfRequiredReporters ** (numberOfRequiredReporters - numberOfReporters))`
  - Where the number of required reporters is 4:
-	* Blocked/Openly Poisoned `-100%`
-	* 1 reporter `-64%`
-	* 2 reporters `-16%`
-	* 3 reporters `-4%`
+	* Blocked/Openly Poisoned `-100`
+	* 1 reporter `-64`
+	* 2 reporters `-16`
+	* 3 reporters `-4`
 	* 4+ reporters is considered a perfect score
 - Unique metrics get 2 weeks to improve their score before auto-deletion
 
