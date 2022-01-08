@@ -671,7 +671,7 @@ const imports = {
 					<div>first: <span class="blurred">##/##/####, 00:00:00 AM</span></div>
 					<div>last: <span class="blurred">##/##/####, 00:00:00 AM</span></div>
 					<div>persistence: <span class="blurred">0.0 hours/span></div>
-					<div>shadow: <span class="blurred">00000000</span></div>
+					<div>shadow: <span class="blurred">0.00000</span></div>
 					<div class="block-text shadow-icon"></div>
 				</div>
 				<div class="col-six">
@@ -1067,10 +1067,9 @@ const imports = {
 							<div class="ellipsis">first: <span class="unblurred">${toLocaleStr(firstVisit)}</span></div>
 							<div class="ellipsis">last: <span class="unblurred">${toLocaleStr(latestVisit)}</span></div>
 							<div>persistence: <span class="unblurred">${hours} hours</span></div>
-							<div class="relative">shadow:${
-								!shadowCount ? ` ${computePoints(shadowBitsPointLoss)}` : `<span class="unblurred sub-hash">${hashMini(shadow)}</span>  ${computePoints(shadowBitsPointLoss)}`
-							}</div>
-							<div class="block-text shadow-icon">
+							<div>shadow: <span class="unblurred">${shadowBits.toFixed(5)}</span>  ${computePoints(shadowBitsPointLoss)}
+							</div>
+							<div class="block-text shadow-icon help" title="${hashMini(shadow)}">
 								${styleChunks(getChunks(shadow.split(''), 8))}
 							</div>
 						</div>
