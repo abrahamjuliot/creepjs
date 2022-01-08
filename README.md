@@ -84,12 +84,11 @@ Bots leak unusual behavior and can be denied service
 - User agent version or platform does not match features
 - worker scope tampering
 
-### Breadcrumb
-Session metric revision patterns can connect stable fingerprints
+### Shadow
+Session metric revision patterns can follow stable fingerprints like a shadow
 
-- Metric revision patterns are captured in a session and reduced to a breadcrumb
-- Breadcrumb: a string of 64 characters used to signal revised metrics
-- By default, the breadcrumb is clear or empty until revisions are detected
+- Shadow: a string of 64 characters used to hint metric revision patterns
+- Metric revision patterns are captured in a session and reduced to the shadow
 - Metric revisions can include browser updates, user settings and/or API tampering
 
 ## Browser Prediction

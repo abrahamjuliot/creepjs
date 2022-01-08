@@ -671,7 +671,7 @@ const imports = {
 					<div>first: <span class="blurred">##/##/####, 00:00:00 AM</span></div>
 					<div>last: <span class="blurred">##/##/####, 00:00:00 AM</span></div>
 					<div>persistence: <span class="blurred">0.0 hours/span></div>
-					<div>breadcrumb: <span class="blurred">00000000</span></div>
+					<div>shadow: <span class="blurred">00000000</span></div>
 					<div class="block-text"></div>
 				</div>
 				<div class="col-six">
@@ -785,7 +785,7 @@ const imports = {
 		const visitorElem = document.getElementById(id)
 		const fetchVisitorDataTimer = timer()
 
-		const computeBreadcrumb = async fingerprint => {
+		const computeShadow = async fingerprint => {
 			// construct map of all metrics
 			const metricsAll = Object.keys(Fingerprint).sort().reduce((acc, sectionKey) => {
 				const section = Fingerprint[sectionKey]
@@ -803,7 +803,7 @@ const imports = {
 			const metricKeys = Object.keys(metricsAll)
 			const binSize = Math.ceil(metricKeys.length/maxBins)
 
-			// compute current breadcrumb fingerprint
+			// compute current shadow fingerprint
 			const currFp = metricKeys.reduce((acc, key, index) => {
 				if (!index || (index % binSize == 0)) {
 					const keySet = metricKeys.slice(index, index + binSize)
@@ -820,30 +820,30 @@ const imports = {
 				}))
 			)
 
-			// compute breadcrumb from session
+			// compute shadow from session
 			const fingerprintKeys = Object.keys(currFp)
-			const cleanBreadcrumb = [...Array(maxBins)].map(x => 0).join('')
+			const cleanShadow = [...Array(maxBins)].map(x => 0).join('')
 			const prevFp = JSON.parse(sessionStorage.getItem('prevFP'))
 			sessionStorage.setItem('prevFP', JSON.stringify(currFp))
 			if (!prevFp) {
-				return cleanBreadcrumb
+				return cleanShadow
 			}
 
-			const breadcrumbList = cleanBreadcrumb.split('')
-			const crumb = '1'
-			const breadcrumb = fingerprintKeys.sort().reduce((acc, key, i) => {
+			const shadowList = cleanShadow.split('')
+			const bit = '1'
+			const shadow = fingerprintKeys.sort().reduce((acc, key, i) => {
 				const match = prevFp[key] == currFp[key]
 				if (!match) {
 					//console.log(key)
-					breadcrumbList[i] = crumb
+					shadowList[i] = bit
 				}
-				return breadcrumbList
-			}, breadcrumbList).join('')
-			return breadcrumb
+				return shadowList
+			}, shadowList).join('')
+			return shadow
 		}
-		const sessionBreadcrumb = await computeBreadcrumb(fp)
+		const sessionShadow = await computeShadow(fp)
 
-		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&breadcrumb=${sessionBreadcrumb}`
+		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&shadow=${sessionShadow}`
 		
 		fetch(request)
 		.then(response => response.json())
@@ -864,7 +864,7 @@ const imports = {
 				hasLied,
 				hasErrors,
 				signature,
-				breadcrumb
+				shadow
 			} = data || {}
 			
 			const toLocaleStr = str => {
@@ -1021,13 +1021,13 @@ const imports = {
 			const styleChunks = chunks => chunks.map((y,yi) => {
 				const animate = n => `animation: balloon ${3*n}00ms ${6*n}00ms cubic-bezier(.47,.47,.56,1.26) alternate infinite`
 				return `<div>${
-					y.map((x,  xi) => `<span class="${x == '1' ? 'breadcrumb' : 'blank'}" style="${x == 1 ? animate(xi+yi): ''}"></span>`).join('')
+					y.map((x,  xi) => `<span class="${x == '1' ? 'shadow' : 'blank'}" style="${x == 1 ? animate(xi+yi): ''}"></span>`).join('')
 				}</div>`
 			}).join('')
 
 			const { initial, loads, revisedKeys } = computeSession({ fingerprint: fp, loading: true }) 
-			const breadcrumbCount = breadcrumb.split('').filter(x => x == '1').length
-			const breadcrumbBits = breadcrumbCount/breadcrumb.length
+			const shadowCount = shadow.split('').filter(x => x == '1').length
+			const shadowBits = shadowCount/shadow.length
 			const template = `
 				<div class="visitor-info">
 					<div class="ellipsis">
@@ -1045,14 +1045,14 @@ const imports = {
 							<div class="ellipsis">first: <span class="unblurred">${toLocaleStr(firstVisit)}</span></div>
 							<div class="ellipsis">last: <span class="unblurred">${toLocaleStr(latestVisit)}</span></div>
 							<div>persistence: <span class="unblurred">${hours} hours</span></div>
-							<div class="relative">breadcrumb:${
-								!breadcrumbCount ? ' clear' : `<span class="unblurred sub-hash">${hashMini(breadcrumb)}</span>`
+							<div class="relative">shadow:${
+								!shadowCount ? ' clear' : `<span class="unblurred sub-hash">${hashMini(shadow)}</span>`
 							}
-							<span class="confidence-note">${ breadcrumbBits ? breadcrumbBits.toFixed(5) : ''}</span>
+							<span class="confidence-note">${ shadowBits ? shadowBits.toFixed(5) : ''}</span>
 							</div>
 							
 							<div class="block-text no-font">
-								${styleChunks(getChunks(breadcrumb.split(''), 8))}
+								${styleChunks(getChunks(shadow.split(''), 8))}
 							</div>
 						</div>
 						<div class="col-six">
