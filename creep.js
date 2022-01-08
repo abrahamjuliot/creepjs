@@ -876,17 +876,30 @@ const imports = {
 			const hoursAgo = (date1, date2) => Math.abs(date1 - date2) / 36e5
 			const hours = hoursAgo(new Date(firstVisit), new Date(latestVisit)).toFixed(1)
 
-			const computeTrustScore = ({ switchCount, errorsLen, trashLen, liesLen }) => {
+			const computeTrustScore = ({
+				switchCount,
+				errorsLen,
+				trashLen,
+				liesLen,
+				shadowBits
+			}) => {
 				const score = {
 					errorsRisk: 5.2,
 					trashRisk: 15.5,
 					liesRisk: 31,
+					shadowRisk: 31,
 					reward: 20,
+					get shadowBitsPointLoss() {
+						return -Math.round(
+							!shadowBits ? -(score.reward/2) :
+								shadowBits * score.shadowRisk
+						)
+					},
 					get switchCountPointLoss() {
 						return -Math.round(
 							switchCount < 2 ? -score.reward :
-							switchCount < 11 ? switchCount * 0.1 :
-							switchCount * 0.2
+								switchCount < 11 ? switchCount * 0.1 :
+									switchCount * 0.2
 						)
 					},
 					get errorsPointLoss() {
@@ -904,7 +917,8 @@ const imports = {
 							score.switchCountPointLoss +
 							score.errorsPointLoss +
 							score.trashPointLoss + 
-							score.liesPointLoss
+							score.liesPointLoss +
+							score.shadowBitsPointLoss
 						)
 						return points < 0 ? 0 : points > 100 ? 100 : points
 					},
@@ -929,25 +943,29 @@ const imports = {
 						)
 					}
 				}
+				console.log(shadowBits, score.shadowBitsPointLoss, score.total)
 				return score
 			}
-
+			const shadowCount = shadow.split('').filter(x => x == '1').length
+			const shadowBits = shadowCount/shadow.length
 			const {
 				switchCountPointLoss,
 				errorsPointLoss,
 				trashPointLoss,
 				liesPointLoss,
+				shadowBitsPointLoss,
 				grade,
 				total: scoreTotal
 			} = computeTrustScore({
 				switchCount,
 				errorsLen,
 				trashLen,
-				liesLen
+				liesLen,
+				shadowBits
 			})
-			const percentify = x => {
+			const computePoints = x => {
 				return `<span class="scale-up grade-${x < 0 ? 'F' : x > 0 ? 'A' : ''}">${
-					x > 0 ? `+${x}% reward` : x < 0 ? `${x}%` : ''
+					x > 0 ? `+${x} reward` : x < 0 ? `${x}` : ''
 				}</span>`
 			}
 
@@ -1007,7 +1025,12 @@ const imports = {
 				}
 			}
 			
-			const { isBot, botPercentString, botPatterns } = getBot({fp, hours, hasLied, switchCount})
+			const { isBot, botPercentString, botPatterns } = getBot({
+				fp,
+				hours,
+				hasLied,
+				switchCount
+			})
 
 			const botInfo = Object.keys(botPatterns).map(key => {
 				return `${key}: ${botPatterns[key]}`
@@ -1026,8 +1049,7 @@ const imports = {
 			}).join('')
 
 			const { initial, loads, revisedKeys } = computeSession({ fingerprint: fp, loading: true }) 
-			const shadowCount = shadow.split('').filter(x => x == '1').length
-			const shadowBits = shadowCount/shadow.length
+			
 			const template = `
 				<div class="visitor-info">
 					<div class="ellipsis">
@@ -1046,11 +1068,8 @@ const imports = {
 							<div class="ellipsis">last: <span class="unblurred">${toLocaleStr(latestVisit)}</span></div>
 							<div>persistence: <span class="unblurred">${hours} hours</span></div>
 							<div class="relative">shadow:${
-								!shadowCount ? ' clear' : `<span class="unblurred sub-hash">${hashMini(shadow)}</span>`
-							}
-							<span class="confidence-note">${ shadowBits ? shadowBits.toFixed(5) : ''}</span>
-							</div>
-							
+								!shadowCount ? ` ${computePoints(shadowBitsPointLoss)}` : `<span class="unblurred sub-hash">${hashMini(shadow)}</span>  ${computePoints(shadowBitsPointLoss)}`
+							}</div>
 							<div class="block-text shadow-icon">
 								${styleChunks(getChunks(shadow.split(''), 8))}
 							</div>
@@ -1059,20 +1078,20 @@ const imports = {
 							<div class="help ellipsis" title="${botInfo}">bot: <span class="unblurred">${botPercentString}</span></div>
 							<div>has trash: <span class="unblurred">${
 								(''+hasTrash) == 'true' ?
-								`true ${percentify(trashPointLoss)}` : 
+								`true ${computePoints(trashPointLoss)}` : 
 								'false'
 							}</span></div>
 							<div>has lied: <span class="unblurred">${
 								(''+hasLied) == 'true' ? 
-								`true ${percentify(liesPointLoss)}` : 
+								`true ${computePoints(liesPointLoss)}` : 
 								'false'
 							}</span></div>
 							<div>has errors: <span class="unblurred">${
 								(''+hasErrors) == 'true' ? 
-								`true ${percentify(errorsPointLoss)}` : 
+								`true ${computePoints(errorsPointLoss)}` : 
 								'false'
 							}</span></div>
-							<div class="ellipsis">loose fp (${''+switchCount}):<span class="unblurred sub-hash">${hashSlice(fpHash)}</span> ${percentify(switchCountPointLoss)}</div>
+							<div class="ellipsis">loose fp (${''+switchCount}):<span class="unblurred sub-hash">${hashSlice(fpHash)}</span> ${computePoints(switchCountPointLoss)}</div>
 							<div>session (${''+loads}):<span class="unblurred sub-hash">${initial}</span></div>
 							<div>revisions (${''+revisedKeys.length}): ${
 								!revisedKeys.length ? 'none' : modal(
