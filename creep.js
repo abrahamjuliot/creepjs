@@ -551,7 +551,8 @@ const imports = {
 		// skip trash since it is random
 		capturedErrors: !!errorsLen,
 		lies: !!liesLen,
-		resistance: fp.resistance || undefined
+		resistance: fp.resistance || undefined,
+		forceRenew: 1641705891652
 	}
 
 	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f')
