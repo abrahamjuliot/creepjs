@@ -803,8 +803,6 @@ const imports = {
 			const metricKeys = Object.keys(metricsAll)
 			const binSize = Math.ceil(metricKeys.length/maxBins)
 
-			console.log(metricKeys.length)
-
 			// compute current shadow fingerprint
 			const currFp = metricKeys.reduce((acc, key, index) => {
 				if (!index || ((index % binSize) == 0)) {
