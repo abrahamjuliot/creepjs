@@ -785,10 +785,10 @@ const imports = {
 		const visitorElem = document.getElementById(id)
 		const fetchVisitorDataTimer = timer()
 
-		const computeShadow = async fingerprint => {
+		const computeShadow = async fp => {
 			// construct map of all metrics
-			const metricsAll = Object.keys(Fingerprint).sort().reduce((acc, sectionKey) => {
-				const section = Fingerprint[sectionKey]
+			const metricsAll = Object.keys(fp).sort().reduce((acc, sectionKey) => {
+				const section = fp[sectionKey]
 				const sectionMetrics = Object.keys(section || {}).sort().reduce((acc, key) => {
 					if (key == '$hash' || key == 'lied') {
 						return acc
@@ -803,9 +803,11 @@ const imports = {
 			const metricKeys = Object.keys(metricsAll)
 			const binSize = Math.ceil(metricKeys.length/maxBins)
 
+			console.log(metricKeys.length)
+
 			// compute current shadow fingerprint
 			const currFp = metricKeys.reduce((acc, key, index) => {
-				if (!index || (index % binSize == 0)) {
+				if (!index || ((index % binSize) == 0)) {
 					const keySet = metricKeys.slice(index, index + binSize)
 					return {...acc, [''+keySet]: keySet.map(key => metricsAll[key]) }
 				}
@@ -821,7 +823,7 @@ const imports = {
 			)
 
 			// compute shadow from session
-			const fingerprintKeys = Object.keys(currFp)
+			const fpKeys = Object.keys(currFp)
 			const cleanShadow = [...Array(maxBins)].map(x => 0).join('')
 			const prevFp = JSON.parse(sessionStorage.getItem('prevFP'))
 			sessionStorage.setItem('prevFP', JSON.stringify(currFp))
@@ -831,7 +833,7 @@ const imports = {
 
 			const shadowList = cleanShadow.split('')
 			const bit = '1'
-			const shadow = fingerprintKeys.sort().reduce((acc, key, i) => {
+			const shadow = fpKeys.sort().reduce((acc, key, i) => {
 				const match = prevFp[key] == currFp[key]
 				if (!match) {
 					//console.log(key)
