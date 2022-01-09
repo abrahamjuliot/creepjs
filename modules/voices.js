@@ -18,12 +18,10 @@ export const getVoices = imports => {
 			// use window since phantomDarkness is unstable in FF
 			const supported = 'speechSynthesis' in window
 			supported && speechSynthesis.getVoices() // warm up
-			const start = performance.now()
 			if (!supported) {
 				logTestResult({ test: 'speech', passed: false })
 				return resolve()
 			}
-			
 			const voiceslie = !!lieProps['SpeechSynthesis.getVoices']
 
 			const getVoices = () => {
