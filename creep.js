@@ -552,7 +552,7 @@ const imports = {
 		capturedErrors: !!errorsLen,
 		lies: !!liesLen,
 		resistance: fp.resistance || undefined,
-		forceRenew: 1642021680653
+		forceRenew: 1642021680656
 	}
 
 	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f')
@@ -868,30 +868,35 @@ const imports = {
 			}))
 		)
 
-		// compute shadow from session
-		const fpKeys = Object.keys(currFp)
-		const cleanShadow = [...Array(maxBins)].map(x => 0).join('')
-		const prevFp = JSON.parse(sessionStorage.getItem('prevFP'))
-		sessionStorage.setItem('prevFP', JSON.stringify(currFp))
-		if (!prevFp) {
-			return cleanShadow
-		}
-
-		const shadowList = cleanShadow.split('')
-		const bit = '1'
-		const sessionShadow = fpKeys.sort().reduce((acc, key, i) => {
-			const match = prevFp[key] == currFp[key]
-			if (!match) {
-				//console.log(key)
-				shadowList[i] = bit
-			}
-			return shadowList
-		}, shadowList).join('')
+		// create fuzzy hash
 		const fuzzyBits = 64
 		const fuzzyFingerprint = Object.keys(currFp)
 			.map(key => currFp[key][0])
 			.join('')
 			.padEnd(fuzzyBits, '0')
+
+		// compute shadow from session
+		const fpKeys = Object.keys(currFp)
+		const cleanShadow = [...Array(maxBins)].map(x => 0).join('')
+		const prevFp = JSON.parse(sessionStorage.getItem('prevFP'))
+		sessionStorage.setItem('prevFP', JSON.stringify(currFp))
+
+		// On first session load
+		if (!prevFp) {
+			return { sessionShadow: cleanShadow, fuzzyFingerprint }
+		}
+
+		// On session reloads
+		const bit = '1'
+		const sessionShadow = fpKeys.sort().reduce((acc, key, i) => {
+			const match = prevFp[key] == currFp[key]
+			if (!match) {
+				//console.log(key)
+				acc[i] = bit
+			}
+			return acc
+		}, cleanShadow.split('')).join('')
+
 		return { sessionShadow, fuzzyFingerprint }
 	}
 	const { sessionShadow, fuzzyFingerprint } = await computeShadow(fp)
