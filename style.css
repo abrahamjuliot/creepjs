@@ -235,7 +235,9 @@ visitor {
 
 #fingerprint-data .fingerprint-header-container {
     position: fixed;
-    font-size: 18px !important;
+	padding: 8px 20px;
+    font-size: 14px !important;
+	line-height: 1;
     top: 0;
     background: rgba(255, 255, 255, 0.75);
     right: 0;
@@ -244,10 +246,17 @@ visitor {
     margin: 0 auto;
 }
 #fingerprint-data .fingerprint-header {
-    font-size: 18px !important;
     max-width: 750px;
     padding: 0 20px;
     margin: 0 auto;
+	background: #ffffffc7;
+}
+
+#fingerprint-data .fingerprint-header-container .fuzzy-fp {
+	color: #77777794;
+}
+#fingerprint-data .fingerprint-header-container .noise-fp {
+	color: #77777747;
 }
 
 #fingerprint-data .visitor-info {
@@ -706,12 +715,12 @@ input[type="radio"] {
 }
 
 .blurred {
-    filter: blur(2.5px);
+    filter: blur(1.5px);
     animation: reveal 5s ease both;
 }
 
 .unblurred {
-    animation: unblur 0s ease both;
+    animation: unblur 0.3s ease both;
     /*revist*/
 }
 @keyframes reveal {
@@ -858,6 +867,17 @@ input[type="radio"] {
     strong {
         color: #fff;
     }
+
+	#fingerprint-data .fingerprint-header {
+		background: none;
+	}
+
+	#fingerprint-data .fingerprint-header-container .fuzzy-fp {
+		color: #bebeca94;
+	}
+	#fingerprint-data .fingerprint-header-container .noise-fp {
+		color: #bebeca47;
+	}
 
     #fingerprint-data > div {
         border-bottom: 1px solid var(--grey-glass);

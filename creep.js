@@ -552,7 +552,7 @@ const imports = {
 		capturedErrors: !!errorsLen,
 		lies: !!liesLen,
 		resistance: fp.resistance || undefined,
-		forceRenew: 1641705891653
+		forceRenew: 1642021680653
 	}
 
 	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f')
@@ -653,13 +653,258 @@ const imports = {
 	}
 	const hasTrash = !!trashLen
 	const { lies: hasLied, capturedErrors: hasErrors } = creep
+
+	const computeShadow = async fp => {
+		// requires update log (below) when adding new keys to fp
+		const metricKeys = [
+			'canvas2d.blob',
+			'canvas2d.blobOffscreen',
+			'canvas2d.dataURI',
+			'canvas2d.emojiSet',
+			'canvas2d.imageData',
+			'canvas2d.liedTextMetrics',
+			'canvas2d.mods',
+			'canvas2d.points',
+			'canvas2d.textMetricsSystemSum',
+			'canvasWebgl.dataURI',
+			'canvasWebgl.dataURI2',
+			'canvasWebgl.extensions',
+			'canvasWebgl.gpu',
+			'canvasWebgl.parameterOrExtensionLie',
+			'canvasWebgl.parameters',
+			'canvasWebgl.pixels',
+			'canvasWebgl.pixels2',
+			'capturedErrors.data',
+			'clientRects.elementBoundingClientRect',
+			'clientRects.elementClientRects',
+			'clientRects.emojiSet',
+			'clientRects.rangeBoundingClientRect',
+			'clientRects.rangeClientRects',
+			'consoleErrors.errors',
+			'css.computedStyle',
+			'css.system',
+			'cssMedia.importCSS',
+			'cssMedia.matchMediaCSS',
+			'cssMedia.mediaCSS',
+			'cssMedia.screenQuery',
+			'features.cssFeatures',
+			'features.cssVersion',
+			'features.jsFeatures',
+			'features.jsFeaturesKeys',
+			'features.jsVersion',
+			'features.version',
+			'features.versionRange',
+			'features.windowFeatures',
+			'features.windowVersion',
+			'fonts.apps',
+			'fonts.emojiSet',
+			'fonts.fontFaceLoadFonts',
+			'fonts.originFonts',
+			'fonts.pixelFonts',
+			'fonts.platformVersion',
+			'headless.chromium',
+			'headless.headless',
+			'headless.headlessRating',
+			'headless.likeHeadless',
+			'headless.likeHeadlessRating',
+			'headless.stealth',
+			'headless.stealthRating',
+			'htmlElementVersion.keys',
+			'intl.dateTimeFormat',
+			'intl.displayNames',
+			'intl.listFormat',
+			'intl.locale',
+			'intl.numberFormat',
+			'intl.pluralRules',
+			'intl.relativeTimeFormat',
+			'lies.data',
+			'lies.totalLies',
+			'maths.data',
+			'media.mediaDevices',
+			'media.mimeTypes',
+			'navigator.appVersion',
+			'navigator.bluetoothAvailability',
+			'navigator.device',
+			'navigator.deviceMemory',
+			'navigator.doNotTrack',
+			'navigator.globalPrivacyControl',
+			'navigator.hardwareConcurrency',
+			'navigator.keyboard',
+			'navigator.language',
+			'navigator.maxTouchPoints',
+			'navigator.mediaCapabilities',
+			'navigator.mimeTypes',
+			'navigator.oscpu',
+			'navigator.permissions',
+			'navigator.platform',
+			'navigator.plugins',
+			'navigator.properties',
+			'navigator.system',
+			'navigator.uaPostReduction',
+			'navigator.userAgent',
+			'navigator.userAgentData',
+			'navigator.userAgentParsed',
+			'navigator.vendor',
+			'navigator.webgpu',
+			'offlineAudioContext.binsSample',
+			'offlineAudioContext.compressorGainReduction',
+			'offlineAudioContext.copySample',
+			'offlineAudioContext.floatFrequencyDataSum',
+			'offlineAudioContext.floatTimeDomainDataSum',
+			'offlineAudioContext.noise',
+			'offlineAudioContext.sampleSum',
+			'offlineAudioContext.totalUniqueSamples',
+			'offlineAudioContext.values',
+			'resistance.engine',
+			'resistance.extension',
+			'resistance.extensionHashPattern',
+			'resistance.mode',
+			'resistance.privacy',
+			'resistance.security',
+			'screen.availHeight',
+			'screen.availWidth',
+			'screen.colorDepth',
+			'screen.device',
+			'screen.height',
+			'screen.outerHeight',
+			'screen.outerWidth',
+			'screen.pixelDepth',
+			'screen.width',
+			'svg.bBox',
+			'svg.computedTextLength',
+			'svg.emojiSet',
+			'svg.extentOfChar',
+			'svg.subStringLength',
+			'timezone.location',
+			'timezone.locationEpoch',
+			'timezone.locationMeasured',
+			'timezone.offset',
+			'timezone.offsetComputed',
+			'timezone.zone',
+			'trash.trashBin',
+			'voices.defaults',
+			'voices.languages',
+			'voices.local',
+			'voices.remote',
+			'webRTC.audio',
+			'webRTC.extensions',
+			'webRTC.ipaddress',
+			'webRTC.video',
+			'windowFeatures.apple',
+			'windowFeatures.keys',
+			'windowFeatures.moz',
+			'windowFeatures.webkit',
+			'workerScope.canvas2d',
+			'workerScope.device',
+			'workerScope.deviceMemory',
+			'workerScope.engineCurrencyLocale',
+			'workerScope.fontFaceSetFonts',
+			'workerScope.fontListLen',
+			'workerScope.fontSystemClass',
+			'workerScope.gpu',
+			'workerScope.hardwareConcurrency',
+			'workerScope.language',
+			'workerScope.languages',
+			'workerScope.lies',
+			'workerScope.locale',
+			'workerScope.localeEntropyIsTrusty',
+			'workerScope.localeIntlEntropyIsTrusty',
+			'workerScope.mediaCapabilities',
+			'workerScope.permissions',
+			'workerScope.platform',
+			'workerScope.scope',
+			'workerScope.scopeKeys',
+			'workerScope.system',
+			'workerScope.systemCurrencyLocale',
+			'workerScope.textMetrics',
+			'workerScope.textMetricsSystemClass',
+			'workerScope.textMetricsSystemSum',
+			'workerScope.timezoneLocation',
+			'workerScope.timezoneOffset',
+			'workerScope.type',
+			'workerScope.userAgent',
+			'workerScope.userAgentData',
+			'workerScope.userAgentDataVersion',
+			'workerScope.userAgentEngine',
+			'workerScope.userAgentVersion',
+			'workerScope.webglRenderer',
+			'workerScope.webglVendor',
+		]
+		// construct map of all metrics
+		const metricsAll = Object.keys(fp).sort().reduce((acc, sectionKey) => {
+			const section = fp[sectionKey]
+			const sectionMetrics = Object.keys(section || {}).sort().reduce((acc, key) => {
+				if (key == '$hash' || key == 'lied') {
+					return acc
+				}
+				return {...acc, [`${sectionKey}.${key}`]: section[key] }
+			}, {})
+			return {...acc, ...sectionMetrics}
+		}, {})
+
+		// reduce to 64 bins
+		const maxBins = 64
+		const metricKeysReported = Object.keys(metricsAll)
+		const binSize = Math.ceil(metricKeys.length/maxBins)
+		
+		// update log
+		//console.log(metricKeysReported.length) // 172
+		//console.log(metricKeysReported.map(x => `'${x}',`).join('\n'))
+
+		// compute current shadow fingerprint
+		const currFp = metricKeys.reduce((acc, key, index) => {
+			if (!index || ((index % binSize) == 0)) {
+				const keySet = metricKeys.slice(index, index + binSize)
+				return {...acc, [''+keySet]: keySet.map(key => metricsAll[key]) }
+			}
+			return acc
+		}, {})
+
+		// hash each bin
+		await Promise.all(
+			Object.keys(currFp).map(key => (async () => hashMini(currFp[key]))().then(hash => {
+				currFp[key] = hash // swap values for hash
+				return hash
+			}))
+		)
+
+		// compute shadow from session
+		const fpKeys = Object.keys(currFp)
+		const cleanShadow = [...Array(maxBins)].map(x => 0).join('')
+		const prevFp = JSON.parse(sessionStorage.getItem('prevFP'))
+		sessionStorage.setItem('prevFP', JSON.stringify(currFp))
+		if (!prevFp) {
+			return cleanShadow
+		}
+
+		const shadowList = cleanShadow.split('')
+		const bit = '1'
+		const sessionShadow = fpKeys.sort().reduce((acc, key, i) => {
+			const match = prevFp[key] == currFp[key]
+			if (!match) {
+				//console.log(key)
+				shadowList[i] = bit
+			}
+			return shadowList
+		}, shadowList).join('')
+		const fuzzyBits = 64
+		const fuzzyFingerprint = Object.keys(currFp)
+			.map(key => currFp[key][0])
+			.join('')
+			.padEnd(fuzzyBits, '0')
+		return { sessionShadow, fuzzyFingerprint }
+	}
+	const { sessionShadow, fuzzyFingerprint } = await computeShadow(fp)
+
 	const getBlankIcons = () => `<span class="icon"></span><span class="icon"></span>`
 	const el = document.getElementById('fingerprint-data')
 	patch(el, html`
 	<div id="fingerprint-data">
 		<div class="fingerprint-header-container">
 			<div class="fingerprint-header">
-				<strong>Your ID:</strong><span class="trusted-fingerprint ellipsis main-hash">${hashSlice(creepHash)}</span>
+				<div class="ellipsis-all">FP ID: ${creepHash}</div>
+				<div class="ellipsis-all fuzzy-fp">Fuzzy: <span class="unblurred">${fuzzyFingerprint}</span></div>
+				<div class="ellipsis-all noise-fp">Noise: <span class="unblurred">${sessionShadow}</span></div>
 				<div class="ellipsis"><span class="time">${timeEnd.toFixed(2)} ms</span></div>
 			</div>
 		</div>
@@ -680,9 +925,9 @@ const imports = {
 					<div>has trash: <span class="blurred">false</span></div>
 					<div>has lied: <span class="blurred">false</span></div>
 					<div>has errors: <span class="blurred">false</span></div>
-					<div>loose fp (0): <span class="blurred">00000000</span></div>
 					<div>session (0): <span class="blurred">00000000</span></div>
 					<div>revisions (0): <span class="blurred">00000000</span></div>
+					<div>loose fp (0): <span class="blurred">00000000</span></div>
 					<div id="signature"></div>
 				</div>
 			</div>
@@ -785,245 +1030,7 @@ const imports = {
 		const id = 'creep-browser'
 		const visitorElem = document.getElementById(id)
 		const fetchVisitorDataTimer = timer()
-
-		const computeShadow = async fp => {
-			// requires update log (below) when adding new keys to fp
-			const metricKeys = [
-				'canvas2d.blob',
-				'canvas2d.blobOffscreen',
-				'canvas2d.dataURI',
-				'canvas2d.emojiSet',
-				'canvas2d.imageData',
-				'canvas2d.liedTextMetrics',
-				'canvas2d.mods',
-				'canvas2d.points',
-				'canvas2d.textMetricsSystemSum',
-				'canvasWebgl.dataURI',
-				'canvasWebgl.dataURI2',
-				'canvasWebgl.extensions',
-				'canvasWebgl.gpu',
-				'canvasWebgl.parameterOrExtensionLie',
-				'canvasWebgl.parameters',
-				'canvasWebgl.pixels',
-				'canvasWebgl.pixels2',
-				'capturedErrors.data',
-				'clientRects.elementBoundingClientRect',
-				'clientRects.elementClientRects',
-				'clientRects.emojiSet',
-				'clientRects.rangeBoundingClientRect',
-				'clientRects.rangeClientRects',
-				'consoleErrors.errors',
-				'css.computedStyle',
-				'css.system',
-				'cssMedia.importCSS',
-				'cssMedia.matchMediaCSS',
-				'cssMedia.mediaCSS',
-				'cssMedia.screenQuery',
-				'features.cssFeatures',
-				'features.cssVersion',
-				'features.jsFeatures',
-				'features.jsFeaturesKeys',
-				'features.jsVersion',
-				'features.version',
-				'features.versionRange',
-				'features.windowFeatures',
-				'features.windowVersion',
-				'fonts.apps',
-				'fonts.emojiSet',
-				'fonts.fontFaceLoadFonts',
-				'fonts.originFonts',
-				'fonts.pixelFonts',
-				'fonts.platformVersion',
-				'headless.chromium',
-				'headless.headless',
-				'headless.headlessRating',
-				'headless.likeHeadless',
-				'headless.likeHeadlessRating',
-				'headless.stealth',
-				'headless.stealthRating',
-				'htmlElementVersion.keys',
-				'intl.dateTimeFormat',
-				'intl.displayNames',
-				'intl.listFormat',
-				'intl.locale',
-				'intl.numberFormat',
-				'intl.pluralRules',
-				'intl.relativeTimeFormat',
-				'lies.data',
-				'lies.totalLies',
-				'maths.data',
-				'media.mediaDevices',
-				'media.mimeTypes',
-				'navigator.appVersion',
-				'navigator.bluetoothAvailability',
-				'navigator.device',
-				'navigator.deviceMemory',
-				'navigator.doNotTrack',
-				'navigator.globalPrivacyControl',
-				'navigator.hardwareConcurrency',
-				'navigator.keyboard',
-				'navigator.language',
-				'navigator.maxTouchPoints',
-				'navigator.mediaCapabilities',
-				'navigator.mimeTypes',
-				'navigator.oscpu',
-				'navigator.permissions',
-				'navigator.platform',
-				'navigator.plugins',
-				'navigator.properties',
-				'navigator.system',
-				'navigator.uaPostReduction',
-				'navigator.userAgent',
-				'navigator.userAgentData',
-				'navigator.userAgentParsed',
-				'navigator.vendor',
-				'navigator.webgpu',
-				'offlineAudioContext.binsSample',
-				'offlineAudioContext.compressorGainReduction',
-				'offlineAudioContext.copySample',
-				'offlineAudioContext.floatFrequencyDataSum',
-				'offlineAudioContext.floatTimeDomainDataSum',
-				'offlineAudioContext.noise',
-				'offlineAudioContext.sampleSum',
-				'offlineAudioContext.totalUniqueSamples',
-				'offlineAudioContext.values',
-				'resistance.engine',
-				'resistance.extension',
-				'resistance.extensionHashPattern',
-				'resistance.mode',
-				'resistance.privacy',
-				'resistance.security',
-				'screen.availHeight',
-				'screen.availWidth',
-				'screen.colorDepth',
-				'screen.device',
-				'screen.height',
-				'screen.outerHeight',
-				'screen.outerWidth',
-				'screen.pixelDepth',
-				'screen.width',
-				'svg.bBox',
-				'svg.computedTextLength',
-				'svg.emojiSet',
-				'svg.extentOfChar',
-				'svg.subStringLength',
-				'timezone.location',
-				'timezone.locationEpoch',
-				'timezone.locationMeasured',
-				'timezone.offset',
-				'timezone.offsetComputed',
-				'timezone.zone',
-				'trash.trashBin',
-				'voices.defaults',
-				'voices.languages',
-				'voices.local',
-				'voices.remote',
-				'webRTC.audio',
-				'webRTC.extensions',
-				'webRTC.ipaddress',
-				'webRTC.video',
-				'windowFeatures.apple',
-				'windowFeatures.keys',
-				'windowFeatures.moz',
-				'windowFeatures.webkit',
-				'workerScope.canvas2d',
-				'workerScope.device',
-				'workerScope.deviceMemory',
-				'workerScope.engineCurrencyLocale',
-				'workerScope.fontFaceSetFonts',
-				'workerScope.fontListLen',
-				'workerScope.fontSystemClass',
-				'workerScope.gpu',
-				'workerScope.hardwareConcurrency',
-				'workerScope.language',
-				'workerScope.languages',
-				'workerScope.lies',
-				'workerScope.locale',
-				'workerScope.localeEntropyIsTrusty',
-				'workerScope.localeIntlEntropyIsTrusty',
-				'workerScope.mediaCapabilities',
-				'workerScope.permissions',
-				'workerScope.platform',
-				'workerScope.scope',
-				'workerScope.scopeKeys',
-				'workerScope.system',
-				'workerScope.systemCurrencyLocale',
-				'workerScope.textMetrics',
-				'workerScope.textMetricsSystemClass',
-				'workerScope.textMetricsSystemSum',
-				'workerScope.timezoneLocation',
-				'workerScope.timezoneOffset',
-				'workerScope.type',
-				'workerScope.userAgent',
-				'workerScope.userAgentData',
-				'workerScope.userAgentDataVersion',
-				'workerScope.userAgentEngine',
-				'workerScope.userAgentVersion',
-				'workerScope.webglRenderer',
-				'workerScope.webglVendor',
-			]
-			// construct map of all metrics
-			const metricsAll = Object.keys(fp).sort().reduce((acc, sectionKey) => {
-				const section = fp[sectionKey]
-				const sectionMetrics = Object.keys(section || {}).sort().reduce((acc, key) => {
-					if (key == '$hash' || key == 'lied') {
-						return acc
-					}
-					return {...acc, [`${sectionKey}.${key}`]: section[key] }
-				}, {})
-				return {...acc, ...sectionMetrics}
-			}, {})
-
-			// reduce to 64 bins
-			const maxBins = 64
-			const metricKeysReported = Object.keys(metricsAll)
-			const binSize = Math.ceil(metricKeys.length/maxBins)
-			
-			// update log
-			//console.log(metricKeysReported.length) // 172
-			//console.log(metricKeysReported.map(x => `'${x}',`).join('\n'))
-
-			// compute current shadow fingerprint
-			const currFp = metricKeys.reduce((acc, key, index) => {
-				if (!index || ((index % binSize) == 0)) {
-					const keySet = metricKeys.slice(index, index + binSize)
-					return {...acc, [''+keySet]: keySet.map(key => metricsAll[key]) }
-				}
-				return acc
-			}, {})
-
-			// hash each bin
-			await Promise.all(
-				Object.keys(currFp).map(key => (async () => hashMini(currFp[key]))().then(hash => {
-					currFp[key] = hash // swap values for hash
-					return hash
-				}))
-			)
-
-			// compute shadow from session
-			const fpKeys = Object.keys(currFp)
-			const cleanShadow = [...Array(maxBins)].map(x => 0).join('')
-			const prevFp = JSON.parse(sessionStorage.getItem('prevFP'))
-			sessionStorage.setItem('prevFP', JSON.stringify(currFp))
-			if (!prevFp) {
-				return cleanShadow
-			}
-
-			const shadowList = cleanShadow.split('')
-			const bit = '1'
-			const shadow = fpKeys.sort().reduce((acc, key, i) => {
-				const match = prevFp[key] == currFp[key]
-				if (!match) {
-					//console.log(key)
-					shadowList[i] = bit
-				}
-				return shadowList
-			}, shadowList).join('')
-			return shadow
-		}
-		const sessionShadow = await computeShadow(fp)
-
-		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&shadow=${sessionShadow}`
+		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&shadow=${sessionShadow}&fuzzy=${fuzzyFingerprint}`
 		
 		fetch(request)
 		.then(response => response.json())
@@ -1148,14 +1155,15 @@ const imports = {
 				}</span>`
 			}
 
-			const renewedDate = '11/14/2021'
+			const renewedDate = new Date(creep.forceRenew)
+			const renewedDateString = `${renewedDate.getMonth()+1}/${renewedDate.getDate()}/${renewedDate.getFullYear()}`
 			const addDays = (date, n) => {
 				const d = new Date(date)
 				d.setDate(d.getDate() + n)
 				return d
 			}
-			const shouldStyle = renewedDate => {
-				const endNoticeDate = addDays(renewedDate, 7)
+			const shouldStyle = renewedDateString => {
+				const endNoticeDate = addDays(renewedDateString, 7)
 				const daysRemaining = Math.round((+endNoticeDate - +new Date()) / (1000 * 3600 * 24))
 				return daysRemaining >= 0
 			}
@@ -1232,8 +1240,8 @@ const imports = {
 			const template = `
 				<div class="visitor-info">
 					<div class="ellipsis">
-						<span class="time">fingerprints renewed <span class="${shouldStyle(renewedDate) ? 'renewed' : ''}">${
-							new Date(renewedDate).toLocaleDateString()
+						<span class="time">fingerprints renewed <span class="${shouldStyle(renewedDateString) ? 'renewed' : ''}">${
+							new Date(renewedDateString).toLocaleDateString()
 						}</span></span>
 					</div>
 					<div class="flex-grid">
@@ -1272,7 +1280,6 @@ const imports = {
 								`true ${computePoints(errorsPointLoss)}` : 
 								'false'
 							}</span></div>
-							<div class="ellipsis">loose fp (${''+switchCount}):<span class="unblurred sub-hash">${hashSlice(fpHash)}</span> ${computePoints(switchCountPointLoss)}</div>
 							<div>session (${''+loads}):<span class="unblurred sub-hash">${initial}</span></div>
 							<div>revisions (${''+revisedKeys.length}): ${
 								!revisedKeys.length ? 'none' : modal(
@@ -1281,6 +1288,7 @@ const imports = {
 									hashMini(revisedKeys)
 								)
 							}
+							<div class="ellipsis">loose fp (${''+switchCount}):<span class="unblurred sub-hash">${hashSlice(fpHash)}</span> ${computePoints(switchCountPointLoss)}</div>
 							${
 								signature ? 
 								`
@@ -1296,7 +1304,6 @@ const imports = {
 							}
 						</div>
 					</div>
-					
 				</div>
 			`
 			patch(visitorElem, html`${template}`, () => {
