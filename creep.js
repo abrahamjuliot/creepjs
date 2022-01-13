@@ -1056,7 +1056,8 @@ const imports = {
 				hasLied,
 				hasErrors,
 				signature,
-				shadow
+				shadow,
+				shadowBits
 			} = data || {}
 			
 			const toLocaleStr = str => {
@@ -1137,8 +1138,7 @@ const imports = {
 				}
 				return score
 			}
-			const shadowCount = shadow.split('').filter(x => x == '1').length
-			const shadowBits = shadowCount/shadow.length
+
 			const {
 				switchCountPointLoss,
 				errorsPointLoss,
