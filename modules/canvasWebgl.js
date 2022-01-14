@@ -9,6 +9,7 @@ export const getCanvasWebgl = async imports => {
 			lieProps,
 			phantomDarkness,
 			dragonOfDeath,
+			sendToTrash,
 			logTestResult,
 			compressWebGLRenderer,
 			getWebGLRendererConfidence 
