@@ -25,15 +25,11 @@ export const getVoices = imports => {
 			const voiceslie = !!lieProps['SpeechSynthesis.getVoices']
 
 			const getVoices = () => {
-				const giveUpOnVoices = setTimeout(() => {
-					logTestResult({ test: 'speech', passed: false })
-					return resolve()
-				}, 3000)
 				const data = speechSynthesis.getVoices()
 				if (!data || !data.length) {
-					return
+					logTestResult({ test: 'speech', passed: false })
+					return resolve()
 				}
-				clearTimeout(giveUpOnVoices)
 				const filterFirstOccurenceOfUniqueVoiceURIData = ({data, voiceURISet}) => data.filter(x => {
 					const { voiceURI } = x
 					if (!voiceURISet.has(voiceURI)) {
@@ -43,7 +39,10 @@ export const getVoices = imports => {
 					return false
 				})
 
-				const dataUnique = filterFirstOccurenceOfUniqueVoiceURIData({ data, voiceURISet: new Set() })
+				const dataUnique = filterFirstOccurenceOfUniqueVoiceURIData({
+					data,
+					voiceURISet: new Set()
+				})
 
 				// https://wicg.github.io/speech-api/#speechsynthesisvoice-attributes
 				const local = dataUnique.filter(x => x.localService).map(x => x.name)
