@@ -25,11 +25,15 @@ export const getVoices = imports => {
 			const voiceslie = !!lieProps['SpeechSynthesis.getVoices']
 
 			const getVoices = () => {
-				const data = speechSynthesis.getVoices()
-				if (!data || !data.length) {
+				const giveUpOnVoices = setTimeout(() => {
 					logTestResult({ test: 'speech', passed: false })
 					return resolve()
+				}, 3000)
+				const data = speechSynthesis.getVoices()
+				if (!data || !data.length) {
+					return
 				}
+				clearTimeout(giveUpOnVoices)
 				const filterFirstOccurenceOfUniqueVoiceURIData = ({data, voiceURISet}) => data.filter(x => {
 					const { voiceURI } = x
 					if (!voiceURISet.has(voiceURI)) {
