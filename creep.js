@@ -552,7 +552,7 @@ const imports = {
 		capturedErrors: !!errorsLen,
 		lies: !!liesLen,
 		resistance: fp.resistance || undefined,
-		forceRenew: 1642135506365
+		forceRenew: 1642174251950
 	}
 
 	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f')
@@ -654,7 +654,7 @@ const imports = {
 	const hasTrash = !!trashLen
 	const { lies: hasLied, capturedErrors: hasErrors } = creep
 
-	const computeShadow = async fp => {
+	const computeFuzzy = async fp => {
 		// requires update log (below) when adding new keys to fp
 		const metricKeys = [
 			'canvas2d.blob',
@@ -851,8 +851,8 @@ const imports = {
 		//console.log(metricKeysReported.length) // 172
 		//console.log(metricKeysReported.map(x => `'${x}',`).join('\n'))
 
-		// compute current shadow fingerprint
-		const currFp = metricKeys.reduce((acc, key, index) => {
+		// compute fuzzy fingerprint master
+		const fuzzyFpMaster = metricKeys.reduce((acc, key, index) => {
 			if (!index || ((index % binSize) == 0)) {
 				const keySet = metricKeys.slice(index, index + binSize)
 				return {...acc, [''+keySet]: keySet.map(key => metricsAll[key]) }
@@ -862,44 +862,22 @@ const imports = {
 
 		// hash each bin
 		await Promise.all(
-			Object.keys(currFp).map(key => hashify(currFp[key]).then(hash => {
-				currFp[key] = hash // swap values for hash
+			Object.keys(fuzzyFpMaster).map(key => hashify(fuzzyFpMaster[key]).then(hash => {
+				fuzzyFpMaster[key] = hash // swap values for hash
 				return hash
 			}))
 		)
 
 		// create fuzzy hash
 		const fuzzyBits = 64
-		const fuzzyFingerprint = Object.keys(currFp)
-			.map(key => currFp[key][0])
+		const fuzzyFingerprint = Object.keys(fuzzyFpMaster)
+			.map(key => fuzzyFpMaster[key][0])
 			.join('')
 			.padEnd(fuzzyBits, '0')
-
-		// compute shadow from session
-		const fpKeys = Object.keys(currFp)
-		const cleanShadow = [...Array(maxBins)].map(x => 0).join('')
-		const prevFp = JSON.parse(sessionStorage.getItem('prevFP'))
-		sessionStorage.setItem('prevFP', JSON.stringify(currFp))
-
-		// On first session load
-		if (!prevFp) {
-			return { sessionShadow: cleanShadow, fuzzyFingerprint }
-		}
-
-		// On session reloads
-		const bit = '1'
-		const sessionShadow = fpKeys.sort().reduce((acc, key, i) => {
-			const match = prevFp[key] == currFp[key]
-			if (!match) {
-				//console.log(key)
-				acc[i] = bit
-			}
-			return acc
-		}, cleanShadow.split('')).join('')
-
-		return { sessionShadow, fuzzyFingerprint }
+	
+		return fuzzyFingerprint
 	}
-	const { sessionShadow, fuzzyFingerprint } = await computeShadow(fp)
+	const fuzzyFingerprint = await computeFuzzy(fp)
 
 	const getBlankIcons = () => `<span class="icon"></span><span class="icon"></span>`
 	const el = document.getElementById('fingerprint-data')
@@ -908,8 +886,10 @@ const imports = {
 		<div class="fingerprint-header-container">
 			<div class="fingerprint-header">
 				<div class="ellipsis-all">FP ID: ${creepHash}</div>
-				<div class="ellipsis-all fuzzy-fp">Fuzzy: <span class="unblurred">${fuzzyFingerprint}</span></div>
-				<div class="ellipsis-all noise-fp">Noise: <span class="unblurred">${sessionShadow}</span></div>
+				<div id="fuzzy-fingerprint">
+					<div class="ellipsis-all fuzzy-fp">Fuzzy: <span class="blurred-pause">0000000000000000000000000000000000000000000000000000000000000000</span></div>
+					<div class="ellipsis-all fuzzy-diffs">Diffs: <span class="blurred-pause">0000000000000000000000000000000000000000000000000000000000000000</span></div>
+				</div>
 				<div class="ellipsis"><span class="time">${timeEnd.toFixed(2)} ms</span></div>
 			</div>
 		</div>
@@ -1035,7 +1015,7 @@ const imports = {
 		const id = 'creep-browser'
 		const visitorElem = document.getElementById(id)
 		const fetchVisitorDataTimer = timer()
-		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&trashLen${trashLen}&liesLen${liesLen}&errorsLen${errorsLen}&shadow=${sessionShadow}&fuzzy=${fuzzyFingerprint}`
+		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&trashLen=${trashLen}&liesLen=${liesLen}&errorsLen=${errorsLen}&fuzzy=${fuzzyFingerprint}`
 		
 		fetch(request)
 		.then(response => response.json())
@@ -1056,11 +1036,21 @@ const imports = {
 				hasLied,
 				hasErrors,
 				signature,
+				fuzzyInit,
+				fuzzyLast,
 				shadow,
 				shadowBits,
 				score,
 				scoreData
 			} = data || {}
+
+			const fuzzyFpEl = document.getElementById('fuzzy-fingerprint')
+			patch(fuzzyFpEl, html`
+				<div id="fuzzy-fingerprint">
+					<div class="ellipsis-all fuzzy-fp">Fuzzy: <span class="unblurred">${fuzzyInit}</span></div>
+					<div class="ellipsis-all fuzzy-diffs">Diffs: <span class="unblurred">${fuzzyLast}</span></div>
+				</div>
+			`)
 			
 			const toLocaleStr = str => {
 				const date = new Date(str)
@@ -1190,7 +1180,7 @@ const imports = {
 								!shadowBits ? '' : `<span class="confidence-note">${hashMini(shadow)}</span>`
 							}
 							</div>
-							<div class="block-text shadow-icon help" title="session metric revision pattern">
+							<div class="block-text shadow-icon help" title="fuzzy diff history">
 								${styleChunks(getChunks(shadow.split(''), 8))}
 							</div>
 						</div>

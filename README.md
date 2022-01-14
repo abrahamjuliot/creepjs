@@ -87,11 +87,10 @@ Bots leak unusual behavior and can be denied service
 - worker scope tampering
 
 ### Shadow
-Session metric revision patterns can follow stable fingerprints like a shadow
+Loose metric revision patterns can follow stable fingerprints like a shadow
 
-- Shadow: a string of 64 characters used to hint metric revision patterns
-- Metric revision patterns are captured in a session and reduced to the shadow
-- Metric revisions can include browser updates, user settings and/or API tampering
+- Shadow: a string of 64 characters used to capture the history of fuzzy fingerprint diffs
+- Diffs or revisions may include browser updates, user settings and/or API tampering
 
 ## Browser Prediction
 - A prediction is made to decrypt the browser vendor, version, renderer, engine, system, device and gpu

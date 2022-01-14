@@ -255,7 +255,7 @@ visitor {
 #fingerprint-data .fingerprint-header-container .fuzzy-fp {
 	color: #77777794;
 }
-#fingerprint-data .fingerprint-header-container .noise-fp {
+#fingerprint-data .fingerprint-header-container .fuzzy-diffs {
 	color: #77777747;
 }
 
@@ -718,6 +718,10 @@ input[type="radio"] {
     filter: blur(1.5px);
     animation: reveal 5s ease both;
 }
+.blurred-pause {
+    filter: blur(1.5px);
+    opacity: 0.5;
+}
 
 .unblurred {
     animation: unblur 0.3s ease both;
@@ -875,7 +879,7 @@ input[type="radio"] {
 	#fingerprint-data .fingerprint-header-container .fuzzy-fp {
 		color: #bebeca94;
 	}
-	#fingerprint-data .fingerprint-header-container .noise-fp {
+	#fingerprint-data .fingerprint-header-container .fuzzy-diffs {
 		color: #bebeca47;
 	}
 
