@@ -1035,7 +1035,7 @@ const imports = {
 		const id = 'creep-browser'
 		const visitorElem = document.getElementById(id)
 		const fetchVisitorDataTimer = timer()
-		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&shadow=${sessionShadow}&fuzzy=${fuzzyFingerprint}`
+		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&trashLen${trashLen}&liesLen${liesLen}&errorsLen${errorsLen}&shadow=${sessionShadow}&fuzzy=${fuzzyFingerprint}`
 		
 		fetch(request)
 		.then(response => response.json())
@@ -1057,7 +1057,9 @@ const imports = {
 				hasErrors,
 				signature,
 				shadow,
-				shadowBits
+				shadowBits,
+				score,
+				scoreData
 			} = data || {}
 			
 			const toLocaleStr = str => {
@@ -1069,91 +1071,15 @@ const imports = {
 			const hoursAgo = (date1, date2) => Math.abs(date1 - date2) / 36e5
 			const hours = hoursAgo(new Date(firstVisit), new Date(latestVisit)).toFixed(1)
 
-			const computeTrustScore = ({
-				switchCount,
-				errorsLen,
-				trashLen,
-				liesLen,
-				shadowBits
-			}) => {
-				const score = {
-					errorsRisk: 3.5,
-					trashRisk: 5.5,
-					liesRisk: 31,
-					shadowRisk: 31,
-					maxReward: 20,
-					get shadowBitsPointLoss() {
-						return -Math.round(
-							!shadowBits ? -(score.maxReward/2) :
-								shadowBits * score.shadowRisk
-						)
-					},
-					get switchCountPointLoss() {
-						return -Math.round(
-							switchCount < 2 ? -(score.maxReward/4) :
-								switchCount < 11 ? switchCount * 0.1 :
-									switchCount * 0.2
-						)
-					},
-					get errorsPointLoss() {
-						return -Math.round(errorsLen * score.errorsRisk)
-					},
-					get trashPointLoss() {
-						return -Math.round(trashLen * score.trashRisk)
-					},
-					get liesPointLoss() {
-						return -Math.round(liesLen * score.liesRisk)
-					},
-					get total() {
-						const points = Math.round(
-							100 +
-							score.switchCountPointLoss +
-							score.errorsPointLoss +
-							score.trashPointLoss + 
-							score.liesPointLoss +
-							score.shadowBitsPointLoss
-						)
-						return points < 0 ? 0 : points > 100 ? 100 : points
-					},
-					get grade() {
-						const total = score.total
-						return (
-							total > 95 ? 'A+' :
-							total == 95 ? 'A' :
-							total >= 90 ? 'A-' :
-							total > 85 ? 'B+' :
-							total == 85 ? 'B' :
-							total >= 80 ? 'B-' :
-							total > 75 ? 'C+' :
-							total == 75 ? 'C' :
-							total >= 70 ? 'C-' :
-							total > 65 ? 'D+' :
-							total == 65 ? 'D' :
-							total >= 60 ? 'D-' :
-							total > 55 ? 'F+' :
-							total == 55 ? 'F' :
-							'F-'
-						)
-					}
-				}
-				return score
-			}
-
 			const {
-				switchCountPointLoss,
-				errorsPointLoss,
-				trashPointLoss,
-				liesPointLoss,
-				shadowBitsPointLoss,
+				switchCountPointGain,
+				errorsPointGain,
+				trashPointGain,
+				liesPointGain,
+				shadowBitsPointGain,
 				grade,
-				total: scoreTotal
-			} = computeTrustScore({
-				switchCount,
-				errorsLen,
-				trashLen,
-				liesLen,
-				shadowBits
-			})
+			} = JSON.parse(scoreData)
+
 			const computePoints = x => {
 				return `<span class="scale-up grade-${x < 0 ? 'F' : x > 0 ? 'A' : ''}">${
 					x > 0 ? `+${x}` : x < 0 ? `${x}` : ''
@@ -1253,13 +1179,13 @@ const imports = {
 						<div class="col-six">
 							<strong>Browser</strong>
 							<div>trust score: <span class="unblurred">
-								${scoreTotal}% <span class="scale-down grade-${grade.charAt(0)}">${grade}</span>
+								${score}% <span class="scale-down grade-${grade.charAt(0)}">${grade}</span>
 							</span></div>
 							<div>visits: <span class="unblurred">${visits}</span></div>
 							<div class="ellipsis">first: <span class="unblurred">${toLocaleStr(firstVisit)}</span></div>
 							<div class="ellipsis">last: <span class="unblurred">${toLocaleStr(latestVisit)}</span></div>
 							<div>persistence: <span class="unblurred">${hours} hours</span></div>
-							<div class="relative">shadow: <span class="unblurred">${!shadowBits ? '0' : shadowBits.toFixed(5)}</span>  ${computePoints(shadowBitsPointLoss)}
+							<div class="relative">shadow: <span class="unblurred">${!shadowBits ? '0' : shadowBits.toFixed(5)}</span>  ${computePoints(shadowBitsPointGain)}
 							${
 								!shadowBits ? '' : `<span class="confidence-note">${hashMini(shadow)}</span>`
 							}
@@ -1272,17 +1198,17 @@ const imports = {
 							<div class="help ellipsis" title="${botInfo}">bot: <span class="unblurred">${botPercentString}</span></div>
 							<div>has trash: <span class="unblurred">${
 								(''+hasTrash) == 'true' ?
-								`true ${computePoints(trashPointLoss)}` : 
+								`true ${computePoints(trashPointGain)}` : 
 								'false'
 							}</span></div>
 							<div>has lied: <span class="unblurred">${
 								(''+hasLied) == 'true' ? 
-								`true ${computePoints(liesPointLoss)}` : 
+								`true ${computePoints(liesPointGain)}` : 
 								'false'
 							}</span></div>
 							<div>has errors: <span class="unblurred">${
 								(''+hasErrors) == 'true' ? 
-								`true ${computePoints(errorsPointLoss)}` : 
+								`true ${computePoints(errorsPointGain)}` : 
 								'false'
 							}</span></div>
 							<div>session (${''+loads}):<span class="unblurred sub-hash">${initial}</span></div>
@@ -1293,7 +1219,7 @@ const imports = {
 									hashMini(revisedKeys)
 								)
 							}
-							<div class="ellipsis">loose fp (${''+switchCount}):<span class="unblurred sub-hash">${hashSlice(fpHash)}</span> ${computePoints(switchCountPointLoss)}</div>
+							<div class="ellipsis">loose fp (${''+switchCount}):<span class="unblurred sub-hash">${hashSlice(fpHash)}</span> ${computePoints(switchCountPointGain)}</div>
 							${
 								signature ? 
 								`
