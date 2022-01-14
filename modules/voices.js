@@ -28,7 +28,7 @@ export const getVoices = imports => {
 				const giveUpOnVoices = setTimeout(() => {
 					logTestResult({ test: 'speech', passed: false })
 					return resolve()
-				}, 3000)
+				}, 500)
 				const data = speechSynthesis.getVoices()
 				if (!data || !data.length) {
 					return
