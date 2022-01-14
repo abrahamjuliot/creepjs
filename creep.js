@@ -552,7 +552,7 @@ const imports = {
 		capturedErrors: !!errorsLen,
 		lies: !!liesLen,
 		resistance: fp.resistance || undefined,
-		forceRenew: 1642021680656
+		forceRenew: 1642135506365
 	}
 
 	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f')
@@ -862,7 +862,7 @@ const imports = {
 
 		// hash each bin
 		await Promise.all(
-			Object.keys(currFp).map(key => (async () => hashMini(currFp[key]))().then(hash => {
+			Object.keys(currFp).map(key => hashify(currFp[key]).then(hash => {
 				currFp[key] = hash // swap values for hash
 				return hash
 			}))
