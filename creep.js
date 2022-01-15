@@ -879,6 +879,40 @@ const imports = {
 	}
 	const fuzzyFingerprint = await computeFuzzy(fp)
 
+	// Bot Detection: check to keep metric samples pure
+	const getBotHash = fp => {
+		const userAgentReportIsOutsideOfFeaturesVersion = getFeaturesLie(fp)
+		const workerScopeIsTrashed = !fp.workerScope || !fp.workerScope.userAgent
+		const liedWorkerScope = !!(fp.workerScope && fp.workerScope.lied)
+		let liedPlatformVersion = false
+		if (fp.workerScope && fp.fonts) {
+			const { platformVersion, platform } = fp.workerScope.userAgentData || {}
+			const { platformVersion: fontPlatformVersion } = fp.fonts || {}
+			const windowsRelease = computeWindowsRelease({
+				platform,
+				platformVersion,
+				fontPlatformVersion
+			})
+			liedPlatformVersion = (
+				windowsRelease &&
+				fp.fonts.platformVersion &&
+				!(''+windowsRelease).includes(fontPlatformVersion)
+			)
+		}
+		// Pattern conditions that warrant rejection
+		const botPatterns = {
+			excessiveLooseFingerprints: false, // elf (compute on server)
+			liedPlatformVersion, // lpv
+			liedWorkerScope, // lws
+			userAgentReportIsOutsideOfFeaturesVersion, // ofv
+			workerScopeIsTrashed // wst
+		}
+		const botHash = Object.keys(botPatterns)
+			.sort() // order is important
+			.map(key => botPatterns[key] ? '1' : '0').join('')
+		return botHash
+	}
+
 	const getBlankIcons = () => `<span class="icon"></span><span class="icon"></span>`
 	const el = document.getElementById('fingerprint-data')
 	patch(el, html`
@@ -906,14 +940,16 @@ const imports = {
 					<div class="block-text shadow-icon"></div>
 				</div>
 				<div class="col-six">
-					<div>bot: <span class="blurred">false</span></div>
-					<div>idle min-max: <span class="blurred">0.000-0.000 hrs</span></div>
 					<div>has trash: <span class="blurred">false</span></div>
 					<div>has lied: <span class="blurred">false</span></div>
 					<div>has errors: <span class="blurred">false</span></div>
 					<div>session (0): <span class="blurred">00000000</span></div>
 					<div>revisions (0): <span class="blurred">00000000</span></div>
 					<div>loose fp (0): <span class="blurred">00000000</span></div>
+					<div class="block-text-small">
+						<div class="blurred">bot: 0:friend:00000</div>
+						<div class="blurred">idle min-max: 0.000-0.000 hrs</div>
+					</div>
 					<div id="signature"></div>
 				</div>
 			</div>
@@ -1015,18 +1051,18 @@ const imports = {
 		// fetch fingerprint data from server
 		const id = 'creep-browser'
 		const visitorElem = document.getElementById(id)
+		const botHash = getBotHash(fp)
 		const fetchVisitorDataTimer = timer()
-		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&trashLen=${trashLen}&liesLen=${liesLen}&errorsLen=${errorsLen}&fuzzy=${fuzzyFingerprint}`
+		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&trashLen=${trashLen}&liesLen=${liesLen}&errorsLen=${errorsLen}&fuzzy=${fuzzyFingerprint}&botHash=${botHash}`
 		
 		fetch(request)
 		.then(response => response.json())
 		.then(async data => {
-
 			console.groupCollapsed('Server Response')
 			console.log(JSON.stringify(data, null, '\t'))
 			fetchVisitorDataTimer('response time')
 			console.groupEnd()
-		
+
 			const {
 				firstVisit,
 				lastVisit: latestVisit,
@@ -1044,6 +1080,9 @@ const imports = {
 				shadowBits,
 				score,
 				scoreData,
+				bot,
+				botHash,
+				botLevel,
 				timeHoursIdleMin,
 				timeHoursIdleMax
 			} = data || {}
@@ -1091,66 +1130,12 @@ const imports = {
 				d.setDate(d.getDate() + n)
 				return d
 			}
+
 			const shouldStyle = renewedDateString => {
 				const endNoticeDate = addDays(renewedDateString, 7)
 				const daysRemaining = Math.round((+endNoticeDate - +new Date()) / (1000 * 3600 * 24))
 				return daysRemaining >= 0
 			}
-
-			// Bot Detection: a final check to keep metric samples pure
-			const getBot = ({ fp, hours, hasLied, switchCount }) => {
-				const userAgentReportIsOutsideOfFeaturesVersion = getFeaturesLie(fp)
-				const userShouldGetThrottled = (switchCount > 20) && ((hours/switchCount) <= 7) // 
-				const excessiveLooseFingerprints = hasLied && userShouldGetThrottled
-				const workerScopeIsTrashed = !fp.workerScope || !fp.workerScope.userAgent
-				const liedWorkerScope = !!(fp.workerScope && fp.workerScope.lied)
-				let liedPlatformVersion = false
-				if (fp.workerScope && fp.fonts) {
-					const { platformVersion, platform } = fp.workerScope.userAgentData || {}
-					const { platformVersion: fontPlatformVersion } = fp.fonts || {}
-					const windowsRelease = computeWindowsRelease({
-						platform,
-						platformVersion,
-						fontPlatformVersion
-					})
-					liedPlatformVersion = (
-						windowsRelease &&
-						fp.fonts.platformVersion &&
-						!(''+windowsRelease).includes(fontPlatformVersion)
-					)
-				}
-				// Patern conditions that warrant rejection
-				const botPatterns = {
-					excessiveLooseFingerprints,
-					userAgentReportIsOutsideOfFeaturesVersion,
-					workerScopeIsTrashed,
-					liedWorkerScope,
-					liedPlatformVersion
-				}
-				const totalBotPatterns = Object.keys(botPatterns).length
-				const totalBotTriggers = (
-					Object.keys(botPatterns).filter(key => botPatterns[key]).length
-				)
-				const botProbability = totalBotTriggers / totalBotPatterns
-				const isBot = !!botProbability
-				const botPercentString = `${(botProbability*100).toFixed(0)}%`
-				return {
-					isBot,
-					botPercentString,
-					botPatterns
-				}
-			}
-			
-			const { isBot, botPercentString, botPatterns } = getBot({
-				fp,
-				hours: persistence,
-				hasLied,
-				switchCount
-			})
-
-			const botInfo = Object.keys(botPatterns).map(key => {
-				return `${key}: ${botPatterns[key]}`
-			}).join('\n')
 
 			const getChunks = (list, chunkLen) => list.reduce((acc, x, i) => {
 				const chunk = Math.floor(i/chunkLen)
@@ -1193,8 +1178,6 @@ const imports = {
 							</div>
 						</div>
 						<div class="col-six">
-							<div class="help ellipsis" title="${botInfo}">bot: <span class="unblurred">${botPercentString}</span></div>
-							<div>idle min-max: <span class="unblurred">${timeHoursIdleMin}-${timeHoursIdleMax} hrs</span></div>
 							<div>has trash: <span class="unblurred">${
 								(''+hasTrash) == 'true' ?
 								`true ${computePoints(trashPointGain)}` : 
@@ -1219,6 +1202,12 @@ const imports = {
 								)
 							}
 							<div class="ellipsis">loose fp (${''+switchCount}):<span class="unblurred sub-hash">${hashSlice(fpHash)}</span> ${computePoints(switchCountPointGain)}</div>
+
+							<div class="block-text-small">
+								<div class="unblurred">bot: ${bot}:${botLevel}:${botHash}</div>
+								<div class="unblurred">idle min-max: ${timeHoursIdleMin}-${timeHoursIdleMax} hrs</div>
+							</div>
+
 							${
 								signature ? 
 								`
@@ -1341,8 +1330,8 @@ const imports = {
 			const gpuModel = encodeURIComponent(
 				getBestGPUModel({ canvasWebgl, workerScope: fp.workerScope })
 			)
-
-			if (!isBot) {	
+			
+			if (!bot) {	
 				// get data from session
 				let decryptionData = window.sessionStorage && JSON.parse(sessionStorage.getItem('decryptionData'))
 				const targetMetrics = [
@@ -1578,11 +1567,11 @@ const imports = {
 				gpuModel: gpuModelSamples
 			} = decryptionSamples || {}
 
-			if (isBot && !decryptionSamples) {
+			if (bot && !decryptionSamples) {
 				predictionErrorPatch({error: 'Failed prediction fetch', patch, html})
 			}
 			
-			if (isBot && decryptionSamples) {
+			if (bot && decryptionSamples) {
 				// Perform Dragon Fire Magic
 				const decryptionData = {
 					windowVersion: getPrediction({ hash: (windowFeatures || {}).$hash, data: winSamples }),
