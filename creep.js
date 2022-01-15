@@ -552,7 +552,7 @@ const imports = {
 		capturedErrors: !!errorsLen,
 		lies: !!liesLen,
 		resistance: fp.resistance || undefined,
-		forceRenew: 1642174251950
+		forceRenew: 1642275464314
 	}
 
 	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f')
@@ -901,12 +901,13 @@ const imports = {
 					<div>visits: <span class="blurred">1</span></div>
 					<div>first: <span class="blurred">##/##/####, 00:00:00 AM</span></div>
 					<div>last: <span class="blurred">##/##/####, 00:00:00 AM</span></div>
-					<div>persistence: <span class="blurred">0.0 hours/span></div>
+					<div>persistence: <span class="blurred">0.0 hrs</span></div>
 					<div>shadow: <span class="blurred">0.00000</span></div>
 					<div class="block-text shadow-icon"></div>
 				</div>
 				<div class="col-six">
 					<div>bot: <span class="blurred">false</span></div>
+					<div>idle min-max: <span class="blurred">0.000-0.000 hrs</span></div>
 					<div>has trash: <span class="blurred">false</span></div>
 					<div>has lied: <span class="blurred">false</span></div>
 					<div>has errors: <span class="blurred">false</span></div>
@@ -1029,6 +1030,7 @@ const imports = {
 			const {
 				firstVisit,
 				lastVisit: latestVisit,
+				timeHoursAlive: persistence,
 				looseFingerprints: subIds,
 				visits,
 				looseSwitchCount: switchCount,
@@ -1041,7 +1043,9 @@ const imports = {
 				shadow,
 				shadowBits,
 				score,
-				scoreData
+				scoreData,
+				timeHoursIdleMin,
+				timeHoursIdleMax
 			} = data || {}
 
 			const fuzzyFpEl = document.getElementById('fuzzy-fingerprint')
@@ -1060,9 +1064,7 @@ const imports = {
 				const timeString = date.toLocaleTimeString()
 				return `${dateString}, ${timeString}`
 			}
-			const hoursAgo = (date1, date2) => Math.abs(date1 - date2) / 36e5
-			const hours = hoursAgo(new Date(firstVisit), new Date(latestVisit)).toFixed(1)
-
+			
 			const {
 				switchCountPointGain,
 				errorsPointGain,
@@ -1137,7 +1139,7 @@ const imports = {
 			
 			const { isBot, botPercentString, botPatterns } = getBot({
 				fp,
-				hours,
+				hours: persistence,
 				hasLied,
 				switchCount
 			})
@@ -1176,7 +1178,7 @@ const imports = {
 							<div>visits: <span class="unblurred">${visits}</span></div>
 							<div class="ellipsis">first: <span class="unblurred">${toLocaleStr(firstVisit)}</span></div>
 							<div class="ellipsis">last: <span class="unblurred">${toLocaleStr(latestVisit)}</span></div>
-							<div>persistence: <span class="unblurred">${hours} hours</span></div>
+							<div>persistence: <span class="unblurred">${persistence} hrs</span></div>
 							<div class="relative">shadow: <span class="unblurred">${!shadowBits ? '0' : shadowBits.toFixed(5)}</span>  ${computePoints(shadowBitsPointGain)}
 							${
 								!shadowBits ? '' : `<span class="confidence-note">${hashMini(shadow)}</span>`
@@ -1188,6 +1190,7 @@ const imports = {
 						</div>
 						<div class="col-six">
 							<div class="help ellipsis" title="${botInfo}">bot: <span class="unblurred">${botPercentString}</span></div>
+							<div>idle min-max: <span class="unblurred">${timeHoursIdleMin}-${timeHoursIdleMax} hrs</span></div>
 							<div>has trash: <span class="unblurred">${
 								(''+hasTrash) == 'true' ?
 								`true ${computePoints(trashPointGain)}` : 
