@@ -1049,12 +1049,16 @@ const imports = {
 			} = data || {}
 
 			const fuzzyFpEl = document.getElementById('fuzzy-fingerprint')
-			
-			const styleDiffs = (a, b) => b.split('').map((x, i) => x != a[i] ? `<span class="fuzzy-fp">${x}</span>` : x).join('')
+			const fuzzyDiff = getDiffs({
+				stringA: fuzzyInit,
+				stringB: fuzzyLast,
+				charDiff: true,
+				decorate: diff => `<span class="fuzzy-fp">${diff}</span>`
+			})
 			patch(fuzzyFpEl, html`
 				<div id="fuzzy-fingerprint">
 					<div class="ellipsis-all fuzzy-fp">Fuzzy: <span class="unblurred">${fuzzyInit}</span></div>
-					<div class="ellipsis-all fuzzy-diffs">Diffs: <span class="unblurred">${styleDiffs(fuzzyInit, fuzzyLast)}</span></div>
+					<div class="ellipsis-all fuzzy-diffs">Diffs: <span class="unblurred">${fuzzyDiff}</span></div>
 				</div>
 			`)
 			
