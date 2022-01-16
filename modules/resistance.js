@@ -82,7 +82,7 @@ export const getResistance = async imports => {
 				precisionValue: protection ? lastCharA : undefined
 			}
 		}
-		
+
 		const [
 			isBrave,
 			timerPrecision

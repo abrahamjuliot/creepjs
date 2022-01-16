@@ -9,9 +9,12 @@ const braveBrowser = () => {
 		Object.getPrototypeOf(navigator.brave).constructor.name == 'Brave' &&
 		navigator.brave.isBrave.toString() == 'function isBrave() { [native code] }'
 	)
+	return brave
+	/*
 	if (brave) {
 		return true
 	}
+	// backup method (costly on performance)
 	const chromium = 3.141592653589793 ** -100 == 1.9275814160560204e-50
 	const storageQuota2Gb = 2147483648
 	const storageQuotaIs2Gb = (
@@ -19,6 +22,7 @@ const braveBrowser = () => {
 			navigator.storage.estimate().then(estimate => estimate.quota == 2147483648)
 	)
 	return chromium && storageQuotaIs2Gb
+	*/
 }
 
 function getBraveMode() {
