@@ -1217,7 +1217,7 @@ const imports = {
 							<div class="ellipsis">loose fp (${''+switchCount}):<span class="unblurred sub-hash">${hashSlice(fpHash)}</span> ${computePoints(switchCountPointGain)}</div>
 
 							<div class="block-text-small">
-								<div class="unblurred">bot: ${bot}:${botLevel}:${botHash}</div>
+								<div class="unblurred">bot: ${bot.toFixed(2)}:${botLevel}:${botHash}</div>
 								<div class="unblurred">idle min-max: ${timeHoursIdleMin}-${timeHoursIdleMax} hrs</div>
 							</div>
 
