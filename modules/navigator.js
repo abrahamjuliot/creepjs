@@ -456,7 +456,8 @@ export const getNavigator = async (imports, workerScope) => {
 		}, 'keyboard failed')
 
 		const getUserAgentData = () => attempt(async () => {
-			if (!('userAgentData' in phantomNavigator)) {
+			if (!phantomNavigator.userAgentData || 
+				!phantomNavigator.userAgentData.getHighEntropyValues) {
 				return
 			}
 			const data = await phantomNavigator.userAgentData.getHighEntropyValues(

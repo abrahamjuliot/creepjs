@@ -155,6 +155,9 @@ export const getCanvasWebgl = async imports => {
 	].sort()
 
 	const draw = gl => {
+		if (!gl) {
+			return
+		}
 		//gl.clearColor(0.47, 0.7, 0.78, 1)
 		gl.clear(gl.COLOR_BUFFER_BIT)
 
@@ -354,6 +357,12 @@ export const getCanvasWebgl = async imports => {
 		}
 
 		const getWebGLData = (gl, contextType) => {
+			if (!gl) {
+				return {
+					dataURI: undefined,
+					pixels: undefined
+				}
+			}
 			try {
 				draw(gl)
 				const { drawingBufferWidth, drawingBufferHeight } = gl

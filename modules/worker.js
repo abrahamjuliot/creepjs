@@ -22,20 +22,21 @@ export const getBestWorkerScope = async imports => {
 		const resolveWorkerData = (target, resolve, fn) => target.addEventListener('message', event => {
 			fn(); return resolve(event.data)
 		})
+		const hasConstructor = (x, name) => x && x.__proto__.constructor.name == name
 		const getDedicatedWorker = ({ scriptSource }) => new Promise(resolve => {
 			const dedicatedWorker = ask(() => new Worker(scriptSource))
-			if (!dedicatedWorker) return resolve()
+			if (!hasConstructor(dedicatedWorker, 'Worker')) return resolve()
 			return resolveWorkerData(dedicatedWorker, resolve, () => dedicatedWorker.terminate())
 		})
 		const getSharedWorker = ({ scriptSource }) => new Promise(resolve => {
 			const sharedWorker = ask(() => new SharedWorker(scriptSource))
-			if (!sharedWorker) return resolve()
+			if (!hasConstructor(sharedWorker, 'SharedWorker')) return resolve()
 			sharedWorker.port.start()
 			return resolveWorkerData(sharedWorker.port, resolve, () => sharedWorker.port.close())
 		})
 		const getServiceWorker = ({ scriptSource, scope }) => new Promise(async resolve => {
 			const registration = await ask(() => navigator.serviceWorker.register(scriptSource, { scope }).catch(e => {}))
-			if (!registration) return resolve()
+			if (!hasConstructor(registration, 'ServiceWorkerRegistration')) return resolve()
 			return navigator.serviceWorker.ready.then(registration => {
 				registration.active.postMessage(undefined)
 				return resolveWorkerData(navigator.serviceWorker, resolve, () => registration.unregister())

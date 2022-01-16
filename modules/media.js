@@ -59,8 +59,12 @@ export const getMedia = async imports => {
 		const timer = createTimer()
 		timer.start()
 		const phantomNavigator = phantomDarkness ? phantomDarkness.navigator : navigator
-		const devices = !phantomNavigator.mediaDevices ? undefined : await attempt(() => phantomNavigator.mediaDevices.enumerateDevices())
-			.then(devices => devices.map(device => device.kind).sort()).catch(error => undefined)
+		const devices = (
+			!phantomNavigator.mediaDevices ||
+			!phantomNavigator.mediaDevices.enumerateDevices ? undefined :
+				await phantomNavigator.mediaDevices.enumerateDevices()
+					.then(devices => devices.map(device => device.kind).sort()).catch(error => undefined)
+		)
 	
 		const mimeTypes = getMimeTypes()
 		
