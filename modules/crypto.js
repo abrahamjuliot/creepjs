@@ -24,7 +24,9 @@ const hashify = (x, algorithm = 'SHA-256') => {
 }
 
 
-const getBotHash = fp => {
+const getBotHash = (fp, imports) => {
+
+	const { getFeaturesLie, computeWindowsRelease } = imports
 	const outsideFeaturesVersion = getFeaturesLie(fp)
 	const workerScopeIsTrashed = !fp.workerScope || !fp.workerScope.userAgent
 	const liedWorkerScope = !!(fp.workerScope && fp.workerScope.lied)

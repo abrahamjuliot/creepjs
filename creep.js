@@ -794,7 +794,7 @@ const imports = {
 		// fetch fingerprint data from server
 		const id = 'creep-browser'
 		const visitorElem = document.getElementById(id)
-		const botHash = getBotHash(fp)
+		const botHash = getBotHash(fp, { getFeaturesLie, computeWindowsRelease })
 		const fuzzyFingerprint = await getFuzzyHash(fp)
 		const fetchVisitorDataTimer = timer()
 		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&trashLen=${trashLen}&liesLen=${liesLen}&errorsLen=${errorsLen}&fuzzy=${fuzzyFingerprint}&botHash=${botHash}`
