@@ -86,6 +86,14 @@ Bots leak unusual behavior and can be denied service
 - User agent version or platform does not match features
 - worker scope tampering
 
+#### bot hash/level
+- 00100:smart-enemy:lws (lied worker scope)
+- 01000:crafty-attacker:lpv (lied platform version)
+- 00010:clumsy-spy:ofv (ua outside features version)
+- 10000:hyper-client:elf (excessive loose fingerprints)
+- 00001:unique-friend:wst (worker scope trashed)
+- 00000:friend (non of the above)
+
 ### Shadow
 Loose metric revision patterns can follow stable fingerprints like a shadow
 
