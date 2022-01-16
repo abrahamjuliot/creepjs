@@ -185,6 +185,7 @@ strong {
 #signature input[type="submit"] {
     cursor: pointer;
     background: #fff;
+	border-radius: 3px;
 }
 #signature input[type="text"] {
     width: 50%;
