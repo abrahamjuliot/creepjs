@@ -3,7 +3,7 @@ const mathPI = 3.141592653589793
 const isChrome = mathPI ** -100 == 1.9275814160560204e-50
 const isFirefox = mathPI ** -100 == 1.9275814160560185e-50
 
-const braveBrowser = async () => {
+const braveBrowser = () => {
 	const brave = (
 		'brave' in navigator &&
 		Object.getPrototypeOf(navigator.brave).constructor.name == 'Brave' &&
@@ -13,10 +13,10 @@ const braveBrowser = async () => {
 		return true
 	}
 	const chromium = 3.141592653589793 ** -100 == 1.9275814160560204e-50
+	const storageQuota2Gb = 2147483648
 	const storageQuotaIs2Gb = (
-		'storage' in navigator && navigator.storage ?
-		(2147483648 == (await navigator.storage.estimate()).quota) :
-		false
+		(!('storage' in navigator) || !navigator.storage) ? false :
+			navigator.storage.estimate().then(estimate => estimate.quota == 2147483648)
 	)
 	return chromium && storageQuotaIs2Gb
 }
