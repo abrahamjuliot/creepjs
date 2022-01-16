@@ -881,7 +881,7 @@ const imports = {
 
 	// Bot Detection: check to keep metric samples pure
 	const getBotHash = fp => {
-		const userAgentReportIsOutsideOfFeaturesVersion = getFeaturesLie(fp)
+		const usOutsideFeaturesVersion = getFeaturesLie(fp)
 		const workerScopeIsTrashed = !fp.workerScope || !fp.workerScope.userAgent
 		const liedWorkerScope = !!(fp.workerScope && fp.workerScope.lied)
 		let liedPlatformVersion = false
@@ -899,16 +899,29 @@ const imports = {
 				!(''+windowsRelease).includes(fontPlatformVersion)
 			)
 		}
+
+		const { totalLies } = fp.lies || {}
+		const extremeLieCount = (totalLies || 0) > 100
+
+		const { stealth } = fp.headless || {}
+		const functionToStringHasProxy = (
+			!!( stealth || {})['Function.prototype.toString has invalid TypeError'] ||
+			!!( stealth || {})['Function.prototype.toString leaks Proxy behavior']
+		)
+
 		// Pattern conditions that warrant rejection
 		const botPatterns = {
-			excessiveLooseFingerprints: false, // elf (compute on server)
-			liedPlatformVersion, // lpv
+			// custom order is important
 			liedWorkerScope, // lws
-			userAgentReportIsOutsideOfFeaturesVersion, // ofv
+			liedPlatformVersion, // lpv
+			functionToStringHasProxy, // ftp
+			usOutsideFeaturesVersion, // ofv
+			extremeLieCount, // elc
+			excessiveLooseFingerprints: false, // elf (compute on server)
 			workerScopeIsTrashed // wst
 		}
+
 		const botHash = Object.keys(botPatterns)
-			.sort() // order is important
 			.map(key => botPatterns[key] ? '1' : '0').join('')
 		return botHash
 	}

@@ -63,7 +63,7 @@ FP-ID...: 9368a2b8913acba5633aa8f353bfd546aaaf77fd57c1416580e90fc41666feb2
 Fuzzy...: 98fcf569e50680c3dcfb8e53e34874e2b2075c415208a1c05292119ec4000000
 Diffs...: 50ed3569e50680c3dcfb8e00e3387c5fb2075c415408a2006292119ec4000000
 Shadow..: 1111100000000000000000110010011100000000010001101000000000000000
-````
+```
 
 ### Trust Score
 A failing trust score is unique
@@ -101,12 +101,14 @@ Bots leak unusual behavior and can be denied services
 - worker scope tampering
 
 #### bot hash/level
-- `00100:smart-enemy:lws` (lied worker scope)
-- `01000:crafty-attacker:lpv` (lied platform version)
-- `00010:clumsy-spy:ofv` (ua outside features version)
-- `10000:hyper-client:elf` (excessive loose fingerprints)
-- `00001:unique-friend:wst` (worker scope trashed)
-- `00000:friend` (none of the above)
+- `1000000:smart-enemy:lws` (lied worker scope)
+- `0100000:crafty-attacker:lpv` (lied platform version)
+- `0010000:stealth-hacker:ftp` (function toString proxy)
+- `0001000:clumsy-spy:ofv` (ua outside features version)
+- `0000100:bold-fraud:elc` (extreme lie count)
+- `0000010:hyper-client:elf` (excessive loose fingerprints)
+- `0000001:unique-friend:wst` (worker scope trashed)
+- `0000000:friend` (none of the above)
 
 ### Shadow
 Loose metric revision patterns can follow stable fingerprints like a shadow
