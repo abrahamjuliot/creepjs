@@ -149,7 +149,7 @@ export const getResistance = async imports => {
 			noscript: {
 				contentDocumentHash: ['0b637a33', '37e2f32e'],
 				contentWindowHash: ['0b637a33', '37e2f32e'],
-				getContextHash: ['0b637a33', disabled]
+				getContextHash: ['0b637a33', '081d6d1b', disabled]
 			},
 			trace: {
 				contentDocumentHash: ['ca9d9c2f'],
