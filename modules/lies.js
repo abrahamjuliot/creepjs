@@ -998,24 +998,25 @@ const getLies = imports => {
 	})
 }
 
-const liesHTML = ({ fp, hashSlice, modal }) => {
+const liesHTML = ({ fp, hashSlice, modal }, pointsHTML) => {
 	const { lies: { data, totalLies, $hash } } = fp
 	return `
-	<div class="col-four${totalLies ? ' lies' : ''}">
-		<strong>Lies</strong>${totalLies ? `<span class="hash">${hashSlice($hash)}</span>` : ''}
-		<div>unmasked (${!totalLies ? '0' : '' + totalLies}): ${
-		totalLies ? modal('creep-lies', Object.keys(data).sort().map(key => {
-			const lies = data[key]
-			return `
-				<br>
-				<div style="padding:5px">
-					<strong>${key}</strong>:
-					${lies.map(lie => `<div>- ${lie}</div>`).join('')}
-				</div>
-				`
-		}).join('')) : ''
-		}</div>
-	</div>`
+	<div class="${totalLies ? ' lies' : ''}">lies (${!totalLies ? '0' : '' + totalLies}): ${
+		!totalLies ? 'none' : modal(
+			'creep-lies', 
+			Object.keys(data).sort().map(key => {
+				const lies = data[key]
+				return `
+					<br>
+					<div style="padding:5px">
+						<strong>${key}</strong>:
+						${lies.map(lie => `<div>- ${lie}</div>`).join('')}
+					</div>
+					`
+			}).join(''),
+			hashSlice($hash)
+		)
+	}${pointsHTML}</div>`
 }
 
 export { documentLie, phantomDarkness, parentPhantom, lieProps, prototypeLies, lieRecords, getLies, dragonFire, parentDragon, dragonOfDeath, getPluginLies, getNonFunctionToStringLies, liesHTML }

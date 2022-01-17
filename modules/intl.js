@@ -92,7 +92,7 @@ export const getIntl = async imports => {
 				style: 'long'
 			}).format(1, 'year')
 		})
-
+		
 		const locale = getLocale(phantomIntl)
 
 		logTestResult({ time: timer.stop(), test: 'intl', passed: true })
@@ -129,18 +129,16 @@ export const intlHTML = ({ fp, note, hashSlice, performanceLogger }) => {
 		</div>`
 	}
 	const {
-		intl: {
-			$hash,
-			dateTimeFormat,
-			displayNames,
-			listFormat,
-			numberFormat,
-			pluralRules,
-			relativeTimeFormat,
-			locale,
-			lied
-		}
-	} = fp
+		$hash,
+		dateTimeFormat,
+		displayNames,
+		listFormat,
+		numberFormat,
+		pluralRules,
+		relativeTimeFormat,
+		locale,
+		lied
+	} = fp.intl || {}
 
 	return `
 	<div class="relative col-four${lied ? ' rejected' : ''}">

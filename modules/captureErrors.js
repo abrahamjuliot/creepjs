@@ -106,17 +106,19 @@ const getCapturedErrors = async imports => {
 	return { data }
 }
 
-const errorsHTML = ({ fp, hashSlice, modal }) => {
+const errorsHTML = ({ fp, hashSlice, modal }, pointsHTML) => {
 	const { capturedErrors: { data, $hash  } } = fp
 	const len = data.length
 	return `
-	<div class="col-four${len ? ' errors': ''}">
-		<strong>Errors</strong>${len ? `<span class="hash">${hashSlice($hash)}</span>` : ''}
-		<div>captured (${!len ? '0' : ''+len}): ${
-			len ? modal('creep-captured-errors', Object.keys(data).map((key, i) => `${i+1}: ${data[key].trustedName} - ${data[key].trustedMessage} `).join('<br>')) : ''
-		}</div>
-	</div>
-	`
+	<div class="${len ? ' errors': ''}">errors (${!len ? '0' : ''+len}): ${
+		!len ? 'none' : modal(
+			'creep-captured-errors',
+			Object.keys(data)
+			.map((key, i) => `${i+1}: ${data[key].trustedName} - ${data[key].trustedMessage} `)
+			.join('<br>'),
+			hashSlice($hash)
+		)
+	}${pointsHTML}</div>`
 }
 
 export { captureError, attempt, caniuse, timer, errorsCaptured, getCapturedErrors, errorsHTML }

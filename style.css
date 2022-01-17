@@ -376,9 +376,45 @@ visitor {
 #fingerprint-data .trash {
     box-shadow: none;
 }
-#fingerprint-data .lies,
+
 #fingerprint-data .trash {
-    background: var(--error);
+    animation: trash-lies 1s 1s ease both;
+}
+#fingerprint-data .lies {
+    animation: trash-lies 1s 1s ease both;
+}
+#fingerprint-data .errors {
+    animation: errors 1s 1s ease both;
+}
+#fingerprint-data .rejected {
+    animation: rejected 1s 1s ease both;
+}
+#fingerprint-data .undefined {
+    animation: undefined 1s 1s ease both;
+}
+@keyframes trash-lies {
+	0% {}
+	100% {
+		background: var(--error);
+	}
+}
+@keyframes errors {
+	0% {}
+	100% {
+		background: var(--warn);
+	}
+}
+@keyframes rejected {
+	0% {}
+	100% {
+		background: #ca656e14;
+	}
+}
+@keyframes undefined {
+	0% {}
+	100% {
+		background: #9e929314;
+	}
 }
 #fingerprint-data .blocked {
     background: #f1f1f1;
@@ -420,9 +456,6 @@ visitor {
 	}
 }
 
-#fingerprint-data .errors {
-    background: var(--warn);
-}
 #fingerprint-data .blocked,
 #fingerprint-data .known,
 #fingerprint-data .none {
@@ -839,13 +872,6 @@ input[type="radio"] {
     border: 1px solid #eee;
     height: 11px;
     margin: 5px 0;
-}
-
-.rejected {
-    background: #ca656e14 !important;
-}
-.undefined {
-    background: #9e929314 !important;
 }
 
 /* prefers dark */

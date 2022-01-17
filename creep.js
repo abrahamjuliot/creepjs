@@ -636,7 +636,7 @@ const imports = {
 	}
 	
 	// patch dom
-	const hashSlice = x => x.slice(0, 8)
+	const hashSlice = x => !x ? x : x.slice(0, 8)
 	const templateImports = {
 		fp,
 		hashSlice,
@@ -676,15 +676,14 @@ const imports = {
 					<div>trust score: <span class="blurred">100%</span></div>
 					<div>visits: <span class="blurred">1</span></div>
 					<div>first: <span class="blurred">##/##/####, 00:00:00 AM</span></div>
-					<div>last: <span class="blurred">##/##/####, 00:00:00 AM</span></div>
-					<div>persistence: <span class="blurred">0.0 hrs</span></div>
+					<div>alive: <span class="blurred">0.0 hrs</span></div>
 					<div>shadow: <span class="blurred">0.00000</span></div>
 					<div class="block-text shadow-icon"></div>
 				</div>
 				<div class="col-six">
-					<div>has trash: <span class="blurred">false</span></div>
-					<div>has lied: <span class="blurred">false</span></div>
-					<div>has errors: <span class="blurred">false</span></div>
+					<div>trash (0): none</div>
+					<div>lies (0): none</div>
+					<div>errors (0): none</div>
 					<div>session (0): <span class="blurred">00000000</span></div>
 					<div>revisions (0): <span class="blurred">00000000</span></div>
 					<div>loose fp (0): <span class="blurred">00000000</span></div>
@@ -695,17 +694,6 @@ const imports = {
 					<div id="signature"></div>
 				</div>
 			</div>
-			
-		</div>
-		<div class="flex-grid">
-			${trashHTML(templateImports)}
-			${liesHTML(templateImports)}
-			${errorsHTML(templateImports)}
-		</div>
-		<div class="flex-grid">
-			${webrtcHTML(templateImports)}
-			${timezoneHTML(templateImports)}
-			${intlHTML(templateImports)}			
 		</div>
 		<div id="browser-detection" class="flex-grid">
 			<div class="col-eight">
@@ -734,6 +722,11 @@ const imports = {
 			</div>
 			<div class="col-four icon-prediction-container">
 			</div>
+		</div>
+		<div class="flex-grid">
+			${webrtcHTML(templateImports)}
+			${timezoneHTML(templateImports)}
+			${intlHTML(templateImports)}			
 		</div>
 		<div id="headless-resistance-detection-results" class="flex-grid">
 			${headlesFeaturesHTML(templateImports)}
@@ -910,8 +903,7 @@ const imports = {
 							</span></div>
 							<div>visits: <span class="unblurred">${visits}</span></div>
 							<div class="ellipsis">first: <span class="unblurred">${toLocaleStr(firstVisit)}</span></div>
-							<div class="ellipsis">last: <span class="unblurred">${toLocaleStr(latestVisit)}</span></div>
-							<div>persistence: <span class="unblurred">${persistence} hrs</span></div>
+							<div>alive: <span class="unblurred">${persistence} hrs</span></div>
 							<div class="relative">shadow: <span class="unblurred">${!shadowBits ? '0' : shadowBits.toFixed(5)}</span>  ${computePoints(shadowBitsPointGain)}
 							${
 								!shadowBits ? '' : `<span class="confidence-note">${hashMini(shadow)}</span>`
@@ -922,21 +914,9 @@ const imports = {
 							</div>
 						</div>
 						<div class="col-six">
-							<div>has trash: <span class="unblurred">${
-								(''+hasTrash) == 'true' ?
-								`true ${computePoints(trashPointGain)}` : 
-								'false'
-							}</span></div>
-							<div>has lied: <span class="unblurred">${
-								(''+hasLied) == 'true' ? 
-								`true ${computePoints(liesPointGain)}` : 
-								'false'
-							}</span></div>
-							<div>has errors: <span class="unblurred">${
-								(''+hasErrors) == 'true' ? 
-								`true ${computePoints(errorsPointGain)}` : 
-								'false'
-							}</span></div>
+							${trashHTML(templateImports, computePoints(trashPointGain))}
+							${liesHTML(templateImports, computePoints(liesPointGain))}
+							${errorsHTML(templateImports, computePoints(errorsPointGain))}
 							<div>session (${''+loads}):<span class="unblurred sub-hash">${initial}</span></div>
 							<div>revisions (${''+revisedKeys.length}): ${
 								!revisedKeys.length ? 'none' : modal(

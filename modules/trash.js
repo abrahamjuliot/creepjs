@@ -245,21 +245,17 @@ const getTrash = async imports => {
 	return { trashBin: bin }
 }
 
-const trashHTML = ({ fp, hashSlice, modal }) => {
+const trashHTML = ({ fp, hashSlice, modal }, pointsHTML) => {
 	const { trash: { trashBin, $hash  } } = fp
 	const trashLen = trashBin.length
 	return `
-	<div class="col-four${trashLen ? ' trash': ''}">
-		<strong>Trash</strong>${
-			trashLen ? `<span class="hash">${hashSlice($hash)}</span>` : ''
-		}
-		<div>gathered (${!trashLen ? '0' : ''+trashLen }): ${
-			trashLen ? modal(
+		<div class="${trashLen ? ' trash': ''}">trash (${!trashLen ? '0' : ''+trashLen }):${
+			!trashLen ? 'none' : modal(
 				'creep-trash',
-				trashBin.map((trash,i) => `${i+1}: ${trash.name}: ${trash.value}`).join('<br>')
-			) : ''
-		}</div>
-	</div>`
+				trashBin.map((trash,i) => `${i+1}: ${trash.name}: ${trash.value}`).join('<br>'),
+				hashSlice($hash)
+			)
+		}${pointsHTML}</div>`
 }
 
 export { sendToTrash, proxyBehavior, gibberish, trustInteger, compressWebGLRenderer, getWebGLRendererParts, hardenWebGLRenderer, getWebGLRendererConfidence, trashBin, getTrash, trashHTML }
