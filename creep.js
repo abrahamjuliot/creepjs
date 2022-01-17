@@ -407,9 +407,8 @@ const imports = {
 	// harden gpu
 	const hardenGPU = canvasWebgl => {
 		const { gpu: { confidence, compressedGPU } } = canvasWebgl
-		const goodConfidence = confidence != 'low'
 		return (
-			!goodConfidence ? {} : {
+			confidence == 'low' ? {} : {
 				UNMASKED_RENDERER_WEBGL: compressedGPU,
 				UNMASKED_VENDOR_WEBGL: canvasWebgl.parameters.UNMASKED_VENDOR_WEBGL
 			}
