@@ -33,6 +33,8 @@ export const getSVG = async imports => {
 		)
 		
 		const svgId = `${instanceId}-svg-div`
+		const fontId = 'svgrect-font-detector'
+		const chars = `mmmmmmmmmmlli`
 		const divElement = document.createElement('div')
 		divElement.setAttribute('id', svgId)
 		doc.body.appendChild(divElement)
@@ -42,6 +44,30 @@ export const getSVG = async imports => {
 		// patch div
 		patch(divElement, html`
 		<div id="${svgId}">
+			<style>
+				#${fontId} {
+					--font: '';
+					position: absolute !important;
+					left: -9999px!important;
+					font-size: 256px !important;
+					font-style: normal !important;
+					font-weight: normal !important;
+					letter-spacing: normal !important;
+					line-break: auto !important;
+					line-height: normal !important;
+					text-transform: none !important;
+					text-align: left !important;
+					text-decoration: none !important;
+					text-shadow: none !important;
+					white-space: normal !important;
+					word-break: normal !important;
+					word-spacing: normal !important;
+					font-family: var(--font);
+				}
+			</style>
+			<svg viewBox="0 0 200 200">
+				<text id="${fontId}">${chars}</text>
+			</svg>
 			<div id="svg-container">
 				<style>
 				#svg-container {
@@ -73,7 +99,44 @@ export const getSVG = async imports => {
 			</div>
 		</div>
 		`)
-		
+
+		// fonts
+		const baseFonts = ['monospace', 'sans-serif', 'serif']
+		const fontShortList = [
+			'Segoe UI Emoji', // Windows
+			'Apple Color Emoji', // Apple
+			'Noto Color Emoji',  // Linux, Android, Chrome OS
+		]
+		const families = fontShortList.reduce((acc, font) => {
+			baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`))
+			return acc
+		}, [])
+		const svgText = doc.getElementById(fontId)
+		const detected = new Set()
+		const getRectDimensions = svgText => {
+			const { width, height, y } = svgText.getExtentOfChar(chars[0])
+			return { width, height, y }
+		}
+		const base = baseFonts.reduce((acc, font) => {
+			svgText.style.setProperty('--font', font)
+			const dimensions = getRectDimensions(svgText)
+			acc[font] = dimensions
+			return acc
+		}, {})
+		families.forEach(family => {
+			svgText.style.setProperty('--font', family)
+			const basefont = /, (.+)/.exec(family)[1]
+			const dimensions = getRectDimensions(svgText)
+			const font = /\'(.+)\'/.exec(family)[1]
+			if ((dimensions.width != base[basefont].width) ||
+				(dimensions.height != base[basefont].height) ||
+				(dimensions.y != base[basefont].y)) {
+				detected.add(font)
+			}
+			return
+		})
+
+		// SVG
 		const reduceToObject = nativeObj => {
 			const keys = Object.keys(nativeObj.__proto__)
 			return keys.reduce((acc, key) => {
@@ -130,6 +193,7 @@ export const getSVG = async imports => {
 			subStringLength: getListSum([...lengthSet.subStringLength]),
 			computedTextLength: getListSum([...lengthSet.computedTextLength]),
 			emojiSet: [...emojiSet],
+			emojiFonts: [...detected],
 			lied
 		}
 		
@@ -163,6 +227,7 @@ export const svgHTML = ({ fp, note, hashSlice, hashMini, formatEmojiSet, perform
 			extentOfChar,
 			computedTextLength,
 			emojiSet,
+			emojiFonts,
 			lied
 		}
 	} = fp
@@ -176,7 +241,12 @@ export const svgHTML = ({ fp, note, hashSlice, hashMini, formatEmojiSet, perform
 		<div class="help" title="SVGTextContentElement.getExtentOfChar()">char: ${extentOfChar ? (extentOfChar/divisor) : note.blocked}</div>
 		<div class="help" title="SVGTextContentElement.getSubStringLength()">subs: ${subStringLength ? (subStringLength/divisor) : note.blocked}</div>
 		<div class="help" title="SVGTextContentElement.getComputedTextLength()">text: ${computedTextLength ? (computedTextLength/divisor) : note.blocked}</div>
-		<div class="block-text jumbo grey help" title="${helpTitle}">${formatEmojiSet(emojiSet)}</div>
+		<div class="block-text jumbo grey help relative" title="${helpTitle}">
+			<span class="confidence-note">${
+				emojiFonts.length > 1 ? `${emojiFonts[0]}...` : emojiFonts.join(', ')
+			}</span>
+			${formatEmojiSet(emojiSet)}
+		</div>
 	</div>
 	`	
 }

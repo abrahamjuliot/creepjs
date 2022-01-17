@@ -68,6 +68,8 @@ export const getClientRects = async imports => {
 		)
 
 		const rectsId = `${instanceId}-client-rects-div`
+		const fontId = 'domrect-font-detector'
+		const chars = `mmmmmmmmmmlli`
 		const divElement = document.createElement('div')
 		divElement.setAttribute('id', rectsId)
 		doc.body.appendChild(divElement)
@@ -185,6 +187,34 @@ export const getClientRects = async imports => {
 				<div id="cRect12" class="rects"></div>
 				<div id="emoji" class="emojis"></div>
 			</div>
+			<style>
+				#${fontId} {
+					--font: '';
+					position: absolute !important;
+					left: -9999px!important;
+					font-size: 256px !important;
+					font-style: normal !important;
+					font-weight: normal !important;
+					letter-spacing: normal !important;
+					line-break: auto !important;
+					line-height: normal !important;
+					text-transform: none !important;
+					text-align: left !important;
+					text-decoration: none !important;
+					text-shadow: none !important;
+					white-space: normal !important;
+					word-break: normal !important;
+					word-spacing: normal !important;
+					/* in order to test scrollWidth, clientWidth, etc. */
+					padding: 0 !important;
+					margin: 0 !important;
+				}
+				#${fontId}::after {
+					font-family: var(--font);
+					content: '${chars}';
+				}
+			</style>
+			<span id="${fontId}"></span>
 			<div id="emoji-container">
 				<style>
 				.domrect-emoji {
@@ -208,6 +238,7 @@ export const getClientRects = async imports => {
 		</div>
 		`)
 
+		// emojis
 		const pattern = new Set()
 		const emojiElems = [...doc.getElementsByClassName('domrect-emoji')]
 		const emojiRects = emojiElems.map((el, i) => {
@@ -225,6 +256,41 @@ export const getClientRects = async imports => {
 			return true
 		})
 		.map(emoji => emoji.emoji)
+
+		// fonts
+		const baseFonts = ['monospace', 'sans-serif', 'serif']
+		const fontShortList = [
+			'Segoe UI Emoji', // Windows
+			'Apple Color Emoji', // Apple
+			'Noto Color Emoji',  // Linux, Android, Chrome OS
+		]
+		const families = fontShortList.reduce((acc, font) => {
+			baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`))
+			return acc
+		}, [])
+		const span = doc.getElementById(fontId)
+		const detected = new Set()
+		const getRectDimensions = span => {
+			const { width, height } = span.getClientRects()[0]
+			return { width, height }
+		}
+		const base = baseFonts.reduce((acc, font) => {
+			span.style.setProperty('--font', font)
+			const dimensions = getRectDimensions(span)
+			acc[font] = dimensions
+			return acc
+		}, {})
+		families.forEach(family => {
+			span.style.setProperty('--font', family)
+			const basefont = /, (.+)/.exec(family)[1]
+			const dimensions = getRectDimensions(span)
+			const font = /\'(.+)\'/.exec(family)[1]
+			if (dimensions.width != base[basefont].width ||
+				dimensions.height != base[basefont].height) {
+				detected.add(font)
+			}
+			return
+		})
 
 		// get clientRects
 		const range = document.createRange()
@@ -293,11 +359,12 @@ export const getClientRects = async imports => {
 					
 		logTestResult({ time: timer.stop(), test: 'rects', passed: true })
 		return {
-			emojiSet,
 			elementClientRects,
 			elementBoundingClientRect,
 			rangeClientRects,
 			rangeBoundingClientRect,
+			emojiSet,
+			emojiFonts: [...detected],
 			lied
 		}
 	}
@@ -328,6 +395,7 @@ export const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice
 			rangeClientRects,
 			rangeBoundingClientRect,
 			emojiSet,
+			emojiFonts,
 			lied
 		}
 	} = fp
@@ -371,7 +439,12 @@ export const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice
 		<div class="help" title="Element.getBoundingClientRect()">elems B: ${computeDiffs(elementBoundingClientRect)}</div>
 		<div class="help" title="Range.getClientRects()">range A: ${computeDiffs(rangeClientRects)}</div>
 		<div class="help" title="Range.getBoundingClientRect()">range B: ${computeDiffs(rangeBoundingClientRect)}</div>
-		<div class="block-text jumbo grey help" title="${helpTitle}">${formatEmojiSet(emojiSet)}</div>
+		<div class="block-text jumbo grey help relative" title="${helpTitle}">
+			<span class="confidence-note">${
+				emojiFonts.length > 1 ? `${emojiFonts[0]}...` : emojiFonts.join(', ')
+			}</span>
+			${formatEmojiSet(emojiSet)}
+		</div>
 	</div>
 	`
 }

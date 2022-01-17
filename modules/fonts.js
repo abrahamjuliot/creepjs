@@ -158,15 +158,15 @@ export const getFonts = async imports => {
 		}
 	}
 
-	const originPixelsToInt = pixels => Math.round(2 * pixels.replace('px', ''))
+	const originPixelsToNumber = pixels => +(pixels.replace('px', ''))
 	const getPixelDimensions = style => {
 		const transform = style.transformOrigin.split(' ')
 		const perspective = style.perspectiveOrigin.split(' ')
 		const dimensions = {
-			transformWidth: originPixelsToInt(transform[0]),
-			transformHeight: originPixelsToInt(transform[1]),
-			perspectiveWidth: originPixelsToInt(perspective[0]),
-			perspectiveHeight: originPixelsToInt(perspective[1])
+			transformWidth: originPixelsToNumber(transform[0]),
+			transformHeight: originPixelsToNumber(transform[1]),
+			perspectiveWidth: originPixelsToNumber(perspective[0]),
+			perspectiveHeight: originPixelsToNumber(perspective[1])
 		}
 		return dimensions
 	}
