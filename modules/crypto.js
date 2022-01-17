@@ -268,6 +268,10 @@ const getFuzzyHash = async fp => {
 	const binSize = Math.ceil(metricKeys.length/maxBins)
 	
 	// update log
+	if (''+metricKeysReported != ''+metricKeys) {
+		const newKeys = metricKeysReported.filter(key => !metricKeys.includes(key))
+		console.warn('fuzzy keys is missing:\n', newKeys.join('\n'))
+	}
 	//console.log(metricKeysReported.length) // 172
 	//console.log(metricKeysReported.map(x => `'${x}',`).join('\n'))
 

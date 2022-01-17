@@ -108,7 +108,7 @@ Bots leak unusual behavior and can be denied services
 - `00001000:bold-fraud:elc` (extreme lie count)
 - `00000100:hyper-client:elf` (excessive loose fingerprints)
 - `00000010:locked-down:wsb` (worker scope blocked)
-- `00000001:rare-stranger:csl` (crowd-blending score low)
+- `00000001:stranger:csl` (crowd-blending score low)
 - `00000000:friend` (none of the above)
 
 ### Shadow
