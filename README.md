@@ -101,14 +101,15 @@ Bots leak unusual behavior and can be denied services
 - worker scope tampering
 
 #### bot hash/level
-- `1000000:smart-enemy:lws` (lied worker scope)
-- `0100000:crafty-attacker:lpv` (lied platform version)
-- `0010000:stealth-hacker:ftp` (function toString proxy)
-- `0001000:clumsy-spy:ofv` (ua outside features version)
-- `0000100:bold-fraud:elc` (extreme lie count)
-- `0000010:hyper-client:elf` (excessive loose fingerprints)
-- `0000001:unique-friend:wst` (worker scope trashed)
-- `0000000:friend` (none of the above)
+- `10000000:smart-enemy:lws` (lied worker scope)
+- `01000000:crafty-attacker:lpv` (lied platform version)
+- `00100000:stealth-hacker:ftp` (function toString proxy)
+- `00010000:clumsy-spy:ofv` (ua outside features version)
+- `00001000:bold-fraud:elc` (extreme lie count)
+- `00000100:hyper-client:elf` (excessive loose fingerprints)
+- `00000010:locked-down:wsb` (worker scope blocked)
+- `00000001:rare-stranger:csl` (crowd-blending score low)
+- `00000000:friend` (none of the above)
 
 ### Shadow
 Loose metric revision patterns can follow stable fingerprints like a shadow

@@ -28,7 +28,7 @@ const getBotHash = (fp, imports) => {
 
 	const { getFeaturesLie, computeWindowsRelease } = imports
 	const outsideFeaturesVersion = getFeaturesLie(fp)
-	const workerScopeIsTrashed = !fp.workerScope || !fp.workerScope.userAgent
+	const workerScopeIsBlocked = !fp.workerScope || !fp.workerScope.userAgent
 	const liedWorkerScope = !!(fp.workerScope && fp.workerScope.lied)
 	let liedPlatformVersion = false
 	if (fp.workerScope && fp.fonts) {
@@ -65,12 +65,13 @@ const getBotHash = (fp, imports) => {
 		outsideFeaturesVersion, // ofv
 		extremeLieCount, // elc
 		excessiveLooseFingerprints: false, // elf (compute on server)
-		workerScopeIsTrashed // wst
+		workerScopeIsBlocked, // wsb
+		crowdBlendingScoreIsLow: false, // csl
 	}
 
 	const botHash = Object.keys(botPatterns)
 		.map(key => botPatterns[key] ? '1' : '0').join('')
-	return botHash
+	return { botHash, badBot: Object.keys(botPatterns).find(key => botPatterns[key]) }
 }
 
 const getFuzzyHash = async fp => {

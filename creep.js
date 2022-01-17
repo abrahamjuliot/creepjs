@@ -793,7 +793,7 @@ const imports = {
 		// fetch fingerprint data from server
 		const id = 'creep-browser'
 		const visitorElem = document.getElementById(id)
-		const botHash = getBotHash(fp, { getFeaturesLie, computeWindowsRelease })
+		const { botHash, badBot } = getBotHash(fp, { getFeaturesLie, computeWindowsRelease })
 		const fuzzyFingerprint = await getFuzzyHash(fp)
 		const fetchVisitorDataTimer = timer()
 		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&trashLen=${trashLen}&liesLen=${liesLen}&errorsLen=${errorsLen}&fuzzy=${fuzzyFingerprint}&botHash=${botHash}`
@@ -823,6 +823,7 @@ const imports = {
 				shadowBits,
 				score,
 				scoreData,
+				crowdBlendingScore: fpCrowdBlendingScore,
 				bot,
 				botHash,
 				botLevel,
@@ -1074,7 +1075,7 @@ const imports = {
 				getBestGPUModel({ canvasWebgl, workerScope: fp.workerScope })
 			)
 			
-			if (!bot) {	
+			if (!badBot) {	
 				// get data from session
 				let decryptionData = window.sessionStorage && JSON.parse(sessionStorage.getItem('decryptionData'))
 				const targetMetrics = [
@@ -1250,6 +1251,14 @@ const imports = {
 					console.table(scoreMetricsMap)
 				console.groupEnd()
 
+				if (crowdBlendingScore != fpCrowdBlendingScore) {
+					console.log(`updating crowd-blending score from ${fpCrowdBlendingScore} to ${crowdBlendingScore}`)
+					const scoreRequest = `https://creepjs-api.web.app/score-crowd-blending?id=${creepHash}&crowdBlendingScore=${crowdBlendingScore}`
+
+					fetch(scoreRequest)
+						.catch(error => console.error('Failed Score Request', error))
+				}
+
 				renderPrediction({
 					decryptionData,
 					crowdBlendingScore,
@@ -1310,11 +1319,11 @@ const imports = {
 				gpuModel: gpuModelSamples
 			} = decryptionSamples || {}
 
-			if (bot && !decryptionSamples) {
+			if (badBot && !decryptionSamples) {
 				predictionErrorPatch({error: 'Failed prediction fetch', patch, html})
 			}
 			
-			if (bot && decryptionSamples) {
+			if (badBot && decryptionSamples) {
 				// Perform Dragon Fire Magic
 				const decryptionData = {
 					windowVersion: getPrediction({ hash: (windowFeatures || {}).$hash, data: winSamples }),
