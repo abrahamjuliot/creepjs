@@ -90,7 +90,7 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 		const renderIfKnown = (unknown, decrypted) => unknown ? ` ${note.unknown}` : decrypted
 		const renderFailingScore = (title, score) => {
 			return (
-				(score||0) > 36 ? title : `<span class="bold-fail">${title}</span>` 
+				(score||0) > 36 ? title : `<span class="high-entropy">${title}</span>` 
 			)
 		}
 		

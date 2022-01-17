@@ -421,8 +421,24 @@ visitor {
     color: #aaa;
 }
 #fingerprint-data .blocked-entropy {
-    color: #cfcfcf;
+    animation: blocked-entropy 1s 1s ease-in-out both;
 }
+#fingerprint-data .high-entropy {
+    animation: high-entropy 1s 1s ease-in-out both;
+}
+@keyframes blocked-entropy {
+	0% {}
+	100% {
+		color: #cfcfcf;
+	}
+}
+@keyframes high-entropy {
+	0% {}
+	100% {
+		color: #ce4867;
+	}
+}
+
 #fingerprint-data .distrust {
     background: rgba(255, 255, 255, 0);
     color: #aaa;
@@ -841,6 +857,7 @@ input[type="radio"] {
     background-repeat: no-repeat;
     background-size: contain;
 }
+
 .icon {
     display: inline-block;
     width: 1em;
@@ -942,6 +959,20 @@ input[type="radio"] {
 	.blank {
         color: var(--light-grey);
     }
+
+	@keyframes blocked-entropy {
+		0% {}
+		100% {
+			color: #4e4e4e;
+		}
+	}
+
+	@keyframes high-entropy {
+		0% {}
+		100% {
+			color: #b15d64;
+		}
+	}
 
     .entropy-note {
         background: #6666661f;
