@@ -103,7 +103,7 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 		)
 	}
 
-	const unknownHTML = title => `${getBlankIcons()}<span class="blocked">${title}</span>`
+	const unknownHTML = title => `${getBlankIcons()}<span class="blocked-entropy">${title}</span>`
 	const devices = new Set([
 		(jsRuntime || {}).device,
 		(emojiSystem || {}).device,

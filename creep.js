@@ -304,7 +304,7 @@ const imports = {
 		const timeEnd = timeStart()
 
 		console.log(`Hashing complete in ${(hashTimeEnd).toFixed(2)}ms`)
-
+		
 		if (parentPhantom) {
 			parentPhantom.parentNode.removeChild(parentPhantom)
 		}
@@ -669,7 +669,7 @@ const imports = {
 				<div class="ellipsis"><span class="time">${timeEnd.toFixed(2)} ms</span></div>
 			</div>
 		</div>
-		<div id="creep-browser" class="visitor-info">
+		<div id="creep-browser" class="visitor-info fade-in">
 			<div class="flex-grid">
 				<div class="col-six">
 					<strong id="loader">Loading...</strong>
@@ -695,7 +695,7 @@ const imports = {
 				</div>
 			</div>
 		</div>
-		<div id="browser-detection" class="flex-grid">
+		<div id="browser-detection" class="flex-grid fade-in">
 			<div class="col-eight">
 				<strong>Loading...</strong>
 				<div>${getBlankIcons()}</div>
@@ -705,9 +705,9 @@ const imports = {
 				<div>${getBlankIcons()}html element</div>
 				<div>${getBlankIcons()}js runtime</div>
 				<div>${getBlankIcons()}js engine</div>
-				<div>${getBlankIcons()}emojis</div>
+				<div>${getBlankIcons()}domRect emojis</div>
 				<div>${getBlankIcons()}domRect</div>
-				<div>${getBlankIcons()}svg</div>
+				<div>${getBlankIcons()}svg emojis</div>
 				<div>${getBlankIcons()}mimeTypes</div>
 				<div>${getBlankIcons()}audio</div>
 				<div>${getBlankIcons()}canvas</div>
@@ -723,37 +723,37 @@ const imports = {
 			<div class="col-four icon-prediction-container">
 			</div>
 		</div>
-		<div class="flex-grid">
+		<div class="flex-grid fade-in">
 			${webrtcHTML(templateImports)}
 			${timezoneHTML(templateImports)}
 			${intlHTML(templateImports)}			
 		</div>
-		<div id="headless-resistance-detection-results" class="flex-grid">
+		<div id="headless-resistance-detection-results" class="flex-grid fade-in">
 			${headlesFeaturesHTML(templateImports)}
 			${resistanceHTML(templateImports)}
 		</div>
-		<div class="flex-grid relative">${workerScopeHTML(templateImports)}</div>
-		<div class="flex-grid relative">${webglHTML(templateImports)}</div>
-		<div class="flex-grid">
+		<div class="flex-grid relative fade-in">${workerScopeHTML(templateImports)}</div>
+		<div class="flex-grid relative fade-in">${webglHTML(templateImports)}</div>
+		<div class="flex-grid fade-in">
 			${canvasHTML(templateImports)}
 			${fontsHTML(templateImports)}
 		</div>
-		<div class="flex-grid">
+		<div class="flex-grid fade-in">
 			${audioHTML(templateImports)}
 			${voicesHTML(templateImports)}
 			${mediaHTML(templateImports)}
 		</div>
-		<div class="flex-grid">
+		<div class="flex-grid fade-in">
 			${clientRectsHTML(templateImports)}
 			${svgHTML(templateImports)}
 		</div>
-		<div class="flex-grid relative">${screenHTML(templateImports)}</div>
-		<div class="flex-grid relative">${featuresHTML(templateImports)}</div>
-		<div class="flex-grid">
+		<div class="flex-grid relative fade-in">${screenHTML(templateImports)}</div>
+		<div class="flex-grid relative fade-in">${featuresHTML(templateImports)}</div>
+		<div class="flex-grid fade-in">
 			${cssMediaHTML(templateImports)}
 			${cssHTML(templateImports)}
 		</div>
-		<div>
+		<div class="fade-in">
 			<div class="flex-grid">
 				${mathsHTML(templateImports)}
 				${consoleErrorsHTML(templateImports)}
@@ -763,8 +763,8 @@ const imports = {
 				${htmlElementVersionHTML(templateImports)}
 			</div>
 		</div>
-		<div class="flex-grid relative">${navigatorHTML(templateImports)}</div>
-		<div>
+		<div class="flex-grid relative fade-in">${navigatorHTML(templateImports)}</div>
+		<div class="fade-in">
 			<strong>Tests</strong>
 			<div>
 				<a class="tests" href="./tests/workers.html">Workers</a>
@@ -890,11 +890,9 @@ const imports = {
 			
 			const template = `
 				<div class="visitor-info">
-					<div class="ellipsis">
-						<span class="time">fingerprints renewed <span class="${shouldStyle(renewedDateString) ? 'renewed' : ''}">${
-							new Date(renewedDateString).toLocaleDateString()
-						}</span></span>
-					</div>
+					<span class="time">fingerprints renewed <span class="${shouldStyle(renewedDateString) ? 'renewed' : ''}">${
+						new Date(renewedDateString).toLocaleDateString()
+					}</span></span>
 					<div class="flex-grid">
 						<div class="col-six">
 							<strong>Browser</strong>
