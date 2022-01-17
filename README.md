@@ -47,9 +47,9 @@ Tests are focused on:
 	decrypted: "Blink",
 	devicePrimary: "Windows 10 (64-bit)",
 	deviceTrust: `{
-		"Windows 10 (64-bit)":["6a9","fe3","bb7"],
-		"Windows 7 (64-bit)":["8a3"],
-		"Windows 11 (64-bit)":["e4a"]
+		"Windows 10 (64-bit)": ["6a9","fe3","bb7"],
+		"Windows 7 (64-bit)": ["8a3"],
+		"Windows 11 (64-bit)": ["e4a"]
 	}`,
 	devices: [
 		"Windows 10 (64-bit)",
@@ -66,8 +66,8 @@ Tests are focused on:
 		"8eff_75d6295c_345026a9: Blink (12/5/2021, 2:54:02 AM)"
 	],
 	reporter: `{
-		"dates":["12/5/2021","12/10/2021","12/17/2021","12/22/2021"],
-		"ips":["8eff","66fa","6ac2","5887"]
+		"dates": ["12/5/2021","12/10/2021","12/17/2021","12/22/2021"],
+		"ips": ["8eff","66fa","6ac2","5887"]
 	}`,
 	reporterTrustScore: 100,
 	reviewed: true,
@@ -100,19 +100,19 @@ Tests are focused on:
 	lastVisitEpoch: 1642433961964,
 	looseFingerprints: [
 		"f331fd21a4f8dec8054ffaec88c32723f840f6a6174303cd787fb676a513bbf6"
-	]
+	],
 	looseSwitchCount: 0,
 	maxErrors: 0,
 	maxLies: 0,
 	maxTrash: 0,
 	score: 100,
 	scoreData: `{
-		"switchCountPointGain":5,
-		"errorsPointGain":0,
-		"trashPointGain":0,
-		"liesPointGain":0,
-		"shadowBitsPointGain":10,
-		"grade":"A+"
+		"switchCountPointGain": 5,
+		"errorsPointGain": 0,
+		"trashPointGain": 0,
+		"liesPointGain": 0,
+		"shadowBitsPointGain": 10,
+		"grade": "A+"
 	}`,
 	shadow: "0000000000000000000000000000000000000000000000000000000000000000",
 	shadowBits: 0,
