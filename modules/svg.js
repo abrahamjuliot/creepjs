@@ -25,7 +25,13 @@ export const getSVG = async imports => {
 			lieProps['SVGRect.y']
 		) || false // detect lies
 						
-		const doc = phantomDarkness ? phantomDarkness.document : document
+		const doc = (
+			phantomDarkness &&
+			phantomDarkness.document &&
+			phantomDarkness.document.body ? phantomDarkness.document :
+				document
+		)
+		
 		const svgId = `${instanceId}-svg-div`
 		const divElement = document.createElement('div')
 		divElement.setAttribute('id', svgId)

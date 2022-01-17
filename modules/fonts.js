@@ -171,8 +171,7 @@ export const getFonts = async imports => {
 		return dimensions
 	}
 
-	const getPixelFonts = ({ win, id, chars, baseFonts, families, emojis }) => {
-		const doc = win.document
+	const getPixelFonts = ({ doc, id, chars, baseFonts, families, emojis }) => {
 		try {
 			patch(doc.getElementById(id), html`
 				<style>
@@ -384,8 +383,12 @@ export const getFonts = async imports => {
 	try {
 		const timer = createTimer()
 		await queueEvent(timer)
-		const win = phantomDarkness || window
-		const doc = win.document
+		const doc = (
+			phantomDarkness &&
+			phantomDarkness.document &&
+			phantomDarkness.document.body ? phantomDarkness.document :
+				document
+		)
 		const id = `font-fingerprint`
 		const div = doc.createElement('div')
 		div.setAttribute('id', id)
@@ -398,7 +401,7 @@ export const getFonts = async imports => {
 		}, [])
 
 		const { emojiSet, transform, perspective } = getPixelFonts({
-			win,
+			doc,
 			id,
 			chars: `mmmmmmmmmmlli`,
 			baseFonts,

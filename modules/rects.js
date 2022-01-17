@@ -60,7 +60,12 @@ export const getClientRects = async imports => {
 			return range.getBoundingClientRect()
 		}
 					
-		const doc = phantomDarkness ? phantomDarkness.document : document
+		const doc = (
+			phantomDarkness &&
+			phantomDarkness.document &&
+			phantomDarkness.document.body ? phantomDarkness.document :
+				document
+		)
 
 		const rectsId = `${instanceId}-client-rects-div`
 		const divElement = document.createElement('div')
