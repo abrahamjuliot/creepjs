@@ -35,9 +35,95 @@ Tests are focused on:
 
 ## Rules
 ### Data
-- data collected: user agent string, encrypted fingerprints and booleans
+- data collected: worker scope user agent, webgl gpu renderer, js runtime engine, hashed browser fingerprints (`stable`, `loose`, `fuzzy`, & `shadow`), encrypted ip, encrypted system location, dates, and boolean metrics
 - data retention: auto deletes 30 days after last visit
 - visit tracking: limited to data retention and new feature scaling
+
+#### Example Data Models
+##### Metric Samples
+```js
+{
+	cleanup: false,
+	decrypted: "Blink",
+	devicePrimary: "Windows 10 (64-bit)",
+	deviceTrust: `{
+		"Windows 10 (64-bit)":["6a9","fe3","bb7"],
+		"Windows 7 (64-bit)":["8a3"],
+		"Windows 11 (64-bit)":["e4a"]
+	}`,
+	devices: [
+		"Windows 10 (64-bit)",
+		"Windows 7 (64-bit)",
+		"Windows 11 (64-bit)"
+	],
+	gpus: [],
+	healEvents: [],
+	highEntropyLossYield: false,
+	highEntropyLost: true,
+	id: "01aa0cc74cd124b8985d7e386e5499b34770353cab321e214a2aae122b4c1995",
+	lock: false,
+	logger: [
+		"8eff_75d6295c_345026a9: Blink (12/5/2021, 2:54:02 AM)"
+	],
+	reporter: `{
+		"dates":["12/5/2021","12/10/2021","12/17/2021","12/22/2021"],
+		"ips":["8eff","66fa","6ac2","5887"]
+	}`,
+	reporterTrustScore: 100,
+	reviewed: true,
+	suggested: "no change",
+	systemCore: "unknown",
+	systems: [
+		"Windows"
+	],
+	timestamp: "2022-01-15T16:34:23.807Z",
+	trash: false,
+	type: "Canvas System",
+	userAgents: [
+		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36"
+	]
+}
+```
+
+##### Fingerprints
+```js
+{
+	bot: 0.125,
+	botHash: "00000001",
+	botLevel: "stranger:csl",
+	crowdBlendingScore: 36,
+	fingerprint: "18ce59ae1e65397c81b38da98e6eed23a8f6d4bd3a2a349ed800f7daebd6f9dc",
+	firstVisit: "2022-01-17T15:39:21.964Z",
+	fuzzyInit: "1879e559e5de22c3dceb603775ff8062bb274c41547f9fc0b38e919fc4000000",
+	fuzzyLast: "1879e559e5de22c3dceb603775ff8062bb274c41547f9fc0b38e919fc4000000",
+	lastVisit: "2022-01-17T15:39:21.964Z",
+	lastVisitEpoch: 1642433961964,
+	looseFingerprints: [
+    	"f331fd21a4f8dec8054ffaec88c32723f840f6a6174303cd787fb676a513bbf6"
+	]
+	looseSwitchCount: 0,
+	maxErrors: 0,
+	maxLies: 0,
+	maxTrash: 0,
+	score: 100,
+	scoreData: `{
+		"switchCountPointGain":5,
+		"errorsPointGain":0,
+		"trashPointGain":0,
+		"liesPointGain":0,
+		"shadowBitsPointGain":10,
+		"grade":"A+"
+	}`,
+	shadow: "0000000000000000000000000000000000000000000000000000000000000000",
+	shadowBits: 0,
+	signature: "",
+	timeHoursAlive: 0,
+	timeHoursFromLastVisit: 0,
+	timeHoursIdleMax: 0,
+	timeHoursIdleMin: 0,
+	visits: 1
+}
+```
 
 ### New feature scaling
 - scaling should occur no more than once per week
