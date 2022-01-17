@@ -99,7 +99,7 @@ Tests are focused on:
 	lastVisit: "2022-01-17T15:39:21.964Z",
 	lastVisitEpoch: 1642433961964,
 	looseFingerprints: [
-    	"f331fd21a4f8dec8054ffaec88c32723f840f6a6174303cd787fb676a513bbf6"
+		"f331fd21a4f8dec8054ffaec88c32723f840f6a6174303cd787fb676a513bbf6"
 	]
 	looseSwitchCount: 0,
 	maxErrors: 0,
