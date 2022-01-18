@@ -524,18 +524,6 @@ visitor {
 .scale-down {
     animation: scale-down 0.3s 0.6s cubic-bezier(0.77, 0, 0.175, 1.5) both;
 }
-.fade-in {
-	animation: fade-in 0.3s cubic-bezier(0.77, 0, 0.175, 1.5) both;
-}
-@keyframes fade-in {
-    0%,
-    30% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
-}
 @keyframes scale-up {
     0%,
     30% {
@@ -816,7 +804,7 @@ input[type="radio"] {
     text-overflow: ellipsis;
 }
 .hidden {
-	opacity: 0;
+	visibility: hidden;
 }
 
 .fingerprint-header .time {
