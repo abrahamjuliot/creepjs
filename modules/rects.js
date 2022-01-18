@@ -269,7 +269,6 @@ export const getClientRects = async imports => {
 			return acc
 		}, [])
 		const span = doc.getElementById(fontId)
-		const detected = new Set()
 		const getRectDimensions = span => {
 			const { width, height } = span.getClientRects()[0]
 			return { width, height }
@@ -280,17 +279,17 @@ export const getClientRects = async imports => {
 			acc[font] = dimensions
 			return acc
 		}, {})
-		families.forEach(family => {
+		const detected = families.reduce((acc, family) => {
 			span.style.setProperty('--font', family)
 			const basefont = /, (.+)/.exec(family)[1]
 			const dimensions = getRectDimensions(span)
 			const font = /\'(.+)\'/.exec(family)[1]
 			if (dimensions.width != base[basefont].width ||
 				dimensions.height != base[basefont].height) {
-				detected.add(font)
+				acc.add(font)
 			}
-			return
-		})
+			return acc
+		}, new Set())
 
 		// get clientRects
 		const range = document.createRange()
@@ -441,7 +440,7 @@ export const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice
 		<div class="help" title="Range.getBoundingClientRect()">range B: ${computeDiffs(rangeBoundingClientRect)}</div>
 		<div class="block-text jumbo grey help relative" title="${helpTitle}">
 			<span class="confidence-note">${
-				emojiFonts.length > 1 ? `${emojiFonts[0]}...` : emojiFonts.join(', ')
+				emojiFonts.length > 1 ? `${emojiFonts[0]}...` : emojiFonts[0]
 			}</span>
 			${formatEmojiSet(emojiSet)}
 		</div>

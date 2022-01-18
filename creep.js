@@ -488,16 +488,30 @@ const imports = {
 			mediaCapabilities: fp.workerScope.mediaCapabilities,
 		},
 		media: fp.media,
-		canvas2d: ( 
-			!fp.canvas2d || fp.canvas2d.lied ? undefined : {
-				dataURI: fp.canvas2d.dataURI,
-				blob: fp.canvas2d.blob,
-				blobOffscreen: fp.canvas2d.blobOffscreen,
-				imageData: fp.canvas2d.imageData,
-				textMetrics: fp.canvas2d.textMetrics,
-				lied: fp.canvas2d.lied
-			} 
-		),
+		canvas2d: (canvas2d => {
+			if (!canvas2d) {
+				return
+			}
+			const { lied, liedTextMetrics } = canvas2d 
+			let data = {
+				lied
+			}
+			if (!lied) {
+				const { dataURI, blob, blobOffscreen, imageData } = canvas2d 
+				data = {
+					...data,
+					...{ dataURI, blob, blobOffscreen, imageData }
+				}
+			}
+			if (!liedTextMetrics) {
+				const { textMetricsSystemSum, emojiFonts, emojiSet } = canvas2d
+				data = {
+					...data,
+					...{ textMetricsSystemSum, emojiFonts, emojiSet }
+				} 
+			}
+			return data
+		})(fp.canvas2d),
 		canvasWebgl: !fp.canvasWebgl ? undefined : (
 			braveFingerprintingBlocking ? {
 				parameters: {

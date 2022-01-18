@@ -112,7 +112,6 @@ export const getSVG = async imports => {
 			return acc
 		}, [])
 		const svgText = doc.getElementById(fontId)
-		const detected = new Set()
 		const getRectDimensions = svgText => {
 			const { width, height, y } = svgText.getExtentOfChar(chars[0])
 			return { width, height, y }
@@ -123,7 +122,7 @@ export const getSVG = async imports => {
 			acc[font] = dimensions
 			return acc
 		}, {})
-		families.forEach(family => {
+		const detected = families.reduce((acc, family) => {
 			svgText.style.setProperty('--font', family)
 			const basefont = /, (.+)/.exec(family)[1]
 			const dimensions = getRectDimensions(svgText)
@@ -131,10 +130,10 @@ export const getSVG = async imports => {
 			if ((dimensions.width != base[basefont].width) ||
 				(dimensions.height != base[basefont].height) ||
 				(dimensions.y != base[basefont].y)) {
-				detected.add(font)
+				acc.add(font)
 			}
-			return
-		})
+			return acc
+		}, new Set())
 
 		// SVG
 		const reduceToObject = nativeObj => {
@@ -243,7 +242,7 @@ export const svgHTML = ({ fp, note, hashSlice, hashMini, formatEmojiSet, perform
 		<div class="help" title="SVGTextContentElement.getComputedTextLength()">text: ${computedTextLength ? (computedTextLength/divisor) : note.blocked}</div>
 		<div class="block-text jumbo grey help relative" title="${helpTitle}">
 			<span class="confidence-note">${
-				emojiFonts.length > 1 ? `${emojiFonts[0]}...` : emojiFonts.join(', ')
+				emojiFonts.length > 1 ? `${emojiFonts[0]}...` : emojiFonts[0]
 			}</span>
 			${formatEmojiSet(emojiSet)}
 		</div>

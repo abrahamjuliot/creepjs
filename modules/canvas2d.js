@@ -197,7 +197,13 @@ export const getCanvas2d = async imports => {
 			lieProps['TextMetrics.width']
 		)
 		let lied = (dataLie || contextLie || imageDataLie || textMetricsLie) || false
-		const doc = phantomDarkness ? phantomDarkness.document : document
+		const doc = (
+			phantomDarkness &&
+			phantomDarkness.document &&
+			phantomDarkness.document.body ? phantomDarkness.document :
+				document
+		)
+
 		const canvas = doc.createElement('canvas')
 		const context = canvas.getContext('2d')
 		fillRect(canvas, context)
@@ -256,6 +262,39 @@ export const getCanvas2d = async imports => {
 		await queueEvent(timer)
 		const points = getPointIn(canvas, context) // modifies width
 		const mods = getPixelMods()
+
+		// get fonts
+		const measureFonts = (context, font) => {
+			const chars = `mmmmmmmmmmlli`
+			context.font = `256px ${font}`
+			const { left, right, width } = context.measureText(chars)
+			return { left, right, width }
+		}
+		const baseFonts = ['monospace', 'sans-serif', 'serif']
+		const fontShortList = [
+			'Segoe UI Emoji', // Windows
+			'Apple Color Emoji', // Apple
+			'Noto Color Emoji',  // Linux, Android, Chrome OS
+		]
+		const families = fontShortList.reduce((acc, font) => {
+			baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`))
+			return acc
+		}, [])
+		const base = baseFonts.reduce((acc, font) => {
+			acc[font] = measureFonts(context, font)
+			return acc
+		}, {})
+		const detected = families.reduce((acc, family) => {
+			const basefont = /, (.+)/.exec(family)[1]
+			const dimensions = measureFonts(context, family)
+			const font = /\'(.+)\'/.exec(family)[1]
+			if (dimensions.left != base[basefont].left ||
+				dimensions.right != base[basefont].right ||
+				dimensions.width != base[basefont].width) {
+				acc.add(font)
+			}
+			return acc
+		}, new Set())
 
 		// get emojis
 		context.font = `200px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`
@@ -351,6 +390,7 @@ export const getCanvas2d = async imports => {
 			textMetricsSystemSum,
 			liedTextMetrics: textMetricsLie,
 			emojiSet,
+			emojiFonts: [...detected],
 			lied
 		}
 	}
@@ -384,6 +424,7 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 			blob,
 			blobOffscreen,
 			emojiSet,
+			emojiFonts,
 			textMetricsSystemSum,
 			$hash
 		}
@@ -528,7 +569,11 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 		</style>
 		<span class="aside-note">${performanceLogger.getLog()['canvas 2d']}</span>
 		<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-		<div class="help" title="${emojiHelpTitle}">emojis: <span class="grey">${formatEmojiSet(emojiSet)}</span></div>
+		<div class="help relative" title="${emojiHelpTitle}">emojis: <span class="grey">${formatEmojiSet(emojiSet)}</span>
+			<span class="confidence-note">${
+				!emojiFonts.length ? '' : `${emojiFonts[0].split(' ')[0]}...`
+			}</span>
+		</div>
 		<div class="help" title="CanvasRenderingContext2D.measureText()">sum: ${textMetricsSystemSum}</div>
 		<div class="help" title="HTMLCanvasElement.toDataURL()\nCanvasRenderingContext2D.getImageData()\nCanvasRenderingContext2D.isPointInPath()\nCanvasRenderingContext2D.isPointInStroke()\nHTMLCanvasElement.toBlob()\nOffscreenCanvas.convertToBlob()\nFileReader.readAsArrayBuffer()\nFileReader.readAsBinaryString()\nFileReader.readAsDataURL()\nFileReader.readAsText()">data: ${
 			modal(

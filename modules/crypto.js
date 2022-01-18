@@ -80,6 +80,7 @@ const getFuzzyHash = async fp => {
 		'canvas2d.blob',
 		'canvas2d.blobOffscreen',
 		'canvas2d.dataURI',
+		'canvas2d.emojiFonts',
 		'canvas2d.emojiSet',
 		'canvas2d.imageData',
 		'canvas2d.liedTextMetrics',
