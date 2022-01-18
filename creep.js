@@ -1437,8 +1437,13 @@ const imports = {
 			return renderSamples({ samples: decryptionSamples, templateImports })
 		})
 		.catch(error => {
-			fetchVisitorDataTimer('Error fetching vistor data')
-			patch(document.getElementById('browser-detection'), html`
+			fetchVisitorDataTimer('Error fetching visitor data')
+			const el = document.getElementById('browser-detection')
+			console.error('Error!', error.message)
+			if (!el) {
+				return	
+			}
+			return patch(el, html`
 				<style>
 					.rejected {
 						background: #ca656e14 !important;
@@ -1452,7 +1457,6 @@ const imports = {
 					</div>
 				</div>
 			`)
-			return console.error('Error!', error.message)
 		})
 	})
 })(imports)
