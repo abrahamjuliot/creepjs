@@ -493,20 +493,18 @@ const imports = {
 				return
 			}
 			const { lied, liedTextMetrics } = canvas2d 
-			let data = {
-				lied
-			}
+			let data
 			if (!lied) {
 				const { dataURI, blob, blobOffscreen, imageData } = canvas2d 
 				data = {
-					...data,
+					lied,
 					...{ dataURI, blob, blobOffscreen, imageData }
 				}
 			}
 			if (!liedTextMetrics) {
 				const { textMetricsSystemSum, emojiFonts, emojiSet } = canvas2d
 				data = {
-					...data,
+					...(data || {}),
 					...{ textMetricsSystemSum, emojiFonts, emojiSet }
 				} 
 			}
