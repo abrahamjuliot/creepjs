@@ -41,6 +41,8 @@ Tests are focused on:
 
 #### Example Data Models
 ##### Metric Samples
+
+Purpose: learn and predict browser engine and platform version, device, and gpu
 ```js
 {
 	cleanup: false,
@@ -86,6 +88,8 @@ Tests are focused on:
 ```
 
 ##### Fingerprints
+
+Purpose: identify browser visit history and activity
 ```js
 {
 	bot: 0.125,
