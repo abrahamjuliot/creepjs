@@ -361,9 +361,11 @@ export const getCanvas2d = async imports => {
 				return n / +`1e${size}00` // ...e-200
 			}
 			return (
-				fontSet.has('Segoe UI Emoji') ? n :
-					fontSet.has('Apple Color Emoji') ? n / 1e64 : // ...e-66
-						n * 1e64 // ...e+62
+				!size ? n * -1e150 : // -...e+148
+					size > 1 ? n / +`1e${size}00` : // ...e-200
+						fontSet.has('Segoe UI Emoji') ? n :
+							fontSet.has('Apple Color Emoji') ? n / 1e64 : // ...e-66
+								n * 1e64 // ...e+62
 			)
 		} 
 
