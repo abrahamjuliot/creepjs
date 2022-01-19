@@ -265,10 +265,18 @@ export const getCanvas2d = async imports => {
 
 		// get fonts
 		const measureFonts = (context, font) => {
-			const chars = `mmmmmmmmmmlli`
+			const emoji = String.fromCodePoint(128512)
 			context.font = `256px ${font}`
-			const { left, right, width } = context.measureText(chars)
-			return { left, right, width }
+			const metrics = context.measureText(emoji)
+			return {
+				ascent: metrics.actualBoundingBoxAscent,
+				descent: metrics.actualBoundingBoxDescent,
+				left: metrics.actualBoundingBoxLeft,
+				right: metrics.actualBoundingBoxRight,
+				width: metrics.width,
+				fontAscent: metrics.fontBoundingBoxAscent,
+				fontDescent: metrics.fontBoundingBoxDescent
+			}
 		}
 		const baseFonts = ['monospace', 'sans-serif', 'serif']
 		const fontShortList = [
@@ -284,18 +292,26 @@ export const getCanvas2d = async imports => {
 			acc[font] = measureFonts(context, font)
 			return acc
 		}, {})
-		const detected = families.reduce((acc, family) => {
+		const detectedEmojiFonts = families.reduce((acc, family) => {
 			const basefont = /, (.+)/.exec(family)[1]
 			const dimensions = measureFonts(context, family)
+			console.log(dimensions)
 			const font = /\'(.+)\'/.exec(family)[1]
-			if (dimensions.left != base[basefont].left ||
+			const found = (
+				dimensions.ascent != base[basefont].ascent ||
+				dimensions.descent != base[basefont].descent ||
+				dimensions.left != base[basefont].left ||
 				dimensions.right != base[basefont].right ||
-				dimensions.width != base[basefont].width) {
+				dimensions.width != base[basefont].width ||
+				dimensions.fontAscent != base[basefont].fontAscent ||
+				dimensions.fontDescent != base[basefont].fontDescent
+			)
+			if (found) {
 				acc.add(font)
 			}
 			return acc
 		}, new Set())
-
+		
 		// get emojis
 		context.font = `200px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`
 		const pattern = new Set()
@@ -334,9 +350,23 @@ export const getCanvas2d = async imports => {
 		})
 		.map(emoji => emoji.emoji)
 
-		const textMetricsSystemSum = 0.00001 * [...pattern].map(x => {
+		const amplifySum = (n, fontSet) => {
+			const { size } = fontSet
+			if (size > 1) {
+				return n / +`1e${size}00` // ...000-200
+			}
+			return (
+				fontSet.has('Segoe UI Emoji') ? n :
+					fontSet.has('Apple Color Emoji') ? n / 1e64 : // ...e-66
+						n * 1e64 // ...e+62
+			)
+		} 
+
+		const textMetricsSum = 0.00001 * [...pattern].map(x => {
 			return x.split(',').reduce((acc, x) => acc += (+x||0), 0)
 		}).reduce((acc, x) => acc += x, 0)
+
+		const textMetricsSystemSum = amplifySum(textMetricsSum, detectedEmojiFonts)
 	
 		// lies
 		if (mods && mods.pixels) {
@@ -390,7 +420,7 @@ export const getCanvas2d = async imports => {
 			textMetricsSystemSum,
 			liedTextMetrics: textMetricsLie,
 			emojiSet,
-			emojiFonts: [...detected],
+			emojiFonts: [...detectedEmojiFonts],
 			lied
 		}
 	}

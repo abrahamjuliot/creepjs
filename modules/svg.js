@@ -35,6 +35,7 @@ export const getSVG = async imports => {
 		const svgId = `${instanceId}-svg-div`
 		const fontId = 'svgrect-font-detector'
 		const chars = `mmmmmmmmmmlli`
+		const emojiChar = String.fromCodePoint(128512)
 		const divElement = document.createElement('div')
 		divElement.setAttribute('id', svgId)
 		doc.body.appendChild(divElement)
@@ -66,7 +67,7 @@ export const getSVG = async imports => {
 				}
 			</style>
 			<svg viewBox="0 0 200 200">
-				<text id="${fontId}">${chars}</text>
+				<text id="${fontId}">${chars}${emojiChar}</text>
 			</svg>
 			<div id="svg-container">
 				<style>
@@ -113,7 +114,8 @@ export const getSVG = async imports => {
 		}, [])
 		const svgText = doc.getElementById(fontId)
 		const getRectDimensions = svgText => {
-			const { width, height, y } = svgText.getExtentOfChar(chars[0])
+			const emojiChar = String.fromCodePoint(128512)
+			const { width, height, y } = svgText.getExtentOfChar(emojiChar)
 			return { width, height, y }
 		}
 		const base = baseFonts.reduce((acc, font) => {
@@ -122,7 +124,7 @@ export const getSVG = async imports => {
 			acc[font] = dimensions
 			return acc
 		}, {})
-		const detected = families.reduce((acc, family) => {
+		const detectedEmojiFonts = families.reduce((acc, family) => {
 			svgText.style.setProperty('--font', family)
 			const basefont = /, (.+)/.exec(family)[1]
 			const dimensions = getRectDimensions(svgText)
@@ -192,7 +194,7 @@ export const getSVG = async imports => {
 			subStringLength: getListSum([...lengthSet.subStringLength]),
 			computedTextLength: getListSum([...lengthSet.computedTextLength]),
 			emojiSet: [...emojiSet],
-			emojiFonts: [...detected],
+			emojiFonts: [...detectedEmojiFonts],
 			lied
 		}
 		

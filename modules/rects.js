@@ -70,6 +70,7 @@ export const getClientRects = async imports => {
 		const rectsId = `${instanceId}-client-rects-div`
 		const fontId = 'domrect-font-detector'
 		const chars = `mmmmmmmmmmlli`
+		//const emojiChar = String.fromCodePoint(128512)
 		const divElement = document.createElement('div')
 		divElement.setAttribute('id', rectsId)
 		doc.body.appendChild(divElement)
@@ -279,7 +280,7 @@ export const getClientRects = async imports => {
 			acc[font] = dimensions
 			return acc
 		}, {})
-		const detected = families.reduce((acc, family) => {
+		const detectedEmojiFonts = families.reduce((acc, family) => {
 			span.style.setProperty('--font', family)
 			const basefont = /, (.+)/.exec(family)[1]
 			const dimensions = getRectDimensions(span)
@@ -363,7 +364,7 @@ export const getClientRects = async imports => {
 			rangeClientRects,
 			rangeBoundingClientRect,
 			emojiSet,
-			emojiFonts: [...detected],
+			emojiFonts: [...detectedEmojiFonts],
 			lied
 		}
 	}

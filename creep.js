@@ -276,7 +276,10 @@ const imports = {
 			hashify((consoleErrorsComputed || {}).errors),
 			hashify(timezoneComputed),
 			hashify(clientRectsComputed),
-			hashify((clientRectsComputed || {}).emojiSet),
+			hashify({
+				emojiFonts: (clientRectsComputed || {}).emojiFonts,
+				emojiSet: (clientRectsComputed || {}).emojiSet
+			}),
 			hashify([
 				(clientRectsComputed || {}).elementBoundingClientRect,
 				(clientRectsComputed || {}).elementClientRects,
@@ -502,10 +505,10 @@ const imports = {
 				}
 			}
 			if (!liedTextMetrics) {
-				const { textMetricsSystemSum, emojiFonts, emojiSet } = canvas2d
+				const { textMetricsSystemSum, emojiSet, emojiFonts } = canvas2d
 				data = {
 					...(data || {}),
-					...{ textMetricsSystemSum, emojiFonts, emojiSet }
+					...{ textMetricsSystemSum, emojiSet, emojiFonts }
 				} 
 			}
 			return data

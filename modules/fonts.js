@@ -2,14 +2,14 @@
 // https://www.lalit.org/wordpress/wp-content/uploads/2008/05/fontdetect.js?ver=0.3
 
 const getFontsShortList = () => [
-	'Helvetica Neue', // Apple
+	'Droid Sans Mono', // Android
 	'Geneva', // mac (not iOS)
+	'Helvetica Neue', // Apple
 	'Lucida Console', // Windows
 	'Noto Color Emoji', // Linux
-	'Ubuntu', // Ubuntu
-	'Droid Sans Mono', // Android
 	'Roboto', // Android, Chrome OS
-].sort()
+	'Ubuntu' // Ubuntu	
+]
 
 const getWindowsFontMap = () => ({
 	// https://docs.microsoft.com/en-us/typography/fonts/windows_11_font_list
