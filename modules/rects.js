@@ -69,7 +69,7 @@ export const getClientRects = async imports => {
 
 		const rectsId = `${instanceId}-client-rects-div`
 		const fontId = 'domrect-font-detector'
-		const chars = `mmmmmmmmmmlli`
+		//const chars = `mmmmmmmmmmlli`
 		//const emojiChar = String.fromCodePoint(128512)
 		const divElement = document.createElement('div')
 		divElement.setAttribute('id', rectsId)
@@ -212,7 +212,7 @@ export const getClientRects = async imports => {
 				}
 				#${fontId}::after {
 					font-family: var(--font);
-					content: '${chars}';
+					content: '${emojis.join('')}';
 				}
 			</style>
 			<span id="${fontId}"></span>

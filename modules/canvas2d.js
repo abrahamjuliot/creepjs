@@ -264,10 +264,11 @@ export const getCanvas2d = async imports => {
 		const mods = getPixelMods()
 
 		// get fonts
-		const measureFonts = (context, font) => {
-			const emoji = String.fromCodePoint(128512)
+		const emojis = getEmojis()
+		const measureFonts = (context, font, emojis) => {
+			//const emoji = String.fromCodePoint(128512)
 			context.font = `256px ${font}`
-			const metrics = context.measureText(emoji)
+			const metrics = context.measureText(emojis.join(''))
 			return {
 				ascent: metrics.actualBoundingBoxAscent,
 				descent: metrics.actualBoundingBoxDescent,
@@ -289,12 +290,12 @@ export const getCanvas2d = async imports => {
 			return acc
 		}, [])
 		const base = baseFonts.reduce((acc, font) => {
-			acc[font] = measureFonts(context, font)
+			acc[font] = measureFonts(context, font, emojis)
 			return acc
 		}, {})
 		const detectedEmojiFonts = families.reduce((acc, family) => {
 			const basefont = /, (.+)/.exec(family)[1]
-			const dimensions = measureFonts(context, family)
+			const dimensions = measureFonts(context, family, emojis)
 			console.log(dimensions)
 			const font = /\'(.+)\'/.exec(family)[1]
 			const found = (
@@ -315,7 +316,6 @@ export const getCanvas2d = async imports => {
 		// get emojis
 		context.font = `200px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`
 		const pattern = new Set()
-		const emojis = getEmojis()
 		const emojiMetrics = emojis.map(emoji => {
 			return {
 				emoji,
