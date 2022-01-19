@@ -296,7 +296,6 @@ export const getCanvas2d = async imports => {
 		const detectedEmojiFonts = families.reduce((acc, family) => {
 			const basefont = /, (.+)/.exec(family)[1]
 			const dimensions = measureFonts(context, family, emojis)
-			console.log(dimensions)
 			const font = /\'(.+)\'/.exec(family)[1]
 			const found = (
 				dimensions.ascent != base[basefont].ascent ||
