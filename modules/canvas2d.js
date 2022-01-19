@@ -350,10 +350,15 @@ export const getCanvas2d = async imports => {
 		})
 		.map(emoji => emoji.emoji)
 
+		// textMetrics System Sum
+		const textMetricsSum = 0.00001 * [...pattern].map(x => {
+			return x.split(',').reduce((acc, x) => acc += (+x||0), 0)
+		}).reduce((acc, x) => acc += x, 0)
+
 		const amplifySum = (n, fontSet) => {
 			const { size } = fontSet
 			if (size > 1) {
-				return n / +`1e${size}00` // ...000-200
+				return n / +`1e${size}00` // ...e-200
 			}
 			return (
 				fontSet.has('Segoe UI Emoji') ? n :
@@ -361,10 +366,6 @@ export const getCanvas2d = async imports => {
 						n * 1e64 // ...e+62
 			)
 		} 
-
-		const textMetricsSum = 0.00001 * [...pattern].map(x => {
-			return x.split(',').reduce((acc, x) => acc += (+x||0), 0)
-		}).reduce((acc, x) => acc += x, 0)
 
 		const textMetricsSystemSum = amplifySum(textMetricsSum, detectedEmojiFonts)
 	
