@@ -65,7 +65,10 @@ export const getVoices = imports => {
 			}
 			
 			getVoices()
-			return speechSynthesis.addEventListener('voiceschanged', getVoices) // Chrome support
+			if (speechSynthesis.addEventListener) {
+				return speechSynthesis.addEventListener('voiceschanged', getVoices)
+			}
+			speechSynthesis.onvoiceschanged = getVoices
 		}
 		catch (error) {
 			logTestResult({ test: 'speech', passed: false })
