@@ -34,8 +34,6 @@ export const getSVG = async imports => {
 		
 		const svgId = `${instanceId}-svg-div`
 		const fontId = 'svgrect-font-detector'
-		//const chars = `mmmmmmmmmmlli`
-		//const emojiChar = String.fromCodePoint(128512)
 		const divElement = document.createElement('div')
 		divElement.setAttribute('id', svgId)
 		doc.body.appendChild(divElement)
@@ -67,7 +65,7 @@ export const getSVG = async imports => {
 				}
 			</style>
 			<svg viewBox="0 0 200 200">
-				<text id="${fontId}">${emojis.join('')}</text>
+				<text id="${fontId}">x</text>
 			</svg>
 			<div id="svg-container">
 				<style>
@@ -113,21 +111,20 @@ export const getSVG = async imports => {
 			return acc
 		}, [])
 		const svgText = doc.getElementById(fontId)
-		const getRectDimensions = svgText => {
-			const emojiChar = String.fromCodePoint(128512)
-			const { width, height, y } = svgText.getExtentOfChar(emojiChar)
+		const getCharDimensions = (svgText, emojis) => {
+			const { width, height, y } = svgText.getExtentOfChar(emojis.join(''))
 			return { width, height, y }
 		}
 		const base = baseFonts.reduce((acc, font) => {
 			svgText.style.setProperty('--font', font)
-			const dimensions = getRectDimensions(svgText)
+			const dimensions = getCharDimensions(svgText, emojis)
 			acc[font] = dimensions
 			return acc
 		}, {})
 		const detectedEmojiFonts = families.reduce((acc, family) => {
 			svgText.style.setProperty('--font', family)
 			const basefont = /, (.+)/.exec(family)[1]
-			const dimensions = getRectDimensions(svgText)
+			const dimensions = getCharDimensions(svgText, emojis)
 			const font = /\'(.+)\'/.exec(family)[1]
 			if ((dimensions.width != base[basefont].width) ||
 				(dimensions.height != base[basefont].height) ||
