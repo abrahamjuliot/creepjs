@@ -65,7 +65,7 @@ export const getSVG = async imports => {
 				}
 			</style>
 			<svg viewBox="0 0 200 200">
-				<text id="${fontId}">x</text>
+				<text id="${fontId}">${emojis.join('')}</text>
 			</svg>
 			<div id="svg-container">
 				<style>
