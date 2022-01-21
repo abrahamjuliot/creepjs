@@ -1157,7 +1157,7 @@ const imports = {
 						}`,
 						`textMetricsId=${
 							!canvas2d || canvas2d.liedTextMetrics || ((+canvas2d.textMetricsSystemSum) == 0) ? 'undefined' : 
-								canvas2d.textMetricsSystemSum
+								encodeURIComponent(canvas2d.textMetricsSystemSum)
 						}`,
 						`webglId=${
 							!canvasWebgl || (canvas2d || {}).lied || canvasWebgl.lied ? 'undefined' :
