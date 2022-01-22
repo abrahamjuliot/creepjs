@@ -17,7 +17,6 @@ export const getBestWorkerScope = async imports => {
 	try {
 		const timer = createTimer()
 		await queueEvent(timer)
-
 		const ask = fn => { try { return fn() } catch (e) { return } }
 		const resolveWorkerData = (target, resolve, fn) => target.addEventListener('message', event => {
 			fn(); return resolve(event.data)
@@ -35,11 +34,13 @@ export const getBestWorkerScope = async imports => {
 			return resolveWorkerData(sharedWorker.port, resolve, () => sharedWorker.port.close())
 		})
 		const getServiceWorker = ({ scriptSource, scope }) => new Promise(async resolve => {
+			const channel = 'BroadcastChannel' in self ? new BroadcastChannel('app-channel') : undefined
 			const registration = await ask(() => navigator.serviceWorker.register(scriptSource, { scope }).catch(e => {}))
 			if (!hasConstructor(registration, 'ServiceWorkerRegistration')) return resolve()
 			return navigator.serviceWorker.ready.then(registration => {
-				registration.active.postMessage(undefined)
-				return resolveWorkerData(navigator.serviceWorker, resolve, () => registration.unregister())
+				const source = channel || registration.active
+				source.postMessage(undefined)
+				return resolveWorkerData(channel || navigator.serviceWorker, resolve, () => registration.unregister())
 			})
 		})
 

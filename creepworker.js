@@ -1097,11 +1097,15 @@ const getWorkerData = async () => {
 	}
 }
 
+const channel = 'BroadcastChannel' in self ? new BroadcastChannel('app-channel') : undefined
+//channel.postMessage(undefined)
+
 // Compute and communicate from worker scope
-const onEvent = (eventType, fn) => addEventListener(eventType, fn)
+const onEvent = (source, eventType, fn) => source.addEventListener(eventType, fn)
 const send = async source => source.postMessage(await getWorkerData())
+
 if (!globalThis.document && globalThis.WorkerGlobalScope) {
-	globalThis.ServiceWorkerGlobalScope ? onEvent('message', e => send(e.source)) :
+	globalThis.ServiceWorkerGlobalScope ? onEvent(channel || self, 'message', e => send(channel || e.source)) :
 	globalThis.SharedWorkerGlobalScope ? onEvent('connect', e => send(e.ports[0])) :
 	send(self) // DedicatedWorkerGlobalScope
 }
