@@ -150,27 +150,6 @@ export const getFonts = async imports => {
 	} = imports
 
 	
-
-	const getEmojiDimensions = style => {
-		return {
-			width: style.inlineSize,
-			height: style.blockSize
-		}
-	}
-
-	const originPixelsToNumber = pixels => +(pixels.replace('px', ''))
-	const getPixelDimensions = style => {
-		const transform = style.transformOrigin.split(' ')
-		const perspective = style.perspectiveOrigin.split(' ')
-		const dimensions = {
-			transformWidth: originPixelsToNumber(transform[0]),
-			transformHeight: originPixelsToNumber(transform[1]),
-			perspectiveWidth: originPixelsToNumber(perspective[0]),
-			perspectiveHeight: originPixelsToNumber(perspective[1])
-		}
-		return dimensions
-	}
-
 	const getPixelFonts = ({ doc, id, chars, baseFonts, families, emojis }) => {
 		try {
 			patch(doc.getElementById(id), html`
@@ -229,32 +208,25 @@ export const getFonts = async imports => {
 					}
 				</div>
 			`)
-
-			// get emojis
-			const pattern = new Set()
-			const emojiElems = [...doc.getElementsByClassName('pixel-emoji')]
-			const emojiPixels = emojiElems.map((el, i) => {
-				const style = getComputedStyle(el)
-				const emoji = emojis[i]
-				const { height, width } = getEmojiDimensions(style)
-				return { emoji, width, height }
-			})
-			// get emoji set and system
-			const emojiSet = emojiPixels.filter(emoji => {
-				const dimensions = `${emoji.width}, ${emoji.heigt}`
-				if (pattern.has(dimensions)) {
-					return false
+			
+			const pixelToNumber = pixels => +(pixels.replace('px', ''))
+			const getPixelDimensions = style => {
+				const transform = style.transformOrigin.split(' ')
+				const perspective = style.perspectiveOrigin.split(' ')
+				const dimensions = {
+					transformWidth: pixelToNumber(transform[0]),
+					transformHeight: pixelToNumber(transform[1]),
+					perspectiveWidth: pixelToNumber(perspective[0]),
+					perspectiveHeight: pixelToNumber(perspective[1])
 				}
-				pattern.add(dimensions)
-				return true
-			})
-			.map(emoji => emoji.emoji)
-
-			// get fonts
+				return dimensions
+			}
 			const span = doc.getElementById(`${id}-detector`)
+			const style = getComputedStyle(span)
+
+			// get perspective fonts
 			const detectedViaTransform = new Set()
 			const detectedViaPerspective = new Set()
-			const style = getComputedStyle(span)
 			const base = baseFonts.reduce((acc, font) => {
 				span.style.setProperty('--font', font)
 				const dimensions = getPixelDimensions(style)
@@ -277,10 +249,82 @@ export const getFonts = async imports => {
 				return
 			})
 
+			// get size fonts
+			const emojiFontShortList = [
+				'Segoe UI Emoji', // Windows
+				'Apple Color Emoji', // Apple
+				'Noto Color Emoji',  // Linux, Android, Chrome OS
+			]
+			const getEmojiDimensions = style => {
+				return {
+					width: style.inlineSize,
+					height: style.blockSize
+				}
+			}
+			const emojiFamilies = emojiFontShortList.reduce((acc, font) => {
+				baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`))
+				return acc
+			}, [])
+			const emojiBase = baseFonts.reduce((acc, font) => {
+				span.style.setProperty('--font', font)
+				const dimensions = getEmojiDimensions(style)
+				acc[font] = dimensions
+				return acc
+			}, {})
+			const detectedEmojiFonts = emojiFamilies.reduce((acc, family) => {
+				span.style.setProperty('--font', family)
+				const basefont = /, (.+)/.exec(family)[1]
+				const dimensions = getEmojiDimensions(style)
+				const font = /\'(.+)\'/.exec(family)[1]
+				if (dimensions.width != emojiBase[basefont].width ||
+					dimensions.height != emojiBase[basefont].height) {
+					acc.add(font)
+				}
+				return acc
+			}, new Set())
+
+			// get emoji set and system
+			const pattern = new Set()
+			const emojiElems = [...doc.getElementsByClassName('pixel-emoji')]
+			const emojiSet = emojiElems.reduce((emojiSet, el, i) => {
+				const style = getComputedStyle(el)
+				const emoji = emojis[i]
+				const { height, width } = getEmojiDimensions(style)
+				const dimensions = `${width},${height}`
+				if (!pattern.has(dimensions)) {
+					pattern.add(dimensions)
+					emojiSet.add(emoji)
+				}
+				return emojiSet
+			}, new Set())
+
+			const pixelSizeSum = 0.00001 * [...pattern].map(x => {
+				return x.split(',').map(x => pixelToNumber(x)).reduce((acc, x) => acc += (+x||0), 0)
+			}).reduce((acc, x) => acc += x, 0)
+			
+
+			const amplifySum = (n, fontSet) => {
+				const { size } = fontSet
+				if (size > 1) {
+					return n / +`1e${size}00` // ...e-200
+				}
+				return (
+					!size ? n * -1e150 : // -...e+148
+						size > 1 ? n / +`1e${size}00` : // ...e-200
+							fontSet.has('Segoe UI Emoji') ? n :
+								fontSet.has('Apple Color Emoji') ? n / 1e64 : // ...e-66
+									n * 1e64 // ...e+62
+				)
+			}
+
+			const pixelSizeSystemSum =  amplifySum(pixelSizeSum, detectedEmojiFonts)
+			
 			return {
-				emojiSet,
 				transform: [...detectedViaTransform],
-				perspective: [...detectedViaPerspective]
+				perspective: [...detectedViaPerspective],
+				emojiSet: [...emojiSet],
+				emojiFonts: [...detectedEmojiFonts],
+				pixelSizeSystemSum
 			}
 		} catch (error) {
 			console.error(error)
@@ -400,7 +444,13 @@ export const getFonts = async imports => {
 			return acc
 		}, [])
 
-		const { emojiSet, transform, perspective } = getPixelFonts({
+		const {
+			emojiSet,
+			emojiFonts,
+			pixelSizeSystemSum,
+			transform,
+			perspective
+		} = getPixelFonts({
 			doc,
 			id,
 			chars: `mmmmmmmmmmlli`,
@@ -433,6 +483,8 @@ export const getFonts = async imports => {
 			platformVersion,
 			apps,
 			emojiSet,
+			emojiFonts,
+			pixelSizeSystemSum,
 			lied
 		}
 	} catch (error) {
@@ -447,10 +499,9 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini, formatE
 		return `
 		<div class="col-six undefined">
 			<strong>Fonts</strong>
-			<div>emojis: ${note.blocked}</div>
 			<div>origin (0): ${note.blocked}</div>
 			<div>load (0):</div>
-			<div class="block-text">${note.blocked}</div>
+			<div class="block-text-large">${note.blocked}</div>
 		</div>`
 	}
 	const {
@@ -461,6 +512,8 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini, formatE
 			platformVersion,
 			apps,
 			emojiSet,
+			emojiFonts,
+			pixelSizeSystemSum,
 			lied
 		}
 	} = fp
@@ -488,12 +541,11 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini, formatE
 	const originFontString = ''+(originFonts.sort())
 	const fontFaceLoadHash = hashMini(fontFaceLoadFonts)
 	const system = systemMap[originFontString]
-	const emojiHelpTitle = `CSSStyleDeclaration.setProperty()\nblock-size\ninline-size\nhash: ${hashMini(emojiSet)}\n${(emojiSet||[]).map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`
+	const blockHelpTitle = `FontFace.load()\nCSSStyleDeclaration.setProperty()\nblock-size\ninline-size\nhash: ${hashMini(emojiSet)}\n${(emojiSet||[]).map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`
 	return `
 	<div class="relative col-six${lied ? ' rejected' : ''}">
 		<span class="aside-note">${performanceLogger.getLog().fonts}</span>
 		<strong>Fonts</strong><span class="hash">${hashSlice($hash)}</span>
-		<div class="help" title="${emojiHelpTitle}">emojis: <span class="grey">${formatEmojiSet(emojiSet)}</span></div>
 		<div class="help ellipsis-all" title="CSSStyleDeclaration.setProperty()\ntransform-origin\nperspective-origin">origin (${originFonts ? count(originFonts) : '0'}/${'' + getFontsShortList().length}): ${originFontString ? `${system ? system[0] : ''}${originFontString}`: note.unknown }</div>
 		<div class="help" title="FontFace.load()">load (${fontFaceLoadFonts ? count(fontFaceLoadFonts) : '0'}/${'' + getFontList().length}): ${
 			!(fontFaceLoadFonts||[]).length ? note.unknown : modal(
@@ -502,10 +554,11 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini, formatE
 				fontFaceLoadHash
 			)
 		}</div>
-		<div class="block-text">
+		<div class="block-text-large help relative" title="${blockHelpTitle}">
 			<div>
-				${platformVersion ? `platform version: ${platformVersion}<br>` : ((fonts) => {
-					return (
+				${platformVersion ? `platform: ${platformVersion}<br>` : ((fonts) => {
+					
+					return !(fonts || []).length ? '' : (
 						((''+fonts).match(/Lucida Console/)||[]).length ? `${icon.Windows}Lucida Console...` :
 						((''+fonts).match(/Droid Sans Mono|Noto Color Emoji|Roboto/g)||[]).length == 3 ? `${icon.Linux}${icon.Android}Droid Sans Mono,Noto Color...` :
 						((''+fonts).match(/Droid Sans Mono|Roboto/g)||[]).length == 2 ? `${icon.Android}Droid Sans Mono,Roboto...` :
@@ -517,6 +570,12 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini, formatE
 					)
 				})(fontFaceLoadFonts)}
 				${''+apps ? `apps: ${(apps||[]).join(', ')}` : ''}
+
+				<span class="confidence-note">${
+					emojiFonts.length > 1 ? `${emojiFonts[0]}...` : (emojiFonts[0] || '')
+				}</span><br>
+				<span>${pixelSizeSystemSum}</span><br>
+				<span class="grey jumbo" style="${!emojiFonts[0] ? '' : `font-family: '${emojiFonts[0]}' !important`}">${formatEmojiSet(emojiSet)}</span>
 			</div>
 		</div>
 	</div>

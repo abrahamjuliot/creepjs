@@ -239,7 +239,6 @@ const imports = {
 			consoleErrorsHash,
 			timezoneHash,
 			rectsHash,
-			emojiHash,
 			domRectHash,
 			audioHash,
 			fontsHash,
@@ -276,10 +275,6 @@ const imports = {
 			hashify((consoleErrorsComputed || {}).errors),
 			hashify(timezoneComputed),
 			hashify(clientRectsComputed),
-			hashify({
-				emojiFonts: (clientRectsComputed || {}).emojiFonts,
-				emojiSet: (clientRectsComputed || {}).emojiSet
-			}),
 			hashify([
 				(clientRectsComputed || {}).elementBoundingClientRect,
 				(clientRectsComputed || {}).elementClientRects,
@@ -347,7 +342,6 @@ const imports = {
 			fingerprint,
 			styleSystemHash,
 			styleHash,
-			emojiHash,
 			domRectHash,
 			mimeTypesHash,
 			canvas2dImageHash,
@@ -362,7 +356,6 @@ const imports = {
 		fingerprint: fp,
 		styleSystemHash,
 		styleHash,
-		emojiHash,
 		domRectHash,
 		mimeTypesHash,
 		canvas2dImageHash,
@@ -568,7 +561,7 @@ const imports = {
 		capturedErrors: !!errorsLen,
 		lies: !!liesLen,
 		resistance: fp.resistance || undefined,
-		forceRenew: 1642450156677
+		forceRenew: 1642816875879
 	}
 
 	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f')
@@ -754,13 +747,13 @@ const imports = {
 			${fontsHTML(templateImports)}
 		</div>
 		<div class="flex-grid">
+			${clientRectsHTML(templateImports)}
+			${svgHTML(templateImports)}
+		</div>
+		<div class="flex-grid">
 			${audioHTML(templateImports)}
 			${voicesHTML(templateImports)}
 			${mediaHTML(templateImports)}
-		</div>
-		<div class="flex-grid">
-			${clientRectsHTML(templateImports)}
-			${svgHTML(templateImports)}
 		</div>
 		<div class="flex-grid relative">${screenHTML(templateImports)}</div>
 		<div class="flex-grid relative">${featuresHTML(templateImports)}</div>
@@ -1031,7 +1024,7 @@ const imports = {
 			const isTorBrowser = resistance.privacy == 'Tor Browser'
 			const isRFP = resistance.privacy == 'Firefox'
 			const isBravePrivacy = resistance.privacy == 'Brave'
-			//console.log(emojiHash) // Tor Browser check
+
 			const screenMetrics = (
 				!screenFp || screenFp.lied || isRFP || isTorBrowser ? 'undefined' : 
 					`${screenFp.width}x${screenFp.height}`
@@ -1141,9 +1134,15 @@ const imports = {
 						`winId=${windowFeatures.$hash}`,
 						`styleId=${styleHash}`,
 						`styleSystemId=${styleSystemHash}`,
-						`emojiId=${!clientRects || clientRects.lied ? 'undefined' : emojiHash}`,
+						`emojiId=${
+							!clientRects || clientRects.lied ? 'undefined' : 
+								encodeURIComponent(clientRects.domrectSystemSum)
+						}`,
 						`domRectId=${!clientRects || clientRects.lied ? 'undefined' : domRectHash}`,
-						`svgId=${!svg || svg.lied ? 'undefined' : svg.$hash}`,
+						`svgId=${
+							!svg || svg.lied ? 'undefined' :
+								encodeURIComponent(svg.svgrectSystemSum)
+						}`,
 						`mimeTypesId=${!media || media.lied ? 'undefined' : mimeTypesHash}`,
 						`audioId=${
 								!offlineAudioContext ||
@@ -1326,9 +1325,15 @@ const imports = {
 					styleVersion: getPrediction({ hash: styleHash, data: styleVersionSamples }),
 					styleSystem: getPrediction({ hash: styleSystemHash, data: styleSamples }),
 					resistance: getPrediction({ hash: (resistance || {}).$hash, data: resistanceSamples }),
-					emojiSystem: getPrediction({ hash: emojiHash, data: emojiSamples }),
+					emojiSystem: getPrediction({
+						hash: (clientRects || {}).domrectSystemSum,
+						data: emojiSamples
+					}),
 					domRectSystem: getPrediction({ hash: domRectHash, data: domRectSamples }),
-					svgSystem: getPrediction({ hash: (svg || {}).$hash, data: svgSamples }),
+					svgSystem: getPrediction({
+						hash: (svg || {}).svgrectSystemSum,
+						data: svgSamples
+					}),
 					mimeTypesSystem: getPrediction({ hash: mimeTypesHash, data: mimeTypesSamples }),
 					audioSystem: getPrediction({ hash: audioMetrics, data: audioSamples }),
 					canvasSystem: getPrediction({ hash: canvas2dImageHash, data: canvasSamples }),
@@ -1383,9 +1388,9 @@ const imports = {
 					style: styleSystemHash,
 					resistance: (resistance || {}).$hash,
 					styleVersion: styleHash,
-					emoji: emojiHash,
+					emoji: (clientRects || {}).domrectSystemSum,
 					domRect: domRectHash,
-					svg: (svg || {}).$hash,
+					svg: (svg || {}).svgrectSystemSum,
 					mimeTypes: mimeTypesHash,
 					audio: audioMetrics,
 					canvas: canvas2dImageHash,

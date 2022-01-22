@@ -315,6 +315,7 @@ export const getCanvas2d = async imports => {
 		// get emojis
 		context.font = `200px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`
 		const pattern = new Set()
+		await queueEvent(timer)
 		const emojiMetrics = emojis.map(emoji => {
 			return {
 				emoji,
@@ -438,11 +439,11 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 		return `
 		<div class="col-six undefined">
 			<strong>Canvas 2d</strong> <span>${note.blocked}</span>
-			<div>emojis: ${note.blocked}</div>
-			<div>sum: ${note.blocked}</div>
 			<div>data: ${note.blocked}</div>
 			<div>pixel trap:</div>
 			<div class="icon-pixel-container pixels">${note.blocked}</div>
+			<div>textMetrics:</div>
+			<div class="block-text">${note.blocked}</div>
 		</div>`
 	}
 			
@@ -563,8 +564,9 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 			}
 			.pixel-image,
 			.pixel-image-random {
-				max-width: 75px;
+				max-width: 35px;
     			border-radius: 50%;
+				transform: scale(1.5);
 			}
 			.pixel-image {
 				background-image: url(${pixelImage})
@@ -601,12 +603,6 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 		</style>
 		<span class="aside-note">${performanceLogger.getLog()['canvas 2d']}</span>
 		<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-		<div class="help relative" title="${emojiHelpTitle}">emojis: <span class="grey">${formatEmojiSet(emojiSet)}</span>
-			<span class="confidence-note">${
-				!emojiFonts.length ? '' : `${emojiFonts[0].split(' ')[0]}...`
-			}</span>
-		</div>
-		<div class="help" title="CanvasRenderingContext2D.measureText()">sum: ${textMetricsSystemSum}</div>
 		<div class="help" title="HTMLCanvasElement.toDataURL()\nCanvasRenderingContext2D.getImageData()\nCanvasRenderingContext2D.isPointInPath()\nCanvasRenderingContext2D.isPointInStroke()\nHTMLCanvasElement.toBlob()\nOffscreenCanvas.convertToBlob()\nFileReader.readAsArrayBuffer()\nFileReader.readAsBinaryString()\nFileReader.readAsDataURL()\nFileReader.readAsText()">data: ${
 			modal(
 				'creep-canvas-data',
@@ -624,6 +620,16 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 		<div class="icon-pixel-container pixels">
 			<div class="icon-pixel pixel-image-random"></div>
 			${rgba ? `<div class="icon-pixel pixel-image"></div>` : ''}
+		</div>
+		<div>textMetrics:</div>
+		<div class="block-text help relative" title="${emojiHelpTitle}"> 
+			<span class="confidence-note">${
+				emojiFonts.length > 1 ? `${emojiFonts[0]}...` : (emojiFonts[0] || '')
+			}</span>
+			<span>${textMetricsSystemSum}</span>
+			<span class="grey jumbo" style="${!emojiFonts[0] ? '' : `font-family: '${emojiFonts[0]}' !important`}">
+				${formatEmojiSet(emojiSet)}
+			</span>
 		</div>
 	</div>
 	`

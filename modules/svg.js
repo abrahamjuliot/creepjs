@@ -158,6 +158,7 @@ export const getSVG = async imports => {
 		const bBox = reduceToObject(svgBox.getBBox())
 
 		// compute SVGRect emojis
+		const pattern = new Set()
 		const lengthSet = {
 			extentOfChar: new Set(),
 			subStringLength: new Set(),
@@ -165,25 +166,43 @@ export const getSVG = async imports => {
 		}
 		await queueEvent(timer)
 
-		const emojiSet = [...svgBox.getElementsByClassName('svgrect-emoji')].reduce((emojiSet, el, i) => {
+		const svgElems = [...svgBox.getElementsByClassName('svgrect-emoji')]
+		const emojiSet = svgElems.reduce((emojiSet, el, i) => {
 			const emoji = emojis[i]
-			const extentOfCharSum = reduceToSum(el.getExtentOfChar(''))
+			const extentOfCharSum = reduceToSum(el.getExtentOfChar(emoji))
 			const subStringLength = el.getSubStringLength(0, 10)
 			const computedTextLength = el.getComputedTextLength()
-			if (!lengthSet.extentOfChar.has(extentOfCharSum)) {
-				lengthSet.extentOfChar.add(extentOfCharSum)
+			const dimensions = `${extentOfCharSum},${subStringLength},${computedTextLength}`
+			if (!pattern.has(dimensions)) {
+				pattern.add(dimensions)
 				emojiSet.add(emoji)
 			}
-			if (!lengthSet.subStringLength.has(subStringLength)) {
-				lengthSet.subStringLength.add(subStringLength)
-				emojiSet.add(emoji)
-			}
-			if (!lengthSet.computedTextLength.has(computedTextLength)) {
-				lengthSet.computedTextLength.add(computedTextLength)
-				emojiSet.add(emoji)
-			}
+			lengthSet.extentOfChar.add(extentOfCharSum)
+			lengthSet.subStringLength.add(subStringLength)
+			lengthSet.computedTextLength.add(computedTextLength)
 			return emojiSet
 		}, new Set())
+
+		// domRect System Sum
+		const svgrectSum = 0.00001 * [...pattern].map(x => {
+			return x.split(',').reduce((acc, x) => acc += (+x||0), 0)
+		}).reduce((acc, x) => acc += x, 0)
+
+		const amplifySum = (n, fontSet) => {
+			const { size } = fontSet
+			if (size > 1) {
+				return n / +`1e${size}00` // ...e-200
+			}
+			return (
+				!size ? n * -1e150 : // -...e+148
+					size > 1 ? n / +`1e${size}00` : // ...e-200
+						fontSet.has('Segoe UI Emoji') ? n :
+							fontSet.has('Apple Color Emoji') ? n / 1e64 : // ...e-66
+								n * 1e64 // ...e+62
+			)
+		} 
+
+		const svgrectSystemSum = amplifySum(svgrectSum, detectedEmojiFonts)
 
 		const data = {
 			bBox: getObjectSum(bBox),
@@ -192,6 +211,7 @@ export const getSVG = async imports => {
 			computedTextLength: getListSum([...lengthSet.computedTextLength]),
 			emojiSet: [...emojiSet],
 			emojiFonts: [...detectedEmojiFonts],
+			svgrectSystemSum,
 			lied
 		}
 		
@@ -226,11 +246,12 @@ export const svgHTML = ({ fp, note, hashSlice, hashMini, formatEmojiSet, perform
 			computedTextLength,
 			emojiSet,
 			emojiFonts,
+			svgrectSystemSum,
 			lied
 		}
 	} = fp
 	const divisor = 10000
-	const helpTitle = `hash: ${hashMini(emojiSet)}\n${emojiSet.map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`
+	const helpTitle = `SVGTextContentElement.getExtentOfChar()\nSVGTextContentElement.getSubStringLength()\nSVGTextContentElement.getComputedTextLength()\nhash: ${hashMini(emojiSet)}\n${emojiSet.map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`
 	return `
 	<div class="relative col-six${lied ? ' rejected' : ''}">
 		<span class="aside-note">${performanceLogger.getLog().svg}</span>
@@ -239,11 +260,12 @@ export const svgHTML = ({ fp, note, hashSlice, hashMini, formatEmojiSet, perform
 		<div class="help" title="SVGTextContentElement.getExtentOfChar()">char: ${extentOfChar ? (extentOfChar/divisor) : note.blocked}</div>
 		<div class="help" title="SVGTextContentElement.getSubStringLength()">subs: ${subStringLength ? (subStringLength/divisor) : note.blocked}</div>
 		<div class="help" title="SVGTextContentElement.getComputedTextLength()">text: ${computedTextLength ? (computedTextLength/divisor) : note.blocked}</div>
-		<div class="block-text jumbo grey help relative" title="${helpTitle}">
+		<div class="block-text help relative" title="${helpTitle}">
 			<span class="confidence-note">${
 				emojiFonts.length > 1 ? `${emojiFonts[0]}...` : (emojiFonts[0] || '')
 			}</span>
-			${formatEmojiSet(emojiSet)}
+			<span>${svgrectSystemSum}</span>
+			<span class="grey jumbo" style="${!emojiFonts[0] ? '' : `font-family: '${emojiFonts[0]}' !important`}">${formatEmojiSet(emojiSet)}</span>
 		</div>
 	</div>
 	`	

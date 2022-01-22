@@ -266,7 +266,8 @@ visitor {
 }
 
 #fingerprint-data .block-text,
-#fingerprint-data .block-text-small {
+#fingerprint-data .block-text-small,
+#fingerprint-data .block-text-large {
     display: flex;
 	flex-wrap: wrap;
 	flex-direction: column;
@@ -287,6 +288,10 @@ visitor {
 
 #fingerprint-data .block-text-small {
 	min-height: 50px;
+}
+
+#fingerprint-data .block-text-large {
+	min-height: 161px;
 }
 
 #fingerprint-data .jumbo {
@@ -864,7 +869,7 @@ input[type="radio"] {
     min-height: 470px;
 }
 .icon-pixel-container {
-    min-height: 95px;
+    min-height: 55px;
 }
 .icon-pixel,
 .icon-prediction {
@@ -875,7 +880,8 @@ input[type="radio"] {
     height: 55px;
 }
 .icon-pixel {
-    height: 75px;
+	transform: scale(1.5);
+    height: 35px;
 }
 
 .gradient {
@@ -980,6 +986,7 @@ input[type="radio"] {
 
     #fingerprint-data .block-text,
 	#fingerprint-data .block-text-small,
+	#fingerprint-data .block-text-large,
     #fingerprint-data .blocked,
     .aside-note,
     .aside-note-bottom,
@@ -992,6 +999,7 @@ input[type="radio"] {
 
     #fingerprint-data .block-text,
 	#fingerprint-data .block-text-small,
+	#fingerprint-data .block-text-large,
     .hash,
     .modal-content {
         box-shadow: none;
@@ -1001,7 +1009,8 @@ input[type="radio"] {
         border: 1px solid var(--light-grey);
     }
     #fingerprint-data .block-text,
-	#fingerprint-data .block-text-small {
+	#fingerprint-data .block-text-small,
+	#fingerprint-data .block-text-large {
         border: 1px solid #ffffff12;
         box-shadow: 0 2px 0 0 #ffffff17;
     }

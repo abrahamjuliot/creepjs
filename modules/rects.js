@@ -239,25 +239,7 @@ export const getClientRects = async imports => {
 		</div>
 		`)
 
-		// emojis
-		const pattern = new Set()
-		const emojiElems = [...doc.getElementsByClassName('domrect-emoji')]
-		const emojiRects = emojiElems.map((el, i) => {
-			const emoji = emojis[i]
-			const { height, width } = getBestRect(lieProps, doc, el)
-			return { emoji, width, height }
-		})
-		// get emoji set and system
-		const emojiSet = emojiRects.filter(emoji => {
-			const dimensions = `${emoji.width}, ${emoji.heigt}`
-			if (pattern.has(dimensions)) {
-				return false
-			}
-			pattern.add(dimensions)
-			return true
-		})
-		.map(emoji => emoji.emoji)
-
+		
 		// fonts
 		const baseFonts = ['monospace', 'sans-serif', 'serif']
 		const fontShortList = [
@@ -291,6 +273,42 @@ export const getClientRects = async imports => {
 			}
 			return acc
 		}, new Set())
+
+		// get emoji set and system
+		const pattern = new Set()
+		await queueEvent(timer)
+		
+		const emojiElems = [...doc.getElementsByClassName('domrect-emoji')]
+		const emojiSet = emojiElems.reduce((emojiSet, el, i) => {
+			const emoji = emojis[i]
+			const { height, width } = getBestRect(lieProps, doc, el)
+			const dimensions = `${width},${height}`
+			if (!pattern.has(dimensions)) {
+				pattern.add(dimensions)
+				emojiSet.add(emoji)
+			}
+			return emojiSet
+		}, new Set())
+
+		const domrectSum = 0.00001 * [...pattern].map(x => {
+			return x.split(',').reduce((acc, x) => acc += (+x||0), 0)
+		}).reduce((acc, x) => acc += x, 0)
+
+		const amplifySum = (n, fontSet) => {
+			const { size } = fontSet
+			if (size > 1) {
+				return n / +`1e${size}00` // ...e-200
+			}
+			return (
+				!size ? n * -1e150 : // -...e+148
+					size > 1 ? n / +`1e${size}00` : // ...e-200
+						fontSet.has('Segoe UI Emoji') ? n :
+							fontSet.has('Apple Color Emoji') ? n / 1e64 : // ...e-66
+								n * 1e64 // ...e+62
+			)
+		} 
+
+		const domrectSystemSum = amplifySum(domrectSum, detectedEmojiFonts)
 
 		// get clientRects
 		const range = document.createRange()
@@ -363,8 +381,9 @@ export const getClientRects = async imports => {
 			elementBoundingClientRect,
 			rangeClientRects,
 			rangeBoundingClientRect,
-			emojiSet,
+			emojiSet: [...emojiSet],
 			emojiFonts: [...detectedEmojiFonts],
+			domrectSystemSum,
 			lied
 		}
 	}
@@ -396,6 +415,7 @@ export const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice
 			rangeBoundingClientRect,
 			emojiSet,
 			emojiFonts,
+			domrectSystemSum,
 			lied
 		}
 	} = fp
@@ -430,7 +450,7 @@ export const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice
 		})
 	}
 
-	const helpTitle = `hash: ${hashMini(emojiSet)}\n${emojiSet.map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`
+	const helpTitle = `Element.getClientRects()\nhash: ${hashMini(emojiSet)}\n${emojiSet.map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`
 	return `
 	<div class="relative col-six${lied ? ' rejected' : ''}">
 		<span class="aside-note">${performanceLogger.getLog().rects}</span>
@@ -439,11 +459,12 @@ export const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice
 		<div class="help" title="Element.getBoundingClientRect()">elems B: ${computeDiffs(elementBoundingClientRect)}</div>
 		<div class="help" title="Range.getClientRects()">range A: ${computeDiffs(rangeClientRects)}</div>
 		<div class="help" title="Range.getBoundingClientRect()">range B: ${computeDiffs(rangeBoundingClientRect)}</div>
-		<div class="block-text jumbo grey help relative" title="${helpTitle}">
+		<div class="block-text help relative" title="${helpTitle}">
 			<span class="confidence-note">${
 				emojiFonts.length > 1 ? `${emojiFonts[0]}...` : (emojiFonts[0] || '')
 			}</span>
-			${formatEmojiSet(emojiSet)}
+			<span>${domrectSystemSum}</span>
+			<span class="grey jumbo" style="${!emojiFonts[0] ? '' : `font-family: '${emojiFonts[0]}' !important`}">${formatEmojiSet(emojiSet)}</span>
 		</div>
 	</div>
 	`
