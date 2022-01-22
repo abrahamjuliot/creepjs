@@ -282,7 +282,7 @@ export const getFonts = async imports => {
 				}
 				return acc
 			}, new Set())
-
+			
 			// get emoji set and system
 			const pattern = new Set()
 			const emojiElems = [...doc.getElementsByClassName('pixel-emoji')]
@@ -443,7 +443,7 @@ export const getFonts = async imports => {
 			baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`))
 			return acc
 		}, [])
-
+		
 		const {
 			emojiSet,
 			emojiFonts,
@@ -458,6 +458,7 @@ export const getFonts = async imports => {
 			families,
 			emojis: getEmojis()
 		}) || {}
+		
 		const pixelFonts = { transform, perspective }
 		const compressToList = fontObject => Object.keys(fontObject).reduce((acc, key) => {
 			return [...acc, ...fontObject[key]]
