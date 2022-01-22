@@ -371,6 +371,11 @@ visitor {
     padding: 0 5px;
 }
 
+.gl-image {
+	min-height: 200px;
+	width: 100%;
+}
+
 #fingerprint-data h1,
 #fingerprint-data h2 {
     text-align: center;

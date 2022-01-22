@@ -461,18 +461,16 @@ export const getCanvasWebgl = async imports => {
 export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice, performanceLogger }) => {
 	if (!fp.canvasWebgl) {
 		return `
-		<div class="col-four undefined">
+		<div class="col-six undefined">
 			<strong>WebGL</strong>
 			<div>images: ${note.blocked}</div>
 			<div>pixels: ${note.blocked}</div>
 			<div>params (0): ${note.blocked}</div>
 			<div>exts (0): ${note.blocked}</div>
-		</div>
-		<div class="col-four undefined">
 			<div>gpu:</div>
 			<div class="block-text">${note.blocked}</div>
 		</div>
-		<div class="col-four undefined"><image /></div>`
+		<div class="col-six undefined"><image class="gl-image" /></div>`
 	}
 	const { canvasWebgl: data } = fp
 	const id = 'creep-canvas-webgl'
@@ -502,7 +500,7 @@ export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice, perform
 	
 	return `
 	<span class="time">${performanceLogger.getLog().webgl}</span>
-	<div class="col-four${lied ? ' rejected' : ''}">
+	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>WebGL</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div>images:${
 			!dataURI ? ' '+note.blocked : `<span class="sub-hash">${hashMini(dataURI)}</span>${!dataURI2 || dataURI == dataURI2 ? '' : `<span class="sub-hash">${hashMini(dataURI2)}</span>`}`
@@ -526,12 +524,10 @@ export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice, perform
 				hashMini(extensions)
 			)
 		}</div>
-	</div>
-	<div class="col-four${!parameters.UNMASKED_RENDERER_WEBGL ? ' undefined' : lied ? ' rejected' : ''} relative">
-		${
+		
+		<div class="relative">gpu:${
 			confidence ? `<span class="confidence-note">confidence: <span class="scale-up grade-${confidenceGrade}">${confidence}</span></span>` : ''
-		}
-		<div>gpu:</div>
+		}</div>
 		<div class="block-text help" title="${
 			confidence ? `\nWebGLRenderingContext.getParameter()\ngpu compressed: ${compressedGPU}\nknown parts: ${parts || 'none'}\ngibberish: ${gibbers || 'none'}\nwarnings: ${warnings.join(', ') || 'none'}` : 'WebGLRenderingContext.getParameter()'
 		}">
@@ -541,6 +537,6 @@ export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice, perform
 			</div>
 		</div>
 	</div>
-	<div class="col-four${lied ? ' rejected' : ''}"><image ${!dataURI ? '' : `width="100%" src="${dataURI}"`}/></div>
+	<div class="col-six${lied ? ' rejected' : ''}"><image class="gl-image" ${!dataURI ? '' : `src="${dataURI}"`}/></div>
 	`
 }

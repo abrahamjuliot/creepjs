@@ -145,13 +145,15 @@ export const intlHTML = ({ fp, note, hashSlice, performanceLogger }) => {
 		<span class="aside-note">${performanceLogger.getLog().intl}</span>
 		<strong>Intl</strong><span class="hash">${hashSlice($hash)}</span>
 		<div class="block-text help"  title="Intl.Collator\nIntl.DateTimeFormat\nIntl.DisplayNames\nIntl.ListFormat\nIntl.NumberFormat\nIntl.PluralRules\nIntl.RelativeTimeFormat">
-			${locale ? locale : ''}
-			${dateTimeFormat ? `<br>${dateTimeFormat}` : ''}
-			${displayNames ? `<br>${displayNames}` : ''}
-			${numberFormat ? `<br>${numberFormat}` : ''}
-			${relativeTimeFormat ? `<br>${relativeTimeFormat}` : ''}
-			${listFormat ? `<br>${listFormat}` : ''}
-			${pluralRules ? `<br>${pluralRules}` : ''}
+			${[
+				locale,
+				dateTimeFormat,
+				displayNames,
+				numberFormat,
+				relativeTimeFormat,
+				listFormat,
+				pluralRules
+			].join(', ')}
 		</div>
 	</div>
 	`
