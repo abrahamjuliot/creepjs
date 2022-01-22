@@ -264,6 +264,7 @@ export const getCanvas2d = async imports => {
 		const mods = getPixelMods()
 
 		// get fonts
+		await queueEvent(timer)
 		const emojis = getEmojis()
 		const measureFonts = (context, font, emojis) => {
 			//const emoji = String.fromCodePoint(128512)
