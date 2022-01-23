@@ -21,8 +21,7 @@ export const getNavigator = async (imports, workerScope) => {
 			decryptUserAgent,
 			logTestResult,
 			getPluginLies,
-			isUAPostReduction,
-			getUserAgentRestored
+			isUAPostReduction
 		}
 	} = imports
 

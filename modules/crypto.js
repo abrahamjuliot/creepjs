@@ -251,6 +251,7 @@ const getFuzzyHash = async fp => {
 		'workerScope.timezoneLocation',
 		'workerScope.timezoneOffset',
 		'workerScope.type',
+		'workerScope.uaPostReduction',
 		'workerScope.userAgent',
 		'workerScope.userAgentData',
 		'workerScope.userAgentDataVersion',

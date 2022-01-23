@@ -11,7 +11,8 @@ export const getBestWorkerScope = async imports => {
 			documentLie,
 			logTestResult,
 			compressWebGLRenderer,
-			getWebGLRendererConfidence 
+			getWebGLRendererConfidence,
+			isUAPostReduction
 		}
 	} = imports
 	try {
@@ -238,7 +239,8 @@ export const getBestWorkerScope = async imports => {
 			logTestResult({ time: timer.stop(), test: `${type} worker`, passed: true })
 			return {
 				...workerScope,
-				gpu
+				gpu,
+				uaPostReduction: isUAPostReduction(workerScope.userAgent)
 			}
 		}
 		return
@@ -294,6 +296,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 		mediaCapabilities,
 		platform,
 		userAgent,
+		uaPostReduction,
 		permissions,
 		canvas2d,
 		textMetricsSystemSum,
@@ -443,7 +446,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 				!hardwareConcurrency && deviceMemory ? `<br>ram: ${deviceMemory}` : ''
 			}
 		</div>
-		<div>userAgent:</div>
+		<div class="relative">userAgent:${!uaPostReduction ? '' : `<span class="confidence-note">ua reduction</span>`}</div>
 		<div class="block-text help" title="WorkerNavigator.userAgent">
 			<div>${userAgent || note.unsupported}</div>
 		</div>

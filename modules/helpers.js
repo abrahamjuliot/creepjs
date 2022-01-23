@@ -345,7 +345,7 @@ const isUAPostReduction = userAgent => {
 	return isChrome && !!unifiedPlatform
 }
 	
-const getUserAgentRestored = ({ userAgent, userAgentData }) => {
+const getUserAgentRestored = ({ userAgent, userAgentData, fontPlatformVersion }) => {
 	if (!userAgentData || !isUAPostReduction(userAgent)) {
 		return
 	}
@@ -356,9 +356,10 @@ const getUserAgentRestored = ({ userAgent, userAgentData }) => {
 		!!(brands || []).find(x => x == 'Google Chrome')
 	)
 	const versionNumber = +(/(\d+)\./.exec(platformVersion)||[])[1]
+	const windowsFontVersion = (/8\.1|8|7/.exec(fontPlatformVersion) || [])[0]
 	const windowsVersion = (
 		versionNumber >= 13 ? '11' :
-		versionNumber == 0 ? '7/8/8.1' : '10'
+		versionNumber == 0 ? (windowsFontVersion || '7/8/8.1') : '10'
 	)
 	const macVersion = platformVersion.replace(/\./g, '_')
 	const userAgentRestored = userAgent

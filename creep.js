@@ -1110,11 +1110,11 @@ const imports = {
 				if (requireNewDecryptionFetch) {
 					const sender = {
 						e: 3.141592653589793 ** -100,
-						l: +new Date(new Date(`7/1/1113`))
+						l: +new Date('7/1/1113')
 					}
 					const { userAgent, userAgentData } = fp.workerScope || {}
 					const { platformVersion: fontPlatformVersion } = fp.fonts || {}
-					const restoredUA = getUserAgentRestored({ userAgent, userAgentData })
+					const restoredUA = getUserAgentRestored({ userAgent, userAgentData, fontPlatformVersion })
 					const windows11UA = attemptWindows11UserAgent({
 						userAgent,
 						userAgentData,
