@@ -313,18 +313,10 @@ export const getCanvas2d = async imports => {
 			return acc
 		}, new Set())
 		
-		// get emojis
+		// get emoji set and system
 		context.font = `200px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`
 		const pattern = new Set()
-		await queueEvent(timer)
-		const emojiMetrics = emojis.map(emoji => {
-			return {
-				emoji,
-				metrics: (context.measureText(emoji) || {})
-			}
-		})
-		// get emoji set and system
-		const emojiSet = emojiMetrics.filter(emoji => {
+		const emojiSet = emojis.reduce((emojiSet, emoji) => {
 			const {
 				actualBoundingBoxAscent,
 				actualBoundingBoxDescent,
@@ -333,7 +325,7 @@ export const getCanvas2d = async imports => {
 				fontBoundingBoxAscent,
 				fontBoundingBoxDescent,
 				width
-			} = emoji.metrics
+			} = context.measureText(emoji) || {}
 			const dimensions = [
 				actualBoundingBoxAscent,
 				actualBoundingBoxDescent,
@@ -343,13 +335,12 @@ export const getCanvas2d = async imports => {
 				fontBoundingBoxDescent,
 				width
 			].join(',')
-			if (pattern.has(dimensions)) {
-				return false
+			if (!pattern.has(dimensions)) {
+				pattern.add(dimensions)
+				emojiSet.add(emoji)
 			}
-			pattern.add(dimensions)
-			return true
-		})
-		.map(emoji => emoji.emoji)
+			return emojiSet
+		}, new Set())
 
 		// textMetrics System Sum
 		const textMetricsSum = 0.00001 * [...pattern].map(x => {
@@ -423,7 +414,7 @@ export const getCanvas2d = async imports => {
 			blobOffscreen,
 			textMetricsSystemSum,
 			liedTextMetrics: textMetricsLie,
-			emojiSet,
+			emojiSet: [...emojiSet],
 			emojiFonts: [...detectedEmojiFonts],
 			lied
 		}
@@ -625,10 +616,10 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 		<div>textMetrics:</div>
 		<div class="block-text help relative" title="${emojiHelpTitle}"> 
 			<span class="confidence-note">${
-				emojiFonts.length > 1 ? `${emojiFonts[0]}...` : (emojiFonts[0] || '')
+				!emojiFonts ? '' : emojiFonts.length > 1 ? `${emojiFonts[0]}...` : (emojiFonts[0] || '')
 			}</span>
-			<span>${textMetricsSystemSum}</span>
-			<span class="grey jumbo" style="${!emojiFonts[0] ? '' : `font-family: '${emojiFonts[0]}' !important`}">
+			<span>${textMetricsSystemSum || note.unsupported}</span>
+			<span class="grey jumbo" style="${!(emojiFonts || [])[0] ? '' : `font-family: '${emojiFonts[0]}' !important`}">
 				${formatEmojiSet(emojiSet)}
 			</span>
 		</div>

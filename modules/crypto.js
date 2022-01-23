@@ -224,9 +224,13 @@ const getFuzzyHash = async fp => {
 		'workerScope.canvas2d',
 		'workerScope.device',
 		'workerScope.deviceMemory',
+		'workerScope.emojiFonts',
+		'workerScope.emojiSet',
 		'workerScope.engineCurrencyLocale',
-		'workerScope.fontFaceSetFonts',
+		'workerScope.fontApps',
+		'workerScope.fontFaceLoadFonts',
 		'workerScope.fontListLen',
+		'workerScope.fontPlatformVersion',
 		'workerScope.fontSystemClass',
 		'workerScope.gpu',
 		'workerScope.hardwareConcurrency',
@@ -243,8 +247,6 @@ const getFuzzyHash = async fp => {
 		'workerScope.scopeKeys',
 		'workerScope.system',
 		'workerScope.systemCurrencyLocale',
-		'workerScope.textMetrics',
-		'workerScope.textMetricsSystemClass',
 		'workerScope.textMetricsSystemSum',
 		'workerScope.timezoneLocation',
 		'workerScope.timezoneOffset',
@@ -277,10 +279,15 @@ const getFuzzyHash = async fp => {
 	// update log
 	if (''+metricKeysReported != ''+metricKeys) {
 		const newKeys = metricKeysReported.filter(key => !metricKeys.includes(key))
-		console.warn('fuzzy key(s) missing:\n', newKeys.join('\n'))
+
+		if (newKeys.length) {
+			console.warn('fuzzy key(s) missing:\n', newKeys.join('\n'))
+		
+			console.groupCollapsed('update keys for accurate fuzzy hashing:')
+			console.log(metricKeysReported.map(x => `'${x}',`).join('\n'))
+			console.groupEnd()
+		}
 	}
-	//console.log(metricKeysReported.length) // 172
-	//console.log(metricKeysReported.map(x => `'${x}',`).join('\n'))
 
 	// compute fuzzy fingerprint master
 	const fuzzyFpMaster = metricKeys.reduce((acc, key, index) => {

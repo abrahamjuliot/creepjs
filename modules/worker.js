@@ -90,7 +90,6 @@ export const getBestWorkerScope = async imports => {
 			// detect lies 
 			const {
 				fontSystemClass,
-				textMetricsSystemClass,
 				system,
 				userAgent,
 				userAgentData,
@@ -109,20 +108,6 @@ export const getBestWorkerScope = async imports => {
 				workerScope.lied = true
 				workerScope.lies.systemFonts = `${fontSystemClass} fonts and ${system} user agent do not match`
 				documentLie(workerScope.scope, workerScope.lies.systemFonts)
-			}
-
-			// text metrics system lie
-			const textMetricsSystemLie = textMetricsSystemClass && (
-				/^((i(pad|phone|os))|mac)$/i.test(system) && textMetricsSystemClass != 'Apple'  ? true :
-					/^(windows)$/i.test(system) && textMetricsSystemClass != 'Windows'  ? true :
-						/^(linux|chrome os)$/i.test(system) && textMetricsSystemClass != 'Linux'  ? true :
-							/^(android)$/i.test(system) && textMetricsSystemClass != 'Android'  ? true :
-								false
-			)
-			if (textMetricsSystemLie) {
-				workerScope.lied = true
-				workerScope.lies.systemTextMetrics = `${textMetricsSystemClass} text metrics and ${system} user agent do not match`
-				documentLie(workerScope.scope, workerScope.lies.systemTextMetrics)
 			}
 
 			// prototype lies
@@ -265,23 +250,23 @@ export const getBestWorkerScope = async imports => {
 	}
 }
 
-export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, computeWindowsRelease, performanceLogger }) => {
+export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, computeWindowsRelease, performanceLogger, formatEmojiSet }) => {
 	if (!fp.workerScope) {
 		return `
 		<div class="col-six undefined">
 			<strong>Worker</strong>
-			<div>canvas 2d: ${note.blocked}</div>
-			<div>textMetrics: ${note.blocked}</div>
-			<div>fontFaceSet (0): ${note.blocked}</div>
 			<div>keys (0): ${note.blocked}</div>
 			<div>permissions (0): ${note.blocked}</div>
 			<div>codecs (0):${note.blocked}</div>
-			<div>timezone: ${note.blocked}</div>
-			<div>language: ${note.blocked}</div>
+			<div>canvas 2d: ${note.blocked}</div>
+			<div>fonts (0): ${note.blocked}</div>
+			<div class="block-text-large">${note.blocked}</div>
 			<div>gpu:</div>
 			<div class="block-text">${note.blocked}</div>
 		</div>
 		<div class="col-six undefined">
+			<div>lang: ${note.blocked}</div>
+			<div>timezone: ${note.blocked}</div>
 			<div>device:</div>
 			<div class="block-text">${note.blocked}</div>
 			<div>userAgent:</div>
@@ -311,15 +296,18 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 		userAgent,
 		permissions,
 		canvas2d,
-		textMetrics,
 		textMetricsSystemSum,
 		textMetricsSystemClass,
 		webglRenderer,
 		webglVendor,
 		gpu,
-		fontFaceSetFonts,
+		fontFaceLoadFonts,
 		fontSystemClass,
 		fontListLen,
+		fontPlatformVersion,
+		fontApps,
+		emojiSet,
+		emojiFonts,
 		userAgentData,
 		type,
 		scope,
@@ -328,17 +316,6 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 		$hash
 	} = data || {}
 
-	const icon = {
-		'Linux': '<span class="icon linux"></span>',
-		'Apple': '<span class="icon apple"></span>',
-		'Windows': '<span class="icon windows"></span>',
-		'Android': '<span class="icon android"></span>'
-	}
-	
-	const systemFontClassIcon = icon[fontSystemClass]
-	const systemTextMetricsClassIcon = icon[textMetricsSystemClass]
-	const fontFaceSetHash = hashMini(fontFaceSetFonts)
-	const textMetricsHash = hashMini(textMetrics)
 	const codecKeys = Object.keys(mediaCapabilities || {})
 	const permissionsKeys = Object.keys(permissions || {})
 	const permissionsGranted = (
@@ -354,34 +331,14 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 		compressedGPU
 	} = gpu || {}
 
-
+	const fontFaceLoadHash = hashMini(fontFaceLoadFonts)
+	const blockHelpTitle = `FontFace.load()\nOffscreenCanvasRenderingContext2D.measureText()\nhash: ${hashMini(emojiSet)}\n${(emojiSet||[]).map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`
 	return `
 	<span class="time">${performanceLogger.getLog()[`${type} worker`]}</span>
 	<span class="aside-note-bottom">${scope || ''}</span>
 	<div class="relative col-six${lied ? ' rejected' : ''}">
 		
 		<strong>Worker</strong><span class="hash">${hashSlice($hash)}</span>
-		<div class="help" title="OffscreenCanvas.convertToBlob()\nFileReader.readAsDataURL()">canvas 2d:${
-			canvas2d && canvas2d.dataURI ?
-			`<span class="sub-hash">${hashMini(canvas2d.dataURI)}</span>` :
-			` ${note.unsupported}`
-		}</div>
-		<div class="help" title="OffscreenCanvasRenderingContext2D.measureText()">textMetrics: ${
-			!textMetrics ? note.blocked : modal(
-				'creep-worker-text-metrics',
-				`<div>system: ${textMetricsSystemSum}</div><br>` +
-				Object.keys(textMetrics).map(key => `<span>${key}: ${typeof textMetrics[key] == 'undefined' ? note.unsupported : textMetrics[key]}</span>`).join('<br>'),
-				systemTextMetricsClassIcon ? `${systemTextMetricsClassIcon}${textMetricsHash}` :
-					textMetricsHash
-			)	
-		}</div>
-		<div class="help" title="FontFaceSet.check()">fontFaceSet (${fontFaceSetFonts ? count(fontFaceSetFonts) : '0'}/${''+fontListLen}): ${
-			fontFaceSetFonts.length ? modal(
-				'creep-worker-fonts-check', 
-				fontFaceSetFonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>'),
-				systemFontClassIcon ? `${systemFontClassIcon}${fontFaceSetHash}` : fontFaceSetHash
-			) : note.unsupported
-		}</div>
 		<div>keys (${count(scopeKeys)}): ${
 			scopeKeys && scopeKeys.length ? modal(
 				'creep-worker-scope-version',
@@ -396,6 +353,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 				hashMini(permissions)
 			)
 		}</div>
+
 		<div class="help" title="MediaCapabilities.decodingInfo()">codecs (${''+codecKeys.length}): ${
 		!mediaCapabilities || !codecKeys.length ? note.unsupported :
 			modal(
@@ -404,17 +362,52 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 				hashMini(mediaCapabilities)
 			)
 		}</div>
-		<div class="help" title="Intl.DateTimeFormat().resolvedOptions().timeZone\nDate.getDate()\nDate.getMonth()\nDate.parse()">timezone: ${timezoneLocation} (${''+timezoneOffset})</div>
-		<div class="help" title="WorkerNavigator.language\nWorkerNavigator.languages\nIntl.Collator.resolvedOptions()\nIntl.DateTimeFormat.resolvedOptions()\nIntl.DisplayNames.resolvedOptions()\nIntl.ListFormat.resolvedOptions()\nIntl.NumberFormat.resolvedOptions()\nIntl.PluralRules.resolvedOptions()\nIntl.RelativeTimeFormat.resolvedOptions()\nNumber.toLocaleString()">lang:
-			${
-				localeEntropyIsTrusty ? `${language} (${systemCurrencyLocale})` : 
-					`${language} (<span class="bold-fail">${engineCurrencyLocale}</span>)`
-			}
-			${
-				locale === language ? '' : localeIntlEntropyIsTrusty ? ` ${locale}` : 
-					` <span class="bold-fail">${locale}</span>`
-			}
+
+		<div class="help" title="OffscreenCanvas.convertToBlob()\nFileReader.readAsDataURL()">canvas 2d:${
+			canvas2d && canvas2d.dataURI ?
+			`<span class="sub-hash">${hashMini(canvas2d.dataURI)}</span>` :
+			` ${note.unsupported}`
+		}</div>
+
+		<div class="help" title="FontFace.load()">fonts (${fontFaceLoadFonts ? count(fontFaceLoadFonts) : '0'}/${'' + fontListLen}): ${
+			!(fontFaceLoadFonts||[]).length ? note.unsupported : modal(
+				'creep-worker-fonts',
+				fontFaceLoadFonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>'),
+				fontFaceLoadHash
+			)
+		}</div>
+
+		<div class="block-text-large help relative" title="${blockHelpTitle}">
+			<div>
+				${fontPlatformVersion ? `platform: ${fontPlatformVersion}<br>` : ((fonts) => {
+					const icon = {
+						'Linux': '<span class="icon linux"></span>',
+						'Apple': '<span class="icon apple"></span>',
+						'Windows': '<span class="icon windows"></span>',
+						'Android': '<span class="icon android"></span>',
+						'CrOS': '<span class="icon cros"></span>'
+					}
+					return !(fonts || []).length ? '' : (
+						((''+fonts).match(/Lucida Console/)||[]).length ? `${icon.Windows}Lucida Console...` :
+						((''+fonts).match(/Droid Sans Mono|Noto Color Emoji|Roboto/g)||[]).length == 3 ? `${icon.Linux}${icon.Android}Droid Sans Mono,Noto Color...` :
+						((''+fonts).match(/Droid Sans Mono|Roboto/g)||[]).length == 2 ? `${icon.Android}Droid Sans Mono,Roboto...` :
+						((''+fonts).match(/Noto Color Emoji|Roboto/g)||[]).length == 2 ? `${icon.CrOS}Noto Color Emoji,Roboto...` :
+						((''+fonts).match(/Noto Color Emoji/)||[]).length ? `${icon.Linux}Noto Color Emoji...` :
+						((''+fonts).match(/Arimo/)||[]).length ? `${icon.Linux}Arimo...` :
+						((''+fonts).match(/Helvetica Neue/g)||[]).length == 2 ? `${icon.Apple}Helvetica Neue...` :
+						`${(fonts||[])[0]}...`
+					)
+				})(fontFaceLoadFonts)}
+				${(fontApps || []).length ? `apps: ${(fontApps || []).join(', ')}` : ''}
+				
+				<span class="confidence-note">${
+					!emojiFonts ? '' : emojiFonts.length > 1 ? `${emojiFonts[0]}...` : (emojiFonts[0] || '')
+				}</span><br>
+				<span>${textMetricsSystemSum || note.unsupported}</span><br>
+				<span class="grey jumbo" style="${!(emojiFonts || [])[0] ? '' : `font-family: '${emojiFonts[0]}' !important`}">${formatEmojiSet(emojiSet)}</span>
+			</div>
 		</div>
+
 		<div class="relative">${
 			confidence ? `<span class="confidence-note">confidence: <span class="scale-up grade-${confidenceGrade}">${confidence}</span></span>` : ''
 		}gpu:</div>
@@ -426,6 +419,20 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 		</div>
 	</div>
 	<div class="col-six${lied ? ' rejected' : ''}">
+		
+		<div class="help" title="WorkerNavigator.language\nWorkerNavigator.languages\nIntl.Collator.resolvedOptions()\nIntl.DateTimeFormat.resolvedOptions()\nIntl.DisplayNames.resolvedOptions()\nIntl.ListFormat.resolvedOptions()\nIntl.NumberFormat.resolvedOptions()\nIntl.PluralRules.resolvedOptions()\nIntl.RelativeTimeFormat.resolvedOptions()\nNumber.toLocaleString()">lang:
+			${
+				localeEntropyIsTrusty ? `${language} (${systemCurrencyLocale})` : 
+					`${language} (<span class="bold-fail">${engineCurrencyLocale}</span>)`
+			}
+			${
+				locale === language ? '' : localeIntlEntropyIsTrusty ? ` ${locale}` : 
+					` <span class="bold-fail">${locale}</span>`
+			}
+		</div>
+
+		<div class="help" title="Intl.DateTimeFormat().resolvedOptions().timeZone\nDate.getDate()\nDate.getMonth()\nDate.parse()">timezone: ${timezoneLocation} (${''+timezoneOffset})</div>
+
 		<div>device:</div>
 		<div class="block-text help" title="WorkerNavigator.deviceMemory\nWorkerNavigator.hardwareConcurrency\nWorkerNavigator.platform\nWorkerNavigator.userAgent">
 			${`${system}${platform ? ` (${platform})` : ''}`}

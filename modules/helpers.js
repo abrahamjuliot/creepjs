@@ -436,8 +436,9 @@ const queueEvent = (timer, delay = 0) => {
 
 const formatEmojiSet = (emojiSet, limit = 3) => {
 	const maxLen = (limit * 2) + 3
-	return emojiSet.length > maxLen ? `${emojiSet.slice(0, limit).join('')}...${emojiSet.slice(-limit).join('')}` :
-		emojiSet.join('')
+	const list = (emojiSet || [])
+	return list.length > maxLen ? `${emojiSet.slice(0, limit).join('')}...${emojiSet.slice(-limit).join('')}` :
+		list.join('')
 }
 
 const getEmojis = () => [

@@ -520,91 +520,20 @@ const getPrototypeLies = globalScope => {
 	}
 }
 
-const systemEmojis = [
+const getEmojis = () => [
+	[128512],[9786],[129333, 8205, 9794, 65039],[9832],[9784],[9895],[8265],[8505],[127987, 65039, 8205, 9895, 65039],[129394],[9785],[9760],[129489, 8205, 129456],[129487, 8205, 9794, 65039],[9975],[129489, 8205, 129309, 8205, 129489],[9752],[9968],[9961],[9972],[9992],[9201],[9928],[9730],[9969],[9731],[9732],[9976],[9823],[9937],[9000],[9993],[9999],
+
+	[128105, 8205, 10084, 65039, 8205, 128139, 8205, 128104],
+	[128104, 8205, 128105, 8205, 128103, 8205, 128102],
+	[128104, 8205, 128105, 8205, 128102],
+
+	// android 11
 	[128512],
-	[9786],
-	[129333, 8205, 9794, 65039],
-	[9832],
-	[9784],
-	[9895],
-	[8265],
-	[8505],
-	[127987, 65039, 8205, 9895, 65039],
-	[129394],
-	[9785],
-	[9760],
-	[129489, 8205, 129456],
-	[129487, 8205, 9794, 65039],
-	[9975],
-	[129489, 8205, 129309, 8205, 129489],
-	[9752],
-	[9968],
-	[9961],
-	[9972],
-	[9992],
-	[9201],
-	[9928],
-	[9730],
-	[9969],
-	[9731],
-	[9732],
-	[9976],
-	[9823],
-	[9937],
-	[9000],
-	[9993],
-	[9999],
-	[10002],
-	[9986],
-	[9935],
-	[9874],
-	[9876],
-	[9881],
-	[9939],
-	[9879],
-	[9904],
-	[9905],
-	[9888],
-	[9762],
-	[9763],
-	[11014],
-	[8599],
-	[10145],
-	[11013],
-	[9883],
-	[10017],
-	[10013],
-	[9766],
-	[9654],
-	[9197],
-	[9199],
-	[9167],
-	[9792],
-	[9794],
-	[10006],
-	[12336],
-	[9877],
-	[9884],
-	[10004],
-	[10035],
-	[10055],
-	[9724],
-	[9642],
-	[10083],
-	[10084],
-	[9996],
-	[9757],
-	[9997],
-	[10052],
-	[9878],
-	[8618],
-	[9775],
-	[9770],
-	[9774],
-	[9745],
-	[10036],
-	[127344],
-	[127359]
+	[169], [174], [8482],
+	[128065, 65039, 8205, 128488, 65039],
+	
+	// other
+	[10002],[9986],[9935],[9874],[9876],[9881],[9939],[9879],[9904],[9905],[9888],[9762],[9763],[11014],[8599],[10145],[11013],[9883],[10017],[10013],[9766],[9654],[9197],[9199],[9167],[9792],[9794],[10006],[12336],[9877],[9884],[10004],[10035],[10055],[9724],[9642],[10083],[10084],[9996],[9757],[9997],[10052],[9878],[8618],[9775],[9770],[9774],[9745],[10036],[127344],[127359]
 ].map(emojiCode => String.fromCodePoint(...emojiCode))
 
 const codecs = [
@@ -679,97 +608,272 @@ const getPermissionState = name => {
     .catch(error => ({ name, state: 'unknown' }))
 }
 
-const getWorkerData = async () => {
-	const timer = createTimer()
-	await queueEvent(timer)
+const getUserAgentData = async navigator => {
+	if (!('userAgentData' in navigator)) {
+		return
+	}
+	const data = await navigator.userAgentData.getHighEntropyValues(
+		['platform', 'platformVersion', 'architecture', 'bitness',  'model', 'uaFullVersion']
+	)
+	const { brands, mobile } = navigator.userAgentData || {}
+	const compressedBrands = (brands, captureVersion = false) => brands
+		.filter(obj => !/Not/.test(obj.brand)).map(obj => `${obj.brand}${captureVersion ? ` ${obj.version}` : ''}`)
+	const removeChromium = brands => (
+		brands.length > 1 ? brands.filter(brand => !/Chromium/.test(brand)) : brands
+	)
+	
+	// compress brands
+	if (!data.brands) {
+		data.brands = brands
+	}
+	data.brandsVersion = compressedBrands(data.brands, true)
+	data.brands = compressedBrands(data.brands)
+	data.brandsVersion = removeChromium(data.brandsVersion)
+	data.brands = removeChromium(data.brands)
+	
+	if (!data.mobile) {
+		data.mobile = mobile
+	}
+	const dataSorted = Object.keys(data).sort().reduce((acc, key) => {
+		acc[key] = data[key]
+		return acc
+	},{})
+	return dataSorted
+}
 
-	const getAppleFonts = () => [
-		'Helvetica Neue'
-	]
-
-	const getWindowsFonts = () => [
+const getWindowsFontMap = () => ({
+	// https://docs.microsoft.com/en-us/typography/fonts/windows_11_font_list
+	'7': [
 		'Cambria Math',
-		'Lucida Console',
-		'MS Serif',
-		'Segoe UI'
+		'Lucida Console'
+	],
+	'8': [
+		'Aldhabi',
+		'Gadugi',
+		'Myanmar Text',
+		'Nirmala UI'
+	],
+	'8.1': [
+		'Leelawadee UI',
+		'Javanese Text',
+		'Segoe UI Emoji'
+	],
+	'10': [
+		'HoloLens MDL2 Assets', // 10 (v1507) +
+		'Segoe MDL2 Assets', // 10 (v1507) +
+		'Bahnschrift', // 10 (v1709) +-
+		'Ink Free', // 10 (v1803) +-
+	],
+	'11': ['Segoe Fluent Icons']
+})
+
+const getMacOSFontMap = () => ({
+	// Mavericks and below
+	'10.9': [
+		'Helvetica Neue',
+		'Geneva' // mac (not iOS)
+	],
+	// Yosemite
+	'10.10': [
+		'Kohinoor Devanagari Medium',
+		'Luminari'
+	],
+	// El Capitan
+	'10.11': [
+		'PingFang HK Light'
+	],
+	// Sierra: https://support.apple.com/en-ie/HT206872
+	'10.12': [
+		'American Typewriter Semibold',
+		'Futura Bold',
+		'SignPainter-HouseScript Semibold'
+	],
+	// High Sierra: https://support.apple.com/en-me/HT207962
+	// Mojave: https://support.apple.com/en-us/HT208968
+	'10.13-10.14': [
+		'InaiMathi Bold'
+	],
+	// Catalina: https://support.apple.com/en-us/HT210192
+	// Big Sur: https://support.apple.com/en-sg/HT211240
+	'10.15-11': [
+		'Galvji',
+		'MuktaMahee Regular'
+	],
+	// Monterey: https://www.apple.com/my/macos/monterey/features/
+	// https://apple.stackexchange.com/questions/429548/request-for-list-of-fonts-folder-contents-on-monterey
+	//'12': []
+})
+
+const getDesktopAppFontMap = () => ({
+	// docs.microsoft.com/en-us/typography/font-list/ms-outlook
+	'Microsoft Outlook': ['MS Outlook'],
+	// https://community.adobe.com/t5/postscript-discussions/zwadobef-font/m-p/3730427#M785
+	'Adobe Acrobat': ['ZWAdobeF'],
+	// https://wiki.documentfoundation.org/Fonts
+	'LibreOffice': [
+		'Amiri',
+		'KACSTOffice',
+		'Liberation Mono',
+		'Source Code Pro'
+	],
+	// https://superuser.com/a/611804
+	'OpenOffice': [
+		'DejaVu Sans',
+		'Gentium Book Basic',
+		'OpenSymbol'
 	]
+})
 
-	const getLinuxFonts = () => [
-		'Arimo', // ubuntu, chrome os
-		'Cousine', // ubuntu, chrome os
-		'MONO', // ubuntu, chrome os (not TB)
-		'Jomolhari', // chrome os
-		'Ubuntu', // ubuntu (not TB)
-		'Chilanka', // ubuntu (not TB)
-	]
+const getAppleFonts = () => {
+	const macOSFontMap = getMacOSFontMap()
+	return Object.keys(macOSFontMap).map(key => macOSFontMap[key]).flat()
+}
 
-	const getAndroidFonts = () => [
-		'Dancing Script', // android FF
-	]
+const getWindowsFonts = () => {
+	const windowsFontMap = getWindowsFontMap()
+	return Object.keys(windowsFontMap).map(key => windowsFontMap[key]).flat()
+}
 
-	const getGeneralFonts = () => [
-		// Windows
-		'Consolas', //FF and Chrome (not TB)
-		'HELV', // FF (not TB)
-		'Marlett', // chrome
-		// Linux 
-		'Noto Sans JP', // TB linux
-		// Apple
-		'Arial Hebrew', // safari + chrome (not FF or TB)
-		'Arial Rounded MT Bold', // not TB
-		'Geneva', // mac
-		'Apple Chancery', // mac (not TB)
-		'Apple Color Emoji', // ios, chrome, safari (TB, not FF)
-		// Android
-		'Roboto', // android FF, Chrome OS
-		'Droid Sans Mono', // FF android
-		'Cutive Mono', // some android FF
-		// Other
-		'Liberation Mono', // Chrome OS
-		'Noto Sans Yi', // TB on linux and windows, chrome OS, FF android, Safari
-		'Monaco', // android + mac
-		'Palatino', // android + mac + ios
-		'Baskerville', // android + mac
-		'Tahoma' // android, mac, windows (not ios, not chrome os 90)
-	]
+const getDesktopAppFonts = () => {
+	const desktopAppFontMap = getDesktopAppFontMap()
+	return Object.keys(desktopAppFontMap).map(key => desktopAppFontMap[key]).flat()
+}
 
-	const getPlatformFonts = () => [
-		...getAppleFonts(),
-		...getWindowsFonts(),
-		...getLinuxFonts(),
-		...getAndroidFonts(),
-		...getGeneralFonts()
-	].sort()
+const getLinuxFonts = () => [
+	'Arimo', // ubuntu, chrome os
+	'Chilanka', // ubuntu (not TB)
+	'Cousine', // ubuntu, chrome os
+	'Jomolhari', // chrome os
+	'MONO', // ubuntu, chrome os (not TB)
+	'Noto Color Emoji', // Linux
+	'Ubuntu', // ubuntu (not TB)
+]
 
-	const getFontFaceSetFonts = list => {
-		const controlledErrorMessage = 'FontFaceSet.check blocked or not supported'
-		try {
-			if (!('fonts' in globalThis)) {
-				return []
+const getAndroidFonts = () => [
+	'Dancing Script', // android
+	'Droid Sans Mono', // Android
+	'Roboto' // Android, Chrome OS
+]
+
+const getFontList = () => [
+	...getAppleFonts(),
+	...getWindowsFonts(),
+	...getLinuxFonts(),
+	...getAndroidFonts(),
+	...getDesktopAppFonts()
+].sort()
+
+const getFontFaceLoadFonts = async fontList => {
+	if (!self.FontFace) {
+		return
+	}
+	try {
+		const fontFaceList = fontList.map(font => new FontFace(font, `local("${font}")`))
+		const responseCollection = await Promise
+			.allSettled(fontFaceList.map(font => font.load()))
+		const fonts = responseCollection.reduce((acc, font) => {
+			if (font.status == 'fulfilled') {
+				return [...acc, font.value.family]
 			}
-			const gibberish = '&WY2tR*^ftCiMX9LD5m%iZSWCVSg'
-			if (fonts.check(`12px '${gibberish}'`)) {
-				throw new Error(controlledErrorMessage)
-			} 
-			fonts.clear() // clear loaded or added fonts
-			const supportedFonts = list.filter(font => fonts.check(`12px '${font}'`))
-			return supportedFonts
-		} catch (error) {
-			if (error.message != controlledErrorMessage) {
-				console.error(error)
-			}
-			return []
+			return acc
+		}, [])
+		return fonts
+	} catch (error) {
+		console.error(error)
+		return []
+	}
+}
+
+const getPlatformVersion = fonts => {
+	if (!fonts) {
+		return
+	}
+	const getWindows = ({ fonts, fontMap }) => {
+		const fontVersion = {
+			['11']: fontMap['11'].find(x => fonts.includes(x)),
+			['10']: fontMap['10'].find(x => fonts.includes(x)),
+			['8.1']: fontMap['8.1'].find(x => fonts.includes(x)),
+			['8']: fontMap['8'].find(x => fonts.includes(x)),
+			// require complete set of Windows 7 fonts
+			['7']: fontMap['7'].filter(x => fonts.includes(x)).length == fontMap['7'].length
 		}
+		const hash = (
+			'' + Object.keys(fontVersion).sort().filter(key => !!fontVersion[key])
+		)
+		const hashMap = {
+			'10,11,7,8,8.1': '11',
+			'10,7,8,8.1': '10',
+			'7,8,8.1': '8.1',
+			'11,7,8,8.1': '8.1', // missing 10
+			'7,8': '8',
+			'10,7,8': '8', // missing 8.1
+			'10,11,7,8': '8', // missing 8.1
+			'7': '7',
+			'7,8.1': '7',
+			'10,7,8.1': '7', // missing 8
+			'10,11,7,8.1': '7', // missing 8
+		}
+		const version = hashMap[hash]
+		return version ? `Windows ${version}` : undefined
 	}
 
-	// fontFaceSetFonts and fontSystemClass
-	const platformFonts = getPlatformFonts()
-	const fontFaceSetFonts = getFontFaceSetFonts(platformFonts)
-	const apple = new Set(getAppleFonts())
+	const getMacOS = ({ fonts, fontMap }) => {
+		const fontVersion = {
+			['10.15-11']: fontMap['10.15-11'].find(x => fonts.includes(x)),
+			['10.13-10.14']: fontMap['10.13-10.14'].find(x => fonts.includes(x)),
+			['10.12']: fontMap['10.12'].find(x => fonts.includes(x)),
+			['10.11']: fontMap['10.11'].find(x => fonts.includes(x)),
+			['10.10']: fontMap['10.10'].find(x => fonts.includes(x)),
+			// require complete set of 10.9 fonts
+			['10.9']: fontMap['10.9'].filter(x => fonts.includes(x)).length == fontMap['10.9'].length
+		}
+		const hash = (
+			'' + Object.keys(fontVersion).sort().filter(key => !!fontVersion[key])
+		)
+		const hashMap = {
+			'10.10,10.11,10.12,10.13-10.14,10.15-11,10.9': '10.15-11',
+			'10.10,10.11,10.12,10.13-10.14,10.9': '10.13-10.14',
+			'10.10,10.11,10.12,10.9': '10.12',
+			'10.10,10.11,10.9': '10.11',
+			'10.10,10.9': '10.10',
+			'10.9': '10.9'
+		}
+		const version = hashMap[hash]
+		return version ? `macOS ${version}` : undefined
+	}
+
+	return  (
+		getWindows({ fonts, fontMap: getWindowsFontMap() }) ||
+		getMacOS({ fonts, fontMap: getMacOSFontMap() })
+	)
+}
+
+const getDesktopApps = fonts => {
+	if (!fonts) {
+		return
+	}
+	const desktopAppFontMap = getDesktopAppFontMap()
+	const apps = Object.keys(desktopAppFontMap).reduce((acc, key) => {
+		const appFontSet = desktopAppFontMap[key]
+		const match = appFontSet.filter(x => fonts.includes(x)).length == appFontSet.length
+		return match ? [...acc, key] : acc
+	}, [])
+	return apps
+}
+
+const getFontSystemClass = fonts => {
+	if (!fonts) {
+		return
+	}
+	const windows = new Set(['Lucida Console'])
+	const apple = new Set(['Helvetica Neue'])
 	const linux = new Set(getLinuxFonts())
-	const windows = new Set(getWindowsFonts())
 	const android = new Set(getAndroidFonts())
-	const fontSystemClass = [...fontFaceSetFonts.reduce((acc, font) => {
+	const fontSystemClass = [...fonts.reduce((acc, font) => {
+		if (!acc.has('Windows') && windows.has(font)) {
+			acc.add('Windows')
+			return acc
+		}
 		if (!acc.has('Apple') && apple.has(font)) {
 			acc.add('Apple')
 			return acc
@@ -778,134 +882,19 @@ const getWorkerData = async () => {
 			acc.add('Linux')
 			return acc
 		}
-		if (!acc.has('Windows') && windows.has(font)) {
-			acc.add('Windows')
-			return acc
-		}
 		if (!acc.has('Android') && android.has(font)) {
 			acc.add('Android')
 			return acc
 		}
 		return acc
 	}, new Set())]
-	const chromeOnAndroid = (
-		''+((fontFaceSetFonts || []).sort()) == 'Baskerville,Monaco,Palatino,Tahoma'
-	)
-	if (!fontSystemClass.length && chromeOnAndroid) {
-		fontSystemClass.push('Android')
+	return fontSystemClass.length == 1 ? fontSystemClass[0] : undefined
+}
+
+const get2dCanvasData = async () => {
+	if (!self.OffscreenCanvas) {
+		return
 	}
-
-	// userAgentData
-	const getUserAgentData = async navigator => {
-		if (!('userAgentData' in navigator)) {
-			return
-		}
-		const data = await navigator.userAgentData.getHighEntropyValues(
-			['platform', 'platformVersion', 'architecture', 'bitness',  'model', 'uaFullVersion']
-		)
-		const { brands, mobile } = navigator.userAgentData || {}
-		const compressedBrands = (brands, captureVersion = false) => brands
-			.filter(obj => !/Not/.test(obj.brand)).map(obj => `${obj.brand}${captureVersion ? ` ${obj.version}` : ''}`)
-		const removeChromium = brands => (
-			brands.length > 1 ? brands.filter(brand => !/Chromium/.test(brand)) : brands
-		)
-		
-		// compress brands
-		if (!data.brands) {
-			data.brands = brands
-		}
-		data.brandsVersion = compressedBrands(data.brands, true)
-		data.brands = compressedBrands(data.brands)
-		data.brandsVersion = removeChromium(data.brandsVersion)
-		data.brands = removeChromium(data.brands)
-		
-		if (!data.mobile) {
-			data.mobile = mobile
-		}
-		const dataSorted = Object.keys(data).sort().reduce((acc, key) => {
-			acc[key] = data[key]
-			return acc
-		},{})
-		return dataSorted
-	}
-
-	// canvas2d
-	let canvasOffscreen2d
-	let textMetrics = {}
-	let textMetricsSystemSum
-	let textMetricsSystemClass
-	try {
-		canvasOffscreen2d = new OffscreenCanvas(186, 30)
-		const context2d = canvasOffscreen2d.getContext('2d')
-		canvasOffscreen2d.width  = 186
-		canvasOffscreen2d.height = 30
-		const str = `😃🙌🧠🦄🐉🌊🍧🏄‍♀️🌠🔮`
-		context2d.font = '14px Arial'
-		context2d.fillText(str, 0, 20)
-		context2d.fillStyle = 'rgba(0, 0, 0, 0)'
-		context2d.fillRect(0, 0, 186, 30)
-		
-		// get system measurements
-		const knownTextMetrics = {
-			// Blink
-			'169.9375': 'Linux', // Chrome OS
-			'169.4443359375': 'Linux', // Chrome OS/CloudReady
-			'164.6962890625': 'Linux', // Fedora/Ubuntu
-			'170.4443359375': 'Linux', // Fedora/Ubuntu (onscreen)
-			'173.9521484375': 'Windows', // Windows 10
-			'163.5068359375': 'Windows', // Windows 7-8.1
-			'156.5068359375': 'Windows', // Windows 7-8.1 (onscreen)
-			'159.87109375': 'Android', // Android 8-11
-			'161.93359375': 'Android', // Android 9/Chrome OS
-			'160.021484375': 'Android', // Android 5-7
-			'170.462890625': 'Apple', // Mac Yosemite-Big Sur
-			'172.462890625': 'Apple', // Mac Mojave
-			'162.462890625': 'Apple', // Mac Yosemite-Big Sur (onscreen)
-
-			// Gecko (onscreen)
-			'163.48333384195962': 'Linux', // Fedora/Ubuntu
-			'163': 'Linux', // Ubuntu/Tor Browser
-			'170.38938852945964': 'Windows', // Windows 10
-			'159.9560546875': 'Windows', // Windows 7-8
-			'165.9560546875': 'Windows', // Tor Browser
-			'173.43938852945962': 'Apple', // Mac Yosemite-Big Sur (+Tor Browser)
-			'159.70088922409784': 'Android', // Android 11
-			'159.71331355882728': 'Android', // Android 11
-			'159.59375152587893': 'Android', // Android 11
-			'159.75551515467026': 'Android', // Android 10
-			'161.7770797729492': 'Android', // Android 9
-			
-			// WebKit (onscreen)
-			'172.955078125': 'Apple', // Mac, CriOS
-		}
-		const {
-			actualBoundingBoxRight: systemActualBoundingBoxRight,
-			width: systemWidth
-		} = context2d.measureText('😃!@#$%^&*') || {}
-		textMetricsSystemSum = ((systemActualBoundingBoxRight || 0) + (systemWidth || 0)) || undefined
-		textMetricsSystemClass = knownTextMetrics[textMetricsSystemSum]
-
-		// get emoji measurements
-		const {
-			actualBoundingBoxAscent,
-			actualBoundingBoxDescent,
-			actualBoundingBoxLeft,
-			actualBoundingBoxRight,
-			fontBoundingBoxAscent,
-			fontBoundingBoxDescent,
-			width
-		} = context2d.measureText(systemEmojis.join('')) || {}
-		textMetrics = {
-			actualBoundingBoxAscent,
-			actualBoundingBoxDescent,
-			actualBoundingBoxLeft,
-			actualBoundingBoxRight,
-			fontBoundingBoxAscent,
-			fontBoundingBoxDescent,
-			width
-		}
-	}
-	catch (error) { }
 	const getDataURI = async canvasOffscreen2d => {
 		if (!canvasOffscreen2d) {
 			return
@@ -917,16 +906,193 @@ const getWorkerData = async () => {
 			reader.onloadend = () => resolve(reader.result)
 		})
 	}
+	const width = 186
+	const height = 30
+	const canvasOffscreen2d = new OffscreenCanvas(width, height)
+	const context2d = canvasOffscreen2d.getContext('2d')
+	canvasOffscreen2d.width = width
+	canvasOffscreen2d.height = height
+	const str = `😃🙌🧠🦄🐉🌊🍧🏄‍♀️🌠🔮`
+	context2d.font = '14px Arial'
+	context2d.fillText(str, 0, 20)
+	context2d.fillStyle = 'rgba(0, 0, 0, 0)'
+	context2d.fillRect(0, 0, width, height)
+	const canvas2dDataURI = await getDataURI(canvasOffscreen2d)
 
+	// get fonts
+	const emojis = getEmojis()
+	const measureFonts = (context, font, emojis) => {
+		context.font = `256px ${font}`
+		const metrics = context.measureText(emojis.join(''))
+		return {
+			ascent: metrics.actualBoundingBoxAscent,
+			descent: metrics.actualBoundingBoxDescent,
+			left: metrics.actualBoundingBoxLeft,
+			right: metrics.actualBoundingBoxRight,
+			width: metrics.width,
+			fontAscent: metrics.fontBoundingBoxAscent,
+			fontDescent: metrics.fontBoundingBoxDescent
+		}
+	}
+	const baseFonts = ['monospace', 'sans-serif', 'serif']
+	const fontShortList = [
+		'Segoe UI Emoji', // Windows
+		'Apple Color Emoji', // Apple
+		'Noto Color Emoji',  // Linux, Android, Chrome OS
+	]
+	const families = fontShortList.reduce((acc, font) => {
+		baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`))
+		return acc
+	}, [])
+	const base = baseFonts.reduce((acc, font) => {
+		acc[font] = measureFonts(context2d, font, emojis)
+		return acc
+	}, {})
+	const detectedEmojiFonts = families.reduce((acc, family) => {
+		const basefont = /, (.+)/.exec(family)[1]
+		const dimensions = measureFonts(context2d, family, emojis)
+		const font = /\'(.+)\'/.exec(family)[1]
+		const found = (
+			dimensions.ascent != base[basefont].ascent ||
+			dimensions.descent != base[basefont].descent ||
+			dimensions.left != base[basefont].left ||
+			dimensions.right != base[basefont].right ||
+			dimensions.width != base[basefont].width ||
+			dimensions.fontAscent != base[basefont].fontAscent ||
+			dimensions.fontDescent != base[basefont].fontDescent
+		)
+		if (found) {
+			acc.add(font)
+		}
+		return acc
+	}, new Set())
+	
+	// get emoji set and system
+	context2d.font = `200px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`
+	const pattern = new Set()
+	const emojiSet = emojis.reduce((emojiSet, emoji) => {
+		const {
+			actualBoundingBoxAscent,
+			actualBoundingBoxDescent,
+			actualBoundingBoxLeft,
+			actualBoundingBoxRight,
+			fontBoundingBoxAscent,
+			fontBoundingBoxDescent,
+			width
+		} = context2d.measureText(emoji) || {}
+		const dimensions = [
+			actualBoundingBoxAscent,
+			actualBoundingBoxDescent,
+			actualBoundingBoxLeft,
+			actualBoundingBoxRight,
+			fontBoundingBoxAscent,
+			fontBoundingBoxDescent,
+			width
+		].join(',')
+		if (!pattern.has(dimensions)) {
+			pattern.add(dimensions)
+			emojiSet.add(emoji)
+		}
+		return emojiSet
+	}, new Set())
+
+	// textMetrics System Sum
+	const textMetricsSum = 0.00001 * [...pattern].map(x => {
+		return x.split(',').reduce((acc, x) => acc += (+x||0), 0)
+	}).reduce((acc, x) => acc += x, 0)
+
+	const amplifySum = (n, fontSet) => {
+		const { size } = fontSet
+		if (size > 1) {
+			return n / +`1e${size}00` // ...e-200
+		}
+		return (
+			!size ? n * -1e150 : // -...e+148
+				size > 1 ? n / +`1e${size}00` : // ...e-200
+					fontSet.has('Segoe UI Emoji') ? n :
+						fontSet.has('Apple Color Emoji') ? n / 1e64 : // ...e-66
+							n * 1e64 // ...e+62
+		)
+	} 
+
+	const textMetricsSystemSum = amplifySum(textMetricsSum, detectedEmojiFonts)
+
+	return {
+		canvas2dDataURI,
+		textMetricsSystemSum,
+		emojiSet: [...emojiSet],
+		emojiFonts: [...detectedEmojiFonts]
+	}
+}
+
+const getWebglData = () => {
+	if (!self.OffscreenCanvas) {
+		return
+	}
+	const canvasOffscreenWebgl = new OffscreenCanvas(256, 256)
+	const contextWebgl = canvasOffscreenWebgl.getContext('webgl')
+	const renererInfo = contextWebgl.getExtension('WEBGL_debug_renderer_info')
+	return {
+		webglVendor: contextWebgl.getParameter(renererInfo.UNMASKED_VENDOR_WEBGL),
+		webglRenderer: contextWebgl.getParameter(renererInfo.UNMASKED_RENDERER_WEBGL)
+	}
+}
+
+const computeTimezoneOffset = () => {
+	const date = new Date().getDate()
+	const month = new Date().getMonth()
+	const year = Date().split` `[3] // current year
+	const format = n => (''+n).length == 1 ? `0${n}` : n
+	const dateString = `${month+1}/${format(date)}/${year}`
+	const dateStringUTC = `${year}-${format(month+1)}-${format(date)}`
+	const utc = Date.parse(
+		new Date(dateString)
+	)
+	const now = +new Date(dateStringUTC)
+	return +(((utc - now)/60000).toFixed(0))
+}
+
+const getLocale = () => {
+	const constructors = [
+		'Collator',
+		'DateTimeFormat',
+		'DisplayNames',
+		'ListFormat',
+		'NumberFormat',
+		'PluralRules',
+		'RelativeTimeFormat'
+	]
+	const locale = constructors.reduce((acc, name) => {
+		try {
+			const obj = new Intl[name]
+			if (!obj) {
+				return acc
+			}
+			const { locale } = obj.resolvedOptions() || {}
+			return [...acc, locale]
+		}
+		catch (error) {
+			return acc
+		}
+	}, [])
+
+	return [...new Set(locale)]
+}
+
+const getWorkerData = async () => {
+	const timer = createTimer()
 	await queueEvent(timer)
+
 	const [
-		canvas2d,
+		fontFaceLoadFonts,
+		canvasData,
 		userAgentData,
 		mediaCapabilities,
 		// https://w3c.github.io/permissions/#permission-registry
 		permissions
 	] = await Promise.all([
-		getDataURI(canvasOffscreen2d),
+		getFontFaceLoadFonts(getFontList()),
+		get2dCanvasData(),
 		getUserAgentData(navigator),
 		getMediaCapabilities(),
 		Promise.all([
@@ -955,71 +1121,39 @@ const getWorkerData = async () => {
 		])
 	]).catch(error => console.error(error))
 
-	// webglVendor and webglRenderer
-	let webglVendor
-	let webglRenderer
-	try {
-		const canvasOffscreenWebgl = new OffscreenCanvas(256, 256)
-		const contextWebgl = canvasOffscreenWebgl.getContext('webgl')
-		const renererInfo = contextWebgl.getExtension('WEBGL_debug_renderer_info')
-		webglVendor = contextWebgl.getParameter(renererInfo.UNMASKED_VENDOR_WEBGL)
-		webglRenderer = contextWebgl.getParameter(renererInfo.UNMASKED_RENDERER_WEBGL)
-	}
-	catch (error) { }
+	// fonts
+	const fontPlatformVersion = getPlatformVersion(fontFaceLoadFonts)
+	const fontApps = getDesktopApps(fontFaceLoadFonts)
+	const fontSystemClass = getFontSystemClass(fontFaceLoadFonts)
 
-	// timezoneOffset
-	const computeTimezoneOffset = () => {
-		const date = new Date().getDate()
-		const month = new Date().getMonth()
-		const year = Date().split` `[3] // current year
-		const format = n => (''+n).length == 1 ? `0${n}` : n
-		const dateString = `${month+1}/${format(date)}/${year}`
-		const dateStringUTC = `${year}-${format(month+1)}-${format(date)}`
-		const utc = Date.parse(
-			new Date(dateString)
-		)
-		const now = +new Date(dateStringUTC)
-		return +(((utc - now)/60000).toFixed(0))
-	}
+	// canvas and emojis
+	const {
+		canvas2dDataURI: canvas2d,
+		textMetricsSystemSum,
+		emojiSet,
+		emojiFonts
+	} = canvasData || {}
+	
+	// webgl
+	const { webglVendor, webglRenderer } = getWebglData() || {}
+
+	// timezone & locale
 	const timezoneOffset = computeTimezoneOffset()
-
-	// timeZone
 	const timezoneLocation = Intl.DateTimeFormat().resolvedOptions().timeZone
+	const locale = getLocale()
 
 	// navigator
-	const { hardwareConcurrency, language, languages, platform, userAgent, deviceMemory } = navigator || {}
+	const {
+		hardwareConcurrency,
+		language,
+		languages,
+		platform,
+		userAgent,
+		deviceMemory
+	} = navigator || {}
 
 	// scope keys
 	const scopeKeys = Object.getOwnPropertyNames(self)
-
-	// locale
-	const getLocale = () => {
-		const constructors = [
-			'Collator',
-			'DateTimeFormat',
-			'DisplayNames',
-			'ListFormat',
-			'NumberFormat',
-			'PluralRules',
-			'RelativeTimeFormat'
-		]
-		const locale = constructors.reduce((acc, name) => {
-			try {
-				const obj = new Intl[name]
-				if (!obj) {
-					return acc
-				}
-				const { locale } = obj.resolvedOptions() || {}
-				return [...acc, locale]
-			}
-			catch (error) {
-				return acc
-			}
-		}, [])
-
-		return [...new Set(locale)]
-	}
-	const locale = getLocale()
 
 	// prototype lies
 	await queueEvent(timer)
@@ -1085,14 +1219,16 @@ const getWorkerData = async () => {
 		}, {}),
 		userAgent,
 		canvas2d,
-		textMetrics: (new Set(Object.keys(textMetrics)).size > 1) && !!Object.values(textMetrics).reduce((acc, x) => acc += (x||0), 0) ? textMetrics : undefined,
 		textMetricsSystemSum,
-		textMetricsSystemClass,
+		emojiSet,
+		emojiFonts,
 		webglRenderer,
 		webglVendor,
-		fontFaceSetFonts,
-		fontSystemClass: fontSystemClass.length == 1 ? fontSystemClass[0] : undefined,
-		fontListLen: platformFonts.length,
+		fontFaceLoadFonts,
+		fontSystemClass,
+		fontPlatformVersion,
+		fontApps,
+		fontListLen: getFontList().length,
 		userAgentData
 	}
 }

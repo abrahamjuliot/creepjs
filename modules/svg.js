@@ -262,10 +262,10 @@ export const svgHTML = ({ fp, note, hashSlice, hashMini, formatEmojiSet, perform
 		<div class="help" title="SVGTextContentElement.getComputedTextLength()">text: ${computedTextLength ? (computedTextLength/divisor) : note.blocked}</div>
 		<div class="block-text help relative" title="${helpTitle}">
 			<span class="confidence-note">${
-				emojiFonts.length > 1 ? `${emojiFonts[0]}...` : (emojiFonts[0] || '')
+				!emojiFonts ? '' : emojiFonts.length > 1 ? `${emojiFonts[0]}...` : (emojiFonts[0] || '')
 			}</span>
-			<span>${svgrectSystemSum}</span>
-			<span class="grey jumbo" style="${!emojiFonts[0] ? '' : `font-family: '${emojiFonts[0]}' !important`}">${formatEmojiSet(emojiSet)}</span>
+			<span>${svgrectSystemSum || note.unsupported}</span>
+			<span class="grey jumbo" style="${!(emojiFonts || [])[0] ? '' : `font-family: '${emojiFonts[0]}' !important`}">${formatEmojiSet(emojiSet)}</span>
 		</div>
 	</div>
 	`	

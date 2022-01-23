@@ -570,13 +570,13 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini, formatE
 						`${(fonts||[])[0]}...`
 					)
 				})(fontFaceLoadFonts)}
-				${''+apps ? `apps: ${(apps||[]).join(', ')}` : ''}
+				${(apps || []).length ? `apps: ${(apps || []).join(', ')}` : ''}
 
 				<span class="confidence-note">${
-					emojiFonts.length > 1 ? `${emojiFonts[0]}...` : (emojiFonts[0] || '')
+					!emojiFonts ? '' : emojiFonts.length > 1 ? `${emojiFonts[0]}...` : (emojiFonts[0] || '')
 				}</span><br>
-				<span>${pixelSizeSystemSum}</span><br>
-				<span class="grey jumbo" style="${!emojiFonts[0] ? '' : `font-family: '${emojiFonts[0]}' !important`}">${formatEmojiSet(emojiSet)}</span>
+				<span>${pixelSizeSystemSum || note.unsupported}</span><br>
+				<span class="grey jumbo" style="${!(emojiFonts || [])[0] ? '' : `font-family: '${emojiFonts[0]}' !important`}">${formatEmojiSet(emojiSet)}</span>
 			</div>
 		</div>
 	</div>
