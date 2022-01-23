@@ -197,7 +197,11 @@ export const getBestWorkerScope = async imports => {
 				const windows1OrHigherReport = reportedVersionNumber == 10
 				const { platformVersion, brandsVersion } = userAgentData
 
-				const brandsVersionNumber = +(/\d+/.exec(''+(brandsVersion||[])[0])||[])[0]
+				// userAgentData version format changed in Chrome 95
+				// https://github.com/WICG/ua-client-hints/issues/220#issuecomment-870858413
+				const chrome95AndAbove = (
+					((3.141592653589793 ** -100) == 1.9275814160560204e-50) && CSS.supports('app-region: initial')
+				)
 				const versionMap = {
 					'6.1': '7',
 					'6.1.0': '7',
@@ -209,7 +213,7 @@ export const getBestWorkerScope = async imports => {
 					'10.0.0': '10'
 				}
 				let versionNumber = versionMap[platformVersion]
-				if ((brandsVersionNumber < 95) && versionNumber) {
+				if (!chrome95AndAbove && versionNumber) {
 					return versionNumber != (''+reportedVersionNumber)
 				}
 				versionNumber = +(/(\d+)\./.exec(''+platformVersion)||[])[1]
