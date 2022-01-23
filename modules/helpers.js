@@ -361,10 +361,16 @@ const getUserAgentRestored = ({ userAgent, userAgentData, fontPlatformVersion })
 		versionNumber >= 13 ? '11' :
 		versionNumber == 0 ? (windowsFontVersion || '7/8/8.1') : '10'
 	)
+	const windowsVersionMap = {
+		'7': 'NT 6.1',
+		'8': 'NT 6.2',
+		'8.1': 'NT 6.3',
+		'10': 'NT 10.0'
+	}
 	const macVersion = platformVersion.replace(/\./g, '_')
 	const userAgentRestored = userAgent
 		.replace(/(Chrome\/)([^\s]+)/, (match, p1, p2) => `${p1}${isGoogleChrome ? uaFullVersion : p2}`)
-		.replace(/Windows NT 10.0/, `Windows ${windowsVersion}`)
+		.replace(/Windows NT 10.0/, `Windows ${windowsVersionMap[windowsVersion] || windowsVersion}`)
 		.replace(/(X11; CrOS x86_64)/, (match, p1) => `${p1} ${platformVersion}`)
 		.replace(/(Linux; Android )(10)(; K|)/, (match, p1) => `${p1}${versionNumber}; ${deviceModel || 'K'}`)
 		.replace(/(Macintosh; Intel Mac OS X )(10_15_7)/, (match, p1) => `${p1}${macVersion}`)
