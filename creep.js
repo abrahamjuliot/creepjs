@@ -454,7 +454,7 @@ const imports = {
 				(fp.canvas2d && fp.canvas2d.lied) ? undefined : // distrust ungoogled-chromium, brave, firefox, tor browser 
 				fp.workerScope.canvas2d
 			),
-			textMetrics: fp.workerScope.textMetrics,
+			textMetricsSystemSum: fp.workerScope.textMetricsSystemSum,
 			deviceMemory: (
 				braveFingerprintingBlocking ? undefined : fp.workerScope.deviceMemory
 			),
@@ -474,7 +474,10 @@ const imports = {
 			webglVendor: (
 				(fp.workerScope.gpu.confidence != 'low') ? fp.workerScope.webglVendor : undefined
 			),
-			fontFaceSetFonts: fp.workerScope.fontFaceSetFonts,
+			fontFaceLoadFonts: fp.workerScope.fontFaceLoadFonts,
+			fontSystemClass: fp.workerScope.fontSystemClass,
+			fontPlatformVersion: fp.workerScope.fontPlatformVersion,
+			fontApps: fp.workerScope.fontApps,
 			userAgentData: {
 				...fp.workerScope.userAgentData,
 				// loose
