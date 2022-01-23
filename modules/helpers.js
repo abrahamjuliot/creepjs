@@ -273,7 +273,30 @@ const getUserAgentPlatform = ({ userAgent, excludeBuild = true }) => {
 				.trim().replace(/\s{2,}/, ' ')
 		} else if (isDevice(identifiers, apple)) {
 			return identifiers
-				.map(x => appleRelease.test(x) ? appleRelease.exec(x)[0] : x)
+				.map(x => {
+					if (appleRelease.test(x)) {
+						const release = appleRelease.exec(x)[0]
+						const versionMap = {
+						'10_7': 'Lion',
+						'10_8': 'Mountain Lion',
+						'10_9': 'Mavericks',
+						'10_10': 'Yosemite',
+						'10_11': 'El Capitan',
+						'10_12': 'Sierra',
+						'10_13': 'High Sierra',
+						'10_14': 'Mojave',
+						'10_15': 'Catalina',
+						'11': 'Big Sur',
+						'12': 'Monterey'
+						}
+						const version = (/(\d{2}_\d{1,2}|\d{2,})/.exec(release) || [])[0]
+						const isOSX = /^10/.test(version)
+						const id = isOSX ? version : (/^\d{2,}/.exec(version) || [])[0]
+						const codeName = versionMap[id]
+						return codeName ? `macOS ${codeName}` : release
+					}
+					return x
+				})
 				.filter(x => !(appleNoise.test(x)))
 				.join(' ')
 				.replace(/\slike mac.+/ig, '')
@@ -373,7 +396,10 @@ const getUserAgentRestored = ({ userAgent, userAgentData, fontPlatformVersion })
 		.replace(/Windows NT 10.0/, `Windows ${windowsVersionMap[windowsVersion] || windowsVersion}`)
 		.replace(/(X11; CrOS x86_64)/, (match, p1) => `${p1} ${platformVersion}`)
 		.replace(/(Linux; Android )(10)(; K|)/, (match, p1) => `${p1}${versionNumber}; ${deviceModel || 'K'}`)
-		.replace(/(Macintosh; Intel Mac OS X )(10_15_7)/, (match, p1) => `${p1}${macVersion}`)
+		.replace(/(Macintosh; Intel Mac OS X )(10_15_7)/, (match, p1) => {
+			const isOSX = /^10/.test(macVersion)
+			return `${isOSX ? p1 : p1.replace('X ', '')}${macVersion}`
+		})
 		.replace(/(; Win64; x64| x86_64)/, (match, p1) => bitness === '64' ? p1 : '')
 	
 	return userAgentRestored

@@ -157,7 +157,30 @@
 					.trim().replace(/\s{2,}/, ' ')
 			} else if (isDevice(identifiers, apple)) {
 				return identifiers
-					.map(x => appleRelease.test(x) ? appleRelease.exec(x)[0] : x)
+					.map(x => {
+						if (appleRelease.test(x)) {
+							const release = appleRelease.exec(x)[0]
+							const versionMap = {
+								'10_7': 'Lion',
+								'10_8': 'Mountain Lion',
+								'10_9': 'Mavericks',
+								'10_10': 'Yosemite',
+								'10_11': 'El Capitan',
+								'10_12': 'Sierra',
+								'10_13': 'High Sierra',
+								'10_14': 'Mojave',
+								'10_15': 'Catalina',
+								'11': 'Big Sur',
+								'12': 'Monterey'
+							}
+							const version = (/(\d{2}_\d{1,2}|\d{2,})/.exec(release) || [])[0]
+							const isOSX = /^10/.test(version)
+							const id = isOSX ? version : (/^\d{2,}/.exec(version) || [])[0]
+							const codeName = versionMap[id]
+							return codeName ? `macOS ${codeName}` : release
+						}
+						return x
+					})
 					.filter(x => !(appleNoise.test(x)))
 					.join(' ')
 					.replace(/\slike mac.+/ig, '')
