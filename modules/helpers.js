@@ -277,17 +277,17 @@ const getUserAgentPlatform = ({ userAgent, excludeBuild = true }) => {
 					if (appleRelease.test(x)) {
 						const release = appleRelease.exec(x)[0]
 						const versionMap = {
-						'10_7': 'Lion',
-						'10_8': 'Mountain Lion',
-						'10_9': 'Mavericks',
-						'10_10': 'Yosemite',
-						'10_11': 'El Capitan',
-						'10_12': 'Sierra',
-						'10_13': 'High Sierra',
-						'10_14': 'Mojave',
-						'10_15': 'Catalina',
-						'11': 'Big Sur',
-						'12': 'Monterey'
+							'10_7': 'Lion',
+							'10_8': 'Mountain Lion',
+							'10_9': 'Mavericks',
+							'10_10': 'Yosemite',
+							'10_11': 'El Capitan',
+							'10_12': 'Sierra',
+							'10_13': 'High Sierra',
+							'10_14': 'Mojave',
+							'10_15': 'Catalina',
+							'11': 'Big Sur',
+							'12': 'Monterey'
 						}
 						const version = (/(\d{2}_\d{1,2}|\d{2,})/.exec(release) || [])[0]
 						const isOSX = /^10/.test(version)
