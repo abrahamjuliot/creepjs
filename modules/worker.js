@@ -36,10 +36,7 @@ export const getBestWorkerScope = async imports => {
 		})
 		const getServiceWorker = ({ scriptSource }) => new Promise(resolve => {
 			if (!ask(() => navigator.serviceWorker.register)) return resolve()
-			const s = performance.now()
-			
 			return navigator.serviceWorker.register(scriptSource).then(registration => {
-				console.log(performance.now() - s)
 				if (!hasConstructor(registration, 'ServiceWorkerRegistration')) return resolve()
 				return navigator.serviceWorker.ready.then(registration => {
 					registration.active.postMessage(undefined)
