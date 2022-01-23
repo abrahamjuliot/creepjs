@@ -229,7 +229,6 @@ export const getCanvas2d = async imports => {
 		}
 		catch (error) { }
 
-		await queueEvent(timer)
 		const [
 			fileReaderData,
 			fileReaderDataOffscreen
@@ -259,12 +258,10 @@ export const getCanvas2d = async imports => {
 			readAsText: textOffscreen
 		}
 
-		await queueEvent(timer)
 		const points = getPointIn(canvas, context) // modifies width
 		const mods = getPixelMods()
 
 		// get fonts
-		await queueEvent(timer)
 		const emojis = getEmojis()
 		const measureFonts = (context, font, emojis) => {
 			//const emoji = String.fromCodePoint(128512)
@@ -316,7 +313,6 @@ export const getCanvas2d = async imports => {
 		// get emojis
 		context.font = `200px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`
 		const pattern = new Set()
-		await queueEvent(timer)
 		const emojiMetrics = emojis.map(emoji => {
 			return {
 				emoji,
@@ -400,7 +396,6 @@ export const getCanvas2d = async imports => {
 			].find(x => isFloat((x || 0)))
 			return lied
 		}
-		await queueEvent(timer)
 		if (getTextMetricsFloatLie(context)) {
 			textMetricsLie = true
 			lied = true

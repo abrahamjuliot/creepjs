@@ -34,13 +34,26 @@ export const getBestWorkerScope = async imports => {
 			sharedWorker.port.start()
 			return resolveWorkerData(sharedWorker.port, resolve, () => sharedWorker.port.close())
 		})
-		const getServiceWorker = ({ scriptSource, scope }) => new Promise(async resolve => {
-			const registration = await ask(() => navigator.serviceWorker.register(scriptSource, { scope }).catch(e => {}))
-			if (!hasConstructor(registration, 'ServiceWorkerRegistration')) return resolve()
-			return navigator.serviceWorker.ready.then(registration => {
-				registration.active.postMessage(undefined)
-				return resolveWorkerData(navigator.serviceWorker, resolve, () => registration.unregister())
+		const getServiceWorker = ({ scriptSource }) => new Promise(resolve => {
+			if (!ask(() => navigator.serviceWorker.register)) return resolve()
+			const s = performance.now()
+			
+			return navigator.serviceWorker.register(scriptSource).then(registration => {
+				console.log(performance.now() - s)
+				if (!hasConstructor(registration, 'ServiceWorkerRegistration')) return resolve()
+				return navigator.serviceWorker.ready.then(registration => {
+					registration.active.postMessage(undefined)
+					return resolveWorkerData(
+						navigator.serviceWorker,
+						resolve,
+						() => registration.unregister()
+					)
+				})
+			}).catch(error => {
+				console.error(error)
+				return resolve()
 			})
+			
 		})
 
 		const scriptSource = 'creepworker.js'

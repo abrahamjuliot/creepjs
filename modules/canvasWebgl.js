@@ -16,7 +16,6 @@ export const getCanvasWebgl = async imports => {
 		}
 	} = imports
 	
-
 	// use short list to improve performance
 	const getParamNames = () => [
 		//'BLEND_EQUATION',
@@ -403,7 +402,6 @@ export const getCanvasWebgl = async imports => {
 		}
 		
 		// get data
-		await queueEvent(timer)
 		const params = { ...getParams(gl), ...getUnmasked(gl) }
 		const params2 = { ...getParams(gl2), ...getUnmasked(gl2) }
 		const mismatch = Object.keys(params2)
@@ -414,7 +412,6 @@ export const getCanvasWebgl = async imports => {
 			sendToTrash('webgl/webgl2 mirrored params mismatch', mismatch)
 		}
 
-		await queueEvent(timer)
 		const { dataURI, pixels } = getWebGLData(gl, 'webgl') || {}
 		const { dataURI: dataURI2, pixels: pixels2 } = getWebGLData(gl2, 'webgl2') || {}
 		
