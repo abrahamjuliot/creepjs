@@ -153,7 +153,7 @@ export const intlHTML = ({ fp, note, hashSlice, performanceLogger }) => {
 				relativeTimeFormat,
 				listFormat,
 				pluralRules
-			].join(', ')}
+			].join('<br>')}
 		</div>
 	</div>
 	`
