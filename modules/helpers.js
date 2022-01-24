@@ -372,7 +372,7 @@ const isUAPostReduction = userAgent => {
 }
 	
 const getUserAgentRestored = ({ userAgent, userAgentData, fontPlatformVersion }) => {
-	if (!userAgentData || !isUAPostReduction(userAgent)) {
+	if (!userAgentData/* || !isUAPostReduction(userAgent)*/) {
 		return
 	}
 	const { brands, uaFullVersion, platformVersion, model: deviceModel, bitness } = userAgentData
