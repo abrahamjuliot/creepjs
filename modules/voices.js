@@ -23,7 +23,6 @@ export const getVoices = imports => {
 				return resolve()
 			}
 			const voiceslie = !!lieProps['SpeechSynthesis.getVoices']
-
 			const getVoices = () => {
 				const giveUpOnVoices = setTimeout(() => {
 					logTestResult({ test: 'speech', passed: false })
@@ -42,7 +41,6 @@ export const getVoices = imports => {
 					}
 					return false
 				})
-
 				const dataUnique = filterFirstOccurenceOfUniqueVoiceURIData({
 					data,
 					voiceURISet: new Set()
@@ -64,7 +62,6 @@ export const getVoices = imports => {
 				})
 			}
 			
-			getVoices()
 			if (speechSynthesis.addEventListener) {
 				return speechSynthesis.addEventListener('voiceschanged', getVoices)
 			}
