@@ -221,7 +221,7 @@ const getUserAgentPlatform = ({ userAgent, excludeBuild = true }) => {
 	const linuxNoise = /^([a-z]|x11|unknown|compatible|[a-z]{2}(-|_)[a-z]{2}|[a-z]{2})$|(rv:|java|oracle|\+http|http|unknown|mozilla|konqueror|valve).+/i
 	const apple = /(cpu iphone|cpu os|iphone os|mac os|macos|intel os|ppc mac).+/i
 	const appleNoise = /^([a-z]|macintosh|compatible|mimic|[a-z]{2}(-|_)[a-z]{2}|[a-z]{2}|rv|\d+\.\d+)$|(rv:|silk|valve).+/i
-	const appleRelease = /(ppc |intel |)(mac|mac |)os (x |x|)\d+/i
+	const appleRelease = /(ppc |intel |)(mac|mac |)os (x |x|)(\d{2}(_|\.)\d{1,2}|\d{2,})/i
 	const otherOS = /((symbianos|nokia|blackberry|morphos|mac).+)|\/linux|freebsd|symbos|series \d+|win\d+|unix|hp-ux|bsdi|bsd|x86_64/i
 	const extraSpace = /\s{2,}/
 
@@ -289,7 +289,10 @@ const getUserAgentPlatform = ({ userAgent, excludeBuild = true }) => {
 							'11': 'Big Sur',
 							'12': 'Monterey'
 						}
-						const version = (/(\d{2}_\d{1,2}|\d{2,})/.exec(release) || [])[0]
+						const version = (
+							(/(\d{2}(_|\.)\d{1,2}|\d{2,})/.exec(release) || [])[0] ||
+							''
+						).replace(/\./g, '_')
 						const isOSX = /^10/.test(version)
 						const id = isOSX ? version : (/^\d{2,}/.exec(version) || [])[0]
 						const codeName = versionMap[id]
