@@ -37,7 +37,7 @@ export const getScreen = async imports => {
 		} = s
 		const { type: orientationType } = orientation || {}
 
-		const { heigth: vVHeight, width: vVWidth } = visualViewport || {}
+		const { height: vVHeight, width: vVWidth } = visualViewport || {}
 		
 		const matchMediaLie = (
 			!matchMedia(
