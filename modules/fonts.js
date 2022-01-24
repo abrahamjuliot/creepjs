@@ -557,7 +557,7 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini, formatE
 		}</div>
 		<div class="block-text-large help relative" title="${blockHelpTitle}">
 			<div>
-				${platformVersion ? `platform: ${platformVersion}<br>` : ((fonts) => {
+				${platformVersion ? `platform: ${platformVersion}` : ((fonts) => {
 					
 					return !(fonts || []).length ? '' : (
 						((''+fonts).match(/Lucida Console/)||[]).length ? `${icon.Windows}Lucida Console...` :
@@ -570,13 +570,13 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini, formatE
 						`${(fonts||[])[0]}...`
 					)
 				})(fontFaceLoadFonts)}
-				${(apps || []).length ? `apps: ${(apps || []).join(', ')}` : ''}
+				${(apps || []).length ? `<br>apps: ${(apps || []).join(', ')}` : ''}
 
 				<span class="confidence-note">${
 					!emojiFonts ? '' : emojiFonts.length > 1 ? `${emojiFonts[0]}...` : (emojiFonts[0] || '')
-				}</span><br>
-				<span>${pixelSizeSystemSum || note.unsupported}</span><br>
-				<span class="grey jumbo" style="${!(emojiFonts || [])[0] ? '' : `font-family: '${emojiFonts[0]}' !important`}">${formatEmojiSet(emojiSet)}</span>
+				}</span>
+				<br><span>${pixelSizeSystemSum || note.unsupported}</span>
+				<br><span class="grey jumbo" style="${!(emojiFonts || [])[0] ? '' : `font-family: '${emojiFonts[0]}' !important`}">${formatEmojiSet(emojiSet)}</span>
 			</div>
 		</div>
 	</div>

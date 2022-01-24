@@ -386,7 +386,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 
 		<div class="block-text-large help relative" title="${blockHelpTitle}">
 			<div>
-				${fontPlatformVersion ? `platform: ${fontPlatformVersion}<br>` : ((fonts) => {
+				${fontPlatformVersion ? `platform: ${fontPlatformVersion}` : ((fonts) => {
 					const icon = {
 						'Linux': '<span class="icon linux"></span>',
 						'Apple': '<span class="icon apple"></span>',
@@ -405,13 +405,13 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 						`${(fonts||[])[0]}...`
 					)
 				})(fontFaceLoadFonts)}
-				${(fontApps || []).length ? `apps: ${(fontApps || []).join(', ')}` : ''}
+				${(fontApps || []).length ? `<br>apps: ${(fontApps || []).join(', ')}` : ''}
 				
 				<span class="confidence-note">${
 					!emojiFonts ? '' : emojiFonts.length > 1 ? `${emojiFonts[0]}...` : (emojiFonts[0] || '')
-				}</span><br>
-				<span>${textMetricsSystemSum || note.unsupported}</span><br>
-				<span class="grey jumbo" style="${!(emojiFonts || [])[0] ? '' : `font-family: '${emojiFonts[0]}' !important`}">${formatEmojiSet(emojiSet)}</span>
+				}</span>
+				<br><span>${textMetricsSystemSum || note.unsupported}</span>
+				<br><span class="grey jumbo" style="${!(emojiFonts || [])[0] ? '' : `font-family: '${emojiFonts[0]}' !important`}">${formatEmojiSet(emojiSet)}</span>
 			</div>
 		</div>
 
