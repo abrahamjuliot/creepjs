@@ -398,7 +398,11 @@ const getUserAgentRestored = ({ userAgent, userAgentData, fontPlatformVersion })
 		.replace(/(Chrome\/)([^\s]+)/, (match, p1, p2) => `${p1}${isGoogleChrome ? uaFullVersion : p2}`)
 		.replace(/Windows NT 10.0/, `Windows ${windowsVersionMap[windowsVersion] || windowsVersion}`)
 		.replace(/(X11; CrOS x86_64)/, (match, p1) => `${p1} ${platformVersion}`)
-		.replace(/(Linux; Android )(10)(; K|)/, (match, p1) => `${p1}${versionNumber}; ${deviceModel || 'K'}`)
+		.replace(/(Linux; Android )(10)(; K|)/, (match, p1, p2, p3) => {
+			return `${p1}${versionNumber}${
+				!p3 ? '' : deviceModel ? `; ${deviceModel}` : '; K'
+			}`
+		})
 		.replace(/(Macintosh; Intel Mac OS X )(10_15_7)/, (match, p1) => {
 			const isOSX = /^10/.test(macVersion)
 			return `${isOSX ? p1 : p1.replace('X ', '')}${macVersion}`
