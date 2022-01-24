@@ -23,13 +23,16 @@ export const getVoices = imports => {
 				return resolve()
 			}
 			const voiceslie = !!lieProps['SpeechSynthesis.getVoices']
+
 			const getVoices = () => {
 				const giveUpOnVoices = setTimeout(() => {
 					logTestResult({ test: 'speech', passed: false })
 					return resolve()
 				}, 3000)
 				const data = speechSynthesis.getVoices()
-				if (!data || !data.length) {
+				const isChrome = ((3.141592653589793 ** -100) == 1.9275814160560204e-50)
+				const localServiceDidLoad = data.find(x => x.localService)
+				if (!data || !data.length || (isChrome && !localServiceDidLoad)) {
 					return
 				}
 				clearTimeout(giveUpOnVoices)
@@ -41,6 +44,7 @@ export const getVoices = imports => {
 					}
 					return false
 				})
+
 				const dataUnique = filterFirstOccurenceOfUniqueVoiceURIData({
 					data,
 					voiceURISet: new Set()
@@ -62,6 +66,7 @@ export const getVoices = imports => {
 				})
 			}
 			
+			getVoices()
 			if (speechSynthesis.addEventListener) {
 				return speechSynthesis.addEventListener('voiceschanged', getVoices)
 			}
