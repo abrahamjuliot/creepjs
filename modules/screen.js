@@ -139,7 +139,10 @@ export const screenHTML = ({ fp, note, hashSlice, performanceLogger, patch, html
 		}
 		const { deviceWidth, deviceHeight } = getDeviceDimensions(width, height)
 		const { deviceWidth: deviceInnerWidth, deviceHeight: deviceInnerHeight } = getDeviceDimensions(innerWidth, innerHeight)
-
+		const toFix = (n, nFix) => {
+			const d = +(1+[...Array(nFix)].map(x => 0).join(''))
+			return Math.round(n*d)/d
+		}
 		return `
 			<div id="creep-resize" class="relative col-six${lied ? ' rejected' : ''}">
 				<span class="time">${perf}</span>
@@ -148,7 +151,7 @@ export const screenHTML = ({ fp, note, hashSlice, performanceLogger, patch, html
 				<div>....avail: ${availWidth} x ${availHeight}</div>
 				<div>....outer: ${outerWidth} x ${outerHeight}</div>
 				<div>....inner: ${innerWidth} x ${innerHeight}</div>
-				<div>...visual: ${vVWidth} x ${vVHeight}</div>
+				<div>...visual: ${toFix(vVWidth, 6)} x ${toFix(vVHeight, 6)}</div>
 				<div>orientation: ${orientation}</div>
 				<div>type: ${orientationType}</div>
 				<div>depth: ${colorDepth}|${pixelDepth}</div>
