@@ -469,8 +469,8 @@ export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice, perform
 			<div>exts (0): ${note.blocked}</div>
 			<div>gpu:</div>
 			<div class="block-text">${note.blocked}</div>
-		</div>
-		<div class="col-six undefined"><image class="gl-image" /></div>`
+			<image class="gl-image" />
+		</div>`
 	}
 	const { canvasWebgl: data } = fp
 	const id = 'creep-canvas-webgl'
@@ -499,8 +499,9 @@ export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice, perform
 	const paramKeys = parameters ? Object.keys(parameters).sort() : []
 	
 	return `
-	<span class="time">${performanceLogger.getLog().webgl}</span>
-	<div class="col-six${lied ? ' rejected' : ''}">
+	
+	<div class="relative col-six${lied ? ' rejected' : ''}">
+		<span class="time">${performanceLogger.getLog().webgl}</span>
 		<strong>WebGL</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div>images:${
 			!dataURI ? ' '+note.blocked : `<span class="sub-hash">${hashMini(dataURI)}</span>${!dataURI2 || dataURI == dataURI2 ? '' : `<span class="sub-hash">${hashMini(dataURI2)}</span>`}`
@@ -536,7 +537,7 @@ export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice, perform
 				${!parameters.UNMASKED_RENDERER_WEBGL ? note.blocked : `<br>${parameters.UNMASKED_RENDERER_WEBGL}`}
 			</div>
 		</div>
+		<image class="gl-image" ${!dataURI ? '' : `src="${dataURI}"`}/>
 	</div>
-	<div class="col-six${lied ? ' rejected' : ''}"><image class="gl-image" ${!dataURI ? '' : `src="${dataURI}"`}/></div>
 	`
 }

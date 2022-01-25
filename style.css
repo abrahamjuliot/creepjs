@@ -372,8 +372,9 @@ visitor {
 }
 
 .gl-image {
-	min-height: 200px;
+	min-height: 100px;
 	width: 100%;
+	transform: scale(.6);
 }
 
 #fingerprint-data h1,
@@ -735,7 +736,6 @@ input[type="radio"] {
     padding: 3px;
     border: 1px solid #eee;
     max-width: 100%;
-    animation: fade-up 0.7s 1s ease both;
 }
 
 .screen-glass {

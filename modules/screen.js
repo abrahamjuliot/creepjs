@@ -1,4 +1,4 @@
-export const getScreen = async imports => {
+export const getScreen = async (imports, logger = true) => {
 
 	const {
 		require: {
@@ -27,8 +27,6 @@ export const getScreen = async imports => {
 		const {
 			width,
 			height,
-			availLeft,
-			availTop,
 			availWidth,
 			availHeight,
 			colorDepth,
@@ -36,14 +34,11 @@ export const getScreen = async imports => {
 			orientation
 		} = s
 		const { type: orientationType } = orientation || {}
-
-		const { height: vVHeight, width: vVWidth } = visualViewport || {}
+		const { width: vVWidth, height: vVHeight } = visualViewport || {}
 		
-		const matchMediaLie = (
-			!matchMedia(
-				`(device-width: ${s.width}px) and (device-height: ${s.height}px)`
-			).matches
-		)
+		const matchMediaLie = !matchMedia(
+			`(device-width: ${s.width}px) and (device-height: ${s.height}px)`
+		).matches
 		if (matchMediaLie) {
 			lied = true
 			documentLie('Screen', 'failed matchMedia')
@@ -51,15 +46,15 @@ export const getScreen = async imports => {
 		
 		const data = {
 			width,
-			outerWidth,
-			availWidth,
-			vVWidth,
 			height,
-			outerHeight,
+			availWidth,
 			availHeight,
+			outerWidth,
+			outerHeight,
+			innerWidth,
+			innerHeight,
+			vVWidth,
 			vVHeight,
-			availLeft,
-			availTop,
 			colorDepth,
 			pixelDepth,
 			orientationType,
@@ -77,75 +72,110 @@ export const getScreen = async imports => {
 			lied
 		}
 
-		logTestResult({ time: timer.stop(), test: 'screen', passed: true })
+		if (logger) {
+			logTestResult({ time: timer.stop(), test: 'screen', passed: true })
+		}
 		return { ...data }
 	}
 	catch (error) {
-		logTestResult({ test: 'screen', passed: false })
+		if (logger) {
+			logTestResult({ test: 'screen', passed: false })
+		}
 		captureError(error)
 		return
 	}
 }
 
-export const screenHTML = ({ fp, note, hashSlice, performanceLogger }) => {
+export const screenHTML = ({ fp, note, hashSlice, performanceLogger, patch, html, imports }) => {
 	if (!fp.screen) {
 		return `
 		<div class="col-six undefined">
 			<strong>Screen</strong>
-			<div>width: ${note.blocked}</div>
-			<div>outerWidth: ${note.blocked}</div>
-			<div>availWidth: ${note.blocked}</div>
-			<div>height: ${note.blocked}</div>
-			<div>outerHeight: ${note.blocked}</div>
-			<div>availHeight: ${note.blocked}</div>
-			<div>colorDepth: ${note.blocked}</div>
-			<div>pixelDepth: ${note.blocked}</div>
-		</div>
-		<div class="col-six screen-container">
+			<div>...screen: ${note.blocked}</div>
+			<div>....avail: ${note.blocked}</div>
+			<div>....outer: ${note.blocked}</div>
+			<div>....inner: ${note.blocked}</div>
+			<div>...visual: ${note.blocked}</div>
+			<div>orientation: ${note.blocked}</div>
+			<div>type: ${note.blocked}</div>
+			<div>depth: ${note.blocked}</div>
+			<div>dpr: ${note.blocked}</div>
+			<div>viewport: ${note.blocked}</div>
+			<div class="screen-container"></div>
 		</div>`
 	}
 	const {
 		screen: data
 	} = fp
-	const {
-		device,
-		width,
-		outerWidth,
-		availWidth,
-		height,
-		outerHeight,
-		availHeight,
-		colorDepth,
-		pixelDepth,
-		$hash,
-		lied
-	} = data
-	const getDeviceDimensions = (width, height, diameter = 180) => {
-		const aspectRatio = width / height
-		const isPortrait = height > width
-		const deviceHeight = isPortrait ? diameter : diameter / aspectRatio
-		const deviceWidth = isPortrait ? diameter * aspectRatio : diameter
-		return { deviceHeight, deviceWidth }
+	const { $hash } = data || {}
+	const perf = performanceLogger.getLog().screen
+	
+	const resizeHTML = ({ data, $hash, perf }) => {
+		const {
+			width,
+			height,
+			availWidth,
+			availHeight,
+			outerWidth,
+			outerHeight,
+			innerWidth,
+			innerHeight,
+			vVWidth,
+			vVHeight,
+			colorDepth,
+			pixelDepth,
+			orientationType,
+			orientation,
+			devicePixelRatio,
+			lied,
+		} = data
+
+		const getDeviceDimensions = (width, height, diameter = 180) => {
+			const aspectRatio = width / height
+			const isPortrait = height > width
+			const deviceWidth = isPortrait ? diameter * aspectRatio : diameter
+			const deviceHeight = isPortrait ? diameter : diameter / aspectRatio
+			return { deviceWidth, deviceHeight }
+		}
+		const { deviceWidth, deviceHeight } = getDeviceDimensions(width, height)
+		const { deviceWidth: deviceInnerWidth, deviceHeight: deviceInnerHeight } = getDeviceDimensions(innerWidth, innerHeight)
+
+		return `
+			<div id="creep-resize" class="relative col-six${lied ? ' rejected' : ''}">
+				<span class="time">${perf}</span>
+				<strong>Screen</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+				<div>...screen: ${width} x ${height}</div>
+				<div>....avail: ${availWidth} x ${availHeight}</div>
+				<div>....outer: ${outerWidth} x ${outerHeight}</div>
+				<div>....inner: ${innerWidth} x ${innerHeight}</div>
+				<div>...visual: ${vVWidth} x ${vVHeight}</div>
+				<div>orientation: ${orientation}</div>
+				<div>type: ${orientationType}</div>
+				<div>depth: ${colorDepth}|${pixelDepth}</div>
+				<div>dpr: ${devicePixelRatio}</div>
+				<div>viewport:</div>
+				<div class="screen-container">
+					<style>
+						.screen-frame { width:${deviceInnerWidth}px;height:${deviceInnerHeight}px; }
+					</style>
+					<div class="screen-frame">
+						<div class="screen-glass"></div>
+					</div>
+				</div>
+			</div>
+			`
 	}
-	const { deviceHeight, deviceWidth } = getDeviceDimensions(width, height)
+	addEventListener('resize', event => {
+		const el = document.getElementById('creep-resize')
+		if (!el) {
+			return
+		}
+		return getScreen(imports, false).then(data => {
+			patch(el, html`${resizeHTML(({ data, $hash, perf }))}`)
+		})
+
+	})
 	return `
-	<span class="time">${performanceLogger.getLog().screen}</span>
-	<div class="col-six${lied ? ' rejected' : ''}">
-		<strong>Screen</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-		<div>width: ${width ? width : note.blocked}</div>
-		<div>outerWidth: ${outerWidth ? outerWidth : note.blocked}</div>
-		<div>availWidth: ${availWidth ? availWidth : note.blocked}</div>
-		<div>height: ${height ? height : note.blocked}</div>
-		<div>outerHeight: ${outerHeight ? outerHeight : note.blocked}</div>
-		<div>availHeight: ${availHeight ? availHeight : note.blocked}</div>
-		<div>colorDepth: ${colorDepth ? colorDepth : note.blocked}</div>
-		<div>pixelDepth: ${pixelDepth ? pixelDepth : note.blocked}</div>
-	</div>
-	<div class="col-six screen-container${lied ? ' rejected' : ''}">
-		<style>.screen-frame { width:${deviceWidth}px;height:${deviceHeight}px; }</style>
-		<div class="screen-frame">
-			<div class="screen-glass"></div>
-		</div>
-	</div>
+	${resizeHTML({ data, $hash, perf })}
 	`
 }

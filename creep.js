@@ -564,7 +564,7 @@ const imports = {
 		capturedErrors: !!errorsLen,
 		lies: !!liesLen,
 		resistance: fp.resistance || undefined,
-		forceRenew: 1642915011005
+		forceRenew: 1643089159656
 	}
 
 	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f')
@@ -649,6 +649,7 @@ const imports = {
 	// patch dom
 	const hashSlice = x => !x ? x : x.slice(0, 8)
 	const templateImports = {
+		imports,
 		fp,
 		hashSlice,
 		hashMini,
@@ -744,7 +745,10 @@ const imports = {
 			${resistanceHTML(templateImports)}
 		</div>
 		<div class="flex-grid relative">${workerScopeHTML(templateImports)}</div>
-		<div class="flex-grid relative">${webglHTML(templateImports)}</div>
+		<div class="flex-grid relative">
+			${webglHTML(templateImports)}
+			${screenHTML(templateImports)}
+		</div>
 		<div class="flex-grid">
 			${canvasHTML(templateImports)}
 			${fontsHTML(templateImports)}
@@ -758,7 +762,6 @@ const imports = {
 			${voicesHTML(templateImports)}
 			${mediaHTML(templateImports)}
 		</div>
-		<div class="flex-grid relative">${screenHTML(templateImports)}</div>
 		<div class="flex-grid relative">${featuresHTML(templateImports)}</div>
 		<div class="flex-grid">
 			${cssMediaHTML(templateImports)}
