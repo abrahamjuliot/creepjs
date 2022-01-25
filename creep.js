@@ -1124,7 +1124,7 @@ const imports = {
 						fontPlatformVersion
 					})
 					const workerScopeUserAgent = restoredUA || windows11UA
-					if (restoredUA) {
+					if (restoredUA != userAgent) {
 						console.log(`restored: ${workerScopeUserAgent}`)
 					}
 					
