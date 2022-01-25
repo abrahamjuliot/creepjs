@@ -31,7 +31,7 @@ export const getVoices = imports => {
 				}, 3000)
 				const data = speechSynthesis.getVoices()
 				const isChrome = ((3.141592653589793 ** -100) == 1.9275814160560204e-50)
-				const localServiceDidLoad = data.find(x => x.localService)
+				const localServiceDidLoad = (data || []).find(x => x.localService)
 				if (!data || !data.length || (isChrome && !localServiceDidLoad)) {
 					return
 				}
