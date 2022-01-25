@@ -1125,7 +1125,7 @@ const imports = {
 					})
 					const workerScopeUserAgent = restoredUA || windows11UA
 					if (restoredUA != userAgent) {
-						console.log(`restored: ${workerScopeUserAgent}`)
+						console.log(`corrected: ${workerScopeUserAgent}`)
 					}
 					
 					const decryptRequest = `https://creepjs-api.web.app/decrypt?${[

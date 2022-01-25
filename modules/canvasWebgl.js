@@ -469,7 +469,7 @@ export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice, perform
 			<div>exts (0): ${note.blocked}</div>
 			<div>gpu:</div>
 			<div class="block-text">${note.blocked}</div>
-			<image class="gl-image" />
+			<div class="gl-image"></div>
 		</div>`
 	}
 	const { canvasWebgl: data } = fp
@@ -537,7 +537,7 @@ export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice, perform
 				${!parameters.UNMASKED_RENDERER_WEBGL ? note.blocked : `<br>${parameters.UNMASKED_RENDERER_WEBGL}`}
 			</div>
 		</div>
-		<image class="gl-image" ${!dataURI ? '' : `src="${dataURI}"`}/>
+		${!dataURI ? '<div class="gl-image"></div>' : `<image class="gl-image" src="${dataURI}"/>`}
 	</div>
 	`
 }
