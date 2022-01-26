@@ -224,16 +224,21 @@ export const screenHTML = ({ fp, note, hashSlice, performanceLogger, patch, html
 			</div>
 			`
 	}
-	addEventListener('resize', event => {
+
+	const paintScreen = event => {
 		const el = document.getElementById('creep-resize')
 		if (!el) {
 			return
 		}
 		return getScreen(imports, false).then(data => {
-			patch(el, html`${resizeHTML(({ data, $hash, perf }))}`)
+			requestAnimationFrame(
+				() => patch(el, html`${resizeHTML(({ data, $hash, perf }))}`)
+			)
 		})
 
-	})
+	}
+	addEventListener('resize', paintScreen)
+
 	return `
 	${resizeHTML({ data, $hash, perf })}
 	`
