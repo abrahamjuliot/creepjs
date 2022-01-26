@@ -552,6 +552,7 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 			.canvas-data {
 				max-width: 200px;
 				height: 30px;
+				transform: scale(1);
 				background-image: url(${dataURI})
 			}
 			.pixel-image,

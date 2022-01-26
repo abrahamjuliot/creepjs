@@ -189,18 +189,8 @@ const getFuzzyHash = async fp => {
 		'screen.availHeight',
 		'screen.availWidth',
 		'screen.colorDepth',
-		'screen.devicePixelRatio',
-		'screen.displayMode',
 		'screen.height',
-		'screen.innerHeight',
-		'screen.innerWidth',
-		'screen.orientation',
-		'screen.orientationType',
-		'screen.outerHeight',
-		'screen.outerWidth',
 		'screen.pixelDepth',
-		'screen.vVHeight',
-		'screen.vVWidth',
 		'screen.width',
 		'svg.bBox',
 		'svg.computedTextLength',
@@ -265,7 +255,7 @@ const getFuzzyHash = async fp => {
 		'workerScope.userAgentEngine',
 		'workerScope.userAgentVersion',
 		'workerScope.webglRenderer',
-		'workerScope.webglVendor',
+		'workerScope.webglVendor'
 	]
 	// construct map of all metrics
 	const metricsAll = Object.keys(fp).sort().reduce((acc, sectionKey) => {
@@ -287,10 +277,12 @@ const getFuzzyHash = async fp => {
 	// update log
 	if (''+metricKeysReported != ''+metricKeys) {
 		const newKeys = metricKeysReported.filter(key => !metricKeys.includes(key))
+		const oldKeys = metricKeys.filter(key => !metricKeysReported.includes(key))
 
-		if (newKeys.length) {
-			console.warn('fuzzy key(s) missing:\n', newKeys.join('\n'))
-		
+		if (newKeys.length || oldKeys.length) {
+			newKeys.length && console.warn('added fuzzy key(s):\n', newKeys.join('\n'))
+			oldKeys.length && console.warn('removed fuzzy key(s):\n', oldKeys.join('\n'))
+
 			console.groupCollapsed('update keys for accurate fuzzy hashing:')
 			console.log(metricKeysReported.map(x => `'${x}',`).join('\n'))
 			console.groupEnd()

@@ -4,6 +4,7 @@ export const getScreen = async (imports, logger = true) => {
 		require: {
 			queueEvent,
 			createTimer,
+			isFirefox,
 			captureError,
 			lieProps,
 			documentLie,
@@ -23,25 +24,27 @@ export const getScreen = async (imports, logger = true) => {
 			lieProps['Screen.pixelDepth']
 		) || false
 
-		const s = (screen || {})
+		const s = (window.screen || {})
 		const {
 			width,
 			height,
 			availWidth,
 			availHeight,
 			colorDepth,
-			pixelDepth,
-			orientation
+			pixelDepth
 		} = s
-		const { type: orientationType } = orientation || {}
-		const { width: vVWidth, height: vVHeight } = visualViewport || {}
-		
-		const matchMediaLie = !matchMedia(
-			`(device-width: ${s.width}px) and (device-height: ${s.height}px)`
-		).matches
-		if (matchMediaLie) {
-			lied = true
-			documentLie('Screen', 'failed matchMedia')
+
+		const dpr = window.devicePixelRatio || undefined
+		const firefoxWithHighDPR = isFirefox && dpr > 1
+		if (!firefoxWithHighDPR) {
+			// firefox with high dpr requires floating point precision dimensions
+			const matchMediaLie = !matchMedia(
+				`(device-width: ${s.width}px) and (device-height: ${s.height}px)`
+			).matches
+			if (matchMediaLie) {
+				lied = true
+				documentLie('Screen', 'failed matchMedia')
+			}
 		}
 		
 		const data = {
@@ -49,26 +52,8 @@ export const getScreen = async (imports, logger = true) => {
 			height,
 			availWidth,
 			availHeight,
-			outerWidth,
-			outerHeight,
-			innerWidth,
-			innerHeight,
-			vVWidth,
-			vVHeight,
 			colorDepth,
 			pixelDepth,
-			orientationType,
-			orientation: (
-				matchMedia('(orientation: landscape)').matches ? 'landscape' :
-					matchMedia('(orientation: portrait)').matches ? 'portrait' : undefined
-			),
-			displayMode: (
-				matchMedia('(display-mode: fullscreen)').matches ? 'fullscreen' :
-					matchMedia('(display-mode: standalone)').matches ? 'standalone' :
-						matchMedia('(display-mode: minimal-ui)').matches ? 'minimal-ui' :
-							matchMedia('(display-mode: browser)').matches ? 'browser' : undefined
-			),
-			devicePixelRatio,
 			lied
 		}
 
@@ -93,9 +78,9 @@ export const screenHTML = ({ fp, note, hashSlice, performanceLogger, patch, html
 			<strong>Screen</strong>
 			<div>...screen: ${note.blocked}</div>
 			<div>....avail: ${note.blocked}</div>
-			<div>....outer: ${note.blocked}</div>
 			<div>....inner: ${note.blocked}</div>
 			<div>...visual: ${note.blocked}</div>
+			<div>display: ${note.blocked}</div>
 			<div>orientation: ${note.blocked}</div>
 			<div>type: ${note.blocked}</div>
 			<div>depth: ${note.blocked}</div>
@@ -116,19 +101,26 @@ export const screenHTML = ({ fp, note, hashSlice, performanceLogger, patch, html
 			height,
 			availWidth,
 			availHeight,
-			outerWidth,
-			outerHeight,
-			innerWidth,
-			innerHeight,
-			vVWidth,
-			vVHeight,
 			colorDepth,
 			pixelDepth,
-			orientationType,
-			orientation,
-			devicePixelRatio,
 			lied,
 		} = data
+
+		const s = (window.screen || {})
+		const { orientation } = s
+		const { type: orientationType } = orientation || {}
+		const dpr = window.devicePixelRatio || undefined
+		const { width: vVWidth, height: vVHeight } = (window.visualViewport || {})
+		const mediaOrientation = !window.matchMedia ? undefined : (
+			matchMedia('(orientation: landscape)').matches ? 'landscape' :
+				matchMedia('(orientation: portrait)').matches ? 'portrait' : undefined
+		)
+		const displayMode = !window.matchMedia ? undefined : (
+			matchMedia('(display-mode: fullscreen)').matches ? 'fullscreen' :
+				matchMedia('(display-mode: standalone)').matches ? 'standalone' :
+					matchMedia('(display-mode: minimal-ui)').matches ? 'minimal-ui' :
+						matchMedia('(display-mode: browser)').matches ? 'browser' : undefined
+		)
 
 		const getDeviceDimensions = (width, height, diameter = 180) => {
 			const aspectRatio = width / height
@@ -137,7 +129,7 @@ export const screenHTML = ({ fp, note, hashSlice, performanceLogger, patch, html
 			const deviceHeight = isPortrait ? diameter : diameter / aspectRatio
 			return { deviceWidth, deviceHeight }
 		}
-		const { deviceWidth, deviceHeight } = getDeviceDimensions(width, height)
+		//const { deviceWidth, deviceHeight } = getDeviceDimensions(width, height)
 		const { deviceWidth: deviceInnerWidth, deviceHeight: deviceInnerHeight } = getDeviceDimensions(innerWidth, innerHeight)
 		const toFix = (n, nFix) => {
 			const d = +(1+[...Array(nFix)].map(x => 0).join(''))
@@ -149,19 +141,92 @@ export const screenHTML = ({ fp, note, hashSlice, performanceLogger, patch, html
 				<strong>Screen</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 				<div>...screen: ${width} x ${height}</div>
 				<div>....avail: ${availWidth} x ${availHeight}</div>
-				<div>....outer: ${outerWidth} x ${outerHeight}</div>
-				<div>....inner: ${innerWidth} x ${innerHeight}</div>
-				<div>...visual: ${toFix(vVWidth, 6)} x ${toFix(vVHeight, 6)}</div>
-				<div>orientation: ${orientation}</div>
-				<div>type: ${orientationType}</div>
 				<div>depth: ${colorDepth}|${pixelDepth}</div>
-				<div>dpr: ${devicePixelRatio}</div>
 				<div>viewport:</div>
-				<div class="screen-container">
+				<div class="screen-container relative">
 					<style>
 						.screen-frame { width:${deviceInnerWidth}px;height:${deviceInnerHeight}px; }
+						.screen-outer-w,
+						.screen-outer-h,
+						.screen-inner-w,
+						.screen-inner-h,
+						.screen-visual-w,
+						.screen-visual-h,
+						.screen-display-mode,
+						.screen-media-orientation,
+						.screen-orientation-type,
+						.screen-dpr {
+							position: absolute;
+							font-size: 12px !important;
+							border-radius: 3px;
+							padding: 0 3px;
+							margin: 3px 0;
+							z-index: 1;
+						}
+						.screen-outer-w,
+						.screen-inner-w,
+						.screen-visual-w,
+						.screen-display-mode,
+						.screen-media-orientation,
+						.screen-orientation-type,
+						.screen-dpr, {
+							text-align: center;
+						}
+						.screen-outer-h,
+						.screen-inner-h,
+						.screen-visual-h,
+						.screen-display-mode,
+						.screen-media-orientation,
+						.screen-orientation-type,
+						.screen-dpr {
+							line-height: 216px; /* this is derived from the container height*/
+						}
+						.screen-outer-h,
+						.screen-inner-h,
+						.screen-visual-h {
+							left: 0;
+						}
+						.screen-outer-w,
+						.screen-outer-h {
+							top: -29px;
+						}
+						.screen-inner-w,
+						.screen-inner-h {
+							top: -17px;
+						}
+						.screen-visual-w,
+						.screen-visual-h {
+							top: -5px;
+						}
+						
+						.screen-display-mode {
+							top: -36px;
+						}
+						.screen-media-orientation {
+							top: -24px;
+						}
+						.screen-orientation-type {
+							top: -12px;
+						}
+						.screen-dpr {
+							top: 0px;
+						}
+						
 					</style>
-					<div class="screen-frame">
+					<span class="screen-outer-w">${outerWidth}</span>
+					<span class="screen-inner-w">${innerWidth}</span>
+					<span class="screen-visual-w">${toFix(vVWidth, 6)}</span>
+					<span class="screen-outer-h">${outerHeight}</span>
+					<span class="screen-inner-h">${innerHeight}</span>
+					<span class="screen-visual-h">${toFix(vVHeight, 6)}</span>
+
+					
+					
+					<span class="screen-display-mode">${displayMode}</span>
+					<span class="screen-media-orientation">${mediaOrientation}</span>
+					<span class="screen-orientation-type">${orientationType}</span>
+					<span class="screen-dpr">${dpr}</span>
+					<div class="screen-frame relative">
 						<div class="screen-glass"></div>
 					</div>
 				</div>
