@@ -13,7 +13,11 @@
 			<div id="fingerprint-data">
 				<div class="fingerprint-header-container">
 					<div class="fingerprint-header">
-						<strong>Your ID:</strong><span class="trusted-fingerprint ellipsis main-hash">Computing...</span>
+						<div class="ellipsis-all">FP ID: Computing...</div>
+						<div id="fuzzy-fingerprint">
+							<div class="ellipsis-all fuzzy-fp">Fuzzy: <span class="blurred">0000000000000000000000000000000000000000000000000000000000000000</span></div>
+							<div class="ellipsis-all fuzzy-diffs">Diffs: <span class="blurred">0000000000000000000000000000000000000000000000000000000000000000</span></div>
+						</div>
 						<div><span class="time">0 ms</span></div>
 					</div>
 				</div>
@@ -24,58 +28,59 @@
 							<div>trust score:</div>
 							<div>visits:</div>
 							<div>first:</div>
-							<div>last:</div>
-							<div>persistence:</div>
+							<div>alive:</div>
+							<div>shadow:</div>
+							<div class="block-text shadow-icon"></div>
 						</div>
 						<div class="col-six">
-							<div>has trash:</div>
-							<div>has lied:</div>
-							<div>has errors:</div>
-							<div>loose fingerprint:</div>
-							<div>loose count:</div>
-							<div>bot:</div>
+							<div>trash (0):</div>
+							<div>lies (0):</div>
+							<div>errors (0):</div>
+							<div>session (0):</div>
+							<div>revisions (0):</div>
+							<div>loose fp (0):</div>
+							<div class="block-text-small">
+							</div>
+							<div id="signature"></div>
 						</div>
 					</div>
-					<div id="signature">
-					</div>
-					<div class="flex-grid">
-						<div class="col-four">
-							<strong>Session ID</strong>
-							<div>0</div>
-						</div>
-						<div class="col-four">
-							<strong>Session Loads</strong>
-							<div>0</div>
-						</div>
-						<div class="col-four">
-							<strong>Session Switched</strong>
-							<div>none</div>
-						</div>
-					</div>
+					
 				</div>
-				<div class="flex-grid hidden">
-					<div class="col-four">
-						<strong>Trash</strong>
-						<div>gathered (0):</div>
+				<div id="browser-detection" class="flex-grid hidden">
+					<div class="col-eight">
+						<strong>Computing...</strong>
+						<div><span class="icon"></span></div>
+						<div><span class="icon"></span><span class="icon"></span>self:</div>
+						<div><span class="icon"></span><span class="icon"></span>system styles</div>
+						<div><span class="icon"></span><span class="icon"></span>computed styles</div>
+						<div><span class="icon"></span><span class="icon"></span>html element</div>
+						<div><span class="icon"></span><span class="icon"></span>js runtime</div>
+						<div><span class="icon"></span><span class="icon"></span>js engine</div>
+						<div><span class="icon"></span><span class="icon"></span>domRect emojis</div>
+						<div><span class="icon"></span><span class="icon"></span>domRect</div>
+						<div><span class="icon"></span><span class="icon"></span>svgRect emojis</div>
+						<div><span class="icon"></span><span class="icon"></span>mimeTypes</div>
+						<div><span class="icon"></span><span class="icon"></span>audio</div>
+						<div><span class="icon"></span><span class="icon"></span>canvas</div>
+						<div><span class="icon"></span><span class="icon"></span>textMetrics</div>
+						<div><span class="icon"></span><span class="icon"></span>webgl</div>
+						<div><span class="icon"></span><span class="icon"></span>gpu params</div>
+						<div><span class="icon"></span><span class="icon"></span>gpu model</div>
+						<div><span class="icon"></span><span class="icon"></span>fonts</div>
+						<div><span class="icon"></span><span class="icon"></span>voices</div>
+						<div><span class="icon"></span><span class="icon"></span>screen</div>
+						<div><span class="icon"></span><span class="icon"></span>resistance</div>
 					</div>
-					<div class="col-four">
-						<strong>Lies</strong>
-						<div>unmasked (0):</div>
-					</div>
-					<div class="col-four">
-						<strong>Errors</strong>
-						<div>captured (0):</div>
+					<div class="col-four icon-prediction-container">
 					</div>
 				</div>
 				<div class="flex-grid hidden">
 					<div class="col-four">
 						<strong>WebRTC</strong>
-						<div class="block-text"></div>
-						<div>type:</div>
-						<div>foundation:</div>
-						<div>protocol:</div>
-						<div>codecs:</div>
-						<div>codecs sdp:</div>
+						<div class="block-text-small"></div>
+						<div>a codecs (0):</div>
+						<div>v codecs (0):</div>
+						<div>exts (0):</div>
 					</div>
 					<div class="col-four">
 						<strong>Timezone</strong>
@@ -84,34 +89,6 @@
 					<div class="col-four">
 						<strong>Intl</strong>
 						<div class="block-text"></div>
-					</div>
-				</div>
-				<div id="browser-detection" class="flex-grid hidden">
-					<div class="col-eight">
-						<strong>Computing...</strong>
-						<div><span class="icon"></span></div>
-						<div>self:</div>
-						<div>system styles</div>
-						<div>computed styles</div>
-						<div>html element</div>
-						<div>js runtime</div>
-						<div>js engine</div>
-						<div>emojis</div>
-						<div>domRect</div>
-						<div>svg</div>
-						<div>mimeTypes</div>
-						<div>audio</div>
-						<div>canvas</div>
-						<div>textMetrics</div>
-						<div>webgl</div>
-						<div>gpu params</div>
-						<div>gpu model</div>
-						<div>fonts</div>
-						<div>voices</div>
-						<div>screen</div>
-						<div>resistance</div>
-					</div>
-					<div class="col-four icon-prediction-container">
 					</div>
 				</div>
 				<div id="headless-resistance-detection" class="flex-grid hidden">
@@ -133,18 +110,18 @@
 				<div class="flex-grid hidden">
 					<div class="col-six">
 						<strong>Worker</strong>
-						<div>canvas 2d:</div>
-						<div>textMetrics:</div>
-						<div>fontFaceSet (0):</div>
 						<div>keys (0):</div>
 						<div>permissions (0):</div>
 						<div>codecs (0):</div>
-						<div>timezone:</div>
-						<div>lang:</div>
+						<div>canvas 2d:</div>
+						<div>fonts (0):</div>
+						<div class="block-text-large"></div>
 						<div>gpu:</div>
 						<div class="block-text"></div>
 					</div>
 					<div class="col-six">
+						<div>lang:</div>
+						<div>timezone:</div>
 						<div>device:</div>
 						<div class="block-text"></div>
 						<div>userAgent:</div>
@@ -154,31 +131,56 @@
 					</div>
 				</div>
 				<div class="flex-grid hidden">
-					<div class="col-four">
+					<div class="col-six">
 						<strong>WebGL</strong>
 						<div>images:</div>
 						<div>pixels:</div>
 						<div>params (0):</div>
 						<div>exts (0):</div>
-					</div>
-					<div class="col-four">
 						<div>gpu:</div>
 						<div class="block-text"></div>
+						<image class="gl-image"/>
 					</div>
-					<div class="col-four"><image /></div>
+					<div class="col-six">
+						<strong>Screen</strong>
+						<div>...screen:</div>
+						<div>....avail:</div>
+						<div>depth:</div>
+						<div>viewport:</div>
+						<div class="screen-container"></div>
+					</div>
 				</div>
 				<div class="flex-grid hidden">
 					<div class="col-six">
 						<strong>Canvas 2d</strong>
 						<div>data:</div>
-						<div>textMetrics:</div>
 						<div>pixel trap:</div>
 						<div class="icon-pixel-container pixels"></div>
+						<div>textMetrics:</div>
+						<div class="block-text"></div>
 					</div>
 					<div class="col-six">
 						<strong>Fonts</strong>
 						<div>origin (0):</div>
 						<div>load (0):</div>
+						<div class="block-text-large"></div>
+					</div>
+				</div>
+				<div class="flex-grid hidden">
+					<div class="col-six">
+						<strong>DOMRect</strong>
+						<div>elems A:</div>
+						<div>elems B:</div>
+						<div>range A:</div>
+						<div>range B:</div>
+						<div class="block-text"></div>
+					</div>
+					<div class="col-six">
+						<strong>SVGRect</strong>
+						<div>bBox:</div>
+						<div>char:</div>
+						<div>subs:</div>
+						<div>text:</div>
 						<div class="block-text"></div>
 					</div>
 				</div>
@@ -197,51 +199,17 @@
 					</div>
 					<div class="col-four">
 						<strong>Speech</strong>
-						<div>voices (0):</div>
-						<div>default:</div>
+						<div>local (0):</div>
+						<div>remote (0):</div>
+						<div>lang (0):</div>
+						<div>default (0):</div>
+						<div class="block-text"></div>
 					</div>
 					<div class="col-four">
 						<strong>Media</strong>
-						<div>devices (0):</div>
-						<div>constraints:</div>
 						<div>mimes (0):</div>
-					</div>
-				</div>
-				<div class="flex-grid hidden">
-					<div class="col-six">
-						<strong>DOMRect</strong>
-						<div>elems client:</div>
-						<div>range client:</div>
-						<div>elems bounding:</div>
-						<div>range bounding:</div>
-						<div>emojis v13.0:</div>
-						<div>emoji set:</div>
+						<div>devices (0):</div>
 						<div class="block-text"></div>
-					</div>
-					<div class="col-six">
-						<strong>SVG</strong>
-						<div>bBox:</div>
-						<div>pointAt:</div>
-						<div>total:</div>
-						<div>extentOfChar:</div>
-						<div>subString:</div>
-						<div>computedText:</div>
-					</div>
-				</div>
-				<div class="flex-grid hidden">
-					<div class="col-six">
-						<strong>Screen</strong>
-						<div>device:</div>
-						<div>width:</div>
-						<div>outerWidth:</div>
-						<div>availWidth:</div>
-						<div>height:</div>
-						<div>outerHeight:</div>
-						<div>availHeight:</div>
-						<div>colorDepth:</div>
-						<div>pixelDepth:</div>
-					</div>
-					<div class="col-six screen-container">
 					</div>
 				</div>
 				<div class="flex-grid hidden">
@@ -308,11 +276,10 @@
 						</div>
 					</div>
 				</div>
-				<div class="flex-grid" style="visibility:hidden">
+				<div class="flex-grid hidden">
 					<div class="col-six">
 						<strong>Navigator</strong>
 						<div>properties (0):</div>
-						<div>bluetooth:</div>
 						<div>codecs (0):</div>
 						<div>dnt:</div>
 						<div>gpc:</div>
@@ -322,6 +289,7 @@
 						<div>permissions (0):</div>
 						<div>plugins (0):</div>
 						<div>vendor:</div>
+						<div>webgpu:</div>
 						<div>userAgentData:</div>
 						<div class="block-text"></div>
 					</div>
@@ -349,6 +317,7 @@
 						<br><a class="tests" href="./tests/emojis.html">Emojis</a>
 						<br><a class="tests" href="./tests/math.html">Math</a>
 						<br><a class="tests" href="./tests/machine.html">Machine</a>
+						<br><a class="tests" href="./tests/extensions.html">Chrome Extensions</a>
 					</div>
 				</div>
 			</div>

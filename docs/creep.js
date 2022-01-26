@@ -6,22 +6,26 @@
 	const isChrome = mathPI ** -100 == 1.9275814160560204e-50;
 	const isFirefox = mathPI ** -100 == 1.9275814160560185e-50;
 
-	const braveBrowser = async () => {
+	const braveBrowser = () => {
 		const brave = (
 			'brave' in navigator &&
 			Object.getPrototypeOf(navigator.brave).constructor.name == 'Brave' &&
 			navigator.brave.isBrave.toString() == 'function isBrave() { [native code] }'
 		);
+		return brave
+		/*
 		if (brave) {
 			return true
 		}
-		const chromium = 3.141592653589793 ** -100 == 1.9275814160560204e-50;
+		// backup method (costly on performance)
+		const chromium = 3.141592653589793 ** -100 == 1.9275814160560204e-50
+		const storageQuota2Gb = 2147483648
 		const storageQuotaIs2Gb = (
-			'storage' in navigator && navigator.storage ?
-			(2147483648 == (await navigator.storage.estimate()).quota) :
-			false
-		);
+			(!('storage' in navigator) || !navigator.storage) ? false :
+				navigator.storage.estimate().then(estimate => estimate.quota == 2147483648)
+		)
 		return chromium && storageQuotaIs2Gb
+		*/
 	};
 
 	function getBraveMode() {
@@ -220,7 +224,7 @@
 		const linuxNoise = /^([a-z]|x11|unknown|compatible|[a-z]{2}(-|_)[a-z]{2}|[a-z]{2})$|(rv:|java|oracle|\+http|http|unknown|mozilla|konqueror|valve).+/i;
 		const apple = /(cpu iphone|cpu os|iphone os|mac os|macos|intel os|ppc mac).+/i;
 		const appleNoise = /^([a-z]|macintosh|compatible|mimic|[a-z]{2}(-|_)[a-z]{2}|[a-z]{2}|rv|\d+\.\d+)$|(rv:|silk|valve).+/i;
-		const appleRelease = /(ppc |intel |)(mac|mac |)os (x |x|)\d+/i;
+		const appleRelease = /(ppc |intel |)(mac|mac |)os (x |x|)(\d{2}(_|\.)\d{1,2}|\d{2,})/i;
 		const otherOS = /((symbianos|nokia|blackberry|morphos|mac).+)|\/linux|freebsd|symbos|series \d+|win\d+|unix|hp-ux|bsdi|bsd|x86_64/i;
 		const extraSpace = /\s{2,}/;
 
@@ -272,7 +276,33 @@
 					.trim().replace(/\s{2,}/, ' ')
 			} else if (isDevice(identifiers, apple)) {
 				return identifiers
-					.map(x => appleRelease.test(x) ? appleRelease.exec(x)[0] : x)
+					.map(x => {
+						if (appleRelease.test(x)) {
+							const release = appleRelease.exec(x)[0];
+							const versionMap = {
+								'10_7': 'Lion',
+								'10_8': 'Mountain Lion',
+								'10_9': 'Mavericks',
+								'10_10': 'Yosemite',
+								'10_11': 'El Capitan',
+								'10_12': 'Sierra',
+								'10_13': 'High Sierra',
+								'10_14': 'Mojave',
+								'10_15': 'Catalina',
+								'11': 'Big Sur',
+								'12': 'Monterey'
+							};
+							const version = (
+								(/(\d{2}(_|\.)\d{1,2}|\d{2,})/.exec(release) || [])[0] ||
+								''
+							).replace(/\./g, '_');
+							const isOSX = /^10/.test(version);
+							const id = isOSX ? version : (/^\d{2,}/.exec(version) || [])[0];
+							const codeName = versionMap[id];
+							return codeName ? `macOS ${codeName}` : release
+						}
+						return x
+					})
 					.filter(x => !(appleNoise.test(x)))
 					.join(' ')
 					.replace(/\slike mac.+/ig, '')
@@ -289,9 +319,13 @@
 		}
 	};
 
-	const computeWindowsRelease = (platform, platformVersion) => {
-		if (platform != 'Windows') {
-			return false
+	const computeWindowsRelease = ({ platform, platformVersion, fontPlatformVersion }) => {
+		const chrome95Features = (
+			((3.141592653589793 ** -100) == 1.9275814160560204e-50) &&
+			CSS.supports('contain-intrinsic-width', 'initial')
+		);
+		if ((platform != 'Windows') || !chrome95Features) {
+			return
 		}
 		const platformVersionNumber = +(/(\d+)\./.exec(platformVersion)||[])[1];
 
@@ -308,21 +342,102 @@
 			8: '10 (1903|1909)',
 			10: '10 (2004|20H2|21H1)'
 		};
+		
+		const oldFontPlatformVersionNumber = (/7|8\.1|8/.exec(fontPlatformVersion)||[])[0];
+		const version = (
+			platformVersionNumber >= 13 ? '11' : 
+				platformVersionNumber == 0 && oldFontPlatformVersionNumber ? oldFontPlatformVersionNumber : 
+					(release[platformVersionNumber] || 'Unknown')
+		);
 		return (
-			`Windows ${platformVersionNumber >= 13 ? '11' : release[platformVersionNumber] || 'Unknown'}`
+			`Windows ${version} [${platformVersion}]`
 		)
 	};
 
-	const logTestResult = ({ test, passed, start = false }) => {
-		const color = passed ? '#4cca9f' : 'lightcoral';
-		const result = passed ? 'passed' : 'failed';
-		const symbol = passed ? '✔' : '-';
-		return console.log(
-			`%c${symbol}${
-		start ? ` (${(performance.now() - start).toFixed(2)}ms)` : ''
-		} ${test} ${result}`, `color:${color}`
+	// attempt windows 11 userAgent
+	const attemptWindows11UserAgent = ({ userAgent, userAgentData, fontPlatformVersion }) => {
+		const  { platformVersion, platform } = userAgentData || {};
+		const windowsRelease = computeWindowsRelease({ platform, platformVersion });
+		return (
+			/Windows 11/.test(windowsRelease) || /Windows 11/.test(fontPlatformVersion) ? 
+			(''+userAgent).replace('Windows NT 10.0', 'Windows 11') :
+				userAgent
 		)
 	};
+
+	// attempt restore from User-Agent Reduction
+	const isUAPostReduction = userAgent => {
+		const matcher = /Mozilla\/5\.0 \((Macintosh; Intel Mac OS X 10_15_7|Windows NT 10\.0; Win64; x64|(X11; (CrOS|Linux) x86_64)|(Linux; Android 10(; K|)))\) AppleWebKit\/537\.36 \(KHTML, like Gecko\) Chrome\/\d+\.0\.0\.0( Mobile|) Safari\/537\.36/;
+		const unifiedPlatform = (matcher.exec(userAgent)||[])[1];
+		const mathPI = 3.141592653589793;
+		const isChrome = (mathPI ** -100) == 1.9275814160560204e-50;
+		return isChrome && !!unifiedPlatform
+	};
+		
+	const getUserAgentRestored = ({ userAgent, userAgentData, fontPlatformVersion }) => {
+		if (!userAgentData/* || !isUAPostReduction(userAgent)*/) {
+			return
+		}
+		const { brands, uaFullVersion, platformVersion, model: deviceModel, bitness } = userAgentData;
+		
+		const isGoogleChrome = (
+			/X11; CrOS/.test(userAgent) ||
+			!!(brands || []).find(x => x == 'Google Chrome')
+		);
+		const versionNumber = +(/(\d+)\./.exec(platformVersion)||[])[1];
+		const windowsFontVersion = (/8\.1|8|7/.exec(fontPlatformVersion) || [])[0];
+		const windowsVersion = (
+			versionNumber >= 13 ? '11' :
+			versionNumber == 0 ? (windowsFontVersion || '7/8/8.1') : '10'
+		);
+		const windowsVersionMap = {
+			'7': 'NT 6.1',
+			'8': 'NT 6.2',
+			'8.1': 'NT 6.3',
+			'10': 'NT 10.0'
+		};
+		const macVersion = platformVersion.replace(/\./g, '_');
+		const userAgentRestored = userAgent
+			.replace(/(Chrome\/)([^\s]+)/, (match, p1, p2) => `${p1}${isGoogleChrome ? uaFullVersion : p2}`)
+			.replace(/Windows NT 10.0/, `Windows ${windowsVersionMap[windowsVersion] || windowsVersion}`)
+			.replace(/(X11; CrOS x86_64)/, (match, p1) => `${p1} ${platformVersion}`)
+			.replace(/(Linux; Android )(10)(; K|)/, (match, p1, p2, p3) => {
+				return `${p1}${versionNumber}${
+				!p3 ? '' : deviceModel ? `; ${deviceModel}` : '; K'
+			}`
+			})
+			.replace(/(Macintosh; Intel Mac OS X )(10_15_7)/, (match, p1) => {
+				const isOSX = /^10/.test(macVersion);
+				return `${isOSX ? p1 : p1.replace('X ', '')}${macVersion}`
+			})
+			.replace(/(; Win64; x64| x86_64)/, (match, p1) => bitness === '64' ? p1 : '');
+		
+		return userAgentRestored
+	};
+
+	const createPerformanceLogger = () => {
+		const log = {};
+		let total = 0;
+		return {
+			logTestResult: ({ test, passed, time = 0 }) => {
+				total += time;
+				const timeString = `${time.toFixed(2)}ms`;
+				log[test] = timeString;
+				const color = passed ? '#4cca9f' : 'lightcoral';
+				const result = passed ? 'passed' : 'failed';
+				const symbol = passed ? '✔' : '-';
+				return console.log(
+					`%c${symbol}${
+				time ? ` (${timeString})` : ''
+				} ${test} ${result}`, `color:${color}`
+				)
+			},
+			getLog: () => log,
+			getTotal: () => total
+		}
+	};
+	const performanceLogger = createPerformanceLogger();
+	const { logTestResult } = performanceLogger;
 
 	const getPromiseRaceFulfilled = async ({
 		promise,
@@ -338,30 +453,62 @@
 		)
 	};
 
-	// ie11 fix for template.content
-	function templateContent(template) {
-		// template {display: none !important} /* add css if template is in dom */
-		if ('content' in document.createElement('template')) {
-			return document.importNode(template.content, true)
-		} else {
-			const frag = document.createDocumentFragment();
-			const children = template.childNodes;
-			for (let i = 0, len = children.length; i < len; i++) {
-				frag.appendChild(children[i].cloneNode(true));
+	const createTimer = () => {
+		let start = 0;
+		const log = [];
+		return {
+			stop: () => {
+				if (start) {
+					log.push(performance.now() - start);
+					return log.reduce((acc, n) => acc += n, 0)
+				}
+				return start
+			},
+			start: () => {
+				start = performance.now();
+				return start
 			}
-			return frag
 		}
-	}
+	};
 
-	// tagged template literal (JSX alternative)
+	const queueEvent = (timer, delay = 0) => {
+		timer.stop();
+		return new Promise(resolve => setTimeout(() => resolve(timer.start()), delay))
+			.catch(e => { })
+	};
+
+	const formatEmojiSet = (emojiSet, limit = 3) => {
+		const maxLen = (limit * 2) + 3;
+		const list = (emojiSet || []);
+		return list.length > maxLen ? `${emojiSet.slice(0, limit).join('')}...${emojiSet.slice(-limit).join('')}` :
+			list.join('')
+	};
+
+	const getEmojis = () => [
+		[128512],[9786],[129333, 8205, 9794, 65039],[9832],[9784],[9895],[8265],[8505],[127987, 65039, 8205, 9895, 65039],[129394],[9785],[9760],[129489, 8205, 129456],[129487, 8205, 9794, 65039],[9975],[129489, 8205, 129309, 8205, 129489],[9752],[9968],[9961],[9972],[9992],[9201],[9928],[9730],[9969],[9731],[9732],[9976],[9823],[9937],[9000],[9993],[9999],
+
+		[128105, 8205, 10084, 65039, 8205, 128139, 8205, 128104],
+		[128104, 8205, 128105, 8205, 128103, 8205, 128102],
+		[128104, 8205, 128105, 8205, 128102],
+
+		// android 11
+		[128512],
+		[169], [174], [8482],
+		[128065, 65039, 8205, 128488, 65039],
+		
+		// other
+		[10002],[9986],[9935],[9874],[9876],[9881],[9939],[9879],[9904],[9905],[9888],[9762],[9763],[11014],[8599],[10145],[11013],[9883],[10017],[10013],[9766],[9654],[9197],[9199],[9167],[9792],[9794],[10006],[12336],[9877],[9884],[10004],[10035],[10055],[9724],[9642],[10083],[10084],[9996],[9757],[9997],[10052],[9878],[8618],[9775],[9770],[9774],[9745],[10036],[127344],[127359]
+	].map(emojiCode => String.fromCodePoint(...emojiCode));
+
+	// template views
 	const patch = (oldEl, newEl, fn = null) => {
 		oldEl.parentNode.replaceChild(newEl, oldEl);
 		return typeof fn === 'function' ? fn() : true
 	};
-	const html = (stringSet, ...expressionSet) => {
+	const html = (str, ...expressionSet) => {
 		const template = document.createElement('template');
-		template.innerHTML = stringSet.map((str, i) => `${str}${expressionSet[i] || ''}`).join('');
-		return templateContent(template) // ie11 fix for template.content
+		template.innerHTML = str.map((s, i) => `${s}${expressionSet[i] || ''}`).join('');
+		return document.importNode(template.content, true)
 	};
 
 	// template helpers
@@ -374,7 +521,17 @@
 	const pluralify = len => len > 1 ? 's' : '';
 	const count = arr => arr && arr.constructor.name === 'Array' ? '' + (arr.length) : '0';
 
-	const getMismatchStyle = (a, b) => b.map((char, i) => char != a[i] ? `<span class="bold-fail">${char}</span>` : char).join('');
+	const getDiffs = ({ stringA, stringB, charDiff = false, decorate = diff => `[${diff}]` }) => {
+		const splitter = charDiff ? '' : ' ';
+		const listA = (''+stringA).split(splitter);
+		const listB = (''+stringB).split(splitter);
+		const listBWithDiffs = listB.map((x, i) => {
+			const matcher = listA[i];
+			const match = x == matcher;
+			return !match ? decorate(x) : x
+		});
+		return listBWithDiffs.join(splitter)
+	};
 
 	// modal component
 	const modal = (name, result, linkname = 'details') => {
@@ -408,12 +565,11 @@
 	};
 
 	// https://stackoverflow.com/a/22429679
-	const hashMini = str => {
-		const json = `${JSON.stringify(str)}`;
-		let i, len, hash = 0x811c9dc5;
-		for (i = 0, len = json.length; i < len; i++) {
-			hash = Math.imul(31, hash) + json.charCodeAt(i) | 0;
-		}
+	const hashMini =  x => {
+		const json = `${JSON.stringify(x)}`;
+		const hash = json.split('').reduce((hash, char, i) => {
+			return Math.imul(31, hash) + json.charCodeAt(i) | 0
+		}, 0x811c9dc5);
 		return ('0000000' + (hash >>> 0).toString(16)).substr(-8)
 	};
 
@@ -423,13 +579,307 @@
 	// https://stackoverflow.com/a/53490958
 	// https://stackoverflow.com/a/43383990
 	// https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest
-	const hashify = async (x) => {
+	const hashify = (x, algorithm = 'SHA-256') => {
 		const json = `${JSON.stringify(x)}`;
 		const jsonBuffer = new TextEncoder().encode(json);
-		const hashBuffer = await crypto.subtle.digest('SHA-256', jsonBuffer);
-		const hashArray = Array.from(new Uint8Array(hashBuffer));
-		const hashHex = hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('');
-		return hashHex
+		return crypto.subtle.digest(algorithm, jsonBuffer).then(hashBuffer => {
+			const hashArray = Array.from(new Uint8Array(hashBuffer));
+			const hashHex = hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('');
+			return hashHex
+		})
+	};
+
+
+	const getBotHash = (fp, imports) => {
+
+		const { getFeaturesLie, computeWindowsRelease } = imports;
+		const outsideFeaturesVersion = getFeaturesLie(fp);
+		const workerScopeIsBlocked = !fp.workerScope || !fp.workerScope.userAgent;
+		const liedWorkerScope = !!(fp.workerScope && fp.workerScope.lied);
+		let liedPlatformVersion = false;
+		if (fp.workerScope && fp.fonts) {
+			const { platformVersion, platform } = fp.workerScope.userAgentData || {};
+			const { platformVersion: fontPlatformVersion } = fp.fonts || {};
+			const windowsRelease = computeWindowsRelease({
+				platform,
+				platformVersion,
+				fontPlatformVersion
+			});
+			liedPlatformVersion = (
+				windowsRelease &&
+				fp.fonts.platformVersion &&
+				!(''+windowsRelease).includes(fontPlatformVersion)
+			);
+		}
+
+		const { totalLies } = fp.lies || {};
+		const maxLieCount = 100;
+		const extremeLieCount = (totalLies || 0) > maxLieCount;
+
+		const { stealth } = fp.headless || {};
+		const functionToStringHasProxy = (
+			!!( stealth || {})['Function.prototype.toString has invalid TypeError'] ||
+			!!( stealth || {})['Function.prototype.toString leaks Proxy behavior']
+		);
+
+		// Pattern conditions that warrant rejection
+		const botPatterns = {
+			// custom order is important
+			liedWorkerScope, // lws
+			liedPlatformVersion, // lpv
+			functionToStringHasProxy, // ftp
+			outsideFeaturesVersion, // ofv
+			extremeLieCount, // elc
+			excessiveLooseFingerprints: false, // elf (compute on server)
+			workerScopeIsBlocked, // wsb
+			crowdBlendingScoreIsLow: false, // csl
+		};
+
+		const botHash = Object.keys(botPatterns)
+			.map(key => botPatterns[key] ? '1' : '0').join('');
+		return { botHash, badBot: Object.keys(botPatterns).find(key => botPatterns[key]) }
+	};
+
+	const getFuzzyHash = async fp => {
+		// requires update log (below) when adding new keys to fp
+		const metricKeys = [
+			'canvas2d.blob',
+			'canvas2d.blobOffscreen',
+			'canvas2d.dataURI',
+			'canvas2d.emojiFonts',
+			'canvas2d.emojiSet',
+			'canvas2d.imageData',
+			'canvas2d.liedTextMetrics',
+			'canvas2d.mods',
+			'canvas2d.points',
+			'canvas2d.textMetricsSystemSum',
+			'canvasWebgl.dataURI',
+			'canvasWebgl.dataURI2',
+			'canvasWebgl.extensions',
+			'canvasWebgl.gpu',
+			'canvasWebgl.parameterOrExtensionLie',
+			'canvasWebgl.parameters',
+			'canvasWebgl.pixels',
+			'canvasWebgl.pixels2',
+			'capturedErrors.data',
+			'clientRects.domrectSystemSum',
+			'clientRects.elementBoundingClientRect',
+			'clientRects.elementClientRects',
+			'clientRects.emojiFonts',
+			'clientRects.emojiSet',
+			'clientRects.rangeBoundingClientRect',
+			'clientRects.rangeClientRects',
+			'consoleErrors.errors',
+			'css.computedStyle',
+			'css.system',
+			'cssMedia.importCSS',
+			'cssMedia.matchMediaCSS',
+			'cssMedia.mediaCSS',
+			'cssMedia.screenQuery',
+			'features.cssFeatures',
+			'features.cssVersion',
+			'features.jsFeatures',
+			'features.jsFeaturesKeys',
+			'features.jsVersion',
+			'features.version',
+			'features.versionRange',
+			'features.windowFeatures',
+			'features.windowVersion',
+			'fonts.apps',
+			'fonts.emojiFonts',
+			'fonts.emojiSet',
+			'fonts.fontFaceLoadFonts',
+			'fonts.originFonts',
+			'fonts.pixelFonts',
+			'fonts.pixelSizeSystemSum',
+			'fonts.platformVersion',
+			'headless.chromium',
+			'headless.headless',
+			'headless.headlessRating',
+			'headless.likeHeadless',
+			'headless.likeHeadlessRating',
+			'headless.stealth',
+			'headless.stealthRating',
+			'htmlElementVersion.keys',
+			'intl.dateTimeFormat',
+			'intl.displayNames',
+			'intl.listFormat',
+			'intl.locale',
+			'intl.numberFormat',
+			'intl.pluralRules',
+			'intl.relativeTimeFormat',
+			'lies.data',
+			'lies.totalLies',
+			'maths.data',
+			'media.mediaDevices',
+			'media.mimeTypes',
+			'navigator.appVersion',
+			'navigator.bluetoothAvailability',
+			'navigator.device',
+			'navigator.deviceMemory',
+			'navigator.doNotTrack',
+			'navigator.globalPrivacyControl',
+			'navigator.hardwareConcurrency',
+			'navigator.keyboard',
+			'navigator.language',
+			'navigator.maxTouchPoints',
+			'navigator.mediaCapabilities',
+			'navigator.mimeTypes',
+			'navigator.oscpu',
+			'navigator.permissions',
+			'navigator.platform',
+			'navigator.plugins',
+			'navigator.properties',
+			'navigator.system',
+			'navigator.uaPostReduction',
+			'navigator.userAgent',
+			'navigator.userAgentData',
+			'navigator.userAgentParsed',
+			'navigator.vendor',
+			'navigator.webgpu',
+			'offlineAudioContext.binsSample',
+			'offlineAudioContext.compressorGainReduction',
+			'offlineAudioContext.copySample',
+			'offlineAudioContext.floatFrequencyDataSum',
+			'offlineAudioContext.floatTimeDomainDataSum',
+			'offlineAudioContext.noise',
+			'offlineAudioContext.sampleSum',
+			'offlineAudioContext.totalUniqueSamples',
+			'offlineAudioContext.values',
+			'resistance.engine',
+			'resistance.extension',
+			'resistance.extensionHashPattern',
+			'resistance.mode',
+			'resistance.privacy',
+			'resistance.security',
+			'screen.availHeight',
+			'screen.availWidth',
+			'screen.colorDepth',
+			'screen.height',
+			'screen.pixelDepth',
+			'screen.width',
+			'svg.bBox',
+			'svg.computedTextLength',
+			'svg.emojiFonts',
+			'svg.emojiSet',
+			'svg.extentOfChar',
+			'svg.subStringLength',
+			'svg.svgrectSystemSum',
+			'timezone.location',
+			'timezone.locationEpoch',
+			'timezone.locationMeasured',
+			'timezone.offset',
+			'timezone.offsetComputed',
+			'timezone.zone',
+			'trash.trashBin',
+			'voices.defaults',
+			'voices.languages',
+			'voices.local',
+			'voices.remote',
+			'webRTC.audio',
+			'webRTC.extensions',
+			'webRTC.ipaddress',
+			'webRTC.video',
+			'windowFeatures.apple',
+			'windowFeatures.keys',
+			'windowFeatures.moz',
+			'windowFeatures.webkit',
+			'workerScope.canvas2d',
+			'workerScope.device',
+			'workerScope.deviceMemory',
+			'workerScope.emojiFonts',
+			'workerScope.emojiSet',
+			'workerScope.engineCurrencyLocale',
+			'workerScope.fontApps',
+			'workerScope.fontFaceLoadFonts',
+			'workerScope.fontListLen',
+			'workerScope.fontPlatformVersion',
+			'workerScope.fontSystemClass',
+			'workerScope.gpu',
+			'workerScope.hardwareConcurrency',
+			'workerScope.language',
+			'workerScope.languages',
+			'workerScope.lies',
+			'workerScope.locale',
+			'workerScope.localeEntropyIsTrusty',
+			'workerScope.localeIntlEntropyIsTrusty',
+			'workerScope.mediaCapabilities',
+			'workerScope.permissions',
+			'workerScope.platform',
+			'workerScope.scope',
+			'workerScope.scopeKeys',
+			'workerScope.system',
+			'workerScope.systemCurrencyLocale',
+			'workerScope.textMetricsSystemSum',
+			'workerScope.timezoneLocation',
+			'workerScope.timezoneOffset',
+			'workerScope.type',
+			'workerScope.uaPostReduction',
+			'workerScope.userAgent',
+			'workerScope.userAgentData',
+			'workerScope.userAgentDataVersion',
+			'workerScope.userAgentEngine',
+			'workerScope.userAgentVersion',
+			'workerScope.webglRenderer',
+			'workerScope.webglVendor'
+		];
+		// construct map of all metrics
+		const metricsAll = Object.keys(fp).sort().reduce((acc, sectionKey) => {
+			const section = fp[sectionKey];
+			const sectionMetrics = Object.keys(section || {}).sort().reduce((acc, key) => {
+				if (key == '$hash' || key == 'lied') {
+					return acc
+				}
+				return {...acc, [`${sectionKey}.${key}`]: section[key] }
+			}, {});
+			return {...acc, ...sectionMetrics}
+		}, {});
+
+		// reduce to 64 bins
+		const maxBins = 64;
+		const metricKeysReported = Object.keys(metricsAll);
+		const binSize = Math.ceil(metricKeys.length/maxBins);
+		
+		// update log
+		if (''+metricKeysReported != ''+metricKeys) {
+			const newKeys = metricKeysReported.filter(key => !metricKeys.includes(key));
+			const oldKeys = metricKeys.filter(key => !metricKeysReported.includes(key));
+
+			if (newKeys.length || oldKeys.length) {
+				newKeys.length && console.warn('added fuzzy key(s):\n', newKeys.join('\n'));
+				oldKeys.length && console.warn('removed fuzzy key(s):\n', oldKeys.join('\n'));
+
+				console.groupCollapsed('update keys for accurate fuzzy hashing:');
+				console.log(metricKeysReported.map(x => `'${x}',`).join('\n'));
+				console.groupEnd();
+			}
+		}
+
+		// compute fuzzy fingerprint master
+		const fuzzyFpMaster = metricKeys.reduce((acc, key, index) => {
+			if (!index || ((index % binSize) == 0)) {
+				const keySet = metricKeys.slice(index, index + binSize);
+				return {...acc, [''+keySet]: keySet.map(key => metricsAll[key]) }
+			}
+			return acc
+		}, {});
+
+		// hash each bin
+		await Promise.all(
+			Object.keys(fuzzyFpMaster).map(key => hashify(fuzzyFpMaster[key]).then(hash => {
+				fuzzyFpMaster[key] = hash; // swap values for hash
+				return hash
+			}))
+		);
+
+		// create fuzzy hash
+		const fuzzyBits = 64;
+		const fuzzyFingerprint = Object.keys(fuzzyFpMaster)
+			.map(key => fuzzyFpMaster[key][0])
+			.join('')
+			.padEnd(fuzzyBits, '0');
+
+		return fuzzyFingerprint
 	};
 
 	const createErrorsCaptured = () => {
@@ -540,17 +990,19 @@
 		return { data }
 	};
 
-	const errorsHTML = ({ fp, hashSlice, modal }) => {
+	const errorsHTML = ({ fp, hashSlice, modal }, pointsHTML) => {
 		const { capturedErrors: { data, $hash  } } = fp;
 		const len = data.length;
 		return `
-	<div class="col-four${len ? ' errors': ''}">
-		<strong>Errors</strong>${len ? `<span class="hash">${hashSlice($hash)}</span>` : ''}
-		<div>captured (${!len ? '0' : ''+len}): ${
-			len ? modal('creep-captured-errors', Object.keys(data).map((key, i) => `${i+1}: ${data[key].trustedName} - ${data[key].trustedMessage} `).join('<br>')) : ''
-		}</div>
-	</div>
-	`
+	<div class="${len ? ' errors': ''}">errors (${!len ? '0' : ''+len}): ${
+		!len ? 'none' : modal(
+			'creep-captured-errors',
+			Object.keys(data)
+			.map((key, i) => `${i+1}: ${data[key].trustedName} - ${data[key].trustedMessage} `)
+			.join('<br>'),
+			hashSlice($hash)
+		)
+	}${pointsHTML}</div>`
 	};
 
 	// Detect proxy behavior
@@ -711,7 +1163,7 @@
 		}
 		const parts = getWebGLRendererParts(x);
 		const hasKnownParts = parts.length;
-		const hasBlankSpaceNoise = /\s{2,}/.test(x);
+		const hasBlankSpaceNoise = /\s{2,}|^\s|\s$/.test(x);
 		const hasBrokenAngleStructure = /^ANGLE/.test(x) && !(/^ANGLE \((.+)\)$/.exec(x)||[])[1];
 
 		// https://chromium.googlesource.com/angle/angle/+/83fa18905d8fed4f394e4f30140a83a3e76b1577/src/gpu_info_util/SystemInfo.cpp
@@ -757,8 +1209,16 @@
 				confidence == 'moderate' ? 'C' :
 					'F'
 		);
+
+		const warnings = new Set([
+			(hasBlankSpaceNoise ? 'found extra spaces' : undefined),
+			(hasBrokenAngleStructure ? 'broken angle structure' : undefined),
+		]);
+		warnings.delete();
+		
 		return {
 			parts,
+			warnings: [...warnings],
 			gibbers,
 			confidence,
 			grade
@@ -792,21 +1252,17 @@
 		return { trashBin: bin }
 	};
 
-	const trashHTML = ({ fp, hashSlice, modal }) => {
+	const trashHTML = ({ fp, hashSlice, modal }, pointsHTML) => {
 		const { trash: { trashBin, $hash  } } = fp;
 		const trashLen = trashBin.length;
 		return `
-	<div class="col-four${trashLen ? ' trash': ''}">
-		<strong>Trash</strong>${
-			trashLen ? `<span class="hash">${hashSlice($hash)}</span>` : ''
-		}
-		<div>gathered (${!trashLen ? '0' : ''+trashLen }): ${
-			trashLen ? modal(
+		<div class="${trashLen ? ' trash': ''}">trash (${!trashLen ? '0' : ''+trashLen }):${
+			!trashLen ? 'none' : modal(
 				'creep-trash',
-				trashBin.map((trash,i) => `${i+1}: ${trash.name}: ${trash.value}`).join('<br>')
-			) : ''
-		}</div>
-	</div>`
+				trashBin.map((trash,i) => `${i+1}: ${trash.name}: ${trash.value}`).join('<br>'),
+				hashSlice($hash)
+			)
+		}${pointsHTML}</div>`
 	};
 
 	// Collect lies detected
@@ -1497,6 +1953,13 @@
 				'setAttribute'
 			]
 		});
+		searchLies(() => FontFace, {
+			target: [
+				'family',
+				'load',
+				'status'
+			]
+		});
 		searchLies(() => Function, {
 			target: [
 				'toString',
@@ -1622,6 +2085,11 @@
 			]
 		});
 		searchLies(() => Screen);
+		searchLies(() => speechSynthesis, {
+			target: [
+				'getVoices'
+			]
+		});
 		searchLies(() => SVGRect);
 		searchLies(() => TextMetrics);
 		searchLies(() => WebGLRenderingContext, {
@@ -1795,24 +2263,25 @@
 		})
 	};
 
-	const liesHTML = ({ fp, hashSlice, modal }) => {
+	const liesHTML = ({ fp, hashSlice, modal }, pointsHTML) => {
 		const { lies: { data, totalLies, $hash } } = fp;
 		return `
-	<div class="col-four${totalLies ? ' lies' : ''}">
-		<strong>Lies</strong>${totalLies ? `<span class="hash">${hashSlice($hash)}</span>` : ''}
-		<div>unmasked (${!totalLies ? '0' : '' + totalLies}): ${
-		totalLies ? modal('creep-lies', Object.keys(data).sort().map(key => {
-			const lies = data[key];
-			return `
-				<br>
-				<div style="padding:5px">
-					<strong>${key}</strong>:
-					${lies.map(lie => `<div>- ${lie}</div>`).join('')}
-				</div>
-				`
-		}).join('')) : ''
-		}</div>
-	</div>`
+	<div class="${totalLies ? ' lies' : ''}">lies (${!totalLies ? '0' : '' + totalLies}): ${
+		!totalLies ? 'none' : modal(
+			'creep-lies', 
+			Object.keys(data).sort().map(key => {
+				const lies = data[key];
+				return `
+					<br>
+					<div style="padding:5px">
+						<strong>${key}</strong>:
+						${lies.map(lie => `<div>- ${lie}</div>`).join('')}
+					</div>
+					`
+			}).join(''),
+			hashSlice($hash)
+		)
+	}${pointsHTML}</div>`
 	};
 
 	const getKnownAudio = () => ({
@@ -1845,6 +2314,8 @@
 
 		const {
 			require: {
+				queueEvent,
+				createTimer,
 				captureError,
 				attempt,
 				caniuse,
@@ -1857,8 +2328,8 @@
 		} = imports;
 
 		try {
-			await new Promise(setTimeout).catch(e => {});
-			const start = performance.now();
+			const timer = createTimer();
+			await queueEvent(timer);
 			const win = phantomDarkness ? phantomDarkness : window;
 			const audioContext = caniuse(() => win.OfflineAudioContext || win.webkitOfflineAudioContext);
 			if (!audioContext) {
@@ -1920,7 +2391,6 @@
 				['OscillatorNode.frequency.maxValue']: attempt(() => oscillator.frequency.maxValue),
 				['OscillatorNode.frequency.minValue']: attempt(() => oscillator.frequency.minValue)
 			};
-
 			const getRenderedBuffer = ({
 				context,
 				floatFrequencyData,
@@ -1950,7 +2420,7 @@
 				oscillator.start(0);
 				context.startRendering();
 
-				context.oncomplete = event => {
+				return context.addEventListener('complete', event => {
 					try {
 						if (floatFrequencyData) {
 							const data = new Float32Array(analyser.frequencyBinCount);
@@ -1977,9 +2447,9 @@
 						dynamicsCompressor.disconnect();
 						oscillator.disconnect();
 					}
-				};
+				})
 			});
-
+			await queueEvent(timer);
 			const [
 				response,
 				floatFrequencyData,
@@ -1997,7 +2467,7 @@
 					floatTimeDomainData: true
 				})
 			]);
-			
+			await queueEvent(timer);
 			const getSum = arr => !arr ? 0 : arr.reduce((acc, curr) => (acc += Math.abs(curr)), 0);
 			const { buffer, compressorGainReduction } = response || {};
 			const floatFrequencyDataSum = getSum(floatFrequencyData);
@@ -2042,6 +2512,7 @@
 					return 1
 				}
 			};
+			
 			const noiseFactor = getNoiseFactor();
 			const noise = noiseFactor == 1 ? 0 : noiseFactor;
 			if (noise) {
@@ -2049,8 +2520,7 @@
 				const audioSampleNoiseLie = 'sample noise detected';
 				documentLie('AudioBuffer', audioSampleNoiseLie);
 			}
-
-			logTestResult({ start, test: 'audio', passed: true });
+			logTestResult({ time: timer.stop(), test: 'audio', passed: true });
 			return {
 				totalUniqueSamples,
 				compressorGainReduction,
@@ -2073,7 +2543,7 @@
 
 	};
 
-	const audioHTML = ({ fp, note, modal, getMismatchStyle, hashMini, hashSlice }) => {
+	const audioHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, performanceLogger }) => {
 		if (!fp.offlineAudioContext) {
 			return `<div class="col-four undefined">
 			<strong>Audio</strong>
@@ -2104,14 +2574,19 @@
 			}
 		} = fp;
 		const knownSums = getKnownAudio()[compressorGainReduction];
-		
+		const validAudio = sampleSum && compressorGainReduction && knownSums;
+		const matchesKnownAudio = knownSums.includes(sampleSum);
 		return `
-	<div class="col-four${lied ? ' rejected' : ''}">
+	<div class="relative col-four${lied ? ' rejected' : ''}">
+		<span class="aside-note">${performanceLogger.getLog().audio}</span>
 		<strong>Audio</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-		<div>sum: ${
-			sampleSum && compressorGainReduction && knownSums && !knownSums.includes(sampleSum) ?
-			getMismatchStyle((''+knownSums[0]).split(''), (''+sampleSum).split('')) :
-			sampleSum
+		<div class="help" title="AudioBuffer.getChannelData()">sum: ${
+			!validAudio || matchesKnownAudio ? sampleSum : getDiffs({
+				stringA: knownSums[0],
+				stringB: sampleSum,
+				charDiff: true,
+				decorate: diff => `<span class="bold-fail">${diff}</span>`
+			})
 		}</div>
 		<div class="help" title="DynamicsCompressorNode.reduction">gain: ${
 			compressorGainReduction || note.blocked
@@ -2280,6 +2755,9 @@
 
 		const {
 			require: {
+				queueEvent,
+				createTimer,
+				getEmojis,
 				captureError,
 				lieProps,
 				documentLie,
@@ -2296,145 +2774,34 @@
 			context.font = '14px Arial';
 			context.fillText(str, 0, 20);
 			context.fillStyle = 'rgba(0, 0, 0, 0)';
-			context.fillRect(0, 0, 186, 30);
-
+			context.fillRect(0, 0, canvas.width, canvas.height);
 			context.beginPath();
 			context.arc(15.49, 15.51, 10.314, 0, Math.PI * 2);
 			context.closePath();
 			context.fill();
-
 			return context
 		};
 
-		const getFileReaderData = async blob => {
+		const getFileReaderData = blob => {
 			if (!blob) {
-				return
+				return []
 			}
-			const reader1 = new FileReader();
-			const reader2 = new FileReader();
-			const reader3 = new FileReader();
-			const reader4 = new FileReader();
-			reader1.readAsArrayBuffer(blob);
-			reader2.readAsDataURL(blob);
-			reader3.readAsBinaryString(blob);
-			reader4.readAsText(blob);
-			const [
-				readAsArrayBuffer,
-				readAsDataURL,
-				readAsBinaryString,
-				readAsText
-			] = await Promise.all([
-				new Promise(resolve => {
-					reader1.onload = () => resolve(reader1.result);
-				}),
-				new Promise(resolve => {
-					reader2.onload = () => resolve(reader2.result);
-				}),
-				new Promise(resolve => {
-					reader3.onload = () => resolve(reader3.result);
-				}),
-				new Promise(resolve => {
-					reader4.onload = () => resolve(reader4.result);
-				})
-			]);
-			return {
-				readAsArrayBuffer: String.fromCharCode.apply(null, new Uint8Array(readAsArrayBuffer)),
-				readAsBinaryString,
-				readAsDataURL,
-				readAsText
-			}
+			const getRead = (method, blob) => new Promise(resolve => {
+				const reader = new FileReader();
+				reader[method](blob);
+				return reader.addEventListener('loadend', () => resolve(reader.result))
+			});
+			return Promise.all([
+				getRead('readAsArrayBuffer', blob),
+				getRead('readAsBinaryString', blob),
+				getRead('readAsDataURL', blob),
+				getRead('readAsText', blob),
+			])
 		};
 
-		const systemEmojis = [
-			[128512],
-			[9786],
-			[129333, 8205, 9794, 65039],
-			[9832],
-			[9784],
-			[9895],
-			[8265],
-			[8505],
-			[127987, 65039, 8205, 9895, 65039],
-			[129394],
-			[9785],
-			[9760],
-			[129489, 8205, 129456],
-			[129487, 8205, 9794, 65039],
-			[9975],
-			[129489, 8205, 129309, 8205, 129489],
-			[9752],
-			[9968],
-			[9961],
-			[9972],
-			[9992],
-			[9201],
-			[9928],
-			[9730],
-			[9969],
-			[9731],
-			[9732],
-			[9976],
-			[9823],
-			[9937],
-			[9000],
-			[9993],
-			[9999],
-			[10002],
-			[9986],
-			[9935],
-			[9874],
-			[9876],
-			[9881],
-			[9939],
-			[9879],
-			[9904],
-			[9905],
-			[9888],
-			[9762],
-			[9763],
-			[11014],
-			[8599],
-			[10145],
-			[11013],
-			[9883],
-			[10017],
-			[10013],
-			[9766],
-			[9654],
-			[9197],
-			[9199],
-			[9167],
-			[9792],
-			[9794],
-			[10006],
-			[12336],
-			[9877],
-			[9884],
-			[10004],
-			[10035],
-			[10055],
-			[9724],
-			[9642],
-			[10083],
-			[10084],
-			[9996],
-			[9757],
-			[9997],
-			[10052],
-			[9878],
-			[8618],
-			[9775],
-			[9770],
-			[9774],
-			[9745],
-			[10036],
-			[127344],
-			[127359]
-		].map(emojiCode => String.fromCodePoint(...emojiCode));
-
 		try {
-			await new Promise(setTimeout).catch(e => { });
-			const start = performance.now();
+			const timer = createTimer();
+			await queueEvent(timer);
 
 			const dataLie = lieProps['HTMLCanvasElement.toDataURL'];
 			const contextLie = lieProps['HTMLCanvasElement.getContext'];
@@ -2450,13 +2817,17 @@
 				lieProps['TextMetrics.width']
 			);
 			let lied = (dataLie || contextLie || imageDataLie || textMetricsLie) || false;
+			const doc = (
+				phantomDarkness &&
+				phantomDarkness.document &&
+				phantomDarkness.document.body ? phantomDarkness.document :
+					document
+			);
 
-			const doc = phantomDarkness ? phantomDarkness.document : document;
 			const canvas = doc.createElement('canvas');
 			const context = canvas.getContext('2d');
 			fillRect(canvas, context);
 			const dataURI = canvas.toDataURL();
-			
 
 			if (dragonOfDeath) {
 				const result1 = dragonOfDeath.document.createElement('canvas').toDataURL();
@@ -2467,66 +2838,7 @@
 					documentLie(`HTMLCanvasElement.toDataURL`, iframeLie);
 				}
 			}
-
-			// get system measurements
-			const knownTextMetrics = {
-				// Blink
-				'169.9375': 'Linux', // Chrome OS
-				'169.4443359375': 'Linux', // Chrome OS/CloudReady
-				'164.6962890625': 'Linux', // Fedora/Ubuntu
-				'170.4443359375': 'Linux', // Fedora/Ubuntu (onscreen)
-				'173.9521484375': 'Windows', // Windows 10
-				'163.5068359375': 'Windows', // Windows 7-8.1
-				'156.5068359375': 'Windows', // Windows 7-8.1 (onscreen)
-				'159.87109375': 'Android', // Android 8-11
-				'161.93359375': 'Android', // Android 9/Chrome OS
-				'160.021484375': 'Android', // Android 5-7
-				'170.462890625': 'Apple', // Mac Yosemite-Big Sur
-				'172.462890625': 'Apple', // Mac Mojave
-				'162.462890625': 'Apple', // Mac Yosemite-Big Sur (onscreen)
-
-				// Gecko (onscreen)
-				'163.48333384195962': 'Linux', // Fedora/Ubuntu
-				'163': 'Linux', // Ubuntu/Tor Browser
-				'170.38938852945964': 'Windows', // Windows 10
-				'159.9560546875': 'Windows', // Windows 7-8
-				'165.9560546875': 'Windows', // Tor Browser
-				'173.43938852945962': 'Apple', // Mac Yosemite-Big Sur (+Tor Browser)
-				'159.70088922409784': 'Android', // Android 11
-				'159.71331355882728': 'Android', // Android 11
-				'159.59375152587893': 'Android', // Android 11
-				'159.75551515467026': 'Android', // Android 10
-				'161.7770797729492': 'Android', // Android 9
 				
-				// WebKit (onscreen)
-				'172.955078125': 'Apple', // Mac, CriOS
-			};
-
-			const {
-				actualBoundingBoxRight: systemActualBoundingBoxRight,
-				width: systemWidth
-			} = context.measureText('😀!@#$%^&*') || {};
-			const textMetricsSystemSum = ((systemActualBoundingBoxRight || 0) + (systemWidth || 0)) || undefined;
-			const textMetricsSystemClass = knownTextMetrics[textMetricsSystemSum];
-			
-			const {
-				actualBoundingBoxAscent,
-				actualBoundingBoxDescent,
-				actualBoundingBoxLeft,
-				actualBoundingBoxRight,
-				fontBoundingBoxAscent,
-				fontBoundingBoxDescent,
-				width
-			} = context.measureText(systemEmojis.join('')) || {};
-			const textMetrics = {
-				actualBoundingBoxAscent,
-				actualBoundingBoxDescent,
-				actualBoundingBoxLeft,
-				actualBoundingBoxRight,
-				fontBoundingBoxAscent,
-				fontBoundingBoxDescent,
-				width
-			};
 			const { data: imageData } = context.getImageData(0, 0, canvas.width, canvas.height) || {};
 			
 			let canvasOffscreen;
@@ -2537,52 +2849,147 @@
 			}
 			catch (error) { }
 
+			await queueEvent(timer);
 			const [
-				blob,
-				blobOffscreen
+				fileReaderData,
+				fileReaderDataOffscreen
 			] = await Promise.all([
-				new Promise(resolve => canvas.toBlob(async blob => {
-					const data = await getFileReaderData(blob);
-					return resolve(data)
+				new Promise(resolve => canvas.toBlob(blob => {
+					return resolve(getFileReaderData(blob))
 				})),
 				getFileReaderData(canvasOffscreen && await canvasOffscreen.convertToBlob())
 			]);
+			const [arrayBuffer, binaryString, dataURL, text] = fileReaderData || {};
+			const [
+				arrayBufferOffScreen,
+				binaryStringOffscreen,
+				dataURLOffscreen,
+				textOffscreen
+			] = fileReaderDataOffscreen || {};
+			const blob = {
+				readAsArrayBuffer: String.fromCharCode.apply(null, new Uint8Array(arrayBuffer)) || undefined,
+				readAsBinaryString: binaryString,
+				readAsDataURL: dataURL,
+				readAsText: text
+			};
+			const blobOffscreen = {
+				readAsArrayBuffer: String.fromCharCode.apply(null, new Uint8Array(arrayBufferOffScreen)) || undefined,
+				readAsBinaryString: binaryStringOffscreen,
+				readAsDataURL: dataURLOffscreen,
+				readAsText: textOffscreen
+			};
 
+			await queueEvent(timer);
 			const points = getPointIn(canvas, context); // modifies width
 			const mods = getPixelMods();
 
-			// lies
-			const {
-				readAsArrayBuffer,
-				readAsBinaryString,
-				readAsDataURL,
-				readAsText
-			} = blob || {};
+			// get fonts
+			await queueEvent(timer);
+			const emojis = getEmojis();
+			const measureFonts = (context, font, emojis) => {
+				//const emoji = String.fromCodePoint(128512)
+				context.font = `256px ${font}`;
+				const metrics = context.measureText(emojis.join(''));
+				return {
+					ascent: metrics.actualBoundingBoxAscent,
+					descent: metrics.actualBoundingBoxDescent,
+					left: metrics.actualBoundingBoxLeft,
+					right: metrics.actualBoundingBoxRight,
+					width: metrics.width,
+					fontAscent: metrics.fontBoundingBoxAscent,
+					fontDescent: metrics.fontBoundingBoxDescent
+				}
+			};
+			const baseFonts = ['monospace', 'sans-serif', 'serif'];
+			const fontShortList = [
+				'Segoe UI Emoji', // Windows
+				'Apple Color Emoji', // Apple
+				'Noto Color Emoji',  // Linux, Android, Chrome OS
+			];
+			const families = fontShortList.reduce((acc, font) => {
+				baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`));
+				return acc
+			}, []);
+			const base = baseFonts.reduce((acc, font) => {
+				acc[font] = measureFonts(context, font, emojis);
+				return acc
+			}, {});
+			const detectedEmojiFonts = families.reduce((acc, family) => {
+				const basefont = /, (.+)/.exec(family)[1];
+				const dimensions = measureFonts(context, family, emojis);
+				const font = /\'(.+)\'/.exec(family)[1];
+				const found = (
+					dimensions.ascent != base[basefont].ascent ||
+					dimensions.descent != base[basefont].descent ||
+					dimensions.left != base[basefont].left ||
+					dimensions.right != base[basefont].right ||
+					dimensions.width != base[basefont].width ||
+					dimensions.fontAscent != base[basefont].fontAscent ||
+					dimensions.fontDescent != base[basefont].fontDescent
+				);
+				if (found) {
+					acc.add(font);
+				}
+				return acc
+			}, new Set());
 			
-			const {
-				readAsArrayBuffer: readAsArrayBufferOffscreen,
-				readAsBinaryString: readAsBinaryStringOffscreen,
-				readAsDataURL: readAsDataURLOffscreen,
-				readAsText: readAsTextOffscreen
-			} = blobOffscreen || {};
-			const mismatchingFileData = (
-				(readAsArrayBufferOffscreen && readAsArrayBufferOffscreen !== readAsArrayBuffer) ||
-				(readAsBinaryStringOffscreen && readAsBinaryStringOffscreen !== readAsBinaryString) ||
-				(readAsDataURLOffscreen && readAsDataURLOffscreen !== readAsDataURL) ||
-				(readAsTextOffscreen && readAsTextOffscreen !== readAsText)
-			);
-			if (mismatchingFileData) {
-				lied = true;
-				const iframeLie = `mismatching file data`;
-				documentLie(`FileReader`, iframeLie);
-			}
+			// get emoji set and system
+			context.font = `200px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`;
+			const pattern = new Set();
+			const emojiSet = emojis.reduce((emojiSet, emoji) => {
+				const {
+					actualBoundingBoxAscent,
+					actualBoundingBoxDescent,
+					actualBoundingBoxLeft,
+					actualBoundingBoxRight,
+					fontBoundingBoxAscent,
+					fontBoundingBoxDescent,
+					width
+				} = context.measureText(emoji) || {};
+				const dimensions = [
+					actualBoundingBoxAscent,
+					actualBoundingBoxDescent,
+					actualBoundingBoxLeft,
+					actualBoundingBoxRight,
+					fontBoundingBoxAscent,
+					fontBoundingBoxDescent,
+					width
+				].join(',');
+				if (!pattern.has(dimensions)) {
+					pattern.add(dimensions);
+					emojiSet.add(emoji);
+				}
+				return emojiSet
+			}, new Set());
 
+			// textMetrics System Sum
+			const textMetricsSum = 0.00001 * [...pattern].map(x => {
+				return x.split(',').reduce((acc, x) => acc += (+x||0), 0)
+			}).reduce((acc, x) => acc += x, 0);
+
+			const amplifySum = (n, fontSet) => {
+				const { size } = fontSet;
+				if (size > 1) {
+					return n / +`1e${size}00` // ...e-200
+				}
+				return (
+					!size ? n * -1e150 : // -...e+148
+						size > 1 ? n / +`1e${size}00` : // ...e-200
+							fontSet.has('Segoe UI Emoji') ? n :
+								fontSet.has('Apple Color Emoji') ? n / 1e64 : // ...e-66
+									n * 1e64 // ...e+62
+				)
+			}; 
+
+			const textMetricsSystemSum = amplifySum(textMetricsSum, detectedEmojiFonts);
+		
+			// lies
 			if (mods && mods.pixels) {
 				lied = true;
 				const iframeLie = `pixel data modified`;
 				documentLie(`CanvasRenderingContext2D.getImageData`, iframeLie);
 			}
-
+			
 			const getTextMetricsFloatLie = context => {
 				const isFloat = n => n % 1 !== 0;
 				const {
@@ -2604,6 +3011,7 @@
 				].find(x => isFloat((x || 0)));
 				return lied
 			};
+			await queueEvent(timer);
 			if (getTextMetricsFloatLie(context)) {
 				textMetricsLie = true;
 				lied = true;
@@ -2612,19 +3020,22 @@
 					'metric noise detected'
 				);
 			}
-
-			logTestResult({ start, test: 'canvas 2d', passed: true });
+			const imageDataCompressed = (
+				imageData ? String.fromCharCode.apply(null, imageData) : undefined
+			);
+			
+			logTestResult({ time: timer.stop(), test: 'canvas 2d', passed: true });
 			return {
 				dataURI,
-				imageData: imageData ? String.fromCharCode.apply(null, imageData) : undefined,
+				imageData: imageDataCompressed,
 				mods,
 				points,
 				blob,
 				blobOffscreen,
-				textMetrics: new Set(Object.keys(textMetrics)).size > 1 ? textMetrics : undefined,
 				textMetricsSystemSum,
-				textMetricsSystemClass,
 				liedTextMetrics: textMetricsLie,
+				emojiSet: [...emojiSet],
+				emojiFonts: [...detectedEmojiFonts],
 				lied
 			}
 		}
@@ -2635,15 +3046,16 @@
 		}
 	};
 
-	const canvasHTML = ({ fp, note, modal, getMismatchStyle, hashMini, hashSlice }) => {
+	const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, formatEmojiSet, performanceLogger }) => {
 		if (!fp.canvas2d) {
 			return `
 		<div class="col-six undefined">
 			<strong>Canvas 2d</strong> <span>${note.blocked}</span>
 			<div>data: ${note.blocked}</div>
-			<div>textMetrics: ${note.blocked}</div>
 			<div>pixel trap:</div>
 			<div class="icon-pixel-container pixels">${note.blocked}</div>
+			<div>textMetrics:</div>
+			<div class="block-text">${note.blocked}</div>
 		</div>`
 		}
 				
@@ -2656,9 +3068,9 @@
 				points,
 				blob,
 				blobOffscreen,
-				textMetrics,
+				emojiSet,
+				emojiFonts,
 				textMetricsSystemSum,
-				textMetricsSystemClass,
 				$hash
 			}
 		} = fp;
@@ -2688,12 +3100,40 @@
 				readAsDataURL,
 				readAsText
 			} = blob || {};
-			
+	    	const decorate = diff => `<span class="bold-fail">${diff}</span>`;
 			return `
-			<br>readAsArrayBuffer: ${!readAsArrayBuffer ? note.unsupported : getMismatchStyle(hash.readAsArrayBuffer.split(''), hashMini(readAsArrayBuffer).split(''))}
-			<br>readAsBinaryString: ${!readAsBinaryString ? note.unsupported : getMismatchStyle(hash.readAsBinaryString.split(''), hashMini(readAsBinaryString).split(''))}
-			<br>readAsDataURL: ${!readAsDataURL ? note.unsupported : getMismatchStyle(hash.dataURI.split(''), hashMini(readAsDataURL).split(''))}
-			<br>readAsText: ${!readAsText ? note.unsupported : getMismatchStyle(hash.readAsText.split(''), hashMini(readAsText).split(''))}
+			<br>readAsArrayBuffer: ${
+				!readAsArrayBuffer ? note.unsupported : getDiffs({
+					stringA: hash.readAsArrayBuffer,
+					stringB: hashMini(readAsArrayBuffer),
+					charDiff: true,
+					decorate
+				})
+			}
+			<br>readAsBinaryString: ${
+				!readAsBinaryString ? note.unsupported : getDiffs({
+					stringA: hash.readAsBinaryString,
+					stringB: hashMini(readAsBinaryString),
+					charDiff: true,
+					decorate
+				})
+			}
+			<br>readAsDataURL: ${
+				!readAsDataURL ? note.unsupported : getDiffs({
+					stringA: hash.dataURI,
+					stringB: hashMini(readAsDataURL),
+					charDiff: true,
+					decorate
+				})
+			}
+			<br>readAsText: ${
+				!readAsText ? note.unsupported : getDiffs({
+					stringA: hash.readAsText,
+					stringB: hashMini(readAsText),
+					charDiff: true,
+					decorate
+				})
+			}
 		`
 		};
 		const { isPointInPath, isPointInStroke } = points || {};
@@ -2719,18 +3159,10 @@
 			return `<span class="rgba rgba-${css[c]}"></span>`
 		}).join('')).join(' ');
 
-		const icon = {
-			'Linux': '<span class="icon linux"></span>',
-			'Apple': '<span class="icon apple"></span>',
-			'Windows': '<span class="icon windows"></span>',
-			'Android': '<span class="icon android"></span>'
-		};
-		
-		const systemTextMetricsClassIcon = icon[textMetricsSystemClass];
-		const textMetricsHash = hashMini(textMetrics);
+		const emojiHelpTitle = `CanvasRenderingContext2D.measureText()\nhash: ${hashMini(emojiSet)}\n${emojiSet.map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`;
 
 		return `
-	<div class="col-six${lied ? ' rejected' : ''}">
+	<div class="relative col-six${lied ? ' rejected' : ''}">
 		<style>
 			.pixels {
 				padding: 10px;
@@ -2740,12 +3172,14 @@
 			.canvas-data {
 				max-width: 200px;
 				height: 30px;
+				transform: scale(1);
 				background-image: url(${dataURI})
 			}
 			.pixel-image,
 			.pixel-image-random {
-				max-width: 75px;
+				max-width: 35px;
     			border-radius: 50%;
+				transform: scale(1.5);
 			}
 			.pixel-image {
 				background-image: url(${pixelImage})
@@ -2780,6 +3214,7 @@
 				}
 			}
 		</style>
+		<span class="aside-note">${performanceLogger.getLog()['canvas 2d']}</span>
 		<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div class="help" title="HTMLCanvasElement.toDataURL()\nCanvasRenderingContext2D.getImageData()\nCanvasRenderingContext2D.isPointInPath()\nCanvasRenderingContext2D.isPointInStroke()\nHTMLCanvasElement.toBlob()\nOffscreenCanvas.convertToBlob()\nFileReader.readAsArrayBuffer()\nFileReader.readAsBinaryString()\nFileReader.readAsDataURL()\nFileReader.readAsText()">data: ${
 			modal(
@@ -2794,234 +3229,245 @@
 				})
 			)
 		}</div>
-		<div class="help" title="CanvasRenderingContext2D.measureText()">textMetrics: ${
-			!textMetrics ? note.blocked : modal(
-				'creep-text-metrics',
-				`<div>system: ${textMetricsSystemSum}</div><br>` +
-				Object.keys(textMetrics).map(key => `<span>${key}: ${typeof textMetrics[key] == 'undefined' ? note.unsupported : textMetrics[key]}</span>`).join('<br>'),
-				systemTextMetricsClassIcon ? `${systemTextMetricsClassIcon}${textMetricsHash}` :
-					textMetricsHash
-			)	
-		}</div>
 		<div class="help" title="CanvasRenderingContext2D.getImageData()">pixel trap: ${rgba ? `${modPercent}% rgba noise ${rgbaHTML}` : ''}</div>
 		<div class="icon-pixel-container pixels">
 			<div class="icon-pixel pixel-image-random"></div>
 			${rgba ? `<div class="icon-pixel pixel-image"></div>` : ''}
 		</div>
+		<div>textMetrics:</div>
+		<div class="block-text help relative" title="${emojiHelpTitle}"> 
+			<span class="confidence-note">${
+				!emojiFonts ? '' : emojiFonts.length > 1 ? `${emojiFonts[0]}...` : (emojiFonts[0] || '')
+			}</span>
+			<span>${textMetricsSystemSum || note.unsupported}</span>
+			<span class="grey jumbo" style="${!(emojiFonts || [])[0] ? '' : `font-family: '${emojiFonts[0]}' !important`}">
+				${formatEmojiSet(emojiSet)}
+			</span>
+		</div>
 	</div>
 	`
-	};
-
-	const pnames = new Set([
-		'BLEND_EQUATION',
-		'BLEND_EQUATION_RGB',
-		'BLEND_EQUATION_ALPHA',
-		'BLEND_DST_RGB',
-		'BLEND_SRC_RGB',
-		'BLEND_DST_ALPHA',
-		'BLEND_SRC_ALPHA',
-		'BLEND_COLOR',
-		'CULL_FACE',
-		'BLEND',
-		'DITHER',
-		'STENCIL_TEST',
-		'DEPTH_TEST',
-		'SCISSOR_TEST',
-		'POLYGON_OFFSET_FILL',
-		'SAMPLE_ALPHA_TO_COVERAGE',
-		'SAMPLE_COVERAGE',
-		'LINE_WIDTH',
-		'ALIASED_POINT_SIZE_RANGE',
-		'ALIASED_LINE_WIDTH_RANGE',
-		'CULL_FACE_MODE',
-		'FRONT_FACE',
-		'DEPTH_RANGE',
-		'DEPTH_WRITEMASK',
-		'DEPTH_CLEAR_VALUE',
-		'DEPTH_FUNC',
-		'STENCIL_CLEAR_VALUE',
-		'STENCIL_FUNC',
-		'STENCIL_FAIL',
-		'STENCIL_PASS_DEPTH_FAIL',
-		'STENCIL_PASS_DEPTH_PASS',
-		'STENCIL_REF',
-		'STENCIL_VALUE_MASK',
-		'STENCIL_WRITEMASK',
-		'STENCIL_BACK_FUNC',
-		'STENCIL_BACK_FAIL',
-		'STENCIL_BACK_PASS_DEPTH_FAIL',
-		'STENCIL_BACK_PASS_DEPTH_PASS',
-		'STENCIL_BACK_REF',
-		'STENCIL_BACK_VALUE_MASK',
-		'STENCIL_BACK_WRITEMASK',
-		'VIEWPORT',
-		'SCISSOR_BOX',
-		'COLOR_CLEAR_VALUE',
-		'COLOR_WRITEMASK',
-		'UNPACK_ALIGNMENT',
-		'PACK_ALIGNMENT',
-		'MAX_TEXTURE_SIZE',
-		'MAX_VIEWPORT_DIMS',
-		'SUBPIXEL_BITS',
-		'RED_BITS',
-		'GREEN_BITS',
-		'BLUE_BITS',
-		'ALPHA_BITS',
-		'DEPTH_BITS',
-		'STENCIL_BITS',
-		'POLYGON_OFFSET_UNITS',
-		'POLYGON_OFFSET_FACTOR',
-		'SAMPLE_BUFFERS',
-		'SAMPLES',
-		'SAMPLE_COVERAGE_VALUE',
-		'SAMPLE_COVERAGE_INVERT',
-		'COMPRESSED_TEXTURE_FORMATS',
-		'GENERATE_MIPMAP_HINT',
-		'MAX_VERTEX_ATTRIBS',
-		'MAX_VERTEX_UNIFORM_VECTORS',
-		'MAX_VARYING_VECTORS',
-		'MAX_COMBINED_TEXTURE_IMAGE_UNITS',
-		'MAX_VERTEX_TEXTURE_IMAGE_UNITS',
-		'MAX_TEXTURE_IMAGE_UNITS',
-		'MAX_FRAGMENT_UNIFORM_VECTORS',
-		'SHADING_LANGUAGE_VERSION',
-		'VENDOR',
-		'RENDERER',
-		'VERSION',
-		'MAX_CUBE_MAP_TEXTURE_SIZE',
-		'ACTIVE_TEXTURE',
-		'IMPLEMENTATION_COLOR_READ_TYPE',
-		'IMPLEMENTATION_COLOR_READ_FORMAT',
-		'MAX_RENDERBUFFER_SIZE',
-		'UNPACK_FLIP_Y_WEBGL',
-		'UNPACK_PREMULTIPLY_ALPHA_WEBGL',
-		'UNPACK_COLORSPACE_CONVERSION_WEBGL',
-		'READ_BUFFER',
-		'UNPACK_ROW_LENGTH',
-		'UNPACK_SKIP_ROWS',
-		'UNPACK_SKIP_PIXELS',
-		'PACK_ROW_LENGTH',
-		'PACK_SKIP_ROWS',
-		'PACK_SKIP_PIXELS',
-		'UNPACK_SKIP_IMAGES',
-		'UNPACK_IMAGE_HEIGHT',
-		'MAX_3D_TEXTURE_SIZE',
-		'MAX_ELEMENTS_VERTICES',
-		'MAX_ELEMENTS_INDICES',
-		'MAX_TEXTURE_LOD_BIAS',
-		'MAX_DRAW_BUFFERS',
-		'DRAW_BUFFER0',
-		'DRAW_BUFFER1',
-		'DRAW_BUFFER2',
-		'DRAW_BUFFER3',
-		'DRAW_BUFFER4',
-		'DRAW_BUFFER5',
-		'DRAW_BUFFER6',
-		'DRAW_BUFFER7',
-		'MAX_FRAGMENT_UNIFORM_COMPONENTS',
-		'MAX_VERTEX_UNIFORM_COMPONENTS',
-		'FRAGMENT_SHADER_DERIVATIVE_HINT',
-		'MAX_ARRAY_TEXTURE_LAYERS',
-		'MIN_PROGRAM_TEXEL_OFFSET',
-		'MAX_PROGRAM_TEXEL_OFFSET',
-		'MAX_VARYING_COMPONENTS',
-		'MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS',
-		'RASTERIZER_DISCARD',
-		'MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS',
-		'MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS',
-		'MAX_COLOR_ATTACHMENTS',
-		'MAX_SAMPLES',
-		'MAX_VERTEX_UNIFORM_BLOCKS',
-		'MAX_FRAGMENT_UNIFORM_BLOCKS',
-		'MAX_COMBINED_UNIFORM_BLOCKS',
-		'MAX_UNIFORM_BUFFER_BINDINGS',
-		'MAX_UNIFORM_BLOCK_SIZE',
-		'MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS',
-		'MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS',
-		'UNIFORM_BUFFER_OFFSET_ALIGNMENT',
-		'MAX_VERTEX_OUTPUT_COMPONENTS',
-		'MAX_FRAGMENT_INPUT_COMPONENTS',
-		'MAX_SERVER_WAIT_TIMEOUT',
-		'TRANSFORM_FEEDBACK_PAUSED',
-		'TRANSFORM_FEEDBACK_ACTIVE',
-		'MAX_ELEMENT_INDEX',
-		'MAX_CLIENT_WAIT_TIMEOUT_WEBGL'
-	]);
-
-	const draw = gl => {
-		//gl.clearColor(0.47, 0.7, 0.78, 1)
-		gl.clear(gl.COLOR_BUFFER_BIT);
-
-		// based on https://github.com/Valve/fingerprintjs2/blob/master/fingerprint2.js
-		const vertexPosBuffer = gl.createBuffer();
-		gl.bindBuffer(gl.ARRAY_BUFFER, vertexPosBuffer);
-		const vertices = new Float32Array([-0.9, -0.7, 0, 0.8, -0.7, 0, 0, 0.5, 0]);
-		gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-
-		vertexPosBuffer.itemSize = 3;
-		vertexPosBuffer.numItems = 3;
-
-		// create program
-		const program = gl.createProgram();
-
-		// compile and attach vertex shader
-		const vertexShader = gl.createShader(gl.VERTEX_SHADER);
-		gl.shaderSource(vertexShader, `
-		attribute vec2 attrVertex;
-		varying vec2 varyinTexCoordinate;
-		uniform vec2 uniformOffset;
-		void main(){
-			varyinTexCoordinate = attrVertex + uniformOffset;
-			gl_Position = vec4(attrVertex, 0, 1);
-		}
-	`);
-		gl.compileShader(vertexShader);
-		gl.attachShader(program, vertexShader);
-
-		// compile and attach fragment shader
-		const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-		gl.shaderSource(fragmentShader, `
-		precision mediump float;
-		varying vec2 varyinTexCoordinate;
-		void main() {
-			gl_FragColor = vec4(varyinTexCoordinate, 1, 1);
-		}
-	`);
-		gl.compileShader(fragmentShader);
-		gl.attachShader(program, fragmentShader);
-
-		// use program
-		gl.linkProgram(program);
-		gl.useProgram(program);
-		program.vertexPosAttrib = gl.getAttribLocation(program, 'attrVertex');
-		program.offsetUniform = gl.getUniformLocation(program, 'uniformOffset');
-		gl.enableVertexAttribArray(program.vertexPosArray);
-		gl.vertexAttribPointer(program.vertexPosAttrib, vertexPosBuffer.itemSize, gl.FLOAT, false, 0, 0);
-		gl.uniform2f(program.offsetUniform, 1, 1);
-
-		// draw
-		gl.drawArrays(gl.LINE_LOOP, 0, vertexPosBuffer.numItems);
-
-		return gl
 	};
 
 	const getCanvasWebgl = async imports => {
 
 		const {
 			require: {
+				queueEvent,
+				createTimer,
 				captureError,
 				attempt,
-				gibberish,
-				sendToTrash,
 				lieProps,
 				phantomDarkness,
 				dragonOfDeath,
-				logTestResult
+				sendToTrash,
+				logTestResult,
+				compressWebGLRenderer,
+				getWebGLRendererConfidence 
 			}
 		} = imports;
+		
+
+		// use short list to improve performance
+		const getParamNames = () => [
+			//'BLEND_EQUATION',
+			//'BLEND_EQUATION_RGB',
+			//'BLEND_EQUATION_ALPHA',
+			//'BLEND_DST_RGB',
+			//'BLEND_SRC_RGB',
+			//'BLEND_DST_ALPHA',
+			//'BLEND_SRC_ALPHA',
+			//'BLEND_COLOR',
+			//'CULL_FACE',
+			//'BLEND',
+			//'DITHER',
+			//'STENCIL_TEST',
+			//'DEPTH_TEST',
+			//'SCISSOR_TEST',
+			//'POLYGON_OFFSET_FILL',
+			//'SAMPLE_ALPHA_TO_COVERAGE',
+			//'SAMPLE_COVERAGE',
+			//'LINE_WIDTH',
+			'ALIASED_POINT_SIZE_RANGE',
+			'ALIASED_LINE_WIDTH_RANGE',
+			//'CULL_FACE_MODE',
+			//'FRONT_FACE',
+			//'DEPTH_RANGE',
+			//'DEPTH_WRITEMASK',
+			//'DEPTH_CLEAR_VALUE',
+			//'DEPTH_FUNC',
+			//'STENCIL_CLEAR_VALUE',
+			//'STENCIL_FUNC',
+			//'STENCIL_FAIL',
+			//'STENCIL_PASS_DEPTH_FAIL',
+			//'STENCIL_PASS_DEPTH_PASS',
+			//'STENCIL_REF',
+			'STENCIL_VALUE_MASK',
+			'STENCIL_WRITEMASK',
+			//'STENCIL_BACK_FUNC',
+			//'STENCIL_BACK_FAIL',
+			//'STENCIL_BACK_PASS_DEPTH_FAIL',
+			//'STENCIL_BACK_PASS_DEPTH_PASS',
+			//'STENCIL_BACK_REF',
+			'STENCIL_BACK_VALUE_MASK',
+			'STENCIL_BACK_WRITEMASK',
+			//'VIEWPORT',
+			//'SCISSOR_BOX',
+			//'COLOR_CLEAR_VALUE',
+			//'COLOR_WRITEMASK',
+			//'UNPACK_ALIGNMENT',
+			//'PACK_ALIGNMENT',
+			'MAX_TEXTURE_SIZE',
+			'MAX_VIEWPORT_DIMS',
+			'SUBPIXEL_BITS',
+			//'RED_BITS',
+			//'GREEN_BITS',
+			//'BLUE_BITS',
+			//'ALPHA_BITS',
+			//'DEPTH_BITS',
+			//'STENCIL_BITS',
+			//'POLYGON_OFFSET_UNITS',
+			//'POLYGON_OFFSET_FACTOR',
+			//'SAMPLE_BUFFERS',
+			//'SAMPLES',
+			//'SAMPLE_COVERAGE_VALUE',
+			//'SAMPLE_COVERAGE_INVERT',
+			//'COMPRESSED_TEXTURE_FORMATS',
+			//'GENERATE_MIPMAP_HINT',
+			'MAX_VERTEX_ATTRIBS',
+			'MAX_VERTEX_UNIFORM_VECTORS',
+			'MAX_VARYING_VECTORS',
+			'MAX_COMBINED_TEXTURE_IMAGE_UNITS',
+			'MAX_VERTEX_TEXTURE_IMAGE_UNITS',
+			'MAX_TEXTURE_IMAGE_UNITS',
+			'MAX_FRAGMENT_UNIFORM_VECTORS',
+			'SHADING_LANGUAGE_VERSION',
+			'VENDOR',
+			'RENDERER',
+			'VERSION',
+			'MAX_CUBE_MAP_TEXTURE_SIZE',
+			//'ACTIVE_TEXTURE',
+			//'IMPLEMENTATION_COLOR_READ_TYPE',
+			//'IMPLEMENTATION_COLOR_READ_FORMAT',
+			'MAX_RENDERBUFFER_SIZE',
+			//'UNPACK_FLIP_Y_WEBGL',
+			//'UNPACK_PREMULTIPLY_ALPHA_WEBGL',
+			//'UNPACK_COLORSPACE_CONVERSION_WEBGL',
+			//'READ_BUFFER',
+			//'UNPACK_ROW_LENGTH',
+			//'UNPACK_SKIP_ROWS',
+			//'UNPACK_SKIP_PIXELS',
+			//'PACK_ROW_LENGTH',
+			//'PACK_SKIP_ROWS',
+			//'PACK_SKIP_PIXELS',
+			//'UNPACK_SKIP_IMAGES',
+			//'UNPACK_IMAGE_HEIGHT',
+			'MAX_3D_TEXTURE_SIZE',
+			'MAX_ELEMENTS_VERTICES',
+			'MAX_ELEMENTS_INDICES',
+			'MAX_TEXTURE_LOD_BIAS',
+			'MAX_DRAW_BUFFERS',
+			//'DRAW_BUFFER0',
+			//'DRAW_BUFFER1',
+			//'DRAW_BUFFER2',
+			//'DRAW_BUFFER3',
+			//'DRAW_BUFFER4',
+			//'DRAW_BUFFER5',
+			//'DRAW_BUFFER6',
+			//'DRAW_BUFFER7',
+			'MAX_FRAGMENT_UNIFORM_COMPONENTS',
+			'MAX_VERTEX_UNIFORM_COMPONENTS',
+			//'FRAGMENT_SHADER_DERIVATIVE_HINT',
+			'MAX_ARRAY_TEXTURE_LAYERS',
+			//'MIN_PROGRAM_TEXEL_OFFSET',
+			'MAX_PROGRAM_TEXEL_OFFSET',
+			'MAX_VARYING_COMPONENTS',
+			'MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS',
+			//'RASTERIZER_DISCARD',
+			'MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS',
+			'MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS',
+			'MAX_COLOR_ATTACHMENTS',
+			'MAX_SAMPLES',
+			'MAX_VERTEX_UNIFORM_BLOCKS',
+			'MAX_FRAGMENT_UNIFORM_BLOCKS',
+			'MAX_COMBINED_UNIFORM_BLOCKS',
+			'MAX_UNIFORM_BUFFER_BINDINGS',
+			'MAX_UNIFORM_BLOCK_SIZE',
+			'MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS',
+			'MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS',
+			//'UNIFORM_BUFFER_OFFSET_ALIGNMENT',
+			'MAX_VERTEX_OUTPUT_COMPONENTS',
+			'MAX_FRAGMENT_INPUT_COMPONENTS',
+			'MAX_SERVER_WAIT_TIMEOUT',
+			//'TRANSFORM_FEEDBACK_PAUSED',
+			//'TRANSFORM_FEEDBACK_ACTIVE',
+			'MAX_ELEMENT_INDEX',
+			'MAX_CLIENT_WAIT_TIMEOUT_WEBGL'
+		].sort();
+
+		const draw = gl => {
+			if (!gl) {
+				return
+			}
+			//gl.clearColor(0.47, 0.7, 0.78, 1)
+			gl.clear(gl.COLOR_BUFFER_BIT);
+
+			// based on https://github.com/Valve/fingerprintjs2/blob/master/fingerprint2.js
+			const vertexPosBuffer = gl.createBuffer();
+			gl.bindBuffer(gl.ARRAY_BUFFER, vertexPosBuffer);
+			const vertices = new Float32Array([-0.9, -0.7, 0, 0.8, -0.7, 0, 0, 0.5, 0]);
+			gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+			vertexPosBuffer.itemSize = 3;
+			vertexPosBuffer.numItems = 3;
+
+			// create program
+			const program = gl.createProgram();
+
+			// compile and attach vertex shader
+			const vertexShader = gl.createShader(gl.VERTEX_SHADER);
+			gl.shaderSource(vertexShader, `
+			attribute vec2 attrVertex;
+			varying vec2 varyinTexCoordinate;
+			uniform vec2 uniformOffset;
+			void main(){
+				varyinTexCoordinate = attrVertex + uniformOffset;
+				gl_Position = vec4(attrVertex, 0, 1);
+			}
+		`);
+			gl.compileShader(vertexShader);
+			gl.attachShader(program, vertexShader);
+
+			// compile and attach fragment shader
+			const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+			gl.shaderSource(fragmentShader, `
+			precision mediump float;
+			varying vec2 varyinTexCoordinate;
+			void main() {
+				gl_FragColor = vec4(varyinTexCoordinate, 1, 1);
+			}
+		`);
+			gl.compileShader(fragmentShader);
+			gl.attachShader(program, fragmentShader);
+
+			// use program
+			gl.linkProgram(program);
+			gl.useProgram(program);
+			program.vertexPosAttrib = gl.getAttribLocation(program, 'attrVertex');
+			program.offsetUniform = gl.getUniformLocation(program, 'uniformOffset');
+			gl.enableVertexAttribArray(program.vertexPosArray);
+			gl.vertexAttribPointer(program.vertexPosAttrib, vertexPosBuffer.itemSize, gl.FLOAT, false, 0, 0);
+			gl.uniform2f(program.offsetUniform, 1, 1);
+
+			// draw
+			gl.drawArrays(gl.LINE_LOOP, 0, vertexPosBuffer.numItems);
+
+			return gl
+		};
 
 		try {
-			const start = performance.now();
+			const timer = createTimer();
+			await queueEvent(timer);
+
 			// detect lies
 			const dataLie = lieProps['HTMLCanvasElement.toDataURL'];
 			const contextLie = lieProps['HTMLCanvasElement.getContext'];
@@ -3054,7 +3500,7 @@
 				canvas = doc.createElement('canvas');
 				canvas2 = doc.createElement('canvas');
 			}
-
+			
 			const getContext = (canvas, contextType) => {
 				try {
 					if (contextType == 'webgl2') {
@@ -3074,6 +3520,7 @@
 					return
 				}
 			};
+			
 			const gl = getContext(canvas, 'webgl');
 			const gl2 = getContext(canvas2, 'webgl2');
 			if (!gl) {
@@ -3125,41 +3572,26 @@
 				if (!gl) {
 					return {}
 				}
-				const data = Object
-					.getOwnPropertyNames(Object.getPrototypeOf(gl))
+				const pnamesShortList = new Set(getParamNames());
+				const pnames = Object.getOwnPropertyNames(Object.getPrototypeOf(gl))
 					//.filter(prop => prop.toUpperCase() == prop) // global test
-					.filter(name => pnames.has(name))
-					.reduce((acc, name) => {
-						let val = gl.getParameter(gl[name]);
-						if (!!val && 'buffer' in Object.getPrototypeOf(val)) {
-							acc[name] = [...val];
-						} else {
-							acc[name] = val;
-						}
-						return acc
-					}, {});
-				return data
+					.filter(name => pnamesShortList.has(name));
+				return pnames.reduce((acc, name) => {
+					let val = gl.getParameter(gl[name]);
+					if (!!val && 'buffer' in Object.getPrototypeOf(val)) {
+						acc[name] = [...val];
+					} else {
+						acc[name] = val;
+					}
+					return acc
+				}, {})
 			};
 
 			const getUnmasked = gl => {
 				const ext = !!gl ? gl.getExtension('WEBGL_debug_renderer_info') : null;
-				if (!ext) {
-					return {}
-				}
-				const UNMASKED_VENDOR_WEBGL = gl.getParameter(ext.UNMASKED_VENDOR_WEBGL);
-				const UNMASKED_RENDERER_WEBGL = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL);
-				const vendorGibbers = gibberish(UNMASKED_VENDOR_WEBGL);
-				const rendererGibbers = gibberish(UNMASKED_RENDERER_WEBGL);
-				const { name } = Object.getPrototypeOf(gl).constructor;
-				if (vendorGibbers.length) {
-					sendToTrash(`${name} vendor is gibberish`, `[${vendorGibbers.join(', ')}] ${UNMASKED_VENDOR_WEBGL}`);
-				}
-				if (rendererGibbers.length) {
-					sendToTrash(`${name} renderer is gibberish`, `[${rendererGibbers.join(', ')}] ${UNMASKED_RENDERER_WEBGL}`);
-				}
-				return {
-					UNMASKED_VENDOR_WEBGL,
-					UNMASKED_RENDERER_WEBGL
+				return !ext ? {} : {
+					UNMASKED_VENDOR_WEBGL: gl.getParameter(ext.UNMASKED_VENDOR_WEBGL),
+					UNMASKED_RENDERER_WEBGL: gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)
 				}
 			};
 
@@ -3174,36 +3606,54 @@
 				return ext
 			};
 
-			const getDataURI = contextType => {
+			const getWebGLData = (gl, contextType) => {
+				if (!gl) {
+					return {
+						dataURI: undefined,
+						pixels: undefined
+					}
+				}
 				try {
-					const canvas = doc.createElement('canvas');
-					const gl = getContext(canvas, contextType);
 					draw(gl);
-					return canvas.toDataURL()
+					const { drawingBufferWidth, drawingBufferHeight } = gl;
+					let dataURI = '';
+					if (gl.canvas.constructor.name === 'OffscreenCanvas') {
+						const canvas = document.createElement('canvas');
+						draw(getContext(canvas, contextType));
+						dataURI = canvas.toDataURL();
+					} else {
+						dataURI = gl.canvas.toDataURL();
+					}
+
+					// reduce excessive reads to improve performance
+					const width = drawingBufferWidth/15;
+					const height = drawingBufferHeight/6;
+					const pixels = new Uint8Array(
+						width * height * 4
+					);
+					gl.readPixels(
+						0,
+						0,
+						width,
+						height,
+						gl.RGBA,
+						gl.UNSIGNED_BYTE,
+						pixels
+					);
+					//console.log([...pixels].filter(x => !!x)) // test read
+					return {
+						dataURI,
+						pixels: [...pixels]
+					}
 				}
 				catch (error) {
+					console.error(error);
 					return
 				}
 			};
-
-			const getPixels = gl => {
-				if (!gl) {
-					return []
-				}
-				const width = gl.drawingBufferWidth;
-				const height = gl.drawingBufferHeight;
-				try {
-					draw(gl);
-					const pixels = new Uint8Array(width * height * 4);
-					gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
-					return [...pixels]
-				}
-				catch (error) {
-					return []
-				}
-			};
-
+			
 			// get data
+			await queueEvent(timer);
 			const params = { ...getParams(gl), ...getUnmasked(gl) };
 			const params2 = { ...getParams(gl2), ...getUnmasked(gl2) };
 			const mismatch = Object.keys(params2)
@@ -3214,12 +3664,16 @@
 				sendToTrash('webgl/webgl2 mirrored params mismatch', mismatch);
 			}
 
+			await queueEvent(timer);
+			const { dataURI, pixels } = getWebGLData(gl, 'webgl') || {};
+			const { dataURI: dataURI2, pixels: pixels2 } = getWebGLData(gl2, 'webgl2') || {};
+			
 			const data = {
 				extensions: [...getSupportedExtensions(gl), ...getSupportedExtensions(gl2)],
-				pixels: getPixels(gl),
-				pixels2: getPixels(gl2),
-				dataURI: getDataURI('webgl'),
-				dataURI2: getDataURI('webgl2'),
+				pixels,
+				pixels2,
+				dataURI,
+				dataURI2,
 				parameters: {
 					...{ ...params, ...params2 },
 					...{
@@ -3238,8 +3692,14 @@
 				lied
 			};
 
-			logTestResult({ start, test: 'webgl', passed: true });
-			return { ...data }
+			logTestResult({ time: timer.stop(), test: 'webgl', passed: true });
+			return {
+				...data,
+				gpu: {
+					...(getWebGLRendererConfidence((data.parameters||{}).UNMASKED_RENDERER_WEBGL) || {}),
+					compressedGPU: compressWebGLRenderer((data.parameters||{}).UNMASKED_RENDERER_WEBGL)
+				}
+			}
 		}
 		catch (error) {
 			logTestResult({ test: 'webgl', passed: false });
@@ -3248,21 +3708,19 @@
 		}
 	};
 
-	const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice, compressWebGLRenderer, getWebGLRendererConfidence }) => {
+	const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice, performanceLogger }) => {
 		if (!fp.canvasWebgl) {
 			return `
-		<div class="col-four undefined">
+		<div class="col-six undefined">
 			<strong>WebGL</strong>
 			<div>images: ${note.blocked}</div>
 			<div>pixels: ${note.blocked}</div>
 			<div>params (0): ${note.blocked}</div>
 			<div>exts (0): ${note.blocked}</div>
-		</div>
-		<div class="col-four undefined">
 			<div>gpu:</div>
 			<div class="block-text">${note.blocked}</div>
-		</div>
-		<div class="col-four undefined"><image /></div>`
+			<div class="gl-image"></div>
+		</div>`
 		}
 		const { canvasWebgl: data } = fp;
 		const id = 'creep-canvas-webgl';
@@ -3275,25 +3733,34 @@
 			pixels2,
 			lied,
 			extensions,
-			parameters
-		} = data;
+			parameters,
+			gpu
+		} = data || {};
 
-		const compressedGPU = compressWebGLRenderer((parameters||{}).UNMASKED_RENDERER_WEBGL);
-		const { parts, gibbers, confidence, grade: confidenceGrade } = getWebGLRendererConfidence((parameters||{}).UNMASKED_RENDERER_WEBGL) || {};
+		const {
+			parts,
+			warnings,
+			gibbers,
+			confidence,
+			grade: confidenceGrade,
+			compressedGPU
+		} = gpu || {};
 		
 		const paramKeys = parameters ? Object.keys(parameters).sort() : [];
 		
 		return `
-	<div class="col-four${lied ? ' rejected' : ''}">
+	
+	<div class="relative col-six${lied ? ' rejected' : ''}">
+		<span class="time">${performanceLogger.getLog().webgl}</span>
 		<strong>WebGL</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div>images:${
 			!dataURI ? ' '+note.blocked : `<span class="sub-hash">${hashMini(dataURI)}</span>${!dataURI2 || dataURI == dataURI2 ? '' : `<span class="sub-hash">${hashMini(dataURI2)}</span>`}`
 		}</div>
 		<div>pixels:${
-			!pixels ? ' '+note.unsupported : `<span class="sub-hash">${hashSlice(pixels)}</span>${!pixels2 || pixels == pixels2 ? '' : `<span class="sub-hash">${hashSlice(pixels2)}</span>`}`
+			!pixels ? ' '+note.blocked : `<span class="sub-hash">${hashSlice(pixels)}</span>${!pixels2 || pixels == pixels2 ? '' : `<span class="sub-hash">${hashSlice(pixels2)}</span>`}`
 		}</div>
 		<div>params (${count(paramKeys)}): ${
-			!paramKeys.length ? note.unsupported :
+			!paramKeys.length ? note.blocked :
 			modal(
 				`${id}-parameters`,
 				paramKeys.map(key => `${key}: ${parameters[key]}`).join('<br>'),
@@ -3301,228 +3768,217 @@
 			)
 		}</div>
 		<div>exts (${count(extensions)}): ${
-			!extensions.length ? note.unsupported : 
+			!extensions.length ? note.blocked : 
 			modal(
 				`${id}-extensions`,
 				extensions.sort().join('<br>'),
 				hashMini(extensions)
 			)
 		}</div>
-	</div>
-	<div class="col-four${lied ? ' rejected' : ''} relative">
-		${
+		
+		<div class="relative">gpu:${
 			confidence ? `<span class="confidence-note">confidence: <span class="scale-up grade-${confidenceGrade}">${confidence}</span></span>` : ''
-		}
-		<div>gpu:</div>
+		}</div>
 		<div class="block-text help" title="${
-			confidence ? `\nWebGLRenderingContext.getParameter()\ngpu compressed: ${compressedGPU}\nknown parts: ${parts || 'none'}\ngibberish: ${gibbers || 'none'}` : 'WebGLRenderingContext.getParameter()'
+			confidence ? `\nWebGLRenderingContext.getParameter()\ngpu compressed: ${compressedGPU}\nknown parts: ${parts || 'none'}\ngibberish: ${gibbers || 'none'}\nwarnings: ${warnings.join(', ') || 'none'}` : 'WebGLRenderingContext.getParameter()'
 		}">
 			<div>
 				${parameters.UNMASKED_VENDOR_WEBGL ? parameters.UNMASKED_VENDOR_WEBGL : ''}
-				${!parameters.UNMASKED_RENDERER_WEBGL ? note.unsupported : `<br>${parameters.UNMASKED_RENDERER_WEBGL}`}
+				${!parameters.UNMASKED_RENDERER_WEBGL ? note.blocked : `<br>${parameters.UNMASKED_RENDERER_WEBGL}`}
 			</div>
 		</div>
+		${!dataURI ? '<div class="gl-image"></div>' : `<image class="gl-image" src="${dataURI}"/>`}
 	</div>
-	<div class="col-four${lied ? ' rejected' : ''}"><image ${!dataURI ? '' : `width="100%" src="${dataURI}"`}/></div>
 	`
-	};
-
-	const computeStyle = (type, { require: [captureError] }) => {
-		try {
-			// get CSSStyleDeclaration
-			const cssStyleDeclaration = (
-				type == 'getComputedStyle' ? getComputedStyle(document.body) :
-					type == 'HTMLElement.style' ? document.body.style :
-						type == 'CSSRuleList.style' ? document.styleSheets[0].cssRules[0].style :
-							undefined
-			);
-			if (!cssStyleDeclaration) {
-				throw new TypeError('invalid argument string')
-			}
-			// get properties
-			const proto = Object.getPrototypeOf(cssStyleDeclaration);
-			const prototypeProperties = Object.getOwnPropertyNames(proto);
-			const ownEnumerablePropertyNames = [];
-			const cssVar = /^--.*$/;
-			Object.keys(cssStyleDeclaration).forEach(key => {
-				const numericKey = !isNaN(key);
-				const value = cssStyleDeclaration[key];
-				const customPropKey = cssVar.test(key);
-				const customPropValue = cssVar.test(value);
-				if (numericKey && !customPropValue) {
-					return ownEnumerablePropertyNames.push(value)
-				} else if (!numericKey && !customPropKey) {
-					return ownEnumerablePropertyNames.push(key)
-				}
-				return
-			});
-			// get properties in prototype chain (required only in chrome)
-			const propertiesInPrototypeChain = {};
-			const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1);
-			const uncapitalize = str => str.charAt(0).toLowerCase() + str.slice(1);
-			const removeFirstChar = str => str.slice(1);
-			const caps = /[A-Z]/g;
-			ownEnumerablePropertyNames.forEach(key => {
-				if (propertiesInPrototypeChain[key]) {
-					return
-				}
-				// determine attribute type
-				const isNamedAttribute = key.indexOf('-') > -1;
-				const isAliasAttribute = caps.test(key);
-				// reduce key for computation
-				const firstChar = key.charAt(0);
-				const isPrefixedName = isNamedAttribute && firstChar == '-';
-				const isCapitalizedAlias = isAliasAttribute && firstChar == firstChar.toUpperCase();
-				key = (
-					isPrefixedName ? removeFirstChar(key) :
-						isCapitalizedAlias ? uncapitalize(key) :
-							key
-				);
-				// find counterpart in CSSStyleDeclaration object or its prototype chain
-				if (isNamedAttribute) {
-					const aliasAttribute = key.split('-').map((word, index) => index == 0 ? word : capitalize(word)).join('');
-					if (aliasAttribute in cssStyleDeclaration) {
-						propertiesInPrototypeChain[aliasAttribute] = true;
-					} else if (capitalize(aliasAttribute) in cssStyleDeclaration) {
-						propertiesInPrototypeChain[capitalize(aliasAttribute)] = true;
-					}
-				} else if (isAliasAttribute) {
-					const namedAttribute = key.replace(caps, char => '-' + char.toLowerCase());
-					if (namedAttribute in cssStyleDeclaration) {
-						propertiesInPrototypeChain[namedAttribute] = true;
-					} else if (`-${namedAttribute}` in cssStyleDeclaration) {
-						propertiesInPrototypeChain[`-${namedAttribute}`] = true;
-					}
-				}
-				return
-			});
-			// compile keys
-			const keys = [
-				...new Set([
-					...prototypeProperties,
-					...ownEnumerablePropertyNames,
-					...Object.keys(propertiesInPrototypeChain)
-				])
-			];
-			const interfaceName = ('' + proto).match(/\[object (.+)\]/)[1];
-
-			return { keys, interfaceName }
-		}
-		catch (error) {
-			captureError(error);
-			return
-		}
-	};
-
-	const getSystemStyles = (instanceId, { require: [captureError, parentPhantom] }) => {
-		try {
-			const colors = [
-				'ActiveBorder',
-				'ActiveCaption',
-				'ActiveText',
-				'AppWorkspace',
-				'Background',
-				'ButtonBorder',
-				'ButtonFace',
-				'ButtonHighlight',
-				'ButtonShadow',
-				'ButtonText',
-				'Canvas',
-				'CanvasText',
-				'CaptionText',
-				'Field',
-				'FieldText',
-				'GrayText',
-				'Highlight',
-				'HighlightText',
-				'InactiveBorder',
-				'InactiveCaption',
-				'InactiveCaptionText',
-				'InfoBackground',
-				'InfoText',
-				'LinkText',
-				'Mark',
-				'MarkText',
-				'Menu',
-				'MenuText',
-				'Scrollbar',
-				'ThreeDDarkShadow',
-				'ThreeDFace',
-				'ThreeDHighlight',
-				'ThreeDLightShadow',
-				'ThreeDShadow',
-				'VisitedText',
-				'Window',
-				'WindowFrame',
-				'WindowText'
-			];
-			const fonts = [
-				'caption',
-				'icon',
-				'menu',
-				'message-box',
-				'small-caption',
-				'status-bar'
-			];
-
-			let rendered;
-			if (!parentPhantom) {
-				const id = 'creep-system-styles';
-				const el = document.createElement('div');
-				el.setAttribute('id', id);
-				document.body.append(el);
-				rendered = document.getElementById(id);
-			}
-			else {
-				rendered = parentPhantom;
-			}
-			const system = {
-				colors: [],
-				fonts: []
-			};
-			
-			system.colors = colors.map(color => {
-				rendered.setAttribute('style', `background-color: ${color} !important`);
-				return {
-					[color]: getComputedStyle(rendered).backgroundColor
-				}
-			});
-
-			fonts.forEach(font => {
-				rendered.setAttribute('style', `font: ${font} !important`);
-				const computedStyle = getComputedStyle(rendered);
-				system.fonts.push({
-					[font]: `${computedStyle.fontSize} ${computedStyle.fontFamily}`
-				});
-			});
-
-			if (!parentPhantom) {
-				rendered.parentNode.removeChild(rendered);
-			}
-			return { ...system }
-		}
-		catch (error) {
-			captureError(error);
-			return
-		}
 	};
 
 	const getCSS = async imports => {
 
 		const {
 			require: {
-				instanceId,
+				queueEvent,
+				createTimer,
 				captureError,
 				logTestResult,
 				parentPhantom
 			}
 		} = imports;
 
+		const computeStyle = (type, { require: [captureError] }) => {
+			try {
+				// get CSSStyleDeclaration
+				const cssStyleDeclaration = (
+					type == 'getComputedStyle' ? getComputedStyle(document.body) :
+						type == 'HTMLElement.style' ? document.body.style :
+							type == 'CSSRuleList.style' ? document.styleSheets[0].cssRules[0].style :
+								undefined
+				);
+				if (!cssStyleDeclaration) {
+					throw new TypeError('invalid argument string')
+				}
+				// get properties
+				const proto = Object.getPrototypeOf(cssStyleDeclaration);
+				const prototypeProperties = Object.getOwnPropertyNames(proto);
+				const ownEnumerablePropertyNames = [];
+				const cssVar = /^--.*$/;
+				Object.keys(cssStyleDeclaration).forEach(key => {
+					const numericKey = !isNaN(key);
+					const value = cssStyleDeclaration[key];
+					const customPropKey = cssVar.test(key);
+					const customPropValue = cssVar.test(value);
+					if (numericKey && !customPropValue) {
+						return ownEnumerablePropertyNames.push(value)
+					} else if (!numericKey && !customPropKey) {
+						return ownEnumerablePropertyNames.push(key)
+					}
+					return
+				});
+				// get properties in prototype chain (required only in chrome)
+				const propertiesInPrototypeChain = {};
+				const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1);
+				const uncapitalize = str => str.charAt(0).toLowerCase() + str.slice(1);
+				const removeFirstChar = str => str.slice(1);
+				const caps = /[A-Z]/g;
+				ownEnumerablePropertyNames.forEach(key => {
+					if (propertiesInPrototypeChain[key]) {
+						return
+					}
+					// determine attribute type
+					const isNamedAttribute = key.indexOf('-') > -1;
+					const isAliasAttribute = caps.test(key);
+					// reduce key for computation
+					const firstChar = key.charAt(0);
+					const isPrefixedName = isNamedAttribute && firstChar == '-';
+					const isCapitalizedAlias = isAliasAttribute && firstChar == firstChar.toUpperCase();
+					key = (
+						isPrefixedName ? removeFirstChar(key) :
+							isCapitalizedAlias ? uncapitalize(key) :
+								key
+					);
+					// find counterpart in CSSStyleDeclaration object or its prototype chain
+					if (isNamedAttribute) {
+						const aliasAttribute = key.split('-').map((word, index) => index == 0 ? word : capitalize(word)).join('');
+						if (aliasAttribute in cssStyleDeclaration) {
+							propertiesInPrototypeChain[aliasAttribute] = true;
+						} else if (capitalize(aliasAttribute) in cssStyleDeclaration) {
+							propertiesInPrototypeChain[capitalize(aliasAttribute)] = true;
+						}
+					} else if (isAliasAttribute) {
+						const namedAttribute = key.replace(caps, char => '-' + char.toLowerCase());
+						if (namedAttribute in cssStyleDeclaration) {
+							propertiesInPrototypeChain[namedAttribute] = true;
+						} else if (`-${namedAttribute}` in cssStyleDeclaration) {
+							propertiesInPrototypeChain[`-${namedAttribute}`] = true;
+						}
+					}
+					return
+				});
+				// compile keys
+				const keys = [
+					...new Set([
+						...prototypeProperties,
+						...ownEnumerablePropertyNames,
+						...Object.keys(propertiesInPrototypeChain)
+					])
+				];
+				const interfaceName = ('' + proto).match(/\[object (.+)\]/)[1];
+
+				return { keys, interfaceName }
+			}
+			catch (error) {
+				captureError(error);
+				return
+			}
+		};
+
+		const getSystemStyles = el => {
+			try {
+				const colors = [
+					'ActiveBorder',
+					'ActiveCaption',
+					'ActiveText',
+					'AppWorkspace',
+					'Background',
+					'ButtonBorder',
+					'ButtonFace',
+					'ButtonHighlight',
+					'ButtonShadow',
+					'ButtonText',
+					'Canvas',
+					'CanvasText',
+					'CaptionText',
+					'Field',
+					'FieldText',
+					'GrayText',
+					'Highlight',
+					'HighlightText',
+					'InactiveBorder',
+					'InactiveCaption',
+					'InactiveCaptionText',
+					'InfoBackground',
+					'InfoText',
+					'LinkText',
+					'Mark',
+					'MarkText',
+					'Menu',
+					'MenuText',
+					'Scrollbar',
+					'ThreeDDarkShadow',
+					'ThreeDFace',
+					'ThreeDHighlight',
+					'ThreeDLightShadow',
+					'ThreeDShadow',
+					'VisitedText',
+					'Window',
+					'WindowFrame',
+					'WindowText'
+				];
+				const fonts = [
+					'caption',
+					'icon',
+					'menu',
+					'message-box',
+					'small-caption',
+					'status-bar'
+				];
+
+				const getStyles = el => ({
+					colors: colors.map(color => {
+						el.setAttribute('style', `background-color: ${color} !important`);
+						return {
+							[color]: getComputedStyle(el).backgroundColor
+						}
+					}),
+					fonts: fonts.map(font => {
+						el.setAttribute('style', `font: ${font} !important`);
+						const computedStyle = getComputedStyle(el);
+						return {
+							[font]: `${computedStyle.fontSize} ${computedStyle.fontFamily}`
+						}
+					})
+				});
+
+				if (!el) {
+					el = document.createElement('div');
+					document.body.append(el);
+					const systemStyles = getStyles(el);
+					el.parentNode.removeChild(el);
+					return systemStyles
+				}
+				return getStyles(el)
+			}
+			catch (error) {
+				captureError(error);
+				return
+			}
+		};
+
 		try {
-			const start = performance.now();
+			const timer = createTimer();
+			timer.start();
 			const computedStyle = computeStyle('getComputedStyle', { require: [captureError] });
-			const system = getSystemStyles(instanceId, { require: [captureError, parentPhantom] });
-			logTestResult({ start, test: 'computed style', passed: true });
+			const system = getSystemStyles(parentPhantom);
+			logTestResult({ time: timer.stop(), test: 'computed style', passed: true });
 			return {
 				computedStyle,
 				system
@@ -3535,7 +3991,7 @@
 		}
 	};
 
-	const cssHTML = ({ fp, modal, note, hashMini, hashSlice, count }) => {
+	const cssHTML = ({ fp, modal, note, hashMini, hashSlice, count, performanceLogger }) => {
 		if (!fp.css) {
 			return `
 		<div class="col-six undefined">
@@ -3568,7 +4024,8 @@
 		});
 		const id = 'creep-css-style-declaration-version';
 		return `
-	<div class="col-six">
+	<div class="relative col-six">
+		<span class="aside-note">${performanceLogger.getLog()['computed style']}</span>
 		<strong>Computed Style</strong><span class="hash">${hashSlice($hash)}</span>
 		<div>keys (${!computedStyle ? '0' : count(computedStyle.keys)}): ${
 			!computedStyle ? note.blocked : 
@@ -3609,95 +4066,12 @@
 	`
 	};
 
-	const gcd = (a, b) => b == 0 ? a : gcd(b, a % b);
-
-	const getAspectRatio = (width, height) => {
-		const r = gcd(width, height);
-		const aspectRatio = `${width / r}/${height / r}`;
-		return aspectRatio
-	};
-
-	const query = ({ body, type, rangeStart, rangeLen }) => {
-		body.innerHTML = `
-		<style>
-			${[...Array(rangeLen)].map((slot, i) => {
-		i += rangeStart;
-		return `@media(device-${type}:${i}px){body{--device-${type}:${i};}}`
-	}).join('')}
-		</style>
-	`;
-		const style = getComputedStyle(body);
-		return style.getPropertyValue(`--device-${type}`).trim()
-	};
-
-	const getScreenMedia = body => {
-		let i, widthMatched, heightMatched;
-		for (i = 0; i < 10; i++) {
-			let resWidth, resHeight;
-			if (!widthMatched) {
-				resWidth = query({ body, type: 'width', rangeStart: i * 1000, rangeLen: 1000 });
-				if (resWidth) {
-					widthMatched = resWidth;
-				}
-			}
-			if (!heightMatched) {
-				resHeight = query({ body, type: 'height', rangeStart: i * 1000, rangeLen: 1000 });
-				if (resHeight) {
-					heightMatched = resHeight;
-				}
-			}
-			if (widthMatched && heightMatched) {
-				break
-			}
-		}
-		return { width: +widthMatched, height: +heightMatched }
-	};
-
-	const getScreenMatchMedia = win => {
-		let widthMatched, heightMatched;
-		for (let i = 0; i < 10; i++) {
-			let resWidth, resHeight;
-			if (!widthMatched) {
-				let rangeStart = i * 1000;
-				const rangeLen = 1000;
-				for (let i = 0; i < rangeLen; i++) {
-					if (win.matchMedia(`(device-width:${rangeStart}px)`).matches) {
-						resWidth = rangeStart;
-						break
-					}
-					rangeStart++;
-				}
-				if (resWidth) {
-					widthMatched = resWidth;
-				}
-			}
-			if (!heightMatched) {
-				let rangeStart = i * 1000;
-				const rangeLen = 1000;
-				for (let i = 0; i < rangeLen; i++) {
-					if (win.matchMedia(`(device-height:${rangeStart}px)`).matches) {
-						resHeight = rangeStart;
-						break
-					}
-					rangeStart++;
-				}
-				if (resHeight) {
-					heightMatched = resHeight;
-				}
-			}
-			if (widthMatched && heightMatched) {
-				break
-			}
-		}
-		return { width: widthMatched, height: heightMatched }
-	};
-
-	const getCSSDataURI = x => `data:text/css,body {${x}}`;
-
 	const getCSSMedia = async imports => {
 
 		const {
 			require: {
+				queueEvent,
+				createTimer,
 				captureError,
 				phantomDarkness,
 				logTestResult,
@@ -3705,8 +4079,48 @@
 			}
 		} = imports;
 
+		const gcd = (a, b) => b == 0 ? a : gcd(b, a % b);
+
+		const getAspectRatio = (width, height) => {
+			const r = gcd(width, height);
+			const aspectRatio = `${width / r}/${height / r}`;
+			return aspectRatio
+		};
+
+		const query = ({ body, type, rangeStart, rangeLen }) => {
+			const html = [...Array(rangeLen)].map((slot, i) => {
+				i += rangeStart;
+				return `@media(device-${type}:${i}px){body{--device-${type}:${i};}}`
+			}).join('');
+			body.innerHTML = `<style>${html}</style>`;
+			const style = getComputedStyle(body);
+			return style.getPropertyValue(`--device-${type}`).trim()
+		};
+
+		const getScreenMedia = ({ body, width, height }) => {
+			let widthMatch = query({ body, type: 'width', rangeStart: width, rangeLen: 1 });
+			let heightMatch = query({ body, type: 'height', rangeStart: height, rangeLen: 1 });
+			if (widthMatch && heightMatch) {
+				return { width, height }	
+			}
+			const rangeLen = 1000
+			;[...Array(10)].find((slot, i) => {
+				if (!widthMatch) {
+					widthMatch = query({ body, type: 'width', rangeStart: i * rangeLen, rangeLen });
+				}
+				if (!heightMatch) {
+					heightMatch = query({ body, type: 'height', rangeStart: i * rangeLen, rangeLen });
+				}
+				return widthMatch && heightMatch
+			});
+			return { width: +widthMatch, height: +heightMatch }
+		};
+
+		const getCSSDataURI = x => `data:text/css,body {${x}}`;
+
 		try {
-			const start = performance.now();
+			const timer = createTimer();
+			timer.start();
 			const win = phantomDarkness.window;
 
 			const { body } = win.document;
@@ -3776,6 +4190,42 @@
 				)
 			};
 
+			const importStyles = `
+		<style>
+		@import '${getCSSDataURI('--import-prefers-reduced-motion: no-preference')}' (prefers-reduced-motion: no-preference);
+		@import '${getCSSDataURI('--import-prefers-reduced-motion: reduce')}' (prefers-reduced-motion: reduce);
+		@import '${getCSSDataURI('--import-prefers-color-scheme: light')}' (prefers-color-scheme: light);
+		@import '${getCSSDataURI('--import-prefers-color-scheme: dark')}' (prefers-color-scheme: dark);
+		@import '${getCSSDataURI('--import-monochrome: monochrome')}' (monochrome);
+		@import '${getCSSDataURI('--import-monochrome: non-monochrome')}' (monochrome: 0);
+		@import '${getCSSDataURI('--import-inverted-colors: inverted')}' (inverted-colors: inverted);
+		@import '${getCSSDataURI('--import-inverted-colors: none')}' (inverted-colors: 0);
+		@import '${getCSSDataURI('--import-forced-colors: none')}' (forced-colors: none);
+		@import '${getCSSDataURI('--import-forced-colors: active')}' (forced-colors: active);
+		@import '${getCSSDataURI('--import-any-hover: hover')}' (any-hover: hover);
+		@import '${getCSSDataURI('--import-any-hover: none')}' (any-hover: none);
+		@import '${getCSSDataURI('--import-hover: hover')}' (hover: hover);
+		@import '${getCSSDataURI('--import-hover: none')}' (hover: none);
+		@import '${getCSSDataURI('--import-any-pointer: fine')}' (any-pointer: fine);
+		@import '${getCSSDataURI('--import-any-pointer: coarse')}' (any-pointer: coarse);
+		@import '${getCSSDataURI('--import-any-pointer: none')}' (any-pointer: none);
+		@import '${getCSSDataURI('--import-pointer: fine')}' (pointer: fine);
+		@import '${getCSSDataURI('--import-pointer: coarse')}' (pointer: coarse);
+		@import '${getCSSDataURI('--import-pointer: none')}' (pointer: none);
+		@import '${getCSSDataURI(`--import-device-aspect-ratio: ${deviceAspectRatio}`)}' (device-aspect-ratio: ${deviceAspectRatio});
+		@import '${getCSSDataURI(`--import-device-screen: ${width} x ${height}`)}' (device-width: ${width}px) and (device-height: ${height}px);
+		@import '${getCSSDataURI('--import-display-mode: fullscreen')}' (display-mode: fullscreen);
+		@import '${getCSSDataURI('--import-display-mode: standalone')}' (display-mode: standalone);
+		@import '${getCSSDataURI('--import-display-mode: minimal-ui')}' (display-mode: minimal-ui);
+		@import '${getCSSDataURI('--import-display-mode: browser')}' (display-mode: browser);
+		@import '${getCSSDataURI('--import-color-gamut: srgb')}' (color-gamut: srgb);
+		@import '${getCSSDataURI('--import-color-gamut: p3')}' (color-gamut: p3);
+		@import '${getCSSDataURI('--import-color-gamut: rec2020')}' (color-gamut: rec2020);
+		@import '${getCSSDataURI('--import-orientation: landscape')}' (orientation: landscape);
+		@import '${getCSSDataURI('--import-orientation: portrait')}' (orientation: portrait);
+		</style>
+		`;
+
 			body.innerHTML = `
 		<style>
 		@media (prefers-reduced-motion: no-preference) {body {--prefers-reduced-motion: no-preference}}
@@ -3810,9 +4260,10 @@
 		@media (orientation: landscape) {body {--orientation: landscape}}
 		@media (orientation: portrait) {body {--orientation: portrait}}
 		</style>
+		${!isFirefox ? importStyles : ''}
 		`;
-
-			let style = getComputedStyle(body);
+			
+			const style = getComputedStyle(body);
 			const mediaCSS = {
 				['prefers-reduced-motion']: style.getPropertyValue('--prefers-reduced-motion').trim() || undefined,
 				['prefers-color-scheme']: style.getPropertyValue('--prefers-color-scheme').trim() || undefined,
@@ -3830,67 +4281,27 @@
 				orientation: style.getPropertyValue('--orientation').trim() || undefined,
 			};
 
-			let importCSS;
-
-			if (!isFirefox) {
-				body.innerHTML = `
-			<style>
-			@import '${getCSSDataURI('--import-prefers-reduced-motion: no-preference')}' (prefers-reduced-motion: no-preference);
-			@import '${getCSSDataURI('--import-prefers-reduced-motion: reduce')}' (prefers-reduced-motion: reduce);
-			@import '${getCSSDataURI('--import-prefers-color-scheme: light')}' (prefers-color-scheme: light);
-			@import '${getCSSDataURI('--import-prefers-color-scheme: dark')}' (prefers-color-scheme: dark);
-			@import '${getCSSDataURI('--import-monochrome: monochrome')}' (monochrome);
-			@import '${getCSSDataURI('--import-monochrome: non-monochrome')}' (monochrome: 0);
-			@import '${getCSSDataURI('--import-inverted-colors: inverted')}' (inverted-colors: inverted);
-			@import '${getCSSDataURI('--import-inverted-colors: none')}' (inverted-colors: 0);
-			@import '${getCSSDataURI('--import-forced-colors: none')}' (forced-colors: none);
-			@import '${getCSSDataURI('--import-forced-colors: active')}' (forced-colors: active);
-			@import '${getCSSDataURI('--import-any-hover: hover')}' (any-hover: hover);
-			@import '${getCSSDataURI('--import-any-hover: none')}' (any-hover: none);
-			@import '${getCSSDataURI('--import-hover: hover')}' (hover: hover);
-			@import '${getCSSDataURI('--import-hover: none')}' (hover: none);
-			@import '${getCSSDataURI('--import-any-pointer: fine')}' (any-pointer: fine);
-			@import '${getCSSDataURI('--import-any-pointer: coarse')}' (any-pointer: coarse);
-			@import '${getCSSDataURI('--import-any-pointer: none')}' (any-pointer: none);
-			@import '${getCSSDataURI('--import-pointer: fine')}' (pointer: fine);
-			@import '${getCSSDataURI('--import-pointer: coarse')}' (pointer: coarse);
-			@import '${getCSSDataURI('--import-pointer: none')}' (pointer: none);
-			@import '${getCSSDataURI(`--import-device-aspect-ratio: ${deviceAspectRatio}`)}' (device-aspect-ratio: ${deviceAspectRatio});
-			@import '${getCSSDataURI(`--import-device-screen: ${width} x ${height}`)}' (device-width: ${width}px) and (device-height: ${height}px);
-			@import '${getCSSDataURI('--import-display-mode: fullscreen')}' (display-mode: fullscreen);
-			@import '${getCSSDataURI('--import-display-mode: standalone')}' (display-mode: standalone);
-			@import '${getCSSDataURI('--import-display-mode: minimal-ui')}' (display-mode: minimal-ui);
-			@import '${getCSSDataURI('--import-display-mode: browser')}' (display-mode: browser);
-			@import '${getCSSDataURI('--import-color-gamut: srgb')}' (color-gamut: srgb);
-			@import '${getCSSDataURI('--import-color-gamut: p3')}' (color-gamut: p3);
-			@import '${getCSSDataURI('--import-color-gamut: rec2020')}' (color-gamut: rec2020);
-			@import '${getCSSDataURI('--import-orientation: landscape')}' (orientation: landscape);
-			@import '${getCSSDataURI('--import-orientation: portrait')}' (orientation: portrait);
-			</style>
-			`;
-				style = getComputedStyle(body);
-				importCSS = {
-					['prefers-reduced-motion']: style.getPropertyValue('--import-prefers-reduced-motion').trim() || undefined,
-					['prefers-color-scheme']: style.getPropertyValue('--import-prefers-color-scheme').trim() || undefined,
-					monochrome: style.getPropertyValue('--import-monochrome').trim() || undefined,
-					['inverted-colors']: style.getPropertyValue('--import-inverted-colors').trim() || undefined,
-					['forced-colors']: style.getPropertyValue('--import-forced-colors').trim() || undefined,
-					['any-hover']: style.getPropertyValue('--import-any-hover').trim() || undefined,
-					hover: style.getPropertyValue('--import-hover').trim() || undefined,
-					['any-pointer']: style.getPropertyValue('--import-any-pointer').trim() || undefined,
-					pointer: style.getPropertyValue('--import-pointer').trim() || undefined,
-					['device-aspect-ratio']: style.getPropertyValue('--import-device-aspect-ratio').trim() || undefined,
-					['device-screen']: style.getPropertyValue('--import-device-screen').trim() || undefined,
-					['display-mode']: style.getPropertyValue('--import-display-mode').trim() || undefined,
-					['color-gamut']: style.getPropertyValue('--import-color-gamut').trim() || undefined,
-					orientation: style.getPropertyValue('--import-orientation').trim() || undefined
-				};
-			}
+			const importCSS = isFirefox ? undefined : {
+				['prefers-reduced-motion']: style.getPropertyValue('--import-prefers-reduced-motion').trim() || undefined,
+				['prefers-color-scheme']: style.getPropertyValue('--import-prefers-color-scheme').trim() || undefined,
+				monochrome: style.getPropertyValue('--import-monochrome').trim() || undefined,
+				['inverted-colors']: style.getPropertyValue('--import-inverted-colors').trim() || undefined,
+				['forced-colors']: style.getPropertyValue('--import-forced-colors').trim() || undefined,
+				['any-hover']: style.getPropertyValue('--import-any-hover').trim() || undefined,
+				hover: style.getPropertyValue('--import-hover').trim() || undefined,
+				['any-pointer']: style.getPropertyValue('--import-any-pointer').trim() || undefined,
+				pointer: style.getPropertyValue('--import-pointer').trim() || undefined,
+				['device-aspect-ratio']: style.getPropertyValue('--import-device-aspect-ratio').trim() || undefined,
+				['device-screen']: style.getPropertyValue('--import-device-screen').trim() || undefined,
+				['display-mode']: style.getPropertyValue('--import-display-mode').trim() || undefined,
+				['color-gamut']: style.getPropertyValue('--import-color-gamut').trim() || undefined,
+				orientation: style.getPropertyValue('--import-orientation').trim() || undefined
+			};
 
 			// get screen query
-			let screenQuery = getScreenMedia(body);
-
-			logTestResult({ start, test: 'css media', passed: true });
+			const screenQuery = getScreenMedia({ body, width, height });
+			
+			logTestResult({ time: timer.stop(), test: 'css media', passed: true });
 			return { importCSS, mediaCSS, matchMediaCSS, screenQuery }
 		}
 		catch (error) {
@@ -3902,7 +4313,7 @@
 
 
 
-	const cssMediaHTML = ({ fp, modal, note, hashMini, hashSlice }) => {
+	const cssMediaHTML = ({ fp, modal, note, hashMini, hashSlice, performanceLogger }) => {
 		if (!fp.css) {
 			return `
 		<div class="col-six undefined">
@@ -3926,7 +4337,8 @@
 		} = data;
 
 		return `
-	<div class="col-six">
+	<div class="relative col-six">
+		<span class="aside-note">${performanceLogger.getLog()['css media']}</span>
 		<strong>CSS Media Queries</strong><span class="hash">${hashSlice($hash)}</span>
 		<div>@media: ${
 			!mediaCSS || !Object.keys(mediaCSS).filter(key => !!mediaCSS[key]).length ? 
@@ -3977,14 +4389,16 @@
 
 		const {
 			require: {
-				hashify,
+				queueEvent,
+				createTimer,
 				captureError,
 				logTestResult
 			}
 		} = imports;
 
 		try {
-			const start = performance.now();
+			const timer = createTimer();
+			timer.start();
 			const errorTests = [
 				() => new Function('alert(")')(),
 				() => new Function('const foo;foo.bar')(),
@@ -3997,7 +4411,7 @@
 				() => new Function('const a=1; const a=2;')()
 			];
 			const errors = getErrors(errorTests);
-			logTestResult({ start, test: 'console errors', passed: true });
+			logTestResult({ time: timer.stop(), test: 'console errors', passed: true });
 			return { errors }
 		}
 		catch (error) {
@@ -4007,7 +4421,7 @@
 		}
 	};
 
-	const consoleErrorsHTML = ({ fp, modal, note, hashSlice }) => {
+	const consoleErrorsHTML = ({ fp, modal, note, hashSlice, performanceLogger }) => {
 		if (!fp.consoleErrors) {
 			return `
 		<div class="col-six undefined">
@@ -4030,7 +4444,8 @@
 			return `${+key+1}: ${value}`
 		});
 		return `
-	<div class="col-six">
+	<div class="relative col-six">
+		<span class="aside-note">${performanceLogger.getLog()['console errors']}</span>
 		<strong>Error</strong><span class="hash">${hashSlice($hash)}</span>
 		<div>results: ${modal('creep-console-errors', results.join('<br>'))}</div>
 		<div class="blurred" id="error-samples">
@@ -4044,6 +4459,8 @@
 
 		const {
 			require: {
+				queueEvent,
+				createTimer,
 				captureError,
 				phantomDarkness,
 				isFirefox,
@@ -4052,7 +4469,8 @@
 		} = imports;
 
 		try {
-			const start = performance.now();
+			const timer = createTimer();
+			timer.start();
 			const win = phantomDarkness || window;
 			let keys = Object.getOwnPropertyNames(win)
 				.filter(key => !/_|\d{3,}/.test(key)); // clear out known ddg noise
@@ -4080,7 +4498,7 @@
 			const webkit = keys.filter(key => (/webkit/i).test(key)).length;
 			const apple = keys.filter(key => (/apple/i).test(key)).length;
 			const data = { keys, apple, moz, webkit };
-			logTestResult({ start, test: 'window', passed: true });
+			logTestResult({ time: timer.stop(), test: 'window', passed: true });
 			return { ...data }
 		}
 		catch (error) {
@@ -4090,7 +4508,7 @@
 		}
 	};
 
-	const windowFeaturesHTML = ({ fp, modal, note, hashSlice, count }) => {
+	const windowFeaturesHTML = ({ fp, modal, note, hashSlice, count, performanceLogger }) => {
 		if (!fp.windowFeatures) {
 			return `
 		<div class="col-six undefined">
@@ -4109,7 +4527,8 @@
 		} = fp;
 		
 		return `
-	<div class="col-six">
+	<div class="relative col-six">
+		<span class="aside-note">${performanceLogger.getLog().window}</span>
 		<strong>Window</strong><span class="hash">${hashSlice($hash)}</span>
 		<div>keys (${count(keys)}): ${keys && keys.length ? modal('creep-iframe-content-window-version', keys.join(', ')) : note.blocked}</div>
 		<div class="blurred" id="window-features-samples">
@@ -4123,287 +4542,523 @@
 	// https://www.lalit.org/wordpress/wp-content/uploads/2008/05/fontdetect.js?ver=0.3
 
 	const getFontsShortList = () => [
-		'Helvetica Neue', // Apple
+		'Droid Sans Mono', // Android
 		'Geneva', // mac (not iOS)
+		'Helvetica Neue', // Apple
 		'Lucida Console', // Windows
 		'Noto Color Emoji', // Linux
-		'Ubuntu', // Ubuntu
-		'Droid Sans Mono', // Android
 		'Roboto', // Android, Chrome OS
-	].sort();
-
-	const getAppleFonts = () => [
-		'Helvetica Neue'
+		'Ubuntu' // Ubuntu	
 	];
 
-	const getWindowsFonts = () => [
-		'Cambria Math',
-		'Lucida Console',
-		'MS Serif',
-		'Segoe UI',
-	];
+	const getWindowsFontMap = () => ({
+		// https://docs.microsoft.com/en-us/typography/fonts/windows_11_font_list
+		'7': [
+			'Cambria Math',
+			'Lucida Console'
+		],
+		'8': [
+			'Aldhabi',
+			'Gadugi',
+			'Myanmar Text',
+			'Nirmala UI'
+		],
+		'8.1': [
+			'Leelawadee UI',
+			'Javanese Text',
+			'Segoe UI Emoji'
+		],
+		'10': [
+			'HoloLens MDL2 Assets', // 10 (v1507) +
+			'Segoe MDL2 Assets', // 10 (v1507) +
+			'Bahnschrift', // 10 (v1709) +-
+			'Ink Free', // 10 (v1803) +-
+		],
+		'11': ['Segoe Fluent Icons']
+	});
+
+	const getMacOSFontMap = () => ({
+		// Mavericks and below
+		'10.9': [
+			'Helvetica Neue',
+			'Geneva' // mac (not iOS)
+		],
+		// Yosemite
+		'10.10': [
+			'Kohinoor Devanagari Medium',
+			'Luminari'
+		],
+		// El Capitan
+		'10.11': [
+			'PingFang HK Light'
+		],
+		// Sierra: https://support.apple.com/en-ie/HT206872
+		'10.12': [
+			'American Typewriter Semibold',
+			'Futura Bold',
+			'SignPainter-HouseScript Semibold'
+		],
+		// High Sierra: https://support.apple.com/en-me/HT207962
+		// Mojave: https://support.apple.com/en-us/HT208968
+		'10.13-10.14': [
+			'InaiMathi Bold'
+		],
+		// Catalina: https://support.apple.com/en-us/HT210192
+		// Big Sur: https://support.apple.com/en-sg/HT211240
+		'10.15-11': [
+			'Galvji',
+			'MuktaMahee Regular'
+		],
+		// Monterey: https://www.apple.com/my/macos/monterey/features/
+		// https://apple.stackexchange.com/questions/429548/request-for-list-of-fonts-folder-contents-on-monterey
+		//'12': []
+	});
+
+	const getDesktopAppFontMap = () => ({
+		// docs.microsoft.com/en-us/typography/font-list/ms-outlook
+		'Microsoft Outlook': ['MS Outlook'],
+		// https://community.adobe.com/t5/postscript-discussions/zwadobef-font/m-p/3730427#M785
+		'Adobe Acrobat': ['ZWAdobeF'],
+		// https://wiki.documentfoundation.org/Fonts
+		'LibreOffice': [
+			'Amiri',
+			'KACSTOffice',
+			'Liberation Mono',
+			'Source Code Pro'
+		],
+		// https://superuser.com/a/611804
+		'OpenOffice': [
+			'DejaVu Sans',
+			'Gentium Book Basic',
+			'OpenSymbol'
+		]
+	});
+
+	const getAppleFonts = () => {
+		const macOSFontMap = getMacOSFontMap();
+		return Object.keys(macOSFontMap).map(key => macOSFontMap[key]).flat()
+	};
+
+	const getWindowsFonts = () => {
+		const windowsFontMap = getWindowsFontMap();
+		return Object.keys(windowsFontMap).map(key => windowsFontMap[key]).flat()
+	};
+
+	const getDesktopAppFonts = () => {
+		const desktopAppFontMap = getDesktopAppFontMap();
+		return Object.keys(desktopAppFontMap).map(key => desktopAppFontMap[key]).flat()
+	};
 
 	const getLinuxFonts = () => [
 		'Arimo', // ubuntu, chrome os
-		'Cousine', // ubuntu, chrome os
-		'MONO', // ubuntu, chrome os (not TB)
-		'Jomolhari', // chrome os
-		'Ubuntu', // ubuntu (not TB)
 		'Chilanka', // ubuntu (not TB)
+		'Cousine', // ubuntu, chrome os
+		'Jomolhari', // chrome os
+		'MONO', // ubuntu, chrome os (not TB)
+		'Noto Color Emoji', // Linux
+		'Ubuntu', // ubuntu (not TB)
 	];
 
 	const getAndroidFonts = () => [
-		'Dancing Script', // android FF
+		'Dancing Script', // android
+		'Droid Sans Mono', // Android
+		'Roboto' // Android, Chrome OS
 	];
 
-	const getGeneralFonts = () => [
-		// Windows
-		'Consolas', //FF and Chrome (not TB)
-		'HELV', // FF (not TB)
-		'Marlett', // chrome
-		// Linux 
-		'Noto Sans JP', // TB linux
-		// Apple
-		'Arial Hebrew', // safari + chrome (not FF or TB)
-		'Arial Rounded MT Bold', // not TB
-		'Geneva', // mac
-		'Apple Chancery', // mac (not TB)
-		'Apple Color Emoji', // ios, chrome, safari (TB, not FF)
-		// Android
-		'Roboto', // android FF, Chrome OS
-		'Droid Sans Mono', // FF android
-		'Cutive Mono', // some android FF
-		// Other
-		'Liberation Mono', // Chrome OS
-		'Noto Sans Yi', // TB on linux and windows, chrome OS, FF android, Mac
-		'Monaco', // android + mac
-		'Palatino', // android + mac + ios
-		'Baskerville', // android + mac
-		'Tahoma' // android, mac, windows (not ios, not chrome os 90)
-	];
-
-	const getoriginFonts = () => [
+	const getFontList = () => [
 		...getAppleFonts(),
 		...getWindowsFonts(),
 		...getLinuxFonts(),
 		...getAndroidFonts(),
-		...getGeneralFonts()
+		...getDesktopAppFonts()
 	].sort();
-
-	const originPixelsToInt = pixels => Math.round(2 * pixels.replace('px', ''));
-	const getPixelDimensions = style => {
-		const transform = style.transformOrigin.split(' ');
-		const perspective = style.perspectiveOrigin.split(' ');
-		const dimensions = {
-			transformWidth: originPixelsToInt(transform[0]),
-			transformHeight: originPixelsToInt(transform[1]),
-			perspectiveWidth: originPixelsToInt(perspective[0]),
-			perspectiveHeight: originPixelsToInt(perspective[1])
-		};
-		return dimensions
-	};
-
-	const getPixelFonts = ({ win, id, chars, baseFonts, families }) => {
-		try {
-			win.document.getElementById(id).innerHTML = `
-		<style>
-			#${id}-detector {
-				--font: '';
-				position: absolute !important;
-				left: -9999px!important;
-				font-size: 256px !important;
-				font-style: normal !important;
-				font-weight: normal !important;
-				letter-spacing: normal !important;
-				line-break: auto !important;
-				line-height: normal !important;
-				text-transform: none !important;
-				text-align: left !important;
-				text-decoration: none !important;
-				text-shadow: none !important;
-				white-space: normal !important;
-				word-break: normal !important;
-				word-spacing: normal !important;
-				/* in order to test scrollWidth, clientWidth, etc. */
-				padding: 0 !important;
-				margin: 0 !important;
-				/* in order to test inlineSize and blockSize */
-				writing-mode: horizontal-tb !important;
-				/* in order to test perspective-origin */
-				/* in order to test origins */
-				transform-origin: unset !important;
-				perspective-origin: unset !important;
-			}
-			#${id}-detector::after {
-				font-family: var(--font);
-				content: '${chars}';
-			}
-		</style>
-		<span id="${id}-detector"></span>
-	`;
-			const span = win.document.getElementById(`${id}-detector`);
-			const detectedViaTransform = new Set();
-			const detectedViaPerspective = new Set();
-			const style = getComputedStyle(span);
-			const base = baseFonts.reduce((acc, font) => {
-				span.style.setProperty('--font', font);
-				const dimensions = getPixelDimensions(style);
-				acc[font] = dimensions;
-				return acc
-			}, {});
-			families.forEach(family => {
-				span.style.setProperty('--font', family);
-				const basefont = /, (.+)/.exec(family)[1];
-				const dimensions = getPixelDimensions(style);
-				const font = /\'(.+)\'/.exec(family)[1];
-				if (dimensions.transformWidth != base[basefont].transformWidth ||
-					dimensions.transformHeight != base[basefont].transformHeight) {
-					detectedViaTransform.add(font);
-				}
-				if (dimensions.perspectiveWidth != base[basefont].perspectiveWidth ||
-					dimensions.perspectiveHeight != base[basefont].perspectiveHeight) {
-					detectedViaPerspective.add(font);
-				}
-				return
-			});
-			const fonts = {
-				transform: [...detectedViaTransform],
-				perspective: [...detectedViaPerspective]
-			};
-			return fonts
-		} catch (error) {
-			console.error(error);
-			return {
-				transform: [],
-				perspective: []
-			}
-		}
-	};
-
-	const getFontFaceLoadFonts = async list => {
-		try {
-			const fontFaceList = list.map(font => new FontFace(font, `local("${font}")`));
-			const responseCollection = await Promise
-				.allSettled(fontFaceList.map(font => font.load()));
-			const fonts = responseCollection.reduce((acc, font) => {
-				if (font.status == 'fulfilled') {
-					return [...acc, font.value.family]
-				}
-				return acc
-			}, []);
-			return fonts
-		} catch (error) {
-			console.error(error);
-			return []
-		}
-	};
 
 	const getFonts = async imports => {
 
 		const {
 			require: {
+				queueEvent,
+				createTimer,
+				getEmojis,
 				captureError,
 				lieProps,
+				patch,
+				html,
 				phantomDarkness,
 				logTestResult
 			}
 		} = imports;
 
+		
+		const getPixelFonts = ({ doc, id, chars, baseFonts, families, emojis }) => {
+			try {
+				patch(doc.getElementById(id), html`
+				<style>
+					#${id}-detector {
+						--font: '';
+						position: absolute !important;
+						left: -9999px!important;
+						font-size: 256px !important;
+						font-style: normal !important;
+						font-weight: normal !important;
+						letter-spacing: normal !important;
+						line-break: auto !important;
+						line-height: normal !important;
+						text-transform: none !important;
+						text-align: left !important;
+						text-decoration: none !important;
+						text-shadow: none !important;
+						white-space: normal !important;
+						word-break: normal !important;
+						word-spacing: normal !important;
+						/* in order to test scrollWidth, clientWidth, etc. */
+						padding: 0 !important;
+						margin: 0 !important;
+						/* in order to test inlineSize and blockSize */
+						writing-mode: horizontal-tb !important;
+						/* in order to test perspective-origin */
+						/* in order to test origins */
+						transform-origin: unset !important;
+						perspective-origin: unset !important;
+					}
+					#${id}-detector::after {
+						font-family: var(--font);
+						content: '${chars}';
+					}
+				</style>
+				<span id="${id}-detector"></span>
+				<div id="pixel-emoji-container">
+				<style>
+					.pixel-emoji {
+						font-family:
+						'Segoe UI Emoji', /* Windows */
+						'Apple Color Emoji', /* Apple */
+						'Noto Color Emoji', /* Linux, Android, Chrome OS */
+						sans-serif !important;
+						font-size: 200px !important;
+						height: auto;
+						position: absolute !important;
+						transform: scale(100);
+					}
+					</style>
+					${
+						emojis.map(emoji => {
+							return `<div class="pixel-emoji">${emoji}</div>`
+						})
+					}
+				</div>
+			`);
+				
+				const pixelToNumber = pixels => +(pixels.replace('px', ''));
+				const getPixelDimensions = style => {
+					const transform = style.transformOrigin.split(' ');
+					const perspective = style.perspectiveOrigin.split(' ');
+					const dimensions = {
+						transformWidth: pixelToNumber(transform[0]),
+						transformHeight: pixelToNumber(transform[1]),
+						perspectiveWidth: pixelToNumber(perspective[0]),
+						perspectiveHeight: pixelToNumber(perspective[1])
+					};
+					return dimensions
+				};
+				const span = doc.getElementById(`${id}-detector`);
+				const style = getComputedStyle(span);
+
+				// get perspective fonts
+				const detectedViaTransform = new Set();
+				const detectedViaPerspective = new Set();
+				const base = baseFonts.reduce((acc, font) => {
+					span.style.setProperty('--font', font);
+					const dimensions = getPixelDimensions(style);
+					acc[font] = dimensions;
+					return acc
+				}, {});
+				families.forEach(family => {
+					span.style.setProperty('--font', family);
+					const basefont = /, (.+)/.exec(family)[1];
+					const dimensions = getPixelDimensions(style);
+					const font = /\'(.+)\'/.exec(family)[1];
+					if (dimensions.transformWidth != base[basefont].transformWidth ||
+						dimensions.transformHeight != base[basefont].transformHeight) {
+						detectedViaTransform.add(font);
+					}
+					if (dimensions.perspectiveWidth != base[basefont].perspectiveWidth ||
+						dimensions.perspectiveHeight != base[basefont].perspectiveHeight) {
+						detectedViaPerspective.add(font);
+					}
+					return
+				});
+
+				// get size fonts
+				const emojiFontShortList = [
+					'Segoe UI Emoji', // Windows
+					'Apple Color Emoji', // Apple
+					'Noto Color Emoji',  // Linux, Android, Chrome OS
+				];
+				const getEmojiDimensions = style => {
+					return {
+						width: style.inlineSize,
+						height: style.blockSize
+					}
+				};
+				const emojiFamilies = emojiFontShortList.reduce((acc, font) => {
+					baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`));
+					return acc
+				}, []);
+				const emojiBase = baseFonts.reduce((acc, font) => {
+					span.style.setProperty('--font', font);
+					const dimensions = getEmojiDimensions(style);
+					acc[font] = dimensions;
+					return acc
+				}, {});
+				const detectedEmojiFonts = emojiFamilies.reduce((acc, family) => {
+					span.style.setProperty('--font', family);
+					const basefont = /, (.+)/.exec(family)[1];
+					const dimensions = getEmojiDimensions(style);
+					const font = /\'(.+)\'/.exec(family)[1];
+					if (dimensions.width != emojiBase[basefont].width ||
+						dimensions.height != emojiBase[basefont].height) {
+						acc.add(font);
+					}
+					return acc
+				}, new Set());
+				
+				// get emoji set and system
+				const pattern = new Set();
+				const emojiElems = [...doc.getElementsByClassName('pixel-emoji')];
+				const emojiSet = emojiElems.reduce((emojiSet, el, i) => {
+					const style = getComputedStyle(el);
+					const emoji = emojis[i];
+					const { height, width } = getEmojiDimensions(style);
+					const dimensions = `${width},${height}`;
+					if (!pattern.has(dimensions)) {
+						pattern.add(dimensions);
+						emojiSet.add(emoji);
+					}
+					return emojiSet
+				}, new Set());
+
+				const pixelSizeSum = 0.00001 * [...pattern].map(x => {
+					return x.split(',').map(x => pixelToNumber(x)).reduce((acc, x) => acc += (+x||0), 0)
+				}).reduce((acc, x) => acc += x, 0);
+				
+
+				const amplifySum = (n, fontSet) => {
+					const { size } = fontSet;
+					if (size > 1) {
+						return n / +`1e${size}00` // ...e-200
+					}
+					return (
+						!size ? n * -1e150 : // -...e+148
+							size > 1 ? n / +`1e${size}00` : // ...e-200
+								fontSet.has('Segoe UI Emoji') ? n :
+									fontSet.has('Apple Color Emoji') ? n / 1e64 : // ...e-66
+										n * 1e64 // ...e+62
+					)
+				};
+
+				const pixelSizeSystemSum =  amplifySum(pixelSizeSum, detectedEmojiFonts);
+				
+				return {
+					transform: [...detectedViaTransform],
+					perspective: [...detectedViaPerspective],
+					emojiSet: [...emojiSet],
+					emojiFonts: [...detectedEmojiFonts],
+					pixelSizeSystemSum
+				}
+			} catch (error) {
+				console.error(error);
+				return {
+					transform: [],
+					perspective: []
+				}
+			}
+		};
+
+		const getFontFaceLoadFonts = async fontList => {
+			try {
+				const fontFaceList = fontList.map(font => new FontFace(font, `local("${font}")`));
+				const responseCollection = await Promise
+					.allSettled(fontFaceList.map(font => font.load()));
+				const fonts = responseCollection.reduce((acc, font) => {
+					if (font.status == 'fulfilled') {
+						return [...acc, font.value.family]
+					}
+					return acc
+				}, []);
+				return fonts
+			} catch (error) {
+				console.error(error);
+				return []
+			}
+		};
+
+		const getPlatformVersion = fonts => {
+			const getWindows = ({ fonts, fontMap }) => {
+				const fontVersion = {
+					['11']: fontMap['11'].find(x => fonts.includes(x)),
+					['10']: fontMap['10'].find(x => fonts.includes(x)),
+					['8.1']: fontMap['8.1'].find(x => fonts.includes(x)),
+					['8']: fontMap['8'].find(x => fonts.includes(x)),
+					// require complete set of Windows 7 fonts
+					['7']: fontMap['7'].filter(x => fonts.includes(x)).length == fontMap['7'].length
+				};
+				const hash = (
+					'' + Object.keys(fontVersion).sort().filter(key => !!fontVersion[key])
+				);
+				const hashMap = {
+					'10,11,7,8,8.1': '11',
+					'10,7,8,8.1': '10',
+					'7,8,8.1': '8.1',
+					'11,7,8,8.1': '8.1', // missing 10
+					'7,8': '8',
+					'10,7,8': '8', // missing 8.1
+					'10,11,7,8': '8', // missing 8.1
+					'7': '7',
+					'7,8.1': '7',
+					'10,7,8.1': '7', // missing 8
+					'10,11,7,8.1': '7', // missing 8
+				};
+				const version = hashMap[hash];
+				return version ? `Windows ${version}` : undefined
+			};
+
+			const getMacOS = ({ fonts, fontMap }) => {
+				const fontVersion = {
+					['10.15-11']: fontMap['10.15-11'].find(x => fonts.includes(x)),
+					['10.13-10.14']: fontMap['10.13-10.14'].find(x => fonts.includes(x)),
+					['10.12']: fontMap['10.12'].find(x => fonts.includes(x)),
+					['10.11']: fontMap['10.11'].find(x => fonts.includes(x)),
+					['10.10']: fontMap['10.10'].find(x => fonts.includes(x)),
+					// require complete set of 10.9 fonts
+					['10.9']: fontMap['10.9'].filter(x => fonts.includes(x)).length == fontMap['10.9'].length
+				};
+				const hash = (
+					'' + Object.keys(fontVersion).sort().filter(key => !!fontVersion[key])
+				);
+				const hashMap = {
+					'10.10,10.11,10.12,10.13-10.14,10.15-11,10.9': '10.15-11',
+					'10.10,10.11,10.12,10.13-10.14,10.9': '10.13-10.14',
+					'10.10,10.11,10.12,10.9': 'Sierra', // 10.12
+					'10.10,10.11,10.9': 'El Capitan', // 10.11
+					'10.10,10.9': 'Yosemite', // 10.10
+					'10.9': 'Mavericks' // 10.9
+				};
+				const version = hashMap[hash];
+				return version ? `macOS ${version}` : undefined
+			};
+
+			return  (
+				getWindows({ fonts, fontMap: getWindowsFontMap() }) ||
+				getMacOS({ fonts, fontMap: getMacOSFontMap() })
+			)
+		};
+
+		const getDesktopApps = fonts => {
+			const desktopAppFontMap = getDesktopAppFontMap();
+			const apps = Object.keys(desktopAppFontMap).reduce((acc, key) => {
+				const appFontSet = desktopAppFontMap[key];
+				const match = appFontSet.filter(x => fonts.includes(x)).length == appFontSet.length;
+				return match ? [...acc, key] : acc
+			}, []);
+			return apps
+		};
+
 		try {
-			await new Promise(setTimeout).catch(e => {});
-			const start = performance.now();
-			const win = phantomDarkness ? phantomDarkness : window;
-			const doc = win.document;
-			
+			const timer = createTimer();
+			await queueEvent(timer);
+			const doc = (
+				phantomDarkness &&
+				phantomDarkness.document &&
+				phantomDarkness.document.body ? phantomDarkness.document :
+					document
+			);
 			const id = `font-fingerprint`;
 			const div = doc.createElement('div');
 			div.setAttribute('id', id);
 			doc.body.appendChild(div);
-			const originFontsList = getoriginFonts();
 			const baseFonts = ['monospace', 'sans-serif', 'serif'];
-			const families = originFontsList.reduce((acc, font) => {
+			const fontShortList = getFontsShortList();
+			const families = fontShortList.reduce((acc, font) => {
 				baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`));
 				return acc
 			}, []);
-
-			const pixelFonts = getPixelFonts({
-				win,
+			
+			const {
+				emojiSet,
+				emojiFonts,
+				pixelSizeSystemSum,
+				transform,
+				perspective
+			} = getPixelFonts({
+				doc,
 				id,
 				chars: `mmmmmmmmmmlli`,
 				baseFonts,
-				families
-			});
-
+				families,
+				emojis: getEmojis()
+			}) || {};
+			
+			const pixelFonts = { transform, perspective };
 			const compressToList = fontObject => Object.keys(fontObject).reduce((acc, key) => {
 				return [...acc, ...fontObject[key]]
-			},[]);
-			
-			const fontFaceLoadFonts = await getFontFaceLoadFonts(getFontsShortList());
-
+			}, []);
 			const originFonts = [...new Set(compressToList(pixelFonts))];
+			const fontList = getFontList();
+			const fontFaceLoadFonts = await getFontFaceLoadFonts(fontList);
+			const platformVersion = getPlatformVersion(fontFaceLoadFonts);
+			const apps = getDesktopApps(fontFaceLoadFonts);
 
-			logTestResult({ start, test: 'fonts', passed: true });
+			// detect lies
+			const lied = (
+				lieProps['FontFace.load'] ||
+				lieProps['FontFace.family'] ||
+				lieProps['FontFace.status']
+			);
+
+			logTestResult({ time: timer.stop(), test: 'fonts', passed: true });
 			return {
 				fontFaceLoadFonts,
 				pixelFonts,
-				originFonts
+				originFonts,
+				platformVersion,
+				apps,
+				emojiSet,
+				emojiFonts,
+				pixelSizeSystemSum,
+				lied
 			}
 		} catch (error) {
 			logTestResult({ test: 'fonts', passed: false });
 			captureError(error);
 			return
 		}
-
 	};
 
-	const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini }) => {
+	const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini, formatEmojiSet, performanceLogger }) => {
 		if (!fp.fonts) {
 			return `
 		<div class="col-six undefined">
 			<strong>Fonts</strong>
 			<div>origin (0): ${note.blocked}</div>
 			<div>load (0):</div>
-			<div class="block-text">${note.blocked}</div>
+			<div class="block-text-large">${note.blocked}</div>
 		</div>`
 		}
 		const {
 			fonts: {
 				$hash,
 				fontFaceLoadFonts,
-				originFonts
+				originFonts,
+				platformVersion,
+				apps,
+				emojiSet,
+				emojiFonts,
+				pixelSizeSystemSum,
+				lied
 			}
 		} = fp;
-		
-		const apple = new Set(getAppleFonts());
-		const linux = new Set(getLinuxFonts());
-		const windows = new Set(getWindowsFonts());
-		const android = new Set(getAndroidFonts());
 
-		const systemClass = [...originFonts.reduce((acc, font) => {
-			if (!acc.has('Apple') && apple.has(font)) {
-				acc.add('Apple');
-				return acc
-			}
-			if (!acc.has('Linux') && linux.has(font)) {
-				acc.add('Linux');
-				return acc
-			}
-			if (!acc.has('Windows') && windows.has(font)) {
-				acc.add('Windows');
-				return acc
-			}
-			if (!acc.has('Android') && android.has(font)) {
-				acc.add('Android');
-				return acc
-			}
-			return acc
-		}, new Set())];
-		const chromeOnAndroid = (
-			''+((originFonts || []).sort()) == 'Baskerville,Monaco,Palatino,Tahoma'
-		);
-		if (!systemClass.length && chromeOnAndroid) {
-			systemClass.push('Android');
-		}
 		const icon = {
 			'Linux': '<span class="icon linux"></span>',
 			'Apple': '<span class="icon apple"></span>',
@@ -4411,8 +5066,6 @@
 			'Android': '<span class="icon android"></span>',
 			'CrOS': '<span class="icon cros"></span>'
 		};
-		const systemClassIcons = systemClass.map(name => icon[name]);
-		const originHash = hashMini(originFonts);
 
 		const systemMap = {
 			'Lucida Console': [icon.Windows, 'Windows'],
@@ -4421,34 +5074,53 @@
 			'Noto Color Emoji,Ubuntu': [icon.Linux, 'Linux Ubuntu'],
 			'Noto Color Emoji,Roboto': [icon.CrOS, 'Chrome OS'],
 			'Droid Sans Mono,Roboto': [icon.Android, 'Android'],
-			'Droid Sans Mono,Noto Color Emoji,Roboto': [`${icon.Linux}${icon.Android}`, 'Linux Android'],
+			'Droid Sans Mono,Noto Color Emoji,Roboto': [`${icon.Linux}${icon.Android}`, 'Android'], // Android on Chrome OS
 			'Helvetica Neue': [icon.Apple, 'iOS'],
 			'Geneva,Helvetica Neue': [icon.Apple, 'Mac']
-		}; 
+		};
 
-		const fontFaceLoadFontsString = ''+(fontFaceLoadFonts.sort());
-		const system = systemMap[fontFaceLoadFontsString]; 
-
+		const originFontString = ''+(originFonts.sort());
+		const fontFaceLoadHash = hashMini(fontFaceLoadFonts);
+		const system = systemMap[originFontString];
+		const blockHelpTitle = `FontFace.load()\nCSSStyleDeclaration.setProperty()\nblock-size\ninline-size\nhash: ${hashMini(emojiSet)}\n${(emojiSet||[]).map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`;
 		return `
-	<div class="col-six">
+	<div class="relative col-six${lied ? ' rejected' : ''}">
+		<span class="aside-note">${performanceLogger.getLog().fonts}</span>
 		<strong>Fonts</strong><span class="hash">${hashSlice($hash)}</span>
-		<div class="help" title="CSSStyleDeclaration.setProperty()\ntransform-origin\nperspective-origin">origin (${originFonts ? count(originFonts) : '0'}/${''+getoriginFonts().length}): ${
-			originFonts.length ? modal(
-				'creep-fonts', originFonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>'),
-				`${systemClass.length ? `${systemClassIcons.join('')}${originHash}` : originHash}`
-			) : note.unknown
+		<div class="help ellipsis-all" title="CSSStyleDeclaration.setProperty()\ntransform-origin\nperspective-origin">origin (${originFonts ? count(originFonts) : '0'}/${'' + getFontsShortList().length}): ${originFontString ? `${system ? system[0] : ''}${originFontString}`: note.unknown }</div>
+		<div class="help" title="FontFace.load()">load (${fontFaceLoadFonts ? count(fontFaceLoadFonts) : '0'}/${'' + getFontList().length}): ${
+			!(fontFaceLoadFonts||[]).length ? note.unknown : modal(
+				'creep-fonts',
+				fontFaceLoadFonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>'),
+				fontFaceLoadHash
+			)
 		}</div>
-		<div class="help" title="FontFace.load()">load (${fontFaceLoadFonts ? count(fontFaceLoadFonts) : '0'}/${''+getFontsShortList().length}): ${
-			system ? system[1] : ''
-		}</div>
-		<div class="block-text">
-			<div>${
-				fontFaceLoadFonts.length ? `${system ? system[0] : ''}${fontFaceLoadFontsString}` : 
-					note.unknown
-			}</div>
+		<div class="block-text-large help relative" title="${blockHelpTitle}">
+			<div>
+				${platformVersion ? `platform: ${platformVersion}` : ((fonts) => {
+					
+					return !(fonts || []).length ? '' : (
+						((''+fonts).match(/Lucida Console/)||[]).length ? `${icon.Windows}Lucida Console...` :
+						((''+fonts).match(/Droid Sans Mono|Noto Color Emoji|Roboto/g)||[]).length == 3 ? `${icon.Linux}${icon.Android}Droid Sans Mono,Noto Color...` :
+						((''+fonts).match(/Droid Sans Mono|Roboto/g)||[]).length == 2 ? `${icon.Android}Droid Sans Mono,Roboto...` :
+						((''+fonts).match(/Noto Color Emoji|Roboto/g)||[]).length == 2 ? `${icon.CrOS}Noto Color Emoji,Roboto...` :
+						((''+fonts).match(/Noto Color Emoji/)||[]).length ? `${icon.Linux}Noto Color Emoji...` :
+						((''+fonts).match(/Arimo/)||[]).length ? `${icon.Linux}Arimo...` :
+						((''+fonts).match(/Helvetica Neue/g)||[]).length == 2 ? `${icon.Apple}Helvetica Neue...` :
+						`${(fonts||[])[0]}...`
+					)
+				})(fontFaceLoadFonts)}
+				${(apps || []).length ? `<br>apps: ${(apps || []).join(', ')}` : ''}
+
+				<span class="confidence-note">${
+					!emojiFonts ? '' : emojiFonts.length > 1 ? `${emojiFonts[0]}...` : (emojiFonts[0] || '')
+				}</span>
+				<br><span>${pixelSizeSystemSum || note.unsupported}</span>
+				<br><span class="grey jumbo" style="${!(emojiFonts || [])[0] ? '' : `font-family: '${emojiFonts[0]}' !important`}">${formatEmojiSet(emojiSet)}</span>
+			</div>
 		</div>
 	</div>
-	`	
+	`
 	};
 
 	const detectChromium = () => (
@@ -4504,6 +5176,8 @@
 
 		const {
 			require: {
+				queueEvent,
+				createTimer,
 				parentPhantom,
 				hashMini,
 				isChrome,
@@ -4513,7 +5187,8 @@
 		} = imports;
 
 		try {
-			const start = performance.now();
+			const timer = createTimer();
+			await queueEvent(timer);
 			const isChromium = detectChromium() || isChrome;
 			const mimeTypes = Object.keys({ ...navigator.mimeTypes });
 			const data = {
@@ -4645,7 +5320,7 @@
 			const headlessRating = +((headlessKeys.filter(key => headless[key]).length / headlessKeys.length) * 100).toFixed(0);
 			const stealthRating = +((stealthKeys.filter(key => stealth[key]).length / stealthKeys.length) * 100).toFixed(0);
 
-			logTestResult({ start, test: 'headless', passed: true });
+			logTestResult({ time: timer.stop(), test: 'headless', passed: true });
 			return { ...data, likeHeadlessRating, headlessRating, stealthRating }
 		}
 		catch (error) {
@@ -4655,7 +5330,7 @@
 		}
 	};
 
-	const headlesFeaturesHTML = ({ fp, modal, note, hashMini, hashSlice }) => {
+	const headlesFeaturesHTML = ({ fp, modal, note, hashMini, hashSlice, performanceLogger }) => {
 		if (!fp.headless) {
 			return `
 		<div class="col-six">
@@ -4681,7 +5356,7 @@
 		} = data || {};
 		
 		return `
-	<div class="col-six">
+	<div class="relative col-six">
 		<style>
 			.like-headless-rating {
 				background: linear-gradient(90deg, var(${likeHeadlessRating < 100 ? '--grey-glass' : '--error'}) ${likeHeadlessRating}%, #fff0 ${likeHeadlessRating}%, #fff0 100%);
@@ -4693,6 +5368,7 @@
 				background: linear-gradient(90deg, var(--error) ${stealthRating}%, #fff0 ${stealthRating}%, #fff0 100%);
 			}
 		</style>
+		<span class="aside-note">${performanceLogger.getLog().headless}</span>
 		<strong>Headless</strong><span class="hash">${hashSlice($hash)}</span>
 		<div>chromium: ${''+chromium}</div>
 		<div class="like-headless-rating">${''+likeHeadlessRating}% like headless: ${
@@ -4726,18 +5402,21 @@
 
 		const {
 			require: {
+				queueEvent,
+				createTimer,
 				captureError,
 				logTestResult
 			}
 		} = imports;
 
 		try {
-			const start = performance.now();
+			const timer = createTimer();
+			timer.start();
 			const keys = [];
 			for (const key in document.documentElement) {
 				keys.push(key);
 			}
-			logTestResult({ start, test: 'html element', passed: true });
+			logTestResult({ time: timer.stop(), test: 'html element', passed: true });
 			return { keys }
 		}
 		catch (error) {
@@ -4747,7 +5426,7 @@
 		}
 	};
 
-	const htmlElementVersionHTML = ({ fp, modal, note, hashSlice, count }) => {
+	const htmlElementVersionHTML = ({ fp, modal, note, hashSlice, count, performanceLogger }) => {
 		if (!fp.htmlElementVersion) {
 			return `
 		<div class="col-six undefined">
@@ -4766,7 +5445,8 @@
 		} = fp;
 
 		return `
-	<div class="col-six">
+	<div class="relative col-six">
+		<span class="aside-note">${performanceLogger.getLog()['html element']}</span>
 		<strong>HTMLElement</strong><span class="hash">${hashSlice($hash)}</span>
 		<div>keys (${count(keys)}): ${keys && keys.length ? modal('creep-html-element-version', keys.join(', ')) : note.blocked}</div>
 		<div class="blurred" id="html-element-samples">
@@ -4780,7 +5460,8 @@
 
 		const {
 			require: {
-				hashMini,
+				queueEvent,
+				createTimer,
 				captureError,
 				attempt,
 				documentLie,
@@ -4791,7 +5472,8 @@
 		} = imports;
 
 		try {
-			const start = performance.now();
+			const timer = createTimer();
+			timer.start();
 			// detect failed math equality lie
 			const check = [
 				'acos',
@@ -4986,7 +5668,7 @@
 				});
 			});
 
-			logTestResult({ start, test: 'math', passed: true });
+			logTestResult({ time: timer.stop(), test: 'math', passed: true });
 			return { data, lied }
 		}
 		catch (error) {
@@ -4996,7 +5678,7 @@
 		}
 	};
 
-	const mathsHTML = ({ fp, modal, note, hashSlice }) => {
+	const mathsHTML = ({ fp, modal, note, hashSlice, performanceLogger }) => {
 		if (!fp.maths) {
 			return `
 		<div class="col-six undefined">
@@ -5053,7 +5735,8 @@
 		});
 
 		return `
-	<div class="col-six${lied ? ' rejected' : ''}">
+	<div class="relative col-six${lied ? ' rejected' : ''}">
+		<span class="aside-note">${performanceLogger.getLog().math}</span>
 		<strong>Math</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div>results: ${
 			!data ? note.blocked : 
@@ -5072,74 +5755,75 @@
 	// inspired by 
 	// - https://privacycheck.sec.lrz.de/active/fp_cpt/fp_can_play_type.html
 	// - https://arkenfox.github.io/TZP
-	const mimeTypes = ['application/mp21', 'application/mp4', 'application/octet-stream', 'application/ogg', 'application/vnd.apple.mpegurl', 'application/vnd.ms-ss', 'application/vnd.ms-sstr+xml', 'application/x-mpegurl', 'application/x-mpegURL; codecs="avc1.42E01E"', 'audio/3gpp', 'audio/3gpp2', 'audio/aac', 'audio/ac-3', 'audio/ac3', 'audio/aiff', 'audio/basic', 'audio/ec-3', 'audio/flac', 'audio/m4a', 'audio/mid', 'audio/midi', 'audio/mp3', 'audio/mp4', 'audio/mp4; codecs="a3ds"', 'audio/mp4; codecs="A52"', 'audio/mp4; codecs="aac"', 'audio/mp4; codecs="ac-3"', 'audio/mp4; codecs="ac-4"', 'audio/mp4; codecs="ac3"', 'audio/mp4; codecs="alac"', 'audio/mp4; codecs="alaw"', 'audio/mp4; codecs="bogus"', 'audio/mp4; codecs="dra1"', 'audio/mp4; codecs="dts-"', 'audio/mp4; codecs="dts+"', 'audio/mp4; codecs="dtsc"', 'audio/mp4; codecs="dtse"', 'audio/mp4; codecs="dtsh"', 'audio/mp4; codecs="dtsl"', 'audio/mp4; codecs="dtsx"', 'audio/mp4; codecs="ec-3"', 'audio/mp4; codecs="enca"', 'audio/mp4; codecs="flac"', 'audio/mp4; codecs="g719"', 'audio/mp4; codecs="g726"', 'audio/mp4; codecs="m4ae"', 'audio/mp4; codecs="mha1"', 'audio/mp4; codecs="mha2"', 'audio/mp4; codecs="mhm1"', 'audio/mp4; codecs="mhm2"', 'audio/mp4; codecs="mlpa"', 'audio/mp4; codecs="mp3"', 'audio/mp4; codecs="mp4a.40.1"', 'audio/mp4; codecs="mp4a.40.12"', 'audio/mp4; codecs="mp4a.40.13"', 'audio/mp4; codecs="mp4a.40.14"', 'audio/mp4; codecs="mp4a.40.15"', 'audio/mp4; codecs="mp4a.40.16"', 'audio/mp4; codecs="mp4a.40.17"', 'audio/mp4; codecs="mp4a.40.19"', 'audio/mp4; codecs="mp4a.40.2"', 'audio/mp4; codecs="mp4a.40.20"', 'audio/mp4; codecs="mp4a.40.21"', 'audio/mp4; codecs="mp4a.40.22"', 'audio/mp4; codecs="mp4a.40.23"', 'audio/mp4; codecs="mp4a.40.24"', 'audio/mp4; codecs="mp4a.40.25"', 'audio/mp4; codecs="mp4a.40.26"', 'audio/mp4; codecs="mp4a.40.27"', 'audio/mp4; codecs="mp4a.40.28"', 'audio/mp4; codecs="mp4a.40.29"', 'audio/mp4; codecs="mp4a.40.3"', 'audio/mp4; codecs="mp4a.40.32"', 'audio/mp4; codecs="mp4a.40.33"', 'audio/mp4; codecs="mp4a.40.34"', 'audio/mp4; codecs="mp4a.40.35"', 'audio/mp4; codecs="mp4a.40.36"', 'audio/mp4; codecs="mp4a.40.4"', 'audio/mp4; codecs="mp4a.40.5"', 'audio/mp4; codecs="mp4a.40.6"', 'audio/mp4; codecs="mp4a.40.7"', 'audio/mp4; codecs="mp4a.40.8"', 'audio/mp4; codecs="mp4a.40.9"', 'audio/mp4; codecs="mp4a.40"', 'audio/mp4; codecs="mp4a.66"', 'audio/mp4; codecs="mp4a.67"', 'audio/mp4; codecs="mp4a.68"', 'audio/mp4; codecs="mp4a.69"', 'audio/mp4; codecs="mp4a.6B"', 'audio/mp4; codecs="mp4a"', 'audio/mp4; codecs="Opus"', 'audio/mp4; codecs="raw "', 'audio/mp4; codecs="samr"', 'audio/mp4; codecs="sawb"', 'audio/mp4; codecs="sawp"', 'audio/mp4; codecs="sevc"', 'audio/mp4; codecs="sqcp"', 'audio/mp4; codecs="ssmv"', 'audio/mp4; codecs="twos"', 'audio/mp4; codecs="ulaw"', 'audio/mpeg', 'audio/mpeg; codecs="mp3"', 'audio/mpegurl', 'audio/ogg; codecs="flac"', 'audio/ogg; codecs="opus"', 'audio/ogg; codecs="speex"', 'audio/ogg; codecs="vorbis"', 'audio/vnd.rn-realaudio', 'audio/vnd.wave', 'audio/wav', 'audio/wav; codecs="0"', 'audio/wav; codecs="1"', 'audio/wav; codecs="2"', 'audio/wave', 'audio/wave; codecs="0"', 'audio/wave; codecs="1"', 'audio/wave; codecs="2"', 'audio/webm', 'audio/webm; codecs="opus"', 'audio/webm; codecs="vorbis"', 'audio/wma', 'audio/x-aac', 'audio/x-ac3', 'audio/x-aiff', 'audio/x-flac', 'audio/x-m4a', 'audio/x-midi', 'audio/x-mpeg', 'audio/x-mpegurl', 'audio/x-pn-realaudio', 'audio/x-pn-realaudio-plugin', 'audio/x-pn-wav', 'audio/x-pn-wav; codecs="0"', 'audio/x-pn-wav; codecs="1"', 'audio/x-pn-wav; codecs="2"', 'audio/x-scpls', 'audio/x-wav', 'audio/x-wav; codecs="0"', 'audio/x-wav; codecs="1"', 'audio/x-wav; codecs="2"', 'video/3gpp', 'video/3gpp; codecs="mp4v.20.8, samr"', 'video/3gpp2', 'video/avi', 'video/h263', 'video/mp2t', 'video/mp4', 'video/mp4; codecs="3gvo"', 'video/mp4; codecs="a3d1"', 'video/mp4; codecs="a3d2"', 'video/mp4; codecs="a3d3"', 'video/mp4; codecs="a3d4"', 'video/mp4; codecs="av01.0.08M.08"', 'video/mp4; codecs="avc1.2c000a"', 'video/mp4; codecs="avc1.2c000b"', 'video/mp4; codecs="avc1.2c000c"', 'video/mp4; codecs="avc1.2c000d"', 'video/mp4; codecs="avc1.2c0014"', 'video/mp4; codecs="avc1.2c0015"', 'video/mp4; codecs="avc1.2c0016"', 'video/mp4; codecs="avc1.2c001e"', 'video/mp4; codecs="avc1.2c001f"', 'video/mp4; codecs="avc1.2c0020"', 'video/mp4; codecs="avc1.2c0028"', 'video/mp4; codecs="avc1.2c0029"', 'video/mp4; codecs="avc1.2c002a"', 'video/mp4; codecs="avc1.2c0032"', 'video/mp4; codecs="avc1.2c0033"', 'video/mp4; codecs="avc1.2c0034"', 'video/mp4; codecs="avc1.2c003c"', 'video/mp4; codecs="avc1.2c003d"', 'video/mp4; codecs="avc1.2c003e"', 'video/mp4; codecs="avc1.2c003f"', 'video/mp4; codecs="avc1.2c0040"', 'video/mp4; codecs="avc1.2c0050"', 'video/mp4; codecs="avc1.2c006e"', 'video/mp4; codecs="avc1.2c0085"', 'video/mp4; codecs="avc1.42000a"', 'video/mp4; codecs="avc1.42000b"', 'video/mp4; codecs="avc1.42000c"', 'video/mp4; codecs="avc1.42000d"', 'video/mp4; codecs="avc1.420014"', 'video/mp4; codecs="avc1.420015"', 'video/mp4; codecs="avc1.420016"', 'video/mp4; codecs="avc1.42001e"', 'video/mp4; codecs="avc1.42001f"', 'video/mp4; codecs="avc1.420020"', 'video/mp4; codecs="avc1.420028"', 'video/mp4; codecs="avc1.420029"', 'video/mp4; codecs="avc1.42002a"', 'video/mp4; codecs="avc1.420032"', 'video/mp4; codecs="avc1.420033"', 'video/mp4; codecs="avc1.420034"', 'video/mp4; codecs="avc1.42003c"', 'video/mp4; codecs="avc1.42003d"', 'video/mp4; codecs="avc1.42003e"', 'video/mp4; codecs="avc1.42003f"', 'video/mp4; codecs="avc1.420040"', 'video/mp4; codecs="avc1.420050"', 'video/mp4; codecs="avc1.42006e"', 'video/mp4; codecs="avc1.420085"', 'video/mp4; codecs="avc1.42400a"', 'video/mp4; codecs="avc1.42400b"', 'video/mp4; codecs="avc1.42400c"', 'video/mp4; codecs="avc1.42400d"', 'video/mp4; codecs="avc1.424014"', 'video/mp4; codecs="avc1.424015"', 'video/mp4; codecs="avc1.424016"', 'video/mp4; codecs="avc1.42401e"', 'video/mp4; codecs="avc1.42401f"', 'video/mp4; codecs="avc1.424020"', 'video/mp4; codecs="avc1.424028"', 'video/mp4; codecs="avc1.424029"', 'video/mp4; codecs="avc1.42402a"', 'video/mp4; codecs="avc1.424032"', 'video/mp4; codecs="avc1.424033"', 'video/mp4; codecs="avc1.424034"', 'video/mp4; codecs="avc1.42403c"', 'video/mp4; codecs="avc1.42403d"', 'video/mp4; codecs="avc1.42403e"', 'video/mp4; codecs="avc1.42403f"', 'video/mp4; codecs="avc1.424040"', 'video/mp4; codecs="avc1.424050"', 'video/mp4; codecs="avc1.42406e"', 'video/mp4; codecs="avc1.424085"', 'video/mp4; codecs="avc1.4d000a"', 'video/mp4; codecs="avc1.4d000b"', 'video/mp4; codecs="avc1.4d000c"', 'video/mp4; codecs="avc1.4d000d"', 'video/mp4; codecs="avc1.4d0014"', 'video/mp4; codecs="avc1.4d0015"', 'video/mp4; codecs="avc1.4d0016"', 'video/mp4; codecs="avc1.4d001e"', 'video/mp4; codecs="avc1.4d001f"', 'video/mp4; codecs="avc1.4d0020"', 'video/mp4; codecs="avc1.4d0028"', 'video/mp4; codecs="avc1.4d0029"', 'video/mp4; codecs="avc1.4d002a"', 'video/mp4; codecs="avc1.4d0032"', 'video/mp4; codecs="avc1.4d0033"', 'video/mp4; codecs="avc1.4d0034"', 'video/mp4; codecs="avc1.4d003c"', 'video/mp4; codecs="avc1.4d003d"', 'video/mp4; codecs="avc1.4d003e"', 'video/mp4; codecs="avc1.4d003f"', 'video/mp4; codecs="avc1.4d0040"', 'video/mp4; codecs="avc1.4d0050"', 'video/mp4; codecs="avc1.4d006e"', 'video/mp4; codecs="avc1.4d0085"', 'video/mp4; codecs="avc1.4d400a"', 'video/mp4; codecs="avc1.4d400b"', 'video/mp4; codecs="avc1.4d400c"', 'video/mp4; codecs="avc1.4d400d"', 'video/mp4; codecs="avc1.4d4014"', 'video/mp4; codecs="avc1.4d4015"', 'video/mp4; codecs="avc1.4d4016"', 'video/mp4; codecs="avc1.4d401e"', 'video/mp4; codecs="avc1.4d401f"', 'video/mp4; codecs="avc1.4d4020"', 'video/mp4; codecs="avc1.4d4028"', 'video/mp4; codecs="avc1.4d4029"', 'video/mp4; codecs="avc1.4d402a"', 'video/mp4; codecs="avc1.4d4032"', 'video/mp4; codecs="avc1.4d4033"', 'video/mp4; codecs="avc1.4d4034"', 'video/mp4; codecs="avc1.4d403c"', 'video/mp4; codecs="avc1.4d403d"', 'video/mp4; codecs="avc1.4d403e"', 'video/mp4; codecs="avc1.4d403f"', 'video/mp4; codecs="avc1.4d4040"', 'video/mp4; codecs="avc1.4d4050"', 'video/mp4; codecs="avc1.4d406e"', 'video/mp4; codecs="avc1.4d4085"', 'video/mp4; codecs="avc1.53000a"', 'video/mp4; codecs="avc1.53000b"', 'video/mp4; codecs="avc1.53000c"', 'video/mp4; codecs="avc1.53000d"', 'video/mp4; codecs="avc1.530014"', 'video/mp4; codecs="avc1.530015"', 'video/mp4; codecs="avc1.530016"', 'video/mp4; codecs="avc1.53001e"', 'video/mp4; codecs="avc1.53001f"', 'video/mp4; codecs="avc1.530020"', 'video/mp4; codecs="avc1.530028"', 'video/mp4; codecs="avc1.530029"', 'video/mp4; codecs="avc1.53002a"', 'video/mp4; codecs="avc1.530032"', 'video/mp4; codecs="avc1.530033"', 'video/mp4; codecs="avc1.530034"', 'video/mp4; codecs="avc1.53003c"', 'video/mp4; codecs="avc1.53003d"', 'video/mp4; codecs="avc1.53003e"', 'video/mp4; codecs="avc1.53003f"', 'video/mp4; codecs="avc1.530040"', 'video/mp4; codecs="avc1.530050"', 'video/mp4; codecs="avc1.53006e"', 'video/mp4; codecs="avc1.530085"', 'video/mp4; codecs="avc1.53040a"', 'video/mp4; codecs="avc1.53040b"', 'video/mp4; codecs="avc1.53040c"', 'video/mp4; codecs="avc1.53040d"', 'video/mp4; codecs="avc1.530414"', 'video/mp4; codecs="avc1.530415"', 'video/mp4; codecs="avc1.530416"', 'video/mp4; codecs="avc1.53041e"', 'video/mp4; codecs="avc1.53041f"', 'video/mp4; codecs="avc1.530420"', 'video/mp4; codecs="avc1.530428"', 'video/mp4; codecs="avc1.530429"', 'video/mp4; codecs="avc1.53042a"', 'video/mp4; codecs="avc1.530432"', 'video/mp4; codecs="avc1.530433"', 'video/mp4; codecs="avc1.530434"', 'video/mp4; codecs="avc1.53043c"', 'video/mp4; codecs="avc1.53043d"', 'video/mp4; codecs="avc1.53043e"', 'video/mp4; codecs="avc1.53043f"', 'video/mp4; codecs="avc1.530440"', 'video/mp4; codecs="avc1.530450"', 'video/mp4; codecs="avc1.53046e"', 'video/mp4; codecs="avc1.530485"', 'video/mp4; codecs="avc1.56000a"', 'video/mp4; codecs="avc1.56000b"', 'video/mp4; codecs="avc1.56000c"', 'video/mp4; codecs="avc1.56000d"', 'video/mp4; codecs="avc1.560014"', 'video/mp4; codecs="avc1.560015"', 'video/mp4; codecs="avc1.560016"', 'video/mp4; codecs="avc1.56001e"', 'video/mp4; codecs="avc1.56001f"', 'video/mp4; codecs="avc1.560020"', 'video/mp4; codecs="avc1.560028"', 'video/mp4; codecs="avc1.560029"', 'video/mp4; codecs="avc1.56002a"', 'video/mp4; codecs="avc1.560032"', 'video/mp4; codecs="avc1.560033"', 'video/mp4; codecs="avc1.560034"', 'video/mp4; codecs="avc1.56003c"', 'video/mp4; codecs="avc1.56003d"', 'video/mp4; codecs="avc1.56003e"', 'video/mp4; codecs="avc1.56003f"', 'video/mp4; codecs="avc1.560040"', 'video/mp4; codecs="avc1.560050"', 'video/mp4; codecs="avc1.56006e"', 'video/mp4; codecs="avc1.560085"', 'video/mp4; codecs="avc1.56040a"', 'video/mp4; codecs="avc1.56040b"', 'video/mp4; codecs="avc1.56040c"', 'video/mp4; codecs="avc1.56040d"', 'video/mp4; codecs="avc1.560414"', 'video/mp4; codecs="avc1.560415"', 'video/mp4; codecs="avc1.560416"', 'video/mp4; codecs="avc1.56041e"', 'video/mp4; codecs="avc1.56041f"', 'video/mp4; codecs="avc1.560420"', 'video/mp4; codecs="avc1.560428"', 'video/mp4; codecs="avc1.560429"', 'video/mp4; codecs="avc1.56042a"', 'video/mp4; codecs="avc1.560432"', 'video/mp4; codecs="avc1.560433"', 'video/mp4; codecs="avc1.560434"', 'video/mp4; codecs="avc1.56043c"', 'video/mp4; codecs="avc1.56043d"', 'video/mp4; codecs="avc1.56043e"', 'video/mp4; codecs="avc1.56043f"', 'video/mp4; codecs="avc1.560440"', 'video/mp4; codecs="avc1.560450"', 'video/mp4; codecs="avc1.56046e"', 'video/mp4; codecs="avc1.560485"', 'video/mp4; codecs="avc1.56100a"', 'video/mp4; codecs="avc1.56100b"', 'video/mp4; codecs="avc1.56100c"', 'video/mp4; codecs="avc1.56100d"', 'video/mp4; codecs="avc1.561014"', 'video/mp4; codecs="avc1.561015"', 'video/mp4; codecs="avc1.561016"', 'video/mp4; codecs="avc1.56101e"', 'video/mp4; codecs="avc1.56101f"', 'video/mp4; codecs="avc1.561020"', 'video/mp4; codecs="avc1.561028"', 'video/mp4; codecs="avc1.561029"', 'video/mp4; codecs="avc1.56102a"', 'video/mp4; codecs="avc1.561032"', 'video/mp4; codecs="avc1.561033"', 'video/mp4; codecs="avc1.561034"', 'video/mp4; codecs="avc1.56103c"', 'video/mp4; codecs="avc1.56103d"', 'video/mp4; codecs="avc1.56103e"', 'video/mp4; codecs="avc1.56103f"', 'video/mp4; codecs="avc1.561040"', 'video/mp4; codecs="avc1.561050"', 'video/mp4; codecs="avc1.56106e"', 'video/mp4; codecs="avc1.561085"', 'video/mp4; codecs="avc1.58000a"', 'video/mp4; codecs="avc1.58000b"', 'video/mp4; codecs="avc1.58000c"', 'video/mp4; codecs="avc1.58000d"', 'video/mp4; codecs="avc1.580014"', 'video/mp4; codecs="avc1.580015"', 'video/mp4; codecs="avc1.580016"', 'video/mp4; codecs="avc1.58001e"', 'video/mp4; codecs="avc1.58001f"', 'video/mp4; codecs="avc1.580020"', 'video/mp4; codecs="avc1.580028"', 'video/mp4; codecs="avc1.580029"', 'video/mp4; codecs="avc1.58002a"', 'video/mp4; codecs="avc1.580032"', 'video/mp4; codecs="avc1.580033"', 'video/mp4; codecs="avc1.580034"', 'video/mp4; codecs="avc1.58003c"', 'video/mp4; codecs="avc1.58003d"', 'video/mp4; codecs="avc1.58003e"', 'video/mp4; codecs="avc1.58003f"', 'video/mp4; codecs="avc1.580040"', 'video/mp4; codecs="avc1.580050"', 'video/mp4; codecs="avc1.58006e"', 'video/mp4; codecs="avc1.580085"', 'video/mp4; codecs="avc1.64000a"', 'video/mp4; codecs="avc1.64000b"', 'video/mp4; codecs="avc1.64000c"', 'video/mp4; codecs="avc1.64000d"', 'video/mp4; codecs="avc1.640014"', 'video/mp4; codecs="avc1.640015"', 'video/mp4; codecs="avc1.640016"', 'video/mp4; codecs="avc1.64001e"', 'video/mp4; codecs="avc1.64001f"', 'video/mp4; codecs="avc1.640020"', 'video/mp4; codecs="avc1.640028"', 'video/mp4; codecs="avc1.640029"', 'video/mp4; codecs="avc1.64002a"', 'video/mp4; codecs="avc1.640032"', 'video/mp4; codecs="avc1.640033"', 'video/mp4; codecs="avc1.640034"', 'video/mp4; codecs="avc1.64003c"', 'video/mp4; codecs="avc1.64003d"', 'video/mp4; codecs="avc1.64003e"', 'video/mp4; codecs="avc1.64003f"', 'video/mp4; codecs="avc1.640040"', 'video/mp4; codecs="avc1.640050"', 'video/mp4; codecs="avc1.64006e"', 'video/mp4; codecs="avc1.640085"', 'video/mp4; codecs="avc1.64080a"', 'video/mp4; codecs="avc1.64080b"', 'video/mp4; codecs="avc1.64080c"', 'video/mp4; codecs="avc1.64080d"', 'video/mp4; codecs="avc1.640814"', 'video/mp4; codecs="avc1.640815"', 'video/mp4; codecs="avc1.640816"', 'video/mp4; codecs="avc1.64081e"', 'video/mp4; codecs="avc1.64081f"', 'video/mp4; codecs="avc1.640820"', 'video/mp4; codecs="avc1.640828"', 'video/mp4; codecs="avc1.640829"', 'video/mp4; codecs="avc1.64082a"', 'video/mp4; codecs="avc1.640832"', 'video/mp4; codecs="avc1.640833"', 'video/mp4; codecs="avc1.640834"', 'video/mp4; codecs="avc1.64083c"', 'video/mp4; codecs="avc1.64083d"', 'video/mp4; codecs="avc1.64083e"', 'video/mp4; codecs="avc1.64083f"', 'video/mp4; codecs="avc1.640840"', 'video/mp4; codecs="avc1.640850"', 'video/mp4; codecs="avc1.64086e"', 'video/mp4; codecs="avc1.640885"', 'video/mp4; codecs="avc1.6e000a"', 'video/mp4; codecs="avc1.6e000b"', 'video/mp4; codecs="avc1.6e000c"', 'video/mp4; codecs="avc1.6e000d"', 'video/mp4; codecs="avc1.6e0014"', 'video/mp4; codecs="avc1.6e0015"', 'video/mp4; codecs="avc1.6e0016"', 'video/mp4; codecs="avc1.6e001e"', 'video/mp4; codecs="avc1.6e001f"', 'video/mp4; codecs="avc1.6e0020"', 'video/mp4; codecs="avc1.6e0028"', 'video/mp4; codecs="avc1.6e0029"', 'video/mp4; codecs="avc1.6e002a"', 'video/mp4; codecs="avc1.6e0032"', 'video/mp4; codecs="avc1.6e0033"', 'video/mp4; codecs="avc1.6e0034"', 'video/mp4; codecs="avc1.6e003c"', 'video/mp4; codecs="avc1.6e003d"', 'video/mp4; codecs="avc1.6e003e"', 'video/mp4; codecs="avc1.6e003f"', 'video/mp4; codecs="avc1.6e0040"', 'video/mp4; codecs="avc1.6e0050"', 'video/mp4; codecs="avc1.6e006e"', 'video/mp4; codecs="avc1.6e0085"', 'video/mp4; codecs="avc1.6e100a"', 'video/mp4; codecs="avc1.6e100b"', 'video/mp4; codecs="avc1.6e100c"', 'video/mp4; codecs="avc1.6e100d"', 'video/mp4; codecs="avc1.6e1014"', 'video/mp4; codecs="avc1.6e1015"', 'video/mp4; codecs="avc1.6e1016"', 'video/mp4; codecs="avc1.6e101e"', 'video/mp4; codecs="avc1.6e101f"', 'video/mp4; codecs="avc1.6e1020"', 'video/mp4; codecs="avc1.6e1028"', 'video/mp4; codecs="avc1.6e1029"', 'video/mp4; codecs="avc1.6e102a"', 'video/mp4; codecs="avc1.6e1032"', 'video/mp4; codecs="avc1.6e1033"', 'video/mp4; codecs="avc1.6e1034"', 'video/mp4; codecs="avc1.6e103c"', 'video/mp4; codecs="avc1.6e103d"', 'video/mp4; codecs="avc1.6e103e"', 'video/mp4; codecs="avc1.6e103f"', 'video/mp4; codecs="avc1.6e1040"', 'video/mp4; codecs="avc1.6e1050"', 'video/mp4; codecs="avc1.6e106e"', 'video/mp4; codecs="avc1.6e1085"', 'video/mp4; codecs="avc1.76000a"', 'video/mp4; codecs="avc1.76000b"', 'video/mp4; codecs="avc1.76000c"', 'video/mp4; codecs="avc1.76000d"', 'video/mp4; codecs="avc1.760014"', 'video/mp4; codecs="avc1.760015"', 'video/mp4; codecs="avc1.760016"', 'video/mp4; codecs="avc1.76001e"', 'video/mp4; codecs="avc1.76001f"', 'video/mp4; codecs="avc1.760020"', 'video/mp4; codecs="avc1.760028"', 'video/mp4; codecs="avc1.760029"', 'video/mp4; codecs="avc1.76002a"', 'video/mp4; codecs="avc1.760032"', 'video/mp4; codecs="avc1.760033"', 'video/mp4; codecs="avc1.760034"', 'video/mp4; codecs="avc1.76003c"', 'video/mp4; codecs="avc1.76003d"', 'video/mp4; codecs="avc1.76003e"', 'video/mp4; codecs="avc1.76003f"', 'video/mp4; codecs="avc1.760040"', 'video/mp4; codecs="avc1.760050"', 'video/mp4; codecs="avc1.76006e"', 'video/mp4; codecs="avc1.760085"', 'video/mp4; codecs="avc1.7a000a"', 'video/mp4; codecs="avc1.7a000b"', 'video/mp4; codecs="avc1.7a000c"', 'video/mp4; codecs="avc1.7a000d"', 'video/mp4; codecs="avc1.7a0014"', 'video/mp4; codecs="avc1.7a0015"', 'video/mp4; codecs="avc1.7a0016"', 'video/mp4; codecs="avc1.7a001e"', 'video/mp4; codecs="avc1.7a001f"', 'video/mp4; codecs="avc1.7a0020"', 'video/mp4; codecs="avc1.7a0028"', 'video/mp4; codecs="avc1.7a0029"', 'video/mp4; codecs="avc1.7a002a"', 'video/mp4; codecs="avc1.7a0032"', 'video/mp4; codecs="avc1.7a0033"', 'video/mp4; codecs="avc1.7a0034"', 'video/mp4; codecs="avc1.7a003c"', 'video/mp4; codecs="avc1.7a003d"', 'video/mp4; codecs="avc1.7a003e"', 'video/mp4; codecs="avc1.7a003f"', 'video/mp4; codecs="avc1.7a0040"', 'video/mp4; codecs="avc1.7a0050"', 'video/mp4; codecs="avc1.7a006e"', 'video/mp4; codecs="avc1.7a0085"', 'video/mp4; codecs="avc1.7a100a"', 'video/mp4; codecs="avc1.7a100b"', 'video/mp4; codecs="avc1.7a100c"', 'video/mp4; codecs="avc1.7a100d"', 'video/mp4; codecs="avc1.7a1014"', 'video/mp4; codecs="avc1.7a1015"', 'video/mp4; codecs="avc1.7a1016"', 'video/mp4; codecs="avc1.7a101e"', 'video/mp4; codecs="avc1.7a101f"', 'video/mp4; codecs="avc1.7a1020"', 'video/mp4; codecs="avc1.7a1028"', 'video/mp4; codecs="avc1.7a1029"', 'video/mp4; codecs="avc1.7a102a"', 'video/mp4; codecs="avc1.7a1032"', 'video/mp4; codecs="avc1.7a1033"', 'video/mp4; codecs="avc1.7a1034"', 'video/mp4; codecs="avc1.7a103c"', 'video/mp4; codecs="avc1.7a103d"', 'video/mp4; codecs="avc1.7a103e"', 'video/mp4; codecs="avc1.7a103f"', 'video/mp4; codecs="avc1.7a1040"', 'video/mp4; codecs="avc1.7a1050"', 'video/mp4; codecs="avc1.7a106e"', 'video/mp4; codecs="avc1.7a1085"', 'video/mp4; codecs="avc1.80000a"', 'video/mp4; codecs="avc1.80000b"', 'video/mp4; codecs="avc1.80000c"', 'video/mp4; codecs="avc1.80000d"', 'video/mp4; codecs="avc1.800014"', 'video/mp4; codecs="avc1.800015"', 'video/mp4; codecs="avc1.800016"', 'video/mp4; codecs="avc1.80001e"', 'video/mp4; codecs="avc1.80001f"', 'video/mp4; codecs="avc1.800020"', 'video/mp4; codecs="avc1.800028"', 'video/mp4; codecs="avc1.800029"', 'video/mp4; codecs="avc1.80002a"', 'video/mp4; codecs="avc1.800032"', 'video/mp4; codecs="avc1.800033"', 'video/mp4; codecs="avc1.800034"', 'video/mp4; codecs="avc1.80003c"', 'video/mp4; codecs="avc1.80003d"', 'video/mp4; codecs="avc1.80003e"', 'video/mp4; codecs="avc1.80003f"', 'video/mp4; codecs="avc1.800040"', 'video/mp4; codecs="avc1.800050"', 'video/mp4; codecs="avc1.80006e"', 'video/mp4; codecs="avc1.800085"', 'video/mp4; codecs="avc1.8a000a"', 'video/mp4; codecs="avc1.8a000b"', 'video/mp4; codecs="avc1.8a000c"', 'video/mp4; codecs="avc1.8a000d"', 'video/mp4; codecs="avc1.8a0014"', 'video/mp4; codecs="avc1.8a0015"', 'video/mp4; codecs="avc1.8a0016"', 'video/mp4; codecs="avc1.8a001e"', 'video/mp4; codecs="avc1.8a001f"', 'video/mp4; codecs="avc1.8a0020"', 'video/mp4; codecs="avc1.8a0028"', 'video/mp4; codecs="avc1.8a0029"', 'video/mp4; codecs="avc1.8a002a"', 'video/mp4; codecs="avc1.8a0032"', 'video/mp4; codecs="avc1.8a0033"', 'video/mp4; codecs="avc1.8a0034"', 'video/mp4; codecs="avc1.8a003c"', 'video/mp4; codecs="avc1.8a003d"', 'video/mp4; codecs="avc1.8a003e"', 'video/mp4; codecs="avc1.8a003f"', 'video/mp4; codecs="avc1.8a0040"', 'video/mp4; codecs="avc1.8a0050"', 'video/mp4; codecs="avc1.8a006e"', 'video/mp4; codecs="avc1.8a0085"', 'video/mp4; codecs="avc1.f4000a"', 'video/mp4; codecs="avc1.f4000b"', 'video/mp4; codecs="avc1.f4000c"', 'video/mp4; codecs="avc1.f4000d"', 'video/mp4; codecs="avc1.f40014"', 'video/mp4; codecs="avc1.f40015"', 'video/mp4; codecs="avc1.f40016"', 'video/mp4; codecs="avc1.f4001e"', 'video/mp4; codecs="avc1.f4001f"', 'video/mp4; codecs="avc1.f40020"', 'video/mp4; codecs="avc1.f40028"', 'video/mp4; codecs="avc1.f40029"', 'video/mp4; codecs="avc1.f4002a"', 'video/mp4; codecs="avc1.f40032"', 'video/mp4; codecs="avc1.f40033"', 'video/mp4; codecs="avc1.f40034"', 'video/mp4; codecs="avc1.f4003c"', 'video/mp4; codecs="avc1.f4003d"', 'video/mp4; codecs="avc1.f4003e"', 'video/mp4; codecs="avc1.f4003f"', 'video/mp4; codecs="avc1.f40040"', 'video/mp4; codecs="avc1.f40050"', 'video/mp4; codecs="avc1.f4006e"', 'video/mp4; codecs="avc1.f40085"', 'video/mp4; codecs="avc1.f4100a"', 'video/mp4; codecs="avc1.f4100b"', 'video/mp4; codecs="avc1.f4100c"', 'video/mp4; codecs="avc1.f4100d"', 'video/mp4; codecs="avc1.f41014"', 'video/mp4; codecs="avc1.f41015"', 'video/mp4; codecs="avc1.f41016"', 'video/mp4; codecs="avc1.f4101e"', 'video/mp4; codecs="avc1.f4101f"', 'video/mp4; codecs="avc1.f41020"', 'video/mp4; codecs="avc1.f41028"', 'video/mp4; codecs="avc1.f41029"', 'video/mp4; codecs="avc1.f4102a"', 'video/mp4; codecs="avc1.f41032"', 'video/mp4; codecs="avc1.f41033"', 'video/mp4; codecs="avc1.f41034"', 'video/mp4; codecs="avc1.f4103c"', 'video/mp4; codecs="avc1.f4103d"', 'video/mp4; codecs="avc1.f4103e"', 'video/mp4; codecs="avc1.f4103f"', 'video/mp4; codecs="avc1.f41040"', 'video/mp4; codecs="avc1.f41050"', 'video/mp4; codecs="avc1.f4106e"', 'video/mp4; codecs="avc1.f41085"', 'video/mp4; codecs="avc1"', 'video/mp4; codecs="avc2"', 'video/mp4; codecs="avc3"', 'video/mp4; codecs="avc4"', 'video/mp4; codecs="avcp"', 'video/mp4; codecs="drac"', 'video/mp4; codecs="dvav"', 'video/mp4; codecs="dvhe"', 'video/mp4; codecs="encf"', 'video/mp4; codecs="encm"', 'video/mp4; codecs="encs"', 'video/mp4; codecs="enct"', 'video/mp4; codecs="encv"', 'video/mp4; codecs="fdp "', 'video/mp4; codecs="hev1.1.6.L93.90"', 'video/mp4; codecs="hev1.1.6.L93.B0"', 'video/mp4; codecs="hev1"', 'video/mp4; codecs="hvc1.1.6.L93.90"', 'video/mp4; codecs="hvc1.1.6.L93.B0"', 'video/mp4; codecs="hvc1"', 'video/mp4; codecs="hvt1"', 'video/mp4; codecs="ixse"', 'video/mp4; codecs="lhe1"', 'video/mp4; codecs="lht1"', 'video/mp4; codecs="lhv1"', 'video/mp4; codecs="m2ts"', 'video/mp4; codecs="mett"', 'video/mp4; codecs="metx"', 'video/mp4; codecs="mjp2"', 'video/mp4; codecs="mlix"', 'video/mp4; codecs="mp4s"', 'video/mp4; codecs="mp4v"', 'video/mp4; codecs="mvc1"', 'video/mp4; codecs="mvc2"', 'video/mp4; codecs="mvc3"', 'video/mp4; codecs="mvc4"', 'video/mp4; codecs="mvd1"', 'video/mp4; codecs="mvd2"', 'video/mp4; codecs="mvd3"', 'video/mp4; codecs="mvd4"', 'video/mp4; codecs="oksd"', 'video/mp4; codecs="pm2t"', 'video/mp4; codecs="prtp"', 'video/mp4; codecs="resv"', 'video/mp4; codecs="rm2t"', 'video/mp4; codecs="rrtp"', 'video/mp4; codecs="rsrp"', 'video/mp4; codecs="rtmd"', 'video/mp4; codecs="rtp "', 'video/mp4; codecs="s263"', 'video/mp4; codecs="sm2t"', 'video/mp4; codecs="srtp"', 'video/mp4; codecs="STGS"', 'video/mp4; codecs="stpp"', 'video/mp4; codecs="svc1"', 'video/mp4; codecs="svc2"', 'video/mp4; codecs="svcM"', 'video/mp4; codecs="tc64"', 'video/mp4; codecs="tmcd"', 'video/mp4; codecs="tx3g"', 'video/mp4; codecs="unid"', 'video/mp4; codecs="urim"', 'video/mp4; codecs="vc-1"', 'video/mp4; codecs="vp08"', 'video/mp4; codecs="vp09.00.10.08"', 'video/mp4; codecs="vp09.00.50.08"', 'video/mp4; codecs="vp09.01.20.08.01.01.01.01.00"', 'video/mp4; codecs="vp09.01.20.08.01"', 'video/mp4; codecs="vp09.02.10.10.01.09.16.09.01"', 'video/mp4; codecs="vp09"', 'video/mp4; codecs="wvtt"', 'video/mpeg', 'video/mpeg2', 'video/mpeg4', 'video/msvideo', 'video/ogg', 'video/ogg; codecs="dirac, flac"', 'video/ogg; codecs="dirac, vorbis"', 'video/ogg; codecs="flac"', 'video/ogg; codecs="theora, flac"', 'video/ogg; codecs="theora, speex"', 'video/ogg; codecs="theora, vorbis"', 'video/ogg; codecs="theora"', 'video/quicktime', 'video/vnd.rn-realvideo', 'video/wavelet', 'video/webm', 'video/webm; codecs="vorbis"', 'video/webm; codecs="vp8, opus"', 'video/webm; codecs="vp8, vorbis"', 'video/webm; codecs="vp8.0, vorbis"', 'video/webm; codecs="vp8.0"', 'video/webm; codecs="vp8"', 'video/webm; codecs="vp9, opus"', 'video/webm; codecs="vp9, vorbis"', 'video/webm; codecs="vp9"', 'video/x-flv', 'video/x-la-asf', 'video/x-m4v', 'video/x-matroska', 'video/x-matroska; codecs="theora, vorbis"', 'video/x-matroska; codecs="theora"', 'video/x-mkv', 'video/x-mng', 'video/x-mpeg2', 'video/x-ms-wmv', 'video/x-msvideo', 'video/x-theora'];
-
-	const getMimeTypes = async mimeTypes => {
-	    try {
-	        const videoEl = document.createElement('video');
-	        const audioEl = new Audio();
-	        const isMediaRecorderSupported = 'MediaRecorder' in window;
-	        const types = mimeTypes.reduce((acc, type) => {
-	            const data = {
-	                mimeType: type,
-	                audioPlayType: audioEl.canPlayType(type),
-	                videoPlayType: videoEl.canPlayType(type),
-	                mediaSource: MediaSource.isTypeSupported(type),
-	                mediaRecorder: isMediaRecorderSupported ? MediaRecorder.isTypeSupported(type) : false
-	            };
-				if (!data.audioPlayType && !data.videoPlayType && !data.mediaSource && !data.mediaRecorder) {
-					return acc
-				}
-	            acc.push(data);
-	            return acc
-	        }, []);
-	        return types
-	    } catch (error) {
-	        return
-	    }
-	};
+	const getMimeTypeShortList = () => [
+		'audio/ogg; codecs="vorbis"',
+		'audio/mpeg',
+		'audio/mpegurl',
+		'audio/wav; codecs="1"',
+		'audio/x-m4a',
+		'audio/aac',
+		'video/ogg; codecs="theora"',
+		'video/quicktime',
+		'video/mp4; codecs="avc1.42E01E"',
+		'video/webm; codecs="vp8"',
+		'video/webm; codecs="vp9"',
+		'video/x-matroska'
+	].sort();
 
 	const getMedia = async imports => {
 
 		const {
 			require: {
+				queueEvent,
+				createTimer,
+				attempt,
 				captureError,
 				phantomDarkness,
-				caniuse,
-				logTestResult,
-				getPromiseRaceFulfilled
+				logTestResult
 			}
 		} = imports;
 
+		const getMimeTypes = () => {
+			try {
+				const mimeTypes = getMimeTypeShortList();
+				const videoEl = document.createElement('video');
+				const audioEl = new Audio();
+				const isMediaRecorderSupported = 'MediaRecorder' in window;
+				const types = mimeTypes.reduce((acc, type) => {
+					const data = {
+						mimeType: type,
+						audioPlayType: audioEl.canPlayType(type),
+						videoPlayType: videoEl.canPlayType(type),
+						mediaSource: MediaSource.isTypeSupported(type),
+						mediaRecorder: isMediaRecorderSupported ? MediaRecorder.isTypeSupported(type) : false
+					};
+					if (!data.audioPlayType && !data.videoPlayType && !data.mediaSource && !data.mediaRecorder) {
+						return acc
+					}
+					acc.push(data);
+					return acc
+				}, []);
+				return types
+			} catch (error) {
+				return
+			}
+		};
+
 		try {
-			await new Promise(setTimeout).catch(e => {});
-			const start = performance.now();
+			const timer = createTimer();
+			timer.start();
 			const phantomNavigator = phantomDarkness ? phantomDarkness.navigator : navigator;
-			let devices, types;
-			if (caniuse(() => navigator.mediaDevices.enumerateDevices)) {
-				const [
-					enumeratedDevices,
-					mimes
-				] = await Promise.all([
-					phantomNavigator.mediaDevices.enumerateDevices(),
-					getMimeTypes(mimeTypes)
-				])
-				.catch(error => console.error(error));
-
-				types = mimes;
-				devices = (
-					enumeratedDevices ?
-					enumeratedDevices.map(device => device.kind).sort() :
-					undefined
-				);
-			}
-			else {
-				types = await getMimeTypes(mimeTypes);
-			}
-			const constraints = caniuse(() => Object.keys(navigator.mediaDevices.getSupportedConstraints()));
-
-			logTestResult({ start, test: 'media', passed: true });
-			return { mediaDevices: devices, constraints, mimeTypes: types }
+			const devices = (
+				!phantomNavigator.mediaDevices ||
+				!phantomNavigator.mediaDevices.enumerateDevices ? undefined :
+					await phantomNavigator.mediaDevices.enumerateDevices()
+						.then(devices => devices.map(device => device.kind).sort()).catch(error => undefined)
+			);
+		
+			const mimeTypes = getMimeTypes();
+			
+			logTestResult({ time: timer.stop(), test: 'media', passed: true });
+			return { mediaDevices: devices, mimeTypes }
 		}
 		catch (error) {
 			logTestResult({ test: 'media', passed: false });
@@ -5148,24 +5832,29 @@
 		}
 	};
 
-	const mediaHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
+	const mediaHTML = ({ fp, note, count, modal, hashMini, hashSlice, performanceLogger }) => {
 		if (!fp.media) {
 			return `
 		<div class="col-four undefined">
 			<strong>Media</strong>
-			<div>devices (0): ${note.blocked}</div>
-			<div>constraints: ${note.blocked}</div>
 			<div>mimes (0): ${note.blocked}</div>
+			<div>devices (0): ${note.blocked}</div>
+			<div class="block-text">${note.blocked}</div>
 		</div>`
 		}
 		const {
 			media: {
 				mediaDevices,
-				constraints,
 				mimeTypes,
 				$hash
 			}
 		} = fp;
+
+		const deviceMap = {
+			'audioinput': 'mic',
+			'audiooutput': 'audio',
+			'videoinput': 'webcam'
+		};
 
 		const header = `
 	<style>
@@ -5210,27 +5899,36 @@
 			${audioPlayType == 'probably' ? '<span class="audiop pb">P</span>' : audioPlayType == 'maybe' ? '<span class="audiop mb">M</span>': '<span class="blank-false">-</span>'}${videoPlayType == 'probably' ? '<span class="videop pb">P</span>' : videoPlayType == 'maybe' ? '<span class="videop mb">M</span>': '<span class="blank-false">-</span>'}${mediaSource ? '<span class="medias tr">T</span>'  : '<span class="blank-false">-</span>'}${mediaRecorder ? '<span class="mediar tr">T</span>'  : '<span class="blank-false">-</span>'}: ${mimeType}
 		`	
 		});
+		const mimesListLen = getMimeTypeShortList().length;
 
+		const replaceIndex = ({ list, index, replacement }) => [
+			...list.slice(0, index),
+			replacement,
+			...list.slice(index + 1)
+		];
+
+		const mediaDevicesByType = (mediaDevices || []).reduce((acc, x) => {
+			const deviceType = deviceMap[x] || x;
+			if (!acc.includes(deviceType)) {
+				return (acc = [...acc, deviceType])
+			}
+			else if (!deviceType.includes('dual') && (acc.filter(x => x == deviceType) || []).length == 1) {
+				return (
+					acc = replaceIndex({
+						list: acc,
+						index: acc.indexOf(deviceType),
+						replacement: `dual ${deviceType}`
+					})
+				)
+			}
+			return (acc = [...acc, deviceType])
+		}, []);
+		
 		return `
-	<div class="col-four">
+	<div class="relative col-four">
+		<span class="aside-note">${performanceLogger.getLog().media}</span>
 		<strong>Media</strong><span class="hash">${hashSlice($hash)}</span>
-		<div>devices (${count(mediaDevices)}): ${
-			!mediaDevices || !mediaDevices.length ? note.blocked : 
-			modal(
-				'creep-media-devices',
-				mediaDevices.join('<br>'),
-				hashMini(mediaDevices)
-			)
-		}</div>
-		<div>constraints: ${
-			!constraints || !constraints.length ? note.blocked : 
-			modal(
-				'creep-media-constraints',
-				constraints.join('<br>'),
-				hashMini(constraints)
-			)
-		}</div>
-		<div>mimes (${count(mimeTypes)}): ${
+		<div class="help" title="HTMLMediaElement.canPlayType()\nMediaRecorder.isTypeSupported()\nMediaSource.isTypeSupported()">mimes (${count(mimeTypes)}/${mimesListLen}): ${
 			invalidMimeTypes ? note.blocked : 
 			modal(
 				'creep-media-mimeTypes',
@@ -5238,6 +5936,13 @@
 				hashMini(mimeTypes)
 			)
 		}</div>
+		<div class="help" title="MediaDevices.enumerateDevices()\nMediaDeviceInfo.kind">devices (${count(mediaDevices)}):</div>
+		<div class="block-text">
+			${
+				!mediaDevices || !mediaDevices.length ? note.blocked : 
+					mediaDevicesByType.join(', ')
+			}
+		</div>
 	</div>
 	`	
 	};
@@ -5247,8 +5952,9 @@
 
 		const {
 			require: {
+				queueEvent,
+				createTimer,
 				getOS,
-				hashMini,
 				captureError,
 				attempt,
 				caniuse,
@@ -5263,12 +5969,14 @@
 				braveBrowser,
 				decryptUserAgent,
 				logTestResult,
-				getPluginLies
+				getPluginLies,
+				isUAPostReduction
 			}
 		} = imports;
 
 		try {
-			const start = performance.now();
+			const timer = createTimer();
+			await queueEvent(timer);
 			let lied = (
 				lieProps['Navigator.appVersion'] ||
 				lieProps['Navigator.deviceMemory'] ||
@@ -5313,7 +6021,6 @@
 			const credibleUserAgent = (
 				'chrome' in window ? navigator.userAgent.includes(navigator.appVersion) : true
 			);
-
 			const data = {
 				platform: attempt(() => {
 					const { platform } = phantomNavigator;
@@ -5378,11 +6085,11 @@
 						sendToTrash('userAgent', `${navigatorUserAgent} does not match appVersion`);
 					}
 					if (/\s{2,}|^\s|\s$/g.test(navigatorUserAgent)) {
-						sendToTrash('userAgent', `extra spaces in "${navigatorUserAgent.replace(/\s{2,}|^\s|\s$/g, '[...]')}"`);
+						sendToTrash('userAgent', `extra spaces detected`);
 					}
 					const gibbers = gibberish(navigatorUserAgent);
 					if (!!gibbers.length) {
-						sendToTrash(`userAgent contains gibberish`, `[${gibbers.join(', ')}] ${navigatorUserAgent}`);
+						sendToTrash(`userAgent is gibberish`, navigatorUserAgent);
 					}
 					if (userAgent != navigatorUserAgent) {
 						lied = true;
@@ -5391,6 +6098,7 @@
 					}
 					return userAgent.trim().replace(/\s{2,}/, ' ')
 				}, 'userAgent failed'),
+				uaPostReduction: isUAPostReduction((navigator || {}).userAgent),
 				appVersion: attempt(() => {
 					const { appVersion } = phantomNavigator;
 					const navigatorAppVersion = navigator.appVersion;
@@ -5402,7 +6110,7 @@
 						sendToTrash('appVersion', 'Living Standard property returned falsy value');
 					}
 					if (/\s{2,}|^\s|\s$/g.test(navigatorAppVersion)) {
-						sendToTrash('appVersion', `extra spaces in "${navigatorAppVersion.replace(/\s{2,}|^\s|\s$/g, '[...]')}"`);
+						sendToTrash('appVersion', `extra spaces detected`);
 					}
 					if (appVersion != navigatorAppVersion) {
 						lied = true;
@@ -5418,16 +6126,15 @@
 					const { deviceMemory } = phantomNavigator;
 					const navigatorDeviceMemory = navigator.deviceMemory;
 					const trusted = {
-						'0': true,
+						'0.25': true,
+						'0.5': true,
 						'1': true,
 						'2': true,
 						'4': true,
-						'6': true,
 						'8': true
 					};
-					trustInteger('deviceMemory - invalid return type', navigatorDeviceMemory);
 					if (!trusted[navigatorDeviceMemory]) {
-						sendToTrash('deviceMemory', `${navigatorDeviceMemory} is not within set [0, 1, 2, 4, 6, 8]`);
+						sendToTrash('deviceMemory', `${navigatorDeviceMemory} is not a valid value [0.25, 0.5, 1, 2, 4, 8]`);
 					}
 					if (deviceMemory != navigatorDeviceMemory) {
 						lied = true;
@@ -5586,6 +6293,7 @@
 					return oscpu
 				}, 'oscpu failed'),
 				plugins: attempt(() => {
+					// https://html.spec.whatwg.org/multipage/system-state.html#pdf-viewing-support
 					const navigatorPlugins = navigator.plugins;
 					const plugins = phantomNavigator.plugins;
 					if (!(navigatorPlugins instanceof PluginArray)) {
@@ -5613,10 +6321,10 @@
 							const nameGibbers = gibberish(name);
 							const descriptionGibbers = gibberish(description);
 							if (!!nameGibbers.length) {
-								sendToTrash(`plugin name contains gibberish`, `[${nameGibbers.join(', ')}] ${name}`);
+								sendToTrash(`plugin name is gibberish`, name);
 							}
 							if (!!descriptionGibbers.length) {
-								sendToTrash(`plugin description contains gibberish`, `[${descriptionGibbers.join(', ')}] ${description}`);
+								sendToTrash(`plugin description is gibberish`, description);
 							}
 							return
 						});
@@ -5627,161 +6335,164 @@
 					const keys = Object.keys(Object.getPrototypeOf(phantomNavigator));
 					return keys
 				}, 'navigator keys failed'),
-				userAgentData: await attempt(async () => {
-					if (!('userAgentData' in phantomNavigator)) {
-						return
-					}
-					const data = await phantomNavigator.userAgentData.getHighEntropyValues(
-						['platform', 'platformVersion', 'architecture',  'model', 'uaFullVersion']
-					);
-					const { brands, mobile } = phantomNavigator.userAgentData || {};
-					const compressedBrands = (brands, captureVersion = false) => brands
-						.filter(obj => !/Not/.test(obj.brand)).map(obj => `${obj.brand}${captureVersion ? ` ${obj.version}` : ''}`);
-					const removeChromium = brands => (
-						brands.length > 1 ? brands.filter(brand => !/Chromium/.test(brand)) : brands
-					);
-		
-					// compress brands
-					if (!data.brands) {
-						data.brands = brands;
-					}
-					data.brandsVersion = compressedBrands(data.brands, true);
-					data.brands = compressedBrands(data.brands);
-					data.brandsVersion = removeChromium(data.brandsVersion);
-					data.brands = removeChromium(data.brands);
-					
-					if (!data.mobile) {
-						data.mobile = mobile;
-					}
-					const dataSorted = Object.keys(data).sort().reduce((acc, key) => {
-						acc[key] = data[key];
+			};
+
+			const getKeyboard = () => attempt(async () => {
+				if (!('keyboard' in navigator && navigator.keyboard)) {
+					return
+				}
+				const keys = [
+					'Backquote',
+					'Backslash',
+					'Backspace',
+					'BracketLeft',
+					'BracketRight',
+					'Comma',
+					'Digit0',
+					'Digit1',
+					'Digit2',
+					'Digit3',
+					'Digit4',
+					'Digit5',
+					'Digit6',
+					'Digit7',
+					'Digit8',
+					'Digit9',
+					'Equal',
+					'IntlBackslash',
+					'IntlRo',
+					'IntlYen',
+					'KeyA',
+					'KeyB',
+					'KeyC',
+					'KeyD',
+					'KeyE',
+					'KeyF',
+					'KeyG',
+					'KeyH',
+					'KeyI',
+					'KeyJ',
+					'KeyK',
+					'KeyL',
+					'KeyM',
+					'KeyN',
+					'KeyO',
+					'KeyP',
+					'KeyQ',
+					'KeyR',
+					'KeyS',
+					'KeyT',
+					'KeyU',
+					'KeyV',
+					'KeyW',
+					'KeyX',
+					'KeyY',
+					'KeyZ',
+					'Minus',
+					'Period',
+					'Quote',
+					'Semicolon',
+					'Slash'
+				];
+				const keyoardLayoutMap = await navigator.keyboard.getLayoutMap();
+				const writingSystemKeys = keys
+					.reduce((acc, key) => {
+						acc[key] = keyoardLayoutMap.get(key);
 						return acc
-					},{});
-					return dataSorted
-				}, 'userAgentData failed'),
-				keyboard: await attempt(async () => {
-					if (!('keyboard' in navigator && navigator.keyboard)) {
-						return
-					}
-					const keys = [
-						'Backquote',
-						'Backslash',
-						'Backspace',
-						'BracketLeft',
-						'BracketRight',
-						'Comma',
-						'Digit0',
-						'Digit1',
-						'Digit2',
-						'Digit3',
-						'Digit4',
-						'Digit5',
-						'Digit6',
-						'Digit7',
-						'Digit8',
-						'Digit9',
-						'Equal',
-						'IntlBackslash',
-						'IntlRo',
-						'IntlYen',
-						'KeyA',
-						'KeyB',
-						'KeyC',
-						'KeyD',
-						'KeyE',
-						'KeyF',
-						'KeyG',
-						'KeyH',
-						'KeyI',
-						'KeyJ',
-						'KeyK',
-						'KeyL',
-						'KeyM',
-						'KeyN',
-						'KeyO',
-						'KeyP',
-						'KeyQ',
-						'KeyR',
-						'KeyS',
-						'KeyT',
-						'KeyU',
-						'KeyV',
-						'KeyW',
-						'KeyX',
-						'KeyY',
-						'KeyZ',
-						'Minus',
-						'Period',
-						'Quote',
-						'Semicolon',
-						'Slash'
-					];
-					const keyoardLayoutMap = await navigator.keyboard.getLayoutMap();
-					const writingSystemKeys = keys
-						.reduce((acc, key) => {
-							acc[key] = keyoardLayoutMap.get(key);
-							return acc
-						}, {});
-					return writingSystemKeys
-				}),
-				bluetoothAvailability: await attempt(async () => {
-					if (
-						!('bluetooth' in phantomNavigator) ||
-						!phantomNavigator.bluetooth ||
-						!phantomNavigator.bluetooth.getAvailability) {
-						return undefined
-					}
-					const available = await navigator.bluetooth.getAvailability();
-					return available
-				}, 'bluetoothAvailability failed'),
-				mediaCapabilities: await attempt(async () => {
-					const codecs = [
-						'audio/ogg; codecs=vorbis',
-						'audio/ogg; codecs=flac',
-						'audio/mp4; codecs="mp4a.40.2"',
-						'audio/mpeg; codecs="mp3"',
-						'video/ogg; codecs="theora"',
-						'video/mp4; codecs="avc1.42E01E"'
-					];
+					}, {});
+				return writingSystemKeys
+			}, 'keyboard failed');
 
-					const getMediaConfig = (codec, video, audio) => ({
-						type: 'file',
-						video: !/^video/.test(codec) ? undefined : {
-							contentType: codec,
-							...video
-						},
-						audio: !/^audio/.test(codec) ? undefined : {
-							contentType: codec,
-							...audio
-						}
-					});
+			const getUserAgentData = () => attempt(async () => {
+				if (!phantomNavigator.userAgentData || 
+					!phantomNavigator.userAgentData.getHighEntropyValues) {
+					return
+				}
+				const data = await phantomNavigator.userAgentData.getHighEntropyValues(
+					['platform', 'platformVersion', 'architecture', 'bitness', 'model', 'uaFullVersion']
+				);
+				const { brands, mobile } = phantomNavigator.userAgentData || {};
+				const compressedBrands = (brands, captureVersion = false) => brands
+					.filter(obj => !/Not/.test(obj.brand)).map(obj => `${obj.brand}${captureVersion ? ` ${obj.version}` : ''}`);
+				const removeChromium = brands => (
+					brands.length > 1 ? brands.filter(brand => !/Chromium/.test(brand)) : brands
+				);
 
-					const getMediaCapabilities = async () => {
-						const video = {
-							width: 1920,
-							height: 1080,
-							bitrate: 120000,
-							framerate: 60
-						};
-						const audio = {
-							channels: 2,
-							bitrate: 300000,
-							samplerate: 5200
-						};
-						try {
-							const decodingInfo = codecs.map(codec => {
-								const config = getMediaConfig(codec, video, audio);
-								const info = navigator.mediaCapabilities.decodingInfo(config)
-									.then(support => ({
-										codec,
-										...support
-									}))
-									.catch(error => console.error(codec, error));
-								return info
-							});
-							const data = await Promise.all(decodingInfo)
-								.catch(error => console.error(error));
-							const codecsSupported = data.reduce((acc, support) => {
+				// compress brands
+				if (!data.brands) {
+					data.brands = brands;
+				}
+				data.brandsVersion = compressedBrands(data.brands, true);
+				data.brands = compressedBrands(data.brands);
+				data.brandsVersion = removeChromium(data.brandsVersion);
+				data.brands = removeChromium(data.brands);
+				
+				if (!data.mobile) {
+					data.mobile = mobile;
+				}
+				const dataSorted = Object.keys(data).sort().reduce((acc, key) => {
+					acc[key] = data[key];
+					return acc
+				},{});
+				return dataSorted
+			}, 'userAgentData failed');
+
+			const getBluetoothAvailability = () => attempt(async () => {
+				if (
+					!('bluetooth' in phantomNavigator) ||
+					!phantomNavigator.bluetooth ||
+					!phantomNavigator.bluetooth.getAvailability) {
+					return undefined
+				}
+				const available = await navigator.bluetooth.getAvailability();
+				return available
+			}, 'bluetoothAvailability failed');
+
+			const getMediaCapabilities = () => attempt(async () => {
+				const codecs = [
+					'audio/ogg; codecs=vorbis',
+					'audio/ogg; codecs=flac',
+					'audio/mp4; codecs="mp4a.40.2"',
+					'audio/mpeg; codecs="mp3"',
+					'video/ogg; codecs="theora"',
+					'video/mp4; codecs="avc1.42E01E"'
+				];
+
+				const getMediaConfig = (codec, video, audio) => ({
+					type: 'file',
+					video: !/^video/.test(codec) ? undefined : {
+						contentType: codec,
+						...video
+					},
+					audio: !/^audio/.test(codec) ? undefined : {
+						contentType: codec,
+						...audio
+					}
+				});
+
+				const computeMediaCapabilities = () => {
+					const video = {
+						width: 1920,
+						height: 1080,
+						bitrate: 120000,
+						framerate: 60
+					};
+					const audio = {
+						channels: 2,
+						bitrate: 300000,
+						samplerate: 5200
+					};
+					try {
+						const decodingInfo = codecs.map(codec => {
+							const config = getMediaConfig(codec, video, audio);
+							return navigator.mediaCapabilities.decodingInfo(config).then(support => ({
+								codec,
+								...support
+							}))
+							.catch(error => console.error(codec, error))
+						});
+						return Promise.all(decodingInfo).then(data => {
+							return data.reduce((acc, support) => {
 								const { codec, supported, smooth, powerEfficient } = support || {};
 								if (!supported) { return acc }
 								return {
@@ -5791,60 +6502,101 @@
 										...(powerEfficient ? ['efficient'] : [])
 									]
 								}
-							}, {});
-							return codecsSupported
-						}
-						catch (error) {
-							return
-						}
-					};
-					const mediaCapabilities = await getMediaCapabilities();
-					return mediaCapabilities
-				}, 'mediaCapabilities failed'),
-			
-				permissions: await attempt(async () => {
-					const getPermissionState = name => navigator.permissions.query({ name })
-						.then(res => ({ name, state: res.state }))
-						.catch(error => ({ name, state: 'unknown' }));
+							}, {})
+						}).catch(error => console.error(error))
+					}
+					catch (error) {
+						return
+					}
+				};
+				return computeMediaCapabilities()
+			}, 'mediaCapabilities failed');
+		
+			const getPermissions = () => attempt(async () => {
+				const getPermissionState = name => navigator.permissions.query({ name })
+					.then(res => ({ name, state: res.state }))
+					.catch(error => ({ name, state: 'unknown' }));
 
-					// https://w3c.github.io/permissions/#permission-registry
-					const permissions = !('permissions' in navigator) ? undefined : await Promise.all([
-							getPermissionState('accelerometer'),
-							getPermissionState('ambient-light-sensor'),
-							getPermissionState('background-fetch'),
-							getPermissionState('background-sync'),
-							getPermissionState('bluetooth'),
-							getPermissionState('camera'),
-							getPermissionState('clipboard'),
-							getPermissionState('device-info'),
-							getPermissionState('display-capture'),
-							getPermissionState('gamepad'),
-							getPermissionState('geolocation'),
-							getPermissionState('gyroscope'),
-							getPermissionState('magnetometer'),
-							getPermissionState('microphone'),
-							getPermissionState('midi'),
-							getPermissionState('nfc'),
-							getPermissionState('notifications'),
-							getPermissionState('persistent-storage'),
-							getPermissionState('push'),
-							getPermissionState('screen-wake-lock'),
-							getPermissionState('speaker'),
-							getPermissionState('speaker-selection')
-						]).then(permissions => permissions.reduce((acc, perm) => {
-							const { state, name } = perm || {};
-							if (acc[state]) {
-								acc[state].push(name);
-								return acc
-							}
-							acc[state] = [name];
+				// https://w3c.github.io/permissions/#permission-registry
+				const permissions = !('permissions' in navigator) ? undefined : Promise.all([
+						getPermissionState('accelerometer'),
+						getPermissionState('ambient-light-sensor'),
+						getPermissionState('background-fetch'),
+						getPermissionState('background-sync'),
+						getPermissionState('bluetooth'),
+						getPermissionState('camera'),
+						getPermissionState('clipboard'),
+						getPermissionState('device-info'),
+						getPermissionState('display-capture'),
+						getPermissionState('gamepad'),
+						getPermissionState('geolocation'),
+						getPermissionState('gyroscope'),
+						getPermissionState('magnetometer'),
+						getPermissionState('microphone'),
+						getPermissionState('midi'),
+						getPermissionState('nfc'),
+						getPermissionState('notifications'),
+						getPermissionState('persistent-storage'),
+						getPermissionState('push'),
+						getPermissionState('screen-wake-lock'),
+						getPermissionState('speaker'),
+						getPermissionState('speaker-selection')
+					]).then(permissions => permissions.reduce((acc, perm) => {
+						const { state, name } = perm || {};
+						if (acc[state]) {
+							acc[state].push(name);
 							return acc
-						}, {})).catch(error => console.error(error));
-					return permissions
-				}, 'permissions failed'),
-			};
-			logTestResult({ start, test: 'navigator', passed: true });
-			return { ...data, lied }
+						}
+						acc[state] = [name];
+						return acc
+					}, {})).catch(error => console.error(error));
+				return permissions
+			}, 'permissions failed');
+
+			const getWebgpu = () => attempt(async () => {
+				if (!('gpu' in navigator)) {
+					return
+				}
+				const { limits, features } = await navigator.gpu.requestAdapter();
+
+				return {
+					features: [...features.values()],
+					limits: (limits => {
+						const data = {};
+						for (const prop in limits) {
+							data[prop] = limits[prop];
+						}
+						return data
+					})(limits)
+				}
+			}, 'webgpu failed');
+
+			const [
+				keyboard,
+				userAgentData,
+				bluetoothAvailability,
+				mediaCapabilities,
+				permissions,
+				webgpu
+			] = await Promise.all([
+				getKeyboard(),
+				getUserAgentData(),
+				getBluetoothAvailability(),
+				getMediaCapabilities(),
+				getPermissions(),
+				getWebgpu()
+			]);
+			logTestResult({ time: timer.stop(), test: 'navigator', passed: true });
+			return {
+				...data,
+				keyboard,
+				userAgentData,
+				bluetoothAvailability,
+				mediaCapabilities,
+				permissions,
+				webgpu,
+				lied
+			}
 		}
 		catch (error) {
 			logTestResult({ test: 'navigator', passed: false });
@@ -5853,13 +6605,12 @@
 		}
 	};
 
-	const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count, computeWindowsRelease }) => {
+	const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count, computeWindowsRelease, performanceLogger }) => {
 		if (!fp.navigator) {
 			return `
 		<div class="col-six undefined">
 			<strong>Navigator</strong>
 			<div>properties (0): ${note.blocked}</div>
-			<div>bluetooth: ${note.blocked}</div>
 			<div>codecs (0): ${note.blocked}</div>
 			<div>dnt: ${note.blocked}</div>
 			<div>gpc:${note.blocked}</div>
@@ -5869,6 +6620,7 @@
 			<div>permissions (0): ${note.blocked}</div>
 			<div>plugins (0): ${note.blocked}</div>
 			<div>vendor: ${note.blocked}</div>
+			<div>webgpu: ${note.blocked}</div>
 			<div>userAgentData:</div>
 			<div class="block-text">${note.blocked}</div>
 		</div>
@@ -5902,11 +6654,13 @@
 				system,
 				device,
 				userAgent,
+				uaPostReduction,
 				userAgentData,
 				userAgentParsed,
 				vendor,
 				keyboard,
 				bluetoothAvailability,
+				webgpu,
 				lied
 			}
 		} = fp;
@@ -5922,6 +6676,7 @@
 			permissions && permissions.granted ? permissions.granted.length : 0
 		);
 		return `
+	<span class="time">${performanceLogger.getLog().navigator}</span>
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<strong>Navigator</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div>properties (${count(properties)}): ${
@@ -5930,10 +6685,6 @@
 			properties.join(', '),
 			hashMini(properties)
 		)
-		}</div>
-		<div>bluetooth: ${
-		typeof bluetoothAvailability == 'undefined' ? note.unsupported :
-			!bluetoothAvailability ? 'unavailable' : 'available'
 		}</div>
 		<div class="help" title="MediaCapabilities.decodingInfo()">codecs (${''+codecKeys.length}): ${
 		!mediaCapabilities || !codecKeys.length ? note.unsupported :
@@ -5982,12 +6733,30 @@
 			note.blocked
 		}</div>
 		<div>vendor: ${!blocked[vendor] ? vendor : note.blocked}</div>
+		<div>webgpu: ${!webgpu ? note.unsupported :
+			modal(
+				`${id}-webgpu`,
+				(webgpu => {
+					const { limits, features } = webgpu;
+					return `
+					<div>
+						<strong>Features</strong><br>${features.join('<br>')}
+					</div>
+					<div>
+						<br><strong>Limits</strong><br>${Object.keys(limits).map(x => `${x}: ${limits[x]}`).join('<br>')}
+					</div>
+					`
+				})(webgpu),
+				hashMini(webgpu)
+			)
+		}</div>
 		<div>userAgentData:</div>
 		<div class="block-text help" title="Navigator.userAgentData\nNavigatorUAData.getHighEntropyValues()">
 			<div>
 			${((userAgentData) => {
 				const {
 					architecture,
+					bitness,
 					brandsVersion,
 					uaFullVersion,
 					mobile,
@@ -5996,15 +6765,11 @@
 					platform
 				} = userAgentData || {};
 				
-				const brandsVersionNumber = +(/\d+/.exec(''+(brandsVersion||[])[0])||[])[0]
-				const windowsRelease = (
-					brandsVersionNumber > 94 ? computeWindowsRelease(platform, platformVersion) :
-						undefined
-				)
-
+				const windowsRelease = computeWindowsRelease({ platform, platformVersion });
+				
 				return !userAgentData ? note.unsupported : `
 					${(brandsVersion || []).join(',')}${uaFullVersion ? ` (${uaFullVersion})` : ''}
-					<br>${windowsRelease ? windowsRelease : `${platform} ${platformVersion}`} ${architecture}
+					<br>${windowsRelease || `${platform} ${platformVersion}`} ${architecture ? `${architecture}${bitness ? `_${bitness}` : ''}` : ''} 
 					${model ? `<br>${model}` : ''}
 					${mobile ? '<br>mobile' : ''}
 				`
@@ -6014,17 +6779,17 @@
 	</div>
 	<div class="col-six${lied ? ' rejected' : ''}">
 		<div>device:</div>
-		<div class="block-text help" title="Navigator.deviceMemory\nNavigator.hardwareConcurrency\nNavigator.maxTouchPoints\nNavigator.oscpu\nNavigator.platform\nNavigator.userAgent">
+		<div class="block-text help" title="Navigator.deviceMemory\nNavigator.hardwareConcurrency\nNavigator.maxTouchPoints\nNavigator.oscpu\nNavigator.platform\nNavigator.userAgent\nBluetooth.getAvailability()">
 			${oscpu ? oscpu : ''}
 			${`${oscpu ? '<br>' : ''}${system}${platform ? ` (${platform})` : ''}`}
 			${device ? `<br>${device}` : note.blocked}${
-				hardwareConcurrency && deviceMemory ? `<br>cores: ${hardwareConcurrency}, memory: ${deviceMemory}` :
+				hardwareConcurrency && deviceMemory ? `<br>cores: ${hardwareConcurrency}, ram: ${deviceMemory}` :
 				hardwareConcurrency && !deviceMemory ? `<br>cores: ${hardwareConcurrency}` :
-				!hardwareConcurrency && deviceMemory ? `<br>memory: ${deviceMemory}` : ''
-			}${typeof maxTouchPoints != 'undefined' ? `, touch: ${''+maxTouchPoints}` : ''}
+				!hardwareConcurrency && deviceMemory ? `<br>ram: ${deviceMemory}` : ''
+			}${typeof maxTouchPoints != 'undefined' ? `, touch: ${''+maxTouchPoints}` : ''}${bluetoothAvailability ? `, bluetooth` : ''}
 		</div>
 		<div>ua parsed: ${userAgentParsed || note.blocked}</div>
-		<div>userAgent:</div>
+		<div class="relative">userAgent:${!uaPostReduction ? '' : `<span class="confidence-note">ua reduction</span>`}</div>
 		<div class="block-text">
 			<div>${userAgent || note.blocked}</div>
 		</div>
@@ -6039,14 +6804,15 @@
 	// inspired by
 	// https://privacycheck.sec.lrz.de/active/fp_gcr/fp_getclientrects.html
 	// https://privacycheck.sec.lrz.de/active/fp_e/fp_emoji.html
-	const emojis = [[128512],[128515],[128516],[128513],[128518],[128517],[129315],[128514],[128578],[128579],[128521],[128522],[128519],[129392],[128525],[129321],[128536],[128535],[9786],[128538],[128537],[129394],[128523],[128539],[128540],[129322],[128541],[129297],[129303],[129325],[129323],[129300],[129296],[129320],[128528],[128529],[128566],[128527],[128530],[128580],[128556],[129317],[128524],[128532],[128554],[129316],[128564],[128567],[129298],[129301],[129314],[129326],[129319],[129397],[129398],[129396],[128565],[129327],[129312],[129395],[129400],[128526],[129299],[129488],[128533],[128543],[128577],[9785],[128558],[128559],[128562],[128563],[129402],[128550],[128551],[128552],[128560],[128549],[128546],[128557],[128561],[128534],[128547],[128542],[128531],[128553],[128555],[129393],[128548],[128545],[128544],[129324],[128520],[128127],[128128],[9760],[128169],[129313],[128121],[128122],[128123],[128125],[128126],[129302],[128570],[128568],[128569],[128571],[128572],[128573],[128576],[128575],[128574],[128584],[128585],[128586],[128139],[128140],[128152],[128157],[128150],[128151],[128147],[128158],[128149],[128159],[10083],[128148],[10084],[129505],[128155],[128154],[128153],[128156],[129294],[128420],[129293],[128175],[128162],[128165],[128171],[128166],[128168],[128371],[128163],[128172],[128065,65039,8205,128488,65039],[128488],[128495],[128173],[128164],[128075],[129306],[128400],[9995],[128406],[128076],[129292],[129295],[9996],[129310],[129311],[129304],[129305],[128072],[128073],[128070],[128405],[128071],[9757],[128077],[128078],[9994],[128074],[129307],[129308],[128079],[128588],[128080],[129330],[129309],[128591],[9997],[128133],[129331],[128170],[129470],[129471],[129461],[129462],[128066],[129467],[128067],[129504],[129728],[129729],[129463],[129460],[128064],[128065],[128069],[128068],[128118],[129490],[128102],[128103],[129489],[128113],[128104],[129492],[128104,8205,129456],[128104,8205,129457],[128104,8205,129459],[128104,8205,129458],[128105],[128105,8205,129456],[129489,8205,129456],[128105,8205,129457],[129489,8205,129457],[128105,8205,129459],[129489,8205,129459],[128105,8205,129458],[129489,8205,129458],[128113,8205,9792,65039],[128113,8205,9794,65039],[129491],[128116],[128117],[128589],[128589,8205,9794,65039],[128589,8205,9792,65039],[128590],[128590,8205,9794,65039],[128590,8205,9792,65039],[128581],[128581,8205,9794,65039],[128581,8205,9792,65039],[128582],[128582,8205,9794,65039],[128582,8205,9792,65039],[128129],[128129,8205,9794,65039],[128129,8205,9792,65039],[128587],[128587,8205,9794,65039],[128587,8205,9792,65039],[129487],[129487,8205,9794,65039],[129487,8205,9792,65039],[128583],[128583,8205,9794,65039],[128583,8205,9792,65039],[129318],[129318,8205,9794,65039],[129318,8205,9792,65039],[129335],[129335,8205,9794,65039],[129335,8205,9792,65039],[129489,8205,9877,65039],[128104,8205,9877,65039],[128105,8205,9877,65039],[129489,8205,127891],[128104,8205,127891],[128105,8205,127891],[129489,8205,127979],[128104,8205,127979],[128105,8205,127979],[129489,8205,9878,65039],[128104,8205,9878,65039],[128105,8205,9878,65039],[129489,8205,127806],[128104,8205,127806],[128105,8205,127806],[129489,8205,127859],[128104,8205,127859],[128105,8205,127859],[129489,8205,128295],[128104,8205,128295],[128105,8205,128295],[129489,8205,127981],[128104,8205,127981],[128105,8205,127981],[129489,8205,128188],[128104,8205,128188],[128105,8205,128188],[129489,8205,128300],[128104,8205,128300],[128105,8205,128300],[129489,8205,128187],[128104,8205,128187],[128105,8205,128187],[129489,8205,127908],[128104,8205,127908],[128105,8205,127908],[129489,8205,127912],[128104,8205,127912],[128105,8205,127912],[129489,8205,9992,65039],[128104,8205,9992,65039],[128105,8205,9992,65039],[129489,8205,128640],[128104,8205,128640],[128105,8205,128640],[129489,8205,128658],[128104,8205,128658],[128105,8205,128658],[128110],[128110,8205,9794,65039],[128110,8205,9792,65039],[128373],[128373,65039,8205,9794,65039],[128373,65039,8205,9792,65039],[128130],[128130,8205,9794,65039],[128130,8205,9792,65039],[129399],[128119],[128119,8205,9794,65039],[128119,8205,9792,65039],[129332],[128120],[128115],[128115,8205,9794,65039],[128115,8205,9792,65039],[128114],[129493],[129333],[129333,8205,9794,65039],[129333,8205,9792,65039],[128112],[128112,8205,9794,65039],[128112,8205,9792,65039],[129328],[129329],[128105,8205,127868],[128104,8205,127868],[129489,8205,127868],[128124],[127877],[129334],[129489,8205,127876],[129464],[129464,8205,9794,65039],[129464,8205,9792,65039],[129465],[129465,8205,9794,65039],[129465,8205,9792,65039],[129497],[129497,8205,9794,65039],[129497,8205,9792,65039],[129498],[129498,8205,9794,65039],[129498,8205,9792,65039],[129499],[129499,8205,9794,65039],[129499,8205,9792,65039],[129500],[129500,8205,9794,65039],[129500,8205,9792,65039],[129501],[129501,8205,9794,65039],[129501,8205,9792,65039],[129502],[129502,8205,9794,65039],[129502,8205,9792,65039],[129503],[129503,8205,9794,65039],[129503,8205,9792,65039],[128134],[128134,8205,9794,65039],[128134,8205,9792,65039],[128135],[128135,8205,9794,65039],[128135,8205,9792,65039],[128694],[128694,8205,9794,65039],[128694,8205,9792,65039],[129485],[129485,8205,9794,65039],[129485,8205,9792,65039],[129486],[129486,8205,9794,65039],[129486,8205,9792,65039],[129489,8205,129455],[128104,8205,129455],[128105,8205,129455],[129489,8205,129468],[128104,8205,129468],[128105,8205,129468],[129489,8205,129469],[128104,8205,129469],[128105,8205,129469],[127939],[127939,8205,9794,65039],[127939,8205,9792,65039],[128131],[128378],[128372],[128111],[128111,8205,9794,65039],[128111,8205,9792,65039],[129494],[129494,8205,9794,65039],[129494,8205,9792,65039],[129495],[129495,8205,9794,65039],[129495,8205,9792,65039],[129338],[127943],[9975],[127938],[127948],[127948,65039,8205,9794,65039],[127948,65039,8205,9792,65039],[127940],[127940,8205,9794,65039],[127940,8205,9792,65039],[128675],[128675,8205,9794,65039],[128675,8205,9792,65039],[127946],[127946,8205,9794,65039],[127946,8205,9792,65039],[9977],[9977,65039,8205,9794,65039],[9977,65039,8205,9792,65039],[127947],[127947,65039,8205,9794,65039],[127947,65039,8205,9792,65039],[128692],[128692,8205,9794,65039],[128692,8205,9792,65039],[128693],[128693,8205,9794,65039],[128693,8205,9792,65039],[129336],[129336,8205,9794,65039],[129336,8205,9792,65039],[129340],[129340,8205,9794,65039],[129340,8205,9792,65039],[129341],[129341,8205,9794,65039],[129341,8205,9792,65039],[129342],[129342,8205,9794,65039],[129342,8205,9792,65039],[129337],[129337,8205,9794,65039],[129337,8205,9792,65039],[129496],[129496,8205,9794,65039],[129496,8205,9792,65039],[128704],[128716],[129489,8205,129309,8205,129489],[128109],[128107],[128108],[128143],[128105,8205,10084,65039,8205,128139,8205,128104],[128104,8205,10084,65039,8205,128139,8205,128104],[128105,8205,10084,65039,8205,128139,8205,128105],[128145],[128105,8205,10084,65039,8205,128104],[128104,8205,10084,65039,8205,128104],[128105,8205,10084,65039,8205,128105],[128106],[128104,8205,128105,8205,128102],[128104,8205,128105,8205,128103],[128104,8205,128105,8205,128103,8205,128102],[128104,8205,128105,8205,128102,8205,128102],[128104,8205,128105,8205,128103,8205,128103],[128104,8205,128104,8205,128102],[128104,8205,128104,8205,128103],[128104,8205,128104,8205,128103,8205,128102],[128104,8205,128104,8205,128102,8205,128102],[128104,8205,128104,8205,128103,8205,128103],[128105,8205,128105,8205,128102],[128105,8205,128105,8205,128103],[128105,8205,128105,8205,128103,8205,128102],[128105,8205,128105,8205,128102,8205,128102],[128105,8205,128105,8205,128103,8205,128103],[128104,8205,128102],[128104,8205,128102,8205,128102],[128104,8205,128103],[128104,8205,128103,8205,128102],[128104,8205,128103,8205,128103],[128105,8205,128102],[128105,8205,128102,8205,128102],[128105,8205,128103],[128105,8205,128103,8205,128102],[128105,8205,128103,8205,128103],[128483],[128100],[128101],[129730],[128099],[129456],[129457],[129459],[129458],[128053],[128018],[129421],[129447],[128054],[128021],[129454],[128021,8205,129466],[128041],[128058],[129418],[129437],[128049],[128008],[128008,8205,11035],[129409],[128047],[128005],[128006],[128052],[128014],[129412],[129427],[129420],[129452],[128046],[128002],[128003],[128004],[128055],[128022],[128023],[128061],[128015],[128017],[128016],[128042],[128043],[129433],[129426],[128024],[129443],[129423],[129435],[128045],[128001],[128e3],[128057],[128048],[128007],[128063],[129451],[129428],[129415],[128059],[128059,8205,10052,65039],[128040],[128060],[129445],[129446],[129448],[129432],[129441],[128062],[129411],[128020],[128019],[128035],[128036],[128037],[128038],[128039],[128330],[129413],[129414],[129442],[129417],[129444],[129718],[129449],[129434],[129436],[128056],[128010],[128034],[129422],[128013],[128050],[128009],[129429],[129430],[128051],[128011],[128044],[129453],[128031],[128032],[128033],[129416],[128025],[128026],[128012],[129419],[128027],[128028],[128029],[129714],[128030],[129431],[129715],[128375],[128376],[129410],[129439],[129712],[129713],[129440],[128144],[127800],[128174],[127989],[127801],[129344],[127802],[127803],[127804],[127799],[127793],[129716],[127794],[127795],[127796],[127797],[127806],[127807],[9752],[127808],[127809],[127810],[127811],[127815],[127816],[127817],[127818],[127819],[127820],[127821],[129389],[127822],[127823],[127824],[127825],[127826],[127827],[129744],[129373],[127813],[129746],[129381],[129361],[127814],[129364],[129365],[127805],[127798],[129745],[129362],[129388],[129382],[129476],[129477],[127812],[129372],[127792],[127838],[129360],[129366],[129747],[129384],[129391],[129374],[129479],[129472],[127830],[127831],[129385],[129363],[127828],[127839],[127829],[127789],[129386],[127790],[127791],[129748],[129369],[129478],[129370],[127859],[129368],[127858],[129749],[129379],[129367],[127871],[129480],[129474],[129387],[127857],[127832],[127833],[127834],[127835],[127836],[127837],[127840],[127842],[127843],[127844],[127845],[129390],[127841],[129375],[129376],[129377],[129408],[129438],[129424],[129425],[129450],[127846],[127847],[127848],[127849],[127850],[127874],[127856],[129473],[129383],[127851],[127852],[127853],[127854],[127855],[127868],[129371],[9749],[129750],[127861],[127862],[127870],[127863],[127864],[127865],[127866],[127867],[129346],[129347],[129380],[129483],[129475],[129481],[129482],[129378],[127869],[127860],[129348],[128298],[127994],[127757],[127758],[127759],[127760],[128506],[128510],[129517],[127956],[9968],[127755],[128507],[127957],[127958],[127964],[127965],[127966],[127967],[127963],[127959],[129521],[129704],[129717],[128726],[127960],[127962],[127968],[127969],[127970],[127971],[127972],[127973],[127974],[127976],[127977],[127978],[127979],[127980],[127981],[127983],[127984],[128146],[128508],[128509],[9962],[128332],[128725],[128333],[9961],[128331],[9970],[9978],[127745],[127747],[127961],[127748],[127749],[127750],[127751],[127753],[9832],[127904],[127905],[127906],[128136],[127914],[128642],[128643],[128644],[128645],[128646],[128647],[128648],[128649],[128650],[128669],[128670],[128651],[128652],[128653],[128654],[128656],[128657],[128658],[128659],[128660],[128661],[128662],[128663],[128664],[128665],[128763],[128666],[128667],[128668],[127950],[127949],[128757],[129469],[129468],[128762],[128690],[128756],[128761],[128764],[128655],[128739],[128740],[128738],[9981],[128680],[128677],[128678],[128721],[128679],[9875],[9973],[128758],[128676],[128755],[9972],[128741],[128674],[9992],[128745],[128747],[128748],[129666],[128186],[128641],[128671],[128672],[128673],[128752],[128640],[128760],[128718],[129523],[8987],[9203],[8986],[9200],[9201],[9202],[128368],[128347],[128359],[128336],[128348],[128337],[128349],[128338],[128350],[128339],[128351],[128340],[128352],[128341],[128353],[128342],[128354],[128343],[128355],[128344],[128356],[128345],[128357],[128346],[128358],[127761],[127762],[127763],[127764],[127765],[127766],[127767],[127768],[127769],[127770],[127771],[127772],[127777],[9728],[127773],[127774],[129680],[11088],[127775],[127776],[127756],[9729],[9925],[9928],[127780],[127781],[127782],[127783],[127784],[127785],[127786],[127787],[127788],[127744],[127752],[127746],[9730],[9748],[9969],[9889],[10052],[9731],[9924],[9732],[128293],[128167],[127754],[127875],[127876],[127878],[127879],[129512],[10024],[127880],[127881],[127882],[127883],[127885],[127886],[127887],[127888],[127889],[129511],[127872],[127873],[127895],[127903],[127915],[127894],[127942],[127941],[129351],[129352],[129353],[9917],[9918],[129358],[127936],[127952],[127944],[127945],[127934],[129359],[127923],[127951],[127953],[127954],[129357],[127955],[127992],[129354],[129355],[129349],[9971],[9976],[127907],[129343],[127933],[127935],[128759],[129356],[127919],[129664],[129665],[127921],[128302],[129668],[129535],[127918],[128377],[127920],[127922],[129513],[129528],[129669],[129670],[9824],[9829],[9830],[9827],[9823],[127183],[126980],[127924],[127917],[128444],[127912],[129525],[129697],[129526],[129698],[128083],[128374],[129405],[129404],[129466],[128084],[128085],[128086],[129507],[129508],[129509],[129510],[128087],[128088],[129403],[129649],[129650],[129651],[128089],[128090],[128091],[128092],[128093],[128717],[127890],[129652],[128094],[128095],[129406],[129407],[128096],[128097],[129648],[128098],[128081],[128082],[127913],[127891],[129506],[129686],[9937],[128255],[128132],[128141],[128142],[128263],[128264],[128265],[128266],[128226],[128227],[128239],[128276],[128277],[127932],[127925],[127926],[127897],[127898],[127899],[127908],[127911],[128251],[127927],[129687],[127928],[127929],[127930],[127931],[129685],[129345],[129688],[128241],[128242],[9742],[128222],[128223],[128224],[128267],[128268],[128187],[128421],[128424],[9e3],[128433],[128434],[128189],[128190],[128191],[128192],[129518],[127909],[127902],[128253],[127916],[128250],[128247],[128248],[128249],[128252],[128269],[128270],[128367],[128161],[128294],[127982],[129684],[128212],[128213],[128214],[128215],[128216],[128217],[128218],[128211],[128210],[128195],[128220],[128196],[128240],[128478],[128209],[128278],[127991],[128176],[129689],[128180],[128181],[128182],[128183],[128184],[128179],[129534],[128185],[9993],[128231],[128232],[128233],[128228],[128229],[128230],[128235],[128234],[128236],[128237],[128238],[128499],[9999],[10002],[128395],[128394],[128396],[128397],[128221],[128188],[128193],[128194],[128450],[128197],[128198],[128466],[128467],[128199],[128200],[128201],[128202],[128203],[128204],[128205],[128206],[128391],[128207],[128208],[9986],[128451],[128452],[128465],[128274],[128275],[128271],[128272],[128273],[128477],[128296],[129683],[9935],[9874],[128736],[128481],[9876],[128299],[129667],[127993],[128737],[129690],[128295],[129691],[128297],[9881],[128476],[9878],[129455],[128279],[9939],[129693],[129520],[129522],[129692],[9879],[129514],[129515],[129516],[128300],[128301],[128225],[128137],[129656],[128138],[129657],[129658],[128682],[128727],[129694],[129695],[128719],[128715],[129681],[128701],[129696],[128703],[128705],[129700],[129682],[129524],[129527],[129529],[129530],[129531],[129699],[129532],[129701],[129533],[129519],[128722],[128684],[9904],[129702],[9905],[128511],[129703],[127975],[128686],[128688],[9855],[128697],[128698],[128699],[128700],[128702],[128706],[128707],[128708],[128709],[9888],[128696],[9940],[128683],[128691],[128685],[128687],[128689],[128695],[128245],[128286],[9762],[9763],[11014],[8599],[10145],[8600],[11015],[8601],[11013],[8598],[8597],[8596],[8617],[8618],[10548],[10549],[128259],[128260],[128281],[128282],[128283],[128284],[128285],[128720],[9883],[128329],[10017],[9784],[9775],[10013],[9766],[9770],[9774],[128334],[128303],[9800],[9801],[9802],[9803],[9804],[9805],[9806],[9807],[9808],[9809],[9810],[9811],[9934],[128256],[128257],[128258],[9654],[9193],[9197],[9199],[9664],[9194],[9198],[128316],[9195],[128317],[9196],[9208],[9209],[9210],[9167],[127910],[128261],[128262],[128246],[128243],[128244],[9792],[9794],[9895],[10006],[10133],[10134],[10135],[9854],[8252],[8265],[10067],[10068],[10069],[10071],[12336],[128177],[128178],[9877],[9851],[9884],[128305],[128219],[128304],[11093],[9989],[9745],[10004],[10060],[10062],[10160],[10175],[12349],[10035],[10036],[10055],[169],[174],[8482],[35,65039,8419],[42,65039,8419],[48,65039,8419],[49,65039,8419],[50,65039,8419],[51,65039,8419],[52,65039,8419],[53,65039,8419],[54,65039,8419],[55,65039,8419],[56,65039,8419],[57,65039,8419],[128287],[128288],[128289],[128290],[128291],[128292],[127344],[127374],[127345],[127377],[127378],[127379],[8505],[127380],[9410],[127381],[127382],[127358],[127383],[127359],[127384],[127385],[127386],[127489],[127490],[127543],[127542],[127535],[127568],[127545],[127514],[127538],[127569],[127544],[127540],[127539],[12951],[12953],[127546],[127541],[128308],[128992],[128993],[128994],[128309],[128995],[128996],[9899],[9898],[128997],[128999],[129e3],[129001],[128998],[129002],[129003],[11035],[11036],[9724],[9723],[9726],[9725],[9642],[9643],[128310],[128311],[128312],[128313],[128314],[128315],[128160],[128280],[128307],[128306],[127937],[128681],[127884],[127988],[127987],[127987,65039,8205,127752],[127987,65039,8205,9895,65039],[127988,8205,9760,65039],[127462,127464],[127462,127465],[127462,127466],[127462,127467],[127462,127468],[127462,127470],[127462,127473],[127462,127474],[127462,127476],[127462,127478],[127462,127479],[127462,127480],[127462,127481],[127462,127482],[127462,127484],[127462,127485],[127462,127487],[127463,127462],[127463,127463],[127463,127465],[127463,127466],[127463,127467],[127463,127468],[127463,127469],[127463,127470],[127463,127471],[127463,127473],[127463,127474],[127463,127475],[127463,127476],[127463,127478],[127463,127479],[127463,127480],[127463,127481],[127463,127483],[127463,127484],[127463,127486],[127463,127487],[127464,127462],[127464,127464],[127464,127465],[127464,127467],[127464,127468],[127464,127469],[127464,127470],[127464,127472],[127464,127473],[127464,127474],[127464,127475],[127464,127476],[127464,127477],[127464,127479],[127464,127482],[127464,127483],[127464,127484],[127464,127485],[127464,127486],[127464,127487],[127465,127466],[127465,127468],[127465,127471],[127465,127472],[127465,127474],[127465,127476],[127465,127487],[127466,127462],[127466,127464],[127466,127466],[127466,127468],[127466,127469],[127466,127479],[127466,127480],[127466,127481],[127466,127482],[127467,127470],[127467,127471],[127467,127472],[127467,127474],[127467,127476],[127467,127479],[127468,127462],[127468,127463],[127468,127465],[127468,127466],[127468,127467],[127468,127468],[127468,127469],[127468,127470],[127468,127473],[127468,127474],[127468,127475],[127468,127477],[127468,127478],[127468,127479],[127468,127480],[127468,127481],[127468,127482],[127468,127484],[127468,127486],[127469,127472],[127469,127474],[127469,127475],[127469,127479],[127469,127481],[127469,127482],[127470,127464],[127470,127465],[127470,127466],[127470,127473],[127470,127474],[127470,127475],[127470,127476],[127470,127478],[127470,127479],[127470,127480],[127470,127481],[127471,127466],[127471,127474],[127471,127476],[127471,127477],[127472,127466],[127472,127468],[127472,127469],[127472,127470],[127472,127474],[127472,127475],[127472,127477],[127472,127479],[127472,127484],[127472,127486],[127472,127487],[127473,127462],[127473,127463],[127473,127464],[127473,127470],[127473,127472],[127473,127479],[127473,127480],[127473,127481],[127473,127482],[127473,127483],[127473,127486],[127474,127462],[127474,127464],[127474,127465],[127474,127466],[127474,127467],[127474,127468],[127474,127469],[127474,127472],[127474,127473],[127474,127474],[127474,127475],[127474,127476],[127474,127477],[127474,127478],[127474,127479],[127474,127480],[127474,127481],[127474,127482],[127474,127483],[127474,127484],[127474,127485],[127474,127486],[127474,127487],[127475,127462],[127475,127464],[127475,127466],[127475,127467],[127475,127468],[127475,127470],[127475,127473],[127475,127476],[127475,127477],[127475,127479],[127475,127482],[127475,127487],[127476,127474],[127477,127462],[127477,127466],[127477,127467],[127477,127468],[127477,127469],[127477,127472],[127477,127473],[127477,127474],[127477,127475],[127477,127479],[127477,127480],[127477,127481],[127477,127484],[127477,127486],[127478,127462],[127479,127466],[127479,127476],[127479,127480],[127479,127482],[127479,127484],[127480,127462],[127480,127463],[127480,127464],[127480,127465],[127480,127466],[127480,127468],[127480,127469],[127480,127470],[127480,127471],[127480,127472],[127480,127473],[127480,127474],[127480,127475],[127480,127476],[127480,127479],[127480,127480],[127480,127481],[127480,127483],[127480,127485],[127480,127486],[127480,127487],[127481,127462],[127481,127464],[127481,127465],[127481,127467],[127481,127468],[127481,127469],[127481,127471],[127481,127472],[127481,127473],[127481,127474],[127481,127475],[127481,127476],[127481,127479],[127481,127481],[127481,127483],[127481,127484],[127481,127487],[127482,127462],[127482,127468],[127482,127474],[127482,127475],[127482,127480],[127482,127486],[127482,127487],[127483,127462],[127483,127464],[127483,127466],[127483,127468],[127483,127470],[127483,127475],[127483,127482],[127484,127467],[127484,127480],[127485,127472],[127486,127466],[127486,127481],[127487,127462],[127487,127474],[127487,127484],[127988,917607,917602,917605,917614,917607,917631],[127988,917607,917602,917619,917603,917620,917631],[127988,917607,917602,917623,917612,917619,917631]];
 
 	const getClientRects = async imports => {
 
 		const {
 			require: {
+				queueEvent,
+				createTimer,
 				instanceId,
-				hashMini,
+				getEmojis,
 				patch,
 				html,
 				captureError,
@@ -6058,7 +6824,8 @@
 		} = imports;
 		
 		try {
-			const start = performance.now();
+			const timer = createTimer();
+			await queueEvent(timer);
 			const toNativeObject = domRect => {
 				return {
 					bottom: domRect.bottom,
@@ -6096,16 +6863,24 @@
 				return range.getBoundingClientRect()
 			};
 						
-			const doc = phantomDarkness ? phantomDarkness.document : document;
+			const doc = (
+				phantomDarkness &&
+				phantomDarkness.document &&
+				phantomDarkness.document.body ? phantomDarkness.document :
+					document
+			);
 
 			const rectsId = `${instanceId}-client-rects-div`;
+			const fontId = 'domrect-font-detector';
+			//const chars = `mmmmmmmmmmlli`
+			//const emojiChar = String.fromCodePoint(128512)
 			const divElement = document.createElement('div');
 			divElement.setAttribute('id', rectsId);
 			doc.body.appendChild(divElement);
-			const divRendered = doc.getElementById(rectsId);
 			
-			// patch div
-			patch(divRendered, html`
+			const emojis = getEmojis();
+
+			patch(divElement, html`
 		<div id="${rectsId}">
 			<div style="perspective:100px;width:1000.099%;" id="rect-container">
 				<style>
@@ -6216,132 +6991,128 @@
 				<div id="cRect12" class="rects"></div>
 				<div id="emoji" class="emojis"></div>
 			</div>
+			<style>
+				#${fontId} {
+					--font: '';
+					position: absolute !important;
+					left: -9999px!important;
+					font-size: 256px !important;
+					font-style: normal !important;
+					font-weight: normal !important;
+					letter-spacing: normal !important;
+					line-break: auto !important;
+					line-height: normal !important;
+					text-transform: none !important;
+					text-align: left !important;
+					text-decoration: none !important;
+					text-shadow: none !important;
+					white-space: normal !important;
+					word-break: normal !important;
+					word-spacing: normal !important;
+					/* in order to test scrollWidth, clientWidth, etc. */
+					padding: 0 !important;
+					margin: 0 !important;
+				}
+				#${fontId}::after {
+					font-family: var(--font);
+					content: '${emojis.join('')}';
+				}
+			</style>
+			<span id="${fontId}"></span>
 			<div id="emoji-container">
 				<style>
-				#emoji {
-					position: absolute;
-					font-size: 200px;
+				.domrect-emoji {
+					font-family:
+					'Segoe UI Emoji', /* Windows */
+					'Apple Color Emoji', /* Apple */
+					'Noto Color Emoji', /* Linux, Android, Chrome OS */
+					sans-serif !important;
+					font-size: 200px !important;
 					height: auto;
+					position: absolute !important;
+					transform: scale(100);
 				}
 				</style>
-				<div id="emoji" class="emojis"></div>
+				${
+					emojis.map(emoji => {
+						return `<div class="domrect-emoji">${emoji}</div>`
+					})
+				}
 			</div>
 		</div>
 		`);
 
-			// get emojis
-			const systemEmojis = [
-				[128512],
-				[9786],
-				[129333,8205,9794,65039],
-				[9832],
-				[9784],
-				[9895],
-				[8265],
-				[8505],
-				[127987,65039,8205,9895,65039],
-				[129394],
-				[9785],
-				[9760],
-				[129489,8205,129456],
-				[129487,8205,9794,65039],
-				[9975],
-				[129489,8205,129309,8205,129489],
-				[9752],
-				[9968],
-				[9961],
-				[9972],
-				[9992],
-				[9201],
-				[9928],
-				[9730],
-				[9969],
-				[9731],
-				[9732],
-				[9976],
-				[9823],
-				[9937],
-				[9000],
-				[9993],
-				[9999],
-				[10002],
-				[9986],
-				[9935],
-				[9874],
-				[9876],
-				[9881],
-				[9939],
-				[9879],
-				[9904],
-				[9905],
-				[9888],
-				[9762],
-				[9763],
-				[11014],
-				[8599],
-				[10145],
-				[11013],
-				[9883],
-				[10017],
-				[10013],
-				[9766],
-				[9654],
-				[9197],
-				[9199],
-				[9167],
-				[9792],
-				[9794],
-				[10006],
-				[12336],
-				[9877],
-				[9884],
-				[10004],
-				[10035],
-				[10055],
-				[9724],
-				[9642],
-				[10083],
-				[10084],
-				[9996],
-				[9757],
-				[9997],
-				[10052],
-				[9878],
-				[8618],
-				[9775],
-				[9770],
-				[9774],
-				[9745],
-				[10036],
-				[127344],
-				[127359]
+			
+			// fonts
+			const baseFonts = ['monospace', 'sans-serif', 'serif'];
+			const fontShortList = [
+				'Segoe UI Emoji', // Windows
+				'Apple Color Emoji', // Apple
+				'Noto Color Emoji',  // Linux, Android, Chrome OS
 			];
-
-			const pattern = new Set();
-			const emojiDiv = doc.getElementById('emoji');
-			const emojiRects = systemEmojis
-				.map(emojiCode => {
-					const emoji = String.fromCodePoint(...emojiCode);
-					emojiDiv.innerHTML = emoji;
-					const { height, width } = getBestRect(lieProps, doc, emojiDiv);
-					return { emoji, width, height }
-				});
+			const families = fontShortList.reduce((acc, font) => {
+				baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`));
+				return acc
+			}, []);
+			const span = doc.getElementById(fontId);
+			const getRectDimensions = span => {
+				const { width, height } = span.getClientRects()[0];
+				return { width, height }
+			};
+			const base = baseFonts.reduce((acc, font) => {
+				span.style.setProperty('--font', font);
+				const dimensions = getRectDimensions(span);
+				acc[font] = dimensions;
+				return acc
+			}, {});
+			const detectedEmojiFonts = families.reduce((acc, family) => {
+				span.style.setProperty('--font', family);
+				const basefont = /, (.+)/.exec(family)[1];
+				const dimensions = getRectDimensions(span);
+				const font = /\'(.+)\'/.exec(family)[1];
+				if (dimensions.width != base[basefont].width ||
+					dimensions.height != base[basefont].height) {
+					acc.add(font);
+				}
+				return acc
+			}, new Set());
 
 			// get emoji set and system
-			const emojiSet = emojiRects
-				.filter(emoji => {
-					const dimensions = `${emoji.width}, ${emoji.heigt}`;
-					if (pattern.has(dimensions)) {
-						return false
-					}
-					pattern.add(dimensions);
-					return true
-				})
-				.map(emoji => {
-					return emoji.emoji
-				});
-			const emojiSystem = hashMini(emojiSet);
+			const pattern = new Set();
+			await queueEvent(timer);
 			
+			const emojiElems = [...doc.getElementsByClassName('domrect-emoji')];
+			const emojiSet = emojiElems.reduce((emojiSet, el, i) => {
+				const emoji = emojis[i];
+				const { height, width } = getBestRect(lieProps, doc, el);
+				const dimensions = `${width},${height}`;
+				if (!pattern.has(dimensions)) {
+					pattern.add(dimensions);
+					emojiSet.add(emoji);
+				}
+				return emojiSet
+			}, new Set());
+
+			const domrectSum = 0.00001 * [...pattern].map(x => {
+				return x.split(',').reduce((acc, x) => acc += (+x||0), 0)
+			}).reduce((acc, x) => acc += x, 0);
+
+			const amplifySum = (n, fontSet) => {
+				const { size } = fontSet;
+				if (size > 1) {
+					return n / +`1e${size}00` // ...e-200
+				}
+				return (
+					!size ? n * -1e150 : // -...e+148
+						size > 1 ? n / +`1e${size}00` : // ...e-200
+							fontSet.has('Segoe UI Emoji') ? n :
+								fontSet.has('Apple Color Emoji') ? n / 1e64 : // ...e-66
+									n * 1e64 // ...e+62
+				)
+			}; 
+
+			const domrectSystemSum = amplifySum(domrectSum, detectedEmojiFonts);
+
 			// get clientRects
 			const range = document.createRange();
 			const rectElems = doc.getElementsByClassName('rects');
@@ -6407,15 +7178,15 @@
 				lied = true;
 			}
 						
-			logTestResult({ start, test: 'rects', passed: true });
+			logTestResult({ time: timer.stop(), test: 'rects', passed: true });
 			return {
-				emojiRects,
-				emojiSet,
-				emojiSystem,
 				elementClientRects,
 				elementBoundingClientRect,
 				rangeClientRects,
 				rangeBoundingClientRect,
+				emojiSet: [...emojiSet],
+				emojiFonts: [...detectedEmojiFonts],
+				domrectSystemSum,
 				lied
 			}
 		}
@@ -6426,18 +7197,16 @@
 		}
 	};
 
-	const clientRectsHTML = ({ fp, note, modal, getMismatchStyle, hashMini, hashSlice }) => {
+	const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, formatEmojiSet, performanceLogger }) => {
 		if (!fp.clientRects) {
 			return `
 		<div class="col-six undefined">
 			<strong>DOMRect</strong>
-			<div>elems client: ${note.blocked}</div>
-			<div>range client: ${note.blocked}</div>
-			<div>elems bounding: ${note.blocked}</div>
-			<div>range bounding: ${note.blocked}</div>
-			<div>emojis v13.0: ${note.blocked}</div>
-			<div>emoji set:</div>
-			div class="block-text">${note.blocked}</div>
+			<div>elems A: ${note.blocked}</div>
+			<div>elems B: ${note.blocked}</div>
+			<div>range A: ${note.blocked}</div>
+			<div>range B: ${note.blocked}</div>
+			<div class="block-text">${note.blocked}</div>
 		</div>`
 		}
 		const {
@@ -6447,22 +7216,17 @@
 				elementBoundingClientRect,
 				rangeClientRects,
 				rangeBoundingClientRect,
-				emojiRects,
 				emojiSet,
-				emojiSystem,
+				emojiFonts,
+				domrectSystemSum,
 				lied
 			}
 		} = fp;
-		const id = 'creep-client-rects';
-		const getRectHash = rect => {
-			const {emoji,...excludeEmoji} = rect;
-			return hashMini(excludeEmoji)
-		};
 
-		// compute mismatch syle
-		const getRectSum = rect => Object.keys(rect).reduce((acc, key) => acc += rect[key], 0);
-		const reduceRectSum = n => (''+n).split('.').reduce((acc, s) => acc += +s, 0);
-		const computeMismatchStyle = rects => {
+		// compute mismatch style
+		const getRectSum = rect => Object.keys(rect).reduce((acc, key) => acc += rect[key], 0)/100_000_000;
+		//const reduceRectSum = n => (''+n).split('.').reduce((acc, s) => acc += +s, 0)
+		const computeDiffs = rects => {
 			if (!rects || !rects.length) {
 				return
 			}
@@ -6481,98 +7245,51 @@
 				return acc += getRectSum(expected)
 			}, 0);
 			const actualSum = rects.reduce((acc, rect) => acc += getRectSum(rect), 0);
-			const expected = reduceRectSum(exptectedSum);
-			const actual = reduceRectSum(actualSum);
-			return getMismatchStyle((''+actual).split(''), (''+expected).split(''))
+			return getDiffs({
+				stringA: actualSum,
+				stringB: exptectedSum,
+				charDiff: true,
+				decorate: diff => `<span class="bold-fail">${diff}</span>`
+			})
 		};
-		
 
+		const helpTitle = `Element.getClientRects()\nhash: ${hashMini(emojiSet)}\n${emojiSet.map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`;
 		return `
-	<div class="col-six${lied ? ' rejected' : ''}">
+	<div class="relative col-six${lied ? ' rejected' : ''}">
+		<span class="aside-note">${performanceLogger.getLog().rects}</span>
 		<strong>DOMRect</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-		<div class="help" title="Element.getClientRects()">elems client: ${computeMismatchStyle(elementClientRects)}</div>
-		<div class="help" title="Range.getClientRects()">range client: ${computeMismatchStyle(rangeClientRects)}</div>
-		<div class="help" title="Element.getBoundingClientRect()">elems bounding: ${computeMismatchStyle(elementBoundingClientRect)}</div>
-		<div class="help" title="Range.getBoundingClientRect()">range bounding: ${computeMismatchStyle(rangeBoundingClientRect)}</div>
-		<div>emojis v13.0: ${
-			modal(
-				`${id}-emojis`,
-				`<div>${emojiRects.map(rect => `${rect.emoji}: ${getRectHash(rect)}`).join('<br>')}</div>`,
-				hashMini(emojiRects)
-			)
-		}</div>
-		<div>emoji set:</div>
-		<div class="block-text">${emojiSet.join('')}</div>
+		<div class="help" title="Element.getClientRects()">elems A: ${computeDiffs(elementClientRects)}</div>
+		<div class="help" title="Element.getBoundingClientRect()">elems B: ${computeDiffs(elementBoundingClientRect)}</div>
+		<div class="help" title="Range.getClientRects()">range A: ${computeDiffs(rangeClientRects)}</div>
+		<div class="help" title="Range.getBoundingClientRect()">range B: ${computeDiffs(rangeBoundingClientRect)}</div>
+		<div class="block-text help relative" title="${helpTitle}">
+			<span class="confidence-note">${
+				!emojiFonts ? '' : emojiFonts.length > 1 ? `${emojiFonts[0]}...` : (emojiFonts[0] || '')
+			}</span>
+			<span>${domrectSystemSum || note.unsupported}</span>
+			<span class="grey jumbo" style="${!(emojiFonts || [])[0] ? '' : `font-family: '${emojiFonts[0]}' !important`}">${formatEmojiSet(emojiSet)}</span>
+		</div>
 	</div>
 	`
 	};
 
-	// screen (allow some discrepancies otherwise lie detection triggers at random)
-
-	const getDevice = (width, height) => {
-		// https://gs.statcounter.com/screen-resolution-stats/
-		const resolution = [
-			{ width: 360, height: 640, device: 'phone'},
-			{ width: 360, height: 720, device: 'phone'},
-			{ width: 360, height: 740, device: 'phone'},
-			{ width: 360, height: 760, device: 'phone'},
-			{ width: 360, height: 780, device: 'phone'},
-			{ width: 375, height: 667, device: 'phone'},
-			{ width: 375, height: 812, device: 'phone'},
-			{ width: 412, height: 732, device: 'phone'},
-			{ width: 412, height: 846, device: 'phone'},
-			{ width: 412, height: 869, device: 'phone'},
-			{ width: 412, height: 892, device: 'phone'},
-			{ width: 414, height: 736, device: 'phone'},
-			{ width: 414, height: 896, device: 'phone'},
-			{ width: 600, height: 1024, device: 'tablet'},
-			{ width: 601, height: 962, device: 'tablet'},
-			{ width: 768, height: 1024, device: 'desktop or tablet'},
-			{ width: 800, height: 1280, device: 'desktop or tablet'},
-			{ width: 834, height: 1112, device: 'desktop or tablet'},
-			{ width: 962, height: 601, device: 'tablet'},
-			{ width: 1000, height: 700, device: 'desktop or tablet'},
-			{ width: 1000, height: 1000, device: 'desktop or tablet'},
-			{ width: 1024, height: 768, device: 'desktop or tablet'},
-			{ width: 1024, height: 1366, device: 'desktop or tablet'},
-			{ width: 1280, height: 720, device: 'desktop or tablet'},
-			{ width: 1280, height: 800, device: 'desktop or tablet'},
-			{ width: 1280, height: 1024, device: 'desktop'},
-			{ width: 1366, height: 768, device: 'desktop'},
-			{ width: 1440, height: 900, device: 'desktop'},
-			{ width: 1536, height: 864, device: 'desktop'},
-			{ width: 1600, height: 900, device: 'desktop'},
-			{ width: 1920, height: 1080, device: 'desktop'}
-		];
-		for (const display of resolution) {
-			if (
-				width == display.width && height == display.height || (
-					(display.device == 'phone' || display.device == 'tablet') &&
-					height == display.width && width == display.height
-				)
-			) {
-				return display.device
-			}
-		}
-		return
-	};
-
-	const getScreen = async imports => {
+	const getScreen = async (imports, logger = true) => {
 
 		const {
 			require: {
+				queueEvent,
+				createTimer,
+				isFirefox,
 				captureError,
-				attempt,
-				sendToTrash,
-				trustInteger,
 				lieProps,
-				phantomDarkness,
+				documentLie,
 				logTestResult
 			}
 		} = imports;
-		
+
 		try {
-			const start = performance.now();
+			const timer = createTimer();
+			timer.start();
 			let lied = (
 				lieProps['Screen.width'] ||
 				lieProps['Screen.height'] ||
@@ -6581,674 +7298,239 @@
 				lieProps['Screen.colorDepth'] ||
 				lieProps['Screen.pixelDepth']
 			) || false;
-			const phantomScreen = phantomDarkness ? phantomDarkness.screen : screen;
-			const phantomOuterWidth = phantomDarkness ? phantomDarkness.outerWidth : outerWidth;
-			const phantomOuterHeight = phantomDarkness ? phantomDarkness.outerHeight : outerHeight;
-			
-			const { width, height, availWidth, availHeight, colorDepth, pixelDepth } = phantomScreen;
+
+			const s = (window.screen || {});
 			const {
-				width: screenWidth,
-				height: screenHeight,
-				availWidth: screenAvailWidth,
-				availHeight: screenAvailHeight,
-				colorDepth: screenColorDepth,
-				pixelDepth: screenPixelDepth
-			} = screen;
+				width,
+				height,
+				availWidth,
+				availHeight,
+				colorDepth,
+				pixelDepth
+			} = s;
 
-			const matching = (
-				width == screenWidth &&
-				height == screenHeight &&
-				availWidth == screenAvailWidth &&
-				availHeight == screenAvailHeight &&
-				colorDepth == screenColorDepth &&
-				pixelDepth == screenPixelDepth
-			);
-
-			if (!matching) {
-				sendToTrash('screen', `[${
-				[
-					screenWidth,
-					screenHeight,
-					screenAvailWidth,
-					screenAvailHeight,
-					screenColorDepth,
-					screenPixelDepth
-				].join(', ')
-			}] does not match iframe`);
-			}
-
-			if (screenAvailWidth > screenWidth) {
-				sendToTrash('screen', `availWidth (${screenAvailWidth}) is greater than width (${screenWidth})`);
-			}
-
-			if (screenAvailHeight > screenHeight) {
-				sendToTrash('screen', `availHeight (${screenAvailHeight}) is greater than height (${screenHeight})`);
+			const dpr = window.devicePixelRatio || undefined;
+			const firefoxWithHighDPR = isFirefox && dpr > 1;
+			if (!firefoxWithHighDPR) {
+				// firefox with high dpr requires floating point precision dimensions
+				const matchMediaLie = !matchMedia(
+					`(device-width: ${s.width}px) and (device-height: ${s.height}px)`
+				).matches;
+				if (matchMediaLie) {
+					lied = true;
+					documentLie('Screen', 'failed matchMedia');
+				}
 			}
 			
 			const data = {
-				device: getDevice(width, height),
-				width: attempt(() => screenWidth ? trustInteger('width - invalid return type', screenWidth) : undefined),
-				outerWidth: attempt(() => outerWidth ? trustInteger('outerWidth - invalid return type', outerWidth) : undefined),
-				availWidth: attempt(() => screenAvailWidth ? trustInteger('availWidth - invalid return type', screenAvailWidth) : undefined),
-				height: attempt(() => screenHeight ? trustInteger('height - invalid return type', screenHeight) : undefined),
-				outerHeight: attempt(() => outerHeight ? trustInteger('outerHeight - invalid return type', outerHeight) : undefined),
-				availHeight: attempt(() => screenAvailHeight ?  trustInteger('availHeight - invalid return type', screenAvailHeight) : undefined),
-				colorDepth: attempt(() => screenColorDepth ? trustInteger('colorDepth - invalid return type', screenColorDepth) : undefined),
-				pixelDepth: attempt(() => screenPixelDepth ? trustInteger('pixelDepth - invalid return type', screenPixelDepth) : undefined),
+				width,
+				height,
+				availWidth,
+				availHeight,
+				colorDepth,
+				pixelDepth,
 				lied
 			};
-			logTestResult({ start, test: 'screen', passed: true });
+
+			if (logger) {
+				logTestResult({ time: timer.stop(), test: 'screen', passed: true });
+			}
 			return { ...data }
 		}
 		catch (error) {
-			logTestResult({ test: 'screen', passed: false });
+			if (logger) {
+				logTestResult({ test: 'screen', passed: false });
+			}
 			captureError(error);
 			return
 		}
 	};
 
-	const screenHTML = ({ fp, note, hashSlice }) => {
+	const screenHTML = ({ fp, note, hashSlice, performanceLogger, patch, html, imports }) => {
 		if (!fp.screen) {
 			return `
 		<div class="col-six undefined">
 			<strong>Screen</strong>
-			<div>device: ${note.blocked}</div>
-			<div>width: ${note.blocked}</div>
-			<div>outerWidth: ${note.blocked}</div>
-			<div>availWidth: ${note.blocked}</div>
-			<div>height: ${note.blocked}</div>
-			<div>outerHeight: ${note.blocked}</div>
-			<div>availHeight: ${note.blocked}</div>
-			<div>colorDepth: ${note.blocked}</div>
-			<div>pixelDepth: ${note.blocked}</div>
-		</div>
-		<div class="col-six screen-container">
+			<div>...screen: ${note.blocked}</div>
+			<div>....avail: ${note.blocked}</div>
+			<div>depth: ${note.blocked}</div>
+			<div>viewport: ${note.blocked}</div>
+			<div class="screen-container"></div>
 		</div>`
 		}
 		const {
 			screen: data
 		} = fp;
-		const {
-			device,
-			width,
-			outerWidth,
-			availWidth,
-			height,
-			outerHeight,
-			availHeight,
-			colorDepth,
-			pixelDepth,
-			$hash,
-			lied
-		} = data;
-		const getDeviceDimensions = (width, height, diameter = 180) => {
-			const aspectRatio = width / height;
-			const isPortrait = height > width;
-			const deviceHeight = isPortrait ? diameter : diameter / aspectRatio;
-			const deviceWidth = isPortrait ? diameter * aspectRatio : diameter;
-			return { deviceHeight, deviceWidth }
+		const { $hash } = data || {};
+		const perf = performanceLogger.getLog().screen;
+
+		const paintScreen = event => {
+			const el = document.getElementById('creep-resize');
+			if (!el) {
+				return
+			}
+			removeEventListener('resize', paintScreen);
+			return getScreen(imports, false).then(data => {
+				requestAnimationFrame(
+					() => patch(el, html`${resizeHTML(({ data, $hash, perf, paintScreen }))}`)
+				);
+			})
 		};
-		const { deviceHeight, deviceWidth } = getDeviceDimensions(width, height);
+		
+		const resizeHTML = ({ data, $hash, perf, paintScreen }) => {
+			const {
+				width,
+				height,
+				availWidth,
+				availHeight,
+				colorDepth,
+				pixelDepth,
+				lied,
+			} = data;
+
+
+			addEventListener('resize', paintScreen);
+
+			const s = (window.screen || {});
+			const { orientation } = s;
+			const { type: orientationType } = orientation || {};
+			const dpr = window.devicePixelRatio || undefined;
+			const { width: vVWidth, height: vVHeight } = (window.visualViewport || {});
+			const mediaOrientation = !window.matchMedia ? undefined : (
+				matchMedia('(orientation: landscape)').matches ? 'landscape' :
+					matchMedia('(orientation: portrait)').matches ? 'portrait' : undefined
+			);
+			const displayMode = !window.matchMedia ? undefined : (
+				matchMedia('(display-mode: fullscreen)').matches ? 'fullscreen' :
+					matchMedia('(display-mode: standalone)').matches ? 'standalone' :
+						matchMedia('(display-mode: minimal-ui)').matches ? 'minimal-ui' :
+							matchMedia('(display-mode: browser)').matches ? 'browser' : undefined
+			);
+
+			const getDeviceDimensions = (width, height, diameter = 180) => {
+				const aspectRatio = width / height;
+				const isPortrait = height > width;
+				const deviceWidth = isPortrait ? diameter * aspectRatio : diameter;
+				const deviceHeight = isPortrait ? diameter : diameter / aspectRatio;
+				return { deviceWidth, deviceHeight }
+			};
+			//const { deviceWidth, deviceHeight } = getDeviceDimensions(width, height)
+			const { deviceWidth: deviceInnerWidth, deviceHeight: deviceInnerHeight } = getDeviceDimensions(innerWidth, innerHeight);
+			const toFix = (n, nFix) => {
+				const d = +(1+[...Array(nFix)].map(x => 0).join(''));
+				return Math.round(n*d)/d
+			};
+			return `
+			<div id="creep-resize" class="relative col-six${lied ? ' rejected' : ''}">
+				<span class="time">${perf}</span>
+				<strong>Screen</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+				<div>...screen: ${width} x ${height}</div>
+				<div>....avail: ${availWidth} x ${availHeight}</div>
+				<div>depth: ${colorDepth}|${pixelDepth}</div>
+				<div>viewport:</div>
+				<div class="screen-container relative">
+					<style>
+						.screen-frame { width:${deviceInnerWidth}px;height:${deviceInnerHeight}px; }
+						.screen-outer-w,
+						.screen-outer-h,
+						.screen-inner-w,
+						.screen-inner-h,
+						.screen-visual-w,
+						.screen-visual-h,
+						.screen-display-mode,
+						.screen-media-orientation,
+						.screen-orientation-type,
+						.screen-dpr {
+							position: absolute;
+							font-size: 12px !important;
+							border-radius: 3px;
+							padding: 0 3px;
+							margin: 3px 0;
+							z-index: 1;
+						}
+						.screen-outer-w,
+						.screen-inner-w,
+						.screen-visual-w,
+						.screen-display-mode,
+						.screen-media-orientation,
+						.screen-orientation-type,
+						.screen-dpr, {
+							text-align: center;
+						}
+						.screen-outer-h,
+						.screen-inner-h,
+						.screen-visual-h,
+						.screen-display-mode,
+						.screen-media-orientation,
+						.screen-orientation-type,
+						.screen-dpr {
+							line-height: 216px; /* this is derived from the container height*/
+						}
+						.screen-outer-h,
+						.screen-inner-h,
+						.screen-visual-h {
+							left: 0;
+						}
+						.screen-outer-w,
+						.screen-outer-h {
+							top: -29px;
+						}
+						.screen-inner-w,
+						.screen-inner-h {
+							top: -17px;
+						}
+						.screen-visual-w,
+						.screen-visual-h {
+							top: -5px;
+						}
+						
+						.screen-display-mode {
+							top: -31px;
+						}
+						.screen-media-orientation {
+							top: -19px;
+						}
+						.screen-orientation-type {
+							top: -7px;
+						}
+						.screen-dpr {
+							top: 5px;
+						}
+						
+					</style>
+					<span class="screen-outer-w">${outerWidth}</span>
+					<span class="screen-inner-w">${innerWidth}</span>
+					<span class="screen-visual-w">${toFix(vVWidth, 6)}</span>
+					<span class="screen-outer-h">${outerHeight}</span>
+					<span class="screen-inner-h">${innerHeight}</span>
+					<span class="screen-visual-h">${toFix(vVHeight, 6)}</span>
+					<span class="screen-display-mode">${displayMode}</span>
+					<span class="screen-media-orientation">${mediaOrientation}</span>
+					<span class="screen-orientation-type">${orientationType}</span>
+					<span class="screen-dpr">${dpr}</span>
+					<div class="screen-frame relative">
+						<div class="screen-glass"></div>
+					</div>
+				</div>
+			</div>
+			`
+		};
+
+		
+		
+
 		return `
-	<div class="col-six${lied ? ' rejected' : ''}">
-		<strong>Screen</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-		<div>device: ${device ? device : note.unknown}</div>
-		<div>width: ${width ? width : note.blocked}</div>
-		<div>outerWidth: ${outerWidth ? outerWidth : note.blocked}</div>
-		<div>availWidth: ${availWidth ? availWidth : note.blocked}</div>
-		<div>height: ${height ? height : note.blocked}</div>
-		<div>outerHeight: ${outerHeight ? outerHeight : note.blocked}</div>
-		<div>availHeight: ${availHeight ? availHeight : note.blocked}</div>
-		<div>colorDepth: ${colorDepth ? colorDepth : note.blocked}</div>
-		<div>pixelDepth: ${pixelDepth ? pixelDepth : note.blocked}</div>
-	</div>
-	<div class="col-six screen-container${lied ? ' rejected' : ''}">
-		<style>.screen-frame { width:${deviceWidth}px;height:${deviceHeight}px; }</style>
-		<div class="screen-frame">
-			<div class="screen-glass"></div>
-		</div>
-	</div>
+	${resizeHTML({ data, $hash, perf, paintScreen })}
 	`
-	};
-
-	// inspired by https://arkenfox.github.io/TZP
-	// https://github.com/vvo/tzdb/blob/master/time-zones-names.json
-	const cities = [
-		"UTC",
-		"GMT",
-		"Etc/GMT+0",
-		"Etc/GMT+1",
-		"Etc/GMT+10",
-		"Etc/GMT+11",
-		"Etc/GMT+12",
-		"Etc/GMT+2",
-		"Etc/GMT+3",
-		"Etc/GMT+4",
-		"Etc/GMT+5",
-		"Etc/GMT+6",
-		"Etc/GMT+7",
-		"Etc/GMT+8",
-		"Etc/GMT+9",
-		"Etc/GMT-1",
-		"Etc/GMT-10",
-		"Etc/GMT-11",
-		"Etc/GMT-12",
-		"Etc/GMT-13",
-		"Etc/GMT-14",
-		"Etc/GMT-2",
-		"Etc/GMT-3",
-		"Etc/GMT-4",
-		"Etc/GMT-5",
-		"Etc/GMT-6",
-		"Etc/GMT-7",
-		"Etc/GMT-8",
-		"Etc/GMT-9",
-		"Etc/GMT",
-		"Africa/Abidjan",
-		"Africa/Accra",
-		"Africa/Addis_Ababa",
-		"Africa/Algiers",
-		"Africa/Asmara",
-		"Africa/Bamako",
-		"Africa/Bangui",
-		"Africa/Banjul",
-		"Africa/Bissau",
-		"Africa/Blantyre",
-		"Africa/Brazzaville",
-		"Africa/Bujumbura",
-		"Africa/Cairo",
-		"Africa/Casablanca",
-		"Africa/Ceuta",
-		"Africa/Conakry",
-		"Africa/Dakar",
-		"Africa/Dar_es_Salaam",
-		"Africa/Djibouti",
-		"Africa/Douala",
-		"Africa/El_Aaiun",
-		"Africa/Freetown",
-		"Africa/Gaborone",
-		"Africa/Harare",
-		"Africa/Johannesburg",
-		"Africa/Juba",
-		"Africa/Kampala",
-		"Africa/Khartoum",
-		"Africa/Kigali",
-		"Africa/Kinshasa",
-		"Africa/Lagos",
-		"Africa/Libreville",
-		"Africa/Lome",
-		"Africa/Luanda",
-		"Africa/Lubumbashi",
-		"Africa/Lusaka",
-		"Africa/Malabo",
-		"Africa/Maputo",
-		"Africa/Maseru",
-		"Africa/Mbabane",
-		"Africa/Mogadishu",
-		"Africa/Monrovia",
-		"Africa/Nairobi",
-		"Africa/Ndjamena",
-		"Africa/Niamey",
-		"Africa/Nouakchott",
-		"Africa/Ouagadougou",
-		"Africa/Porto-Novo",
-		"Africa/Sao_Tome",
-		"Africa/Tripoli",
-		"Africa/Tunis",
-		"Africa/Windhoek",
-		"America/Adak",
-		"America/Anchorage",
-		"America/Anguilla",
-		"America/Antigua",
-		"America/Araguaina",
-		"America/Argentina/Buenos_Aires",
-		"America/Argentina/Catamarca",
-		"America/Argentina/Cordoba",
-		"America/Argentina/Jujuy",
-		"America/Argentina/La_Rioja",
-		"America/Argentina/Mendoza",
-		"America/Argentina/Rio_Gallegos",
-		"America/Argentina/Salta",
-		"America/Argentina/San_Juan",
-		"America/Argentina/San_Luis",
-		"America/Argentina/Tucuman",
-		"America/Argentina/Ushuaia",
-		"America/Aruba",
-		"America/Asuncion",
-		"America/Atikokan",
-		"America/Bahia",
-		"America/Bahia_Banderas",
-		"America/Barbados",
-		"America/Belem",
-		"America/Belize",
-		"America/Blanc-Sablon",
-		"America/Boa_Vista",
-		"America/Bogota",
-		"America/Boise",
-		"America/Cambridge_Bay",
-		"America/Campo_Grande",
-		"America/Cancun",
-		"America/Caracas",
-		"America/Cayenne",
-		"America/Cayman",
-		"America/Chicago",
-		"America/Chihuahua",
-		"America/Costa_Rica",
-		"America/Creston",
-		"America/Cuiaba",
-		"America/Curacao",
-		"America/Danmarkshavn",
-		"America/Dawson",
-		"America/Dawson_Creek",
-		"America/Denver",
-		"America/Detroit",
-		"America/Dominica",
-		"America/Edmonton",
-		"America/Eirunepe",
-		"America/El_Salvador",
-		"America/Fort_Nelson",
-		"America/Fortaleza",
-		"America/Glace_Bay",
-		"America/Godthab",
-		"America/Goose_Bay",
-		"America/Grand_Turk",
-		"America/Grenada",
-		"America/Guadeloupe",
-		"America/Guatemala",
-		"America/Guayaquil",
-		"America/Guyana",
-		"America/Halifax",
-		"America/Havana",
-		"America/Hermosillo",
-		"America/Indiana/Indianapolis",
-		"America/Indiana/Knox",
-		"America/Indiana/Marengo",
-		"America/Indiana/Petersburg",
-		"America/Indiana/Tell_City",
-		"America/Indiana/Vevay",
-		"America/Indiana/Vincennes",
-		"America/Indiana/Winamac",
-		"America/Inuvik",
-		"America/Iqaluit",
-		"America/Jamaica",
-		"America/Juneau",
-		"America/Kentucky/Louisville",
-		"America/Kentucky/Monticello",
-		"America/Kralendijk",
-		"America/La_Paz",
-		"America/Lima",
-		"America/Los_Angeles",
-		"America/Lower_Princes",
-		"America/Maceio",
-		"America/Managua",
-		"America/Manaus",
-		"America/Marigot",
-		"America/Martinique",
-		"America/Matamoros",
-		"America/Mazatlan",
-		"America/Menominee",
-		"America/Merida",
-		"America/Metlakatla",
-		"America/Mexico_City",
-		"America/Miquelon",
-		"America/Moncton",
-		"America/Monterrey",
-		"America/Montevideo",
-		"America/Montserrat",
-		"America/Nassau",
-		"America/New_York",
-		"America/Nipigon",
-		"America/Nome",
-		"America/Noronha",
-		"America/North_Dakota/Beulah",
-		"America/North_Dakota/Center",
-		"America/North_Dakota/New_Salem",
-		"America/Ojinaga",
-		"America/Panama",
-		"America/Pangnirtung",
-		"America/Paramaribo",
-		"America/Phoenix",
-		"America/Port-au-Prince",
-		"America/Port_of_Spain",
-		"America/Porto_Velho",
-		"America/Puerto_Rico",
-		"America/Punta_Arenas",
-		"America/Rainy_River",
-		"America/Rankin_Inlet",
-		"America/Recife",
-		"America/Regina",
-		"America/Resolute",
-		"America/Rio_Branco",
-		"America/Santarem",
-		"America/Santiago",
-		"America/Santo_Domingo",
-		"America/Sao_Paulo",
-		"America/Scoresbysund",
-		"America/Sitka",
-		"America/St_Barthelemy",
-		"America/St_Johns",
-		"America/St_Kitts",
-		"America/St_Lucia",
-		"America/St_Thomas",
-		"America/St_Vincent",
-		"America/Swift_Current",
-		"America/Tegucigalpa",
-		"America/Thule",
-		"America/Thunder_Bay",
-		"America/Tijuana",
-		"America/Toronto",
-		"America/Tortola",
-		"America/Vancouver",
-		"America/Whitehorse",
-		"America/Winnipeg",
-		"America/Yakutat",
-		"America/Yellowknife",
-		"Antarctica/Casey",
-		"Antarctica/Davis",
-		"Antarctica/DumontDUrville",
-		"Antarctica/Macquarie",
-		"Antarctica/Mawson",
-		"Antarctica/McMurdo",
-		"Antarctica/Palmer",
-		"Antarctica/Rothera",
-		"Antarctica/Syowa",
-		"Antarctica/Troll",
-		"Antarctica/Vostok",
-		"Arctic/Longyearbyen",
-		"Asia/Aden",
-		"Asia/Almaty",
-		"Asia/Amman",
-		"Asia/Anadyr",
-		"Asia/Aqtau",
-		"Asia/Aqtobe",
-		"Asia/Ashgabat",
-		"Asia/Atyrau",
-		"Asia/Baghdad",
-		"Asia/Bahrain",
-		"Asia/Baku",
-		"Asia/Bangkok",
-		"Asia/Barnaul",
-		"Asia/Beirut",
-		"Asia/Bishkek",
-		"Asia/Brunei",
-		"Asia/Calcutta",
-		"Asia/Chita",
-		"Asia/Choibalsan",
-		"Asia/Colombo",
-		"Asia/Damascus",
-		"Asia/Dhaka",
-		"Asia/Dili",
-		"Asia/Dubai",
-		"Asia/Dushanbe",
-		"Asia/Famagusta",
-		"Asia/Gaza",
-		"Asia/Hebron",
-		"Asia/Ho_Chi_Minh",
-		"Asia/Hong_Kong",
-		"Asia/Hovd",
-		"Asia/Irkutsk",
-		"Asia/Jakarta",
-		"Asia/Jayapura",
-		"Asia/Jerusalem",
-		"Asia/Kabul",
-		"Asia/Kamchatka",
-		"Asia/Karachi",
-		"Asia/Kathmandu",
-		"Asia/Khandyga",
-		"Asia/Kolkata",
-		"Asia/Krasnoyarsk",
-		"Asia/Kuala_Lumpur",
-		"Asia/Kuching",
-		"Asia/Kuwait",
-		"Asia/Macau",
-		"Asia/Magadan",
-		"Asia/Makassar",
-		"Asia/Manila",
-		"Asia/Muscat",
-		"Asia/Nicosia",
-		"Asia/Novokuznetsk",
-		"Asia/Novosibirsk",
-		"Asia/Omsk",
-		"Asia/Oral",
-		"Asia/Phnom_Penh",
-		"Asia/Pontianak",
-		"Asia/Pyongyang",
-		"Asia/Qatar",
-		"Asia/Qostanay",
-		"Asia/Qyzylorda",
-		"Asia/Riyadh",
-		"Asia/Sakhalin",
-		"Asia/Samarkand",
-		"Asia/Seoul",
-		"Asia/Shanghai",
-		"Asia/Singapore",
-		"Asia/Srednekolymsk",
-		"Asia/Taipei",
-		"Asia/Tashkent",
-		"Asia/Tbilisi",
-		"Asia/Tehran",
-		"Asia/Thimphu",
-		"Asia/Tokyo",
-		"Asia/Tomsk",
-		"Asia/Ulaanbaatar",
-		"Asia/Urumqi",
-		"Asia/Ust-Nera",
-		"Asia/Vientiane",
-		"Asia/Vladivostok",
-		"Asia/Yakutsk",
-		"Asia/Yangon",
-		"Asia/Yekaterinburg",
-		"Asia/Yerevan",
-		"Atlantic/Azores",
-		"Atlantic/Bermuda",
-		"Atlantic/Canary",
-		"Atlantic/Cape_Verde",
-		"Atlantic/Faroe",
-		"Atlantic/Madeira",
-		"Atlantic/Reykjavik",
-		"Atlantic/South_Georgia",
-		"Atlantic/St_Helena",
-		"Atlantic/Stanley",
-		"Australia/Adelaide",
-		"Australia/Brisbane",
-		"Australia/Broken_Hill",
-		"Australia/Currie",
-		"Australia/Darwin",
-		"Australia/Eucla",
-		"Australia/Hobart",
-		"Australia/Lindeman",
-		"Australia/Lord_Howe",
-		"Australia/Melbourne",
-		"Australia/Perth",
-		"Australia/Sydney",
-		"Europe/Amsterdam",
-		"Europe/Andorra",
-		"Europe/Astrakhan",
-		"Europe/Athens",
-		"Europe/Belgrade",
-		"Europe/Berlin",
-		"Europe/Bratislava",
-		"Europe/Brussels",
-		"Europe/Bucharest",
-		"Europe/Budapest",
-		"Europe/Busingen",
-		"Europe/Chisinau",
-		"Europe/Copenhagen",
-		"Europe/Dublin",
-		"Europe/Gibraltar",
-		"Europe/Guernsey",
-		"Europe/Helsinki",
-		"Europe/Isle_of_Man",
-		"Europe/Istanbul",
-		"Europe/Jersey",
-		"Europe/Kaliningrad",
-		"Europe/Kiev",
-		"Europe/Kirov",
-		"Europe/Lisbon",
-		"Europe/Ljubljana",
-		"Europe/London",
-		"Europe/Luxembourg",
-		"Europe/Madrid",
-		"Europe/Malta",
-		"Europe/Mariehamn",
-		"Europe/Minsk",
-		"Europe/Monaco",
-		"Europe/Moscow",
-		"Europe/Oslo",
-		"Europe/Paris",
-		"Europe/Podgorica",
-		"Europe/Prague",
-		"Europe/Riga",
-		"Europe/Rome",
-		"Europe/Samara",
-		"Europe/San_Marino",
-		"Europe/Sarajevo",
-		"Europe/Saratov",
-		"Europe/Simferopol",
-		"Europe/Skopje",
-		"Europe/Sofia",
-		"Europe/Stockholm",
-		"Europe/Tallinn",
-		"Europe/Tirane",
-		"Europe/Ulyanovsk",
-		"Europe/Uzhgorod",
-		"Europe/Vaduz",
-		"Europe/Vatican",
-		"Europe/Vienna",
-		"Europe/Vilnius",
-		"Europe/Volgograd",
-		"Europe/Warsaw",
-		"Europe/Zagreb",
-		"Europe/Zaporozhye",
-		"Europe/Zurich",
-		"Indian/Antananarivo",
-		"Indian/Chagos",
-		"Indian/Christmas",
-		"Indian/Cocos",
-		"Indian/Comoro",
-		"Indian/Kerguelen",
-		"Indian/Mahe",
-		"Indian/Maldives",
-		"Indian/Mauritius",
-		"Indian/Mayotte",
-		"Indian/Reunion",
-		"Pacific/Apia",
-		"Pacific/Auckland",
-		"Pacific/Bougainville",
-		"Pacific/Chatham",
-		"Pacific/Chuuk",
-		"Pacific/Easter",
-		"Pacific/Efate",
-		"Pacific/Enderbury",
-		"Pacific/Fakaofo",
-		"Pacific/Fiji",
-		"Pacific/Funafuti",
-		"Pacific/Galapagos",
-		"Pacific/Gambier",
-		"Pacific/Guadalcanal",
-		"Pacific/Guam",
-		"Pacific/Honolulu",
-		"Pacific/Kiritimati",
-		"Pacific/Kosrae",
-		"Pacific/Kwajalein",
-		"Pacific/Majuro",
-		"Pacific/Marquesas",
-		"Pacific/Midway",
-		"Pacific/Nauru",
-		"Pacific/Niue",
-		"Pacific/Norfolk",
-		"Pacific/Noumea",
-		"Pacific/Pago_Pago",
-		"Pacific/Palau",
-		"Pacific/Pitcairn",
-		"Pacific/Pohnpei",
-		"Pacific/Port_Moresby",
-		"Pacific/Rarotonga",
-		"Pacific/Saipan",
-		"Pacific/Tahiti",
-		"Pacific/Tarawa",
-		"Pacific/Tongatapu",
-		"Pacific/Wake",
-		"Pacific/Wallis"
-	];
-
-	const getTimezoneOffset = phantomDate => {
-		const [year, month, day] = JSON.stringify(new phantomDate())
-			.slice(1,11)
-			.split('-');
-		const dateString = `${month}/${day}/${year}`;
-		const dateStringUTC = `${year}-${month}-${day}`;
-		const now = +new phantomDate(dateString);
-		const utc = +new phantomDate(dateStringUTC);
-		const offset = +((now - utc)/60000);
-		return ~~offset 
-	};
-
-	const getTimezoneOffsetHistory = ({ year, phantomIntl, phantomDate, city = null }) => {
-		const format = {
-			timeZone: '',
-			year: 'numeric',
-			month: 'numeric',
-			day: 'numeric',
-			hour: 'numeric',
-			minute: 'numeric',
-			second: 'numeric'
-		};
-	    const minute = 60000;
-	    let formatter, summer;
-	    if (city) {
-	        const options = {
-	            ...format,
-	            timeZone: city
-	        };
-	        formatter = new phantomIntl.DateTimeFormat('en', options);
-	        summer = +new phantomDate(formatter.format(new phantomDate(`7/1/${year}`)));
-	    } else {
-	        summer = +new phantomDate(`7/1/${year}`);
-	    }
-	    const summerUTCTime = +new phantomDate(`${year}-07-01`);
-	    const offset = (summer - summerUTCTime) / minute;
-	    return offset
-	};
-
-	const binarySearch = (list, fn) => {
-	    const end = list.length;
-	    const middle = Math.floor(end / 2);
-	    const [left, right] = [list.slice(0, middle), list.slice(middle, end)];
-	    const found = fn(left);
-	    return end == 1 || found.length ? found : binarySearch(right, fn)
-	};
-
-	const decryptLocation = ({ year, timeZone, phantomIntl, phantomDate }) => {
-		const system = getTimezoneOffsetHistory({ year, phantomIntl, phantomDate});
-		const resolvedOptions = getTimezoneOffsetHistory({ year, phantomIntl, phantomDate, city: timeZone});
-		const filter = cities => cities
-			.filter(city => system == getTimezoneOffsetHistory({ year, phantomIntl, phantomDate, city }));
-
-		// get city region set
-		const decryption = (
-			system == resolvedOptions ? [timeZone] : binarySearch(cities, filter)
-		);
-
-		// reduce set to one city
-		const decrypted = (
-			decryption.length == 1 && decryption[0] == timeZone ? timeZone : hashMini(decryption)
-		);
-		return decrypted
-	};
-
-	const formatLocation = x => {
-		try {
-			return x.replace(/_/, ' ').split('/').join(', ')
-		}
-		catch (error) {}
-		return x
 	};
 
 	const getTimezone = async imports => {
 
 		const {
 			require: {
+				queueEvent,
+				createTimer,
+				hashMini,
 				captureError,
 				lieProps,
 				phantomDarkness,
@@ -7256,8 +7538,543 @@
 			}
 		} = imports;
 
+		// inspired by https://arkenfox.github.io/TZP
+		// https://github.com/vvo/tzdb/blob/master/time-zones-names.json
+		const cities = [
+			"UTC",
+			"GMT",
+			"Etc/GMT+0",
+			"Etc/GMT+1",
+			"Etc/GMT+10",
+			"Etc/GMT+11",
+			"Etc/GMT+12",
+			"Etc/GMT+2",
+			"Etc/GMT+3",
+			"Etc/GMT+4",
+			"Etc/GMT+5",
+			"Etc/GMT+6",
+			"Etc/GMT+7",
+			"Etc/GMT+8",
+			"Etc/GMT+9",
+			"Etc/GMT-1",
+			"Etc/GMT-10",
+			"Etc/GMT-11",
+			"Etc/GMT-12",
+			"Etc/GMT-13",
+			"Etc/GMT-14",
+			"Etc/GMT-2",
+			"Etc/GMT-3",
+			"Etc/GMT-4",
+			"Etc/GMT-5",
+			"Etc/GMT-6",
+			"Etc/GMT-7",
+			"Etc/GMT-8",
+			"Etc/GMT-9",
+			"Etc/GMT",
+			"Africa/Abidjan",
+			"Africa/Accra",
+			"Africa/Addis_Ababa",
+			"Africa/Algiers",
+			"Africa/Asmara",
+			"Africa/Bamako",
+			"Africa/Bangui",
+			"Africa/Banjul",
+			"Africa/Bissau",
+			"Africa/Blantyre",
+			"Africa/Brazzaville",
+			"Africa/Bujumbura",
+			"Africa/Cairo",
+			"Africa/Casablanca",
+			"Africa/Ceuta",
+			"Africa/Conakry",
+			"Africa/Dakar",
+			"Africa/Dar_es_Salaam",
+			"Africa/Djibouti",
+			"Africa/Douala",
+			"Africa/El_Aaiun",
+			"Africa/Freetown",
+			"Africa/Gaborone",
+			"Africa/Harare",
+			"Africa/Johannesburg",
+			"Africa/Juba",
+			"Africa/Kampala",
+			"Africa/Khartoum",
+			"Africa/Kigali",
+			"Africa/Kinshasa",
+			"Africa/Lagos",
+			"Africa/Libreville",
+			"Africa/Lome",
+			"Africa/Luanda",
+			"Africa/Lubumbashi",
+			"Africa/Lusaka",
+			"Africa/Malabo",
+			"Africa/Maputo",
+			"Africa/Maseru",
+			"Africa/Mbabane",
+			"Africa/Mogadishu",
+			"Africa/Monrovia",
+			"Africa/Nairobi",
+			"Africa/Ndjamena",
+			"Africa/Niamey",
+			"Africa/Nouakchott",
+			"Africa/Ouagadougou",
+			"Africa/Porto-Novo",
+			"Africa/Sao_Tome",
+			"Africa/Tripoli",
+			"Africa/Tunis",
+			"Africa/Windhoek",
+			"America/Adak",
+			"America/Anchorage",
+			"America/Anguilla",
+			"America/Antigua",
+			"America/Araguaina",
+			"America/Argentina/Buenos_Aires",
+			"America/Argentina/Catamarca",
+			"America/Argentina/Cordoba",
+			"America/Argentina/Jujuy",
+			"America/Argentina/La_Rioja",
+			"America/Argentina/Mendoza",
+			"America/Argentina/Rio_Gallegos",
+			"America/Argentina/Salta",
+			"America/Argentina/San_Juan",
+			"America/Argentina/San_Luis",
+			"America/Argentina/Tucuman",
+			"America/Argentina/Ushuaia",
+			"America/Aruba",
+			"America/Asuncion",
+			"America/Atikokan",
+			"America/Bahia",
+			"America/Bahia_Banderas",
+			"America/Barbados",
+			"America/Belem",
+			"America/Belize",
+			"America/Blanc-Sablon",
+			"America/Boa_Vista",
+			"America/Bogota",
+			"America/Boise",
+			"America/Cambridge_Bay",
+			"America/Campo_Grande",
+			"America/Cancun",
+			"America/Caracas",
+			"America/Cayenne",
+			"America/Cayman",
+			"America/Chicago",
+			"America/Chihuahua",
+			"America/Costa_Rica",
+			"America/Creston",
+			"America/Cuiaba",
+			"America/Curacao",
+			"America/Danmarkshavn",
+			"America/Dawson",
+			"America/Dawson_Creek",
+			"America/Denver",
+			"America/Detroit",
+			"America/Dominica",
+			"America/Edmonton",
+			"America/Eirunepe",
+			"America/El_Salvador",
+			"America/Fort_Nelson",
+			"America/Fortaleza",
+			"America/Glace_Bay",
+			"America/Godthab",
+			"America/Goose_Bay",
+			"America/Grand_Turk",
+			"America/Grenada",
+			"America/Guadeloupe",
+			"America/Guatemala",
+			"America/Guayaquil",
+			"America/Guyana",
+			"America/Halifax",
+			"America/Havana",
+			"America/Hermosillo",
+			"America/Indiana/Indianapolis",
+			"America/Indiana/Knox",
+			"America/Indiana/Marengo",
+			"America/Indiana/Petersburg",
+			"America/Indiana/Tell_City",
+			"America/Indiana/Vevay",
+			"America/Indiana/Vincennes",
+			"America/Indiana/Winamac",
+			"America/Inuvik",
+			"America/Iqaluit",
+			"America/Jamaica",
+			"America/Juneau",
+			"America/Kentucky/Louisville",
+			"America/Kentucky/Monticello",
+			"America/Kralendijk",
+			"America/La_Paz",
+			"America/Lima",
+			"America/Los_Angeles",
+			"America/Lower_Princes",
+			"America/Maceio",
+			"America/Managua",
+			"America/Manaus",
+			"America/Marigot",
+			"America/Martinique",
+			"America/Matamoros",
+			"America/Mazatlan",
+			"America/Menominee",
+			"America/Merida",
+			"America/Metlakatla",
+			"America/Mexico_City",
+			"America/Miquelon",
+			"America/Moncton",
+			"America/Monterrey",
+			"America/Montevideo",
+			"America/Montserrat",
+			"America/Nassau",
+			"America/New_York",
+			"America/Nipigon",
+			"America/Nome",
+			"America/Noronha",
+			"America/North_Dakota/Beulah",
+			"America/North_Dakota/Center",
+			"America/North_Dakota/New_Salem",
+			"America/Ojinaga",
+			"America/Panama",
+			"America/Pangnirtung",
+			"America/Paramaribo",
+			"America/Phoenix",
+			"America/Port-au-Prince",
+			"America/Port_of_Spain",
+			"America/Porto_Velho",
+			"America/Puerto_Rico",
+			"America/Punta_Arenas",
+			"America/Rainy_River",
+			"America/Rankin_Inlet",
+			"America/Recife",
+			"America/Regina",
+			"America/Resolute",
+			"America/Rio_Branco",
+			"America/Santarem",
+			"America/Santiago",
+			"America/Santo_Domingo",
+			"America/Sao_Paulo",
+			"America/Scoresbysund",
+			"America/Sitka",
+			"America/St_Barthelemy",
+			"America/St_Johns",
+			"America/St_Kitts",
+			"America/St_Lucia",
+			"America/St_Thomas",
+			"America/St_Vincent",
+			"America/Swift_Current",
+			"America/Tegucigalpa",
+			"America/Thule",
+			"America/Thunder_Bay",
+			"America/Tijuana",
+			"America/Toronto",
+			"America/Tortola",
+			"America/Vancouver",
+			"America/Whitehorse",
+			"America/Winnipeg",
+			"America/Yakutat",
+			"America/Yellowknife",
+			"Antarctica/Casey",
+			"Antarctica/Davis",
+			"Antarctica/DumontDUrville",
+			"Antarctica/Macquarie",
+			"Antarctica/Mawson",
+			"Antarctica/McMurdo",
+			"Antarctica/Palmer",
+			"Antarctica/Rothera",
+			"Antarctica/Syowa",
+			"Antarctica/Troll",
+			"Antarctica/Vostok",
+			"Arctic/Longyearbyen",
+			"Asia/Aden",
+			"Asia/Almaty",
+			"Asia/Amman",
+			"Asia/Anadyr",
+			"Asia/Aqtau",
+			"Asia/Aqtobe",
+			"Asia/Ashgabat",
+			"Asia/Atyrau",
+			"Asia/Baghdad",
+			"Asia/Bahrain",
+			"Asia/Baku",
+			"Asia/Bangkok",
+			"Asia/Barnaul",
+			"Asia/Beirut",
+			"Asia/Bishkek",
+			"Asia/Brunei",
+			"Asia/Calcutta",
+			"Asia/Chita",
+			"Asia/Choibalsan",
+			"Asia/Colombo",
+			"Asia/Damascus",
+			"Asia/Dhaka",
+			"Asia/Dili",
+			"Asia/Dubai",
+			"Asia/Dushanbe",
+			"Asia/Famagusta",
+			"Asia/Gaza",
+			"Asia/Hebron",
+			"Asia/Ho_Chi_Minh",
+			"Asia/Hong_Kong",
+			"Asia/Hovd",
+			"Asia/Irkutsk",
+			"Asia/Jakarta",
+			"Asia/Jayapura",
+			"Asia/Jerusalem",
+			"Asia/Kabul",
+			"Asia/Kamchatka",
+			"Asia/Karachi",
+			"Asia/Kathmandu",
+			"Asia/Khandyga",
+			"Asia/Kolkata",
+			"Asia/Krasnoyarsk",
+			"Asia/Kuala_Lumpur",
+			"Asia/Kuching",
+			"Asia/Kuwait",
+			"Asia/Macau",
+			"Asia/Magadan",
+			"Asia/Makassar",
+			"Asia/Manila",
+			"Asia/Muscat",
+			"Asia/Nicosia",
+			"Asia/Novokuznetsk",
+			"Asia/Novosibirsk",
+			"Asia/Omsk",
+			"Asia/Oral",
+			"Asia/Phnom_Penh",
+			"Asia/Pontianak",
+			"Asia/Pyongyang",
+			"Asia/Qatar",
+			"Asia/Qostanay",
+			"Asia/Qyzylorda",
+			"Asia/Riyadh",
+			"Asia/Sakhalin",
+			"Asia/Samarkand",
+			"Asia/Seoul",
+			"Asia/Shanghai",
+			"Asia/Singapore",
+			"Asia/Srednekolymsk",
+			"Asia/Taipei",
+			"Asia/Tashkent",
+			"Asia/Tbilisi",
+			"Asia/Tehran",
+			"Asia/Thimphu",
+			"Asia/Tokyo",
+			"Asia/Tomsk",
+			"Asia/Ulaanbaatar",
+			"Asia/Urumqi",
+			"Asia/Ust-Nera",
+			"Asia/Vientiane",
+			"Asia/Vladivostok",
+			"Asia/Yakutsk",
+			"Asia/Yangon",
+			"Asia/Yekaterinburg",
+			"Asia/Yerevan",
+			"Atlantic/Azores",
+			"Atlantic/Bermuda",
+			"Atlantic/Canary",
+			"Atlantic/Cape_Verde",
+			"Atlantic/Faroe",
+			"Atlantic/Madeira",
+			"Atlantic/Reykjavik",
+			"Atlantic/South_Georgia",
+			"Atlantic/St_Helena",
+			"Atlantic/Stanley",
+			"Australia/Adelaide",
+			"Australia/Brisbane",
+			"Australia/Broken_Hill",
+			"Australia/Currie",
+			"Australia/Darwin",
+			"Australia/Eucla",
+			"Australia/Hobart",
+			"Australia/Lindeman",
+			"Australia/Lord_Howe",
+			"Australia/Melbourne",
+			"Australia/Perth",
+			"Australia/Sydney",
+			"Europe/Amsterdam",
+			"Europe/Andorra",
+			"Europe/Astrakhan",
+			"Europe/Athens",
+			"Europe/Belgrade",
+			"Europe/Berlin",
+			"Europe/Bratislava",
+			"Europe/Brussels",
+			"Europe/Bucharest",
+			"Europe/Budapest",
+			"Europe/Busingen",
+			"Europe/Chisinau",
+			"Europe/Copenhagen",
+			"Europe/Dublin",
+			"Europe/Gibraltar",
+			"Europe/Guernsey",
+			"Europe/Helsinki",
+			"Europe/Isle_of_Man",
+			"Europe/Istanbul",
+			"Europe/Jersey",
+			"Europe/Kaliningrad",
+			"Europe/Kiev",
+			"Europe/Kirov",
+			"Europe/Lisbon",
+			"Europe/Ljubljana",
+			"Europe/London",
+			"Europe/Luxembourg",
+			"Europe/Madrid",
+			"Europe/Malta",
+			"Europe/Mariehamn",
+			"Europe/Minsk",
+			"Europe/Monaco",
+			"Europe/Moscow",
+			"Europe/Oslo",
+			"Europe/Paris",
+			"Europe/Podgorica",
+			"Europe/Prague",
+			"Europe/Riga",
+			"Europe/Rome",
+			"Europe/Samara",
+			"Europe/San_Marino",
+			"Europe/Sarajevo",
+			"Europe/Saratov",
+			"Europe/Simferopol",
+			"Europe/Skopje",
+			"Europe/Sofia",
+			"Europe/Stockholm",
+			"Europe/Tallinn",
+			"Europe/Tirane",
+			"Europe/Ulyanovsk",
+			"Europe/Uzhgorod",
+			"Europe/Vaduz",
+			"Europe/Vatican",
+			"Europe/Vienna",
+			"Europe/Vilnius",
+			"Europe/Volgograd",
+			"Europe/Warsaw",
+			"Europe/Zagreb",
+			"Europe/Zaporozhye",
+			"Europe/Zurich",
+			"Indian/Antananarivo",
+			"Indian/Chagos",
+			"Indian/Christmas",
+			"Indian/Cocos",
+			"Indian/Comoro",
+			"Indian/Kerguelen",
+			"Indian/Mahe",
+			"Indian/Maldives",
+			"Indian/Mauritius",
+			"Indian/Mayotte",
+			"Indian/Reunion",
+			"Pacific/Apia",
+			"Pacific/Auckland",
+			"Pacific/Bougainville",
+			"Pacific/Chatham",
+			"Pacific/Chuuk",
+			"Pacific/Easter",
+			"Pacific/Efate",
+			"Pacific/Enderbury",
+			"Pacific/Fakaofo",
+			"Pacific/Fiji",
+			"Pacific/Funafuti",
+			"Pacific/Galapagos",
+			"Pacific/Gambier",
+			"Pacific/Guadalcanal",
+			"Pacific/Guam",
+			"Pacific/Honolulu",
+			"Pacific/Kiritimati",
+			"Pacific/Kosrae",
+			"Pacific/Kwajalein",
+			"Pacific/Majuro",
+			"Pacific/Marquesas",
+			"Pacific/Midway",
+			"Pacific/Nauru",
+			"Pacific/Niue",
+			"Pacific/Norfolk",
+			"Pacific/Noumea",
+			"Pacific/Pago_Pago",
+			"Pacific/Palau",
+			"Pacific/Pitcairn",
+			"Pacific/Pohnpei",
+			"Pacific/Port_Moresby",
+			"Pacific/Rarotonga",
+			"Pacific/Saipan",
+			"Pacific/Tahiti",
+			"Pacific/Tarawa",
+			"Pacific/Tongatapu",
+			"Pacific/Wake",
+			"Pacific/Wallis"
+		];
+
+		const getTimezoneOffset = phantomDate => {
+			const [year, month, day] = JSON.stringify(new phantomDate())
+				.slice(1,11)
+				.split('-');
+			const dateString = `${month}/${day}/${year}`;
+			const dateStringUTC = `${year}-${month}-${day}`;
+			const now = +new phantomDate(dateString);
+			const utc = +new phantomDate(dateStringUTC);
+			const offset = +((now - utc)/60000);
+			return ~~offset 
+		};
+
+		const getTimezoneOffsetHistory = ({ year, phantomIntl, phantomDate, city = null }) => {
+			const format = {
+				timeZone: '',
+				year: 'numeric',
+				month: 'numeric',
+				day: 'numeric',
+				hour: 'numeric',
+				minute: 'numeric',
+				second: 'numeric'
+			};
+			const minute = 60000;
+			let formatter, summer;
+			if (city) {
+				const options = {
+					...format,
+					timeZone: city
+				};
+				formatter = new phantomIntl.DateTimeFormat('en', options);
+				summer = +new phantomDate(formatter.format(new phantomDate(`7/1/${year}`)));
+			} else {
+				summer = +new phantomDate(`7/1/${year}`);
+			}
+			const summerUTCTime = +new phantomDate(`${year}-07-01`);
+			const offset = (summer - summerUTCTime) / minute;
+			return offset
+		};
+
+		const binarySearch = (list, fn) => {
+			const end = list.length;
+			const middle = Math.floor(end / 2);
+			const [left, right] = [list.slice(0, middle), list.slice(middle, end)];
+			const found = fn(left);
+			return end == 1 || found.length ? found : binarySearch(right, fn)
+		};
+
+		const decryptLocation = ({ year, timeZone, phantomIntl, phantomDate }) => {
+			const system = getTimezoneOffsetHistory({ year, phantomIntl, phantomDate});
+			const resolvedOptions = getTimezoneOffsetHistory({ year, phantomIntl, phantomDate, city: timeZone});
+			const filter = cities => cities
+				.filter(city => system == getTimezoneOffsetHistory({ year, phantomIntl, phantomDate, city }));
+
+			// get city region set
+			const decryption = (
+				system == resolvedOptions ? [timeZone] : binarySearch(cities, filter)
+			);
+
+			// reduce set to one city
+			const decrypted = (
+				decryption.length == 1 && decryption[0] == timeZone ? timeZone : hashMini(decryption)
+			);
+			return decrypted
+		};
+
+		const formatLocation = x => {
+			try {
+				return x.replace(/_/, ' ').split('/').join(', ')
+			}
+			catch (error) {}
+			return x
+		};
+
 		try {
-			const start = performance.now();
+			const timer = createTimer();
+			timer.start();
 			
 			let lied = (
 				lieProps['Date.getTimezoneOffset'] ||
@@ -7281,7 +8098,7 @@
 				offsetComputed: getTimezoneOffset(phantomDate),
 				lied
 			};
-			logTestResult({ start, test: 'timezone', passed: true });
+			logTestResult({ time: timer.stop(), test: 'timezone', passed: true });
 			return { ...data }
 		}
 		catch (error) {
@@ -7291,7 +8108,7 @@
 		}
 	};
 
-	const timezoneHTML = ({ fp, note, hashSlice }) => {
+	const timezoneHTML = ({ fp, note, hashSlice, performanceLogger }) => {
 		if (!fp.timezone) {
 			return `
 		<div class="col-four undefined">
@@ -7312,7 +8129,8 @@
 			}
 		} = fp;
 		return `
-	<div class="col-four${lied ? ' rejected' : ''}">
+	<div class="relative col-four${lied ? ' rejected' : ''}">
+		<span class="aside-note">${performanceLogger.getLog().timezone}</span>
 		<strong>Timezone</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div class="block-text help"  title="Date\nDate.getTimezoneOffset\nIntl.DateTimeFormat">
 			${zone ? zone : ''}
@@ -7328,49 +8146,75 @@
 
 		const {
 			require: {
+				queueEvent,
+				createTimer,
 				captureError,
-				phantomDarkness,
 				logTestResult,
-				caniuse,
+				sendToTrash,
+				lieProps
 			}
 		} = imports;
 			
 		return new Promise(async resolve => {
 			try {
-				const win = phantomDarkness ? phantomDarkness : window;
-				const supported = 'speechSynthesis' in win;
+				const timer = createTimer();
+				await queueEvent(timer);
+				// use window since phantomDarkness is unstable in FF
+				const supported = 'speechSynthesis' in window;
 				supported && speechSynthesis.getVoices(); // warm up
-				await new Promise(setTimeout).catch(e => {});
-				const start = performance.now();
 				if (!supported) {
 					logTestResult({ test: 'speech', passed: false });
 					return resolve()
 				}
-				let success = false;
+				const voiceslie = !!lieProps['SpeechSynthesis.getVoices'];
+
 				const getVoices = () => {
-					const data = win.speechSynthesis.getVoices();
-					if (!data || !data.length) {
+					const giveUpOnVoices = setTimeout(() => {
+						logTestResult({ test: 'speech', passed: false });
+						return resolve()
+					}, 3000);
+					const data = speechSynthesis.getVoices();
+					const isChrome = ((3.141592653589793 ** -100) == 1.9275814160560204e-50);
+					const localServiceDidLoad = (data || []).find(x => x.localService);
+					if (!data || !data.length || (isChrome && !localServiceDidLoad)) {
 						return
 					}
-					success = true;
-					const voices = data.map(({ name, lang }) => ({ name, lang }));
-					const defaultVoice = caniuse(() => data.find(voice => voice.default).name);
-					logTestResult({ start, test: 'speech', passed: true });
-					return resolve({ voices, defaultVoice })
+					clearTimeout(giveUpOnVoices);
+					const filterFirstOccurenceOfUniqueVoiceURIData = ({data, voiceURISet}) => data.filter(x => {
+						const { voiceURI } = x;
+						if (!voiceURISet.has(voiceURI)) {
+							voiceURISet.add(voiceURI);
+							return true
+						}
+						return false
+					});
+
+					const dataUnique = filterFirstOccurenceOfUniqueVoiceURIData({
+						data,
+						voiceURISet: new Set()
+					});
+
+					// https://wicg.github.io/speech-api/#speechsynthesisvoice-attributes
+					const local = dataUnique.filter(x => x.localService).map(x => x.name);
+					const remote = dataUnique.filter(x => !x.localService).map(x => x.name);
+					const languages = [...new Set(dataUnique.map(x => x.lang))];
+					const defaults = dataUnique.filter(x => x.default).map(x => x.name);
+					
+					logTestResult({ time: timer.stop(), test: 'speech', passed: true });
+					return resolve({
+						local,
+						remote,
+						languages,
+						defaults,
+						lied: voiceslie
+					})
 				};
 				
 				getVoices();
-				win.speechSynthesis.onvoiceschanged = getVoices; // Chrome support
-				
-				// handle pending resolve
-				const wait = 1000;
-				setTimeout(() => {
-					if (success) {
-						return
-					}
-					logTestResult({ test: 'speech', passed: false });
-					return resolve()
-				}, wait);
+				if (speechSynthesis.addEventListener) {
+					return speechSynthesis.addEventListener('voiceschanged', getVoices)
+				}
+				speechSynthesis.onvoiceschanged = getVoices;
 			}
 			catch (error) {
 				logTestResult({ test: 'speech', passed: false });
@@ -7380,176 +8224,296 @@
 		})
 	};
 
-	const voicesHTML = ({ fp, note, count, modal, hashMini, hashSlice }) => {
+	const voicesHTML = ({ fp, note, count, modal, hashMini, hashSlice, performanceLogger }) => {
 		if (!fp.voices) {
 			return `
 		<div class="col-four undefined">
 			<strong>Speech</strong>
-			<div>voices (0): ${note.blocked}</div>
-			<div>default: ${note.blocked}</div>
+			<div>local (0): ${note.blocked}</div>
+			<div>remote (0): ${note.blocked}</div>
+			<div>lang (0): ${note.blocked}</div>
+			<div>default (0):</div>
+			<div class="block-text">${note.blocked}</div>
 		</div>`
 		}
 		const {
 			voices: {
 				$hash,
-				defaultVoice,
-				voices
+				local,
+				remote,
+				languages,
+				defaults,
+				lied
 			}
 		} = fp;
-		const voiceList = voices.map(voice => `${voice.name} (${voice.lang})`);
+
+		const icon = {
+			'Linux': '<span class="icon linux"></span>',
+			'Apple': '<span class="icon apple"></span>',
+			'Windows': '<span class="icon windows"></span>',
+			'Android': '<span class="icon android"></span>',
+			'CrOS': '<span class="icon cros"></span>'
+		};
+		const system = {
+			'Chrome OS': icon.CrOS,
+			'Maged': icon.Apple,
+			'Microsoft': icon.Windows,
+			'English United States': icon.Android,
+			'English (United States)': icon.Android
+		};
+		const systemVoice = Object.keys(system).find(key => local.find(voice => voice.includes(key)));
+		
 		return `
-	<div class="col-four">
-		<strong>Speech</strong><span class="hash">${hashSlice($hash)}</span>
-		<div>voices (${count(voices)}): ${
-			!voiceList || !voiceList.length ? note.unsupported :
+	<div class="relative col-four${lied ? ' rejected' : ''}">
+		<span class="aside-note">${performanceLogger.getLog().speech}</span>
+		<strong>Speech</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+		<div class="help" title="SpeechSynthesis.getVoices()\nSpeechSynthesisVoice.localService">local (${count(local)}): ${
+			!local || !local.length ? note.unsupported :
 			modal(
-				'creep-voices',
-				voiceList.join('<br>'),
-				hashMini(voices)
+				'creep-voices-local',
+				local.join('<br>'),
+				`${system[systemVoice] || ''}${hashMini(local)}`
 			)
 		}</div>
-		<div>default:${
-			!defaultVoice ? ` ${note.unsupported}` :
-			`<span class="sub-hash">${hashMini(defaultVoice)}</span>`
+		<div class="help" title="SpeechSynthesis.getVoices()">remote (${count(remote)}): ${
+			!remote || !remote.length ? note.unsupported :
+			modal(
+				'creep-voices-remote',
+				remote.join('<br>'),
+				hashMini(remote)
+			)
 		}</div>
+		<div class="help" title="SpeechSynthesis.getVoices()\nSpeechSynthesisVoice.lang">lang (${count(languages)}): ${
+			!languages || !languages.length ? note.blocked :
+				languages.length == 1 ? languages[0] : modal(
+					'creep-voices-languages',
+					languages.join('<br>'),
+					hashMini(languages)
+				)
+		}</div>
+		<div class="help" title="SpeechSynthesis.getVoices()\nSpeechSynthesisVoice.default">default (${count(defaults)}):</div>
+		<div class="block-text">
+			${
+				!defaults || !defaults.length ? note.unsupported :
+					defaults.length == 1 ? defaults[0] : modal(
+						'creep-voices-defaults',
+						defaults.join('<br>'),
+						hashMini(defaults)
+					)
+			}
+		</div>
 	</div>
 	`
 	};
 
-	const getWebRTCData = imports => {
+	const getWebRTCData = async imports => {
 
 		const {
 			require: {
+				queueEvent,
+				createTimer,
 				captureError,
-				caniuse,
-				logTestResult,
-				hashMini
+				logTestResult
 			}
 		} = imports;
-		
+
+		const timer = createTimer();
+		await queueEvent(timer);
+
+		const getExtensions = sdp => {
+			const extensions = (('' + sdp).match(/extmap:\d+ [^\n|\r]+/g) || [])
+				.map(x => x.replace(/extmap:[^\s]+ /, ''));
+			return [...new Set(extensions)].sort()
+		};
+
+		const createCounter = () => {
+			let counter = 0;
+			return {
+				increment: () => counter += 1,
+				getValue: () => counter
+			}
+		};
+
+		// https://webrtchacks.com/sdp-anatomy/
+		// https://tools.ietf.org/id/draft-ietf-rtcweb-sdp-08.html
+		const constructDecriptions = ({mediaType, sdp, sdpDescriptors, rtxCounter}) => {
+			if (!(''+sdpDescriptors)) {
+				return
+			}
+			return sdpDescriptors.reduce((descriptionAcc, descriptor) => {
+				const matcher = `(rtpmap|fmtp|rtcp-fb):${descriptor} (.+)`;
+				const formats = (sdp.match(new RegExp(matcher, 'g')) || []);
+				if (!(''+formats)) {
+					return descriptionAcc
+				}
+				const isRtxCodec = ('' + formats).includes(' rtx/');
+				if (isRtxCodec) {
+					if (rtxCounter.getValue()) {
+						return descriptionAcc
+					}
+					rtxCounter.increment();
+				}
+				const getLineData = x => x.replace(/[^\s]+ /, '');
+				const description = formats.reduce((acc, x) => {
+					const rawData = getLineData(x);
+					const data = rawData.split('/');
+					const codec = data[0];
+					const description = {};
+					
+					if (x.includes('rtpmap')) {
+						if (mediaType == 'audio') {
+							description.channels = (+data[2]) || 1;
+						}
+						description.mimeType = `${mediaType}/${codec}`;
+						description.clockRates = [+data[1]];
+						return {
+							...acc,
+							...description
+						}
+					}
+					else if (x.includes('rtcp-fb')) {
+						return {
+							...acc,
+							feedbackSupport: [...(acc.feedbackSupport||[]), rawData]
+						}
+					}
+					else if (isRtxCodec) {
+						return acc // no sdpFmtpLine
+					}
+					return { ...acc, sdpFmtpLine: [...rawData.split(';')] }
+				}, {});
+
+				let shouldMerge = false;
+				const mergerAcc = descriptionAcc.map(x => {
+					shouldMerge = x.mimeType == description.mimeType;
+					if (shouldMerge) {
+						if (x.feedbackSupport) {
+							x.feedbackSupport = [
+								...new Set([...x.feedbackSupport, ...description.feedbackSupport])
+							];
+						}
+						if (x.sdpFmtpLine) {
+							x.sdpFmtpLine = [
+								...new Set([...x.sdpFmtpLine, ...description.sdpFmtpLine])
+							];
+						}
+						return {
+							...x,
+							clockRates: [
+								...new Set([...x.clockRates, ...description.clockRates])
+							]
+						}
+					}
+					return x
+				});
+				if (shouldMerge) {
+					return mergerAcc
+				}
+				return [...descriptionAcc, description]
+			}, [])
+		};
+
+		const getCapabilities = sdp => {
+			const videoDescriptors = ((/m=video [^\s]+ [^\s]+ ([^\n|\r]+)/.exec(sdp) || [])[1] || '').split(' ');
+			const audioDescriptors = ((/m=audio [^\s]+ [^\s]+ ([^\n|\r]+)/.exec(sdp) || [])[1] || '').split(' ');
+			const rtxCounter = createCounter();
+			return {
+				audio: constructDecriptions({
+					mediaType: 'audio',
+					sdp,
+					sdpDescriptors: audioDescriptors,
+					rtxCounter
+				}),
+				video: constructDecriptions({
+					mediaType: 'video',
+					sdp,
+					sdpDescriptors: videoDescriptors,
+					rtxCounter
+				})
+			}
+		};
+
 		return new Promise(async resolve => {
 			try {
-				await new Promise(setTimeout).catch(e => {});
-				const start = performance.now();
-				let rtcPeerConnection = (
-					window.RTCPeerConnection ||
-					window.webkitRTCPeerConnection ||
-					window.mozRTCPeerConnection ||
-					window.msRTCPeerConnection
-				);
-
-				const getCapabilities = () => {
-					let capabilities;
-					try {
-						capabilities = {
-							sender: !caniuse(() => RTCRtpSender.getCapabilities) ? undefined : {
-								audio: RTCRtpSender.getCapabilities('audio'),
-								video: RTCRtpSender.getCapabilities('video')
-							},
-							receiver: !caniuse(() => RTCRtpReceiver.getCapabilities) ? undefined : {
-								audio: RTCRtpReceiver.getCapabilities('audio'),
-								video: RTCRtpReceiver.getCapabilities('video')
-							}
-						};
-					}
-					catch (error) {}
-					return capabilities
-				};
-
-				// check support
-				if (!rtcPeerConnection) {
+				if (!window.RTCPeerConnection) {
 					logTestResult({ test: 'webrtc', passed: false });
 					return resolve()
 				}
-				
-				// get connection
-				const connection = new rtcPeerConnection(
-					{ iceServers: [{ urls: ['stun:stun.l.google.com:19302?transport=udp'] }] }
-				);
-				
-				// create channel
-				let success;
-				connection.createDataChannel('creep');
 
-				// set local description
-				await connection.createOffer()
-				.then(offer => connection.setLocalDescription(offer))
-				.catch(error => console.error(error));
+				const connection = new RTCPeerConnection({
+					iceCandidatePoolSize: 1,
+					iceServers: [
+						{
+							urls: [
+								'stun:stun4.l.google.com:19302?transport=udp',
+								'stun:stun3.l.google.com:19302?transport=udp',
+								//'stun:stun2.l.google.com:19302?transport=udp',
+								//'stun:stun1.l.google.com:19302?transport=udp',
+								//'stun:stun.l.google.com:19302?transport=udp',
+							]
+						}
+					]
+				});
 
-				// get sdp capabilities
-				let sdpcapabilities;
-				const capabilities = getCapabilities();
-				await connection.createOffer({
-					offerToReceiveAudio: 1,
-					offerToReceiveVideo: 1
-				})
-				.then(offer => (
-					sdpcapabilities = caniuse(
-						() => offer.sdp
-							.match(/((ext|rtp)map|fmtp|rtcp-fb):.+ (.+)/gm)
-							.sort()
-					)
-				))
-				.catch(error => console.error(error));
-		
-				connection.onicecandidate = e => {
+				const getIPAddress = sdp => {
+					const blocked = '0.0.0.0';
 					const candidateEncoding = /((udp|tcp)\s)((\d|\w)+\s)((\d|\w|(\.|\:))+)(?=\s)/ig;
 					const connectionLineEncoding = /(c=IN\s)(.+)\s/ig;
-
-					// handle null candidate and resolve early
-					if (!e.candidate) {
-						if (sdpcapabilities) {
-							// resolve partial success
-							success = true; 
-							logTestResult({ start, test: 'webrtc', passed: true });
-							return resolve({
-								capabilities,
-								sdpcapabilities
-							})
-						}
-						// resolve error
-						logTestResult({ test: 'webrtc', passed: false });
-						return resolve()
+					const connectionLineIpAddress = ((sdp.match(connectionLineEncoding) || [])[0] || '').trim().split(' ')[2];
+					if (connectionLineIpAddress && (connectionLineIpAddress != blocked)) {
+						return connectionLineIpAddress
 					}
-
-					const { candidate } = e.candidate;
-					const encodingMatch = candidate.match(candidateEncoding);
-					if (encodingMatch) {
-						success = true;
-						const {
-							sdp
-						} = e.target.localDescription;
-						const ipaddress = caniuse(() => e.candidate.address);
-						const candidateIpAddress = caniuse(() => encodingMatch[0].split(' ')[2]);
-						const connectionLineIpAddress = caniuse(() => sdp.match(connectionLineEncoding)[0].trim().split(' ')[2]);
-
-						const type = caniuse(() => /typ ([a-z]+)/.exec(candidate)[1]);
-						const foundation = caniuse(() => /candidate:(\d+)\s/.exec(candidate)[1]);
-						const protocol = caniuse(() => /candidate:\d+ \w+ (\w+)/.exec(candidate)[1]);
-						
-						const data = {
-							ipaddress,
-							candidate: candidateIpAddress,
-							connection: connectionLineIpAddress,
-							type,
-							foundation,
-							protocol,
-							capabilities,
-							sdpcapabilities
-						};
-						logTestResult({ start, test: 'webrtc', passed: true });
-						return resolve({ ...data })
-					}
-					return
+					const candidateIpAddress = ((sdp.match(candidateEncoding) || [])[0] || '').split(' ')[2];
+					return candidateIpAddress && (candidateIpAddress != blocked) ? candidateIpAddress : undefined
 				};
 
-				// resolve when Timeout is reached
-				setTimeout(() => {
-					if (!success) {
+				connection.createDataChannel('');
+				const options = { offerToReceiveAudio: 1, offerToReceiveVideo: 1 };
+				return connection.createOffer(options).then(offer => {
+					connection.setLocalDescription(offer);
+					const giveUpOnGettingIPAddress = setTimeout(() => {
+						const { sdp } = offer || {};
+						if (sdp) {
+							const { audio, video } = getCapabilities(sdp);
+							const extensions = getExtensions(sdp);
+							logTestResult({ time: timer.stop(), test: 'webrtc', passed: true });
+							return resolve({
+								ipaddress: undefined,
+								extensions,
+								audio,
+								video
+							})
+						}
 						logTestResult({ test: 'webrtc', passed: false });
 						return resolve()
-					}
-				}, 1000);
+					}, 3000);
+
+					const computeCandidate = event => {
+						const { candidate } = event.candidate || {};
+						if (!candidate) {
+							return
+						}
+						const { sdp } = connection.localDescription;
+						const ipaddress = getIPAddress(sdp);
+						if (!ipaddress) {
+							return
+						}
+						connection.removeEventListener('icecandidate', computeCandidate);
+						clearTimeout(giveUpOnGettingIPAddress);
+						connection.close();
+						const { audio, video } = getCapabilities(sdp);
+						const extensions = getExtensions(sdp);
+						logTestResult({ time: timer.stop(), test: 'webrtc', passed: true });
+						return resolve({
+							ipaddress,
+							extensions,
+							audio,
+							video
+						})
+					};
+
+					return connection.addEventListener('icecandidate', computeCandidate)
+				})
 			}
 			catch (error) {
 				logTestResult({ test: 'webrtc', passed: false });
@@ -7560,237 +8524,164 @@
 	};
 
 
-	const webrtcHTML = ({ fp, hashSlice, hashMini, note, modal }) => {
+	const webrtcHTML = ({ fp, hashSlice, hashMini, note, modal, performanceLogger }) => {
 		if (!fp.webRTC) {
 			return `
 		<div class="col-four undefined">
 			<strong>WebRTC</strong>
-			<div class="block-text">${note.blocked}</div>
-			<div>type: ${note.blocked}</div>
-			<div>foundation: ${note.blocked}</div>
-			<div>protocol: ${note.blocked}</div>
-			<div>codecs: ${note.blocked}</div>
-			<div>codecs sdp: ${note.blocked}</div>
+			<div class="block-text-small">${note.blocked}</div>
+			<div>a codecs (0): ${note.blocked}</div>
+			<div>v codecs (0): ${note.blocked}</div>
+			<div>exts (0): ${note.blocked}</div>
 		</div>`
 		}
 		const { webRTC } = fp;
 		const {
 			ipaddress,
-			candidate,
-			connection,
-			type,
-			foundation,
-			protocol,
-			capabilities,
-			sdpcapabilities,
+			audio,
+			video,
+			extensions,
 			$hash
 		} = webRTC;
 		const id = 'creep-webrtc';
 
+		const feedbackId = {
+			'ccm fir': 'Codec Control Message Full Intra Request (ccm fir)',
+			'goog-remb': "Google's Receiver Estimated Maximum Bitrate (goog-remb)",
+			'nack': 'Negative ACKs (nack)',
+			'nack pli': 'Picture loss Indication and NACK (nack pli)',
+			'transport-cc': 'Transport Wide Congestion Control (transport-cc)'
+		};
+
+		const getModalTemplate = list => list.map(x => {
+			return `
+			<strong>${x.mimeType}</strong>
+			<br>Clock Rates: ${x.clockRates.sort((a, b) => b - a).join(', ')}
+			${x.channels > 1 ? `<br>Channels: ${x.channels}` : ''}
+			${x.sdpFmtpLine ? `<br>Format Specific Parameters:<br>- ${x.sdpFmtpLine.sort().map(x => x.replace('=', ': ')).join('<br>- ')}` : ''}
+			${x.feedbackSupport ? `<br>Feedback Support:<br>- ${x.feedbackSupport.map(x => {
+				return feedbackId[x] || x
+			}).sort().join('<br>- ')}` : ''}
+		`
+		}).join('<br><br>');
 		return `
-	<div class="col-four">
+	<div class="relative col-four">
+		<span class="aside-note">${performanceLogger.getLog().webrtc}</span>
 		<strong>WebRTC</strong><span class="hash">${hashSlice($hash)}</span>
-		<div class="block-text"">
-			${ipaddress ? ipaddress : ''}
-			${candidate ? `<br>${candidate}` : ''}
-			${connection ? `<br>${connection}` : ''}
+		<div class="block-text-small help" title="RTCSessionDescription.sdp">
+			${ipaddress || note.blocked}
 		</div>
-		<div>type: ${type ? type : note.unsupported}</div>
-		<div>foundation: ${foundation ? foundation : note.unsupported}</div>
-		<div>protocol: ${protocol ? protocol : note.unsupported}</div>
-		<div>codecs: ${
-			!capabilities.receiver && !capabilities.sender ? note.unsupported :
+		<div class="help" title="RTCSessionDescription.sdp">a codecs (${(audio||[]).length}): ${
+		!audio ? note.blocked :
 			modal(
-				`${id}-capabilities`,
-				Object.keys(capabilities).map(modeKey => {
-					const mode = capabilities[modeKey];
-					if (!mode) {
-						return ''
-					}
-					return `
-						<br><div>mimeType [channels] (clockRate) * sdpFmtpLine</div>
-						${
-							Object.keys(mode).map(media => Object.keys(mode[media])
-								.map(key => {
-									return `<br><div><strong>${modeKey} ${media} ${key}</strong>:</div>${
-										mode[media][key].map(obj => {
-											const {
-												channels,
-												clockRate,
-												mimeType,
-												sdpFmtpLine,
-												uri
-											} = obj;
-											return `
-												<div>
-												${mimeType||''}
-												${channels ? `[${channels}]`: ''}
-												${clockRate ? `(${clockRate})`: ''}
-												${sdpFmtpLine ? `<br>* ${sdpFmtpLine}` : ''}
-												${uri||''}
-												</div>
-											`
-										}).join('')
-									}`
-								}).join('')
-							).join('')
-						}
-					`
-				}).join(''),
-				hashMini(capabilities)
+				`${id}-audio`,
+				getModalTemplate(audio),
+				hashMini(audio)
 			)
 		}</div>
-		<div>codecs sdp: ${
-			!sdpcapabilities ? note.unsupported :
+		<div class="help" title="RTCSessionDescription.sdp">v codecs (${(video||[]).length}): ${
+		!audio ? note.blocked :
 			modal(
-				`${id}-sdpcapabilities`,
-				sdpcapabilities.join('<br>'),
-				hashMini(sdpcapabilities)
+				`${id}-video`,
+				getModalTemplate(video),
+				hashMini(video)
+			)
+		}</div>
+		<div class="help" title="RTCSessionDescription.sdp">exts (${(extensions||[]).length}): ${
+		!audio ? note.blocked :
+			modal(
+				`${id}-extensions`,
+				extensions.join('<br>'),
+				hashMini(extensions)
 			)
 		}</div>
 	</div>
-	`	
-	};
-
-	const source = 'creepworker.js';
-
-	const getDedicatedWorker = phantomDarkness => {
-		return new Promise(resolve => {
-			try {
-				if (phantomDarkness && !phantomDarkness.Worker) {
-					return resolve()
-				}
-				else if (
-					phantomDarkness && phantomDarkness.Worker.prototype.constructor.name != 'Worker'
-				) {
-					throw new Error('Worker tampered with by client')
-				}
-				const worker = (
-					phantomDarkness ? phantomDarkness.Worker : Worker
-				);
-				const dedicatedWorker = new worker(source);
-				dedicatedWorker.onmessage = message => {
-					dedicatedWorker.terminate();
-					return resolve(message.data)
-				};
-			}
-			catch(error) {
-				console.error(error);
-				captureError(error);
-				return resolve()
-			}
-		})
-	};
-
-	const getSharedWorker = phantomDarkness => {
-		return new Promise(resolve => {
-			try {
-				if (phantomDarkness && !phantomDarkness.SharedWorker) {
-					return resolve()
-				}
-				else if (
-					phantomDarkness && phantomDarkness.SharedWorker.prototype.constructor.name != 'SharedWorker'
-				) {
-					throw new Error('SharedWorker tampered with by client')
-				}
-
-				const worker = (
-					phantomDarkness ? phantomDarkness.SharedWorker : SharedWorker
-				);
-				const sharedWorker = new worker(source);
-				sharedWorker.port.start();
-				sharedWorker.port.addEventListener('message', message => {
-					sharedWorker.port.close();
-					return resolve(message.data)
-				});
-			}
-			catch(error) {
-				console.error(error);
-				captureError(error);
-				return resolve()
-			}
-		})
-	};
-
-	const getServiceWorker = () => {
-		return new Promise(async resolve => {
-			try {
-				if (!('serviceWorker' in navigator)) {
-					return resolve()
-				}
-				else if (navigator.serviceWorker.__proto__.constructor.name != 'ServiceWorkerContainer') {
-					throw new Error('ServiceWorkerContainer tampered with by client')
-				}
-
-				await navigator.serviceWorker.register(source)
-				.catch(error => {
-					console.error(error);
-					return resolve()
-				});
-				//const registration = await navigator.serviceWorker.ready
-				const registration = await navigator.serviceWorker.getRegistration(source)
-				.catch(error => {
-					console.error(error);
-					return resolve()
-				});
-				if (!registration) {
-					return resolve()
-				}
-
-				if (!('BroadcastChannel' in window)) {
-					return resolve() // no support in Safari and iOS
-				}
-
-				const broadcast = new BroadcastChannel('creep_service_primary');
-				broadcast.onmessage = message => {
-					registration.unregister();
-					broadcast.close();
-					return resolve(message.data)
-				};
-				broadcast.postMessage({ type: 'fingerprint'});
-				return setTimeout(() => resolve(), 1000)
-			}
-			catch(error) {
-				console.error(error);
-				captureError(error);
-				return resolve()
-			}
-		})
+	`
 	};
 
 	const getBestWorkerScope = async imports => {	
 		const {
 			require: {
+				queueEvent,
+				createTimer,
 				getOS,
 				decryptUserAgent,
 				captureError,
-				caniuse,
 				phantomDarkness,
 				getUserAgentPlatform,
 				documentLie,
-				logTestResult
+				logTestResult,
+				compressWebGLRenderer,
+				getWebGLRendererConfidence,
+				isUAPostReduction
 			}
 		} = imports;
 		try {
-			await new Promise(setTimeout).catch(e => {});
-			const start = performance.now();
+			const timer = createTimer();
+			await queueEvent(timer);
+
+			const ask = fn => { try { return fn() } catch (e) { return } };
+			const resolveWorkerData = (target, resolve, fn) => target.addEventListener('message', event => {
+				fn(); return resolve(event.data)
+			});
+			const hasConstructor = (x, name) => x && x.__proto__.constructor.name == name;
+			const getDedicatedWorker = ({ scriptSource }) => new Promise(resolve => {
+				const dedicatedWorker = ask(() => new Worker(scriptSource));
+				if (!hasConstructor(dedicatedWorker, 'Worker')) return resolve()
+				return resolveWorkerData(dedicatedWorker, resolve, () => dedicatedWorker.terminate())
+			});
+			const getSharedWorker = ({ scriptSource }) => new Promise(resolve => {
+				const sharedWorker = ask(() => new SharedWorker(scriptSource));
+				if (!hasConstructor(sharedWorker, 'SharedWorker')) return resolve()
+				sharedWorker.port.start();
+				return resolveWorkerData(sharedWorker.port, resolve, () => sharedWorker.port.close())
+			});
+			const getServiceWorker = ({ scriptSource }) => new Promise(resolve => {
+				if (!ask(() => navigator.serviceWorker.register)) return resolve()
+				return navigator.serviceWorker.register(scriptSource).then(registration => {
+					if (!hasConstructor(registration, 'ServiceWorkerRegistration')) return resolve()
+					return navigator.serviceWorker.ready.then(registration => {
+						registration.active.postMessage(undefined);
+						return resolveWorkerData(
+							navigator.serviceWorker,
+							resolve,
+							() => registration.unregister()
+						)
+					})
+				}).catch(error => {
+					console.error(error);
+					return resolve()
+				})
+				
+			});
+
+			const scriptSource = 'creepworker.js';
 			let scope = 'ServiceWorkerGlobalScope';
 			let type = 'service'; // loads fast but is not available in frames
-			let workerScope = await getServiceWorker()
-				.catch(error => console.error(error.message));
-			if (!caniuse(() => workerScope.userAgent)) {
+			let workerScope = await getServiceWorker({ scriptSource }).catch(error => {
+				captureError(error);
+				console.error(error.message);
+				return
+			});
+			if (!(workerScope || {}).userAgent) {
 				scope = 'SharedWorkerGlobalScope';
 				type = 'shared'; // no support in Safari, iOS, and Chrome Android
-				workerScope = await getSharedWorker(phantomDarkness)
-				.catch(error => console.error(error.message));
+				workerScope = await getSharedWorker({ scriptSource }).catch(error => {
+					captureError(error);
+					console.error(error.message);
+					return
+				});
 			}
-			if (!caniuse(() => workerScope.userAgent)) {
+			if (!(workerScope || {}).userAgent) {
 				scope = 'WorkerGlobalScope';
 				type = 'dedicated'; // simulators & extensions can spoof userAgent
-				workerScope = await getDedicatedWorker(phantomDarkness)
-				.catch(error => console.error(error.message));
+				workerScope = await getDedicatedWorker({ scriptSource }).catch(error => {
+					captureError(error);
+					console.error(error.message);
+					return
+				});
 			}
-			if (caniuse(() => workerScope.userAgent)) {
+			if ((workerScope || {}).userAgent) {
 				const { canvas2d } = workerScope || {};
 				workerScope.system = getOS(workerScope.userAgent);
 				workerScope.device = getUserAgentPlatform({ userAgent: workerScope.userAgent });
@@ -7801,7 +8692,6 @@
 				// detect lies 
 				const {
 					fontSystemClass,
-					textMetricsSystemClass,
 					system,
 					userAgent,
 					userAgentData,
@@ -7820,20 +8710,6 @@
 					workerScope.lied = true;
 					workerScope.lies.systemFonts = `${fontSystemClass} fonts and ${system} user agent do not match`;
 					documentLie(workerScope.scope, workerScope.lies.systemFonts);
-				}
-
-				// text metrics system lie
-				const textMetricsSystemLie = textMetricsSystemClass && (
-					/^((i(pad|phone|os))|mac)$/i.test(system) && textMetricsSystemClass != 'Apple'  ? true :
-						/^(windows)$/i.test(system) && textMetricsSystemClass != 'Windows'  ? true :
-							/^(linux|chrome os)$/i.test(system) && textMetricsSystemClass != 'Linux'  ? true :
-								/^(android)$/i.test(system) && textMetricsSystemClass != 'Android'  ? true :
-									false
-				);
-				if (textMetricsSystemLie) {
-					workerScope.lied = true;
-					workerScope.lies.systemTextMetrics = `${textMetricsSystemClass} text metrics and ${system} user agent do not match`;
-					documentLie(workerScope.scope, workerScope.lies.systemTextMetrics);
 				}
 
 				// prototype lies
@@ -7918,11 +8794,15 @@
 					if (!/windows/i.test(device) || !userAgentData) {
 						return false
 					}
-					const reportedVersionNumber = +(/windows ([\d|\.]+)/i.exec(device)||[])[1]
-					const windows1OrHigherReport = reportedVersionNumber == 10
-					const { platformVersion, brandsVersion } = userAgentData
+					const reportedVersionNumber = +(/windows ([\d|\.]+)/i.exec(device)||[])[1];
+					const windows1OrHigherReport = reportedVersionNumber == 10;
+					const { platformVersion, brandsVersion } = userAgentData;
 
-					const brandsVersionNumber = +(/\d+/.exec(''+(brandsVersion||[])[0])||[])[0]
+					// userAgentData version format changed in Chrome 95
+					// https://github.com/WICG/ua-client-hints/issues/220#issuecomment-870858413
+					const chrome95AndAbove = (
+						((3.141592653589793 ** -100) == 1.9275814160560204e-50) && CSS.supports('app-region: initial')
+					);
 					const versionMap = {
 						'6.1': '7',
 						'6.1.0': '7',
@@ -7932,18 +8812,18 @@
 						'6.3.0': '8.1',
 						'10.0': '10',
 						'10.0.0': '10'
-					}
-					let versionNumber = versionMap[platformVersion]
-					if ((brandsVersionNumber < 95) && versionNumber) {
+					};
+					let versionNumber = versionMap[platformVersion];
+					if (!chrome95AndAbove && versionNumber) {
 						return versionNumber != (''+reportedVersionNumber)
 					}
-					versionNumber = +(/(\d+)\./.exec(''+platformVersion)||[])[1]
-					const windows10OrHigherPlatform = versionNumber > 0
+					versionNumber = +(/(\d+)\./.exec(''+platformVersion)||[])[1];
+					const windows10OrHigherPlatform = versionNumber > 0;
 					return (
 						(windows10OrHigherPlatform && !windows1OrHigherReport) ||
 						(!windows10OrHigherPlatform && windows1OrHigherReport)
 					)
-				}
+				};
 				const windowsVersionLie  = getWindowsVersionLie(workerScope.device, userAgentData);
 				if (windowsVersionLie) {
 					workerScope.lied = true;
@@ -7956,8 +8836,17 @@
 				workerScope.userAgentDataVersion = userAgentDataVersion;
 				workerScope.userAgentEngine = userAgentEngine;
 
-				logTestResult({ start, test: `${type} worker`, passed: true });
-				return { ...workerScope }
+				const gpu = {
+					...(getWebGLRendererConfidence(workerScope.webglRenderer) || {}),
+					compressedGPU: compressWebGLRenderer(workerScope.webglRenderer)
+				};
+				
+				logTestResult({ time: timer.stop(), test: `${type} worker`, passed: true });
+				return {
+					...workerScope,
+					gpu,
+					uaPostReduction: isUAPostReduction(workerScope.userAgent)
+				}
 			}
 			return
 		}
@@ -7968,23 +8857,23 @@
 		}
 	};
 
-	const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, compressWebGLRenderer, getWebGLRendererConfidence, computeWindowsRelease }) => {
+	const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, computeWindowsRelease, performanceLogger, formatEmojiSet }) => {
 		if (!fp.workerScope) {
 			return `
 		<div class="col-six undefined">
 			<strong>Worker</strong>
-			<div>canvas 2d: ${note.blocked}</div>
-			<div>textMetrics: ${note.blocked}</div>
-			<div>fontFaceSet (0): ${note.blocked}</div>
 			<div>keys (0): ${note.blocked}</div>
 			<div>permissions (0): ${note.blocked}</div>
 			<div>codecs (0):${note.blocked}</div>
-			<div>timezone: ${note.blocked}</div>
-			<div>language: ${note.blocked}</div>
+			<div>canvas 2d: ${note.blocked}</div>
+			<div>fonts (0): ${note.blocked}</div>
+			<div class="block-text-large">${note.blocked}</div>
 			<div>gpu:</div>
 			<div class="block-text">${note.blocked}</div>
 		</div>
 		<div class="col-six undefined">
+			<div>lang: ${note.blocked}</div>
+			<div>timezone: ${note.blocked}</div>
 			<div>device:</div>
 			<div class="block-text">${note.blocked}</div>
 			<div>userAgent:</div>
@@ -8012,16 +8901,21 @@
 			mediaCapabilities,
 			platform,
 			userAgent,
+			uaPostReduction,
 			permissions,
 			canvas2d,
-			textMetrics,
 			textMetricsSystemSum,
 			textMetricsSystemClass,
 			webglRenderer,
 			webglVendor,
-			fontFaceSetFonts,
+			gpu,
+			fontFaceLoadFonts,
 			fontSystemClass,
 			fontListLen,
+			fontPlatformVersion,
+			fontApps,
+			emojiSet,
+			emojiFonts,
 			userAgentData,
 			type,
 			scope,
@@ -8030,51 +8924,29 @@
 			$hash
 		} = data || {};
 
-		const icon = {
-			'Linux': '<span class="icon linux"></span>',
-			'Apple': '<span class="icon apple"></span>',
-			'Windows': '<span class="icon windows"></span>',
-			'Android': '<span class="icon android"></span>'
-		};
-		
-		const systemFontClassIcon = icon[fontSystemClass];
-		const systemTextMetricsClassIcon = icon[textMetricsSystemClass];
-		const fontFaceSetHash = hashMini(fontFaceSetFonts);
-		const textMetricsHash = hashMini(textMetrics);
 		const codecKeys = Object.keys(mediaCapabilities || {});
 		const permissionsKeys = Object.keys(permissions || {});
 		const permissionsGranted = (
 			permissions && permissions.granted ? permissions.granted.length : 0
 		);
 
-		const compressedGPU = compressWebGLRenderer(webglRenderer);
-		const { parts, gibbers, confidence, grade: confidenceGrade } = getWebGLRendererConfidence(webglRenderer) || {};
+		const {
+			parts,
+			warnings,
+			gibbers,
+			confidence,
+			grade: confidenceGrade,
+			compressedGPU
+		} = gpu || {};
 
+		const fontFaceLoadHash = hashMini(fontFaceLoadFonts);
+		const blockHelpTitle = `FontFace.load()\nOffscreenCanvasRenderingContext2D.measureText()\nhash: ${hashMini(emojiSet)}\n${(emojiSet||[]).map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`;
 		return `
-	<div class="ellipsis"><span class="aside-note">${scope || ''}</span></div>
-	<div class="col-six${lied ? ' rejected' : ''}">
+	<span class="time">${performanceLogger.getLog()[`${type} worker`]}</span>
+	<span class="aside-note-bottom">${scope || ''}</span>
+	<div class="relative col-six${lied ? ' rejected' : ''}">
+		
 		<strong>Worker</strong><span class="hash">${hashSlice($hash)}</span>
-		<div class="help" title="OffscreenCanvas.convertToBlob()\nFileReader.readAsDataURL()">canvas 2d:${
-			canvas2d && canvas2d.dataURI ?
-			`<span class="sub-hash">${hashMini(canvas2d.dataURI)}</span>` :
-			` ${note.unsupported}`
-		}</div>
-		<div class="help" title="OffscreenCanvasRenderingContext2D.measureText()">textMetrics: ${
-			!textMetrics ? note.blocked : modal(
-				'creep-worker-text-metrics',
-				`<div>system: ${textMetricsSystemSum}</div><br>` +
-				Object.keys(textMetrics).map(key => `<span>${key}: ${typeof textMetrics[key] == 'undefined' ? note.unsupported : textMetrics[key]}</span>`).join('<br>'),
-				systemTextMetricsClassIcon ? `${systemTextMetricsClassIcon}${textMetricsHash}` :
-					textMetricsHash
-			)	
-		}</div>
-		<div class="help" title="FontFaceSet.check()">fontFaceSet (${fontFaceSetFonts ? count(fontFaceSetFonts) : '0'}/${''+fontListLen}): ${
-			fontFaceSetFonts.length ? modal(
-				'creep-worker-fonts-check', 
-				fontFaceSetFonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>'),
-				systemFontClassIcon ? `${systemFontClassIcon}${fontFaceSetHash}` : fontFaceSetHash
-			) : note.unsupported
-		}</div>
 		<div>keys (${count(scopeKeys)}): ${
 			scopeKeys && scopeKeys.length ? modal(
 				'creep-worker-scope-version',
@@ -8089,6 +8961,7 @@
 				hashMini(permissions)
 			)
 		}</div>
+
 		<div class="help" title="MediaCapabilities.decodingInfo()">codecs (${''+codecKeys.length}): ${
 		!mediaCapabilities || !codecKeys.length ? note.unsupported :
 			modal(
@@ -8097,7 +8970,64 @@
 				hashMini(mediaCapabilities)
 			)
 		}</div>
-		<div class="help" title="Intl.DateTimeFormat().resolvedOptions().timeZone\nDate.getDate()\nDate.getMonth()\nDate.parse()">timezone: ${timezoneLocation} (${''+timezoneOffset})</div>
+
+		<div class="help" title="OffscreenCanvas.convertToBlob()\nFileReader.readAsDataURL()">canvas 2d:${
+			canvas2d && canvas2d.dataURI ?
+			`<span class="sub-hash">${hashMini(canvas2d.dataURI)}</span>` :
+			` ${note.unsupported}`
+		}</div>
+
+		<div class="help" title="FontFace.load()">fonts (${fontFaceLoadFonts ? count(fontFaceLoadFonts) : '0'}/${'' + fontListLen}): ${
+			!(fontFaceLoadFonts||[]).length ? note.unsupported : modal(
+				'creep-worker-fonts',
+				fontFaceLoadFonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>'),
+				fontFaceLoadHash
+			)
+		}</div>
+
+		<div class="block-text-large help relative" title="${blockHelpTitle}">
+			<div>
+				${fontPlatformVersion ? `platform: ${fontPlatformVersion}` : ((fonts) => {
+					const icon = {
+						'Linux': '<span class="icon linux"></span>',
+						'Apple': '<span class="icon apple"></span>',
+						'Windows': '<span class="icon windows"></span>',
+						'Android': '<span class="icon android"></span>',
+						'CrOS': '<span class="icon cros"></span>'
+					};
+					return !(fonts || []).length ? '' : (
+						((''+fonts).match(/Lucida Console/)||[]).length ? `${icon.Windows}Lucida Console...` :
+						((''+fonts).match(/Droid Sans Mono|Noto Color Emoji|Roboto/g)||[]).length == 3 ? `${icon.Linux}${icon.Android}Droid Sans Mono,Noto Color...` :
+						((''+fonts).match(/Droid Sans Mono|Roboto/g)||[]).length == 2 ? `${icon.Android}Droid Sans Mono,Roboto...` :
+						((''+fonts).match(/Noto Color Emoji|Roboto/g)||[]).length == 2 ? `${icon.CrOS}Noto Color Emoji,Roboto...` :
+						((''+fonts).match(/Noto Color Emoji/)||[]).length ? `${icon.Linux}Noto Color Emoji...` :
+						((''+fonts).match(/Arimo/)||[]).length ? `${icon.Linux}Arimo...` :
+						((''+fonts).match(/Helvetica Neue/g)||[]).length == 2 ? `${icon.Apple}Helvetica Neue...` :
+						`${(fonts||[])[0]}...`
+					)
+				})(fontFaceLoadFonts)}
+				${(fontApps || []).length ? `<br>apps: ${(fontApps || []).join(', ')}` : ''}
+				
+				<span class="confidence-note">${
+					!emojiFonts ? '' : emojiFonts.length > 1 ? `${emojiFonts[0]}...` : (emojiFonts[0] || '')
+				}</span>
+				<br><span>${textMetricsSystemSum || note.unsupported}</span>
+				<br><span class="grey jumbo" style="${!(emojiFonts || [])[0] ? '' : `font-family: '${emojiFonts[0]}' !important`}">${formatEmojiSet(emojiSet)}</span>
+			</div>
+		</div>
+
+		<div class="relative">${
+			confidence ? `<span class="confidence-note">confidence: <span class="scale-up grade-${confidenceGrade}">${confidence}</span></span>` : ''
+		}gpu:</div>
+		<div class="block-text help" title="${
+			confidence ? `\nWebGLRenderingContext.getParameter()\ngpu compressed: ${compressedGPU}\nknown parts: ${parts || 'none'}\ngibberish: ${gibbers || 'none'}\nwarnings: ${warnings.join(', ') || 'none'}` : 'WebGLRenderingContext.getParameter()'
+		}">
+			${webglVendor ? webglVendor : ''}
+			${webglRenderer ? `<br>${webglRenderer}` : note.unsupported}
+		</div>
+	</div>
+	<div class="col-six${lied ? ' rejected' : ''}">
+		
 		<div class="help" title="WorkerNavigator.language\nWorkerNavigator.languages\nIntl.Collator.resolvedOptions()\nIntl.DateTimeFormat.resolvedOptions()\nIntl.DisplayNames.resolvedOptions()\nIntl.ListFormat.resolvedOptions()\nIntl.NumberFormat.resolvedOptions()\nIntl.PluralRules.resolvedOptions()\nIntl.RelativeTimeFormat.resolvedOptions()\nNumber.toLocaleString()">lang:
 			${
 				localeEntropyIsTrusty ? `${language} (${systemCurrencyLocale})` : 
@@ -8108,28 +9038,20 @@
 					` <span class="bold-fail">${locale}</span>`
 			}
 		</div>
-		<div class="relative">${
-			confidence ? `<span class="confidence-note">confidence: <span class="scale-up grade-${confidenceGrade}">${confidence}</span></span>` : ''
-		}gpu:</div>
-		<div class="block-text help" title="${
-			confidence ? `\nWebGLRenderingContext.getParameter()\ngpu compressed: ${compressedGPU}\nknown parts: ${parts || 'none'}\ngibberish: ${gibbers || 'none'}` : 'WebGLRenderingContext.getParameter()'
-		}">
-			${webglVendor ? webglVendor : ''}
-			${webglRenderer ? `<br>${webglRenderer}` : note.unsupported}
-		</div>
-	</div>
-	<div class="col-six${lied ? ' rejected' : ''}">
+
+		<div class="help" title="Intl.DateTimeFormat().resolvedOptions().timeZone\nDate.getDate()\nDate.getMonth()\nDate.parse()">timezone: ${timezoneLocation} (${''+timezoneOffset})</div>
+
 		<div>device:</div>
 		<div class="block-text help" title="WorkerNavigator.deviceMemory\nWorkerNavigator.hardwareConcurrency\nWorkerNavigator.platform\nWorkerNavigator.userAgent">
 			${`${system}${platform ? ` (${platform})` : ''}`}
 			${device ? `<br>${device}` : note.blocked}
 			${
-				hardwareConcurrency && deviceMemory ? `<br>cores: ${hardwareConcurrency}, memory: ${deviceMemory}` :
+				hardwareConcurrency && deviceMemory ? `<br>cores: ${hardwareConcurrency}, ram: ${deviceMemory}` :
 				hardwareConcurrency && !deviceMemory ? `<br>cores: ${hardwareConcurrency}` :
-				!hardwareConcurrency && deviceMemory ? `<br>memory: ${deviceMemory}` : ''
+				!hardwareConcurrency && deviceMemory ? `<br>ram: ${deviceMemory}` : ''
 			}
 		</div>
-		<div>userAgent:</div>
+		<div class="relative">userAgent:${!uaPostReduction ? '' : `<span class="confidence-note">ua reduction</span>`}</div>
 		<div class="block-text help" title="WorkerNavigator.userAgent">
 			<div>${userAgent || note.unsupported}</div>
 		</div>
@@ -8139,6 +9061,7 @@
 			${((userAgentData) => {
 				const {
 					architecture,
+					bitness,
 					brandsVersion,
 					uaFullVersion,
 					mobile,
@@ -8147,15 +9070,11 @@
 					platform
 				} = userAgentData || {};
 
-				const brandsVersionNumber = +(/\d+/.exec(''+(brandsVersion||[])[0])||[])[0]
-				const windowsRelease = (
-					brandsVersionNumber > 94 ? computeWindowsRelease(platform, platformVersion) :
-						undefined
-				)
+				const windowsRelease = computeWindowsRelease({ platform, platformVersion });
 
 				return !userAgentData ? note.unsupported : `
 					${(brandsVersion || []).join(',')}${uaFullVersion ? ` (${uaFullVersion})` : ''}
-					<br>${windowsRelease ? windowsRelease : `${platform} ${platformVersion}`} ${architecture}
+					<br>${windowsRelease || `${platform} ${platformVersion}`} ${architecture ? `${architecture}${bitness ? `_${bitness}` : ''}` : ''}
 					${model ? `<br>${model}` : ''}
 					${mobile ? '<br>mobile' : ''}
 				`
@@ -8170,12 +9089,13 @@
 
 		const {
 			require: {
+				queueEvent,
+				createTimer,
 				instanceId,
-				hashMini,
 				patch,
 				html,
 				captureError,
-				documentLie,
+				getEmojis,
 				lieProps,
 				logTestResult,
 				phantomDarkness
@@ -8183,7 +9103,8 @@
 		} = imports;
 		
 		try {
-			const start = performance.now();
+			const timer = createTimer();
+			await queueEvent(timer);
 			let lied = (
 				lieProps['SVGRect.height'] ||
 				lieProps['SVGRect.width'] ||
@@ -8191,17 +9112,48 @@
 				lieProps['SVGRect.y']
 			) || false; // detect lies
 							
-			const doc = phantomDarkness ? phantomDarkness.document : document;
-
+			const doc = (
+				phantomDarkness &&
+				phantomDarkness.document &&
+				phantomDarkness.document.body ? phantomDarkness.document :
+					document
+			);
+			
 			const svgId = `${instanceId}-svg-div`;
+			const fontId = 'svgrect-font-detector';
 			const divElement = document.createElement('div');
 			divElement.setAttribute('id', svgId);
 			doc.body.appendChild(divElement);
-			const divRendered = doc.getElementById(svgId);
+
+			const emojis = getEmojis();
 			
 			// patch div
-			patch(divRendered, html`
+			patch(divElement, html`
 		<div id="${svgId}">
+			<style>
+				#${fontId} {
+					--font: '';
+					position: absolute !important;
+					left: -9999px!important;
+					font-size: 256px !important;
+					font-style: normal !important;
+					font-weight: normal !important;
+					letter-spacing: normal !important;
+					line-break: auto !important;
+					line-height: normal !important;
+					text-transform: none !important;
+					text-align: left !important;
+					text-decoration: none !important;
+					text-shadow: none !important;
+					white-space: normal !important;
+					word-break: normal !important;
+					word-spacing: normal !important;
+					font-family: var(--font);
+				}
+			</style>
+			<svg viewBox="0 0 200 200">
+				<text id="${fontId}">${emojis.join('')}</text>
+			</svg>
 			<div id="svg-container">
 				<style>
 				#svg-container {
@@ -8209,81 +9161,149 @@
 					left: -9999px;
 					height: auto;
 				}
-				#svgText {
-					font-family: monospace !important;
-					font-size: 100px;
-					font-style: normal;
-					font-weight: normal;
-					letter-spacing: normal;
-					line-break: auto;
-					line-height: normal;
-					text-transform: none;
-					text-align: left;
-					text-decoration: none;
-					text-shadow: none;
-					white-space: normal;
-					word-break: normal;
-					word-spacing: normal;
+				.svgrect-emoji {
+					font-family:
+					'Segoe UI Emoji', /* Windows */
+					'Apple Color Emoji', /* Apple */
+					'Noto Color Emoji', /* Linux, Android, Chrome OS */
+					sans-serif !important;
+					font-size: 200px !important;
+					height: auto;
+					position: absolute !important;
+					transform: scale(100);
 				}
 				</style>
 				<svg>
 					<g id="svgBox">
-						<text id="svgText" x="32" y="32" transform="scale(0.099999999)">
-							qwertyuiopasdfghjklzxcvbnm
-						</text>
+						${
+							emojis.map(emoji => {
+								return `<text x="32" y="32" class="svgrect-emoji">${emoji}</text>`
+							})
+						}
 					</g>
-					<path id="svgPath" d="M 10 80 C 50 10, 75 10, 95 80 S 150 110, 150 110 S 80 190, 40 140 Z"/>
 				</svg>
 			</div>
 		</div>
 		`);
+
+			// fonts
+			const baseFonts = ['monospace', 'sans-serif', 'serif'];
+			const fontShortList = [
+				'Segoe UI Emoji', // Windows
+				'Apple Color Emoji', // Apple
+				'Noto Color Emoji',  // Linux, Android, Chrome OS
+			];
+			const families = fontShortList.reduce((acc, font) => {
+				baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`));
+				return acc
+			}, []);
+			const svgText = doc.getElementById(fontId);
+			const getCharDimensions = (svgText, emojis) => {
+				const { width, height, y } = svgText.getExtentOfChar(emojis.join(''));
+				return { width, height, y }
+			};
+			const base = baseFonts.reduce((acc, font) => {
+				svgText.style.setProperty('--font', font);
+				const dimensions = getCharDimensions(svgText, emojis);
+				acc[font] = dimensions;
+				return acc
+			}, {});
+			const detectedEmojiFonts = families.reduce((acc, family) => {
+				svgText.style.setProperty('--font', family);
+				const basefont = /, (.+)/.exec(family)[1];
+				const dimensions = getCharDimensions(svgText, emojis);
+				const font = /\'(.+)\'/.exec(family)[1];
+				if ((dimensions.width != base[basefont].width) ||
+					(dimensions.height != base[basefont].height) ||
+					(dimensions.y != base[basefont].y)) {
+					acc.add(font);
+				}
+				return acc
+			}, new Set());
+
+			// SVG
+			const reduceToObject = nativeObj => {
+				const keys = Object.keys(nativeObj.__proto__);
+				return keys.reduce((acc, key) => {
+					const val = nativeObj[key];
+					const isMethod = typeof val == 'function';
+					return isMethod ? acc : {...acc, [key]: val}
+				}, {})
+			};
+			const reduceToSum = nativeObj => {
+				const keys = Object.keys(nativeObj.__proto__);
+				return keys.reduce((acc, key) => {
+					const val = nativeObj[key];
+					return isNaN(val) ? acc : (acc += val)
+				}, 0)
+			};
+			const getListSum = list => list.reduce((acc, n) => acc += n, 0);
+			const getObjectSum = obj => !obj ? 0 : Object.keys(obj).reduce((acc, key) => acc += Math.abs(obj[key]), 0);
 			
+			// SVGRect
 			const svgBox = doc.getElementById('svgBox');
-			const bBox = {} // SVGRect 
-			;(
-				{
-					height: bBox.height,
-					width: bBox.width,
-					x: bBox.x,
-					y: bBox.y
-				} = svgBox.getBBox()
-			);
-			
-			const svgText = doc.getElementById('svgText');
-			const subStringLength = svgText.getSubStringLength(1, 2);
-			const extentOfChar = {} // SVGRect 
-			;(
-				{
-					height: extentOfChar.height,
-					width: extentOfChar.width,
-					x: extentOfChar.x,
-					y: extentOfChar.y
-				} = svgText.getExtentOfChar('x')
-			);
-				
-			const computedTextLength = svgText.getComputedTextLength();		
-			const svgPath = doc.getElementById('svgPath');
-			const totalLength = svgPath.getTotalLength();
-			const pointAtLength = {} // SVGPoint 
-			;(
-				{
-					x: pointAtLength.x,
-					y: pointAtLength.y
-				} = svgPath.getPointAtLength(1)
-			);
+			const bBox = reduceToObject(svgBox.getBBox());
 
-			logTestResult({ start, test: 'svg', passed: true });
+			// compute SVGRect emojis
+			const pattern = new Set();
+			const lengthSet = {
+				extentOfChar: new Set(),
+				subStringLength: new Set(),
+				computedTextLength: new Set()
+			};
+			await queueEvent(timer);
 
-			const getSum = obj => !obj ? 0 : Object.keys(obj).reduce((acc, key) => acc += Math.abs(obj[key]), 0);
-			return {
-				bBox: getSum(bBox),
-				subStringLength,
-				extentOfChar: getSum(extentOfChar),
-				computedTextLength,
-				totalLength,
-				pointAtLength: getSum(pointAtLength),
+			const svgElems = [...svgBox.getElementsByClassName('svgrect-emoji')];
+			const emojiSet = svgElems.reduce((emojiSet, el, i) => {
+				const emoji = emojis[i];
+				const extentOfCharSum = reduceToSum(el.getExtentOfChar(emoji));
+				const subStringLength = el.getSubStringLength(0, 10);
+				const computedTextLength = el.getComputedTextLength();
+				const dimensions = `${extentOfCharSum},${subStringLength},${computedTextLength}`;
+				if (!pattern.has(dimensions)) {
+					pattern.add(dimensions);
+					emojiSet.add(emoji);
+				}
+				lengthSet.extentOfChar.add(extentOfCharSum);
+				lengthSet.subStringLength.add(subStringLength);
+				lengthSet.computedTextLength.add(computedTextLength);
+				return emojiSet
+			}, new Set());
+
+			// domRect System Sum
+			const svgrectSum = 0.00001 * [...pattern].map(x => {
+				return x.split(',').reduce((acc, x) => acc += (+x||0), 0)
+			}).reduce((acc, x) => acc += x, 0);
+
+			const amplifySum = (n, fontSet) => {
+				const { size } = fontSet;
+				if (size > 1) {
+					return n / +`1e${size}00` // ...e-200
+				}
+				return (
+					!size ? n * -1e150 : // -...e+148
+						size > 1 ? n / +`1e${size}00` : // ...e-200
+							fontSet.has('Segoe UI Emoji') ? n :
+								fontSet.has('Apple Color Emoji') ? n / 1e64 : // ...e-66
+									n * 1e64 // ...e+62
+				)
+			}; 
+
+			const svgrectSystemSum = amplifySum(svgrectSum, detectedEmojiFonts);
+
+			const data = {
+				bBox: getObjectSum(bBox),
+				extentOfChar: getListSum([...lengthSet.extentOfChar]),
+				subStringLength: getListSum([...lengthSet.subStringLength]),
+				computedTextLength: getListSum([...lengthSet.computedTextLength]),
+				emojiSet: [...emojiSet],
+				emojiFonts: [...detectedEmojiFonts],
+				svgrectSystemSum,
 				lied
-			}
+			};
+			
+			logTestResult({ time: timer.stop(), test: 'svg', passed: true });
+			return data
 		}
 		catch (error) {
 			logTestResult({ test: 'svg', passed: false });
@@ -8292,17 +9312,16 @@
 		}
 	};
 
-	const svgHTML = ({ fp, note, hashSlice }) => {
+	const svgHTML = ({ fp, note, hashSlice, hashMini, formatEmojiSet, performanceLogger }) => {
 		if (!fp.svg) {
 			return `
 		<div class="col-six undefined">
-			<strong>SVG</strong>
+			<strong>SVGRect</strong>
 			<div>bBox: ${note.blocked}</div>
-			<div>pointAt: ${note.blocked}</div>
-			<div>total: ${note.blocked}</div>
-			<div>extentOfChar: ${note.blocked}</div>
-			<div>subString: ${note.blocked}</div>
-			<div>computedText: ${note.blocked}</div>
+			<div>char: ${note.blocked}</div>
+			<div>subs: ${note.blocked}</div>
+			<div>text: ${note.blocked}</div>
+			<div class="block-text">${note.blocked}</div>
 		</div>`
 		}
 		const {
@@ -8312,21 +9331,29 @@
 				subStringLength,
 				extentOfChar,
 				computedTextLength,
-				totalLength,
-				pointAtLength,
+				emojiSet,
+				emojiFonts,
+				svgrectSystemSum,
 				lied
 			}
 		} = fp;
-
+		const divisor = 10000;
+		const helpTitle = `SVGTextContentElement.getExtentOfChar()\nSVGTextContentElement.getSubStringLength()\nSVGTextContentElement.getComputedTextLength()\nhash: ${hashMini(emojiSet)}\n${emojiSet.map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`;
 		return `
-	<div class="col-six${lied ? ' rejected' : ''}">
-		<strong>SVG</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-		<div class="help" title="SVGGraphicsElement.getBBox()">bBox: ${bBox || note.blocked}</div>
-		<div class="help" title="SVGGeometryElement.getPointAtLength()">pointAt: ${pointAtLength || note.blocked}</div>
-		<div class="help" title="SVGGeometryElement.getTotalLength()">total: ${totalLength || note.blocked}</div>
-		<div class="help" title="SVGTextContentElement.getExtentOfChar()">extentOfChar: ${extentOfChar || note.blocked}</div>
-		<div class="help" title="SVGTextContentElement.getSubStringLength()">subString: ${subStringLength || note.blocked}</div>
-		<div class="help" title="SVGTextContentElement.getComputedTextLength()">computedText: ${computedTextLength || note.blocked}</div>
+	<div class="relative col-six${lied ? ' rejected' : ''}">
+		<span class="aside-note">${performanceLogger.getLog().svg}</span>
+		<strong>SVGRect</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+		<div class="help" title="SVGGraphicsElement.getBBox()">bBox: ${bBox ? (bBox/divisor) : note.blocked}</div>
+		<div class="help" title="SVGTextContentElement.getExtentOfChar()">char: ${extentOfChar ? (extentOfChar/divisor) : note.blocked}</div>
+		<div class="help" title="SVGTextContentElement.getSubStringLength()">subs: ${subStringLength ? (subStringLength/divisor) : note.blocked}</div>
+		<div class="help" title="SVGTextContentElement.getComputedTextLength()">text: ${computedTextLength ? (computedTextLength/divisor) : note.blocked}</div>
+		<div class="block-text help relative" title="${helpTitle}">
+			<span class="confidence-note">${
+				!emojiFonts ? '' : emojiFonts.length > 1 ? `${emojiFonts[0]}...` : (emojiFonts[0] || '')
+			}</span>
+			<span>${svgrectSystemSum || note.unsupported}</span>
+			<span class="grey jumbo" style="${!(emojiFonts || [])[0] ? '' : `font-family: '${emojiFonts[0]}' !important`}">${formatEmojiSet(emojiSet)}</span>
+		</div>
 	</div>
 	`	
 	};
@@ -8335,6 +9362,8 @@
 
 		const {
 			require: {
+				queueEvent,
+				createTimer,
 				isFirefox,
 				isChrome,
 				getBraveMode,
@@ -8347,8 +9376,8 @@
 		} = imports;
 
 		try {
-			await new Promise(setTimeout).catch(e => {});
-			const start = performance.now();
+			const timer = createTimer();
+			await queueEvent(timer);
 			const data = {
 				privacy: undefined,
 				security: undefined,
@@ -8360,24 +9389,6 @@
 							''
 				)
 			};
-			// Brave
-			const isBrave = await braveBrowser();
-			if (isBrave) {
-				const braveMode = getBraveMode();
-				data.privacy = 'Brave';
-				data.security = {
-					'FileSystemWritableFileStream': 'FileSystemWritableFileStream' in window,
-					'Serial': 'Serial' in window,
-					'ReportingObserver': 'ReportingObserver' in window
-				};
-				data.mode = (
-					braveMode.allow ? 'allow' :
-					braveMode.standard ? 'standard' :
-					braveMode.strict ? 'strict' :
-					undefined
-				);
-			}
-			
 			// Firefox/Tor Browser
 			const regex = n => new RegExp(`${n}+$`);
 			const delay = (ms, baseNumber, baseDate = null) => new Promise(resolve => setTimeout(() => {
@@ -8431,8 +9442,32 @@
 					precisionValue: protection ? lastCharA : undefined
 				}
 			};
-			const { protection } = isChrome ? {} : await getTimerPrecision();
 
+			const [
+				isBrave,
+				timerPrecision
+			] = await Promise.all([
+				braveBrowser(),
+				isChrome ? undefined : getTimerPrecision()
+			]);
+			
+			if (isBrave) {
+				const braveMode = getBraveMode();
+				data.privacy = 'Brave';
+				data.security = {
+					'FileSystemWritableFileStream': 'FileSystemWritableFileStream' in window,
+					'Serial': 'Serial' in window,
+					'ReportingObserver': 'ReportingObserver' in window
+				};
+				data.mode = (
+					braveMode.allow ? 'allow' :
+					braveMode.standard ? 'standard' :
+					braveMode.strict ? 'strict' :
+					undefined
+				);
+			}
+
+			const { protection } = timerPrecision || {};
 			if (isFirefox && protection) {
 				const features = {
 					'OfflineAudioContext': 'OfflineAudioContext' in window, // dom.webaudio.enabled
@@ -8474,7 +9509,7 @@
 				noscript: {
 					contentDocumentHash: ['0b637a33', '37e2f32e'],
 					contentWindowHash: ['0b637a33', '37e2f32e'],
-					getContextHash: ['0b637a33', disabled]
+					getContextHash: ['0b637a33', '081d6d1b', disabled]
 				},
 				trace: {
 					contentDocumentHash: ['ca9d9c2f'],
@@ -8550,7 +9585,7 @@
 			ScriptSafe
 			Windscribe
 			*/
-			
+			await queueEvent(timer);
 			const hash = {
 				// iframes
 				contentDocumentHash: hashMini(prototypeLies['HTMLIFrameElement.contentDocument']),
@@ -8694,7 +9729,7 @@
 			
 			data.extension = getExtension(pattern, hash);
 
-			logTestResult({ start, test: 'resistance', passed: true });
+			logTestResult({ time: timer.stop(), test: 'resistance', passed: true });
 			return data
 		}
 		catch (error) {
@@ -8704,7 +9739,7 @@
 		}
 	};
 
-	const resistanceHTML = ({ fp, modal, note, hashMini, hashSlice }) => {
+	const resistanceHTML = ({ fp, modal, note, hashMini, hashSlice, performanceLogger }) => {
 		if (!fp.resistance) {
 			return `
 		<div class="col-six undefined">
@@ -8751,7 +9786,8 @@
 		);
 
 		return `
-	<div class="col-six">
+	<div class="relative col-six">
+		<span class="aside-note">${performanceLogger.getLog().resistance}</span>
 		<strong>Resistance</strong><span class="hash">${hashSlice($hash)}</span>
 		<div>privacy: ${privacy ? `${browserIcon}${privacy}` : note.unknown}</div>
 		<div>security: ${
@@ -8777,37 +9813,12 @@
 	`
 	};
 
-	const getLocale = intl => {
-		const constructors = [
-			'Collator',
-			'DateTimeFormat',
-			'DisplayNames',
-			'ListFormat',
-			'NumberFormat',
-			'PluralRules',
-			'RelativeTimeFormat'
-		];
-		const locale = constructors.reduce((acc, name) => {
-			try {
-				const obj = new intl[name];
-				if (!obj) {
-					return acc
-				}
-				const { locale } = obj.resolvedOptions() || {};
-				return [...acc, locale]
-			}
-			catch (error) {
-				return acc
-			}
-		}, []);
-
-		return [...new Set(locale)]
-	};
-
 	const getIntl = async imports => {
 
 		const {
 			require: {
+				queueEvent,
+				createTimer,
 				phantomDarkness,
 				lieProps,
 				caniuse,
@@ -8816,8 +9827,36 @@
 			}
 		} = imports;
 
+		const getLocale = intl => {
+			const constructors = [
+				'Collator',
+				'DateTimeFormat',
+				'DisplayNames',
+				'ListFormat',
+				'NumberFormat',
+				'PluralRules',
+				'RelativeTimeFormat'
+			];
+			const locale = constructors.reduce((acc, name) => {
+				try {
+					const obj = new intl[name];
+					if (!obj) {
+						return acc
+					}
+					const { locale } = obj.resolvedOptions() || {};
+					return [...acc, locale]
+				}
+				catch (error) {
+					return acc
+				}
+			}, []);
+
+			return [...new Set(locale)]
+		};
+
 		try {
-			const start = performance.now();
+			const timer = createTimer();
+			await queueEvent(timer);
 			let lied = (
 				lieProps['Intl.Collator.resolvedOptions'] ||
 				lieProps['Intl.DateTimeFormat.resolvedOptions'] ||
@@ -8868,10 +9907,10 @@
 					style: 'long'
 				}).format(1, 'year')
 			});
-
+			
 			const locale = getLocale(phantomIntl);
 
-			logTestResult({ start, test: 'intl', passed: true });
+			logTestResult({ time: timer.stop(), test: 'intl', passed: true });
 			return {
 				dateTimeFormat,
 				displayNames,
@@ -8890,7 +9929,7 @@
 		}
 	};
 
-	const intlHTML = ({ fp, modal, note, hashSlice, count }) => {
+	const intlHTML = ({ fp, note, hashSlice, performanceLogger }) => {
 		if (!fp.htmlElementVersion) {
 			return `
 		<div class="col-four undefined">
@@ -8905,30 +9944,31 @@
 		</div>`
 		}
 		const {
-			intl: {
-				$hash,
-				dateTimeFormat,
-				displayNames,
-				listFormat,
-				numberFormat,
-				pluralRules,
-				relativeTimeFormat,
-				locale,
-				lied
-			}
-		} = fp;
+			$hash,
+			dateTimeFormat,
+			displayNames,
+			listFormat,
+			numberFormat,
+			pluralRules,
+			relativeTimeFormat,
+			locale,
+			lied
+		} = fp.intl || {};
 
 		return `
-	<div class="col-four${lied ? ' rejected' : ''}">
+	<div class="relative col-four${lied ? ' rejected' : ''}">
+		<span class="aside-note">${performanceLogger.getLog().intl}</span>
 		<strong>Intl</strong><span class="hash">${hashSlice($hash)}</span>
 		<div class="block-text help"  title="Intl.Collator\nIntl.DateTimeFormat\nIntl.DisplayNames\nIntl.ListFormat\nIntl.NumberFormat\nIntl.PluralRules\nIntl.RelativeTimeFormat">
-			${locale ? locale : ''}
-			${dateTimeFormat ? `<br>${dateTimeFormat}` : ''}
-			${displayNames ? `<br>${displayNames}` : ''}
-			${numberFormat ? `<br>${numberFormat}` : ''}
-			${relativeTimeFormat ? `<br>${relativeTimeFormat}` : ''}
-			${listFormat ? `<br>${listFormat}` : ''}
-			${pluralRules ? `<br>${pluralRules}` : ''}
+			${[
+				locale,
+				dateTimeFormat,
+				displayNames,
+				numberFormat,
+				relativeTimeFormat,
+				listFormat,
+				pluralRules
+			].join('<br>')}
 		</div>
 	</div>
 	`
@@ -8943,15 +9983,15 @@
 	*/
 	const getStableFeatures = () => ({
 		'Chrome': {
-			version: 97,
-			windowKeys: `Object, Function, Array, Number, parseFloat, parseInt, Infinity, NaN, undefined, Boolean, String, Symbol, Date, Promise, RegExp, Error, AggregateError, EvalError, RangeError, ReferenceError, SyntaxError, TypeError, URIError, globalThis, JSON, Math, console, Intl, ArrayBuffer, Uint8Array, Int8Array, Uint16Array, Int16Array, Uint32Array, Int32Array, Float32Array, Float64Array, Uint8ClampedArray, BigUint64Array, BigInt64Array, DataView, Map, BigInt, Set, WeakMap, WeakSet, Proxy, Reflect, FinalizationRegistry, WeakRef, decodeURI, decodeURIComponent, encodeURI, encodeURIComponent, escape, unescape, eval, isFinite, isNaN, Option, Image, Audio, webkitURL, webkitRTCPeerConnection, webkitMediaStream, WebKitMutationObserver, WebKitCSSMatrix, XPathResult, XPathExpression, XPathEvaluator, XMLSerializer, XMLHttpRequestUpload, XMLHttpRequestEventTarget, XMLHttpRequest, XMLDocument, WritableStreamDefaultWriter, WritableStreamDefaultController, WritableStream, Worker, Window, WheelEvent, WebSocket, WebGLVertexArrayObject, WebGLUniformLocation, WebGLTransformFeedback, WebGLTexture, WebGLSync, WebGLShaderPrecisionFormat, WebGLShader, WebGLSampler, WebGLRenderingContext, WebGLRenderbuffer, WebGLQuery, WebGLProgram, WebGLFramebuffer, WebGLContextEvent, WebGLBuffer, WebGLActiveInfo, WebGL2RenderingContext, WaveShaperNode, VisualViewport, ValidityState, VTTCue, UserActivation, URLSearchParams, URL, UIEvent, TreeWalker, TransitionEvent, TransformStream, TrackEvent, TouchList, TouchEvent, Touch, TimeRanges, TextTrackList, TextTrackCueList, TextTrackCue, TextTrack, TextMetrics, TextEvent, TextEncoderStream, TextEncoder, TextDecoderStream, TextDecoder, Text, TaskAttributionTiming, SyncManager, SubmitEvent, StyleSheetList, StyleSheet, StylePropertyMapReadOnly, StylePropertyMap, StorageEvent, Storage, StereoPannerNode, StaticRange, ShadowRoot, Selection, SecurityPolicyViolationEvent, ScriptProcessorNode, ScreenOrientation, Screen, SVGViewElement, SVGUseElement, SVGUnitTypes, SVGTransformList, SVGTransform, SVGTitleElement, SVGTextPositioningElement, SVGTextPathElement, SVGTextElement, SVGTextContentElement, SVGTSpanElement, SVGSymbolElement, SVGSwitchElement, SVGStyleElement, SVGStringList, SVGStopElement, SVGSetElement, SVGScriptElement, SVGSVGElement, SVGRectElement, SVGRect, SVGRadialGradientElement, SVGPreserveAspectRatio, SVGPolylineElement, SVGPolygonElement, SVGPointList, SVGPoint, SVGPatternElement, SVGPathElement, SVGNumberList, SVGNumber, SVGMetadataElement, SVGMatrix, SVGMaskElement, SVGMarkerElement, SVGMPathElement, SVGLinearGradientElement, SVGLineElement, SVGLengthList, SVGLength, SVGImageElement, SVGGraphicsElement, SVGGradientElement, SVGGeometryElement, SVGGElement, SVGForeignObjectElement, SVGFilterElement, SVGFETurbulenceElement, SVGFETileElement, SVGFESpotLightElement, SVGFESpecularLightingElement, SVGFEPointLightElement, SVGFEOffsetElement, SVGFEMorphologyElement, SVGFEMergeNodeElement, SVGFEMergeElement, SVGFEImageElement, SVGFEGaussianBlurElement, SVGFEFuncRElement, SVGFEFuncGElement, SVGFEFuncBElement, SVGFEFuncAElement, SVGFEFloodElement, SVGFEDropShadowElement, SVGFEDistantLightElement, SVGFEDisplacementMapElement, SVGFEDiffuseLightingElement, SVGFEConvolveMatrixElement, SVGFECompositeElement, SVGFEComponentTransferElement, SVGFEColorMatrixElement, SVGFEBlendElement, SVGEllipseElement, SVGElement, SVGDescElement, SVGDefsElement, SVGComponentTransferFunctionElement, SVGClipPathElement, SVGCircleElement, SVGAnimationElement, SVGAnimatedTransformList, SVGAnimatedString, SVGAnimatedRect, SVGAnimatedPreserveAspectRatio, SVGAnimatedNumberList, SVGAnimatedNumber, SVGAnimatedLengthList, SVGAnimatedLength, SVGAnimatedInteger, SVGAnimatedEnumeration, SVGAnimatedBoolean, SVGAnimatedAngle, SVGAnimateTransformElement, SVGAnimateMotionElement, SVGAnimateElement, SVGAngle, SVGAElement, Response, ResizeObserverSize, ResizeObserverEntry, ResizeObserver, Request, ReportingObserver, ReadableStreamDefaultReader, ReadableStreamDefaultController, ReadableStreamBYOBRequest, ReadableStreamBYOBReader, ReadableStream, ReadableByteStreamController, Range, RadioNodeList, RTCTrackEvent, RTCStatsReport, RTCSessionDescription, RTCSctpTransport, RTCRtpTransceiver, RTCRtpSender, RTCRtpReceiver, RTCPeerConnectionIceEvent, RTCPeerConnectionIceErrorEvent, RTCPeerConnection, RTCIceCandidate, RTCErrorEvent, RTCError, RTCEncodedVideoFrame, RTCEncodedAudioFrame, RTCDtlsTransport, RTCDataChannelEvent, RTCDataChannel, RTCDTMFToneChangeEvent, RTCDTMFSender, RTCCertificate, PromiseRejectionEvent, ProgressEvent, ProcessingInstruction, PopStateEvent, PointerEvent, PluginArray, Plugin, PeriodicWave, PerformanceTiming, PerformanceServerTiming, PerformanceResourceTiming, PerformancePaintTiming, PerformanceObserverEntryList, PerformanceObserver, PerformanceNavigationTiming, PerformanceNavigation, PerformanceMeasure, PerformanceMark, PerformanceLongTaskTiming, PerformanceEventTiming, PerformanceEntry, PerformanceElementTiming, Performance, Path2D, PannerNode, PageTransitionEvent, OverconstrainedError, OscillatorNode, OffscreenCanvasRenderingContext2D, OffscreenCanvas, OfflineAudioContext, OfflineAudioCompletionEvent, NodeList, NodeIterator, NodeFilter, Node, NetworkInformation, Navigator, NamedNodeMap, MutationRecord, MutationObserver, MutationEvent, MouseEvent, MimeTypeArray, MimeType, MessagePort, MessageEvent, MessageChannel, MediaStreamTrackEvent, MediaStreamTrack, MediaStreamEvent, MediaStreamAudioSourceNode, MediaStreamAudioDestinationNode, MediaStream, MediaRecorder, MediaQueryListEvent, MediaQueryList, MediaList, MediaError, MediaEncryptedEvent, MediaElementAudioSourceNode, MediaCapabilities, Location, LayoutShiftAttribution, LayoutShift, LargestContentfulPaint, KeyframeEffect, KeyboardEvent, IntersectionObserverEntry, IntersectionObserver, InputEvent, InputDeviceInfo, InputDeviceCapabilities, ImageData, ImageCapture, ImageBitmapRenderingContext, ImageBitmap, IdleDeadline, IIRFilterNode, IDBVersionChangeEvent, IDBTransaction, IDBRequest, IDBOpenDBRequest, IDBObjectStore, IDBKeyRange, IDBIndex, IDBFactory, IDBDatabase, IDBCursorWithValue, IDBCursor, History, Headers, HashChangeEvent, HTMLVideoElement, HTMLUnknownElement, HTMLUListElement, HTMLTrackElement, HTMLTitleElement, HTMLTimeElement, HTMLTextAreaElement, HTMLTemplateElement, HTMLTableSectionElement, HTMLTableRowElement, HTMLTableElement, HTMLTableColElement, HTMLTableCellElement, HTMLTableCaptionElement, HTMLStyleElement, HTMLSpanElement, HTMLSourceElement, HTMLSlotElement, HTMLSelectElement, HTMLScriptElement, HTMLQuoteElement, HTMLProgressElement, HTMLPreElement, HTMLPictureElement, HTMLParamElement, HTMLParagraphElement, HTMLOutputElement, HTMLOptionsCollection, HTMLOptionElement, HTMLOptGroupElement, HTMLObjectElement, HTMLOListElement, HTMLModElement, HTMLMeterElement, HTMLMetaElement, HTMLMenuElement, HTMLMediaElement, HTMLMarqueeElement, HTMLMapElement, HTMLLinkElement, HTMLLegendElement, HTMLLabelElement, HTMLLIElement, HTMLInputElement, HTMLImageElement, HTMLIFrameElement, HTMLHtmlElement, HTMLHeadingElement, HTMLHeadElement, HTMLHRElement, HTMLFrameSetElement, HTMLFrameElement, HTMLFormElement, HTMLFormControlsCollection, HTMLFontElement, HTMLFieldSetElement, HTMLEmbedElement, HTMLElement, HTMLDocument, HTMLDivElement, HTMLDirectoryElement, HTMLDialogElement, HTMLDetailsElement, HTMLDataListElement, HTMLDataElement, HTMLDListElement, HTMLCollection, HTMLCanvasElement, HTMLButtonElement, HTMLBodyElement, HTMLBaseElement, HTMLBRElement, HTMLAudioElement, HTMLAreaElement, HTMLAnchorElement, HTMLAllCollection, GeolocationPositionError, GeolocationPosition, GeolocationCoordinates, Geolocation, GamepadHapticActuator, GamepadEvent, GamepadButton, Gamepad, GainNode, FormDataEvent, FormData, FontFaceSetLoadEvent, FontFace, FocusEvent, FileReader, FileList, File, FeaturePolicy, External, EventTarget, EventSource, EventCounts, Event, ErrorEvent, ElementInternals, Element, DynamicsCompressorNode, DragEvent, DocumentType, DocumentFragment, Document, DelayNode, DecompressionStream, DataTransferItemList, DataTransferItem, DataTransfer, DOMTokenList, DOMStringMap, DOMStringList, DOMRectReadOnly, DOMRectList, DOMRect, DOMQuad, DOMPointReadOnly, DOMPoint, DOMParser, DOMMatrixReadOnly, DOMMatrix, DOMImplementation, DOMException, DOMError, CustomEvent, CustomElementRegistry, Crypto, CountQueuingStrategy, ConvolverNode, ConstantSourceNode, CompressionStream, CompositionEvent, Comment, CloseEvent, ClipboardEvent, CharacterData, ChannelSplitterNode, ChannelMergerNode, CanvasRenderingContext2D, CanvasPattern, CanvasGradient, CanvasCaptureMediaStreamTrack, CSSVariableReferenceValue, CSSUnparsedValue, CSSUnitValue, CSSTranslate, CSSTransformValue, CSSTransformComponent, CSSSupportsRule, CSSStyleValue, CSSStyleSheet, CSSStyleRule, CSSStyleDeclaration, CSSSkewY, CSSSkewX, CSSSkew, CSSScale, CSSRuleList, CSSRule, CSSRotate, CSSPropertyRule, CSSPositionValue, CSSPerspective, CSSPageRule, CSSNumericValue, CSSNumericArray, CSSNamespaceRule, CSSMediaRule, CSSMatrixComponent, CSSMathValue, CSSMathSum, CSSMathProduct, CSSMathNegate, CSSMathMin, CSSMathMax, CSSMathInvert, CSSKeywordValue, CSSKeyframesRule, CSSKeyframeRule, CSSImportRule, CSSImageValue, CSSGroupingRule, CSSFontFaceRule, CSSCounterStyleRule, CSSConditionRule, CSS, CDATASection, ByteLengthQueuingStrategy, BroadcastChannel, BlobEvent, Blob, BiquadFilterNode, BeforeUnloadEvent, BeforeInstallPromptEvent, BatteryManager, BaseAudioContext, BarProp, AudioWorkletNode, AudioScheduledSourceNode, AudioProcessingEvent, AudioParamMap, AudioParam, AudioNode, AudioListener, AudioDestinationNode, AudioContext, AudioBufferSourceNode, AudioBuffer, Attr, AnimationEvent, AnimationEffect, Animation, AnalyserNode, AbstractRange, AbortSignal, AbortController, window, self, document, name, location, customElements, history, locationbar, menubar, personalbar, scrollbars, statusbar, toolbar, status, closed, frames, length, top, opener, parent, frameElement, navigator, origin, external, screen, innerWidth, innerHeight, scrollX, pageXOffset, scrollY, pageYOffset, visualViewport, screenX, screenY, outerWidth, outerHeight, devicePixelRatio, event, clientInformation, offscreenBuffering, screenLeft, screenTop, defaultStatus, defaultstatus, styleMedia, onsearch, isSecureContext, performance, onappinstalled, onbeforeinstallprompt, crypto, indexedDB, webkitStorageInfo, sessionStorage, localStorage, onbeforexrselect, onabort, onblur, oncancel, oncanplay, oncanplaythrough, onchange, onclick, onclose, oncontextmenu, oncuechange, ondblclick, ondrag, ondragend, ondragenter, ondragleave, ondragover, ondragstart, ondrop, ondurationchange, onemptied, onended, onerror, onfocus, onformdata, oninput, oninvalid, onkeydown, onkeypress, onkeyup, onload, onloadeddata, onloadedmetadata, onloadstart, onmousedown, onmouseenter, onmouseleave, onmousemove, onmouseout, onmouseover, onmouseup, onmousewheel, onpause, onplay, onplaying, onprogress, onratechange, onreset, onresize, onscroll, onsecuritypolicyviolation, onseeked, onseeking, onselect, onslotchange, onstalled, onsubmit, onsuspend, ontimeupdate, ontoggle, onvolumechange, onwaiting, onwebkitanimationend, onwebkitanimationiteration, onwebkitanimationstart, onwebkittransitionend, onwheel, onauxclick, ongotpointercapture, onlostpointercapture, onpointerdown, onpointermove, onpointerup, onpointercancel, onpointerover, onpointerout, onpointerenter, onpointerleave, onselectstart, onselectionchange, onanimationend, onanimationiteration, onanimationstart, ontransitionrun, ontransitionstart, ontransitionend, ontransitioncancel, onafterprint, onbeforeprint, onbeforeunload, onhashchange, onlanguagechange, onmessage, onmessageerror, onoffline, ononline, onpagehide, onpageshow, onpopstate, onrejectionhandled, onstorage, onunhandledrejection, onunload, alert, atob, blur, btoa, cancelAnimationFrame, cancelIdleCallback, captureEvents, clearInterval, clearTimeout, close, confirm, createImageBitmap, fetch, find, focus, getComputedStyle, getSelection, matchMedia, moveBy, moveTo, open, postMessage, print, prompt, queueMicrotask, releaseEvents, reportError, requestAnimationFrame, requestIdleCallback, resizeBy, resizeTo, scroll, scrollBy, scrollTo, setInterval, setTimeout, stop, webkitCancelAnimationFrame, webkitRequestAnimationFrame, Atomics, chrome, WebAssembly, caches, cookieStore, ondevicemotion, ondeviceorientation, ondeviceorientationabsolute, AbsoluteOrientationSensor, Accelerometer, AudioWorklet, Cache, CacheStorage, Clipboard, ClipboardItem, CookieChangeEvent, CookieStore, CookieStoreManager, Credential, CredentialsContainer, CryptoKey, DeviceMotionEvent, DeviceMotionEventAcceleration, DeviceMotionEventRotationRate, DeviceOrientationEvent, FederatedCredential, Gyroscope, Keyboard, KeyboardLayoutMap, LinearAccelerationSensor, Lock, LockManager, MIDIAccess, MIDIConnectionEvent, MIDIInput, MIDIInputMap, MIDIMessageEvent, MIDIOutput, MIDIOutputMap, MIDIPort, MediaDeviceInfo, MediaDevices, MediaKeyMessageEvent, MediaKeySession, MediaKeyStatusMap, MediaKeySystemAccess, MediaKeys, NavigationPreloadManager, NavigatorManagedData, OrientationSensor, PasswordCredential, RTCIceTransport, RelativeOrientationSensor, Sensor, SensorErrorEvent, ServiceWorker, ServiceWorkerContainer, ServiceWorkerRegistration, StorageManager, SubtleCrypto, Worklet, XRDOMOverlayState, XRLayer, XRWebGLBinding, AudioData, EncodedAudioChunk, EncodedVideoChunk, ImageTrack, ImageTrackList, VideoColorSpace, VideoFrame, AudioDecoder, AudioEncoder, ImageDecoder, VideoDecoder, VideoEncoder, AuthenticatorAssertionResponse, AuthenticatorAttestationResponse, AuthenticatorResponse, PublicKeyCredential, Bluetooth, BluetoothCharacteristicProperties, BluetoothDevice, BluetoothRemoteGATTCharacteristic, BluetoothRemoteGATTDescriptor, BluetoothRemoteGATTServer, BluetoothRemoteGATTService, EyeDropper, FileSystemDirectoryHandle, FileSystemFileHandle, FileSystemHandle, FileSystemWritableFileStream, FragmentDirective, GravitySensor, HID, HIDConnectionEvent, HIDDevice, HIDInputReportEvent, IdleDetector, MediaStreamTrackGenerator, MediaStreamTrackProcessor, OTPCredential, PaymentAddress, PaymentRequest, PaymentResponse, PaymentMethodChangeEvent, Presentation, PresentationAvailability, PresentationConnection, PresentationConnectionAvailableEvent, PresentationConnectionCloseEvent, PresentationConnectionList, PresentationReceiver, PresentationRequest, Profiler, Scheduling, Serial, SerialPort, USB, USBAlternateInterface, USBConfiguration, USBConnectionEvent, USBDevice, USBEndpoint, USBInTransferResult, USBInterface, USBIsochronousInTransferPacket, USBIsochronousInTransferResult, USBIsochronousOutTransferPacket, USBIsochronousOutTransferResult, USBOutTransferResult, VirtualKeyboard, WakeLock, WakeLockSentinel, WebTransport, WebTransportBidirectionalStream, WebTransportDatagramDuplexStream, WebTransportError, XRAnchor, XRAnchorSet, XRBoundedReferenceSpace, XRFrame, XRInputSource, XRInputSourceArray, XRInputSourceEvent, XRInputSourcesChangeEvent, XRPose, XRReferenceSpace, XRReferenceSpaceEvent, XRRenderState, XRRigidTransform, XRSession, XRSessionEvent, XRSpace, XRSystem, XRView, XRViewerPose, XRViewport, XRWebGLLayer, XRCPUDepthInformation, XRDepthInformation, XRWebGLDepthInformation, XRHitTestResult, XRHitTestSource, XRRay, XRTransientInputHitTestResult, XRTransientInputHitTestSource, XRLightEstimate, XRLightProbe, showDirectoryPicker, showOpenFilePicker, showSaveFilePicker, originAgentCluster, trustedTypes, speechSynthesis, onpointerrawupdate, crossOriginIsolated, scheduler, AnimationPlaybackEvent, AnimationTimeline, CSSAnimation, CSSTransition, DocumentTimeline, BackgroundFetchManager, BackgroundFetchRecord, BackgroundFetchRegistration, BluetoothUUID, CustomStateSet, DelegatedInkTrailPresenter, Ink, MediaMetadata, MediaSession, MediaSource, SourceBuffer, SourceBufferList, NavigatorUAData, Notification, PaymentInstruments, PaymentManager, PaymentRequestUpdateEvent, PeriodicSyncManager, PermissionStatus, Permissions, PictureInPictureEvent, PictureInPictureWindow, PushManager, PushSubscription, PushSubscriptionOptions, RemotePlayback, Scheduler, TaskController, TaskPriorityChangeEvent, TaskSignal, SharedWorker, SpeechSynthesisErrorEvent, SpeechSynthesisEvent, SpeechSynthesisUtterance, TrustedHTML, TrustedScript, TrustedScriptURL, TrustedTypePolicy, TrustedTypePolicyFactory, URLPattern, VideoPlaybackQuality, VirtualKeyboardGeometryChangeEvent, XSLTProcessor, webkitSpeechGrammar, webkitSpeechGrammarList, webkitSpeechRecognition, webkitSpeechRecognitionError, webkitSpeechRecognitionEvent, openDatabase, webkitRequestFileSystem, webkitResolveLocalFileSystemURL`,
-			cssKeys: `cssText, length, parentRule, cssFloat, getPropertyPriority, getPropertyValue, item, removeProperty, setProperty, constructor, accent-color, align-content, align-items, align-self, alignment-baseline, animation-delay, animation-direction, animation-duration, animation-fill-mode, animation-iteration-count, animation-name, animation-play-state, animation-timing-function, app-region, appearance, backdrop-filter, backface-visibility, background-attachment, background-blend-mode, background-clip, background-color, background-image, background-origin, background-position, background-repeat, background-size, baseline-shift, block-size, border-block-end-color, border-block-end-style, border-block-end-width, border-block-start-color, border-block-start-style, border-block-start-width, border-bottom-color, border-bottom-left-radius, border-bottom-right-radius, border-bottom-style, border-bottom-width, border-collapse, border-end-end-radius, border-end-start-radius, border-image-outset, border-image-repeat, border-image-slice, border-image-source, border-image-width, border-inline-end-color, border-inline-end-style, border-inline-end-width, border-inline-start-color, border-inline-start-style, border-inline-start-width, border-left-color, border-left-style, border-left-width, border-right-color, border-right-style, border-right-width, border-start-end-radius, border-start-start-radius, border-top-color, border-top-left-radius, border-top-right-radius, border-top-style, border-top-width, bottom, box-shadow, box-sizing, break-after, break-before, break-inside, buffered-rendering, caption-side, caret-color, clear, clip, clip-path, clip-rule, color, color-interpolation, color-interpolation-filters, color-rendering, column-count, column-gap, column-rule-color, column-rule-style, column-rule-width, column-span, column-width, contain-intrinsic-block-size, contain-intrinsic-height, contain-intrinsic-inline-size, contain-intrinsic-size, contain-intrinsic-width, content, cursor, cx, cy, d, direction, display, dominant-baseline, empty-cells, fill, fill-opacity, fill-rule, filter, flex-basis, flex-direction, flex-grow, flex-shrink, flex-wrap, float, flood-color, flood-opacity, font-family, font-kerning, font-optical-sizing, font-size, font-stretch, font-style, font-synthesis-small-caps, font-synthesis-style, font-synthesis-weight, font-variant, font-variant-caps, font-variant-east-asian, font-variant-ligatures, font-variant-numeric, font-weight, grid-auto-columns, grid-auto-flow, grid-auto-rows, grid-column-end, grid-column-start, grid-row-end, grid-row-start, grid-template-areas, grid-template-columns, grid-template-rows, height, hyphens, image-orientation, image-rendering, inline-size, inset-block-end, inset-block-start, inset-inline-end, inset-inline-start, isolation, justify-content, justify-items, justify-self, left, letter-spacing, lighting-color, line-break, line-height, list-style-image, list-style-position, list-style-type, margin-block-end, margin-block-start, margin-bottom, margin-inline-end, margin-inline-start, margin-left, margin-right, margin-top, marker-end, marker-mid, marker-start, mask-type, max-block-size, max-height, max-inline-size, max-width, min-block-size, min-height, min-inline-size, min-width, mix-blend-mode, object-fit, object-position, offset-distance, offset-path, offset-rotate, opacity, order, orphans, outline-color, outline-offset, outline-style, outline-width, overflow-anchor, overflow-clip-margin, overflow-wrap, overflow-x, overflow-y, overscroll-behavior-block, overscroll-behavior-inline, padding-block-end, padding-block-start, padding-bottom, padding-inline-end, padding-inline-start, padding-left, padding-right, padding-top, paint-order, perspective, perspective-origin, pointer-events, position, r, resize, right, row-gap, ruby-position, rx, ry, scroll-behavior, scroll-margin-block-end, scroll-margin-block-start, scroll-margin-inline-end, scroll-margin-inline-start, scroll-padding-block-end, scroll-padding-block-start, scroll-padding-inline-end, scroll-padding-inline-start, scrollbar-gutter, shape-image-threshold, shape-margin, shape-outside, shape-rendering, speak, stop-color, stop-opacity, stroke, stroke-dasharray, stroke-dashoffset, stroke-linecap, stroke-linejoin, stroke-miterlimit, stroke-opacity, stroke-width, tab-size, table-layout, text-align, text-align-last, text-anchor, text-decoration, text-decoration-color, text-decoration-line, text-decoration-skip-ink, text-decoration-style, text-indent, text-overflow, text-rendering, text-shadow, text-size-adjust, text-transform, text-underline-position, top, touch-action, transform, transform-origin, transform-style, transition-delay, transition-duration, transition-property, transition-timing-function, unicode-bidi, user-select, vector-effect, vertical-align, visibility, white-space, widows, width, will-change, word-break, word-spacing, writing-mode, x, y, z-index, zoom, -webkit-border-horizontal-spacing, -webkit-border-image, -webkit-border-vertical-spacing, -webkit-box-align, -webkit-box-decoration-break, -webkit-box-direction, -webkit-box-flex, -webkit-box-ordinal-group, -webkit-box-orient, -webkit-box-pack, -webkit-box-reflect, -webkit-font-smoothing, -webkit-highlight, -webkit-hyphenate-character, -webkit-line-break, -webkit-line-clamp, -webkit-locale, -webkit-mask-box-image, -webkit-mask-box-image-outset, -webkit-mask-box-image-repeat, -webkit-mask-box-image-slice, -webkit-mask-box-image-source, -webkit-mask-box-image-width, -webkit-mask-clip, -webkit-mask-composite, -webkit-mask-image, -webkit-mask-origin, -webkit-mask-position, -webkit-mask-repeat, -webkit-mask-size, -webkit-print-color-adjust, -webkit-rtl-ordering, -webkit-tap-highlight-color, -webkit-text-combine, -webkit-text-decorations-in-effect, -webkit-text-emphasis-color, -webkit-text-emphasis-position, -webkit-text-emphasis-style, -webkit-text-fill-color, -webkit-text-orientation, -webkit-text-security, -webkit-text-stroke-color, -webkit-text-stroke-width, -webkit-user-drag, -webkit-user-modify, -webkit-writing-mode, accentColor, additiveSymbols, alignContent, alignItems, alignSelf, alignmentBaseline, all, animation, animationDelay, animationDirection, animationDuration, animationFillMode, animationIterationCount, animationName, animationPlayState, animationTimingFunction, appRegion, ascentOverride, aspectRatio, backdropFilter, backfaceVisibility, background, backgroundAttachment, backgroundBlendMode, backgroundClip, backgroundColor, backgroundImage, backgroundOrigin, backgroundPosition, backgroundPositionX, backgroundPositionY, backgroundRepeat, backgroundRepeatX, backgroundRepeatY, backgroundSize, baselineShift, blockSize, border, borderBlock, borderBlockColor, borderBlockEnd, borderBlockEndColor, borderBlockEndStyle, borderBlockEndWidth, borderBlockStart, borderBlockStartColor, borderBlockStartStyle, borderBlockStartWidth, borderBlockStyle, borderBlockWidth, borderBottom, borderBottomColor, borderBottomLeftRadius, borderBottomRightRadius, borderBottomStyle, borderBottomWidth, borderCollapse, borderColor, borderEndEndRadius, borderEndStartRadius, borderImage, borderImageOutset, borderImageRepeat, borderImageSlice, borderImageSource, borderImageWidth, borderInline, borderInlineColor, borderInlineEnd, borderInlineEndColor, borderInlineEndStyle, borderInlineEndWidth, borderInlineStart, borderInlineStartColor, borderInlineStartStyle, borderInlineStartWidth, borderInlineStyle, borderInlineWidth, borderLeft, borderLeftColor, borderLeftStyle, borderLeftWidth, borderRadius, borderRight, borderRightColor, borderRightStyle, borderRightWidth, borderSpacing, borderStartEndRadius, borderStartStartRadius, borderStyle, borderTop, borderTopColor, borderTopLeftRadius, borderTopRightRadius, borderTopStyle, borderTopWidth, borderWidth, boxShadow, boxSizing, breakAfter, breakBefore, breakInside, bufferedRendering, captionSide, caretColor, clipPath, clipRule, colorInterpolation, colorInterpolationFilters, colorRendering, colorScheme, columnCount, columnFill, columnGap, columnRule, columnRuleColor, columnRuleStyle, columnRuleWidth, columnSpan, columnWidth, columns, contain, containIntrinsicBlockSize, containIntrinsicHeight, containIntrinsicInlineSize, containIntrinsicSize, containIntrinsicWidth, contentVisibility, counterIncrement, counterReset, counterSet, descentOverride, dominantBaseline, emptyCells, fallback, fillOpacity, fillRule, flex, flexBasis, flexDirection, flexFlow, flexGrow, flexShrink, flexWrap, floodColor, floodOpacity, font, fontDisplay, fontFamily, fontFeatureSettings, fontKerning, fontOpticalSizing, fontSize, fontStretch, fontStyle, fontSynthesis, fontSynthesisSmallCaps, fontSynthesisStyle, fontSynthesisWeight, fontVariant, fontVariantCaps, fontVariantEastAsian, fontVariantLigatures, fontVariantNumeric, fontVariationSettings, fontWeight, forcedColorAdjust, gap, grid, gridArea, gridAutoColumns, gridAutoFlow, gridAutoRows, gridColumn, gridColumnEnd, gridColumnGap, gridColumnStart, gridGap, gridRow, gridRowEnd, gridRowGap, gridRowStart, gridTemplate, gridTemplateAreas, gridTemplateColumns, gridTemplateRows, imageOrientation, imageRendering, inherits, initialValue, inlineSize, inset, insetBlock, insetBlockEnd, insetBlockStart, insetInline, insetInlineEnd, insetInlineStart, justifyContent, justifyItems, justifySelf, letterSpacing, lightingColor, lineBreak, lineGapOverride, lineHeight, listStyle, listStyleImage, listStylePosition, listStyleType, margin, marginBlock, marginBlockEnd, marginBlockStart, marginBottom, marginInline, marginInlineEnd, marginInlineStart, marginLeft, marginRight, marginTop, marker, markerEnd, markerMid, markerStart, mask, maskType, maxBlockSize, maxHeight, maxInlineSize, maxWidth, maxZoom, minBlockSize, minHeight, minInlineSize, minWidth, minZoom, mixBlendMode, negative, objectFit, objectPosition, offset, offsetDistance, offsetPath, offsetRotate, orientation, outline, outlineColor, outlineOffset, outlineStyle, outlineWidth, overflow, overflowAnchor, overflowClipMargin, overflowWrap, overflowX, overflowY, overscrollBehavior, overscrollBehaviorBlock, overscrollBehaviorInline, overscrollBehaviorX, overscrollBehaviorY, pad, padding, paddingBlock, paddingBlockEnd, paddingBlockStart, paddingBottom, paddingInline, paddingInlineEnd, paddingInlineStart, paddingLeft, paddingRight, paddingTop, page, pageBreakAfter, pageBreakBefore, pageBreakInside, pageOrientation, paintOrder, perspectiveOrigin, placeContent, placeItems, placeSelf, pointerEvents, prefix, quotes, range, rowGap, rubyPosition, scrollBehavior, scrollMargin, scrollMarginBlock, scrollMarginBlockEnd, scrollMarginBlockStart, scrollMarginBottom, scrollMarginInline, scrollMarginInlineEnd, scrollMarginInlineStart, scrollMarginLeft, scrollMarginRight, scrollMarginTop, scrollPadding, scrollPaddingBlock, scrollPaddingBlockEnd, scrollPaddingBlockStart, scrollPaddingBottom, scrollPaddingInline, scrollPaddingInlineEnd, scrollPaddingInlineStart, scrollPaddingLeft, scrollPaddingRight, scrollPaddingTop, scrollSnapAlign, scrollSnapStop, scrollSnapType, scrollbarGutter, shapeImageThreshold, shapeMargin, shapeOutside, shapeRendering, size, sizeAdjust, speakAs, src, stopColor, stopOpacity, strokeDasharray, strokeDashoffset, strokeLinecap, strokeLinejoin, strokeMiterlimit, strokeOpacity, strokeWidth, suffix, symbols, syntax, system, tabSize, tableLayout, textAlign, textAlignLast, textAnchor, textCombineUpright, textDecoration, textDecorationColor, textDecorationLine, textDecorationSkipInk, textDecorationStyle, textDecorationThickness, textIndent, textOrientation, textOverflow, textRendering, textShadow, textSizeAdjust, textTransform, textUnderlineOffset, textUnderlinePosition, touchAction, transformBox, transformOrigin, transformStyle, transition, transitionDelay, transitionDuration, transitionProperty, transitionTimingFunction, unicodeBidi, unicodeRange, userSelect, userZoom, vectorEffect, verticalAlign, webkitAlignContent, webkitAlignItems, webkitAlignSelf, webkitAnimation, webkitAnimationDelay, webkitAnimationDirection, webkitAnimationDuration, webkitAnimationFillMode, webkitAnimationIterationCount, webkitAnimationName, webkitAnimationPlayState, webkitAnimationTimingFunction, webkitAppRegion, webkitAppearance, webkitBackfaceVisibility, webkitBackgroundClip, webkitBackgroundOrigin, webkitBackgroundSize, webkitBorderAfter, webkitBorderAfterColor, webkitBorderAfterStyle, webkitBorderAfterWidth, webkitBorderBefore, webkitBorderBeforeColor, webkitBorderBeforeStyle, webkitBorderBeforeWidth, webkitBorderBottomLeftRadius, webkitBorderBottomRightRadius, webkitBorderEnd, webkitBorderEndColor, webkitBorderEndStyle, webkitBorderEndWidth, webkitBorderHorizontalSpacing, webkitBorderImage, webkitBorderRadius, webkitBorderStart, webkitBorderStartColor, webkitBorderStartStyle, webkitBorderStartWidth, webkitBorderTopLeftRadius, webkitBorderTopRightRadius, webkitBorderVerticalSpacing, webkitBoxAlign, webkitBoxDecorationBreak, webkitBoxDirection, webkitBoxFlex, webkitBoxOrdinalGroup, webkitBoxOrient, webkitBoxPack, webkitBoxReflect, webkitBoxShadow, webkitBoxSizing, webkitClipPath, webkitColumnBreakAfter, webkitColumnBreakBefore, webkitColumnBreakInside, webkitColumnCount, webkitColumnGap, webkitColumnRule, webkitColumnRuleColor, webkitColumnRuleStyle, webkitColumnRuleWidth, webkitColumnSpan, webkitColumnWidth, webkitColumns, webkitFilter, webkitFlex, webkitFlexBasis, webkitFlexDirection, webkitFlexFlow, webkitFlexGrow, webkitFlexShrink, webkitFlexWrap, webkitFontFeatureSettings, webkitFontSmoothing, webkitHighlight, webkitHyphenateCharacter, webkitJustifyContent, webkitLineBreak, webkitLineClamp, webkitLocale, webkitLogicalHeight, webkitLogicalWidth, webkitMarginAfter, webkitMarginBefore, webkitMarginEnd, webkitMarginStart, webkitMask, webkitMaskBoxImage, webkitMaskBoxImageOutset, webkitMaskBoxImageRepeat, webkitMaskBoxImageSlice, webkitMaskBoxImageSource, webkitMaskBoxImageWidth, webkitMaskClip, webkitMaskComposite, webkitMaskImage, webkitMaskOrigin, webkitMaskPosition, webkitMaskPositionX, webkitMaskPositionY, webkitMaskRepeat, webkitMaskRepeatX, webkitMaskRepeatY, webkitMaskSize, webkitMaxLogicalHeight, webkitMaxLogicalWidth, webkitMinLogicalHeight, webkitMinLogicalWidth, webkitOpacity, webkitOrder, webkitPaddingAfter, webkitPaddingBefore, webkitPaddingEnd, webkitPaddingStart, webkitPerspective, webkitPerspectiveOrigin, webkitPerspectiveOriginX, webkitPerspectiveOriginY, webkitPrintColorAdjust, webkitRtlOrdering, webkitRubyPosition, webkitShapeImageThreshold, webkitShapeMargin, webkitShapeOutside, webkitTapHighlightColor, webkitTextCombine, webkitTextDecorationsInEffect, webkitTextEmphasis, webkitTextEmphasisColor, webkitTextEmphasisPosition, webkitTextEmphasisStyle, webkitTextFillColor, webkitTextOrientation, webkitTextSecurity, webkitTextSizeAdjust, webkitTextStroke, webkitTextStrokeColor, webkitTextStrokeWidth, webkitTransform, webkitTransformOrigin, webkitTransformOriginX, webkitTransformOriginY, webkitTransformOriginZ, webkitTransformStyle, webkitTransition, webkitTransitionDelay, webkitTransitionDuration, webkitTransitionProperty, webkitTransitionTimingFunction, webkitUserDrag, webkitUserModify, webkitUserSelect, webkitWritingMode, whiteSpace, willChange, wordBreak, wordSpacing, wordWrap, writingMode, zIndex, additive-symbols, ascent-override, aspect-ratio, background-position-x, background-position-y, background-repeat-x, background-repeat-y, border-block, border-block-color, border-block-end, border-block-start, border-block-style, border-block-width, border-bottom, border-color, border-image, border-inline, border-inline-color, border-inline-end, border-inline-start, border-inline-style, border-inline-width, border-left, border-radius, border-right, border-spacing, border-style, border-top, border-width, color-scheme, column-fill, column-rule, content-visibility, counter-increment, counter-reset, counter-set, descent-override, flex-flow, font-display, font-feature-settings, font-synthesis, font-variation-settings, forced-color-adjust, grid-area, grid-column, grid-column-gap, grid-gap, grid-row, grid-row-gap, grid-template, initial-value, inset-block, inset-inline, line-gap-override, list-style, margin-block, margin-inline, max-zoom, min-zoom, overscroll-behavior, overscroll-behavior-x, overscroll-behavior-y, padding-block, padding-inline, page-break-after, page-break-before, page-break-inside, page-orientation, place-content, place-items, place-self, scroll-margin, scroll-margin-block, scroll-margin-bottom, scroll-margin-inline, scroll-margin-left, scroll-margin-right, scroll-margin-top, scroll-padding, scroll-padding-block, scroll-padding-bottom, scroll-padding-inline, scroll-padding-left, scroll-padding-right, scroll-padding-top, scroll-snap-align, scroll-snap-stop, scroll-snap-type, size-adjust, speak-as, text-combine-upright, text-decoration-thickness, text-orientation, text-underline-offset, transform-box, unicode-range, user-zoom, -webkit-align-content, -webkit-align-items, -webkit-align-self, -webkit-animation, -webkit-animation-delay, -webkit-animation-direction, -webkit-animation-duration, -webkit-animation-fill-mode, -webkit-animation-iteration-count, -webkit-animation-name, -webkit-animation-play-state, -webkit-animation-timing-function, -webkit-app-region, -webkit-appearance, -webkit-backface-visibility, -webkit-background-clip, -webkit-background-origin, -webkit-background-size, -webkit-border-after, -webkit-border-after-color, -webkit-border-after-style, -webkit-border-after-width, -webkit-border-before, -webkit-border-before-color, -webkit-border-before-style, -webkit-border-before-width, -webkit-border-bottom-left-radius, -webkit-border-bottom-right-radius, -webkit-border-end, -webkit-border-end-color, -webkit-border-end-style, -webkit-border-end-width, -webkit-border-radius, -webkit-border-start, -webkit-border-start-color, -webkit-border-start-style, -webkit-border-start-width, -webkit-border-top-left-radius, -webkit-border-top-right-radius, -webkit-box-shadow, -webkit-box-sizing, -webkit-clip-path, -webkit-column-break-after, -webkit-column-break-before, -webkit-column-break-inside, -webkit-column-count, -webkit-column-gap, -webkit-column-rule, -webkit-column-rule-color, -webkit-column-rule-style, -webkit-column-rule-width, -webkit-column-span, -webkit-column-width, -webkit-columns, -webkit-filter, -webkit-flex, -webkit-flex-basis, -webkit-flex-direction, -webkit-flex-flow, -webkit-flex-grow, -webkit-flex-shrink, -webkit-flex-wrap, -webkit-font-feature-settings, -webkit-justify-content, -webkit-logical-height, -webkit-logical-width, -webkit-margin-after, -webkit-margin-before, -webkit-margin-end, -webkit-margin-start, -webkit-mask, -webkit-mask-position-x, -webkit-mask-position-y, -webkit-mask-repeat-x, -webkit-mask-repeat-y, -webkit-max-logical-height, -webkit-max-logical-width, -webkit-min-logical-height, -webkit-min-logical-width, -webkit-opacity, -webkit-order, -webkit-padding-after, -webkit-padding-before, -webkit-padding-end, -webkit-padding-start, -webkit-perspective, -webkit-perspective-origin, -webkit-perspective-origin-x, -webkit-perspective-origin-y, -webkit-ruby-position, -webkit-shape-image-threshold, -webkit-shape-margin, -webkit-shape-outside, -webkit-text-emphasis, -webkit-text-size-adjust, -webkit-text-stroke, -webkit-transform, -webkit-transform-origin, -webkit-transform-origin-x, -webkit-transform-origin-y, -webkit-transform-origin-z, -webkit-transform-style, -webkit-transition, -webkit-transition-delay, -webkit-transition-duration, -webkit-transition-property, -webkit-transition-timing-function, -webkit-user-select, word-wrap`,
-			jsKeys: "Array.at, Array.concat, Array.copyWithin, Array.entries, Array.every, Array.fill, Array.filter, Array.find, Array.findIndex, Array.findLast, Array.findLastIndex, Array.flat, Array.flatMap, Array.forEach, Array.from, Array.includes, Array.indexOf, Array.isArray, Array.join, Array.keys, Array.lastIndexOf, Array.map, Array.of, Array.pop, Array.push, Array.reduce, Array.reduceRight, Array.reverse, Array.shift, Array.slice, Array.some, Array.sort, Array.splice, Array.toLocaleString, Array.toString, Array.unshift, Array.values, Atomics.add, Atomics.and, Atomics.compareExchange, Atomics.exchange, Atomics.isLockFree, Atomics.load, Atomics.notify, Atomics.or, Atomics.store, Atomics.sub, Atomics.wait, Atomics.waitAsync, Atomics.xor, BigInt.asIntN, BigInt.asUintN, BigInt.toLocaleString, BigInt.toString, BigInt.valueOf, Boolean.toString, Boolean.valueOf, Date.UTC, Date.getDate, Date.getDay, Date.getFullYear, Date.getHours, Date.getMilliseconds, Date.getMinutes, Date.getMonth, Date.getSeconds, Date.getTime, Date.getTimezoneOffset, Date.getUTCDate, Date.getUTCDay, Date.getUTCFullYear, Date.getUTCHours, Date.getUTCMilliseconds, Date.getUTCMinutes, Date.getUTCMonth, Date.getUTCSeconds, Date.getYear, Date.now, Date.parse, Date.setDate, Date.setFullYear, Date.setHours, Date.setMilliseconds, Date.setMinutes, Date.setMonth, Date.setSeconds, Date.setTime, Date.setUTCDate, Date.setUTCFullYear, Date.setUTCHours, Date.setUTCMilliseconds, Date.setUTCMinutes, Date.setUTCMonth, Date.setUTCSeconds, Date.setYear, Date.toDateString, Date.toGMTString, Date.toISOString, Date.toJSON, Date.toLocaleDateString, Date.toLocaleString, Date.toLocaleTimeString, Date.toString, Date.toTimeString, Date.toUTCString, Date.valueOf, Document.URL, Document.activeElement, Document.adoptNode, Document.adoptedStyleSheets, Document.alinkColor, Document.all, Document.anchors, Document.append, Document.applets, Document.bgColor, Document.body, Document.captureEvents, Document.caretRangeFromPoint, Document.characterSet, Document.charset, Document.childElementCount, Document.children, Document.clear, Document.close, Document.compatMode, Document.contentType, Document.cookie, Document.createAttribute, Document.createAttributeNS, Document.createCDATASection, Document.createComment, Document.createDocumentFragment, Document.createElement, Document.createElementNS, Document.createEvent, Document.createExpression, Document.createNSResolver, Document.createNodeIterator, Document.createProcessingInstruction, Document.createRange, Document.createTextNode, Document.createTreeWalker, Document.currentScript, Document.defaultView, Document.designMode, Document.dir, Document.doctype, Document.documentElement, Document.documentURI, Document.domain, Document.elementFromPoint, Document.elementsFromPoint, Document.embeds, Document.evaluate, Document.execCommand, Document.exitFullscreen, Document.exitPictureInPicture, Document.exitPointerLock, Document.featurePolicy, Document.fgColor, Document.firstElementChild, Document.fonts, Document.forms, Document.fragmentDirective, Document.fullscreen, Document.fullscreenElement, Document.fullscreenEnabled, Document.getAnimations, Document.getElementById, Document.getElementsByClassName, Document.getElementsByName, Document.getElementsByTagName, Document.getElementsByTagNameNS, Document.getSelection, Document.hasFocus, Document.head, Document.hidden, Document.images, Document.implementation, Document.importNode, Document.inputEncoding, Document.lastElementChild, Document.lastModified, Document.linkColor, Document.links, Document.onabort, Document.onanimationend, Document.onanimationiteration, Document.onanimationstart, Document.onauxclick, Document.onbeforecopy, Document.onbeforecut, Document.onbeforepaste, Document.onbeforexrselect, Document.onblur, Document.oncancel, Document.oncanplay, Document.oncanplaythrough, Document.onchange, Document.onclick, Document.onclose, Document.oncontextmenu, Document.oncopy, Document.oncuechange, Document.oncut, Document.ondblclick, Document.ondrag, Document.ondragend, Document.ondragenter, Document.ondragleave, Document.ondragover, Document.ondragstart, Document.ondrop, Document.ondurationchange, Document.onemptied, Document.onended, Document.onerror, Document.onfocus, Document.onformdata, Document.onfreeze, Document.onfullscreenchange, Document.onfullscreenerror, Document.ongotpointercapture, Document.oninput, Document.oninvalid, Document.onkeydown, Document.onkeypress, Document.onkeyup, Document.onload, Document.onloadeddata, Document.onloadedmetadata, Document.onloadstart, Document.onlostpointercapture, Document.onmousedown, Document.onmouseenter, Document.onmouseleave, Document.onmousemove, Document.onmouseout, Document.onmouseover, Document.onmouseup, Document.onmousewheel, Document.onpaste, Document.onpause, Document.onplay, Document.onplaying, Document.onpointercancel, Document.onpointerdown, Document.onpointerenter, Document.onpointerleave, Document.onpointerlockchange, Document.onpointerlockerror, Document.onpointermove, Document.onpointerout, Document.onpointerover, Document.onpointerrawupdate, Document.onpointerup, Document.onprogress, Document.onratechange, Document.onreadystatechange, Document.onreset, Document.onresize, Document.onresume, Document.onscroll, Document.onsearch, Document.onsecuritypolicyviolation, Document.onseeked, Document.onseeking, Document.onselect, Document.onselectionchange, Document.onselectstart, Document.onslotchange, Document.onstalled, Document.onsubmit, Document.onsuspend, Document.ontimeupdate, Document.ontoggle, Document.ontransitioncancel, Document.ontransitionend, Document.ontransitionrun, Document.ontransitionstart, Document.onvisibilitychange, Document.onvolumechange, Document.onwaiting, Document.onwebkitanimationend, Document.onwebkitanimationiteration, Document.onwebkitanimationstart, Document.onwebkitfullscreenchange, Document.onwebkitfullscreenerror, Document.onwebkittransitionend, Document.onwheel, Document.open, Document.pictureInPictureElement, Document.pictureInPictureEnabled, Document.plugins, Document.pointerLockElement, Document.prepend, Document.queryCommandEnabled, Document.queryCommandIndeterm, Document.queryCommandState, Document.queryCommandSupported, Document.queryCommandValue, Document.querySelector, Document.querySelectorAll, Document.readyState, Document.referrer, Document.releaseEvents, Document.replaceChildren, Document.rootElement, Document.scripts, Document.scrollingElement, Document.styleSheets, Document.timeline, Document.title, Document.visibilityState, Document.vlinkColor, Document.wasDiscarded, Document.webkitCancelFullScreen, Document.webkitCurrentFullScreenElement, Document.webkitExitFullscreen, Document.webkitFullscreenElement, Document.webkitFullscreenEnabled, Document.webkitHidden, Document.webkitIsFullScreen, Document.webkitVisibilityState, Document.write, Document.writeln, Document.xmlEncoding, Document.xmlStandalone, Document.xmlVersion, Element.after, Element.animate, Element.append, Element.ariaAtomic, Element.ariaAutoComplete, Element.ariaBusy, Element.ariaChecked, Element.ariaColCount, Element.ariaColIndex, Element.ariaColSpan, Element.ariaCurrent, Element.ariaDescription, Element.ariaDisabled, Element.ariaExpanded, Element.ariaHasPopup, Element.ariaHidden, Element.ariaKeyShortcuts, Element.ariaLabel, Element.ariaLevel, Element.ariaLive, Element.ariaModal, Element.ariaMultiLine, Element.ariaMultiSelectable, Element.ariaOrientation, Element.ariaPlaceholder, Element.ariaPosInSet, Element.ariaPressed, Element.ariaReadOnly, Element.ariaRelevant, Element.ariaRequired, Element.ariaRoleDescription, Element.ariaRowCount, Element.ariaRowIndex, Element.ariaRowSpan, Element.ariaSelected, Element.ariaSetSize, Element.ariaSort, Element.ariaValueMax, Element.ariaValueMin, Element.ariaValueNow, Element.ariaValueText, Element.assignedSlot, Element.attachShadow, Element.attributeStyleMap, Element.attributes, Element.before, Element.childElementCount, Element.children, Element.classList, Element.className, Element.clientHeight, Element.clientLeft, Element.clientTop, Element.clientWidth, Element.closest, Element.computedStyleMap, Element.elementTiming, Element.firstElementChild, Element.getAnimations, Element.getAttribute, Element.getAttributeNS, Element.getAttributeNames, Element.getAttributeNode, Element.getAttributeNodeNS, Element.getBoundingClientRect, Element.getClientRects, Element.getElementsByClassName, Element.getElementsByTagName, Element.getElementsByTagNameNS, Element.getInnerHTML, Element.hasAttribute, Element.hasAttributeNS, Element.hasAttributes, Element.hasPointerCapture, Element.id, Element.innerHTML, Element.insertAdjacentElement, Element.insertAdjacentHTML, Element.insertAdjacentText, Element.lastElementChild, Element.localName, Element.matches, Element.namespaceURI, Element.nextElementSibling, Element.onbeforecopy, Element.onbeforecut, Element.onbeforepaste, Element.onfullscreenchange, Element.onfullscreenerror, Element.onsearch, Element.onwebkitfullscreenchange, Element.onwebkitfullscreenerror, Element.outerHTML, Element.part, Element.prefix, Element.prepend, Element.previousElementSibling, Element.querySelector, Element.querySelectorAll, Element.releasePointerCapture, Element.remove, Element.removeAttribute, Element.removeAttributeNS, Element.removeAttributeNode, Element.replaceChildren, Element.replaceWith, Element.requestFullscreen, Element.requestPointerLock, Element.scroll, Element.scrollBy, Element.scrollHeight, Element.scrollIntoView, Element.scrollIntoViewIfNeeded, Element.scrollLeft, Element.scrollTo, Element.scrollTop, Element.scrollWidth, Element.setAttribute, Element.setAttributeNS, Element.setAttributeNode, Element.setAttributeNodeNS, Element.setPointerCapture, Element.shadowRoot, Element.slot, Element.tagName, Element.toggleAttribute, Element.webkitMatchesSelector, Element.webkitRequestFullScreen, Element.webkitRequestFullscreen, Error.captureStackTrace, Error.message, Error.stackTraceLimit, Error.toString, Function.apply, Function.bind, Function.call, Function.toString, Intl.Collator, Intl.DateTimeFormat, Intl.DisplayNames, Intl.ListFormat, Intl.Locale, Intl.NumberFormat, Intl.PluralRules, Intl.RelativeTimeFormat, Intl.Segmenter, Intl.getCanonicalLocales, Intl.v8BreakIterator, JSON.parse, JSON.stringify, Map.clear, Map.delete, Map.entries, Map.forEach, Map.get, Map.has, Map.keys, Map.set, Map.size, Map.values, Math.E, Math.LN10, Math.LN2, Math.LOG10E, Math.LOG2E, Math.PI, Math.SQRT1_2, Math.SQRT2, Math.abs, Math.acos, Math.acosh, Math.asin, Math.asinh, Math.atan, Math.atan2, Math.atanh, Math.cbrt, Math.ceil, Math.clz32, Math.cos, Math.cosh, Math.exp, Math.expm1, Math.floor, Math.fround, Math.hypot, Math.imul, Math.log, Math.log10, Math.log1p, Math.log2, Math.max, Math.min, Math.pow, Math.random, Math.round, Math.sign, Math.sin, Math.sinh, Math.sqrt, Math.tan, Math.tanh, Math.trunc, Number.EPSILON, Number.MAX_SAFE_INTEGER, Number.MAX_VALUE, Number.MIN_SAFE_INTEGER, Number.MIN_VALUE, Number.NEGATIVE_INFINITY, Number.NaN, Number.POSITIVE_INFINITY, Number.isFinite, Number.isInteger, Number.isNaN, Number.isSafeInteger, Number.parseFloat, Number.parseInt, Number.toExponential, Number.toFixed, Number.toLocaleString, Number.toPrecision, Number.toString, Number.valueOf, Object.__defineGetter__, Object.__defineSetter__, Object.__lookupGetter__, Object.__lookupSetter__, Object.__proto__, Object.assign, Object.create, Object.defineProperties, Object.defineProperty, Object.entries, Object.freeze, Object.fromEntries, Object.getOwnPropertyDescriptor, Object.getOwnPropertyDescriptors, Object.getOwnPropertyNames, Object.getOwnPropertySymbols, Object.getPrototypeOf, Object.hasOwn, Object.hasOwnProperty, Object.is, Object.isExtensible, Object.isFrozen, Object.isPrototypeOf, Object.isSealed, Object.keys, Object.preventExtensions, Object.propertyIsEnumerable, Object.seal, Object.setPrototypeOf, Object.toLocaleString, Object.toString, Object.valueOf, Object.values, Promise.all, Promise.allSettled, Promise.any, Promise.catch, Promise.finally, Promise.race, Promise.reject, Promise.resolve, Promise.then, Proxy.revocable, Reflect.apply, Reflect.construct, Reflect.defineProperty, Reflect.deleteProperty, Reflect.get, Reflect.getOwnPropertyDescriptor, Reflect.getPrototypeOf, Reflect.has, Reflect.isExtensible, Reflect.ownKeys, Reflect.preventExtensions, Reflect.set, Reflect.setPrototypeOf, RegExp.$&, RegExp.$', RegExp.$+, RegExp.$1, RegExp.$2, RegExp.$3, RegExp.$4, RegExp.$5, RegExp.$6, RegExp.$7, RegExp.$8, RegExp.$9, RegExp.$_, RegExp.$`, RegExp.compile, RegExp.dotAll, RegExp.exec, RegExp.flags, RegExp.global, RegExp.hasIndices, RegExp.ignoreCase, RegExp.input, RegExp.lastMatch, RegExp.lastParen, RegExp.leftContext, RegExp.multiline, RegExp.rightContext, RegExp.source, RegExp.sticky, RegExp.test, RegExp.toString, RegExp.unicode, Set.add, Set.clear, Set.delete, Set.entries, Set.forEach, Set.has, Set.keys, Set.size, Set.values, String.anchor, String.at, String.big, String.blink, String.bold, String.charAt, String.charCodeAt, String.codePointAt, String.concat, String.endsWith, String.fixed, String.fontcolor, String.fontsize, String.fromCharCode, String.fromCodePoint, String.includes, String.indexOf, String.italics, String.lastIndexOf, String.link, String.localeCompare, String.match, String.matchAll, String.normalize, String.padEnd, String.padStart, String.raw, String.repeat, String.replace, String.replaceAll, String.search, String.slice, String.small, String.split, String.startsWith, String.strike, String.sub, String.substr, String.substring, String.sup, String.toLocaleLowerCase, String.toLocaleUpperCase, String.toLowerCase, String.toString, String.toUpperCase, String.trim, String.trimEnd, String.trimLeft, String.trimRight, String.trimStart, String.valueOf, Symbol.asyncIterator, Symbol.description, Symbol.for, Symbol.hasInstance, Symbol.isConcatSpreadable, Symbol.iterator, Symbol.keyFor, Symbol.match, Symbol.matchAll, Symbol.replace, Symbol.search, Symbol.species, Symbol.split, Symbol.toPrimitive, Symbol.toString, Symbol.toStringTag, Symbol.unscopables, Symbol.valueOf, WeakMap.delete, WeakMap.get, WeakMap.has, WeakMap.set, WeakSet.add, WeakSet.delete, WeakSet.has, WebAssembly.CompileError, WebAssembly.Exception, WebAssembly.Global, WebAssembly.Instance, WebAssembly.LinkError, WebAssembly.Memory, WebAssembly.Module, WebAssembly.RuntimeError, WebAssembly.Table, WebAssembly.Tag, WebAssembly.compile, WebAssembly.compileStreaming, WebAssembly.instantiate, WebAssembly.instantiateStreaming, WebAssembly.validate",
+			version: 99,
+			windowKeys: `Object, Function, Array, Number, parseFloat, parseInt, Infinity, NaN, undefined, Boolean, String, Symbol, Date, Promise, RegExp, Error, AggregateError, EvalError, RangeError, ReferenceError, SyntaxError, TypeError, URIError, globalThis, JSON, Math, console, Intl, ArrayBuffer, Uint8Array, Int8Array, Uint16Array, Int16Array, Uint32Array, Int32Array, Float32Array, Float64Array, Uint8ClampedArray, BigUint64Array, BigInt64Array, DataView, Map, BigInt, Set, WeakMap, WeakSet, Proxy, Reflect, FinalizationRegistry, WeakRef, decodeURI, decodeURIComponent, encodeURI, encodeURIComponent, escape, unescape, eval, isFinite, isNaN, Option, Image, Audio, webkitURL, webkitRTCPeerConnection, webkitMediaStream, WebKitMutationObserver, WebKitCSSMatrix, XPathResult, XPathExpression, XPathEvaluator, XMLSerializer, XMLHttpRequestUpload, XMLHttpRequestEventTarget, XMLHttpRequest, XMLDocument, WritableStreamDefaultWriter, WritableStreamDefaultController, WritableStream, Worker, Window, WheelEvent, WebSocket, WebGLVertexArrayObject, WebGLUniformLocation, WebGLTransformFeedback, WebGLTexture, WebGLSync, WebGLShaderPrecisionFormat, WebGLShader, WebGLSampler, WebGLRenderingContext, WebGLRenderbuffer, WebGLQuery, WebGLProgram, WebGLFramebuffer, WebGLContextEvent, WebGLBuffer, WebGLActiveInfo, WebGL2RenderingContext, WaveShaperNode, VisualViewport, ValidityState, VTTCue, UserActivation, URLSearchParams, URL, UIEvent, TreeWalker, TransitionEvent, TransformStream, TrackEvent, TouchList, TouchEvent, Touch, TimeRanges, TextTrackList, TextTrackCueList, TextTrackCue, TextTrack, TextMetrics, TextEvent, TextEncoderStream, TextEncoder, TextDecoderStream, TextDecoder, Text, TaskAttributionTiming, SyncManager, SubmitEvent, StyleSheetList, StyleSheet, StylePropertyMapReadOnly, StylePropertyMap, StorageEvent, Storage, StereoPannerNode, StaticRange, ShadowRoot, Selection, SecurityPolicyViolationEvent, ScriptProcessorNode, ScreenOrientation, Screen, SVGViewElement, SVGUseElement, SVGUnitTypes, SVGTransformList, SVGTransform, SVGTitleElement, SVGTextPositioningElement, SVGTextPathElement, SVGTextElement, SVGTextContentElement, SVGTSpanElement, SVGSymbolElement, SVGSwitchElement, SVGStyleElement, SVGStringList, SVGStopElement, SVGSetElement, SVGScriptElement, SVGSVGElement, SVGRectElement, SVGRect, SVGRadialGradientElement, SVGPreserveAspectRatio, SVGPolylineElement, SVGPolygonElement, SVGPointList, SVGPoint, SVGPatternElement, SVGPathElement, SVGNumberList, SVGNumber, SVGMetadataElement, SVGMatrix, SVGMaskElement, SVGMarkerElement, SVGMPathElement, SVGLinearGradientElement, SVGLineElement, SVGLengthList, SVGLength, SVGImageElement, SVGGraphicsElement, SVGGradientElement, SVGGeometryElement, SVGGElement, SVGForeignObjectElement, SVGFilterElement, SVGFETurbulenceElement, SVGFETileElement, SVGFESpotLightElement, SVGFESpecularLightingElement, SVGFEPointLightElement, SVGFEOffsetElement, SVGFEMorphologyElement, SVGFEMergeNodeElement, SVGFEMergeElement, SVGFEImageElement, SVGFEGaussianBlurElement, SVGFEFuncRElement, SVGFEFuncGElement, SVGFEFuncBElement, SVGFEFuncAElement, SVGFEFloodElement, SVGFEDropShadowElement, SVGFEDistantLightElement, SVGFEDisplacementMapElement, SVGFEDiffuseLightingElement, SVGFEConvolveMatrixElement, SVGFECompositeElement, SVGFEComponentTransferElement, SVGFEColorMatrixElement, SVGFEBlendElement, SVGEllipseElement, SVGElement, SVGDescElement, SVGDefsElement, SVGComponentTransferFunctionElement, SVGClipPathElement, SVGCircleElement, SVGAnimationElement, SVGAnimatedTransformList, SVGAnimatedString, SVGAnimatedRect, SVGAnimatedPreserveAspectRatio, SVGAnimatedNumberList, SVGAnimatedNumber, SVGAnimatedLengthList, SVGAnimatedLength, SVGAnimatedInteger, SVGAnimatedEnumeration, SVGAnimatedBoolean, SVGAnimatedAngle, SVGAnimateTransformElement, SVGAnimateMotionElement, SVGAnimateElement, SVGAngle, SVGAElement, Response, ResizeObserverSize, ResizeObserverEntry, ResizeObserver, Request, ReportingObserver, ReadableStreamDefaultReader, ReadableStreamDefaultController, ReadableStreamBYOBRequest, ReadableStreamBYOBReader, ReadableStream, ReadableByteStreamController, Range, RadioNodeList, RTCTrackEvent, RTCStatsReport, RTCSessionDescription, RTCSctpTransport, RTCRtpTransceiver, RTCRtpSender, RTCRtpReceiver, RTCPeerConnectionIceEvent, RTCPeerConnectionIceErrorEvent, RTCPeerConnection, RTCIceCandidate, RTCErrorEvent, RTCError, RTCEncodedVideoFrame, RTCEncodedAudioFrame, RTCDtlsTransport, RTCDataChannelEvent, RTCDataChannel, RTCDTMFToneChangeEvent, RTCDTMFSender, RTCCertificate, PromiseRejectionEvent, ProgressEvent, ProcessingInstruction, PopStateEvent, PointerEvent, PluginArray, Plugin, PeriodicWave, PerformanceTiming, PerformanceServerTiming, PerformanceResourceTiming, PerformancePaintTiming, PerformanceObserverEntryList, PerformanceObserver, PerformanceNavigationTiming, PerformanceNavigation, PerformanceMeasure, PerformanceMark, PerformanceLongTaskTiming, PerformanceEventTiming, PerformanceEntry, PerformanceElementTiming, Performance, Path2D, PannerNode, PageTransitionEvent, OverconstrainedError, OscillatorNode, OffscreenCanvasRenderingContext2D, OffscreenCanvas, OfflineAudioContext, OfflineAudioCompletionEvent, NodeList, NodeIterator, NodeFilter, Node, NetworkInformation, Navigator, NamedNodeMap, MutationRecord, MutationObserver, MutationEvent, MouseEvent, MimeTypeArray, MimeType, MessagePort, MessageEvent, MessageChannel, MediaStreamTrackEvent, MediaStreamTrack, MediaStreamEvent, MediaStreamAudioSourceNode, MediaStreamAudioDestinationNode, MediaStream, MediaRecorder, MediaQueryListEvent, MediaQueryList, MediaList, MediaError, MediaEncryptedEvent, MediaElementAudioSourceNode, MediaCapabilities, Location, LayoutShiftAttribution, LayoutShift, LargestContentfulPaint, KeyframeEffect, KeyboardEvent, IntersectionObserverEntry, IntersectionObserver, InputEvent, InputDeviceInfo, InputDeviceCapabilities, ImageData, ImageCapture, ImageBitmapRenderingContext, ImageBitmap, IdleDeadline, IIRFilterNode, IDBVersionChangeEvent, IDBTransaction, IDBRequest, IDBOpenDBRequest, IDBObjectStore, IDBKeyRange, IDBIndex, IDBFactory, IDBDatabase, IDBCursorWithValue, IDBCursor, History, Headers, HashChangeEvent, HTMLVideoElement, HTMLUnknownElement, HTMLUListElement, HTMLTrackElement, HTMLTitleElement, HTMLTimeElement, HTMLTextAreaElement, HTMLTemplateElement, HTMLTableSectionElement, HTMLTableRowElement, HTMLTableElement, HTMLTableColElement, HTMLTableCellElement, HTMLTableCaptionElement, HTMLStyleElement, HTMLSpanElement, HTMLSourceElement, HTMLSlotElement, HTMLSelectElement, HTMLScriptElement, HTMLQuoteElement, HTMLProgressElement, HTMLPreElement, HTMLPictureElement, HTMLParamElement, HTMLParagraphElement, HTMLOutputElement, HTMLOptionsCollection, HTMLOptionElement, HTMLOptGroupElement, HTMLObjectElement, HTMLOListElement, HTMLModElement, HTMLMeterElement, HTMLMetaElement, HTMLMenuElement, HTMLMediaElement, HTMLMarqueeElement, HTMLMapElement, HTMLLinkElement, HTMLLegendElement, HTMLLabelElement, HTMLLIElement, HTMLInputElement, HTMLImageElement, HTMLIFrameElement, HTMLHtmlElement, HTMLHeadingElement, HTMLHeadElement, HTMLHRElement, HTMLFrameSetElement, HTMLFrameElement, HTMLFormElement, HTMLFormControlsCollection, HTMLFontElement, HTMLFieldSetElement, HTMLEmbedElement, HTMLElement, HTMLDocument, HTMLDivElement, HTMLDirectoryElement, HTMLDialogElement, HTMLDetailsElement, HTMLDataListElement, HTMLDataElement, HTMLDListElement, HTMLCollection, HTMLCanvasElement, HTMLButtonElement, HTMLBodyElement, HTMLBaseElement, HTMLBRElement, HTMLAudioElement, HTMLAreaElement, HTMLAnchorElement, HTMLAllCollection, GeolocationPositionError, GeolocationPosition, GeolocationCoordinates, Geolocation, GamepadHapticActuator, GamepadEvent, GamepadButton, Gamepad, GainNode, FormDataEvent, FormData, FontFaceSetLoadEvent, FontFace, FocusEvent, FileReader, FileList, File, FeaturePolicy, External, EventTarget, EventSource, EventCounts, Event, ErrorEvent, ElementInternals, Element, DynamicsCompressorNode, DragEvent, DocumentType, DocumentFragment, Document, DelayNode, DecompressionStream, DataTransferItemList, DataTransferItem, DataTransfer, DOMTokenList, DOMStringMap, DOMStringList, DOMRectReadOnly, DOMRectList, DOMRect, DOMQuad, DOMPointReadOnly, DOMPoint, DOMParser, DOMMatrixReadOnly, DOMMatrix, DOMImplementation, DOMException, DOMError, CustomEvent, CustomElementRegistry, Crypto, CountQueuingStrategy, ConvolverNode, ConstantSourceNode, CompressionStream, CompositionEvent, Comment, CloseEvent, ClipboardEvent, CharacterData, ChannelSplitterNode, ChannelMergerNode, CanvasRenderingContext2D, CanvasPattern, CanvasGradient, CanvasCaptureMediaStreamTrack, CSSVariableReferenceValue, CSSUnparsedValue, CSSUnitValue, CSSTranslate, CSSTransformValue, CSSTransformComponent, CSSSupportsRule, CSSStyleValue, CSSStyleSheet, CSSStyleRule, CSSStyleDeclaration, CSSSkewY, CSSSkewX, CSSSkew, CSSScale, CSSRuleList, CSSRule, CSSRotate, CSSPropertyRule, CSSPositionValue, CSSPerspective, CSSPageRule, CSSNumericValue, CSSNumericArray, CSSNamespaceRule, CSSMediaRule, CSSMatrixComponent, CSSMathValue, CSSMathSum, CSSMathProduct, CSSMathNegate, CSSMathMin, CSSMathMax, CSSMathInvert, CSSKeywordValue, CSSKeyframesRule, CSSKeyframeRule, CSSImportRule, CSSImageValue, CSSGroupingRule, CSSFontFaceRule, CSSCounterStyleRule, CSSConditionRule, CSS, CDATASection, ByteLengthQueuingStrategy, BroadcastChannel, BlobEvent, Blob, BiquadFilterNode, BeforeUnloadEvent, BeforeInstallPromptEvent, BatteryManager, BaseAudioContext, BarProp, AudioWorkletNode, AudioScheduledSourceNode, AudioProcessingEvent, AudioParamMap, AudioParam, AudioNode, AudioListener, AudioDestinationNode, AudioContext, AudioBufferSourceNode, AudioBuffer, Attr, AnimationEvent, AnimationEffect, Animation, AnalyserNode, AbstractRange, AbortSignal, AbortController, window, self, document, name, location, customElements, history, locationbar, menubar, personalbar, scrollbars, statusbar, toolbar, status, closed, frames, length, top, opener, parent, frameElement, navigator, origin, external, screen, innerWidth, innerHeight, scrollX, pageXOffset, scrollY, pageYOffset, visualViewport, screenX, screenY, outerWidth, outerHeight, devicePixelRatio, event, clientInformation, offscreenBuffering, screenLeft, screenTop, defaultStatus, defaultstatus, styleMedia, onsearch, isSecureContext, performance, onappinstalled, onbeforeinstallprompt, crypto, indexedDB, webkitStorageInfo, sessionStorage, localStorage, onbeforexrselect, onabort, onblur, oncancel, oncanplay, oncanplaythrough, onchange, onclick, onclose, oncontextmenu, oncuechange, ondblclick, ondrag, ondragend, ondragenter, ondragleave, ondragover, ondragstart, ondrop, ondurationchange, onemptied, onended, onerror, onfocus, onformdata, oninput, oninvalid, onkeydown, onkeypress, onkeyup, onload, onloadeddata, onloadedmetadata, onloadstart, onmousedown, onmouseenter, onmouseleave, onmousemove, onmouseout, onmouseover, onmouseup, onmousewheel, onpause, onplay, onplaying, onprogress, onratechange, onreset, onresize, onscroll, onsecuritypolicyviolation, onseeked, onseeking, onselect, onslotchange, onstalled, onsubmit, onsuspend, ontimeupdate, ontoggle, onvolumechange, onwaiting, onwebkitanimationend, onwebkitanimationiteration, onwebkitanimationstart, onwebkittransitionend, onwheel, onauxclick, ongotpointercapture, onlostpointercapture, onpointerdown, onpointermove, onpointerup, onpointercancel, onpointerover, onpointerout, onpointerenter, onpointerleave, onselectstart, onselectionchange, onanimationend, onanimationiteration, onanimationstart, ontransitionrun, ontransitionstart, ontransitionend, ontransitioncancel, onafterprint, onbeforeprint, onbeforeunload, onhashchange, onlanguagechange, onmessage, onmessageerror, onoffline, ononline, onpagehide, onpageshow, onpopstate, onrejectionhandled, onstorage, onunhandledrejection, onunload, alert, atob, blur, btoa, cancelAnimationFrame, cancelIdleCallback, captureEvents, clearInterval, clearTimeout, close, confirm, createImageBitmap, fetch, find, focus, getComputedStyle, getSelection, matchMedia, moveBy, moveTo, open, postMessage, print, prompt, queueMicrotask, releaseEvents, reportError, requestAnimationFrame, requestIdleCallback, resizeBy, resizeTo, scroll, scrollBy, scrollTo, setInterval, setTimeout, stop, structuredClone, webkitCancelAnimationFrame, webkitRequestAnimationFrame, Atomics, chrome, WebAssembly, caches, cookieStore, ondevicemotion, ondeviceorientation, ondeviceorientationabsolute, oncontextlost, oncontextrestored, AbsoluteOrientationSensor, Accelerometer, AudioWorklet, Cache, CacheStorage, Clipboard, ClipboardItem, CookieChangeEvent, CookieStore, CookieStoreManager, Credential, CredentialsContainer, CryptoKey, DeviceMotionEvent, DeviceMotionEventAcceleration, DeviceMotionEventRotationRate, DeviceOrientationEvent, FederatedCredential, Gyroscope, Keyboard, KeyboardLayoutMap, LinearAccelerationSensor, Lock, LockManager, MIDIAccess, MIDIConnectionEvent, MIDIInput, MIDIInputMap, MIDIMessageEvent, MIDIOutput, MIDIOutputMap, MIDIPort, MediaDeviceInfo, MediaDevices, MediaKeyMessageEvent, MediaKeySession, MediaKeyStatusMap, MediaKeySystemAccess, MediaKeys, NavigationPreloadManager, NavigatorManagedData, OrientationSensor, PasswordCredential, RTCIceTransport, RelativeOrientationSensor, Sensor, SensorErrorEvent, ServiceWorker, ServiceWorkerContainer, ServiceWorkerRegistration, StorageManager, SubtleCrypto, Worklet, XRDOMOverlayState, XRLayer, XRWebGLBinding, AudioData, EncodedAudioChunk, EncodedVideoChunk, ImageTrack, ImageTrackList, VideoColorSpace, VideoFrame, AudioDecoder, AudioEncoder, ImageDecoder, VideoDecoder, VideoEncoder, AuthenticatorAssertionResponse, AuthenticatorAttestationResponse, AuthenticatorResponse, PublicKeyCredential, Bluetooth, BluetoothCharacteristicProperties, BluetoothDevice, BluetoothRemoteGATTCharacteristic, BluetoothRemoteGATTDescriptor, BluetoothRemoteGATTServer, BluetoothRemoteGATTService, CanvasFilter, EyeDropper, FileSystemDirectoryHandle, FileSystemFileHandle, FileSystemHandle, FileSystemWritableFileStream, FragmentDirective, GravitySensor, HID, HIDConnectionEvent, HIDDevice, HIDInputReportEvent, IdleDetector, MediaStreamTrackGenerator, MediaStreamTrackProcessor, OTPCredential, PaymentAddress, PaymentRequest, PaymentResponse, PaymentMethodChangeEvent, Presentation, PresentationAvailability, PresentationConnection, PresentationConnectionAvailableEvent, PresentationConnectionCloseEvent, PresentationConnectionList, PresentationReceiver, PresentationRequest, Profiler, Scheduling, Serial, SerialPort, USB, USBAlternateInterface, USBConfiguration, USBConnectionEvent, USBDevice, USBEndpoint, USBInTransferResult, USBInterface, USBIsochronousInTransferPacket, USBIsochronousInTransferResult, USBIsochronousOutTransferPacket, USBIsochronousOutTransferResult, USBOutTransferResult, VirtualKeyboard, WakeLock, WakeLockSentinel, WebTransport, WebTransportBidirectionalStream, WebTransportDatagramDuplexStream, WebTransportError, WindowControlsOverlay, WindowControlsOverlayGeometryChangeEvent, XRAnchor, XRAnchorSet, XRBoundedReferenceSpace, XRFrame, XRInputSource, XRInputSourceArray, XRInputSourceEvent, XRInputSourcesChangeEvent, XRPose, XRReferenceSpace, XRReferenceSpaceEvent, XRRenderState, XRRigidTransform, XRSession, XRSessionEvent, XRSpace, XRSystem, XRView, XRViewerPose, XRViewport, XRWebGLLayer, XRCPUDepthInformation, XRDepthInformation, XRWebGLDepthInformation, XRHitTestResult, XRHitTestSource, XRRay, XRTransientInputHitTestResult, XRTransientInputHitTestSource, XRLightEstimate, XRLightProbe, showDirectoryPicker, showOpenFilePicker, showSaveFilePicker, originAgentCluster, trustedTypes, speechSynthesis, onpointerrawupdate, crossOriginIsolated, scheduler, AnimationPlaybackEvent, AnimationTimeline, CSSAnimation, CSSTransition, DocumentTimeline, BackgroundFetchManager, BackgroundFetchRecord, BackgroundFetchRegistration, BluetoothUUID, CSSLayerBlockRule, CSSLayerStatementRule, CustomStateSet, DelegatedInkTrailPresenter, Ink, MediaMetadata, MediaSession, MediaSource, SourceBuffer, SourceBufferList, NavigatorUAData, Notification, PaymentInstruments, PaymentManager, PaymentRequestUpdateEvent, PeriodicSyncManager, PermissionStatus, Permissions, PictureInPictureEvent, PictureInPictureWindow, PushManager, PushSubscription, PushSubscriptionOptions, RemotePlayback, Scheduler, TaskController, TaskPriorityChangeEvent, TaskSignal, SharedWorker, SpeechSynthesisErrorEvent, SpeechSynthesisEvent, SpeechSynthesisUtterance, TrustedHTML, TrustedScript, TrustedScriptURL, TrustedTypePolicy, TrustedTypePolicyFactory, URLPattern, VideoPlaybackQuality, VirtualKeyboardGeometryChangeEvent, XSLTProcessor, webkitSpeechGrammar, webkitSpeechGrammarList, webkitSpeechRecognition, webkitSpeechRecognitionError, webkitSpeechRecognitionEvent, openDatabase, webkitRequestFileSystem, webkitResolveLocalFileSystemURL`,
+			cssKeys: `cssText, length, parentRule, cssFloat, getPropertyPriority, getPropertyValue, item, removeProperty, setProperty, constructor, accent-color, align-content, align-items, align-self, alignment-baseline, animation-delay, animation-direction, animation-duration, animation-fill-mode, animation-iteration-count, animation-name, animation-play-state, animation-timing-function, app-region, appearance, backdrop-filter, backface-visibility, background-attachment, background-blend-mode, background-clip, background-color, background-image, background-origin, background-position, background-repeat, background-size, baseline-shift, block-size, border-block-end-color, border-block-end-style, border-block-end-width, border-block-start-color, border-block-start-style, border-block-start-width, border-bottom-color, border-bottom-left-radius, border-bottom-right-radius, border-bottom-style, border-bottom-width, border-collapse, border-end-end-radius, border-end-start-radius, border-image-outset, border-image-repeat, border-image-slice, border-image-source, border-image-width, border-inline-end-color, border-inline-end-style, border-inline-end-width, border-inline-start-color, border-inline-start-style, border-inline-start-width, border-left-color, border-left-style, border-left-width, border-right-color, border-right-style, border-right-width, border-start-end-radius, border-start-start-radius, border-top-color, border-top-left-radius, border-top-right-radius, border-top-style, border-top-width, bottom, box-shadow, box-sizing, break-after, break-before, break-inside, buffered-rendering, caption-side, caret-color, clear, clip, clip-path, clip-rule, color, color-interpolation, color-interpolation-filters, color-rendering, column-count, column-gap, column-rule-color, column-rule-style, column-rule-width, column-span, column-width, contain-intrinsic-block-size, contain-intrinsic-height, contain-intrinsic-inline-size, contain-intrinsic-size, contain-intrinsic-width, content, cursor, cx, cy, d, direction, display, dominant-baseline, empty-cells, fill, fill-opacity, fill-rule, filter, flex-basis, flex-direction, flex-grow, flex-shrink, flex-wrap, float, flood-color, flood-opacity, font-family, font-kerning, font-optical-sizing, font-size, font-stretch, font-style, font-synthesis-small-caps, font-synthesis-style, font-synthesis-weight, font-variant, font-variant-caps, font-variant-east-asian, font-variant-ligatures, font-variant-numeric, font-weight, grid-auto-columns, grid-auto-flow, grid-auto-rows, grid-column-end, grid-column-start, grid-row-end, grid-row-start, grid-template-areas, grid-template-columns, grid-template-rows, height, hyphens, image-orientation, image-rendering, inline-size, inset-block-end, inset-block-start, inset-inline-end, inset-inline-start, isolation, justify-content, justify-items, justify-self, left, letter-spacing, lighting-color, line-break, line-height, list-style-image, list-style-position, list-style-type, margin-block-end, margin-block-start, margin-bottom, margin-inline-end, margin-inline-start, margin-left, margin-right, margin-top, marker-end, marker-mid, marker-start, mask-type, max-block-size, max-height, max-inline-size, max-width, min-block-size, min-height, min-inline-size, min-width, mix-blend-mode, object-fit, object-position, offset-distance, offset-path, offset-rotate, opacity, order, orphans, outline-color, outline-offset, outline-style, outline-width, overflow-anchor, overflow-clip-margin, overflow-wrap, overflow-x, overflow-y, overscroll-behavior-block, overscroll-behavior-inline, padding-block-end, padding-block-start, padding-bottom, padding-inline-end, padding-inline-start, padding-left, padding-right, padding-top, paint-order, perspective, perspective-origin, pointer-events, position, r, resize, right, row-gap, ruby-position, rx, ry, scroll-behavior, scroll-margin-block-end, scroll-margin-block-start, scroll-margin-inline-end, scroll-margin-inline-start, scroll-padding-block-end, scroll-padding-block-start, scroll-padding-inline-end, scroll-padding-inline-start, scrollbar-gutter, shape-image-threshold, shape-margin, shape-outside, shape-rendering, speak, stop-color, stop-opacity, stroke, stroke-dasharray, stroke-dashoffset, stroke-linecap, stroke-linejoin, stroke-miterlimit, stroke-opacity, stroke-width, tab-size, table-layout, text-align, text-align-last, text-anchor, text-decoration, text-decoration-color, text-decoration-line, text-decoration-skip-ink, text-decoration-style, text-emphasis-color, text-emphasis-position, text-emphasis-style, text-indent, text-overflow, text-rendering, text-shadow, text-size-adjust, text-transform, text-underline-position, top, touch-action, transform, transform-origin, transform-style, transition-delay, transition-duration, transition-property, transition-timing-function, unicode-bidi, user-select, vector-effect, vertical-align, visibility, white-space, widows, width, will-change, word-break, word-spacing, writing-mode, x, y, z-index, zoom, -webkit-border-horizontal-spacing, -webkit-border-image, -webkit-border-vertical-spacing, -webkit-box-align, -webkit-box-decoration-break, -webkit-box-direction, -webkit-box-flex, -webkit-box-ordinal-group, -webkit-box-orient, -webkit-box-pack, -webkit-box-reflect, -webkit-font-smoothing, -webkit-highlight, -webkit-hyphenate-character, -webkit-line-break, -webkit-line-clamp, -webkit-locale, -webkit-mask-box-image, -webkit-mask-box-image-outset, -webkit-mask-box-image-repeat, -webkit-mask-box-image-slice, -webkit-mask-box-image-source, -webkit-mask-box-image-width, -webkit-mask-clip, -webkit-mask-composite, -webkit-mask-image, -webkit-mask-origin, -webkit-mask-position, -webkit-mask-repeat, -webkit-mask-size, -webkit-print-color-adjust, -webkit-rtl-ordering, -webkit-tap-highlight-color, -webkit-text-combine, -webkit-text-decorations-in-effect, -webkit-text-fill-color, -webkit-text-orientation, -webkit-text-security, -webkit-text-stroke-color, -webkit-text-stroke-width, -webkit-user-drag, -webkit-user-modify, -webkit-writing-mode, accentColor, additiveSymbols, alignContent, alignItems, alignSelf, alignmentBaseline, all, animation, animationDelay, animationDirection, animationDuration, animationFillMode, animationIterationCount, animationName, animationPlayState, animationTimingFunction, appRegion, ascentOverride, aspectRatio, backdropFilter, backfaceVisibility, background, backgroundAttachment, backgroundBlendMode, backgroundClip, backgroundColor, backgroundImage, backgroundOrigin, backgroundPosition, backgroundPositionX, backgroundPositionY, backgroundRepeat, backgroundRepeatX, backgroundRepeatY, backgroundSize, baselineShift, blockSize, border, borderBlock, borderBlockColor, borderBlockEnd, borderBlockEndColor, borderBlockEndStyle, borderBlockEndWidth, borderBlockStart, borderBlockStartColor, borderBlockStartStyle, borderBlockStartWidth, borderBlockStyle, borderBlockWidth, borderBottom, borderBottomColor, borderBottomLeftRadius, borderBottomRightRadius, borderBottomStyle, borderBottomWidth, borderCollapse, borderColor, borderEndEndRadius, borderEndStartRadius, borderImage, borderImageOutset, borderImageRepeat, borderImageSlice, borderImageSource, borderImageWidth, borderInline, borderInlineColor, borderInlineEnd, borderInlineEndColor, borderInlineEndStyle, borderInlineEndWidth, borderInlineStart, borderInlineStartColor, borderInlineStartStyle, borderInlineStartWidth, borderInlineStyle, borderInlineWidth, borderLeft, borderLeftColor, borderLeftStyle, borderLeftWidth, borderRadius, borderRight, borderRightColor, borderRightStyle, borderRightWidth, borderSpacing, borderStartEndRadius, borderStartStartRadius, borderStyle, borderTop, borderTopColor, borderTopLeftRadius, borderTopRightRadius, borderTopStyle, borderTopWidth, borderWidth, boxShadow, boxSizing, breakAfter, breakBefore, breakInside, bufferedRendering, captionSide, caretColor, clipPath, clipRule, colorInterpolation, colorInterpolationFilters, colorRendering, colorScheme, columnCount, columnFill, columnGap, columnRule, columnRuleColor, columnRuleStyle, columnRuleWidth, columnSpan, columnWidth, columns, contain, containIntrinsicBlockSize, containIntrinsicHeight, containIntrinsicInlineSize, containIntrinsicSize, containIntrinsicWidth, contentVisibility, counterIncrement, counterReset, counterSet, descentOverride, dominantBaseline, emptyCells, fallback, fillOpacity, fillRule, flex, flexBasis, flexDirection, flexFlow, flexGrow, flexShrink, flexWrap, floodColor, floodOpacity, font, fontDisplay, fontFamily, fontFeatureSettings, fontKerning, fontOpticalSizing, fontSize, fontStretch, fontStyle, fontSynthesis, fontSynthesisSmallCaps, fontSynthesisStyle, fontSynthesisWeight, fontVariant, fontVariantCaps, fontVariantEastAsian, fontVariantLigatures, fontVariantNumeric, fontVariationSettings, fontWeight, forcedColorAdjust, gap, grid, gridArea, gridAutoColumns, gridAutoFlow, gridAutoRows, gridColumn, gridColumnEnd, gridColumnGap, gridColumnStart, gridGap, gridRow, gridRowEnd, gridRowGap, gridRowStart, gridTemplate, gridTemplateAreas, gridTemplateColumns, gridTemplateRows, imageOrientation, imageRendering, inherits, initialValue, inlineSize, inset, insetBlock, insetBlockEnd, insetBlockStart, insetInline, insetInlineEnd, insetInlineStart, justifyContent, justifyItems, justifySelf, letterSpacing, lightingColor, lineBreak, lineGapOverride, lineHeight, listStyle, listStyleImage, listStylePosition, listStyleType, margin, marginBlock, marginBlockEnd, marginBlockStart, marginBottom, marginInline, marginInlineEnd, marginInlineStart, marginLeft, marginRight, marginTop, marker, markerEnd, markerMid, markerStart, mask, maskType, maxBlockSize, maxHeight, maxInlineSize, maxWidth, maxZoom, minBlockSize, minHeight, minInlineSize, minWidth, minZoom, mixBlendMode, negative, objectFit, objectPosition, offset, offsetDistance, offsetPath, offsetRotate, orientation, outline, outlineColor, outlineOffset, outlineStyle, outlineWidth, overflow, overflowAnchor, overflowClipMargin, overflowWrap, overflowX, overflowY, overscrollBehavior, overscrollBehaviorBlock, overscrollBehaviorInline, overscrollBehaviorX, overscrollBehaviorY, pad, padding, paddingBlock, paddingBlockEnd, paddingBlockStart, paddingBottom, paddingInline, paddingInlineEnd, paddingInlineStart, paddingLeft, paddingRight, paddingTop, page, pageBreakAfter, pageBreakBefore, pageBreakInside, pageOrientation, paintOrder, perspectiveOrigin, placeContent, placeItems, placeSelf, pointerEvents, prefix, quotes, range, rowGap, rubyPosition, scrollBehavior, scrollMargin, scrollMarginBlock, scrollMarginBlockEnd, scrollMarginBlockStart, scrollMarginBottom, scrollMarginInline, scrollMarginInlineEnd, scrollMarginInlineStart, scrollMarginLeft, scrollMarginRight, scrollMarginTop, scrollPadding, scrollPaddingBlock, scrollPaddingBlockEnd, scrollPaddingBlockStart, scrollPaddingBottom, scrollPaddingInline, scrollPaddingInlineEnd, scrollPaddingInlineStart, scrollPaddingLeft, scrollPaddingRight, scrollPaddingTop, scrollSnapAlign, scrollSnapStop, scrollSnapType, scrollbarGutter, shapeImageThreshold, shapeMargin, shapeOutside, shapeRendering, size, sizeAdjust, speakAs, src, stopColor, stopOpacity, strokeDasharray, strokeDashoffset, strokeLinecap, strokeLinejoin, strokeMiterlimit, strokeOpacity, strokeWidth, suffix, symbols, syntax, system, tabSize, tableLayout, textAlign, textAlignLast, textAnchor, textCombineUpright, textDecoration, textDecorationColor, textDecorationLine, textDecorationSkipInk, textDecorationStyle, textDecorationThickness, textEmphasis, textEmphasisColor, textEmphasisPosition, textEmphasisStyle, textIndent, textOrientation, textOverflow, textRendering, textShadow, textSizeAdjust, textTransform, textUnderlineOffset, textUnderlinePosition, touchAction, transformBox, transformOrigin, transformStyle, transition, transitionDelay, transitionDuration, transitionProperty, transitionTimingFunction, unicodeBidi, unicodeRange, userSelect, userZoom, vectorEffect, verticalAlign, webkitAlignContent, webkitAlignItems, webkitAlignSelf, webkitAnimation, webkitAnimationDelay, webkitAnimationDirection, webkitAnimationDuration, webkitAnimationFillMode, webkitAnimationIterationCount, webkitAnimationName, webkitAnimationPlayState, webkitAnimationTimingFunction, webkitAppRegion, webkitAppearance, webkitBackfaceVisibility, webkitBackgroundClip, webkitBackgroundOrigin, webkitBackgroundSize, webkitBorderAfter, webkitBorderAfterColor, webkitBorderAfterStyle, webkitBorderAfterWidth, webkitBorderBefore, webkitBorderBeforeColor, webkitBorderBeforeStyle, webkitBorderBeforeWidth, webkitBorderBottomLeftRadius, webkitBorderBottomRightRadius, webkitBorderEnd, webkitBorderEndColor, webkitBorderEndStyle, webkitBorderEndWidth, webkitBorderHorizontalSpacing, webkitBorderImage, webkitBorderRadius, webkitBorderStart, webkitBorderStartColor, webkitBorderStartStyle, webkitBorderStartWidth, webkitBorderTopLeftRadius, webkitBorderTopRightRadius, webkitBorderVerticalSpacing, webkitBoxAlign, webkitBoxDecorationBreak, webkitBoxDirection, webkitBoxFlex, webkitBoxOrdinalGroup, webkitBoxOrient, webkitBoxPack, webkitBoxReflect, webkitBoxShadow, webkitBoxSizing, webkitClipPath, webkitColumnBreakAfter, webkitColumnBreakBefore, webkitColumnBreakInside, webkitColumnCount, webkitColumnGap, webkitColumnRule, webkitColumnRuleColor, webkitColumnRuleStyle, webkitColumnRuleWidth, webkitColumnSpan, webkitColumnWidth, webkitColumns, webkitFilter, webkitFlex, webkitFlexBasis, webkitFlexDirection, webkitFlexFlow, webkitFlexGrow, webkitFlexShrink, webkitFlexWrap, webkitFontFeatureSettings, webkitFontSmoothing, webkitHighlight, webkitHyphenateCharacter, webkitJustifyContent, webkitLineBreak, webkitLineClamp, webkitLocale, webkitLogicalHeight, webkitLogicalWidth, webkitMarginAfter, webkitMarginBefore, webkitMarginEnd, webkitMarginStart, webkitMask, webkitMaskBoxImage, webkitMaskBoxImageOutset, webkitMaskBoxImageRepeat, webkitMaskBoxImageSlice, webkitMaskBoxImageSource, webkitMaskBoxImageWidth, webkitMaskClip, webkitMaskComposite, webkitMaskImage, webkitMaskOrigin, webkitMaskPosition, webkitMaskPositionX, webkitMaskPositionY, webkitMaskRepeat, webkitMaskRepeatX, webkitMaskRepeatY, webkitMaskSize, webkitMaxLogicalHeight, webkitMaxLogicalWidth, webkitMinLogicalHeight, webkitMinLogicalWidth, webkitOpacity, webkitOrder, webkitPaddingAfter, webkitPaddingBefore, webkitPaddingEnd, webkitPaddingStart, webkitPerspective, webkitPerspectiveOrigin, webkitPerspectiveOriginX, webkitPerspectiveOriginY, webkitPrintColorAdjust, webkitRtlOrdering, webkitRubyPosition, webkitShapeImageThreshold, webkitShapeMargin, webkitShapeOutside, webkitTapHighlightColor, webkitTextCombine, webkitTextDecorationsInEffect, webkitTextEmphasis, webkitTextEmphasisColor, webkitTextEmphasisPosition, webkitTextEmphasisStyle, webkitTextFillColor, webkitTextOrientation, webkitTextSecurity, webkitTextSizeAdjust, webkitTextStroke, webkitTextStrokeColor, webkitTextStrokeWidth, webkitTransform, webkitTransformOrigin, webkitTransformOriginX, webkitTransformOriginY, webkitTransformOriginZ, webkitTransformStyle, webkitTransition, webkitTransitionDelay, webkitTransitionDuration, webkitTransitionProperty, webkitTransitionTimingFunction, webkitUserDrag, webkitUserModify, webkitUserSelect, webkitWritingMode, whiteSpace, willChange, wordBreak, wordSpacing, wordWrap, writingMode, zIndex, additive-symbols, ascent-override, aspect-ratio, background-position-x, background-position-y, background-repeat-x, background-repeat-y, border-block, border-block-color, border-block-end, border-block-start, border-block-style, border-block-width, border-bottom, border-color, border-image, border-inline, border-inline-color, border-inline-end, border-inline-start, border-inline-style, border-inline-width, border-left, border-radius, border-right, border-spacing, border-style, border-top, border-width, color-scheme, column-fill, column-rule, content-visibility, counter-increment, counter-reset, counter-set, descent-override, flex-flow, font-display, font-feature-settings, font-synthesis, font-variation-settings, forced-color-adjust, grid-area, grid-column, grid-column-gap, grid-gap, grid-row, grid-row-gap, grid-template, initial-value, inset-block, inset-inline, line-gap-override, list-style, margin-block, margin-inline, max-zoom, min-zoom, overscroll-behavior, overscroll-behavior-x, overscroll-behavior-y, padding-block, padding-inline, page-break-after, page-break-before, page-break-inside, page-orientation, place-content, place-items, place-self, scroll-margin, scroll-margin-block, scroll-margin-bottom, scroll-margin-inline, scroll-margin-left, scroll-margin-right, scroll-margin-top, scroll-padding, scroll-padding-block, scroll-padding-bottom, scroll-padding-inline, scroll-padding-left, scroll-padding-right, scroll-padding-top, scroll-snap-align, scroll-snap-stop, scroll-snap-type, size-adjust, speak-as, text-combine-upright, text-decoration-thickness, text-emphasis, text-orientation, text-underline-offset, transform-box, unicode-range, user-zoom, -webkit-align-content, -webkit-align-items, -webkit-align-self, -webkit-animation, -webkit-animation-delay, -webkit-animation-direction, -webkit-animation-duration, -webkit-animation-fill-mode, -webkit-animation-iteration-count, -webkit-animation-name, -webkit-animation-play-state, -webkit-animation-timing-function, -webkit-app-region, -webkit-appearance, -webkit-backface-visibility, -webkit-background-clip, -webkit-background-origin, -webkit-background-size, -webkit-border-after, -webkit-border-after-color, -webkit-border-after-style, -webkit-border-after-width, -webkit-border-before, -webkit-border-before-color, -webkit-border-before-style, -webkit-border-before-width, -webkit-border-bottom-left-radius, -webkit-border-bottom-right-radius, -webkit-border-end, -webkit-border-end-color, -webkit-border-end-style, -webkit-border-end-width, -webkit-border-radius, -webkit-border-start, -webkit-border-start-color, -webkit-border-start-style, -webkit-border-start-width, -webkit-border-top-left-radius, -webkit-border-top-right-radius, -webkit-box-shadow, -webkit-box-sizing, -webkit-clip-path, -webkit-column-break-after, -webkit-column-break-before, -webkit-column-break-inside, -webkit-column-count, -webkit-column-gap, -webkit-column-rule, -webkit-column-rule-color, -webkit-column-rule-style, -webkit-column-rule-width, -webkit-column-span, -webkit-column-width, -webkit-columns, -webkit-filter, -webkit-flex, -webkit-flex-basis, -webkit-flex-direction, -webkit-flex-flow, -webkit-flex-grow, -webkit-flex-shrink, -webkit-flex-wrap, -webkit-font-feature-settings, -webkit-justify-content, -webkit-logical-height, -webkit-logical-width, -webkit-margin-after, -webkit-margin-before, -webkit-margin-end, -webkit-margin-start, -webkit-mask, -webkit-mask-position-x, -webkit-mask-position-y, -webkit-mask-repeat-x, -webkit-mask-repeat-y, -webkit-max-logical-height, -webkit-max-logical-width, -webkit-min-logical-height, -webkit-min-logical-width, -webkit-opacity, -webkit-order, -webkit-padding-after, -webkit-padding-before, -webkit-padding-end, -webkit-padding-start, -webkit-perspective, -webkit-perspective-origin, -webkit-perspective-origin-x, -webkit-perspective-origin-y, -webkit-ruby-position, -webkit-shape-image-threshold, -webkit-shape-margin, -webkit-shape-outside, -webkit-text-emphasis, -webkit-text-emphasis-color, -webkit-text-emphasis-position, -webkit-text-emphasis-style, -webkit-text-size-adjust, -webkit-text-stroke, -webkit-transform, -webkit-transform-origin, -webkit-transform-origin-x, -webkit-transform-origin-y, -webkit-transform-origin-z, -webkit-transform-style, -webkit-transition, -webkit-transition-delay, -webkit-transition-duration, -webkit-transition-property, -webkit-transition-timing-function, -webkit-user-select, word-wrap`,
+			jsKeys: "Object.assign, Object.getOwnPropertyDescriptor, Object.getOwnPropertyDescriptors, Object.getOwnPropertyNames, Object.getOwnPropertySymbols, Object.is, Object.preventExtensions, Object.seal, Object.create, Object.defineProperties, Object.defineProperty, Object.freeze, Object.getPrototypeOf, Object.setPrototypeOf, Object.isExtensible, Object.isFrozen, Object.isSealed, Object.keys, Object.entries, Object.fromEntries, Object.values, Object.hasOwn, Object.__defineGetter__, Object.__defineSetter__, Object.hasOwnProperty, Object.__lookupGetter__, Object.__lookupSetter__, Object.isPrototypeOf, Object.propertyIsEnumerable, Object.toString, Object.valueOf, Object.__proto__, Object.toLocaleString, Function.apply, Function.bind, Function.call, Function.toString, Boolean.toString, Boolean.valueOf, Symbol.for, Symbol.keyFor, Symbol.asyncIterator, Symbol.hasInstance, Symbol.isConcatSpreadable, Symbol.iterator, Symbol.match, Symbol.matchAll, Symbol.replace, Symbol.search, Symbol.species, Symbol.split, Symbol.toPrimitive, Symbol.toStringTag, Symbol.unscopables, Symbol.toString, Symbol.valueOf, Symbol.description, Error.captureStackTrace, Error.stackTraceLimit, Error.message, Error.toString, Number.isFinite, Number.isInteger, Number.isNaN, Number.isSafeInteger, Number.parseFloat, Number.parseInt, Number.MAX_VALUE, Number.MIN_VALUE, Number.NaN, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, Number.MAX_SAFE_INTEGER, Number.MIN_SAFE_INTEGER, Number.EPSILON, Number.toExponential, Number.toFixed, Number.toPrecision, Number.toString, Number.valueOf, Number.toLocaleString, BigInt.asUintN, BigInt.asIntN, BigInt.toLocaleString, BigInt.toString, BigInt.valueOf, Math.abs, Math.acos, Math.acosh, Math.asin, Math.asinh, Math.atan, Math.atanh, Math.atan2, Math.ceil, Math.cbrt, Math.expm1, Math.clz32, Math.cos, Math.cosh, Math.exp, Math.floor, Math.fround, Math.hypot, Math.imul, Math.log, Math.log1p, Math.log2, Math.log10, Math.max, Math.min, Math.pow, Math.random, Math.round, Math.sign, Math.sin, Math.sinh, Math.sqrt, Math.tan, Math.tanh, Math.trunc, Math.E, Math.LN10, Math.LN2, Math.LOG10E, Math.LOG2E, Math.PI, Math.SQRT1_2, Math.SQRT2, Date.now, Date.parse, Date.UTC, Date.toString, Date.toDateString, Date.toTimeString, Date.toISOString, Date.toUTCString, Date.toGMTString, Date.getDate, Date.setDate, Date.getDay, Date.getFullYear, Date.setFullYear, Date.getHours, Date.setHours, Date.getMilliseconds, Date.setMilliseconds, Date.getMinutes, Date.setMinutes, Date.getMonth, Date.setMonth, Date.getSeconds, Date.setSeconds, Date.getTime, Date.setTime, Date.getTimezoneOffset, Date.getUTCDate, Date.setUTCDate, Date.getUTCDay, Date.getUTCFullYear, Date.setUTCFullYear, Date.getUTCHours, Date.setUTCHours, Date.getUTCMilliseconds, Date.setUTCMilliseconds, Date.getUTCMinutes, Date.setUTCMinutes, Date.getUTCMonth, Date.setUTCMonth, Date.getUTCSeconds, Date.setUTCSeconds, Date.valueOf, Date.getYear, Date.setYear, Date.toJSON, Date.toLocaleString, Date.toLocaleDateString, Date.toLocaleTimeString, String.fromCharCode, String.fromCodePoint, String.raw, String.anchor, String.big, String.blink, String.bold, String.charAt, String.charCodeAt, String.codePointAt, String.concat, String.endsWith, String.fontcolor, String.fontsize, String.fixed, String.includes, String.indexOf, String.italics, String.lastIndexOf, String.link, String.localeCompare, String.match, String.matchAll, String.normalize, String.padEnd, String.padStart, String.repeat, String.replace, String.replaceAll, String.search, String.slice, String.small, String.split, String.strike, String.sub, String.substr, String.substring, String.sup, String.startsWith, String.toString, String.trim, String.trimStart, String.trimLeft, String.trimEnd, String.trimRight, String.toLocaleLowerCase, String.toLocaleUpperCase, String.toLowerCase, String.toUpperCase, String.valueOf, String.at, RegExp.input, RegExp.$_, RegExp.lastMatch, RegExp.$&, RegExp.lastParen, RegExp.$+, RegExp.leftContext, RegExp.$`, RegExp.rightContext, RegExp.$', RegExp.$1, RegExp.$2, RegExp.$3, RegExp.$4, RegExp.$5, RegExp.$6, RegExp.$7, RegExp.$8, RegExp.$9, RegExp.exec, RegExp.dotAll, RegExp.flags, RegExp.global, RegExp.hasIndices, RegExp.ignoreCase, RegExp.multiline, RegExp.source, RegExp.sticky, RegExp.unicode, RegExp.compile, RegExp.toString, RegExp.test, Array.isArray, Array.from, Array.of, Array.concat, Array.copyWithin, Array.fill, Array.find, Array.findIndex, Array.lastIndexOf, Array.pop, Array.push, Array.reverse, Array.shift, Array.unshift, Array.slice, Array.sort, Array.splice, Array.includes, Array.indexOf, Array.join, Array.keys, Array.entries, Array.values, Array.forEach, Array.filter, Array.flat, Array.flatMap, Array.map, Array.every, Array.some, Array.reduce, Array.reduceRight, Array.toLocaleString, Array.toString, Array.at, Array.findLast, Array.findLastIndex, Map.get, Map.set, Map.has, Map.delete, Map.clear, Map.entries, Map.forEach, Map.keys, Map.size, Map.values, Set.has, Set.add, Set.delete, Set.clear, Set.entries, Set.forEach, Set.size, Set.values, Set.keys, WeakMap.delete, WeakMap.get, WeakMap.set, WeakMap.has, WeakSet.delete, WeakSet.has, WeakSet.add, Atomics.load, Atomics.store, Atomics.add, Atomics.sub, Atomics.and, Atomics.or, Atomics.xor, Atomics.exchange, Atomics.compareExchange, Atomics.isLockFree, Atomics.wait, Atomics.waitAsync, Atomics.notify, JSON.parse, JSON.stringify, Promise.all, Promise.allSettled, Promise.any, Promise.race, Promise.resolve, Promise.reject, Promise.then, Promise.catch, Promise.finally, Reflect.defineProperty, Reflect.deleteProperty, Reflect.apply, Reflect.construct, Reflect.get, Reflect.getOwnPropertyDescriptor, Reflect.getPrototypeOf, Reflect.has, Reflect.isExtensible, Reflect.ownKeys, Reflect.preventExtensions, Reflect.set, Reflect.setPrototypeOf, Proxy.revocable, Intl.getCanonicalLocales, Intl.DateTimeFormat, Intl.NumberFormat, Intl.Collator, Intl.v8BreakIterator, Intl.PluralRules, Intl.RelativeTimeFormat, Intl.ListFormat, Intl.Locale, Intl.DisplayNames, Intl.Segmenter, Intl.supportedValuesOf, WebAssembly.compile, WebAssembly.validate, WebAssembly.instantiate, WebAssembly.compileStreaming, WebAssembly.instantiateStreaming, WebAssembly.Module, WebAssembly.Instance, WebAssembly.Table, WebAssembly.Memory, WebAssembly.Global, WebAssembly.Tag, WebAssembly.Exception, WebAssembly.CompileError, WebAssembly.LinkError, WebAssembly.RuntimeError, Document.implementation, Document.URL, Document.documentURI, Document.compatMode, Document.characterSet, Document.charset, Document.inputEncoding, Document.contentType, Document.doctype, Document.documentElement, Document.xmlEncoding, Document.xmlVersion, Document.xmlStandalone, Document.domain, Document.referrer, Document.cookie, Document.lastModified, Document.readyState, Document.title, Document.dir, Document.body, Document.head, Document.images, Document.embeds, Document.plugins, Document.links, Document.forms, Document.scripts, Document.currentScript, Document.defaultView, Document.designMode, Document.onreadystatechange, Document.anchors, Document.applets, Document.fgColor, Document.linkColor, Document.vlinkColor, Document.alinkColor, Document.bgColor, Document.all, Document.scrollingElement, Document.onpointerlockchange, Document.onpointerlockerror, Document.hidden, Document.visibilityState, Document.wasDiscarded, Document.featurePolicy, Document.webkitVisibilityState, Document.webkitHidden, Document.onbeforecopy, Document.onbeforecut, Document.onbeforepaste, Document.onfreeze, Document.onresume, Document.onsearch, Document.onvisibilitychange, Document.fullscreenEnabled, Document.fullscreen, Document.onfullscreenchange, Document.onfullscreenerror, Document.webkitIsFullScreen, Document.webkitCurrentFullScreenElement, Document.webkitFullscreenEnabled, Document.webkitFullscreenElement, Document.onwebkitfullscreenchange, Document.onwebkitfullscreenerror, Document.rootElement, Document.onbeforexrselect, Document.onabort, Document.onblur, Document.oncancel, Document.oncanplay, Document.oncanplaythrough, Document.onchange, Document.onclick, Document.onclose, Document.oncontextmenu, Document.oncuechange, Document.ondblclick, Document.ondrag, Document.ondragend, Document.ondragenter, Document.ondragleave, Document.ondragover, Document.ondragstart, Document.ondrop, Document.ondurationchange, Document.onemptied, Document.onended, Document.onerror, Document.onfocus, Document.onformdata, Document.oninput, Document.oninvalid, Document.onkeydown, Document.onkeypress, Document.onkeyup, Document.onload, Document.onloadeddata, Document.onloadedmetadata, Document.onloadstart, Document.onmousedown, Document.onmouseenter, Document.onmouseleave, Document.onmousemove, Document.onmouseout, Document.onmouseover, Document.onmouseup, Document.onmousewheel, Document.onpause, Document.onplay, Document.onplaying, Document.onprogress, Document.onratechange, Document.onreset, Document.onresize, Document.onscroll, Document.onsecuritypolicyviolation, Document.onseeked, Document.onseeking, Document.onselect, Document.onslotchange, Document.onstalled, Document.onsubmit, Document.onsuspend, Document.ontimeupdate, Document.ontoggle, Document.onvolumechange, Document.onwaiting, Document.onwebkitanimationend, Document.onwebkitanimationiteration, Document.onwebkitanimationstart, Document.onwebkittransitionend, Document.onwheel, Document.onauxclick, Document.ongotpointercapture, Document.onlostpointercapture, Document.onpointerdown, Document.onpointermove, Document.onpointerup, Document.onpointercancel, Document.onpointerover, Document.onpointerout, Document.onpointerenter, Document.onpointerleave, Document.onselectstart, Document.onselectionchange, Document.onanimationend, Document.onanimationiteration, Document.onanimationstart, Document.ontransitionrun, Document.ontransitionstart, Document.ontransitionend, Document.ontransitioncancel, Document.oncopy, Document.oncut, Document.onpaste, Document.children, Document.firstElementChild, Document.lastElementChild, Document.childElementCount, Document.activeElement, Document.styleSheets, Document.pointerLockElement, Document.fullscreenElement, Document.adoptedStyleSheets, Document.fonts, Document.adoptNode, Document.append, Document.captureEvents, Document.caretRangeFromPoint, Document.clear, Document.close, Document.createAttribute, Document.createAttributeNS, Document.createCDATASection, Document.createComment, Document.createDocumentFragment, Document.createElement, Document.createElementNS, Document.createEvent, Document.createExpression, Document.createNSResolver, Document.createNodeIterator, Document.createProcessingInstruction, Document.createRange, Document.createTextNode, Document.createTreeWalker, Document.elementFromPoint, Document.elementsFromPoint, Document.evaluate, Document.execCommand, Document.exitFullscreen, Document.exitPointerLock, Document.getElementById, Document.getElementsByClassName, Document.getElementsByName, Document.getElementsByTagName, Document.getElementsByTagNameNS, Document.getSelection, Document.hasFocus, Document.importNode, Document.open, Document.prepend, Document.queryCommandEnabled, Document.queryCommandIndeterm, Document.queryCommandState, Document.queryCommandSupported, Document.queryCommandValue, Document.querySelector, Document.querySelectorAll, Document.releaseEvents, Document.replaceChildren, Document.webkitCancelFullScreen, Document.webkitExitFullscreen, Document.write, Document.writeln, Document.fragmentDirective, Document.oncontextlost, Document.oncontextrestored, Document.timeline, Document.pictureInPictureEnabled, Document.pictureInPictureElement, Document.onpointerrawupdate, Document.exitPictureInPicture, Document.getAnimations, Element.namespaceURI, Element.prefix, Element.localName, Element.tagName, Element.id, Element.className, Element.classList, Element.slot, Element.attributes, Element.shadowRoot, Element.part, Element.assignedSlot, Element.innerHTML, Element.outerHTML, Element.scrollTop, Element.scrollLeft, Element.scrollWidth, Element.scrollHeight, Element.clientTop, Element.clientLeft, Element.clientWidth, Element.clientHeight, Element.attributeStyleMap, Element.onbeforecopy, Element.onbeforecut, Element.onbeforepaste, Element.onsearch, Element.elementTiming, Element.onfullscreenchange, Element.onfullscreenerror, Element.onwebkitfullscreenchange, Element.onwebkitfullscreenerror, Element.children, Element.firstElementChild, Element.lastElementChild, Element.childElementCount, Element.previousElementSibling, Element.nextElementSibling, Element.after, Element.animate, Element.append, Element.attachShadow, Element.before, Element.closest, Element.computedStyleMap, Element.getAttribute, Element.getAttributeNS, Element.getAttributeNames, Element.getAttributeNode, Element.getAttributeNodeNS, Element.getBoundingClientRect, Element.getClientRects, Element.getElementsByClassName, Element.getElementsByTagName, Element.getElementsByTagNameNS, Element.getInnerHTML, Element.hasAttribute, Element.hasAttributeNS, Element.hasAttributes, Element.hasPointerCapture, Element.insertAdjacentElement, Element.insertAdjacentHTML, Element.insertAdjacentText, Element.matches, Element.prepend, Element.querySelector, Element.querySelectorAll, Element.releasePointerCapture, Element.remove, Element.removeAttribute, Element.removeAttributeNS, Element.removeAttributeNode, Element.replaceChildren, Element.replaceWith, Element.requestFullscreen, Element.requestPointerLock, Element.scroll, Element.scrollBy, Element.scrollIntoView, Element.scrollIntoViewIfNeeded, Element.scrollTo, Element.setAttribute, Element.setAttributeNS, Element.setAttributeNode, Element.setAttributeNodeNS, Element.setPointerCapture, Element.toggleAttribute, Element.webkitMatchesSelector, Element.webkitRequestFullScreen, Element.webkitRequestFullscreen, Element.ariaAtomic, Element.ariaAutoComplete, Element.ariaBusy, Element.ariaChecked, Element.ariaColCount, Element.ariaColIndex, Element.ariaColSpan, Element.ariaCurrent, Element.ariaDescription, Element.ariaDisabled, Element.ariaExpanded, Element.ariaHasPopup, Element.ariaHidden, Element.ariaKeyShortcuts, Element.ariaLabel, Element.ariaLevel, Element.ariaLive, Element.ariaModal, Element.ariaMultiLine, Element.ariaMultiSelectable, Element.ariaOrientation, Element.ariaPlaceholder, Element.ariaPosInSet, Element.ariaPressed, Element.ariaReadOnly, Element.ariaRelevant, Element.ariaRequired, Element.ariaRoleDescription, Element.ariaRowCount, Element.ariaRowIndex, Element.ariaRowSpan, Element.ariaSelected, Element.ariaSetSize, Element.ariaSort, Element.ariaValueMax, Element.ariaValueMin, Element.ariaValueNow, Element.ariaValueText, Element.getAnimations",
 		},
 		'Firefox': {
-			version: 94,
-			windowKeys: `undefined, globalThis, Array, Boolean, JSON, Date, Math, Number, String, RegExp, Error, InternalError, AggregateError, EvalError, RangeError, ReferenceError, SyntaxError, TypeError, URIError, ArrayBuffer, Int8Array, Uint8Array, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, Uint8ClampedArray, BigInt64Array, BigUint64Array, BigInt, Proxy, WeakMap, Set, DataView, Symbol, Intl, Reflect, WeakSet, Atomics, Promise, ReadableStream, ByteLengthQueuingStrategy, CountQueuingStrategy, WebAssembly, FinalizationRegistry, WeakRef, NaN, Infinity, isNaN, isFinite, parseFloat, parseInt, escape, unescape, decodeURI, encodeURI, decodeURIComponent, encodeURIComponent, TimeRanges, GeolocationCoordinates, HTMLLinkElement, SVGImageElement, RTCTrackEvent, ServiceWorkerContainer, DOMMatrixReadOnly, ResizeObserverSize, Audio, MediaQueryList, MediaStreamTrackAudioSourceNode, HTMLOListElement, PerformanceMeasure, HTMLMetaElement, GamepadPose, MediaStreamAudioDestinationNode, VisualViewport, CSSAnimation, PerformanceMark, RTCDTMFToneChangeEvent, RTCDTMFSender, MediaCapabilities, UIEvent, HashChangeEvent, HTMLParagraphElement, WebSocket, DynamicsCompressorNode, PerformanceResourceTiming, StorageEvent, ResizeObserverEntry, HTMLFieldSetElement, TextDecoder, Option, RTCRtpTransceiver, PerformanceObserver, ChannelSplitterNode, TimeEvent, HTMLIFrameElement, IDBKeyRange, CharacterData, MediaDevices, MediaRecorder, IDBMutableFile, Directory, HTMLSourceElement, MediaKeySession, BeforeUnloadEvent, SVGLength, FileSystem, WebKitCSSMatrix, SVGPolygonElement, HTMLObjectElement, CSSMediaRule, OfflineResourceList, SVGPreserveAspectRatio, IDBRequest, InputEvent, ImageData, DelayNode, VideoPlaybackQuality, HTMLMapElement, XMLDocument, ProgressEvent, TreeWalker, HTMLCollection, HTMLQuoteElement, PerformanceEntry, ValidityState, MediaRecorderErrorEvent, AudioListener, SVGFEColorMatrixElement, SVGAnimatedNumber, HTMLTableSectionElement, MutationEvent, HTMLLabelElement, WebGLRenderingContext, MouseScrollEvent, VRDisplay, DeviceMotionEvent, HTMLBaseElement, FileSystemFileEntry, SVGNumberList, CSSFontFeatureValuesRule, HTMLTimeElement, WebGLFramebuffer, mozRTCSessionDescription, SVGFEDropShadowElement, DeviceOrientationEvent, MessageChannel, RTCSessionDescription, PopStateEvent, Worklet, Plugin, GamepadEvent, RTCDataChannel, Screen, PaintRequestList, SVGLengthList, VRPose, ChannelMergerNode, SVGFEFuncRElement, XPathExpression, GamepadHapticActuator, VRDisplayCapabilities, VRFieldOfView, DOMRect, SharedWorker, HTMLBRElement, MediaDeviceInfo, SpeechSynthesisVoice, WebGLShaderPrecisionFormat, SVGSymbolElement, MessageEvent, AuthenticatorAttestationResponse, HTMLSelectElement, SVGTransformList, MediaList, SVGDefsElement, SVGDescElement, HTMLOptionElement, HTMLMarqueeElement, SubtleCrypto, mozRTCIceCandidate, WebGLVertexArrayObject, PerformanceTiming, U2F, AbstractRange, CSSFontFaceRule, HTMLAllCollection, KeyframeEffect, WebGLTransformFeedback, HTMLOptionsCollection, RTCPeerConnection, SpeechSynthesis, SVGGElement, SVGFEDistantLightElement, SVGAnimatedPreserveAspectRatio, HTMLVideoElement, ImageBitmap, DOMMatrix, SVGUnitTypes, SVGCircleElement, HTMLEmbedElement, SVGScriptElement, HTMLCanvasElement, HTMLModElement, AudioParamMap, CSSTransition, HTMLOutputElement, CustomEvent, ServiceWorker, Animation, WebGLSync, MediaKeyError, MediaKeys, DOMRectList, HTMLElement, Cache, DOMQuad, PaintRequest, Text, Geolocation, RTCDtlsTransport, XSLTProcessor, PerformanceNavigation, NodeIterator, SVGAnimatedBoolean, HTMLLegendElement, CSSRule, Crypto, SVGFETurbulenceElement, XMLSerializer, CacheStorage, SourceBuffer, SVGStopElement, SVGFEMergeElement, DataTransfer, ScrollAreaEvent, SVGFEDiffuseLightingElement, MediaKeyStatusMap, XMLHttpRequest, SVGAnimatedLengthList, IDBDatabase, SVGFEFloodElement, MediaStreamEvent, SVGGraphicsElement, ErrorEvent, Response, KeyboardEvent, SubmitEvent, SVGFEMorphologyElement, MimeTypeArray, HTMLUnknownElement, WebGLBuffer, AbortSignal, Element, SVGElement, MediaError, DOMTokenList, HTMLTrackElement, PerformanceServerTiming, Credential, PageTransitionEvent, Attr, PermissionStatus, IDBVersionChangeEvent, HTMLHeadingElement, FileSystemDirectoryEntry, OfflineAudioContext, AnimationTimeline, CSSMozDocumentRule, SVGMatrix, HTMLTableCaptionElement, SVGMetadataElement, SVGFEImageElement, EventSource, SVGFEFuncAElement, Blob, VRFrameData, HTMLMediaElement, MediaMetadata, SVGRect, BarProp, FocusEvent, SVGAngle, PerformanceEventTiming, WebGLShader, HTMLProgressElement, PublicKeyCredential, IntersectionObserver, IDBCursorWithValue, SVGLinearGradientElement, ScreenOrientation, PushSubscriptionOptions, HTMLImageElement, IIRFilterNode, ConstantSourceNode, IDBFileHandle, TextEncoder, PopupBlockedEvent, DOMPointReadOnly, MediaStream, AuthenticatorResponse, IDBIndex, AnimationEvent, TextTrackCue, webkitURL, HTMLPictureElement, CDATASection, ProcessingInstruction, ResizeObserver, IdleDeadline, DOMRequest, CustomElementRegistry, FileList, WaveShaperNode, XPathResult, MediaKeyMessageEvent, MathMLElement, HTMLFrameElement, SVGMarkerElement, VREyeParameters, RTCRtpReceiver, VRDisplayEvent, FontFaceSet, DocumentFragment, MediaSource, DOMStringMap, HTMLDetailsElement, SVGAnimatedNumberList, Path2D, CompositionEvent, SVGUseElement, StyleSheet, TextTrackList, HTMLTableCellElement, AbortController, AudioScheduledSourceNode, SourceBufferList, RTCPeerConnectionIceEvent, VRStageParameters, XMLHttpRequestEventTarget, FormData, SVGMaskElement, NodeList, DataTransferItemList, FileSystemEntry, IDBTransaction, HTMLSpanElement, TransitionEvent, HTMLTableRowElement, SVGFESpecularLightingElement, HTMLSlotElement, IDBObjectStore, DOMImplementation, CSSImportRule, SVGAnimatedLength, HTMLDListElement, FontFace, HTMLAnchorElement, SVGFEGaussianBlurElement, NodeFilter, WebGLTexture, DOMPoint, MessagePort, SVGAnimatedRect, MediaKeySystemAccess, WheelEvent, AudioDestinationNode, DOMRectReadOnly, IDBCursor, MediaElementAudioSourceNode, History, HTMLHtmlElement, HTMLTableElement, SVGTextContentElement, XMLHttpRequestUpload, IDBOpenDBRequest, MediaStreamTrackEvent, SVGSetElement, FormDataEvent, URLSearchParams, SVGAnimationElement, HTMLTemplateElement, HTMLParamElement, ElementInternals, Selection, SVGLineElement, HTMLScriptElement, MediaStreamTrack, CSSGroupingRule, ScriptProcessorNode, CSSSupportsRule, Range, SVGGeometryElement, MutationRecord, HTMLMenuElement, HTMLUListElement, HTMLTableColElement, HTMLFrameSetElement, SVGFEPointLightElement, CanvasRenderingContext2D, Clipboard, HTMLButtonElement, CSSKeyframesRule, ShadowRoot, SVGEllipseElement, IntersectionObserverEntry, SVGComponentTransferFunctionElement, mozRTCPeerConnection, CSS2Properties, WebGLUniformLocation, PeriodicWave, Gamepad, SVGClipPathElement, HTMLPreElement, SVGPathElement, DataTransferItem, HTMLFormElement, GainNode, SVGFEFuncBElement, RTCIceCandidate, SVGFETileElement, ServiceWorkerRegistration, RadioNodeList, SVGMPathElement, KeyEvent, PointerEvent, SVGFESpotLightElement, Worker, Location, RTCStatsReport, SVGAnimatedString, HTMLDirectoryElement, WebGLQuery, HTMLFormControlsCollection, AudioNode, CaretPosition, SVGStyleElement, HTMLDataListElement, SVGTextPositioningElement, SVGAnimatedInteger, Storage, AuthenticatorAssertionResponse, MimeType, DOMException, AnimationEffect, SVGTextPathElement, GeolocationPositionError, CSSNamespaceRule, SVGPoint, SVGFECompositeElement, SVGGradientElement, SVGAnimatedTransformList, MediaStreamAudioSourceNode, CSS, WebGLRenderbuffer, RTCDataChannelEvent, HTMLLIElement, TextTrackCueList, HTMLTitleElement, MutationObserver, Comment, BroadcastChannel, MediaSession, SVGFEComponentTransferElement, HTMLHRElement, HTMLTextAreaElement, HTMLMeterElement, SVGAnimatedAngle, MediaQueryListEvent, WebGL2RenderingContext, TextTrack, VTTCue, CloseEvent, SpeechSynthesisErrorEvent, Headers, BiquadFilterNode, AudioWorklet, IDBFileRequest, MouseEvent, WebGLContextEvent, IDBFactory, NamedNodeMap, SVGSVGElement, SVGRadialGradientElement, TextMetrics, SVGAnimateMotionElement, PushSubscription, CryptoKey, CredentialsContainer, ClipboardEvent, PerformancePaintTiming, PushManager, OfflineAudioCompletionEvent, DOMStringList, SVGPatternElement, RTCCertificate, DocumentType, Request, DocumentTimeline, SVGTSpanElement, SVGTitleElement, StyleSheetList, RTCRtpSender, GamepadButton, ConvolverNode, HTMLAudioElement, HTMLDataElement, AudioProcessingEvent, StaticRange, SVGAnimateTransformElement, AudioBufferSourceNode, SVGAElement, WebGLActiveInfo, XPathEvaluator, SVGFEConvolveMatrixElement, Navigator, SVGRectElement, URL, CSSKeyframeRule, console, SVGAnimatedEnumeration, AnalyserNode, HTMLInputElement, SVGStringList, SVGFEOffsetElement, PannerNode, File, CSSStyleRule, AudioParam, AudioWorkletNode, SpeechSynthesisUtterance, HTMLFontElement, AudioBuffer, SecurityPolicyViolationEvent, DOMParser, CanvasCaptureMediaStream, PerformanceObserverEntryList, SVGNumber, FileSystemDirectoryReader, GeolocationPosition, BaseAudioContext, CSSStyleSheet, SVGFilterElement, HTMLHeadElement, SVGTransform, MediaCapabilitiesInfo, CSSRuleList, SVGFEMergeNodeElement, HTMLAreaElement, SVGTextElement, SVGSwitchElement, Permissions, AnimationPlaybackEvent, CanvasGradient, VTTRegion, MediaEncryptedEvent, WebGLSampler, CSSPageRule, AudioContext, SVGPathSegList, FileReader, SVGPolylineElement, CSSCounterStyleRule, CSSConditionRule, BlobEvent, DragEvent, ImageBitmapRenderingContext, SVGViewElement, SVGFEBlendElement, PluginArray, SVGFEDisplacementMapElement, HTMLOptGroupElement, HTMLDivElement, PromiseRejectionEvent, CSSStyleDeclaration, SVGAnimateElement, CanvasPattern, WebGLProgram, TrackEvent, SpeechSynthesisEvent, Notification, HTMLBodyElement, HTMLStyleElement, SVGFEFuncGElement, StorageManager, Image, FontFaceSetLoadEvent, SVGPointList, StereoPannerNode, OscillatorNode, SVGForeignObjectElement, Function, Object, eval, EventTarget, Window, close, stop, focus, blur, open, alert, confirm, prompt, print, postMessage, captureEvents, releaseEvents, getSelection, getComputedStyle, matchMedia, moveTo, moveBy, resizeTo, resizeBy, scroll, scrollTo, scrollBy, requestAnimationFrame, cancelAnimationFrame, getDefaultComputedStyle, scrollByLines, scrollByPages, sizeToContent, updateCommands, find, dump, setResizable, requestIdleCallback, cancelIdleCallback, reportError, btoa, atob, setTimeout, clearTimeout, setInterval, clearInterval, queueMicrotask, createImageBitmap, structuredClone, fetch, self, name, history, customElements, locationbar, menubar, personalbar, scrollbars, statusbar, toolbar, status, closed, event, frames, length, opener, parent, frameElement, navigator, clientInformation, external, applicationCache, screen, innerWidth, innerHeight, scrollX, pageXOffset, scrollY, pageYOffset, screenLeft, screenTop, screenX, screenY, outerWidth, outerHeight, performance, mozInnerScreenX, mozInnerScreenY, devicePixelRatio, scrollMaxX, scrollMaxY, fullScreen, ondevicemotion, ondeviceorientation, onabsolutedeviceorientation, content, InstallTrigger, sidebar, onvrdisplayconnect, onvrdisplaydisconnect, onvrdisplayactivate, onvrdisplaydeactivate, onvrdisplaypresentchange, visualViewport, crypto, onabort, onblur, onfocus, onauxclick, onbeforeinput, oncanplay, oncanplaythrough, onchange, onclick, onclose, oncontextmenu, oncuechange, ondblclick, ondrag, ondragend, ondragenter, ondragexit, ondragleave, ondragover, ondragstart, ondrop, ondurationchange, onemptied, onended, onformdata, oninput, oninvalid, onkeydown, onkeypress, onkeyup, onload, onloadeddata, onloadedmetadata, onloadend, onloadstart, onmousedown, onmouseenter, onmouseleave, onmousemove, onmouseout, onmouseover, onmouseup, onwheel, onpause, onplay, onplaying, onprogress, onratechange, onreset, onresize, onscroll, onsecuritypolicyviolation, onseeked, onseeking, onselect, onslotchange, onstalled, onsubmit, onsuspend, ontimeupdate, onvolumechange, onwaiting, onselectstart, onselectionchange, ontoggle, onpointercancel, onpointerdown, onpointerup, onpointermove, onpointerout, onpointerover, onpointerenter, onpointerleave, ongotpointercapture, onlostpointercapture, onmozfullscreenchange, onmozfullscreenerror, onanimationcancel, onanimationend, onanimationiteration, onanimationstart, ontransitioncancel, ontransitionend, ontransitionrun, ontransitionstart, onwebkitanimationend, onwebkitanimationiteration, onwebkitanimationstart, onwebkittransitionend, u2f, onerror, speechSynthesis, onafterprint, onbeforeprint, onbeforeunload, onhashchange, onlanguagechange, onmessage, onmessageerror, onoffline, ononline, onpagehide, onpageshow, onpopstate, onrejectionhandled, onstorage, onunhandledrejection, onunload, ongamepadconnected, ongamepaddisconnected, localStorage, origin, crossOriginIsolated, isSecureContext, indexedDB, caches, sessionStorage, window, document, location, top, netscape, Node, Document, HTMLDocument, EventCounts, Map, Event`,
-			cssKeys: `alignContent, align-content, alignItems, align-items, alignSelf, align-self, aspectRatio, aspect-ratio, backfaceVisibility, backface-visibility, borderCollapse, border-collapse, borderImageRepeat, border-image-repeat, boxDecorationBreak, box-decoration-break, boxSizing, box-sizing, breakInside, break-inside, captionSide, caption-side, clear, colorAdjust, color-adjust, colorInterpolation, color-interpolation, colorInterpolationFilters, color-interpolation-filters, columnCount, column-count, columnFill, column-fill, columnSpan, column-span, contain, direction, display, dominantBaseline, dominant-baseline, emptyCells, empty-cells, flexDirection, flex-direction, flexWrap, flex-wrap, cssFloat, float, fontKerning, font-kerning, fontOpticalSizing, font-optical-sizing, fontSizeAdjust, font-size-adjust, fontStretch, font-stretch, fontStyle, font-style, fontSynthesis, font-synthesis, fontVariantCaps, font-variant-caps, fontVariantEastAsian, font-variant-east-asian, fontVariantLigatures, font-variant-ligatures, fontVariantNumeric, font-variant-numeric, fontVariantPosition, font-variant-position, fontWeight, font-weight, gridAutoFlow, grid-auto-flow, hyphens, imageOrientation, image-orientation, imageRendering, image-rendering, imeMode, ime-mode, isolation, justifyContent, justify-content, justifyItems, justify-items, justifySelf, justify-self, lineBreak, line-break, listStylePosition, list-style-position, maskType, mask-type, mixBlendMode, mix-blend-mode, MozBoxAlign, -moz-box-align, MozBoxDirection, -moz-box-direction, MozBoxOrient, -moz-box-orient, MozBoxPack, -moz-box-pack, MozFloatEdge, -moz-float-edge, MozForceBrokenImageIcon, -moz-force-broken-image-icon, MozOrient, -moz-orient, MozTextSizeAdjust, -moz-text-size-adjust, MozUserFocus, -moz-user-focus, MozUserInput, -moz-user-input, MozUserModify, -moz-user-modify, MozWindowDragging, -moz-window-dragging, objectFit, object-fit, offsetRotate, offset-rotate, outlineStyle, outline-style, overflowAnchor, overflow-anchor, overflowWrap, overflow-wrap, paintOrder, paint-order, pointerEvents, pointer-events, position, resize, rubyAlign, ruby-align, rubyPosition, ruby-position, scrollBehavior, scroll-behavior, scrollSnapAlign, scroll-snap-align, scrollSnapType, scroll-snap-type, scrollbarWidth, scrollbar-width, shapeRendering, shape-rendering, strokeLinecap, stroke-linecap, strokeLinejoin, stroke-linejoin, tableLayout, table-layout, textAlign, text-align, textAlignLast, text-align-last, textAnchor, text-anchor, textCombineUpright, text-combine-upright, textDecorationLine, text-decoration-line, textDecorationSkipInk, text-decoration-skip-ink, textDecorationStyle, text-decoration-style, textEmphasisPosition, text-emphasis-position, textJustify, text-justify, textOrientation, text-orientation, textRendering, text-rendering, textTransform, text-transform, textUnderlinePosition, text-underline-position, touchAction, touch-action, transformBox, transform-box, transformStyle, transform-style, unicodeBidi, unicode-bidi, userSelect, user-select, vectorEffect, vector-effect, visibility, webkitLineClamp, WebkitLineClamp, -webkit-line-clamp, whiteSpace, white-space, wordBreak, word-break, writingMode, writing-mode, zIndex, z-index, appearance, breakAfter, break-after, breakBefore, break-before, clipRule, clip-rule, fillRule, fill-rule, fillOpacity, fill-opacity, strokeOpacity, stroke-opacity, MozBoxOrdinalGroup, -moz-box-ordinal-group, order, flexGrow, flex-grow, flexShrink, flex-shrink, MozBoxFlex, -moz-box-flex, strokeMiterlimit, stroke-miterlimit, overflowBlock, overflow-block, overflowInline, overflow-inline, overflowX, overflow-x, overflowY, overflow-y, overscrollBehaviorBlock, overscroll-behavior-block, overscrollBehaviorInline, overscroll-behavior-inline, overscrollBehaviorX, overscroll-behavior-x, overscrollBehaviorY, overscroll-behavior-y, floodOpacity, flood-opacity, opacity, shapeImageThreshold, shape-image-threshold, stopOpacity, stop-opacity, borderBlockEndStyle, border-block-end-style, borderBlockStartStyle, border-block-start-style, borderBottomStyle, border-bottom-style, borderInlineEndStyle, border-inline-end-style, borderInlineStartStyle, border-inline-start-style, borderLeftStyle, border-left-style, borderRightStyle, border-right-style, borderTopStyle, border-top-style, columnRuleStyle, column-rule-style, accentColor, accent-color, animationDelay, animation-delay, animationDirection, animation-direction, animationDuration, animation-duration, animationFillMode, animation-fill-mode, animationIterationCount, animation-iteration-count, animationName, animation-name, animationPlayState, animation-play-state, animationTimingFunction, animation-timing-function, backgroundAttachment, background-attachment, backgroundBlendMode, background-blend-mode, backgroundClip, background-clip, backgroundImage, background-image, backgroundOrigin, background-origin, backgroundPositionX, background-position-x, backgroundPositionY, background-position-y, backgroundRepeat, background-repeat, backgroundSize, background-size, borderImageOutset, border-image-outset, borderImageSlice, border-image-slice, borderImageWidth, border-image-width, borderSpacing, border-spacing, boxShadow, box-shadow, caretColor, caret-color, clipPath, clip-path, color, columnWidth, column-width, content, counterIncrement, counter-increment, cursor, filter, flexBasis, flex-basis, fontFamily, font-family, fontFeatureSettings, font-feature-settings, fontLanguageOverride, font-language-override, fontSize, font-size, fontVariantAlternates, font-variant-alternates, fontVariationSettings, font-variation-settings, gridTemplateAreas, grid-template-areas, letterSpacing, letter-spacing, lineHeight, line-height, listStyleType, list-style-type, maskClip, mask-clip, maskComposite, mask-composite, maskImage, mask-image, maskMode, mask-mode, maskOrigin, mask-origin, maskPositionX, mask-position-x, maskPositionY, mask-position-y, maskRepeat, mask-repeat, maskSize, mask-size, offsetAnchor, offset-anchor, offsetPath, offset-path, perspective, quotes, rotate, scale, scrollbarColor, scrollbar-color, shapeOutside, shape-outside, strokeDasharray, stroke-dasharray, strokeDashoffset, stroke-dashoffset, strokeWidth, stroke-width, tabSize, tab-size, textDecorationThickness, text-decoration-thickness, textEmphasisStyle, text-emphasis-style, textOverflow, text-overflow, textShadow, text-shadow, transitionDelay, transition-delay, transitionDuration, transition-duration, transitionProperty, transition-property, transitionTimingFunction, transition-timing-function, translate, verticalAlign, vertical-align, willChange, will-change, wordSpacing, word-spacing, clip, MozImageRegion, -moz-image-region, objectPosition, object-position, perspectiveOrigin, perspective-origin, fill, stroke, transformOrigin, transform-origin, counterReset, counter-reset, counterSet, counter-set, gridTemplateColumns, grid-template-columns, gridTemplateRows, grid-template-rows, borderImageSource, border-image-source, listStyleImage, list-style-image, gridAutoColumns, grid-auto-columns, gridAutoRows, grid-auto-rows, transform, columnGap, column-gap, rowGap, row-gap, markerEnd, marker-end, markerMid, marker-mid, markerStart, marker-start, gridColumnEnd, grid-column-end, gridColumnStart, grid-column-start, gridRowEnd, grid-row-end, gridRowStart, grid-row-start, maxBlockSize, max-block-size, maxHeight, max-height, maxInlineSize, max-inline-size, maxWidth, max-width, cx, cy, offsetDistance, offset-distance, textIndent, text-indent, x, y, borderBottomLeftRadius, border-bottom-left-radius, borderBottomRightRadius, border-bottom-right-radius, borderEndEndRadius, border-end-end-radius, borderEndStartRadius, border-end-start-radius, borderStartEndRadius, border-start-end-radius, borderStartStartRadius, border-start-start-radius, borderTopLeftRadius, border-top-left-radius, borderTopRightRadius, border-top-right-radius, blockSize, block-size, height, inlineSize, inline-size, minBlockSize, min-block-size, minHeight, min-height, minInlineSize, min-inline-size, minWidth, min-width, width, outlineOffset, outline-offset, scrollMarginBlockEnd, scroll-margin-block-end, scrollMarginBlockStart, scroll-margin-block-start, scrollMarginBottom, scroll-margin-bottom, scrollMarginInlineEnd, scroll-margin-inline-end, scrollMarginInlineStart, scroll-margin-inline-start, scrollMarginLeft, scroll-margin-left, scrollMarginRight, scroll-margin-right, scrollMarginTop, scroll-margin-top, paddingBlockEnd, padding-block-end, paddingBlockStart, padding-block-start, paddingBottom, padding-bottom, paddingInlineEnd, padding-inline-end, paddingInlineStart, padding-inline-start, paddingLeft, padding-left, paddingRight, padding-right, paddingTop, padding-top, r, shapeMargin, shape-margin, rx, ry, scrollPaddingBlockEnd, scroll-padding-block-end, scrollPaddingBlockStart, scroll-padding-block-start, scrollPaddingBottom, scroll-padding-bottom, scrollPaddingInlineEnd, scroll-padding-inline-end, scrollPaddingInlineStart, scroll-padding-inline-start, scrollPaddingLeft, scroll-padding-left, scrollPaddingRight, scroll-padding-right, scrollPaddingTop, scroll-padding-top, borderBlockEndWidth, border-block-end-width, borderBlockStartWidth, border-block-start-width, borderBottomWidth, border-bottom-width, borderInlineEndWidth, border-inline-end-width, borderInlineStartWidth, border-inline-start-width, borderLeftWidth, border-left-width, borderRightWidth, border-right-width, borderTopWidth, border-top-width, columnRuleWidth, column-rule-width, outlineWidth, outline-width, webkitTextStrokeWidth, WebkitTextStrokeWidth, -webkit-text-stroke-width, bottom, insetBlockEnd, inset-block-end, insetBlockStart, inset-block-start, insetInlineEnd, inset-inline-end, insetInlineStart, inset-inline-start, left, marginBlockEnd, margin-block-end, marginBlockStart, margin-block-start, marginBottom, margin-bottom, marginInlineEnd, margin-inline-end, marginInlineStart, margin-inline-start, marginLeft, margin-left, marginRight, margin-right, marginTop, margin-top, right, textUnderlineOffset, text-underline-offset, top, backgroundColor, background-color, borderBlockEndColor, border-block-end-color, borderBlockStartColor, border-block-start-color, borderBottomColor, border-bottom-color, borderInlineEndColor, border-inline-end-color, borderInlineStartColor, border-inline-start-color, borderLeftColor, border-left-color, borderRightColor, border-right-color, borderTopColor, border-top-color, columnRuleColor, column-rule-color, floodColor, flood-color, lightingColor, lighting-color, outlineColor, outline-color, stopColor, stop-color, textDecorationColor, text-decoration-color, textEmphasisColor, text-emphasis-color, webkitTextFillColor, WebkitTextFillColor, -webkit-text-fill-color, webkitTextStrokeColor, WebkitTextStrokeColor, -webkit-text-stroke-color, background, backgroundPosition, background-position, borderColor, border-color, borderStyle, border-style, borderWidth, border-width, borderTop, border-top, borderRight, border-right, borderBottom, border-bottom, borderLeft, border-left, borderBlockStart, border-block-start, borderBlockEnd, border-block-end, borderInlineStart, border-inline-start, borderInlineEnd, border-inline-end, border, borderRadius, border-radius, borderImage, border-image, borderBlockWidth, border-block-width, borderBlockStyle, border-block-style, borderBlockColor, border-block-color, borderInlineWidth, border-inline-width, borderInlineStyle, border-inline-style, borderInlineColor, border-inline-color, borderBlock, border-block, borderInline, border-inline, overflow, transition, animation, overscrollBehavior, overscroll-behavior, pageBreakBefore, page-break-before, pageBreakAfter, page-break-after, pageBreakInside, page-break-inside, offset, columns, columnRule, column-rule, font, fontVariant, font-variant, marker, textEmphasis, text-emphasis, webkitTextStroke, WebkitTextStroke, -webkit-text-stroke, listStyle, list-style, margin, marginBlock, margin-block, marginInline, margin-inline, scrollMargin, scroll-margin, scrollMarginBlock, scroll-margin-block, scrollMarginInline, scroll-margin-inline, outline, padding, paddingBlock, padding-block, paddingInline, padding-inline, scrollPadding, scroll-padding, scrollPaddingBlock, scroll-padding-block, scrollPaddingInline, scroll-padding-inline, flexFlow, flex-flow, flex, gap, gridRow, grid-row, gridColumn, grid-column, gridArea, grid-area, gridTemplate, grid-template, grid, placeContent, place-content, placeSelf, place-self, placeItems, place-items, inset, insetBlock, inset-block, insetInline, inset-inline, mask, maskPosition, mask-position, textDecoration, text-decoration, all, webkitBackgroundClip, WebkitBackgroundClip, -webkit-background-clip, webkitBackgroundOrigin, WebkitBackgroundOrigin, -webkit-background-origin, webkitBackgroundSize, WebkitBackgroundSize, -webkit-background-size, MozBorderStartColor, -moz-border-start-color, MozBorderStartStyle, -moz-border-start-style, MozBorderStartWidth, -moz-border-start-width, MozBorderEndColor, -moz-border-end-color, MozBorderEndStyle, -moz-border-end-style, MozBorderEndWidth, -moz-border-end-width, webkitBorderTopLeftRadius, WebkitBorderTopLeftRadius, -webkit-border-top-left-radius, webkitBorderTopRightRadius, WebkitBorderTopRightRadius, -webkit-border-top-right-radius, webkitBorderBottomRightRadius, WebkitBorderBottomRightRadius, -webkit-border-bottom-right-radius, webkitBorderBottomLeftRadius, WebkitBorderBottomLeftRadius, -webkit-border-bottom-left-radius, MozTransitionDuration, -moz-transition-duration, webkitTransitionDuration, WebkitTransitionDuration, -webkit-transition-duration, MozTransitionTimingFunction, -moz-transition-timing-function, webkitTransitionTimingFunction, WebkitTransitionTimingFunction, -webkit-transition-timing-function, MozTransitionProperty, -moz-transition-property, webkitTransitionProperty, WebkitTransitionProperty, -webkit-transition-property, MozTransitionDelay, -moz-transition-delay, webkitTransitionDelay, WebkitTransitionDelay, -webkit-transition-delay, MozAnimationName, -moz-animation-name, webkitAnimationName, WebkitAnimationName, -webkit-animation-name, MozAnimationDuration, -moz-animation-duration, webkitAnimationDuration, WebkitAnimationDuration, -webkit-animation-duration, MozAnimationTimingFunction, -moz-animation-timing-function, webkitAnimationTimingFunction, WebkitAnimationTimingFunction, -webkit-animation-timing-function, MozAnimationIterationCount, -moz-animation-iteration-count, webkitAnimationIterationCount, WebkitAnimationIterationCount, -webkit-animation-iteration-count, MozAnimationDirection, -moz-animation-direction, webkitAnimationDirection, WebkitAnimationDirection, -webkit-animation-direction, MozAnimationPlayState, -moz-animation-play-state, webkitAnimationPlayState, WebkitAnimationPlayState, -webkit-animation-play-state, MozAnimationFillMode, -moz-animation-fill-mode, webkitAnimationFillMode, WebkitAnimationFillMode, -webkit-animation-fill-mode, MozAnimationDelay, -moz-animation-delay, webkitAnimationDelay, WebkitAnimationDelay, -webkit-animation-delay, MozTransform, -moz-transform, webkitTransform, WebkitTransform, -webkit-transform, MozPerspective, -moz-perspective, webkitPerspective, WebkitPerspective, -webkit-perspective, MozPerspectiveOrigin, -moz-perspective-origin, webkitPerspectiveOrigin, WebkitPerspectiveOrigin, -webkit-perspective-origin, MozBackfaceVisibility, -moz-backface-visibility, webkitBackfaceVisibility, WebkitBackfaceVisibility, -webkit-backface-visibility, MozTransformStyle, -moz-transform-style, webkitTransformStyle, WebkitTransformStyle, -webkit-transform-style, MozTransformOrigin, -moz-transform-origin, webkitTransformOrigin, WebkitTransformOrigin, -webkit-transform-origin, MozAppearance, -moz-appearance, webkitAppearance, WebkitAppearance, -webkit-appearance, webkitBoxShadow, WebkitBoxShadow, -webkit-box-shadow, webkitFilter, WebkitFilter, -webkit-filter, MozFontFeatureSettings, -moz-font-feature-settings, MozFontLanguageOverride, -moz-font-language-override, MozHyphens, -moz-hyphens, webkitTextSizeAdjust, WebkitTextSizeAdjust, -webkit-text-size-adjust, wordWrap, word-wrap, MozTabSize, -moz-tab-size, MozMarginStart, -moz-margin-start, MozMarginEnd, -moz-margin-end, MozPaddingStart, -moz-padding-start, MozPaddingEnd, -moz-padding-end, webkitFlexDirection, WebkitFlexDirection, -webkit-flex-direction, webkitFlexWrap, WebkitFlexWrap, -webkit-flex-wrap, webkitJustifyContent, WebkitJustifyContent, -webkit-justify-content, webkitAlignContent, WebkitAlignContent, -webkit-align-content, webkitAlignItems, WebkitAlignItems, -webkit-align-items, webkitFlexGrow, WebkitFlexGrow, -webkit-flex-grow, webkitFlexShrink, WebkitFlexShrink, -webkit-flex-shrink, webkitAlignSelf, WebkitAlignSelf, -webkit-align-self, webkitOrder, WebkitOrder, -webkit-order, webkitFlexBasis, WebkitFlexBasis, -webkit-flex-basis, MozBoxSizing, -moz-box-sizing, webkitBoxSizing, WebkitBoxSizing, -webkit-box-sizing, gridColumnGap, grid-column-gap, gridRowGap, grid-row-gap, webkitMaskRepeat, WebkitMaskRepeat, -webkit-mask-repeat, webkitMaskPositionX, WebkitMaskPositionX, -webkit-mask-position-x, webkitMaskPositionY, WebkitMaskPositionY, -webkit-mask-position-y, webkitMaskClip, WebkitMaskClip, -webkit-mask-clip, webkitMaskOrigin, WebkitMaskOrigin, -webkit-mask-origin, webkitMaskSize, WebkitMaskSize, -webkit-mask-size, webkitMaskComposite, WebkitMaskComposite, -webkit-mask-composite, webkitMaskImage, WebkitMaskImage, -webkit-mask-image, MozUserSelect, -moz-user-select, webkitUserSelect, WebkitUserSelect, -webkit-user-select, webkitBoxAlign, WebkitBoxAlign, -webkit-box-align, webkitBoxDirection, WebkitBoxDirection, -webkit-box-direction, webkitBoxFlex, WebkitBoxFlex, -webkit-box-flex, webkitBoxOrient, WebkitBoxOrient, -webkit-box-orient, webkitBoxPack, WebkitBoxPack, -webkit-box-pack, webkitBoxOrdinalGroup, WebkitBoxOrdinalGroup, -webkit-box-ordinal-group, MozBorderStart, -moz-border-start, MozBorderEnd, -moz-border-end, webkitBorderRadius, WebkitBorderRadius, -webkit-border-radius, MozBorderImage, -moz-border-image, webkitBorderImage, WebkitBorderImage, -webkit-border-image, MozTransition, -moz-transition, webkitTransition, WebkitTransition, -webkit-transition, MozAnimation, -moz-animation, webkitAnimation, WebkitAnimation, -webkit-animation, webkitFlexFlow, WebkitFlexFlow, -webkit-flex-flow, webkitFlex, WebkitFlex, -webkit-flex, gridGap, grid-gap, webkitMask, WebkitMask, -webkit-mask, webkitMaskPosition, WebkitMaskPosition, -webkit-mask-position, constructor`,
+			version: 96,
+			windowKeys: `undefined, globalThis, Array, Boolean, JSON, Date, Math, Number, String, RegExp, Error, InternalError, AggregateError, EvalError, RangeError, ReferenceError, SyntaxError, TypeError, URIError, ArrayBuffer, Int8Array, Uint8Array, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, Uint8ClampedArray, BigInt64Array, BigUint64Array, BigInt, Proxy, WeakMap, Set, DataView, Symbol, Intl, Reflect, WeakSet, Atomics, Promise, ReadableStream, ByteLengthQueuingStrategy, CountQueuingStrategy, WebAssembly, FinalizationRegistry, WeakRef, NaN, Infinity, isNaN, isFinite, parseFloat, parseInt, escape, unescape, decodeURI, encodeURI, decodeURIComponent, encodeURIComponent, Lock, SecurityPolicyViolationEvent, SVGPathSegList, GamepadEvent, HTMLOutputElement, MediaKeyMessageEvent, HTMLLinkElement, CSSRule, HTMLMapElement, WebGLContextEvent, SVGForeignObjectElement, HTMLDListElement, HTMLMeterElement, HTMLAnchorElement, SVGFEGaussianBlurElement, WebGLUniformLocation, MediaDeviceInfo, Notification, SVGFEMergeNodeElement, TextTrackCue, BarProp, SVGCircleElement, History, Option, Navigator, CSSStyleDeclaration, SourceBuffer, CacheStorage, HTMLBaseElement, TimeEvent, console, AbortController, MediaStreamEvent, AnimationEffect, DocumentTimeline, MediaCapabilities, PerformancePaintTiming, Element, SVGGraphicsElement, SourceBufferList, HTMLLIElement, DOMRequest, CSSGroupingRule, PerformanceTiming, LockManager, FileReader, CSSNamespaceRule, CSSSupportsRule, SVGSetElement, HTMLScriptElement, URLSearchParams, VRFrameData, CanvasGradient, SubmitEvent, Worker, StyleSheet, TimeRanges, DOMRectReadOnly, HTMLUnknownElement, StorageEvent, HTMLTitleElement, MimeType, IDBRequest, WebSocket, DOMStringMap, SVGTitleElement, WebGLSampler, BaseAudioContext, HTMLParagraphElement, RTCDataChannel, IDBOpenDBRequest, PerformanceMeasure, SVGStringList, SVGGeometryElement, CanvasRenderingContext2D, MediaStreamAudioSourceNode, SVGTextElement, ClipboardEvent, VRDisplay, Location, MediaCapabilitiesInfo, DOMTokenList, HTMLSlotElement, AudioWorklet, PushSubscriptionOptions, HTMLModElement, SVGAnimatedLength, SVGComponentTransferFunctionElement, SVGPointList, SVGFEOffsetElement, SVGImageElement, VisualViewport, GamepadHapticActuator, PerformanceObserver, IntersectionObserver, OfflineAudioCompletionEvent, Clipboard, Selection, PerformanceServerTiming, NodeList, DelayNode, HTMLIFrameElement, IDBMutableFile, FontFaceSet, Credential, DOMRectList, HTMLDivElement, HTMLFontElement, SVGAnimationElement, SVGNumber, Permissions, SVGFEDiffuseLightingElement, RTCDtlsTransport, SVGFEPointLightElement, AudioParamMap, Response, HTMLProgressElement, HTMLHRElement, VTTRegion, MediaStreamTrackAudioSourceNode, SVGLinearGradientElement, SVGStyleElement, MediaKeySession, XMLHttpRequestUpload, HTMLHeadingElement, SVGTextPathElement, MediaStreamAudioDestinationNode, CanvasPattern, CSSMediaRule, DataTransferItem, IIRFilterNode, SVGAnimatedAngle, PerformanceNavigation, WebGLRenderingContext, SVGFETileElement, VRStageParameters, SVGAnimatedBoolean, SVGStopElement, SVGEllipseElement, HTMLTableColElement, SpeechSynthesisVoice, NodeIterator, IdleDeadline, MediaStreamTrackEvent, PushSubscription, IDBFileHandle, IDBCursorWithValue, WebGLRenderbuffer, WebGLShaderPrecisionFormat, ConstantSourceNode, PluginArray, DocumentType, SVGMatrix, Range, CSSImportRule, SVGElement, XMLSerializer, AudioScheduledSourceNode, CanvasCaptureMediaStream, DOMMatrix, SVGAElement, SVGFEColorMatrixElement, FontFace, AudioNode, RTCPeerConnectionIceEvent, SVGTextContentElement, VRFieldOfView, EventSource, PermissionStatus, SVGFEDisplacementMapElement, HTMLFrameElement, TextTrackCueList, SVGAnimatedLengthList, AudioDestinationNode, SVGMaskElement, HTMLSelectElement, HTMLAllCollection, PageTransitionEvent, ServiceWorkerContainer, SVGMetadataElement, CompositionEvent, BiquadFilterNode, HTMLMenuElement, HTMLMarqueeElement, AudioParam, DeviceMotionEvent, WebGLQuery, WebGLShader, ScrollAreaEvent, GeolocationPosition, SVGFEImageElement, XMLHttpRequest, SVGFEBlendElement, SVGPathElement, SVGPolylineElement, Text, MathMLElement, SVGTSpanElement, RTCSessionDescription, HTMLStyleElement, GainNode, DOMImplementation, HashChangeEvent, CustomElementRegistry, HTMLTableCellElement, IDBKeyRange, MediaStreamTrack, mozRTCSessionDescription, Animation, ImageData, WebGLTexture, XPathExpression, HTMLObjectElement, CSSPageRule, PushManager, WebGL2RenderingContext, DeviceOrientationEvent, AudioBuffer, HTMLOListElement, PointerEvent, ScriptProcessorNode, mozRTCIceCandidate, RTCTrackEvent, SVGLength, SVGUnitTypes, CredentialsContainer, XPathResult, AudioProcessingEvent, AnimationTimeline, SVGAnimateMotionElement, WheelEvent, BeforeUnloadEvent, PaintRequestList, HTMLAreaElement, GeolocationCoordinates, SVGAnimatedInteger, SVGAnimatedRect, OfflineAudioContext, FormData, SVGFEDistantLightElement, AudioBufferSourceNode, OscillatorNode, UIEvent, VRPose, SVGScriptElement, SubtleCrypto, MediaQueryListEvent, MessageEvent, RTCRtpReceiver, DocumentFragment, SpeechSynthesisUtterance, CSS2Properties, HTMLLabelElement, SVGFEFuncBElement, Audio, DOMStringList, AnalyserNode, FileList, SVGUseElement, ChannelSplitterNode, PerformanceMark, MessageChannel, webkitURL, StyleSheetList, CustomEvent, RTCCertificate, CSSConditionRule, CaretPosition, PopupBlockedEvent, ResizeObserverSize, PromiseRejectionEvent, VTTCue, SVGTextPositioningElement, DOMPoint, HTMLVideoElement, SVGGElement, SVGPoint, SVGFEFloodElement, FocusEvent, HTMLImageElement, WebGLActiveInfo, HTMLCollection, SVGSVGElement, MediaKeyStatusMap, HTMLTableElement, SVGFilterElement, SVGNumberList, MutationRecord, WebGLBuffer, MediaList, CSSStyleSheet, PerformanceResourceTiming, HTMLBRElement, Gamepad, Cache, HTMLTableSectionElement, CSSFontFeatureValuesRule, FormDataEvent, SVGAnimateElement, CSSStyleRule, SVGFECompositeElement, Path2D, SVGFEConvolveMatrixElement, SVGDefsElement, MediaDevices, MessagePort, MediaMetadata, FileSystemDirectoryEntry, ElementInternals, RTCDTMFToneChangeEvent, HTMLBodyElement, Attr, HTMLEmbedElement, SVGSwitchElement, VideoPlaybackQuality, HTMLDataListElement, SVGFEFuncGElement, SpeechSynthesisErrorEvent, ServiceWorkerRegistration, Screen, SVGFETurbulenceElement, PeriodicWave, DataTransfer, PaintRequest, SVGFEDropShadowElement, MediaKeys, HTMLAudioElement, SVGAnimatedNumberList, SpeechSynthesisEvent, WebGLTransformFeedback, HTMLCanvasElement, ShadowRoot, SVGRect, URL, StereoPannerNode, MutationEvent, AudioWorkletNode, FileSystemFileEntry, HTMLTrackElement, MediaSession, InputEvent, SVGTransformList, TransitionEvent, DOMParser, AuthenticatorAssertionResponse, SVGGradientElement, HTMLOptionElement, TextEncoder, Storage, MediaEncryptedEvent, TextTrackList, AuthenticatorResponse, HTMLTemplateElement, IDBDatabase, SVGViewElement, StorageManager, HTMLTableRowElement, Worklet, mozRTCPeerConnection, HTMLTableCaptionElement, HTMLSourceElement, HTMLOptGroupElement, SVGAnimatedTransformList, GamepadPose, CSSRuleList, SVGAnimatedPreserveAspectRatio, HTMLParamElement, Image, HTMLInputElement, WaveShaperNode, WebGLProgram, SVGAngle, HTMLPreElement, SVGLengthList, ServiceWorker, ErrorEvent, RTCStatsReport, SVGFESpecularLightingElement, TreeWalker, ConvolverNode, RTCRtpSender, MediaStream, KeyframeEffect, DOMRect, HTMLQuoteElement, ResizeObserverEntry, CharacterData, SVGSymbolElement, Directory, CSSKeyframesRule, HTMLElement, ProgressEvent, SVGPatternElement, SharedWorker, HTMLHtmlElement, SVGTransform, SVGAnimatedString, AnimationPlaybackEvent, StaticRange, CSSAnimation, SVGFEFuncAElement, XPathEvaluator, NamedNodeMap, HTMLFieldSetElement, AudioListener, SVGClipPathElement, MediaElementAudioSourceNode, RadioNodeList, Crypto, XMLDocument, SVGFEFuncRElement, SVGFEMergeElement, File, IDBTransaction, BroadcastChannel, PublicKeyCredential, SVGAnimatedEnumeration, WebGLFramebuffer, RTCDTMFSender, RTCRtpTransceiver, WebGLSync, RTCIceCandidate, TrackEvent, CSSMozDocumentRule, HTMLTimeElement, SVGFESpotLightElement, DynamicsCompressorNode, FontFaceSetLoadEvent, Headers, DOMMatrixReadOnly, SVGMarkerElement, HTMLMediaElement, CloseEvent, HTMLDetailsElement, VRDisplayCapabilities, DOMException, ResizeObserver, HTMLTextAreaElement, OfflineResourceList, HTMLDataElement, SpeechSynthesis, MediaSource, HTMLFrameSetElement, DragEvent, MediaError, CSS, SVGLineElement, MimeTypeArray, HTMLDirectoryElement, SVGPolygonElement, SVGPreserveAspectRatio, SVGAnimatedNumber, FileSystemDirectoryReader, BlobEvent, MediaKeyError, HTMLHeadElement, IDBVersionChangeEvent, HTMLButtonElement, HTMLFormElement, AbortSignal, GeolocationPositionError, ValidityState, Geolocation, ProcessingInstruction, SVGMPathElement, FileSystem, SVGRadialGradientElement, DOMQuad, U2F, MutationObserver, HTMLSpanElement, Request, FileSystemEntry, ImageBitmapRenderingContext, SVGDescElement, PerformanceObserverEntryList, WebGLVertexArrayObject, IntersectionObserverEntry, HTMLFormControlsCollection, PannerNode, PerformanceEntry, HTMLLegendElement, IDBCursor, XSLTProcessor, KeyboardEvent, MouseScrollEvent, CSSTransition, MediaRecorder, TextDecoder, CSSCounterStyleRule, KeyEvent, VREyeParameters, HTMLOptionsCollection, IDBIndex, ChannelMergerNode, Plugin, SVGRectElement, VRDisplayEvent, PopStateEvent, IDBFactory, MouseEvent, DataTransferItemList, GamepadButton, MediaRecorderErrorEvent, RTCDataChannelEvent, SVGAnimateTransformElement, AuthenticatorAttestationResponse, AbstractRange, CSSKeyframeRule, SVGFEComponentTransferElement, IDBFileRequest, XMLHttpRequestEventTarget, PerformanceEventTiming, CDATASection, DOMPointReadOnly, IDBObjectStore, WebKitCSSMatrix, HTMLMetaElement, TextMetrics, HTMLUListElement, CryptoKey, Comment, CSSFontFaceRule, ImageBitmap, AudioContext, MediaKeySystemAccess, Blob, TextTrack, AnimationEvent, RTCPeerConnection, SVGFEMorphologyElement, HTMLPictureElement, MediaQueryList, ScreenOrientation, NodeFilter, Function, Object, eval, EventTarget, Window, close, stop, focus, blur, open, alert, confirm, prompt, print, postMessage, captureEvents, releaseEvents, getSelection, getComputedStyle, matchMedia, moveTo, moveBy, resizeTo, resizeBy, scroll, scrollTo, scrollBy, requestAnimationFrame, cancelAnimationFrame, getDefaultComputedStyle, scrollByLines, scrollByPages, sizeToContent, updateCommands, find, dump, setResizable, requestIdleCallback, cancelIdleCallback, reportError, btoa, atob, setTimeout, clearTimeout, setInterval, clearInterval, queueMicrotask, createImageBitmap, structuredClone, fetch, self, name, history, customElements, locationbar, menubar, personalbar, scrollbars, statusbar, toolbar, status, closed, event, frames, length, opener, parent, frameElement, navigator, clientInformation, external, applicationCache, screen, innerWidth, innerHeight, scrollX, pageXOffset, scrollY, pageYOffset, screenLeft, screenTop, screenX, screenY, outerWidth, outerHeight, performance, mozInnerScreenX, mozInnerScreenY, devicePixelRatio, scrollMaxX, scrollMaxY, fullScreen, ondevicemotion, ondeviceorientation, onabsolutedeviceorientation, content, InstallTrigger, sidebar, onvrdisplayconnect, onvrdisplaydisconnect, onvrdisplayactivate, onvrdisplaydeactivate, onvrdisplaypresentchange, visualViewport, crypto, onabort, onblur, onfocus, onauxclick, onbeforeinput, oncanplay, oncanplaythrough, onchange, onclick, onclose, oncontextmenu, oncuechange, ondblclick, ondrag, ondragend, ondragenter, ondragexit, ondragleave, ondragover, ondragstart, ondrop, ondurationchange, onemptied, onended, onformdata, oninput, oninvalid, onkeydown, onkeypress, onkeyup, onload, onloadeddata, onloadedmetadata, onloadend, onloadstart, onmousedown, onmouseenter, onmouseleave, onmousemove, onmouseout, onmouseover, onmouseup, onwheel, onpause, onplay, onplaying, onprogress, onratechange, onreset, onresize, onscroll, onsecuritypolicyviolation, onseeked, onseeking, onselect, onslotchange, onstalled, onsubmit, onsuspend, ontimeupdate, onvolumechange, onwaiting, onselectstart, onselectionchange, ontoggle, onpointercancel, onpointerdown, onpointerup, onpointermove, onpointerout, onpointerover, onpointerenter, onpointerleave, ongotpointercapture, onlostpointercapture, onmozfullscreenchange, onmozfullscreenerror, onanimationcancel, onanimationend, onanimationiteration, onanimationstart, ontransitioncancel, ontransitionend, ontransitionrun, ontransitionstart, onwebkitanimationend, onwebkitanimationiteration, onwebkitanimationstart, onwebkittransitionend, u2f, onerror, speechSynthesis, onafterprint, onbeforeprint, onbeforeunload, onhashchange, onlanguagechange, onmessage, onmessageerror, onoffline, ononline, onpagehide, onpageshow, onpopstate, onrejectionhandled, onstorage, onunhandledrejection, onunload, ongamepadconnected, ongamepaddisconnected, localStorage, origin, crossOriginIsolated, isSecureContext, indexedDB, caches, sessionStorage, window, document, location, top, netscape, Node, Document, HTMLDocument, EventCounts, Map, Event`,
+			cssKeys: `alignContent, align-content, alignItems, align-items, alignSelf, align-self, aspectRatio, aspect-ratio, backfaceVisibility, backface-visibility, borderCollapse, border-collapse, borderImageRepeat, border-image-repeat, boxDecorationBreak, box-decoration-break, boxSizing, box-sizing, breakInside, break-inside, captionSide, caption-side, clear, colorAdjust, color-adjust, colorInterpolation, color-interpolation, colorInterpolationFilters, color-interpolation-filters, columnCount, column-count, columnFill, column-fill, columnSpan, column-span, contain, direction, display, dominantBaseline, dominant-baseline, emptyCells, empty-cells, flexDirection, flex-direction, flexWrap, flex-wrap, cssFloat, float, fontKerning, font-kerning, fontOpticalSizing, font-optical-sizing, fontSizeAdjust, font-size-adjust, fontStretch, font-stretch, fontStyle, font-style, fontSynthesis, font-synthesis, fontVariantCaps, font-variant-caps, fontVariantEastAsian, font-variant-east-asian, fontVariantLigatures, font-variant-ligatures, fontVariantNumeric, font-variant-numeric, fontVariantPosition, font-variant-position, fontWeight, font-weight, gridAutoFlow, grid-auto-flow, hyphens, imageOrientation, image-orientation, imageRendering, image-rendering, imeMode, ime-mode, isolation, justifyContent, justify-content, justifyItems, justify-items, justifySelf, justify-self, lineBreak, line-break, listStylePosition, list-style-position, maskType, mask-type, mixBlendMode, mix-blend-mode, MozBoxAlign, -moz-box-align, MozBoxDirection, -moz-box-direction, MozBoxOrient, -moz-box-orient, MozBoxPack, -moz-box-pack, MozFloatEdge, -moz-float-edge, MozForceBrokenImageIcon, -moz-force-broken-image-icon, MozOrient, -moz-orient, MozTextSizeAdjust, -moz-text-size-adjust, MozUserFocus, -moz-user-focus, MozUserInput, -moz-user-input, MozUserModify, -moz-user-modify, MozWindowDragging, -moz-window-dragging, objectFit, object-fit, offsetRotate, offset-rotate, outlineStyle, outline-style, overflowAnchor, overflow-anchor, overflowWrap, overflow-wrap, paintOrder, paint-order, pointerEvents, pointer-events, position, resize, rubyAlign, ruby-align, rubyPosition, ruby-position, scrollBehavior, scroll-behavior, scrollSnapAlign, scroll-snap-align, scrollSnapType, scroll-snap-type, scrollbarWidth, scrollbar-width, shapeRendering, shape-rendering, strokeLinecap, stroke-linecap, strokeLinejoin, stroke-linejoin, tableLayout, table-layout, textAlign, text-align, textAlignLast, text-align-last, textAnchor, text-anchor, textCombineUpright, text-combine-upright, textDecorationLine, text-decoration-line, textDecorationSkipInk, text-decoration-skip-ink, textDecorationStyle, text-decoration-style, textEmphasisPosition, text-emphasis-position, textJustify, text-justify, textOrientation, text-orientation, textRendering, text-rendering, textTransform, text-transform, textUnderlinePosition, text-underline-position, touchAction, touch-action, transformBox, transform-box, transformStyle, transform-style, unicodeBidi, unicode-bidi, userSelect, user-select, vectorEffect, vector-effect, visibility, webkitLineClamp, WebkitLineClamp, -webkit-line-clamp, whiteSpace, white-space, wordBreak, word-break, writingMode, writing-mode, zIndex, z-index, appearance, breakAfter, break-after, breakBefore, break-before, clipRule, clip-rule, fillRule, fill-rule, fillOpacity, fill-opacity, strokeOpacity, stroke-opacity, MozBoxOrdinalGroup, -moz-box-ordinal-group, order, flexGrow, flex-grow, flexShrink, flex-shrink, MozBoxFlex, -moz-box-flex, strokeMiterlimit, stroke-miterlimit, overflowBlock, overflow-block, overflowInline, overflow-inline, overflowX, overflow-x, overflowY, overflow-y, overscrollBehaviorBlock, overscroll-behavior-block, overscrollBehaviorInline, overscroll-behavior-inline, overscrollBehaviorX, overscroll-behavior-x, overscrollBehaviorY, overscroll-behavior-y, floodOpacity, flood-opacity, opacity, shapeImageThreshold, shape-image-threshold, stopOpacity, stop-opacity, borderBlockEndStyle, border-block-end-style, borderBlockStartStyle, border-block-start-style, borderBottomStyle, border-bottom-style, borderInlineEndStyle, border-inline-end-style, borderInlineStartStyle, border-inline-start-style, borderLeftStyle, border-left-style, borderRightStyle, border-right-style, borderTopStyle, border-top-style, columnRuleStyle, column-rule-style, accentColor, accent-color, animationDelay, animation-delay, animationDirection, animation-direction, animationDuration, animation-duration, animationFillMode, animation-fill-mode, animationIterationCount, animation-iteration-count, animationName, animation-name, animationPlayState, animation-play-state, animationTimingFunction, animation-timing-function, backgroundAttachment, background-attachment, backgroundBlendMode, background-blend-mode, backgroundClip, background-clip, backgroundImage, background-image, backgroundOrigin, background-origin, backgroundPositionX, background-position-x, backgroundPositionY, background-position-y, backgroundRepeat, background-repeat, backgroundSize, background-size, borderImageOutset, border-image-outset, borderImageSlice, border-image-slice, borderImageWidth, border-image-width, borderSpacing, border-spacing, boxShadow, box-shadow, caretColor, caret-color, clipPath, clip-path, color, colorScheme, color-scheme, columnWidth, column-width, content, counterIncrement, counter-increment, counterReset, counter-reset, counterSet, counter-set, cursor, filter, flexBasis, flex-basis, fontFamily, font-family, fontFeatureSettings, font-feature-settings, fontLanguageOverride, font-language-override, fontSize, font-size, fontVariantAlternates, font-variant-alternates, fontVariationSettings, font-variation-settings, gridTemplateAreas, grid-template-areas, letterSpacing, letter-spacing, lineHeight, line-height, listStyleType, list-style-type, maskClip, mask-clip, maskComposite, mask-composite, maskImage, mask-image, maskMode, mask-mode, maskOrigin, mask-origin, maskPositionX, mask-position-x, maskPositionY, mask-position-y, maskRepeat, mask-repeat, maskSize, mask-size, offsetAnchor, offset-anchor, offsetPath, offset-path, perspective, quotes, rotate, scale, scrollbarColor, scrollbar-color, shapeOutside, shape-outside, strokeDasharray, stroke-dasharray, strokeDashoffset, stroke-dashoffset, strokeWidth, stroke-width, tabSize, tab-size, textDecorationThickness, text-decoration-thickness, textEmphasisStyle, text-emphasis-style, textOverflow, text-overflow, textShadow, text-shadow, transitionDelay, transition-delay, transitionDuration, transition-duration, transitionProperty, transition-property, transitionTimingFunction, transition-timing-function, translate, verticalAlign, vertical-align, willChange, will-change, wordSpacing, word-spacing, clip, MozImageRegion, -moz-image-region, objectPosition, object-position, perspectiveOrigin, perspective-origin, fill, stroke, transformOrigin, transform-origin, gridTemplateColumns, grid-template-columns, gridTemplateRows, grid-template-rows, borderImageSource, border-image-source, listStyleImage, list-style-image, gridAutoColumns, grid-auto-columns, gridAutoRows, grid-auto-rows, transform, columnGap, column-gap, rowGap, row-gap, markerEnd, marker-end, markerMid, marker-mid, markerStart, marker-start, gridColumnEnd, grid-column-end, gridColumnStart, grid-column-start, gridRowEnd, grid-row-end, gridRowStart, grid-row-start, maxBlockSize, max-block-size, maxHeight, max-height, maxInlineSize, max-inline-size, maxWidth, max-width, cx, cy, offsetDistance, offset-distance, textIndent, text-indent, x, y, borderBottomLeftRadius, border-bottom-left-radius, borderBottomRightRadius, border-bottom-right-radius, borderEndEndRadius, border-end-end-radius, borderEndStartRadius, border-end-start-radius, borderStartEndRadius, border-start-end-radius, borderStartStartRadius, border-start-start-radius, borderTopLeftRadius, border-top-left-radius, borderTopRightRadius, border-top-right-radius, blockSize, block-size, height, inlineSize, inline-size, minBlockSize, min-block-size, minHeight, min-height, minInlineSize, min-inline-size, minWidth, min-width, width, outlineOffset, outline-offset, scrollMarginBlockEnd, scroll-margin-block-end, scrollMarginBlockStart, scroll-margin-block-start, scrollMarginBottom, scroll-margin-bottom, scrollMarginInlineEnd, scroll-margin-inline-end, scrollMarginInlineStart, scroll-margin-inline-start, scrollMarginLeft, scroll-margin-left, scrollMarginRight, scroll-margin-right, scrollMarginTop, scroll-margin-top, paddingBlockEnd, padding-block-end, paddingBlockStart, padding-block-start, paddingBottom, padding-bottom, paddingInlineEnd, padding-inline-end, paddingInlineStart, padding-inline-start, paddingLeft, padding-left, paddingRight, padding-right, paddingTop, padding-top, r, shapeMargin, shape-margin, rx, ry, scrollPaddingBlockEnd, scroll-padding-block-end, scrollPaddingBlockStart, scroll-padding-block-start, scrollPaddingBottom, scroll-padding-bottom, scrollPaddingInlineEnd, scroll-padding-inline-end, scrollPaddingInlineStart, scroll-padding-inline-start, scrollPaddingLeft, scroll-padding-left, scrollPaddingRight, scroll-padding-right, scrollPaddingTop, scroll-padding-top, borderBlockEndWidth, border-block-end-width, borderBlockStartWidth, border-block-start-width, borderBottomWidth, border-bottom-width, borderInlineEndWidth, border-inline-end-width, borderInlineStartWidth, border-inline-start-width, borderLeftWidth, border-left-width, borderRightWidth, border-right-width, borderTopWidth, border-top-width, columnRuleWidth, column-rule-width, outlineWidth, outline-width, webkitTextStrokeWidth, WebkitTextStrokeWidth, -webkit-text-stroke-width, bottom, insetBlockEnd, inset-block-end, insetBlockStart, inset-block-start, insetInlineEnd, inset-inline-end, insetInlineStart, inset-inline-start, left, marginBlockEnd, margin-block-end, marginBlockStart, margin-block-start, marginBottom, margin-bottom, marginInlineEnd, margin-inline-end, marginInlineStart, margin-inline-start, marginLeft, margin-left, marginRight, margin-right, marginTop, margin-top, right, textUnderlineOffset, text-underline-offset, top, backgroundColor, background-color, borderBlockEndColor, border-block-end-color, borderBlockStartColor, border-block-start-color, borderBottomColor, border-bottom-color, borderInlineEndColor, border-inline-end-color, borderInlineStartColor, border-inline-start-color, borderLeftColor, border-left-color, borderRightColor, border-right-color, borderTopColor, border-top-color, columnRuleColor, column-rule-color, floodColor, flood-color, lightingColor, lighting-color, outlineColor, outline-color, stopColor, stop-color, textDecorationColor, text-decoration-color, textEmphasisColor, text-emphasis-color, webkitTextFillColor, WebkitTextFillColor, -webkit-text-fill-color, webkitTextStrokeColor, WebkitTextStrokeColor, -webkit-text-stroke-color, background, backgroundPosition, background-position, borderColor, border-color, borderStyle, border-style, borderWidth, border-width, borderTop, border-top, borderRight, border-right, borderBottom, border-bottom, borderLeft, border-left, borderBlockStart, border-block-start, borderBlockEnd, border-block-end, borderInlineStart, border-inline-start, borderInlineEnd, border-inline-end, border, borderRadius, border-radius, borderImage, border-image, borderBlockWidth, border-block-width, borderBlockStyle, border-block-style, borderBlockColor, border-block-color, borderInlineWidth, border-inline-width, borderInlineStyle, border-inline-style, borderInlineColor, border-inline-color, borderBlock, border-block, borderInline, border-inline, overflow, transition, animation, overscrollBehavior, overscroll-behavior, pageBreakBefore, page-break-before, pageBreakAfter, page-break-after, pageBreakInside, page-break-inside, offset, columns, columnRule, column-rule, font, fontVariant, font-variant, marker, textEmphasis, text-emphasis, webkitTextStroke, WebkitTextStroke, -webkit-text-stroke, listStyle, list-style, margin, marginBlock, margin-block, marginInline, margin-inline, scrollMargin, scroll-margin, scrollMarginBlock, scroll-margin-block, scrollMarginInline, scroll-margin-inline, outline, padding, paddingBlock, padding-block, paddingInline, padding-inline, scrollPadding, scroll-padding, scrollPaddingBlock, scroll-padding-block, scrollPaddingInline, scroll-padding-inline, flexFlow, flex-flow, flex, gap, gridRow, grid-row, gridColumn, grid-column, gridArea, grid-area, gridTemplate, grid-template, grid, placeContent, place-content, placeSelf, place-self, placeItems, place-items, inset, insetBlock, inset-block, insetInline, inset-inline, mask, maskPosition, mask-position, textDecoration, text-decoration, all, webkitBackgroundClip, WebkitBackgroundClip, -webkit-background-clip, webkitBackgroundOrigin, WebkitBackgroundOrigin, -webkit-background-origin, webkitBackgroundSize, WebkitBackgroundSize, -webkit-background-size, MozBorderStartColor, -moz-border-start-color, MozBorderStartStyle, -moz-border-start-style, MozBorderStartWidth, -moz-border-start-width, MozBorderEndColor, -moz-border-end-color, MozBorderEndStyle, -moz-border-end-style, MozBorderEndWidth, -moz-border-end-width, webkitBorderTopLeftRadius, WebkitBorderTopLeftRadius, -webkit-border-top-left-radius, webkitBorderTopRightRadius, WebkitBorderTopRightRadius, -webkit-border-top-right-radius, webkitBorderBottomRightRadius, WebkitBorderBottomRightRadius, -webkit-border-bottom-right-radius, webkitBorderBottomLeftRadius, WebkitBorderBottomLeftRadius, -webkit-border-bottom-left-radius, MozTransitionDuration, -moz-transition-duration, webkitTransitionDuration, WebkitTransitionDuration, -webkit-transition-duration, MozTransitionTimingFunction, -moz-transition-timing-function, webkitTransitionTimingFunction, WebkitTransitionTimingFunction, -webkit-transition-timing-function, MozTransitionProperty, -moz-transition-property, webkitTransitionProperty, WebkitTransitionProperty, -webkit-transition-property, MozTransitionDelay, -moz-transition-delay, webkitTransitionDelay, WebkitTransitionDelay, -webkit-transition-delay, MozAnimationName, -moz-animation-name, webkitAnimationName, WebkitAnimationName, -webkit-animation-name, MozAnimationDuration, -moz-animation-duration, webkitAnimationDuration, WebkitAnimationDuration, -webkit-animation-duration, MozAnimationTimingFunction, -moz-animation-timing-function, webkitAnimationTimingFunction, WebkitAnimationTimingFunction, -webkit-animation-timing-function, MozAnimationIterationCount, -moz-animation-iteration-count, webkitAnimationIterationCount, WebkitAnimationIterationCount, -webkit-animation-iteration-count, MozAnimationDirection, -moz-animation-direction, webkitAnimationDirection, WebkitAnimationDirection, -webkit-animation-direction, MozAnimationPlayState, -moz-animation-play-state, webkitAnimationPlayState, WebkitAnimationPlayState, -webkit-animation-play-state, MozAnimationFillMode, -moz-animation-fill-mode, webkitAnimationFillMode, WebkitAnimationFillMode, -webkit-animation-fill-mode, MozAnimationDelay, -moz-animation-delay, webkitAnimationDelay, WebkitAnimationDelay, -webkit-animation-delay, MozTransform, -moz-transform, webkitTransform, WebkitTransform, -webkit-transform, MozPerspective, -moz-perspective, webkitPerspective, WebkitPerspective, -webkit-perspective, MozPerspectiveOrigin, -moz-perspective-origin, webkitPerspectiveOrigin, WebkitPerspectiveOrigin, -webkit-perspective-origin, MozBackfaceVisibility, -moz-backface-visibility, webkitBackfaceVisibility, WebkitBackfaceVisibility, -webkit-backface-visibility, MozTransformStyle, -moz-transform-style, webkitTransformStyle, WebkitTransformStyle, -webkit-transform-style, MozTransformOrigin, -moz-transform-origin, webkitTransformOrigin, WebkitTransformOrigin, -webkit-transform-origin, MozAppearance, -moz-appearance, webkitAppearance, WebkitAppearance, -webkit-appearance, webkitBoxShadow, WebkitBoxShadow, -webkit-box-shadow, webkitFilter, WebkitFilter, -webkit-filter, MozFontFeatureSettings, -moz-font-feature-settings, MozFontLanguageOverride, -moz-font-language-override, MozHyphens, -moz-hyphens, webkitTextSizeAdjust, WebkitTextSizeAdjust, -webkit-text-size-adjust, wordWrap, word-wrap, MozTabSize, -moz-tab-size, MozMarginStart, -moz-margin-start, MozMarginEnd, -moz-margin-end, MozPaddingStart, -moz-padding-start, MozPaddingEnd, -moz-padding-end, webkitFlexDirection, WebkitFlexDirection, -webkit-flex-direction, webkitFlexWrap, WebkitFlexWrap, -webkit-flex-wrap, webkitJustifyContent, WebkitJustifyContent, -webkit-justify-content, webkitAlignContent, WebkitAlignContent, -webkit-align-content, webkitAlignItems, WebkitAlignItems, -webkit-align-items, webkitFlexGrow, WebkitFlexGrow, -webkit-flex-grow, webkitFlexShrink, WebkitFlexShrink, -webkit-flex-shrink, webkitAlignSelf, WebkitAlignSelf, -webkit-align-self, webkitOrder, WebkitOrder, -webkit-order, webkitFlexBasis, WebkitFlexBasis, -webkit-flex-basis, MozBoxSizing, -moz-box-sizing, webkitBoxSizing, WebkitBoxSizing, -webkit-box-sizing, gridColumnGap, grid-column-gap, gridRowGap, grid-row-gap, webkitMaskRepeat, WebkitMaskRepeat, -webkit-mask-repeat, webkitMaskPositionX, WebkitMaskPositionX, -webkit-mask-position-x, webkitMaskPositionY, WebkitMaskPositionY, -webkit-mask-position-y, webkitMaskClip, WebkitMaskClip, -webkit-mask-clip, webkitMaskOrigin, WebkitMaskOrigin, -webkit-mask-origin, webkitMaskSize, WebkitMaskSize, -webkit-mask-size, webkitMaskComposite, WebkitMaskComposite, -webkit-mask-composite, webkitMaskImage, WebkitMaskImage, -webkit-mask-image, MozUserSelect, -moz-user-select, webkitUserSelect, WebkitUserSelect, -webkit-user-select, webkitBoxAlign, WebkitBoxAlign, -webkit-box-align, webkitBoxDirection, WebkitBoxDirection, -webkit-box-direction, webkitBoxFlex, WebkitBoxFlex, -webkit-box-flex, webkitBoxOrient, WebkitBoxOrient, -webkit-box-orient, webkitBoxPack, WebkitBoxPack, -webkit-box-pack, webkitBoxOrdinalGroup, WebkitBoxOrdinalGroup, -webkit-box-ordinal-group, MozBorderStart, -moz-border-start, MozBorderEnd, -moz-border-end, webkitBorderRadius, WebkitBorderRadius, -webkit-border-radius, MozBorderImage, -moz-border-image, webkitBorderImage, WebkitBorderImage, -webkit-border-image, MozTransition, -moz-transition, webkitTransition, WebkitTransition, -webkit-transition, MozAnimation, -moz-animation, webkitAnimation, WebkitAnimation, -webkit-animation, webkitFlexFlow, WebkitFlexFlow, -webkit-flex-flow, webkitFlex, WebkitFlex, -webkit-flex, gridGap, grid-gap, webkitMask, WebkitMask, -webkit-mask, webkitMaskPosition, WebkitMaskPosition, -webkit-mask-position, constructor`,
 			jsKeys: "Array.at, Array.concat, Array.copyWithin, Array.entries, Array.every, Array.fill, Array.filter, Array.find, Array.findIndex, Array.flat, Array.flatMap, Array.forEach, Array.from, Array.includes, Array.indexOf, Array.isArray, Array.join, Array.keys, Array.lastIndexOf, Array.map, Array.of, Array.pop, Array.push, Array.reduce, Array.reduceRight, Array.reverse, Array.shift, Array.slice, Array.some, Array.sort, Array.splice, Array.toLocaleString, Array.toString, Array.unshift, Array.values, Atomics.add, Atomics.and, Atomics.compareExchange, Atomics.exchange, Atomics.isLockFree, Atomics.load, Atomics.notify, Atomics.or, Atomics.store, Atomics.sub, Atomics.wait, Atomics.wake, Atomics.xor, BigInt.asIntN, BigInt.asUintN, BigInt.toLocaleString, BigInt.toString, BigInt.valueOf, Boolean.toString, Boolean.valueOf, Date.UTC, Date.getDate, Date.getDay, Date.getFullYear, Date.getHours, Date.getMilliseconds, Date.getMinutes, Date.getMonth, Date.getSeconds, Date.getTime, Date.getTimezoneOffset, Date.getUTCDate, Date.getUTCDay, Date.getUTCFullYear, Date.getUTCHours, Date.getUTCMilliseconds, Date.getUTCMinutes, Date.getUTCMonth, Date.getUTCSeconds, Date.getYear, Date.now, Date.parse, Date.setDate, Date.setFullYear, Date.setHours, Date.setMilliseconds, Date.setMinutes, Date.setMonth, Date.setSeconds, Date.setTime, Date.setUTCDate, Date.setUTCFullYear, Date.setUTCHours, Date.setUTCMilliseconds, Date.setUTCMinutes, Date.setUTCMonth, Date.setUTCSeconds, Date.setYear, Date.toDateString, Date.toGMTString, Date.toISOString, Date.toJSON, Date.toLocaleDateString, Date.toLocaleString, Date.toLocaleTimeString, Date.toString, Date.toTimeString, Date.toUTCString, Date.valueOf, Document.URL, Document.activeElement, Document.adoptNode, Document.alinkColor, Document.all, Document.anchors, Document.append, Document.applets, Document.bgColor, Document.body, Document.captureEvents, Document.caretPositionFromPoint, Document.characterSet, Document.charset, Document.childElementCount, Document.children, Document.clear, Document.close, Document.compatMode, Document.contentType, Document.cookie, Document.createAttribute, Document.createAttributeNS, Document.createCDATASection, Document.createComment, Document.createDocumentFragment, Document.createElement, Document.createElementNS, Document.createEvent, Document.createExpression, Document.createNSResolver, Document.createNodeIterator, Document.createProcessingInstruction, Document.createRange, Document.createTextNode, Document.createTreeWalker, Document.currentScript, Document.defaultView, Document.designMode, Document.dir, Document.doctype, Document.documentElement, Document.documentURI, Document.domain, Document.elementFromPoint, Document.elementsFromPoint, Document.embeds, Document.enableStyleSheetsForSet, Document.evaluate, Document.execCommand, Document.exitFullscreen, Document.exitPointerLock, Document.fgColor, Document.firstElementChild, Document.fonts, Document.forms, Document.fullscreen, Document.fullscreenElement, Document.fullscreenEnabled, Document.getAnimations, Document.getElementById, Document.getElementsByClassName, Document.getElementsByName, Document.getElementsByTagName, Document.getElementsByTagNameNS, Document.getSelection, Document.hasFocus, Document.hasStorageAccess, Document.head, Document.hidden, Document.images, Document.implementation, Document.importNode, Document.inputEncoding, Document.lastElementChild, Document.lastModified, Document.lastStyleSheetSet, Document.linkColor, Document.links, Document.mozCancelFullScreen, Document.mozFullScreen, Document.mozFullScreenElement, Document.mozFullScreenEnabled, Document.mozSetImageElement, Document.onabort, Document.onafterscriptexecute, Document.onanimationcancel, Document.onanimationend, Document.onanimationiteration, Document.onanimationstart, Document.onauxclick, Document.onbeforeinput, Document.onbeforescriptexecute, Document.onblur, Document.oncanplay, Document.oncanplaythrough, Document.onchange, Document.onclick, Document.onclose, Document.oncontextmenu, Document.oncopy, Document.oncuechange, Document.oncut, Document.ondblclick, Document.ondrag, Document.ondragend, Document.ondragenter, Document.ondragexit, Document.ondragleave, Document.ondragover, Document.ondragstart, Document.ondrop, Document.ondurationchange, Document.onemptied, Document.onended, Document.onerror, Document.onfocus, Document.onformdata, Document.onfullscreenchange, Document.onfullscreenerror, Document.ongotpointercapture, Document.oninput, Document.oninvalid, Document.onkeydown, Document.onkeypress, Document.onkeyup, Document.onload, Document.onloadeddata, Document.onloadedmetadata, Document.onloadend, Document.onloadstart, Document.onlostpointercapture, Document.onmousedown, Document.onmouseenter, Document.onmouseleave, Document.onmousemove, Document.onmouseout, Document.onmouseover, Document.onmouseup, Document.onmozfullscreenchange, Document.onmozfullscreenerror, Document.onpaste, Document.onpause, Document.onplay, Document.onplaying, Document.onpointercancel, Document.onpointerdown, Document.onpointerenter, Document.onpointerleave, Document.onpointerlockchange, Document.onpointerlockerror, Document.onpointermove, Document.onpointerout, Document.onpointerover, Document.onpointerup, Document.onprogress, Document.onratechange, Document.onreadystatechange, Document.onreset, Document.onresize, Document.onscroll, Document.onsecuritypolicyviolation, Document.onseeked, Document.onseeking, Document.onselect, Document.onselectionchange, Document.onselectstart, Document.onslotchange, Document.onstalled, Document.onsubmit, Document.onsuspend, Document.ontimeupdate, Document.ontoggle, Document.ontransitioncancel, Document.ontransitionend, Document.ontransitionrun, Document.ontransitionstart, Document.onvisibilitychange, Document.onvolumechange, Document.onwaiting, Document.onwebkitanimationend, Document.onwebkitanimationiteration, Document.onwebkitanimationstart, Document.onwebkittransitionend, Document.onwheel, Document.open, Document.plugins, Document.pointerLockElement, Document.preferredStyleSheetSet, Document.prepend, Document.queryCommandEnabled, Document.queryCommandIndeterm, Document.queryCommandState, Document.queryCommandSupported, Document.queryCommandValue, Document.querySelector, Document.querySelectorAll, Document.readyState, Document.referrer, Document.releaseCapture, Document.releaseEvents, Document.replaceChildren, Document.requestStorageAccess, Document.rootElement, Document.scripts, Document.scrollingElement, Document.selectedStyleSheetSet, Document.styleSheetSets, Document.styleSheets, Document.timeline, Document.title, Document.visibilityState, Document.vlinkColor, Document.write, Document.writeln, Element.after, Element.animate, Element.append, Element.assignedSlot, Element.attachShadow, Element.attributes, Element.before, Element.childElementCount, Element.children, Element.classList, Element.className, Element.clientHeight, Element.clientLeft, Element.clientTop, Element.clientWidth, Element.closest, Element.firstElementChild, Element.getAnimations, Element.getAttribute, Element.getAttributeNS, Element.getAttributeNames, Element.getAttributeNode, Element.getAttributeNodeNS, Element.getBoundingClientRect, Element.getClientRects, Element.getElementsByClassName, Element.getElementsByTagName, Element.getElementsByTagNameNS, Element.hasAttribute, Element.hasAttributeNS, Element.hasAttributes, Element.hasPointerCapture, Element.id, Element.innerHTML, Element.insertAdjacentElement, Element.insertAdjacentHTML, Element.insertAdjacentText, Element.lastElementChild, Element.localName, Element.matches, Element.mozMatchesSelector, Element.mozRequestFullScreen, Element.namespaceURI, Element.nextElementSibling, Element.onfullscreenchange, Element.onfullscreenerror, Element.outerHTML, Element.part, Element.prefix, Element.prepend, Element.previousElementSibling, Element.querySelector, Element.querySelectorAll, Element.releaseCapture, Element.releasePointerCapture, Element.remove, Element.removeAttribute, Element.removeAttributeNS, Element.removeAttributeNode, Element.replaceChildren, Element.replaceWith, Element.requestFullscreen, Element.requestPointerLock, Element.scroll, Element.scrollBy, Element.scrollHeight, Element.scrollIntoView, Element.scrollLeft, Element.scrollLeftMax, Element.scrollTo, Element.scrollTop, Element.scrollTopMax, Element.scrollWidth, Element.setAttribute, Element.setAttributeNS, Element.setAttributeNode, Element.setAttributeNodeNS, Element.setCapture, Element.setPointerCapture, Element.shadowRoot, Element.slot, Element.tagName, Element.toggleAttribute, Element.webkitMatchesSelector, Error.message, Error.stack, Error.toString, Function.apply, Function.bind, Function.call, Function.toString, Intl.Collator, Intl.DateTimeFormat, Intl.DisplayNames, Intl.ListFormat, Intl.Locale, Intl.NumberFormat, Intl.PluralRules, Intl.RelativeTimeFormat, Intl.getCanonicalLocales, Intl.supportedValuesOf, JSON.parse, JSON.stringify, Map.clear, Map.delete, Map.entries, Map.forEach, Map.get, Map.has, Map.keys, Map.set, Map.size, Map.values, Math.E, Math.LN10, Math.LN2, Math.LOG10E, Math.LOG2E, Math.PI, Math.SQRT1_2, Math.SQRT2, Math.abs, Math.acos, Math.acosh, Math.asin, Math.asinh, Math.atan, Math.atan2, Math.atanh, Math.cbrt, Math.ceil, Math.clz32, Math.cos, Math.cosh, Math.exp, Math.expm1, Math.floor, Math.fround, Math.hypot, Math.imul, Math.log, Math.log10, Math.log1p, Math.log2, Math.max, Math.min, Math.pow, Math.random, Math.round, Math.sign, Math.sin, Math.sinh, Math.sqrt, Math.tan, Math.tanh, Math.trunc, Number.EPSILON, Number.MAX_SAFE_INTEGER, Number.MAX_VALUE, Number.MIN_SAFE_INTEGER, Number.MIN_VALUE, Number.NEGATIVE_INFINITY, Number.NaN, Number.POSITIVE_INFINITY, Number.isFinite, Number.isInteger, Number.isNaN, Number.isSafeInteger, Number.parseFloat, Number.parseInt, Number.toExponential, Number.toFixed, Number.toLocaleString, Number.toPrecision, Number.toString, Number.valueOf, Object.__defineGetter__, Object.__defineSetter__, Object.__lookupGetter__, Object.__lookupSetter__, Object.__proto__, Object.assign, Object.create, Object.defineProperties, Object.defineProperty, Object.entries, Object.freeze, Object.fromEntries, Object.getOwnPropertyDescriptor, Object.getOwnPropertyDescriptors, Object.getOwnPropertyNames, Object.getOwnPropertySymbols, Object.getPrototypeOf, Object.hasOwn, Object.hasOwnProperty, Object.is, Object.isExtensible, Object.isFrozen, Object.isPrototypeOf, Object.isSealed, Object.keys, Object.preventExtensions, Object.propertyIsEnumerable, Object.seal, Object.setPrototypeOf, Object.toLocaleString, Object.toString, Object.valueOf, Object.values, Promise.all, Promise.allSettled, Promise.any, Promise.catch, Promise.finally, Promise.race, Promise.reject, Promise.resolve, Promise.then, Proxy.revocable, Reflect.apply, Reflect.construct, Reflect.defineProperty, Reflect.deleteProperty, Reflect.get, Reflect.getOwnPropertyDescriptor, Reflect.getPrototypeOf, Reflect.has, Reflect.isExtensible, Reflect.ownKeys, Reflect.preventExtensions, Reflect.set, Reflect.setPrototypeOf, RegExp.$&, RegExp.$', RegExp.$+, RegExp.$1, RegExp.$2, RegExp.$3, RegExp.$4, RegExp.$5, RegExp.$6, RegExp.$7, RegExp.$8, RegExp.$9, RegExp.$_, RegExp.$`, RegExp.compile, RegExp.dotAll, RegExp.exec, RegExp.flags, RegExp.global, RegExp.hasIndices, RegExp.ignoreCase, RegExp.input, RegExp.lastMatch, RegExp.lastParen, RegExp.leftContext, RegExp.multiline, RegExp.rightContext, RegExp.source, RegExp.sticky, RegExp.test, RegExp.toString, RegExp.unicode, Set.add, Set.clear, Set.delete, Set.entries, Set.forEach, Set.has, Set.keys, Set.size, Set.values, String.anchor, String.at, String.big, String.blink, String.bold, String.charAt, String.charCodeAt, String.codePointAt, String.concat, String.endsWith, String.fixed, String.fontcolor, String.fontsize, String.fromCharCode, String.fromCodePoint, String.includes, String.indexOf, String.italics, String.lastIndexOf, String.link, String.localeCompare, String.match, String.matchAll, String.normalize, String.padEnd, String.padStart, String.raw, String.repeat, String.replace, String.replaceAll, String.search, String.slice, String.small, String.split, String.startsWith, String.strike, String.sub, String.substr, String.substring, String.sup, String.toLocaleLowerCase, String.toLocaleUpperCase, String.toLowerCase, String.toString, String.toUpperCase, String.trim, String.trimEnd, String.trimLeft, String.trimRight, String.trimStart, String.valueOf, Symbol.asyncIterator, Symbol.description, Symbol.for, Symbol.hasInstance, Symbol.isConcatSpreadable, Symbol.iterator, Symbol.keyFor, Symbol.match, Symbol.matchAll, Symbol.replace, Symbol.search, Symbol.species, Symbol.split, Symbol.toPrimitive, Symbol.toString, Symbol.toStringTag, Symbol.unscopables, Symbol.valueOf, WeakMap.delete, WeakMap.get, WeakMap.has, WeakMap.set, WeakSet.add, WeakSet.delete, WeakSet.has, WebAssembly.CompileError, WebAssembly.Global, WebAssembly.Instance, WebAssembly.LinkError, WebAssembly.Memory, WebAssembly.Module, WebAssembly.RuntimeError, WebAssembly.Table, WebAssembly.compile, WebAssembly.compileStreaming, WebAssembly.instantiate, WebAssembly.instantiateStreaming, WebAssembly.validate"
 		}
 	});
@@ -8987,7 +10027,8 @@
 			'80-88': ['appearance'],
 			'89-90': ['!-moz-outline-radius', '!-moz-outline-radius-bottomleft', '!-moz-outline-radius-bottomright', '!-moz-outline-radius-topleft', '!-moz-outline-radius-topright', 'aspect-ratio'],
 			'91': ['tab-size'],
-			'92-94': ['accent-color']
+			'92-95': ['accent-color'],
+			'96': ['color-scheme']
 		};
 
 		const blinkCSS = {
@@ -9006,7 +10047,8 @@
 			'93': ['accent-color'],
 			'94': ['scrollbar-gutter'],
 			'95-96': ['app-region', 'contain-intrinsic-block-size', 'contain-intrinsic-height', 'contain-intrinsic-inline-size', 'contain-intrinsic-width'],
-			'97': ['font-synthesis-small-caps', 'font-synthesis-style', 'font-synthesis-weight', 'font-synthesis']
+			'97-98': ['font-synthesis-small-caps', 'font-synthesis-style', 'font-synthesis-weight', 'font-synthesis'],
+			'99': ['text-emphasis-color', 'text-emphasis-position', 'text-emphasis-style', 'text-emphasis']
 		};
 
 		const geckoWindow = {
@@ -9025,7 +10067,8 @@
 			'87': ['onbeforeinput'],
 			'88': ['onbeforeinput', '!VisualViewport'],
 			'89-92': ['!ondevicelight', '!ondeviceproximity', '!onuserproximity'],
-			'93-94': ['ElementInternals']
+			'93-95': ['ElementInternals'],
+			'96': ['Lock', 'LockManager']
 		};
 
 		const blinkWindow = {
@@ -9045,7 +10088,9 @@
 			'93': ['WritableStreamDefaultController'],
 			'94': ['AudioData', 'AudioDecoder', 'AudioEncoder', 'EncodedAudioChunk', 'EncodedVideoChunk', 'IdleDetector', 'ImageDecoder', 'ImageTrack', 'ImageTrackList', 'VideoColorSpace', 'VideoDecoder', 'VideoEncoder', 'VideoFrame', 'MediaStreamTrackGenerator', 'MediaStreamTrackProcessor', 'Profiler', 'VirtualKeyboard', 'DelegatedInkTrailPresenter', 'Ink', 'Scheduler', 'TaskController', 'TaskPriorityChangeEvent', 'TaskSignal', 'VirtualKeyboardGeometryChangeEvent'],
 			'95-96': ['URLPattern'],
-			'97': ['WebTransport', 'WebTransportBidirectionalStream', 'WebTransportDatagramDuplexStream', 'WebTransportError']
+			'97': ['WebTransport', 'WebTransportBidirectionalStream', 'WebTransportDatagramDuplexStream', 'WebTransportError'],
+			'98': ['WindowControlsOverlay', 'WindowControlsOverlayGeometryChangeEvent'],
+			'99': ['CanvasFilter', 'CSSLayerBlockRule', 'CSSLayerStatementRule']
 		};
 
 		const blinkJS = {
@@ -9066,7 +10111,8 @@
 			'93': ['Error.cause','Object.hasOwn'],
 			'94': ['!Error.cause', 'Object.hasOwn'],
 			'95-96': ['WebAssembly.Exception','WebAssembly.Tag'],
-			'97': ['Array.findLast', 'Array.findLastIndex', 'Document.onslotchange']
+			'97-98': ['Array.findLast', 'Array.findLastIndex', 'Document.onslotchange'],
+			'99': ['Intl.supportedValuesOf', 'Document.oncontextlost', 'Document.oncontextrestored']
 		};
 
 		const geckoJS = {
@@ -9083,7 +10129,7 @@
 			'88-89': ['RegExp.hasIndices'],
 			'90-91': ['Array.at','String.at'],
 			'92': ['Object.hasOwn'],
-			'93-94': ['Intl.supportedValuesOf','Document.onsecuritypolicyviolation','Document.onslotchange']
+			'93-96': ['Intl.supportedValuesOf','Document.onsecuritypolicyviolation','Document.onslotchange']
 		};
 
 		const isChrome = browser == 'Chrome';
@@ -9200,6 +10246,8 @@
 	const getEngineFeatures = async ({ imports, cssComputed, windowFeaturesComputed }) => {
 		const {
 			require: {
+				queueEvent,
+				createTimer,
 				captureError,
 				phantomDarkness,
 				logTestResult
@@ -9207,7 +10255,8 @@
 		} = imports;
 
 		try {
-			const start = performance.now();
+			const timer = createTimer();
+			await queueEvent(timer);
 			const win = phantomDarkness ? phantomDarkness : window;
 			if (!cssComputed || !windowFeaturesComputed) {
 				logTestResult({ test: 'features', passed: false });
@@ -9215,7 +10264,6 @@
 			}
 			
 			const jsFeaturesKeys = getJSCoreFeatures(win);
-			//console.log(jsFeaturesKeys.sort().join(', ')) // log features
 			const { keys: computedStyleKeys } = cssComputed.computedStyle || {};
 			const { keys: windowFeaturesKeys } = windowFeaturesComputed || {};
 
@@ -9317,7 +10365,7 @@
 				[...versionSet].reduce((acc, x) => [...acc, ...x.split('-')], [])
 			);
 			const version = getVersionFromRange(versionRange, [cssVersion, windowVersion, jsVersion]);
-			logTestResult({ start, test: 'features', passed: true });
+			logTestResult({ time: timer.stop(), test: 'features', passed: true });
 			return {
 				versionRange,
 				version,
@@ -9337,7 +10385,7 @@
 		}
 	};
 
-	const featuresHTML = ({ fp, modal, note, hashMini }) => {
+	const featuresHTML = ({ fp, modal, note, hashMini, performanceLogger }) => {
 		if (!fp.features) {
 			return `
 		<div class="col-six undefined">
@@ -9364,7 +10412,7 @@
 
 		const { keys: windowFeaturesKeys } = fp.windowFeatures || {};
 		const { keys: computedStyleKeys } = fp.css.computedStyle || {};
-
+		const { userAgentVersion } = fp.workerScope || {};
 		const browser = getFeaturesBrowser();
 		const {
 			css: engineMapCSS,
@@ -9372,30 +10420,54 @@
 			js: engineMapJS
 		} = getEngineMaps(browser);
 			
+
+		// logger
+		const shouldLogFeatures = (browser, version, userAgentVersion) => {
+			const shouldLog = userAgentVersion > version;
+			return shouldLog
+		};
+		const log = ({ features, name, diff }) => {
+			console.groupCollapsed(`%c ${name} Features %c-${diff.removed.length} %c+${diff.added.length}`, 'color: #4cc1f9', 'color: Salmon', 'color: MediumAquaMarine');
+			Object.keys(diff).forEach(key => {
+				console.log(`%c${key}:`, `color: ${key == 'added' ? 'MediumAquaMarine' : 'Salmon' }`);
+				return console.log(diff[key].join('\n'))
+			});
+			console.log(features.join(', '));
+			return console.groupEnd()
+		};
 		// modal
-		const getModal = ({id, engineMap, features, browser}) => {
+		const report = { computedStyleKeys, windowFeaturesKeys, jsFeaturesKeys };
+		const getModal = ({id, engineMap, features, browser, report, userAgentVersion }) => {
 			// capture diffs from stable release
 			const stable = getStableFeatures();
 			const { windowKeys, cssKeys, jsKeys, version } = stable[browser] || {};
+			const logger = shouldLogFeatures(browser, version, userAgentVersion);
 			let diff;
 			if (id == 'css') {
+				const { computedStyleKeys } = report;
 				diff = !cssKeys ? undefined : getListDiff({
 					oldList: cssKeys.split(', '),
 					newList: computedStyleKeys,
 					removeCamelCase: true
 				});
+				logger && console.log(`computing ${browser} ${userAgentVersion} diffs from ${browser} ${version}...`);
+				logger && log({ features: computedStyleKeys, name: 'CSS', diff });
 			}
 			else if (id == 'window') {
+				const { windowFeaturesKeys } = report;
 				diff = !windowKeys ? undefined : getListDiff({
 					oldList: windowKeys.split(', '),
 					newList: windowFeaturesKeys
 				});
+				logger && log({ features: windowFeaturesKeys, name: 'Window', diff });
 			}
 			else if (id == 'js') {
+				const { jsFeaturesKeys } = report;
 				diff = !jsKeys ? undefined : getListDiff({
 					oldList: jsKeys.split(', '),
 					newList: jsFeaturesKeys
 				});
+				logger && log({ features: jsFeaturesKeys, name: 'JS', diff });
 			}
 
 			const header = !version || !diff || (!diff.added.length && !diff.removed.length) ? '' : `
@@ -9428,21 +10500,27 @@
 			id: 'css',
 			engineMap: engineMapCSS,
 			features: new Set(cssFeatures),
-			browser
+			browser,
+			report,
+			userAgentVersion
 		});
 		
 		const windowModal = getModal({
 			id: 'window',
 			engineMap: engineMapWindow,
 			features: new Set(windowFeatures),
-			browser
+			browser,
+			report,
+			userAgentVersion
 		});
 
 		const jsModal = getModal({
 			id: 'js',
 			engineMap: engineMapJS,
 			features: new Set(jsFeatures),
-			browser
+			browser,
+			report,
+			userAgentVersion
 		});
 
 		const getIcon = name => `<span class="icon ${name}"></span>`;
@@ -9474,6 +10552,7 @@
 			}
 		}
 	</style>
+	<span class="time">${performanceLogger.getLog().features}</span>
 	<div class="col-six">
 		<div>Features: ${
 			versionRange.length ? `${browserIcon}${version}+` :
@@ -9800,7 +10879,7 @@
 			const renderIfKnown = (unknown, decrypted) => unknown ? ` ${note.unknown}` : decrypted;
 			const renderFailingScore = (title, score) => {
 				return (
-					(score||0) > 36 ? title : `<span class="bold-fail">${title}</span>` 
+					(score||0) > 36 ? title : `<span class="high-entropy">${title}</span>` 
 				)
 			};
 			
@@ -9813,7 +10892,7 @@
 			)
 		};
 
-		const unknownHTML = title => `${getBlankIcons()}<span class="blocked">${title}</span>`;
+		const unknownHTML = title => `${getBlankIcons()}<span class="blocked-entropy">${title}</span>`;
 		const devices = new Set([
 			(jsRuntime || {}).device,
 			(emojiSystem || {}).device,
@@ -9830,16 +10909,16 @@
 			(voicesSystem || {}).device,
 			(screenSystem || {}).device
 		]);
+
 		devices.delete(undefined);
 		const getBaseDeviceName = devices => {
 			return devices.find(a => devices.filter(b => b.includes(a)).length == devices.length)
 		};
-		const getOldestWindowOS = devices => {
+		const getRFPWindowOS = devices => {
 			// FF RFP is ingnored in samples data since it returns Windows 10
-			// So, if we have multiples versions of Windows, the lowest is the most accurate
-			const windowsCore = (
-				devices.length == devices.filter(x => /windows/i.test(x)).length
-			);
+			// So, if we have multiples versions of Windows, prefer the lowest then Windows 11
+			const windowsCoreRatio = devices.filter(x => /windows/i.test(x)).length / devices.length;
+			const windowsCore = windowsCoreRatio > 0.5;
 			if (windowsCore) {
 				return (
 					devices.includes('Windows 7') ? 'Windows 7' :
@@ -9848,6 +10927,8 @@
 					devices.includes('Windows 8 (64-bit)') ? 'Windows 8 (64-bit)' :
 					devices.includes('Windows 8.1') ? 'Windows 8.1' :
 					devices.includes('Windows 8.1 (64-bit)') ? 'Windows 8.1 (64-bit)' :
+					devices.includes('Windows 11') ? 'Windows 11' :
+					devices.includes('Windows 11 (64-bit)') ? 'Windows 11 (64-bit)' :
 					devices.includes('Windows 10') ? 'Windows 10' :
 					devices.includes('Windows 10 (64-bit)') ? 'Windows 10 (64-bit)' :
 						undefined
@@ -9857,10 +10938,9 @@
 		};
 		const deviceCollection = [...devices];
 		const deviceName = (
-			getOldestWindowOS(deviceCollection) ||
+			getRFPWindowOS(deviceCollection) ||
 			getBaseDeviceName(deviceCollection)
 		);
-
 		// Crowd-Blending Score Grade
 		const crowdBlendingScoreGrade = (
 			crowdBlendingScore >= 90 ? 'A' :
@@ -9877,8 +10957,8 @@
 			pendingReview ? `<span class="aside-note-bottom">pending review: <span class="renewed">${pendingReview}</span></span>` : ''
 		}
 		${
-			bot ? `<span class="aside-note"><span class="renewed">bot pattern detected</span></span>` :
-				typeof crowdBlendingScore == 'number' ? `<span class="aside-note">crowd-blending score: ${''+crowdBlendingScore}% <span class="scale-up grade-${crowdBlendingScoreGrade}">${crowdBlendingScoreGrade}</span></span>` : ''
+			bot ? `<span class="time"><span class="renewed">locked</span></span>` :
+				typeof crowdBlendingScore == 'number' ? `<span class="time">crowd-blending score: ${''+crowdBlendingScore}% <span class="scale-up grade-${crowdBlendingScoreGrade}">${crowdBlendingScoreGrade}</span></span>` : ''
 		}
 		<div class="col-eight">
 			<strong>Prediction</strong>
@@ -9911,8 +10991,8 @@
 			}</div>
 			<div class="ellipsis relative">
 				<span id="emoji-entropy"></span>${
-				!Object.keys(emojiSystem || {}).length ? unknownHTML('emojis') : 
-					getTemplate({title: 'emojis', agent: emojiSystem})
+				!Object.keys(emojiSystem || {}).length ? unknownHTML('domRect emojis') : 
+					getTemplate({title: 'domRect emojis', agent: emojiSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="domRect-entropy"></span>${
@@ -9921,8 +11001,8 @@
 			}</div>
 			<div class="ellipsis relative">
 				<span id="svg-entropy"></span>${
-				!Object.keys(svgSystem || {}).length ? unknownHTML('svg') : 
-					getTemplate({title: 'svg', agent: svgSystem})
+				!Object.keys(svgSystem || {}).length ? unknownHTML('svg emojis') : 
+					getTemplate({title: 'svg emojis', agent: svgSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="mimeTypes-entropy"></span>${
@@ -10039,22 +11119,29 @@
 			decryptUserAgent,
 			getUserAgentPlatform,
 			logTestResult,
+			performanceLogger,
 			getPromiseRaceFulfilled,
+			queueEvent,
+			createTimer,
 			compressWebGLRenderer,
 			getWebGLRendererParts,
 			hardenWebGLRenderer,
 			getWebGLRendererConfidence,
+			formatEmojiSet,
+			getEmojis,
 			// crypto
 			instanceId,
 			hashMini,
 			hashify,
+			getBotHash,
+			getFuzzyHash,
 			// html
 			patch,
 			html,
 			note,
 			count,
 			modal,
-			getMismatchStyle,
+			getDiffs,
 			// captureErrors
 			captureError,
 			attempt,
@@ -10085,7 +11172,10 @@
 			dragonOfDeath,
 			parentDragon,
 			getPluginLies,
-			getKnownAudio
+			getKnownAudio,
+			attemptWindows11UserAgent,
+			isUAPostReduction,
+			getUserAgentRestored
 		}
 	}
 	// worker.js
@@ -10225,7 +11315,6 @@
 				consoleErrorsHash,
 				timezoneHash,
 				rectsHash,
-				emojiHash,
 				domRectHash,
 				audioHash,
 				fontsHash,
@@ -10256,13 +11345,12 @@
 				hashify(canvasWebglComputed),
 				hashify((canvasWebglComputed || {}).dataURI),
 				hashify(reducedGPUParameters),
-				caniuse(() => canvasWebglComputed.pixels.length) ? hashify(canvasWebglComputed.pixels) : undefined,
-				caniuse(() => canvasWebglComputed.pixels2.length) ? hashify(canvasWebglComputed.pixels2) : undefined,
+				((canvasWebglComputed || {}).pixels || []).length ? hashify(canvasWebglComputed.pixels) : undefined,
+				((canvasWebglComputed || {}).pixels2 || []).length ? hashify(canvasWebglComputed.pixels2) : undefined,
 				hashify((mathsComputed || {}).data),
 				hashify((consoleErrorsComputed || {}).errors),
 				hashify(timezoneComputed),
 				hashify(clientRectsComputed),
-				hashify((clientRectsComputed || {}).emojiSet),
 				hashify([
 					(clientRectsComputed || {}).elementBoundingClientRect,
 					(clientRectsComputed || {}).elementClientRects,
@@ -10290,7 +11378,7 @@
 			const timeEnd = timeStart();
 
 			console.log(`Hashing complete in ${(hashTimeEnd).toFixed(2)}ms`);
-
+			
 			if (parentPhantom) {
 				parentPhantom.parentNode.removeChild(parentPhantom);
 			}
@@ -10330,7 +11418,6 @@
 				fingerprint,
 				styleSystemHash,
 				styleHash,
-				emojiHash,
 				domRectHash,
 				mimeTypesHash,
 				canvas2dImageHash,
@@ -10345,7 +11432,6 @@
 			fingerprint: fp,
 			styleSystemHash,
 			styleHash,
-			emojiHash,
 			domRectHash,
 			mimeTypesHash,
 			canvas2dImageHash,
@@ -10390,6 +11476,17 @@
 			fp.resistance && /^(tor browser|firefox)$/i.test(fp.resistance.privacy)
 		);
 
+		// harden gpu
+		const hardenGPU = canvasWebgl => {
+			const { gpu: { confidence, compressedGPU } } = canvasWebgl;
+			return (
+				confidence == 'low' ? {} : {
+					UNMASKED_RENDERER_WEBGL: compressedGPU,
+					UNMASKED_VENDOR_WEBGL: canvasWebgl.parameters.UNMASKED_VENDOR_WEBGL
+				}
+			)
+		};
+
 		const creep = {
 			navigator: ( 
 				!fp.navigator || fp.navigator.lied ? undefined : {
@@ -10433,7 +11530,7 @@
 					(fp.canvas2d && fp.canvas2d.lied) ? undefined : // distrust ungoogled-chromium, brave, firefox, tor browser 
 					fp.workerScope.canvas2d
 				),
-				textMetrics: fp.workerScope.textMetrics,
+				textMetricsSystemSum: fp.workerScope.textMetricsSystemSum,
 				deviceMemory: (
 					braveFingerprintingBlocking ? undefined : fp.workerScope.deviceMemory
 				),
@@ -10447,13 +11544,16 @@
 				system: fp.workerScope.system,
 				device: fp.workerScope.device,
 				timezoneLocation: hardenEntropy(fp.workerScope, fp.workerScope.timezoneLocation),
-				['webgl renderer']: (
-					braveFingerprintingBlocking ? undefined : hardenWebGLRenderer(fp.workerScope.webglRenderer)
+				webglRenderer: (
+					(fp.workerScope.gpu.confidence != 'low') ? fp.workerScope.gpu.compressedGPU : undefined
 				),
-				['webgl vendor']: (
-					braveFingerprintingBlocking ? undefined : fp.workerScope.webglVendor
+				webglVendor: (
+					(fp.workerScope.gpu.confidence != 'low') ? fp.workerScope.webglVendor : undefined
 				),
-				fontFaceSetFonts: fp.workerScope.fontFaceSetFonts,
+				fontFaceLoadFonts: fp.workerScope.fontFaceLoadFonts,
+				fontSystemClass: fp.workerScope.fontSystemClass,
+				fontPlatformVersion: fp.workerScope.fontPlatformVersion,
+				fontApps: fp.workerScope.fontApps,
 				userAgentData: {
 					...fp.workerScope.userAgentData,
 					// loose
@@ -10463,24 +11563,39 @@
 				mediaCapabilities: fp.workerScope.mediaCapabilities,
 			},
 			media: fp.media,
-			canvas2d: ( 
-				!fp.canvas2d || fp.canvas2d.lied ? undefined : {
-					dataURI: fp.canvas2d.dataURI,
-					blob: fp.canvas2d.blob,
-					blobOffscreen: fp.canvas2d.blobOffscreen,
-					imageData: fp.canvas2d.imageData,
-					textMetrics: fp.canvas2d.textMetrics,
-					lied: fp.canvas2d.lied
-				} 
-			),
+			canvas2d: (canvas2d => {
+				if (!canvas2d) {
+					return
+				}
+				const { lied, liedTextMetrics } = canvas2d; 
+				let data;
+				if (!lied) {
+					const { dataURI, blob, blobOffscreen, imageData } = canvas2d; 
+					data = {
+						lied,
+						...{ dataURI, blob, blobOffscreen, imageData }
+					};
+				}
+				if (!liedTextMetrics) {
+					const { textMetricsSystemSum, emojiSet, emojiFonts } = canvas2d;
+					data = {
+						...(data || {}),
+						...{ textMetricsSystemSum, emojiSet, emojiFonts }
+					}; 
+				}
+				return data
+			})(fp.canvas2d),
 			canvasWebgl: !fp.canvasWebgl ? undefined : (
 				braveFingerprintingBlocking ? {
-					parameters: getBraveUnprotectedParameters(fp.canvasWebgl.parameters)
+					parameters: {
+						...getBraveUnprotectedParameters(fp.canvasWebgl.parameters),
+						...hardenGPU(fp.canvasWebgl)
+					}
 				} : fp.canvasWebgl.lied ? undefined : {
 					...fp.canvasWebgl,
 					parameters: {
 						...fp.canvasWebgl.parameters,
-						UNMASKED_RENDERER_WEBGL: hardenWebGLRenderer(fp.canvasWebgl.parameters.UNMASKED_RENDERER_WEBGL)
+						...hardenGPU(fp.canvasWebgl)
 					}
 				}
 			),
@@ -10522,9 +11637,10 @@
 			),
 			fonts: !fp.fonts || fp.fonts.lied ? undefined : fp.fonts,
 			// skip trash since it is random
-			lies: !!liesLen,
 			capturedErrors: !!errorsLen,
-			resistance: fp.resistance || undefined
+			lies: !!liesLen,
+			resistance: fp.resistance || undefined,
+			forceRenew: 1643170284926
 		};
 
 		console.log('%c✔ stable fingerprint passed', 'color:#4cca9f');
@@ -10550,38 +11666,54 @@
 		window.Creep = JSON.parse(JSON.stringify(creep));
 
 		// session
-		const computeSession = fp => {
+		const computeSession = ({ fingerprint, loading = false, computePreviousLoadRevision = false }) => {
 			const data = {
+				revisedKeysFromPreviousLoad: [],
 				revisedKeys: [],
 				initial: undefined,
 				loads: undefined
 			};
 			try {
-				const currentFingerprint = Object.keys(fp)
-				.reduce((acc, key) => {
-					if (!fp[key]) {
+				const currentFingerprint = Object.keys(fingerprint).reduce((acc, key) => {
+					if (!fingerprint[key]) {
 						return acc
 					}
-					acc[key] = fp[key].$hash;
+					acc[key] = fingerprint[key].$hash;
 					return acc
 				}, {});
+				const loads = +(sessionStorage.getItem('loads'));
 				const initialFingerprint = JSON.parse(sessionStorage.getItem('initialFingerprint'));
+				const previousFingerprint = JSON.parse(sessionStorage.getItem('previousFingerprint'));
 				if (initialFingerprint) {
 					data.initial = hashMini(initialFingerprint);
-					data.loads = 1+(+sessionStorage.getItem('loads'));
-					sessionStorage.setItem('loads', data.loads);
-					const revisedKeys = Object.keys(currentFingerprint)
-						.filter(key => currentFingerprint[key] != initialFingerprint[key]);
-					if (revisedKeys.length) {
-						data.revisedKeys = revisedKeys;
+					if (loading) {
+						data.loads = 1+loads;
+						sessionStorage.setItem('loads', data.loads);
 					}
+					else {
+						data.loads =  loads;
+					}
+					
+					if (computePreviousLoadRevision) {
+						sessionStorage.setItem('previousFingerprint', JSON.stringify(currentFingerprint));
+					}
+
+					const currentFingerprintKeys =  Object.keys(currentFingerprint);
+					const revisedKeysFromPreviousLoad = currentFingerprintKeys
+						.filter(key => currentFingerprint[key] != previousFingerprint[key]);
+					
+					const revisedKeys = currentFingerprintKeys
+						.filter(key => currentFingerprint[key] != initialFingerprint[key]);
+
+					data.revisedKeys = revisedKeys.length ? revisedKeys : [];
+					data.revisedKeysFromPreviousLoad = revisedKeysFromPreviousLoad.length ? revisedKeysFromPreviousLoad : [];
+					return data
 				}
-				else {
-					sessionStorage.setItem('initialFingerprint', JSON.stringify(currentFingerprint));
-					sessionStorage.setItem('loads', 1);
-					data.initial = hashMini(currentFingerprint);
-					data.loads = 1;
-				}
+				sessionStorage.setItem('initialFingerprint', JSON.stringify(currentFingerprint));
+				sessionStorage.setItem('previousFingerprint', JSON.stringify(currentFingerprint));
+				sessionStorage.setItem('loads', 1);
+				data.initial = hashMini(currentFingerprint);
+				data.loads = 1;
 				return data
 			}
 			catch (error) {
@@ -10591,31 +11723,37 @@
 		};
 		
 		// patch dom
-		const hashSlice = x => x.slice(0, 8);
+		const hashSlice = x => !x ? x : x.slice(0, 8);
 		const templateImports = {
+			imports,
 			fp,
 			hashSlice,
 			hashMini,
 			note,
 			modal,
 			count,
-			getMismatchStyle,
+			getDiffs,
 			patch,
 			html,
 			styleSystemHash,
-			compressWebGLRenderer,
-			getWebGLRendererConfidence,
-			computeWindowsRelease
+			computeWindowsRelease,
+			formatEmojiSet,
+			performanceLogger
 		};
 		const hasTrash = !!trashLen;
 		const { lies: hasLied, capturedErrors: hasErrors } = creep;
+
 		const getBlankIcons = () => `<span class="icon"></span><span class="icon"></span>`;
 		const el = document.getElementById('fingerprint-data');
 		patch(el, html`
 	<div id="fingerprint-data">
 		<div class="fingerprint-header-container">
 			<div class="fingerprint-header">
-				<strong>Your ID:</strong><span class="trusted-fingerprint ellipsis main-hash">${hashSlice(creepHash)}</span>
+				<div class="ellipsis-all">FP ID: ${creepHash}</div>
+				<div id="fuzzy-fingerprint">
+					<div class="ellipsis-all fuzzy-fp">Fuzzy: <span class="blurred-pause">0000000000000000000000000000000000000000000000000000000000000000</span></div>
+					<div class="ellipsis-all fuzzy-diffs">Diffs: <span class="blurred-pause">0000000000000000000000000000000000000000000000000000000000000000</span></div>
+				</div>
 				<div class="ellipsis"><span class="time">${timeEnd.toFixed(2)} ms</span></div>
 			</div>
 		</div>
@@ -10626,44 +11764,24 @@
 					<div>trust score: <span class="blurred">100%</span></div>
 					<div>visits: <span class="blurred">1</span></div>
 					<div>first: <span class="blurred">##/##/####, 00:00:00 AM</span></div>
-					<div>last: <span class="blurred">##/##/####, 00:00:00 AM</span></div>
-					<div>persistence: <span class="blurred">0.0 hours/span></div>
+					<div>alive: <span class="blurred">0.0 hrs</span></div>
+					<div>shadow: <span class="blurred">0.00000</span></div>
+					<div class="block-text shadow-icon"></div>
 				</div>
 				<div class="col-six">
-					<div>has trash: <span class="blurred">false</span></div>
-					<div>has lied: <span class="blurred">false</span></div>
-					<div>has errors: <span class="blurred">false</span></div>
-					<div>loose fingerprint: <span class="blurred">00000000</span></div>
-					<div>loose count: <span class="blurred">1</span></div>
-					<div>bot: <span class="blurred">false</span></div>
+					<div>trash (0): none</div>
+					<div>lies (0): none</div>
+					<div>errors (0): none</div>
+					<div>session (0): <span class="blurred">00000000</span></div>
+					<div>revisions (0): <span class="blurred">00000000</span></div>
+					<div>loose fp (0): <span class="blurred">00000000</span></div>
+					<div class="block-text-small">
+						<div class="blurred">bot: 0:friend:00000</div>
+						<div class="blurred">idle min-max: 0.000-0.000 hrs</div>
+					</div>
+					<div id="signature"></div>
 				</div>
 			</div>
-			<div id="signature">
-			</div>
-			<div class="flex-grid">
-				<div class="col-four">
-					<strong>Session ID</strong>
-					<div>0</div>
-				</div>
-				<div class="col-four">
-					<strong>Session Loads</strong>
-					<div>0</div>
-				</div>
-				<div class="col-four">
-					<strong>Session Switched</strong>
-					<div>none</div>
-				</div>
-			</div>
-		</div>
-		<div class="flex-grid">
-			${trashHTML(templateImports)}
-			${liesHTML(templateImports)}
-			${errorsHTML(templateImports)}
-		</div>
-		<div class="flex-grid">
-			${webrtcHTML(templateImports)}
-			${timezoneHTML(templateImports)}
-			${intlHTML(templateImports)}			
 		</div>
 		<div id="browser-detection" class="flex-grid">
 			<div class="col-eight">
@@ -10675,9 +11793,9 @@
 				<div>${getBlankIcons()}html element</div>
 				<div>${getBlankIcons()}js runtime</div>
 				<div>${getBlankIcons()}js engine</div>
-				<div>${getBlankIcons()}emojis</div>
+				<div>${getBlankIcons()}domRect emojis</div>
 				<div>${getBlankIcons()}domRect</div>
-				<div>${getBlankIcons()}svg</div>
+				<div>${getBlankIcons()}svg emojis</div>
 				<div>${getBlankIcons()}mimeTypes</div>
 				<div>${getBlankIcons()}audio</div>
 				<div>${getBlankIcons()}canvas</div>
@@ -10693,27 +11811,34 @@
 			<div class="col-four icon-prediction-container">
 			</div>
 		</div>
+		<div class="flex-grid">
+			${webrtcHTML(templateImports)}
+			${timezoneHTML(templateImports)}
+			${intlHTML(templateImports)}			
+		</div>
 		<div id="headless-resistance-detection-results" class="flex-grid">
 			${headlesFeaturesHTML(templateImports)}
 			${resistanceHTML(templateImports)}
 		</div>
 		<div class="flex-grid relative">${workerScopeHTML(templateImports)}</div>
-		<div class="flex-grid">${webglHTML(templateImports)}</div>
+		<div class="flex-grid relative">
+			${webglHTML(templateImports)}
+			${screenHTML(templateImports)}
+		</div>
 		<div class="flex-grid">
 			${canvasHTML(templateImports)}
 			${fontsHTML(templateImports)}
+		</div>
+		<div class="flex-grid">
+			${clientRectsHTML(templateImports)}
+			${svgHTML(templateImports)}
 		</div>
 		<div class="flex-grid">
 			${audioHTML(templateImports)}
 			${voicesHTML(templateImports)}
 			${mediaHTML(templateImports)}
 		</div>
-		<div class="flex-grid">
-			${clientRectsHTML(templateImports)}
-			${svgHTML(templateImports)}
-		</div>
-		<div class="flex-grid">${screenHTML(templateImports)}</div>
-		<div class="flex-grid">${featuresHTML(templateImports)}</div>
+		<div class="flex-grid relative">${featuresHTML(templateImports)}</div>
 		<div class="flex-grid">
 			${cssMediaHTML(templateImports)}
 			${cssHTML(templateImports)}
@@ -10728,7 +11853,7 @@
 				${htmlElementVersionHTML(templateImports)}
 			</div>
 		</div>
-		<div class="flex-grid">${navigatorHTML(templateImports)}</div>
+		<div class="flex-grid relative">${navigatorHTML(templateImports)}</div>
 		<div>
 			<strong>Tests</strong>
 			<div>
@@ -10743,27 +11868,65 @@
 				<br><a class="tests" href="./tests/emojis.html">Emojis</a>
 				<br><a class="tests" href="./tests/math.html">Math</a>
 				<br><a class="tests" href="./tests/machine.html">Machine</a>
+				<br><a class="tests" href="./tests/extensions.html">Chrome Extensions</a>
 			</div>
 		</div>
 	</div>
-	`, () => {
-
+	`, async () => {
 			// fetch fingerprint data from server
 			const id = 'creep-browser';
 			const visitorElem = document.getElementById(id);
+			const { botHash, badBot } = getBotHash(fp, { getFeaturesLie, computeWindowsRelease });
+			const fuzzyFingerprint = await getFuzzyHash(fp);
 			const fetchVisitorDataTimer = timer();
-			const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}`;
+			const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&trashLen=${trashLen}&liesLen=${liesLen}&errorsLen=${errorsLen}&fuzzy=${fuzzyFingerprint}&botHash=${botHash}`;
 			
 			fetch(request)
 			.then(response => response.json())
 			.then(async data => {
-
 				console.groupCollapsed('Server Response');
 				console.log(JSON.stringify(data, null, '\t'));
 				fetchVisitorDataTimer('response time');
 				console.groupEnd();
-			
-				const { firstVisit, lastVisit: latestVisit, looseFingerprints: subIds, visits,looseSwitchCount: switchCount,  hasTrash, hasLied, hasErrors, signature } = data;
+
+				const {
+					firstVisit,
+					lastVisit: latestVisit,
+					timeHoursAlive: persistence,
+					looseFingerprints: subIds,
+					visits,
+					looseSwitchCount: switchCount,
+					hasTrash,
+					hasLied,
+					hasErrors,
+					signature,
+					fuzzyInit,
+					fuzzyLast,
+					shadow,
+					shadowBits,
+					score,
+					scoreData,
+					crowdBlendingScore: fpCrowdBlendingScore,
+					bot,
+					botHash,
+					botLevel,
+					timeHoursIdleMin,
+					timeHoursIdleMax
+				} = data || {};
+
+				const fuzzyFpEl = document.getElementById('fuzzy-fingerprint');
+				const fuzzyDiff = getDiffs({
+					stringA: fuzzyInit,
+					stringB: fuzzyLast,
+					charDiff: true,
+					decorate: diff => `<span class="fuzzy-fp">${diff}</span>`
+				});
+				patch(fuzzyFpEl, html`
+				<div id="fuzzy-fingerprint">
+					<div class="ellipsis-all fuzzy-fp">Fuzzy: <span class="unblurred">${fuzzyInit}</span></div>
+					<div class="ellipsis-all fuzzy-diffs">Diffs: <span class="unblurred">${fuzzyDiff}</span></div>
+				</div>
+			`);
 				
 				const toLocaleStr = str => {
 					const date = new Date(str);
@@ -10771,209 +11934,107 @@
 					const timeString = date.toLocaleTimeString();
 					return `${dateString}, ${timeString}`
 				};
-				const hoursAgo = (date1, date2) => Math.abs(date1 - date2) / 36e5;
-				const hours = hoursAgo(new Date(firstVisit), new Date(latestVisit)).toFixed(1);
-
-				const computeTrustScore = ({ switchCount, errorsLen, trashLen, liesLen }) => {
-					const score = {
-						errorsRisk: 5.2,
-						trashRisk: 15.5,
-						liesRisk: 31,
-						reward: 20,
-						get switchCountPointLoss() {
-							return -Math.round(
-								switchCount < 2 ? -score.reward :
-								switchCount < 11 ? switchCount * 0.1 :
-								switchCount * 0.2
-							)
-						},
-						get errorsPointLoss() {
-							return -Math.round(errorsLen * score.errorsRisk)
-						},
-						get trashPointLoss() {
-							return -Math.round(trashLen * score.trashRisk)
-						},
-						get liesPointLoss() {
-							return -Math.round(liesLen * score.liesRisk)
-						},
-						get total() {
-							const points = Math.round(
-								100 +
-								score.switchCountPointLoss +
-								score.errorsPointLoss +
-								score.trashPointLoss + 
-								score.liesPointLoss
-							);
-							return points < 0 ? 0 : points > 100 ? 100 : points
-						},
-						get grade() {
-							const total = score.total;
-							return (
-								total > 95 ? 'A+' :
-								total == 95 ? 'A' :
-								total >= 90 ? 'A-' :
-								total > 85 ? 'B+' :
-								total == 85 ? 'B' :
-								total >= 80 ? 'B-' :
-								total > 75 ? 'C+' :
-								total == 75 ? 'C' :
-								total >= 70 ? 'C-' :
-								total > 65 ? 'D+' :
-								total == 65 ? 'D' :
-								total >= 60 ? 'D-' :
-								total > 55 ? 'F+' :
-								total == 55 ? 'F' :
-								'F-'
-							)
-						}
-					};
-					return score
-				};
-
+				
 				const {
-					switchCountPointLoss,
-					errorsPointLoss,
-					trashPointLoss,
-					liesPointLoss,
+					switchCountPointGain,
+					errorsPointGain,
+					trashPointGain,
+					liesPointGain,
+					shadowBitsPointGain,
 					grade,
-					total: scoreTotal
-				} = computeTrustScore({
-					switchCount,
-					errorsLen,
-					trashLen,
-					liesLen
-				});
-				const percentify = x => {
+				} = JSON.parse(scoreData);
+
+				const computePoints = x => {
 					return `<span class="scale-up grade-${x < 0 ? 'F' : x > 0 ? 'A' : ''}">${
-					x > 0 ? `+${x}% reward` : x < 0 ? `${x}%` : ''
+					x > 0 ? `+${x}` : x < 0 ? `${x}` : ''
 				}</span>`
 				};
 
-				const renewedDate = '11/14/2021';
+				const renewedDate = new Date(creep.forceRenew);
+				const renewedDateString = `${renewedDate.getMonth()+1}/${renewedDate.getDate()}/${renewedDate.getFullYear()}`;
 				const addDays = (date, n) => {
 					const d = new Date(date);
 					d.setDate(d.getDate() + n);
 					return d
 				};
-				const shouldStyle = renewedDate => {
-					const endNoticeDate = addDays(renewedDate, 7);
+
+				const shouldStyle = renewedDateString => {
+					const endNoticeDate = addDays(renewedDateString, 7);
 					const daysRemaining = Math.round((+endNoticeDate - +new Date()) / (1000 * 3600 * 24));
 					return daysRemaining >= 0
 				};
 
-				// Bot Detection
-				const getBot = ({ fp, hours, hasLied, switchCount }) => {
-					const userAgentReportIsOutsideOfFeaturesVersion = getFeaturesLie(fp);
-					const userShouldGetThrottled = (switchCount > 20) && ((hours/switchCount) <= 7); // 
-					const excessiveLooseFingerprints = hasLied && userShouldGetThrottled;
-					const workerScopeIsTrashed = !fp.workerScope || !fp.workerScope.userAgent;
-					const liedWorkerScope = !!(fp.workerScope && fp.workerScope.lied);
-					// Patern conditions that warrant rejection
-					const botPatterns = {
-						excessiveLooseFingerprints,
-						userAgentReportIsOutsideOfFeaturesVersion,
-						workerScopeIsTrashed,
-						liedWorkerScope
-					};
-					const totalBotPatterns = Object.keys(botPatterns).length;
-					const totalBotTriggers = (
-						Object.keys(botPatterns).filter(key => botPatterns[key]).length
-					);
-					const botProbability = totalBotTriggers / totalBotPatterns;
-					const isBot = !!botProbability;
-					const botPercentString = `${(botProbability*100).toFixed(0)}%`;
-					if (isBot) {
-						console.warn('bot patterns: ', botPatterns);
-					}
-					return {
-						isBot,
-						botPercentString
-					}
-				};
-				
-				const { isBot, botPercentString } = getBot({fp, hours, hasLied, switchCount}); 
+				const getChunks = (list, chunkLen) => list.reduce((acc, x, i) => {
+					const chunk = Math.floor(i/chunkLen);
+					acc[chunk] = [...(acc[chunk]||[]), x];
+					return acc
+				}, []);
+				const styleChunks = chunks => chunks.map((y,yi) => {
+					const animate = n => `animation: balloon ${3*n}00ms ${6*n}00ms cubic-bezier(.47,.47,.56,1.26) alternate infinite`;
+					return `<div>${
+					y.map((x,  xi) => `<span class="${x == '1' ? 'shadow' : 'blank'}" style="${x == 1 ? animate(xi+yi): ''}"></span>`).join('')
+				}</div>`
+				}).join('');
+
+				const { initial, loads, revisedKeys } = computeSession({ fingerprint: fp, loading: true }); 
 				
 				const template = `
 				<div class="visitor-info">
-					<div class="ellipsis">
-						<span class="aside-note">fingerprints renewed <span class="${shouldStyle(renewedDate) ? 'renewed' : ''}">${
-							new Date(renewedDate).toLocaleDateString()
-						}</span></span>
-					</div>
+					<span class="time">fingerprints renewed <span class="${shouldStyle(renewedDateString) ? 'renewed' : ''}">${
+						new Date(renewedDateString).toLocaleDateString()
+					}</span></span>
 					<div class="flex-grid">
 						<div class="col-six">
 							<strong>Browser</strong>
 							<div>trust score: <span class="unblurred">
-								${scoreTotal}% <span class="scale-down grade-${grade.charAt(0)}">${grade}</span>
+								${score}% <span class="scale-down grade-${grade.charAt(0)}">${grade}</span>
 							</span></div>
 							<div>visits: <span class="unblurred">${visits}</span></div>
 							<div class="ellipsis">first: <span class="unblurred">${toLocaleStr(firstVisit)}</span></div>
-							<div class="ellipsis">last: <span class="unblurred">${toLocaleStr(latestVisit)}</span></div>
-							<div>persistence: <span class="unblurred">${hours} hours</span></div>
+							<div>alive: <span class="unblurred">${persistence} hrs</span></div>
+							<div class="relative">shadow: <span class="unblurred">${!shadowBits ? '0' : shadowBits.toFixed(5)}</span>  ${computePoints(shadowBitsPointGain)}
+							${
+								!shadowBits ? '' : `<span class="confidence-note">${hashMini(shadow)}</span>`
+							}
+							</div>
+							<div class="block-text shadow-icon help" title="fuzzy diff history">
+								${styleChunks(getChunks(shadow.split(''), 8))}
+							</div>
 						</div>
 						<div class="col-six">
-							<div>has trash: <span class="unblurred">${
-								(''+hasTrash) == 'true' ?
-								`true ${percentify(trashPointLoss)}` : 
-								'false'
-							}</span></div>
-							<div>has lied: <span class="unblurred">${
-								(''+hasLied) == 'true' ? 
-								`true ${percentify(liesPointLoss)}` : 
-								'false'
-							}</span></div>
-							<div>has errors: <span class="unblurred">${
-								(''+hasErrors) == 'true' ? 
-								`true ${percentify(errorsPointLoss)}` : 
-								'false'
-							}</span></div>
-							<div class="ellipsis">loose fingerprint: <span class="unblurred">${hashSlice(fpHash)}</span></div>
-							<div class="ellipsis">loose switched: <span class="unblurred">${switchCount}x ${percentify(switchCountPointLoss)}</span></div>
-							<div class="ellipsis">bot: <span class="unblurred">${botPercentString}</span></div>
+							${trashHTML(templateImports, computePoints(trashPointGain))}
+							${liesHTML(templateImports, computePoints(liesPointGain))}
+							${errorsHTML(templateImports, computePoints(errorsPointGain))}
+							<div>session (${''+loads}):<span class="unblurred sub-hash">${initial}</span></div>
+							<div>revisions (${''+revisedKeys.length}): ${
+								!revisedKeys.length ? 'none' : modal(
+									`creep-revisions`,
+									revisedKeys.join('<br>'),
+									hashMini(revisedKeys)
+								)
+							}
+							<div class="ellipsis">loose fp (${''+switchCount}):<span class="unblurred sub-hash">${hashSlice(fpHash)}</span> ${computePoints(switchCountPointGain)}</div>
+
+							<div class="block-text-small">
+								<div class="unblurred">bot: ${bot.toFixed(2)}:${botLevel}:${botHash}</div>
+								<div class="unblurred">idle min-max: ${timeHoursIdleMin}-${timeHoursIdleMax} hrs</div>
+							</div>
+
+							${
+								signature ? 
+								`
+								<div class="fade-right-in" id="signature">
+									<div class="ellipsis"><strong>signed</strong>: <span>${signature}</span></div>
+								</div>
+								` :
+								`<form class="fade-right-in" id="signature">
+									<input id="signature-input" type="text" placeholder="add a signature" title="sign this fingerprint" required minlength="4" maxlength="64">
+									<input type="submit" value="Sign">
+								</form>
+								`
+							}
 						</div>
 					</div>
-					${
-						signature ? 
-						`
-						<div class="fade-right-in" id="signature">
-							<div class="ellipsis"><strong>signed</strong>: <span>${signature}</span></div>
-						</div>
-						` :
-						`<form class="fade-right-in" id="signature">
-							<input id="signature-input" type="text" placeholder="add a signature to your fingerprint" title="sign your fingerprint" required minlength="4" maxlength="64">
-							<input type="submit" value="Sign">
-						</form>
-						`
-					}
-					${
-						(() => {
-							const { initial, loads, revisedKeys } = computeSession(fp);
-							
-							return `
-								<div class="flex-grid">
-									<div class="col-four">
-										<strong>Session ID</strong>
-										<div><span class="sub-hash">${initial}</span></div>
-									</div>
-									<div class="col-four">
-										<strong>Session Loads</strong>
-										<div>${loads}</div>
-									</div>
-									<div class="col-four">
-										<strong>Session Switched</strong>
-										<div>${
-											!revisedKeys.length ? 'none' :
-											modal(
-												`creep-revisions`,
-												revisedKeys.join('<br>'),
-												hashMini(revisedKeys)
-											)
-										}</div>
-									</div>
-								</div>
-							`	
-						})()
-					}
 				</div>
 			`;
 				patch(visitorElem, html`${template}`, () => {
@@ -10983,7 +12044,6 @@
 					const form = document.getElementById('signature');
 					form.addEventListener('submit', async () => {
 						event.preventDefault();
-
 						
 						const input = document.getElementById('signature-input').value;
 						const submit = confirm(`Are you sure? This cannot be undone.\n\nsignature: ${input}`);
@@ -11046,7 +12106,7 @@
 				const isTorBrowser = resistance.privacy == 'Tor Browser';
 				const isRFP = resistance.privacy == 'Firefox';
 				const isBravePrivacy = resistance.privacy == 'Brave';
-				//console.log(emojiHash) // Tor Browser check
+
 				const screenMetrics = (
 					!screenFp || screenFp.lied || isRFP || isTorBrowser ? 'undefined' : 
 						`${screenFp.width}x${screenFp.height}`
@@ -11061,90 +12121,156 @@
 				const valuesHash = hashMini(audioValues);
 				const audioMetrics = `${sampleSum}_${gain}_${freqSum}_${timeSum}_${valuesHash}`;
 
-				const gpuModel = (
-					!canvasWebgl || canvasWebgl.parameterOrExtensionLie ? 'undefined' : (
-						(fp.workerScope && (fp.workerScope.type != 'dedicated') && fp.workerScope.webglRenderer) ? encodeURIComponent(fp.workerScope.webglRenderer) :
-							(canvasWebgl.parameters && !isBravePrivacy) ? encodeURIComponent(canvasWebgl.parameters.UNMASKED_RENDERER_WEBGL) : 
-								'undefined'
-					)
-				);
-
-				if (!isBot) {
-					const sender = {
-						e: 3.141592653589793 ** -100,
-						l: +new Date(new Date(`7/1/1113`))
+				const getBestGPUModel = ({ canvasWebgl, workerScope }) => {
+					const gpuHasGoodConfidence = data => {
+						return (
+							(data.gpu || {}).confidence &&
+							(data.gpu.confidence != 'low')
+						)
 					};
-					
-					// attempt windows 11 userAgent
-					const { userAgent, userAgentData } = fp.workerScope || {};
-					const attemptWindows11UserAgent = (userAgent, userAgentData) => {
-						const  { platformVersion, platform } = userAgentData || {};
-						const windowsRelease = computeWindowsRelease(platform, platformVersion);
-						if (windowsRelease == 'Windows 11') {
-							return (''+userAgent).replace('Windows NT 10.0', 'Windows 11')
-						}
-						return userAgent
-					};
-					const workerScopeUserAgent = attemptWindows11UserAgent(userAgent, userAgentData);
-
-					const decryptRequest = `https://creepjs-api.web.app/decrypt?${[
-					`sender=${sender.e}_${sender.l}`,
-					`isTorBrowser=${isTorBrowser}`,
-					`isRFP=${isRFP}`,
-					`isBrave=${isBrave}`,
-					`resistanceId=${resistance.$hash}`,
-					`mathId=${maths.$hash}`,
-					`errorId=${consoleErrors.$hash}`,
-					`htmlId=${htmlElementVersion.$hash}`,
-					`winId=${windowFeatures.$hash}`,
-					`styleId=${styleHash}`,
-					`styleSystemId=${styleSystemHash}`,
-					`emojiId=${!clientRects || clientRects.lied ? 'undefined' : emojiHash}`,
-					`domRectId=${!clientRects || clientRects.lied ? 'undefined' : domRectHash}`,
-					`svgId=${!svg || svg.lied ? 'undefined' : svg.$hash}`,
-					`mimeTypesId=${!media || media.lied ? 'undefined' : mimeTypesHash}`,
-					`audioId=${
-							!offlineAudioContext ||
-							offlineAudioContext.lied ||
-							unknownFirefoxAudio ? 'undefined' : 
-								audioMetrics
-					}`,
-					`canvasId=${
-						!canvas2d || canvas2d.lied ? 'undefined' :
-							canvas2dImageHash
-					}`,
-					`textMetricsId=${
-						!canvas2d || canvas2d.liedTextMetrics || ((+canvas2d.textMetricsSystemSum) == 0) ? 'undefined' : 
-							canvas2d.textMetricsSystemSum
-					}`,
-					`webglId=${
-						!canvasWebgl || (canvas2d || {}).lied || canvasWebgl.lied ? 'undefined' :
-							canvasWebglImageHash
-					}`,
-					`gpuId=${
-						!canvasWebgl || canvasWebgl.parameterOrExtensionLie ? 'undefined' :
-							canvasWebglParametersHash
-					}`,
-					`gpu=${gpuModel}`,
-					`fontsId=${!fonts || fonts.lied ? 'undefined' : fonts.$hash}`,
-					`voicesId=${!voices || voices.lied ? 'undefined' : voices.$hash}`,
-					`screenId=${screenMetrics}`,
-					`ua=${encodeURIComponent(workerScopeUserAgent)}`
-				].join('&')}`;
-
-					const decryptionResponse = await fetch(decryptRequest)
-						.catch(error => {
-							console.error(error);
-							predictionErrorPatch({error, patch, html});
-							return
-						});
-					if (!decryptionResponse) {
-						return
+					if (!canvasWebgl || canvasWebgl.parameterOrExtensionLie) {
+						return 'undefined'
 					}
-					const decryptionData = await decryptionResponse.json();
+					else if (workerScope && gpuHasGoodConfidence(workerScope)) {
+						return workerScope.webglRenderer
+					}
+					else if (canvasWebgl && !canvasWebgl.parameterOrExtensionLie && gpuHasGoodConfidence(canvasWebgl)) {
+						return ''+((canvasWebgl.parameters || {}).UNMASKED_RENDERER_WEBGL)
+					}
+					return 'undefined'
+				};
+				const gpuModel = encodeURIComponent(
+					getBestGPUModel({ canvasWebgl, workerScope: fp.workerScope })
+				);
+				
+				if (!badBot) {	
+					// get data from session
+					let decryptionData = window.sessionStorage && JSON.parse(sessionStorage.getItem('decryptionData'));
+					const targetMetrics = [
+						'canvas2d',
+						'canvasWebgl',
+						'clientRects',
+						'consoleErrors',
+						'css',
+						'fonts',
+						'htmlElementVersion',
+						'maths',
+						'media',
+						'offlineAudioContext',
+						'resistance',
+						'screen',
+						'svg',
+						'voices',
+						'windowFeatures',
+						'workerScope',
+						/* disregard metrics not in samples:
+							capturedErrors,
+							cssMedia,
+							features, 
+							headless,
+							intl,
+							lies,
+							navigator,
+							timezone,
+							trash,
+							webRTC
+						*/
+					];
+					const { revisedKeysFromPreviousLoad } = computeSession({
+						fingerprint: fp,
+						computePreviousLoadRevision: true
+					}); 
+					const sessionFingerprintRevision = targetMetrics.filter(x => revisedKeysFromPreviousLoad.includes(x));
+					const revisionLen = sessionFingerprintRevision.length;
+					// fetch data
+					const requireNewDecryptionFetch = !decryptionData || revisionLen;
+					console.log(`${revisionLen} revisions: fetching prediction data from ${requireNewDecryptionFetch ? 'server' : 'session'}...`);
+					
+					if (requireNewDecryptionFetch) {
+						const sender = {
+							e: 3.141592653589793 ** -100,
+							l: +new Date('7/1/1113')
+						};
+						const { userAgent, userAgentData } = fp.workerScope || {};
+						const { platformVersion: fontPlatformVersion } = fp.fonts || {};
+						const restoredUA = getUserAgentRestored({ userAgent, userAgentData, fontPlatformVersion });
+						const windows11UA = attemptWindows11UserAgent({
+							userAgent,
+							userAgentData,
+							fontPlatformVersion
+						});
+						const workerScopeUserAgent = restoredUA || windows11UA;
+						if (restoredUA != userAgent) {
+							console.log(`corrected: ${workerScopeUserAgent}`);
+						}
+						
+						const decryptRequest = `https://creepjs-api.web.app/decrypt?${[
+						`sender=${sender.e}_${sender.l}`,
+						`isTorBrowser=${isTorBrowser}`,
+						`isRFP=${isRFP}`,
+						`isBrave=${isBrave}`,
+						`resistanceId=${resistance.$hash}`,
+						`mathId=${maths.$hash}`,
+						`errorId=${consoleErrors.$hash}`,
+						`htmlId=${htmlElementVersion.$hash}`,
+						`winId=${windowFeatures.$hash}`,
+						`styleId=${styleHash}`,
+						`styleSystemId=${styleSystemHash}`,
+						`emojiId=${
+							!clientRects || clientRects.lied ? 'undefined' : 
+								encodeURIComponent(clientRects.domrectSystemSum)
+						}`,
+						`domRectId=${!clientRects || clientRects.lied ? 'undefined' : domRectHash}`,
+						`svgId=${
+							!svg || svg.lied ? 'undefined' :
+								encodeURIComponent(svg.svgrectSystemSum)
+						}`,
+						`mimeTypesId=${!media || media.lied ? 'undefined' : mimeTypesHash}`,
+						`audioId=${
+								!offlineAudioContext ||
+								offlineAudioContext.lied ||
+								unknownFirefoxAudio ? 'undefined' : 
+									audioMetrics
+						}`,
+						`canvasId=${
+							!canvas2d || canvas2d.lied ? 'undefined' :
+								canvas2dImageHash
+						}`,
+						`textMetricsId=${
+							!canvas2d || canvas2d.liedTextMetrics || ((+canvas2d.textMetricsSystemSum) == 0) ? 'undefined' : 
+								encodeURIComponent(canvas2d.textMetricsSystemSum)
+						}`,
+						`webglId=${
+							!canvasWebgl || (canvas2d || {}).lied || canvasWebgl.lied ? 'undefined' :
+								canvasWebglImageHash
+						}`,
+						`gpuId=${
+							!canvasWebgl || canvasWebgl.parameterOrExtensionLie ? 'undefined' :
+								canvasWebglParametersHash
+						}`,
+						`gpu=${gpuModel}`,
+						`fontsId=${!fonts || fonts.lied ? 'undefined' : fonts.$hash}`,
+						`voicesId=${!voices || voices.lied ? 'undefined' : voices.$hash}`,
+						`screenId=${screenMetrics}`,
+						`ua=${encodeURIComponent(workerScopeUserAgent)}`
+					].join('&')}`;
+
+						const decryptionResponse = await fetch(decryptRequest)
+							.catch(error => {
+								console.error(error);
+								predictionErrorPatch({error, patch, html});
+								return
+							});
+						if (!decryptionResponse) {
+							return
+						}
+						decryptionData = await decryptionResponse.json();
+						if (decryptionData && window.sessionStorage) {
+							sessionStorage.setItem('decryptionData', JSON.stringify(decryptionData));
+						}
+					}
 					
 					// Crowd-Blending Score
-					
 					const scoreKeys = [
 						'windowVersion',
 						'jsRuntime',
@@ -11199,6 +12325,14 @@
 						console.table(scoreMetricsMap);
 					console.groupEnd();
 
+					if (crowdBlendingScore != fpCrowdBlendingScore) {
+						console.log(`updating crowd-blending score from ${fpCrowdBlendingScore} to ${crowdBlendingScore}`);
+						const scoreRequest = `https://creepjs-api.web.app/score-crowd-blending?id=${creepHash}&crowdBlendingScore=${crowdBlendingScore}`;
+
+						fetch(scoreRequest)
+							.catch(error => console.error('Failed Score Request', error));
+					}
+
 					renderPrediction({
 						decryptionData,
 						crowdBlendingScore,
@@ -11208,18 +12342,31 @@
 					});
 				}
 			
-
 				// get GCD Samples
-				const webapp = 'https://script.google.com/macros/s/AKfycbw26MLaK1PwIGzUiStwweOeVfl-sEmIxFIs5Ax7LMoP1Cuw-s0llN-aJYS7F8vxQuVG-A/exec';
-				const decryptionResponse = await fetch(webapp)
-					.catch(error => {
+				const getSamples = async () => {
+					const samples = window.sessionStorage && sessionStorage.getItem('samples');
+					if (samples) {
+						return {
+							samples: JSON.parse(samples),
+							samplesDidLoadFromSession: true
+						}
+					}
+					const url = 'https://script.google.com/macros/s/AKfycbw26MLaK1PwIGzUiStwweOeVfl-sEmIxFIs5Ax7LMoP1Cuw-s0llN-aJYS7F8vxQuVG-A/exec';
+					const cloudSamples = await fetch(url).then(res => res.json()).catch(error => {
 						console.error(error);
 						return
 					});
-				const decryptionSamples = (
-					decryptionResponse ? await decryptionResponse.json() : undefined
-				);
-
+					if (cloudSamples && window.sessionStorage) {
+						sessionStorage.setItem('samples', JSON.stringify(cloudSamples));
+					}
+					return {
+						samples: cloudSamples,
+						samplesDidLoadFromSession: false
+					}
+				};
+				
+				const { samples: decryptionSamples, samplesDidLoadFromSession } = await getSamples();
+				
 				// prevent Error: value for argument "documentPath" must point to a document
 				const cleanGPUString = x => !x ? x : (''+x).replace(/\//g,'');
 				
@@ -11246,11 +12393,11 @@
 					gpuModel: gpuModelSamples
 				} = decryptionSamples || {};
 
-				if (isBot && !decryptionSamples) {
+				if (badBot && !decryptionSamples) {
 					predictionErrorPatch({error: 'Failed prediction fetch', patch, html});
 				}
 				
-				if (isBot && decryptionSamples) {
+				if (badBot && decryptionSamples) {
 					// Perform Dragon Fire Magic
 					const decryptionData = {
 						windowVersion: getPrediction({ hash: (windowFeatures || {}).$hash, data: winSamples }),
@@ -11260,9 +12407,15 @@
 						styleVersion: getPrediction({ hash: styleHash, data: styleVersionSamples }),
 						styleSystem: getPrediction({ hash: styleSystemHash, data: styleSamples }),
 						resistance: getPrediction({ hash: (resistance || {}).$hash, data: resistanceSamples }),
-						emojiSystem: getPrediction({ hash: emojiHash, data: emojiSamples }),
+						emojiSystem: getPrediction({
+							hash: (clientRects || {}).domrectSystemSum,
+							data: emojiSamples
+						}),
 						domRectSystem: getPrediction({ hash: domRectHash, data: domRectSamples }),
-						svgSystem: getPrediction({ hash: (svg || {}).$hash, data: svgSamples }),
+						svgSystem: getPrediction({
+							hash: (svg || {}).svgrectSystemSum,
+							data: svgSamples
+						}),
 						mimeTypesSystem: getPrediction({ hash: mimeTypesHash, data: mimeTypesSamples }),
 						audioSystem: getPrediction({ hash: audioMetrics, data: audioSamples }),
 						canvasSystem: getPrediction({ hash: canvas2dImageHash, data: canvasSamples }),
@@ -11317,9 +12470,9 @@
 						style: styleSystemHash,
 						resistance: (resistance || {}).$hash,
 						styleVersion: styleHash,
-						emoji: emojiHash,
+						emoji: (clientRects || {}).domrectSystemSum,
 						domRect: domRectHash,
-						svg: (svg || {}).$hash,
+						svg: (svg || {}).svgrectSystemSum,
 						mimeTypes: mimeTypesHash,
 						audio: audioMetrics,
 						canvas: canvas2dImageHash,
@@ -11341,7 +12494,7 @@
 						styleVersion: 'computed styles',
 						emoji: 'domrect emojis',
 						domRect: 'domrect metrics',
-						svg: 'svg metrics',
+						svg: 'svg emojis',
 						mimeTypes: 'media mimeTypes',
 						audio: 'audio metrics',
 						canvas: 'canvas image',
@@ -11374,7 +12527,7 @@
 							uniquePercent > 10 ? 'entropy-low' :
 								''
 						);
-						const animate = `style="animation: fade-up .3s ${100*i}ms ease both;"`;
+						const animate = samplesDidLoadFromSession ? '' : `style="animation: fade-up .3s ${100*i}ms ease both;"`;
 						return patch(el, html`
 						<span ${animate} class="${signal} entropy-note help" title="1 of ${classTotal || Infinity}${deviceMetric ? ' in x device' : ` in ${decryption || 'unknown'}`}${` (trusted ${entropyDescriptors[key]})`}">
 							${(uniquePercent).toFixed(2)}%
@@ -11386,8 +12539,13 @@
 				return renderSamples({ samples: decryptionSamples, templateImports })
 			})
 			.catch(error => {
-				fetchVisitorDataTimer('Error fetching vistor data');
-				patch(document.getElementById('browser-detection'), html`
+				fetchVisitorDataTimer('Error fetching visitor data');
+				const el = document.getElementById('browser-detection');
+				console.error('Error!', error.message);
+				if (!el) {
+					return	
+				}
+				return patch(el, html`
 				<style>
 					.rejected {
 						background: #ca656e14 !important;
@@ -11395,15 +12553,14 @@
 				</style>
 				<div class="flex-grid rejected">
 					<div class="col-eight">
-						${error}
+						${'prediction service unavailable'}
 					</div>
 					<div class="col-four icon-prediction-container">
 					</div>
 				</div>
-			`);
-				return console.error('Error!', error.message)
+			`)
 			});
 		});
 	})(imports);
 
-}());
+})();
