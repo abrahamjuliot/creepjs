@@ -194,16 +194,16 @@ export const screenHTML = ({ fp, note, hashSlice, performanceLogger, patch, html
 						}
 						
 						.screen-display-mode {
-							top: -36px;
+							top: -31px;
 						}
 						.screen-media-orientation {
-							top: -24px;
+							top: -19px;
 						}
 						.screen-orientation-type {
-							top: -12px;
+							top: -7px;
 						}
 						.screen-dpr {
-							top: 0px;
+							top: 5px;
 						}
 						
 					</style>
