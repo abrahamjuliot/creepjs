@@ -372,9 +372,12 @@ visitor {
 }
 
 .gl-image {
-	min-height: 100px;
-	width: 100%;
-	transform: scale(.6);
+	position: absolute;
+    top: 0;
+    right: 0;
+    height: auto;
+    width: 50%;
+    transform: scale(.7);
 }
 
 #fingerprint-data h1,
