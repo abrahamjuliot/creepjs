@@ -78,13 +78,7 @@ export const screenHTML = ({ fp, note, hashSlice, performanceLogger, patch, html
 			<strong>Screen</strong>
 			<div>...screen: ${note.blocked}</div>
 			<div>....avail: ${note.blocked}</div>
-			<div>....inner: ${note.blocked}</div>
-			<div>...visual: ${note.blocked}</div>
-			<div>display: ${note.blocked}</div>
-			<div>orientation: ${note.blocked}</div>
-			<div>type: ${note.blocked}</div>
 			<div>depth: ${note.blocked}</div>
-			<div>dpr: ${note.blocked}</div>
 			<div>viewport: ${note.blocked}</div>
 			<div class="screen-container"></div>
 		</div>`
@@ -219,9 +213,6 @@ export const screenHTML = ({ fp, note, hashSlice, performanceLogger, patch, html
 					<span class="screen-outer-h">${outerHeight}</span>
 					<span class="screen-inner-h">${innerHeight}</span>
 					<span class="screen-visual-h">${toFix(vVHeight, 6)}</span>
-
-					
-					
 					<span class="screen-display-mode">${displayMode}</span>
 					<span class="screen-media-orientation">${mediaOrientation}</span>
 					<span class="screen-orientation-type">${orientationType}</span>
