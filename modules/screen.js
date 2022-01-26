@@ -88,8 +88,21 @@ export const screenHTML = ({ fp, note, hashSlice, performanceLogger, patch, html
 	} = fp
 	const { $hash } = data || {}
 	const perf = performanceLogger.getLog().screen
+
+	const paintScreen = event => {
+		const el = document.getElementById('creep-resize')
+		if (!el) {
+			return
+		}
+		removeEventListener('resize', paintScreen)
+		return getScreen(imports, false).then(data => {
+			requestAnimationFrame(
+				() => patch(el, html`${resizeHTML(({ data, $hash, perf, paintScreen }))}`)
+			)
+		})
+	}
 	
-	const resizeHTML = ({ data, $hash, perf }) => {
+	const resizeHTML = ({ data, $hash, perf, paintScreen }) => {
 		const {
 			width,
 			height,
@@ -99,6 +112,9 @@ export const screenHTML = ({ fp, note, hashSlice, performanceLogger, patch, html
 			pixelDepth,
 			lied,
 		} = data
+
+
+		addEventListener('resize', paintScreen)
 
 		const s = (window.screen || {})
 		const { orientation } = s
@@ -225,21 +241,10 @@ export const screenHTML = ({ fp, note, hashSlice, performanceLogger, patch, html
 			`
 	}
 
-	const paintScreen = event => {
-		const el = document.getElementById('creep-resize')
-		if (!el) {
-			return
-		}
-		return getScreen(imports, false).then(data => {
-			requestAnimationFrame(
-				() => patch(el, html`${resizeHTML(({ data, $hash, perf }))}`)
-			)
-		})
-
-	}
-	addEventListener('resize', paintScreen)
+	
+	
 
 	return `
-	${resizeHTML({ data, $hash, perf })}
+	${resizeHTML({ data, $hash, perf, paintScreen })}
 	`
 }
