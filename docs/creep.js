@@ -7420,15 +7420,16 @@
 				const d = +(1+[...Array(nFix)].map(x => 0).join(''));
 				return Math.round(n*d)/d
 			};
+			const viewportTitle = `Window.outerWidth\nWindow.outerHeight\nWindow.innerWidth\nWindow.innerHeight\nVisualViewport.width\nVisualViewport.height\nWindow.matchMedia()\nScreenOrientation.type\nWindow.devicePixelRatio`;
 			return `
 			<div id="creep-resize" class="relative col-six${lied ? ' rejected' : ''}">
 				<span class="time">${perf}</span>
 				<strong>Screen</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-				<div>...screen: ${width} x ${height}</div>
-				<div>....avail: ${availWidth} x ${availHeight}</div>
-				<div>depth: ${colorDepth}|${pixelDepth}</div>
-				<div>viewport:</div>
-				<div class="screen-container relative">
+				<div class="help" title="Screen.width\nScreen.height">...screen: ${width} x ${height}</div>
+				<div class="help" title="Screen.availWidth\nScreen.availHeight">....avail: ${availWidth} x ${availHeight}</div>
+				<div class="help" title="Screen.colorDepth\nScreen.pixelDepth">depth: ${colorDepth}|${pixelDepth}</div>
+				<div class="help" title="${viewportTitle}">viewport:</div>
+				<div class="screen-container relative help" title="${viewportTitle}">
 					<style>
 						.screen-frame { width:${deviceInnerWidth}px;height:${deviceInnerHeight}px; }
 						.screen-outer-w,
