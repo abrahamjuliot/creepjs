@@ -841,7 +841,9 @@
 		const binSize = Math.ceil(metricKeys.length/maxBins);
 		
 		// update log
-		if (''+metricKeysReported != ''+metricKeys) {
+		const { host } = window.location || {};
+		const devMode = host != 'abrahamjuliot.github.io';
+		if (devMode && (''+metricKeysReported != ''+metricKeys)) {
 			const newKeys = metricKeysReported.filter(key => !metricKeys.includes(key));
 			const oldKeys = metricKeys.filter(key => !metricKeysReported.includes(key));
 
@@ -12201,7 +12203,7 @@
 							fontPlatformVersion
 						});
 						const workerScopeUserAgent = restoredUA || windows11UA;
-						if (restoredUA != userAgent) {
+						if (restoredUA && (restoredUA != userAgent)) {
 							console.log(`corrected: ${workerScopeUserAgent}`);
 						}
 						
