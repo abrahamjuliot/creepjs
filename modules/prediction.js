@@ -87,7 +87,7 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 
 		const unknown = ''+[...new Set([decrypted, system, device])] == ''
 		const renderBlankIfKnown = unknown => unknown ? ` ${note.unknown}` : ''
-		const renderIfKnown = (unknown, decrypted) => unknown ? ` ${note.unknown}` : decrypted
+		const renderIfKnown = (unknown, decrypted) => unknown ? ` ${note.unknown}` : `<span class="user-agent">${decrypted}</span>`
 		const renderFailingScore = (title, score) => {
 			return (
 				(score||0) > 36 ? title : `<span class="high-entropy">${title}</span>` 
@@ -98,7 +98,7 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 			device ? `<span class="help" title="${device}">
 				${renderFailingScore(`${icons}${title}`, score)}<strong>*</strong>
 			</span>` :
-				showVersion ? renderFailingScore(`${icons}${title}: ${renderIfKnown(unknown, decrypted)}`, score) :
+				showVersion ? renderFailingScore(`${icons}${renderIfKnown(unknown, decrypted)}`, score) :
 					renderFailingScore(`${icons}${title}${renderBlankIfKnown(unknown)}`, score)
 		)
 	}
@@ -171,10 +171,10 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 			bot ? `<span class="time"><span class="renewed">locked</span></span>` :
 				typeof crowdBlendingScore == 'number' ? `<span class="time">crowd-blending score: ${''+crowdBlendingScore}% <span class="scale-up grade-${crowdBlendingScoreGrade}">${crowdBlendingScoreGrade}</span></span>` : ''
 		}
-		<div class="col-eight">
+		<div class="col-six">
 			<strong>Prediction</strong>
 			<div class="ellipsis relative">${
-				deviceName ? `<strong>*</strong>${deviceName}` : getBlankIcons()
+				deviceName ? `<span class="user-agent"><strong>*</strong>${deviceName}</span>` : getBlankIcons()
 			}</div>
 			<div class="ellipsis relative">
 				<span id="window-entropy"></span>${
@@ -271,7 +271,7 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 					getTemplate({title: 'resistance', agent: resistance})
 			}</div>
 		</div>
-		<div class="col-four icon-prediction-container">
+		<div class="col-six icon-prediction-container">
 			${[...iconSet].map(icon => {
 				return `<div class="icon-prediction ${icon}"></div>`
 			}).join('')}

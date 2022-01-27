@@ -851,6 +851,13 @@ input[type="radio"] {
     }
 }
 
+.user-agent {
+	font-size: 12px !important;
+    background: #6363ce1f;
+    padding: 3px 5px;
+    border-radius: 2px;
+}
+
 .icon,
 .icon-pixel,
 .icon-prediction {

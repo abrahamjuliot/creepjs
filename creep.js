@@ -708,10 +708,10 @@ const imports = {
 			</div>
 		</div>
 		<div id="browser-detection" class="flex-grid">
-			<div class="col-eight">
+			<div class="col-six">
 				<strong>Loading...</strong>
 				<div>${getBlankIcons()}</div>
-				<div>${getBlankIcons()}self:</div>
+				<div>${getBlankIcons()}<span class="user-agent">self</span></div>
 				<div>${getBlankIcons()}system styles</div>
 				<div>${getBlankIcons()}computed styles</div>
 				<div>${getBlankIcons()}html element</div>
@@ -732,7 +732,7 @@ const imports = {
 				<div>${getBlankIcons()}screen</div>
 				<div>${getBlankIcons()}resistance</div>
 			</div>
-			<div class="col-four icon-prediction-container">
+			<div class="col-six icon-prediction-container">
 			</div>
 		</div>
 		<div class="flex-grid">
