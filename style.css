@@ -170,6 +170,16 @@ strong {
 .grey {
 	filter: grayscale(100%);
 }
+.user-agent {
+	font-size: 12px !important;
+    padding: 3px 5px;
+    border-radius: 2px;
+}
+#signature span,
+.user-agent {
+    color: #9165ca;
+    background: #f9f9f9;
+}
 #signature {
 	width: 100%;
     min-height: 50px;
@@ -177,8 +187,6 @@ strong {
 }
 #signature span {
     margin: 5px;
-    color: #9165ca;
-    background: #f9f9f9;
     padding: 3px 10px;
     font-style: italic;
 }
@@ -851,13 +859,6 @@ input[type="radio"] {
     }
 }
 
-.user-agent {
-	font-size: 12px !important;
-    background: #6363ce1f;
-    padding: 3px 5px;
-    border-radius: 2px;
-}
-
 .icon,
 .icon-pixel,
 .icon-prediction {
@@ -1039,7 +1040,8 @@ input[type="radio"] {
     .modal-container {
         background: var(--dark-sky-transparent);
     }
-    #signature span {
+    #signature span,
+	.user-agent {
         color: #d0b0f9;
         background: #f9f9f90d;
     }
