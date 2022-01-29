@@ -543,6 +543,7 @@
 		searchLies(() => Range)
 		searchLies(() => Intl.RelativeTimeFormat)
 		searchLies(() => Screen)
+		searchLies(() => String)
 		searchLies(() => speechSynthesis)
 		searchLies(() => SVGRect)
 		searchLies(() => TextMetrics)

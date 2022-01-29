@@ -35,12 +35,13 @@ export const getClientRects = async imports => {
 				y: domRect.y
 			}
 		}
-		let lied = (
+		let lied = !!(
 			lieProps['Element.getClientRects'] ||
 			lieProps['Element.getBoundingClientRect'] ||
 			lieProps['Range.getClientRects'] ||
-			lieProps['Range.getBoundingClientRect']
-		) || false // detect lies
+			lieProps['Range.getBoundingClientRect'] ||
+			lieProps['String.fromCodePoint']
+		)
 		
 		const getBestRect = (lieProps, doc, el) => {
 			let range

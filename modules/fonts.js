@@ -470,10 +470,11 @@ export const getFonts = async imports => {
 		const apps = getDesktopApps(fontFaceLoadFonts)
 
 		// detect lies
-		const lied = (
+		const lied = !!(
 			lieProps['FontFace.load'] ||
 			lieProps['FontFace.family'] ||
-			lieProps['FontFace.status']
+			lieProps['FontFace.status'] ||
+			lieProps['String.fromCodePoint']
 		)
 
 		logTestResult({ time: timer.stop(), test: 'fonts', passed: true })

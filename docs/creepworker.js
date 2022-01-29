@@ -461,6 +461,18 @@ const getPrototypeLies = globalScope => {
 			'arguments'
 		]
 	})
+	searchLies(() => FontFace, {
+		target: [
+			'family',
+			'load',
+			'status'
+		]
+	})
+	searchLies(() => String, {
+		target: [
+			'fromCodePoint'
+		]
+	})
 	searchLies(() => WorkerNavigator, {
 		target: [
 			'appVersion',
@@ -479,7 +491,8 @@ const getPrototypeLies = globalScope => {
 			'isPointInPath',
 			'isPointInStroke',
 			'measureText',
-			'quadraticCurveTo'
+			'quadraticCurveTo',
+			'font'
 		]
 	})
 	searchLies(() => OffscreenCanvas, {

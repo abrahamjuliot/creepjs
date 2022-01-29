@@ -612,7 +612,8 @@ const getPrototypeLies = iframeWindow => {
 			'isPointInPath',
 			'isPointInStroke',
 			'measureText',
-			'quadraticCurveTo'
+			'quadraticCurveTo',
+			'font'
 		]
 	})
 	searchLies(() => Date, {
@@ -805,7 +806,8 @@ const getPrototypeLies = iframeWindow => {
 			'isPointInPath',
 			'isPointInStroke',
 			'measureText',
-			'quadraticCurveTo'
+			'quadraticCurveTo',
+			'font'
 		]
 	})
 	searchLies(() => Range, {
@@ -823,6 +825,11 @@ const getPrototypeLies = iframeWindow => {
 	searchLies(() => speechSynthesis, {
 		target: [
 			'getVoices'
+		]
+	})
+	searchLies(() => String, {
+		target: [
+			'fromCodePoint'
 		]
 	})
 	searchLies(() => SVGRect)

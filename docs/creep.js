@@ -1879,7 +1879,8 @@
 				'isPointInPath',
 				'isPointInStroke',
 				'measureText',
-				'quadraticCurveTo'
+				'quadraticCurveTo',
+				'font'
 			]
 		});
 		searchLies(() => Date, {
@@ -2072,7 +2073,8 @@
 				'isPointInPath',
 				'isPointInStroke',
 				'measureText',
-				'quadraticCurveTo'
+				'quadraticCurveTo',
+				'font'
 			]
 		});
 		searchLies(() => Range, {
@@ -2090,6 +2092,11 @@
 		searchLies(() => speechSynthesis, {
 			target: [
 				'getVoices'
+			]
+		});
+		searchLies(() => String, {
+			target: [
+				'fromCodePoint'
 			]
 		});
 		searchLies(() => SVGRect);
@@ -2808,7 +2815,7 @@
 			const dataLie = lieProps['HTMLCanvasElement.toDataURL'];
 			const contextLie = lieProps['HTMLCanvasElement.getContext'];
 			const imageDataLie = lieProps['CanvasRenderingContext2D.getImageData'];
-			let textMetricsLie = (
+			let textMetricsLie = !!(
 				lieProps['CanvasRenderingContext2D.measureText'] ||
 				lieProps['TextMetrics.actualBoundingBoxAscent'] ||
 				lieProps['TextMetrics.actualBoundingBoxDescent'] ||
@@ -2816,7 +2823,8 @@
 				lieProps['TextMetrics.actualBoundingBoxRight'] ||
 				lieProps['TextMetrics.fontBoundingBoxAscent'] ||
 				lieProps['TextMetrics.fontBoundingBoxDescent'] ||
-				lieProps['TextMetrics.width']
+				lieProps['TextMetrics.width'] ||
+				lieProps['String.fromCodePoint']
 			);
 			let lied = (dataLie || contextLie || imageDataLie || textMetricsLie) || false;
 			const doc = (
@@ -5012,10 +5020,11 @@
 			const apps = getDesktopApps(fontFaceLoadFonts);
 
 			// detect lies
-			const lied = (
+			const lied = !!(
 				lieProps['FontFace.load'] ||
 				lieProps['FontFace.family'] ||
-				lieProps['FontFace.status']
+				lieProps['FontFace.status'] ||
+				lieProps['String.fromCodePoint']
 			);
 
 			logTestResult({ time: timer.stop(), test: 'fonts', passed: true });
@@ -6840,12 +6849,13 @@
 					y: domRect.y
 				}
 			};
-			let lied = (
+			let lied = !!(
 				lieProps['Element.getClientRects'] ||
 				lieProps['Element.getBoundingClientRect'] ||
 				lieProps['Range.getClientRects'] ||
-				lieProps['Range.getBoundingClientRect']
-			) || false; // detect lies
+				lieProps['Range.getBoundingClientRect'] ||
+				lieProps['String.fromCodePoint']
+			);
 			
 			const getBestRect = (lieProps, doc, el) => {
 				let range;
@@ -9108,12 +9118,13 @@
 		try {
 			const timer = createTimer();
 			await queueEvent(timer);
-			let lied = (
+			let lied = !!(
 				lieProps['SVGRect.height'] ||
 				lieProps['SVGRect.width'] ||
 				lieProps['SVGRect.x'] ||
-				lieProps['SVGRect.y']
-			) || false; // detect lies
+				lieProps['SVGRect.y'] ||
+				lieProps['String.fromCodePoint']
+			);
 							
 			const doc = (
 				phantomDarkness &&
