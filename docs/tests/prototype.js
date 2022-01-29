@@ -500,6 +500,12 @@
 		searchLies(() => AudioBuffer)
 		searchLies(() => BiquadFilterNode)
 		searchLies(() => CanvasRenderingContext2D)
+		if (window.CSSStyleDeclaration) { // Blink/WebKit
+			searchLies(() => CSSStyleDeclaration)
+		}
+		if (window.CSS2Properties) { // Gecko
+			searchLies(() => CSS2Properties)
+		}
 		searchLies(() => Date)
 		searchLies(() => Intl.DateTimeFormat)
 		searchLies(() => Document, {

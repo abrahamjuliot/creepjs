@@ -1883,6 +1883,22 @@
 				'font'
 			]
 		});
+		if (window.CSSStyleDeclaration) {
+			// Blink/WebKit
+			searchLies(() => CSSStyleDeclaration, {
+				target: [
+					'setProperty'
+				]
+			});
+		}
+		if (window.CSS2Properties) {
+			// Gecko
+			searchLies(() => CSS2Properties, {
+				target: [
+					'setProperty'
+				]
+			});
+		}
 		searchLies(() => Date, {
 			target: [
 				'getDate',
@@ -5024,7 +5040,9 @@
 				lieProps['FontFace.load'] ||
 				lieProps['FontFace.family'] ||
 				lieProps['FontFace.status'] ||
-				lieProps['String.fromCodePoint']
+				lieProps['String.fromCodePoint'] ||
+				lieProps['CSSStyleDeclaration.setProperty'] ||
+				lieProps['CSS2Properties.setProperty']
 			);
 
 			logTestResult({ time: timer.stop(), test: 'fonts', passed: true });

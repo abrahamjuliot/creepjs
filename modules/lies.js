@@ -616,6 +616,22 @@ const getPrototypeLies = iframeWindow => {
 			'font'
 		]
 	})
+	if (window.CSSStyleDeclaration) {
+		// Blink/WebKit
+		searchLies(() => CSSStyleDeclaration, {
+			target: [
+				'setProperty'
+			]
+		})
+	}
+	if (window.CSS2Properties) {
+		// Gecko
+		searchLies(() => CSS2Properties, {
+			target: [
+				'setProperty'
+			]
+		})
+	}
 	searchLies(() => Date, {
 		target: [
 			'getDate',
