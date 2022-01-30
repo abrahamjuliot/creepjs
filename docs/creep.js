@@ -591,7 +591,6 @@
 
 
 	const getBotHash = (fp, imports) => {
-
 		const { getFeaturesLie, computeWindowsRelease } = imports;
 		const outsideFeaturesVersion = getFeaturesLie(fp);
 		const workerScopeIsBlocked = !fp.workerScope || !fp.workerScope.userAgent;
@@ -605,10 +604,26 @@
 				platformVersion,
 				fontPlatformVersion
 			});
-			liedPlatformVersion = (
+
+			console.log(computeWindowsRelease({
+				platform,
+				platformVersion,
+				fontPlatformVersion
+			}));
+			const windowsPlatformVersionLie = (
 				windowsRelease &&
-				fp.fonts.platformVersion &&
+				fontPlatformVersion &&
 				!(''+windowsRelease).includes(fontPlatformVersion)
+			);
+			// use font platform (window scope) to detect userAgent (worker scope) lies
+			const macOrWindowsPlatformVersionLie = (
+				/macOS|Windows/.test(fontPlatformVersion) &&
+				!fontPlatformVersion.includes(platform)
+			);
+
+			liedPlatformVersion = (
+				windowsPlatformVersionLie ||
+				macOrWindowsPlatformVersionLie
 			);
 		}
 
