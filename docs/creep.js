@@ -605,11 +605,6 @@
 				fontPlatformVersion
 			});
 
-			console.log(computeWindowsRelease({
-				platform,
-				platformVersion,
-				fontPlatformVersion
-			}));
 			const windowsPlatformVersionLie = (
 				windowsRelease &&
 				fontPlatformVersion &&
@@ -618,9 +613,8 @@
 			// use font platform (window scope) to detect userAgent (worker scope) lies
 			const macOrWindowsPlatformVersionLie = (
 				/macOS|Windows/.test(fontPlatformVersion) &&
-				!fontPlatformVersion.includes(platform)
+				(platform && !fontPlatformVersion.includes(platform))
 			);
-
 			liedPlatformVersion = (
 				windowsPlatformVersionLie ||
 				macOrWindowsPlatformVersionLie
@@ -6866,6 +6860,8 @@
 				patch,
 				html,
 				captureError,
+				isChrome,
+				isFirefox,
 				documentLie,
 				lieProps,
 				logTestResult,
@@ -6933,6 +6929,18 @@
 
 			patch(divElement, html`
 		<div id="${rectsId}">
+			<style>
+			.rect-known {
+				top: 0;
+				left: 0;
+				position: absolute;
+				visibility: hidden;
+				width: 100px;
+				height: 100px;
+				transform: rotate(45deg);
+			}
+			</style>
+			<div class="rect-known"></div>
 			<div style="perspective:100px;width:1000.099%;" id="rect-container">
 				<style>
 				.rects {
@@ -7228,6 +7236,33 @@
 				documentLie('Element.getClientRects', 'equal elements mismatch');
 				lied = true;
 			}
+
+			// detect unknown dimensions
+			const elKnown = [...doc.getElementsByClassName('rect-known')][0];
+			const dimensionsKnown = toNativeObject(elKnown.getClientRects()[0]);
+			const knownSum = Object.keys(dimensionsKnown)
+				.reduce((acc, key) => (acc += +dimensionsKnown[key]), 0);
+			
+			//console.log(knownSum)
+			if (isChrome) {
+				const zoom = {
+					'441.4213562011719': true, // 100, etc
+					'441.3523979187012': true, // 33, 67
+					'441.4214057922363': true // 90
+				};
+				if (!zoom[knownSum]) {
+					documentLie('Element.getClientRects', 'unknown dimensions');
+					lied = true;
+				}
+			} else if (isFirefox) {
+				const zoom = {
+					'441.3666687011719': true // 100, etc
+				};
+				if (!zoom[knownSum]) {
+					documentLie('Element.getClientRects', 'unknown dimensions');
+					lied = true;
+				}
+			}
 						
 			logTestResult({ time: timer.stop(), test: 'rects', passed: true });
 			return {
@@ -7361,7 +7396,7 @@
 			} = s;
 
 			const dpr = window.devicePixelRatio || undefined;
-			const firefoxWithHighDPR = isFirefox && dpr > 1;
+			const firefoxWithHighDPR = isFirefox && (dpr != 1);
 			if (!firefoxWithHighDPR) {
 				// firefox with high dpr requires floating point precision dimensions
 				const matchMediaLie = !matchMedia(

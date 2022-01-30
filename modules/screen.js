@@ -35,7 +35,7 @@ export const getScreen = async (imports, logger = true) => {
 		} = s
 
 		const dpr = window.devicePixelRatio || undefined
-		const firefoxWithHighDPR = isFirefox && dpr > 1
+		const firefoxWithHighDPR = isFirefox && (dpr != 1)
 		if (!firefoxWithHighDPR) {
 			// firefox with high dpr requires floating point precision dimensions
 			const matchMediaLie = !matchMedia(

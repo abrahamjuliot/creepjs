@@ -13,6 +13,8 @@ export const getClientRects = async imports => {
 			patch,
 			html,
 			captureError,
+			isChrome,
+			isFirefox,
 			documentLie,
 			lieProps,
 			logTestResult,
@@ -80,6 +82,18 @@ export const getClientRects = async imports => {
 
 		patch(divElement, html`
 		<div id="${rectsId}">
+			<style>
+			.rect-known {
+				top: 0;
+				left: 0;
+				position: absolute;
+				visibility: hidden;
+				width: 100px;
+				height: 100px;
+				transform: rotate(45deg);
+			}
+			</style>
+			<div class="rect-known"></div>
 			<div style="perspective:100px;width:1000.099%;" id="rect-container">
 				<style>
 				.rects {
@@ -374,6 +388,33 @@ export const getClientRects = async imports => {
 		if (right1 != right2 || left1 != left2) {
 			documentLie('Element.getClientRects', 'equal elements mismatch')
 			lied = true
+		}
+
+		// detect unknown dimensions
+		const elKnown = [...doc.getElementsByClassName('rect-known')][0]
+		const dimensionsKnown = toNativeObject(elKnown.getClientRects()[0])
+		const knownSum = Object.keys(dimensionsKnown)
+			.reduce((acc, key) => (acc += +dimensionsKnown[key]), 0)
+		
+		//console.log(knownSum)
+		if (isChrome) {
+			const zoom = {
+				'441.4213562011719': true, // 100, etc
+				'441.3523979187012': true, // 33, 67
+				'441.4214057922363': true // 90
+			}
+			if (!zoom[knownSum]) {
+				documentLie('Element.getClientRects', 'unknown dimensions')
+				lied = true
+			}
+		} else if (isFirefox) {
+			const zoom = {
+				'441.3666687011719': true // 100, etc
+			}
+			if (!zoom[knownSum]) {
+				documentLie('Element.getClientRects', 'unknown dimensions')
+				lied = true
+			}
 		}
 					
 		logTestResult({ time: timer.stop(), test: 'rects', passed: true })

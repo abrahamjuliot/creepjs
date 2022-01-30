@@ -39,11 +39,6 @@ const getBotHash = (fp, imports) => {
 			fontPlatformVersion
 		})
 
-		console.log(computeWindowsRelease({
-			platform,
-			platformVersion,
-			fontPlatformVersion
-		}))
 		const windowsPlatformVersionLie = (
 			windowsRelease &&
 			fontPlatformVersion &&
@@ -52,9 +47,8 @@ const getBotHash = (fp, imports) => {
 		// use font platform (window scope) to detect userAgent (worker scope) lies
 		const macOrWindowsPlatformVersionLie = (
 			/macOS|Windows/.test(fontPlatformVersion) &&
-			!fontPlatformVersion.includes(platform)
+			(platform && !fontPlatformVersion.includes(platform))
 		)
-
 		liedPlatformVersion = (
 			windowsPlatformVersionLie ||
 			macOrWindowsPlatformVersionLie
