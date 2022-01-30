@@ -18,13 +18,13 @@ export const getSVG = async imports => {
 	try {
 		const timer = createTimer()
 		await queueEvent(timer)
-		let lied = !!(
+		let lied = (
 			lieProps['SVGRect.height'] ||
 			lieProps['SVGRect.width'] ||
 			lieProps['SVGRect.x'] ||
 			lieProps['SVGRect.y'] ||
 			lieProps['String.fromCodePoint']
-		)
+		) || false
 						
 		const doc = (
 			phantomDarkness &&

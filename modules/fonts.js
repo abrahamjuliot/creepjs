@@ -470,7 +470,7 @@ export const getFonts = async imports => {
 		const apps = getDesktopApps(fontFaceLoadFonts)
 
 		// detect lies
-		const lied = !!(
+		const lied = (
 			lieProps['FontFace.load'] ||
 			lieProps['FontFace.family'] ||
 			lieProps['FontFace.status'] ||

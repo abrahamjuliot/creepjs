@@ -2831,7 +2831,8 @@
 			const dataLie = lieProps['HTMLCanvasElement.toDataURL'];
 			const contextLie = lieProps['HTMLCanvasElement.getContext'];
 			const imageDataLie = lieProps['CanvasRenderingContext2D.getImageData'];
-			let textMetricsLie = !!(
+			const codePointLie =  lieProps['String.fromCodePoint'];
+			let textMetricsLie = (
 				lieProps['CanvasRenderingContext2D.measureText'] ||
 				lieProps['TextMetrics.actualBoundingBoxAscent'] ||
 				lieProps['TextMetrics.actualBoundingBoxDescent'] ||
@@ -2839,10 +2840,15 @@
 				lieProps['TextMetrics.actualBoundingBoxRight'] ||
 				lieProps['TextMetrics.fontBoundingBoxAscent'] ||
 				lieProps['TextMetrics.fontBoundingBoxDescent'] ||
-				lieProps['TextMetrics.width'] ||
-				lieProps['String.fromCodePoint']
+				lieProps['TextMetrics.width']
 			);
-			let lied = (dataLie || contextLie || imageDataLie || textMetricsLie) || false;
+			let lied = (
+				dataLie ||
+				contextLie ||
+				imageDataLie ||
+				textMetricsLie ||
+				codePointLie
+			) || false;
 			const doc = (
 				phantomDarkness &&
 				phantomDarkness.document &&
@@ -5036,7 +5042,7 @@
 			const apps = getDesktopApps(fontFaceLoadFonts);
 
 			// detect lies
-			const lied = !!(
+			const lied = (
 				lieProps['FontFace.load'] ||
 				lieProps['FontFace.family'] ||
 				lieProps['FontFace.status'] ||
@@ -6867,13 +6873,13 @@
 					y: domRect.y
 				}
 			};
-			let lied = !!(
+			let lied = (
 				lieProps['Element.getClientRects'] ||
 				lieProps['Element.getBoundingClientRect'] ||
 				lieProps['Range.getClientRects'] ||
 				lieProps['Range.getBoundingClientRect'] ||
 				lieProps['String.fromCodePoint']
-			);
+			) || false;
 			
 			const getBestRect = (lieProps, doc, el) => {
 				let range;
@@ -9136,13 +9142,13 @@
 		try {
 			const timer = createTimer();
 			await queueEvent(timer);
-			let lied = !!(
+			let lied = (
 				lieProps['SVGRect.height'] ||
 				lieProps['SVGRect.width'] ||
 				lieProps['SVGRect.x'] ||
 				lieProps['SVGRect.y'] ||
 				lieProps['String.fromCodePoint']
-			);
+			) || false;
 							
 			const doc = (
 				phantomDarkness &&

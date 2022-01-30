@@ -186,7 +186,8 @@ export const getCanvas2d = async imports => {
 		const dataLie = lieProps['HTMLCanvasElement.toDataURL']
 		const contextLie = lieProps['HTMLCanvasElement.getContext']
 		const imageDataLie = lieProps['CanvasRenderingContext2D.getImageData']
-		let textMetricsLie = !!(
+		const codePointLie =  lieProps['String.fromCodePoint']
+		let textMetricsLie = (
 			lieProps['CanvasRenderingContext2D.measureText'] ||
 			lieProps['TextMetrics.actualBoundingBoxAscent'] ||
 			lieProps['TextMetrics.actualBoundingBoxDescent'] ||
@@ -194,10 +195,15 @@ export const getCanvas2d = async imports => {
 			lieProps['TextMetrics.actualBoundingBoxRight'] ||
 			lieProps['TextMetrics.fontBoundingBoxAscent'] ||
 			lieProps['TextMetrics.fontBoundingBoxDescent'] ||
-			lieProps['TextMetrics.width'] ||
-			lieProps['String.fromCodePoint']
+			lieProps['TextMetrics.width']
 		)
-		let lied = (dataLie || contextLie || imageDataLie || textMetricsLie) || false
+		let lied = (
+			dataLie ||
+			contextLie ||
+			imageDataLie ||
+			textMetricsLie ||
+			codePointLie
+		) || false
 		const doc = (
 			phantomDarkness &&
 			phantomDarkness.document &&
