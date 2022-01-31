@@ -1178,7 +1178,7 @@ const getWorkerData = async () => {
 		propsSearched
 	} = getPrototypeLies(globalThis) // execute and destructure the list and detail
 	const prototypeLies = JSON.parse(JSON.stringify(lieDetail))
-	const protoLie = lieList.length
+	const protoLieLen = lieList.length
 
 	// match engine locale to system locale to determine if locale entropy is trusty
 	let systemCurrencyLocale
@@ -1202,11 +1202,21 @@ const getWorkerData = async () => {
 	const localeEntropyIsTrusty = engineCurrencyLocale == systemCurrencyLocale
 	const localeIntlEntropyIsTrusty = new Set((''+language).split(',')).has(''+locale)
 
+	const scriptURLPathName = '/creepworker.js'
+	const { href, pathname } = self.location || {}
+	const endsWithPathName = new RegExp(`${pathname}$`)
+	const locationPathNameLie = (
+		!href ||
+		!pathname ||
+		pathname != scriptURLPathName ||
+		!endsWithPathName.test(href)
+	)
+
 	return {
 		scopeKeys,
-		lied: protoLie,
+		lied: protoLieLen || +locationPathNameLie,
 		lies: {
-			proto: protoLie ? lieDetail : false
+			proto: protoLieLen ? lieDetail : false
 		},
 		locale: ''+locale,
 		systemCurrencyLocale,
