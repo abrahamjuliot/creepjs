@@ -1206,7 +1206,7 @@ const getWorkerData = async () => {
 	const locationPathNameLie = (
 		!href ||
 		!pathname ||
-		!/^(\/docs|)\/creepworker.js$/.test(pathname) ||
+		!/^(\/docs|\/creepjs|)\/creepworker.js$/.test(pathname) ||
 		!new RegExp(`${pathname}$`).test(href)
 	)
 
