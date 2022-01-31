@@ -1201,15 +1201,13 @@ const getWorkerData = async () => {
 	})
 	const localeEntropyIsTrusty = engineCurrencyLocale == systemCurrencyLocale
 	const localeIntlEntropyIsTrusty = new Set((''+language).split(',')).has(''+locale)
-
-	const scriptURLPathName = '/creepworker.js'
+	
 	const { href, pathname } = self.location || {}
-	const endsWithPathName = new RegExp(`${pathname}$`)
 	const locationPathNameLie = (
 		!href ||
 		!pathname ||
-		pathname != scriptURLPathName ||
-		!endsWithPathName.test(href)
+		!/^(\/docs|)\/creepworker.js$/.test(pathname) ||
+		!new RegExp(`${pathname}$`).test(href)
 	)
 
 	return {
