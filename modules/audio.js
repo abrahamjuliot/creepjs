@@ -287,7 +287,7 @@ export const audioHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, perf
 			values
 		}
 	} = fp
-	const knownSums = getKnownAudio()[compressorGainReduction]
+	const knownSums = getKnownAudio()[compressorGainReduction] || []
 	const validAudio = sampleSum && compressorGainReduction && knownSums
 	const matchesKnownAudio = knownSums.includes(sampleSum)
 	return `
