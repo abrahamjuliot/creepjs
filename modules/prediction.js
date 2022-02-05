@@ -90,7 +90,7 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 		const renderIfKnown = (unknown, decrypted) => unknown ? ` ${note.unknown}` : `<span class="user-agent">${decrypted}</span>`
 		const renderFailingScore = (title, score) => {
 			return (
-				(score||0) > 36 ? title : `<span class="high-entropy">${title}</span>` 
+				!score || (score > 36) ? title : `<span class="high-entropy">${title}</span>` 
 			)
 		}
 		
@@ -99,7 +99,7 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 				${renderFailingScore(`${icons}${title}`, score)}<strong>*</strong>
 			</span>` :
 				showVersion ? renderFailingScore(`${icons}${renderIfKnown(unknown, decrypted)}`, score) :
-					renderFailingScore(`${icons}${title}${renderBlankIfKnown(unknown)}`, score)
+					renderFailingScore(`${icons}${title}`, score)
 		)
 	}
 
@@ -161,6 +161,8 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 						'F'
 	)
 
+	const hasValue = data => Object.values(data || {}).find(x => typeof x != 'undefined')
+
 	const el = document.getElementById('browser-detection')
 	return patch(el, html`
 	<div class="flex-grid relative">
@@ -202,72 +204,72 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 			}</div>
 			<div class="ellipsis relative">
 				<span id="emoji-entropy"></span>${
-				!Object.keys(emojiSystem || {}).length ? unknownHTML('domRect emojis') : 
+				!hasValue(emojiSystem) ? unknownHTML('domRect emojis') : 
 					getTemplate({title: 'domRect emojis', agent: emojiSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="domRect-entropy"></span>${
-				!Object.keys(domRectSystem || {}).length ? unknownHTML('domRect') : 
+				!hasValue(domRectSystem) ? unknownHTML('domRect') : 
 					getTemplate({title: 'domRect', agent: domRectSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="svg-entropy"></span>${
-				!Object.keys(svgSystem || {}).length ? unknownHTML('svg emojis') : 
+				!hasValue(svgSystem) ? unknownHTML('svg emojis') : 
 					getTemplate({title: 'svg emojis', agent: svgSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="mimeTypes-entropy"></span>${
-				!Object.keys(mimeTypesSystem || {}).length ? unknownHTML('mimeTypes') : 
+				!hasValue(mimeTypesSystem) ? unknownHTML('mimeTypes') : 
 					getTemplate({title: 'mimeTypes', agent: mimeTypesSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="audio-entropy"></span>${
-				!Object.keys(audioSystem || {}).length ? unknownHTML('audio') : 
+				!hasValue(audioSystem) ? unknownHTML('audio') : 
 					getTemplate({title: 'audio', agent: audioSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="canvas-entropy"></span>${
-				!Object.keys(canvasSystem || {}).length ? unknownHTML('canvas') : 
+				!hasValue(canvasSystem) ? unknownHTML('canvas') : 
 					getTemplate({title: 'canvas', agent: canvasSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="textMetrics-entropy"></span>${
-				!Object.keys(textMetricsSystem || {}).length ? unknownHTML('textMetrics') : 
+				!hasValue(textMetricsSystem) ? unknownHTML('textMetrics') : 
 					getTemplate({title: 'textMetrics', agent: textMetricsSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="webgl-entropy"></span>${
-				!Object.keys(webglSystem || {}).length ? unknownHTML('webgl') : 
+				!hasValue(webglSystem) ? unknownHTML('webgl') : 
 					getTemplate({title: 'webgl', agent: webglSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="gpu-entropy"></span>${
-				!Object.keys(gpuSystem || {}).length ? unknownHTML('gpu params') : 
+				!hasValue(gpuSystem) ? unknownHTML('gpu params') : 
 					getTemplate({title: 'gpu params', agent: gpuSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="gpuModel-entropy"></span>${
-				!Object.keys(gpuModelSystem || {}).length ? unknownHTML('gpu model') : 
+				!hasValue(gpuModelSystem) ? unknownHTML('gpu model') : 
 					getTemplate({title: 'gpu model', agent: gpuModelSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="fonts-entropy"></span>${
-				!Object.keys(fontsSystem || {}).length ? unknownHTML('fonts') : 
+				!hasValue(fontsSystem) ? unknownHTML('fonts') : 
 					getTemplate({title: 'fonts', agent: fontsSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="voices-entropy"></span>${
-				!Object.keys(voicesSystem || {}).length ? unknownHTML('voices') : 
+				!hasValue(voicesSystem) ? unknownHTML('voices') : 
 					getTemplate({title: 'voices', agent: voicesSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="screen-entropy"></span>${
-				!Object.keys(screenSystem || {}).length ? unknownHTML('screen') : 
+				!hasValue(screenSystem) ? unknownHTML('screen') : 
 					getTemplate({title: 'screen', agent: screenSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="resistance-entropy"></span>${
-				!Object.keys(resistance || {}).length ? unknownHTML('resistance') : 
+				!hasValue(resistance) ? unknownHTML('resistance') : 
 					getTemplate({title: 'resistance', agent: resistance})
 			}</div>
 		</div>
