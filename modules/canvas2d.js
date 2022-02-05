@@ -139,6 +139,7 @@ export const getCanvas2d = async imports => {
 			createTimer,
 			getEmojis,
 			captureError,
+			attempt,
 			lieProps,
 			documentLie,
 			phantomDarkness,
@@ -244,7 +245,7 @@ export const getCanvas2d = async imports => {
 			new Promise(resolve => canvas.toBlob(blob => {
 				return resolve(getFileReaderData(blob))
 			})),
-			getFileReaderData(canvasOffscreen && await canvasOffscreen.convertToBlob())
+			getFileReaderData(await attempt(() => canvasOffscreen.convertToBlob()))
 		])
 		const [arrayBuffer, binaryString, dataURL, text] = fileReaderData || {}
 		const [
