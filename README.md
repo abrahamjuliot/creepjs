@@ -22,6 +22,7 @@ Tests are focused on:
 - uBlock Origin (aopr)
 - NoScript
 - DuckDuckGo Privacy Essentials
+- JShelter (JavaScript Restrictor)
 - Privacy Badger
 - Privacy Possom
 - Random User-Agent
