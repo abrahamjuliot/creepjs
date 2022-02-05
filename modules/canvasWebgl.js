@@ -397,8 +397,7 @@ export const getCanvasWebgl = async imports => {
 				}
 			}
 			catch (error) {
-				console.error(error)
-				return
+				return captureError(error)
 			}
 		}
 		
