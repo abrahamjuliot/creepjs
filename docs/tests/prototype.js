@@ -500,12 +500,8 @@
 		searchLies(() => AudioBuffer)
 		searchLies(() => BiquadFilterNode)
 		searchLies(() => CanvasRenderingContext2D)
-		if (window.CSSStyleDeclaration) { // Blink/WebKit
-			searchLies(() => CSSStyleDeclaration)
-		}
-		if (window.CSS2Properties) { // Gecko
-			searchLies(() => CSS2Properties)
-		}
+		searchLies(() => CSSStyleDeclaration)
+		searchLies(() => CSS2Properties) // Gecko
 		searchLies(() => Date)
 		searchLies(() => Intl.DateTimeFormat)
 		searchLies(() => Document, {
@@ -545,6 +541,7 @@
 		searchLies(() => MediaDevices)
 		searchLies(() => Navigator)
 		searchLies(() => Node)
+		searchLies(() => OffscreenCanvas)
 		searchLies(() => OffscreenCanvasRenderingContext2D)
 		searchLies(() => Range)
 		searchLies(() => Intl.RelativeTimeFormat)

@@ -616,22 +616,16 @@ const getPrototypeLies = iframeWindow => {
 			'font'
 		]
 	})
-	if (window.CSSStyleDeclaration) {
-		// Blink/WebKit
-		searchLies(() => CSSStyleDeclaration, {
-			target: [
-				'setProperty'
-			]
-		})
-	}
-	if (window.CSS2Properties) {
-		// Gecko
-		searchLies(() => CSS2Properties, {
-			target: [
-				'setProperty'
-			]
-		})
-	}
+	searchLies(() => CSSStyleDeclaration, {
+		target: [
+			'setProperty'
+		]
+	})
+	searchLies(() => CSS2Properties, { // Gecko
+		target: [
+			'setProperty'
+		]
+	})
 	searchLies(() => Date, {
 		target: [
 			'getDate',
@@ -813,6 +807,12 @@ const getPrototypeLies = iframeWindow => {
 			'appendChild',
 			'insertBefore',
 			'replaceChild'
+		]
+	})
+	searchLies(() => OffscreenCanvas, {
+		target: [
+			'convertToBlob',
+			'getContext'
 		]
 	})
 	searchLies(() => OffscreenCanvasRenderingContext2D, {
