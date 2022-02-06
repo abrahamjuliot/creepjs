@@ -1044,10 +1044,13 @@ const getWebglData = () => {
 	}
 	const canvasOffscreenWebgl = new OffscreenCanvas(256, 256)
 	const contextWebgl = canvasOffscreenWebgl.getContext('webgl')
-	const renererInfo = contextWebgl.getExtension('WEBGL_debug_renderer_info')
+	if(!contextWebgl){
+		return
+	}
+	const rendererInfo = contextWebgl.getExtension('WEBGL_debug_renderer_info')
 	return {
-		webglVendor: contextWebgl.getParameter(renererInfo.UNMASKED_VENDOR_WEBGL),
-		webglRenderer: contextWebgl.getParameter(renererInfo.UNMASKED_RENDERER_WEBGL)
+		webglVendor: contextWebgl.getParameter(rendererInfo.UNMASKED_VENDOR_WEBGL),
+		webglRenderer: contextWebgl.getParameter(rendererInfo.UNMASKED_RENDERER_WEBGL)
 	}
 }
 
