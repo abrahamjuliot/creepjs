@@ -245,7 +245,7 @@ export const getCanvas2d = async imports => {
 			new Promise(resolve => canvas.toBlob(blob => {
 				return resolve(getFileReaderData(blob))
 			})),
-			getFileReaderData(await attempt(() => canvasOffscreen.convertToBlob()))
+			getFileReaderData(canvasOffscreen && await attempt(() => canvasOffscreen.convertToBlob()))
 		])
 		const [arrayBuffer, binaryString, dataURL, text] = fileReaderData || {}
 		const [

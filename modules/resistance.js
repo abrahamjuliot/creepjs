@@ -216,6 +216,19 @@ export const getResistance = async imports => {
 				hardwareConcurrencyHash: ['452924d5'],
 				availWidthHash: ['452924d5'],
 				colorDepthHash: ['452924d5']
+			},
+			jshelter: {
+				contentDocumentHash: ['8ee7df22', '0b637a33'],
+				contentWindowHash: ['8ee7df22', '0b637a33'],
+				appendHash: ['8ee7df22', '0b637a33'],
+				insertAdjacentElementHash: ['8ee7df22', '0b637a33'],
+				insertAdjacentHTMLHash: ['8ee7df22', '0b637a33'],
+				prependHash: ['8ee7df22', '0b637a33'],
+				replaceWithHash: ['8ee7df22', '0b637a33'],
+				appendChildHash: ['8ee7df22', '0b637a33'],
+				insertBeforeHash: ['8ee7df22', '0b637a33'],
+				replaceChildHash: ['8ee7df22', '0b637a33'],
+				hardwareConcurrencyHash: ['dfd41ab4']
 			}
 		}
 
@@ -273,7 +286,7 @@ export const getResistance = async imports => {
 			return acc
 		}, {})
 
-		const getExtension = (pattern, hash) => {
+		const getExtension = ({ pattern, hash, prototypeLiesLen }) => {
 			const {
 				noscript,
 				trace,
@@ -282,8 +295,10 @@ export const getResistance = async imports => {
 				chameleon,
 				duckduckgo,
 				privacybadger,
-				privacypossum
+				privacypossum,
+				jshelter
 			} = pattern
+			const disabled = 'c767712b'
 			if (prototypeLiesLen) {
 				if (prototypeLiesLen >= 7 &&
 					trace.contentDocumentHash.includes(hash.contentDocumentHash) &&
@@ -359,15 +374,31 @@ export const getResistance = async imports => {
 				if (prototypeLiesLen >= 2 &&
 					noscript.contentDocumentHash.includes(hash.contentDocumentHash) &&
 					noscript.contentWindowHash.includes(hash.contentDocumentHash) &&
-					noscript.getContextHash.includes(hash.getContextHash)) {
+					noscript.getContextHash.includes(hash.getContextHash) &&
+					// distinguish NoScript from JShelter
+					hash.hardwareConcurrencyHash == disabled) {
 					return 'NoScript'
+				}
+				if (prototypeLiesLen >= 14 &&
+					jshelter.contentDocumentHash.includes(hash.contentDocumentHash) &&
+					jshelter.contentWindowHash.includes(hash.contentDocumentHash) &&
+					jshelter.appendHash.includes(hash.appendHash) &&
+					jshelter.insertAdjacentElementHash.includes(hash.insertAdjacentElementHash) &&
+					jshelter.insertAdjacentHTMLHash.includes(hash.insertAdjacentHTMLHash) &&
+					jshelter.prependHash.includes(hash.prependHash) &&
+					jshelter.replaceWithHash.includes(hash.replaceWithHash) &&
+					jshelter.appendChildHash.includes(hash.appendChildHash) &&
+					jshelter.insertBeforeHash.includes(hash.insertBeforeHash) &&
+					jshelter.replaceChildHash.includes(hash.replaceChildHash) &&
+					jshelter.hardwareConcurrencyHash.includes(hash.hardwareConcurrencyHash)) {
+					return 'JShelter'
 				}
 				return
 			}
 			return
 		}
 		
-		data.extension = getExtension(pattern, hash)
+		data.extension = getExtension({ pattern, hash, prototypeLiesLen })
 
 		logTestResult({ time: timer.stop(), test: 'resistance', passed: true })
 		return data

@@ -126,7 +126,7 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 				})(),
 				['srcdoc triggers a window Proxy']: (() => {
 					const iframe = document.createElement('iframe')
-					iframe.srcdoc = '' + hashMini(crypto.getRandomValues(new Uint32Array(10)))
+					iframe.srcdoc = Math.random().toString(36).slice(-8)
 					return !!iframe.contentWindow
 				})(),
 				['index of chrome is too high']: (() => {

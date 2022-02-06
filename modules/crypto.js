@@ -8,7 +8,7 @@ const hashMini =  x => {
 }
 
 // instance id
-const instanceId = hashMini(crypto.getRandomValues(new Uint32Array(10)))
+const instanceId = Math.random().toString(36).slice(-8)
 
 // https://stackoverflow.com/a/53490958
 // https://stackoverflow.com/a/43383990
