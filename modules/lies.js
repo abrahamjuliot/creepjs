@@ -122,15 +122,13 @@ const getDragonIframe = ({ numberOfNests, kill = false, context = window }) => {
 	}
 }
 
-const { iframeWindow: dragonFire, parent: parentDragon } = getDragonIframe({ numberOfNests: 2 })
+//const { iframeWindow: dragonFire, parent: parentDragon } = getDragonIframe({ numberOfNests: 2 })
 
 const { iframeWindow: dragonOfDeath } = getDragonIframe({ numberOfNests: 4, kill: true })
 
-const getFirefox = () => 3.141592653589793 ** -100 == 1.9275814160560185e-50
-
 const getPrototypeLies = iframeWindow => {
+	const getFirefox = () => 3.141592653589793 ** -100 == 1.9275814160560185e-50
 	// Lie Tests
-
 	// object constructor descriptor should return undefined properties
 	const getUndefinedValueLie = (obj, name) => {
 		const objName = obj.name
@@ -1023,4 +1021,4 @@ const liesHTML = ({ fp, hashSlice, modal }, pointsHTML) => {
 	}${pointsHTML}</div>`
 }
 
-export { documentLie, phantomDarkness, parentPhantom, lieProps, prototypeLies, lieRecords, getLies, dragonFire, parentDragon, dragonOfDeath, getPluginLies, getNonFunctionToStringLies, liesHTML }
+export { documentLie, phantomDarkness, parentPhantom, lieProps, prototypeLies, lieRecords, getLies, dragonOfDeath, getPluginLies, getNonFunctionToStringLies, liesHTML }

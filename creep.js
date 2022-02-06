@@ -4,7 +4,7 @@ import { hashMini, instanceId, hashify, getBotHash, getFuzzyHash  } from './modu
 
 import { captureError, attempt, caniuse, timer, errorsCaptured, getCapturedErrors, errorsHTML } from './modules/captureErrors.js'
 import { sendToTrash, proxyBehavior, gibberish, trustInteger, compressWebGLRenderer, getWebGLRendererParts, hardenWebGLRenderer, getWebGLRendererConfidence, trashBin, getTrash, trashHTML } from './modules/trash.js'
-import { documentLie, phantomDarkness, parentPhantom, lieProps, prototypeLies, lieRecords, getLies, dragonFire, parentDragon, dragonOfDeath, getPluginLies, getNonFunctionToStringLies, liesHTML } from './modules/lies.js'
+import { documentLie, phantomDarkness, parentPhantom, lieProps, prototypeLies, lieRecords, getLies, dragonOfDeath, getPluginLies, getNonFunctionToStringLies, liesHTML } from './modules/lies.js'
 
 import { getOfflineAudioContext, audioHTML, getKnownAudio } from './modules/audio.js'
 import { getCanvas2d, canvasHTML } from './modules/canvas2d.js'
@@ -92,9 +92,7 @@ const imports = {
 		lieRecords,
 		phantomDarkness,
 		parentPhantom,
-		dragonFire,
 		dragonOfDeath,
-		parentDragon,
 		getPluginLies,
 		getKnownAudio,
 		attemptWindows11UserAgent,
@@ -305,9 +303,6 @@ const imports = {
 		
 		if (parentPhantom) {
 			parentPhantom.parentNode.removeChild(parentPhantom)
-		}
-		if (parentDragon) {
-			parentDragon.parentNode.removeChild(parentDragon)
 		}
 		
 		const fingerprint = {
