@@ -574,7 +574,10 @@
 	};
 
 	// instance id
-	const instanceId = hashMini(crypto.getRandomValues(new Uint32Array(10)));
+	const instanceId = (
+		String.fromCharCode(Math.random() * 26 + 97) +
+		Math.random().toString(36).slice(-7)
+	);
 
 	// https://stackoverflow.com/a/53490958
 	// https://stackoverflow.com/a/43383990
@@ -1892,22 +1895,16 @@
 				'font'
 			]
 		});
-		if (window.CSSStyleDeclaration) {
-			// Blink/WebKit
-			searchLies(() => CSSStyleDeclaration, {
-				target: [
-					'setProperty'
-				]
-			});
-		}
-		if (window.CSS2Properties) {
-			// Gecko
-			searchLies(() => CSS2Properties, {
-				target: [
-					'setProperty'
-				]
-			});
-		}
+		searchLies(() => CSSStyleDeclaration, {
+			target: [
+				'setProperty'
+			]
+		});
+		searchLies(() => CSS2Properties, { // Gecko
+			target: [
+				'setProperty'
+			]
+		});
 		searchLies(() => Date, {
 			target: [
 				'getDate',
@@ -2089,6 +2086,12 @@
 				'appendChild',
 				'insertBefore',
 				'replaceChild'
+			]
+		});
+		searchLies(() => OffscreenCanvas, {
+			target: [
+				'convertToBlob',
+				'getContext'
 			]
 		});
 		searchLies(() => OffscreenCanvasRenderingContext2D, {
@@ -2793,6 +2796,7 @@
 				createTimer,
 				getEmojis,
 				captureError,
+				attempt,
 				lieProps,
 				documentLie,
 				phantomDarkness,
@@ -2898,7 +2902,7 @@
 				new Promise(resolve => canvas.toBlob(blob => {
 					return resolve(getFileReaderData(blob))
 				})),
-				getFileReaderData(canvasOffscreen && await canvasOffscreen.convertToBlob())
+				getFileReaderData(canvasOffscreen && await attempt(() => canvasOffscreen.convertToBlob()))
 			]);
 			const [arrayBuffer, binaryString, dataURL, text] = fileReaderData || {};
 			const [
@@ -3688,8 +3692,7 @@
 					}
 				}
 				catch (error) {
-					console.error(error);
-					return
+					return captureError(error)
 				}
 			};
 			
@@ -5223,7 +5226,7 @@
 				queueEvent,
 				createTimer,
 				parentPhantom,
-				hashMini,
+				instanceId,
 				isChrome,
 				captureError,
 				logTestResult
@@ -5295,7 +5298,7 @@
 					})(),
 					['srcdoc triggers a window Proxy']: (() => {
 						const iframe = document.createElement('iframe');
-						iframe.srcdoc = '' + hashMini(crypto.getRandomValues(new Uint32Array(10)));
+						iframe.srcdoc = instanceId;
 						return !!iframe.contentWindow
 					})(),
 					['index of chrome is too high']: (() => {
@@ -9664,6 +9667,19 @@
 					hardwareConcurrencyHash: ['452924d5'],
 					availWidthHash: ['452924d5'],
 					colorDepthHash: ['452924d5']
+				},
+				jshelter: {
+					contentDocumentHash: ['8ee7df22', '0b637a33'],
+					contentWindowHash: ['8ee7df22', '0b637a33'],
+					appendHash: ['8ee7df22', '0b637a33'],
+					insertAdjacentElementHash: ['8ee7df22', '0b637a33'],
+					insertAdjacentHTMLHash: ['8ee7df22', '0b637a33'],
+					prependHash: ['8ee7df22', '0b637a33'],
+					replaceWithHash: ['8ee7df22', '0b637a33'],
+					appendChildHash: ['8ee7df22', '0b637a33'],
+					insertBeforeHash: ['8ee7df22', '0b637a33'],
+					replaceChildHash: ['8ee7df22', '0b637a33'],
+					hardwareConcurrencyHash: ['dfd41ab4']
 				}
 			};
 
@@ -9721,7 +9737,7 @@
 				return acc
 			}, {});
 
-			const getExtension = (pattern, hash) => {
+			const getExtension = ({ pattern, hash, prototypeLiesLen }) => {
 				const {
 					noscript,
 					trace,
@@ -9730,8 +9746,10 @@
 					chameleon,
 					duckduckgo,
 					privacybadger,
-					privacypossum
+					privacypossum,
+					jshelter
 				} = pattern;
+				const disabled = 'c767712b';
 				if (prototypeLiesLen) {
 					if (prototypeLiesLen >= 7 &&
 						trace.contentDocumentHash.includes(hash.contentDocumentHash) &&
@@ -9807,15 +9825,31 @@
 					if (prototypeLiesLen >= 2 &&
 						noscript.contentDocumentHash.includes(hash.contentDocumentHash) &&
 						noscript.contentWindowHash.includes(hash.contentDocumentHash) &&
-						noscript.getContextHash.includes(hash.getContextHash)) {
+						noscript.getContextHash.includes(hash.getContextHash) &&
+						// distinguish NoScript from JShelter
+						hash.hardwareConcurrencyHash == disabled) {
 						return 'NoScript'
+					}
+					if (prototypeLiesLen >= 14 &&
+						jshelter.contentDocumentHash.includes(hash.contentDocumentHash) &&
+						jshelter.contentWindowHash.includes(hash.contentDocumentHash) &&
+						jshelter.appendHash.includes(hash.appendHash) &&
+						jshelter.insertAdjacentElementHash.includes(hash.insertAdjacentElementHash) &&
+						jshelter.insertAdjacentHTMLHash.includes(hash.insertAdjacentHTMLHash) &&
+						jshelter.prependHash.includes(hash.prependHash) &&
+						jshelter.replaceWithHash.includes(hash.replaceWithHash) &&
+						jshelter.appendChildHash.includes(hash.appendChildHash) &&
+						jshelter.insertBeforeHash.includes(hash.insertBeforeHash) &&
+						jshelter.replaceChildHash.includes(hash.replaceChildHash) &&
+						jshelter.hardwareConcurrencyHash.includes(hash.hardwareConcurrencyHash)) {
+						return 'JShelter'
 					}
 					return
 				}
 				return
 			};
 			
-			data.extension = getExtension(pattern, hash);
+			data.extension = getExtension({ pattern, hash, prototypeLiesLen });
 
 			logTestResult({ time: timer.stop(), test: 'resistance', passed: true });
 			return data
@@ -10967,7 +11001,7 @@
 			const renderIfKnown = (unknown, decrypted) => unknown ? ` ${note.unknown}` : `<span class="user-agent">${decrypted}</span>`;
 			const renderFailingScore = (title, score) => {
 				return (
-					(score||0) > 36 ? title : `<span class="high-entropy">${title}</span>` 
+					!score || (score > 36) ? title : `<span class="high-entropy">${title}</span>` 
 				)
 			};
 			
@@ -10976,7 +11010,7 @@
 				${renderFailingScore(`${icons}${title}`, score)}<strong>*</strong>
 			</span>` :
 					showVersion ? renderFailingScore(`${icons}${renderIfKnown(unknown, decrypted)}`, score) :
-						renderFailingScore(`${icons}${title}${renderBlankIfKnown(unknown)}`, score)
+						renderFailingScore(`${icons}${title}`, score)
 			)
 		};
 
@@ -11038,6 +11072,8 @@
 							'F'
 		);
 
+		const hasValue = data => Object.values(data || {}).find(x => typeof x != 'undefined');
+
 		const el = document.getElementById('browser-detection');
 		return patch(el, html`
 	<div class="flex-grid relative">
@@ -11079,72 +11115,72 @@
 			}</div>
 			<div class="ellipsis relative">
 				<span id="emoji-entropy"></span>${
-				!Object.keys(emojiSystem || {}).length ? unknownHTML('domRect emojis') : 
+				!hasValue(emojiSystem) ? unknownHTML('domRect emojis') : 
 					getTemplate({title: 'domRect emojis', agent: emojiSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="domRect-entropy"></span>${
-				!Object.keys(domRectSystem || {}).length ? unknownHTML('domRect') : 
+				!hasValue(domRectSystem) ? unknownHTML('domRect') : 
 					getTemplate({title: 'domRect', agent: domRectSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="svg-entropy"></span>${
-				!Object.keys(svgSystem || {}).length ? unknownHTML('svg emojis') : 
+				!hasValue(svgSystem) ? unknownHTML('svg emojis') : 
 					getTemplate({title: 'svg emojis', agent: svgSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="mimeTypes-entropy"></span>${
-				!Object.keys(mimeTypesSystem || {}).length ? unknownHTML('mimeTypes') : 
+				!hasValue(mimeTypesSystem) ? unknownHTML('mimeTypes') : 
 					getTemplate({title: 'mimeTypes', agent: mimeTypesSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="audio-entropy"></span>${
-				!Object.keys(audioSystem || {}).length ? unknownHTML('audio') : 
+				!hasValue(audioSystem) ? unknownHTML('audio') : 
 					getTemplate({title: 'audio', agent: audioSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="canvas-entropy"></span>${
-				!Object.keys(canvasSystem || {}).length ? unknownHTML('canvas') : 
+				!hasValue(canvasSystem) ? unknownHTML('canvas') : 
 					getTemplate({title: 'canvas', agent: canvasSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="textMetrics-entropy"></span>${
-				!Object.keys(textMetricsSystem || {}).length ? unknownHTML('textMetrics') : 
+				!hasValue(textMetricsSystem) ? unknownHTML('textMetrics') : 
 					getTemplate({title: 'textMetrics', agent: textMetricsSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="webgl-entropy"></span>${
-				!Object.keys(webglSystem || {}).length ? unknownHTML('webgl') : 
+				!hasValue(webglSystem) ? unknownHTML('webgl') : 
 					getTemplate({title: 'webgl', agent: webglSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="gpu-entropy"></span>${
-				!Object.keys(gpuSystem || {}).length ? unknownHTML('gpu params') : 
+				!hasValue(gpuSystem) ? unknownHTML('gpu params') : 
 					getTemplate({title: 'gpu params', agent: gpuSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="gpuModel-entropy"></span>${
-				!Object.keys(gpuModelSystem || {}).length ? unknownHTML('gpu model') : 
+				!hasValue(gpuModelSystem) ? unknownHTML('gpu model') : 
 					getTemplate({title: 'gpu model', agent: gpuModelSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="fonts-entropy"></span>${
-				!Object.keys(fontsSystem || {}).length ? unknownHTML('fonts') : 
+				!hasValue(fontsSystem) ? unknownHTML('fonts') : 
 					getTemplate({title: 'fonts', agent: fontsSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="voices-entropy"></span>${
-				!Object.keys(voicesSystem || {}).length ? unknownHTML('voices') : 
+				!hasValue(voicesSystem) ? unknownHTML('voices') : 
 					getTemplate({title: 'voices', agent: voicesSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="screen-entropy"></span>${
-				!Object.keys(screenSystem || {}).length ? unknownHTML('screen') : 
+				!hasValue(screenSystem) ? unknownHTML('screen') : 
 					getTemplate({title: 'screen', agent: screenSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="resistance-entropy"></span>${
-				!Object.keys(resistance || {}).length ? unknownHTML('resistance') : 
+				!hasValue(resistance) ? unknownHTML('resistance') : 
 					getTemplate({title: 'resistance', agent: resistance})
 			}</div>
 		</div>
