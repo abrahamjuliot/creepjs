@@ -54,7 +54,7 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 			queueEvent,
 			createTimer,
 			parentPhantom,
-			hashMini,
+			instanceId,
 			isChrome,
 			captureError,
 			logTestResult
@@ -126,7 +126,7 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 				})(),
 				['srcdoc triggers a window Proxy']: (() => {
 					const iframe = document.createElement('iframe')
-					iframe.srcdoc = Math.random().toString(36).slice(-8)
+					iframe.srcdoc = instanceId
 					return !!iframe.contentWindow
 				})(),
 				['index of chrome is too high']: (() => {
