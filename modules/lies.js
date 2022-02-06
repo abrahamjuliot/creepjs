@@ -28,11 +28,10 @@ const ghost = () => `
 	left:-10000px;
 	visibility: hidden;
 `
-const getRandomValues = () => {
-	const id = [...crypto.getRandomValues(new Uint32Array(10))]
-		.map(n => n.toString(36)).join('')
-	return id
-}
+const getRandomValues = () => (
+	String.fromCharCode(Math.random() * 26 + 97) +
+	Math.random().toString(36).slice(-7)
+)
 
 const getBehemothIframe = win => {
 	try {
