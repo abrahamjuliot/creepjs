@@ -1,3 +1,4 @@
+const ask = fn => { try { return fn() } catch (e) { return } }
 const createTimer = () => {
 	let start = 0
 	const log = []
@@ -1038,21 +1039,15 @@ const get2dCanvasData = async () => {
 	}
 }
 
-const getWebglData = () => {
-	if (!self.OffscreenCanvas) {
-		return
-	}
+const getWebglData = () => ask(() => {
 	const canvasOffscreenWebgl = new OffscreenCanvas(256, 256)
 	const contextWebgl = canvasOffscreenWebgl.getContext('webgl')
-	if(!contextWebgl){
-		return
-	}
 	const rendererInfo = contextWebgl.getExtension('WEBGL_debug_renderer_info')
 	return {
 		webglVendor: contextWebgl.getParameter(rendererInfo.UNMASKED_VENDOR_WEBGL),
 		webglRenderer: contextWebgl.getParameter(rendererInfo.UNMASKED_RENDERER_WEBGL)
 	}
-}
+})
 
 const computeTimezoneOffset = () => {
 	const date = new Date().getDate()
