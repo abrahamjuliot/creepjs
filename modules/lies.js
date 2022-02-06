@@ -126,24 +126,6 @@ const { iframeWindow: dragonFire, parent: parentDragon } = getDragonIframe({ num
 
 const { iframeWindow: dragonOfDeath } = getDragonIframe({ numberOfNests: 4, kill: true })
 
-const chromium = (
-	Math.acos(0.123) == 1.4474840516030247 &&
-	Math.acosh(Math.SQRT2) == 0.881373587019543 &&
-	Math.atan(2) == 1.1071487177940904 &&
-	Math.atanh(0.5) == 0.5493061443340548 &&
-	Math.cbrt(Math.PI) == 1.4645918875615231 &&
-	Math.cos(21 * Math.LN2) == -0.4067775970251724 &&
-	Math.cosh(492 * Math.LOG2E) == 9.199870313877772e+307 &&
-	Math.expm1(1) == 1.718281828459045 &&
-	Math.hypot(6 * Math.PI, -100) == 101.76102278593319 &&
-	Math.log10(Math.PI) == 0.4971498726941338 &&
-	Math.sin(Math.PI) == 1.2246467991473532e-16 &&
-	Math.sinh(Math.PI) == 11.548739357257748 &&
-	Math.tan(10 * Math.LOG2E) == -3.3537128705376014 &&
-	Math.tanh(0.123) == 0.12238344189440875 &&
-	Math.pow(Math.PI, -100) == 1.9275814160560204e-50
-)
-
 const getFirefox = () => 3.141592653589793 ** -100 == 1.9275814160560185e-50
 
 const getPrototypeLies = iframeWindow => {
