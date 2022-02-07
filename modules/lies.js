@@ -128,6 +128,7 @@ const { iframeWindow: dragonOfDeath } = getDragonIframe({ numberOfNests: 4, kill
 
 const getPrototypeLies = iframeWindow => {
 	const getFirefox = () => 3.141592653589793 ** -100 == 1.9275814160560185e-50
+	const getChrome = () => 3.141592653589793 ** -100 == 1.9275814160560204e-50
 	// Lie Tests
 	// object constructor descriptor should return undefined properties
 	const getUndefinedValueLie = (obj, name) => {
@@ -360,7 +361,7 @@ const getPrototypeLies = iframeWindow => {
 				error.constructor.name == 'TypeError' && stackLines.length > 1
 			)
 			// Chromium must throw error 'at Function.toString' and not 'at Object.apply'
-			const isChrome = 3.141592653589793 ** -100 == 1.9275814160560204e-50
+			const isChrome = getChrome()
 			if (validStack && isChrome && (!functionToString.test(stackLines[1]) || !validLines)) {
 				return true
 			}
@@ -397,7 +398,7 @@ const getPrototypeLies = iframeWindow => {
 
 	// setting prototype to itself should not throw 'Uncaught InternalError: too much recursion'
 	/*
-		Designed for Firefox Proxies
+		Designed for Chrome and Firefox Proxies
 		
 		Trying to bypass this? We can also check if empty Proxies return 'Uncaught InternalError: too much recursion'
 
@@ -424,15 +425,48 @@ const getPrototypeLies = iframeWindow => {
 	*/
 	const getTooMuchRecursionLie = apiFunction => {
 		const isFirefox = getFirefox()
+		const isChrome = getChrome()
 		const nativeProto = Object.getPrototypeOf(apiFunction)
 		try {
 			Object.setPrototypeOf(apiFunction, apiFunction) + ''
-			return true
-		} catch (error) {
-			return (
-				error.constructor.name != 'TypeError' ||
-					(isFirefox && /too much recursion/.test(error.message)) ? true : false
-			)
+			return true // failed to throw
+		} catch (typeError) {
+			try {
+				const hasTypeError = typeError.constructor.name == 'TypeError'
+				const chromeLie = (
+					isChrome &&
+					(typeError.message != `Cyclic __proto__ value`)
+				)
+				const firefoxLie = (
+					isFirefox &&
+					typeError.message != `can't set prototype: it would cause a prototype chain cycle`
+				)
+				if (!hasTypeError || chromeLie || firefoxLie) {
+					return true
+				}
+				Object.setPrototypeOf(new Proxy(apiFunction, {}), new Proxy(apiFunction, {})) + ''
+				return true // failed to throw
+			} catch (error) {
+				const hasRangeError = error.constructor.name == 'RangeError'
+				const hasInternalError = error.constructor.name == 'InternalError'
+				const hasRangeOrInternalError = hasRangeError || hasInternalError
+				const chromeLie = (
+					isChrome &&
+					((error.message != `Maximum call stack size exceeded`) || !hasRangeError)
+				)
+				const firefoxLie = (
+					isFirefox &&
+					((error.message != `too much recursion`) || !hasInternalError)
+				)
+				if (!hasRangeOrInternalError || chromeLie || firefoxLie) {
+					return true
+				}
+				try {
+					return Reflect.setPrototypeOf(apiFunction, apiFunction)
+				} catch (error) {
+					return true // failed at Error
+				}
+			}
 		} finally {
 			// restore proto
 			Object.setPrototypeOf(apiFunction, nativeProto)

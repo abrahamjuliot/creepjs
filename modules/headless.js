@@ -46,6 +46,56 @@ const getNewObjectToStringTypeErrorLie = apiFunction => {
 	}
 }
 
+const getTooMuchRecursionLie = apiFunction => {
+	const isFirefox = 3.141592653589793 ** -100 == 1.9275814160560185e-50
+	const isChrome = 3.141592653589793 ** -100 == 1.9275814160560204e-50
+	const nativeProto = Object.getPrototypeOf(apiFunction)
+	try {
+		Object.setPrototypeOf(apiFunction, apiFunction) + ''
+		return true // failed to throw
+	} catch (typeError) {
+		try {
+			const hasTypeError = typeError.constructor.name == 'TypeError'
+			const chromeLie = (
+				isChrome &&
+				(typeError.message != `Cyclic __proto__ value`)
+			)
+			const firefoxLie = (
+				isFirefox &&
+				typeError.message != `can't set prototype: it would cause a prototype chain cycle`
+			)
+			if (!hasTypeError || chromeLie || firefoxLie) {
+				return true
+			}
+			Object.setPrototypeOf(new Proxy(apiFunction, {}), new Proxy(apiFunction, {})) + ''
+			return true // failed to throw
+		} catch (error) {
+			const hasRangeError = error.constructor.name == 'RangeError'
+			const hasInternalError = error.constructor.name == 'InternalError'
+			const hasRangeOrInternalError = hasRangeError || hasInternalError
+			const chromeLie = (
+				isChrome &&
+				((error.message != `Maximum call stack size exceeded`) || !hasRangeError)
+			)
+			const firefoxLie = (
+				isFirefox &&
+				((error.message != `too much recursion`) || !hasInternalError)
+			)
+			if (!hasRangeOrInternalError || chromeLie || firefoxLie) {
+				return true
+			}
+			try {
+				return Reflect.setPrototypeOf(apiFunction, apiFunction)
+			} catch (error) {
+				return true // failed at Error
+			}
+		}
+	} finally {
+		// restore proto
+		Object.setPrototypeOf(apiFunction, nativeProto)
+	}
+}
+
 
 export const getHeadlessFeatures = async (imports, workerScope) => {
 
@@ -159,13 +209,7 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 					}
 				})(),
 				['Permissions.prototype.query leaks Proxy behavior']: (() => {
-					try {
-						class Blah extends Permissions.prototype.query { }
-						return true
-					}
-					catch (error) {
-						return /\[object Function\]/.test(error.message)
-					}
+					return getTooMuchRecursionLie(Permissions.prototype.query)
 				})(),
 				['Function.prototype.toString leaks Proxy behavior']: (() => {
 					try {
@@ -177,9 +221,11 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 					}
 				})(),
 				['Function.prototype.toString has invalid TypeError']: (() => {
+					const apiFunction = Function.prototype.toString
 					const liedToString = (
-						getNewObjectToStringTypeErrorLie(Function.prototype.toString) ||
-						getNewObjectToStringTypeErrorLie(() => { })
+						getNewObjectToStringTypeErrorLie(apiFunction) ||
+						getNewObjectToStringTypeErrorLie(() => { }) ||
+						getTooMuchRecursionLie(apiFunction)
 					)
 					return liedToString
 				})()
