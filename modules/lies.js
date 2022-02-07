@@ -348,24 +348,31 @@ const getPrototypeLies = iframeWindow => {
 	// calling toString() on an object created from the function should throw a TypeError
 	const getNewObjectToStringTypeErrorLie = apiFunction => {
 		try {
-			Object.create(apiFunction).toString()
+			const you = () => Object.create(apiFunction).toString()
+			const cant = () => you()
+			const hide = () => cant()
+			hide()
+			// error must throw
 			return true
 		} catch (error) {
 			const stackLines = error.stack.split('\n')
-			const traceLines = stackLines.slice(1)
-			const objectApply = /at Object\.apply/
-			const functionToString = /at Function\.toString/
-			const validLines = !traceLines.find(line => objectApply.test(line))
+			const validScope = !/at Object\.apply/.test(stackLines[1])
 			// Stack must be valid
-			const validStack = (
-				error.constructor.name == 'TypeError' && stackLines.length > 1
+			const validStackSize = (
+				error.constructor.name == 'TypeError' && stackLines.length >= 5
 			)
-			// Chromium must throw error 'at Function.toString' and not 'at Object.apply'
-			const isChrome = getChrome()
-			if (validStack && isChrome && (!functionToString.test(stackLines[1]) || !validLines)) {
+			// Chromium must throw error 'at Function.toString'... and not 'at Object.apply'
+			const isChrome = 3.141592653589793 ** -100 == 1.9275814160560204e-50
+			if (validStackSize && isChrome && (
+				!validScope ||
+				!/at Function\.toString/.test(stackLines[1]) ||
+				!/at you/.test(stackLines[2]) ||
+				!/at cant/.test(stackLines[3]) ||
+				!/at hide/.test(stackLines[4])
+			)) {
 				return true
 			}
-			return !validStack
+			return !validStackSize
 		}
 	}
 
@@ -424,8 +431,8 @@ const getPrototypeLies = iframeWindow => {
 		hide()
 	*/
 	const getTooMuchRecursionLie = apiFunction => {
-		const isFirefox = getFirefox()
-		const isChrome = getChrome()
+		const isFirefox = 3.141592653589793 ** -100 == 1.9275814160560185e-50
+		const isChrome = 3.141592653589793 ** -100 == 1.9275814160560204e-50
 		const nativeProto = Object.getPrototypeOf(apiFunction)
 		try {
 			Object.setPrototypeOf(apiFunction, apiFunction) + ''
@@ -896,7 +903,8 @@ const getPrototypeLies = iframeWindow => {
 		lieList: Object.keys(props).sort(),
 		lieDetail: props,
 		lieCount: Object.keys(props).reduce((acc, key) => acc + props[key].length, 0),
-		propsSearched
+		propsSearched,
+		methods: [ getTooMuchRecursionLie, getNewObjectToStringTypeErrorLie ]
 	}
 }
 
@@ -907,7 +915,8 @@ const {
 	lieList,
 	lieDetail,
 	lieCount,
-	propsSearched
+	propsSearched,
+	methods: [ getTooMuchRecursionLie, getNewObjectToStringTypeErrorLie ]
 } = getPrototypeLies(phantomDarkness) // execute and destructure the list and detail
 const prototypeLies = JSON.parse(JSON.stringify(lieDetail))
 const perf = performance.now() - start
@@ -1055,4 +1064,4 @@ const liesHTML = ({ fp, hashSlice, modal }, pointsHTML) => {
 	}${pointsHTML}</div>`
 }
 
-export { documentLie, phantomDarkness, parentPhantom, lieProps, prototypeLies, lieRecords, getLies, dragonOfDeath, getPluginLies, getNonFunctionToStringLies, liesHTML }
+export { documentLie, phantomDarkness, parentPhantom, lieProps, prototypeLies, lieRecords, getLies, getTooMuchRecursionLie, getNewObjectToStringTypeErrorLie, dragonOfDeath, getPluginLies, getNonFunctionToStringLies, liesHTML }

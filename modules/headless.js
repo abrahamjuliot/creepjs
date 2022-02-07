@@ -1,102 +1,3 @@
-const detectChromium = () => (
-	Math.acos(0.123) == 1.4474840516030247 &&
-	Math.acosh(Math.SQRT2) == 0.881373587019543 &&
-	Math.atan(2) == 1.1071487177940904 &&
-	Math.atanh(0.5) == 0.5493061443340548 &&
-	Math.cbrt(Math.PI) == 1.4645918875615231 &&
-	Math.cos(21 * Math.LN2) == -0.4067775970251724 &&
-	Math.cosh(492 * Math.LOG2E) == 9.199870313877772e+307 &&
-	Math.expm1(1) == 1.718281828459045 &&
-	Math.hypot(6 * Math.PI, -100) == 101.76102278593319 &&
-	Math.log10(Math.PI) == 0.4971498726941338 &&
-	Math.sin(Math.PI) == 1.2246467991473532e-16 &&
-	Math.sinh(Math.PI) == 11.548739357257748 &&
-	Math.tan(10 * Math.LOG2E) == -3.3537128705376014 &&
-	Math.tanh(0.123) == 0.12238344189440875 &&
-	Math.pow(Math.PI, -100) == 1.9275814160560204e-50
-)
-
-const getNewObjectToStringTypeErrorLie = apiFunction => {
-	try {
-		const you = () => Object.create(apiFunction).toString()
-		const cant = () => you()
-		const hide = () => cant()
-		hide()
-		// error must throw
-		return true
-	} catch (error) {
-		const stackLines = error.stack.split('\n')
-		const validScope = !/at Object\.apply/.test(stackLines[1])
-		// Stack must be valid
-		const validStackSize = (
-			error.constructor.name == 'TypeError' && stackLines.length >= 5
-		)
-		// Chromium must throw error 'at Function.toString'... and not 'at Object.apply'
-		const isChromium = 'chrome' in window || detectChromium()
-		if (validStackSize && isChromium && (
-			!validScope ||
-			!/at Function\.toString/.test(stackLines[1]) ||
-			!/at you/.test(stackLines[2]) ||
-			!/at cant/.test(stackLines[3]) ||
-			!/at hide/.test(stackLines[4])
-		)) {
-			return true
-		}
-		return !validStackSize
-	}
-}
-
-const getTooMuchRecursionLie = apiFunction => {
-	const isFirefox = 3.141592653589793 ** -100 == 1.9275814160560185e-50
-	const isChrome = 3.141592653589793 ** -100 == 1.9275814160560204e-50
-	const nativeProto = Object.getPrototypeOf(apiFunction)
-	try {
-		Object.setPrototypeOf(apiFunction, apiFunction) + ''
-		return true // failed to throw
-	} catch (typeError) {
-		try {
-			const hasTypeError = typeError.constructor.name == 'TypeError'
-			const chromeLie = (
-				isChrome &&
-				(typeError.message != `Cyclic __proto__ value`)
-			)
-			const firefoxLie = (
-				isFirefox &&
-				typeError.message != `can't set prototype: it would cause a prototype chain cycle`
-			)
-			if (!hasTypeError || chromeLie || firefoxLie) {
-				return true
-			}
-			Object.setPrototypeOf(new Proxy(apiFunction, {}), new Proxy(apiFunction, {})) + ''
-			return true // failed to throw
-		} catch (error) {
-			const hasRangeError = error.constructor.name == 'RangeError'
-			const hasInternalError = error.constructor.name == 'InternalError'
-			const hasRangeOrInternalError = hasRangeError || hasInternalError
-			const chromeLie = (
-				isChrome &&
-				((error.message != `Maximum call stack size exceeded`) || !hasRangeError)
-			)
-			const firefoxLie = (
-				isFirefox &&
-				((error.message != `too much recursion`) || !hasInternalError)
-			)
-			if (!hasRangeOrInternalError || chromeLie || firefoxLie) {
-				return true
-			}
-			try {
-				return Reflect.setPrototypeOf(apiFunction, apiFunction)
-			} catch (error) {
-				return true // failed at Error
-			}
-		}
-	} finally {
-		// restore proto
-		Object.setPrototypeOf(apiFunction, nativeProto)
-	}
-}
-
-
 export const getHeadlessFeatures = async (imports, workerScope) => {
 
 	const {
@@ -106,6 +7,8 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 			parentPhantom,
 			instanceId,
 			isChrome,
+			getTooMuchRecursionLie,
+			getNewObjectToStringTypeErrorLie,
 			captureError,
 			logTestResult
 		}
@@ -114,20 +17,19 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 	try {
 		const timer = createTimer()
 		await queueEvent(timer)
-		const isChromium = detectChromium() || isChrome
 		const mimeTypes = Object.keys({ ...navigator.mimeTypes })
 		const data = {
-			chromium: isChromium,
+			chromium: isChrome,
 			likeHeadless: {
 				['navigator.webdriver is on']: 'webdriver' in navigator && !!navigator.webdriver,
-				['chrome plugins array is empty']: isChromium && navigator.plugins.length === 0,
-				['chrome mimeTypes array is empty']: isChromium && mimeTypes.length === 0,
+				['chrome plugins array is empty']: isChrome && navigator.plugins.length === 0,
+				['chrome mimeTypes array is empty']: isChrome && mimeTypes.length === 0,
 				['notification permission is denied']: (
-					isChromium &&
+					isChrome &&
 					'Notification' in window &&
 					(Notification.permission == 'denied')
 				),
-				['chrome system color ActiveText is rgb(255, 0, 0)']: isChromium && (() => {
+				['chrome system color ActiveText is rgb(255, 0, 0)']: isChrome && (() => {
 					let rendered = parentPhantom
 					if (!parentPhantom) {
 						rendered = document.createElement('div')
@@ -143,9 +45,9 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 				['prefers light color scheme']: matchMedia('(prefers-color-scheme: light)').matches
 			},
 			headless: {
-				['chrome window.chrome is undefined']: isChromium && !('chrome' in window),
+				['chrome window.chrome is undefined']: isChrome && !('chrome' in window),
 				['chrome permission state is inconsistent']: (
-					isChromium &&
+					isChrome &&
 					'permissions' in navigator &&
 					await (async () => {
 						const res = await navigator.permissions.query({ name: 'notifications' })
