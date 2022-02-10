@@ -5879,12 +5879,14 @@
 		try {
 			const timer = createTimer();
 			timer.start();
-			const phantomNavigator = phantomDarkness ? phantomDarkness.navigator : navigator;
 			const devices = (
-				!phantomNavigator.mediaDevices ||
-				!phantomNavigator.mediaDevices.enumerateDevices ? undefined :
-					await phantomNavigator.mediaDevices.enumerateDevices()
-						.then(devices => devices.map(device => device.kind).sort()).catch(error => undefined)
+				!navigator.mediaDevices ||
+				!navigator.mediaDevices.enumerateDevices ? undefined :
+					await navigator.mediaDevices.enumerateDevices()
+						.then(devices => devices.map(device => device.kind).sort()).catch(error => {
+							console.error(error);
+							return
+						})
 			);
 		
 			const mimeTypes = getMimeTypes();
