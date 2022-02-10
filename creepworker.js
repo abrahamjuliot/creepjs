@@ -274,7 +274,8 @@ const getPrototypeLies = globalScope => {
 	}
 
 	// arguments or caller should not throw 'incompatible Proxy' TypeError
-	const tryIncompatibleProxy = (isFirefox, fn) => {
+	const tryIncompatibleProxy = fn => {
+		const isFirefox = getFirefox()
 		try {
 			fn()
 			return true
@@ -286,17 +287,15 @@ const getPrototypeLies = globalScope => {
 		}
 	}
 	const getIncompatibleProxyTypeErrorLie = apiFunction => {
-		const isFirefox = getFirefox()
 		return (
-			tryIncompatibleProxy(isFirefox, () => apiFunction.arguments) ||
-			tryIncompatibleProxy(isFirefox, () => apiFunction.arguments)
+			tryIncompatibleProxy(() => apiFunction.arguments) ||
+			tryIncompatibleProxy(() => apiFunction.caller)
 		)
 	}
 	const getToStringIncompatibleProxyTypeErrorLie = apiFunction => {
-		const isFirefox = getFirefox()
 		return (
-			tryIncompatibleProxy(isFirefox, () => apiFunction.toString.arguments) ||
-			tryIncompatibleProxy(isFirefox, () => apiFunction.toString.caller)
+			tryIncompatibleProxy(() => apiFunction.toString.arguments) ||
+			tryIncompatibleProxy(() => apiFunction.toString.caller)
 		)
 	}
 
