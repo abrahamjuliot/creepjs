@@ -373,7 +373,7 @@
 			}
 		}
 
-		const getDefinePropertiesLie = (proxy, apiFunction) => {
+		const getDefinePropertiesLie = (apiFunction) => {
 			try {
 				const _apiFunction = apiFunction
 				Object.defineProperty(_apiFunction, '', {})+''
