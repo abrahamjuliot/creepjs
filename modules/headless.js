@@ -111,7 +111,7 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 					}
 				})(),
 				['Permissions.prototype.query leaks Proxy behavior']: (() => {
-					return getTooMuchRecursionLie(Permissions.prototype.query)
+					return getTooMuchRecursionLie({ apiFunction: Permissions.prototype.query })
 				})(),
 				['Function.prototype.toString leaks Proxy behavior']: (() => {
 					try {
@@ -127,7 +127,7 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 					const liedToString = (
 						getNewObjectToStringTypeErrorLie(apiFunction) ||
 						getNewObjectToStringTypeErrorLie(() => { }) ||
-						getTooMuchRecursionLie(apiFunction)
+						getTooMuchRecursionLie({ apiFunction })
 					)
 					return liedToString
 				})()
