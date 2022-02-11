@@ -355,7 +355,6 @@ const getPrototypeLies = globalScope => {
 
 	// setting prototype or __proto__ to itself should not throw 'Uncaught InternalError: too much recursion'
 	const getTooMuchRecursionLie = ({ apiFunction, method = 'setPrototypeOf', randomId }) => {
-		setTimeout(() => {}, 0)
 		if (!randomId) {
 			randomId = getRandomValues()
 		}
