@@ -7,8 +7,12 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 			parentPhantom,
 			instanceId,
 			isChrome,
-			getTooMuchRecursionLie,
-			getNewObjectToStringTypeErrorLie,
+			proxyDetectionMethods: [
+				getTooMuchRecursionLie,
+				getNewObjectToStringTypeErrorLie,
+				getInstanceofCheckLie,
+				getDefinePropertiesLie
+			],
 			captureError,
 			logTestResult
 		}
@@ -111,7 +115,13 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 					}
 				})(),
 				['Permissions.prototype.query leaks Proxy behavior']: (() => {
-					return getTooMuchRecursionLie({ apiFunction: Permissions.prototype.query })
+					const apiFunction = Permissions.prototype.query
+					return (
+						getTooMuchRecursionLie({ apiFunction }) ||
+						getTooMuchRecursionLie({ apiFunction, method: '__proto__' }) ||
+						getInstanceofCheckLie(new Proxy(apiFunction, {}), apiFunction) || 
+						getDefinePropertiesLie(apiFunction)
+					)
 				})(),
 				['Function.prototype.toString leaks Proxy behavior']: (() => {
 					try {
@@ -127,7 +137,10 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 					const liedToString = (
 						getNewObjectToStringTypeErrorLie(apiFunction) ||
 						getNewObjectToStringTypeErrorLie(() => { }) ||
-						getTooMuchRecursionLie({ apiFunction })
+						getTooMuchRecursionLie({ apiFunction }) ||
+						getTooMuchRecursionLie({ apiFunction, method: '__proto__' }) ||
+						getInstanceofCheckLie(new Proxy(apiFunction, {}), apiFunction) || 
+						getDefinePropertiesLie(apiFunction)
 					)
 					return liedToString
 				})()

@@ -23,10 +23,14 @@ const queueEvent = timer => {
 		.catch(e => { })
 }
 
-
 const getPrototypeLies = globalScope => {
 	const getFirefox = () => 3.141592653589793 ** -100 == 1.9275814160560185e-50
 	const getChrome = () => 3.141592653589793 ** -100 == 1.9275814160560204e-50
+	const getRandomValues = () => (
+		String.fromCharCode(Math.random() * 26 + 97) +
+		Math.random().toString(36).slice(-7)
+	)
+	const randomId = getRandomValues()
 	// Lie Tests
 	// object constructor descriptor should return undefined properties
 	const getUndefinedValueLie = (obj, name) => {
@@ -299,12 +303,12 @@ const getPrototypeLies = globalScope => {
 		)
 	}
 
-	// setting prototype to itself should not throw 'Uncaught InternalError: too much recursion'
-	/*
-		Designed for Chrome and Firefox Proxies
-	*/
-	const getInstanceOfCheckLie = (proxy, apiFunction) => {
-		// Chrome only
+	// checking proxy instanceof proxy should throw a valid TypeError
+	const getInstanceofCheckLie = (proxy, apiFunction) => {
+		const isChrome = 3.141592653589793 ** -100 == 1.9275814160560204e-50
+		if (!isChrome) {
+			return false
+		}
 		const hasValidStack = (error, type = 'Function') => {
 			const { message, name, stack } = error
 			const validName = name == 'TypeError'
@@ -318,6 +322,7 @@ const getPrototypeLies = globalScope => {
 			return true // failed to throw
 		}
 		catch (error) {
+			// expect Proxy.[Symbol.hasInstance]
 			if (!hasValidStack(error, 'Proxy')) {
 				return true
 			}
@@ -326,80 +331,116 @@ const getPrototypeLies = globalScope => {
 				return true // failed to throw
 			}
 			catch (error) {
+				// expect Function.[Symbol.hasInstance] 
 				return !hasValidStack(error)
 			}
 		}
 	}
 
+	// defining properties should not throw an error
 	const getDefinePropertiesLie = (apiFunction) => {
+		const isChrome = 3.141592653589793 ** -100 == 1.9275814160560204e-50
+		if (!isChrome) {
+			return false
+		}
 		try {
 			const _apiFunction = apiFunction
 			Object.defineProperty(_apiFunction, '', {})+''
 			Object.defineProperties(_apiFunction, {})+''
+			return false
 		} catch (error) {
 			return true // failed at Error
 		}
 	}
 
-	const getTooMuchRecursionLie = apiFunction => {
+	// setting prototype or __proto__ to itself should not throw 'Uncaught InternalError: too much recursion'
+	const getTooMuchRecursionLie = ({ apiFunction, method = 'setPrototypeOf', randomId }) => {
+		setTimeout(() => {}, 0)
+		if (!randomId) {
+			randomId = getRandomValues()
+		}
 		const isFirefox = 3.141592653589793 ** -100 == 1.9275814160560185e-50
 		const isChrome = 3.141592653589793 ** -100 == 1.9275814160560204e-50
 		const nativeProto = Object.getPrototypeOf(apiFunction)
+		const spawnError = (apiFunction, method) => {
+			if (method == 'setPrototypeOf') {
+				return Object.setPrototypeOf(apiFunction, Object.create(apiFunction)) + ''
+			} else {
+				apiFunction.__proto__ = apiFunction
+				return apiFunction++
+			}
+		}
 		try {
-			// try Cyclic __proto__ value error
-			Object.setPrototypeOf(apiFunction, apiFunction) + ''
+			spawnError(apiFunction, method)
 			return true // failed to throw
 		} catch (error) {
 			try {
-				const { name, message } = error
+				const { name, message, stack } = error
+				const targetStackLine = ((stack || '').split('\n') || [])[1]
 				const hasTypeError = name == 'TypeError'
-				const chromeLie = (
-					isChrome &&
-					(message != `Cyclic __proto__ value`)
+				const chromeLie = isChrome && (
+					message != `Cyclic __proto__ value` ||
+					(method == '__proto__' && !targetStackLine.startsWith(`    at Function.set __proto__ [as __proto__]`))
 				)
-				const firefoxLie = (
-					isFirefox &&
+				const firefoxLie = isFirefox && (
 					message != `can't set prototype: it would cause a prototype chain cycle`
 				)
 				if (!hasTypeError || chromeLie || firefoxLie) {
-					return true
+					return true // failed Error
 				}
-				const proxy = new Proxy(apiFunction, {})
-				// try proxy instanceof proxy check or define properties
-				if (isChrome && (
-					getInstanceOfCheckLie(proxy, apiFunction) ||
-					getDefinePropertiesLie(apiFunction)
-				)) {
-					return true
-				}
-				// try Maximum call stack size exceeded error
-				Object.setPrototypeOf(proxy, proxy) + ''
+				spawnError(new Proxy(apiFunction, {}), method)
 				return true // failed to throw
 			} catch (error) {
-				const { name, message } = error
-				const hasRangeError = name == 'RangeError'
-				const hasInternalError = name == 'InternalError'
-				const hasRangeOrInternalError = hasRangeError || hasInternalError
-				const chromeLie = (
-					isChrome &&
-					((message != `Maximum call stack size exceeded`) || !hasRangeError)
-				)
-				const firefoxLie = (
-					isFirefox &&
-					((message != `too much recursion`) || !hasInternalError)
-				)
-				if (!hasRangeOrInternalError || chromeLie || firefoxLie) {
-					return true
+				const hasValidError = ({ error, isChrome, isFirefox }) => {
+					const { name, message } = error
+					const hasRangeError = name == 'RangeError'
+					const hasInternalError = name == 'InternalError'
+					const chromeLie = isChrome && (
+						message != `Maximum call stack size exceeded` || !hasRangeError
+					)
+					const firefoxLie = isFirefox && (
+						message != `too much recursion` || !hasInternalError
+					)
+					return (hasRangeError || hasInternalError) && !(chromeLie || firefoxLie) 
+				}
+				if (!hasValidError({ error, isChrome, isFirefox })) {
+					return true // failed valid Error
 				}
 				try {
 					// try Reflect.setPrototypeOf
-					return Reflect.setPrototypeOf(apiFunction, apiFunction)
+					Object.setPrototypeOf(apiFunction, nativeProto) // restore
+					if (Reflect.setPrototypeOf(apiFunction, Object.create(apiFunction))) {
+						return true // failed value (expected false)
+					} else {
+						try {
+							randomId in apiFunction
+						} catch (error) {
+							return true  // failed at Error 
+						}
+					} 
+
+					const proxy = new Proxy(apiFunction, {})
+					Object.setPrototypeOf(apiFunction, nativeProto) // restore
+					if (!Reflect.setPrototypeOf(proxy, Object.create(proxy))) {
+						return true // failed value (expected true)
+					} else {
+						try {
+							randomId in apiFunction
+							return true // failed to throw
+						} catch (error) {
+							if (!hasValidError({ error, isChrome, isFirefox })) {
+								return true // failed valid Error
+							}
+							return false // passed!
+						}
+					}
 				} catch (error) {
+					console.log('failing 6')
 					return true // failed at Error
 				}
 			}
 		} finally {
-			// restore proto
+			// restore
 			Object.setPrototypeOf(apiFunction, nativeProto)
 		}
 	}
@@ -430,9 +471,13 @@ const getPrototypeLies = globalScope => {
 			[`failed own property names`]: getOwnPropertyNamesLie(apiFunction),
 			[`failed own keys names`]: getOwnKeysLie(apiFunction),
 			[`failed object toString error`]: getNewObjectToStringTypeErrorLie(apiFunction),
+			// Proxy Detection
 			[`failed at incompatible proxy error`]: getIncompatibleProxyTypeErrorLie(apiFunction),
 			[`failed at toString incompatible proxy error`]: getToStringIncompatibleProxyTypeErrorLie(apiFunction),
-			[`failed at too much recursion error`]: getTooMuchRecursionLie(apiFunction)
+			[`failed at too much recursion error`]: getTooMuchRecursionLie({ apiFunction, randomId }),
+			//[`failed at too much recursion __proto__ error`]: getTooMuchRecursionLie({ apiFunction, method: '__proto__', randomId }),
+			//[`failed at instanceof check error`]: getInstanceofCheckLie(new Proxy(apiFunction, {}), apiFunction),
+			//[`failed at define properties`]: getDefinePropertiesLie(apiFunction)
 		}
 		const lieTypes = Object.keys(lies).filter(key => !!lies[key])
 		return {
