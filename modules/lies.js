@@ -539,7 +539,6 @@ const getPrototypeLies = iframeWindow => {
 						}
 					}
 				} catch (error) {
-					console.log('failing 6')
 					return true // failed at Error
 				}
 			}
