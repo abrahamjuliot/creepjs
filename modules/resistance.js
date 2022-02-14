@@ -218,16 +218,16 @@ export const getResistance = async imports => {
 				colorDepthHash: ['452924d5']
 			},
 			jshelter: {
-				contentDocumentHash: ['8ee7df22', '0b637a33'],
-				contentWindowHash: ['8ee7df22', '0b637a33'],
-				appendHash: ['8ee7df22', '0b637a33'],
-				insertAdjacentElementHash: ['8ee7df22', '0b637a33'],
-				insertAdjacentHTMLHash: ['8ee7df22', '0b637a33'],
-				prependHash: ['8ee7df22', '0b637a33'],
-				replaceWithHash: ['8ee7df22', '0b637a33'],
-				appendChildHash: ['8ee7df22', '0b637a33'],
-				insertBeforeHash: ['8ee7df22', '0b637a33'],
-				replaceChildHash: ['8ee7df22', '0b637a33'],
+				contentDocumentHash: ['0007ab4e', '0b637a33'],
+				contentWindowHash: ['0007ab4e', '0b637a33'],
+				appendHash: ['0007ab4e', '0b637a33'],
+				insertAdjacentElementHash: ['0007ab4e', '0b637a33'],
+				insertAdjacentHTMLHash: ['0007ab4e', '0b637a33'],
+				prependHash: ['0007ab4e', '0b637a33'],
+				replaceWithHash: ['0007ab4e', '0b637a33'],
+				appendChildHash: ['0007ab4e', '0b637a33'],
+				insertBeforeHash: ['0007ab4e', '0b637a33'],
+				replaceChildHash: ['0007ab4e', '0b637a33'],
 				hardwareConcurrencyHash: ['dfd41ab4']
 			}
 		}
