@@ -9745,19 +9745,20 @@
 					// [FF, FF Anti OFF, Chrome, Chrome Anti Off, no iframe Chrome, no iframe Chrome Anti Off]
 					contentDocumentHash: ['945b0c78', '15771efa', '403a1a21', '55e9b959'],
 					contentWindowHash: ['945b0c78', '15771efa', '403a1a21', '55e9b959'],
-					createElementHash: ['cc7cb598', '4237b44c', '1466aaf0', '0cb0c682', '73c662d9', '72b1ee2b'],
-					getElementByIdHash: ['cc7cb598', '4237b44c', '1466aaf0', '0cb0c682', '73c662d9', '72b1ee2b'],
-					getImageDataHash: ['db60d7f9', '15771efa', 'db60d7f9', '55e9b959'],
+					createElementHash: ['3dd86d6f', 'cc7cb598', '4237b44c', '1466aaf0', '0cb0c682', '73c662d9', '72b1ee2b', 'ae3d02c9'],
+					getElementByIdHash: ['3dd86d6f', 'cc7cb598', '4237b44c', '1466aaf0', '0cb0c682', '73c662d9', '72b1ee2b',  'ae3d02c9'],
+					getImageDataHash: ['044f14c2', 'db60d7f9', '15771efa', 'db60d7f9', '55e9b959'],
 					toBlobHash: ['044f14c2', '15771efa', 'afec348d', '55e9b959', '0dbbf456'],
-					toDataURLHash: ['ecb498d9', '6b838fb6', 'ecb498d9', 'd19104ec', 'ecb498d9', '6985d315']
+					toDataURLHash: ['ecb498d9', '15771efa', '6b838fb6', 'd19104ec', '6985d315', '55e9b959', 'fe88259f']
 				},
+
 				canvasblocker: {
-					contentDocumentHash: ['6f901c5a'],
-					contentWindowHash: ['6f901c5a'],
-					appendHash: ['6f901c5a'],
-					getImageDataHash: ['6f901c5a', 'a2971888', disabled],
-					toBlobHash: ['6f901c5a', '9f1c3dfe', disabled],
-					toDataURLHash: ['6f901c5a', disabled]
+					contentDocumentHash: ['98ec858e'],
+					contentWindowHash: ['98ec858e'],
+					appendHash: ['98ec858e'],
+					getImageDataHash: ['98ec858e', 'a2971888', disabled],
+					toBlobHash: ['9f1c3dfe', 'a2971888', disabled],
+					toDataURLHash: ['98ec858e', 'a2971888', disabled]
 				},
 				chameleon: {
 					appendHash: ['77dea834'],
@@ -9799,17 +9800,20 @@
 					colorDepthHash: ['452924d5']
 				},
 				jshelter: {
-					contentDocumentHash: ['8ee7df22', '0b637a33'],
-					contentWindowHash: ['8ee7df22', '0b637a33'],
-					appendHash: ['8ee7df22', '0b637a33'],
-					insertAdjacentElementHash: ['8ee7df22', '0b637a33'],
-					insertAdjacentHTMLHash: ['8ee7df22', '0b637a33'],
-					prependHash: ['8ee7df22', '0b637a33'],
-					replaceWithHash: ['8ee7df22', '0b637a33'],
-					appendChildHash: ['8ee7df22', '0b637a33'],
-					insertBeforeHash: ['8ee7df22', '0b637a33'],
-					replaceChildHash: ['8ee7df22', '0b637a33'],
+					contentDocumentHash: ['0007ab4e', '0b637a33'],
+					contentWindowHash: ['0007ab4e', '0b637a33'],
+					appendHash: ['0007ab4e', '0b637a33'],
+					insertAdjacentElementHash: ['0007ab4e', '0b637a33'],
+					insertAdjacentHTMLHash: ['0007ab4e', '0b637a33'],
+					prependHash: ['0007ab4e', '0b637a33'],
+					replaceWithHash: ['0007ab4e', '0b637a33'],
+					appendChildHash: ['0007ab4e', '0b637a33'],
+					insertBeforeHash: ['0007ab4e', '0b637a33'],
+					replaceChildHash: ['0007ab4e', '0b637a33'],
 					hardwareConcurrencyHash: ['dfd41ab4']
+				},
+				puppeteerExtra: {
+					appendChildHash: ['8dfec2ec']
 				}
 			};
 
@@ -9877,8 +9881,10 @@
 					duckduckgo,
 					privacybadger,
 					privacypossum,
-					jshelter
+					jshelter,
+					puppeteerExtra
 				} = pattern;
+
 				const disabled = 'c767712b';
 				if (prototypeLiesLen) {
 					if (prototypeLiesLen >= 7 &&
@@ -9973,6 +9979,10 @@
 						jshelter.replaceChildHash.includes(hash.replaceChildHash) &&
 						jshelter.hardwareConcurrencyHash.includes(hash.hardwareConcurrencyHash)) {
 						return 'JShelter'
+					}
+					if (prototypeLiesLen >= 1 &&
+						puppeteerExtra.appendChildHash.includes(hash.appendChildHash)) {
+						return 'puppeteer-extra'
 					}
 					return
 				}
