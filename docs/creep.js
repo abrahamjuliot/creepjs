@@ -1417,12 +1417,12 @@
 		// object constructor descriptor should return undefined properties
 		const getUndefinedValueLie = (obj, name) => {
 			const objName = obj.name;
-			const objNameUncapitalized = window[objName.charAt(0).toLowerCase() + objName.slice(1)];
+			const objNameUncapitalized = self[objName.charAt(0).toLowerCase() + objName.slice(1)];
 			const hasInvalidValue = !!objNameUncapitalized && (
 				typeof Object.getOwnPropertyDescriptor(objNameUncapitalized, name) != 'undefined' ||
 				typeof Reflect.getOwnPropertyDescriptor(objNameUncapitalized, name) != 'undefined'
 			);
-			return hasInvalidValue ? true : false
+			return hasInvalidValue
 		};
 
 		// accessing the property from the prototype should throw a TypeError
@@ -1457,15 +1457,15 @@
 				'getOwnPropertySymbols',
 				'getOwnPropertyDescriptors'
 			];
-			const lied = !!illegal.find(prop => {
+			const hasInvalidError = !!illegal.find(prop => {
 				try {
 					prop == '' ? Object(proto[name]) : Object[prop](proto[name]);
-					return true
+					return true // failed to throw
 				} catch (error) {
-					return error.constructor.name != 'TypeError' ? true : false
+					return error.constructor.name != 'TypeError'
 				}
 			});
-			return lied
+			return hasInvalidError
 		};
 
 		// calling the interface prototype on the function should throw a TypeError
@@ -1475,7 +1475,7 @@
 				apiFunction.call(proto);
 				return true
 			} catch (error) {
-				return error.constructor.name != 'TypeError' ? true : false
+				return error.constructor.name != 'TypeError'
 			}
 		};
 
@@ -1486,7 +1486,7 @@
 				apiFunction.apply(proto);
 				return true
 			} catch (error) {
-				return error.constructor.name != 'TypeError' ? true : false
+				return error.constructor.name != 'TypeError'
 			}
 		};
 
@@ -1496,7 +1496,7 @@
 				new apiFunction();
 				return true
 			} catch (error) {
-				return error.constructor.name != 'TypeError' ? true : false
+				return error.constructor.name != 'TypeError'
 			}
 		};
 
@@ -1515,8 +1515,10 @@
 				return true
 			} catch (error) {
 				// Native has TypeError and 'not a constructor' message in FF & Chrome
-				return error.constructor.name != 'TypeError' ? true :
-					!/not a constructor/i.test(error.message) ? true : false
+				return (
+					error.constructor.name != 'TypeError' ||
+					!/not a constructor/i.test(error.message)
+				)
 			}
 		};
 
@@ -1527,7 +1529,7 @@
 				Object.setPrototypeOf(apiFunction, null) + '';
 				return true
 			} catch (error) {
-				return error.constructor.name != 'TypeError' ? true : false
+				return error.constructor.name != 'TypeError'
 			} finally {
 				// restore proto
 				Object.setPrototypeOf(apiFunction, nativeProto);
@@ -1556,12 +1558,12 @@
 			const apiFunctionToString = (
 				iframeToString ?
 					iframeToString :
-					apiFunction.toString()
+						apiFunction.toString()
 			);
 			const apiFunctionToStringToString = (
 				iframeToStringToString ?
 					iframeToStringToString :
-					apiFunction.toString.toString()
+						apiFunction.toString.toString()
 			);
 			const trust = name => ({
 				[`function ${name}() { [native code] }`]: true,
@@ -1578,21 +1580,21 @@
 		};
 
 		// "prototype" in function should not exist
-		const getPrototypeInFunctionLie = apiFunction => 'prototype' in apiFunction ? true : false;
+		const getPrototypeInFunctionLie = apiFunction => 'prototype' in apiFunction;
 
 		// "arguments", "caller", "prototype", "toString"  should not exist in descriptor
 		const getDescriptorLie = apiFunction => {
 			const hasInvalidDescriptor = (
-				!!Object.getOwnPropertyDescriptor(apiFunction, 'arguments') ||
-				!!Reflect.getOwnPropertyDescriptor(apiFunction, 'arguments') ||
-				!!Object.getOwnPropertyDescriptor(apiFunction, 'caller') ||
-				!!Reflect.getOwnPropertyDescriptor(apiFunction, 'caller') ||
-				!!Object.getOwnPropertyDescriptor(apiFunction, 'prototype') ||
-				!!Reflect.getOwnPropertyDescriptor(apiFunction, 'prototype') ||
-				!!Object.getOwnPropertyDescriptor(apiFunction, 'toString') ||
-				!!Reflect.getOwnPropertyDescriptor(apiFunction, 'toString')
+				Object.getOwnPropertyDescriptor(apiFunction, 'arguments') ||
+				Reflect.getOwnPropertyDescriptor(apiFunction, 'arguments') ||
+				Object.getOwnPropertyDescriptor(apiFunction, 'caller') ||
+				Reflect.getOwnPropertyDescriptor(apiFunction, 'caller') ||
+				Object.getOwnPropertyDescriptor(apiFunction, 'prototype') ||
+				Reflect.getOwnPropertyDescriptor(apiFunction, 'prototype') ||
+				Object.getOwnPropertyDescriptor(apiFunction, 'toString') ||
+				Reflect.getOwnPropertyDescriptor(apiFunction, 'toString')
 			);
-			return hasInvalidDescriptor ? true : false
+			return hasInvalidDescriptor
 		};
 
 		// "arguments", "caller", "prototype", "toString" should not exist as own property
@@ -1603,30 +1605,34 @@
 				apiFunction.hasOwnProperty('prototype') ||
 				apiFunction.hasOwnProperty('toString')
 			);
-			return hasInvalidOwnProperty ? true : false
+			return hasInvalidOwnProperty
 		};
 
 		// descriptor keys should only contain "name" and "length"
 		const getDescriptorKeysLie = apiFunction => {
 			const descriptorKeys = Object.keys(Object.getOwnPropertyDescriptors(apiFunction));
 			const hasInvalidKeys = '' + descriptorKeys != 'length,name' && '' + descriptorKeys != 'name,length';
-			return hasInvalidKeys ? true : false
+			return hasInvalidKeys
 		};
 
 		// own property names should only contain "name" and "length"
 		const getOwnPropertyNamesLie = apiFunction => {
 			const ownPropertyNames = Object.getOwnPropertyNames(apiFunction);
-			const hasInvalidNames = (
-				'' + ownPropertyNames != 'length,name' && '' + ownPropertyNames != 'name,length'
+			const hasInvalidNames = !(
+				'' + ownPropertyNames == 'length,name' ||
+				'' + ownPropertyNames == 'name,length'
 			);
-			return hasInvalidNames ? true : false
+			return hasInvalidNames
 		};
 
 		// own keys names should only contain "name" and "length"
 		const getOwnKeysLie = apiFunction => {
 			const ownKeys = Reflect.ownKeys(apiFunction);
-			const hasInvalidKeys = '' + ownKeys != 'length,name' && '' + ownKeys != 'name,length';
-			return hasInvalidKeys ? true : false
+			const hasInvalidKeys = !(
+				'' + ownKeys == 'length,name' ||
+				'' + ownKeys == 'name,length'
+			);
+			return hasInvalidKeys
 		};
 
 		// calling toString() on an object created from the function should throw a TypeError
@@ -1666,11 +1672,11 @@
 			const isFirefox = getFirefox();
 			try {
 				fn();
-				return true
+				return true // failed to throw
 			} catch (error) {
 				return (
 					error.constructor.name != 'TypeError' ||
-						(isFirefox && /incompatible\sProxy/.test(error.message)) ? true : false
+					(isFirefox && /incompatible\sProxy/.test(error.message))
 				)
 			}
 		};
@@ -1688,7 +1694,8 @@
 		};
 
 		// checking proxy instanceof proxy should throw a valid TypeError
-		const getInstanceofCheckLie = (proxy, apiFunction) => {
+		const getInstanceofCheckLie = apiFunction => {
+			const proxy = new Proxy(apiFunction, {});
 			const isChrome = 3.141592653589793 ** -100 == 1.9275814160560204e-50;
 			if (!isChrome) {
 				return false
@@ -1725,7 +1732,7 @@
 		const getDefinePropertiesLie = (apiFunction) => {
 			const isChrome = 3.141592653589793 ** -100 == 1.9275814160560204e-50;
 			if (!isChrome) {
-				return false
+				return false // chrome only test
 			}
 			try {
 				const _apiFunction = apiFunction;
@@ -1737,99 +1744,119 @@
 			}
 		};
 
-		// setting prototype or __proto__ to itself should not throw 'Uncaught InternalError: too much recursion'
-		const getTooMuchRecursionLie = ({ apiFunction, method = 'setPrototypeOf', randomId }) => {
-			if (!randomId) {
-				randomId = getRandomValues();
+		// setPrototypeOf error tests
+		const spawnError = (apiFunction, method) => {
+			if (method == 'setPrototypeOf') {
+				return Object.setPrototypeOf(apiFunction, Object.create(apiFunction)) + ''
+			} else {
+				apiFunction.__proto__ = apiFunction;
+				return apiFunction++
 			}
+		};
+		const hasValidError = error => {
 			const isFirefox = 3.141592653589793 ** -100 == 1.9275814160560185e-50;
 			const isChrome = 3.141592653589793 ** -100 == 1.9275814160560204e-50;
+			const { name, message } = error;
+			const hasRangeError = name == 'RangeError';
+			const hasInternalError = name == 'InternalError';
+			const chromeLie = isChrome && (
+				message != `Maximum call stack size exceeded` || !hasRangeError
+			);
+			const firefoxLie = isFirefox && (
+				message != `too much recursion` || !hasInternalError
+			);
+			return (hasRangeError || hasInternalError) && !(chromeLie || firefoxLie) 
+		};
+
+
+		const getTooMuchRecursionLie = ({ apiFunction, method = 'setPrototypeOf' }) => {
 			const nativeProto = Object.getPrototypeOf(apiFunction);
-			const spawnError = (apiFunction, method) => {
-				if (method == 'setPrototypeOf') {
-					return Object.setPrototypeOf(apiFunction, Object.create(apiFunction)) + ''
-				} else {
-					apiFunction.__proto__ = apiFunction;
-					return apiFunction++
-				}
-			};
+			const proxy = new Proxy(apiFunction, {});
+			try {
+				spawnError(proxy, method);
+				return true // failed to throw
+			} catch (error) {
+				return !hasValidError(error)
+			} finally {
+				Object.setPrototypeOf(proxy, nativeProto); // restore
+			}
+		};
+
+		const getChainCycleLie = ({ apiFunction, method = 'setPrototypeOf' }) => {
+			const nativeProto = Object.getPrototypeOf(apiFunction);
 			try {
 				spawnError(apiFunction, method);
 				return true // failed to throw
 			} catch (error) {
-				try {
-					const { name, message, stack } = error;
-					const targetStackLine = ((stack || '').split('\n') || [])[1];
-					const hasTypeError = name == 'TypeError';
-					const chromeLie = isChrome && (
-						message != `Cyclic __proto__ value` ||
-						(method == '__proto__' && !targetStackLine.startsWith(`    at Function.set __proto__ [as __proto__]`))
-					);
-					const firefoxLie = isFirefox && (
-						message != `can't set prototype: it would cause a prototype chain cycle`
-					);
-					if (!hasTypeError || chromeLie || firefoxLie) {
-						return true // failed Error
-					}
-					spawnError(new Proxy(apiFunction, {}), method);
-					return true // failed to throw
-				} catch (error) {
-					const hasValidError = ({ error, isChrome, isFirefox }) => {
-						const { name, message } = error;
-						const hasRangeError = name == 'RangeError';
-						const hasInternalError = name == 'InternalError';
-						const chromeLie = isChrome && (
-							message != `Maximum call stack size exceeded` || !hasRangeError
-						);
-						const firefoxLie = isFirefox && (
-							message != `too much recursion` || !hasInternalError
-						);
-						return (hasRangeError || hasInternalError) && !(chromeLie || firefoxLie) 
-					};
-					if (!hasValidError({ error, isChrome, isFirefox })) {
-						return true // failed valid Error
-					}
-					try {
-						// try Reflect.setPrototypeOf
-						Object.setPrototypeOf(apiFunction, nativeProto); // restore
-						if (Reflect.setPrototypeOf(apiFunction, Object.create(apiFunction))) {
-							return true // failed value (expected false)
-						} else {
-							try {
-								randomId in apiFunction;
-							} catch (error) {
-								return true  // failed at Error 
-							}
-						} 
-
-						const proxy = new Proxy(apiFunction, {});
-						Object.setPrototypeOf(apiFunction, nativeProto); // restore
-						if (!Reflect.setPrototypeOf(proxy, Object.create(proxy))) {
-							return true // failed value (expected true)
-						} else {
-							try {
-								randomId in apiFunction;
-								return true // failed to throw
-							} catch (error) {
-								if (!hasValidError({ error, isChrome, isFirefox })) {
-									return true // failed valid Error
-								}
-								return false // passed!
-							}
-						}
-					} catch (error) {
-						console.log('failing 6');
-						return true // failed at Error
-					}
+				const isFirefox = 3.141592653589793 ** -100 == 1.9275814160560185e-50;
+				const isChrome = 3.141592653589793 ** -100 == 1.9275814160560204e-50;
+				const { name, message, stack } = error;
+				const targetStackLine = ((stack || '').split('\n') || [])[1];
+				const hasTypeError = name == 'TypeError';
+				const chromeLie = isChrome && (
+					message != `Cyclic __proto__ value` ||
+					(method == '__proto__' && !targetStackLine.startsWith(`    at Function.set __proto__ [as __proto__]`))
+				);
+				const firefoxLie = isFirefox && (
+					message != `can't set prototype: it would cause a prototype chain cycle`
+				);
+				if (!hasTypeError || chromeLie || firefoxLie) {
+					return true // failed Error
 				}
 			} finally {
-				// restore
-				Object.setPrototypeOf(apiFunction, nativeProto);
+				Object.setPrototypeOf(apiFunction, nativeProto); // restore
+			}
+		};
+
+		const getReflectSetProtoLie = ({ apiFunction, randomId }) => {
+			if (!randomId) {
+				randomId = getRandomValues();
+			}
+			const nativeProto = Object.getPrototypeOf(apiFunction);
+			try {
+				if (Reflect.setPrototypeOf(apiFunction, Object.create(apiFunction))) {
+					return true // failed value (expected false)
+				} else {
+					try {
+						randomId in apiFunction;
+						return false
+					} catch (error) {
+						return true  // failed at Error 
+					}
+				}
+			} catch (error) {
+				return true // failed at Error
+			} finally {
+				Object.setPrototypeOf(apiFunction, nativeProto); // restore
+			}
+		};
+
+		const getReflectSetProtoProxyLie = ({ apiFunction, randomId }) => {
+			if (!randomId) {
+				randomId = getRandomValues();
+			}
+			const nativeProto = Object.getPrototypeOf(apiFunction);
+			const proxy = new Proxy(apiFunction, {});
+			try {
+				if (!Reflect.setPrototypeOf(proxy, Object.create(proxy))) {
+					return true // failed value (expected true)
+				} else {
+					try {
+						randomId in apiFunction;
+						return true // failed to throw
+					} catch (error) {
+						return !hasValidError(error)
+					}
+				}
+			} catch (error) {
+				return true // failed at Error
+			} finally {
+				Object.setPrototypeOf(proxy, nativeProto); // restore
 			}
 		};
 
 		// API Function Test
-		const getLies = (apiFunction, proto, obj = null) => {
+		const getLies = ({ apiFunction, proto, obj = null, lieProps }) => {
 			if (typeof apiFunction != 'function') {
 				return {
 					lied: false,
@@ -1837,7 +1864,7 @@
 				}
 			}
 			const name = apiFunction.name.replace(/get\s/, '');
-			const lies = {
+			let lies = {
 				// custom lie string names
 				[`failed illegal error`]: obj ? getIllegalTypeErrorLie(obj, name) : false,
 				[`failed undefined properties`]: obj ? getUndefinedValueLie(obj, name) : false,
@@ -1857,12 +1884,25 @@
 				// Proxy Detection
 				[`failed at incompatible proxy error`]: getIncompatibleProxyTypeErrorLie(apiFunction),
 				[`failed at toString incompatible proxy error`]: getToStringIncompatibleProxyTypeErrorLie(apiFunction),
-				[`failed at too much recursion error`]: getTooMuchRecursionLie({ apiFunction, randomId }),
-				//[`failed at too much recursion __proto__ error`]: getTooMuchRecursionLie({ apiFunction, method: '__proto__', randomId }),
-				//[`failed at instanceof check error`]: getInstanceofCheckLie(new Proxy(apiFunction, {}), apiFunction),
-				//[`failed at define properties`]: getDefinePropertiesLie(apiFunction)
-						
+				[`failed at too much recursion error`]: getChainCycleLie({ apiFunction })
 			};
+			// conditionally use advanced detection
+			const detectProxies = (
+				name == 'toString' || !!lieProps['Function.toString']
+			);
+			if (detectProxies) {
+				lies = {
+					...lies,
+					// Advanced Proxy Detection
+					[`failed at too much recursion __proto__ error`]: getChainCycleLie({ apiFunction, method: '__proto__' }),
+					[`failed at chain cycle error`]: getTooMuchRecursionLie({ apiFunction }),
+					[`failed at chain cycle __proto__ error`]: getTooMuchRecursionLie({ apiFunction, method: '__proto__' }),
+					[`failed at reflect set proto`]: getReflectSetProtoLie({ apiFunction, randomId }),
+					[`failed at reflect set proto proxy`]: getReflectSetProtoProxyLie({ apiFunction, randomId }),
+					[`failed at instanceof check error`]: getInstanceofCheckLie(apiFunction),
+					[`failed at define properties`]: getDefinePropertiesLie(apiFunction)
+				};
+			}
 			const lieTypes = Object.keys(lies).filter(key => !!lies[key]);
 			return {
 				lied: lieTypes.length,
@@ -1920,7 +1960,11 @@
 								try {
 									const apiFunction = proto[name]; // may trigger TypeError
 									if (typeof apiFunction == 'function') {
-										res = getLies(proto[name], proto);
+										res = getLies({
+											apiFunction: proto[name],
+											proto,
+											lieProps: props
+										});
 										if (res.lied) {
 											documentLie(apiName, res.lieTypes);
 											return (props[apiName] = res.lieTypes)
@@ -1942,7 +1986,13 @@
 								} catch (error) { }
 								// else search getter function
 								const getterFunction = Object.getOwnPropertyDescriptor(proto, name).get;
-								res = getLies(getterFunction, proto, obj); // send the obj for special tests
+								res = getLies({
+									apiFunction: getterFunction,
+									proto,
+									obj,
+									lieProps: props
+								}); // send the obj for special tests
+								
 								if (res.lied) {
 									documentLie(apiName, res.lieTypes);
 									return (props[apiName] = res.lieTypes)
@@ -1965,7 +2015,18 @@
 			searchLies
 		} = lieDetector;
 
-		// search for lies: remove target to search all properties
+		// search lies: remove target to search all properties
+		// test Function.toString first to determine the depth of the search
+		searchLies(() => Function, {
+			target: [
+				'toString',
+			],
+			ignore: [
+				'caller',
+				'arguments'
+			]
+		});
+		// other APIs
 		searchLies(() => AnalyserNode);
 		searchLies(() => AudioBuffer, {
 			target: [
@@ -2077,15 +2138,6 @@
 				'family',
 				'load',
 				'status'
-			]
-		});
-		searchLies(() => Function, {
-			target: [
-				'toString',
-			],
-			ignore: [
-				'caller',
-				'arguments'
 			]
 		});
 		searchLies(() => HTMLCanvasElement);
@@ -2260,6 +2312,9 @@
 			proxyDetectionMethods: [
 				getTooMuchRecursionLie,
 				getNewObjectToStringTypeErrorLie,
+				getChainCycleLie,
+				getReflectSetProtoLie,
+				getReflectSetProtoProxyLie,
 				getInstanceofCheckLie,
 				getDefinePropertiesLie,
 			]
@@ -5283,8 +5338,11 @@
 				proxyDetectionMethods: [
 					getTooMuchRecursionLie,
 					getNewObjectToStringTypeErrorLie,
+					getChainCycleLie,
+					getReflectSetProtoLie,
+					getReflectSetProtoProxyLie,
 					getInstanceofCheckLie,
-					getDefinePropertiesLie
+					getDefinePropertiesLie,
 				],
 				captureError,
 				logTestResult
@@ -5392,7 +5450,11 @@
 						return (
 							getTooMuchRecursionLie({ apiFunction }) ||
 							getTooMuchRecursionLie({ apiFunction, method: '__proto__' }) ||
-							getInstanceofCheckLie(new Proxy(apiFunction, {}), apiFunction) || 
+							getChainCycleLie({ apiFunction }) ||
+							getChainCycleLie({ apiFunction, method: '__proto__' }) ||
+							getReflectSetProtoLie({ apiFunction }) ||
+							getReflectSetProtoProxyLie({ apiFunction }) ||
+							getInstanceofCheckLie(apiFunction) || 
 							getDefinePropertiesLie(apiFunction)
 						)
 					})(),
@@ -5412,7 +5474,11 @@
 							getNewObjectToStringTypeErrorLie(() => { }) ||
 							getTooMuchRecursionLie({ apiFunction }) ||
 							getTooMuchRecursionLie({ apiFunction, method: '__proto__' }) ||
-							getInstanceofCheckLie(new Proxy(apiFunction, {}), apiFunction) || 
+							getChainCycleLie({ apiFunction }) ||
+							getChainCycleLie({ apiFunction, method: '__proto__' }) ||
+							getReflectSetProtoLie({ apiFunction }) ||
+							getReflectSetProtoProxyLie({ apiFunction }) ||
+							getInstanceofCheckLie(apiFunction) || 
 							getDefinePropertiesLie(apiFunction)
 						);
 						return liedToString

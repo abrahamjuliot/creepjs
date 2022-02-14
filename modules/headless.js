@@ -10,8 +10,11 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 			proxyDetectionMethods: [
 				getTooMuchRecursionLie,
 				getNewObjectToStringTypeErrorLie,
+				getChainCycleLie,
+				getReflectSetProtoLie,
+				getReflectSetProtoProxyLie,
 				getInstanceofCheckLie,
-				getDefinePropertiesLie
+				getDefinePropertiesLie,
 			],
 			captureError,
 			logTestResult
@@ -119,7 +122,11 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 					return (
 						getTooMuchRecursionLie({ apiFunction }) ||
 						getTooMuchRecursionLie({ apiFunction, method: '__proto__' }) ||
-						getInstanceofCheckLie(new Proxy(apiFunction, {}), apiFunction) || 
+						getChainCycleLie({ apiFunction }) ||
+						getChainCycleLie({ apiFunction, method: '__proto__' }) ||
+						getReflectSetProtoLie({ apiFunction }) ||
+						getReflectSetProtoProxyLie({ apiFunction }) ||
+						getInstanceofCheckLie(apiFunction) || 
 						getDefinePropertiesLie(apiFunction)
 					)
 				})(),
@@ -139,7 +146,11 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 						getNewObjectToStringTypeErrorLie(() => { }) ||
 						getTooMuchRecursionLie({ apiFunction }) ||
 						getTooMuchRecursionLie({ apiFunction, method: '__proto__' }) ||
-						getInstanceofCheckLie(new Proxy(apiFunction, {}), apiFunction) || 
+						getChainCycleLie({ apiFunction }) ||
+						getChainCycleLie({ apiFunction, method: '__proto__' }) ||
+						getReflectSetProtoLie({ apiFunction }) ||
+						getReflectSetProtoProxyLie({ apiFunction }) ||
+						getInstanceofCheckLie(apiFunction) || 
 						getDefinePropertiesLie(apiFunction)
 					)
 					return liedToString
