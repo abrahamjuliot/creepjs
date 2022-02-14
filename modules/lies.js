@@ -126,9 +126,16 @@ const getDragonIframe = ({ numberOfNests, kill = false, context = window }) => {
 
 const { iframeWindow: dragonOfDeath } = getDragonIframe({ numberOfNests: 4, kill: true })
 
-const getPrototypeLies = iframeWindow => {
-	const getFirefox = () => 3.141592653589793 ** -100 == 1.9275814160560185e-50
-	const getChrome = () => 3.141592653589793 ** -100 == 1.9275814160560204e-50
+const getPrototypeLies = scope => {
+	const getEngine = () => {
+		const mathPI = 3.141592653589793
+		const compute = n => mathPI ** -100 == +`1.9275814160560${n}e-50`
+		return {
+			isChrome: compute(204),
+			isFirefox: compute(185),
+			isSafari: compute(206)
+		}
+	}
 	const getRandomValues = () => (
 		String.fromCharCode(Math.random() * 26 + 97) +
 		Math.random().toString(36).slice(-7)
@@ -224,9 +231,9 @@ const getPrototypeLies = iframeWindow => {
 	// extending the function on a fake class should throw a TypeError and message "not a constructor"
 	const getClassExtendsTypeErrorLie = apiFunction => {
 		try {
+			const { isSafari } = getEngine()
 			const shouldExitInSafari13 = (
-				/version\/13/i.test((navigator || {}).userAgent) &&
-				((3.141592653589793 ** -100) == 1.9275814160560206e-50)
+				/version\/13/i.test((navigator || {}).userAgent) && isSafari
 			)
 			if (shouldExitInSafari13) {
 				return false
@@ -258,7 +265,7 @@ const getPrototypeLies = iframeWindow => {
 	}
 
 	// toString() and toString.toString() should return a native string in all frames
-	const getToStringLie = (apiFunction, name, iframeWindow) => {
+	const getToStringLie = (apiFunction, name, scope) => {
         /*
         Accepted strings:
         'function name() { [native code] }'
@@ -268,22 +275,22 @@ const getPrototypeLies = iframeWindow => {
         'function () { [native code] }'
         `function () {\n    [native code]\n}`
         */
-		let iframeToString, iframeToStringToString
+		let scopeToString, scopeToStringToString
 		try {
-			iframeToString = iframeWindow.Function.prototype.toString.call(apiFunction)
+			scopeToString = scope.Function.prototype.toString.call(apiFunction)
 		} catch (e) { }
 		try {
-			iframeToStringToString = iframeWindow.Function.prototype.toString.call(apiFunction.toString)
+			scopeToStringToString = scope.Function.prototype.toString.call(apiFunction.toString)
 		} catch (e) { }
 
 		const apiFunctionToString = (
-			iframeToString ?
-				iframeToString :
+			scopeToString ?
+				scopeToString :
 					apiFunction.toString()
 		)
 		const apiFunctionToStringToString = (
-			iframeToStringToString ?
-				iframeToStringToString :
+			scopeToStringToString ?
+				scopeToStringToString :
 					apiFunction.toString.toString()
 		)
 		const trust = name => ({
@@ -373,7 +380,7 @@ const getPrototypeLies = iframeWindow => {
 				error.constructor.name == 'TypeError' && stackLines.length >= 5
 			)
 			// Chromium must throw error 'at Function.toString'... and not 'at Object.apply'
-			const isChrome = 3.141592653589793 ** -100 == 1.9275814160560204e-50
+			const { isChrome } = getEngine()
 			if (validStackSize && isChrome && (
 				!validScope ||
 				!/at Function\.toString/.test(stackLines[1]) ||
@@ -390,7 +397,7 @@ const getPrototypeLies = iframeWindow => {
 	/* Proxy Detection */
 	// arguments or caller should not throw 'incompatible Proxy' TypeError
 	const tryIncompatibleProxy = fn => {
-		const isFirefox = getFirefox()
+		const { isFirefox } = getEngine()
 		try {
 			fn()
 			return true // failed to throw
@@ -417,7 +424,7 @@ const getPrototypeLies = iframeWindow => {
 	// checking proxy instanceof proxy should throw a valid TypeError
 	const getInstanceofCheckLie = apiFunction => {
 		const proxy = new Proxy(apiFunction, {})
-		const isChrome = 3.141592653589793 ** -100 == 1.9275814160560204e-50
+		const { isChrome } = getEngine()
 		if (!isChrome) {
 			return false
 		}
@@ -451,7 +458,7 @@ const getPrototypeLies = iframeWindow => {
 
 	// defining properties should not throw an error
 	const getDefinePropertiesLie = (apiFunction) => {
-		const isChrome = 3.141592653589793 ** -100 == 1.9275814160560204e-50
+		const { isChrome } = getEngine()
 		if (!isChrome) {
 			return false // chrome only test
 		}
@@ -475,8 +482,7 @@ const getPrototypeLies = iframeWindow => {
 		}
 	}
 	const hasValidError = error => {
-		const isFirefox = 3.141592653589793 ** -100 == 1.9275814160560185e-50
-		const isChrome = 3.141592653589793 ** -100 == 1.9275814160560204e-50
+		const { isChrome, isFirefox } = getEngine()
 		const { name, message } = error
 		const hasRangeError = name == 'RangeError'
 		const hasInternalError = name == 'InternalError'
@@ -509,8 +515,7 @@ const getPrototypeLies = iframeWindow => {
 			spawnError(apiFunction, method)
 			return true // failed to throw
 		} catch (error) {
-			const isFirefox = 3.141592653589793 ** -100 == 1.9275814160560185e-50
-			const isChrome = 3.141592653589793 ** -100 == 1.9275814160560204e-50
+			const { isChrome, isFirefox } = getEngine()
 			const { name, message, stack } = error
 			const targetStackLine = ((stack || '').split('\n') || [])[1]
 			const hasTypeError = name == 'TypeError'
@@ -594,7 +599,7 @@ const getPrototypeLies = iframeWindow => {
 			[`failed new instance error`]: getNewInstanceTypeErrorLie(apiFunction),
 			[`failed class extends error`]: getClassExtendsTypeErrorLie(apiFunction),
 			[`failed null conversion error`]: getNullConversionTypeErrorLie(apiFunction),
-			[`failed toString`]: getToStringLie(apiFunction, name, iframeWindow),
+			[`failed toString`]: getToStringLie(apiFunction, name, scope),
 			[`failed "prototype" in function`]: getPrototypeInFunctionLie(apiFunction),
 			[`failed descriptor`]: getDescriptorLie(apiFunction),
 			[`failed own property`]: getOwnPropertyLie(apiFunction),
