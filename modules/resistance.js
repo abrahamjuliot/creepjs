@@ -172,12 +172,12 @@ export const getResistance = async imports => {
 			},
 
 			canvasblocker: {
-				contentDocumentHash: ['6f901c5a'],
-				contentWindowHash: ['6f901c5a'],
-				appendHash: ['6f901c5a'],
-				getImageDataHash: ['6f901c5a', 'a2971888', disabled],
-				toBlobHash: ['6f901c5a', '9f1c3dfe', disabled],
-				toDataURLHash: ['6f901c5a', disabled]
+				contentDocumentHash: ['98ec858e'],
+				contentWindowHash: ['98ec858e'],
+				appendHash: ['98ec858e'],
+				getImageDataHash: ['98ec858e', 'a2971888', disabled],
+				toBlobHash: ['9f1c3dfe', 'a2971888', disabled],
+				toDataURLHash: ['98ec858e', 'a2971888', disabled]
 			},
 			chameleon: {
 				appendHash: ['77dea834'],
