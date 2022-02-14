@@ -164,12 +164,13 @@ export const getResistance = async imports => {
 				// [FF, FF Anti OFF, Chrome, Chrome Anti Off, no iframe Chrome, no iframe Chrome Anti Off]
 				contentDocumentHash: ['945b0c78', '15771efa', '403a1a21', '55e9b959'],
 				contentWindowHash: ['945b0c78', '15771efa', '403a1a21', '55e9b959'],
-				createElementHash: ['cc7cb598', '4237b44c', '1466aaf0', '0cb0c682', '73c662d9', '72b1ee2b'],
-				getElementByIdHash: ['cc7cb598', '4237b44c', '1466aaf0', '0cb0c682', '73c662d9', '72b1ee2b'],
-				getImageDataHash: ['db60d7f9', '15771efa', 'db60d7f9', '55e9b959'],
+				createElementHash: ['3dd86d6f', 'cc7cb598', '4237b44c', '1466aaf0', '0cb0c682', '73c662d9', '72b1ee2b', 'ae3d02c9'],
+				getElementByIdHash: ['3dd86d6f', 'cc7cb598', '4237b44c', '1466aaf0', '0cb0c682', '73c662d9', '72b1ee2b',  'ae3d02c9'],
+				getImageDataHash: ['044f14c2', 'db60d7f9', '15771efa', 'db60d7f9', '55e9b959'],
 				toBlobHash: ['044f14c2', '15771efa', 'afec348d', '55e9b959', '0dbbf456'],
-				toDataURLHash: ['ecb498d9', '6b838fb6', 'ecb498d9', 'd19104ec', 'ecb498d9', '6985d315']
+				toDataURLHash: ['ecb498d9', '15771efa', '6b838fb6', 'd19104ec', '6985d315', '55e9b959', 'fe88259f']
 			},
+
 			canvasblocker: {
 				contentDocumentHash: ['6f901c5a'],
 				contentWindowHash: ['6f901c5a'],
