@@ -229,6 +229,9 @@ export const getResistance = async imports => {
 				insertBeforeHash: ['0007ab4e', '0b637a33'],
 				replaceChildHash: ['0007ab4e', '0b637a33'],
 				hardwareConcurrencyHash: ['dfd41ab4']
+			},
+			puppeteerExtra: {
+				appendChildHash: ['8dfec2ec']
 			}
 		}
 
@@ -296,8 +299,10 @@ export const getResistance = async imports => {
 				duckduckgo,
 				privacybadger,
 				privacypossum,
-				jshelter
+				jshelter,
+				puppeteerExtra
 			} = pattern
+
 			const disabled = 'c767712b'
 			if (prototypeLiesLen) {
 				if (prototypeLiesLen >= 7 &&
@@ -392,6 +397,10 @@ export const getResistance = async imports => {
 					jshelter.replaceChildHash.includes(hash.replaceChildHash) &&
 					jshelter.hardwareConcurrencyHash.includes(hash.hardwareConcurrencyHash)) {
 					return 'JShelter'
+				}
+				if (prototypeLiesLen >= 1 &&
+					puppeteerExtra.appendChildHash.includes(hash.appendChildHash)) {
+					return 'puppeteer-extra'
 				}
 				return
 			}
