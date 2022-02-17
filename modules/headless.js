@@ -118,6 +118,9 @@ export const getHeadlessFeatures = async (imports, workerScope) => {
 					}
 				})(),
 				['Permissions.prototype.query leaks Proxy behavior']: (() => {
+					if (!('Permissions' in window)) {
+						return false
+					}
 					const apiFunction = Permissions.prototype.query
 					return (
 						getTooMuchRecursionLie({ apiFunction }) ||
