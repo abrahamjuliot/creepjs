@@ -155,24 +155,30 @@ export const getCanvasWebgl = async imports => {
 	].sort()
 
 	const draw = gl => {
-		if (!gl) {
+		const isSafari15AndAbove = (
+			'BigInt64Array' in window &&
+			(3.141592653589793 ** -100 == 1.9275814160560206e-50) &&
+			!/(Cr|Fx)iOS/.test(navigator.userAgent)
+		)
+		
+		if (!gl || isSafari15AndAbove) {
 			return
 		}
+		
 		//gl.clearColor(0.47, 0.7, 0.78, 1)
 		gl.clear(gl.COLOR_BUFFER_BIT)
-
+		
 		// based on https://github.com/Valve/fingerprintjs2/blob/master/fingerprint2.js
 		const vertexPosBuffer = gl.createBuffer()
 		gl.bindBuffer(gl.ARRAY_BUFFER, vertexPosBuffer)
 		const vertices = new Float32Array([-0.9, -0.7, 0, 0.8, -0.7, 0, 0, 0.5, 0])
 		gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW)
-
 		vertexPosBuffer.itemSize = 3
 		vertexPosBuffer.numItems = 3
 
 		// create program
 		const program = gl.createProgram()
-
+		
 		// compile and attach vertex shader
 		const vertexShader = gl.createShader(gl.VERTEX_SHADER)
 		gl.shaderSource(vertexShader, `
@@ -186,7 +192,7 @@ export const getCanvasWebgl = async imports => {
 		`)
 		gl.compileShader(vertexShader)
 		gl.attachShader(program, vertexShader)
-
+		
 		// compile and attach fragment shader
 		const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER)
 		gl.shaderSource(fragmentShader, `
@@ -198,7 +204,7 @@ export const getCanvasWebgl = async imports => {
 		`)
 		gl.compileShader(fragmentShader)
 		gl.attachShader(program, fragmentShader)
-
+		
 		// use program
 		gl.linkProgram(program)
 		gl.useProgram(program)
@@ -210,7 +216,6 @@ export const getCanvasWebgl = async imports => {
 
 		// draw
 		gl.drawArrays(gl.LINE_LOOP, 0, vertexPosBuffer.numItems)
-
 		return gl
 	}
 
@@ -447,7 +452,7 @@ export const getCanvasWebgl = async imports => {
 			parameterOrExtensionLie,
 			lied
 		}
-
+		
 		logTestResult({ time: timer.stop(), test: 'webgl', passed: true })
 		return {
 			...data,

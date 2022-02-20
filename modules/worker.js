@@ -81,173 +81,173 @@ export const getBestWorkerScope = async imports => {
 			})
 		}
 		if ((workerScope || {}).userAgent) {
-			const { canvas2d } = workerScope || {}
-			workerScope.system = getOS(workerScope.userAgent)
-			workerScope.device = getUserAgentPlatform({ userAgent: workerScope.userAgent })
-			workerScope.canvas2d = { dataURI: canvas2d }
-			workerScope.type = type
-			workerScope.scope = scope
-
-			// detect lies 
-			const {
-				fontSystemClass,
-				system,
-				userAgent,
-				userAgentData,
-				platform
-			} = workerScope || {}
-			
-			// font system lie
-			const fontSystemLie = fontSystemClass && (
-				/^((i(pad|phone|os))|mac)$/i.test(system) && fontSystemClass != 'Apple'  ? true :
-					/^(windows)$/i.test(system) && fontSystemClass != 'Windows'  ? true :
-						/^(linux|chrome os)$/i.test(system) && fontSystemClass != 'Linux'  ? true :
-							/^(android)$/i.test(system) && fontSystemClass != 'Android'  ? true :
-								false
-			)
-			if (fontSystemLie) {
-				workerScope.lied = true
-				workerScope.lies.systemFonts = `${fontSystemClass} fonts and ${system} user agent do not match`
-				documentLie(workerScope.scope, workerScope.lies.systemFonts)
-			}
-
-			// prototype lies
-			if (workerScope.lies.proto) {
-				const { proto } = workerScope.lies
-				const keys = Object.keys(proto)
-				keys.forEach(key => {
-					const api = `${workerScope.scope}.${key}`
-					const lies = proto[key]
-					lies.forEach(lie => documentLie(api, lie))
-				})
-				
-			}
-			
-			// user agent os lie
-			const userAgentOS = (
-				// order is important
-				/win(dows|16|32|64|95|98|nt)|wow64/ig.test(userAgent) ? 'Windows' :
-					/android|linux|cros/ig.test(userAgent) ? 'Linux' :
-						/(i(os|p(ad|hone|od)))|mac/ig.test(userAgent) ? 'Apple' :
-							'Other'
-			)
-			const platformOS = (
-				// order is important
-				/win/ig.test(platform) ? 'Windows' :
-					/android|arm|linux/ig.test(platform) ? 'Linux' :
-						/(i(os|p(ad|hone|od)))|mac/ig.test(platform) ? 'Apple' :
-							'Other'
-			)
-			const osLie = userAgentOS != platformOS
-			if (osLie) {
-				workerScope.lied = true
-				workerScope.lies.os = `${platformOS} platform and ${userAgentOS} user agent do not match`
-				documentLie(workerScope.scope, workerScope.lies.os)
-			}
-
-			// user agent engine lie
-			const decryptedName = decryptUserAgent({
-				ua: userAgent,
-				os: system,
-				isBrave: false // default false since we are only looking for JS runtime and version
-			})
-			const userAgentEngine = (
-				(/safari/i.test(decryptedName) || /iphone|ipad/i.test(userAgent)) ? 'JavaScriptCore' :
-					/firefox/i.test(userAgent) ? 'SpiderMonkey' :
-						/chrome/i.test(userAgent) ? 'V8' :
-							undefined
-			)
-			const jsRuntimeEngine = {
-				'1.9275814160560204e-50': 'V8',
-				'1.9275814160560185e-50': 'SpiderMonkey',
-				'1.9275814160560206e-50': 'JavaScriptCore'
-			}
-			const mathPI = 3.141592653589793
-			const engine = jsRuntimeEngine[mathPI ** -100]
-			if (userAgentEngine != engine) {
-				workerScope.lied = true
-				workerScope.lies.engine = `${engine} JS runtime and ${userAgentEngine} user agent do not match`
-				documentLie(workerScope.scope, workerScope.lies.engine)
-			}
-			// user agent version lie
-			const getVersion = x => /\s(\d+)/i.test(x) && /\s(\d+)/i.exec(x)[1]
-			const userAgentVersion = getVersion(decryptedName)
-			const userAgentDataVersion = (
-				userAgentData &&
-				userAgentData.brandsVersion &&
-				userAgentData.brandsVersion.length ? 
-				getVersion(userAgentData.brandsVersion) :
-				undefined
-			)
-			const versionSupported = userAgentDataVersion && userAgentVersion
-			const versionMatch = userAgentDataVersion == userAgentVersion
-			if (versionSupported && !versionMatch) {
-				workerScope.lied = true
-				workerScope.lies.version = `userAgentData version ${userAgentDataVersion} and user agent version ${userAgentVersion} do not match`
-				documentLie(workerScope.scope, workerScope.lies.version)
-			}
-
-			// windows platformVersion lie
-			// https://docs.microsoft.com/en-us/microsoft-edge/web-platform/how-to-detect-win11
-			const getWindowsVersionLie = (device, userAgentData) => {
-				if (!/windows/i.test(device) || !userAgentData) {
-					return false
-				}
-				const reportedVersionNumber = +(/windows ([\d|\.]+)/i.exec(device)||[])[1]
-				const windows1OrHigherReport = reportedVersionNumber == 10
-				const { platformVersion, brandsVersion } = userAgentData
-
-				// userAgentData version format changed in Chrome 95
-				// https://github.com/WICG/ua-client-hints/issues/220#issuecomment-870858413
-				const chrome95AndAbove = (
-					((3.141592653589793 ** -100) == 1.9275814160560204e-50) && CSS.supports('app-region: initial')
-				)
-				const versionMap = {
-					'6.1': '7',
-					'6.1.0': '7',
-					'6.2': '8',
-					'6.2.0': '8',
-					'6.3': '8.1',
-					'6.3.0': '8.1',
-					'10.0': '10',
-					'10.0.0': '10'
-				}
-				let versionNumber = versionMap[platformVersion]
-				if (!chrome95AndAbove && versionNumber) {
-					return versionNumber != (''+reportedVersionNumber)
-				}
-				versionNumber = +(/(\d+)\./.exec(''+platformVersion)||[])[1]
-				const windows10OrHigherPlatform = versionNumber > 0
-				return (
-					(windows10OrHigherPlatform && !windows1OrHigherReport) ||
-					(!windows10OrHigherPlatform && windows1OrHigherReport)
-				)
-			}
-			const windowsVersionLie  = getWindowsVersionLie(workerScope.device, userAgentData)
-			if (windowsVersionLie) {
-				workerScope.lied = true
-				workerScope.lies.platformVersion = `Windows platformVersion ${(userAgentData||{}).platformVersion} does not match user agent version ${workerScope.device}`
-				documentLie(workerScope.scope, workerScope.lies.platformVersion)
-			}			
-			
-			// capture userAgent version
-			workerScope.userAgentVersion = userAgentVersion
-			workerScope.userAgentDataVersion = userAgentDataVersion
-			workerScope.userAgentEngine = userAgentEngine
-
-			const gpu = {
-				...(getWebGLRendererConfidence(workerScope.webglRenderer) || {}),
-				compressedGPU: compressWebGLRenderer(workerScope.webglRenderer)
-			}
-			
-			logTestResult({ time: timer.stop(), test: `${type} worker`, passed: true })
-			return {
-				...workerScope,
-				gpu,
-				uaPostReduction: isUAPostReduction(workerScope.userAgent)
-			}
+			return
 		}
-		return
+		const { canvas2d } = workerScope || {}
+		workerScope.system = getOS(workerScope.userAgent)
+		workerScope.device = getUserAgentPlatform({ userAgent: workerScope.userAgent })
+		workerScope.canvas2d = { dataURI: canvas2d }
+		workerScope.type = type
+		workerScope.scope = scope
+
+		// detect lies 
+		const {
+			fontSystemClass,
+			system,
+			userAgent,
+			userAgentData,
+			platform
+		} = workerScope || {}
+		
+		// font system lie
+		const fontSystemLie = fontSystemClass && (
+			/^((i(pad|phone|os))|mac)$/i.test(system) && fontSystemClass != 'Apple'  ? true :
+				/^(windows)$/i.test(system) && fontSystemClass != 'Windows'  ? true :
+					/^(linux|chrome os)$/i.test(system) && fontSystemClass != 'Linux'  ? true :
+						/^(android)$/i.test(system) && fontSystemClass != 'Android'  ? true :
+							false
+		)
+		if (fontSystemLie) {
+			workerScope.lied = true
+			workerScope.lies.systemFonts = `${fontSystemClass} fonts and ${system} user agent do not match`
+			documentLie(workerScope.scope, workerScope.lies.systemFonts)
+		}
+
+		// prototype lies
+		if (workerScope.lies.proto) {
+			const { proto } = workerScope.lies
+			const keys = Object.keys(proto)
+			keys.forEach(key => {
+				const api = `${workerScope.scope}.${key}`
+				const lies = proto[key]
+				lies.forEach(lie => documentLie(api, lie))
+			})
+			
+		}
+		
+		// user agent os lie
+		const userAgentOS = (
+			// order is important
+			/win(dows|16|32|64|95|98|nt)|wow64/ig.test(userAgent) ? 'Windows' :
+				/android|linux|cros/ig.test(userAgent) ? 'Linux' :
+					/(i(os|p(ad|hone|od)))|mac/ig.test(userAgent) ? 'Apple' :
+						'Other'
+		)
+		const platformOS = (
+			// order is important
+			/win/ig.test(platform) ? 'Windows' :
+				/android|arm|linux/ig.test(platform) ? 'Linux' :
+					/(i(os|p(ad|hone|od)))|mac/ig.test(platform) ? 'Apple' :
+						'Other'
+		)
+		const osLie = userAgentOS != platformOS
+		if (osLie) {
+			workerScope.lied = true
+			workerScope.lies.os = `${platformOS} platform and ${userAgentOS} user agent do not match`
+			documentLie(workerScope.scope, workerScope.lies.os)
+		}
+
+		// user agent engine lie
+		const decryptedName = decryptUserAgent({
+			ua: userAgent,
+			os: system,
+			isBrave: false // default false since we are only looking for JS runtime and version
+		})
+		const userAgentEngine = (
+			(/safari/i.test(decryptedName) || /iphone|ipad/i.test(userAgent)) ? 'JavaScriptCore' :
+				/firefox/i.test(userAgent) ? 'SpiderMonkey' :
+					/chrome/i.test(userAgent) ? 'V8' :
+						undefined
+		)
+		const jsRuntimeEngine = {
+			'1.9275814160560204e-50': 'V8',
+			'1.9275814160560185e-50': 'SpiderMonkey',
+			'1.9275814160560206e-50': 'JavaScriptCore'
+		}
+		const mathPI = 3.141592653589793
+		const engine = jsRuntimeEngine[mathPI ** -100]
+		if (userAgentEngine != engine) {
+			workerScope.lied = true
+			workerScope.lies.engine = `${engine} JS runtime and ${userAgentEngine} user agent do not match`
+			documentLie(workerScope.scope, workerScope.lies.engine)
+		}
+		// user agent version lie
+		const getVersion = x => /\s(\d+)/i.test(x) && /\s(\d+)/i.exec(x)[1]
+		const userAgentVersion = getVersion(decryptedName)
+		const userAgentDataVersion = (
+			userAgentData &&
+			userAgentData.brandsVersion &&
+			userAgentData.brandsVersion.length ? 
+			getVersion(userAgentData.brandsVersion) :
+			undefined
+		)
+		const versionSupported = userAgentDataVersion && userAgentVersion
+		const versionMatch = userAgentDataVersion == userAgentVersion
+		if (versionSupported && !versionMatch) {
+			workerScope.lied = true
+			workerScope.lies.version = `userAgentData version ${userAgentDataVersion} and user agent version ${userAgentVersion} do not match`
+			documentLie(workerScope.scope, workerScope.lies.version)
+		}
+
+		// windows platformVersion lie
+		// https://docs.microsoft.com/en-us/microsoft-edge/web-platform/how-to-detect-win11
+		const getWindowsVersionLie = (device, userAgentData) => {
+			if (!/windows/i.test(device) || !userAgentData) {
+				return false
+			}
+			const reportedVersionNumber = +(/windows ([\d|\.]+)/i.exec(device)||[])[1]
+			const windows1OrHigherReport = reportedVersionNumber == 10
+			const { platformVersion, brandsVersion } = userAgentData
+
+			// userAgentData version format changed in Chrome 95
+			// https://github.com/WICG/ua-client-hints/issues/220#issuecomment-870858413
+			const chrome95AndAbove = (
+				((3.141592653589793 ** -100) == 1.9275814160560204e-50) && CSS.supports('app-region: initial')
+			)
+			const versionMap = {
+				'6.1': '7',
+				'6.1.0': '7',
+				'6.2': '8',
+				'6.2.0': '8',
+				'6.3': '8.1',
+				'6.3.0': '8.1',
+				'10.0': '10',
+				'10.0.0': '10'
+			}
+			let versionNumber = versionMap[platformVersion]
+			if (!chrome95AndAbove && versionNumber) {
+				return versionNumber != (''+reportedVersionNumber)
+			}
+			versionNumber = +(/(\d+)\./.exec(''+platformVersion)||[])[1]
+			const windows10OrHigherPlatform = versionNumber > 0
+			return (
+				(windows10OrHigherPlatform && !windows1OrHigherReport) ||
+				(!windows10OrHigherPlatform && windows1OrHigherReport)
+			)
+		}
+		const windowsVersionLie  = getWindowsVersionLie(workerScope.device, userAgentData)
+		if (windowsVersionLie) {
+			workerScope.lied = true
+			workerScope.lies.platformVersion = `Windows platformVersion ${(userAgentData||{}).platformVersion} does not match user agent version ${workerScope.device}`
+			documentLie(workerScope.scope, workerScope.lies.platformVersion)
+		}			
+		
+		// capture userAgent version
+		workerScope.userAgentVersion = userAgentVersion
+		workerScope.userAgentDataVersion = userAgentDataVersion
+		workerScope.userAgentEngine = userAgentEngine
+
+		const gpu = {
+			...(getWebGLRendererConfidence(workerScope.webglRenderer) || {}),
+			compressedGPU: compressWebGLRenderer(workerScope.webglRenderer)
+		}
+		
+		logTestResult({ time: timer.stop(), test: `${type} worker`, passed: true })
+		return {
+			...workerScope,
+			gpu,
+			uaPostReduction: isUAPostReduction(workerScope.userAgent)
+		}
 	}
 	catch (error) {
 		logTestResult({ test: 'worker', passed: false })
