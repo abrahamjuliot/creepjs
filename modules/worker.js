@@ -80,7 +80,7 @@ export const getBestWorkerScope = async imports => {
 				return
 			})
 		}
-		if ((workerScope || {}).userAgent) {
+		if (!(workerScope || {}).userAgent) {
 			return
 		}
 		const { canvas2d } = workerScope || {}
