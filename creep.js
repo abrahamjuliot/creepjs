@@ -911,7 +911,16 @@ const imports = {
 							</span></div>
 							<div>visits: <span class="unblurred">${visits}</span></div>
 							<div class="ellipsis">first: <span class="unblurred">${toLocaleStr(firstVisit)}</span></div>
-							<div>alive: <span class="unblurred">${persistence} hrs</span></div>
+							<div>alive: <span class="unblurred">${(hours => {
+								const format = n => {
+									const fixed = n.toFixed(1)
+									const shouldMakeNumberWhole = /\.0/.test(fixed)
+									return shouldMakeNumberWhole ? n.toFixed() : fixed
+								}
+								return (
+									hours > 48 ? `${format(hours/24)} days` : `${format(hours)} hrs`
+								)
+							})(persistence)}</span></div>
 							<div class="relative">shadow: <span class="unblurred">${!shadowBits ? '0' : shadowBits.toFixed(5)}</span>  ${computePoints(shadowBitsPointGain)}
 							${
 								!shadowBits ? '' : `<span class="confidence-note">${hashMini(shadow)}</span>`
