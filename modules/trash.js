@@ -250,7 +250,7 @@ const trashHTML = ({ fp, hashSlice, modal }, pointsHTML) => {
 	const trashLen = trashBin.length
 	return `
 		<div class="${trashLen ? ' trash': ''}">trash (${!trashLen ? '0' : ''+trashLen }):${
-			!trashLen ? 'none' : modal(
+			!trashLen ? ' none' : modal(
 				'creep-trash',
 				trashBin.map((trash,i) => `${i+1}: ${trash.name}: ${trash.value}`).join('<br>'),
 				hashSlice($hash)
