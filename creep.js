@@ -685,6 +685,7 @@ const imports = {
 					<div>visits: <span class="blurred">1</span></div>
 					<div>first: <span class="blurred">##/##/####, 00:00:00 AM</span></div>
 					<div>alive: <span class="blurred">0.0 hrs</span></div>
+					<div id="auto-delete">auto-delete in</div>
 					<div>shadow: <span class="blurred">0.00000</span></div>
 					<div class="block-text shadow-icon"></div>
 				</div>
@@ -812,6 +813,7 @@ const imports = {
 			const {
 				firstVisit,
 				lastVisit: latestVisit,
+				lastVisitEpoch,
 				timeHoursAlive: persistence,
 				looseFingerprints: subIds,
 				visits,
@@ -921,6 +923,7 @@ const imports = {
 									hours > 48 ? `${format(hours/24)} days` : `${format(hours)} hrs`
 								)
 							})(persistence)}</span></div>
+							<div id="auto-delete">auto-delete in</div>
 							<div class="relative">shadow: <span class="unblurred">${!shadowBits ? '0' : shadowBits.toFixed(5)}</span>  ${computePoints(shadowBitsPointGain)}
 							${
 								!shadowBits ? '' : `<span class="confidence-note">${hashMini(shadow)}</span>`
@@ -967,6 +970,24 @@ const imports = {
 				</div>
 			`
 			patch(visitorElem, html`${template}`, () => {
+
+				// show self destruct time
+				const el = document.getElementById('auto-delete')
+				const arrivalTime = +new Date
+				const showTime = () => {
+					requestAnimationFrame(showTime)
+					const hoursInMs = 36e5
+					const day = hoursInMs * 24
+					const destructionDate = +new Date(+new Date+(day*30))
+					const hoursTillSelfDestruct = Math.abs(arrivalTime - destructionDate) / hoursInMs
+					return el.style.setProperty(
+						'--auto-delete-time',
+						`'${hoursTillSelfDestruct.toFixed(6)}'`
+					)
+				}
+				showTime()
+
+				// listen to form signature if not already signed
 				if (signature) {
 					return
 				}

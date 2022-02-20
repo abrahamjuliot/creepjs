@@ -487,6 +487,12 @@ visitor {
     height: 7px;
     width: 7px;
 }
+#auto-delete {
+	--auto-delete-time: '720.000000';
+}
+#auto-delete:after {
+	content: ' ' var(--auto-delete-time) ' hrs';
+}
 @keyframes balloon {
 	0% {
 		
