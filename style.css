@@ -488,10 +488,10 @@ visitor {
     width: 7px;
 }
 #auto-delete {
-	--auto-delete-time: '720.000000';
+	--auto-delete-time: '30.00000000';
 }
 #auto-delete:after {
-	content: ' ' var(--auto-delete-time) ' hrs';
+	content: ' ' var(--auto-delete-time) ' days';
 }
 @keyframes balloon {
 	0% {

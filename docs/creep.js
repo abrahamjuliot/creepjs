@@ -12344,11 +12344,11 @@
 						requestAnimationFrame(showTime);
 						const hoursInMs = 36e5;
 						const day = hoursInMs * 24;
-						const destructionDate = +new Date(+new Date+(day*30));
-						const hoursTillSelfDestruct = Math.abs(arrivalTime - destructionDate) / hoursInMs;
+						const destructionDate = +new Date(+new Date-(day*30));
+						const hoursTillSelfDestruct = Math.abs(arrivalTime - destructionDate) / hoursInMs/24;
 						return el.style.setProperty(
 							'--auto-delete-time',
-							`'${hoursTillSelfDestruct.toFixed(6)}'`
+							`'${hoursTillSelfDestruct.toFixed(8)}'`
 						)
 					};
 					showTime();
