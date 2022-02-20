@@ -114,10 +114,9 @@ const getEngineMaps = browser => {
 		'93': ['WritableStreamDefaultController'],
 		'94': ['AudioData', 'AudioDecoder', 'AudioEncoder', 'EncodedAudioChunk', 'EncodedVideoChunk', 'IdleDetector', 'ImageDecoder', 'ImageTrack', 'ImageTrackList', 'VideoColorSpace', 'VideoDecoder', 'VideoEncoder', 'VideoFrame', 'MediaStreamTrackGenerator', 'MediaStreamTrackProcessor', 'Profiler', 'VirtualKeyboard', 'DelegatedInkTrailPresenter', 'Ink', 'Scheduler', 'TaskController', 'TaskPriorityChangeEvent', 'TaskSignal', 'VirtualKeyboardGeometryChangeEvent'],
 		'95-96': ['URLPattern'],
-		'97': ['WebTransport', 'WebTransportBidirectionalStream', 'WebTransportDatagramDuplexStream', 'WebTransportError'],
-		'98': ['WindowControlsOverlay', 'WindowControlsOverlayGeometryChangeEvent'],
+		'97-98': ['WebTransport', 'WebTransportBidirectionalStream', 'WebTransportDatagramDuplexStream', 'WebTransportError'],
 		'99': ['CanvasFilter', 'CSSLayerBlockRule', 'CSSLayerStatementRule'],
-		'100': ['CSSMathClamp', '!WindowControlsOverlay']
+		'100': ['CSSMathClamp']
 	}
 
 	const blinkJS = {
