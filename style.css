@@ -373,6 +373,10 @@ visitor {
     color: #bbb;
     background: #fff;
 }
+.left {
+	left: 5px;
+	right: 0;
+}
 .renewed {
     background: linear-gradient(45deg, #657fcac2, #a54991a3);
     color: #fff;

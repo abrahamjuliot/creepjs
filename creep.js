@@ -696,9 +696,10 @@ const imports = {
 					<div>session (0): <span class="blurred">00000000</span></div>
 					<div>revisions (0): <span class="blurred">00000000</span></div>
 					<div>loose fp (0): <span class="blurred">00000000</span></div>
-					<div class="block-text-small">
+					<div class="block-text">
 						<div class="blurred">bot: 0:friend:00000</div>
 						<div class="blurred">idle min-max: 0.000-0.000 hrs</div>
+						<div class="blurred">performance benchmark: 0.00 ms</div>
 					</div>
 					<div id="signature"></div>
 				</div>
@@ -837,7 +838,9 @@ const imports = {
 				botHash,
 				botLevel,
 				timeHoursIdleMin,
-				timeHoursIdleMax
+				timeHoursIdleMax,
+				benchmark,
+				resistance: resistanceId
 			} = data || {}
 
 			const fuzzyFpEl = document.getElementById('fuzzy-fingerprint')
@@ -909,7 +912,8 @@ const imports = {
 					<span class="time">fingerprints renewed <span class="${shouldStyle(renewedDateString) ? 'renewed' : ''}">${
 						new Date(renewedDateString).toLocaleDateString()
 					}</span></span>
-					<div class="flex-grid">
+					<div class="flex-grid relative">
+						<span class="aside-note-bottom left">${resistanceId}</span>
 						<div class="col-six">
 							<strong>Browser</strong>
 							<div>trust score: <span class="unblurred">
@@ -951,9 +955,10 @@ const imports = {
 							}
 							<div class="ellipsis">loose fp (${''+switchCount}):<span class="unblurred sub-hash">${hashSlice(fpHash)}</span> ${computePoints(switchCountPointGain)}</div>
 
-							<div class="block-text-small">
+							<div class="block-text">
 								<div class="unblurred">bot: ${bot.toFixed(2)}:${botLevel}:${botHash}</div>
 								<div class="unblurred">idle min-max: ${timeHoursIdleMin}-${timeHoursIdleMax} hrs</div>
+								<div class="unblurred">performance benchmark: ${benchmark.toFixed(2)} ms</div>
 							</div>
 
 							${
