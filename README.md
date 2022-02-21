@@ -126,7 +126,9 @@ Purpose: identify browser visit history and activity
 	timeHoursFromLastVisit: 0,
 	timeHoursIdleMax: 0,
 	timeHoursIdleMin: 0,
-	visits: 1
+	visits: 1,
+	benchmark: 565.4,
+	resistance: ''
 }
 ```
 

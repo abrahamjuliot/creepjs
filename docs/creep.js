@@ -12165,8 +12165,12 @@
 			const visitorElem = document.getElementById(id);
 			const { botHash, badBot } = getBotHash(fp, { getFeaturesLie, computeWindowsRelease });
 			const fuzzyFingerprint = await getFuzzyHash(fp);
+			const { privacy, security, mode, extension } = fp.resistance || {};
+			const resistanceSet = new Set([privacy, (mode ? `(${mode})` : mode), extension]);
+			resistanceSet.delete();
+			const resistanceType = [...resistanceSet].join(' ');
 			const fetchVisitorDataTimer = timer();
-			const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&trashLen=${trashLen}&liesLen=${liesLen}&errorsLen=${errorsLen}&fuzzy=${fuzzyFingerprint}&botHash=${botHash}`;
+			const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&trashLen=${trashLen}&liesLen=${liesLen}&errorsLen=${errorsLen}&fuzzy=${fuzzyFingerprint}&botHash=${botHash}&perf=${timeEnd.toFixed(2)}&resistance=${resistanceType}`;
 			
 			fetch(request)
 			.then(response => response.json())
