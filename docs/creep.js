@@ -3629,8 +3629,6 @@
 			gl.bindBuffer(gl.ARRAY_BUFFER, vertexPosBuffer);
 			const vertices = new Float32Array([-0.9, -0.7, 0, 0.8, -0.7, 0, 0, 0.5, 0]);
 			gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-			vertexPosBuffer.itemSize = 3;
-			vertexPosBuffer.numItems = 3;
 
 			// create program
 			const program = gl.createProgram();
@@ -3662,16 +3660,18 @@
 			gl.attachShader(program, fragmentShader);
 			
 			// use program
+			const componentSize = 3;
 			gl.linkProgram(program);
 			gl.useProgram(program);
 			program.vertexPosAttrib = gl.getAttribLocation(program, 'attrVertex');
 			program.offsetUniform = gl.getUniformLocation(program, 'uniformOffset');
 			gl.enableVertexAttribArray(program.vertexPosArray);
-			gl.vertexAttribPointer(program.vertexPosAttrib, vertexPosBuffer.itemSize, gl.FLOAT, false, 0, 0);
+			gl.vertexAttribPointer(program.vertexPosAttrib, componentSize, gl.FLOAT, false, 0, 0);
 			gl.uniform2f(program.offsetUniform, 1, 1);
 
 			// draw
-			gl.drawArrays(gl.LINE_LOOP, 0, vertexPosBuffer.numItems);
+			const numOfIndices = 3;
+			gl.drawArrays(gl.LINE_LOOP, 0, numOfIndices);
 			return gl
 		};
 

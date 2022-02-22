@@ -970,7 +970,14 @@ const getFontList = () => [
 ].sort()
 
 const getFontFaceLoadFonts = async fontList => {
-	if (!self.FontFace) {
+	// Crashes in Safari 15 (stable in Safari 15.4)
+	const isSafari15VersionError = (
+		'BigInt64Array' in self && // Safari 15
+		!('reportError' in self) && // Safari 15.4
+		(3.141592653589793 ** -100 == 1.9275814160560206e-50) && // Webkit
+		!/(Cr|Fx)iOS/.test(navigator.userAgent) // Safari
+	)
+	if (!self.FontFace || isSafari15VersionError) {
 		return
 	}
 	try {
