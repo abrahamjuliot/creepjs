@@ -232,7 +232,24 @@ export const getResistance = async imports => {
 				hardwareConcurrencyHash: ['dfd41ab4']
 			},
 			puppeteerExtra: {
-				appendChildHash: ['8dfec2ec']
+				contentDocumentHash: ['55e9b959'],
+    		contentWindowHash: ['55e9b959'],
+    		createElementHash: ['55e9b959'],
+    		getElementByIdHash: ['55e9b959'],
+    		appendHash: ['55e9b959'],
+    		insertAdjacentElementHash: ['55e9b959'],
+    		insertAdjacentHTMLHash: ['55e9b959'],
+    		insertAdjacentTextHash: ['55e9b959'],
+    		prependHash: ['55e9b959'],
+    		replaceWithHash: ['55e9b959'],
+    		appendChildHash: ['55e9b959', '8dfec2ec'],
+    		insertBeforeHash: ['55e9b959'],
+    		replaceChildHash: ['55e9b959'],
+		    getContextHash: ['55e9b959'],
+		    toDataURLHash: ['55e9b959'],
+		    toBlobHash: ['55e9b959'],
+		    getImageDataHash: ['55e9b959'],
+    		hardwareConcurrencyHash: ['efbd4cf9'],
 			}
 		}
 
@@ -399,8 +416,27 @@ export const getResistance = async imports => {
 					jshelter.hardwareConcurrencyHash.includes(hash.hardwareConcurrencyHash)) {
 					return 'JShelter'
 				}
-				if (prototypeLiesLen >= 1 &&
-					puppeteerExtra.appendChildHash.includes(hash.appendChildHash)) {
+				if (prototypeLiesLen >= 13 &&
+					puppeteerExtra.contentDocumentHash.includes(hash.contentDocumentHash) &&
+					puppeteerExtra.contentWindowHash.includes(hash.contentWindowHash) &&
+					puppeteerExtra.createElementHash.includes(hash.createElementHash) &&
+					puppeteerExtra.getElementByIdHash.includes(hash.getElementByIdHash) &&
+					puppeteerExtra.appendHash.includes(hash.appendHash) &&
+					puppeteerExtra.insertAdjacentElementHash.includes(hash.insertAdjacentElementHash) &&
+					puppeteerExtra.insertAdjacentHTMLHash.includes(hash.insertAdjacentHTMLHash) &&
+					puppeteerExtra.insertAdjacentTextHash.includes(hash.insertAdjacentTextHash) &&
+					puppeteerExtra.prependHash.includes(hash.prependHash) &&
+					puppeteerExtra.replaceWithHash.includes(hash.replaceWithHash) &&
+					puppeteerExtra.appendChildHash.includes(hash.appendChildHash) &&
+					puppeteerExtra.insertBeforeHash.includes(hash.insertBeforeHash) &&
+					puppeteerExtra.contentDocumentHash.includes(hash.contentDocumentHash) &&
+						
+					puppeteerExtra.replaceChildHash.includes(hash.replaceChildHash) &&
+					puppeteerExtra.getContextHash.includes(hash.getContextHash) &&
+					puppeteerExtra.toDataURLHash.includes(hash.toDataURLHash) &&
+					puppeteerExtra.toBlobHash.includes(hash.toBlobHash) &&
+					puppeteerExtra.getImageDataHash.includes(hash.getImageDataHash) &&
+					puppeteerExtra.hardwareConcurrencyHash.includes(hash.hardwareConcurrencyHash)) {
 					return 'puppeteer-extra'
 				}
 				return
