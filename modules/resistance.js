@@ -233,23 +233,23 @@ export const getResistance = async imports => {
 			},
 			puppeteerExtra: {
 				contentDocumentHash: ['55e9b959'],
-    		contentWindowHash: ['55e9b959'],
-    		createElementHash: ['55e9b959'],
-    		getElementByIdHash: ['55e9b959'],
-    		appendHash: ['55e9b959'],
-    		insertAdjacentElementHash: ['55e9b959'],
-    		insertAdjacentHTMLHash: ['55e9b959'],
-    		insertAdjacentTextHash: ['55e9b959'],
-    		prependHash: ['55e9b959'],
-    		replaceWithHash: ['55e9b959'],
-    		appendChildHash: ['55e9b959', '8dfec2ec'],
-    		insertBeforeHash: ['55e9b959'],
-    		replaceChildHash: ['55e9b959'],
-		    getContextHash: ['55e9b959'],
-		    toDataURLHash: ['55e9b959'],
-		    toBlobHash: ['55e9b959'],
-		    getImageDataHash: ['55e9b959'],
-    		hardwareConcurrencyHash: ['efbd4cf9'],
+				contentWindowHash: ['55e9b959'],
+				createElementHash: ['55e9b959'],
+				getElementByIdHash: ['55e9b959'],
+				appendHash: ['55e9b959'],
+				insertAdjacentElementHash: ['55e9b959'],
+				insertAdjacentHTMLHash: ['55e9b959'],
+				insertAdjacentTextHash: ['55e9b959'],
+				prependHash: ['55e9b959'],
+				replaceWithHash: ['55e9b959'],
+				appendChildHash: ['55e9b959', '8dfec2ec'],
+				insertBeforeHash: ['55e9b959'],
+				replaceChildHash: ['55e9b959'],
+				getContextHash: ['55e9b959'],
+				toDataURLHash: ['55e9b959'],
+				toBlobHash: ['55e9b959'],
+				getImageDataHash: ['55e9b959'],
+				hardwareConcurrencyHash: ['efbd4cf9'],
 			}
 		}
 
@@ -430,7 +430,6 @@ export const getResistance = async imports => {
 					puppeteerExtra.appendChildHash.includes(hash.appendChildHash) &&
 					puppeteerExtra.insertBeforeHash.includes(hash.insertBeforeHash) &&
 					puppeteerExtra.contentDocumentHash.includes(hash.contentDocumentHash) &&
-						
 					puppeteerExtra.replaceChildHash.includes(hash.replaceChildHash) &&
 					puppeteerExtra.getContextHash.includes(hash.getContextHash) &&
 					puppeteerExtra.toDataURLHash.includes(hash.toDataURLHash) &&

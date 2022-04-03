@@ -9033,12 +9033,12 @@
 			// windows platformVersion lie
 			// https://docs.microsoft.com/en-us/microsoft-edge/web-platform/how-to-detect-win11
 			const getWindowsVersionLie = (device, userAgentData) => {
-				if (!/windows/i.test(device) || !userAgentData) {
+				if (!/windows/i.test(device) || !userAgentData || !userAgentData.platformVersion) {
 					return false
 				}
 				const reportedVersionNumber = +(/windows ([\d|\.]+)/i.exec(device)||[])[1];
 				const windows1OrHigherReport = reportedVersionNumber == 10;
-				const { platformVersion, brandsVersion } = userAgentData;
+				const { platformVersion } = userAgentData;
 
 				// userAgentData version format changed in Chrome 95
 				// https://github.com/WICG/ua-client-hints/issues/220#issuecomment-870858413
@@ -9834,23 +9834,23 @@
 				},
 				puppeteerExtra: {
 					contentDocumentHash: ['55e9b959'],
-	    		contentWindowHash: ['55e9b959'],
-	    		createElementHash: ['55e9b959'],
-	    		getElementByIdHash: ['55e9b959'],
-	    		appendHash: ['55e9b959'],
-	    		insertAdjacentElementHash: ['55e9b959'],
-	    		insertAdjacentHTMLHash: ['55e9b959'],
-	    		insertAdjacentTextHash: ['55e9b959'],
-	    		prependHash: ['55e9b959'],
-	    		replaceWithHash: ['55e9b959'],
-	    		appendChildHash: ['55e9b959', '8dfec2ec'],
-	    		insertBeforeHash: ['55e9b959'],
-	    		replaceChildHash: ['55e9b959'],
-			    getContextHash: ['55e9b959'],
-			    toDataURLHash: ['55e9b959'],
-			    toBlobHash: ['55e9b959'],
-			    getImageDataHash: ['55e9b959'],
-	    		hardwareConcurrencyHash: ['efbd4cf9'],
+					contentWindowHash: ['55e9b959'],
+					createElementHash: ['55e9b959'],
+					getElementByIdHash: ['55e9b959'],
+					appendHash: ['55e9b959'],
+					insertAdjacentElementHash: ['55e9b959'],
+					insertAdjacentHTMLHash: ['55e9b959'],
+					insertAdjacentTextHash: ['55e9b959'],
+					prependHash: ['55e9b959'],
+					replaceWithHash: ['55e9b959'],
+					appendChildHash: ['55e9b959', '8dfec2ec'],
+					insertBeforeHash: ['55e9b959'],
+					replaceChildHash: ['55e9b959'],
+					getContextHash: ['55e9b959'],
+					toDataURLHash: ['55e9b959'],
+					toBlobHash: ['55e9b959'],
+					getImageDataHash: ['55e9b959'],
+					hardwareConcurrencyHash: ['efbd4cf9'],
 				}
 			};
 
@@ -10031,7 +10031,6 @@
 						puppeteerExtra.appendChildHash.includes(hash.appendChildHash) &&
 						puppeteerExtra.insertBeforeHash.includes(hash.insertBeforeHash) &&
 						puppeteerExtra.contentDocumentHash.includes(hash.contentDocumentHash) &&
-							
 						puppeteerExtra.replaceChildHash.includes(hash.replaceChildHash) &&
 						puppeteerExtra.getContextHash.includes(hash.getContextHash) &&
 						puppeteerExtra.toDataURLHash.includes(hash.toDataURLHash) &&
