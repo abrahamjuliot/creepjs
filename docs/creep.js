@@ -10391,7 +10391,7 @@
 			'96': ['Lock', 'LockManager'],
 			'97': ['CSSLayerBlockRule', 'CSSLayerStatementRule'],
 			'98': ['HTMLDialogElement'],
-			'99': ['MIDIAccess', 'MIDIOutputMap', 'MIDIOutput', 'NavigationPreloadManager', 'MIDIInputMap', 'MIDIPort', 'MIDIInput', 'MIDIMessageEvent', 'MIDIConnectionEvent']
+			'99': ['NavigationPreloadManager']
 		};
 
 		const blinkWindow = {
