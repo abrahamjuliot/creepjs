@@ -249,7 +249,7 @@ export const getResistance = async imports => {
 				toDataURLHash: ['55e9b959'],
 				toBlobHash: ['55e9b959'],
 				getImageDataHash: ['55e9b959'],
-				hardwareConcurrencyHash: ['efbd4cf9'],
+				hardwareConcurrencyHash: ['efbd4cf9', 'a63491fb'],
 			}
 		}
 
