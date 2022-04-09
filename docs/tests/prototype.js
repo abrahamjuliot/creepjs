@@ -359,7 +359,10 @@
 				const validName = name == 'TypeError'
 				const validMessage = message == `Function has non-object prototype 'undefined' in instanceof check`
 				const targetStackLine = ((stack || '').split('\n') || [])[1]
-				const validStackLine = targetStackLine.startsWith(`    at ${type}.[Symbol.hasInstance]`)
+				const validStackLine = (
+					targetStackLine.startsWith(`    at ${type}.[Symbol.hasInstance]`) ||
+					targetStackLine.startsWith('    at [Symbol.hasInstance]') // Chrome 102
+				)
 				return validName && validMessage && validStackLine
 			}
 			try {
@@ -446,8 +449,12 @@
 				const targetStackLine = ((stack || '').split('\n') || [])[1]
 				const hasTypeError = name == 'TypeError'
 				const chromeLie = isChrome && (
-					message != `Cyclic __proto__ value` ||
-					(method == '__proto__' && !targetStackLine.startsWith(`    at Function.set __proto__ [as __proto__]`))
+					message != `Cyclic __proto__ value` || (
+						method == '__proto__' && (
+							!targetStackLine.startsWith(`    at Function.set __proto__ [as __proto__]`) &&
+							!targetStackLine.startsWith(`    at set __proto__ [as __proto__]`) // Chrome 102
+						)
+					)
 				)
 				const firefoxLie = isFirefox && (
 					message != `can't set prototype: it would cause a prototype chain cycle`
