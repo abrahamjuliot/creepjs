@@ -18,6 +18,7 @@ Tests are focused on:
 - ungoogled-chromium (fingerprint deception)
 - Brave Browser (Standard/Strict)
 - puppeteer-extra
+- FakeBrowser
 - Bromite
 - uBlock Origin (aopr)
 - NoScript

@@ -242,7 +242,7 @@ export const getResistance = async imports => {
 				insertAdjacentTextHash: ['55e9b959'],
 				prependHash: ['55e9b959'],
 				replaceWithHash: ['55e9b959'],
-				appendChildHash: ['55e9b959', '8dfec2ec'],
+				appendChildHash: ['55e9b959'],
 				insertBeforeHash: ['55e9b959'],
 				replaceChildHash: ['55e9b959'],
 				getContextHash: ['55e9b959'],
@@ -250,7 +250,21 @@ export const getResistance = async imports => {
 				toBlobHash: ['55e9b959'],
 				getImageDataHash: ['55e9b959'],
 				hardwareConcurrencyHash: ['efbd4cf9', 'a63491fb'],
-			}
+			},
+			fakeBrowser: {
+				appendChildHash: ['8dfec2ec', 'f43e6134'],
+				getContextHash: ['83b825ab', 'a63491fb'],
+				toDataURLHash: ['83b825ab', 'a63491fb'],
+				toBlobHash: ['83b825ab', 'a63491fb'],
+				getImageDataHash: ['83b825ab', 'a63491fb'],
+				hardwareConcurrencyHash: ['83b825ab', 'a63491fb'],
+				availHeightHash: ['83b825ab', 'a63491fb'],
+				availLeftHash: ['83b825ab', 'a63491fb'],
+				availTopHash: ['83b825ab', 'a63491fb'],
+				availWidthHash: ['83b825ab', 'a63491fb'],
+				colorDepthHash: ['83b825ab', 'a63491fb'],
+				pixelDepthHash: ['83b825ab', 'a63491fb'],
+			},
 		}
 
 		/*
@@ -318,7 +332,8 @@ export const getResistance = async imports => {
 				privacybadger,
 				privacypossum,
 				jshelter,
-				puppeteerExtra
+				puppeteerExtra,
+				fakeBrowser
 			} = pattern
 
 			const disabled = 'c767712b'
@@ -437,6 +452,22 @@ export const getResistance = async imports => {
 					puppeteerExtra.getImageDataHash.includes(hash.getImageDataHash) &&
 					puppeteerExtra.hardwareConcurrencyHash.includes(hash.hardwareConcurrencyHash)) {
 					return 'puppeteer-extra'
+				}
+
+				if (prototypeLiesLen >= 12 &&
+					fakeBrowser.appendChildHash.includes(hash.appendChildHash) &&
+					fakeBrowser.getContextHash.includes(hash.getContextHash) &&
+					fakeBrowser.toDataURLHash.includes(hash.toDataURLHash) &&
+					fakeBrowser.toBlobHash.includes(hash.toBlobHash) &&
+					fakeBrowser.getImageDataHash.includes(hash.getImageDataHash) &&
+					fakeBrowser.hardwareConcurrencyHash.includes(hash.hardwareConcurrencyHash) &&
+					fakeBrowser.availHeightHash.includes(hash.availHeightHash) &&
+					fakeBrowser.availLeftHash.includes(hash.availLeftHash) &&
+					fakeBrowser.availTopHash.includes(hash.availTopHash) &&
+					fakeBrowser.availWidthHash.includes(hash.availWidthHash) &&
+					fakeBrowser.colorDepthHash.includes(hash.colorDepthHash) &&
+					fakeBrowser.pixelDepthHash.includes(hash.pixelDepthHash)) {
+					return 'FakeBrowser'
 				}
 				return
 			}
