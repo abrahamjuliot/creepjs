@@ -105,48 +105,36 @@ export const getOfflineAudioContext = async imports => {
 			['OscillatorNode.frequency.maxValue']: attempt(() => oscillator.frequency.maxValue),
 			['OscillatorNode.frequency.minValue']: attempt(() => oscillator.frequency.minValue)
 		}
-		const getRenderedBuffer = ({
-			context,
-			floatFrequencyData,
-			floatTimeDomainData
-		} = {}) => new Promise(resolve => {
+		const getRenderedBuffer = (context) => new Promise(resolve => {
 			let analyser
 			const oscillator = context.createOscillator()
 			const dynamicsCompressor = context.createDynamicsCompressor()
 
-			oscillator.type = 'triangle'
-			oscillator.frequency.value = 10000
+			try {
+				oscillator.type = 'triangle'
+				oscillator.frequency.value = 10000
+				dynamicsCompressor.threshold.value = -50
+				dynamicsCompressor.knee.value = 40
+				dynamicsCompressor.attack.value = 0
+			} catch (err) {}
 
-			caniuse(() => dynamicsCompressor.threshold.value = -50)
-			caniuse(() => dynamicsCompressor.knee.value = 40)
-			caniuse(() => dynamicsCompressor.attack.value = 0)
-
+			analyser = context.createAnalyser()
 			oscillator.connect(dynamicsCompressor)
-
-			if (floatFrequencyData || floatTimeDomainData) {
-				analyser = context.createAnalyser()
-				dynamicsCompressor.connect(analyser)
-				analyser.connect(context.destination)
-			} else {
-				dynamicsCompressor.connect(context.destination)
-			}
+			dynamicsCompressor.connect(analyser)
+			dynamicsCompressor.connect(context.destination)
 
 			oscillator.start(0)
 			context.startRendering()
 
 			return context.addEventListener('complete', event => {
 				try {
-					if (floatFrequencyData) {
-						const data = new Float32Array(analyser.frequencyBinCount)
-						analyser.getFloatFrequencyData(data)
-						return resolve(data)
-					}
-					else if (floatTimeDomainData) {
-						const data = new Float32Array(analyser.fftSize)
-						analyser.getFloatTimeDomainData(data)
-						return resolve(data)
-					}
+					const floatFrequencyData = new Float32Array(analyser.frequencyBinCount)
+					analyser.getFloatFrequencyData(floatFrequencyData)
+					const floatTimeDomainData = new Float32Array(analyser.fftSize)
+					analyser.getFloatTimeDomainData(floatTimeDomainData)
 					return resolve({
+						floatFrequencyData,
+						floatTimeDomainData,
 						buffer: event.renderedBuffer,
 						compressorGainReduction: (
 							dynamicsCompressor.reduction.value || // webkit
@@ -164,26 +152,15 @@ export const getOfflineAudioContext = async imports => {
 			})
 		})
 		await queueEvent(timer)
-		const [
-			response,
+		const {
 			floatFrequencyData,
-			floatTimeDomainData
-		] = await Promise.all([
-			getRenderedBuffer({
-				context: new audioContext(1, bufferLen, 44100)
-			}),
-			getRenderedBuffer({
-				context: new audioContext(1, bufferLen, 44100),
-				floatFrequencyData: true
-			}),
-			getRenderedBuffer({
-				context: new audioContext(1, bufferLen, 44100),
-				floatTimeDomainData: true
-			})
-		])
+			floatTimeDomainData,
+			buffer,
+			compressorGainReduction
+		} = await getRenderedBuffer(new audioContext(1, bufferLen, 44100)) || {}
+		
 		await queueEvent(timer)
 		const getSum = arr => !arr ? 0 : arr.reduce((acc, curr) => (acc += Math.abs(curr)), 0)
-		const { buffer, compressorGainReduction } = response || {}
 		const floatFrequencyDataSum = getSum(floatFrequencyData)
 		const floatTimeDomainDataSum = getSum(floatTimeDomainData)
 
