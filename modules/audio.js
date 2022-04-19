@@ -106,7 +106,7 @@ export const getOfflineAudioContext = async imports => {
 			['OscillatorNode.frequency.minValue']: attempt(() => oscillator.frequency.minValue)
 		}
 		const getRenderedBuffer = (context) => new Promise(resolve => {
-			let analyser
+			const analyser = context.createAnalyser()
 			const oscillator = context.createOscillator()
 			const dynamicsCompressor = context.createDynamicsCompressor()
 
@@ -118,7 +118,6 @@ export const getOfflineAudioContext = async imports => {
 				dynamicsCompressor.attack.value = 0
 			} catch (err) {}
 
-			analyser = context.createAnalyser()
 			oscillator.connect(dynamicsCompressor)
 			dynamicsCompressor.connect(analyser)
 			dynamicsCompressor.connect(context.destination)
