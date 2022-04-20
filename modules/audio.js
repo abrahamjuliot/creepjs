@@ -291,7 +291,7 @@ export const audioHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, perf
 		<div class="help" title="AnalyserNode.getFloatTimeDomainData()">time: ${
 			floatTimeDomainDataSum || note.unsupported
 		}</div>
-		<div>buffer noise: ${!noise ? 0 : `${noise.toFixed(4)}...`}</div>
+		<div>buffer noise: ${!noise ? 0 : `${(''+noise).slice(0, 6)}...`}</div>
 		<div>unique: ${totalUniqueSamples}</div>
 		<div class="help" title="AudioBuffer.getChannelData()">data:${
 			''+binsSample[0] == 'undefined' ? ` ${note.unsupported}` : 
