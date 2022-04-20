@@ -132,12 +132,14 @@ const getWebGLRendererParts = x => {
 		'Radeon',
 		'Radeon Pro',
 		'Radeon Pro Vega',
+		'Samsung',
 		'SSE2',
 		'VMware',
 		'VMware SVGA 3D',
 		'Vega',
 		'VirtualBox',
 		'VirtualBox Graphics Adapter',
+		'Vulkan',
 		'Xe Graphics',
 		'llvmpipe'
     ]
@@ -157,7 +159,7 @@ const getWebGLRendererConfidence = x => {
 	const parts = getWebGLRendererParts(x)
 	const hasKnownParts = parts.length
 	const hasBlankSpaceNoise = /\s{2,}|^\s|\s$/.test(x)
-	const hasBrokenAngleStructure = /^ANGLE/.test(x) && !(/^ANGLE \((.+)\)$/.exec(x)||[])[1]
+	const hasBrokenAngleStructure = /^ANGLE/.test(x) && !(/^ANGLE \((.+)\)/.exec(x)||[])[1]
 
 	// https://chromium.googlesource.com/angle/angle/+/83fa18905d8fed4f394e4f30140a83a3e76b1577/src/gpu_info_util/SystemInfo.cpp
 	// https://chromium.googlesource.com/angle/angle/+/83fa18905d8fed4f394e4f30140a83a3e76b1577/src/gpu_info_util/SystemInfo.h
