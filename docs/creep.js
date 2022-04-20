@@ -1153,12 +1153,14 @@
 			'Radeon',
 			'Radeon Pro',
 			'Radeon Pro Vega',
+			'Samsung',
 			'SSE2',
 			'VMware',
 			'VMware SVGA 3D',
 			'Vega',
 			'VirtualBox',
 			'VirtualBox Graphics Adapter',
+			'Vulkan',
 			'Xe Graphics',
 			'llvmpipe'
 	    ];
@@ -1178,7 +1180,7 @@
 		const parts = getWebGLRendererParts(x);
 		const hasKnownParts = parts.length;
 		const hasBlankSpaceNoise = /\s{2,}|^\s|\s$/.test(x);
-		const hasBrokenAngleStructure = /^ANGLE/.test(x) && !(/^ANGLE \((.+)\)$/.exec(x)||[])[1];
+		const hasBrokenAngleStructure = /^ANGLE/.test(x) && !(/^ANGLE \((.+)\)/.exec(x)||[])[1];
 
 		// https://chromium.googlesource.com/angle/angle/+/83fa18905d8fed4f394e4f30140a83a3e76b1577/src/gpu_info_util/SystemInfo.cpp
 		// https://chromium.googlesource.com/angle/angle/+/83fa18905d8fed4f394e4f30140a83a3e76b1577/src/gpu_info_util/SystemInfo.h
@@ -2596,48 +2598,39 @@
 				['OscillatorNode.frequency.maxValue']: attempt(() => oscillator.frequency.maxValue),
 				['OscillatorNode.frequency.minValue']: attempt(() => oscillator.frequency.minValue)
 			};
-			const getRenderedBuffer = ({
-				context,
-				floatFrequencyData,
-				floatTimeDomainData
-			} = {}) => new Promise(resolve => {
-				let analyser;
+			const getRenderedBuffer = (context) => new Promise(resolve => {
+				const analyser = context.createAnalyser();
 				const oscillator = context.createOscillator();
 				const dynamicsCompressor = context.createDynamicsCompressor();
 
-				oscillator.type = 'triangle';
-				oscillator.frequency.value = 10000;
-
-				caniuse(() => dynamicsCompressor.threshold.value = -50);
-				caniuse(() => dynamicsCompressor.knee.value = 40);
-				caniuse(() => dynamicsCompressor.attack.value = 0);
+				try {
+					oscillator.type = 'triangle';
+					oscillator.frequency.value = 10000;
+					dynamicsCompressor.threshold.value = -50;
+					dynamicsCompressor.knee.value = 40;
+					dynamicsCompressor.attack.value = 0;
+				} catch (err) {}
 
 				oscillator.connect(dynamicsCompressor);
-
-				if (floatFrequencyData || floatTimeDomainData) {
-					analyser = context.createAnalyser();
-					dynamicsCompressor.connect(analyser);
-					analyser.connect(context.destination);
-				} else {
-					dynamicsCompressor.connect(context.destination);
-				}
+				dynamicsCompressor.connect(analyser);
+				dynamicsCompressor.connect(context.destination);
 
 				oscillator.start(0);
 				context.startRendering();
-
+				
 				return context.addEventListener('complete', event => {
 					try {
-						if (floatFrequencyData) {
-							const data = new Float32Array(analyser.frequencyBinCount);
-							analyser.getFloatFrequencyData(data);
-							return resolve(data)
-						}
-						else if (floatTimeDomainData) {
-							const data = new Float32Array(analyser.fftSize);
-							analyser.getFloatTimeDomainData(data);
-							return resolve(data)
+						dynamicsCompressor.disconnect();
+						oscillator.disconnect();
+						const floatFrequencyData = new Float32Array(analyser.frequencyBinCount);
+						analyser.getFloatFrequencyData(floatFrequencyData);
+						const floatTimeDomainData = new Float32Array(analyser.fftSize);
+						if ('getFloatTimeDomainData' in analyser) {
+							analyser.getFloatTimeDomainData(floatTimeDomainData);
 						}
 						return resolve({
+							floatFrequencyData,
+							floatTimeDomainData,
 							buffer: event.renderedBuffer,
 							compressorGainReduction: (
 								dynamicsCompressor.reduction.value || // webkit
@@ -2648,33 +2641,18 @@
 					catch (error) {
 						return resolve()
 					}
-					finally {
-						dynamicsCompressor.disconnect();
-						oscillator.disconnect();
-					}
 				})
 			});
 			await queueEvent(timer);
-			const [
-				response,
+			const {
 				floatFrequencyData,
-				floatTimeDomainData
-			] = await Promise.all([
-				getRenderedBuffer({
-					context: new audioContext(1, bufferLen, 44100)
-				}),
-				getRenderedBuffer({
-					context: new audioContext(1, bufferLen, 44100),
-					floatFrequencyData: true
-				}),
-				getRenderedBuffer({
-					context: new audioContext(1, bufferLen, 44100),
-					floatTimeDomainData: true
-				})
-			]);
+				floatTimeDomainData,
+				buffer,
+				compressorGainReduction
+			} = await getRenderedBuffer(new audioContext(1, bufferLen, 44100)) || {};
+			
 			await queueEvent(timer);
 			const getSum = arr => !arr ? 0 : arr.reduce((acc, curr) => (acc += Math.abs(curr)), 0);
-			const { buffer, compressorGainReduction } = response || {};
 			const floatFrequencyDataSum = getSum(floatFrequencyData);
 			const floatTimeDomainDataSum = getSum(floatTimeDomainData);
 
@@ -2719,7 +2697,9 @@
 			};
 			
 			const noiseFactor = getNoiseFactor();
-			const noise = noiseFactor == 1 ? 0 : noiseFactor;
+			const noise = 1e+20 * (
+				noiseFactor != 1 ? noiseFactor : [...new Set(bins.slice(0, 100))].reduce((acc, n) => acc += n, 0)
+			);
 			if (noise) {
 				lied = true;
 				const audioSampleNoiseLie = 'sample noise detected';
@@ -2800,9 +2780,9 @@
 			floatFrequencyDataSum || note.blocked
 		}</div>
 		<div class="help" title="AnalyserNode.getFloatTimeDomainData()">time: ${
-			floatTimeDomainDataSum || note.blocked
+			floatTimeDomainDataSum || note.unsupported
 		}</div>
-		<div>buffer noise: ${!noise ? 0 : `${noise.toFixed(4)}...`}</div>
+		<div>buffer noise: ${!noise ? 0 : `${(''+noise).slice(0, 6)}...`}</div>
 		<div>unique: ${totalUniqueSamples}</div>
 		<div class="help" title="AudioBuffer.getChannelData()">data:${
 			''+binsSample[0] == 'undefined' ? ` ${note.unsupported}` : 
@@ -11585,7 +11565,6 @@
 				consoleErrorsComputed,
 				timezoneComputed,
 				clientRectsComputed,
-				offlineAudioContextComputed,
 				fontsComputed,
 				workerScopeComputed,
 				mediaComputed,
@@ -11606,7 +11585,6 @@
 				getConsoleErrors(imports),
 				getTimezone(imports),
 				getClientRects(imports),
-				getOfflineAudioContext(imports),
 				getFonts(imports),
 				getBestWorkerScope(imports),
 				getMedia(imports),
@@ -11617,10 +11595,12 @@
 			]).catch(error => console.error(error.message));
 			
 			const [
+				offlineAudioContextComputed,
 				navigatorComputed,
 				headlessComputed,
 				featuresComputed
 			] = await Promise.all([
+				getOfflineAudioContext(imports),
 				getNavigator(imports, workerScopeComputed),
 				getHeadlessFeatures(imports, workerScopeComputed),
 				getEngineFeatures({
