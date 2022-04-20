@@ -124,13 +124,15 @@ export const getOfflineAudioContext = async imports => {
 
 			oscillator.start(0)
 			context.startRendering()
-
+			
 			return context.addEventListener('complete', event => {
 				try {
 					const floatFrequencyData = new Float32Array(analyser.frequencyBinCount)
 					analyser.getFloatFrequencyData(floatFrequencyData)
 					const floatTimeDomainData = new Float32Array(analyser.fftSize)
-					analyser.getFloatTimeDomainData(floatTimeDomainData)
+					if ('getFloatTimeDomainData' in analyser) {
+						analyser.getFloatTimeDomainData(floatTimeDomainData)
+					}
 					return resolve({
 						floatFrequencyData,
 						floatTimeDomainData,
@@ -204,7 +206,9 @@ export const getOfflineAudioContext = async imports => {
 		}
 		
 		const noiseFactor = getNoiseFactor()
-		const noise = noiseFactor == 1 ? 0 : noiseFactor
+		const noise = 1e+20 * (
+			noiseFactor != 1 ? noiseFactor : [...new Set(bins.slice(0, 100))].reduce((acc, n) => acc += n, 0)
+		)
 		if (noise) {
 			lied = true
 			const audioSampleNoiseLie = 'sample noise detected'
@@ -285,7 +289,7 @@ export const audioHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, perf
 			floatFrequencyDataSum || note.blocked
 		}</div>
 		<div class="help" title="AnalyserNode.getFloatTimeDomainData()">time: ${
-			floatTimeDomainDataSum || note.blocked
+			floatTimeDomainDataSum || note.unsupported
 		}</div>
 		<div>buffer noise: ${!noise ? 0 : `${noise.toFixed(4)}...`}</div>
 		<div>unique: ${totalUniqueSamples}</div>
