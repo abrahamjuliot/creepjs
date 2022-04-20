@@ -127,6 +127,8 @@ export const getOfflineAudioContext = async imports => {
 			
 			return context.addEventListener('complete', event => {
 				try {
+					dynamicsCompressor.disconnect()
+					oscillator.disconnect()
 					const floatFrequencyData = new Float32Array(analyser.frequencyBinCount)
 					analyser.getFloatFrequencyData(floatFrequencyData)
 					const floatTimeDomainData = new Float32Array(analyser.fftSize)
@@ -145,10 +147,6 @@ export const getOfflineAudioContext = async imports => {
 				}
 				catch (error) {
 					return resolve()
-				}
-				finally {
-					dynamicsCompressor.disconnect()
-					oscillator.disconnect()
 				}
 			})
 		})
