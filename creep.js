@@ -140,7 +140,6 @@ const imports = {
 			consoleErrorsComputed,
 			timezoneComputed,
 			clientRectsComputed,
-			offlineAudioContextComputed,
 			fontsComputed,
 			workerScopeComputed,
 			mediaComputed,
@@ -161,7 +160,6 @@ const imports = {
 			getConsoleErrors(imports),
 			getTimezone(imports),
 			getClientRects(imports),
-			getOfflineAudioContext(imports),
 			getFonts(imports),
 			getBestWorkerScope(imports),
 			getMedia(imports),
@@ -172,10 +170,12 @@ const imports = {
 		]).catch(error => console.error(error.message))
 		
 		const [
+			offlineAudioContextComputed,
 			navigatorComputed,
 			headlessComputed,
 			featuresComputed
 		] = await Promise.all([
+			getOfflineAudioContext(imports),
 			getNavigator(imports, workerScopeComputed),
 			getHeadlessFeatures(imports, workerScopeComputed),
 			getEngineFeatures({
