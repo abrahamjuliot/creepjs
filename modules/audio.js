@@ -189,7 +189,7 @@ export const getOfflineAudioContext = async imports => {
 		}
 
 		// sample noise factor
-		const getCopyFrom2 = (rand, buffer, copy) => {
+		const getCopyFrom = (rand, buffer, copy) => {
 			const { length } = buffer
 			buffer.getChannelData(0)[0] = rand
 			buffer.getChannelData(0)[length/2] = rand
@@ -216,7 +216,7 @@ export const getOfflineAudioContext = async imports => {
 			const rand = Math.random()
 			try {
 				const result = [...new Set([
-					...getCopyFrom2(
+					...getCopyFrom(
 						rand,
 						new AudioBuffer({ length, sampleRate: 44100 }),
 						new Float32Array(length)
