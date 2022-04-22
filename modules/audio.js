@@ -24,6 +24,8 @@ export const getKnownAudio = () => ({
 	[-31.509262084960938]: [35.7383295930922, 35.73833402246237] 
 })
 
+const AudioTrap = Math.random()
+
 export const getOfflineAudioContext = async imports => {
 
 	const {
@@ -213,16 +215,15 @@ export const getOfflineAudioContext = async imports => {
 		
 		const getNoiseFactor = () => {
 			const length = 20
-			const rand = Math.random()
 			try {
 				const result = [...new Set([
 					...getCopyFrom(
-						rand,
+						AudioTrap,
 						new AudioBuffer({ length, sampleRate: 44100 }),
 						new Float32Array(length)
 					),
 					...getCopyTo(
-						rand,
+						AudioTrap,
 						new AudioBuffer({ length, sampleRate: 44100 }),
 						new Float32Array(length)
 					)
@@ -239,8 +240,8 @@ export const getOfflineAudioContext = async imports => {
 		}
 		
 		const noiseFactor = getNoiseFactor()
-		const noise = 1e+20 * (
-			noiseFactor != 1 ? noiseFactor : [...new Set(bins.slice(0, 100))].reduce((acc, n) => acc += n, 0)
+		const noise = (
+			noiseFactor || [...new Set(bins.slice(0, 100))].reduce((acc, n) => acc += n, 0)
 		)
 		
 		if (noise) {
@@ -279,7 +280,7 @@ export const audioHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, perf
 			<div>gain: ${note.blocked}</div>
 			<div>freq: ${note.blocked}</div>
 			<div>time: ${note.blocked}</div>
-			<div>buffer noise: ${note.blocked}</div>
+			<div>trap: ${note.blocked}</div>
 			<div>unique: ${note.blocked}</div>
 			<div>data: ${note.blocked}</div>
 			<div>copy: ${note.blocked}</div>
@@ -325,7 +326,14 @@ export const audioHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, perf
 		<div class="help" title="AnalyserNode.getFloatTimeDomainData()">time: ${
 			floatTimeDomainDataSum || note.unsupported
 		}</div>
-		<div>buffer noise: ${!noise ? 0 : `${(''+noise).slice(0, 6)}...`}</div>
+		<div>trap: ${
+			!noise ? noise : getDiffs({
+				stringA: AudioTrap,
+				stringB: noise,
+				charDiff: true,
+				decorate: diff => `<span class="bold-fail">${diff}</span>`
+			})
+		}</div>
 		<div>unique: ${totalUniqueSamples}</div>
 		<div class="help" title="AudioBuffer.getChannelData()">data:${
 			''+binsSample[0] == 'undefined' ? ` ${note.unsupported}` : 
