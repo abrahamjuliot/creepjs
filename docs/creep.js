@@ -2682,17 +2682,52 @@
 			}
 
 			// sample noise factor
+			const getCopyFrom = (rand, buffer, copy) => {
+				const { length } = buffer;
+				buffer.getChannelData(0)[0] = rand;
+				buffer.getChannelData(0)[length/2] = rand;
+				buffer.getChannelData(0)[length-1] = rand;
+				buffer.copyFromChannel(copy, 0);
+				const attack = [
+					buffer.getChannelData(0)[0] === 0 ? Math.random() : 0,
+					buffer.getChannelData(0)[length/2] === 0 ? Math.random() : 0,
+					buffer.getChannelData(0)[length-1] === 0 ? Math.random() : 0
+				];
+				return [...new Set([...buffer.getChannelData(0), ...copy, ...attack])].filter(x => x !== 0)
+			};
+
+			const getCopyTo = (rand, buffer, copy) => {
+				buffer.copyToChannel(copy.map((x) => rand), 0);
+				const frequency = buffer.getChannelData(0)[0];
+				const dataAttacked = [...buffer.getChannelData(0)]
+					.map(x => x !== frequency || !x ? Math.random() : x);
+				return dataAttacked.filter(x => x !== frequency)
+			};
+			
 			const getNoiseFactor = () => {
+				const length = 20;
+				const rand = Math.random();
 				try {
-					const buffer = new AudioBuffer({
-						length: 1,
-						sampleRate: 44100
-					});
-					buffer.getChannelData(0)[0] = 1;
-					return buffer.getChannelData(0)[0]
+					const result = [...new Set([
+						...getCopyFrom(
+							rand,
+							new AudioBuffer({ length, sampleRate: 44100 }),
+							new Float32Array(length)
+						),
+						...getCopyTo(
+							rand,
+							new AudioBuffer({ length, sampleRate: 44100 }),
+							new Float32Array(length)
+						)
+					])];
+					return +(
+						result.length !== 1 &&
+						result.reduce((acc, n) => acc += +n, 0)
+					)
 				}
 				catch (error) {
-					return 1
+					console.error(error);
+					return 0
 				}
 			};
 			
@@ -2700,6 +2735,7 @@
 			const noise = 1e+20 * (
 				noiseFactor != 1 ? noiseFactor : [...new Set(bins.slice(0, 100))].reduce((acc, n) => acc += n, 0)
 			);
+			
 			if (noise) {
 				lied = true;
 				const audioSampleNoiseLie = 'sample noise detected';
