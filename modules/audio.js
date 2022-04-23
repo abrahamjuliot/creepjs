@@ -24,7 +24,7 @@ export const getKnownAudio = () => ({
 	[-31.509262084960938]: [35.7383295930922, 35.73833402246237] 
 })
 
-const AudioTrap = Math.random()
+const audioTrap = Math.random()
 
 export const getOfflineAudioContext = async imports => {
 
@@ -214,16 +214,16 @@ export const getOfflineAudioContext = async imports => {
 		}
 		
 		const getNoiseFactor = () => {
-			const length = 20
+			const length = 2000
 			try {
 				const result = [...new Set([
 					...getCopyFrom(
-						AudioTrap,
+						audioTrap,
 						new AudioBuffer({ length, sampleRate: 44100 }),
 						new Float32Array(length)
 					),
 					...getCopyTo(
-						AudioTrap,
+						audioTrap,
 						new AudioBuffer({ length, sampleRate: 44100 }),
 						new Float32Array(length)
 					)
@@ -327,8 +327,8 @@ export const audioHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, perf
 			floatTimeDomainDataSum || note.unsupported
 		}</div>
 		<div class="help" title="AudioBuffer.getChannelData()\nAudioBuffer.copyFromChannel()\nAudioBuffer.copyToChannel">trap: ${
-			!noise ? AudioTrap : getDiffs({
-				stringA: AudioTrap,
+			!noise ? audioTrap : getDiffs({
+				stringA: audioTrap,
 				stringB: noise,
 				charDiff: true,
 				decorate: diff => `<span class="bold-fail">${diff}</span>`
