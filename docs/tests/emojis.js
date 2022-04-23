@@ -71,8 +71,6 @@ const cssFontFamily = `
 	'Jomolhari',
 	'MONO',
 	'Noto Color Emoji',
-	'MS Outlook',
-	'ZWAdobeF',
 	sans-serif !important
 `
 
@@ -83,7 +81,7 @@ patch(el, html`
 <div id="emoji-container">
 	<style>
 	#emoji-container {
-		position: relaive;
+		position: relative;
 	}
 	#emoji {
 		font-family: ${cssFontFamily};
@@ -176,6 +174,9 @@ patch(document.getElementById('emoji-container'), html`
 		.isolate {
 			background: #657fca1a
 		}
+		.unique-emoji {
+			font-family: ${cssFontFamily};
+		}
 		@media (prefers-color-scheme: dark) {
 			.group {
 				border: 1px solid #eeeeee54;
@@ -189,7 +190,7 @@ patch(document.getElementById('emoji-container'), html`
 		</div>
 		<div>
 		<div>${unique.size} of ${emojiRects.length} unique:</div>
-		<br>${emojiRects.filter(rect => unique.has(rect.hash) && unique.delete(rect.hash)).map(rect => `<span>${rect.emoji} (${rect.emojiCode})</span>`).join('<br>')}
+		<br>${emojiRects.filter(rect => unique.has(rect.hash) && unique.delete(rect.hash)).map(rect => `<span class="unique-emoji">${rect.emoji} (${rect.emojiCode})</span>`).join('<br>')}
 		</div>
 		<div>
 		<div>hash... : ...(emoji code)</div>

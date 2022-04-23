@@ -1151,8 +1151,6 @@ const cssFontFamily = `
 	'Jomolhari',
 	'MONO',
 	'Noto Color Emoji',
-	'MS Outlook',
-	'ZWAdobeF',
 	sans-serif !important
 `
 
