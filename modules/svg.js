@@ -92,27 +92,16 @@ export const getSVG = async imports => {
 
 		// compute SVGRect emojis
 		const pattern = new Set()
-		const lengthSet = {
-			extentOfChar: new Set(),
-			subStringLength: new Set(),
-			computedTextLength: new Set()
-		}
-		
 		const svgElems = [...svgBox.getElementsByClassName('svgrect-emoji')]
+		
 		await queueEvent(timer)
 		const emojiSet = svgElems.reduce((emojiSet, el, i) => {
 			const emoji = emojis[i]
-			const extentOfCharSum = reduceToSum(el.getExtentOfChar(emoji))
-			const subStringLength = el.getSubStringLength(0, 10)
-			const computedTextLength = el.getComputedTextLength()
-			const dimensions = `${extentOfCharSum},${subStringLength},${computedTextLength}`
+			const dimensions = ''+el.getComputedTextLength()
 			if (!pattern.has(dimensions)) {
 				pattern.add(dimensions)
 				emojiSet.add(emoji)
 			}
-			lengthSet.extentOfChar.add(extentOfCharSum)
-			lengthSet.subStringLength.add(subStringLength)
-			lengthSet.computedTextLength.add(computedTextLength)
 			return emojiSet
 		}, new Set())
 
@@ -120,12 +109,12 @@ export const getSVG = async imports => {
 		const svgrectSystemSum = 0.00001 * [...pattern].map(x => {
 			return x.split(',').reduce((acc, x) => acc += (+x||0), 0)
 		}).reduce((acc, x) => acc += x, 0)
-
+		
 		const data = {
 			bBox: getObjectSum(bBox),
-			extentOfChar: getListSum([...lengthSet.extentOfChar]),
-			subStringLength: getListSum([...lengthSet.subStringLength]),
-			computedTextLength: getListSum([...lengthSet.computedTextLength]),
+			extentOfChar: reduceToSum(svgElems[0].getExtentOfChar(emojis[0])),
+			subStringLength: svgElems[0].getSubStringLength(0, 10),
+			computedTextLength: svgElems[0].getComputedTextLength(),
 			emojiSet: [...emojiSet],
 			svgrectSystemSum,
 			lied
