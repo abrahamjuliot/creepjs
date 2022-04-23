@@ -4,7 +4,6 @@ export const getSVG = async imports => {
 		require: {
 			queueEvent,
 			createTimer,
-			instanceId,
 			patch,
 			html,
 			captureError,
@@ -34,41 +33,13 @@ export const getSVG = async imports => {
 				document
 		)
 		
-		const svgId = `${instanceId}-svg-div`
-		const fontId = 'svgrect-font-detector'
 		const divElement = document.createElement('div')
-		divElement.setAttribute('id', svgId)
 		doc.body.appendChild(divElement)
 
 		const emojis = getEmojis()
 		
 		// patch div
 		patch(divElement, html`
-		<div id="${svgId}">
-			<style>
-				#${fontId} {
-					--font: '';
-					position: absolute !important;
-					left: -9999px!important;
-					font-size: 256px !important;
-					font-style: normal !important;
-					font-weight: normal !important;
-					letter-spacing: normal !important;
-					line-break: auto !important;
-					line-height: normal !important;
-					text-transform: none !important;
-					text-align: left !important;
-					text-decoration: none !important;
-					text-shadow: none !important;
-					white-space: normal !important;
-					word-break: normal !important;
-					word-spacing: normal !important;
-					font-family: var(--font);
-				}
-			</style>
-			<svg viewBox="0 0 200 200">
-				<text id="${fontId}">${emojis.join('')}</text>
-			</svg>
 			<div id="svg-container">
 				<style>
 				#svg-container {
@@ -94,7 +65,6 @@ export const getSVG = async imports => {
 					</g>
 				</svg>
 			</div>
-		</div>
 		`)
 
 		// SVG
@@ -127,9 +97,9 @@ export const getSVG = async imports => {
 			subStringLength: new Set(),
 			computedTextLength: new Set()
 		}
-		await queueEvent(timer)
-
+		
 		const svgElems = [...svgBox.getElementsByClassName('svgrect-emoji')]
+		await queueEvent(timer)
 		const emojiSet = svgElems.reduce((emojiSet, el, i) => {
 			const emoji = emojis[i]
 			const extentOfCharSum = reduceToSum(el.getExtentOfChar(emoji))
