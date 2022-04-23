@@ -191,18 +191,22 @@ export const getOfflineAudioContext = async imports => {
 		}
 
 		// sample noise factor
+		const getRandFromRange = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min
 		const getCopyFrom = (rand, buffer, copy) => {
 			const { length } = buffer
-			buffer.getChannelData(0)[0] = rand
-			buffer.getChannelData(0)[length/2] = rand
-			buffer.getChannelData(0)[length-1] = rand
+			const start = getRandFromRange(275, length-1)
+			const mid = start+10
+			const end = start+20
+			buffer.getChannelData(0)[start] = rand
+			buffer.getChannelData(0)[mid] = rand
+			buffer.getChannelData(0)[end] = rand
 			buffer.copyFromChannel(copy, 0)
-			const attack = [
-				buffer.getChannelData(0)[0] === 0 ? Math.random() : 0,
-				buffer.getChannelData(0)[length/2] === 0 ? Math.random() : 0,
-				buffer.getChannelData(0)[length-1] === 0 ? Math.random() : 0
-			]
-			return [...new Set([...buffer.getChannelData(0), ...copy, ...attack])].filter(x => x !== 0)
+			const attack = (
+				buffer.getChannelData(0)[start] === 0 ||
+				buffer.getChannelData(0)[mid] === 0 ||
+				buffer.getChannelData(0)[end] === 0 ? Math.random() : 0
+			)
+			return [...new Set([...buffer.getChannelData(0), ...copy, attack])].filter(x => x !== 0)
 		}
 
 		const getCopyTo = (rand, buffer, copy) => {
@@ -327,7 +331,7 @@ export const audioHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, perf
 			floatTimeDomainDataSum || note.unsupported
 		}</div>
 		<div class="help" title="AudioBuffer.getChannelData()\nAudioBuffer.copyFromChannel()\nAudioBuffer.copyToChannel">trap: ${
-			!noise ? audioTrap : getDiffs({
+			!noise ? `<span style="color:#bbb">${audioTrap}</span>` : getDiffs({
 				stringA: audioTrap,
 				stringB: noise,
 				charDiff: true,
