@@ -150,7 +150,7 @@ export const getCanvas2d = async imports => {
 	} = imports
 
 	const fillRect = (canvas, context) => {
-		canvas.width = 186
+		canvas.width = 140
 		canvas.height = 30
 		context.font = `5px ${cssFontFamily.replace(/!important/gm, '')}`
 		context.fillText(`😀☺🤵‍♂️♨☸⚧⁉ℹ🏳️‍⚧️🥲☹☠🧑‍🦰🧏‍♂️⛷🧑‍🤝‍🧑☘⛰`, 0, 5)
@@ -230,7 +230,7 @@ export const getCanvas2d = async imports => {
 		
 		let canvasOffscreen
 		try {
-			canvasOffscreen = new OffscreenCanvas(186, 30)
+			canvasOffscreen = new OffscreenCanvas(140, 30)
 			const contextOffscreen = canvasOffscreen.getContext('2d')
 			fillRect(canvasOffscreen, contextOffscreen)
 		}

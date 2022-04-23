@@ -1169,7 +1169,7 @@ const get2dCanvasData = async () => {
 			reader.onloadend = () => resolve(reader.result)
 		})
 	}
-	const width = 186
+	const width = 140
 	const height = 30
 	const canvasOffscreen2d = new OffscreenCanvas(width, height)
 	const context2d = canvasOffscreen2d.getContext('2d')
