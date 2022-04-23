@@ -326,8 +326,8 @@ export const audioHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, perf
 		<div class="help" title="AnalyserNode.getFloatTimeDomainData()">time: ${
 			floatTimeDomainDataSum || note.unsupported
 		}</div>
-		<div>trap: ${
-			!noise ? noise : getDiffs({
+		<div class="help" title="AudioBuffer.getChannelData()\nAudioBuffer.copyFromChannel()\nAudioBuffer.copyToChannel">trap: ${
+			!noise ? AudioTrap : getDiffs({
 				stringA: AudioTrap,
 				stringB: noise,
 				charDiff: true,
