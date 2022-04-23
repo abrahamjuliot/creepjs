@@ -1,4 +1,4 @@
-import { isChrome, braveBrowser, getBraveMode, getBraveUnprotectedParameters, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, computeWindowsRelease, attemptWindows11UserAgent, isUAPostReduction, getUserAgentRestored, logTestResult, performanceLogger, getPromiseRaceFulfilled, queueEvent, createTimer, formatEmojiSet, getEmojis } from './modules/helpers.js'
+import { isChrome, braveBrowser, getBraveMode, getBraveUnprotectedParameters, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, computeWindowsRelease, attemptWindows11UserAgent, isUAPostReduction, getUserAgentRestored, logTestResult, performanceLogger, getPromiseRaceFulfilled, queueEvent, createTimer, formatEmojiSet, getEmojis, cssFontFamily } from './modules/helpers.js'
 import { patch, html, note, count, modal, getDiffs } from './modules/html.js'
 import { hashMini, instanceId, hashify, getBotHash, getFuzzyHash  } from './modules/crypto.js'
 
@@ -53,6 +53,7 @@ const imports = {
 		getWebGLRendererConfidence,
 		formatEmojiSet,
 		getEmojis,
+		cssFontFamily,
 		// crypto
 		instanceId,
 		hashMini,
@@ -560,7 +561,7 @@ const imports = {
 		capturedErrors: !!errorsLen,
 		lies: !!liesLen,
 		resistance: fp.resistance || undefined,
-		forceRenew: 1643170284926
+		forceRenew: 1650697804297
 	}
 
 	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f')
@@ -658,7 +659,8 @@ const imports = {
 		styleSystemHash,
 		computeWindowsRelease,
 		formatEmojiSet,
-		performanceLogger
+		performanceLogger,
+		cssFontFamily
 	}
 	const hasTrash = !!trashLen
 	const { lies: hasLied, capturedErrors: hasErrors } = creep

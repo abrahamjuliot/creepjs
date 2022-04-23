@@ -92,7 +92,6 @@ const getFuzzyHash = async fp => {
 		'canvas2d.blob',
 		'canvas2d.blobOffscreen',
 		'canvas2d.dataURI',
-		'canvas2d.emojiFonts',
 		'canvas2d.emojiSet',
 		'canvas2d.imageData',
 		'canvas2d.liedTextMetrics',
@@ -111,7 +110,6 @@ const getFuzzyHash = async fp => {
 		'clientRects.domrectSystemSum',
 		'clientRects.elementBoundingClientRect',
 		'clientRects.elementClientRects',
-		'clientRects.emojiFonts',
 		'clientRects.emojiSet',
 		'clientRects.rangeBoundingClientRect',
 		'clientRects.rangeClientRects',
@@ -132,11 +130,8 @@ const getFuzzyHash = async fp => {
 		'features.windowFeatures',
 		'features.windowVersion',
 		'fonts.apps',
-		'fonts.emojiFonts',
 		'fonts.emojiSet',
 		'fonts.fontFaceLoadFonts',
-		'fonts.originFonts',
-		'fonts.pixelFonts',
 		'fonts.pixelSizeSystemSum',
 		'fonts.platformVersion',
 		'headless.chromium',
@@ -206,7 +201,6 @@ const getFuzzyHash = async fp => {
 		'screen.width',
 		'svg.bBox',
 		'svg.computedTextLength',
-		'svg.emojiFonts',
 		'svg.emojiSet',
 		'svg.extentOfChar',
 		'svg.subStringLength',
@@ -233,7 +227,6 @@ const getFuzzyHash = async fp => {
 		'workerScope.canvas2d',
 		'workerScope.device',
 		'workerScope.deviceMemory',
-		'workerScope.emojiFonts',
 		'workerScope.emojiSet',
 		'workerScope.engineCurrencyLocale',
 		'workerScope.fontApps',
@@ -267,7 +260,7 @@ const getFuzzyHash = async fp => {
 		'workerScope.userAgentEngine',
 		'workerScope.userAgentVersion',
 		'workerScope.webglRenderer',
-		'workerScope.webglVendor'
+		'workerScope.webglVendor',
 	]
 	// construct map of all metrics
 	const metricsAll = Object.keys(fp).sort().reduce((acc, sectionKey) => {

@@ -497,4 +497,49 @@ const getEmojis = () => [
 	[10002],[9986],[9935],[9874],[9876],[9881],[9939],[9879],[9904],[9905],[9888],[9762],[9763],[11014],[8599],[10145],[11013],[9883],[10017],[10013],[9766],[9654],[9197],[9199],[9167],[9792],[9794],[10006],[12336],[9877],[9884],[10004],[10035],[10055],[9724],[9642],[10083],[10084],[9996],[9757],[9997],[10052],[9878],[8618],[9775],[9770],[9774],[9745],[10036],[127344],[127359]
 ].map(emojiCode => String.fromCodePoint(...emojiCode))
 
-export { isChrome, braveBrowser, getBraveMode, getBraveUnprotectedParameters, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, computeWindowsRelease, attemptWindows11UserAgent, isUAPostReduction, getUserAgentRestored, logTestResult, performanceLogger, getPromiseRaceFulfilled, queueEvent, createTimer, formatEmojiSet, getEmojis }
+const cssFontFamily = `
+	'Segoe Fluent Icons',
+	'Ink Free',
+	'Bahnschrift',
+	'Segoe MDL2 Assets',
+	'HoloLens MDL2 Assets',
+	'Leelawadee UI',
+	'Javanese Text',
+	'Segoe UI Emoji',
+	'Aldhabi',
+	'Gadugi',
+	'Myanmar Text',
+	'Nirmala UI',
+	'Lucida Console',
+	'Cambria Math',
+	'Galvji',
+	'MuktaMahee Regular',
+	'InaiMathi Bold',
+	'American Typewriter Semibold',
+	'Futura Bold',
+	'SignPainter-HouseScript Semibold',
+	'PingFang HK Light',
+	'Kohinoor Devanagari Medium',
+	'Luminari',
+	'Geneva',
+	'Helvetica Neue',
+	'Droid Sans Mono',
+	'Dancing Script',
+	'Roboto',
+	'Ubuntu',
+	'Liberation Mono',
+	'Source Code Pro',
+	'DejaVu Sans',
+	'OpenSymbol',
+	'Chilanka',
+	'Cousine',
+	'Arimo',
+	'Jomolhari',
+	'MONO',
+	'Noto Color Emoji',
+	'MS Outlook',
+	'ZWAdobeF',
+	sans-serif !important
+`
+
+export { isChrome, braveBrowser, getBraveMode, getBraveUnprotectedParameters, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, computeWindowsRelease, attemptWindows11UserAgent, isUAPostReduction, getUserAgentRestored, logTestResult, performanceLogger, getPromiseRaceFulfilled, queueEvent, createTimer, formatEmojiSet, getEmojis, cssFontFamily }

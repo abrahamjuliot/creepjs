@@ -138,6 +138,7 @@ export const getCanvas2d = async imports => {
 			queueEvent,
 			createTimer,
 			getEmojis,
+			cssFontFamily,
 			captureError,
 			attempt,
 			lieProps,
@@ -151,15 +152,13 @@ export const getCanvas2d = async imports => {
 	const fillRect = (canvas, context) => {
 		canvas.width = 186
 		canvas.height = 30
-		const str = `😃🙌🧠🦄🐉🌊🍧🏄‍♀️🌠🔮`
-		context.font = '14px Arial'
-		context.fillText(str, 0, 20)
-		context.fillStyle = 'rgba(0, 0, 0, 0)'
-		context.fillRect(0, 0, canvas.width, canvas.height)
-		context.beginPath()
-		context.arc(15.49, 15.51, 10.314, 0, Math.PI * 2)
-		context.closePath()
-		context.fill()
+		context.font = `5px ${cssFontFamily.replace(/!important/gm, '')}`
+		context.fillText(`😀☺🤵‍♂️♨☸⚧⁉ℹ🏳️‍⚧️🥲☹☠🧑‍🦰🧏‍♂️⛷🧑‍🤝‍🧑☘⛰`, 0, 2)
+		context.fillText(`⛩⛴✈⏱⛈☂⛱☃☄⛸♟⛑⌨✉✏👩‍❤️‍`, 0, 7)
+		context.fillText(`💋‍👨👨‍👩‍👧‍👦👨‍👩‍👦😀©®™👁️‍�`, 0, 12)
+		context.fillText(`�️✒✂⛏⚒⚔⚙⛓⚗⚰⚱⚠☢☣⬆↗➡⬅`, 0, 17)
+		context.fillText(`⚛✡✝☦▶⏭⏯⏏♀♂✖〰⚕⚜✔✳❇◼▪❣`, 0, 22)
+		context.fillText(`❤✌☝✍❄⚖↪☯☪☮☑✴🅰🅿`, 0, 27)
 		return context
 	}
 
@@ -271,58 +270,10 @@ export const getCanvas2d = async imports => {
 		const points = getPointIn(canvas, context) // modifies width
 		const mods = getPixelMods()
 
-		// get fonts
+		// get emoji set and system
 		await queueEvent(timer)
 		const emojis = getEmojis()
-		const measureFonts = (context, font, emojis) => {
-			//const emoji = String.fromCodePoint(128512)
-			context.font = `256px ${font}`
-			const metrics = context.measureText(emojis.join(''))
-			return {
-				ascent: metrics.actualBoundingBoxAscent,
-				descent: metrics.actualBoundingBoxDescent,
-				left: metrics.actualBoundingBoxLeft,
-				right: metrics.actualBoundingBoxRight,
-				width: metrics.width,
-				fontAscent: metrics.fontBoundingBoxAscent,
-				fontDescent: metrics.fontBoundingBoxDescent
-			}
-		}
-		const baseFonts = ['monospace', 'sans-serif', 'serif']
-		const fontShortList = [
-			'Segoe UI Emoji', // Windows
-			'Apple Color Emoji', // Apple
-			'Noto Color Emoji',  // Linux, Android, Chrome OS
-		]
-		const families = fontShortList.reduce((acc, font) => {
-			baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`))
-			return acc
-		}, [])
-		const base = baseFonts.reduce((acc, font) => {
-			acc[font] = measureFonts(context, font, emojis)
-			return acc
-		}, {})
-		const detectedEmojiFonts = families.reduce((acc, family) => {
-			const basefont = /, (.+)/.exec(family)[1]
-			const dimensions = measureFonts(context, family, emojis)
-			const font = /\'(.+)\'/.exec(family)[1]
-			const found = (
-				dimensions.ascent != base[basefont].ascent ||
-				dimensions.descent != base[basefont].descent ||
-				dimensions.left != base[basefont].left ||
-				dimensions.right != base[basefont].right ||
-				dimensions.width != base[basefont].width ||
-				dimensions.fontAscent != base[basefont].fontAscent ||
-				dimensions.fontDescent != base[basefont].fontDescent
-			)
-			if (found) {
-				acc.add(font)
-			}
-			return acc
-		}, new Set())
-		
-		// get emoji set and system
-		context.font = `200px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`
+		context.font = `200px ${cssFontFamily.replace(/!important/gm, '')}`
 		const pattern = new Set()
 		const emojiSet = emojis.reduce((emojiSet, emoji) => {
 			const {
@@ -351,26 +302,10 @@ export const getCanvas2d = async imports => {
 		}, new Set())
 
 		// textMetrics System Sum
-		const textMetricsSum = 0.00001 * [...pattern].map(x => {
+		const textMetricsSystemSum = 0.00001 * [...pattern].map(x => {
 			return x.split(',').reduce((acc, x) => acc += (+x||0), 0)
 		}).reduce((acc, x) => acc += x, 0)
 
-		const amplifySum = (n, fontSet) => {
-			const { size } = fontSet
-			if (size > 1) {
-				return n / +`1e${size}00` // ...e-200
-			}
-			return (
-				!size ? n * -1e150 : // -...e+148
-					size > 1 ? n / +`1e${size}00` : // ...e-200
-						fontSet.has('Segoe UI Emoji') ? n :
-							fontSet.has('Apple Color Emoji') ? n / 1e64 : // ...e-66
-								n * 1e64 // ...e+62
-			)
-		} 
-
-		const textMetricsSystemSum = amplifySum(textMetricsSum, detectedEmojiFonts)
-	
 		// lies
 		if (mods && mods.pixels) {
 			lied = true
@@ -423,7 +358,6 @@ export const getCanvas2d = async imports => {
 			textMetricsSystemSum,
 			liedTextMetrics: textMetricsLie,
 			emojiSet: [...emojiSet],
-			emojiFonts: [...detectedEmojiFonts],
 			lied
 		}
 	}
@@ -434,7 +368,7 @@ export const getCanvas2d = async imports => {
 	}
 }
 
-export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, formatEmojiSet, performanceLogger }) => {
+export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, formatEmojiSet, performanceLogger, cssFontFamily }) => {
 	if (!fp.canvas2d) {
 		return `
 		<div class="col-six undefined">
@@ -457,7 +391,6 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 			blob,
 			blobOffscreen,
 			emojiSet,
-			emojiFonts,
 			textMetricsSystemSum,
 			$hash
 		}
@@ -624,11 +557,8 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 		</div>
 		<div>textMetrics:</div>
 		<div class="block-text help relative" title="${emojiHelpTitle}"> 
-			<span class="confidence-note">${
-				!emojiFonts ? '' : emojiFonts.length > 1 ? `${emojiFonts[0]}...` : (emojiFonts[0] || '')
-			}</span>
 			<span>${textMetricsSystemSum || note.unsupported}</span>
-			<span class="grey jumbo" style="${!(emojiFonts || [])[0] ? '' : `font-family: '${emojiFonts[0]}' !important`}">
+			<span class="grey jumbo" style="font-family: ${cssFontFamily}">
 				${formatEmojiSet(emojiSet)}
 			</span>
 		</div>

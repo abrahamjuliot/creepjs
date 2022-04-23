@@ -256,7 +256,7 @@ export const getBestWorkerScope = async imports => {
 	}
 }
 
-export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, computeWindowsRelease, performanceLogger, formatEmojiSet }) => {
+export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, computeWindowsRelease, performanceLogger, formatEmojiSet, cssFontFamily }) => {
 	if (!fp.workerScope) {
 		return `
 		<div class="col-six undefined">
@@ -314,7 +314,6 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 		fontPlatformVersion,
 		fontApps,
 		emojiSet,
-		emojiFonts,
 		userAgentData,
 		type,
 		scope,
@@ -407,11 +406,8 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 				})(fontFaceLoadFonts)}
 				${(fontApps || []).length ? `<br>apps: ${(fontApps || []).join(', ')}` : ''}
 				
-				<span class="confidence-note">${
-					!emojiFonts ? '' : emojiFonts.length > 1 ? `${emojiFonts[0]}...` : (emojiFonts[0] || '')
-				}</span>
 				<br><span>${textMetricsSystemSum || note.unsupported}</span>
-				<br><span class="grey jumbo" style="${!(emojiFonts || [])[0] ? '' : `font-family: '${emojiFonts[0]}' !important`}">${formatEmojiSet(emojiSet)}</span>
+				<br><span class="grey jumbo" style="font-family: ${cssFontFamily}">${formatEmojiSet(emojiSet)}</span>
 			</div>
 		</div>
 

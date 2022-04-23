@@ -9,6 +9,7 @@ export const getSVG = async imports => {
 			html,
 			captureError,
 			getEmojis,
+			cssFontFamily,
 			lieProps,
 			logTestResult,
 			phantomDarkness
@@ -76,15 +77,11 @@ export const getSVG = async imports => {
 					height: auto;
 				}
 				.svgrect-emoji {
-					font-family:
-					'Segoe UI Emoji', /* Windows */
-					'Apple Color Emoji', /* Apple */
-					'Noto Color Emoji', /* Linux, Android, Chrome OS */
-					sans-serif !important;
+					font-family: ${cssFontFamily};
 					font-size: 200px !important;
 					height: auto;
 					position: absolute !important;
-					transform: scale(100);
+					transform: scale(1.000999);
 				}
 				</style>
 				<svg>
@@ -99,41 +96,6 @@ export const getSVG = async imports => {
 			</div>
 		</div>
 		`)
-
-		// fonts
-		const baseFonts = ['monospace', 'sans-serif', 'serif']
-		const fontShortList = [
-			'Segoe UI Emoji', // Windows
-			'Apple Color Emoji', // Apple
-			'Noto Color Emoji',  // Linux, Android, Chrome OS
-		]
-		const families = fontShortList.reduce((acc, font) => {
-			baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`))
-			return acc
-		}, [])
-		const svgText = doc.getElementById(fontId)
-		const getCharDimensions = (svgText, emojis) => {
-			const { width, height, y } = svgText.getExtentOfChar(emojis.join(''))
-			return { width, height, y }
-		}
-		const base = baseFonts.reduce((acc, font) => {
-			svgText.style.setProperty('--font', font)
-			const dimensions = getCharDimensions(svgText, emojis)
-			acc[font] = dimensions
-			return acc
-		}, {})
-		const detectedEmojiFonts = families.reduce((acc, family) => {
-			svgText.style.setProperty('--font', family)
-			const basefont = /, (.+)/.exec(family)[1]
-			const dimensions = getCharDimensions(svgText, emojis)
-			const font = /\'(.+)\'/.exec(family)[1]
-			if ((dimensions.width != base[basefont].width) ||
-				(dimensions.height != base[basefont].height) ||
-				(dimensions.y != base[basefont].y)) {
-				acc.add(font)
-			}
-			return acc
-		}, new Set())
 
 		// SVG
 		const reduceToObject = nativeObj => {
@@ -185,25 +147,9 @@ export const getSVG = async imports => {
 		}, new Set())
 
 		// domRect System Sum
-		const svgrectSum = 0.00001 * [...pattern].map(x => {
+		const svgrectSystemSum = 0.00001 * [...pattern].map(x => {
 			return x.split(',').reduce((acc, x) => acc += (+x||0), 0)
 		}).reduce((acc, x) => acc += x, 0)
-
-		const amplifySum = (n, fontSet) => {
-			const { size } = fontSet
-			if (size > 1) {
-				return n / +`1e${size}00` // ...e-200
-			}
-			return (
-				!size ? n * -1e150 : // -...e+148
-					size > 1 ? n / +`1e${size}00` : // ...e-200
-						fontSet.has('Segoe UI Emoji') ? n :
-							fontSet.has('Apple Color Emoji') ? n / 1e64 : // ...e-66
-								n * 1e64 // ...e+62
-			)
-		} 
-
-		const svgrectSystemSum = amplifySum(svgrectSum, detectedEmojiFonts)
 
 		const data = {
 			bBox: getObjectSum(bBox),
@@ -211,7 +157,6 @@ export const getSVG = async imports => {
 			subStringLength: getListSum([...lengthSet.subStringLength]),
 			computedTextLength: getListSum([...lengthSet.computedTextLength]),
 			emojiSet: [...emojiSet],
-			emojiFonts: [...detectedEmojiFonts],
 			svgrectSystemSum,
 			lied
 		}
@@ -226,7 +171,7 @@ export const getSVG = async imports => {
 	}
 }
 
-export const svgHTML = ({ fp, note, hashSlice, hashMini, formatEmojiSet, performanceLogger }) => {
+export const svgHTML = ({ fp, note, hashSlice, hashMini, formatEmojiSet, performanceLogger, cssFontFamily }) => {
 	if (!fp.svg) {
 		return `
 		<div class="col-six undefined">
@@ -246,7 +191,6 @@ export const svgHTML = ({ fp, note, hashSlice, hashMini, formatEmojiSet, perform
 			extentOfChar,
 			computedTextLength,
 			emojiSet,
-			emojiFonts,
 			svgrectSystemSum,
 			lied
 		}
@@ -262,11 +206,8 @@ export const svgHTML = ({ fp, note, hashSlice, hashMini, formatEmojiSet, perform
 		<div class="help" title="SVGTextContentElement.getSubStringLength()">subs: ${subStringLength ? (subStringLength/divisor) : note.blocked}</div>
 		<div class="help" title="SVGTextContentElement.getComputedTextLength()">text: ${computedTextLength ? (computedTextLength/divisor) : note.blocked}</div>
 		<div class="block-text help relative" title="${helpTitle}">
-			<span class="confidence-note">${
-				!emojiFonts ? '' : emojiFonts.length > 1 ? `${emojiFonts[0]}...` : (emojiFonts[0] || '')
-			}</span>
 			<span>${svgrectSystemSum || note.unsupported}</span>
-			<span class="grey jumbo" style="${!(emojiFonts || [])[0] ? '' : `font-family: '${emojiFonts[0]}' !important`}">${formatEmojiSet(emojiSet)}</span>
+			<span class="grey jumbo" style="font-family: ${cssFontFamily}">${formatEmojiSet(emojiSet)}</span>
 		</div>
 	</div>
 	`	

@@ -10,6 +10,7 @@ export const getClientRects = async imports => {
 			createTimer,
 			instanceId,
 			getEmojis,
+			cssFontFamily,
 			patch,
 			html,
 			captureError,
@@ -234,15 +235,11 @@ export const getClientRects = async imports => {
 			<div id="emoji-container">
 				<style>
 				.domrect-emoji {
-					font-family:
-					'Segoe UI Emoji', /* Windows */
-					'Apple Color Emoji', /* Apple */
-					'Noto Color Emoji', /* Linux, Android, Chrome OS */
-					sans-serif !important;
+					font-family: ${cssFontFamily};
 					font-size: 200px !important;
 					height: auto;
 					position: absolute !important;
-					transform: scale(100);
+					transform: scale(1.000999);
 				}
 				</style>
 				${
@@ -253,41 +250,6 @@ export const getClientRects = async imports => {
 			</div>
 		</div>
 		`)
-
-		
-		// fonts
-		const baseFonts = ['monospace', 'sans-serif', 'serif']
-		const fontShortList = [
-			'Segoe UI Emoji', // Windows
-			'Apple Color Emoji', // Apple
-			'Noto Color Emoji',  // Linux, Android, Chrome OS
-		]
-		const families = fontShortList.reduce((acc, font) => {
-			baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`))
-			return acc
-		}, [])
-		const span = doc.getElementById(fontId)
-		const getRectDimensions = span => {
-			const { width, height } = span.getClientRects()[0]
-			return { width, height }
-		}
-		const base = baseFonts.reduce((acc, font) => {
-			span.style.setProperty('--font', font)
-			const dimensions = getRectDimensions(span)
-			acc[font] = dimensions
-			return acc
-		}, {})
-		const detectedEmojiFonts = families.reduce((acc, family) => {
-			span.style.setProperty('--font', family)
-			const basefont = /, (.+)/.exec(family)[1]
-			const dimensions = getRectDimensions(span)
-			const font = /\'(.+)\'/.exec(family)[1]
-			if (dimensions.width != base[basefont].width ||
-				dimensions.height != base[basefont].height) {
-				acc.add(font)
-			}
-			return acc
-		}, new Set())
 
 		// get emoji set and system
 		const pattern = new Set()
@@ -305,25 +267,9 @@ export const getClientRects = async imports => {
 			return emojiSet
 		}, new Set())
 
-		const domrectSum = 0.00001 * [...pattern].map(x => {
+		const domrectSystemSum = 0.00001 * [...pattern].map(x => {
 			return x.split(',').reduce((acc, x) => acc += (+x||0), 0)
 		}).reduce((acc, x) => acc += x, 0)
-
-		const amplifySum = (n, fontSet) => {
-			const { size } = fontSet
-			if (size > 1) {
-				return n / +`1e${size}00` // ...e-200
-			}
-			return (
-				!size ? n * -1e150 : // -...e+148
-					size > 1 ? n / +`1e${size}00` : // ...e-200
-						fontSet.has('Segoe UI Emoji') ? n :
-							fontSet.has('Apple Color Emoji') ? n / 1e64 : // ...e-66
-								n * 1e64 // ...e+62
-			)
-		} 
-
-		const domrectSystemSum = amplifySum(domrectSum, detectedEmojiFonts)
 
 		// get clientRects
 		const range = document.createRange()
@@ -346,7 +292,6 @@ export const getClientRects = async imports => {
 			range.selectNode(el)
 			return toNativeObject(el.getBoundingClientRect())
 		})
-
 
 		// detect failed shift calculation
 		// inspired by https://arkenfox.github.io/TZP
@@ -424,7 +369,6 @@ export const getClientRects = async imports => {
 			rangeClientRects,
 			rangeBoundingClientRect,
 			emojiSet: [...emojiSet],
-			emojiFonts: [...detectedEmojiFonts],
 			domrectSystemSum,
 			lied
 		}
@@ -436,7 +380,7 @@ export const getClientRects = async imports => {
 	}
 }
 
-export const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, formatEmojiSet, performanceLogger }) => {
+export const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, formatEmojiSet, performanceLogger, cssFontFamily }) => {
 	if (!fp.clientRects) {
 		return `
 		<div class="col-six undefined">
@@ -456,7 +400,6 @@ export const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice
 			rangeClientRects,
 			rangeBoundingClientRect,
 			emojiSet,
-			emojiFonts,
 			domrectSystemSum,
 			lied
 		}
@@ -502,11 +445,8 @@ export const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice
 		<div class="help" title="Range.getClientRects()">range A: ${computeDiffs(rangeClientRects)}</div>
 		<div class="help" title="Range.getBoundingClientRect()">range B: ${computeDiffs(rangeBoundingClientRect)}</div>
 		<div class="block-text help relative" title="${helpTitle}">
-			<span class="confidence-note">${
-				!emojiFonts ? '' : emojiFonts.length > 1 ? `${emojiFonts[0]}...` : (emojiFonts[0] || '')
-			}</span>
 			<span>${domrectSystemSum || note.unsupported}</span>
-			<span class="grey jumbo" style="${!(emojiFonts || [])[0] ? '' : `font-family: '${emojiFonts[0]}' !important`}">${formatEmojiSet(emojiSet)}</span>
+			<span class="grey jumbo" style="font-family: ${cssFontFamily}">${formatEmojiSet(emojiSet)}</span>
 		</div>
 	</div>
 	`
