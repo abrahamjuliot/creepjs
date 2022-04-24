@@ -11862,10 +11862,10 @@
 				const { lied, liedTextMetrics } = canvas2d; 
 				let data;
 				if (!lied) {
-					const { dataURI, blob, blobOffscreen } = canvas2d; 
+					const { dataURI, paintURI, textURI, emojiURI, blob, blobOffscreen } = canvas2d; 
 					data = {
 						lied,
-						...{ dataURI, blob, blobOffscreen }
+						...{ dataURI, paintURI, textURI, emojiURI, blob, blobOffscreen }
 					};
 				}
 				if (!liedTextMetrics) {
@@ -11932,7 +11932,7 @@
 			capturedErrors: !!errorsLen,
 			lies: !!liesLen,
 			resistance: fp.resistance || undefined,
-			forceRenew: 1650776877533
+			forceRenew: 1650785039602
 		};
 
 		console.log('%c✔ stable fingerprint passed', 'color:#4cca9f');
