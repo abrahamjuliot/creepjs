@@ -6,7 +6,6 @@ export const getBestWorkerScope = async imports => {
 			getOS,
 			decryptUserAgent,
 			captureError,
-			phantomDarkness,
 			getUserAgentPlatform,
 			documentLie,
 			logTestResult,
@@ -20,38 +19,62 @@ export const getBestWorkerScope = async imports => {
 		await queueEvent(timer)
 
 		const ask = fn => { try { return fn() } catch (e) { return } }
-		const resolveWorkerData = (target, resolve, fn) => target.addEventListener('message', event => {
-			fn(); return resolve(event.data)
-		})
+
 		const hasConstructor = (x, name) => x && x.__proto__.constructor.name == name
 		const getDedicatedWorker = ({ scriptSource }) => new Promise(resolve => {
+			const giveUpOnWorker = setTimeout(() => {
+				return resolve()
+			}, 3000)
+			
 			const dedicatedWorker = ask(() => new Worker(scriptSource))
 			if (!hasConstructor(dedicatedWorker, 'Worker')) return resolve()
-			return resolveWorkerData(dedicatedWorker, resolve, () => dedicatedWorker.terminate())
+			
+			dedicatedWorker.onmessage = event => {
+				dedicatedWorker.terminate()
+				clearTimeout(giveUpOnWorker)
+				return resolve(event.data)
+			}
 		})
 		const getSharedWorker = ({ scriptSource }) => new Promise(resolve => {
+			const giveUpOnWorker = setTimeout(() => {
+				return resolve()
+			}, 3000)
+			
 			const sharedWorker = ask(() => new SharedWorker(scriptSource))
 			if (!hasConstructor(sharedWorker, 'SharedWorker')) return resolve()
+			
 			sharedWorker.port.start()
-			return resolveWorkerData(sharedWorker.port, resolve, () => sharedWorker.port.close())
+			
+			sharedWorker.port.onmessage = event => {
+				sharedWorker.port.close()
+				clearTimeout(giveUpOnWorker)
+				return resolve(event.data)
+			}
 		})
 		const getServiceWorker = ({ scriptSource }) => new Promise(resolve => {
+			const giveUpOnWorker = setTimeout(() => {
+				return resolve()
+			}, 3000)
+			
 			if (!ask(() => navigator.serviceWorker.register)) return resolve()
+			
 			return navigator.serviceWorker.register(scriptSource).then(registration => {
 				if (!hasConstructor(registration, 'ServiceWorkerRegistration')) return resolve()
+				
 				return navigator.serviceWorker.ready.then(registration => {
 					registration.active.postMessage(undefined)
-					return resolveWorkerData(
-						navigator.serviceWorker,
-						resolve,
-						() => registration.unregister()
-					)
+
+					navigator.serviceWorker.onmessage = event => {
+						registration.unregister()
+						clearTimeout(giveUpOnWorker)
+						return resolve(event.data)
+					}
 				})
 			}).catch(error => {
 				console.error(error)
+				clearTimeout(giveUpOnWorker)
 				return resolve()
 			})
-			
 		})
 
 		const scriptSource = 'creepworker.js'
@@ -62,6 +85,7 @@ export const getBestWorkerScope = async imports => {
 			console.error(error.message)
 			return
 		})
+		
 		if (!(workerScope || {}).userAgent) {
 			scope = 'SharedWorkerGlobalScope'
 			type = 'shared' // no support in Safari, iOS, and Chrome Android
@@ -71,6 +95,7 @@ export const getBestWorkerScope = async imports => {
 				return
 			})
 		}
+		
 		if (!(workerScope || {}).userAgent) {
 			scope = 'WorkerGlobalScope'
 			type = 'dedicated' // simulators & extensions can spoof userAgent

@@ -28,7 +28,7 @@ export const getVoices = imports => {
 				const giveUpOnVoices = setTimeout(() => {
 					logTestResult({ test: 'speech', passed: false })
 					return resolve()
-				}, 3000)
+				}, 1000)
 				const data = speechSynthesis.getVoices()
 				const isChrome = ((3.141592653589793 ** -100) == 1.9275814160560204e-50)
 				const localServiceDidLoad = (data || []).find(x => x.localService)
