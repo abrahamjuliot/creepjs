@@ -30,7 +30,13 @@ const hashify = (x, algorithm = 'SHA-256') => {
 const getBotHash = (fp, imports) => {
 	const { getFeaturesLie, computeWindowsRelease } = imports
 	const outsideFeaturesVersion = getFeaturesLie(fp)
-	const workerScopeIsBlocked = !fp.workerScope || !fp.workerScope.userAgent
+	const workerScopeIsBlocked = (
+		!fp.workerScope ||
+		!fp.workerScope.userAgent ||
+		// only accept shared and service types
+		// device emulators can easily spoof dedicated scope
+		fp.workerScope.type == 'dedicated'
+	)
 	const liedWorkerScope = !!(fp.workerScope && fp.workerScope.lied)
 	let liedPlatformVersion = false
 	if (fp.workerScope && fp.fonts) {

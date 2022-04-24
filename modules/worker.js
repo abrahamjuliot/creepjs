@@ -98,7 +98,7 @@ export const getBestWorkerScope = async imports => {
 		
 		if (!(workerScope || {}).userAgent) {
 			scope = 'WorkerGlobalScope'
-			type = 'dedicated' // simulators & extensions can spoof userAgent
+			type = 'dedicated' // device emulators can easily spoof dedicated scope
 			workerScope = await getDedicatedWorker({ scriptSource }).catch(error => {
 				captureError(error)
 				console.error(error.message)
