@@ -247,22 +247,22 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 					getTemplate({title: 'canvas', agent: canvasSystem})
 			}</div>
 			<div class="ellipsis relative">
-				<span id="canvas-blob-entropy"></span>${
+				<span id="canvasBlob-entropy"></span>${
 				!hasValue(canvasBlobSystem) ? unknownHTML('canvas blob') : 
 					getTemplate({title: 'canvas blob', agent: canvasBlobSystem})
 			}</div>
 			<div class="ellipsis relative">
-				<span id="canvas-paint-entropy"></span>${
+				<span id="canvasPaint-entropy"></span>${
 				!hasValue(canvasPaintSystem) ? unknownHTML('canvas paint') : 
 					getTemplate({title: 'canvas paint', agent: canvasPaintSystem})
 			}</div>
 			<div class="ellipsis relative">
-				<span id="canvas-text-entropy"></span>${
+				<span id="canvasText-entropy"></span>${
 				!hasValue(canvasTextSystem) ? unknownHTML('canvas text') : 
 					getTemplate({title: 'canvas text', agent: canvasTextSystem})
 			}</div>
 			<div class="ellipsis relative">
-				<span id="canvas-emoji-entropy"></span>${
+				<span id="canvasEmoji-entropy"></span>${
 				!hasValue(canvasEmojiSystem) ? unknownHTML('canvas emoji') : 
 					getTemplate({title: 'canvas emoji', agent: canvasEmojiSystem})
 			}</div>
@@ -307,7 +307,7 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 					getTemplate({title: 'resistance', agent: resistance})
 			}</div>
 			<div class="ellipsis relative">
-				<span id="device-of-timezone-entropy"></span>${
+				<span id="deviceOfTimezone-entropy"></span>${
 				!hasValue(deviceOfTimezone) ? unknownHTML('device of timezone') : 
 					getTemplate({title: 'device of timezone', agent: deviceOfTimezone})
 			}</div>
