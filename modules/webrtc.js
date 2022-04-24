@@ -178,7 +178,7 @@ export const getWebRTCData = async imports => {
 					}
 					logTestResult({ test: 'webrtc', passed: false })
 					return resolve()
-				}, 1000)
+				}, 3000)
 
 				const computeCandidate = event => {
 					const { candidate } = event.candidate || {}
