@@ -623,7 +623,7 @@ const imports = {
 		capturedErrors: !!errorsLen,
 		lies: !!liesLen,
 		resistance: fp.resistance || undefined,
-		forceRenew: 1650697804297
+		forceRenew: 1650776877533
 	}
 
 	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f')
