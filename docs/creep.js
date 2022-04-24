@@ -9035,15 +9035,15 @@
 			<div>keys (0): ${note.blocked}</div>
 			<div>lang/timezone:</div>
 			<div class="block-text">${note.blocked}</div>
-			<div>device:</div>
+			<div>gpu:</div>
 			<div class="block-text">${note.blocked}</div>
 		</div>
 		<div class="col-six undefined">
 			<div>userAgent:</div>
 			<div class="block-text">${note.blocked}</div>
-			<div>userAgentData:</div>
+			<div>device:</div>
 			<div class="block-text">${note.blocked}</div>
-			<div>gpu:</div>
+			<div>userAgentData:</div>
 			<div class="block-text">${note.blocked}</div>
 		</div>`
 		}
@@ -9112,6 +9112,25 @@
 			}
 			<br>${timezoneLocation} (${''+timezoneOffset})
 		</div>
+
+		<div class="relative">${
+			confidence ? `<span class="confidence-note">confidence: <span class="scale-up grade-${confidenceGrade}">${confidence}</span></span>` : ''
+		}gpu:</div>
+		<div class="block-text help" title="${
+			confidence ? `\nWebGLRenderingContext.getParameter()\ngpu compressed: ${compressedGPU}\nknown parts: ${parts || 'none'}\ngibberish: ${gibbers || 'none'}\nwarnings: ${warnings.join(', ') || 'none'}` : 'WebGLRenderingContext.getParameter()'
+		}">
+			${webglVendor ? webglVendor : ''}
+			${webglRenderer ? `<br>${webglRenderer}` : note.unsupported}
+		</div>
+		
+	</div>
+	<div class="col-six${lied ? ' rejected' : ''}">
+
+		<div class="relative">userAgent:${!uaPostReduction ? '' : `<span class="confidence-note">ua reduction</span>`}</div>
+		<div class="block-text help" title="WorkerNavigator.userAgent">
+			<div>${userAgent || note.unsupported}</div>
+		</div>
+
 		<div>device:</div>
 		<div class="block-text help" title="WorkerNavigator.deviceMemory\nWorkerNavigator.hardwareConcurrency\nWorkerNavigator.platform\nWorkerNavigator.userAgent">
 			${`${system}${platform ? ` (${platform})` : ''}`}
@@ -9121,13 +9140,6 @@
 				hardwareConcurrency && !deviceMemory ? `<br>cores: ${hardwareConcurrency}` :
 				!hardwareConcurrency && deviceMemory ? `<br>ram: ${deviceMemory}` : ''
 			}
-		</div>
-	</div>
-	<div class="col-six${lied ? ' rejected' : ''}">
-
-		<div class="relative">userAgent:${!uaPostReduction ? '' : `<span class="confidence-note">ua reduction</span>`}</div>
-		<div class="block-text help" title="WorkerNavigator.userAgent">
-			<div>${userAgent || note.unsupported}</div>
 		</div>
 
 		<div>userAgentData:</div>
@@ -9156,16 +9168,7 @@
 			})(userAgentData)}	
 			</div>
 		</div>
-		<div class="relative">${
-			confidence ? `<span class="confidence-note">confidence: <span class="scale-up grade-${confidenceGrade}">${confidence}</span></span>` : ''
-		}gpu:</div>
-		<div class="block-text help" title="${
-			confidence ? `\nWebGLRenderingContext.getParameter()\ngpu compressed: ${compressedGPU}\nknown parts: ${parts || 'none'}\ngibberish: ${gibbers || 'none'}\nwarnings: ${warnings.join(', ') || 'none'}` : 'WebGLRenderingContext.getParameter()'
-		}">
-			${webglVendor ? webglVendor : ''}
-			${webglRenderer ? `<br>${webglRenderer}` : note.unsupported}
-		</div>
-
+		
 	</div>
 	`
 	};
