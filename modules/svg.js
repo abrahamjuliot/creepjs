@@ -83,7 +83,7 @@ export const getSVG = async imports => {
 				return isNaN(val) ? acc : (acc += val)
 			}, 0)
 		}
-		const getListSum = list => list.reduce((acc, n) => acc += n, 0)
+		
 		const getObjectSum = obj => !obj ? 0 : Object.keys(obj).reduce((acc, key) => acc += Math.abs(obj[key]), 0)
 		
 		// SVGRect
@@ -155,7 +155,7 @@ export const svgHTML = ({ fp, note, hashSlice, hashMini, formatEmojiSet, perform
 		}
 	} = fp
 	const divisor = 10000
-	const helpTitle = `SVGTextContentElement.getExtentOfChar()\nSVGTextContentElement.getSubStringLength()\nSVGTextContentElement.getComputedTextLength()\nhash: ${hashMini(emojiSet)}\n${emojiSet.map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`
+	const helpTitle = `SVGTextContentElement.getComputedTextLength()\nhash: ${hashMini(emojiSet)}\n${emojiSet.map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`
 	return `
 	<div class="relative col-six${lied ? ' rejected' : ''}">
 		<span class="aside-note">${performanceLogger.getLog().svg}</span>
