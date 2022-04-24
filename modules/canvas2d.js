@@ -189,7 +189,7 @@ const paintCanvas = ({
 		const fontSize = 2.99;
 		context.font = `${height / fontSize}px ${cssFontFamily.replace(/!important/gm, '')}`;
 		context.strokeText(
-			'😃A',
+			'👾A',
 			patchSeed(getNextSeed(), offset, width),
 			patchSeed(getNextSeed(), offset, height),
 			patchSeed(getNextSeed(), offset, width),
@@ -457,7 +457,7 @@ export const getCanvas2d = async imports => {
 	  canvas.width = maxSize
 	  canvas.height = maxSize
 		context.font = `35px ${cssFontFamily.replace(/!important/gm, '')}`
-		context.fillText('😀', 0, 37)
+		context.fillText('👾', 0, 37)
 		const emojiURI = canvas.toDataURL()
 
 		// lies
