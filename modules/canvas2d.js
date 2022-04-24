@@ -470,8 +470,8 @@ export const getCanvas2d = async imports => {
 		context.clearRect(0, 0, canvas.width, canvas.height)
 	  canvas.width = maxSize
 	  canvas.height = maxSize
-		context.font = `45px ${cssFontFamily.replace(/!important/gm, '')}`
-		context.fillText('😀', -6, 41)
+		context.font = `35px ${cssFontFamily.replace(/!important/gm, '')}`
+		context.fillText('😀', 0, 37)
 		const emojiURI = canvas.toDataURL()
 
 		// lies
@@ -634,6 +634,7 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 			}
 			.pixel-image,
 			.pixel-image-random,
+			.combined-image,
 			.paint-image, 
 			.text-image, 
 			.emoji-image {
@@ -655,6 +656,9 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 			}
 			.emoji-image {
 				background-image: url(${emojiURI})
+			}
+			.combined-image {
+				background-image: url(${dataURI})
 			}
 			.rgba {
 				width: 8px;
@@ -702,6 +706,7 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 			${textURI ? `<div class="icon-pixel text-image"></div>` : ''}
 			${emojiURI ? `<div class="icon-pixel emoji-image"></div>` : ''}
 			${paintURI ? `<div class="icon-pixel paint-image"></div>` : ''}
+			${dataURI ? `<div class="icon-pixel combined-image"></div>` : ''}
 		</div>
 		<div class="icon-pixel-container pixels">
 			<div class="icon-pixel pixel-image-random"></div>
