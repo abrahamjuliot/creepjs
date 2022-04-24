@@ -361,7 +361,9 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini, formatE
 		<div class="col-six undefined">
 			<strong>Fonts</strong>
 			<div>load (0):</div>
+			<div>apps:${note.blocked}</div>
 			<div class="block-text-large">${note.blocked}</div>
+			<div class="block-text">${note.blocked}</div>
 		</div>`
 	}
 	const {
@@ -384,34 +386,29 @@ export const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini, formatE
 		'CrOS': '<span class="icon cros"></span>'
 	}
 
-	const fontFaceLoadHash = hashMini(fontFaceLoadFonts)
 	const blockHelpTitle = `FontFace.load()\nCSSStyleDeclaration.setProperty()\nblock-size\ninline-size\nhash: ${hashMini(emojiSet)}\n${(emojiSet||[]).map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`
 	return `
 	<div class="relative col-six${lied ? ' rejected' : ''}">
 		<span class="aside-note">${performanceLogger.getLog().fonts}</span>
 		<strong>Fonts</strong><span class="hash">${hashSlice($hash)}</span>
-		<div class="help" title="FontFace.load()">load (${fontFaceLoadFonts ? count(fontFaceLoadFonts) : '0'}/${'' + getFontList().length}): ${
-			!(fontFaceLoadFonts||[]).length ? note.unknown : modal(
-				'creep-fonts',
-				fontFaceLoadFonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>'),
-				fontFaceLoadHash
+		<div class="help" title="FontFace.load()">load (${fontFaceLoadFonts ? count(fontFaceLoadFonts) : '0'}/${'' + getFontList().length}): ${platformVersion || ((fonts) => {
+			return !(fonts || []).length ? '' : (
+				((''+fonts).match(/Lucida Console/)||[]).length ? `${icon.Windows}Lucida Console...` :
+				((''+fonts).match(/Droid Sans Mono|Noto Color Emoji|Roboto/g)||[]).length == 3 ? `${icon.Linux}${icon.Android}Droid Sans Mono,Noto Color...` :
+				((''+fonts).match(/Droid Sans Mono|Roboto/g)||[]).length == 2 ? `${icon.Android}Droid Sans Mono,Roboto...` :
+				((''+fonts).match(/Noto Color Emoji|Roboto/g)||[]).length == 2 ? `${icon.CrOS}Noto Color Emoji,Roboto...` :
+				((''+fonts).match(/Noto Color Emoji/)||[]).length ? `${icon.Linux}Noto Color Emoji...` :
+				((''+fonts).match(/Arimo/)||[]).length ? `${icon.Linux}Arimo...` :
+				((''+fonts).match(/Helvetica Neue/g)||[]).length == 2 ? `${icon.Apple}Helvetica Neue...` :
+				`${(fonts||[])[0]}...`
 			)
-		}</div>
-		<div class="block-text-large help relative" title="${blockHelpTitle}">
+		})(fontFaceLoadFonts)}</div>
+		<div>apps: ${(apps || []).length ? apps.join(', ') : note.unknown}</div>
+		<div class="block-text-large help relative" title="FontFace.load()">
+			${fontFaceLoadFonts.join(', ') || note.unsupported}
+		</div>
+		<div class="block-text help relative" title="${blockHelpTitle}">
 			<div>
-				${platformVersion ? `platform: ${platformVersion}` : ((fonts) => {
-					return !(fonts || []).length ? '' : (
-						((''+fonts).match(/Lucida Console/)||[]).length ? `${icon.Windows}Lucida Console...` :
-						((''+fonts).match(/Droid Sans Mono|Noto Color Emoji|Roboto/g)||[]).length == 3 ? `${icon.Linux}${icon.Android}Droid Sans Mono,Noto Color...` :
-						((''+fonts).match(/Droid Sans Mono|Roboto/g)||[]).length == 2 ? `${icon.Android}Droid Sans Mono,Roboto...` :
-						((''+fonts).match(/Noto Color Emoji|Roboto/g)||[]).length == 2 ? `${icon.CrOS}Noto Color Emoji,Roboto...` :
-						((''+fonts).match(/Noto Color Emoji/)||[]).length ? `${icon.Linux}Noto Color Emoji...` :
-						((''+fonts).match(/Arimo/)||[]).length ? `${icon.Linux}Arimo...` :
-						((''+fonts).match(/Helvetica Neue/g)||[]).length == 2 ? `${icon.Apple}Helvetica Neue...` :
-						`${(fonts||[])[0]}...`
-					)
-				})(fontFaceLoadFonts)}
-				${(apps || []).length ? `<br>apps: ${(apps || []).join(', ')}` : ''}
 				<br><span>${pixelSizeSystemSum || note.unsupported}</span>
 				<br><span class="grey jumbo" style="font-family: ${cssFontFamily}">${formatEmojiSet(emojiSet)}</span>
 			</div>

@@ -900,14 +900,14 @@ input[type="radio"] {
 .icon-pixel,
 .icon-prediction {
     flex: 1 0 auto;
-    width: 50%;
+    width: 33%;
 }
 .icon-prediction {
-    height: 55px;
+  height: 55px;
 }
 .icon-pixel {
 	transform: scale(1.5);
-    height: 35px;
+  height: 35px;
 }
 
 .gradient {

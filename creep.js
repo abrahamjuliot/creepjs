@@ -230,6 +230,10 @@ const imports = {
 			voicesHash,
 			canvas2dHash,
 			canvas2dImageHash,
+			canvas2dBlobHash,
+			canvas2dPaintHash,
+			canvas2dTextHash,
+			canvas2dEmojiHash,
 			canvasWebglHash,
 			canvasWebglImageHash,
 			canvasWebglParametersHash,
@@ -266,6 +270,10 @@ const imports = {
 			hashify(voicesComputed),
 			hashify(canvas2dComputed),
 			hashify((canvas2dComputed || {}).dataURI),
+			hashify((canvas2dComputed || {}).blob.readAsDataURL),
+			hashify((canvas2dComputed || {}).paintURI),
+			hashify((canvas2dComputed || {}).textURI),
+			hashify((canvas2dComputed || {}).emojiURI),
 			hashify(canvasWebglComputed),
 			hashify((canvasWebglComputed || {}).dataURI),
 			hashify(reducedGPUParameters),
@@ -343,6 +351,10 @@ const imports = {
 			mimeTypesHash,
 			canvas2dImageHash,
 			canvasWebglImageHash,
+			canvas2dBlobHash,
+			canvas2dPaintHash,
+			canvas2dTextHash,
+			canvas2dEmojiHash,
 			canvasWebglParametersHash,
 			timeEnd
 		}
@@ -356,6 +368,10 @@ const imports = {
 		domRectHash,
 		mimeTypesHash,
 		canvas2dImageHash,
+		canvas2dBlobHash,
+		canvas2dPaintHash,
+		canvas2dTextHash,
+		canvas2dEmojiHash,
 		canvasWebglImageHash,
 		canvasWebglParametersHash,
 		timeEnd
@@ -491,17 +507,17 @@ const imports = {
 			const { lied, liedTextMetrics } = canvas2d 
 			let data
 			if (!lied) {
-				const { dataURI, blob, blobOffscreen, imageData } = canvas2d 
+				const { dataURI, blob, blobOffscreen } = canvas2d 
 				data = {
 					lied,
-					...{ dataURI, blob, blobOffscreen, imageData }
+					...{ dataURI, blob, blobOffscreen }
 				}
 			}
 			if (!liedTextMetrics) {
-				const { textMetricsSystemSum, emojiSet, emojiFonts } = canvas2d
+				const { textMetricsSystemSum, emojiSet } = canvas2d
 				data = {
 					...(data || {}),
-					...{ textMetricsSystemSum, emojiSet, emojiFonts }
+					...{ textMetricsSystemSum, emojiSet }
 				} 
 			}
 			return data
@@ -1196,6 +1212,22 @@ const imports = {
 						`canvasId=${
 							!canvas2d || canvas2d.lied ? 'undefined' :
 								canvas2dImageHash
+						}`,
+						`canvasBlobId=${
+							!canvas2d || canvas2d.lied ? 'undefined' :
+								canvas2dBlobHash
+						}`,
+						`canvasPaintId=${
+							!canvas2d || canvas2d.lied ? 'undefined' :
+								canvas2dPaintHash
+						}`,
+						`canvasTextId=${
+							!canvas2d || canvas2d.lied ? 'undefined' :
+								canvas2dTextHash
+						}`,
+						`canvasEmojiId=${
+							!canvas2d || canvas2d.lied ? 'undefined' :
+								canvas2dEmojiHash
 						}`,
 						`textMetricsId=${
 							!canvas2d || canvas2d.liedTextMetrics || ((+canvas2d.textMetricsSystemSum) == 0) ? 'undefined' : 

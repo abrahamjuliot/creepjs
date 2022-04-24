@@ -113,12 +113,6 @@ const getPixelMods = () => {
 }
 
 const getPointIn = (canvas, context) => {
-	canvas.width = canvas.height
-	context.fillStyle = 'rgba(0, 0, 0, 1)'
-	context.beginPath()
-	context.arc(0, 0, 10, 0, Math.PI * 2)
-	context.closePath()
-	context.fill()
 	const isPointInPath = []
 	const isPointInStroke = []
 	;[...Array(canvas.width)].forEach((e, x) => [...Array(canvas.height)].forEach((e, y) => {
@@ -129,6 +123,178 @@ const getPointIn = (canvas, context) => {
 		isPointInPath: isPointInPath.length ? isPointInPath : undefined,
 		isPointInStroke: isPointInStroke.length ? isPointInStroke : undefined
 	}
+}
+
+// based on and inspired by https://github.com/antoinevastel/picasso-like-canvas-fingerprinting
+const paintCanvas = ({
+  canvas,
+  context,
+	strokeText = false,
+	cssFontFamily = '',
+  area = { width: 100, height: 100 },
+  rounds = 50,
+  maxShadowBlur = 50,
+  seed = 500,
+  offset = 2001000001,
+  multiplier = 15000,
+}) => {
+  if (!context) {
+    return
+  }
+
+  context.clearRect(0, 0, canvas.width, canvas.height)
+  canvas.width = area.width
+  canvas.height = area.height
+	
+  if (canvas.style) {
+    canvas.style.display = 'none'
+  }
+
+  const createPicassoSeed = ({ seed, offset, multiplier }) => {
+    let current = Number(seed) % Number(offset)
+    const getNextSeed = () => {
+      current = (Number(multiplier) * current) % Number(offset)
+      return current
+    }
+    return {
+      getNextSeed,
+    }
+  }
+
+  const picassoSeed = createPicassoSeed({ seed, offset, multiplier })
+  const { getNextSeed } = picassoSeed
+
+  const patchSeed = (current, offset, maxBound = null, computeFloat = null) => {
+    const result = (((current - 1) / offset) * (maxBound || 1)) || 0
+    return computeFloat ? result : Math.floor(result)
+  }
+
+  const addRandomCanvasGradient = (context, offset, area, colors, getNextSeed) => {
+    const { width, height } = area
+    const canvasGradient = context.createRadialGradient(
+      patchSeed(getNextSeed(), offset, width),
+      patchSeed(getNextSeed(), offset, height),
+      patchSeed(getNextSeed(), offset, width),
+      patchSeed(getNextSeed(), offset, width),
+      patchSeed(getNextSeed(), offset, height),
+      patchSeed(getNextSeed(), offset, width),
+    )
+    canvasGradient.addColorStop(0, colors[patchSeed(getNextSeed(), offset, colors.length)])
+    canvasGradient.addColorStop(1, colors[patchSeed(getNextSeed(), offset, colors.length)])
+    context.fillStyle = canvasGradient
+  }
+
+  const colors = [
+    '#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6',
+    '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D',
+    '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A',
+    '#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC',
+    '#66994D', '#B366CC', '#4D8000', '#B33300', '#CC80CC',
+    '#66664D', '#991AFF', '#E666FF', '#4DB3FF', '#1AB399',
+    '#E666B3', '#33991A', '#CC9999', '#B3B31A', '#00E680',
+    '#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933',
+    '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3',
+    '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF',
+  ]
+
+	const drawOutlineOfText = (context, offset, area, getNextSeed) => {
+		const { width, height } = area
+		const fontSize = 2.99;
+		context.font = `${height / fontSize}px ${cssFontFamily.replace(/!important/gm, '')}`;
+		context.strokeText(
+			'😃A',
+			patchSeed(getNextSeed(), offset, width),
+			patchSeed(getNextSeed(), offset, height),
+			patchSeed(getNextSeed(), offset, width),
+		);
+	}
+
+  const createCircularArc = (context, offset, area, getNextSeed) => {
+    const { width, height } = area
+    context.beginPath()
+    context.arc(
+      patchSeed(getNextSeed(), offset, width),
+      patchSeed(getNextSeed(), offset, height),
+      patchSeed(getNextSeed(), offset, Math.min(width, height)),
+      patchSeed(getNextSeed(), offset, 2 * Math.PI, true),
+      patchSeed(getNextSeed(), offset, 2 * Math.PI, true),
+    )
+    context.stroke()
+  }
+
+  const createBezierCurve = (context, offset, area, getNextSeed) => {
+    const { width, height } = area
+    context.beginPath()
+    context.moveTo(
+      patchSeed(getNextSeed(), offset, width),
+      patchSeed(getNextSeed(), offset, height),
+    )
+    context.bezierCurveTo(
+      patchSeed(getNextSeed(), offset, width),
+      patchSeed(getNextSeed(), offset, height),
+      patchSeed(getNextSeed(), offset, width),
+      patchSeed(getNextSeed(), offset, height),
+      patchSeed(getNextSeed(), offset, width),
+      patchSeed(getNextSeed(), offset, height),
+    )
+    context.stroke()
+  }
+
+  const createQuadraticCurve = (context, offset, area, getNextSeed) => {
+    const { width, height } = area
+    context.beginPath()
+    context.moveTo(
+      patchSeed(getNextSeed(), offset, width),
+      patchSeed(getNextSeed(), offset, height),
+    )
+    context.quadraticCurveTo(
+      patchSeed(getNextSeed(), offset, width),
+      patchSeed(getNextSeed(), offset, height),
+      patchSeed(getNextSeed(), offset, width),
+      patchSeed(getNextSeed(), offset, height),
+    )
+    context.stroke()
+  }
+
+  const createEllipticalArc = (context, offset, area, getNextSeed) => {
+    if (!('ellipse' in context)) {
+      return
+    }
+    const { width, height } = area
+    context.beginPath()
+    context.ellipse(
+      patchSeed(getNextSeed(), offset, width),
+      patchSeed(getNextSeed(), offset, height),
+      patchSeed(getNextSeed(), offset, Math.floor(width / 2)),
+      patchSeed(getNextSeed(), offset, Math.floor(height / 2)),
+      patchSeed(getNextSeed(), offset, 2 * Math.PI, true),
+      patchSeed(getNextSeed(), offset, 2 * Math.PI, true),
+      patchSeed(getNextSeed(), offset, 2 * Math.PI, true)
+    )
+    context.stroke()
+  }
+
+  const methods = [
+    createCircularArc,
+    createBezierCurve,
+    createQuadraticCurve,
+    createEllipticalArc
+  ]
+	
+	if (strokeText) {
+		methods.push(drawOutlineOfText)
+	}
+
+  ;[...Array(rounds)].forEach((x) => { 
+    addRandomCanvasGradient(context, offset, area, colors, getNextSeed)
+    context.shadowBlur = patchSeed(getNextSeed(), offset, maxShadowBlur, true)
+    context.shadowColor = colors[patchSeed(getNextSeed(), offset, colors.length)]
+    const nextMethod = methods[patchSeed(getNextSeed(), offset, methods.length)]
+    nextMethod(context, offset, area, getNextSeed) 
+    context.fill()
+  })
+
+  return
 }
 
 export const getCanvas2d = async imports => {
@@ -144,23 +310,9 @@ export const getCanvas2d = async imports => {
 			lieProps,
 			documentLie,
 			phantomDarkness,
-			dragonOfDeath,
 			logTestResult
 		}
 	} = imports
-
-	const fillRect = (canvas, context) => {
-		canvas.width = 140
-		canvas.height = 30
-		context.font = `5px ${cssFontFamily.replace(/!important/gm, '')}`
-		context.fillText(`😀☺🤵‍♂️♨☸⚧⁉ℹ🏳️‍⚧️🥲☹☠🧑‍🦰🧏‍♂️⛷🧑‍🤝‍🧑☘⛰`, 0, 5)
-		context.fillText(`⛩⛴✈⏱⛈☂⛱☃☄⛸♟⛑⌨✉✏👩‍❤️‍`, 0, 10)
-		context.fillText(`💋‍👨👨‍👩‍👧‍👦👨‍👩‍👦😀©®™👁️‍�`, 0, 15)
-		context.fillText(`�️✒✂⛏⚒⚔⚙⛓⚗⚰⚱⚠☢☣⬆↗➡⬅`, 0, 20)
-		context.fillText(`⚛✡✝☦▶⏭⏯⏏♀♂✖〰⚕⚜✔✳❇◼▪❣`, 0, 25)
-		context.fillText(`❤✌☝✍❄⚖↪☯☪☮☑✴🅰🅿`, 0, 30)
-		return context
-	}
 
 	const getFileReaderData = blob => {
 		if (!blob) {
@@ -171,12 +323,7 @@ export const getCanvas2d = async imports => {
 			reader[method](blob)
 			return reader.addEventListener('loadend', () => resolve(reader.result))
 		})
-		return Promise.all([
-			getRead('readAsArrayBuffer', blob),
-			getRead('readAsBinaryString', blob),
-			getRead('readAsDataURL', blob),
-			getRead('readAsText', blob),
-		])
+		return getRead('readAsDataURL', blob)
 	}
 
 	try {
@@ -210,29 +357,36 @@ export const getCanvas2d = async imports => {
 			phantomDarkness.document.body ? phantomDarkness.document :
 				document
 		)
-
+		
 		const canvas = doc.createElement('canvas')
 		const context = canvas.getContext('2d')
-		fillRect(canvas, context)
+		const emojis = getEmojis()
+		paintCanvas({
+			canvas,
+			context,
+			strokeText: true,
+			cssFontFamily,
+			area: { width: 50, height: 50 },
+			rounds: 10,
+		})
+		
 		const dataURI = canvas.toDataURL()
-
-		if (dragonOfDeath) {
-			const result1 = dragonOfDeath.document.createElement('canvas').toDataURL()
-			const result2 = document.createElement('canvas').toDataURL()
-			if (result1 != result2) {
-				lied = true
-				const iframeLie = `expected x in nested iframe and got y`
-				documentLie(`HTMLCanvasElement.toDataURL`, iframeLie)
-			}
-		}
-			
-		const { data: imageData } = context.getImageData(0, 0, canvas.width, canvas.height) || {}
+		const points = getPointIn(canvas, context)
 		
 		let canvasOffscreen
 		try {
-			canvasOffscreen = new OffscreenCanvas(140, 30)
+			const width = 50
+			const height = 50
+			canvasOffscreen = new OffscreenCanvas(width, height)
 			const contextOffscreen = canvasOffscreen.getContext('2d')
-			fillRect(canvasOffscreen, contextOffscreen)
+			paintCanvas({
+				canvas: canvasOffscreen,
+				context: contextOffscreen,
+				strokeText: true,
+				cssFontFamily,
+				area: { width, height },
+				rounds: 10,
+			})
 		}
 		catch (error) { }
 
@@ -246,34 +400,21 @@ export const getCanvas2d = async imports => {
 			})),
 			getFileReaderData(canvasOffscreen && await attempt(() => canvasOffscreen.convertToBlob()))
 		])
-		const [arrayBuffer, binaryString, dataURL, text] = fileReaderData || {}
-		const [
-			arrayBufferOffScreen,
-			binaryStringOffscreen,
-			dataURLOffscreen,
-			textOffscreen
-		] = fileReaderDataOffscreen || {}
+		const dataURL = fileReaderData || {}
+		const dataURLOffscreen = fileReaderDataOffscreen || {}
 		const blob = {
-			readAsArrayBuffer: String.fromCharCode.apply(null, new Uint8Array(arrayBuffer)) || undefined,
-			readAsBinaryString: binaryString,
 			readAsDataURL: dataURL,
-			readAsText: text
 		}
 		const blobOffscreen = {
-			readAsArrayBuffer: String.fromCharCode.apply(null, new Uint8Array(arrayBufferOffScreen)) || undefined,
-			readAsBinaryString: binaryStringOffscreen,
 			readAsDataURL: dataURLOffscreen,
-			readAsText: textOffscreen
 		}
 
 		await queueEvent(timer)
-		const points = getPointIn(canvas, context) // modifies width
 		const mods = getPixelMods()
 
-		// get emoji set and system
+		// TextMetrics: get emoji set and system
 		await queueEvent(timer)
-		const emojis = getEmojis()
-		context.font = `200px ${cssFontFamily.replace(/!important/gm, '')}`
+		context.font = `10px ${cssFontFamily.replace(/!important/gm, '')}`
 		const pattern = new Set()
 		const emojiSet = emojis.reduce((emojiSet, emoji) => {
 			const {
@@ -306,11 +447,39 @@ export const getCanvas2d = async imports => {
 			return x.split(',').reduce((acc, x) => acc += (+x||0), 0)
 		}).reduce((acc, x) => acc += x, 0)
 
+		// Paint
+		const maxSize = 50
+		paintCanvas({
+			canvas,
+			context,
+			area: { width: maxSize, height: maxSize }
+		}) // clears image
+		const paintURI = canvas.toDataURL()
+
+		// Text
+		context.restore()
+		context.clearRect(0, 0, canvas.width, canvas.height)
+	  canvas.width = maxSize
+	  canvas.height = maxSize
+		context.font = `50px ${cssFontFamily.replace(/!important/gm, '')}`
+		context.fillText('A', 7, 37)
+		const textURI = canvas.toDataURL()
+
+		// Emoji
+		context.restore()
+		context.clearRect(0, 0, canvas.width, canvas.height)
+	  canvas.width = maxSize
+	  canvas.height = maxSize
+		context.font = `45px ${cssFontFamily.replace(/!important/gm, '')}`
+		context.fillText('😀', -6, 41)
+		const emojiURI = canvas.toDataURL()
+
 		// lies
-		if (mods && mods.pixels) {
+		context.clearRect(0, 0, canvas.width, canvas.height)
+		const liedImageData = !!Math.max(...context.getImageData(0, 0, 8, 8).data)
+		if ((mods && mods.pixels) || liedImageData) {
 			lied = true
-			const iframeLie = `pixel data modified`
-			documentLie(`CanvasRenderingContext2D.getImageData`, iframeLie)
+			documentLie(`CanvasRenderingContext2D.getImageData`, `pixel data modified`)
 		}
 		
 		const getTextMetricsFloatLie = context => {
@@ -343,14 +512,13 @@ export const getCanvas2d = async imports => {
 				'metric noise detected'
 			)
 		}
-		const imageDataCompressed = (
-			imageData ? String.fromCharCode.apply(null, imageData) : undefined
-		)
-		
+
 		logTestResult({ time: timer.stop(), test: 'canvas 2d', passed: true })
 		return {
 			dataURI,
-			imageData: imageDataCompressed,
+			paintURI,
+			textURI,
+			emojiURI,
 			mods,
 			points,
 			blob,
@@ -374,7 +542,8 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 		<div class="col-six undefined">
 			<strong>Canvas 2d</strong> <span>${note.blocked}</span>
 			<div>data: ${note.blocked}</div>
-			<div>pixel trap:</div>
+			<div>rendering:</div>
+			<div class="icon-pixel-container pixels">${note.blocked}</div>
 			<div class="icon-pixel-container pixels">${note.blocked}</div>
 			<div>textMetrics:</div>
 			<div class="block-text">${note.blocked}</div>
@@ -385,7 +554,9 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 		canvas2d: {
 			lied,
 			dataURI,
-			imageData,
+			paintURI,
+			textURI,
+			emojiURI,
 			mods,
 			points,
 			blob,
@@ -399,58 +570,24 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 	const modPercent = pixels ? Math.round((pixels / 400) * 100) : 0
 
 	const {
-		readAsArrayBuffer,
-		readAsBinaryString,
 		readAsDataURL,
-		readAsText
 	} = blob || {}
 
 	const hash = {
 		dataURI: hashMini(dataURI),
-		readAsArrayBuffer: hashMini(readAsArrayBuffer),
-		readAsBinaryString: hashMini(readAsBinaryString),
-		readAsDataURL: hashMini(readAsDataURL),
-		readAsText: hashMini(readAsText)
-		
+		blobDataURI: hashMini(readAsDataURL)
 	}
 
 	const getBlobtemplate = blob => {
 		const {
-			readAsArrayBuffer,
-			readAsBinaryString,
 			readAsDataURL,
-			readAsText
 		} = blob || {}
-    	const decorate = diff => `<span class="bold-fail">${diff}</span>`
+    const decorate = diff => `<span class="bold-fail">${diff}</span>`
 		return `
-			<br>readAsArrayBuffer: ${
-				!readAsArrayBuffer ? note.unsupported : getDiffs({
-					stringA: hash.readAsArrayBuffer,
-					stringB: hashMini(readAsArrayBuffer),
-					charDiff: true,
-					decorate
-				})
-			}
-			<br>readAsBinaryString: ${
-				!readAsBinaryString ? note.unsupported : getDiffs({
-					stringA: hash.readAsBinaryString,
-					stringB: hashMini(readAsBinaryString),
-					charDiff: true,
-					decorate
-				})
-			}
 			<br>readAsDataURL: ${
 				!readAsDataURL ? note.unsupported : getDiffs({
-					stringA: hash.dataURI,
+					stringA: hash.blobDataURI,
 					stringB: hashMini(readAsDataURL),
-					charDiff: true,
-					decorate
-				})
-			}
-			<br>readAsText: ${
-				!readAsText ? note.unsupported : getDiffs({
-					stringA: hash.readAsText,
-					stringB: hashMini(readAsText),
 					charDiff: true,
 					decorate
 				})
@@ -461,7 +598,6 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 	const dataTemplate = `
 		${dataURI ? `<div class="icon-pixel canvas-data"></div>` : ''}
 		<br>toDataURL: ${!dataURI ? note.blocked : hash.dataURI}
-		<br>getImageData: ${!imageData ? note.blocked : hashMini(imageData)}
 		<br>isPointInPath: ${!isPointInPath ? note.blocked : hashMini(isPointInPath)}
 		<br>isPointInStroke: ${!isPointInStroke ? note.blocked : hashMini(isPointInStroke)}
 		<br><br><strong>HTMLCanvasElement.toBlob</strong>
@@ -486,20 +622,23 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 	<div class="relative col-six${lied ? ' rejected' : ''}">
 		<style>
 			.pixels {
-				padding: 10px;
+				padding: 15px;
 				position: relative;
 				overflow: hidden;
 			}
 			.canvas-data {
 				max-width: 200px;
-				height: 30px;
+				height: 50px;
 				transform: scale(1);
 				background-image: url(${dataURI})
 			}
 			.pixel-image,
-			.pixel-image-random {
+			.pixel-image-random,
+			.paint-image, 
+			.text-image, 
+			.emoji-image {
 				max-width: 35px;
-    			border-radius: 50%;
+    		border-radius: 50%;
 				transform: scale(1.5);
 			}
 			.pixel-image {
@@ -507,6 +646,15 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 			}
 			.pixel-image-random {
 				background-image: url(${pixelImageRandom})
+			}
+			.paint-image {
+				background-image: url(${paintURI})
+			}
+			.text-image {
+				background-image: url(${textURI})
+			}
+			.emoji-image {
+				background-image: url(${emojiURI})
 			}
 			.rgba {
 				width: 8px;
@@ -537,20 +685,24 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 		</style>
 		<span class="aside-note">${performanceLogger.getLog()['canvas 2d']}</span>
 		<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-		<div class="help" title="HTMLCanvasElement.toDataURL()\nCanvasRenderingContext2D.getImageData()\nCanvasRenderingContext2D.isPointInPath()\nCanvasRenderingContext2D.isPointInStroke()\nHTMLCanvasElement.toBlob()\nOffscreenCanvas.convertToBlob()\nFileReader.readAsArrayBuffer()\nFileReader.readAsBinaryString()\nFileReader.readAsDataURL()\nFileReader.readAsText()">data: ${
+		<div class="help" title="HTMLCanvasElement.toDataURL()\nCanvasRenderingContext2D.getImageData()\nCanvasRenderingContext2D.isPointInPath()\nCanvasRenderingContext2D.isPointInStroke()\nHTMLCanvasElement.toBlob()\nOffscreenCanvas.convertToBlob()\nFileReader.readAsDataURL()">data: ${
 			modal(
 				'creep-canvas-data',
 				dataTemplate,
 				hashMini({
 					dataURI,
-					imageData,
 					points,
 					blob,
 					blobOffscreen
 				})
 			)
 		}</div>
-		<div class="help" title="CanvasRenderingContext2D.getImageData()">pixel trap: ${rgba ? `${modPercent}% rgba noise ${rgbaHTML}` : ''}</div>
+		<div class="help" title="CanvasRenderingContext2D.getImageData()">rendering: ${rgba ? `${modPercent}% rgba noise ${rgbaHTML}` : ''}</div>
+		<div class="icon-pixel-container pixels">
+			${textURI ? `<div class="icon-pixel text-image"></div>` : ''}
+			${emojiURI ? `<div class="icon-pixel emoji-image"></div>` : ''}
+			${paintURI ? `<div class="icon-pixel paint-image"></div>` : ''}
+		</div>
 		<div class="icon-pixel-container pixels">
 			<div class="icon-pixel pixel-image-random"></div>
 			${rgba ? `<div class="icon-pixel pixel-image"></div>` : ''}
