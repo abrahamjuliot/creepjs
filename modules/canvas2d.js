@@ -112,19 +112,6 @@ const getPixelMods = () => {
 	}
 }
 
-const getPointIn = (canvas, context) => {
-	const isPointInPath = []
-	const isPointInStroke = []
-	;[...Array(canvas.width)].forEach((e, x) => [...Array(canvas.height)].forEach((e, y) => {
-		context.isPointInPath(x, y) && isPointInPath.push([x, y])
-		return context.isPointInStroke(x, y) && isPointInStroke.push([x, y])
-	}))
-	return {
-		isPointInPath: isPointInPath.length ? isPointInPath : undefined,
-		isPointInStroke: isPointInStroke.length ? isPointInStroke : undefined
-	}
-}
-
 // based on and inspired by https://github.com/antoinevastel/picasso-like-canvas-fingerprinting
 const paintCanvas = ({
   canvas,
@@ -371,7 +358,6 @@ export const getCanvas2d = async imports => {
 		})
 		
 		const dataURI = canvas.toDataURL()
-		const points = getPointIn(canvas, context)
 		
 		let canvasOffscreen
 		try {
@@ -520,7 +506,6 @@ export const getCanvas2d = async imports => {
 			textURI,
 			emojiURI,
 			mods,
-			points,
 			blob,
 			blobOffscreen,
 			textMetricsSystemSum,
@@ -558,7 +543,6 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 			textURI,
 			emojiURI,
 			mods,
-			points,
 			blob,
 			blobOffscreen,
 			emojiSet,
@@ -577,12 +561,12 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 		dataURI: hashMini(dataURI),
 		blobDataURI: hashMini(readAsDataURL)
 	}
-
+	
+	const decorate = diff => `<span class="bold-fail">${diff}</span>`
 	const getBlobtemplate = blob => {
 		const {
 			readAsDataURL,
 		} = blob || {}
-    const decorate = diff => `<span class="bold-fail">${diff}</span>`
 		return `
 			<br>readAsDataURL: ${
 				!readAsDataURL ? note.unsupported : getDiffs({
@@ -594,12 +578,9 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 			}
 		`
 	}
-	const { isPointInPath, isPointInStroke } = points || {}
 	const dataTemplate = `
 		${dataURI ? `<div class="icon-pixel canvas-data"></div>` : ''}
 		<br>toDataURL: ${!dataURI ? note.blocked : hash.dataURI}
-		<br>isPointInPath: ${!isPointInPath ? note.blocked : hashMini(isPointInPath)}
-		<br>isPointInStroke: ${!isPointInStroke ? note.blocked : hashMini(isPointInStroke)}
 		<br><br><strong>HTMLCanvasElement.toBlob</strong>
 		${getBlobtemplate(blob)}
 		<br><br><strong>OffscreenCanvas.convertToBlob</strong>
@@ -689,13 +670,12 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 		</style>
 		<span class="aside-note">${performanceLogger.getLog()['canvas 2d']}</span>
 		<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-		<div class="help" title="HTMLCanvasElement.toDataURL()\nCanvasRenderingContext2D.getImageData()\nCanvasRenderingContext2D.isPointInPath()\nCanvasRenderingContext2D.isPointInStroke()\nHTMLCanvasElement.toBlob()\nOffscreenCanvas.convertToBlob()\nFileReader.readAsDataURL()">data: ${
+		<div class="help" title="HTMLCanvasElement.toDataURL()\nCanvasRenderingContext2D.getImageData()\nHTMLCanvasElement.toBlob()\nOffscreenCanvas.convertToBlob()\nFileReader.readAsDataURL()">data: ${
 			modal(
 				'creep-canvas-data',
 				dataTemplate,
 				hashMini({
 					dataURI,
-					points,
 					blob,
 					blobOffscreen
 				})
