@@ -244,7 +244,7 @@ export const renderPrediction = ({ decryptionData, crowdBlendingScore, patch, ht
 			<div class="ellipsis relative">
 				<span id="canvas-entropy"></span>${
 		!hasValue(canvasSystem) ? unknownHTML('canvas image') :
-			getTemplate({ title: 'canvas', agent: canvasSystem })
+			getTemplate({ title: 'canvas image', agent: canvasSystem })
 		}</div>
 			<div class="ellipsis relative">
 				<span id="canvasBlob-entropy"></span>${
