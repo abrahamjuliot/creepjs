@@ -318,7 +318,7 @@ export const getCanvas2d = async imports => {
 
 	const getFileReaderData = blob => {
 		if (!blob) {
-			return []
+			return
 		}
 		const getRead = (method, blob) => new Promise(resolve => {
 			const reader = new FileReader()
@@ -529,7 +529,7 @@ export const getCanvas2d = async imports => {
 	}
 }
 
-export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, formatEmojiSet, performanceLogger, cssFontFamily }) => {
+export const canvasHTML = ({ fp, note, modal, hashMini, hashSlice, formatEmojiSet, performanceLogger, cssFontFamily }) => {
 	if (!fp.canvas2d) {
 		return `
 		<div class="col-six undefined">
@@ -559,13 +559,7 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 		}
 	} = fp
 	const { pixels, rgba, pixelImage } = mods || {}
-	const modPercent = pixels ? Math.round((pixels / 400) * 100) : 0
-
-	const {
-		readAsDataURL,
-	} = blob || {}
-
-	
+	const modPercent = pixels ? Math.round((pixels / 400) * 100) : 0	
 	
 	const blobDataURI = (blob || {}).readAsDataURL
 	const blobOffscreenDataURI = (blobOffscreen || {}).readAsDataURL
