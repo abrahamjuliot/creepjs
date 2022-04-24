@@ -123,8 +123,7 @@ const getDragonIframe = ({ numberOfNests, kill = false, context = window }) => {
 }
 
 //const { iframeWindow: dragonFire, parent: parentDragon } = getDragonIframe({ numberOfNests: 2 })
-
-const { iframeWindow: dragonOfDeath } = getDragonIframe({ numberOfNests: 4, kill: true })
+//const { iframeWindow: dragonOfDeath } = getDragonIframe({ numberOfNests: 4, kill: true })
 
 const getPrototypeLies = scope => {
 	const getEngine = () => {
@@ -1210,4 +1209,4 @@ const liesHTML = ({ fp, hashSlice, modal }, pointsHTML) => {
 	}${pointsHTML}</div>`
 }
 
-export { documentLie, phantomDarkness, parentPhantom, lieProps, prototypeLies, lieRecords, getLies, proxyDetectionMethods, dragonOfDeath, getPluginLies, getNonFunctionToStringLies, liesHTML }
+export { documentLie, phantomDarkness, parentPhantom, lieProps, prototypeLies, lieRecords, getLies, proxyDetectionMethods, getPluginLies, getNonFunctionToStringLies, liesHTML }

@@ -8,7 +8,6 @@ export const getCanvasWebgl = async imports => {
 			attempt,
 			lieProps,
 			phantomDarkness,
-			dragonOfDeath,
 			sendToTrash,
 			logTestResult,
 			compressWebGLRenderer,
@@ -239,10 +238,6 @@ export const getCanvasWebgl = async imports => {
 			lieProps['WebGLRenderingContext.getSupportedExtensions'] ||
 			lieProps['WebGL2RenderingContext.getSupportedExtensions']
 		) || false
-		if (dragonOfDeath &&
-			dragonOfDeath.document.createElement('canvas').toDataURL() != document.createElement('canvas').toDataURL()) {
-			lied = true
-		}
 
 		// create canvas context
 		const win = phantomDarkness ? phantomDarkness : window

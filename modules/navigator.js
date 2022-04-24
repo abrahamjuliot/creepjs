@@ -15,7 +15,6 @@ export const getNavigator = async (imports, workerScope) => {
 			documentLie,
 			lieProps,
 			phantomDarkness,
-			dragonOfDeath,
 			getUserAgentPlatform,
 			braveBrowser,
 			decryptUserAgent,
@@ -238,11 +237,7 @@ export const getNavigator = async (imports, workerScope) => {
 				if (!('hardwareConcurrency' in navigator)) {
 					return undefined
 				}
-				const hardwareConcurrency = (
-					dragonOfDeath ?
-						dragonOfDeath.navigator.hardwareConcurrency :
-						phantomNavigator.hardwareConcurrency
-				)
+				const hardwareConcurrency = phantomNavigator.hardwareConcurrency
 				const navigatorHardwareConcurrency = navigator.hardwareConcurrency
 				detectLies('hardwareConcurrency', navigatorHardwareConcurrency)
 				trustInteger('hardwareConcurrency - invalid return type', navigatorHardwareConcurrency)

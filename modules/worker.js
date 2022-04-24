@@ -287,22 +287,23 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 		<div class="col-six undefined">
 			<strong>Worker</strong>
 			<div>keys (0): ${note.blocked}</div>
-			<div>permissions (0): ${note.blocked}</div>
-			<div>codecs (0):${note.blocked}</div>
-			<div>canvas 2d: ${note.blocked}</div>
-			<div>fonts (0): ${note.blocked}</div>
-			<div class="block-text-large">${note.blocked}</div>
-			<div>gpu:</div>
+			<div>lang/timezone:</div>
 			<div class="block-text">${note.blocked}</div>
-		</div>
-		<div class="col-six undefined">
-			<div>lang: ${note.blocked}</div>
-			<div>timezone: ${note.blocked}</div>
 			<div>device:</div>
 			<div class="block-text">${note.blocked}</div>
 			<div>userAgent:</div>
 			<div class="block-text">${note.blocked}</div>
 			<div>userAgentData:</div>
+			<div class="block-text">${note.blocked}</div>
+		</div>
+		<div class="col-six undefined">
+			<div>permissions (0): ${note.blocked}</div>
+			<div>codecs (0):${note.blocked}</div>
+			<div>canvas 2d: ${note.blocked}</div>
+			<div class="block-text">${note.blocked}</div>
+			<div>fonts (0): ${note.blocked}</div>
+			<div class="block-text-large">${note.blocked}</div>
+			<div>gpu:</div>
 			<div class="block-text">${note.blocked}</div>
 		</div>`
 	}
@@ -367,6 +368,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 	return `
 	<span class="time">${performanceLogger.getLog()[`${type} worker`]}</span>
 	<span class="aside-note-bottom">${scope || ''}</span>
+	
 	<div class="relative col-six${lied ? ' rejected' : ''}">
 		
 		<strong>Worker</strong><span class="hash">${hashSlice($hash)}</span>
@@ -377,6 +379,62 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 				hashMini(scopeKeys)
 			) : note.blocked
 		}</div>
+		<div class="help">lang/timezone:</div>
+		<div class="block-text help" title="WorkerNavigator.language\nWorkerNavigator.languages\nIntl.Collator.resolvedOptions()\nIntl.DateTimeFormat.resolvedOptions()\nIntl.DisplayNames.resolvedOptions()\nIntl.ListFormat.resolvedOptions()\nIntl.NumberFormat.resolvedOptions()\nIntl.PluralRules.resolvedOptions()\nIntl.RelativeTimeFormat.resolvedOptions()\nNumber.toLocaleString()\nIntl.DateTimeFormat().resolvedOptions().timeZone\nDate.getDate()\nDate.getMonth()\nDate.parse()">
+			${
+				localeEntropyIsTrusty ? `${language} (${systemCurrencyLocale})` : 
+					`${language} (<span class="bold-fail">${engineCurrencyLocale}</span>)`
+			}
+			${
+				locale === language ? '' : localeIntlEntropyIsTrusty ? ` ${locale}` : 
+					` <span class="bold-fail">${locale}</span>`
+			}
+			<br>${timezoneLocation} (${''+timezoneOffset})
+		</div>
+		<div>device:</div>
+		<div class="block-text help" title="WorkerNavigator.deviceMemory\nWorkerNavigator.hardwareConcurrency\nWorkerNavigator.platform\nWorkerNavigator.userAgent">
+			${`${system}${platform ? ` (${platform})` : ''}`}
+			${device ? `<br>${device}` : note.blocked}
+			${
+				hardwareConcurrency && deviceMemory ? `<br>cores: ${hardwareConcurrency}, ram: ${deviceMemory}` :
+				hardwareConcurrency && !deviceMemory ? `<br>cores: ${hardwareConcurrency}` :
+				!hardwareConcurrency && deviceMemory ? `<br>ram: ${deviceMemory}` : ''
+			}
+		</div>
+		<div class="relative">userAgent:${!uaPostReduction ? '' : `<span class="confidence-note">ua reduction</span>`}</div>
+		<div class="block-text help" title="WorkerNavigator.userAgent">
+			<div>${userAgent || note.unsupported}</div>
+		</div>
+		<div>userAgentData:</div>
+		<div class="block-text help" title="WorkerNavigator.userAgentData\nNavigatorUAData.getHighEntropyValues()">
+			<div>
+			${((userAgentData) => {
+				const {
+					architecture,
+					bitness,
+					brandsVersion,
+					uaFullVersion,
+					mobile,
+					model,
+					platformVersion,
+					platform
+				} = userAgentData || {}
+
+				const windowsRelease = computeWindowsRelease({ platform, platformVersion })
+
+				return !userAgentData ? note.unsupported : `
+					${(brandsVersion || []).join(',')}${uaFullVersion ? ` (${uaFullVersion})` : ''}
+					<br>${windowsRelease || `${platform} ${platformVersion}`} ${architecture ? `${architecture}${bitness ? `_${bitness}` : ''}` : ''}
+					${model ? `<br>${model}` : ''}
+					${mobile ? '<br>mobile' : ''}
+				`
+			})(userAgentData)}	
+			</div>
+		</div>
+
+	</div>
+	<div class="col-six${lied ? ' rejected' : ''}">
+
 		<div class="help" title="Permissions.query()">permissions (${''+permissionsGranted}): ${
 			!permissions || !permissionsKeys ? note.unsupported : modal(
 				'creep-worker-permissions',
@@ -399,6 +457,23 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 			`<span class="sub-hash">${hashMini(canvas2d.dataURI)}</span>` :
 			` ${note.unsupported}`
 		}</div>
+		<style>
+			.canvas-worker-image {
+				background-image: url(${canvas2d.dataURI || ''});
+				background-repeat: repeat-y;
+				height: 70px;
+		    width: 70px;
+		    border-radius: 50%;
+				background-position: center;
+			}
+		</style>
+		<div class="block-text help" title="OffscreenCanvas.convertToBlob()\nFileReader.readAsDataURL()">
+			${
+				canvas2d && canvas2d.dataURI ?
+				`<div class="canvas-worker-image"></div>` :
+					note.unsupported
+			}
+		</div>
 
 		<div class="help" title="FontFace.load()">fonts (${fontFaceLoadFonts ? count(fontFaceLoadFonts) : '0'}/${'' + fontListLen}): ${
 			!(fontFaceLoadFonts||[]).length ? note.unsupported : modal(
@@ -445,62 +520,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 			${webglVendor ? webglVendor : ''}
 			${webglRenderer ? `<br>${webglRenderer}` : note.unsupported}
 		</div>
-	</div>
-	<div class="col-six${lied ? ' rejected' : ''}">
-		
-		<div class="help" title="WorkerNavigator.language\nWorkerNavigator.languages\nIntl.Collator.resolvedOptions()\nIntl.DateTimeFormat.resolvedOptions()\nIntl.DisplayNames.resolvedOptions()\nIntl.ListFormat.resolvedOptions()\nIntl.NumberFormat.resolvedOptions()\nIntl.PluralRules.resolvedOptions()\nIntl.RelativeTimeFormat.resolvedOptions()\nNumber.toLocaleString()">lang:
-			${
-				localeEntropyIsTrusty ? `${language} (${systemCurrencyLocale})` : 
-					`${language} (<span class="bold-fail">${engineCurrencyLocale}</span>)`
-			}
-			${
-				locale === language ? '' : localeIntlEntropyIsTrusty ? ` ${locale}` : 
-					` <span class="bold-fail">${locale}</span>`
-			}
-		</div>
 
-		<div class="help" title="Intl.DateTimeFormat().resolvedOptions().timeZone\nDate.getDate()\nDate.getMonth()\nDate.parse()">timezone: ${timezoneLocation} (${''+timezoneOffset})</div>
-
-		<div>device:</div>
-		<div class="block-text help" title="WorkerNavigator.deviceMemory\nWorkerNavigator.hardwareConcurrency\nWorkerNavigator.platform\nWorkerNavigator.userAgent">
-			${`${system}${platform ? ` (${platform})` : ''}`}
-			${device ? `<br>${device}` : note.blocked}
-			${
-				hardwareConcurrency && deviceMemory ? `<br>cores: ${hardwareConcurrency}, ram: ${deviceMemory}` :
-				hardwareConcurrency && !deviceMemory ? `<br>cores: ${hardwareConcurrency}` :
-				!hardwareConcurrency && deviceMemory ? `<br>ram: ${deviceMemory}` : ''
-			}
-		</div>
-		<div class="relative">userAgent:${!uaPostReduction ? '' : `<span class="confidence-note">ua reduction</span>`}</div>
-		<div class="block-text help" title="WorkerNavigator.userAgent">
-			<div>${userAgent || note.unsupported}</div>
-		</div>
-		<div>userAgentData:</div>
-		<div class="block-text help" title="WorkerNavigator.userAgentData\nNavigatorUAData.getHighEntropyValues()">
-			<div>
-			${((userAgentData) => {
-				const {
-					architecture,
-					bitness,
-					brandsVersion,
-					uaFullVersion,
-					mobile,
-					model,
-					platformVersion,
-					platform
-				} = userAgentData || {}
-
-				const windowsRelease = computeWindowsRelease({ platform, platformVersion })
-
-				return !userAgentData ? note.unsupported : `
-					${(brandsVersion || []).join(',')}${uaFullVersion ? ` (${uaFullVersion})` : ''}
-					<br>${windowsRelease || `${platform} ${platformVersion}`} ${architecture ? `${architecture}${bitness ? `_${bitness}` : ''}` : ''}
-					${model ? `<br>${model}` : ''}
-					${mobile ? '<br>mobile' : ''}
-				`
-			})(userAgentData)}	
-			</div>
-		</div>
 	</div>
 	`
 }
