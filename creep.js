@@ -784,7 +784,11 @@ const imports = {
 				<div>${getBlankIcons()}svg emojis</div>
 				<div>${getBlankIcons()}mimeTypes</div>
 				<div>${getBlankIcons()}audio</div>
-				<div>${getBlankIcons()}canvas</div>
+				<div>${getBlankIcons()}canvas image</div>
+				<div>${getBlankIcons()}canvas blob</div>
+				<div>${getBlankIcons()}canvas paint</div>
+				<div>${getBlankIcons()}canvas text</div>
+				<div>${getBlankIcons()}canvas emoji</div>
 				<div>${getBlankIcons()}textMetrics</div>
 				<div>${getBlankIcons()}webgl</div>
 				<div>${getBlankIcons()}gpu params</div>
@@ -793,6 +797,7 @@ const imports = {
 				<div>${getBlankIcons()}voices</div>
 				<div>${getBlankIcons()}screen</div>
 				<div>${getBlankIcons()}resistance</div>
+				<div>${getBlankIcons()}device of timezone</div>
 			</div>
 			<div class="col-six icon-prediction-container">
 			</div>
