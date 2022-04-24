@@ -639,7 +639,13 @@
 	const getBotHash = (fp, imports) => {
 		const { getFeaturesLie, computeWindowsRelease } = imports;
 		const outsideFeaturesVersion = getFeaturesLie(fp);
-		const workerScopeIsBlocked = !fp.workerScope || !fp.workerScope.userAgent;
+		const workerScopeIsBlocked = (
+			!fp.workerScope ||
+			!fp.workerScope.userAgent ||
+			// only accept shared and service types
+			// device emulators can easily spoof dedicated scope
+			fp.workerScope.type == 'dedicated'
+		);
 		const liedWorkerScope = !!(fp.workerScope && fp.workerScope.lied);
 		let liedPlatformVersion = false;
 		if (fp.workerScope && fp.fonts) {
@@ -1441,8 +1447,7 @@
 	};
 
 	//const { iframeWindow: dragonFire, parent: parentDragon } = getDragonIframe({ numberOfNests: 2 })
-
-	const { iframeWindow: dragonOfDeath } = getDragonIframe({ numberOfNests: 4, kill: true });
+	//const { iframeWindow: dragonOfDeath } = getDragonIframe({ numberOfNests: 4, kill: true })
 
 	const getPrototypeLies = scope => {
 		const getEngine = () => {
@@ -3493,7 +3498,7 @@
 	<div class="relative col-six${lied ? ' rejected' : ''}">
 		<style>
 			.pixels {
-				padding: 15px;
+				padding: 19px;
 				position: relative;
 				overflow: hidden;
 			}
@@ -3603,7 +3608,6 @@
 				attempt,
 				lieProps,
 				phantomDarkness,
-				dragonOfDeath,
 				sendToTrash,
 				logTestResult,
 				compressWebGLRenderer,
@@ -3834,10 +3838,6 @@
 				lieProps['WebGLRenderingContext.getSupportedExtensions'] ||
 				lieProps['WebGL2RenderingContext.getSupportedExtensions']
 			) || false;
-			if (dragonOfDeath &&
-				dragonOfDeath.document.createElement('canvas').toDataURL() != document.createElement('canvas').toDataURL()) {
-				lied = true;
-			}
 
 			// create canvas context
 			const win = phantomDarkness ? phantomDarkness : window;
@@ -5251,7 +5251,7 @@
 		}
 	};
 
-	const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini, formatEmojiSet, performanceLogger, cssFontFamily }) => {
+	const fontsHTML = ({ fp, note, count, hashSlice, hashMini, formatEmojiSet, performanceLogger, cssFontFamily }) => {
 		if (!fp.fonts) {
 			return `
 		<div class="col-six undefined">
@@ -5289,13 +5289,13 @@
 		<strong>Fonts</strong><span class="hash">${hashSlice($hash)}</span>
 		<div class="help" title="FontFace.load()">load (${fontFaceLoadFonts ? count(fontFaceLoadFonts) : '0'}/${'' + getFontList().length}): ${platformVersion || ((fonts) => {
 			return !(fonts || []).length ? '' : (
-				((''+fonts).match(/Lucida Console/)||[]).length ? `${icon.Windows}Lucida Console...` :
-				((''+fonts).match(/Droid Sans Mono|Noto Color Emoji|Roboto/g)||[]).length == 3 ? `${icon.Linux}${icon.Android}Droid Sans Mono,Noto Color...` :
-				((''+fonts).match(/Droid Sans Mono|Roboto/g)||[]).length == 2 ? `${icon.Android}Droid Sans Mono,Roboto...` :
-				((''+fonts).match(/Noto Color Emoji|Roboto/g)||[]).length == 2 ? `${icon.CrOS}Noto Color Emoji,Roboto...` :
-				((''+fonts).match(/Noto Color Emoji/)||[]).length ? `${icon.Linux}Noto Color Emoji...` :
-				((''+fonts).match(/Arimo/)||[]).length ? `${icon.Linux}Arimo...` :
-				((''+fonts).match(/Helvetica Neue/g)||[]).length == 2 ? `${icon.Apple}Helvetica Neue...` :
+				((''+fonts).match(/Lucida Console/)||[]).length ? `${icon.Windows}Windows` :
+				((''+fonts).match(/Droid Sans Mono|Noto Color Emoji|Roboto/g)||[]).length == 3 ? `${icon.Linux}${icon.Android}Linux Android` :
+				((''+fonts).match(/Droid Sans Mono|Roboto/g)||[]).length == 2 ? `${icon.Android}Android` :
+				((''+fonts).match(/Noto Color Emoji|Roboto/g)||[]).length == 2 ? `${icon.CrOS}Chrome OS` :
+				((''+fonts).match(/Noto Color Emoji/)||[]).length ? `${icon.Linux}Linux` :
+				((''+fonts).match(/Arimo/)||[]).length ? `${icon.Linux}Linux` :
+				((''+fonts).match(/Helvetica Neue/g)||[]).length == 2 ? `${icon.Apple}Apple` :
 				`${(fonts||[])[0]}...`
 			)
 		})(fontFaceLoadFonts)}</div>
@@ -6131,7 +6131,6 @@
 				documentLie,
 				lieProps,
 				phantomDarkness,
-				dragonOfDeath,
 				getUserAgentPlatform,
 				braveBrowser,
 				decryptUserAgent,
@@ -6354,11 +6353,7 @@
 					if (!('hardwareConcurrency' in navigator)) {
 						return undefined
 					}
-					const hardwareConcurrency = (
-						dragonOfDeath ?
-							dragonOfDeath.navigator.hardwareConcurrency :
-							phantomNavigator.hardwareConcurrency
-					);
+					const hardwareConcurrency = phantomNavigator.hardwareConcurrency;
 					const navigatorHardwareConcurrency = navigator.hardwareConcurrency;
 					detectLies('hardwareConcurrency', navigatorHardwareConcurrency);
 					trustInteger('hardwareConcurrency - invalid return type', navigatorHardwareConcurrency);
@@ -8322,7 +8317,7 @@
 					const giveUpOnVoices = setTimeout(() => {
 						logTestResult({ test: 'speech', passed: false });
 						return resolve()
-					}, 1000);
+					}, 3000);
 					const data = speechSynthesis.getVoices();
 					const isChrome = ((3.141592653589793 ** -100) == 1.9275814160560204e-50);
 					const localServiceDidLoad = (data || []).find(x => x.localService);
@@ -8636,7 +8631,7 @@
 						}
 						logTestResult({ test: 'webrtc', passed: false });
 						return resolve()
-					}, 1000);
+					}, 3000);
 
 					const computeCandidate = event => {
 						const { candidate } = event.candidate || {};
@@ -8849,7 +8844,7 @@
 			
 			if (!(workerScope || {}).userAgent) {
 				scope = 'WorkerGlobalScope';
-				type = 'dedicated'; // simulators & extensions can spoof userAgent
+				type = 'dedicated'; // device emulators can easily spoof dedicated scope
 				workerScope = await getDedicatedWorker({ scriptSource }).catch(error => {
 					captureError(error);
 					console.error(error.message);
@@ -9038,22 +9033,23 @@
 		<div class="col-six undefined">
 			<strong>Worker</strong>
 			<div>keys (0): ${note.blocked}</div>
-			<div>permissions (0): ${note.blocked}</div>
-			<div>codecs (0):${note.blocked}</div>
-			<div>canvas 2d: ${note.blocked}</div>
-			<div>fonts (0): ${note.blocked}</div>
-			<div class="block-text-large">${note.blocked}</div>
-			<div>gpu:</div>
+			<div>lang/timezone:</div>
 			<div class="block-text">${note.blocked}</div>
-		</div>
-		<div class="col-six undefined">
-			<div>lang: ${note.blocked}</div>
-			<div>timezone: ${note.blocked}</div>
 			<div>device:</div>
 			<div class="block-text">${note.blocked}</div>
 			<div>userAgent:</div>
 			<div class="block-text">${note.blocked}</div>
 			<div>userAgentData:</div>
+			<div class="block-text">${note.blocked}</div>
+		</div>
+		<div class="col-six undefined">
+			<div>permissions (0): ${note.blocked}</div>
+			<div>codecs (0):${note.blocked}</div>
+			<div>canvas 2d: ${note.blocked}</div>
+			<div class="block-text">${note.blocked}</div>
+			<div>fonts (0): ${note.blocked}</div>
+			<div class="block-text-large">${note.blocked}</div>
+			<div>gpu:</div>
 			<div class="block-text">${note.blocked}</div>
 		</div>`
 		}
@@ -9118,6 +9114,7 @@
 		return `
 	<span class="time">${performanceLogger.getLog()[`${type} worker`]}</span>
 	<span class="aside-note-bottom">${scope || ''}</span>
+	
 	<div class="relative col-six${lied ? ' rejected' : ''}">
 		
 		<strong>Worker</strong><span class="hash">${hashSlice($hash)}</span>
@@ -9128,6 +9125,62 @@
 				hashMini(scopeKeys)
 			) : note.blocked
 		}</div>
+		<div class="help">lang/timezone:</div>
+		<div class="block-text help" title="WorkerNavigator.language\nWorkerNavigator.languages\nIntl.Collator.resolvedOptions()\nIntl.DateTimeFormat.resolvedOptions()\nIntl.DisplayNames.resolvedOptions()\nIntl.ListFormat.resolvedOptions()\nIntl.NumberFormat.resolvedOptions()\nIntl.PluralRules.resolvedOptions()\nIntl.RelativeTimeFormat.resolvedOptions()\nNumber.toLocaleString()\nIntl.DateTimeFormat().resolvedOptions().timeZone\nDate.getDate()\nDate.getMonth()\nDate.parse()">
+			${
+				localeEntropyIsTrusty ? `${language} (${systemCurrencyLocale})` : 
+					`${language} (<span class="bold-fail">${engineCurrencyLocale}</span>)`
+			}
+			${
+				locale === language ? '' : localeIntlEntropyIsTrusty ? ` ${locale}` : 
+					` <span class="bold-fail">${locale}</span>`
+			}
+			<br>${timezoneLocation} (${''+timezoneOffset})
+		</div>
+		<div>device:</div>
+		<div class="block-text help" title="WorkerNavigator.deviceMemory\nWorkerNavigator.hardwareConcurrency\nWorkerNavigator.platform\nWorkerNavigator.userAgent">
+			${`${system}${platform ? ` (${platform})` : ''}`}
+			${device ? `<br>${device}` : note.blocked}
+			${
+				hardwareConcurrency && deviceMemory ? `<br>cores: ${hardwareConcurrency}, ram: ${deviceMemory}` :
+				hardwareConcurrency && !deviceMemory ? `<br>cores: ${hardwareConcurrency}` :
+				!hardwareConcurrency && deviceMemory ? `<br>ram: ${deviceMemory}` : ''
+			}
+		</div>
+		<div class="relative">userAgent:${!uaPostReduction ? '' : `<span class="confidence-note">ua reduction</span>`}</div>
+		<div class="block-text help" title="WorkerNavigator.userAgent">
+			<div>${userAgent || note.unsupported}</div>
+		</div>
+		<div>userAgentData:</div>
+		<div class="block-text help" title="WorkerNavigator.userAgentData\nNavigatorUAData.getHighEntropyValues()">
+			<div>
+			${((userAgentData) => {
+				const {
+					architecture,
+					bitness,
+					brandsVersion,
+					uaFullVersion,
+					mobile,
+					model,
+					platformVersion,
+					platform
+				} = userAgentData || {};
+
+				const windowsRelease = computeWindowsRelease({ platform, platformVersion });
+
+				return !userAgentData ? note.unsupported : `
+					${(brandsVersion || []).join(',')}${uaFullVersion ? ` (${uaFullVersion})` : ''}
+					<br>${windowsRelease || `${platform} ${platformVersion}`} ${architecture ? `${architecture}${bitness ? `_${bitness}` : ''}` : ''}
+					${model ? `<br>${model}` : ''}
+					${mobile ? '<br>mobile' : ''}
+				`
+			})(userAgentData)}	
+			</div>
+		</div>
+
+	</div>
+	<div class="col-six${lied ? ' rejected' : ''}">
+
 		<div class="help" title="Permissions.query()">permissions (${''+permissionsGranted}): ${
 			!permissions || !permissionsKeys ? note.unsupported : modal(
 				'creep-worker-permissions',
@@ -9150,6 +9203,23 @@
 			`<span class="sub-hash">${hashMini(canvas2d.dataURI)}</span>` :
 			` ${note.unsupported}`
 		}</div>
+		<style>
+			.canvas-worker-image {
+				background-image: url(${canvas2d.dataURI || ''});
+				background-repeat: repeat-y;
+				height: 70px;
+		    width: 70px;
+		    border-radius: 50%;
+				background-position: center;
+			}
+		</style>
+		<div class="block-text help" title="OffscreenCanvas.convertToBlob()\nFileReader.readAsDataURL()">
+			${
+				canvas2d && canvas2d.dataURI ?
+				`<div class="canvas-worker-image"></div>` :
+					note.unsupported
+			}
+		</div>
 
 		<div class="help" title="FontFace.load()">fonts (${fontFaceLoadFonts ? count(fontFaceLoadFonts) : '0'}/${'' + fontListLen}): ${
 			!(fontFaceLoadFonts||[]).length ? note.unsupported : modal(
@@ -9196,62 +9266,7 @@
 			${webglVendor ? webglVendor : ''}
 			${webglRenderer ? `<br>${webglRenderer}` : note.unsupported}
 		</div>
-	</div>
-	<div class="col-six${lied ? ' rejected' : ''}">
-		
-		<div class="help" title="WorkerNavigator.language\nWorkerNavigator.languages\nIntl.Collator.resolvedOptions()\nIntl.DateTimeFormat.resolvedOptions()\nIntl.DisplayNames.resolvedOptions()\nIntl.ListFormat.resolvedOptions()\nIntl.NumberFormat.resolvedOptions()\nIntl.PluralRules.resolvedOptions()\nIntl.RelativeTimeFormat.resolvedOptions()\nNumber.toLocaleString()">lang:
-			${
-				localeEntropyIsTrusty ? `${language} (${systemCurrencyLocale})` : 
-					`${language} (<span class="bold-fail">${engineCurrencyLocale}</span>)`
-			}
-			${
-				locale === language ? '' : localeIntlEntropyIsTrusty ? ` ${locale}` : 
-					` <span class="bold-fail">${locale}</span>`
-			}
-		</div>
 
-		<div class="help" title="Intl.DateTimeFormat().resolvedOptions().timeZone\nDate.getDate()\nDate.getMonth()\nDate.parse()">timezone: ${timezoneLocation} (${''+timezoneOffset})</div>
-
-		<div>device:</div>
-		<div class="block-text help" title="WorkerNavigator.deviceMemory\nWorkerNavigator.hardwareConcurrency\nWorkerNavigator.platform\nWorkerNavigator.userAgent">
-			${`${system}${platform ? ` (${platform})` : ''}`}
-			${device ? `<br>${device}` : note.blocked}
-			${
-				hardwareConcurrency && deviceMemory ? `<br>cores: ${hardwareConcurrency}, ram: ${deviceMemory}` :
-				hardwareConcurrency && !deviceMemory ? `<br>cores: ${hardwareConcurrency}` :
-				!hardwareConcurrency && deviceMemory ? `<br>ram: ${deviceMemory}` : ''
-			}
-		</div>
-		<div class="relative">userAgent:${!uaPostReduction ? '' : `<span class="confidence-note">ua reduction</span>`}</div>
-		<div class="block-text help" title="WorkerNavigator.userAgent">
-			<div>${userAgent || note.unsupported}</div>
-		</div>
-		<div>userAgentData:</div>
-		<div class="block-text help" title="WorkerNavigator.userAgentData\nNavigatorUAData.getHighEntropyValues()">
-			<div>
-			${((userAgentData) => {
-				const {
-					architecture,
-					bitness,
-					brandsVersion,
-					uaFullVersion,
-					mobile,
-					model,
-					platformVersion,
-					platform
-				} = userAgentData || {};
-
-				const windowsRelease = computeWindowsRelease({ platform, platformVersion });
-
-				return !userAgentData ? note.unsupported : `
-					${(brandsVersion || []).join(',')}${uaFullVersion ? ` (${uaFullVersion})` : ''}
-					<br>${windowsRelease || `${platform} ${platformVersion}`} ${architecture ? `${architecture}${bitness ? `_${bitness}` : ''}` : ''}
-					${model ? `<br>${model}` : ''}
-					${mobile ? '<br>mobile' : ''}
-				`
-			})(userAgentData)}	
-			</div>
-		</div>
 	</div>
 	`
 	};
@@ -9341,7 +9356,7 @@
 					return isNaN(val) ? acc : (acc += val)
 				}, 0)
 			};
-			const getListSum = list => list.reduce((acc, n) => acc += n, 0);
+			
 			const getObjectSum = obj => !obj ? 0 : Object.keys(obj).reduce((acc, key) => acc += Math.abs(obj[key]), 0);
 			
 			// SVGRect
@@ -9413,7 +9428,7 @@
 			}
 		} = fp;
 		const divisor = 10000;
-		const helpTitle = `SVGTextContentElement.getExtentOfChar()\nSVGTextContentElement.getSubStringLength()\nSVGTextContentElement.getComputedTextLength()\nhash: ${hashMini(emojiSet)}\n${emojiSet.map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`;
+		const helpTitle = `SVGTextContentElement.getComputedTextLength()\nhash: ${hashMini(emojiSet)}\n${emojiSet.map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`;
 		return `
 	<div class="relative col-six${lied ? ' rejected' : ''}">
 		<span class="aside-note">${performanceLogger.getLog().svg}</span>
@@ -11077,7 +11092,7 @@
 
 			return (
 				device ? `<span class="help" title="${device}">
-				${renderFailingScore(`${icons}${title}`, score)}<strong>*</strong>
+				${renderFailingScore(`${icons}${title}`, score)}<span>*</span>
 			</span>` :
 					showVersion ? renderFailingScore(`${icons}${renderIfKnown(unknown, decrypted)}`, score) :
 						renderFailingScore(`${icons}${title}`, score)
@@ -11166,7 +11181,7 @@
 		<div class="col-six">
 			<strong>Prediction</strong>
 			<div class="ellipsis relative">${
-		deviceName ? `<span class="user-agent"><strong>*</strong>${deviceName}</span>` : getBlankIcons()
+		deviceName ? `<span class="user-agent"><span>*</span>${deviceName}</span>` : getBlankIcons()
 		}</div>
 			<div class="ellipsis relative">
 				<span id="window-entropy"></span>${
@@ -11220,7 +11235,7 @@
 			<div class="ellipsis relative">
 				<span id="canvas-entropy"></span>${
 		!hasValue(canvasSystem) ? unknownHTML('canvas image') :
-			getTemplate({ title: 'canvas', agent: canvasSystem })
+			getTemplate({ title: 'canvas image', agent: canvasSystem })
 		}</div>
 			<div class="ellipsis relative">
 				<span id="canvasBlob-entropy"></span>${
@@ -11403,7 +11418,6 @@
 			proxyDetectionMethods,
 			phantomDarkness,
 			parentPhantom,
-			dragonOfDeath,
 			getPluginLies,
 			getKnownAudio,
 			attemptWindows11UserAgent,
