@@ -108,35 +108,19 @@ export const getBestWorkerScope = async imports => {
 		if (!(workerScope || {}).userAgent) {
 			return
 		}
-		const { canvas2d } = workerScope || {}
 		workerScope.system = getOS(workerScope.userAgent)
 		workerScope.device = getUserAgentPlatform({ userAgent: workerScope.userAgent })
-		workerScope.canvas2d = { dataURI: canvas2d }
 		workerScope.type = type
 		workerScope.scope = scope
 
 		// detect lies 
 		const {
-			fontSystemClass,
 			system,
 			userAgent,
 			userAgentData,
 			platform
 		} = workerScope || {}
 		
-		// font system lie
-		const fontSystemLie = fontSystemClass && (
-			/^((i(pad|phone|os))|mac)$/i.test(system) && fontSystemClass != 'Apple'  ? true :
-				/^(windows)$/i.test(system) && fontSystemClass != 'Windows'  ? true :
-					/^(linux|chrome os)$/i.test(system) && fontSystemClass != 'Linux'  ? true :
-						/^(android)$/i.test(system) && fontSystemClass != 'Android'  ? true :
-							false
-		)
-		if (fontSystemLie) {
-			workerScope.lied = true
-			workerScope.lies.systemFonts = `${fontSystemClass} fonts and ${system} user agent do not match`
-			documentLie(workerScope.scope, workerScope.lies.systemFonts)
-		}
 
 		// prototype lies
 		if (workerScope.lies.proto) {
@@ -281,7 +265,7 @@ export const getBestWorkerScope = async imports => {
 	}
 }
 
-export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, computeWindowsRelease, performanceLogger, formatEmojiSet, cssFontFamily }) => {
+export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, computeWindowsRelease, performanceLogger }) => {
 	if (!fp.workerScope) {
 		return `
 		<div class="col-six undefined">
@@ -291,18 +275,12 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 			<div class="block-text">${note.blocked}</div>
 			<div>device:</div>
 			<div class="block-text">${note.blocked}</div>
+		</div>
+		<div class="col-six undefined">
 			<div>userAgent:</div>
 			<div class="block-text">${note.blocked}</div>
 			<div>userAgentData:</div>
 			<div class="block-text">${note.blocked}</div>
-		</div>
-		<div class="col-six undefined">
-			<div>permissions (0): ${note.blocked}</div>
-			<div>codecs (0):${note.blocked}</div>
-			<div>canvas 2d: ${note.blocked}</div>
-			<div class="block-text">${note.blocked}</div>
-			<div>fonts (0): ${note.blocked}</div>
-			<div class="block-text-large">${note.blocked}</div>
 			<div>gpu:</div>
 			<div class="block-text">${note.blocked}</div>
 		</div>`
@@ -323,23 +301,12 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 		hardwareConcurrency,
 		language,
 		languages,
-		mediaCapabilities,
 		platform,
 		userAgent,
 		uaPostReduction,
-		permissions,
-		canvas2d,
-		textMetricsSystemSum,
-		textMetricsSystemClass,
 		webglRenderer,
 		webglVendor,
 		gpu,
-		fontFaceLoadFonts,
-		fontSystemClass,
-		fontListLen,
-		fontPlatformVersion,
-		fontApps,
-		emojiSet,
 		userAgentData,
 		type,
 		scope,
@@ -347,12 +314,6 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 		device,
 		$hash
 	} = data || {}
-
-	const codecKeys = Object.keys(mediaCapabilities || {})
-	const permissionsKeys = Object.keys(permissions || {})
-	const permissionsGranted = (
-		permissions && permissions.granted ? permissions.granted.length : 0
-	)
 
 	const {
 		parts,
@@ -362,9 +323,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 		grade: confidenceGrade,
 		compressedGPU
 	} = gpu || {}
-
-	const fontFaceLoadHash = hashMini(fontFaceLoadFonts)
-	const blockHelpTitle = `FontFace.load()\nOffscreenCanvasRenderingContext2D.measureText()\nhash: ${hashMini(emojiSet)}\n${(emojiSet||[]).map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`
+	
 	return `
 	<span class="time">${performanceLogger.getLog()[`${type} worker`]}</span>
 	<span class="aside-note-bottom">${scope || ''}</span>
@@ -401,10 +360,14 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 				!hardwareConcurrency && deviceMemory ? `<br>ram: ${deviceMemory}` : ''
 			}
 		</div>
+	</div>
+	<div class="col-six${lied ? ' rejected' : ''}">
+
 		<div class="relative">userAgent:${!uaPostReduction ? '' : `<span class="confidence-note">ua reduction</span>`}</div>
 		<div class="block-text help" title="WorkerNavigator.userAgent">
 			<div>${userAgent || note.unsupported}</div>
 		</div>
+
 		<div>userAgentData:</div>
 		<div class="block-text help" title="WorkerNavigator.userAgentData\nNavigatorUAData.getHighEntropyValues()">
 			<div>
@@ -431,86 +394,6 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 			})(userAgentData)}	
 			</div>
 		</div>
-
-	</div>
-	<div class="col-six${lied ? ' rejected' : ''}">
-
-		<div class="help" title="Permissions.query()">permissions (${''+permissionsGranted}): ${
-			!permissions || !permissionsKeys ? note.unsupported : modal(
-				'creep-worker-permissions',
-				permissionsKeys.map(key => `<div class="perm perm-${key}"><strong>${key}</strong>:<br>${permissions[key].join('<br>')}</div>`).join(''),
-				hashMini(permissions)
-			)
-		}</div>
-
-		<div class="help" title="MediaCapabilities.decodingInfo()">codecs (${''+codecKeys.length}): ${
-		!mediaCapabilities || !codecKeys.length ? note.unsupported :
-			modal(
-				`creep-worker-media-codecs`,
-				Object.keys(mediaCapabilities).map(key => `${key}: ${mediaCapabilities[key].join(', ')}`).join('<br>'),
-				hashMini(mediaCapabilities)
-			)
-		}</div>
-
-		<div class="help" title="OffscreenCanvas.convertToBlob()\nFileReader.readAsDataURL()">canvas 2d:${
-			canvas2d && canvas2d.dataURI ?
-			`<span class="sub-hash">${hashMini(canvas2d.dataURI)}</span>` :
-			` ${note.unsupported}`
-		}</div>
-		<style>
-			.canvas-worker-image {
-				background-image: url(${canvas2d.dataURI || ''});
-				background-repeat: repeat-y;
-				height: 70px;
-		    width: 70px;
-		    border-radius: 50%;
-				background-position: center;
-			}
-		</style>
-		<div class="block-text help" title="OffscreenCanvas.convertToBlob()\nFileReader.readAsDataURL()">
-			${
-				canvas2d && canvas2d.dataURI ?
-				`<div class="canvas-worker-image"></div>` :
-					note.unsupported
-			}
-		</div>
-
-		<div class="help" title="FontFace.load()">fonts (${fontFaceLoadFonts ? count(fontFaceLoadFonts) : '0'}/${'' + fontListLen}): ${
-			!(fontFaceLoadFonts||[]).length ? note.unsupported : modal(
-				'creep-worker-fonts',
-				fontFaceLoadFonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>'),
-				fontFaceLoadHash
-			)
-		}</div>
-
-		<div class="block-text-large help relative" title="${blockHelpTitle}">
-			<div>
-				${fontPlatformVersion ? `platform: ${fontPlatformVersion}` : ((fonts) => {
-					const icon = {
-						'Linux': '<span class="icon linux"></span>',
-						'Apple': '<span class="icon apple"></span>',
-						'Windows': '<span class="icon windows"></span>',
-						'Android': '<span class="icon android"></span>',
-						'CrOS': '<span class="icon cros"></span>'
-					}
-					return !(fonts || []).length ? '' : (
-						((''+fonts).match(/Lucida Console/)||[]).length ? `${icon.Windows}Lucida Console...` :
-						((''+fonts).match(/Droid Sans Mono|Noto Color Emoji|Roboto/g)||[]).length == 3 ? `${icon.Linux}${icon.Android}Droid Sans Mono,Noto Color...` :
-						((''+fonts).match(/Droid Sans Mono|Roboto/g)||[]).length == 2 ? `${icon.Android}Droid Sans Mono,Roboto...` :
-						((''+fonts).match(/Noto Color Emoji|Roboto/g)||[]).length == 2 ? `${icon.CrOS}Noto Color Emoji,Roboto...` :
-						((''+fonts).match(/Noto Color Emoji/)||[]).length ? `${icon.Linux}Noto Color Emoji...` :
-						((''+fonts).match(/Arimo/)||[]).length ? `${icon.Linux}Arimo...` :
-						((''+fonts).match(/Helvetica Neue/g)||[]).length == 2 ? `${icon.Apple}Helvetica Neue...` :
-						`${(fonts||[])[0]}...`
-					)
-				})(fontFaceLoadFonts)}
-				${(fontApps || []).length ? `<br>apps: ${(fontApps || []).join(', ')}` : ''}
-				
-				<br><span>${textMetricsSystemSum || note.unsupported}</span>
-				<br><span class="grey jumbo" style="font-family: ${cssFontFamily}">${formatEmojiSet(emojiSet)}</span>
-			</div>
-		</div>
-
 		<div class="relative">${
 			confidence ? `<span class="confidence-note">confidence: <span class="scale-up grade-${confidenceGrade}">${confidence}</span></span>` : ''
 		}gpu:</div>

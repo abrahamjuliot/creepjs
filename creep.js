@@ -508,11 +508,6 @@ const imports = {
 				)
 		),
 		workerScope: !fp.workerScope || fp.workerScope.lied ? undefined : {
-			canvas2d: (
-				(fp.canvas2d && fp.canvas2d.lied) ? undefined : // distrust ungoogled-chromium, brave, firefox, tor browser 
-				fp.workerScope.canvas2d
-			),
-			textMetricsSystemSum: fp.workerScope.textMetricsSystemSum,
 			deviceMemory: (
 				braveFingerprintingBlocking ? undefined : fp.workerScope.deviceMemory
 			),
@@ -532,17 +527,12 @@ const imports = {
 			webglVendor: (
 				(fp.workerScope.gpu.confidence != 'low') ? fp.workerScope.webglVendor : undefined
 			),
-			fontFaceLoadFonts: fp.workerScope.fontFaceLoadFonts,
-			fontSystemClass: fp.workerScope.fontSystemClass,
-			fontPlatformVersion: fp.workerScope.fontPlatformVersion,
-			fontApps: fp.workerScope.fontApps,
 			userAgentData: {
 				...fp.workerScope.userAgentData,
 				// loose
 				brandsVersion: undefined, 
 				uaFullVersion: undefined
 			},
-			mediaCapabilities: fp.workerScope.mediaCapabilities,
 		},
 		media: fp.media,
 		canvas2d: (canvas2d => {
@@ -622,7 +612,7 @@ const imports = {
 		capturedErrors: !!errorsLen,
 		lies: !!liesLen,
 		resistance: fp.resistance || undefined,
-		forceRenew: 1650785039602
+		forceRenew: 1650838684414
 	}
 
 	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f')

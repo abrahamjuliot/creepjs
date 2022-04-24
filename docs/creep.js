@@ -840,16 +840,9 @@
 			'windowFeatures.keys',
 			'windowFeatures.moz',
 			'windowFeatures.webkit',
-			'workerScope.canvas2d',
 			'workerScope.device',
 			'workerScope.deviceMemory',
-			'workerScope.emojiSet',
 			'workerScope.engineCurrencyLocale',
-			'workerScope.fontApps',
-			'workerScope.fontFaceLoadFonts',
-			'workerScope.fontListLen',
-			'workerScope.fontPlatformVersion',
-			'workerScope.fontSystemClass',
 			'workerScope.gpu',
 			'workerScope.hardwareConcurrency',
 			'workerScope.language',
@@ -858,14 +851,11 @@
 			'workerScope.locale',
 			'workerScope.localeEntropyIsTrusty',
 			'workerScope.localeIntlEntropyIsTrusty',
-			'workerScope.mediaCapabilities',
-			'workerScope.permissions',
 			'workerScope.platform',
 			'workerScope.scope',
 			'workerScope.scopeKeys',
 			'workerScope.system',
 			'workerScope.systemCurrencyLocale',
-			'workerScope.textMetricsSystemSum',
 			'workerScope.timezoneLocation',
 			'workerScope.timezoneOffset',
 			'workerScope.type',
@@ -3179,6 +3169,21 @@
 	  return
 	};
 
+	const emojifyCanvas = ({ canvas, context, cssFontFamily }) => {
+		const width = 140;
+		const height = 30;
+		canvas.width = width;
+		canvas.height = height;
+		context.font = `5px ${cssFontFamily.replace(/!important/gm, '')}`;
+		context.fillText(`😀☺🤵‍♂️♨☸⚧⁉ℹ🏳️‍⚧️🥲☹☠🧑‍🦰🧏‍♂️⛷🧑‍🤝‍🧑☘⛰`, 0, 5);
+		context.fillText(`⛩⛴✈⏱⛈☂⛱☃☄⛸♟⛑⌨✉✏👩‍❤️‍`, 0, 10);
+		context.fillText(`💋‍👨👨‍👩‍👧‍👦👨‍👩‍👦😀©®™👁️‍�`, 0, 15);
+		context.fillText(`�️✒✂⛏⚒⚔⚙⛓⚗⚰⚱⚠☢☣⬆↗➡⬅`, 0, 20);
+		context.fillText(`⚛✡✝☦▶⏭⏯⏏♀♂✖〰⚕⚜✔✳❇◼▪❣`, 0, 25);
+		context.fillText(`❤✌☝✍❄⚖↪☯☪☮☑✴🅰🅿`, 0, 30);
+		return
+	}; 
+		
 	const getCanvas2d = async imports => {
 
 		const {
@@ -3256,17 +3261,11 @@
 			
 			let canvasOffscreen;
 			try {
-				const width = 50;
-				const height = 50;
-				canvasOffscreen = new OffscreenCanvas(width, height);
-				const contextOffscreen = canvasOffscreen.getContext('2d');
-				paintCanvas({
+				canvasOffscreen = new OffscreenCanvas(140, 30);
+				emojifyCanvas({
 					canvas: canvasOffscreen,
-					context: contextOffscreen,
-					strokeText: true,
-					cssFontFamily,
-					area: { width, height },
-					rounds: 10,
+					context: canvasOffscreen.getContext('2d'),
+					cssFontFamily
 				});
 			}
 			catch (error) { }
@@ -3281,13 +3280,12 @@
 				})),
 				getFileReaderData(canvasOffscreen && await attempt(() => canvasOffscreen.convertToBlob()))
 			]);
-			const dataURL = fileReaderData || {};
-			const dataURLOffscreen = fileReaderDataOffscreen || {};
+			
 			const blob = {
-				readAsDataURL: dataURL,
+				readAsDataURL: fileReaderData,
 			};
 			const blobOffscreen = {
-				readAsDataURL: dataURLOffscreen,
+				readAsDataURL: fileReaderDataOffscreen,
 			};
 
 			await queueEvent(timer);
@@ -3452,34 +3450,40 @@
 			readAsDataURL,
 		} = blob || {};
 
+		
+		
+		const blobDataURI = (blob || {}).readAsDataURL;
+		const blobOffscreenDataURI = (blobOffscreen || {}).readAsDataURL;
 		const hash = {
 			dataURI: hashMini(dataURI),
-			blobDataURI: hashMini(readAsDataURL)
-		};
-		
-		const decorate = diff => `<span class="bold-fail">${diff}</span>`;
-		const getBlobtemplate = blob => {
-			const {
-				readAsDataURL,
-			} = blob || {};
-			return `
-			<br>readAsDataURL: ${
-				!readAsDataURL ? note.unsupported : getDiffs({
-					stringA: hash.blobDataURI,
-					stringB: hashMini(readAsDataURL),
-					charDiff: true,
-					decorate
-				})
-			}
-		`
+			blobDataURI: hashMini(blobDataURI),
+			blobOffscreenDataURI: hashMini(blobOffscreenDataURI),
+			textURI: hashMini(textURI),
+			emojiURI: hashMini(emojiURI),
+			paintURI: hashMini(paintURI)
 		};
 		const dataTemplate = `
-		${dataURI ? `<div class="icon-pixel canvas-data"></div>` : ''}
-		<br>toDataURL: ${!dataURI ? note.blocked : hash.dataURI}
-		<br><br><strong>HTMLCanvasElement.toBlob</strong>
-		${getBlobtemplate(blob)}
-		<br><br><strong>OffscreenCanvas.convertToBlob</strong>
-		${getBlobtemplate(blobOffscreen)}
+		${textURI ? `<div class="icon-pixel text-image"></div>` : ''}
+		<br>text: ${!textURI ? note.blocked : hash.textURI}
+		
+		<br><br>
+		${emojiURI ? `<div class="icon-pixel emoji-image"></div>` : ''}
+		<br>emoji: ${!emojiURI ? note.blocked : hash.emojiURI}
+
+		<br><br>
+		${paintURI ? `<div class="icon-pixel paint-image"></div>` : ''}
+		<br>paint: ${!paintURI ? note.blocked : hash.paintURI}
+
+		<br><br>
+		${dataURI ? `<div class="icon-pixel combined-image"></div>` : ''}
+		${dataURI ? `<div class="icon-pixel combined-image-blob"></div>` : ''}
+		<br>combined: ${!dataURI ? note.blocked : hash.dataURI}
+		<br>toBlob (combined): ${!blobDataURI ? note.unsupported : hash.blobDataURI}
+		<br><br>
+		${blobOffscreenDataURI ? `<div class="icon-pixel offscreen-image"></div>` : ''}
+		<br>convertToBlob (emoji storm): ${
+			!blobOffscreenDataURI ? note.unsupported : hash.blobOffscreenDataURI
+		}		
 	`;
 
 		// rgba: "b, g, gb, r, rb, rg, rgb"
@@ -3511,9 +3515,11 @@
 			.pixel-image,
 			.pixel-image-random,
 			.combined-image,
+			.combined-image-blob,
 			.paint-image, 
 			.text-image, 
-			.emoji-image {
+			.emoji-image,
+			.offscreen-image {
 				max-width: 35px;
     		border-radius: 50%;
 				transform: scale(1.5);
@@ -3535,6 +3541,14 @@
 			}
 			.combined-image {
 				background-image: url(${dataURI})
+			}
+			.combined-image-blob {
+				background-image: url(${blobDataURI})
+			}
+			.offscreen-image {
+				background-image: url(${blobOffscreenDataURI});
+				background-repeat: repeat-y;
+				background-size: 70px;
 			}
 			.rgba {
 				width: 8px;
@@ -3582,8 +3596,10 @@
 			${emojiURI ? `<div class="icon-pixel emoji-image"></div>` : ''}
 			${paintURI ? `<div class="icon-pixel paint-image"></div>` : ''}
 			${dataURI ? `<div class="icon-pixel combined-image"></div>` : ''}
+
 		</div>
 		<div class="icon-pixel-container pixels">
+			${blobOffscreenDataURI ? `<div class="icon-pixel offscreen-image"></div>` : ''}
 			<div class="icon-pixel pixel-image-random"></div>
 			${rgba ? `<div class="icon-pixel pixel-image"></div>` : ''}
 		</div>
@@ -8854,35 +8870,19 @@
 			if (!(workerScope || {}).userAgent) {
 				return
 			}
-			const { canvas2d } = workerScope || {};
 			workerScope.system = getOS(workerScope.userAgent);
 			workerScope.device = getUserAgentPlatform({ userAgent: workerScope.userAgent });
-			workerScope.canvas2d = { dataURI: canvas2d };
 			workerScope.type = type;
 			workerScope.scope = scope;
 
 			// detect lies 
 			const {
-				fontSystemClass,
 				system,
 				userAgent,
 				userAgentData,
 				platform
 			} = workerScope || {};
 			
-			// font system lie
-			const fontSystemLie = fontSystemClass && (
-				/^((i(pad|phone|os))|mac)$/i.test(system) && fontSystemClass != 'Apple'  ? true :
-					/^(windows)$/i.test(system) && fontSystemClass != 'Windows'  ? true :
-						/^(linux|chrome os)$/i.test(system) && fontSystemClass != 'Linux'  ? true :
-							/^(android)$/i.test(system) && fontSystemClass != 'Android'  ? true :
-								false
-			);
-			if (fontSystemLie) {
-				workerScope.lied = true;
-				workerScope.lies.systemFonts = `${fontSystemClass} fonts and ${system} user agent do not match`;
-				documentLie(workerScope.scope, workerScope.lies.systemFonts);
-			}
 
 			// prototype lies
 			if (workerScope.lies.proto) {
@@ -9027,7 +9027,7 @@
 		}
 	};
 
-	const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, computeWindowsRelease, performanceLogger, formatEmojiSet, cssFontFamily }) => {
+	const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, computeWindowsRelease, performanceLogger }) => {
 		if (!fp.workerScope) {
 			return `
 		<div class="col-six undefined">
@@ -9037,18 +9037,12 @@
 			<div class="block-text">${note.blocked}</div>
 			<div>device:</div>
 			<div class="block-text">${note.blocked}</div>
+		</div>
+		<div class="col-six undefined">
 			<div>userAgent:</div>
 			<div class="block-text">${note.blocked}</div>
 			<div>userAgentData:</div>
 			<div class="block-text">${note.blocked}</div>
-		</div>
-		<div class="col-six undefined">
-			<div>permissions (0): ${note.blocked}</div>
-			<div>codecs (0):${note.blocked}</div>
-			<div>canvas 2d: ${note.blocked}</div>
-			<div class="block-text">${note.blocked}</div>
-			<div>fonts (0): ${note.blocked}</div>
-			<div class="block-text-large">${note.blocked}</div>
 			<div>gpu:</div>
 			<div class="block-text">${note.blocked}</div>
 		</div>`
@@ -9069,23 +9063,12 @@
 			hardwareConcurrency,
 			language,
 			languages,
-			mediaCapabilities,
 			platform,
 			userAgent,
 			uaPostReduction,
-			permissions,
-			canvas2d,
-			textMetricsSystemSum,
-			textMetricsSystemClass,
 			webglRenderer,
 			webglVendor,
 			gpu,
-			fontFaceLoadFonts,
-			fontSystemClass,
-			fontListLen,
-			fontPlatformVersion,
-			fontApps,
-			emojiSet,
 			userAgentData,
 			type,
 			scope,
@@ -9093,12 +9076,6 @@
 			device,
 			$hash
 		} = data || {};
-
-		const codecKeys = Object.keys(mediaCapabilities || {});
-		const permissionsKeys = Object.keys(permissions || {});
-		const permissionsGranted = (
-			permissions && permissions.granted ? permissions.granted.length : 0
-		);
 
 		const {
 			parts,
@@ -9108,9 +9085,7 @@
 			grade: confidenceGrade,
 			compressedGPU
 		} = gpu || {};
-
-		const fontFaceLoadHash = hashMini(fontFaceLoadFonts);
-		const blockHelpTitle = `FontFace.load()\nOffscreenCanvasRenderingContext2D.measureText()\nhash: ${hashMini(emojiSet)}\n${(emojiSet||[]).map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`;
+		
 		return `
 	<span class="time">${performanceLogger.getLog()[`${type} worker`]}</span>
 	<span class="aside-note-bottom">${scope || ''}</span>
@@ -9147,10 +9122,14 @@
 				!hardwareConcurrency && deviceMemory ? `<br>ram: ${deviceMemory}` : ''
 			}
 		</div>
+	</div>
+	<div class="col-six${lied ? ' rejected' : ''}">
+
 		<div class="relative">userAgent:${!uaPostReduction ? '' : `<span class="confidence-note">ua reduction</span>`}</div>
 		<div class="block-text help" title="WorkerNavigator.userAgent">
 			<div>${userAgent || note.unsupported}</div>
 		</div>
+
 		<div>userAgentData:</div>
 		<div class="block-text help" title="WorkerNavigator.userAgentData\nNavigatorUAData.getHighEntropyValues()">
 			<div>
@@ -9177,86 +9156,6 @@
 			})(userAgentData)}	
 			</div>
 		</div>
-
-	</div>
-	<div class="col-six${lied ? ' rejected' : ''}">
-
-		<div class="help" title="Permissions.query()">permissions (${''+permissionsGranted}): ${
-			!permissions || !permissionsKeys ? note.unsupported : modal(
-				'creep-worker-permissions',
-				permissionsKeys.map(key => `<div class="perm perm-${key}"><strong>${key}</strong>:<br>${permissions[key].join('<br>')}</div>`).join(''),
-				hashMini(permissions)
-			)
-		}</div>
-
-		<div class="help" title="MediaCapabilities.decodingInfo()">codecs (${''+codecKeys.length}): ${
-		!mediaCapabilities || !codecKeys.length ? note.unsupported :
-			modal(
-				`creep-worker-media-codecs`,
-				Object.keys(mediaCapabilities).map(key => `${key}: ${mediaCapabilities[key].join(', ')}`).join('<br>'),
-				hashMini(mediaCapabilities)
-			)
-		}</div>
-
-		<div class="help" title="OffscreenCanvas.convertToBlob()\nFileReader.readAsDataURL()">canvas 2d:${
-			canvas2d && canvas2d.dataURI ?
-			`<span class="sub-hash">${hashMini(canvas2d.dataURI)}</span>` :
-			` ${note.unsupported}`
-		}</div>
-		<style>
-			.canvas-worker-image {
-				background-image: url(${canvas2d.dataURI || ''});
-				background-repeat: repeat-y;
-				height: 70px;
-		    width: 70px;
-		    border-radius: 50%;
-				background-position: center;
-			}
-		</style>
-		<div class="block-text help" title="OffscreenCanvas.convertToBlob()\nFileReader.readAsDataURL()">
-			${
-				canvas2d && canvas2d.dataURI ?
-				`<div class="canvas-worker-image"></div>` :
-					note.unsupported
-			}
-		</div>
-
-		<div class="help" title="FontFace.load()">fonts (${fontFaceLoadFonts ? count(fontFaceLoadFonts) : '0'}/${'' + fontListLen}): ${
-			!(fontFaceLoadFonts||[]).length ? note.unsupported : modal(
-				'creep-worker-fonts',
-				fontFaceLoadFonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>'),
-				fontFaceLoadHash
-			)
-		}</div>
-
-		<div class="block-text-large help relative" title="${blockHelpTitle}">
-			<div>
-				${fontPlatformVersion ? `platform: ${fontPlatformVersion}` : ((fonts) => {
-					const icon = {
-						'Linux': '<span class="icon linux"></span>',
-						'Apple': '<span class="icon apple"></span>',
-						'Windows': '<span class="icon windows"></span>',
-						'Android': '<span class="icon android"></span>',
-						'CrOS': '<span class="icon cros"></span>'
-					};
-					return !(fonts || []).length ? '' : (
-						((''+fonts).match(/Lucida Console/)||[]).length ? `${icon.Windows}Lucida Console...` :
-						((''+fonts).match(/Droid Sans Mono|Noto Color Emoji|Roboto/g)||[]).length == 3 ? `${icon.Linux}${icon.Android}Droid Sans Mono,Noto Color...` :
-						((''+fonts).match(/Droid Sans Mono|Roboto/g)||[]).length == 2 ? `${icon.Android}Droid Sans Mono,Roboto...` :
-						((''+fonts).match(/Noto Color Emoji|Roboto/g)||[]).length == 2 ? `${icon.CrOS}Noto Color Emoji,Roboto...` :
-						((''+fonts).match(/Noto Color Emoji/)||[]).length ? `${icon.Linux}Noto Color Emoji...` :
-						((''+fonts).match(/Arimo/)||[]).length ? `${icon.Linux}Arimo...` :
-						((''+fonts).match(/Helvetica Neue/g)||[]).length == 2 ? `${icon.Apple}Helvetica Neue...` :
-						`${(fonts||[])[0]}...`
-					)
-				})(fontFaceLoadFonts)}
-				${(fontApps || []).length ? `<br>apps: ${(fontApps || []).join(', ')}` : ''}
-				
-				<br><span>${textMetricsSystemSum || note.unsupported}</span>
-				<br><span class="grey jumbo" style="font-family: ${cssFontFamily}">${formatEmojiSet(emojiSet)}</span>
-			</div>
-		</div>
-
 		<div class="relative">${
 			confidence ? `<span class="confidence-note">confidence: <span class="scale-up grade-${confidenceGrade}">${confidence}</span></span>` : ''
 		}gpu:</div>
@@ -11832,11 +11731,6 @@
 					)
 			),
 			workerScope: !fp.workerScope || fp.workerScope.lied ? undefined : {
-				canvas2d: (
-					(fp.canvas2d && fp.canvas2d.lied) ? undefined : // distrust ungoogled-chromium, brave, firefox, tor browser 
-					fp.workerScope.canvas2d
-				),
-				textMetricsSystemSum: fp.workerScope.textMetricsSystemSum,
 				deviceMemory: (
 					braveFingerprintingBlocking ? undefined : fp.workerScope.deviceMemory
 				),
@@ -11856,17 +11750,12 @@
 				webglVendor: (
 					(fp.workerScope.gpu.confidence != 'low') ? fp.workerScope.webglVendor : undefined
 				),
-				fontFaceLoadFonts: fp.workerScope.fontFaceLoadFonts,
-				fontSystemClass: fp.workerScope.fontSystemClass,
-				fontPlatformVersion: fp.workerScope.fontPlatformVersion,
-				fontApps: fp.workerScope.fontApps,
 				userAgentData: {
 					...fp.workerScope.userAgentData,
 					// loose
 					brandsVersion: undefined, 
 					uaFullVersion: undefined
 				},
-				mediaCapabilities: fp.workerScope.mediaCapabilities,
 			},
 			media: fp.media,
 			canvas2d: (canvas2d => {
@@ -11946,7 +11835,7 @@
 			capturedErrors: !!errorsLen,
 			lies: !!liesLen,
 			resistance: fp.resistance || undefined,
-			forceRenew: 1650785039602
+			forceRenew: 1650838684414
 		};
 
 		console.log('%c✔ stable fingerprint passed', 'color:#4cca9f');

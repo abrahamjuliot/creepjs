@@ -284,6 +284,21 @@ const paintCanvas = ({
   return
 }
 
+const emojifyCanvas = ({ canvas, context, cssFontFamily }) => {
+	const width = 140
+	const height = 30
+	canvas.width = width
+	canvas.height = height
+	context.font = `5px ${cssFontFamily.replace(/!important/gm, '')}`
+	context.fillText(`😀☺🤵‍♂️♨☸⚧⁉ℹ🏳️‍⚧️🥲☹☠🧑‍🦰🧏‍♂️⛷🧑‍🤝‍🧑☘⛰`, 0, 5)
+	context.fillText(`⛩⛴✈⏱⛈☂⛱☃☄⛸♟⛑⌨✉✏👩‍❤️‍`, 0, 10)
+	context.fillText(`💋‍👨👨‍👩‍👧‍👦👨‍👩‍👦😀©®™👁️‍�`, 0, 15)
+	context.fillText(`�️✒✂⛏⚒⚔⚙⛓⚗⚰⚱⚠☢☣⬆↗➡⬅`, 0, 20)
+	context.fillText(`⚛✡✝☦▶⏭⏯⏏♀♂✖〰⚕⚜✔✳❇◼▪❣`, 0, 25)
+	context.fillText(`❤✌☝✍❄⚖↪☯☪☮☑✴🅰🅿`, 0, 30)
+	return
+} 
+	
 export const getCanvas2d = async imports => {
 
 	const {
@@ -361,17 +376,11 @@ export const getCanvas2d = async imports => {
 		
 		let canvasOffscreen
 		try {
-			const width = 50
-			const height = 50
-			canvasOffscreen = new OffscreenCanvas(width, height)
-			const contextOffscreen = canvasOffscreen.getContext('2d')
-			paintCanvas({
+			canvasOffscreen = new OffscreenCanvas(140, 30)
+			emojifyCanvas({
 				canvas: canvasOffscreen,
-				context: contextOffscreen,
-				strokeText: true,
-				cssFontFamily,
-				area: { width, height },
-				rounds: 10,
+				context: canvasOffscreen.getContext('2d'),
+				cssFontFamily
 			})
 		}
 		catch (error) { }
@@ -386,13 +395,12 @@ export const getCanvas2d = async imports => {
 			})),
 			getFileReaderData(canvasOffscreen && await attempt(() => canvasOffscreen.convertToBlob()))
 		])
-		const dataURL = fileReaderData || {}
-		const dataURLOffscreen = fileReaderDataOffscreen || {}
+		
 		const blob = {
-			readAsDataURL: dataURL,
+			readAsDataURL: fileReaderData,
 		}
 		const blobOffscreen = {
-			readAsDataURL: dataURLOffscreen,
+			readAsDataURL: fileReaderDataOffscreen,
 		}
 
 		await queueEvent(timer)
@@ -557,34 +565,40 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 		readAsDataURL,
 	} = blob || {}
 
+	
+	
+	const blobDataURI = (blob || {}).readAsDataURL
+	const blobOffscreenDataURI = (blobOffscreen || {}).readAsDataURL
 	const hash = {
 		dataURI: hashMini(dataURI),
-		blobDataURI: hashMini(readAsDataURL)
-	}
-	
-	const decorate = diff => `<span class="bold-fail">${diff}</span>`
-	const getBlobtemplate = blob => {
-		const {
-			readAsDataURL,
-		} = blob || {}
-		return `
-			<br>readAsDataURL: ${
-				!readAsDataURL ? note.unsupported : getDiffs({
-					stringA: hash.blobDataURI,
-					stringB: hashMini(readAsDataURL),
-					charDiff: true,
-					decorate
-				})
-			}
-		`
+		blobDataURI: hashMini(blobDataURI),
+		blobOffscreenDataURI: hashMini(blobOffscreenDataURI),
+		textURI: hashMini(textURI),
+		emojiURI: hashMini(emojiURI),
+		paintURI: hashMini(paintURI)
 	}
 	const dataTemplate = `
-		${dataURI ? `<div class="icon-pixel canvas-data"></div>` : ''}
-		<br>toDataURL: ${!dataURI ? note.blocked : hash.dataURI}
-		<br><br><strong>HTMLCanvasElement.toBlob</strong>
-		${getBlobtemplate(blob)}
-		<br><br><strong>OffscreenCanvas.convertToBlob</strong>
-		${getBlobtemplate(blobOffscreen)}
+		${textURI ? `<div class="icon-pixel text-image"></div>` : ''}
+		<br>text: ${!textURI ? note.blocked : hash.textURI}
+		
+		<br><br>
+		${emojiURI ? `<div class="icon-pixel emoji-image"></div>` : ''}
+		<br>emoji: ${!emojiURI ? note.blocked : hash.emojiURI}
+
+		<br><br>
+		${paintURI ? `<div class="icon-pixel paint-image"></div>` : ''}
+		<br>paint: ${!paintURI ? note.blocked : hash.paintURI}
+
+		<br><br>
+		${dataURI ? `<div class="icon-pixel combined-image"></div>` : ''}
+		${dataURI ? `<div class="icon-pixel combined-image-blob"></div>` : ''}
+		<br>combined: ${!dataURI ? note.blocked : hash.dataURI}
+		<br>toBlob (combined): ${!blobDataURI ? note.unsupported : hash.blobDataURI}
+		<br><br>
+		${blobOffscreenDataURI ? `<div class="icon-pixel offscreen-image"></div>` : ''}
+		<br>convertToBlob (emoji storm): ${
+			!blobOffscreenDataURI ? note.unsupported : hash.blobOffscreenDataURI
+		}		
 	`
 
 	// rgba: "b, g, gb, r, rb, rg, rgb"
@@ -616,9 +630,11 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 			.pixel-image,
 			.pixel-image-random,
 			.combined-image,
+			.combined-image-blob,
 			.paint-image, 
 			.text-image, 
-			.emoji-image {
+			.emoji-image,
+			.offscreen-image {
 				max-width: 35px;
     		border-radius: 50%;
 				transform: scale(1.5);
@@ -640,6 +656,14 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 			}
 			.combined-image {
 				background-image: url(${dataURI})
+			}
+			.combined-image-blob {
+				background-image: url(${blobDataURI})
+			}
+			.offscreen-image {
+				background-image: url(${blobOffscreenDataURI});
+				background-repeat: repeat-y;
+				background-size: 70px;
 			}
 			.rgba {
 				width: 8px;
@@ -687,8 +711,10 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 			${emojiURI ? `<div class="icon-pixel emoji-image"></div>` : ''}
 			${paintURI ? `<div class="icon-pixel paint-image"></div>` : ''}
 			${dataURI ? `<div class="icon-pixel combined-image"></div>` : ''}
+
 		</div>
 		<div class="icon-pixel-container pixels">
+			${blobOffscreenDataURI ? `<div class="icon-pixel offscreen-image"></div>` : ''}
 			<div class="icon-pixel pixel-image-random"></div>
 			${rgba ? `<div class="icon-pixel pixel-image"></div>` : ''}
 		</div>
