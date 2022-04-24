@@ -257,7 +257,8 @@ const imports = {
 			svgHash,
 			resistanceHash,
 			intlHash,
-			featuresHash
+			featuresHash,
+			deviceOfTimezoneHash
 		] = await Promise.all([
 			hashify(windowFeaturesComputed),
 			hashify(headlessComputed),
@@ -302,7 +303,50 @@ const imports = {
 			hashify(svgComputed),
 			hashify(resistanceComputed),
 			hashify(intlComputed),
-			hashify(featuresComputed)
+			hashify(featuresComputed),
+			hashify((() => {
+				const {
+					bluetoothAvailability,
+					device,
+					deviceMemory,
+					hardwareConcurrency,
+					maxTouchPoints,
+					oscpu,
+					platform, 
+					system,
+					userAgentData,
+				} = navigatorComputed || {}
+				const {
+					architecture,
+					bitness,
+					mobile,
+					model,
+					platform: uaPlatform,
+					platformVersion,
+				} = userAgentData || {}
+				const { anyPointer } = cssMediaComputed || {}
+				const { location, locationEpoch, zone  } = timezoneComputed || {}
+				return [
+					anyPointer,
+					architecture,
+					bitness,
+					bluetoothAvailability,
+					device,
+					deviceMemory,
+					hardwareConcurrency,
+					location,
+					locationEpoch, 
+					maxTouchPoints,
+					mobile,
+					model,
+					oscpu,
+					platform,
+					platformVersion,
+					system,
+					uaPlatform,
+					zone
+				]
+			})())
 		]).catch(error => console.error(error.message))
 		
 		//console.log(performance.now()-start)
@@ -356,6 +400,7 @@ const imports = {
 			canvas2dTextHash,
 			canvas2dEmojiHash,
 			canvasWebglParametersHash,
+			deviceOfTimezoneHash,
 			timeEnd
 		}
 	}
@@ -374,6 +419,7 @@ const imports = {
 		canvas2dEmojiHash,
 		canvasWebglImageHash,
 		canvasWebglParametersHash,
+		deviceOfTimezoneHash,
 		timeEnd
 	} = await fingerprint().catch(error => console.error(error))
 	
@@ -1245,6 +1291,7 @@ const imports = {
 						`fontsId=${!fonts || fonts.lied ? 'undefined' : fonts.$hash}`,
 						`voicesId=${!voices || voices.lied ? 'undefined' : voices.$hash}`,
 						`screenId=${screenMetrics}`,
+						`deviceOfTimezoneId=${deviceOfTimezoneHash}`,
 						`ua=${encodeURIComponent(workerScopeUserAgent)}`
 					].join('&')}`
 

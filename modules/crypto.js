@@ -97,7 +97,6 @@ const getFuzzyHash = async fp => {
 		'canvas2d.liedTextMetrics',
 		'canvas2d.mods',
 		'canvas2d.paintURI',
-		'canvas2d.points',
 		'canvas2d.textMetricsSystemSum',
 		'canvas2d.textURI',
 		'canvasWebgl.dataURI',
