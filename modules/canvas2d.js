@@ -603,7 +603,7 @@ export const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, for
 	<div class="relative col-six${lied ? ' rejected' : ''}">
 		<style>
 			.pixels {
-				padding: 15px;
+				padding: 19px;
 				position: relative;
 				overflow: hidden;
 			}
