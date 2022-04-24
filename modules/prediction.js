@@ -39,6 +39,10 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 		mimeTypesSystem,
 		audioSystem,
 		canvasSystem,
+		canvasBlobSystem,
+		canvasPaintSystem,
+		canvasTextSystem,
+		canvasEmojiSystem,
 		textMetricsSystem,
 		webglSystem,
 		gpuSystem,
@@ -46,6 +50,7 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 		fontsSystem,
 		voicesSystem,
 		screenSystem,
+		deviceOfTimezone,
 		pendingReview
 	} = decryptionData
 
@@ -112,13 +117,18 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 		(mimeTypesSystem || {}).device,
 		(audioSystem || {}).device,
 		(canvasSystem || {}).device,
+		(canvasBlobSystem || {}).device,
+		(canvasPaintSystem || {}).device,
+		(canvasTextSystem || {}).device,
+		(canvasEmojiSystem || {}).device,
 		(textMetricsSystem || {}).device,
 		(webglSystem || {}).device,
 		(gpuSystem || {}).device,
 		(gpuModelSystem || {}).device,
 		(fontsSystem || {}).device,
 		(voicesSystem || {}).device,
-		(screenSystem || {}).device
+		(screenSystem || {}).device,
+		//(deviceOfTimezone || {}).device, // to avoid pollution, don't collect this device
 	])
 
 	devices.delete(undefined)
@@ -233,8 +243,28 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 			}</div>
 			<div class="ellipsis relative">
 				<span id="canvas-entropy"></span>${
-				!hasValue(canvasSystem) ? unknownHTML('canvas') : 
+				!hasValue(canvasSystem) ? unknownHTML('canvas image') : 
 					getTemplate({title: 'canvas', agent: canvasSystem})
+			}</div>
+			<div class="ellipsis relative">
+				<span id="canvas-blob-entropy"></span>${
+				!hasValue(canvasBlobSystem) ? unknownHTML('canvas blob') : 
+					getTemplate({title: 'canvas blob', agent: canvasBlobSystem})
+			}</div>
+			<div class="ellipsis relative">
+				<span id="canvas-paint-entropy"></span>${
+				!hasValue(canvasPaintSystem) ? unknownHTML('canvas paint') : 
+					getTemplate({title: 'canvas paint', agent: canvasPaintSystem})
+			}</div>
+			<div class="ellipsis relative">
+				<span id="canvas-text-entropy"></span>${
+				!hasValue(canvasTextSystem) ? unknownHTML('canvas text') : 
+					getTemplate({title: 'canvas text', agent: canvasTextSystem})
+			}</div>
+			<div class="ellipsis relative">
+				<span id="canvas-emoji-entropy"></span>${
+				!hasValue(canvasEmojiSystem) ? unknownHTML('canvas emoji') : 
+					getTemplate({title: 'canvas emoji', agent: canvasEmojiSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="textMetrics-entropy"></span>${
@@ -276,6 +306,11 @@ export const renderPrediction = ({decryptionData, crowdBlendingScore, patch, htm
 				!hasValue(resistance) ? unknownHTML('resistance') : 
 					getTemplate({title: 'resistance', agent: resistance})
 			}</div>
+			<div class="ellipsis relative">
+				<span id="device-of-timezone-entropy"></span>${
+				!hasValue(deviceOfTimezone) ? unknownHTML('device of timezone') : 
+					getTemplate({title: 'device of timezone', agent: deviceOfTimezone})
+			}</div>
 		</div>
 		<div class="col-six icon-prediction-container">
 			${[...iconSet].map(icon => {
@@ -309,7 +344,11 @@ export const predictionErrorPatch = ({error, patch, html}) => {
 				<div>${getBlankIcons()}svg</div>
 				<div>${getBlankIcons()}mimeTypes</div>
 				<div>${getBlankIcons()}audio</div>
-				<div>${getBlankIcons()}canvas</div>
+				<div>${getBlankIcons()}canvas image</div>
+				<div>${getBlankIcons()}canvas blob</div>
+				<div>${getBlankIcons()}canvas paint</div>
+				<div>${getBlankIcons()}canvas text</div>
+				<div>${getBlankIcons()}canvas emoji</div>
 				<div>${getBlankIcons()}textMetrics</div>
 				<div>${getBlankIcons()}webgl</div>
 				<div>${getBlankIcons()}gpu params</div>
@@ -318,6 +357,7 @@ export const predictionErrorPatch = ({error, patch, html}) => {
 				<div>${getBlankIcons()}voices</div>
 				<div>${getBlankIcons()}screen</div>
 				<div>${getBlankIcons()}resistance</div>
+				<div>${getBlankIcons()}device of timezone</div>
 			</div>
 			<div class="col-four icon-prediction-container">
 			</div>

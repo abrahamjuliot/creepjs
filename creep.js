@@ -1325,13 +1325,18 @@ const imports = {
 					'mimeTypesSystem',
 					'audioSystem',
 					'canvasSystem',
+					'canvasBlobSystem',
+					'canvasPaintSystem',
+					'canvasTextSystem',
+					'canvasEmojiSystem',
 					'textMetricsSystem',
 					'webglSystem',
 					'gpuSystem',
 					'gpuModelSystem',
 					'fontsSystem',
 					'voicesSystem',
-					'screenSystem'
+					'screenSystem',
+					'deviceOfTimezone',
 				]
 
 				const decryptionDataScores = scoreKeys.reduce((acc, key) => {
@@ -1424,13 +1429,18 @@ const imports = {
 				mimeTypes: mimeTypesSamples,
 				audio: audioSamples,
 				canvas: canvasSamples,
+				canvasBlob: canvasBlobSamples,
+				canvasPaint: canvasPaintSamples,
+				canvasText: canvasTextSamples,
+				canvasEmoji: canvasEmojiSamples,
 				textMetrics: textMetricsSamples,
 				webgl: webglSamples,
 				fonts: fontsSamples,
 				voices: voicesSamples,
 				screen: screenSamples,
 				gpu: gpuSamples,
-				gpuModel: gpuModelSamples
+				gpuModel: gpuModelSamples,
+				deviceOfTimezone: deviceOfTimezoneSamples,
 			} = decryptionSamples || {}
 
 			if (badBot && !decryptionSamples) {
@@ -1459,6 +1469,10 @@ const imports = {
 					mimeTypesSystem: getPrediction({ hash: mimeTypesHash, data: mimeTypesSamples }),
 					audioSystem: getPrediction({ hash: audioMetrics, data: audioSamples }),
 					canvasSystem: getPrediction({ hash: canvas2dImageHash, data: canvasSamples }),
+					canvasBlobSystem: getPrediction({ hash: canvas2dBlobHash, data: canvasBlobSamples }),
+					canvasPaintSystem: getPrediction({ hash: canvas2dPaintHash, data: canvasPaintSamples }),
+					canvasTextSystem: getPrediction({ hash: canvas2dTextHash, data: canvasTextSamples }),
+					canvasEmojiSystem: getPrediction({ hash: canvas2dEmojiHash, data: canvasEmojiSamples }),
 					textMetricsSystem: getPrediction({
 						hash: (canvas2d || {}).textMetricsSystemSum,
 						data: textMetricsSamples
@@ -1468,7 +1482,8 @@ const imports = {
 					gpuModelSystem: getPrediction({ hash: cleanGPUString(gpuModel), data: gpuModelSamples }),
 					fontsSystem: getPrediction({ hash: (fonts || {}).$hash, data: fontsSamples }),
 					voicesSystem: getPrediction({ hash: (voices || {}).$hash, data: voicesSamples }),
-					screenSystem: getPrediction({ hash: screenMetrics, data: screenSamples })
+					screenSystem: getPrediction({ hash: screenMetrics, data: screenSamples }),
+					deviceOfTimezone: getPrediction({ hash: deviceOfTimezoneHash, data: deviceOfTimezoneSamples }),
 				}
 
 				renderPrediction({
@@ -1516,13 +1531,18 @@ const imports = {
 					mimeTypes: mimeTypesHash,
 					audio: audioMetrics,
 					canvas: canvas2dImageHash,
+					canvasBlob: canvas2dBlobHash,
+					canvasPaint: canvas2dPaintHash,
+					canvasText: canvas2dTextHash,
+					canvasEmoji: canvas2dEmojiHash,
 					textMetrics: (canvas2d || {}).textMetricsSystemSum,
 					webgl: canvasWebglImageHash,
 					fonts: (fonts || {}).$hash,
 					voices: (voices || {}).$hash,
 					screen: screenMetrics,
 					gpu: canvasWebglParametersHash,
-					gpuModel
+					gpuModel,
+					deviceOfTimezone: deviceOfTimezoneHash,
 				}
 				const entropyDescriptors = {
 					window: 'window object',
@@ -1538,13 +1558,18 @@ const imports = {
 					mimeTypes: 'media mimeTypes',
 					audio: 'audio metrics',
 					canvas: 'canvas image',
+					canvasBlob: 'canvas blob',
+					canvasPaint: 'canvas paint',
+					canvasText: 'canvas text',
+					canvasEmoji: 'canvas emoji',
 					textMetrics: 'textMetrics',
 					webgl: 'webgl image',
 					fonts: 'system fonts',
 					voices: 'voices',
 					screen: 'screen metrics',
 					gpu: 'webgl parameters',
-					gpuModel: 'webgl renderer'
+					gpuModel: 'webgl renderer',
+					deviceOfTimezone: 'device of timezone',
 				}
 				Object.keys(decryptionSamples).forEach((key,i) => {
 					const hash = (
@@ -1558,7 +1583,7 @@ const imports = {
 					} = getEntropy(hash, decryptionSamples[key])
 					const el = document.getElementById(`${key}-entropy`)
 					const deviceMetric = (
-						(key == 'screen') || (key == 'fonts') || (key == 'gpuModel')
+						(key == 'screen') || (key == 'fonts') || (key == 'gpuModel') || (key == 'deviceOfTimezone')
 					)
 					const uniquePercent = !classTotal ? 0 : (1/classTotal)*100
 					const signal = (

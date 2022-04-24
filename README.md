@@ -233,7 +233,7 @@ Loose metric revision patterns can follow stable fingerprints like a shadow
 9. SVG
 10. Audio
 11. MimeTypes
-12. Canvas
+12. Canvas (Image, Blob, Paint, Text, Emoji)
 13. TextMetrics
 14. WebGL
 15. GPU Params (WebGL Parameters)
@@ -242,6 +242,7 @@ Loose metric revision patterns can follow stable fingerprints like a shadow
 18. Voices
 19. Screen
 20. Resistance (Known Patterns)
+21. Device of Timezone
 
 #### Supported
 - layout rendering engines: `Gecko`, `Goanna`, `Blink`, `WebKit`
