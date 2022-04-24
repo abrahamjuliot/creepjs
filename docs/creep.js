@@ -500,6 +500,49 @@
 		[10002],[9986],[9935],[9874],[9876],[9881],[9939],[9879],[9904],[9905],[9888],[9762],[9763],[11014],[8599],[10145],[11013],[9883],[10017],[10013],[9766],[9654],[9197],[9199],[9167],[9792],[9794],[10006],[12336],[9877],[9884],[10004],[10035],[10055],[9724],[9642],[10083],[10084],[9996],[9757],[9997],[10052],[9878],[8618],[9775],[9770],[9774],[9745],[10036],[127344],[127359]
 	].map(emojiCode => String.fromCodePoint(...emojiCode));
 
+	const cssFontFamily = `
+	'Segoe Fluent Icons',
+	'Ink Free',
+	'Bahnschrift',
+	'Segoe MDL2 Assets',
+	'HoloLens MDL2 Assets',
+	'Leelawadee UI',
+	'Javanese Text',
+	'Segoe UI Emoji',
+	'Aldhabi',
+	'Gadugi',
+	'Myanmar Text',
+	'Nirmala UI',
+	'Lucida Console',
+	'Cambria Math',
+	'Galvji',
+	'MuktaMahee Regular',
+	'InaiMathi Bold',
+	'American Typewriter Semibold',
+	'Futura Bold',
+	'SignPainter-HouseScript Semibold',
+	'PingFang HK Light',
+	'Kohinoor Devanagari Medium',
+	'Luminari',
+	'Geneva',
+	'Helvetica Neue',
+	'Droid Sans Mono',
+	'Dancing Script',
+	'Roboto',
+	'Ubuntu',
+	'Liberation Mono',
+	'Source Code Pro',
+	'DejaVu Sans',
+	'OpenSymbol',
+	'Chilanka',
+	'Cousine',
+	'Arimo',
+	'Jomolhari',
+	'MONO',
+	'Noto Color Emoji',
+	sans-serif !important
+`;
+
 	// template views
 	const patch = (oldEl, newEl, fn = null) => {
 		oldEl.parentNode.replaceChild(newEl, oldEl);
@@ -658,13 +701,13 @@
 			'canvas2d.blob',
 			'canvas2d.blobOffscreen',
 			'canvas2d.dataURI',
-			'canvas2d.emojiFonts',
 			'canvas2d.emojiSet',
-			'canvas2d.imageData',
+			'canvas2d.emojiURI',
 			'canvas2d.liedTextMetrics',
 			'canvas2d.mods',
-			'canvas2d.points',
+			'canvas2d.paintURI',
 			'canvas2d.textMetricsSystemSum',
+			'canvas2d.textURI',
 			'canvasWebgl.dataURI',
 			'canvasWebgl.dataURI2',
 			'canvasWebgl.extensions',
@@ -677,7 +720,6 @@
 			'clientRects.domrectSystemSum',
 			'clientRects.elementBoundingClientRect',
 			'clientRects.elementClientRects',
-			'clientRects.emojiFonts',
 			'clientRects.emojiSet',
 			'clientRects.rangeBoundingClientRect',
 			'clientRects.rangeClientRects',
@@ -698,11 +740,8 @@
 			'features.windowFeatures',
 			'features.windowVersion',
 			'fonts.apps',
-			'fonts.emojiFonts',
 			'fonts.emojiSet',
 			'fonts.fontFaceLoadFonts',
-			'fonts.originFonts',
-			'fonts.pixelFonts',
 			'fonts.pixelSizeSystemSum',
 			'fonts.platformVersion',
 			'headless.chromium',
@@ -772,7 +811,6 @@
 			'screen.width',
 			'svg.bBox',
 			'svg.computedTextLength',
-			'svg.emojiFonts',
 			'svg.emojiSet',
 			'svg.extentOfChar',
 			'svg.subStringLength',
@@ -799,7 +837,6 @@
 			'workerScope.canvas2d',
 			'workerScope.device',
 			'workerScope.deviceMemory',
-			'workerScope.emojiFonts',
 			'workerScope.emojiSet',
 			'workerScope.engineCurrencyLocale',
 			'workerScope.fontApps',
@@ -833,7 +870,7 @@
 			'workerScope.userAgentEngine',
 			'workerScope.userAgentVersion',
 			'workerScope.webglRenderer',
-			'workerScope.webglVendor'
+			'workerScope.webglVendor',
 		];
 		// construct map of all metrics
 		const metricsAll = Object.keys(fp).sort().reduce((acc, sectionKey) => {
@@ -2517,6 +2554,8 @@
 		[-31.509262084960938]: [35.7383295930922, 35.73833402246237] 
 	});
 
+	const audioTrap = Math.random();
+
 	const getOfflineAudioContext = async imports => {
 
 		const {
@@ -2682,18 +2721,22 @@
 			}
 
 			// sample noise factor
+			const getRandFromRange = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 			const getCopyFrom = (rand, buffer, copy) => {
 				const { length } = buffer;
-				buffer.getChannelData(0)[0] = rand;
-				buffer.getChannelData(0)[length/2] = rand;
-				buffer.getChannelData(0)[length-1] = rand;
+				const start = getRandFromRange(275, length-1);
+				const mid = start+10;
+				const end = start+20;
+				buffer.getChannelData(0)[start] = rand;
+				buffer.getChannelData(0)[mid] = rand;
+				buffer.getChannelData(0)[end] = rand;
 				buffer.copyFromChannel(copy, 0);
-				const attack = [
-					buffer.getChannelData(0)[0] === 0 ? Math.random() : 0,
-					buffer.getChannelData(0)[length/2] === 0 ? Math.random() : 0,
-					buffer.getChannelData(0)[length-1] === 0 ? Math.random() : 0
-				];
-				return [...new Set([...buffer.getChannelData(0), ...copy, ...attack])].filter(x => x !== 0)
+				const attack = (
+					buffer.getChannelData(0)[start] === 0 ||
+					buffer.getChannelData(0)[mid] === 0 ||
+					buffer.getChannelData(0)[end] === 0 ? Math.random() : 0
+				);
+				return [...new Set([...buffer.getChannelData(0), ...copy, attack])].filter(x => x !== 0)
 			};
 
 			const getCopyTo = (rand, buffer, copy) => {
@@ -2705,17 +2748,16 @@
 			};
 			
 			const getNoiseFactor = () => {
-				const length = 20;
-				const rand = Math.random();
+				const length = 2000;
 				try {
 					const result = [...new Set([
 						...getCopyFrom(
-							rand,
+							audioTrap,
 							new AudioBuffer({ length, sampleRate: 44100 }),
 							new Float32Array(length)
 						),
 						...getCopyTo(
-							rand,
+							audioTrap,
 							new AudioBuffer({ length, sampleRate: 44100 }),
 							new Float32Array(length)
 						)
@@ -2732,8 +2774,8 @@
 			};
 			
 			const noiseFactor = getNoiseFactor();
-			const noise = 1e+20 * (
-				noiseFactor != 1 ? noiseFactor : [...new Set(bins.slice(0, 100))].reduce((acc, n) => acc += n, 0)
+			const noise = (
+				noiseFactor || [...new Set(bins.slice(0, 100))].reduce((acc, n) => acc += n, 0)
 			);
 			
 			if (noise) {
@@ -2772,7 +2814,7 @@
 			<div>gain: ${note.blocked}</div>
 			<div>freq: ${note.blocked}</div>
 			<div>time: ${note.blocked}</div>
-			<div>buffer noise: ${note.blocked}</div>
+			<div>trap: ${note.blocked}</div>
 			<div>unique: ${note.blocked}</div>
 			<div>data: ${note.blocked}</div>
 			<div>copy: ${note.blocked}</div>
@@ -2818,7 +2860,14 @@
 		<div class="help" title="AnalyserNode.getFloatTimeDomainData()">time: ${
 			floatTimeDomainDataSum || note.unsupported
 		}</div>
-		<div>buffer noise: ${!noise ? 0 : `${(''+noise).slice(0, 6)}...`}</div>
+		<div class="help" title="AudioBuffer.getChannelData()\nAudioBuffer.copyFromChannel()\nAudioBuffer.copyToChannel">trap: ${
+			!noise ? audioTrap : getDiffs({
+				stringA: audioTrap,
+				stringB: noise,
+				charDiff: true,
+				decorate: diff => `<span class="bold-fail">${diff}</span>`
+			})
+		}</div>
 		<div>unique: ${totalUniqueSamples}</div>
 		<div class="help" title="AudioBuffer.getChannelData()">data:${
 			''+binsSample[0] == 'undefined' ? ` ${note.unsupported}` : 
@@ -2953,23 +3002,176 @@
 		}
 	};
 
-	const getPointIn = (canvas, context) => {
-		canvas.width = canvas.height;
-		context.fillStyle = 'rgba(0, 0, 0, 1)';
-		context.beginPath();
-		context.arc(0, 0, 10, 0, Math.PI * 2);
-		context.closePath();
-		context.fill();
-		const isPointInPath = [];
-		const isPointInStroke = []
-		;[...Array(canvas.width)].forEach((e, x) => [...Array(canvas.height)].forEach((e, y) => {
-			context.isPointInPath(x, y) && isPointInPath.push([x, y]);
-			return context.isPointInStroke(x, y) && isPointInStroke.push([x, y])
-		}));
-		return {
-			isPointInPath: isPointInPath.length ? isPointInPath : undefined,
-			isPointInStroke: isPointInStroke.length ? isPointInStroke : undefined
+	// based on and inspired by https://github.com/antoinevastel/picasso-like-canvas-fingerprinting
+	const paintCanvas = ({
+	  canvas,
+	  context,
+		strokeText = false,
+		cssFontFamily = '',
+	  area = { width: 100, height: 100 },
+	  rounds = 50,
+	  maxShadowBlur = 50,
+	  seed = 500,
+	  offset = 2001000001,
+	  multiplier = 15000,
+	}) => {
+	  if (!context) {
+	    return
+	  }
+
+	  context.clearRect(0, 0, canvas.width, canvas.height);
+	  canvas.width = area.width;
+	  canvas.height = area.height;
+		
+	  if (canvas.style) {
+	    canvas.style.display = 'none';
+	  }
+
+	  const createPicassoSeed = ({ seed, offset, multiplier }) => {
+	    let current = Number(seed) % Number(offset);
+	    const getNextSeed = () => {
+	      current = (Number(multiplier) * current) % Number(offset);
+	      return current
+	    };
+	    return {
+	      getNextSeed,
+	    }
+	  };
+
+	  const picassoSeed = createPicassoSeed({ seed, offset, multiplier });
+	  const { getNextSeed } = picassoSeed;
+
+	  const patchSeed = (current, offset, maxBound = null, computeFloat = null) => {
+	    const result = (((current - 1) / offset) * (maxBound || 1)) || 0;
+	    return computeFloat ? result : Math.floor(result)
+	  };
+
+	  const addRandomCanvasGradient = (context, offset, area, colors, getNextSeed) => {
+	    const { width, height } = area;
+	    const canvasGradient = context.createRadialGradient(
+	      patchSeed(getNextSeed(), offset, width),
+	      patchSeed(getNextSeed(), offset, height),
+	      patchSeed(getNextSeed(), offset, width),
+	      patchSeed(getNextSeed(), offset, width),
+	      patchSeed(getNextSeed(), offset, height),
+	      patchSeed(getNextSeed(), offset, width),
+	    );
+	    canvasGradient.addColorStop(0, colors[patchSeed(getNextSeed(), offset, colors.length)]);
+	    canvasGradient.addColorStop(1, colors[patchSeed(getNextSeed(), offset, colors.length)]);
+	    context.fillStyle = canvasGradient;
+	  };
+
+	  const colors = [
+	    '#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6',
+	    '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D',
+	    '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A',
+	    '#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC',
+	    '#66994D', '#B366CC', '#4D8000', '#B33300', '#CC80CC',
+	    '#66664D', '#991AFF', '#E666FF', '#4DB3FF', '#1AB399',
+	    '#E666B3', '#33991A', '#CC9999', '#B3B31A', '#00E680',
+	    '#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933',
+	    '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3',
+	    '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF',
+	  ];
+
+		const drawOutlineOfText = (context, offset, area, getNextSeed) => {
+			const { width, height } = area;
+			const fontSize = 2.99;
+			context.font = `${height / fontSize}px ${cssFontFamily.replace(/!important/gm, '')}`;
+			context.strokeText(
+				'👾A',
+				patchSeed(getNextSeed(), offset, width),
+				patchSeed(getNextSeed(), offset, height),
+				patchSeed(getNextSeed(), offset, width),
+			);
+		};
+
+	  const createCircularArc = (context, offset, area, getNextSeed) => {
+	    const { width, height } = area;
+	    context.beginPath();
+	    context.arc(
+	      patchSeed(getNextSeed(), offset, width),
+	      patchSeed(getNextSeed(), offset, height),
+	      patchSeed(getNextSeed(), offset, Math.min(width, height)),
+	      patchSeed(getNextSeed(), offset, 2 * Math.PI, true),
+	      patchSeed(getNextSeed(), offset, 2 * Math.PI, true),
+	    );
+	    context.stroke();
+	  };
+
+	  const createBezierCurve = (context, offset, area, getNextSeed) => {
+	    const { width, height } = area;
+	    context.beginPath();
+	    context.moveTo(
+	      patchSeed(getNextSeed(), offset, width),
+	      patchSeed(getNextSeed(), offset, height),
+	    );
+	    context.bezierCurveTo(
+	      patchSeed(getNextSeed(), offset, width),
+	      patchSeed(getNextSeed(), offset, height),
+	      patchSeed(getNextSeed(), offset, width),
+	      patchSeed(getNextSeed(), offset, height),
+	      patchSeed(getNextSeed(), offset, width),
+	      patchSeed(getNextSeed(), offset, height),
+	    );
+	    context.stroke();
+	  };
+
+	  const createQuadraticCurve = (context, offset, area, getNextSeed) => {
+	    const { width, height } = area;
+	    context.beginPath();
+	    context.moveTo(
+	      patchSeed(getNextSeed(), offset, width),
+	      patchSeed(getNextSeed(), offset, height),
+	    );
+	    context.quadraticCurveTo(
+	      patchSeed(getNextSeed(), offset, width),
+	      patchSeed(getNextSeed(), offset, height),
+	      patchSeed(getNextSeed(), offset, width),
+	      patchSeed(getNextSeed(), offset, height),
+	    );
+	    context.stroke();
+	  };
+
+	  const createEllipticalArc = (context, offset, area, getNextSeed) => {
+	    if (!('ellipse' in context)) {
+	      return
+	    }
+	    const { width, height } = area;
+	    context.beginPath();
+	    context.ellipse(
+	      patchSeed(getNextSeed(), offset, width),
+	      patchSeed(getNextSeed(), offset, height),
+	      patchSeed(getNextSeed(), offset, Math.floor(width / 2)),
+	      patchSeed(getNextSeed(), offset, Math.floor(height / 2)),
+	      patchSeed(getNextSeed(), offset, 2 * Math.PI, true),
+	      patchSeed(getNextSeed(), offset, 2 * Math.PI, true),
+	      patchSeed(getNextSeed(), offset, 2 * Math.PI, true)
+	    );
+	    context.stroke();
+	  };
+
+	  const methods = [
+	    createCircularArc,
+	    createBezierCurve,
+	    createQuadraticCurve,
+	    createEllipticalArc
+	  ];
+		
+		if (strokeText) {
+			methods.push(drawOutlineOfText);
 		}
+
+	  ;[...Array(rounds)].forEach((x) => { 
+	    addRandomCanvasGradient(context, offset, area, colors, getNextSeed);
+	    context.shadowBlur = patchSeed(getNextSeed(), offset, maxShadowBlur, true);
+	    context.shadowColor = colors[patchSeed(getNextSeed(), offset, colors.length)];
+	    const nextMethod = methods[patchSeed(getNextSeed(), offset, methods.length)];
+	    nextMethod(context, offset, area, getNextSeed); 
+	    context.fill();
+	  });
+
+	  return
 	};
 
 	const getCanvas2d = async imports => {
@@ -2979,30 +3181,15 @@
 				queueEvent,
 				createTimer,
 				getEmojis,
+				cssFontFamily,
 				captureError,
 				attempt,
 				lieProps,
 				documentLie,
 				phantomDarkness,
-				dragonOfDeath,
 				logTestResult
 			}
 		} = imports;
-
-		const fillRect = (canvas, context) => {
-			canvas.width = 186;
-			canvas.height = 30;
-			const str = `😃🙌🧠🦄🐉🌊🍧🏄‍♀️🌠🔮`;
-			context.font = '14px Arial';
-			context.fillText(str, 0, 20);
-			context.fillStyle = 'rgba(0, 0, 0, 0)';
-			context.fillRect(0, 0, canvas.width, canvas.height);
-			context.beginPath();
-			context.arc(15.49, 15.51, 10.314, 0, Math.PI * 2);
-			context.closePath();
-			context.fill();
-			return context
-		};
 
 		const getFileReaderData = blob => {
 			if (!blob) {
@@ -3013,12 +3200,7 @@
 				reader[method](blob);
 				return reader.addEventListener('loadend', () => resolve(reader.result))
 			});
-			return Promise.all([
-				getRead('readAsArrayBuffer', blob),
-				getRead('readAsBinaryString', blob),
-				getRead('readAsDataURL', blob),
-				getRead('readAsText', blob),
-			])
+			return getRead('readAsDataURL', blob)
 		};
 
 		try {
@@ -3052,29 +3234,35 @@
 				phantomDarkness.document.body ? phantomDarkness.document :
 					document
 			);
-
+			
 			const canvas = doc.createElement('canvas');
 			const context = canvas.getContext('2d');
-			fillRect(canvas, context);
+			const emojis = getEmojis();
+			paintCanvas({
+				canvas,
+				context,
+				strokeText: true,
+				cssFontFamily,
+				area: { width: 50, height: 50 },
+				rounds: 10,
+			});
+			
 			const dataURI = canvas.toDataURL();
-
-			if (dragonOfDeath) {
-				const result1 = dragonOfDeath.document.createElement('canvas').toDataURL();
-				const result2 = document.createElement('canvas').toDataURL();
-				if (result1 != result2) {
-					lied = true;
-					const iframeLie = `expected x in nested iframe and got y`;
-					documentLie(`HTMLCanvasElement.toDataURL`, iframeLie);
-				}
-			}
-				
-			const { data: imageData } = context.getImageData(0, 0, canvas.width, canvas.height) || {};
 			
 			let canvasOffscreen;
 			try {
-				canvasOffscreen = new OffscreenCanvas(186, 30);
+				const width = 50;
+				const height = 50;
+				canvasOffscreen = new OffscreenCanvas(width, height);
 				const contextOffscreen = canvasOffscreen.getContext('2d');
-				fillRect(canvasOffscreen, contextOffscreen);
+				paintCanvas({
+					canvas: canvasOffscreen,
+					context: contextOffscreen,
+					strokeText: true,
+					cssFontFamily,
+					area: { width, height },
+					rounds: 10,
+				});
 			}
 			catch (error) { }
 
@@ -3088,82 +3276,21 @@
 				})),
 				getFileReaderData(canvasOffscreen && await attempt(() => canvasOffscreen.convertToBlob()))
 			]);
-			const [arrayBuffer, binaryString, dataURL, text] = fileReaderData || {};
-			const [
-				arrayBufferOffScreen,
-				binaryStringOffscreen,
-				dataURLOffscreen,
-				textOffscreen
-			] = fileReaderDataOffscreen || {};
+			const dataURL = fileReaderData || {};
+			const dataURLOffscreen = fileReaderDataOffscreen || {};
 			const blob = {
-				readAsArrayBuffer: String.fromCharCode.apply(null, new Uint8Array(arrayBuffer)) || undefined,
-				readAsBinaryString: binaryString,
 				readAsDataURL: dataURL,
-				readAsText: text
 			};
 			const blobOffscreen = {
-				readAsArrayBuffer: String.fromCharCode.apply(null, new Uint8Array(arrayBufferOffScreen)) || undefined,
-				readAsBinaryString: binaryStringOffscreen,
 				readAsDataURL: dataURLOffscreen,
-				readAsText: textOffscreen
 			};
 
 			await queueEvent(timer);
-			const points = getPointIn(canvas, context); // modifies width
 			const mods = getPixelMods();
 
-			// get fonts
+			// TextMetrics: get emoji set and system
 			await queueEvent(timer);
-			const emojis = getEmojis();
-			const measureFonts = (context, font, emojis) => {
-				//const emoji = String.fromCodePoint(128512)
-				context.font = `256px ${font}`;
-				const metrics = context.measureText(emojis.join(''));
-				return {
-					ascent: metrics.actualBoundingBoxAscent,
-					descent: metrics.actualBoundingBoxDescent,
-					left: metrics.actualBoundingBoxLeft,
-					right: metrics.actualBoundingBoxRight,
-					width: metrics.width,
-					fontAscent: metrics.fontBoundingBoxAscent,
-					fontDescent: metrics.fontBoundingBoxDescent
-				}
-			};
-			const baseFonts = ['monospace', 'sans-serif', 'serif'];
-			const fontShortList = [
-				'Segoe UI Emoji', // Windows
-				'Apple Color Emoji', // Apple
-				'Noto Color Emoji',  // Linux, Android, Chrome OS
-			];
-			const families = fontShortList.reduce((acc, font) => {
-				baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`));
-				return acc
-			}, []);
-			const base = baseFonts.reduce((acc, font) => {
-				acc[font] = measureFonts(context, font, emojis);
-				return acc
-			}, {});
-			const detectedEmojiFonts = families.reduce((acc, family) => {
-				const basefont = /, (.+)/.exec(family)[1];
-				const dimensions = measureFonts(context, family, emojis);
-				const font = /\'(.+)\'/.exec(family)[1];
-				const found = (
-					dimensions.ascent != base[basefont].ascent ||
-					dimensions.descent != base[basefont].descent ||
-					dimensions.left != base[basefont].left ||
-					dimensions.right != base[basefont].right ||
-					dimensions.width != base[basefont].width ||
-					dimensions.fontAscent != base[basefont].fontAscent ||
-					dimensions.fontDescent != base[basefont].fontDescent
-				);
-				if (found) {
-					acc.add(font);
-				}
-				return acc
-			}, new Set());
-			
-			// get emoji set and system
-			context.font = `200px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`;
+			context.font = `10px ${cssFontFamily.replace(/!important/gm, '')}`;
 			const pattern = new Set();
 			const emojiSet = emojis.reduce((emojiSet, emoji) => {
 				const {
@@ -3192,31 +3319,43 @@
 			}, new Set());
 
 			// textMetrics System Sum
-			const textMetricsSum = 0.00001 * [...pattern].map(x => {
+			const textMetricsSystemSum = 0.00001 * [...pattern].map(x => {
 				return x.split(',').reduce((acc, x) => acc += (+x||0), 0)
 			}).reduce((acc, x) => acc += x, 0);
 
-			const amplifySum = (n, fontSet) => {
-				const { size } = fontSet;
-				if (size > 1) {
-					return n / +`1e${size}00` // ...e-200
-				}
-				return (
-					!size ? n * -1e150 : // -...e+148
-						size > 1 ? n / +`1e${size}00` : // ...e-200
-							fontSet.has('Segoe UI Emoji') ? n :
-								fontSet.has('Apple Color Emoji') ? n / 1e64 : // ...e-66
-									n * 1e64 // ...e+62
-				)
-			}; 
+			// Paint
+			const maxSize = 50;
+			paintCanvas({
+				canvas,
+				context,
+				area: { width: maxSize, height: maxSize }
+			}); // clears image
+			const paintURI = canvas.toDataURL();
 
-			const textMetricsSystemSum = amplifySum(textMetricsSum, detectedEmojiFonts);
-		
+			// Text
+			context.restore();
+			context.clearRect(0, 0, canvas.width, canvas.height);
+		  canvas.width = maxSize;
+		  canvas.height = maxSize;
+			context.font = `50px ${cssFontFamily.replace(/!important/gm, '')}`;
+			context.fillText('A', 7, 37);
+			const textURI = canvas.toDataURL();
+
+			// Emoji
+			context.restore();
+			context.clearRect(0, 0, canvas.width, canvas.height);
+		  canvas.width = maxSize;
+		  canvas.height = maxSize;
+			context.font = `35px ${cssFontFamily.replace(/!important/gm, '')}`;
+			context.fillText('👾', 0, 37);
+			const emojiURI = canvas.toDataURL();
+
 			// lies
-			if (mods && mods.pixels) {
+			context.clearRect(0, 0, canvas.width, canvas.height);
+			const liedImageData = !!Math.max(...context.getImageData(0, 0, 8, 8).data);
+			if ((mods && mods.pixels) || liedImageData) {
 				lied = true;
-				const iframeLie = `pixel data modified`;
-				documentLie(`CanvasRenderingContext2D.getImageData`, iframeLie);
+				documentLie(`CanvasRenderingContext2D.getImageData`, `pixel data modified`);
 			}
 			
 			const getTextMetricsFloatLie = context => {
@@ -3249,22 +3388,19 @@
 					'metric noise detected'
 				);
 			}
-			const imageDataCompressed = (
-				imageData ? String.fromCharCode.apply(null, imageData) : undefined
-			);
-			
+
 			logTestResult({ time: timer.stop(), test: 'canvas 2d', passed: true });
 			return {
 				dataURI,
-				imageData: imageDataCompressed,
+				paintURI,
+				textURI,
+				emojiURI,
 				mods,
-				points,
 				blob,
 				blobOffscreen,
 				textMetricsSystemSum,
 				liedTextMetrics: textMetricsLie,
 				emojiSet: [...emojiSet],
-				emojiFonts: [...detectedEmojiFonts],
 				lied
 			}
 		}
@@ -3275,13 +3411,14 @@
 		}
 	};
 
-	const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, formatEmojiSet, performanceLogger }) => {
+	const canvasHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, formatEmojiSet, performanceLogger, cssFontFamily }) => {
 		if (!fp.canvas2d) {
 			return `
 		<div class="col-six undefined">
 			<strong>Canvas 2d</strong> <span>${note.blocked}</span>
 			<div>data: ${note.blocked}</div>
-			<div>pixel trap:</div>
+			<div>rendering:</div>
+			<div class="icon-pixel-container pixels">${note.blocked}</div>
 			<div class="icon-pixel-container pixels">${note.blocked}</div>
 			<div>textMetrics:</div>
 			<div class="block-text">${note.blocked}</div>
@@ -3292,13 +3429,13 @@
 			canvas2d: {
 				lied,
 				dataURI,
-				imageData,
+				paintURI,
+				textURI,
+				emojiURI,
 				mods,
-				points,
 				blob,
 				blobOffscreen,
 				emojiSet,
-				emojiFonts,
 				textMetricsSystemSum,
 				$hash
 			}
@@ -3307,71 +3444,33 @@
 		const modPercent = pixels ? Math.round((pixels / 400) * 100) : 0;
 
 		const {
-			readAsArrayBuffer,
-			readAsBinaryString,
 			readAsDataURL,
-			readAsText
 		} = blob || {};
 
 		const hash = {
 			dataURI: hashMini(dataURI),
-			readAsArrayBuffer: hashMini(readAsArrayBuffer),
-			readAsBinaryString: hashMini(readAsBinaryString),
-			readAsDataURL: hashMini(readAsDataURL),
-			readAsText: hashMini(readAsText)
-			
+			blobDataURI: hashMini(readAsDataURL)
 		};
-
+		
+		const decorate = diff => `<span class="bold-fail">${diff}</span>`;
 		const getBlobtemplate = blob => {
 			const {
-				readAsArrayBuffer,
-				readAsBinaryString,
 				readAsDataURL,
-				readAsText
 			} = blob || {};
-	    	const decorate = diff => `<span class="bold-fail">${diff}</span>`;
 			return `
-			<br>readAsArrayBuffer: ${
-				!readAsArrayBuffer ? note.unsupported : getDiffs({
-					stringA: hash.readAsArrayBuffer,
-					stringB: hashMini(readAsArrayBuffer),
-					charDiff: true,
-					decorate
-				})
-			}
-			<br>readAsBinaryString: ${
-				!readAsBinaryString ? note.unsupported : getDiffs({
-					stringA: hash.readAsBinaryString,
-					stringB: hashMini(readAsBinaryString),
-					charDiff: true,
-					decorate
-				})
-			}
 			<br>readAsDataURL: ${
 				!readAsDataURL ? note.unsupported : getDiffs({
-					stringA: hash.dataURI,
+					stringA: hash.blobDataURI,
 					stringB: hashMini(readAsDataURL),
-					charDiff: true,
-					decorate
-				})
-			}
-			<br>readAsText: ${
-				!readAsText ? note.unsupported : getDiffs({
-					stringA: hash.readAsText,
-					stringB: hashMini(readAsText),
 					charDiff: true,
 					decorate
 				})
 			}
 		`
 		};
-		const { isPointInPath, isPointInStroke } = points || {};
 		const dataTemplate = `
 		${dataURI ? `<div class="icon-pixel canvas-data"></div>` : ''}
 		<br>toDataURL: ${!dataURI ? note.blocked : hash.dataURI}
-		<br>getImageData: ${!imageData ? note.blocked : hashMini(imageData)}
-		<br>isPointInPath: ${!isPointInPath ? note.blocked : hashMini(isPointInPath)}
-		<br>isPointInStroke: ${!isPointInStroke ? note.blocked : hashMini(isPointInStroke)}
 		<br><br><strong>HTMLCanvasElement.toBlob</strong>
 		${getBlobtemplate(blob)}
 		<br><br><strong>OffscreenCanvas.convertToBlob</strong>
@@ -3394,20 +3493,24 @@
 	<div class="relative col-six${lied ? ' rejected' : ''}">
 		<style>
 			.pixels {
-				padding: 10px;
+				padding: 15px;
 				position: relative;
 				overflow: hidden;
 			}
 			.canvas-data {
 				max-width: 200px;
-				height: 30px;
+				height: 50px;
 				transform: scale(1);
 				background-image: url(${dataURI})
 			}
 			.pixel-image,
-			.pixel-image-random {
+			.pixel-image-random,
+			.combined-image,
+			.paint-image, 
+			.text-image, 
+			.emoji-image {
 				max-width: 35px;
-    			border-radius: 50%;
+    		border-radius: 50%;
 				transform: scale(1.5);
 			}
 			.pixel-image {
@@ -3415,6 +3518,18 @@
 			}
 			.pixel-image-random {
 				background-image: url(${pixelImageRandom})
+			}
+			.paint-image {
+				background-image: url(${paintURI})
+			}
+			.text-image {
+				background-image: url(${textURI})
+			}
+			.emoji-image {
+				background-image: url(${emojiURI})
+			}
+			.combined-image {
+				background-image: url(${dataURI})
 			}
 			.rgba {
 				width: 8px;
@@ -3445,31 +3560,32 @@
 		</style>
 		<span class="aside-note">${performanceLogger.getLog()['canvas 2d']}</span>
 		<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-		<div class="help" title="HTMLCanvasElement.toDataURL()\nCanvasRenderingContext2D.getImageData()\nCanvasRenderingContext2D.isPointInPath()\nCanvasRenderingContext2D.isPointInStroke()\nHTMLCanvasElement.toBlob()\nOffscreenCanvas.convertToBlob()\nFileReader.readAsArrayBuffer()\nFileReader.readAsBinaryString()\nFileReader.readAsDataURL()\nFileReader.readAsText()">data: ${
+		<div class="help" title="HTMLCanvasElement.toDataURL()\nCanvasRenderingContext2D.getImageData()\nHTMLCanvasElement.toBlob()\nOffscreenCanvas.convertToBlob()\nFileReader.readAsDataURL()">data: ${
 			modal(
 				'creep-canvas-data',
 				dataTemplate,
 				hashMini({
 					dataURI,
-					imageData,
-					points,
 					blob,
 					blobOffscreen
 				})
 			)
 		}</div>
-		<div class="help" title="CanvasRenderingContext2D.getImageData()">pixel trap: ${rgba ? `${modPercent}% rgba noise ${rgbaHTML}` : ''}</div>
+		<div class="help" title="CanvasRenderingContext2D.getImageData()">rendering: ${rgba ? `${modPercent}% rgba noise ${rgbaHTML}` : ''}</div>
+		<div class="icon-pixel-container pixels">
+			${textURI ? `<div class="icon-pixel text-image"></div>` : ''}
+			${emojiURI ? `<div class="icon-pixel emoji-image"></div>` : ''}
+			${paintURI ? `<div class="icon-pixel paint-image"></div>` : ''}
+			${dataURI ? `<div class="icon-pixel combined-image"></div>` : ''}
+		</div>
 		<div class="icon-pixel-container pixels">
 			<div class="icon-pixel pixel-image-random"></div>
 			${rgba ? `<div class="icon-pixel pixel-image"></div>` : ''}
 		</div>
 		<div>textMetrics:</div>
 		<div class="block-text help relative" title="${emojiHelpTitle}"> 
-			<span class="confidence-note">${
-				!emojiFonts ? '' : emojiFonts.length > 1 ? `${emojiFonts[0]}...` : (emojiFonts[0] || '')
-			}</span>
 			<span>${textMetricsSystemSum || note.unsupported}</span>
-			<span class="grey jumbo" style="${!(emojiFonts || [])[0] ? '' : `font-family: '${emojiFonts[0]}' !important`}">
+			<span class="grey jumbo" style="font-family: ${cssFontFamily}">
 				${formatEmojiSet(emojiSet)}
 			</span>
 		</div>
@@ -4920,6 +5036,7 @@
 				queueEvent,
 				createTimer,
 				getEmojis,
+				cssFontFamily,
 				captureError,
 				lieProps,
 				patch,
@@ -4930,55 +5047,17 @@
 		} = imports;
 
 		
-		const getPixelFonts = ({ doc, id, chars, baseFonts, families, emojis }) => {
+		const getPixelEmojis = ({ doc, id, emojis }) => {
 			try {
 				patch(doc.getElementById(id), html`
-				<style>
-					#${id}-detector {
-						--font: '';
-						position: absolute !important;
-						left: -9999px!important;
-						font-size: 256px !important;
-						font-style: normal !important;
-						font-weight: normal !important;
-						letter-spacing: normal !important;
-						line-break: auto !important;
-						line-height: normal !important;
-						text-transform: none !important;
-						text-align: left !important;
-						text-decoration: none !important;
-						text-shadow: none !important;
-						white-space: normal !important;
-						word-break: normal !important;
-						word-spacing: normal !important;
-						/* in order to test scrollWidth, clientWidth, etc. */
-						padding: 0 !important;
-						margin: 0 !important;
-						/* in order to test inlineSize and blockSize */
-						writing-mode: horizontal-tb !important;
-						/* in order to test perspective-origin */
-						/* in order to test origins */
-						transform-origin: unset !important;
-						perspective-origin: unset !important;
-					}
-					#${id}-detector::after {
-						font-family: var(--font);
-						content: '${chars}';
-					}
-				</style>
-				<span id="${id}-detector"></span>
 				<div id="pixel-emoji-container">
 				<style>
 					.pixel-emoji {
-						font-family:
-						'Segoe UI Emoji', /* Windows */
-						'Apple Color Emoji', /* Apple */
-						'Noto Color Emoji', /* Linux, Android, Chrome OS */
-						sans-serif !important;
+						font-family: ${cssFontFamily};
 						font-size: 200px !important;
 						height: auto;
 						position: absolute !important;
-						transform: scale(100);
+						transform: scale(1.000999);
 					}
 					</style>
 					${
@@ -4988,82 +5067,15 @@
 					}
 				</div>
 			`);
-				
-				const pixelToNumber = pixels => +(pixels.replace('px', ''));
-				const getPixelDimensions = style => {
-					const transform = style.transformOrigin.split(' ');
-					const perspective = style.perspectiveOrigin.split(' ');
-					const dimensions = {
-						transformWidth: pixelToNumber(transform[0]),
-						transformHeight: pixelToNumber(transform[1]),
-						perspectiveWidth: pixelToNumber(perspective[0]),
-						perspectiveHeight: pixelToNumber(perspective[1])
-					};
-					return dimensions
-				};
-				const span = doc.getElementById(`${id}-detector`);
-				const style = getComputedStyle(span);
-
-				// get perspective fonts
-				const detectedViaTransform = new Set();
-				const detectedViaPerspective = new Set();
-				const base = baseFonts.reduce((acc, font) => {
-					span.style.setProperty('--font', font);
-					const dimensions = getPixelDimensions(style);
-					acc[font] = dimensions;
-					return acc
-				}, {});
-				families.forEach(family => {
-					span.style.setProperty('--font', family);
-					const basefont = /, (.+)/.exec(family)[1];
-					const dimensions = getPixelDimensions(style);
-					const font = /\'(.+)\'/.exec(family)[1];
-					if (dimensions.transformWidth != base[basefont].transformWidth ||
-						dimensions.transformHeight != base[basefont].transformHeight) {
-						detectedViaTransform.add(font);
-					}
-					if (dimensions.perspectiveWidth != base[basefont].perspectiveWidth ||
-						dimensions.perspectiveHeight != base[basefont].perspectiveHeight) {
-						detectedViaPerspective.add(font);
-					}
-					return
-				});
-
-				// get size fonts
-				const emojiFontShortList = [
-					'Segoe UI Emoji', // Windows
-					'Apple Color Emoji', // Apple
-					'Noto Color Emoji',  // Linux, Android, Chrome OS
-				];
+							
+				// get emoji set and system
 				const getEmojiDimensions = style => {
 					return {
 						width: style.inlineSize,
 						height: style.blockSize
 					}
 				};
-				const emojiFamilies = emojiFontShortList.reduce((acc, font) => {
-					baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`));
-					return acc
-				}, []);
-				const emojiBase = baseFonts.reduce((acc, font) => {
-					span.style.setProperty('--font', font);
-					const dimensions = getEmojiDimensions(style);
-					acc[font] = dimensions;
-					return acc
-				}, {});
-				const detectedEmojiFonts = emojiFamilies.reduce((acc, family) => {
-					span.style.setProperty('--font', family);
-					const basefont = /, (.+)/.exec(family)[1];
-					const dimensions = getEmojiDimensions(style);
-					const font = /\'(.+)\'/.exec(family)[1];
-					if (dimensions.width != emojiBase[basefont].width ||
-						dimensions.height != emojiBase[basefont].height) {
-						acc.add(font);
-					}
-					return acc
-				}, new Set());
 				
-				// get emoji set and system
 				const pattern = new Set();
 				const emojiElems = [...doc.getElementsByClassName('pixel-emoji')];
 				const emojiSet = emojiElems.reduce((emojiSet, el, i) => {
@@ -5078,39 +5090,20 @@
 					return emojiSet
 				}, new Set());
 
-				const pixelSizeSum = 0.00001 * [...pattern].map(x => {
+				const pixelToNumber = pixels => +(pixels.replace('px', ''));
+				const pixelSizeSystemSum = 0.00001 * [...pattern].map(x => {
 					return x.split(',').map(x => pixelToNumber(x)).reduce((acc, x) => acc += (+x||0), 0)
 				}).reduce((acc, x) => acc += x, 0);
 				
-
-				const amplifySum = (n, fontSet) => {
-					const { size } = fontSet;
-					if (size > 1) {
-						return n / +`1e${size}00` // ...e-200
-					}
-					return (
-						!size ? n * -1e150 : // -...e+148
-							size > 1 ? n / +`1e${size}00` : // ...e-200
-								fontSet.has('Segoe UI Emoji') ? n :
-									fontSet.has('Apple Color Emoji') ? n / 1e64 : // ...e-66
-										n * 1e64 // ...e+62
-					)
-				};
-
-				const pixelSizeSystemSum =  amplifySum(pixelSizeSum, detectedEmojiFonts);
-				
 				return {
-					transform: [...detectedViaTransform],
-					perspective: [...detectedViaPerspective],
 					emojiSet: [...emojiSet],
-					emojiFonts: [...detectedEmojiFonts],
 					pixelSizeSystemSum
 				}
 			} catch (error) {
 				console.error(error);
 				return {
-					transform: [],
-					perspective: []
+					emojiSet: [],
+					pixelSizeSystemSum: 0
 				}
 			}
 		};
@@ -5217,33 +5210,16 @@
 			const div = doc.createElement('div');
 			div.setAttribute('id', id);
 			doc.body.appendChild(div);
-			const baseFonts = ['monospace', 'sans-serif', 'serif'];
-			const fontShortList = getFontsShortList();
-			const families = fontShortList.reduce((acc, font) => {
-				baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`));
-				return acc
-			}, []);
 			
 			const {
 				emojiSet,
-				emojiFonts,
 				pixelSizeSystemSum,
-				transform,
-				perspective
-			} = getPixelFonts({
+			} = getPixelEmojis({
 				doc,
 				id,
-				chars: `mmmmmmmmmmlli`,
-				baseFonts,
-				families,
 				emojis: getEmojis()
 			}) || {};
 			
-			const pixelFonts = { transform, perspective };
-			const compressToList = fontObject => Object.keys(fontObject).reduce((acc, key) => {
-				return [...acc, ...fontObject[key]]
-			}, []);
-			const originFonts = [...new Set(compressToList(pixelFonts))];
 			const fontList = getFontList();
 			const fontFaceLoadFonts = await getFontFaceLoadFonts(fontList);
 			const platformVersion = getPlatformVersion(fontFaceLoadFonts);
@@ -5262,12 +5238,9 @@
 			logTestResult({ time: timer.stop(), test: 'fonts', passed: true });
 			return {
 				fontFaceLoadFonts,
-				pixelFonts,
-				originFonts,
 				platformVersion,
 				apps,
 				emojiSet,
-				emojiFonts,
 				pixelSizeSystemSum,
 				lied
 			}
@@ -5278,25 +5251,24 @@
 		}
 	};
 
-	const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini, formatEmojiSet, performanceLogger }) => {
+	const fontsHTML = ({ fp, note, modal, count, hashSlice, hashMini, formatEmojiSet, performanceLogger, cssFontFamily }) => {
 		if (!fp.fonts) {
 			return `
 		<div class="col-six undefined">
 			<strong>Fonts</strong>
-			<div>origin (0): ${note.blocked}</div>
 			<div>load (0):</div>
+			<div>apps:${note.blocked}</div>
 			<div class="block-text-large">${note.blocked}</div>
+			<div class="block-text">${note.blocked}</div>
 		</div>`
 		}
 		const {
 			fonts: {
 				$hash,
 				fontFaceLoadFonts,
-				originFonts,
 				platformVersion,
 				apps,
 				emojiSet,
-				emojiFonts,
 				pixelSizeSystemSum,
 				lied
 			}
@@ -5310,56 +5282,31 @@
 			'CrOS': '<span class="icon cros"></span>'
 		};
 
-		const systemMap = {
-			'Lucida Console': [icon.Windows, 'Windows'],
-			'Arimo': [icon.Linux, 'Linux'],
-			'Noto Color Emoji': [icon.Linux, 'Linux'],
-			'Noto Color Emoji,Ubuntu': [icon.Linux, 'Linux Ubuntu'],
-			'Noto Color Emoji,Roboto': [icon.CrOS, 'Chrome OS'],
-			'Droid Sans Mono,Roboto': [icon.Android, 'Android'],
-			'Droid Sans Mono,Noto Color Emoji,Roboto': [`${icon.Linux}${icon.Android}`, 'Android'], // Android on Chrome OS
-			'Helvetica Neue': [icon.Apple, 'iOS'],
-			'Geneva,Helvetica Neue': [icon.Apple, 'Mac']
-		};
-
-		const originFontString = ''+(originFonts.sort());
-		const fontFaceLoadHash = hashMini(fontFaceLoadFonts);
-		const system = systemMap[originFontString];
 		const blockHelpTitle = `FontFace.load()\nCSSStyleDeclaration.setProperty()\nblock-size\ninline-size\nhash: ${hashMini(emojiSet)}\n${(emojiSet||[]).map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`;
 		return `
 	<div class="relative col-six${lied ? ' rejected' : ''}">
 		<span class="aside-note">${performanceLogger.getLog().fonts}</span>
 		<strong>Fonts</strong><span class="hash">${hashSlice($hash)}</span>
-		<div class="help ellipsis-all" title="CSSStyleDeclaration.setProperty()\ntransform-origin\nperspective-origin">origin (${originFonts ? count(originFonts) : '0'}/${'' + getFontsShortList().length}): ${originFontString ? `${system ? system[0] : ''}${originFontString}`: note.unknown }</div>
-		<div class="help" title="FontFace.load()">load (${fontFaceLoadFonts ? count(fontFaceLoadFonts) : '0'}/${'' + getFontList().length}): ${
-			!(fontFaceLoadFonts||[]).length ? note.unknown : modal(
-				'creep-fonts',
-				fontFaceLoadFonts.map(font => `<span style="font-family:'${font}'">${font}</span>`).join('<br>'),
-				fontFaceLoadHash
+		<div class="help" title="FontFace.load()">load (${fontFaceLoadFonts ? count(fontFaceLoadFonts) : '0'}/${'' + getFontList().length}): ${platformVersion || ((fonts) => {
+			return !(fonts || []).length ? '' : (
+				((''+fonts).match(/Lucida Console/)||[]).length ? `${icon.Windows}Lucida Console...` :
+				((''+fonts).match(/Droid Sans Mono|Noto Color Emoji|Roboto/g)||[]).length == 3 ? `${icon.Linux}${icon.Android}Droid Sans Mono,Noto Color...` :
+				((''+fonts).match(/Droid Sans Mono|Roboto/g)||[]).length == 2 ? `${icon.Android}Droid Sans Mono,Roboto...` :
+				((''+fonts).match(/Noto Color Emoji|Roboto/g)||[]).length == 2 ? `${icon.CrOS}Noto Color Emoji,Roboto...` :
+				((''+fonts).match(/Noto Color Emoji/)||[]).length ? `${icon.Linux}Noto Color Emoji...` :
+				((''+fonts).match(/Arimo/)||[]).length ? `${icon.Linux}Arimo...` :
+				((''+fonts).match(/Helvetica Neue/g)||[]).length == 2 ? `${icon.Apple}Helvetica Neue...` :
+				`${(fonts||[])[0]}...`
 			)
-		}</div>
-		<div class="block-text-large help relative" title="${blockHelpTitle}">
+		})(fontFaceLoadFonts)}</div>
+		<div>apps: ${(apps || []).length ? apps.join(', ') : note.unknown}</div>
+		<div class="block-text-large help relative" title="FontFace.load()">
+			${fontFaceLoadFonts.join(', ') || note.unsupported}
+		</div>
+		<div class="block-text help relative" title="${blockHelpTitle}">
 			<div>
-				${platformVersion ? `platform: ${platformVersion}` : ((fonts) => {
-					
-					return !(fonts || []).length ? '' : (
-						((''+fonts).match(/Lucida Console/)||[]).length ? `${icon.Windows}Lucida Console...` :
-						((''+fonts).match(/Droid Sans Mono|Noto Color Emoji|Roboto/g)||[]).length == 3 ? `${icon.Linux}${icon.Android}Droid Sans Mono,Noto Color...` :
-						((''+fonts).match(/Droid Sans Mono|Roboto/g)||[]).length == 2 ? `${icon.Android}Droid Sans Mono,Roboto...` :
-						((''+fonts).match(/Noto Color Emoji|Roboto/g)||[]).length == 2 ? `${icon.CrOS}Noto Color Emoji,Roboto...` :
-						((''+fonts).match(/Noto Color Emoji/)||[]).length ? `${icon.Linux}Noto Color Emoji...` :
-						((''+fonts).match(/Arimo/)||[]).length ? `${icon.Linux}Arimo...` :
-						((''+fonts).match(/Helvetica Neue/g)||[]).length == 2 ? `${icon.Apple}Helvetica Neue...` :
-						`${(fonts||[])[0]}...`
-					)
-				})(fontFaceLoadFonts)}
-				${(apps || []).length ? `<br>apps: ${(apps || []).join(', ')}` : ''}
-
-				<span class="confidence-note">${
-					!emojiFonts ? '' : emojiFonts.length > 1 ? `${emojiFonts[0]}...` : (emojiFonts[0] || '')
-				}</span>
 				<br><span>${pixelSizeSystemSum || note.unsupported}</span>
-				<br><span class="grey jumbo" style="${!(emojiFonts || [])[0] ? '' : `font-family: '${emojiFonts[0]}' !important`}">${formatEmojiSet(emojiSet)}</span>
+				<br><span class="grey jumbo" style="font-family: ${cssFontFamily}">${formatEmojiSet(emojiSet)}</span>
 			</div>
 		</div>
 	</div>
@@ -7033,6 +6980,7 @@
 				createTimer,
 				instanceId,
 				getEmojis,
+				cssFontFamily,
 				patch,
 				html,
 				captureError,
@@ -7257,15 +7205,11 @@
 			<div id="emoji-container">
 				<style>
 				.domrect-emoji {
-					font-family:
-					'Segoe UI Emoji', /* Windows */
-					'Apple Color Emoji', /* Apple */
-					'Noto Color Emoji', /* Linux, Android, Chrome OS */
-					sans-serif !important;
+					font-family: ${cssFontFamily};
 					font-size: 200px !important;
 					height: auto;
 					position: absolute !important;
-					transform: scale(100);
+					transform: scale(1.000999);
 				}
 				</style>
 				${
@@ -7276,41 +7220,6 @@
 			</div>
 		</div>
 		`);
-
-			
-			// fonts
-			const baseFonts = ['monospace', 'sans-serif', 'serif'];
-			const fontShortList = [
-				'Segoe UI Emoji', // Windows
-				'Apple Color Emoji', // Apple
-				'Noto Color Emoji',  // Linux, Android, Chrome OS
-			];
-			const families = fontShortList.reduce((acc, font) => {
-				baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`));
-				return acc
-			}, []);
-			const span = doc.getElementById(fontId);
-			const getRectDimensions = span => {
-				const { width, height } = span.getClientRects()[0];
-				return { width, height }
-			};
-			const base = baseFonts.reduce((acc, font) => {
-				span.style.setProperty('--font', font);
-				const dimensions = getRectDimensions(span);
-				acc[font] = dimensions;
-				return acc
-			}, {});
-			const detectedEmojiFonts = families.reduce((acc, family) => {
-				span.style.setProperty('--font', family);
-				const basefont = /, (.+)/.exec(family)[1];
-				const dimensions = getRectDimensions(span);
-				const font = /\'(.+)\'/.exec(family)[1];
-				if (dimensions.width != base[basefont].width ||
-					dimensions.height != base[basefont].height) {
-					acc.add(font);
-				}
-				return acc
-			}, new Set());
 
 			// get emoji set and system
 			const pattern = new Set();
@@ -7328,25 +7237,9 @@
 				return emojiSet
 			}, new Set());
 
-			const domrectSum = 0.00001 * [...pattern].map(x => {
+			const domrectSystemSum = 0.00001 * [...pattern].map(x => {
 				return x.split(',').reduce((acc, x) => acc += (+x||0), 0)
 			}).reduce((acc, x) => acc += x, 0);
-
-			const amplifySum = (n, fontSet) => {
-				const { size } = fontSet;
-				if (size > 1) {
-					return n / +`1e${size}00` // ...e-200
-				}
-				return (
-					!size ? n * -1e150 : // -...e+148
-						size > 1 ? n / +`1e${size}00` : // ...e-200
-							fontSet.has('Segoe UI Emoji') ? n :
-								fontSet.has('Apple Color Emoji') ? n / 1e64 : // ...e-66
-									n * 1e64 // ...e+62
-				)
-			}; 
-
-			const domrectSystemSum = amplifySum(domrectSum, detectedEmojiFonts);
 
 			// get clientRects
 			const range = document.createRange();
@@ -7369,7 +7262,6 @@
 				range.selectNode(el);
 				return toNativeObject(el.getBoundingClientRect())
 			});
-
 
 			// detect failed shift calculation
 			// inspired by https://arkenfox.github.io/TZP
@@ -7447,7 +7339,6 @@
 				rangeClientRects,
 				rangeBoundingClientRect,
 				emojiSet: [...emojiSet],
-				emojiFonts: [...detectedEmojiFonts],
 				domrectSystemSum,
 				lied
 			}
@@ -7459,7 +7350,7 @@
 		}
 	};
 
-	const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, formatEmojiSet, performanceLogger }) => {
+	const clientRectsHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, formatEmojiSet, performanceLogger, cssFontFamily }) => {
 		if (!fp.clientRects) {
 			return `
 		<div class="col-six undefined">
@@ -7479,7 +7370,6 @@
 				rangeClientRects,
 				rangeBoundingClientRect,
 				emojiSet,
-				emojiFonts,
 				domrectSystemSum,
 				lied
 			}
@@ -7525,11 +7415,8 @@
 		<div class="help" title="Range.getClientRects()">range A: ${computeDiffs(rangeClientRects)}</div>
 		<div class="help" title="Range.getBoundingClientRect()">range B: ${computeDiffs(rangeBoundingClientRect)}</div>
 		<div class="block-text help relative" title="${helpTitle}">
-			<span class="confidence-note">${
-				!emojiFonts ? '' : emojiFonts.length > 1 ? `${emojiFonts[0]}...` : (emojiFonts[0] || '')
-			}</span>
 			<span>${domrectSystemSum || note.unsupported}</span>
-			<span class="grey jumbo" style="${!(emojiFonts || [])[0] ? '' : `font-family: '${emojiFonts[0]}' !important`}">${formatEmojiSet(emojiSet)}</span>
+			<span class="grey jumbo" style="font-family: ${cssFontFamily}">${formatEmojiSet(emojiSet)}</span>
 		</div>
 	</div>
 	`
@@ -8435,7 +8322,7 @@
 					const giveUpOnVoices = setTimeout(() => {
 						logTestResult({ test: 'speech', passed: false });
 						return resolve()
-					}, 3000);
+					}, 1000);
 					const data = speechSynthesis.getVoices();
 					const isChrome = ((3.141592653589793 ** -100) == 1.9275814160560204e-50);
 					const localServiceDidLoad = (data || []).find(x => x.localService);
@@ -8749,7 +8636,7 @@
 						}
 						logTestResult({ test: 'webrtc', passed: false });
 						return resolve()
-					}, 3000);
+					}, 1000);
 
 					const computeCandidate = event => {
 						const { candidate } = event.candidate || {};
@@ -8870,7 +8757,6 @@
 				getOS,
 				decryptUserAgent,
 				captureError,
-				phantomDarkness,
 				getUserAgentPlatform,
 				documentLie,
 				logTestResult,
@@ -8884,38 +8770,62 @@
 			await queueEvent(timer);
 
 			const ask = fn => { try { return fn() } catch (e) { return } };
-			const resolveWorkerData = (target, resolve, fn) => target.addEventListener('message', event => {
-				fn(); return resolve(event.data)
-			});
+
 			const hasConstructor = (x, name) => x && x.__proto__.constructor.name == name;
 			const getDedicatedWorker = ({ scriptSource }) => new Promise(resolve => {
+				const giveUpOnWorker = setTimeout(() => {
+					return resolve()
+				}, 3000);
+				
 				const dedicatedWorker = ask(() => new Worker(scriptSource));
 				if (!hasConstructor(dedicatedWorker, 'Worker')) return resolve()
-				return resolveWorkerData(dedicatedWorker, resolve, () => dedicatedWorker.terminate())
+				
+				dedicatedWorker.onmessage = event => {
+					dedicatedWorker.terminate();
+					clearTimeout(giveUpOnWorker);
+					return resolve(event.data)
+				};
 			});
 			const getSharedWorker = ({ scriptSource }) => new Promise(resolve => {
+				const giveUpOnWorker = setTimeout(() => {
+					return resolve()
+				}, 3000);
+				
 				const sharedWorker = ask(() => new SharedWorker(scriptSource));
 				if (!hasConstructor(sharedWorker, 'SharedWorker')) return resolve()
+				
 				sharedWorker.port.start();
-				return resolveWorkerData(sharedWorker.port, resolve, () => sharedWorker.port.close())
+				
+				sharedWorker.port.onmessage = event => {
+					sharedWorker.port.close();
+					clearTimeout(giveUpOnWorker);
+					return resolve(event.data)
+				};
 			});
 			const getServiceWorker = ({ scriptSource }) => new Promise(resolve => {
+				const giveUpOnWorker = setTimeout(() => {
+					return resolve()
+				}, 3000);
+				
 				if (!ask(() => navigator.serviceWorker.register)) return resolve()
+				
 				return navigator.serviceWorker.register(scriptSource).then(registration => {
 					if (!hasConstructor(registration, 'ServiceWorkerRegistration')) return resolve()
+					
 					return navigator.serviceWorker.ready.then(registration => {
 						registration.active.postMessage(undefined);
-						return resolveWorkerData(
-							navigator.serviceWorker,
-							resolve,
-							() => registration.unregister()
-						)
+
+						navigator.serviceWorker.onmessage = event => {
+							registration.unregister();
+							clearTimeout(giveUpOnWorker);
+							return resolve(event.data)
+						};
 					})
 				}).catch(error => {
 					console.error(error);
+					clearTimeout(giveUpOnWorker);
 					return resolve()
 				})
-				
 			});
 
 			const scriptSource = 'creepworker.js';
@@ -8926,6 +8836,7 @@
 				console.error(error.message);
 				return
 			});
+			
 			if (!(workerScope || {}).userAgent) {
 				scope = 'SharedWorkerGlobalScope';
 				type = 'shared'; // no support in Safari, iOS, and Chrome Android
@@ -8935,6 +8846,7 @@
 					return
 				});
 			}
+			
 			if (!(workerScope || {}).userAgent) {
 				scope = 'WorkerGlobalScope';
 				type = 'dedicated'; // simulators & extensions can spoof userAgent
@@ -9120,7 +9032,7 @@
 		}
 	};
 
-	const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, computeWindowsRelease, performanceLogger, formatEmojiSet }) => {
+	const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, computeWindowsRelease, performanceLogger, formatEmojiSet, cssFontFamily }) => {
 		if (!fp.workerScope) {
 			return `
 		<div class="col-six undefined">
@@ -9178,7 +9090,6 @@
 			fontPlatformVersion,
 			fontApps,
 			emojiSet,
-			emojiFonts,
 			userAgentData,
 			type,
 			scope,
@@ -9271,11 +9182,8 @@
 				})(fontFaceLoadFonts)}
 				${(fontApps || []).length ? `<br>apps: ${(fontApps || []).join(', ')}` : ''}
 				
-				<span class="confidence-note">${
-					!emojiFonts ? '' : emojiFonts.length > 1 ? `${emojiFonts[0]}...` : (emojiFonts[0] || '')
-				}</span>
 				<br><span>${textMetricsSystemSum || note.unsupported}</span>
-				<br><span class="grey jumbo" style="${!(emojiFonts || [])[0] ? '' : `font-family: '${emojiFonts[0]}' !important`}">${formatEmojiSet(emojiSet)}</span>
+				<br><span class="grey jumbo" style="font-family: ${cssFontFamily}">${formatEmojiSet(emojiSet)}</span>
 			</div>
 		</div>
 
@@ -9354,11 +9262,11 @@
 			require: {
 				queueEvent,
 				createTimer,
-				instanceId,
 				patch,
 				html,
 				captureError,
 				getEmojis,
+				cssFontFamily,
 				lieProps,
 				logTestResult,
 				phantomDarkness
@@ -9383,41 +9291,13 @@
 					document
 			);
 			
-			const svgId = `${instanceId}-svg-div`;
-			const fontId = 'svgrect-font-detector';
 			const divElement = document.createElement('div');
-			divElement.setAttribute('id', svgId);
 			doc.body.appendChild(divElement);
 
 			const emojis = getEmojis();
 			
 			// patch div
 			patch(divElement, html`
-		<div id="${svgId}">
-			<style>
-				#${fontId} {
-					--font: '';
-					position: absolute !important;
-					left: -9999px!important;
-					font-size: 256px !important;
-					font-style: normal !important;
-					font-weight: normal !important;
-					letter-spacing: normal !important;
-					line-break: auto !important;
-					line-height: normal !important;
-					text-transform: none !important;
-					text-align: left !important;
-					text-decoration: none !important;
-					text-shadow: none !important;
-					white-space: normal !important;
-					word-break: normal !important;
-					word-spacing: normal !important;
-					font-family: var(--font);
-				}
-			</style>
-			<svg viewBox="0 0 200 200">
-				<text id="${fontId}">${emojis.join('')}</text>
-			</svg>
 			<div id="svg-container">
 				<style>
 				#svg-container {
@@ -9426,15 +9306,11 @@
 					height: auto;
 				}
 				.svgrect-emoji {
-					font-family:
-					'Segoe UI Emoji', /* Windows */
-					'Apple Color Emoji', /* Apple */
-					'Noto Color Emoji', /* Linux, Android, Chrome OS */
-					sans-serif !important;
+					font-family: ${cssFontFamily};
 					font-size: 200px !important;
 					height: auto;
 					position: absolute !important;
-					transform: scale(100);
+					transform: scale(1.000999);
 				}
 				</style>
 				<svg>
@@ -9447,43 +9323,7 @@
 					</g>
 				</svg>
 			</div>
-		</div>
 		`);
-
-			// fonts
-			const baseFonts = ['monospace', 'sans-serif', 'serif'];
-			const fontShortList = [
-				'Segoe UI Emoji', // Windows
-				'Apple Color Emoji', // Apple
-				'Noto Color Emoji',  // Linux, Android, Chrome OS
-			];
-			const families = fontShortList.reduce((acc, font) => {
-				baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`));
-				return acc
-			}, []);
-			const svgText = doc.getElementById(fontId);
-			const getCharDimensions = (svgText, emojis) => {
-				const { width, height, y } = svgText.getExtentOfChar(emojis.join(''));
-				return { width, height, y }
-			};
-			const base = baseFonts.reduce((acc, font) => {
-				svgText.style.setProperty('--font', font);
-				const dimensions = getCharDimensions(svgText, emojis);
-				acc[font] = dimensions;
-				return acc
-			}, {});
-			const detectedEmojiFonts = families.reduce((acc, family) => {
-				svgText.style.setProperty('--font', family);
-				const basefont = /, (.+)/.exec(family)[1];
-				const dimensions = getCharDimensions(svgText, emojis);
-				const font = /\'(.+)\'/.exec(family)[1];
-				if ((dimensions.width != base[basefont].width) ||
-					(dimensions.height != base[basefont].height) ||
-					(dimensions.y != base[basefont].y)) {
-					acc.add(font);
-				}
-				return acc
-			}, new Set());
 
 			// SVG
 			const reduceToObject = nativeObj => {
@@ -9510,58 +9350,30 @@
 
 			// compute SVGRect emojis
 			const pattern = new Set();
-			const lengthSet = {
-				extentOfChar: new Set(),
-				subStringLength: new Set(),
-				computedTextLength: new Set()
-			};
-			await queueEvent(timer);
-
 			const svgElems = [...svgBox.getElementsByClassName('svgrect-emoji')];
+			
+			await queueEvent(timer);
 			const emojiSet = svgElems.reduce((emojiSet, el, i) => {
 				const emoji = emojis[i];
-				const extentOfCharSum = reduceToSum(el.getExtentOfChar(emoji));
-				const subStringLength = el.getSubStringLength(0, 10);
-				const computedTextLength = el.getComputedTextLength();
-				const dimensions = `${extentOfCharSum},${subStringLength},${computedTextLength}`;
+				const dimensions = ''+el.getComputedTextLength();
 				if (!pattern.has(dimensions)) {
 					pattern.add(dimensions);
 					emojiSet.add(emoji);
 				}
-				lengthSet.extentOfChar.add(extentOfCharSum);
-				lengthSet.subStringLength.add(subStringLength);
-				lengthSet.computedTextLength.add(computedTextLength);
 				return emojiSet
 			}, new Set());
 
 			// domRect System Sum
-			const svgrectSum = 0.00001 * [...pattern].map(x => {
+			const svgrectSystemSum = 0.00001 * [...pattern].map(x => {
 				return x.split(',').reduce((acc, x) => acc += (+x||0), 0)
 			}).reduce((acc, x) => acc += x, 0);
-
-			const amplifySum = (n, fontSet) => {
-				const { size } = fontSet;
-				if (size > 1) {
-					return n / +`1e${size}00` // ...e-200
-				}
-				return (
-					!size ? n * -1e150 : // -...e+148
-						size > 1 ? n / +`1e${size}00` : // ...e-200
-							fontSet.has('Segoe UI Emoji') ? n :
-								fontSet.has('Apple Color Emoji') ? n / 1e64 : // ...e-66
-									n * 1e64 // ...e+62
-				)
-			}; 
-
-			const svgrectSystemSum = amplifySum(svgrectSum, detectedEmojiFonts);
-
+			
 			const data = {
 				bBox: getObjectSum(bBox),
-				extentOfChar: getListSum([...lengthSet.extentOfChar]),
-				subStringLength: getListSum([...lengthSet.subStringLength]),
-				computedTextLength: getListSum([...lengthSet.computedTextLength]),
+				extentOfChar: reduceToSum(svgElems[0].getExtentOfChar(emojis[0])),
+				subStringLength: svgElems[0].getSubStringLength(0, 10),
+				computedTextLength: svgElems[0].getComputedTextLength(),
 				emojiSet: [...emojiSet],
-				emojiFonts: [...detectedEmojiFonts],
 				svgrectSystemSum,
 				lied
 			};
@@ -9576,7 +9388,7 @@
 		}
 	};
 
-	const svgHTML = ({ fp, note, hashSlice, hashMini, formatEmojiSet, performanceLogger }) => {
+	const svgHTML = ({ fp, note, hashSlice, hashMini, formatEmojiSet, performanceLogger, cssFontFamily }) => {
 		if (!fp.svg) {
 			return `
 		<div class="col-six undefined">
@@ -9596,7 +9408,6 @@
 				extentOfChar,
 				computedTextLength,
 				emojiSet,
-				emojiFonts,
 				svgrectSystemSum,
 				lied
 			}
@@ -9612,11 +9423,8 @@
 		<div class="help" title="SVGTextContentElement.getSubStringLength()">subs: ${subStringLength ? (subStringLength/divisor) : note.blocked}</div>
 		<div class="help" title="SVGTextContentElement.getComputedTextLength()">text: ${computedTextLength ? (computedTextLength/divisor) : note.blocked}</div>
 		<div class="block-text help relative" title="${helpTitle}">
-			<span class="confidence-note">${
-				!emojiFonts ? '' : emojiFonts.length > 1 ? `${emojiFonts[0]}...` : (emojiFonts[0] || '')
-			}</span>
 			<span>${svgrectSystemSum || note.unsupported}</span>
-			<span class="grey jumbo" style="${!(emojiFonts || [])[0] ? '' : `font-family: '${emojiFonts[0]}' !important`}">${formatEmojiSet(emojiSet)}</span>
+			<span class="grey jumbo" style="font-family: ${cssFontFamily}">${formatEmojiSet(emojiSet)}</span>
 		</div>
 	</div>
 	`	
@@ -11207,6 +11015,10 @@
 			mimeTypesSystem,
 			audioSystem,
 			canvasSystem,
+			canvasBlobSystem,
+			canvasPaintSystem,
+			canvasTextSystem,
+			canvasEmojiSystem,
 			textMetricsSystem,
 			webglSystem,
 			gpuSystem,
@@ -11214,6 +11026,7 @@
 			fontsSystem,
 			voicesSystem,
 			screenSystem,
+			deviceOfTimezone,
 			pendingReview
 		} = decryptionData;
 
@@ -11280,13 +11093,18 @@
 			(mimeTypesSystem || {}).device,
 			(audioSystem || {}).device,
 			(canvasSystem || {}).device,
+			(canvasBlobSystem || {}).device,
+			(canvasPaintSystem || {}).device,
+			(canvasTextSystem || {}).device,
+			(canvasEmojiSystem || {}).device,
 			(textMetricsSystem || {}).device,
 			(webglSystem || {}).device,
 			(gpuSystem || {}).device,
 			(gpuModelSystem || {}).device,
 			(fontsSystem || {}).device,
 			(voicesSystem || {}).device,
-			(screenSystem || {}).device
+			(screenSystem || {}).device,
+			//(deviceOfTimezone || {}).device, // to avoid pollution, don't collect this device
 		]);
 
 		devices.delete(undefined);
@@ -11401,8 +11219,28 @@
 			}</div>
 			<div class="ellipsis relative">
 				<span id="canvas-entropy"></span>${
-				!hasValue(canvasSystem) ? unknownHTML('canvas') : 
+				!hasValue(canvasSystem) ? unknownHTML('canvas image') : 
 					getTemplate({title: 'canvas', agent: canvasSystem})
+			}</div>
+			<div class="ellipsis relative">
+				<span id="canvas-blob-entropy"></span>${
+				!hasValue(canvasBlobSystem) ? unknownHTML('canvas blob') : 
+					getTemplate({title: 'canvas blob', agent: canvasBlobSystem})
+			}</div>
+			<div class="ellipsis relative">
+				<span id="canvas-paint-entropy"></span>${
+				!hasValue(canvasPaintSystem) ? unknownHTML('canvas paint') : 
+					getTemplate({title: 'canvas paint', agent: canvasPaintSystem})
+			}</div>
+			<div class="ellipsis relative">
+				<span id="canvas-text-entropy"></span>${
+				!hasValue(canvasTextSystem) ? unknownHTML('canvas text') : 
+					getTemplate({title: 'canvas text', agent: canvasTextSystem})
+			}</div>
+			<div class="ellipsis relative">
+				<span id="canvas-emoji-entropy"></span>${
+				!hasValue(canvasEmojiSystem) ? unknownHTML('canvas emoji') : 
+					getTemplate({title: 'canvas emoji', agent: canvasEmojiSystem})
 			}</div>
 			<div class="ellipsis relative">
 				<span id="textMetrics-entropy"></span>${
@@ -11444,6 +11282,11 @@
 				!hasValue(resistance) ? unknownHTML('resistance') : 
 					getTemplate({title: 'resistance', agent: resistance})
 			}</div>
+			<div class="ellipsis relative">
+				<span id="device-of-timezone-entropy"></span>${
+				!hasValue(deviceOfTimezone) ? unknownHTML('device of timezone') : 
+					getTemplate({title: 'device of timezone', agent: deviceOfTimezone})
+			}</div>
 		</div>
 		<div class="col-six icon-prediction-container">
 			${[...iconSet].map(icon => {
@@ -11477,7 +11320,11 @@
 				<div>${getBlankIcons()}svg</div>
 				<div>${getBlankIcons()}mimeTypes</div>
 				<div>${getBlankIcons()}audio</div>
-				<div>${getBlankIcons()}canvas</div>
+				<div>${getBlankIcons()}canvas image</div>
+				<div>${getBlankIcons()}canvas blob</div>
+				<div>${getBlankIcons()}canvas paint</div>
+				<div>${getBlankIcons()}canvas text</div>
+				<div>${getBlankIcons()}canvas emoji</div>
 				<div>${getBlankIcons()}textMetrics</div>
 				<div>${getBlankIcons()}webgl</div>
 				<div>${getBlankIcons()}gpu params</div>
@@ -11486,6 +11333,7 @@
 				<div>${getBlankIcons()}voices</div>
 				<div>${getBlankIcons()}screen</div>
 				<div>${getBlankIcons()}resistance</div>
+				<div>${getBlankIcons()}device of timezone</div>
 			</div>
 			<div class="col-four icon-prediction-container">
 			</div>
@@ -11514,6 +11362,7 @@
 			getWebGLRendererConfidence,
 			formatEmojiSet,
 			getEmojis,
+			cssFontFamily,
 			// crypto
 			instanceId,
 			hashMini,
@@ -11690,6 +11539,10 @@
 				voicesHash,
 				canvas2dHash,
 				canvas2dImageHash,
+				canvas2dBlobHash,
+				canvas2dPaintHash,
+				canvas2dTextHash,
+				canvas2dEmojiHash,
 				canvasWebglHash,
 				canvasWebglImageHash,
 				canvasWebglParametersHash,
@@ -11713,7 +11566,8 @@
 				svgHash,
 				resistanceHash,
 				intlHash,
-				featuresHash
+				featuresHash,
+				deviceOfTimezoneHash
 			] = await Promise.all([
 				hashify(windowFeaturesComputed),
 				hashify(headlessComputed),
@@ -11726,6 +11580,10 @@
 				hashify(voicesComputed),
 				hashify(canvas2dComputed),
 				hashify((canvas2dComputed || {}).dataURI),
+				hashify((canvas2dComputed || {}).blob.readAsDataURL),
+				hashify((canvas2dComputed || {}).paintURI),
+				hashify((canvas2dComputed || {}).textURI),
+				hashify((canvas2dComputed || {}).emojiURI),
 				hashify(canvasWebglComputed),
 				hashify((canvasWebglComputed || {}).dataURI),
 				hashify(reducedGPUParameters),
@@ -11754,7 +11612,50 @@
 				hashify(svgComputed),
 				hashify(resistanceComputed),
 				hashify(intlComputed),
-				hashify(featuresComputed)
+				hashify(featuresComputed),
+				hashify((() => {
+					const {
+						bluetoothAvailability,
+						device,
+						deviceMemory,
+						hardwareConcurrency,
+						maxTouchPoints,
+						oscpu,
+						platform, 
+						system,
+						userAgentData,
+					} = navigatorComputed || {};
+					const {
+						architecture,
+						bitness,
+						mobile,
+						model,
+						platform: uaPlatform,
+						platformVersion,
+					} = userAgentData || {};
+					const { anyPointer } = cssMediaComputed || {};
+					const { location, locationEpoch, zone  } = timezoneComputed || {};
+					return [
+						anyPointer,
+						architecture,
+						bitness,
+						bluetoothAvailability,
+						device,
+						deviceMemory,
+						hardwareConcurrency,
+						location,
+						locationEpoch, 
+						maxTouchPoints,
+						mobile,
+						model,
+						oscpu,
+						platform,
+						platformVersion,
+						system,
+						uaPlatform,
+						zone
+					]
+				})())
 			]).catch(error => console.error(error.message));
 			
 			//console.log(performance.now()-start)
@@ -11803,7 +11704,12 @@
 				mimeTypesHash,
 				canvas2dImageHash,
 				canvasWebglImageHash,
+				canvas2dBlobHash,
+				canvas2dPaintHash,
+				canvas2dTextHash,
+				canvas2dEmojiHash,
 				canvasWebglParametersHash,
+				deviceOfTimezoneHash,
 				timeEnd
 			}
 		};
@@ -11816,8 +11722,13 @@
 			domRectHash,
 			mimeTypesHash,
 			canvas2dImageHash,
+			canvas2dBlobHash,
+			canvas2dPaintHash,
+			canvas2dTextHash,
+			canvas2dEmojiHash,
 			canvasWebglImageHash,
 			canvasWebglParametersHash,
+			deviceOfTimezoneHash,
 			timeEnd
 		} = await fingerprint().catch(error => console.error(error));
 		
@@ -11951,17 +11862,17 @@
 				const { lied, liedTextMetrics } = canvas2d; 
 				let data;
 				if (!lied) {
-					const { dataURI, blob, blobOffscreen, imageData } = canvas2d; 
+					const { dataURI, blob, blobOffscreen } = canvas2d; 
 					data = {
 						lied,
-						...{ dataURI, blob, blobOffscreen, imageData }
+						...{ dataURI, blob, blobOffscreen }
 					};
 				}
 				if (!liedTextMetrics) {
-					const { textMetricsSystemSum, emojiSet, emojiFonts } = canvas2d;
+					const { textMetricsSystemSum, emojiSet } = canvas2d;
 					data = {
 						...(data || {}),
-						...{ textMetricsSystemSum, emojiSet, emojiFonts }
+						...{ textMetricsSystemSum, emojiSet }
 					}; 
 				}
 				return data
@@ -12021,7 +11932,7 @@
 			capturedErrors: !!errorsLen,
 			lies: !!liesLen,
 			resistance: fp.resistance || undefined,
-			forceRenew: 1643170284926
+			forceRenew: 1650776877533
 		};
 
 		console.log('%c✔ stable fingerprint passed', 'color:#4cca9f');
@@ -12119,7 +12030,8 @@
 			styleSystemHash,
 			computeWindowsRelease,
 			formatEmojiSet,
-			performanceLogger
+			performanceLogger,
+			cssFontFamily
 		};
 		const hasTrash = !!trashLen;
 		const { lies: hasLied, capturedErrors: hasErrors } = creep;
@@ -12181,7 +12093,11 @@
 				<div>${getBlankIcons()}svg emojis</div>
 				<div>${getBlankIcons()}mimeTypes</div>
 				<div>${getBlankIcons()}audio</div>
-				<div>${getBlankIcons()}canvas</div>
+				<div>${getBlankIcons()}canvas image</div>
+				<div>${getBlankIcons()}canvas blob</div>
+				<div>${getBlankIcons()}canvas paint</div>
+				<div>${getBlankIcons()}canvas text</div>
+				<div>${getBlankIcons()}canvas emoji</div>
 				<div>${getBlankIcons()}textMetrics</div>
 				<div>${getBlankIcons()}webgl</div>
 				<div>${getBlankIcons()}gpu params</div>
@@ -12190,6 +12106,7 @@
 				<div>${getBlankIcons()}voices</div>
 				<div>${getBlankIcons()}screen</div>
 				<div>${getBlankIcons()}resistance</div>
+				<div>${getBlankIcons()}device of timezone</div>
 			</div>
 			<div class="col-six icon-prediction-container">
 			</div>
@@ -12572,26 +12489,26 @@
 						'clientRects',
 						'consoleErrors',
 						'css',
+						'cssMedia',
 						'fonts',
 						'htmlElementVersion',
 						'maths',
 						'media',
+						'navigator',
 						'offlineAudioContext',
 						'resistance',
 						'screen',
 						'svg',
+						'timezone',
 						'voices',
 						'windowFeatures',
 						'workerScope',
 						/* disregard metrics not in samples:
 							capturedErrors,
-							cssMedia,
 							features, 
 							headless,
 							intl,
 							lies,
-							navigator,
-							timezone,
 							trash,
 							webRTC
 						*/
@@ -12656,6 +12573,22 @@
 							!canvas2d || canvas2d.lied ? 'undefined' :
 								canvas2dImageHash
 						}`,
+						`canvasBlobId=${
+							!canvas2d || canvas2d.lied ? 'undefined' :
+								canvas2dBlobHash
+						}`,
+						`canvasPaintId=${
+							!canvas2d || canvas2d.lied ? 'undefined' :
+								canvas2dPaintHash
+						}`,
+						`canvasTextId=${
+							!canvas2d || canvas2d.lied ? 'undefined' :
+								canvas2dTextHash
+						}`,
+						`canvasEmojiId=${
+							!canvas2d || canvas2d.lied ? 'undefined' :
+								canvas2dEmojiHash
+						}`,
 						`textMetricsId=${
 							!canvas2d || canvas2d.liedTextMetrics || ((+canvas2d.textMetricsSystemSum) == 0) ? 'undefined' : 
 								encodeURIComponent(canvas2d.textMetricsSystemSum)
@@ -12672,6 +12605,7 @@
 						`fontsId=${!fonts || fonts.lied ? 'undefined' : fonts.$hash}`,
 						`voicesId=${!voices || voices.lied ? 'undefined' : voices.$hash}`,
 						`screenId=${screenMetrics}`,
+						`deviceOfTimezoneId=${deviceOfTimezoneHash}`,
 						`ua=${encodeURIComponent(workerScopeUserAgent)}`
 					].join('&')}`;
 
@@ -12705,13 +12639,18 @@
 						'mimeTypesSystem',
 						'audioSystem',
 						'canvasSystem',
+						'canvasBlobSystem',
+						'canvasPaintSystem',
+						'canvasTextSystem',
+						'canvasEmojiSystem',
 						'textMetricsSystem',
 						'webglSystem',
 						'gpuSystem',
 						'gpuModelSystem',
 						'fontsSystem',
 						'voicesSystem',
-						'screenSystem'
+						'screenSystem',
+						'deviceOfTimezone',
 					];
 
 					const decryptionDataScores = scoreKeys.reduce((acc, key) => {
@@ -12804,13 +12743,18 @@
 					mimeTypes: mimeTypesSamples,
 					audio: audioSamples,
 					canvas: canvasSamples,
+					canvasBlob: canvasBlobSamples,
+					canvasPaint: canvasPaintSamples,
+					canvasText: canvasTextSamples,
+					canvasEmoji: canvasEmojiSamples,
 					textMetrics: textMetricsSamples,
 					webgl: webglSamples,
 					fonts: fontsSamples,
 					voices: voicesSamples,
 					screen: screenSamples,
 					gpu: gpuSamples,
-					gpuModel: gpuModelSamples
+					gpuModel: gpuModelSamples,
+					deviceOfTimezone: deviceOfTimezoneSamples,
 				} = decryptionSamples || {};
 
 				if (badBot && !decryptionSamples) {
@@ -12839,6 +12783,10 @@
 						mimeTypesSystem: getPrediction({ hash: mimeTypesHash, data: mimeTypesSamples }),
 						audioSystem: getPrediction({ hash: audioMetrics, data: audioSamples }),
 						canvasSystem: getPrediction({ hash: canvas2dImageHash, data: canvasSamples }),
+						canvasBlobSystem: getPrediction({ hash: canvas2dBlobHash, data: canvasBlobSamples }),
+						canvasPaintSystem: getPrediction({ hash: canvas2dPaintHash, data: canvasPaintSamples }),
+						canvasTextSystem: getPrediction({ hash: canvas2dTextHash, data: canvasTextSamples }),
+						canvasEmojiSystem: getPrediction({ hash: canvas2dEmojiHash, data: canvasEmojiSamples }),
 						textMetricsSystem: getPrediction({
 							hash: (canvas2d || {}).textMetricsSystemSum,
 							data: textMetricsSamples
@@ -12848,7 +12796,8 @@
 						gpuModelSystem: getPrediction({ hash: cleanGPUString(gpuModel), data: gpuModelSamples }),
 						fontsSystem: getPrediction({ hash: (fonts || {}).$hash, data: fontsSamples }),
 						voicesSystem: getPrediction({ hash: (voices || {}).$hash, data: voicesSamples }),
-						screenSystem: getPrediction({ hash: screenMetrics, data: screenSamples })
+						screenSystem: getPrediction({ hash: screenMetrics, data: screenSamples }),
+						deviceOfTimezone: getPrediction({ hash: deviceOfTimezoneHash, data: deviceOfTimezoneSamples }),
 					};
 
 					renderPrediction({
@@ -12896,13 +12845,18 @@
 						mimeTypes: mimeTypesHash,
 						audio: audioMetrics,
 						canvas: canvas2dImageHash,
+						canvasBlob: canvas2dBlobHash,
+						canvasPaint: canvas2dPaintHash,
+						canvasText: canvas2dTextHash,
+						canvasEmoji: canvas2dEmojiHash,
 						textMetrics: (canvas2d || {}).textMetricsSystemSum,
 						webgl: canvasWebglImageHash,
 						fonts: (fonts || {}).$hash,
 						voices: (voices || {}).$hash,
 						screen: screenMetrics,
 						gpu: canvasWebglParametersHash,
-						gpuModel
+						gpuModel,
+						deviceOfTimezone: deviceOfTimezoneHash,
 					};
 					const entropyDescriptors = {
 						window: 'window object',
@@ -12918,13 +12872,18 @@
 						mimeTypes: 'media mimeTypes',
 						audio: 'audio metrics',
 						canvas: 'canvas image',
+						canvasBlob: 'canvas blob',
+						canvasPaint: 'canvas paint',
+						canvasText: 'canvas text',
+						canvasEmoji: 'canvas emoji',
 						textMetrics: 'textMetrics',
 						webgl: 'webgl image',
 						fonts: 'system fonts',
 						voices: 'voices',
 						screen: 'screen metrics',
 						gpu: 'webgl parameters',
-						gpuModel: 'webgl renderer'
+						gpuModel: 'webgl renderer',
+						deviceOfTimezone: 'device of timezone',
 					};
 					Object.keys(decryptionSamples).forEach((key,i) => {
 						const hash = (
@@ -12938,7 +12897,7 @@
 						} = getEntropy(hash, decryptionSamples[key]);
 						const el = document.getElementById(`${key}-entropy`);
 						const deviceMetric = (
-							(key == 'screen') || (key == 'fonts') || (key == 'gpuModel')
+							(key == 'screen') || (key == 'fonts') || (key == 'gpuModel') || (key == 'deviceOfTimezone')
 						);
 						const uniquePercent = !classTotal ? 0 : (1/classTotal)*100;
 						const signal = (

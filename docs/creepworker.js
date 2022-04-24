@@ -330,7 +330,10 @@ const getPrototypeLies = scope => {
 			const validName = name == 'TypeError'
 			const validMessage = message == `Function has non-object prototype 'undefined' in instanceof check`
 			const targetStackLine = ((stack || '').split('\n') || [])[1]
-			const validStackLine = targetStackLine.startsWith(`    at ${type}.[Symbol.hasInstance]`)
+			const validStackLine = (
+				targetStackLine.startsWith(`    at ${type}.[Symbol.hasInstance]`) ||
+				targetStackLine.startsWith('    at [Symbol.hasInstance]') // Chrome 102
+			)
 			return validName && validMessage && validStackLine
 		}
 		try {
@@ -417,8 +420,12 @@ const getPrototypeLies = scope => {
 			const targetStackLine = ((stack || '').split('\n') || [])[1]
 			const hasTypeError = name == 'TypeError'
 			const chromeLie = isChrome && (
-				message != `Cyclic __proto__ value` ||
-				(method == '__proto__' && !targetStackLine.startsWith(`    at Function.set __proto__ [as __proto__]`))
+				message != `Cyclic __proto__ value` || (
+					method == '__proto__' && (
+						!targetStackLine.startsWith(`    at Function.set __proto__ [as __proto__]`) &&
+						!targetStackLine.startsWith(`    at set __proto__ [as __proto__]`) // Chrome 102
+					)
+				)
 			)
 			const firefoxLie = isFirefox && (
 				message != `can't set prototype: it would cause a prototype chain cycle`
@@ -1104,6 +1111,49 @@ const getFontSystemClass = fonts => {
 	return fontSystemClass.length == 1 ? fontSystemClass[0] : undefined
 }
 
+const cssFontFamily = `
+	'Segoe Fluent Icons',
+	'Ink Free',
+	'Bahnschrift',
+	'Segoe MDL2 Assets',
+	'HoloLens MDL2 Assets',
+	'Leelawadee UI',
+	'Javanese Text',
+	'Segoe UI Emoji',
+	'Aldhabi',
+	'Gadugi',
+	'Myanmar Text',
+	'Nirmala UI',
+	'Lucida Console',
+	'Cambria Math',
+	'Galvji',
+	'MuktaMahee Regular',
+	'InaiMathi Bold',
+	'American Typewriter Semibold',
+	'Futura Bold',
+	'SignPainter-HouseScript Semibold',
+	'PingFang HK Light',
+	'Kohinoor Devanagari Medium',
+	'Luminari',
+	'Geneva',
+	'Helvetica Neue',
+	'Droid Sans Mono',
+	'Dancing Script',
+	'Roboto',
+	'Ubuntu',
+	'Liberation Mono',
+	'Source Code Pro',
+	'DejaVu Sans',
+	'OpenSymbol',
+	'Chilanka',
+	'Cousine',
+	'Arimo',
+	'Jomolhari',
+	'MONO',
+	'Noto Color Emoji',
+	sans-serif !important
+`
+
 const get2dCanvasData = async () => {
 	if (!self.OffscreenCanvas) {
 		return
@@ -1119,69 +1169,25 @@ const get2dCanvasData = async () => {
 			reader.onloadend = () => resolve(reader.result)
 		})
 	}
-	const width = 186
+	const width = 140
 	const height = 30
 	const canvasOffscreen2d = new OffscreenCanvas(width, height)
 	const context2d = canvasOffscreen2d.getContext('2d')
 	canvasOffscreen2d.width = width
 	canvasOffscreen2d.height = height
-	const str = `😃🙌🧠🦄🐉🌊🍧🏄‍♀️🌠🔮`
-	context2d.font = '14px Arial'
-	context2d.fillText(str, 0, 20)
-	context2d.fillStyle = 'rgba(0, 0, 0, 0)'
-	context2d.fillRect(0, 0, width, height)
+	context2d.font = `5px ${cssFontFamily.replace(/!important/gm, '')}`
+	context2d.fillText(`😀☺🤵‍♂️♨☸⚧⁉ℹ🏳️‍⚧️🥲☹☠🧑‍🦰🧏‍♂️⛷🧑‍🤝‍🧑☘⛰`, 0, 5)
+	context2d.fillText(`⛩⛴✈⏱⛈☂⛱☃☄⛸♟⛑⌨✉✏👩‍❤️‍`, 0, 10)
+	context2d.fillText(`💋‍👨👨‍👩‍👧‍👦👨‍👩‍👦😀©®™👁️‍�`, 0, 15)
+	context2d.fillText(`�️✒✂⛏⚒⚔⚙⛓⚗⚰⚱⚠☢☣⬆↗➡⬅`, 0, 20)
+	context2d.fillText(`⚛✡✝☦▶⏭⏯⏏♀♂✖〰⚕⚜✔✳❇◼▪❣`, 0, 25)
+	context2d.fillText(`❤✌☝✍❄⚖↪☯☪☮☑✴🅰🅿`, 0, 30)
+	
 	const canvas2dDataURI = await getDataURI(canvasOffscreen2d)
 
-	// get fonts
-	const emojis = getEmojis()
-	const measureFonts = (context, font, emojis) => {
-		context.font = `256px ${font}`
-		const metrics = context.measureText(emojis.join(''))
-		return {
-			ascent: metrics.actualBoundingBoxAscent,
-			descent: metrics.actualBoundingBoxDescent,
-			left: metrics.actualBoundingBoxLeft,
-			right: metrics.actualBoundingBoxRight,
-			width: metrics.width,
-			fontAscent: metrics.fontBoundingBoxAscent,
-			fontDescent: metrics.fontBoundingBoxDescent
-		}
-	}
-	const baseFonts = ['monospace', 'sans-serif', 'serif']
-	const fontShortList = [
-		'Segoe UI Emoji', // Windows
-		'Apple Color Emoji', // Apple
-		'Noto Color Emoji',  // Linux, Android, Chrome OS
-	]
-	const families = fontShortList.reduce((acc, font) => {
-		baseFonts.forEach(baseFont => acc.push(`'${font}', ${baseFont}`))
-		return acc
-	}, [])
-	const base = baseFonts.reduce((acc, font) => {
-		acc[font] = measureFonts(context2d, font, emojis)
-		return acc
-	}, {})
-	const detectedEmojiFonts = families.reduce((acc, family) => {
-		const basefont = /, (.+)/.exec(family)[1]
-		const dimensions = measureFonts(context2d, family, emojis)
-		const font = /\'(.+)\'/.exec(family)[1]
-		const found = (
-			dimensions.ascent != base[basefont].ascent ||
-			dimensions.descent != base[basefont].descent ||
-			dimensions.left != base[basefont].left ||
-			dimensions.right != base[basefont].right ||
-			dimensions.width != base[basefont].width ||
-			dimensions.fontAscent != base[basefont].fontAscent ||
-			dimensions.fontDescent != base[basefont].fontDescent
-		)
-		if (found) {
-			acc.add(font)
-		}
-		return acc
-	}, new Set())
-	
 	// get emoji set and system
-	context2d.font = `200px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`
+	const emojis = getEmojis()
+	context2d.font = `200px ${cssFontFamily.replace(/!important/gm, '')}`
 	const pattern = new Set()
 	const emojiSet = emojis.reduce((emojiSet, emoji) => {
 		const {
@@ -1210,31 +1216,14 @@ const get2dCanvasData = async () => {
 	}, new Set())
 
 	// textMetrics System Sum
-	const textMetricsSum = 0.00001 * [...pattern].map(x => {
+	const textMetricsSystemSum = 0.00001 * [...pattern].map(x => {
 		return x.split(',').reduce((acc, x) => acc += (+x||0), 0)
 	}).reduce((acc, x) => acc += x, 0)
-
-	const amplifySum = (n, fontSet) => {
-		const { size } = fontSet
-		if (size > 1) {
-			return n / +`1e${size}00` // ...e-200
-		}
-		return (
-			!size ? n * -1e150 : // -...e+148
-				size > 1 ? n / +`1e${size}00` : // ...e-200
-					fontSet.has('Segoe UI Emoji') ? n :
-						fontSet.has('Apple Color Emoji') ? n / 1e64 : // ...e-66
-							n * 1e64 // ...e+62
-		)
-	} 
-
-	const textMetricsSystemSum = amplifySum(textMetricsSum, detectedEmojiFonts)
 
 	return {
 		canvas2dDataURI,
 		textMetricsSystemSum,
-		emojiSet: [...emojiSet],
-		emojiFonts: [...detectedEmojiFonts]
+		emojiSet: [...emojiSet]
 	}
 }
 
@@ -1341,7 +1330,6 @@ const getWorkerData = async () => {
 		canvas2dDataURI: canvas2d,
 		textMetricsSystemSum,
 		emojiSet,
-		emojiFonts
 	} = canvasData || {}
 	
 	// webgl
@@ -1439,7 +1427,6 @@ const getWorkerData = async () => {
 		canvas2d,
 		textMetricsSystemSum,
 		emojiSet,
-		emojiFonts,
 		webglRenderer,
 		webglVendor,
 		fontFaceLoadFonts,
