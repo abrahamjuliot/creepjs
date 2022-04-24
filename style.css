@@ -892,7 +892,7 @@ input[type="radio"] {
     align-items: center;
 }
 .icon-prediction-container {
-    min-height: 490px;
+    min-height: 600px;
 }
 .icon-pixel-container {
     min-height: 55px;

@@ -101,7 +101,7 @@ export const renderPrediction = ({ decryptionData, crowdBlendingScore, patch, ht
 
 		return (
 			device ? `<span class="help" title="${device}">
-				${renderFailingScore(`${icons}${title}`, score)}<strong>*</strong>
+				${renderFailingScore(`${icons}${title}`, score)}<span>*</span>
 			</span>` :
 				showVersion ? renderFailingScore(`${icons}${renderIfKnown(unknown, decrypted)}`, score) :
 					renderFailingScore(`${icons}${title}`, score)
@@ -190,7 +190,7 @@ export const renderPrediction = ({ decryptionData, crowdBlendingScore, patch, ht
 		<div class="col-six">
 			<strong>Prediction</strong>
 			<div class="ellipsis relative">${
-		deviceName ? `<span class="user-agent"><strong>*</strong>${deviceName}</span>` : getBlankIcons()
+		deviceName ? `<span class="user-agent"><span>*</span>${deviceName}</span>` : getBlankIcons()
 		}</div>
 			<div class="ellipsis relative">
 				<span id="window-entropy"></span>${
