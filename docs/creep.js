@@ -11233,11 +11233,9 @@
 					device: fp.navigator.device,
 					deviceMemory: fp.navigator.deviceMemory,
 					hardwareConcurrency: fp.navigator.hardwareConcurrency,
-					keyboard: fp.navigator.keyboard,
 					// distrust language if worker locale is not trusty
 					language: hardenEntropy(fp.workerScope, fp.navigator.language),
 					maxTouchPoints: fp.navigator.maxTouchPoints,
-					mediaCapabilities: fp.navigator.mediaCapabilities,
 					mimeTypes: fp.navigator.mimeTypes,
 					oscpu: fp.navigator.oscpu,
 					platform: fp.navigator.platform,
@@ -11369,7 +11367,7 @@
 			capturedErrors: !!errorsLen,
 			lies: !!liesLen,
 			resistance: fp.resistance || undefined,
-			forceRenew: 1650847106766
+			forceRenew: 1650847106767
 		};
 
 		console.log('%c✔ stable fingerprint passed', 'color:#4cca9f');
