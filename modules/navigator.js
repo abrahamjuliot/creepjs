@@ -383,72 +383,6 @@ export const getNavigator = async (imports, workerScope) => {
 			}, 'navigator keys failed'),
 		}
 
-		const getKeyboard = () => attempt(async () => {
-			if (!('keyboard' in navigator && navigator.keyboard)) {
-				return
-			}
-			const keys = [
-				'Backquote',
-				'Backslash',
-				'Backspace',
-				'BracketLeft',
-				'BracketRight',
-				'Comma',
-				'Digit0',
-				'Digit1',
-				'Digit2',
-				'Digit3',
-				'Digit4',
-				'Digit5',
-				'Digit6',
-				'Digit7',
-				'Digit8',
-				'Digit9',
-				'Equal',
-				'IntlBackslash',
-				'IntlRo',
-				'IntlYen',
-				'KeyA',
-				'KeyB',
-				'KeyC',
-				'KeyD',
-				'KeyE',
-				'KeyF',
-				'KeyG',
-				'KeyH',
-				'KeyI',
-				'KeyJ',
-				'KeyK',
-				'KeyL',
-				'KeyM',
-				'KeyN',
-				'KeyO',
-				'KeyP',
-				'KeyQ',
-				'KeyR',
-				'KeyS',
-				'KeyT',
-				'KeyU',
-				'KeyV',
-				'KeyW',
-				'KeyX',
-				'KeyY',
-				'KeyZ',
-				'Minus',
-				'Period',
-				'Quote',
-				'Semicolon',
-				'Slash'
-			]
-			const keyoardLayoutMap = await navigator.keyboard.getLayoutMap()
-			const writingSystemKeys = keys
-				.reduce((acc, key) => {
-					acc[key] = keyoardLayoutMap.get(key)
-					return acc
-				}, {})
-			return writingSystemKeys
-		}, 'keyboard failed')
-
 		const getUserAgentData = () => attempt(async () => {
 			if (!phantomNavigator.userAgentData || 
 				!phantomNavigator.userAgentData.getHighEntropyValues) {
@@ -493,70 +427,6 @@ export const getNavigator = async (imports, workerScope) => {
 			const available = await navigator.bluetooth.getAvailability()
 			return available
 		}, 'bluetoothAvailability failed')
-
-		const getMediaCapabilities = () => attempt(async () => {
-			const codecs = [
-				'audio/ogg; codecs=vorbis',
-				'audio/ogg; codecs=flac',
-				'audio/mp4; codecs="mp4a.40.2"',
-				'audio/mpeg; codecs="mp3"',
-				'video/ogg; codecs="theora"',
-				'video/mp4; codecs="avc1.42E01E"'
-			]
-
-			const getMediaConfig = (codec, video, audio) => ({
-				type: 'file',
-				video: !/^video/.test(codec) ? undefined : {
-					contentType: codec,
-					...video
-				},
-				audio: !/^audio/.test(codec) ? undefined : {
-					contentType: codec,
-					...audio
-				}
-			})
-
-			const computeMediaCapabilities = () => {
-				const video = {
-					width: 1920,
-					height: 1080,
-					bitrate: 120000,
-					framerate: 60
-				}
-				const audio = {
-					channels: 2,
-					bitrate: 300000,
-					samplerate: 5200
-				}
-				try {
-					const decodingInfo = codecs.map(codec => {
-						const config = getMediaConfig(codec, video, audio)
-						return navigator.mediaCapabilities.decodingInfo(config).then(support => ({
-							codec,
-							...support
-						}))
-						.catch(error => console.error(codec, error))
-					})
-					return Promise.all(decodingInfo).then(data => {
-						return data.reduce((acc, support) => {
-							const { codec, supported, smooth, powerEfficient } = support || {}
-							if (!supported) { return acc }
-							return {
-								...acc,
-								[codec]: [
-									...(smooth ? ['smooth'] : []),
-									...(powerEfficient ? ['efficient'] : [])
-								]
-							}
-						}, {})
-					}).catch(error => console.error(error))
-				}
-				catch (error) {
-					return
-				}
-			}
-			return computeMediaCapabilities()
-		}, 'mediaCapabilities failed')
 	
 		const getPermissions = () => attempt(async () => {
 			const getPermissionState = name => navigator.permissions.query({ name })
@@ -616,29 +486,23 @@ export const getNavigator = async (imports, workerScope) => {
 				})(limits)
 			}
 		}, 'webgpu failed')
-
+		
 		const [
-			keyboard,
 			userAgentData,
 			bluetoothAvailability,
-			mediaCapabilities,
 			permissions,
 			webgpu
 		] = await Promise.all([
-			getKeyboard(),
 			getUserAgentData(),
 			getBluetoothAvailability(),
-			getMediaCapabilities(),
 			getPermissions(),
 			getWebgpu()
-		])
+		]).catch(error => console.error(error))
 		logTestResult({ time: timer.stop(), test: 'navigator', passed: true })
 		return {
 			...data,
-			keyboard,
 			userAgentData,
 			bluetoothAvailability,
-			mediaCapabilities,
 			permissions,
 			webgpu,
 			lied
@@ -657,10 +521,8 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count, com
 		<div class="col-six undefined">
 			<strong>Navigator</strong>
 			<div>properties (0): ${note.blocked}</div>
-			<div>codecs (0): ${note.blocked}</div>
 			<div>dnt: ${note.blocked}</div>
 			<div>gpc:${note.blocked}</div>
-			<div>keyboard: ${note.blocked}</div>
 			<div>lang: ${note.blocked}</div>
 			<div>mimeTypes (0): ${note.blocked}</div>
 			<div>permissions (0): ${note.blocked}</div>
@@ -690,7 +552,6 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count, com
 			hardwareConcurrency,
 			language,
 			maxTouchPoints,
-			mediaCapabilities,
 			mimeTypes,
 			oscpu,
 			permissions,
@@ -704,7 +565,6 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count, com
 			userAgentData,
 			userAgentParsed,
 			vendor,
-			keyboard,
 			bluetoothAvailability,
 			webgpu,
 			lied
@@ -716,7 +576,6 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count, com
 		[undefined]: !0,
 		['']: !0
 	}
-	const codecKeys = Object.keys(mediaCapabilities || {})
 	const permissionsKeys = Object.keys(permissions || {})
 	const permissionsGranted = (
 		permissions && permissions.granted ? permissions.granted.length : 0
@@ -732,25 +591,9 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count, com
 			hashMini(properties)
 		)
 		}</div>
-		<div class="help" title="MediaCapabilities.decodingInfo()">codecs (${''+codecKeys.length}): ${
-		!mediaCapabilities || !codecKeys.length ? note.unsupported :
-			modal(
-				`${id}-media-codecs`,
-				Object.keys(mediaCapabilities).map(key => `${key}: ${mediaCapabilities[key].join(', ')}`).join('<br>'),
-				hashMini(mediaCapabilities)
-			)
-		}</div>
 		<div class="help" title="Navigator.doNotTrack">dnt: ${'' + doNotTrack}</div>
 		<div class="help" title="Navigator.globalPrivacyControl">gpc: ${
 		'' + globalPrivacyControl == 'undefined' ? note.unsupported : '' + globalPrivacyControl
-		}</div>
-		<div>keyboard: ${
-		!keyboard ? note.unsupported :
-			modal(
-				`${id}-keyboard`,
-				Object.keys(keyboard).map(key => `${key}: ${keyboard[key]}`).join('<br>'),
-				hashMini(keyboard)
-			)
 		}</div>
 		<div class="help" title="Navigator.language\nNavigator.languages">lang: ${!blocked[language] ? language : note.blocked}</div>
 		<div>mimeTypes (${count(mimeTypes)}): ${

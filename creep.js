@@ -23,7 +23,6 @@ import { getClientRects, clientRectsHTML } from './modules/rects.js'
 import { getScreen, screenHTML } from './modules/screen.js'
 import { getTimezone, timezoneHTML } from './modules/timezone.js'
 import { getVoices, voicesHTML } from './modules/voices.js'
-import { getWebRTCData, webrtcHTML } from './modules/webrtc.js'
 import { getBestWorkerScope, workerScopeHTML } from './modules/worker.js'
 import { getSVG, svgHTML } from './modules/svg.js'
 import { getResistance, resistanceHTML } from './modules/resistance.js'
@@ -143,7 +142,6 @@ const imports = {
 			fontsComputed,
 			workerScopeComputed,
 			mediaComputed,
-			webRTCDataComputed,
 			svgComputed,
 			resistanceComputed,
 			intlComputed
@@ -163,7 +161,6 @@ const imports = {
 			getFonts(imports),
 			getBestWorkerScope(imports),
 			getMedia(imports),
-			getWebRTCData(imports),
 			getSVG(imports),
 			getResistance(imports),
 			getIntl(imports)
@@ -248,7 +245,6 @@ const imports = {
 			workerHash,
 			mediaHash,
 			mimeTypesHash,
-			webRTCHash,
 			navigatorHash,
 			liesHash,
 			trashHash,
@@ -294,7 +290,6 @@ const imports = {
 			hashify(workerScopeComputed),
 			hashify(mediaComputed),
 			hashify((mediaComputed || {}).mimeTypes),
-			hashify(webRTCDataComputed),
 			hashify(navigatorComputed),
 			hashify(liesComputed),
 			hashify(trashComputed),
@@ -360,7 +355,6 @@ const imports = {
 		
 		const fingerprint = {
 			workerScope: !workerScopeComputed ? undefined : { ...workerScopeComputed, $hash: workerHash},
-			webRTC: !webRTCDataComputed ? undefined : {...webRTCDataComputed, $hash: webRTCHash},
 			navigator: !navigatorComputed ? undefined : {...navigatorComputed, $hash: navigatorHash},
 			windowFeatures: !windowFeaturesComputed ? undefined : {...windowFeaturesComputed, $hash: windowHash},
 			headless: !headlessComputed ? undefined : {...headlessComputed, $hash: headlessHash},
@@ -612,7 +606,7 @@ const imports = {
 		capturedErrors: !!errorsLen,
 		lies: !!liesLen,
 		resistance: fp.resistance || undefined,
-		forceRenew: 1650838684414
+		forceRenew: 1650847106766
 	}
 
 	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f')
@@ -792,7 +786,6 @@ const imports = {
 			</div>
 		</div>
 		<div class="flex-grid">
-			${webrtcHTML(templateImports)}
 			${timezoneHTML(templateImports)}
 			${intlHTML(templateImports)}			
 		</div>
@@ -1190,7 +1183,6 @@ const imports = {
 						intl,
 						lies,
 						trash,
-						webRTC
 					*/
 				]
 				const { revisedKeysFromPreviousLoad } = computeSession({

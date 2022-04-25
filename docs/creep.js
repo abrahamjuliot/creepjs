@@ -777,10 +777,8 @@
 			'navigator.doNotTrack',
 			'navigator.globalPrivacyControl',
 			'navigator.hardwareConcurrency',
-			'navigator.keyboard',
 			'navigator.language',
 			'navigator.maxTouchPoints',
-			'navigator.mediaCapabilities',
 			'navigator.mimeTypes',
 			'navigator.oscpu',
 			'navigator.permissions',
@@ -832,10 +830,6 @@
 			'voices.languages',
 			'voices.local',
 			'voices.remote',
-			'webRTC.audio',
-			'webRTC.extensions',
-			'webRTC.ipaddress',
-			'webRTC.video',
 			'windowFeatures.apple',
 			'windowFeatures.keys',
 			'windowFeatures.moz',
@@ -6509,72 +6503,6 @@
 				}, 'navigator keys failed'),
 			};
 
-			const getKeyboard = () => attempt(async () => {
-				if (!('keyboard' in navigator && navigator.keyboard)) {
-					return
-				}
-				const keys = [
-					'Backquote',
-					'Backslash',
-					'Backspace',
-					'BracketLeft',
-					'BracketRight',
-					'Comma',
-					'Digit0',
-					'Digit1',
-					'Digit2',
-					'Digit3',
-					'Digit4',
-					'Digit5',
-					'Digit6',
-					'Digit7',
-					'Digit8',
-					'Digit9',
-					'Equal',
-					'IntlBackslash',
-					'IntlRo',
-					'IntlYen',
-					'KeyA',
-					'KeyB',
-					'KeyC',
-					'KeyD',
-					'KeyE',
-					'KeyF',
-					'KeyG',
-					'KeyH',
-					'KeyI',
-					'KeyJ',
-					'KeyK',
-					'KeyL',
-					'KeyM',
-					'KeyN',
-					'KeyO',
-					'KeyP',
-					'KeyQ',
-					'KeyR',
-					'KeyS',
-					'KeyT',
-					'KeyU',
-					'KeyV',
-					'KeyW',
-					'KeyX',
-					'KeyY',
-					'KeyZ',
-					'Minus',
-					'Period',
-					'Quote',
-					'Semicolon',
-					'Slash'
-				];
-				const keyoardLayoutMap = await navigator.keyboard.getLayoutMap();
-				const writingSystemKeys = keys
-					.reduce((acc, key) => {
-						acc[key] = keyoardLayoutMap.get(key);
-						return acc
-					}, {});
-				return writingSystemKeys
-			}, 'keyboard failed');
-
 			const getUserAgentData = () => attempt(async () => {
 				if (!phantomNavigator.userAgentData || 
 					!phantomNavigator.userAgentData.getHighEntropyValues) {
@@ -6619,70 +6547,6 @@
 				const available = await navigator.bluetooth.getAvailability();
 				return available
 			}, 'bluetoothAvailability failed');
-
-			const getMediaCapabilities = () => attempt(async () => {
-				const codecs = [
-					'audio/ogg; codecs=vorbis',
-					'audio/ogg; codecs=flac',
-					'audio/mp4; codecs="mp4a.40.2"',
-					'audio/mpeg; codecs="mp3"',
-					'video/ogg; codecs="theora"',
-					'video/mp4; codecs="avc1.42E01E"'
-				];
-
-				const getMediaConfig = (codec, video, audio) => ({
-					type: 'file',
-					video: !/^video/.test(codec) ? undefined : {
-						contentType: codec,
-						...video
-					},
-					audio: !/^audio/.test(codec) ? undefined : {
-						contentType: codec,
-						...audio
-					}
-				});
-
-				const computeMediaCapabilities = () => {
-					const video = {
-						width: 1920,
-						height: 1080,
-						bitrate: 120000,
-						framerate: 60
-					};
-					const audio = {
-						channels: 2,
-						bitrate: 300000,
-						samplerate: 5200
-					};
-					try {
-						const decodingInfo = codecs.map(codec => {
-							const config = getMediaConfig(codec, video, audio);
-							return navigator.mediaCapabilities.decodingInfo(config).then(support => ({
-								codec,
-								...support
-							}))
-							.catch(error => console.error(codec, error))
-						});
-						return Promise.all(decodingInfo).then(data => {
-							return data.reduce((acc, support) => {
-								const { codec, supported, smooth, powerEfficient } = support || {};
-								if (!supported) { return acc }
-								return {
-									...acc,
-									[codec]: [
-										...(smooth ? ['smooth'] : []),
-										...(powerEfficient ? ['efficient'] : [])
-									]
-								}
-							}, {})
-						}).catch(error => console.error(error))
-					}
-					catch (error) {
-						return
-					}
-				};
-				return computeMediaCapabilities()
-			}, 'mediaCapabilities failed');
 		
 			const getPermissions = () => attempt(async () => {
 				const getPermissionState = name => navigator.permissions.query({ name })
@@ -6742,29 +6606,23 @@
 					})(limits)
 				}
 			}, 'webgpu failed');
-
+			
 			const [
-				keyboard,
 				userAgentData,
 				bluetoothAvailability,
-				mediaCapabilities,
 				permissions,
 				webgpu
 			] = await Promise.all([
-				getKeyboard(),
 				getUserAgentData(),
 				getBluetoothAvailability(),
-				getMediaCapabilities(),
 				getPermissions(),
 				getWebgpu()
-			]);
+			]).catch(error => console.error(error));
 			logTestResult({ time: timer.stop(), test: 'navigator', passed: true });
 			return {
 				...data,
-				keyboard,
 				userAgentData,
 				bluetoothAvailability,
-				mediaCapabilities,
 				permissions,
 				webgpu,
 				lied
@@ -6783,10 +6641,8 @@
 		<div class="col-six undefined">
 			<strong>Navigator</strong>
 			<div>properties (0): ${note.blocked}</div>
-			<div>codecs (0): ${note.blocked}</div>
 			<div>dnt: ${note.blocked}</div>
 			<div>gpc:${note.blocked}</div>
-			<div>keyboard: ${note.blocked}</div>
 			<div>lang: ${note.blocked}</div>
 			<div>mimeTypes (0): ${note.blocked}</div>
 			<div>permissions (0): ${note.blocked}</div>
@@ -6816,7 +6672,6 @@
 				hardwareConcurrency,
 				language,
 				maxTouchPoints,
-				mediaCapabilities,
 				mimeTypes,
 				oscpu,
 				permissions,
@@ -6830,7 +6685,6 @@
 				userAgentData,
 				userAgentParsed,
 				vendor,
-				keyboard,
 				bluetoothAvailability,
 				webgpu,
 				lied
@@ -6842,7 +6696,6 @@
 			[undefined]: !0,
 			['']: !0
 		};
-		const codecKeys = Object.keys(mediaCapabilities || {});
 		const permissionsKeys = Object.keys(permissions || {});
 		const permissionsGranted = (
 			permissions && permissions.granted ? permissions.granted.length : 0
@@ -6858,25 +6711,9 @@
 			hashMini(properties)
 		)
 		}</div>
-		<div class="help" title="MediaCapabilities.decodingInfo()">codecs (${''+codecKeys.length}): ${
-		!mediaCapabilities || !codecKeys.length ? note.unsupported :
-			modal(
-				`${id}-media-codecs`,
-				Object.keys(mediaCapabilities).map(key => `${key}: ${mediaCapabilities[key].join(', ')}`).join('<br>'),
-				hashMini(mediaCapabilities)
-			)
-		}</div>
 		<div class="help" title="Navigator.doNotTrack">dnt: ${'' + doNotTrack}</div>
 		<div class="help" title="Navigator.globalPrivacyControl">gpc: ${
 		'' + globalPrivacyControl == 'undefined' ? note.unsupported : '' + globalPrivacyControl
-		}</div>
-		<div>keyboard: ${
-		!keyboard ? note.unsupported :
-			modal(
-				`${id}-keyboard`,
-				Object.keys(keyboard).map(key => `${key}: ${keyboard[key]}`).join('<br>'),
-				hashMini(keyboard)
-			)
 		}</div>
 		<div class="help" title="Navigator.language\nNavigator.languages">lang: ${!blocked[language] ? language : note.blocked}</div>
 		<div>mimeTypes (${count(mimeTypes)}): ${
@@ -7683,7 +7520,6 @@
 
 		const {
 			require: {
-				queueEvent,
 				createTimer,
 				hashMini,
 				captureError,
@@ -8266,7 +8102,7 @@
 	const timezoneHTML = ({ fp, note, hashSlice, performanceLogger }) => {
 		if (!fp.timezone) {
 			return `
-		<div class="col-four undefined">
+		<div class="col-six undefined">
 			<strong>Timezone</strong>
 			<div class="block-text">${note.blocked}</div>
 		</div>`
@@ -8284,7 +8120,7 @@
 			}
 		} = fp;
 		return `
-	<div class="relative col-four${lied ? ' rejected' : ''}">
+	<div class="relative col-six${lied ? ' rejected' : ''}">
 		<span class="aside-note">${performanceLogger.getLog().timezone}</span>
 		<strong>Timezone</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div class="block-text help"  title="Date\nDate.getTimezoneOffset\nIntl.DateTimeFormat">
@@ -8305,7 +8141,6 @@
 				createTimer,
 				captureError,
 				logTestResult,
-				sendToTrash,
 				lieProps
 			}
 		} = imports;
@@ -8457,299 +8292,6 @@
 					)
 			}
 		</div>
-	</div>
-	`
-	};
-
-	const getWebRTCData = async imports => {
-
-		const {
-			require: {
-				queueEvent,
-				createTimer,
-				captureError,
-				logTestResult
-			}
-		} = imports;
-
-		const timer = createTimer();
-		await queueEvent(timer);
-
-		const getExtensions = sdp => {
-			const extensions = (('' + sdp).match(/extmap:\d+ [^\n|\r]+/g) || [])
-				.map(x => x.replace(/extmap:[^\s]+ /, ''));
-			return [...new Set(extensions)].sort()
-		};
-
-		const createCounter = () => {
-			let counter = 0;
-			return {
-				increment: () => counter += 1,
-				getValue: () => counter
-			}
-		};
-
-		// https://webrtchacks.com/sdp-anatomy/
-		// https://tools.ietf.org/id/draft-ietf-rtcweb-sdp-08.html
-		const constructDecriptions = ({mediaType, sdp, sdpDescriptors, rtxCounter}) => {
-			if (!(''+sdpDescriptors)) {
-				return
-			}
-			return sdpDescriptors.reduce((descriptionAcc, descriptor) => {
-				const matcher = `(rtpmap|fmtp|rtcp-fb):${descriptor} (.+)`;
-				const formats = (sdp.match(new RegExp(matcher, 'g')) || []);
-				if (!(''+formats)) {
-					return descriptionAcc
-				}
-				const isRtxCodec = ('' + formats).includes(' rtx/');
-				if (isRtxCodec) {
-					if (rtxCounter.getValue()) {
-						return descriptionAcc
-					}
-					rtxCounter.increment();
-				}
-				const getLineData = x => x.replace(/[^\s]+ /, '');
-				const description = formats.reduce((acc, x) => {
-					const rawData = getLineData(x);
-					const data = rawData.split('/');
-					const codec = data[0];
-					const description = {};
-					
-					if (x.includes('rtpmap')) {
-						if (mediaType == 'audio') {
-							description.channels = (+data[2]) || 1;
-						}
-						description.mimeType = `${mediaType}/${codec}`;
-						description.clockRates = [+data[1]];
-						return {
-							...acc,
-							...description
-						}
-					}
-					else if (x.includes('rtcp-fb')) {
-						return {
-							...acc,
-							feedbackSupport: [...(acc.feedbackSupport||[]), rawData]
-						}
-					}
-					else if (isRtxCodec) {
-						return acc // no sdpFmtpLine
-					}
-					return { ...acc, sdpFmtpLine: [...rawData.split(';')] }
-				}, {});
-
-				let shouldMerge = false;
-				const mergerAcc = descriptionAcc.map(x => {
-					shouldMerge = x.mimeType == description.mimeType;
-					if (shouldMerge) {
-						if (x.feedbackSupport) {
-							x.feedbackSupport = [
-								...new Set([...x.feedbackSupport, ...description.feedbackSupport])
-							];
-						}
-						if (x.sdpFmtpLine) {
-							x.sdpFmtpLine = [
-								...new Set([...x.sdpFmtpLine, ...description.sdpFmtpLine])
-							];
-						}
-						return {
-							...x,
-							clockRates: [
-								...new Set([...x.clockRates, ...description.clockRates])
-							]
-						}
-					}
-					return x
-				});
-				if (shouldMerge) {
-					return mergerAcc
-				}
-				return [...descriptionAcc, description]
-			}, [])
-		};
-
-		const getCapabilities = sdp => {
-			const videoDescriptors = ((/m=video [^\s]+ [^\s]+ ([^\n|\r]+)/.exec(sdp) || [])[1] || '').split(' ');
-			const audioDescriptors = ((/m=audio [^\s]+ [^\s]+ ([^\n|\r]+)/.exec(sdp) || [])[1] || '').split(' ');
-			const rtxCounter = createCounter();
-			return {
-				audio: constructDecriptions({
-					mediaType: 'audio',
-					sdp,
-					sdpDescriptors: audioDescriptors,
-					rtxCounter
-				}),
-				video: constructDecriptions({
-					mediaType: 'video',
-					sdp,
-					sdpDescriptors: videoDescriptors,
-					rtxCounter
-				})
-			}
-		};
-
-		return new Promise(async resolve => {
-			try {
-				if (!window.RTCPeerConnection) {
-					logTestResult({ test: 'webrtc', passed: false });
-					return resolve()
-				}
-
-				const connection = new RTCPeerConnection({
-					iceCandidatePoolSize: 1,
-					iceServers: [
-						{
-							urls: [
-								'stun:stun4.l.google.com:19302?transport=udp',
-								'stun:stun3.l.google.com:19302?transport=udp',
-								//'stun:stun2.l.google.com:19302?transport=udp',
-								//'stun:stun1.l.google.com:19302?transport=udp',
-								//'stun:stun.l.google.com:19302?transport=udp',
-							]
-						}
-					]
-				});
-
-				const getIPAddress = sdp => {
-					const blocked = '0.0.0.0';
-					const candidateEncoding = /((udp|tcp)\s)((\d|\w)+\s)((\d|\w|(\.|\:))+)(?=\s)/ig;
-					const connectionLineEncoding = /(c=IN\s)(.+)\s/ig;
-					const connectionLineIpAddress = ((sdp.match(connectionLineEncoding) || [])[0] || '').trim().split(' ')[2];
-					if (connectionLineIpAddress && (connectionLineIpAddress != blocked)) {
-						return connectionLineIpAddress
-					}
-					const candidateIpAddress = ((sdp.match(candidateEncoding) || [])[0] || '').split(' ')[2];
-					return candidateIpAddress && (candidateIpAddress != blocked) ? candidateIpAddress : undefined
-				};
-
-				connection.createDataChannel('');
-				const options = { offerToReceiveAudio: 1, offerToReceiveVideo: 1 };
-				return connection.createOffer(options).then(offer => {
-					connection.setLocalDescription(offer);
-					const giveUpOnGettingIPAddress = setTimeout(() => {
-						const { sdp } = offer || {};
-						if (sdp) {
-							const { audio, video } = getCapabilities(sdp);
-							const extensions = getExtensions(sdp);
-							logTestResult({ time: timer.stop(), test: 'webrtc', passed: true });
-							return resolve({
-								ipaddress: undefined,
-								extensions,
-								audio,
-								video
-							})
-						}
-						logTestResult({ test: 'webrtc', passed: false });
-						return resolve()
-					}, 3000);
-
-					const computeCandidate = event => {
-						const { candidate } = event.candidate || {};
-						if (!candidate) {
-							return
-						}
-						const { sdp } = connection.localDescription;
-						const ipaddress = getIPAddress(sdp);
-						if (!ipaddress) {
-							return
-						}
-						connection.removeEventListener('icecandidate', computeCandidate);
-						clearTimeout(giveUpOnGettingIPAddress);
-						connection.close();
-						const { audio, video } = getCapabilities(sdp);
-						const extensions = getExtensions(sdp);
-						logTestResult({ time: timer.stop(), test: 'webrtc', passed: true });
-						return resolve({
-							ipaddress,
-							extensions,
-							audio,
-							video
-						})
-					};
-
-					return connection.addEventListener('icecandidate', computeCandidate)
-				})
-			}
-			catch (error) {
-				logTestResult({ test: 'webrtc', passed: false });
-				captureError(error, 'RTCPeerConnection failed or blocked by client');
-				return resolve()
-			}
-		})
-	};
-
-
-	const webrtcHTML = ({ fp, hashSlice, hashMini, note, modal, performanceLogger }) => {
-		if (!fp.webRTC) {
-			return `
-		<div class="col-four undefined">
-			<strong>WebRTC</strong>
-			<div class="block-text-small">${note.blocked}</div>
-			<div>a codecs (0): ${note.blocked}</div>
-			<div>v codecs (0): ${note.blocked}</div>
-			<div>exts (0): ${note.blocked}</div>
-		</div>`
-		}
-		const { webRTC } = fp;
-		const {
-			ipaddress,
-			audio,
-			video,
-			extensions,
-			$hash
-		} = webRTC;
-		const id = 'creep-webrtc';
-
-		const feedbackId = {
-			'ccm fir': 'Codec Control Message Full Intra Request (ccm fir)',
-			'goog-remb': "Google's Receiver Estimated Maximum Bitrate (goog-remb)",
-			'nack': 'Negative ACKs (nack)',
-			'nack pli': 'Picture loss Indication and NACK (nack pli)',
-			'transport-cc': 'Transport Wide Congestion Control (transport-cc)'
-		};
-
-		const getModalTemplate = list => list.map(x => {
-			return `
-			<strong>${x.mimeType}</strong>
-			<br>Clock Rates: ${x.clockRates.sort((a, b) => b - a).join(', ')}
-			${x.channels > 1 ? `<br>Channels: ${x.channels}` : ''}
-			${x.sdpFmtpLine ? `<br>Format Specific Parameters:<br>- ${x.sdpFmtpLine.sort().map(x => x.replace('=', ': ')).join('<br>- ')}` : ''}
-			${x.feedbackSupport ? `<br>Feedback Support:<br>- ${x.feedbackSupport.map(x => {
-				return feedbackId[x] || x
-			}).sort().join('<br>- ')}` : ''}
-		`
-		}).join('<br><br>');
-		return `
-	<div class="relative col-four">
-		<span class="aside-note">${performanceLogger.getLog().webrtc}</span>
-		<strong>WebRTC</strong><span class="hash">${hashSlice($hash)}</span>
-		<div class="block-text-small help" title="RTCSessionDescription.sdp">
-			${ipaddress || note.blocked}
-		</div>
-		<div class="help" title="RTCSessionDescription.sdp">a codecs (${(audio||[]).length}): ${
-		!audio ? note.blocked :
-			modal(
-				`${id}-audio`,
-				getModalTemplate(audio),
-				hashMini(audio)
-			)
-		}</div>
-		<div class="help" title="RTCSessionDescription.sdp">v codecs (${(video||[]).length}): ${
-		!audio ? note.blocked :
-			modal(
-				`${id}-video`,
-				getModalTemplate(video),
-				hashMini(video)
-			)
-		}</div>
-		<div class="help" title="RTCSessionDescription.sdp">exts (${(extensions||[]).length}): ${
-		!audio ? note.blocked :
-			modal(
-				`${id}-extensions`,
-				extensions.join('<br>'),
-				hashMini(extensions)
-			)
-		}</div>
 	</div>
 	`
 	};
@@ -10022,7 +9564,7 @@
 	const intlHTML = ({ fp, note, hashSlice, performanceLogger }) => {
 		if (!fp.htmlElementVersion) {
 			return `
-		<div class="col-four undefined">
+		<div class="col-six undefined">
 			<strong>Intl</strong>
 			<div>locale: ${note.blocked}</div>
 			<div>date: ${note.blocked}</div>
@@ -10046,7 +9588,7 @@
 		} = fp.intl || {};
 
 		return `
-	<div class="relative col-four${lied ? ' rejected' : ''}">
+	<div class="relative col-six${lied ? ' rejected' : ''}">
 		<span class="aside-note">${performanceLogger.getLog().intl}</span>
 		<strong>Intl</strong><span class="hash">${hashSlice($hash)}</span>
 		<div class="block-text help"  title="Intl.Collator\nIntl.DateTimeFormat\nIntl.DisplayNames\nIntl.ListFormat\nIntl.NumberFormat\nIntl.PluralRules\nIntl.RelativeTimeFormat">
@@ -11363,7 +10905,6 @@
 				fontsComputed,
 				workerScopeComputed,
 				mediaComputed,
-				webRTCDataComputed,
 				svgComputed,
 				resistanceComputed,
 				intlComputed
@@ -11383,7 +10924,6 @@
 				getFonts(imports),
 				getBestWorkerScope(imports),
 				getMedia(imports),
-				getWebRTCData(imports),
 				getSVG(imports),
 				getResistance(imports),
 				getIntl(imports)
@@ -11468,7 +11008,6 @@
 				workerHash,
 				mediaHash,
 				mimeTypesHash,
-				webRTCHash,
 				navigatorHash,
 				liesHash,
 				trashHash,
@@ -11514,7 +11053,6 @@
 				hashify(workerScopeComputed),
 				hashify(mediaComputed),
 				hashify((mediaComputed || {}).mimeTypes),
-				hashify(webRTCDataComputed),
 				hashify(navigatorComputed),
 				hashify(liesComputed),
 				hashify(trashComputed),
@@ -11580,7 +11118,6 @@
 			
 			const fingerprint = {
 				workerScope: !workerScopeComputed ? undefined : { ...workerScopeComputed, $hash: workerHash},
-				webRTC: !webRTCDataComputed ? undefined : {...webRTCDataComputed, $hash: webRTCHash},
 				navigator: !navigatorComputed ? undefined : {...navigatorComputed, $hash: navigatorHash},
 				windowFeatures: !windowFeaturesComputed ? undefined : {...windowFeaturesComputed, $hash: windowHash},
 				headless: !headlessComputed ? undefined : {...headlessComputed, $hash: headlessHash},
@@ -11832,7 +11369,7 @@
 			capturedErrors: !!errorsLen,
 			lies: !!liesLen,
 			resistance: fp.resistance || undefined,
-			forceRenew: 1650838684414
+			forceRenew: 1650847106766
 		};
 
 		console.log('%c✔ stable fingerprint passed', 'color:#4cca9f');
@@ -12012,7 +11549,6 @@
 			</div>
 		</div>
 		<div class="flex-grid">
-			${webrtcHTML(templateImports)}
 			${timezoneHTML(templateImports)}
 			${intlHTML(templateImports)}			
 		</div>
@@ -12410,7 +11946,6 @@
 							intl,
 							lies,
 							trash,
-							webRTC
 						*/
 					];
 					const { revisedKeysFromPreviousLoad } = computeSession({

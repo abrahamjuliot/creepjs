@@ -117,7 +117,7 @@ export const getIntl = async imports => {
 export const intlHTML = ({ fp, note, hashSlice, performanceLogger }) => {
 	if (!fp.htmlElementVersion) {
 		return `
-		<div class="col-four undefined">
+		<div class="col-six undefined">
 			<strong>Intl</strong>
 			<div>locale: ${note.blocked}</div>
 			<div>date: ${note.blocked}</div>
@@ -141,7 +141,7 @@ export const intlHTML = ({ fp, note, hashSlice, performanceLogger }) => {
 	} = fp.intl || {}
 
 	return `
-	<div class="relative col-four${lied ? ' rejected' : ''}">
+	<div class="relative col-six${lied ? ' rejected' : ''}">
 		<span class="aside-note">${performanceLogger.getLog().intl}</span>
 		<strong>Intl</strong><span class="hash">${hashSlice($hash)}</span>
 		<div class="block-text help"  title="Intl.Collator\nIntl.DateTimeFormat\nIntl.DisplayNames\nIntl.ListFormat\nIntl.NumberFormat\nIntl.PluralRules\nIntl.RelativeTimeFormat">

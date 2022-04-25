@@ -6,7 +6,6 @@ export const getVoices = imports => {
 			createTimer,
 			captureError,
 			logTestResult,
-			sendToTrash,
 			lieProps
 		}
 	} = imports
