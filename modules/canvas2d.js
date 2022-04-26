@@ -363,6 +363,7 @@ export const getCanvas2d = async imports => {
 		const canvas = doc.createElement('canvas')
 		const context = canvas.getContext('2d')
 		const emojis = getEmojis()
+		await queueEvent(timer)
 		paintCanvas({
 			canvas,
 			context,
@@ -377,6 +378,7 @@ export const getCanvas2d = async imports => {
 		let canvasOffscreen
 		try {
 			canvasOffscreen = new OffscreenCanvas(140, 30)
+			await queueEvent(timer)
 			emojifyCanvas({
 				canvas: canvasOffscreen,
 				context: canvasOffscreen.getContext('2d'),
@@ -443,6 +445,7 @@ export const getCanvas2d = async imports => {
 
 		// Paint
 		const maxSize = 50
+		await queueEvent(timer)
 		paintCanvas({
 			canvas,
 			context,
