@@ -201,12 +201,12 @@ export const getOfflineAudioContext = async imports => {
 			buffer.getChannelData(0)[mid] = rand
 			buffer.getChannelData(0)[end] = rand
 			buffer.copyFromChannel(copy, 0)
-			const attack = (
-				buffer.getChannelData(0)[start] === 0 ||
-				buffer.getChannelData(0)[mid] === 0 ||
-				buffer.getChannelData(0)[end] === 0 ? Math.random() : 0
-			)
-			return [...new Set([...buffer.getChannelData(0), ...copy, attack])].filter(x => x !== 0)
+			const attack = [
+				buffer.getChannelData(0)[start] === 0 ? Math.random() : 0,
+				buffer.getChannelData(0)[mid] === 0 ? Math.random() : 0,
+				buffer.getChannelData(0)[end] === 0 ? Math.random() : 0,
+			]
+			return [...new Set([...buffer.getChannelData(0), ...copy, ...attack])].filter(x => x !== 0)
 		}
 
 		const getCopyTo = (rand, buffer, copy) => {
@@ -232,6 +232,7 @@ export const getOfflineAudioContext = async imports => {
 						new Float32Array(length)
 					)
 				])]
+				console.log(result)
 				return +(
 					result.length !== 1 &&
 					result.reduce((acc, n) => acc += +n, 0)
