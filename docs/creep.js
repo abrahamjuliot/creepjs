@@ -10870,7 +10870,6 @@
 
 		const {
 			require: {
-				instanceId,
 				hashMini,
 				patch,
 				html,
@@ -11319,7 +11318,19 @@
 						...hardenGPU(fp.canvasWebgl)
 					}
 				} : fp.canvasWebgl.lied ? undefined : {
-					...fp.canvasWebgl,
+					...((gl , canvas2d) => {
+						if (canvas2d && canvas2d.lied) {
+							// distrust images
+							const { extensions, gpu, lied, parameterOrExtensionLie } = gl;
+							return {
+								extensions,
+								gpu,
+								lied,
+								parameterOrExtensionLie,
+							}
+						}
+						return gl
+					})(fp.canvasWebgl, fp.canvas2d),
 					parameters: {
 						...fp.canvasWebgl.parameters,
 						...hardenGPU(fp.canvasWebgl)
