@@ -232,7 +232,6 @@ export const getOfflineAudioContext = async imports => {
 						new Float32Array(length)
 					)
 				])]
-				console.log(result)
 				return +(
 					result.length !== 1 &&
 					result.reduce((acc, n) => acc += +n, 0)
