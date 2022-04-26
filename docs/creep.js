@@ -2720,12 +2720,12 @@
 				buffer.getChannelData(0)[mid] = rand;
 				buffer.getChannelData(0)[end] = rand;
 				buffer.copyFromChannel(copy, 0);
-				const attack = (
-					buffer.getChannelData(0)[start] === 0 ||
-					buffer.getChannelData(0)[mid] === 0 ||
-					buffer.getChannelData(0)[end] === 0 ? Math.random() : 0
-				);
-				return [...new Set([...buffer.getChannelData(0), ...copy, attack])].filter(x => x !== 0)
+				const attack = [
+					buffer.getChannelData(0)[start] === 0 ? Math.random() : 0,
+					buffer.getChannelData(0)[mid] === 0 ? Math.random() : 0,
+					buffer.getChannelData(0)[end] === 0 ? Math.random() : 0,
+				];
+				return [...new Set([...buffer.getChannelData(0), ...copy, ...attack])].filter(x => x !== 0)
 			};
 
 			const getCopyTo = (rand, buffer, copy) => {
@@ -2751,6 +2751,7 @@
 							new Float32Array(length)
 						)
 					])];
+					console.log(result);
 					return +(
 						result.length !== 1 &&
 						result.reduce((acc, n) => acc += +n, 0)
@@ -3242,6 +3243,7 @@
 			const canvas = doc.createElement('canvas');
 			const context = canvas.getContext('2d');
 			const emojis = getEmojis();
+			await queueEvent(timer);
 			paintCanvas({
 				canvas,
 				context,
@@ -3256,6 +3258,7 @@
 			let canvasOffscreen;
 			try {
 				canvasOffscreen = new OffscreenCanvas(140, 30);
+				await queueEvent(timer);
 				emojifyCanvas({
 					canvas: canvasOffscreen,
 					context: canvasOffscreen.getContext('2d'),
@@ -3322,6 +3325,7 @@
 
 			// Paint
 			const maxSize = 50;
+			await queueEvent(timer);
 			paintCanvas({
 				canvas,
 				context,
@@ -11081,25 +11085,61 @@
 						platformVersion,
 					} = userAgentData || {};
 					const { anyPointer } = cssMediaComputed || {};
+					const { colorDepth, pixelDepth, height, width  } = screenComputed || {};
 					const { location, locationEpoch, zone  } = timezoneComputed || {};
+					const {
+						deviceMemory: deviceMemoryWorker,
+						hardwareConcurrency: hardwareConcurrencyWorker,
+						gpu,
+						platform: platformWorker,
+						system: systemWorker,
+						timezoneLocation: locationWorker,
+						userAgentData: userAgentDataWorker
+					} = workerScopeComputed || {};
+					const { compressedGPU, confidence } = gpu || {};
+					const {
+						architecture: architectureWorker,
+						bitness: bitnessWorker,
+						mobile: mobileWorker,
+						model: modelWorker,
+						platform: uaPlatformWorker,
+						platformVersion: platformVersionWorker,
+					} = userAgentDataWorker || {};
+
 					return [
 						anyPointer,
 						architecture,
+						architectureWorker,
 						bitness,
+						bitnessWorker,
 						bluetoothAvailability,
+						colorDepth,
+						...(compressedGPU && confidence != 'low' ? [compressedGPU] : []),
 						device,
 						deviceMemory,
+						deviceMemoryWorker,
 						hardwareConcurrency,
+						hardwareConcurrencyWorker,
+						height,
 						location,
+						locationWorker,
 						locationEpoch, 
 						maxTouchPoints,
 						mobile,
+						mobileWorker,
 						model,
+						modelWorker,
 						oscpu,
+						pixelDepth,
 						platform,
+						platformWorker,
 						platformVersion,
+						platformVersionWorker,
 						system,
+						systemWorker,
 						uaPlatform,
+						uaPlatformWorker,
+						width,
 						zone
 					]
 				})())
