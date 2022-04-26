@@ -318,25 +318,61 @@ const imports = {
 					platformVersion,
 				} = userAgentData || {}
 				const { anyPointer } = cssMediaComputed || {}
+				const { colorDepth, pixelDepth, height, width  } = screenComputed || {}
 				const { location, locationEpoch, zone  } = timezoneComputed || {}
+				const {
+					deviceMemory: deviceMemoryWorker,
+					hardwareConcurrency: hardwareConcurrencyWorker,
+					gpu,
+					platform: platformWorker,
+					system: systemWorker,
+					timezoneLocation: locationWorker,
+					userAgentData: userAgentDataWorker
+				} = workerScopeComputed || {}
+				const { compressedGPU, confidence } = gpu || {}
+				const {
+					architecture: architectureWorker,
+					bitness: bitnessWorker,
+					mobile: mobileWorker,
+					model: modelWorker,
+					platform: uaPlatformWorker,
+					platformVersion: platformVersionWorker,
+				} = userAgentDataWorker || {}
+
 				return [
 					anyPointer,
 					architecture,
+					architectureWorker,
 					bitness,
+					bitnessWorker,
 					bluetoothAvailability,
+					colorDepth,
+					...(compressedGPU && confidence != 'low' ? [compressedGPU] : []),
 					device,
 					deviceMemory,
+					deviceMemoryWorker,
 					hardwareConcurrency,
+					hardwareConcurrencyWorker,
+					height,
 					location,
+					locationWorker,
 					locationEpoch, 
 					maxTouchPoints,
 					mobile,
+					mobileWorker,
 					model,
+					modelWorker,
 					oscpu,
+					pixelDepth,
 					platform,
+					platformWorker,
 					platformVersion,
+					platformVersionWorker,
 					system,
+					systemWorker,
 					uaPlatform,
+					uaPlatformWorker,
+					width,
 					zone
 				]
 			})())
