@@ -11056,7 +11056,7 @@
 				return
 			}
 
-			if (foundation == (/^candidate:([\w]+)/.exec(candidate) || [])[1] || '') {
+			if (foundation.length > 1 && foundation == (/^candidate:([\w]+)/.exec(candidate) || [])[1] || '') {
 				iceCandidate = undefined;
 			}
 			
