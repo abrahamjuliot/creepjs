@@ -150,7 +150,6 @@ export const getFonts = async imports => {
 		}
 	} = imports
 
-	
 	const getPixelEmojis = ({ doc, id, emojis }) => {
 		try {
 			patch(doc.getElementById(id), html`
@@ -198,6 +197,8 @@ export const getFonts = async imports => {
 			const pixelSizeSystemSum = 0.00001 * [...pattern].map(x => {
 				return x.split(',').map(x => pixelToNumber(x)).reduce((acc, x) => acc += (+x||0), 0)
 			}).reduce((acc, x) => acc += x, 0)
+
+			doc.body.removeChild(doc.getElementById('pixel-emoji-container'))	
 			
 			return {
 				emojiSet: [...emojiSet],

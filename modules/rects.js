@@ -80,7 +80,7 @@ export const getClientRects = async imports => {
 		doc.body.appendChild(divElement)
 		
 		const emojis = getEmojis()
-
+		
 		patch(divElement, html`
 		<div id="${rectsId}">
 			<style>
@@ -361,7 +361,9 @@ export const getClientRects = async imports => {
 				lied = true
 			}
 		}
-					
+
+		doc.body.removeChild(doc.getElementById(rectsId))
+		
 		logTestResult({ time: timer.stop(), test: 'rects', passed: true })
 		return {
 			elementClientRects,

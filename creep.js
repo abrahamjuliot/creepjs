@@ -30,6 +30,7 @@ import { getIntl, intlHTML } from './modules/intl.js'
 import { getFeaturesLie, getEngineFeatures, featuresHTML } from './modules/features.js'
 import { renderSamples } from './modules/samples.js'
 import { getPrediction, renderPrediction, predictionErrorPatch } from './modules/prediction.js'
+import { webrtcHTML, getWebRTCData, getMediaCapabilities } from './modules/webrtc.js'
 
 const imports = {
 	require: {
@@ -97,7 +98,10 @@ const imports = {
 		getKnownAudio,
 		attemptWindows11UserAgent,
 		isUAPostReduction,
-		getUserAgentRestored
+		getUserAgentRestored,
+		// slow connections
+		getWebRTCData,
+		getMediaCapabilities
 	}
 }
 // worker.js
@@ -830,6 +834,18 @@ const imports = {
 			<div class="col-six icon-prediction-container">
 			</div>
 		</div>
+		<div id="webrtc-connection" class="flex-grid">
+			<div class="col-six">
+				<strong>WebRTC</strong>
+				<div>host connection:</div>
+				<div class="block-text"></div>
+			</div>
+			<div class="col-six">
+				<div>capabilities:</div>
+				<div>stun connection:</div>
+				<div class="block-text"></div>
+			</div>
+		</div>
 		<div class="flex-grid">
 			${timezoneHTML(templateImports)}
 			${intlHTML(templateImports)}			
@@ -891,6 +907,17 @@ const imports = {
 		</div>
 	</div>
 	`, async () => {
+
+		// get WebRTC data
+		getWebRTCData().then(data => {
+			patch(document.getElementById('webrtc-connection'), html`
+				<div class="flex-grid">
+					${webrtcHTML(data, templateImports)}		
+				</div>			
+			`)
+			
+		})
+		
 		// fetch fingerprint data from server
 		const id = 'creep-browser'
 		const visitorElem = document.getElementById(id)

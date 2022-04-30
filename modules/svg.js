@@ -105,7 +105,7 @@ export const getSVG = async imports => {
 			return emojiSet
 		}, new Set())
 
-		// domRect System Sum
+		// svgRect System Sum
 		const svgrectSystemSum = 0.00001 * [...pattern].map(x => {
 			return x.split(',').reduce((acc, x) => acc += (+x||0), 0)
 		}).reduce((acc, x) => acc += x, 0)
@@ -119,6 +119,8 @@ export const getSVG = async imports => {
 			svgrectSystemSum,
 			lied
 		}
+
+		doc.body.removeChild(doc.getElementById('svg-container'))
 		
 		logTestResult({ time: timer.stop(), test: 'svg', passed: true })
 		return data
