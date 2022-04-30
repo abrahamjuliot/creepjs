@@ -2713,9 +2713,12 @@
 			const getRandFromRange = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 			const getCopyFrom = (rand, buffer, copy) => {
 				const { length } = buffer;
-				const start = getRandFromRange(275, length-1);
-				const mid = start+10;
-				const end = start+20;
+
+				const max = 20;
+			  const start = getRandFromRange(275, length - (max + 1));
+			  const mid = start + max / 2;
+			  const end = start + max;
+																																	
 				buffer.getChannelData(0)[start] = rand;
 				buffer.getChannelData(0)[mid] = rand;
 				buffer.getChannelData(0)[end] = rand;
