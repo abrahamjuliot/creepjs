@@ -11055,11 +11055,7 @@
 			if (!address) {
 				return
 			}
-
-			if (foundation.length > 1 && foundation == (/^candidate:([\w]+)/.exec(candidate) || [])[1] || '') {
-				iceCandidate = undefined;
-			}
-			
+		
 			connection.removeEventListener('icecandidate', computeCandidate);
 			clearTimeout(giveUpOnIPAddress);
 			connection.close();
