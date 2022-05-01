@@ -1,5 +1,11 @@
 import { captureError } from './captureErrors.js'
 
+try {
+	// warm up while we detect lies
+	navigator.mediaDevices.enumerateDevices()
+	speechSynthesis.getVoices()
+} catch (err) {}
+
 // Collect lies detected
 const createlieRecords = () => {
 	const records = {}
