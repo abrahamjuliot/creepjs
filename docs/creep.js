@@ -1308,9 +1308,12 @@
 		}${pointsHTML}</div>`
 	};
 
+	// warm up while we detect lies
 	try {
-		// warm up while we detect lies
 		navigator.mediaDevices.enumerateDevices();
+	} catch (err) {}
+
+	try {
 		speechSynthesis.getVoices();
 	} catch (err) {}
 
@@ -2708,8 +2711,15 @@
 				buffer,
 				compressorGainReduction
 			} = await getRenderedBuffer(new audioContext(1, bufferLen, 44100)) || {};
-			
+
 			await queueEvent(timer);
+			const getSnapshot = (arr, start, end) => {
+				const collection = [];
+				for (let i = start; i < end; i++) {
+					collection.push(arr[i]);
+				}
+				return collection
+			};
 			const getSum = arr => !arr ? 0 : arr.reduce((acc, curr) => (acc += Math.abs(curr)), 0);
 			const floatFrequencyDataSum = getSum(floatFrequencyData);
 			const floatTimeDomainDataSum = getSum(floatTimeDomainData);
@@ -2717,9 +2727,9 @@
 			const copy = new Float32Array(bufferLen);
 			caniuse(() => buffer.copyFromChannel(copy, 0));
 			const bins = caniuse(() => buffer.getChannelData(0)) || [];
-			const copySample = [...copy].slice(4500, 4600);
-			const binsSample = [...bins].slice(4500, 4600);
-			const sampleSum = getSum([...bins].slice(4500, bufferLen));
+			const copySample = getSnapshot([...copy], 4500, 4600);
+			const binsSample = getSnapshot([...bins], 4500, 4600);
+			const sampleSum = getSum(getSnapshot([...bins], 4500, bufferLen));
 			
 			// detect lies
 
