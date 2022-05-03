@@ -1,8 +1,11 @@
 import { captureError } from './captureErrors.js'
 
+// warm up while we detect lies
 try {
-	// warm up while we detect lies
 	navigator.mediaDevices.enumerateDevices()
+} catch (err) {}
+
+try {
 	speechSynthesis.getVoices()
 } catch (err) {}
 
