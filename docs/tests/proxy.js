@@ -36,10 +36,12 @@
       console.log(stack)
       const match = (stack.match(matcher) || [])[0]
       return {
-        data: [
-          match ? `[${match}] ${name}` : name,
-          `${message} (${stack.split('\n').length})`
-        ].join(': '),
+        data: {
+          stackLen: stack.split('\n').length,
+          match,
+          name,
+          message,
+        },
         perf: performance.now() - start
       }
     } finally {
@@ -167,10 +169,10 @@
   const hash = hashMini(results.map(x => x && x.data))
   const known = {
     // Blink
-    '549019d0': 1, // 102
-    'f0bc4390': 1,
+    '6ff09366': 1, // 102+
+    'eb5ffce4': 1,
     // Gecko
-    'af818625': 1,
+    '6fc1a86f': 1,
   }
 
   const el = document.getElementById('fingerprint-data')
@@ -192,19 +194,35 @@
 				color: #ca656e;
 				font-weight: bold;
 			}
+
+      .error-info {
+      }
 		</style>
 		<div class="visitor-info">
-			<strong>JS Proxy</strong>
+			<strong>Function.toString Proxy</strong>
 		</div>
-		<div class="jumbo">
-      <div>Function.toString</div>
-			<div>${known[hash] ? hash : `<span class="bold-fail">${hash}</span>`}</div>
+		<div>
+			<div class="jumbo" >${known[hash] ? hash : `<span class="bold-fail">${hash}</span>`}</div>
+      <div>${results.filter(x => !!x).length} errors</div>
 		</div>
+
 		<div class="flex-grid">
 			<div class="col-six relative">
         ${results.map(err => !err ? '' : `
-          <div class="block-text relative"><span class="aside-note">${err.perf.toFixed(2)}ms</span>${err.data}</div>`
-        ).join('<br>')}
+          <div class="error-info ellipsis relative"><span class="aside-note">${err.perf.toFixed(2)}ms</span>
+          ${
+            ((err) => {
+              const { match, stackLen, name, message } = err.data
+              return `<span class="help" title="${name}: ${message}">${[
+                stackLen,
+                name,
+                message.slice(0,20)+'...',
+                ...(match ? [match] : []),
+              ].join(':').toLocaleLowerCase().replace(/\s/g,'')}</span>`
+            })(err)
+          }
+          </div>`
+        ).join('')}
 			</div>
 		</div>
 	</div>
