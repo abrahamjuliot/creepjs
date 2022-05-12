@@ -164,7 +164,6 @@
   const perf = performance.now() - start
 
   console.log(results)
-  console.log(perf)
 
   const hash = hashMini(results.map(x => x && x.data))
   const known = {
@@ -198,10 +197,11 @@
       .error-info {
       }
 		</style>
-		<div class="visitor-info">
+		<div class="relative">
 			<strong>Function.toString Proxy</strong>
 		</div>
-		<div>
+		<div class="relative">
+      <span class="aside-note">${perf.toFixed(2)}ms</span>
 			<div class="jumbo" >${known[hash] ? hash : `<span class="bold-fail">${hash}</span>`}</div>
       <div>${results.filter(x => !!x).length} errors</div>
 		</div>
