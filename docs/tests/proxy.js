@@ -23,8 +23,7 @@
     lied: '<span class="lies">lied</span>'
   }
 
-  const spawnError = async (fn, matcher = null, final = null) => {
-    await Promise.resolve(setTimeout)
+  const spawnError = (fn, matcher = null, final = null) => {
     const start = performance.now()
     try {
       fn()
@@ -55,8 +54,10 @@
   const apiFunction = Function.prototype.toString
   const proxy = new Proxy(apiFunction, {})
   const proto = Object.getPrototypeOf(apiFunction)
+  /*
 
-  const results = await Promise.all([
+  */
+  const results = [
     // new Proxy
     spawnError(() => {
       new Proxy(apiFunction, () => { const x = 0; x = 1 })()
@@ -158,7 +159,7 @@
       proxy.toString.caller
     }),
 
-  ])
+  ]
 
   const perf = performance.now() - start
 
@@ -167,10 +168,10 @@
   const hash = hashMini(results.map(x => x && x.data))
   const known = {
     // Blink
-    '9e43d59b': 1, // 102+
-    '67ebfcd9': 1,
+    '6ff09366': 1, // 102+
+    'eb5ffce4': 1,
     // Gecko
-    '65122e1c': 1,
+    '6fc1a86f': 1,
   }
 
   const el = document.getElementById('fingerprint-data')
