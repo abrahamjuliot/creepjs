@@ -103,6 +103,7 @@
     }, /(Proxy\.|)\[Symbol\.hasInstance\]/g),
 
     // Recursion (< Chrome 102)
+    /*
     spawnError(repeat = () => {
       Object.create(apiFunction.__proto__)
       return repeat()
@@ -111,6 +112,7 @@
       Object.create(proxy.__proto__)
       return repeat()
     }, /(Proxy\.|)get __proto__/g),
+    */
 
     // Object.toString
     spawnError(() => {
@@ -168,10 +170,10 @@
   const hash = hashMini(results.map(x => x && x.data))
   const known = {
     // Blink
-    '6ff09366': 1, // 102+
-    'eb5ffce4': 1,
+    'ebbd435a': 1, // 102+
+    'e7dfce38': 1,
     // Gecko
-    '6fc1a86f': 1,
+    'fab6356e': 1,
   }
 
   const el = document.getElementById('fingerprint-data')
