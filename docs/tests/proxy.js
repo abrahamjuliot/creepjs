@@ -174,6 +174,10 @@
     'e7dfce38': 1,
     // Gecko
     'fab6356e': 1,
+		'cfb5d320': 1, // ~70
+		// WebKit
+		'82f12639': 1, // 15
+		'7b8a7b35': 1 // 14
   }
 
   const el = document.getElementById('fingerprint-data')
