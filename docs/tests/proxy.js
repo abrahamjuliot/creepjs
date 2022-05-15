@@ -183,8 +183,8 @@
     'e9a20637': 1,
 		'bea1a3e9': 1, // ~70
 		// WebKit
-		'82f12639': 1, // 15
-		'7b8a7b35': 1 // 14
+		'3b912776': 1, // 15
+		'342a7c72': 1 // 14
   }
   const perfDiff = (perf/perfControl).toFixed(0) * 10
   const el = document.getElementById('fingerprint-data')
