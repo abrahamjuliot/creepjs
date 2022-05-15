@@ -50,136 +50,143 @@
       }
     }
   }
-  const start = performance.now()
-  const apiFunction = Function.prototype.toString
-  const proxy = new Proxy(apiFunction, {})
-  const proto = Object.getPrototypeOf(apiFunction)
-  /*
 
-  */
-  const results = [
-    // new Proxy
-    spawnError(() => {
-      new Proxy(apiFunction, () => { const x = 0; x = 1 })()
-    }, /Function/g),
-    spawnError(() => {
-      new Proxy(proxy, () => { const x = 0; x = 1 })()
-    }, /Proxy/g),
+  const captureErrors = (apiFunction) => {
+    const start = performance.now()
+    const proxy = new Proxy(apiFunction, {})
+    const proto = Object.getPrototypeOf(apiFunction)
 
-    // Reflect.setPrototypeOf
-    spawnError(() => {
-      Reflect.setPrototypeOf(apiFunction, Object.create(apiFunction))
-      null in apiFunction
-    }, null, () => Object.setPrototypeOf(apiFunction, proto)),
-    spawnError(() => {
-      Reflect.setPrototypeOf(proxy, Object.create(proxy))
-      null in apiFunction
-    }, null, () => Object.setPrototypeOf(proxy, proto)),
+    const results = [
+      // new Proxy
+      spawnError(() => {
+        new Proxy(apiFunction, () => { const x = 0; x = 1 })()
+      }, /Function/g),
+      spawnError(() => {
+        new Proxy(proxy, () => { const x = 0; x = 1 })()
+      }, /Proxy/g),
 
-    // Object.setPrototypeOf
-    spawnError(() => {
-      Object.setPrototypeOf(apiFunction, Object.create(apiFunction)).toString()
-    }, /Function\.setPrototypeOf/g, () => Object.setPrototypeOf(apiFunction, proto)),
-    spawnError(() => {Function.setPrototypeOf
-      Object.setPrototypeOf(apiFunction, Object.create(proxy)).toString()
-    }, null, () => Object.setPrototypeOf(proxy, proto)),
+      // Reflect.setPrototypeOf
+      spawnError(() => {
+        Reflect.setPrototypeOf(apiFunction, Object.create(apiFunction))
+        null in apiFunction
+      }, null, () => Object.setPrototypeOf(apiFunction, proto)),
+      spawnError(() => {
+        Reflect.setPrototypeOf(proxy, Object.create(proxy))
+        null in apiFunction
+      }, null, () => Object.setPrototypeOf(proxy, proto)),
 
-    // set __proto__
-    spawnError(() => {
-      apiFunction.__proto__ = Object.create(apiFunction)
-      return apiFunction++
-    }, /(Function\.|)set __proto__ \[as __proto__\]/g, () => Object.setPrototypeOf(apiFunction, proto)),
-    spawnError(() => {
-      proxy.__proto__ = Object.create(proxy)
-      return proxy++
-    }, null, () => Object.setPrototypeOf(proxy, proto)),
+      // Object.setPrototypeOf
+      spawnError(() => {
+        Object.setPrototypeOf(apiFunction, Object.create(apiFunction)).toString()
+      }, /Function\.setPrototypeOf/g, () => Object.setPrototypeOf(apiFunction, proto)),
+      spawnError(() => {Function.setPrototypeOf
+        Object.setPrototypeOf(apiFunction, Object.create(proxy)).toString()
+      }, null, () => Object.setPrototypeOf(proxy, proto)),
 
-    // Symbol.hasInstance (< Chrome 102)
-    spawnError(() => {
-      (1).toString instanceof apiFunction
-    }, /(Function\.|)\[Symbol\.hasInstance\]/g),
-    spawnError(() => {
-      (1).toString instanceof proxy
-    }, /(Proxy\.|)\[Symbol\.hasInstance\]/g),
+      // set __proto__
+      spawnError(() => {
+        apiFunction.__proto__ = Object.create(apiFunction)
+        return apiFunction++
+      }, /(Function\.|)set __proto__ \[as __proto__\]/g, () => Object.setPrototypeOf(apiFunction, proto)),
+      spawnError(() => {
+        proxy.__proto__ = Object.create(proxy)
+        return proxy++
+      }, null, () => Object.setPrototypeOf(proxy, proto)),
 
-    // Recursion (< Chrome 102)
-    /*
-    spawnError(repeat = () => {
-      Object.create(apiFunction.__proto__)
-      return repeat()
-    }, /Function.create/g),
-    spawnError(repeat = () => {
-      Object.create(proxy.__proto__)
-      return repeat()
-    }, /(Proxy\.|)get __proto__/g),
-    */
+      // Symbol.hasInstance (< Chrome 102)
+      spawnError(() => {
+        (1).toString instanceof apiFunction
+      }, /(Function\.|)\[Symbol\.hasInstance\]/g),
+      spawnError(() => {
+        (1).toString instanceof proxy
+      }, /(Proxy\.|)\[Symbol\.hasInstance\]/g),
 
-    // Object.toString
-    spawnError(() => {
-      throw Error(Object.create(apiFunction))
-    }, /Function.toString/g),
-    spawnError(() => {
-      throw Error(Object.create(proxy))
-    }, /Object.toString/g),
+      // Recursion (< Chrome 102)
+      /*
+      spawnError(repeat = () => {
+        Object.create(apiFunction.__proto__)
+        return repeat()
+      }, /Function.create/g),
+      spawnError(repeat = () => {
+        Object.create(proxy.__proto__)
+        return repeat()
+      }, /(Proxy\.|)get __proto__/g),
+      */
 
-    spawnError(() => {
-      Object.defineProperty(Object.create(apiFunction), '', {}).toString()
-    }, /Function.toString/g),
-    spawnError(() => {
-      Object.defineProperty(Object.create(proxy), '', {}).toString()
-    }, /Object.toString/g),
+      // Object.toString
+      spawnError(() => {
+        throw Error(Object.create(apiFunction))
+      }, /Function.toString/g),
+      spawnError(() => {
+        throw Error(Object.create(proxy))
+      }, /Object.toString/g),
 
-    spawnError(() => {
-      Object.defineProperties(Object.create(apiFunction), {}).toString()
-    }, /Function.toString/g),
-    spawnError(() => {
-      Object.defineProperties(Object.create(proxy), {}).toString()
-    }, /Object.toString/g),
+      spawnError(() => {
+        Object.defineProperty(Object.create(apiFunction), '', {}).toString()
+      }, /Function.toString/g),
+      spawnError(() => {
+        Object.defineProperty(Object.create(proxy), '', {}).toString()
+      }, /Object.toString/g),
 
-    spawnError(() => {
-      Object.create(apiFunction).toString(-1)
-    }, /Function.toString/g),
-    spawnError(() => {
-      Object.create(proxy).toString(-1)
-    }, /Object.toString/g),
+      spawnError(() => {
+        Object.defineProperties(Object.create(apiFunction), {}).toString()
+      }, /Function.toString/g),
+      spawnError(() => {
+        Object.defineProperties(Object.create(proxy), {}).toString()
+      }, /Object.toString/g),
 
-    // Incompatible proxy
-    spawnError(() => {
-      apiFunction.arguments
-      apiFunction.caller
-    }),
-    spawnError(() => {
-      proxy.arguments
-      proxy.caller
-    }),
-    spawnError(() => {
-      apiFunction.toString.arguments
-      apiFunction.toString.caller
-    }),
-    spawnError(() => {
-      proxy.toString.arguments
-      proxy.toString.caller
-    }),
+      spawnError(() => {
+        Object.create(apiFunction).toString(-1)
+      }, /Function.toString/g),
+      spawnError(() => {
+        Object.create(proxy).toString(-1)
+      }, /Object.toString/g),
 
-  ]
+      // Incompatible proxy
+      spawnError(() => {
+        apiFunction.arguments
+        apiFunction.caller
+      }),
+      spawnError(() => {
+        proxy.arguments
+        proxy.caller
+      }),
+      spawnError(() => {
+        apiFunction.toString.arguments
+        apiFunction.toString.caller
+      }),
+      spawnError(() => {
+        proxy.toString.arguments
+        proxy.toString.caller
+      }),
 
-  const perf = performance.now() - start
+    ]
+
+    const perf = (performance.now() - start).toFixed(2)
+    return {
+      results,
+      perf,
+    }
+  }
+
+  const { results, perf } = captureErrors(Function.prototype.toString)
+  const { results: resultsControl, perf: perfControl } = captureErrors(Function.prototype.valueOf)
 
   console.log(results)
 
   const hash = hashMini(results.map(x => x && x.data))
   const known = {
     // Blink
-    'ebbd435a': 1, // 102+
-    'e7dfce38': 1,
+    '0d1b909b': 1, // 102+
+    '38ee167d': 1,
     // Gecko
-    'fab6356e': 1,
-		'cfb5d320': 1, // ~70
+    'e9a20637': 1,
+		'bea1a3e9': 1, // ~70
 		// WebKit
 		'82f12639': 1, // 15
 		'7b8a7b35': 1 // 14
   }
-
+  const perfDiff = (perf/perfControl).toFixed(0) * 10
   const el = document.getElementById('fingerprint-data')
   patch(el, html`
 	<div id="fingerprint-data">
@@ -207,9 +214,14 @@
 			<strong>Function.toString Proxy</strong>
 		</div>
 		<div class="relative">
-      <span class="aside-note">${perf.toFixed(2)}ms</span>
-			<div class="jumbo" >${known[hash] ? hash : `<span class="bold-fail">${hash}</span>`}</div>
-      <div>${results.filter(x => !!x).length} errors</div>
+      <span class="aside-note">${perf}ms</span>
+			<div class="jumbo" >
+        ${known[hash] ? hash : `<span class="bold-fail">${hash}</span>`}
+      </div>
+      <div>
+        ${results.filter(x => !!x).length} errors
+        <br>+${perfDiff > 100 ? ` <span class="bold-fail">${perfDiff}%</span>`: `${perfDiff}%`} lag
+      </div>
 		</div>
 
 		<div class="flex-grid">
