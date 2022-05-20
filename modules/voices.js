@@ -9,25 +9,28 @@ export const getVoices = imports => {
 			lieProps
 		}
 	} = imports
-		
+
 	return new Promise(async resolve => {
 		try {
 			const timer = createTimer()
 			await queueEvent(timer)
-			// use window since phantomDarkness is unstable in FF
+			
+			// use window since iframe is unstable in FF
 			const supported = 'speechSynthesis' in window
 			supported && speechSynthesis.getVoices() // warm up
 			if (!supported) {
 				logTestResult({ test: 'speech', passed: false })
 				return resolve()
 			}
+
 			const voiceslie = !!lieProps['SpeechSynthesis.getVoices']
 
+			const giveUpOnVoices = setTimeout(() => {
+				logTestResult({ test: 'speech', passed: false })
+				return resolve()
+			}, 3000)
+
 			const getVoices = () => {
-				const giveUpOnVoices = setTimeout(() => {
-					logTestResult({ test: 'speech', passed: false })
-					return resolve()
-				}, 3000)
 				const data = speechSynthesis.getVoices()
 				const isChrome = ((3.141592653589793 ** -100) == 1.9275814160560204e-50)
 				const localServiceDidLoad = (data || []).find(x => x.localService)
@@ -54,7 +57,7 @@ export const getVoices = imports => {
 				const remote = dataUnique.filter(x => !x.localService).map(x => x.name)
 				const languages = [...new Set(dataUnique.map(x => x.lang))]
 				const defaults = dataUnique.filter(x => x.default).map(x => x.name)
-				
+
 				logTestResult({ time: timer.stop(), test: 'speech', passed: true })
 				return resolve({
 					local,
@@ -64,7 +67,7 @@ export const getVoices = imports => {
 					lied: voiceslie
 				})
 			}
-			
+
 			getVoices()
 			if (speechSynthesis.addEventListener) {
 				return speechSynthesis.addEventListener('voiceschanged', getVoices)
@@ -117,7 +120,7 @@ export const voicesHTML = ({ fp, note, count, modal, hashMini, hashSlice, perfor
 		'English (United States)': icon.Android
 	}
 	const systemVoice = Object.keys(system).find(key => local.find(voice => voice.includes(key)))
-	
+
 	return `
 	<div class="relative col-four${lied ? ' rejected' : ''}">
 		<span class="aside-note">${performanceLogger.getLog().speech}</span>
