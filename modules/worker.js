@@ -125,21 +125,18 @@ export const getBestWorkerScope = async imports => {
 
 		// navigator lies
 		// skip language and languages to respect valid engine language switching bug in Chrome
+		// these are more likely navigator lies, so don't trigger lied worker scope
 		const workerScopeMatchLie = 'does not match worker scope'
 		if (platform != navigator.platform) {
-			workerScope.lied = true
 			documentLie('Navigator.platform', workerScopeMatchLie)
 		}
 		if (userAgent != navigator.userAgent) {
-			workerScope.lied = true
 			documentLie('Navigator.userAgent', workerScopeMatchLie)
 		}
 		if (hardwareConcurrency && (hardwareConcurrency != navigator.hardwareConcurrency)) {
-			workerScope.lied = true
 			documentLie('Navigator.hardwareConcurrency', workerScopeMatchLie)
 		}
 		if (deviceMemory && (deviceMemory != navigator.deviceMemory)) {
-			workerScope.lied = true
 			documentLie('Navigator.deviceMemory', workerScopeMatchLie)
 		}
 
