@@ -6274,7 +6274,7 @@
 	};
 
 	// special thanks to https://arh.antoinevastel.com/reports/stats/menu.html for stats
-	const getNavigator = async (imports, workerScope) => {
+	const getNavigator = async (imports) => {
 
 		const {
 			require: {
@@ -6318,31 +6318,7 @@
 				lieProps['Navigator.mimeTypes']
 			) || false;
 			const phantomNavigator = phantomDarkness ? phantomDarkness.navigator : navigator;
-			const detectLies = (name, value) => {
-				const workerScopeValue = caniuse(() => workerScope, [name]);
-				const workerScopeMatchLie = 'does not match worker scope';
-				if (workerScopeValue) {
-					if (name == 'userAgent') {
-						const navigatorUserAgent = value;
-						const system = getOS(navigatorUserAgent);
-						if (workerScope.system != system) {
-							lied = true;
-							documentLie(`Navigator.${name}`, workerScopeMatchLie);
-						}
-						else if (workerScope.userAgent != navigatorUserAgent) {
-							lied = true;
-							documentLie(`Navigator.${name}`, workerScopeMatchLie);
-						}
-						return value
-					}
-					else if (name != 'userAgent' && workerScopeValue != value) {
-						lied = true;
-						documentLie(`Navigator.${name}`, workerScopeMatchLie);
-						return value
-					}
-				}
-				return value
-			};
+
 			const credibleUserAgent = (
 				'chrome' in window ? navigator.userAgent.includes(navigator.appVersion) : true
 			);
@@ -6352,7 +6328,7 @@
 					const navigatorPlatform = navigator.platform;
 					const systems = ['win', 'linux', 'mac', 'arm', 'pike', 'linux', 'iphone', 'ipad', 'ipod', 'android', 'x11'];
 					const trusted = typeof navigatorPlatform == 'string' && systems.filter(val => navigatorPlatform.toLowerCase().includes(val))[0];
-					detectLies('platform', navigatorPlatform);
+
 					if (!trusted) {
 						sendToTrash(`platform`, `${navigatorPlatform} is unusual`);
 					}
@@ -6405,7 +6381,7 @@
 				userAgent: attempt(() => {
 					const { userAgent } = phantomNavigator;
 					const navigatorUserAgent = navigator.userAgent;
-					detectLies('userAgent', navigatorUserAgent);
+
 					if (!credibleUserAgent) {
 						sendToTrash('userAgent', `${navigatorUserAgent} does not match appVersion`);
 					}
@@ -6427,7 +6403,7 @@
 				appVersion: attempt(() => {
 					const { appVersion } = phantomNavigator;
 					const navigatorAppVersion = navigator.appVersion;
-					detectLies('appVersion', appVersion);
+
 					if (!credibleUserAgent) {
 						sendToTrash('appVersion', `${navigatorAppVersion} does not match userAgent`);
 					}
@@ -6514,7 +6490,7 @@
 					}
 					const hardwareConcurrency = phantomNavigator.hardwareConcurrency;
 					const navigatorHardwareConcurrency = navigator.hardwareConcurrency;
-					detectLies('hardwareConcurrency', navigatorHardwareConcurrency);
+
 					trustInteger('hardwareConcurrency - invalid return type', navigatorHardwareConcurrency);
 					if (hardwareConcurrency != navigatorHardwareConcurrency) {
 						lied = true;
@@ -6527,9 +6503,7 @@
 					const { language, languages } = phantomNavigator;
 					const navigatorLanguage = navigator.language;
 					const navigatorLanguages = navigator.languages;
-					// disregard detectLies in workers to respect valid engine language switching
-					//detectLies('language', navigatorLanguage)
-					//detectLies('languages', '' + navigatorLanguages)
+
 					if ('' + language != '' + navigatorLanguage) {
 						lied = true;
 						const nestedIframeLie = `Expected "${navigatorLanguage}" in nested iframe and got "${language}"`;
@@ -6659,7 +6633,7 @@
 			};
 
 			const getUserAgentData = () => attempt(async () => {
-				if (!phantomNavigator.userAgentData || 
+				if (!phantomNavigator.userAgentData ||
 					!phantomNavigator.userAgentData.getHighEntropyValues) {
 					return
 				}
@@ -6681,7 +6655,7 @@
 				data.brands = compressedBrands(data.brands);
 				data.brandsVersion = removeChromium(data.brandsVersion);
 				data.brands = removeChromium(data.brands);
-				
+
 				if (!data.mobile) {
 					data.mobile = mobile;
 				}
@@ -6702,7 +6676,7 @@
 				const available = await navigator.bluetooth.getAvailability();
 				return available
 			}, 'bluetoothAvailability failed');
-		
+
 			const getPermissions = () => attempt(async () => {
 				const getPermissionState = name => navigator.permissions.query({ name })
 					.then(res => ({ name, state: res.state }))
@@ -6761,7 +6735,7 @@
 					})(limits)
 				}
 			}, 'webgpu failed');
-			
+
 			const [
 				userAgentData,
 				bluetoothAvailability,
@@ -6928,16 +6902,16 @@
 					platformVersion,
 					platform
 				} = userAgentData || {};
-				
+
 				const windowsRelease = computeWindowsRelease({ platform, platformVersion });
-				
+
 				return !userAgentData ? note.unsupported : `
 					${(brandsVersion || []).join(',')}${uaFullVersion ? ` (${uaFullVersion})` : ''}
-					<br>${windowsRelease || `${platform} ${platformVersion}`} ${architecture ? `${architecture}${bitness ? `_${bitness}` : ''}` : ''} 
+					<br>${windowsRelease || `${platform} ${platformVersion}`} ${architecture ? `${architecture}${bitness ? `_${bitness}` : ''}` : ''}
 					${model ? `<br>${model}` : ''}
 					${mobile ? '<br>mobile' : ''}
 				`
-			})(userAgentData)}	
+			})(userAgentData)}
 			</div>
 		</div>
 	</div>
@@ -8301,25 +8275,28 @@
 				lieProps
 			}
 		} = imports;
-			
+
 		return new Promise(async resolve => {
 			try {
 				const timer = createTimer();
 				await queueEvent(timer);
-				// use window since phantomDarkness is unstable in FF
+				
+				// use window since iframe is unstable in FF
 				const supported = 'speechSynthesis' in window;
 				supported && speechSynthesis.getVoices(); // warm up
 				if (!supported) {
 					logTestResult({ test: 'speech', passed: false });
 					return resolve()
 				}
+
 				const voiceslie = !!lieProps['SpeechSynthesis.getVoices'];
 
+				const giveUpOnVoices = setTimeout(() => {
+					logTestResult({ test: 'speech', passed: false });
+					return resolve()
+				}, 3000);
+
 				const getVoices = () => {
-					const giveUpOnVoices = setTimeout(() => {
-						logTestResult({ test: 'speech', passed: false });
-						return resolve()
-					}, 3000);
 					const data = speechSynthesis.getVoices();
 					const isChrome = ((3.141592653589793 ** -100) == 1.9275814160560204e-50);
 					const localServiceDidLoad = (data || []).find(x => x.localService);
@@ -8346,7 +8323,7 @@
 					const remote = dataUnique.filter(x => !x.localService).map(x => x.name);
 					const languages = [...new Set(dataUnique.map(x => x.lang))];
 					const defaults = dataUnique.filter(x => x.default).map(x => x.name);
-					
+
 					logTestResult({ time: timer.stop(), test: 'speech', passed: true });
 					return resolve({
 						local,
@@ -8356,7 +8333,7 @@
 						lied: voiceslie
 					})
 				};
-				
+
 				getVoices();
 				if (speechSynthesis.addEventListener) {
 					return speechSynthesis.addEventListener('voiceschanged', getVoices)
@@ -8409,7 +8386,7 @@
 			'English (United States)': icon.Android
 		};
 		const systemVoice = Object.keys(system).find(key => local.find(voice => voice.includes(key)));
-		
+
 		return `
 	<div class="relative col-four${lied ? ' rejected' : ''}">
 		<span class="aside-note">${performanceLogger.getLog().speech}</span>
@@ -8453,7 +8430,7 @@
 	`
 	};
 
-	const getBestWorkerScope = async imports => {	
+	const getBestWorkerScope = async imports => {
 		const {
 			require: {
 				queueEvent,
@@ -8480,10 +8457,10 @@
 				const giveUpOnWorker = setTimeout(() => {
 					return resolve()
 				}, 3000);
-				
+
 				const dedicatedWorker = ask(() => new Worker(scriptSource));
 				if (!hasConstructor(dedicatedWorker, 'Worker')) return resolve()
-				
+
 				dedicatedWorker.onmessage = event => {
 					dedicatedWorker.terminate();
 					clearTimeout(giveUpOnWorker);
@@ -8494,12 +8471,12 @@
 				const giveUpOnWorker = setTimeout(() => {
 					return resolve()
 				}, 3000);
-				
+
 				const sharedWorker = ask(() => new SharedWorker(scriptSource));
 				if (!hasConstructor(sharedWorker, 'SharedWorker')) return resolve()
-				
+
 				sharedWorker.port.start();
-				
+
 				sharedWorker.port.onmessage = event => {
 					sharedWorker.port.close();
 					clearTimeout(giveUpOnWorker);
@@ -8510,12 +8487,12 @@
 				const giveUpOnWorker = setTimeout(() => {
 					return resolve()
 				}, 3000);
-				
+
 				if (!ask(() => navigator.serviceWorker.register)) return resolve()
-				
+
 				return navigator.serviceWorker.register(scriptSource).then(registration => {
 					if (!hasConstructor(registration, 'ServiceWorkerRegistration')) return resolve()
-					
+
 					return navigator.serviceWorker.ready.then(registration => {
 						registration.active.postMessage(undefined);
 
@@ -8540,7 +8517,7 @@
 				console.error(error.message);
 				return
 			});
-			
+
 			if (!(workerScope || {}).userAgent) {
 				scope = 'SharedWorkerGlobalScope';
 				type = 'shared'; // no support in Safari, iOS, and Chrome Android
@@ -8550,7 +8527,7 @@
 					return
 				});
 			}
-			
+
 			if (!(workerScope || {}).userAgent) {
 				scope = 'WorkerGlobalScope';
 				type = 'dedicated'; // device emulators can easily spoof dedicated scope
@@ -8568,14 +8545,35 @@
 			workerScope.type = type;
 			workerScope.scope = scope;
 
-			// detect lies 
+			// detect lies
 			const {
 				system,
 				userAgent,
 				userAgentData,
-				platform
+				platform,
+				deviceMemory,
+				hardwareConcurrency,
 			} = workerScope || {};
-			
+
+			// navigator lies
+			// skip language and languages to respect valid engine language switching bug in Chrome
+			const workerScopeMatchLie = 'does not match worker scope';
+			if (platform != navigator.platform) {
+				workerScope.lied = true;
+				documentLie('Navigator.platform', workerScopeMatchLie);
+			}
+			if (userAgent != navigator.userAgent) {
+				workerScope.lied = true;
+				documentLie('Navigator.userAgent', workerScopeMatchLie);
+			}
+			if (hardwareConcurrency && (hardwareConcurrency != navigator.hardwareConcurrency)) {
+				workerScope.lied = true;
+				documentLie('Navigator.hardwareConcurrency', workerScopeMatchLie);
+			}
+			if (deviceMemory && (deviceMemory != navigator.deviceMemory)) {
+				workerScope.lied = true;
+				documentLie('Navigator.deviceMemory', workerScopeMatchLie);
+			}
 
 			// prototype lies
 			if (workerScope.lies.proto) {
@@ -8586,9 +8584,9 @@
 					const lies = proto[key];
 					lies.forEach(lie => documentLie(api, lie));
 				});
-				
+
 			}
-			
+
 			// user agent os lie
 			const userAgentOS = (
 				// order is important
@@ -8641,7 +8639,7 @@
 			const userAgentDataVersion = (
 				userAgentData &&
 				userAgentData.brandsVersion &&
-				userAgentData.brandsVersion.length ? 
+				userAgentData.brandsVersion.length ?
 				getVersion(userAgentData.brandsVersion) :
 				undefined
 			);
@@ -8694,8 +8692,8 @@
 				workerScope.lied = true;
 				workerScope.lies.platformVersion = `Windows platformVersion ${(userAgentData||{}).platformVersion} does not match user agent version ${workerScope.device}`;
 				documentLie(workerScope.scope, workerScope.lies.platformVersion);
-			}			
-			
+			}
+
 			// capture userAgent version
 			workerScope.userAgentVersion = userAgentVersion;
 			workerScope.userAgentDataVersion = userAgentDataVersion;
@@ -8705,7 +8703,7 @@
 				...(getWebGLRendererConfidence(workerScope.webglRenderer) || {}),
 				compressedGPU: compressWebGLRenderer(workerScope.webglRenderer)
 			};
-			
+
 			logTestResult({ time: timer.stop(), test: `${type} worker`, passed: true });
 			return {
 				...workerScope,
@@ -8778,13 +8776,13 @@
 			grade: confidenceGrade,
 			compressedGPU
 		} = gpu || {};
-		
+
 		return `
 	<span class="time">${performanceLogger.getLog()[`${type} worker`]}</span>
 	<span class="aside-note-bottom">${scope || ''}</span>
-	
+
 	<div class="relative col-six${lied ? ' rejected' : ''}">
-		
+
 		<strong>Worker</strong><span class="hash">${hashSlice($hash)}</span>
 		<div>keys (${count(scopeKeys)}): ${
 			scopeKeys && scopeKeys.length ? modal(
@@ -8796,11 +8794,11 @@
 		<div class="help">lang/timezone:</div>
 		<div class="block-text help" title="WorkerNavigator.language\nWorkerNavigator.languages\nIntl.Collator.resolvedOptions()\nIntl.DateTimeFormat.resolvedOptions()\nIntl.DisplayNames.resolvedOptions()\nIntl.ListFormat.resolvedOptions()\nIntl.NumberFormat.resolvedOptions()\nIntl.PluralRules.resolvedOptions()\nIntl.RelativeTimeFormat.resolvedOptions()\nNumber.toLocaleString()\nIntl.DateTimeFormat().resolvedOptions().timeZone\nDate.getDate()\nDate.getMonth()\nDate.parse()">
 			${
-				localeEntropyIsTrusty ? `${language} (${systemCurrencyLocale})` : 
+				localeEntropyIsTrusty ? `${language} (${systemCurrencyLocale})` :
 					`${language} (<span class="bold-fail">${engineCurrencyLocale}</span>)`
 			}
 			${
-				locale === language ? '' : localeIntlEntropyIsTrusty ? ` ${locale}` : 
+				locale === language ? '' : localeIntlEntropyIsTrusty ? ` ${locale}` :
 					` <span class="bold-fail">${locale}</span>`
 			}
 			<br>${timezoneLocation} (${''+timezoneOffset})
@@ -8815,7 +8813,7 @@
 			${webglVendor ? webglVendor : ''}
 			${webglRenderer ? `<br>${webglRenderer}` : note.unsupported}
 		</div>
-		
+
 	</div>
 	<div class="col-six${lied ? ' rejected' : ''}">
 
@@ -8858,10 +8856,10 @@
 					${model ? `<br>${model}` : ''}
 					${mobile ? '<br>mobile' : ''}
 				`
-			})(userAgentData)}	
+			})(userAgentData)}
 			</div>
 		</div>
-		
+
 	</div>
 	`
 	};
@@ -11414,7 +11412,9 @@
 				mediaComputed,
 				svgComputed,
 				resistanceComputed,
-				intlComputed
+				intlComputed,
+				navigatorComputed,
+				offlineAudioContextComputed,
 			] = await Promise.all([
 				getWindowFeatures(imports),
 				getHTMLElementVersion(imports),
@@ -11433,25 +11433,23 @@
 				getMedia(imports),
 				getSVG(imports),
 				getResistance(imports),
-				getIntl(imports)
+				getIntl(imports),
+				getNavigator(imports),
+				getOfflineAudioContext(imports),
 			]).catch(error => console.error(error.message));
-			
+
 			const [
-				offlineAudioContextComputed,
-				navigatorComputed,
 				headlessComputed,
 				featuresComputed
 			] = await Promise.all([
-				getOfflineAudioContext(imports),
-				getNavigator(imports, workerScopeComputed),
 				getHeadlessFeatures(imports, workerScopeComputed),
 				getEngineFeatures({
 					imports,
-					cssComputed, 
+					cssComputed,
 					windowFeaturesComputed
 				})
 			]).catch(error => console.error(error.message));
-			
+
 			const [
 				liesComputed,
 				trashComputed,
@@ -11461,7 +11459,7 @@
 				getTrash(imports),
 				getCapturedErrors(imports)
 			]).catch(error => console.error(error.message));
-			
+
 			const fingerprintTimeEnd = fingerprintTimeStart();
 			console.log(`Fingerprinting complete in ${(fingerprintTimeEnd).toFixed(2)}ms`);
 
@@ -11576,7 +11574,7 @@
 						hardwareConcurrency,
 						maxTouchPoints,
 						oscpu,
-						platform, 
+						platform,
 						system,
 						userAgentData,
 					} = navigatorComputed || {};
@@ -11627,7 +11625,7 @@
 						height,
 						location,
 						locationWorker,
-						locationEpoch, 
+						locationEpoch,
 						maxTouchPoints,
 						mobile,
 						mobileWorker,
@@ -11648,17 +11646,17 @@
 					]
 				})())
 			]).catch(error => console.error(error.message));
-			
+
 			//console.log(performance.now()-start)
 			const hashTimeEnd = hashStartTime();
 			const timeEnd = timeStart();
 
 			console.log(`Hashing complete in ${(hashTimeEnd).toFixed(2)}ms`);
-			
+
 			if (parentPhantom) {
 				parentPhantom.parentNode.removeChild(parentPhantom);
 			}
-			
+
 			const fingerprint = {
 				workerScope: !workerScopeComputed ? undefined : { ...workerScopeComputed, $hash: workerHash},
 				navigator: !navigatorComputed ? undefined : {...navigatorComputed, $hash: navigatorHash},
@@ -11703,7 +11701,7 @@
 				timeEnd
 			}
 		};
-		
+
 		// fingerprint and render
 		const {
 			fingerprint: fp,
@@ -11721,7 +11719,7 @@
 			deviceOfTimezoneHash,
 			timeEnd
 		} = await fingerprint().catch(error => console.error(error));
-		
+
 		console.log('%c✔ loose fingerprint passed', 'color:#4cca9f');
 
 		console.groupCollapsed('Loose Fingerprint');
@@ -11731,7 +11729,7 @@
 		console.groupCollapsed('Loose Fingerprint JSON');
 		console.log('diff check at https://www.diffchecker.com/diff\n\n', JSON.stringify(fp, null, '\t'));
 		console.groupEnd();
-		
+
 		// Trusted Fingerprint
 		const trashLen = fp.trash.trashBin.length;
 		const liesLen = !('totalLies' in fp.lies) ? 0 : fp.lies.totalLies;
@@ -11748,8 +11746,8 @@
 
 		const hardenEntropy = (workerScope, prop) => {
 			return (
-				!workerScope ? prop : 
-					(workerScope.localeEntropyIsTrusty && workerScope.localeIntlEntropyIsTrusty) ? prop : 
+				!workerScope ? prop :
+					(workerScope.localeEntropyIsTrusty && workerScope.localeIntlEntropyIsTrusty) ? prop :
 						undefined
 			)
 		};
@@ -11770,7 +11768,7 @@
 		};
 
 		const creep = {
-			navigator: ( 
+			navigator: (
 				!fp.navigator || fp.navigator.lied ? undefined : {
 					bluetoothAvailability: fp.navigator.bluetoothAvailability,
 					device: fp.navigator.device,
@@ -11787,14 +11785,14 @@
 					userAgentData: {
 						...(fp.navigator.userAgentData || {}),
 						// loose
-						brandsVersion: undefined, 
+						brandsVersion: undefined,
 						uaFullVersion: undefined
 					},
 					vendor: fp.navigator.vendor
 				}
 			),
-			screen: ( 
-				!fp.screen || fp.screen.lied || privacyResistFingerprinting ? undefined : 
+			screen: (
+				!fp.screen || fp.screen.lied || privacyResistFingerprinting ? undefined :
 					hardenEntropy(
 						fp.workerScope, {
 							height: fp.screen.height,
@@ -11814,7 +11812,7 @@
 				),
 				// system locale in blink
 				language: fp.workerScope.language,
-				languages: fp.workerScope.languages, 
+				languages: fp.workerScope.languages,
 				platform: fp.workerScope.platform,
 				system: fp.workerScope.system,
 				device: fp.workerScope.device,
@@ -11828,7 +11826,7 @@
 				userAgentData: {
 					...fp.workerScope.userAgentData,
 					// loose
-					brandsVersion: undefined, 
+					brandsVersion: undefined,
 					uaFullVersion: undefined
 				},
 			},
@@ -11837,10 +11835,10 @@
 				if (!canvas2d) {
 					return
 				}
-				const { lied, liedTextMetrics } = canvas2d; 
+				const { lied, liedTextMetrics } = canvas2d;
 				let data;
 				if (!lied) {
-					const { dataURI, paintURI, textURI, emojiURI, blob, blobOffscreen } = canvas2d; 
+					const { dataURI, paintURI, textURI, emojiURI, blob, blobOffscreen } = canvas2d;
 					data = {
 						lied,
 						...{ dataURI, paintURI, textURI, emojiURI, blob, blobOffscreen }
@@ -11851,7 +11849,7 @@
 					data = {
 						...(data || {}),
 						...{ textMetricsSystemSum, emojiSet }
-					}; 
+					};
 				}
 				return data
 			})(fp.canvas2d),
@@ -11913,8 +11911,8 @@
 				braveFingerprintingBlocking ? {
 					values: fp.offlineAudioContext.values,
 					compressorGainReduction: fp.offlineAudioContext.compressorGainReduction
-				} : 
-					fp.offlineAudioContext.lied || unknownFirefoxAudio ? undefined : 
+				} :
+					fp.offlineAudioContext.lied || unknownFirefoxAudio ? undefined :
 						fp.offlineAudioContext
 			),
 			fonts: !fp.fonts || fp.fonts.lied ? undefined : fp.fonts,
@@ -11939,7 +11937,7 @@
 		const webapp = 'https://creepjs-api.web.app/fp';
 
 		const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
-		.catch(error => { 
+		.catch(error => {
 			console.error(error.message);
 		});
 
@@ -11975,7 +11973,7 @@
 					else {
 						data.loads =  loads;
 					}
-					
+
 					if (computePreviousLoadRevision) {
 						sessionStorage.setItem('previousFingerprint', JSON.stringify(currentFingerprint));
 					}
@@ -11983,7 +11981,7 @@
 					const currentFingerprintKeys =  Object.keys(currentFingerprint);
 					const revisedKeysFromPreviousLoad = currentFingerprintKeys
 						.filter(key => currentFingerprint[key] != previousFingerprint[key]);
-					
+
 					const revisedKeys = currentFingerprintKeys
 						.filter(key => currentFingerprint[key] != initialFingerprint[key]);
 
@@ -12003,7 +12001,7 @@
 				return data
 			}
 		};
-		
+
 		// patch dom
 		const hashSlice = x => !x ? x : x.slice(0, 8);
 		const templateImports = {
@@ -12115,7 +12113,7 @@
 		</div>
 		<div class="flex-grid">
 			${timezoneHTML(templateImports)}
-			${intlHTML(templateImports)}			
+			${intlHTML(templateImports)}
 		</div>
 		<div id="headless-resistance-detection-results" class="flex-grid">
 			${headlesFeaturesHTML(templateImports)}
@@ -12179,12 +12177,12 @@
 			getWebRTCData().then(data => {
 				patch(document.getElementById('webrtc-connection'), html`
 				<div class="flex-grid">
-					${webrtcHTML(data, templateImports)}		
-				</div>			
+					${webrtcHTML(data, templateImports)}
+				</div>
 			`);
-				
+
 			});
-			
+
 			// fetch fingerprint data from server
 			const id = 'creep-browser';
 			const visitorElem = document.getElementById(id);
@@ -12196,7 +12194,7 @@
 			const resistanceType = [...resistanceSet].join(' ');
 			const fetchVisitorDataTimer = timer();
 			const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&trashLen=${trashLen}&liesLen=${liesLen}&errorsLen=${errorsLen}&fuzzy=${fuzzyFingerprint}&botHash=${botHash}&perf=${timeEnd.toFixed(2)}&resistance=${resistanceType}`;
-			
+
 			fetch(request)
 			.then(response => response.json())
 			.then(async data => {
@@ -12246,14 +12244,14 @@
 					<div class="ellipsis-all fuzzy-diffs">Diffs: <span class="unblurred">${fuzzyDiff}</span></div>
 				</div>
 			`);
-				
+
 				const toLocaleStr = str => {
 					const date = new Date(str);
 					const dateString = date.toLocaleDateString();
 					const timeString = date.toLocaleTimeString();
 					return `${dateString}, ${timeString}`
 				};
-				
+
 				const {
 					switchCountPointGain,
 					errorsPointGain,
@@ -12295,8 +12293,8 @@
 				}</div>`
 				}).join('');
 
-				const { initial, loads, revisedKeys } = computeSession({ fingerprint: fp, loading: true }); 
-				
+				const { initial, loads, revisedKeys } = computeSession({ fingerprint: fp, loading: true });
+
 				const template = `
 				<div class="visitor-info">
 					<span class="time">fingerprints renewed <span class="${shouldStyle(renewedDateString) ? 'renewed' : ''}">${
@@ -12352,7 +12350,7 @@
 							</div>
 
 							${
-								signature ? 
+								signature ?
 								`
 								<div class="fade-right-in" id="signature">
 									<div class="ellipsis"><strong>signed</strong>: <span>${signature}</span></div>
@@ -12393,7 +12391,7 @@
 					const form = document.getElementById('signature');
 					form.addEventListener('submit', async () => {
 						event.preventDefault();
-						
+
 						const input = document.getElementById('signature-input').value;
 						const submit = confirm(`Are you sure? This cannot be undone.\n\nsignature: ${input}`);
 
@@ -12457,7 +12455,7 @@
 				const isBravePrivacy = resistance.privacy == 'Brave';
 
 				const screenMetrics = (
-					!screenFp || screenFp.lied || isRFP || isTorBrowser ? 'undefined' : 
+					!screenFp || screenFp.lied || isRFP || isTorBrowser ? 'undefined' :
 						`${screenFp.width}x${screenFp.height}`
 				);
 				const {
@@ -12491,8 +12489,8 @@
 				const gpuModel = encodeURIComponent(
 					getBestGPUModel({ canvasWebgl, workerScope: fp.workerScope })
 				);
-				
-				if (!badBot) {	
+
+				if (!badBot) {
 					// get data from session
 					let decryptionData = window.sessionStorage && JSON.parse(sessionStorage.getItem('decryptionData'));
 					const targetMetrics = [
@@ -12517,7 +12515,7 @@
 						'workerScope',
 						/* disregard metrics not in samples:
 							capturedErrors,
-							features, 
+							features,
 							headless,
 							intl,
 							lies,
@@ -12527,13 +12525,13 @@
 					const { revisedKeysFromPreviousLoad } = computeSession({
 						fingerprint: fp,
 						computePreviousLoadRevision: true
-					}); 
+					});
 					const sessionFingerprintRevision = targetMetrics.filter(x => revisedKeysFromPreviousLoad.includes(x));
 					const revisionLen = sessionFingerprintRevision.length;
 					// fetch data
 					const requireNewDecryptionFetch = !decryptionData || revisionLen;
 					console.log(`${revisionLen} revisions: fetching prediction data from ${requireNewDecryptionFetch ? 'server' : 'session'}...`);
-					
+
 					if (requireNewDecryptionFetch) {
 						const sender = {
 							e: 3.141592653589793 ** -100,
@@ -12551,7 +12549,7 @@
 						if (restoredUA && (restoredUA != userAgent)) {
 							console.log(`corrected: ${workerScopeUserAgent}`);
 						}
-						
+
 						const decryptRequest = `https://creepjs-api.web.app/decrypt?${[
 						`sender=${sender.e}_${sender.l}`,
 						`isTorBrowser=${isTorBrowser}`,
@@ -12565,7 +12563,7 @@
 						`styleId=${styleHash}`,
 						`styleSystemId=${styleSystemHash}`,
 						`emojiId=${
-							!clientRects || clientRects.lied ? 'undefined' : 
+							!clientRects || clientRects.lied ? 'undefined' :
 								encodeURIComponent(clientRects.domrectSystemSum)
 						}`,
 						`domRectId=${!clientRects || clientRects.lied ? 'undefined' : domRectHash}`,
@@ -12577,7 +12575,7 @@
 						`audioId=${
 								!offlineAudioContext ||
 								offlineAudioContext.lied ||
-								unknownFirefoxAudio ? 'undefined' : 
+								unknownFirefoxAudio ? 'undefined' :
 									audioMetrics
 						}`,
 						`canvasId=${
@@ -12601,7 +12599,7 @@
 								canvas2dEmojiHash
 						}`,
 						`textMetricsId=${
-							!canvas2d || canvas2d.liedTextMetrics || ((+canvas2d.textMetricsSystemSum) == 0) ? 'undefined' : 
+							!canvas2d || canvas2d.liedTextMetrics || ((+canvas2d.textMetricsSystemSum) == 0) ? 'undefined' :
 								encodeURIComponent(canvas2d.textMetricsSystemSum)
 						}`,
 						`webglId=${
@@ -12634,7 +12632,7 @@
 							sessionStorage.setItem('decryptionData', JSON.stringify(decryptionData));
 						}
 					}
-					
+
 					// Crowd-Blending Score
 					const scoreKeys = [
 						'windowVersion',
@@ -12685,7 +12683,7 @@
 						acc[scoreMetricData.key] = { score, reporters };
 						return acc
 					}, {});
-					
+
 					const blockedOrOpenlyPoisonedMetric = decryptionDataScores.scores.includes(0);
 					const validScores = decryptionDataScores.scores.filter(n => !!n);
 					const crowdBlendingScoreMin = Math.min(...validScores);
@@ -12711,7 +12709,7 @@
 						note
 					});
 				}
-			
+
 				// get GCD Samples
 				const getSamples = async () => {
 					const samples = window.sessionStorage && sessionStorage.getItem('samples');
@@ -12734,12 +12732,12 @@
 						samplesDidLoadFromSession: false
 					}
 				};
-				
+
 				const { samples: decryptionSamples, samplesDidLoadFromSession } = await getSamples();
-				
+
 				// prevent Error: value for argument "documentPath" must point to a document
 				const cleanGPUString = x => !x ? x : (''+x).replace(/\//g,'');
-				
+
 				const {
 					window: winSamples,
 					math: mathSamples,
@@ -12771,7 +12769,7 @@
 				if (badBot && !decryptionSamples) {
 					predictionErrorPatch({error: 'Failed prediction fetch', patch, html});
 				}
-				
+
 				if (badBot && decryptionSamples) {
 					// Perform Dragon Fire Magic
 					const decryptionData = {
@@ -12819,7 +12817,7 @@
 						bot: true
 					});
 				}
-				
+
 				// render entropy notes
 				if (decryptionSamples) {
 					const getEntropy = (hash, data) => {
@@ -12918,7 +12916,7 @@
 								''
 						);
 						const animate = samplesDidLoadFromSession ? '' : `style="animation: fade-up .3s ${100*i}ms ease both;"`;
-						
+
 						return patch(el, html`
 						<span ${animate} class="${signal} entropy-note help" title="1 of ${classTotal || Infinity}${deviceMetric ? ' in x device' : ` in ${decryption || 'unknown'}`}${` (trusted ${entropyDescriptors[key]})`}">
 							${(uniquePercent).toFixed(2)}%
@@ -12926,7 +12924,7 @@
 					`)
 					});
 				}
-				
+
 				return renderSamples({ samples: decryptionSamples, templateImports })
 			})
 			.catch(error => {
@@ -12934,7 +12932,7 @@
 				const el = document.getElementById('browser-detection');
 				console.error('Error!', error.message);
 				if (!el) {
-					return	
+					return
 				}
 				return patch(el, html`
 				<style>
