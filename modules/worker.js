@@ -1,4 +1,4 @@
-export const getBestWorkerScope = async imports => {	
+export const getBestWorkerScope = async imports => {
 	const {
 		require: {
 			queueEvent,
@@ -25,10 +25,10 @@ export const getBestWorkerScope = async imports => {
 			const giveUpOnWorker = setTimeout(() => {
 				return resolve()
 			}, 3000)
-			
+
 			const dedicatedWorker = ask(() => new Worker(scriptSource))
 			if (!hasConstructor(dedicatedWorker, 'Worker')) return resolve()
-			
+
 			dedicatedWorker.onmessage = event => {
 				dedicatedWorker.terminate()
 				clearTimeout(giveUpOnWorker)
@@ -39,12 +39,12 @@ export const getBestWorkerScope = async imports => {
 			const giveUpOnWorker = setTimeout(() => {
 				return resolve()
 			}, 3000)
-			
+
 			const sharedWorker = ask(() => new SharedWorker(scriptSource))
 			if (!hasConstructor(sharedWorker, 'SharedWorker')) return resolve()
-			
+
 			sharedWorker.port.start()
-			
+
 			sharedWorker.port.onmessage = event => {
 				sharedWorker.port.close()
 				clearTimeout(giveUpOnWorker)
@@ -55,12 +55,12 @@ export const getBestWorkerScope = async imports => {
 			const giveUpOnWorker = setTimeout(() => {
 				return resolve()
 			}, 3000)
-			
+
 			if (!ask(() => navigator.serviceWorker.register)) return resolve()
-			
+
 			return navigator.serviceWorker.register(scriptSource).then(registration => {
 				if (!hasConstructor(registration, 'ServiceWorkerRegistration')) return resolve()
-				
+
 				return navigator.serviceWorker.ready.then(registration => {
 					registration.active.postMessage(undefined)
 
@@ -85,7 +85,7 @@ export const getBestWorkerScope = async imports => {
 			console.error(error.message)
 			return
 		})
-		
+
 		if (!(workerScope || {}).userAgent) {
 			scope = 'SharedWorkerGlobalScope'
 			type = 'shared' // no support in Safari, iOS, and Chrome Android
@@ -95,7 +95,7 @@ export const getBestWorkerScope = async imports => {
 				return
 			})
 		}
-		
+
 		if (!(workerScope || {}).userAgent) {
 			scope = 'WorkerGlobalScope'
 			type = 'dedicated' // device emulators can easily spoof dedicated scope
@@ -113,14 +113,35 @@ export const getBestWorkerScope = async imports => {
 		workerScope.type = type
 		workerScope.scope = scope
 
-		// detect lies 
+		// detect lies
 		const {
 			system,
 			userAgent,
 			userAgentData,
-			platform
+			platform,
+			deviceMemory,
+			hardwareConcurrency,
 		} = workerScope || {}
-		
+
+		// navigator lies
+		// skip language and languages to respect valid engine language switching bug in Chrome
+		const workerScopeMatchLie = 'does not match worker scope'
+		if (platform != navigator.platform) {
+			workerScope.lied = true
+			documentLie('Navigator.platform', workerScopeMatchLie)
+		}
+		if (userAgent != navigator.userAgent) {
+			workerScope.lied = true
+			documentLie('Navigator.userAgent', workerScopeMatchLie)
+		}
+		if (hardwareConcurrency && (hardwareConcurrency != navigator.hardwareConcurrency)) {
+			workerScope.lied = true
+			documentLie('Navigator.hardwareConcurrency', workerScopeMatchLie)
+		}
+		if (deviceMemory && (deviceMemory != navigator.deviceMemory)) {
+			workerScope.lied = true
+			documentLie('Navigator.deviceMemory', workerScopeMatchLie)
+		}
 
 		// prototype lies
 		if (workerScope.lies.proto) {
@@ -131,9 +152,9 @@ export const getBestWorkerScope = async imports => {
 				const lies = proto[key]
 				lies.forEach(lie => documentLie(api, lie))
 			})
-			
+
 		}
-		
+
 		// user agent os lie
 		const userAgentOS = (
 			// order is important
@@ -186,7 +207,7 @@ export const getBestWorkerScope = async imports => {
 		const userAgentDataVersion = (
 			userAgentData &&
 			userAgentData.brandsVersion &&
-			userAgentData.brandsVersion.length ? 
+			userAgentData.brandsVersion.length ?
 			getVersion(userAgentData.brandsVersion) :
 			undefined
 		)
@@ -239,8 +260,8 @@ export const getBestWorkerScope = async imports => {
 			workerScope.lied = true
 			workerScope.lies.platformVersion = `Windows platformVersion ${(userAgentData||{}).platformVersion} does not match user agent version ${workerScope.device}`
 			documentLie(workerScope.scope, workerScope.lies.platformVersion)
-		}			
-		
+		}
+
 		// capture userAgent version
 		workerScope.userAgentVersion = userAgentVersion
 		workerScope.userAgentDataVersion = userAgentDataVersion
@@ -250,7 +271,7 @@ export const getBestWorkerScope = async imports => {
 			...(getWebGLRendererConfidence(workerScope.webglRenderer) || {}),
 			compressedGPU: compressWebGLRenderer(workerScope.webglRenderer)
 		}
-		
+
 		logTestResult({ time: timer.stop(), test: `${type} worker`, passed: true })
 		return {
 			...workerScope,
@@ -323,13 +344,13 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 		grade: confidenceGrade,
 		compressedGPU
 	} = gpu || {}
-	
+
 	return `
 	<span class="time">${performanceLogger.getLog()[`${type} worker`]}</span>
 	<span class="aside-note-bottom">${scope || ''}</span>
-	
+
 	<div class="relative col-six${lied ? ' rejected' : ''}">
-		
+
 		<strong>Worker</strong><span class="hash">${hashSlice($hash)}</span>
 		<div>keys (${count(scopeKeys)}): ${
 			scopeKeys && scopeKeys.length ? modal(
@@ -341,11 +362,11 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 		<div class="help">lang/timezone:</div>
 		<div class="block-text help" title="WorkerNavigator.language\nWorkerNavigator.languages\nIntl.Collator.resolvedOptions()\nIntl.DateTimeFormat.resolvedOptions()\nIntl.DisplayNames.resolvedOptions()\nIntl.ListFormat.resolvedOptions()\nIntl.NumberFormat.resolvedOptions()\nIntl.PluralRules.resolvedOptions()\nIntl.RelativeTimeFormat.resolvedOptions()\nNumber.toLocaleString()\nIntl.DateTimeFormat().resolvedOptions().timeZone\nDate.getDate()\nDate.getMonth()\nDate.parse()">
 			${
-				localeEntropyIsTrusty ? `${language} (${systemCurrencyLocale})` : 
+				localeEntropyIsTrusty ? `${language} (${systemCurrencyLocale})` :
 					`${language} (<span class="bold-fail">${engineCurrencyLocale}</span>)`
 			}
 			${
-				locale === language ? '' : localeIntlEntropyIsTrusty ? ` ${locale}` : 
+				locale === language ? '' : localeIntlEntropyIsTrusty ? ` ${locale}` :
 					` <span class="bold-fail">${locale}</span>`
 			}
 			<br>${timezoneLocation} (${''+timezoneOffset})
@@ -360,7 +381,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 			${webglVendor ? webglVendor : ''}
 			${webglRenderer ? `<br>${webglRenderer}` : note.unsupported}
 		</div>
-		
+
 	</div>
 	<div class="col-six${lied ? ' rejected' : ''}">
 
@@ -403,10 +424,10 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 					${model ? `<br>${model}` : ''}
 					${mobile ? '<br>mobile' : ''}
 				`
-			})(userAgentData)}	
+			})(userAgentData)}
 			</div>
 		</div>
-		
+
 	</div>
 	`
 }

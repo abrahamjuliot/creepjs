@@ -1,5 +1,5 @@
 // special thanks to https://arh.antoinevastel.com/reports/stats/menu.html for stats
-export const getNavigator = async (imports, workerScope) => {
+export const getNavigator = async (imports) => {
 
 	const {
 		require: {
@@ -43,31 +43,7 @@ export const getNavigator = async (imports, workerScope) => {
 			lieProps['Navigator.mimeTypes']
 		) || false
 		const phantomNavigator = phantomDarkness ? phantomDarkness.navigator : navigator
-		const detectLies = (name, value) => {
-			const workerScopeValue = caniuse(() => workerScope, [name])
-			const workerScopeMatchLie = 'does not match worker scope'
-			if (workerScopeValue) {
-				if (name == 'userAgent') {
-					const navigatorUserAgent = value
-					const system = getOS(navigatorUserAgent)
-					if (workerScope.system != system) {
-						lied = true
-						documentLie(`Navigator.${name}`, workerScopeMatchLie)
-					}
-					else if (workerScope.userAgent != navigatorUserAgent) {
-						lied = true
-						documentLie(`Navigator.${name}`, workerScopeMatchLie)
-					}
-					return value
-				}
-				else if (name != 'userAgent' && workerScopeValue != value) {
-					lied = true
-					documentLie(`Navigator.${name}`, workerScopeMatchLie)
-					return value
-				}
-			}
-			return value
-		}
+
 		const credibleUserAgent = (
 			'chrome' in window ? navigator.userAgent.includes(navigator.appVersion) : true
 		)
@@ -77,7 +53,7 @@ export const getNavigator = async (imports, workerScope) => {
 				const navigatorPlatform = navigator.platform
 				const systems = ['win', 'linux', 'mac', 'arm', 'pike', 'linux', 'iphone', 'ipad', 'ipod', 'android', 'x11']
 				const trusted = typeof navigatorPlatform == 'string' && systems.filter(val => navigatorPlatform.toLowerCase().includes(val))[0]
-				detectLies('platform', navigatorPlatform)
+
 				if (!trusted) {
 					sendToTrash(`platform`, `${navigatorPlatform} is unusual`)
 				}
@@ -130,7 +106,7 @@ export const getNavigator = async (imports, workerScope) => {
 			userAgent: attempt(() => {
 				const { userAgent } = phantomNavigator
 				const navigatorUserAgent = navigator.userAgent
-				detectLies('userAgent', navigatorUserAgent)
+
 				if (!credibleUserAgent) {
 					sendToTrash('userAgent', `${navigatorUserAgent} does not match appVersion`)
 				}
@@ -152,7 +128,7 @@ export const getNavigator = async (imports, workerScope) => {
 			appVersion: attempt(() => {
 				const { appVersion } = phantomNavigator
 				const navigatorAppVersion = navigator.appVersion
-				detectLies('appVersion', appVersion)
+
 				if (!credibleUserAgent) {
 					sendToTrash('appVersion', `${navigatorAppVersion} does not match userAgent`)
 				}
@@ -239,7 +215,7 @@ export const getNavigator = async (imports, workerScope) => {
 				}
 				const hardwareConcurrency = phantomNavigator.hardwareConcurrency
 				const navigatorHardwareConcurrency = navigator.hardwareConcurrency
-				detectLies('hardwareConcurrency', navigatorHardwareConcurrency)
+
 				trustInteger('hardwareConcurrency - invalid return type', navigatorHardwareConcurrency)
 				if (hardwareConcurrency != navigatorHardwareConcurrency) {
 					lied = true
@@ -252,9 +228,7 @@ export const getNavigator = async (imports, workerScope) => {
 				const { language, languages } = phantomNavigator
 				const navigatorLanguage = navigator.language
 				const navigatorLanguages = navigator.languages
-				// disregard detectLies in workers to respect valid engine language switching
-				//detectLies('language', navigatorLanguage)
-				//detectLies('languages', '' + navigatorLanguages)
+
 				if ('' + language != '' + navigatorLanguage) {
 					lied = true
 					const nestedIframeLie = `Expected "${navigatorLanguage}" in nested iframe and got "${language}"`
@@ -384,7 +358,7 @@ export const getNavigator = async (imports, workerScope) => {
 		}
 
 		const getUserAgentData = () => attempt(async () => {
-			if (!phantomNavigator.userAgentData || 
+			if (!phantomNavigator.userAgentData ||
 				!phantomNavigator.userAgentData.getHighEntropyValues) {
 				return
 			}
@@ -406,7 +380,7 @@ export const getNavigator = async (imports, workerScope) => {
 			data.brands = compressedBrands(data.brands)
 			data.brandsVersion = removeChromium(data.brandsVersion)
 			data.brands = removeChromium(data.brands)
-			
+
 			if (!data.mobile) {
 				data.mobile = mobile
 			}
@@ -427,7 +401,7 @@ export const getNavigator = async (imports, workerScope) => {
 			const available = await navigator.bluetooth.getAvailability()
 			return available
 		}, 'bluetoothAvailability failed')
-	
+
 		const getPermissions = () => attempt(async () => {
 			const getPermissionState = name => navigator.permissions.query({ name })
 				.then(res => ({ name, state: res.state }))
@@ -486,7 +460,7 @@ export const getNavigator = async (imports, workerScope) => {
 				})(limits)
 			}
 		}, 'webgpu failed')
-		
+
 		const [
 			userAgentData,
 			bluetoothAvailability,
@@ -653,16 +627,16 @@ export const navigatorHTML = ({ fp, hashSlice, hashMini, note, modal, count, com
 					platformVersion,
 					platform
 				} = userAgentData || {}
-				
+
 				const windowsRelease = computeWindowsRelease({ platform, platformVersion })
-				
+
 				return !userAgentData ? note.unsupported : `
 					${(brandsVersion || []).join(',')}${uaFullVersion ? ` (${uaFullVersion})` : ''}
-					<br>${windowsRelease || `${platform} ${platformVersion}`} ${architecture ? `${architecture}${bitness ? `_${bitness}` : ''}` : ''} 
+					<br>${windowsRelease || `${platform} ${platformVersion}`} ${architecture ? `${architecture}${bitness ? `_${bitness}` : ''}` : ''}
 					${model ? `<br>${model}` : ''}
 					${mobile ? '<br>mobile' : ''}
 				`
-			})(userAgentData)}	
+			})(userAgentData)}
 			</div>
 		</div>
 	</div>
