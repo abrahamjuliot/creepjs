@@ -72,7 +72,7 @@
       }, null, () => Object.setPrototypeOf(apiFunction, proto)),
       spawnError(() => {
         Reflect.setPrototypeOf(proxy, Object.create(proxy))
-        null in apiFunction
+        null in proxy
       }, null, () => Object.setPrototypeOf(proxy, proto)),
 
       // Object.setPrototypeOf
