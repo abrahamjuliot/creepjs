@@ -79,7 +79,7 @@
       spawnError(() => {
         Object.setPrototypeOf(apiFunction, Object.create(apiFunction)).toString()
       }, /Function\.setPrototypeOf/g, () => Object.setPrototypeOf(apiFunction, proto)),
-      spawnError(() => {Function.setPrototypeOf
+      spawnError(() => {
         Object.setPrototypeOf(apiFunction, Object.create(proxy)).toString()
       }, null, () => Object.setPrototypeOf(proxy, proto)),
 
