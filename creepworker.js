@@ -350,7 +350,7 @@ const getPrototypeLies = scope => {
 				return true // failed to throw
 			}
 			catch (error) {
-				// expect Function.[Symbol.hasInstance] 
+				// expect Function.[Symbol.hasInstance]
 				return !hasValidStack(error)
 			}
 		}
@@ -392,7 +392,7 @@ const getPrototypeLies = scope => {
 		const firefoxLie = isFirefox && (
 			message != `too much recursion` || !hasInternalError
 		)
-		return (hasRangeError || hasInternalError) && !(chromeLie || firefoxLie) 
+		return (hasRangeError || hasInternalError) && !(chromeLie || firefoxLie)
 	}
 
 
@@ -451,7 +451,7 @@ const getPrototypeLies = scope => {
 					randomId in apiFunction
 					return false
 				} catch (error) {
-					return true  // failed at Error 
+					return true  // failed at Error
 				}
 			}
 		} catch (error) {
@@ -620,7 +620,7 @@ const getPrototypeLies = scope => {
 								obj,
 								lieProps: props
 							}) // send the obj for special tests
-							
+
 							if (res.lied) {
 								return (props[apiName] = res.lieTypes)
 							}
@@ -664,7 +664,7 @@ const getPrototypeLies = scope => {
 			'userAgent'
 		]
 	})
-	// return lies list and detail 
+	// return lies list and detail
 	const props = lieDetector.getProps()
 	const propsSearched = lieDetector.getPropsSearched()
 	return {
@@ -689,7 +689,7 @@ const getUserAgentData = async navigator => {
 	const removeChromium = brands => (
 		brands.length > 1 ? brands.filter(brand => !/Chromium/.test(brand)) : brands
 	)
-	
+
 	// compress brands
 	if (!data.brands) {
 		data.brands = brands
@@ -698,7 +698,7 @@ const getUserAgentData = async navigator => {
 	data.brands = compressedBrands(data.brands)
 	data.brandsVersion = removeChromium(data.brandsVersion)
 	data.brands = removeChromium(data.brands)
-	
+
 	if (!data.mobile) {
 		data.mobile = mobile
 	}
@@ -765,7 +765,7 @@ const getWorkerData = async () => {
 	await queueEvent(timer)
 
 	const userAgentData = await getUserAgentData(navigator).catch(error => console.error(error))
-	
+
 	// webgl
 	const { webglVendor, webglRenderer } = getWebglData() || {}
 
@@ -820,7 +820,7 @@ const getWorkerData = async () => {
 	})
 	const localeEntropyIsTrusty = engineCurrencyLocale == systemCurrencyLocale
 	const localeIntlEntropyIsTrusty = new Set((''+language).split(',')).has(''+locale)
-	
+
 	const { href, pathname } = self.location || {}
 	const locationPathNameLie = (
 		!href ||
