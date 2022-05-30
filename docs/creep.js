@@ -8631,15 +8631,9 @@
 				documentLie(workerScope.scope, workerScope.lies.engine);
 			}
 			// user agent version lie
-			const getVersion = x => /\s(\d+)/i.test(x) && /\s(\d+)/i.exec(x)[1];
+			const getVersion = x => (/\d+/.exec(x) || [])[0];
 			const userAgentVersion = getVersion(decryptedName);
-			const userAgentDataVersion = (
-				userAgentData &&
-				userAgentData.brandsVersion &&
-				userAgentData.brandsVersion.length ?
-				getVersion(userAgentData.brandsVersion) :
-				undefined
-			);
+			const userAgentDataVersion = getVersion(userAgentData ? userAgentData.uaFullVersion : '');
 			const versionSupported = userAgentDataVersion && userAgentVersion;
 			const versionMatch = userAgentDataVersion == userAgentVersion;
 			if (versionSupported && !versionMatch) {
