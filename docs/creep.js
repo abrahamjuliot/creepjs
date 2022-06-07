@@ -9878,8 +9878,7 @@
 			'97-98': ['WebTransport', 'WebTransportBidirectionalStream', 'WebTransportDatagramDuplexStream', 'WebTransportError'],
 			'99': ['CanvasFilter', 'CSSLayerBlockRule', 'CSSLayerStatementRule'],
 			'100': ['CSSMathClamp'],
-			'101-102': ['CSSFontPaletteValuesRule'],
-			'103': ['LaunchParams', 'LaunchQueue']
+			'101-103': ['CSSFontPaletteValuesRule'],
 		};
 
 		const blinkJS = {
