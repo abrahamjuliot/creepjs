@@ -14,7 +14,6 @@ export const getNavigator = async (imports) => {
 			trustInteger,
 			documentLie,
 			lieProps,
-			phantomDarkness,
 			getUserAgentPlatform,
 			braveBrowser,
 			decryptUserAgent,
@@ -42,25 +41,18 @@ export const getNavigator = async (imports) => {
 			lieProps['Navigator.plugins'] ||
 			lieProps['Navigator.mimeTypes']
 		) || false
-		const phantomNavigator = phantomDarkness ? phantomDarkness.navigator : navigator
 
 		const credibleUserAgent = (
 			'chrome' in window ? navigator.userAgent.includes(navigator.appVersion) : true
 		)
 		const data = {
 			platform: attempt(() => {
-				const { platform } = phantomNavigator
-				const navigatorPlatform = navigator.platform
+				const { platform } = navigator
 				const systems = ['win', 'linux', 'mac', 'arm', 'pike', 'linux', 'iphone', 'ipad', 'ipod', 'android', 'x11']
-				const trusted = typeof navigatorPlatform == 'string' && systems.filter(val => navigatorPlatform.toLowerCase().includes(val))[0]
+				const trusted = typeof platform == 'string' && systems.filter(val => platform.toLowerCase().includes(val))[0]
 
 				if (!trusted) {
-					sendToTrash(`platform`, `${navigatorPlatform} is unusual`)
-				}
-				if (platform != navigatorPlatform) {
-					lied = true
-					const nestedIframeLie = `Expected "${navigatorPlatform}" in nested iframe and got "${platform}"`
-					documentLie(`Navigator.platform`, nestedIframeLie)
+					sendToTrash(`platform`, `${platform} is unusual`)
 				}
 
 				// user agent os lie
@@ -90,7 +82,7 @@ export const getNavigator = async (imports) => {
 
 				return platform
 			}),
-			system: attempt(() => getOS(phantomNavigator.userAgent), 'userAgent system failed'),
+			system: attempt(() => getOS(navigator.userAgent), 'userAgent system failed'),
 			userAgentParsed: await attempt(async () => {
 				const reportedUserAgent = caniuse(() => navigator.userAgent)
 				const reportedSystem = getOS(reportedUserAgent)
@@ -102,55 +94,44 @@ export const getNavigator = async (imports) => {
 				})
 				return report
 			}),
-			device: attempt(() => getUserAgentPlatform({ userAgent: phantomNavigator.userAgent }), 'userAgent device failed'),
+			device: attempt(() => getUserAgentPlatform({ userAgent: navigator.userAgent }), 'userAgent device failed'),
 			userAgent: attempt(() => {
-				const { userAgent } = phantomNavigator
-				const navigatorUserAgent = navigator.userAgent
+				const { userAgent } = navigator
 
 				if (!credibleUserAgent) {
-					sendToTrash('userAgent', `${navigatorUserAgent} does not match appVersion`)
+					sendToTrash('userAgent', `${userAgent} does not match appVersion`)
 				}
-				if (/\s{2,}|^\s|\s$/g.test(navigatorUserAgent)) {
+				if (/\s{2,}|^\s|\s$/g.test(userAgent)) {
 					sendToTrash('userAgent', `extra spaces detected`)
 				}
-				const gibbers = gibberish(navigatorUserAgent)
+				const gibbers = gibberish(userAgent)
 				if (!!gibbers.length) {
-					sendToTrash(`userAgent is gibberish`, navigatorUserAgent)
+					sendToTrash(`userAgent is gibberish`, userAgent)
 				}
-				if (userAgent != navigatorUserAgent) {
-					lied = true
-					const nestedIframeLie = `Expected "${navigatorUserAgent}" in nested iframe and got "${userAgent}"`
-					documentLie(`Navigator.userAgent`, nestedIframeLie)
-				}
+
 				return userAgent.trim().replace(/\s{2,}/, ' ')
 			}, 'userAgent failed'),
 			uaPostReduction: isUAPostReduction((navigator || {}).userAgent),
 			appVersion: attempt(() => {
-				const { appVersion } = phantomNavigator
-				const navigatorAppVersion = navigator.appVersion
+				const { appVersion } = navigator
 
 				if (!credibleUserAgent) {
-					sendToTrash('appVersion', `${navigatorAppVersion} does not match userAgent`)
+					sendToTrash('appVersion', `${appVersion} does not match userAgent`)
 				}
-				if ('appVersion' in navigator && !navigatorAppVersion) {
+				if ('appVersion' in navigator && !appVersion) {
 					sendToTrash('appVersion', 'Living Standard property returned falsy value')
 				}
-				if (/\s{2,}|^\s|\s$/g.test(navigatorAppVersion)) {
+				if (/\s{2,}|^\s|\s$/g.test(appVersion)) {
 					sendToTrash('appVersion', `extra spaces detected`)
 				}
-				if (appVersion != navigatorAppVersion) {
-					lied = true
-					const nestedIframeLie = `Expected "${navigatorAppVersion}" in nested iframe and got "${appVersion}"`
-					documentLie(`Navigator.appVersion`, nestedIframeLie)
-				}
+
 				return appVersion.trim().replace(/\s{2,}/, ' ')
 			}, 'appVersion failed'),
 			deviceMemory: attempt(() => {
 				if (!('deviceMemory' in navigator)) {
 					return undefined
 				}
-				const { deviceMemory } = phantomNavigator
-				const navigatorDeviceMemory = navigator.deviceMemory
+				const { deviceMemory } = navigator
 				const trusted = {
 					'0.25': true,
 					'0.5': true,
@@ -159,19 +140,13 @@ export const getNavigator = async (imports) => {
 					'4': true,
 					'8': true
 				}
-				if (!trusted[navigatorDeviceMemory]) {
-					sendToTrash('deviceMemory', `${navigatorDeviceMemory} is not a valid value [0.25, 0.5, 1, 2, 4, 8]`)
-				}
-				if (deviceMemory != navigatorDeviceMemory) {
-					lied = true
-					const nestedIframeLie = `Expected ${navigatorDeviceMemory} in nested iframe and got ${deviceMemory}`
-					documentLie(`Navigator.deviceMemory`, nestedIframeLie)
+				if (!trusted[deviceMemory]) {
+					sendToTrash('deviceMemory', `${deviceMemory} is not a valid value [0.25, 0.5, 1, 2, 4, 8]`)
 				}
 				return deviceMemory
 			}, 'deviceMemory failed'),
 			doNotTrack: attempt(() => {
-				const { doNotTrack } = phantomNavigator
-				const navigatorDoNotTrack = navigator.doNotTrack
+				const { doNotTrack } = navigator
 				const trusted = {
 					'1': !0,
 					'true': !0,
@@ -183,8 +158,8 @@ export const getNavigator = async (imports) => {
 					'null': !0,
 					'undefined': !0
 				}
-				if (!trusted[navigatorDoNotTrack]) {
-					sendToTrash('doNotTrack - unusual result', navigatorDoNotTrack)
+				if (!trusted[doNotTrack]) {
+					sendToTrash('doNotTrack - unusual result', doNotTrack)
 				}
 				return doNotTrack
 			}, 'doNotTrack failed'),
@@ -213,28 +188,10 @@ export const getNavigator = async (imports) => {
 				if (!('hardwareConcurrency' in navigator)) {
 					return undefined
 				}
-				const hardwareConcurrency = phantomNavigator.hardwareConcurrency
-				const navigatorHardwareConcurrency = navigator.hardwareConcurrency
-
-				trustInteger('hardwareConcurrency - invalid return type', navigatorHardwareConcurrency)
-				if (hardwareConcurrency != navigatorHardwareConcurrency) {
-					lied = true
-					const nestedIframeLie = `Expected ${navigatorHardwareConcurrency} in nested iframe and got ${hardwareConcurrency}`
-					documentLie(`Navigator.hardwareConcurrency`, nestedIframeLie)
-				}
-				return hardwareConcurrency
+				return navigator.hardwareConcurrency
 			}, 'hardwareConcurrency failed'),
 			language: attempt(() => {
-				const { language, languages } = phantomNavigator
-				const navigatorLanguage = navigator.language
-				const navigatorLanguages = navigator.languages
-
-				if ('' + language != '' + navigatorLanguage) {
-					lied = true
-					const nestedIframeLie = `Expected "${navigatorLanguage}" in nested iframe and got "${language}"`
-					documentLie(`Navigator.language`, nestedIframeLie)
-				}
-
+				const { language, languages } = navigator
 				const lang = ('' + language).split(',')[0]
 				let currencyLanguage
 				try {
@@ -263,11 +220,11 @@ export const getNavigator = async (imports) => {
 					)
 				}
 
-				if (navigatorLanguage && navigatorLanguages) {
-					const lang = /^.{0,2}/g.exec(navigatorLanguage)[0]
-					const langs = /^.{0,2}/g.exec(navigatorLanguages[0])[0]
+				if (language && languages) {
+					const lang = /^.{0,2}/g.exec(language)[0]
+					const langs = /^.{0,2}/g.exec(languages[0])[0]
 					if (langs != lang) {
-						sendToTrash('language/languages', `${[navigatorLanguage, navigatorLanguages].join(' ')} mismatch`)
+						sendToTrash('language/languages', `${[language, languages].join(' ')} mismatch`)
 					}
 					return `${languages.join(', ')} (${language})`
 				}
@@ -278,48 +235,21 @@ export const getNavigator = async (imports) => {
 				if (!('maxTouchPoints' in navigator)) {
 					return null
 				}
-				const { maxTouchPoints } = phantomNavigator
-				const navigatorMaxTouchPoints = navigator.maxTouchPoints
-				if (maxTouchPoints != navigatorMaxTouchPoints) {
-					lied = true
-					const nestedIframeLie = `Expected ${navigatorMaxTouchPoints} in nested iframe and got ${maxTouchPoints}`
-					documentLie(`Navigator.maxTouchPoints`, nestedIframeLie)
-				}
-
-				return maxTouchPoints
+				return navigator.maxTouchPoints
 			}, 'maxTouchPoints failed'),
-			vendor: attempt(() => {
-				const { vendor } = phantomNavigator
-				const navigatorVendor = navigator.vendor
-				if (vendor != navigatorVendor) {
-					lied = true
-					const nestedIframeLie = `Expected "${navigatorVendor}" in nested iframe and got "${vendor}"`
-					documentLie(`Navigator.vendor`, nestedIframeLie)
-				}
-				return vendor
-			}, 'vendor failed'),
+			vendor: attempt(() => navigator.vendor, 'vendor failed'),
 			mimeTypes: attempt(() => {
-				const mimeTypes = phantomNavigator.mimeTypes
+				const  { mimeTypes } = navigator
 				return mimeTypes ? [...mimeTypes].map(m => m.type) : []
 			}, 'mimeTypes failed'),
-			oscpu: attempt(() => {
-				const { oscpu } = phantomNavigator
-				const navigatorOscpu = navigator.oscpu
-				if (oscpu != navigatorOscpu) {
-					lied = true
-					const nestedIframeLie = `Expected "${navigatorOscpu}" in nested iframe and got "${oscpu}"`
-					documentLie(`Navigator.oscpu`, nestedIframeLie)
-				}
-				return oscpu
-			}, 'oscpu failed'),
+			oscpu: attempt(() => navigator.oscpu, 'oscpu failed'),
 			plugins: attempt(() => {
 				// https://html.spec.whatwg.org/multipage/system-state.html#pdf-viewing-support
-				const navigatorPlugins = navigator.plugins
-				const plugins = phantomNavigator.plugins
-				if (!(navigatorPlugins instanceof PluginArray)) {
+				const { plugins } = navigator
+				if (!(plugins instanceof PluginArray)) {
 					return
 				}
-				const response = plugins ? [...phantomNavigator.plugins]
+				const response = plugins ? [...plugins]
 					.map(p => ({
 						name: p.name,
 						description: p.description,
@@ -327,7 +257,7 @@ export const getNavigator = async (imports) => {
 						version: p.version
 					})) : []
 
-				const { lies } = getPluginLies(navigatorPlugins, navigator.mimeTypes)
+				const { lies } = getPluginLies(plugins, navigator.mimeTypes)
 				if (lies.length) {
 					lied = true
 					lies.forEach(lie => {
@@ -335,15 +265,15 @@ export const getNavigator = async (imports) => {
 					})
 				}
 
-				if (!!response.length) {
+				if (response.length) {
 					response.forEach(plugin => {
 						const { name, description } = plugin
 						const nameGibbers = gibberish(name)
 						const descriptionGibbers = gibberish(description)
-						if (!!nameGibbers.length) {
+						if (nameGibbers.length) {
 							sendToTrash(`plugin name is gibberish`, name)
 						}
-						if (!!descriptionGibbers.length) {
+						if (descriptionGibbers.length) {
 							sendToTrash(`plugin description is gibberish`, description)
 						}
 						return
@@ -352,20 +282,20 @@ export const getNavigator = async (imports) => {
 				return response
 			}, 'plugins failed'),
 			properties: attempt(() => {
-				const keys = Object.keys(Object.getPrototypeOf(phantomNavigator))
+				const keys = Object.keys(Object.getPrototypeOf(navigator))
 				return keys
 			}, 'navigator keys failed'),
 		}
 
 		const getUserAgentData = () => attempt(async () => {
-			if (!phantomNavigator.userAgentData ||
-				!phantomNavigator.userAgentData.getHighEntropyValues) {
+			if (!navigator.userAgentData ||
+				!navigator.userAgentData.getHighEntropyValues) {
 				return
 			}
-			const data = await phantomNavigator.userAgentData.getHighEntropyValues(
+			const data = await navigator.userAgentData.getHighEntropyValues(
 				['platform', 'platformVersion', 'architecture', 'bitness', 'model', 'uaFullVersion']
 			)
-			const { brands, mobile } = phantomNavigator.userAgentData || {}
+			const { brands, mobile } = navigator.userAgentData || {}
 			const compressedBrands = (brands, captureVersion = false) => brands
 				.filter(obj => !/Not/.test(obj.brand)).map(obj => `${obj.brand}${captureVersion ? ` ${obj.version}` : ''}`)
 			const removeChromium = brands => (
@@ -391,15 +321,14 @@ export const getNavigator = async (imports) => {
 			return dataSorted
 		}, 'userAgentData failed')
 
-		const getBluetoothAvailability = () => attempt(async () => {
+		const getBluetoothAvailability = () => attempt(() => {
 			if (
-				!('bluetooth' in phantomNavigator) ||
-				!phantomNavigator.bluetooth ||
-				!phantomNavigator.bluetooth.getAvailability) {
+				!('bluetooth' in navigator) ||
+				!navigator.bluetooth ||
+				!navigator.bluetooth.getAvailability) {
 				return undefined
 			}
-			const available = await navigator.bluetooth.getAvailability()
-			return available
+			return navigator.bluetooth.getAvailability()
 		}, 'bluetoothAvailability failed')
 
 		const getPermissions = () => attempt(async () => {

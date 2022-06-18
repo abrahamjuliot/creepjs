@@ -4,7 +4,6 @@ export const getIntl = async imports => {
 		require: {
 			queueEvent,
 			createTimer,
-			phantomDarkness,
 			lieProps,
 			caniuse,
 			captureError,
@@ -52,48 +51,46 @@ export const getIntl = async imports => {
 			lieProps['Intl.RelativeTimeFormat.resolvedOptions']
 		) || false
 
-		const phantomIntl = phantomDarkness ? phantomDarkness.Intl : Intl
-
 		const dateTimeFormat = caniuse(() => {
-			return new phantomIntl.DateTimeFormat(undefined, {
+			return new Intl.DateTimeFormat(undefined, {
 				month: 'long',
 				timeZoneName: 'long'
 			}).format(963644400000)
 		})
 
 		const displayNames = caniuse(() => {
-			return new phantomIntl.DisplayNames(undefined, {
+			return new Intl.DisplayNames(undefined, {
 				type: 'language'
 			}).of('en-US')
 		})
 
 		const listFormat = caniuse(() => {
-			return new phantomIntl.ListFormat(undefined, {
+			return new Intl.ListFormat(undefined, {
 				style: 'long',
 				type: 'disjunction'
 			}).format(['0', '1'])
 		})
-		
+
 		const numberFormat = caniuse(() => {
-			return new phantomIntl.NumberFormat(undefined, {
+			return new Intl.NumberFormat(undefined, {
 				notation: 'compact',
 				compactDisplay: 'long'
 			}).format(21000000)
 		})
 
 		const pluralRules = caniuse(() => {
-			return new phantomIntl.PluralRules().select(1)
+			return new Intl.PluralRules().select(1)
 		})
 
 		const relativeTimeFormat = caniuse(() => {
-			return new phantomIntl.RelativeTimeFormat(undefined, {
+			return new Intl.RelativeTimeFormat(undefined, {
 				localeMatcher: 'best fit',
 				numeric: 'auto',
 				style: 'long'
 			}).format(1, 'year')
 		})
-		
-		const locale = getLocale(phantomIntl)
+
+		const locale = getLocale(Intl)
 
 		logTestResult({ time: timer.stop(), test: 'intl', passed: true })
 		return {

@@ -132,7 +132,7 @@ const paintCanvas = ({
   context.clearRect(0, 0, canvas.width, canvas.height)
   canvas.width = area.width
   canvas.height = area.height
-	
+
   if (canvas.style) {
     canvas.style.display = 'none'
   }
@@ -267,17 +267,17 @@ const paintCanvas = ({
     createQuadraticCurve,
     createEllipticalArc
   ]
-	
+
 	if (strokeText) {
 		methods.push(drawOutlineOfText)
 	}
 
-  ;[...Array(rounds)].forEach((x) => { 
+  ;[...Array(rounds)].forEach((x) => {
     addRandomCanvasGradient(context, offset, area, colors, getNextSeed)
     context.shadowBlur = patchSeed(getNextSeed(), offset, maxShadowBlur, true)
     context.shadowColor = colors[patchSeed(getNextSeed(), offset, colors.length)]
     const nextMethod = methods[patchSeed(getNextSeed(), offset, methods.length)]
-    nextMethod(context, offset, area, getNextSeed) 
+    nextMethod(context, offset, area, getNextSeed)
     context.fill()
   })
 
@@ -297,8 +297,8 @@ const emojifyCanvas = ({ canvas, context, cssFontFamily }) => {
 	context.fillText(`⚛✡✝☦▶⏭⏯⏏♀♂✖〰⚕⚜✔✳❇◼▪❣`, 0, 25)
 	context.fillText(`❤✌☝✍❄⚖↪☯☪☮☑✴🅰🅿`, 0, 30)
 	return
-} 
-	
+}
+
 export const getCanvas2d = async imports => {
 
 	const {
@@ -311,7 +311,6 @@ export const getCanvas2d = async imports => {
 			attempt,
 			lieProps,
 			documentLie,
-			phantomDarkness,
 			logTestResult
 		}
 	} = imports
@@ -353,13 +352,8 @@ export const getCanvas2d = async imports => {
 			textMetricsLie ||
 			codePointLie
 		) || false
-		const doc = (
-			phantomDarkness &&
-			phantomDarkness.document &&
-			phantomDarkness.document.body ? phantomDarkness.document :
-				document
-		)
-		
+		const doc = document
+
 		const canvas = doc.createElement('canvas')
 		const context = canvas.getContext('2d')
 		const emojis = getEmojis()
@@ -372,9 +366,9 @@ export const getCanvas2d = async imports => {
 			area: { width: 50, height: 50 },
 			rounds: 10,
 		})
-		
+
 		const dataURI = canvas.toDataURL()
-		
+
 		let canvasOffscreen
 		try {
 			canvasOffscreen = new OffscreenCanvas(140, 30)
@@ -397,7 +391,7 @@ export const getCanvas2d = async imports => {
 			})),
 			getFileReaderData(canvasOffscreen && await attempt(() => canvasOffscreen.convertToBlob()))
 		])
-		
+
 		const blob = {
 			readAsDataURL: fileReaderData,
 		}
@@ -478,7 +472,7 @@ export const getCanvas2d = async imports => {
 			lied = true
 			documentLie(`CanvasRenderingContext2D.getImageData`, `pixel data modified`)
 		}
-		
+
 		const getTextMetricsFloatLie = context => {
 			const isFloat = n => n % 1 !== 0
 			const {
@@ -545,7 +539,7 @@ export const canvasHTML = ({ fp, note, modal, hashMini, hashSlice, formatEmojiSe
 			<div class="block-text">${note.blocked}</div>
 		</div>`
 	}
-			
+
 	const {
 		canvas2d: {
 			lied,
@@ -562,8 +556,8 @@ export const canvasHTML = ({ fp, note, modal, hashMini, hashSlice, formatEmojiSe
 		}
 	} = fp
 	const { pixels, rgba, pixelImage } = mods || {}
-	const modPercent = pixels ? Math.round((pixels / 400) * 100) : 0	
-	
+	const modPercent = pixels ? Math.round((pixels / 400) * 100) : 0
+
 	const blobDataURI = (blob || {}).readAsDataURL
 	const blobOffscreenDataURI = (blobOffscreen || {}).readAsDataURL
 	const hash = {
@@ -577,7 +571,7 @@ export const canvasHTML = ({ fp, note, modal, hashMini, hashSlice, formatEmojiSe
 	const dataTemplate = `
 		${textURI ? `<div class="icon-pixel text-image"></div>` : ''}
 		<br>text: ${!textURI ? note.blocked : hash.textURI}
-		
+
 		<br><br>
 		${emojiURI ? `<div class="icon-pixel emoji-image"></div>` : ''}
 		<br>emoji: ${!emojiURI ? note.blocked : hash.emojiURI}
@@ -595,7 +589,7 @@ export const canvasHTML = ({ fp, note, modal, hashMini, hashSlice, formatEmojiSe
 		${blobOffscreenDataURI ? `<div class="icon-pixel offscreen-image"></div>` : ''}
 		<br>convertToBlob (emoji storm): ${
 			!blobOffscreenDataURI ? note.unsupported : hash.blobOffscreenDataURI
-		}		
+		}
 	`
 
 	// rgba: "b, g, gb, r, rb, rg, rgb"
@@ -628,8 +622,8 @@ export const canvasHTML = ({ fp, note, modal, hashMini, hashSlice, formatEmojiSe
 			.pixel-image-random,
 			.combined-image,
 			.combined-image-blob,
-			.paint-image, 
-			.text-image, 
+			.paint-image,
+			.text-image,
 			.emoji-image,
 			.offscreen-image {
 				max-width: 35px;
@@ -716,7 +710,7 @@ export const canvasHTML = ({ fp, note, modal, hashMini, hashSlice, formatEmojiSe
 			${rgba ? `<div class="icon-pixel pixel-image"></div>` : ''}
 		</div>
 		<div>textMetrics:</div>
-		<div class="block-text help relative" title="${emojiHelpTitle}"> 
+		<div class="block-text help relative" title="${emojiHelpTitle}">
 			<span>${textMetricsSystemSum || note.unsupported}</span>
 			<span class="grey jumbo" style="font-family: ${cssFontFamily}">
 				${formatEmojiSet(emojiSet)}

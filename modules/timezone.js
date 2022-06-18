@@ -6,7 +6,6 @@ export const getTimezone = async imports => {
 			hashMini,
 			captureError,
 			lieProps,
-			phantomDarkness,
 			logTestResult
 		}
 	} = imports
@@ -472,19 +471,19 @@ export const getTimezone = async imports => {
 		"Pacific/Wallis"
 	]
 
-	const getTimezoneOffset = phantomDate => {
-		const [year, month, day] = JSON.stringify(new phantomDate())
+	const getTimezoneOffset = () => {
+		const [year, month, day] = JSON.stringify(new Date())
 			.slice(1,11)
 			.split('-')
 		const dateString = `${month}/${day}/${year}`
 		const dateStringUTC = `${year}-${month}-${day}`
-		const now = +new phantomDate(dateString)
-		const utc = +new phantomDate(dateStringUTC)
+		const now = +new Date(dateString)
+		const utc = +new Date(dateStringUTC)
 		const offset = +((now - utc)/60000)
-		return ~~offset 
+		return ~~offset
 	}
 
-	const getTimezoneOffsetHistory = ({ year, phantomIntl, phantomDate, city = null }) => {
+	const getTimezoneOffsetHistory = ({ year, city = null }) => {
 		const format = {
 			timeZone: '',
 			year: 'numeric',
@@ -501,12 +500,12 @@ export const getTimezone = async imports => {
 				...format,
 				timeZone: city
 			}
-			formatter = new phantomIntl.DateTimeFormat('en', options)
-			summer = +new phantomDate(formatter.format(new phantomDate(`7/1/${year}`)))
+			formatter = new Intl.DateTimeFormat('en', options)
+			summer = +new Date(formatter.format(new Date(`7/1/${year}`)))
 		} else {
-			summer = +new phantomDate(`7/1/${year}`)
+			summer = +new Date(`7/1/${year}`)
 		}
-		const summerUTCTime = +new phantomDate(`${year}-07-01`)
+		const summerUTCTime = +new Date(`${year}-07-01`)
 		const offset = (summer - summerUTCTime) / minute
 		return offset
 	}
@@ -519,11 +518,11 @@ export const getTimezone = async imports => {
 		return end == 1 || found.length ? found : binarySearch(right, fn)
 	}
 
-	const decryptLocation = ({ year, timeZone, phantomIntl, phantomDate }) => {
-		const system = getTimezoneOffsetHistory({ year, phantomIntl, phantomDate})
-		const resolvedOptions = getTimezoneOffsetHistory({ year, phantomIntl, phantomDate, city: timeZone})
+	const decryptLocation = ({ year, timeZone }) => {
+		const system = getTimezoneOffsetHistory({ year })
+		const resolvedOptions = getTimezoneOffsetHistory({ year, city: timeZone })
 		const filter = cities => cities
-			.filter(city => system == getTimezoneOffsetHistory({ year, phantomIntl, phantomDate, city }))
+			.filter(city => system == getTimezoneOffsetHistory({ year, city }))
 
 		// get city region set
 		const decryption = (
@@ -548,27 +547,25 @@ export const getTimezone = async imports => {
 	try {
 		const timer = createTimer()
 		timer.start()
-		
+
 		let lied = (
 			lieProps['Date.getTimezoneOffset'] ||
 			lieProps['Intl.DateTimeFormat.resolvedOptions'] ||
 			lieProps['Intl.RelativeTimeFormat.resolvedOptions']
 		) || false
-		const phantomDate = phantomDarkness ? phantomDarkness.Date : Date
-		const phantomIntl = phantomDarkness ? phantomDarkness.Intl : Intl
 
 		const year = 1113
-		const { timeZone } = phantomIntl.DateTimeFormat().resolvedOptions()
-		const decrypted = decryptLocation({ year, timeZone, phantomIntl, phantomDate })
+		const { timeZone } = Intl.DateTimeFormat().resolvedOptions()
+		const decrypted = decryptLocation({ year, timeZone })
 		const locationEpoch = +new Date(new Date(`7/1/${year}`))
 		const notWithinParentheses = /.*\(|\).*/g
 		const data =  {
-			zone: (''+new phantomDate()).replace(notWithinParentheses, ''),
+			zone: (''+new Date()).replace(notWithinParentheses, ''),
 			location: formatLocation(timeZone),
 			locationMeasured: formatLocation(decrypted),
 			locationEpoch,
-			offset: new phantomDate().getTimezoneOffset(),
-			offsetComputed: getTimezoneOffset(phantomDate),
+			offset: new Date().getTimezoneOffset(),
+			offsetComputed: getTimezoneOffset(),
 			lied
 		}
 		logTestResult({ time: timer.stop(), test: 'timezone', passed: true })

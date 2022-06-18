@@ -1,4 +1,4 @@
-// inspired by 
+// inspired by
 // - https://privacycheck.sec.lrz.de/active/fp_cpt/fp_can_play_type.html
 // - https://arkenfox.github.io/TZP
 const getMimeTypeShortList = () => [
@@ -24,7 +24,6 @@ export const getMedia = async imports => {
 			createTimer,
 			attempt,
 			captureError,
-			phantomDarkness,
 			logTestResult
 		}
 	} = imports
@@ -67,9 +66,9 @@ export const getMedia = async imports => {
 						return
 					})
 		)
-	
+
 		const mimeTypes = getMimeTypes()
-		
+
 		logTestResult({ time: timer.stop(), test: 'media', passed: true })
 		return { mediaDevices: devices, mimeTypes }
 	}
@@ -145,7 +144,7 @@ export const mediaHTML = ({ fp, note, count, modal, hashMini, hashSlice, perform
 		const { mimeType, audioPlayType, videoPlayType, mediaSource, mediaRecorder } = type
 		return `
 			${audioPlayType == 'probably' ? '<span class="audiop pb">P</span>' : audioPlayType == 'maybe' ? '<span class="audiop mb">M</span>': '<span class="blank-false">-</span>'}${videoPlayType == 'probably' ? '<span class="videop pb">P</span>' : videoPlayType == 'maybe' ? '<span class="videop mb">M</span>': '<span class="blank-false">-</span>'}${mediaSource ? '<span class="medias tr">T</span>'  : '<span class="blank-false">-</span>'}${mediaRecorder ? '<span class="mediar tr">T</span>'  : '<span class="blank-false">-</span>'}: ${mimeType}
-		`	
+		`
 	})
 	const mimesListLen = getMimeTypeShortList().length
 
@@ -171,13 +170,13 @@ export const mediaHTML = ({ fp, note, count, modal, hashMini, hashSlice, perform
 		}
 		return (acc = [...acc, deviceType])
 	}, [])
-	
+
 	return `
 	<div class="relative col-four">
 		<span class="aside-note">${performanceLogger.getLog().media}</span>
 		<strong>Media</strong><span class="hash">${hashSlice($hash)}</span>
 		<div class="help" title="HTMLMediaElement.canPlayType()\nMediaRecorder.isTypeSupported()\nMediaSource.isTypeSupported()">mimes (${count(mimeTypes)}/${mimesListLen}): ${
-			invalidMimeTypes ? note.blocked : 
+			invalidMimeTypes ? note.blocked :
 			modal(
 				'creep-media-mimeTypes',
 				header+mimes.join('<br>'),
@@ -187,10 +186,10 @@ export const mediaHTML = ({ fp, note, count, modal, hashMini, hashSlice, perform
 		<div class="help" title="MediaDevices.enumerateDevices()\nMediaDeviceInfo.kind">devices (${count(mediaDevices)}):</div>
 		<div class="block-text">
 			${
-				!mediaDevices || !mediaDevices.length ? note.blocked : 
+				!mediaDevices || !mediaDevices.length ? note.blocked :
 					mediaDevicesByType.join(', ')
 			}
 		</div>
 	</div>
-	`	
+	`
 }

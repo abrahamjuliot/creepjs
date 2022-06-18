@@ -7,14 +7,13 @@ export const getCanvasWebgl = async imports => {
 			captureError,
 			attempt,
 			lieProps,
-			phantomDarkness,
 			sendToTrash,
 			logTestResult,
 			compressWebGLRenderer,
-			getWebGLRendererConfidence 
+			getWebGLRendererConfidence
 		}
 	} = imports
-	
+
 
 	// use short list to improve performance
 	const getParamNames = () => [
@@ -159,14 +158,14 @@ export const getCanvasWebgl = async imports => {
 			(3.141592653589793 ** -100 == 1.9275814160560206e-50) &&
 			!/(Cr|Fx)iOS/.test(navigator.userAgent)
 		)
-		
+
 		if (!gl || isSafari15AndAbove) {
 			return
 		}
-		
+
 		//gl.clearColor(0.47, 0.7, 0.78, 1)
 		gl.clear(gl.COLOR_BUFFER_BIT)
-		
+
 		// based on https://github.com/Valve/fingerprintjs2/blob/master/fingerprint2.js
 		const vertexPosBuffer = gl.createBuffer()
 		gl.bindBuffer(gl.ARRAY_BUFFER, vertexPosBuffer)
@@ -175,7 +174,7 @@ export const getCanvasWebgl = async imports => {
 
 		// create program
 		const program = gl.createProgram()
-		
+
 		// compile and attach vertex shader
 		const vertexShader = gl.createShader(gl.VERTEX_SHADER)
 		gl.shaderSource(vertexShader, `
@@ -189,7 +188,7 @@ export const getCanvasWebgl = async imports => {
 		`)
 		gl.compileShader(vertexShader)
 		gl.attachShader(program, vertexShader)
-		
+
 		// compile and attach fragment shader
 		const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER)
 		gl.shaderSource(fragmentShader, `
@@ -201,7 +200,7 @@ export const getCanvasWebgl = async imports => {
 		`)
 		gl.compileShader(fragmentShader)
 		gl.attachShader(program, fragmentShader)
-		
+
 		// use program
 		const componentSize = 3
 		gl.linkProgram(program)
@@ -240,7 +239,7 @@ export const getCanvasWebgl = async imports => {
 		) || false
 
 		// create canvas context
-		const win = phantomDarkness ? phantomDarkness : window
+		const win = window
 		const doc = win.document
 		let canvas, canvas2
 		if ('OffscreenCanvas' in window) {
@@ -250,7 +249,7 @@ export const getCanvasWebgl = async imports => {
 			canvas = doc.createElement('canvas')
 			canvas2 = doc.createElement('canvas')
 		}
-		
+
 		const getContext = (canvas, contextType) => {
 			try {
 				if (contextType == 'webgl2') {
@@ -270,7 +269,7 @@ export const getCanvasWebgl = async imports => {
 				return
 			}
 		}
-		
+
 		const gl = getContext(canvas, 'webgl')
 		const gl2 = getContext(canvas2, 'webgl2')
 		if (!gl) {
@@ -407,7 +406,7 @@ export const getCanvasWebgl = async imports => {
 				return captureError(error)
 			}
 		}
-		
+
 		// get data
 		await queueEvent(timer)
 		const params = { ...getParams(gl), ...getUnmasked(gl) }
@@ -423,7 +422,7 @@ export const getCanvasWebgl = async imports => {
 		await queueEvent(timer)
 		const { dataURI, pixels } = getWebGLData(gl, 'webgl') || {}
 		const { dataURI: dataURI2, pixels: pixels2 } = getWebGLData(gl2, 'webgl2') || {}
-		
+
 		const data = {
 			extensions: [...getSupportedExtensions(gl), ...getSupportedExtensions(gl2)],
 			pixels,
@@ -447,7 +446,7 @@ export const getCanvasWebgl = async imports => {
 			parameterOrExtensionLie,
 			lied
 		}
-		
+
 		logTestResult({ time: timer.stop(), test: 'webgl', passed: true })
 		return {
 			...data,
@@ -480,7 +479,7 @@ export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice, perform
 	}
 	const { canvasWebgl: data } = fp
 	const id = 'creep-canvas-webgl'
-	
+
 	const {
 		$hash,
 		dataURI,
@@ -501,11 +500,11 @@ export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice, perform
 		grade: confidenceGrade,
 		compressedGPU
 	} = gpu || {}
-	
+
 	const paramKeys = parameters ? Object.keys(parameters).sort() : []
-	
+
 	return `
-	
+
 	<div class="relative col-six${lied ? ' rejected' : ''}">
 		<span class="time">${performanceLogger.getLog().webgl}</span>
 		<strong>WebGL</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
@@ -524,14 +523,14 @@ export const webglHTML = ({ fp, note, count, modal, hashMini, hashSlice, perform
 			)
 		}</div>
 		<div>exts (${count(extensions)}): ${
-			!extensions.length ? note.blocked : 
+			!extensions.length ? note.blocked :
 			modal(
 				`${id}-extensions`,
 				extensions.sort().join('<br>'),
 				hashMini(extensions)
 			)
 		}</div>
-		
+
 		<div class="relative">gpu:${
 			confidence ? `<span class="confidence-note">confidence: <span class="scale-up grade-${confidenceGrade}">${confidence}</span></span>` : ''
 		}</div>

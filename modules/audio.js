@@ -26,7 +26,7 @@ export const getKnownAudio = () => ({
 	],
 	[-20.535268783569336]: [
 		// Android/Linux
-		124.080722568091, 
+		124.080722568091,
 		124.08072256811283,
 		124.08072766105033,
 		124.08072787802666,
@@ -41,7 +41,7 @@ export const getKnownAudio = () => ({
 	[-31.502185821533203]: [35.74996031448245, 35.7499681673944],
 	// Gecko Windows/Mac/Linux
 	[-31.50218963623047]: [35.74996031448245],
-	[-31.509262084960938]: [35.7383295930922, 35.73833402246237], 
+	[-31.509262084960938]: [35.7383295930922, 35.73833402246237],
 
 	// WebKit
 	[-29.837873458862305]: [35.10892717540264, 35.10892752557993],
@@ -62,7 +62,6 @@ export const getOfflineAudioContext = async imports => {
 			sendToTrash,
 			documentLie,
 			lieProps,
-			phantomDarkness,
 			logTestResult
 		}
 	} = imports
@@ -70,7 +69,7 @@ export const getOfflineAudioContext = async imports => {
 	try {
 		const timer = createTimer()
 		await queueEvent(timer)
-		const win = phantomDarkness ? phantomDarkness : window
+		const win = window
 		const audioContext = caniuse(() => win.OfflineAudioContext || win.webkitOfflineAudioContext)
 		if (!audioContext) {
 			logTestResult({ test: 'audio', passed: false })
@@ -150,7 +149,7 @@ export const getOfflineAudioContext = async imports => {
 
 			oscillator.start(0)
 			context.startRendering()
-			
+
 			return context.addEventListener('complete', event => {
 				try {
 					dynamicsCompressor.disconnect()
@@ -202,7 +201,7 @@ export const getOfflineAudioContext = async imports => {
 		const copySample = getSnapshot([...copy], 4500, 4600)
 		const binsSample = getSnapshot([...bins], 4500, 4600)
 		const sampleSum = getSum(getSnapshot([...bins], 4500, bufferLen))
-		
+
 		// detect lies
 
 		// sample matching
@@ -230,7 +229,7 @@ export const getOfflineAudioContext = async imports => {
 		  const start = getRandFromRange(275, length - (max + 1));
 		  const mid = start + max / 2;
 		  const end = start + max;
-																																
+
 			buffer.getChannelData(0)[start] = rand
 			buffer.getChannelData(0)[mid] = rand
 			buffer.getChannelData(0)[end] = rand
@@ -250,7 +249,7 @@ export const getOfflineAudioContext = async imports => {
 				.map(x => x !== frequency || !x ? Math.random() : x)
 			return dataAttacked.filter(x => x !== frequency)
 		}
-		
+
 		const getNoiseFactor = () => {
 			const length = 2000
 			try {
@@ -276,7 +275,7 @@ export const getOfflineAudioContext = async imports => {
 				return 0
 			}
 		}
-		
+
 		const noiseFactor = getNoiseFactor()
 		const noise = (
 			noiseFactor || [...new Set(bins.slice(0, 100))].reduce((acc, n) => acc += n, 0)
@@ -378,7 +377,7 @@ export const getOfflineAudioContext = async imports => {
 			'-29.83786964416504,163209.17245483398,0': [35.10893232002854],
 			'-29.83786964416504,163202.77336883545,0': [35.10893253237009],
 		}
-		
+
 		if (noise) {
 			lied = true
 			documentLie('AudioBuffer', 'sample noise detected')
@@ -388,13 +387,13 @@ export const getOfflineAudioContext = async imports => {
 			floatFrequencyDataSum,
 			floatTimeDomainDataSum
 		]
-		
+
 		const knownPattern = known[pattern]
 		if (knownPattern && !knownPattern.includes(sampleSum)) {
 			lied = true
 			documentLie('AudioBuffer', 'unknown frequency pattern (suspected lie)')
 		}
-		
+
 		logTestResult({ time: timer.stop(), test: 'audio', passed: true })
 		return {
 			totalUniqueSamples,
@@ -408,7 +407,7 @@ export const getOfflineAudioContext = async imports => {
 			noise,
 			lied
 		}
-			
+
 	}
 	catch (error) {
 		logTestResult({ test: 'audio', passed: false })
@@ -482,11 +481,11 @@ export const audioHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, perf
 		}</div>
 		<div>unique: ${totalUniqueSamples}</div>
 		<div class="help" title="AudioBuffer.getChannelData()">data:${
-			''+binsSample[0] == 'undefined' ? ` ${note.unsupported}` : 
+			''+binsSample[0] == 'undefined' ? ` ${note.unsupported}` :
 			`<span class="sub-hash">${hashMini(binsSample)}</span>`
 		}</div>
 		<div class="help" title="AudioBuffer.copyFromChannel()">copy:${
-			''+copySample[0] == 'undefined' ? ` ${note.unsupported}` : 
+			''+copySample[0] == 'undefined' ? ` ${note.unsupported}` :
 			`<span class="sub-hash">${hashMini(copySample)}</span>`
 		}</div>
 		<div>values: ${

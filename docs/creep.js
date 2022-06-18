@@ -2554,7 +2554,7 @@
 		],
 		[-20.535268783569336]: [
 			// Android/Linux
-			124.080722568091, 
+			124.080722568091,
 			124.08072256811283,
 			124.08072766105033,
 			124.08072787802666,
@@ -2569,7 +2569,7 @@
 		[-31.502185821533203]: [35.74996031448245, 35.7499681673944],
 		// Gecko Windows/Mac/Linux
 		[-31.50218963623047]: [35.74996031448245],
-		[-31.509262084960938]: [35.7383295930922, 35.73833402246237], 
+		[-31.509262084960938]: [35.7383295930922, 35.73833402246237],
 
 		// WebKit
 		[-29.837873458862305]: [35.10892717540264, 35.10892752557993],
@@ -2590,7 +2590,6 @@
 				sendToTrash,
 				documentLie,
 				lieProps,
-				phantomDarkness,
 				logTestResult
 			}
 		} = imports;
@@ -2598,7 +2597,7 @@
 		try {
 			const timer = createTimer();
 			await queueEvent(timer);
-			const win = phantomDarkness ? phantomDarkness : window;
+			const win = window;
 			const audioContext = caniuse(() => win.OfflineAudioContext || win.webkitOfflineAudioContext);
 			if (!audioContext) {
 				logTestResult({ test: 'audio', passed: false });
@@ -2678,7 +2677,7 @@
 
 				oscillator.start(0);
 				context.startRendering();
-				
+
 				return context.addEventListener('complete', event => {
 					try {
 						dynamicsCompressor.disconnect();
@@ -2730,7 +2729,7 @@
 			const copySample = getSnapshot([...copy], 4500, 4600);
 			const binsSample = getSnapshot([...bins], 4500, 4600);
 			const sampleSum = getSum(getSnapshot([...bins], 4500, bufferLen));
-			
+
 			// detect lies
 
 			// sample matching
@@ -2758,7 +2757,7 @@
 			  const start = getRandFromRange(275, length - (max + 1));
 			  const mid = start + max / 2;
 			  const end = start + max;
-																																	
+
 				buffer.getChannelData(0)[start] = rand;
 				buffer.getChannelData(0)[mid] = rand;
 				buffer.getChannelData(0)[end] = rand;
@@ -2778,7 +2777,7 @@
 					.map(x => x !== frequency || !x ? Math.random() : x);
 				return dataAttacked.filter(x => x !== frequency)
 			};
-			
+
 			const getNoiseFactor = () => {
 				const length = 2000;
 				try {
@@ -2804,7 +2803,7 @@
 					return 0
 				}
 			};
-			
+
 			const noiseFactor = getNoiseFactor();
 			const noise = (
 				noiseFactor || [...new Set(bins.slice(0, 100))].reduce((acc, n) => acc += n, 0)
@@ -2906,7 +2905,7 @@
 				'-29.83786964416504,163209.17245483398,0': [35.10893232002854],
 				'-29.83786964416504,163202.77336883545,0': [35.10893253237009],
 			};
-			
+
 			if (noise) {
 				lied = true;
 				documentLie('AudioBuffer', 'sample noise detected');
@@ -2916,13 +2915,13 @@
 				floatFrequencyDataSum,
 				floatTimeDomainDataSum
 			];
-			
+
 			const knownPattern = known[pattern];
 			if (knownPattern && !knownPattern.includes(sampleSum)) {
 				lied = true;
 				documentLie('AudioBuffer', 'unknown frequency pattern (suspected lie)');
 			}
-			
+
 			logTestResult({ time: timer.stop(), test: 'audio', passed: true });
 			return {
 				totalUniqueSamples,
@@ -2936,7 +2935,7 @@
 				noise,
 				lied
 			}
-				
+
 		}
 		catch (error) {
 			logTestResult({ test: 'audio', passed: false });
@@ -3010,11 +3009,11 @@
 		}</div>
 		<div>unique: ${totalUniqueSamples}</div>
 		<div class="help" title="AudioBuffer.getChannelData()">data:${
-			''+binsSample[0] == 'undefined' ? ` ${note.unsupported}` : 
+			''+binsSample[0] == 'undefined' ? ` ${note.unsupported}` :
 			`<span class="sub-hash">${hashMini(binsSample)}</span>`
 		}</div>
 		<div class="help" title="AudioBuffer.copyFromChannel()">copy:${
-			''+copySample[0] == 'undefined' ? ` ${note.unsupported}` : 
+			''+copySample[0] == 'undefined' ? ` ${note.unsupported}` :
 			`<span class="sub-hash">${hashMini(copySample)}</span>`
 		}</div>
 		<div>values: ${
@@ -3162,7 +3161,7 @@
 	  context.clearRect(0, 0, canvas.width, canvas.height);
 	  canvas.width = area.width;
 	  canvas.height = area.height;
-		
+
 	  if (canvas.style) {
 	    canvas.style.display = 'none';
 	  }
@@ -3297,17 +3296,17 @@
 	    createQuadraticCurve,
 	    createEllipticalArc
 	  ];
-		
+
 		if (strokeText) {
 			methods.push(drawOutlineOfText);
 		}
 
-	  ;[...Array(rounds)].forEach((x) => { 
+	  ;[...Array(rounds)].forEach((x) => {
 	    addRandomCanvasGradient(context, offset, area, colors, getNextSeed);
 	    context.shadowBlur = patchSeed(getNextSeed(), offset, maxShadowBlur, true);
 	    context.shadowColor = colors[patchSeed(getNextSeed(), offset, colors.length)];
 	    const nextMethod = methods[patchSeed(getNextSeed(), offset, methods.length)];
-	    nextMethod(context, offset, area, getNextSeed); 
+	    nextMethod(context, offset, area, getNextSeed);
 	    context.fill();
 	  });
 
@@ -3327,8 +3326,8 @@
 		context.fillText(`⚛✡✝☦▶⏭⏯⏏♀♂✖〰⚕⚜✔✳❇◼▪❣`, 0, 25);
 		context.fillText(`❤✌☝✍❄⚖↪☯☪☮☑✴🅰🅿`, 0, 30);
 		return
-	}; 
-		
+	};
+
 	const getCanvas2d = async imports => {
 
 		const {
@@ -3341,7 +3340,6 @@
 				attempt,
 				lieProps,
 				documentLie,
-				phantomDarkness,
 				logTestResult
 			}
 		} = imports;
@@ -3383,13 +3381,8 @@
 				textMetricsLie ||
 				codePointLie
 			) || false;
-			const doc = (
-				phantomDarkness &&
-				phantomDarkness.document &&
-				phantomDarkness.document.body ? phantomDarkness.document :
-					document
-			);
-			
+			const doc = document;
+
 			const canvas = doc.createElement('canvas');
 			const context = canvas.getContext('2d');
 			const emojis = getEmojis();
@@ -3402,9 +3395,9 @@
 				area: { width: 50, height: 50 },
 				rounds: 10,
 			});
-			
+
 			const dataURI = canvas.toDataURL();
-			
+
 			let canvasOffscreen;
 			try {
 				canvasOffscreen = new OffscreenCanvas(140, 30);
@@ -3427,7 +3420,7 @@
 				})),
 				getFileReaderData(canvasOffscreen && await attempt(() => canvasOffscreen.convertToBlob()))
 			]);
-			
+
 			const blob = {
 				readAsDataURL: fileReaderData,
 			};
@@ -3508,7 +3501,7 @@
 				lied = true;
 				documentLie(`CanvasRenderingContext2D.getImageData`, `pixel data modified`);
 			}
-			
+
 			const getTextMetricsFloatLie = context => {
 				const isFloat = n => n % 1 !== 0;
 				const {
@@ -3575,7 +3568,7 @@
 			<div class="block-text">${note.blocked}</div>
 		</div>`
 		}
-				
+
 		const {
 			canvas2d: {
 				lied,
@@ -3592,8 +3585,8 @@
 			}
 		} = fp;
 		const { pixels, rgba, pixelImage } = mods || {};
-		const modPercent = pixels ? Math.round((pixels / 400) * 100) : 0;	
-		
+		const modPercent = pixels ? Math.round((pixels / 400) * 100) : 0;
+
 		const blobDataURI = (blob || {}).readAsDataURL;
 		const blobOffscreenDataURI = (blobOffscreen || {}).readAsDataURL;
 		const hash = {
@@ -3607,7 +3600,7 @@
 		const dataTemplate = `
 		${textURI ? `<div class="icon-pixel text-image"></div>` : ''}
 		<br>text: ${!textURI ? note.blocked : hash.textURI}
-		
+
 		<br><br>
 		${emojiURI ? `<div class="icon-pixel emoji-image"></div>` : ''}
 		<br>emoji: ${!emojiURI ? note.blocked : hash.emojiURI}
@@ -3625,7 +3618,7 @@
 		${blobOffscreenDataURI ? `<div class="icon-pixel offscreen-image"></div>` : ''}
 		<br>convertToBlob (emoji storm): ${
 			!blobOffscreenDataURI ? note.unsupported : hash.blobOffscreenDataURI
-		}		
+		}
 	`;
 
 		// rgba: "b, g, gb, r, rb, rg, rgb"
@@ -3658,8 +3651,8 @@
 			.pixel-image-random,
 			.combined-image,
 			.combined-image-blob,
-			.paint-image, 
-			.text-image, 
+			.paint-image,
+			.text-image,
 			.emoji-image,
 			.offscreen-image {
 				max-width: 35px;
@@ -3746,7 +3739,7 @@
 			${rgba ? `<div class="icon-pixel pixel-image"></div>` : ''}
 		</div>
 		<div>textMetrics:</div>
-		<div class="block-text help relative" title="${emojiHelpTitle}"> 
+		<div class="block-text help relative" title="${emojiHelpTitle}">
 			<span>${textMetricsSystemSum || note.unsupported}</span>
 			<span class="grey jumbo" style="font-family: ${cssFontFamily}">
 				${formatEmojiSet(emojiSet)}
@@ -3765,14 +3758,13 @@
 				captureError,
 				attempt,
 				lieProps,
-				phantomDarkness,
 				sendToTrash,
 				logTestResult,
 				compressWebGLRenderer,
-				getWebGLRendererConfidence 
+				getWebGLRendererConfidence
 			}
 		} = imports;
-		
+
 
 		// use short list to improve performance
 		const getParamNames = () => [
@@ -3917,14 +3909,14 @@
 				(3.141592653589793 ** -100 == 1.9275814160560206e-50) &&
 				!/(Cr|Fx)iOS/.test(navigator.userAgent)
 			);
-			
+
 			if (!gl || isSafari15AndAbove) {
 				return
 			}
-			
+
 			//gl.clearColor(0.47, 0.7, 0.78, 1)
 			gl.clear(gl.COLOR_BUFFER_BIT);
-			
+
 			// based on https://github.com/Valve/fingerprintjs2/blob/master/fingerprint2.js
 			const vertexPosBuffer = gl.createBuffer();
 			gl.bindBuffer(gl.ARRAY_BUFFER, vertexPosBuffer);
@@ -3933,7 +3925,7 @@
 
 			// create program
 			const program = gl.createProgram();
-			
+
 			// compile and attach vertex shader
 			const vertexShader = gl.createShader(gl.VERTEX_SHADER);
 			gl.shaderSource(vertexShader, `
@@ -3947,7 +3939,7 @@
 		`);
 			gl.compileShader(vertexShader);
 			gl.attachShader(program, vertexShader);
-			
+
 			// compile and attach fragment shader
 			const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
 			gl.shaderSource(fragmentShader, `
@@ -3959,7 +3951,7 @@
 		`);
 			gl.compileShader(fragmentShader);
 			gl.attachShader(program, fragmentShader);
-			
+
 			// use program
 			const componentSize = 3;
 			gl.linkProgram(program);
@@ -3998,7 +3990,7 @@
 			) || false;
 
 			// create canvas context
-			const win = phantomDarkness ? phantomDarkness : window;
+			const win = window;
 			const doc = win.document;
 			let canvas, canvas2;
 			if ('OffscreenCanvas' in window) {
@@ -4008,7 +4000,7 @@
 				canvas = doc.createElement('canvas');
 				canvas2 = doc.createElement('canvas');
 			}
-			
+
 			const getContext = (canvas, contextType) => {
 				try {
 					if (contextType == 'webgl2') {
@@ -4028,7 +4020,7 @@
 					return
 				}
 			};
-			
+
 			const gl = getContext(canvas, 'webgl');
 			const gl2 = getContext(canvas2, 'webgl2');
 			if (!gl) {
@@ -4165,7 +4157,7 @@
 					return captureError(error)
 				}
 			};
-			
+
 			// get data
 			await queueEvent(timer);
 			const params = { ...getParams(gl), ...getUnmasked(gl) };
@@ -4181,7 +4173,7 @@
 			await queueEvent(timer);
 			const { dataURI, pixels } = getWebGLData(gl, 'webgl') || {};
 			const { dataURI: dataURI2, pixels: pixels2 } = getWebGLData(gl2, 'webgl2') || {};
-			
+
 			const data = {
 				extensions: [...getSupportedExtensions(gl), ...getSupportedExtensions(gl2)],
 				pixels,
@@ -4205,7 +4197,7 @@
 				parameterOrExtensionLie,
 				lied
 			};
-			
+
 			logTestResult({ time: timer.stop(), test: 'webgl', passed: true });
 			return {
 				...data,
@@ -4238,7 +4230,7 @@
 		}
 		const { canvasWebgl: data } = fp;
 		const id = 'creep-canvas-webgl';
-		
+
 		const {
 			$hash,
 			dataURI,
@@ -4259,11 +4251,11 @@
 			grade: confidenceGrade,
 			compressedGPU
 		} = gpu || {};
-		
+
 		const paramKeys = parameters ? Object.keys(parameters).sort() : [];
-		
+
 		return `
-	
+
 	<div class="relative col-six${lied ? ' rejected' : ''}">
 		<span class="time">${performanceLogger.getLog().webgl}</span>
 		<strong>WebGL</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
@@ -4282,14 +4274,14 @@
 			)
 		}</div>
 		<div>exts (${count(extensions)}): ${
-			!extensions.length ? note.blocked : 
+			!extensions.length ? note.blocked :
 			modal(
 				`${id}-extensions`,
 				extensions.sort().join('<br>'),
 				hashMini(extensions)
 			)
 		}</div>
-		
+
 		<div class="relative">gpu:${
 			confidence ? `<span class="confidence-note">confidence: <span class="scale-up grade-${confidenceGrade}">${confidence}</span></span>` : ''
 		}</div>
@@ -5790,8 +5782,7 @@
 				attempt,
 				documentLie,
 				lieProps,
-				phantomDarkness,
-				logTestResult						
+				logTestResult
 			}
 		} = imports;
 
@@ -5825,7 +5816,7 @@
 			];
 			let lied = false;
 			let liedCalc = false;
-			const phantomMath = phantomDarkness ? phantomDarkness.Math : Math;
+
 			check.forEach(prop => {
 				if (!!lieProps[`Math.${prop}`]) {
 					lied = true;
@@ -5833,7 +5824,7 @@
 				const test = (
 					prop == 'cos' ? [1e308] :
 					prop == 'acos' || prop == 'asin' || prop == 'atanh' ? [0.5] :
-					prop == 'pow' || prop == 'atan2' ? [Math.PI, 2] : 
+					prop == 'pow' || prop == 'atan2' ? [Math.PI, 2] :
 					[Math.PI]
 				);
 				const res1 = Math[prop](...test);
@@ -5846,14 +5837,14 @@
 				}
 				return
 			});
-			
+
 
 			const n = 0.123;
 			const bigN = 5.860847362277284e+38;
 			const fns = [
 				['acos', [n], `acos(${n})`, 1.4474840516030247, NaN, NaN, 1.4474840516030245],
 				['acos', [Math.SQRT1_2], 'acos(Math.SQRT1_2)', 0.7853981633974483, NaN, NaN, NaN],
-				
+
 				['acosh', [1e308], 'acosh(1e308)', 709.889355822726, NaN, NaN, NaN],
 				['acosh', [Math.PI], 'acosh(Math.PI)', 1.811526272460853, NaN, NaN, NaN],
 				['acosh', [Math.SQRT2], 'acosh(Math.SQRT2)', 0.881373587019543, NaN, NaN, 0.8813735870195432],
@@ -5873,7 +5864,7 @@
 
 				['cbrt', [100], 'cbrt(100)', 4.641588833612779, NaN, NaN, NaN],
 				['cbrt', [Math.PI], 'cbrt(Math.PI)', 1.4645918875615231, NaN, NaN, 1.4645918875615234],
-				
+
 				['cos', [n], `cos(${n})`, 0.9924450321351935, NaN, NaN, NaN],
 				['cos', [Math.PI], 'cos(Math.PI)', -1, NaN, NaN, NaN],
 				['cos', [bigN], `cos(${bigN})`, -0.10868049424995659, NaN, -0.9779661551196617, NaN],
@@ -5929,7 +5920,7 @@
 				['log10', [Math.SQRT1_2], 'log10(Math.SQRT1_2)', -0.15051499783199057, NaN, NaN, NaN],
 				['log10', [2*Math.SQRT1_2], 'log10(2*Math.SQRT1_2)', 0.1505149978319906, 0.15051499783199063, NaN, NaN],
 				['log10', [Math.SQRT2], 'log10(Math.SQRT2)', 0.1505149978319906, 0.15051499783199063, NaN, NaN],
-				
+
 				['sin', [bigN], `sin(${bigN})`, 0.994076732536068, NaN, -0.20876350121720488, NaN],
 				['sin', [Math.PI], 'sin(Math.PI)', 1.2246467991473532e-16, NaN, 1.2246063538223773e-16, NaN],
 
@@ -5953,7 +5944,7 @@
 
 				['sqrt', [n], `sqrt(${n})`, 0.3507135583350036, NaN, NaN, NaN],
 				['sqrt', [Math.PI], 'sqrt(Math.PI)', 1.7724538509055159, NaN, NaN, NaN],
-				
+
 				['tan', [-1e308], 'tan(-1e308)', 0.5086861259107568, NaN, NaN, 0.5086861259107567],
 				['tan', [Math.PI], 'tan(Math.PI)', -1.2246467991473532e-16, NaN, NaN, NaN],
 
@@ -5962,8 +5953,8 @@
 				['tan', [10*Math.LOG2E], 'tan(10*Math.LOG2E)', -3.3537128705376014, -3.353712870537601, NaN, -3.353712870537602],
 				['tan', [17*Math.SQRT2], 'tan(17*Math.SQRT2)', -1.9222955461799982, -1.922295546179998, NaN, NaN],
 				['tan', [34*Math.SQRT1_2], 'tan(34*Math.SQRT1_2)', -1.9222955461799982, -1.922295546179998, NaN, NaN],
-				['tan', [10*Math.LOG10E], 'tan(10*Math.LOG10E)', 2.5824856130712432, 2.5824856130712437, NaN, NaN], 
-									
+				['tan', [10*Math.LOG10E], 'tan(10*Math.LOG10E)', 2.5824856130712432, 2.5824856130712437, NaN, NaN],
+
 				['tanh', [n], `tanh(${n})`, 0.12238344189440875, NaN, NaN, 0.12238344189440876],
 				['tanh', [Math.PI], 'tanh(Math.PI)', 0.99627207622075, NaN, NaN, NaN],
 
@@ -5976,14 +5967,14 @@
 				['pow', [Math.LOG10E, -100], 'pow(Math.LOG10E, -100)', 1.6655929347585958e+36, 1.665592934758592e+36, NaN, 1.6655929347585955e+36],
 				['pow', [Math.SQRT1_2, -100], 'pow(Math.SQRT1_2, -100)', 1125899906842616.2, 1125899906842611.5, NaN, NaN],
 				['pow', [Math.SQRT2, -100], 'pow(Math.SQRT2, -100)', 8.881784197001191e-16, 8.881784197001154e-16, NaN, NaN],
-				
+
 				['polyfill', [2e-3 ** -100], 'polyfill pow(2e-3, -100)', 7.888609052210102e+269, 7.888609052210126e+269, NaN, NaN]
 			];
-			
+
 			const data = {};
 			fns.forEach(fn => {
 				data[fn[2]] = attempt(() => {
-					const result = fn[0] != 'polyfill' ? phantomMath[fn[0]](...fn[1]) : fn[1];
+					const result = fn[0] != 'polyfill' ? Math[fn[0]](...fn[1]) : fn[1];
 					const chrome = result == fn[3];
 					const firefox = fn[4] ? result == fn[4] : false;
 					const torBrowser = fn[5] ? result == fn[5] : false;
@@ -6011,7 +6002,7 @@
 			<div>
 				<div>${note.blocked}</div>
 			</div>
-			
+
 		</div>`
 		}
 		const {
@@ -6063,7 +6054,7 @@
 		<span class="aside-note">${performanceLogger.getLog().math}</span>
 		<strong>Math</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div>results: ${
-			!data ? note.blocked : 
+			!data ? note.blocked :
 			modal(
 				'creep-maths',
 				header+results.join('<br>')
@@ -6076,7 +6067,7 @@
 	`
 	};
 
-	// inspired by 
+	// inspired by
 	// - https://privacycheck.sec.lrz.de/active/fp_cpt/fp_can_play_type.html
 	// - https://arkenfox.github.io/TZP
 	const getMimeTypeShortList = () => [
@@ -6102,7 +6093,6 @@
 				createTimer,
 				attempt,
 				captureError,
-				phantomDarkness,
 				logTestResult
 			}
 		} = imports;
@@ -6145,9 +6135,9 @@
 							return
 						})
 			);
-		
+
 			const mimeTypes = getMimeTypes();
-			
+
 			logTestResult({ time: timer.stop(), test: 'media', passed: true });
 			return { mediaDevices: devices, mimeTypes }
 		}
@@ -6223,7 +6213,7 @@
 			const { mimeType, audioPlayType, videoPlayType, mediaSource, mediaRecorder } = type;
 			return `
 			${audioPlayType == 'probably' ? '<span class="audiop pb">P</span>' : audioPlayType == 'maybe' ? '<span class="audiop mb">M</span>': '<span class="blank-false">-</span>'}${videoPlayType == 'probably' ? '<span class="videop pb">P</span>' : videoPlayType == 'maybe' ? '<span class="videop mb">M</span>': '<span class="blank-false">-</span>'}${mediaSource ? '<span class="medias tr">T</span>'  : '<span class="blank-false">-</span>'}${mediaRecorder ? '<span class="mediar tr">T</span>'  : '<span class="blank-false">-</span>'}: ${mimeType}
-		`	
+		`
 		});
 		const mimesListLen = getMimeTypeShortList().length;
 
@@ -6249,13 +6239,13 @@
 			}
 			return (acc = [...acc, deviceType])
 		}, []);
-		
+
 		return `
 	<div class="relative col-four">
 		<span class="aside-note">${performanceLogger.getLog().media}</span>
 		<strong>Media</strong><span class="hash">${hashSlice($hash)}</span>
 		<div class="help" title="HTMLMediaElement.canPlayType()\nMediaRecorder.isTypeSupported()\nMediaSource.isTypeSupported()">mimes (${count(mimeTypes)}/${mimesListLen}): ${
-			invalidMimeTypes ? note.blocked : 
+			invalidMimeTypes ? note.blocked :
 			modal(
 				'creep-media-mimeTypes',
 				header+mimes.join('<br>'),
@@ -6265,12 +6255,12 @@
 		<div class="help" title="MediaDevices.enumerateDevices()\nMediaDeviceInfo.kind">devices (${count(mediaDevices)}):</div>
 		<div class="block-text">
 			${
-				!mediaDevices || !mediaDevices.length ? note.blocked : 
+				!mediaDevices || !mediaDevices.length ? note.blocked :
 					mediaDevicesByType.join(', ')
 			}
 		</div>
 	</div>
-	`	
+	`
 	};
 
 	// special thanks to https://arh.antoinevastel.com/reports/stats/menu.html for stats
@@ -6289,7 +6279,6 @@
 				trustInteger,
 				documentLie,
 				lieProps,
-				phantomDarkness,
 				getUserAgentPlatform,
 				braveBrowser,
 				decryptUserAgent,
@@ -6317,25 +6306,18 @@
 				lieProps['Navigator.plugins'] ||
 				lieProps['Navigator.mimeTypes']
 			) || false;
-			const phantomNavigator = phantomDarkness ? phantomDarkness.navigator : navigator;
 
 			const credibleUserAgent = (
 				'chrome' in window ? navigator.userAgent.includes(navigator.appVersion) : true
 			);
 			const data = {
 				platform: attempt(() => {
-					const { platform } = phantomNavigator;
-					const navigatorPlatform = navigator.platform;
+					const { platform } = navigator;
 					const systems = ['win', 'linux', 'mac', 'arm', 'pike', 'linux', 'iphone', 'ipad', 'ipod', 'android', 'x11'];
-					const trusted = typeof navigatorPlatform == 'string' && systems.filter(val => navigatorPlatform.toLowerCase().includes(val))[0];
+					const trusted = typeof platform == 'string' && systems.filter(val => platform.toLowerCase().includes(val))[0];
 
 					if (!trusted) {
-						sendToTrash(`platform`, `${navigatorPlatform} is unusual`);
-					}
-					if (platform != navigatorPlatform) {
-						lied = true;
-						const nestedIframeLie = `Expected "${navigatorPlatform}" in nested iframe and got "${platform}"`;
-						documentLie(`Navigator.platform`, nestedIframeLie);
+						sendToTrash(`platform`, `${platform} is unusual`);
 					}
 
 					// user agent os lie
@@ -6365,7 +6347,7 @@
 
 					return platform
 				}),
-				system: attempt(() => getOS(phantomNavigator.userAgent), 'userAgent system failed'),
+				system: attempt(() => getOS(navigator.userAgent), 'userAgent system failed'),
 				userAgentParsed: await attempt(async () => {
 					const reportedUserAgent = caniuse(() => navigator.userAgent);
 					const reportedSystem = getOS(reportedUserAgent);
@@ -6377,55 +6359,44 @@
 					});
 					return report
 				}),
-				device: attempt(() => getUserAgentPlatform({ userAgent: phantomNavigator.userAgent }), 'userAgent device failed'),
+				device: attempt(() => getUserAgentPlatform({ userAgent: navigator.userAgent }), 'userAgent device failed'),
 				userAgent: attempt(() => {
-					const { userAgent } = phantomNavigator;
-					const navigatorUserAgent = navigator.userAgent;
+					const { userAgent } = navigator;
 
 					if (!credibleUserAgent) {
-						sendToTrash('userAgent', `${navigatorUserAgent} does not match appVersion`);
+						sendToTrash('userAgent', `${userAgent} does not match appVersion`);
 					}
-					if (/\s{2,}|^\s|\s$/g.test(navigatorUserAgent)) {
+					if (/\s{2,}|^\s|\s$/g.test(userAgent)) {
 						sendToTrash('userAgent', `extra spaces detected`);
 					}
-					const gibbers = gibberish(navigatorUserAgent);
+					const gibbers = gibberish(userAgent);
 					if (!!gibbers.length) {
-						sendToTrash(`userAgent is gibberish`, navigatorUserAgent);
+						sendToTrash(`userAgent is gibberish`, userAgent);
 					}
-					if (userAgent != navigatorUserAgent) {
-						lied = true;
-						const nestedIframeLie = `Expected "${navigatorUserAgent}" in nested iframe and got "${userAgent}"`;
-						documentLie(`Navigator.userAgent`, nestedIframeLie);
-					}
+
 					return userAgent.trim().replace(/\s{2,}/, ' ')
 				}, 'userAgent failed'),
 				uaPostReduction: isUAPostReduction((navigator || {}).userAgent),
 				appVersion: attempt(() => {
-					const { appVersion } = phantomNavigator;
-					const navigatorAppVersion = navigator.appVersion;
+					const { appVersion } = navigator;
 
 					if (!credibleUserAgent) {
-						sendToTrash('appVersion', `${navigatorAppVersion} does not match userAgent`);
+						sendToTrash('appVersion', `${appVersion} does not match userAgent`);
 					}
-					if ('appVersion' in navigator && !navigatorAppVersion) {
+					if ('appVersion' in navigator && !appVersion) {
 						sendToTrash('appVersion', 'Living Standard property returned falsy value');
 					}
-					if (/\s{2,}|^\s|\s$/g.test(navigatorAppVersion)) {
+					if (/\s{2,}|^\s|\s$/g.test(appVersion)) {
 						sendToTrash('appVersion', `extra spaces detected`);
 					}
-					if (appVersion != navigatorAppVersion) {
-						lied = true;
-						const nestedIframeLie = `Expected "${navigatorAppVersion}" in nested iframe and got "${appVersion}"`;
-						documentLie(`Navigator.appVersion`, nestedIframeLie);
-					}
+
 					return appVersion.trim().replace(/\s{2,}/, ' ')
 				}, 'appVersion failed'),
 				deviceMemory: attempt(() => {
 					if (!('deviceMemory' in navigator)) {
 						return undefined
 					}
-					const { deviceMemory } = phantomNavigator;
-					const navigatorDeviceMemory = navigator.deviceMemory;
+					const { deviceMemory } = navigator;
 					const trusted = {
 						'0.25': true,
 						'0.5': true,
@@ -6434,19 +6405,13 @@
 						'4': true,
 						'8': true
 					};
-					if (!trusted[navigatorDeviceMemory]) {
-						sendToTrash('deviceMemory', `${navigatorDeviceMemory} is not a valid value [0.25, 0.5, 1, 2, 4, 8]`);
-					}
-					if (deviceMemory != navigatorDeviceMemory) {
-						lied = true;
-						const nestedIframeLie = `Expected ${navigatorDeviceMemory} in nested iframe and got ${deviceMemory}`;
-						documentLie(`Navigator.deviceMemory`, nestedIframeLie);
+					if (!trusted[deviceMemory]) {
+						sendToTrash('deviceMemory', `${deviceMemory} is not a valid value [0.25, 0.5, 1, 2, 4, 8]`);
 					}
 					return deviceMemory
 				}, 'deviceMemory failed'),
 				doNotTrack: attempt(() => {
-					const { doNotTrack } = phantomNavigator;
-					const navigatorDoNotTrack = navigator.doNotTrack;
+					const { doNotTrack } = navigator;
 					const trusted = {
 						'1': !0,
 						'true': !0,
@@ -6458,8 +6423,8 @@
 						'null': !0,
 						'undefined': !0
 					};
-					if (!trusted[navigatorDoNotTrack]) {
-						sendToTrash('doNotTrack - unusual result', navigatorDoNotTrack);
+					if (!trusted[doNotTrack]) {
+						sendToTrash('doNotTrack - unusual result', doNotTrack);
 					}
 					return doNotTrack
 				}, 'doNotTrack failed'),
@@ -6488,28 +6453,10 @@
 					if (!('hardwareConcurrency' in navigator)) {
 						return undefined
 					}
-					const hardwareConcurrency = phantomNavigator.hardwareConcurrency;
-					const navigatorHardwareConcurrency = navigator.hardwareConcurrency;
-
-					trustInteger('hardwareConcurrency - invalid return type', navigatorHardwareConcurrency);
-					if (hardwareConcurrency != navigatorHardwareConcurrency) {
-						lied = true;
-						const nestedIframeLie = `Expected ${navigatorHardwareConcurrency} in nested iframe and got ${hardwareConcurrency}`;
-						documentLie(`Navigator.hardwareConcurrency`, nestedIframeLie);
-					}
-					return hardwareConcurrency
+					return navigator.hardwareConcurrency
 				}, 'hardwareConcurrency failed'),
 				language: attempt(() => {
-					const { language, languages } = phantomNavigator;
-					const navigatorLanguage = navigator.language;
-					const navigatorLanguages = navigator.languages;
-
-					if ('' + language != '' + navigatorLanguage) {
-						lied = true;
-						const nestedIframeLie = `Expected "${navigatorLanguage}" in nested iframe and got "${language}"`;
-						documentLie(`Navigator.language`, nestedIframeLie);
-					}
-
+					const { language, languages } = navigator;
 					const lang = ('' + language).split(',')[0];
 					let currencyLanguage;
 					try {
@@ -6538,11 +6485,11 @@
 						);
 					}
 
-					if (navigatorLanguage && navigatorLanguages) {
-						const lang = /^.{0,2}/g.exec(navigatorLanguage)[0];
-						const langs = /^.{0,2}/g.exec(navigatorLanguages[0])[0];
+					if (language && languages) {
+						const lang = /^.{0,2}/g.exec(language)[0];
+						const langs = /^.{0,2}/g.exec(languages[0])[0];
 						if (langs != lang) {
-							sendToTrash('language/languages', `${[navigatorLanguage, navigatorLanguages].join(' ')} mismatch`);
+							sendToTrash('language/languages', `${[language, languages].join(' ')} mismatch`);
 						}
 						return `${languages.join(', ')} (${language})`
 					}
@@ -6553,48 +6500,21 @@
 					if (!('maxTouchPoints' in navigator)) {
 						return null
 					}
-					const { maxTouchPoints } = phantomNavigator;
-					const navigatorMaxTouchPoints = navigator.maxTouchPoints;
-					if (maxTouchPoints != navigatorMaxTouchPoints) {
-						lied = true;
-						const nestedIframeLie = `Expected ${navigatorMaxTouchPoints} in nested iframe and got ${maxTouchPoints}`;
-						documentLie(`Navigator.maxTouchPoints`, nestedIframeLie);
-					}
-
-					return maxTouchPoints
+					return navigator.maxTouchPoints
 				}, 'maxTouchPoints failed'),
-				vendor: attempt(() => {
-					const { vendor } = phantomNavigator;
-					const navigatorVendor = navigator.vendor;
-					if (vendor != navigatorVendor) {
-						lied = true;
-						const nestedIframeLie = `Expected "${navigatorVendor}" in nested iframe and got "${vendor}"`;
-						documentLie(`Navigator.vendor`, nestedIframeLie);
-					}
-					return vendor
-				}, 'vendor failed'),
+				vendor: attempt(() => navigator.vendor, 'vendor failed'),
 				mimeTypes: attempt(() => {
-					const mimeTypes = phantomNavigator.mimeTypes;
+					const  { mimeTypes } = navigator;
 					return mimeTypes ? [...mimeTypes].map(m => m.type) : []
 				}, 'mimeTypes failed'),
-				oscpu: attempt(() => {
-					const { oscpu } = phantomNavigator;
-					const navigatorOscpu = navigator.oscpu;
-					if (oscpu != navigatorOscpu) {
-						lied = true;
-						const nestedIframeLie = `Expected "${navigatorOscpu}" in nested iframe and got "${oscpu}"`;
-						documentLie(`Navigator.oscpu`, nestedIframeLie);
-					}
-					return oscpu
-				}, 'oscpu failed'),
+				oscpu: attempt(() => navigator.oscpu, 'oscpu failed'),
 				plugins: attempt(() => {
 					// https://html.spec.whatwg.org/multipage/system-state.html#pdf-viewing-support
-					const navigatorPlugins = navigator.plugins;
-					const plugins = phantomNavigator.plugins;
-					if (!(navigatorPlugins instanceof PluginArray)) {
+					const { plugins } = navigator;
+					if (!(plugins instanceof PluginArray)) {
 						return
 					}
-					const response = plugins ? [...phantomNavigator.plugins]
+					const response = plugins ? [...plugins]
 						.map(p => ({
 							name: p.name,
 							description: p.description,
@@ -6602,7 +6522,7 @@
 							version: p.version
 						})) : [];
 
-					const { lies } = getPluginLies(navigatorPlugins, navigator.mimeTypes);
+					const { lies } = getPluginLies(plugins, navigator.mimeTypes);
 					if (lies.length) {
 						lied = true;
 						lies.forEach(lie => {
@@ -6610,15 +6530,15 @@
 						});
 					}
 
-					if (!!response.length) {
+					if (response.length) {
 						response.forEach(plugin => {
 							const { name, description } = plugin;
 							const nameGibbers = gibberish(name);
 							const descriptionGibbers = gibberish(description);
-							if (!!nameGibbers.length) {
+							if (nameGibbers.length) {
 								sendToTrash(`plugin name is gibberish`, name);
 							}
-							if (!!descriptionGibbers.length) {
+							if (descriptionGibbers.length) {
 								sendToTrash(`plugin description is gibberish`, description);
 							}
 							return
@@ -6627,20 +6547,20 @@
 					return response
 				}, 'plugins failed'),
 				properties: attempt(() => {
-					const keys = Object.keys(Object.getPrototypeOf(phantomNavigator));
+					const keys = Object.keys(Object.getPrototypeOf(navigator));
 					return keys
 				}, 'navigator keys failed'),
 			};
 
 			const getUserAgentData = () => attempt(async () => {
-				if (!phantomNavigator.userAgentData ||
-					!phantomNavigator.userAgentData.getHighEntropyValues) {
+				if (!navigator.userAgentData ||
+					!navigator.userAgentData.getHighEntropyValues) {
 					return
 				}
-				const data = await phantomNavigator.userAgentData.getHighEntropyValues(
+				const data = await navigator.userAgentData.getHighEntropyValues(
 					['platform', 'platformVersion', 'architecture', 'bitness', 'model', 'uaFullVersion']
 				);
-				const { brands, mobile } = phantomNavigator.userAgentData || {};
+				const { brands, mobile } = navigator.userAgentData || {};
 				const compressedBrands = (brands, captureVersion = false) => brands
 					.filter(obj => !/Not/.test(obj.brand)).map(obj => `${obj.brand}${captureVersion ? ` ${obj.version}` : ''}`);
 				const removeChromium = brands => (
@@ -6666,15 +6586,14 @@
 				return dataSorted
 			}, 'userAgentData failed');
 
-			const getBluetoothAvailability = () => attempt(async () => {
+			const getBluetoothAvailability = () => attempt(() => {
 				if (
-					!('bluetooth' in phantomNavigator) ||
-					!phantomNavigator.bluetooth ||
-					!phantomNavigator.bluetooth.getAvailability) {
+					!('bluetooth' in navigator) ||
+					!navigator.bluetooth ||
+					!navigator.bluetooth.getAvailability) {
 					return undefined
 				}
-				const available = await navigator.bluetooth.getAvailability();
-				return available
+				return navigator.bluetooth.getAvailability()
 			}, 'bluetoothAvailability failed');
 
 			const getPermissions = () => attempt(async () => {
@@ -7655,7 +7574,6 @@
 				hashMini,
 				captureError,
 				lieProps,
-				phantomDarkness,
 				logTestResult
 			}
 		} = imports;
@@ -8121,19 +8039,19 @@
 			"Pacific/Wallis"
 		];
 
-		const getTimezoneOffset = phantomDate => {
-			const [year, month, day] = JSON.stringify(new phantomDate())
+		const getTimezoneOffset = () => {
+			const [year, month, day] = JSON.stringify(new Date())
 				.slice(1,11)
 				.split('-');
 			const dateString = `${month}/${day}/${year}`;
 			const dateStringUTC = `${year}-${month}-${day}`;
-			const now = +new phantomDate(dateString);
-			const utc = +new phantomDate(dateStringUTC);
+			const now = +new Date(dateString);
+			const utc = +new Date(dateStringUTC);
 			const offset = +((now - utc)/60000);
-			return ~~offset 
+			return ~~offset
 		};
 
-		const getTimezoneOffsetHistory = ({ year, phantomIntl, phantomDate, city = null }) => {
+		const getTimezoneOffsetHistory = ({ year, city = null }) => {
 			const format = {
 				timeZone: '',
 				year: 'numeric',
@@ -8150,12 +8068,12 @@
 					...format,
 					timeZone: city
 				};
-				formatter = new phantomIntl.DateTimeFormat('en', options);
-				summer = +new phantomDate(formatter.format(new phantomDate(`7/1/${year}`)));
+				formatter = new Intl.DateTimeFormat('en', options);
+				summer = +new Date(formatter.format(new Date(`7/1/${year}`)));
 			} else {
-				summer = +new phantomDate(`7/1/${year}`);
+				summer = +new Date(`7/1/${year}`);
 			}
-			const summerUTCTime = +new phantomDate(`${year}-07-01`);
+			const summerUTCTime = +new Date(`${year}-07-01`);
 			const offset = (summer - summerUTCTime) / minute;
 			return offset
 		};
@@ -8168,11 +8086,11 @@
 			return end == 1 || found.length ? found : binarySearch(right, fn)
 		};
 
-		const decryptLocation = ({ year, timeZone, phantomIntl, phantomDate }) => {
-			const system = getTimezoneOffsetHistory({ year, phantomIntl, phantomDate});
-			const resolvedOptions = getTimezoneOffsetHistory({ year, phantomIntl, phantomDate, city: timeZone});
+		const decryptLocation = ({ year, timeZone }) => {
+			const system = getTimezoneOffsetHistory({ year });
+			const resolvedOptions = getTimezoneOffsetHistory({ year, city: timeZone });
 			const filter = cities => cities
-				.filter(city => system == getTimezoneOffsetHistory({ year, phantomIntl, phantomDate, city }));
+				.filter(city => system == getTimezoneOffsetHistory({ year, city }));
 
 			// get city region set
 			const decryption = (
@@ -8197,27 +8115,25 @@
 		try {
 			const timer = createTimer();
 			timer.start();
-			
+
 			let lied = (
 				lieProps['Date.getTimezoneOffset'] ||
 				lieProps['Intl.DateTimeFormat.resolvedOptions'] ||
 				lieProps['Intl.RelativeTimeFormat.resolvedOptions']
 			) || false;
-			const phantomDate = phantomDarkness ? phantomDarkness.Date : Date;
-			const phantomIntl = phantomDarkness ? phantomDarkness.Intl : Intl;
 
 			const year = 1113;
-			const { timeZone } = phantomIntl.DateTimeFormat().resolvedOptions();
-			const decrypted = decryptLocation({ year, timeZone, phantomIntl, phantomDate });
+			const { timeZone } = Intl.DateTimeFormat().resolvedOptions();
+			const decrypted = decryptLocation({ year, timeZone });
 			const locationEpoch = +new Date(new Date(`7/1/${year}`));
 			const notWithinParentheses = /.*\(|\).*/g;
 			const data =  {
-				zone: (''+new phantomDate()).replace(notWithinParentheses, ''),
+				zone: (''+new Date()).replace(notWithinParentheses, ''),
 				location: formatLocation(timeZone),
 				locationMeasured: formatLocation(decrypted),
 				locationEpoch,
-				offset: new phantomDate().getTimezoneOffset(),
-				offsetComputed: getTimezoneOffset(phantomDate),
+				offset: new Date().getTimezoneOffset(),
+				offsetComputed: getTimezoneOffset(),
 				lied
 			};
 			logTestResult({ time: timer.stop(), test: 'timezone', passed: true });
@@ -9599,7 +9515,6 @@
 			require: {
 				queueEvent,
 				createTimer,
-				phantomDarkness,
 				lieProps,
 				caniuse,
 				captureError,
@@ -9647,48 +9562,46 @@
 				lieProps['Intl.RelativeTimeFormat.resolvedOptions']
 			) || false;
 
-			const phantomIntl = phantomDarkness ? phantomDarkness.Intl : Intl;
-
 			const dateTimeFormat = caniuse(() => {
-				return new phantomIntl.DateTimeFormat(undefined, {
+				return new Intl.DateTimeFormat(undefined, {
 					month: 'long',
 					timeZoneName: 'long'
 				}).format(963644400000)
 			});
 
 			const displayNames = caniuse(() => {
-				return new phantomIntl.DisplayNames(undefined, {
+				return new Intl.DisplayNames(undefined, {
 					type: 'language'
 				}).of('en-US')
 			});
 
 			const listFormat = caniuse(() => {
-				return new phantomIntl.ListFormat(undefined, {
+				return new Intl.ListFormat(undefined, {
 					style: 'long',
 					type: 'disjunction'
 				}).format(['0', '1'])
 			});
-			
+
 			const numberFormat = caniuse(() => {
-				return new phantomIntl.NumberFormat(undefined, {
+				return new Intl.NumberFormat(undefined, {
 					notation: 'compact',
 					compactDisplay: 'long'
 				}).format(21000000)
 			});
 
 			const pluralRules = caniuse(() => {
-				return new phantomIntl.PluralRules().select(1)
+				return new Intl.PluralRules().select(1)
 			});
 
 			const relativeTimeFormat = caniuse(() => {
-				return new phantomIntl.RelativeTimeFormat(undefined, {
+				return new Intl.RelativeTimeFormat(undefined, {
 					localeMatcher: 'best fit',
 					numeric: 'auto',
 					style: 'long'
 				}).format(1, 'year')
 			});
-			
-			const locale = getLocale(phantomIntl);
+
+			const locale = getLocale(Intl);
 
 			logTestResult({ time: timer.stop(), test: 'intl', passed: true });
 			return {

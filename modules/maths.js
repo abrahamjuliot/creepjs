@@ -8,8 +8,7 @@ export const getMaths = async imports => {
 			attempt,
 			documentLie,
 			lieProps,
-			phantomDarkness,
-			logTestResult						
+			logTestResult
 		}
 	} = imports
 
@@ -43,7 +42,7 @@ export const getMaths = async imports => {
 		]
 		let lied = false
 		let liedCalc = false
-		const phantomMath = phantomDarkness ? phantomDarkness.Math : Math
+
 		check.forEach(prop => {
 			if (!!lieProps[`Math.${prop}`]) {
 				lied = true
@@ -51,7 +50,7 @@ export const getMaths = async imports => {
 			const test = (
 				prop == 'cos' ? [1e308] :
 				prop == 'acos' || prop == 'asin' || prop == 'atanh' ? [0.5] :
-				prop == 'pow' || prop == 'atan2' ? [Math.PI, 2] : 
+				prop == 'pow' || prop == 'atan2' ? [Math.PI, 2] :
 				[Math.PI]
 			)
 			const res1 = Math[prop](...test)
@@ -64,14 +63,14 @@ export const getMaths = async imports => {
 			}
 			return
 		})
-		
+
 
 		const n = 0.123
 		const bigN = 5.860847362277284e+38
 		const fns = [
 			['acos', [n], `acos(${n})`, 1.4474840516030247, NaN, NaN, 1.4474840516030245],
 			['acos', [Math.SQRT1_2], 'acos(Math.SQRT1_2)', 0.7853981633974483, NaN, NaN, NaN],
-			
+
 			['acosh', [1e308], 'acosh(1e308)', 709.889355822726, NaN, NaN, NaN],
 			['acosh', [Math.PI], 'acosh(Math.PI)', 1.811526272460853, NaN, NaN, NaN],
 			['acosh', [Math.SQRT2], 'acosh(Math.SQRT2)', 0.881373587019543, NaN, NaN, 0.8813735870195432],
@@ -91,7 +90,7 @@ export const getMaths = async imports => {
 
 			['cbrt', [100], 'cbrt(100)', 4.641588833612779, NaN, NaN, NaN],
 			['cbrt', [Math.PI], 'cbrt(Math.PI)', 1.4645918875615231, NaN, NaN, 1.4645918875615234],
-			
+
 			['cos', [n], `cos(${n})`, 0.9924450321351935, NaN, NaN, NaN],
 			['cos', [Math.PI], 'cos(Math.PI)', -1, NaN, NaN, NaN],
 			['cos', [bigN], `cos(${bigN})`, -0.10868049424995659, NaN, -0.9779661551196617, NaN],
@@ -147,7 +146,7 @@ export const getMaths = async imports => {
 			['log10', [Math.SQRT1_2], 'log10(Math.SQRT1_2)', -0.15051499783199057, NaN, NaN, NaN],
 			['log10', [2*Math.SQRT1_2], 'log10(2*Math.SQRT1_2)', 0.1505149978319906, 0.15051499783199063, NaN, NaN],
 			['log10', [Math.SQRT2], 'log10(Math.SQRT2)', 0.1505149978319906, 0.15051499783199063, NaN, NaN],
-			
+
 			['sin', [bigN], `sin(${bigN})`, 0.994076732536068, NaN, -0.20876350121720488, NaN],
 			['sin', [Math.PI], 'sin(Math.PI)', 1.2246467991473532e-16, NaN, 1.2246063538223773e-16, NaN],
 
@@ -171,7 +170,7 @@ export const getMaths = async imports => {
 
 			['sqrt', [n], `sqrt(${n})`, 0.3507135583350036, NaN, NaN, NaN],
 			['sqrt', [Math.PI], 'sqrt(Math.PI)', 1.7724538509055159, NaN, NaN, NaN],
-			
+
 			['tan', [-1e308], 'tan(-1e308)', 0.5086861259107568, NaN, NaN, 0.5086861259107567],
 			['tan', [Math.PI], 'tan(Math.PI)', -1.2246467991473532e-16, NaN, NaN, NaN],
 
@@ -180,8 +179,8 @@ export const getMaths = async imports => {
 			['tan', [10*Math.LOG2E], 'tan(10*Math.LOG2E)', -3.3537128705376014, -3.353712870537601, NaN, -3.353712870537602],
 			['tan', [17*Math.SQRT2], 'tan(17*Math.SQRT2)', -1.9222955461799982, -1.922295546179998, NaN, NaN],
 			['tan', [34*Math.SQRT1_2], 'tan(34*Math.SQRT1_2)', -1.9222955461799982, -1.922295546179998, NaN, NaN],
-			['tan', [10*Math.LOG10E], 'tan(10*Math.LOG10E)', 2.5824856130712432, 2.5824856130712437, NaN, NaN], 
-								
+			['tan', [10*Math.LOG10E], 'tan(10*Math.LOG10E)', 2.5824856130712432, 2.5824856130712437, NaN, NaN],
+
 			['tanh', [n], `tanh(${n})`, 0.12238344189440875, NaN, NaN, 0.12238344189440876],
 			['tanh', [Math.PI], 'tanh(Math.PI)', 0.99627207622075, NaN, NaN, NaN],
 
@@ -194,14 +193,14 @@ export const getMaths = async imports => {
 			['pow', [Math.LOG10E, -100], 'pow(Math.LOG10E, -100)', 1.6655929347585958e+36, 1.665592934758592e+36, NaN, 1.6655929347585955e+36],
 			['pow', [Math.SQRT1_2, -100], 'pow(Math.SQRT1_2, -100)', 1125899906842616.2, 1125899906842611.5, NaN, NaN],
 			['pow', [Math.SQRT2, -100], 'pow(Math.SQRT2, -100)', 8.881784197001191e-16, 8.881784197001154e-16, NaN, NaN],
-			
+
 			['polyfill', [2e-3 ** -100], 'polyfill pow(2e-3, -100)', 7.888609052210102e+269, 7.888609052210126e+269, NaN, NaN]
 		]
-		
+
 		const data = {}
 		fns.forEach(fn => {
 			data[fn[2]] = attempt(() => {
-				const result = fn[0] != 'polyfill' ? phantomMath[fn[0]](...fn[1]) : fn[1]
+				const result = fn[0] != 'polyfill' ? Math[fn[0]](...fn[1]) : fn[1]
 				const chrome = result == fn[3]
 				const firefox = fn[4] ? result == fn[4] : false
 				const torBrowser = fn[5] ? result == fn[5] : false
@@ -229,7 +228,7 @@ export const mathsHTML = ({ fp, modal, note, hashSlice, performanceLogger }) => 
 			<div>
 				<div>${note.blocked}</div>
 			</div>
-			
+
 		</div>`
 	}
 	const {
@@ -281,7 +280,7 @@ export const mathsHTML = ({ fp, modal, note, hashSlice, performanceLogger }) => 
 		<span class="aside-note">${performanceLogger.getLog().math}</span>
 		<strong>Math</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div>results: ${
-			!data ? note.blocked : 
+			!data ? note.blocked :
 			modal(
 				'creep-maths',
 				header+results.join('<br>')
