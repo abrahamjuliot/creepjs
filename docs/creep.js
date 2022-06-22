@@ -9039,7 +9039,7 @@
 				braveBrowser(),
 				isChrome ? undefined : getTimerPrecision()
 			]);
-			
+
 			if (isBrave) {
 				const braveMode = getBraveMode();
 				data.privacy = 'Brave';
@@ -9083,7 +9083,7 @@
 				data.mode = (
 					!torBrowser ? 'resistFingerprinting' :
 						safer ? 'safer' :
-							'standard' 
+							'standard'
 				);
 			}
 
@@ -9182,7 +9182,10 @@
 				},
 				puppeteerExtra: {
 					contentDocumentHash: ['55e9b959'],
-					contentWindowHash: ['55e9b959'],
+					contentWindowHash: [
+						'55e9b959',
+						'50a281b5' // @2.10.0
+					],
 					createElementHash: ['55e9b959'],
 					getElementByIdHash: ['55e9b959'],
 					appendHash: ['55e9b959'],
@@ -9260,7 +9263,7 @@
 				colorDepthHash: hashMini(prototypeLies['Screen.colorDepth']),
 				pixelDepthHash: hashMini(prototypeLies['Screen.pixelDepth'])
 			};
-			
+
 			data.extensionHashPattern = Object.keys(hash).reduce((acc, key) => {
 				const val = hash[key];
 				if (val == disabled) {
@@ -9422,7 +9425,7 @@
 				}
 				return
 			};
-			
+
 			data.extension = getExtension({ pattern, hash, prototypeLiesLen });
 
 			logTestResult({ time: timer.stop(), test: 'resistance', passed: true });
@@ -9458,7 +9461,7 @@
 			extensionHashPattern,
 			engine
 		} = data || {};
-		
+
 		const securitySettings = !security || Object.keys(security).reduce((acc, curr) => {
 			if (security[curr]) {
 				acc[curr] = 'enabled';

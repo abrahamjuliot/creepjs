@@ -90,7 +90,7 @@ export const getResistance = async imports => {
 			braveBrowser(),
 			isChrome ? undefined : getTimerPrecision()
 		])
-		
+
 		if (isBrave) {
 			const braveMode = getBraveMode()
 			data.privacy = 'Brave'
@@ -134,7 +134,7 @@ export const getResistance = async imports => {
 			data.mode = (
 				!torBrowser ? 'resistFingerprinting' :
 					safer ? 'safer' :
-						'standard' 
+						'standard'
 			)
 		}
 
@@ -233,7 +233,10 @@ export const getResistance = async imports => {
 			},
 			puppeteerExtra: {
 				contentDocumentHash: ['55e9b959'],
-				contentWindowHash: ['55e9b959'],
+				contentWindowHash: [
+					'55e9b959',
+					'50a281b5' // @2.10.0
+				],
 				createElementHash: ['55e9b959'],
 				getElementByIdHash: ['55e9b959'],
 				appendHash: ['55e9b959'],
@@ -311,7 +314,7 @@ export const getResistance = async imports => {
 			colorDepthHash: hashMini(prototypeLies['Screen.colorDepth']),
 			pixelDepthHash: hashMini(prototypeLies['Screen.pixelDepth'])
 		}
-		
+
 		data.extensionHashPattern = Object.keys(hash).reduce((acc, key) => {
 			const val = hash[key]
 			if (val == disabled) {
@@ -473,7 +476,7 @@ export const getResistance = async imports => {
 			}
 			return
 		}
-		
+
 		data.extension = getExtension({ pattern, hash, prototypeLiesLen })
 
 		logTestResult({ time: timer.stop(), test: 'resistance', passed: true })
@@ -509,7 +512,7 @@ export const resistanceHTML = ({ fp, modal, note, hashMini, hashSlice, performan
 		extensionHashPattern,
 		engine
 	} = data || {}
-	
+
 	const securitySettings = !security || Object.keys(security).reduce((acc, curr) => {
 		if (security[curr]) {
 			acc[curr] = 'enabled'
