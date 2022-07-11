@@ -181,6 +181,7 @@ const imports = {
 			getEngineFeatures({
 				imports,
 				cssComputed,
+				navigatorComputed,
 				windowFeaturesComputed
 			})
 		]).catch(error => console.error(error.message))

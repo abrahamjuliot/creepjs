@@ -237,14 +237,39 @@ const getJSCoreFeatures = win => {
 
 const versionSort = x => x.sort((a, b) => /\d+/.exec(a)[0] - /\d+/.exec(b)[0]).reverse()
 
+const getVersionLie = (vReport, version, forgivenessOffset = 0) => {
+	const browser = getFeaturesBrowser()
+	const stable = getStableFeatures()
+	const { version: maxVersion } = stable[browser] || {}
+	const validMetrics = vReport && version
+	if (!validMetrics) {
+		return false
+	}
+
+	const [vStart, vEnd] = version ? version.split('-') : []
+	const vMax = (vEnd || vStart)
+	const reportIsTooHigh = +vReport > (+vMax + forgivenessOffset)
+	const reportIsTooLow = +vReport < (+vStart - forgivenessOffset)
+	const reportIsOff = (reportIsTooHigh || reportIsTooLow)
+	const versionIsAboveMax = (
+		(+vMax == maxVersion) &&
+		(+vReport > maxVersion)
+	)
+	const liedVersion = !versionIsAboveMax && reportIsOff
+
+	const distance = !liedVersion ? 0 : (
+		Math.abs(vReport-(reportIsTooLow ? vStart : vMax))
+	)
+
+	return { liedVersion, distance }
+}
+
 // feature firewall
 const getFeaturesLie = fp => {
 	if (!fp.workerScope || !fp.workerScope.userAgent) {
 		return false
 	}
-	const browser = getFeaturesBrowser()
-	const stable = getStableFeatures()
-	const { version: maxVersion } = stable[browser] || {}
+	
 	const { userAgentVersion: reportedVersion } = fp.workerScope
 
 	// let RFP pass
@@ -253,42 +278,21 @@ const getFeaturesLie = fp => {
 		return false
 	}
 
-	const getVersionLie = version => {
-		const versionParts = version ? version.split('-') : []
-		const versionNotAboveSamples = (+reportedVersion <= maxVersion)
-		const validMetrics = reportedVersion && version
-		const forgivenessOffset = 0 // 0 is strict (dev and canary builds may fail)
-		const outsideOfVersion = (
-			versionParts.length == 1 && (
-				+reportedVersion > (+versionParts[0]+forgivenessOffset) ||
-				+reportedVersion < (+versionParts[0]-forgivenessOffset)
-			)
-		)
-		const outsideOfVersionRange = (
-			versionParts.length == 2 && (
-				+reportedVersion > (+versionParts[1]+forgivenessOffset) ||
-				+reportedVersion < (+versionParts[0]-forgivenessOffset)
-			)
-		)
-		const liedVersion = validMetrics && versionNotAboveSamples && (
-			outsideOfVersion || outsideOfVersionRange
-		)
-		return liedVersion
-	}
 	const { cssVersion, jsVersion } = fp.features || {}
-	const liedVersion = (
-		getVersionLie(cssVersion) ||
-		getVersionLie(jsVersion)
-	)
+	const { liedVersion: liedCSS } = getVersionLie(reportedVersion, cssVersion)
+	const { liedVersion: liedJS } = getVersionLie(reportedVersion, jsVersion)
+	const liedVersion = liedCSS || liedJS
 	return liedVersion
 }
 
-const getEngineFeatures = async ({ imports, cssComputed, windowFeaturesComputed }) => {
+const getEngineFeatures = async ({ imports, cssComputed, navigatorComputed, windowFeaturesComputed }) => {
 	const {
 		require: {
 			queueEvent,
 			createTimer,
 			captureError,
+			sendToTrash,
+			documentLie,
 			phantomDarkness,
 			logTestResult
 		}
@@ -306,6 +310,7 @@ const getEngineFeatures = async ({ imports, cssComputed, windowFeaturesComputed 
 		const jsFeaturesKeys = getJSCoreFeatures(win)
 		const { keys: computedStyleKeys } = cssComputed.computedStyle || {}
 		const { keys: windowFeaturesKeys } = windowFeaturesComputed || {}
+		const { userAgentParsed: decryptedName } = navigatorComputed || {}
 
 		const isNative = (win, x) => (
 			/\[native code\]/.test(win[x]+'') &&
@@ -405,6 +410,51 @@ const getEngineFeatures = async ({ imports, cssComputed, windowFeaturesComputed 
 			[...versionSet].reduce((acc, x) => [...acc, ...x.split('-')], [])
 		)
 		const version = getVersionFromRange(versionRange, [cssVersion, windowVersion, jsVersion])
+		
+		const vReport = (/\d+/.exec(decryptedName) || [])[0]
+		const {
+			liedVersion: liedCSS,
+			distance: distanceCSS,
+		} = getVersionLie(vReport, cssVersion)
+		const {
+			liedVersion: liedJS,
+			distance: distanceJS,
+		} = getVersionLie(vReport, jsVersion)
+		const {
+			liedVersion: liedWindow,
+			distance: distanceWindow,
+		} = getVersionLie(vReport, windowVersion)
+
+		if (liedCSS) {
+			sendToTrash('userAgent', `v${vReport} failed v${cssVersion} CSS features`)
+			if (distanceCSS > 1) {
+				documentLie(
+					`Navigator.userAgent`,
+					`v${vReport} failed CSS features by ${distanceCSS} versions`
+				)
+			}
+		}
+
+		if (liedJS) {
+			sendToTrash('userAgent', `v${vReport} failed v${jsVersion} JS features`)
+			if (distanceJS > 2) {
+				documentLie(
+					`Navigator.userAgent`,
+					`v${vReport} failed JS features by ${distanceJS} versions`
+				)
+			}
+		}
+
+		if (liedWindow) {
+			sendToTrash('userAgent', `v${vReport} failed v${windowVersion} Window features`)
+			if (distanceWindow > 3) {
+				documentLie(
+					`Navigator.userAgent`,
+					`v${vReport} failed Window features by ${distanceWindow} versions`
+				)
+			}
+		}
+
 		logTestResult({ time: timer.stop(), test: 'features', passed: true })
 		return {
 			versionRange,
