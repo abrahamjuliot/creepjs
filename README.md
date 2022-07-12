@@ -194,7 +194,7 @@ A metric with only 1 reporter is unique
 ### Bot Detection
 Bots leak unusual behavior and can be denied services
 
-> Do we really know you are bot? No, but we can have fun trying!
+> Do we really know you are a bot? No, but we can have fun trying!
 
 - Excessive loose fingerprints
 - User agent version or platform does not match features
@@ -221,7 +221,7 @@ if (catTime < 10000 /* 10 seconds */) {
   clientIsBadBot = true
 }
 if (catTime < 1000) {
-  banned = true // client should get banned!
+  banned = true // client should get banned! Proceed with caution. Agent could be extraterrestrial and friendly.
 }
 ```
 ![image](https://user-images.githubusercontent.com/6946045/178409285-49b345f7-c9ef-4d25-a07b-41db8fc46711.png)
