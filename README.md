@@ -162,6 +162,8 @@ Shadow..: 1111100000000000000000110010011100000000010001101000000000000000
 ### Trust Score
 A failing trust score is unique
 
+> The trust score shows the level of trust computed from the browser fingerprint. If the score is 100%, there is a high level of trust in the reported values. Values should not be trusted when the score is low. No attempt is made to score how well a browser performs against fingerprint traceability and linkability. It is not always beneficial to have a high trust score, and sometimes a low trust score is not bad.
+
 - start at `100`
 - less than 2 loose fingerprints: reward `5` extra credit
 - 0 shadow bits (session metric revisions): reward `10` extra credit
@@ -174,6 +176,8 @@ A failing trust score is unique
 
 ### Crowd-Blending Score
 A metric with only 1 reporter is unique
+
+> In the prediction section, the crowd blending score is a site indicator that scores how well certain metrics blend in with other fingerprints (strictly collected on the same site). A low trust score can be improved and amended by a high crowd-blending score. Tor Browser, for example, should yield a high crowd-blending score, which results in an increased trust score.
 
 - Metric scores decline by metric uniqueness
 - Final score is the minimum of all metrics scores
@@ -190,6 +194,8 @@ A metric with only 1 reporter is unique
 ### Bot Detection
 Bots leak unusual behavior and can be denied services
 
+> Do we really know you are bot? No, but we can have fun trying!
+
 - Excessive loose fingerprints
 - User agent version or platform does not match features
 - worker scope tampering
@@ -204,6 +210,22 @@ Bots leak unusual behavior and can be denied services
 - `00000010:locked-down:wsb` (service & shared worker scopes blocked)
 - `00000001:stranger:csl` (crowd-blending score low)
 - `00000000:friend` (none of the above)
+
+```js
+// Cute cat trap. Works every time!
+let clientIsBadBot = false
+let banned = false
+// How long did the client pause to admire the cute cat?
+const catTime = await getClientTimeWithCuteCat()
+if (catTime < 10000 /* 10 seconds */) {
+  clientIsBadBot = true
+}
+if (catTime < 1000) {
+  banned = true // client should get banned!
+}
+```
+![image](https://user-images.githubusercontent.com/6946045/178409285-49b345f7-c9ef-4d25-a07b-41db8fc46711.png)
+
 
 ### Shadow
 Loose metric revision patterns can follow stable fingerprints like a shadow
