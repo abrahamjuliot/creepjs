@@ -177,7 +177,7 @@ A failing trust score is unique
 ### Crowd-Blending Score
 A metric with only 1 reporter is unique
 
-> In the prediction section, the crowd blending score is a site indicator that scores how well certain metrics blend in with other fingerprints (strictly collected on the same site). A low trust score can be improved and amended by a high crowd-blending score. Tor Browser, for example, should yield a high crowd-blending score, which results in an increased trust score.
+> In the prediction section, the crowd blending score is a site indicator that scores how well certain metrics blend in with other fingerprints (strictly collected on the same site).
 
 - Metric scores decline by metric uniqueness
 - Final score is the minimum of all metrics scores
@@ -221,7 +221,9 @@ if (catTime < 10000 /* 10 seconds */) {
   clientIsBadBot = true
 }
 if (catTime < 1000) {
-  banned = true // client should get banned! Proceed with caution. Agent could be extraterrestrial and friendly.
+  // client should get banned! Proceed with caution
+  // Agent could be extraterrestrial and friendly
+  banned = true
 }
 ```
 ![image](https://user-images.githubusercontent.com/6946045/178409285-49b345f7-c9ef-4d25-a07b-41db8fc46711.png)
@@ -273,11 +275,11 @@ Loose metric revision patterns can follow stable fingerprints like a shadow
 ## Definitions
 ### Trash
 - unusual results
-- forgivable lies (invalid metrics capable of being restored)
+- forgivable lies: invalid metrics that can either be restored or used to create a better fingerprint
 - failed calculations that may reasonably occur at random (loose fingerprint metrics)
 
 ### Lies
-- prototype tampering
+- JS prototype tampering
 - mismatch in worker scope or iframe
 - failed math calculations
 
