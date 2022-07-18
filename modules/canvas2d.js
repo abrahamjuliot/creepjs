@@ -333,7 +333,12 @@ export const getCanvas2d = async imports => {
 
 		const dataLie = lieProps['HTMLCanvasElement.toDataURL']
 		const contextLie = lieProps['HTMLCanvasElement.getContext']
-		const imageDataLie = lieProps['CanvasRenderingContext2D.getImageData']
+		const imageDataLie = (
+			lieProps['CanvasRenderingContext2D.fillText'] ||
+			lieProps['CanvasRenderingContext2D.font'] ||
+			lieProps['CanvasRenderingContext2D.getImageData'] ||
+			lieProps['CanvasRenderingContext2D.strokeText']
+		)
 		const codePointLie =  lieProps['String.fromCodePoint']
 		let textMetricsLie = (
 			lieProps['CanvasRenderingContext2D.measureText'] ||

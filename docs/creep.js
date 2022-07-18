@@ -1769,7 +1769,7 @@
 					return true // failed to throw
 				}
 				catch (error) {
-					// expect Function.[Symbol.hasInstance] 
+					// expect Function.[Symbol.hasInstance]
 					return !hasValidStack(error)
 				}
 			}
@@ -1811,7 +1811,7 @@
 			const firefoxLie = isFirefox && (
 				message != `too much recursion` || !hasInternalError
 			);
-			return (hasRangeError || hasInternalError) && !(chromeLie || firefoxLie) 
+			return (hasRangeError || hasInternalError) && !(chromeLie || firefoxLie)
 		};
 
 
@@ -1870,7 +1870,7 @@
 						randomId in apiFunction;
 						return false
 					} catch (error) {
-						return true  // failed at Error 
+						return true  // failed at Error
 					}
 				}
 			} catch (error) {
@@ -2041,7 +2041,7 @@
 									obj,
 									lieProps: props
 								}); // send the obj for special tests
-								
+
 								if (res.lied) {
 									documentLie(apiName, res.lieTypes);
 									return (props[apiName] = res.lieTypes)
@@ -2096,6 +2096,8 @@
 				'isPointInStroke',
 				'measureText',
 				'quadraticCurveTo',
+				'fillText',
+				'strokeText',
 				'font'
 			]
 		});
@@ -2349,7 +2351,7 @@
 	    	History
 	    */
 
-		// return lies list and detail 
+		// return lies list and detail
 		const props = lieDetector.getProps();
 		const propsSearched = lieDetector.getPropsSearched();
 		return {
@@ -2510,7 +2512,7 @@
 		return `
 	<div class="${totalLies ? ' lies' : ''}">lies (${!totalLies ? '0' : '' + totalLies}): ${
 		!totalLies ? 'none' : modal(
-			'creep-lies', 
+			'creep-lies',
 			Object.keys(data).sort().map(key => {
 				const lies = data[key];
 				return `
@@ -3362,7 +3364,12 @@
 
 			const dataLie = lieProps['HTMLCanvasElement.toDataURL'];
 			const contextLie = lieProps['HTMLCanvasElement.getContext'];
-			const imageDataLie = lieProps['CanvasRenderingContext2D.getImageData'];
+			const imageDataLie = (
+				lieProps['CanvasRenderingContext2D.fillText'] ||
+				lieProps['CanvasRenderingContext2D.font'] ||
+				lieProps['CanvasRenderingContext2D.getImageData'] ||
+				lieProps['CanvasRenderingContext2D.strokeText']
+			);
 			const codePointLie =  lieProps['String.fromCodePoint'];
 			let textMetricsLie = (
 				lieProps['CanvasRenderingContext2D.measureText'] ||

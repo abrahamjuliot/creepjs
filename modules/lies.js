@@ -461,7 +461,7 @@ const getPrototypeLies = scope => {
 				return true // failed to throw
 			}
 			catch (error) {
-				// expect Function.[Symbol.hasInstance] 
+				// expect Function.[Symbol.hasInstance]
 				return !hasValidStack(error)
 			}
 		}
@@ -503,7 +503,7 @@ const getPrototypeLies = scope => {
 		const firefoxLie = isFirefox && (
 			message != `too much recursion` || !hasInternalError
 		)
-		return (hasRangeError || hasInternalError) && !(chromeLie || firefoxLie) 
+		return (hasRangeError || hasInternalError) && !(chromeLie || firefoxLie)
 	}
 
 
@@ -562,7 +562,7 @@ const getPrototypeLies = scope => {
 					randomId in apiFunction
 					return false
 				} catch (error) {
-					return true  // failed at Error 
+					return true  // failed at Error
 				}
 			}
 		} catch (error) {
@@ -733,7 +733,7 @@ const getPrototypeLies = scope => {
 								obj,
 								lieProps: props
 							}) // send the obj for special tests
-							
+
 							if (res.lied) {
 								documentLie(apiName, res.lieTypes)
 								return (props[apiName] = res.lieTypes)
@@ -788,6 +788,8 @@ const getPrototypeLies = scope => {
 			'isPointInStroke',
 			'measureText',
 			'quadraticCurveTo',
+			'fillText',
+			'strokeText',
 			'font'
 		]
 	})
@@ -1041,7 +1043,7 @@ const getPrototypeLies = scope => {
     	History
     */
 
-	// return lies list and detail 
+	// return lies list and detail
 	const props = lieDetector.getProps()
 	const propsSearched = lieDetector.getPropsSearched()
 	return {
@@ -1202,7 +1204,7 @@ const liesHTML = ({ fp, hashSlice, modal }, pointsHTML) => {
 	return `
 	<div class="${totalLies ? ' lies' : ''}">lies (${!totalLies ? '0' : '' + totalLies}): ${
 		!totalLies ? 'none' : modal(
-			'creep-lies', 
+			'creep-lies',
 			Object.keys(data).sort().map(key => {
 				const lies = data[key]
 				return `
