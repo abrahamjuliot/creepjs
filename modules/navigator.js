@@ -277,7 +277,7 @@ export default async function getNavigator() {
 			}, 'navigator keys failed'),
 		}
 
-		const getUserAgentData = () => attempt(async () => {
+		const getUserAgentData = () => attempt(() => {
 			// @ts-ignore
 			if (!navigator.userAgentData ||
 				// @ts-ignore
@@ -285,34 +285,35 @@ export default async function getNavigator() {
 				return
 			}
 			// @ts-ignore
-			const data = await navigator.userAgentData.getHighEntropyValues(
+			return navigator.userAgentData.getHighEntropyValues(
 				['platform', 'platformVersion', 'architecture', 'bitness', 'model', 'uaFullVersion'],
-			)
-			// @ts-ignore
-			const { brands, mobile } = navigator.userAgentData || {}
-			const compressedBrands = (brands, captureVersion = false) => brands
-				.filter((obj) => !/Not/.test(obj.brand)).map((obj) => `${obj.brand}${captureVersion ? ` ${obj.version}` : ''}`)
-			const removeChromium = (brands) => (
-				brands.length > 1 ? brands.filter((brand) => !/Chromium/.test(brand)) : brands
-			)
+			).then((data) => {
+				// @ts-ignore
+				const { brands, mobile } = navigator.userAgentData || {}
+				const compressedBrands = (brands, captureVersion = false) => brands
+					.filter((obj) => !/Not/.test(obj.brand)).map((obj) => `${obj.brand}${captureVersion ? ` ${obj.version}` : ''}`)
+				const removeChromium = (brands) => (
+					brands.length > 1 ? brands.filter((brand) => !/Chromium/.test(brand)) : brands
+				)
 
-			// compress brands
-			if (!data.brands) {
-				data.brands = brands
-			}
-			data.brandsVersion = compressedBrands(data.brands, true)
-			data.brands = compressedBrands(data.brands)
-			data.brandsVersion = removeChromium(data.brandsVersion)
-			data.brands = removeChromium(data.brands)
+				// compress brands
+				if (!data.brands) {
+					data.brands = brands
+				}
+				data.brandsVersion = compressedBrands(data.brands, true)
+				data.brands = compressedBrands(data.brands)
+				data.brandsVersion = removeChromium(data.brandsVersion)
+				data.brands = removeChromium(data.brands)
 
-			if (!data.mobile) {
-				data.mobile = mobile
-			}
-			const dataSorted = Object.keys(data).sort().reduce((acc, key) => {
-				acc[key] = data[key]
-				return acc
-			}, {})
-			return dataSorted
+				if (!data.mobile) {
+					data.mobile = mobile
+				}
+				const dataSorted = Object.keys(data).sort().reduce((acc, key) => {
+					acc[key] = data[key]
+					return acc
+				}, {})
+				return dataSorted
+			})
 		}, 'userAgentData failed')
 
 		const getBluetoothAvailability = () => attempt(() => {
@@ -328,7 +329,7 @@ export default async function getNavigator() {
 			return navigator.bluetooth.getAvailability()
 		}, 'bluetoothAvailability failed')
 
-		const getPermissions = () => attempt(async () => {
+		const getPermissions = () => attempt(() => {
 			const getPermissionState = (name) => navigator.permissions.query({ name })
 				.then((res) => ({ name, state: res.state }))
 				.catch((error) => ({ name, state: 'unknown' }))
@@ -369,47 +370,55 @@ export default async function getNavigator() {
 			return permissions
 		}, 'permissions failed')
 
-		const getWebgpu = () => attempt(async () => {
+		const getWebgpu = () => attempt(() => {
 			if (!('gpu' in navigator)) {
 				return
 			}
 			// @ts-ignore
-			const { limits, features } = await navigator.gpu.requestAdapter()
-
-			return {
-				features: [...features.values()],
-				limits: ((limits) => {
-					const data = {}
-					// eslint-disable-next-line guard-for-in
-					for (const prop in limits) {
-						data[prop] = limits[prop]
-					}
-					return data
-				})(limits),
-			}
+			return navigator.gpu.requestAdapter().then(({ limits, features }) => {
+				return {
+					features: [...features.values()],
+					limits: ((limits) => {
+						const data = {}
+						// eslint-disable-next-line guard-for-in
+						for (const prop in limits) {
+							data[prop] = limits[prop]
+						}
+						return data
+					})(limits),
+				}
+			})
 		}, 'webgpu failed')
 
-		// @ts-ignore
-		const [
-			userAgentData,
-			bluetoothAvailability,
-			permissions,
-			webgpu,
-		] = await Promise.all([
+		await queueEvent(timer)
+		return Promise.all([
 			getUserAgentData(),
 			getBluetoothAvailability(),
 			getPermissions(),
 			getWebgpu(),
-		]).catch((error) => console.error(error))
-		logTestResult({ time: timer.stop(), test: 'navigator', passed: true })
-		return {
-			...data,
+		]).then(([
 			userAgentData,
 			bluetoothAvailability,
 			permissions,
 			webgpu,
-			lied,
-		}
+		]) => {
+			logTestResult({ time: timer.stop(), test: 'navigator', passed: true })
+			return {
+				...data,
+				userAgentData,
+				bluetoothAvailability,
+				permissions,
+				webgpu,
+				lied,
+			}
+		}).catch((error) => {
+			console.error(error)
+			logTestResult({ time: timer.stop(), test: 'navigator', passed: true })
+			return {
+				...data,
+				lied,
+			}
+		})
 	} catch (error) {
 		logTestResult({ test: 'navigator', passed: false })
 		captureError(error, 'Navigator failed or blocked by client')
