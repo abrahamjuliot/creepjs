@@ -1,0 +1,11 @@
+{
+	"typescript.preferences.importModuleSpecifierEnding": "auto",
+	"javascript.preferences.importModuleSpecifierEnding": "js",
+	"javascript.preferences.quoteStyle": "single",
+	"javascript.format.semicolons": "remove",
+	"javascript.suggest.completeFunctionCalls": true,
+	"js/ts.implicitProjectConfig.checkJs": true,
+	"editor.codeActionsOnSave": {
+		"source.addMissingImports": true,
+	}
+}
