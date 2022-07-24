@@ -2,9 +2,9 @@
 
 import { attempt, captureError } from './captureErrors.js'
 import { hashMini } from './crypto.js'
-import { createTimer, queueEvent, EMOJIS, CSS_FONT_FAMILY, logTestResult, formatEmojiSet, hashSlice, performanceLogger } from './helpers.js'
+import { createTimer, queueEvent, EMOJIS, CSS_FONT_FAMILY, logTestResult, formatEmojiSet, hashSlice, performanceLogger, LIKE_BRAVE } from './helpers.js'
 import { HTMLNote, modal } from './html.js'
-import { lieProps, documentLie } from './lies.js'
+import { lieProps, documentLie, PHANTOM_DARKNESS } from './lies.js'
 
 let pixelImageRandom = ''
 
@@ -351,7 +351,13 @@ export default async function getCanvas2d() {
 			textMetricsLie ||
 			codePointLie
 		) || false
-		const doc = document
+
+		// create canvas context
+		let win = window
+		if (!LIKE_BRAVE && PHANTOM_DARKNESS) {
+			win = PHANTOM_DARKNESS
+		}
+		const doc = win.document
 
 		const canvas = doc.createElement('canvas')
 		const context = canvas.getContext('2d')

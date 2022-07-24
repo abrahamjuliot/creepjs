@@ -1,8 +1,8 @@
 import { attempt, captureError } from './captureErrors.js'
 import { hashMini } from './crypto.js'
-import { createTimer, hashSlice, IS_WEBKIT, logTestResult, performanceLogger, queueEvent } from './helpers.js'
+import { createTimer, hashSlice, IS_WEBKIT, LIKE_BRAVE, logTestResult, performanceLogger, queueEvent } from './helpers.js'
 import { count, HTMLNote, modal } from './html.js'
-import { lieProps } from './lies.js'
+import { lieProps, PHANTOM_DARKNESS } from './lies.js'
 import { sendToTrash, getWebGLRendererConfidence, compressWebGLRenderer } from './trash.js'
 
 export default async function getCanvasWebgl() {
@@ -230,8 +230,12 @@ export default async function getCanvasWebgl() {
 		) || false
 
 		// create canvas context
-		const win = window
+		let win = window
+		if (!LIKE_BRAVE && PHANTOM_DARKNESS) {
+			win = PHANTOM_DARKNESS
+		}
 		const doc = win.document
+
 		let canvas; let canvas2
 		if ('OffscreenCanvas' in window) {
 			// @ts-ignore OffscreenCanvas

@@ -18,6 +18,8 @@ const JS_ENGINE = ({
 	77: 'JavaScriptCore',
 })[ENGINE_IDENTIFIER] || null
 
+const LIKE_BRAVE = IS_BLINK && 'flat' in Array.prototype /* Chrome 69*/ && !('ReportingObserver' in window /* Brave */)
+
 function braveBrowser() {
 	const brave = (
 		'brave' in navigator &&
@@ -548,4 +550,4 @@ const CSS_FONT_FAMILY = `
 
 const hashSlice = (x) => !x ? x : x.slice(0, 8)
 
-export { IS_BLINK, IS_GECKO, IS_WEBKIT, JS_ENGINE, ENGINE_IDENTIFIER, braveBrowser, getBraveMode, getBraveUnprotectedParameters, getOS, decryptUserAgent, getUserAgentPlatform, computeWindowsRelease, attemptWindows11UserAgent, isUAPostReduction, getUserAgentRestored, logTestResult, performanceLogger, getPromiseRaceFulfilled, queueEvent, createTimer, formatEmojiSet, EMOJIS, CSS_FONT_FAMILY, hashSlice }
+export { IS_BLINK, IS_GECKO, IS_WEBKIT, JS_ENGINE, LIKE_BRAVE, ENGINE_IDENTIFIER, braveBrowser, getBraveMode, getBraveUnprotectedParameters, getOS, decryptUserAgent, getUserAgentPlatform, computeWindowsRelease, attemptWindows11UserAgent, isUAPostReduction, getUserAgentRestored, logTestResult, performanceLogger, getPromiseRaceFulfilled, queueEvent, createTimer, formatEmojiSet, EMOJIS, CSS_FONT_FAMILY, hashSlice }
