@@ -28,8 +28,12 @@
     "rollup": "^2.62.0"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.30.7",
+    "@typescript-eslint/parser": "^5.30.7",
     "autoprefixer": "^10.4.1",
     "clean-css-cli": "^4.3.0",
+    "eslint": "^8.20.0",
+    "eslint-config-google": "^0.14.0",
     "postcss": "^8.4.5",
     "postcss-cli": "^8.3.1"
   }
