@@ -52,20 +52,24 @@ export default async function getMedia() {
 	try {
 		const timer = createTimer()
 		timer.start()
-		const devices = (
-			!navigator.mediaDevices ||
-			!navigator.mediaDevices.enumerateDevices ? undefined :
-				await navigator.mediaDevices.enumerateDevices()
-					.then((devices) => devices.map((device) => device.kind).sort()).catch((error) => {
-						console.error(error)
-						return
-					})
-		)
-
 		const mimeTypes = getMimeTypes()
 
-		logTestResult({ time: timer.stop(), test: 'media', passed: true })
-		return { mediaDevices: devices, mimeTypes }
+		if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+			logTestResult({ time: timer.stop(), test: 'media', passed: true })
+			return { mediaDevices: null, mimeTypes }
+		}
+
+		return navigator.mediaDevices.enumerateDevices().then((devices) => {
+			logTestResult({ time: timer.stop(), test: 'media', passed: true })
+			return {
+				mediaDevices: devices.map((device) => device.kind).sort(),
+				mimeTypes,
+			}
+		}).catch((error) => {
+			console.error(error)
+			logTestResult({ time: timer.stop(), test: 'media', passed: true })
+			return { mediaDevices: null, mimeTypes }
+		})
 	} catch (error) {
 		logTestResult({ test: 'media', passed: false })
 		captureError(error)
