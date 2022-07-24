@@ -1,6 +1,6 @@
 
 // template views
-const patch = (oldEl, newEl, fn = null) => {
+const patch = (oldEl, newEl, fn) => {
 	oldEl.parentNode.replaceChild(newEl, oldEl)
 	return typeof fn === 'function' ? fn() : true
 }
@@ -11,16 +11,17 @@ const html = (str, ...expressionSet) => {
 }
 
 // template helpers
-const note = {
-	unknown: '<span class="blocked">unknown</span>',
-	unsupported: '<span class="blocked">unsupported</span>',
-	blocked: '<span class="blocked">blocked</span>',
-	lied: '<span class="lies">lied</span>'
+const HTMLNote = {
+	UNKNOWN: '<span class="blocked">unknown</span>',
+	UNSUPPORTED: '<span class="blocked">unsupported</span>',
+	BLOCKED: '<span class="blocked">blocked</span>',
+	LIED: '<span class="lies">lied</span>',
 }
-const pluralify = len => len > 1 ? 's' : ''
-const count = arr => arr && arr.constructor.name === 'Array' ? '' + (arr.length) : '0'
 
-const getDiffs = ({ stringA, stringB, charDiff = false, decorate = diff => `[${diff}]` }) => {
+const pluralify = (len) => len > 1 ? 's' : ''
+const count = (arr) => arr && arr.constructor.name === 'Array' ? '' + (arr.length) : '0'
+
+const getDiffs = ({ stringA, stringB, charDiff = false, decorate = (diff) => `[${diff}]` }) => {
 	const splitter = charDiff ? '' : ' '
 	const listA = (''+stringA).split(splitter)
 	const listB = (''+stringB).split(splitter)
@@ -63,4 +64,4 @@ const modal = (name, result, linkname = 'details') => {
 	`
 }
 
-export { patch, html, note, pluralify, getDiffs, count, modal }
+export { patch, html, HTMLNote, pluralify, getDiffs, count, modal }

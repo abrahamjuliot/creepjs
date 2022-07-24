@@ -1,86 +1,85 @@
-export const getBestWorkerScope = async imports => {
-	const {
-		require: {
-			queueEvent,
-			createTimer,
-			getOS,
-			decryptUserAgent,
-			captureError,
-			getUserAgentPlatform,
-			documentLie,
-			logTestResult,
-			compressWebGLRenderer,
-			getWebGLRendererConfidence,
-			isUAPostReduction
-		}
-	} = imports
+import { captureError } from './captureErrors.js'
+import { hashMini } from './crypto.js'
+import { computeWindowsRelease, createTimer, decryptUserAgent, getOS, getUserAgentPlatform, hashSlice, isUAPostReduction, JS_ENGINE, logTestResult, performanceLogger, queueEvent } from './helpers.js'
+import { count, HTMLNote, modal } from './html.js'
+import { documentLie } from './lies.js'
+import { getWebGLRendererConfidence, compressWebGLRenderer } from './trash.js'
+
+export default async function getBestWorkerScope() {
 	try {
 		const timer = createTimer()
 		await queueEvent(timer)
 
-		const ask = fn => { try { return fn() } catch (e) { return } }
+		const ask = (fn) => {
+			try {
+				return fn()
+			} catch (e) {
+				return
+			}
+		}
 
 		const hasConstructor = (x, name) => x && x.__proto__.constructor.name == name
-		const getDedicatedWorker = ({ scriptSource }) => new Promise(resolve => {
+		const getDedicatedWorker = ({ scriptSource }) => new Promise((resolve) => {
 			const giveUpOnWorker = setTimeout(() => {
-				return resolve()
+				return resolve(null)
 			}, 3000)
 
 			const dedicatedWorker = ask(() => new Worker(scriptSource))
-			if (!hasConstructor(dedicatedWorker, 'Worker')) return resolve()
+			if (!hasConstructor(dedicatedWorker, 'Worker')) return resolve(null)
 
-			dedicatedWorker.onmessage = event => {
+			dedicatedWorker.onmessage = (event) => {
 				dedicatedWorker.terminate()
 				clearTimeout(giveUpOnWorker)
 				return resolve(event.data)
 			}
 		})
-		const getSharedWorker = ({ scriptSource }) => new Promise(resolve => {
+		const getSharedWorker = ({ scriptSource }) => new Promise((resolve) => {
 			const giveUpOnWorker = setTimeout(() => {
-				return resolve()
+				return resolve(null)
 			}, 3000)
 
 			const sharedWorker = ask(() => new SharedWorker(scriptSource))
-			if (!hasConstructor(sharedWorker, 'SharedWorker')) return resolve()
+			if (!hasConstructor(sharedWorker, 'SharedWorker')) return resolve(null)
 
 			sharedWorker.port.start()
 
-			sharedWorker.port.onmessage = event => {
+			sharedWorker.port.onmessage = (event) => {
 				sharedWorker.port.close()
 				clearTimeout(giveUpOnWorker)
 				return resolve(event.data)
 			}
 		})
-		const getServiceWorker = ({ scriptSource }) => new Promise(resolve => {
+		const getServiceWorker = ({ scriptSource }) => new Promise((resolve) => {
 			const giveUpOnWorker = setTimeout(() => {
-				return resolve()
+				return resolve(null)
 			}, 3000)
 
-			if (!ask(() => navigator.serviceWorker.register)) return resolve()
+			if (!ask(() => navigator.serviceWorker.register)) return resolve(null)
 
-			return navigator.serviceWorker.register(scriptSource).then(registration => {
-				if (!hasConstructor(registration, 'ServiceWorkerRegistration')) return resolve()
+			return navigator.serviceWorker.register(scriptSource).then((registration) => {
+				if (!hasConstructor(registration, 'ServiceWorkerRegistration')) return resolve(null)
 
-				return navigator.serviceWorker.ready.then(registration => {
+				return navigator.serviceWorker.ready.then((registration) => {
+					// @ts-ignore
 					registration.active.postMessage(undefined)
 
-					navigator.serviceWorker.onmessage = event => {
+					navigator.serviceWorker.onmessage = (event) => {
 						registration.unregister()
 						clearTimeout(giveUpOnWorker)
 						return resolve(event.data)
 					}
 				})
-			}).catch(error => {
+			}).catch((error) => {
 				console.error(error)
 				clearTimeout(giveUpOnWorker)
-				return resolve()
+				return resolve(null)
 			})
 		})
 
 		const scriptSource = 'creepworker.js'
 		let scope = 'ServiceWorkerGlobalScope'
 		let type = 'service' // loads fast but is not available in frames
-		let workerScope = await getServiceWorker({ scriptSource }).catch(error => {
+		let workerScope = await getServiceWorker({ scriptSource }).catch((error) => {
 			captureError(error)
 			console.error(error.message)
 			return
@@ -89,7 +88,7 @@ export const getBestWorkerScope = async imports => {
 		if (!(workerScope || {}).userAgent) {
 			scope = 'SharedWorkerGlobalScope'
 			type = 'shared' // no support in Safari, iOS, and Chrome Android
-			workerScope = await getSharedWorker({ scriptSource }).catch(error => {
+			workerScope = await getSharedWorker({ scriptSource }).catch((error) => {
 				captureError(error)
 				console.error(error.message)
 				return
@@ -99,7 +98,7 @@ export const getBestWorkerScope = async imports => {
 		if (!(workerScope || {}).userAgent) {
 			scope = 'WorkerGlobalScope'
 			type = 'dedicated' // device emulators can easily spoof dedicated scope
-			workerScope = await getDedicatedWorker({ scriptSource }).catch(error => {
+			workerScope = await getDedicatedWorker({ scriptSource }).catch((error) => {
 				captureError(error)
 				console.error(error.message)
 				return
@@ -136,6 +135,7 @@ export const getBestWorkerScope = async imports => {
 		if (hardwareConcurrency && (hardwareConcurrency != navigator.hardwareConcurrency)) {
 			documentLie('Navigator.hardwareConcurrency', workerScopeMatchLie)
 		}
+		// @ts-ignore
 		if (deviceMemory && (deviceMemory != navigator.deviceMemory)) {
 			documentLie('Navigator.deviceMemory', workerScopeMatchLie)
 		}
@@ -144,12 +144,11 @@ export const getBestWorkerScope = async imports => {
 		if (workerScope.lies.proto) {
 			const { proto } = workerScope.lies
 			const keys = Object.keys(proto)
-			keys.forEach(key => {
+			keys.forEach((key) => {
 				const api = `${workerScope.scope}.${key}`
 				const lies = proto[key]
-				lies.forEach(lie => documentLie(api, lie))
+				lies.forEach((lie) => documentLie(api, lie))
 			})
-
 		}
 
 		// user agent os lie
@@ -178,7 +177,7 @@ export const getBestWorkerScope = async imports => {
 		const decryptedName = decryptUserAgent({
 			ua: userAgent,
 			os: system,
-			isBrave: false // default false since we are only looking for JS runtime and version
+			isBrave: false, // default false since we are only looking for JS runtime and version
 		})
 		const userAgentEngine = (
 			(/safari/i.test(decryptedName) || /iphone|ipad/i.test(userAgent)) ? 'JavaScriptCore' :
@@ -186,20 +185,13 @@ export const getBestWorkerScope = async imports => {
 					/chrome/i.test(userAgent) ? 'V8' :
 						undefined
 		)
-		const jsRuntimeEngine = {
-			'1.9275814160560204e-50': 'V8',
-			'1.9275814160560185e-50': 'SpiderMonkey',
-			'1.9275814160560206e-50': 'JavaScriptCore'
-		}
-		const mathPI = 3.141592653589793
-		const engine = jsRuntimeEngine[mathPI ** -100]
-		if (userAgentEngine != engine) {
+		if (userAgentEngine != JS_ENGINE) {
 			workerScope.lied = true
-			workerScope.lies.engine = `${engine} JS runtime and ${userAgentEngine} user agent do not match`
+			workerScope.lies.engine = `${JS_ENGINE} JS runtime and ${userAgentEngine} user agent do not match`
 			documentLie(workerScope.scope, workerScope.lies.engine)
 		}
 		// user agent version lie
-		const getVersion = x => (/\d+/.exec(x) || [])[0]
+		const getVersion = (x) => (/\d+/.exec(x) || [])[0]
 		const userAgentVersion = getVersion(decryptedName)
 		const userAgentDataVersion = getVersion(userAgentData ? userAgentData.uaFullVersion : '')
 		const versionSupported = userAgentDataVersion && userAgentVersion
@@ -233,7 +225,7 @@ export const getBestWorkerScope = async imports => {
 				'6.3': '8.1',
 				'6.3.0': '8.1',
 				'10.0': '10',
-				'10.0.0': '10'
+				'10.0.0': '10',
 			}
 			let versionNumber = versionMap[platformVersion]
 			if (!chrome95AndAbove && versionNumber) {
@@ -246,7 +238,7 @@ export const getBestWorkerScope = async imports => {
 				(!windows10OrHigherPlatform && windows1OrHigherReport)
 			)
 		}
-		const windowsVersionLie  = getWindowsVersionLie(workerScope.device, userAgentData)
+		const windowsVersionLie = getWindowsVersionLie(workerScope.device, userAgentData)
 		if (windowsVersionLie) {
 			workerScope.lied = true
 			workerScope.lies.platformVersion = `Windows platformVersion ${(userAgentData||{}).platformVersion} does not match user agent version ${workerScope.device}`
@@ -260,41 +252,40 @@ export const getBestWorkerScope = async imports => {
 
 		const gpu = {
 			...(getWebGLRendererConfidence(workerScope.webglRenderer) || {}),
-			compressedGPU: compressWebGLRenderer(workerScope.webglRenderer)
+			compressedGPU: compressWebGLRenderer(workerScope.webglRenderer),
 		}
 
 		logTestResult({ time: timer.stop(), test: `${type} worker`, passed: true })
 		return {
 			...workerScope,
 			gpu,
-			uaPostReduction: isUAPostReduction(workerScope.userAgent)
+			uaPostReduction: isUAPostReduction(workerScope.userAgent),
 		}
-	}
-	catch (error) {
+	} catch (error) {
 		logTestResult({ test: 'worker', passed: false })
 		captureError(error, 'workers failed or blocked by client')
 		return
 	}
 }
 
-export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, computeWindowsRelease, performanceLogger }) => {
+export function workerScopeHTML(fp) {
 	if (!fp.workerScope) {
 		return `
 		<div class="col-six undefined">
 			<strong>Worker</strong>
-			<div>keys (0): ${note.blocked}</div>
+			<div>keys (0): ${HTMLNote.BLOCKED}</div>
 			<div>lang/timezone:</div>
-			<div class="block-text">${note.blocked}</div>
+			<div class="block-text">${HTMLNote.BLOCKED}</div>
 			<div>gpu:</div>
-			<div class="block-text">${note.blocked}</div>
+			<div class="block-text">${HTMLNote.BLOCKED}</div>
 		</div>
 		<div class="col-six undefined">
 			<div>userAgent:</div>
-			<div class="block-text">${note.blocked}</div>
+			<div class="block-text">${HTMLNote.BLOCKED}</div>
 			<div>device:</div>
-			<div class="block-text">${note.blocked}</div>
+			<div class="block-text">${HTMLNote.BLOCKED}</div>
 			<div>userAgentData:</div>
-			<div class="block-text">${note.blocked}</div>
+			<div class="block-text">${HTMLNote.BLOCKED}</div>
 		</div>`
 	}
 	const { workerScope: data } = fp
@@ -312,7 +303,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 		deviceMemory,
 		hardwareConcurrency,
 		language,
-		languages,
+		// languages,
 		platform,
 		userAgent,
 		uaPostReduction,
@@ -324,7 +315,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 		scope,
 		system,
 		device,
-		$hash
+		$hash,
 	} = data || {}
 
 	const {
@@ -333,7 +324,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 		gibbers,
 		confidence,
 		grade: confidenceGrade,
-		compressedGPU
+		compressedGPU,
 	} = gpu || {}
 
 	return `
@@ -347,8 +338,8 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 			scopeKeys && scopeKeys.length ? modal(
 				'creep-worker-scope-version',
 				scopeKeys.join(', '),
-				hashMini(scopeKeys)
-			) : note.blocked
+				hashMini(scopeKeys),
+			) : HTMLNote.BLOCKED
 		}</div>
 		<div class="help">lang/timezone:</div>
 		<div class="block-text help" title="WorkerNavigator.language\nWorkerNavigator.languages\nIntl.Collator.resolvedOptions()\nIntl.DateTimeFormat.resolvedOptions()\nIntl.DisplayNames.resolvedOptions()\nIntl.ListFormat.resolvedOptions()\nIntl.NumberFormat.resolvedOptions()\nIntl.PluralRules.resolvedOptions()\nIntl.RelativeTimeFormat.resolvedOptions()\nNumber.toLocaleString()\nIntl.DateTimeFormat().resolvedOptions().timeZone\nDate.getDate()\nDate.getMonth()\nDate.parse()">
@@ -370,7 +361,7 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 			confidence ? `\nWebGLRenderingContext.getParameter()\ngpu compressed: ${compressedGPU}\nknown parts: ${parts || 'none'}\ngibberish: ${gibbers || 'none'}\nwarnings: ${warnings.join(', ') || 'none'}` : 'WebGLRenderingContext.getParameter()'
 		}">
 			${webglVendor ? webglVendor : ''}
-			${webglRenderer ? `<br>${webglRenderer}` : note.unsupported}
+			${webglRenderer ? `<br>${webglRenderer}` : HTMLNote.UNSUPPORTED}
 		</div>
 
 	</div>
@@ -378,13 +369,13 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 
 		<div class="relative">userAgent:${!uaPostReduction ? '' : `<span class="confidence-note">ua reduction</span>`}</div>
 		<div class="block-text help" title="WorkerNavigator.userAgent">
-			<div>${userAgent || note.unsupported}</div>
+			<div>${userAgent || HTMLNote.UNSUPPORTED}</div>
 		</div>
 
 		<div>device:</div>
 		<div class="block-text help" title="WorkerNavigator.deviceMemory\nWorkerNavigator.hardwareConcurrency\nWorkerNavigator.platform\nWorkerNavigator.userAgent">
 			${`${system}${platform ? ` (${platform})` : ''}`}
-			${device ? `<br>${device}` : note.blocked}
+			${device ? `<br>${device}` : HTMLNote.BLOCKED}
 			${
 				hardwareConcurrency && deviceMemory ? `<br>cores: ${hardwareConcurrency}, ram: ${deviceMemory}` :
 				hardwareConcurrency && !deviceMemory ? `<br>cores: ${hardwareConcurrency}` :
@@ -404,9 +395,10 @@ export const workerScopeHTML = ({ fp, note, count, modal, hashMini, hashSlice, c
 					mobile,
 					model,
 					platformVersion,
-					platform
+					platform,
 				} = userAgentData || {}
 
+				// @ts-ignore
 				const windowsRelease = computeWindowsRelease({ platform, platformVersion })
 
 				return !userAgentData ? note.unsupported : `

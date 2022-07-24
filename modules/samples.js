@@ -1,5 +1,6 @@
-export const renderSamples = async ({samples, templateImports}) => {
+import { patch, html, HTMLNote } from './html.js'
 
+export default async function renderSamples(samples, { fp, styleSystemHash }) {
 	if (!samples) {
 		return
 	}
@@ -9,14 +10,14 @@ export const renderSamples = async ({samples, templateImports}) => {
 		math: mathSamples,
 		error: errorSamples,
 		html: htmlSamples,
-		style: styleSamples
+		style: styleSamples,
 	} = samples || {}
 
 	const computeData = (hash, data) => {
 		let systems = []
 		let poolTotal = 0
-		const metricTotal = Object.keys(data).reduce((acc,item) => acc+= data[item].length, 0)
-		const decryption = Object.keys(data).find(key => data[key].find(item => {
+		const metricTotal = Object.keys(data).reduce((acc, item) => acc+= data[item].length, 0)
+		const decryption = Object.keys(data).find((key) => data[key].find((item) => {
 			if (!(item.id == hash)) {
 				return false
 			}
@@ -29,12 +30,12 @@ export const renderSamples = async ({samples, templateImports}) => {
 			systems,
 			poolTotal,
 			metricTotal,
-			decryption
+			decryption,
 		}
 	}
 	const decryptHash = (hash, data) => {
 		const { systems, poolTotal, metricTotal, decryption } = computeData(hash, data)
-		const getIcon = name => `<span class="icon ${name}"></span>`
+		const getIcon = (name) => `<span class="icon ${name}"></span>`
 		const browserIcon = (
 			!decryption ? '' :
 				/edgios|edge/i.test(decryption) ? getIcon('edge') :
@@ -63,7 +64,7 @@ export const renderSamples = async ({samples, templateImports}) => {
 			linux: '<span class="icon linux"></span>',
 			apple: '<span class="icon apple"></span>',
 			windows: '<span class="icon windows"></span>',
-			android: '<span class="icon android"></span>'
+			android: '<span class="icon android"></span>',
 		}
 		const engineIcon = (
 			!decryption ? '' :
@@ -90,37 +91,35 @@ export const renderSamples = async ({samples, templateImports}) => {
 									''
 		)
 
-		const formatPercent = n => n.toFixed(2).replace('.00', '')
+		const formatPercent = (n) => n.toFixed(2).replace('.00', '')
 		return {
 			decryption: decryption || 'unknown',
 			browserHTML: (
-				!decryption ? undefined : 
+				!decryption ? undefined :
 					`${browserIcon}${decryption}`
 			),
 			engineHTML: (
-				!decryption ? undefined : 
+				!decryption ? undefined :
 					`${engineIcon}${decryption}`
 			),
 			engineRendererHTML: (
-				!decryption ? undefined : 
+				!decryption ? undefined :
 					`${engineRendererIcon}${decryption}`
 			),
 			engineRendererSystemHTML: (
-				!decryption ? undefined : 
+				!decryption ? undefined :
 					`${engineRendererIcon}${systemIcon}${decryption}${systems.length != 1 ? '' : ` on ${systems[0]}`}`
 			),
 			engineSystem: (
-				!decryption ? undefined : 
+				!decryption ? undefined :
 					`${engineIcon}${systemIcon}${decryption}${systems.length != 1 ? '' : ` on ${systems[0]}`}`
 			),
 			uniqueMetric: !decryption ? '0' : formatPercent(1/metricTotal*100),
-			uniqueEngine: !decryption ? '0' : formatPercent(1/poolTotal*100)
+			uniqueEngine: !decryption ? '0' : formatPercent(1/poolTotal*100),
 		}
 	}
 
-	
-
-	const renderWindowSamples = ({ fp, note, patch, html }) => {
+	const renderWindowSamples = (fp) => {
 		const id = document.getElementById(`window-features-samples`)
 		if (!fp.windowFeatures || !id) {
 			return
@@ -134,12 +133,12 @@ export const renderSamples = async ({samples, templateImports}) => {
 						background: linear-gradient(90deg, var(${uniqueEngine < 10 ? '--unique' : '--grey-glass'}) ${uniqueEngine}%, #fff0 ${uniqueEngine}%, #fff0 100%);
 					}
 				</style>
-				<div class="window-features-class-rating">${uniqueEngine}% of ${browserHTML || note.unknown}</div>
+				<div class="window-features-class-rating">${uniqueEngine}% of ${browserHTML || HTMLNote.UNKNOWN}</div>
 			</div>
 		`)
 	}
 
-	const renderMathSamples = ({ fp, note, patch, html }) => {
+	const renderMathSamples = (fp) => {
 		const id = document.getElementById(`math-samples`)
 		if (!fp.maths || !id) {
 			return
@@ -153,12 +152,12 @@ export const renderSamples = async ({samples, templateImports}) => {
 						background: linear-gradient(90deg, var(${uniqueEngine < 10 ? '--unique' : '--grey-glass'}) ${uniqueEngine}%, #fff0 ${uniqueEngine}%, #fff0 100%);
 					}
 				</style>
-				<div class="math-class-rating">${uniqueEngine}% of ${engineHTML || note.unknown}</div>
+				<div class="math-class-rating">${uniqueEngine}% of ${engineHTML || HTMLNote.UNKNOWN}</div>
 			</div>
 		`)
 	}
 
-	const renderErrorSamples = ({ fp, note, patch, html }) => {
+	const renderErrorSamples = (fp) => {
 		const id = document.getElementById(`error-samples`)
 		if (!fp.consoleErrors || !id) {
 			return
@@ -172,12 +171,12 @@ export const renderSamples = async ({samples, templateImports}) => {
 						background: linear-gradient(90deg, var(${uniqueEngine < 10 ? '--unique' : '--grey-glass'}) ${uniqueEngine}%, #fff0 ${uniqueEngine}%, #fff0 100%);
 					}
 				</style>
-				<div class="console-errors-class-rating">${uniqueEngine}% of ${engineHTML || note.unknown}</div>
+				<div class="console-errors-class-rating">${uniqueEngine}% of ${engineHTML || HTMLNote.UNKNOWN}</div>
 			</div>
 		`)
 	}
 
-	const renderHTMLElementSamples = ({ fp, note, patch, html }) => {
+	const renderHTMLElementSamples = (fp) => {
 		const id = document.getElementById(`html-element-samples`)
 		if (!fp.htmlElementVersion || !id) {
 			return
@@ -191,29 +190,29 @@ export const renderSamples = async ({samples, templateImports}) => {
 						background: linear-gradient(90deg, var(${uniqueEngine < 10 ? '--unique' : '--grey-glass'}) ${uniqueEngine}%, #fff0 ${uniqueEngine}%, #fff0 100%);
 					}
 				</style>
-				<div class="html-element-version-class-rating">${uniqueEngine}% of ${engineRendererHTML || note.unknown}</div>
+				<div class="html-element-version-class-rating">${uniqueEngine}% of ${engineRendererHTML || HTMLNote.UNKNOWN}</div>
 			</div>
 		`)
 	}
 
-	const renderSystemStylesSamples = ({ fp, note, patch, html, styleSystemHash }) => {
+	const renderSystemStylesSamples = (fp, styleSystemHash) => {
 		const id = document.getElementById(`system-style-samples`)
 		if (!fp.css || !id) {
 			return
 		}
-		const { engineRendererSystemHTML, uniqueEngine } = decryptHash(styleSystemHash, styleSamples)
+		const { engineRendererSystemHTML } = decryptHash(styleSystemHash, styleSamples)
 		return patch(id, html`
 			<div>
-				<div>${engineRendererSystemHTML || note.unknown}</div>
+				<div>${engineRendererSystemHTML || HTMLNote.UNKNOWN}</div>
 			</div>
 		`)
 	}
 
-	renderWindowSamples(templateImports)
-	renderMathSamples(templateImports)
-	renderErrorSamples(templateImports)
-	renderHTMLElementSamples(templateImports)
-	renderSystemStylesSamples(templateImports)
+	renderWindowSamples(fp)
+	renderMathSamples(fp)
+	renderErrorSamples(fp)
+	renderHTMLElementSamples(fp)
+	renderSystemStylesSamples(fp, styleSystemHash)
 
 	return
 }

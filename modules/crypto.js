@@ -1,5 +1,5 @@
 // https://stackoverflow.com/a/22429679
-const hashMini =  x => {
+const hashMini = (x) => {
 	const json = `${JSON.stringify(x)}`
 	const hash = json.split('').reduce((hash, char, i) => {
 		return Math.imul(31, hash) + json.charCodeAt(i) | 0
@@ -19,9 +19,9 @@ const instanceId = (
 const hashify = (x, algorithm = 'SHA-256') => {
 	const json = `${JSON.stringify(x)}`
 	const jsonBuffer = new TextEncoder().encode(json)
-	return crypto.subtle.digest(algorithm, jsonBuffer).then(hashBuffer => {
+	return crypto.subtle.digest(algorithm, jsonBuffer).then((hashBuffer) => {
 		const hashArray = Array.from(new Uint8Array(hashBuffer))
-		const hashHex = hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('')
+		const hashHex = hashArray.map((b) => ('00' + b.toString(16)).slice(-2)).join('')
 		return hashHex
 	})
 }
@@ -45,7 +45,7 @@ const getBotHash = (fp, imports) => {
 		const windowsRelease = computeWindowsRelease({
 			platform,
 			platformVersion,
-			fontPlatformVersion
+			fontPlatformVersion,
 		})
 
 		const windowsPlatformVersionLie = (
@@ -88,11 +88,11 @@ const getBotHash = (fp, imports) => {
 	}
 
 	const botHash = Object.keys(botPatterns)
-		.map(key => botPatterns[key] ? '1' : '0').join('')
-	return { botHash, badBot: Object.keys(botPatterns).find(key => botPatterns[key]) }
+		.map((key) => botPatterns[key] ? '1' : '0').join('')
+	return { botHash, badBot: Object.keys(botPatterns).find((key) => botPatterns[key]) }
 }
 
-const getFuzzyHash = async fp => {
+const getFuzzyHash = async (fp) => {
 	// requires update log (below) when adding new keys to fp
 	const metricKeys = [
 		'canvas2d.blob',
@@ -269,20 +269,20 @@ const getFuzzyHash = async fp => {
 	const maxBins = 64
 	const metricKeysReported = Object.keys(metricsAll)
 	const binSize = Math.ceil(metricKeys.length/maxBins)
-	
+
 	// update log
 	const { host } = window.location || {}
 	const devMode = host != 'abrahamjuliot.github.io'
 	if (devMode && (''+metricKeysReported != ''+metricKeys)) {
-		const newKeys = metricKeysReported.filter(key => !metricKeys.includes(key))
-		const oldKeys = metricKeys.filter(key => !metricKeysReported.includes(key))
+		const newKeys = metricKeysReported.filter((key) => !metricKeys.includes(key))
+		const oldKeys = metricKeys.filter((key) => !metricKeysReported.includes(key))
 
 		if (newKeys.length || oldKeys.length) {
 			newKeys.length && console.warn('added fuzzy key(s):\n', newKeys.join('\n'))
 			oldKeys.length && console.warn('removed fuzzy key(s):\n', oldKeys.join('\n'))
 
 			console.groupCollapsed('update keys for accurate fuzzy hashing:')
-			console.log(metricKeysReported.map(x => `'${x}',`).join('\n'))
+			console.log(metricKeysReported.map((x) => `'${x}',`).join('\n'))
 			console.groupEnd()
 		}
 	}
@@ -291,23 +291,23 @@ const getFuzzyHash = async fp => {
 	const fuzzyFpMaster = metricKeys.reduce((acc, key, index) => {
 		if (!index || ((index % binSize) == 0)) {
 			const keySet = metricKeys.slice(index, index + binSize)
-			return {...acc, [''+keySet]: keySet.map(key => metricsAll[key]) }
+			return {...acc, [''+keySet]: keySet.map((key) => metricsAll[key]) }
 		}
 		return acc
 	}, {})
 
 	// hash each bin
 	await Promise.all(
-		Object.keys(fuzzyFpMaster).map(key => hashify(fuzzyFpMaster[key]).then(hash => {
+		Object.keys(fuzzyFpMaster).map((key) => hashify(fuzzyFpMaster[key]).then((hash) => {
 			fuzzyFpMaster[key] = hash // swap values for hash
 			return hash
-		}))
+		})),
 	)
 
 	// create fuzzy hash
 	const fuzzyBits = 64
 	const fuzzyFingerprint = Object.keys(fuzzyFpMaster)
-		.map(key => fuzzyFpMaster[key][0])
+		.map((key) => fuzzyFpMaster[key][0])
 		.join('')
 		.padEnd(fuzzyBits, '0')
 

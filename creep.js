@@ -1,134 +1,47 @@
-import { isChrome, braveBrowser, getBraveMode, getBraveUnprotectedParameters, isFirefox, getOS, decryptUserAgent, getUserAgentPlatform, computeWindowsRelease, attemptWindows11UserAgent, isUAPostReduction, getUserAgentRestored, logTestResult, performanceLogger, getPromiseRaceFulfilled, queueEvent, createTimer, formatEmojiSet, getEmojis, cssFontFamily } from './modules/helpers.js'
-import { patch, html, note, count, modal, getDiffs } from './modules/html.js'
-import { hashMini, instanceId, hashify, getBotHash, getFuzzyHash  } from './modules/crypto.js'
+import getOfflineAudioContext, { audioHTML, KnownAudio } from './modules/audio.js'
+import getCanvas2d, { canvasHTML } from './modules/canvas2d.js'
+import getCanvasWebgl, { webglHTML } from './modules/canvasWebgl.js'
+import { timer, getCapturedErrors, caniuse, errorsHTML } from './modules/captureErrors.js'
+import getCSS, { cssHTML } from './modules/computedStyle.js'
+import getConsoleErrors, { consoleErrorsHTML } from './modules/consoleErrors.js'
+import getWindowFeatures, { windowFeaturesHTML } from './modules/contentWindowVersion.js'
+import { hashify, hashMini, getBotHash, getFuzzyHash } from './modules/crypto.js'
+import getCSSMedia, { cssMediaHTML } from './modules/css.js'
+import getEngineFeatures, { getFeaturesLie, featuresHTML } from './modules/features.js'
+import getFonts, { fontsHTML } from './modules/fonts.js'
+import getHeadlessFeatures, { headlessFeaturesHTML } from './modules/headless.js'
+import { IS_BLINK, braveBrowser, getBraveUnprotectedParameters, IS_GECKO, computeWindowsRelease, getUserAgentRestored, attemptWindows11UserAgent, getBraveMode, hashSlice, ENGINE_IDENTIFIER } from './modules/helpers.js'
+import { patch, html, getDiffs, modal } from './modules/html.js'
+import getHTMLElementVersion, { htmlElementVersionHTML } from './modules/htmlElementVersion.js'
+import getIntl, { intlHTML } from './modules/intl.js'
+import { getLies, PARENT_PHANTOM, liesHTML } from './modules/lies.js'
+import getMaths, { mathsHTML } from './modules/maths.js'
+import getMedia, { mediaHTML } from './modules/media.js'
+import getNavigator, { navigatorHTML } from './modules/navigator.js'
+import getPrediction, { predictionErrorPatch, renderPrediction } from './modules/prediction.js'
+import getClientRects, { clientRectsHTML } from './modules/rects.js'
+import getResistance, { resistanceHTML } from './modules/resistance.js'
+import renderSamples from './modules/samples.js'
+import getScreen, { screenHTML } from './modules/screen.js'
+import getSVG, { svgHTML } from './modules/svg.js'
+import getTimezone, { timezoneHTML } from './modules/timezone.js'
 
-import { captureError, attempt, caniuse, timer, errorsCaptured, getCapturedErrors, errorsHTML } from './modules/captureErrors.js'
-import { sendToTrash, proxyBehavior, gibberish, trustInteger, compressWebGLRenderer, getWebGLRendererParts, hardenWebGLRenderer, getWebGLRendererConfidence, trashBin, getTrash, trashHTML } from './modules/trash.js'
-import { documentLie, phantomDarkness, parentPhantom, lieProps, prototypeLies, lieRecords, getLies, proxyDetectionMethods, getPluginLies, getNonFunctionToStringLies, liesHTML } from './modules/lies.js'
+import { getTrash, trashHTML } from './modules/trash.js'
+import getVoices, { voicesHTML } from './modules/voices.js'
+import getWebRTCData, { webrtcHTML } from './modules/webrtc.js'
+import getBestWorkerScope, { workerScopeHTML } from './modules/worker.js'
 
-import { getOfflineAudioContext, audioHTML, getKnownAudio } from './modules/audio.js'
-import { getCanvas2d, canvasHTML } from './modules/canvas2d.js'
-import { getCanvasWebgl, webglHTML } from './modules/canvasWebgl.js'
-import { getCSS, cssHTML } from './modules/computedStyle.js'
-import { getCSSMedia, cssMediaHTML } from './modules/css.js'
-import { getConsoleErrors, consoleErrorsHTML } from './modules/consoleErrors.js'
-import { getWindowFeatures, windowFeaturesHTML } from './modules/contentWindowVersion.js'
-import { getFonts, fontsHTML } from './modules/fonts.js'
-import { getHeadlessFeatures, headlesFeaturesHTML } from './modules/headless.js'
-import { getHTMLElementVersion, htmlElementVersionHTML } from './modules/htmlElementVersion.js'
-import { getMaths, mathsHTML } from './modules/maths.js'
-import { getMedia, mediaHTML } from './modules/media.js'
-import { getNavigator, navigatorHTML } from './modules/navigator.js'
-import { getClientRects, clientRectsHTML } from './modules/rects.js'
-import { getScreen, screenHTML } from './modules/screen.js'
-import { getTimezone, timezoneHTML } from './modules/timezone.js'
-import { getVoices, voicesHTML } from './modules/voices.js'
-import { getBestWorkerScope, workerScopeHTML } from './modules/worker.js'
-import { getSVG, svgHTML } from './modules/svg.js'
-import { getResistance, resistanceHTML } from './modules/resistance.js'
-import { getIntl, intlHTML } from './modules/intl.js'
-import { getFeaturesLie, getEngineFeatures, featuresHTML } from './modules/features.js'
-import { renderSamples } from './modules/samples.js'
-import { getPrediction, renderPrediction, predictionErrorPatch } from './modules/prediction.js'
-import { webrtcHTML, getWebRTCData, getMediaCapabilities } from './modules/webrtc.js'
-
-const imports = {
-	require: {
-		// helpers
-		isChrome,
-		braveBrowser,
-		getBraveMode,
-		isFirefox,
-		getOS,
-		decryptUserAgent,
-		getUserAgentPlatform,
-		logTestResult,
-		performanceLogger,
-		getPromiseRaceFulfilled,
-		queueEvent,
-		createTimer,
-		compressWebGLRenderer,
-		getWebGLRendererParts,
-		hardenWebGLRenderer,
-		getWebGLRendererConfidence,
-		formatEmojiSet,
-		getEmojis,
-		cssFontFamily,
-		// crypto
-		instanceId,
-		hashMini,
-		hashify,
-		getBotHash,
-		getFuzzyHash,
-		// html
-		patch,
-		html,
-		note,
-		count,
-		modal,
-		getDiffs,
-		// captureErrors
-		captureError,
-		attempt,
-		caniuse,
-		// trash
-		sendToTrash,
-		proxyBehavior,
-		gibberish,
-		trustInteger,
-		// lies
-		documentLie,
-		// filter out lies on Function.prototype.toString (this is a false positive on native APIs void of tampering)
-		lieProps: (() => {
-			const props = lieProps.getProps()
-			return Object.keys(props).reduce((acc, key) => {
-				acc[key] = getNonFunctionToStringLies(props[key])
-				return acc
-			}, {})
-		})(),
-		prototypeLies,
-		// collections
-		errorsCaptured,
-		trashBin,
-		lieRecords,
-		proxyDetectionMethods,
-		phantomDarkness,
-		parentPhantom,
-		getPluginLies,
-		getKnownAudio,
-		attemptWindows11UserAgent,
-		isUAPostReduction,
-		getUserAgentRestored,
-		// slow connections
-		getWebRTCData,
-		getMediaCapabilities
-	}
-}
-// worker.js
-
-;(async imports => {
+!async function() {
 	'use strict';
 
-	const {
-		require: {
-			hashMini,
-			patch,
-			html,
-			note,
-			count,
-			modal,
-			caniuse,
-			isFirefox
-		}
-	} = imports
-
-	const isBrave = isChrome ? await braveBrowser() : false
+	const isBrave = IS_BLINK ? await braveBrowser() : false
 	const braveMode = isBrave ? getBraveMode() : {}
 	const braveFingerprintingBlocking = isBrave && (braveMode.standard || braveMode.strict)
 
 	const fingerprint = async () => {
 		const timeStart = timer()
 		const fingerprintTimeStart = timer()
+		// @ts-ignore
 		const [
 			windowFeaturesComputed,
 			htmlElementVersionComputed,
@@ -151,50 +64,51 @@ const imports = {
 			navigatorComputed,
 			offlineAudioContextComputed,
 		] = await Promise.all([
-			getWindowFeatures(imports),
-			getHTMLElementVersion(imports),
-			getCSS(imports),
-			getCSSMedia(imports),
-			getScreen(imports),
-			getVoices(imports),
-			getCanvas2d(imports),
-			getCanvasWebgl(imports),
-			getMaths(imports),
-			getConsoleErrors(imports),
-			getTimezone(imports),
-			getClientRects(imports),
-			getFonts(imports),
-			getBestWorkerScope(imports),
-			getMedia(imports),
-			getSVG(imports),
-			getResistance(imports),
-			getIntl(imports),
-			getNavigator(imports),
-			getOfflineAudioContext(imports),
-		]).catch(error => console.error(error.message))
+			getWindowFeatures(),
+			getHTMLElementVersion(),
+			getCSS(),
+			getCSSMedia(),
+			getScreen(),
+			getVoices(),
+			getCanvas2d(),
+			getCanvasWebgl(),
+			getMaths(),
+			getConsoleErrors(),
+			getTimezone(),
+			getClientRects(),
+			getFonts(),
+			getBestWorkerScope(),
+			getMedia(),
+			getSVG(),
+			getResistance(),
+			getIntl(),
+			getNavigator(),
+			getOfflineAudioContext(),
+		]).catch((error) => console.error(error.message))
 
+		// @ts-ignore
 		const [
 			headlessComputed,
-			featuresComputed
+			featuresComputed,
 		] = await Promise.all([
-			getHeadlessFeatures(imports, workerScopeComputed),
+			getHeadlessFeatures(workerScopeComputed),
 			getEngineFeatures({
-				imports,
 				cssComputed,
 				navigatorComputed,
-				windowFeaturesComputed
-			})
-		]).catch(error => console.error(error.message))
+				windowFeaturesComputed,
+			}),
+		]).catch((error) => console.error(error.message))
 
+		// @ts-ignore
 		const [
 			liesComputed,
 			trashComputed,
-			capturedErrorsComputed
+			capturedErrorsComputed,
 		] = await Promise.all([
-			getLies(imports),
-			getTrash(imports),
-			getCapturedErrors(imports)
-		]).catch(error => console.error(error.message))
+			getLies(),
+			getTrash(),
+			getCapturedErrors(),
+		]).catch((error) => console.error(error.message))
 
 		const fingerprintTimeEnd = fingerprintTimeStart()
 		console.log(`Fingerprinting complete in ${(fingerprintTimeEnd).toFixed(2)}ms`)
@@ -211,13 +125,12 @@ const imports = {
 			UNMASKED_RENDERER_WEBGL: undefined,
 			UNMASKED_VENDOR_WEBGL: undefined,
 			VERSION: undefined,
-			VENDOR: undefined
+			VENDOR: undefined,
 		}
-
-		//console.log(hashMini(reducedGPUParameters))
 
 		// Hashing
 		const hashStartTime = timer()
+		// @ts-ignore
 		const [
 			windowHash,
 			headlessHash,
@@ -257,7 +170,7 @@ const imports = {
 			resistanceHash,
 			intlHash,
 			featuresHash,
-			deviceOfTimezoneHash
+			deviceOfTimezoneHash,
 		] = await Promise.all([
 			hashify(windowFeaturesComputed),
 			hashify(headlessComputed),
@@ -287,7 +200,7 @@ const imports = {
 				(clientRectsComputed || {}).elementBoundingClientRect,
 				(clientRectsComputed || {}).elementClientRects,
 				(clientRectsComputed || {}).rangeBoundingClientRect,
-				(clientRectsComputed || {}).rangeClientRects
+				(clientRectsComputed || {}).rangeClientRects,
 			]),
 			hashify(offlineAudioContextComputed),
 			hashify(fontsComputed),
@@ -323,8 +236,8 @@ const imports = {
 					platformVersion,
 				} = userAgentData || {}
 				const { anyPointer } = cssMediaComputed || {}
-				const { colorDepth, pixelDepth, height, width  } = screenComputed || {}
-				const { location, locationEpoch, zone  } = timezoneComputed || {}
+				const { colorDepth, pixelDepth, height, width } = screenComputed || {}
+				const { location, locationEpoch, zone } = timezoneComputed || {}
 				const {
 					deviceMemory: deviceMemoryWorker,
 					hardwareConcurrency: hardwareConcurrencyWorker,
@@ -332,7 +245,7 @@ const imports = {
 					platform: platformWorker,
 					system: systemWorker,
 					timezoneLocation: locationWorker,
-					userAgentData: userAgentDataWorker
+					userAgentData: userAgentDataWorker,
 				} = workerScopeComputed || {}
 				const { compressedGPU, confidence } = gpu || {}
 				const {
@@ -378,19 +291,20 @@ const imports = {
 					uaPlatform,
 					uaPlatformWorker,
 					width,
-					zone
+					zone,
 				]
-			})())
-		]).catch(error => console.error(error.message))
+			})()),
+		]).catch((error) => console.error(error.message))
 
-		//console.log(performance.now()-start)
+		// console.log(performance.now()-start)
 		const hashTimeEnd = hashStartTime()
 		const timeEnd = timeStart()
 
 		console.log(`Hashing complete in ${(hashTimeEnd).toFixed(2)}ms`)
 
-		if (parentPhantom) {
-			parentPhantom.parentNode.removeChild(parentPhantom)
+		if (PARENT_PHANTOM) {
+			// @ts-ignore
+			PARENT_PHANTOM.parentNode.removeChild(PARENT_PHANTOM)
 		}
 
 		const fingerprint = {
@@ -434,7 +348,7 @@ const imports = {
 			canvas2dEmojiHash,
 			canvasWebglParametersHash,
 			deviceOfTimezoneHash,
-			timeEnd
+			timeEnd,
 		}
 	}
 
@@ -453,8 +367,12 @@ const imports = {
 		canvasWebglImageHash,
 		canvasWebglParametersHash,
 		deviceOfTimezoneHash,
-		timeEnd
-	} = await fingerprint().catch(error => console.error(error))
+		timeEnd,
+	} = await fingerprint().catch((error) => console.error(error)) || {}
+
+	if (!fp) {
+		throw new Error('Fingerprint failed!')
+	}
 
 	console.log('%c✔ loose fingerprint passed', 'color:#4cca9f')
 
@@ -474,11 +392,11 @@ const imports = {
 	// limit to known audio
 	const { offlineAudioContext } = fp || {}
 	const { compressorGainReduction, sampleSum } = offlineAudioContext || {}
-	const knownSums = getKnownAudio()[compressorGainReduction]
+	const knownSums = KnownAudio[compressorGainReduction]
 	const unknownAudio = (
 		sampleSum && compressorGainReduction && knownSums && !knownSums.includes(sampleSum)
 	)
-	const unknownFirefoxAudio = isFirefox && unknownAudio
+	const unknownFirefoxAudio = IS_GECKO && unknownAudio
 
 	const hardenEntropy = (workerScope, prop) => {
 		return (
@@ -493,12 +411,12 @@ const imports = {
 	)
 
 	// harden gpu
-	const hardenGPU = canvasWebgl => {
+	const hardenGPU = (canvasWebgl) => {
 		const { gpu: { confidence, compressedGPU } } = canvasWebgl
 		return (
 			confidence == 'low' ? {} : {
 				UNMASKED_RENDERER_WEBGL: compressedGPU,
-				UNMASKED_VENDOR_WEBGL: canvasWebgl.parameters.UNMASKED_VENDOR_WEBGL
+				UNMASKED_VENDOR_WEBGL: canvasWebgl.parameters.UNMASKED_VENDOR_WEBGL,
 			}
 		)
 	}
@@ -522,9 +440,9 @@ const imports = {
 					...(fp.navigator.userAgentData || {}),
 					// loose
 					brandsVersion: undefined,
-					uaFullVersion: undefined
+					uaFullVersion: undefined,
 				},
-				vendor: fp.navigator.vendor
+				vendor: fp.navigator.vendor,
 			}
 		),
 		screen: (
@@ -535,8 +453,8 @@ const imports = {
 						width: fp.screen.width,
 						pixelDepth: fp.screen.pixelDepth,
 						colorDepth: fp.screen.colorDepth,
-						lied: fp.screen.lied
-					}
+						lied: fp.screen.lied,
+					},
 				)
 		),
 		workerScope: !fp.workerScope || fp.workerScope.lied ? undefined : {
@@ -563,11 +481,11 @@ const imports = {
 				...fp.workerScope.userAgentData,
 				// loose
 				brandsVersion: undefined,
-				uaFullVersion: undefined
+				uaFullVersion: undefined,
 			},
 		},
 		media: fp.media,
-		canvas2d: (canvas2d => {
+		canvas2d: ((canvas2d) => {
 			if (!canvas2d) {
 				return
 			}
@@ -577,14 +495,14 @@ const imports = {
 				const { dataURI, paintURI, textURI, emojiURI, blob, blobOffscreen } = canvas2d
 				data = {
 					lied,
-					...{ dataURI, paintURI, textURI, emojiURI, blob, blobOffscreen }
+					...{ dataURI, paintURI, textURI, emojiURI, blob, blobOffscreen },
 				}
 			}
 			if (!liedTextMetrics) {
 				const { textMetricsSystemSum, emojiSet } = canvas2d
 				data = {
 					...(data || {}),
-					...{ textMetricsSystemSum, emojiSet }
+					...{ textMetricsSystemSum, emojiSet },
 				}
 			}
 			return data
@@ -593,10 +511,10 @@ const imports = {
 			braveFingerprintingBlocking ? {
 				parameters: {
 					...getBraveUnprotectedParameters(fp.canvasWebgl.parameters),
-					...hardenGPU(fp.canvasWebgl)
-				}
+					...hardenGPU(fp.canvasWebgl),
+				},
 			} : fp.canvasWebgl.lied ? undefined : {
-				...((gl , canvas2d) => {
+				...((gl, canvas2d) => {
 					if (canvas2d && canvas2d.lied) {
 						// distrust images
 						const { extensions, gpu, lied, parameterOrExtensionLie } = gl
@@ -611,8 +529,8 @@ const imports = {
 				})(fp.canvasWebgl, fp.canvas2d),
 				parameters: {
 					...fp.canvasWebgl.parameters,
-					...hardenGPU(fp.canvasWebgl)
-				}
+					...hardenGPU(fp.canvasWebgl),
+				},
 			}
 		),
 		cssMedia: !fp.cssMedia ? undefined : {
@@ -633,20 +551,20 @@ const imports = {
 		},
 		css: !fp.css ? undefined : {
 			interfaceName: caniuse(() => fp.css.computedStyle.interfaceName),
-			system: caniuse(() => fp.css.system)
+			system: caniuse(() => fp.css.system),
 		},
 		maths: !fp.maths || fp.maths.lied ? undefined : fp.maths,
 		consoleErrors: fp.consoleErrors,
 		timezone: !fp.timezone || fp.timezone.lied ? undefined : {
 			locationMeasured: hardenEntropy(fp.workerScope, fp.timezone.locationMeasured),
-			lied: fp.timezone.lied
+			lied: fp.timezone.lied,
 		},
 		svg: !fp.svg || fp.svg.lied ? undefined : fp.svg,
 		clientRects: !fp.clientRects || fp.clientRects.lied ? undefined : fp.clientRects,
 		offlineAudioContext: !fp.offlineAudioContext ? undefined : (
 			braveFingerprintingBlocking ? {
 				values: fp.offlineAudioContext.values,
-				compressorGainReduction: fp.offlineAudioContext.compressorGainReduction
+				compressorGainReduction: fp.offlineAudioContext.compressorGainReduction,
 			} :
 				fp.offlineAudioContext.lied || unknownFirefoxAudio ? undefined :
 					fp.offlineAudioContext
@@ -656,7 +574,7 @@ const imports = {
 		capturedErrors: !!errorsLen,
 		lies: !!liesLen,
 		resistance: fp.resistance || undefined,
-		forceRenew: 1650847106767
+		forceRenew: 1650847106767,
 	}
 
 	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f')
@@ -673,12 +591,14 @@ const imports = {
 	const webapp = 'https://creepjs-api.web.app/fp'
 
 	const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
-	.catch(error => {
+	.catch((error) => {
 		console.error(error.message)
-	})
+	}) || []
 
 	// expose results to the window
+	// @ts-ignore
 	window.Fingerprint = JSON.parse(JSON.stringify(fp))
+	// @ts-ignore
 	window.Creep = JSON.parse(JSON.stringify(creep))
 
 	// session
@@ -686,8 +606,8 @@ const imports = {
 		const data = {
 			revisedKeysFromPreviousLoad: [],
 			revisedKeys: [],
-			initial: undefined,
-			loads: undefined
+			initial: '',
+			loads: 0,
 		}
 		try {
 			const currentFingerprint = Object.keys(fingerprint).reduce((acc, key) => {
@@ -697,66 +617,51 @@ const imports = {
 				acc[key] = fingerprint[key].$hash
 				return acc
 			}, {})
+			// @ts-ignore
 			const loads = +(sessionStorage.getItem('loads'))
+			// @ts-ignore
 			const initialFingerprint = JSON.parse(sessionStorage.getItem('initialFingerprint'))
+			// @ts-ignore
 			const previousFingerprint = JSON.parse(sessionStorage.getItem('previousFingerprint'))
 			if (initialFingerprint) {
 				data.initial = hashMini(initialFingerprint)
 				if (loading) {
 					data.loads = 1+loads
-					sessionStorage.setItem('loads', data.loads)
-				}
-				else {
-					data.loads =  loads
+					sessionStorage.setItem('loads', ''+data.loads)
+				} else {
+					data.loads = loads
 				}
 
 				if (computePreviousLoadRevision) {
 					sessionStorage.setItem('previousFingerprint', JSON.stringify(currentFingerprint))
 				}
 
-				const currentFingerprintKeys =  Object.keys(currentFingerprint)
+				const currentFingerprintKeys = Object.keys(currentFingerprint)
 				const revisedKeysFromPreviousLoad = currentFingerprintKeys
-					.filter(key => currentFingerprint[key] != previousFingerprint[key])
+					.filter((key) => currentFingerprint[key] != previousFingerprint[key])
 
 				const revisedKeys = currentFingerprintKeys
-					.filter(key => currentFingerprint[key] != initialFingerprint[key])
+					.filter((key) => currentFingerprint[key] != initialFingerprint[key])
 
+				// @ts-ignore
 				data.revisedKeys = revisedKeys.length ? revisedKeys : []
+				// @ts-ignore
 				data.revisedKeysFromPreviousLoad = revisedKeysFromPreviousLoad.length ? revisedKeysFromPreviousLoad : []
 				return data
 			}
 			sessionStorage.setItem('initialFingerprint', JSON.stringify(currentFingerprint))
 			sessionStorage.setItem('previousFingerprint', JSON.stringify(currentFingerprint))
-			sessionStorage.setItem('loads', 1)
+			sessionStorage.setItem('loads', ''+1)
 			data.initial = hashMini(currentFingerprint)
 			data.loads = 1
 			return data
-		}
-		catch (error) {
+		} catch (error) {
 			console.error(error)
 			return data
 		}
 	}
 
 	// patch dom
-	const hashSlice = x => !x ? x : x.slice(0, 8)
-	const templateImports = {
-		imports,
-		fp,
-		hashSlice,
-		hashMini,
-		note,
-		modal,
-		count,
-		getDiffs,
-		patch,
-		html,
-		styleSystemHash,
-		computeWindowsRelease,
-		formatEmojiSet,
-		performanceLogger,
-		cssFontFamily
-	}
 	const hasTrash = !!trashLen
 	const { lies: hasLied, capturedErrors: hasErrors } = creep
 
@@ -771,7 +676,7 @@ const imports = {
 					<div class="ellipsis-all fuzzy-fp">Fuzzy: <span class="blurred-pause">0000000000000000000000000000000000000000000000000000000000000000</span></div>
 					<div class="ellipsis-all fuzzy-diffs">Diffs: <span class="blurred-pause">0000000000000000000000000000000000000000000000000000000000000000</span></div>
 				</div>
-				<div class="ellipsis"><span class="time">${timeEnd.toFixed(2)} ms</span></div>
+				<div class="ellipsis"><span class="time">${(timeEnd || 0).toFixed(2)} ms</span></div>
 			</div>
 		</div>
 		<div id="creep-browser" class="visitor-info">
@@ -848,47 +753,47 @@ const imports = {
 			</div>
 		</div>
 		<div class="flex-grid">
-			${timezoneHTML(templateImports)}
-			${intlHTML(templateImports)}
+			${timezoneHTML(fp)}
+			${intlHTML(fp)}
 		</div>
 		<div id="headless-resistance-detection-results" class="flex-grid">
-			${headlesFeaturesHTML(templateImports)}
-			${resistanceHTML(templateImports)}
+			${headlessFeaturesHTML(fp)}
+			${resistanceHTML(fp)}
 		</div>
-		<div class="flex-grid relative">${workerScopeHTML(templateImports)}</div>
+		<div class="flex-grid relative">${workerScopeHTML(fp)}</div>
 		<div class="flex-grid relative">
-			${webglHTML(templateImports)}
-			${screenHTML(templateImports)}
+			${webglHTML(fp)}
+			${screenHTML(fp)}
 		</div>
 		<div class="flex-grid">
-			${canvasHTML(templateImports)}
-			${fontsHTML(templateImports)}
+			${canvasHTML(fp)}
+			${fontsHTML(fp)}
 		</div>
 		<div class="flex-grid">
-			${clientRectsHTML(templateImports)}
-			${svgHTML(templateImports)}
+			${clientRectsHTML(fp)}
+			${svgHTML(fp)}
 		</div>
 		<div class="flex-grid">
-			${audioHTML(templateImports)}
-			${voicesHTML(templateImports)}
-			${mediaHTML(templateImports)}
+			${audioHTML(fp)}
+			${voicesHTML(fp)}
+			${mediaHTML(fp)}
 		</div>
-		<div class="flex-grid relative">${featuresHTML(templateImports)}</div>
+		<div class="flex-grid relative">${featuresHTML(fp)}</div>
 		<div class="flex-grid">
-			${cssMediaHTML(templateImports)}
-			${cssHTML(templateImports)}
+			${cssMediaHTML(fp)}
+			${cssHTML(fp)}
 		</div>
 		<div>
 			<div class="flex-grid">
-				${mathsHTML(templateImports)}
-				${consoleErrorsHTML(templateImports)}
+				${mathsHTML(fp)}
+				${consoleErrorsHTML(fp)}
 			</div>
 			<div class="flex-grid">
-				${windowFeaturesHTML(templateImports)}
-				${htmlElementVersionHTML(templateImports)}
+				${windowFeaturesHTML(fp)}
+				${htmlElementVersionHTML(fp)}
 			</div>
 		</div>
-		<div class="flex-grid relative">${navigatorHTML(templateImports)}</div>
+		<div class="flex-grid relative">${navigatorHTML(fp)}</div>
 		<div>
 			<strong>Tests</strong>
 			<div>
@@ -908,15 +813,13 @@ const imports = {
 		</div>
 	</div>
 	`, async () => {
-
 		// get WebRTC data
-		getWebRTCData().then(data => {
+		getWebRTCData().then((data) => {
 			patch(document.getElementById('webrtc-connection'), html`
 				<div class="flex-grid">
-					${webrtcHTML(data, templateImports)}
+					${webrtcHTML(data)}
 				</div>
 			`)
-
 		})
 
 		// fetch fingerprint data from server
@@ -924,16 +827,16 @@ const imports = {
 		const visitorElem = document.getElementById(id)
 		const { botHash, badBot } = getBotHash(fp, { getFeaturesLie, computeWindowsRelease })
 		const fuzzyFingerprint = await getFuzzyHash(fp)
-		const { privacy, security, mode, extension } = fp.resistance || {}
+		const { privacy, mode, extension } = fp.resistance || {}
 		const resistanceSet = new Set([privacy, (mode ? `(${mode})` : mode), extension])
-		resistanceSet.delete()
+		resistanceSet.delete(undefined)
 		const resistanceType = [...resistanceSet].join(' ')
 		const fetchVisitorDataTimer = timer()
-		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&trashLen=${trashLen}&liesLen=${liesLen}&errorsLen=${errorsLen}&fuzzy=${fuzzyFingerprint}&botHash=${botHash}&perf=${timeEnd.toFixed(2)}&resistance=${resistanceType}`
+		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&trashLen=${trashLen}&liesLen=${liesLen}&errorsLen=${errorsLen}&fuzzy=${fuzzyFingerprint}&botHash=${botHash}&perf=${(timeEnd || 0).toFixed(2)}&resistance=${resistanceType}`
 
 		fetch(request)
-		.then(response => response.json())
-		.then(async data => {
+		.then((response) => response.json())
+		.then(async (data) => {
 			console.groupCollapsed('Server Response')
 			console.log(JSON.stringify(data, null, '\t'))
 			fetchVisitorDataTimer('response time')
@@ -941,15 +844,15 @@ const imports = {
 
 			const {
 				firstVisit,
-				lastVisit: latestVisit,
-				lastVisitEpoch,
+				// lastVisit: latestVisit,
+				// lastVisitEpoch,
 				timeHoursAlive: persistence,
-				looseFingerprints: subIds,
+				// looseFingerprints: subIds,
 				visits,
 				looseSwitchCount: switchCount,
-				hasTrash,
-				hasLied,
-				hasErrors,
+				// hasTrash,
+				// hasLied,
+				// hasErrors,
 				signature,
 				fuzzyInit,
 				fuzzyLast,
@@ -964,7 +867,7 @@ const imports = {
 				timeHoursIdleMin,
 				timeHoursIdleMax,
 				benchmark,
-				resistance: resistanceId
+				resistance: resistanceId,
 			} = data || {}
 
 			const fuzzyFpEl = document.getElementById('fuzzy-fingerprint')
@@ -972,7 +875,7 @@ const imports = {
 				stringA: fuzzyInit,
 				stringB: fuzzyLast,
 				charDiff: true,
-				decorate: diff => `<span class="fuzzy-fp">${diff}</span>`
+				decorate: (diff) => `<span class="fuzzy-fp">${diff}</span>`,
 			})
 			patch(fuzzyFpEl, html`
 				<div id="fuzzy-fingerprint">
@@ -981,7 +884,7 @@ const imports = {
 				</div>
 			`)
 
-			const toLocaleStr = str => {
+			const toLocaleStr = (str) => {
 				const date = new Date(str)
 				const dateString = date.toLocaleDateString()
 				const timeString = date.toLocaleTimeString()
@@ -997,7 +900,7 @@ const imports = {
 				grade,
 			} = JSON.parse(scoreData)
 
-			const computePoints = x => {
+			const computePoints = (x) => {
 				return `<span class="scale-up grade-${x < 0 ? 'F' : x > 0 ? 'A' : ''}">${
 					x > 0 ? `+${x}` : x < 0 ? `${x}` : ''
 				}</span>`
@@ -1011,7 +914,7 @@ const imports = {
 				return d
 			}
 
-			const shouldStyle = renewedDateString => {
+			const shouldStyle = (renewedDateString) => {
 				const endNoticeDate = addDays(renewedDateString, 7)
 				const daysRemaining = Math.round((+endNoticeDate - +new Date()) / (1000 * 3600 * 24))
 				return daysRemaining >= 0
@@ -1022,10 +925,10 @@ const imports = {
 				acc[chunk] = [...(acc[chunk]||[]), x]
 				return acc
 			}, [])
-			const styleChunks = chunks => chunks.map((y,yi) => {
-				const animate = n => `animation: balloon ${3*n}00ms ${6*n}00ms cubic-bezier(.47,.47,.56,1.26) alternate infinite`
+			const styleChunks = (chunks) => chunks.map((y, yi) => {
+				const animate = (n) => `animation: balloon ${3*n}00ms ${6*n}00ms cubic-bezier(.47,.47,.56,1.26) alternate infinite`
 				return `<div>${
-					y.map((x,  xi) => `<span class="${x == '1' ? 'shadow' : 'blank'}" style="${x == 1 ? animate(xi+yi): ''}"></span>`).join('')
+					y.map((x, xi) => `<span class="${x == '1' ? 'shadow' : 'blank'}" style="${x == 1 ? animate(xi+yi): ''}"></span>`).join('')
 				}</div>`
 			}).join('')
 
@@ -1045,8 +948,8 @@ const imports = {
 							</span></div>
 							<div>visits: <span class="unblurred">${visits}</span></div>
 							<div class="ellipsis">first: <span class="unblurred">${toLocaleStr(firstVisit)}</span></div>
-							<div>alive: <span class="unblurred">${(hours => {
-								const format = n => {
+							<div>alive: <span class="unblurred">${((hours) => {
+								const format = (n) => {
 									const fixed = n.toFixed(1)
 									const shouldMakeNumberWhole = /\.0/.test(fixed)
 									return shouldMakeNumberWhole ? n.toFixed() : fixed
@@ -1066,15 +969,15 @@ const imports = {
 							</div>
 						</div>
 						<div class="col-six">
-							${trashHTML(templateImports, computePoints(trashPointGain))}
-							${liesHTML(templateImports, computePoints(liesPointGain))}
-							${errorsHTML(templateImports, computePoints(errorsPointGain))}
+							${trashHTML(fp, computePoints(trashPointGain))}
+							${liesHTML(fp, computePoints(liesPointGain))}
+							${errorsHTML(fp, computePoints(errorsPointGain))}
 							<div>session (${''+loads}):<span class="unblurred sub-hash">${initial}</span></div>
 							<div>revisions (${''+revisedKeys.length}): ${
 								!revisedKeys.length ? 'none' : modal(
 									`creep-revisions`,
 									revisedKeys.join('<br>'),
-									hashMini(revisedKeys)
+									hashMini(revisedKeys),
 								)
 							}
 							<div class="ellipsis">loose fp (${''+switchCount}):<span class="unblurred sub-hash">${hashSlice(fpHash)}</span> ${computePoints(switchCountPointGain)}</div>
@@ -1103,7 +1006,6 @@ const imports = {
 				</div>
 			`
 			patch(visitorElem, html`${template}`, () => {
-
 				// show self destruct time
 				const el = document.getElementById('auto-delete')
 				const arrivalTime = +new Date
@@ -1113,9 +1015,10 @@ const imports = {
 					const day = hoursInMs * 24
 					const destructionDate = +new Date(+new Date-(day*30))
 					const hoursTillSelfDestruct = Math.abs(arrivalTime - destructionDate) / hoursInMs/24
+					// @ts-ignore
 					return el.style.setProperty(
 						'--auto-delete-time',
-						`'${hoursTillSelfDestruct.toFixed(8)}'`
+						`'${hoursTillSelfDestruct.toFixed(8)}'`,
 					)
 				}
 				showTime()
@@ -1125,9 +1028,11 @@ const imports = {
 					return
 				}
 				const form = document.getElementById('signature')
-				form.addEventListener('submit', async () => {
+				// @ts-ignore
+				form.addEventListener('submit', async (event) => {
 					event.preventDefault()
 
+					// @ts-ignore
 					const input = document.getElementById('signature-input').value
 					const submit = confirm(`Are you sure? This cannot be undone.\n\nsignature: ${input}`)
 
@@ -1138,13 +1043,15 @@ const imports = {
 					const signatureRequest = `https://creepjs-api.web.app/sign?id=${creepHash}&signature=${input}`
 
 					// animate out
+					// @ts-ignore
 					form.classList.remove('fade-right-in')
+					// @ts-ignore
 					form.classList.add('fade-down-out')
 
 					// fetch/animate in
 					return fetch(signatureRequest)
-					.then(response => response.json())
-					.then(data => {
+					.then((response) => response.json())
+					.then((data) => {
 						return setTimeout(() => {
 							patch(form, html`
 								<div class="fade-right-in" id="signature">
@@ -1154,7 +1061,7 @@ const imports = {
 							return console.log('Signed: ', JSON.stringify(data, null, '\t'))
 						}, 300)
 					})
-					.catch(error => {
+					.catch((error) => {
 						patch(form, html`
 							<div class="fade-right-in" id="signature">
 								<div class="ellipsis"><strong style="color:crimson">${error}</strong></div>
@@ -1170,7 +1077,7 @@ const imports = {
 				consoleErrors,
 				htmlElementVersion,
 				windowFeatures,
-				css,
+				// css,
 				clientRects,
 				offlineAudioContext,
 				resistance,
@@ -1180,15 +1087,12 @@ const imports = {
 				fonts,
 				voices,
 				svg,
-				media
+				media,
 			} = fp || {}
-			const {
-				computedStyle,
-				system
-			} = css || {}
+			// const { computedStyle, system } = css || {}
 			const isTorBrowser = resistance.privacy == 'Tor Browser'
 			const isRFP = resistance.privacy == 'Firefox'
-			const isBravePrivacy = resistance.privacy == 'Brave'
+			// const isBravePrivacy = resistance.privacy == 'Brave'
 
 			const screenMetrics = (
 				!screenFp || screenFp.lied || isRFP || isTorBrowser ? 'undefined' :
@@ -1199,13 +1103,13 @@ const imports = {
 				sampleSum,
 				floatFrequencyDataSum: freqSum,
 				floatTimeDomainDataSum: timeSum,
-				values: audioValues
+				values: audioValues,
 			} = offlineAudioContext || {}
 			const valuesHash = hashMini(audioValues)
 			const audioMetrics = `${sampleSum}_${gain}_${freqSum}_${timeSum}_${valuesHash}`
 
 			const getBestGPUModel = ({ canvasWebgl, workerScope }) => {
-				const gpuHasGoodConfidence = data => {
+				const gpuHasGoodConfidence = (data) => {
 					return (
 						(data.gpu || {}).confidence &&
 						(data.gpu.confidence != 'low')
@@ -1213,21 +1117,20 @@ const imports = {
 				}
 				if (!canvasWebgl || canvasWebgl.parameterOrExtensionLie) {
 					return 'undefined'
-				}
-				else if (workerScope && gpuHasGoodConfidence(workerScope)) {
+				} else if (workerScope && gpuHasGoodConfidence(workerScope)) {
 					return workerScope.webglRenderer
-				}
-				else if (canvasWebgl && !canvasWebgl.parameterOrExtensionLie && gpuHasGoodConfidence(canvasWebgl)) {
+				} else if (canvasWebgl && !canvasWebgl.parameterOrExtensionLie && gpuHasGoodConfidence(canvasWebgl)) {
 					return ''+((canvasWebgl.parameters || {}).UNMASKED_RENDERER_WEBGL)
 				}
 				return 'undefined'
 			}
 			const gpuModel = encodeURIComponent(
-				getBestGPUModel({ canvasWebgl, workerScope: fp.workerScope })
+				getBestGPUModel({ canvasWebgl, workerScope: fp.workerScope }),
 			)
 
 			if (!badBot) {
 				// get data from session
+				// @ts-ignore
 				let decryptionData = window.sessionStorage && JSON.parse(sessionStorage.getItem('decryptionData'))
 				const targetMetrics = [
 					'canvas2d',
@@ -1260,9 +1163,10 @@ const imports = {
 				]
 				const { revisedKeysFromPreviousLoad } = computeSession({
 					fingerprint: fp,
-					computePreviousLoadRevision: true
+					computePreviousLoadRevision: true,
 				})
-				const sessionFingerprintRevision = targetMetrics.filter(x => revisedKeysFromPreviousLoad.includes(x))
+				// @ts-ignore
+				const sessionFingerprintRevision = targetMetrics.filter((x) => revisedKeysFromPreviousLoad.includes(x))
 				const revisionLen = sessionFingerprintRevision.length
 				// fetch data
 				const requireNewDecryptionFetch = !decryptionData || revisionLen
@@ -1270,8 +1174,13 @@ const imports = {
 
 				if (requireNewDecryptionFetch) {
 					const sender = {
-						e: 3.141592653589793 ** -100,
-						l: +new Date('7/1/1113')
+						e: ({
+							// this just allows us to keep using Math.PI ** -100 results in the data base for consistency
+							80: 1.9275814160560204e-50,
+							58: 1.9275814160560185e-50,
+							77: 1.9275814160560206e-50,
+						})[ENGINE_IDENTIFIER] || 0,
+						l: +new Date('7/1/1113'),
 					}
 					const { userAgent, userAgentData } = fp.workerScope || {}
 					const { platformVersion: fontPlatformVersion } = fp.fonts || {}
@@ -1279,7 +1188,7 @@ const imports = {
 					const windows11UA = attemptWindows11UserAgent({
 						userAgent,
 						userAgentData,
-						fontPlatformVersion
+						fontPlatformVersion,
 					})
 					const workerScopeUserAgent = restoredUA || windows11UA
 					if (restoredUA && (restoredUA != userAgent)) {
@@ -1351,11 +1260,11 @@ const imports = {
 						`voicesId=${!voices || voices.lied ? 'undefined' : voices.$hash}`,
 						`screenId=${screenMetrics}`,
 						`deviceOfTimezoneId=${deviceOfTimezoneHash}`,
-						`ua=${encodeURIComponent(workerScopeUserAgent)}`
+						`ua=${encodeURIComponent(workerScopeUserAgent)}`,
 					].join('&')}`
 
 					const decryptionResponse = await fetch(decryptRequest)
-						.catch(error => {
+						.catch((error) => {
 							console.error(error)
 							predictionErrorPatch({error, patch, html})
 							return
@@ -1407,21 +1316,26 @@ const imports = {
 						score == 100 ? 4 :
 							0
 					)
+					// @ts-ignore
 					acc.metrics = [...(acc.metrics||[]), { key, score: (score||0), reporters }]
+					// @ts-ignore
 					acc.scores = [...(acc.scores||[]), (score||0)]
 					return acc
 				}, {})
 
+				// @ts-ignore
 				const { metrics: scoreMetrics } = decryptionDataScores
 				const scoreMetricsMap = Object.keys(scoreMetrics).reduce((acc, key) => {
 					const scoreMetricData = scoreMetrics[key]
-					const { score , reporters } = scoreMetricData
+					const { score, reporters } = scoreMetricData
 					acc[scoreMetricData.key] = { score, reporters }
 					return acc
 				}, {})
 
+				// @ts-ignore
 				const blockedOrOpenlyPoisonedMetric = decryptionDataScores.scores.includes(0)
-				const validScores = decryptionDataScores.scores.filter(n => !!n)
+				// @ts-ignore
+				const validScores = decryptionDataScores.scores.filter((n) => !!n)
 				const crowdBlendingScoreMin = Math.min(...validScores)
 				const crowdBlendingScore = blockedOrOpenlyPoisonedMetric ? (0.75 * crowdBlendingScoreMin) : crowdBlendingScoreMin
 
@@ -1434,16 +1348,10 @@ const imports = {
 					const scoreRequest = `https://creepjs-api.web.app/score-crowd-blending?id=${creepHash}&crowdBlendingScore=${crowdBlendingScore}`
 
 					fetch(scoreRequest)
-						.catch(error => console.error('Failed Score Request', error))
+						.catch((error) => console.error('Failed Score Request', error))
 				}
 
-				renderPrediction({
-					decryptionData,
-					crowdBlendingScore,
-					patch,
-					html,
-					note
-				})
+				renderPrediction({ decryptionData, crowdBlendingScore })
 			}
 
 			// get GCD Samples
@@ -1452,11 +1360,11 @@ const imports = {
 				if (samples) {
 					return {
 						samples: JSON.parse(samples),
-						samplesDidLoadFromSession: true
+						samplesDidLoadFromSession: true,
 					}
 				}
 				const url = 'https://script.google.com/macros/s/AKfycbw26MLaK1PwIGzUiStwweOeVfl-sEmIxFIs5Ax7LMoP1Cuw-s0llN-aJYS7F8vxQuVG-A/exec'
-				const cloudSamples = await fetch(url).then(res => res.json()).catch(error => {
+				const cloudSamples = await fetch(url).then((res) => res.json()).catch((error) => {
 					console.error(error)
 					return
 				})
@@ -1465,14 +1373,14 @@ const imports = {
 				}
 				return {
 					samples: cloudSamples,
-					samplesDidLoadFromSession: false
+					samplesDidLoadFromSession: false,
 				}
 			}
 
 			const { samples: decryptionSamples, samplesDidLoadFromSession } = await getSamples()
 
 			// prevent Error: value for argument "documentPath" must point to a document
-			const cleanGPUString = x => !x ? x : (''+x).replace(/\//g,'')
+			const cleanGPUString = (x) => !x ? x : (''+x).replace(/\//g, '')
 
 			const {
 				window: winSamples,
@@ -1518,12 +1426,12 @@ const imports = {
 					resistance: getPrediction({ hash: (resistance || {}).$hash, data: resistanceSamples }),
 					emojiSystem: getPrediction({
 						hash: (clientRects || {}).domrectSystemSum,
-						data: emojiSamples
+						data: emojiSamples,
 					}),
 					domRectSystem: getPrediction({ hash: domRectHash, data: domRectSamples }),
 					svgSystem: getPrediction({
 						hash: (svg || {}).svgrectSystemSum,
-						data: svgSamples
+						data: svgSamples,
 					}),
 					mimeTypesSystem: getPrediction({ hash: mimeTypesHash, data: mimeTypesSamples }),
 					audioSystem: getPrediction({ hash: audioMetrics, data: audioSamples }),
@@ -1534,7 +1442,7 @@ const imports = {
 					canvasEmojiSystem: getPrediction({ hash: canvas2dEmojiHash, data: canvasEmojiSamples }),
 					textMetricsSystem: getPrediction({
 						hash: (canvas2d || {}).textMetricsSystemSum,
-						data: textMetricsSamples
+						data: textMetricsSamples,
 					}),
 					webglSystem: getPrediction({ hash: canvasWebglImageHash, data: webglSamples }),
 					gpuSystem: getPrediction({ hash: canvasWebglParametersHash, data: gpuSamples }),
@@ -1545,13 +1453,8 @@ const imports = {
 					deviceOfTimezone: getPrediction({ hash: deviceOfTimezoneHash, data: deviceOfTimezoneSamples }),
 				}
 
-				renderPrediction({
-					decryptionData,
-					patch,
-					html,
-					note,
-					bot: true
-				})
+				// @ts-ignore
+				renderPrediction({ decryptionData, bot: true })
 			}
 
 			// render entropy notes
@@ -1560,9 +1463,9 @@ const imports = {
 					let classTotal = 0
 					const metricTotal = Object.keys(data)
 						.reduce((acc, key) => acc+= data[key].length, 0)
-					const decryption = Object.keys(data).find(key => data[key].find(item => {
+					const decryption = Object.keys(data).find((key) => data[key].find((item) => {
 						if ((item.id == hash) && (item.reporterTrustScore > 36)) {
-							const trustedSamples = data[key].filter(sample => {
+							const trustedSamples = data[key].filter((sample) => {
 								return (sample.reporterTrustScore > 36)
 							})
 							classTotal = trustedSamples.length
@@ -1573,7 +1476,7 @@ const imports = {
 					return {
 						classTotal,
 						decryption,
-						metricTotal
+						metricTotal,
 					}
 				}
 				const entropyHash = {
@@ -1630,7 +1533,7 @@ const imports = {
 					gpuModel: 'webgl renderer',
 					deviceOfTimezone: 'device of timezone',
 				}
-				Object.keys(decryptionSamples).forEach((key,i) => {
+				Object.keys(decryptionSamples).forEach((key, i) => {
 					const hash = (
 						key == 'gpuModel' ? cleanGPUString(decodeURIComponent(entropyHash[key])) :
 							entropyHash[key]
@@ -1638,7 +1541,7 @@ const imports = {
 					const {
 						classTotal,
 						decryption,
-						metricTotal
+						// metricTotal,
 					} = getEntropy(hash, decryptionSamples[key])
 					const el = document.getElementById(`${key}-entropy`)
 					const deviceMetric = (
@@ -1661,9 +1564,9 @@ const imports = {
 				})
 			}
 
-			return renderSamples({ samples: decryptionSamples, templateImports })
+			return renderSamples(decryptionSamples, { fp, styleSystemHash })
 		})
-		.catch(error => {
+		.catch((error) => {
 			fetchVisitorDataTimer('Error fetching visitor data')
 			const el = document.getElementById('browser-detection')
 			console.error('Error!', error.message)
@@ -1686,4 +1589,4 @@ const imports = {
 			`)
 		})
 	})
-})(imports)
+}()

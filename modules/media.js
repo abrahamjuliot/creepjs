@@ -1,3 +1,8 @@
+import { captureError } from './captureErrors.js'
+import { hashMini } from './crypto.js'
+import { createTimer, hashSlice, logTestResult, performanceLogger } from './helpers.js'
+import { count, HTMLNote, modal } from './html.js'
+
 // inspired by
 // - https://privacycheck.sec.lrz.de/active/fp_cpt/fp_can_play_type.html
 // - https://arkenfox.github.io/TZP
@@ -13,21 +18,10 @@ const getMimeTypeShortList = () => [
 	'video/mp4; codecs="avc1.42E01E"',
 	'video/webm; codecs="vp8"',
 	'video/webm; codecs="vp9"',
-	'video/x-matroska'
+	'video/x-matroska',
 ].sort()
 
-export const getMedia = async imports => {
-
-	const {
-		require: {
-			queueEvent,
-			createTimer,
-			attempt,
-			captureError,
-			logTestResult
-		}
-	} = imports
-
+export default async function getMedia() {
 	const getMimeTypes = () => {
 		try {
 			const mimeTypes = getMimeTypeShortList()
@@ -40,11 +34,12 @@ export const getMedia = async imports => {
 					audioPlayType: audioEl.canPlayType(type),
 					videoPlayType: videoEl.canPlayType(type),
 					mediaSource: MediaSource.isTypeSupported(type),
-					mediaRecorder: isMediaRecorderSupported ? MediaRecorder.isTypeSupported(type) : false
+					mediaRecorder: isMediaRecorderSupported ? MediaRecorder.isTypeSupported(type) : false,
 				}
 				if (!data.audioPlayType && !data.videoPlayType && !data.mediaSource && !data.mediaRecorder) {
 					return acc
 				}
+				// @ts-ignore
 				acc.push(data)
 				return acc
 			}, [])
@@ -61,7 +56,7 @@ export const getMedia = async imports => {
 			!navigator.mediaDevices ||
 			!navigator.mediaDevices.enumerateDevices ? undefined :
 				await navigator.mediaDevices.enumerateDevices()
-					.then(devices => devices.map(device => device.kind).sort()).catch(error => {
+					.then((devices) => devices.map((device) => device.kind).sort()).catch((error) => {
 						console.error(error)
 						return
 					})
@@ -71,36 +66,35 @@ export const getMedia = async imports => {
 
 		logTestResult({ time: timer.stop(), test: 'media', passed: true })
 		return { mediaDevices: devices, mimeTypes }
-	}
-	catch (error) {
+	} catch (error) {
 		logTestResult({ test: 'media', passed: false })
 		captureError(error)
 		return
 	}
 }
 
-export const mediaHTML = ({ fp, note, count, modal, hashMini, hashSlice, performanceLogger }) => {
+export function mediaHTML(fp) {
 	if (!fp.media) {
 		return `
 		<div class="col-four undefined">
 			<strong>Media</strong>
-			<div>mimes (0): ${note.blocked}</div>
-			<div>devices (0): ${note.blocked}</div>
-			<div class="block-text">${note.blocked}</div>
+			<div>mimes (0): ${HTMLNote.BLOCKED}</div>
+			<div>devices (0): ${HTMLNote.BLOCKED}</div>
+			<div class="block-text">${HTMLNote.BLOCKED}</div>
 		</div>`
 	}
 	const {
 		media: {
 			mediaDevices,
 			mimeTypes,
-			$hash
-		}
+			$hash,
+		},
 	} = fp
 
 	const deviceMap = {
 		'audioinput': 'mic',
 		'audiooutput': 'audio',
-		'videoinput': 'webcam'
+		'videoinput': 'webcam',
 	}
 
 	const header = `
@@ -140,10 +134,10 @@ export const mediaHTML = ({ fp, note, count, modal, hashMini, hashSlice, perform
 	<br><span class="guide tr">T (True)</span>
 	</div>`
 	const invalidMimeTypes = !mimeTypes || !mimeTypes.length
-	const mimes = invalidMimeTypes ? undefined : mimeTypes.map(type => {
+	const mimes = invalidMimeTypes ? undefined : mimeTypes.map((type) => {
 		const { mimeType, audioPlayType, videoPlayType, mediaSource, mediaRecorder } = type
 		return `
-			${audioPlayType == 'probably' ? '<span class="audiop pb">P</span>' : audioPlayType == 'maybe' ? '<span class="audiop mb">M</span>': '<span class="blank-false">-</span>'}${videoPlayType == 'probably' ? '<span class="videop pb">P</span>' : videoPlayType == 'maybe' ? '<span class="videop mb">M</span>': '<span class="blank-false">-</span>'}${mediaSource ? '<span class="medias tr">T</span>'  : '<span class="blank-false">-</span>'}${mediaRecorder ? '<span class="mediar tr">T</span>'  : '<span class="blank-false">-</span>'}: ${mimeType}
+			${audioPlayType == 'probably' ? '<span class="audiop pb">P</span>' : audioPlayType == 'maybe' ? '<span class="audiop mb">M</span>': '<span class="blank-false">-</span>'}${videoPlayType == 'probably' ? '<span class="videop pb">P</span>' : videoPlayType == 'maybe' ? '<span class="videop mb">M</span>': '<span class="blank-false">-</span>'}${mediaSource ? '<span class="medias tr">T</span>' : '<span class="blank-false">-</span>'}${mediaRecorder ? '<span class="mediar tr">T</span>' : '<span class="blank-false">-</span>'}: ${mimeType}
 		`
 	})
 	const mimesListLen = getMimeTypeShortList().length
@@ -151,20 +145,19 @@ export const mediaHTML = ({ fp, note, count, modal, hashMini, hashSlice, perform
 	const replaceIndex = ({ list, index, replacement }) => [
 		...list.slice(0, index),
 		replacement,
-		...list.slice(index + 1)
+		...list.slice(index + 1),
 	]
 
 	const mediaDevicesByType = (mediaDevices || []).reduce((acc, x) => {
 		const deviceType = deviceMap[x] || x
 		if (!acc.includes(deviceType)) {
 			return (acc = [...acc, deviceType])
-		}
-		else if (!deviceType.includes('dual') && (acc.filter(x => x == deviceType) || []).length == 1) {
+		} else if (!deviceType.includes('dual') && (acc.filter((x) => x == deviceType) || []).length == 1) {
 			return (
 				acc = replaceIndex({
 					list: acc,
 					index: acc.indexOf(deviceType),
-					replacement: `dual ${deviceType}`
+					replacement: `dual ${deviceType}`,
 				})
 			)
 		}
@@ -176,17 +169,17 @@ export const mediaHTML = ({ fp, note, count, modal, hashMini, hashSlice, perform
 		<span class="aside-note">${performanceLogger.getLog().media}</span>
 		<strong>Media</strong><span class="hash">${hashSlice($hash)}</span>
 		<div class="help" title="HTMLMediaElement.canPlayType()\nMediaRecorder.isTypeSupported()\nMediaSource.isTypeSupported()">mimes (${count(mimeTypes)}/${mimesListLen}): ${
-			invalidMimeTypes ? note.blocked :
+			invalidMimeTypes ? HTMLNote.BLOCKED :
 			modal(
 				'creep-media-mimeTypes',
 				header+mimes.join('<br>'),
-				hashMini(mimeTypes)
+				hashMini(mimeTypes),
 			)
 		}</div>
 		<div class="help" title="MediaDevices.enumerateDevices()\nMediaDeviceInfo.kind">devices (${count(mediaDevices)}):</div>
 		<div class="block-text">
 			${
-				!mediaDevices || !mediaDevices.length ? note.blocked :
+				!mediaDevices || !mediaDevices.length ? HTMLNote.BLOCKED :
 					mediaDevicesByType.join(', ')
 			}
 		</div>

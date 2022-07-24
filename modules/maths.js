@@ -1,17 +1,9 @@
-export const getMaths = async imports => {
+import { attempt, captureError } from './captureErrors.js'
+import { createTimer, hashSlice, logTestResult, performanceLogger } from './helpers.js'
+import { HTMLNote, modal } from './html.js'
+import { lieProps, documentLie } from './lies.js'
 
-	const {
-		require: {
-			queueEvent,
-			createTimer,
-			captureError,
-			attempt,
-			documentLie,
-			lieProps,
-			logTestResult
-		}
-	} = imports
-
+export default function getMaths() {
 	try {
 		const timer = createTimer()
 		timer.start()
@@ -38,12 +30,11 @@ export const getMaths = async imports => {
 			'sqrt',
 			'tan',
 			'tanh',
-			'pow'
+			'pow',
 		]
 		let lied = false
-		let liedCalc = false
 
-		check.forEach(prop => {
+		check.forEach((prop) => {
 			if (!!lieProps[`Math.${prop}`]) {
 				lied = true
 			}
@@ -57,7 +48,7 @@ export const getMaths = async imports => {
 			const res2 = Math[prop](...test)
 			const matching = isNaN(res1) && isNaN(res2) ? true : res1 == res2
 			if (!matching) {
-				liedCalc = true
+				lied = true
 				const mathLie = `expected x and got y`
 				documentLie(`Math.${prop}`, mathLie)
 			}
@@ -194,12 +185,13 @@ export const getMaths = async imports => {
 			['pow', [Math.SQRT1_2, -100], 'pow(Math.SQRT1_2, -100)', 1125899906842616.2, 1125899906842611.5, NaN, NaN],
 			['pow', [Math.SQRT2, -100], 'pow(Math.SQRT2, -100)', 8.881784197001191e-16, 8.881784197001154e-16, NaN, NaN],
 
-			['polyfill', [2e-3 ** -100], 'polyfill pow(2e-3, -100)', 7.888609052210102e+269, 7.888609052210126e+269, NaN, NaN]
+			['polyfill', [2e-3 ** -100], 'polyfill pow(2e-3, -100)', 7.888609052210102e+269, 7.888609052210126e+269, NaN, NaN],
 		]
 
 		const data = {}
-		fns.forEach(fn => {
+		fns.forEach((fn) => {
 			data[fn[2]] = attempt(() => {
+				// @ts-ignore
 				const result = fn[0] != 'polyfill' ? Math[fn[0]](...fn[1]) : fn[1]
 				const chrome = result == fn[3]
 				const firefox = fn[4] ? result == fn[4] : false
@@ -211,22 +203,21 @@ export const getMaths = async imports => {
 
 		logTestResult({ time: timer.stop(), test: 'math', passed: true })
 		return { data, lied }
-	}
-	catch (error) {
+	} catch (error) {
 		logTestResult({ test: 'math', passed: false })
 		captureError(error)
 		return
 	}
 }
 
-export const mathsHTML = ({ fp, modal, note, hashSlice, performanceLogger }) => {
+export function mathsHTML(fp) {
 	if (!fp.maths) {
 		return `
 		<div class="col-six undefined">
 			<strong>Math</strong>
-			<div>results: ${note.blocked}</div>
+			<div>results: ${HTMLNote.Blocked}</div>
 			<div>
-				<div>${note.blocked}</div>
+				<div>${HTMLNote.Blocked}</div>
 			</div>
 
 		</div>`
@@ -235,8 +226,8 @@ export const mathsHTML = ({ fp, modal, note, hashSlice, performanceLogger }) => 
 		maths: {
 			data,
 			$hash,
-			lied
-		}
+			lied,
+		},
 	} = fp
 
 	const header = `
@@ -268,9 +259,9 @@ export const mathsHTML = ({ fp, modal, note, hashSlice, performanceLogger }) => 
 	<br><span class="math-safari">S - Safari</span>
 	</div>`
 
-	const results = Object.keys(data).map(key => {
+	const results = Object.keys(data).map((key) => {
 		const value = data[key]
-		const { result, chrome, firefox, torBrowser, safari } = value
+		const { chrome, firefox, torBrowser, safari } = value
 		return `
 		${chrome ? '<span class="math-chromium">C</span>' : '<span class="math-blank-false">-</span>'}${firefox ? '<span class="math-firefox">F</span>' : '<span class="math-blank-false">-</span>'}${torBrowser ? '<span class="math-tor-browser">T</span>' : '<span class="math-blank-false">-</span>'}${safari ? '<span class="math-safari">S</span>' : '<span class="math-blank-false">-</span>'} ${key}`
 	})
@@ -280,10 +271,10 @@ export const mathsHTML = ({ fp, modal, note, hashSlice, performanceLogger }) => 
 		<span class="aside-note">${performanceLogger.getLog().math}</span>
 		<strong>Math</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div>results: ${
-			!data ? note.blocked :
+			!data ? HTMLNote.Blocked :
 			modal(
 				'creep-maths',
-				header+results.join('<br>')
+				header+results.join('<br>'),
 			)
 		}</div>
 		<div class="blurred" id="math-samples">

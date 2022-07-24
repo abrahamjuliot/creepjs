@@ -1,17 +1,9 @@
-export const getScreen = async (imports, logger = true) => {
+import { captureError } from './captureErrors.js'
+import { createTimer, hashSlice, IS_GECKO, logTestResult, performanceLogger } from './helpers.js'
+import { html, HTMLNote, patch } from './html.js'
+import { lieProps, documentLie } from './lies.js'
 
-	const {
-		require: {
-			queueEvent,
-			createTimer,
-			isFirefox,
-			captureError,
-			lieProps,
-			documentLie,
-			logTestResult
-		}
-	} = imports
-
+export default async function getScreen(log = true) {
 	try {
 		const timer = createTimer()
 		timer.start()
@@ -31,22 +23,22 @@ export const getScreen = async (imports, logger = true) => {
 			availWidth,
 			availHeight,
 			colorDepth,
-			pixelDepth
+			pixelDepth,
 		} = s
 
 		const dpr = window.devicePixelRatio || undefined
-		const firefoxWithHighDPR = isFirefox && (dpr != 1)
+		const firefoxWithHighDPR = IS_GECKO && (dpr != 1)
 		if (!firefoxWithHighDPR) {
 			// firefox with high dpr requires floating point precision dimensions
 			const matchMediaLie = !matchMedia(
-				`(device-width: ${s.width}px) and (device-height: ${s.height}px)`
+				`(device-width: ${s.width}px) and (device-height: ${s.height}px)`,
 			).matches
 			if (matchMediaLie) {
 				lied = true
 				documentLie('Screen', 'failed matchMedia')
 			}
 		}
-		
+
 		const data = {
 			width,
 			height,
@@ -54,54 +46,49 @@ export const getScreen = async (imports, logger = true) => {
 			availHeight,
 			colorDepth,
 			pixelDepth,
-			lied
+			lied,
 		}
 
-		if (logger) {
-			logTestResult({ time: timer.stop(), test: 'screen', passed: true })
-		}
+		log && logTestResult({ time: timer.stop(), test: 'screen', passed: true })
 		return { ...data }
-	}
-	catch (error) {
-		if (logger) {
-			logTestResult({ test: 'screen', passed: false })
-		}
+	} catch (error) {
+		log && logTestResult({ test: 'screen', passed: false })
 		captureError(error)
 		return
 	}
 }
 
-export const screenHTML = ({ fp, note, hashSlice, performanceLogger, patch, html, imports }) => {
+export function screenHTML(fp) {
 	if (!fp.screen) {
 		return `
 		<div class="col-six undefined">
 			<strong>Screen</strong>
-			<div>...screen: ${note.blocked}</div>
-			<div>....avail: ${note.blocked}</div>
-			<div>depth: ${note.blocked}</div>
-			<div>viewport: ${note.blocked}</div>
+			<div>...screen: ${HTMLNote.BLOCKED}</div>
+			<div>....avail: ${HTMLNote.BLOCKED}</div>
+			<div>depth: ${HTMLNote.BLOCKED}</div>
+			<div>viewport: ${HTMLNote.BLOCKED}</div>
 			<div class="screen-container"></div>
 		</div>`
 	}
 	const {
-		screen: data
+		screen: data,
 	} = fp
 	const { $hash } = data || {}
 	const perf = performanceLogger.getLog().screen
 
-	const paintScreen = event => {
+	const paintScreen = (event) => {
 		const el = document.getElementById('creep-resize')
 		if (!el) {
 			return
 		}
 		removeEventListener('resize', paintScreen)
-		return getScreen(imports, false).then(data => {
+		return getScreen(false).then((data) => {
 			requestAnimationFrame(
-				() => patch(el, html`${resizeHTML(({ data, $hash, perf, paintScreen }))}`)
+				() => patch(el, html`${resizeHTML(({ data, $hash, perf, paintScreen }))}`),
 			)
 		})
 	}
-	
+
 	const resizeHTML = ({ data, $hash, perf, paintScreen }) => {
 		const {
 			width,
@@ -139,10 +126,10 @@ export const screenHTML = ({ fp, note, hashSlice, performanceLogger, patch, html
 			const deviceHeight = isPortrait ? diameter : diameter / aspectRatio
 			return { deviceWidth, deviceHeight }
 		}
-		//const { deviceWidth, deviceHeight } = getDeviceDimensions(width, height)
+		// const { deviceWidth, deviceHeight } = getDeviceDimensions(width, height)
 		const { deviceWidth: deviceInnerWidth, deviceHeight: deviceInnerHeight } = getDeviceDimensions(innerWidth, innerHeight)
 		const toFix = (n, nFix) => {
-			const d = +(1+[...Array(nFix)].map(x => 0).join(''))
+			const d = +(1+[...Array(nFix)].map((x) => 0).join(''))
 			return Math.round(n*d)/d
 		}
 		const viewportTitle = `Window.outerWidth\nWindow.outerHeight\nWindow.innerWidth\nWindow.innerHeight\nVisualViewport.width\nVisualViewport.height\nWindow.matchMedia()\nScreenOrientation.type\nWindow.devicePixelRatio`
@@ -209,7 +196,7 @@ export const screenHTML = ({ fp, note, hashSlice, performanceLogger, patch, html
 						.screen-visual-h {
 							top: -5px;
 						}
-						
+
 						.screen-display-mode {
 							top: -31px;
 						}
@@ -222,7 +209,7 @@ export const screenHTML = ({ fp, note, hashSlice, performanceLogger, patch, html
 						.screen-dpr {
 							top: 5px;
 						}
-						
+
 					</style>
 					<span class="screen-outer-w">${outerWidth}</span>
 					<span class="screen-inner-w">${innerWidth}</span>
@@ -242,8 +229,6 @@ export const screenHTML = ({ fp, note, hashSlice, performanceLogger, patch, html
 			`
 	}
 
-	
-	
 
 	return `
 	${resizeHTML({ data, $hash, perf, paintScreen })}

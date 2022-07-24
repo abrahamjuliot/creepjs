@@ -1,16 +1,10 @@
-export const getCSSMedia = async imports => {
+import { captureError } from './captureErrors.js'
+import { hashMini } from './crypto.js'
+import { createTimer, hashSlice, IS_GECKO, logTestResult, performanceLogger } from './helpers.js'
+import { HTMLNote, modal } from './html.js'
+import { PHANTOM_DARKNESS } from './lies.js'
 
-	const {
-		require: {
-			queueEvent,
-			createTimer,
-			captureError,
-			phantomDarkness,
-			logTestResult,
-			isFirefox
-		}
-	} = imports
-
+export default function getCSSMedia() {
 	const gcd = (a, b) => b == 0 ? a : gcd(b, a % b)
 
 	const getAspectRatio = (width, height) => {
@@ -33,7 +27,7 @@ export const getCSSMedia = async imports => {
 		let widthMatch = query({ body, type: 'width', rangeStart: width, rangeLen: 1 })
 		let heightMatch = query({ body, type: 'height', rangeStart: height, rangeLen: 1 })
 		if (widthMatch && heightMatch) {
-			return { width, height }	
+			return { width, height }
 		}
 		const rangeLen = 1000
 		;[...Array(10)].find((slot, i) => {
@@ -48,12 +42,12 @@ export const getCSSMedia = async imports => {
 		return { width: +widthMatch, height: +heightMatch }
 	}
 
-	const getCSSDataURI = x => `data:text/css,body {${x}}`
+	const getCSSDataURI = (x) => `data:text/css,body {${x}}`
 
 	try {
 		const timer = createTimer()
 		timer.start()
-		const win = phantomDarkness.window
+		const win = PHANTOM_DARKNESS.window
 
 		const { body } = win.document
 		const { width, height } = win.screen
@@ -119,7 +113,7 @@ export const getCSSMedia = async imports => {
 			orientation: (
 				win.matchMedia('(orientation: landscape)').matches ? 'landscape' :
 					win.matchMedia('(orientation: portrait)').matches ? 'portrait' : undefined
-			)
+			),
 		}
 
 		const importStyles = `
@@ -192,9 +186,9 @@ export const getCSSMedia = async imports => {
 		@media (orientation: landscape) {body {--orientation: landscape}}
 		@media (orientation: portrait) {body {--orientation: portrait}}
 		</style>
-		${!isFirefox ? importStyles : ''}
+		${!IS_GECKO ? importStyles : ''}
 		`
-		
+
 		const style = getComputedStyle(body)
 		const mediaCSS = {
 			['prefers-reduced-motion']: style.getPropertyValue('--prefers-reduced-motion').trim() || undefined,
@@ -213,7 +207,7 @@ export const getCSSMedia = async imports => {
 			orientation: style.getPropertyValue('--orientation').trim() || undefined,
 		}
 
-		const importCSS = isFirefox ? undefined : {
+		const importCSS = IS_GECKO ? undefined : {
 			['prefers-reduced-motion']: style.getPropertyValue('--import-prefers-reduced-motion').trim() || undefined,
 			['prefers-color-scheme']: style.getPropertyValue('--import-prefers-color-scheme').trim() || undefined,
 			monochrome: style.getPropertyValue('--import-monochrome').trim() || undefined,
@@ -227,16 +221,15 @@ export const getCSSMedia = async imports => {
 			['device-screen']: style.getPropertyValue('--import-device-screen').trim() || undefined,
 			['display-mode']: style.getPropertyValue('--import-display-mode').trim() || undefined,
 			['color-gamut']: style.getPropertyValue('--import-color-gamut').trim() || undefined,
-			orientation: style.getPropertyValue('--import-orientation').trim() || undefined
+			orientation: style.getPropertyValue('--import-orientation').trim() || undefined,
 		}
 
 		// get screen query
 		const screenQuery = getScreenMedia({ body, width, height })
-		
+
 		logTestResult({ time: timer.stop(), test: 'css media', passed: true })
 		return { importCSS, mediaCSS, matchMediaCSS, screenQuery }
-	}
-	catch (error) {
+	} catch (error) {
 		logTestResult({ test: 'css media', passed: false })
 		captureError(error)
 		return
@@ -244,28 +237,27 @@ export const getCSSMedia = async imports => {
 }
 
 
-
-export const cssMediaHTML = ({ fp, modal, note, hashMini, hashSlice, performanceLogger }) => {
+export function cssMediaHTML(fp) {
 	if (!fp.css) {
 		return `
 		<div class="col-six undefined">
 			<strong>CSS Media Queries</strong>
-			<div>@media: ${note.blocked}</div>
-			<div>@import: ${note.blocked}</div>
-			<div>matchMedia: ${note.blocked}</div>
-			<div>touch device: ${note.blocked}</div>
-			<div>screen query: ${note.blocked}</div>
+			<div>@media: ${HTMLNote.BLOCKED}</div>
+			<div>@import: ${HTMLNote.BLOCKED}</div>
+			<div>matchMedia: ${HTMLNote.BLOCKED}</div>
+			<div>touch device: ${HTMLNote.BLOCKED}</div>
+			<div>screen query: ${HTMLNote.BLOCKED}</div>
 		</div>`
 	}
 	const {
-		cssMedia: data
+		cssMedia: data,
 	} = fp
 	const {
 		$hash,
 		importCSS,
 		mediaCSS,
 		matchMediaCSS,
-		screenQuery
+		screenQuery,
 	} = data
 
 	return `
@@ -273,34 +265,34 @@ export const cssMediaHTML = ({ fp, modal, note, hashMini, hashSlice, performance
 		<span class="aside-note">${performanceLogger.getLog()['css media']}</span>
 		<strong>CSS Media Queries</strong><span class="hash">${hashSlice($hash)}</span>
 		<div>@media: ${
-			!mediaCSS || !Object.keys(mediaCSS).filter(key => !!mediaCSS[key]).length ? 
-			note.blocked :
+			!mediaCSS || !Object.keys(mediaCSS).filter((key) => !!mediaCSS[key]).length ?
+			HTMLNote.BLOCKED :
 			modal(
 				'creep-css-media',
-				`<strong>@media</strong><br><br>${Object.keys(mediaCSS).map(key => `${key}: ${mediaCSS[key] || note.unsupported}`).join('<br>')}`,
-				hashMini(mediaCSS)
+				`<strong>@media</strong><br><br>${Object.keys(mediaCSS).map((key) => `${key}: ${mediaCSS[key] || HTMLNote.UNSUPPORTED}`).join('<br>')}`,
+				hashMini(mediaCSS),
 			)
 		}</div>
 		<div>@import: ${
-			!importCSS || !Object.keys(importCSS).filter(key => !!importCSS[key]).length ? 
-			note.unsupported :
+			!importCSS || !Object.keys(importCSS).filter((key) => !!importCSS[key]).length ?
+			HTMLNote.UNSUPPORTED :
 			modal(
 				'creep-css-import',
-				`<strong>@import</strong><br><br>${Object.keys(importCSS).map(key => `${key}: ${importCSS[key] || note.unsupported}`).join('<br>')}`,
-				hashMini(importCSS)
+				`<strong>@import</strong><br><br>${Object.keys(importCSS).map((key) => `${key}: ${importCSS[key] || HTMLNote.UNSUPPORTED}`).join('<br>')}`,
+				hashMini(importCSS),
 			)
 		}</div>
 		<div>matchMedia: ${
-			!matchMediaCSS || !Object.keys(matchMediaCSS).filter(key => !!matchMediaCSS[key]).length ? 
-			note.blocked : 
+			!matchMediaCSS || !Object.keys(matchMediaCSS).filter((key) => !!matchMediaCSS[key]).length ?
+			HTMLNote.BLOCKED :
 			modal(
 				'creep-css-match-media',
-				`<strong>matchMedia</strong><br><br>${Object.keys(matchMediaCSS).map(key => `${key}: ${matchMediaCSS[key] || note.unsupported}`).join('<br>')}`,
-				hashMini(matchMediaCSS)
+				`<strong>matchMedia</strong><br><br>${Object.keys(matchMediaCSS).map((key) => `${key}: ${matchMediaCSS[key] || HTMLNote.UNSUPPORTED}`).join('<br>')}`,
+				hashMini(matchMediaCSS),
 			)
 		}</div>
-		<div>touch device: ${!mediaCSS ? note.blocked : mediaCSS['any-pointer'] == 'coarse' ? true : note.unknown}</div>
-		<div>screen query: ${!screenQuery ? note.blocked : `${screenQuery.width} x ${screenQuery.height}`}</div>
+		<div>touch device: ${!mediaCSS ? HTMLNote.BLOCKED : mediaCSS['any-pointer'] == 'coarse' ? true : HTMLNote.UNKNOWN}</div>
+		<div>screen query: ${!screenQuery ? HTMLNote.BLOCKED : `${screenQuery.width} x ${screenQuery.height}`}</div>
 	</div>
 	`
 }

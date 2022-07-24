@@ -1,4 +1,11 @@
-export const getKnownAudio = () => ({
+import {caniuse, attempt, captureError} from './captureErrors.js'
+import { hashMini } from './crypto.js'
+import {createTimer, queueEvent, logTestResult, hashSlice, performanceLogger} from './helpers.js'
+import { HTMLNote, getDiffs, modal } from './html.js'
+import {lieProps, documentLie} from './lies.js'
+import {sendToTrash} from './trash.js'
+
+export const KnownAudio = {
 	// Blink/WebKit
 	[-20.538286209106445]: [
 		124.0434488439787,
@@ -14,7 +21,7 @@ export const getKnownAudio = () => ({
 		124.04344968475198,
 		124.04347657808103,
 		124.04347730590962, // pattern (rare)
-		124.0434765110258,  // pattern (rare)
+		124.0434765110258, // pattern (rare)
 		124.04347656317987, // pattern (rare)
 		124.04375314689969, // pattern (rare)
 		// WebKit
@@ -46,42 +53,31 @@ export const getKnownAudio = () => ({
 	// WebKit
 	[-29.837873458862305]: [35.10892717540264, 35.10892752557993],
 	[-29.83786964416504]: [35.10893232002854, 35.10893253237009],
-})
+}
 
-const audioTrap = Math.random()
+const AUDIO_TRAP = Math.random()
 
-export const getOfflineAudioContext = async imports => {
-
-	const {
-		require: {
-			queueEvent,
-			createTimer,
-			captureError,
-			attempt,
-			caniuse,
-			sendToTrash,
-			documentLie,
-			lieProps,
-			logTestResult
-		}
-	} = imports
-
+export default async function getOfflineAudioContext() {
 	try {
 		const timer = createTimer()
 		await queueEvent(timer)
-		const win = window
-		const audioContext = caniuse(() => win.OfflineAudioContext || win.webkitOfflineAudioContext)
-		if (!audioContext) {
-			logTestResult({ test: 'audio', passed: false })
+		try {
+			// @ts-ignore webkitOfflineAudioContext
+			window.OfflineAudioContext = OfflineAudioContext || webkitOfflineAudioContext
+		} catch (err) { }
+
+		if (!OfflineAudioContext) {
+			logTestResult({test: 'audio', passed: false})
 			return
 		}
+
 		// detect lies
 		const channelDataLie = lieProps['AudioBuffer.getChannelData']
 		const copyFromChannelLie = lieProps['AudioBuffer.copyFromChannel']
 		let lied = (channelDataLie || copyFromChannelLie) || false
 
 		const bufferLen = 5000
-		const context = new audioContext(1, bufferLen, 44100)
+		const context = new OfflineAudioContext(1, bufferLen, 44100)
 		const analyser = context.createAnalyser()
 		const oscillator = context.createOscillator()
 		const dynamicsCompressor = context.createDynamicsCompressor()
@@ -128,9 +124,9 @@ export const getOfflineAudioContext = async imports => {
 			['OscillatorNode.detune.minValue']: attempt(() => oscillator.detune.minValue),
 			['OscillatorNode.frequency.defaultValue']: attempt(() => oscillator.frequency.defaultValue),
 			['OscillatorNode.frequency.maxValue']: attempt(() => oscillator.frequency.maxValue),
-			['OscillatorNode.frequency.minValue']: attempt(() => oscillator.frequency.minValue)
+			['OscillatorNode.frequency.minValue']: attempt(() => oscillator.frequency.minValue),
 		}
-		const getRenderedBuffer = (context) => new Promise(resolve => {
+		const getRenderedBuffer = (context) => (new Promise((resolve) => {
 			const analyser = context.createAnalyser()
 			const oscillator = context.createOscillator()
 			const dynamicsCompressor = context.createDynamicsCompressor()
@@ -150,7 +146,7 @@ export const getOfflineAudioContext = async imports => {
 			oscillator.start(0)
 			context.startRendering()
 
-			return context.addEventListener('complete', event => {
+			return context.addEventListener('complete', (event) => {
 				try {
 					dynamicsCompressor.disconnect()
 					oscillator.disconnect()
@@ -167,21 +163,20 @@ export const getOfflineAudioContext = async imports => {
 						compressorGainReduction: (
 							dynamicsCompressor.reduction.value || // webkit
 							dynamicsCompressor.reduction
-						)
+						),
 					})
-				}
-				catch (error) {
-					return resolve()
+				} catch (error) {
+					return resolve(null)
 				}
 			})
-		})
+		}))
 		await queueEvent(timer)
 		const {
 			floatFrequencyData,
 			floatTimeDomainData,
 			buffer,
-			compressorGainReduction
-		} = await getRenderedBuffer(new audioContext(1, bufferLen, 44100)) || {}
+			compressorGainReduction,
+		} = await getRenderedBuffer(new OfflineAudioContext(1, bufferLen, 44100)) || {}
 
 		await queueEvent(timer)
 		const getSnapshot = (arr, start, end) => {
@@ -191,7 +186,7 @@ export const getOfflineAudioContext = async imports => {
 			}
 			return collection
 		}
-		const getSum = arr => !arr ? 0 : arr.reduce((acc, curr) => (acc += Math.abs(curr)), 0)
+		const getSum = (arr) => !arr ? 0 : arr.reduce((acc, curr) => (acc += Math.abs(curr)), 0)
 		const floatFrequencyDataSum = getSum(floatFrequencyData)
 		const floatTimeDomainDataSum = getSum(floatTimeDomainData)
 
@@ -223,12 +218,12 @@ export const getOfflineAudioContext = async imports => {
 		// sample noise factor
 		const getRandFromRange = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min
 		const getCopyFrom = (rand, buffer, copy) => {
-			const { length } = buffer
+			const {length} = buffer
 
 			const max = 20;
-		  const start = getRandFromRange(275, length - (max + 1));
-		  const mid = start + max / 2;
-		  const end = start + max;
+			const start = getRandFromRange(275, length - (max + 1));
+			const mid = start + max / 2;
+			const end = start + max;
 
 			buffer.getChannelData(0)[start] = rand
 			buffer.getChannelData(0)[mid] = rand
@@ -239,15 +234,15 @@ export const getOfflineAudioContext = async imports => {
 				buffer.getChannelData(0)[mid] === 0 ? Math.random() : 0,
 				buffer.getChannelData(0)[end] === 0 ? Math.random() : 0,
 			]
-			return [...new Set([...buffer.getChannelData(0), ...copy, ...attack])].filter(x => x !== 0)
+			return [...new Set([...buffer.getChannelData(0), ...copy, ...attack])].filter((x) => x !== 0)
 		}
 
 		const getCopyTo = (rand, buffer, copy) => {
 			buffer.copyToChannel(copy.map((x) => rand), 0)
 			const frequency = buffer.getChannelData(0)[0]
 			const dataAttacked = [...buffer.getChannelData(0)]
-				.map(x => x !== frequency || !x ? Math.random() : x)
-			return dataAttacked.filter(x => x !== frequency)
+				.map((x) => x !== frequency || !x ? Math.random() : x)
+			return dataAttacked.filter((x) => x !== frequency)
 		}
 
 		const getNoiseFactor = () => {
@@ -255,22 +250,21 @@ export const getOfflineAudioContext = async imports => {
 			try {
 				const result = [...new Set([
 					...getCopyFrom(
-						audioTrap,
-						new AudioBuffer({ length, sampleRate: 44100 }),
-						new Float32Array(length)
+						AUDIO_TRAP,
+						new AudioBuffer({length, sampleRate: 44100}),
+						new Float32Array(length),
 					),
 					...getCopyTo(
-						audioTrap,
-						new AudioBuffer({ length, sampleRate: 44100 }),
-						new Float32Array(length)
-					)
+						AUDIO_TRAP,
+						new AudioBuffer({length, sampleRate: 44100}),
+						new Float32Array(length),
+					),
 				])]
 				return +(
 					result.length !== 1 &&
 					result.reduce((acc, n) => acc += +n, 0)
 				)
-			}
-			catch (error) {
+			} catch (error) {
 				console.error(error)
 				return 0
 			}
@@ -385,7 +379,7 @@ export const getOfflineAudioContext = async imports => {
 		const pattern = ''+[
 			compressorGainReduction,
 			floatFrequencyDataSum,
-			floatTimeDomainDataSum
+			floatTimeDomainDataSum,
 		]
 
 		const knownPattern = known[pattern]
@@ -394,7 +388,7 @@ export const getOfflineAudioContext = async imports => {
 			documentLie('AudioBuffer', 'unknown frequency pattern (suspected lie)')
 		}
 
-		logTestResult({ time: timer.stop(), test: 'audio', passed: true })
+		logTestResult({time: timer.stop(), test: 'audio', passed: true})
 		return {
 			totalUniqueSamples,
 			compressorGainReduction,
@@ -405,31 +399,28 @@ export const getOfflineAudioContext = async imports => {
 			copySample: copyFromChannelSupported ? copySample : [undefined],
 			values,
 			noise,
-			lied
+			lied,
 		}
-
-	}
-	catch (error) {
-		logTestResult({ test: 'audio', passed: false })
+	} catch (error) {
+		logTestResult({test: 'audio', passed: false})
 		captureError(error, 'OfflineAudioContext failed or blocked by client')
 		return
 	}
-
 }
 
-export const audioHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, performanceLogger }) => {
+export function audioHTML(fp) {
 	if (!fp.offlineAudioContext) {
 		return `<div class="col-four undefined">
 			<strong>Audio</strong>
-			<div>sum: ${note.blocked}</div>
-			<div>gain: ${note.blocked}</div>
-			<div>freq: ${note.blocked}</div>
-			<div>time: ${note.blocked}</div>
-			<div>trap: ${note.blocked}</div>
-			<div>unique: ${note.blocked}</div>
-			<div>data: ${note.blocked}</div>
-			<div>copy: ${note.blocked}</div>
-			<div>values: ${note.blocked}</div>
+			<div>sum: ${HTMLNote.BLOCKED}</div>
+			<div>gain: ${HTMLNote.BLOCKED}</div>
+			<div>freq: ${HTMLNote.BLOCKED}</div>
+			<div>time: ${HTMLNote.BLOCKED}</div>
+			<div>trap: ${HTMLNote.BLOCKED}</div>
+			<div>unique: ${HTMLNote.BLOCKED}</div>
+			<div>data: ${HTMLNote.BLOCKED}</div>
+			<div>copy: ${HTMLNote.BLOCKED}</div>
+			<div>values: ${HTMLNote.BLOCKED}</div>
 		</div>`
 	}
 	const {
@@ -444,10 +435,10 @@ export const audioHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, perf
 			copySample,
 			lied,
 			noise,
-			values
-		}
+			values,
+		},
 	} = fp
-	const knownSums = getKnownAudio()[compressorGainReduction] || []
+	const knownSums = KnownAudio[compressorGainReduction] || []
 	const validAudio = sampleSum && compressorGainReduction && knownSums.length
 	const matchesKnownAudio = knownSums.includes(sampleSum)
 	return `
@@ -459,40 +450,40 @@ export const audioHTML = ({ fp, note, modal, getDiffs, hashMini, hashSlice, perf
 				stringA: knownSums[0],
 				stringB: sampleSum,
 				charDiff: true,
-				decorate: diff => `<span class="bold-fail">${diff}</span>`
+				decorate: (diff) => `<span class="bold-fail">${diff}</span>`,
 			})
 		}</div>
 		<div class="help" title="DynamicsCompressorNode.reduction">gain: ${
-			compressorGainReduction || note.blocked
+			compressorGainReduction || HTMLNote.BLOCKED
 		}</div>
 		<div class="help" title="AnalyserNode.getFloatFrequencyData()">freq: ${
-			floatFrequencyDataSum || note.blocked
+			floatFrequencyDataSum || HTMLNote.BLOCKED
 		}</div>
 		<div class="help" title="AnalyserNode.getFloatTimeDomainData()">time: ${
-			floatTimeDomainDataSum || note.unsupported
+			floatTimeDomainDataSum || HTMLNote.UNSUPPORTED
 		}</div>
 		<div class="help" title="AudioBuffer.getChannelData()\nAudioBuffer.copyFromChannel()\nAudioBuffer.copyToChannel">trap: ${
-			!noise ? audioTrap : getDiffs({
-				stringA: audioTrap,
+			!noise ? AUDIO_TRAP : getDiffs({
+				stringA: AUDIO_TRAP,
 				stringB: noise,
 				charDiff: true,
-				decorate: diff => `<span class="bold-fail">${diff}</span>`
+				decorate: (diff) => `<span class="bold-fail">${diff}</span>`,
 			})
 		}</div>
 		<div>unique: ${totalUniqueSamples}</div>
 		<div class="help" title="AudioBuffer.getChannelData()">data:${
-			''+binsSample[0] == 'undefined' ? ` ${note.unsupported}` :
+			''+binsSample[0] == 'undefined' ? ` ${HTMLNote.UNSUPPORTED}` :
 			`<span class="sub-hash">${hashMini(binsSample)}</span>`
 		}</div>
 		<div class="help" title="AudioBuffer.copyFromChannel()">copy:${
-			''+copySample[0] == 'undefined' ? ` ${note.unsupported}` :
+			''+copySample[0] == 'undefined' ? ` ${HTMLNote.UNSUPPORTED}` :
 			`<span class="sub-hash">${hashMini(copySample)}</span>`
 		}</div>
 		<div>values: ${
 			modal(
 				'creep-offline-audio-context',
-				Object.keys(values).map(key => `<div>${key}: ${values[key]}</div>`).join(''),
-				hashMini(values)
+				Object.keys(values).map((key) => `<div>${key}: ${values[key]}</div>`).join(''),
+				hashMini(values),
 			)
 		}</div>
 	</div>

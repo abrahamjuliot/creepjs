@@ -1,4 +1,6 @@
 import { captureError } from './captureErrors.js'
+import { hashSlice, IS_BLINK, IS_GECKO, IS_WEBKIT } from './helpers.js'
+import { modal } from './html.js'
 
 // warm up while we detect lies
 try {
@@ -10,7 +12,7 @@ try {
 } catch (err) {}
 
 // Collect lies detected
-const createlieRecords = () => {
+const createLieRecords = () => {
 	const records = {}
 	return {
 		getRecords: () => records,
@@ -23,11 +25,11 @@ const createlieRecords = () => {
 				return records[name].push(lie)
 			}
 			return isArray ? (records[name] = lie) : (records[name] = [lie])
-		}
+		},
 	}
 }
 
-const lieRecords = createlieRecords()
+const lieRecords = createLieRecords()
 const { documentLie } = lieRecords
 
 const ghost = () => `
@@ -42,10 +44,9 @@ const getRandomValues = () => (
 	Math.random().toString(36).slice(-7)
 )
 
-const getBehemothIframe = win => {
+const getBehemothIframe = (win) => {
 	try {
-		const isChrome = (3.141592653589793 ** -100) == 1.9275814160560204e-50
-		if (!isChrome) {
+		if (!IS_BLINK) {
 			return win
 		}
 		const div = win.document.createElement('div')
@@ -63,8 +64,7 @@ const getBehemothIframe = win => {
 		contentWindow.document.body.appendChild(div2)
 		const iframe2 = [...[...div2.childNodes][0].childNodes][0]
 		return iframe2.contentWindow
-	}
-	catch (error) {
+	} catch (error) {
 		captureError(error, 'client blocked behemoth iframe')
 		return win
 	}
@@ -83,67 +83,14 @@ const getPhantomIframe = () => {
 		const iframeWindow = window[numberOfIframes]
 		const phantomWindow = getBehemothIframe(iframeWindow)
 		return { iframeWindow: phantomWindow, div }
-	}
-	catch (error) {
+	} catch (error) {
 		captureError(error, 'client blocked phantom iframe')
 		return { iframeWindow: window, div: undefined }
 	}
 }
-const { iframeWindow: phantomDarkness, div: parentPhantom } = getPhantomIframe()
+const { iframeWindow: PHANTOM_DARKNESS, div: PARENT_PHANTOM } = getPhantomIframe()
 
-const getDragonIframe = ({ numberOfNests, kill = false, context = window }) => {
-	try {
-		let parent, total = numberOfNests
-		return (function getIframeWindow(win, {
-			previous = context
-		} = {}) {
-			if (!win) {
-				if (kill) {
-					parent.parentNode.removeChild(parent)
-				}
-				console.log(`\ndragon fire is valid up to ${total - numberOfNests} fiery flames`)
-				return { iframeWindow: previous, parent }
-			}
-			const numberOfIframes = win.length
-			const div = win.document.createElement('div')
-			win.document.body.appendChild(div)
-			div.innerHTML = '<iframe></iframe>'
-			const iframeWindow = win[numberOfIframes]
-			if (total == numberOfNests) {
-				parent = div
-				parent.setAttribute('style', 'display:none')
-			}
-			numberOfNests--
-			if (!numberOfNests) {
-				if (kill) {
-					parent.parentNode.removeChild(parent)
-				}
-				return { iframeWindow, parent }
-			}
-			return getIframeWindow(iframeWindow, {
-				previous: win
-			})
-		})(context)
-	}
-	catch (error) {
-		captureError(error, 'client blocked dragon iframe')
-		return { iframeWindow: window, parent: undefined }
-	}
-}
-
-//const { iframeWindow: dragonFire, parent: parentDragon } = getDragonIframe({ numberOfNests: 2 })
-//const { iframeWindow: dragonOfDeath } = getDragonIframe({ numberOfNests: 4, kill: true })
-
-const getPrototypeLies = scope => {
-	const getEngine = () => {
-		const mathPI = 3.141592653589793
-		const compute = n => mathPI ** -100 == +`1.9275814160560${n}e-50`
-		return {
-			isChrome: compute(204),
-			isFirefox: compute(185),
-			isSafari: compute(206)
-		}
-	}
+function getPrototypeLies(scope) {
 	const getRandomValues = () => (
 		String.fromCharCode(Math.random() * 26 + 97) +
 		Math.random().toString(36).slice(-7)
@@ -170,43 +117,12 @@ const getPrototypeLies = scope => {
 		} catch (error) {
 			return error.constructor.name != 'TypeError' ? true : false
 		}
-		const illegal = [
-			'',
-			'is',
-			'call',
-			'seal',
-			'keys',
-			'bind',
-			'apply',
-			'assign',
-			'freeze',
-			'values',
-			'entries',
-			'toString',
-			'isFrozen',
-			'isSealed',
-			'constructor',
-			'isExtensible',
-			'getPrototypeOf',
-			'preventExtensions',
-			'propertyIsEnumerable',
-			'getOwnPropertySymbols',
-			'getOwnPropertyDescriptors'
-		]
-		const hasInvalidError = !!illegal.find(prop => {
-			try {
-				prop == '' ? Object(proto[name]) : Object[prop](proto[name])
-				return true // failed to throw
-			} catch (error) {
-				return error.constructor.name != 'TypeError'
-			}
-		})
-		return hasInvalidError
 	}
 
 	// calling the interface prototype on the function should throw a TypeError
 	const getCallInterfaceTypeErrorLie = (apiFunction, proto) => {
 		try {
+			// eslint-disable-next-line new-cap
 			new apiFunction()
 			apiFunction.call(proto)
 			return true
@@ -218,6 +134,7 @@ const getPrototypeLies = scope => {
 	// applying the interface prototype on the function should throw a TypeError
 	const getApplyInterfaceTypeErrorLie = (apiFunction, proto) => {
 		try {
+			// eslint-disable-next-line new-cap
 			new apiFunction()
 			apiFunction.apply(proto)
 			return true
@@ -227,8 +144,9 @@ const getPrototypeLies = scope => {
 	}
 
 	// creating a new instance of the function should throw a TypeError
-	const getNewInstanceTypeErrorLie = apiFunction => {
+	const getNewInstanceTypeErrorLie = (apiFunction) => {
 		try {
+			// eslint-disable-next-line new-cap
 			new apiFunction()
 			return true
 		} catch (error) {
@@ -237,16 +155,16 @@ const getPrototypeLies = scope => {
 	}
 
 	// extending the function on a fake class should throw a TypeError and message "not a constructor"
-	const getClassExtendsTypeErrorLie = apiFunction => {
+	const getClassExtendsTypeErrorLie = (apiFunction) => {
 		try {
-			const { isSafari } = getEngine()
 			const shouldExitInSafari13 = (
-				/version\/13/i.test((navigator || {}).userAgent) && isSafari
+				/version\/13/i.test((navigator || {}).userAgent) && IS_WEBKIT
 			)
 			if (shouldExitInSafari13) {
 				return false
 			}
 			// begin tests
+			// eslint-disable-next-line no-unused-vars
 			class Fake extends apiFunction { }
 			return true
 		} catch (error) {
@@ -259,7 +177,7 @@ const getPrototypeLies = scope => {
 	}
 
 	// setting prototype to null and converting to a string should throw a TypeError
-	const getNullConversionTypeErrorLie = apiFunction => {
+	const getNullConversionTypeErrorLie = (apiFunction) => {
 		const nativeProto = Object.getPrototypeOf(apiFunction)
 		try {
 			Object.setPrototypeOf(apiFunction, null) + ''
@@ -283,7 +201,7 @@ const getPrototypeLies = scope => {
         'function () { [native code] }'
         `function () {\n    [native code]\n}`
         */
-		let scopeToString, scopeToStringToString
+		let scopeToString; let scopeToStringToString
 		try {
 			scopeToString = scope.Function.prototype.toString.call(apiFunction)
 		} catch (e) { }
@@ -301,13 +219,13 @@ const getPrototypeLies = scope => {
 				scopeToStringToString :
 					apiFunction.toString.toString()
 		)
-		const trust = name => ({
+		const trust = (name) => ({
 			[`function ${name}() { [native code] }`]: true,
 			[`function get ${name}() { [native code] }`]: true,
 			[`function () { [native code] }`]: true,
 			[`function ${name}() {${'\n'}    [native code]${'\n'}}`]: true,
 			[`function get ${name}() {${'\n'}    [native code]${'\n'}}`]: true,
-			[`function () {${'\n'}    [native code]${'\n'}}`]: true
+			[`function () {${'\n'}    [native code]${'\n'}}`]: true,
 		})
 		return (
 			!trust(name)[apiFunctionToString] ||
@@ -316,10 +234,10 @@ const getPrototypeLies = scope => {
 	}
 
 	// "prototype" in function should not exist
-	const getPrototypeInFunctionLie = apiFunction => 'prototype' in apiFunction
+	const getPrototypeInFunctionLie = (apiFunction) => 'prototype' in apiFunction
 
 	// "arguments", "caller", "prototype", "toString"  should not exist in descriptor
-	const getDescriptorLie = apiFunction => {
+	const getDescriptorLie = (apiFunction) => {
 		const hasInvalidDescriptor = (
 			Object.getOwnPropertyDescriptor(apiFunction, 'arguments') ||
 			Reflect.getOwnPropertyDescriptor(apiFunction, 'arguments') ||
@@ -334,7 +252,7 @@ const getPrototypeLies = scope => {
 	}
 
 	// "arguments", "caller", "prototype", "toString" should not exist as own property
-	const getOwnPropertyLie = apiFunction => {
+	const getOwnPropertyLie = (apiFunction) => {
 		const hasInvalidOwnProperty = (
 			apiFunction.hasOwnProperty('arguments') ||
 			apiFunction.hasOwnProperty('caller') ||
@@ -345,14 +263,14 @@ const getPrototypeLies = scope => {
 	}
 
 	// descriptor keys should only contain "name" and "length"
-	const getDescriptorKeysLie = apiFunction => {
+	const getDescriptorKeysLie = (apiFunction) => {
 		const descriptorKeys = Object.keys(Object.getOwnPropertyDescriptors(apiFunction))
 		const hasInvalidKeys = '' + descriptorKeys != 'length,name' && '' + descriptorKeys != 'name,length'
 		return hasInvalidKeys
 	}
 
 	// own property names should only contain "name" and "length"
-	const getOwnPropertyNamesLie = apiFunction => {
+	const getOwnPropertyNamesLie = (apiFunction) => {
 		const ownPropertyNames = Object.getOwnPropertyNames(apiFunction)
 		const hasInvalidNames = !(
 			'' + ownPropertyNames == 'length,name' ||
@@ -362,7 +280,7 @@ const getPrototypeLies = scope => {
 	}
 
 	// own keys names should only contain "name" and "length"
-	const getOwnKeysLie = apiFunction => {
+	const getOwnKeysLie = (apiFunction) => {
 		const ownKeys = Reflect.ownKeys(apiFunction)
 		const hasInvalidKeys = !(
 			'' + ownKeys == 'length,name' ||
@@ -372,7 +290,7 @@ const getPrototypeLies = scope => {
 	}
 
 	// calling toString() on an object created from the function should throw a TypeError
-	const getNewObjectToStringTypeErrorLie = apiFunction => {
+	const getNewObjectToStringTypeErrorLie = (apiFunction) => {
 		try {
 			const you = () => Object.create(apiFunction).toString()
 			const cant = () => you()
@@ -388,8 +306,7 @@ const getPrototypeLies = scope => {
 				error.constructor.name == 'TypeError' && stackLines.length >= 5
 			)
 			// Chromium must throw error 'at Function.toString'... and not 'at Object.apply'
-			const { isChrome } = getEngine()
-			if (validStackSize && isChrome && (
+			if (validStackSize && IS_BLINK && (
 				!validScope ||
 				!/at Function\.toString/.test(stackLines[1]) ||
 				!/at you/.test(stackLines[2]) ||
@@ -404,25 +321,24 @@ const getPrototypeLies = scope => {
 
 	/* Proxy Detection */
 	// arguments or caller should not throw 'incompatible Proxy' TypeError
-	const tryIncompatibleProxy = fn => {
-		const { isFirefox } = getEngine()
+	const tryIncompatibleProxy = (fn) => {
 		try {
 			fn()
 			return true // failed to throw
 		} catch (error) {
 			return (
 				error.constructor.name != 'TypeError' ||
-				(isFirefox && /incompatible\sProxy/.test(error.message))
+				(IS_GECKO && /incompatible\sProxy/.test(error.message))
 			)
 		}
 	}
-	const getIncompatibleProxyTypeErrorLie = apiFunction => {
+	const getIncompatibleProxyTypeErrorLie = (apiFunction) => {
 		return (
 			tryIncompatibleProxy(() => apiFunction.arguments) ||
 			tryIncompatibleProxy(() => apiFunction.caller)
 		)
 	}
-	const getToStringIncompatibleProxyTypeErrorLie = apiFunction => {
+	const getToStringIncompatibleProxyTypeErrorLie = (apiFunction) => {
 		return (
 			tryIncompatibleProxy(() => apiFunction.toString.arguments) ||
 			tryIncompatibleProxy(() => apiFunction.toString.caller)
@@ -430,10 +346,9 @@ const getPrototypeLies = scope => {
 	}
 
 	// checking proxy instanceof proxy should throw a valid TypeError
-	const getInstanceofCheckLie = apiFunction => {
+	const getInstanceofCheckLie = (apiFunction) => {
 		const proxy = new Proxy(apiFunction, {})
-		const { isChrome } = getEngine()
-		if (!isChrome) {
+		if (!IS_BLINK) {
 			return false
 		}
 		const hasValidStack = (error, type = 'Function') => {
@@ -450,8 +365,7 @@ const getPrototypeLies = scope => {
 		try {
 			proxy instanceof proxy
 			return true // failed to throw
-		}
-		catch (error) {
+		} catch (error) {
 			// expect Proxy.[Symbol.hasInstance]
 			if (!hasValidStack(error, 'Proxy')) {
 				return true
@@ -459,8 +373,7 @@ const getPrototypeLies = scope => {
 			try {
 				apiFunction instanceof apiFunction
 				return true // failed to throw
-			}
-			catch (error) {
+			} catch (error) {
 				// expect Function.[Symbol.hasInstance]
 				return !hasValidStack(error)
 			}
@@ -469,8 +382,7 @@ const getPrototypeLies = scope => {
 
 	// defining properties should not throw an error
 	const getDefinePropertiesLie = (apiFunction) => {
-		const { isChrome } = getEngine()
-		if (!isChrome) {
+		if (!IS_BLINK) {
 			return false // chrome only test
 		}
 		try {
@@ -492,15 +404,14 @@ const getPrototypeLies = scope => {
 			return apiFunction++
 		}
 	}
-	const hasValidError = error => {
-		const { isChrome, isFirefox } = getEngine()
+	const hasValidError = (error) => {
 		const { name, message } = error
 		const hasRangeError = name == 'RangeError'
 		const hasInternalError = name == 'InternalError'
-		const chromeLie = isChrome && (
+		const chromeLie = IS_BLINK && (
 			message != `Maximum call stack size exceeded` || !hasRangeError
 		)
-		const firefoxLie = isFirefox && (
+		const firefoxLie = IS_GECKO && (
 			message != `too much recursion` || !hasInternalError
 		)
 		return (hasRangeError || hasInternalError) && !(chromeLie || firefoxLie)
@@ -526,11 +437,10 @@ const getPrototypeLies = scope => {
 			spawnError(apiFunction, method)
 			return true // failed to throw
 		} catch (error) {
-			const { isChrome, isFirefox } = getEngine()
 			const { name, message, stack } = error
 			const targetStackLine = ((stack || '').split('\n') || [])[1]
 			const hasTypeError = name == 'TypeError'
-			const chromeLie = isChrome && (
+			const chromeLie = IS_BLINK && (
 				message != `Cyclic __proto__ value` || (
 					method == '__proto__' && (
 						!targetStackLine.startsWith(`    at Function.set __proto__ [as __proto__]`) &&
@@ -538,7 +448,7 @@ const getPrototypeLies = scope => {
 					)
 				)
 			)
-			const firefoxLie = isFirefox && (
+			const firefoxLie = IS_GECKO && (
 				message != `can't set prototype: it would cause a prototype chain cycle`
 			)
 			if (!hasTypeError || chromeLie || firefoxLie) {
@@ -562,7 +472,7 @@ const getPrototypeLies = scope => {
 					randomId in apiFunction
 					return false
 				} catch (error) {
-					return true  // failed at Error
+					return true // failed at Error
 				}
 			}
 		} catch (error) {
@@ -601,7 +511,7 @@ const getPrototypeLies = scope => {
 		if (typeof apiFunction != 'function') {
 			return {
 				lied: false,
-				lieTypes: []
+				lieTypes: [],
 			}
 		}
 		const name = apiFunction.name.replace(/get\s/, '')
@@ -625,7 +535,7 @@ const getPrototypeLies = scope => {
 			// Proxy Detection
 			[`failed at incompatible proxy error`]: getIncompatibleProxyTypeErrorLie(apiFunction),
 			[`failed at toString incompatible proxy error`]: getToStringIncompatibleProxyTypeErrorLie(apiFunction),
-			[`failed at too much recursion error`]: getChainCycleLie({ apiFunction })
+			[`failed at too much recursion error`]: getChainCycleLie({ apiFunction }),
 		}
 		// conditionally use advanced detection
 		const detectProxies = (
@@ -641,27 +551,27 @@ const getPrototypeLies = scope => {
 				[`failed at reflect set proto`]: getReflectSetProtoLie({ apiFunction, randomId }),
 				[`failed at reflect set proto proxy`]: getReflectSetProtoProxyLie({ apiFunction, randomId }),
 				[`failed at instanceof check error`]: getInstanceofCheckLie(apiFunction),
-				[`failed at define properties`]: getDefinePropertiesLie(apiFunction)
+				[`failed at define properties`]: getDefinePropertiesLie(apiFunction),
 			}
 		}
-		const lieTypes = Object.keys(lies).filter(key => !!lies[key])
+		const lieTypes = Object.keys(lies).filter((key) => !!lies[key])
 		return {
 			lied: lieTypes.length,
-			lieTypes
+			lieTypes,
 		}
 	}
 
 	// Lie Detector
 	const createLieDetector = () => {
-		const isSupported = obj => typeof obj != 'undefined' && !!obj
+		const isSupported = (obj) => typeof obj != 'undefined' && !!obj
 		const props = {} // lie list and detail
-		let propsSearched = [] // list of properties searched
+		const propsSearched = [] // list of properties searched
 		return {
 			getProps: () => props,
 			getPropsSearched: () => propsSearched,
 			searchLies: (fn, {
 				target = [],
-				ignore = []
+				ignore = [],
 			} = {}) => {
 				let obj
 				// check if api is blocked or not supported
@@ -678,8 +588,8 @@ const getPrototypeLies = scope => {
 				Object.getOwnPropertyNames(interfaceObject)
 					;[...new Set([
 						...Object.getOwnPropertyNames(interfaceObject),
-						...Object.keys(interfaceObject) // backup
-					])].sort().forEach(name => {
+						...Object.keys(interfaceObject), // backup
+					])].sort().forEach((name) => {
 						const skip = (
 							name == 'constructor' ||
 							(target.length && !new Set(target).has(name)) ||
@@ -690,6 +600,7 @@ const getPrototypeLies = scope => {
 						}
 						const objectNameString = /\s(.+)\]/
 						const apiName = `${
+							// @ts-ignore
 							obj.name ? obj.name : objectNameString.test(obj) ? objectNameString.exec(obj)[1] : undefined
 							}.${name}`
 						propsSearched.push(apiName)
@@ -704,7 +615,7 @@ const getPrototypeLies = scope => {
 									res = getLies({
 										apiFunction: proto[name],
 										proto,
-										lieProps: props
+										lieProps: props,
 									})
 									if (res.lied) {
 										documentLie(apiName, res.lieTypes)
@@ -726,12 +637,13 @@ const getPrototypeLies = scope => {
 								}
 							} catch (error) { }
 							// else search getter function
+							// @ts-ignore
 							const getterFunction = Object.getOwnPropertyDescriptor(proto, name).get
 							res = getLies({
 								apiFunction: getterFunction,
 								proto,
 								obj,
-								lieProps: props
+								lieProps: props,
 							}) // send the obj for special tests
 
 							if (res.lied) {
@@ -747,13 +659,13 @@ const getPrototypeLies = scope => {
 							)
 						}
 					})
-			}
+			},
 		}
 	}
 
 	const lieDetector = createLieDetector()
 	const {
-		searchLies
+		searchLies,
 	} = lieDetector
 
 	// search lies: remove target to search all properties
@@ -764,21 +676,21 @@ const getPrototypeLies = scope => {
 		],
 		ignore: [
 			'caller',
-			'arguments'
-		]
+			'arguments',
+		],
 	})
 	// other APIs
 	searchLies(() => AnalyserNode)
 	searchLies(() => AudioBuffer, {
 		target: [
 			'copyFromChannel',
-			'getChannelData'
-		]
+			'getChannelData',
+		],
 	})
 	searchLies(() => BiquadFilterNode, {
 		target: [
-			'getFrequencyResponse'
-		]
+			'getFrequencyResponse',
+		],
 	})
 	searchLies(() => CanvasRenderingContext2D, {
 		target: [
@@ -790,18 +702,19 @@ const getPrototypeLies = scope => {
 			'quadraticCurveTo',
 			'fillText',
 			'strokeText',
-			'font'
-		]
+			'font',
+		],
 	})
 	searchLies(() => CSSStyleDeclaration, {
 		target: [
-			'setProperty'
-		]
+			'setProperty',
+		],
 	})
+	// @ts-ignore
 	searchLies(() => CSS2Properties, { // Gecko
 		target: [
-			'setProperty'
-		]
+			'setProperty',
+		],
 	})
 	searchLies(() => Date, {
 		target: [
@@ -827,16 +740,16 @@ const getPrototypeLies = scope => {
 			'toLocaleTimeString',
 			'toString',
 			'toTimeString',
-			'valueOf'
-		]
+			'valueOf',
+		],
 	})
 	searchLies(() => Intl.DateTimeFormat, {
 		target: [
 			'format',
 			'formatRange',
 			'formatToParts',
-			'resolvedOptions'
-		]
+			'resolvedOptions',
+		],
 	})
 	searchLies(() => Document, {
 		target: [
@@ -849,14 +762,14 @@ const getPrototypeLies = scope => {
 			'getElementsByTagNameNS',
 			'referrer',
 			'write',
-			'writeln'
+			'writeln',
 		],
 		ignore: [
 			// Firefox returns undefined on getIllegalTypeErrorLie test
 			'onreadystatechange',
 			'onmouseenter',
-			'onmouseleave'
-		]
+			'onmouseleave',
+		],
 	})
 	searchLies(() => DOMRect)
 	searchLies(() => DOMRectReadOnly)
@@ -873,15 +786,15 @@ const getPrototypeLies = scope => {
 			'prepend',
 			'replaceChild',
 			'replaceWith',
-			'setAttribute'
-		]
+			'setAttribute',
+		],
 	})
 	searchLies(() => FontFace, {
 		target: [
 			'family',
 			'load',
-			'status'
-		]
+			'status',
+		],
 	})
 	searchLies(() => HTMLCanvasElement)
 	searchLies(() => HTMLElement, {
@@ -891,26 +804,26 @@ const getPrototypeLies = scope => {
 			'offsetHeight',
 			'offsetWidth',
 			'scrollHeight',
-			'scrollWidth'
+			'scrollWidth',
 		],
 		ignore: [
 			// Firefox returns undefined on getIllegalTypeErrorLie test
 			'onmouseenter',
-			'onmouseleave'
-		]
+			'onmouseleave',
+		],
 	})
 	searchLies(() => HTMLIFrameElement, {
 		target: [
 			'contentDocument',
 			'contentWindow',
-		]
+		],
 	})
 	searchLies(() => IntersectionObserverEntry, {
 		target: [
 			'boundingClientRect',
 			'intersectionRect',
-			'rootBounds'
-		]
+			'rootBounds',
+		],
 	})
 	searchLies(() => Math, {
 		target: [
@@ -932,15 +845,15 @@ const getPrototypeLies = scope => {
 			'sinh',
 			'sqrt',
 			'tan',
-			'tanh'
-		]
+			'tanh',
+		],
 	})
 	searchLies(() => MediaDevices, {
 		target: [
 			'enumerateDevices',
 			'getDisplayMedia',
-			'getUserMedia'
-		]
+			'getUserMedia',
+		],
 	})
 	searchLies(() => Navigator, {
 		target: [
@@ -967,22 +880,24 @@ const getPrototypeLies = scope => {
 			'serviceWorker',
 			'userAgent',
 			'vendor',
-			'vendorSub'
-		]
+			'vendorSub',
+		],
 	})
 	searchLies(() => Node, {
 		target: [
 			'appendChild',
 			'insertBefore',
-			'replaceChild'
-		]
+			'replaceChild',
+		],
 	})
+	// @ts-ignore
 	searchLies(() => OffscreenCanvas, {
 		target: [
 			'convertToBlob',
-			'getContext'
-		]
+			'getContext',
+		],
 	})
+	// @ts-ignore
 	searchLies(() => OffscreenCanvasRenderingContext2D, {
 		target: [
 			'getImageData',
@@ -991,30 +906,30 @@ const getPrototypeLies = scope => {
 			'isPointInStroke',
 			'measureText',
 			'quadraticCurveTo',
-			'font'
-		]
+			'font',
+		],
 	})
 	searchLies(() => Range, {
 		target: [
 			'getBoundingClientRect',
 			'getClientRects',
-		]
+		],
 	})
 	searchLies(() => Intl.RelativeTimeFormat, {
 		target: [
-			'resolvedOptions'
-		]
+			'resolvedOptions',
+		],
 	})
 	searchLies(() => Screen)
 	searchLies(() => speechSynthesis, {
 		target: [
-			'getVoices'
-		]
+			'getVoices',
+		],
 	})
 	searchLies(() => String, {
 		target: [
-			'fromCodePoint'
-		]
+			'fromCodePoint',
+		],
 	})
 	searchLies(() => SVGRect)
 	searchLies(() => TextMetrics)
@@ -1022,15 +937,15 @@ const getPrototypeLies = scope => {
 		target: [
 			'bufferData',
 			'getParameter',
-			'readPixels'
-		]
+			'readPixels',
+		],
 	})
 	searchLies(() => WebGL2RenderingContext, {
 		target: [
 			'bufferData',
 			'getParameter',
-			'readPixels'
-		]
+			'readPixels',
+		],
 	})
 
     /* potential targets:
@@ -1060,20 +975,29 @@ const getPrototypeLies = scope => {
 			getReflectSetProtoProxyLie,
 			getInstanceofCheckLie,
 			getDefinePropertiesLie,
-		]
+		],
 	}
 }
 
 // start program
 const start = performance.now()
 const {
-	lieDetector: lieProps,
+	lieDetector,
 	lieList,
 	lieDetail,
-	lieCount,
+	// lieCount,
 	propsSearched,
-	proxyDetectionMethods
-} = getPrototypeLies(phantomDarkness) // execute and destructure the list and detail
+	proxyDetectionMethods,
+} = getPrototypeLies(PHANTOM_DARKNESS) // execute and destructure the list and detail
+
+const lieProps = (() => {
+	const props = lieDetector.getProps()
+	return Object.keys(props).reduce((acc, key) => {
+		acc[key] = getNonFunctionToStringLies(props[key])
+		return acc
+	}, {})
+})()
+
 const prototypeLies = JSON.parse(JSON.stringify(lieDetail))
 const perf = performance.now() - start
 
@@ -1082,25 +1006,25 @@ console.log(`${propsSearched.length} API properties analyzed in ${(perf).toFixed
 
 const getPluginLies = (plugins, mimeTypes) => {
 	const lies = [] // collect lie types
-	const pluginsOwnPropertyNames = Object.getOwnPropertyNames(plugins).filter(name => isNaN(+name))
-	const mimeTypesOwnPropertyNames = Object.getOwnPropertyNames(mimeTypes).filter(name => isNaN(+name))
+	const pluginsOwnPropertyNames = Object.getOwnPropertyNames(plugins).filter((name) => isNaN(+name))
+	const mimeTypesOwnPropertyNames = Object.getOwnPropertyNames(mimeTypes).filter((name) => isNaN(+name))
 
 	// cast to array
 	plugins = [...plugins]
 	mimeTypes = [...mimeTypes]
 
-	// get intitial trusted mimeType names
+	// get initial trusted mimeType names
 	const trustedMimeTypes = new Set(mimeTypesOwnPropertyNames)
 
 	// get initial trusted plugin names
-	const excludeDuplicates = arr => [...new Set(arr)]
+	const excludeDuplicates = (arr) => [...new Set(arr)]
 	const mimeTypeEnabledPlugins = excludeDuplicates(
-		mimeTypes.map(mimeType => mimeType.enabledPlugin)
+		mimeTypes.map((mimeType) => mimeType.enabledPlugin),
 	)
 	const trustedPluginNames = new Set(pluginsOwnPropertyNames)
-	const mimeTypeEnabledPluginsNames = mimeTypeEnabledPlugins.map(plugin => plugin && plugin.name)
+	const mimeTypeEnabledPluginsNames = mimeTypeEnabledPlugins.map((plugin) => plugin && plugin.name)
 	const trustedPluginNamesArray = [...trustedPluginNames]
-	trustedPluginNamesArray.forEach(name => {
+	trustedPluginNamesArray.forEach((name) => {
 		const validName = new Set(mimeTypeEnabledPluginsNames).has(name)
 		if (!validName) {
 			trustedPluginNames.delete(name)
@@ -1133,7 +1057,7 @@ const getPluginLies = (plugins, mimeTypes) => {
 	*/
 
 	// 3. Expect MimeType object in plugins
-	const invalidPlugins = plugins.filter(plugin => {
+	const invalidPlugins = plugins.filter((plugin) => {
 		try {
 			const validMimeType = Object.getPrototypeOf(plugin[0]).constructor.name == 'MimeType'
 			if (!validMimeType) {
@@ -1151,19 +1075,19 @@ const getPluginLies = (plugins, mimeTypes) => {
 
 	// 4. Expect valid MimeType(s) in plugin
 	const pluginMimeTypes = plugins
-		.map(plugin => Object.values(plugin))
+		.map((plugin) => Object.values(plugin))
 		.flat()
-	const pluginMimeTypesNames = pluginMimeTypes.map(mimetype => mimetype.type)
-	pluginMimeTypesNames.forEach(name => {
+	const pluginMimeTypesNames = pluginMimeTypes.map((mimetype) => mimetype.type)
+	pluginMimeTypesNames.forEach((name) => {
 		const validName = trustedMimeTypes.has(name)
 		if (!validName) {
 			trustedMimeTypes.delete(name)
 		}
 	})
 
-	plugins.forEach(plugin => {
-		const pluginMimeTypes = Object.values(plugin).map(mimetype => mimetype.type)
-		return pluginMimeTypes.forEach(mimetype => {
+	plugins.forEach((plugin) => {
+		const pluginMimeTypes = Object.values(plugin).map((mimetype) => mimetype.type)
+		return pluginMimeTypes.forEach((mimetype) => {
 			if (!trustedMimeTypes.has(mimetype)) {
 				lies.push('invalid mimetype')
 				return trustedPluginNames.delete(plugin.name)
@@ -1172,52 +1096,43 @@ const getPluginLies = (plugins, mimeTypes) => {
 	})
 
 	return {
-		validPlugins: plugins.filter(plugin => trustedPluginNames.has(plugin.name)),
-		validMimeTypes: mimeTypes.filter(mimeType => trustedMimeTypes.has(mimeType.type)),
-		lies: [...new Set(lies)] // remove duplicates
+		validPlugins: plugins.filter((plugin) => trustedPluginNames.has(plugin.name)),
+		validMimeTypes: mimeTypes.filter((mimeType) => trustedMimeTypes.has(mimeType.type)),
+		lies: [...new Set(lies)], // remove duplicates
 	}
 }
 
 // disregard Function.prototype.toString lies when determining if the API can be trusted
-const getNonFunctionToStringLies = x => !x ? x : x.filter(x => !/object toString|toString incompatible proxy/.test(x)).length
+const getNonFunctionToStringLies = (x) => !x ? x : x.filter((x) => !/object toString|toString incompatible proxy/.test(x)).length
 
-const getLies = imports => {
-
-	const {
-		require: {
-			lieRecords
-		}
-	} = imports
-
+const getLies = () => {
 	const records = lieRecords.getRecords()
-	return new Promise(resolve => {
-		const totalLies = Object.keys(records).reduce((acc, key) => {
-			acc += records[key].length
-			return acc
-		}, 0)
-		return resolve({ data: records, totalLies })
-	})
+	const totalLies = Object.keys(records).reduce((acc, key) => {
+		acc += records[key].length
+		return acc
+	}, 0)
+	return { data: records, totalLies }
 }
 
-const liesHTML = ({ fp, hashSlice, modal }, pointsHTML) => {
+function liesHTML(fp, pointsHTML) {
 	const { lies: { data, totalLies, $hash } } = fp
 	return `
 	<div class="${totalLies ? ' lies' : ''}">lies (${!totalLies ? '0' : '' + totalLies}): ${
 		!totalLies ? 'none' : modal(
 			'creep-lies',
-			Object.keys(data).sort().map(key => {
+			Object.keys(data).sort().map((key) => {
 				const lies = data[key]
 				return `
 					<br>
 					<div style="padding:5px">
 						<strong>${key}</strong>:
-						${lies.map(lie => `<div>- ${lie}</div>`).join('')}
+						${lies.map((lie) => `<div>- ${lie}</div>`).join('')}
 					</div>
 					`
 			}).join(''),
-			hashSlice($hash)
+			hashSlice($hash),
 		)
 	}${pointsHTML}</div>`
 }
 
-export { documentLie, phantomDarkness, parentPhantom, lieProps, prototypeLies, lieRecords, getLies, proxyDetectionMethods, getPluginLies, getNonFunctionToStringLies, liesHTML }
+export { documentLie, PHANTOM_DARKNESS, PARENT_PHANTOM, lieProps, prototypeLies, lieRecords, getLies, proxyDetectionMethods, getPluginLies, getNonFunctionToStringLies, liesHTML }

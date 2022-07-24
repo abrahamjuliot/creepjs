@@ -1,6 +1,10 @@
-const getErrors = errFns => {
+import { captureError } from './captureErrors.js'
+import { createTimer, hashSlice, logTestResult, performanceLogger } from './helpers.js'
+import { HTMLNote, modal } from './html.js'
+
+function getErrors(errFns) {
 	const errors = []
-	let i, len = errFns.length
+	let i; const len = errFns.length
 	for (i = 0; i < len; i++) {
 		try {
 			errFns[i]()
@@ -10,17 +14,8 @@ const getErrors = errFns => {
 	}
 	return errors
 }
-export const getConsoleErrors = async imports => {
 
-	const {
-		require: {
-			queueEvent,
-			createTimer,
-			captureError,
-			logTestResult
-		}
-	} = imports
-
+export default function getConsoleErrors() {
 	try {
 		const timer = createTimer()
 		timer.start()
@@ -33,38 +28,37 @@ export const getConsoleErrors = async imports => {
 			() => new Function('(1).toString(1000)')(),
 			() => new Function('[...undefined].length')(),
 			() => new Function('var x = new Array(-1)')(),
-			() => new Function('const a=1; const a=2;')()
+			() => new Function('const a=1; const a=2;')(),
 		]
 		const errors = getErrors(errorTests)
 		logTestResult({ time: timer.stop(), test: 'console errors', passed: true })
 		return { errors }
-	}
-	catch (error) {
+	} catch (error) {
 		logTestResult({ test: 'console errors', passed: false })
 		captureError(error)
 		return
 	}
 }
 
-export const consoleErrorsHTML = ({ fp, modal, note, hashSlice, performanceLogger }) => {
+export function consoleErrorsHTML(fp) {
 	if (!fp.consoleErrors) {
 		return `
 		<div class="col-six undefined">
 			<strong>Error</strong>
-			<div>results: ${note.blocked}</div>
+			<div>results: ${HTMLNote.BLOCKED}</div>
 			<div>
-				<div>${note.blocked}</div>
+				<div>${HTMLNote.BLOCKED}</div>
 			</div>
 		</div>`
 	}
 	const {
 		consoleErrors: {
 			$hash,
-			errors
-		}
+			errors,
+		},
 	} = fp
 
-	const results = Object.keys(errors).map(key => {
+	const results = Object.keys(errors).map((key) => {
 		const value = errors[key]
 		return `${+key+1}: ${value}`
 	})
@@ -77,5 +71,5 @@ export const consoleErrorsHTML = ({ fp, modal, note, hashSlice, performanceLogge
 			<div>0% of engine</div>
 		</div>
 	</div>
-	`	
+	`
 }

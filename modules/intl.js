@@ -1,17 +1,10 @@
-export const getIntl = async imports => {
+import { caniuse, captureError } from './captureErrors.js'
+import { createTimer, queueEvent, logTestResult, hashSlice, performanceLogger } from './helpers.js'
+import { HTMLNote } from './html.js'
+import { lieProps } from './lies.js'
 
-	const {
-		require: {
-			queueEvent,
-			createTimer,
-			lieProps,
-			caniuse,
-			captureError,
-			logTestResult
-		}
-	} = imports
-
-	const getLocale = intl => {
+export default async function getIntl() {
+	const getLocale = (intl) => {
 		const constructors = [
 			'Collator',
 			'DateTimeFormat',
@@ -19,8 +12,9 @@ export const getIntl = async imports => {
 			'ListFormat',
 			'NumberFormat',
 			'PluralRules',
-			'RelativeTimeFormat'
+			'RelativeTimeFormat',
 		]
+		// @ts-ignore
 		const locale = constructors.reduce((acc, name) => {
 			try {
 				const obj = new intl[name]
@@ -29,8 +23,7 @@ export const getIntl = async imports => {
 				}
 				const { locale } = obj.resolvedOptions() || {}
 				return [...acc, locale]
-			}
-			catch (error) {
+			} catch (error) {
 				return acc
 			}
 		}, [])
@@ -41,7 +34,7 @@ export const getIntl = async imports => {
 	try {
 		const timer = createTimer()
 		await queueEvent(timer)
-		let lied = (
+		const lied = (
 			lieProps['Intl.Collator.resolvedOptions'] ||
 			lieProps['Intl.DateTimeFormat.resolvedOptions'] ||
 			lieProps['Intl.DisplayNames.resolvedOptions'] ||
@@ -54,27 +47,28 @@ export const getIntl = async imports => {
 		const dateTimeFormat = caniuse(() => {
 			return new Intl.DateTimeFormat(undefined, {
 				month: 'long',
-				timeZoneName: 'long'
+				timeZoneName: 'long',
 			}).format(963644400000)
 		})
 
 		const displayNames = caniuse(() => {
 			return new Intl.DisplayNames(undefined, {
-				type: 'language'
+				type: 'language',
 			}).of('en-US')
 		})
 
 		const listFormat = caniuse(() => {
+			// @ts-ignore
 			return new Intl.ListFormat(undefined, {
 				style: 'long',
-				type: 'disjunction'
+				type: 'disjunction',
 			}).format(['0', '1'])
 		})
 
 		const numberFormat = caniuse(() => {
 			return new Intl.NumberFormat(undefined, {
 				notation: 'compact',
-				compactDisplay: 'long'
+				compactDisplay: 'long',
 			}).format(21000000)
 		})
 
@@ -86,7 +80,7 @@ export const getIntl = async imports => {
 			return new Intl.RelativeTimeFormat(undefined, {
 				localeMatcher: 'best fit',
 				numeric: 'auto',
-				style: 'long'
+				style: 'long',
 			}).format(1, 'year')
 		})
 
@@ -101,28 +95,27 @@ export const getIntl = async imports => {
 			pluralRules,
 			relativeTimeFormat,
 			locale: ''+locale,
-			lied
+			lied,
 		}
-	}
-	catch (error) {
+	} catch (error) {
 		logTestResult({ test: 'intl', passed: false })
 		captureError(error)
 		return
 	}
 }
 
-export const intlHTML = ({ fp, note, hashSlice, performanceLogger }) => {
+export function intlHTML(fp) {
 	if (!fp.htmlElementVersion) {
 		return `
 		<div class="col-six undefined">
 			<strong>Intl</strong>
-			<div>locale: ${note.blocked}</div>
-			<div>date: ${note.blocked}</div>
-			<div>display: ${note.blocked}</div>
-			<div>list: ${note.blocked}</div>
-			<div>number: ${note.blocked}</div>
-			<div>plural: ${note.blocked}</div>
-			<div>relative: ${note.blocked}</div>
+			<div>locale: ${HTMLNote.Blocked}</div>
+			<div>date: ${HTMLNote.Blocked}</div>
+			<div>display: ${HTMLNote.Blocked}</div>
+			<div>list: ${HTMLNote.Blocked}</div>
+			<div>number: ${HTMLNote.Blocked}</div>
+			<div>plural: ${HTMLNote.Blocked}</div>
+			<div>relative: ${HTMLNote.Blocked}</div>
 		</div>`
 	}
 	const {
@@ -134,7 +127,7 @@ export const intlHTML = ({ fp, note, hashSlice, performanceLogger }) => {
 		pluralRules,
 		relativeTimeFormat,
 		locale,
-		lied
+		lied,
 	} = fp.intl || {}
 
 	return `
@@ -149,7 +142,7 @@ export const intlHTML = ({ fp, note, hashSlice, performanceLogger }) => {
 				numberFormat,
 				relativeTimeFormat,
 				listFormat,
-				pluralRules
+				pluralRules,
 			].join('<br>')}
 		</div>
 	</div>

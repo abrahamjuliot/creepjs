@@ -1,8 +1,11 @@
+import { hashSlice } from './helpers.js'
+import { modal } from './html.js'
+
 const createErrorsCaptured = () => {
 	const errors = []
 	return {
 		getErrors: () => errors,
-		captureError: (error, customMessage = null) => {
+		captureError: (error, customMessage = '') => {
 			const type = {
 				Error: true,
 				EvalError: true,
@@ -13,9 +16,9 @@ const createErrorsCaptured = () => {
 				TypeError: true,
 				URIError: true,
 				InvalidStateError: true,
-				SecurityError: true
+				SecurityError: true,
 			}
-			const hasInnerSpace = s => /.+(\s).+/g.test(s) // ignore AOPR noise
+			const hasInnerSpace = (s) => /.+(\s).+/g.test(s) // ignore AOPR noise
 			console.error(error) // log error to educate
 			const { name, message } = error
 			const trustedMessage = (
@@ -25,16 +28,16 @@ const createErrorsCaptured = () => {
 			)
 			const trustedName = type[name] ? name : undefined
 			errors.push(
-				{ trustedName, trustedMessage }
+				{ trustedName, trustedMessage },
 			)
 			return undefined
-		}
+		},
 	}
 }
 const errorsCaptured = createErrorsCaptured()
 const { captureError } = errorsCaptured
 
-const attempt = (fn, customMessage = null) => {
+const attempt = (fn, customMessage = '') => {
 	try {
 		return fn()
 	} catch (error) {
@@ -52,14 +55,13 @@ const caniuse = (fn, objChainList = [], args = [], method = false) => {
 	} catch (error) {
 		return undefined
 	}
-	let i, len = objChainList.length, chain = api
+	let i; const len = objChainList.length; let chain = api
 	try {
 		for (i = 0; i < len; i++) {
 			const obj = objChainList[i]
 			chain = chain[obj]
 		}
-	}
-	catch (error) {
+	} catch (error) {
 		return undefined
 	}
 	return (
@@ -75,39 +77,26 @@ const timer = (logStart) => {
 	let start = 0
 	try {
 		start = performance.now()
-	}
-	catch (error) {
+	} catch (error) {
 		captureError(error)
 	}
-	return logEnd => {
+	return (logEnd) => {
 		let end = 0
 		try {
 			end = performance.now() - start
 			logEnd && console.log(`${logEnd}: ${end / 1000} seconds`)
 			return end
-		}
-		catch (error) {
+		} catch (error) {
 			captureError(error)
 			return 0
 		}
 	}
 }
 
-const getCapturedErrors = async imports => {
+const getCapturedErrors = () => ({ data: errorsCaptured.getErrors() })
 
-	const {
-		require: {
-			errorsCaptured
-		}
-	} = imports
-
-	const data = errorsCaptured.getErrors()
-
-	return { data }
-}
-
-const errorsHTML = ({ fp, hashSlice, modal }, pointsHTML) => {
-	const { capturedErrors: { data, $hash  } } = fp
+const errorsHTML = (fp, pointsHTML) => {
+	const { capturedErrors: { data, $hash } } = fp
 	const len = data.length
 	return `
 	<div class="${len ? ' errors': ''}">errors (${!len ? '0' : ''+len}): ${
@@ -116,7 +105,7 @@ const errorsHTML = ({ fp, hashSlice, modal }, pointsHTML) => {
 			Object.keys(data)
 			.map((key, i) => `${i+1}: ${data[key].trustedName} - ${data[key].trustedMessage} `)
 			.join('<br>'),
-			hashSlice($hash)
+			hashSlice($hash),
 		)
 	}${pointsHTML}</div>`
 }

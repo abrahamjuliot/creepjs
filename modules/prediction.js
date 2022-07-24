@@ -1,10 +1,12 @@
-export const getPrediction = ({ hash, data }) => {
-	const getBaseDeviceName = devices => {
+import { HTMLNote, patch, html } from './html.js'
+
+export default function getPrediction({ hash, data }) {
+	const getBaseDeviceName = (devices) => {
 		// ex: find Android 10 in [Android 10, Android 10 Blah Blah]
-		return devices.find(a => devices.filter(b => b.includes(a)).length == devices.length)
+		return devices.find((a) => devices.filter((b) => b.includes(a)).length == devices.length)
 	}
-	let systems = [], devices = [], gpus = []
-	const decrypted = Object.keys(data).find(key => data[key].find(item => {
+	let systems = []; let devices = []; let gpus = []
+	const decrypted = Object.keys(data).find((key) => data[key].find((item) => {
 		if (!(item.id == hash)) {
 			return false
 		}
@@ -19,12 +21,16 @@ export const getPrediction = ({ hash, data }) => {
 		device: (
 			devices.length == 1 ? devices[0] : getBaseDeviceName(devices)
 		),
-		gpu: gpus.length == 1 ? gpus[0] : undefined
+		gpu: gpus.length == 1 ? gpus[0] : undefined,
 	}
 	return prediction
 }
 
-export const renderPrediction = ({ decryptionData, crowdBlendingScore, patch, html, note, bot = false }) => {
+export function renderPrediction({
+	decryptionData,
+	crowdBlendingScore,
+	bot = false,
+}) {
 	const {
 		jsRuntime,
 		jsEngine,
@@ -51,12 +57,12 @@ export const renderPrediction = ({ decryptionData, crowdBlendingScore, patch, ht
 		voicesSystem,
 		screenSystem,
 		deviceOfTimezone,
-		pendingReview
+		pendingReview,
 	} = decryptionData
 
 	const iconSet = new Set()
 	const getBlankIcons = () => `<span class="icon"></span><span class="icon"></span>`
-	const htmlIcon = cssClass => `<span class="icon ${cssClass}"></span>`
+	const htmlIcon = (cssClass) => `<span class="icon ${cssClass}"></span>`
 	const getTemplate = ({ title, agent, showVersion = false }) => {
 		const { decrypted, system, device, score } = agent || {}
 		const browserIcon = (
@@ -87,12 +93,12 @@ export const renderPrediction = ({ decryptionData, crowdBlendingScore, patch, ht
 		)
 		const icons = [
 			systemIcon,
-			browserIcon
+			browserIcon,
 		].join('')
 
 		const unknown = '' + [...new Set([decrypted, system, device])] == ''
-		const renderBlankIfKnown = unknown => unknown ? ` ${note.unknown}` : ''
-		const renderIfKnown = (unknown, decrypted) => unknown ? ` ${note.unknown}` : `<span class="user-agent">${decrypted}</span>`
+		// const renderBlankIfKnown = (unknown) => unknown ? ` ${HTMLNote.unknown}` : ''
+		const renderIfKnown = (unknown, decrypted) => unknown ? ` ${HTMLNote.UNKNOWN}` : `<span class="user-agent">${decrypted}</span>`
 		const renderFailingScore = (title, score) => {
 			return (
 				!score || (score > 36) ? title : `<span class="high-entropy">${title}</span>`
@@ -108,7 +114,7 @@ export const renderPrediction = ({ decryptionData, crowdBlendingScore, patch, ht
 		)
 	}
 
-	const unknownHTML = title => `${getBlankIcons()}<span class="blocked-entropy">${title}</span>`
+	const unknownHTML = (title) => `${getBlankIcons()}<span class="blocked-entropy">${title}</span>`
 	const devices = new Set([
 		(jsRuntime || {}).device,
 		(emojiSystem || {}).device,
@@ -132,13 +138,13 @@ export const renderPrediction = ({ decryptionData, crowdBlendingScore, patch, ht
 	])
 
 	devices.delete(undefined)
-	const getBaseDeviceName = devices => {
-		return devices.find(a => devices.filter(b => b.includes(a)).length == devices.length)
+	const getBaseDeviceName = (devices) => {
+		return devices.find((a) => devices.filter((b) => b.includes(a)).length == devices.length)
 	}
-	const getRFPWindowOS = devices => {
+	const getRFPWindowOS = (devices) => {
 		// FF RFP is ingnored in samples data since it returns Windows 10
 		// So, if we have multiples versions of Windows, prefer the lowest then Windows 11
-		const windowsCoreRatio = devices.filter(x => /windows/i.test(x)).length / devices.length
+		const windowsCoreRatio = devices.filter((x) => /windows/i.test(x)).length / devices.length
 		const windowsCore = windowsCoreRatio > 0.5
 		if (windowsCore) {
 			return (
@@ -175,7 +181,7 @@ export const renderPrediction = ({ decryptionData, crowdBlendingScore, patch, ht
 						'F'
 	)
 
-	const hasValue = data => Object.values(data || {}).find(x => typeof x != 'undefined')
+	const hasValue = (data) => Object.values(data || {}).find((x) => typeof x != 'undefined')
 
 	const el = document.getElementById('browser-detection')
 	return patch(el, html`
@@ -313,7 +319,7 @@ export const renderPrediction = ({ decryptionData, crowdBlendingScore, patch, ht
 		}</div>
 		</div>
 		<div class="col-six icon-prediction-container">
-			${[...iconSet].map(icon => {
+			${[...iconSet].map((icon) => {
 			return `<div class="icon-prediction ${icon}"></div>`
 		}).join('')}
 			${
@@ -325,7 +331,7 @@ export const renderPrediction = ({ decryptionData, crowdBlendingScore, patch, ht
 	`)
 }
 
-export const predictionErrorPatch = ({ error, patch, html }) => {
+export function predictionErrorPatch({ error, patch, html }) {
 	const getBlankIcons = () => `<span class="icon"></span><span class="icon"></span>`
 	const el = document.getElementById('browser-detection')
 	return patch(el, html`

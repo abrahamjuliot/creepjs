@@ -1,5 +1,11 @@
 // inspired by https://arkenfox.github.io/TZP/tests/canvasnoise.html
 
+import { attempt, captureError } from './captureErrors.js'
+import { hashMini } from './crypto.js'
+import { createTimer, queueEvent, EMOJIS, CSS_FONT_FAMILY, logTestResult, formatEmojiSet, hashSlice, performanceLogger } from './helpers.js'
+import { HTMLNote, modal } from './html.js'
+import { lieProps, documentLie } from './lies.js'
+
 let pixelImageRandom = ''
 
 const getPixelMods = () => {
@@ -19,6 +25,10 @@ const getPixelMods = () => {
 		const contextDisplay2 = canvasDisplay2.getContext('2d')
 		const context1 = canvas1.getContext('2d')
 		const context2 = canvas2.getContext('2d')
+
+		if (!contextDisplay1 || !contextDisplay2 || !context1 || !context2) {
+			throw new Error('canvas context blocked')
+		}
 
 		// set the dimensions
 		canvasDisplay1.width = len * visualMultiplier
@@ -44,7 +54,7 @@ const getPixelMods = () => {
 				x * visualMultiplier,
 				y * visualMultiplier,
 				1 * visualMultiplier,
-				1 * visualMultiplier
+				1 * visualMultiplier,
 			)
 			return pattern1.push(colors) // collect the pixel pattern
 		}))
@@ -53,7 +63,7 @@ const getPixelMods = () => {
 		;[...Array(len)].forEach((e, x) => [...Array(len)].forEach((e, y) => {
 			// get context1 pixel data and mirror to context2
 			const {
-				data: [red, green, blue, alpha]
+				data: [red, green, blue, alpha],
 			} = context1.getImageData(x, y, 1, 1) || {}
 			const colors = `${red}, ${green}, ${blue}, ${alpha}`
 			context2.fillStyle = `rgba(${colors})`
@@ -61,7 +71,7 @@ const getPixelMods = () => {
 
 			// capture noise in visuals
 			const {
-				data: [red2, green2, blue2, alpha2]
+				data: [red2, green2, blue2, alpha2],
 			} = context2.getImageData(x, y, 1, 1) || {}
 			const colorsDisplay = `
 				${red != red2 ? red2 : 255},
@@ -74,7 +84,7 @@ const getPixelMods = () => {
 				x * visualMultiplier,
 				y * visualMultiplier,
 				1 * visualMultiplier,
-				1 * visualMultiplier
+				1 * visualMultiplier,
 			)
 			return pattern2.push(colors) // collect the pixel pattern
 		}))
@@ -93,7 +103,7 @@ const getPixelMods = () => {
 					rgbaValues1[0] != rgbaValues2[0] ? 'r' : '',
 					rgbaValues1[1] != rgbaValues2[1] ? 'g' : '',
 					rgbaValues1[2] != rgbaValues2[2] ? 'b' : '',
-					rgbaValues1[3] != rgbaValues2[3] ? 'a' : ''
+					rgbaValues1[3] != rgbaValues2[3] ? 'a' : '',
 				].join('')
 				rgbaChannels.add(colors)
 				patternDiffs.push([i, colors])
@@ -106,8 +116,7 @@ const getPixelMods = () => {
 		const rgba = rgbaChannels.size ? [...rgbaChannels].sort().join(', ') : undefined
 		const pixels = patternDiffs.length || undefined
 		return { rgba, pixels, pixelImage }
-	}
-	catch (error) {
+	} catch (error) {
 		return console.error(error)
 	}
 }
@@ -151,7 +160,7 @@ const paintCanvas = ({
   const picassoSeed = createPicassoSeed({ seed, offset, multiplier })
   const { getNextSeed } = picassoSeed
 
-  const patchSeed = (current, offset, maxBound = null, computeFloat = null) => {
+  const patchSeed = (current, offset, maxBound, computeFloat) => {
     const result = (((current - 1) / offset) * (maxBound || 1)) || 0
     return computeFloat ? result : Math.floor(result)
   }
@@ -256,7 +265,7 @@ const paintCanvas = ({
       patchSeed(getNextSeed(), offset, Math.floor(height / 2)),
       patchSeed(getNextSeed(), offset, 2 * Math.PI, true),
       patchSeed(getNextSeed(), offset, 2 * Math.PI, true),
-      patchSeed(getNextSeed(), offset, 2 * Math.PI, true)
+      patchSeed(getNextSeed(), offset, 2 * Math.PI, true),
     )
     context.stroke()
   }
@@ -265,7 +274,7 @@ const paintCanvas = ({
     createCircularArc,
     createBezierCurve,
     createQuadraticCurve,
-    createEllipticalArc
+    createEllipticalArc,
   ]
 
 	if (strokeText) {
@@ -299,27 +308,12 @@ const emojifyCanvas = ({ canvas, context, cssFontFamily }) => {
 	return
 }
 
-export const getCanvas2d = async imports => {
-
-	const {
-		require: {
-			queueEvent,
-			createTimer,
-			getEmojis,
-			cssFontFamily,
-			captureError,
-			attempt,
-			lieProps,
-			documentLie,
-			logTestResult
-		}
-	} = imports
-
-	const getFileReaderData = blob => {
+export default async function getCanvas2d() {
+	const getFileReaderData = (blob) => {
 		if (!blob) {
 			return
 		}
-		const getRead = (method, blob) => new Promise(resolve => {
+		const getRead = (method, blob) => new Promise((resolve) => {
 			const reader = new FileReader()
 			reader[method](blob)
 			return reader.addEventListener('loadend', () => resolve(reader.result))
@@ -339,7 +333,7 @@ export const getCanvas2d = async imports => {
 			lieProps['CanvasRenderingContext2D.getImageData'] ||
 			lieProps['CanvasRenderingContext2D.strokeText']
 		)
-		const codePointLie =  lieProps['String.fromCodePoint']
+		const codePointLie = lieProps['String.fromCodePoint']
 		let textMetricsLie = (
 			lieProps['CanvasRenderingContext2D.measureText'] ||
 			lieProps['TextMetrics.actualBoundingBoxAscent'] ||
@@ -361,13 +355,16 @@ export const getCanvas2d = async imports => {
 
 		const canvas = doc.createElement('canvas')
 		const context = canvas.getContext('2d')
-		const emojis = getEmojis()
+		if (!context) {
+			throw new Error('canvas context blocked')
+		}
+
 		await queueEvent(timer)
 		paintCanvas({
 			canvas,
 			context,
 			strokeText: true,
-			cssFontFamily,
+			cssFontFamily: CSS_FONT_FAMILY,
 			area: { width: 50, height: 50 },
 			rounds: 10,
 		})
@@ -376,25 +373,25 @@ export const getCanvas2d = async imports => {
 
 		let canvasOffscreen
 		try {
+			// @ts-ignore OffscreenCanvas
 			canvasOffscreen = new OffscreenCanvas(140, 30)
 			await queueEvent(timer)
 			emojifyCanvas({
 				canvas: canvasOffscreen,
 				context: canvasOffscreen.getContext('2d'),
-				cssFontFamily
+				cssFontFamily: CSS_FONT_FAMILY,
 			})
-		}
-		catch (error) { }
+		} catch (error) { }
 
 		await queueEvent(timer)
 		const [
 			fileReaderData,
-			fileReaderDataOffscreen
+			fileReaderDataOffscreen,
 		] = await Promise.all([
-			new Promise(resolve => canvas.toBlob(blob => {
+			new Promise((resolve) => canvas.toBlob((blob) => {
 				return resolve(getFileReaderData(blob))
 			})),
-			getFileReaderData(canvasOffscreen && await attempt(() => canvasOffscreen.convertToBlob()))
+			getFileReaderData(canvasOffscreen && await attempt(() => canvasOffscreen.convertToBlob())),
 		])
 
 		const blob = {
@@ -409,9 +406,9 @@ export const getCanvas2d = async imports => {
 
 		// TextMetrics: get emoji set and system
 		await queueEvent(timer)
-		context.font = `10px ${cssFontFamily.replace(/!important/gm, '')}`
+		context.font = `10px ${CSS_FONT_FAMILY.replace(/!important/gm, '')}`
 		const pattern = new Set()
-		const emojiSet = emojis.reduce((emojiSet, emoji) => {
+		const emojiSet = EMOJIS.reduce((emojiSet, emoji) => {
 			const {
 				actualBoundingBoxAscent,
 				actualBoundingBoxDescent,
@@ -419,7 +416,7 @@ export const getCanvas2d = async imports => {
 				actualBoundingBoxRight,
 				fontBoundingBoxAscent,
 				fontBoundingBoxDescent,
-				width
+				width,
 			} = context.measureText(emoji) || {}
 			const dimensions = [
 				actualBoundingBoxAscent,
@@ -428,7 +425,7 @@ export const getCanvas2d = async imports => {
 				actualBoundingBoxRight,
 				fontBoundingBoxAscent,
 				fontBoundingBoxDescent,
-				width
+				width,
 			].join(',')
 			if (!pattern.has(dimensions)) {
 				pattern.add(dimensions)
@@ -438,7 +435,7 @@ export const getCanvas2d = async imports => {
 		}, new Set())
 
 		// textMetrics System Sum
-		const textMetricsSystemSum = 0.00001 * [...pattern].map(x => {
+		const textMetricsSystemSum = 0.00001 * [...pattern].map((x) => {
 			return x.split(',').reduce((acc, x) => acc += (+x||0), 0)
 		}).reduce((acc, x) => acc += x, 0)
 
@@ -448,25 +445,25 @@ export const getCanvas2d = async imports => {
 		paintCanvas({
 			canvas,
 			context,
-			area: { width: maxSize, height: maxSize }
+			area: { width: maxSize, height: maxSize },
 		}) // clears image
 		const paintURI = canvas.toDataURL()
 
 		// Text
 		context.restore()
 		context.clearRect(0, 0, canvas.width, canvas.height)
-	  canvas.width = maxSize
-	  canvas.height = maxSize
-		context.font = `50px ${cssFontFamily.replace(/!important/gm, '')}`
+		canvas.width = maxSize
+		canvas.height = maxSize
+		context.font = `50px ${CSS_FONT_FAMILY.replace(/!important/gm, '')}`
 		context.fillText('A', 7, 37)
 		const textURI = canvas.toDataURL()
 
 		// Emoji
 		context.restore()
 		context.clearRect(0, 0, canvas.width, canvas.height)
-	  canvas.width = maxSize
-	  canvas.height = maxSize
-		context.font = `35px ${cssFontFamily.replace(/!important/gm, '')}`
+		canvas.width = maxSize
+		canvas.height = maxSize
+		context.font = `35px ${CSS_FONT_FAMILY.replace(/!important/gm, '')}`
 		context.fillText('👾', 0, 37)
 		const emojiURI = canvas.toDataURL()
 
@@ -478,8 +475,8 @@ export const getCanvas2d = async imports => {
 			documentLie(`CanvasRenderingContext2D.getImageData`, `pixel data modified`)
 		}
 
-		const getTextMetricsFloatLie = context => {
-			const isFloat = n => n % 1 !== 0
+		const getTextMetricsFloatLie = (context) => {
+			const isFloat = (n) => n % 1 !== 0
 			const {
 				actualBoundingBoxAscent: abba,
 				actualBoundingBoxDescent: abbd,
@@ -487,7 +484,7 @@ export const getCanvas2d = async imports => {
 				actualBoundingBoxRight: abbr,
 				fontBoundingBoxAscent: fbba,
 				fontBoundingBoxDescent: fbbd,
-				width: w
+				// width: w,
 			} = context.measureText('') || {}
 			const lied = [
 				abba,
@@ -495,8 +492,8 @@ export const getCanvas2d = async imports => {
 				abbl,
 				abbr,
 				fbba,
-				fbbd
-			].find(x => isFloat((x || 0)))
+				fbbd,
+			].find((x) => isFloat((x || 0)))
 			return lied
 		}
 		await queueEvent(timer)
@@ -505,7 +502,7 @@ export const getCanvas2d = async imports => {
 			lied = true
 			documentLie(
 				'CanvasRenderingContext2D.measureText',
-				'metric noise detected'
+				'metric noise detected',
 			)
 		}
 
@@ -521,27 +518,26 @@ export const getCanvas2d = async imports => {
 			textMetricsSystemSum,
 			liedTextMetrics: textMetricsLie,
 			emojiSet: [...emojiSet],
-			lied
+			lied,
 		}
-	}
-	catch (error) {
+	}	catch (error) {
 		logTestResult({ test: 'canvas 2d', passed: false })
 		captureError(error)
 		return
 	}
 }
 
-export const canvasHTML = ({ fp, note, modal, hashMini, hashSlice, formatEmojiSet, performanceLogger, cssFontFamily }) => {
+export function canvasHTML(fp) {
 	if (!fp.canvas2d) {
 		return `
 		<div class="col-six undefined">
-			<strong>Canvas 2d</strong> <span>${note.blocked}</span>
-			<div>data: ${note.blocked}</div>
+			<strong>Canvas 2d</strong> <span>${HTMLNote.BLOCKED}</span>
+			<div>data: ${HTMLNote.BLOCKED}</div>
 			<div>rendering:</div>
-			<div class="icon-pixel-container pixels">${note.blocked}</div>
-			<div class="icon-pixel-container pixels">${note.blocked}</div>
+			<div class="icon-pixel-container pixels">${HTMLNote.BLOCKED}</div>
+			<div class="icon-pixel-container pixels">${HTMLNote.BLOCKED}</div>
 			<div>textMetrics:</div>
-			<div class="block-text">${note.blocked}</div>
+			<div class="block-text">${HTMLNote.BLOCKED}</div>
 		</div>`
 	}
 
@@ -557,8 +553,8 @@ export const canvasHTML = ({ fp, note, modal, hashMini, hashSlice, formatEmojiSe
 			blobOffscreen,
 			emojiSet,
 			textMetricsSystemSum,
-			$hash
-		}
+			$hash,
+		},
 	} = fp
 	const { pixels, rgba, pixelImage } = mods || {}
 	const modPercent = pixels ? Math.round((pixels / 400) * 100) : 0
@@ -571,34 +567,34 @@ export const canvasHTML = ({ fp, note, modal, hashMini, hashSlice, formatEmojiSe
 		blobOffscreenDataURI: hashMini(blobOffscreenDataURI),
 		textURI: hashMini(textURI),
 		emojiURI: hashMini(emojiURI),
-		paintURI: hashMini(paintURI)
+		paintURI: hashMini(paintURI),
 	}
 	const dataTemplate = `
 		${textURI ? `<div class="icon-pixel text-image"></div>` : ''}
-		<br>text: ${!textURI ? note.blocked : hash.textURI}
+		<br>text: ${!textURI ? HTMLNote.BLOCKED : hash.textURI}
 
 		<br><br>
 		${emojiURI ? `<div class="icon-pixel emoji-image"></div>` : ''}
-		<br>emoji: ${!emojiURI ? note.blocked : hash.emojiURI}
+		<br>emoji: ${!emojiURI ? HTMLNote.BLOCKED : hash.emojiURI}
 
 		<br><br>
 		${paintURI ? `<div class="icon-pixel paint-image"></div>` : ''}
-		<br>paint: ${!paintURI ? note.blocked : hash.paintURI}
+		<br>paint: ${!paintURI ? HTMLNote.BLOCKED : hash.paintURI}
 
 		<br><br>
 		${dataURI ? `<div class="icon-pixel combined-image"></div>` : ''}
 		${dataURI ? `<div class="icon-pixel combined-image-blob"></div>` : ''}
-		<br>combined: ${!dataURI ? note.blocked : hash.dataURI}
-		<br>toBlob (combined): ${!blobDataURI ? note.unsupported : hash.blobDataURI}
+		<br>combined: ${!dataURI ? HTMLNote.BLOCKED : hash.dataURI}
+		<br>toBlob (combined): ${!blobDataURI ? HTMLNote.UNSUPPORTED : hash.blobDataURI}
 		<br><br>
 		${blobOffscreenDataURI ? `<div class="icon-pixel offscreen-image"></div>` : ''}
 		<br>convertToBlob (emoji storm): ${
-			!blobOffscreenDataURI ? note.unsupported : hash.blobOffscreenDataURI
+			!blobOffscreenDataURI ? HTMLNote.UNSUPPORTED : hash.blobOffscreenDataURI
 		}
 	`
 
 	// rgba: "b, g, gb, r, rb, rg, rgb"
-	const rgbaHTML = !rgba ? rgba : rgba.split(', ').map(s => s.split('').map(c => {
+	const rgbaHTML = !rgba ? rgba : rgba.split(', ').map((s) => s.split('').map((c) => {
 		const css = {
 			r: 'red',
 			g: 'green',
@@ -607,7 +603,7 @@ export const canvasHTML = ({ fp, note, modal, hashMini, hashSlice, formatEmojiSe
 		return `<span class="rgba rgba-${css[c]}"></span>`
 	}).join('')).join(' ')
 
-	const emojiHelpTitle = `CanvasRenderingContext2D.measureText()\nhash: ${hashMini(emojiSet)}\n${emojiSet.map((x,i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`
+	const emojiHelpTitle = `CanvasRenderingContext2D.measureText()\nhash: ${hashMini(emojiSet)}\n${emojiSet.map((x, i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`
 
 	return `
 	<div class="relative col-six${lied ? ' rejected' : ''}">
@@ -697,8 +693,8 @@ export const canvasHTML = ({ fp, note, modal, hashMini, hashSlice, formatEmojiSe
 				hashMini({
 					dataURI,
 					blob,
-					blobOffscreen
-				})
+					blobOffscreen,
+				}),
 			)
 		}</div>
 		<div class="help" title="CanvasRenderingContext2D.getImageData()">rendering: ${rgba ? `${modPercent}% rgba noise ${rgbaHTML}` : ''}</div>
@@ -716,8 +712,8 @@ export const canvasHTML = ({ fp, note, modal, hashMini, hashSlice, formatEmojiSe
 		</div>
 		<div>textMetrics:</div>
 		<div class="block-text help relative" title="${emojiHelpTitle}">
-			<span>${textMetricsSystemSum || note.unsupported}</span>
-			<span class="grey jumbo" style="font-family: ${cssFontFamily}">
+			<span>${textMetricsSystemSum || HTMLNote.UNSUPPORTED}</span>
+			<span class="grey jumbo" style="font-family: ${CSS_FONT_FAMILY}">
 				${formatEmojiSet(emojiSet)}
 			</span>
 		</div>
