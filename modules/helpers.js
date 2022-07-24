@@ -18,7 +18,7 @@ const JS_ENGINE = ({
 	77: 'JavaScriptCore',
 })[ENGINE_IDENTIFIER] || null
 
-const LIKE_BRAVE = IS_BLINK && 'flat' in Array.prototype /* Chrome 69*/ && !('ReportingObserver' in window /* Brave */)
+const LIKE_BRAVE = IS_BLINK && 'flat' in Array.prototype /* Chrome 69 */ && !('ReportingObserver' in window /* Brave */)
 
 function braveBrowser() {
 	const brave = (
