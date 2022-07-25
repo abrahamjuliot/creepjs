@@ -808,6 +808,7 @@ import getBestWorkerScope, { workerScopeHTML } from './worker'
 				<br><a class="tests" href="./tests/math.html">Math</a>
 				<br><a class="tests" href="./tests/machine.html">Machine</a>
 				<br><a class="tests" href="./tests/extensions.html">Chrome Extensions</a>
+				<br><a class="tests" href="./tests/proxy.html">JS Proxy</a>
 			</div>
 		</div>
 	</div>

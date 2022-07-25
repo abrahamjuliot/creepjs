@@ -1620,16 +1620,6 @@ typescript@^4.7.4:
   resolved "https://registry.npmjs.org/typescript/-/typescript-4.7.4.tgz"
   integrity sha512-C0WQT0gezHuw6AdY1M2jxUO83Rjf0HP7Sk1DtXj6j1EwkQNZrHAg2XPWlq62oqEhYvONq5pkC2Y9oPljWToLmQ==
 
-uglify-js@^3.16.2:
-  version "3.16.3"
-  resolved "https://registry.npmjs.org/uglify-js/-/uglify-js-3.16.3.tgz"
-  integrity sha512-uVbFqx9vvLhQg0iBaau9Z75AxWJ8tqM9AV890dIZCLApF4rTcyHwmAvLeEdYRs+BzYWu8Iw81F79ah0EfTXbaw==
-
-uglifyjs@^2.4.11:
-  version "2.4.11"
-  resolved "https://registry.yarnpkg.com/uglifyjs/-/uglifyjs-2.4.11.tgz#3440d64e045759589524418eb641c68bb90d113e"
-  integrity sha512-iR5+eXZCsoqmlzqYYENJm+rtX/KpC+jhhCtgORtBeVxRET+mfFHlyArl3DgYEqRTVDOxenv0OojFg02tf6LluA==
-
 undefsafe@^2.0.5:
   version "2.0.5"
   resolved "https://registry.npmjs.org/undefsafe/-/undefsafe-2.0.5.tgz"

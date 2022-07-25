@@ -1,4 +1,10 @@
-const ask = fn => { try { return fn() } catch (e) { return } }
+const ask = (fn) => {
+	try {
+		return fn()
+	} catch (e) {
+		return
+	}
+}
 const createTimer = () => {
 	let start = 0
 	const log = []
@@ -13,26 +19,31 @@ const createTimer = () => {
 		start: () => {
 			start = performance.now()
 			return start
-		}
+		},
 	}
 }
 
-const queueEvent = timer => {
+const queueEvent = (timer) => {
 	timer.stop()
-	return new Promise(resolve => setTimeout(() => resolve(timer.start()), 0))
-		.catch(e => { })
+	return new Promise((resolve) => setTimeout(() => resolve(timer.start()), 0))
+		.catch((e) => { })
 }
 
-const getPrototypeLies = scope => {
-	const getEngine = () => {
-		const mathPI = 3.141592653589793
-		const compute = n => mathPI ** -100 == +`1.9275814160560${n}e-50`
-		return {
-			isChrome: compute(204),
-			isFirefox: compute(185),
-			isSafari: compute(206)
-		}
+function getEngine() {
+	const x = [].constructor
+	try {
+		(-1).toFixed(-1)
+	} catch (err) {
+		return err.message.length + (x+'').split(x.name).join('').length
 	}
+}
+
+const browserEngine = getEngine()
+const IS_BLINK = browserEngine == 80
+const IS_GECKO = browserEngine == 58
+const IS_WEBKIT = browserEngine == 77
+
+const getPrototypeLies = (scope) => {
 	const getRandomValues = () => (
 		String.fromCharCode(Math.random() * 26 + 97) +
 		Math.random().toString(36).slice(-7)
@@ -59,43 +70,12 @@ const getPrototypeLies = scope => {
 		} catch (error) {
 			return error.constructor.name != 'TypeError' ? true : false
 		}
-		const illegal = [
-			'',
-			'is',
-			'call',
-			'seal',
-			'keys',
-			'bind',
-			'apply',
-			'assign',
-			'freeze',
-			'values',
-			'entries',
-			'toString',
-			'isFrozen',
-			'isSealed',
-			'constructor',
-			'isExtensible',
-			'getPrototypeOf',
-			'preventExtensions',
-			'propertyIsEnumerable',
-			'getOwnPropertySymbols',
-			'getOwnPropertyDescriptors'
-		]
-		const hasInvalidError = !!illegal.find(prop => {
-			try {
-				prop == '' ? Object(proto[name]) : Object[prop](proto[name])
-				return true // failed to throw
-			} catch (error) {
-				return error.constructor.name != 'TypeError'
-			}
-		})
-		return hasInvalidError
 	}
 
 	// calling the interface prototype on the function should throw a TypeError
 	const getCallInterfaceTypeErrorLie = (apiFunction, proto) => {
 		try {
+			// eslint-disable-next-line new-cap
 			new apiFunction()
 			apiFunction.call(proto)
 			return true
@@ -107,6 +87,7 @@ const getPrototypeLies = scope => {
 	// applying the interface prototype on the function should throw a TypeError
 	const getApplyInterfaceTypeErrorLie = (apiFunction, proto) => {
 		try {
+			// eslint-disable-next-line new-cap
 			new apiFunction()
 			apiFunction.apply(proto)
 			return true
@@ -116,8 +97,9 @@ const getPrototypeLies = scope => {
 	}
 
 	// creating a new instance of the function should throw a TypeError
-	const getNewInstanceTypeErrorLie = apiFunction => {
+	const getNewInstanceTypeErrorLie = (apiFunction) => {
 		try {
+			// eslint-disable-next-line new-cap
 			new apiFunction()
 			return true
 		} catch (error) {
@@ -126,16 +108,16 @@ const getPrototypeLies = scope => {
 	}
 
 	// extending the function on a fake class should throw a TypeError and message "not a constructor"
-	const getClassExtendsTypeErrorLie = apiFunction => {
+	const getClassExtendsTypeErrorLie = (apiFunction) => {
 		try {
-			const { isSafari } = getEngine()
 			const shouldExitInSafari13 = (
-				/version\/13/i.test((navigator || {}).userAgent) && isSafari
+				/version\/13/i.test((navigator || {}).userAgent) && IS_WEBKIT
 			)
 			if (shouldExitInSafari13) {
 				return false
 			}
 			// begin tests
+			// eslint-disable-next-line no-unused-vars
 			class Fake extends apiFunction { }
 			return true
 		} catch (error) {
@@ -148,7 +130,7 @@ const getPrototypeLies = scope => {
 	}
 
 	// setting prototype to null and converting to a string should throw a TypeError
-	const getNullConversionTypeErrorLie = apiFunction => {
+	const getNullConversionTypeErrorLie = (apiFunction) => {
 		const nativeProto = Object.getPrototypeOf(apiFunction)
 		try {
 			Object.setPrototypeOf(apiFunction, null) + ''
@@ -172,7 +154,7 @@ const getPrototypeLies = scope => {
         'function () { [native code] }'
         `function () {\n    [native code]\n}`
         */
-		let scopeToString, scopeToStringToString
+		let scopeToString; let scopeToStringToString
 		try {
 			scopeToString = scope.Function.prototype.toString.call(apiFunction)
 		} catch (e) { }
@@ -190,13 +172,13 @@ const getPrototypeLies = scope => {
 				scopeToStringToString :
 					apiFunction.toString.toString()
 		)
-		const trust = name => ({
+		const trust = (name) => ({
 			[`function ${name}() { [native code] }`]: true,
 			[`function get ${name}() { [native code] }`]: true,
 			[`function () { [native code] }`]: true,
 			[`function ${name}() {${'\n'}    [native code]${'\n'}}`]: true,
 			[`function get ${name}() {${'\n'}    [native code]${'\n'}}`]: true,
-			[`function () {${'\n'}    [native code]${'\n'}}`]: true
+			[`function () {${'\n'}    [native code]${'\n'}}`]: true,
 		})
 		return (
 			!trust(name)[apiFunctionToString] ||
@@ -205,10 +187,10 @@ const getPrototypeLies = scope => {
 	}
 
 	// "prototype" in function should not exist
-	const getPrototypeInFunctionLie = apiFunction => 'prototype' in apiFunction
+	const getPrototypeInFunctionLie = (apiFunction) => 'prototype' in apiFunction
 
 	// "arguments", "caller", "prototype", "toString"  should not exist in descriptor
-	const getDescriptorLie = apiFunction => {
+	const getDescriptorLie = (apiFunction) => {
 		const hasInvalidDescriptor = (
 			Object.getOwnPropertyDescriptor(apiFunction, 'arguments') ||
 			Reflect.getOwnPropertyDescriptor(apiFunction, 'arguments') ||
@@ -223,7 +205,7 @@ const getPrototypeLies = scope => {
 	}
 
 	// "arguments", "caller", "prototype", "toString" should not exist as own property
-	const getOwnPropertyLie = apiFunction => {
+	const getOwnPropertyLie = (apiFunction) => {
 		const hasInvalidOwnProperty = (
 			apiFunction.hasOwnProperty('arguments') ||
 			apiFunction.hasOwnProperty('caller') ||
@@ -234,14 +216,14 @@ const getPrototypeLies = scope => {
 	}
 
 	// descriptor keys should only contain "name" and "length"
-	const getDescriptorKeysLie = apiFunction => {
+	const getDescriptorKeysLie = (apiFunction) => {
 		const descriptorKeys = Object.keys(Object.getOwnPropertyDescriptors(apiFunction))
 		const hasInvalidKeys = '' + descriptorKeys != 'length,name' && '' + descriptorKeys != 'name,length'
 		return hasInvalidKeys
 	}
 
 	// own property names should only contain "name" and "length"
-	const getOwnPropertyNamesLie = apiFunction => {
+	const getOwnPropertyNamesLie = (apiFunction) => {
 		const ownPropertyNames = Object.getOwnPropertyNames(apiFunction)
 		const hasInvalidNames = !(
 			'' + ownPropertyNames == 'length,name' ||
@@ -251,7 +233,7 @@ const getPrototypeLies = scope => {
 	}
 
 	// own keys names should only contain "name" and "length"
-	const getOwnKeysLie = apiFunction => {
+	const getOwnKeysLie = (apiFunction) => {
 		const ownKeys = Reflect.ownKeys(apiFunction)
 		const hasInvalidKeys = !(
 			'' + ownKeys == 'length,name' ||
@@ -261,7 +243,7 @@ const getPrototypeLies = scope => {
 	}
 
 	// calling toString() on an object created from the function should throw a TypeError
-	const getNewObjectToStringTypeErrorLie = apiFunction => {
+	const getNewObjectToStringTypeErrorLie = (apiFunction) => {
 		try {
 			const you = () => Object.create(apiFunction).toString()
 			const cant = () => you()
@@ -277,8 +259,7 @@ const getPrototypeLies = scope => {
 				error.constructor.name == 'TypeError' && stackLines.length >= 5
 			)
 			// Chromium must throw error 'at Function.toString'... and not 'at Object.apply'
-			const { isChrome } = getEngine()
-			if (validStackSize && isChrome && (
+			if (validStackSize && IS_BLINK && (
 				!validScope ||
 				!/at Function\.toString/.test(stackLines[1]) ||
 				!/at you/.test(stackLines[2]) ||
@@ -293,25 +274,24 @@ const getPrototypeLies = scope => {
 
 	/* Proxy Detection */
 	// arguments or caller should not throw 'incompatible Proxy' TypeError
-	const tryIncompatibleProxy = fn => {
-		const { isFirefox } = getEngine()
+	const tryIncompatibleProxy = (fn) => {
 		try {
 			fn()
 			return true // failed to throw
 		} catch (error) {
 			return (
 				error.constructor.name != 'TypeError' ||
-				(isFirefox && /incompatible\sProxy/.test(error.message))
+				(IS_GECKO && /incompatible\sProxy/.test(error.message))
 			)
 		}
 	}
-	const getIncompatibleProxyTypeErrorLie = apiFunction => {
+	const getIncompatibleProxyTypeErrorLie = (apiFunction) => {
 		return (
 			tryIncompatibleProxy(() => apiFunction.arguments) ||
 			tryIncompatibleProxy(() => apiFunction.caller)
 		)
 	}
-	const getToStringIncompatibleProxyTypeErrorLie = apiFunction => {
+	const getToStringIncompatibleProxyTypeErrorLie = (apiFunction) => {
 		return (
 			tryIncompatibleProxy(() => apiFunction.toString.arguments) ||
 			tryIncompatibleProxy(() => apiFunction.toString.caller)
@@ -319,10 +299,9 @@ const getPrototypeLies = scope => {
 	}
 
 	// checking proxy instanceof proxy should throw a valid TypeError
-	const getInstanceofCheckLie = apiFunction => {
+	const getInstanceofCheckLie = (apiFunction) => {
 		const proxy = new Proxy(apiFunction, {})
-		const { isChrome } = getEngine()
-		if (!isChrome) {
+		if (!IS_BLINK) {
 			return false
 		}
 		const hasValidStack = (error, type = 'Function') => {
@@ -339,8 +318,7 @@ const getPrototypeLies = scope => {
 		try {
 			proxy instanceof proxy
 			return true // failed to throw
-		}
-		catch (error) {
+		} catch (error) {
 			// expect Proxy.[Symbol.hasInstance]
 			if (!hasValidStack(error, 'Proxy')) {
 				return true
@@ -348,9 +326,8 @@ const getPrototypeLies = scope => {
 			try {
 				apiFunction instanceof apiFunction
 				return true // failed to throw
-			}
-			catch (error) {
-				// expect Function.[Symbol.hasInstance] 
+			} catch (error) {
+				// expect Function.[Symbol.hasInstance]
 				return !hasValidStack(error)
 			}
 		}
@@ -358,8 +335,7 @@ const getPrototypeLies = scope => {
 
 	// defining properties should not throw an error
 	const getDefinePropertiesLie = (apiFunction) => {
-		const { isChrome } = getEngine()
-		if (!isChrome) {
+		if (!IS_BLINK) {
 			return false // chrome only test
 		}
 		try {
@@ -381,18 +357,17 @@ const getPrototypeLies = scope => {
 			return apiFunction++
 		}
 	}
-	const hasValidError = error => {
-		const { isChrome, isFirefox } = getEngine()
+	const hasValidError = (error) => {
 		const { name, message } = error
 		const hasRangeError = name == 'RangeError'
 		const hasInternalError = name == 'InternalError'
-		const chromeLie = isChrome && (
+		const chromeLie = IS_BLINK && (
 			message != `Maximum call stack size exceeded` || !hasRangeError
 		)
-		const firefoxLie = isFirefox && (
+		const firefoxLie = IS_GECKO && (
 			message != `too much recursion` || !hasInternalError
 		)
-		return (hasRangeError || hasInternalError) && !(chromeLie || firefoxLie) 
+		return (hasRangeError || hasInternalError) && !(chromeLie || firefoxLie)
 	}
 
 
@@ -415,11 +390,10 @@ const getPrototypeLies = scope => {
 			spawnError(apiFunction, method)
 			return true // failed to throw
 		} catch (error) {
-			const { isChrome, isFirefox } = getEngine()
 			const { name, message, stack } = error
 			const targetStackLine = ((stack || '').split('\n') || [])[1]
 			const hasTypeError = name == 'TypeError'
-			const chromeLie = isChrome && (
+			const chromeLie = IS_BLINK && (
 				message != `Cyclic __proto__ value` || (
 					method == '__proto__' && (
 						!targetStackLine.startsWith(`    at Function.set __proto__ [as __proto__]`) &&
@@ -427,7 +401,7 @@ const getPrototypeLies = scope => {
 					)
 				)
 			)
-			const firefoxLie = isFirefox && (
+			const firefoxLie = IS_GECKO && (
 				message != `can't set prototype: it would cause a prototype chain cycle`
 			)
 			if (!hasTypeError || chromeLie || firefoxLie) {
@@ -451,7 +425,7 @@ const getPrototypeLies = scope => {
 					randomId in apiFunction
 					return false
 				} catch (error) {
-					return true  // failed at Error 
+					return true // failed at Error
 				}
 			}
 		} catch (error) {
@@ -490,7 +464,7 @@ const getPrototypeLies = scope => {
 		if (typeof apiFunction != 'function') {
 			return {
 				lied: false,
-				lieTypes: []
+				lieTypes: [],
 			}
 		}
 		const name = apiFunction.name.replace(/get\s/, '')
@@ -514,7 +488,7 @@ const getPrototypeLies = scope => {
 			// Proxy Detection
 			[`failed at incompatible proxy error`]: getIncompatibleProxyTypeErrorLie(apiFunction),
 			[`failed at toString incompatible proxy error`]: getToStringIncompatibleProxyTypeErrorLie(apiFunction),
-			[`failed at too much recursion error`]: getChainCycleLie({ apiFunction })
+			[`failed at too much recursion error`]: getChainCycleLie({ apiFunction }),
 		}
 		// conditionally use advanced detection
 		const detectProxies = (
@@ -530,27 +504,27 @@ const getPrototypeLies = scope => {
 				[`failed at reflect set proto`]: getReflectSetProtoLie({ apiFunction, randomId }),
 				[`failed at reflect set proto proxy`]: getReflectSetProtoProxyLie({ apiFunction, randomId }),
 				[`failed at instanceof check error`]: getInstanceofCheckLie(apiFunction),
-				[`failed at define properties`]: getDefinePropertiesLie(apiFunction)
+				[`failed at define properties`]: getDefinePropertiesLie(apiFunction),
 			}
 		}
-		const lieTypes = Object.keys(lies).filter(key => !!lies[key])
+		const lieTypes = Object.keys(lies).filter((key) => !!lies[key])
 		return {
 			lied: lieTypes.length,
-			lieTypes
+			lieTypes,
 		}
 	}
 
 	// Lie Detector
 	const createLieDetector = () => {
-		const isSupported = obj => typeof obj != 'undefined' && !!obj
+		const isSupported = (obj) => typeof obj != 'undefined' && !!obj
 		const props = {} // lie list and detail
-		let propsSearched = [] // list of properties searched
+		const propsSearched = [] // list of properties searched
 		return {
 			getProps: () => props,
 			getPropsSearched: () => propsSearched,
 			searchLies: (fn, {
 				target = [],
-				ignore = []
+				ignore = [],
 			} = {}) => {
 				let obj
 				// check if api is blocked or not supported
@@ -567,8 +541,8 @@ const getPrototypeLies = scope => {
 				Object.getOwnPropertyNames(interfaceObject)
 					;[...new Set([
 						...Object.getOwnPropertyNames(interfaceObject),
-						...Object.keys(interfaceObject) // backup
-					])].sort().forEach(name => {
+						...Object.keys(interfaceObject), // backup
+					])].sort().forEach((name) => {
 						const skip = (
 							name == 'constructor' ||
 							(target.length && !new Set(target).has(name)) ||
@@ -579,6 +553,7 @@ const getPrototypeLies = scope => {
 						}
 						const objectNameString = /\s(.+)\]/
 						const apiName = `${
+							// @ts-ignore
 							obj.name ? obj.name : objectNameString.test(obj) ? objectNameString.exec(obj)[1] : undefined
 							}.${name}`
 						propsSearched.push(apiName)
@@ -593,7 +568,7 @@ const getPrototypeLies = scope => {
 									res = getLies({
 										apiFunction: proto[name],
 										proto,
-										lieProps: props
+										lieProps: props,
 									})
 									if (res.lied) {
 										return (props[apiName] = res.lieTypes)
@@ -601,7 +576,7 @@ const getPrototypeLies = scope => {
 									return
 								}
 								// since there is no TypeError and the typeof is not a function,
-								// handle invalid values and ingnore name, length, and constants
+								// handle invalid values and ignore name, length, and constants
 								if (
 									name != 'name' &&
 									name != 'length' &&
@@ -613,14 +588,15 @@ const getPrototypeLies = scope => {
 								}
 							} catch (error) { }
 							// else search getter function
+							// @ts-ignore
 							const getterFunction = Object.getOwnPropertyDescriptor(proto, name).get
 							res = getLies({
 								apiFunction: getterFunction,
 								proto,
 								obj,
-								lieProps: props
+								lieProps: props,
 							}) // send the obj for special tests
-							
+
 							if (res.lied) {
 								return (props[apiName] = res.lieTypes)
 							}
@@ -633,13 +609,13 @@ const getPrototypeLies = scope => {
 							)
 						}
 					})
-			}
+			},
 		}
 	}
 
 	const lieDetector = createLieDetector()
 	const {
-		searchLies
+		searchLies,
 	} = lieDetector
 
 	// search lies: remove target to search all properties
@@ -650,10 +626,11 @@ const getPrototypeLies = scope => {
 		],
 		ignore: [
 			'caller',
-			'arguments'
-		]
+			'arguments',
+		],
 	})
 
+	// @ts-ignore
 	searchLies(() => WorkerNavigator, {
 		target: [
 			'deviceMemory',
@@ -661,10 +638,10 @@ const getPrototypeLies = scope => {
 			'language',
 			'languages',
 			'platform',
-			'userAgent'
-		]
+			'userAgent',
+		],
 	})
-	// return lies list and detail 
+	// return lies list and detail
 	const props = lieDetector.getProps()
 	const propsSearched = lieDetector.getPropsSearched()
 	return {
@@ -672,24 +649,24 @@ const getPrototypeLies = scope => {
 		lieList: Object.keys(props).sort(),
 		lieDetail: props,
 		lieCount: Object.keys(props).reduce((acc, key) => acc + props[key].length, 0),
-		propsSearched
+		propsSearched,
 	}
 }
 
-const getUserAgentData = async navigator => {
+const getUserAgentData = async (navigator) => {
 	if (!('userAgentData' in navigator)) {
 		return
 	}
 	const data = await navigator.userAgentData.getHighEntropyValues(
-		['platform', 'platformVersion', 'architecture', 'bitness',  'model', 'uaFullVersion']
+		['platform', 'platformVersion', 'architecture', 'bitness', 'model', 'uaFullVersion'],
 	)
 	const { brands, mobile } = navigator.userAgentData || {}
 	const compressedBrands = (brands, captureVersion = false) => brands
-		.filter(obj => !/Not/.test(obj.brand)).map(obj => `${obj.brand}${captureVersion ? ` ${obj.version}` : ''}`)
-	const removeChromium = brands => (
-		brands.length > 1 ? brands.filter(brand => !/Chromium/.test(brand)) : brands
+		.filter((obj) => !/Not/.test(obj.brand)).map((obj) => `${obj.brand}${captureVersion ? ` ${obj.version}` : ''}`)
+	const removeChromium = (brands) => (
+		brands.length > 1 ? brands.filter((brand) => !/Chromium/.test(brand)) : brands
 	)
-	
+
 	// compress brands
 	if (!data.brands) {
 		data.brands = brands
@@ -698,37 +675,38 @@ const getUserAgentData = async navigator => {
 	data.brands = compressedBrands(data.brands)
 	data.brandsVersion = removeChromium(data.brandsVersion)
 	data.brands = removeChromium(data.brands)
-	
+
 	if (!data.mobile) {
 		data.mobile = mobile
 	}
 	const dataSorted = Object.keys(data).sort().reduce((acc, key) => {
 		acc[key] = data[key]
 		return acc
-	},{})
+	}, {})
 	return dataSorted
 }
 
 const getWebglData = () => ask(() => {
+	// @ts-ignore
 	const canvasOffscreenWebgl = new OffscreenCanvas(256, 256)
 	const contextWebgl = canvasOffscreenWebgl.getContext('webgl')
 	const rendererInfo = contextWebgl.getExtension('WEBGL_debug_renderer_info')
 	return {
 		webglVendor: contextWebgl.getParameter(rendererInfo.UNMASKED_VENDOR_WEBGL),
-		webglRenderer: contextWebgl.getParameter(rendererInfo.UNMASKED_RENDERER_WEBGL)
+		webglRenderer: contextWebgl.getParameter(rendererInfo.UNMASKED_RENDERER_WEBGL),
 	}
 })
 
 const computeTimezoneOffset = () => {
 	const date = new Date().getDate()
 	const month = new Date().getMonth()
+	// @ts-ignore
 	const year = Date().split` `[3] // current year
-	const format = n => (''+n).length == 1 ? `0${n}` : n
+	const format = (n) => (''+n).length == 1 ? `0${n}` : n
 	const dateString = `${month+1}/${format(date)}/${year}`
 	const dateStringUTC = `${year}-${format(month+1)}-${format(date)}`
-	const utc = Date.parse(
-		new Date(dateString)
-	)
+	// @ts-ignore
+	const utc = Date.parse(new Date(dateString))
 	const now = +new Date(dateStringUTC)
 	return +(((utc - now)/60000).toFixed(0))
 }
@@ -741,8 +719,9 @@ const getLocale = () => {
 		'ListFormat',
 		'NumberFormat',
 		'PluralRules',
-		'RelativeTimeFormat'
+		'RelativeTimeFormat',
 	]
+	// @ts-ignore
 	const locale = constructors.reduce((acc, name) => {
 		try {
 			const obj = new Intl[name]
@@ -751,8 +730,7 @@ const getLocale = () => {
 			}
 			const { locale } = obj.resolvedOptions() || {}
 			return [...acc, locale]
-		}
-		catch (error) {
+		} catch (error) {
 			return acc
 		}
 	}, [])
@@ -764,13 +742,14 @@ const getWorkerData = async () => {
 	const timer = createTimer()
 	await queueEvent(timer)
 
-	const userAgentData = await getUserAgentData(navigator).catch(error => console.error(error))
-	
+	const userAgentData = await getUserAgentData(navigator).catch((error) => console.error(error))
+
 	// webgl
 	const { webglVendor, webglRenderer } = getWebglData() || {}
 
 	// timezone & locale
 	const timezoneOffset = computeTimezoneOffset()
+	// eslint-disable-next-line new-cap
 	const timezoneLocation = Intl.DateTimeFormat().resolvedOptions().timeZone
 	const locale = getLocale()
 
@@ -781,7 +760,8 @@ const getWorkerData = async () => {
 		languages,
 		platform,
 		userAgent,
-		deviceMemory
+		// @ts-ignore
+		deviceMemory,
 	} = navigator || {}
 
 	// scope keys
@@ -790,13 +770,13 @@ const getWorkerData = async () => {
 	// prototype lies
 	await queueEvent(timer)
 	const {
-		lieDetector: lieProps,
+		// lieDetector: lieProps,
 		lieList,
 		lieDetail,
-		lieCount,
-		propsSearched
+		// lieCount,
+		// propsSearched,
 	} = getPrototypeLies(globalThis) // execute and destructure the list and detail
-	const prototypeLies = JSON.parse(JSON.stringify(lieDetail))
+	// const prototypeLies = JSON.parse(JSON.stringify(lieDetail))
 	const protoLieLen = lieList.length
 
 	// match engine locale to system locale to determine if locale entropy is trusty
@@ -808,7 +788,7 @@ const getWorkerData = async () => {
 			currency: 'USD',
 			currencyDisplay: 'name',
 			minimumFractionDigits: 0,
-			maximumFractionDigits: 0
+			maximumFractionDigits: 0,
 		})
 	} catch (e) {}
 	const engineCurrencyLocale = (1).toLocaleString(undefined, {
@@ -816,11 +796,11 @@ const getWorkerData = async () => {
 		currency: 'USD',
 		currencyDisplay: 'name',
 		minimumFractionDigits: 0,
-		maximumFractionDigits: 0
+		maximumFractionDigits: 0,
 	})
 	const localeEntropyIsTrusty = engineCurrencyLocale == systemCurrencyLocale
 	const localeIntlEntropyIsTrusty = new Set((''+language).split(',')).has(''+locale)
-	
+
 	const { href, pathname } = self.location || {}
 	const locationPathNameLie = (
 		!href ||
@@ -833,7 +813,7 @@ const getWorkerData = async () => {
 		scopeKeys,
 		lied: protoLieLen || +locationPathNameLie,
 		lies: {
-			proto: protoLieLen ? lieDetail : false
+			proto: protoLieLen ? lieDetail : false,
 		},
 		locale: ''+locale,
 		systemCurrencyLocale,
@@ -850,15 +830,15 @@ const getWorkerData = async () => {
 		userAgent,
 		webglRenderer,
 		webglVendor,
-		userAgentData
+		userAgentData,
 	}
 }
 
 // Compute and communicate from worker scope
 const onEvent = (eventType, fn) => addEventListener(eventType, fn)
-const send = async source => source.postMessage(await getWorkerData())
+const send = async (source) => source.postMessage(await getWorkerData())
 if (!globalThis.document && globalThis.WorkerGlobalScope) {
-	globalThis.ServiceWorkerGlobalScope ? onEvent('message', e => send(e.source)) :
-	globalThis.SharedWorkerGlobalScope ? onEvent('connect', e => send(e.ports[0])) :
+	globalThis.ServiceWorkerGlobalScope ? onEvent('message', (e) => send(e.source)) :
+	globalThis.SharedWorkerGlobalScope ? onEvent('connect', (e) => send(e.ports[0])) :
 	send(self) // DedicatedWorkerGlobalScope
 }
