@@ -6,11 +6,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "autoprefixer": "postcss style.css -u autoprefixer -o style.prefix.css",
-    "cleancss": "cleancss -o docs/style.min.css style.prefix.css",
-    "rollup": "rollup creep.js --file docs/creep.js --no-treeshake --format iife",
-    "build:css": "npm run autoprefixer && npm run cleancss",
-    "build": "npm run rollup & npm run build:css",
+    "watch:dev": "npx rollup --config rollup.config.js -w & nodemon -d 1 ./server.js localhost 8000",
+    "build:dev": "npx rollup --config rollup.config.js",
+    "minify:js": "uglifyjs public/creep.js -o docs/creep.min.js -c",
+    "autoprefixer": "postcss public/style.css -u autoprefixer -o public/style.prefix.css",
+    "minify:css": "cleancss -o docs/style.min.css public/style.prefix.css",
+    "build:css": "yarn autoprefixer && yarn minify:css",
+    "build:js": "yarn build:dev && yarn minify:js",
+    "build": "yarn build:js & yarn build:css",
     "postbuild": "echo 'build complete 🔥'"
   },
   "repository": {
@@ -24,17 +27,22 @@
   },
   "homepage": "https://github.com/abrahamjuliot/CreepJS#readme",
   "dependencies": {
-    "express": "^4.17.2",
-    "rollup": "^2.62.0"
+    "express": "^4.17.2"
   },
   "devDependencies": {
+    "@rollup/plugin-typescript": "^8.3.3",
     "@typescript-eslint/eslint-plugin": "^5.30.7",
     "@typescript-eslint/parser": "^5.30.7",
     "autoprefixer": "^10.4.1",
     "clean-css-cli": "^4.3.0",
     "eslint": "^8.20.0",
     "eslint-config-google": "^0.14.0",
+    "nodemon": "^2.0.19",
     "postcss": "^8.4.5",
-    "postcss-cli": "^8.3.1"
+    "postcss-cli": "^8.3.1",
+    "rollup": "^2.77.0",
+    "typescript": "^4.7.4",
+    "uglify-js": "^3.16.2",
+    "uglifyjs": "^2.4.11"
   }
 }
