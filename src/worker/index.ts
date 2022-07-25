@@ -76,7 +76,7 @@ export default async function getBestWorkerScope() {
 			})
 		})
 
-		const scriptSource = '/creepworker.js'
+		const scriptSource = 'creepworker.js'
 		let scope = 'ServiceWorkerGlobalScope'
 		let type = 'service' // loads fast but is not available in frames
 		let workerScope = await getServiceWorker({ scriptSource }).catch((error) => {
