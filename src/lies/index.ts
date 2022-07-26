@@ -200,8 +200,8 @@ function getPrototypeLies(scope: Window & typeof globalThis) {
 		lieProps: Record<string, string[]>
 	}
 	interface LieResult {
-    lied: number
-    lieTypes: string[]
+		lied: number
+		lieTypes: string[]
 	}
 	const getLies = ({ apiFunction, proto, obj, lieProps }: LiesConfig): LieResult => {
 		if (typeof apiFunction != 'function') {
@@ -338,8 +338,8 @@ function getPrototypeLies(scope: Window & typeof globalThis) {
 
 	// Lie Detector
 	interface SearchConfig {
-			target?: string[] | undefined
-			ignore?: string[] | undefined
+		target?: string[] | undefined
+		ignore?: string[] | undefined
 	}
 	const createLieDetector = () => {
 		const isSupported = (obj: any) => typeof obj != 'undefined' && !!obj
