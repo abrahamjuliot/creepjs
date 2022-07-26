@@ -1,6 +1,6 @@
 /* eslint-disable new-cap */
 import { captureError } from '../errors'
-import { proxyDetectionMethods, PARENT_PHANTOM } from '../lies'
+import { lieProps, PARENT_PHANTOM } from '../lies'
 import { instanceId, hashMini } from '../utils/crypto'
 import { createTimer, queueEvent, IS_BLINK, logTestResult, performanceLogger, hashSlice } from '../utils/helpers'
 import { HTMLNote, modal } from '../utils/html'
@@ -12,15 +12,6 @@ export default async function getHeadlessFeatures(workerScope) {
 	try {
 		const timer = createTimer()
 		await queueEvent(timer)
-		const [
-			getTooMuchRecursionLie,
-			getNewObjectToStringTypeErrorLie,
-			getChainCycleLie,
-			getReflectSetProtoLie,
-			getReflectSetProtoProxyLie,
-			getInstanceofCheckLie,
-			getDefinePropertiesLie,
-		] = proxyDetectionMethods
 		const mimeTypes = Object.keys({ ...navigator.mimeTypes })
 		const data = {
 			chromium: IS_BLINK,
@@ -118,69 +109,25 @@ export default async function getHeadlessFeatures(workerScope) {
 						// @ts-ignore
 						new chrome.runtime.connect
 						return true
-					} catch (error) {
-						return error.constructor.name != 'TypeError' ? true : false
+					} catch (err: any) {
+						return err.constructor.name != 'TypeError' ? true : false
 					}
 				})(),
-				['Permissions.prototype.query leaks Proxy behavior']: (() => {
-					if (!('Permissions' in window)) {
-						return false
-					}
-					const apiFunction = Permissions.prototype.query
-					return (
-						// @ts-ignore
-						getTooMuchRecursionLie({ apiFunction }) ||
-						// @ts-ignore
-						getTooMuchRecursionLie({ apiFunction, method: '__proto__' }) ||
-						// @ts-ignore
-						getChainCycleLie({ apiFunction }) ||
-						// @ts-ignore
-						getChainCycleLie({ apiFunction, method: '__proto__' }) ||
-						// @ts-ignore
-						getReflectSetProtoLie({ apiFunction }) ||
-						// @ts-ignore
-						getReflectSetProtoProxyLie({ apiFunction }) ||
-						// @ts-ignore
-						getInstanceofCheckLie(apiFunction) ||
-						// @ts-ignore
-						getDefinePropertiesLie(apiFunction)
-					)
-				})(),
+				['Permissions.prototype.query leaks Proxy behavior']: (
+					('Permissions' in window) && !!lieProps['Permissions.query']
+				),
 				['Function.prototype.toString leaks Proxy behavior']: (() => {
 					try {
 						// @ts-ignore
 						class Blah extends Function.prototype.toString { } // eslint-disable-line no-unused-vars
 						return true
-					} catch (error) {
-						return /\[object Function\]/.test(error.message)
+					} catch (err: any) {
+						return /\[object Function\]/.test(err.message)
 					}
 				})(),
-				['Function.prototype.toString has invalid TypeError']: (() => {
-					const apiFunction = Function.prototype.toString
-					const liedToString = (
-						// @ts-ignore
-						getNewObjectToStringTypeErrorLie(apiFunction) ||
-						// @ts-ignore
-						getNewObjectToStringTypeErrorLie(() => { }) ||
-						// @ts-ignore
-						getTooMuchRecursionLie({ apiFunction }) ||
-						// @ts-ignore
-						getTooMuchRecursionLie({ apiFunction, method: '__proto__' }) ||
-						// @ts-ignore
-						getChainCycleLie({ apiFunction }) ||
-						// @ts-ignore
-						getChainCycleLie({ apiFunction, method: '__proto__' }) ||
-						// @ts-ignore
-						getReflectSetProtoLie({ apiFunction }) ||
-						// @ts-ignore
-						getReflectSetProtoProxyLie({ apiFunction }) ||
-						// @ts-ignore
-						getInstanceofCheckLie(apiFunction) ||
-						// @ts-ignore
-						getDefinePropertiesLie(apiFunction)
-					)
-					return liedToString
-				})(),
+				['Function.prototype.toString has invalid TypeError']: (
+					!!lieProps['Function.toString']
+				),
 			},
 		}
 
