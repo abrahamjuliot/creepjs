@@ -240,7 +240,9 @@ export async function spawnWorker() {
 
 	// Compute and communicate from worker scope
 	const onEvent = (eventType, fn) => addEventListener(eventType, fn)
-	const send = async (source) => source.postMessage(await getWorkerData())
+	const send = (source) => {
+		return getWorkerData().then((data) => source.postMessage(data))
+	}
 	if (IS_WORKER_SCOPE) {
 		globalThis.ServiceWorkerGlobalScope ? onEvent('message', (e) => send(e.source)) :
 		globalThis.SharedWorkerGlobalScope ? onEvent('connect', (e) => send(e.ports[0])) :
