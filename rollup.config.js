@@ -4,7 +4,7 @@ export default {
   input: 'src/creep.ts',
   output: {
     dir: 'public',
-    format: 'esm',
+    format: 'iife',
     sourcemap: true,
   },
   plugins: [
