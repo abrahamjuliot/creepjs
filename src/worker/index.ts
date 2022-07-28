@@ -1,9 +1,254 @@
 import { captureError } from '../errors'
-import { documentLie } from '../lies'
+import { createLieDetector, documentLie } from '../lies'
 import { getWebGLRendererConfidence, compressWebGLRenderer } from '../trash'
 import { hashMini } from '../utils/crypto'
-import { createTimer, queueEvent, getOS, getUserAgentPlatform, decryptUserAgent, computeWindowsRelease, JS_ENGINE, logTestResult, isUAPostReduction, performanceLogger, hashSlice } from '../utils/helpers'
+import { createTimer, queueEvent, getOS, getUserAgentPlatform, decryptUserAgent, computeWindowsRelease, JS_ENGINE, logTestResult, isUAPostReduction, performanceLogger, hashSlice, IS_WORKER_SCOPE } from '../utils/helpers'
 import { HTMLNote, count, modal } from '../utils/html'
+
+export const enum Scope {
+	WORKER = 0,
+	WINDOW,
+}
+
+export async function spawnWorker() {
+	const ask = (fn) => {
+		try {
+			return fn()
+		} catch (e) {
+			return
+		}
+	}
+
+	function getWorkerPrototypeLies(scope: Window & typeof globalThis) {
+		const lieDetector = createLieDetector(scope)
+		const {
+			searchLies,
+		} = lieDetector
+
+		searchLies(() => Function, {
+			target: [
+				'toString',
+			],
+			ignore: [
+				'caller',
+				'arguments',
+			],
+		})
+		// @ts-expect-error
+		searchLies(() => WorkerNavigator, {
+			target: [
+				'deviceMemory',
+				'hardwareConcurrency',
+				'language',
+				'languages',
+				'platform',
+				'userAgent',
+			],
+		})
+		// return lies list and detail
+		const props = lieDetector.getProps()
+		const propsSearched = lieDetector.getPropsSearched()
+		return {
+			lieDetector,
+			lieList: Object.keys(props).sort(),
+			lieDetail: props,
+			lieCount: Object.keys(props).reduce((acc, key) => acc + props[key].length, 0),
+			propsSearched,
+		}
+	}
+
+	const getUserAgentData = async (navigator) => {
+		if (!('userAgentData' in navigator)) {
+			return
+		}
+		const data = await navigator.userAgentData.getHighEntropyValues(
+			['platform', 'platformVersion', 'architecture', 'bitness', 'model', 'uaFullVersion'],
+		)
+		const { brands, mobile } = navigator.userAgentData || {}
+		const compressedBrands = (brands, captureVersion = false) => brands
+			.filter((obj) => !/Not/.test(obj.brand)).map((obj) => `${obj.brand}${captureVersion ? ` ${obj.version}` : ''}`)
+		const removeChromium = (brands) => (
+			brands.length > 1 ? brands.filter((brand) => !/Chromium/.test(brand)) : brands
+		)
+
+		// compress brands
+		if (!data.brands) {
+			data.brands = brands
+		}
+		data.brandsVersion = compressedBrands(data.brands, true)
+		data.brands = compressedBrands(data.brands)
+		data.brandsVersion = removeChromium(data.brandsVersion)
+		data.brands = removeChromium(data.brands)
+
+		if (!data.mobile) {
+			data.mobile = mobile
+		}
+		const dataSorted = Object.keys(data).sort().reduce((acc, key) => {
+			acc[key] = data[key]
+			return acc
+		}, {})
+		return dataSorted
+	}
+
+	const getWebglData = () => ask(() => {
+		// @ts-ignore
+		const canvasOffscreenWebgl = new OffscreenCanvas(256, 256)
+		const contextWebgl = canvasOffscreenWebgl.getContext('webgl')
+		const rendererInfo = contextWebgl.getExtension('WEBGL_debug_renderer_info')
+		return {
+			webglVendor: contextWebgl.getParameter(rendererInfo.UNMASKED_VENDOR_WEBGL),
+			webglRenderer: contextWebgl.getParameter(rendererInfo.UNMASKED_RENDERER_WEBGL),
+		}
+	})
+
+	const computeTimezoneOffset = () => {
+		const date = new Date().getDate()
+		const month = new Date().getMonth()
+		// @ts-ignore
+		const year = Date().split` `[3] // current year
+		const format = (n) => (''+n).length == 1 ? `0${n}` : n
+		const dateString = `${month+1}/${format(date)}/${year}`
+		const dateStringUTC = `${year}-${format(month+1)}-${format(date)}`
+		// @ts-ignore
+		const utc = Date.parse(new Date(dateString))
+		const now = +new Date(dateStringUTC)
+		return +(((utc - now)/60000).toFixed(0))
+	}
+
+	const getLocale = () => {
+		const constructors = [
+			'Collator',
+			'DateTimeFormat',
+			'DisplayNames',
+			'ListFormat',
+			'NumberFormat',
+			'PluralRules',
+			'RelativeTimeFormat',
+		]
+		// @ts-ignore
+		const locale = constructors.reduce((acc, name) => {
+			try {
+				const obj = new Intl[name]
+				if (!obj) {
+					return acc
+				}
+				const { locale } = obj.resolvedOptions() || {}
+				return [...acc, locale]
+			} catch (error) {
+				return acc
+			}
+		}, [])
+
+		return [...new Set(locale)]
+	}
+
+	const getWorkerData = async () => {
+		const timer = createTimer()
+		await queueEvent(timer)
+
+		const userAgentData = await getUserAgentData(navigator).catch((error) => console.error(error))
+
+		// webgl
+		const { webglVendor, webglRenderer } = getWebglData() || {}
+
+		// timezone & locale
+		const timezoneOffset = computeTimezoneOffset()
+		// eslint-disable-next-line new-cap
+		const timezoneLocation = Intl.DateTimeFormat().resolvedOptions().timeZone
+		const locale = getLocale()
+
+		// navigator
+		const {
+			hardwareConcurrency,
+			language,
+			languages,
+			platform,
+			userAgent,
+			// @ts-expect-error
+			deviceMemory,
+		} = navigator || {}
+
+		// scope keys
+		const scopeKeys = Object.getOwnPropertyNames(self)
+
+		// prototype lies
+		await queueEvent(timer)
+		const {
+			// lieDetector: lieProps,
+			lieList,
+			lieDetail,
+			// lieCount,
+			// propsSearched,
+		} = getWorkerPrototypeLies(self) // execute and destructure the list and detail
+		// const prototypeLies = JSON.parse(JSON.stringify(lieDetail))
+		const protoLieLen = lieList.length
+
+		// match engine locale to system locale to determine if locale entropy is trusty
+		let systemCurrencyLocale
+		const lang = (''+language).split(',')[0]
+		try {
+			systemCurrencyLocale = (1).toLocaleString((lang || undefined), {
+				style: 'currency',
+				currency: 'USD',
+				currencyDisplay: 'name',
+				minimumFractionDigits: 0,
+				maximumFractionDigits: 0,
+			})
+		} catch (e) {}
+		const engineCurrencyLocale = (1).toLocaleString(undefined, {
+			style: 'currency',
+			currency: 'USD',
+			currencyDisplay: 'name',
+			minimumFractionDigits: 0,
+			maximumFractionDigits: 0,
+		})
+		const localeEntropyIsTrusty = engineCurrencyLocale == systemCurrencyLocale
+		const localeIntlEntropyIsTrusty = new Set((''+language).split(',')).has(''+locale)
+
+		const { href, pathname } = self.location || {}
+		const locationPathNameLie = (
+			!href ||
+			!pathname ||
+			!/^(\/docs|\/creepjs|)\/creep.js$/.test(pathname) ||
+			!new RegExp(`${pathname}$`).test(href)
+		)
+
+		return {
+			scopeKeys,
+			lied: protoLieLen || +locationPathNameLie,
+			lies: {
+				proto: protoLieLen ? lieDetail : false,
+			},
+			locale: ''+locale,
+			systemCurrencyLocale,
+			engineCurrencyLocale,
+			localeEntropyIsTrusty,
+			localeIntlEntropyIsTrusty,
+			timezoneOffset,
+			timezoneLocation,
+			deviceMemory,
+			hardwareConcurrency,
+			language,
+			languages: ''+languages,
+			platform,
+			userAgent,
+			webglRenderer,
+			webglVendor,
+			userAgentData,
+		}
+	}
+
+	// Compute and communicate from worker scope
+	const onEvent = (eventType, fn) => addEventListener(eventType, fn)
+	const send = async (source) => source.postMessage(await getWorkerData())
+	if (IS_WORKER_SCOPE) {
+		globalThis.ServiceWorkerGlobalScope ? onEvent('message', (e) => send(e.source)) :
+		globalThis.SharedWorkerGlobalScope ? onEvent('connect', (e) => send(e.ports[0])) :
+		send(self) // DedicatedWorkerGlobalScope
+	}
+
+	return IS_WORKER_SCOPE ? Scope.WORKER : Scope.WINDOW
+}
 
 export default async function getBestWorkerScope() {
 	try {
@@ -76,7 +321,7 @@ export default async function getBestWorkerScope() {
 			})
 		})
 
-		const scriptSource = 'creepworker.js'
+		const scriptSource = './creep.js'
 		let scope = 'ServiceWorkerGlobalScope'
 		let type = 'service' // loads fast but is not available in frames
 		let workerScope = await getServiceWorker({ scriptSource }).catch((error) => {

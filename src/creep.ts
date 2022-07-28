@@ -28,10 +28,15 @@ import { patch, html, getDiffs, modal } from './utils/html'
 import getCanvasWebgl, { webglHTML } from './webgl'
 import getWebRTCData, { webrtcHTML } from './webrtc'
 import getWindowFeatures, { windowFeaturesHTML } from './window'
-import getBestWorkerScope, { workerScopeHTML } from './worker'
+import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worker'
 
 !async function() {
 	'use strict';
+
+	const scope = await spawnWorker()
+	if (scope == Scope.WORKER) {
+		return
+	}
 
 	const isBrave = IS_BLINK ? await braveBrowser() : false
 	const braveMode = isBrave ? getBraveMode() : {}

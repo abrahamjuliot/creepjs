@@ -1,3 +1,7 @@
+
+// @ts-expect-error
+export const IS_WORKER_SCOPE = !self.document && self.WorkerGlobalScope
+
 // Detect Browser
 function getEngine() {
 	const x = [].constructor
@@ -18,7 +22,7 @@ const JS_ENGINE = ({
 	77: 'JavaScriptCore',
 })[ENGINE_IDENTIFIER] || null
 
-const LIKE_BRAVE = IS_BLINK && 'flat' in Array.prototype /* Chrome 69 */ && !('ReportingObserver' in window /* Brave */)
+const LIKE_BRAVE = IS_BLINK && 'flat' in Array.prototype /* Chrome 69 */ && !('ReportingObserver' in self /* Brave */)
 
 function braveBrowser() {
 	const brave = (

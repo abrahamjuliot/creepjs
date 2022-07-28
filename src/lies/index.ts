@@ -1,7 +1,7 @@
 /* eslint-disable new-cap */
 /* eslint-disable no-unused-vars */
 import { captureError } from '../errors'
-import { IS_BLINK, IS_WEBKIT, IS_GECKO, hashSlice } from '../utils/helpers'
+import { IS_BLINK, IS_WEBKIT, IS_GECKO, hashSlice, IS_WORKER_SCOPE } from '../utils/helpers'
 import { modal } from '../utils/html'
 
 // warm up while we detect lies
@@ -71,13 +71,369 @@ function getBehemothIframe(win: Window): Window | null {
 	}
 }
 
+const RAND = getRandomValues()
+const HAS_REFLECT = 'Reflect' in self
+
+const failsTypeError = (fn: Function, final?: Function): boolean => {
+	try {
+		fn()
+		throw Error()
+	} catch (err: any) {
+		return err.constructor.name != 'TypeError'
+	} finally {
+		final && final()
+	}
+}
+
+const failsWithError = (fn: Function): boolean => {
+	try {
+		fn()
+		return false
+	} catch (err: any) {
+		return true
+	}
+}
+
+const hasKnownToString = (name: string) => ({
+	[`function ${name}() { [native code] }`]: true,
+	[`function get ${name}() { [native code] }`]: true,
+	[`function () { [native code] }`]: true,
+	[`function ${name}() {${'\n'}    [native code]${'\n'}}`]: true,
+	[`function get ${name}() {${'\n'}    [native code]${'\n'}}`]: true,
+	[`function () {${'\n'}    [native code]${'\n'}}`]: true,
+})
+
+// calling toString() on an object created from the function should throw a TypeError
+const getNewObjectToStringTypeErrorLie = (apiFunction: Function): boolean => {
+	try {
+		// javascript-obfuscator:disable
+		const you = () => Object.create(apiFunction).toString()
+		const cant = () => you()
+		const hide = () => cant()
+		hide()
+		// error must throw
+		return true
+	} catch (err: any) {
+		const stackLines = err.stack.split('\n')
+		const validScope = !/at Object\.apply/.test(stackLines[1])
+		// Stack must be valid
+		const validStackSize = (
+			err.constructor.name == 'TypeError' && stackLines.length >= 5
+		)
+		// Chromium must throw error 'at Function.toString'... and not 'at Object.apply'
+		if (validStackSize && IS_BLINK && (
+			!validScope ||
+			!/at Function\.toString/.test(stackLines[1]) ||
+			!/at you/.test(stackLines[2]) ||
+			!/at cant/.test(stackLines[3]) ||
+			!/at hide/.test(stackLines[4])
+		)) {
+			return true
+		}
+		return !validStackSize
+	}
+	// javascript-obfuscator:enable
+}
+
+// checking proxy instanceof proxy should throw a valid TypeError
+const hasValidStack = (err: any, type = 'Function') => {
+	const { message, name, stack } = err
+	const validName = name == 'TypeError'
+	const validMessage = message == `Function has non-object prototype 'undefined' in instanceof check`
+	const targetStackLine = ((stack || '').split('\n') || [])[1]
+	const validStackLine = (
+		targetStackLine.startsWith(`    at ${type}.[Symbol.hasInstance]`) ||
+		targetStackLine.startsWith('    at [Symbol.hasInstance]') // Chrome 102
+	)
+	return validName && validMessage && validStackLine
+}
+const getInstanceofCheckLie = (apiFunction: Function): boolean => {
+	const proxy = new Proxy(apiFunction, {})
+	if (!IS_BLINK) return false
+
+	try {
+		proxy instanceof proxy
+		return true // failed to throw
+	} catch (error) {
+		// expect Proxy.[Symbol.hasInstance]
+		if (!hasValidStack(error, 'Proxy')) {
+			return true
+		}
+		try {
+			apiFunction instanceof apiFunction
+			return true // failed to throw
+		} catch (error) {
+			// expect Function.[Symbol.hasInstance]
+			return !hasValidStack(error)
+		}
+	}
+}
+
+// API Function Test
+interface LiesConfig {
+	scope: Window & typeof globalThis,
+	apiFunction: Function
+	proto: any
+	obj: any
+	lieProps: Record<string, string[]>
+}
+interface LieResult {
+	lied: number
+	lieTypes: string[]
+}
+function queryLies({
+	scope,
+	apiFunction,
+	proto,
+	obj,
+	lieProps,
+}: LiesConfig): LieResult {
+	if (typeof apiFunction != 'function') {
+		return {
+			lied: 0,
+			lieTypes: [],
+		}
+	}
+	const name = apiFunction.name.replace(/get\s/, '')
+	const objName = obj?.name
+	const nativeProto = Object.getPrototypeOf(apiFunction)
+	let lies: Record<string, boolean> = {
+		// custom lie string names
+		[`failed illegal error`]: !!obj && failsTypeError(() => obj.prototype[name]),
+		[`failed undefined properties`]: (
+			!!obj && /^(screen|navigator)$/i.test(objName) && !!(
+				Object.getOwnPropertyDescriptor(self[objName.toLowerCase()], name) || (
+					HAS_REFLECT &&
+					Reflect.getOwnPropertyDescriptor(self[objName.toLowerCase()], name)
+				)
+			)
+		),
+		[`failed call interface error`]: failsTypeError(() => {
+			// @ts-expect-error
+			new apiFunction(); apiFunction.call(proto)
+		}),
+		[`failed apply interface error`]: failsTypeError(() => {
+			// @ts-expect-error
+			new apiFunction(); apiFunction.apply(proto)
+		}),
+		// @ts-expect-error
+		[`failed new instance error`]: failsTypeError(() => new apiFunction()),
+		[`failed class extends error`]: !IS_WEBKIT && failsTypeError(() => {
+			// @ts-expect-error
+			class Fake extends apiFunction { }
+		}),
+		[`failed null conversion error`]: failsTypeError(() => {
+			Object.setPrototypeOf(apiFunction, null).toString()
+		}, () => Object.setPrototypeOf(apiFunction, nativeProto)),
+		[`failed toString`]: (
+			!hasKnownToString(name)[scope.Function.prototype.toString.call(apiFunction)] ||
+			!hasKnownToString('toString')[scope.Function.prototype.toString.call(apiFunction.toString)]
+		),
+		[`failed "prototype" in function`]: 'prototype' in apiFunction,
+		[`failed descriptor`]: !!(
+			Object.getOwnPropertyDescriptor(apiFunction, 'arguments') ||
+			Reflect.getOwnPropertyDescriptor(apiFunction, 'arguments') ||
+			Object.getOwnPropertyDescriptor(apiFunction, 'caller') ||
+			Reflect.getOwnPropertyDescriptor(apiFunction, 'caller') ||
+			Object.getOwnPropertyDescriptor(apiFunction, 'prototype') ||
+			Reflect.getOwnPropertyDescriptor(apiFunction, 'prototype') ||
+			Object.getOwnPropertyDescriptor(apiFunction, 'toString') ||
+			Reflect.getOwnPropertyDescriptor(apiFunction, 'toString')
+		),
+		[`failed own property`]: !!(
+			apiFunction.hasOwnProperty('arguments') ||
+			apiFunction.hasOwnProperty('caller') ||
+			apiFunction.hasOwnProperty('prototype') ||
+			apiFunction.hasOwnProperty('toString')
+		),
+		[`failed descriptor keys`]: (
+			Object.keys(Object.getOwnPropertyDescriptors(apiFunction)).sort().toString() != 'length,name'
+		),
+		[`failed own property names`]: (
+			Object.getOwnPropertyNames(apiFunction).sort().toString() != 'length,name'
+		),
+		[`failed own keys names`]: HAS_REFLECT && (
+			Reflect.ownKeys(apiFunction).sort().toString() != 'length,name'
+		),
+		[`failed object toString error`]: getNewObjectToStringTypeErrorLie(apiFunction),
+		// Proxy Detection
+		[`failed at incompatible proxy error`]: failsTypeError(() => {
+			apiFunction.arguments; apiFunction.caller
+		}),
+		[`failed at toString incompatible proxy error`]: failsTypeError(() => {
+			apiFunction.toString.arguments
+			apiFunction.toString.caller
+		}),
+		[`failed at too much recursion error`]: failsTypeError(() => {
+			Object.setPrototypeOf(apiFunction, Object.create(apiFunction)).toString()
+		}, () => Object.setPrototypeOf(apiFunction, nativeProto)),
+	}
+
+	// conditionally increase difficulty
+	const detectProxies = (
+		name == 'toString' ||
+		!!lieProps['Function.toString'] ||
+		!!lieProps['Permissions.query']
+	)
+	if (detectProxies) {
+		const proxy1 = new Proxy(apiFunction, {})
+		const proxy2 = new Proxy(apiFunction, {})
+		const proxy3 = new Proxy(apiFunction, {})
+
+		lies = {
+			...lies,
+			// Advanced Proxy Detection
+			[`failed at too much recursion __proto__ error`]: !failsTypeError(() => {
+				// @ts-expect-error
+				apiFunction.__proto__ = proxy
+				// @ts-expect-error
+				apiFunction++
+			}, () => Object.setPrototypeOf(apiFunction, nativeProto)),
+			[`failed at chain cycle error`]: !failsTypeError(() => {
+				Object.setPrototypeOf(proxy1, Object.create(proxy1)).toString()
+			}, () => Object.setPrototypeOf(proxy1, nativeProto)),
+			[`failed at chain cycle __proto__ error`]: !failsTypeError(() => {
+				// @ts-expect-error
+				proxy2.__proto__ = proxy2
+				// @ts-expect-error
+				proxy2++
+			}, () => Object.setPrototypeOf(proxy2, nativeProto)),
+			[`failed at reflect set proto`]: HAS_REFLECT && !failsTypeError(() => {
+				Reflect.setPrototypeOf(apiFunction, Object.create(apiFunction))
+				RAND in apiFunction
+			}, () => Object.setPrototypeOf(apiFunction, nativeProto)),
+			[`failed at reflect set proto proxy`]: HAS_REFLECT && !failsTypeError(() => {
+				Reflect.setPrototypeOf(proxy3, Object.create(proxy3))
+				RAND in proxy3
+			}, () => Object.setPrototypeOf(proxy3, nativeProto)),
+			[`failed at instanceof check error`]: getInstanceofCheckLie(apiFunction),
+			[`failed at define properties`]: IS_BLINK && HAS_REFLECT && failsWithError(() => {
+				Object.defineProperty(apiFunction, '', { configurable: true }).toString()
+				Reflect.deleteProperty(apiFunction, '')
+			}),
+		}
+	}
+	const lieTypes = Object.keys(lies).filter((key) => !!lies[key])
+	return {
+		lied: lieTypes.length,
+		lieTypes,
+	}
+}
+
+interface SearchConfig {
+	target?: string[] | undefined
+	ignore?: string[] | undefined
+}
+function createLieDetector(scope: Window & typeof globalThis) {
+	const isSupported = (obj: any) => typeof obj != 'undefined' && !!obj
+	const props: Record<string, string[]> = {} // lie list and detail
+	const propsSearched: string[] = [] // list of properties searched
+	return {
+		getProps: () => props,
+		getPropsSearched: () => propsSearched,
+		searchLies: (fn: Function, config?: SearchConfig): void => {
+			const { target, ignore } = config || {}
+			let obj: any
+			// check if api is blocked or not supported
+			try {
+				obj = fn()
+				if (!isSupported(obj)) {
+					return
+				}
+			} catch (error) {
+				return
+			}
+
+			const interfaceObject = !!obj.prototype ? obj.prototype : obj
+			Object.getOwnPropertyNames(interfaceObject)
+				;[...new Set([
+					...Object.getOwnPropertyNames(interfaceObject),
+					...Object.keys(interfaceObject), // backup
+				])].sort().forEach((name) => {
+					const skip = (
+						name == 'constructor' ||
+						(!new Set(target).has(name)) ||
+						(new Set(ignore).has(name))
+					)
+					if (skip) {
+						return
+					}
+					const objectNameString = /\s(.+)\]/
+					const apiName = `${
+						// @ts-ignore
+						obj.name ? obj.name : objectNameString.test(obj) ? objectNameString.exec(obj)[1] : undefined
+						}.${name}`
+					propsSearched.push(apiName)
+					try {
+						const proto = obj.prototype ? obj.prototype : obj
+						let res // response from getLies
+
+						// search if function
+						try {
+							const apiFunction = proto[name] // may trigger TypeError
+							if (typeof apiFunction == 'function') {
+								res = queryLies({
+									scope,
+									apiFunction: proto[name],
+									proto,
+									obj: null,
+									lieProps: props,
+								})
+								if (res.lied) {
+									documentLie(apiName, res.lieTypes)
+									return (props[apiName] = res.lieTypes)
+								}
+								return
+							}
+							// since there is no TypeError and the typeof is not a function,
+							// handle invalid values and ignore name, length, and constants
+							if (
+								name != 'name' &&
+								name != 'length' &&
+								name[0] !== name[0].toUpperCase()) {
+								const lie = [`failed descriptor.value undefined`]
+								documentLie(apiName, lie)
+								return (
+									props[apiName] = lie
+								)
+							}
+						} catch (error) { }
+						// else search getter function
+						// @ts-ignore
+						const getterFunction = Object.getOwnPropertyDescriptor(proto, name).get!
+						res = queryLies({
+							scope,
+							apiFunction: getterFunction,
+							proto,
+							obj,
+							lieProps: props,
+						}) // send the obj for special tests
+
+						if (res.lied) {
+							documentLie(apiName, res.lieTypes)
+							return (props[apiName] = res.lieTypes)
+						}
+						return
+					} catch (error) {
+						const lie = `failed prototype test execution`
+						documentLie(apiName, lie)
+						return (
+							props[apiName] = [lie]
+						)
+					}
+				})
+		},
+	}
+}
+
 interface Phantom {
 	iframeWindow: Window
 	div?: HTMLDivElement | undefined
 }
 function getPhantomIframe(): Phantom {
+	if (IS_WORKER_SCOPE) return { iframeWindow: self }
 	try {
-		const numberOfIframes = window.length
+		const numberOfIframes = self.length
 		const frag = new DocumentFragment()
 		const div = document.createElement('div')
 		const id = getRandomValues()
@@ -85,363 +441,18 @@ function getPhantomIframe(): Phantom {
 		frag.appendChild(div)
 		div.innerHTML = `<div style="${GHOST}"><iframe></iframe></div>`
 		document.body.appendChild(frag)
-		const iframeWindow = window[numberOfIframes]
+		const iframeWindow = self[numberOfIframes]
 		const phantomWindow = getBehemothIframe(iframeWindow)
-		return { iframeWindow: phantomWindow || window, div }
+		return { iframeWindow: phantomWindow || self, div }
 	} catch (error) {
 		captureError(error, 'client blocked phantom iframe')
-		return { iframeWindow: window }
+		return { iframeWindow: self }
 	}
 }
 const { iframeWindow: PHANTOM_DARKNESS, div: PARENT_PHANTOM } = getPhantomIframe() || {}
 
 function getPrototypeLies(scope: Window & typeof globalThis) {
-	const RAND = getRandomValues()
-	const HAS_REFLECT = 'Reflect' in self
-
-	const failsTypeError = (fn: Function, final?: Function): boolean => {
-		try {
-			fn()
-			throw Error()
-		} catch (err: any) {
-			return err.constructor.name != 'TypeError'
-		} finally {
-			final && final()
-		}
-	}
-
-	const failsWithError = (fn: Function): boolean => {
-		try {
-			fn()
-			return false
-		} catch (err: any) {
-			return true
-		}
-	}
-
-	const hasKnownToString = (name: string) => ({
-		[`function ${name}() { [native code] }`]: true,
-		[`function get ${name}() { [native code] }`]: true,
-		[`function () { [native code] }`]: true,
-		[`function ${name}() {${'\n'}    [native code]${'\n'}}`]: true,
-		[`function get ${name}() {${'\n'}    [native code]${'\n'}}`]: true,
-		[`function () {${'\n'}    [native code]${'\n'}}`]: true,
-	})
-
-	// calling toString() on an object created from the function should throw a TypeError
-	const getNewObjectToStringTypeErrorLie = (apiFunction: Function): boolean => {
-		try {
-			const you = () => Object.create(apiFunction).toString()
-			const cant = () => you()
-			const hide = () => cant()
-			hide()
-			// error must throw
-			return true
-		} catch (err: any) {
-			const stackLines = err.stack.split('\n')
-			const validScope = !/at Object\.apply/.test(stackLines[1])
-			// Stack must be valid
-			const validStackSize = (
-				err.constructor.name == 'TypeError' && stackLines.length >= 5
-			)
-			// Chromium must throw error 'at Function.toString'... and not 'at Object.apply'
-			if (validStackSize && IS_BLINK && (
-				!validScope ||
-				!/at Function\.toString/.test(stackLines[1]) ||
-				!/at you/.test(stackLines[2]) ||
-				!/at cant/.test(stackLines[3]) ||
-				!/at hide/.test(stackLines[4])
-			)) {
-				return true
-			}
-			return !validStackSize
-		}
-	}
-
-	// checking proxy instanceof proxy should throw a valid TypeError
-	const hasValidStack = (err: any, type = 'Function') => {
-		const { message, name, stack } = err
-		const validName = name == 'TypeError'
-		const validMessage = message == `Function has non-object prototype 'undefined' in instanceof check`
-		const targetStackLine = ((stack || '').split('\n') || [])[1]
-		const validStackLine = (
-			targetStackLine.startsWith(`    at ${type}.[Symbol.hasInstance]`) ||
-			targetStackLine.startsWith('    at [Symbol.hasInstance]') // Chrome 102
-		)
-		return validName && validMessage && validStackLine
-	}
-	const getInstanceofCheckLie = (apiFunction: Function): boolean => {
-		const proxy = new Proxy(apiFunction, {})
-		if (!IS_BLINK) return false
-
-		try {
-			proxy instanceof proxy
-			return true // failed to throw
-		} catch (error) {
-			// expect Proxy.[Symbol.hasInstance]
-			if (!hasValidStack(error, 'Proxy')) {
-				return true
-			}
-			try {
-				apiFunction instanceof apiFunction
-				return true // failed to throw
-			} catch (error) {
-				// expect Function.[Symbol.hasInstance]
-				return !hasValidStack(error)
-			}
-		}
-	}
-
-	// API Function Test
-	interface LiesConfig {
-		apiFunction: Function
-		proto: any
-		obj: any
-		lieProps: Record<string, string[]>
-	}
-	interface LieResult {
-		lied: number
-		lieTypes: string[]
-	}
-	const getLies = ({ apiFunction, proto, obj, lieProps }: LiesConfig): LieResult => {
-		if (typeof apiFunction != 'function') {
-			return {
-				lied: 0,
-				lieTypes: [],
-			}
-		}
-		const name = apiFunction.name.replace(/get\s/, '')
-		const objName = obj?.name
-		const nativeProto = Object.getPrototypeOf(apiFunction)
-		let lies: Record<string, boolean> = {
-			// custom lie string names
-			[`failed illegal error`]: !!obj && failsTypeError(() => obj.prototype[name]),
-			[`failed undefined properties`]: (
-				!!obj && /^(screen|navigator)$/i.test(objName) && !!(
-					Object.getOwnPropertyDescriptor(self[objName.toLowerCase()], name) || (
-						HAS_REFLECT &&
-						Reflect.getOwnPropertyDescriptor(self[objName.toLowerCase()], name)
-					)
-				)
-			),
-			[`failed call interface error`]: failsTypeError(() => {
-				// @ts-expect-error
-				new apiFunction(); apiFunction.call(proto)
-			}),
-			[`failed apply interface error`]: failsTypeError(() => {
-				// @ts-expect-error
-				new apiFunction(); apiFunction.apply(proto)
-			}),
-			// @ts-expect-error
-			[`failed new instance error`]: failsTypeError(() => new apiFunction()),
-			[`failed class extends error`]: !IS_WEBKIT && failsTypeError(() => {
-				// @ts-expect-error
-				class Fake extends apiFunction { }
-			}),
-			[`failed null conversion error`]: failsTypeError(() => {
-				Object.setPrototypeOf(apiFunction, null).toString()
-			}, () => Object.setPrototypeOf(apiFunction, nativeProto)),
-			[`failed toString`]: (
-				!hasKnownToString(name)[scope.Function.prototype.toString.call(apiFunction)] ||
-				!hasKnownToString('toString')[scope.Function.prototype.toString.call(apiFunction.toString)]
-			),
-			[`failed "prototype" in function`]: 'prototype' in apiFunction,
-			[`failed descriptor`]: !!(
-				Object.getOwnPropertyDescriptor(apiFunction, 'arguments') ||
-				Reflect.getOwnPropertyDescriptor(apiFunction, 'arguments') ||
-				Object.getOwnPropertyDescriptor(apiFunction, 'caller') ||
-				Reflect.getOwnPropertyDescriptor(apiFunction, 'caller') ||
-				Object.getOwnPropertyDescriptor(apiFunction, 'prototype') ||
-				Reflect.getOwnPropertyDescriptor(apiFunction, 'prototype') ||
-				Object.getOwnPropertyDescriptor(apiFunction, 'toString') ||
-				Reflect.getOwnPropertyDescriptor(apiFunction, 'toString')
-			),
-			[`failed own property`]: !!(
-				apiFunction.hasOwnProperty('arguments') ||
-				apiFunction.hasOwnProperty('caller') ||
-				apiFunction.hasOwnProperty('prototype') ||
-				apiFunction.hasOwnProperty('toString')
-			),
-			[`failed descriptor keys`]: (
-				Object.keys(Object.getOwnPropertyDescriptors(apiFunction)).sort().toString() != 'length,name'
-			),
-			[`failed own property names`]: (
-				Object.getOwnPropertyNames(apiFunction).sort().toString() != 'length,name'
-			),
-			[`failed own keys names`]: HAS_REFLECT && (
-				Reflect.ownKeys(apiFunction).sort().toString() != 'length,name'
-			),
-			[`failed object toString error`]: getNewObjectToStringTypeErrorLie(apiFunction),
-			// Proxy Detection
-			[`failed at incompatible proxy error`]: failsTypeError(() => {
-				apiFunction.arguments; apiFunction.caller
-			}),
-			[`failed at toString incompatible proxy error`]: failsTypeError(() => {
-				apiFunction.toString.arguments
-				apiFunction.toString.caller
-			}),
-			[`failed at too much recursion error`]: failsTypeError(() => {
-				Object.setPrototypeOf(apiFunction, Object.create(apiFunction)).toString()
-			}, () => Object.setPrototypeOf(apiFunction, nativeProto)),
-		}
-
-		// conditionally increase difficulty
-		const detectProxies = (
-			name == 'toString' ||
-			!!lieProps['Function.toString'] ||
-			!!lieProps['Permissions.query']
-		)
-		if (detectProxies) {
-			const proxy1 = new Proxy(apiFunction, {})
-			const proxy2 = new Proxy(apiFunction, {})
-			const proxy3 = new Proxy(apiFunction, {})
-
-			lies = {
-				...lies,
-				// Advanced Proxy Detection
-				[`failed at too much recursion __proto__ error`]: !failsTypeError(() => {
-					// @ts-expect-error
-					apiFunction.__proto__ = proxy
-					// @ts-expect-error
-					apiFunction++
-				}, () => Object.setPrototypeOf(apiFunction, nativeProto)),
-				[`failed at chain cycle error`]: !failsTypeError(() => {
-					Object.setPrototypeOf(proxy1, Object.create(proxy1)).toString()
-				}, () => Object.setPrototypeOf(proxy1, nativeProto)),
-				[`failed at chain cycle __proto__ error`]: !failsTypeError(() => {
-					// @ts-expect-error
-					proxy2.__proto__ = proxy2
-					// @ts-expect-error
-					proxy2++
-				}, () => Object.setPrototypeOf(proxy2, nativeProto)),
-				[`failed at reflect set proto`]: HAS_REFLECT && !failsTypeError(() => {
-					Reflect.setPrototypeOf(apiFunction, Object.create(apiFunction))
-					RAND in apiFunction
-				}, () => Object.setPrototypeOf(apiFunction, nativeProto)),
-				[`failed at reflect set proto proxy`]: HAS_REFLECT && !failsTypeError(() => {
-					Reflect.setPrototypeOf(proxy3, Object.create(proxy3))
-					RAND in proxy3
-				}, () => Object.setPrototypeOf(proxy3, nativeProto)),
-				[`failed at instanceof check error`]: getInstanceofCheckLie(apiFunction),
-				[`failed at define properties`]: IS_BLINK && HAS_REFLECT && failsWithError(() => {
-					Object.defineProperty(apiFunction, '', { configurable: true }).toString()
-					Reflect.deleteProperty(apiFunction, '')
-				}),
-			}
-		}
-		const lieTypes = Object.keys(lies).filter((key) => !!lies[key])
-		return {
-			lied: lieTypes.length,
-			lieTypes,
-		}
-	}
-
-	// Lie Detector
-	interface SearchConfig {
-		target?: string[] | undefined
-		ignore?: string[] | undefined
-	}
-	const createLieDetector = () => {
-		const isSupported = (obj: any) => typeof obj != 'undefined' && !!obj
-		const props: Record<string, string[]> = {} // lie list and detail
-		const propsSearched: string[] = [] // list of properties searched
-		return {
-			getProps: () => props,
-			getPropsSearched: () => propsSearched,
-			searchLies: (fn: Function, config?: SearchConfig): void => {
-				const { target, ignore } = config || {}
-				let obj: any
-				// check if api is blocked or not supported
-				try {
-					obj = fn()
-					if (!isSupported(obj)) {
-						return
-					}
-				} catch (error) {
-					return
-				}
-
-				const interfaceObject = !!obj.prototype ? obj.prototype : obj
-				Object.getOwnPropertyNames(interfaceObject)
-					;[...new Set([
-						...Object.getOwnPropertyNames(interfaceObject),
-						...Object.keys(interfaceObject), // backup
-					])].sort().forEach((name) => {
-						const skip = (
-							name == 'constructor' ||
-							(!new Set(target).has(name)) ||
-							(new Set(ignore).has(name))
-						)
-						if (skip) {
-							return
-						}
-						const objectNameString = /\s(.+)\]/
-						const apiName = `${
-							// @ts-ignore
-							obj.name ? obj.name : objectNameString.test(obj) ? objectNameString.exec(obj)[1] : undefined
-							}.${name}`
-						propsSearched.push(apiName)
-						try {
-							const proto = obj.prototype ? obj.prototype : obj
-							let res // response from getLies
-
-							// search if function
-							try {
-								const apiFunction = proto[name] // may trigger TypeError
-								if (typeof apiFunction == 'function') {
-									res = getLies({
-										apiFunction: proto[name],
-										proto,
-										obj: null,
-										lieProps: props,
-									})
-									if (res.lied) {
-										documentLie(apiName, res.lieTypes)
-										return (props[apiName] = res.lieTypes)
-									}
-									return
-								}
-								// since there is no TypeError and the typeof is not a function,
-								// handle invalid values and ignore name, length, and constants
-								if (
-									name != 'name' &&
-									name != 'length' &&
-									name[0] !== name[0].toUpperCase()) {
-									const lie = [`failed descriptor.value undefined`]
-									documentLie(apiName, lie)
-									return (
-										props[apiName] = lie
-									)
-								}
-							} catch (error) { }
-							// else search getter function
-							// @ts-ignore
-							const getterFunction = Object.getOwnPropertyDescriptor(proto, name).get!
-							res = getLies({
-								apiFunction: getterFunction,
-								proto,
-								obj,
-								lieProps: props,
-							}) // send the obj for special tests
-
-							if (res.lied) {
-								documentLie(apiName, res.lieTypes)
-								return (props[apiName] = res.lieTypes)
-							}
-							return
-						} catch (error) {
-							const lie = `failed prototype test execution`
-							documentLie(apiName, lie)
-							return (
-								props[apiName] = [lie]
-							)
-						}
-					})
-			},
-		}
-	}
-
-	const lieDetector = createLieDetector()
+	const lieDetector = createLieDetector(scope)
 	const {
 		searchLies,
 	} = lieDetector
@@ -488,7 +499,7 @@ function getPrototypeLies(scope: Window & typeof globalThis) {
 			'setProperty',
 		],
 	})
-	// @ts-ignore
+	// @ts-expect-error
 	searchLies(() => CSS2Properties, { // Gecko
 		target: [
 			'setProperty',
@@ -543,7 +554,7 @@ function getPrototypeLies(scope: Window & typeof globalThis) {
 			'writeln',
 		],
 		ignore: [
-			// Firefox returns undefined on getIllegalTypeErrorLie test
+			// Gecko
 			'onreadystatechange',
 			'onmouseenter',
 			'onmouseleave',
@@ -585,7 +596,7 @@ function getPrototypeLies(scope: Window & typeof globalThis) {
 			'scrollWidth',
 		],
 		ignore: [
-			// Firefox returns undefined on getIllegalTypeErrorLie test
+			// Gecko
 			'onmouseenter',
 			'onmouseleave',
 		],
@@ -668,14 +679,14 @@ function getPrototypeLies(scope: Window & typeof globalThis) {
 			'replaceChild',
 		],
 	})
-	// @ts-ignore
+	// @ts-expect-error
 	searchLies(() => OffscreenCanvas, {
 		target: [
 			'convertToBlob',
 			'getContext',
 		],
 	})
-	// @ts-ignore
+	// @ts-expect-error
 	searchLies(() => OffscreenCanvasRenderingContext2D, {
 		target: [
 			'getImageData',
@@ -687,13 +698,11 @@ function getPrototypeLies(scope: Window & typeof globalThis) {
 			'font',
 		],
 	})
-
 	searchLies(() => Permissions, {
 		target: [
 			'query',
 		],
 	})
-
 	searchLies(() => Range, {
 		target: [
 			'getBoundingClientRect',
@@ -734,15 +743,15 @@ function getPrototypeLies(scope: Window & typeof globalThis) {
 		],
 	})
 
-    /* potential targets:
-    	RTCPeerConnection
-    	Plugin
-    	PluginArray
-    	MimeType
-    	MimeTypeArray
-    	Worker
-    	History
-    */
+	/* potential targets:
+		RTCPeerConnection
+		Plugin
+		PluginArray
+		MimeType
+		MimeTypeArray
+		Worker
+		History
+	*/
 
 	// return lies list and detail
 	const props = lieDetector.getProps()
@@ -769,19 +778,25 @@ const {
 // disregard Function.prototype.toString lies when determining if the API can be trusted
 const getNonFunctionToStringLies = (x: string[]) => !x ? x : x.filter((x) => !/object toString|toString incompatible proxy/.test(x)).length
 
-const lieProps = (() => {
-	const props = lieDetector.getProps()
-	return Object.keys(props).reduce((acc, key) => {
-		acc[key] = getNonFunctionToStringLies(props[key])
-		return acc
-	}, {} as Record<string, number>)
-})()
+let lieProps
+let prototypeLies
+if (!IS_WORKER_SCOPE) {
+	lieProps = (() => {
+		const props = lieDetector.getProps()
+		return Object.keys(props).reduce((acc, key) => {
+			acc[key] = getNonFunctionToStringLies(props[key])
+			return acc
+		}, {} as Record<string, number>)
+	})()
 
-const prototypeLies = JSON.parse(JSON.stringify(lieDetail))
-const perf = performance.now() - start
+	prototypeLies = JSON.parse(JSON.stringify(lieDetail))
+	const perf = performance.now() - start
 
 
-console.log(`${propsSearched.length} API properties analyzed in ${(perf).toFixed(2)}ms (${lieList.length} corrupted)`)
+	console.log(
+		`${propsSearched.length} API properties analyzed in ${(perf).toFixed(2)}ms (${lieList.length} corrupted)`,
+	)
+}
 
 const getPluginLies = (plugins: PluginArray, mimeTypes: MimeTypeArray) => {
 	const lies = [] // collect lie types
@@ -893,4 +908,4 @@ function liesHTML(fp: LiesFingerprint, pointsHTML: string): string {
 	}${pointsHTML}</div>`
 }
 
-export { documentLie, PHANTOM_DARKNESS, PARENT_PHANTOM, lieProps, prototypeLies, lieRecords, getLies, getPluginLies, liesHTML }
+export { documentLie, createLieDetector, PHANTOM_DARKNESS, PARENT_PHANTOM, lieProps, prototypeLies, lieRecords, getLies, getPluginLies, liesHTML }
