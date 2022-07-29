@@ -832,10 +832,10 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		const visitorElem = document.getElementById(id)
 		const { botHash, badBot } = getBotHash(fp, { getFeaturesLie, computeWindowsRelease })
 		const fuzzyFingerprint = await getFuzzyHash(fp)
-		const { privacy, mode, extension } = fp.resistance || {}
-		const resistanceSet = new Set([privacy, (mode ? `(${mode})` : mode), extension])
+		const { $hash, privacy, mode, extension } = fp.resistance || {}
+		const resistanceSet = new Set([hashSlice($hash), privacy, mode, extension])
 		resistanceSet.delete(undefined)
-		const resistanceType = [...resistanceSet].join(' ')
+		const resistanceType = [...resistanceSet].join(':')
 		const fetchVisitorDataTimer = timer()
 		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&trashLen=${trashLen}&liesLen=${liesLen}&errorsLen=${errorsLen}&fuzzy=${fuzzyFingerprint}&botHash=${botHash}&perf=${(timeEnd || 0).toFixed(2)}&resistance=${resistanceType}`
 

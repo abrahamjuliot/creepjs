@@ -150,8 +150,8 @@ export default async function getResistance() {
 				createElementHash: ['77dea834'],
 				getElementByIdHash: ['77dea834'],
 				getImageDataHash: ['77dea834'],
-				toBlobHash: ['77dea834'],
-				toDataURLHash: ['77dea834'],
+				toBlobHash: ['77dea834', disabled],
+				toDataURLHash: ['77dea834', disabled],
 			},
 			cydec: {
 				// [FF, FF Anti OFF, Chrome, Chrome Anti Off, no iframe Chrome, no iframe Chrome Anti Off]
