@@ -241,12 +241,13 @@ export default async function getResistance() {
 				appendChildHash: ['55e9b959'],
 				insertBeforeHash: ['55e9b959'],
 				replaceChildHash: ['55e9b959'],
-				getContextHash: ['55e9b959'],
-				toDataURLHash: ['55e9b959'],
-				toBlobHash: ['55e9b959'],
+				getContextHash: ['55e9b959', disabled],
+				toDataURLHash: ['55e9b959', disabled],
+				toBlobHash: ['55e9b959', disabled],
 				getImageDataHash: ['55e9b959'],
-				hardwareConcurrencyHash: ['efbd4cf9', 'a63491fb'],
+				hardwareConcurrencyHash: ['efbd4cf9', 'a63491fb', 'b011fd1c', '194ecf17'],
 			},
+
 			fakeBrowser: {
 				appendChildHash: ['8dfec2ec', 'f43e6134'],
 				getContextHash: ['83b825ab', 'a63491fb'],
