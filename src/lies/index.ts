@@ -121,7 +121,8 @@ function hasValidStack(err: any, reg: RegExp, i: number = 1) {
 
 const AT_FUNCTION = /at Function\.toString /
 const AT_OBJECT = /at Object\.toString/
-const HAS_INSTANCE = /at (Function\.)?\[Symbol.hasInstance\]/ // useful if < Chrome 102
+const FUNCTION_INSTANCE = /at (Function\.)?\[Symbol.hasInstance\]/ // useful if < Chrome 102
+const PROXY_INSTANCE = /at (Proxy\.)?\[Symbol.hasInstance\]/ // useful if < Chrome 102
 
 // API Function Test
 interface LiesConfig {
@@ -303,14 +304,14 @@ function queryLies({
 					spawnErr: () => {
 						apiFunction instanceof apiFunction
 					},
-					withStack: (err: any) => !hasValidStack(err, HAS_INSTANCE),
+					withStack: (err: any) => !hasValidStack(err, FUNCTION_INSTANCE),
 				}) ||
 				failsTypeError({
 					spawnErr: () => {
 						const proxy = new Proxy(apiFunction, {})
 						proxy instanceof proxy
 					},
-					withStack: (err: any) => !hasValidStack(err, HAS_INSTANCE),
+					withStack: (err: any) => !hasValidStack(err, PROXY_INSTANCE),
 				})
 			),
 			['failed at define properties']: IS_BLINK && HAS_REFLECT && failsWithError(() => {
