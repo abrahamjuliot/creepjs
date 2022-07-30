@@ -213,7 +213,7 @@ Performance.now = function() {
 }
 ```
 
-### Shadow Bits
+##### Shadow Bits
 - tracks the amount of `1` values (bits) in the shadow fingerprint
 ```js
 bits = 4
