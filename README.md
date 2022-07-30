@@ -41,13 +41,13 @@ Tests are focused on:
 - data retention:
     - database:
 		  - browser fingerprint auto deletes
-			  - 30 days after last visit
-				- 30 days after we change the fingerprint
+			   - 30 days after last visit
+				 - 30 days after we change the fingerprint
 			- prediction data auto deletes
-			  - if it fails to establish a good crowd-blending score within 2 weeks
-				- 40 days after last seen
+			   - if it fails to establish a good crowd-blending score within 2 weeks
+				 - 40 days after last seen
 		- web tracing and traffic analysis:
-		  - history auto discards itself after 60 days
+		   - history auto discards itself after 60 days
 
 #### Example Data Models
 ##### Prediction Samples
