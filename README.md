@@ -4,13 +4,13 @@
 
 The purpose of this project is to shed light on weaknesses and privacy leaks among modern anti-fingerprinting extensions and browsers.
 
-1. Detect and ignore API tampering (API lies)
-2. Fingerprint lie types
+1. Detect and ignore JavaScript tampering (prototype lies)
+2. Fingerprint lie patterns
 3. Fingerprint extension code
 4. Fingerprint browser privacy settings
 5. Employ large-scale validation, but allow possible inconsistencies
-6. Feature detect and fingerprint [new APIs](https://www.javascripture.com/) that reveal high entropy
-7. Rely only on APIs that are the most difficult to spoof when generating a pure fingerprint
+6. Feature detect and fingerprint [new APIs](https://www.javascripture.com/) that contain high entropy
+7. Use APIs that are the most difficult to fake in a stable fingerprint
 
 Tests are focused on:
 - Tor Browser (SL 1 & 2)
@@ -37,12 +37,20 @@ Tests are focused on:
 
 ## Rules
 ### Data
-- data collected: worker scope user agent, webgl gpu renderer, js runtime engine, hashed browser fingerprints (`stable`, `loose`, `fuzzy`, & `shadow`), encrypted ip, encrypted system location, dates, and boolean metrics
-- data retention: auto deletes 30 days after last visit
-- visit tracking: limited to data retention and new feature scaling
+- data collected: worker scope user agent, webgl gpu renderer, js runtime engine, hashed browser fingerprints (`stable`, `loose`, `fuzzy`, & `shadow`), encrypted ip, encrypted system location, dates, and other metrics displayed on the website
+- data retention:
+    - database:
+		  - browser fingerprint auto deletes
+			  - 30 days after last visit
+				- 30 days after we change the fingerprint
+			- prediction data auto deletes
+			  - if it fails to establish a good crowd-blending score within 2 weeks
+				- 40 days after last seen
+		- web tracing and traffic analysis:
+		  - history auto discards itself after 60 days
 
 #### Example Data Models
-##### Metric Samples
+##### Prediction Samples
 
 Purpose: learn and predict browser engine and platform version, device, and gpu
 ```js
@@ -140,7 +148,7 @@ Purpose: identify browser visit history and activity
 
 ### Signatures
 - you may optionally sign your fingerprint with 4-64 characters
-- signatures can be memorable descriptors 
+- signatures can be memorable descriptors
 - in low entropy browsers, a signature can signal to others that the fingerprint is shared
 
 ## Fingerprint Tracing Formulas
@@ -162,17 +170,57 @@ Shadow..: 1111100000000000000000110010011100000000010001101000000000000000
 ### Trust Score
 A failing trust score is unique
 
-> The trust score shows the level of trust computed from the browser fingerprint. If the score is 100%, there is a high level of trust in the reported values. Values should not be trusted when the score is low. No attempt is made to score how well a browser performs against fingerprint traceability and linkability. It is not always beneficial to have a high trust score, and sometimes a low trust score is not bad.
+> The trust score shows the level of trust computed from the browser fingerprint values and revision indicators. If the score is 100%, there is a high level of trust in the reported values. Values should not be trusted when the score is low. No attempt is made to score how well a browser performs against fingerprint traceability and linkability. It is not always beneficial to have a high trust score, and sometimes a low trust score is not bad.
 
 - start at `100`
 - less than 2 loose fingerprints: reward `5` extra credit
-- 0 shadow bits (session metric revisions): reward `10` extra credit
-- 2 - 10 loose fingerprints: subtract `total*0.1`
+- 0 shadow bits (revision indicator): reward `10` extra credit
+- 2 - 10 loose fingerprints (revision indicator): subtract `total*0.1`
 - 11+ loose fingerprints: subtract `total*0.2`
 - shadow bits: subtract `(total/64)*31`
 - trash: subtract `total*5.5`
 - lies: subtract `total*31`
 - errors: subtract `total*3.5`
+
+#### Definitions
+##### Trash
+- unusual results or rare data
+- forgivable lies: invalid metrics that can either be restored or used to create a better fingerprint
+```js
+platform = 'Cat OS'
+gpu = '   Cat Adaptor'
+// ¯\_(ツ)_/¯
+```
+- failed calculations that may reasonably occur at random (loose fingerprint metrics)
+```js
+userAgent = 'Chrome 102'
+features = '101' // I disabled a feature
+gpu = '^5zeD4 Cat Titan V' // We can forgive this
+```
+
+##### Lies
+- JS tampering of native API functions via `Proxy` or `Object.defineProperty()`
+- `Window` scope values not matching `WorkerGlobalScope` values
+- top-level `Window` values not matching `HTMLIFrameElement.contentWindow` values
+- failed `Math` calculations or invalid `DOMRect` coordinates
+- Inconsistent results when rendering the same data repeatedly.
+##### Errors
+- ungracefully blocked features that break the web
+- failed executions
+```js
+Performance.now = function() {
+	// break the web
+	throw new Error('Crash the code before it starts!')
+}
+```
+
+### Shadow Bits
+- tracks the amount of `1` values (bits) in the shadow fingerprint
+```js
+bits = 4
+totalBins = 64
+shadowBits = bits/totalBins // 0.0625
+```
 
 ### Crowd-Blending Score
 A metric with only 1 reporter is unique
@@ -228,7 +276,6 @@ if (catTime < 1000) {
 ```
 ![image](https://user-images.githubusercontent.com/6946045/178409285-49b345f7-c9ef-4d25-a07b-41db8fc46711.png)
 
-
 ### Shadow
 Loose metric revision patterns can follow stable fingerprints like a shadow
 
@@ -271,31 +318,20 @@ Loose metric revision patterns can follow stable fingerprints like a shadow
 #### Supported
 - layout rendering engines: `Gecko`, `Goanna`, `Blink`, `WebKit`
 - JS runtime engines: `SpiderMonkey`, `JavaScriptCore`, `V8`
-
-## Definitions
-### Trash
-- unusual results
-- forgivable lies: invalid metrics that can either be restored or used to create a better fingerprint
-- failed calculations that may reasonably occur at random (loose fingerprint metrics)
-
-### Lies
-- JS prototype tampering
-- mismatch in worker scope or iframe
-- failed math calculations
-
-### Errors 
-- ungracefully blocked features that break the web
-- failed executions
-
 ## Interact with the fingerprint objects
 - `window.Fingerprint`
 - `window.Creep`
 
-### Fingerprint
-- collects as much entropy as possible
-- permits loose metrics
+### Fingerprint (loose fingerprint)
+The loose fingerprint is used to detect rapid and excessive fingerprints
 
-### Creep
+- collects as much entropy as possible, including data with instability caused by fingerprinting resistance: JS tampering patterns, random poison, known noise, invalid data, and more
+- does not collect data containing a high amount of instability: viewport size, performance, network speed,
+- skips slow metrics: webrtc data
+
+### Creep (FP ID)
+This is the main fingerprint, the creep
+
 - adapts to browsers and distrusts known noise vectors
 - aims to ignore entropy unique to a browser version release
 - gathers compressed and static entropy
