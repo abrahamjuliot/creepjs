@@ -39,15 +39,15 @@ Tests are focused on:
 ### Data
 - data collected: worker scope user agent, webgl gpu renderer, js runtime engine, hashed browser fingerprints (`stable`, `loose`, `fuzzy`, & `shadow`), encrypted ip, encrypted system location, dates, and other metrics displayed on the website
 - data retention:
-  - database:
-	  - browser fingerprint auto deletes
-		  - 30 days after last visit
-		  - 30 days after we change the fingerprint
-		- prediction data auto deletes
-		  - if it fails to establish a good crowd-blending score within 2 weeks
-			- 40 days after last seen
-	- web tracing and traffic analysis:
-	  - history auto discards itself after 60 days
+    - database:
+        - browser fingerprint auto deletes
+        - 30 days after last visit
+        - 30 days after we change the fingerprint
+    - prediction data auto deletes
+        - if it fails to establish a good crowd-blending score within 2 weeks
+        - 40 days after last seen
+    - web tracing and traffic analysis:
+        - history auto discards itself after 60 days
 
 #### Example Data Models
 ##### Prediction Samples
