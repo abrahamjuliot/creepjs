@@ -8,7 +8,7 @@ The purpose of this project is to shed light on weaknesses and privacy leaks amo
 2. Fingerprint lie patterns
 3. Fingerprint extension code
 4. Fingerprint browser privacy settings
-5. Employ large-scale validation, but allow possible inconsistencies
+5. Use large-scale validation and collect inconsistencies
 6. Feature detect and fingerprint [new APIs](https://www.javascripture.com/) that contain high entropy
 7. Use APIs that are the most difficult to fake in a stable fingerprint
 
@@ -25,7 +25,7 @@ Tests are focused on:
 - DuckDuckGo Privacy Essentials
 - JShelter (JavaScript Restrictor)
 - Privacy Badger
-- Privacy Possom
+- Privacy Possum
 - Random User-Agent
 - User Agent Switcher and Manager
 - CanvasBlocker
@@ -88,8 +88,8 @@ Purpose: learn and predict browser engine and platform version, device, and gpu
 		"Windows"
 	],
 	systemWatch: [
-		"Windows:Windows:460191600000:8/2/1984:703722......:18",
-	]
+		"Windows:Windows:460191600000:8/2/1984:703722......:18"
+	],
 	timestamp: "1984-08-01T07:00:00.000Z",
 	trash: false,
 	type: "Canvas System",
