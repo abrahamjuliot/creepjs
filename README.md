@@ -58,14 +58,14 @@ Purpose: learn and predict browser engine and platform version, device, and gpu
 	decrypted: "Blink",
 	devicePrimary: "Windows 10 (64-bit)",
 	deviceTrust: `{
-		"Windows 10 (64-bit)": ["6a9","fe3","bb7"],
-		"Windows 7 (64-bit)": ["8a3"],
-		"Windows 11 (64-bit)": ["e4a"]
+		"Windows:Windows 10 (64-bit)": ["6a9","fe3","bb7"],
+		"Windows:Windows 7 (64-bit)": ["8a3"],
+		"Windows:Windows 11 (64-bit)": ["e4a"]
 	}`,
 	devices: [
-		"Windows 10 (64-bit)",
-		"Windows 7 (64-bit)",
-		"Windows 11 (64-bit)"
+		"Windows:Windows 10 (64-bit)",
+		"Windows:Windows 7 (64-bit)",
+		"Windows:Windows 11 (64-bit)"
 	],
 	gpus: [],
 	healEvents: [],
@@ -74,10 +74,10 @@ Purpose: learn and predict browser engine and platform version, device, and gpu
 	id: "01aa0cc74cd124b8985d7e386e5499b34770353cab321e214a2aae122b4c1995",
 	lock: false,
 	logger: [
-		"8eff_75d6295c_345026a9: Blink (12/5/2021, 2:54:02 AM)"
+		"8eff_75d6295c_345026a9: Blink (2/5/1984, 2:54:02 AM)"
 	],
 	reporter: `{
-		"dates": ["12/5/2021","12/10/2021","12/17/2021","12/22/2021"],
+		"dates": ["2/5/1984","2/10/1984","2/17/1984","2/22/1984"],
 		"ips": ["8eff","66fa","6ac2","5887"]
 	}`,
 	reporterTrustScore: 100,
@@ -87,7 +87,10 @@ Purpose: learn and predict browser engine and platform version, device, and gpu
 	systems: [
 		"Windows"
 	],
-	timestamp: "2022-01-15T16:34:23.807Z",
+	systemWatch: [
+		"Windows:Windows:460191600000:8/2/1984:703722......:18"
+	]
+	timestamp: "1984-08-01T07:00:00.000Z",
 	trash: false,
 	type: "Canvas System",
 	userAgents: [
@@ -106,11 +109,11 @@ Purpose: identify browser visit history and activity
 	botLevel: "stranger:csl",
 	crowdBlendingScore: 36,
 	fingerprint: "18ce59ae1e65397c81b38da98e6eed23a8f6d4bd3a2a349ed800f7daebd6f9dc",
-	firstVisit: "2022-01-17T15:39:21.964Z",
+	firstVisit: "1984-08-01T07:00:00.000Z",
 	fuzzyInit: "1879e559e5de22c3dceb603775ff8062bb274c41547f9fc0b38e919fc4000000",
 	fuzzyLast: "1879e559e5de22c3dceb603775ff8062bb274c41547f9fc0b38e919fc4000000",
-	lastVisit: "2022-01-17T15:39:21.964Z",
-	lastVisitEpoch: 1642433961964,
+	lastVisit: "1984-08-01T07:00:00.000Z",
+	lastVisitEpoch: 460191600000,
 	looseFingerprints: [
 		"f331fd21a4f8dec8054ffaec88c32723f840f6a6174303cd787fb676a513bbf6"
 	],
