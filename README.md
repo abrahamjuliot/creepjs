@@ -88,7 +88,7 @@ Purpose: learn and predict browser engine and platform version, device, and gpu
 		"Windows"
 	],
 	systemWatch: [
-		"Windows:Windows:460191600000:8/2/1984:703722......:18"
+		"Windows:Windows:460191600000:8/2/1984:703722......:18",
 	]
 	timestamp: "1984-08-01T07:00:00.000Z",
 	trash: false,
