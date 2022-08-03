@@ -301,6 +301,7 @@ const getUserAgentPlatform = ({ userAgent, excludeBuild = true }) => {
 							'10_15': 'Catalina',
 							'11': 'Big Sur',
 							'12': 'Monterey',
+							'13': 'Ventura',
 						}
 						const version = (
 							(/(\d{2}(_|\.)\d{1,2}|\d{2,})/.exec(release) || [])[0] ||
