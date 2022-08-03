@@ -1,5 +1,3691 @@
-function a0W(){const QU=['call','Asia/Almaty','\x27\x20(device-width:\x20','convertToBlob','workerScope.userAgentVersion','function\x20()\x20{\x20[native\x20code]\x20}','status-bar','WebGL2RenderingContext.getParameter','Asia/Yekaterinburg','Africa/Kampala','createDataChannel','Europe/Riga','ImageTrack','creep-css-match-media','unknown\x20dimensions','FragmentDirective','</div>\x0a\x09\x09<div\x20class=\x22help\x22\x20title=\x22AudioBuffer.getChannelData()\x22>data:','size','creep-resistance','failed\x20at\x20define\x20properties','rgb(255,\x200,\x200)','FontFace.family','resistFingerprinting','America/Argentina/Rio_Gallegos','timezone.locationEpoch','Stable\x20Fingerprint','Atlantic/Canary','https://creepjs-api.web.app/score-crowd-blending?id=','!Element.getDestinationInsertionPoints','headless.headless','workerScope','!JSON.toSource','MimeType','AudioData','onreadystatechange','iframe','navigator.maxTouchPoints','!Error.cause','destination','\x22>errors\x20(','Africa/Bissau','inset-block-start','Element.ariaOrientation','svgrectSystemSum','Asia/Baku','\x20Vivaldi','MAX_VERTEX_UNIFORM_COMPONENTS','#FF33FF','InfoText','LOG2E','headless','\x0a\x09\x09\x09</div>\x0a\x09\x09</div>\x0a\x09</div>\x0a\x09<div\x20class=\x22col-six','language(s)\x20failed','Pacific/Fiji','Element.ariaModal','computed\x20style','resistance.privacy','--prefers-color-scheme','workerScope.platform','getMinutes','isPointInPath','Proxy','--import-device-screen:\x20','size-adjust',';\x20K','\x0a\x09\x09<div\x20class=\x22col-six\x20undefined\x22>\x0a\x09\x09\x09<strong>Computed\x20Style</strong>\x0a\x09\x09\x09<div>keys\x20(0):\x20','XRWebGLBinding','Microsoft\x20Basic\x20Render\x20Driver','<span\x20class=\x22icon\x20tor\x22></span>','NavigatorUAData','MAX_VERTEX_UNIFORM_BLOCKS','--import-orientation:\x20portrait','loads','Document.onformdata','</div>\x0a\x09</div>','htmlVersion','15771efa','pixelDepthHash','America/Grenada','localDescription','</div>\x0a\x09\x09</div>\x0a\x09\x09<div\x20class=\x22col-six\x22>\x0a\x09\x09\x09<div>device:</div>\x0a\x09\x09\x09<div\x20class=\x22block-text\x22>','!mozPaintCount','10.9','</div>\x0a\x09\x09<div>mimeTypes\x20(','XRHitTestResult','</span>\x0a\x09\x09\x09\x09\x09<span\x20class=\x22screen-dpr\x22>','Promise.any','totalLies','6.2','win','\x27\x20(hover:\x20none);\x0a\x09\x09@import\x20\x27','Intl.DisplayNames','Indian/Antananarivo','Europe/Zaporozhye','VERTEX_SHADER.MEDIUM_FLOAT.rangeMax','hypot','intl.numberFormat','!WebAssembly.toSource','10\x20(1511)','--import-prefers-reduced-motion:\x20reduce','--monochrome','expm1','Collator','numberOfInputs','FLOAT','browser','plugin\x20description\x20is\x20gibberish','HTMLIFrameElement.contentWindow','CSSFontPaletteValuesRule','video','toUpperCase','metric\x20noise\x20detected','useProgram','Europe/Luxembourg','runtime','WebTransportBidirectionalStream','ratio','portrait','features.versionRange','Asia/Macau','find','CSSCounterStyleRule','hypot(','cssMedia.importCSS','</span>\x0a\x09\x09<strong>Canvas\x202d</strong><span\x20class=\x22','XRCPUDepthInformation','expm1(Math.PI)','Google\x27s\x20Receiver\x20Estimated\x20Maximum\x20Bitrate\x20(goog-remb)','keys','serviceWorker','Intl.Collator.resolvedOptions','Firefox','platformVersion','Asia/Kuwait','Intl','version','&liesLen=','failed\x20at\x20chain\x20cycle\x20__proto__\x20error','svg','<span\x20class=\x22fuzzy-fp\x22>','allow','getUserMedia','</span>\x0a\x09\x09\x09\x09\x09\x09\x09</span></div>\x0a\x09\x09\x09\x09\x09\x09\x09<div>visits:\x20<span\x20class=\x22unblurred\x22>','Europe/Mariehamn','#80B300','18613XIzRQI','-webgpu','userAgentDataVersion','Worklet','Graphics','Asia/Jerusalem','America/Indiana/Indianapolis','America/Puerto_Rico','Intel','Fingerprinting\x20complete\x20in\x20','GMT','appCodeName','\x22></span>','renderedBuffer','exec','\x0a\x09<div\x20class=\x22relative\x20col-six\x22>\x0a\x09\x09<strong>WebRTC</strong><span\x20class=\x22hash\x22>','}}\x0a\x09\x09@media\x20(device-width:\x20','America/Chicago','Number','ReadableByteStreamController','Windows\x2010\x20(64-bit)','startRendering','background-color:\x20','--import-any-pointer','computedStyle','<span\x20class=\x22blank-false\x22>-</span>','America/Regina','</div>\x0a\x09\x09\x09<div>....avail:\x20','fuzzy-fingerprint','%\x20<span\x20class=\x22scale-down\x20grade-','10.12','\x27\x20(display-mode:\x20browser);\x0a\x09\x09@import\x20\x27','MAX_DRAW_BUFFERS_WEBGL','Scheduler','webglRenderer','createShader','Lion','</div>\x0a\x09\x09<div>screen\x20query:\x20','creep-trash','canvasBlobSystem','</span>\x0a\x0a\x09<div\x20class=\x22relative\x20col-six','initialFingerprint','sqrt(','ZWAdobeF','fine','Element.replaceWith','selectNode','navigator','Asia/Aqtau','enabledPlugin','kind','DynamicsCompressorNode.knee.maxValue','WebTransportError','removed\x20fuzzy\x20key(s):\x0a','10\x20(1809)','Asia/Samarkand','attrVertex','blank','navigator.deviceMemory','getDisplayMedia','trustedMessage','Screen.height','-07-01','overflow-clip-margin','18054399QjmGHR','Windows\x207\x20(64-bit)','Transport\x20Wide\x20Congestion\x20Control\x20(transport-cc)','10px\x20','low','canvasEmojiSystem','#E666FF','languages','\x22>\x0a\x09\x09\x09\x09','Africa/Mogadishu','(device-width:\x20','MAX_VERTEX_OUTPUT_COMPONENTS','Africa/Mbabane','Field','log10(Math.LOG2E)','#3366E6','</span>\x0a\x09\x09\x09\x09\x09<div\x20class=\x22screen-frame\x20relative\x22>\x0a\x09\x09\x09\x09\x09\x09<div\x20class=\x22screen-glass\x22></div>\x0a\x09\x09\x09\x09\x09</div>\x0a\x09\x09\x09\x09</div>\x0a\x09\x09\x09</div>\x0a\x09\x09\x09','video/mp4;\x20codecs=\x22avc1.42E01E\x22','<strong>Pattern</strong><br><br>','MAX_FRAGMENT_INPUT_COMPONENTS','getLineDash','--inverted-colors','failed\x20unshift\x20calculation','domRect','./creep.js','\x0a\x09\x09<br>convertToBlob\x20(emoji\x20storm):\x20','scrollWidth','container-name','styleSystemId=','screen.availHeight','\x0a\x09\x09\x09\x09\x09\x09\x09<div>session\x20(','from','\x0a\x09\x09<div\x20class=\x22col-six\x20undefined\x22>\x0a\x09\x09\x09<strong>Window</strong>\x0a\x09\x09\x09<div>keys\x20(0):\x20','AudioBuffer.copyFromChannel','America/Halifax','localeIntlEntropyIsTrusty','#66664D','<div><iframe></iframe></div>','ListFormat',',\x0a\x09\x09\x09\x09','America/Menominee','inset-inline-start','163646TEMdIE','</div>\x0a\x09\x09<div\x20class=\x22help\x22\x20title=\x22DynamicsCompressorNode.reduction\x22>gain:\x20','--import-forced-colors','WebAssembly','Navigator.hardwareConcurrency','gpu\x20model','\x0a\x09\x09<style>\x0a\x09\x09@import\x20\x27','apple','!-moz-outline-radius-topleft','local(\x22','fingerprint-data','terminate','Permissions.query','port','Galvji','setItem','video/quicktime','fillRect','\x27\x20(forced-colors:\x20active);\x0a\x09\x09@import\x20\x27','#E6B333','</div>\x0a\x09\x09<div\x20class=\x22blurred\x22\x20id=\x22error-samples\x22>\x0a\x09\x09\x09<div>0%\x20of\x20engine</div>\x0a\x09\x09</div>\x0a\x09</div>\x0a\x09','8dfec2ec','MONO','inset','isTorBrowser=','arm','cssMedia','workerScope.lies','</div>\x0a\x09\x09\x09<div>lang/timezone:</div>\x0a\x09\x09\x09<div\x20class=\x22block-text\x22>','fonts.emojiSet','Brave','Document.ontransitionrun','polyfill','⛩⛴✈⏱⛈☂⛱☃☄⛸♟⛑⌨✉✏👩‍❤️‍','EventCounts','error','onmouseleave','America/Indiana/Vevay','--orientation','Other','452924d5','<div><span\x20class=\x22unsupport\x22>','AppWorkspace','</div>\x0a\x09\x09<div\x20class=\x22help\x22\x20title=\x22SpeechSynthesis.getVoices()\x22>remote\x20(','toLowerCase','math','experimental-webgl2','uaFullVersion','Asia/Vientiane','!Object.toSource','WritableStream','svg-container','-entropy','lies\x20','FRAGMENT_SHADER.LOW_FLOAT.rangeMax','Asia/Kathmandu','\x0a\x09\x09<div\x20class=\x22col-six\x20undefined\x22>\x0a\x09\x09\x09<strong>Resistance</strong>\x0a\x09\x09\x09<div>privacy:\x20','#1AFF33','FRAGMENT_SHADER.HIGH_INT.rangeMax','\x0a\x09<div\x20class=\x22relative\x20col-six','TextMetrics.actualBoundingBoxLeft','Africa/Windhoek','CSSLayerStatementRule','<span\x20class=\x22time\x22><span\x20class=\x22renewed\x22>locked</span></span>','HTMLDialogElement','channels','ReadableStreamDefaultController','failed\x20object\x20toString\x20error','abs','NT\x206.2','Pacific/Noumea','Google\x20SwiftShader','\x0a\x09\x09<div\x20class=\x22col-six\x20undefined\x22>\x0a\x09\x09\x09<strong>Screen</strong>\x0a\x09\x09\x09<div>...screen:\x20','\x0a\x09<div\x20class=\x22col-six\x22>\x0a\x09\x09<strong>WebRTC</strong>\x0a\x09\x09<div>host\x20connection:</div>\x0a\x09\x09<div\x20class=\x22block-text\x22>','canvas2d.mods','D3D11','<span\x20class=\x22math-tor-browser\x22>T</span>','setPrototypeOf','5.2','WEBGL_debug_renderer_info','fonts.pixelSizeSystemSum','</span>\x0a\x09\x09\x09\x09\x09<span\x20class=\x22screen-visual-w\x22>','\x27\x20(display-mode:\x20standalone);\x0a\x09\x09@import\x20\x27','Asia/Qatar','FRAGMENT_SHADER.MEDIUM_FLOAT.precision','HIGH_INT','arguments','\x0a\x09\x09\x09\x09\x09\x09\x09<div\x20class=\x22ellipsis\x22>loose\x20fp\x20(','#FF6633','4.0','workerScope.device','2974098fXhZwp','\x20Brave','index\x20of\x20chrome\x20is\x20too\x20high','border-block-color','length','Asia/Yakutsk','MAX_TEXTURE_LOD_BIAS',',\x20touch:\x20','\x20(v','PCIe','4237b44c','<span\x20class=\x22icon\x20android\x22></span>','ButtonText','Asia/Shanghai','</div>\x0a\x0a\x09\x09\x09\x09\x09\x09\x09<div\x20class=\x22block-text\x22>\x0a\x09\x09\x09\x09\x09\x09\x09\x09<div\x20class=\x22unblurred\x22>bot:\x20','<div\x20class=\x22icon-pixel\x20emoji-image\x22></div>','Element.getInnerHTML','</strong>:<br>','domrect\x20emojis','#4DB380','Antarctica/Davis','gain','parameters','<strong>Stealth</strong><br><br>','globalPrivacyControl\x20-\x20unusual\x20result','window\x20object','</span>\x0a\x09\x09<strong>Audio</strong><span\x20class=\x22','OffscreenCanvas','goanna','CanvasRenderingContext2D.fillText','createElement','color-scheme','htmlElementVersion','htmlId=','container','!-moz-stack-sizing','font-synthesis-small-caps','America/Indiana/Marengo','--import-hover:\x20hover','atanh','Intl.Segmenter','capturedErrors','passed','atanh(0.5)','Element.ariaMultiLine','\x27\x20(display-mode:\x20fullscreen);\x0a\x09\x09@import\x20\x27','animation:\x20balloon\x20','America/Yellowknife','fromCharCode','diff\x20check\x20at\x20https://www.diffchecker.com/diff\x0a\x0a','</span>\x0a\x09\x09\x09</div>\x0a\x09\x09</div>\x0a\x09</div>\x0a\x09','(prefers-reduced-motion:\x20reduce)','macOS\x20','<span\x20class=\x22blocked-entropy\x22>','copyToChannel','FRAGMENT_SHADER.MEDIUM_FLOAT.rangeMin','Navigator.language','permissions\x20failed','platform','setFullYear','❤✌☝✍❄⚖↪☯☪☮☑✴🅰🅿','pow(Math.LOG10E,\x20-100)','creep-navigator','#FFB399','alert(\x22)','features.windowVersion','Europe/Moscow','maxTouchPoints','Background','Europe/Malta','random','America/Iqaluit','</div>\x0a\x09\x09<div\x20class=\x22block-text\x22>\x0a\x09\x09\x09<div>','0007ab4e','</div>\x0a\x09\x09<div\x20class=\x22block-text\x20help\x20relative\x22\x20title=\x22','Microsoft\x20Corporation','creep-css-media','WebGL2RenderingContext.getExtension','\x0a\x09\x09\x09\x09\x09\x09\x09<div>','svgId=','initial-value','css.system','toJSON','content','America/Montserrat','inverted','\x20failed\x20JS\x20features\x20by\x20','getClientRects','\x0a\x09\x09\x09\x09\x09\x09</div>\x0a\x09\x09\x09\x09\x09</div>\x0a\x09\x09\x09\x09</div>\x0a\x09\x09\x09','failed\x20at\x20reflect\x20set\x20proto','unregister','px)','Pacific/Wake','Element.ariaValueText','Asia/Amman','VERTEX_SHADER.HIGH_FLOAT.rangeMin','<div\x20class=\x22icon-pixel\x20combined-image\x22></div>','Africa/Bujumbura','<span\x20class=\x22','SVGRect.y','#999933','small-caption','Unknown','fonts.apps','fontsId=','Europe/Sarajevo','webgl2','canvasId=','Element.getClientRects()\x0ahash:\x20','</div>','MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS','metrics','CanvasRenderingContext2D.measureText','windowFeatures.webkit','cssText,\x20length,\x20parentRule,\x20cssFloat,\x20getPropertyPriority,\x20getPropertyValue,\x20item,\x20removeProperty,\x20setProperty,\x20constructor,\x20accent-color,\x20align-content,\x20align-items,\x20align-self,\x20alignment-baseline,\x20animation-delay,\x20animation-direction,\x20animation-duration,\x20animation-fill-mode,\x20animation-iteration-count,\x20animation-name,\x20animation-play-state,\x20animation-timing-function,\x20app-region,\x20appearance,\x20backdrop-filter,\x20backface-visibility,\x20background-attachment,\x20background-blend-mode,\x20background-clip,\x20background-color,\x20background-image,\x20background-origin,\x20background-position,\x20background-repeat,\x20background-size,\x20baseline-shift,\x20block-size,\x20border-block-end-color,\x20border-block-end-style,\x20border-block-end-width,\x20border-block-start-color,\x20border-block-start-style,\x20border-block-start-width,\x20border-bottom-color,\x20border-bottom-left-radius,\x20border-bottom-right-radius,\x20border-bottom-style,\x20border-bottom-width,\x20border-collapse,\x20border-end-end-radius,\x20border-end-start-radius,\x20border-image-outset,\x20border-image-repeat,\x20border-image-slice,\x20border-image-source,\x20border-image-width,\x20border-inline-end-color,\x20border-inline-end-style,\x20border-inline-end-width,\x20border-inline-start-color,\x20border-inline-start-style,\x20border-inline-start-width,\x20border-left-color,\x20border-left-style,\x20border-left-width,\x20border-right-color,\x20border-right-style,\x20border-right-width,\x20border-start-end-radius,\x20border-start-start-radius,\x20border-top-color,\x20border-top-left-radius,\x20border-top-right-radius,\x20border-top-style,\x20border-top-width,\x20bottom,\x20box-shadow,\x20box-sizing,\x20break-after,\x20break-before,\x20break-inside,\x20buffered-rendering,\x20caption-side,\x20caret-color,\x20clear,\x20clip,\x20clip-path,\x20clip-rule,\x20color,\x20color-interpolation,\x20color-interpolation-filters,\x20color-rendering,\x20column-count,\x20column-gap,\x20column-rule-color,\x20column-rule-style,\x20column-rule-width,\x20column-span,\x20column-width,\x20contain-intrinsic-block-size,\x20contain-intrinsic-height,\x20contain-intrinsic-inline-size,\x20contain-intrinsic-size,\x20contain-intrinsic-width,\x20container-name,\x20container-type,\x20content,\x20cursor,\x20cx,\x20cy,\x20d,\x20direction,\x20display,\x20dominant-baseline,\x20empty-cells,\x20fill,\x20fill-opacity,\x20fill-rule,\x20filter,\x20flex-basis,\x20flex-direction,\x20flex-grow,\x20flex-shrink,\x20flex-wrap,\x20float,\x20flood-color,\x20flood-opacity,\x20font-family,\x20font-kerning,\x20font-optical-sizing,\x20font-palette,\x20font-size,\x20font-stretch,\x20font-style,\x20font-synthesis-small-caps,\x20font-synthesis-style,\x20font-synthesis-weight,\x20font-variant,\x20font-variant-caps,\x20font-variant-east-asian,\x20font-variant-ligatures,\x20font-variant-numeric,\x20font-weight,\x20grid-auto-columns,\x20grid-auto-flow,\x20grid-auto-rows,\x20grid-column-end,\x20grid-column-start,\x20grid-row-end,\x20grid-row-start,\x20grid-template-areas,\x20grid-template-columns,\x20grid-template-rows,\x20height,\x20hyphens,\x20image-orientation,\x20image-rendering,\x20inline-size,\x20inset-block-end,\x20inset-block-start,\x20inset-inline-end,\x20inset-inline-start,\x20isolation,\x20justify-content,\x20justify-items,\x20justify-self,\x20left,\x20letter-spacing,\x20lighting-color,\x20line-break,\x20line-height,\x20list-style-image,\x20list-style-position,\x20list-style-type,\x20margin-block-end,\x20margin-block-start,\x20margin-bottom,\x20margin-inline-end,\x20margin-inline-start,\x20margin-left,\x20margin-right,\x20margin-top,\x20marker-end,\x20marker-mid,\x20marker-start,\x20mask-type,\x20max-block-size,\x20max-height,\x20max-inline-size,\x20max-width,\x20min-block-size,\x20min-height,\x20min-inline-size,\x20min-width,\x20mix-blend-mode,\x20object-fit,\x20object-position,\x20object-view-box,\x20offset-distance,\x20offset-path,\x20offset-rotate,\x20opacity,\x20order,\x20orphans,\x20outline-color,\x20outline-offset,\x20outline-style,\x20outline-width,\x20overflow-anchor,\x20overflow-clip-margin,\x20overflow-wrap,\x20overflow-x,\x20overflow-y,\x20overscroll-behavior-block,\x20overscroll-behavior-inline,\x20padding-block-end,\x20padding-block-start,\x20padding-bottom,\x20padding-inline-end,\x20padding-inline-start,\x20padding-left,\x20padding-right,\x20padding-top,\x20paint-order,\x20perspective,\x20perspective-origin,\x20pointer-events,\x20position,\x20r,\x20resize,\x20right,\x20rotate,\x20row-gap,\x20ruby-position,\x20rx,\x20ry,\x20scale,\x20scroll-behavior,\x20scroll-margin-block-end,\x20scroll-margin-block-start,\x20scroll-margin-inline-end,\x20scroll-margin-inline-start,\x20scroll-padding-block-end,\x20scroll-padding-block-start,\x20scroll-padding-inline-end,\x20scroll-padding-inline-start,\x20scrollbar-gutter,\x20shape-image-threshold,\x20shape-margin,\x20shape-outside,\x20shape-rendering,\x20speak,\x20stop-color,\x20stop-opacity,\x20stroke,\x20stroke-dasharray,\x20stroke-dashoffset,\x20stroke-linecap,\x20stroke-linejoin,\x20stroke-miterlimit,\x20stroke-opacity,\x20stroke-width,\x20tab-size,\x20table-layout,\x20text-align,\x20text-align-last,\x20text-anchor,\x20text-decoration,\x20text-decoration-color,\x20text-decoration-line,\x20text-decoration-skip-ink,\x20text-decoration-style,\x20text-emphasis-color,\x20text-emphasis-position,\x20text-emphasis-style,\x20text-indent,\x20text-overflow,\x20text-rendering,\x20text-shadow,\x20text-size-adjust,\x20text-transform,\x20text-underline-position,\x20top,\x20touch-action,\x20transform,\x20transform-origin,\x20transform-style,\x20transition-delay,\x20transition-duration,\x20transition-property,\x20transition-timing-function,\x20translate,\x20unicode-bidi,\x20user-select,\x20vector-effect,\x20vertical-align,\x20visibility,\x20white-space,\x20widows,\x20width,\x20will-change,\x20word-break,\x20word-spacing,\x20writing-mode,\x20x,\x20y,\x20z-index,\x20zoom,\x20-webkit-border-horizontal-spacing,\x20-webkit-border-image,\x20-webkit-border-vertical-spacing,\x20-webkit-box-align,\x20-webkit-box-decoration-break,\x20-webkit-box-direction,\x20-webkit-box-flex,\x20-webkit-box-ordinal-group,\x20-webkit-box-orient,\x20-webkit-box-pack,\x20-webkit-box-reflect,\x20-webkit-font-smoothing,\x20-webkit-highlight,\x20-webkit-hyphenate-character,\x20-webkit-line-break,\x20-webkit-line-clamp,\x20-webkit-locale,\x20-webkit-mask-box-image,\x20-webkit-mask-box-image-outset,\x20-webkit-mask-box-image-repeat,\x20-webkit-mask-box-image-slice,\x20-webkit-mask-box-image-source,\x20-webkit-mask-box-image-width,\x20-webkit-mask-clip,\x20-webkit-mask-composite,\x20-webkit-mask-image,\x20-webkit-mask-origin,\x20-webkit-mask-position,\x20-webkit-mask-repeat,\x20-webkit-mask-size,\x20-webkit-print-color-adjust,\x20-webkit-rtl-ordering,\x20-webkit-tap-highlight-color,\x20-webkit-text-combine,\x20-webkit-text-decorations-in-effect,\x20-webkit-text-fill-color,\x20-webkit-text-orientation,\x20-webkit-text-security,\x20-webkit-text-stroke-color,\x20-webkit-text-stroke-width,\x20-webkit-user-drag,\x20-webkit-user-modify,\x20-webkit-writing-mode,\x20accentColor,\x20additiveSymbols,\x20alignContent,\x20alignItems,\x20alignSelf,\x20alignmentBaseline,\x20all,\x20animation,\x20animationDelay,\x20animationDirection,\x20animationDuration,\x20animationFillMode,\x20animationIterationCount,\x20animationName,\x20animationPlayState,\x20animationTimingFunction,\x20appRegion,\x20ascentOverride,\x20aspectRatio,\x20backdropFilter,\x20backfaceVisibility,\x20background,\x20backgroundAttachment,\x20backgroundBlendMode,\x20backgroundClip,\x20backgroundColor,\x20backgroundImage,\x20backgroundOrigin,\x20backgroundPosition,\x20backgroundPositionX,\x20backgroundPositionY,\x20backgroundRepeat,\x20backgroundRepeatX,\x20backgroundRepeatY,\x20backgroundSize,\x20basePalette,\x20baselineShift,\x20blockSize,\x20border,\x20borderBlock,\x20borderBlockColor,\x20borderBlockEnd,\x20borderBlockEndColor,\x20borderBlockEndStyle,\x20borderBlockEndWidth,\x20borderBlockStart,\x20borderBlockStartColor,\x20borderBlockStartStyle,\x20borderBlockStartWidth,\x20borderBlockStyle,\x20borderBlockWidth,\x20borderBottom,\x20borderBottomColor,\x20borderBottomLeftRadius,\x20borderBottomRightRadius,\x20borderBottomStyle,\x20borderBottomWidth,\x20borderCollapse,\x20borderColor,\x20borderEndEndRadius,\x20borderEndStartRadius,\x20borderImage,\x20borderImageOutset,\x20borderImageRepeat,\x20borderImageSlice,\x20borderImageSource,\x20borderImageWidth,\x20borderInline,\x20borderInlineColor,\x20borderInlineEnd,\x20borderInlineEndColor,\x20borderInlineEndStyle,\x20borderInlineEndWidth,\x20borderInlineStart,\x20borderInlineStartColor,\x20borderInlineStartStyle,\x20borderInlineStartWidth,\x20borderInlineStyle,\x20borderInlineWidth,\x20borderLeft,\x20borderLeftColor,\x20borderLeftStyle,\x20borderLeftWidth,\x20borderRadius,\x20borderRight,\x20borderRightColor,\x20borderRightStyle,\x20borderRightWidth,\x20borderSpacing,\x20borderStartEndRadius,\x20borderStartStartRadius,\x20borderStyle,\x20borderTop,\x20borderTopColor,\x20borderTopLeftRadius,\x20borderTopRightRadius,\x20borderTopStyle,\x20borderTopWidth,\x20borderWidth,\x20boxShadow,\x20boxSizing,\x20breakAfter,\x20breakBefore,\x20breakInside,\x20bufferedRendering,\x20captionSide,\x20caretColor,\x20clipPath,\x20clipRule,\x20colorInterpolation,\x20colorInterpolationFilters,\x20colorRendering,\x20colorScheme,\x20columnCount,\x20columnFill,\x20columnGap,\x20columnRule,\x20columnRuleColor,\x20columnRuleStyle,\x20columnRuleWidth,\x20columnSpan,\x20columnWidth,\x20columns,\x20contain,\x20containIntrinsicBlockSize,\x20containIntrinsicHeight,\x20containIntrinsicInlineSize,\x20containIntrinsicSize,\x20containIntrinsicWidth,\x20container,\x20containerName,\x20containerType,\x20contentVisibility,\x20counterIncrement,\x20counterReset,\x20counterSet,\x20descentOverride,\x20dominantBaseline,\x20emptyCells,\x20fallback,\x20fillOpacity,\x20fillRule,\x20flex,\x20flexBasis,\x20flexDirection,\x20flexFlow,\x20flexGrow,\x20flexShrink,\x20flexWrap,\x20floodColor,\x20floodOpacity,\x20font,\x20fontDisplay,\x20fontFamily,\x20fontFeatureSettings,\x20fontKerning,\x20fontOpticalSizing,\x20fontPalette,\x20fontSize,\x20fontStretch,\x20fontStyle,\x20fontSynthesis,\x20fontSynthesisSmallCaps,\x20fontSynthesisStyle,\x20fontSynthesisWeight,\x20fontVariant,\x20fontVariantCaps,\x20fontVariantEastAsian,\x20fontVariantLigatures,\x20fontVariantNumeric,\x20fontVariationSettings,\x20fontWeight,\x20forcedColorAdjust,\x20gap,\x20grid,\x20gridArea,\x20gridAutoColumns,\x20gridAutoFlow,\x20gridAutoRows,\x20gridColumn,\x20gridColumnEnd,\x20gridColumnGap,\x20gridColumnStart,\x20gridGap,\x20gridRow,\x20gridRowEnd,\x20gridRowGap,\x20gridRowStart,\x20gridTemplate,\x20gridTemplateAreas,\x20gridTemplateColumns,\x20gridTemplateRows,\x20imageOrientation,\x20imageRendering,\x20inherits,\x20initialValue,\x20inlineSize,\x20inset,\x20insetBlock,\x20insetBlockEnd,\x20insetBlockStart,\x20insetInline,\x20insetInlineEnd,\x20insetInlineStart,\x20justifyContent,\x20justifyItems,\x20justifySelf,\x20letterSpacing,\x20lightingColor,\x20lineBreak,\x20lineGapOverride,\x20lineHeight,\x20listStyle,\x20listStyleImage,\x20listStylePosition,\x20listStyleType,\x20margin,\x20marginBlock,\x20marginBlockEnd,\x20marginBlockStart,\x20marginBottom,\x20marginInline,\x20marginInlineEnd,\x20marginInlineStart,\x20marginLeft,\x20marginRight,\x20marginTop,\x20marker,\x20markerEnd,\x20markerMid,\x20markerStart,\x20mask,\x20maskType,\x20maxBlockSize,\x20maxHeight,\x20maxInlineSize,\x20maxWidth,\x20maxZoom,\x20minBlockSize,\x20minHeight,\x20minInlineSize,\x20minWidth,\x20minZoom,\x20mixBlendMode,\x20negative,\x20objectFit,\x20objectPosition,\x20objectViewBox,\x20offset,\x20offsetDistance,\x20offsetPath,\x20offsetRotate,\x20orientation,\x20outline,\x20outlineColor,\x20outlineOffset,\x20outlineStyle,\x20outlineWidth,\x20overflow,\x20overflowAnchor,\x20overflowClipMargin,\x20overflowWrap,\x20overflowX,\x20overflowY,\x20overrideColors,\x20overscrollBehavior,\x20overscrollBehaviorBlock,\x20overscrollBehaviorInline,\x20overscrollBehaviorX,\x20overscrollBehaviorY,\x20pad,\x20padding,\x20paddingBlock,\x20paddingBlockEnd,\x20paddingBlockStart,\x20paddingBottom,\x20paddingInline,\x20paddingInlineEnd,\x20paddingInlineStart,\x20paddingLeft,\x20paddingRight,\x20paddingTop,\x20page,\x20pageBreakAfter,\x20pageBreakBefore,\x20pageBreakInside,\x20pageOrientation,\x20paintOrder,\x20perspectiveOrigin,\x20placeContent,\x20placeItems,\x20placeSelf,\x20pointerEvents,\x20prefix,\x20quotes,\x20range,\x20rowGap,\x20rubyPosition,\x20scrollBehavior,\x20scrollMargin,\x20scrollMarginBlock,\x20scrollMarginBlockEnd,\x20scrollMarginBlockStart,\x20scrollMarginBottom,\x20scrollMarginInline,\x20scrollMarginInlineEnd,\x20scrollMarginInlineStart,\x20scrollMarginLeft,\x20scrollMarginRight,\x20scrollMarginTop,\x20scrollPadding,\x20scrollPaddingBlock,\x20scrollPaddingBlockEnd,\x20scrollPaddingBlockStart,\x20scrollPaddingBottom,\x20scrollPaddingInline,\x20scrollPaddingInlineEnd,\x20scrollPaddingInlineStart,\x20scrollPaddingLeft,\x20scrollPaddingRight,\x20scrollPaddingTop,\x20scrollSnapAlign,\x20scrollSnapStop,\x20scrollSnapType,\x20scrollbarGutter,\x20shapeImageThreshold,\x20shapeMargin,\x20shapeOutside,\x20shapeRendering,\x20size,\x20sizeAdjust,\x20speakAs,\x20src,\x20stopColor,\x20stopOpacity,\x20strokeDasharray,\x20strokeDashoffset,\x20strokeLinecap,\x20strokeLinejoin,\x20strokeMiterlimit,\x20strokeOpacity,\x20strokeWidth,\x20suffix,\x20symbols,\x20syntax,\x20system,\x20tabSize,\x20tableLayout,\x20textAlign,\x20textAlignLast,\x20textAnchor,\x20textCombineUpright,\x20textDecoration,\x20textDecorationColor,\x20textDecorationLine,\x20textDecorationSkipInk,\x20textDecorationStyle,\x20textDecorationThickness,\x20textEmphasis,\x20textEmphasisColor,\x20textEmphasisPosition,\x20textEmphasisStyle,\x20textIndent,\x20textOrientation,\x20textOverflow,\x20textRendering,\x20textShadow,\x20textSizeAdjust,\x20textTransform,\x20textUnderlineOffset,\x20textUnderlinePosition,\x20touchAction,\x20transformBox,\x20transformOrigin,\x20transformStyle,\x20transition,\x20transitionDelay,\x20transitionDuration,\x20transitionProperty,\x20transitionTimingFunction,\x20unicodeBidi,\x20unicodeRange,\x20userSelect,\x20userZoom,\x20vectorEffect,\x20verticalAlign,\x20webkitAlignContent,\x20webkitAlignItems,\x20webkitAlignSelf,\x20webkitAnimation,\x20webkitAnimationDelay,\x20webkitAnimationDirection,\x20webkitAnimationDuration,\x20webkitAnimationFillMode,\x20webkitAnimationIterationCount,\x20webkitAnimationName,\x20webkitAnimationPlayState,\x20webkitAnimationTimingFunction,\x20webkitAppRegion,\x20webkitAppearance,\x20webkitBackfaceVisibility,\x20webkitBackgroundClip,\x20webkitBackgroundOrigin,\x20webkitBackgroundSize,\x20webkitBorderAfter,\x20webkitBorderAfterColor,\x20webkitBorderAfterStyle,\x20webkitBorderAfterWidth,\x20webkitBorderBefore,\x20webkitBorderBeforeColor,\x20webkitBorderBeforeStyle,\x20webkitBorderBeforeWidth,\x20webkitBorderBottomLeftRadius,\x20webkitBorderBottomRightRadius,\x20webkitBorderEnd,\x20webkitBorderEndColor,\x20webkitBorderEndStyle,\x20webkitBorderEndWidth,\x20webkitBorderHorizontalSpacing,\x20webkitBorderImage,\x20webkitBorderRadius,\x20webkitBorderStart,\x20webkitBorderStartColor,\x20webkitBorderStartStyle,\x20webkitBorderStartWidth,\x20webkitBorderTopLeftRadius,\x20webkitBorderTopRightRadius,\x20webkitBorderVerticalSpacing,\x20webkitBoxAlign,\x20webkitBoxDecorationBreak,\x20webkitBoxDirection,\x20webkitBoxFlex,\x20webkitBoxOrdinalGroup,\x20webkitBoxOrient,\x20webkitBoxPack,\x20webkitBoxReflect,\x20webkitBoxShadow,\x20webkitBoxSizing,\x20webkitClipPath,\x20webkitColumnBreakAfter,\x20webkitColumnBreakBefore,\x20webkitColumnBreakInside,\x20webkitColumnCount,\x20webkitColumnGap,\x20webkitColumnRule,\x20webkitColumnRuleColor,\x20webkitColumnRuleStyle,\x20webkitColumnRuleWidth,\x20webkitColumnSpan,\x20webkitColumnWidth,\x20webkitColumns,\x20webkitFilter,\x20webkitFlex,\x20webkitFlexBasis,\x20webkitFlexDirection,\x20webkitFlexFlow,\x20webkitFlexGrow,\x20webkitFlexShrink,\x20webkitFlexWrap,\x20webkitFontFeatureSettings,\x20webkitFontSmoothing,\x20webkitHighlight,\x20webkitHyphenateCharacter,\x20webkitJustifyContent,\x20webkitLineBreak,\x20webkitLineClamp,\x20webkitLocale,\x20webkitLogicalHeight,\x20webkitLogicalWidth,\x20webkitMarginAfter,\x20webkitMarginBefore,\x20webkitMarginEnd,\x20webkitMarginStart,\x20webkitMask,\x20webkitMaskBoxImage,\x20webkitMaskBoxImageOutset,\x20webkitMaskBoxImageRepeat,\x20webkitMaskBoxImageSlice,\x20webkitMaskBoxImageSource,\x20webkitMaskBoxImageWidth,\x20webkitMaskClip,\x20webkitMaskComposite,\x20webkitMaskImage,\x20webkitMaskOrigin,\x20webkitMaskPosition,\x20webkitMaskPositionX,\x20webkitMaskPositionY,\x20webkitMaskRepeat,\x20webkitMaskRepeatX,\x20webkitMaskRepeatY,\x20webkitMaskSize,\x20webkitMaxLogicalHeight,\x20webkitMaxLogicalWidth,\x20webkitMinLogicalHeight,\x20webkitMinLogicalWidth,\x20webkitOpacity,\x20webkitOrder,\x20webkitPaddingAfter,\x20webkitPaddingBefore,\x20webkitPaddingEnd,\x20webkitPaddingStart,\x20webkitPerspective,\x20webkitPerspectiveOrigin,\x20webkitPerspectiveOriginX,\x20webkitPerspectiveOriginY,\x20webkitPrintColorAdjust,\x20webkitRtlOrdering,\x20webkitRubyPosition,\x20webkitShapeImageThreshold,\x20webkitShapeMargin,\x20webkitShapeOutside,\x20webkitTapHighlightColor,\x20webkitTextCombine,\x20webkitTextDecorationsInEffect,\x20webkitTextEmphasis,\x20webkitTextEmphasisColor,\x20webkitTextEmphasisPosition,\x20webkitTextEmphasisStyle,\x20webkitTextFillColor,\x20webkitTextOrientation,\x20webkitTextSecurity,\x20webkitTextSizeAdjust,\x20webkitTextStroke,\x20webkitTextStrokeColor,\x20webkitTextStrokeWidth,\x20webkitTransform,\x20webkitTransformOrigin,\x20webkitTransformOriginX,\x20webkitTransformOriginY,\x20webkitTransformOriginZ,\x20webkitTransformStyle,\x20webkitTransition,\x20webkitTransitionDelay,\x20webkitTransitionDuration,\x20webkitTransitionProperty,\x20webkitTransitionTimingFunction,\x20webkitUserDrag,\x20webkitUserModify,\x20webkitUserSelect,\x20webkitWritingMode,\x20whiteSpace,\x20willChange,\x20wordBreak,\x20wordSpacing,\x20wordWrap,\x20writingMode,\x20zIndex,\x20additive-symbols,\x20ascent-override,\x20aspect-ratio,\x20background-position-x,\x20background-position-y,\x20background-repeat-x,\x20background-repeat-y,\x20base-palette,\x20border-block,\x20border-block-color,\x20border-block-end,\x20border-block-start,\x20border-block-style,\x20border-block-width,\x20border-bottom,\x20border-color,\x20border-image,\x20border-inline,\x20border-inline-color,\x20border-inline-end,\x20border-inline-start,\x20border-inline-style,\x20border-inline-width,\x20border-left,\x20border-radius,\x20border-right,\x20border-spacing,\x20border-style,\x20border-top,\x20border-width,\x20color-scheme,\x20column-fill,\x20column-rule,\x20content-visibility,\x20counter-increment,\x20counter-reset,\x20counter-set,\x20descent-override,\x20flex-flow,\x20font-display,\x20font-feature-settings,\x20font-synthesis,\x20font-variation-settings,\x20forced-color-adjust,\x20grid-area,\x20grid-column,\x20grid-column-gap,\x20grid-gap,\x20grid-row,\x20grid-row-gap,\x20grid-template,\x20initial-value,\x20inset-block,\x20inset-inline,\x20line-gap-override,\x20list-style,\x20margin-block,\x20margin-inline,\x20max-zoom,\x20min-zoom,\x20override-colors,\x20overscroll-behavior,\x20overscroll-behavior-x,\x20overscroll-behavior-y,\x20padding-block,\x20padding-inline,\x20page-break-after,\x20page-break-before,\x20page-break-inside,\x20page-orientation,\x20place-content,\x20place-items,\x20place-self,\x20scroll-margin,\x20scroll-margin-block,\x20scroll-margin-bottom,\x20scroll-margin-inline,\x20scroll-margin-left,\x20scroll-margin-right,\x20scroll-margin-top,\x20scroll-padding,\x20scroll-padding-block,\x20scroll-padding-bottom,\x20scroll-padding-inline,\x20scroll-padding-left,\x20scroll-padding-right,\x20scroll-padding-top,\x20scroll-snap-align,\x20scroll-snap-stop,\x20scroll-snap-type,\x20size-adjust,\x20speak-as,\x20text-combine-upright,\x20text-decoration-thickness,\x20text-emphasis,\x20text-orientation,\x20text-underline-offset,\x20transform-box,\x20unicode-range,\x20user-zoom,\x20-webkit-align-content,\x20-webkit-align-items,\x20-webkit-align-self,\x20-webkit-animation,\x20-webkit-animation-delay,\x20-webkit-animation-direction,\x20-webkit-animation-duration,\x20-webkit-animation-fill-mode,\x20-webkit-animation-iteration-count,\x20-webkit-animation-name,\x20-webkit-animation-play-state,\x20-webkit-animation-timing-function,\x20-webkit-app-region,\x20-webkit-appearance,\x20-webkit-backface-visibility,\x20-webkit-background-clip,\x20-webkit-background-origin,\x20-webkit-background-size,\x20-webkit-border-after,\x20-webkit-border-after-color,\x20-webkit-border-after-style,\x20-webkit-border-after-width,\x20-webkit-border-before,\x20-webkit-border-before-color,\x20-webkit-border-before-style,\x20-webkit-border-before-width,\x20-webkit-border-bottom-left-radius,\x20-webkit-border-bottom-right-radius,\x20-webkit-border-end,\x20-webkit-border-end-color,\x20-webkit-border-end-style,\x20-webkit-border-end-width,\x20-webkit-border-radius,\x20-webkit-border-start,\x20-webkit-border-start-color,\x20-webkit-border-start-style,\x20-webkit-border-start-width,\x20-webkit-border-top-left-radius,\x20-webkit-border-top-right-radius,\x20-webkit-box-shadow,\x20-webkit-box-sizing,\x20-webkit-clip-path,\x20-webkit-column-break-after,\x20-webkit-column-break-before,\x20-webkit-column-break-inside,\x20-webkit-column-count,\x20-webkit-column-gap,\x20-webkit-column-rule,\x20-webkit-column-rule-color,\x20-webkit-column-rule-style,\x20-webkit-column-rule-width,\x20-webkit-column-span,\x20-webkit-column-width,\x20-webkit-columns,\x20-webkit-filter,\x20-webkit-flex,\x20-webkit-flex-basis,\x20-webkit-flex-direction,\x20-webkit-flex-flow,\x20-webkit-flex-grow,\x20-webkit-flex-shrink,\x20-webkit-flex-wrap,\x20-webkit-font-feature-settings,\x20-webkit-justify-content,\x20-webkit-logical-height,\x20-webkit-logical-width,\x20-webkit-margin-after,\x20-webkit-margin-before,\x20-webkit-margin-end,\x20-webkit-margin-start,\x20-webkit-mask,\x20-webkit-mask-position-x,\x20-webkit-mask-position-y,\x20-webkit-mask-repeat-x,\x20-webkit-mask-repeat-y,\x20-webkit-max-logical-height,\x20-webkit-max-logical-width,\x20-webkit-min-logical-height,\x20-webkit-min-logical-width,\x20-webkit-opacity,\x20-webkit-order,\x20-webkit-padding-after,\x20-webkit-padding-before,\x20-webkit-padding-end,\x20-webkit-padding-start,\x20-webkit-perspective,\x20-webkit-perspective-origin,\x20-webkit-perspective-origin-x,\x20-webkit-perspective-origin-y,\x20-webkit-ruby-position,\x20-webkit-shape-image-threshold,\x20-webkit-shape-margin,\x20-webkit-shape-outside,\x20-webkit-text-emphasis,\x20-webkit-text-emphasis-color,\x20-webkit-text-emphasis-position,\x20-webkit-text-emphasis-style,\x20-webkit-text-size-adjust,\x20-webkit-text-stroke,\x20-webkit-transform,\x20-webkit-transform-origin,\x20-webkit-transform-origin-x,\x20-webkit-transform-origin-y,\x20-webkit-transform-origin-z,\x20-webkit-transform-style,\x20-webkit-transition,\x20-webkit-transition-delay,\x20-webkit-transition-duration,\x20-webkit-transition-property,\x20-webkit-transition-timing-function,\x20-webkit-user-select,\x20word-wrap','</span>\x0a\x09\x09<strong>Intl</strong><span\x20class=\x22hash\x22>','</div>\x0a\x09\x09\x09<div>system\x20styles:\x20','computing\x20','color:\x20','setTime','cos(57*Math.E)','<span\x20class=\x22icon\x20linux\x22></span>','</div>\x0a\x09\x09\x09\x09<div\x20class=\x22help\x22\x20title=\x22','AnalyserNode.getByteFrequencyData','73c662d9','--import-prefers-reduced-motion','<span\x20class=\x22icon\x20cros\x22></span>','--import-orientation:\x20landscape','Asia/Krasnoyarsk','Object','#809900','resistance.security','match','Europe/Berlin','enumerateDevices','--import-color-gamut','<span\x20class=\x22icon\x20goanna\x22></span>','\x0a\x0a\x09\x09</div>\x0a\x09\x09<div\x20class=\x22icon-pixel-container\x20pixels\x22>\x0a\x09\x09\x09','HD\x20Graphics\x20Family','Liberation\x20Mono','</span>\x0a\x09\x09\x09\x09\x09<span\x20class=\x22screen-inner-w\x22>','!Document.registerElement','features.cssVersion','Antarctica/Syowa','Screen.colorDepth','log1p(Math.PI)','format','Apple','Adreno','\x0a\x09\x09<div\x20class=\x22col-six\x20undefined\x22>\x0a\x09\x09\x09<strong>HTMLElement</strong>\x0a\x09\x09\x09<div>keys\x20(0):\x20','America/Recife','efbd4cf9','America/Araguaina','\x0a\x09\x09<div\x20class=\x22col-four\x20undefined\x22>\x0a\x09\x09\x09<strong>Media</strong>\x0a\x09\x09\x09<div>mimes\x20(0):\x20','pow(Math.SQRT1_2,\x20-100)','\x0a\x09\x09<div\x20class=\x22col-six\x20undefined\x22>\x0a\x09\x09\x09<strong>Intl</strong>\x0a\x09\x09\x09<div>locale:\x20','release','mathId=','features.jsFeatures','CSSPropertyRule','(color-gamut:\x20srgb)','creep-webrtc','colors','canvas2d.textMetricsSystemSum','DecompressionStream','Safari','margin-block','10\x20(1709)','America/Rio_Branco','chrome\x20system\x20color\x20ActiveText\x20is\x20rgb(255,\x200,\x200)','offlineAudioContext.copySample','contentWindowHash','lies','lied','<span\x20class=\x22icon\x20v8\x22></span>','</span>\x0a\x09\x09<div>results:\x20','Map','VERTEX_SHADER.HIGH_FLOAT.precision','addColorStop','parentNode','Vulkan','features','Pacific/Pohnpei','unknown','America/El_Salvador','...','America/Scoresbysund','</div>\x0a\x09\x09<div\x20class=\x22blurred\x22\x20id=\x22math-samples\x22>\x0a\x09\x09\x09<div>0%\x20of\x20engine</div>\x0a\x09\x09</div>\x0a\x09</div>\x0a\x09','navigator.hardwareConcurrency','Africa/Monrovia','system','Pacific/Efate','VMware',');\x0a\x09\x09\x09\x09background-repeat:\x20repeat-y;\x0a\x09\x09\x09\x09background-size:\x2070px;\x0a\x09\x09\x09}\x0a\x09\x09\x09.rgba\x20{\x0a\x09\x09\x09\x09width:\x208px;\x0a\x09\x09\x09\x09height:\x208px;\x0a\x09\x09\x09\x09display:\x20inline-block;\x0a\x09\x09\x09\x09border-radius:\x2050%;\x0a\x09\x09\x09}\x0a\x09\x09\x09.rgba-red\x20{\x0a\x09\x09\x09\x09background:\x20#ff000c4a;\x0a\x09\x09\x09}\x0a\x09\x09\x09.rgba-green\x20{\x0a\x09\x09\x09\x09background:\x20#00ff584a;\x0a\x09\x09\x09}\x0a\x09\x09\x09.rgba-blue\x20{\x0a\x09\x09\x09\x09background:\x20#009fff5e;\x0a\x09\x09\x09}\x0a\x09\x09\x09@media\x20(prefers-color-scheme:\x20dark)\x20{\x0a\x09\x09\x09\x09.rgba-red\x20{\x0a\x09\x09\x09\x09\x09background:\x20#e19fa2;\x0a\x09\x09\x09\x09}\x0a\x09\x09\x09\x09.rgba-green\x20{\x0a\x09\x09\x09\x09\x09background:\x20#98dfb1;\x0a\x09\x09\x09\x09}\x0a\x09\x09\x09\x09.rgba-blue\x20{\x0a\x09\x09\x09\x09\x09background:\x20#67b7ff;\x0a\x09\x09\x09\x09}\x0a\x09\x09\x09}\x0a\x09\x09</style>\x0a\x09\x09<span\x20class=\x22aside-note\x22>','template','clockRates','EXT_texture_filter_anisotropic','&hasErrors=','</div>\x0a\x09\x09\x09<div>list:\x20','Asia/Damascus','null.bar','</div>\x0a\x09\x09<div>userAgentData:</div>\x0a\x09\x09<div\x20class=\x22block-text\x20help\x22\x20title=\x22Navigator.userAgentData\x0aNavigatorUAData.getHighEntropyValues()\x22>\x0a\x09\x09\x09<div>\x0a\x09\x09\x09','<span\x20class=\x22icon\x20apple\x22></span>','InfoBackground','\x0a\x09\x09<br>combined:\x20','visualViewport','getComputedStyle','isPointInStroke','getAttribLocation','Atlantic/St_Helena','America/Grand_Turk','canvasWebgl.dataURI','enabled','parse','getBin','setLocalDescription','MarkText','Intl.DateTimeFormat.resolvedOptions','FRAGMENT_SHADER','Africa/Johannesburg','chrome','dual\x20','split','frequencyBinCount','\x0a\x09\x09\x09<br>','Atomics','color:\x20MediumAquaMarine','Atomics.xor','America/Edmonton','\x0a\x09\x09\x09<div\x20id=\x22creep-resize\x22\x20class=\x22relative\x20col-six','styleSheets','Asia/Urumqi','Reflect','-sdp-capabilities','Failed\x20prediction\x20fetch','America/Guatemala','ServiceWorkerRegistration','--import-pointer:\x20none','(any-pointer:\x20coarse)','Asia/Novosibirsk','Atomics.compareExchange','</span></div>\x0a\x09\x09\x09\x09\x09\x09\x09<div>revisions\x20(','minValue','Asia/Thimphu','</div>\x0a\x09\x09<div>stun\x20connection:</div>\x0a\x09\x09<div\x20class=\x22block-text\x22>','Element','</div>\x0a\x09\x09\x09<div>devices\x20(0):\x20','Scheduling','ResizeObserverSize','XRLayer','()\x20{\x20[native\x20code]\x20}','getContextAttributes','Function.toString','<div\x20class=\x22icon-pixel\x20text-image\x22></div>','contain-intrinsic-inline-size','Chilanka','gpuModel','audio/mpegurl','LinkText','userAgent\x20is\x20gibberish','#CCFF1A','engine\x20math\x20runtime','CustomStateSet','--prefers-reduced-motion','getElementsByClassName','</span></div>\x0a\x09\x09\x09\x09\x09\x09\x09<div\x20class=\x22ellipsis\x22>first:\x20<span\x20class=\x22unblurred\x22>','getMonth','creep-like-headless','message','stun:stun3.l.google.com:19302?transport=udp','Asia/Kuching','asinh','pow(Math.LN2,\x20-100)','creep-maths','%\x20headless:\x20','stringify','&crowdBlendingScore=','America/Moncton','</span></span>','<span\x20class=\x22time\x22>crowd-blending\x20score:\x20','contentDocumentHash','Math.','MAX_ELEMENT_INDEX','Pacific/Pitcairn','toDataURLHash','Asia/Yangon','VERSION','function\x20get\x20','</div>\x0a\x09\x09</div>\x0a\x0a\x09\x09<div>device:</div>\x0a\x09\x09<div\x20class=\x22block-text\x20help\x22\x20title=\x22WorkerNavigator.deviceMemory\x0aWorkerNavigator.hardwareConcurrency\x0aWorkerNavigator.platform\x0aWorkerNavigator.userAgent\x22>\x0a\x09\x09\x09','6985d315','JavaScriptCore','Europe/Helsinki','canvas','fonts','ANGLE','<div\x20class=\x22icon-pixel\x20offscreen-image\x22></div>','\x22>\x0a\x0a\x09\x09<strong>Worker</strong><span\x20class=\x22hash\x22>','\x0a\x09\x09\x09\x09\x09\x09\x09','WeakSet','clientHeight','availTopHash','Sanitizer','America/Dawson','voices.remote','subtle','mimeTypes','intl.pluralRules','timezone.location','Intl.RelativeTimeFormat.resolvedOptions','.00','FRAGMENT_SHADER.LOW_FLOAT.rangeMin','chrome\x20window.chrome\x20is\x20undefined','America/Toronto','Element.ariaChecked','cssMedia.mediaCSS','consoleErrors.errors','Array.findLastIndex','STENCIL_BACK_WRITEMASK','Asia/Tokyo','</div>\x0a\x09\x09\x09<div>subs:\x20','Salmon','text-emphasis-color','cos(-1e308)','Ink','text-decoration-thickness','svg.computedTextLength','\x27\x20(pointer:\x20none);\x0a\x09\x09@import\x20\x27','Intl.Locale','color:#4cca9f','America/Porto_Velho','offset-path','</div>\x0a\x09\x09\x09<div>plugins\x20(0):\x20','then','America/Tortola','alignContent,\x20align-content,\x20alignItems,\x20align-items,\x20alignSelf,\x20align-self,\x20aspectRatio,\x20aspect-ratio,\x20backfaceVisibility,\x20backface-visibility,\x20borderCollapse,\x20border-collapse,\x20borderImageRepeat,\x20border-image-repeat,\x20boxDecorationBreak,\x20box-decoration-break,\x20boxSizing,\x20box-sizing,\x20breakInside,\x20break-inside,\x20captionSide,\x20caption-side,\x20clear,\x20colorInterpolation,\x20color-interpolation,\x20colorInterpolationFilters,\x20color-interpolation-filters,\x20columnCount,\x20column-count,\x20columnFill,\x20column-fill,\x20columnSpan,\x20column-span,\x20contain,\x20direction,\x20display,\x20dominantBaseline,\x20dominant-baseline,\x20emptyCells,\x20empty-cells,\x20flexDirection,\x20flex-direction,\x20flexWrap,\x20flex-wrap,\x20cssFloat,\x20float,\x20fontKerning,\x20font-kerning,\x20fontOpticalSizing,\x20font-optical-sizing,\x20fontSizeAdjust,\x20font-size-adjust,\x20fontStretch,\x20font-stretch,\x20fontStyle,\x20font-style,\x20fontSynthesis,\x20font-synthesis,\x20fontVariantCaps,\x20font-variant-caps,\x20fontVariantEastAsian,\x20font-variant-east-asian,\x20fontVariantLigatures,\x20font-variant-ligatures,\x20fontVariantNumeric,\x20font-variant-numeric,\x20fontVariantPosition,\x20font-variant-position,\x20fontWeight,\x20font-weight,\x20gridAutoFlow,\x20grid-auto-flow,\x20hyphens,\x20imageOrientation,\x20image-orientation,\x20imageRendering,\x20image-rendering,\x20imeMode,\x20ime-mode,\x20isolation,\x20justifyContent,\x20justify-content,\x20justifyItems,\x20justify-items,\x20justifySelf,\x20justify-self,\x20lineBreak,\x20line-break,\x20listStylePosition,\x20list-style-position,\x20maskType,\x20mask-type,\x20mixBlendMode,\x20mix-blend-mode,\x20MozBoxAlign,\x20-moz-box-align,\x20MozBoxDirection,\x20-moz-box-direction,\x20MozBoxOrient,\x20-moz-box-orient,\x20MozBoxPack,\x20-moz-box-pack,\x20MozFloatEdge,\x20-moz-float-edge,\x20MozForceBrokenImageIcon,\x20-moz-force-broken-image-icon,\x20MozOrient,\x20-moz-orient,\x20MozTextSizeAdjust,\x20-moz-text-size-adjust,\x20MozUserFocus,\x20-moz-user-focus,\x20MozUserInput,\x20-moz-user-input,\x20MozUserModify,\x20-moz-user-modify,\x20MozWindowDragging,\x20-moz-window-dragging,\x20objectFit,\x20object-fit,\x20offsetRotate,\x20offset-rotate,\x20outlineStyle,\x20outline-style,\x20overflowAnchor,\x20overflow-anchor,\x20overflowWrap,\x20overflow-wrap,\x20paintOrder,\x20paint-order,\x20pointerEvents,\x20pointer-events,\x20position,\x20printColorAdjust,\x20print-color-adjust,\x20resize,\x20rubyAlign,\x20ruby-align,\x20rubyPosition,\x20ruby-position,\x20scrollBehavior,\x20scroll-behavior,\x20scrollSnapAlign,\x20scroll-snap-align,\x20scrollSnapType,\x20scroll-snap-type,\x20scrollbarGutter,\x20scrollbar-gutter,\x20scrollbarWidth,\x20scrollbar-width,\x20shapeRendering,\x20shape-rendering,\x20strokeLinecap,\x20stroke-linecap,\x20strokeLinejoin,\x20stroke-linejoin,\x20tableLayout,\x20table-layout,\x20textAlign,\x20text-align,\x20textAlignLast,\x20text-align-last,\x20textAnchor,\x20text-anchor,\x20textCombineUpright,\x20text-combine-upright,\x20textDecorationLine,\x20text-decoration-line,\x20textDecorationSkipInk,\x20text-decoration-skip-ink,\x20textDecorationStyle,\x20text-decoration-style,\x20textEmphasisPosition,\x20text-emphasis-position,\x20textJustify,\x20text-justify,\x20textOrientation,\x20text-orientation,\x20textRendering,\x20text-rendering,\x20textTransform,\x20text-transform,\x20textUnderlinePosition,\x20text-underline-position,\x20touchAction,\x20touch-action,\x20transformBox,\x20transform-box,\x20transformStyle,\x20transform-style,\x20unicodeBidi,\x20unicode-bidi,\x20userSelect,\x20user-select,\x20vectorEffect,\x20vector-effect,\x20visibility,\x20webkitLineClamp,\x20WebkitLineClamp,\x20-webkit-line-clamp,\x20whiteSpace,\x20white-space,\x20wordBreak,\x20word-break,\x20writingMode,\x20writing-mode,\x20zIndex,\x20z-index,\x20appearance,\x20breakAfter,\x20break-after,\x20breakBefore,\x20break-before,\x20clipRule,\x20clip-rule,\x20fillRule,\x20fill-rule,\x20fillOpacity,\x20fill-opacity,\x20strokeOpacity,\x20stroke-opacity,\x20MozBoxOrdinalGroup,\x20-moz-box-ordinal-group,\x20order,\x20flexGrow,\x20flex-grow,\x20flexShrink,\x20flex-shrink,\x20MozBoxFlex,\x20-moz-box-flex,\x20strokeMiterlimit,\x20stroke-miterlimit,\x20overflowBlock,\x20overflow-block,\x20overflowInline,\x20overflow-inline,\x20overflowX,\x20overflow-x,\x20overflowY,\x20overflow-y,\x20overscrollBehaviorBlock,\x20overscroll-behavior-block,\x20overscrollBehaviorInline,\x20overscroll-behavior-inline,\x20overscrollBehaviorX,\x20overscroll-behavior-x,\x20overscrollBehaviorY,\x20overscroll-behavior-y,\x20floodOpacity,\x20flood-opacity,\x20opacity,\x20shapeImageThreshold,\x20shape-image-threshold,\x20stopOpacity,\x20stop-opacity,\x20borderBlockEndStyle,\x20border-block-end-style,\x20borderBlockStartStyle,\x20border-block-start-style,\x20borderBottomStyle,\x20border-bottom-style,\x20borderInlineEndStyle,\x20border-inline-end-style,\x20borderInlineStartStyle,\x20border-inline-start-style,\x20borderLeftStyle,\x20border-left-style,\x20borderRightStyle,\x20border-right-style,\x20borderTopStyle,\x20border-top-style,\x20columnRuleStyle,\x20column-rule-style,\x20accentColor,\x20accent-color,\x20animationDelay,\x20animation-delay,\x20animationDirection,\x20animation-direction,\x20animationDuration,\x20animation-duration,\x20animationFillMode,\x20animation-fill-mode,\x20animationIterationCount,\x20animation-iteration-count,\x20animationName,\x20animation-name,\x20animationPlayState,\x20animation-play-state,\x20animationTimingFunction,\x20animation-timing-function,\x20backgroundAttachment,\x20background-attachment,\x20backgroundBlendMode,\x20background-blend-mode,\x20backgroundClip,\x20background-clip,\x20backgroundImage,\x20background-image,\x20backgroundOrigin,\x20background-origin,\x20backgroundPositionX,\x20background-position-x,\x20backgroundPositionY,\x20background-position-y,\x20backgroundRepeat,\x20background-repeat,\x20backgroundSize,\x20background-size,\x20borderImageOutset,\x20border-image-outset,\x20borderImageSlice,\x20border-image-slice,\x20borderImageWidth,\x20border-image-width,\x20borderSpacing,\x20border-spacing,\x20boxShadow,\x20box-shadow,\x20caretColor,\x20caret-color,\x20clipPath,\x20clip-path,\x20color,\x20colorScheme,\x20color-scheme,\x20columnWidth,\x20column-width,\x20content,\x20counterIncrement,\x20counter-increment,\x20counterReset,\x20counter-reset,\x20counterSet,\x20counter-set,\x20cursor,\x20d,\x20filter,\x20flexBasis,\x20flex-basis,\x20fontFamily,\x20font-family,\x20fontFeatureSettings,\x20font-feature-settings,\x20fontLanguageOverride,\x20font-language-override,\x20fontSize,\x20font-size,\x20fontVariantAlternates,\x20font-variant-alternates,\x20fontVariationSettings,\x20font-variation-settings,\x20gridTemplateAreas,\x20grid-template-areas,\x20hyphenateCharacter,\x20hyphenate-character,\x20letterSpacing,\x20letter-spacing,\x20lineHeight,\x20line-height,\x20listStyleType,\x20list-style-type,\x20maskClip,\x20mask-clip,\x20maskComposite,\x20mask-composite,\x20maskImage,\x20mask-image,\x20maskMode,\x20mask-mode,\x20maskOrigin,\x20mask-origin,\x20maskPositionX,\x20mask-position-x,\x20maskPositionY,\x20mask-position-y,\x20maskRepeat,\x20mask-repeat,\x20maskSize,\x20mask-size,\x20offsetAnchor,\x20offset-anchor,\x20offsetPath,\x20offset-path,\x20perspective,\x20quotes,\x20rotate,\x20scale,\x20scrollbarColor,\x20scrollbar-color,\x20shapeOutside,\x20shape-outside,\x20strokeDasharray,\x20stroke-dasharray,\x20strokeDashoffset,\x20stroke-dashoffset,\x20strokeWidth,\x20stroke-width,\x20tabSize,\x20tab-size,\x20textDecorationThickness,\x20text-decoration-thickness,\x20textEmphasisStyle,\x20text-emphasis-style,\x20textOverflow,\x20text-overflow,\x20textShadow,\x20text-shadow,\x20transitionDelay,\x20transition-delay,\x20transitionDuration,\x20transition-duration,\x20transitionProperty,\x20transition-property,\x20transitionTimingFunction,\x20transition-timing-function,\x20translate,\x20verticalAlign,\x20vertical-align,\x20willChange,\x20will-change,\x20wordSpacing,\x20word-spacing,\x20clip,\x20MozImageRegion,\x20-moz-image-region,\x20objectPosition,\x20object-position,\x20perspectiveOrigin,\x20perspective-origin,\x20fill,\x20stroke,\x20transformOrigin,\x20transform-origin,\x20gridTemplateColumns,\x20grid-template-columns,\x20gridTemplateRows,\x20grid-template-rows,\x20borderImageSource,\x20border-image-source,\x20listStyleImage,\x20list-style-image,\x20gridAutoColumns,\x20grid-auto-columns,\x20gridAutoRows,\x20grid-auto-rows,\x20transform,\x20columnGap,\x20column-gap,\x20rowGap,\x20row-gap,\x20markerEnd,\x20marker-end,\x20markerMid,\x20marker-mid,\x20markerStart,\x20marker-start,\x20gridColumnEnd,\x20grid-column-end,\x20gridColumnStart,\x20grid-column-start,\x20gridRowEnd,\x20grid-row-end,\x20gridRowStart,\x20grid-row-start,\x20maxBlockSize,\x20max-block-size,\x20maxHeight,\x20max-height,\x20maxInlineSize,\x20max-inline-size,\x20maxWidth,\x20max-width,\x20cx,\x20cy,\x20offsetDistance,\x20offset-distance,\x20textIndent,\x20text-indent,\x20x,\x20y,\x20borderBottomLeftRadius,\x20border-bottom-left-radius,\x20borderBottomRightRadius,\x20border-bottom-right-radius,\x20borderEndEndRadius,\x20border-end-end-radius,\x20borderEndStartRadius,\x20border-end-start-radius,\x20borderStartEndRadius,\x20border-start-end-radius,\x20borderStartStartRadius,\x20border-start-start-radius,\x20borderTopLeftRadius,\x20border-top-left-radius,\x20borderTopRightRadius,\x20border-top-right-radius,\x20blockSize,\x20block-size,\x20height,\x20inlineSize,\x20inline-size,\x20minBlockSize,\x20min-block-size,\x20minHeight,\x20min-height,\x20minInlineSize,\x20min-inline-size,\x20minWidth,\x20min-width,\x20width,\x20outlineOffset,\x20outline-offset,\x20overflowClipMargin,\x20overflow-clip-margin,\x20scrollMarginBlockEnd,\x20scroll-margin-block-end,\x20scrollMarginBlockStart,\x20scroll-margin-block-start,\x20scrollMarginBottom,\x20scroll-margin-bottom,\x20scrollMarginInlineEnd,\x20scroll-margin-inline-end,\x20scrollMarginInlineStart,\x20scroll-margin-inline-start,\x20scrollMarginLeft,\x20scroll-margin-left,\x20scrollMarginRight,\x20scroll-margin-right,\x20scrollMarginTop,\x20scroll-margin-top,\x20paddingBlockEnd,\x20padding-block-end,\x20paddingBlockStart,\x20padding-block-start,\x20paddingBottom,\x20padding-bottom,\x20paddingInlineEnd,\x20padding-inline-end,\x20paddingInlineStart,\x20padding-inline-start,\x20paddingLeft,\x20padding-left,\x20paddingRight,\x20padding-right,\x20paddingTop,\x20padding-top,\x20r,\x20shapeMargin,\x20shape-margin,\x20rx,\x20ry,\x20scrollPaddingBlockEnd,\x20scroll-padding-block-end,\x20scrollPaddingBlockStart,\x20scroll-padding-block-start,\x20scrollPaddingBottom,\x20scroll-padding-bottom,\x20scrollPaddingInlineEnd,\x20scroll-padding-inline-end,\x20scrollPaddingInlineStart,\x20scroll-padding-inline-start,\x20scrollPaddingLeft,\x20scroll-padding-left,\x20scrollPaddingRight,\x20scroll-padding-right,\x20scrollPaddingTop,\x20scroll-padding-top,\x20borderBlockEndWidth,\x20border-block-end-width,\x20borderBlockStartWidth,\x20border-block-start-width,\x20borderBottomWidth,\x20border-bottom-width,\x20borderInlineEndWidth,\x20border-inline-end-width,\x20borderInlineStartWidth,\x20border-inline-start-width,\x20borderLeftWidth,\x20border-left-width,\x20borderRightWidth,\x20border-right-width,\x20borderTopWidth,\x20border-top-width,\x20columnRuleWidth,\x20column-rule-width,\x20outlineWidth,\x20outline-width,\x20webkitTextStrokeWidth,\x20WebkitTextStrokeWidth,\x20-webkit-text-stroke-width,\x20bottom,\x20insetBlockEnd,\x20inset-block-end,\x20insetBlockStart,\x20inset-block-start,\x20insetInlineEnd,\x20inset-inline-end,\x20insetInlineStart,\x20inset-inline-start,\x20left,\x20marginBlockEnd,\x20margin-block-end,\x20marginBlockStart,\x20margin-block-start,\x20marginBottom,\x20margin-bottom,\x20marginInlineEnd,\x20margin-inline-end,\x20marginInlineStart,\x20margin-inline-start,\x20marginLeft,\x20margin-left,\x20marginRight,\x20margin-right,\x20marginTop,\x20margin-top,\x20right,\x20textUnderlineOffset,\x20text-underline-offset,\x20top,\x20backgroundColor,\x20background-color,\x20borderBlockEndColor,\x20border-block-end-color,\x20borderBlockStartColor,\x20border-block-start-color,\x20borderBottomColor,\x20border-bottom-color,\x20borderInlineEndColor,\x20border-inline-end-color,\x20borderInlineStartColor,\x20border-inline-start-color,\x20borderLeftColor,\x20border-left-color,\x20borderRightColor,\x20border-right-color,\x20borderTopColor,\x20border-top-color,\x20columnRuleColor,\x20column-rule-color,\x20floodColor,\x20flood-color,\x20lightingColor,\x20lighting-color,\x20outlineColor,\x20outline-color,\x20stopColor,\x20stop-color,\x20textDecorationColor,\x20text-decoration-color,\x20textEmphasisColor,\x20text-emphasis-color,\x20webkitTextFillColor,\x20WebkitTextFillColor,\x20-webkit-text-fill-color,\x20webkitTextStrokeColor,\x20WebkitTextStrokeColor,\x20-webkit-text-stroke-color,\x20background,\x20backgroundPosition,\x20background-position,\x20borderColor,\x20border-color,\x20borderStyle,\x20border-style,\x20borderWidth,\x20border-width,\x20borderTop,\x20border-top,\x20borderRight,\x20border-right,\x20borderBottom,\x20border-bottom,\x20borderLeft,\x20border-left,\x20borderBlockStart,\x20border-block-start,\x20borderBlockEnd,\x20border-block-end,\x20borderInlineStart,\x20border-inline-start,\x20borderInlineEnd,\x20border-inline-end,\x20border,\x20borderRadius,\x20border-radius,\x20borderImage,\x20border-image,\x20borderBlockWidth,\x20border-block-width,\x20borderBlockStyle,\x20border-block-style,\x20borderBlockColor,\x20border-block-color,\x20borderInlineWidth,\x20border-inline-width,\x20borderInlineStyle,\x20border-inline-style,\x20borderInlineColor,\x20border-inline-color,\x20borderBlock,\x20border-block,\x20borderInline,\x20border-inline,\x20overflow,\x20overscrollBehavior,\x20overscroll-behavior,\x20pageBreakBefore,\x20page-break-before,\x20pageBreakAfter,\x20page-break-after,\x20pageBreakInside,\x20page-break-inside,\x20offset,\x20columns,\x20columnRule,\x20column-rule,\x20font,\x20fontVariant,\x20font-variant,\x20marker,\x20textEmphasis,\x20text-emphasis,\x20webkitTextStroke,\x20WebkitTextStroke,\x20-webkit-text-stroke,\x20listStyle,\x20list-style,\x20margin,\x20marginBlock,\x20margin-block,\x20marginInline,\x20margin-inline,\x20scrollMargin,\x20scroll-margin,\x20scrollMarginBlock,\x20scroll-margin-block,\x20scrollMarginInline,\x20scroll-margin-inline,\x20outline,\x20padding,\x20paddingBlock,\x20padding-block,\x20paddingInline,\x20padding-inline,\x20scrollPadding,\x20scroll-padding,\x20scrollPaddingBlock,\x20scroll-padding-block,\x20scrollPaddingInline,\x20scroll-padding-inline,\x20flexFlow,\x20flex-flow,\x20flex,\x20gap,\x20gridRow,\x20grid-row,\x20gridColumn,\x20grid-column,\x20gridArea,\x20grid-area,\x20gridTemplate,\x20grid-template,\x20grid,\x20placeContent,\x20place-content,\x20placeSelf,\x20place-self,\x20placeItems,\x20place-items,\x20inset,\x20insetBlock,\x20inset-block,\x20insetInline,\x20inset-inline,\x20mask,\x20maskPosition,\x20mask-position,\x20textDecoration,\x20text-decoration,\x20transition,\x20animation,\x20all,\x20webkitBackgroundClip,\x20WebkitBackgroundClip,\x20-webkit-background-clip,\x20webkitBackgroundOrigin,\x20WebkitBackgroundOrigin,\x20-webkit-background-origin,\x20webkitBackgroundSize,\x20WebkitBackgroundSize,\x20-webkit-background-size,\x20MozBorderStartColor,\x20-moz-border-start-color,\x20MozBorderStartStyle,\x20-moz-border-start-style,\x20MozBorderStartWidth,\x20-moz-border-start-width,\x20MozBorderEndColor,\x20-moz-border-end-color,\x20MozBorderEndStyle,\x20-moz-border-end-style,\x20MozBorderEndWidth,\x20-moz-border-end-width,\x20webkitBorderTopLeftRadius,\x20WebkitBorderTopLeftRadius,\x20-webkit-border-top-left-radius,\x20webkitBorderTopRightRadius,\x20WebkitBorderTopRightRadius,\x20-webkit-border-top-right-radius,\x20webkitBorderBottomRightRadius,\x20WebkitBorderBottomRightRadius,\x20-webkit-border-bottom-right-radius,\x20webkitBorderBottomLeftRadius,\x20WebkitBorderBottomLeftRadius,\x20-webkit-border-bottom-left-radius,\x20MozTransform,\x20-moz-transform,\x20webkitTransform,\x20WebkitTransform,\x20-webkit-transform,\x20MozPerspective,\x20-moz-perspective,\x20webkitPerspective,\x20WebkitPerspective,\x20-webkit-perspective,\x20MozPerspectiveOrigin,\x20-moz-perspective-origin,\x20webkitPerspectiveOrigin,\x20WebkitPerspectiveOrigin,\x20-webkit-perspective-origin,\x20MozBackfaceVisibility,\x20-moz-backface-visibility,\x20webkitBackfaceVisibility,\x20WebkitBackfaceVisibility,\x20-webkit-backface-visibility,\x20MozTransformStyle,\x20-moz-transform-style,\x20webkitTransformStyle,\x20WebkitTransformStyle,\x20-webkit-transform-style,\x20MozTransformOrigin,\x20-moz-transform-origin,\x20webkitTransformOrigin,\x20WebkitTransformOrigin,\x20-webkit-transform-origin,\x20MozAppearance,\x20-moz-appearance,\x20webkitAppearance,\x20WebkitAppearance,\x20-webkit-appearance,\x20webkitBoxShadow,\x20WebkitBoxShadow,\x20-webkit-box-shadow,\x20webkitFilter,\x20WebkitFilter,\x20-webkit-filter,\x20MozFontFeatureSettings,\x20-moz-font-feature-settings,\x20MozFontLanguageOverride,\x20-moz-font-language-override,\x20colorAdjust,\x20color-adjust,\x20MozHyphens,\x20-moz-hyphens,\x20webkitTextSizeAdjust,\x20WebkitTextSizeAdjust,\x20-webkit-text-size-adjust,\x20wordWrap,\x20word-wrap,\x20MozTabSize,\x20-moz-tab-size,\x20MozMarginStart,\x20-moz-margin-start,\x20MozMarginEnd,\x20-moz-margin-end,\x20MozPaddingStart,\x20-moz-padding-start,\x20MozPaddingEnd,\x20-moz-padding-end,\x20webkitFlexDirection,\x20WebkitFlexDirection,\x20-webkit-flex-direction,\x20webkitFlexWrap,\x20WebkitFlexWrap,\x20-webkit-flex-wrap,\x20webkitJustifyContent,\x20WebkitJustifyContent,\x20-webkit-justify-content,\x20webkitAlignContent,\x20WebkitAlignContent,\x20-webkit-align-content,\x20webkitAlignItems,\x20WebkitAlignItems,\x20-webkit-align-items,\x20webkitFlexGrow,\x20WebkitFlexGrow,\x20-webkit-flex-grow,\x20webkitFlexShrink,\x20WebkitFlexShrink,\x20-webkit-flex-shrink,\x20webkitAlignSelf,\x20WebkitAlignSelf,\x20-webkit-align-self,\x20webkitOrder,\x20WebkitOrder,\x20-webkit-order,\x20webkitFlexBasis,\x20WebkitFlexBasis,\x20-webkit-flex-basis,\x20MozBoxSizing,\x20-moz-box-sizing,\x20webkitBoxSizing,\x20WebkitBoxSizing,\x20-webkit-box-sizing,\x20gridColumnGap,\x20grid-column-gap,\x20gridRowGap,\x20grid-row-gap,\x20webkitMaskRepeat,\x20WebkitMaskRepeat,\x20-webkit-mask-repeat,\x20webkitMaskPositionX,\x20WebkitMaskPositionX,\x20-webkit-mask-position-x,\x20webkitMaskPositionY,\x20WebkitMaskPositionY,\x20-webkit-mask-position-y,\x20webkitMaskClip,\x20WebkitMaskClip,\x20-webkit-mask-clip,\x20webkitMaskOrigin,\x20WebkitMaskOrigin,\x20-webkit-mask-origin,\x20webkitMaskSize,\x20WebkitMaskSize,\x20-webkit-mask-size,\x20webkitMaskComposite,\x20WebkitMaskComposite,\x20-webkit-mask-composite,\x20webkitMaskImage,\x20WebkitMaskImage,\x20-webkit-mask-image,\x20MozUserSelect,\x20-moz-user-select,\x20webkitUserSelect,\x20WebkitUserSelect,\x20-webkit-user-select,\x20MozTransitionDuration,\x20-moz-transition-duration,\x20webkitTransitionDuration,\x20WebkitTransitionDuration,\x20-webkit-transition-duration,\x20MozTransitionTimingFunction,\x20-moz-transition-timing-function,\x20webkitTransitionTimingFunction,\x20WebkitTransitionTimingFunction,\x20-webkit-transition-timing-function,\x20MozTransitionProperty,\x20-moz-transition-property,\x20webkitTransitionProperty,\x20WebkitTransitionProperty,\x20-webkit-transition-property,\x20MozTransitionDelay,\x20-moz-transition-delay,\x20webkitTransitionDelay,\x20WebkitTransitionDelay,\x20-webkit-transition-delay,\x20MozAnimationName,\x20-moz-animation-name,\x20webkitAnimationName,\x20WebkitAnimationName,\x20-webkit-animation-name,\x20MozAnimationDuration,\x20-moz-animation-duration,\x20webkitAnimationDuration,\x20WebkitAnimationDuration,\x20-webkit-animation-duration,\x20MozAnimationTimingFunction,\x20-moz-animation-timing-function,\x20webkitAnimationTimingFunction,\x20WebkitAnimationTimingFunction,\x20-webkit-animation-timing-function,\x20MozAnimationIterationCount,\x20-moz-animation-iteration-count,\x20webkitAnimationIterationCount,\x20WebkitAnimationIterationCount,\x20-webkit-animation-iteration-count,\x20MozAnimationDirection,\x20-moz-animation-direction,\x20webkitAnimationDirection,\x20WebkitAnimationDirection,\x20-webkit-animation-direction,\x20MozAnimationPlayState,\x20-moz-animation-play-state,\x20webkitAnimationPlayState,\x20WebkitAnimationPlayState,\x20-webkit-animation-play-state,\x20MozAnimationFillMode,\x20-moz-animation-fill-mode,\x20webkitAnimationFillMode,\x20WebkitAnimationFillMode,\x20-webkit-animation-fill-mode,\x20MozAnimationDelay,\x20-moz-animation-delay,\x20webkitAnimationDelay,\x20WebkitAnimationDelay,\x20-webkit-animation-delay,\x20webkitBoxAlign,\x20WebkitBoxAlign,\x20-webkit-box-align,\x20webkitBoxDirection,\x20WebkitBoxDirection,\x20-webkit-box-direction,\x20webkitBoxFlex,\x20WebkitBoxFlex,\x20-webkit-box-flex,\x20webkitBoxOrient,\x20WebkitBoxOrient,\x20-webkit-box-orient,\x20webkitBoxPack,\x20WebkitBoxPack,\x20-webkit-box-pack,\x20webkitBoxOrdinalGroup,\x20WebkitBoxOrdinalGroup,\x20-webkit-box-ordinal-group,\x20MozBorderStart,\x20-moz-border-start,\x20MozBorderEnd,\x20-moz-border-end,\x20webkitBorderRadius,\x20WebkitBorderRadius,\x20-webkit-border-radius,\x20MozBorderImage,\x20-moz-border-image,\x20webkitBorderImage,\x20WebkitBorderImage,\x20-webkit-border-image,\x20webkitFlexFlow,\x20WebkitFlexFlow,\x20-webkit-flex-flow,\x20webkitFlex,\x20WebkitFlex,\x20-webkit-flex,\x20gridGap,\x20grid-gap,\x20webkitMask,\x20WebkitMask,\x20-webkit-mask,\x20webkitMaskPosition,\x20WebkitMaskPosition,\x20-webkit-mask-position,\x20MozTransition,\x20-moz-transition,\x20webkitTransition,\x20WebkitTransition,\x20-webkit-transition,\x20MozAnimation,\x20-moz-animation,\x20webkitAnimation,\x20WebkitAnimation,\x20-webkit-animation,\x20constructor','ButtonShadow','\x22><iframe></iframe></div>','IdleDetector','userAgent\x20system\x20failed','</span>\x0a\x09\x09<div>chromium:\x20','getContext','Etc/GMT+10','speech','Asia/Bishkek','plugins\x20failed','workerScope.languages','getFrequencyResponse','resistance.engine','Microsoft','88bRQvKU',',\x20bluetooth','America/Cambridge_Bay','Apple\x20M1','drawArrays','Etc/GMT-2','Europe/Samara','</div>\x0a\x09\x09<div\x20class=\x22help\x22\x20title=\x22Navigator.globalPrivacyControl\x22>gpc:\x20','getElementByIdHash','Catalina','message-box','Picture\x20loss\x20Indication\x20and\x20NACK\x20(nack\x20pli)','svg.emojiSet','Ink\x20Free','</div>\x0a\x09\x09<div>@import:\x20','WeakRef','rangeMax','groupCollapsed','Windows\x208','failed\x20illegal\x20error','prototype','workerScope.deviceMemory','minimal-ui','OscillatorNode.frequency.defaultValue','llvmpipe','\x27\x20(any-hover:\x20none);\x0a\x09\x09@import\x20\x27','acos(Math.SQRT1_2)','Asia/Qostanay','prependHash','rtcp-fb','deviceMemory\x20failed','workerScope.userAgentDataVersion','Pacific/Guam','MAX_RENDERBUFFER_SIZE','</div>\x0a\x09</div>\x0a\x09','getByteTimeDomainDataHash','\x22/>\x0a\x09\x09<label\x20class=\x22modal-open-btn\x22\x20for=\x22toggle-open-','speaker-selection','caption','initial','winId=','ButtonFace','ButtonBorder','createElementHash','Indian/Chagos','Document.timeline','\x20<span\x20class=\x22bold-fail\x22>','mimeType','bluetoothAvailability\x20failed','NT\x206.3','<div>','<span\x20class=\x22user-agent\x22><span>*</span>','Europe/Guernsey','VERTEX_SHADER.LOW_FLOAT.rangeMin','USD','language/languages','Antarctica/McMurdo','\x27\x20(pointer:\x20coarse);\x0a\x09\x09@import\x20\x27','\x22>\x0a\x09\x09\x09<span>','(device-aspect-ratio:\x20','<span\x20class=\x22confidence-note\x22>ua\x20reduction</span>','</div>\x0a\x09\x09<div\x20class=\x22help\x22\x20title=\x22MediaDevices.enumerateDevices()\x0aMediaDeviceInfo.kind\x22>devices\x20(','hash\x22>','(rtpmap|fmtp|rtcp-fb):','#4D8066','Pacific/Tongatapu','contentDocument','bindBuffer','\x0a\x09\x09\x09\x09\x09','top','America/Danmarkshavn','domRectSystem','https://script.google.com/macros/s/AKfycbw26MLaK1PwIGzUiStwweOeVfl-sEmIxFIs5Ax7LMoP1Cuw-s0llN-aJYS7F8vxQuVG-A/exec','</span>\x0a\x09\x09\x09<span\x20class=\x22grey\x20jumbo\x22\x20style=\x22font-family:\x20','SVGRect.height','added','Iris','toFixed','matches','</div>\x0a\x09\x09\x09<div>trap:\x20','OscillatorNode.detune.minValue','Pacific/Chatham','DocumentTimeline','</span>\x0a\x09\x09<strong>Fonts</strong><span\x20class=\x22hash\x22>','bezierCurveTo','Screen.pixelDepth','Vega','America/Argentina/San_Luis','HoloLens\x20MDL2\x20Assets','prefers\x20light\x20color\x20scheme','Generic\x20Renderer','creep-browser','navigator.appVersion','cos(2*Math.LOG10E)','webgl/webgl2\x20mirrored\x20params\x20mismatch','knee','Asia/Brunei','scale','creep-worker-scope-version','#33FFCC','long','Asia/Baghdad','getItem','MuktaMahee\x20Regular','PowerVR','<span\x20class=\x22blocked\x22>unsupported</span>','</div>\x0a\x09</div>\x0a\x09<div\x20class=\x22relative\x20col-six\x22>\x0a\x09\x09<div\x20class=\x22help\x22\x20title=\x22RTCSessionDescription.sdp\x22>sdp\x20capabilities:\x20','moveTo','shift-dom-rect','getHighEntropyValues','atan','state','Element.ariaValueMax','features.jsFeaturesKeys','rgba(','Asia/Seoul','palemoon','pixels2','</div>\x0a\x09\x09<div\x20class=\x22help\x22\x20title=\x22CanvasRenderingContext2D.getImageData()\x22>rendering:\x20','extra\x20spaces\x20detected','windowFeatures.keys','navigator.userAgent','counter-set','voices.languages','AudioParamMap','js\x20runtime','</div>\x0a\x09\x09\x09<div>lang\x20(0):\x20','enableVertexAttribArray','compressedGPU','Europe/Copenhagen','creep-resize','createOscillator','failed\x20call\x20interface\x20error','inset-inline','--import-display-mode:\x20standalone','Asia/Sakhalin','CSSMathClamp','ReadableStreamBYOBRequest','.rangeMin','Pacific/Norfolk','</span>\x0a\x09\x09<div\x20class=\x22block-text\x20help\x22\x20\x20title=\x22Date\x0aDate.getTimezoneOffset\x0aIntl.DateTimeFormat\x22>\x0a\x09\x09\x09','CanvasRenderingContext2D.strokeText','</span>\x0a\x09<span\x20class=\x22aside-note-bottom\x22>','Australia/Lindeman','America/Belem','}}\x0a\x09\x09@media\x20(display-mode:\x20fullscreen)\x20{body\x20{--display-mode:\x20fullscreen}}\x0a\x09\x09@media\x20(display-mode:\x20standalone)\x20{body\x20{--display-mode:\x20standalone}}\x0a\x09\x09@media\x20(display-mode:\x20minimal-ui)\x20{body\x20{--display-mode:\x20minimal-ui}}\x0a\x09\x09@media\x20(display-mode:\x20browser)\x20{body\x20{--display-mode:\x20browser}}\x0a\x09\x09@media\x20(color-gamut:\x20srgb)\x20{body\x20{--color-gamut:\x20srgb}}\x0a\x09\x09@media\x20(color-gamut:\x20p3)\x20{body\x20{--color-gamut:\x20p3}}\x0a\x09\x09@media\x20(color-gamut:\x20rec2020)\x20{body\x20{--color-gamut:\x20rec2020}}\x0a\x09\x09@media\x20(orientation:\x20landscape)\x20{body\x20{--orientation:\x20landscape}}\x0a\x09\x09@media\x20(orientation:\x20portrait)\x20{body\x20{--orientation:\x20portrait}}\x0a\x09\x09</style>\x0a\x09\x09','55e9b959','6.0','Android\x20Emulator','safari','chrome\x20permission\x20state\x20is\x20inconsistent','%,\x20#fff0\x20','cos(25*Math.SQRT2)','getVRDisplays','</div>\x0a\x09\x09\x09\x09\x09\x09','maxDecibels','&hasTrash=','AMD','\x20locale\x20and\x20','catch','SubmitEvent','America/Argentina/Mendoza','privacy','\x0a\x09\x09<br>paint:\x20','intersectionRect','Atomics.exchange','VERTEX_SHADER.HIGH_INT.precision','<div\x20style=\x22','blobOffscreenDataURI','color:','Asia/Ho_Chi_Minh','fd00bf5d','</span>\x0a\x09\x09\x09\x09\x09<span\x20class=\x22screen-media-orientation\x22>','America/Pangnirtung','America/Fortaleza','#9900B3','getExtension','America/Whitehorse','(prefers-color-scheme:\x20dark)','Luminari','overscroll-behavior-block','DisplayNames','boundingClientRect','Node.insertBefore','offlineAudioContext.totalUniqueSamples','America/Argentina/Tucuman','descent-override','</span>\x0a\x09\x09<div\x20class=\x22help\x22\x20title=\x22HTMLMediaElement.canPlayType()\x0aMediaRecorder.isTypeSupported()\x0aMediaSource.isTypeSupported()\x22>mimes\x20(','<span\x20class=\x22user-agent\x22>',')\x0a\x09\x09</div>\x0a\x0a\x09\x09<div\x20class=\x22relative\x22>','Arctic/Longyearbyen','forced-colors','getBattery','bluetoothAvailability','Europe/Isle_of_Man','videoPlayType','mediaCSS','headless.stealthRating','headless.chromium','listener','cos','intl.relativeTimeFormat','acosh(Math.SQRT2)','svg.subStringLength','Math','AnalyserNode.getFloatFrequencyData','loadend','Africa/Sao_Tome','landscape','\x22>\x0a\x09\x09<span\x20class=\x22aside-note\x22>','cos(21*Math.LOG2E)','Element.getBoundingClientRect','Windows\x20platformVersion\x20','revisedKeysFromPreviousLoad','dfd41ab4','FeaturePolicy','auto-delete','MenuText','\x0agibberish:\x20','clientRects.rangeBoundingClientRect','workerScope.scope','\x22>\x0a\x09\x09<span\x20class=\x22time\x22>','architecture','workerScope.systemCurrencyLocale','</div>\x0a\x09\x09\x09<div>gpc:','sin(35*Math.LN2)','WebAssembly.Exception','screen.pixelDepth','37e2f32e','context','offsetUniform','#B366CC','FRAGMENT_SHADER.HIGH_INT.precision','&trashLen=','\x0a\x09\x09','&signature=','jsRuntime','imul','quadraticCurveTo','\x22>lies\x20(','year','America/Ojinaga','Gadugi','\x22></div>','Blocked','America/Kentucky/Monticello','\x0a\x09\x27Segoe\x20Fluent\x20Icons\x27,\x0a\x09\x27Ink\x20Free\x27,\x0a\x09\x27Bahnschrift\x27,\x0a\x09\x27Segoe\x20MDL2\x20Assets\x27,\x0a\x09\x27HoloLens\x20MDL2\x20Assets\x27,\x0a\x09\x27Leelawadee\x20UI\x27,\x0a\x09\x27Javanese\x20Text\x27,\x0a\x09\x27Segoe\x20UI\x20Emoji\x27,\x0a\x09\x27Aldhabi\x27,\x0a\x09\x27Gadugi\x27,\x0a\x09\x27Myanmar\x20Text\x27,\x0a\x09\x27Nirmala\x20UI\x27,\x0a\x09\x27Lucida\x20Console\x27,\x0a\x09\x27Cambria\x20Math\x27,\x0a\x09\x27Galvji\x27,\x0a\x09\x27MuktaMahee\x20Regular\x27,\x0a\x09\x27InaiMathi\x20Bold\x27,\x0a\x09\x27American\x20Typewriter\x20Semibold\x27,\x0a\x09\x27Futura\x20Bold\x27,\x0a\x09\x27SignPainter-HouseScript\x20Semibold\x27,\x0a\x09\x27PingFang\x20HK\x20Light\x27,\x0a\x09\x27Kohinoor\x20Devanagari\x20Medium\x27,\x0a\x09\x27Luminari\x27,\x0a\x09\x27Geneva\x27,\x0a\x09\x27Helvetica\x20Neue\x27,\x0a\x09\x27Droid\x20Sans\x20Mono\x27,\x0a\x09\x27Dancing\x20Script\x27,\x0a\x09\x27Roboto\x27,\x0a\x09\x27Ubuntu\x27,\x0a\x09\x27Liberation\x20Mono\x27,\x0a\x09\x27Source\x20Code\x20Pro\x27,\x0a\x09\x27DejaVu\x20Sans\x27,\x0a\x09\x27OpenSymbol\x27,\x0a\x09\x27Chilanka\x27,\x0a\x09\x27Cousine\x27,\x0a\x09\x27Arimo\x27,\x0a\x09\x27Jomolhari\x27,\x0a\x09\x27MONO\x27,\x0a\x09\x27Noto\x20Color\x20Emoji\x27,\x0a\x09sans-serif\x20!important\x0a','data:text/css,body\x20{','Asia/Phnom_Penh','media.mediaDevices','maxValue','\x20\x20\x20\x20[native\x20code]','HTMLCanvasElement.getContext','Signed:\x20','getContextHash','Atomics.sub','):\x20','Africa/Tunis','textMetricsSystem','formatRange','service','\x20user\x20agent\x20do\x20not\x20match','image-orientation','</div>\x0a\x09\x09<div>mode:\x20','UNKNOWN','failed\x20prototype\x20test\x20execution','audioPlayType','safer','DynamicsCompressorNode.ratio.maxValue','screenId=','SpeechSynthesis.getVoices','%,\x20','Indian/Maldives','digest','NumberFormat','coarse','Yosemite','Antarctica/Troll','UNMASKED_RENDERER_WEBGL','</span>\x0a\x09\x09<div\x20class=\x22help\x22\x20title=\x22SVGGraphicsElement.getBBox()\x22>bBox:\x20','clientWidth','color-gamut','accent-color','svg.svgrectSystemSum','DynamicsCompressorNode.release.maxValue','margin-inline','</div>\x0a\x09\x09\x09<div>touch\x20device:\x20','</div>\x0a\x09\x09\x09<div\x20class=\x22block-text-large\x22>','<span\x20class=\x22icon\x20firefox\x22></span>','\x27\x20(any-pointer:\x20fine);\x0a\x09\x09@import\x20\x27','exp(','NVIDIA\x20Corporation','buffer','getVoices','navigator.mimeTypes','cssMedia.screenQuery','\x20on\x20','\x0a\x09\x09<div\x20class=\x22col-six\x20undefined\x22>\x0a\x09\x09\x09<strong>Worker</strong>\x0a\x09\x09\x09<div>keys\x20(0):\x20','\x22>\x0a\x0a\x09\x09<div\x20class=\x22relative\x22>userAgent:','&perf=','\x20in\x20','Indian/Kerguelen','appName','navigator.oscpu','getGamepads','America/Nome','toDataURL','tan(Math.PI)','ondevicemotion','Element.ariaMultiSelectable','&resistance=','notifications','America/Manaus','</div>\x0a\x09\x09\x09<div>pixels:\x20','cc7cb598','--import-color-gamut:\x20p3','Pacific/Funafuti','errorId=','America/Lima','sin(110*Math.LOG2E)','\x0a\x09<div\x20class=\x22','AudioBuffer','Futura\x20Bold','Europe/Dublin','</span></div>\x0a\x09\x09\x09\x09\x09\x09\x09<div>alive:\x20<span\x20class=\x22unblurred\x22>','pixel-emoji-container','entropy-low','compressorGainReduction','</strong>\x0a\x09\x09\x09<br>Clock\x20Rates:\x20','</span></span>\x0a\x09\x09\x09\x09\x09<div\x20class=\x22flex-grid\x20relative\x22>\x0a\x09\x09\x09\x09\x09\x09<span\x20class=\x22aside-note-bottom\x20left\x22>','brands','dataURI','Canvas','Etc/GMT+9','Europe/Kirov','canvasWebgl.gpu','#00E680','</div>\x0a\x09\x09<div>matchMedia:\x20','(display-mode:\x20fullscreen)','\x27\x20(forced-colors:\x20none);\x0a\x09\x09@import\x20\x27','granted','log10(','failed\x20at\x20toString\x20incompatible\x20proxy\x20error','Function.prototype.toString\x20leaks\x20Proxy\x20behavior','WeakMap','\x20unique\x20samples\x20of\x20','pointer','readPixels','canvas2d.paintURI','35px\x20','canvasWebgl.extensions','AnalyserNode.numberOfOutputs','numberOfOutputs','(prefers-reduced-motion:\x20no-preference)','</span>\x0a\x09\x09<strong>Timezone</strong><span\x20class=\x22','puppeteer-extra','</div>\x0a\x09\x09\x09<div>screen\x20query:\x20','</div>\x0a\x09\x09<div>apps:\x20','color:\x20#4cc1f9','Etc/GMT-8','</span></div>','webdriver','\x20revisions:\x20fetching\x20prediction\x20data\x20from\x20','America/Metlakatla','devicePixelRatio','none','fftSize','OscillatorNode.detune.maxValue','<span\x20class=\x22confidence-note\x22>confidence:\x20<span\x20class=\x22scale-up\x20grade-','now','scrollbar-gutter','Africa/Ceuta','screen-wake-lock','FRAGMENT_SHADER.HIGH_INT.rangeMin','styleId=','AnimationTimeline','0.0.0.0','STENCIL_WRITEMASK','\x0a\x09<div\x20class=\x22relative\x20col-six\x22>\x0a\x09\x09<style>\x0a\x09\x09\x09.like-headless-rating\x20{\x0a\x09\x09\x09\x09background:\x20linear-gradient(90deg,\x20var(','ImageTrackList','Europe/Istanbul','elementBoundingClientRect','XRLightProbe','(monochrome:\x200)','America/Winnipeg','appearance','--grey-glass','SpiderMonkey','Navigator.maxTouchPoints','\x20mismatch','remove','device-screen','Element.ariaSetSize','\x0a\x09\x09<br>toBlob\x20(combined):\x20','MAX_VARYING_COMPONENTS','TaskPriorityChangeEvent','textMetricsId=','creep-lies','getChannelData\x20and\x20copyFromChannel\x20samples\x20mismatch','Windows\x20NT\x2010.0','Pacific/Kiritimati','voicesSystem','\x20Yandex','</div>\x0a\x09\x09\x09<div>remote\x20(0):\x20','insertAdjacentTextHash','America/Swift_Current','navigator.permissions','Element.getAnimations','\x20Vista','</span>\x0a\x09\x09<div>images:','var\x20x\x20=\x20new\x20Array(-1)','precision','failed\x20toString','America/Nassau','MediumAquaMarine','\x0a\x09\x09\x09\x09<div\x20class=\x22visitor-info\x22>\x0a\x09\x09\x09\x09\x09<span\x20class=\x22time\x22>fingerprints\x20renewed\x20<span\x20class=\x22','pixels','print-color-adjust','</div>\x0a\x09\x09\x09<div>viewport:\x20','MAX_TEXTURE_SIZE','getElementsByName','MediaStreamTrackGenerator','\x20platform\x20and\x20','active','<span\x20class=\x22high-entropy\x22>','00ms\x20','creep-canvas-data','ATI','delete','Navigator.userAgent','canvas2d.dataURI','Element.append','--import-forced-colors:\x20active','Element.ariaHidden','forceRenew','Europe/Prague','5px\x20','10.11','clientRects.emojiSet','number','getErrors','<span\x20class=\x22icon\x20windows\x22></span>','offsetHeight','</div>\x0a\x09\x09\x09<div>permissions\x20(0):\x20','!Math.toSource','<strong>Like\x20Headless</strong><br><br>','atan(Math.PI)','Document.onwebkitanimationend','Document.getAnimations','media','log10(Math.PI)','</div>\x0a\x09\x09\x09<div>ua\x20parsed:\x20','getAvailability','<strong>Security</strong><br><br>','corrected:\x20','America/Denver','--display-mode','ThreeDShadow','America/New_York','display-mode','strokeText','VERTEX_SHADER.LOW_FLOAT.rangeMax','createBiquadFilter','</span>\x0a\x09\x09<strong>Error</strong><span\x20class=\x22hash\x22>','BiquadFilterNode.gain.maxValue','bufferData','domrect\x20metrics','</div>\x0a\x09\x09\x09<div>rendering:</div>\x0a\x09\x09\x09<div\x20class=\x22icon-pixel-container\x20pixels\x22>','maybe','cros','\x0awarnings:\x20','webkit','\x22>viewport:</div>\x0a\x09\x09\x09\x09<div\x20class=\x22screen-container\x20relative\x20help\x22\x20title=\x22','83b825ab','Africa/Nouakchott','Europe/Belgrade','!-moz-outline-radius','Africa/Freetown','Mojave','styleVersion','removeChild','push','Element.replaceChildren','data','workerScope.engineCurrencyLocale','audio/ogg;\x20codecs=\x22vorbis\x22','Document.onsecuritypolicyviolation','</div>\x0a\x09\x09\x09<div>appVersion:</div>\x0a\x09\x09\x09<div\x20class=\x22block-text\x22>','dedicated','insertAdjacentElementHash','</div>\x0a\x09\x09<div\x20class=\x22help\x22>lang/timezone:</div>\x0a\x09\x09<div\x20class=\x22block-text\x20help\x22\x20title=\x22WorkerNavigator.language\x0aWorkerNavigator.languages\x0aIntl.Collator.resolvedOptions()\x0aIntl.DateTimeFormat.resolvedOptions()\x0aIntl.DisplayNames.resolvedOptions()\x0aIntl.ListFormat.resolvedOptions()\x0aIntl.NumberFormat.resolvedOptions()\x0aIntl.PluralRules.resolvedOptions()\x0aIntl.RelativeTimeFormat.resolvedOptions()\x0aNumber.toLocaleString()\x0aIntl.DateTimeFormat().resolvedOptions().timeZone\x0aDate.getDate()\x0aDate.getMonth()\x0aDate.parse()\x22>\x0a\x09\x09\x09','screenSystem','8.1','</span>\x0a\x09\x09<strong>HTMLElement</strong><span\x20class=\x22hash\x22>','Atomics.store','VERTEX_SHADER.MEDIUM_FLOAT.rangeMin','style','app-region:\x20initial','standard','sinh','\x20CSS\x20features','windowFeatures','<span\x20class=\x22bold-fail\x22>','Europe/Kiev','$hash','hover','Europe/Andorra','border-end-start-radius','String.replaceAll','\x20x\x20','High\x20Sierra','<image\x20class=\x22gl-image\x22\x20src=\x22','Lucida\x20Console','rangeMin','innerHTML','forwardX','deviceOfTimezoneId=','(any-hover:\x20none)','WebGLRenderingContext.getParameter()','indexOf','America/Anguilla','feedbackSupport','f43e6134','6.3','Document.adoptedStyleSheets','VMware\x20SVGA\x203D','added\x20fuzzy\x20key(s):\x0a','consoleErrors','creep-voices-defaults','--import-pointer:\x20fine','headless.likeHeadless','America/Atikokan','\x0a\x09\x09\x09</div>\x0a\x09\x09</div>\x0a\x09\x09','</div>\x0a\x09\x09\x09<div>matchMedia:\x20','navigator.platform','Australia/Eucla','best\x20fit','Antarctica/Casey','72b1ee2b','(pointer:\x20fine)','deviceOfTimezone','tor','</div>\x0a\x09\x09<div\x20class=\x22stealth-rating\x22>','</div>\x0a\x09\x09\x09<div>values:\x20','</span>\x0a\x09\x09<strong>CSS\x20Media\x20Queries</strong><span\x20class=\x22hash\x22>','Europe/Paris','America/St_Barthelemy','Menu','inset-block','font','Trace','OpenGL','Document.fragmentDirective','border-block-style','canvas\x20text','America/Thunder_Bay','padEnd','</div>\x0a\x09\x09<div>extension:\x20','Pacific/Niue','(display-mode:\x20browser)','EncodedAudioChunk','</div>\x0a\x09\x09\x09<div>display:\x20','--forced-colors','(prefers-color-scheme:\x20light)','Indian/Mahe','border-end-end-radius','clientRects','Europe/Volgograd','\x22></span>\x20','clientRects.domrectSystemSum','worker\x20userAgent\x20contains\x20HeadlessChrome','\x20does\x20not\x20match\x20user\x20agent\x20version\x20','</div>\x0a\x09\x09\x09\x09\x09\x09\x09\x09<div\x20class=\x22unblurred\x22>idle\x20min-max:\x20','!Array.toSource','stroke','mode','bottom','border-block','ALIASED_POINT_SIZE_RANGE','appendChild','systems','Europe/Chisinau','vendor','\x20days','</span>','userAgentData\x20failed','fontsSystem','</div>\x0a\x09\x09<div\x20class=\x22help\x22\x20title=\x22Permissions.query()\x22>permissions\x20(','CanvasFilter','log(','does\x20not\x20match\x20worker\x20scope','navigator.webdriver\x20is\x20on','video/ogg;\x20codecs=\x22theora\x22','Africa/Algiers','America/Bogota','expected\x20-Infinity\x20(silence)\x20and\x20got\x20','Etc/GMT+11','MAX_ARRAY_TEXTURE_LAYERS','America/Argentina/Salta','MAX_SAMPLES','en-US','Europe/Simferopol','10.0','[...undefined].length','</div>\x0a\x09\x09<div\x20class=\x22like-headless-rating\x22>','ae3d02c9','colorDepthHash','engine\x20console\x20errors','Fingerprint','canvasPaintSystem',');\x0a\x09\x09@import\x20\x27','insertBefore','emojiURI','ASUS','Codec\x20Control\x20Message\x20Full\x20Intra\x20Request\x20(ccm\x20fir)','getProps','VirtualKeyboardGeometryChangeEvent','VideoFrame','fillStyle','background-sync','failed\x20at\x20too\x20much\x20recursion\x20error','#99FF99','<br>Feedback\x20Support:<br>-\x20','%,\x20#fff0\x20100%);\x0a\x09\x09\x09}\x0a\x09\x09</style>\x0a\x09\x09<span\x20class=\x22aside-note\x22>','--import-any-hover:\x20none',');\x20}</style>\x0a\x09\x09<div\x20class=\x22gradient\x22></div>\x0a\x09</div>\x0a\x09','Element.getClientRects','XRTransientInputHitTestResult','America/St_Thomas','CSSRuleList.style','10.15-11','\x22\x20name=\x22modal-','reporterTrustScore','Asia/Hong_Kong','acos','Pacific/Nauru','fill','constructor','monochrome','</div>\x0a\x09\x09\x09<div>mode:\x20','America/Monterrey','getSupportedExtensions','#E666B3','--import-pointer','navigator\x20keys\x20failed','Australia/Lord_Howe','gpuId=','GrayText','navigator.webgpu','previousFingerprint','Function.prototype.toString\x20has\x20invalid\x20TypeError','disabled','sinh(Math.SQRT2)','background-color:\x20ActiveText','audio/mpeg','createElementNS','oscpu\x20failed','\x0a\x09\x09</div>\x0a\x0a\x09\x09<div>userAgentData:</div>\x0a\x09\x09<div\x20class=\x22block-text\x20help\x22\x20title=\x22WorkerNavigator.userAgentData\x0aNavigatorUAData.getHighEntropyValues()\x22>\x0a\x09\x09\x09<div>\x0a\x09\x09\x09','gpu=','\x20%c+','appendChildHash','worker','#999966','</span>\x0a\x09\x09<div\x20class=\x22help\x22\x20title=\x22SpeechSynthesis.getVoices()\x0aSpeechSynthesisVoice.localService\x22>local\x20(','canvas\x20image','Symbol','getFloatFrequencyDataHash','toBlobHash','\x22>trash\x20(','2tylBAP','cos(Math.PI)','charAt','sin(35*Math.SQRT1_2)','Promise.allSettled','Etc/GMT-13','appVersion','Etc/GMT+3','Document.ontransitionstart','10\x20(1803)','America/Chihuahua','MAX_CLIENT_WAIT_TIMEOUT_WEBGL','--import-monochrome:\x20non-monochrome','Asia/Magadan','channelCountMode','(display-mode:\x20standalone)','EncodedVideoChunk','CSSAnimation','\x0aWebGLRenderingContext.getParameter()\x0agpu\x20compressed:\x20','</div>\x0a\x09\x09<div\x20class=\x22blurred\x22\x20id=\x22window-features-samples\x22>\x0a\x09\x09\x09<div>0%\x20of\x20version</div>\x0a\x09\x09</div>\x0a\x09</div>\x0a\x09','userAgent','\x20!important','081d6d1b','\x202000','\x0a\x09\x09<br>emoji:\x20','getChannelData','WEBKIT_EXT_texture_filter_anisotropic','navigator.system','Intl.supportedValuesOf','<div\x20class=\x22col-four\x20undefined\x22>\x0a\x09\x09\x09<strong>Audio</strong>\x0a\x09\x09\x09<div>sum:\x20','lang','Apple\x20GPU','Navigator.platform','Atlantic/Stanley','SVGTextContentElement.getComputedTextLength()\x0ahash:\x20','Document.onanimationend','</div>\x0a\x09\x09<div>plugins\x20(','#6680B3','Asia/Yerevan','speak-as','America/Rainy_River','colorDepth','border-inline','Document.oncontextlost','RegExp','XRWebGLDepthInformation','</strong>:\x0a\x09\x09\x09\x09\x09\x09','\x20XP','!ondevicelight','canvas\x20blob','America/Maceio','</span>\x0a\x09\x09<div>host\x20connection:</div>\x0a\x09\x09<div\x20class=\x22block-text\x22>','ellipse','Africa/Maseru','navigator.globalPrivacyControl','Windows\x20Phone','2257461QPJidg','America/Inuvik','💋‍👨👨‍👩‍👧‍👦👨‍👩‍👦😀©®™👁️‍�','CookieStoreManager','Asia/Khandyga','<div\x20class=\x22icon-prediction\x20block-text-borderless\x22>gpu:<br>','sin(','FRAGMENT_SHADER.HIGH_FLOAT.rangeMin','log10(Math.LN2)','Atomics.isLockFree','inverted-colors','\x20hrs</div>\x0a\x09\x09\x09\x09\x09\x09\x09\x09<div\x20class=\x22unblurred\x22>performance\x20benchmark:\x20','Nirmala\x20UI','div','Cambria\x20Math','<span\x20class=\x22confidence-note\x22>','HTMLIFrameElement.contentDocument','restore','document','isTypeSupported','</div>\x0a\x09\x09<div\x20class=\x22block-text\x20help\x22\x20title=\x22','</div>\x0a\x09\x09<div\x20class=\x22help\x22\x20title=\x22Navigator.language\x0aNavigator.languages\x22>lang:\x20','(inverted-colors:\x20inverted)','945b0c78','signature','RTCEncodedVideoFrame','floor','buildID','InaiMathi\x20Bold','Australia/Melbourne','\x0a\x09\x09\x09\x09','Google\x20Chrome','</div>\x0a\x09\x09<div\x20class=\x22help\x22\x20title=\x22Range.getClientRects()\x22>range\x20A:\x20','America/Mexico_City','Document.getElementById','4893830fEaMGj','svg.extentOfChar','exp(Math.PI)','ActiveText','Asia/Ulaanbaatar','Africa/Lagos','connection','Element.ariaColSpan','windows','any-hover','Windows\x208.1\x20(64-bit)','\x22\x20onclick=\x22\x22>\x0a\x09\x09\x09\x09<input\x20type=\x22radio\x22\x20id=\x22toggle-close-','charCodeAt','Element.ariaSort','</span>\x20','font:\x20','VERTEX_SHADER.HIGH_INT.rangeMin','Europe/Athens','gpu\x20params','98ec858e','</div>\x0a\x09\x09<div\x20class=\x22help\x22\x20title=\x22AnalyserNode.getFloatTimeDomainData()\x22>time:\x20','clear','table','scores','background-fetch','Asia/Tehran','Profiler','failed\x20at\x20chain\x20cycle\x20error','headless.headlessRating','SQRT2','\x0a\x09\x09\x09\x09\x09\x09\x09</div>\x0a\x09\x09\x09\x09\x09\x09</div>\x0a\x09\x09\x09\x09\x09\x09<div\x20class=\x22col-six\x22>\x0a\x09\x09\x09\x09\x09\x09\x09','<strong>matchMedia</strong><br><br>','&fuzzy=','tan(34*Math.SQRT1_2)','\x27\x20(color-gamut:\x20p3);\x0a\x09\x09@import\x20\x27','\x20worker','light','toLocaleTimeString','currency','rootBounds','--import-any-hover:\x20hover','</div>\x0a\x09\x09\x09<div>vendor:\x20','Antarctica/Macquarie','MAX_TEXTURE_MAX_ANISOTROPY_EXT','NavigationPreloadManager','atan2(1e-310,\x202)','Leelawadee\x20UI','ambient-light-sensor','getShaderPrecisionFormat','canvas2d.blobOffscreen','👾A','sessionStorage','createBuffer','Error.cause','Document.oncontextrestored','px)\x20{body\x20{--device-screen:\x20','FontFace.load()\x0aCSSStyleDeclaration.setProperty()\x0ablock-size\x0ainline-size\x0ahash:\x20','windowVersion','#4DB3FF','Element.ariaAtomic','prepend','webglId=','Element.part','clientRects.elementBoundingClientRect','WebGLRenderingContext.getExtension','</div>\x0a\x09\x09\x09<div>range\x20B:\x20','America/Merida','America/Caracas','PerformancePaintTiming','MAX_FRAGMENT_UNIFORM_COMPONENTS','VirtualKeyboard','\x20lies','Permissions','workerScope.userAgentEngine','min','getExtentOfChar','failed','America/Sitka','log10','<br>ram:\x20','rect-known','\x20does\x20not\x20match\x20appVersion','plugin\x20name\x20is\x20gibberish','trashBin','</div>\x0a\x09\x09<div\x20class=\x22blurred\x22\x20id=\x22html-element-samples\x22>\x0a\x09\x09\x09<div>0%\x20of\x20engine</div>\x0a\x09\x09</div>\x0a\x09</div>\x0a\x09','ButtonHighlight','intl','accelerometer','\x0a\x09\x09</div>\x0a\x09\x09<div\x20class=\x22block-text\x20help\x20relative\x22\x20title=\x22','Africa/Bamako','America/Hermosillo','permissions','html-element-samples','linux','Etc/GMT+12','firefox','CaptionText','VirtualBox','America/Goose_Bay','ALIASED_LINE_WIDTH_RANGE','\x27\x20(color-gamut:\x20srgb);\x0a\x09\x09@import\x20\x27','tan(17*Math.SQRT2)','Etc/GMT-14','replaceChild','VideoPlaybackQuality','XRDOMOverlayState','</div>\x0a\x09\x09<div>touch\x20device:\x20','hypot(6*Math.PI,\x20-100)','ruby-position','DelegatedInkTrailPresenter','canvasWebgl','cosh(Math.PI)','MAX_PROGRAM_TEXEL_OFFSET','yandex','Africa/Addis_Ababa','Europe/Uzhgorod','<span\x20class=\x22help\x22\x20title=\x22','cos(21*Math.LN2)','close','RTCRtpTransceiver','result','\x0a\x09<div\x20class=\x22relative\x20col-four','any-pointer','Creep','ca9d9c2f','VisitedText','test','childNodes','Navigator\x20failed\x20or\x20blocked\x20by\x20client','Asia/Aqtobe','Myanmar\x20Text','AnalyserNode.channelInterpretation','createRadialGradient','</div>\x0a\x09\x09<div\x20class=\x22help\x22\x20title=\x22AudioBuffer.copyFromChannel()\x22>copy:','\x20errors','!Element.onbeforexrselect','WindowFrame','InactiveBorder','Amiri','log10(Math.SQRT1_2)','Date.getTimezoneOffset','getFloatFrequencyData','Atomics.waitAsync','MediaStreamTrackProcessor','</div>\x0a\x09\x09<div>values:\x20','webgl','</div>\x0a\x09\x09<div\x20class=\x22help\x22\x20title=\x22Navigator.doNotTrack\x22>dnt:\x20','#991AFF','PingFang\x20HK\x20Light','pixelDepth','</div>\x0a\x09\x09<div\x20class=\x22block-text-large\x20help\x20relative\x22\x20title=\x22FontFace.load()\x22>\x0a\x09\x09\x09','navigator.userAgentData','caller','stun:stun4.l.google.com:19302?transport=udp','screen.height','</span>\x0a\x09\x09<strong>DOMRect</strong><span\x20class=\x22','mimeTypesId=','#66991A','self','srcdoc','workerScope.userAgentData','America/Curacao','vivaldi','appendHash','apply','\x20versions','createOffer','Etc/GMT-9','navigator.userAgentParsed','Atlantic/Reykjavik','canvas\x20paint','linkProgram','page-orientation','AnalyserNode.getFloatTimeDomainData','Atlantic/Madeira','failed\x20at\x20incompatible\x20proxy\x20error','cos(13*Math.E)','Asia/Tomsk','workerScope.hardwareConcurrency','7/1/','--import-device-screen','AnalyserNode.fftSize','Open\x20Source\x20Technology\x20Center','textURI','SVGRect.width','\x20trash','<span\x20class=\x22blocked\x22>blocked</span>','prompt','Asia/Novokuznetsk','insertAdjacentElement','</div>\x0a\x09\x09\x09</div>\x0a\x09\x09</div>','Africa/Dar_es_Salaam','atan2(Math.PI)','String','\x0a\x09\x09\x09<div\x20class=\x22icon-pixel\x20pixel-image-random\x22></div>\x0a\x09\x09\x09','<br>mobile','overscroll-behavior-inline','</div>\x0a\x09\x09\x09<div>security:\x20','AggregateError','AudioBuffer.getChannelData','Element.insertAdjacentText','text-emphasis','creep-features-','offlineAudioContext.noise','<strong>@media</strong><br><br>','NT\x2010.0','Asia/Dushanbe','tan','</div>\x0a\x09\x09\x09<div>gpu:</div>\x0a\x09\x09\x09<div\x20class=\x22block-text\x22>','Document.onwebkittransitionend',')\x0a\x09\x09\x09}\x0a\x09\x09\x09.text-image\x20{\x0a\x09\x09\x09\x09background-image:\x20url(','TextMetrics.actualBoundingBoxAscent','textMetrics','smoothingTimeConstant','creep-computed-style','border-inline-color','!HTMLMenuItemElement','client\x20blocked\x20phantom\x20iframe','log10(43*Math.LOG2E)','backdrop-filter','\x0a\x09<style>\x0a\x09\x09.audiop,\x20.videop,\x20.medias,\x20.mediar,\x20.blank-false\x20{\x0a\x09\x09\x09padding:\x202px\x208px;\x0a\x09\x09}\x0a\x09\x09.audiop\x20{\x0a\x09\x09\x09background:\x20#657fca26;\x0a\x09\x09}\x0a\x09\x09.medias\x20{\x0a\x09\x09\x09background:\x20#657fca54;\x0a\x09\x09}\x0a\x09\x09.videop\x20{\x0a\x09\x09\x09background:\x20#ca65b424;\x0a\x09\x09}\x0a\x09\x09.mediar\x20{\x0a\x09\x09\x09background:\x20#ca65b459;\x0a\x09\x09}\x0a\x09\x09.audiop.pb,\x20.videop.pb,\x20.guide.pr\x20{\x0a\x09\x09\x09color:\x20#8f8ff1\x20!important;\x0a\x09\x09}\x0a\x09\x09.audiop.mb,\x20.videop.mb,\x20.guide.mb\x20{\x0a\x09\x09\x09color:\x20#98cee4\x20!important;\x0a\x09\x09}\x0a\x09\x09.medias.tr,\x20.mediar.tr,\x20.guide.tr\x20{\x0a\x09\x09\x09color:\x20#c778ba\x20!important;\x0a\x09\x09}\x0a\x09</style>\x0a\x09<div>\x0a\x09<br><span\x20class=\x22audiop\x22>audioPlayType</span>\x0a\x09<br><span\x20class=\x22videop\x22>videoPlayType</span>\x0a\x09<br><span\x20class=\x22medias\x22>mediaSource</span>\x0a\x09<br><span\x20class=\x22mediar\x22>mediaRecorder</span>\x0a\x09<br><span\x20class=\x22guide\x20pr\x22>P\x20(Probably)</span>\x0a\x09<br><span\x20class=\x22guide\x20mb\x22>M\x20(Maybe)</span>\x0a\x09<br><span\x20class=\x22guide\x20tr\x22>T\x20(True)</span>\x0a\x09</div>','12dlefOJ','\x22/>','ready','\x0a\x09\x09\x09','\x20seconds','</div>\x0a\x09\x09\x09<div>Window:\x20','groupEnd','SignPainter-HouseScript\x20Semibold','Arimo','\x20rejected','OpenSymbol','insertAdjacentText','\x0a\x09\x09<style>\x0a\x09\x09.modal-','\x0a\x09\x09<div\x20class=\x22col-six\x20undefined\x22>\x0a\x09\x09\x09<strong>Canvas\x202d</strong>\x20<span>','\x20corrupted)','\x20JS\x20features','America/Montevideo','Sierra','canvas2d.textURI','MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS','Pacific/Wallis','hypot(2*Math.LOG10E,\x20-100)','Generation','setMonth','</span></div>\x0a\x09\x09\x09\x09\x09\x09\x09<div\x20id=\x22auto-delete\x22>auto-delete\x20in</div>\x0a\x09\x09\x09\x09\x09\x09\x09<div\x20class=\x22relative\x22>shadow:\x20<span\x20class=\x22unblurred\x22>','iOS','Asia/Beirut','Asia/Srednekolymsk','Intl.NumberFormat.resolvedOptions','\x22/>\x0a\x09\x09\x09\x09<label\x20class=\x22modal-close-btn\x22\x20for=\x22toggle-close-','\x20none','additive-symbols','#CC80CC','Europe/Tirane','Document.createElement','reduction','mediaDevices','failed\x20\x22prototype\x22\x20in\x20function','allSettled','intl.listFormat','AnalyserNode.frequencyBinCount','Element.ariaDescription','()\x20{','setDate','TextMetrics.actualBoundingBoxDescent','</span>\x0a\x09\x09<strong>Math</strong><span\x20class=\x22','\x0a\x09\x09</div>\x0a\x09\x09<div>textMetrics:</div>\x0a\x09\x09<div\x20class=\x22block-text\x20help\x20relative\x22\x20title=\x22','webkit-3d','audio','10\x20(1607)','asinh(1e308)','\x0a\x09\x09</div>\x0a\x09</div>\x0a\x09','geolocation','webglVendor','getImageData','onmouseenter','</span>\x0a\x09\x09<div\x20class=\x22help\x22\x20title=\x22AudioBuffer.getChannelData()\x22>sum:\x20','</div>\x0a\x09\x09<div\x20class=\x22headless-rating\x22>','threshold','iPhone','toLocaleString','\x0a\x09\x09\x09attribute\x20vec2\x20attrVertex;\x0a\x09\x09\x09varying\x20vec2\x20varyinTexCoordinate;\x0a\x09\x09\x09uniform\x20vec2\x20uniformOffset;\x0a\x09\x09\x09void\x20main(){\x0a\x09\x09\x09\x09varyinTexCoordinate\x20=\x20attrVertex\x20+\x20uniformOffset;\x0a\x09\x09\x09\x09gl_Position\x20=\x20vec4(attrVertex,\x200,\x201);\x0a\x09\x09\x09}\x0a\x09\x09','SharedWorker','__proto__','rangeClientRects','failed\x20undefined\x20properties','getDate','<br><br><strong>extensions</strong><br>','response\x20time','7/8/8.1','\x0a\x09\x09\x09\x09<strong>','Africa/Maputo','</div>\x0a\x09\x09\x09<div\x20class=\x22icon-pixel-container\x20pixels\x22>','Element.ariaValueMin','\x27\x20(prefers-reduced-motion:\x20reduce);\x0a\x09\x09@import\x20\x27','MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS','\x27\x20(orientation:\x20portrait);\x0a\x09\x09</style>\x0a\x09\x09','voices','<br>-\x20','creep-iframe-content-window-version','expm1(1)','json','PluralRules','Serial','failed\x20descriptor\x20keys','workerScope.uaPostReduction','value','ImageDecoder','function\x20','null','AudioWorklet','disjunction','--import-device-aspect-ratio:\x20','sampleRate','styleSystem','America/St_Lucia','map','%,\x20#fff0\x20100%);\x0a\x09\x09\x09}\x0a\x09\x09\x09.headless-rating\x20{\x0a\x09\x09\x09\x09background:\x20linear-gradient(90deg,\x20var(--error)\x20','icecandidate','canvas\x202d','MediaDevices','undefined','70044XGTAHO','creep-css-import','WakeLock','prefers-reduced-motion','log','Segoe\x20Fluent\x20Icons','join','padding-inline','Navigator.appVersion','windowFeatures.apple','Radeon\x20Pro\x20Vega','getLog','\x22>\x0a\x09\x09<style>\x0a\x09\x09\x09.pixels\x20{\x0a\x09\x09\x09\x09padding:\x2019px;\x0a\x09\x09\x09\x09position:\x20relative;\x0a\x09\x09\x09\x09overflow:\x20hidden;\x0a\x09\x09\x09}\x0a\x09\x09\x09.canvas-data\x20{\x0a\x09\x09\x09\x09max-width:\x20200px;\x0a\x09\x09\x09\x09height:\x2050px;\x0a\x09\x09\x09\x09transform:\x20scale(1);\x0a\x09\x09\x09\x09background-image:\x20url(','):</div>\x0a\x09\x09<div\x20class=\x22block-text\x22>\x0a\x09\x09\x09','Asia/Atyrau','Android','</div>\x0a\x09\x09\x09<div>depth:\x20','</span>\x0a\x09\x09<div>@media:\x20','(64-bit)','lightcoral','microphone','Asia/Bangkok','Africa/Brazzaville','acos(','-plugins','replaceWith','AudioDecoder','#99E6E6','rec2020','paintURI','MEDIUM_FLOAT','localService','bitness','</div>\x0a\x09\x09<div\x20class=\x22help\x22\x20title=\x22AudioBuffer.getChannelData()\x0aAudioBuffer.copyFromChannel()\x0aAudioBuffer.copyToChannel\x22>trap:\x20','PeriodicSyncManager','Navigator.plugins','plugins','sqrt(Math.PI)','TextMetrics.fontBoundingBoxDescent','</span>\x0a\x09\x09<strong>Headless</strong><span\x20class=\x22hash\x22>','chrome.runtime\x20functions\x20are\x20invalid','measureText','(pointer:\x20coarse)','Europe/Amsterdam','getComputedTextLength','getPropsSearched','getTimezoneOffset','Africa/Libreville','0000000','50px\x20','</div>\x0a\x09\x09\x09<div>@import:\x20','America/Vancouver','<span\x20class=\x22blocked\x22>unknown</span>','broken\x20angle\x20structure','</span>\x0a\x09\x09</div>\x0a\x09</div>\x0a\x09','Asia/Chita','America/Indiana/Vincennes','Element.insertAdjacentHTML','features.jsVersion','#FF4D4D','resize','system\x20styles','</div>\x0a\x09\x09<div\x20class=\x22help\x22\x20title=\x22SVGTextContentElement.getSubStringLength()\x22>subs:\x20','--import-any-hover','Parallels\x20Display\x20Adapter','clearRect','SUBPIXEL_BITS','Element.role',',\x20ram:\x20','#1AB399','ThreeDLightShadow','svgrect-emoji','Range.getClientRects','globalPrivacyControl\x20failed',')\x0a\x09\x09\x09}\x0a\x09\x09\x09.emoji-image\x20{\x0a\x09\x09\x09\x09background-image:\x20url(','Intel(R)\x20UHD\x20Graphics','lieTypes','shadow','America/Rankin_Inlet','webgpu\x20failed','America/Boa_Vista','!Function.toSource','maths','navigator.device','</div>\x0a\x09\x09</div>','const\x20foo;foo.bar','MAX_VERTEX_ATTRIBS','WebTransportDatagramDuplexStream','triangle','AnalyserNode.channelCount','Navigator.doNotTrack','create','scope','device\x20of\x20timezone','</span>\x0a\x09\x09\x09\x09\x09\x09<div\x20class=\x22col-six\x22>\x0a\x09\x09\x09\x09\x09\x09\x09<strong>Browser</strong>\x0a\x09\x09\x09\x09\x09\x09\x09<div>trust\x20score:\x20<span\x20class=\x22unblurred\x22>\x0a\x09\x09\x09\x09\x09\x09\x09\x09','ipod','resolvedOptions','rangeBoundingClientRect','#B3B31A','--device-aspect-ratio','Intl.PluralRules.resolvedOptions','DynamicsCompressorNode.knee.defaultValue','px;\x20}\x0a\x09\x09\x09\x09\x09\x09.screen-outer-w,\x0a\x09\x09\x09\x09\x09\x09.screen-outer-h,\x0a\x09\x09\x09\x09\x09\x09.screen-inner-w,\x0a\x09\x09\x09\x09\x09\x09.screen-inner-h,\x0a\x09\x09\x09\x09\x09\x09.screen-visual-w,\x0a\x09\x09\x09\x09\x09\x09.screen-visual-h,\x0a\x09\x09\x09\x09\x09\x09.screen-display-mode,\x0a\x09\x09\x09\x09\x09\x09.screen-media-orientation,\x0a\x09\x09\x09\x09\x09\x09.screen-orientation-type,\x0a\x09\x09\x09\x09\x09\x09.screen-dpr\x20{\x0a\x09\x09\x09\x09\x09\x09\x09position:\x20absolute;\x0a\x09\x09\x09\x09\x09\x09\x09font-size:\x2012px\x20!important;\x0a\x09\x09\x09\x09\x09\x09\x09border-radius:\x203px;\x0a\x09\x09\x09\x09\x09\x09\x09padding:\x200\x203px;\x0a\x09\x09\x09\x09\x09\x09\x09margin:\x203px\x200;\x0a\x09\x09\x09\x09\x09\x09\x09z-index:\x201;\x0a\x09\x09\x09\x09\x09\x09}\x0a\x09\x09\x09\x09\x09\x09.screen-outer-w,\x0a\x09\x09\x09\x09\x09\x09.screen-inner-w,\x0a\x09\x09\x09\x09\x09\x09.screen-visual-w,\x0a\x09\x09\x09\x09\x09\x09.screen-display-mode,\x0a\x09\x09\x09\x09\x09\x09.screen-media-orientation,\x0a\x09\x09\x09\x09\x09\x09.screen-orientation-type,\x0a\x09\x09\x09\x09\x09\x09.screen-dpr,\x20{\x0a\x09\x09\x09\x09\x09\x09\x09text-align:\x20center;\x0a\x09\x09\x09\x09\x09\x09}\x0a\x09\x09\x09\x09\x09\x09.screen-outer-h,\x0a\x09\x09\x09\x09\x09\x09.screen-inner-h,\x0a\x09\x09\x09\x09\x09\x09.screen-visual-h,\x0a\x09\x09\x09\x09\x09\x09.screen-display-mode,\x0a\x09\x09\x09\x09\x09\x09.screen-media-orientation,\x0a\x09\x09\x09\x09\x09\x09.screen-orientation-type,\x0a\x09\x09\x09\x09\x09\x09.screen-dpr\x20{\x0a\x09\x09\x09\x09\x09\x09\x09line-height:\x20216px;\x20/*\x20this\x20is\x20derived\x20from\x20the\x20container\x20height*/\x0a\x09\x09\x09\x09\x09\x09}\x0a\x09\x09\x09\x09\x09\x09.screen-outer-h,\x0a\x09\x09\x09\x09\x09\x09.screen-inner-h,\x0a\x09\x09\x09\x09\x09\x09.screen-visual-h\x20{\x0a\x09\x09\x09\x09\x09\x09\x09left:\x200;\x0a\x09\x09\x09\x09\x09\x09}\x0a\x09\x09\x09\x09\x09\x09.screen-outer-w,\x0a\x09\x09\x09\x09\x09\x09.screen-outer-h\x20{\x0a\x09\x09\x09\x09\x09\x09\x09top:\x20-29px;\x0a\x09\x09\x09\x09\x09\x09}\x0a\x09\x09\x09\x09\x09\x09.screen-inner-w,\x0a\x09\x09\x09\x09\x09\x09.screen-inner-h\x20{\x0a\x09\x09\x09\x09\x09\x09\x09top:\x20-17px;\x0a\x09\x09\x09\x09\x09\x09}\x0a\x09\x09\x09\x09\x09\x09.screen-visual-w,\x0a\x09\x09\x09\x09\x09\x09.screen-visual-h\x20{\x0a\x09\x09\x09\x09\x09\x09\x09top:\x20-5px;\x0a\x09\x09\x09\x09\x09\x09}\x0a\x0a\x09\x09\x09\x09\x09\x09.screen-display-mode\x20{\x0a\x09\x09\x09\x09\x09\x09\x09top:\x20-31px;\x0a\x09\x09\x09\x09\x09\x09}\x0a\x09\x09\x09\x09\x09\x09.screen-media-orientation\x20{\x0a\x09\x09\x09\x09\x09\x09\x09top:\x20-19px;\x0a\x09\x09\x09\x09\x09\x09}\x0a\x09\x09\x09\x09\x09\x09.screen-orientation-type\x20{\x0a\x09\x09\x09\x09\x09\x09\x09top:\x20-7px;\x0a\x09\x09\x09\x09\x09\x09}\x0a\x09\x09\x09\x09\x09\x09.screen-dpr\x20{\x0a\x09\x09\x09\x09\x09\x09\x09top:\x205px;\x0a\x09\x09\x09\x09\x09\x09}\x0a\x0a\x09\x09\x09\x09\x09</style>\x0a\x09\x09\x09\x09\x09<span\x20class=\x22screen-outer-w\x22>','model','getRecords','cbrt(100)','UTC','parameterOrExtensionLie','device','MOZ_EXT_texture_filter_anisotropic','<span\x20class=\x22math-chromium\x22>C</span>','pow(Math.PI,\x20-100)','increment','maths.data','@media(device-','ThreeDDarkShadow','MediaMetadata','window-features-samples','failed\x20at\x20instanceof\x20check\x20error','readAsDataURL','MAX_COMBINED_UNIFORM_BLOCKS','</span>\x0a\x09\x09\x09<div>data:\x20','features.windowFeatures','Radeon','MAX_VERTEX_TEXTURE_IMAGE_UNITS','Pro\x20Graphics','https://creepjs-api.web.app/fp','screen','</text>','VideoDecoder','America/Kentucky/Louisville','America/Jamaica','opera','MAX_3D_TEXTURE_SIZE','WebGLRenderingContext.getSupportedExtensions','America/Campo_Grande','Roboto','CanvasBlocker','Asia/Tbilisi','SHADING_LANGUAGE_VERSION','Function','lies.totalLies','Document.onwebkitanimationstart','</style>','Linux\x20Android','oscpu','America/Thule','defaultValue','CanvasRenderingContext2D.getImageData','WebGL2RenderingContext','numeric','language','hasOwnProperty','Element.ariaColIndex','getOwnPropertyNames','getBoundingClientRect','MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS','Pacific/Majuro','Pacific/Galapagos','Screen.availWidth','pow(Math.E,\x20-100)','</div>\x0a\x09\x09<div\x20class=\x22help\x22\x20title=\x22Range.getBoundingClientRect()\x22>range\x20B:\x20','America/Los_Angeles','Helvetica\x20Neue','webgl\x20image','Object,\x20Function,\x20Array,\x20Number,\x20parseFloat,\x20parseInt,\x20Infinity,\x20NaN,\x20undefined,\x20Boolean,\x20String,\x20Symbol,\x20Date,\x20Promise,\x20RegExp,\x20Error,\x20AggregateError,\x20EvalError,\x20RangeError,\x20ReferenceError,\x20SyntaxError,\x20TypeError,\x20URIError,\x20globalThis,\x20JSON,\x20Math,\x20Intl,\x20ArrayBuffer,\x20Uint8Array,\x20Int8Array,\x20Uint16Array,\x20Int16Array,\x20Uint32Array,\x20Int32Array,\x20Float32Array,\x20Float64Array,\x20Uint8ClampedArray,\x20BigUint64Array,\x20BigInt64Array,\x20DataView,\x20Map,\x20BigInt,\x20Set,\x20WeakMap,\x20WeakSet,\x20Proxy,\x20Reflect,\x20FinalizationRegistry,\x20WeakRef,\x20decodeURI,\x20decodeURIComponent,\x20encodeURI,\x20encodeURIComponent,\x20escape,\x20unescape,\x20eval,\x20isFinite,\x20isNaN,\x20console,\x20Option,\x20Image,\x20Audio,\x20webkitURL,\x20webkitRTCPeerConnection,\x20webkitMediaStream,\x20WebKitMutationObserver,\x20WebKitCSSMatrix,\x20XPathResult,\x20XPathExpression,\x20XPathEvaluator,\x20XMLSerializer,\x20XMLHttpRequestUpload,\x20XMLHttpRequestEventTarget,\x20XMLHttpRequest,\x20XMLDocument,\x20WritableStreamDefaultWriter,\x20WritableStreamDefaultController,\x20WritableStream,\x20Worker,\x20Window,\x20WheelEvent,\x20WebSocket,\x20WebGLVertexArrayObject,\x20WebGLUniformLocation,\x20WebGLTransformFeedback,\x20WebGLTexture,\x20WebGLSync,\x20WebGLShaderPrecisionFormat,\x20WebGLShader,\x20WebGLSampler,\x20WebGLRenderingContext,\x20WebGLRenderbuffer,\x20WebGLQuery,\x20WebGLProgram,\x20WebGLFramebuffer,\x20WebGLContextEvent,\x20WebGLBuffer,\x20WebGLActiveInfo,\x20WebGL2RenderingContext,\x20WaveShaperNode,\x20VisualViewport,\x20ValidityState,\x20VTTCue,\x20UserActivation,\x20URLSearchParams,\x20URL,\x20UIEvent,\x20TreeWalker,\x20TransitionEvent,\x20TransformStream,\x20TrackEvent,\x20TouchList,\x20TouchEvent,\x20Touch,\x20TimeRanges,\x20TextTrackList,\x20TextTrackCueList,\x20TextTrackCue,\x20TextTrack,\x20TextMetrics,\x20TextEvent,\x20TextEncoderStream,\x20TextEncoder,\x20TextDecoderStream,\x20TextDecoder,\x20Text,\x20TaskAttributionTiming,\x20SyncManager,\x20SubmitEvent,\x20StyleSheetList,\x20StyleSheet,\x20StylePropertyMapReadOnly,\x20StylePropertyMap,\x20StorageEvent,\x20Storage,\x20StereoPannerNode,\x20StaticRange,\x20ShadowRoot,\x20Selection,\x20SecurityPolicyViolationEvent,\x20ScriptProcessorNode,\x20ScreenOrientation,\x20Screen,\x20Scheduling,\x20SVGViewElement,\x20SVGUseElement,\x20SVGUnitTypes,\x20SVGTransformList,\x20SVGTransform,\x20SVGTitleElement,\x20SVGTextPositioningElement,\x20SVGTextPathElement,\x20SVGTextElement,\x20SVGTextContentElement,\x20SVGTSpanElement,\x20SVGSymbolElement,\x20SVGSwitchElement,\x20SVGStyleElement,\x20SVGStringList,\x20SVGStopElement,\x20SVGSetElement,\x20SVGScriptElement,\x20SVGSVGElement,\x20SVGRectElement,\x20SVGRect,\x20SVGRadialGradientElement,\x20SVGPreserveAspectRatio,\x20SVGPolylineElement,\x20SVGPolygonElement,\x20SVGPointList,\x20SVGPoint,\x20SVGPatternElement,\x20SVGPathElement,\x20SVGNumberList,\x20SVGNumber,\x20SVGMetadataElement,\x20SVGMatrix,\x20SVGMaskElement,\x20SVGMarkerElement,\x20SVGMPathElement,\x20SVGLinearGradientElement,\x20SVGLineElement,\x20SVGLengthList,\x20SVGLength,\x20SVGImageElement,\x20SVGGraphicsElement,\x20SVGGradientElement,\x20SVGGeometryElement,\x20SVGGElement,\x20SVGForeignObjectElement,\x20SVGFilterElement,\x20SVGFETurbulenceElement,\x20SVGFETileElement,\x20SVGFESpotLightElement,\x20SVGFESpecularLightingElement,\x20SVGFEPointLightElement,\x20SVGFEOffsetElement,\x20SVGFEMorphologyElement,\x20SVGFEMergeNodeElement,\x20SVGFEMergeElement,\x20SVGFEImageElement,\x20SVGFEGaussianBlurElement,\x20SVGFEFuncRElement,\x20SVGFEFuncGElement,\x20SVGFEFuncBElement,\x20SVGFEFuncAElement,\x20SVGFEFloodElement,\x20SVGFEDropShadowElement,\x20SVGFEDistantLightElement,\x20SVGFEDisplacementMapElement,\x20SVGFEDiffuseLightingElement,\x20SVGFEConvolveMatrixElement,\x20SVGFECompositeElement,\x20SVGFEComponentTransferElement,\x20SVGFEColorMatrixElement,\x20SVGFEBlendElement,\x20SVGEllipseElement,\x20SVGElement,\x20SVGDescElement,\x20SVGDefsElement,\x20SVGComponentTransferFunctionElement,\x20SVGClipPathElement,\x20SVGCircleElement,\x20SVGAnimationElement,\x20SVGAnimatedTransformList,\x20SVGAnimatedString,\x20SVGAnimatedRect,\x20SVGAnimatedPreserveAspectRatio,\x20SVGAnimatedNumberList,\x20SVGAnimatedNumber,\x20SVGAnimatedLengthList,\x20SVGAnimatedLength,\x20SVGAnimatedInteger,\x20SVGAnimatedEnumeration,\x20SVGAnimatedBoolean,\x20SVGAnimatedAngle,\x20SVGAnimateTransformElement,\x20SVGAnimateMotionElement,\x20SVGAnimateElement,\x20SVGAngle,\x20SVGAElement,\x20Response,\x20ResizeObserverSize,\x20ResizeObserverEntry,\x20ResizeObserver,\x20Request,\x20ReportingObserver,\x20ReadableStreamDefaultReader,\x20ReadableStreamDefaultController,\x20ReadableStreamBYOBRequest,\x20ReadableStreamBYOBReader,\x20ReadableStream,\x20ReadableByteStreamController,\x20Range,\x20RadioNodeList,\x20RTCTrackEvent,\x20RTCStatsReport,\x20RTCSessionDescription,\x20RTCSctpTransport,\x20RTCRtpTransceiver,\x20RTCRtpSender,\x20RTCRtpReceiver,\x20RTCPeerConnectionIceEvent,\x20RTCPeerConnectionIceErrorEvent,\x20RTCPeerConnection,\x20RTCIceCandidate,\x20RTCErrorEvent,\x20RTCError,\x20RTCEncodedVideoFrame,\x20RTCEncodedAudioFrame,\x20RTCDtlsTransport,\x20RTCDataChannelEvent,\x20RTCDataChannel,\x20RTCDTMFToneChangeEvent,\x20RTCDTMFSender,\x20RTCCertificate,\x20PromiseRejectionEvent,\x20ProgressEvent,\x20ProcessingInstruction,\x20PopStateEvent,\x20PointerEvent,\x20PluginArray,\x20Plugin,\x20PeriodicWave,\x20PerformanceTiming,\x20PerformanceServerTiming,\x20PerformanceResourceTiming,\x20PerformancePaintTiming,\x20PerformanceObserverEntryList,\x20PerformanceObserver,\x20PerformanceNavigationTiming,\x20PerformanceNavigation,\x20PerformanceMeasure,\x20PerformanceMark,\x20PerformanceLongTaskTiming,\x20PerformanceEventTiming,\x20PerformanceEntry,\x20PerformanceElementTiming,\x20Performance,\x20Path2D,\x20PannerNode,\x20PageTransitionEvent,\x20OverconstrainedError,\x20OscillatorNode,\x20OffscreenCanvasRenderingContext2D,\x20OffscreenCanvas,\x20OfflineAudioContext,\x20OfflineAudioCompletionEvent,\x20NodeList,\x20NodeIterator,\x20NodeFilter,\x20Node,\x20NetworkInformation,\x20Navigator,\x20NamedNodeMap,\x20MutationRecord,\x20MutationObserver,\x20MutationEvent,\x20MouseEvent,\x20MimeTypeArray,\x20MimeType,\x20MessagePort,\x20MessageEvent,\x20MessageChannel,\x20MediaStreamTrackEvent,\x20MediaStreamEvent,\x20MediaStreamAudioSourceNode,\x20MediaStreamAudioDestinationNode,\x20MediaStream,\x20MediaRecorder,\x20MediaQueryListEvent,\x20MediaQueryList,\x20MediaList,\x20MediaError,\x20MediaEncryptedEvent,\x20MediaElementAudioSourceNode,\x20MediaCapabilities,\x20Location,\x20LayoutShiftAttribution,\x20LayoutShift,\x20LargestContentfulPaint,\x20KeyframeEffect,\x20KeyboardEvent,\x20IntersectionObserverEntry,\x20IntersectionObserver,\x20InputEvent,\x20InputDeviceInfo,\x20InputDeviceCapabilities,\x20ImageData,\x20ImageCapture,\x20ImageBitmapRenderingContext,\x20ImageBitmap,\x20IdleDeadline,\x20IIRFilterNode,\x20IDBVersionChangeEvent,\x20IDBTransaction,\x20IDBRequest,\x20IDBOpenDBRequest,\x20IDBObjectStore,\x20IDBKeyRange,\x20IDBIndex,\x20IDBFactory,\x20IDBDatabase,\x20IDBCursorWithValue,\x20IDBCursor,\x20History,\x20Headers,\x20HashChangeEvent,\x20HTMLVideoElement,\x20HTMLUnknownElement,\x20HTMLUListElement,\x20HTMLTrackElement,\x20HTMLTitleElement,\x20HTMLTimeElement,\x20HTMLTextAreaElement,\x20HTMLTemplateElement,\x20HTMLTableSectionElement,\x20HTMLTableRowElement,\x20HTMLTableElement,\x20HTMLTableColElement,\x20HTMLTableCellElement,\x20HTMLTableCaptionElement,\x20HTMLStyleElement,\x20HTMLSpanElement,\x20HTMLSourceElement,\x20HTMLSlotElement,\x20HTMLSelectElement,\x20HTMLScriptElement,\x20HTMLQuoteElement,\x20HTMLProgressElement,\x20HTMLPreElement,\x20HTMLPictureElement,\x20HTMLParamElement,\x20HTMLParagraphElement,\x20HTMLOutputElement,\x20HTMLOptionsCollection,\x20HTMLOptionElement,\x20HTMLOptGroupElement,\x20HTMLObjectElement,\x20HTMLOListElement,\x20HTMLModElement,\x20HTMLMeterElement,\x20HTMLMetaElement,\x20HTMLMenuElement,\x20HTMLMediaElement,\x20HTMLMarqueeElement,\x20HTMLMapElement,\x20HTMLLinkElement,\x20HTMLLegendElement,\x20HTMLLabelElement,\x20HTMLLIElement,\x20HTMLInputElement,\x20HTMLImageElement,\x20HTMLIFrameElement,\x20HTMLHtmlElement,\x20HTMLHeadingElement,\x20HTMLHeadElement,\x20HTMLHRElement,\x20HTMLFrameSetElement,\x20HTMLFrameElement,\x20HTMLFormElement,\x20HTMLFormControlsCollection,\x20HTMLFontElement,\x20HTMLFieldSetElement,\x20HTMLEmbedElement,\x20HTMLElement,\x20HTMLDocument,\x20HTMLDivElement,\x20HTMLDirectoryElement,\x20HTMLDialogElement,\x20HTMLDetailsElement,\x20HTMLDataListElement,\x20HTMLDataElement,\x20HTMLDListElement,\x20HTMLCollection,\x20HTMLCanvasElement,\x20HTMLButtonElement,\x20HTMLBodyElement,\x20HTMLBaseElement,\x20HTMLBRElement,\x20HTMLAudioElement,\x20HTMLAreaElement,\x20HTMLAnchorElement,\x20HTMLAllCollection,\x20GeolocationPositionError,\x20GeolocationPosition,\x20GeolocationCoordinates,\x20Geolocation,\x20GamepadHapticActuator,\x20GamepadEvent,\x20GamepadButton,\x20Gamepad,\x20GainNode,\x20FormDataEvent,\x20FormData,\x20FontFaceSetLoadEvent,\x20FontFace,\x20FocusEvent,\x20FileReader,\x20FileList,\x20File,\x20FeaturePolicy,\x20External,\x20EventTarget,\x20EventSource,\x20EventCounts,\x20Event,\x20ErrorEvent,\x20ElementInternals,\x20Element,\x20DynamicsCompressorNode,\x20DragEvent,\x20DocumentType,\x20DocumentFragment,\x20Document,\x20DelayNode,\x20DecompressionStream,\x20DataTransferItemList,\x20DataTransferItem,\x20DataTransfer,\x20DOMTokenList,\x20DOMStringMap,\x20DOMStringList,\x20DOMRectReadOnly,\x20DOMRectList,\x20DOMRect,\x20DOMQuad,\x20DOMPointReadOnly,\x20DOMPoint,\x20DOMParser,\x20DOMMatrixReadOnly,\x20DOMMatrix,\x20DOMImplementation,\x20DOMException,\x20DOMError,\x20CustomEvent,\x20CustomElementRegistry,\x20Crypto,\x20CountQueuingStrategy,\x20ConvolverNode,\x20ConstantSourceNode,\x20CompressionStream,\x20CompositionEvent,\x20Comment,\x20CloseEvent,\x20ClipboardEvent,\x20CharacterData,\x20ChannelSplitterNode,\x20ChannelMergerNode,\x20CanvasRenderingContext2D,\x20CanvasPattern,\x20CanvasGradient,\x20CanvasFilter,\x20CanvasCaptureMediaStreamTrack,\x20CSSVariableReferenceValue,\x20CSSUnparsedValue,\x20CSSUnitValue,\x20CSSTranslate,\x20CSSTransformValue,\x20CSSTransformComponent,\x20CSSSupportsRule,\x20CSSStyleValue,\x20CSSStyleSheet,\x20CSSStyleRule,\x20CSSStyleDeclaration,\x20CSSSkewY,\x20CSSSkewX,\x20CSSSkew,\x20CSSScale,\x20CSSRuleList,\x20CSSRule,\x20CSSRotate,\x20CSSPropertyRule,\x20CSSPositionValue,\x20CSSPerspective,\x20CSSPageRule,\x20CSSNumericValue,\x20CSSNumericArray,\x20CSSNamespaceRule,\x20CSSMediaRule,\x20CSSMatrixComponent,\x20CSSMathValue,\x20CSSMathSum,\x20CSSMathProduct,\x20CSSMathNegate,\x20CSSMathMin,\x20CSSMathMax,\x20CSSMathInvert,\x20CSSMathClamp,\x20CSSLayerStatementRule,\x20CSSLayerBlockRule,\x20CSSKeywordValue,\x20CSSKeyframesRule,\x20CSSKeyframeRule,\x20CSSImportRule,\x20CSSImageValue,\x20CSSGroupingRule,\x20CSSFontFaceRule,\x20CSSCounterStyleRule,\x20CSSConditionRule,\x20CSS,\x20CDATASection,\x20ByteLengthQueuingStrategy,\x20BroadcastChannel,\x20BlobEvent,\x20Blob,\x20BiquadFilterNode,\x20BeforeUnloadEvent,\x20BeforeInstallPromptEvent,\x20BaseAudioContext,\x20BarProp,\x20AudioWorkletNode,\x20AudioScheduledSourceNode,\x20AudioProcessingEvent,\x20AudioParamMap,\x20AudioParam,\x20AudioNode,\x20AudioListener,\x20AudioDestinationNode,\x20AudioContext,\x20AudioBufferSourceNode,\x20AudioBuffer,\x20Attr,\x20AnimationEvent,\x20AnimationEffect,\x20Animation,\x20AnalyserNode,\x20AbstractRange,\x20AbortSignal,\x20AbortController,\x20window,\x20self,\x20document,\x20name,\x20location,\x20customElements,\x20history,\x20locationbar,\x20menubar,\x20personalbar,\x20scrollbars,\x20statusbar,\x20toolbar,\x20status,\x20closed,\x20frames,\x20length,\x20top,\x20opener,\x20parent,\x20frameElement,\x20navigator,\x20origin,\x20external,\x20screen,\x20innerWidth,\x20innerHeight,\x20scrollX,\x20pageXOffset,\x20scrollY,\x20pageYOffset,\x20visualViewport,\x20screenX,\x20screenY,\x20outerWidth,\x20outerHeight,\x20devicePixelRatio,\x20event,\x20clientInformation,\x20offscreenBuffering,\x20screenLeft,\x20screenTop,\x20defaultStatus,\x20defaultstatus,\x20styleMedia,\x20onsearch,\x20isSecureContext,\x20performance,\x20onappinstalled,\x20onbeforeinstallprompt,\x20crypto,\x20indexedDB,\x20webkitStorageInfo,\x20sessionStorage,\x20localStorage,\x20onbeforexrselect,\x20onabort,\x20onblur,\x20oncancel,\x20oncanplay,\x20oncanplaythrough,\x20onchange,\x20onclick,\x20onclose,\x20oncontextlost,\x20oncontextmenu,\x20oncontextrestored,\x20oncuechange,\x20ondblclick,\x20ondrag,\x20ondragend,\x20ondragenter,\x20ondragleave,\x20ondragover,\x20ondragstart,\x20ondrop,\x20ondurationchange,\x20onemptied,\x20onended,\x20onerror,\x20onfocus,\x20onformdata,\x20oninput,\x20oninvalid,\x20onkeydown,\x20onkeypress,\x20onkeyup,\x20onload,\x20onloadeddata,\x20onloadedmetadata,\x20onloadstart,\x20onmousedown,\x20onmouseenter,\x20onmouseleave,\x20onmousemove,\x20onmouseout,\x20onmouseover,\x20onmouseup,\x20onmousewheel,\x20onpause,\x20onplay,\x20onplaying,\x20onprogress,\x20onratechange,\x20onreset,\x20onresize,\x20onscroll,\x20onsecuritypolicyviolation,\x20onseeked,\x20onseeking,\x20onselect,\x20onslotchange,\x20onstalled,\x20onsubmit,\x20onsuspend,\x20ontimeupdate,\x20ontoggle,\x20onvolumechange,\x20onwaiting,\x20onwebkitanimationend,\x20onwebkitanimationiteration,\x20onwebkitanimationstart,\x20onwebkittransitionend,\x20onwheel,\x20onauxclick,\x20ongotpointercapture,\x20onlostpointercapture,\x20onpointerdown,\x20onpointermove,\x20onpointerup,\x20onpointercancel,\x20onpointerover,\x20onpointerout,\x20onpointerenter,\x20onpointerleave,\x20onselectstart,\x20onselectionchange,\x20onanimationend,\x20onanimationiteration,\x20onanimationstart,\x20ontransitionrun,\x20ontransitionstart,\x20ontransitionend,\x20ontransitioncancel,\x20onafterprint,\x20onbeforeprint,\x20onbeforeunload,\x20onhashchange,\x20onlanguagechange,\x20onmessage,\x20onmessageerror,\x20onoffline,\x20ononline,\x20onpagehide,\x20onpageshow,\x20onpopstate,\x20onrejectionhandled,\x20onstorage,\x20onunhandledrejection,\x20onunload,\x20crossOriginIsolated,\x20alert,\x20atob,\x20blur,\x20btoa,\x20cancelAnimationFrame,\x20cancelIdleCallback,\x20captureEvents,\x20clearInterval,\x20clearTimeout,\x20close,\x20confirm,\x20createImageBitmap,\x20fetch,\x20find,\x20focus,\x20getComputedStyle,\x20getSelection,\x20matchMedia,\x20moveBy,\x20moveTo,\x20open,\x20postMessage,\x20print,\x20prompt,\x20queueMicrotask,\x20releaseEvents,\x20reportError,\x20requestAnimationFrame,\x20requestIdleCallback,\x20resizeBy,\x20resizeTo,\x20scroll,\x20scrollBy,\x20scrollTo,\x20setInterval,\x20setTimeout,\x20stop,\x20structuredClone,\x20webkitCancelAnimationFrame,\x20webkitRequestAnimationFrame,\x20Atomics,\x20chrome,\x20WebAssembly,\x20caches,\x20cookieStore,\x20ondevicemotion,\x20ondeviceorientation,\x20ondeviceorientationabsolute,\x20launchQueue,\x20onbeforematch,\x20AbsoluteOrientationSensor,\x20Accelerometer,\x20AudioWorklet,\x20Cache,\x20CacheStorage,\x20Clipboard,\x20ClipboardItem,\x20CookieChangeEvent,\x20CookieStore,\x20CookieStoreManager,\x20Credential,\x20CredentialsContainer,\x20CryptoKey,\x20DeviceMotionEvent,\x20DeviceMotionEventAcceleration,\x20DeviceMotionEventRotationRate,\x20DeviceOrientationEvent,\x20FederatedCredential,\x20Gyroscope,\x20Keyboard,\x20KeyboardLayoutMap,\x20LinearAccelerationSensor,\x20Lock,\x20LockManager,\x20MIDIAccess,\x20MIDIConnectionEvent,\x20MIDIInput,\x20MIDIInputMap,\x20MIDIMessageEvent,\x20MIDIOutput,\x20MIDIOutputMap,\x20MIDIPort,\x20MediaDeviceInfo,\x20MediaDevices,\x20MediaKeyMessageEvent,\x20MediaKeySession,\x20MediaKeyStatusMap,\x20MediaKeySystemAccess,\x20MediaKeys,\x20NavigationPreloadManager,\x20NavigatorManagedData,\x20OrientationSensor,\x20PasswordCredential,\x20RTCIceTransport,\x20RelativeOrientationSensor,\x20Sensor,\x20SensorErrorEvent,\x20ServiceWorker,\x20ServiceWorkerContainer,\x20ServiceWorkerRegistration,\x20StorageManager,\x20SubtleCrypto,\x20Worklet,\x20XRDOMOverlayState,\x20XRLayer,\x20XRWebGLBinding,\x20AudioData,\x20EncodedAudioChunk,\x20EncodedVideoChunk,\x20ImageTrack,\x20ImageTrackList,\x20VideoColorSpace,\x20VideoFrame,\x20AudioDecoder,\x20AudioEncoder,\x20ImageDecoder,\x20VideoDecoder,\x20VideoEncoder,\x20AuthenticatorAssertionResponse,\x20AuthenticatorAttestationResponse,\x20AuthenticatorResponse,\x20PublicKeyCredential,\x20BatteryManager,\x20Bluetooth,\x20BluetoothCharacteristicProperties,\x20BluetoothDevice,\x20BluetoothRemoteGATTCharacteristic,\x20BluetoothRemoteGATTDescriptor,\x20BluetoothRemoteGATTServer,\x20BluetoothRemoteGATTService,\x20BrowserCaptureMediaStreamTrack,\x20CropTarget,\x20EyeDropper,\x20FileSystemDirectoryHandle,\x20FileSystemFileHandle,\x20FileSystemHandle,\x20FileSystemWritableFileStream,\x20FontData,\x20FragmentDirective,\x20GravitySensor,\x20HID,\x20HIDConnectionEvent,\x20HIDDevice,\x20HIDInputReportEvent,\x20IdleDetector,\x20LaunchParams,\x20LaunchQueue,\x20MediaStreamTrackGenerator,\x20MediaStreamTrackProcessor,\x20OTPCredential,\x20PaymentAddress,\x20PaymentRequest,\x20PaymentResponse,\x20PaymentMethodChangeEvent,\x20Presentation,\x20PresentationAvailability,\x20PresentationConnection,\x20PresentationConnectionAvailableEvent,\x20PresentationConnectionCloseEvent,\x20PresentationConnectionList,\x20PresentationReceiver,\x20PresentationRequest,\x20Profiler,\x20ScreenDetailed,\x20ScreenDetails,\x20Serial,\x20SerialPort,\x20USB,\x20USBAlternateInterface,\x20USBConfiguration,\x20USBConnectionEvent,\x20USBDevice,\x20USBEndpoint,\x20USBInTransferResult,\x20USBInterface,\x20USBIsochronousInTransferPacket,\x20USBIsochronousInTransferResult,\x20USBIsochronousOutTransferPacket,\x20USBIsochronousOutTransferResult,\x20USBOutTransferResult,\x20VirtualKeyboard,\x20WakeLock,\x20WakeLockSentinel,\x20WebTransport,\x20WebTransportBidirectionalStream,\x20WebTransportDatagramDuplexStream,\x20WebTransportError,\x20WindowControlsOverlay,\x20WindowControlsOverlayGeometryChangeEvent,\x20XRAnchor,\x20XRAnchorSet,\x20XRBoundedReferenceSpace,\x20XRFrame,\x20XRInputSource,\x20XRInputSourceArray,\x20XRInputSourceEvent,\x20XRInputSourcesChangeEvent,\x20XRPose,\x20XRReferenceSpace,\x20XRReferenceSpaceEvent,\x20XRRenderState,\x20XRRigidTransform,\x20XRSession,\x20XRSessionEvent,\x20XRSpace,\x20XRSystem,\x20XRView,\x20XRViewerPose,\x20XRViewport,\x20XRWebGLLayer,\x20XRCPUDepthInformation,\x20XRDepthInformation,\x20XRWebGLDepthInformation,\x20XRHitTestResult,\x20XRHitTestSource,\x20XRRay,\x20XRTransientInputHitTestResult,\x20XRTransientInputHitTestSource,\x20XRLightEstimate,\x20XRLightProbe,\x20getScreenDetails,\x20queryLocalFonts,\x20showDirectoryPicker,\x20showOpenFilePicker,\x20showSaveFilePicker,\x20originAgentCluster,\x20trustedTypes,\x20navigation,\x20speechSynthesis,\x20onpointerrawupdate,\x20scheduler,\x20AnimationPlaybackEvent,\x20AnimationTimeline,\x20CSSAnimation,\x20CSSTransition,\x20DocumentTimeline,\x20BackgroundFetchManager,\x20BackgroundFetchRecord,\x20BackgroundFetchRegistration,\x20BluetoothUUID,\x20CSSContainerRule,\x20CSSFontPaletteValuesRule,\x20CustomStateSet,\x20DelegatedInkTrailPresenter,\x20Ink,\x20MediaMetadata,\x20MediaSession,\x20MediaSource,\x20SourceBuffer,\x20SourceBufferList,\x20MediaStreamTrack,\x20NavigateEvent,\x20Navigation,\x20NavigationCurrentEntryChangeEvent,\x20NavigationDestination,\x20NavigationHistoryEntry,\x20NavigationTransition,\x20NavigatorUAData,\x20Notification,\x20PaymentInstruments,\x20PaymentManager,\x20PaymentRequestUpdateEvent,\x20PeriodicSyncManager,\x20PermissionStatus,\x20Permissions,\x20PictureInPictureEvent,\x20PictureInPictureWindow,\x20PushManager,\x20PushSubscription,\x20PushSubscriptionOptions,\x20RemotePlayback,\x20Scheduler,\x20TaskController,\x20TaskPriorityChangeEvent,\x20TaskSignal,\x20SharedWorker,\x20SpeechSynthesisErrorEvent,\x20SpeechSynthesisEvent,\x20SpeechSynthesisUtterance,\x20TrustedHTML,\x20TrustedScript,\x20TrustedScriptURL,\x20TrustedTypePolicy,\x20TrustedTypePolicyFactory,\x20URLPattern,\x20VideoPlaybackQuality,\x20VirtualKeyboardGeometryChangeEvent,\x20XSLTProcessor,\x20webkitSpeechGrammar,\x20webkitSpeechGrammarList,\x20webkitSpeechRecognition,\x20webkitSpeechRecognitionError,\x20webkitSpeechRecognitionEvent,\x20openDatabase,\x20webkitRequestFileSystem,\x20webkitResolveLocalFileSystemURL','</div>\x0a\x09\x09\x09<div>time:\x20','failed\x20own\x20property\x20names','Error!','Segoe\x20UI\x20Emoji','scrollHeight','tab-size','Africa/Douala','GeolocationPosition','\x22>\x0a\x09\x09\x09','America/Cuiaba','\x0a\x09\x09<div\x20class=\x22col-six\x20undefined\x22>\x0a\x09\x09\x09<strong>Math</strong>\x0a\x09\x09\x09<div>results:\x20','Cousine','domrect-emoji','\x20Opera','Windows\x2011\x20(64-bit)','workerScope.localeEntropyIsTrusty','sdpFmtpLine','gpu:</div>\x0a\x09\x09<div\x20class=\x22block-text\x20help\x22\x20title=\x22','entropy-high','cbrt','canPlayType','creep-console-errors','<span\x20class=\x22audiop\x20mb\x22>M</span>','\x22\x20onclick=\x22\x22>\x0a\x09\x09\x09<label\x20class=\x22modal-content\x22\x20for=\x22toggle-open-','availLeftHash','MAX_UNIFORM_BUFFER_BINDINGS','requestAdapter','failed\x20descriptor','Navigator.mimeTypes','brandsVersion','Atomics.load','America/Blanc-Sablon','HighlightText','\x27\x20(prefers-color-scheme:\x20dark);\x0a\x09\x09@import\x20\x27','duckduckgo','sinh(Math.LN2)','<br>','features.version','abrahamjuliot.github.io','Intel(R)\x20HD\x20Graphics','equal\x20elements\x20mismatch','Windows\x208.1','Element.insertAdjacentElement','WebAssembly.Tag','sin','\x20XP\x20Pro','timeZone','America/Managua','WebTransport','Europe/Busingen','Australia/Sydney','blue','failed\x20class\x20extends\x20error','<br><br>','bluetooth','function','(orientation:\x20portrait)','fade-right-in','%\x20rgba\x20noise\x20','inherits','MAX_TEXTURE_IMAGE_UNITS','--import-monochrome:\x20monochrome','supports','shaderSource','America/Costa_Rica','includes','Performance','Europe/Budapest','sinh(Math.SQRT1_2)','reduce','high','Antarctica/Mawson','#CC9999','classList','JShelter','log10(11*Math.LN2)','!Number.toSource','contain-intrinsic-width','canvasEmojiId=','Europe/Rome','cos(','tan(10*Math.LOG10E)','px\x20','replace','ThreeDHighlight','America/Argentina/Buenos_Aires','Etc/GMT','filter','getImageDataHash','NVIDIAGameReadyD3D','Atomics.wait','signature-input','tan(6*Math.E)','\x22\x20style=\x22','font-synthesis','type','#E6FF80','Screen','Set','Element.ariaRowSpan','<span\x20class=\x22mediar\x20tr\x22>T</span>','\x0aknown\x20parts:\x20','\x0a\x09\x09<div\x20class=\x22col-six\x20undefined\x22>\x0a\x09\x09\x09<strong>CSS\x20Media\x20Queries</strong>\x0a\x09\x09\x09<div>@media:\x20','\x0a\x0a\x09\x09<br><br>\x0a\x09\x09','</div>\x0a\x09\x09\x09<div>mimeTypes\x20(0):\x20','\x20failed\x20v','border-start-end-radius','Etc/GMT-5','fullscreen','Big\x20Sur','WebGLRenderingContext.getParameter','NVIDIAGa','beginPath','mimeTypesSystem','\x22>\x0a\x09\x09<div>device:</div>\x0a\x09\x09<div\x20class=\x22block-text\x20help\x22\x20title=\x22Navigator.deviceMemory\x0aNavigator.hardwareConcurrency\x0aNavigator.maxTouchPoints\x0aNavigator.oscpu\x0aNavigator.platform\x0aNavigator.userAgent\x0aBluetooth.getAvailability()\x22>\x0a\x09\x09\x09','brand','FormDataEvent','brave','Dancing\x20Script','\x27\x20(prefers-color-scheme:\x20light);\x0a\x09\x09@import\x20\x27','gyroscope','cos(51*Math.LN2)','getOwnPropertyDescriptor','</span>\x0a\x09\x09\x09\x09<br><span\x20class=\x22grey\x20jumbo\x22\x20style=\x22font-family:\x20','Windows\x2011','Asia/Anadyr','cos(21*Math.SQRT1_2)','workerScope.webglRenderer','AnalyserNode.minDecibels','sendMessage','Element.ariaExpanded','--import-color-gamut:\x20rec2020','America/St_Vincent','Pacific/Gambier','<span\x20class=\x22icon\x20blink\x22></span>','Asia/Colombo','frequency','?id=','samples','America/Kralendijk','mimeTypes\x20failed','Asia/Famagusta','getElementsByTagName','\x0a\x09\x09\x09</span>\x0a\x09\x09</div>\x0a\x09</div>\x0a\x09','b011fd1c','offset','Etc/GMT-7','webgl\x20parameters','-mimeTypes','VERTEX_SHADER.HIGH_INT.rangeMax','-client-rects-div','trim','10\x20(2004|20H2|21H1)','query','</span>\x0a\x09<div\x20class=\x22col-six','defineProperty','10.13-10.14','screen\x20metrics','Are\x20you\x20sure?\x20This\x20cannot\x20be\x20undone.\x0a\x0asignature:\x20','</div>\x0a\x09\x09<div\x20class=\x22block-text\x20help\x22\x20title=\x22WorkerNavigator.userAgent\x22>\x0a\x09\x09\x09<div>','detune','<span\x20class=\x22math-blank-false\x22>-</span>','UNSUPPORTED','BigInt64Array','setAttribute','Element.prepend','7/1/1113','Document.onpointerrawupdate','Australia/Broken_Hill','#66E64D','5MFQBkb','window','XRRay','MAX_VIEWPORT_DIMS','TypeError','!-moz-outline-radius-topright','&subId=','\x0a\x09<div\x20class=\x22relative\x20col-six\x22>\x0a\x09\x09<span\x20class=\x22aside-note\x22>','replaceChildHash','Asia/Ust-Nera','webgl\x20renderer','symbols','offlineAudioContext.floatTimeDomainDataSum','timezone','KACSTOffice','svg\x20emojis','FinalizationRegistry','Etc/GMT-3','audioSystem','Notification','Tor\x20Browser','America/Creston','Africa/Ouagadougou','Pacific/Chuuk','navigator.plugins','STATIC_DRAW','border-block-width','html\x20element','function\x20isBrave()\x20{\x20[native\x20code]\x20}','Etc/GMT+0','\x0a\x09\x09\x09\x09\x09\x09\x09<div><span\x20style=\x22display:inline-block;border:1px\x20solid\x20#eee;border-radius:3px;width:12px;height:12px;background:','Africa/El_Aaiun','Asia/Dubai','\x22\x20class=\x22modal-','America/Argentina/Cordoba','</div>\x0a\x09\x09\x09\x09<div\x20class=\x22help\x22\x20title=\x22Screen.colorDepth\x0aScreen.pixelDepth\x22>depth:\x20','createRange','--color-gamut','</div>\x0a\x09\x09\x09<div>plural:\x20','ServiceWorkerGlobalScope','appVersion\x20failed','\x20is\x20unusual','</div>\x0a\x09\x09\x09</div>\x0a\x0a\x09\x09</div>',';}}','concat','</div>\x0a\x09\x09</div>\x0a\x09\x09<div\x20class=\x22col-six\x20undefined\x22>\x0a\x09\x09\x09<div>userAgent:</div>\x0a\x09\x09\x09<div\x20class=\x22block-text\x22>','CanvasRenderingContext2D.font','sin(21*Math.SQRT2)','status','cookieStore','replaceWithHash','Africa/Asmara','Africa/Accra','(forced-colors:\x20none)','border-inline-width','\x20failed\x20Window\x20features\x20by\x20','\x20Features\x20%c-','!Atomics.wake','\x0a\x09\x09<div\x20class=\x22col-six\x20undefined\x22>\x0a\x09\x09\x09<div>Features:\x20','Europe/Sofia','BLOCKED','952aIonGz','compact','NavigatorManagedData','\x20-\x20','a2971888','Screen.availHeight','\x27\x20(monochrome);\x0a\x09\x09@import\x20\x27','DateTimeFormat','America/Lower_Princes','#B34D4D','<div\x20class=\x22domrect-emoji\x22>','preventDefault','#FF99E6','missing\x20mimetype','createAnalyser','Chipset','Africa/Kigali','compileShader','sinh(Math.PI)','Pacific/Saipan','domRect\x20emojis','!BatteryManager','canvasBlobId=','SHA-256','Africa/Cairo','DejaVu\x20Sans','\x27\x20(prefers-reduced-motion:\x20no-preference);\x0a\x09\x09@import\x20\x27','--import-display-mode','aspect-ratio','</span>\x0a\x09\x09\x09\x09<strong>Screen</strong><span\x20class=\x22','(color-gamut:\x20rec2020)','has','Graphics\x20Media\x20Accelerator','Asia/Ashgabat','Pacific/Apia','shadowBlur','tan(6*Math.LN2)','hypot(2*Math.LN2,\x20-100)','px;height:','vertexPosArray','Element.ariaRowCount','vendorSub','offset-distance','Document.onbeforeinput','voices.defaults','ownKeys','Africa/Luanda','canvas\x20context\x20blocked','speaker','America/Bahia_Banderas','removed','Indian/Reunion','</div>\x0a\x09\x09</div>\x0a\x09</div>\x0a\x09','America/Dawson_Creek','speechSynthesis','warn','creep-voices-local','10\x20(1903|1909)','CrOS','canvas2d.liedTextMetrics','canvasWebgl.dataURI2','Document.onanimationstart','Europe/Zurich','<span\x20class=\x22videop\x20mb\x22>M</span>','LN10','America/Tijuana','slice','asin','Etc/GMT+7','Africa/Abidjan','America/North_Dakota/Center','MAX_VERTEX_UNIFORM_VECTORS','log10(7*Math.LOG10E)','(any-hover:\x20hover)','(forced-colors:\x20active)','right','Europe/Vaduz','\x27\x20(display-mode:\x20minimal-ui);\x0a\x09\x09@import\x20\x27','blink','voicesId=','denied','vertexAttribPointer','gpus','-extensions','FontFace.status','MathMLElement','svgSystem','(display-mode:\x20minimal-ui)','canvas2d','AnalyserNode.maxDecibels','vendor\x20failed','ecb498d9','LN2','values','Africa/Lubumbashi','<div\x20class=\x22pixel-emoji\x22>','clipboard','6.1','load','log10(Math.SQRT2)','Indian/Mayotte','GeolocationPositionError','#CCCC00','</div>\x0a\x09\x09</div>\x0a\x09\x09<div>appVersion:</div>\x0a\x09\x09<div\x20class=\x22block-text\x22>\x0a\x09\x09\x09<div>','3dd86d6f','#4cca9f','America/Asuncion','getOwnPropertyDescriptors','SQRT1_2','Atomics.wake','sendBeacon','syntax','ms\x20(','sinh(1)','DuckDuckGo','<span\x20class=\x22icon\x20chrome-extension\x22></span>','</span>\x0a\x09\x09<strong>Resistance</strong><span\x20class=\x22hash\x22>','all','--import-prefers-color-scheme','</label>\x0a\x09\x09<label\x20class=\x22modal-container\x22\x20for=\x22toggle-close-','userAgentData','<div\x20class=\x22icon-pixel\x20paint-image\x22></div>','String.at','device-info','device-aspect-ratio','Living\x20Standard\x20property\x20returned\x20falsy\x20value','Asia/Gaza','</div>\x0a\x09\x09\x09<div>extension:\x20','translate','Screen.availLeft','<span\x20class=\x22sub-hash\x22>','America/Antigua','Scrollbar','const\x20a=1;\x20const\x20a=2;','c767712b','green','BigInt','America/Guadeloupe','Credential','</div>\x0a\x09\x09<div\x20class=\x22help\x22\x20title=\x22SpeechSynthesis.getVoices()\x0aSpeechSynthesisVoice.default\x22>default\x20(','</div>\x0a\x09\x09<div>vendor:\x20','--import-any-pointer:\x20fine','Pacific/Marquesas','canvasWebgl.parameters','Object.hasOwn','gpuModelSystem','getPrototypeOf','Asia/Aden','</div>\x0a\x09\x09<div\x20class=\x22relative\x22>userAgent:','negative','Africa/Harare','userAgentData\x20version\x20','Europe/Bratislava','intl.displayNames','JSON','key','ThreeDFace','Aldhabi','Windows\x208\x20(64-bit)','style=\x22animation:\x20fade-up\x20.3s\x20','register','audio/aac','\x20rtx/','submit','!Error.toSource','America/Cayman','--hover','log10(2*Math.SQRT1_2)','<br>cores:\x20','Screen.availTop','--import-any-pointer:\x20none','copyFromChannelHash','getElementsByTagNameNS','canvas2d.emojiURI','exp','XRDepthInformation','Atlantic/Azores','connect','getDay','AnalyserNode.channelCountMode','Australia/Brisbane','liedTextMetrics','contain-intrinsic-block-size','entropy-unknown','\x27\x20(inverted-colors:\x20inverted);\x0a\x09\x09@import\x20\x27','Europe/Tallinn','toTimeString','Noto\x20Color\x20Emoji','Linux','audioId=','Asia/Riyadh','Source\x20Code\x20Pro','CSSTransition','MAX_FRAGMENT_UNIFORM_BLOCKS','</span>\x0a\x09\x09<div>privacy:\x20','body','trustedName','setProperty','emojiSystem','FieldText','gpu','fillText','Window','</span></div>\x0a\x09\x09\x09\x09\x09\x09\x09\x09</div>\x0a\x09\x09\x09\x09\x09\x09\x09\x09','failed\x20apply\x20interface\x20error','America/Indiana/Knox','tanh(','override-colors','--import-pointer:\x20coarse','contentWindow','sort','OscillatorNode.frequency.maxValue','content-visibility','<span\x20class=\x22math-firefox\x22>F</span>','workerScope.timezoneLocation','America/Barbados','TextMetrics.actualBoundingBoxRight','pow(','Element.ariaSelected','Asia/Muscat','onbeforeinput','ports','padding-block','America/Sao_Paulo','px)\x20and\x20(device-height:\x20','toString',':checked\x20~\x20.modal-container\x20{\x0a\x09\x09\x09visibility:\x20visible;\x0a\x09\x09\x09opacity:\x201;\x0a\x09\x09\x09animation:\x20show\x200.1s\x20linear\x20both;\x0a\x09\x09}\x0a\x09\x09.modal-','!uneval','range','failed\x20matchMedia','Negative\x20ACKs\x20(nack)','--import-prefers-reduced-motion:\x20no-preference','trash.trashBin','Pacific/Enderbury','America/Argentina/San_Juan','String.fromCodePoint','MediaSession','WEBGL_draw_buffers','America/Phoenix','</div>\x0a\x09\x09<div>security:\x20','fallback','Plus\x20Graphics','midi','Navigator.deviceMemory','Asia/Qyzylorda','navigator.uaPostReduction','getFloatTimeDomainDataHash','setMilliseconds','css\x20media','stop','El\x20Capitan','RelativeTimeFormat','stack','standalone','extensionHashPattern','ARRAY_BUFFER','timezone.zone','MAX_ELEMENTS_INDICES','\x0a\x09\x09<div\x20class=\x22col-four\x20undefined\x22>\x0a\x09\x09\x09<strong>Speech</strong>\x0a\x09\x09\x09<div>local\x20(0):\x20','name','Element.ariaPlaceholder','css','0dbbf456','unknown\x20frequency\x20pattern\x20(suspected\x20lie)','Mavericks','resistance','</div>\x0a\x09\x09<div\x20class=\x22help\x22\x20title=\x22SVGTextContentElement.getExtentOfChar()\x22>char:\x20','cosh','nfc','vertexPosAttrib','\x0a\x09\x09\x09<strong>diffs\x20from\x20','</span>\x0a\x09\x09<strong>Window</strong><span\x20class=\x22hash\x22>','creep-captured-errors','XRLightEstimate','Mac','</span>\x0a\x09\x09<div>keys\x20(','computed\x20styles','cssRules','DynamicsCompressorNode.release.defaultValue','navigator.properties','cosh(1)','voices.local','0cb0c682','WebGL2RenderingContext.getSupportedExtensions','</span>\x0a\x09\x09<div\x20class=\x22help\x22\x20title=\x22Element.getClientRects()\x22>elems\x20A:\x20','</span>\x0a\x09\x09<div>properties\x20(','</div>\x0a\x09</div>\x0a\x09<div\x20class=\x22col-six\x22>\x0a\x09\x09<div>CSS:\x20','America/Santarem','createDynamicsCompressor','ATI\x20Radeon','\x20is\x20too\x20high','found\x20extra\x20spaces','userAgent\x20contains\x20HeadlessChrome','%\x20<span\x20class=\x22scale-up\x20grade-','getPropertyValue','Etc/GMT-11','function\x20()\x20{','\x20JS\x20runtime\x20and\x20','OfflineAudioContext','capturedErrors.data','Mesa','invalid\x20mimetype','maxTouchPoints\x20failed','Javanese\x20Text','HIGH_FLOAT','productSub','mac','<span\x20class=\x22icon\x20gecko\x22></span>','HTMLCanvasElement.toDataURL','round','SharedWorkerGlobalScope','onmessage','Samsung','\x0a\x09\x09<br>text:\x20','):<span\x20class=\x22unblurred\x20sub-hash\x22>','1466aaf0','--import-prefers-color-scheme:\x20dark','video/webm;\x20codecs=\x22vp9\x22','container-type','Windows\x20','FRAGMENT_SHADER.MEDIUM_FLOAT.rangeMax','edge','Australia/Darwin','probably','width','DynamicsCompressorNode.attack.defaultValue','getChannelDataHash','InactiveCaption','video/webm;\x20codecs=\x22vp8\x22','MAX_COMBINED_TEXTURE_IMAGE_UNITS','textMetricsSystemSum','Atomics.or','userAgentVersion','SVGRect.x','workerScope.type','Indian/Christmas','</div>\x0a\x09\x09\x09<div\x20class=\x22block-text\x22>','America/Dominica','0b637a33','cos(50*Math.SQRT1_2)','--import-any-pointer:\x20coarse','deviceMemory','Europe/Gibraltar','!Boolean.toSource','acosh','<div\x20class=\x22icon-prediction\x20','VERTEX_SHADER.HIGH_FLOAT.rangeMax','addEventListener','(monochrome)','location','77dea834','Asia/Karachi','atan2','domrectSystemSum','\x22>\x0a\x09\x09\x09<div>\x0a\x09\x09\x09\x09<br><span>','Europe/Vienna','flat','tanh','\x0a\x09\x09\x09\x09\x09\x09\x09</div>\x0a\x09\x09\x09\x09\x09\x09\x09<div\x20class=\x22block-text\x20shadow-icon\x20help\x22\x20title=\x22fuzzy\x20diff\x20history\x22>\x0a\x09\x09\x09\x09\x09\x09\x09\x09','</div>\x0a\x09\x09<div\x20class=\x22help\x22\x20title=\x22AnalyserNode.getFloatFrequencyData()\x22>freq:\x20','add','trash','--unique','hardwareConcurrency','availHeightHash','pow','contain-intrinsic-height','Africa/Nairobi','menu','Etc/GMT+4','Document.onslotchange','Windows','Asia/Dhaka','inlineSize','arc','!SVGZoomAndPan','</div>\x0a\x09\x09\x09<div>\x0a\x09\x09\x09\x09<div>','mic','Geneva','Stable\x20Fingerprint\x20JSON','!Sanitizer','chrome\x20plugins\x20array\x20is\x20empty','<span\x20class=\x22icon\x20','UNMASKED_VENDOR_WEBGL','Asia/Hebron','insertAdjacentHTMLHash','XRTransientInputHitTestSource','FRAGMENT_SHADER.HIGH_FLOAT.rangeMax','blockSize','AudioEncoder','Direct3D','prefers-color-scheme','workerScope.scopeKeys','Windows\x2010','Atlantic/South_Georgia','Intl.ListFormat.resolvedOptions','AbstractRange','Event','AnalyserNode.context.sampleRate','</div>\x0a\x09\x09\x09<div>params\x20(0):\x20','CSSLayerBlockRule','rects','Africa/Kinshasa','America/Indiana/Tell_City','start','\x20hrs','MAX_COLOR_ATTACHMENTS','LockManager','isBrave=','text-underline-position','FRAGMENT_SHADER.LOW_FLOAT.precision','(hover:\x20none)','Asia/Bahrain','<text\x20x=\x2232\x22\x20y=\x2232\x22\x20class=\x22svgrect-emoji\x22>','valueOf','America/Boise','RegExp.hasIndices','\x20does\x20not\x20match\x20userAgent','Asia/Choibalsan','America/Detroit','canvasWebgl.pixels2','GravitySensor','Europe/Saratov','channelCount','devices','mobile','asin(','security','disconnect','TaskController','Asia/Dili','FakeBrowser','--import-hover:\x20none','</div>\x0a\x09\x09<div>webgpu:\x20','Asia/Omsk','\x27\x20(device-aspect-ratio:\x20','getByteFrequencyDataHash','<span\x20class=\x22scale-up\x20grade-','--import-prefers-color-scheme:\x20light','Screen.width','resistance.extensionHashPattern','sin(39*Math.E)','getBBox','\x27\x20(any-pointer:\x20none);\x0a\x09\x09@import\x20\x27','TextMetrics.fontBoundingBoxAscent','matchMedia','Antarctica/Palmer','Europe/Minsk','Array','Error\x20fetching\x20visitor\x20data','red','getFloatTimeDomainData','Asia/Manila','prefix','<style>','extension','America/Santiago','font-fingerprint','LOG10E','height','default','screen.width','\x20diffs\x20from\x20','cosh(502*Math.SQRT2)','Pacific/Easter','Pacific/Auckland',':not(:checked)\x20~\x20.modal-container\x20{\x0a\x09\x09\x09visibility:\x20hidden;\x0a\x09\x09}\x0a\x09\x09</style>\x0a\x09\x09<input\x20type=\x22radio\x22\x20id=\x22toggle-open-','!String.toSource','iPad','Africa/Juba','Atomics.and','Node.appendChild','importNode','Document.onbeforexrselect','ActiveCaption','\x0a\x09\x09\x09\x09\x09</div>\x0a\x09\x09\x09\x09\x09','10\x20(1507)','OfflineAudioContext\x20failed\x20or\x20blocked\x20by\x20client','Lock','canvasSystem','shadowColor','(any-pointer:\x20fine)','Array.at','copyFromChannel','</span>\x0a\x09\x09<strong>Speech</strong><span\x20class=\x22','!Intl.toSource','-moz-column-span','044f14c2','navigator.language','setHours','Document.replaceChildren','Asia/Tashkent','audio/x-m4a','Etc/GMT+8','WorkerGlobalScope','hardwareConcurrencyHash','\x0a\x09\x09<div\x20class=\x22col-six\x20undefined\x22>\x0a\x09\x09\x09<strong>Fonts</strong>\x0a\x09\x09\x09<div>load\x20(0):</div>\x0a\x09\x09\x09<div>apps:','Asia/Jakarta','BiquadFilterNode.frequency.defaultValue','America/Guyana','%c✔\x20loose\x20fingerprint\x20passed','intl.dateTimeFormat','creep-css-style-declaration-version','moderate','pixel-emoji','Element.ariaPosInSet','availWidthHash','Element.ariaHasPopup','America/Punta_Arenas','icon',')\x0a\x09\x09\x09}\x0a\x09\x09\x09.offscreen-image\x20{\x0a\x09\x09\x09\x09background-image:\x20url(','creep-revisions','LOW_FLOAT','family','hypot(Math.LOG2E,\x20-100)','CSSContainerRule','America/Indiana/Petersburg','Loose\x20Fingerprint\x20JSON','(orientation:\x20landscape)','Element.ariaInvalid','\x2010','Gecko','Chrome','Element.ariaColCount','MAX_VARYING_VECTORS','\x0a\x09\x09<br><br>\x0a\x09\x09','America/Adak','Object.assign,\x20Object.getPrototypeOf,\x20Object.setPrototypeOf,\x20Object.getOwnPropertyDescriptor,\x20Object.getOwnPropertyDescriptors,\x20Object.keys,\x20Object.values,\x20Object.entries,\x20Object.is,\x20Object.defineProperty,\x20Object.defineProperties,\x20Object.create,\x20Object.getOwnPropertyNames,\x20Object.getOwnPropertySymbols,\x20Object.isExtensible,\x20Object.preventExtensions,\x20Object.freeze,\x20Object.isFrozen,\x20Object.seal,\x20Object.isSealed,\x20Object.fromEntries,\x20Object.hasOwn,\x20Object.toString,\x20Object.toLocaleString,\x20Object.valueOf,\x20Object.hasOwnProperty,\x20Object.isPrototypeOf,\x20Object.propertyIsEnumerable,\x20Object.__defineGetter__,\x20Object.__defineSetter__,\x20Object.__lookupGetter__,\x20Object.__lookupSetter__,\x20Object.__proto__,\x20Function.toString,\x20Function.apply,\x20Function.call,\x20Function.bind,\x20Boolean.toString,\x20Boolean.valueOf,\x20Symbol.for,\x20Symbol.keyFor,\x20Symbol.isConcatSpreadable,\x20Symbol.iterator,\x20Symbol.match,\x20Symbol.replace,\x20Symbol.search,\x20Symbol.species,\x20Symbol.hasInstance,\x20Symbol.split,\x20Symbol.toPrimitive,\x20Symbol.toStringTag,\x20Symbol.unscopables,\x20Symbol.asyncIterator,\x20Symbol.matchAll,\x20Symbol.toString,\x20Symbol.valueOf,\x20Symbol.description,\x20Error.toString,\x20Error.message,\x20Error.stack,\x20Number.isFinite,\x20Number.isInteger,\x20Number.isNaN,\x20Number.isSafeInteger,\x20Number.POSITIVE_INFINITY,\x20Number.NEGATIVE_INFINITY,\x20Number.MAX_VALUE,\x20Number.MIN_VALUE,\x20Number.MAX_SAFE_INTEGER,\x20Number.MIN_SAFE_INTEGER,\x20Number.EPSILON,\x20Number.parseInt,\x20Number.parseFloat,\x20Number.NaN,\x20Number.toString,\x20Number.toLocaleString,\x20Number.valueOf,\x20Number.toFixed,\x20Number.toExponential,\x20Number.toPrecision,\x20BigInt.asUintN,\x20BigInt.asIntN,\x20BigInt.valueOf,\x20BigInt.toString,\x20BigInt.toLocaleString,\x20Math.abs,\x20Math.acos,\x20Math.asin,\x20Math.atan,\x20Math.atan2,\x20Math.ceil,\x20Math.clz32,\x20Math.cos,\x20Math.exp,\x20Math.floor,\x20Math.imul,\x20Math.fround,\x20Math.log,\x20Math.max,\x20Math.min,\x20Math.pow,\x20Math.random,\x20Math.round,\x20Math.sin,\x20Math.sqrt,\x20Math.tan,\x20Math.log10,\x20Math.log2,\x20Math.log1p,\x20Math.expm1,\x20Math.cosh,\x20Math.sinh,\x20Math.tanh,\x20Math.acosh,\x20Math.asinh,\x20Math.atanh,\x20Math.hypot,\x20Math.trunc,\x20Math.sign,\x20Math.cbrt,\x20Math.E,\x20Math.LOG2E,\x20Math.LOG10E,\x20Math.LN2,\x20Math.LN10,\x20Math.PI,\x20Math.SQRT2,\x20Math.SQRT1_2,\x20Date.UTC,\x20Date.parse,\x20Date.now,\x20Date.getTime,\x20Date.getTimezoneOffset,\x20Date.getYear,\x20Date.getFullYear,\x20Date.getUTCFullYear,\x20Date.getMonth,\x20Date.getUTCMonth,\x20Date.getDate,\x20Date.getUTCDate,\x20Date.getDay,\x20Date.getUTCDay,\x20Date.getHours,\x20Date.getUTCHours,\x20Date.getMinutes,\x20Date.getUTCMinutes,\x20Date.getSeconds,\x20Date.getUTCSeconds,\x20Date.getMilliseconds,\x20Date.getUTCMilliseconds,\x20Date.setTime,\x20Date.setYear,\x20Date.setFullYear,\x20Date.setUTCFullYear,\x20Date.setMonth,\x20Date.setUTCMonth,\x20Date.setDate,\x20Date.setUTCDate,\x20Date.setHours,\x20Date.setUTCHours,\x20Date.setMinutes,\x20Date.setUTCMinutes,\x20Date.setSeconds,\x20Date.setUTCSeconds,\x20Date.setMilliseconds,\x20Date.setUTCMilliseconds,\x20Date.toUTCString,\x20Date.toLocaleString,\x20Date.toLocaleDateString,\x20Date.toLocaleTimeString,\x20Date.toDateString,\x20Date.toTimeString,\x20Date.toISOString,\x20Date.toJSON,\x20Date.toString,\x20Date.valueOf,\x20Date.toGMTString,\x20String.fromCharCode,\x20String.fromCodePoint,\x20String.raw,\x20String.toString,\x20String.valueOf,\x20String.toLowerCase,\x20String.toUpperCase,\x20String.charAt,\x20String.charCodeAt,\x20String.substring,\x20String.padStart,\x20String.padEnd,\x20String.codePointAt,\x20String.includes,\x20String.indexOf,\x20String.lastIndexOf,\x20String.startsWith,\x20String.endsWith,\x20String.trim,\x20String.trimStart,\x20String.trimEnd,\x20String.toLocaleLowerCase,\x20String.toLocaleUpperCase,\x20String.localeCompare,\x20String.repeat,\x20String.normalize,\x20String.match,\x20String.matchAll,\x20String.search,\x20String.replace,\x20String.replaceAll,\x20String.split,\x20String.substr,\x20String.concat,\x20String.slice,\x20String.at,\x20String.bold,\x20String.italics,\x20String.fixed,\x20String.strike,\x20String.small,\x20String.big,\x20String.blink,\x20String.sup,\x20String.sub,\x20String.anchor,\x20String.link,\x20String.fontcolor,\x20String.fontsize,\x20String.trimLeft,\x20String.trimRight,\x20RegExp.input,\x20RegExp.lastMatch,\x20RegExp.lastParen,\x20RegExp.leftContext,\x20RegExp.rightContext,\x20RegExp.$1,\x20RegExp.$2,\x20RegExp.$3,\x20RegExp.$4,\x20RegExp.$5,\x20RegExp.$6,\x20RegExp.$7,\x20RegExp.$8,\x20RegExp.$9,\x20RegExp.$_,\x20RegExp.$&,\x20RegExp.$+,\x20RegExp.$`,\x20RegExp.$\x27,\x20RegExp.toString,\x20RegExp.compile,\x20RegExp.exec,\x20RegExp.test,\x20RegExp.flags,\x20RegExp.hasIndices,\x20RegExp.global,\x20RegExp.ignoreCase,\x20RegExp.multiline,\x20RegExp.dotAll,\x20RegExp.source,\x20RegExp.sticky,\x20RegExp.unicode,\x20Array.isArray,\x20Array.from,\x20Array.of,\x20Array.toString,\x20Array.toLocaleString,\x20Array.join,\x20Array.reverse,\x20Array.sort,\x20Array.push,\x20Array.pop,\x20Array.shift,\x20Array.unshift,\x20Array.splice,\x20Array.concat,\x20Array.slice,\x20Array.lastIndexOf,\x20Array.indexOf,\x20Array.forEach,\x20Array.map,\x20Array.filter,\x20Array.reduce,\x20Array.reduceRight,\x20Array.some,\x20Array.every,\x20Array.find,\x20Array.findIndex,\x20Array.copyWithin,\x20Array.fill,\x20Array.entries,\x20Array.keys,\x20Array.values,\x20Array.includes,\x20Array.flatMap,\x20Array.flat,\x20Array.at,\x20Map.get,\x20Map.has,\x20Map.set,\x20Map.delete,\x20Map.keys,\x20Map.values,\x20Map.clear,\x20Map.forEach,\x20Map.entries,\x20Map.size,\x20Set.has,\x20Set.add,\x20Set.delete,\x20Set.entries,\x20Set.clear,\x20Set.forEach,\x20Set.values,\x20Set.keys,\x20Set.size,\x20WeakMap.has,\x20WeakMap.get,\x20WeakMap.delete,\x20WeakMap.set,\x20WeakSet.add,\x20WeakSet.delete,\x20WeakSet.has,\x20Atomics.compareExchange,\x20Atomics.load,\x20Atomics.store,\x20Atomics.exchange,\x20Atomics.add,\x20Atomics.sub,\x20Atomics.and,\x20Atomics.or,\x20Atomics.xor,\x20Atomics.isLockFree,\x20Atomics.wait,\x20Atomics.notify,\x20Atomics.wake,\x20JSON.parse,\x20JSON.stringify,\x20Promise.all,\x20Promise.allSettled,\x20Promise.any,\x20Promise.race,\x20Promise.reject,\x20Promise.resolve,\x20Promise.then,\x20Promise.catch,\x20Promise.finally,\x20Reflect.apply,\x20Reflect.construct,\x20Reflect.defineProperty,\x20Reflect.deleteProperty,\x20Reflect.get,\x20Reflect.getOwnPropertyDescriptor,\x20Reflect.getPrototypeOf,\x20Reflect.has,\x20Reflect.isExtensible,\x20Reflect.ownKeys,\x20Reflect.preventExtensions,\x20Reflect.set,\x20Reflect.setPrototypeOf,\x20Proxy.revocable,\x20Intl.getCanonicalLocales,\x20Intl.supportedValuesOf,\x20Intl.Collator,\x20Intl.DateTimeFormat,\x20Intl.DisplayNames,\x20Intl.ListFormat,\x20Intl.Locale,\x20Intl.NumberFormat,\x20Intl.PluralRules,\x20Intl.RelativeTimeFormat,\x20WebAssembly.compile,\x20WebAssembly.instantiate,\x20WebAssembly.validate,\x20WebAssembly.compileStreaming,\x20WebAssembly.instantiateStreaming,\x20WebAssembly.Module,\x20WebAssembly.Instance,\x20WebAssembly.Memory,\x20WebAssembly.Table,\x20WebAssembly.Global,\x20WebAssembly.CompileError,\x20WebAssembly.LinkError,\x20WebAssembly.RuntimeError,\x20WebAssembly.Tag,\x20WebAssembly.Exception,\x20Document.getElementsByTagName,\x20Document.getElementsByTagNameNS,\x20Document.getElementsByClassName,\x20Document.getElementById,\x20Document.createElement,\x20Document.createElementNS,\x20Document.createDocumentFragment,\x20Document.createTextNode,\x20Document.createComment,\x20Document.createProcessingInstruction,\x20Document.importNode,\x20Document.adoptNode,\x20Document.createEvent,\x20Document.createRange,\x20Document.createNodeIterator,\x20Document.createTreeWalker,\x20Document.createCDATASection,\x20Document.createAttribute,\x20Document.createAttributeNS,\x20Document.getElementsByName,\x20Document.open,\x20Document.close,\x20Document.write,\x20Document.writeln,\x20Document.hasFocus,\x20Document.execCommand,\x20Document.queryCommandEnabled,\x20Document.queryCommandIndeterm,\x20Document.queryCommandState,\x20Document.queryCommandSupported,\x20Document.queryCommandValue,\x20Document.releaseCapture,\x20Document.mozSetImageElement,\x20Document.clear,\x20Document.captureEvents,\x20Document.releaseEvents,\x20Document.exitFullscreen,\x20Document.mozCancelFullScreen,\x20Document.exitPointerLock,\x20Document.enableStyleSheetsForSet,\x20Document.caretPositionFromPoint,\x20Document.querySelector,\x20Document.querySelectorAll,\x20Document.getSelection,\x20Document.hasStorageAccess,\x20Document.requestStorageAccess,\x20Document.elementFromPoint,\x20Document.elementsFromPoint,\x20Document.getAnimations,\x20Document.prepend,\x20Document.append,\x20Document.replaceChildren,\x20Document.createExpression,\x20Document.createNSResolver,\x20Document.evaluate,\x20Document.implementation,\x20Document.URL,\x20Document.documentURI,\x20Document.compatMode,\x20Document.characterSet,\x20Document.charset,\x20Document.inputEncoding,\x20Document.contentType,\x20Document.doctype,\x20Document.documentElement,\x20Document.domain,\x20Document.referrer,\x20Document.cookie,\x20Document.lastModified,\x20Document.readyState,\x20Document.title,\x20Document.dir,\x20Document.body,\x20Document.head,\x20Document.images,\x20Document.embeds,\x20Document.plugins,\x20Document.links,\x20Document.forms,\x20Document.scripts,\x20Document.defaultView,\x20Document.designMode,\x20Document.onreadystatechange,\x20Document.onbeforescriptexecute,\x20Document.onafterscriptexecute,\x20Document.currentScript,\x20Document.fgColor,\x20Document.linkColor,\x20Document.vlinkColor,\x20Document.alinkColor,\x20Document.bgColor,\x20Document.anchors,\x20Document.applets,\x20Document.all,\x20Document.fullscreen,\x20Document.mozFullScreen,\x20Document.fullscreenEnabled,\x20Document.mozFullScreenEnabled,\x20Document.onfullscreenchange,\x20Document.onfullscreenerror,\x20Document.onpointerlockchange,\x20Document.onpointerlockerror,\x20Document.hidden,\x20Document.visibilityState,\x20Document.onvisibilitychange,\x20Document.selectedStyleSheetSet,\x20Document.lastStyleSheetSet,\x20Document.preferredStyleSheetSet,\x20Document.styleSheetSets,\x20Document.scrollingElement,\x20Document.timeline,\x20Document.rootElement,\x20Document.oncopy,\x20Document.oncut,\x20Document.onpaste,\x20Document.activeElement,\x20Document.styleSheets,\x20Document.pointerLockElement,\x20Document.fullscreenElement,\x20Document.mozFullScreenElement,\x20Document.adoptedStyleSheets,\x20Document.fonts,\x20Document.onabort,\x20Document.onblur,\x20Document.onfocus,\x20Document.onauxclick,\x20Document.onbeforeinput,\x20Document.oncanplay,\x20Document.oncanplaythrough,\x20Document.onchange,\x20Document.onclick,\x20Document.onclose,\x20Document.oncontextmenu,\x20Document.oncuechange,\x20Document.ondblclick,\x20Document.ondrag,\x20Document.ondragend,\x20Document.ondragenter,\x20Document.ondragexit,\x20Document.ondragleave,\x20Document.ondragover,\x20Document.ondragstart,\x20Document.ondrop,\x20Document.ondurationchange,\x20Document.onemptied,\x20Document.onended,\x20Document.onformdata,\x20Document.oninput,\x20Document.oninvalid,\x20Document.onkeydown,\x20Document.onkeypress,\x20Document.onkeyup,\x20Document.onload,\x20Document.onloadeddata,\x20Document.onloadedmetadata,\x20Document.onloadend,\x20Document.onloadstart,\x20Document.onmousedown,\x20Document.onmouseenter,\x20Document.onmouseleave,\x20Document.onmousemove,\x20Document.onmouseout,\x20Document.onmouseover,\x20Document.onmouseup,\x20Document.onwheel,\x20Document.onpause,\x20Document.onplay,\x20Document.onplaying,\x20Document.onprogress,\x20Document.onratechange,\x20Document.onreset,\x20Document.onresize,\x20Document.onscroll,\x20Document.onsecuritypolicyviolation,\x20Document.onseeked,\x20Document.onseeking,\x20Document.onselect,\x20Document.onslotchange,\x20Document.onstalled,\x20Document.onsubmit,\x20Document.onsuspend,\x20Document.ontimeupdate,\x20Document.onvolumechange,\x20Document.onwaiting,\x20Document.onselectstart,\x20Document.onselectionchange,\x20Document.ontoggle,\x20Document.onpointercancel,\x20Document.onpointerdown,\x20Document.onpointerup,\x20Document.onpointermove,\x20Document.onpointerout,\x20Document.onpointerover,\x20Document.onpointerenter,\x20Document.onpointerleave,\x20Document.ongotpointercapture,\x20Document.onlostpointercapture,\x20Document.onmozfullscreenchange,\x20Document.onmozfullscreenerror,\x20Document.onanimationcancel,\x20Document.onanimationend,\x20Document.onanimationiteration,\x20Document.onanimationstart,\x20Document.ontransitioncancel,\x20Document.ontransitionend,\x20Document.ontransitionrun,\x20Document.ontransitionstart,\x20Document.onwebkitanimationend,\x20Document.onwebkitanimationiteration,\x20Document.onwebkitanimationstart,\x20Document.onwebkittransitionend,\x20Document.onerror,\x20Document.children,\x20Document.firstElementChild,\x20Document.lastElementChild,\x20Document.childElementCount,\x20Element.getAttributeNames,\x20Element.getAttribute,\x20Element.getAttributeNS,\x20Element.toggleAttribute,\x20Element.setAttribute,\x20Element.setAttributeNS,\x20Element.removeAttribute,\x20Element.removeAttributeNS,\x20Element.hasAttribute,\x20Element.hasAttributeNS,\x20Element.hasAttributes,\x20Element.closest,\x20Element.matches,\x20Element.webkitMatchesSelector,\x20Element.getElementsByTagName,\x20Element.getElementsByTagNameNS,\x20Element.getElementsByClassName,\x20Element.insertAdjacentElement,\x20Element.insertAdjacentText,\x20Element.mozMatchesSelector,\x20Element.setPointerCapture,\x20Element.releasePointerCapture,\x20Element.hasPointerCapture,\x20Element.setCapture,\x20Element.releaseCapture,\x20Element.getAttributeNode,\x20Element.setAttributeNode,\x20Element.removeAttributeNode,\x20Element.getAttributeNodeNS,\x20Element.setAttributeNodeNS,\x20Element.getClientRects,\x20Element.getBoundingClientRect,\x20Element.scrollIntoView,\x20Element.scroll,\x20Element.scrollTo,\x20Element.scrollBy,\x20Element.insertAdjacentHTML,\x20Element.querySelector,\x20Element.querySelectorAll,\x20Element.attachShadow,\x20Element.requestFullscreen,\x20Element.mozRequestFullScreen,\x20Element.requestPointerLock,\x20Element.animate,\x20Element.getAnimations,\x20Element.before,\x20Element.after,\x20Element.replaceWith,\x20Element.remove,\x20Element.prepend,\x20Element.append,\x20Element.replaceChildren,\x20Element.namespaceURI,\x20Element.prefix,\x20Element.localName,\x20Element.tagName,\x20Element.id,\x20Element.className,\x20Element.classList,\x20Element.part,\x20Element.attributes,\x20Element.scrollTop,\x20Element.scrollLeft,\x20Element.scrollWidth,\x20Element.scrollHeight,\x20Element.clientTop,\x20Element.clientLeft,\x20Element.clientWidth,\x20Element.clientHeight,\x20Element.scrollTopMax,\x20Element.scrollLeftMax,\x20Element.innerHTML,\x20Element.outerHTML,\x20Element.shadowRoot,\x20Element.assignedSlot,\x20Element.slot,\x20Element.onfullscreenchange,\x20Element.onfullscreenerror,\x20Element.previousElementSibling,\x20Element.nextElementSibling,\x20Element.children,\x20Element.firstElementChild,\x20Element.lastElementChild,\x20Element.childElementCount','https://creepjs-api.web.app/decrypt?','decryptionData','5.0','Hash','insertBeforeHash','client\x20blocked\x20behemoth\x20iframe','getParameter','</span>\x0a\x09\x09\x09\x09\x09<span\x20class=\x22screen-visual-h\x22>','object-view-box','Windows\x207','(1).toString(1000)','America/Marigot','--import-display-mode:\x20minimal-ui','hyphenate-character','�️✒✂⛏⚒⚔⚙⛓⚗⚰⚱⚠☢☣⬆↗➡⬅','getFullYear','8ee7df22','failed\x20null\x20conversion\x20error','Antarctica/DumontDUrville','Europe/Vilnius','(color-gamut:\x20p3)','console\x20errors','Asia/Pontianak','!VisualViewport','Pacific/Port_Moresby','AnalyserNode.getByteTimeDomainData','offlineAudioContext','Africa/Khartoum','America/Argentina/Catamarca','Blink','NVIDIA','canvasPaintId=','WindowText','font-palette','cosh(492*Math.LOG2E)','GeForce','Element.ariaCurrent','canvas2d.emojiSet','<span\x20class=\x22icon\x22></span><span\x20class=\x22icon\x22></span>','--import-display-mode:\x20fullscreen','MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS','canvasWebgl.parameterOrExtensionLie','America/St_Kitts','a63491fb','America/Panama','browser-detection','strict','\x0a\x09\x09<div\x20class=\x22col-six\x20undefined\x22>\x0a\x09\x09\x09<strong>Error</strong>\x0a\x09\x09\x09<div>results:\x20','gecko','getElementById','filename','Africa/Casablanca','forEach','sinh(Math.E)','confidence','XRAnchor','-system-styles','features.cssFeatures','attachShader','SSE2','America/Eirunepe','elementClientRects','pad','😀☺🤵‍♂️♨☸⚧⁉ℹ🏳️‍⚧️🥲☹☠🧑‍🦰🧏‍♂️⛷🧑‍🤝‍🧑☘⛰','Element.ariaRelevant','</span>\x0a\x09\x09\x09\x09\x09<span\x20class=\x22screen-orientation-type\x22>','Array.findLast','Segoe\x20MDL2\x20Assets','canvas\x20emoji','Fingerprint\x20failed!','America/Port_of_Spain','Parallels','Antarctica/Rothera','MAX_SERVER_WAIT_TIMEOUT','Intl.DisplayNames.resolvedOptions','</div>\x0a\x09\x09\x09<div>relative:\x20','Document.onwebkitanimationiteration','creep-stealth','toLocaleDateString','domRectId=','toBlob','\x0a\x09\x09\x09</div>\x0a\x0a\x09\x09','<strong>Headless</strong><br><br>','Element.ariaRequired','creep-voices-remote','offlineAudioContext.floatFrequencyDataSum',',\x20-100)','log1p','SHADING_LANGUAGE_VERSION,VERSION'];a0W=function(){return QU;};return a0W();}function a0T(W,T){const z=a0W();return a0T=function(Z,d){Z=Z-0xf4;let L=z[Z];return L;},a0T(W,T);}(function(W,T){const L2=a0T,z=W();while(!![]){try{const Z=-parseInt(L2(0x4a0))/0x1*(parseInt(L2(0xb2f))/0x2)+parseInt(L2(0x63e))/0x3*(-parseInt(L2(0x203))/0x4)+-parseInt(L2(0x78e))/0x5*(parseInt(L2(0xb8a))/0x6)+-parseInt(L2(0xac5))/0x7*(parseInt(L2(0x7cb))/0x8)+-parseInt(L2(0x4d8))/0x9+parseInt(L2(0x4fb))/0xa+-parseInt(L2(0xb05))/0xb*(-parseInt(L2(0x5d8))/0xc);if(Z===T)break;else z['push'](z['shift']());}catch(d){z['push'](z['shift']());}}}(a0W,0x5f539),(function(){'use strict';const L3=a0T;const W=!self[L3(0x4ea)]&&self[L3(0x9b9)];function T(){const L4=L3,To=[][L4(0x480)];try{(-0x1)[L4(0x250)](-0x1);}catch(TU){return TU[L4(0x1b2)][L4(0xb8e)]+(To+'')['split'](To[L4(0x8ce)])[L4(0x644)]('')[L4(0xb8e)];}}const z=T(),Z=z==0x50,d=z==0x3a,L=z==0x4d,p={0x50:'V8',0x3a:L3(0x386),0x4d:L3(0x1c8)}[z]||null,n=Z&&L3(0x92f)in Array['prototype']&&!('ReportingObserver'in self);function b(){const L5=L3,To='brave'in navigator&&Object[L5(0x85d)](navigator[L5(0x759)])['constructor'][L5(0x8ce)]==L5(0xb4d)&&navigator[L5(0x759)]['isBrave']['toString']()==L5(0x7aa);return To;}function S(){const L7=L3,To={'unknown':![],'allow':![],'standard':![],'strict':![]};try{const TU=()=>{const L6=a0T;try{window[L6(0x8f5)]=OfflineAudioContext||webkitOfflineAudioContext;}catch(z7){}if(!window[L6(0x8f5)])return![];const z3=new OfflineAudioContext(0x1,0x1,0xac44),z4=z3[L6(0x7d9)](),z5=new Float32Array(z4[L6(0x185)]);z4[L6(0x588)](z5);const z6=new Set(z5)[L6(0xa45)]>0x1;return z6;};if(TU())return To[L7(0xa09)]=!![],To;const z0=/(Chrom(e|ium)|Microsoft Edge) PDF (Plugin|Viewer)/,z1=[...navigator[L7(0x662)]],z2=z1[L7(0x73b)](z3=>z0[L7(0x579)](z3['name']))['length']==0x2;if(z1[L7(0xb8e)]&&!z2)return To[L7(0x3f5)]=!![],To;return To[L7(0xac0)]=!![],To;}catch(z3){return To[L7(0x15d)]=!![],To;}}const Q=To=>{const L8=L3,TU=new Set(['FRAGMENT_SHADER.HIGH_FLOAT.precision',L8(0x94e),L8(0x4df),L8(0x2eb),L8(0xb69),L8(0x378),L8(0x965),L8(0xb65),L8(0x1dc),L8(0xb83),L8(0x90b),L8(0xbc1),L8(0xa03),L8(0x6b6),'MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS','MAX_DRAW_BUFFERS_WEBGL','MAX_FRAGMENT_INPUT_COMPONENTS',L8(0x88c),'MAX_FRAGMENT_UNIFORM_COMPONENTS',L8(0x526),'MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS',L8(0x6fd),L8(0x38d),'MAX_VERTEX_OUTPUT_COMPONENTS',L8(0xa7a),L8(0xa62),L8(0x6c9),L8(0x319),L8(0x94a),L8(0x1c4),L8(0x157),L8(0x925),L8(0x105),L8(0x2a9),L8(0x779),L8(0x50b),'VERTEX_SHADER.LOW_FLOAT.precision',L8(0x3d0),L8(0x238),'VERTEX_SHADER.MEDIUM_FLOAT.precision',L8(0xa92),L8(0x3f2)]),z0=Object['keys'](To)[L8(0x729)]((z1,z2)=>{const L9=L8;if(TU[L9(0x7ea)](z2))return z1;return z1[z2]=To[z2],z1;},{});return z0;},u=To=>{const LW=L3,TU=/windows phone/ig[LW(0x579)](To)?LW(0x4d7):/win(dows|16|32|64|95|98|nt)|wow64/ig[LW(0x579)](To)?'Windows':/android/ig[LW(0x579)](To)?'Android':/cros/ig[LW(0x579)](To)?'Chrome\x20OS':/linux/ig[LW(0x579)](To)?'Linux':/ipad/ig[LW(0x579)](To)?LW(0x99f):/iphone/ig[LW(0x579)](To)?LW(0x613):/ipod/ig[LW(0x579)](To)?'iPod':/ios/ig[LW(0x579)](To)?LW(0x5f1):/mac/ig[LW(0x579)](To)?LW(0x8dd):LW(0xb56);return TU;},F=({ua:To,os:TU,isBrave:z0})=>{const LT=L3,z1=/ipad|iphone|ipod|ios|mac/ig[LT(0x579)](TU),z2=/OPR\//g[LT(0x579)](To),z3=/Vivaldi/g['test'](To),z4=/DuckDuckGo/g[LT(0x579)](To),z5=/YaBrowser/g[LT(0x579)](To),z6=To[LT(0x12a)](/(palemoon)\/(\d+)./i),z7=To[LT(0x12a)](/(edgios|edg|edge|edga)\/(\d+)./i),z8=z7&&/edgios/i[LT(0x579)](z7[0x1]),z9=To[LT(0x12a)](/(crios|chrome)\/(\d+)./i),zW=To[LT(0x12a)](/(fxios|firefox)\/(\d+)./i),zT=/AppleWebKit/g[LT(0x579)](To)&&/Safari/g['test'](To),zz=zT&&!zW&&!z9&&!z7&&To[LT(0x12a)](/(version)\/(\d+)\.(\d|\.)+\s(mobile|safari)/i);if(z9){const zZ=z9[0x1],zd=z9[0x2],zL=z2?LT(0x6f1):z3?LT(0xa61):z4?'\x20DuckDuckGo':z5?LT(0x395):z7?'\x20Edge':z0?LT(0xb8b):'';return zZ+'\x20'+zd+zL;}else{if(z8){const zp=z7[0x1],zn=z7[0x2];return zp+'\x20'+zn;}else{if(zW){const zb=z6?z6[0x1]:zW[0x1],zS=z6?z6[0x2]:zW[0x2];return zb+'\x20'+zS;}else{if(z1&&zz){const zQ=LT(0x14b),zu=zz[0x2];return zQ+'\x20'+zu;}}}}return LT(0x15d);},v=({userAgent:To,excludeBuild:excludeBuild=!![]})=>{const Lz=L3;if(!To)return'unknown';const TU=/\((khtml|unlike|vizio|like gec|internal dummy|org\.eclipse|openssl|ipv6|via translate|safari|cardamon).+|xt\d+\)/ig,z0=/\((.+)\)/,z1=/((android).+)/i,z2=/^(linux|[a-z]|wv|mobile|[a-z]{2}(-|_)[a-z]{2}|[a-z]{2})$|windows|(rv:|trident|webview|iemobile).+/i,z3=/build\/.+\s|\sbuild\/.+/i,z4=/android( |-)\d+/i,z5=/((windows).+)/i,z6=/^(windows|ms(-|)office|microsoft|compatible|[a-z]|x64|[a-z]{2}(-|_)[a-z]{2}|[a-z]{2})$|(rv:|outlook|ms(-|)office|microsoft|trident|\.net|msie|httrack|media center|infopath|aol|opera|iemobile|webbrowser).+/i,z7=/w(ow|in)64/i,z8=/cros/i,z9=/^([a-z]|x11|[a-z]{2}(-|_)[a-z]{2}|[a-z]{2})$|(rv:|trident).+/i,zW=/\d+\.\d+\.\d+/i,zT=/linux|x11|ubuntu|debian/i,zz=/^([a-z]|x11|unknown|compatible|[a-z]{2}(-|_)[a-z]{2}|[a-z]{2})$|(rv:|java|oracle|\+http|http|unknown|mozilla|konqueror|valve).+/i,zZ=/(cpu iphone|cpu os|iphone os|mac os|macos|intel os|ppc mac).+/i,zd=/^([a-z]|macintosh|compatible|mimic|[a-z]{2}(-|_)[a-z]{2}|[a-z]{2}|rv|\d+\.\d+)$|(rv:|silk|valve).+/i,zL=/(ppc |intel |)(mac|mac |)os (x |x|)(\d{2}(_|\.)\d{1,2}|\d{2,})/i,zp=/((symbianos|nokia|blackberry|morphos|mac).+)|\/linux|freebsd|symbos|series \d+|win\d+|unix|hp-ux|bsdi|bsd|x86_64/i,zn=(zb,zS)=>zb[Lz(0x73b)](zQ=>zS[Lz(0x579)](zQ))[Lz(0xb8e)];To=To[Lz(0x77b)]()[Lz(0x737)](/\s{2,}/,'\x20')[Lz(0x737)](TU,'');if(z0['test'](To)){const zb=To[Lz(0x12a)](z0)[0x0],zS=zb[Lz(0x80d)](0x1,-0x1)[Lz(0x737)](/,/g,';')[Lz(0x184)](';')[Lz(0x638)](zQ=>zQ[Lz(0x77b)]());if(zn(zS,z1))return zS[Lz(0x638)](zQ=>z4[Lz(0x579)](zQ)?z4['exec'](zQ)[0x0][Lz(0x737)]('-','\x20'):zQ)[Lz(0x73b)](zQ=>!z2[Lz(0x579)](zQ))[Lz(0x644)]('\x20')['replace'](excludeBuild?z3:'','')[Lz(0x77b)]()[Lz(0x737)](/\s{2,}/,'\x20');else{if(zn(zS,z5))return zS[Lz(0x73b)](zQ=>!z6['test'](zQ))[Lz(0x644)]('\x20')[Lz(0x737)](/\sNT (\d+\.\d+)/,(zQ,zu)=>{const LZ=Lz;return zu==LZ(0x45d)?LZ(0x9d3):zu==LZ(0x40e)?'\x208.1':zu==LZ(0xa8c)?'\x208':zu==LZ(0x82c)?'\x207':zu==LZ(0x296)?LZ(0x39b):zu==LZ(0xb7d)?LZ(0x711):zu=='5.1'?LZ(0x4cf):zu==LZ(0x9dd)?LZ(0x4b7):zu==LZ(0xb88)?zQ:'\x20'+zu;})[Lz(0x737)](z7,Lz(0x650))[Lz(0x77b)]()[Lz(0x737)](/\s{2,}/,'\x20');else{if(zn(zS,z8))return zS['filter'](zQ=>!z9[Lz(0x579)](zQ))['join']('\x20')[Lz(0x737)](excludeBuild?zW:'','')[Lz(0x77b)]()['replace'](/\s{2,}/,'\x20');else{if(zn(zS,zT))return zS[Lz(0x73b)](zQ=>!zz[Lz(0x579)](zQ))['join']('\x20')[Lz(0x77b)]()[Lz(0x737)](/\s{2,}/,'\x20');else{if(zn(zS,zZ))return zS['map'](zQ=>{const Ld=Lz;if(zL['test'](zQ)){const zu=zL[Ld(0xad3)](zQ)[0x0],zF={'10_7':Ld(0xae9),'10_8':'Mountain\x20Lion','10_9':Ld(0x8d3),'10_10':Ld(0x317),'10_11':'El\x20Capitan','10_12':'Sierra','10_13':Ld(0x401),'10_14':Ld(0x3e1),'10_15':Ld(0x20c),'11':Ld(0x751),'12':'Monterey','13':'Ventura'},zv=((/(\d{2}(_|\.)\d{1,2}|\d{2,})/['exec'](zu)||[])[0x0]||'')[Ld(0x737)](/\./g,'_'),zH=/^10/[Ld(0x579)](zv),zx=zH?zv:(/^\d{2,}/['exec'](zv)||[])[0x0],zD=zF[zx];return zD?Ld(0xbbe)+zD:zu;}return zQ;})[Lz(0x73b)](zQ=>!zd[Lz(0x579)](zQ))[Lz(0x644)]('\x20')[Lz(0x737)](/\slike mac.+/ig,'')[Lz(0x77b)]()['replace'](/\s{2,}/,'\x20');else{const zQ=zS[Lz(0x73b)](zu=>zp[Lz(0x579)](zu));if(zQ['length'])return zQ[Lz(0x644)]('\x20')['trim']()[Lz(0x737)](/\s{2,}/,'\x20');return zS[Lz(0x644)]('\x20');}}}}}}else return Lz(0x15d);},H=({platform:To,platformVersion:TU,fontPlatformVersion:z0})=>{const LL=L3,z1=Z&&CSS[LL(0x722)](LL(0x731),LL(0x22a));if(To!=LL(0x93e)||!z1)return;const z2=+(/(\d+)\./[LL(0xad3)](TU)||[])[0x1],z3={0x0:LL(0x61d),0x1:LL(0x9a7),0x2:LL(0xa96),0x3:LL(0x609),0x4:'10\x20(1703)',0x5:LL(0x14d),0x6:LL(0x4a9),0x7:LL(0xafb),0x8:LL(0x804),0xa:LL(0x77c)},z4=(/7|8\.1|8/[LL(0xad3)](z0)||[])[0x0],z5=z2>=0xd?'11':z2==0x0&&z4?z4:z3[z2]||LL(0x10c);return LL(0x90a)+z5+'\x20['+TU+']';},D=({userAgent:To,userAgentData:TU,fontPlatformVersion:z0})=>{const Lp=L3,{platformVersion:z1,platform:z2}=TU||{},z3=H({'platform':z2,'platformVersion':z1});return/Windows 11/[Lp(0x579)](''+z3)||/Windows 11/[Lp(0x579)](z0)?(''+To)[Lp(0x737)](Lp(0x392),Lp(0x760)):To;},A=To=>{const TU=/Mozilla\/5\.0 \((Macintosh; Intel Mac OS X 10_15_7|Windows NT 10\.0; Win64; x64|(X11; (CrOS|Linux) x86_64)|(Linux; Android 10(; K|)))\) AppleWebKit\/537\.36 \(KHTML, like Gecko\) Chrome\/\d+\.0\.0\.0( Mobile|) Safari\/537\.36/,z0=(TU['exec'](To)||[])[0x1];return Z&&!!z0;},Y=({userAgent:To,userAgentData:TU,fontPlatformVersion:z0})=>{const Ln=L3;if(!TU)return;const {brands:z1,uaFullVersion:z2,platformVersion:z3,model:z4,bitness:z5}=TU,z6=/X11; CrOS/['test'](To)||!!(z1||[])[Ln(0xaac)](zZ=>zZ==Ln(0x4f7)),z7=+(/(\d+)\./[Ln(0xad3)](z3)||[])[0x1],z8=(/8\.1|8|7/[Ln(0xad3)](z0)||[])[0x0],z9=z7>=0xd?'11':z7==0x0?z8||Ln(0x61d):'10',zW={'7':'NT\x206.1','8':Ln(0xb74),'8.1':Ln(0x234),'10':Ln(0x5c8)},zT=z3['replace'](/\./g,'_'),zz=To[Ln(0x737)](/(Chrome\/)([^\s]+)/,(zZ,zd,zL)=>''+zd+(z6?z2:zL))[Ln(0x737)](/Windows NT 10.0/,Ln(0x90a)+(zW[z9]||z9))['replace'](/(X11; CrOS x86_64)/,(zZ,zd)=>zd+'\x20'+z3)['replace'](/(Linux; Android )(10)(; K|)/,(zZ,zd,zL,zp)=>{const Lb=Ln;return''+zd+z7+(!zp?'':z4?';\x20'+z4:Lb(0xa74));})[Ln(0x737)](/(Macintosh; Intel Mac OS X )(10_15_7)/,(zZ,zd)=>{const LS=Ln,zL=/^10/[LS(0x579)](zT);return''+(zL?zd:zd[LS(0x737)]('X\x20',''))+zT;})['replace'](/(; Win64; x64| x86_64)/,(zZ,zd)=>z5==='64'?zd:'');return zz;},k=()=>{const To={};let TU=0x0;return{'logTestResult':({test:z0,passed:z1,time:time=0x0})=>{const LQ=a0T;TU+=time;const z2=time['toFixed'](0x2)+'ms';To[z0]=z2;const z3=z1?LQ(0x834):LQ(0x651),z4=z1?LQ(0xbb4):LQ(0x547),z5=z1?'✔':'-';return console['log']('%c'+z5+(time?'\x20('+z2+')':'')+'\x20'+z0+'\x20'+z4,LQ(0x2ac)+z3);},'getLog':()=>To,'getTotal':()=>TU};},P=k(),{logTestResult:a}=P,q=()=>{let To=0x0;const TU=[];return{'stop':()=>{const Lu=a0T;if(To)return TU[Lu(0x3e4)](performance[Lu(0x374)]()-To),TU[Lu(0x729)]((z0,z1)=>z0+=z1,0x0);return To;},'start':()=>{const LF=a0T;return To=performance[LF(0x374)](),To;}};},t=(To,TU=0x0)=>{const Lv=L3;return To[Lv(0x8c4)](),new Promise(z0=>setTimeout(()=>z0(To[Lv(0x95f)]()),TU))[Lv(0x2a2)](z0=>{});},M=(To,TU=0x3)=>{const LH=L3,z0=TU*0x2+0x3,z1=To||[];return z1[LH(0xb8e)]>z0?To[LH(0x80d)](0x0,TU)[LH(0x644)]('')+'...'+To[LH(0x80d)](-TU)['join'](''):z1[LH(0x644)]('');},B=[[0x1f600],[0x263a],[0x1f935,0x200d,0x2642,0xfe0f],[0x2668],[0x2638],[0x26a7],[0x2049],[0x2139],[0x1f3f3,0xfe0f,0x200d,0x26a7,0xfe0f],[0x1f972],[0x2639],[0x2620],[0x1f9d1,0x200d,0x1f9b0],[0x1f9cf,0x200d,0x2642,0xfe0f],[0x26f7],[0x1f9d1,0x200d,0x1f91d,0x200d,0x1f9d1],[0x2618],[0x26f0],[0x26e9],[0x26f4],[0x2708],[0x23f1],[0x26c8],[0x2602],[0x26f1],[0x2603],[0x2604],[0x26f8],[0x265f],[0x26d1],[0x2328],[0x2709],[0x270f],[0x1f469,0x200d,0x2764,0xfe0f,0x200d,0x1f48b,0x200d,0x1f468],[0x1f468,0x200d,0x1f469,0x200d,0x1f467,0x200d,0x1f466],[0x1f468,0x200d,0x1f469,0x200d,0x1f466],[0x1f600],[0xa9],[0xae],[0x2122],[0x1f441,0xfe0f,0x200d,0x1f5e8,0xfe0f],[0x2712],[0x2702],[0x26cf],[0x2692],[0x2694],[0x2699],[0x26d3],[0x2697],[0x26b0],[0x26b1],[0x26a0],[0x2622],[0x2623],[0x2b06],[0x2197],[0x27a1],[0x2b05],[0x269b],[0x2721],[0x271d],[0x2626],[0x25b6],[0x23ed],[0x23ef],[0x23cf],[0x2640],[0x2642],[0x2716],[0x3030],[0x2695],[0x269c],[0x2714],[0x2733],[0x2747],[0x25fc],[0x25aa],[0x2763],[0x2764],[0x270c],[0x261d],[0x270d],[0x2744],[0x2696],[0x21aa],[0x262f],[0x262a],[0x262e],[0x2611],[0x2734],[0x1f170],[0x1f17f]][L3(0x638)](To=>String['fromCodePoint'](...To)),O=L3(0x2f9),N=To=>!To?To:To[L3(0x80d)](0x0,0x8),i=(To,TU,z0)=>{const Lx=L3;return To[Lx(0x159)][Lx(0x562)](TU,To),typeof z0===Lx(0x71b)?z0():!![];},K=(To,...TU)=>{const LD=L3,z0=document[LD(0xba8)](LD(0x168));return z0[LD(0x405)]=To['map']((z1,z2)=>''+z1+(TU[z2]||''))['join'](''),document[LD(0x9a3)](z0[LD(0xf9)],!![]);},r={'UNKNOWN':L3(0x672),'UNSUPPORTED':L3(0x26c),'BLOCKED':L3(0x5b5),'LIED':'<span\x20class=\x22lies\x22>lied</span>'},V=To=>To&&To[L3(0x480)][L3(0x8ce)]===L3(0x98b)?''+To[L3(0xb8e)]:'0',R=({stringA:To,stringB:TU,charDiff:charDiff=![],decorate:decorate=z4=>'['+z4+']'})=>{const LA=L3,z0=charDiff?'':'\x20',z1=(''+To)[LA(0x184)](z0),z2=(''+TU)[LA(0x184)](z0),z3=z2['map']((z4,z5)=>{const z6=z1[z5],z7=z4==z6;return!z7?decorate(z4):z4;});return z3[LA(0x644)](z0);},w=(To,TU,z0='details')=>{const LY=L3;if(!TU[LY(0xb8e)])return'';return LY(0x5e4)+To+LY(0x8ad)+To+':checked\x20~\x20.modal-container\x20.modal-content\x20{\x0a\x09\x09\x09animation:\x20enter\x200.2s\x20ease\x20both\x0a\x09\x09}\x0a\x09\x09.modal-'+To+LY(0x99d)+To+LY(0x7af)+To+LY(0x47a)+To+LY(0x227)+To+'\x22\x20onclick=\x22\x22>'+z0+LY(0x842)+To+LY(0x6fb)+To+LY(0x506)+To+LY(0x47a)+To+LY(0x5f5)+To+'\x22\x20onclick=\x22\x22>×</label>\x0a\x09\x09\x09\x09<div>'+TU+'</div>\x0a\x09\x09\x09</label>\x0a\x09\x09</label>\x0a\x09';},m=()=>{const To=[];return{'getErrors':()=>To,'captureError':(TU,z0='')=>{const Lk=a0T,z1={'Error':!![],'EvalError':!![],'InternalError':!![],'RangeError':!![],'ReferenceError':!![],'SyntaxError':!![],'TypeError':!![],'URIError':!![],'InvalidStateError':!![],'SecurityError':!![]},z2=z7=>/.+(\s).+/g[Lk(0x579)](z7);console['error'](TU);const {name:z3,message:z4}=TU,z5=!z2(z4)?undefined:!z0?z4:z4+'\x20['+z0+']',z6=z1[z3]?z3:undefined;return To[Lk(0x3e4)]({'trustedName':z6,'trustedMessage':z5}),undefined;}};},E=m(),{captureError:f}=E,c=(To,TU='')=>{try{return To();}catch(z0){if(TU)return f(z0,TU);return f(z0);}},G=(To,TU=[],z0=[],z1=![])=>{const LP=L3;let z2;try{z2=To();}catch(z6){return undefined;}let z3;const z4=TU['length'];let z5=z2;try{for(z3=0x0;z3<z4;z3++){const z7=TU[z3];z5=z5[z7];}}catch(z8){return undefined;}return z1&&z0[LP(0xb8e)]?z5['apply'](z2,z0):z1&&!z0[LP(0xb8e)]?z5[LP(0x59f)](z2):z5;},e=To=>{const La=L3;To&&console[La(0x642)](To);let TU=0x0;try{TU=performance[La(0x374)]();}catch(z0){f(z0);}return z1=>{const Lq=La;let z2=0x0;try{return z2=performance[Lq(0x374)]()-TU,z1&&console[Lq(0x642)](z1+':\x20'+z2/0x3e8+Lq(0x5dc)),z2;}catch(z3){return f(z3),0x0;}};},C=()=>({'data':E[L3(0x3bb)]()}),s=(To,TU)=>{const Lt=L3,{capturedErrors:{data:z0,$hash:z1}}=To,z2=z0['length'];return Lt(0x343)+(z2?Lt(0x581):'')+Lt(0xa5b)+(!z2?'0':''+z2)+'):\x20'+(!z2?Lt(0x370):w(Lt(0x8db),Object['keys'](z0)['map']((z3,z4)=>z4+0x1+':\x20'+z0[z3][Lt(0x88f)]+Lt(0x7ce)+z0[z3][Lt(0xb01)]+'\x20')['join'](Lt(0x708)),N(z1)))+TU+Lt(0x113);};try{speechSynthesis[L3(0x328)]();}catch(To){}function I(){const TU={};return{'getRecords':()=>TU,'documentLie':(z0,z1)=>{const LM=a0T,z2=z1 instanceof Array;if(TU[z0]){if(z2)return TU[z0]=[...TU[z0],...z1];return TU[z0][LM(0x3e4)](z1);}return z2?TU[z0]=z1:TU[z0]=[z1];}};}const j=I(),{documentLie:h}=j,l='\x0a\x09height:\x20100vh;\x0a\x09width:\x20100vw;\x0a\x09position:\x20absolute;\x0a\x09left:-10000px;\x0a\x09visibility:\x20hidden;\x0a';function X(){const LB=L3;return String[LB(0xbba)](Math[LB(0xbd0)]()*0x1a+0x61)+Math[LB(0xbd0)]()[LB(0x8ac)](0x24)[LB(0x80d)](-0x7);}function g(TU){const LO=L3;try{if(!Z)return TU;const z0=TU[LO(0x4ea)][LO(0xba8)](LO(0x4e5));z0[LO(0x788)]('id',X()),z0[LO(0x788)](LO(0x3f3),l),z0[LO(0x405)]=LO(0xb2a),TU[LO(0x4ea)]['body']['appendChild'](z0);const z1=[...[...z0[LO(0x57a)]][0x0][LO(0x57a)]][0x0];if(!z1)return null;const {contentWindow:z2}=z1||{};if(!z2)return null;const z3=z2[LO(0x4ea)][LO(0xba8)]('div');z3[LO(0x405)]=LO(0xb2a),z2[LO(0x4ea)][LO(0x88e)][LO(0x446)](z3);const z4=[...[...z3[LO(0x57a)]][0x0][LO(0x57a)]][0x0];return z4['contentWindow'];}catch(z5){return f(z5,LO(0x9e0)),TU;}}const J=X(),o=L3(0x18e)in self;function U(TU){const LN=L3;return TU[LN(0x480)][LN(0x8ce)]==LN(0x792);}function W0({spawnErr:TU,withStack:z0,final:z1}){try{TU();throw Error();}catch(z2){if(!U(z2))return!![];return z0?z0(z2):![];}finally{z1&&z1();}}function W1(TU){try{return TU(),![];}catch(z0){return!![];}}function W2(TU){const Li=L3;return{[Li(0x630)+TU+Li(0x1a0)]:!![],[Li(0x1c5)+TU+Li(0x1a0)]:!![],[Li(0xa39)]:!![],['function\x20'+TU+'()\x20{'+'\x0a'+Li(0x2fe)+'\x0a'+'}']:!![],[Li(0x1c5)+TU+Li(0x602)+'\x0a'+Li(0x2fe)+'\x0a'+'}']:!![],[Li(0x8f3)+'\x0a'+Li(0x2fe)+'\x0a'+'}']:!![]};}function W3(TU,z0,z1=0x1){const Ly=L3;return z0[Ly(0x579)](TU[Ly(0x8c7)][Ly(0x184)]('\x0a')[z1]);}const W4=/at Function\.toString /,W5=/at Object\.toString/,W6=/at (Function\.)?\[Symbol.hasInstance\]/,W7=/at (Proxy\.)?\[Symbol.hasInstance\]/;function W8({scope:TU,apiFunction:z0,proto:z1,obj:z2,lieProps:z3}){const LK=L3;if(typeof z0!=LK(0x71b))return{'lied':0x0,'lieTypes':[]};const z4=z0[LK(0x8ce)]['replace'](/get\s/,''),z5=z2===null||z2===void 0x0?void 0x0:z2[LK(0x8ce)],z6=Object['getPrototypeOf'](z0);let z7={[LK(0x216)]:!!z2&&W0({'spawnErr':()=>z2[LK(0x217)][z4]}),[LK(0x619)]:!!z2&&/^(screen|navigator)$/i[LK(0x579)](z5)&&!!(Object[LK(0x75e)](self[z5[LK(0xb5b)]()],z4)||o&&Reflect[LK(0x75e)](self[z5[LK(0xb5b)]()],z4)),[LK(0x287)]:W0({'spawnErr':()=>{const Lr=LK;new z0(),z0[Lr(0xa34)](z1);}}),[LK(0x897)]:W0({'spawnErr':()=>{const LV=LK;new z0(),z0[LV(0x59f)](z1);}}),['failed\x20new\x20instance\x20error']:W0({'spawnErr':()=>new z0()}),[LK(0x718)]:!L&&W0({'spawnErr':()=>{class zW extends z0{}}}),[LK(0x9ec)]:W0({'spawnErr':()=>Object[LK(0xb7c)](z0,null)[LK(0x8ac)](),'final':()=>Object[LK(0xb7c)](z0,z6)}),[LK(0x39f)]:!W2(z4)[TU[LK(0x6ca)][LK(0x217)][LK(0x8ac)][LK(0xa34)](z0)]||!W2(LK(0x8ac))[TU[LK(0x6ca)][LK(0x217)]['toString']['call'](z0[LK(0x8ac)])],[LK(0x5fd)]:LK(0x217)in z0,[LK(0x6ff)]:!!(Object[LK(0x75e)](z0,'arguments')||Reflect[LK(0x75e)](z0,LK(0xb85))||Object['getOwnPropertyDescriptor'](z0,LK(0x593))||Reflect[LK(0x75e)](z0,LK(0x593))||Object[LK(0x75e)](z0,'prototype')||Reflect['getOwnPropertyDescriptor'](z0,'prototype')||Object[LK(0x75e)](z0,'toString')||Reflect[LK(0x75e)](z0,LK(0x8ac))),['failed\x20own\x20property']:!!(z0[LK(0x6d6)](LK(0xb85))||z0[LK(0x6d6)](LK(0x593))||z0[LK(0x6d6)](LK(0x217))||z0['hasOwnProperty'](LK(0x8ac))),[LK(0x62c)]:Object['keys'](Object[LK(0x836)](z0))[LK(0x89d)]()['toString']()!='length,name',[LK(0x6e5)]:Object[LK(0x6d8)](z0)[LK(0x89d)]()[LK(0x8ac)]()!='length,name',['failed\x20own\x20keys\x20names']:o&&Reflect[LK(0x7f8)](z0)[LK(0x89d)]()[LK(0x8ac)]()!='length,name',[LK(0xb72)]:W0({'spawnErr':()=>Object[LK(0x699)](z0)[LK(0x8ac)](),'withStack':zW=>Z&&!W3(zW,W4)})||W0({'spawnErr':()=>Object[LK(0x699)](new Proxy(z0,{}))[LK(0x8ac)](),'withStack':zW=>Z&&!W3(zW,W5)}),[LK(0x5aa)]:W0({'spawnErr':()=>{const LR=LK;z0[LR(0xb85)],z0[LR(0x593)];}}),[LK(0x359)]:W0({'spawnErr':()=>{const Lw=LK;z0[Lw(0x8ac)]['arguments'],z0['toString']['caller'];}}),[LK(0x46f)]:W0({'spawnErr':()=>{const Lm=LK;Object['setPrototypeOf'](z0,Object[Lm(0x699)](z0))['toString']();},'final':()=>Object['setPrototypeOf'](z0,z6)})};const z8=z4==LK(0x8ac)||!!z3[LK(0x1a2)]||!!z3[LK(0xb3b)];if(z8){const zW=new Proxy(z0,{}),zT=new Proxy(z0,{}),zz=new Proxy(z0,{});z7={...z7,['failed\x20at\x20too\x20much\x20recursion\x20__proto__\x20error']:!W0({'spawnErr':()=>{const LE=LK;z0[LE(0x617)]=proxy,z0++;},'final':()=>Object[LK(0xb7c)](z0,z6)}),[LK(0x516)]:!W0({'spawnErr':()=>{const Lf=LK;Object[Lf(0xb7c)](zW,Object[Lf(0x699)](zW))[Lf(0x8ac)]();},'final':()=>Object[LK(0xb7c)](zW,z6)}),[LK(0xabd)]:!W0({'spawnErr':()=>{const Lc=LK;zT[Lc(0x617)]=zT,zT++;},'final':()=>Object[LK(0xb7c)](zT,z6)}),[LK(0xff)]:o&&W0({'spawnErr':()=>{const LG=LK;Reflect[LG(0xb7c)](z0,Object[LG(0x699)](z0)),J in z0;throw new TypeError();},'final':()=>Object['setPrototypeOf'](z0,z6)}),['failed\x20at\x20reflect\x20set\x20proto\x20proxy']:o&&!W0({'spawnErr':()=>{const Le=LK;Reflect['setPrototypeOf'](zz,Object[Le(0x699)](zz)),J in zz;},'final':()=>Object[LK(0xb7c)](zz,z6)}),[LK(0x6b4)]:Z&&(W0({'spawnErr':()=>{z0 instanceof z0;},'withStack':zZ=>!W3(zZ,W6)})||W0({'spawnErr':()=>{const zZ=new Proxy(z0,{});zZ instanceof zZ;},'withStack':zZ=>!W3(zZ,W7)})),[LK(0xa47)]:Z&&o&&W1(()=>{const LC=LK;Object[LC(0x77f)](z0,'',{'configurable':!![]})[LC(0x8ac)](),Reflect['deleteProperty'](z0,'');})};}const z9=Object['keys'](z7)[LK(0x73b)](zZ=>!!z7[zZ]);return{'lied':z9['length'],'lieTypes':z9};}function W9(TU){const Ls=L3,z0=z3=>typeof z3!=Ls(0x63d)&&!!z3,z1={},z2=[];return{'getProps':()=>z1,'getPropsSearched':()=>z2,'searchLies':(z3,z4)=>{const LI=Ls,{target:z5,ignore:z6}=z4||{};let z7;try{z7=z3();if(!z0(z7))return;}catch(z9){return;}const z8=!!z7[LI(0x217)]?z7[LI(0x217)]:z7;[...new Set([...Object[LI(0x6d8)](z8),...Object[LI(0xab4)](z8)])][LI(0x89d)]()[LI(0xa0f)](zW=>{const Lj=LI,zT=zW==Lj(0x480)||!new Set(z5)[Lj(0x7ea)](zW)||new Set(z6)['has'](zW);if(zT)return;const zz=/\s(.+)\]/,zZ=(z7[Lj(0x8ce)]?z7[Lj(0x8ce)]:zz[Lj(0x579)](z7)?zz[Lj(0xad3)](z7)[0x1]:undefined)+'.'+zW;z2[Lj(0x3e4)](zZ);try{const zd=z7[Lj(0x217)]?z7['prototype']:z7;let zL;try{const zn=zd[zW];if(typeof zn==Lj(0x71b)){zL=W8({'scope':TU,'apiFunction':zd[zW],'proto':zd,'obj':null,'lieProps':z1});if(zL['lied'])return h(zZ,zL[Lj(0x68a)]),z1[zZ]=zL[Lj(0x68a)];return;}if(zW!='name'&&zW!='length'&&zW[0x0]!==zW[0x0]['toUpperCase']()){const zb=['failed\x20descriptor.value\x20undefined'];return h(zZ,zb),z1[zZ]=zb;}}catch(zS){}const zp=Object[Lj(0x75e)](zd,zW)['get'];zL=W8({'scope':TU,'apiFunction':zp,'proto':zd,'obj':z7,'lieProps':z1});if(zL[Lj(0x153)])return h(zZ,zL['lieTypes']),z1[zZ]=zL[Lj(0x68a)];return;}catch(zQ){const zu=Lj(0x30c);return h(zZ,zu),z1[zZ]=[zu];}});}};}function WW(){const Lh=L3;if(W)return{'iframeWindow':self};try{const TU=self['length'],z0=new DocumentFragment(),z1=document[Lh(0xba8)]('div'),z2=X();z1[Lh(0x788)]('id',z2),z0[Lh(0x446)](z1),z1[Lh(0x405)]=Lh(0x2aa)+l+Lh(0x1f6),document[Lh(0x88e)]['appendChild'](z0);const z3=self[TU],z4=g(z3);return{'iframeWindow':z4||self,'div':z1};}catch(z5){return f(z5,Lh(0x5d4)),{'iframeWindow':self};}}const {iframeWindow:WT,div:Wz}=WW()||{};function WZ(TU){const Ll=L3,z0=W9(TU),{searchLies:z1}=z0;z1(()=>Function,{'target':[Ll(0x8ac)],'ignore':[Ll(0x593),'arguments']}),z1(()=>AnalyserNode),z1(()=>AudioBuffer,{'target':[Ll(0x9ae),Ll(0x4b9)]}),z1(()=>BiquadFilterNode,{'target':[Ll(0x200)]}),z1(()=>CanvasRenderingContext2D,{'target':[Ll(0x60e),Ll(0xb19),'isPointInPath',Ll(0x175),Ll(0x667),'quadraticCurveTo',Ll(0x894),'strokeText','font']}),z1(()=>CSSStyleDeclaration,{'target':[Ll(0x890)]}),z1(()=>CSS2Properties,{'target':[Ll(0x890)]}),z1(()=>Date,{'target':[Ll(0x61a),Ll(0x87d),'getFullYear','getHours',Ll(0xa6f),Ll(0x1b0),'getTime',Ll(0x66c),'setDate',Ll(0xbc5),Ll(0x9b4),Ll(0x8c2),Ll(0x5ef),'setSeconds',Ll(0x11d),'toDateString',Ll(0xf8),Ll(0xa29),Ll(0x614),Ll(0x520),Ll(0x8ac),Ll(0x885),Ll(0x969)]}),z1(()=>Intl[Ll(0x7d2)],{'target':[Ll(0x138),Ll(0x306),'formatToParts',Ll(0x69e)]}),z1(()=>Document,{'target':[Ll(0xba8),Ll(0x492),Ll(0xa0c),'getElementsByClassName',Ll(0x3a7),Ll(0x772),Ll(0x877),'referrer','write','writeln'],'ignore':[Ll(0xa56),Ll(0x60f),Ll(0xb53)]}),z1(()=>DOMRect),z1(()=>DOMRectReadOnly),z1(()=>Element,{'target':['append',Ll(0x446),'getBoundingClientRect',Ll(0xfd),Ll(0x5b8),'insertAdjacentHTML',Ll(0x5e3),Ll(0x466),Ll(0x537),Ll(0x562),Ll(0x657),'setAttribute']}),z1(()=>FontFace,{'target':[Ll(0x9cc),Ll(0x82d),Ll(0x7be)]}),z1(()=>HTMLCanvasElement),z1(()=>HTMLElement,{'target':[Ll(0x1d1),Ll(0x31b),Ll(0x3bd),'offsetWidth',Ll(0x6e8),Ll(0xb1f)],'ignore':[Ll(0x60f),Ll(0xb53)]}),z1(()=>HTMLIFrameElement,{'target':[Ll(0x245),Ll(0x89c)]}),z1(()=>IntersectionObserverEntry,{'target':[Ll(0x2b9),Ll(0x2a7),Ll(0x522)]}),z1(()=>Math,{'target':['acos',Ll(0x923),Ll(0x1b5),Ll(0x271),Ll(0x92b),Ll(0xbb1),Ll(0x6f7),Ll(0x2cb),Ll(0x8d6),Ll(0x879),'expm1',Ll(0x642),Ll(0x549),Ll(0xa32),Ll(0x710),'sinh','sqrt',Ll(0x5ca),'tanh']}),z1(()=>MediaDevices,{'target':[Ll(0x12c),Ll(0xb00),Ll(0xac1)]}),z1(()=>Navigator,{'target':[Ll(0xad0),Ll(0x331),Ll(0x4a6),Ll(0x4f3),Ll(0x501),'deviceMemory',Ll(0x2c3),Ll(0x333),Ll(0x29c),Ll(0x936),Ll(0x6d5),'languages',Ll(0xbcd),Ll(0x1d7),Ll(0x6cf),Ll(0xbc4),'plugins','product',Ll(0x8fc),Ll(0x839),Ll(0xab5),Ll(0x4b4),Ll(0x449),Ll(0x7f4)]}),z1(()=>Node,{'target':[Ll(0x446),'insertBefore','replaceChild']}),z1(()=>OffscreenCanvas,{'target':['convertToBlob',Ll(0x1fa)]}),z1(()=>OffscreenCanvasRenderingContext2D,{'target':[Ll(0x60e),Ll(0xb19),Ll(0xa70),Ll(0x175),'measureText',Ll(0x2f1),Ll(0x428)]}),z1(()=>Permissions,{'target':[Ll(0x77d)]}),z1(()=>Range,{'target':[Ll(0x6d9),Ll(0xfd)]}),z1(()=>Intl[Ll(0x8c6)],{'target':[Ll(0x69e)]}),z1(()=>Screen),z1(()=>speechSynthesis,{'target':['getVoices']}),z1(()=>String,{'target':['fromCodePoint']}),z1(()=>SVGRect),z1(()=>TextMetrics),z1(()=>WebGLRenderingContext,{'target':[Ll(0x3d4),Ll(0x9e1),Ll(0x35e)]}),z1(()=>WebGL2RenderingContext,{'target':[Ll(0x3d4),Ll(0x9e1),Ll(0x35e)]});const z2=z0[Ll(0x46a)](),z3=z0[Ll(0x66b)]();return{'lieDetector':z0,'lieList':Object[Ll(0xab4)](z2)[Ll(0x89d)](),'lieDetail':z2,'lieCount':Object[Ll(0xab4)](z2)[Ll(0x729)]((z4,z5)=>z4+z2[z5][Ll(0xb8e)],0x0),'propsSearched':z3};}const Wd=performance[L3(0x374)](),{lieDetector:WL,lieList:Wp,lieDetail:Wn,propsSearched:Wb}=WZ(WT),WS=TU=>!TU?TU:TU['filter'](z0=>!/object toString|toString incompatible proxy/['test'](z0))[L3(0xb8e)];let WQ,Wu;if(!W){WQ=((()=>{const LX=L3,z0=WL[LX(0x46a)]();return Object['keys'](z0)[LX(0x729)]((z1,z2)=>{return z1[z2]=WS(z0[z2]),z1;},{});})()),Wu=JSON[L3(0x17b)](JSON['stringify'](Wn));const TU=performance['now']()-Wd;console[L3(0x642)](Wb[L3(0xb8e)]+'\x20API\x20properties\x20analyzed\x20in\x20'+TU[L3(0x250)](0x2)+L3(0x83b)+Wp[L3(0xb8e)]+L3(0x5e6));}const WF=(z0,z1)=>{const Lg=L3,z2=[],z3=Object['getOwnPropertyNames'](z0)[Lg(0x73b)](zp=>isNaN(+zp)),z4=Object[Lg(0x6d8)](z1)['filter'](zp=>isNaN(+zp)),z5=[...z0],z6=[...z1],z7=new Set(z4),z8=zp=>[...new Set(zp)],z9=z8(z6[Lg(0x638)](zp=>zp[Lg(0xaf6)])),zW=new Set(z3),zT=z9[Lg(0x638)](zp=>zp&&zp[Lg(0x8ce)]),zz=[...zW];zz[Lg(0xa0f)](zp=>{const LJ=Lg,zn=new Set(zT)['has'](zp);!zn&&zW[LJ(0x3af)](zp);});const zZ=z5['filter'](zp=>{const Lo=Lg;try{const zn=Object[Lo(0x85d)](zp[0x0])['constructor'][Lo(0x8ce)]==Lo(0xa54);return!zn&&zW['delete'](zp[Lo(0x8ce)]),!zn;}catch(zb){return zW[Lo(0x3af)](zp[Lo(0x8ce)]),!![];}});zZ[Lg(0xb8e)]&&z2['push'](Lg(0x7d8));const zd=z5['map'](zp=>Object['values'](zp))[Lg(0x92f)](),zL=zd[Lg(0x638)](zp=>zp[Lg(0x743)]);return zL[Lg(0xa0f)](zp=>{const zn=z7['has'](zp);!zn&&z7['delete'](zp);}),z5[Lg(0xa0f)](zp=>{const LU=Lg,zn=Object[LU(0x828)](zp)[LU(0x638)](zb=>zb['type']);return zn[LU(0xa0f)](zb=>{const p0=LU;if(!z7[p0(0x7ea)](zb))return z2[p0(0x3e4)](p0(0x8f8)),zW[p0(0x3af)](zp[p0(0x8ce)]);return;});}),{'validPlugins':z5['filter'](zp=>zW['has'](zp[Lg(0x8ce)])),'validMimeTypes':z6[Lg(0x73b)](zp=>z7[Lg(0x7ea)](zp[Lg(0x743)])),'lies':[...new Set(z2)]};},Wv=()=>{const p1=L3,z0=j[p1(0x6a6)](),z1=Object['keys'](z0)['reduce']((z2,z3)=>{const p2=p1;return z2+=z0[z3][p2(0xb8e)],z2;},0x0);return{'data':z0,'totalLies':z1};};function WH(z0,z1){const p3=L3,{lies:{data:z2,totalLies:z3,$hash:z4}}=z0;return p3(0x343)+(z3?p3(0x542):'')+p3(0x2f2)+(!z3?'0':''+z3)+'):\x20'+(!z3?p3(0x370):w(p3(0x390),Object[p3(0xab4)](z2)[p3(0x89d)]()[p3(0x638)](z5=>{const p4=p3,z6=z2[z5];return'\x0a\x09\x09\x09\x09\x09<br>\x0a\x09\x09\x09\x09\x09<div\x20style=\x22padding:5px\x22>\x0a\x09\x09\x09\x09\x09\x09<strong>'+z5+p4(0x4ce)+z6[p4(0x638)](z7=>'<div>-\x20'+z7+'</div>')[p4(0x644)]('')+p4(0x9a6);})['join'](''),N(z4)))+z1+'</div>';}const Wx=z0=>typeof z0==L3(0x71b)?!![]:![],WD={'aa':0x1,'ab':0x1,'ac':0x1,'ad':0x1,'ae':0x1,'af':0x1,'ag':0x1,'ah':0x1,'ai':0x1,'aj':0x1,'ak':0x1,'al':0x1,'am':0x1,'an':0x1,'ao':0x1,'ap':0x1,'aq':0x1,'ar':0x1,'as':0x1,'at':0x1,'au':0x1,'av':0x1,'aw':0x1,'ax':0x1,'ay':0x1,'az':0x1,'ba':0x1,'bb':0x1,'bc':0x1,'bd':0x1,'be':0x1,'bf':0x1,'bg':0x1,'bh':0x1,'bi':0x1,'bj':0x1,'bk':0x1,'bl':0x1,'bm':0x1,'bn':0x1,'bo':0x1,'bp':0x1,'br':0x1,'bs':0x1,'bt':0x1,'bu':0x1,'bv':0x1,'bw':0x1,'bx':0x1,'by':0x1,'ca':0x1,'cb':0x1,'cc':0x1,'cd':0x1,'ce':0x1,'cg':0x1,'ch':0x1,'ci':0x1,'ck':0x1,'cl':0x1,'cm':0x1,'cn':0x1,'co':0x1,'cp':0x1,'cq':0x1,'cr':0x1,'cs':0x1,'ct':0x1,'cu':0x1,'cw':0x1,'cy':0x1,'cz':0x1,'da':0x1,'db':0x1,'dc':0x1,'dd':0x1,'de':0x1,'df':0x1,'dg':0x1,'dh':0x1,'di':0x1,'dj':0x1,'dk':0x1,'dl':0x1,'dm':0x1,'dn':0x1,'do':0x1,'dp':0x1,'dq':0x1,'dr':0x1,'ds':0x1,'dt':0x1,'du':0x1,'dv':0x1,'dw':0x1,'dx':0x1,'dy':0x1,'dz':0x1,'ea':0x1,'eb':0x1,'ec':0x1,'ed':0x1,'ee':0x1,'ef':0x1,'eg':0x1,'eh':0x1,'ei':0x1,'ej':0x1,'ek':0x1,'el':0x1,'em':0x1,'en':0x1,'eo':0x1,'ep':0x1,'eq':0x1,'er':0x1,'es':0x1,'et':0x1,'eu':0x1,'ev':0x1,'ew':0x1,'ex':0x1,'ey':0x1,'ez':0x1,'fa':0x1,'fb':0x1,'fc':0x1,'fd':0x1,'fe':0x1,'ff':0x1,'fg':0x1,'fh':0x1,'fi':0x1,'fj':0x1,'fk':0x1,'fl':0x1,'fm':0x1,'fn':0x1,'fo':0x1,'fp':0x1,'fr':0x1,'fs':0x1,'ft':0x1,'fu':0x1,'fw':0x1,'fy':0x1,'ga':0x1,'gb':0x1,'gc':0x1,'gd':0x1,'ge':0x1,'gf':0x1,'gg':0x1,'gh':0x1,'gi':0x1,'gj':0x1,'gk':0x1,'gl':0x1,'gm':0x1,'gn':0x1,'go':0x1,'gp':0x1,'gr':0x1,'gs':0x1,'gt':0x1,'gu':0x1,'gw':0x1,'gy':0x1,'gz':0x1,'ha':0x1,'hb':0x1,'hc':0x1,'hd':0x1,'he':0x1,'hf':0x1,'hg':0x1,'hh':0x1,'hi':0x1,'hj':0x1,'hk':0x1,'hl':0x1,'hm':0x1,'hn':0x1,'ho':0x1,'hp':0x1,'hq':0x1,'hr':0x1,'hs':0x1,'ht':0x1,'hu':0x1,'hv':0x1,'hw':0x1,'hy':0x1,'ia':0x1,'ib':0x1,'ic':0x1,'id':0x1,'ie':0x1,'if':0x1,'ig':0x1,'ih':0x1,'ii':0x1,'ij':0x1,'ik':0x1,'il':0x1,'im':0x1,'in':0x1,'io':0x1,'ip':0x1,'iq':0x1,'ir':0x1,'is':0x1,'it':0x1,'iu':0x1,'iv':0x1,'iw':0x1,'ix':0x1,'iy':0x1,'iz':0x1,'ja':0x1,'jc':0x1,'je':0x1,'ji':0x1,'jj':0x1,'jk':0x1,'jn':0x1,'jo':0x1,'ju':0x1,'ka':0x1,'kb':0x1,'kc':0x1,'kd':0x1,'ke':0x1,'kf':0x1,'kg':0x1,'kh':0x1,'ki':0x1,'kj':0x1,'kk':0x1,'kl':0x1,'km':0x1,'kn':0x1,'ko':0x1,'kp':0x1,'kr':0x1,'ks':0x1,'kt':0x1,'ku':0x1,'kv':0x1,'kw':0x1,'ky':0x1,'la':0x1,'lb':0x1,'lc':0x1,'ld':0x1,'le':0x1,'lf':0x1,'lg':0x1,'lh':0x1,'li':0x1,'lj':0x1,'lk':0x1,'ll':0x1,'lm':0x1,'ln':0x1,'lo':0x1,'lp':0x1,'lq':0x1,'lr':0x1,'ls':0x1,'lt':0x1,'lu':0x1,'lv':0x1,'lw':0x1,'lx':0x1,'ly':0x1,'lz':0x1,'ma':0x1,'mb':0x1,'mc':0x1,'md':0x1,'me':0x1,'mf':0x1,'mg':0x1,'mh':0x1,'mi':0x1,'mj':0x1,'mk':0x1,'ml':0x1,'mm':0x1,'mn':0x1,'mo':0x1,'mp':0x1,'mq':0x1,'mr':0x1,'ms':0x1,'mt':0x1,'mu':0x1,'mv':0x1,'mw':0x1,'my':0x1,'na':0x1,'nb':0x1,'nc':0x1,'nd':0x1,'ne':0x1,'nf':0x1,'ng':0x1,'nh':0x1,'ni':0x1,'nj':0x1,'nk':0x1,'nl':0x1,'nm':0x1,'nn':0x1,'no':0x1,'np':0x1,'nq':0x1,'nr':0x1,'ns':0x1,'nt':0x1,'nu':0x1,'nv':0x1,'nw':0x1,'nx':0x1,'ny':0x1,'nz':0x1,'oa':0x1,'ob':0x1,'oc':0x1,'od':0x1,'oe':0x1,'of':0x1,'og':0x1,'oh':0x1,'oi':0x1,'oj':0x1,'ok':0x1,'ol':0x1,'om':0x1,'on':0x1,'oo':0x1,'op':0x1,'oq':0x1,'or':0x1,'os':0x1,'ot':0x1,'ou':0x1,'ov':0x1,'ow':0x1,'ox':0x1,'oy':0x1,'oz':0x1,'pa':0x1,'pb':0x1,'pc':0x1,'pd':0x1,'pe':0x1,'pf':0x1,'pg':0x1,'ph':0x1,'pi':0x1,'pj':0x1,'pk':0x1,'pl':0x1,'pm':0x1,'pn':0x1,'po':0x1,'pp':0x1,'pr':0x1,'ps':0x1,'pt':0x1,'pu':0x1,'pw':0x1,'py':0x1,'pz':0x1,'qa':0x1,'qe':0x1,'qi':0x1,'qo':0x1,'qr':0x1,'qs':0x1,'qt':0x1,'qu':0x1,'ra':0x1,'rb':0x1,'rc':0x1,'rd':0x1,'re':0x1,'rf':0x1,'rg':0x1,'rh':0x1,'ri':0x1,'rj':0x1,'rk':0x1,'rl':0x1,'rm':0x1,'rn':0x1,'ro':0x1,'rp':0x1,'rq':0x1,'rr':0x1,'rs':0x1,'rt':0x1,'ru':0x1,'rv':0x1,'rw':0x1,'rx':0x1,'ry':0x1,'rz':0x1,'sa':0x1,'sb':0x1,'sc':0x1,'sd':0x1,'se':0x1,'sf':0x1,'sg':0x1,'sh':0x1,'si':0x1,'sj':0x1,'sk':0x1,'sl':0x1,'sm':0x1,'sn':0x1,'so':0x1,'sp':0x1,'sq':0x1,'sr':0x1,'ss':0x1,'st':0x1,'su':0x1,'sv':0x1,'sw':0x1,'sy':0x1,'sz':0x1,'ta':0x1,'tb':0x1,'tc':0x1,'td':0x1,'te':0x1,'tf':0x1,'tg':0x1,'th':0x1,'ti':0x1,'tj':0x1,'tk':0x1,'tl':0x1,'tm':0x1,'tn':0x1,'to':0x1,'tp':0x1,'tr':0x1,'ts':0x1,'tt':0x1,'tu':0x1,'tv':0x1,'tw':0x1,'tx':0x1,'ty':0x1,'tz':0x1,'ua':0x1,'ub':0x1,'uc':0x1,'ud':0x1,'ue':0x1,'uf':0x1,'ug':0x1,'uh':0x1,'ui':0x1,'uj':0x1,'uk':0x1,'ul':0x1,'um':0x1,'un':0x1,'uo':0x1,'up':0x1,'uq':0x1,'ur':0x1,'us':0x1,'ut':0x1,'uu':0x1,'uv':0x1,'uw':0x1,'ux':0x1,'uy':0x1,'uz':0x1,'va':0x1,'vc':0x1,'vd':0x1,'ve':0x1,'vg':0x1,'vi':0x1,'vl':0x1,'vn':0x1,'vo':0x1,'vr':0x1,'vs':0x1,'vt':0x1,'vu':0x1,'vv':0x1,'vy':0x1,'vz':0x1,'wa':0x1,'wb':0x1,'wc':0x1,'wd':0x1,'we':0x1,'wf':0x1,'wg':0x1,'wh':0x1,'wi':0x1,'wj':0x1,'wk':0x1,'wl':0x1,'wm':0x1,'wn':0x1,'wo':0x1,'wp':0x1,'wr':0x1,'ws':0x1,'wt':0x1,'wu':0x1,'ww':0x1,'wy':0x1,'wz':0x1,'xa':0x1,'xb':0x1,'xc':0x1,'xe':0x1,'xf':0x1,'xg':0x1,'xh':0x1,'xi':0x1,'xl':0x1,'xm':0x1,'xn':0x1,'xo':0x1,'xp':0x1,'xq':0x1,'xs':0x1,'xt':0x1,'xu':0x1,'xv':0x1,'xw':0x1,'xx':0x1,'xy':0x1,'ya':0x1,'yb':0x1,'yc':0x1,'yd':0x1,'ye':0x1,'yf':0x1,'yg':0x1,'yh':0x1,'yi':0x1,'yj':0x1,'yk':0x1,'yl':0x1,'ym':0x1,'yn':0x1,'yo':0x1,'yp':0x1,'yr':0x1,'ys':0x1,'yt':0x1,'yu':0x1,'yv':0x1,'yw':0x1,'yx':0x1,'yz':0x1,'za':0x1,'zb':0x1,'zc':0x1,'zd':0x1,'ze':0x1,'zg':0x1,'zh':0x1,'zi':0x1,'zj':0x1,'zk':0x1,'zl':0x1,'zm':0x1,'zn':0x1,'zo':0x1,'zp':0x1,'zq':0x1,'zs':0x1,'zt':0x1,'zu':0x1,'zv':0x1,'zw':0x1,'zy':0x1,'zz':0x1},WA=(z0,{strict:strict=![]}={})=>{const p5=L3;if(!z0)return[];const z1=[],z2=[/([A-Z]{3,}[a-z])/g,/([a-z][A-Z]{3,})/g,/([a-z][A-Z]{2,}[a-z])/g,/([a-z][\d]{2,}[a-z])/g,/([A-Z][\d]{2,}[a-z])/g,/([a-z][\d]{2,}[A-Z])/g];z2[p5(0xa0f)](z9=>{const p6=p5,zW=z0[p6(0x12a)](z9);if(zW)return z1[p6(0x3e4)](zW[p6(0x644)](',\x20'));return;});const z3=[],z4=z0[p5(0xb5b)]()['replace'](/\d|\W|_/g,'\x20')[p5(0x737)](/\s+/g,'\x20')[p5(0x77b)]()[p5(0x184)]('\x20')[p5(0x644)]('_'),z5=z4['length'],z6=[...z4];z6['forEach']((z9,zW)=>{const p7=p5,zT=zW+0x1;if(z6[zT]=='_'||z9=='_'||zT==z5)return!![];const zz=z9+z6[zW+0x1],zZ=!!WD[zz];!zZ&&z3[p7(0x3e4)](zz);return;});const z7=[...!strict&&z3[p5(0xb8e)]<0x3?[]:z3,...!strict&&z1[p5(0xb8e)]<0x4?[]:z1],z8=['bz','cf','fx','mx','vb','xd','gx',p5(0xb93),'vm',p5(0x753)];return z7[p5(0x73b)](z9=>!z8[p5(0x725)](z9));},WY=z0=>(''+z0)[L3(0x737)](/ANGLE \(|\sDirect3D.+|\sD3D.+|\svs_.+\)|\((DRM|POLARIS|LLVM).+|Mesa.+|(ATI|INTEL)-.+|Metal\s-\s.+|NVIDIA\s[\d|\.]+/ig,'')['replace'](/(\s(ti|\d{1,2}GB|super)$)/ig,'')[L3(0x737)](/\s{2,}/g,'\x20')[L3(0x77b)]()['replace'](/((r|g)(t|)(x|s|\d) |Graphics |GeForce |Radeon (HD |Pro |))(\d+)/i,(...z1)=>{const p8=L3;return''+z1[0x1]+z1[0x6][0x0]+z1[0x6]['slice'](0x1)[p8(0x737)](/\d/g,'0')+'s';}),Wk=z0=>{const p9=L3,z1=[p9(0x2a0),p9(0x1cc),p9(0x468),p9(0x3ae),p9(0x8ec),'ATI\x20Technologies\x20Inc',p9(0x13a),p9(0x297),p9(0x139),p9(0x4bf),p9(0x206),p9(0x7da),p9(0xb7a),p9(0x951),'Express\x20Chipset',p9(0x9fe),p9(0x5ee),p9(0x25d),'Google',p9(0xb76),p9(0xac9),p9(0x7eb),p9(0x130),p9(0xacd),p9(0x70b),p9(0x689),p9(0x24f),'KBL\x20Graphics','Mali',p9(0x8f7),'Mesa\x20DRI','Metal',p9(0x202),p9(0xa77),p9(0xbd5),p9(0x9f9),p9(0x326),p9(0x73d),p9(0x42a),'OpenGL\x20Engine',p9(0x5b1),p9(0xa22),p9(0x67e),p9(0xb93),p9(0x8bc),p9(0x26b),p9(0x6bb),'Quadro',p9(0x6b9),'Radeon\x20Pro',p9(0x648),p9(0x903),p9(0xa16),p9(0x166),p9(0x410),p9(0x259),p9(0x55c),'VirtualBox\x20Graphics\x20Adapter',p9(0x15a),'Xe\x20Graphics',p9(0x21b)],z2=[...z1][p9(0x73b)](z3=>(''+z0)[p9(0x725)](z3));return[...new Set(z2)][p9(0x89d)]()[p9(0x644)](',\x20');},WP=z0=>{const pW=L3;if(!z0)return;const z1=Wk(z0),z2=z1[pW(0xb8e)],z3=/\s{2,}|^\s|\s$/[pW(0x579)](z0),z4=/^ANGLE/[pW(0x579)](z0)&&!(/^ANGLE \((.+)\)/[pW(0xad3)](z0)||[])[0x1],z5=WA(z0,{'strict':!![]})['join'](',\x20'),z6=z2&&!z3&&!z4,z7=z6&&!z5['length']?'high':z6&&z5[pW(0xb8e)]?'moderate':pW(0xb09),z8=z7==pW(0x72a)?'A':z7==pW(0x9c2)?'C':'F',z9=new Set([z3?pW(0x8ee):undefined,z4?pW(0x673):undefined]);return z9[pW(0x3af)](undefined),{'parts':z1,'warnings':[...z9],'gibbers':z5,'confidence':z7,'grade':z8};},Wa=()=>{const z0=[];return{'getBin':()=>z0,'sendToTrash':(z1,z2,z3=undefined)=>{const z4=Wx(z2),z5=!z4?z2:'proxy\x20behavior\x20detected';return z0['push']({'name':z1,'value':z5}),z3;}};},Wq=Wa(),{sendToTrash:Wt}=Wq,WM=()=>({'trashBin':Wq[L3(0x17c)]()});function WB(z0,z1){const pT=L3,{trash:{trashBin:z2,$hash:z3}}=z0,z4=z2[pT(0xb8e)];return'\x0a\x09\x09<div\x20class=\x22'+(z4?pT(0x5b4):'')+pT(0x49f)+(!z4?'0':''+z4)+'):'+(!z4?pT(0x5f6):w(pT(0xaeb),z2[pT(0x638)]((z5,z6)=>z6+0x1+':\x20'+z5[pT(0x8ce)]+':\x20'+z5[pT(0x62e)])[pT(0x644)](pT(0x708)),N(z3)))+z1+pT(0x113);}const WO=z0=>{const pz=L3,z1=''+JSON['stringify'](z0),z2=z1[pz(0x184)]('')[pz(0x729)]((z3,z4,z5)=>{const pZ=pz;return Math[pZ(0x2f0)](0x1f,z3)+z1[pZ(0x507)](z5)|0x0;},0x811c9dc5);return(pz(0x66e)+(z2>>>0x0)[pz(0x8ac)](0x10))['substr'](-0x8);},WN=String[L3(0xbba)](Math[L3(0xbd0)]()*0x1a+0x61)+Math[L3(0xbd0)]()['toString'](0x24)[L3(0x80d)](-0x7),Wi=(z0,z1=L3(0x7e2))=>{const pd=L3,z2=''+JSON[pd(0x1b9)](z0),z3=new TextEncoder()['encode'](z2);return crypto[pd(0x1d6)][pd(0x314)](z1,z3)[pd(0x1f2)](z4=>{const pL=pd,z5=Array[pL(0xb24)](new Uint8Array(z4)),z6=z5[pL(0x638)](z7=>('00'+z7['toString'](0x10))[pL(0x80d)](-0x2))['join']('');return z6;});},Wy=(z0,z1)=>{const pp=L3,{getFeaturesLie:z2,computeWindowsRelease:z3}=z1,z4=z2(z0),z5=!z0['workerScope']||!z0[pp(0xa52)][pp(0x4b4)]||z0['workerScope'][pp(0x743)]==pp(0x3eb),z6=!!(z0[pp(0xa52)]&&z0['workerScope'][pp(0x153)]);let z7=![];if(z0['workerScope']&&z0[pp(0x1cb)]){const {platformVersion:zL,platform:zp}=z0[pp(0xa52)]['userAgentData']||{},{platformVersion:zn}=z0[pp(0x1cb)]||{},zb=z3({'platform':zp,'platformVersion':zL,'fontPlatformVersion':zn}),zS=zb&&zn&&!(''+zb)['includes'](zn),zQ=/macOS|Windows/['test'](zn)&&(zp&&!zn[pp(0x725)](zp));z7=zS||zQ;}const {totalLies:z8}=z0[pp(0x152)]||{},z9=0x64,zW=(z8||0x0)>z9,{stealth:zT}=z0[pp(0xa66)]||{},zz=!!(zT||{})[pp(0x48d)]||!!(zT||{})['Function.prototype.toString\x20leaks\x20Proxy\x20behavior'],zZ={'liedWorkerScope':z6,'liedPlatformVersion':z7,'functionToStringHasProxy':zz,'outsideFeaturesVersion':z4,'extremeLieCount':zW,'excessiveLooseFingerprints':![],'workerScopeIsBlocked':z5,'crowdBlendingScoreIsLow':![]},zd=Object[pp(0xab4)](zZ)[pp(0x638)](zu=>zZ[zu]?'1':'0')[pp(0x644)]('');return{'botHash':zd,'badBot':Object['keys'](zZ)[pp(0xaac)](zu=>zZ[zu])};},WK=async z0=>{const pn=L3,z1=['canvas2d.blob',pn(0x52c),pn(0x3b1),pn(0xa00),pn(0x878),pn(0x806),pn(0xb79),pn(0x35f),pn(0x149),pn(0x5ea),pn(0x179),pn(0x807),pn(0x361),pn(0x352),pn(0xa04),pn(0x85a),'canvasWebgl.pixels',pn(0x96f),pn(0x8f6),pn(0x43c),pn(0x53a),'clientRects.elementClientRects',pn(0x3b9),pn(0x2de),'clientRects.rangeClientRects',pn(0x1e1),'css.computedStyle',pn(0xf7),pn(0xaaf),'cssMedia.matchMediaCSS',pn(0x1e0),pn(0x32a),pn(0xa14),pn(0x134),pn(0x144),pn(0x274),pn(0x678),pn(0x709),pn(0xaaa),pn(0x6b8),pn(0xbcb),pn(0x10d),pn(0xb4c),'fonts.fontFaceLoadFonts',pn(0xb7f),'fonts.platformVersion',pn(0x2c9),pn(0xa51),pn(0x517),pn(0x415),'headless.likeHeadlessRating','headless.stealth',pn(0x2c8),'htmlElementVersion.keys',pn(0x9c0),pn(0x864),pn(0x5ff),'intl.locale',pn(0xa94),pn(0x1d8),pn(0x2cc),'lies.data',pn(0x6cb),pn(0x6af),pn(0x2fc),'media.mimeTypes',pn(0x25f),'navigator.bluetoothAvailability',pn(0x691),pn(0xaff),'navigator.doNotTrack',pn(0x4d6),pn(0x162),pn(0x9b3),pn(0xa58),pn(0x329),pn(0x332),pn(0x399),pn(0x419),pn(0x7a6),pn(0x8e2),pn(0x4bb),pn(0x8c0),pn(0x27c),pn(0x592),pn(0x5a3),'navigator.vendor',pn(0x48b),'offlineAudioContext.binsSample','offlineAudioContext.compressorGainReduction',pn(0x150),pn(0xa30),pn(0x79a),pn(0x5c6),'offlineAudioContext.sampleSum',pn(0x2bb),'offlineAudioContext.values',pn(0x201),'resistance.extension',pn(0x983),'resistance.mode',pn(0xa6c),pn(0x129),pn(0xb22),'screen.availWidth','screen.colorDepth',pn(0x595),pn(0x2e6),pn(0x998),'svg.bBox',pn(0x1eb),pn(0x20f),pn(0x4fc),pn(0x2ce),pn(0x31e),pn(0x1d9),pn(0xa4c),'timezone.locationMeasured','timezone.offset','timezone.offsetComputed',pn(0x8cb),pn(0x8b3),pn(0x7f7),pn(0x27e),pn(0x8e4),pn(0x1d5),pn(0x647),pn(0x27b),'windowFeatures.moz',pn(0x117),pn(0xb89),pn(0x218),pn(0x3e7),'workerScope.gpu',pn(0x5ad),'workerScope.language',pn(0x1ff),pn(0xb4a),'workerScope.locale',pn(0x6f3),'workerScope.localeIntlEntropyIsTrusty',pn(0xa6e),pn(0x2df),pn(0x953),'workerScope.system',pn(0x2e2),pn(0x8a1),'workerScope.timezoneOffset',pn(0x919),pn(0x62d),'workerScope.userAgent',pn(0x59b),pn(0x222),pn(0x544),pn(0xa38),pn(0x763),'workerScope.webglVendor'],z2=Object[pn(0xab4)](z0)[pn(0x89d)]()[pn(0x729)]((zT,zz)=>{const pb=pn,zZ=z0[zz],zd=Object[pb(0xab4)](zZ||{})[pb(0x89d)]()[pb(0x729)]((zL,zp)=>{const pS=pb;if(zp=='$hash'||zp==pS(0x153))return zL;return{...zL,[zz+'.'+zp]:zZ[zp]};},{});return{...zT,...zd};},{}),z3=0x40,z4=Object['keys'](z2),z5=Math['ceil'](z1['length']/z3),{host:z6}=window[pn(0x928)]||{},z7=z6!=pn(0x70a);if(z7&&''+z4!=''+z1){const zT=z4['filter'](zZ=>!z1['includes'](zZ)),zz=z1[pn(0x73b)](zZ=>!z4[pn(0x725)](zZ));(zT[pn(0xb8e)]||zz[pn(0xb8e)])&&(zT[pn(0xb8e)]&&console['warn'](pn(0x411),zT[pn(0x644)]('\x0a')),zz['length']&&console[pn(0x802)](pn(0xafa),zz[pn(0x644)]('\x0a')),console[pn(0x214)]('update\x20keys\x20for\x20accurate\x20fuzzy\x20hashing:'),console[pn(0x642)](z4[pn(0x638)](zZ=>'\x27'+zZ+'\x27,')[pn(0x644)]('\x0a')),console['groupEnd']());}const z8=z1['reduce']((zZ,zd,zL)=>{const pQ=pn;if(!zL||zL%z5==0x0){const zp=z1['slice'](zL,zL+z5);return{...zZ,[''+zp]:zp[pQ(0x638)](zn=>z2[zn])};}return zZ;},{});await Promise[pn(0x840)](Object[pn(0xab4)](z8)[pn(0x638)](zZ=>Wi(z8[zZ])[pn(0x1f2)](zd=>{return z8[zZ]=zd,zd;})));const z9=0x40,zW=Object[pn(0xab4)](z8)[pn(0x638)](zZ=>z8[zZ][0x0])[pn(0x644)]('')[pn(0x42f)](z9,'0');return zW;},Wr={[-20.538286209106445]:[124.0434488439787,124.04344968475198,124.04347527516074,124.04347503720783,124.04347657808103],[-20.538288116455078]:[124.04347518575378,124.04347527516074,124.04344884395687,124.04344968475198,124.04347657808103,124.04347730590962,124.0434765110258,124.04347656317987,124.04375314689969,124.0434485301812,124.0434496849557,124.043453265891,124.04345734833623,124.04345808873768],[-20.535268783569336]:[124.080722568091,124.08072256811283,124.08072766105033,124.08072787802666,124.08072787804849,124.08074500028306,124.0807470110085,124.08075528279005,124.08075643483608],[-31.502185821533203]:[35.74996031448245,35.7499681673944],[-31.50218963623047]:[35.74996031448245],[-31.509262084960938]:[35.7383295930922,35.73833402246237],[-29.837873458862305]:[35.10892717540264,35.10892752557993],[-29.83786964416504]:[35.10893232002854,35.10893253237009]},WV=Math['random']();async function WR(){const pu=L3;try{const z0=q();await t(z0);try{window[pu(0x8f5)]=OfflineAudioContext||webkitOfflineAudioContext;}catch(zy){}if(!OfflineAudioContext){a({'test':'audio','passed':![]});return;}const z1=WQ[pu(0x5c2)],z2=WQ[pu(0xb26)];let z3=z1||z2||![];const z4=0x1388,z5=new OfflineAudioContext(0x1,z4,0xac44),z6=z5[pu(0x7d9)](),z7=z5[pu(0x286)](),z8=z5['createDynamicsCompressor'](),z9=z5[pu(0x3d1)](),zW=new Float32Array(z6['frequencyBinCount']);z6[pu(0x588)](zW);const zT=new Set(zW)[pu(0xa45)];if(zT>0x1){z3=!![];const zK=pu(0x456)+zT+'\x20frequencies';h(pu(0x2d0),zK);}const zz={[pu(0x697)]:c(()=>z6[pu(0x972)]),[pu(0x87e)]:c(()=>z6[pu(0x4ae)]),[pu(0x57e)]:c(()=>z6['channelInterpretation']),[pu(0x959)]:c(()=>z6[pu(0x2e8)][pu(0x635)]),[pu(0x5b0)]:c(()=>z6[pu(0x371)]),[pu(0x600)]:c(()=>z6[pu(0x185)]),[pu(0x824)]:c(()=>z6[pu(0x29e)]),[pu(0x764)]:c(()=>z6['minDecibels']),['AnalyserNode.numberOfInputs']:c(()=>z6[pu(0xa9b)]),[pu(0x362)]:c(()=>z6[pu(0x363)]),['AnalyserNode.smoothingTimeConstant']:c(()=>z6[pu(0x5d0)]),['AnalyserNode.context.listener.forwardX.maxValue']:c(()=>{const pF=pu;return G(()=>z6[pF(0x2e8)][pF(0x2ca)][pF(0x406)][pF(0x2fd)]);}),[pu(0x3d3)]:c(()=>z9[pu(0xb9f)][pu(0x2fd)]),[pu(0x9bd)]:c(()=>z9[pu(0x76c)][pu(0x6d1)]),['BiquadFilterNode.frequency.maxValue']:c(()=>z9[pu(0x76c)][pu(0x2fd)]),[pu(0x910)]:c(()=>z8['attack'][pu(0x6d1)]),[pu(0x6a3)]:c(()=>z8[pu(0x262)][pu(0x6d1)]),[pu(0xaf8)]:c(()=>z8[pu(0x262)]['maxValue']),['DynamicsCompressorNode.ratio.defaultValue']:c(()=>z8['ratio'][pu(0x6d1)]),[pu(0x30f)]:c(()=>z8[pu(0xaa8)][pu(0x2fd)]),[pu(0x8e1)]:c(()=>z8['release'][pu(0x6d1)]),[pu(0x31f)]:c(()=>z8[pu(0x142)][pu(0x2fd)]),['DynamicsCompressorNode.threshold.defaultValue']:c(()=>z8[pu(0x612)][pu(0x6d1)]),['DynamicsCompressorNode.threshold.minValue']:c(()=>z8[pu(0x612)][pu(0x198)]),[pu(0x372)]:c(()=>z7[pu(0x784)][pu(0x2fd)]),[pu(0x253)]:c(()=>z7['detune'][pu(0x198)]),[pu(0x21a)]:c(()=>z7[pu(0x76c)][pu(0x6d1)]),[pu(0x89e)]:c(()=>z7['frequency']['maxValue']),['OscillatorNode.frequency.minValue']:c(()=>z7['frequency'][pu(0x198)])},zZ=zr=>new Promise(zV=>{const pv=pu,zR=zr['createAnalyser'](),zw=zr[pv(0x286)](),zm=zr[pv(0x8eb)]();try{zw['type']=pv(0x696),zw[pv(0x76c)][pv(0x62e)]=0x2710,zm['threshold'][pv(0x62e)]=-0x32,zm['knee'][pv(0x62e)]=0x28,zm['attack'][pv(0x62e)]=0x0;}catch(zE){}return zw[pv(0x87c)](zm),zm[pv(0x87c)](zR),zm[pv(0x87c)](zr[pv(0xa5a)]),zw[pv(0x95f)](0x0),zr[pv(0xada)](),zr[pv(0x926)]('complete',zf=>{const pH=pv;try{zm[pH(0x977)](),zw['disconnect']();const zc=new Float32Array(zR[pH(0x185)]);zR[pH(0x588)](zc);const zG=new Float32Array(zR[pH(0x371)]);return pH(0x98e)in zR&&zR['getFloatTimeDomainData'](zG),zV({'floatFrequencyData':zc,'floatTimeDomainData':zG,'buffer':zf[pH(0xad2)],'compressorGainReduction':zm[pH(0x5fb)][pH(0x62e)]||zm[pH(0x5fb)]});}catch(ze){return zV(null);}});});await t(z0);const {floatFrequencyData:zd,floatTimeDomainData:zL,buffer:zp,compressorGainReduction:zn}=await zZ(new OfflineAudioContext(0x1,z4,0xac44))||{};await t(z0);const zb=(zr,zV,zR)=>{const px=pu,zw=[];for(let zm=zV;zm<zR;zm++){zw[px(0x3e4)](zr[zm]);}return zw;},zS=zr=>!zr?0x0:zr['reduce']((zV,zR)=>zV+=Math['abs'](zR),0x0),zQ=zS(zd),zu=zS(zL),zF=new Float32Array(z4);G(()=>zp['copyFromChannel'](zF,0x0));const zv=G(()=>zp[pu(0x4b9)](0x0))||[],zH=zb([...zF],0x1194,0x11f8),zx=zb([...zv],0x1194,0x11f8),zD=zS(zb([...zv],0x1194,z4)),zA=''+zx==''+zH,zY='copyFromChannel'in AudioBuffer[pu(0x217)];if(zY&&!zA){z3=!![];const zr=pu(0x391);h(pu(0x344),zr);}const zk=new Set([...zv])[pu(0xa45)];if(zk==z4){const zV=zk+pu(0x35c)+z4+pu(0x8ed);Wt(pu(0x344),zV);}const zP=(zR,zw)=>Math[pu(0x4f2)](Math[pu(0xbd0)]()*(zw-zR+0x1))+zR,za=(zR,zw,zm)=>{const pD=pu,{length:zE}=zw,zf=0x14,zc=zP(0x113,zE-(zf+0x1)),zG=zc+zf/0x2,ze=zc+zf;zw[pD(0x4b9)](0x0)[zc]=zR,zw[pD(0x4b9)](0x0)[zG]=zR,zw[pD(0x4b9)](0x0)[ze]=zR,zw['copyFromChannel'](zm,0x0);const zC=[zw[pD(0x4b9)](0x0)[zc]===0x0?Math[pD(0xbd0)]():0x0,zw[pD(0x4b9)](0x0)[zG]===0x0?Math[pD(0xbd0)]():0x0,zw[pD(0x4b9)](0x0)[ze]===0x0?Math[pD(0xbd0)]():0x0];return[...new Set([...zw[pD(0x4b9)](0x0),...zm,...zC])][pD(0x73b)](zs=>zs!==0x0);},zq=(zR,zw,zm)=>{const pA=pu;zw[pA(0xbc0)](zm[pA(0x638)](zc=>zR),0x0);const zE=zw['getChannelData'](0x0)[0x0],zf=[...zw[pA(0x4b9)](0x0)][pA(0x638)](zc=>zc!==zE||!zc?Math[pA(0xbd0)]():zc);return zf['filter'](zc=>zc!==zE);},zt=()=>{const pY=pu,zR=0x7d0;try{const zw=[...new Set([...za(WV,new AudioBuffer({'length':zR,'sampleRate':0xac44}),new Float32Array(zR)),...zq(WV,new AudioBuffer({'length':zR,'sampleRate':0xac44}),new Float32Array(zR))])];return+(zw[pY(0xb8e)]!==0x1&&zw[pY(0x729)]((zm,zE)=>zm+=+zE,0x0));}catch(zm){return console['error'](zm),0x0;}},zM=zt(),zB=zM||[...new Set(zv[pu(0x80d)](0x0,0x64))][pu(0x729)]((zR,zw)=>zR+=zw,0x0),zO={'-20.538286209106445,164537.64796829224,502.5999283068122':[124.04347527516074],'-20.538288116455078,164537.64796829224,502.5999283068122':[124.04347527516074],'-20.538288116455078,164537.64795303345,502.5999283068122':[124.04347527516074,124.04347518575378,124.04347519320436,124.04347523045726],'-20.538286209106445,164537.64805984497,502.5999283068122':[124.04347527516074],'-20.538288116455078,164537.64805984497,502.5999283068122':[124.04347527516074,124.04347518575378,124.04347520065494,124.04347523790784,124.043475252809,124.04347526025958,124.04347522300668,124.04347523045726,124.04347524535842],'-20.538288116455078,164881.9727935791,502.59990317908887':[124.04344884395687],'-20.538288116455078,164881.9729309082,502.59990317908887':[124.04344884395687],'-20.538286209106445,164882.2082748413,502.59990317911434':[124.0434488439787],'-20.538288116455078,164882.20836639404,502.59990317911434':[124.0434488439787],'-20.538286209106445,164863.45319366455,502.5999033495791':[124.04344968475198],'-20.538288116455078,164863.45319366455,502.5999033495791':[124.04344968475198,124.04375314689969,124.04341541208123],'-20.538288116455078,164531.82670593262,502.59992767886797':[124.04347503720783,124.04347494780086,124.04347495525144,124.04347499250434,124.0434750074055],'-20.538286209106445,164540.1567993164,502.59992209258417':[124.04347657808103],'-20.538288116455078,164540.1567993164,502.59992209258417':[124.04347657808103,124.0434765110258,124.04347656317987,124.04347657063045,124.04378004022874],'-20.538288116455078,164540.1580810547,502.59992209258417':[124.04347657808103],'-20.535268783569336,164940.360786438,502.69695458233764':[124.080722568091],'-20.538288116455078,164538.55073928833,502.5999307175407':[124.04347730590962],'-20.535268783569336,164948.14596557617,502.6969545823631':[124.08072256811283],'-20.535268783569336,164926.65912628174,502.6969610930064':[124.08072766105033],'-20.535268783569336,164932.96168518066,502.69696179985476':[124.08072787802666],'-20.535268783569336,164931.54252624512,502.6969617998802':[124.08072787804849],'-20.535268783569336,164591.9659729004,502.6969925059784':[124.08074500028306],'-20.535268783569336,164590.4111480713,502.6969947774742':[124.0807470110085],'-20.535268783569336,164590.41115570068,502.6969947774742':[124.0807470110085],'-20.535268783569336,164593.64263916016,502.69700490119067':[124.08075528279005],'-20.535268783569336,164595.0285797119,502.69700578315314':[124.08075643483608],'-20.538288116455078,164860.96576690674,502.6075748118915':[124.0434496279413],'-20.538288116455078,164860.9938583374,502.6073723861407':[124.04344962817413],'-20.538288116455078,164862.14078521729,502.59991004130643':[124.04345734833623],'-20.538288116455078,164534.50047683716,502.61542110471055':[124.04347520368174],'-20.538288116455078,164535.1324043274,502.6079200572931':[124.04347521997988],'-20.538288116455078,164535.51135635376,502.60633126448374':[124.04347522952594],'-31.509262084960938,167722.6894454956,148.42717787250876':[35.7383295930922],'-31.509262084960938,167728.72756958008,148.427184343338':[35.73833402246237],'-31.50218963623047,167721.27517700195,148.47537828609347':[35.74996031448245],'-31.502185821533203,167727.52931976318,148.47542023658752':[35.7499681673944],'-20.538288116455078,164873.80361557007,502.59989904452596':[124.0434485301812],'-20.538288116455078,164863.47760391235,502.5999033453372':[124.0434496849557],'-20.538288116455078,164876.62466049194,502.5998911961724':[124.043453265891],'-20.538288116455078,164862.14879989624,502.59991004130643':[124.04345734833623],'-20.538288116455078,164896.54167175293,502.5999054916465':[124.04345808873768],'-29.837873458862305,163206.43050384521,0':[35.10892717540264],'-29.837873458862305,163224.69785308838,0':[35.10892752557993],'-29.83786964416504,163209.17245483398,0':[35.10893232002854],'-29.83786964416504,163202.77336883545,0':[35.10893253237009]};zB&&(z3=!![],h(pu(0x344),'sample\x20noise\x20detected'));const zN=''+[zn,zQ,zu],zi=zO[zN];return zi&&!zi[pu(0x725)](zD)&&(z3=!![],h(pu(0x344),pu(0x8d2))),a({'time':z0[pu(0x8c4)](),'test':pu(0x608),'passed':!![]}),{'totalUniqueSamples':zk,'compressorGainReduction':zn,'floatFrequencyDataSum':zQ,'floatTimeDomainDataSum':zu,'sampleSum':zD,'binsSample':zx,'copySample':zY?zH:[undefined],'values':zz,'noise':zB,'lied':z3};}catch(zR){a({'test':pu(0x608),'passed':![]}),f(zR,pu(0x9a8));return;}}function Ww(z0){const pk=L3;if(!z0['offlineAudioContext'])return pk(0x4bd)+r[pk(0x7ca)]+'</div>\x0a\x09\x09\x09<div>gain:\x20'+r[pk(0x7ca)]+'</div>\x0a\x09\x09\x09<div>freq:\x20'+r['BLOCKED']+pk(0x6e4)+r[pk(0x7ca)]+pk(0x252)+r[pk(0x7ca)]+'</div>\x0a\x09\x09\x09<div>unique:\x20'+r[pk(0x7ca)]+'</div>\x0a\x09\x09\x09<div>data:\x20'+r[pk(0x7ca)]+'</div>\x0a\x09\x09\x09<div>copy:\x20'+r['BLOCKED']+pk(0x422)+r[pk(0x7ca)]+'</div>\x0a\x09\x09</div>';const {offlineAudioContext:{$hash:z1,totalUniqueSamples:z2,compressorGainReduction:z3,floatFrequencyDataSum:z4,floatTimeDomainDataSum:z5,sampleSum:z6,binsSample:z7,copySample:z8,lied:z9,noise:zW,values:zT}}=z0,zz=Wr[z3]||[],zZ=z6&&z3&&zz['length'],zd=zz[pk(0x725)](z6);return pk(0x574)+(z9?pk(0x5e1):'')+pk(0x2d4)+P['getLog']()[pk(0x608)]+pk(0xba4)+(z9?'lies\x20':'')+pk(0x241)+N(z1)+pk(0x610)+(!zZ||zd?z6:R({'stringA':zz[0x0],'stringB':z6,'charDiff':!![],'decorate':zL=>pk(0x3f9)+zL+pk(0x44b)}))+pk(0xb30)+(z3||r[pk(0x7ca)])+pk(0x932)+(z4||r['BLOCKED'])+pk(0x50f)+(z5||r['UNSUPPORTED'])+pk(0x65f)+(!zW?WV:R({'stringA':WV,'stringB':zW,'charDiff':!![],'decorate':zL=>pk(0x3f9)+zL+pk(0x44b)}))+'</div>\x0a\x09\x09<div>unique:\x20'+z2+pk(0xa44)+(''+z7[0x0]==pk(0x63d)?'\x20'+r['UNSUPPORTED']:'<span\x20class=\x22sub-hash\x22>'+WO(z7)+pk(0x44b))+pk(0x580)+(''+z8[0x0]=='undefined'?'\x20'+r[pk(0x786)]:'<span\x20class=\x22sub-hash\x22>'+WO(z8)+pk(0x44b))+pk(0x58b)+w('creep-offline-audio-context',Object[pk(0xab4)](zT)['map'](zL=>pk(0x235)+zL+':\x20'+zT[zL]+'</div>')[pk(0x644)](''),WO(zT))+pk(0x225);}let Wm='';const WE=()=>{const pP=L3,z0=[],z1=[],z2=0x8,z3=0xff,z4=0x5;try{const z5=document['createElement'](pP(0x1ca)),z6=document['createElement'](pP(0x1ca)),z7=document[pP(0xba8)](pP(0x1ca)),z8=document[pP(0xba8)](pP(0x1ca)),z9=z5[pP(0x1fa)]('2d'),zW=z6[pP(0x1fa)]('2d'),zT=z7[pP(0x1fa)]('2d'),zz=z8[pP(0x1fa)]('2d');if(!z9||!zW||!zT||!zz)throw new Error(pP(0x7fa));z5[pP(0x90f)]=z2*z4,z5[pP(0x996)]=z2*z4,z6[pP(0x90f)]=z2*z4,z6[pP(0x996)]=z2*z4,z7['width']=z2,z7['height']=z2,z8[pP(0x90f)]=z2,z8['height']=z2,[...Array(z2)][pP(0xa0f)]((zb,zS)=>[...Array(z2)][pP(0xa0f)]((zQ,zu)=>{const pa=pP,zF=~~(Math['random']()*0x100),zv=~~(Math[pa(0xbd0)]()*0x100),zH=~~(Math[pa(0xbd0)]()*0x100),zx=zF+',\x20'+zv+',\x20'+zH+',\x20'+z3;return zT['fillStyle']='rgba('+zx+')',zT[pa(0xb40)](zS,zu,0x1,0x1),z9[pa(0x46d)]=pa(0x275)+zx+')',z9[pa(0xb40)](zS*z4,zu*z4,0x1*z4,0x1*z4),z0[pa(0x3e4)](zx);})),[...Array(z2)][pP(0xa0f)]((zb,zS)=>[...Array(z2)][pP(0xa0f)]((zQ,zu)=>{const pq=pP,{data:[zF,zv,zH,zx]}=zT['getImageData'](zS,zu,0x1,0x1)||{},zD=zF+',\x20'+zv+',\x20'+zH+',\x20'+zx;zz[pq(0x46d)]=pq(0x275)+zD+')',zz['fillRect'](zS,zu,0x1,0x1);const {data:[zA,zY,zk,zP]}=zz['getImageData'](zS,zu,0x1,0x1)||{},za=pq(0x4f6)+(zF!=zA?zA:0xff)+pq(0xb2c)+(zv!=zY?zY:0xff)+pq(0xb2c)+(zH!=zk?zk:0xff)+pq(0xb2c)+(zx!=zP?zP:0x1)+'\x0a\x09\x09\x09';return zW[pq(0x46d)]=pq(0x275)+za+')',zW[pq(0xb40)](zS*z4,zu*z4,0x1*z4,0x1*z4),z1[pq(0x3e4)](zD);}));const zZ=[],zd=new Set();[...Array(z0[pP(0xb8e)])][pP(0xa0f)]((zb,zS)=>{const pt=pP,zQ=z0[zS],zu=z1[zS];if(zQ!=zu){const zF=zQ[pt(0x184)](','),zv=zu[pt(0x184)](','),zH=[zF[0x0]!=zv[0x0]?'r':'',zF[0x1]!=zv[0x1]?'g':'',zF[0x2]!=zv[0x2]?'b':'',zF[0x3]!=zv[0x3]?'a':''][pt(0x644)]('');zd[pt(0x933)](zH),zZ[pt(0x3e4)]([zS,zH]);}}),Wm=z5['toDataURL']();const zL=z6[pP(0x335)](),zp=zd[pP(0xa45)]?[...zd][pP(0x89d)]()[pP(0x644)](',\x20'):undefined,zn=zZ[pP(0xb8e)]||undefined;return{'rgba':zp,'pixels':zn,'pixelImage':zL};}catch(zb){return console['error'](zb);}},Wf=({canvas:z0,context:z1,strokeText:strokeText=![],cssFontFamily:cssFontFamily='',area:area={'width':0x64,'height':0x64},rounds:rounds=0x32,maxShadowBlur:maxShadowBlur=0x32,seed:seed=0x1f4,offset:offset=0x7744d641,multiplier:multiplier=0x3a98})=>{const pM=L3;if(!z1)return;z1[pM(0x67f)](0x0,0x0,z0[pM(0x90f)],z0[pM(0x996)]),z0[pM(0x90f)]=area[pM(0x90f)],z0[pM(0x996)]=area[pM(0x996)];z0[pM(0x3f3)]&&(z0[pM(0x3f3)]['display']=pM(0x370));const z2=({seed:zd,offset:zL,multiplier:zp})=>{let zn=Number(zd)%Number(zL);const zb=()=>{return zn=Number(zp)*zn%Number(zL),zn;};return{'getNextSeed':zb};},z3=z2({'seed':seed,'offset':offset,'multiplier':multiplier}),{getNextSeed:z4}=z3,z5=(zd,zL,zp,zn)=>{const zb=(zd-0x1)/zL*(zp||0x1)||0x0;return zn?zb:Math['floor'](zb);},z6=(zd,zL,zp,zn,zb)=>{const pB=pM,{width:zS,height:zQ}=zp,zu=zd[pB(0x57f)](z5(zb(),zL,zS),z5(zb(),zL,zQ),z5(zb(),zL,zS),z5(zb(),zL,zS),z5(zb(),zL,zQ),z5(zb(),zL,zS));zu[pB(0x158)](0x0,zn[z5(zb(),zL,zn[pB(0xb8e)])]),zu['addColorStop'](0x1,zn[z5(zb(),zL,zn[pB(0xb8e)])]),zd[pB(0x46d)]=zu;},z7=[pM(0xb87),pM(0xbc9),pM(0xa63),'#FFFF99','#00B3E6',pM(0xb42),pM(0xb14),pM(0x499),pM(0x470),pM(0x7d4),pM(0xac4),pM(0x128),'#E6B3B3',pM(0x4c5),pM(0x598),pM(0x7d7),pM(0x1aa),'#FF1A66','#E6331A',pM(0x266),'#66994D',pM(0x2ea),'#4D8000','#B33300',pM(0x5f8),pM(0xb29),pM(0x58e),pM(0xb0b),pM(0x535),pM(0x683),pM(0x485),'#33991A',pM(0x72c),pM(0x6a0),pM(0x353),pM(0x243),'#809980',pM(0x744),pM(0xb68),pM(0x10a),'#FF3380',pM(0x831),pM(0x78d),'#4D80CC',pM(0x2b2),'#E64D66',pM(0xb9d),pM(0x679),pM(0x659),'#6666FF'],z8=(zd,zL,zp,zn)=>{const pO=pM,{width:zb,height:zS}=zp,zQ=2.99;zd[pO(0x428)]=zS/zQ+pO(0x736)+cssFontFamily[pO(0x737)](/!important/gm,''),zd[pO(0x3cf)](pO(0x52d),z5(zn(),zL,zb),z5(zn(),zL,zS),z5(zn(),zL,zb));},z9=(zd,zL,zp,zn)=>{const pN=pM,{width:zb,height:zS}=zp;zd['beginPath'](),zd[pN(0x941)](z5(zn(),zL,zb),z5(zn(),zL,zS),z5(zn(),zL,Math[pN(0x545)](zb,zS)),z5(zn(),zL,0x2*Math['PI'],!![]),z5(zn(),zL,0x2*Math['PI'],!![])),zd[pN(0x441)]();},zW=(zd,zL,zp,zn)=>{const pi=pM,{width:zb,height:zS}=zp;zd[pi(0x754)](),zd[pi(0x26e)](z5(zn(),zL,zb),z5(zn(),zL,zS)),zd[pi(0x257)](z5(zn(),zL,zb),z5(zn(),zL,zS),z5(zn(),zL,zb),z5(zn(),zL,zS),z5(zn(),zL,zb),z5(zn(),zL,zS)),zd[pi(0x441)]();},zT=(zd,zL,zp,zn)=>{const py=pM,{width:zb,height:zS}=zp;zd[py(0x754)](),zd[py(0x26e)](z5(zn(),zL,zb),z5(zn(),zL,zS)),zd[py(0x2f1)](z5(zn(),zL,zb),z5(zn(),zL,zS),z5(zn(),zL,zb),z5(zn(),zL,zS)),zd[py(0x441)]();},zz=(zd,zL,zp,zn)=>{const pK=pM;if(!('ellipse'in zd))return;const {width:zb,height:zS}=zp;zd['beginPath'](),zd[pK(0x4d4)](z5(zn(),zL,zb),z5(zn(),zL,zS),z5(zn(),zL,Math[pK(0x4f2)](zb/0x2)),z5(zn(),zL,Math[pK(0x4f2)](zS/0x2)),z5(zn(),zL,0x2*Math['PI'],!![]),z5(zn(),zL,0x2*Math['PI'],!![]),z5(zn(),zL,0x2*Math['PI'],!![])),zd['stroke']();},zZ=[z9,zW,zT,zz];strokeText&&zZ[pM(0x3e4)](z8);[...Array(rounds)][pM(0xa0f)](zd=>{const pr=pM;z6(z1,offset,area,z7,z4),z1[pr(0x7ee)]=z5(z4(),offset,maxShadowBlur,!![]),z1[pr(0x9ab)]=z7[z5(z4(),offset,z7[pr(0xb8e)])];const zL=zZ[z5(z4(),offset,zZ[pr(0xb8e)])];zL(z1,offset,area,z4),z1[pr(0x47f)]();});return;},Wc=({canvas:z0,context:z1,cssFontFamily:z2})=>{const pV=L3,z3=0x8c,z4=0x1e;z0[pV(0x90f)]=z3,z0[pV(0x996)]=z4,z1[pV(0x428)]=pV(0x3b7)+z2[pV(0x737)](/!important/gm,''),z1[pV(0x894)](pV(0xa1a),0x0,0x5),z1[pV(0x894)](pV(0xb50),0x0,0xa),z1['fillText'](pV(0x4da),0x0,0xf),z1['fillText'](pV(0x9e9),0x0,0x14),z1[pV(0x894)]('⚛✡✝☦▶⏭⏯⏏♀♂✖〰⚕⚜✔✳❇◼▪❣',0x0,0x19),z1[pV(0x894)](pV(0xbc6),0x0,0x1e);return;};async function WG(){const pm=L3,z0=z1=>{const pw=a0T;if(!z1)return;const z2=(z3,z4)=>new Promise(z5=>{const pR=a0T,z6=new FileReader();return z6[z3](z4),z6['addEventListener'](pR(0x2d1),()=>z5(z6[pR(0x573)]));});return z2(pw(0x6b5),z1);};try{const z1=q();await t(z1);const z2=WQ[pm(0x8ff)],z3=WQ[pm(0x2ff)],z4=WQ[pm(0xba7)]||WQ[pm(0x7bc)]||WQ[pm(0x6d2)]||WQ[pm(0x290)],z5=WQ[pm(0x8b6)];let z6=WQ[pm(0x116)]||WQ[pm(0x5ce)]||WQ[pm(0x604)]||WQ[pm(0xb6b)]||WQ[pm(0x8a3)]||WQ[pm(0x987)]||WQ[pm(0x664)]||WQ['TextMetrics.width'],z7=z2||z3||z4||z6||z5||![],z8=window;!n&&WT&&(z8=WT);const z9=z8[pm(0x4ea)],zW=z9[pm(0xba8)]('canvas'),zT=zW[pm(0x1fa)]('2d');if(!zT)throw new Error(pm(0x7fa));await t(z1),Wf({'canvas':zW,'context':zT,'strokeText':!![],'cssFontFamily':O,'area':{'width':0x32,'height':0x32},'rounds':0xa});const zz=zW[pm(0x335)]();let zZ;try{zZ=new OffscreenCanvas(0x8c,0x1e),await t(z1),Wc({'canvas':zZ,'context':zZ[pm(0x1fa)]('2d'),'cssFontFamily':O});}catch(zY){}await t(z1);const [zd,zL]=await Promise[pm(0x840)]([new Promise(zk=>zW[pm(0xa2b)](zP=>{return zk(z0(zP));})),z0(zZ&&await c(()=>zZ[pm(0xa37)]()))]),zp={'readAsDataURL':zd},zn={'readAsDataURL':zL};await t(z1);const zb=WE();await t(z1),zT['font']=pm(0xb08)+O[pm(0x737)](/!important/gm,'');const zS=new Set(),zQ=B[pm(0x729)]((zk,zP)=>{const pE=pm,{actualBoundingBoxAscent:za,actualBoundingBoxDescent:zq,actualBoundingBoxLeft:zt,actualBoundingBoxRight:zM,fontBoundingBoxAscent:zB,fontBoundingBoxDescent:zO,width:zN}=zT[pE(0x667)](zP)||{},zi=[za,zq,zt,zM,zB,zO,zN][pE(0x644)](',');return!zS[pE(0x7ea)](zi)&&(zS[pE(0x933)](zi),zk[pE(0x933)](zP)),zk;},new Set()),zu=0.00001*[...zS]['map'](zk=>{const pf=pm;return zk['split'](',')[pf(0x729)]((zP,za)=>zP+=+za||0x0,0x0);})[pm(0x729)]((zk,zP)=>zk+=zP,0x0),zF=0x32;await t(z1),Wf({'canvas':zW,'context':zT,'area':{'width':zF,'height':zF}});const zv=zW[pm(0x335)]();zT[pm(0x4e9)](),zT[pm(0x67f)](0x0,0x0,zW[pm(0x90f)],zW['height']),zW[pm(0x90f)]=zF,zW['height']=zF,zT[pm(0x428)]=pm(0x66f)+O['replace'](/!important/gm,''),zT[pm(0x894)]('A',0x7,0x25);const zH=zW[pm(0x335)]();zT[pm(0x4e9)](),zT['clearRect'](0x0,0x0,zW['width'],zW['height']),zW['width']=zF,zW['height']=zF,zT[pm(0x428)]=pm(0x360)+O[pm(0x737)](/!important/gm,''),zT['fillText']('👾',0x0,0x25);const zx=zW['toDataURL']();zT[pm(0x67f)](0x0,0x0,zW[pm(0x90f)],zW['height']);const zD=!!Math['max'](...zT[pm(0x60e)](0x0,0x0,0x8,0x8)[pm(0x3e6)]);(zb&&zb[pm(0x3a3)]||zD)&&(z7=!![],h(pm(0x6d2),'pixel\x20data\x20modified'));const zA=zk=>{const pc=pm,zP=zi=>zi%0x1!==0x0,{actualBoundingBoxAscent:za,actualBoundingBoxDescent:zq,actualBoundingBoxLeft:zt,actualBoundingBoxRight:zM,fontBoundingBoxAscent:zB,fontBoundingBoxDescent:zO}=zk[pc(0x667)]('')||{},zN=[za,zq,zt,zM,zB,zO]['find'](zi=>zP(zi||0x0));return zN;};return await t(z1),zA(zT)&&(z6=!![],z7=!![],h(pm(0x116),pm(0xaa3))),a({'time':z1[pm(0x8c4)](),'test':pm(0x63b),'passed':!![]}),{'dataURI':zz,'paintURI':zv,'textURI':zH,'emojiURI':zx,'mods':zb,'blob':zp,'blobOffscreen':zn,'textMetricsSystemSum':zu,'liedTextMetrics':z6,'emojiSet':[...zQ],'lied':z7};}catch(zk){a({'test':pm(0x63b),'passed':![]}),f(zk);return;}}function We(z0){const pG=L3;if(!z0['canvas2d'])return pG(0x5e5)+r['BLOCKED']+pG(0x6b7)+r[pG(0x7ca)]+pG(0x3d6)+r[pG(0x7ca)]+pG(0x620)+r[pG(0x7ca)]+'</div>\x0a\x09\x09\x09<div>textMetrics:</div>\x0a\x09\x09\x09<div\x20class=\x22block-text\x22>'+r[pG(0x7ca)]+'</div>\x0a\x09\x09</div>';const {canvas2d:{lied:z1,dataURI:z2,paintURI:z3,textURI:z4,emojiURI:z5,mods:z6,blob:z7,blobOffscreen:z8,emojiSet:z9,textMetricsSystemSum:zW,$hash:zT}}=z0,{pixels:zz,rgba:zZ,pixelImage:zd}=z6||{},zL=zz?Math[pG(0x900)](zz/0x190*0x64):0x0,zp=(z7||{})[pG(0x6b5)],zn=(z8||{})['readAsDataURL'],zb={'dataURI':WO(z2),'blobDataURI':WO(zp),'blobOffscreenDataURI':WO(zn),'textURI':WO(z4),'emojiURI':WO(z5),'paintURI':WO(z3)},zS=pG(0x2ed)+(z4?'<div\x20class=\x22icon-pixel\x20text-image\x22></div>':'')+pG(0x904)+(!z4?r['BLOCKED']:zb[pG(0x5b2)])+pG(0x74b)+(z5?'<div\x20class=\x22icon-pixel\x20emoji-image\x22></div>':'')+pG(0x4b8)+(!z5?r[pG(0x7ca)]:zb[pG(0x467)])+pG(0x74b)+(z3?pG(0x844):'')+pG(0x2a6)+(!z3?r[pG(0x7ca)]:zb[pG(0x65b)])+pG(0x74b)+(z2?pG(0x106):'')+'\x0a\x09\x09'+(z2?'<div\x20class=\x22icon-pixel\x20combined-image-blob\x22></div>':'')+pG(0x172)+(!z2?r[pG(0x7ca)]:zb['dataURI'])+pG(0x38c)+(!zp?r['UNSUPPORTED']:zb['blobDataURI'])+pG(0x9d8)+(zn?pG(0x1cd):'')+pG(0xb1e)+(!zn?r[pG(0x786)]:zb[pG(0x2ab)])+'\x0a\x09',zQ=!zZ?zZ:zZ[pG(0x184)](',\x20')['map'](zF=>zF['split']('')['map'](zv=>{const pe=pG,zH={'r':pe(0x98d),'g':pe(0x852),'b':pe(0x717)};return'<span\x20class=\x22rgba\x20rgba-'+zH[zv]+pe(0xad1);})['join'](''))[pG(0x644)]('\x20'),zu='CanvasRenderingContext2D.measureText()\x0ahash:\x20'+WO(z9)+'\x0a'+z9[pG(0x638)]((zF,zv)=>zv&&zv%0x6==0x0?zF+'\x0a':zF)[pG(0x644)]('');return pG(0xb6a)+(z1?pG(0x5e1):'')+pG(0x64a)+z2+')\x0a\x09\x09\x09}\x0a\x09\x09\x09.pixel-image,\x0a\x09\x09\x09.pixel-image-random,\x0a\x09\x09\x09.combined-image,\x0a\x09\x09\x09.combined-image-blob,\x0a\x09\x09\x09.paint-image,\x0a\x09\x09\x09.text-image,\x0a\x09\x09\x09.emoji-image,\x0a\x09\x09\x09.offscreen-image\x20{\x0a\x09\x09\x09\x09max-width:\x2035px;\x0a\x20\x20\x20\x20\x09\x09border-radius:\x2050%;\x0a\x09\x09\x09\x09transform:\x20scale(1.5);\x0a\x09\x09\x09}\x0a\x09\x09\x09.pixel-image\x20{\x0a\x09\x09\x09\x09background-image:\x20url('+zd+')\x0a\x09\x09\x09}\x0a\x09\x09\x09.pixel-image-random\x20{\x0a\x09\x09\x09\x09background-image:\x20url('+Wm+')\x0a\x09\x09\x09}\x0a\x09\x09\x09.paint-image\x20{\x0a\x09\x09\x09\x09background-image:\x20url('+z3+pG(0x5cd)+z4+pG(0x688)+z5+')\x0a\x09\x09\x09}\x0a\x09\x09\x09.combined-image\x20{\x0a\x09\x09\x09\x09background-image:\x20url('+z2+')\x0a\x09\x09\x09}\x0a\x09\x09\x09.combined-image-blob\x20{\x0a\x09\x09\x09\x09background-image:\x20url('+zp+pG(0x9c9)+zn+pG(0x167)+P['getLog']()[pG(0x63b)]+pG(0xab0)+(z1?pG(0xb64):'')+'hash\x22>'+N(zT)+'</span>\x0a\x09\x09<div\x20class=\x22help\x22\x20title=\x22HTMLCanvasElement.toDataURL()\x0aCanvasRenderingContext2D.getImageData()\x0aHTMLCanvasElement.toBlob()\x0aOffscreenCanvas.convertToBlob()\x0aFileReader.readAsDataURL()\x22>data:\x20'+w(pG(0x3ad),zS,WO({'dataURI':z2,'blob':z7,'blobOffscreen':z8}))+pG(0x279)+(zZ?zL+pG(0x71e)+zQ:'')+'</div>\x0a\x09\x09<div\x20class=\x22icon-pixel-container\x20pixels\x22>\x0a\x09\x09\x09'+(z4?pG(0x1a3):'')+'\x0a\x09\x09\x09'+(z5?pG(0xb99):'')+pG(0x5db)+(z3?pG(0x844):'')+pG(0x5db)+(z2?pG(0x106):'')+pG(0x12f)+(zn?pG(0x1cd):'')+pG(0x5bd)+(zZ?'<div\x20class=\x22icon-pixel\x20pixel-image\x22></div>':'')+pG(0x606)+zu+pG(0x23d)+(zW||r['UNSUPPORTED'])+pG(0x24c)+O+'\x22>\x0a\x09\x09\x09\x09'+M(z9)+pG(0x773);}function WC(){const pX=L3,z0=(z2,{require:[z3]})=>{const pC=a0T;try{const z4=z2==pC(0x174)?getComputedStyle(document[pC(0x88e)]):z2=='HTMLElement.style'?document[pC(0x88e)][pC(0x3f3)]:z2==pC(0x478)?document[pC(0x18c)][0x0][pC(0x8e0)][0x0]['style']:undefined;if(!z4)throw new TypeError('invalid\x20argument\x20string');const z5=Object[pC(0x85d)](z4),z6=Object[pC(0x6d8)](z5),z7=[],z8=/^--.*$/;Object[pC(0xab4)](z4)[pC(0xa0f)](zp=>{const ps=pC,zn=!isNaN(+zp),zb=z4[zp],zS=z8['test'](zp),zQ=z8[ps(0x579)](zb);if(zn&&!zQ)return z7['push'](zb);else{if(!zn&&!zS)return z7[ps(0x3e4)](zp);}return;});const z9={},zW=zp=>zp['charAt'](0x0)[pC(0xaa2)]()+zp[pC(0x80d)](0x1),zT=zp=>zp[pC(0x4a2)](0x0)[pC(0xb5b)]()+zp[pC(0x80d)](0x1),zz=zp=>zp[pC(0x80d)](0x1),zZ=/[A-Z]/g;z7['forEach'](zp=>{const pI=pC;if(z9[zp])return;const zn=zp[pI(0x40a)]('-')>-0x1,zb=zZ[pI(0x579)](zp),zS=zp[pI(0x4a2)](0x0),zQ=zn&&zS=='-',zu=zb&&zS==zS['toUpperCase']();zp=zQ?zz(zp):zu?zT(zp):zp;if(zn){const zF=zp[pI(0x184)]('-')[pI(0x638)]((zv,zH)=>zH==0x0?zv:zW(zv))[pI(0x644)]('');if(zF in z4)z9[zF]=!![];else zW(zF)in z4&&(z9[zW(zF)]=!![]);}else{if(zb){const zv=zp['replace'](zZ,zH=>'-'+zH[pI(0xb5b)]());if(zv in z4)z9[zv]=!![];else'-'+zv in z4&&(z9['-'+zv]=!![]);}}return;});const zd=[...new Set([...z6,...z7,...Object[pC(0xab4)](z9)])],zL=(''+z5)[pC(0x12a)](/\[object (.+)\]/)[0x1];return{'keys':zd,'interfaceName':zL};}catch(zp){z3(zp);return;}},z1=z2=>{const pj=a0T;try{const z3=['ActiveBorder',pj(0x9a5),pj(0x4fe),pj(0xb59),pj(0xbce),pj(0x22d),pj(0x22c),pj(0x550),pj(0x1f5),pj(0xb96),pj(0x34f),'CanvasText',pj(0x55b),pj(0xb12),pj(0x892),pj(0x48a),'Highlight',pj(0x704),pj(0x584),pj(0x912),'InactiveCaptionText',pj(0x171),pj(0xa64),pj(0x1a8),'Mark',pj(0x17e),pj(0x426),pj(0x2dc),pj(0x84f),pj(0x6b1),pj(0x867),pj(0x738),pj(0x684),pj(0x3cc),pj(0x578),pj(0x895),pj(0x583),pj(0x9fb)],z4=[pj(0x229),pj(0x9c8),pj(0x93b),pj(0x20d),pj(0x10b),pj(0xa3a)],z5=z6=>({'colors':z3[pj(0x638)](z7=>{const ph=pj;return z6[ph(0x788)]('style',ph(0xadb)+z7+ph(0x4b5)),{[z7]:getComputedStyle(z6)['backgroundColor']};}),'fonts':z4['map'](z7=>{const pl=pj;z6[pl(0x788)](pl(0x3f3),pl(0x50a)+z7+pl(0x4b5));const z8=getComputedStyle(z6);return{[z7]:z8['fontSize']+'\x20'+z8['fontFamily']};})});if(!z2){z2=document[pj(0xba8)]('div'),document[pj(0x88e)]['append'](z2);const z6=z5(z2);return z2[pj(0x159)][pj(0x3e3)](z2),z6;}return z5(z2);}catch(z7){f(z7);return;}};try{const z2=q();z2['start']();const z3=z0('getComputedStyle',{'require':[f]}),z4=z1(Wz);return a({'time':z2['stop'](),'test':pX(0xa6b),'passed':!![]}),{'computedStyle':z3,'system':z4};}catch(z5){a({'test':'computed\x20style','passed':![]}),f(z5);return;}}function Ws(z0){const pg=L3;if(!z0['css'])return pg(0xa75)+r[pg(0x7ca)]+pg(0x11a)+r[pg(0x7ca)]+pg(0x943)+r['BLOCKED']+'</div>\x0a\x09\x09\x09</div>\x0a\x09\x09\x09<div\x20class=\x22gradient\x22></div>\x0a\x09\x09</div>';const {css:z1}=z0,{$hash:z2,computedStyle:z3,system:z4}=z1,z5=z4[pg(0x148)][pg(0xb8e)],z6=z4[pg(0x148)][pg(0x638)]((z8,z9)=>{const pJ=pg,zW=Object['values'](z8)[0x0];return z9==0x0?zW+',\x20'+zW+'\x20'+((z9+0x1)/z5*0x64)['toFixed'](0x2)+'%':z9==z5-0x1?zW+'\x20'+((z9-0x1)/z5*0x64)[pJ(0x250)](0x2)+pJ(0x312)+zW+'\x20100%':zW+'\x20'+(z9/z5*0x64)[pJ(0x250)](0x2)+pJ(0x312)+zW+'\x20'+((z9+0x1)/z5*0x64)[pJ(0x250)](0x2)+'%';}),z7=pg(0x9c1);return pg(0x795)+P[pg(0x649)]()['computed\x20style']+'</span>\x0a\x09\x09<strong>Computed\x20Style</strong><span\x20class=\x22hash\x22>'+N(z2)+pg(0x8de)+(!z3?'0':V(z3[pg(0xab4)]))+'):\x20'+(!z3?r[pg(0x7ca)]:w(pg(0x5d1),z3[pg(0xab4)][pg(0x644)](',\x20'),WO(z3)))+'</div>\x0a\x09\x09<div>system\x20styles:\x20'+(z4&&z4['colors']?w(z7+pg(0xa13),[...z4['colors'][pg(0x638)](z8=>{const po=pg,z9=Object['keys'](z8)[0x0],zW=z8[z9];return po(0x7ac)+zW+po(0x43b)+z9+':\x20'+zW+po(0x29d);}),...z4[pg(0x1cb)]['map'](z8=>{const pU=pg,z9=Object[pU(0xab4)](z8)[0x0],zW=z8[z9];return pU(0xf4)+z9+':\x20<span\x20style=\x22padding:0\x205px;border-radius:3px;font:'+zW+'\x22>'+zW+'</span></div>\x0a\x09\x09\x09\x09\x09\x09';})][pg(0x644)](''),WO(z4)):r[pg(0x7ca)])+'</div>\x0a\x09\x09<div\x20class=\x22blurred\x22\x20id=\x22system-style-samples\x22>\x0a\x09\x09\x09<div>system</div>\x0a\x09\x09</div>\x0a\x09\x09<style>.gradient\x20{\x20background:\x20repeating-linear-gradient(to\x20right,\x20'+z6[pg(0x644)](',\x20')+pg(0x474);}function WI(){const n4=L3,z0=(z5,z6)=>z6==0x0?z5:z0(z6,z5%z6),z1=(z5,z6)=>{const z7=z0(z5,z6),z8=z5/z7+'/'+z6/z7;return z8;},z2=({body:z5,type:z6,rangeStart:z7,rangeLen:z8})=>{const n0=a0T,z9=[...Array(z8)][n0(0x638)]((zT,zz)=>{const n1=n0;return zz+=z7,n1(0x6b0)+z6+':'+zz+'px){body{--device-'+z6+':'+zz+n1(0x7b9);})[n0(0x644)]('');z5[n0(0x405)]=n0(0x991)+z9+n0(0x6cd);const zW=getComputedStyle(z5);return zW[n0(0x8f1)]('--device-'+z6)['trim']();},z3=({body:z5,width:z6,height:z7})=>{const n2=a0T;let z8=z2({'body':z5,'type':n2(0x90f),'rangeStart':z6,'rangeLen':0x1}),z9=z2({'body':z5,'type':n2(0x996),'rangeStart':z7,'rangeLen':0x1});if(z8&&z9)return{'width':z6,'height':z7};const zW=0x3e8;return[...Array(0xa)][n2(0xaac)]((zT,zz)=>{const n3=n2;return!z8&&(z8=z2({'body':z5,'type':n3(0x90f),'rangeStart':zz*zW,'rangeLen':zW})),!z9&&(z9=z2({'body':z5,'type':n3(0x996),'rangeStart':zz*zW,'rangeLen':zW})),z8&&z9;}),{'width':+z8,'height':+z9};},z4=z5=>n4(0x2fa)+z5+'}';try{const z5=q();z5[n4(0x95f)]();const z6=WT[n4(0x78f)],{body:z7}=z6[n4(0x4ea)],{width:z8,height:z9}=z6['screen'],zW=z1(z8,z9),zT={[n4(0x641)]:z6['matchMedia'](n4(0x364))[n4(0x251)]?'no-preference':z6[n4(0x988)](n4(0xbbd))['matches']?n4(0x729):undefined,[n4(0x952)]:z6['matchMedia']('(prefers-color-scheme:\x20light)')['matches']?n4(0x51f):z6[n4(0x988)](n4(0x2b5))['matches']?'dark':undefined,'monochrome':z6[n4(0x988)](n4(0x927))[n4(0x251)]?n4(0x481):z6[n4(0x988)](n4(0x382))['matches']?'non-monochrome':undefined,[n4(0x4e2)]:z6['matchMedia'](n4(0x4ee))[n4(0x251)]?n4(0xfb):z6[n4(0x988)]('(inverted-colors:\x20none)')[n4(0x251)]?n4(0x370):undefined,[n4(0x2c2)]:z6[n4(0x988)](n4(0x7c3))[n4(0x251)]?n4(0x370):z6[n4(0x988)](n4(0x815))[n4(0x251)]?n4(0x3aa):undefined,[n4(0x504)]:z6[n4(0x988)](n4(0x814))[n4(0x251)]?n4(0x3fc):z6[n4(0x988)](n4(0x408))['matches']?'none':undefined,'hover':z6[n4(0x988)]('(hover:\x20hover)')[n4(0x251)]?n4(0x3fc):z6['matchMedia'](n4(0x966))['matches']?'none':undefined,[n4(0x575)]:z6[n4(0x988)](n4(0x9ac))['matches']?'fine':z6[n4(0x988)](n4(0x194))[n4(0x251)]?'coarse':z6[n4(0x988)]('(any-pointer:\x20none)')[n4(0x251)]?n4(0x370):undefined,'pointer':z6['matchMedia'](n4(0x41e))[n4(0x251)]?n4(0xaf1):z6['matchMedia'](n4(0x668))['matches']?n4(0x316):z6[n4(0x988)]('(pointer:\x20none)')[n4(0x251)]?n4(0x370):undefined,[n4(0x847)]:z6[n4(0x988)](n4(0x23e)+zW+')')[n4(0x251)]?zW:undefined,[n4(0x38a)]:z6[n4(0x988)](n4(0xb0f)+z8+'px)\x20and\x20(device-height:\x20'+z9+n4(0x101))['matches']?z8+n4(0x400)+z9:undefined,[n4(0x3ce)]:z6[n4(0x988)](n4(0x355))[n4(0x251)]?n4(0x750):z6['matchMedia'](n4(0x4af))[n4(0x251)]?n4(0x8c8):z6['matchMedia'](n4(0x822))[n4(0x251)]?n4(0x219):z6[n4(0x988)](n4(0x432))[n4(0x251)]?n4(0xa9d):undefined,[n4(0x31c)]:z6[n4(0x988)](n4(0x146))['matches']?'srgb':z6[n4(0x988)](n4(0x9ef))[n4(0x251)]?'p3':z6[n4(0x988)](n4(0x7e9))[n4(0x251)]?n4(0x65a):undefined,'orientation':z6[n4(0x988)](n4(0x9d1))[n4(0x251)]?n4(0x2d3):z6[n4(0x988)](n4(0x71c))[n4(0x251)]?'portrait':undefined},zz=n4(0xb35)+z4(n4(0x8b2))+n4(0x7e5)+z4(n4(0xa97))+n4(0x622)+z4(n4(0x981))+n4(0x75b)+z4(n4(0x907))+n4(0x705)+z4(n4(0x721))+n4(0x7d1)+z4(n4(0x4ac))+'\x27\x20(monochrome:\x200);\x0a\x09\x09@import\x20\x27'+z4('--import-inverted-colors:\x20inverted')+n4(0x883)+z4('--import-inverted-colors:\x20none')+'\x27\x20(inverted-colors:\x200);\x0a\x09\x09@import\x20\x27'+z4('--import-forced-colors:\x20none')+n4(0x356)+z4(n4(0x3b3))+n4(0xb41)+z4(n4(0x523))+'\x27\x20(any-hover:\x20hover);\x0a\x09\x09@import\x20\x27'+z4(n4(0x473))+n4(0x21c)+z4(n4(0xbb0))+'\x27\x20(hover:\x20hover);\x0a\x09\x09@import\x20\x27'+z4(n4(0x97b))+n4(0xa8e)+z4(n4(0x858))+n4(0x324)+z4(n4(0x91f))+'\x27\x20(any-pointer:\x20coarse);\x0a\x09\x09@import\x20\x27'+z4(n4(0x875))+n4(0x986)+z4(n4(0x414))+'\x27\x20(pointer:\x20fine);\x0a\x09\x09@import\x20\x27'+z4(n4(0x89b))+n4(0x23c)+z4(n4(0x193))+n4(0x1ec)+z4(n4(0x634)+zW)+n4(0x97e)+zW+n4(0x465)+z4(n4(0xa72)+z8+n4(0x400)+z9)+n4(0xa36)+z8+n4(0x8ab)+z9+'px);\x0a\x09\x09@import\x20\x27'+z4(n4(0xa02))+n4(0xbb7)+z4(n4(0x289))+n4(0xb81)+z4(n4(0x9e7))+n4(0x818)+z4('--import-display-mode:\x20browser')+n4(0xae4)+z4('--import-color-gamut:\x20srgb')+n4(0x55f)+z4(n4(0x33e))+n4(0x51d)+z4(n4(0x767))+'\x27\x20(color-gamut:\x20rec2020);\x0a\x09\x09@import\x20\x27'+z4(n4(0x125))+'\x27\x20(orientation:\x20landscape);\x0a\x09\x09@import\x20\x27'+z4(n4(0xa7b))+n4(0x624);z7[n4(0x405)]='\x0a\x09\x09<style>\x0a\x09\x09@media\x20(prefers-reduced-motion:\x20no-preference)\x20{body\x20{--prefers-reduced-motion:\x20no-preference}}\x0a\x09\x09@media\x20(prefers-reduced-motion:\x20reduce)\x20{body\x20{--prefers-reduced-motion:\x20reduce}}\x0a\x09\x09@media\x20(prefers-color-scheme:\x20light)\x20{body\x20{--prefers-color-scheme:\x20light}}\x0a\x09\x09@media\x20(prefers-color-scheme:\x20dark)\x20{body\x20{--prefers-color-scheme:\x20dark}}\x0a\x09\x09@media\x20(monochrome)\x20{body\x20{--monochrome:\x20monochrome}}\x0a\x09\x09@media\x20(monochrome:\x200)\x20{body\x20{--monochrome:\x20non-monochrome}}\x0a\x09\x09@media\x20(inverted-colors:\x20inverted)\x20{body\x20{--inverted-colors:\x20inverted}}\x0a\x09\x09@media\x20(inverted-colors:\x20none)\x20{body\x20{--inverted-colors:\x20none}}\x0a\x09\x09@media\x20(forced-colors:\x20none)\x20{body\x20{--forced-colors:\x20none}}\x0a\x09\x09@media\x20(forced-colors:\x20active)\x20{body\x20{--forced-colors:\x20active}}\x0a\x09\x09@media\x20(any-hover:\x20hover)\x20{body\x20{--any-hover:\x20hover}}\x0a\x09\x09@media\x20(any-hover:\x20none)\x20{body\x20{--any-hover:\x20none}}\x0a\x09\x09@media\x20(hover:\x20hover)\x20{body\x20{--hover:\x20hover}}\x0a\x09\x09@media\x20(hover:\x20none)\x20{body\x20{--hover:\x20none}}\x0a\x09\x09@media\x20(any-pointer:\x20fine)\x20{body\x20{--any-pointer:\x20fine}}\x0a\x09\x09@media\x20(any-pointer:\x20coarse)\x20{body\x20{--any-pointer:\x20coarse}}\x0a\x09\x09@media\x20(any-pointer:\x20none)\x20{body\x20{--any-pointer:\x20none}}\x0a\x09\x09@media\x20(pointer:\x20fine)\x20{body\x20{--pointer:\x20fine}}\x0a\x09\x09@media\x20(pointer:\x20coarse)\x20{body\x20{--pointer:\x20coarse}}\x0a\x09\x09@media\x20(pointer:\x20none)\x20{body\x20{--pointer:\x20none}}\x0a\x09\x09@media\x20(device-aspect-ratio:\x20'+zW+')\x20{body\x20{--device-aspect-ratio:\x20'+zW+n4(0xad5)+z8+n4(0x8ab)+z9+n4(0x532)+z8+n4(0x400)+z9+n4(0x294)+(!d?zz:'')+n4(0x2ed);const zZ=getComputedStyle(z7),zd={['prefers-reduced-motion']:zZ['getPropertyValue'](n4(0x1ad))[n4(0x77b)]()||undefined,[n4(0x952)]:zZ[n4(0x8f1)](n4(0xa6d))[n4(0x77b)]()||undefined,'monochrome':zZ[n4(0x8f1)](n4(0xa98))[n4(0x77b)]()||undefined,[n4(0x4e2)]:zZ[n4(0x8f1)](n4(0xb1a))[n4(0x77b)]()||undefined,['forced-colors']:zZ[n4(0x8f1)](n4(0x435))[n4(0x77b)]()||undefined,['any-hover']:zZ[n4(0x8f1)]('--any-hover')['trim']()||undefined,'hover':zZ[n4(0x8f1)](n4(0x871))[n4(0x77b)]()||undefined,[n4(0x575)]:zZ['getPropertyValue']('--any-pointer')[n4(0x77b)]()||undefined,'pointer':zZ['getPropertyValue']('--pointer')[n4(0x77b)]()||undefined,[n4(0x847)]:zZ['getPropertyValue'](n4(0x6a1))[n4(0x77b)]()||undefined,[n4(0x38a)]:zZ[n4(0x8f1)]('--device-screen')['trim']()||undefined,[n4(0x3ce)]:zZ[n4(0x8f1)](n4(0x3cb))[n4(0x77b)]()||undefined,[n4(0x31c)]:zZ[n4(0x8f1)](n4(0x7b3))[n4(0x77b)]()||undefined,'orientation':zZ[n4(0x8f1)](n4(0xb55))[n4(0x77b)]()||undefined},zL=d?undefined:{[n4(0x641)]:zZ[n4(0x8f1)](n4(0x123))[n4(0x77b)]()||undefined,[n4(0x952)]:zZ[n4(0x8f1)](n4(0x841))[n4(0x77b)]()||undefined,'monochrome':zZ[n4(0x8f1)]('--import-monochrome')[n4(0x77b)]()||undefined,[n4(0x4e2)]:zZ[n4(0x8f1)]('--import-inverted-colors')[n4(0x77b)]()||undefined,[n4(0x2c2)]:zZ[n4(0x8f1)](n4(0xb31))[n4(0x77b)]()||undefined,[n4(0x504)]:zZ['getPropertyValue'](n4(0x67d))[n4(0x77b)]()||undefined,'hover':zZ['getPropertyValue']('--import-hover')[n4(0x77b)]()||undefined,[n4(0x575)]:zZ[n4(0x8f1)](n4(0xadc))['trim']()||undefined,'pointer':zZ['getPropertyValue'](n4(0x486))[n4(0x77b)]()||undefined,[n4(0x847)]:zZ[n4(0x8f1)]('--import-device-aspect-ratio')[n4(0x77b)]()||undefined,[n4(0x38a)]:zZ[n4(0x8f1)](n4(0x5af))['trim']()||undefined,[n4(0x3ce)]:zZ['getPropertyValue'](n4(0x7e6))[n4(0x77b)]()||undefined,[n4(0x31c)]:zZ[n4(0x8f1)](n4(0x12d))[n4(0x77b)]()||undefined,'orientation':zZ[n4(0x8f1)]('--import-orientation')['trim']()||undefined},zp=z3({'body':z7,'width':z8,'height':z9});return a({'time':z5[n4(0x8c4)](),'test':n4(0x8c3),'passed':!![]}),{'importCSS':zL,'mediaCSS':zd,'matchMediaCSS':zT,'screenQuery':zp};}catch(zn){a({'test':n4(0x8c3),'passed':![]}),f(zn);return;}}function Wj(z0){const n5=L3;if(!z0[n5(0x8d0)])return n5(0x74a)+r[n5(0x7ca)]+n5(0x670)+r[n5(0x7ca)]+n5(0x418)+r[n5(0x7ca)]+n5(0x321)+r[n5(0x7ca)]+n5(0x367)+r['BLOCKED']+'</div>\x0a\x09\x09</div>';const {cssMedia:z1}=z0,{$hash:z2,importCSS:z3,mediaCSS:z4,matchMediaCSS:z5,screenQuery:z6}=z1;return'\x0a\x09<div\x20class=\x22relative\x20col-six\x22>\x0a\x09\x09<span\x20class=\x22aside-note\x22>'+P[n5(0x649)]()[n5(0x8c3)]+n5(0x423)+N(z2)+n5(0x64f)+(!z4||!Object[n5(0xab4)](z4)[n5(0x73b)](z7=>!!z4[z7])[n5(0xb8e)]?r[n5(0x7ca)]:w(n5(0xbd6),n5(0x5c7)+Object[n5(0xab4)](z4)[n5(0x638)](z7=>z7+':\x20'+(z4[z7]||r[n5(0x786)]))[n5(0x644)](n5(0x708)),WO(z4)))+n5(0x211)+(!z3||!Object['keys'](z3)[n5(0x73b)](z7=>!!z3[z7])[n5(0xb8e)]?r[n5(0x786)]:w(n5(0x63f),'<strong>@import</strong><br><br>'+Object['keys'](z3)[n5(0x638)](z7=>z7+':\x20'+(z3[z7]||r['UNSUPPORTED']))[n5(0x644)]('<br>'),WO(z3)))+n5(0x354)+(!z5||!Object[n5(0xab4)](z5)[n5(0x73b)](z7=>!!z5[z7])[n5(0xb8e)]?r['BLOCKED']:w(n5(0xa41),n5(0x51a)+Object[n5(0xab4)](z5)[n5(0x638)](z7=>z7+':\x20'+(z5[z7]||r[n5(0x786)]))[n5(0x644)](n5(0x708)),WO(z5)))+n5(0x565)+(!z4?r['BLOCKED']:z4[n5(0x575)]==n5(0x316)?!![]:r[n5(0x30b)])+n5(0xaea)+(!z6?r[n5(0x7ca)]:z6[n5(0x90f)]+n5(0x400)+z6[n5(0x996)])+n5(0x225);}function Wh(){const n6=L3;try{const z0=q();z0[n6(0x95f)]();const z1=[];for(const z2 in document['documentElement']){z1[n6(0x3e4)](z2);}return a({'time':z0[n6(0x8c4)](),'test':'html\x20element','passed':!![]}),{'keys':z1};}catch(z3){a({'test':n6(0x7a9),'passed':![]}),f(z3);return;}}function Wl(z0){const n7=L3;if(!z0[n7(0xbaa)])return n7(0x13b)+r['Blocked']+n7(0x943)+r[n7(0x2f7)]+n7(0x5b9);const {htmlElementVersion:{$hash:z1,keys:z2}}=z0;return n7(0x795)+P['getLog']()['html\x20element']+n7(0x3f0)+N(z1)+'</span>\x0a\x09\x09<div>keys\x20('+V(z2)+n7(0x303)+(z2&&z2['length']?w('creep-html-element-version',z2[n7(0x644)](',\x20')):r[n7(0x2f7)])+n7(0x54f);}async function WX(){const n9=L3;try{const z0=q();await t(z0);const z1=zq=>{const n8=a0T;return{'bottom':zq[n8(0x443)],'height':zq['height'],'left':zq['left'],'right':zq[n8(0x816)],'width':zq[n8(0x90f)],'top':zq[n8(0x248)],'x':zq['x'],'y':zq['y']};};let z2=WQ[n9(0x475)]||WQ[n9(0x2d6)]||WQ['Range.getClientRects']||WQ['Range.getBoundingClientRect']||WQ[n9(0x8b6)]||![];const z3=(zq,zt,zM)=>{const nW=n9;let zB;if(!zq[nW(0x475)])return zM[nW(0xfd)]()[0x0];else{if(!zq['Element.getBoundingClientRect'])return zM[nW(0x6d9)]();else{if(!zq[nW(0x686)])return zB=zt[nW(0x7b2)](),zB[nW(0xaf3)](zM),zB['getClientRects']()[0x0];}}return zB=zt[nW(0x7b2)](),zB[nW(0xaf3)](zM),zB[nW(0x6d9)]();},z4=WT&&WT[n9(0x4ea)]&&WT[n9(0x4ea)]['body']?WT[n9(0x4ea)]:document,z5=WN+n9(0x77a),z6='domrect-font-detector',z7=document['createElement'](n9(0x4e5));z7[n9(0x788)]('id',z5),z4['body'][n9(0x446)](z7),i(z7,K`
-		<div id="${z5}">
+// Detect Browser
+function getEngine() {
+    const x = [].constructor;
+    try {
+        (-1).toFixed(-1);
+    }
+    catch (err) {
+        return err.message.length + (x + '').split(x.name).join('').length;
+    }
+}
+const ENGINE_IDENTIFIER = getEngine();
+const IS_BLINK = ENGINE_IDENTIFIER == 80;
+const IS_GECKO = ENGINE_IDENTIFIER == 58;
+const IS_WEBKIT = ENGINE_IDENTIFIER == 77;
+const JS_ENGINE = ({
+    80: 'V8',
+    58: 'SpiderMonkey',
+    77: 'JavaScriptCore',
+})[ENGINE_IDENTIFIER] || null;
+const LIKE_BRAVE = IS_BLINK && 'flat' in Array.prototype /* Chrome 69 */ && !('ReportingObserver' in window /* Brave */);
+function braveBrowser() {
+    const brave = ('brave' in navigator &&
+        // @ts-ignore
+        Object.getPrototypeOf(navigator.brave).constructor.name == 'Brave' &&
+        // @ts-ignore
+        navigator.brave.isBrave.toString() == 'function isBrave() { [native code] }');
+    return brave;
+}
+function getBraveMode() {
+    const mode = {
+        unknown: false,
+        allow: false,
+        standard: false,
+        strict: false,
+    };
+    try {
+        // strict mode adds float frequency data AnalyserNode
+        const strictMode = () => {
+            try {
+                window.OfflineAudioContext = (
+                // @ts-ignore
+                OfflineAudioContext || webkitOfflineAudioContext);
+            }
+            catch (err) { }
+            if (!window.OfflineAudioContext) {
+                return false;
+            }
+            const context = new OfflineAudioContext(1, 1, 44100);
+            const analyser = context.createAnalyser();
+            const data = new Float32Array(analyser.frequencyBinCount);
+            analyser.getFloatFrequencyData(data);
+            const strict = new Set(data).size > 1; // native only has -Infinity
+            return strict;
+        };
+        if (strictMode()) {
+            mode.strict = true;
+            return mode;
+        }
+        // standard and strict mode do not have chrome plugins
+        const chromePlugins = /(Chrom(e|ium)|Microsoft Edge) PDF (Plugin|Viewer)/;
+        const pluginsList = [...navigator.plugins];
+        const hasChromePlugins = pluginsList
+            .filter((plugin) => chromePlugins.test(plugin.name)).length == 2;
+        if (pluginsList.length && !hasChromePlugins) {
+            mode.standard = true;
+            return mode;
+        }
+        mode.allow = true;
+        return mode;
+    }
+    catch (e) {
+        mode.unknown = true;
+        return mode;
+    }
+}
+const getBraveUnprotectedParameters = (parameters) => {
+    const blocked = new Set([
+        'FRAGMENT_SHADER.HIGH_FLOAT.precision',
+        'FRAGMENT_SHADER.HIGH_FLOAT.rangeMax',
+        'FRAGMENT_SHADER.HIGH_FLOAT.rangeMin',
+        'FRAGMENT_SHADER.HIGH_INT.precision',
+        'FRAGMENT_SHADER.HIGH_INT.rangeMax',
+        'FRAGMENT_SHADER.HIGH_INT.rangeMin',
+        'FRAGMENT_SHADER.LOW_FLOAT.precision',
+        'FRAGMENT_SHADER.LOW_FLOAT.rangeMax',
+        'FRAGMENT_SHADER.LOW_FLOAT.rangeMin',
+        'FRAGMENT_SHADER.MEDIUM_FLOAT.precision',
+        'FRAGMENT_SHADER.MEDIUM_FLOAT.rangeMax',
+        'FRAGMENT_SHADER.MEDIUM_FLOAT.rangeMin',
+        'MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS',
+        'MAX_COMBINED_UNIFORM_BLOCKS',
+        'MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS',
+        'MAX_DRAW_BUFFERS_WEBGL',
+        'MAX_FRAGMENT_INPUT_COMPONENTS',
+        'MAX_FRAGMENT_UNIFORM_BLOCKS',
+        'MAX_FRAGMENT_UNIFORM_COMPONENTS',
+        'MAX_TEXTURE_MAX_ANISOTROPY_EXT',
+        'MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS',
+        'MAX_UNIFORM_BUFFER_BINDINGS',
+        'MAX_VARYING_COMPONENTS',
+        'MAX_VERTEX_OUTPUT_COMPONENTS',
+        'MAX_VERTEX_UNIFORM_BLOCKS',
+        'MAX_VERTEX_UNIFORM_COMPONENTS',
+        'SHADING_LANGUAGE_VERSION',
+        'UNMASKED_RENDERER_WEBGL',
+        'UNMASKED_VENDOR_WEBGL',
+        'VERSION',
+        'VERTEX_SHADER.HIGH_FLOAT.precision',
+        'VERTEX_SHADER.HIGH_FLOAT.rangeMax',
+        'VERTEX_SHADER.HIGH_FLOAT.rangeMin',
+        'VERTEX_SHADER.HIGH_INT.precision',
+        'VERTEX_SHADER.HIGH_INT.rangeMax',
+        'VERTEX_SHADER.HIGH_INT.rangeMin',
+        'VERTEX_SHADER.LOW_FLOAT.precision',
+        'VERTEX_SHADER.LOW_FLOAT.rangeMax',
+        'VERTEX_SHADER.LOW_FLOAT.rangeMin',
+        'VERTEX_SHADER.MEDIUM_FLOAT.precision',
+        'VERTEX_SHADER.MEDIUM_FLOAT.rangeMax',
+        'VERTEX_SHADER.MEDIUM_FLOAT.rangeMin',
+    ]);
+    const safeParameters = Object.keys(parameters).reduce((acc, curr) => {
+        if (blocked.has(curr)) {
+            return acc;
+        }
+        acc[curr] = parameters[curr];
+        return acc;
+    }, {});
+    return safeParameters;
+};
+// system
+const getOS = (userAgent) => {
+    const os = (
+    // order is important
+    /windows phone/ig.test(userAgent) ? 'Windows Phone' :
+        /win(dows|16|32|64|95|98|nt)|wow64/ig.test(userAgent) ? 'Windows' :
+            /android/ig.test(userAgent) ? 'Android' :
+                /cros/ig.test(userAgent) ? 'Chrome OS' :
+                    /linux/ig.test(userAgent) ? 'Linux' :
+                        /ipad/ig.test(userAgent) ? 'iPad' :
+                            /iphone/ig.test(userAgent) ? 'iPhone' :
+                                /ipod/ig.test(userAgent) ? 'iPod' :
+                                    /ios/ig.test(userAgent) ? 'iOS' :
+                                        /mac/ig.test(userAgent) ? 'Mac' :
+                                            'Other');
+    return os;
+};
+const decryptUserAgent = ({ ua, os, isBrave }) => {
+    const apple = /ipad|iphone|ipod|ios|mac/ig.test(os);
+    const isOpera = /OPR\//g.test(ua);
+    const isVivaldi = /Vivaldi/g.test(ua);
+    const isDuckDuckGo = /DuckDuckGo/g.test(ua);
+    const isYandex = /YaBrowser/g.test(ua);
+    const paleMoon = ua.match(/(palemoon)\/(\d+)./i);
+    const edge = ua.match(/(edgios|edg|edge|edga)\/(\d+)./i);
+    const edgios = edge && /edgios/i.test(edge[1]);
+    const chromium = ua.match(/(crios|chrome)\/(\d+)./i);
+    const firefox = ua.match(/(fxios|firefox)\/(\d+)./i);
+    const likeSafari = (/AppleWebKit/g.test(ua) &&
+        /Safari/g.test(ua));
+    const safari = (likeSafari &&
+        !firefox &&
+        !chromium &&
+        !edge &&
+        ua.match(/(version)\/(\d+)\.(\d|\.)+\s(mobile|safari)/i));
+    if (chromium) {
+        const browser = chromium[1];
+        const version = chromium[2];
+        const like = (isOpera ? ' Opera' :
+            isVivaldi ? ' Vivaldi' :
+                isDuckDuckGo ? ' DuckDuckGo' :
+                    isYandex ? ' Yandex' :
+                        edge ? ' Edge' :
+                            isBrave ? ' Brave' : '');
+        return `${browser} ${version}${like}`;
+    }
+    else if (edgios) {
+        const browser = edge[1];
+        const version = edge[2];
+        return `${browser} ${version}`;
+    }
+    else if (firefox) {
+        const browser = paleMoon ? paleMoon[1] : firefox[1];
+        const version = paleMoon ? paleMoon[2] : firefox[2];
+        return `${browser} ${version}`;
+    }
+    else if (apple && safari) {
+        const browser = 'Safari';
+        const version = safari[2];
+        return `${browser} ${version}`;
+    }
+    return 'unknown';
+};
+const getUserAgentPlatform = ({ userAgent, excludeBuild = true }) => {
+    if (!userAgent) {
+        return 'unknown';
+    }
+    // patterns
+    const nonPlatformParenthesis = /\((khtml|unlike|vizio|like gec|internal dummy|org\.eclipse|openssl|ipv6|via translate|safari|cardamon).+|xt\d+\)/ig;
+    const parenthesis = /\((.+)\)/;
+    const android = /((android).+)/i;
+    const androidNoise = /^(linux|[a-z]|wv|mobile|[a-z]{2}(-|_)[a-z]{2}|[a-z]{2})$|windows|(rv:|trident|webview|iemobile).+/i;
+    const androidBuild = /build\/.+\s|\sbuild\/.+/i;
+    const androidRelease = /android( |-)\d+/i;
+    const windows = /((windows).+)/i;
+    const windowsNoise = /^(windows|ms(-|)office|microsoft|compatible|[a-z]|x64|[a-z]{2}(-|_)[a-z]{2}|[a-z]{2})$|(rv:|outlook|ms(-|)office|microsoft|trident|\.net|msie|httrack|media center|infopath|aol|opera|iemobile|webbrowser).+/i;
+    const windows64bitCPU = /w(ow|in)64/i;
+    const cros = /cros/i;
+    const crosNoise = /^([a-z]|x11|[a-z]{2}(-|_)[a-z]{2}|[a-z]{2})$|(rv:|trident).+/i;
+    const crosBuild = /\d+\.\d+\.\d+/i;
+    const linux = /linux|x11|ubuntu|debian/i;
+    const linuxNoise = /^([a-z]|x11|unknown|compatible|[a-z]{2}(-|_)[a-z]{2}|[a-z]{2})$|(rv:|java|oracle|\+http|http|unknown|mozilla|konqueror|valve).+/i;
+    const apple = /(cpu iphone|cpu os|iphone os|mac os|macos|intel os|ppc mac).+/i;
+    const appleNoise = /^([a-z]|macintosh|compatible|mimic|[a-z]{2}(-|_)[a-z]{2}|[a-z]{2}|rv|\d+\.\d+)$|(rv:|silk|valve).+/i;
+    const appleRelease = /(ppc |intel |)(mac|mac |)os (x |x|)(\d{2}(_|\.)\d{1,2}|\d{2,})/i;
+    const otherOS = /((symbianos|nokia|blackberry|morphos|mac).+)|\/linux|freebsd|symbos|series \d+|win\d+|unix|hp-ux|bsdi|bsd|x86_64/i;
+    const isDevice = (list, device) => list.filter((x) => device.test(x)).length;
+    userAgent = userAgent.trim().replace(/\s{2,}/, ' ').replace(nonPlatformParenthesis, '');
+    if (parenthesis.test(userAgent)) {
+        const platformSection = userAgent.match(parenthesis)[0];
+        const identifiers = platformSection.slice(1, -1).replace(/,/g, ';').split(';').map((x) => x.trim());
+        if (isDevice(identifiers, android)) {
+            return identifiers
+                // @ts-ignore
+                .map((x) => androidRelease.test(x) ? androidRelease.exec(x)[0].replace('-', ' ') : x)
+                .filter((x) => !(androidNoise.test(x)))
+                .join(' ')
+                .replace((excludeBuild ? androidBuild : ''), '')
+                .trim().replace(/\s{2,}/, ' ');
+        }
+        else if (isDevice(identifiers, windows)) {
+            return identifiers
+                .filter((x) => !(windowsNoise.test(x)))
+                .join(' ')
+                .replace(/\sNT (\d+\.\d+)/, (match, version) => {
+                return (version == '10.0' ? ' 10' :
+                    version == '6.3' ? ' 8.1' :
+                        version == '6.2' ? ' 8' :
+                            version == '6.1' ? ' 7' :
+                                version == '6.0' ? ' Vista' :
+                                    version == '5.2' ? ' XP Pro' :
+                                        version == '5.1' ? ' XP' :
+                                            version == '5.0' ? ' 2000' :
+                                                version == '4.0' ? match :
+                                                    ' ' + version);
+            })
+                .replace(windows64bitCPU, '(64-bit)')
+                .trim().replace(/\s{2,}/, ' ');
+        }
+        else if (isDevice(identifiers, cros)) {
+            return identifiers
+                .filter((x) => !(crosNoise.test(x)))
+                .join(' ')
+                .replace((excludeBuild ? crosBuild : ''), '')
+                .trim().replace(/\s{2,}/, ' ');
+        }
+        else if (isDevice(identifiers, linux)) {
+            return identifiers
+                .filter((x) => !(linuxNoise.test(x)))
+                .join(' ')
+                .trim().replace(/\s{2,}/, ' ');
+        }
+        else if (isDevice(identifiers, apple)) {
+            return identifiers
+                .map((x) => {
+                if (appleRelease.test(x)) {
+                    // @ts-ignore
+                    const release = appleRelease.exec(x)[0];
+                    const versionMap = {
+                        '10_7': 'Lion',
+                        '10_8': 'Mountain Lion',
+                        '10_9': 'Mavericks',
+                        '10_10': 'Yosemite',
+                        '10_11': 'El Capitan',
+                        '10_12': 'Sierra',
+                        '10_13': 'High Sierra',
+                        '10_14': 'Mojave',
+                        '10_15': 'Catalina',
+                        '11': 'Big Sur',
+                        '12': 'Monterey',
+                    };
+                    const version = ((/(\d{2}(_|\.)\d{1,2}|\d{2,})/.exec(release) || [])[0] ||
+                        '').replace(/\./g, '_');
+                    const isOSX = /^10/.test(version);
+                    const id = isOSX ? version : (/^\d{2,}/.exec(version) || [])[0];
+                    const codeName = versionMap[id];
+                    return codeName ? `macOS ${codeName}` : release;
+                }
+                return x;
+            })
+                .filter((x) => !(appleNoise.test(x)))
+                .join(' ')
+                .replace(/\slike mac.+/ig, '')
+                .trim().replace(/\s{2,}/, ' ');
+        }
+        else {
+            const other = identifiers.filter((x) => otherOS.test(x));
+            if (other.length) {
+                return other.join(' ').trim().replace(/\s{2,}/, ' ');
+            }
+            return identifiers.join(' ');
+        }
+    }
+    else {
+        return 'unknown';
+    }
+};
+const computeWindowsRelease = ({ platform, platformVersion, fontPlatformVersion }) => {
+    const chrome95Features = (IS_BLINK &&
+        CSS.supports('contain-intrinsic-width', 'initial'));
+    if ((platform != 'Windows') || !chrome95Features) {
+        return;
+    }
+    const platformVersionNumber = +(/(\d+)\./.exec(platformVersion) || [])[1];
+    // https://github.com/WICG/ua-client-hints/issues/220#issuecomment-870858413
+    const release = {
+        0: '7/8/8.1',
+        1: '10 (1507)',
+        2: '10 (1511)',
+        3: '10 (1607)',
+        4: '10 (1703)',
+        5: '10 (1709)',
+        6: '10 (1803)',
+        7: '10 (1809)',
+        8: '10 (1903|1909)',
+        10: '10 (2004|20H2|21H1)',
+    };
+    const oldFontPlatformVersionNumber = (/7|8\.1|8/.exec(fontPlatformVersion) || [])[0];
+    const version = (platformVersionNumber >= 13 ? '11' :
+        platformVersionNumber == 0 && oldFontPlatformVersionNumber ? oldFontPlatformVersionNumber :
+            (release[platformVersionNumber] || 'Unknown'));
+    return (`Windows ${version} [${platformVersion}]`);
+};
+// attempt windows 11 userAgent
+const attemptWindows11UserAgent = ({ userAgent, userAgentData, fontPlatformVersion }) => {
+    const { platformVersion, platform } = userAgentData || {};
+    // @ts-ignore
+    const windowsRelease = computeWindowsRelease({ platform, platformVersion });
+    return (/Windows 11/.test('' + windowsRelease) || /Windows 11/.test(fontPlatformVersion) ?
+        ('' + userAgent).replace('Windows NT 10.0', 'Windows 11') :
+        userAgent);
+};
+// attempt restore from User-Agent Reduction
+const isUAPostReduction = (userAgent) => {
+    const matcher = /Mozilla\/5\.0 \((Macintosh; Intel Mac OS X 10_15_7|Windows NT 10\.0; Win64; x64|(X11; (CrOS|Linux) x86_64)|(Linux; Android 10(; K|)))\) AppleWebKit\/537\.36 \(KHTML, like Gecko\) Chrome\/\d+\.0\.0\.0( Mobile|) Safari\/537\.36/;
+    const unifiedPlatform = (matcher.exec(userAgent) || [])[1];
+    return IS_BLINK && !!unifiedPlatform;
+};
+const getUserAgentRestored = ({ userAgent, userAgentData, fontPlatformVersion }) => {
+    if (!userAgentData /* || !isUAPostReduction(userAgent)*/) {
+        return;
+    }
+    const { brands, uaFullVersion, platformVersion, model: deviceModel, bitness } = userAgentData;
+    const isGoogleChrome = (/X11; CrOS/.test(userAgent) ||
+        !!(brands || []).find((x) => x == 'Google Chrome'));
+    const versionNumber = +(/(\d+)\./.exec(platformVersion) || [])[1];
+    const windowsFontVersion = (/8\.1|8|7/.exec(fontPlatformVersion) || [])[0];
+    const windowsVersion = (versionNumber >= 13 ? '11' :
+        versionNumber == 0 ? (windowsFontVersion || '7/8/8.1') : '10');
+    const windowsVersionMap = {
+        '7': 'NT 6.1',
+        '8': 'NT 6.2',
+        '8.1': 'NT 6.3',
+        '10': 'NT 10.0',
+    };
+    const macVersion = platformVersion.replace(/\./g, '_');
+    const userAgentRestored = userAgent
+        .replace(/(Chrome\/)([^\s]+)/, (match, p1, p2) => `${p1}${isGoogleChrome ? uaFullVersion : p2}`)
+        .replace(/Windows NT 10.0/, `Windows ${windowsVersionMap[windowsVersion] || windowsVersion}`)
+        .replace(/(X11; CrOS x86_64)/, (match, p1) => `${p1} ${platformVersion}`)
+        .replace(/(Linux; Android )(10)(; K|)/, (match, p1, p2, p3) => {
+        return `${p1}${versionNumber}${!p3 ? '' : deviceModel ? `; ${deviceModel}` : '; K'}`;
+    })
+        .replace(/(Macintosh; Intel Mac OS X )(10_15_7)/, (match, p1) => {
+        const isOSX = /^10/.test(macVersion);
+        return `${isOSX ? p1 : p1.replace('X ', '')}${macVersion}`;
+    })
+        .replace(/(; Win64; x64| x86_64)/, (match, p1) => bitness === '64' ? p1 : '');
+    return userAgentRestored;
+};
+const createPerformanceLogger = () => {
+    const log = {};
+    let total = 0;
+    return {
+        logTestResult: ({ test, passed, time = 0 }) => {
+            total += time;
+            const timeString = `${time.toFixed(2)}ms`;
+            log[test] = timeString;
+            const color = passed ? '#4cca9f' : 'lightcoral';
+            const result = passed ? 'passed' : 'failed';
+            const symbol = passed ? '✔' : '-';
+            return console.log(`%c${symbol}${time ? ` (${timeString})` : ''} ${test} ${result}`, `color:${color}`);
+        },
+        getLog: () => log,
+        getTotal: () => total,
+    };
+};
+const performanceLogger = createPerformanceLogger();
+const { logTestResult } = performanceLogger;
+const createTimer = () => {
+    let start = 0;
+    const log = [];
+    return {
+        stop: () => {
+            if (start) {
+                log.push(performance.now() - start);
+                return log.reduce((acc, n) => acc += n, 0);
+            }
+            return start;
+        },
+        start: () => {
+            start = performance.now();
+            return start;
+        },
+    };
+};
+const queueEvent = (timer, delay = 0) => {
+    timer.stop();
+    return new Promise((resolve) => setTimeout(() => resolve(timer.start()), delay))
+        .catch((e) => { });
+};
+const formatEmojiSet = (emojiSet, limit = 3) => {
+    const maxLen = (limit * 2) + 3;
+    const list = (emojiSet || []);
+    return list.length > maxLen ? `${emojiSet.slice(0, limit).join('')}...${emojiSet.slice(-limit).join('')}` :
+        list.join('');
+};
+const EMOJIS = [
+    [128512], [9786], [129333, 8205, 9794, 65039], [9832], [9784], [9895], [8265], [8505], [127987, 65039, 8205, 9895, 65039], [129394], [9785], [9760], [129489, 8205, 129456], [129487, 8205, 9794, 65039], [9975], [129489, 8205, 129309, 8205, 129489], [9752], [9968], [9961], [9972], [9992], [9201], [9928], [9730], [9969], [9731], [9732], [9976], [9823], [9937], [9000], [9993], [9999],
+    [128105, 8205, 10084, 65039, 8205, 128139, 8205, 128104],
+    [128104, 8205, 128105, 8205, 128103, 8205, 128102],
+    [128104, 8205, 128105, 8205, 128102],
+    // android 11
+    [128512],
+    [169], [174], [8482],
+    [128065, 65039, 8205, 128488, 65039],
+    // other
+    [10002], [9986], [9935], [9874], [9876], [9881], [9939], [9879], [9904], [9905], [9888], [9762], [9763], [11014], [8599], [10145], [11013], [9883], [10017], [10013], [9766], [9654], [9197], [9199], [9167], [9792], [9794], [10006], [12336], [9877], [9884], [10004], [10035], [10055], [9724], [9642], [10083], [10084], [9996], [9757], [9997], [10052], [9878], [8618], [9775], [9770], [9774], [9745], [10036], [127344], [127359],
+].map((emojiCode) => String.fromCodePoint(...emojiCode));
+const CSS_FONT_FAMILY = `
+	'Segoe Fluent Icons',
+	'Ink Free',
+	'Bahnschrift',
+	'Segoe MDL2 Assets',
+	'HoloLens MDL2 Assets',
+	'Leelawadee UI',
+	'Javanese Text',
+	'Segoe UI Emoji',
+	'Aldhabi',
+	'Gadugi',
+	'Myanmar Text',
+	'Nirmala UI',
+	'Lucida Console',
+	'Cambria Math',
+	'Galvji',
+	'MuktaMahee Regular',
+	'InaiMathi Bold',
+	'American Typewriter Semibold',
+	'Futura Bold',
+	'SignPainter-HouseScript Semibold',
+	'PingFang HK Light',
+	'Kohinoor Devanagari Medium',
+	'Luminari',
+	'Geneva',
+	'Helvetica Neue',
+	'Droid Sans Mono',
+	'Dancing Script',
+	'Roboto',
+	'Ubuntu',
+	'Liberation Mono',
+	'Source Code Pro',
+	'DejaVu Sans',
+	'OpenSymbol',
+	'Chilanka',
+	'Cousine',
+	'Arimo',
+	'Jomolhari',
+	'MONO',
+	'Noto Color Emoji',
+	sans-serif !important
+`;
+const hashSlice = (x) => !x ? x : x.slice(0, 8);
+
+// template views
+const patch = (oldEl, newEl, fn) => {
+    oldEl.parentNode.replaceChild(newEl, oldEl);
+    return typeof fn === 'function' ? fn() : true;
+};
+const html = (str, ...expressionSet) => {
+    const template = document.createElement('template');
+    template.innerHTML = str.map((s, i) => `${s}${expressionSet[i] || ''}`).join('');
+    return document.importNode(template.content, true);
+};
+// template helpers
+const HTMLNote = {
+    UNKNOWN: '<span class="blocked">unknown</span>',
+    UNSUPPORTED: '<span class="blocked">unsupported</span>',
+    BLOCKED: '<span class="blocked">blocked</span>',
+    LIED: '<span class="lies">lied</span>',
+};
+const count = (arr) => arr && arr.constructor.name === 'Array' ? '' + (arr.length) : '0';
+const getDiffs = ({ stringA, stringB, charDiff = false, decorate = (diff) => `[${diff}]` }) => {
+    const splitter = charDiff ? '' : ' ';
+    const listA = ('' + stringA).split(splitter);
+    const listB = ('' + stringB).split(splitter);
+    const listBWithDiffs = listB.map((x, i) => {
+        const matcher = listA[i];
+        const match = x == matcher;
+        return !match ? decorate(x) : x;
+    });
+    return listBWithDiffs.join(splitter);
+};
+// modal component
+const modal = (name, result, linkname = 'details') => {
+    if (!result.length) {
+        return '';
+    }
+    return `
+		<style>
+		.modal-${name}:checked ~ .modal-container {
+			visibility: visible;
+			opacity: 1;
+			animation: show 0.1s linear both;
+		}
+		.modal-${name}:checked ~ .modal-container .modal-content {
+			animation: enter 0.2s ease both
+		}
+		.modal-${name}:not(:checked) ~ .modal-container {
+			visibility: hidden;
+		}
+		</style>
+		<input type="radio" id="toggle-open-${name}" class="modal-${name}" name="modal-${name}"/>
+		<label class="modal-open-btn" for="toggle-open-${name}" onclick="">${linkname}</label>
+		<label class="modal-container" for="toggle-close-${name}" onclick="">
+			<label class="modal-content" for="toggle-open-${name}" onclick="">
+				<input type="radio" id="toggle-close-${name}" name="modal-${name}"/>
+				<label class="modal-close-btn" for="toggle-close-${name}" onclick="">×</label>
+				<div>${result}</div>
+			</label>
+		</label>
+	`;
+};
+
+const createErrorsCaptured = () => {
+    const errors = [];
+    return {
+        getErrors: () => errors,
+        captureError: (error, customMessage = '') => {
+            const type = {
+                Error: true,
+                EvalError: true,
+                InternalError: true,
+                RangeError: true,
+                ReferenceError: true,
+                SyntaxError: true,
+                TypeError: true,
+                URIError: true,
+                InvalidStateError: true,
+                SecurityError: true,
+            };
+            const hasInnerSpace = (s) => /.+(\s).+/g.test(s); // ignore AOPR noise
+            console.error(error); // log error to educate
+            const { name, message } = error;
+            const trustedMessage = (!hasInnerSpace(message) ? undefined :
+                !customMessage ? message :
+                    `${message} [${customMessage}]`);
+            const trustedName = type[name] ? name : undefined;
+            errors.push({ trustedName, trustedMessage });
+            return undefined;
+        },
+    };
+};
+const errorsCaptured = createErrorsCaptured();
+const { captureError } = errorsCaptured;
+const attempt = (fn, customMessage = '') => {
+    try {
+        return fn();
+    }
+    catch (error) {
+        if (customMessage) {
+            return captureError(error, customMessage);
+        }
+        return captureError(error);
+    }
+};
+const caniuse = (fn, objChainList = [], args = [], method = false) => {
+    let api;
+    try {
+        api = fn();
+    }
+    catch (error) {
+        return undefined;
+    }
+    let i;
+    const len = objChainList.length;
+    let chain = api;
+    try {
+        for (i = 0; i < len; i++) {
+            const obj = objChainList[i];
+            chain = chain[obj];
+        }
+    }
+    catch (error) {
+        return undefined;
+    }
+    return (method && args.length ? chain.apply(api, args) :
+        method && !args.length ? chain.apply(api) :
+            chain);
+};
+// Log performance time
+const timer = (logStart) => {
+    logStart && console.log(logStart);
+    let start = 0;
+    try {
+        start = performance.now();
+    }
+    catch (error) {
+        captureError(error);
+    }
+    return (logEnd) => {
+        let end = 0;
+        try {
+            end = performance.now() - start;
+            logEnd && console.log(`${logEnd}: ${end / 1000} seconds`);
+            return end;
+        }
+        catch (error) {
+            captureError(error);
+            return 0;
+        }
+    };
+};
+const getCapturedErrors = () => ({ data: errorsCaptured.getErrors() });
+const errorsHTML = (fp, pointsHTML) => {
+    const { capturedErrors: { data, $hash } } = fp;
+    const len = data.length;
+    return `
+	<div class="${len ? ' errors' : ''}">errors (${!len ? '0' : '' + len}): ${!len ? 'none' : modal('creep-captured-errors', Object.keys(data)
+        .map((key, i) => `${i + 1}: ${data[key].trustedName} - ${data[key].trustedMessage} `)
+        .join('<br>'), hashSlice($hash))}${pointsHTML}</div>`;
+};
+
+// warm up while we detect lies
+try {
+    navigator.mediaDevices.enumerateDevices();
+}
+catch (err) { }
+try {
+    speechSynthesis.getVoices();
+}
+catch (err) { }
+// Collect lies detected
+const createLieRecords = () => {
+    const records = {};
+    return {
+        getRecords: () => records,
+        documentLie: (name, lie) => {
+            const isArray = lie instanceof Array;
+            if (records[name]) {
+                if (isArray) {
+                    return (records[name] = [...records[name], ...lie]);
+                }
+                return records[name].push(lie);
+            }
+            return isArray ? (records[name] = lie) : (records[name] = [lie]);
+        },
+    };
+};
+const lieRecords = createLieRecords();
+const { documentLie } = lieRecords;
+const ghost = () => `
+	height: 100vh;
+	width: 100vw;
+	position: absolute;
+	left:-10000px;
+	visibility: hidden;
+`;
+const getRandomValues = () => (String.fromCharCode(Math.random() * 26 + 97) +
+    Math.random().toString(36).slice(-7));
+const getBehemothIframe = (win) => {
+    try {
+        if (!IS_BLINK) {
+            return win;
+        }
+        const div = win.document.createElement('div');
+        div.setAttribute('id', getRandomValues());
+        div.setAttribute('style', ghost());
+        div.innerHTML = `<div><iframe></iframe></div>`;
+        win.document.body.appendChild(div);
+        const iframe = [...[...div.childNodes][0].childNodes][0];
+        if (!iframe) {
+            return;
+        }
+        const { contentWindow } = iframe || {};
+        const div2 = contentWindow.document.createElement('div');
+        div2.innerHTML = `<div><iframe></iframe></div>`;
+        contentWindow.document.body.appendChild(div2);
+        const iframe2 = [...[...div2.childNodes][0].childNodes][0];
+        return iframe2.contentWindow;
+    }
+    catch (error) {
+        captureError(error, 'client blocked behemoth iframe');
+        return win;
+    }
+};
+const getPhantomIframe = () => {
+    try {
+        const numberOfIframes = window.length;
+        const frag = new DocumentFragment();
+        const div = document.createElement('div');
+        const id = getRandomValues();
+        div.setAttribute('id', id);
+        frag.appendChild(div);
+        div.innerHTML = `<div style="${ghost()}"><iframe></iframe></div>`;
+        document.body.appendChild(frag);
+        const iframeWindow = window[numberOfIframes];
+        const phantomWindow = getBehemothIframe(iframeWindow);
+        return { iframeWindow: phantomWindow, div };
+    }
+    catch (error) {
+        captureError(error, 'client blocked phantom iframe');
+        return { iframeWindow: window, div: undefined };
+    }
+};
+const { iframeWindow: PHANTOM_DARKNESS, div: PARENT_PHANTOM } = getPhantomIframe();
+function getPrototypeLies(scope) {
+    const getRandomValues = () => (String.fromCharCode(Math.random() * 26 + 97) +
+        Math.random().toString(36).slice(-7));
+    const randomId = getRandomValues();
+    // Lie Tests
+    // object constructor descriptor should return undefined properties
+    const getUndefinedValueLie = (obj, name) => {
+        const objName = obj.name;
+        const objNameUncapitalized = self[objName.charAt(0).toLowerCase() + objName.slice(1)];
+        const hasInvalidValue = !!objNameUncapitalized && (typeof Object.getOwnPropertyDescriptor(objNameUncapitalized, name) != 'undefined' ||
+            typeof Reflect.getOwnPropertyDescriptor(objNameUncapitalized, name) != 'undefined');
+        return hasInvalidValue;
+    };
+    // accessing the property from the prototype should throw a TypeError
+    const getIllegalTypeErrorLie = (obj, name) => {
+        const proto = obj.prototype;
+        try {
+            proto[name];
+            return true;
+        }
+        catch (error) {
+            return error.constructor.name != 'TypeError' ? true : false;
+        }
+    };
+    // calling the interface prototype on the function should throw a TypeError
+    const getCallInterfaceTypeErrorLie = (apiFunction, proto) => {
+        try {
+            // eslint-disable-next-line new-cap
+            new apiFunction();
+            apiFunction.call(proto);
+            return true;
+        }
+        catch (error) {
+            return error.constructor.name != 'TypeError';
+        }
+    };
+    // applying the interface prototype on the function should throw a TypeError
+    const getApplyInterfaceTypeErrorLie = (apiFunction, proto) => {
+        try {
+            // eslint-disable-next-line new-cap
+            new apiFunction();
+            apiFunction.apply(proto);
+            return true;
+        }
+        catch (error) {
+            return error.constructor.name != 'TypeError';
+        }
+    };
+    // creating a new instance of the function should throw a TypeError
+    const getNewInstanceTypeErrorLie = (apiFunction) => {
+        try {
+            // eslint-disable-next-line new-cap
+            new apiFunction();
+            return true;
+        }
+        catch (error) {
+            return error.constructor.name != 'TypeError';
+        }
+    };
+    // extending the function on a fake class should throw a TypeError and message "not a constructor"
+    const getClassExtendsTypeErrorLie = (apiFunction) => {
+        try {
+            const shouldExitInSafari13 = (/version\/13/i.test((navigator || {}).userAgent) && IS_WEBKIT);
+            if (shouldExitInSafari13) {
+                return false;
+            }
+            // begin tests
+            // eslint-disable-next-line no-unused-vars
+            class Fake extends apiFunction {
+            }
+            return true;
+        }
+        catch (error) {
+            // Native has TypeError and 'not a constructor' message in FF & Chrome
+            return (error.constructor.name != 'TypeError' ||
+                !/not a constructor/i.test(error.message));
+        }
+    };
+    // setting prototype to null and converting to a string should throw a TypeError
+    const getNullConversionTypeErrorLie = (apiFunction) => {
+        const nativeProto = Object.getPrototypeOf(apiFunction);
+        try {
+            Object.setPrototypeOf(apiFunction, null) + '';
+            return true;
+        }
+        catch (error) {
+            return error.constructor.name != 'TypeError';
+        }
+        finally {
+            // restore proto
+            Object.setPrototypeOf(apiFunction, nativeProto);
+        }
+    };
+    // toString() and toString.toString() should return a native string in all frames
+    const getToStringLie = (apiFunction, name, scope) => {
+        /*
+        Accepted strings:
+        'function name() { [native code] }'
+        'function name() {\n    [native code]\n}'
+        'function get name() { [native code] }'
+        'function get name() {\n    [native code]\n}'
+        'function () { [native code] }'
+        `function () {\n    [native code]\n}`
+        */
+        let scopeToString;
+        let scopeToStringToString;
+        try {
+            scopeToString = scope.Function.prototype.toString.call(apiFunction);
+        }
+        catch (e) { }
+        try {
+            scopeToStringToString = scope.Function.prototype.toString.call(apiFunction.toString);
+        }
+        catch (e) { }
+        const apiFunctionToString = (scopeToString ?
+            scopeToString :
+            apiFunction.toString());
+        const apiFunctionToStringToString = (scopeToStringToString ?
+            scopeToStringToString :
+            apiFunction.toString.toString());
+        const trust = (name) => ({
+            [`function ${name}() { [native code] }`]: true,
+            [`function get ${name}() { [native code] }`]: true,
+            [`function () { [native code] }`]: true,
+            [`function ${name}() {${'\n'}    [native code]${'\n'}}`]: true,
+            [`function get ${name}() {${'\n'}    [native code]${'\n'}}`]: true,
+            [`function () {${'\n'}    [native code]${'\n'}}`]: true,
+        });
+        return (!trust(name)[apiFunctionToString] ||
+            !trust('toString')[apiFunctionToStringToString]);
+    };
+    // "prototype" in function should not exist
+    const getPrototypeInFunctionLie = (apiFunction) => 'prototype' in apiFunction;
+    // "arguments", "caller", "prototype", "toString"  should not exist in descriptor
+    const getDescriptorLie = (apiFunction) => {
+        const hasInvalidDescriptor = (Object.getOwnPropertyDescriptor(apiFunction, 'arguments') ||
+            Reflect.getOwnPropertyDescriptor(apiFunction, 'arguments') ||
+            Object.getOwnPropertyDescriptor(apiFunction, 'caller') ||
+            Reflect.getOwnPropertyDescriptor(apiFunction, 'caller') ||
+            Object.getOwnPropertyDescriptor(apiFunction, 'prototype') ||
+            Reflect.getOwnPropertyDescriptor(apiFunction, 'prototype') ||
+            Object.getOwnPropertyDescriptor(apiFunction, 'toString') ||
+            Reflect.getOwnPropertyDescriptor(apiFunction, 'toString'));
+        return hasInvalidDescriptor;
+    };
+    // "arguments", "caller", "prototype", "toString" should not exist as own property
+    const getOwnPropertyLie = (apiFunction) => {
+        const hasInvalidOwnProperty = (apiFunction.hasOwnProperty('arguments') ||
+            apiFunction.hasOwnProperty('caller') ||
+            apiFunction.hasOwnProperty('prototype') ||
+            apiFunction.hasOwnProperty('toString'));
+        return hasInvalidOwnProperty;
+    };
+    // descriptor keys should only contain "name" and "length"
+    const getDescriptorKeysLie = (apiFunction) => {
+        const descriptorKeys = Object.keys(Object.getOwnPropertyDescriptors(apiFunction));
+        const hasInvalidKeys = '' + descriptorKeys != 'length,name' && '' + descriptorKeys != 'name,length';
+        return hasInvalidKeys;
+    };
+    // own property names should only contain "name" and "length"
+    const getOwnPropertyNamesLie = (apiFunction) => {
+        const ownPropertyNames = Object.getOwnPropertyNames(apiFunction);
+        const hasInvalidNames = !('' + ownPropertyNames == 'length,name' ||
+            '' + ownPropertyNames == 'name,length');
+        return hasInvalidNames;
+    };
+    // own keys names should only contain "name" and "length"
+    const getOwnKeysLie = (apiFunction) => {
+        const ownKeys = Reflect.ownKeys(apiFunction);
+        const hasInvalidKeys = !('' + ownKeys == 'length,name' ||
+            '' + ownKeys == 'name,length');
+        return hasInvalidKeys;
+    };
+    // calling toString() on an object created from the function should throw a TypeError
+    const getNewObjectToStringTypeErrorLie = (apiFunction) => {
+        try {
+            const you = () => Object.create(apiFunction).toString();
+            const cant = () => you();
+            const hide = () => cant();
+            hide();
+            // error must throw
+            return true;
+        }
+        catch (error) {
+            const stackLines = error.stack.split('\n');
+            const validScope = !/at Object\.apply/.test(stackLines[1]);
+            // Stack must be valid
+            const validStackSize = (error.constructor.name == 'TypeError' && stackLines.length >= 5);
+            // Chromium must throw error 'at Function.toString'... and not 'at Object.apply'
+            if (validStackSize && IS_BLINK && (!validScope ||
+                !/at Function\.toString/.test(stackLines[1]) ||
+                !/at you/.test(stackLines[2]) ||
+                !/at cant/.test(stackLines[3]) ||
+                !/at hide/.test(stackLines[4]))) {
+                return true;
+            }
+            return !validStackSize;
+        }
+    };
+    /* Proxy Detection */
+    // arguments or caller should not throw 'incompatible Proxy' TypeError
+    const tryIncompatibleProxy = (fn) => {
+        try {
+            fn();
+            return true; // failed to throw
+        }
+        catch (error) {
+            return (error.constructor.name != 'TypeError' ||
+                (IS_GECKO && /incompatible\sProxy/.test(error.message)));
+        }
+    };
+    const getIncompatibleProxyTypeErrorLie = (apiFunction) => {
+        return (tryIncompatibleProxy(() => apiFunction.arguments) ||
+            tryIncompatibleProxy(() => apiFunction.caller));
+    };
+    const getToStringIncompatibleProxyTypeErrorLie = (apiFunction) => {
+        return (tryIncompatibleProxy(() => apiFunction.toString.arguments) ||
+            tryIncompatibleProxy(() => apiFunction.toString.caller));
+    };
+    // checking proxy instanceof proxy should throw a valid TypeError
+    const getInstanceofCheckLie = (apiFunction) => {
+        const proxy = new Proxy(apiFunction, {});
+        if (!IS_BLINK) {
+            return false;
+        }
+        const hasValidStack = (error, type = 'Function') => {
+            const { message, name, stack } = error;
+            const validName = name == 'TypeError';
+            const validMessage = message == `Function has non-object prototype 'undefined' in instanceof check`;
+            const targetStackLine = ((stack || '').split('\n') || [])[1];
+            const validStackLine = (targetStackLine.startsWith(`    at ${type}.[Symbol.hasInstance]`) ||
+                targetStackLine.startsWith('    at [Symbol.hasInstance]') // Chrome 102
+            );
+            return validName && validMessage && validStackLine;
+        };
+        try {
+            proxy instanceof proxy;
+            return true; // failed to throw
+        }
+        catch (error) {
+            // expect Proxy.[Symbol.hasInstance]
+            if (!hasValidStack(error, 'Proxy')) {
+                return true;
+            }
+            try {
+                apiFunction instanceof apiFunction;
+                return true; // failed to throw
+            }
+            catch (error) {
+                // expect Function.[Symbol.hasInstance]
+                return !hasValidStack(error);
+            }
+        }
+    };
+    // defining properties should not throw an error
+    const getDefinePropertiesLie = (apiFunction) => {
+        if (!IS_BLINK) {
+            return false; // chrome only test
+        }
+        try {
+            const _apiFunction = apiFunction;
+            Object.defineProperty(_apiFunction, '', {}) + '';
+            Object.defineProperties(_apiFunction, {}) + '';
+            return false;
+        }
+        catch (error) {
+            return true; // failed at Error
+        }
+    };
+    // setPrototypeOf error tests
+    const spawnError = (apiFunction, method) => {
+        if (method == 'setPrototypeOf') {
+            return Object.setPrototypeOf(apiFunction, Object.create(apiFunction)) + '';
+        }
+        else {
+            apiFunction.__proto__ = apiFunction;
+            return apiFunction++;
+        }
+    };
+    const hasValidError = (error) => {
+        const { name, message } = error;
+        const hasRangeError = name == 'RangeError';
+        const hasInternalError = name == 'InternalError';
+        const chromeLie = IS_BLINK && (message != `Maximum call stack size exceeded` || !hasRangeError);
+        const firefoxLie = IS_GECKO && (message != `too much recursion` || !hasInternalError);
+        return (hasRangeError || hasInternalError) && !(chromeLie || firefoxLie);
+    };
+    const getTooMuchRecursionLie = ({ apiFunction, method = 'setPrototypeOf' }) => {
+        const nativeProto = Object.getPrototypeOf(apiFunction);
+        const proxy = new Proxy(apiFunction, {});
+        try {
+            spawnError(proxy, method);
+            return true; // failed to throw
+        }
+        catch (error) {
+            return !hasValidError(error);
+        }
+        finally {
+            Object.setPrototypeOf(proxy, nativeProto); // restore
+        }
+    };
+    const getChainCycleLie = ({ apiFunction, method = 'setPrototypeOf' }) => {
+        const nativeProto = Object.getPrototypeOf(apiFunction);
+        try {
+            spawnError(apiFunction, method);
+            return true; // failed to throw
+        }
+        catch (error) {
+            const { name, message, stack } = error;
+            const targetStackLine = ((stack || '').split('\n') || [])[1];
+            const hasTypeError = name == 'TypeError';
+            const chromeLie = IS_BLINK && (message != `Cyclic __proto__ value` || (method == '__proto__' && (!targetStackLine.startsWith(`    at Function.set __proto__ [as __proto__]`) &&
+                !targetStackLine.startsWith(`    at set __proto__ [as __proto__]`) // Chrome 102
+            )));
+            const firefoxLie = IS_GECKO && (message != `can't set prototype: it would cause a prototype chain cycle`);
+            if (!hasTypeError || chromeLie || firefoxLie) {
+                return true; // failed Error
+            }
+        }
+        finally {
+            Object.setPrototypeOf(apiFunction, nativeProto); // restore
+        }
+    };
+    const getReflectSetProtoLie = ({ apiFunction, randomId }) => {
+        if (!randomId) {
+            randomId = getRandomValues();
+        }
+        const nativeProto = Object.getPrototypeOf(apiFunction);
+        try {
+            if (Reflect.setPrototypeOf(apiFunction, Object.create(apiFunction))) {
+                return true; // failed value (expected false)
+            }
+            else {
+                try {
+                    randomId in apiFunction;
+                    return false;
+                }
+                catch (error) {
+                    return true; // failed at Error
+                }
+            }
+        }
+        catch (error) {
+            return true; // failed at Error
+        }
+        finally {
+            Object.setPrototypeOf(apiFunction, nativeProto); // restore
+        }
+    };
+    const getReflectSetProtoProxyLie = ({ apiFunction, randomId }) => {
+        if (!randomId) {
+            randomId = getRandomValues();
+        }
+        const nativeProto = Object.getPrototypeOf(apiFunction);
+        const proxy = new Proxy(apiFunction, {});
+        try {
+            if (!Reflect.setPrototypeOf(proxy, Object.create(proxy))) {
+                return true; // failed value (expected true)
+            }
+            else {
+                try {
+                    randomId in apiFunction;
+                    return true; // failed to throw
+                }
+                catch (error) {
+                    return !hasValidError(error);
+                }
+            }
+        }
+        catch (error) {
+            return true; // failed at Error
+        }
+        finally {
+            Object.setPrototypeOf(proxy, nativeProto); // restore
+        }
+    };
+    // API Function Test
+    const getLies = ({ apiFunction, proto, obj = null, lieProps }) => {
+        if (typeof apiFunction != 'function') {
+            return {
+                lied: false,
+                lieTypes: [],
+            };
+        }
+        const name = apiFunction.name.replace(/get\s/, '');
+        let lies = {
+            // custom lie string names
+            [`failed illegal error`]: obj ? getIllegalTypeErrorLie(obj, name) : false,
+            [`failed undefined properties`]: obj ? getUndefinedValueLie(obj, name) : false,
+            [`failed call interface error`]: getCallInterfaceTypeErrorLie(apiFunction, proto),
+            [`failed apply interface error`]: getApplyInterfaceTypeErrorLie(apiFunction, proto),
+            [`failed new instance error`]: getNewInstanceTypeErrorLie(apiFunction),
+            [`failed class extends error`]: getClassExtendsTypeErrorLie(apiFunction),
+            [`failed null conversion error`]: getNullConversionTypeErrorLie(apiFunction),
+            [`failed toString`]: getToStringLie(apiFunction, name, scope),
+            [`failed "prototype" in function`]: getPrototypeInFunctionLie(apiFunction),
+            [`failed descriptor`]: getDescriptorLie(apiFunction),
+            [`failed own property`]: getOwnPropertyLie(apiFunction),
+            [`failed descriptor keys`]: getDescriptorKeysLie(apiFunction),
+            [`failed own property names`]: getOwnPropertyNamesLie(apiFunction),
+            [`failed own keys names`]: getOwnKeysLie(apiFunction),
+            [`failed object toString error`]: getNewObjectToStringTypeErrorLie(apiFunction),
+            // Proxy Detection
+            [`failed at incompatible proxy error`]: getIncompatibleProxyTypeErrorLie(apiFunction),
+            [`failed at toString incompatible proxy error`]: getToStringIncompatibleProxyTypeErrorLie(apiFunction),
+            [`failed at too much recursion error`]: getChainCycleLie({ apiFunction }),
+        };
+        // conditionally use advanced detection
+        const detectProxies = (name == 'toString' || !!lieProps['Function.toString']);
+        if (detectProxies) {
+            lies = Object.assign(Object.assign({}, lies), {
+                // Advanced Proxy Detection
+                [`failed at too much recursion __proto__ error`]: getChainCycleLie({ apiFunction, method: '__proto__' }), [`failed at chain cycle error`]: getTooMuchRecursionLie({ apiFunction }), [`failed at chain cycle __proto__ error`]: getTooMuchRecursionLie({ apiFunction, method: '__proto__' }), [`failed at reflect set proto`]: getReflectSetProtoLie({ apiFunction, randomId }), [`failed at reflect set proto proxy`]: getReflectSetProtoProxyLie({ apiFunction, randomId }), [`failed at instanceof check error`]: getInstanceofCheckLie(apiFunction), [`failed at define properties`]: getDefinePropertiesLie(apiFunction) });
+        }
+        const lieTypes = Object.keys(lies).filter((key) => !!lies[key]);
+        return {
+            lied: lieTypes.length,
+            lieTypes,
+        };
+    };
+    // Lie Detector
+    const createLieDetector = () => {
+        const isSupported = (obj) => typeof obj != 'undefined' && !!obj;
+        const props = {}; // lie list and detail
+        const propsSearched = []; // list of properties searched
+        return {
+            getProps: () => props,
+            getPropsSearched: () => propsSearched,
+            searchLies: (fn, { target = [], ignore = [], } = {}) => {
+                let obj;
+                // check if api is blocked or not supported
+                try {
+                    obj = fn();
+                    if (!isSupported(obj)) {
+                        return;
+                    }
+                }
+                catch (error) {
+                    return;
+                }
+                const interfaceObject = !!obj.prototype ? obj.prototype : obj;
+                [...new Set([
+                        ...Object.getOwnPropertyNames(interfaceObject),
+                        ...Object.keys(interfaceObject), // backup
+                    ])].sort().forEach((name) => {
+                    const skip = (name == 'constructor' ||
+                        (target.length && !new Set(target).has(name)) ||
+                        (ignore.length && new Set(ignore).has(name)));
+                    if (skip) {
+                        return;
+                    }
+                    const objectNameString = /\s(.+)\]/;
+                    const apiName = `${
+                    // @ts-ignore
+                    obj.name ? obj.name : objectNameString.test(obj) ? objectNameString.exec(obj)[1] : undefined}.${name}`;
+                    propsSearched.push(apiName);
+                    try {
+                        const proto = obj.prototype ? obj.prototype : obj;
+                        let res; // response from getLies
+                        // search if function
+                        try {
+                            const apiFunction = proto[name]; // may trigger TypeError
+                            if (typeof apiFunction == 'function') {
+                                res = getLies({
+                                    apiFunction: proto[name],
+                                    proto,
+                                    lieProps: props,
+                                });
+                                if (res.lied) {
+                                    documentLie(apiName, res.lieTypes);
+                                    return (props[apiName] = res.lieTypes);
+                                }
+                                return;
+                            }
+                            // since there is no TypeError and the typeof is not a function,
+                            // handle invalid values and ingnore name, length, and constants
+                            if (name != 'name' &&
+                                name != 'length' &&
+                                name[0] !== name[0].toUpperCase()) {
+                                const lie = [`failed descriptor.value undefined`];
+                                documentLie(apiName, lie);
+                                return (props[apiName] = lie);
+                            }
+                        }
+                        catch (error) { }
+                        // else search getter function
+                        // @ts-ignore
+                        const getterFunction = Object.getOwnPropertyDescriptor(proto, name).get;
+                        res = getLies({
+                            apiFunction: getterFunction,
+                            proto,
+                            obj,
+                            lieProps: props,
+                        }); // send the obj for special tests
+                        if (res.lied) {
+                            documentLie(apiName, res.lieTypes);
+                            return (props[apiName] = res.lieTypes);
+                        }
+                        return;
+                    }
+                    catch (error) {
+                        const lie = `failed prototype test execution`;
+                        documentLie(apiName, lie);
+                        return (props[apiName] = [lie]);
+                    }
+                });
+            },
+        };
+    };
+    const lieDetector = createLieDetector();
+    const { searchLies, } = lieDetector;
+    // search lies: remove target to search all properties
+    // test Function.toString first to determine the depth of the search
+    searchLies(() => Function, {
+        target: [
+            'toString',
+        ],
+        ignore: [
+            'caller',
+            'arguments',
+        ],
+    });
+    // other APIs
+    searchLies(() => AnalyserNode);
+    searchLies(() => AudioBuffer, {
+        target: [
+            'copyFromChannel',
+            'getChannelData',
+        ],
+    });
+    searchLies(() => BiquadFilterNode, {
+        target: [
+            'getFrequencyResponse',
+        ],
+    });
+    searchLies(() => CanvasRenderingContext2D, {
+        target: [
+            'getImageData',
+            'getLineDash',
+            'isPointInPath',
+            'isPointInStroke',
+            'measureText',
+            'quadraticCurveTo',
+            'fillText',
+            'strokeText',
+            'font',
+        ],
+    });
+    searchLies(() => CSSStyleDeclaration, {
+        target: [
+            'setProperty',
+        ],
+    });
+    // @ts-ignore
+    searchLies(() => CSS2Properties, {
+        target: [
+            'setProperty',
+        ],
+    });
+    searchLies(() => Date, {
+        target: [
+            'getDate',
+            'getDay',
+            'getFullYear',
+            'getHours',
+            'getMinutes',
+            'getMonth',
+            'getTime',
+            'getTimezoneOffset',
+            'setDate',
+            'setFullYear',
+            'setHours',
+            'setMilliseconds',
+            'setMonth',
+            'setSeconds',
+            'setTime',
+            'toDateString',
+            'toJSON',
+            'toLocaleDateString',
+            'toLocaleString',
+            'toLocaleTimeString',
+            'toString',
+            'toTimeString',
+            'valueOf',
+        ],
+    });
+    searchLies(() => Intl.DateTimeFormat, {
+        target: [
+            'format',
+            'formatRange',
+            'formatToParts',
+            'resolvedOptions',
+        ],
+    });
+    searchLies(() => Document, {
+        target: [
+            'createElement',
+            'createElementNS',
+            'getElementById',
+            'getElementsByClassName',
+            'getElementsByName',
+            'getElementsByTagName',
+            'getElementsByTagNameNS',
+            'referrer',
+            'write',
+            'writeln',
+        ],
+        ignore: [
+            // Firefox returns undefined on getIllegalTypeErrorLie test
+            'onreadystatechange',
+            'onmouseenter',
+            'onmouseleave',
+        ],
+    });
+    searchLies(() => DOMRect);
+    searchLies(() => DOMRectReadOnly);
+    searchLies(() => Element, {
+        target: [
+            'append',
+            'appendChild',
+            'getBoundingClientRect',
+            'getClientRects',
+            'insertAdjacentElement',
+            'insertAdjacentHTML',
+            'insertAdjacentText',
+            'insertBefore',
+            'prepend',
+            'replaceChild',
+            'replaceWith',
+            'setAttribute',
+        ],
+    });
+    searchLies(() => FontFace, {
+        target: [
+            'family',
+            'load',
+            'status',
+        ],
+    });
+    searchLies(() => HTMLCanvasElement);
+    searchLies(() => HTMLElement, {
+        target: [
+            'clientHeight',
+            'clientWidth',
+            'offsetHeight',
+            'offsetWidth',
+            'scrollHeight',
+            'scrollWidth',
+        ],
+        ignore: [
+            // Firefox returns undefined on getIllegalTypeErrorLie test
+            'onmouseenter',
+            'onmouseleave',
+        ],
+    });
+    searchLies(() => HTMLIFrameElement, {
+        target: [
+            'contentDocument',
+            'contentWindow',
+        ],
+    });
+    searchLies(() => IntersectionObserverEntry, {
+        target: [
+            'boundingClientRect',
+            'intersectionRect',
+            'rootBounds',
+        ],
+    });
+    searchLies(() => Math, {
+        target: [
+            'acos',
+            'acosh',
+            'asinh',
+            'atan',
+            'atan2',
+            'atanh',
+            'cbrt',
+            'cos',
+            'cosh',
+            'exp',
+            'expm1',
+            'log',
+            'log10',
+            'log1p',
+            'sin',
+            'sinh',
+            'sqrt',
+            'tan',
+            'tanh',
+        ],
+    });
+    searchLies(() => MediaDevices, {
+        target: [
+            'enumerateDevices',
+            'getDisplayMedia',
+            'getUserMedia',
+        ],
+    });
+    searchLies(() => Navigator, {
+        target: [
+            'appCodeName',
+            'appName',
+            'appVersion',
+            'buildID',
+            'connection',
+            'deviceMemory',
+            'getBattery',
+            'getGamepads',
+            'getVRDisplays',
+            'hardwareConcurrency',
+            'language',
+            'languages',
+            'maxTouchPoints',
+            'mimeTypes',
+            'oscpu',
+            'platform',
+            'plugins',
+            'product',
+            'productSub',
+            'sendBeacon',
+            'serviceWorker',
+            'userAgent',
+            'vendor',
+            'vendorSub',
+        ],
+    });
+    searchLies(() => Node, {
+        target: [
+            'appendChild',
+            'insertBefore',
+            'replaceChild',
+        ],
+    });
+    // @ts-ignore
+    searchLies(() => OffscreenCanvas, {
+        target: [
+            'convertToBlob',
+            'getContext',
+        ],
+    });
+    // @ts-ignore
+    searchLies(() => OffscreenCanvasRenderingContext2D, {
+        target: [
+            'getImageData',
+            'getLineDash',
+            'isPointInPath',
+            'isPointInStroke',
+            'measureText',
+            'quadraticCurveTo',
+            'font',
+        ],
+    });
+    searchLies(() => Range, {
+        target: [
+            'getBoundingClientRect',
+            'getClientRects',
+        ],
+    });
+    searchLies(() => Intl.RelativeTimeFormat, {
+        target: [
+            'resolvedOptions',
+        ],
+    });
+    searchLies(() => Screen);
+    searchLies(() => speechSynthesis, {
+        target: [
+            'getVoices',
+        ],
+    });
+    searchLies(() => String, {
+        target: [
+            'fromCodePoint',
+        ],
+    });
+    searchLies(() => SVGRect);
+    searchLies(() => TextMetrics);
+    searchLies(() => WebGLRenderingContext, {
+        target: [
+            'bufferData',
+            'getParameter',
+            'readPixels',
+        ],
+    });
+    searchLies(() => WebGL2RenderingContext, {
+        target: [
+            'bufferData',
+            'getParameter',
+            'readPixels',
+        ],
+    });
+    /* potential targets:
+        RTCPeerConnection
+        Plugin
+        PluginArray
+        MimeType
+        MimeTypeArray
+        Worker
+        History
+    */
+    // return lies list and detail
+    const props = lieDetector.getProps();
+    const propsSearched = lieDetector.getPropsSearched();
+    return {
+        lieDetector,
+        lieList: Object.keys(props).sort(),
+        lieDetail: props,
+        lieCount: Object.keys(props).reduce((acc, key) => acc + props[key].length, 0),
+        propsSearched,
+        proxyDetectionMethods: [
+            getTooMuchRecursionLie,
+            getNewObjectToStringTypeErrorLie,
+            getChainCycleLie,
+            getReflectSetProtoLie,
+            getReflectSetProtoProxyLie,
+            getInstanceofCheckLie,
+            getDefinePropertiesLie,
+        ],
+    };
+}
+// start program
+const start = performance.now();
+const { lieDetector, lieList, lieDetail,
+// lieCount,
+propsSearched, proxyDetectionMethods, } = getPrototypeLies(PHANTOM_DARKNESS); // execute and destructure the list and detail
+// disregard Function.prototype.toString lies when determining if the API can be trusted
+const getNonFunctionToStringLies = (x) => !x ? x : x.filter((x) => !/object toString|toString incompatible proxy/.test(x)).length;
+const lieProps = (() => {
+    const props = lieDetector.getProps();
+    return Object.keys(props).reduce((acc, key) => {
+        acc[key] = getNonFunctionToStringLies(props[key]);
+        return acc;
+    }, {});
+})();
+const prototypeLies = JSON.parse(JSON.stringify(lieDetail));
+const perf = performance.now() - start;
+console.log(`${propsSearched.length} API properties analyzed in ${(perf).toFixed(2)}ms (${lieList.length} corrupted)`);
+const getPluginLies = (plugins, mimeTypes) => {
+    const lies = []; // collect lie types
+    const pluginsOwnPropertyNames = Object.getOwnPropertyNames(plugins).filter((name) => isNaN(+name));
+    const mimeTypesOwnPropertyNames = Object.getOwnPropertyNames(mimeTypes).filter((name) => isNaN(+name));
+    // cast to array
+    plugins = [...plugins];
+    mimeTypes = [...mimeTypes];
+    // get initial trusted mimeType names
+    const trustedMimeTypes = new Set(mimeTypesOwnPropertyNames);
+    // get initial trusted plugin names
+    const excludeDuplicates = (arr) => [...new Set(arr)];
+    const mimeTypeEnabledPlugins = excludeDuplicates(mimeTypes.map((mimeType) => mimeType.enabledPlugin));
+    const trustedPluginNames = new Set(pluginsOwnPropertyNames);
+    const mimeTypeEnabledPluginsNames = mimeTypeEnabledPlugins.map((plugin) => plugin && plugin.name);
+    const trustedPluginNamesArray = [...trustedPluginNames];
+    trustedPluginNamesArray.forEach((name) => {
+        const validName = new Set(mimeTypeEnabledPluginsNames).has(name);
+        if (!validName) {
+            trustedPluginNames.delete(name);
+        }
+    });
+    // 1. Expect plugin name to be in plugins own property names
+    /* [1-2 are unstable tests as of Chrome 94]
+    plugins.forEach(plugin => {
+        if (!trustedPluginNames.has(plugin.name)) {
+            lies.push('missing plugin name')
+        }
+    })
+
+    // 2. Expect MimeType Plugins to match Plugins
+    const getPluginPropertyValues = plugin => {
+        return [
+            plugin.description,
+            plugin.filename,
+            plugin.length,
+            plugin.name
+        ]
+    }
+    const pluginList = plugins.map(getPluginPropertyValues).sort()
+    const enabledpluginList = mimeTypeEnabledPlugins.map(getPluginPropertyValues).sort()
+    const mismatchingPlugins = '' + pluginList != '' + enabledpluginList
+    if (mismatchingPlugins) {
+        lies.push('mismatching plugins')
+    }
+    */
+    // 3. Expect MimeType object in plugins
+    const invalidPlugins = plugins.filter((plugin) => {
+        try {
+            const validMimeType = Object.getPrototypeOf(plugin[0]).constructor.name == 'MimeType';
+            if (!validMimeType) {
+                trustedPluginNames.delete(plugin.name);
+            }
+            return !validMimeType;
+        }
+        catch (error) {
+            trustedPluginNames.delete(plugin.name);
+            return true; // sign of tampering
+        }
+    });
+    if (invalidPlugins.length) {
+        lies.push('missing mimetype');
+    }
+    // 4. Expect valid MimeType(s) in plugin
+    const pluginMimeTypes = plugins
+        .map((plugin) => Object.values(plugin))
+        .flat();
+    const pluginMimeTypesNames = pluginMimeTypes.map((mimetype) => mimetype.type);
+    pluginMimeTypesNames.forEach((name) => {
+        const validName = trustedMimeTypes.has(name);
+        if (!validName) {
+            trustedMimeTypes.delete(name);
+        }
+    });
+    plugins.forEach((plugin) => {
+        const pluginMimeTypes = Object.values(plugin).map((mimetype) => mimetype.type);
+        return pluginMimeTypes.forEach((mimetype) => {
+            if (!trustedMimeTypes.has(mimetype)) {
+                lies.push('invalid mimetype');
+                return trustedPluginNames.delete(plugin.name);
+            }
+        });
+    });
+    return {
+        validPlugins: plugins.filter((plugin) => trustedPluginNames.has(plugin.name)),
+        validMimeTypes: mimeTypes.filter((mimeType) => trustedMimeTypes.has(mimeType.type)),
+        lies: [...new Set(lies)], // remove duplicates
+    };
+};
+const getLies = () => {
+    const records = lieRecords.getRecords();
+    const totalLies = Object.keys(records).reduce((acc, key) => {
+        acc += records[key].length;
+        return acc;
+    }, 0);
+    return { data: records, totalLies };
+};
+function liesHTML(fp, pointsHTML) {
+    const { lies: { data, totalLies, $hash } } = fp;
+    return `
+	<div class="${totalLies ? ' lies' : ''}">lies (${!totalLies ? '0' : '' + totalLies}): ${!totalLies ? 'none' : modal('creep-lies', Object.keys(data).sort().map((key) => {
+        const lies = data[key];
+        return `
+					<br>
+					<div style="padding:5px">
+						<strong>${key}</strong>:
+						${lies.map((lie) => `<div>- ${lie}</div>`).join('')}
+					</div>
+					`;
+    }).join(''), hashSlice($hash))}${pointsHTML}</div>`;
+}
+
+// Detect proxy behavior
+const proxyBehavior = (x) => typeof x == 'function' ? true : false;
+// Detect gibberish
+const accept = { 'aa': 1, 'ab': 1, 'ac': 1, 'ad': 1, 'ae': 1, 'af': 1, 'ag': 1, 'ah': 1, 'ai': 1, 'aj': 1, 'ak': 1, 'al': 1, 'am': 1, 'an': 1, 'ao': 1, 'ap': 1, 'aq': 1, 'ar': 1, 'as': 1, 'at': 1, 'au': 1, 'av': 1, 'aw': 1, 'ax': 1, 'ay': 1, 'az': 1, 'ba': 1, 'bb': 1, 'bc': 1, 'bd': 1, 'be': 1, 'bf': 1, 'bg': 1, 'bh': 1, 'bi': 1, 'bj': 1, 'bk': 1, 'bl': 1, 'bm': 1, 'bn': 1, 'bo': 1, 'bp': 1, 'br': 1, 'bs': 1, 'bt': 1, 'bu': 1, 'bv': 1, 'bw': 1, 'bx': 1, 'by': 1, 'ca': 1, 'cb': 1, 'cc': 1, 'cd': 1, 'ce': 1, 'cg': 1, 'ch': 1, 'ci': 1, 'ck': 1, 'cl': 1, 'cm': 1, 'cn': 1, 'co': 1, 'cp': 1, 'cq': 1, 'cr': 1, 'cs': 1, 'ct': 1, 'cu': 1, 'cw': 1, 'cy': 1, 'cz': 1, 'da': 1, 'db': 1, 'dc': 1, 'dd': 1, 'de': 1, 'df': 1, 'dg': 1, 'dh': 1, 'di': 1, 'dj': 1, 'dk': 1, 'dl': 1, 'dm': 1, 'dn': 1, 'do': 1, 'dp': 1, 'dq': 1, 'dr': 1, 'ds': 1, 'dt': 1, 'du': 1, 'dv': 1, 'dw': 1, 'dx': 1, 'dy': 1, 'dz': 1, 'ea': 1, 'eb': 1, 'ec': 1, 'ed': 1, 'ee': 1, 'ef': 1, 'eg': 1, 'eh': 1, 'ei': 1, 'ej': 1, 'ek': 1, 'el': 1, 'em': 1, 'en': 1, 'eo': 1, 'ep': 1, 'eq': 1, 'er': 1, 'es': 1, 'et': 1, 'eu': 1, 'ev': 1, 'ew': 1, 'ex': 1, 'ey': 1, 'ez': 1, 'fa': 1, 'fb': 1, 'fc': 1, 'fd': 1, 'fe': 1, 'ff': 1, 'fg': 1, 'fh': 1, 'fi': 1, 'fj': 1, 'fk': 1, 'fl': 1, 'fm': 1, 'fn': 1, 'fo': 1, 'fp': 1, 'fr': 1, 'fs': 1, 'ft': 1, 'fu': 1, 'fw': 1, 'fy': 1, 'ga': 1, 'gb': 1, 'gc': 1, 'gd': 1, 'ge': 1, 'gf': 1, 'gg': 1, 'gh': 1, 'gi': 1, 'gj': 1, 'gk': 1, 'gl': 1, 'gm': 1, 'gn': 1, 'go': 1, 'gp': 1, 'gr': 1, 'gs': 1, 'gt': 1, 'gu': 1, 'gw': 1, 'gy': 1, 'gz': 1, 'ha': 1, 'hb': 1, 'hc': 1, 'hd': 1, 'he': 1, 'hf': 1, 'hg': 1, 'hh': 1, 'hi': 1, 'hj': 1, 'hk': 1, 'hl': 1, 'hm': 1, 'hn': 1, 'ho': 1, 'hp': 1, 'hq': 1, 'hr': 1, 'hs': 1, 'ht': 1, 'hu': 1, 'hv': 1, 'hw': 1, 'hy': 1, 'ia': 1, 'ib': 1, 'ic': 1, 'id': 1, 'ie': 1, 'if': 1, 'ig': 1, 'ih': 1, 'ii': 1, 'ij': 1, 'ik': 1, 'il': 1, 'im': 1, 'in': 1, 'io': 1, 'ip': 1, 'iq': 1, 'ir': 1, 'is': 1, 'it': 1, 'iu': 1, 'iv': 1, 'iw': 1, 'ix': 1, 'iy': 1, 'iz': 1, 'ja': 1, 'jc': 1, 'je': 1, 'ji': 1, 'jj': 1, 'jk': 1, 'jn': 1, 'jo': 1, 'ju': 1, 'ka': 1, 'kb': 1, 'kc': 1, 'kd': 1, 'ke': 1, 'kf': 1, 'kg': 1, 'kh': 1, 'ki': 1, 'kj': 1, 'kk': 1, 'kl': 1, 'km': 1, 'kn': 1, 'ko': 1, 'kp': 1, 'kr': 1, 'ks': 1, 'kt': 1, 'ku': 1, 'kv': 1, 'kw': 1, 'ky': 1, 'la': 1, 'lb': 1, 'lc': 1, 'ld': 1, 'le': 1, 'lf': 1, 'lg': 1, 'lh': 1, 'li': 1, 'lj': 1, 'lk': 1, 'll': 1, 'lm': 1, 'ln': 1, 'lo': 1, 'lp': 1, 'lq': 1, 'lr': 1, 'ls': 1, 'lt': 1, 'lu': 1, 'lv': 1, 'lw': 1, 'lx': 1, 'ly': 1, 'lz': 1, 'ma': 1, 'mb': 1, 'mc': 1, 'md': 1, 'me': 1, 'mf': 1, 'mg': 1, 'mh': 1, 'mi': 1, 'mj': 1, 'mk': 1, 'ml': 1, 'mm': 1, 'mn': 1, 'mo': 1, 'mp': 1, 'mq': 1, 'mr': 1, 'ms': 1, 'mt': 1, 'mu': 1, 'mv': 1, 'mw': 1, 'my': 1, 'na': 1, 'nb': 1, 'nc': 1, 'nd': 1, 'ne': 1, 'nf': 1, 'ng': 1, 'nh': 1, 'ni': 1, 'nj': 1, 'nk': 1, 'nl': 1, 'nm': 1, 'nn': 1, 'no': 1, 'np': 1, 'nq': 1, 'nr': 1, 'ns': 1, 'nt': 1, 'nu': 1, 'nv': 1, 'nw': 1, 'nx': 1, 'ny': 1, 'nz': 1, 'oa': 1, 'ob': 1, 'oc': 1, 'od': 1, 'oe': 1, 'of': 1, 'og': 1, 'oh': 1, 'oi': 1, 'oj': 1, 'ok': 1, 'ol': 1, 'om': 1, 'on': 1, 'oo': 1, 'op': 1, 'oq': 1, 'or': 1, 'os': 1, 'ot': 1, 'ou': 1, 'ov': 1, 'ow': 1, 'ox': 1, 'oy': 1, 'oz': 1, 'pa': 1, 'pb': 1, 'pc': 1, 'pd': 1, 'pe': 1, 'pf': 1, 'pg': 1, 'ph': 1, 'pi': 1, 'pj': 1, 'pk': 1, 'pl': 1, 'pm': 1, 'pn': 1, 'po': 1, 'pp': 1, 'pr': 1, 'ps': 1, 'pt': 1, 'pu': 1, 'pw': 1, 'py': 1, 'pz': 1, 'qa': 1, 'qe': 1, 'qi': 1, 'qo': 1, 'qr': 1, 'qs': 1, 'qt': 1, 'qu': 1, 'ra': 1, 'rb': 1, 'rc': 1, 'rd': 1, 're': 1, 'rf': 1, 'rg': 1, 'rh': 1, 'ri': 1, 'rj': 1, 'rk': 1, 'rl': 1, 'rm': 1, 'rn': 1, 'ro': 1, 'rp': 1, 'rq': 1, 'rr': 1, 'rs': 1, 'rt': 1, 'ru': 1, 'rv': 1, 'rw': 1, 'rx': 1, 'ry': 1, 'rz': 1, 'sa': 1, 'sb': 1, 'sc': 1, 'sd': 1, 'se': 1, 'sf': 1, 'sg': 1, 'sh': 1, 'si': 1, 'sj': 1, 'sk': 1, 'sl': 1, 'sm': 1, 'sn': 1, 'so': 1, 'sp': 1, 'sq': 1, 'sr': 1, 'ss': 1, 'st': 1, 'su': 1, 'sv': 1, 'sw': 1, 'sy': 1, 'sz': 1, 'ta': 1, 'tb': 1, 'tc': 1, 'td': 1, 'te': 1, 'tf': 1, 'tg': 1, 'th': 1, 'ti': 1, 'tj': 1, 'tk': 1, 'tl': 1, 'tm': 1, 'tn': 1, 'to': 1, 'tp': 1, 'tr': 1, 'ts': 1, 'tt': 1, 'tu': 1, 'tv': 1, 'tw': 1, 'tx': 1, 'ty': 1, 'tz': 1, 'ua': 1, 'ub': 1, 'uc': 1, 'ud': 1, 'ue': 1, 'uf': 1, 'ug': 1, 'uh': 1, 'ui': 1, 'uj': 1, 'uk': 1, 'ul': 1, 'um': 1, 'un': 1, 'uo': 1, 'up': 1, 'uq': 1, 'ur': 1, 'us': 1, 'ut': 1, 'uu': 1, 'uv': 1, 'uw': 1, 'ux': 1, 'uy': 1, 'uz': 1, 'va': 1, 'vc': 1, 'vd': 1, 've': 1, 'vg': 1, 'vi': 1, 'vl': 1, 'vn': 1, 'vo': 1, 'vr': 1, 'vs': 1, 'vt': 1, 'vu': 1, 'vv': 1, 'vy': 1, 'vz': 1, 'wa': 1, 'wb': 1, 'wc': 1, 'wd': 1, 'we': 1, 'wf': 1, 'wg': 1, 'wh': 1, 'wi': 1, 'wj': 1, 'wk': 1, 'wl': 1, 'wm': 1, 'wn': 1, 'wo': 1, 'wp': 1, 'wr': 1, 'ws': 1, 'wt': 1, 'wu': 1, 'ww': 1, 'wy': 1, 'wz': 1, 'xa': 1, 'xb': 1, 'xc': 1, 'xe': 1, 'xf': 1, 'xg': 1, 'xh': 1, 'xi': 1, 'xl': 1, 'xm': 1, 'xn': 1, 'xo': 1, 'xp': 1, 'xq': 1, 'xs': 1, 'xt': 1, 'xu': 1, 'xv': 1, 'xw': 1, 'xx': 1, 'xy': 1, 'ya': 1, 'yb': 1, 'yc': 1, 'yd': 1, 'ye': 1, 'yf': 1, 'yg': 1, 'yh': 1, 'yi': 1, 'yj': 1, 'yk': 1, 'yl': 1, 'ym': 1, 'yn': 1, 'yo': 1, 'yp': 1, 'yr': 1, 'ys': 1, 'yt': 1, 'yu': 1, 'yv': 1, 'yw': 1, 'yx': 1, 'yz': 1, 'za': 1, 'zb': 1, 'zc': 1, 'zd': 1, 'ze': 1, 'zg': 1, 'zh': 1, 'zi': 1, 'zj': 1, 'zk': 1, 'zl': 1, 'zm': 1, 'zn': 1, 'zo': 1, 'zp': 1, 'zq': 1, 'zs': 1, 'zt': 1, 'zu': 1, 'zv': 1, 'zw': 1, 'zy': 1, 'zz': 1 };
+const gibberish = (str, { strict = false } = {}) => {
+    if (!str) {
+        return [];
+    }
+    // test letter case sequence
+    const letterCaseSequenceGibbers = [];
+    const tests = [
+        /([A-Z]{3,}[a-z])/g,
+        /([a-z][A-Z]{3,})/g,
+        /([a-z][A-Z]{2,}[a-z])/g,
+        /([a-z][\d]{2,}[a-z])/g,
+        /([A-Z][\d]{2,}[a-z])/g,
+        /([a-z][\d]{2,}[A-Z])/g, // a##...B
+    ];
+    tests.forEach((regExp) => {
+        const match = str.match(regExp);
+        if (match) {
+            return letterCaseSequenceGibbers.push(match.join(', '));
+        }
+        return;
+    });
+    // test letter sequence
+    const letterSequenceGibbers = [];
+    const clean = str.toLowerCase().replace(/\d|\W|_/g, ' ').replace(/\s+/g, ' ').trim().split(' ').join('_');
+    const len = clean.length;
+    const arr = [...clean];
+    arr.forEach((char, index) => {
+        const next = index + 1;
+        if (arr[next] == '_' || char == '_' || next == len) {
+            return true;
+        }
+        const combo = char + arr[index + 1];
+        const acceptable = !!accept[combo];
+        !acceptable && letterSequenceGibbers.push(combo);
+        return;
+    });
+    const gibbers = [
+        // ignore sequence if less than 3 exist
+        ...(!strict && (letterSequenceGibbers.length < 3) ? [] : letterSequenceGibbers),
+        ...(!strict && (letterCaseSequenceGibbers.length < 4) ? [] : letterCaseSequenceGibbers),
+    ];
+    const allow = [
+        // known gibbers
+        'bz',
+        'cf',
+        'fx',
+        'mx',
+        'vb',
+        'xd',
+        'gx',
+        'PCIe',
+        'vm',
+        'NVIDIAGa',
+    ];
+    return gibbers.filter((x) => !allow.includes(x));
+};
+// WebGL Renderer helpers
+const compressWebGLRenderer = (x) => ('' + x)
+    .replace(/ANGLE \(|\sDirect3D.+|\sD3D.+|\svs_.+\)|\((DRM|POLARIS|LLVM).+|Mesa.+|(ATI|INTEL)-.+|Metal\s-\s.+|NVIDIA\s[\d|\.]+/ig, '')
+    .replace(/(\s(ti|\d{1,2}GB|super)$)/ig, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim()
+    .replace(/((r|g)(t|)(x|s|\d) |Graphics |GeForce |Radeon (HD |Pro |))(\d+)/i, (...args) => {
+    return `${args[1]}${args[6][0]}${args[6].slice(1).replace(/\d/g, '0')}s`;
+});
+const getWebGLRendererParts = (x) => {
+    const knownParts = [
+        'AMD',
+        'ANGLE',
+        'ASUS',
+        'ATI',
+        'ATI Radeon',
+        'ATI Technologies Inc',
+        'Adreno',
+        'Android Emulator',
+        'Apple',
+        'Apple GPU',
+        'Apple M1',
+        'Chipset',
+        'D3D11',
+        'Direct3D',
+        'Express Chipset',
+        'GeForce',
+        'Generation',
+        'Generic Renderer',
+        'Google',
+        'Google SwiftShader',
+        'Graphics',
+        'Graphics Media Accelerator',
+        'HD Graphics Family',
+        'Intel',
+        'Intel(R) HD Graphics',
+        'Intel(R) UHD Graphics',
+        'Iris',
+        'KBL Graphics',
+        'Mali',
+        'Mesa',
+        'Mesa DRI',
+        'Metal',
+        'Microsoft',
+        'Microsoft Basic Render Driver',
+        'Microsoft Corporation',
+        'NVIDIA',
+        'NVIDIA Corporation',
+        'NVIDIAGameReadyD3D',
+        'OpenGL',
+        'OpenGL Engine',
+        'Open Source Technology Center',
+        'Parallels',
+        'Parallels Display Adapter',
+        'PCIe',
+        'Plus Graphics',
+        'PowerVR',
+        'Pro Graphics',
+        'Quadro',
+        'Radeon',
+        'Radeon Pro',
+        'Radeon Pro Vega',
+        'Samsung',
+        'SSE2',
+        'VMware',
+        'VMware SVGA 3D',
+        'Vega',
+        'VirtualBox',
+        'VirtualBox Graphics Adapter',
+        'Vulkan',
+        'Xe Graphics',
+        'llvmpipe',
+    ];
+    const parts = [...knownParts].filter((name) => ('' + x).includes(name));
+    return [...new Set(parts)].sort().join(', ');
+};
+const getWebGLRendererConfidence = (x) => {
+    if (!x) {
+        return;
+    }
+    const parts = getWebGLRendererParts(x);
+    const hasKnownParts = parts.length;
+    const hasBlankSpaceNoise = /\s{2,}|^\s|\s$/.test(x);
+    const hasBrokenAngleStructure = /^ANGLE/.test(x) && !(/^ANGLE \((.+)\)/.exec(x) || [])[1];
+    // https://chromium.googlesource.com/angle/angle/+/83fa18905d8fed4f394e4f30140a83a3e76b1577/src/gpu_info_util/SystemInfo.cpp
+    // https://chromium.googlesource.com/angle/angle/+/83fa18905d8fed4f394e4f30140a83a3e76b1577/src/gpu_info_util/SystemInfo.h
+    // https://chromium.googlesource.com/chromium/src/+/refs/heads/main/ui/gl/gl_version_info.cc
+    /*
+    const knownVendors = [
+        'AMD',
+        'ARM',
+        'Broadcom',
+        'Google',
+        'ImgTec',
+        'Intel',
+        'Kazan',
+        'NVIDIA',
+        'Qualcomm',
+        'VeriSilicon',
+        'Vivante',
+        'VMWare',
+        'Apple',
+        'Unknown'
+    ]
+    const angle = {
+        vendorId: (/^ANGLE \(([^,]+),/.exec(x)||[])[1] || knownVendors.find(vendor => x.includes(vendor)),
+        deviceId: (
+            (x.match(/,/g)||[]).length == 2 ? (/^ANGLE \(([^,]+), ([^,]+)[,|\)]/.exec(x)||[])[2] :
+                (/^ANGLE \(([^,]+), ([^,]+)[,|\)]/.exec(x)||[])[1] || (/^ANGLE \((.+)\)$/.exec(x)||[])[1]
+        ).replace(/\sDirect3D.+/, '')
+    }
+    */
+    const gibbers = gibberish(x, { strict: true }).join(', ');
+    const valid = (hasKnownParts && !hasBlankSpaceNoise && !hasBrokenAngleStructure);
+    const confidence = (valid && !gibbers.length ? 'high' :
+        valid && gibbers.length ? 'moderate' :
+            'low');
+    const grade = (confidence == 'high' ? 'A' :
+        confidence == 'moderate' ? 'C' :
+            'F');
+    const warnings = new Set([
+        (hasBlankSpaceNoise ? 'found extra spaces' : undefined),
+        (hasBrokenAngleStructure ? 'broken angle structure' : undefined),
+    ]);
+    warnings.delete(undefined);
+    return {
+        parts,
+        warnings: [...warnings],
+        gibbers,
+        confidence,
+        grade,
+    };
+};
+// Collect trash values
+const createTrashBin = () => {
+    const bin = [];
+    return {
+        getBin: () => bin,
+        sendToTrash: (name, val, response = undefined) => {
+            const proxyLike = proxyBehavior(val);
+            const value = !proxyLike ? val : 'proxy behavior detected';
+            bin.push({ name, value });
+            return response;
+        },
+    };
+};
+const trashBin = createTrashBin();
+const { sendToTrash } = trashBin;
+const getTrash = () => ({ trashBin: trashBin.getBin() });
+function trashHTML(fp, pointsHTML) {
+    const { trash: { trashBin, $hash } } = fp;
+    const trashLen = trashBin.length;
+    return `
+		<div class="${trashLen ? ' trash' : ''}">trash (${!trashLen ? '0' : '' + trashLen}):${!trashLen ? ' none' : modal('creep-trash', trashBin.map((trash, i) => `${i + 1}: ${trash.name}: ${trash.value}`).join('<br>'), hashSlice($hash))}${pointsHTML}</div>`;
+}
+
+// https://stackoverflow.com/a/22429679
+const hashMini = (x) => {
+    const json = `${JSON.stringify(x)}`;
+    const hash = json.split('').reduce((hash, char, i) => {
+        return Math.imul(31, hash) + json.charCodeAt(i) | 0;
+    }, 0x811c9dc5);
+    return ('0000000' + (hash >>> 0).toString(16)).substr(-8);
+};
+// instance id
+const instanceId = (String.fromCharCode(Math.random() * 26 + 97) +
+    Math.random().toString(36).slice(-7));
+// https://stackoverflow.com/a/53490958
+// https://stackoverflow.com/a/43383990
+// https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest
+const hashify = (x, algorithm = 'SHA-256') => {
+    const json = `${JSON.stringify(x)}`;
+    const jsonBuffer = new TextEncoder().encode(json);
+    return crypto.subtle.digest(algorithm, jsonBuffer).then((hashBuffer) => {
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map((b) => ('00' + b.toString(16)).slice(-2)).join('');
+        return hashHex;
+    });
+};
+const getBotHash = (fp, imports) => {
+    const { getFeaturesLie, computeWindowsRelease } = imports;
+    const outsideFeaturesVersion = getFeaturesLie(fp);
+    const workerScopeIsBlocked = (!fp.workerScope ||
+        !fp.workerScope.userAgent ||
+        // only accept shared and service types
+        // device emulators can easily spoof dedicated scope
+        fp.workerScope.type == 'dedicated');
+    const liedWorkerScope = !!(fp.workerScope && fp.workerScope.lied);
+    let liedPlatformVersion = false;
+    if (fp.workerScope && fp.fonts) {
+        const { platformVersion, platform } = fp.workerScope.userAgentData || {};
+        const { platformVersion: fontPlatformVersion } = fp.fonts || {};
+        const windowsRelease = computeWindowsRelease({
+            platform,
+            platformVersion,
+            fontPlatformVersion,
+        });
+        const windowsPlatformVersionLie = (windowsRelease &&
+            fontPlatformVersion &&
+            !('' + windowsRelease).includes(fontPlatformVersion));
+        // use font platform (window scope) to detect userAgent (worker scope) lies
+        const macOrWindowsPlatformVersionLie = (/macOS|Windows/.test(fontPlatformVersion) &&
+            (platform && !fontPlatformVersion.includes(platform)));
+        liedPlatformVersion = (windowsPlatformVersionLie ||
+            macOrWindowsPlatformVersionLie);
+    }
+    const { totalLies } = fp.lies || {};
+    const maxLieCount = 100;
+    const extremeLieCount = (totalLies || 0) > maxLieCount;
+    const { stealth } = fp.headless || {};
+    const functionToStringHasProxy = (!!(stealth || {})['Function.prototype.toString has invalid TypeError'] ||
+        !!(stealth || {})['Function.prototype.toString leaks Proxy behavior']);
+    // Pattern conditions that warrant rejection
+    const botPatterns = {
+        // custom order is important
+        liedWorkerScope,
+        liedPlatformVersion,
+        functionToStringHasProxy,
+        outsideFeaturesVersion,
+        extremeLieCount,
+        excessiveLooseFingerprints: false,
+        workerScopeIsBlocked,
+        crowdBlendingScoreIsLow: false, // csl
+    };
+    const botHash = Object.keys(botPatterns)
+        .map((key) => botPatterns[key] ? '1' : '0').join('');
+    return { botHash, badBot: Object.keys(botPatterns).find((key) => botPatterns[key]) };
+};
+const getFuzzyHash = async (fp) => {
+    // requires update log (below) when adding new keys to fp
+    const metricKeys = [
+        'canvas2d.blob',
+        'canvas2d.blobOffscreen',
+        'canvas2d.dataURI',
+        'canvas2d.emojiSet',
+        'canvas2d.emojiURI',
+        'canvas2d.liedTextMetrics',
+        'canvas2d.mods',
+        'canvas2d.paintURI',
+        'canvas2d.textMetricsSystemSum',
+        'canvas2d.textURI',
+        'canvasWebgl.dataURI',
+        'canvasWebgl.dataURI2',
+        'canvasWebgl.extensions',
+        'canvasWebgl.gpu',
+        'canvasWebgl.parameterOrExtensionLie',
+        'canvasWebgl.parameters',
+        'canvasWebgl.pixels',
+        'canvasWebgl.pixels2',
+        'capturedErrors.data',
+        'clientRects.domrectSystemSum',
+        'clientRects.elementBoundingClientRect',
+        'clientRects.elementClientRects',
+        'clientRects.emojiSet',
+        'clientRects.rangeBoundingClientRect',
+        'clientRects.rangeClientRects',
+        'consoleErrors.errors',
+        'css.computedStyle',
+        'css.system',
+        'cssMedia.importCSS',
+        'cssMedia.matchMediaCSS',
+        'cssMedia.mediaCSS',
+        'cssMedia.screenQuery',
+        'features.cssFeatures',
+        'features.cssVersion',
+        'features.jsFeatures',
+        'features.jsFeaturesKeys',
+        'features.jsVersion',
+        'features.version',
+        'features.versionRange',
+        'features.windowFeatures',
+        'features.windowVersion',
+        'fonts.apps',
+        'fonts.emojiSet',
+        'fonts.fontFaceLoadFonts',
+        'fonts.pixelSizeSystemSum',
+        'fonts.platformVersion',
+        'headless.chromium',
+        'headless.headless',
+        'headless.headlessRating',
+        'headless.likeHeadless',
+        'headless.likeHeadlessRating',
+        'headless.stealth',
+        'headless.stealthRating',
+        'htmlElementVersion.keys',
+        'intl.dateTimeFormat',
+        'intl.displayNames',
+        'intl.listFormat',
+        'intl.locale',
+        'intl.numberFormat',
+        'intl.pluralRules',
+        'intl.relativeTimeFormat',
+        'lies.data',
+        'lies.totalLies',
+        'maths.data',
+        'media.mediaDevices',
+        'media.mimeTypes',
+        'navigator.appVersion',
+        'navigator.bluetoothAvailability',
+        'navigator.device',
+        'navigator.deviceMemory',
+        'navigator.doNotTrack',
+        'navigator.globalPrivacyControl',
+        'navigator.hardwareConcurrency',
+        'navigator.language',
+        'navigator.maxTouchPoints',
+        'navigator.mimeTypes',
+        'navigator.oscpu',
+        'navigator.permissions',
+        'navigator.platform',
+        'navigator.plugins',
+        'navigator.properties',
+        'navigator.system',
+        'navigator.uaPostReduction',
+        'navigator.userAgent',
+        'navigator.userAgentData',
+        'navigator.userAgentParsed',
+        'navigator.vendor',
+        'navigator.webgpu',
+        'offlineAudioContext.binsSample',
+        'offlineAudioContext.compressorGainReduction',
+        'offlineAudioContext.copySample',
+        'offlineAudioContext.floatFrequencyDataSum',
+        'offlineAudioContext.floatTimeDomainDataSum',
+        'offlineAudioContext.noise',
+        'offlineAudioContext.sampleSum',
+        'offlineAudioContext.totalUniqueSamples',
+        'offlineAudioContext.values',
+        'resistance.engine',
+        'resistance.extension',
+        'resistance.extensionHashPattern',
+        'resistance.mode',
+        'resistance.privacy',
+        'resistance.security',
+        'screen.availHeight',
+        'screen.availWidth',
+        'screen.colorDepth',
+        'screen.height',
+        'screen.pixelDepth',
+        'screen.width',
+        'svg.bBox',
+        'svg.computedTextLength',
+        'svg.emojiSet',
+        'svg.extentOfChar',
+        'svg.subStringLength',
+        'svg.svgrectSystemSum',
+        'timezone.location',
+        'timezone.locationEpoch',
+        'timezone.locationMeasured',
+        'timezone.offset',
+        'timezone.offsetComputed',
+        'timezone.zone',
+        'trash.trashBin',
+        'voices.defaults',
+        'voices.languages',
+        'voices.local',
+        'voices.remote',
+        'windowFeatures.apple',
+        'windowFeatures.keys',
+        'windowFeatures.moz',
+        'windowFeatures.webkit',
+        'workerScope.device',
+        'workerScope.deviceMemory',
+        'workerScope.engineCurrencyLocale',
+        'workerScope.gpu',
+        'workerScope.hardwareConcurrency',
+        'workerScope.language',
+        'workerScope.languages',
+        'workerScope.lies',
+        'workerScope.locale',
+        'workerScope.localeEntropyIsTrusty',
+        'workerScope.localeIntlEntropyIsTrusty',
+        'workerScope.platform',
+        'workerScope.scope',
+        'workerScope.scopeKeys',
+        'workerScope.system',
+        'workerScope.systemCurrencyLocale',
+        'workerScope.timezoneLocation',
+        'workerScope.timezoneOffset',
+        'workerScope.type',
+        'workerScope.uaPostReduction',
+        'workerScope.userAgent',
+        'workerScope.userAgentData',
+        'workerScope.userAgentDataVersion',
+        'workerScope.userAgentEngine',
+        'workerScope.userAgentVersion',
+        'workerScope.webglRenderer',
+        'workerScope.webglVendor',
+    ];
+    // construct map of all metrics
+    const metricsAll = Object.keys(fp).sort().reduce((acc, sectionKey) => {
+        const section = fp[sectionKey];
+        const sectionMetrics = Object.keys(section || {}).sort().reduce((acc, key) => {
+            if (key == '$hash' || key == 'lied') {
+                return acc;
+            }
+            return Object.assign(Object.assign({}, acc), { [`${sectionKey}.${key}`]: section[key] });
+        }, {});
+        return Object.assign(Object.assign({}, acc), sectionMetrics);
+    }, {});
+    // reduce to 64 bins
+    const maxBins = 64;
+    const metricKeysReported = Object.keys(metricsAll);
+    const binSize = Math.ceil(metricKeys.length / maxBins);
+    // update log
+    const { host } = window.location || {};
+    const devMode = host != 'abrahamjuliot.github.io';
+    if (devMode && ('' + metricKeysReported != '' + metricKeys)) {
+        const newKeys = metricKeysReported.filter((key) => !metricKeys.includes(key));
+        const oldKeys = metricKeys.filter((key) => !metricKeysReported.includes(key));
+        if (newKeys.length || oldKeys.length) {
+            newKeys.length && console.warn('added fuzzy key(s):\n', newKeys.join('\n'));
+            oldKeys.length && console.warn('removed fuzzy key(s):\n', oldKeys.join('\n'));
+            console.groupCollapsed('update keys for accurate fuzzy hashing:');
+            console.log(metricKeysReported.map((x) => `'${x}',`).join('\n'));
+            console.groupEnd();
+        }
+    }
+    // compute fuzzy fingerprint master
+    const fuzzyFpMaster = metricKeys.reduce((acc, key, index) => {
+        if (!index || ((index % binSize) == 0)) {
+            const keySet = metricKeys.slice(index, index + binSize);
+            return Object.assign(Object.assign({}, acc), { ['' + keySet]: keySet.map((key) => metricsAll[key]) });
+        }
+        return acc;
+    }, {});
+    // hash each bin
+    await Promise.all(Object.keys(fuzzyFpMaster).map((key) => hashify(fuzzyFpMaster[key]).then((hash) => {
+        fuzzyFpMaster[key] = hash; // swap values for hash
+        return hash;
+    })));
+    // create fuzzy hash
+    const fuzzyBits = 64;
+    const fuzzyFingerprint = Object.keys(fuzzyFpMaster)
+        .map((key) => fuzzyFpMaster[key][0])
+        .join('')
+        .padEnd(fuzzyBits, '0');
+    return fuzzyFingerprint;
+};
+
+const KnownAudio = {
+    // Blink/WebKit
+    [-20.538286209106445]: [
+        124.0434488439787,
+        124.04344968475198,
+        124.04347527516074,
+        124.04347503720783,
+        124.04347657808103,
+    ],
+    [-20.538288116455078]: [
+        124.04347518575378,
+        124.04347527516074,
+        124.04344884395687,
+        124.04344968475198,
+        124.04347657808103,
+        124.04347730590962,
+        124.0434765110258,
+        124.04347656317987,
+        124.04375314689969,
+        // WebKit
+        124.0434485301812,
+        124.0434496849557,
+        124.043453265891,
+        124.04345734833623,
+        124.04345808873768,
+    ],
+    [-20.535268783569336]: [
+        // Android/Linux
+        124.080722568091,
+        124.08072256811283,
+        124.08072766105033,
+        124.08072787802666,
+        124.08072787804849,
+        124.08074500028306,
+        124.0807470110085,
+        124.08075528279005,
+        124.08075643483608,
+    ],
+    // Gecko Android
+    [-31.502185821533203]: [35.74996031448245, 35.7499681673944],
+    // Gecko Windows/Mac/Linux
+    [-31.50218963623047]: [35.74996031448245],
+    [-31.509262084960938]: [35.7383295930922, 35.73833402246237],
+    // WebKit
+    [-29.837873458862305]: [35.10892717540264, 35.10892752557993],
+    [-29.83786964416504]: [35.10893232002854, 35.10893253237009],
+};
+const AUDIO_TRAP = Math.random();
+async function getOfflineAudioContext() {
+    try {
+        const timer = createTimer();
+        await queueEvent(timer);
+        try {
+            // @ts-ignore webkitOfflineAudioContext
+            window.OfflineAudioContext = OfflineAudioContext || webkitOfflineAudioContext;
+        }
+        catch (err) { }
+        if (!OfflineAudioContext) {
+            logTestResult({ test: 'audio', passed: false });
+            return;
+        }
+        // detect lies
+        const channelDataLie = lieProps['AudioBuffer.getChannelData'];
+        const copyFromChannelLie = lieProps['AudioBuffer.copyFromChannel'];
+        let lied = (channelDataLie || copyFromChannelLie) || false;
+        const bufferLen = 5000;
+        const context = new OfflineAudioContext(1, bufferLen, 44100);
+        const analyser = context.createAnalyser();
+        const oscillator = context.createOscillator();
+        const dynamicsCompressor = context.createDynamicsCompressor();
+        const biquadFilter = context.createBiquadFilter();
+        // detect lie
+        const dataArray = new Float32Array(analyser.frequencyBinCount);
+        analyser.getFloatFrequencyData(dataArray);
+        const floatFrequencyUniqueDataSize = new Set(dataArray).size;
+        if (floatFrequencyUniqueDataSize > 1) {
+            lied = true;
+            const floatFrequencyDataLie = `expected -Infinity (silence) and got ${floatFrequencyUniqueDataSize} frequencies`;
+            documentLie(`AnalyserNode.getFloatFrequencyData`, floatFrequencyDataLie);
+        }
+        const values = {
+            ['AnalyserNode.channelCount']: attempt(() => analyser.channelCount),
+            ['AnalyserNode.channelCountMode']: attempt(() => analyser.channelCountMode),
+            ['AnalyserNode.channelInterpretation']: attempt(() => analyser.channelInterpretation),
+            ['AnalyserNode.context.sampleRate']: attempt(() => analyser.context.sampleRate),
+            ['AnalyserNode.fftSize']: attempt(() => analyser.fftSize),
+            ['AnalyserNode.frequencyBinCount']: attempt(() => analyser.frequencyBinCount),
+            ['AnalyserNode.maxDecibels']: attempt(() => analyser.maxDecibels),
+            ['AnalyserNode.minDecibels']: attempt(() => analyser.minDecibels),
+            ['AnalyserNode.numberOfInputs']: attempt(() => analyser.numberOfInputs),
+            ['AnalyserNode.numberOfOutputs']: attempt(() => analyser.numberOfOutputs),
+            ['AnalyserNode.smoothingTimeConstant']: attempt(() => analyser.smoothingTimeConstant),
+            ['AnalyserNode.context.listener.forwardX.maxValue']: attempt(() => {
+                return caniuse(() => analyser.context.listener.forwardX.maxValue);
+            }),
+            ['BiquadFilterNode.gain.maxValue']: attempt(() => biquadFilter.gain.maxValue),
+            ['BiquadFilterNode.frequency.defaultValue']: attempt(() => biquadFilter.frequency.defaultValue),
+            ['BiquadFilterNode.frequency.maxValue']: attempt(() => biquadFilter.frequency.maxValue),
+            ['DynamicsCompressorNode.attack.defaultValue']: attempt(() => dynamicsCompressor.attack.defaultValue),
+            ['DynamicsCompressorNode.knee.defaultValue']: attempt(() => dynamicsCompressor.knee.defaultValue),
+            ['DynamicsCompressorNode.knee.maxValue']: attempt(() => dynamicsCompressor.knee.maxValue),
+            ['DynamicsCompressorNode.ratio.defaultValue']: attempt(() => dynamicsCompressor.ratio.defaultValue),
+            ['DynamicsCompressorNode.ratio.maxValue']: attempt(() => dynamicsCompressor.ratio.maxValue),
+            ['DynamicsCompressorNode.release.defaultValue']: attempt(() => dynamicsCompressor.release.defaultValue),
+            ['DynamicsCompressorNode.release.maxValue']: attempt(() => dynamicsCompressor.release.maxValue),
+            ['DynamicsCompressorNode.threshold.defaultValue']: attempt(() => dynamicsCompressor.threshold.defaultValue),
+            ['DynamicsCompressorNode.threshold.minValue']: attempt(() => dynamicsCompressor.threshold.minValue),
+            ['OscillatorNode.detune.maxValue']: attempt(() => oscillator.detune.maxValue),
+            ['OscillatorNode.detune.minValue']: attempt(() => oscillator.detune.minValue),
+            ['OscillatorNode.frequency.defaultValue']: attempt(() => oscillator.frequency.defaultValue),
+            ['OscillatorNode.frequency.maxValue']: attempt(() => oscillator.frequency.maxValue),
+            ['OscillatorNode.frequency.minValue']: attempt(() => oscillator.frequency.minValue),
+        };
+        const getRenderedBuffer = (context) => (new Promise((resolve) => {
+            const analyser = context.createAnalyser();
+            const oscillator = context.createOscillator();
+            const dynamicsCompressor = context.createDynamicsCompressor();
+            try {
+                oscillator.type = 'triangle';
+                oscillator.frequency.value = 10000;
+                dynamicsCompressor.threshold.value = -50;
+                dynamicsCompressor.knee.value = 40;
+                dynamicsCompressor.attack.value = 0;
+            }
+            catch (err) { }
+            oscillator.connect(dynamicsCompressor);
+            dynamicsCompressor.connect(analyser);
+            dynamicsCompressor.connect(context.destination);
+            oscillator.start(0);
+            context.startRendering();
+            return context.addEventListener('complete', (event) => {
+                try {
+                    dynamicsCompressor.disconnect();
+                    oscillator.disconnect();
+                    const floatFrequencyData = new Float32Array(analyser.frequencyBinCount);
+                    analyser.getFloatFrequencyData(floatFrequencyData);
+                    const floatTimeDomainData = new Float32Array(analyser.fftSize);
+                    if ('getFloatTimeDomainData' in analyser) {
+                        analyser.getFloatTimeDomainData(floatTimeDomainData);
+                    }
+                    return resolve({
+                        floatFrequencyData,
+                        floatTimeDomainData,
+                        buffer: event.renderedBuffer,
+                        compressorGainReduction: (dynamicsCompressor.reduction.value || // webkit
+                            dynamicsCompressor.reduction),
+                    });
+                }
+                catch (error) {
+                    return resolve(null);
+                }
+            });
+        }));
+        await queueEvent(timer);
+        const { floatFrequencyData, floatTimeDomainData, buffer, compressorGainReduction, } = await getRenderedBuffer(new OfflineAudioContext(1, bufferLen, 44100)) || {};
+        await queueEvent(timer);
+        const getSnapshot = (arr, start, end) => {
+            const collection = [];
+            for (let i = start; i < end; i++) {
+                collection.push(arr[i]);
+            }
+            return collection;
+        };
+        const getSum = (arr) => !arr ? 0 : arr.reduce((acc, curr) => (acc += Math.abs(curr)), 0);
+        const floatFrequencyDataSum = getSum(floatFrequencyData);
+        const floatTimeDomainDataSum = getSum(floatTimeDomainData);
+        const copy = new Float32Array(bufferLen);
+        caniuse(() => buffer.copyFromChannel(copy, 0));
+        const bins = caniuse(() => buffer.getChannelData(0)) || [];
+        const copySample = getSnapshot([...copy], 4500, 4600);
+        const binsSample = getSnapshot([...bins], 4500, 4600);
+        const sampleSum = getSum(getSnapshot([...bins], 4500, bufferLen));
+        // detect lies
+        // sample matching
+        const matching = '' + binsSample == '' + copySample;
+        const copyFromChannelSupported = ('copyFromChannel' in AudioBuffer.prototype);
+        if (copyFromChannelSupported && !matching) {
+            lied = true;
+            const audioSampleLie = 'getChannelData and copyFromChannel samples mismatch';
+            documentLie('AudioBuffer', audioSampleLie);
+        }
+        // sample uniqueness
+        const totalUniqueSamples = new Set([...bins]).size;
+        if (totalUniqueSamples == bufferLen) {
+            const audioUniquenessTrash = `${totalUniqueSamples} unique samples of ${bufferLen} is too high`;
+            sendToTrash('AudioBuffer', audioUniquenessTrash);
+        }
+        // sample noise factor
+        const getRandFromRange = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+        const getCopyFrom = (rand, buffer, copy) => {
+            const { length } = buffer;
+            const max = 20;
+            const start = getRandFromRange(275, length - (max + 1));
+            const mid = start + max / 2;
+            const end = start + max;
+            buffer.getChannelData(0)[start] = rand;
+            buffer.getChannelData(0)[mid] = rand;
+            buffer.getChannelData(0)[end] = rand;
+            buffer.copyFromChannel(copy, 0);
+            const attack = [
+                buffer.getChannelData(0)[start] === 0 ? Math.random() : 0,
+                buffer.getChannelData(0)[mid] === 0 ? Math.random() : 0,
+                buffer.getChannelData(0)[end] === 0 ? Math.random() : 0,
+            ];
+            return [...new Set([...buffer.getChannelData(0), ...copy, ...attack])].filter((x) => x !== 0);
+        };
+        const getCopyTo = (rand, buffer, copy) => {
+            buffer.copyToChannel(copy.map((x) => rand), 0);
+            const frequency = buffer.getChannelData(0)[0];
+            const dataAttacked = [...buffer.getChannelData(0)]
+                .map((x) => x !== frequency || !x ? Math.random() : x);
+            return dataAttacked.filter((x) => x !== frequency);
+        };
+        const getNoiseFactor = () => {
+            const length = 2000;
+            try {
+                const result = [...new Set([
+                        ...getCopyFrom(AUDIO_TRAP, new AudioBuffer({ length, sampleRate: 44100 }), new Float32Array(length)),
+                        ...getCopyTo(AUDIO_TRAP, new AudioBuffer({ length, sampleRate: 44100 }), new Float32Array(length)),
+                    ])];
+                return +(result.length !== 1 &&
+                    result.reduce((acc, n) => acc += +n, 0));
+            }
+            catch (error) {
+                console.error(error);
+                return 0;
+            }
+        };
+        const noiseFactor = getNoiseFactor();
+        const noise = (noiseFactor || [...new Set(bins.slice(0, 100))].reduce((acc, n) => acc += n, 0));
+        // Locked Patterns
+        const known = {
+            /* BLINK */
+            // 124.04347527516074/124.04347518575378
+            '-20.538286209106445,164537.64796829224,502.5999283068122': [124.04347527516074],
+            '-20.538288116455078,164537.64796829224,502.5999283068122': [124.04347527516074],
+            '-20.538288116455078,164537.64795303345,502.5999283068122': [
+                124.04347527516074,
+                124.04347518575378,
+                // sus:
+                124.04347519320436,
+                124.04347523045726,
+            ],
+            '-20.538286209106445,164537.64805984497,502.5999283068122': [124.04347527516074],
+            '-20.538288116455078,164537.64805984497,502.5999283068122': [
+                124.04347527516074,
+                124.04347518575378,
+                // sus
+                124.04347520065494,
+                124.04347523790784,
+                124.043475252809,
+                124.04347526025958,
+                124.04347522300668,
+                124.04347523045726,
+                124.04347524535842,
+            ],
+            // 124.04344884395687
+            '-20.538288116455078,164881.9727935791,502.59990317908887': [124.04344884395687],
+            '-20.538288116455078,164881.9729309082,502.59990317908887': [124.04344884395687],
+            // 124.0434488439787
+            '-20.538286209106445,164882.2082748413,502.59990317911434': [124.0434488439787],
+            '-20.538288116455078,164882.20836639404,502.59990317911434': [124.0434488439787],
+            // 124.04344968475198
+            '-20.538286209106445,164863.45319366455,502.5999033495791': [124.04344968475198],
+            '-20.538288116455078,164863.45319366455,502.5999033495791': [
+                124.04344968475198,
+                124.04375314689969,
+                // sus
+                124.04341541208123,
+            ],
+            // 124.04347503720783 (rare)
+            '-20.538288116455078,164531.82670593262,502.59992767886797': [
+                124.04347503720783,
+                // sus
+                124.04347494780086,
+                124.04347495525144,
+                124.04347499250434,
+                124.0434750074055,
+            ],
+            // 124.04347657808103
+            '-20.538286209106445,164540.1567993164,502.59992209258417': [124.04347657808103],
+            '-20.538288116455078,164540.1567993164,502.59992209258417': [
+                124.04347657808103,
+                124.0434765110258,
+                124.04347656317987,
+                // sus
+                124.04347657063045,
+                124.04378004022874,
+            ],
+            '-20.538288116455078,164540.1580810547,502.59992209258417': [124.04347657808103],
+            // 124.080722568091/124.04347730590962 (rare)
+            '-20.535268783569336,164940.360786438,502.69695458233764': [124.080722568091],
+            '-20.538288116455078,164538.55073928833,502.5999307175407': [124.04347730590962],
+            // Android/Linux
+            '-20.535268783569336,164948.14596557617,502.6969545823631': [124.08072256811283],
+            '-20.535268783569336,164926.65912628174,502.6969610930064': [124.08072766105033],
+            '-20.535268783569336,164932.96168518066,502.69696179985476': [124.08072787802666],
+            '-20.535268783569336,164931.54252624512,502.6969617998802': [124.08072787804849],
+            '-20.535268783569336,164591.9659729004,502.6969925059784': [124.08074500028306],
+            '-20.535268783569336,164590.4111480713,502.6969947774742': [124.0807470110085],
+            '-20.535268783569336,164590.41115570068,502.6969947774742': [124.0807470110085],
+            '-20.535268783569336,164593.64263916016,502.69700490119067': [124.08075528279005],
+            '-20.535268783569336,164595.0285797119,502.69700578315314': [124.08075643483608],
+            // sus
+            '-20.538288116455078,164860.96576690674,502.6075748118915': [124.0434496279413],
+            '-20.538288116455078,164860.9938583374,502.6073723861407': [124.04344962817413],
+            '-20.538288116455078,164862.14078521729,502.59991004130643': [124.04345734833623],
+            '-20.538288116455078,164534.50047683716,502.61542110471055': [124.04347520368174],
+            '-20.538288116455078,164535.1324043274,502.6079200572931': [124.04347521997988],
+            '-20.538288116455078,164535.51135635376,502.60633126448374': [124.04347522952594],
+            /* GECKO */
+            '-31.509262084960938,167722.6894454956,148.42717787250876': [35.7383295930922],
+            '-31.509262084960938,167728.72756958008,148.427184343338': [35.73833402246237],
+            '-31.50218963623047,167721.27517700195,148.47537828609347': [35.74996031448245],
+            '-31.502185821533203,167727.52931976318,148.47542023658752': [35.7499681673944],
+            /* WEBKIT */
+            '-20.538288116455078,164873.80361557007,502.59989904452596': [124.0434485301812],
+            '-20.538288116455078,164863.47760391235,502.5999033453372': [124.0434496849557],
+            '-20.538288116455078,164876.62466049194,502.5998911961724': [124.043453265891],
+            '-20.538288116455078,164862.14879989624,502.59991004130643': [124.04345734833623],
+            '-20.538288116455078,164896.54167175293,502.5999054916465': [124.04345808873768],
+            '-29.837873458862305,163206.43050384521,0': [35.10892717540264],
+            '-29.837873458862305,163224.69785308838,0': [35.10892752557993],
+            '-29.83786964416504,163209.17245483398,0': [35.10893232002854],
+            '-29.83786964416504,163202.77336883545,0': [35.10893253237009],
+        };
+        if (noise) {
+            lied = true;
+            documentLie('AudioBuffer', 'sample noise detected');
+        }
+        const pattern = '' + [
+            compressorGainReduction,
+            floatFrequencyDataSum,
+            floatTimeDomainDataSum,
+        ];
+        const knownPattern = known[pattern];
+        if (knownPattern && !knownPattern.includes(sampleSum)) {
+            lied = true;
+            documentLie('AudioBuffer', 'unknown frequency pattern (suspected lie)');
+        }
+        logTestResult({ time: timer.stop(), test: 'audio', passed: true });
+        return {
+            totalUniqueSamples,
+            compressorGainReduction,
+            floatFrequencyDataSum,
+            floatTimeDomainDataSum,
+            sampleSum,
+            binsSample,
+            copySample: copyFromChannelSupported ? copySample : [undefined],
+            values,
+            noise,
+            lied,
+        };
+    }
+    catch (error) {
+        logTestResult({ test: 'audio', passed: false });
+        captureError(error, 'OfflineAudioContext failed or blocked by client');
+        return;
+    }
+}
+function audioHTML(fp) {
+    if (!fp.offlineAudioContext) {
+        return `<div class="col-four undefined">
+			<strong>Audio</strong>
+			<div>sum: ${HTMLNote.BLOCKED}</div>
+			<div>gain: ${HTMLNote.BLOCKED}</div>
+			<div>freq: ${HTMLNote.BLOCKED}</div>
+			<div>time: ${HTMLNote.BLOCKED}</div>
+			<div>trap: ${HTMLNote.BLOCKED}</div>
+			<div>unique: ${HTMLNote.BLOCKED}</div>
+			<div>data: ${HTMLNote.BLOCKED}</div>
+			<div>copy: ${HTMLNote.BLOCKED}</div>
+			<div>values: ${HTMLNote.BLOCKED}</div>
+		</div>`;
+    }
+    const { offlineAudioContext: { $hash, totalUniqueSamples, compressorGainReduction, floatFrequencyDataSum, floatTimeDomainDataSum, sampleSum, binsSample, copySample, lied, noise, values, }, } = fp;
+    const knownSums = KnownAudio[compressorGainReduction] || [];
+    const validAudio = sampleSum && compressorGainReduction && knownSums.length;
+    const matchesKnownAudio = knownSums.includes(sampleSum);
+    return `
+	<div class="relative col-four${lied ? ' rejected' : ''}">
+		<span class="aside-note">${performanceLogger.getLog().audio}</span>
+		<strong>Audio</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+		<div class="help" title="AudioBuffer.getChannelData()">sum: ${!validAudio || matchesKnownAudio ? sampleSum : getDiffs({
+        stringA: knownSums[0],
+        stringB: sampleSum,
+        charDiff: true,
+        decorate: (diff) => `<span class="bold-fail">${diff}</span>`,
+    })}</div>
+		<div class="help" title="DynamicsCompressorNode.reduction">gain: ${compressorGainReduction || HTMLNote.BLOCKED}</div>
+		<div class="help" title="AnalyserNode.getFloatFrequencyData()">freq: ${floatFrequencyDataSum || HTMLNote.BLOCKED}</div>
+		<div class="help" title="AnalyserNode.getFloatTimeDomainData()">time: ${floatTimeDomainDataSum || HTMLNote.UNSUPPORTED}</div>
+		<div class="help" title="AudioBuffer.getChannelData()\nAudioBuffer.copyFromChannel()\nAudioBuffer.copyToChannel">trap: ${!noise ? AUDIO_TRAP : getDiffs({
+        stringA: AUDIO_TRAP,
+        stringB: noise,
+        charDiff: true,
+        decorate: (diff) => `<span class="bold-fail">${diff}</span>`,
+    })}</div>
+		<div>unique: ${totalUniqueSamples}</div>
+		<div class="help" title="AudioBuffer.getChannelData()">data:${'' + binsSample[0] == 'undefined' ? ` ${HTMLNote.UNSUPPORTED}` :
+        `<span class="sub-hash">${hashMini(binsSample)}</span>`}</div>
+		<div class="help" title="AudioBuffer.copyFromChannel()">copy:${'' + copySample[0] == 'undefined' ? ` ${HTMLNote.UNSUPPORTED}` :
+        `<span class="sub-hash">${hashMini(copySample)}</span>`}</div>
+		<div>values: ${modal('creep-offline-audio-context', Object.keys(values).map((key) => `<div>${key}: ${values[key]}</div>`).join(''), hashMini(values))}</div>
+	</div>
+	`;
+}
+
+// inspired by https://arkenfox.github.io/TZP/tests/canvasnoise.html
+let pixelImageRandom = '';
+const getPixelMods = () => {
+    const pattern1 = [];
+    const pattern2 = [];
+    const len = 8; // canvas dimensions
+    const alpha = 255;
+    const visualMultiplier = 5;
+    try {
+        // create 2 canvas contexts
+        const canvasDisplay1 = document.createElement('canvas');
+        const canvasDisplay2 = document.createElement('canvas');
+        const canvas1 = document.createElement('canvas');
+        const canvas2 = document.createElement('canvas');
+        const contextDisplay1 = canvasDisplay1.getContext('2d');
+        const contextDisplay2 = canvasDisplay2.getContext('2d');
+        const context1 = canvas1.getContext('2d');
+        const context2 = canvas2.getContext('2d');
+        if (!contextDisplay1 || !contextDisplay2 || !context1 || !context2) {
+            throw new Error('canvas context blocked');
+        }
+        // set the dimensions
+        canvasDisplay1.width = len * visualMultiplier;
+        canvasDisplay1.height = len * visualMultiplier;
+        canvasDisplay2.width = len * visualMultiplier;
+        canvasDisplay2.height = len * visualMultiplier;
+        canvas1.width = len;
+        canvas1.height = len;
+        canvas2.width = len;
+        canvas2.height = len;
+        [...Array(len)].forEach((e, x) => [...Array(len)].forEach((e, y) => {
+            const red = ~~(Math.random() * 256);
+            const green = ~~(Math.random() * 256);
+            const blue = ~~(Math.random() * 256);
+            const colors = `${red}, ${green}, ${blue}, ${alpha}`;
+            context1.fillStyle = `rgba(${colors})`;
+            context1.fillRect(x, y, 1, 1);
+            // capture data in visuals
+            contextDisplay1.fillStyle = `rgba(${colors})`;
+            contextDisplay1.fillRect(x * visualMultiplier, y * visualMultiplier, 1 * visualMultiplier, 1 * visualMultiplier);
+            return pattern1.push(colors); // collect the pixel pattern
+        }));
+        [...Array(len)].forEach((e, x) => [...Array(len)].forEach((e, y) => {
+            // get context1 pixel data and mirror to context2
+            const { data: [red, green, blue, alpha], } = context1.getImageData(x, y, 1, 1) || {};
+            const colors = `${red}, ${green}, ${blue}, ${alpha}`;
+            context2.fillStyle = `rgba(${colors})`;
+            context2.fillRect(x, y, 1, 1);
+            // capture noise in visuals
+            const { data: [red2, green2, blue2, alpha2], } = context2.getImageData(x, y, 1, 1) || {};
+            const colorsDisplay = `
+				${red != red2 ? red2 : 255},
+				${green != green2 ? green2 : 255},
+				${blue != blue2 ? blue2 : 255},
+				${alpha != alpha2 ? alpha2 : 1}
+			`;
+            contextDisplay2.fillStyle = `rgba(${colorsDisplay})`;
+            contextDisplay2.fillRect(x * visualMultiplier, y * visualMultiplier, 1 * visualMultiplier, 1 * visualMultiplier);
+            return pattern2.push(colors); // collect the pixel pattern
+        }));
+        // compare the pattern collections and collect diffs
+        const patternDiffs = [];
+        const rgbaChannels = new Set();
+        [...Array(pattern1.length)].forEach((e, i) => {
+            const pixelColor1 = pattern1[i];
+            const pixelColor2 = pattern2[i];
+            if (pixelColor1 != pixelColor2) {
+                const rgbaValues1 = pixelColor1.split(',');
+                const rgbaValues2 = pixelColor2.split(',');
+                const colors = [
+                    rgbaValues1[0] != rgbaValues2[0] ? 'r' : '',
+                    rgbaValues1[1] != rgbaValues2[1] ? 'g' : '',
+                    rgbaValues1[2] != rgbaValues2[2] ? 'b' : '',
+                    rgbaValues1[3] != rgbaValues2[3] ? 'a' : '',
+                ].join('');
+                rgbaChannels.add(colors);
+                patternDiffs.push([i, colors]);
+            }
+        });
+        pixelImageRandom = canvasDisplay1.toDataURL(); // template use only
+        const pixelImage = canvasDisplay2.toDataURL();
+        const rgba = rgbaChannels.size ? [...rgbaChannels].sort().join(', ') : undefined;
+        const pixels = patternDiffs.length || undefined;
+        return { rgba, pixels, pixelImage };
+    }
+    catch (error) {
+        return console.error(error);
+    }
+};
+// based on and inspired by https://github.com/antoinevastel/picasso-like-canvas-fingerprinting
+const paintCanvas = ({ canvas, context, strokeText = false, cssFontFamily = '', area = { width: 100, height: 100 }, rounds = 50, maxShadowBlur = 50, seed = 500, offset = 2001000001, multiplier = 15000, }) => {
+    if (!context) {
+        return;
+    }
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    canvas.width = area.width;
+    canvas.height = area.height;
+    if (canvas.style) {
+        canvas.style.display = 'none';
+    }
+    const createPicassoSeed = ({ seed, offset, multiplier }) => {
+        let current = Number(seed) % Number(offset);
+        const getNextSeed = () => {
+            current = (Number(multiplier) * current) % Number(offset);
+            return current;
+        };
+        return {
+            getNextSeed,
+        };
+    };
+    const picassoSeed = createPicassoSeed({ seed, offset, multiplier });
+    const { getNextSeed } = picassoSeed;
+    const patchSeed = (current, offset, maxBound, computeFloat) => {
+        const result = (((current - 1) / offset) * (maxBound || 1)) || 0;
+        return computeFloat ? result : Math.floor(result);
+    };
+    const addRandomCanvasGradient = (context, offset, area, colors, getNextSeed) => {
+        const { width, height } = area;
+        const canvasGradient = context.createRadialGradient(patchSeed(getNextSeed(), offset, width), patchSeed(getNextSeed(), offset, height), patchSeed(getNextSeed(), offset, width), patchSeed(getNextSeed(), offset, width), patchSeed(getNextSeed(), offset, height), patchSeed(getNextSeed(), offset, width));
+        canvasGradient.addColorStop(0, colors[patchSeed(getNextSeed(), offset, colors.length)]);
+        canvasGradient.addColorStop(1, colors[patchSeed(getNextSeed(), offset, colors.length)]);
+        context.fillStyle = canvasGradient;
+    };
+    const colors = [
+        '#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6',
+        '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D',
+        '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A',
+        '#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC',
+        '#66994D', '#B366CC', '#4D8000', '#B33300', '#CC80CC',
+        '#66664D', '#991AFF', '#E666FF', '#4DB3FF', '#1AB399',
+        '#E666B3', '#33991A', '#CC9999', '#B3B31A', '#00E680',
+        '#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933',
+        '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3',
+        '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF',
+    ];
+    const drawOutlineOfText = (context, offset, area, getNextSeed) => {
+        const { width, height } = area;
+        const fontSize = 2.99;
+        context.font = `${height / fontSize}px ${cssFontFamily.replace(/!important/gm, '')}`;
+        context.strokeText('👾A', patchSeed(getNextSeed(), offset, width), patchSeed(getNextSeed(), offset, height), patchSeed(getNextSeed(), offset, width));
+    };
+    const createCircularArc = (context, offset, area, getNextSeed) => {
+        const { width, height } = area;
+        context.beginPath();
+        context.arc(patchSeed(getNextSeed(), offset, width), patchSeed(getNextSeed(), offset, height), patchSeed(getNextSeed(), offset, Math.min(width, height)), patchSeed(getNextSeed(), offset, 2 * Math.PI, true), patchSeed(getNextSeed(), offset, 2 * Math.PI, true));
+        context.stroke();
+    };
+    const createBezierCurve = (context, offset, area, getNextSeed) => {
+        const { width, height } = area;
+        context.beginPath();
+        context.moveTo(patchSeed(getNextSeed(), offset, width), patchSeed(getNextSeed(), offset, height));
+        context.bezierCurveTo(patchSeed(getNextSeed(), offset, width), patchSeed(getNextSeed(), offset, height), patchSeed(getNextSeed(), offset, width), patchSeed(getNextSeed(), offset, height), patchSeed(getNextSeed(), offset, width), patchSeed(getNextSeed(), offset, height));
+        context.stroke();
+    };
+    const createQuadraticCurve = (context, offset, area, getNextSeed) => {
+        const { width, height } = area;
+        context.beginPath();
+        context.moveTo(patchSeed(getNextSeed(), offset, width), patchSeed(getNextSeed(), offset, height));
+        context.quadraticCurveTo(patchSeed(getNextSeed(), offset, width), patchSeed(getNextSeed(), offset, height), patchSeed(getNextSeed(), offset, width), patchSeed(getNextSeed(), offset, height));
+        context.stroke();
+    };
+    const createEllipticalArc = (context, offset, area, getNextSeed) => {
+        if (!('ellipse' in context)) {
+            return;
+        }
+        const { width, height } = area;
+        context.beginPath();
+        context.ellipse(patchSeed(getNextSeed(), offset, width), patchSeed(getNextSeed(), offset, height), patchSeed(getNextSeed(), offset, Math.floor(width / 2)), patchSeed(getNextSeed(), offset, Math.floor(height / 2)), patchSeed(getNextSeed(), offset, 2 * Math.PI, true), patchSeed(getNextSeed(), offset, 2 * Math.PI, true), patchSeed(getNextSeed(), offset, 2 * Math.PI, true));
+        context.stroke();
+    };
+    const methods = [
+        createCircularArc,
+        createBezierCurve,
+        createQuadraticCurve,
+        createEllipticalArc,
+    ];
+    if (strokeText) {
+        methods.push(drawOutlineOfText);
+    }
+    [...Array(rounds)].forEach((x) => {
+        addRandomCanvasGradient(context, offset, area, colors, getNextSeed);
+        context.shadowBlur = patchSeed(getNextSeed(), offset, maxShadowBlur, true);
+        context.shadowColor = colors[patchSeed(getNextSeed(), offset, colors.length)];
+        const nextMethod = methods[patchSeed(getNextSeed(), offset, methods.length)];
+        nextMethod(context, offset, area, getNextSeed);
+        context.fill();
+    });
+    return;
+};
+const emojifyCanvas = ({ canvas, context, cssFontFamily }) => {
+    const width = 140;
+    const height = 30;
+    canvas.width = width;
+    canvas.height = height;
+    context.font = `5px ${cssFontFamily.replace(/!important/gm, '')}`;
+    context.fillText(`😀☺🤵‍♂️♨☸⚧⁉ℹ🏳️‍⚧️🥲☹☠🧑‍🦰🧏‍♂️⛷🧑‍🤝‍🧑☘⛰`, 0, 5);
+    context.fillText(`⛩⛴✈⏱⛈☂⛱☃☄⛸♟⛑⌨✉✏👩‍❤️‍`, 0, 10);
+    context.fillText(`💋‍👨👨‍👩‍👧‍👦👨‍👩‍👦😀©®™👁️‍�`, 0, 15);
+    context.fillText(`�️✒✂⛏⚒⚔⚙⛓⚗⚰⚱⚠☢☣⬆↗➡⬅`, 0, 20);
+    context.fillText(`⚛✡✝☦▶⏭⏯⏏♀♂✖〰⚕⚜✔✳❇◼▪❣`, 0, 25);
+    context.fillText(`❤✌☝✍❄⚖↪☯☪☮☑✴🅰🅿`, 0, 30);
+    return;
+};
+async function getCanvas2d() {
+    const getFileReaderData = (blob) => {
+        if (!blob) {
+            return;
+        }
+        const getRead = (method, blob) => new Promise((resolve) => {
+            const reader = new FileReader();
+            reader[method](blob);
+            return reader.addEventListener('loadend', () => resolve(reader.result));
+        });
+        return getRead('readAsDataURL', blob);
+    };
+    try {
+        const timer = createTimer();
+        await queueEvent(timer);
+        const dataLie = lieProps['HTMLCanvasElement.toDataURL'];
+        const contextLie = lieProps['HTMLCanvasElement.getContext'];
+        const imageDataLie = (lieProps['CanvasRenderingContext2D.fillText'] ||
+            lieProps['CanvasRenderingContext2D.font'] ||
+            lieProps['CanvasRenderingContext2D.getImageData'] ||
+            lieProps['CanvasRenderingContext2D.strokeText']);
+        const codePointLie = lieProps['String.fromCodePoint'];
+        let textMetricsLie = (lieProps['CanvasRenderingContext2D.measureText'] ||
+            lieProps['TextMetrics.actualBoundingBoxAscent'] ||
+            lieProps['TextMetrics.actualBoundingBoxDescent'] ||
+            lieProps['TextMetrics.actualBoundingBoxLeft'] ||
+            lieProps['TextMetrics.actualBoundingBoxRight'] ||
+            lieProps['TextMetrics.fontBoundingBoxAscent'] ||
+            lieProps['TextMetrics.fontBoundingBoxDescent'] ||
+            lieProps['TextMetrics.width']);
+        let lied = (dataLie ||
+            contextLie ||
+            imageDataLie ||
+            textMetricsLie ||
+            codePointLie) || false;
+        // create canvas context
+        let win = window;
+        if (!LIKE_BRAVE && PHANTOM_DARKNESS) {
+            win = PHANTOM_DARKNESS;
+        }
+        const doc = win.document;
+        const canvas = doc.createElement('canvas');
+        const context = canvas.getContext('2d');
+        if (!context) {
+            throw new Error('canvas context blocked');
+        }
+        await queueEvent(timer);
+        paintCanvas({
+            canvas,
+            context,
+            strokeText: true,
+            cssFontFamily: CSS_FONT_FAMILY,
+            area: { width: 50, height: 50 },
+            rounds: 10,
+        });
+        const dataURI = canvas.toDataURL();
+        let canvasOffscreen;
+        try {
+            // @ts-ignore OffscreenCanvas
+            canvasOffscreen = new OffscreenCanvas(140, 30);
+            await queueEvent(timer);
+            emojifyCanvas({
+                canvas: canvasOffscreen,
+                context: canvasOffscreen.getContext('2d'),
+                cssFontFamily: CSS_FONT_FAMILY,
+            });
+        }
+        catch (error) { }
+        await queueEvent(timer);
+        const [fileReaderData, fileReaderDataOffscreen,] = await Promise.all([
+            new Promise((resolve) => canvas.toBlob((blob) => {
+                return resolve(getFileReaderData(blob));
+            })),
+            getFileReaderData(canvasOffscreen && await attempt(() => canvasOffscreen.convertToBlob())),
+        ]);
+        const blob = {
+            readAsDataURL: fileReaderData,
+        };
+        const blobOffscreen = {
+            readAsDataURL: fileReaderDataOffscreen,
+        };
+        await queueEvent(timer);
+        const mods = getPixelMods();
+        // TextMetrics: get emoji set and system
+        await queueEvent(timer);
+        context.font = `10px ${CSS_FONT_FAMILY.replace(/!important/gm, '')}`;
+        const pattern = new Set();
+        const emojiSet = EMOJIS.reduce((emojiSet, emoji) => {
+            const { actualBoundingBoxAscent, actualBoundingBoxDescent, actualBoundingBoxLeft, actualBoundingBoxRight, fontBoundingBoxAscent, fontBoundingBoxDescent, width, } = context.measureText(emoji) || {};
+            const dimensions = [
+                actualBoundingBoxAscent,
+                actualBoundingBoxDescent,
+                actualBoundingBoxLeft,
+                actualBoundingBoxRight,
+                fontBoundingBoxAscent,
+                fontBoundingBoxDescent,
+                width,
+            ].join(',');
+            if (!pattern.has(dimensions)) {
+                pattern.add(dimensions);
+                emojiSet.add(emoji);
+            }
+            return emojiSet;
+        }, new Set());
+        // textMetrics System Sum
+        const textMetricsSystemSum = 0.00001 * [...pattern].map((x) => {
+            return x.split(',').reduce((acc, x) => acc += (+x || 0), 0);
+        }).reduce((acc, x) => acc += x, 0);
+        // Paint
+        const maxSize = 50;
+        await queueEvent(timer);
+        paintCanvas({
+            canvas,
+            context,
+            area: { width: maxSize, height: maxSize },
+        }); // clears image
+        const paintURI = canvas.toDataURL();
+        // Text
+        context.restore();
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.width = maxSize;
+        canvas.height = maxSize;
+        context.font = `50px ${CSS_FONT_FAMILY.replace(/!important/gm, '')}`;
+        context.fillText('A', 7, 37);
+        const textURI = canvas.toDataURL();
+        // Emoji
+        context.restore();
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.width = maxSize;
+        canvas.height = maxSize;
+        context.font = `35px ${CSS_FONT_FAMILY.replace(/!important/gm, '')}`;
+        context.fillText('👾', 0, 37);
+        const emojiURI = canvas.toDataURL();
+        // lies
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        const liedImageData = !!Math.max(...context.getImageData(0, 0, 8, 8).data);
+        if ((mods && mods.pixels) || liedImageData) {
+            lied = true;
+            documentLie(`CanvasRenderingContext2D.getImageData`, `pixel data modified`);
+        }
+        const getTextMetricsFloatLie = (context) => {
+            const isFloat = (n) => n % 1 !== 0;
+            const { actualBoundingBoxAscent: abba, actualBoundingBoxDescent: abbd, actualBoundingBoxLeft: abbl, actualBoundingBoxRight: abbr, fontBoundingBoxAscent: fbba, fontBoundingBoxDescent: fbbd,
+            // width: w,
+             } = context.measureText('') || {};
+            const lied = [
+                abba,
+                abbd,
+                abbl,
+                abbr,
+                fbba,
+                fbbd,
+            ].find((x) => isFloat((x || 0)));
+            return lied;
+        };
+        await queueEvent(timer);
+        if (getTextMetricsFloatLie(context)) {
+            textMetricsLie = true;
+            lied = true;
+            documentLie('CanvasRenderingContext2D.measureText', 'metric noise detected');
+        }
+        logTestResult({ time: timer.stop(), test: 'canvas 2d', passed: true });
+        return {
+            dataURI,
+            paintURI,
+            textURI,
+            emojiURI,
+            mods,
+            blob,
+            blobOffscreen,
+            textMetricsSystemSum,
+            liedTextMetrics: textMetricsLie,
+            emojiSet: [...emojiSet],
+            lied,
+        };
+    }
+    catch (error) {
+        logTestResult({ test: 'canvas 2d', passed: false });
+        captureError(error);
+        return;
+    }
+}
+function canvasHTML(fp) {
+    if (!fp.canvas2d) {
+        return `
+		<div class="col-six undefined">
+			<strong>Canvas 2d</strong> <span>${HTMLNote.BLOCKED}</span>
+			<div>data: ${HTMLNote.BLOCKED}</div>
+			<div>rendering:</div>
+			<div class="icon-pixel-container pixels">${HTMLNote.BLOCKED}</div>
+			<div class="icon-pixel-container pixels">${HTMLNote.BLOCKED}</div>
+			<div>textMetrics:</div>
+			<div class="block-text">${HTMLNote.BLOCKED}</div>
+		</div>`;
+    }
+    const { canvas2d: { lied, dataURI, paintURI, textURI, emojiURI, mods, blob, blobOffscreen, emojiSet, textMetricsSystemSum, $hash, }, } = fp;
+    const { pixels, rgba, pixelImage } = mods || {};
+    const modPercent = pixels ? Math.round((pixels / 400) * 100) : 0;
+    const blobDataURI = (blob || {}).readAsDataURL;
+    const blobOffscreenDataURI = (blobOffscreen || {}).readAsDataURL;
+    const hash = {
+        dataURI: hashMini(dataURI),
+        blobDataURI: hashMini(blobDataURI),
+        blobOffscreenDataURI: hashMini(blobOffscreenDataURI),
+        textURI: hashMini(textURI),
+        emojiURI: hashMini(emojiURI),
+        paintURI: hashMini(paintURI),
+    };
+    const dataTemplate = `
+		${textURI ? `<div class="icon-pixel text-image"></div>` : ''}
+		<br>text: ${!textURI ? HTMLNote.BLOCKED : hash.textURI}
+
+		<br><br>
+		${emojiURI ? `<div class="icon-pixel emoji-image"></div>` : ''}
+		<br>emoji: ${!emojiURI ? HTMLNote.BLOCKED : hash.emojiURI}
+
+		<br><br>
+		${paintURI ? `<div class="icon-pixel paint-image"></div>` : ''}
+		<br>paint: ${!paintURI ? HTMLNote.BLOCKED : hash.paintURI}
+
+		<br><br>
+		${dataURI ? `<div class="icon-pixel combined-image"></div>` : ''}
+		${dataURI ? `<div class="icon-pixel combined-image-blob"></div>` : ''}
+		<br>combined: ${!dataURI ? HTMLNote.BLOCKED : hash.dataURI}
+		<br>toBlob (combined): ${!blobDataURI ? HTMLNote.UNSUPPORTED : hash.blobDataURI}
+		<br><br>
+		${blobOffscreenDataURI ? `<div class="icon-pixel offscreen-image"></div>` : ''}
+		<br>convertToBlob (emoji storm): ${!blobOffscreenDataURI ? HTMLNote.UNSUPPORTED : hash.blobOffscreenDataURI}
+	`;
+    // rgba: "b, g, gb, r, rb, rg, rgb"
+    const rgbaHTML = !rgba ? rgba : rgba.split(', ').map((s) => s.split('').map((c) => {
+        const css = {
+            r: 'red',
+            g: 'green',
+            b: 'blue',
+        };
+        return `<span class="rgba rgba-${css[c]}"></span>`;
+    }).join('')).join(' ');
+    const emojiHelpTitle = `CanvasRenderingContext2D.measureText()\nhash: ${hashMini(emojiSet)}\n${emojiSet.map((x, i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`;
+    return `
+	<div class="relative col-six${lied ? ' rejected' : ''}">
+		<style>
+			.pixels {
+				padding: 19px;
+				position: relative;
+				overflow: hidden;
+			}
+			.canvas-data {
+				max-width: 200px;
+				height: 50px;
+				transform: scale(1);
+				background-image: url(${dataURI})
+			}
+			.pixel-image,
+			.pixel-image-random,
+			.combined-image,
+			.combined-image-blob,
+			.paint-image,
+			.text-image,
+			.emoji-image,
+			.offscreen-image {
+				max-width: 35px;
+    		border-radius: 50%;
+				transform: scale(1.5);
+			}
+			.pixel-image {
+				background-image: url(${pixelImage})
+			}
+			.pixel-image-random {
+				background-image: url(${pixelImageRandom})
+			}
+			.paint-image {
+				background-image: url(${paintURI})
+			}
+			.text-image {
+				background-image: url(${textURI})
+			}
+			.emoji-image {
+				background-image: url(${emojiURI})
+			}
+			.combined-image {
+				background-image: url(${dataURI})
+			}
+			.combined-image-blob {
+				background-image: url(${blobDataURI})
+			}
+			.offscreen-image {
+				background-image: url(${blobOffscreenDataURI});
+				background-repeat: repeat-y;
+				background-size: 70px;
+			}
+			.rgba {
+				width: 8px;
+				height: 8px;
+				display: inline-block;
+				border-radius: 50%;
+			}
+			.rgba-red {
+				background: #ff000c4a;
+			}
+			.rgba-green {
+				background: #00ff584a;
+			}
+			.rgba-blue {
+				background: #009fff5e;
+			}
+			@media (prefers-color-scheme: dark) {
+				.rgba-red {
+					background: #e19fa2;
+				}
+				.rgba-green {
+					background: #98dfb1;
+				}
+				.rgba-blue {
+					background: #67b7ff;
+				}
+			}
+		</style>
+		<span class="aside-note">${performanceLogger.getLog()['canvas 2d']}</span>
+		<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+		<div class="help" title="HTMLCanvasElement.toDataURL()\nCanvasRenderingContext2D.getImageData()\nHTMLCanvasElement.toBlob()\nOffscreenCanvas.convertToBlob()\nFileReader.readAsDataURL()">data: ${modal('creep-canvas-data', dataTemplate, hashMini({
+        dataURI,
+        blob,
+        blobOffscreen,
+    }))}</div>
+		<div class="help" title="CanvasRenderingContext2D.getImageData()">rendering: ${rgba ? `${modPercent}% rgba noise ${rgbaHTML}` : ''}</div>
+		<div class="icon-pixel-container pixels">
+			${textURI ? `<div class="icon-pixel text-image"></div>` : ''}
+			${emojiURI ? `<div class="icon-pixel emoji-image"></div>` : ''}
+			${paintURI ? `<div class="icon-pixel paint-image"></div>` : ''}
+			${dataURI ? `<div class="icon-pixel combined-image"></div>` : ''}
+
+		</div>
+		<div class="icon-pixel-container pixels">
+			${blobOffscreenDataURI ? `<div class="icon-pixel offscreen-image"></div>` : ''}
+			<div class="icon-pixel pixel-image-random"></div>
+			${rgba ? `<div class="icon-pixel pixel-image"></div>` : ''}
+		</div>
+		<div>textMetrics:</div>
+		<div class="block-text help relative" title="${emojiHelpTitle}">
+			<span>${textMetricsSystemSum || HTMLNote.UNSUPPORTED}</span>
+			<span class="grey jumbo" style="font-family: ${CSS_FONT_FAMILY}">
+				${formatEmojiSet(emojiSet)}
+			</span>
+		</div>
+	</div>
+	`;
+}
+
+function getCSS() {
+    const computeStyle = (type, { require: [captureError] }) => {
+        try {
+            // get CSSStyleDeclaration
+            const cssStyleDeclaration = (type == 'getComputedStyle' ? getComputedStyle(document.body) :
+                type == 'HTMLElement.style' ? document.body.style :
+                    // @ts-ignore
+                    type == 'CSSRuleList.style' ? document.styleSheets[0].cssRules[0].style :
+                        undefined);
+            if (!cssStyleDeclaration) {
+                throw new TypeError('invalid argument string');
+            }
+            // get properties
+            const proto = Object.getPrototypeOf(cssStyleDeclaration);
+            const prototypeProperties = Object.getOwnPropertyNames(proto);
+            const ownEnumerablePropertyNames = [];
+            const cssVar = /^--.*$/;
+            Object.keys(cssStyleDeclaration).forEach((key) => {
+                const numericKey = !isNaN(+key);
+                const value = cssStyleDeclaration[key];
+                const customPropKey = cssVar.test(key);
+                const customPropValue = cssVar.test(value);
+                if (numericKey && !customPropValue) {
+                    return ownEnumerablePropertyNames.push(value);
+                }
+                else if (!numericKey && !customPropKey) {
+                    return ownEnumerablePropertyNames.push(key);
+                }
+                return;
+            });
+            // get properties in prototype chain (required only in chrome)
+            const propertiesInPrototypeChain = {};
+            const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+            const uncapitalize = (str) => str.charAt(0).toLowerCase() + str.slice(1);
+            const removeFirstChar = (str) => str.slice(1);
+            const caps = /[A-Z]/g;
+            ownEnumerablePropertyNames.forEach((key) => {
+                if (propertiesInPrototypeChain[key]) {
+                    return;
+                }
+                // determine attribute type
+                const isNamedAttribute = key.indexOf('-') > -1;
+                const isAliasAttribute = caps.test(key);
+                // reduce key for computation
+                const firstChar = key.charAt(0);
+                const isPrefixedName = isNamedAttribute && firstChar == '-';
+                const isCapitalizedAlias = isAliasAttribute && firstChar == firstChar.toUpperCase();
+                key = (isPrefixedName ? removeFirstChar(key) :
+                    isCapitalizedAlias ? uncapitalize(key) :
+                        key);
+                // find counterpart in CSSStyleDeclaration object or its prototype chain
+                if (isNamedAttribute) {
+                    const aliasAttribute = key.split('-').map((word, index) => index == 0 ? word : capitalize(word)).join('');
+                    if (aliasAttribute in cssStyleDeclaration) {
+                        propertiesInPrototypeChain[aliasAttribute] = true;
+                    }
+                    else if (capitalize(aliasAttribute) in cssStyleDeclaration) {
+                        propertiesInPrototypeChain[capitalize(aliasAttribute)] = true;
+                    }
+                }
+                else if (isAliasAttribute) {
+                    const namedAttribute = key.replace(caps, (char) => '-' + char.toLowerCase());
+                    if (namedAttribute in cssStyleDeclaration) {
+                        propertiesInPrototypeChain[namedAttribute] = true;
+                    }
+                    else if (`-${namedAttribute}` in cssStyleDeclaration) {
+                        propertiesInPrototypeChain[`-${namedAttribute}`] = true;
+                    }
+                }
+                return;
+            });
+            // compile keys
+            const keys = [
+                ...new Set([
+                    ...prototypeProperties,
+                    ...ownEnumerablePropertyNames,
+                    ...Object.keys(propertiesInPrototypeChain),
+                ]),
+            ];
+            // @ts-ignore
+            const interfaceName = ('' + proto).match(/\[object (.+)\]/)[1];
+            return { keys, interfaceName };
+        }
+        catch (error) {
+            captureError(error);
+            return;
+        }
+    };
+    const getSystemStyles = (el) => {
+        try {
+            const colors = [
+                'ActiveBorder',
+                'ActiveCaption',
+                'ActiveText',
+                'AppWorkspace',
+                'Background',
+                'ButtonBorder',
+                'ButtonFace',
+                'ButtonHighlight',
+                'ButtonShadow',
+                'ButtonText',
+                'Canvas',
+                'CanvasText',
+                'CaptionText',
+                'Field',
+                'FieldText',
+                'GrayText',
+                'Highlight',
+                'HighlightText',
+                'InactiveBorder',
+                'InactiveCaption',
+                'InactiveCaptionText',
+                'InfoBackground',
+                'InfoText',
+                'LinkText',
+                'Mark',
+                'MarkText',
+                'Menu',
+                'MenuText',
+                'Scrollbar',
+                'ThreeDDarkShadow',
+                'ThreeDFace',
+                'ThreeDHighlight',
+                'ThreeDLightShadow',
+                'ThreeDShadow',
+                'VisitedText',
+                'Window',
+                'WindowFrame',
+                'WindowText',
+            ];
+            const fonts = [
+                'caption',
+                'icon',
+                'menu',
+                'message-box',
+                'small-caption',
+                'status-bar',
+            ];
+            const getStyles = (el) => ({
+                colors: colors.map((color) => {
+                    el.setAttribute('style', `background-color: ${color} !important`);
+                    return {
+                        [color]: getComputedStyle(el).backgroundColor,
+                    };
+                }),
+                fonts: fonts.map((font) => {
+                    el.setAttribute('style', `font: ${font} !important`);
+                    const computedStyle = getComputedStyle(el);
+                    return {
+                        [font]: `${computedStyle.fontSize} ${computedStyle.fontFamily}`,
+                    };
+                }),
+            });
+            if (!el) {
+                el = document.createElement('div');
+                document.body.append(el);
+                const systemStyles = getStyles(el);
+                el.parentNode.removeChild(el);
+                return systemStyles;
+            }
+            return getStyles(el);
+        }
+        catch (error) {
+            captureError(error);
+            return;
+        }
+    };
+    try {
+        const timer = createTimer();
+        timer.start();
+        const computedStyle = computeStyle('getComputedStyle', { require: [captureError] });
+        const system = getSystemStyles(PARENT_PHANTOM);
+        logTestResult({ time: timer.stop(), test: 'computed style', passed: true });
+        return {
+            computedStyle,
+            system,
+        };
+    }
+    catch (error) {
+        logTestResult({ test: 'computed style', passed: false });
+        captureError(error);
+        return;
+    }
+}
+function cssHTML(fp) {
+    if (!fp.css) {
+        return `
+		<div class="col-six undefined">
+			<strong>Computed Style</strong>
+			<div>keys (0): ${HTMLNote.BLOCKED}</div>
+			<div>system styles: ${HTMLNote.BLOCKED}</div>
+			<div>
+				<div>${HTMLNote.BLOCKED}</div>
+			</div>
+			<div class="gradient"></div>
+		</div>`;
+    }
+    const { css: data, } = fp;
+    const { $hash, computedStyle, system, } = data;
+    const colorsLen = system.colors.length;
+    const gradientColors = system.colors.map((color, index) => {
+        const name = Object.values(color)[0];
+        return (index == 0 ? `${name}, ${name} ${((index + 1) / colorsLen * 100).toFixed(2)}%` :
+            index == colorsLen - 1 ? `${name} ${((index - 1) / colorsLen * 100).toFixed(2)}%, ${name} 100%` :
+                `${name} ${(index / colorsLen * 100).toFixed(2)}%, ${name} ${((index + 1) / colorsLen * 100).toFixed(2)}%`);
+    });
+    const id = 'creep-css-style-declaration-version';
+    return `
+	<div class="relative col-six">
+		<span class="aside-note">${performanceLogger.getLog()['computed style']}</span>
+		<strong>Computed Style</strong><span class="hash">${hashSlice($hash)}</span>
+		<div>keys (${!computedStyle ? '0' : count(computedStyle.keys)}): ${!computedStyle ? HTMLNote.BLOCKED :
+        modal('creep-computed-style', computedStyle.keys.join(', '), hashMini(computedStyle))}</div>
+		<div>system styles: ${system && system.colors ? modal(`${id}-system-styles`, [
+        ...system.colors.map((color) => {
+            const key = Object.keys(color)[0];
+            const val = color[key];
+            return `
+							<div><span style="display:inline-block;border:1px solid #eee;border-radius:3px;width:12px;height:12px;background:${val}"></span> ${key}: ${val}</div>
+						`;
+        }),
+        ...system.fonts.map((font) => {
+            const key = Object.keys(font)[0];
+            const val = font[key];
+            return `
+							<div>${key}: <span style="padding:0 5px;border-radius:3px;font:${val}">${val}</span></div>
+						`;
+        }),
+    ].join(''), hashMini(system)) : HTMLNote.BLOCKED}</div>
+		<div class="blurred" id="system-style-samples">
+			<div>system</div>
+		</div>
+		<style>.gradient { background: repeating-linear-gradient(to right, ${gradientColors.join(', ')}); }</style>
+		<div class="gradient"></div>
+	</div>
+	`;
+}
+
+function getCSSMedia() {
+    const gcd = (a, b) => b == 0 ? a : gcd(b, a % b);
+    const getAspectRatio = (width, height) => {
+        const r = gcd(width, height);
+        const aspectRatio = `${width / r}/${height / r}`;
+        return aspectRatio;
+    };
+    const query = ({ body, type, rangeStart, rangeLen }) => {
+        const html = [...Array(rangeLen)].map((slot, i) => {
+            i += rangeStart;
+            return `@media(device-${type}:${i}px){body{--device-${type}:${i};}}`;
+        }).join('');
+        body.innerHTML = `<style>${html}</style>`;
+        const style = getComputedStyle(body);
+        return style.getPropertyValue(`--device-${type}`).trim();
+    };
+    const getScreenMedia = ({ body, width, height }) => {
+        let widthMatch = query({ body, type: 'width', rangeStart: width, rangeLen: 1 });
+        let heightMatch = query({ body, type: 'height', rangeStart: height, rangeLen: 1 });
+        if (widthMatch && heightMatch) {
+            return { width, height };
+        }
+        const rangeLen = 1000;
+        [...Array(10)].find((slot, i) => {
+            if (!widthMatch) {
+                widthMatch = query({ body, type: 'width', rangeStart: i * rangeLen, rangeLen });
+            }
+            if (!heightMatch) {
+                heightMatch = query({ body, type: 'height', rangeStart: i * rangeLen, rangeLen });
+            }
+            return widthMatch && heightMatch;
+        });
+        return { width: +widthMatch, height: +heightMatch };
+    };
+    const getCSSDataURI = (x) => `data:text/css,body {${x}}`;
+    try {
+        const timer = createTimer();
+        timer.start();
+        const win = PHANTOM_DARKNESS.window;
+        const { body } = win.document;
+        const { width, height } = win.screen;
+        const deviceAspectRatio = getAspectRatio(width, height);
+        const matchMediaCSS = {
+            ['prefers-reduced-motion']: (win.matchMedia('(prefers-reduced-motion: no-preference)').matches ? 'no-preference' :
+                win.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'reduce' : undefined),
+            ['prefers-color-scheme']: (win.matchMedia('(prefers-color-scheme: light)').matches ? 'light' :
+                win.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : undefined),
+            monochrome: (win.matchMedia('(monochrome)').matches ? 'monochrome' :
+                win.matchMedia('(monochrome: 0)').matches ? 'non-monochrome' : undefined),
+            ['inverted-colors']: (win.matchMedia('(inverted-colors: inverted)').matches ? 'inverted' :
+                win.matchMedia('(inverted-colors: none)').matches ? 'none' : undefined),
+            ['forced-colors']: (win.matchMedia('(forced-colors: none)').matches ? 'none' :
+                win.matchMedia('(forced-colors: active)').matches ? 'active' : undefined),
+            ['any-hover']: (win.matchMedia('(any-hover: hover)').matches ? 'hover' :
+                win.matchMedia('(any-hover: none)').matches ? 'none' : undefined),
+            hover: (win.matchMedia('(hover: hover)').matches ? 'hover' :
+                win.matchMedia('(hover: none)').matches ? 'none' : undefined),
+            ['any-pointer']: (win.matchMedia('(any-pointer: fine)').matches ? 'fine' :
+                win.matchMedia('(any-pointer: coarse)').matches ? 'coarse' :
+                    win.matchMedia('(any-pointer: none)').matches ? 'none' : undefined),
+            pointer: (win.matchMedia('(pointer: fine)').matches ? 'fine' :
+                win.matchMedia('(pointer: coarse)').matches ? 'coarse' :
+                    win.matchMedia('(pointer: none)').matches ? 'none' : undefined),
+            ['device-aspect-ratio']: (win.matchMedia(`(device-aspect-ratio: ${deviceAspectRatio})`).matches ? deviceAspectRatio : undefined),
+            ['device-screen']: (win.matchMedia(`(device-width: ${width}px) and (device-height: ${height}px)`).matches ? `${width} x ${height}` : undefined),
+            ['display-mode']: (win.matchMedia('(display-mode: fullscreen)').matches ? 'fullscreen' :
+                win.matchMedia('(display-mode: standalone)').matches ? 'standalone' :
+                    win.matchMedia('(display-mode: minimal-ui)').matches ? 'minimal-ui' :
+                        win.matchMedia('(display-mode: browser)').matches ? 'browser' : undefined),
+            ['color-gamut']: (win.matchMedia('(color-gamut: srgb)').matches ? 'srgb' :
+                win.matchMedia('(color-gamut: p3)').matches ? 'p3' :
+                    win.matchMedia('(color-gamut: rec2020)').matches ? 'rec2020' : undefined),
+            orientation: (win.matchMedia('(orientation: landscape)').matches ? 'landscape' :
+                win.matchMedia('(orientation: portrait)').matches ? 'portrait' : undefined),
+        };
+        const importStyles = `
+		<style>
+		@import '${getCSSDataURI('--import-prefers-reduced-motion: no-preference')}' (prefers-reduced-motion: no-preference);
+		@import '${getCSSDataURI('--import-prefers-reduced-motion: reduce')}' (prefers-reduced-motion: reduce);
+		@import '${getCSSDataURI('--import-prefers-color-scheme: light')}' (prefers-color-scheme: light);
+		@import '${getCSSDataURI('--import-prefers-color-scheme: dark')}' (prefers-color-scheme: dark);
+		@import '${getCSSDataURI('--import-monochrome: monochrome')}' (monochrome);
+		@import '${getCSSDataURI('--import-monochrome: non-monochrome')}' (monochrome: 0);
+		@import '${getCSSDataURI('--import-inverted-colors: inverted')}' (inverted-colors: inverted);
+		@import '${getCSSDataURI('--import-inverted-colors: none')}' (inverted-colors: 0);
+		@import '${getCSSDataURI('--import-forced-colors: none')}' (forced-colors: none);
+		@import '${getCSSDataURI('--import-forced-colors: active')}' (forced-colors: active);
+		@import '${getCSSDataURI('--import-any-hover: hover')}' (any-hover: hover);
+		@import '${getCSSDataURI('--import-any-hover: none')}' (any-hover: none);
+		@import '${getCSSDataURI('--import-hover: hover')}' (hover: hover);
+		@import '${getCSSDataURI('--import-hover: none')}' (hover: none);
+		@import '${getCSSDataURI('--import-any-pointer: fine')}' (any-pointer: fine);
+		@import '${getCSSDataURI('--import-any-pointer: coarse')}' (any-pointer: coarse);
+		@import '${getCSSDataURI('--import-any-pointer: none')}' (any-pointer: none);
+		@import '${getCSSDataURI('--import-pointer: fine')}' (pointer: fine);
+		@import '${getCSSDataURI('--import-pointer: coarse')}' (pointer: coarse);
+		@import '${getCSSDataURI('--import-pointer: none')}' (pointer: none);
+		@import '${getCSSDataURI(`--import-device-aspect-ratio: ${deviceAspectRatio}`)}' (device-aspect-ratio: ${deviceAspectRatio});
+		@import '${getCSSDataURI(`--import-device-screen: ${width} x ${height}`)}' (device-width: ${width}px) and (device-height: ${height}px);
+		@import '${getCSSDataURI('--import-display-mode: fullscreen')}' (display-mode: fullscreen);
+		@import '${getCSSDataURI('--import-display-mode: standalone')}' (display-mode: standalone);
+		@import '${getCSSDataURI('--import-display-mode: minimal-ui')}' (display-mode: minimal-ui);
+		@import '${getCSSDataURI('--import-display-mode: browser')}' (display-mode: browser);
+		@import '${getCSSDataURI('--import-color-gamut: srgb')}' (color-gamut: srgb);
+		@import '${getCSSDataURI('--import-color-gamut: p3')}' (color-gamut: p3);
+		@import '${getCSSDataURI('--import-color-gamut: rec2020')}' (color-gamut: rec2020);
+		@import '${getCSSDataURI('--import-orientation: landscape')}' (orientation: landscape);
+		@import '${getCSSDataURI('--import-orientation: portrait')}' (orientation: portrait);
+		</style>
+		`;
+        body.innerHTML = `
+		<style>
+		@media (prefers-reduced-motion: no-preference) {body {--prefers-reduced-motion: no-preference}}
+		@media (prefers-reduced-motion: reduce) {body {--prefers-reduced-motion: reduce}}
+		@media (prefers-color-scheme: light) {body {--prefers-color-scheme: light}}
+		@media (prefers-color-scheme: dark) {body {--prefers-color-scheme: dark}}
+		@media (monochrome) {body {--monochrome: monochrome}}
+		@media (monochrome: 0) {body {--monochrome: non-monochrome}}
+		@media (inverted-colors: inverted) {body {--inverted-colors: inverted}}
+		@media (inverted-colors: none) {body {--inverted-colors: none}}
+		@media (forced-colors: none) {body {--forced-colors: none}}
+		@media (forced-colors: active) {body {--forced-colors: active}}
+		@media (any-hover: hover) {body {--any-hover: hover}}
+		@media (any-hover: none) {body {--any-hover: none}}
+		@media (hover: hover) {body {--hover: hover}}
+		@media (hover: none) {body {--hover: none}}
+		@media (any-pointer: fine) {body {--any-pointer: fine}}
+		@media (any-pointer: coarse) {body {--any-pointer: coarse}}
+		@media (any-pointer: none) {body {--any-pointer: none}}
+		@media (pointer: fine) {body {--pointer: fine}}
+		@media (pointer: coarse) {body {--pointer: coarse}}
+		@media (pointer: none) {body {--pointer: none}}
+		@media (device-aspect-ratio: ${deviceAspectRatio}) {body {--device-aspect-ratio: ${deviceAspectRatio}}}
+		@media (device-width: ${width}px) and (device-height: ${height}px) {body {--device-screen: ${width} x ${height}}}
+		@media (display-mode: fullscreen) {body {--display-mode: fullscreen}}
+		@media (display-mode: standalone) {body {--display-mode: standalone}}
+		@media (display-mode: minimal-ui) {body {--display-mode: minimal-ui}}
+		@media (display-mode: browser) {body {--display-mode: browser}}
+		@media (color-gamut: srgb) {body {--color-gamut: srgb}}
+		@media (color-gamut: p3) {body {--color-gamut: p3}}
+		@media (color-gamut: rec2020) {body {--color-gamut: rec2020}}
+		@media (orientation: landscape) {body {--orientation: landscape}}
+		@media (orientation: portrait) {body {--orientation: portrait}}
+		</style>
+		${!IS_GECKO ? importStyles : ''}
+		`;
+        const style = getComputedStyle(body);
+        const mediaCSS = {
+            ['prefers-reduced-motion']: style.getPropertyValue('--prefers-reduced-motion').trim() || undefined,
+            ['prefers-color-scheme']: style.getPropertyValue('--prefers-color-scheme').trim() || undefined,
+            monochrome: style.getPropertyValue('--monochrome').trim() || undefined,
+            ['inverted-colors']: style.getPropertyValue('--inverted-colors').trim() || undefined,
+            ['forced-colors']: style.getPropertyValue('--forced-colors').trim() || undefined,
+            ['any-hover']: style.getPropertyValue('--any-hover').trim() || undefined,
+            hover: style.getPropertyValue('--hover').trim() || undefined,
+            ['any-pointer']: style.getPropertyValue('--any-pointer').trim() || undefined,
+            pointer: style.getPropertyValue('--pointer').trim() || undefined,
+            ['device-aspect-ratio']: style.getPropertyValue('--device-aspect-ratio').trim() || undefined,
+            ['device-screen']: style.getPropertyValue('--device-screen').trim() || undefined,
+            ['display-mode']: style.getPropertyValue('--display-mode').trim() || undefined,
+            ['color-gamut']: style.getPropertyValue('--color-gamut').trim() || undefined,
+            orientation: style.getPropertyValue('--orientation').trim() || undefined,
+        };
+        const importCSS = IS_GECKO ? undefined : {
+            ['prefers-reduced-motion']: style.getPropertyValue('--import-prefers-reduced-motion').trim() || undefined,
+            ['prefers-color-scheme']: style.getPropertyValue('--import-prefers-color-scheme').trim() || undefined,
+            monochrome: style.getPropertyValue('--import-monochrome').trim() || undefined,
+            ['inverted-colors']: style.getPropertyValue('--import-inverted-colors').trim() || undefined,
+            ['forced-colors']: style.getPropertyValue('--import-forced-colors').trim() || undefined,
+            ['any-hover']: style.getPropertyValue('--import-any-hover').trim() || undefined,
+            hover: style.getPropertyValue('--import-hover').trim() || undefined,
+            ['any-pointer']: style.getPropertyValue('--import-any-pointer').trim() || undefined,
+            pointer: style.getPropertyValue('--import-pointer').trim() || undefined,
+            ['device-aspect-ratio']: style.getPropertyValue('--import-device-aspect-ratio').trim() || undefined,
+            ['device-screen']: style.getPropertyValue('--import-device-screen').trim() || undefined,
+            ['display-mode']: style.getPropertyValue('--import-display-mode').trim() || undefined,
+            ['color-gamut']: style.getPropertyValue('--import-color-gamut').trim() || undefined,
+            orientation: style.getPropertyValue('--import-orientation').trim() || undefined,
+        };
+        // get screen query
+        const screenQuery = getScreenMedia({ body, width, height });
+        logTestResult({ time: timer.stop(), test: 'css media', passed: true });
+        return { importCSS, mediaCSS, matchMediaCSS, screenQuery };
+    }
+    catch (error) {
+        logTestResult({ test: 'css media', passed: false });
+        captureError(error);
+        return;
+    }
+}
+function cssMediaHTML(fp) {
+    if (!fp.css) {
+        return `
+		<div class="col-six undefined">
+			<strong>CSS Media Queries</strong>
+			<div>@media: ${HTMLNote.BLOCKED}</div>
+			<div>@import: ${HTMLNote.BLOCKED}</div>
+			<div>matchMedia: ${HTMLNote.BLOCKED}</div>
+			<div>touch device: ${HTMLNote.BLOCKED}</div>
+			<div>screen query: ${HTMLNote.BLOCKED}</div>
+		</div>`;
+    }
+    const { cssMedia: data, } = fp;
+    const { $hash, importCSS, mediaCSS, matchMediaCSS, screenQuery, } = data;
+    return `
+	<div class="relative col-six">
+		<span class="aside-note">${performanceLogger.getLog()['css media']}</span>
+		<strong>CSS Media Queries</strong><span class="hash">${hashSlice($hash)}</span>
+		<div>@media: ${!mediaCSS || !Object.keys(mediaCSS).filter((key) => !!mediaCSS[key]).length ?
+        HTMLNote.BLOCKED :
+        modal('creep-css-media', `<strong>@media</strong><br><br>${Object.keys(mediaCSS).map((key) => `${key}: ${mediaCSS[key] || HTMLNote.UNSUPPORTED}`).join('<br>')}`, hashMini(mediaCSS))}</div>
+		<div>@import: ${!importCSS || !Object.keys(importCSS).filter((key) => !!importCSS[key]).length ?
+        HTMLNote.UNSUPPORTED :
+        modal('creep-css-import', `<strong>@import</strong><br><br>${Object.keys(importCSS).map((key) => `${key}: ${importCSS[key] || HTMLNote.UNSUPPORTED}`).join('<br>')}`, hashMini(importCSS))}</div>
+		<div>matchMedia: ${!matchMediaCSS || !Object.keys(matchMediaCSS).filter((key) => !!matchMediaCSS[key]).length ?
+        HTMLNote.BLOCKED :
+        modal('creep-css-match-media', `<strong>matchMedia</strong><br><br>${Object.keys(matchMediaCSS).map((key) => `${key}: ${matchMediaCSS[key] || HTMLNote.UNSUPPORTED}`).join('<br>')}`, hashMini(matchMediaCSS))}</div>
+		<div>touch device: ${!mediaCSS ? HTMLNote.BLOCKED : mediaCSS['any-pointer'] == 'coarse' ? true : HTMLNote.UNKNOWN}</div>
+		<div>screen query: ${!screenQuery ? HTMLNote.BLOCKED : `${screenQuery.width} x ${screenQuery.height}`}</div>
+	</div>
+	`;
+}
+
+function getHTMLElementVersion() {
+    try {
+        const timer = createTimer();
+        timer.start();
+        const keys = [];
+        // eslint-disable-next-line guard-for-in
+        for (const key in document.documentElement) {
+            keys.push(key);
+        }
+        logTestResult({ time: timer.stop(), test: 'html element', passed: true });
+        return { keys };
+    }
+    catch (error) {
+        logTestResult({ test: 'html element', passed: false });
+        captureError(error);
+        return;
+    }
+}
+function htmlElementVersionHTML(fp) {
+    if (!fp.htmlElementVersion) {
+        return `
+		<div class="col-six undefined">
+			<strong>HTMLElement</strong>
+			<div>keys (0): ${HTMLNote.Blocked}</div>
+			<div>
+				<div>${HTMLNote.Blocked}</div>
+			</div>
+		</div>`;
+    }
+    const { htmlElementVersion: { $hash, keys, }, } = fp;
+    return `
+	<div class="relative col-six">
+		<span class="aside-note">${performanceLogger.getLog()['html element']}</span>
+		<strong>HTMLElement</strong><span class="hash">${hashSlice($hash)}</span>
+		<div>keys (${count(keys)}): ${keys && keys.length ? modal('creep-html-element-version', keys.join(', ')) : HTMLNote.Blocked}</div>
+		<div class="blurred" id="html-element-samples">
+			<div>0% of engine</div>
+		</div>
+	</div>
+	`;
+}
+
+// inspired by
+// https://privacycheck.sec.lrz.de/active/fp_gcr/fp_getclientrects.html
+// https://privacycheck.sec.lrz.de/active/fp_e/fp_emoji.html
+async function getClientRects() {
+    try {
+        const timer = createTimer();
+        await queueEvent(timer);
+        const toNativeObject = (domRect) => {
+            return {
+                bottom: domRect.bottom,
+                height: domRect.height,
+                left: domRect.left,
+                right: domRect.right,
+                width: domRect.width,
+                top: domRect.top,
+                x: domRect.x,
+                y: domRect.y,
+            };
+        };
+        let lied = (lieProps['Element.getClientRects'] ||
+            lieProps['Element.getBoundingClientRect'] ||
+            lieProps['Range.getClientRects'] ||
+            lieProps['Range.getBoundingClientRect'] ||
+            lieProps['String.fromCodePoint']) || false;
+        const getBestRect = (lieProps, doc, el) => {
+            let range;
+            if (!lieProps['Element.getClientRects']) {
+                return el.getClientRects()[0];
+            }
+            else if (!lieProps['Element.getBoundingClientRect']) {
+                return el.getBoundingClientRect();
+            }
+            else if (!lieProps['Range.getClientRects']) {
+                range = doc.createRange();
+                range.selectNode(el);
+                return range.getClientRects()[0];
+            }
+            range = doc.createRange();
+            range.selectNode(el);
+            return range.getBoundingClientRect();
+        };
+        const doc = (PHANTOM_DARKNESS &&
+            PHANTOM_DARKNESS.document &&
+            PHANTOM_DARKNESS.document.body ? PHANTOM_DARKNESS.document :
+            document);
+        const rectsId = `${instanceId}-client-rects-div`;
+        const fontId = 'domrect-font-detector';
+        // const chars = `mmmmmmmmmmlli`
+        // const emojiChar = String.fromCodePoint(128512)
+        const divElement = document.createElement('div');
+        divElement.setAttribute('id', rectsId);
+        doc.body.appendChild(divElement);
+        patch(divElement, html `
+		<div id="${rectsId}">
 			<style>
 			.rect-known {
 				top: 0;
@@ -122,7 +3808,7 @@ function a0W(){const QU=['call','Asia/Almaty','\x27\x20(device-width:\x20','conv
 				<div id="emoji" class="emojis"></div>
 			</div>
 			<style>
-				#${z6} {
+				#${fontId} {
 					--font: '';
 					position: absolute !important;
 					left: -9999px!important;
@@ -143,176 +3829,3578 @@ function a0W(){const QU=['call','Asia/Almaty','\x27\x20(device-width:\x20','conv
 					padding: 0 !important;
 					margin: 0 !important;
 				}
-				#${z6}::after {
+				#${fontId}::after {
 					font-family: var(--font);
-					content: '${B[n9(0x644)]('')}';
+					content: '${EMOJIS.join('')}';
 				}
 			</style>
-			<span id="${z6}"></span>
+			<span id="${fontId}"></span>
 			<div id="emoji-container">
 				<style>
 				.domrect-emoji {
-					font-family: ${O};
+					font-family: ${CSS_FONT_FAMILY};
 					font-size: 200px !important;
 					height: auto;
 					position: absolute !important;
 					transform: scale(1.000999);
 				}
 				</style>
-				${B['map'](zq=>{const nT=n9;return nT(0x7d5)+zq+nT(0x113);})}
+				${EMOJIS.map((emoji) => {
+            return `<div class="domrect-emoji">${emoji}</div>`;
+        })}
 			</div>
 		</div>
-		`);const z8=new Set();await t(z0);const z9=[...z4[n9(0x1ae)](n9(0x6f0))],zW=z9['reduce']((zq,zt,zM)=>{const nz=n9,zB=B[zM],{height:zO,width:zN}=z3(WQ,z4,zt),zi=zN+','+zO;return!z8[nz(0x7ea)](zi)&&(z8[nz(0x933)](zi),zq[nz(0x933)](zB)),zq;},new Set()),zT=0.00001*[...z8][n9(0x638)](zq=>{const nZ=n9;return zq[nZ(0x184)](',')[nZ(0x729)]((zt,zM)=>zt+=+zM||0x0,0x0);})['reduce']((zq,zt)=>zq+=zt,0x0),zz=document[n9(0x7b2)](),zZ=z4[n9(0x1ae)](n9(0x95c)),zd=[...zZ][n9(0x638)](zq=>{const nd=n9;return z1(zq[nd(0xfd)]()[0x0]);}),zL=[...zZ]['map'](zq=>{return z1(zq['getBoundingClientRect']());}),zp=[...zZ][n9(0x638)](zq=>{return zz['selectNode'](zq),z1(zz['getClientRects']()[0x0]);}),zn=[...zZ][n9(0x638)](zq=>{const nL=n9;return zz[nL(0xaf3)](zq),z1(zq['getBoundingClientRect']());}),zb=[...zZ][0x3],{top:zS}=zd[0x3];zb[n9(0x72d)]['add'](n9(0x26f));const {top:zQ}=z1(zb[n9(0xfd)]()[0x0]);zb[n9(0x72d)][n9(0x389)](n9(0x26f));const {top:zu}=z1(zb[n9(0xfd)]()[0x0]),zF=zS-zQ,zv=zF!=zu-zQ;zv&&(z2=!![],h('Element.getClientRects',n9(0xb1b)));let zH=![];zd[n9(0xa0f)](zq=>{const {right:zt,left:zM,width:zB,bottom:zO,top:zN,height:zi,x:zy,y:zK}=zq;(zt-zM!=zB||zO-zN!=zi||zt-zy!=zB||zO-zK!=zi)&&(z2=!![],zH=!![]);return;});zH&&h('Element.getClientRects','failed\x20math\x20calculation');const {right:zx,left:zD}=zd[0xa],{right:zA,left:zY}=zd[0xb];(zx!=zA||zD!=zY)&&(h(n9(0x475),n9(0x70c)),z2=!![]);const zk=[...z4['getElementsByClassName'](n9(0x54b))][0x0],zP=z1(zk[n9(0xfd)]()[0x0]),za=Object[n9(0xab4)](zP)[n9(0x729)]((zq,zt)=>zq+=+zP[zt],0x0);if(Z){const zq={'441.4213562011719':!![],'441.3523979187012':!![],'441.4214057922363':!![]};!zq[za]&&(h('Element.getClientRects',n9(0xa42)),z2=!![]);}else{if(d){const zt={'441.3666687011719':!![]};!zt[za]&&(h(n9(0x475),n9(0xa42)),z2=!![]);}}return z4[n9(0x88e)]['removeChild'](z4[n9(0xa0c)](z5)),a({'time':z0['stop'](),'test':n9(0x95c),'passed':!![]}),{'elementClientRects':zd,'elementBoundingClientRect':zL,'rangeClientRects':zp,'rangeBoundingClientRect':zn,'emojiSet':[...zW],'domrectSystemSum':zT,'lied':z2};}catch(zM){a({'test':n9(0x95c),'passed':![]}),f(zM);return;}}function Wg(z0){const np=L3;if(!z0[np(0x439)])return'\x0a\x09\x09<div\x20class=\x22col-six\x20undefined\x22>\x0a\x09\x09\x09<strong>DOMRect</strong>\x0a\x09\x09\x09<div>elems\x20A:\x20'+r[np(0x7ca)]+'</div>\x0a\x09\x09\x09<div>elems\x20B:\x20'+r[np(0x7ca)]+'</div>\x0a\x09\x09\x09<div>range\x20A:\x20'+r[np(0x7ca)]+np(0x53c)+r['BLOCKED']+'</div>\x0a\x09\x09\x09<div\x20class=\x22block-text\x22>'+r[np(0x7ca)]+np(0x692);const {clientRects:{$hash:z1,elementClientRects:z2,elementBoundingClientRect:z3,rangeClientRects:z4,rangeBoundingClientRect:z5,emojiSet:z6,domrectSystemSum:z7,lied:z8}}=z0,z9=zz=>Object[np(0xab4)](zz)['reduce']((zZ,zd)=>zZ+=zz[zd],0x0)/0x5f5e100,zW=zz=>{const nn=np;if(!zz||!zz[nn(0xb8e)])return;const zZ=zz[nn(0x729)]((zL,zp)=>{const {right:zn,left:zb,width:zS,bottom:zQ,top:zu,height:zF}=zp,zv={'width':zn-zb,'height':zQ-zu,'right':zb+zS,'left':zn-zS,'bottom':zu+zF,'top':zQ-zF,'x':zn-zS,'y':zQ-zF};return zL+=z9(zv);},0x0),zd=zz[nn(0x729)]((zL,zp)=>zL+=z9(zp),0x0);return R({'stringA':zd,'stringB':zZ,'charDiff':!![],'decorate':zL=>nn(0x3f9)+zL+nn(0x44b)});},zT=np(0x112)+WO(z6)+'\x0a'+z6[np(0x638)]((zz,zZ)=>zZ&&zZ%0x6==0x0?zz+'\x0a':zz)[np(0x644)]('');return np(0xb6a)+(z8?np(0x5e1):'')+np(0x2d4)+P[np(0x649)]()[np(0x95c)]+np(0x596)+(z8?np(0xb64):'')+'hash\x22>'+N(z1)+np(0x8e7)+zW(z2)+'</div>\x0a\x09\x09<div\x20class=\x22help\x22\x20title=\x22Element.getBoundingClientRect()\x22>elems\x20B:\x20'+zW(z3)+np(0x4f8)+zW(z4)+np(0x6df)+zW(z5)+np(0xbd4)+zT+np(0x23d)+(z7||r[np(0x786)])+np(0x24c)+O+'\x22>'+M(z6)+np(0x674);}function WJ(z0){const nb=L3,z1=[];let z2;const z3=z0[nb(0xb8e)];for(z2=0x0;z2<z3;z2++){try{z0[z2]();}catch(z4){z1[nb(0x3e4)](z4[nb(0x1b2)]);}}return z1;}function Wo(){const nS=L3;try{const z0=q();z0[nS(0x95f)]();const z1=[()=>new Function(nS(0xbca))(),()=>new Function('const\x20foo;foo.bar')(),()=>new Function(nS(0x16e))(),()=>new Function('abc.xyz\x20=\x20123')(),()=>new Function(nS(0x693))(),()=>new Function(nS(0x9e5))(),()=>new Function(nS(0x45e))(),()=>new Function(nS(0x39d))(),()=>new Function(nS(0x850))()],z2=WJ(z1);return a({'time':z0[nS(0x8c4)](),'test':nS(0x9f0),'passed':!![]}),{'errors':z2};}catch(z3){a({'test':nS(0x9f0),'passed':![]}),f(z3);return;}}function WU(z0){const nQ=L3;if(!z0[nQ(0x412)])return nQ(0xa0a)+r[nQ(0x7ca)]+'</div>\x0a\x09\x09\x09<div>\x0a\x09\x09\x09\x09<div>'+r['BLOCKED']+nQ(0x5b9);const {consoleErrors:{$hash:z1,errors:z2}}=z0,z3=Object[nQ(0xab4)](z2)['map'](z4=>{const z5=z2[z4];return+z4+0x1+':\x20'+z5;});return nQ(0x795)+P['getLog']()[nQ(0x9f0)]+nQ(0x3d2)+N(z1)+nQ(0x155)+w(nQ(0x6f9),z3[nQ(0x644)](nQ(0x708)))+nQ(0xb43);}const T0=()=>({'Chrome':{'version':0x69,'windowKeys':L3(0x6e3),'cssKeys':L3(0x118),'jsKeys':'Object.assign,\x20Object.getOwnPropertyDescriptor,\x20Object.getOwnPropertyDescriptors,\x20Object.getOwnPropertyNames,\x20Object.getOwnPropertySymbols,\x20Object.is,\x20Object.preventExtensions,\x20Object.seal,\x20Object.create,\x20Object.defineProperties,\x20Object.defineProperty,\x20Object.freeze,\x20Object.getPrototypeOf,\x20Object.setPrototypeOf,\x20Object.isExtensible,\x20Object.isFrozen,\x20Object.isSealed,\x20Object.keys,\x20Object.entries,\x20Object.fromEntries,\x20Object.values,\x20Object.hasOwn,\x20Object.__defineGetter__,\x20Object.__defineSetter__,\x20Object.hasOwnProperty,\x20Object.__lookupGetter__,\x20Object.__lookupSetter__,\x20Object.isPrototypeOf,\x20Object.propertyIsEnumerable,\x20Object.toString,\x20Object.valueOf,\x20Object.__proto__,\x20Object.toLocaleString,\x20Function.apply,\x20Function.bind,\x20Function.call,\x20Function.toString,\x20Boolean.toString,\x20Boolean.valueOf,\x20Symbol.for,\x20Symbol.keyFor,\x20Symbol.asyncIterator,\x20Symbol.hasInstance,\x20Symbol.isConcatSpreadable,\x20Symbol.iterator,\x20Symbol.match,\x20Symbol.matchAll,\x20Symbol.replace,\x20Symbol.search,\x20Symbol.species,\x20Symbol.split,\x20Symbol.toPrimitive,\x20Symbol.toStringTag,\x20Symbol.unscopables,\x20Symbol.toString,\x20Symbol.valueOf,\x20Symbol.description,\x20Error.captureStackTrace,\x20Error.stackTraceLimit,\x20Error.message,\x20Error.toString,\x20Number.isFinite,\x20Number.isInteger,\x20Number.isNaN,\x20Number.isSafeInteger,\x20Number.parseFloat,\x20Number.parseInt,\x20Number.MAX_VALUE,\x20Number.MIN_VALUE,\x20Number.NaN,\x20Number.NEGATIVE_INFINITY,\x20Number.POSITIVE_INFINITY,\x20Number.MAX_SAFE_INTEGER,\x20Number.MIN_SAFE_INTEGER,\x20Number.EPSILON,\x20Number.toExponential,\x20Number.toFixed,\x20Number.toPrecision,\x20Number.toString,\x20Number.valueOf,\x20Number.toLocaleString,\x20BigInt.asUintN,\x20BigInt.asIntN,\x20BigInt.toLocaleString,\x20BigInt.toString,\x20BigInt.valueOf,\x20Math.abs,\x20Math.acos,\x20Math.acosh,\x20Math.asin,\x20Math.asinh,\x20Math.atan,\x20Math.atanh,\x20Math.atan2,\x20Math.ceil,\x20Math.cbrt,\x20Math.expm1,\x20Math.clz32,\x20Math.cos,\x20Math.cosh,\x20Math.exp,\x20Math.floor,\x20Math.fround,\x20Math.hypot,\x20Math.imul,\x20Math.log,\x20Math.log1p,\x20Math.log2,\x20Math.log10,\x20Math.max,\x20Math.min,\x20Math.pow,\x20Math.random,\x20Math.round,\x20Math.sign,\x20Math.sin,\x20Math.sinh,\x20Math.sqrt,\x20Math.tan,\x20Math.tanh,\x20Math.trunc,\x20Math.E,\x20Math.LN10,\x20Math.LN2,\x20Math.LOG10E,\x20Math.LOG2E,\x20Math.PI,\x20Math.SQRT1_2,\x20Math.SQRT2,\x20Date.now,\x20Date.parse,\x20Date.UTC,\x20Date.toString,\x20Date.toDateString,\x20Date.toTimeString,\x20Date.toISOString,\x20Date.toUTCString,\x20Date.toGMTString,\x20Date.getDate,\x20Date.setDate,\x20Date.getDay,\x20Date.getFullYear,\x20Date.setFullYear,\x20Date.getHours,\x20Date.setHours,\x20Date.getMilliseconds,\x20Date.setMilliseconds,\x20Date.getMinutes,\x20Date.setMinutes,\x20Date.getMonth,\x20Date.setMonth,\x20Date.getSeconds,\x20Date.setSeconds,\x20Date.getTime,\x20Date.setTime,\x20Date.getTimezoneOffset,\x20Date.getUTCDate,\x20Date.setUTCDate,\x20Date.getUTCDay,\x20Date.getUTCFullYear,\x20Date.setUTCFullYear,\x20Date.getUTCHours,\x20Date.setUTCHours,\x20Date.getUTCMilliseconds,\x20Date.setUTCMilliseconds,\x20Date.getUTCMinutes,\x20Date.setUTCMinutes,\x20Date.getUTCMonth,\x20Date.setUTCMonth,\x20Date.getUTCSeconds,\x20Date.setUTCSeconds,\x20Date.valueOf,\x20Date.getYear,\x20Date.setYear,\x20Date.toJSON,\x20Date.toLocaleString,\x20Date.toLocaleDateString,\x20Date.toLocaleTimeString,\x20String.fromCharCode,\x20String.fromCodePoint,\x20String.raw,\x20String.anchor,\x20String.at,\x20String.big,\x20String.blink,\x20String.bold,\x20String.charAt,\x20String.charCodeAt,\x20String.codePointAt,\x20String.concat,\x20String.endsWith,\x20String.fontcolor,\x20String.fontsize,\x20String.fixed,\x20String.includes,\x20String.indexOf,\x20String.italics,\x20String.lastIndexOf,\x20String.link,\x20String.localeCompare,\x20String.match,\x20String.matchAll,\x20String.normalize,\x20String.padEnd,\x20String.padStart,\x20String.repeat,\x20String.replace,\x20String.replaceAll,\x20String.search,\x20String.slice,\x20String.small,\x20String.split,\x20String.strike,\x20String.sub,\x20String.substr,\x20String.substring,\x20String.sup,\x20String.startsWith,\x20String.toString,\x20String.trim,\x20String.trimStart,\x20String.trimLeft,\x20String.trimEnd,\x20String.trimRight,\x20String.toLocaleLowerCase,\x20String.toLocaleUpperCase,\x20String.toLowerCase,\x20String.toUpperCase,\x20String.valueOf,\x20RegExp.input,\x20RegExp.$_,\x20RegExp.lastMatch,\x20RegExp.$&,\x20RegExp.lastParen,\x20RegExp.$+,\x20RegExp.leftContext,\x20RegExp.$`,\x20RegExp.rightContext,\x20RegExp.$\x27,\x20RegExp.$1,\x20RegExp.$2,\x20RegExp.$3,\x20RegExp.$4,\x20RegExp.$5,\x20RegExp.$6,\x20RegExp.$7,\x20RegExp.$8,\x20RegExp.$9,\x20RegExp.exec,\x20RegExp.dotAll,\x20RegExp.flags,\x20RegExp.global,\x20RegExp.hasIndices,\x20RegExp.ignoreCase,\x20RegExp.multiline,\x20RegExp.source,\x20RegExp.sticky,\x20RegExp.unicode,\x20RegExp.compile,\x20RegExp.toString,\x20RegExp.test,\x20Array.isArray,\x20Array.from,\x20Array.of,\x20Array.at,\x20Array.concat,\x20Array.copyWithin,\x20Array.fill,\x20Array.find,\x20Array.findIndex,\x20Array.lastIndexOf,\x20Array.pop,\x20Array.push,\x20Array.reverse,\x20Array.shift,\x20Array.unshift,\x20Array.slice,\x20Array.sort,\x20Array.splice,\x20Array.includes,\x20Array.indexOf,\x20Array.join,\x20Array.keys,\x20Array.entries,\x20Array.values,\x20Array.forEach,\x20Array.filter,\x20Array.flat,\x20Array.flatMap,\x20Array.map,\x20Array.every,\x20Array.some,\x20Array.reduce,\x20Array.reduceRight,\x20Array.toLocaleString,\x20Array.toString,\x20Array.findLast,\x20Array.findLastIndex,\x20Map.get,\x20Map.set,\x20Map.has,\x20Map.delete,\x20Map.clear,\x20Map.entries,\x20Map.forEach,\x20Map.keys,\x20Map.size,\x20Map.values,\x20Set.has,\x20Set.add,\x20Set.delete,\x20Set.clear,\x20Set.entries,\x20Set.forEach,\x20Set.size,\x20Set.values,\x20Set.keys,\x20WeakMap.delete,\x20WeakMap.get,\x20WeakMap.set,\x20WeakMap.has,\x20WeakSet.delete,\x20WeakSet.has,\x20WeakSet.add,\x20Atomics.load,\x20Atomics.store,\x20Atomics.add,\x20Atomics.sub,\x20Atomics.and,\x20Atomics.or,\x20Atomics.xor,\x20Atomics.exchange,\x20Atomics.compareExchange,\x20Atomics.isLockFree,\x20Atomics.wait,\x20Atomics.waitAsync,\x20Atomics.notify,\x20JSON.parse,\x20JSON.stringify,\x20Promise.all,\x20Promise.allSettled,\x20Promise.any,\x20Promise.race,\x20Promise.resolve,\x20Promise.reject,\x20Promise.then,\x20Promise.catch,\x20Promise.finally,\x20Reflect.defineProperty,\x20Reflect.deleteProperty,\x20Reflect.apply,\x20Reflect.construct,\x20Reflect.get,\x20Reflect.getOwnPropertyDescriptor,\x20Reflect.getPrototypeOf,\x20Reflect.has,\x20Reflect.isExtensible,\x20Reflect.ownKeys,\x20Reflect.preventExtensions,\x20Reflect.set,\x20Reflect.setPrototypeOf,\x20Proxy.revocable,\x20Intl.getCanonicalLocales,\x20Intl.supportedValuesOf,\x20Intl.DateTimeFormat,\x20Intl.NumberFormat,\x20Intl.Collator,\x20Intl.v8BreakIterator,\x20Intl.PluralRules,\x20Intl.RelativeTimeFormat,\x20Intl.ListFormat,\x20Intl.Locale,\x20Intl.DisplayNames,\x20Intl.Segmenter,\x20WebAssembly.compile,\x20WebAssembly.validate,\x20WebAssembly.instantiate,\x20WebAssembly.compileStreaming,\x20WebAssembly.instantiateStreaming,\x20WebAssembly.Module,\x20WebAssembly.Instance,\x20WebAssembly.Table,\x20WebAssembly.Memory,\x20WebAssembly.Global,\x20WebAssembly.Tag,\x20WebAssembly.Exception,\x20WebAssembly.CompileError,\x20WebAssembly.LinkError,\x20WebAssembly.RuntimeError,\x20Document.implementation,\x20Document.URL,\x20Document.documentURI,\x20Document.compatMode,\x20Document.characterSet,\x20Document.charset,\x20Document.inputEncoding,\x20Document.contentType,\x20Document.doctype,\x20Document.documentElement,\x20Document.xmlEncoding,\x20Document.xmlVersion,\x20Document.xmlStandalone,\x20Document.domain,\x20Document.referrer,\x20Document.cookie,\x20Document.lastModified,\x20Document.readyState,\x20Document.title,\x20Document.dir,\x20Document.body,\x20Document.head,\x20Document.images,\x20Document.embeds,\x20Document.plugins,\x20Document.links,\x20Document.forms,\x20Document.scripts,\x20Document.currentScript,\x20Document.defaultView,\x20Document.designMode,\x20Document.onreadystatechange,\x20Document.anchors,\x20Document.applets,\x20Document.fgColor,\x20Document.linkColor,\x20Document.vlinkColor,\x20Document.alinkColor,\x20Document.bgColor,\x20Document.all,\x20Document.scrollingElement,\x20Document.onpointerlockchange,\x20Document.onpointerlockerror,\x20Document.hidden,\x20Document.visibilityState,\x20Document.wasDiscarded,\x20Document.featurePolicy,\x20Document.webkitVisibilityState,\x20Document.webkitHidden,\x20Document.onbeforecopy,\x20Document.onbeforecut,\x20Document.onbeforepaste,\x20Document.onfreeze,\x20Document.onresume,\x20Document.onsearch,\x20Document.onvisibilitychange,\x20Document.fullscreenEnabled,\x20Document.fullscreen,\x20Document.onfullscreenchange,\x20Document.onfullscreenerror,\x20Document.webkitIsFullScreen,\x20Document.webkitCurrentFullScreenElement,\x20Document.webkitFullscreenEnabled,\x20Document.webkitFullscreenElement,\x20Document.onwebkitfullscreenchange,\x20Document.onwebkitfullscreenerror,\x20Document.rootElement,\x20Document.onbeforexrselect,\x20Document.onabort,\x20Document.onblur,\x20Document.oncancel,\x20Document.oncanplay,\x20Document.oncanplaythrough,\x20Document.onchange,\x20Document.onclick,\x20Document.onclose,\x20Document.oncontextlost,\x20Document.oncontextmenu,\x20Document.oncontextrestored,\x20Document.oncuechange,\x20Document.ondblclick,\x20Document.ondrag,\x20Document.ondragend,\x20Document.ondragenter,\x20Document.ondragleave,\x20Document.ondragover,\x20Document.ondragstart,\x20Document.ondrop,\x20Document.ondurationchange,\x20Document.onemptied,\x20Document.onended,\x20Document.onerror,\x20Document.onfocus,\x20Document.onformdata,\x20Document.oninput,\x20Document.oninvalid,\x20Document.onkeydown,\x20Document.onkeypress,\x20Document.onkeyup,\x20Document.onload,\x20Document.onloadeddata,\x20Document.onloadedmetadata,\x20Document.onloadstart,\x20Document.onmousedown,\x20Document.onmouseenter,\x20Document.onmouseleave,\x20Document.onmousemove,\x20Document.onmouseout,\x20Document.onmouseover,\x20Document.onmouseup,\x20Document.onmousewheel,\x20Document.onpause,\x20Document.onplay,\x20Document.onplaying,\x20Document.onprogress,\x20Document.onratechange,\x20Document.onreset,\x20Document.onresize,\x20Document.onscroll,\x20Document.onsecuritypolicyviolation,\x20Document.onseeked,\x20Document.onseeking,\x20Document.onselect,\x20Document.onslotchange,\x20Document.onstalled,\x20Document.onsubmit,\x20Document.onsuspend,\x20Document.ontimeupdate,\x20Document.ontoggle,\x20Document.onvolumechange,\x20Document.onwaiting,\x20Document.onwebkitanimationend,\x20Document.onwebkitanimationiteration,\x20Document.onwebkitanimationstart,\x20Document.onwebkittransitionend,\x20Document.onwheel,\x20Document.onauxclick,\x20Document.ongotpointercapture,\x20Document.onlostpointercapture,\x20Document.onpointerdown,\x20Document.onpointermove,\x20Document.onpointerup,\x20Document.onpointercancel,\x20Document.onpointerover,\x20Document.onpointerout,\x20Document.onpointerenter,\x20Document.onpointerleave,\x20Document.onselectstart,\x20Document.onselectionchange,\x20Document.onanimationend,\x20Document.onanimationiteration,\x20Document.onanimationstart,\x20Document.ontransitionrun,\x20Document.ontransitionstart,\x20Document.ontransitionend,\x20Document.ontransitioncancel,\x20Document.oncopy,\x20Document.oncut,\x20Document.onpaste,\x20Document.children,\x20Document.firstElementChild,\x20Document.lastElementChild,\x20Document.childElementCount,\x20Document.activeElement,\x20Document.styleSheets,\x20Document.pointerLockElement,\x20Document.fullscreenElement,\x20Document.adoptedStyleSheets,\x20Document.fonts,\x20Document.adoptNode,\x20Document.append,\x20Document.captureEvents,\x20Document.caretRangeFromPoint,\x20Document.clear,\x20Document.close,\x20Document.createAttribute,\x20Document.createAttributeNS,\x20Document.createCDATASection,\x20Document.createComment,\x20Document.createDocumentFragment,\x20Document.createElement,\x20Document.createElementNS,\x20Document.createEvent,\x20Document.createExpression,\x20Document.createNSResolver,\x20Document.createNodeIterator,\x20Document.createProcessingInstruction,\x20Document.createRange,\x20Document.createTextNode,\x20Document.createTreeWalker,\x20Document.elementFromPoint,\x20Document.elementsFromPoint,\x20Document.evaluate,\x20Document.execCommand,\x20Document.exitFullscreen,\x20Document.exitPointerLock,\x20Document.getElementById,\x20Document.getElementsByClassName,\x20Document.getElementsByName,\x20Document.getElementsByTagName,\x20Document.getElementsByTagNameNS,\x20Document.getSelection,\x20Document.hasFocus,\x20Document.importNode,\x20Document.open,\x20Document.prepend,\x20Document.queryCommandEnabled,\x20Document.queryCommandIndeterm,\x20Document.queryCommandState,\x20Document.queryCommandSupported,\x20Document.queryCommandValue,\x20Document.querySelector,\x20Document.querySelectorAll,\x20Document.releaseEvents,\x20Document.replaceChildren,\x20Document.webkitCancelFullScreen,\x20Document.webkitExitFullscreen,\x20Document.write,\x20Document.writeln,\x20Document.fragmentDirective,\x20Document.onbeforematch,\x20Document.timeline,\x20Document.pictureInPictureEnabled,\x20Document.pictureInPictureElement,\x20Document.onpointerrawupdate,\x20Document.exitPictureInPicture,\x20Document.getAnimations,\x20Element.namespaceURI,\x20Element.prefix,\x20Element.localName,\x20Element.tagName,\x20Element.id,\x20Element.className,\x20Element.classList,\x20Element.slot,\x20Element.attributes,\x20Element.shadowRoot,\x20Element.part,\x20Element.assignedSlot,\x20Element.innerHTML,\x20Element.outerHTML,\x20Element.scrollTop,\x20Element.scrollLeft,\x20Element.scrollWidth,\x20Element.scrollHeight,\x20Element.clientTop,\x20Element.clientLeft,\x20Element.clientWidth,\x20Element.clientHeight,\x20Element.attributeStyleMap,\x20Element.onbeforecopy,\x20Element.onbeforecut,\x20Element.onbeforepaste,\x20Element.onsearch,\x20Element.elementTiming,\x20Element.onfullscreenchange,\x20Element.onfullscreenerror,\x20Element.onwebkitfullscreenchange,\x20Element.onwebkitfullscreenerror,\x20Element.role,\x20Element.ariaAtomic,\x20Element.ariaAutoComplete,\x20Element.ariaBusy,\x20Element.ariaChecked,\x20Element.ariaColCount,\x20Element.ariaColIndex,\x20Element.ariaColSpan,\x20Element.ariaCurrent,\x20Element.ariaDescription,\x20Element.ariaDisabled,\x20Element.ariaExpanded,\x20Element.ariaHasPopup,\x20Element.ariaHidden,\x20Element.ariaInvalid,\x20Element.ariaKeyShortcuts,\x20Element.ariaLabel,\x20Element.ariaLevel,\x20Element.ariaLive,\x20Element.ariaModal,\x20Element.ariaMultiLine,\x20Element.ariaMultiSelectable,\x20Element.ariaOrientation,\x20Element.ariaPlaceholder,\x20Element.ariaPosInSet,\x20Element.ariaPressed,\x20Element.ariaReadOnly,\x20Element.ariaRelevant,\x20Element.ariaRequired,\x20Element.ariaRoleDescription,\x20Element.ariaRowCount,\x20Element.ariaRowIndex,\x20Element.ariaRowSpan,\x20Element.ariaSelected,\x20Element.ariaSetSize,\x20Element.ariaSort,\x20Element.ariaValueMax,\x20Element.ariaValueMin,\x20Element.ariaValueNow,\x20Element.ariaValueText,\x20Element.children,\x20Element.firstElementChild,\x20Element.lastElementChild,\x20Element.childElementCount,\x20Element.previousElementSibling,\x20Element.nextElementSibling,\x20Element.after,\x20Element.animate,\x20Element.append,\x20Element.attachShadow,\x20Element.before,\x20Element.closest,\x20Element.computedStyleMap,\x20Element.getAttribute,\x20Element.getAttributeNS,\x20Element.getAttributeNames,\x20Element.getAttributeNode,\x20Element.getAttributeNodeNS,\x20Element.getBoundingClientRect,\x20Element.getClientRects,\x20Element.getElementsByClassName,\x20Element.getElementsByTagName,\x20Element.getElementsByTagNameNS,\x20Element.getInnerHTML,\x20Element.hasAttribute,\x20Element.hasAttributeNS,\x20Element.hasAttributes,\x20Element.hasPointerCapture,\x20Element.insertAdjacentElement,\x20Element.insertAdjacentHTML,\x20Element.insertAdjacentText,\x20Element.matches,\x20Element.prepend,\x20Element.querySelector,\x20Element.querySelectorAll,\x20Element.releasePointerCapture,\x20Element.remove,\x20Element.removeAttribute,\x20Element.removeAttributeNS,\x20Element.removeAttributeNode,\x20Element.replaceChildren,\x20Element.replaceWith,\x20Element.requestFullscreen,\x20Element.requestPointerLock,\x20Element.scroll,\x20Element.scrollBy,\x20Element.scrollIntoView,\x20Element.scrollIntoViewIfNeeded,\x20Element.scrollTo,\x20Element.setAttribute,\x20Element.setAttributeNS,\x20Element.setAttributeNode,\x20Element.setAttributeNodeNS,\x20Element.setPointerCapture,\x20Element.toggleAttribute,\x20Element.webkitMatchesSelector,\x20Element.webkitRequestFullScreen,\x20Element.webkitRequestFullscreen,\x20Element.getAnimations'},'Firefox':{'version':0x66,'windowKeys':'undefined,\x20globalThis,\x20Array,\x20Boolean,\x20JSON,\x20Date,\x20Math,\x20Number,\x20String,\x20RegExp,\x20Error,\x20InternalError,\x20AggregateError,\x20EvalError,\x20RangeError,\x20ReferenceError,\x20SyntaxError,\x20TypeError,\x20URIError,\x20ArrayBuffer,\x20Int8Array,\x20Uint8Array,\x20Int16Array,\x20Uint16Array,\x20Int32Array,\x20Uint32Array,\x20Float32Array,\x20Float64Array,\x20Uint8ClampedArray,\x20BigInt64Array,\x20BigUint64Array,\x20BigInt,\x20Proxy,\x20WeakMap,\x20Set,\x20DataView,\x20Symbol,\x20Intl,\x20Reflect,\x20WeakSet,\x20Atomics,\x20Promise,\x20WebAssembly,\x20FinalizationRegistry,\x20WeakRef,\x20NaN,\x20Infinity,\x20isNaN,\x20isFinite,\x20parseFloat,\x20parseInt,\x20escape,\x20unescape,\x20decodeURI,\x20encodeURI,\x20decodeURIComponent,\x20encodeURIComponent,\x20SVGGradientElement,\x20StyleSheetList,\x20HTMLSlotElement,\x20SVGMPathElement,\x20SVGPathElement,\x20PermissionStatus,\x20CSSMediaRule,\x20TrackEvent,\x20PopStateEvent,\x20GamepadButton,\x20Attr,\x20CSSConditionRule,\x20ConstantSourceNode,\x20BaseAudioContext,\x20StaticRange,\x20HTMLAreaElement,\x20HTMLPictureElement,\x20FileReader,\x20SVGLengthList,\x20SpeechSynthesisUtterance,\x20SVGSymbolElement,\x20ElementInternals,\x20PerformanceServerTiming,\x20LockManager,\x20HTMLFrameElement,\x20FocusEvent,\x20SVGAElement,\x20SVGAnimatedPreserveAspectRatio,\x20Credential,\x20RTCStatsReport,\x20WebGLProgram,\x20TextEncoder,\x20MediaSession,\x20MediaDevices,\x20MediaSource,\x20PerformanceEventTiming,\x20PerformanceObserverEntryList,\x20SVGAnimatedInteger,\x20SVGSVGElement,\x20Screen,\x20SVGFEComponentTransferElement,\x20CSSFontFaceRule,\x20FileSystem,\x20IDBOpenDBRequest,\x20PeriodicWave,\x20IDBVersionChangeEvent,\x20WebGLRenderingContext,\x20CanvasCaptureMediaStream,\x20Image,\x20DOMMatrixReadOnly,\x20DataTransfer,\x20HTMLUListElement,\x20ReadableStreamDefaultReader,\x20SVGTransform,\x20Path2D,\x20SVGAnimatedNumberList,\x20SubmitEvent,\x20SVGTextPathElement,\x20GainNode,\x20ReadableByteStreamController,\x20SVGMatrix,\x20PaintRequestList,\x20KeyframeEffect,\x20SVGFETileElement,\x20SVGFESpotLightElement,\x20HTMLOutputElement,\x20PerformanceResourceTiming,\x20FileSystemDirectoryEntry,\x20DOMStringMap,\x20SVGGeometryElement,\x20SVGFEFuncGElement,\x20PageTransitionEvent,\x20HTMLAudioElement,\x20DOMQuad,\x20ByteLengthQueuingStrategy,\x20SVGUseElement,\x20MathMLElement,\x20CSSPageRule,\x20AnimationTimeline,\x20GeolocationPosition,\x20ClipboardEvent,\x20CSS2Properties,\x20CloseEvent,\x20HTMLTemplateElement,\x20DragEvent,\x20WebGLShader,\x20SVGFEImageElement,\x20HTMLMarqueeElement,\x20URLSearchParams,\x20MediaStreamEvent,\x20SharedWorker,\x20MimeType,\x20CompositionEvent,\x20PerformanceTiming,\x20SVGFEMergeElement,\x20mozRTCIceCandidate,\x20ResizeObserver,\x20RTCIceCandidate,\x20DOMRectList,\x20CustomElementRegistry,\x20XMLDocument,\x20Worklet,\x20DOMRectReadOnly,\x20MediaList,\x20HTMLFormControlsCollection,\x20SVGRectElement,\x20DOMPointReadOnly,\x20IDBFactory,\x20HTMLCollection,\x20HTMLBRElement,\x20HTMLFieldSetElement,\x20HTMLSelectElement,\x20Gamepad,\x20AudioNode,\x20SVGSetElement,\x20CaretPosition,\x20HTMLParagraphElement,\x20HTMLScriptElement,\x20WebGLShaderPrecisionFormat,\x20FileList,\x20MediaDeviceInfo,\x20RadioNodeList,\x20AudioDestinationNode,\x20SVGNumberList,\x20BeforeUnloadEvent,\x20IDBCursor,\x20HTMLAllCollection,\x20MediaError,\x20SVGFEBlendElement,\x20WebGLActiveInfo,\x20InputEvent,\x20MediaStream,\x20Range,\x20HTMLHtmlElement,\x20HTMLAnchorElement,\x20FormData,\x20DOMMatrix,\x20AudioBufferSourceNode,\x20HTMLElement,\x20IdleDeadline,\x20CanvasGradient,\x20TreeWalker,\x20MouseEvent,\x20KeyboardEvent,\x20PerformanceNavigation,\x20AudioBuffer,\x20HTMLInputElement,\x20DOMRect,\x20SpeechSynthesisErrorEvent,\x20SVGAnimatedRect,\x20BroadcastChannel,\x20SVGTextPositioningElement,\x20RTCRtpSender,\x20HTMLButtonElement,\x20FileSystemDirectoryReader,\x20SVGStopElement,\x20GamepadEvent,\x20MediaKeySystemAccess,\x20FontFaceSetLoadEvent,\x20PushSubscriptionOptions,\x20StereoPannerNode,\x20HTMLDialogElement,\x20SVGAnimatedEnumeration,\x20MutationRecord,\x20HTMLStyleElement,\x20SVGPolylineElement,\x20SVGFESpecularLightingElement,\x20FontFace,\x20DocumentFragment,\x20NamedNodeMap,\x20WebGL2RenderingContext,\x20MediaRecorder,\x20FileSystemFileEntry,\x20VideoPlaybackQuality,\x20Selection,\x20Response,\x20CSSSupportsRule,\x20Request,\x20MediaCapabilities,\x20ServiceWorker,\x20HTMLDataElement,\x20WritableStreamDefaultWriter,\x20SVGFilterElement,\x20PerformancePaintTiming,\x20CSSStyleSheet,\x20SVGGraphicsElement,\x20URL,\x20CSSStyleDeclaration,\x20PerformanceMark,\x20HTMLVideoElement,\x20ErrorEvent,\x20SVGForeignObjectElement,\x20GeolocationPositionError,\x20ResizeObserverSize,\x20SVGNumber,\x20WebGLUniformLocation,\x20ImageBitmap,\x20TransformStream,\x20PointerEvent,\x20ShadowRoot,\x20GeolocationCoordinates,\x20DOMParser,\x20SVGPreserveAspectRatio,\x20DelayNode,\x20HTMLDivElement,\x20SVGTextElement,\x20HTMLOptionElement,\x20NodeFilter,\x20StorageManager,\x20ScrollAreaEvent,\x20WebGLRenderbuffer,\x20TextTrackCue,\x20SVGTextContentElement,\x20TransformStreamDefaultController,\x20RTCRtpTransceiver,\x20SVGAnimatedString,\x20CredentialsContainer,\x20PopupBlockedEvent,\x20WaveShaperNode,\x20CSSRuleList,\x20FileSystemEntry,\x20SVGAnimateTransformElement,\x20SVGMetadataElement,\x20CSSKeyframeRule,\x20SVGCircleElement,\x20HTMLTableRowElement,\x20IIRFilterNode,\x20IntersectionObserverEntry,\x20Notification,\x20CSSLayerStatementRule,\x20SVGAnimatedNumber,\x20MediaStreamTrack,\x20HTMLImageElement,\x20ScriptProcessorNode,\x20SVGFEGaussianBlurElement,\x20AudioParam,\x20CustomEvent,\x20MessageChannel,\x20MediaQueryListEvent,\x20CacheStorage,\x20SVGFEFloodElement,\x20PaintRequest,\x20DOMImplementation,\x20HTMLPreElement,\x20ConvolverNode,\x20HTMLEmbedElement,\x20SVGElement,\x20TextTrack,\x20IDBKeyRange,\x20DeviceOrientationEvent,\x20RTCDataChannelEvent,\x20MediaQueryList,\x20SVGLength,\x20SVGStyleElement,\x20Geolocation,\x20CSS,\x20SVGFEDropShadowElement,\x20ServiceWorkerContainer,\x20MediaStreamTrackEvent,\x20NavigationPreloadManager,\x20SVGViewElement,\x20FormDataEvent,\x20MediaStreamTrackAudioSourceNode,\x20MouseScrollEvent,\x20RTCRtpReceiver,\x20IDBObjectStore,\x20PerformanceEntry,\x20HTMLBodyElement,\x20HashChangeEvent,\x20SVGAngle,\x20RTCDTMFToneChangeEvent,\x20Clipboard,\x20Cache,\x20HTMLIFrameElement,\x20SVGScriptElement,\x20Storage,\x20BiquadFilterNode,\x20WritableStreamDefaultController,\x20IDBMutableFile,\x20console,\x20RTCPeerConnectionIceEvent,\x20StyleSheet,\x20ProgressEvent,\x20BlobEvent,\x20HTMLMediaElement,\x20HTMLSourceElement,\x20MediaKeyMessageEvent,\x20IDBIndex,\x20webkitURL,\x20Worker,\x20WebGLQuery,\x20HTMLLabelElement,\x20RTCDtlsTransport,\x20SVGFEMorphologyElement,\x20ChannelSplitterNode,\x20SourceBuffer,\x20SVGTSpanElement,\x20MediaMetadata,\x20SVGPatternElement,\x20CSSNamespaceRule,\x20HTMLQuoteElement,\x20HTMLMenuElement,\x20WebGLTransformFeedback,\x20MediaCapabilitiesInfo,\x20SVGFEFuncBElement,\x20ValidityState,\x20HTMLUnknownElement,\x20CharacterData,\x20HTMLDataListElement,\x20SVGRect,\x20DeviceMotionEvent,\x20OfflineResourceList,\x20XMLSerializer,\x20HTMLMeterElement,\x20SourceBufferList,\x20CountQueuingStrategy,\x20SecurityPolicyViolationEvent,\x20AudioContext,\x20PerformanceMeasure,\x20HTMLHeadingElement,\x20ResizeObserverEntry,\x20Audio,\x20TextMetrics,\x20U2F,\x20ServiceWorkerRegistration,\x20History,\x20AnimationPlaybackEvent,\x20Plugin,\x20CSSImportRule,\x20DOMStringList,\x20HTMLOptGroupElement,\x20RTCTrackEvent,\x20XPathResult,\x20Lock,\x20RTCDataChannel,\x20HTMLDirectoryElement,\x20ProcessingInstruction,\x20DOMException,\x20ReadableStream,\x20TextTrackCueList,\x20AnimationEvent,\x20MediaStreamAudioDestinationNode,\x20HTMLTableElement,\x20SVGPoint,\x20HTMLModElement,\x20IDBTransaction,\x20DynamicsCompressorNode,\x20SVGAnimatedTransformList,\x20PublicKeyCredential,\x20SVGFEDiffuseLightingElement,\x20CSSRule,\x20IDBDatabase,\x20HTMLSpanElement,\x20SVGFEColorMatrixElement,\x20TransitionEvent,\x20AudioListener,\x20HTMLFormElement,\x20SVGFEMergeNodeElement,\x20AbortController,\x20RTCPeerConnection,\x20AnimationEffect,\x20Permissions,\x20CanvasRenderingContext2D,\x20SVGLineElement,\x20MediaStreamAudioSourceNode,\x20CSSKeyframesRule,\x20Directory,\x20MediaKeys,\x20WebGLTexture,\x20MediaKeySession,\x20Comment,\x20WritableStream,\x20CSSGroupingRule,\x20SVGEllipseElement,\x20WheelEvent,\x20SubtleCrypto,\x20XPathExpression,\x20NodeList,\x20AuthenticatorAssertionResponse,\x20CSSMozDocumentRule,\x20SVGAnimatedAngle,\x20File,\x20SVGLinearGradientElement,\x20AnalyserNode,\x20MutationObserver,\x20SVGStringList,\x20SVGAnimateMotionElement,\x20BarProp,\x20XMLHttpRequestEventTarget,\x20Text,\x20CanvasPattern,\x20FontFaceSet,\x20Crypto,\x20IDBRequest,\x20UIEvent,\x20SVGFEDisplacementMapElement,\x20VTTCue,\x20KeyEvent,\x20WebGLBuffer,\x20StorageEvent,\x20OscillatorNode,\x20AuthenticatorResponse,\x20OfflineAudioContext,\x20MediaElementAudioSourceNode,\x20HTMLTextAreaElement,\x20ImageData,\x20SpeechSynthesisVoice,\x20SVGFEConvolveMatrixElement,\x20SVGMarkerElement,\x20AudioParamMap,\x20CSSTransition,\x20CSSFontFeatureValuesRule,\x20ChannelMergerNode,\x20AudioProcessingEvent,\x20HTMLHeadElement,\x20AudioScheduledSourceNode,\x20WebKitCSSMatrix,\x20MediaKeyError,\x20DOMRequest,\x20HTMLLIElement,\x20SVGDefsElement,\x20SVGFETurbulenceElement,\x20SVGUnitTypes,\x20PushSubscription,\x20RTCCertificate,\x20ReadableStreamBYOBRequest,\x20GamepadHapticActuator,\x20TextDecoder,\x20HTMLHRElement,\x20SVGClipPathElement,\x20MimeTypeArray,\x20Element,\x20TextTrackList,\x20SVGPointList,\x20XMLHttpRequest,\x20ImageBitmapRenderingContext,\x20MutationEvent,\x20GamepadPose,\x20MediaRecorderErrorEvent,\x20SVGFEDistantLightElement,\x20HTMLParamElement,\x20OfflineAudioCompletionEvent,\x20IntersectionObserver,\x20HTMLOptionsCollection,\x20SVGAnimationElement,\x20HTMLOListElement,\x20SVGFEFuncAElement,\x20HTMLCanvasElement,\x20SVGAnimatedLength,\x20HTMLProgressElement,\x20HTMLTableColElement,\x20SpeechSynthesisEvent,\x20Location,\x20SVGAnimatedBoolean,\x20HTMLDListElement,\x20HTMLTableCellElement,\x20HTMLDetailsElement,\x20CSSAnimation,\x20XPathEvaluator,\x20RTCDTMFSender,\x20SVGFEOffsetElement,\x20XSLTProcessor,\x20SVGFECompositeElement,\x20ReadableStreamDefaultController,\x20WebGLSync,\x20mozRTCSessionDescription,\x20MediaEncryptedEvent,\x20WebGLSampler,\x20AuthenticatorAttestationResponse,\x20ScreenOrientation,\x20SVGComponentTransferFunctionElement,\x20PerformanceObserver,\x20CDATASection,\x20CSSStyleRule,\x20HTMLTableSectionElement,\x20AudioWorklet,\x20MessagePort,\x20HTMLLegendElement,\x20WebGLFramebuffer,\x20VisualViewport,\x20Blob,\x20PannerNode,\x20SVGFEPointLightElement,\x20TimeEvent,\x20HTMLFontElement,\x20DOMPoint,\x20NodeIterator,\x20WebGLContextEvent,\x20DOMTokenList,\x20HTMLTitleElement,\x20XMLHttpRequestUpload,\x20VTTRegion,\x20SVGSwitchElement,\x20SVGTransformList,\x20AbortSignal,\x20SVGFEFuncRElement,\x20Option,\x20HTMLTrackElement,\x20EventSource,\x20CSSCounterStyleRule,\x20HTMLFrameSetElement,\x20SVGImageElement,\x20HTMLMetaElement,\x20SVGGElement,\x20HTMLLinkElement,\x20HTMLMapElement,\x20mozRTCPeerConnection,\x20HTMLObjectElement,\x20HTMLTableCaptionElement,\x20HTMLBaseElement,\x20SVGAnimatedLengthList,\x20AbstractRange,\x20PromiseRejectionEvent,\x20TimeRanges,\x20PluginArray,\x20Animation,\x20SVGMaskElement,\x20IDBFileRequest,\x20SVGRadialGradientElement,\x20SVGAnimateElement,\x20MediaKeyStatusMap,\x20IDBFileHandle,\x20DocumentTimeline,\x20DataTransferItemList,\x20PushManager,\x20Navigator,\x20ReadableStreamBYOBReader,\x20MessageEvent,\x20WebSocket,\x20SVGPolygonElement,\x20WebGLVertexArrayObject,\x20SVGTitleElement,\x20HTMLTimeElement,\x20IDBCursorWithValue,\x20AudioWorkletNode,\x20SpeechSynthesis,\x20DocumentType,\x20DataTransferItem,\x20RTCSessionDescription,\x20CSSLayerBlockRule,\x20CryptoKey,\x20SVGDescElement,\x20Headers,\x20Function,\x20Object,\x20eval,\x20EventTarget,\x20Window,\x20close,\x20stop,\x20focus,\x20blur,\x20open,\x20alert,\x20confirm,\x20prompt,\x20print,\x20postMessage,\x20captureEvents,\x20releaseEvents,\x20getSelection,\x20getComputedStyle,\x20matchMedia,\x20moveTo,\x20moveBy,\x20resizeTo,\x20resizeBy,\x20scroll,\x20scrollTo,\x20scrollBy,\x20getDefaultComputedStyle,\x20scrollByLines,\x20scrollByPages,\x20sizeToContent,\x20updateCommands,\x20find,\x20dump,\x20setResizable,\x20requestIdleCallback,\x20cancelIdleCallback,\x20requestAnimationFrame,\x20cancelAnimationFrame,\x20reportError,\x20btoa,\x20atob,\x20setTimeout,\x20clearTimeout,\x20setInterval,\x20clearInterval,\x20queueMicrotask,\x20createImageBitmap,\x20structuredClone,\x20fetch,\x20self,\x20name,\x20history,\x20customElements,\x20locationbar,\x20menubar,\x20personalbar,\x20scrollbars,\x20statusbar,\x20toolbar,\x20status,\x20closed,\x20event,\x20frames,\x20length,\x20opener,\x20parent,\x20frameElement,\x20navigator,\x20clientInformation,\x20external,\x20applicationCache,\x20screen,\x20innerWidth,\x20innerHeight,\x20scrollX,\x20pageXOffset,\x20scrollY,\x20pageYOffset,\x20screenLeft,\x20screenTop,\x20screenX,\x20screenY,\x20outerWidth,\x20outerHeight,\x20performance,\x20mozInnerScreenX,\x20mozInnerScreenY,\x20devicePixelRatio,\x20scrollMaxX,\x20scrollMaxY,\x20fullScreen,\x20ondevicemotion,\x20ondeviceorientation,\x20onabsolutedeviceorientation,\x20InstallTrigger,\x20visualViewport,\x20crypto,\x20onabort,\x20onblur,\x20onfocus,\x20onauxclick,\x20onbeforeinput,\x20oncanplay,\x20oncanplaythrough,\x20onchange,\x20onclick,\x20onclose,\x20oncontextmenu,\x20oncuechange,\x20ondblclick,\x20ondrag,\x20ondragend,\x20ondragenter,\x20ondragexit,\x20ondragleave,\x20ondragover,\x20ondragstart,\x20ondrop,\x20ondurationchange,\x20onemptied,\x20onended,\x20onformdata,\x20oninput,\x20oninvalid,\x20onkeydown,\x20onkeypress,\x20onkeyup,\x20onload,\x20onloadeddata,\x20onloadedmetadata,\x20onloadend,\x20onloadstart,\x20onmousedown,\x20onmouseenter,\x20onmouseleave,\x20onmousemove,\x20onmouseout,\x20onmouseover,\x20onmouseup,\x20onwheel,\x20onpause,\x20onplay,\x20onplaying,\x20onprogress,\x20onratechange,\x20onreset,\x20onresize,\x20onscroll,\x20onsecuritypolicyviolation,\x20onseeked,\x20onseeking,\x20onselect,\x20onslotchange,\x20onstalled,\x20onsubmit,\x20onsuspend,\x20ontimeupdate,\x20onvolumechange,\x20onwaiting,\x20onselectstart,\x20onselectionchange,\x20ontoggle,\x20onpointercancel,\x20onpointerdown,\x20onpointerup,\x20onpointermove,\x20onpointerout,\x20onpointerover,\x20onpointerenter,\x20onpointerleave,\x20ongotpointercapture,\x20onlostpointercapture,\x20onmozfullscreenchange,\x20onmozfullscreenerror,\x20onanimationcancel,\x20onanimationend,\x20onanimationiteration,\x20onanimationstart,\x20ontransitioncancel,\x20ontransitionend,\x20ontransitionrun,\x20ontransitionstart,\x20onwebkitanimationend,\x20onwebkitanimationiteration,\x20onwebkitanimationstart,\x20onwebkittransitionend,\x20u2f,\x20onerror,\x20speechSynthesis,\x20onafterprint,\x20onbeforeprint,\x20onbeforeunload,\x20onhashchange,\x20onlanguagechange,\x20onmessage,\x20onmessageerror,\x20onoffline,\x20ononline,\x20onpagehide,\x20onpageshow,\x20onpopstate,\x20onrejectionhandled,\x20onstorage,\x20onunhandledrejection,\x20onunload,\x20ongamepadconnected,\x20ongamepaddisconnected,\x20localStorage,\x20origin,\x20crossOriginIsolated,\x20isSecureContext,\x20indexedDB,\x20caches,\x20sessionStorage,\x20window,\x20document,\x20location,\x20top,\x20netscape,\x20Node,\x20Document,\x20HTMLDocument,\x20EventCounts,\x20Map,\x20Event','cssKeys':L3(0x1f4),'jsKeys':L3(0x9da)}}),T1=({oldList:z0,newList:z1,removeCamelCase:removeCamelCase=![]}={})=>{const nu=L3,z2=new Set(z0),z3=new Set(z1);z1[nu(0xa0f)](z5=>z2[nu(0x3af)](z5)),z0[nu(0xa0f)](z5=>z3[nu(0x3af)](z5));const z4=/[a-z][A-Z]/;return{'removed':!removeCamelCase?[...z2]:[...z2][nu(0x73b)](z5=>!z4[nu(0x579)](z5)),'added':!removeCamelCase?[...z3]:[...z3][nu(0x73b)](z5=>!z4[nu(0x579)](z5))};},T2=Z?'Chrome':d?L3(0xab7):'',T3=z0=>{const nF=L3,z1={'71':[nF(0x9b1)],'72':[nF(0x775),'offset-anchor',nF(0x7f5),nF(0x1f0),'offset-rotate','rotate',nF(0x264),nF(0x84b)],'73':[nF(0x2b7),nF(0x5bf)],'74-79':[nF(0xbad),nF(0x964)],'80-88':[nF(0x384)],'89-90':[nF(0x3df),'!-moz-outline-radius-bottomleft','!-moz-outline-radius-bottomright',nF(0xb37),nF(0x793),nF(0x7e7)],'91':[nF(0x6e9)],'92-95':[nF(0x31d)],'96':['color-scheme'],'97':[nF(0x3a4),nF(0x375),'d'],'98-101':[nF(0x9e8)],'102':[nF(0xb04)]},z2={'76':[nF(0x5d6)],'77-80':[nF(0x2b7),nF(0x5bf)],'81':[nF(0xba9),nF(0x309)],'83':['contain-intrinsic-size'],'84':[nF(0x384),nF(0x567)],'85-86':[nF(0x89f),nF(0x27d),nF(0x71f),nF(0xf6),nF(0x5a7),nF(0x83a)],'87':['ascent-override',nF(0x444),nF(0xb8d),nF(0x42c),nF(0x7a8),nF(0x4ca),nF(0x5d2),'border-inline-style',nF(0x7c4),nF(0x2bd),nF(0xb46),nF(0x427),'inset-block-end',nF(0xa5d),nF(0x288),'inset-inline-end',nF(0xb2e),'line-gap-override',nF(0x14c),nF(0x320),nF(0x8a9),nF(0x645),nF(0x1ea),'text-underline-offset'],'88':['aspect-ratio'],'89':[nF(0x438),nF(0x3fe),nF(0x74e),'border-start-start-radius','forced-color-adjust'],'90':['overflow-clip-margin'],'91':[nF(0x5f7),nF(0x8bb),nF(0x860),nF(0xa19),nF(0x990),nF(0x8af),nF(0x4c7),'suffix',nF(0x799),nF(0x164)],'92':[nF(0xa73)],'93':[nF(0x31d)],'94':[nF(0x375)],'95-96':['app-region',nF(0x881),nF(0x939),nF(0x1a4),nF(0x731)],'97-98':[nF(0xbae),'font-synthesis-style','font-synthesis-weight',nF(0x742)],'99-100':[nF(0x1e7),'text-emphasis-position','text-emphasis-style',nF(0x5c4)],'101-103':[nF(0x9fc),'base-palette',nF(0x89a)],'104':[nF(0x9e3)],'105':[nF(0xb20),nF(0x909),nF(0xbac)]},z3={'71':[nF(0x820),nF(0x942)],'72-73':[nF(0x7e0),nF(0x758),'Geolocation','GeolocationCoordinates',nF(0x6eb),nF(0x830),nF(0xa85)],'74':[nF(0x758),nF(0x8ae)],'75':[nF(0x37a),nF(0x4b1),nF(0x88b),'DocumentTimeline','SubmitEvent'],'76-77':[nF(0x27f),nF(0x632),'AudioWorkletNode',nF(0xac8)],'78':[nF(0x187)],'79-81':['AggregateError',nF(0x79e)],'82':[nF(0x6b2),nF(0x8b7),nF(0x1d3)],'83':['MediaMetadata',nF(0x8b7),nF(0x947)],'84':[nF(0x53f)],'85-86':[nF(0x53f),nF(0x5d3),'!onshow'],'87':[nF(0x8a7)],'88':[nF(0x8a7),nF(0x9f2)],'89-92':[nF(0x4d0),'!ondeviceproximity','!onuserproximity'],'93-95':['ElementInternals'],'96':[nF(0x9a9),nF(0x962)],'97':[nF(0x95b),nF(0xb6d)],'98':[nF(0xb6f)],'99':[nF(0x527)],'100-102':[nF(0xb61)]},z4={'80':['CompressionStream',nF(0x14a),nF(0x2da),nF(0xa43),nF(0x660),nF(0x563)],'81':[nF(0x2a3),nF(0xa88),'XRHitTestSource',nF(0x790),nF(0x476),nF(0x94d)],'83':['BarcodeDetector',nF(0x564),'XRSystem'],'84':['AnimationPlaybackEvent','AnimationTimeline',nF(0x4b1),nF(0x88b),nF(0x255),'FinalizationRegistry','LayoutShiftAttribution',nF(0x19e),nF(0x640),'WakeLockSentinel',nF(0x212),nF(0x19f)],'85':[nF(0x5c1),nF(0x145),nF(0xb51),nF(0xa12),'XRAnchorSet'],'86':['RTCEncodedAudioFrame',nF(0x4f1)],'87':['CookieChangeEvent','CookieStore',nF(0x4db),nF(0x19d)],'88':[nF(0x19d),'!BarcodeDetector'],'89':[nF(0xad8),'ReadableStreamBYOBReader',nF(0x28c),nF(0xb71),nF(0xa76)],'90':[nF(0x957),nF(0x1ac),nF(0xa79),nF(0xab1),nF(0x87a),nF(0x8dc),nF(0x381),nF(0x4cd)],'91':[nF(0xaad),nF(0x970),nF(0x7cd)],'92':['CSSCounterStyleRule','!SharedArrayBuffer'],'93':['WritableStreamDefaultController'],'94':[nF(0xa55),nF(0x658),nF(0x950),nF(0x433),nF(0x4b0),nF(0x1f7),nF(0x62f),nF(0xa40),nF(0x37e),'VideoColorSpace',nF(0x6bf),'VideoEncoder',nF(0x46c),nF(0x3a8),nF(0x58a),nF(0x515),nF(0x541),nF(0x568),nF(0x1e9),nF(0xae6),nF(0x978),nF(0x38e),'TaskSignal',nF(0x46b)],'95-96':['URLPattern'],'97-98':[nF(0x714),nF(0xaa7),nF(0x695),nF(0xaf9)],'99':[nF(0x44f),'CSSLayerBlockRule',nF(0xb6d)],'100':[nF(0x28b)],'101-104':[nF(0xaa0)],'105':[nF(0x9ce)]},z5={'76':[nF(0x3e9),nF(0x4a4)],'77':['Document.onformdata',nF(0x78b)],'78':['Element.elementTiming'],'79':[nF(0x4c3),'Document.onanimationiteration',nF(0x808),'Document.ontransitionend'],'80':[nF(0x133),'!Element.createShadowRoot',nF(0xa50)],'81':[nF(0x3c2),nF(0xa27),nF(0x6cc),nF(0x5cc),nF(0x536),'Element.ariaAutoComplete','Element.ariaBusy',nF(0x1df),nF(0x9d6),nF(0x6d7),nF(0x502),nF(0x9ff),'Element.ariaDisabled',nF(0x766),nF(0x9c6),nF(0x3b4),'Element.ariaKeyShortcuts','Element.ariaLabel','Element.ariaLevel','Element.ariaLive',nF(0xa6a),nF(0xbb6),nF(0x338),nF(0xa5e),nF(0x8cf),nF(0x9c4),'Element.ariaPressed','Element.ariaReadOnly',nF(0xa1b),nF(0xa2e),'Element.ariaRoleDescription',nF(0x7f3),'Element.ariaRowIndex',nF(0x747),nF(0x8a5),nF(0x508),nF(0x273),nF(0x621),'Element.ariaValueNow',nF(0x103),nF(0xa8f)],'83':[nF(0x601),'Element.onbeforexrselect'],'84':[nF(0x3c3),nF(0x230),nF(0x38b),nF(0x39a)],'85':[nF(0xa8a),nF(0x3ff)],'86':[nF(0x42b),nF(0x9b5),'Element.replaceChildren',nF(0x7c7)],'87-89':[nF(0x589),'Document.ontransitioncancel',nF(0xb4e),nF(0x4a8),nF(0xbb2)],'90':[nF(0x9a4),nF(0x96b),nF(0x582)],'91':[nF(0xb9a)],'92':[nF(0x9ad),nF(0x845)],'93':[nF(0x530),nF(0x85b)],'94':[nF(0xa59),nF(0x85b)],'95-96':[nF(0x2e5),nF(0x70f)],'97-98':[nF(0xa1d),nF(0x1e2),nF(0x93d)],'99-101':[nF(0x4bc),nF(0x4cb),nF(0x531)],'102':[nF(0x9d2),'Document.onbeforematch'],'103-105':[nF(0x681)]},z6={'71':[nF(0x4a4)],'72-73':[nF(0xa7d),nF(0x539)],'74':[nF(0x440),nF(0x922),'!Date.toSource',nF(0x86f),nF(0x68f),nF(0x9b0),nF(0xa53),nF(0x3bf),nF(0x730),nF(0xb60),'!RegExp.toSource',nF(0x99e),nF(0xa95)],'75-76':[nF(0x3c3),nF(0x230),nF(0x39a),nF(0x1ed)],'77':[nF(0x3ff)],'78':['Atomics.add',nF(0x9a1),nF(0x196),nF(0x2a8),nF(0x4e1),nF(0x702),'Atomics.notify',nF(0x916),nF(0x3f1),nF(0x302),nF(0x73e),nF(0x838),nF(0x189),'Document.replaceChildren',nF(0x3e5),'Intl.ListFormat','RegExp.dotAll'],'79-84':['Promise.any'],'85':['!Document.onshow',nF(0xa8a)],'86':[nF(0xa8f)],'87':[nF(0x7f6)],'88-89':[nF(0x96b)],'90-91':[nF(0x9ad),nF(0x845)],'92':[nF(0x85b)],'93-99':['Intl.supportedValuesOf',nF(0x3e9),'Document.onslotchange'],'100':[nF(0x70f),nF(0x2e5)],'101-102':[nF(0x40f)]},z7=z0==nF(0x9d5),z8=z0==nF(0xab7),z9=z7?z2:z8?z1:{},zW=z7?z4:z8?z3:{},zT=z7?z5:z8?z6:{};return{'css':z9,'win':zW,'js':zT};},T4=z0=>{const nv=L3,z1=[nv(0x127),nv(0x6ca),'Boolean',nv(0x49c),'Error',nv(0xad7),nv(0x853),nv(0x2cf),'Date',nv(0x5bc),nv(0x4cc),nv(0x98b),nv(0x156),nv(0x746),nv(0x35b),nv(0x1d0),'Atomics',nv(0x865),'Promise','Reflect',nv(0xa71),nv(0xaba),nv(0xb32),'Document',nv(0x19b)];try{const z2=z1[nv(0x729)]((z3,z4)=>{const nH=nv,z5=[nH(0x8ce),nH(0xb8e),nH(0x480),nH(0x217),'arguments',nH(0x593)],z6=Object[nH(0xab4)](Object[nH(0x836)](z0[z4]||{})),z7=Object[nH(0xab4)](Object['getOwnPropertyDescriptors']((z0[z4]||{})['prototype']||{})),z8=[...new Set([...z6,...z7][nH(0x73b)](zW=>!z5[nH(0x725)](zW)))],z9=z8[nH(0x638)](zW=>z4+'.'+zW);return[...z3,...z9];},[]);return z2;}catch(z3){return console[nv(0xb52)](z3),[];}},T5=z0=>z0['sort']((z1,z2)=>/\d+/[L3(0xad3)](z1)[0x0]-/\d+/[L3(0xad3)](z2)[0x0])['reverse'](),T6=(z0,z1,z2=0x0)=>{const nx=L3,z3=T0(),{version:z4}=z3[T2]||{},z5=z0&&z1;if(!z5)return{};const [z6,z7]=z1?z1[nx(0x184)]('-'):[],z8=z7||z6,z9=+z0>+z8+z2,zW=+z0<+z6-z2,zT=z9||zW,zz=+z8==z4&&+z0>z4,zZ=!zz&&zT,zd=!zZ?0x0:Math[nx(0xb73)](z0-(zW?z6:z8));return{'liedVersion':zZ,'distance':zd};};function T7(z0){const nD=L3;if(!z0['workerScope']||!z0['workerScope'][nD(0x4b4)])return![];const {userAgentVersion:z1}=z0[nD(0xa52)],{privacy:z2}=z0[nD(0x8d4)]||{};if(z2==nD(0xab7)||z2==nD(0x7a2))return![];const {cssVersion:z3,jsVersion:z4}=z0[nD(0x15b)]||{},{liedVersion:z5}=T6(z1,z3),{liedVersion:z6}=T6(z1,z4),z7=z5||z6;return z7;}async function T8({cssComputed:z0,navigatorComputed:z1,windowFeaturesComputed:z2}){const nA=L3;try{const z3=q();await t(z3);const z4=WT?WT:window;if(!z0||!z2){a({'test':'features','passed':![]});return;}const z5=T4(z4),{keys:z6}=z0[nA(0xadd)]||{},{keys:z7}=z2||{},{userAgentParsed:z8}=z1||{},z9=(za,zq)=>/\[native code\]/[nA(0x579)](za[zq]+'')&&nA(0x217)in za[zq]&&za[zq][nA(0x217)]['constructor']['name']===zq,zW=({context:za,allKeys:zq,engineMap:zt,checkNative:checkNative=![]}={})=>{const nY=nA,zM=new Set(zq),zB=new Set(),zO=Object[nY(0xab4)](zt||{})[nY(0x729)]((zi,zy)=>{const nk=nY,zK=zt[zy],zr=zK[nk(0xb8e)],zV=zK[nk(0x73b)](zR=>{const nP=nk,zw=zR['charAt'](0x0)=='!';if(zw){const zm=zR[nP(0x80d)](0x1);return!zM[nP(0x7ea)](zm)&&zB[nP(0x933)](zR);}return zM['has'](zR)&&(checkNative?z9(za,zR):!![])&&zB[nP(0x933)](zR);})['length'];return zr==zV?[...zi,zy]:zi;},[]),zN=T5(zO)[0x0];return{'version':zN,'features':zB};},{css:zT,win:zz,js:zZ}=T3(T2),{version:zd,features:zL}=zW({'context':z4,'allKeys':z6,'engineMap':zT}),{version:zp,features:zn}=zW({'context':z4,'allKeys':z7,'engineMap':zz,'checkNative':!![]}),{version:zb,features:zS}=zW({'context':z4,'allKeys':z5,'engineMap':zZ}),zQ=(za,zq)=>{const na=nA,zt=zq[na(0xaac)](zN=>zN&&!/-/[na(0x579)](zN));if(zt)return zt;const zM=za[na(0xb8e)],zB=za[0x0],zO=za[zM-0x1];return!zM?'':zM==0x1?zB:zO+'-'+zB;},zu=new Set([zd,zp,zb]);zu[nA(0x3af)](undefined);const zF=T5([...zu][nA(0x729)]((za,zq)=>[...za,...zq['split']('-')],[])),zv=zQ(zF,[zd,zp,zb]),zH=(/\d+/['exec'](z8)||[])[0x0],{liedVersion:zx,distance:zD}=T6(zH,zd),{liedVersion:zA,distance:zY}=T6(zH,zb),{liedVersion:zk,distance:zP}=T6(zH,zp);return zx&&(Wt(nA(0x4b4),'v'+zH+nA(0x74d)+zd+nA(0x3f7)),zD>0x1&&h(nA(0x3b0),'v'+zH+'\x20failed\x20CSS\x20features\x20by\x20'+zD+nA(0x5a0))),zA&&(Wt(nA(0x4b4),'v'+zH+nA(0x74d)+zb+nA(0x5e7)),zY>0x2&&h('Navigator.userAgent','v'+zH+nA(0xfc)+zY+nA(0x5a0))),zk&&(Wt('userAgent','v'+zH+nA(0x74d)+zp+'\x20Window\x20features'),zP>0x3&&h(nA(0x3b0),'v'+zH+nA(0x7c5)+zP+nA(0x5a0))),a({'time':z3[nA(0x8c4)](),'test':'features','passed':!![]}),{'versionRange':zF,'version':zv,'cssVersion':zd,'windowVersion':zp,'jsVersion':zb,'cssFeatures':[...zL],'windowFeatures':[...zn],'jsFeatures':[...zS],'jsFeaturesKeys':z5};}catch(za){a({'test':nA(0x15b),'passed':![]}),f(za);return;}}function T9(z0){const nq=L3;if(!z0[nq(0x15b)])return nq(0x7c8)+r[nq(0x30b)]+'</div>\x0a\x09\x09\x09<div>JS/DOM:\x20'+r[nq(0x30b)]+'</div>\x0a\x09\x09</div>\x0a\x09\x09<div\x20class=\x22col-six\x20undefined\x22>\x0a\x09\x09\x09<div>CSS:\x20'+r[nq(0x30b)]+nq(0x5dd)+r['UNKNOWN']+nq(0x692);const {versionRange:z1,version:z2,cssVersion:z3,jsVersion:z4,windowVersion:z5,cssFeatures:z6,windowFeatures:z7,jsFeatures:z8,jsFeaturesKeys:z9}=z0['features']||{},{keys:zW}=z0[nq(0x3f8)]||{},{keys:zT}=z0[nq(0x8d0)]['computedStyle']||{},{userAgentVersion:zz}=z0['workerScope']||{},{css:zZ,win:zd,js:zL}=T3(T2),zp=(zx,zD,zA)=>{const zY=zA>zD;return zY;},zn=({features:zx,name:zD,diff:zA})=>{const nt=nq;return console[nt(0x214)]('%c\x20'+zD+nt(0x7c6)+zA[nt(0x7fd)][nt(0xb8e)]+nt(0x496)+zA[nt(0x24e)][nt(0xb8e)],nt(0x369),'color:\x20Salmon',nt(0x188)),Object[nt(0xab4)](zA)[nt(0xa0f)](zY=>{const nM=nt;return console[nM(0x642)]('%c'+zY+':',nM(0x11c)+(zY==nM(0x24e)?nM(0x3a1):nM(0x1e6))),console[nM(0x642)](zA[zY][nM(0x644)]('\x0a'));}),console[nt(0x642)](zx['join'](',\x20')),console['groupEnd']();},zb={'computedStyleKeys':zT,'windowFeaturesKeys':zW,'jsFeaturesKeys':z9},zS=({id:zx,engineMap:zD,features:zA,browser:zY,report:zk,userAgentVersion:zP})=>{const nB=nq,za=T0(),{windowKeys:zq,cssKeys:zt,jsKeys:zM,version:zB}=za[zY]||{},zO=zp(zY,zB,zP);let zN;if(zx==nB(0x8d0)){const {computedStyleKeys:zy}=zk;zN=!zt?undefined:T1({'oldList':zt[nB(0x184)](',\x20'),'newList':zy,'removeCamelCase':!![]}),zO&&console[nB(0x642)](nB(0x11b)+zY+'\x20'+zP+nB(0x999)+zY+'\x20'+zB+nB(0x15f)),zO&&zn({'features':zy,'name':'CSS','diff':zN});}else{if(zx==nB(0x78f)){const {windowFeaturesKeys:zK}=zk;zN=!zq?undefined:T1({'oldList':zq[nB(0x184)](',\x20'),'newList':zK}),zO&&zn({'features':zK,'name':'Window','diff':zN});}else{if(zx=='js'){const {jsFeaturesKeys:zr}=zk;zN=!zM?undefined:T1({'oldList':zM['split'](',\x20'),'newList':zr}),zO&&zn({'features':zr,'name':'JS','diff':zN});}}}const zi=!zB||!zN||!zN[nB(0x24e)]['length']&&!zN[nB(0x7fd)][nB(0xb8e)]?'':nB(0x8d9)+zB+'</strong>:\x0a\x09\x09\x09<div>\x0a\x09\x09\x09'+(zN&&zN[nB(0x24e)]['length']?zN['added']['map'](zV=>'<div><span>'+zV+nB(0x36b))['join'](''):'')+nB(0x5db)+(zN&&zN[nB(0x7fd)]['length']?zN[nB(0x7fd)]['map'](zV=>nB(0xb58)+zV+nB(0x36b))[nB(0x644)](''):'')+nB(0xa2c);return w(nB(0x5c5)+zx,zi+T5(Object['keys'](zD))['map'](zV=>{const nO=nB;return nO(0x61e)+zV+nO(0xb9b)+zD[zV][nO(0x638)](zR=>{const nN=nO;return'<span\x20class=\x22'+(!zA[nN(0x7ea)](zR)?'unsupport':'')+'\x22>'+zR+nN(0x44b);})[nO(0x644)]('<br>')+nO(0x5db);})['join']('<br>'),WO([...zA]));},zQ=zS({'id':nq(0x8d0),'engineMap':zZ,'features':new Set(z6),'browser':T2,'report':zb,'userAgentVersion':zz}),zu=zS({'id':nq(0x78f),'engineMap':zd,'features':new Set(z7),'browser':T2,'report':zb,'userAgentVersion':zz}),zF=zS({'id':'js','engineMap':zL,'features':new Set(z8),'browser':T2,'report':zb,'userAgentVersion':zz}),zv=zx=>nq(0x949)+zx+'\x22></span>',zH=!T2?'':/chrome/i['test'](T2)?zv(nq(0x182)):/firefox/i[nq(0x579)](T2)?zv('firefox'):'';return'\x0a\x09<style>\x0a\x09\x09.unsupport\x20{\x0a\x09\x09\x09background:\x20#f1f1f1;\x0a\x09\x09\x09color:\x20#aaa;\x0a\x09\x09}\x0a\x09\x09.features-removed\x20{\x0a\x09\x09\x09background:\x20red;\x0a\x09\x09\x09color:\x20#fff;\x0a\x09\x09}\x0a\x09\x09.features-added\x20{\x0a\x09\x09\x09background:\x20green;\x0a\x09\x09\x09color:\x20#fff;\x0a\x09\x09}\x0a\x09\x09@media\x20(prefers-color-scheme:\x20dark)\x20{\x0a\x09\x09\x09.unsupport\x20{\x0a\x09\x09\x09\x09color:\x20var(--light-grey);\x0a\x09\x09\x09\x09background:\x20none;\x0a\x09\x09\x09}\x0a\x09\x09}\x0a\x09</style>\x0a\x09<span\x20class=\x22time\x22>'+P[nq(0x649)]()[nq(0x15b)]+'</span>\x0a\x09<div\x20class=\x22col-six\x22>\x0a\x09\x09<div>Features:\x20'+(z1[nq(0xb8e)]?''+zH+z2+'+':r[nq(0x30b)])+'</div>\x0a\x09\x09<div>JS/DOM:\x20'+(z4?zF+nq(0xb92)+z4+')':r[nq(0x30b)])+nq(0x8e9)+(z3?zQ+nq(0xb92)+z3+')':r[nq(0x30b)])+'</div>\x0a\x09\x09<div>Window:\x20'+(z5?zu+nq(0xb92)+z5+')':r[nq(0x30b)])+nq(0x225);}const TW={'7':[L3(0x4e6),L3(0x403)],'8':[L3(0x868),L3(0x2f5),L3(0x57d),L3(0x4e4)],'8.1':[L3(0x529),L3(0x8fa),L3(0x6e7)],'10':[L3(0x25b),L3(0xa1e),'Bahnschrift',L3(0x210)],'11':[L3(0x643)]},TT={'10.9':[L3(0x6e1),L3(0x945)],'10.10':['Kohinoor\x20Devanagari\x20Medium',L3(0x2b6)],'10.11':[L3(0x58f)],'10.12':['American\x20Typewriter\x20Semibold',L3(0x345),L3(0x5df)],'10.13-10.14':[L3(0x4f4)],'10.15-11':[L3(0xb3d),L3(0x26a)]},Tz={'Microsoft\x20Outlook':['MS\x20Outlook'],'Adobe\x20Acrobat':[L3(0xaf0)],'LibreOffice':[L3(0x585),L3(0x79c),L3(0x131),L3(0x88a)],'OpenOffice':[L3(0x7e4),'Gentium\x20Book\x20Basic',L3(0x5e2)]},TZ=Object[L3(0xab4)](TT)[L3(0x638)](z0=>TT[z0])[L3(0x92f)](),Td=Object[L3(0xab4)](TW)['map'](z0=>TW[z0])[L3(0x92f)](),TL=Object[L3(0xab4)](Tz)['map'](z0=>Tz[z0])['flat'](),Tp=[L3(0x5e0),L3(0x1a5),L3(0x6ef),'Jomolhari',L3(0xb45),L3(0x886),'Ubuntu'],Tn=[L3(0x75a),'Droid\x20Sans\x20Mono',L3(0x6c6)],Tb=[...TZ,...Td,...Tp,...Tn,...TL][L3(0x89d)]();async function TS(){const nc=L3,z0=({doc:z4,id:z5,emojis:z6})=>{const ni=a0T;try{i(z4[ni(0xa0c)](z5),K`
+		`);
+        // get emoji set and system
+        const pattern = new Set();
+        await queueEvent(timer);
+        const emojiElems = [...doc.getElementsByClassName('domrect-emoji')];
+        const emojiSet = emojiElems.reduce((emojiSet, el, i) => {
+            const emoji = EMOJIS[i];
+            const { height, width } = getBestRect(lieProps, doc, el);
+            const dimensions = `${width},${height}`;
+            if (!pattern.has(dimensions)) {
+                pattern.add(dimensions);
+                emojiSet.add(emoji);
+            }
+            return emojiSet;
+        }, new Set());
+        const domrectSystemSum = 0.00001 * [...pattern].map((x) => {
+            return x.split(',').reduce((acc, x) => acc += (+x || 0), 0);
+        }).reduce((acc, x) => acc += x, 0);
+        // get clientRects
+        const range = document.createRange();
+        const rectElems = doc.getElementsByClassName('rects');
+        const elementClientRects = [...rectElems].map((el) => {
+            return toNativeObject(el.getClientRects()[0]);
+        });
+        const elementBoundingClientRect = [...rectElems].map((el) => {
+            return toNativeObject(el.getBoundingClientRect());
+        });
+        const rangeClientRects = [...rectElems].map((el) => {
+            range.selectNode(el);
+            return toNativeObject(range.getClientRects()[0]);
+        });
+        const rangeBoundingClientRect = [...rectElems].map((el) => {
+            range.selectNode(el);
+            return toNativeObject(el.getBoundingClientRect());
+        });
+        // detect failed shift calculation
+        // inspired by https://arkenfox.github.io/TZP
+        const rect4 = [...rectElems][3];
+        const { top: initialTop } = elementClientRects[3];
+        rect4.classList.add('shift-dom-rect');
+        const { top: shiftedTop } = toNativeObject(rect4.getClientRects()[0]);
+        rect4.classList.remove('shift-dom-rect');
+        const { top: unshiftedTop } = toNativeObject(rect4.getClientRects()[0]);
+        const diff = initialTop - shiftedTop;
+        const unshiftLie = diff != (unshiftedTop - shiftedTop);
+        if (unshiftLie) {
+            lied = true;
+            documentLie('Element.getClientRects', 'failed unshift calculation');
+        }
+        // detect failed math calculation lie
+        let mathLie = false;
+        elementClientRects.forEach((rect) => {
+            const { right, left, width, bottom, top, height, x, y } = rect;
+            if (right - left != width ||
+                bottom - top != height ||
+                right - x != width ||
+                bottom - y != height) {
+                lied = true;
+                mathLie = true;
+            }
+            return;
+        });
+        if (mathLie) {
+            documentLie('Element.getClientRects', 'failed math calculation');
+        }
+        // detect equal elements mismatch lie
+        const { right: right1, left: left1 } = elementClientRects[10];
+        const { right: right2, left: left2 } = elementClientRects[11];
+        if (right1 != right2 || left1 != left2) {
+            documentLie('Element.getClientRects', 'equal elements mismatch');
+            lied = true;
+        }
+        // detect unknown dimensions
+        const elKnown = [...doc.getElementsByClassName('rect-known')][0];
+        const dimensionsKnown = toNativeObject(elKnown.getClientRects()[0]);
+        const knownSum = Object.keys(dimensionsKnown)
+            .reduce((acc, key) => (acc += +dimensionsKnown[key]), 0);
+        // console.log(knownSum)
+        if (IS_BLINK) {
+            const zoom = {
+                '441.4213562011719': true,
+                '441.3523979187012': true,
+                '441.4214057922363': true, // 90
+            };
+            if (!zoom[knownSum]) {
+                documentLie('Element.getClientRects', 'unknown dimensions');
+                lied = true;
+            }
+        }
+        else if (IS_GECKO) {
+            const zoom = {
+                '441.3666687011719': true, // 100, etc
+            };
+            if (!zoom[knownSum]) {
+                documentLie('Element.getClientRects', 'unknown dimensions');
+                lied = true;
+            }
+        }
+        doc.body.removeChild(doc.getElementById(rectsId));
+        logTestResult({ time: timer.stop(), test: 'rects', passed: true });
+        return {
+            elementClientRects,
+            elementBoundingClientRect,
+            rangeClientRects,
+            rangeBoundingClientRect,
+            emojiSet: [...emojiSet],
+            domrectSystemSum,
+            lied,
+        };
+    }
+    catch (error) {
+        logTestResult({ test: 'rects', passed: false });
+        captureError(error);
+        return;
+    }
+}
+function clientRectsHTML(fp) {
+    if (!fp.clientRects) {
+        return `
+		<div class="col-six undefined">
+			<strong>DOMRect</strong>
+			<div>elems A: ${HTMLNote.BLOCKED}</div>
+			<div>elems B: ${HTMLNote.BLOCKED}</div>
+			<div>range A: ${HTMLNote.BLOCKED}</div>
+			<div>range B: ${HTMLNote.BLOCKED}</div>
+			<div class="block-text">${HTMLNote.BLOCKED}</div>
+		</div>`;
+    }
+    const { clientRects: { $hash, elementClientRects, elementBoundingClientRect, rangeClientRects, rangeBoundingClientRect, emojiSet, domrectSystemSum, lied, }, } = fp;
+    // compute mismatch style
+    const getRectSum = (rect) => Object.keys(rect).reduce((acc, key) => acc += rect[key], 0) / 100000000;
+    // const reduceRectSum = n => (''+n).split('.').reduce((acc, s) => acc += +s, 0)
+    const computeDiffs = (rects) => {
+        if (!rects || !rects.length) {
+            return;
+        }
+        const expectedSum = rects.reduce((acc, rect) => {
+            const { right, left, width, bottom, top, height } = rect;
+            const expected = {
+                width: right - left,
+                height: bottom - top,
+                right: left + width,
+                left: right - width,
+                bottom: top + height,
+                top: bottom - height,
+                x: right - width,
+                y: bottom - height,
+            };
+            return acc += getRectSum(expected);
+        }, 0);
+        const actualSum = rects.reduce((acc, rect) => acc += getRectSum(rect), 0);
+        return getDiffs({
+            stringA: actualSum,
+            stringB: expectedSum,
+            charDiff: true,
+            decorate: (diff) => `<span class="bold-fail">${diff}</span>`,
+        });
+    };
+    const helpTitle = `Element.getClientRects()\nhash: ${hashMini(emojiSet)}\n${emojiSet.map((x, i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`;
+    return `
+	<div class="relative col-six${lied ? ' rejected' : ''}">
+		<span class="aside-note">${performanceLogger.getLog().rects}</span>
+		<strong>DOMRect</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+		<div class="help" title="Element.getClientRects()">elems A: ${computeDiffs(elementClientRects)}</div>
+		<div class="help" title="Element.getBoundingClientRect()">elems B: ${computeDiffs(elementBoundingClientRect)}</div>
+		<div class="help" title="Range.getClientRects()">range A: ${computeDiffs(rangeClientRects)}</div>
+		<div class="help" title="Range.getBoundingClientRect()">range B: ${computeDiffs(rangeBoundingClientRect)}</div>
+		<div class="block-text help relative" title="${helpTitle}">
+			<span>${domrectSystemSum || HTMLNote.UNSUPPORTED}</span>
+			<span class="grey jumbo" style="font-family: ${CSS_FONT_FAMILY}">${formatEmojiSet(emojiSet)}</span>
+		</div>
+	</div>
+	`;
+}
+
+function getErrors(errFns) {
+    const errors = [];
+    let i;
+    const len = errFns.length;
+    for (i = 0; i < len; i++) {
+        try {
+            errFns[i]();
+        }
+        catch (err) {
+            errors.push(err.message);
+        }
+    }
+    return errors;
+}
+function getConsoleErrors() {
+    try {
+        const timer = createTimer();
+        timer.start();
+        const errorTests = [
+            () => new Function('alert(")')(),
+            () => new Function('const foo;foo.bar')(),
+            () => new Function('null.bar')(),
+            () => new Function('abc.xyz = 123')(),
+            () => new Function('const foo;foo.bar')(),
+            () => new Function('(1).toString(1000)')(),
+            () => new Function('[...undefined].length')(),
+            () => new Function('var x = new Array(-1)')(),
+            () => new Function('const a=1; const a=2;')(),
+        ];
+        const errors = getErrors(errorTests);
+        logTestResult({ time: timer.stop(), test: 'console errors', passed: true });
+        return { errors };
+    }
+    catch (error) {
+        logTestResult({ test: 'console errors', passed: false });
+        captureError(error);
+        return;
+    }
+}
+function consoleErrorsHTML(fp) {
+    if (!fp.consoleErrors) {
+        return `
+		<div class="col-six undefined">
+			<strong>Error</strong>
+			<div>results: ${HTMLNote.BLOCKED}</div>
+			<div>
+				<div>${HTMLNote.BLOCKED}</div>
+			</div>
+		</div>`;
+    }
+    const { consoleErrors: { $hash, errors, }, } = fp;
+    const results = Object.keys(errors).map((key) => {
+        const value = errors[key];
+        return `${+key + 1}: ${value}`;
+    });
+    return `
+	<div class="relative col-six">
+		<span class="aside-note">${performanceLogger.getLog()['console errors']}</span>
+		<strong>Error</strong><span class="hash">${hashSlice($hash)}</span>
+		<div>results: ${modal('creep-console-errors', results.join('<br>'))}</div>
+		<div class="blurred" id="error-samples">
+			<div>0% of engine</div>
+		</div>
+	</div>
+	`;
+}
+
+/*
+Steps to update:
+0. get beta release desktop/mobile
+1. get diffs from template
+2. update feature list
+3. update stable features object
+*/
+const getStableFeatures = () => ({
+    'Chrome': {
+        version: 105,
+        windowKeys: `Object, Function, Array, Number, parseFloat, parseInt, Infinity, NaN, undefined, Boolean, String, Symbol, Date, Promise, RegExp, Error, AggregateError, EvalError, RangeError, ReferenceError, SyntaxError, TypeError, URIError, globalThis, JSON, Math, Intl, ArrayBuffer, Uint8Array, Int8Array, Uint16Array, Int16Array, Uint32Array, Int32Array, Float32Array, Float64Array, Uint8ClampedArray, BigUint64Array, BigInt64Array, DataView, Map, BigInt, Set, WeakMap, WeakSet, Proxy, Reflect, FinalizationRegistry, WeakRef, decodeURI, decodeURIComponent, encodeURI, encodeURIComponent, escape, unescape, eval, isFinite, isNaN, console, Option, Image, Audio, webkitURL, webkitRTCPeerConnection, webkitMediaStream, WebKitMutationObserver, WebKitCSSMatrix, XPathResult, XPathExpression, XPathEvaluator, XMLSerializer, XMLHttpRequestUpload, XMLHttpRequestEventTarget, XMLHttpRequest, XMLDocument, WritableStreamDefaultWriter, WritableStreamDefaultController, WritableStream, Worker, Window, WheelEvent, WebSocket, WebGLVertexArrayObject, WebGLUniformLocation, WebGLTransformFeedback, WebGLTexture, WebGLSync, WebGLShaderPrecisionFormat, WebGLShader, WebGLSampler, WebGLRenderingContext, WebGLRenderbuffer, WebGLQuery, WebGLProgram, WebGLFramebuffer, WebGLContextEvent, WebGLBuffer, WebGLActiveInfo, WebGL2RenderingContext, WaveShaperNode, VisualViewport, ValidityState, VTTCue, UserActivation, URLSearchParams, URL, UIEvent, TreeWalker, TransitionEvent, TransformStream, TrackEvent, TouchList, TouchEvent, Touch, TimeRanges, TextTrackList, TextTrackCueList, TextTrackCue, TextTrack, TextMetrics, TextEvent, TextEncoderStream, TextEncoder, TextDecoderStream, TextDecoder, Text, TaskAttributionTiming, SyncManager, SubmitEvent, StyleSheetList, StyleSheet, StylePropertyMapReadOnly, StylePropertyMap, StorageEvent, Storage, StereoPannerNode, StaticRange, ShadowRoot, Selection, SecurityPolicyViolationEvent, ScriptProcessorNode, ScreenOrientation, Screen, Scheduling, SVGViewElement, SVGUseElement, SVGUnitTypes, SVGTransformList, SVGTransform, SVGTitleElement, SVGTextPositioningElement, SVGTextPathElement, SVGTextElement, SVGTextContentElement, SVGTSpanElement, SVGSymbolElement, SVGSwitchElement, SVGStyleElement, SVGStringList, SVGStopElement, SVGSetElement, SVGScriptElement, SVGSVGElement, SVGRectElement, SVGRect, SVGRadialGradientElement, SVGPreserveAspectRatio, SVGPolylineElement, SVGPolygonElement, SVGPointList, SVGPoint, SVGPatternElement, SVGPathElement, SVGNumberList, SVGNumber, SVGMetadataElement, SVGMatrix, SVGMaskElement, SVGMarkerElement, SVGMPathElement, SVGLinearGradientElement, SVGLineElement, SVGLengthList, SVGLength, SVGImageElement, SVGGraphicsElement, SVGGradientElement, SVGGeometryElement, SVGGElement, SVGForeignObjectElement, SVGFilterElement, SVGFETurbulenceElement, SVGFETileElement, SVGFESpotLightElement, SVGFESpecularLightingElement, SVGFEPointLightElement, SVGFEOffsetElement, SVGFEMorphologyElement, SVGFEMergeNodeElement, SVGFEMergeElement, SVGFEImageElement, SVGFEGaussianBlurElement, SVGFEFuncRElement, SVGFEFuncGElement, SVGFEFuncBElement, SVGFEFuncAElement, SVGFEFloodElement, SVGFEDropShadowElement, SVGFEDistantLightElement, SVGFEDisplacementMapElement, SVGFEDiffuseLightingElement, SVGFEConvolveMatrixElement, SVGFECompositeElement, SVGFEComponentTransferElement, SVGFEColorMatrixElement, SVGFEBlendElement, SVGEllipseElement, SVGElement, SVGDescElement, SVGDefsElement, SVGComponentTransferFunctionElement, SVGClipPathElement, SVGCircleElement, SVGAnimationElement, SVGAnimatedTransformList, SVGAnimatedString, SVGAnimatedRect, SVGAnimatedPreserveAspectRatio, SVGAnimatedNumberList, SVGAnimatedNumber, SVGAnimatedLengthList, SVGAnimatedLength, SVGAnimatedInteger, SVGAnimatedEnumeration, SVGAnimatedBoolean, SVGAnimatedAngle, SVGAnimateTransformElement, SVGAnimateMotionElement, SVGAnimateElement, SVGAngle, SVGAElement, Response, ResizeObserverSize, ResizeObserverEntry, ResizeObserver, Request, ReportingObserver, ReadableStreamDefaultReader, ReadableStreamDefaultController, ReadableStreamBYOBRequest, ReadableStreamBYOBReader, ReadableStream, ReadableByteStreamController, Range, RadioNodeList, RTCTrackEvent, RTCStatsReport, RTCSessionDescription, RTCSctpTransport, RTCRtpTransceiver, RTCRtpSender, RTCRtpReceiver, RTCPeerConnectionIceEvent, RTCPeerConnectionIceErrorEvent, RTCPeerConnection, RTCIceCandidate, RTCErrorEvent, RTCError, RTCEncodedVideoFrame, RTCEncodedAudioFrame, RTCDtlsTransport, RTCDataChannelEvent, RTCDataChannel, RTCDTMFToneChangeEvent, RTCDTMFSender, RTCCertificate, PromiseRejectionEvent, ProgressEvent, ProcessingInstruction, PopStateEvent, PointerEvent, PluginArray, Plugin, PeriodicWave, PerformanceTiming, PerformanceServerTiming, PerformanceResourceTiming, PerformancePaintTiming, PerformanceObserverEntryList, PerformanceObserver, PerformanceNavigationTiming, PerformanceNavigation, PerformanceMeasure, PerformanceMark, PerformanceLongTaskTiming, PerformanceEventTiming, PerformanceEntry, PerformanceElementTiming, Performance, Path2D, PannerNode, PageTransitionEvent, OverconstrainedError, OscillatorNode, OffscreenCanvasRenderingContext2D, OffscreenCanvas, OfflineAudioContext, OfflineAudioCompletionEvent, NodeList, NodeIterator, NodeFilter, Node, NetworkInformation, Navigator, NamedNodeMap, MutationRecord, MutationObserver, MutationEvent, MouseEvent, MimeTypeArray, MimeType, MessagePort, MessageEvent, MessageChannel, MediaStreamTrackEvent, MediaStreamEvent, MediaStreamAudioSourceNode, MediaStreamAudioDestinationNode, MediaStream, MediaRecorder, MediaQueryListEvent, MediaQueryList, MediaList, MediaError, MediaEncryptedEvent, MediaElementAudioSourceNode, MediaCapabilities, Location, LayoutShiftAttribution, LayoutShift, LargestContentfulPaint, KeyframeEffect, KeyboardEvent, IntersectionObserverEntry, IntersectionObserver, InputEvent, InputDeviceInfo, InputDeviceCapabilities, ImageData, ImageCapture, ImageBitmapRenderingContext, ImageBitmap, IdleDeadline, IIRFilterNode, IDBVersionChangeEvent, IDBTransaction, IDBRequest, IDBOpenDBRequest, IDBObjectStore, IDBKeyRange, IDBIndex, IDBFactory, IDBDatabase, IDBCursorWithValue, IDBCursor, History, Headers, HashChangeEvent, HTMLVideoElement, HTMLUnknownElement, HTMLUListElement, HTMLTrackElement, HTMLTitleElement, HTMLTimeElement, HTMLTextAreaElement, HTMLTemplateElement, HTMLTableSectionElement, HTMLTableRowElement, HTMLTableElement, HTMLTableColElement, HTMLTableCellElement, HTMLTableCaptionElement, HTMLStyleElement, HTMLSpanElement, HTMLSourceElement, HTMLSlotElement, HTMLSelectElement, HTMLScriptElement, HTMLQuoteElement, HTMLProgressElement, HTMLPreElement, HTMLPictureElement, HTMLParamElement, HTMLParagraphElement, HTMLOutputElement, HTMLOptionsCollection, HTMLOptionElement, HTMLOptGroupElement, HTMLObjectElement, HTMLOListElement, HTMLModElement, HTMLMeterElement, HTMLMetaElement, HTMLMenuElement, HTMLMediaElement, HTMLMarqueeElement, HTMLMapElement, HTMLLinkElement, HTMLLegendElement, HTMLLabelElement, HTMLLIElement, HTMLInputElement, HTMLImageElement, HTMLIFrameElement, HTMLHtmlElement, HTMLHeadingElement, HTMLHeadElement, HTMLHRElement, HTMLFrameSetElement, HTMLFrameElement, HTMLFormElement, HTMLFormControlsCollection, HTMLFontElement, HTMLFieldSetElement, HTMLEmbedElement, HTMLElement, HTMLDocument, HTMLDivElement, HTMLDirectoryElement, HTMLDialogElement, HTMLDetailsElement, HTMLDataListElement, HTMLDataElement, HTMLDListElement, HTMLCollection, HTMLCanvasElement, HTMLButtonElement, HTMLBodyElement, HTMLBaseElement, HTMLBRElement, HTMLAudioElement, HTMLAreaElement, HTMLAnchorElement, HTMLAllCollection, GeolocationPositionError, GeolocationPosition, GeolocationCoordinates, Geolocation, GamepadHapticActuator, GamepadEvent, GamepadButton, Gamepad, GainNode, FormDataEvent, FormData, FontFaceSetLoadEvent, FontFace, FocusEvent, FileReader, FileList, File, FeaturePolicy, External, EventTarget, EventSource, EventCounts, Event, ErrorEvent, ElementInternals, Element, DynamicsCompressorNode, DragEvent, DocumentType, DocumentFragment, Document, DelayNode, DecompressionStream, DataTransferItemList, DataTransferItem, DataTransfer, DOMTokenList, DOMStringMap, DOMStringList, DOMRectReadOnly, DOMRectList, DOMRect, DOMQuad, DOMPointReadOnly, DOMPoint, DOMParser, DOMMatrixReadOnly, DOMMatrix, DOMImplementation, DOMException, DOMError, CustomEvent, CustomElementRegistry, Crypto, CountQueuingStrategy, ConvolverNode, ConstantSourceNode, CompressionStream, CompositionEvent, Comment, CloseEvent, ClipboardEvent, CharacterData, ChannelSplitterNode, ChannelMergerNode, CanvasRenderingContext2D, CanvasPattern, CanvasGradient, CanvasFilter, CanvasCaptureMediaStreamTrack, CSSVariableReferenceValue, CSSUnparsedValue, CSSUnitValue, CSSTranslate, CSSTransformValue, CSSTransformComponent, CSSSupportsRule, CSSStyleValue, CSSStyleSheet, CSSStyleRule, CSSStyleDeclaration, CSSSkewY, CSSSkewX, CSSSkew, CSSScale, CSSRuleList, CSSRule, CSSRotate, CSSPropertyRule, CSSPositionValue, CSSPerspective, CSSPageRule, CSSNumericValue, CSSNumericArray, CSSNamespaceRule, CSSMediaRule, CSSMatrixComponent, CSSMathValue, CSSMathSum, CSSMathProduct, CSSMathNegate, CSSMathMin, CSSMathMax, CSSMathInvert, CSSMathClamp, CSSLayerStatementRule, CSSLayerBlockRule, CSSKeywordValue, CSSKeyframesRule, CSSKeyframeRule, CSSImportRule, CSSImageValue, CSSGroupingRule, CSSFontFaceRule, CSSCounterStyleRule, CSSConditionRule, CSS, CDATASection, ByteLengthQueuingStrategy, BroadcastChannel, BlobEvent, Blob, BiquadFilterNode, BeforeUnloadEvent, BeforeInstallPromptEvent, BaseAudioContext, BarProp, AudioWorkletNode, AudioScheduledSourceNode, AudioProcessingEvent, AudioParamMap, AudioParam, AudioNode, AudioListener, AudioDestinationNode, AudioContext, AudioBufferSourceNode, AudioBuffer, Attr, AnimationEvent, AnimationEffect, Animation, AnalyserNode, AbstractRange, AbortSignal, AbortController, window, self, document, name, location, customElements, history, locationbar, menubar, personalbar, scrollbars, statusbar, toolbar, status, closed, frames, length, top, opener, parent, frameElement, navigator, origin, external, screen, innerWidth, innerHeight, scrollX, pageXOffset, scrollY, pageYOffset, visualViewport, screenX, screenY, outerWidth, outerHeight, devicePixelRatio, event, clientInformation, offscreenBuffering, screenLeft, screenTop, defaultStatus, defaultstatus, styleMedia, onsearch, isSecureContext, performance, onappinstalled, onbeforeinstallprompt, crypto, indexedDB, webkitStorageInfo, sessionStorage, localStorage, onbeforexrselect, onabort, onblur, oncancel, oncanplay, oncanplaythrough, onchange, onclick, onclose, oncontextlost, oncontextmenu, oncontextrestored, oncuechange, ondblclick, ondrag, ondragend, ondragenter, ondragleave, ondragover, ondragstart, ondrop, ondurationchange, onemptied, onended, onerror, onfocus, onformdata, oninput, oninvalid, onkeydown, onkeypress, onkeyup, onload, onloadeddata, onloadedmetadata, onloadstart, onmousedown, onmouseenter, onmouseleave, onmousemove, onmouseout, onmouseover, onmouseup, onmousewheel, onpause, onplay, onplaying, onprogress, onratechange, onreset, onresize, onscroll, onsecuritypolicyviolation, onseeked, onseeking, onselect, onslotchange, onstalled, onsubmit, onsuspend, ontimeupdate, ontoggle, onvolumechange, onwaiting, onwebkitanimationend, onwebkitanimationiteration, onwebkitanimationstart, onwebkittransitionend, onwheel, onauxclick, ongotpointercapture, onlostpointercapture, onpointerdown, onpointermove, onpointerup, onpointercancel, onpointerover, onpointerout, onpointerenter, onpointerleave, onselectstart, onselectionchange, onanimationend, onanimationiteration, onanimationstart, ontransitionrun, ontransitionstart, ontransitionend, ontransitioncancel, onafterprint, onbeforeprint, onbeforeunload, onhashchange, onlanguagechange, onmessage, onmessageerror, onoffline, ononline, onpagehide, onpageshow, onpopstate, onrejectionhandled, onstorage, onunhandledrejection, onunload, crossOriginIsolated, alert, atob, blur, btoa, cancelAnimationFrame, cancelIdleCallback, captureEvents, clearInterval, clearTimeout, close, confirm, createImageBitmap, fetch, find, focus, getComputedStyle, getSelection, matchMedia, moveBy, moveTo, open, postMessage, print, prompt, queueMicrotask, releaseEvents, reportError, requestAnimationFrame, requestIdleCallback, resizeBy, resizeTo, scroll, scrollBy, scrollTo, setInterval, setTimeout, stop, structuredClone, webkitCancelAnimationFrame, webkitRequestAnimationFrame, Atomics, chrome, WebAssembly, caches, cookieStore, ondevicemotion, ondeviceorientation, ondeviceorientationabsolute, launchQueue, onbeforematch, AbsoluteOrientationSensor, Accelerometer, AudioWorklet, Cache, CacheStorage, Clipboard, ClipboardItem, CookieChangeEvent, CookieStore, CookieStoreManager, Credential, CredentialsContainer, CryptoKey, DeviceMotionEvent, DeviceMotionEventAcceleration, DeviceMotionEventRotationRate, DeviceOrientationEvent, FederatedCredential, Gyroscope, Keyboard, KeyboardLayoutMap, LinearAccelerationSensor, Lock, LockManager, MIDIAccess, MIDIConnectionEvent, MIDIInput, MIDIInputMap, MIDIMessageEvent, MIDIOutput, MIDIOutputMap, MIDIPort, MediaDeviceInfo, MediaDevices, MediaKeyMessageEvent, MediaKeySession, MediaKeyStatusMap, MediaKeySystemAccess, MediaKeys, NavigationPreloadManager, NavigatorManagedData, OrientationSensor, PasswordCredential, RTCIceTransport, RelativeOrientationSensor, Sensor, SensorErrorEvent, ServiceWorker, ServiceWorkerContainer, ServiceWorkerRegistration, StorageManager, SubtleCrypto, Worklet, XRDOMOverlayState, XRLayer, XRWebGLBinding, AudioData, EncodedAudioChunk, EncodedVideoChunk, ImageTrack, ImageTrackList, VideoColorSpace, VideoFrame, AudioDecoder, AudioEncoder, ImageDecoder, VideoDecoder, VideoEncoder, AuthenticatorAssertionResponse, AuthenticatorAttestationResponse, AuthenticatorResponse, PublicKeyCredential, BatteryManager, Bluetooth, BluetoothCharacteristicProperties, BluetoothDevice, BluetoothRemoteGATTCharacteristic, BluetoothRemoteGATTDescriptor, BluetoothRemoteGATTServer, BluetoothRemoteGATTService, BrowserCaptureMediaStreamTrack, CropTarget, EyeDropper, FileSystemDirectoryHandle, FileSystemFileHandle, FileSystemHandle, FileSystemWritableFileStream, FontData, FragmentDirective, GravitySensor, HID, HIDConnectionEvent, HIDDevice, HIDInputReportEvent, IdleDetector, LaunchParams, LaunchQueue, MediaStreamTrackGenerator, MediaStreamTrackProcessor, OTPCredential, PaymentAddress, PaymentRequest, PaymentResponse, PaymentMethodChangeEvent, Presentation, PresentationAvailability, PresentationConnection, PresentationConnectionAvailableEvent, PresentationConnectionCloseEvent, PresentationConnectionList, PresentationReceiver, PresentationRequest, Profiler, ScreenDetailed, ScreenDetails, Serial, SerialPort, USB, USBAlternateInterface, USBConfiguration, USBConnectionEvent, USBDevice, USBEndpoint, USBInTransferResult, USBInterface, USBIsochronousInTransferPacket, USBIsochronousInTransferResult, USBIsochronousOutTransferPacket, USBIsochronousOutTransferResult, USBOutTransferResult, VirtualKeyboard, WakeLock, WakeLockSentinel, WebTransport, WebTransportBidirectionalStream, WebTransportDatagramDuplexStream, WebTransportError, WindowControlsOverlay, WindowControlsOverlayGeometryChangeEvent, XRAnchor, XRAnchorSet, XRBoundedReferenceSpace, XRFrame, XRInputSource, XRInputSourceArray, XRInputSourceEvent, XRInputSourcesChangeEvent, XRPose, XRReferenceSpace, XRReferenceSpaceEvent, XRRenderState, XRRigidTransform, XRSession, XRSessionEvent, XRSpace, XRSystem, XRView, XRViewerPose, XRViewport, XRWebGLLayer, XRCPUDepthInformation, XRDepthInformation, XRWebGLDepthInformation, XRHitTestResult, XRHitTestSource, XRRay, XRTransientInputHitTestResult, XRTransientInputHitTestSource, XRLightEstimate, XRLightProbe, getScreenDetails, queryLocalFonts, showDirectoryPicker, showOpenFilePicker, showSaveFilePicker, originAgentCluster, trustedTypes, navigation, speechSynthesis, onpointerrawupdate, scheduler, AnimationPlaybackEvent, AnimationTimeline, CSSAnimation, CSSTransition, DocumentTimeline, BackgroundFetchManager, BackgroundFetchRecord, BackgroundFetchRegistration, BluetoothUUID, CSSContainerRule, CSSFontPaletteValuesRule, CustomStateSet, DelegatedInkTrailPresenter, Ink, MediaMetadata, MediaSession, MediaSource, SourceBuffer, SourceBufferList, MediaStreamTrack, NavigateEvent, Navigation, NavigationCurrentEntryChangeEvent, NavigationDestination, NavigationHistoryEntry, NavigationTransition, NavigatorUAData, Notification, PaymentInstruments, PaymentManager, PaymentRequestUpdateEvent, PeriodicSyncManager, PermissionStatus, Permissions, PictureInPictureEvent, PictureInPictureWindow, PushManager, PushSubscription, PushSubscriptionOptions, RemotePlayback, Scheduler, TaskController, TaskPriorityChangeEvent, TaskSignal, SharedWorker, SpeechSynthesisErrorEvent, SpeechSynthesisEvent, SpeechSynthesisUtterance, TrustedHTML, TrustedScript, TrustedScriptURL, TrustedTypePolicy, TrustedTypePolicyFactory, URLPattern, VideoPlaybackQuality, VirtualKeyboardGeometryChangeEvent, XSLTProcessor, webkitSpeechGrammar, webkitSpeechGrammarList, webkitSpeechRecognition, webkitSpeechRecognitionError, webkitSpeechRecognitionEvent, openDatabase, webkitRequestFileSystem, webkitResolveLocalFileSystemURL`,
+        cssKeys: `cssText, length, parentRule, cssFloat, getPropertyPriority, getPropertyValue, item, removeProperty, setProperty, constructor, accent-color, align-content, align-items, align-self, alignment-baseline, animation-delay, animation-direction, animation-duration, animation-fill-mode, animation-iteration-count, animation-name, animation-play-state, animation-timing-function, app-region, appearance, backdrop-filter, backface-visibility, background-attachment, background-blend-mode, background-clip, background-color, background-image, background-origin, background-position, background-repeat, background-size, baseline-shift, block-size, border-block-end-color, border-block-end-style, border-block-end-width, border-block-start-color, border-block-start-style, border-block-start-width, border-bottom-color, border-bottom-left-radius, border-bottom-right-radius, border-bottom-style, border-bottom-width, border-collapse, border-end-end-radius, border-end-start-radius, border-image-outset, border-image-repeat, border-image-slice, border-image-source, border-image-width, border-inline-end-color, border-inline-end-style, border-inline-end-width, border-inline-start-color, border-inline-start-style, border-inline-start-width, border-left-color, border-left-style, border-left-width, border-right-color, border-right-style, border-right-width, border-start-end-radius, border-start-start-radius, border-top-color, border-top-left-radius, border-top-right-radius, border-top-style, border-top-width, bottom, box-shadow, box-sizing, break-after, break-before, break-inside, buffered-rendering, caption-side, caret-color, clear, clip, clip-path, clip-rule, color, color-interpolation, color-interpolation-filters, color-rendering, column-count, column-gap, column-rule-color, column-rule-style, column-rule-width, column-span, column-width, contain-intrinsic-block-size, contain-intrinsic-height, contain-intrinsic-inline-size, contain-intrinsic-size, contain-intrinsic-width, container-name, container-type, content, cursor, cx, cy, d, direction, display, dominant-baseline, empty-cells, fill, fill-opacity, fill-rule, filter, flex-basis, flex-direction, flex-grow, flex-shrink, flex-wrap, float, flood-color, flood-opacity, font-family, font-kerning, font-optical-sizing, font-palette, font-size, font-stretch, font-style, font-synthesis-small-caps, font-synthesis-style, font-synthesis-weight, font-variant, font-variant-caps, font-variant-east-asian, font-variant-ligatures, font-variant-numeric, font-weight, grid-auto-columns, grid-auto-flow, grid-auto-rows, grid-column-end, grid-column-start, grid-row-end, grid-row-start, grid-template-areas, grid-template-columns, grid-template-rows, height, hyphens, image-orientation, image-rendering, inline-size, inset-block-end, inset-block-start, inset-inline-end, inset-inline-start, isolation, justify-content, justify-items, justify-self, left, letter-spacing, lighting-color, line-break, line-height, list-style-image, list-style-position, list-style-type, margin-block-end, margin-block-start, margin-bottom, margin-inline-end, margin-inline-start, margin-left, margin-right, margin-top, marker-end, marker-mid, marker-start, mask-type, max-block-size, max-height, max-inline-size, max-width, min-block-size, min-height, min-inline-size, min-width, mix-blend-mode, object-fit, object-position, object-view-box, offset-distance, offset-path, offset-rotate, opacity, order, orphans, outline-color, outline-offset, outline-style, outline-width, overflow-anchor, overflow-clip-margin, overflow-wrap, overflow-x, overflow-y, overscroll-behavior-block, overscroll-behavior-inline, padding-block-end, padding-block-start, padding-bottom, padding-inline-end, padding-inline-start, padding-left, padding-right, padding-top, paint-order, perspective, perspective-origin, pointer-events, position, r, resize, right, rotate, row-gap, ruby-position, rx, ry, scale, scroll-behavior, scroll-margin-block-end, scroll-margin-block-start, scroll-margin-inline-end, scroll-margin-inline-start, scroll-padding-block-end, scroll-padding-block-start, scroll-padding-inline-end, scroll-padding-inline-start, scrollbar-gutter, shape-image-threshold, shape-margin, shape-outside, shape-rendering, speak, stop-color, stop-opacity, stroke, stroke-dasharray, stroke-dashoffset, stroke-linecap, stroke-linejoin, stroke-miterlimit, stroke-opacity, stroke-width, tab-size, table-layout, text-align, text-align-last, text-anchor, text-decoration, text-decoration-color, text-decoration-line, text-decoration-skip-ink, text-decoration-style, text-emphasis-color, text-emphasis-position, text-emphasis-style, text-indent, text-overflow, text-rendering, text-shadow, text-size-adjust, text-transform, text-underline-position, top, touch-action, transform, transform-origin, transform-style, transition-delay, transition-duration, transition-property, transition-timing-function, translate, unicode-bidi, user-select, vector-effect, vertical-align, visibility, white-space, widows, width, will-change, word-break, word-spacing, writing-mode, x, y, z-index, zoom, -webkit-border-horizontal-spacing, -webkit-border-image, -webkit-border-vertical-spacing, -webkit-box-align, -webkit-box-decoration-break, -webkit-box-direction, -webkit-box-flex, -webkit-box-ordinal-group, -webkit-box-orient, -webkit-box-pack, -webkit-box-reflect, -webkit-font-smoothing, -webkit-highlight, -webkit-hyphenate-character, -webkit-line-break, -webkit-line-clamp, -webkit-locale, -webkit-mask-box-image, -webkit-mask-box-image-outset, -webkit-mask-box-image-repeat, -webkit-mask-box-image-slice, -webkit-mask-box-image-source, -webkit-mask-box-image-width, -webkit-mask-clip, -webkit-mask-composite, -webkit-mask-image, -webkit-mask-origin, -webkit-mask-position, -webkit-mask-repeat, -webkit-mask-size, -webkit-print-color-adjust, -webkit-rtl-ordering, -webkit-tap-highlight-color, -webkit-text-combine, -webkit-text-decorations-in-effect, -webkit-text-fill-color, -webkit-text-orientation, -webkit-text-security, -webkit-text-stroke-color, -webkit-text-stroke-width, -webkit-user-drag, -webkit-user-modify, -webkit-writing-mode, accentColor, additiveSymbols, alignContent, alignItems, alignSelf, alignmentBaseline, all, animation, animationDelay, animationDirection, animationDuration, animationFillMode, animationIterationCount, animationName, animationPlayState, animationTimingFunction, appRegion, ascentOverride, aspectRatio, backdropFilter, backfaceVisibility, background, backgroundAttachment, backgroundBlendMode, backgroundClip, backgroundColor, backgroundImage, backgroundOrigin, backgroundPosition, backgroundPositionX, backgroundPositionY, backgroundRepeat, backgroundRepeatX, backgroundRepeatY, backgroundSize, basePalette, baselineShift, blockSize, border, borderBlock, borderBlockColor, borderBlockEnd, borderBlockEndColor, borderBlockEndStyle, borderBlockEndWidth, borderBlockStart, borderBlockStartColor, borderBlockStartStyle, borderBlockStartWidth, borderBlockStyle, borderBlockWidth, borderBottom, borderBottomColor, borderBottomLeftRadius, borderBottomRightRadius, borderBottomStyle, borderBottomWidth, borderCollapse, borderColor, borderEndEndRadius, borderEndStartRadius, borderImage, borderImageOutset, borderImageRepeat, borderImageSlice, borderImageSource, borderImageWidth, borderInline, borderInlineColor, borderInlineEnd, borderInlineEndColor, borderInlineEndStyle, borderInlineEndWidth, borderInlineStart, borderInlineStartColor, borderInlineStartStyle, borderInlineStartWidth, borderInlineStyle, borderInlineWidth, borderLeft, borderLeftColor, borderLeftStyle, borderLeftWidth, borderRadius, borderRight, borderRightColor, borderRightStyle, borderRightWidth, borderSpacing, borderStartEndRadius, borderStartStartRadius, borderStyle, borderTop, borderTopColor, borderTopLeftRadius, borderTopRightRadius, borderTopStyle, borderTopWidth, borderWidth, boxShadow, boxSizing, breakAfter, breakBefore, breakInside, bufferedRendering, captionSide, caretColor, clipPath, clipRule, colorInterpolation, colorInterpolationFilters, colorRendering, colorScheme, columnCount, columnFill, columnGap, columnRule, columnRuleColor, columnRuleStyle, columnRuleWidth, columnSpan, columnWidth, columns, contain, containIntrinsicBlockSize, containIntrinsicHeight, containIntrinsicInlineSize, containIntrinsicSize, containIntrinsicWidth, container, containerName, containerType, contentVisibility, counterIncrement, counterReset, counterSet, descentOverride, dominantBaseline, emptyCells, fallback, fillOpacity, fillRule, flex, flexBasis, flexDirection, flexFlow, flexGrow, flexShrink, flexWrap, floodColor, floodOpacity, font, fontDisplay, fontFamily, fontFeatureSettings, fontKerning, fontOpticalSizing, fontPalette, fontSize, fontStretch, fontStyle, fontSynthesis, fontSynthesisSmallCaps, fontSynthesisStyle, fontSynthesisWeight, fontVariant, fontVariantCaps, fontVariantEastAsian, fontVariantLigatures, fontVariantNumeric, fontVariationSettings, fontWeight, forcedColorAdjust, gap, grid, gridArea, gridAutoColumns, gridAutoFlow, gridAutoRows, gridColumn, gridColumnEnd, gridColumnGap, gridColumnStart, gridGap, gridRow, gridRowEnd, gridRowGap, gridRowStart, gridTemplate, gridTemplateAreas, gridTemplateColumns, gridTemplateRows, imageOrientation, imageRendering, inherits, initialValue, inlineSize, inset, insetBlock, insetBlockEnd, insetBlockStart, insetInline, insetInlineEnd, insetInlineStart, justifyContent, justifyItems, justifySelf, letterSpacing, lightingColor, lineBreak, lineGapOverride, lineHeight, listStyle, listStyleImage, listStylePosition, listStyleType, margin, marginBlock, marginBlockEnd, marginBlockStart, marginBottom, marginInline, marginInlineEnd, marginInlineStart, marginLeft, marginRight, marginTop, marker, markerEnd, markerMid, markerStart, mask, maskType, maxBlockSize, maxHeight, maxInlineSize, maxWidth, maxZoom, minBlockSize, minHeight, minInlineSize, minWidth, minZoom, mixBlendMode, negative, objectFit, objectPosition, objectViewBox, offset, offsetDistance, offsetPath, offsetRotate, orientation, outline, outlineColor, outlineOffset, outlineStyle, outlineWidth, overflow, overflowAnchor, overflowClipMargin, overflowWrap, overflowX, overflowY, overrideColors, overscrollBehavior, overscrollBehaviorBlock, overscrollBehaviorInline, overscrollBehaviorX, overscrollBehaviorY, pad, padding, paddingBlock, paddingBlockEnd, paddingBlockStart, paddingBottom, paddingInline, paddingInlineEnd, paddingInlineStart, paddingLeft, paddingRight, paddingTop, page, pageBreakAfter, pageBreakBefore, pageBreakInside, pageOrientation, paintOrder, perspectiveOrigin, placeContent, placeItems, placeSelf, pointerEvents, prefix, quotes, range, rowGap, rubyPosition, scrollBehavior, scrollMargin, scrollMarginBlock, scrollMarginBlockEnd, scrollMarginBlockStart, scrollMarginBottom, scrollMarginInline, scrollMarginInlineEnd, scrollMarginInlineStart, scrollMarginLeft, scrollMarginRight, scrollMarginTop, scrollPadding, scrollPaddingBlock, scrollPaddingBlockEnd, scrollPaddingBlockStart, scrollPaddingBottom, scrollPaddingInline, scrollPaddingInlineEnd, scrollPaddingInlineStart, scrollPaddingLeft, scrollPaddingRight, scrollPaddingTop, scrollSnapAlign, scrollSnapStop, scrollSnapType, scrollbarGutter, shapeImageThreshold, shapeMargin, shapeOutside, shapeRendering, size, sizeAdjust, speakAs, src, stopColor, stopOpacity, strokeDasharray, strokeDashoffset, strokeLinecap, strokeLinejoin, strokeMiterlimit, strokeOpacity, strokeWidth, suffix, symbols, syntax, system, tabSize, tableLayout, textAlign, textAlignLast, textAnchor, textCombineUpright, textDecoration, textDecorationColor, textDecorationLine, textDecorationSkipInk, textDecorationStyle, textDecorationThickness, textEmphasis, textEmphasisColor, textEmphasisPosition, textEmphasisStyle, textIndent, textOrientation, textOverflow, textRendering, textShadow, textSizeAdjust, textTransform, textUnderlineOffset, textUnderlinePosition, touchAction, transformBox, transformOrigin, transformStyle, transition, transitionDelay, transitionDuration, transitionProperty, transitionTimingFunction, unicodeBidi, unicodeRange, userSelect, userZoom, vectorEffect, verticalAlign, webkitAlignContent, webkitAlignItems, webkitAlignSelf, webkitAnimation, webkitAnimationDelay, webkitAnimationDirection, webkitAnimationDuration, webkitAnimationFillMode, webkitAnimationIterationCount, webkitAnimationName, webkitAnimationPlayState, webkitAnimationTimingFunction, webkitAppRegion, webkitAppearance, webkitBackfaceVisibility, webkitBackgroundClip, webkitBackgroundOrigin, webkitBackgroundSize, webkitBorderAfter, webkitBorderAfterColor, webkitBorderAfterStyle, webkitBorderAfterWidth, webkitBorderBefore, webkitBorderBeforeColor, webkitBorderBeforeStyle, webkitBorderBeforeWidth, webkitBorderBottomLeftRadius, webkitBorderBottomRightRadius, webkitBorderEnd, webkitBorderEndColor, webkitBorderEndStyle, webkitBorderEndWidth, webkitBorderHorizontalSpacing, webkitBorderImage, webkitBorderRadius, webkitBorderStart, webkitBorderStartColor, webkitBorderStartStyle, webkitBorderStartWidth, webkitBorderTopLeftRadius, webkitBorderTopRightRadius, webkitBorderVerticalSpacing, webkitBoxAlign, webkitBoxDecorationBreak, webkitBoxDirection, webkitBoxFlex, webkitBoxOrdinalGroup, webkitBoxOrient, webkitBoxPack, webkitBoxReflect, webkitBoxShadow, webkitBoxSizing, webkitClipPath, webkitColumnBreakAfter, webkitColumnBreakBefore, webkitColumnBreakInside, webkitColumnCount, webkitColumnGap, webkitColumnRule, webkitColumnRuleColor, webkitColumnRuleStyle, webkitColumnRuleWidth, webkitColumnSpan, webkitColumnWidth, webkitColumns, webkitFilter, webkitFlex, webkitFlexBasis, webkitFlexDirection, webkitFlexFlow, webkitFlexGrow, webkitFlexShrink, webkitFlexWrap, webkitFontFeatureSettings, webkitFontSmoothing, webkitHighlight, webkitHyphenateCharacter, webkitJustifyContent, webkitLineBreak, webkitLineClamp, webkitLocale, webkitLogicalHeight, webkitLogicalWidth, webkitMarginAfter, webkitMarginBefore, webkitMarginEnd, webkitMarginStart, webkitMask, webkitMaskBoxImage, webkitMaskBoxImageOutset, webkitMaskBoxImageRepeat, webkitMaskBoxImageSlice, webkitMaskBoxImageSource, webkitMaskBoxImageWidth, webkitMaskClip, webkitMaskComposite, webkitMaskImage, webkitMaskOrigin, webkitMaskPosition, webkitMaskPositionX, webkitMaskPositionY, webkitMaskRepeat, webkitMaskRepeatX, webkitMaskRepeatY, webkitMaskSize, webkitMaxLogicalHeight, webkitMaxLogicalWidth, webkitMinLogicalHeight, webkitMinLogicalWidth, webkitOpacity, webkitOrder, webkitPaddingAfter, webkitPaddingBefore, webkitPaddingEnd, webkitPaddingStart, webkitPerspective, webkitPerspectiveOrigin, webkitPerspectiveOriginX, webkitPerspectiveOriginY, webkitPrintColorAdjust, webkitRtlOrdering, webkitRubyPosition, webkitShapeImageThreshold, webkitShapeMargin, webkitShapeOutside, webkitTapHighlightColor, webkitTextCombine, webkitTextDecorationsInEffect, webkitTextEmphasis, webkitTextEmphasisColor, webkitTextEmphasisPosition, webkitTextEmphasisStyle, webkitTextFillColor, webkitTextOrientation, webkitTextSecurity, webkitTextSizeAdjust, webkitTextStroke, webkitTextStrokeColor, webkitTextStrokeWidth, webkitTransform, webkitTransformOrigin, webkitTransformOriginX, webkitTransformOriginY, webkitTransformOriginZ, webkitTransformStyle, webkitTransition, webkitTransitionDelay, webkitTransitionDuration, webkitTransitionProperty, webkitTransitionTimingFunction, webkitUserDrag, webkitUserModify, webkitUserSelect, webkitWritingMode, whiteSpace, willChange, wordBreak, wordSpacing, wordWrap, writingMode, zIndex, additive-symbols, ascent-override, aspect-ratio, background-position-x, background-position-y, background-repeat-x, background-repeat-y, base-palette, border-block, border-block-color, border-block-end, border-block-start, border-block-style, border-block-width, border-bottom, border-color, border-image, border-inline, border-inline-color, border-inline-end, border-inline-start, border-inline-style, border-inline-width, border-left, border-radius, border-right, border-spacing, border-style, border-top, border-width, color-scheme, column-fill, column-rule, content-visibility, counter-increment, counter-reset, counter-set, descent-override, flex-flow, font-display, font-feature-settings, font-synthesis, font-variation-settings, forced-color-adjust, grid-area, grid-column, grid-column-gap, grid-gap, grid-row, grid-row-gap, grid-template, initial-value, inset-block, inset-inline, line-gap-override, list-style, margin-block, margin-inline, max-zoom, min-zoom, override-colors, overscroll-behavior, overscroll-behavior-x, overscroll-behavior-y, padding-block, padding-inline, page-break-after, page-break-before, page-break-inside, page-orientation, place-content, place-items, place-self, scroll-margin, scroll-margin-block, scroll-margin-bottom, scroll-margin-inline, scroll-margin-left, scroll-margin-right, scroll-margin-top, scroll-padding, scroll-padding-block, scroll-padding-bottom, scroll-padding-inline, scroll-padding-left, scroll-padding-right, scroll-padding-top, scroll-snap-align, scroll-snap-stop, scroll-snap-type, size-adjust, speak-as, text-combine-upright, text-decoration-thickness, text-emphasis, text-orientation, text-underline-offset, transform-box, unicode-range, user-zoom, -webkit-align-content, -webkit-align-items, -webkit-align-self, -webkit-animation, -webkit-animation-delay, -webkit-animation-direction, -webkit-animation-duration, -webkit-animation-fill-mode, -webkit-animation-iteration-count, -webkit-animation-name, -webkit-animation-play-state, -webkit-animation-timing-function, -webkit-app-region, -webkit-appearance, -webkit-backface-visibility, -webkit-background-clip, -webkit-background-origin, -webkit-background-size, -webkit-border-after, -webkit-border-after-color, -webkit-border-after-style, -webkit-border-after-width, -webkit-border-before, -webkit-border-before-color, -webkit-border-before-style, -webkit-border-before-width, -webkit-border-bottom-left-radius, -webkit-border-bottom-right-radius, -webkit-border-end, -webkit-border-end-color, -webkit-border-end-style, -webkit-border-end-width, -webkit-border-radius, -webkit-border-start, -webkit-border-start-color, -webkit-border-start-style, -webkit-border-start-width, -webkit-border-top-left-radius, -webkit-border-top-right-radius, -webkit-box-shadow, -webkit-box-sizing, -webkit-clip-path, -webkit-column-break-after, -webkit-column-break-before, -webkit-column-break-inside, -webkit-column-count, -webkit-column-gap, -webkit-column-rule, -webkit-column-rule-color, -webkit-column-rule-style, -webkit-column-rule-width, -webkit-column-span, -webkit-column-width, -webkit-columns, -webkit-filter, -webkit-flex, -webkit-flex-basis, -webkit-flex-direction, -webkit-flex-flow, -webkit-flex-grow, -webkit-flex-shrink, -webkit-flex-wrap, -webkit-font-feature-settings, -webkit-justify-content, -webkit-logical-height, -webkit-logical-width, -webkit-margin-after, -webkit-margin-before, -webkit-margin-end, -webkit-margin-start, -webkit-mask, -webkit-mask-position-x, -webkit-mask-position-y, -webkit-mask-repeat-x, -webkit-mask-repeat-y, -webkit-max-logical-height, -webkit-max-logical-width, -webkit-min-logical-height, -webkit-min-logical-width, -webkit-opacity, -webkit-order, -webkit-padding-after, -webkit-padding-before, -webkit-padding-end, -webkit-padding-start, -webkit-perspective, -webkit-perspective-origin, -webkit-perspective-origin-x, -webkit-perspective-origin-y, -webkit-ruby-position, -webkit-shape-image-threshold, -webkit-shape-margin, -webkit-shape-outside, -webkit-text-emphasis, -webkit-text-emphasis-color, -webkit-text-emphasis-position, -webkit-text-emphasis-style, -webkit-text-size-adjust, -webkit-text-stroke, -webkit-transform, -webkit-transform-origin, -webkit-transform-origin-x, -webkit-transform-origin-y, -webkit-transform-origin-z, -webkit-transform-style, -webkit-transition, -webkit-transition-delay, -webkit-transition-duration, -webkit-transition-property, -webkit-transition-timing-function, -webkit-user-select, word-wrap`,
+        jsKeys: 'Object.assign, Object.getOwnPropertyDescriptor, Object.getOwnPropertyDescriptors, Object.getOwnPropertyNames, Object.getOwnPropertySymbols, Object.is, Object.preventExtensions, Object.seal, Object.create, Object.defineProperties, Object.defineProperty, Object.freeze, Object.getPrototypeOf, Object.setPrototypeOf, Object.isExtensible, Object.isFrozen, Object.isSealed, Object.keys, Object.entries, Object.fromEntries, Object.values, Object.hasOwn, Object.__defineGetter__, Object.__defineSetter__, Object.hasOwnProperty, Object.__lookupGetter__, Object.__lookupSetter__, Object.isPrototypeOf, Object.propertyIsEnumerable, Object.toString, Object.valueOf, Object.__proto__, Object.toLocaleString, Function.apply, Function.bind, Function.call, Function.toString, Boolean.toString, Boolean.valueOf, Symbol.for, Symbol.keyFor, Symbol.asyncIterator, Symbol.hasInstance, Symbol.isConcatSpreadable, Symbol.iterator, Symbol.match, Symbol.matchAll, Symbol.replace, Symbol.search, Symbol.species, Symbol.split, Symbol.toPrimitive, Symbol.toStringTag, Symbol.unscopables, Symbol.toString, Symbol.valueOf, Symbol.description, Error.captureStackTrace, Error.stackTraceLimit, Error.message, Error.toString, Number.isFinite, Number.isInteger, Number.isNaN, Number.isSafeInteger, Number.parseFloat, Number.parseInt, Number.MAX_VALUE, Number.MIN_VALUE, Number.NaN, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, Number.MAX_SAFE_INTEGER, Number.MIN_SAFE_INTEGER, Number.EPSILON, Number.toExponential, Number.toFixed, Number.toPrecision, Number.toString, Number.valueOf, Number.toLocaleString, BigInt.asUintN, BigInt.asIntN, BigInt.toLocaleString, BigInt.toString, BigInt.valueOf, Math.abs, Math.acos, Math.acosh, Math.asin, Math.asinh, Math.atan, Math.atanh, Math.atan2, Math.ceil, Math.cbrt, Math.expm1, Math.clz32, Math.cos, Math.cosh, Math.exp, Math.floor, Math.fround, Math.hypot, Math.imul, Math.log, Math.log1p, Math.log2, Math.log10, Math.max, Math.min, Math.pow, Math.random, Math.round, Math.sign, Math.sin, Math.sinh, Math.sqrt, Math.tan, Math.tanh, Math.trunc, Math.E, Math.LN10, Math.LN2, Math.LOG10E, Math.LOG2E, Math.PI, Math.SQRT1_2, Math.SQRT2, Date.now, Date.parse, Date.UTC, Date.toString, Date.toDateString, Date.toTimeString, Date.toISOString, Date.toUTCString, Date.toGMTString, Date.getDate, Date.setDate, Date.getDay, Date.getFullYear, Date.setFullYear, Date.getHours, Date.setHours, Date.getMilliseconds, Date.setMilliseconds, Date.getMinutes, Date.setMinutes, Date.getMonth, Date.setMonth, Date.getSeconds, Date.setSeconds, Date.getTime, Date.setTime, Date.getTimezoneOffset, Date.getUTCDate, Date.setUTCDate, Date.getUTCDay, Date.getUTCFullYear, Date.setUTCFullYear, Date.getUTCHours, Date.setUTCHours, Date.getUTCMilliseconds, Date.setUTCMilliseconds, Date.getUTCMinutes, Date.setUTCMinutes, Date.getUTCMonth, Date.setUTCMonth, Date.getUTCSeconds, Date.setUTCSeconds, Date.valueOf, Date.getYear, Date.setYear, Date.toJSON, Date.toLocaleString, Date.toLocaleDateString, Date.toLocaleTimeString, String.fromCharCode, String.fromCodePoint, String.raw, String.anchor, String.at, String.big, String.blink, String.bold, String.charAt, String.charCodeAt, String.codePointAt, String.concat, String.endsWith, String.fontcolor, String.fontsize, String.fixed, String.includes, String.indexOf, String.italics, String.lastIndexOf, String.link, String.localeCompare, String.match, String.matchAll, String.normalize, String.padEnd, String.padStart, String.repeat, String.replace, String.replaceAll, String.search, String.slice, String.small, String.split, String.strike, String.sub, String.substr, String.substring, String.sup, String.startsWith, String.toString, String.trim, String.trimStart, String.trimLeft, String.trimEnd, String.trimRight, String.toLocaleLowerCase, String.toLocaleUpperCase, String.toLowerCase, String.toUpperCase, String.valueOf, RegExp.input, RegExp.$_, RegExp.lastMatch, RegExp.$&, RegExp.lastParen, RegExp.$+, RegExp.leftContext, RegExp.$`, RegExp.rightContext, RegExp.$\', RegExp.$1, RegExp.$2, RegExp.$3, RegExp.$4, RegExp.$5, RegExp.$6, RegExp.$7, RegExp.$8, RegExp.$9, RegExp.exec, RegExp.dotAll, RegExp.flags, RegExp.global, RegExp.hasIndices, RegExp.ignoreCase, RegExp.multiline, RegExp.source, RegExp.sticky, RegExp.unicode, RegExp.compile, RegExp.toString, RegExp.test, Array.isArray, Array.from, Array.of, Array.at, Array.concat, Array.copyWithin, Array.fill, Array.find, Array.findIndex, Array.lastIndexOf, Array.pop, Array.push, Array.reverse, Array.shift, Array.unshift, Array.slice, Array.sort, Array.splice, Array.includes, Array.indexOf, Array.join, Array.keys, Array.entries, Array.values, Array.forEach, Array.filter, Array.flat, Array.flatMap, Array.map, Array.every, Array.some, Array.reduce, Array.reduceRight, Array.toLocaleString, Array.toString, Array.findLast, Array.findLastIndex, Map.get, Map.set, Map.has, Map.delete, Map.clear, Map.entries, Map.forEach, Map.keys, Map.size, Map.values, Set.has, Set.add, Set.delete, Set.clear, Set.entries, Set.forEach, Set.size, Set.values, Set.keys, WeakMap.delete, WeakMap.get, WeakMap.set, WeakMap.has, WeakSet.delete, WeakSet.has, WeakSet.add, Atomics.load, Atomics.store, Atomics.add, Atomics.sub, Atomics.and, Atomics.or, Atomics.xor, Atomics.exchange, Atomics.compareExchange, Atomics.isLockFree, Atomics.wait, Atomics.waitAsync, Atomics.notify, JSON.parse, JSON.stringify, Promise.all, Promise.allSettled, Promise.any, Promise.race, Promise.resolve, Promise.reject, Promise.then, Promise.catch, Promise.finally, Reflect.defineProperty, Reflect.deleteProperty, Reflect.apply, Reflect.construct, Reflect.get, Reflect.getOwnPropertyDescriptor, Reflect.getPrototypeOf, Reflect.has, Reflect.isExtensible, Reflect.ownKeys, Reflect.preventExtensions, Reflect.set, Reflect.setPrototypeOf, Proxy.revocable, Intl.getCanonicalLocales, Intl.supportedValuesOf, Intl.DateTimeFormat, Intl.NumberFormat, Intl.Collator, Intl.v8BreakIterator, Intl.PluralRules, Intl.RelativeTimeFormat, Intl.ListFormat, Intl.Locale, Intl.DisplayNames, Intl.Segmenter, WebAssembly.compile, WebAssembly.validate, WebAssembly.instantiate, WebAssembly.compileStreaming, WebAssembly.instantiateStreaming, WebAssembly.Module, WebAssembly.Instance, WebAssembly.Table, WebAssembly.Memory, WebAssembly.Global, WebAssembly.Tag, WebAssembly.Exception, WebAssembly.CompileError, WebAssembly.LinkError, WebAssembly.RuntimeError, Document.implementation, Document.URL, Document.documentURI, Document.compatMode, Document.characterSet, Document.charset, Document.inputEncoding, Document.contentType, Document.doctype, Document.documentElement, Document.xmlEncoding, Document.xmlVersion, Document.xmlStandalone, Document.domain, Document.referrer, Document.cookie, Document.lastModified, Document.readyState, Document.title, Document.dir, Document.body, Document.head, Document.images, Document.embeds, Document.plugins, Document.links, Document.forms, Document.scripts, Document.currentScript, Document.defaultView, Document.designMode, Document.onreadystatechange, Document.anchors, Document.applets, Document.fgColor, Document.linkColor, Document.vlinkColor, Document.alinkColor, Document.bgColor, Document.all, Document.scrollingElement, Document.onpointerlockchange, Document.onpointerlockerror, Document.hidden, Document.visibilityState, Document.wasDiscarded, Document.featurePolicy, Document.webkitVisibilityState, Document.webkitHidden, Document.onbeforecopy, Document.onbeforecut, Document.onbeforepaste, Document.onfreeze, Document.onresume, Document.onsearch, Document.onvisibilitychange, Document.fullscreenEnabled, Document.fullscreen, Document.onfullscreenchange, Document.onfullscreenerror, Document.webkitIsFullScreen, Document.webkitCurrentFullScreenElement, Document.webkitFullscreenEnabled, Document.webkitFullscreenElement, Document.onwebkitfullscreenchange, Document.onwebkitfullscreenerror, Document.rootElement, Document.onbeforexrselect, Document.onabort, Document.onblur, Document.oncancel, Document.oncanplay, Document.oncanplaythrough, Document.onchange, Document.onclick, Document.onclose, Document.oncontextlost, Document.oncontextmenu, Document.oncontextrestored, Document.oncuechange, Document.ondblclick, Document.ondrag, Document.ondragend, Document.ondragenter, Document.ondragleave, Document.ondragover, Document.ondragstart, Document.ondrop, Document.ondurationchange, Document.onemptied, Document.onended, Document.onerror, Document.onfocus, Document.onformdata, Document.oninput, Document.oninvalid, Document.onkeydown, Document.onkeypress, Document.onkeyup, Document.onload, Document.onloadeddata, Document.onloadedmetadata, Document.onloadstart, Document.onmousedown, Document.onmouseenter, Document.onmouseleave, Document.onmousemove, Document.onmouseout, Document.onmouseover, Document.onmouseup, Document.onmousewheel, Document.onpause, Document.onplay, Document.onplaying, Document.onprogress, Document.onratechange, Document.onreset, Document.onresize, Document.onscroll, Document.onsecuritypolicyviolation, Document.onseeked, Document.onseeking, Document.onselect, Document.onslotchange, Document.onstalled, Document.onsubmit, Document.onsuspend, Document.ontimeupdate, Document.ontoggle, Document.onvolumechange, Document.onwaiting, Document.onwebkitanimationend, Document.onwebkitanimationiteration, Document.onwebkitanimationstart, Document.onwebkittransitionend, Document.onwheel, Document.onauxclick, Document.ongotpointercapture, Document.onlostpointercapture, Document.onpointerdown, Document.onpointermove, Document.onpointerup, Document.onpointercancel, Document.onpointerover, Document.onpointerout, Document.onpointerenter, Document.onpointerleave, Document.onselectstart, Document.onselectionchange, Document.onanimationend, Document.onanimationiteration, Document.onanimationstart, Document.ontransitionrun, Document.ontransitionstart, Document.ontransitionend, Document.ontransitioncancel, Document.oncopy, Document.oncut, Document.onpaste, Document.children, Document.firstElementChild, Document.lastElementChild, Document.childElementCount, Document.activeElement, Document.styleSheets, Document.pointerLockElement, Document.fullscreenElement, Document.adoptedStyleSheets, Document.fonts, Document.adoptNode, Document.append, Document.captureEvents, Document.caretRangeFromPoint, Document.clear, Document.close, Document.createAttribute, Document.createAttributeNS, Document.createCDATASection, Document.createComment, Document.createDocumentFragment, Document.createElement, Document.createElementNS, Document.createEvent, Document.createExpression, Document.createNSResolver, Document.createNodeIterator, Document.createProcessingInstruction, Document.createRange, Document.createTextNode, Document.createTreeWalker, Document.elementFromPoint, Document.elementsFromPoint, Document.evaluate, Document.execCommand, Document.exitFullscreen, Document.exitPointerLock, Document.getElementById, Document.getElementsByClassName, Document.getElementsByName, Document.getElementsByTagName, Document.getElementsByTagNameNS, Document.getSelection, Document.hasFocus, Document.importNode, Document.open, Document.prepend, Document.queryCommandEnabled, Document.queryCommandIndeterm, Document.queryCommandState, Document.queryCommandSupported, Document.queryCommandValue, Document.querySelector, Document.querySelectorAll, Document.releaseEvents, Document.replaceChildren, Document.webkitCancelFullScreen, Document.webkitExitFullscreen, Document.write, Document.writeln, Document.fragmentDirective, Document.onbeforematch, Document.timeline, Document.pictureInPictureEnabled, Document.pictureInPictureElement, Document.onpointerrawupdate, Document.exitPictureInPicture, Document.getAnimations, Element.namespaceURI, Element.prefix, Element.localName, Element.tagName, Element.id, Element.className, Element.classList, Element.slot, Element.attributes, Element.shadowRoot, Element.part, Element.assignedSlot, Element.innerHTML, Element.outerHTML, Element.scrollTop, Element.scrollLeft, Element.scrollWidth, Element.scrollHeight, Element.clientTop, Element.clientLeft, Element.clientWidth, Element.clientHeight, Element.attributeStyleMap, Element.onbeforecopy, Element.onbeforecut, Element.onbeforepaste, Element.onsearch, Element.elementTiming, Element.onfullscreenchange, Element.onfullscreenerror, Element.onwebkitfullscreenchange, Element.onwebkitfullscreenerror, Element.role, Element.ariaAtomic, Element.ariaAutoComplete, Element.ariaBusy, Element.ariaChecked, Element.ariaColCount, Element.ariaColIndex, Element.ariaColSpan, Element.ariaCurrent, Element.ariaDescription, Element.ariaDisabled, Element.ariaExpanded, Element.ariaHasPopup, Element.ariaHidden, Element.ariaInvalid, Element.ariaKeyShortcuts, Element.ariaLabel, Element.ariaLevel, Element.ariaLive, Element.ariaModal, Element.ariaMultiLine, Element.ariaMultiSelectable, Element.ariaOrientation, Element.ariaPlaceholder, Element.ariaPosInSet, Element.ariaPressed, Element.ariaReadOnly, Element.ariaRelevant, Element.ariaRequired, Element.ariaRoleDescription, Element.ariaRowCount, Element.ariaRowIndex, Element.ariaRowSpan, Element.ariaSelected, Element.ariaSetSize, Element.ariaSort, Element.ariaValueMax, Element.ariaValueMin, Element.ariaValueNow, Element.ariaValueText, Element.children, Element.firstElementChild, Element.lastElementChild, Element.childElementCount, Element.previousElementSibling, Element.nextElementSibling, Element.after, Element.animate, Element.append, Element.attachShadow, Element.before, Element.closest, Element.computedStyleMap, Element.getAttribute, Element.getAttributeNS, Element.getAttributeNames, Element.getAttributeNode, Element.getAttributeNodeNS, Element.getBoundingClientRect, Element.getClientRects, Element.getElementsByClassName, Element.getElementsByTagName, Element.getElementsByTagNameNS, Element.getInnerHTML, Element.hasAttribute, Element.hasAttributeNS, Element.hasAttributes, Element.hasPointerCapture, Element.insertAdjacentElement, Element.insertAdjacentHTML, Element.insertAdjacentText, Element.matches, Element.prepend, Element.querySelector, Element.querySelectorAll, Element.releasePointerCapture, Element.remove, Element.removeAttribute, Element.removeAttributeNS, Element.removeAttributeNode, Element.replaceChildren, Element.replaceWith, Element.requestFullscreen, Element.requestPointerLock, Element.scroll, Element.scrollBy, Element.scrollIntoView, Element.scrollIntoViewIfNeeded, Element.scrollTo, Element.setAttribute, Element.setAttributeNS, Element.setAttributeNode, Element.setAttributeNodeNS, Element.setPointerCapture, Element.toggleAttribute, Element.webkitMatchesSelector, Element.webkitRequestFullScreen, Element.webkitRequestFullscreen, Element.getAnimations',
+    },
+    'Firefox': {
+        version: 102,
+        windowKeys: `undefined, globalThis, Array, Boolean, JSON, Date, Math, Number, String, RegExp, Error, InternalError, AggregateError, EvalError, RangeError, ReferenceError, SyntaxError, TypeError, URIError, ArrayBuffer, Int8Array, Uint8Array, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, Uint8ClampedArray, BigInt64Array, BigUint64Array, BigInt, Proxy, WeakMap, Set, DataView, Symbol, Intl, Reflect, WeakSet, Atomics, Promise, WebAssembly, FinalizationRegistry, WeakRef, NaN, Infinity, isNaN, isFinite, parseFloat, parseInt, escape, unescape, decodeURI, encodeURI, decodeURIComponent, encodeURIComponent, SVGGradientElement, StyleSheetList, HTMLSlotElement, SVGMPathElement, SVGPathElement, PermissionStatus, CSSMediaRule, TrackEvent, PopStateEvent, GamepadButton, Attr, CSSConditionRule, ConstantSourceNode, BaseAudioContext, StaticRange, HTMLAreaElement, HTMLPictureElement, FileReader, SVGLengthList, SpeechSynthesisUtterance, SVGSymbolElement, ElementInternals, PerformanceServerTiming, LockManager, HTMLFrameElement, FocusEvent, SVGAElement, SVGAnimatedPreserveAspectRatio, Credential, RTCStatsReport, WebGLProgram, TextEncoder, MediaSession, MediaDevices, MediaSource, PerformanceEventTiming, PerformanceObserverEntryList, SVGAnimatedInteger, SVGSVGElement, Screen, SVGFEComponentTransferElement, CSSFontFaceRule, FileSystem, IDBOpenDBRequest, PeriodicWave, IDBVersionChangeEvent, WebGLRenderingContext, CanvasCaptureMediaStream, Image, DOMMatrixReadOnly, DataTransfer, HTMLUListElement, ReadableStreamDefaultReader, SVGTransform, Path2D, SVGAnimatedNumberList, SubmitEvent, SVGTextPathElement, GainNode, ReadableByteStreamController, SVGMatrix, PaintRequestList, KeyframeEffect, SVGFETileElement, SVGFESpotLightElement, HTMLOutputElement, PerformanceResourceTiming, FileSystemDirectoryEntry, DOMStringMap, SVGGeometryElement, SVGFEFuncGElement, PageTransitionEvent, HTMLAudioElement, DOMQuad, ByteLengthQueuingStrategy, SVGUseElement, MathMLElement, CSSPageRule, AnimationTimeline, GeolocationPosition, ClipboardEvent, CSS2Properties, CloseEvent, HTMLTemplateElement, DragEvent, WebGLShader, SVGFEImageElement, HTMLMarqueeElement, URLSearchParams, MediaStreamEvent, SharedWorker, MimeType, CompositionEvent, PerformanceTiming, SVGFEMergeElement, mozRTCIceCandidate, ResizeObserver, RTCIceCandidate, DOMRectList, CustomElementRegistry, XMLDocument, Worklet, DOMRectReadOnly, MediaList, HTMLFormControlsCollection, SVGRectElement, DOMPointReadOnly, IDBFactory, HTMLCollection, HTMLBRElement, HTMLFieldSetElement, HTMLSelectElement, Gamepad, AudioNode, SVGSetElement, CaretPosition, HTMLParagraphElement, HTMLScriptElement, WebGLShaderPrecisionFormat, FileList, MediaDeviceInfo, RadioNodeList, AudioDestinationNode, SVGNumberList, BeforeUnloadEvent, IDBCursor, HTMLAllCollection, MediaError, SVGFEBlendElement, WebGLActiveInfo, InputEvent, MediaStream, Range, HTMLHtmlElement, HTMLAnchorElement, FormData, DOMMatrix, AudioBufferSourceNode, HTMLElement, IdleDeadline, CanvasGradient, TreeWalker, MouseEvent, KeyboardEvent, PerformanceNavigation, AudioBuffer, HTMLInputElement, DOMRect, SpeechSynthesisErrorEvent, SVGAnimatedRect, BroadcastChannel, SVGTextPositioningElement, RTCRtpSender, HTMLButtonElement, FileSystemDirectoryReader, SVGStopElement, GamepadEvent, MediaKeySystemAccess, FontFaceSetLoadEvent, PushSubscriptionOptions, StereoPannerNode, HTMLDialogElement, SVGAnimatedEnumeration, MutationRecord, HTMLStyleElement, SVGPolylineElement, SVGFESpecularLightingElement, FontFace, DocumentFragment, NamedNodeMap, WebGL2RenderingContext, MediaRecorder, FileSystemFileEntry, VideoPlaybackQuality, Selection, Response, CSSSupportsRule, Request, MediaCapabilities, ServiceWorker, HTMLDataElement, WritableStreamDefaultWriter, SVGFilterElement, PerformancePaintTiming, CSSStyleSheet, SVGGraphicsElement, URL, CSSStyleDeclaration, PerformanceMark, HTMLVideoElement, ErrorEvent, SVGForeignObjectElement, GeolocationPositionError, ResizeObserverSize, SVGNumber, WebGLUniformLocation, ImageBitmap, TransformStream, PointerEvent, ShadowRoot, GeolocationCoordinates, DOMParser, SVGPreserveAspectRatio, DelayNode, HTMLDivElement, SVGTextElement, HTMLOptionElement, NodeFilter, StorageManager, ScrollAreaEvent, WebGLRenderbuffer, TextTrackCue, SVGTextContentElement, TransformStreamDefaultController, RTCRtpTransceiver, SVGAnimatedString, CredentialsContainer, PopupBlockedEvent, WaveShaperNode, CSSRuleList, FileSystemEntry, SVGAnimateTransformElement, SVGMetadataElement, CSSKeyframeRule, SVGCircleElement, HTMLTableRowElement, IIRFilterNode, IntersectionObserverEntry, Notification, CSSLayerStatementRule, SVGAnimatedNumber, MediaStreamTrack, HTMLImageElement, ScriptProcessorNode, SVGFEGaussianBlurElement, AudioParam, CustomEvent, MessageChannel, MediaQueryListEvent, CacheStorage, SVGFEFloodElement, PaintRequest, DOMImplementation, HTMLPreElement, ConvolverNode, HTMLEmbedElement, SVGElement, TextTrack, IDBKeyRange, DeviceOrientationEvent, RTCDataChannelEvent, MediaQueryList, SVGLength, SVGStyleElement, Geolocation, CSS, SVGFEDropShadowElement, ServiceWorkerContainer, MediaStreamTrackEvent, NavigationPreloadManager, SVGViewElement, FormDataEvent, MediaStreamTrackAudioSourceNode, MouseScrollEvent, RTCRtpReceiver, IDBObjectStore, PerformanceEntry, HTMLBodyElement, HashChangeEvent, SVGAngle, RTCDTMFToneChangeEvent, Clipboard, Cache, HTMLIFrameElement, SVGScriptElement, Storage, BiquadFilterNode, WritableStreamDefaultController, IDBMutableFile, console, RTCPeerConnectionIceEvent, StyleSheet, ProgressEvent, BlobEvent, HTMLMediaElement, HTMLSourceElement, MediaKeyMessageEvent, IDBIndex, webkitURL, Worker, WebGLQuery, HTMLLabelElement, RTCDtlsTransport, SVGFEMorphologyElement, ChannelSplitterNode, SourceBuffer, SVGTSpanElement, MediaMetadata, SVGPatternElement, CSSNamespaceRule, HTMLQuoteElement, HTMLMenuElement, WebGLTransformFeedback, MediaCapabilitiesInfo, SVGFEFuncBElement, ValidityState, HTMLUnknownElement, CharacterData, HTMLDataListElement, SVGRect, DeviceMotionEvent, OfflineResourceList, XMLSerializer, HTMLMeterElement, SourceBufferList, CountQueuingStrategy, SecurityPolicyViolationEvent, AudioContext, PerformanceMeasure, HTMLHeadingElement, ResizeObserverEntry, Audio, TextMetrics, U2F, ServiceWorkerRegistration, History, AnimationPlaybackEvent, Plugin, CSSImportRule, DOMStringList, HTMLOptGroupElement, RTCTrackEvent, XPathResult, Lock, RTCDataChannel, HTMLDirectoryElement, ProcessingInstruction, DOMException, ReadableStream, TextTrackCueList, AnimationEvent, MediaStreamAudioDestinationNode, HTMLTableElement, SVGPoint, HTMLModElement, IDBTransaction, DynamicsCompressorNode, SVGAnimatedTransformList, PublicKeyCredential, SVGFEDiffuseLightingElement, CSSRule, IDBDatabase, HTMLSpanElement, SVGFEColorMatrixElement, TransitionEvent, AudioListener, HTMLFormElement, SVGFEMergeNodeElement, AbortController, RTCPeerConnection, AnimationEffect, Permissions, CanvasRenderingContext2D, SVGLineElement, MediaStreamAudioSourceNode, CSSKeyframesRule, Directory, MediaKeys, WebGLTexture, MediaKeySession, Comment, WritableStream, CSSGroupingRule, SVGEllipseElement, WheelEvent, SubtleCrypto, XPathExpression, NodeList, AuthenticatorAssertionResponse, CSSMozDocumentRule, SVGAnimatedAngle, File, SVGLinearGradientElement, AnalyserNode, MutationObserver, SVGStringList, SVGAnimateMotionElement, BarProp, XMLHttpRequestEventTarget, Text, CanvasPattern, FontFaceSet, Crypto, IDBRequest, UIEvent, SVGFEDisplacementMapElement, VTTCue, KeyEvent, WebGLBuffer, StorageEvent, OscillatorNode, AuthenticatorResponse, OfflineAudioContext, MediaElementAudioSourceNode, HTMLTextAreaElement, ImageData, SpeechSynthesisVoice, SVGFEConvolveMatrixElement, SVGMarkerElement, AudioParamMap, CSSTransition, CSSFontFeatureValuesRule, ChannelMergerNode, AudioProcessingEvent, HTMLHeadElement, AudioScheduledSourceNode, WebKitCSSMatrix, MediaKeyError, DOMRequest, HTMLLIElement, SVGDefsElement, SVGFETurbulenceElement, SVGUnitTypes, PushSubscription, RTCCertificate, ReadableStreamBYOBRequest, GamepadHapticActuator, TextDecoder, HTMLHRElement, SVGClipPathElement, MimeTypeArray, Element, TextTrackList, SVGPointList, XMLHttpRequest, ImageBitmapRenderingContext, MutationEvent, GamepadPose, MediaRecorderErrorEvent, SVGFEDistantLightElement, HTMLParamElement, OfflineAudioCompletionEvent, IntersectionObserver, HTMLOptionsCollection, SVGAnimationElement, HTMLOListElement, SVGFEFuncAElement, HTMLCanvasElement, SVGAnimatedLength, HTMLProgressElement, HTMLTableColElement, SpeechSynthesisEvent, Location, SVGAnimatedBoolean, HTMLDListElement, HTMLTableCellElement, HTMLDetailsElement, CSSAnimation, XPathEvaluator, RTCDTMFSender, SVGFEOffsetElement, XSLTProcessor, SVGFECompositeElement, ReadableStreamDefaultController, WebGLSync, mozRTCSessionDescription, MediaEncryptedEvent, WebGLSampler, AuthenticatorAttestationResponse, ScreenOrientation, SVGComponentTransferFunctionElement, PerformanceObserver, CDATASection, CSSStyleRule, HTMLTableSectionElement, AudioWorklet, MessagePort, HTMLLegendElement, WebGLFramebuffer, VisualViewport, Blob, PannerNode, SVGFEPointLightElement, TimeEvent, HTMLFontElement, DOMPoint, NodeIterator, WebGLContextEvent, DOMTokenList, HTMLTitleElement, XMLHttpRequestUpload, VTTRegion, SVGSwitchElement, SVGTransformList, AbortSignal, SVGFEFuncRElement, Option, HTMLTrackElement, EventSource, CSSCounterStyleRule, HTMLFrameSetElement, SVGImageElement, HTMLMetaElement, SVGGElement, HTMLLinkElement, HTMLMapElement, mozRTCPeerConnection, HTMLObjectElement, HTMLTableCaptionElement, HTMLBaseElement, SVGAnimatedLengthList, AbstractRange, PromiseRejectionEvent, TimeRanges, PluginArray, Animation, SVGMaskElement, IDBFileRequest, SVGRadialGradientElement, SVGAnimateElement, MediaKeyStatusMap, IDBFileHandle, DocumentTimeline, DataTransferItemList, PushManager, Navigator, ReadableStreamBYOBReader, MessageEvent, WebSocket, SVGPolygonElement, WebGLVertexArrayObject, SVGTitleElement, HTMLTimeElement, IDBCursorWithValue, AudioWorkletNode, SpeechSynthesis, DocumentType, DataTransferItem, RTCSessionDescription, CSSLayerBlockRule, CryptoKey, SVGDescElement, Headers, Function, Object, eval, EventTarget, Window, close, stop, focus, blur, open, alert, confirm, prompt, print, postMessage, captureEvents, releaseEvents, getSelection, getComputedStyle, matchMedia, moveTo, moveBy, resizeTo, resizeBy, scroll, scrollTo, scrollBy, getDefaultComputedStyle, scrollByLines, scrollByPages, sizeToContent, updateCommands, find, dump, setResizable, requestIdleCallback, cancelIdleCallback, requestAnimationFrame, cancelAnimationFrame, reportError, btoa, atob, setTimeout, clearTimeout, setInterval, clearInterval, queueMicrotask, createImageBitmap, structuredClone, fetch, self, name, history, customElements, locationbar, menubar, personalbar, scrollbars, statusbar, toolbar, status, closed, event, frames, length, opener, parent, frameElement, navigator, clientInformation, external, applicationCache, screen, innerWidth, innerHeight, scrollX, pageXOffset, scrollY, pageYOffset, screenLeft, screenTop, screenX, screenY, outerWidth, outerHeight, performance, mozInnerScreenX, mozInnerScreenY, devicePixelRatio, scrollMaxX, scrollMaxY, fullScreen, ondevicemotion, ondeviceorientation, onabsolutedeviceorientation, InstallTrigger, visualViewport, crypto, onabort, onblur, onfocus, onauxclick, onbeforeinput, oncanplay, oncanplaythrough, onchange, onclick, onclose, oncontextmenu, oncuechange, ondblclick, ondrag, ondragend, ondragenter, ondragexit, ondragleave, ondragover, ondragstart, ondrop, ondurationchange, onemptied, onended, onformdata, oninput, oninvalid, onkeydown, onkeypress, onkeyup, onload, onloadeddata, onloadedmetadata, onloadend, onloadstart, onmousedown, onmouseenter, onmouseleave, onmousemove, onmouseout, onmouseover, onmouseup, onwheel, onpause, onplay, onplaying, onprogress, onratechange, onreset, onresize, onscroll, onsecuritypolicyviolation, onseeked, onseeking, onselect, onslotchange, onstalled, onsubmit, onsuspend, ontimeupdate, onvolumechange, onwaiting, onselectstart, onselectionchange, ontoggle, onpointercancel, onpointerdown, onpointerup, onpointermove, onpointerout, onpointerover, onpointerenter, onpointerleave, ongotpointercapture, onlostpointercapture, onmozfullscreenchange, onmozfullscreenerror, onanimationcancel, onanimationend, onanimationiteration, onanimationstart, ontransitioncancel, ontransitionend, ontransitionrun, ontransitionstart, onwebkitanimationend, onwebkitanimationiteration, onwebkitanimationstart, onwebkittransitionend, u2f, onerror, speechSynthesis, onafterprint, onbeforeprint, onbeforeunload, onhashchange, onlanguagechange, onmessage, onmessageerror, onoffline, ononline, onpagehide, onpageshow, onpopstate, onrejectionhandled, onstorage, onunhandledrejection, onunload, ongamepadconnected, ongamepaddisconnected, localStorage, origin, crossOriginIsolated, isSecureContext, indexedDB, caches, sessionStorage, window, document, location, top, netscape, Node, Document, HTMLDocument, EventCounts, Map, Event`,
+        cssKeys: `alignContent, align-content, alignItems, align-items, alignSelf, align-self, aspectRatio, aspect-ratio, backfaceVisibility, backface-visibility, borderCollapse, border-collapse, borderImageRepeat, border-image-repeat, boxDecorationBreak, box-decoration-break, boxSizing, box-sizing, breakInside, break-inside, captionSide, caption-side, clear, colorInterpolation, color-interpolation, colorInterpolationFilters, color-interpolation-filters, columnCount, column-count, columnFill, column-fill, columnSpan, column-span, contain, direction, display, dominantBaseline, dominant-baseline, emptyCells, empty-cells, flexDirection, flex-direction, flexWrap, flex-wrap, cssFloat, float, fontKerning, font-kerning, fontOpticalSizing, font-optical-sizing, fontSizeAdjust, font-size-adjust, fontStretch, font-stretch, fontStyle, font-style, fontSynthesis, font-synthesis, fontVariantCaps, font-variant-caps, fontVariantEastAsian, font-variant-east-asian, fontVariantLigatures, font-variant-ligatures, fontVariantNumeric, font-variant-numeric, fontVariantPosition, font-variant-position, fontWeight, font-weight, gridAutoFlow, grid-auto-flow, hyphens, imageOrientation, image-orientation, imageRendering, image-rendering, imeMode, ime-mode, isolation, justifyContent, justify-content, justifyItems, justify-items, justifySelf, justify-self, lineBreak, line-break, listStylePosition, list-style-position, maskType, mask-type, mixBlendMode, mix-blend-mode, MozBoxAlign, -moz-box-align, MozBoxDirection, -moz-box-direction, MozBoxOrient, -moz-box-orient, MozBoxPack, -moz-box-pack, MozFloatEdge, -moz-float-edge, MozForceBrokenImageIcon, -moz-force-broken-image-icon, MozOrient, -moz-orient, MozTextSizeAdjust, -moz-text-size-adjust, MozUserFocus, -moz-user-focus, MozUserInput, -moz-user-input, MozUserModify, -moz-user-modify, MozWindowDragging, -moz-window-dragging, objectFit, object-fit, offsetRotate, offset-rotate, outlineStyle, outline-style, overflowAnchor, overflow-anchor, overflowWrap, overflow-wrap, paintOrder, paint-order, pointerEvents, pointer-events, position, printColorAdjust, print-color-adjust, resize, rubyAlign, ruby-align, rubyPosition, ruby-position, scrollBehavior, scroll-behavior, scrollSnapAlign, scroll-snap-align, scrollSnapType, scroll-snap-type, scrollbarGutter, scrollbar-gutter, scrollbarWidth, scrollbar-width, shapeRendering, shape-rendering, strokeLinecap, stroke-linecap, strokeLinejoin, stroke-linejoin, tableLayout, table-layout, textAlign, text-align, textAlignLast, text-align-last, textAnchor, text-anchor, textCombineUpright, text-combine-upright, textDecorationLine, text-decoration-line, textDecorationSkipInk, text-decoration-skip-ink, textDecorationStyle, text-decoration-style, textEmphasisPosition, text-emphasis-position, textJustify, text-justify, textOrientation, text-orientation, textRendering, text-rendering, textTransform, text-transform, textUnderlinePosition, text-underline-position, touchAction, touch-action, transformBox, transform-box, transformStyle, transform-style, unicodeBidi, unicode-bidi, userSelect, user-select, vectorEffect, vector-effect, visibility, webkitLineClamp, WebkitLineClamp, -webkit-line-clamp, whiteSpace, white-space, wordBreak, word-break, writingMode, writing-mode, zIndex, z-index, appearance, breakAfter, break-after, breakBefore, break-before, clipRule, clip-rule, fillRule, fill-rule, fillOpacity, fill-opacity, strokeOpacity, stroke-opacity, MozBoxOrdinalGroup, -moz-box-ordinal-group, order, flexGrow, flex-grow, flexShrink, flex-shrink, MozBoxFlex, -moz-box-flex, strokeMiterlimit, stroke-miterlimit, overflowBlock, overflow-block, overflowInline, overflow-inline, overflowX, overflow-x, overflowY, overflow-y, overscrollBehaviorBlock, overscroll-behavior-block, overscrollBehaviorInline, overscroll-behavior-inline, overscrollBehaviorX, overscroll-behavior-x, overscrollBehaviorY, overscroll-behavior-y, floodOpacity, flood-opacity, opacity, shapeImageThreshold, shape-image-threshold, stopOpacity, stop-opacity, borderBlockEndStyle, border-block-end-style, borderBlockStartStyle, border-block-start-style, borderBottomStyle, border-bottom-style, borderInlineEndStyle, border-inline-end-style, borderInlineStartStyle, border-inline-start-style, borderLeftStyle, border-left-style, borderRightStyle, border-right-style, borderTopStyle, border-top-style, columnRuleStyle, column-rule-style, accentColor, accent-color, animationDelay, animation-delay, animationDirection, animation-direction, animationDuration, animation-duration, animationFillMode, animation-fill-mode, animationIterationCount, animation-iteration-count, animationName, animation-name, animationPlayState, animation-play-state, animationTimingFunction, animation-timing-function, backgroundAttachment, background-attachment, backgroundBlendMode, background-blend-mode, backgroundClip, background-clip, backgroundImage, background-image, backgroundOrigin, background-origin, backgroundPositionX, background-position-x, backgroundPositionY, background-position-y, backgroundRepeat, background-repeat, backgroundSize, background-size, borderImageOutset, border-image-outset, borderImageSlice, border-image-slice, borderImageWidth, border-image-width, borderSpacing, border-spacing, boxShadow, box-shadow, caretColor, caret-color, clipPath, clip-path, color, colorScheme, color-scheme, columnWidth, column-width, content, counterIncrement, counter-increment, counterReset, counter-reset, counterSet, counter-set, cursor, d, filter, flexBasis, flex-basis, fontFamily, font-family, fontFeatureSettings, font-feature-settings, fontLanguageOverride, font-language-override, fontSize, font-size, fontVariantAlternates, font-variant-alternates, fontVariationSettings, font-variation-settings, gridTemplateAreas, grid-template-areas, hyphenateCharacter, hyphenate-character, letterSpacing, letter-spacing, lineHeight, line-height, listStyleType, list-style-type, maskClip, mask-clip, maskComposite, mask-composite, maskImage, mask-image, maskMode, mask-mode, maskOrigin, mask-origin, maskPositionX, mask-position-x, maskPositionY, mask-position-y, maskRepeat, mask-repeat, maskSize, mask-size, offsetAnchor, offset-anchor, offsetPath, offset-path, perspective, quotes, rotate, scale, scrollbarColor, scrollbar-color, shapeOutside, shape-outside, strokeDasharray, stroke-dasharray, strokeDashoffset, stroke-dashoffset, strokeWidth, stroke-width, tabSize, tab-size, textDecorationThickness, text-decoration-thickness, textEmphasisStyle, text-emphasis-style, textOverflow, text-overflow, textShadow, text-shadow, transitionDelay, transition-delay, transitionDuration, transition-duration, transitionProperty, transition-property, transitionTimingFunction, transition-timing-function, translate, verticalAlign, vertical-align, willChange, will-change, wordSpacing, word-spacing, clip, MozImageRegion, -moz-image-region, objectPosition, object-position, perspectiveOrigin, perspective-origin, fill, stroke, transformOrigin, transform-origin, gridTemplateColumns, grid-template-columns, gridTemplateRows, grid-template-rows, borderImageSource, border-image-source, listStyleImage, list-style-image, gridAutoColumns, grid-auto-columns, gridAutoRows, grid-auto-rows, transform, columnGap, column-gap, rowGap, row-gap, markerEnd, marker-end, markerMid, marker-mid, markerStart, marker-start, gridColumnEnd, grid-column-end, gridColumnStart, grid-column-start, gridRowEnd, grid-row-end, gridRowStart, grid-row-start, maxBlockSize, max-block-size, maxHeight, max-height, maxInlineSize, max-inline-size, maxWidth, max-width, cx, cy, offsetDistance, offset-distance, textIndent, text-indent, x, y, borderBottomLeftRadius, border-bottom-left-radius, borderBottomRightRadius, border-bottom-right-radius, borderEndEndRadius, border-end-end-radius, borderEndStartRadius, border-end-start-radius, borderStartEndRadius, border-start-end-radius, borderStartStartRadius, border-start-start-radius, borderTopLeftRadius, border-top-left-radius, borderTopRightRadius, border-top-right-radius, blockSize, block-size, height, inlineSize, inline-size, minBlockSize, min-block-size, minHeight, min-height, minInlineSize, min-inline-size, minWidth, min-width, width, outlineOffset, outline-offset, overflowClipMargin, overflow-clip-margin, scrollMarginBlockEnd, scroll-margin-block-end, scrollMarginBlockStart, scroll-margin-block-start, scrollMarginBottom, scroll-margin-bottom, scrollMarginInlineEnd, scroll-margin-inline-end, scrollMarginInlineStart, scroll-margin-inline-start, scrollMarginLeft, scroll-margin-left, scrollMarginRight, scroll-margin-right, scrollMarginTop, scroll-margin-top, paddingBlockEnd, padding-block-end, paddingBlockStart, padding-block-start, paddingBottom, padding-bottom, paddingInlineEnd, padding-inline-end, paddingInlineStart, padding-inline-start, paddingLeft, padding-left, paddingRight, padding-right, paddingTop, padding-top, r, shapeMargin, shape-margin, rx, ry, scrollPaddingBlockEnd, scroll-padding-block-end, scrollPaddingBlockStart, scroll-padding-block-start, scrollPaddingBottom, scroll-padding-bottom, scrollPaddingInlineEnd, scroll-padding-inline-end, scrollPaddingInlineStart, scroll-padding-inline-start, scrollPaddingLeft, scroll-padding-left, scrollPaddingRight, scroll-padding-right, scrollPaddingTop, scroll-padding-top, borderBlockEndWidth, border-block-end-width, borderBlockStartWidth, border-block-start-width, borderBottomWidth, border-bottom-width, borderInlineEndWidth, border-inline-end-width, borderInlineStartWidth, border-inline-start-width, borderLeftWidth, border-left-width, borderRightWidth, border-right-width, borderTopWidth, border-top-width, columnRuleWidth, column-rule-width, outlineWidth, outline-width, webkitTextStrokeWidth, WebkitTextStrokeWidth, -webkit-text-stroke-width, bottom, insetBlockEnd, inset-block-end, insetBlockStart, inset-block-start, insetInlineEnd, inset-inline-end, insetInlineStart, inset-inline-start, left, marginBlockEnd, margin-block-end, marginBlockStart, margin-block-start, marginBottom, margin-bottom, marginInlineEnd, margin-inline-end, marginInlineStart, margin-inline-start, marginLeft, margin-left, marginRight, margin-right, marginTop, margin-top, right, textUnderlineOffset, text-underline-offset, top, backgroundColor, background-color, borderBlockEndColor, border-block-end-color, borderBlockStartColor, border-block-start-color, borderBottomColor, border-bottom-color, borderInlineEndColor, border-inline-end-color, borderInlineStartColor, border-inline-start-color, borderLeftColor, border-left-color, borderRightColor, border-right-color, borderTopColor, border-top-color, columnRuleColor, column-rule-color, floodColor, flood-color, lightingColor, lighting-color, outlineColor, outline-color, stopColor, stop-color, textDecorationColor, text-decoration-color, textEmphasisColor, text-emphasis-color, webkitTextFillColor, WebkitTextFillColor, -webkit-text-fill-color, webkitTextStrokeColor, WebkitTextStrokeColor, -webkit-text-stroke-color, background, backgroundPosition, background-position, borderColor, border-color, borderStyle, border-style, borderWidth, border-width, borderTop, border-top, borderRight, border-right, borderBottom, border-bottom, borderLeft, border-left, borderBlockStart, border-block-start, borderBlockEnd, border-block-end, borderInlineStart, border-inline-start, borderInlineEnd, border-inline-end, border, borderRadius, border-radius, borderImage, border-image, borderBlockWidth, border-block-width, borderBlockStyle, border-block-style, borderBlockColor, border-block-color, borderInlineWidth, border-inline-width, borderInlineStyle, border-inline-style, borderInlineColor, border-inline-color, borderBlock, border-block, borderInline, border-inline, overflow, overscrollBehavior, overscroll-behavior, pageBreakBefore, page-break-before, pageBreakAfter, page-break-after, pageBreakInside, page-break-inside, offset, columns, columnRule, column-rule, font, fontVariant, font-variant, marker, textEmphasis, text-emphasis, webkitTextStroke, WebkitTextStroke, -webkit-text-stroke, listStyle, list-style, margin, marginBlock, margin-block, marginInline, margin-inline, scrollMargin, scroll-margin, scrollMarginBlock, scroll-margin-block, scrollMarginInline, scroll-margin-inline, outline, padding, paddingBlock, padding-block, paddingInline, padding-inline, scrollPadding, scroll-padding, scrollPaddingBlock, scroll-padding-block, scrollPaddingInline, scroll-padding-inline, flexFlow, flex-flow, flex, gap, gridRow, grid-row, gridColumn, grid-column, gridArea, grid-area, gridTemplate, grid-template, grid, placeContent, place-content, placeSelf, place-self, placeItems, place-items, inset, insetBlock, inset-block, insetInline, inset-inline, mask, maskPosition, mask-position, textDecoration, text-decoration, transition, animation, all, webkitBackgroundClip, WebkitBackgroundClip, -webkit-background-clip, webkitBackgroundOrigin, WebkitBackgroundOrigin, -webkit-background-origin, webkitBackgroundSize, WebkitBackgroundSize, -webkit-background-size, MozBorderStartColor, -moz-border-start-color, MozBorderStartStyle, -moz-border-start-style, MozBorderStartWidth, -moz-border-start-width, MozBorderEndColor, -moz-border-end-color, MozBorderEndStyle, -moz-border-end-style, MozBorderEndWidth, -moz-border-end-width, webkitBorderTopLeftRadius, WebkitBorderTopLeftRadius, -webkit-border-top-left-radius, webkitBorderTopRightRadius, WebkitBorderTopRightRadius, -webkit-border-top-right-radius, webkitBorderBottomRightRadius, WebkitBorderBottomRightRadius, -webkit-border-bottom-right-radius, webkitBorderBottomLeftRadius, WebkitBorderBottomLeftRadius, -webkit-border-bottom-left-radius, MozTransform, -moz-transform, webkitTransform, WebkitTransform, -webkit-transform, MozPerspective, -moz-perspective, webkitPerspective, WebkitPerspective, -webkit-perspective, MozPerspectiveOrigin, -moz-perspective-origin, webkitPerspectiveOrigin, WebkitPerspectiveOrigin, -webkit-perspective-origin, MozBackfaceVisibility, -moz-backface-visibility, webkitBackfaceVisibility, WebkitBackfaceVisibility, -webkit-backface-visibility, MozTransformStyle, -moz-transform-style, webkitTransformStyle, WebkitTransformStyle, -webkit-transform-style, MozTransformOrigin, -moz-transform-origin, webkitTransformOrigin, WebkitTransformOrigin, -webkit-transform-origin, MozAppearance, -moz-appearance, webkitAppearance, WebkitAppearance, -webkit-appearance, webkitBoxShadow, WebkitBoxShadow, -webkit-box-shadow, webkitFilter, WebkitFilter, -webkit-filter, MozFontFeatureSettings, -moz-font-feature-settings, MozFontLanguageOverride, -moz-font-language-override, colorAdjust, color-adjust, MozHyphens, -moz-hyphens, webkitTextSizeAdjust, WebkitTextSizeAdjust, -webkit-text-size-adjust, wordWrap, word-wrap, MozTabSize, -moz-tab-size, MozMarginStart, -moz-margin-start, MozMarginEnd, -moz-margin-end, MozPaddingStart, -moz-padding-start, MozPaddingEnd, -moz-padding-end, webkitFlexDirection, WebkitFlexDirection, -webkit-flex-direction, webkitFlexWrap, WebkitFlexWrap, -webkit-flex-wrap, webkitJustifyContent, WebkitJustifyContent, -webkit-justify-content, webkitAlignContent, WebkitAlignContent, -webkit-align-content, webkitAlignItems, WebkitAlignItems, -webkit-align-items, webkitFlexGrow, WebkitFlexGrow, -webkit-flex-grow, webkitFlexShrink, WebkitFlexShrink, -webkit-flex-shrink, webkitAlignSelf, WebkitAlignSelf, -webkit-align-self, webkitOrder, WebkitOrder, -webkit-order, webkitFlexBasis, WebkitFlexBasis, -webkit-flex-basis, MozBoxSizing, -moz-box-sizing, webkitBoxSizing, WebkitBoxSizing, -webkit-box-sizing, gridColumnGap, grid-column-gap, gridRowGap, grid-row-gap, webkitMaskRepeat, WebkitMaskRepeat, -webkit-mask-repeat, webkitMaskPositionX, WebkitMaskPositionX, -webkit-mask-position-x, webkitMaskPositionY, WebkitMaskPositionY, -webkit-mask-position-y, webkitMaskClip, WebkitMaskClip, -webkit-mask-clip, webkitMaskOrigin, WebkitMaskOrigin, -webkit-mask-origin, webkitMaskSize, WebkitMaskSize, -webkit-mask-size, webkitMaskComposite, WebkitMaskComposite, -webkit-mask-composite, webkitMaskImage, WebkitMaskImage, -webkit-mask-image, MozUserSelect, -moz-user-select, webkitUserSelect, WebkitUserSelect, -webkit-user-select, MozTransitionDuration, -moz-transition-duration, webkitTransitionDuration, WebkitTransitionDuration, -webkit-transition-duration, MozTransitionTimingFunction, -moz-transition-timing-function, webkitTransitionTimingFunction, WebkitTransitionTimingFunction, -webkit-transition-timing-function, MozTransitionProperty, -moz-transition-property, webkitTransitionProperty, WebkitTransitionProperty, -webkit-transition-property, MozTransitionDelay, -moz-transition-delay, webkitTransitionDelay, WebkitTransitionDelay, -webkit-transition-delay, MozAnimationName, -moz-animation-name, webkitAnimationName, WebkitAnimationName, -webkit-animation-name, MozAnimationDuration, -moz-animation-duration, webkitAnimationDuration, WebkitAnimationDuration, -webkit-animation-duration, MozAnimationTimingFunction, -moz-animation-timing-function, webkitAnimationTimingFunction, WebkitAnimationTimingFunction, -webkit-animation-timing-function, MozAnimationIterationCount, -moz-animation-iteration-count, webkitAnimationIterationCount, WebkitAnimationIterationCount, -webkit-animation-iteration-count, MozAnimationDirection, -moz-animation-direction, webkitAnimationDirection, WebkitAnimationDirection, -webkit-animation-direction, MozAnimationPlayState, -moz-animation-play-state, webkitAnimationPlayState, WebkitAnimationPlayState, -webkit-animation-play-state, MozAnimationFillMode, -moz-animation-fill-mode, webkitAnimationFillMode, WebkitAnimationFillMode, -webkit-animation-fill-mode, MozAnimationDelay, -moz-animation-delay, webkitAnimationDelay, WebkitAnimationDelay, -webkit-animation-delay, webkitBoxAlign, WebkitBoxAlign, -webkit-box-align, webkitBoxDirection, WebkitBoxDirection, -webkit-box-direction, webkitBoxFlex, WebkitBoxFlex, -webkit-box-flex, webkitBoxOrient, WebkitBoxOrient, -webkit-box-orient, webkitBoxPack, WebkitBoxPack, -webkit-box-pack, webkitBoxOrdinalGroup, WebkitBoxOrdinalGroup, -webkit-box-ordinal-group, MozBorderStart, -moz-border-start, MozBorderEnd, -moz-border-end, webkitBorderRadius, WebkitBorderRadius, -webkit-border-radius, MozBorderImage, -moz-border-image, webkitBorderImage, WebkitBorderImage, -webkit-border-image, webkitFlexFlow, WebkitFlexFlow, -webkit-flex-flow, webkitFlex, WebkitFlex, -webkit-flex, gridGap, grid-gap, webkitMask, WebkitMask, -webkit-mask, webkitMaskPosition, WebkitMaskPosition, -webkit-mask-position, MozTransition, -moz-transition, webkitTransition, WebkitTransition, -webkit-transition, MozAnimation, -moz-animation, webkitAnimation, WebkitAnimation, -webkit-animation, constructor`,
+        jsKeys: 'Object.assign, Object.getPrototypeOf, Object.setPrototypeOf, Object.getOwnPropertyDescriptor, Object.getOwnPropertyDescriptors, Object.keys, Object.values, Object.entries, Object.is, Object.defineProperty, Object.defineProperties, Object.create, Object.getOwnPropertyNames, Object.getOwnPropertySymbols, Object.isExtensible, Object.preventExtensions, Object.freeze, Object.isFrozen, Object.seal, Object.isSealed, Object.fromEntries, Object.hasOwn, Object.toString, Object.toLocaleString, Object.valueOf, Object.hasOwnProperty, Object.isPrototypeOf, Object.propertyIsEnumerable, Object.__defineGetter__, Object.__defineSetter__, Object.__lookupGetter__, Object.__lookupSetter__, Object.__proto__, Function.toString, Function.apply, Function.call, Function.bind, Boolean.toString, Boolean.valueOf, Symbol.for, Symbol.keyFor, Symbol.isConcatSpreadable, Symbol.iterator, Symbol.match, Symbol.replace, Symbol.search, Symbol.species, Symbol.hasInstance, Symbol.split, Symbol.toPrimitive, Symbol.toStringTag, Symbol.unscopables, Symbol.asyncIterator, Symbol.matchAll, Symbol.toString, Symbol.valueOf, Symbol.description, Error.toString, Error.message, Error.stack, Number.isFinite, Number.isInteger, Number.isNaN, Number.isSafeInteger, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.MAX_VALUE, Number.MIN_VALUE, Number.MAX_SAFE_INTEGER, Number.MIN_SAFE_INTEGER, Number.EPSILON, Number.parseInt, Number.parseFloat, Number.NaN, Number.toString, Number.toLocaleString, Number.valueOf, Number.toFixed, Number.toExponential, Number.toPrecision, BigInt.asUintN, BigInt.asIntN, BigInt.valueOf, BigInt.toString, BigInt.toLocaleString, Math.abs, Math.acos, Math.asin, Math.atan, Math.atan2, Math.ceil, Math.clz32, Math.cos, Math.exp, Math.floor, Math.imul, Math.fround, Math.log, Math.max, Math.min, Math.pow, Math.random, Math.round, Math.sin, Math.sqrt, Math.tan, Math.log10, Math.log2, Math.log1p, Math.expm1, Math.cosh, Math.sinh, Math.tanh, Math.acosh, Math.asinh, Math.atanh, Math.hypot, Math.trunc, Math.sign, Math.cbrt, Math.E, Math.LOG2E, Math.LOG10E, Math.LN2, Math.LN10, Math.PI, Math.SQRT2, Math.SQRT1_2, Date.UTC, Date.parse, Date.now, Date.getTime, Date.getTimezoneOffset, Date.getYear, Date.getFullYear, Date.getUTCFullYear, Date.getMonth, Date.getUTCMonth, Date.getDate, Date.getUTCDate, Date.getDay, Date.getUTCDay, Date.getHours, Date.getUTCHours, Date.getMinutes, Date.getUTCMinutes, Date.getSeconds, Date.getUTCSeconds, Date.getMilliseconds, Date.getUTCMilliseconds, Date.setTime, Date.setYear, Date.setFullYear, Date.setUTCFullYear, Date.setMonth, Date.setUTCMonth, Date.setDate, Date.setUTCDate, Date.setHours, Date.setUTCHours, Date.setMinutes, Date.setUTCMinutes, Date.setSeconds, Date.setUTCSeconds, Date.setMilliseconds, Date.setUTCMilliseconds, Date.toUTCString, Date.toLocaleString, Date.toLocaleDateString, Date.toLocaleTimeString, Date.toDateString, Date.toTimeString, Date.toISOString, Date.toJSON, Date.toString, Date.valueOf, Date.toGMTString, String.fromCharCode, String.fromCodePoint, String.raw, String.toString, String.valueOf, String.toLowerCase, String.toUpperCase, String.charAt, String.charCodeAt, String.substring, String.padStart, String.padEnd, String.codePointAt, String.includes, String.indexOf, String.lastIndexOf, String.startsWith, String.endsWith, String.trim, String.trimStart, String.trimEnd, String.toLocaleLowerCase, String.toLocaleUpperCase, String.localeCompare, String.repeat, String.normalize, String.match, String.matchAll, String.search, String.replace, String.replaceAll, String.split, String.substr, String.concat, String.slice, String.at, String.bold, String.italics, String.fixed, String.strike, String.small, String.big, String.blink, String.sup, String.sub, String.anchor, String.link, String.fontcolor, String.fontsize, String.trimLeft, String.trimRight, RegExp.input, RegExp.lastMatch, RegExp.lastParen, RegExp.leftContext, RegExp.rightContext, RegExp.$1, RegExp.$2, RegExp.$3, RegExp.$4, RegExp.$5, RegExp.$6, RegExp.$7, RegExp.$8, RegExp.$9, RegExp.$_, RegExp.$&, RegExp.$+, RegExp.$`, RegExp.$\', RegExp.toString, RegExp.compile, RegExp.exec, RegExp.test, RegExp.flags, RegExp.hasIndices, RegExp.global, RegExp.ignoreCase, RegExp.multiline, RegExp.dotAll, RegExp.source, RegExp.sticky, RegExp.unicode, Array.isArray, Array.from, Array.of, Array.toString, Array.toLocaleString, Array.join, Array.reverse, Array.sort, Array.push, Array.pop, Array.shift, Array.unshift, Array.splice, Array.concat, Array.slice, Array.lastIndexOf, Array.indexOf, Array.forEach, Array.map, Array.filter, Array.reduce, Array.reduceRight, Array.some, Array.every, Array.find, Array.findIndex, Array.copyWithin, Array.fill, Array.entries, Array.keys, Array.values, Array.includes, Array.flatMap, Array.flat, Array.at, Map.get, Map.has, Map.set, Map.delete, Map.keys, Map.values, Map.clear, Map.forEach, Map.entries, Map.size, Set.has, Set.add, Set.delete, Set.entries, Set.clear, Set.forEach, Set.values, Set.keys, Set.size, WeakMap.has, WeakMap.get, WeakMap.delete, WeakMap.set, WeakSet.add, WeakSet.delete, WeakSet.has, Atomics.compareExchange, Atomics.load, Atomics.store, Atomics.exchange, Atomics.add, Atomics.sub, Atomics.and, Atomics.or, Atomics.xor, Atomics.isLockFree, Atomics.wait, Atomics.notify, Atomics.wake, JSON.parse, JSON.stringify, Promise.all, Promise.allSettled, Promise.any, Promise.race, Promise.reject, Promise.resolve, Promise.then, Promise.catch, Promise.finally, Reflect.apply, Reflect.construct, Reflect.defineProperty, Reflect.deleteProperty, Reflect.get, Reflect.getOwnPropertyDescriptor, Reflect.getPrototypeOf, Reflect.has, Reflect.isExtensible, Reflect.ownKeys, Reflect.preventExtensions, Reflect.set, Reflect.setPrototypeOf, Proxy.revocable, Intl.getCanonicalLocales, Intl.supportedValuesOf, Intl.Collator, Intl.DateTimeFormat, Intl.DisplayNames, Intl.ListFormat, Intl.Locale, Intl.NumberFormat, Intl.PluralRules, Intl.RelativeTimeFormat, WebAssembly.compile, WebAssembly.instantiate, WebAssembly.validate, WebAssembly.compileStreaming, WebAssembly.instantiateStreaming, WebAssembly.Module, WebAssembly.Instance, WebAssembly.Memory, WebAssembly.Table, WebAssembly.Global, WebAssembly.CompileError, WebAssembly.LinkError, WebAssembly.RuntimeError, WebAssembly.Tag, WebAssembly.Exception, Document.getElementsByTagName, Document.getElementsByTagNameNS, Document.getElementsByClassName, Document.getElementById, Document.createElement, Document.createElementNS, Document.createDocumentFragment, Document.createTextNode, Document.createComment, Document.createProcessingInstruction, Document.importNode, Document.adoptNode, Document.createEvent, Document.createRange, Document.createNodeIterator, Document.createTreeWalker, Document.createCDATASection, Document.createAttribute, Document.createAttributeNS, Document.getElementsByName, Document.open, Document.close, Document.write, Document.writeln, Document.hasFocus, Document.execCommand, Document.queryCommandEnabled, Document.queryCommandIndeterm, Document.queryCommandState, Document.queryCommandSupported, Document.queryCommandValue, Document.releaseCapture, Document.mozSetImageElement, Document.clear, Document.captureEvents, Document.releaseEvents, Document.exitFullscreen, Document.mozCancelFullScreen, Document.exitPointerLock, Document.enableStyleSheetsForSet, Document.caretPositionFromPoint, Document.querySelector, Document.querySelectorAll, Document.getSelection, Document.hasStorageAccess, Document.requestStorageAccess, Document.elementFromPoint, Document.elementsFromPoint, Document.getAnimations, Document.prepend, Document.append, Document.replaceChildren, Document.createExpression, Document.createNSResolver, Document.evaluate, Document.implementation, Document.URL, Document.documentURI, Document.compatMode, Document.characterSet, Document.charset, Document.inputEncoding, Document.contentType, Document.doctype, Document.documentElement, Document.domain, Document.referrer, Document.cookie, Document.lastModified, Document.readyState, Document.title, Document.dir, Document.body, Document.head, Document.images, Document.embeds, Document.plugins, Document.links, Document.forms, Document.scripts, Document.defaultView, Document.designMode, Document.onreadystatechange, Document.onbeforescriptexecute, Document.onafterscriptexecute, Document.currentScript, Document.fgColor, Document.linkColor, Document.vlinkColor, Document.alinkColor, Document.bgColor, Document.anchors, Document.applets, Document.all, Document.fullscreen, Document.mozFullScreen, Document.fullscreenEnabled, Document.mozFullScreenEnabled, Document.onfullscreenchange, Document.onfullscreenerror, Document.onpointerlockchange, Document.onpointerlockerror, Document.hidden, Document.visibilityState, Document.onvisibilitychange, Document.selectedStyleSheetSet, Document.lastStyleSheetSet, Document.preferredStyleSheetSet, Document.styleSheetSets, Document.scrollingElement, Document.timeline, Document.rootElement, Document.oncopy, Document.oncut, Document.onpaste, Document.activeElement, Document.styleSheets, Document.pointerLockElement, Document.fullscreenElement, Document.mozFullScreenElement, Document.adoptedStyleSheets, Document.fonts, Document.onabort, Document.onblur, Document.onfocus, Document.onauxclick, Document.onbeforeinput, Document.oncanplay, Document.oncanplaythrough, Document.onchange, Document.onclick, Document.onclose, Document.oncontextmenu, Document.oncuechange, Document.ondblclick, Document.ondrag, Document.ondragend, Document.ondragenter, Document.ondragexit, Document.ondragleave, Document.ondragover, Document.ondragstart, Document.ondrop, Document.ondurationchange, Document.onemptied, Document.onended, Document.onformdata, Document.oninput, Document.oninvalid, Document.onkeydown, Document.onkeypress, Document.onkeyup, Document.onload, Document.onloadeddata, Document.onloadedmetadata, Document.onloadend, Document.onloadstart, Document.onmousedown, Document.onmouseenter, Document.onmouseleave, Document.onmousemove, Document.onmouseout, Document.onmouseover, Document.onmouseup, Document.onwheel, Document.onpause, Document.onplay, Document.onplaying, Document.onprogress, Document.onratechange, Document.onreset, Document.onresize, Document.onscroll, Document.onsecuritypolicyviolation, Document.onseeked, Document.onseeking, Document.onselect, Document.onslotchange, Document.onstalled, Document.onsubmit, Document.onsuspend, Document.ontimeupdate, Document.onvolumechange, Document.onwaiting, Document.onselectstart, Document.onselectionchange, Document.ontoggle, Document.onpointercancel, Document.onpointerdown, Document.onpointerup, Document.onpointermove, Document.onpointerout, Document.onpointerover, Document.onpointerenter, Document.onpointerleave, Document.ongotpointercapture, Document.onlostpointercapture, Document.onmozfullscreenchange, Document.onmozfullscreenerror, Document.onanimationcancel, Document.onanimationend, Document.onanimationiteration, Document.onanimationstart, Document.ontransitioncancel, Document.ontransitionend, Document.ontransitionrun, Document.ontransitionstart, Document.onwebkitanimationend, Document.onwebkitanimationiteration, Document.onwebkitanimationstart, Document.onwebkittransitionend, Document.onerror, Document.children, Document.firstElementChild, Document.lastElementChild, Document.childElementCount, Element.getAttributeNames, Element.getAttribute, Element.getAttributeNS, Element.toggleAttribute, Element.setAttribute, Element.setAttributeNS, Element.removeAttribute, Element.removeAttributeNS, Element.hasAttribute, Element.hasAttributeNS, Element.hasAttributes, Element.closest, Element.matches, Element.webkitMatchesSelector, Element.getElementsByTagName, Element.getElementsByTagNameNS, Element.getElementsByClassName, Element.insertAdjacentElement, Element.insertAdjacentText, Element.mozMatchesSelector, Element.setPointerCapture, Element.releasePointerCapture, Element.hasPointerCapture, Element.setCapture, Element.releaseCapture, Element.getAttributeNode, Element.setAttributeNode, Element.removeAttributeNode, Element.getAttributeNodeNS, Element.setAttributeNodeNS, Element.getClientRects, Element.getBoundingClientRect, Element.scrollIntoView, Element.scroll, Element.scrollTo, Element.scrollBy, Element.insertAdjacentHTML, Element.querySelector, Element.querySelectorAll, Element.attachShadow, Element.requestFullscreen, Element.mozRequestFullScreen, Element.requestPointerLock, Element.animate, Element.getAnimations, Element.before, Element.after, Element.replaceWith, Element.remove, Element.prepend, Element.append, Element.replaceChildren, Element.namespaceURI, Element.prefix, Element.localName, Element.tagName, Element.id, Element.className, Element.classList, Element.part, Element.attributes, Element.scrollTop, Element.scrollLeft, Element.scrollWidth, Element.scrollHeight, Element.clientTop, Element.clientLeft, Element.clientWidth, Element.clientHeight, Element.scrollTopMax, Element.scrollLeftMax, Element.innerHTML, Element.outerHTML, Element.shadowRoot, Element.assignedSlot, Element.slot, Element.onfullscreenchange, Element.onfullscreenerror, Element.previousElementSibling, Element.nextElementSibling, Element.children, Element.firstElementChild, Element.lastElementChild, Element.childElementCount',
+    },
+});
+// @ts-ignore
+const getListDiff = ({ oldList, newList, removeCamelCase = false } = {}) => {
+    const oldSet = new Set(oldList);
+    const newSet = new Set(newList);
+    newList.forEach((x) => oldSet.delete(x));
+    oldList.forEach((x) => newSet.delete(x));
+    const camelCase = /[a-z][A-Z]/;
+    return {
+        removed: !removeCamelCase ? [...oldSet] : [...oldSet].filter((key) => !camelCase.test(key)),
+        added: !removeCamelCase ? [...newSet] : [...newSet].filter((key) => !camelCase.test(key)),
+    };
+};
+const BROWSER = (IS_BLINK ? 'Chrome' : IS_GECKO ? 'Firefox' : '');
+const getEngineMaps = (browser) => {
+    const geckoCSS = {
+        '71': ['-moz-column-span'],
+        '72': ['offset', 'offset-anchor', 'offset-distance', 'offset-path', 'offset-rotate', 'rotate', 'scale', 'translate'],
+        '73': ['overscroll-behavior-block', 'overscroll-behavior-inline'],
+        '74-79': ['!-moz-stack-sizing', 'text-underline-position'],
+        '80-88': ['appearance'],
+        '89-90': ['!-moz-outline-radius', '!-moz-outline-radius-bottomleft', '!-moz-outline-radius-bottomright', '!-moz-outline-radius-topleft', '!-moz-outline-radius-topright', 'aspect-ratio'],
+        '91': ['tab-size'],
+        '92-95': ['accent-color'],
+        '96': ['color-scheme'],
+        '97': ['print-color-adjust', 'scrollbar-gutter', 'd'],
+        '98-101': ['hyphenate-character'],
+        '102': ['overflow-clip-margin'],
+    };
+    const blinkCSS = {
+        '76': ['backdrop-filter'],
+        '77-80': ['overscroll-behavior-block', 'overscroll-behavior-inline'],
+        '81': ['color-scheme', 'image-orientation'],
+        '83': ['contain-intrinsic-size'],
+        '84': ['appearance', 'ruby-position'],
+        '85-86': ['content-visibility', 'counter-set', 'inherits', 'initial-value', 'page-orientation', 'syntax'],
+        '87': ['ascent-override', 'border-block', 'border-block-color', 'border-block-style', 'border-block-width', 'border-inline', 'border-inline-color', 'border-inline-style', 'border-inline-width', 'descent-override', 'inset', 'inset-block', 'inset-block-end', 'inset-block-start', 'inset-inline', 'inset-inline-end', 'inset-inline-start', 'line-gap-override', 'margin-block', 'margin-inline', 'padding-block', 'padding-inline', 'text-decoration-thickness', 'text-underline-offset'],
+        '88': ['aspect-ratio'],
+        '89': ['border-end-end-radius', 'border-end-start-radius', 'border-start-end-radius', 'border-start-start-radius', 'forced-color-adjust'],
+        '90': ['overflow-clip-margin'],
+        '91': ['additive-symbols', 'fallback', 'negative', 'pad', 'prefix', 'range', 'speak-as', 'suffix', 'symbols', 'system'],
+        '92': ['size-adjust'],
+        '93': ['accent-color'],
+        '94': ['scrollbar-gutter'],
+        '95-96': ['app-region', 'contain-intrinsic-block-size', 'contain-intrinsic-height', 'contain-intrinsic-inline-size', 'contain-intrinsic-width'],
+        '97-98': ['font-synthesis-small-caps', 'font-synthesis-style', 'font-synthesis-weight', 'font-synthesis'],
+        '99-100': ['text-emphasis-color', 'text-emphasis-position', 'text-emphasis-style', 'text-emphasis'],
+        '101-103': ['font-palette', 'base-palette', 'override-colors'],
+        '104': ['object-view-box'],
+        '105': ['container-name', 'container-type', 'container'],
+    };
+    const geckoWindow = {
+        // disregard: 'reportError','onsecuritypolicyviolation','onslotchange'
+        '71': ['MathMLElement', '!SVGZoomAndPan'],
+        '72-73': ['!BatteryManager', 'FormDataEvent', 'Geolocation', 'GeolocationCoordinates', 'GeolocationPosition', 'GeolocationPositionError', '!mozPaintCount'],
+        '74': ['FormDataEvent', '!uneval'],
+        '75': ['AnimationTimeline', 'CSSAnimation', 'CSSTransition', 'DocumentTimeline', 'SubmitEvent'],
+        '76-77': ['AudioParamMap', 'AudioWorklet', 'AudioWorkletNode', 'Worklet'],
+        '78': ['Atomics'],
+        '79-81': ['AggregateError', 'FinalizationRegistry'],
+        '82': ['MediaMetadata', 'MediaSession', 'Sanitizer'],
+        '83': ['MediaMetadata', 'MediaSession', '!Sanitizer'],
+        '84': ['PerformancePaintTiming'],
+        '85-86': ['PerformancePaintTiming', '!HTMLMenuItemElement', '!onshow'],
+        '87': ['onbeforeinput'],
+        '88': ['onbeforeinput', '!VisualViewport'],
+        '89-92': ['!ondevicelight', '!ondeviceproximity', '!onuserproximity'],
+        '93-95': ['ElementInternals'],
+        '96': ['Lock', 'LockManager'],
+        '97': ['CSSLayerBlockRule', 'CSSLayerStatementRule'],
+        '98': ['HTMLDialogElement'],
+        '99': ['NavigationPreloadManager'],
+        '100-102': ['WritableStream'],
+    };
+    const blinkWindow = {
+        // disregard: EyeDropper
+        '80': ['CompressionStream', 'DecompressionStream', 'FeaturePolicy', 'FragmentDirective', 'PeriodicSyncManager', 'VideoPlaybackQuality'],
+        '81': ['SubmitEvent', 'XRHitTestResult', 'XRHitTestSource', 'XRRay', 'XRTransientInputHitTestResult', 'XRTransientInputHitTestSource'],
+        '83': ['BarcodeDetector', 'XRDOMOverlayState', 'XRSystem'],
+        '84': ['AnimationPlaybackEvent', 'AnimationTimeline', 'CSSAnimation', 'CSSTransition', 'DocumentTimeline', 'FinalizationRegistry', 'LayoutShiftAttribution', 'ResizeObserverSize', 'WakeLock', 'WakeLockSentinel', 'WeakRef', 'XRLayer'],
+        '85': ['AggregateError', 'CSSPropertyRule', 'EventCounts', 'XRAnchor', 'XRAnchorSet'],
+        '86': ['RTCEncodedAudioFrame', 'RTCEncodedVideoFrame'],
+        '87': ['CookieChangeEvent', 'CookieStore', 'CookieStoreManager', 'Scheduling'],
+        '88': ['Scheduling', '!BarcodeDetector'],
+        '89': ['ReadableByteStreamController', 'ReadableStreamBYOBReader', 'ReadableStreamBYOBRequest', 'ReadableStreamDefaultController', 'XRWebGLBinding'],
+        '90': ['AbstractRange', 'CustomStateSet', 'NavigatorUAData', 'XRCPUDepthInformation', 'XRDepthInformation', 'XRLightEstimate', 'XRLightProbe', 'XRWebGLDepthInformation'],
+        '91': ['CSSCounterStyleRule', 'GravitySensor', 'NavigatorManagedData'],
+        '92': ['CSSCounterStyleRule', '!SharedArrayBuffer'],
+        '93': ['WritableStreamDefaultController'],
+        '94': ['AudioData', 'AudioDecoder', 'AudioEncoder', 'EncodedAudioChunk', 'EncodedVideoChunk', 'IdleDetector', 'ImageDecoder', 'ImageTrack', 'ImageTrackList', 'VideoColorSpace', 'VideoDecoder', 'VideoEncoder', 'VideoFrame', 'MediaStreamTrackGenerator', 'MediaStreamTrackProcessor', 'Profiler', 'VirtualKeyboard', 'DelegatedInkTrailPresenter', 'Ink', 'Scheduler', 'TaskController', 'TaskPriorityChangeEvent', 'TaskSignal', 'VirtualKeyboardGeometryChangeEvent'],
+        '95-96': ['URLPattern'],
+        '97-98': ['WebTransport', 'WebTransportBidirectionalStream', 'WebTransportDatagramDuplexStream', 'WebTransportError'],
+        '99': ['CanvasFilter', 'CSSLayerBlockRule', 'CSSLayerStatementRule'],
+        '100': ['CSSMathClamp'],
+        '101-104': ['CSSFontPaletteValuesRule'],
+        '105': ['CSSContainerRule'],
+    };
+    const blinkJS = {
+        '76': ['Document.onsecuritypolicyviolation', 'Promise.allSettled'],
+        '77': ['Document.onformdata', 'Document.onpointerrawupdate'],
+        '78': ['Element.elementTiming'],
+        '79': ['Document.onanimationend', 'Document.onanimationiteration', 'Document.onanimationstart', 'Document.ontransitionend'],
+        '80': ['!Document.registerElement', '!Element.createShadowRoot', '!Element.getDestinationInsertionPoints'],
+        '81': ['Document.onwebkitanimationend', 'Document.onwebkitanimationiteration', 'Document.onwebkitanimationstart', 'Document.onwebkittransitionend', 'Element.ariaAtomic', 'Element.ariaAutoComplete', 'Element.ariaBusy', 'Element.ariaChecked', 'Element.ariaColCount', 'Element.ariaColIndex', 'Element.ariaColSpan', 'Element.ariaCurrent', 'Element.ariaDisabled', 'Element.ariaExpanded', 'Element.ariaHasPopup', 'Element.ariaHidden', 'Element.ariaKeyShortcuts', 'Element.ariaLabel', 'Element.ariaLevel', 'Element.ariaLive', 'Element.ariaModal', 'Element.ariaMultiLine', 'Element.ariaMultiSelectable', 'Element.ariaOrientation', 'Element.ariaPlaceholder', 'Element.ariaPosInSet', 'Element.ariaPressed', 'Element.ariaReadOnly', 'Element.ariaRelevant', 'Element.ariaRequired', 'Element.ariaRoleDescription', 'Element.ariaRowCount', 'Element.ariaRowIndex', 'Element.ariaRowSpan', 'Element.ariaSelected', 'Element.ariaSort', 'Element.ariaValueMax', 'Element.ariaValueMin', 'Element.ariaValueNow', 'Element.ariaValueText', 'Intl.DisplayNames'],
+        '83': ['Element.ariaDescription', 'Element.onbeforexrselect'],
+        '84': ['Document.getAnimations', 'Document.timeline', 'Element.ariaSetSize', 'Element.getAnimations'],
+        '85': ['Promise.any', 'String.replaceAll'],
+        '86': ['Document.fragmentDirective', 'Document.replaceChildren', 'Element.replaceChildren', '!Atomics.wake'],
+        '87-89': ['Atomics.waitAsync', 'Document.ontransitioncancel', 'Document.ontransitionrun', 'Document.ontransitionstart', 'Intl.Segmenter'],
+        '90': ['Document.onbeforexrselect', 'RegExp.hasIndices', '!Element.onbeforexrselect'],
+        '91': ['Element.getInnerHTML'],
+        '92': ['Array.at', 'String.at'],
+        '93': ['Error.cause', 'Object.hasOwn'],
+        '94': ['!Error.cause', 'Object.hasOwn'],
+        '95-96': ['WebAssembly.Exception', 'WebAssembly.Tag'],
+        '97-98': ['Array.findLast', 'Array.findLastIndex', 'Document.onslotchange'],
+        '99-101': ['Intl.supportedValuesOf', 'Document.oncontextlost', 'Document.oncontextrestored'],
+        '102': ['Element.ariaInvalid', 'Document.onbeforematch'],
+        '103-105': ['Element.role'],
+    };
+    const geckoJS = {
+        '71': ['Promise.allSettled'],
+        '72-73': ['Document.onformdata', 'Element.part'],
+        '74': ['!Array.toSource', '!Boolean.toSource', '!Date.toSource', '!Error.toSource', '!Function.toSource', '!Intl.toSource', '!JSON.toSource', '!Math.toSource', '!Number.toSource', '!Object.toSource', '!RegExp.toSource', '!String.toSource', '!WebAssembly.toSource'],
+        '75-76': ['Document.getAnimations', 'Document.timeline', 'Element.getAnimations', 'Intl.Locale'],
+        '77': ['String.replaceAll'],
+        '78': ['Atomics.add', 'Atomics.and', 'Atomics.compareExchange', 'Atomics.exchange', 'Atomics.isLockFree', 'Atomics.load', 'Atomics.notify', 'Atomics.or', 'Atomics.store', 'Atomics.sub', 'Atomics.wait', 'Atomics.wake', 'Atomics.xor', 'Document.replaceChildren', 'Element.replaceChildren', 'Intl.ListFormat', 'RegExp.dotAll'],
+        '79-84': ['Promise.any'],
+        '85': ['!Document.onshow', 'Promise.any'],
+        '86': ['Intl.DisplayNames'],
+        '87': ['Document.onbeforeinput'],
+        '88-89': ['RegExp.hasIndices'],
+        '90-91': ['Array.at', 'String.at'],
+        '92': ['Object.hasOwn'],
+        '93-99': ['Intl.supportedValuesOf', 'Document.onsecuritypolicyviolation', 'Document.onslotchange'],
+        '100': ['WebAssembly.Tag', 'WebAssembly.Exception'],
+        '101-102': ['Document.adoptedStyleSheets'],
+    };
+    const IS_BLINK = browser == 'Chrome';
+    const IS_GECKO = browser == 'Firefox';
+    const css = (IS_BLINK ? blinkCSS : IS_GECKO ? geckoCSS : {});
+    const win = (IS_BLINK ? blinkWindow : IS_GECKO ? geckoWindow : {});
+    const js = (IS_BLINK ? blinkJS : IS_GECKO ? geckoJS : {});
+    return {
+        css,
+        win,
+        js,
+    };
+};
+const getJSCoreFeatures = (win) => {
+    const globalObjects = [
+        'Object',
+        'Function',
+        'Boolean',
+        'Symbol',
+        'Error',
+        'Number',
+        'BigInt',
+        'Math',
+        'Date',
+        'String',
+        'RegExp',
+        'Array',
+        'Map',
+        'Set',
+        'WeakMap',
+        'WeakSet',
+        'Atomics',
+        'JSON',
+        'Promise',
+        'Reflect',
+        'Proxy',
+        'Intl',
+        'WebAssembly',
+        'Document',
+        'Element',
+    ];
+    try {
+        // @ts-ignore
+        const features = globalObjects.reduce((acc, name) => {
+            const ignore = ['name', 'length', 'constructor', 'prototype', 'arguments', 'caller'];
+            const descriptorKeys = Object.keys(Object.getOwnPropertyDescriptors(win[name] || {}));
+            const descriptorProtoKeys = Object.keys(Object.getOwnPropertyDescriptors((win[name] || {}).prototype || {}));
+            const uniques = [...new Set([...descriptorKeys, ...descriptorProtoKeys].filter((key) => !ignore.includes(key)))];
+            const keys = uniques.map((key) => `${name}.${key}`);
+            return [...acc, ...keys];
+        }, []);
+        return features;
+    }
+    catch (error) {
+        console.error(error);
+        return [];
+    }
+};
+// @ts-ignore
+const versionSort = (x) => x.sort((a, b) => /\d+/.exec(a)[0] - /\d+/.exec(b)[0]).reverse();
+const getVersionLie = (vReport, version, forgivenessOffset = 0) => {
+    const stable = getStableFeatures();
+    const { version: maxVersion } = stable[BROWSER] || {};
+    const validMetrics = vReport && version;
+    if (!validMetrics) {
+        return {};
+    }
+    const [vStart, vEnd] = version ? version.split('-') : [];
+    const vMax = (vEnd || vStart);
+    const reportIsTooHigh = +vReport > (+vMax + forgivenessOffset);
+    const reportIsTooLow = +vReport < (+vStart - forgivenessOffset);
+    const reportIsOff = (reportIsTooHigh || reportIsTooLow);
+    const versionIsAboveMax = ((+vMax == maxVersion) &&
+        (+vReport > maxVersion));
+    const liedVersion = !versionIsAboveMax && reportIsOff;
+    const distance = !liedVersion ? 0 : (Math.abs(vReport - (reportIsTooLow ? vStart : vMax)));
+    return { liedVersion, distance };
+};
+// feature firewall
+function getFeaturesLie(fp) {
+    if (!fp.workerScope || !fp.workerScope.userAgent) {
+        return false;
+    }
+    const { userAgentVersion: reportedVersion } = fp.workerScope;
+    // let RFP pass
+    const { privacy } = fp.resistance || {};
+    if (privacy == 'Firefox' || privacy == 'Tor Browser') {
+        return false;
+    }
+    const { cssVersion, jsVersion } = fp.features || {};
+    const { liedVersion: liedCSS } = getVersionLie(reportedVersion, cssVersion);
+    const { liedVersion: liedJS } = getVersionLie(reportedVersion, jsVersion);
+    const liedVersion = liedCSS || liedJS;
+    return liedVersion;
+}
+async function getEngineFeatures({ cssComputed, navigatorComputed, windowFeaturesComputed, }) {
+    try {
+        const timer = createTimer();
+        await queueEvent(timer);
+        const win = PHANTOM_DARKNESS ? PHANTOM_DARKNESS : window;
+        if (!cssComputed || !windowFeaturesComputed) {
+            logTestResult({ test: 'features', passed: false });
+            return;
+        }
+        const jsFeaturesKeys = getJSCoreFeatures(win);
+        const { keys: computedStyleKeys } = cssComputed.computedStyle || {};
+        const { keys: windowFeaturesKeys } = windowFeaturesComputed || {};
+        const { userAgentParsed: decryptedName } = navigatorComputed || {};
+        const isNative = (win, x) => (/\[native code\]/.test(win[x] + '') &&
+            'prototype' in win[x] &&
+            win[x].prototype.constructor.name === x);
+        // @ts-ignore
+        const getFeatures = ({ context, allKeys, engineMap, checkNative = false } = {}) => {
+            const allKeysSet = new Set(allKeys);
+            const features = new Set();
+            // @ts-ignore
+            const match = Object.keys(engineMap || {}).reduce((acc, key) => {
+                const version = engineMap[key];
+                const versionLen = version.length;
+                const featureLen = version.filter((prop) => {
+                    const removedFromVersion = prop.charAt(0) == '!';
+                    if (removedFromVersion) {
+                        const propName = prop.slice(1);
+                        return !allKeysSet.has(propName) && features.add(prop);
+                    }
+                    return (allKeysSet.has(prop) &&
+                        (checkNative ? isNative(context, prop) : true) &&
+                        features.add(prop));
+                }).length;
+                return versionLen == featureLen ? [...acc, key] : acc;
+            }, []);
+            const version = versionSort(match)[0];
+            return {
+                version,
+                features,
+            };
+        };
+        // engine maps
+        const { css: engineMapCSS, win: engineMapWindow, js: engineMapJS, } = getEngineMaps(BROWSER);
+        // css version
+        const { version: cssVersion, features: cssFeatures, } = getFeatures({
+            context: win,
+            allKeys: computedStyleKeys,
+            engineMap: engineMapCSS,
+        });
+        // window version
+        const { version: windowVersion, features: windowFeatures, } = getFeatures({
+            context: win,
+            allKeys: windowFeaturesKeys,
+            engineMap: engineMapWindow,
+            checkNative: true,
+        });
+        // js version
+        const { version: jsVersion, features: jsFeatures, } = getFeatures({
+            context: win,
+            allKeys: jsFeaturesKeys,
+            engineMap: engineMapJS,
+        });
+        // determine version based on 3 factors
+        const getVersionFromRange = (range, versionCollection) => {
+            const exactVersion = versionCollection.find((version) => version && !/-/.test(version));
+            if (exactVersion) {
+                return exactVersion;
+            }
+            const len = range.length;
+            const first = range[0];
+            const last = range[len - 1];
+            return (!len ? '' :
+                len == 1 ? first :
+                    `${last}-${first}`);
+        };
+        const versionSet = new Set([
+            cssVersion,
+            windowVersion,
+            jsVersion,
+        ]);
+        versionSet.delete(undefined);
+        const versionRange = versionSort([...versionSet].reduce((acc, x) => [...acc, ...x.split('-')], []));
+        const version = getVersionFromRange(versionRange, [cssVersion, windowVersion, jsVersion]);
+        const vReport = (/\d+/.exec(decryptedName) || [])[0];
+        const { liedVersion: liedCSS, distance: distanceCSS, } = getVersionLie(vReport, cssVersion);
+        const { liedVersion: liedJS, distance: distanceJS, } = getVersionLie(vReport, jsVersion);
+        const { liedVersion: liedWindow, distance: distanceWindow, } = getVersionLie(vReport, windowVersion);
+        if (liedCSS) {
+            sendToTrash('userAgent', `v${vReport} failed v${cssVersion} CSS features`);
+            if (distanceCSS > 1) {
+                documentLie(`Navigator.userAgent`, `v${vReport} failed CSS features by ${distanceCSS} versions`);
+            }
+        }
+        if (liedJS) {
+            sendToTrash('userAgent', `v${vReport} failed v${jsVersion} JS features`);
+            if (distanceJS > 2) {
+                documentLie(`Navigator.userAgent`, `v${vReport} failed JS features by ${distanceJS} versions`);
+            }
+        }
+        if (liedWindow) {
+            sendToTrash('userAgent', `v${vReport} failed v${windowVersion} Window features`);
+            if (distanceWindow > 3) {
+                documentLie(`Navigator.userAgent`, `v${vReport} failed Window features by ${distanceWindow} versions`);
+            }
+        }
+        logTestResult({ time: timer.stop(), test: 'features', passed: true });
+        return {
+            versionRange,
+            version,
+            cssVersion,
+            windowVersion,
+            jsVersion,
+            cssFeatures: [...cssFeatures],
+            windowFeatures: [...windowFeatures],
+            jsFeatures: [...jsFeatures],
+            jsFeaturesKeys,
+        };
+    }
+    catch (error) {
+        logTestResult({ test: 'features', passed: false });
+        captureError(error);
+        return;
+    }
+}
+function featuresHTML(fp) {
+    if (!fp.features) {
+        return `
+		<div class="col-six undefined">
+			<div>Features: ${HTMLNote.UNKNOWN}</div>
+			<div>JS/DOM: ${HTMLNote.UNKNOWN}</div>
+		</div>
+		<div class="col-six undefined">
+			<div>CSS: ${HTMLNote.UNKNOWN}</div>
+			<div>Window: ${HTMLNote.UNKNOWN}</div>
+		</div>`;
+    }
+    const { versionRange, version, cssVersion, jsVersion, windowVersion, cssFeatures, windowFeatures, jsFeatures, jsFeaturesKeys, } = fp.features || {};
+    const { keys: windowFeaturesKeys } = fp.windowFeatures || {};
+    const { keys: computedStyleKeys } = fp.css.computedStyle || {};
+    const { userAgentVersion } = fp.workerScope || {};
+    const { css: engineMapCSS, win: engineMapWindow, js: engineMapJS, } = getEngineMaps(BROWSER);
+    // logger
+    const shouldLogFeatures = (browser, version, userAgentVersion) => {
+        const shouldLog = userAgentVersion > version;
+        return shouldLog;
+    };
+    const log = ({ features, name, diff }) => {
+        console.groupCollapsed(`%c ${name} Features %c-${diff.removed.length} %c+${diff.added.length}`, 'color: #4cc1f9', 'color: Salmon', 'color: MediumAquaMarine');
+        Object.keys(diff).forEach((key) => {
+            console.log(`%c${key}:`, `color: ${key == 'added' ? 'MediumAquaMarine' : 'Salmon'}`);
+            return console.log(diff[key].join('\n'));
+        });
+        console.log(features.join(', '));
+        return console.groupEnd();
+    };
+    // modal
+    const report = { computedStyleKeys, windowFeaturesKeys, jsFeaturesKeys };
+    const getModal = ({ id, engineMap, features, browser, report, userAgentVersion }) => {
+        // capture diffs from stable release
+        const stable = getStableFeatures();
+        const { windowKeys, cssKeys, jsKeys, version } = stable[browser] || {};
+        const logger = shouldLogFeatures(browser, version, userAgentVersion);
+        let diff;
+        if (id == 'css') {
+            const { computedStyleKeys } = report;
+            diff = !cssKeys ? undefined : getListDiff({
+                oldList: cssKeys.split(', '),
+                newList: computedStyleKeys,
+                removeCamelCase: true,
+            });
+            logger && console.log(`computing ${browser} ${userAgentVersion} diffs from ${browser} ${version}...`);
+            logger && log({ features: computedStyleKeys, name: 'CSS', diff });
+        }
+        else if (id == 'window') {
+            const { windowFeaturesKeys } = report;
+            diff = !windowKeys ? undefined : getListDiff({
+                oldList: windowKeys.split(', '),
+                newList: windowFeaturesKeys,
+            });
+            logger && log({ features: windowFeaturesKeys, name: 'Window', diff });
+        }
+        else if (id == 'js') {
+            const { jsFeaturesKeys } = report;
+            diff = !jsKeys ? undefined : getListDiff({
+                oldList: jsKeys.split(', '),
+                newList: jsFeaturesKeys,
+            });
+            logger && log({ features: jsFeaturesKeys, name: 'JS', diff });
+        }
+        const header = !version || !diff || (!diff.added.length && !diff.removed.length) ? '' : `
+			<strong>diffs from ${version}</strong>:
+			<div>
+			${diff && diff.added.length ?
+            diff.added.map((key) => `<div><span>${key}</span></div>`).join('') : ''}
+			${diff && diff.removed.length ?
+            diff.removed.map((key) => `<div><span class="unsupport">${key}</span></div>`).join('') : ''}
+			</div>
+
+		`;
+        return modal(`creep-features-${id}`, header + versionSort(Object.keys(engineMap)).map((key) => {
+            return `
+				<strong>${key}</strong>:<br>${engineMap[key].map((prop) => {
+                return `<span class="${!features.has(prop) ? 'unsupport' : ''}">${prop}</span>`;
+            }).join('<br>')}
+			`;
+        }).join('<br>'), hashMini([...features]));
+    };
+    const cssModal = getModal({
+        id: 'css',
+        engineMap: engineMapCSS,
+        features: new Set(cssFeatures),
+        browser: BROWSER,
+        report,
+        userAgentVersion,
+    });
+    const windowModal = getModal({
+        id: 'window',
+        engineMap: engineMapWindow,
+        features: new Set(windowFeatures),
+        browser: BROWSER,
+        report,
+        userAgentVersion,
+    });
+    const jsModal = getModal({
+        id: 'js',
+        engineMap: engineMapJS,
+        features: new Set(jsFeatures),
+        browser: BROWSER,
+        report,
+        userAgentVersion,
+    });
+    const getIcon = (name) => `<span class="icon ${name}"></span>`;
+    const browserIcon = (!BROWSER ? '' :
+        /chrome/i.test(BROWSER) ? getIcon('chrome') :
+            /firefox/i.test(BROWSER) ? getIcon('firefox') :
+                '');
+    return `
+	<style>
+		.unsupport {
+			background: #f1f1f1;
+			color: #aaa;
+		}
+		.features-removed {
+			background: red;
+			color: #fff;
+		}
+		.features-added {
+			background: green;
+			color: #fff;
+		}
+		@media (prefers-color-scheme: dark) {
+			.unsupport {
+				color: var(--light-grey);
+				background: none;
+			}
+		}
+	</style>
+	<span class="time">${performanceLogger.getLog().features}</span>
+	<div class="col-six">
+		<div>Features: ${versionRange.length ? `${browserIcon}${version}+` : HTMLNote.UNKNOWN}</div>
+		<div>JS/DOM: ${jsVersion ? `${jsModal} (v${jsVersion})` : HTMLNote.UNKNOWN}</div>
+	</div>
+	<div class="col-six">
+		<div>CSS: ${cssVersion ? `${cssModal} (v${cssVersion})` : HTMLNote.UNKNOWN}</div>
+		<div>Window: ${windowVersion ? `${windowModal} (v${windowVersion})` : HTMLNote.UNKNOWN}</div>
+	</div>
+	`;
+}
+
+// inspired by Lalit Patel's fontdetect.js
+// https://www.lalit.org/wordpress/wp-content/uploads/2008/05/fontdetect.js?ver=0.3
+const WindowsFonts = {
+    // https://docs.microsoft.com/en-us/typography/fonts/windows_11_font_list
+    '7': [
+        'Cambria Math',
+        'Lucida Console',
+    ],
+    '8': [
+        'Aldhabi',
+        'Gadugi',
+        'Myanmar Text',
+        'Nirmala UI',
+    ],
+    '8.1': [
+        'Leelawadee UI',
+        'Javanese Text',
+        'Segoe UI Emoji',
+    ],
+    '10': [
+        'HoloLens MDL2 Assets',
+        'Segoe MDL2 Assets',
+        'Bahnschrift',
+        'Ink Free', // 10 (v1803) +-
+    ],
+    '11': ['Segoe Fluent Icons'],
+};
+const MacOSFonts = {
+    // Mavericks and below
+    '10.9': [
+        'Helvetica Neue',
+        'Geneva', // mac (not iOS)
+    ],
+    // Yosemite
+    '10.10': [
+        'Kohinoor Devanagari Medium',
+        'Luminari',
+    ],
+    // El Capitan
+    '10.11': [
+        'PingFang HK Light',
+    ],
+    // Sierra: https://support.apple.com/en-ie/HT206872
+    '10.12': [
+        'American Typewriter Semibold',
+        'Futura Bold',
+        'SignPainter-HouseScript Semibold',
+    ],
+    // High Sierra: https://support.apple.com/en-me/HT207962
+    // Mojave: https://support.apple.com/en-us/HT208968
+    '10.13-10.14': [
+        'InaiMathi Bold',
+    ],
+    // Catalina: https://support.apple.com/en-us/HT210192
+    // Big Sur: https://support.apple.com/en-sg/HT211240
+    '10.15-11': [
+        'Galvji',
+        'MuktaMahee Regular',
+    ],
+    // Monterey: https://www.apple.com/my/macos/monterey/features/
+    // https://apple.stackexchange.com/questions/429548/request-for-list-of-fonts-folder-contents-on-monterey
+    // '12': []
+};
+const DesktopAppFonts = {
+    // docs.microsoft.com/en-us/typography/font-list/ms-outlook
+    'Microsoft Outlook': ['MS Outlook'],
+    // https://community.adobe.com/t5/postscript-discussions/zwadobef-font/m-p/3730427#M785
+    'Adobe Acrobat': ['ZWAdobeF'],
+    // https://wiki.documentfoundation.org/Fonts
+    'LibreOffice': [
+        'Amiri',
+        'KACSTOffice',
+        'Liberation Mono',
+        'Source Code Pro',
+    ],
+    // https://superuser.com/a/611804
+    'OpenOffice': [
+        'DejaVu Sans',
+        'Gentium Book Basic',
+        'OpenSymbol',
+    ],
+};
+const APPLE_FONTS = Object.keys(MacOSFonts).map((key) => MacOSFonts[key]).flat();
+const WINDOWS_FONTS = Object.keys(WindowsFonts).map((key) => WindowsFonts[key]).flat();
+const DESKTOP_APP_FONTS = (Object.keys(DesktopAppFonts).map((key) => DesktopAppFonts[key]).flat());
+const LINUX_FONTS = [
+    'Arimo',
+    'Chilanka',
+    'Cousine',
+    'Jomolhari',
+    'MONO',
+    'Noto Color Emoji',
+    'Ubuntu', // ubuntu (not TB)
+];
+const ANDROID_FONTS = [
+    'Dancing Script',
+    'Droid Sans Mono',
+    'Roboto', // Android, Chrome OS
+];
+const FONT_LIST = [
+    ...APPLE_FONTS,
+    ...WINDOWS_FONTS,
+    ...LINUX_FONTS,
+    ...ANDROID_FONTS,
+    ...DESKTOP_APP_FONTS,
+].sort();
+async function getFonts() {
+    const getPixelEmojis = ({ doc, id, emojis }) => {
+        try {
+            patch(doc.getElementById(id), html `
 				<div id="pixel-emoji-container">
 				<style>
 					.pixel-emoji {
-						font-family: ${O};
+						font-family: ${CSS_FONT_FAMILY};
 						font-size: 200px !important;
 						height: auto;
 						position: absolute !important;
 						transform: scale(1.000999);
 					}
 					</style>
-					${z6[ni(0x638)](zZ=>{const ny=ni;return ny(0x82a)+zZ+ny(0x113);})}
+					${emojis.map((emoji) => {
+                return `<div class="pixel-emoji">${emoji}</div>`;
+            })}
 				</div>
-			`);const z7=zZ=>{const nK=ni;return{'width':zZ[nK(0x940)],'height':zZ[nK(0x94f)]};},z8=new Set(),z9=[...z4[ni(0x1ae)](ni(0x9c3))],zW=z9[ni(0x729)]((zZ,zd,zL)=>{const nr=ni,zp=getComputedStyle(zd),zn=z6[zL],{height:zb,width:zS}=z7(zp),zQ=zS+','+zb;return!z8[nr(0x7ea)](zQ)&&(z8['add'](zQ),zZ[nr(0x933)](zn)),zZ;},new Set()),zT=zZ=>+zZ[ni(0x737)]('px',''),zz=0.00001*[...z8][ni(0x638)](zZ=>{const nV=ni;return zZ[nV(0x184)](',')[nV(0x638)](zd=>zT(zd))['reduce']((zd,zL)=>zd+=+zL||0x0,0x0);})[ni(0x729)]((zZ,zd)=>zZ+=zd,0x0);return z4[ni(0x88e)][ni(0x3e3)](z4[ni(0xa0c)](ni(0x348))),{'emojiSet':[...zW],'pixelSizeSystemSum':zz};}catch(zZ){return console[ni(0xb52)](zZ),{'emojiSet':[],'pixelSizeSystemSum':0x0};}},z1=async z4=>{const nR=a0T;try{const z5=z4[nR(0x638)](z8=>new FontFace(z8,nR(0xb38)+z8+'\x22)')),z6=await Promise[nR(0x5fe)](z5[nR(0x638)](z8=>z8['load']())),z7=z6[nR(0x729)]((z8,z9)=>{const nw=nR;if(z9[nw(0x7be)]=='fulfilled')return[...z8,z9['value']['family']];return z8;},[]);return z7;}catch(z8){return console['error'](z8),[];}},z2=z4=>{const z5=({fonts:z7,fontMap:z8})=>{const nm=a0T,z9={['11']:z8['11']['find'](zZ=>z7[nm(0x725)](zZ)),['10']:z8['10'][nm(0xaac)](zZ=>z7[nm(0x725)](zZ)),[nm(0x3ef)]:z8[nm(0x3ef)][nm(0xaac)](zZ=>z7[nm(0x725)](zZ)),['8']:z8['8'][nm(0xaac)](zZ=>z7[nm(0x725)](zZ)),['7']:z8['7'][nm(0x73b)](zZ=>z7['includes'](zZ))[nm(0xb8e)]==z8['7'][nm(0xb8e)]},zW=''+Object[nm(0xab4)](z9)[nm(0x89d)]()['filter'](zZ=>!!z9[zZ]),zT={'10,11,7,8,8.1':'11','10,7,8,8.1':'10','7,8,8.1':nm(0x3ef),'11,7,8,8.1':'8.1','7,8':'8','10,7,8':'8','10,11,7,8':'8','7':'7','7,8.1':'7','10,7,8.1':'7','10,11,7,8.1':'7'},zz=zT[zW];return zz?nm(0x90a)+zz:undefined;},z6=({fonts:z7,fontMap:z8})=>{const nE=a0T,z9={['10.15-11']:z8[nE(0x479)][nE(0xaac)](zZ=>z7[nE(0x725)](zZ)),[nE(0x780)]:z8['10.13-10.14'][nE(0xaac)](zZ=>z7[nE(0x725)](zZ)),[nE(0xae3)]:z8[nE(0xae3)][nE(0xaac)](zZ=>z7['includes'](zZ)),[nE(0x3b8)]:z8['10.11'][nE(0xaac)](zZ=>z7[nE(0x725)](zZ)),['10.10']:z8['10.10']['find'](zZ=>z7['includes'](zZ)),['10.9']:z8[nE(0xa86)][nE(0x73b)](zZ=>z7[nE(0x725)](zZ))['length']==z8[nE(0xa86)][nE(0xb8e)]},zW=''+Object[nE(0xab4)](z9)['sort']()[nE(0x73b)](zZ=>!!z9[zZ]),zT={'10.10,10.11,10.12,10.13-10.14,10.15-11,10.9':nE(0x479),'10.10,10.11,10.12,10.13-10.14,10.9':nE(0x780),'10.10,10.11,10.12,10.9':nE(0x5e9),'10.10,10.11,10.9':nE(0x8c5),'10.10,10.9':nE(0x317),'10.9':nE(0x8d3)},zz=zT[zW];return zz?'macOS\x20'+zz:undefined;};return z5({'fonts':z4,'fontMap':TW})||z6({'fonts':z4,'fontMap':TT});},z3=z4=>{const z5=Object['keys'](Tz)['reduce']((z6,z7)=>{const nf=a0T,z8=Tz[z7],z9=z8[nf(0x73b)](zW=>z4[nf(0x725)](zW))[nf(0xb8e)]==z8[nf(0xb8e)];return z9?[...z6,z7]:z6;},[]);return z5;};try{const z4=q();await t(z4);const z5=WT&&WT['document']&&WT[nc(0x4ea)][nc(0x88e)]?WT[nc(0x4ea)]:document,z6=nc(0x994),z7=z5[nc(0xba8)](nc(0x4e5));z7['setAttribute']('id',z6),z5[nc(0x88e)]['appendChild'](z7);const {emojiSet:z8,pixelSizeSystemSum:z9}=z0({'doc':z5,'id':z6,'emojis':B})||{},zW=Tb,zT=await z1(zW),zz=z2(zT),zZ=z3(zT),zd=WQ['FontFace.load']||WQ[nc(0xa49)]||WQ[nc(0x81f)]||WQ[nc(0x8b6)]||WQ['CSSStyleDeclaration.setProperty']||WQ['CSS2Properties.setProperty'];return a({'time':z4['stop'](),'test':'fonts','passed':!![]}),{'fontFaceLoadFonts':zT,'platformVersion':zz,'apps':zZ,'emojiSet':z8,'pixelSizeSystemSum':z9,'lied':zd};}catch(zL){a({'test':nc(0x1cb),'passed':![]}),f(zL);return;}}function TQ(z0){const nG=L3;if(!z0[nG(0x1cb)])return nG(0x9bb)+r[nG(0x7ca)]+nG(0x322)+r[nG(0x7ca)]+nG(0x91b)+r[nG(0x7ca)]+nG(0x692);const {fonts:{$hash:z1,fontFaceLoadFonts:z2,platformVersion:z3,apps:z4,emojiSet:z5,pixelSizeSystemSum:z6,lied:z7}}=z0,z8={'Linux':'<span\x20class=\x22icon\x20linux\x22></span>','Apple':nG(0x170),'Windows':nG(0x3bc),'Android':nG(0xb95),'CrOS':nG(0x124)},z9=nG(0x533)+WO(z5)+'\x0a'+(z5||[])['map']((zW,zT)=>zT&&zT%0x6==0x0?zW+'\x0a':zW)[nG(0x644)]('');return nG(0xb6a)+(z7?nG(0x5e1):'')+nG(0x2d4)+P[nG(0x649)]()[nG(0x1cb)]+nG(0x256)+N(z1)+'</span>\x0a\x09\x09<div\x20class=\x22help\x22\x20title=\x22FontFace.load()\x22>load\x20('+(z2?V(z2):'0')+'/'+(''+Tb[nG(0xb8e)])+'):\x20'+(z3||(zW=>{const ne=nG;return!(zW||[])[ne(0xb8e)]?'':((''+zW)[ne(0x12a)](/Lucida Console/)||[])[ne(0xb8e)]?z8[ne(0x93e)]+ne(0x93e):((''+zW)['match'](/Droid Sans Mono|Noto Color Emoji|Roboto/g)||[])[ne(0xb8e)]==0x3?''+z8[ne(0x887)]+z8[ne(0x64d)]+ne(0x6ce):((''+zW)['match'](/Droid Sans Mono|Roboto/g)||[])[ne(0xb8e)]==0x2?z8[ne(0x64d)]+'Android':((''+zW)['match'](/Noto Color Emoji|Roboto/g)||[])['length']==0x2?z8[ne(0x805)]+'Chrome\x20OS':((''+zW)[ne(0x12a)](/Noto Color Emoji/)||[])[ne(0xb8e)]?z8[ne(0x887)]+'Linux':((''+zW)['match'](/Arimo/)||[])[ne(0xb8e)]?z8[ne(0x887)]+'Linux':((''+zW)['match'](/Helvetica Neue/g)||[])[ne(0xb8e)]==0x2?z8[ne(0x139)]+ne(0x139):(zW||[])[0x0]+ne(0x15f);})(z2))+nG(0x368)+((z4||[])[nG(0xb8e)]?z4[nG(0x644)](',\x20'):r['UNSUPPORTED'])+nG(0x591)+(z2[nG(0x644)](',\x20')||r[nG(0x786)])+nG(0x553)+z9+nG(0x92d)+(z6||r[nG(0x786)])+nG(0x75f)+O+'\x22>'+M(z5)+nG(0xbbc);}async function Tu(z0){const nC=L3;try{const z1=q();await t(z1);const z2=Object[nC(0xab4)]({...navigator[nC(0x1d7)]}),z3={'chromium':Z,'likeHeadless':{[nC(0x452)]:nC(0x36c)in navigator&&!!navigator[nC(0x36c)],[nC(0x948)]:Z&&navigator[nC(0x662)][nC(0xb8e)]===0x0,['chrome\x20mimeTypes\x20array\x20is\x20empty']:Z&&z2['length']===0x0,['notification\x20permission\x20is\x20denied']:Z&&nC(0x7a1)in window&&Notification['permission']==nC(0x81b),[nC(0x14f)]:Z&&((()=>{const ns=nC;let zZ=Wz;!Wz&&(zZ=document[ns(0xba8)](ns(0x4e5)),document[ns(0x88e)][ns(0x446)](zZ));if(!zZ)return![];zZ[ns(0x788)](ns(0x3f3),ns(0x490));const {backgroundColor:zd}=getComputedStyle(zZ);return!Wz&&zZ['parentNode'][ns(0x3e3)](zZ),zd===ns(0xa48);})()),[nC(0x25c)]:matchMedia(nC(0x436))['matches']},'headless':{[nC(0x1dd)]:Z&&!(nC(0x182)in window),[nC(0x299)]:Z&&'permissions'in navigator&&await((async()=>{const nI=nC,zZ=await navigator[nI(0x556)][nI(0x77d)]({'name':nI(0x33a)});return zZ[nI(0x272)]==nI(0x5b6)&&nI(0x7a1)in window&&Notification['permission']===nI(0x81b);})()),[nC(0x8ef)]:/HeadlessChrome/[nC(0x579)](navigator['userAgent'])||/HeadlessChrome/['test'](navigator[nC(0x4a6)]),[nC(0x43d)]:!!z0&&/HeadlessChrome/[nC(0x579)](z0[nC(0x4b4)])},'stealth':{['srcdoc\x20throws\x20an\x20error']:((()=>{const nj=nC;try{const {srcdoc:zZ}=document[nj(0xba8)]('iframe');return!!zZ;}catch(zd){return!![];}})()),['srcdoc\x20triggers\x20a\x20window\x20Proxy']:((()=>{const nh=nC,zZ=document[nh(0xba8)](nh(0xa57));return zZ[nh(0x59a)]=WN,!!zZ['contentWindow'];})()),[nC(0xb8c)]:((()=>{const nl=nC,zZ=nl(0x7bf)in window?nl(0x7bf):nl(0x337)in window?'ondevicemotion':'speechSynthesis',zd=[];for(const zn in window){zd[nl(0x3e4)](zn);}const zL=zd[nl(0x40a)](nl(0x182)),zp=zd['indexOf'](zZ);return zL>zp;})()),[nC(0x666)]:((()=>{const nX=nC;if(!('chrome'in window&&nX(0xaa6)in chrome))return![];try{if(nX(0x217)in chrome['runtime'][nX(0x765)]||nX(0x217)in chrome[nX(0xaa6)][nX(0x87c)])return!![];return new chrome[(nX(0xaa6))][(nX(0x765))](),new chrome[(nX(0xaa6))][(nX(0x87c))](),!![];}catch(zZ){return zZ[nX(0x480)]['name']!=nX(0x792)?!![]:![];}})()),['Permissions.prototype.query\x20leaks\x20Proxy\x20behavior']:nC(0x543)in window&&!!WQ[nC(0xb3b)],[nC(0x35a)]:((()=>{const ng=nC;try{class zZ extends Function[ng(0x217)][ng(0x8ac)]{}return!![];}catch(zd){return/\[object Function\]/[ng(0x579)](zd[ng(0x1b2)]);}})()),[nC(0x48d)]:!!WQ[nC(0x1a2)]}},{likeHeadless:z4,headless:z5,stealth:z6}=z3,z7=Object['keys'](z4),z8=Object['keys'](z5),z9=Object[nC(0xab4)](z6),zW=+(z7['filter'](zZ=>z4[zZ])[nC(0xb8e)]/z7[nC(0xb8e)]*0x64)[nC(0x250)](0x0),zT=+(z8[nC(0x73b)](zZ=>z5[zZ])[nC(0xb8e)]/z8[nC(0xb8e)]*0x64)[nC(0x250)](0x0),zz=+(z9[nC(0x73b)](zZ=>z6[zZ])[nC(0xb8e)]/z9['length']*0x64)[nC(0x250)](0x0);return a({'time':z1[nC(0x8c4)](),'test':nC(0xa66),'passed':!![]}),{...z3,'likeHeadlessRating':zW,'headlessRating':zT,'stealthRating':zz};}catch(zZ){a({'test':nC(0xa66),'passed':![]}),f(zZ);return;}}function TF(z0){const nJ=L3;if(!z0[nJ(0xa66)])return'\x0a\x09\x09<div\x20class=\x22col-six\x22>\x0a\x09\x09\x09<strong>Headless</strong>\x0a\x09\x09\x09<div>chromium:\x20'+r[nJ(0x2f7)]+'</div>\x0a\x09\x09\x09<div>0%\x20like\x20headless:\x20'+r['Blocked']+'</div>\x0a\x09\x09\x09<div>0%\x20headless:\x20'+r['Blocked']+'</div>\x0a\x09\x09\x09<div>0%\x20stealth:\x20'+r[nJ(0x2f7)]+'</div>\x0a\x09\x09</div>';const {headless:z1}=z0,{$hash:z2,chromium:z3,likeHeadless:z4,likeHeadlessRating:z5,headless:z6,headlessRating:z7,stealth:z8,stealthRating:z9}=z1||{};return nJ(0x37d)+(z5<0x64?nJ(0x385):'--error')+')\x20'+z5+'%,\x20#fff0\x20'+z5+nJ(0x639)+z7+nJ(0x29a)+z7+'%,\x20#fff0\x20100%);\x0a\x09\x09\x09}\x0a\x09\x09\x09.stealth-rating\x20{\x0a\x09\x09\x09\x09background:\x20linear-gradient(90deg,\x20var(--error)\x20'+z9+nJ(0x29a)+z9+nJ(0x472)+P['getLog']()[nJ(0xa66)]+nJ(0x665)+N(z2)+nJ(0x1f9)+(''+z3)+nJ(0x45f)+(''+z5)+'%\x20like\x20headless:\x20'+w(nJ(0x1b1),nJ(0x3c0)+Object[nJ(0xab4)](z4)[nJ(0x638)](zW=>zW+':\x20'+(''+z4[zW]))[nJ(0x644)](nJ(0x708)),WO(z4))+nJ(0x611)+(''+z7)+nJ(0x1b8)+w('creep-headless',nJ(0xa2d)+Object[nJ(0xab4)](z6)['map'](zW=>zW+':\x20'+(''+z6[zW]))[nJ(0x644)](nJ(0x708)),WO(z6))+nJ(0x421)+(''+z9)+'%\x20stealth:\x20'+w(nJ(0xa28),nJ(0xba1)+Object[nJ(0xab4)](z8)['map'](zW=>zW+':\x20'+(''+z8[zW]))['join'](nJ(0x708)),WO(z8))+nJ(0xa7e);}async function Tv(){const b0=L3,z0=z1=>{const no=a0T,z2=['Collator',no(0x7d2),no(0x2b8),no(0xb2b),no(0x315),no(0x62a),no(0x8c6)],z3=z2['reduce']((z4,z5)=>{const nU=no;try{const z6=new z1[z5]();if(!z6)return z4;const {locale:z7}=z6[nU(0x69e)]()||{};return[...z4,z7];}catch(z8){return z4;}},[]);return[...new Set(z3)];};try{const z1=q();await t(z1);const z2=WQ[b0(0xab6)]||WQ[b0(0x17f)]||WQ[b0(0xa25)]||WQ[b0(0x956)]||WQ[b0(0x5f4)]||WQ[b0(0x6a2)]||WQ[b0(0x1da)]||![],z3=G(()=>{const b1=b0;return new Intl[(b1(0x7d2))](undefined,{'month':b1(0x267),'timeZoneName':b1(0x267)})['format'](0xe05daea180);}),z4=G(()=>{const b2=b0;return new Intl[(b2(0x2b8))](undefined,{'type':'language'})['of'](b2(0x45b));}),z5=G(()=>{const b3=b0;return new Intl[(b3(0xb2b))](undefined,{'style':'long','type':b3(0x633)})[b3(0x138)](['0','1']);}),z6=G(()=>{const b4=b0;return new Intl[(b4(0x315))](undefined,{'notation':b4(0x7cc),'compactDisplay':b4(0x267)})[b4(0x138)](0x1406f40);}),z7=G(()=>{const b5=b0;return new Intl[(b5(0x62a))]()['select'](0x1);}),z8=G(()=>{const b6=b0;return new Intl['RelativeTimeFormat'](undefined,{'localeMatcher':b6(0x41b),'numeric':'auto','style':b6(0x267)})[b6(0x138)](0x1,b6(0x2f3));}),z9=z0(Intl);return a({'time':z1[b0(0x8c4)](),'test':b0(0x551),'passed':!![]}),{'dateTimeFormat':z3,'displayNames':z4,'listFormat':z5,'numberFormat':z6,'pluralRules':z7,'relativeTimeFormat':z8,'locale':''+z9,'lied':z2};}catch(zW){a({'test':b0(0x551),'passed':![]}),f(zW);return;}}function TH(z0){const b7=L3;if(!z0[b7(0xbaa)])return b7(0x141)+r[b7(0x2f7)]+'</div>\x0a\x09\x09\x09<div>date:\x20'+r['Blocked']+b7(0x434)+r[b7(0x2f7)]+b7(0x16c)+r['Blocked']+'</div>\x0a\x09\x09\x09<div>number:\x20'+r[b7(0x2f7)]+b7(0x7b4)+r['Blocked']+b7(0xa26)+r[b7(0x2f7)]+b7(0x692);const {$hash:z1,dateTimeFormat:z2,displayNames:z3,listFormat:z4,numberFormat:z5,pluralRules:z6,relativeTimeFormat:z7,locale:z8,lied:z9}=z0[b7(0x551)]||{};return b7(0xb6a)+(z9?b7(0x5e1):'')+b7(0x2d4)+P[b7(0x649)]()[b7(0x551)]+b7(0x119)+N(z1)+'</span>\x0a\x09\x09<div\x20class=\x22block-text\x20help\x22\x20\x20title=\x22Intl.Collator\x0aIntl.DateTimeFormat\x0aIntl.DisplayNames\x0aIntl.ListFormat\x0aIntl.NumberFormat\x0aIntl.PluralRules\x0aIntl.RelativeTimeFormat\x22>\x0a\x09\x09\x09'+[z8,z2,z3,z5,z7,z4,z6][b7(0x644)]('<br>')+b7(0x60b);}function Tx(){const b8=L3;try{const z0=q();z0[b8(0x95f)]();const z1=[b8(0x47d),b8(0x923),'asin',b8(0x1b5),'atan',b8(0xbb1),'atan2',b8(0x6f7),'cos',b8(0x8d6),b8(0xa99),b8(0x879),b8(0xa93),b8(0x642),'log1p',b8(0x549),'sin',b8(0x3f6),'sqrt',b8(0x5ca),b8(0x930),b8(0x938)];let z2=![];z1[b8(0xa0f)](z7=>{const b9=b8;!!WQ[b9(0x1bf)+z7]&&(z2=!![]);const z8=z7==b9(0x2cb)?[0x8e679c2f5e450000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000]:z7==b9(0x47d)||z7==b9(0x80e)||z7==b9(0xbb1)?[0.5]:z7=='pow'||z7==b9(0x92b)?[Math['PI'],0x2]:[Math['PI']],z9=Math[z7](...z8),zW=Math[z7](...z8),zT=isNaN(z9)&&isNaN(zW)?!![]:z9==zW;if(!zT){z2=!![];const zz='expected\x20x\x20and\x20got\x20y';h(b9(0x1bf)+z7,zz);}return;});const z3=0.123,z4=0x1b8ebd078e8c000000000000000000000,z5=[[b8(0x47d),[z3],b8(0x655)+z3+')',1.4474840516030247,NaN,NaN,1.4474840516030245],[b8(0x47d),[Math['SQRT1_2']],b8(0x21d),0.7853981633974483,NaN,NaN,NaN],[b8(0x923),[0x8e679c2f5e450000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000],'acosh(1e308)',709.889355822726,NaN,NaN,NaN],[b8(0x923),[Math['PI']],'acosh(Math.PI)',1.811526272460853,NaN,NaN,NaN],[b8(0x923),[Math['SQRT2']],b8(0x2cd),0.881373587019543,NaN,NaN,0.8813735870195432],[b8(0x80e),[z3],b8(0x975)+z3+')',0.12331227519187199,NaN,NaN,NaN],[b8(0x1b5),[0x17e43c8800759c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000],b8(0x60a),691.4686750787736,NaN,NaN,NaN],[b8(0x1b5),[Math['PI']],'asinh(Math.PI)',1.8622957433108482,NaN,NaN,NaN],[b8(0x271),[0x2],'atan(2)',1.1071487177940904,NaN,NaN,1.1071487177940906],['atan',[Math['PI']],b8(0x3c1),1.2626272556789115,NaN,NaN,NaN],[b8(0xbb1),[0.5],b8(0xbb5),0.5493061443340548,NaN,NaN,0.5493061443340549],[b8(0x92b),[1e-310,0x2],b8(0x528),5e-311,NaN,NaN,NaN],[b8(0x92b),[Math['PI'],0x2],b8(0x5bb),1.0038848218538872,NaN,NaN,NaN],[b8(0x6f7),[0x64],b8(0x6a7),4.641588833612779,NaN,NaN,NaN],[b8(0x6f7),[Math['PI']],'cbrt(Math.PI)',1.4645918875615231,NaN,NaN,1.4645918875615234],[b8(0x2cb),[z3],b8(0x734)+z3+')',0.9924450321351935,NaN,NaN,NaN],[b8(0x2cb),[Math['PI']],b8(0x4a1),-0x1,NaN,NaN,NaN],[b8(0x2cb),[z4],b8(0x734)+z4+')',-0.10868049424995659,NaN,-0.9779661551196617,NaN],['cos',[-0x8e679c2f5e450000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000],b8(0x1e8),-0.8913089376870335,NaN,0.99970162388838,NaN],[b8(0x2cb),[0xd*Math['E']],b8(0x5ab),-0.7108118501064331,-0.7108118501064332,NaN,NaN],[b8(0x2cb),[0x39*Math['E']],b8(0x11e),-0.536911695749024,-0.5369116957490239,NaN,NaN],['cos',[0x15*Math[b8(0x827)]],b8(0x570),-0.4067775970251724,-0.40677759702517235,-0.6534063185820197,NaN],[b8(0x2cb),[0x33*Math[b8(0x827)]],b8(0x75d),-0.7017203400855446,-0.7017203400855445,NaN,NaN],[b8(0x2cb),[0x15*Math[b8(0xa65)]],b8(0x2d5),0.4362848063618998,0.43628480636189976,NaN,NaN],[b8(0x2cb),[0x19*Math[b8(0x518)]],b8(0x29b),-0.6982689820462377,-0.6982689820462376,NaN,NaN],[b8(0x2cb),[0x32*Math[b8(0x837)]],b8(0x91e),-0.6982689820462377,-0.6982689820462376,NaN,NaN],['cos',[0x15*Math['SQRT1_2']],b8(0x762),-0.6534063185820198,NaN,NaN,NaN],[b8(0x2cb),[0x11*Math[b8(0x995)]],'cos(17*Math.LOG10E)',0.4537557425982784,0.45375574259827833,NaN,NaN],[b8(0x2cb),[0x2*Math[b8(0x995)]],b8(0x260),0.6459044007438142,NaN,0.6459044007438141,NaN],['cosh',[0x1],b8(0x8e3),1.5430806348152437,NaN,NaN,NaN],[b8(0x8d6),[Math['PI']],b8(0x56a),11.591953275521519,NaN,NaN,NaN],['cosh',[0x1ec*Math[b8(0xa65)]],b8(0x9fd),0x8302b042469c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000,0x8302b042469c0800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000,NaN,NaN],[b8(0x8d6),[0x1f6*Math[b8(0x518)]],b8(0x99a),0x95161b2a7b631000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000,0x95161b2a7b631800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000,NaN,NaN],['expm1',[0x1],b8(0x628),1.718281828459045,NaN,NaN,1.7182818284590453],[b8(0xa99),[Math['PI']],b8(0xab2),22.140692632779267,NaN,NaN,NaN],[b8(0x879),[z3],b8(0x325)+z3+')',1.1308844209474893,NaN,NaN,NaN],[b8(0x879),[Math['PI']],b8(0x4fd),23.140692632779267,NaN,NaN,NaN],[b8(0xa93),[0x1,0x2,0x3,0x4,0x5,0x6],'hypot(1,\x202,\x203,\x204,\x205,\x206)',9.539392014169456,NaN,NaN,NaN],[b8(0xa93),[z4,z4],b8(0xaae)+z4+',\x20'+z4+')',0x26f8e81ec355a40000000000000000000,0x26f8e81ec355a20000000000000000000,NaN,NaN],[b8(0xa93),[0x2*Math['E'],-0x64],'hypot(2*Math.E,\x20-100)',100.14767208675259,100.14767208675258,NaN,NaN],[b8(0xa93),[0x6*Math['PI'],-0x64],b8(0x566),101.76102278593319,101.7610227859332,NaN,NaN],[b8(0xa93),[0x2*Math[b8(0x827)],-0x64],b8(0x7f0),100.0096085986525,100.00960859865252,NaN,NaN],[b8(0xa93),[Math[b8(0xa65)],-0x64],b8(0x9cd),100.01040630344929,100.01040630344927,NaN,NaN],[b8(0xa93),[Math[b8(0x518)],-0x64],'hypot(Math.SQRT2,\x20-100)',100.00999950004999,100.00999950005,NaN,NaN],['hypot',[Math['SQRT1_2'],-0x64],'hypot(Math.SQRT1_2,\x20-100)',100.0024999687508,100.00249996875078,NaN,NaN],[b8(0xa93),[0x2*Math['LOG10E'],-0x64],b8(0x5ed),100.00377216279416,100.00377216279418,NaN,NaN],[b8(0x642),[z3],b8(0x450)+z3+')',-2.0955709236097197,NaN,NaN,NaN],[b8(0x642),[Math['PI']],'log(Math.PI)',1.1447298858494002,NaN,NaN,NaN],[b8(0xa32),[z3],'log1p('+z3+')',0.11600367575630613,NaN,NaN,NaN],['log1p',[Math['PI']],b8(0x137),1.4210804127942926,NaN,NaN,NaN],[b8(0x549),[z3],b8(0x358)+z3+')',-0.9100948885606021,NaN,NaN,NaN],['log10',[Math['PI']],b8(0x3c5),0.4971498726941338,0.49714987269413385,NaN,NaN],[b8(0x549),[Math['E']],'log10(Math.E)',0.4342944819032518,NaN,NaN,NaN],[b8(0x549),[0x22*Math['E']],'log10(34*Math.E)',1.9657733989455068,1.965773398945507,NaN,NaN],['log10',[Math[b8(0x827)]],b8(0x4e0),-0.1591745389548616,NaN,NaN,NaN],[b8(0x549),[0xb*Math[b8(0x827)]],b8(0x72f),0.8822181462033634,0.8822181462033635,NaN,NaN],[b8(0x549),[Math[b8(0xa65)]],b8(0xb13),0.15917453895486158,NaN,NaN,NaN],[b8(0x549),[0x2b*Math[b8(0xa65)]],b8(0x5d5),1.792642994534448,1.7926429945344482,NaN,NaN],[b8(0x549),[Math[b8(0x995)]],'log10(Math.LOG10E)',-0.36221568869946325,NaN,NaN,NaN],['log10',[0x7*Math['LOG10E']],b8(0x813),0.4828823513147936,0.48288235131479357,NaN,NaN],[b8(0x549),[Math['SQRT1_2']],b8(0x586),-0.15051499783199057,NaN,NaN,NaN],['log10',[0x2*Math[b8(0x837)]],b8(0x872),0.1505149978319906,0.15051499783199063,NaN,NaN],[b8(0x549),[Math[b8(0x518)]],b8(0x82e),0.1505149978319906,0.15051499783199063,NaN,NaN],['sin',[z4],b8(0x4de)+z4+')',0.994076732536068,NaN,-0.20876350121720488,NaN],[b8(0x710),[Math['PI']],'sin(Math.PI)',1.2246467991473532e-16,NaN,1.2246063538223773e-16,NaN],[b8(0x710),[0x27*Math['E']],b8(0x984),-0.7181630308570677,-0.7181630308570678,NaN,NaN],[b8(0x710),[0x23*Math[b8(0x827)]],b8(0x2e4),-0.7659964138980511,-0.765996413898051,NaN,NaN],['sin',[0x6e*Math[b8(0xa65)]],b8(0x342),0.9989410140273756,0.9989410140273757,NaN,NaN],[b8(0x710),[0x7*Math[b8(0x995)]],'sin(7*Math.LOG10E)',0.10135692924965616,0.10135692924965614,NaN,NaN],[b8(0x710),[0x23*Math[b8(0x837)]],b8(0x4a3),-0.3746357547858202,-0.37463575478582023,NaN,NaN],[b8(0x710),[0x15*Math[b8(0x518)]],b8(0x7bd),-0.9892668187780498,-0.9892668187780497,NaN,NaN],[b8(0x3f6),[0x1],b8(0x83c),1.1752011936438014,NaN,NaN,NaN],[b8(0x3f6),[Math['PI']],b8(0x7dd),11.548739357257748,NaN,NaN,11.548739357257746],[b8(0x3f6),[Math['E']],b8(0xa10),7.544137102816975,NaN,NaN,NaN],[b8(0x3f6),[Math['LN2']],b8(0x707),0.75,NaN,NaN,NaN],[b8(0x3f6),[Math['LOG2E']],'sinh(Math.LOG2E)',1.9978980091062795,NaN,NaN,NaN],[b8(0x3f6),[0x1ec*Math['LOG2E']],'sinh(492*Math.LOG2E)',0x8302b042469c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000,0x8302b042469c0800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000,NaN,NaN],[b8(0x3f6),[Math[b8(0x995)]],'sinh(Math.LOG10E)',0.44807597941469024,NaN,NaN,NaN],[b8(0x3f6),[Math[b8(0x837)]],b8(0x728),0.7675231451261164,NaN,NaN,NaN],[b8(0x3f6),[Math[b8(0x518)]],b8(0x48f),1.935066822174357,NaN,NaN,1.9350668221743568],[b8(0x3f6),[0x1f6*Math[b8(0x518)]],'sinh(502*Math.SQRT2)',0x95161b2a7b631000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000,0x95161b2a7b631800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000,NaN,NaN],['sqrt',[z3],b8(0xaef)+z3+')',0.3507135583350036,NaN,NaN,NaN],['sqrt',[Math['PI']],b8(0x663),1.7724538509055159,NaN,NaN,NaN],[b8(0x5ca),[-0x8e679c2f5e450000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000],'tan(-1e308)',0.5086861259107568,NaN,NaN,0.5086861259107567],[b8(0x5ca),[Math['PI']],b8(0x336),-1.2246467991473532e-16,NaN,NaN,NaN],['tan',[0x6*Math['E']],b8(0x740),0.6866761546452431,0.686676154645243,NaN,NaN],[b8(0x5ca),[0x6*Math[b8(0x827)]],b8(0x7ef),1.6182817135715877,1.618281713571588,NaN,1.6182817135715875],[b8(0x5ca),[0xa*Math[b8(0xa65)]],'tan(10*Math.LOG2E)',-3.3537128705376014,-3.353712870537601,NaN,-3.353712870537602],['tan',[0x11*Math[b8(0x518)]],b8(0x560),-1.9222955461799982,-1.922295546179998,NaN,NaN],[b8(0x5ca),[0x22*Math['SQRT1_2']],b8(0x51c),-1.9222955461799982,-1.922295546179998,NaN,NaN],[b8(0x5ca),[0xa*Math[b8(0x995)]],b8(0x735),2.5824856130712432,2.5824856130712437,NaN,NaN],[b8(0x930),[z3],b8(0x899)+z3+')',0.12238344189440875,NaN,NaN,0.12238344189440876],[b8(0x930),[Math['PI']],'tanh(Math.PI)',0.99627207622075,NaN,NaN,NaN],[b8(0x938),[z3,-0x64],b8(0x8a4)+z3+b8(0xa31),0x5047cfb4ca009800000000000000000000000000000000000000000000000000000000000000,0x5047cfb4ca007800000000000000000000000000000000000000000000000000000000000000,NaN,NaN],[b8(0x938),[Math['PI'],-0x64],b8(0x6ad),1.9275814160560204e-50,1.9275814160560185e-50,NaN,1.9275814160560206e-50],[b8(0x938),[Math['E'],-0x64],b8(0x6de),3.7200759760208555e-44,3.720075976020851e-44,NaN,NaN],[b8(0x938),[Math['LN2'],-0x64],b8(0x1b6),0x1d60a09913011a,0x1d60a09913012a,NaN,NaN],[b8(0x938),[Math[b8(0x80b)],-0x64],'pow(Math.LN10,\x20-100)',6.003867926738829e-37,6.003867926738811e-37,NaN,NaN],[b8(0x938),[Math[b8(0xa65)],-0x64],'pow(Math.LOG2E,\x20-100)',1.20933355845501e-16,1.2093335584550061e-16,NaN,NaN],['pow',[Math[b8(0x995)],-0x64],b8(0xbc7),0x140c81267659c400000000000000000,0x140c81267659b700000000000000000,NaN,0x140c81267659c300000000000000000],[b8(0x938),[Math['SQRT1_2'],-0x64],b8(0x140),1125899906842616.2,1125899906842611.5,NaN,NaN],[b8(0x938),[Math[b8(0x518)],-0x64],'pow(Math.SQRT2,\x20-100)',8.881784197001191e-16,8.881784197001154e-16,NaN,NaN],[b8(0xb4f),[0.002**-0x64],'polyfill\x20pow(2e-3,\x20-100)',0x17e43c8800758e0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000,0x17e43c880075a20000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000,NaN,NaN]],z6={};return z5[b8(0xa0f)](z7=>{z6[z7[0x2]]=c(()=>{const bW=a0T,z8=z7[0x0]!=bW(0xb4f)?Math[z7[0x0]](...z7[0x1]):z7[0x1],z9=z8==z7[0x3],zW=z7[0x4]?z8==z7[0x4]:![],zT=z7[0x5]?z8==z7[0x5]:![],zz=z7[0x6]?z8==z7[0x6]:![];return{'result':z8,'chrome':z9,'firefox':zW,'torBrowser':zT,'safari':zz};});}),a({'time':z0[b8(0x8c4)](),'test':b8(0xb5c),'passed':!![]}),{'data':z6,'lied':z2};}catch(z7){a({'test':b8(0xb5c),'passed':![]}),f(z7);return;}}function TD(z0){const bT=L3;if(!z0[bT(0x690)])return bT(0x6ee)+r[bT(0x2f7)]+'</div>\x0a\x09\x09\x09<div>\x0a\x09\x09\x09\x09<div>'+r[bT(0x2f7)]+bT(0x7b8);const {maths:{data:z1,$hash:z2,lied:z3}}=z0,z4='\x0a\x09<style>\x0a\x09\x09.math-chromium,\x0a\x09\x09.math-firefox,\x0a\x09\x09.math-tor-browser,\x0a\x09\x09.math-safari,\x0a\x09\x09.math-blank-false\x20{\x0a\x09\x09\x09padding:\x202px\x208px;\x0a\x09\x09}\x0a\x09\x09.math-chromium\x20{\x0a\x09\x09\x09background:\x20#657fca26;\x0a\x09\x09}\x0a\x09\x09.math-firefox\x20{\x0a\x09\x09\x09background:\x20#657fca54;\x0a\x09\x09}\x0a\x09\x09.math-tor-browser\x20{\x0a\x09\x09\x09background:\x20#ca65b424;\x0a\x09\x09}\x0a\x09\x09.math-safari\x20{\x0a\x09\x09\x09background:\x20#ca65b459;\x0a\x09\x09}\x0a\x09</style>\x0a\x09<div>\x0a\x09<br><span\x20class=\x22math-chromium\x22>C\x20-\x20Chromium</span>\x0a\x09<br><span\x20class=\x22math-firefox\x22>F\x20-\x20Firefox</span>\x0a\x09<br><span\x20class=\x22math-tor-browser\x22>T\x20-\x20Tor\x20Browser</span>\x0a\x09<br><span\x20class=\x22math-safari\x22>S\x20-\x20Safari</span>\x0a\x09</div>',z5=Object[bT(0xab4)](z1)[bT(0x638)](z6=>{const bz=bT,z7=z1[z6],{chrome:z8,firefox:z9,torBrowser:zW,safari:zT}=z7;return bz(0x2ed)+(z8?bz(0x6ac):bz(0x785))+(z9?bz(0x8a0):'<span\x20class=\x22math-blank-false\x22>-</span>')+(zW?bz(0xb7b):'<span\x20class=\x22math-blank-false\x22>-</span>')+(zT?'<span\x20class=\x22math-safari\x22>S</span>':bz(0x785))+'\x20'+z6;});return'\x0a\x09<div\x20class=\x22relative\x20col-six'+(z3?'\x20rejected':'')+'\x22>\x0a\x09\x09<span\x20class=\x22aside-note\x22>'+P['getLog']()[bT(0xb5c)]+bT(0x605)+(z3?bT(0xb64):'')+bT(0x241)+N(z2)+bT(0x155)+(!z1?r[bT(0x2f7)]:w(bT(0x1b7),z4+z5[bT(0x644)]('<br>')))+bT(0x161);}const TA=()=>[L3(0x3e8),L3(0x491),L3(0x1a7),'audio/wav;\x20codecs=\x221\x22',L3(0x9b7),L3(0x86c),L3(0x453),L3(0xb3f),L3(0xb16),L3(0x913),L3(0x908),'video/x-matroska'][L3(0x89d)]();async function TY(){const bL=L3,z0=()=>{const bZ=a0T;try{const z1=TA(),z2=document['createElement'](bZ(0xaa1)),z3=new Audio(),z4='MediaRecorder'in window,z5=z1[bZ(0x729)]((z6,z7)=>{const bd=bZ,z8={'mimeType':z7,'audioPlayType':z3[bd(0x6f8)](z7),'videoPlayType':z2[bd(0x6f8)](z7),'mediaSource':MediaSource[bd(0x4eb)](z7),'mediaRecorder':z4?MediaRecorder['isTypeSupported'](z7):![]};if(!z8[bd(0x30d)]&&!z8[bd(0x2c6)]&&!z8['mediaSource']&&!z8['mediaRecorder'])return z6;return z6['push'](z8),z6;},[]);return z5;}catch(z6){return;}};try{const z1=q();z1[bL(0x95f)]();const z2=z0();if(!navigator['mediaDevices']||!navigator[bL(0x5fc)]['enumerateDevices'])return a({'time':z1['stop'](),'test':bL(0x3c4),'passed':!![]}),{'mediaDevices':null,'mimeTypes':z2};return navigator[bL(0x5fc)]['enumerateDevices']()[bL(0x1f2)](z3=>{const bp=bL;return a({'time':z1[bp(0x8c4)](),'test':bp(0x3c4),'passed':!![]}),{'mediaDevices':z3['map'](z4=>z4[bp(0xaf7)])[bp(0x89d)](),'mimeTypes':z2};})[bL(0x2a2)](z3=>{const bn=bL;return console[bn(0xb52)](z3),a({'time':z1['stop'](),'test':bn(0x3c4),'passed':!![]}),{'mediaDevices':null,'mimeTypes':z2};});}catch(z3){a({'test':bL(0x3c4),'passed':![]}),f(z3);return;}}function Tk(z0){const bb=L3;if(!z0['media'])return bb(0x13f)+r[bb(0x7ca)]+bb(0x19c)+r[bb(0x7ca)]+bb(0x91b)+r[bb(0x7ca)]+'</div>\x0a\x09\x09</div>';const {media:{mediaDevices:z1,mimeTypes:z2,$hash:z3}}=z0,z4={'audioinput':bb(0x944),'audiooutput':bb(0x608),'videoinput':'webcam'},z5=bb(0x5d7),z6=!z2||!z2[bb(0xb8e)],z7=z6?undefined:z2['map'](zT=>{const bS=bb,{mimeType:zz,audioPlayType:zZ,videoPlayType:zd,mediaSource:zL,mediaRecorder:zp}=zT;return bS(0x5db)+(zZ==bS(0x90e)?'<span\x20class=\x22audiop\x20pb\x22>P</span>':zZ==bS(0x3d7)?bS(0x6fa):bS(0xade))+(zd==bS(0x90e)?'<span\x20class=\x22videop\x20pb\x22>P</span>':zd==bS(0x3d7)?bS(0x80a):bS(0xade))+(zL?'<span\x20class=\x22medias\x20tr\x22>T</span>':bS(0xade))+(zp?bS(0x748):bS(0xade))+':\x20'+zz+bS(0x2ed);}),z8=TA()['length'],z9=({list:zT,index:zz,replacement:zZ})=>[...zT[bb(0x80d)](0x0,zz),zZ,...zT['slice'](zz+0x1)],zW=(z1||[])[bb(0x729)]((zT,zz)=>{const bQ=bb,zZ=z4[zz]||zz;if(!zT[bQ(0x725)](zZ))return zT=[...zT,zZ];else{if(!zZ[bQ(0x725)]('dual')&&(zT[bQ(0x73b)](zd=>zd==zZ)||[])[bQ(0xb8e)]==0x1)return zT=z9({'list':zT,'index':zT[bQ(0x40a)](zZ),'replacement':bQ(0x183)+zZ});}return zT=[...zT,zZ];},[]);return'\x0a\x09<div\x20class=\x22relative\x20col-four\x22>\x0a\x09\x09<span\x20class=\x22aside-note\x22>'+P[bb(0x649)]()[bb(0x3c4)]+'</span>\x0a\x09\x09<strong>Media</strong><span\x20class=\x22hash\x22>'+N(z3)+bb(0x2be)+V(z2)+'/'+z8+bb(0x303)+(z6?r['BLOCKED']:w('creep-media-mimeTypes',z5+z7['join'](bb(0x708)),WO(z2)))+bb(0x240)+V(z1)+bb(0x64b)+(!z1||!z1['length']?r[bb(0x7ca)]:zW[bb(0x644)](',\x20'))+bb(0x60b);}async function TP(){const bu=L3;try{const z0=q();await t(z0);let z1=WQ[bu(0x646)]||WQ[bu(0x8be)]||WQ[bu(0x698)]||WQ[bu(0xb33)]||WQ[bu(0xbc2)]||WQ['Navigator.languages']||WQ[bu(0x387)]||WQ['Navigator.oscpu']||WQ[bu(0x4c0)]||WQ[bu(0x3b0)]||WQ['Navigator.vendor']||WQ[bu(0x661)]||WQ[bu(0x700)]||![];const z2=bu(0x182)in window?navigator['userAgent'][bu(0x725)](navigator[bu(0x4a6)]):!![],z3={'platform':c(()=>{const bF=bu,{platform:z8}=navigator,z9=[bF(0xa8d),bF(0x558),bF(0x8fd),bF(0xb48),'pike',bF(0x558),'iphone','ipad',bF(0x69d),'android','x11'],zW=typeof z8=='string'&&z9[bF(0x73b)](zL=>z8[bF(0xb5b)]()[bF(0x725)](zL))[0x0];!zW&&Wt(bF(0xbc4),z8+bF(0x7b7));const {userAgent:zT}=navigator,zz=/win(dows|16|32|64|95|98|nt)|wow64/ig[bF(0x579)](zT)?bF(0x93e):/android|linux|cros/ig[bF(0x579)](zT)?bF(0x887):/(i(os|p(ad|hone|od)))|mac/ig[bF(0x579)](zT)?'Apple':bF(0xb56),zZ=/win/ig['test'](z8)?'Windows':/android|arm|linux/ig[bF(0x579)](z8)?bF(0x887):/(i(os|p(ad|hone|od)))|mac/ig[bF(0x579)](z8)?bF(0x139):bF(0xb56),zd=zz!=zZ;return zd&&(z1=!![],h(bF(0x4c0),zZ+bF(0x3a9)+zz+bF(0x308))),z8;}),'system':c(()=>u(navigator[bu(0x4b4)]),bu(0x1f8)),'userAgentParsed':await c(async()=>{const z8=G(()=>navigator['userAgent']),z9=u(z8),zW=await b(),zT=F({'ua':z8,'os':z9,'isBrave':zW});return zT;}),'device':c(()=>v({'userAgent':navigator[bu(0x4b4)]}),'userAgent\x20device\x20failed'),'userAgent':c(()=>{const bv=bu,{userAgent:z8}=navigator;!z2&&Wt(bv(0x4b4),z8+bv(0x54c));/\s{2,}|^\s|\s$/g['test'](z8)&&Wt(bv(0x4b4),bv(0x27a));const z9=WA(z8);return!!z9[bv(0xb8e)]&&Wt(bv(0x1a9),z8),z8['trim']()['replace'](/\s{2,}/,'\x20');},'userAgent\x20failed'),'uaPostReduction':A((navigator||{})['userAgent']),'appVersion':c(()=>{const bH=bu,{appVersion:z8}=navigator;return!z2&&Wt(bH(0x4a6),z8+bH(0x96c)),bH(0x4a6)in navigator&&!z8&&Wt(bH(0x4a6),bH(0x848)),/\s{2,}|^\s|\s$/g[bH(0x579)](z8)&&Wt(bH(0x4a6),bH(0x27a)),z8[bH(0x77b)]()[bH(0x737)](/\s{2,}/,'\x20');},bu(0x7b6)),'deviceMemory':c(()=>{const bx=bu;if(!(bx(0x920)in navigator))return undefined;const {deviceMemory:z8}=navigator,z9={'0.25':!![],'0.5':!![],'1':!![],'2':!![],'4':!![],'8':!![]};return!z9[z8]&&Wt(bx(0x920),z8+'\x20is\x20not\x20a\x20valid\x20value\x20[0.25,\x200.5,\x201,\x202,\x204,\x208]'),z8;},bu(0x221)),'doNotTrack':c(()=>{const {doNotTrack:z8}=navigator,z9={'1':!0x0,'true':!0x0,'yes':!0x0,'0':!0x0,'false':!0x0,'no':!0x0,'unspecified':!0x0,'null':!0x0,'undefined':!0x0};return!z9[z8]&&Wt('doNotTrack\x20-\x20unusual\x20result',z8),z8;},'doNotTrack\x20failed'),'globalPrivacyControl':c(()=>{const bD=bu;if(!('globalPrivacyControl'in navigator))return undefined;const {globalPrivacyControl:z8}=navigator,z9={'1':!0x0,'true':!0x0,'yes':!0x0,'0':!0x0,'false':!0x0,'no':!0x0,'unspecified':!0x0,'null':!0x0,'undefined':!0x0};return!z9[z8]&&Wt(bD(0xba2),z8),z8;},bu(0x687)),'hardwareConcurrency':c(()=>{const bA=bu;if(!(bA(0x936)in navigator))return undefined;return navigator[bA(0x936)];},'hardwareConcurrency\x20failed'),'language':c(()=>{const bY=bu,{language:z8,languages:z9}=navigator,zW=(''+z8)[bY(0x184)](',')[0x0];let zT;try{zT=0x1[bY(0x614)](zW||undefined,{'style':bY(0x521),'currency':bY(0x239),'currencyDisplay':bY(0x8ce),'minimumFractionDigits':0x0,'maximumFractionDigits':0x0});}catch(zd){}const zz=0x1[bY(0x614)](undefined,{'style':'currency','currency':bY(0x239),'currencyDisplay':'name','minimumFractionDigits':0x0,'maximumFractionDigits':0x0}),zZ=zz!=zT;zZ&&(z1=!![],h(bY(0xbc2),zz+bY(0x2a1)+zT+'\x20language\x20do\x20not\x20match'));if(z8&&z9){const zL=/^.{0,2}/g[bY(0xad3)](z8)[0x0],zp=/^.{0,2}/g[bY(0xad3)](z9[0x0])[0x0];return zp!=zL&&Wt(bY(0x23a),[z8,z9][bY(0x644)]('\x20')+bY(0x388)),z9[bY(0x644)](',\x20')+'\x20('+z8+')';}return z8+'\x20'+z9;},bu(0xa68)),'maxTouchPoints':c(()=>{const bk=bu;if(!(bk(0xbcd)in navigator))return null;return navigator[bk(0xbcd)];},bu(0x8f9)),'vendor':c(()=>navigator['vendor'],bu(0x825)),'mimeTypes':c(()=>{const bP=bu,{mimeTypes:z8}=navigator;return z8?[...z8][bP(0x638)](z9=>z9['type']):[];},bu(0x770)),'oscpu':c(()=>navigator[bu(0x6cf)],bu(0x493)),'plugins':c(()=>{const ba=bu,{plugins:z8}=navigator;if(!(z8 instanceof PluginArray))return;const z9=z8?[...z8][ba(0x638)](zT=>({'name':zT[ba(0x8ce)],'description':zT['description'],'filename':zT[ba(0xa0d)],'version':zT['version']})):[],{lies:zW}=WF(z8,navigator[ba(0x1d7)]);return zW[ba(0xb8e)]&&(z1=!![],zW[ba(0xa0f)](zT=>{const bq=ba;return h(bq(0x661),zT);})),z9[ba(0xb8e)]&&z9[ba(0xa0f)](zT=>{const bt=ba,{name:zz,description:zZ}=zT,zd=WA(zz),zL=WA(zZ);zd[bt(0xb8e)]&&Wt(bt(0x54d),zz);zL[bt(0xb8e)]&&Wt(bt(0xa9e),zZ);return;}),z9;},bu(0x1fe)),'properties':c(()=>{const bM=bu,z8=Object['keys'](Object[bM(0x85d)](navigator));return z8;},bu(0x487))},z4=()=>c(()=>{const bB=bu;if(!navigator[bB(0x843)]||!navigator[bB(0x843)]['getHighEntropyValues'])return;return navigator[bB(0x843)][bB(0x270)](['platform',bB(0xab8),bB(0x2e1),bB(0x65e),bB(0x6a5),bB(0xb5e)])['then'](z8=>{const bO=bB,{brands:z9,mobile:zW}=navigator[bO(0x843)]||{},zT=(zd,zL=![])=>zd[bO(0x73b)](zp=>!/Not/['test'](zp[bO(0x757)]))['map'](zp=>''+zp[bO(0x757)]+(zL?'\x20'+zp['version']:'')),zz=zd=>zd[bO(0xb8e)]>0x1?zd['filter'](zL=>!/Chromium/[bO(0x579)](zL)):zd;!z8[bO(0x34d)]&&(z8[bO(0x34d)]=z9);z8['brandsVersion']=zT(z8[bO(0x34d)],!![]),z8[bO(0x34d)]=zT(z8[bO(0x34d)]),z8['brandsVersion']=zz(z8[bO(0x701)]),z8[bO(0x34d)]=zz(z8['brands']);!z8[bO(0x974)]&&(z8['mobile']=zW);const zZ=Object['keys'](z8)[bO(0x89d)]()[bO(0x729)]((zd,zL)=>{return zd[zL]=z8[zL],zd;},{});return zZ;});},bu(0x44c)),z5=()=>c(()=>{const bN=bu;if(!('bluetooth'in navigator)||!navigator['bluetooth']||!navigator[bN(0x71a)][bN(0x3c7)])return undefined;return navigator[bN(0x71a)][bN(0x3c7)]();},bu(0x233)),z6=()=>c(()=>{const bi=bu,z8=zW=>navigator[bi(0x556)][bi(0x77d)]({'name':zW})[bi(0x1f2)](zT=>({'name':zW,'state':zT[bi(0x272)]}))[bi(0x2a2)](zT=>({'name':zW,'state':bi(0x15d)})),z9=!('permissions'in navigator)?undefined:Promise[bi(0x840)]([z8(bi(0x552)),z8(bi(0x52a)),z8(bi(0x513)),z8(bi(0x46e)),z8(bi(0x71a)),z8('camera'),z8(bi(0x82b)),z8(bi(0x846)),z8('display-capture'),z8('gamepad'),z8(bi(0x60c)),z8(bi(0x75c)),z8('magnetometer'),z8(bi(0x652)),z8(bi(0x8bd)),z8(bi(0x8d7)),z8(bi(0x33a)),z8('persistent-storage'),z8(bi(0x3e4)),z8(bi(0x377)),z8(bi(0x7fb)),z8(bi(0x228))])['then'](zW=>zW[bi(0x729)]((zT,zz)=>{const by=bi,{state:zZ,name:zd}=zz||{};if(zT[zZ])return zT[zZ][by(0x3e4)](zd),zT;return zT[zZ]=[zd],zT;},{}))[bi(0x2a2)](zW=>console[bi(0xb52)](zW));return z9;},bu(0xbc3)),z7=()=>c(()=>{const bK=bu;if(!('gpu'in navigator))return;return navigator[bK(0x893)][bK(0x6fe)]()[bK(0x1f2)](({limits:z8,features:z9})=>{const br=bK;return{'features':[...z9[br(0x828)]()],'limits':(zW=>{const zT={};for(const zz in zW){zT[zz]=zW[zz];}return zT;})(z8)};});},bu(0x68d));return await t(z0),Promise[bu(0x840)]([z4(),z5(),z6(),z7()])[bu(0x1f2)](([z8,z9,zW,zT])=>{const bV=bu;return a({'time':z0[bV(0x8c4)](),'test':bV(0xaf4),'passed':!![]}),{...z3,'userAgentData':z8,'bluetoothAvailability':z9,'permissions':zW,'webgpu':zT,'lied':z1};})[bu(0x2a2)](z8=>{const bR=bu;return console[bR(0xb52)](z8),a({'time':z0[bR(0x8c4)](),'test':bR(0xaf4),'passed':!![]}),{...z3,'lied':z1};});}catch(z8){a({'test':bu(0xaf4),'passed':![]}),f(z8,bu(0x57b));return;}}function Ta(z0){const bw=L3;if(!z0['navigator'])return'\x0a\x09\x09<div\x20class=\x22col-six\x20undefined\x22>\x0a\x09\x09\x09<strong>Navigator</strong>\x0a\x09\x09\x09<div>properties\x20(0):\x20'+r[bw(0x7ca)]+'</div>\x0a\x09\x09\x09<div>dnt:\x20'+r[bw(0x7ca)]+bw(0x2e3)+r[bw(0x7ca)]+'</div>\x0a\x09\x09\x09<div>lang:\x20'+r[bw(0x7ca)]+bw(0x74c)+r[bw(0x7ca)]+bw(0x3be)+r[bw(0x7ca)]+bw(0x1f1)+r[bw(0x7ca)]+bw(0x524)+r[bw(0x7ca)]+'</div>\x0a\x09\x09\x09<div>webgpu:\x20'+r[bw(0x7ca)]+'</div>\x0a\x09\x09\x09<div>userAgentData:</div>\x0a\x09\x09\x09<div\x20class=\x22block-text\x22>'+r['BLOCKED']+bw(0xa84)+r[bw(0x7ca)]+bw(0x3c6)+r['BLOCKED']+'</div>\x0a\x09\x09\x09<div>userAgent:</div>\x0a\x09\x09\x09<div\x20class=\x22block-text\x22>'+r[bw(0x7ca)]+bw(0x3ea)+r[bw(0x7ca)]+bw(0x692);const {navigator:{$hash:z1,appVersion:z2,deviceMemory:z3,doNotTrack:z4,globalPrivacyControl:z5,hardwareConcurrency:z6,language:z7,maxTouchPoints:z8,mimeTypes:z9,oscpu:zW,permissions:zT,platform:zz,plugins:zZ,properties:zd,system:zL,device:zp,userAgent:zn,uaPostReduction:zb,userAgentData:zS,userAgentParsed:zQ,vendor:zu,bluetoothAvailability:zF,webgpu:zv,lied:zH}}=z0,zx=bw(0xbc8),zD={[bw(0x631)]:!0x0,[bw(0x63d)]:!0x0,['']:!0x0},zA=Object[bw(0xab4)](zT||{}),zY=zT&&zT[bw(0x357)]?zT[bw(0x357)][bw(0xb8e)]:0x0;return'\x0a\x09<span\x20class=\x22time\x22>'+P[bw(0x649)]()['navigator']+bw(0x77e)+(zH?bw(0x5e1):'')+'\x22>\x0a\x09\x09<strong>Navigator</strong><span\x20class=\x22'+(zH?bw(0xb64):'')+'hash\x22>'+N(z1)+bw(0x8e8)+V(zd)+bw(0x303)+w(zx+'-properties',zd[bw(0x644)](',\x20'),WO(zd))+bw(0x58d)+(''+z4)+bw(0x20a)+(''+z5==bw(0x63d)?r['UNSUPPORTED']:''+z5)+bw(0x4ed)+(!zD[z7]?z7:r[bw(0x7ca)])+bw(0xa87)+V(z9)+bw(0x303)+(!zD[''+z9]?w(zx+bw(0x778),z9['join'](bw(0x708)),WO(z9)):r['BLOCKED'])+bw(0x44e)+(''+zY)+bw(0x303)+(!zT||!zA?r[bw(0x786)]:w('creep-permissions',zA['map'](zk=>'<div\x20class=\x22perm\x20perm-'+zk+'\x22><strong>'+zk+bw(0xb9b)+zT[zk]['join']('<br>')+bw(0x113))[bw(0x644)](''),WO(zT)))+bw(0x4c4)+V(zZ)+'):\x20'+(!zD[''+zZ]?w(zx+bw(0x656),zZ[bw(0x638)](zk=>zk[bw(0x8ce)])[bw(0x644)]('<br>'),WO(zZ)):r['BLOCKED'])+bw(0x857)+(!zD[zu]?zu:r[bw(0x7ca)])+bw(0x97c)+(!zv?r[bw(0x786)]:w(zx+bw(0xac6),(zk=>{const bm=bw,{limits:zP,features:za}=zk;return'\x0a\x09\x09\x09\x09\x09<div>\x0a\x09\x09\x09\x09\x09\x09<strong>Features</strong><br>'+za[bm(0x644)](bm(0x708))+'\x0a\x09\x09\x09\x09\x09</div>\x0a\x09\x09\x09\x09\x09<div>\x0a\x09\x09\x09\x09\x09\x09<br><strong>Limits</strong><br>'+Object[bm(0xab4)](zP)['map'](zq=>zq+':\x20'+zP[zq])[bm(0x644)](bm(0x708))+bm(0x9a6);})(zv),WO(zv)))+bw(0x16f)+(zk=>{const bE=bw,{architecture:zP,bitness:za,brandsVersion:zq,uaFullVersion:zt,mobile:zM,model:zB,platformVersion:zO,platform:zN}=zk||{},zi=H({'platform':zN,'platformVersion':zO});return!zk?r[bE(0x786)]:'\x0a\x09\x09\x09\x09\x09'+(zq||[])[bE(0x644)](',')+(zt?'\x20('+zt+')':'')+'\x0a\x09\x09\x09\x09\x09<br>'+(zi||zN+'\x20'+zO)+'\x20'+(zP?''+zP+(za?'_'+za:''):'')+bE(0x247)+(zB?'<br>'+zB:'')+bE(0x247)+(zM?'<br>mobile':'')+bE(0x4f6);})(zS)+bw(0xa67)+(zH?bw(0x5e1):'')+bw(0x756)+(zW?zW:'')+bw(0x5db)+(''+(zW?bw(0x708):'')+zL+(zz?'\x20('+zz+')':''))+bw(0x5db)+(zp?bw(0x708)+zp:r['BLOCKED'])+(z6&&z3?bw(0x873)+z6+bw(0x682)+z3:z6&&!z3?bw(0x873)+z6:!z6&&z3?bw(0x54a)+z3:'')+(typeof z8!=bw(0x63d)?bw(0xb91)+(''+z8):'')+(zF?bw(0x204):'')+'\x0a\x09\x09</div>\x0a\x09\x09<div>ua\x20parsed:\x20'+(zQ||r[bw(0x7ca)])+bw(0x85f)+(!zb?'':'<span\x20class=\x22confidence-note\x22>ua\x20reduction</span>')+bw(0xbd2)+(zn||r[bw(0x7ca)])+bw(0x832)+(z2||r['BLOCKED'])+bw(0x7ff);}function Tq({hash:z0,data:z1}){const bc=L3,z2=z8=>{const bf=a0T;return z8[bf(0xaac)](z9=>z8['filter'](zW=>zW[bf(0x725)](z9))[bf(0xb8e)]==z8[bf(0xb8e)]);};let z3=[],z4=[],z5=[];const z6=Object[bc(0xab4)](z1)['find'](z8=>z1[z8][bc(0xaac)](z9=>{const bG=bc;if(!(z9['id']==z0))return![];return z4=z9[bG(0x973)]||[],z3=z9[bG(0x447)]||[],z5=z9[bG(0x81d)]||[],!![];})),z7={'decrypted':z6,'system':z3[bc(0xb8e)]==0x1?z3[0x0]:undefined,'device':z4[bc(0xb8e)]==0x1?z4[0x0]:z2(z4),'gpu':z5['length']==0x1?z5[0x0]:undefined};return z7;}function Tt({decryptionData:z0,crowdBlendingScore:z1,bot:bot=![]}){const be=L3,{jsRuntime:z2,jsEngine:z3,htmlVersion:z4,windowVersion:z5,styleVersion:z6,resistance:z7,styleSystem:z8,emojiSystem:z9,domRectSystem:zW,svgSystem:zT,mimeTypesSystem:zz,audioSystem:zZ,canvasSystem:zd,canvasBlobSystem:zL,canvasPaintSystem:zp,canvasTextSystem:zn,canvasEmojiSystem:zb,textMetricsSystem:zS,webglSystem:zQ,gpuSystem:zu,gpuModelSystem:zF,fontsSystem:zv,voicesSystem:zH,screenSystem:zx,deviceOfTimezone:zD,pendingReview:zA}=z0,zY=new Set(),zk=()=>be(0xa01),zP=zr=>be(0x949)+zr+'\x22></span>',za=({title:zr,agent:zV,showVersion:showVersion=![]})=>{const bC=be,{decrypted:zR,system:zw,device:zm,score:zE}=zV||{},zf=/edgios|edge/i[bC(0x579)](zR)?zY['add']('edge')&&zP(bC(0x90c)):/brave/i[bC(0x579)](zR)?zY[bC(0x933)]('brave')&&zP(bC(0x759)):/vivaldi/i['test'](zR)?zY[bC(0x933)](bC(0x59d))&&zP('vivaldi'):/duckduckgo/i['test'](zR)?zY[bC(0x933)]('duckduckgo')&&zP(bC(0x706)):/yandex/i['test'](zR)?zY[bC(0x933)]('yandex')&&zP('yandex'):/opera/i['test'](zR)?zY[bC(0x933)](bC(0x6c2))&&zP(bC(0x6c2)):/crios|chrome/i[bC(0x579)](zR)?zY['add'](bC(0x182))&&zP(bC(0x182)):/tor browser/i['test'](zR)?zY['add'](bC(0x420))&&zP(bC(0x420)):/palemoon/i[bC(0x579)](zR)?zY[bC(0x933)](bC(0x277))&&zP(bC(0x277)):/fxios|firefox/i[bC(0x579)](zR)?zY[bC(0x933)](bC(0x55a))&&zP(bC(0x55a)):/v8/i[bC(0x579)](zR)?zY[bC(0x933)]('v8')&&zP('v8'):/gecko/i[bC(0x579)](zR)?zY[bC(0x933)](bC(0xa0b))&&zP(bC(0xa0b)):/goanna/i[bC(0x579)](zR)?zY['add'](bC(0xba6))&&zP(bC(0xba6)):/spidermonkey/i[bC(0x579)](zR)?zY[bC(0x933)](bC(0x55a))&&zP(bC(0x55a)):/safari/i[bC(0x579)](zR)?zY[bC(0x933)](bC(0x298))&&zP(bC(0x298)):/webkit|javascriptcore/i[bC(0x579)](zR)?zY[bC(0x933)](bC(0x3da))&&zP(bC(0x3da)):/blink/i[bC(0x579)](zR)?zY[bC(0x933)](bC(0x819))&&zP('blink'):zP(''),zc=/chrome os/i[bC(0x579)](zw)?zY[bC(0x933)](bC(0x3d8))&&zP(bC(0x3d8)):/linux/i[bC(0x579)](zw)?zY['add'](bC(0x558))&&zP(bC(0x558)):/android/i[bC(0x579)](zw)?zY[bC(0x933)]('android')&&zP('android'):/ipad|iphone|ipod|ios|mac|apple/i[bC(0x579)](zw)?zY[bC(0x933)](bC(0xb36))&&zP(bC(0xb36)):/windows/i[bC(0x579)](zw)?zY['add']('windows')&&zP(bC(0x503)):zP(''),zG=[zc,zf][bC(0x644)](''),ze=''+[...new Set([zR,zw,zm])]=='',zC=(zI,zj)=>zI?'\x20'+r[bC(0x30b)]:bC(0x2bf)+zj+bC(0x44b),zs=(zI,zj)=>{const bs=bC;return!zj||zj>0x24?zI:bs(0x3ab)+zI+bs(0x44b);};return zm?bC(0x56f)+zm+bC(0xb0d)+zs(''+zG+zr,zE)+'<span>*</span>\x0a\x09\x09\x09</span>':showVersion?zs(''+zG+zC(ze,zR),zE):zs(''+zG+zr,zE);},zq=zr=>zk()+be(0xbbf)+zr+be(0x44b),zt=new Set([(z2||{})['device'],(z9||{})[be(0x6aa)],(zW||{})[be(0x6aa)],(zT||{})[be(0x6aa)],(zz||{})['device'],(zZ||{})[be(0x6aa)],(zd||{})[be(0x6aa)],(zL||{})[be(0x6aa)],(zp||{})[be(0x6aa)],(zn||{})[be(0x6aa)],(zb||{})[be(0x6aa)],(zS||{})[be(0x6aa)],(zQ||{})[be(0x6aa)],(zu||{})[be(0x6aa)],(zF||{})['device'],(zv||{})[be(0x6aa)],(zH||{})[be(0x6aa)],(zx||{})[be(0x6aa)],(zD||{})['device']]);zt[be(0x3af)](undefined);const zM=zr=>{const bI=be;return zr[bI(0xaac)](zV=>zr[bI(0x73b)](zR=>zR['includes'](zV))[bI(0xb8e)]==zr[bI(0xb8e)]);},zB=zr=>{const bj=be,zV=zr[bj(0x73b)](zw=>/windows/i[bj(0x579)](zw))[bj(0xb8e)]/zr[bj(0xb8e)],zR=zV>0.5;if(zR)return zr[bj(0x725)](bj(0xb06))?bj(0xb06):zr[bj(0x725)]('Windows\x207')?bj(0x9e4):zr['includes'](bj(0x869))?bj(0x869):zr[bj(0x725)](bj(0x215))?bj(0x215):zr[bj(0x725)](bj(0x505))?bj(0x505):zr['includes']('Windows\x208.1')?bj(0x70d):zr[bj(0x725)]('Windows\x2011\x20(64-bit)')?bj(0x6f2):zr['includes']('Windows\x2011')?bj(0x760):zr[bj(0x725)]('Windows\x2010\x20(64-bit)')?bj(0xad9):zr[bj(0x725)]('Windows\x2010')?bj(0x954):undefined;return undefined;},zO=[...zt],zN=zB(zO)||zM(zO),zi=z1>=0x5a?'A':z1>=0x50?'B':z1>=0x46?'C':z1>=0x3c?'D':'F',zy=zr=>Object[be(0x828)](zr||{})[be(0xaac)](zV=>typeof zV!=be(0x63d)),zK=document['getElementById']('browser-detection');return i(zK,K`
-	<div class="flex-grid relative">
-		${zA?'<span\x20class=\x22aside-note-bottom\x22>pending\x20review:\x20<span\x20class=\x22renewed\x22>'+zA+be(0x1bc):''}
-		${bot?be(0xb6e):typeof z1==be(0x3ba)?be(0x1bd)+(''+z1)+be(0x8f0)+zi+'\x22>'+zi+'</span></span>':''}
-		<div class="col-six">
-			<strong>Prediction</strong>
-			<div class="ellipsis relative">${zN?be(0x236)+zN+be(0x44b):zk()}</div>
-			<div class="ellipsis relative">
-				<span id="window-entropy"></span>${za({'title':be(0x599),'agent':z5,'showVersion':!![]})}</div>
-			<div class="ellipsis relative">
-				<span id="style-entropy"></span>${za({'title':be(0x67b),'agent':z8})}</div>
-			<div class="ellipsis relative">
-				<span id="styleVersion-entropy"></span>${za({'title':be(0x8df),'agent':z6})}</div>
-			<div class="ellipsis relative">
-				<span id="html-entropy"></span>${za({'title':be(0x7a9),'agent':z4})}</div>
-			<div class="ellipsis relative">
-				<span id="math-entropy"></span>${za({'title':be(0x280),'agent':z2})}</div>
-			<div class="ellipsis relative">
-				<span id="error-entropy"></span>${za({'title':'js\x20engine','agent':z3})}</div>
-			<div class="ellipsis relative">
-				<span id="emoji-entropy"></span>${!zy(z9)?zq(be(0x7df)):za({'title':be(0x7df),'agent':z9})}</div>
-			<div class="ellipsis relative">
-				<span id="domRect-entropy"></span>${!zy(zW)?zq(be(0xb1c)):za({'title':be(0xb1c),'agent':zW})}</div>
-			<div class="ellipsis relative">
-				<span id="svg-entropy"></span>${!zy(zT)?zq(be(0x79d)):za({'title':be(0x79d),'agent':zT})}</div>
-			<div class="ellipsis relative">
-				<span id="mimeTypes-entropy"></span>${!zy(zz)?zq(be(0x1d7)):za({'title':be(0x1d7),'agent':zz})}</div>
-			<div class="ellipsis relative">
-				<span id="audio-entropy"></span>${!zy(zZ)?zq(be(0x608)):za({'title':'audio','agent':zZ})}</div>
-			<div class="ellipsis relative">
-				<span id="canvas-entropy"></span>${!zy(zd)?zq(be(0x49b)):za({'title':be(0x49b),'agent':zd})}</div>
-			<div class="ellipsis relative">
-				<span id="canvasBlob-entropy"></span>${!zy(zL)?zq(be(0x4d1)):za({'title':'canvas\x20blob','agent':zL})}</div>
-			<div class="ellipsis relative">
-				<span id="canvasPaint-entropy"></span>${!zy(zp)?zq(be(0x5a5)):za({'title':'canvas\x20paint','agent':zp})}</div>
-			<div class="ellipsis relative">
-				<span id="canvasText-entropy"></span>${!zy(zn)?zq('canvas\x20text'):za({'title':be(0x42d),'agent':zn})}</div>
-			<div class="ellipsis relative">
-				<span id="canvasEmoji-entropy"></span>${!zy(zb)?zq(be(0xa1f)):za({'title':be(0xa1f),'agent':zb})}</div>
-			<div class="ellipsis relative">
-				<span id="textMetrics-entropy"></span>${!zy(zS)?zq(be(0x5cf)):za({'title':be(0x5cf),'agent':zS})}</div>
-			<div class="ellipsis relative">
-				<span id="webgl-entropy"></span>${!zy(zQ)?zq(be(0x58c)):za({'title':'webgl','agent':zQ})}</div>
-			<div class="ellipsis relative">
-				<span id="gpu-entropy"></span>${!zy(zu)?zq(be(0x50d)):za({'title':be(0x50d),'agent':zu})}</div>
-			<div class="ellipsis relative">
-				<span id="gpuModel-entropy"></span>${!zy(zF)?zq('gpu\x20model'):za({'title':be(0xb34),'agent':zF})}</div>
-			<div class="ellipsis relative">
-				<span id="fonts-entropy"></span>${!zy(zv)?zq(be(0x1cb)):za({'title':be(0x1cb),'agent':zv})}</div>
-			<div class="ellipsis relative">
-				<span id="voices-entropy"></span>${!zy(zH)?zq(be(0x625)):za({'title':'voices','agent':zH})}</div>
-			<div class="ellipsis relative">
-				<span id="screen-entropy"></span>${!zy(zx)?zq(be(0x6bd)):za({'title':be(0x6bd),'agent':zx})}</div>
-			<div class="ellipsis relative">
-				<span id="resistance-entropy"></span>${!zy(z7)?zq(be(0x8d4)):za({'title':be(0x8d4),'agent':z7})}</div>
-			<div class="ellipsis relative">
-				<span id="deviceOfTimezone-entropy"></span>${!zy(zD)?zq(be(0x69b)):za({'title':be(0x69b),'agent':zD})}</div>
+			`);
+            // get emoji set and system
+            const getEmojiDimensions = (style) => {
+                return {
+                    width: style.inlineSize,
+                    height: style.blockSize,
+                };
+            };
+            const pattern = new Set();
+            const emojiElems = [...doc.getElementsByClassName('pixel-emoji')];
+            const emojiSet = emojiElems.reduce((emojiSet, el, i) => {
+                const style = getComputedStyle(el);
+                const emoji = emojis[i];
+                const { height, width } = getEmojiDimensions(style);
+                const dimensions = `${width},${height}`;
+                if (!pattern.has(dimensions)) {
+                    pattern.add(dimensions);
+                    emojiSet.add(emoji);
+                }
+                return emojiSet;
+            }, new Set());
+            const pixelToNumber = (pixels) => +(pixels.replace('px', ''));
+            const pixelSizeSystemSum = 0.00001 * [...pattern].map((x) => {
+                return x.split(',').map((x) => pixelToNumber(x)).reduce((acc, x) => acc += (+x || 0), 0);
+            }).reduce((acc, x) => acc += x, 0);
+            doc.body.removeChild(doc.getElementById('pixel-emoji-container'));
+            return {
+                emojiSet: [...emojiSet],
+                pixelSizeSystemSum,
+            };
+        }
+        catch (error) {
+            console.error(error);
+            return {
+                emojiSet: [],
+                pixelSizeSystemSum: 0,
+            };
+        }
+    };
+    const getFontFaceLoadFonts = async (fontList) => {
+        try {
+            const fontFaceList = fontList.map((font) => new FontFace(font, `local("${font}")`));
+            const responseCollection = await Promise
+                .allSettled(fontFaceList.map((font) => font.load()));
+            // @ts-ignore
+            const fonts = responseCollection.reduce((acc, font) => {
+                if (font.status == 'fulfilled') {
+                    return [...acc, font.value.family];
+                }
+                return acc;
+            }, []);
+            return fonts;
+        }
+        catch (error) {
+            console.error(error);
+            return [];
+        }
+    };
+    const getPlatformVersion = (fonts) => {
+        const getWindows = ({ fonts, fontMap }) => {
+            const fontVersion = {
+                ['11']: fontMap['11'].find((x) => fonts.includes(x)),
+                ['10']: fontMap['10'].find((x) => fonts.includes(x)),
+                ['8.1']: fontMap['8.1'].find((x) => fonts.includes(x)),
+                ['8']: fontMap['8'].find((x) => fonts.includes(x)),
+                // require complete set of Windows 7 fonts
+                ['7']: fontMap['7'].filter((x) => fonts.includes(x)).length == fontMap['7'].length,
+            };
+            const hash = ('' + Object.keys(fontVersion).sort().filter((key) => !!fontVersion[key]));
+            const hashMap = {
+                '10,11,7,8,8.1': '11',
+                '10,7,8,8.1': '10',
+                '7,8,8.1': '8.1',
+                '11,7,8,8.1': '8.1',
+                '7,8': '8',
+                '10,7,8': '8',
+                '10,11,7,8': '8',
+                '7': '7',
+                '7,8.1': '7',
+                '10,7,8.1': '7',
+                '10,11,7,8.1': '7', // missing 8
+            };
+            const version = hashMap[hash];
+            return version ? `Windows ${version}` : undefined;
+        };
+        const getMacOS = ({ fonts, fontMap }) => {
+            const fontVersion = {
+                ['10.15-11']: fontMap['10.15-11'].find((x) => fonts.includes(x)),
+                ['10.13-10.14']: fontMap['10.13-10.14'].find((x) => fonts.includes(x)),
+                ['10.12']: fontMap['10.12'].find((x) => fonts.includes(x)),
+                ['10.11']: fontMap['10.11'].find((x) => fonts.includes(x)),
+                ['10.10']: fontMap['10.10'].find((x) => fonts.includes(x)),
+                // require complete set of 10.9 fonts
+                ['10.9']: fontMap['10.9'].filter((x) => fonts.includes(x)).length == fontMap['10.9'].length,
+            };
+            const hash = ('' + Object.keys(fontVersion).sort().filter((key) => !!fontVersion[key]));
+            const hashMap = {
+                '10.10,10.11,10.12,10.13-10.14,10.15-11,10.9': '10.15-11',
+                '10.10,10.11,10.12,10.13-10.14,10.9': '10.13-10.14',
+                '10.10,10.11,10.12,10.9': 'Sierra',
+                '10.10,10.11,10.9': 'El Capitan',
+                '10.10,10.9': 'Yosemite',
+                '10.9': 'Mavericks', // 10.9
+            };
+            const version = hashMap[hash];
+            return version ? `macOS ${version}` : undefined;
+        };
+        return (getWindows({ fonts, fontMap: WindowsFonts }) ||
+            getMacOS({ fonts, fontMap: MacOSFonts }));
+    };
+    const getDesktopApps = (fonts) => {
+        // @ts-ignore
+        const apps = Object.keys(DesktopAppFonts).reduce((acc, key) => {
+            const appFontSet = DesktopAppFonts[key];
+            const match = appFontSet.filter((x) => fonts.includes(x)).length == appFontSet.length;
+            return match ? [...acc, key] : acc;
+        }, []);
+        return apps;
+    };
+    try {
+        const timer = createTimer();
+        await queueEvent(timer);
+        const doc = (PHANTOM_DARKNESS &&
+            PHANTOM_DARKNESS.document &&
+            PHANTOM_DARKNESS.document.body ? PHANTOM_DARKNESS.document :
+            document);
+        const id = `font-fingerprint`;
+        const div = doc.createElement('div');
+        div.setAttribute('id', id);
+        doc.body.appendChild(div);
+        const { emojiSet, pixelSizeSystemSum, } = getPixelEmojis({
+            doc,
+            id,
+            emojis: EMOJIS,
+        }) || {};
+        const fontList = FONT_LIST;
+        const fontFaceLoadFonts = await getFontFaceLoadFonts(fontList);
+        const platformVersion = getPlatformVersion(fontFaceLoadFonts);
+        const apps = getDesktopApps(fontFaceLoadFonts);
+        // detect lies
+        const lied = (lieProps['FontFace.load'] ||
+            lieProps['FontFace.family'] ||
+            lieProps['FontFace.status'] ||
+            lieProps['String.fromCodePoint'] ||
+            lieProps['CSSStyleDeclaration.setProperty'] ||
+            lieProps['CSS2Properties.setProperty']);
+        logTestResult({ time: timer.stop(), test: 'fonts', passed: true });
+        return {
+            fontFaceLoadFonts,
+            platformVersion,
+            apps,
+            emojiSet,
+            pixelSizeSystemSum,
+            lied,
+        };
+    }
+    catch (error) {
+        logTestResult({ test: 'fonts', passed: false });
+        captureError(error);
+        return;
+    }
+}
+function fontsHTML(fp) {
+    if (!fp.fonts) {
+        return `
+		<div class="col-six undefined">
+			<strong>Fonts</strong>
+			<div>load (0):</div>
+			<div>apps:${HTMLNote.BLOCKED}</div>
+			<div class="block-text-large">${HTMLNote.BLOCKED}</div>
+			<div class="block-text">${HTMLNote.BLOCKED}</div>
+		</div>`;
+    }
+    const { fonts: { $hash, fontFaceLoadFonts, platformVersion, apps, emojiSet, pixelSizeSystemSum, lied, }, } = fp;
+    const icon = {
+        'Linux': '<span class="icon linux"></span>',
+        'Apple': '<span class="icon apple"></span>',
+        'Windows': '<span class="icon windows"></span>',
+        'Android': '<span class="icon android"></span>',
+        'CrOS': '<span class="icon cros"></span>',
+    };
+    const blockHelpTitle = `FontFace.load()\nCSSStyleDeclaration.setProperty()\nblock-size\ninline-size\nhash: ${hashMini(emojiSet)}\n${(emojiSet || []).map((x, i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`;
+    return `
+	<div class="relative col-six${lied ? ' rejected' : ''}">
+		<span class="aside-note">${performanceLogger.getLog().fonts}</span>
+		<strong>Fonts</strong><span class="hash">${hashSlice($hash)}</span>
+		<div class="help" title="FontFace.load()">load (${fontFaceLoadFonts ? count(fontFaceLoadFonts) : '0'}/${'' + FONT_LIST.length}): ${platformVersion || ((fonts) => {
+        return !(fonts || []).length ? '' : ((('' + fonts).match(/Lucida Console/) || []).length ? `${icon.Windows}Windows` :
+            (('' + fonts).match(/Droid Sans Mono|Noto Color Emoji|Roboto/g) || []).length == 3 ? `${icon.Linux}${icon.Android}Linux Android` :
+                (('' + fonts).match(/Droid Sans Mono|Roboto/g) || []).length == 2 ? `${icon.Android}Android` :
+                    (('' + fonts).match(/Noto Color Emoji|Roboto/g) || []).length == 2 ? `${icon.CrOS}Chrome OS` :
+                        (('' + fonts).match(/Noto Color Emoji/) || []).length ? `${icon.Linux}Linux` :
+                            (('' + fonts).match(/Arimo/) || []).length ? `${icon.Linux}Linux` :
+                                (('' + fonts).match(/Helvetica Neue/g) || []).length == 2 ? `${icon.Apple}Apple` :
+                                    `${(fonts || [])[0]}...`);
+    })(fontFaceLoadFonts)}</div>
+		<div>apps: ${(apps || []).length ? apps.join(', ') : HTMLNote.UNSUPPORTED}</div>
+		<div class="block-text-large help relative" title="FontFace.load()">
+			${fontFaceLoadFonts.join(', ') || HTMLNote.UNSUPPORTED}
 		</div>
-		<div class="col-six icon-prediction-container">
-			${[...zY][be(0x638)](zr=>{const bh=be;return bh(0x924)+zr+bh(0x2f6);})[be(0x644)]('')}
-			${zu&&!/^(undefined|false)$/['test'](''+zu[be(0x893)])?be(0x4dd)+zu[be(0x893)]+be(0x113):''}
+		<div class="block-text help relative" title="${blockHelpTitle}">
+			<div>
+				<br><span>${pixelSizeSystemSum || HTMLNote.UNSUPPORTED}</span>
+				<br><span class="grey jumbo" style="font-family: ${CSS_FONT_FAMILY}">${formatEmojiSet(emojiSet)}</span>
+			</div>
 		</div>
 	</div>
-	`);}function TM({error:z0,patch:z1,html:z2}){const bl=L3,z3=()=>'<span\x20class=\x22icon\x22></span><span\x20class=\x22icon\x22></span>',z4=document[bl(0xa0c)](bl(0xa08));return z1(z4,z2`
+	`;
+}
+
+/* eslint-disable new-cap */
+/**
+ * @param {{ userAgent: string; }} workerScope
+ */
+async function getHeadlessFeatures(workerScope) {
+    try {
+        const timer = createTimer();
+        await queueEvent(timer);
+        const [getTooMuchRecursionLie, getNewObjectToStringTypeErrorLie, getChainCycleLie, getReflectSetProtoLie, getReflectSetProtoProxyLie, getInstanceofCheckLie, getDefinePropertiesLie,] = proxyDetectionMethods;
+        const mimeTypes = Object.keys(Object.assign({}, navigator.mimeTypes));
+        const data = {
+            chromium: IS_BLINK,
+            likeHeadless: {
+                ['navigator.webdriver is on']: 'webdriver' in navigator && !!navigator.webdriver,
+                ['chrome plugins array is empty']: IS_BLINK && navigator.plugins.length === 0,
+                ['chrome mimeTypes array is empty']: IS_BLINK && mimeTypes.length === 0,
+                ['notification permission is denied']: (IS_BLINK &&
+                    'Notification' in window &&
+                    (Notification.permission == 'denied')),
+                ['chrome system color ActiveText is rgb(255, 0, 0)']: IS_BLINK && (() => {
+                    let rendered = PARENT_PHANTOM;
+                    if (!PARENT_PHANTOM) {
+                        rendered = document.createElement('div');
+                        document.body.appendChild(rendered);
+                    }
+                    if (!rendered)
+                        return false;
+                    rendered.setAttribute('style', `background-color: ActiveText`);
+                    const { backgroundColor: activeText } = getComputedStyle(rendered);
+                    if (!PARENT_PHANTOM) {
+                        // @ts-ignore
+                        rendered.parentNode.removeChild(rendered);
+                    }
+                    return activeText === 'rgb(255, 0, 0)';
+                })(),
+                ['prefers light color scheme']: matchMedia('(prefers-color-scheme: light)').matches,
+            },
+            headless: {
+                ['chrome window.chrome is undefined']: IS_BLINK && !('chrome' in window),
+                ['chrome permission state is inconsistent']: (IS_BLINK &&
+                    'permissions' in navigator &&
+                    await (async () => {
+                        const res = await navigator.permissions.query({ name: 'notifications' });
+                        return (res.state == 'prompt' &&
+                            'Notification' in window &&
+                            Notification.permission === 'denied');
+                    })()),
+                ['userAgent contains HeadlessChrome']: (/HeadlessChrome/.test(navigator.userAgent) ||
+                    /HeadlessChrome/.test(navigator.appVersion)),
+                ['worker userAgent contains HeadlessChrome']: !!workerScope && (/HeadlessChrome/.test(workerScope.userAgent)),
+            },
+            stealth: {
+                ['srcdoc throws an error']: (() => {
+                    try {
+                        const { srcdoc } = document.createElement('iframe');
+                        return !!srcdoc;
+                    }
+                    catch (error) {
+                        return true;
+                    }
+                })(),
+                ['srcdoc triggers a window Proxy']: (() => {
+                    const iframe = document.createElement('iframe');
+                    iframe.srcdoc = instanceId;
+                    return !!iframe.contentWindow;
+                })(),
+                ['index of chrome is too high']: (() => {
+                    const control = ('cookieStore' in window ? 'cookieStore' :
+                        'ondevicemotion' in window ? 'ondevicemotion' :
+                            'speechSynthesis');
+                    const propsInWindow = [];
+                    // eslint-disable-next-line guard-for-in
+                    for (const prop in window) {
+                        propsInWindow.push(prop);
+                    }
+                    const chromeIndex = propsInWindow.indexOf('chrome');
+                    const controlIndex = propsInWindow.indexOf(control);
+                    return chromeIndex > controlIndex;
+                })(),
+                ['chrome.runtime functions are invalid']: (() => {
+                    // @ts-ignore
+                    if (!('chrome' in window && 'runtime' in chrome)) {
+                        return false;
+                    }
+                    try {
+                        // @ts-ignore
+                        if ('prototype' in chrome.runtime.sendMessage ||
+                            // @ts-ignore
+                            'prototype' in chrome.runtime.connect) {
+                            return true;
+                        }
+                        // @ts-ignore
+                        new chrome.runtime.sendMessage;
+                        // @ts-ignore
+                        new chrome.runtime.connect;
+                        return true;
+                    }
+                    catch (error) {
+                        return error.constructor.name != 'TypeError' ? true : false;
+                    }
+                })(),
+                ['Permissions.prototype.query leaks Proxy behavior']: (() => {
+                    if (!('Permissions' in window)) {
+                        return false;
+                    }
+                    const apiFunction = Permissions.prototype.query;
+                    return (
+                    // @ts-ignore
+                    getTooMuchRecursionLie({ apiFunction }) ||
+                        // @ts-ignore
+                        getTooMuchRecursionLie({ apiFunction, method: '__proto__' }) ||
+                        // @ts-ignore
+                        getChainCycleLie({ apiFunction }) ||
+                        // @ts-ignore
+                        getChainCycleLie({ apiFunction, method: '__proto__' }) ||
+                        // @ts-ignore
+                        getReflectSetProtoLie({ apiFunction }) ||
+                        // @ts-ignore
+                        getReflectSetProtoProxyLie({ apiFunction }) ||
+                        // @ts-ignore
+                        getInstanceofCheckLie(apiFunction) ||
+                        // @ts-ignore
+                        getDefinePropertiesLie(apiFunction));
+                })(),
+                ['Function.prototype.toString leaks Proxy behavior']: (() => {
+                    try {
+                        // @ts-ignore
+                        class Blah extends Function.prototype.toString {
+                        } // eslint-disable-line no-unused-vars
+                        return true;
+                    }
+                    catch (error) {
+                        return /\[object Function\]/.test(error.message);
+                    }
+                })(),
+                ['Function.prototype.toString has invalid TypeError']: (() => {
+                    const apiFunction = Function.prototype.toString;
+                    const liedToString = (
+                    // @ts-ignore
+                    getNewObjectToStringTypeErrorLie(apiFunction) ||
+                        // @ts-ignore
+                        getNewObjectToStringTypeErrorLie(() => { }) ||
+                        // @ts-ignore
+                        getTooMuchRecursionLie({ apiFunction }) ||
+                        // @ts-ignore
+                        getTooMuchRecursionLie({ apiFunction, method: '__proto__' }) ||
+                        // @ts-ignore
+                        getChainCycleLie({ apiFunction }) ||
+                        // @ts-ignore
+                        getChainCycleLie({ apiFunction, method: '__proto__' }) ||
+                        // @ts-ignore
+                        getReflectSetProtoLie({ apiFunction }) ||
+                        // @ts-ignore
+                        getReflectSetProtoProxyLie({ apiFunction }) ||
+                        // @ts-ignore
+                        getInstanceofCheckLie(apiFunction) ||
+                        // @ts-ignore
+                        getDefinePropertiesLie(apiFunction));
+                    return liedToString;
+                })(),
+            },
+        };
+        const { likeHeadless, headless, stealth } = data;
+        const likeHeadlessKeys = Object.keys(likeHeadless);
+        const headlessKeys = Object.keys(headless);
+        const stealthKeys = Object.keys(stealth);
+        const likeHeadlessRating = +((likeHeadlessKeys.filter((key) => likeHeadless[key]).length / likeHeadlessKeys.length) * 100).toFixed(0);
+        const headlessRating = +((headlessKeys.filter((key) => headless[key]).length / headlessKeys.length) * 100).toFixed(0);
+        const stealthRating = +((stealthKeys.filter((key) => stealth[key]).length / stealthKeys.length) * 100).toFixed(0);
+        logTestResult({ time: timer.stop(), test: 'headless', passed: true });
+        return Object.assign(Object.assign({}, data), { likeHeadlessRating, headlessRating, stealthRating });
+    }
+    catch (error) {
+        logTestResult({ test: 'headless', passed: false });
+        captureError(error);
+        return;
+    }
+}
+function headlessFeaturesHTML(fp) {
+    if (!fp.headless) {
+        return `
+		<div class="col-six">
+			<strong>Headless</strong>
+			<div>chromium: ${HTMLNote.Blocked}</div>
+			<div>0% like headless: ${HTMLNote.Blocked}</div>
+			<div>0% headless: ${HTMLNote.Blocked}</div>
+			<div>0% stealth: ${HTMLNote.Blocked}</div>
+		</div>`;
+    }
+    const { headless: data, } = fp;
+    const { $hash, chromium, likeHeadless, likeHeadlessRating, headless, headlessRating, stealth, stealthRating, } = data || {};
+    return `
+	<div class="relative col-six">
+		<style>
+			.like-headless-rating {
+				background: linear-gradient(90deg, var(${likeHeadlessRating < 100 ? '--grey-glass' : '--error'}) ${likeHeadlessRating}%, #fff0 ${likeHeadlessRating}%, #fff0 100%);
+			}
+			.headless-rating {
+				background: linear-gradient(90deg, var(--error) ${headlessRating}%, #fff0 ${headlessRating}%, #fff0 100%);
+			}
+			.stealth-rating {
+				background: linear-gradient(90deg, var(--error) ${stealthRating}%, #fff0 ${stealthRating}%, #fff0 100%);
+			}
+		</style>
+		<span class="aside-note">${performanceLogger.getLog().headless}</span>
+		<strong>Headless</strong><span class="hash">${hashSlice($hash)}</span>
+		<div>chromium: ${'' + chromium}</div>
+		<div class="like-headless-rating">${'' + likeHeadlessRating}% like headless: ${modal('creep-like-headless', '<strong>Like Headless</strong><br><br>' +
+        Object.keys(likeHeadless).map((key) => `${key}: ${'' + likeHeadless[key]}`).join('<br>'), hashMini(likeHeadless))}</div>
+		<div class="headless-rating">${'' + headlessRating}% headless: ${modal('creep-headless', '<strong>Headless</strong><br><br>' +
+        Object.keys(headless).map((key) => `${key}: ${'' + headless[key]}`).join('<br>'), hashMini(headless))}</div>
+		<div class="stealth-rating">${'' + stealthRating}% stealth: ${modal('creep-stealth', '<strong>Stealth</strong><br><br>' +
+        Object.keys(stealth).map((key) => `${key}: ${'' + stealth[key]}`).join('<br>'), hashMini(stealth))}</div>
+	</div>`;
+}
+
+async function getIntl() {
+    const getLocale = (intl) => {
+        const constructors = [
+            'Collator',
+            'DateTimeFormat',
+            'DisplayNames',
+            'ListFormat',
+            'NumberFormat',
+            'PluralRules',
+            'RelativeTimeFormat',
+        ];
+        // @ts-ignore
+        const locale = constructors.reduce((acc, name) => {
+            try {
+                const obj = new intl[name];
+                if (!obj) {
+                    return acc;
+                }
+                const { locale } = obj.resolvedOptions() || {};
+                return [...acc, locale];
+            }
+            catch (error) {
+                return acc;
+            }
+        }, []);
+        return [...new Set(locale)];
+    };
+    try {
+        const timer = createTimer();
+        await queueEvent(timer);
+        const lied = (lieProps['Intl.Collator.resolvedOptions'] ||
+            lieProps['Intl.DateTimeFormat.resolvedOptions'] ||
+            lieProps['Intl.DisplayNames.resolvedOptions'] ||
+            lieProps['Intl.ListFormat.resolvedOptions'] ||
+            lieProps['Intl.NumberFormat.resolvedOptions'] ||
+            lieProps['Intl.PluralRules.resolvedOptions'] ||
+            lieProps['Intl.RelativeTimeFormat.resolvedOptions']) || false;
+        const dateTimeFormat = caniuse(() => {
+            return new Intl.DateTimeFormat(undefined, {
+                month: 'long',
+                timeZoneName: 'long',
+            }).format(963644400000);
+        });
+        const displayNames = caniuse(() => {
+            return new Intl.DisplayNames(undefined, {
+                type: 'language',
+            }).of('en-US');
+        });
+        const listFormat = caniuse(() => {
+            // @ts-ignore
+            return new Intl.ListFormat(undefined, {
+                style: 'long',
+                type: 'disjunction',
+            }).format(['0', '1']);
+        });
+        const numberFormat = caniuse(() => {
+            return new Intl.NumberFormat(undefined, {
+                notation: 'compact',
+                compactDisplay: 'long',
+            }).format(21000000);
+        });
+        const pluralRules = caniuse(() => {
+            return new Intl.PluralRules().select(1);
+        });
+        const relativeTimeFormat = caniuse(() => {
+            return new Intl.RelativeTimeFormat(undefined, {
+                localeMatcher: 'best fit',
+                numeric: 'auto',
+                style: 'long',
+            }).format(1, 'year');
+        });
+        const locale = getLocale(Intl);
+        logTestResult({ time: timer.stop(), test: 'intl', passed: true });
+        return {
+            dateTimeFormat,
+            displayNames,
+            listFormat,
+            numberFormat,
+            pluralRules,
+            relativeTimeFormat,
+            locale: '' + locale,
+            lied,
+        };
+    }
+    catch (error) {
+        logTestResult({ test: 'intl', passed: false });
+        captureError(error);
+        return;
+    }
+}
+function intlHTML(fp) {
+    if (!fp.htmlElementVersion) {
+        return `
+		<div class="col-six undefined">
+			<strong>Intl</strong>
+			<div>locale: ${HTMLNote.Blocked}</div>
+			<div>date: ${HTMLNote.Blocked}</div>
+			<div>display: ${HTMLNote.Blocked}</div>
+			<div>list: ${HTMLNote.Blocked}</div>
+			<div>number: ${HTMLNote.Blocked}</div>
+			<div>plural: ${HTMLNote.Blocked}</div>
+			<div>relative: ${HTMLNote.Blocked}</div>
+		</div>`;
+    }
+    const { $hash, dateTimeFormat, displayNames, listFormat, numberFormat, pluralRules, relativeTimeFormat, locale, lied, } = fp.intl || {};
+    return `
+	<div class="relative col-six${lied ? ' rejected' : ''}">
+		<span class="aside-note">${performanceLogger.getLog().intl}</span>
+		<strong>Intl</strong><span class="hash">${hashSlice($hash)}</span>
+		<div class="block-text help"  title="Intl.Collator\nIntl.DateTimeFormat\nIntl.DisplayNames\nIntl.ListFormat\nIntl.NumberFormat\nIntl.PluralRules\nIntl.RelativeTimeFormat">
+			${[
+        locale,
+        dateTimeFormat,
+        displayNames,
+        numberFormat,
+        relativeTimeFormat,
+        listFormat,
+        pluralRules,
+    ].join('<br>')}
+		</div>
+	</div>
+	`;
+}
+
+function getMaths() {
+    try {
+        const timer = createTimer();
+        timer.start();
+        // detect failed math equality lie
+        const check = [
+            'acos',
+            'acosh',
+            'asin',
+            'asinh',
+            'atan',
+            'atanh',
+            'atan2',
+            'cbrt',
+            'cos',
+            'cosh',
+            'expm1',
+            'exp',
+            'hypot',
+            'log',
+            'log1p',
+            'log10',
+            'sin',
+            'sinh',
+            'sqrt',
+            'tan',
+            'tanh',
+            'pow',
+        ];
+        let lied = false;
+        check.forEach((prop) => {
+            if (!!lieProps[`Math.${prop}`]) {
+                lied = true;
+            }
+            const test = (prop == 'cos' ? [1e308] :
+                prop == 'acos' || prop == 'asin' || prop == 'atanh' ? [0.5] :
+                    prop == 'pow' || prop == 'atan2' ? [Math.PI, 2] :
+                        [Math.PI]);
+            const res1 = Math[prop](...test);
+            const res2 = Math[prop](...test);
+            const matching = isNaN(res1) && isNaN(res2) ? true : res1 == res2;
+            if (!matching) {
+                lied = true;
+                const mathLie = `expected x and got y`;
+                documentLie(`Math.${prop}`, mathLie);
+            }
+            return;
+        });
+        const n = 0.123;
+        const bigN = 5.860847362277284e+38;
+        const fns = [
+            ['acos', [n], `acos(${n})`, 1.4474840516030247, NaN, NaN, 1.4474840516030245],
+            ['acos', [Math.SQRT1_2], 'acos(Math.SQRT1_2)', 0.7853981633974483, NaN, NaN, NaN],
+            ['acosh', [1e308], 'acosh(1e308)', 709.889355822726, NaN, NaN, NaN],
+            ['acosh', [Math.PI], 'acosh(Math.PI)', 1.811526272460853, NaN, NaN, NaN],
+            ['acosh', [Math.SQRT2], 'acosh(Math.SQRT2)', 0.881373587019543, NaN, NaN, 0.8813735870195432],
+            ['asin', [n], `asin(${n})`, 0.12331227519187199, NaN, NaN, NaN],
+            ['asinh', [1e300], 'asinh(1e308)', 691.4686750787736, NaN, NaN, NaN],
+            ['asinh', [Math.PI], 'asinh(Math.PI)', 1.8622957433108482, NaN, NaN, NaN],
+            ['atan', [2], 'atan(2)', 1.1071487177940904, NaN, NaN, 1.1071487177940906],
+            ['atan', [Math.PI], 'atan(Math.PI)', 1.2626272556789115, NaN, NaN, NaN],
+            ['atanh', [0.5], 'atanh(0.5)', 0.5493061443340548, NaN, NaN, 0.5493061443340549],
+            ['atan2', [1e-310, 2], 'atan2(1e-310, 2)', 5e-311, NaN, NaN, NaN],
+            ['atan2', [Math.PI, 2], 'atan2(Math.PI)', 1.0038848218538872, NaN, NaN, NaN],
+            ['cbrt', [100], 'cbrt(100)', 4.641588833612779, NaN, NaN, NaN],
+            ['cbrt', [Math.PI], 'cbrt(Math.PI)', 1.4645918875615231, NaN, NaN, 1.4645918875615234],
+            ['cos', [n], `cos(${n})`, 0.9924450321351935, NaN, NaN, NaN],
+            ['cos', [Math.PI], 'cos(Math.PI)', -1, NaN, NaN, NaN],
+            ['cos', [bigN], `cos(${bigN})`, -0.10868049424995659, NaN, -0.9779661551196617, NaN],
+            ['cos', [-1e308], 'cos(-1e308)', -0.8913089376870335, NaN, 0.99970162388838, NaN],
+            ['cos', [13 * Math.E], 'cos(13*Math.E)', -0.7108118501064331, -0.7108118501064332, NaN, NaN],
+            ['cos', [57 * Math.E], 'cos(57*Math.E)', -0.536911695749024, -0.5369116957490239, NaN, NaN],
+            ['cos', [21 * Math.LN2], 'cos(21*Math.LN2)', -0.4067775970251724, -0.40677759702517235, -0.6534063185820197, NaN],
+            ['cos', [51 * Math.LN2], 'cos(51*Math.LN2)', -0.7017203400855446, -0.7017203400855445, NaN, NaN],
+            ['cos', [21 * Math.LOG2E], 'cos(21*Math.LOG2E)', 0.4362848063618998, 0.43628480636189976, NaN, NaN],
+            ['cos', [25 * Math.SQRT2], 'cos(25*Math.SQRT2)', -0.6982689820462377, -0.6982689820462376, NaN, NaN],
+            ['cos', [50 * Math.SQRT1_2], 'cos(50*Math.SQRT1_2)', -0.6982689820462377, -0.6982689820462376, NaN, NaN],
+            ['cos', [21 * Math.SQRT1_2], 'cos(21*Math.SQRT1_2)', -0.6534063185820198, NaN, NaN, NaN],
+            ['cos', [17 * Math.LOG10E], 'cos(17*Math.LOG10E)', 0.4537557425982784, 0.45375574259827833, NaN, NaN],
+            ['cos', [2 * Math.LOG10E], 'cos(2*Math.LOG10E)', 0.6459044007438142, NaN, 0.6459044007438141, NaN],
+            ['cosh', [1], 'cosh(1)', 1.5430806348152437, NaN, NaN, NaN],
+            ['cosh', [Math.PI], 'cosh(Math.PI)', 11.591953275521519, NaN, NaN, NaN],
+            ['cosh', [492 * Math.LOG2E], 'cosh(492*Math.LOG2E)', 9.199870313877772e+307, 9.199870313877774e+307, NaN, NaN],
+            ['cosh', [502 * Math.SQRT2], 'cosh(502*Math.SQRT2)', 1.0469199669023138e+308, 1.046919966902314e+308, NaN, NaN],
+            ['expm1', [1], 'expm1(1)', 1.718281828459045, NaN, NaN, 1.7182818284590453],
+            ['expm1', [Math.PI], 'expm1(Math.PI)', 22.140692632779267, NaN, NaN, NaN],
+            ['exp', [n], `exp(${n})`, 1.1308844209474893, NaN, NaN, NaN],
+            ['exp', [Math.PI], 'exp(Math.PI)', 23.140692632779267, NaN, NaN, NaN],
+            ['hypot', [1, 2, 3, 4, 5, 6], 'hypot(1, 2, 3, 4, 5, 6)', 9.539392014169456, NaN, NaN, NaN],
+            ['hypot', [bigN, bigN], `hypot(${bigN}, ${bigN})`, 8.288489826731116e+38, 8.288489826731114e+38, NaN, NaN],
+            ['hypot', [2 * Math.E, -100], 'hypot(2*Math.E, -100)', 100.14767208675259, 100.14767208675258, NaN, NaN],
+            ['hypot', [6 * Math.PI, -100], 'hypot(6*Math.PI, -100)', 101.76102278593319, 101.7610227859332, NaN, NaN],
+            ['hypot', [2 * Math.LN2, -100], 'hypot(2*Math.LN2, -100)', 100.0096085986525, 100.00960859865252, NaN, NaN],
+            ['hypot', [Math.LOG2E, -100], 'hypot(Math.LOG2E, -100)', 100.01040630344929, 100.01040630344927, NaN, NaN],
+            ['hypot', [Math.SQRT2, -100], 'hypot(Math.SQRT2, -100)', 100.00999950004999, 100.00999950005, NaN, NaN],
+            ['hypot', [Math.SQRT1_2, -100], 'hypot(Math.SQRT1_2, -100)', 100.0024999687508, 100.00249996875078, NaN, NaN],
+            ['hypot', [2 * Math.LOG10E, -100], 'hypot(2*Math.LOG10E, -100)', 100.00377216279416, 100.00377216279418, NaN, NaN],
+            ['log', [n], `log(${n})`, -2.0955709236097197, NaN, NaN, NaN],
+            ['log', [Math.PI], 'log(Math.PI)', 1.1447298858494002, NaN, NaN, NaN],
+            ['log1p', [n], `log1p(${n})`, 0.11600367575630613, NaN, NaN, NaN],
+            ['log1p', [Math.PI], 'log1p(Math.PI)', 1.4210804127942926, NaN, NaN, NaN],
+            ['log10', [n], `log10(${n})`, -0.9100948885606021, NaN, NaN, NaN],
+            ['log10', [Math.PI], 'log10(Math.PI)', 0.4971498726941338, 0.49714987269413385, NaN, NaN],
+            ['log10', [Math.E], 'log10(Math.E)', 0.4342944819032518, NaN, NaN, NaN],
+            ['log10', [34 * Math.E], 'log10(34*Math.E)', 1.9657733989455068, 1.965773398945507, NaN, NaN],
+            ['log10', [Math.LN2], 'log10(Math.LN2)', -0.1591745389548616, NaN, NaN, NaN],
+            ['log10', [11 * Math.LN2], 'log10(11*Math.LN2)', 0.8822181462033634, 0.8822181462033635, NaN, NaN],
+            ['log10', [Math.LOG2E], 'log10(Math.LOG2E)', 0.15917453895486158, NaN, NaN, NaN],
+            ['log10', [43 * Math.LOG2E], 'log10(43*Math.LOG2E)', 1.792642994534448, 1.7926429945344482, NaN, NaN],
+            ['log10', [Math.LOG10E], 'log10(Math.LOG10E)', -0.36221568869946325, NaN, NaN, NaN],
+            ['log10', [7 * Math.LOG10E], 'log10(7*Math.LOG10E)', 0.4828823513147936, 0.48288235131479357, NaN, NaN],
+            ['log10', [Math.SQRT1_2], 'log10(Math.SQRT1_2)', -0.15051499783199057, NaN, NaN, NaN],
+            ['log10', [2 * Math.SQRT1_2], 'log10(2*Math.SQRT1_2)', 0.1505149978319906, 0.15051499783199063, NaN, NaN],
+            ['log10', [Math.SQRT2], 'log10(Math.SQRT2)', 0.1505149978319906, 0.15051499783199063, NaN, NaN],
+            ['sin', [bigN], `sin(${bigN})`, 0.994076732536068, NaN, -0.20876350121720488, NaN],
+            ['sin', [Math.PI], 'sin(Math.PI)', 1.2246467991473532e-16, NaN, 1.2246063538223773e-16, NaN],
+            ['sin', [39 * Math.E], 'sin(39*Math.E)', -0.7181630308570677, -0.7181630308570678, NaN, NaN],
+            ['sin', [35 * Math.LN2], 'sin(35*Math.LN2)', -0.7659964138980511, -0.765996413898051, NaN, NaN],
+            ['sin', [110 * Math.LOG2E], 'sin(110*Math.LOG2E)', 0.9989410140273756, 0.9989410140273757, NaN, NaN],
+            ['sin', [7 * Math.LOG10E], 'sin(7*Math.LOG10E)', 0.10135692924965616, 0.10135692924965614, NaN, NaN],
+            ['sin', [35 * Math.SQRT1_2], 'sin(35*Math.SQRT1_2)', -0.3746357547858202, -0.37463575478582023, NaN, NaN],
+            ['sin', [21 * Math.SQRT2], 'sin(21*Math.SQRT2)', -0.9892668187780498, -0.9892668187780497, NaN, NaN],
+            ['sinh', [1], 'sinh(1)', 1.1752011936438014, NaN, NaN, NaN],
+            ['sinh', [Math.PI], 'sinh(Math.PI)', 11.548739357257748, NaN, NaN, 11.548739357257746],
+            ['sinh', [Math.E], 'sinh(Math.E)', 7.544137102816975, NaN, NaN, NaN],
+            ['sinh', [Math.LN2], 'sinh(Math.LN2)', 0.75, NaN, NaN, NaN],
+            ['sinh', [Math.LOG2E], 'sinh(Math.LOG2E)', 1.9978980091062795, NaN, NaN, NaN],
+            ['sinh', [492 * Math.LOG2E], 'sinh(492*Math.LOG2E)', 9.199870313877772e+307, 9.199870313877774e+307, NaN, NaN],
+            ['sinh', [Math.LOG10E], 'sinh(Math.LOG10E)', 0.44807597941469024, NaN, NaN, NaN],
+            ['sinh', [Math.SQRT1_2], 'sinh(Math.SQRT1_2)', 0.7675231451261164, NaN, NaN, NaN],
+            ['sinh', [Math.SQRT2], 'sinh(Math.SQRT2)', 1.935066822174357, NaN, NaN, 1.9350668221743568],
+            ['sinh', [502 * Math.SQRT2], 'sinh(502*Math.SQRT2)', 1.0469199669023138e+308, 1.046919966902314e+308, NaN, NaN],
+            ['sqrt', [n], `sqrt(${n})`, 0.3507135583350036, NaN, NaN, NaN],
+            ['sqrt', [Math.PI], 'sqrt(Math.PI)', 1.7724538509055159, NaN, NaN, NaN],
+            ['tan', [-1e308], 'tan(-1e308)', 0.5086861259107568, NaN, NaN, 0.5086861259107567],
+            ['tan', [Math.PI], 'tan(Math.PI)', -1.2246467991473532e-16, NaN, NaN, NaN],
+            ['tan', [6 * Math.E], 'tan(6*Math.E)', 0.6866761546452431, 0.686676154645243, NaN, NaN],
+            ['tan', [6 * Math.LN2], 'tan(6*Math.LN2)', 1.6182817135715877, 1.618281713571588, NaN, 1.6182817135715875],
+            ['tan', [10 * Math.LOG2E], 'tan(10*Math.LOG2E)', -3.3537128705376014, -3.353712870537601, NaN, -3.353712870537602],
+            ['tan', [17 * Math.SQRT2], 'tan(17*Math.SQRT2)', -1.9222955461799982, -1.922295546179998, NaN, NaN],
+            ['tan', [34 * Math.SQRT1_2], 'tan(34*Math.SQRT1_2)', -1.9222955461799982, -1.922295546179998, NaN, NaN],
+            ['tan', [10 * Math.LOG10E], 'tan(10*Math.LOG10E)', 2.5824856130712432, 2.5824856130712437, NaN, NaN],
+            ['tanh', [n], `tanh(${n})`, 0.12238344189440875, NaN, NaN, 0.12238344189440876],
+            ['tanh', [Math.PI], 'tanh(Math.PI)', 0.99627207622075, NaN, NaN, NaN],
+            ['pow', [n, -100], `pow(${n}, -100)`, 1.022089333584519e+91, 1.0220893335845176e+91, NaN, NaN],
+            ['pow', [Math.PI, -100], 'pow(Math.PI, -100)', 1.9275814160560204e-50, 1.9275814160560185e-50, NaN, 1.9275814160560206e-50],
+            ['pow', [Math.E, -100], 'pow(Math.E, -100)', 3.7200759760208555e-44, 3.720075976020851e-44, NaN, NaN],
+            ['pow', [Math.LN2, -100], 'pow(Math.LN2, -100)', 8269017203802394, 8269017203802410, NaN, NaN],
+            ['pow', [Math.LN10, -100], 'pow(Math.LN10, -100)', 6.003867926738829e-37, 6.003867926738811e-37, NaN, NaN],
+            ['pow', [Math.LOG2E, -100], 'pow(Math.LOG2E, -100)', 1.20933355845501e-16, 1.2093335584550061e-16, NaN, NaN],
+            ['pow', [Math.LOG10E, -100], 'pow(Math.LOG10E, -100)', 1.6655929347585958e+36, 1.665592934758592e+36, NaN, 1.6655929347585955e+36],
+            ['pow', [Math.SQRT1_2, -100], 'pow(Math.SQRT1_2, -100)', 1125899906842616.2, 1125899906842611.5, NaN, NaN],
+            ['pow', [Math.SQRT2, -100], 'pow(Math.SQRT2, -100)', 8.881784197001191e-16, 8.881784197001154e-16, NaN, NaN],
+            ['polyfill', [2e-3 ** -100], 'polyfill pow(2e-3, -100)', 7.888609052210102e+269, 7.888609052210126e+269, NaN, NaN],
+        ];
+        const data = {};
+        fns.forEach((fn) => {
+            data[fn[2]] = attempt(() => {
+                // @ts-ignore
+                const result = fn[0] != 'polyfill' ? Math[fn[0]](...fn[1]) : fn[1];
+                const chrome = result == fn[3];
+                const firefox = fn[4] ? result == fn[4] : false;
+                const torBrowser = fn[5] ? result == fn[5] : false;
+                const safari = fn[6] ? result == fn[6] : false;
+                return { result, chrome, firefox, torBrowser, safari };
+            });
+        });
+        logTestResult({ time: timer.stop(), test: 'math', passed: true });
+        return { data, lied };
+    }
+    catch (error) {
+        logTestResult({ test: 'math', passed: false });
+        captureError(error);
+        return;
+    }
+}
+function mathsHTML(fp) {
+    if (!fp.maths) {
+        return `
+		<div class="col-six undefined">
+			<strong>Math</strong>
+			<div>results: ${HTMLNote.Blocked}</div>
+			<div>
+				<div>${HTMLNote.Blocked}</div>
+			</div>
+
+		</div>`;
+    }
+    const { maths: { data, $hash, lied, }, } = fp;
+    const header = `
+	<style>
+		.math-chromium,
+		.math-firefox,
+		.math-tor-browser,
+		.math-safari,
+		.math-blank-false {
+			padding: 2px 8px;
+		}
+		.math-chromium {
+			background: #657fca26;
+		}
+		.math-firefox {
+			background: #657fca54;
+		}
+		.math-tor-browser {
+			background: #ca65b424;
+		}
+		.math-safari {
+			background: #ca65b459;
+		}
+	</style>
+	<div>
+	<br><span class="math-chromium">C - Chromium</span>
+	<br><span class="math-firefox">F - Firefox</span>
+	<br><span class="math-tor-browser">T - Tor Browser</span>
+	<br><span class="math-safari">S - Safari</span>
+	</div>`;
+    const results = Object.keys(data).map((key) => {
+        const value = data[key];
+        const { chrome, firefox, torBrowser, safari } = value;
+        return `
+		${chrome ? '<span class="math-chromium">C</span>' : '<span class="math-blank-false">-</span>'}${firefox ? '<span class="math-firefox">F</span>' : '<span class="math-blank-false">-</span>'}${torBrowser ? '<span class="math-tor-browser">T</span>' : '<span class="math-blank-false">-</span>'}${safari ? '<span class="math-safari">S</span>' : '<span class="math-blank-false">-</span>'} ${key}`;
+    });
+    return `
+	<div class="relative col-six${lied ? ' rejected' : ''}">
+		<span class="aside-note">${performanceLogger.getLog().math}</span>
+		<strong>Math</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+		<div>results: ${!data ? HTMLNote.Blocked :
+        modal('creep-maths', header + results.join('<br>'))}</div>
+		<div class="blurred" id="math-samples">
+			<div>0% of engine</div>
+		</div>
+	</div>
+	`;
+}
+
+// inspired by
+// - https://privacycheck.sec.lrz.de/active/fp_cpt/fp_can_play_type.html
+// - https://arkenfox.github.io/TZP
+const getMimeTypeShortList = () => [
+    'audio/ogg; codecs="vorbis"',
+    'audio/mpeg',
+    'audio/mpegurl',
+    'audio/wav; codecs="1"',
+    'audio/x-m4a',
+    'audio/aac',
+    'video/ogg; codecs="theora"',
+    'video/quicktime',
+    'video/mp4; codecs="avc1.42E01E"',
+    'video/webm; codecs="vp8"',
+    'video/webm; codecs="vp9"',
+    'video/x-matroska',
+].sort();
+async function getMedia() {
+    const getMimeTypes = () => {
+        try {
+            const mimeTypes = getMimeTypeShortList();
+            const videoEl = document.createElement('video');
+            const audioEl = new Audio();
+            const isMediaRecorderSupported = 'MediaRecorder' in window;
+            const types = mimeTypes.reduce((acc, type) => {
+                const data = {
+                    mimeType: type,
+                    audioPlayType: audioEl.canPlayType(type),
+                    videoPlayType: videoEl.canPlayType(type),
+                    mediaSource: MediaSource.isTypeSupported(type),
+                    mediaRecorder: isMediaRecorderSupported ? MediaRecorder.isTypeSupported(type) : false,
+                };
+                if (!data.audioPlayType && !data.videoPlayType && !data.mediaSource && !data.mediaRecorder) {
+                    return acc;
+                }
+                // @ts-ignore
+                acc.push(data);
+                return acc;
+            }, []);
+            return types;
+        }
+        catch (error) {
+            return;
+        }
+    };
+    try {
+        const timer = createTimer();
+        timer.start();
+        const mimeTypes = getMimeTypes();
+        if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+            logTestResult({ time: timer.stop(), test: 'media', passed: true });
+            return { mediaDevices: null, mimeTypes };
+        }
+        return navigator.mediaDevices.enumerateDevices().then((devices) => {
+            logTestResult({ time: timer.stop(), test: 'media', passed: true });
+            return {
+                mediaDevices: devices.map((device) => device.kind).sort(),
+                mimeTypes,
+            };
+        }).catch((error) => {
+            console.error(error);
+            logTestResult({ time: timer.stop(), test: 'media', passed: true });
+            return { mediaDevices: null, mimeTypes };
+        });
+    }
+    catch (error) {
+        logTestResult({ test: 'media', passed: false });
+        captureError(error);
+        return;
+    }
+}
+function mediaHTML(fp) {
+    if (!fp.media) {
+        return `
+		<div class="col-four undefined">
+			<strong>Media</strong>
+			<div>mimes (0): ${HTMLNote.BLOCKED}</div>
+			<div>devices (0): ${HTMLNote.BLOCKED}</div>
+			<div class="block-text">${HTMLNote.BLOCKED}</div>
+		</div>`;
+    }
+    const { media: { mediaDevices, mimeTypes, $hash, }, } = fp;
+    const deviceMap = {
+        'audioinput': 'mic',
+        'audiooutput': 'audio',
+        'videoinput': 'webcam',
+    };
+    const header = `
+	<style>
+		.audiop, .videop, .medias, .mediar, .blank-false {
+			padding: 2px 8px;
+		}
+		.audiop {
+			background: #657fca26;
+		}
+		.medias {
+			background: #657fca54;
+		}
+		.videop {
+			background: #ca65b424;
+		}
+		.mediar {
+			background: #ca65b459;
+		}
+		.audiop.pb, .videop.pb, .guide.pr {
+			color: #8f8ff1 !important;
+		}
+		.audiop.mb, .videop.mb, .guide.mb {
+			color: #98cee4 !important;
+		}
+		.medias.tr, .mediar.tr, .guide.tr {
+			color: #c778ba !important;
+		}
+	</style>
+	<div>
+	<br><span class="audiop">audioPlayType</span>
+	<br><span class="videop">videoPlayType</span>
+	<br><span class="medias">mediaSource</span>
+	<br><span class="mediar">mediaRecorder</span>
+	<br><span class="guide pr">P (Probably)</span>
+	<br><span class="guide mb">M (Maybe)</span>
+	<br><span class="guide tr">T (True)</span>
+	</div>`;
+    const invalidMimeTypes = !mimeTypes || !mimeTypes.length;
+    const mimes = invalidMimeTypes ? undefined : mimeTypes.map((type) => {
+        const { mimeType, audioPlayType, videoPlayType, mediaSource, mediaRecorder } = type;
+        return `
+			${audioPlayType == 'probably' ? '<span class="audiop pb">P</span>' : audioPlayType == 'maybe' ? '<span class="audiop mb">M</span>' : '<span class="blank-false">-</span>'}${videoPlayType == 'probably' ? '<span class="videop pb">P</span>' : videoPlayType == 'maybe' ? '<span class="videop mb">M</span>' : '<span class="blank-false">-</span>'}${mediaSource ? '<span class="medias tr">T</span>' : '<span class="blank-false">-</span>'}${mediaRecorder ? '<span class="mediar tr">T</span>' : '<span class="blank-false">-</span>'}: ${mimeType}
+		`;
+    });
+    const mimesListLen = getMimeTypeShortList().length;
+    const replaceIndex = ({ list, index, replacement }) => [
+        ...list.slice(0, index),
+        replacement,
+        ...list.slice(index + 1),
+    ];
+    const mediaDevicesByType = (mediaDevices || []).reduce((acc, x) => {
+        const deviceType = deviceMap[x] || x;
+        if (!acc.includes(deviceType)) {
+            return (acc = [...acc, deviceType]);
+        }
+        else if (!deviceType.includes('dual') && (acc.filter((x) => x == deviceType) || []).length == 1) {
+            return (acc = replaceIndex({
+                list: acc,
+                index: acc.indexOf(deviceType),
+                replacement: `dual ${deviceType}`,
+            }));
+        }
+        return (acc = [...acc, deviceType]);
+    }, []);
+    return `
+	<div class="relative col-four">
+		<span class="aside-note">${performanceLogger.getLog().media}</span>
+		<strong>Media</strong><span class="hash">${hashSlice($hash)}</span>
+		<div class="help" title="HTMLMediaElement.canPlayType()\nMediaRecorder.isTypeSupported()\nMediaSource.isTypeSupported()">mimes (${count(mimeTypes)}/${mimesListLen}): ${invalidMimeTypes ? HTMLNote.BLOCKED :
+        modal('creep-media-mimeTypes', header + mimes.join('<br>'), hashMini(mimeTypes))}</div>
+		<div class="help" title="MediaDevices.enumerateDevices()\nMediaDeviceInfo.kind">devices (${count(mediaDevices)}):</div>
+		<div class="block-text">
+			${!mediaDevices || !mediaDevices.length ? HTMLNote.BLOCKED :
+        mediaDevicesByType.join(', ')}
+		</div>
+	</div>
+	`;
+}
+
+// special thanks to https://arh.antoinevastel.com for inspiration
+async function getNavigator() {
+    try {
+        const timer = createTimer();
+        await queueEvent(timer);
+        let lied = (lieProps['Navigator.appVersion'] ||
+            lieProps['Navigator.deviceMemory'] ||
+            lieProps['Navigator.doNotTrack'] ||
+            lieProps['Navigator.hardwareConcurrency'] ||
+            lieProps['Navigator.language'] ||
+            lieProps['Navigator.languages'] ||
+            lieProps['Navigator.maxTouchPoints'] ||
+            lieProps['Navigator.oscpu'] ||
+            lieProps['Navigator.platform'] ||
+            lieProps['Navigator.userAgent'] ||
+            lieProps['Navigator.vendor'] ||
+            lieProps['Navigator.plugins'] ||
+            lieProps['Navigator.mimeTypes']) || false;
+        const credibleUserAgent = ('chrome' in window ? navigator.userAgent.includes(navigator.appVersion) : true);
+        const data = {
+            platform: attempt(() => {
+                const { platform } = navigator;
+                const systems = ['win', 'linux', 'mac', 'arm', 'pike', 'linux', 'iphone', 'ipad', 'ipod', 'android', 'x11'];
+                const trusted = typeof platform == 'string' && systems.filter((val) => platform.toLowerCase().includes(val))[0];
+                if (!trusted) {
+                    sendToTrash(`platform`, `${platform} is unusual`);
+                }
+                // user agent os lie
+                const { userAgent } = navigator;
+                const userAgentOS = (
+                // order is important
+                /win(dows|16|32|64|95|98|nt)|wow64/ig.test(userAgent) ? 'Windows' :
+                    /android|linux|cros/ig.test(userAgent) ? 'Linux' :
+                        /(i(os|p(ad|hone|od)))|mac/ig.test(userAgent) ? 'Apple' :
+                            'Other');
+                const platformOS = (
+                // order is important
+                /win/ig.test(platform) ? 'Windows' :
+                    /android|arm|linux/ig.test(platform) ? 'Linux' :
+                        /(i(os|p(ad|hone|od)))|mac/ig.test(platform) ? 'Apple' :
+                            'Other');
+                const osLie = userAgentOS != platformOS;
+                if (osLie) {
+                    lied = true;
+                    documentLie(`Navigator.platform`, `${platformOS} platform and ${userAgentOS} user agent do not match`);
+                }
+                return platform;
+            }),
+            system: attempt(() => getOS(navigator.userAgent), 'userAgent system failed'),
+            userAgentParsed: await attempt(async () => {
+                const reportedUserAgent = caniuse(() => navigator.userAgent);
+                const reportedSystem = getOS(reportedUserAgent);
+                const isBrave = await braveBrowser();
+                const report = decryptUserAgent({
+                    ua: reportedUserAgent,
+                    os: reportedSystem,
+                    isBrave,
+                });
+                return report;
+            }),
+            device: attempt(() => getUserAgentPlatform({ userAgent: navigator.userAgent }), 'userAgent device failed'),
+            userAgent: attempt(() => {
+                const { userAgent } = navigator;
+                if (!credibleUserAgent) {
+                    sendToTrash('userAgent', `${userAgent} does not match appVersion`);
+                }
+                if (/\s{2,}|^\s|\s$/g.test(userAgent)) {
+                    sendToTrash('userAgent', `extra spaces detected`);
+                }
+                const gibbers = gibberish(userAgent);
+                if (!!gibbers.length) {
+                    sendToTrash(`userAgent is gibberish`, userAgent);
+                }
+                return userAgent.trim().replace(/\s{2,}/, ' ');
+            }, 'userAgent failed'),
+            uaPostReduction: isUAPostReduction((navigator || {}).userAgent),
+            appVersion: attempt(() => {
+                const { appVersion } = navigator;
+                if (!credibleUserAgent) {
+                    sendToTrash('appVersion', `${appVersion} does not match userAgent`);
+                }
+                if ('appVersion' in navigator && !appVersion) {
+                    sendToTrash('appVersion', 'Living Standard property returned falsy value');
+                }
+                if (/\s{2,}|^\s|\s$/g.test(appVersion)) {
+                    sendToTrash('appVersion', `extra spaces detected`);
+                }
+                return appVersion.trim().replace(/\s{2,}/, ' ');
+            }, 'appVersion failed'),
+            deviceMemory: attempt(() => {
+                if (!('deviceMemory' in navigator)) {
+                    return undefined;
+                }
+                // @ts-ignore
+                const { deviceMemory } = navigator;
+                const trusted = {
+                    '0.25': true,
+                    '0.5': true,
+                    '1': true,
+                    '2': true,
+                    '4': true,
+                    '8': true,
+                };
+                if (!trusted[deviceMemory]) {
+                    sendToTrash('deviceMemory', `${deviceMemory} is not a valid value [0.25, 0.5, 1, 2, 4, 8]`);
+                }
+                return deviceMemory;
+            }, 'deviceMemory failed'),
+            doNotTrack: attempt(() => {
+                const { doNotTrack } = navigator;
+                const trusted = {
+                    '1': !0,
+                    'true': !0,
+                    'yes': !0,
+                    '0': !0,
+                    'false': !0,
+                    'no': !0,
+                    'unspecified': !0,
+                    'null': !0,
+                    'undefined': !0,
+                };
+                if (!trusted[doNotTrack]) {
+                    sendToTrash('doNotTrack - unusual result', doNotTrack);
+                }
+                return doNotTrack;
+            }, 'doNotTrack failed'),
+            globalPrivacyControl: attempt(() => {
+                if (!('globalPrivacyControl' in navigator)) {
+                    return undefined;
+                }
+                // @ts-ignore
+                const { globalPrivacyControl } = navigator;
+                const trusted = {
+                    '1': !0,
+                    'true': !0,
+                    'yes': !0,
+                    '0': !0,
+                    'false': !0,
+                    'no': !0,
+                    'unspecified': !0,
+                    'null': !0,
+                    'undefined': !0,
+                };
+                if (!trusted[globalPrivacyControl]) {
+                    sendToTrash('globalPrivacyControl - unusual result', globalPrivacyControl);
+                }
+                return globalPrivacyControl;
+            }, 'globalPrivacyControl failed'),
+            hardwareConcurrency: attempt(() => {
+                if (!('hardwareConcurrency' in navigator)) {
+                    return undefined;
+                }
+                return navigator.hardwareConcurrency;
+            }, 'hardwareConcurrency failed'),
+            language: attempt(() => {
+                const { language, languages } = navigator;
+                const lang = ('' + language).split(',')[0];
+                let currencyLanguage;
+                try {
+                    currencyLanguage = (1).toLocaleString((lang || undefined), {
+                        style: 'currency',
+                        currency: 'USD',
+                        currencyDisplay: 'name',
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                    });
+                }
+                catch (e) { }
+                const currencyLocale = (1).toLocaleString(undefined, {
+                    style: 'currency',
+                    currency: 'USD',
+                    currencyDisplay: 'name',
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0,
+                });
+                const languageLie = currencyLocale != currencyLanguage;
+                if (languageLie) {
+                    lied = true;
+                    documentLie(`Navigator.language`, `${currencyLocale} locale and ${currencyLanguage} language do not match`);
+                }
+                if (language && languages) {
+                    // @ts-ignore
+                    const lang = /^.{0,2}/g.exec(language)[0];
+                    // @ts-ignore
+                    const langs = /^.{0,2}/g.exec(languages[0])[0];
+                    if (langs != lang) {
+                        sendToTrash('language/languages', `${[language, languages].join(' ')} mismatch`);
+                    }
+                    return `${languages.join(', ')} (${language})`;
+                }
+                return `${language} ${languages}`;
+            }, 'language(s) failed'),
+            maxTouchPoints: attempt(() => {
+                if (!('maxTouchPoints' in navigator)) {
+                    return null;
+                }
+                return navigator.maxTouchPoints;
+            }, 'maxTouchPoints failed'),
+            vendor: attempt(() => navigator.vendor, 'vendor failed'),
+            mimeTypes: attempt(() => {
+                const { mimeTypes } = navigator;
+                return mimeTypes ? [...mimeTypes].map((m) => m.type) : [];
+            }, 'mimeTypes failed'),
+            // @ts-ignore
+            oscpu: attempt(() => navigator.oscpu, 'oscpu failed'),
+            plugins: attempt(() => {
+                // https://html.spec.whatwg.org/multipage/system-state.html#pdf-viewing-support
+                const { plugins } = navigator;
+                if (!(plugins instanceof PluginArray)) {
+                    return;
+                }
+                const response = plugins ? [...plugins]
+                    .map((p) => ({
+                    name: p.name,
+                    description: p.description,
+                    filename: p.filename,
+                    // @ts-ignore
+                    version: p.version,
+                })) : [];
+                const { lies } = getPluginLies(plugins, navigator.mimeTypes);
+                if (lies.length) {
+                    lied = true;
+                    lies.forEach((lie) => {
+                        return documentLie(`Navigator.plugins`, lie);
+                    });
+                }
+                if (response.length) {
+                    response.forEach((plugin) => {
+                        const { name, description } = plugin;
+                        const nameGibbers = gibberish(name);
+                        const descriptionGibbers = gibberish(description);
+                        if (nameGibbers.length) {
+                            sendToTrash(`plugin name is gibberish`, name);
+                        }
+                        if (descriptionGibbers.length) {
+                            sendToTrash(`plugin description is gibberish`, description);
+                        }
+                        return;
+                    });
+                }
+                return response;
+            }, 'plugins failed'),
+            properties: attempt(() => {
+                const keys = Object.keys(Object.getPrototypeOf(navigator));
+                return keys;
+            }, 'navigator keys failed'),
+        };
+        const getUserAgentData = () => attempt(() => {
+            // @ts-ignore
+            if (!navigator.userAgentData ||
+                // @ts-ignore
+                !navigator.userAgentData.getHighEntropyValues) {
+                return;
+            }
+            // @ts-ignore
+            return navigator.userAgentData.getHighEntropyValues(['platform', 'platformVersion', 'architecture', 'bitness', 'model', 'uaFullVersion']).then((data) => {
+                // @ts-ignore
+                const { brands, mobile } = navigator.userAgentData || {};
+                const compressedBrands = (brands, captureVersion = false) => brands
+                    .filter((obj) => !/Not/.test(obj.brand)).map((obj) => `${obj.brand}${captureVersion ? ` ${obj.version}` : ''}`);
+                const removeChromium = (brands) => (brands.length > 1 ? brands.filter((brand) => !/Chromium/.test(brand)) : brands);
+                // compress brands
+                if (!data.brands) {
+                    data.brands = brands;
+                }
+                data.brandsVersion = compressedBrands(data.brands, true);
+                data.brands = compressedBrands(data.brands);
+                data.brandsVersion = removeChromium(data.brandsVersion);
+                data.brands = removeChromium(data.brands);
+                if (!data.mobile) {
+                    data.mobile = mobile;
+                }
+                const dataSorted = Object.keys(data).sort().reduce((acc, key) => {
+                    acc[key] = data[key];
+                    return acc;
+                }, {});
+                return dataSorted;
+            });
+        }, 'userAgentData failed');
+        const getBluetoothAvailability = () => attempt(() => {
+            if (!('bluetooth' in navigator) ||
+                // @ts-ignore
+                !navigator.bluetooth ||
+                // @ts-ignore
+                !navigator.bluetooth.getAvailability) {
+                return undefined;
+            }
+            // @ts-ignore
+            return navigator.bluetooth.getAvailability();
+        }, 'bluetoothAvailability failed');
+        const getPermissions = () => attempt(() => {
+            const getPermissionState = (name) => navigator.permissions.query({ name })
+                .then((res) => ({ name, state: res.state }))
+                .catch((error) => ({ name, state: 'unknown' }));
+            // https://w3c.github.io/permissions/#permission-registry
+            const permissions = !('permissions' in navigator) ? undefined : Promise.all([
+                getPermissionState('accelerometer'),
+                getPermissionState('ambient-light-sensor'),
+                getPermissionState('background-fetch'),
+                getPermissionState('background-sync'),
+                getPermissionState('bluetooth'),
+                getPermissionState('camera'),
+                getPermissionState('clipboard'),
+                getPermissionState('device-info'),
+                getPermissionState('display-capture'),
+                getPermissionState('gamepad'),
+                getPermissionState('geolocation'),
+                getPermissionState('gyroscope'),
+                getPermissionState('magnetometer'),
+                getPermissionState('microphone'),
+                getPermissionState('midi'),
+                getPermissionState('nfc'),
+                getPermissionState('notifications'),
+                getPermissionState('persistent-storage'),
+                getPermissionState('push'),
+                getPermissionState('screen-wake-lock'),
+                getPermissionState('speaker'),
+                getPermissionState('speaker-selection'),
+            ]).then((permissions) => permissions.reduce((acc, perm) => {
+                const { state, name } = perm || {};
+                if (acc[state]) {
+                    acc[state].push(name);
+                    return acc;
+                }
+                acc[state] = [name];
+                return acc;
+            }, {})).catch((error) => console.error(error));
+            return permissions;
+        }, 'permissions failed');
+        const getWebgpu = () => attempt(() => {
+            if (!('gpu' in navigator)) {
+                return;
+            }
+            // @ts-ignore
+            return navigator.gpu.requestAdapter().then(({ limits, features }) => {
+                return {
+                    features: [...features.values()],
+                    limits: ((limits) => {
+                        const data = {};
+                        // eslint-disable-next-line guard-for-in
+                        for (const prop in limits) {
+                            data[prop] = limits[prop];
+                        }
+                        return data;
+                    })(limits),
+                };
+            });
+        }, 'webgpu failed');
+        await queueEvent(timer);
+        return Promise.all([
+            getUserAgentData(),
+            getBluetoothAvailability(),
+            getPermissions(),
+            getWebgpu(),
+        ]).then(([userAgentData, bluetoothAvailability, permissions, webgpu,]) => {
+            logTestResult({ time: timer.stop(), test: 'navigator', passed: true });
+            return Object.assign(Object.assign({}, data), { userAgentData,
+                bluetoothAvailability,
+                permissions,
+                webgpu,
+                lied });
+        }).catch((error) => {
+            console.error(error);
+            logTestResult({ time: timer.stop(), test: 'navigator', passed: true });
+            return Object.assign(Object.assign({}, data), { lied });
+        });
+    }
+    catch (error) {
+        logTestResult({ test: 'navigator', passed: false });
+        captureError(error, 'Navigator failed or blocked by client');
+        return;
+    }
+}
+function navigatorHTML(fp) {
+    if (!fp.navigator) {
+        return `
+		<div class="col-six undefined">
+			<strong>Navigator</strong>
+			<div>properties (0): ${HTMLNote.BLOCKED}</div>
+			<div>dnt: ${HTMLNote.BLOCKED}</div>
+			<div>gpc:${HTMLNote.BLOCKED}</div>
+			<div>lang: ${HTMLNote.BLOCKED}</div>
+			<div>mimeTypes (0): ${HTMLNote.BLOCKED}</div>
+			<div>permissions (0): ${HTMLNote.BLOCKED}</div>
+			<div>plugins (0): ${HTMLNote.BLOCKED}</div>
+			<div>vendor: ${HTMLNote.BLOCKED}</div>
+			<div>webgpu: ${HTMLNote.BLOCKED}</div>
+			<div>userAgentData:</div>
+			<div class="block-text">${HTMLNote.BLOCKED}</div>
+		</div>
+		<div class="col-six">
+			<div>device:</div>
+			<div class="block-text">${HTMLNote.BLOCKED}</div>
+			<div>ua parsed: ${HTMLNote.BLOCKED}</div>
+			<div>userAgent:</div>
+			<div class="block-text">${HTMLNote.BLOCKED}</div>
+			<div>appVersion:</div>
+			<div class="block-text">${HTMLNote.BLOCKED}</div>
+		</div>`;
+    }
+    const { navigator: { $hash, appVersion, deviceMemory, doNotTrack, globalPrivacyControl, hardwareConcurrency, language, maxTouchPoints, mimeTypes, oscpu, permissions, platform, plugins, properties, system, device, userAgent, uaPostReduction, userAgentData, userAgentParsed, vendor, bluetoothAvailability, webgpu, lied, }, } = fp;
+    const id = 'creep-navigator';
+    const blocked = {
+        ['null']: !0,
+        ['undefined']: !0,
+        ['']: !0,
+    };
+    const permissionsKeys = Object.keys(permissions || {});
+    const permissionsGranted = (permissions && permissions.granted ? permissions.granted.length : 0);
+    return `
+	<span class="time">${performanceLogger.getLog().navigator}</span>
+	<div class="col-six${lied ? ' rejected' : ''}">
+		<strong>Navigator</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+		<div>properties (${count(properties)}): ${modal(`${id}-properties`, properties.join(', '), hashMini(properties))}</div>
+		<div class="help" title="Navigator.doNotTrack">dnt: ${'' + doNotTrack}</div>
+		<div class="help" title="Navigator.globalPrivacyControl">gpc: ${'' + globalPrivacyControl == 'undefined' ? HTMLNote.UNSUPPORTED : '' + globalPrivacyControl}</div>
+		<div class="help" title="Navigator.language\nNavigator.languages">lang: ${!blocked[language] ? language : HTMLNote.BLOCKED}</div>
+		<div>mimeTypes (${count(mimeTypes)}): ${!blocked['' + mimeTypes] ?
+        modal(`${id}-mimeTypes`, mimeTypes.join('<br>'), hashMini(mimeTypes)) :
+        HTMLNote.BLOCKED}</div>
+		<div class="help" title="Permissions.query()">permissions (${'' + permissionsGranted}): ${!permissions || !permissionsKeys ? HTMLNote.UNSUPPORTED : modal('creep-permissions', permissionsKeys.map((key) => `<div class="perm perm-${key}"><strong>${key}</strong>:<br>${permissions[key].join('<br>')}</div>`).join(''), hashMini(permissions))}</div>
+		<div>plugins (${count(plugins)}): ${!blocked['' + plugins] ?
+        modal(`${id}-plugins`, plugins.map((plugin) => plugin.name).join('<br>'), hashMini(plugins)) :
+        HTMLNote.BLOCKED}</div>
+		<div>vendor: ${!blocked[vendor] ? vendor : HTMLNote.BLOCKED}</div>
+		<div>webgpu: ${!webgpu ? HTMLNote.UNSUPPORTED :
+        modal(`${id}-webgpu`, ((webgpu) => {
+            const { limits, features } = webgpu;
+            return `
+					<div>
+						<strong>Features</strong><br>${features.join('<br>')}
+					</div>
+					<div>
+						<br><strong>Limits</strong><br>${Object.keys(limits).map((x) => `${x}: ${limits[x]}`).join('<br>')}
+					</div>
+					`;
+        })(webgpu), hashMini(webgpu))}</div>
+		<div>userAgentData:</div>
+		<div class="block-text help" title="Navigator.userAgentData\nNavigatorUAData.getHighEntropyValues()">
+			<div>
+			${((userAgentData) => {
+        const { architecture, bitness, brandsVersion, uaFullVersion, mobile, model, platformVersion, platform, } = userAgentData || {};
+        // @ts-ignore
+        const windowsRelease = computeWindowsRelease({ platform, platformVersion });
+        return !userAgentData ? HTMLNote.UNSUPPORTED : `
+					${(brandsVersion || []).join(',')}${uaFullVersion ? ` (${uaFullVersion})` : ''}
+					<br>${windowsRelease || `${platform} ${platformVersion}`} ${architecture ? `${architecture}${bitness ? `_${bitness}` : ''}` : ''}
+					${model ? `<br>${model}` : ''}
+					${mobile ? '<br>mobile' : ''}
+				`;
+    })(userAgentData)}
+			</div>
+		</div>
+	</div>
+	<div class="col-six${lied ? ' rejected' : ''}">
+		<div>device:</div>
+		<div class="block-text help" title="Navigator.deviceMemory\nNavigator.hardwareConcurrency\nNavigator.maxTouchPoints\nNavigator.oscpu\nNavigator.platform\nNavigator.userAgent\nBluetooth.getAvailability()">
+			${oscpu ? oscpu : ''}
+			${`${oscpu ? '<br>' : ''}${system}${platform ? ` (${platform})` : ''}`}
+			${device ? `<br>${device}` : HTMLNote.BLOCKED}${hardwareConcurrency && deviceMemory ? `<br>cores: ${hardwareConcurrency}, ram: ${deviceMemory}` :
+        hardwareConcurrency && !deviceMemory ? `<br>cores: ${hardwareConcurrency}` :
+            !hardwareConcurrency && deviceMemory ? `<br>ram: ${deviceMemory}` : ''}${typeof maxTouchPoints != 'undefined' ? `, touch: ${'' + maxTouchPoints}` : ''}${bluetoothAvailability ? `, bluetooth` : ''}
+		</div>
+		<div>ua parsed: ${userAgentParsed || HTMLNote.BLOCKED}</div>
+		<div class="relative">userAgent:${!uaPostReduction ? '' : `<span class="confidence-note">ua reduction</span>`}</div>
+		<div class="block-text">
+			<div>${userAgent || HTMLNote.BLOCKED}</div>
+		</div>
+		<div>appVersion:</div>
+		<div class="block-text">
+			<div>${appVersion || HTMLNote.BLOCKED}</div>
+		</div>
+	</div>
+	`;
+}
+
+function getPrediction({ hash, data }) {
+    const getBaseDeviceName = (devices) => {
+        // ex: find Android 10 in [Android 10, Android 10 Blah Blah]
+        return devices.find((a) => devices.filter((b) => b.includes(a)).length == devices.length);
+    };
+    let systems = [];
+    let devices = [];
+    let gpus = [];
+    const decrypted = Object.keys(data).find((key) => data[key].find((item) => {
+        if (!(item.id == hash)) {
+            return false;
+        }
+        devices = item.devices || [];
+        systems = item.systems || [];
+        gpus = item.gpus || [];
+        return true;
+    }));
+    const prediction = {
+        decrypted,
+        system: systems.length == 1 ? systems[0] : undefined,
+        device: (devices.length == 1 ? devices[0] : getBaseDeviceName(devices)),
+        gpu: gpus.length == 1 ? gpus[0] : undefined,
+    };
+    return prediction;
+}
+function renderPrediction({ decryptionData, crowdBlendingScore, bot = false, }) {
+    const { jsRuntime, jsEngine, htmlVersion, windowVersion, styleVersion, resistance, styleSystem, emojiSystem, domRectSystem, svgSystem, mimeTypesSystem, audioSystem, canvasSystem, canvasBlobSystem, canvasPaintSystem, canvasTextSystem, canvasEmojiSystem, textMetricsSystem, webglSystem, gpuSystem, gpuModelSystem, fontsSystem, voicesSystem, screenSystem, deviceOfTimezone, pendingReview, } = decryptionData;
+    const iconSet = new Set();
+    const getBlankIcons = () => `<span class="icon"></span><span class="icon"></span>`;
+    const htmlIcon = (cssClass) => `<span class="icon ${cssClass}"></span>`;
+    const getTemplate = ({ title, agent, showVersion = false }) => {
+        const { decrypted, system, device, score } = agent || {};
+        const browserIcon = (/edgios|edge/i.test(decrypted) ? iconSet.add('edge') && htmlIcon('edge') :
+            /brave/i.test(decrypted) ? iconSet.add('brave') && htmlIcon('brave') :
+                /vivaldi/i.test(decrypted) ? iconSet.add('vivaldi') && htmlIcon('vivaldi') :
+                    /duckduckgo/i.test(decrypted) ? iconSet.add('duckduckgo') && htmlIcon('duckduckgo') :
+                        /yandex/i.test(decrypted) ? iconSet.add('yandex') && htmlIcon('yandex') :
+                            /opera/i.test(decrypted) ? iconSet.add('opera') && htmlIcon('opera') :
+                                /crios|chrome/i.test(decrypted) ? iconSet.add('chrome') && htmlIcon('chrome') :
+                                    /tor browser/i.test(decrypted) ? iconSet.add('tor') && htmlIcon('tor') :
+                                        /palemoon/i.test(decrypted) ? iconSet.add('palemoon') && htmlIcon('palemoon') :
+                                            /fxios|firefox/i.test(decrypted) ? iconSet.add('firefox') && htmlIcon('firefox') :
+                                                /v8/i.test(decrypted) ? iconSet.add('v8') && htmlIcon('v8') :
+                                                    /gecko/i.test(decrypted) ? iconSet.add('gecko') && htmlIcon('gecko') :
+                                                        /goanna/i.test(decrypted) ? iconSet.add('goanna') && htmlIcon('goanna') :
+                                                            /spidermonkey/i.test(decrypted) ? iconSet.add('firefox') && htmlIcon('firefox') :
+                                                                /safari/i.test(decrypted) ? iconSet.add('safari') && htmlIcon('safari') :
+                                                                    /webkit|javascriptcore/i.test(decrypted) ? iconSet.add('webkit') && htmlIcon('webkit') :
+                                                                        /blink/i.test(decrypted) ? iconSet.add('blink') && htmlIcon('blink') : htmlIcon(''));
+        const systemIcon = (/chrome os/i.test(system) ? iconSet.add('cros') && htmlIcon('cros') :
+            /linux/i.test(system) ? iconSet.add('linux') && htmlIcon('linux') :
+                /android/i.test(system) ? iconSet.add('android') && htmlIcon('android') :
+                    /ipad|iphone|ipod|ios|mac|apple/i.test(system) ? iconSet.add('apple') && htmlIcon('apple') :
+                        /windows/i.test(system) ? iconSet.add('windows') && htmlIcon('windows') : htmlIcon(''));
+        const icons = [
+            systemIcon,
+            browserIcon,
+        ].join('');
+        const unknown = '' + [...new Set([decrypted, system, device])] == '';
+        // const renderBlankIfKnown = (unknown) => unknown ? ` ${HTMLNote.unknown}` : ''
+        const renderIfKnown = (unknown, decrypted) => unknown ? ` ${HTMLNote.UNKNOWN}` : `<span class="user-agent">${decrypted}</span>`;
+        const renderFailingScore = (title, score) => {
+            return (!score || (score > 36) ? title : `<span class="high-entropy">${title}</span>`);
+        };
+        return (device ? `<span class="help" title="${device}">
+				${renderFailingScore(`${icons}${title}`, score)}<span>*</span>
+			</span>` :
+            showVersion ? renderFailingScore(`${icons}${renderIfKnown(unknown, decrypted)}`, score) :
+                renderFailingScore(`${icons}${title}`, score));
+    };
+    const unknownHTML = (title) => `${getBlankIcons()}<span class="blocked-entropy">${title}</span>`;
+    const devices = new Set([
+        (jsRuntime || {}).device,
+        (emojiSystem || {}).device,
+        (domRectSystem || {}).device,
+        (svgSystem || {}).device,
+        (mimeTypesSystem || {}).device,
+        (audioSystem || {}).device,
+        (canvasSystem || {}).device,
+        (canvasBlobSystem || {}).device,
+        (canvasPaintSystem || {}).device,
+        (canvasTextSystem || {}).device,
+        (canvasEmojiSystem || {}).device,
+        (textMetricsSystem || {}).device,
+        (webglSystem || {}).device,
+        (gpuSystem || {}).device,
+        (gpuModelSystem || {}).device,
+        (fontsSystem || {}).device,
+        (voicesSystem || {}).device,
+        (screenSystem || {}).device,
+        (deviceOfTimezone || {}).device,
+    ]);
+    devices.delete(undefined);
+    const getBaseDeviceName = (devices) => {
+        return devices.find((a) => devices.filter((b) => b.includes(a)).length == devices.length);
+    };
+    const getRFPWindowOS = (devices) => {
+        // FF RFP is ingnored in samples data since it returns Windows 10
+        // So, if we have multiples versions of Windows, prefer the lowest then Windows 11
+        const windowsCoreRatio = devices.filter((x) => /windows/i.test(x)).length / devices.length;
+        const windowsCore = windowsCoreRatio > 0.5;
+        if (windowsCore) {
+            return (devices.includes('Windows 7 (64-bit)') ? 'Windows 7 (64-bit)' :
+                devices.includes('Windows 7') ? 'Windows 7' :
+                    devices.includes('Windows 8 (64-bit)') ? 'Windows 8 (64-bit)' :
+                        devices.includes('Windows 8') ? 'Windows 8' :
+                            devices.includes('Windows 8.1 (64-bit)') ? 'Windows 8.1 (64-bit)' :
+                                devices.includes('Windows 8.1') ? 'Windows 8.1' :
+                                    devices.includes('Windows 11 (64-bit)') ? 'Windows 11 (64-bit)' :
+                                        devices.includes('Windows 11') ? 'Windows 11' :
+                                            devices.includes('Windows 10 (64-bit)') ? 'Windows 10 (64-bit)' :
+                                                devices.includes('Windows 10') ? 'Windows 10' :
+                                                    undefined);
+        }
+        return undefined;
+    };
+    const deviceCollection = [...devices];
+    const deviceName = (getRFPWindowOS(deviceCollection) ||
+        getBaseDeviceName(deviceCollection));
+    // Crowd-Blending Score Grade
+    const crowdBlendingScoreGrade = (crowdBlendingScore >= 90 ? 'A' :
+        crowdBlendingScore >= 80 ? 'B' :
+            crowdBlendingScore >= 70 ? 'C' :
+                crowdBlendingScore >= 60 ? 'D' :
+                    'F');
+    const hasValue = (data) => Object.values(data || {}).find((x) => typeof x != 'undefined');
+    const el = document.getElementById('browser-detection');
+    return patch(el, html `
+	<div class="flex-grid relative">
+		${pendingReview ? `<span class="aside-note-bottom">pending review: <span class="renewed">${pendingReview}</span></span>` : ''}
+		${bot ? `<span class="time"><span class="renewed">locked</span></span>` :
+        typeof crowdBlendingScore == 'number' ? `<span class="time">crowd-blending score: ${'' + crowdBlendingScore}% <span class="scale-up grade-${crowdBlendingScoreGrade}">${crowdBlendingScoreGrade}</span></span>` : ''}
+		<div class="col-six">
+			<strong>Prediction</strong>
+			<div class="ellipsis relative">${deviceName ? `<span class="user-agent"><span>*</span>${deviceName}</span>` : getBlankIcons()}</div>
+			<div class="ellipsis relative">
+				<span id="window-entropy"></span>${getTemplate({ title: 'self', agent: windowVersion, showVersion: true })}</div>
+			<div class="ellipsis relative">
+				<span id="style-entropy"></span>${getTemplate({ title: 'system styles', agent: styleSystem })}</div>
+			<div class="ellipsis relative">
+				<span id="styleVersion-entropy"></span>${getTemplate({ title: 'computed styles', agent: styleVersion })}</div>
+			<div class="ellipsis relative">
+				<span id="html-entropy"></span>${getTemplate({ title: 'html element', agent: htmlVersion })}</div>
+			<div class="ellipsis relative">
+				<span id="math-entropy"></span>${getTemplate({ title: 'js runtime', agent: jsRuntime })}</div>
+			<div class="ellipsis relative">
+				<span id="error-entropy"></span>${getTemplate({ title: 'js engine', agent: jsEngine })}</div>
+			<div class="ellipsis relative">
+				<span id="emoji-entropy"></span>${!hasValue(emojiSystem) ? unknownHTML('domRect emojis') :
+        getTemplate({ title: 'domRect emojis', agent: emojiSystem })}</div>
+			<div class="ellipsis relative">
+				<span id="domRect-entropy"></span>${!hasValue(domRectSystem) ? unknownHTML('domRect') :
+        getTemplate({ title: 'domRect', agent: domRectSystem })}</div>
+			<div class="ellipsis relative">
+				<span id="svg-entropy"></span>${!hasValue(svgSystem) ? unknownHTML('svg emojis') :
+        getTemplate({ title: 'svg emojis', agent: svgSystem })}</div>
+			<div class="ellipsis relative">
+				<span id="mimeTypes-entropy"></span>${!hasValue(mimeTypesSystem) ? unknownHTML('mimeTypes') :
+        getTemplate({ title: 'mimeTypes', agent: mimeTypesSystem })}</div>
+			<div class="ellipsis relative">
+				<span id="audio-entropy"></span>${!hasValue(audioSystem) ? unknownHTML('audio') :
+        getTemplate({ title: 'audio', agent: audioSystem })}</div>
+			<div class="ellipsis relative">
+				<span id="canvas-entropy"></span>${!hasValue(canvasSystem) ? unknownHTML('canvas image') :
+        getTemplate({ title: 'canvas image', agent: canvasSystem })}</div>
+			<div class="ellipsis relative">
+				<span id="canvasBlob-entropy"></span>${!hasValue(canvasBlobSystem) ? unknownHTML('canvas blob') :
+        getTemplate({ title: 'canvas blob', agent: canvasBlobSystem })}</div>
+			<div class="ellipsis relative">
+				<span id="canvasPaint-entropy"></span>${!hasValue(canvasPaintSystem) ? unknownHTML('canvas paint') :
+        getTemplate({ title: 'canvas paint', agent: canvasPaintSystem })}</div>
+			<div class="ellipsis relative">
+				<span id="canvasText-entropy"></span>${!hasValue(canvasTextSystem) ? unknownHTML('canvas text') :
+        getTemplate({ title: 'canvas text', agent: canvasTextSystem })}</div>
+			<div class="ellipsis relative">
+				<span id="canvasEmoji-entropy"></span>${!hasValue(canvasEmojiSystem) ? unknownHTML('canvas emoji') :
+        getTemplate({ title: 'canvas emoji', agent: canvasEmojiSystem })}</div>
+			<div class="ellipsis relative">
+				<span id="textMetrics-entropy"></span>${!hasValue(textMetricsSystem) ? unknownHTML('textMetrics') :
+        getTemplate({ title: 'textMetrics', agent: textMetricsSystem })}</div>
+			<div class="ellipsis relative">
+				<span id="webgl-entropy"></span>${!hasValue(webglSystem) ? unknownHTML('webgl') :
+        getTemplate({ title: 'webgl', agent: webglSystem })}</div>
+			<div class="ellipsis relative">
+				<span id="gpu-entropy"></span>${!hasValue(gpuSystem) ? unknownHTML('gpu params') :
+        getTemplate({ title: 'gpu params', agent: gpuSystem })}</div>
+			<div class="ellipsis relative">
+				<span id="gpuModel-entropy"></span>${!hasValue(gpuModelSystem) ? unknownHTML('gpu model') :
+        getTemplate({ title: 'gpu model', agent: gpuModelSystem })}</div>
+			<div class="ellipsis relative">
+				<span id="fonts-entropy"></span>${!hasValue(fontsSystem) ? unknownHTML('fonts') :
+        getTemplate({ title: 'fonts', agent: fontsSystem })}</div>
+			<div class="ellipsis relative">
+				<span id="voices-entropy"></span>${!hasValue(voicesSystem) ? unknownHTML('voices') :
+        getTemplate({ title: 'voices', agent: voicesSystem })}</div>
+			<div class="ellipsis relative">
+				<span id="screen-entropy"></span>${!hasValue(screenSystem) ? unknownHTML('screen') :
+        getTemplate({ title: 'screen', agent: screenSystem })}</div>
+			<div class="ellipsis relative">
+				<span id="resistance-entropy"></span>${!hasValue(resistance) ? unknownHTML('resistance') :
+        getTemplate({ title: 'resistance', agent: resistance })}</div>
+			<div class="ellipsis relative">
+				<span id="deviceOfTimezone-entropy"></span>${!hasValue(deviceOfTimezone) ? unknownHTML('device of timezone') :
+        getTemplate({ title: 'device of timezone', agent: deviceOfTimezone })}</div>
+		</div>
+		<div class="col-six icon-prediction-container">
+			${[...iconSet].map((icon) => {
+        return `<div class="icon-prediction ${icon}"></div>`;
+    }).join('')}
+			${gpuSystem && !(/^(undefined|false)$/.test('' + gpuSystem.gpu)) ?
+        `<div class="icon-prediction block-text-borderless">gpu:<br>${gpuSystem.gpu}</div>` : ''}
+		</div>
+	</div>
+	`);
+}
+function predictionErrorPatch({ error, patch, html }) {
+    const getBlankIcons = () => `<span class="icon"></span><span class="icon"></span>`;
+    const el = document.getElementById('browser-detection');
+    return patch(el, html `
 		<div class="flex-grid rejected">
 			<div class="col-eight">
-				<strong>Prediction Failed: ${z0}</strong>
-				<div>${z3()}</div>
-				<div class="ellipsis">${z3()}window object:</div>
-				<div>${z3()}system styles</div>
-				<div>${z3()}computed styles</div>
-				<div>${z3()}html element</div>
-				<div>${z3()}js runtime</div>
-				<div>${z3()}js engine</div>
-				<div>${z3()}emojis</div>
-				<div>${z3()}domRect</div>
-				<div>${z3()}svg</div>
-				<div>${z3()}mimeTypes</div>
-				<div>${z3()}audio</div>
-				<div>${z3()}canvas image</div>
-				<div>${z3()}canvas blob</div>
-				<div>${z3()}canvas paint</div>
-				<div>${z3()}canvas text</div>
-				<div>${z3()}canvas emoji</div>
-				<div>${z3()}textMetrics</div>
-				<div>${z3()}webgl</div>
-				<div>${z3()}gpu params</div>
-				<div>${z3()}gpu model</div>
-				<div>${z3()}fonts</div>
-				<div>${z3()}voices</div>
-				<div>${z3()}screen</div>
-				<div>${z3()}resistance</div>
-				<div>${z3()}device of timezone</div>
+				<strong>Prediction Failed: ${error}</strong>
+				<div>${getBlankIcons()}</div>
+				<div class="ellipsis">${getBlankIcons()}window object:</div>
+				<div>${getBlankIcons()}system styles</div>
+				<div>${getBlankIcons()}computed styles</div>
+				<div>${getBlankIcons()}html element</div>
+				<div>${getBlankIcons()}js runtime</div>
+				<div>${getBlankIcons()}js engine</div>
+				<div>${getBlankIcons()}emojis</div>
+				<div>${getBlankIcons()}domRect</div>
+				<div>${getBlankIcons()}svg</div>
+				<div>${getBlankIcons()}mimeTypes</div>
+				<div>${getBlankIcons()}audio</div>
+				<div>${getBlankIcons()}canvas image</div>
+				<div>${getBlankIcons()}canvas blob</div>
+				<div>${getBlankIcons()}canvas paint</div>
+				<div>${getBlankIcons()}canvas text</div>
+				<div>${getBlankIcons()}canvas emoji</div>
+				<div>${getBlankIcons()}textMetrics</div>
+				<div>${getBlankIcons()}webgl</div>
+				<div>${getBlankIcons()}gpu params</div>
+				<div>${getBlankIcons()}gpu model</div>
+				<div>${getBlankIcons()}fonts</div>
+				<div>${getBlankIcons()}voices</div>
+				<div>${getBlankIcons()}screen</div>
+				<div>${getBlankIcons()}resistance</div>
+				<div>${getBlankIcons()}device of timezone</div>
 			</div>
 			<div class="col-four icon-prediction-container">
 			</div>
 		</div>
-	`);}async function TB(){const bX=L3;try{const z0=q();await t(z0);const z1={'privacy':undefined,'security':undefined,'mode':undefined,'extension':undefined,'engine':Z?bX(0x9f8):d?bX(0x9d4):''},z2=zZ=>new RegExp(zZ+'+$'),z3=(zZ,zd,zL)=>new Promise(zp=>setTimeout(()=>{const bg=bX,zn=zL?zL:+new Date(),zb=z2(zd)[bg(0x579)](zn)?z2(zd)['exec'](zn)[0x0]:zn;return zp(zb);},zZ)),z4=async()=>{const bJ=bX,zZ=+new Date(),zd=+(''+zZ)[bJ(0x80d)](-0x1),zL=await z3(0x0,zd,zZ),zp=await z3(0x1,zd),zn=await z3(0x2,zd),zb=await z3(0x3,zd),zS=await z3(0x4,zd),zQ=await z3(0x5,zd),zu=await z3(0x6,zd),zF=await z3(0x7,zd),zv=await z3(0x8,zd),zH=await z3(0x9,zd),zx=(''+zL)[bJ(0x80d)](-0x1),zD=(''+zp)[bJ(0x80d)](-0x1),zA=(''+zn)[bJ(0x80d)](-0x1),zY=(''+zb)[bJ(0x80d)](-0x1),zk=(''+zS)['slice'](-0x1),zP=(''+zQ)[bJ(0x80d)](-0x1),za=(''+zu)[bJ(0x80d)](-0x1),zq=(''+zF)['slice'](-0x1),zt=(''+zv)[bJ(0x80d)](-0x1),zM=(''+zH)['slice'](-0x1),zB=zx==zD&&zx==zA&&zx==zY&&zx==zk&&zx==zP&&zx==za&&zx==zq&&zx==zt&&zx==zM,zO=(''+zL)[bJ(0xb8e)],zN=[zL,zp,zn,zb,zS,zQ,zu,zF,zv,zH];return{'protection':zB,'delays':zN['map'](zi=>(''+zi)[bJ(0xb8e)]>zO?(''+zi)['slice'](-zO):zi),'precision':zB?Math[bJ(0x545)](...zN['map'](zi=>(''+zi)[bJ(0xb8e)])):undefined,'precisionValue':zB?zx:undefined};},[z5,z6]=await Promise['all']([b(),Z?undefined:z4()]);if(z5){const zZ=S();z1[bX(0x2a5)]=bX(0xb4d),z1[bX(0x976)]={'FileSystemWritableFileStream':'FileSystemWritableFileStream'in window,'Serial':bX(0x62b)in window,'ReportingObserver':'ReportingObserver'in window},z1[bX(0x442)]=zZ[bX(0xac0)]?'allow':zZ[bX(0x3f5)]?bX(0x3f5):zZ['strict']?'strict':'';}const {protection:z7}=z6||{};if(d&&z7){const zd={'OfflineAudioContext':bX(0x8f5)in window,'WebGL2RenderingContext':bX(0x6d3)in window,'WebAssembly':'WebAssembly'in window,'maxTouchPoints':bX(0xbcd)in navigator,'RTCRtpTransceiver':bX(0x572)in window,'MediaDevices':bX(0x63c)in window,'Credential':bX(0x855)in window},zL=Object[bX(0xab4)](zd),zp=new Set(['RTCRtpTransceiver',bX(0x63c),'Credential']),zn=zL[bX(0x73b)](zS=>zp[bX(0x7ea)](zS)&&!zd[zS])[bX(0xb8e)]==zp[bX(0xa45)],zb=!zd[bX(0xb32)];z1[bX(0x2a5)]=zn?bX(0x7a2):bX(0xab7),z1[bX(0x976)]={'reduceTimerPrecision':!![],...zd},z1['mode']=!zn?bX(0xa4a):zb?bX(0x30e):bX(0x3f5);}const z8=Object[bX(0xab4)](Wu)[bX(0xb8e)],z9=bX(0x851),zW={'noscript':{'contentDocumentHash':[bX(0x91d),bX(0x2e7)],'contentWindowHash':['0b637a33',bX(0x2e7)],'getContextHash':['0b637a33',bX(0x4b6),z9]},'trace':{'contentDocumentHash':[bX(0x577)],'contentWindowHash':['ca9d9c2f'],'createElementHash':[bX(0x929)],'getElementByIdHash':[bX(0x929)],'getImageDataHash':[bX(0x929)],'toBlobHash':[bX(0x929),z9],'toDataURLHash':[bX(0x929),z9]},'cydec':{'contentDocumentHash':[bX(0x4ef),bX(0xa80),'403a1a21','55e9b959'],'contentWindowHash':[bX(0x4ef),'15771efa','403a1a21',bX(0x295)],'createElementHash':[bX(0x833),bX(0x33d),bX(0xb94),bX(0x906),bX(0x8e5),bX(0x122),bX(0x41d),'ae3d02c9'],'getElementByIdHash':[bX(0x833),bX(0x33d),bX(0xb94),bX(0x906),bX(0x8e5),bX(0x122),bX(0x41d),bX(0x460)],'getImageDataHash':[bX(0x9b2),'db60d7f9',bX(0xa80),'db60d7f9',bX(0x295)],'toBlobHash':[bX(0x9b2),'15771efa','afec348d',bX(0x295),bX(0x8d1)],'toDataURLHash':[bX(0x826),bX(0xa80),'6b838fb6','d19104ec',bX(0x1c7),bX(0x295),'fe88259f']},'canvasblocker':{'contentDocumentHash':[bX(0x50e)],'contentWindowHash':['98ec858e'],'appendHash':[bX(0x50e)],'getImageDataHash':[bX(0x50e),bX(0x7cf),z9],'toBlobHash':['9f1c3dfe',bX(0x7cf),z9],'toDataURLHash':[bX(0x50e),bX(0x7cf),z9]},'chameleon':{'appendHash':[bX(0x929)],'insertAdjacentElementHash':[bX(0x929)],'insertAdjacentHTMLHash':[bX(0x929)],'insertAdjacentTextHash':[bX(0x929)],'prependHash':['77dea834'],'replaceWithHash':[bX(0x929)],'appendChildHash':[bX(0x929)],'insertBeforeHash':[bX(0x929)],'replaceChildHash':[bX(0x929)]},'duckduckgo':{'toDataURLHash':[bX(0x2ae),bX(0x9eb)],'toBlobHash':[bX(0x2ae),'8ee7df22'],'getImageDataHash':[bX(0x2ae),bX(0x9eb)],'getByteFrequencyDataHash':['fd00bf5d',bX(0x9eb),z9],'getByteTimeDomainDataHash':['fd00bf5d',bX(0x9eb),z9],'getFloatFrequencyDataHash':[bX(0x2ae),bX(0x9eb),z9],'getFloatTimeDomainDataHash':['fd00bf5d',bX(0x9eb),z9],'copyFromChannelHash':[bX(0x2ae),'8ee7df22',z9],'getChannelDataHash':[bX(0x2ae),bX(0x9eb),z9],'hardwareConcurrencyHash':[bX(0x2d9)],'availHeightHash':[bX(0x2d9)],'availLeftHash':['dfd41ab4'],'availTopHash':['dfd41ab4'],'availWidthHash':[bX(0x2d9)],'colorDepthHash':[bX(0x2d9)],'pixelDepthHash':[bX(0x2d9)]},'privacybadger':{'getImageDataHash':[bX(0x8e5)],'toDataURLHash':[bX(0x8e5)]},'privacypossum':{'hardwareConcurrencyHash':['452924d5'],'availWidthHash':[bX(0xb57)],'colorDepthHash':[bX(0xb57)]},'jshelter':{'contentDocumentHash':[bX(0xbd3),bX(0x91d)],'contentWindowHash':[bX(0xbd3),bX(0x91d)],'appendHash':['0007ab4e',bX(0x91d)],'insertAdjacentElementHash':[bX(0xbd3),'0b637a33'],'insertAdjacentHTMLHash':[bX(0xbd3),'0b637a33'],'prependHash':['0007ab4e',bX(0x91d)],'replaceWithHash':['0007ab4e',bX(0x91d)],'appendChildHash':[bX(0xbd3),bX(0x91d)],'insertBeforeHash':['0007ab4e',bX(0x91d)],'replaceChildHash':[bX(0xbd3),bX(0x91d)],'hardwareConcurrencyHash':[bX(0x2d9)]},'puppeteerExtra':{'contentDocumentHash':['55e9b959'],'contentWindowHash':[bX(0x295),'50a281b5'],'createElementHash':[bX(0x295)],'getElementByIdHash':['55e9b959'],'appendHash':['55e9b959'],'insertAdjacentElementHash':[bX(0x295)],'insertAdjacentHTMLHash':[bX(0x295)],'insertAdjacentTextHash':[bX(0x295)],'prependHash':[bX(0x295)],'replaceWithHash':[bX(0x295)],'appendChildHash':[bX(0x295)],'insertBeforeHash':[bX(0x295)],'replaceChildHash':[bX(0x295)],'getContextHash':[bX(0x295),z9],'toDataURLHash':[bX(0x295),z9],'toBlobHash':['55e9b959',z9],'getImageDataHash':[bX(0x295)],'hardwareConcurrencyHash':[bX(0x13d),'a63491fb',bX(0x774),'194ecf17']},'fakeBrowser':{'appendChildHash':[bX(0xb44),bX(0x40d)],'getContextHash':[bX(0x3dc),bX(0xa06)],'toDataURLHash':[bX(0x3dc),bX(0xa06)],'toBlobHash':[bX(0x3dc),'a63491fb'],'getImageDataHash':[bX(0x3dc),'a63491fb'],'hardwareConcurrencyHash':[bX(0x3dc),bX(0xa06)],'availHeightHash':[bX(0x3dc),bX(0xa06)],'availLeftHash':[bX(0x3dc),bX(0xa06)],'availTopHash':[bX(0x3dc),bX(0xa06)],'availWidthHash':[bX(0x3dc),bX(0xa06)],'colorDepthHash':[bX(0x3dc),'a63491fb'],'pixelDepthHash':[bX(0x3dc),'a63491fb']}};await t(z0);const zT={'contentDocumentHash':WO(Wu[bX(0x4e8)]),'contentWindowHash':WO(Wu[bX(0xa9f)]),'createElementHash':WO(Wu[bX(0x5fa)]),'getElementByIdHash':WO(Wu[bX(0x4fa)]),'appendHash':WO(Wu[bX(0x3b2)]),'insertAdjacentElementHash':WO(Wu[bX(0x70e)]),'insertAdjacentHTMLHash':WO(Wu[bX(0x677)]),'insertAdjacentTextHash':WO(Wu[bX(0x5c3)]),'prependHash':WO(Wu[bX(0x789)]),'replaceWithHash':WO(Wu[bX(0xaf2)]),'appendChildHash':WO(Wu[bX(0x9a2)]),'insertBeforeHash':WO(Wu[bX(0x2ba)]),'replaceChildHash':WO(Wu['Node.replaceChild']),'getContextHash':WO(Wu[bX(0x2ff)]),'toDataURLHash':WO(Wu[bX(0x8ff)]),'toBlobHash':WO(Wu['HTMLCanvasElement.toBlob']),'getImageDataHash':WO(Wu[bX(0x6d2)]),'getByteFrequencyDataHash':WO(Wu[bX(0x121)]),'getByteTimeDomainDataHash':WO(Wu[bX(0x9f4)]),'getFloatFrequencyDataHash':WO(Wu[bX(0x2d0)]),'getFloatTimeDomainDataHash':WO(Wu[bX(0x5a8)]),'copyFromChannelHash':WO(Wu[bX(0xb26)]),'getChannelDataHash':WO(Wu[bX(0x5c2)]),'hardwareConcurrencyHash':WO(Wu[bX(0xb33)]),'availHeightHash':WO(Wu[bX(0x7d0)]),'availLeftHash':WO(Wu[bX(0x84c)]),'availTopHash':WO(Wu[bX(0x874)]),'availWidthHash':WO(Wu[bX(0x6dd)]),'colorDepthHash':WO(Wu['Screen.colorDepth']),'pixelDepthHash':WO(Wu[bX(0x258)])};z1[bX(0x8c9)]=Object[bX(0xab4)](zT)[bX(0x729)]((zS,zQ)=>{const bo=bX,zu=zT[zQ];if(zu==z9)return zS;return zS[zQ[bo(0x737)](bo(0x9de),'')]=zu,zS;},{});const zz=({pattern:zS,hash:zQ,prototypeLiesLen:zu})=>{const bU=bX,{noscript:zF,trace:zv,cydec:zH,canvasblocker:zx,chameleon:zD,duckduckgo:zA,privacybadger:zY,privacypossum:zk,jshelter:zP,puppeteerExtra:za,fakeBrowser:zq}=zS,zt=bU(0x851);if(zu){if(zu>=0x7&&zv[bU(0x1be)][bU(0x725)](zQ['contentDocumentHash'])&&zv[bU(0x151)]['includes'](zQ[bU(0x151)])&&zv[bU(0x22e)][bU(0x725)](zQ[bU(0x22e)])&&zv[bU(0x20b)][bU(0x725)](zQ[bU(0x20b)])&&zv[bU(0x1c2)][bU(0x725)](zQ[bU(0x1c2)])&&zv[bU(0x49e)][bU(0x725)](zQ['toBlobHash'])&&zv['getImageDataHash'][bU(0x725)](zQ['getImageDataHash']))return bU(0x429);if(zu>=0x7&&zH[bU(0x1be)]['includes'](zQ[bU(0x1be)])&&zH[bU(0x151)][bU(0x725)](zQ[bU(0x151)])&&zH[bU(0x22e)][bU(0x725)](zQ[bU(0x22e)])&&zH['getElementByIdHash'][bU(0x725)](zQ['getElementByIdHash'])&&zH[bU(0x1c2)]['includes'](zQ[bU(0x1c2)])&&zH[bU(0x49e)][bU(0x725)](zQ[bU(0x49e)])&&zH[bU(0x73c)]['includes'](zQ['getImageDataHash']))return'CyDec';if(zu>=0x6&&zx['contentDocumentHash'][bU(0x725)](zQ[bU(0x1be)])&&zx[bU(0x151)][bU(0x725)](zQ[bU(0x151)])&&zx[bU(0x59e)][bU(0x725)](zQ[bU(0x59e)])&&zx['toDataURLHash']['includes'](zQ[bU(0x1c2)])&&zx[bU(0x49e)][bU(0x725)](zQ[bU(0x49e)])&&zx[bU(0x73c)][bU(0x725)](zQ['getImageDataHash']))return bU(0x6c7);if(zu>=0x9&&zD[bU(0x59e)]['includes'](zQ['appendHash'])&&zD[bU(0x3ec)]['includes'](zQ[bU(0x3ec)])&&zD[bU(0x94c)][bU(0x725)](zQ['insertAdjacentHTMLHash'])&&zD['insertAdjacentTextHash']['includes'](zQ[bU(0x397)])&&zD[bU(0x21f)]['includes'](zQ[bU(0x21f)])&&zD[bU(0x7c0)][bU(0x725)](zQ['replaceWithHash'])&&zD[bU(0x497)][bU(0x725)](zQ['appendChildHash'])&&zD[bU(0x9df)][bU(0x725)](zQ[bU(0x9df)])&&zD[bU(0x796)][bU(0x725)](zQ[bU(0x796)]))return'Chameleon';if(zu>=0xa&&zA[bU(0x1c2)][bU(0x725)](zQ[bU(0x1c2)])&&zA[bU(0x49e)]['includes'](zQ[bU(0x49e)])&&zA[bU(0x73c)][bU(0x725)](zQ[bU(0x73c)])&&zA[bU(0x97f)][bU(0x725)](zQ[bU(0x97f)])&&zA['getByteTimeDomainDataHash']['includes'](zQ[bU(0x226)])&&zA[bU(0x49d)][bU(0x725)](zQ[bU(0x49d)])&&zA[bU(0x8c1)]['includes'](zQ[bU(0x8c1)])&&zA['copyFromChannelHash'][bU(0x725)](zQ[bU(0x876)])&&zA[bU(0x911)][bU(0x725)](zQ[bU(0x911)])&&zA[bU(0x9ba)][bU(0x725)](zQ[bU(0x9ba)])&&zA['availHeightHash'][bU(0x725)](zQ[bU(0x937)])&&zA['availLeftHash'][bU(0x725)](zQ[bU(0x6fc)])&&zA[bU(0x1d2)][bU(0x725)](zQ['availTopHash'])&&zA['availWidthHash'][bU(0x725)](zQ['availWidthHash'])&&zA['colorDepthHash'][bU(0x725)](zQ['colorDepthHash'])&&zA[bU(0xa81)][bU(0x725)](zQ[bU(0xa81)]))return bU(0x83d);if(zu>=0x2&&zY[bU(0x73c)][bU(0x725)](zQ[bU(0x73c)])&&zY[bU(0x1c2)][bU(0x725)](zQ['toDataURLHash']))return'Privacy\x20Badger';if(zu>=0x3&&zk['hardwareConcurrencyHash'][bU(0x725)](zQ[bU(0x9ba)])&&zk[bU(0x9c5)]['includes'](zQ[bU(0x9c5)])&&zk[bU(0x461)]['includes'](zQ[bU(0x461)]))return'Privacy\x20Possum';if(zu>=0x2&&zF['contentDocumentHash']['includes'](zQ['contentDocumentHash'])&&zF[bU(0x151)][bU(0x725)](zQ[bU(0x1be)])&&zF[bU(0x301)]['includes'](zQ['getContextHash'])&&zQ['hardwareConcurrencyHash']==zt)return'NoScript';if(zu>=0xe&&zP['contentDocumentHash'][bU(0x725)](zQ[bU(0x1be)])&&zP[bU(0x151)][bU(0x725)](zQ['contentDocumentHash'])&&zP['appendHash'][bU(0x725)](zQ[bU(0x59e)])&&zP['insertAdjacentElementHash'][bU(0x725)](zQ[bU(0x3ec)])&&zP[bU(0x94c)][bU(0x725)](zQ['insertAdjacentHTMLHash'])&&zP[bU(0x21f)][bU(0x725)](zQ[bU(0x21f)])&&zP['replaceWithHash'][bU(0x725)](zQ[bU(0x7c0)])&&zP[bU(0x497)]['includes'](zQ[bU(0x497)])&&zP[bU(0x9df)][bU(0x725)](zQ[bU(0x9df)])&&zP['replaceChildHash'][bU(0x725)](zQ[bU(0x796)])&&zP[bU(0x9ba)]['includes'](zQ[bU(0x9ba)]))return bU(0x72e);if(zu>=0xd&&za[bU(0x1be)][bU(0x725)](zQ['contentDocumentHash'])&&za[bU(0x151)][bU(0x725)](zQ[bU(0x151)])&&za[bU(0x22e)][bU(0x725)](zQ[bU(0x22e)])&&za[bU(0x20b)]['includes'](zQ['getElementByIdHash'])&&za[bU(0x59e)]['includes'](zQ[bU(0x59e)])&&za[bU(0x3ec)][bU(0x725)](zQ[bU(0x3ec)])&&za['insertAdjacentHTMLHash'][bU(0x725)](zQ[bU(0x94c)])&&za['insertAdjacentTextHash'][bU(0x725)](zQ[bU(0x397)])&&za[bU(0x21f)][bU(0x725)](zQ[bU(0x21f)])&&za[bU(0x7c0)]['includes'](zQ[bU(0x7c0)])&&za[bU(0x497)][bU(0x725)](zQ[bU(0x497)])&&za[bU(0x9df)][bU(0x725)](zQ[bU(0x9df)])&&za[bU(0x1be)][bU(0x725)](zQ[bU(0x1be)])&&za['replaceChildHash']['includes'](zQ[bU(0x796)])&&za[bU(0x301)]['includes'](zQ[bU(0x301)])&&za[bU(0x1c2)][bU(0x725)](zQ[bU(0x1c2)])&&za[bU(0x49e)][bU(0x725)](zQ[bU(0x49e)])&&za['getImageDataHash'][bU(0x725)](zQ[bU(0x73c)])&&za['hardwareConcurrencyHash'][bU(0x725)](zQ[bU(0x9ba)]))return bU(0x366);if(zu>=0xc&&zq[bU(0x497)][bU(0x725)](zQ[bU(0x497)])&&zq['getContextHash'][bU(0x725)](zQ[bU(0x301)])&&zq[bU(0x1c2)][bU(0x725)](zQ[bU(0x1c2)])&&zq[bU(0x49e)][bU(0x725)](zQ[bU(0x49e)])&&zq[bU(0x73c)][bU(0x725)](zQ[bU(0x73c)])&&zq[bU(0x9ba)]['includes'](zQ['hardwareConcurrencyHash'])&&zq['availHeightHash']['includes'](zQ[bU(0x937)])&&zq['availLeftHash'][bU(0x725)](zQ[bU(0x6fc)])&&zq[bU(0x1d2)][bU(0x725)](zQ[bU(0x1d2)])&&zq[bU(0x9c5)][bU(0x725)](zQ[bU(0x9c5)])&&zq[bU(0x461)][bU(0x725)](zQ[bU(0x461)])&&zq[bU(0xa81)]['includes'](zQ[bU(0xa81)]))return bU(0x97a);return;}return;};return z1[bX(0x992)]=zz({'pattern':zW,'hash':zT,'prototypeLiesLen':z8}),a({'time':z0[bX(0x8c4)](),'test':bX(0x8d4),'passed':!![]}),z1;}catch(zS){a({'test':bX(0x8d4),'passed':![]}),f(zS);return;}}function TO(z0){const S0=L3;if(!z0[S0(0x8d4)])return S0(0xb67)+r['BLOCKED']+S0(0x5c0)+r['BLOCKED']+S0(0x482)+r['BLOCKED']+S0(0x84a)+r[S0(0x7ca)]+S0(0x692);const {resistance:z1}=z0,{$hash:z2,privacy:z3,security:z4,mode:z5,extension:z6,extensionHashPattern:z7,engine:z8}=z1||{},z9=!z4||Object[S0(0xab4)](z4)[S0(0x729)]((zz,zZ)=>{const S1=S0;if(z4[zZ])return zz[zZ]=S1(0x17a),zz;return zz[zZ]=S1(0x48e),zz;},{}),zW=/brave/i['test'](z3)?'<span\x20class=\x22icon\x20brave\x22></span>':/tor/i[S0(0x579)](z3)?'<span\x20class=\x22icon\x20tor\x22></span>':/firefox/i[S0(0x579)](z3)?S0(0x323):'',zT=/blink/i['test'](z8)?S0(0x83e):/gecko/i[S0(0x579)](z8)?'<span\x20class=\x22icon\x20firefox-addon\x22></span>':'';return S0(0x795)+P['getLog']()[S0(0x8d4)]+S0(0x83f)+N(z2)+S0(0x88d)+(z3?''+zW+z3:r['UNKNOWN'])+S0(0x8ba)+(!z4?r[S0(0x30b)]:w(S0(0xa46),S0(0x3c8)+Object[S0(0xab4)](z9)[S0(0x638)](zz=>zz+':\x20'+(''+z9[zz]))['join'](S0(0x708)),WO(z4)))+S0(0x30a)+(z5||r[S0(0x30b)])+S0(0x430)+(!Object[S0(0xab4)](z7||{})[S0(0xb8e)]?r[S0(0x30b)]:w('creep-extension',S0(0xb17)+Object['keys'](z7)[S0(0x638)](zz=>zz+':\x20'+(''+z7[zz]))['join']('<br>'),z6?''+zT+z6:WO(z7)))+S0(0x225);}async function TN(z0,{fp:z1,styleSystemHash:z2}){if(!z0)return;const {window:z3,math:z4,error:z5,html:z6,style:z7}=z0||{},z8=(zL,zp)=>{const S2=a0T;let zn=[],zb=0x0;const zS=Object[S2(0xab4)](zp)[S2(0x729)]((zu,zF)=>zu+=zp[zF][S2(0xb8e)],0x0),zQ=Object[S2(0xab4)](zp)[S2(0xaac)](zu=>zp[zu][S2(0xaac)](zF=>{const S3=S2;if(!(zF['id']==zL))return![];return zn=zF[S3(0x447)],zb=zp[zu]['length'],!![];}));return{'systems':zn,'poolTotal':zb,'metricTotal':zS,'decryption':zQ};},z9=(zL,zp)=>{const S4=a0T,{systems:zn,poolTotal:zb,metricTotal:zS,decryption:zQ}=z8(zL,zp),zu=zY=>S4(0x949)+zY+S4(0xad1),zF=!zQ?'':/edgios|edge/i[S4(0x579)](zQ)?zu(S4(0x90c)):/brave/i['test'](zQ)?zu(S4(0x759)):/vivaldi/i['test'](zQ)?zu('vivaldi'):/duckduckgo/i[S4(0x579)](zQ)?zu(S4(0x706)):/yandex/i[S4(0x579)](zQ)?zu(S4(0x56c)):/opera/i[S4(0x579)](zQ)?zu(S4(0x6c2)):/crios|chrome/i['test'](zQ)?zu(S4(0x182)):/tor browser/i[S4(0x579)](zQ)?zu(S4(0x420)):/palemoon/i[S4(0x579)](zQ)?zu('palemoon'):/fxios|firefox/i[S4(0x579)](zQ)?zu(S4(0x55a)):/safari/i[S4(0x579)](zQ)?zu(S4(0x298)):'',zv={'blink':S4(0x76a),'v8':S4(0x154),'webkit':'<span\x20class=\x22icon\x20webkit\x22></span>','gecko':S4(0x8fe),'goanna':S4(0x12e),'tor':S4(0xa78),'firefox':'<span\x20class=\x22icon\x20firefox\x22></span>','cros':'<span\x20class=\x22icon\x20cros\x22></span>','linux':S4(0x11f),'apple':S4(0x170),'windows':S4(0x3bc),'android':'<span\x20class=\x22icon\x20android\x22></span>'},zH=!zQ?'':/SpiderMonkey/[S4(0x579)](zQ)?zv['firefox']:/JavaScriptCore/[S4(0x579)](zQ)?zv[S4(0x3da)]:/V8/[S4(0x579)](zQ)?zv['v8']:'',zx=!zQ?'':/Gecko/['test'](zQ)?zv[S4(0xa0b)]:/WebKit/['test'](zQ)?zv['webkit']:/Blink/[S4(0x579)](zQ)?zv[S4(0x819)]:/Goanna/[S4(0x579)](zQ)?zv[S4(0xba6)]:'',zD=!zQ||zn['length']!=0x1?'':/windows/i[S4(0x579)](zn[0x0])?zv[S4(0x503)]:/linux/i['test'](zn[0x0])?zv[S4(0x558)]:/ipad|iphone|ipod|ios|mac/i[S4(0x579)](zn[0x0])?zv['apple']:/android/i['test'](zn[0x0])?zv['android']:/chrome os/i[S4(0x579)](zn[0x0])?zv[S4(0x3d8)]:'',zA=zY=>zY[S4(0x250)](0x2)[S4(0x737)](S4(0x1db),'');return{'decryption':zQ||'unknown','browserHTML':!zQ?undefined:''+zF+zQ,'engineHTML':!zQ?undefined:''+zH+zQ,'engineRendererHTML':!zQ?undefined:''+zx+zQ,'engineRendererSystemHTML':!zQ?undefined:''+zx+zD+zQ+(zn[S4(0xb8e)]!=0x1?'':'\x20on\x20'+zn[0x0]),'engineSystem':!zQ?undefined:''+zH+zD+zQ+(zn[S4(0xb8e)]!=0x1?'':S4(0x32b)+zn[0x0]),'uniqueMetric':!zQ?'0':zA(0x1/zS*0x64),'uniqueEngine':!zQ?'0':zA(0x1/zb*0x64)};},zW=zL=>{const S5=a0T,zp=document[S5(0xa0c)](S5(0x6b3));if(!zL[S5(0x3f8)]||!zp)return;const {windowFeatures:{$hash:zn}}=zL,{browserHTML:zb,uniqueEngine:zS}=z9(zn,z3);return i(zp,K`
+	`);
+}
+
+async function getResistance() {
+    try {
+        const timer = createTimer();
+        await queueEvent(timer);
+        const data = {
+            privacy: undefined,
+            security: undefined,
+            mode: undefined,
+            extension: undefined,
+            engine: (IS_BLINK ? 'Blink' :
+                IS_GECKO ? 'Gecko' :
+                    ''),
+        };
+        // Firefox/Tor Browser
+        const regex = (n) => new RegExp(`${n}+$`);
+        const delay = (ms, baseNumber, baseDate) => new Promise((resolve) => setTimeout(() => {
+            const date = baseDate ? baseDate : +new Date();
+            // @ts-ignore
+            const value = regex(baseNumber).test(date) ? regex(baseNumber).exec(date)[0] : date;
+            return resolve(value);
+        }, ms));
+        const getTimerPrecision = async () => {
+            const baseDate = +new Date();
+            const baseNumber = +('' + baseDate).slice(-1);
+            const a = await delay(0, baseNumber, baseDate);
+            const b = await delay(1, baseNumber);
+            const c = await delay(2, baseNumber);
+            const d = await delay(3, baseNumber);
+            const e = await delay(4, baseNumber);
+            const f = await delay(5, baseNumber);
+            const g = await delay(6, baseNumber);
+            const h = await delay(7, baseNumber);
+            const i = await delay(8, baseNumber);
+            const j = await delay(9, baseNumber);
+            const lastCharA = ('' + a).slice(-1);
+            const lastCharB = ('' + b).slice(-1);
+            const lastCharC = ('' + c).slice(-1);
+            const lastCharD = ('' + d).slice(-1);
+            const lastCharE = ('' + e).slice(-1);
+            const lastCharF = ('' + f).slice(-1);
+            const lastCharG = ('' + g).slice(-1);
+            const lastCharH = ('' + h).slice(-1);
+            const lastCharI = ('' + i).slice(-1);
+            const lastCharJ = ('' + j).slice(-1);
+            const protection = (lastCharA == lastCharB &&
+                lastCharA == lastCharC &&
+                lastCharA == lastCharD &&
+                lastCharA == lastCharE &&
+                lastCharA == lastCharF &&
+                lastCharA == lastCharG &&
+                lastCharA == lastCharH &&
+                lastCharA == lastCharI &&
+                lastCharA == lastCharJ);
+            const baseLen = ('' + a).length;
+            const collection = [a, b, c, d, e, f, g, h, i, j];
+            return {
+                protection,
+                delays: collection.map((n) => ('' + n).length > baseLen ? ('' + n).slice(-baseLen) : n),
+                precision: protection ? Math.min(...collection.map((val) => ('' + val).length)) : undefined,
+                precisionValue: protection ? lastCharA : undefined,
+            };
+        };
+        const [isBrave, timerPrecision,] = await Promise.all([
+            braveBrowser(),
+            IS_BLINK ? undefined : getTimerPrecision(),
+        ]);
+        if (isBrave) {
+            const braveMode = getBraveMode();
+            data.privacy = 'Brave';
+            // @ts-ignore
+            data.security = {
+                'FileSystemWritableFileStream': 'FileSystemWritableFileStream' in window,
+                'Serial': 'Serial' in window,
+                'ReportingObserver': 'ReportingObserver' in window,
+            };
+            data.mode = (braveMode.allow ? 'allow' :
+                braveMode.standard ? 'standard' :
+                    braveMode.strict ? 'strict' :
+                        '');
+        }
+        const { protection } = timerPrecision || {};
+        if (IS_GECKO && protection) {
+            const features = {
+                'OfflineAudioContext': 'OfflineAudioContext' in window,
+                'WebGL2RenderingContext': 'WebGL2RenderingContext' in window,
+                'WebAssembly': 'WebAssembly' in window,
+                'maxTouchPoints': 'maxTouchPoints' in navigator,
+                'RTCRtpTransceiver': 'RTCRtpTransceiver' in window,
+                'MediaDevices': 'MediaDevices' in window,
+                'Credential': 'Credential' in window,
+            };
+            const featureKeys = Object.keys(features);
+            const targetSet = new Set([
+                'RTCRtpTransceiver',
+                'MediaDevices',
+                'Credential',
+            ]);
+            const torBrowser = featureKeys.filter((key) => targetSet.has(key) && !features[key]).length == targetSet.size;
+            const safer = !features.WebAssembly;
+            data.privacy = torBrowser ? 'Tor Browser' : 'Firefox';
+            // @ts-ignore
+            data.security = Object.assign({ 'reduceTimerPrecision': true }, features);
+            data.mode = (!torBrowser ? 'resistFingerprinting' :
+                safer ? 'safer' :
+                    'standard');
+        }
+        // extension
+        // - this technique gets a small sample of known lie patterns
+        // - patterns vary based on extensions settings, version, browser
+        const prototypeLiesLen = Object.keys(prototypeLies).length;
+        // patterns based on settings
+        const disabled = 'c767712b';
+        const pattern = {
+            noscript: {
+                contentDocumentHash: ['0b637a33', '37e2f32e'],
+                contentWindowHash: ['0b637a33', '37e2f32e'],
+                getContextHash: ['0b637a33', '081d6d1b', disabled],
+            },
+            trace: {
+                contentDocumentHash: ['ca9d9c2f'],
+                contentWindowHash: ['ca9d9c2f'],
+                createElementHash: ['77dea834'],
+                getElementByIdHash: ['77dea834'],
+                getImageDataHash: ['77dea834'],
+                toBlobHash: ['77dea834'],
+                toDataURLHash: ['77dea834'],
+            },
+            cydec: {
+                // [FF, FF Anti OFF, Chrome, Chrome Anti Off, no iframe Chrome, no iframe Chrome Anti Off]
+                contentDocumentHash: ['945b0c78', '15771efa', '403a1a21', '55e9b959'],
+                contentWindowHash: ['945b0c78', '15771efa', '403a1a21', '55e9b959'],
+                createElementHash: ['3dd86d6f', 'cc7cb598', '4237b44c', '1466aaf0', '0cb0c682', '73c662d9', '72b1ee2b', 'ae3d02c9'],
+                getElementByIdHash: ['3dd86d6f', 'cc7cb598', '4237b44c', '1466aaf0', '0cb0c682', '73c662d9', '72b1ee2b', 'ae3d02c9'],
+                getImageDataHash: ['044f14c2', 'db60d7f9', '15771efa', 'db60d7f9', '55e9b959'],
+                toBlobHash: ['044f14c2', '15771efa', 'afec348d', '55e9b959', '0dbbf456'],
+                toDataURLHash: ['ecb498d9', '15771efa', '6b838fb6', 'd19104ec', '6985d315', '55e9b959', 'fe88259f'],
+            },
+            canvasblocker: {
+                contentDocumentHash: ['98ec858e'],
+                contentWindowHash: ['98ec858e'],
+                appendHash: ['98ec858e'],
+                getImageDataHash: ['98ec858e', 'a2971888', disabled],
+                toBlobHash: ['9f1c3dfe', 'a2971888', disabled],
+                toDataURLHash: ['98ec858e', 'a2971888', disabled],
+            },
+            chameleon: {
+                appendHash: ['77dea834'],
+                insertAdjacentElementHash: ['77dea834'],
+                insertAdjacentHTMLHash: ['77dea834'],
+                insertAdjacentTextHash: ['77dea834'],
+                prependHash: ['77dea834'],
+                replaceWithHash: ['77dea834'],
+                appendChildHash: ['77dea834'],
+                insertBeforeHash: ['77dea834'],
+                replaceChildHash: ['77dea834'],
+            },
+            duckduckgo: {
+                toDataURLHash: ['fd00bf5d', '8ee7df22'],
+                toBlobHash: ['fd00bf5d', '8ee7df22'],
+                getImageDataHash: ['fd00bf5d', '8ee7df22'],
+                getByteFrequencyDataHash: ['fd00bf5d', '8ee7df22', disabled],
+                getByteTimeDomainDataHash: ['fd00bf5d', '8ee7df22', disabled],
+                getFloatFrequencyDataHash: ['fd00bf5d', '8ee7df22', disabled],
+                getFloatTimeDomainDataHash: ['fd00bf5d', '8ee7df22', disabled],
+                copyFromChannelHash: ['fd00bf5d', '8ee7df22', disabled],
+                getChannelDataHash: ['fd00bf5d', '8ee7df22', disabled],
+                hardwareConcurrencyHash: ['dfd41ab4'],
+                availHeightHash: ['dfd41ab4'],
+                availLeftHash: ['dfd41ab4'],
+                availTopHash: ['dfd41ab4'],
+                availWidthHash: ['dfd41ab4'],
+                colorDepthHash: ['dfd41ab4'],
+                pixelDepthHash: ['dfd41ab4'],
+            },
+            // mode: Learn to block new trackers from your browsing
+            privacybadger: {
+                getImageDataHash: ['0cb0c682'],
+                toDataURLHash: ['0cb0c682'],
+            },
+            privacypossum: {
+                hardwareConcurrencyHash: ['452924d5'],
+                availWidthHash: ['452924d5'],
+                colorDepthHash: ['452924d5'],
+            },
+            jshelter: {
+                contentDocumentHash: ['0007ab4e', '0b637a33'],
+                contentWindowHash: ['0007ab4e', '0b637a33'],
+                appendHash: ['0007ab4e', '0b637a33'],
+                insertAdjacentElementHash: ['0007ab4e', '0b637a33'],
+                insertAdjacentHTMLHash: ['0007ab4e', '0b637a33'],
+                prependHash: ['0007ab4e', '0b637a33'],
+                replaceWithHash: ['0007ab4e', '0b637a33'],
+                appendChildHash: ['0007ab4e', '0b637a33'],
+                insertBeforeHash: ['0007ab4e', '0b637a33'],
+                replaceChildHash: ['0007ab4e', '0b637a33'],
+                hardwareConcurrencyHash: ['dfd41ab4'],
+            },
+            puppeteerExtra: {
+                contentDocumentHash: ['55e9b959'],
+                contentWindowHash: [
+                    '55e9b959',
+                    '50a281b5', // @2.10.0
+                ],
+                createElementHash: ['55e9b959'],
+                getElementByIdHash: ['55e9b959'],
+                appendHash: ['55e9b959'],
+                insertAdjacentElementHash: ['55e9b959'],
+                insertAdjacentHTMLHash: ['55e9b959'],
+                insertAdjacentTextHash: ['55e9b959'],
+                prependHash: ['55e9b959'],
+                replaceWithHash: ['55e9b959'],
+                appendChildHash: ['55e9b959'],
+                insertBeforeHash: ['55e9b959'],
+                replaceChildHash: ['55e9b959'],
+                getContextHash: ['55e9b959'],
+                toDataURLHash: ['55e9b959'],
+                toBlobHash: ['55e9b959'],
+                getImageDataHash: ['55e9b959'],
+                hardwareConcurrencyHash: ['efbd4cf9', 'a63491fb'],
+            },
+            fakeBrowser: {
+                appendChildHash: ['8dfec2ec', 'f43e6134'],
+                getContextHash: ['83b825ab', 'a63491fb'],
+                toDataURLHash: ['83b825ab', 'a63491fb'],
+                toBlobHash: ['83b825ab', 'a63491fb'],
+                getImageDataHash: ['83b825ab', 'a63491fb'],
+                hardwareConcurrencyHash: ['83b825ab', 'a63491fb'],
+                availHeightHash: ['83b825ab', 'a63491fb'],
+                availLeftHash: ['83b825ab', 'a63491fb'],
+                availTopHash: ['83b825ab', 'a63491fb'],
+                availWidthHash: ['83b825ab', 'a63491fb'],
+                colorDepthHash: ['83b825ab', 'a63491fb'],
+                pixelDepthHash: ['83b825ab', 'a63491fb'],
+            },
+        };
+        /*
+        Random User-Agent
+        User Agent Switcher and Manager
+        ScriptSafe
+        Windscribe
+        */
+        await queueEvent(timer);
+        const hash = {
+            // iframes
+            contentDocumentHash: hashMini(prototypeLies['HTMLIFrameElement.contentDocument']),
+            contentWindowHash: hashMini(prototypeLies['HTMLIFrameElement.contentWindow']),
+            createElementHash: hashMini(prototypeLies['Document.createElement']),
+            getElementByIdHash: hashMini(prototypeLies['Document.getElementById']),
+            appendHash: hashMini(prototypeLies['Element.append']),
+            insertAdjacentElementHash: hashMini(prototypeLies['Element.insertAdjacentElement']),
+            insertAdjacentHTMLHash: hashMini(prototypeLies['Element.insertAdjacentHTML']),
+            insertAdjacentTextHash: hashMini(prototypeLies['Element.insertAdjacentText']),
+            prependHash: hashMini(prototypeLies['Element.prepend']),
+            replaceWithHash: hashMini(prototypeLies['Element.replaceWith']),
+            appendChildHash: hashMini(prototypeLies['Node.appendChild']),
+            insertBeforeHash: hashMini(prototypeLies['Node.insertBefore']),
+            replaceChildHash: hashMini(prototypeLies['Node.replaceChild']),
+            // canvas
+            getContextHash: hashMini(prototypeLies['HTMLCanvasElement.getContext']),
+            toDataURLHash: hashMini(prototypeLies['HTMLCanvasElement.toDataURL']),
+            toBlobHash: hashMini(prototypeLies['HTMLCanvasElement.toBlob']),
+            getImageDataHash: hashMini(prototypeLies['CanvasRenderingContext2D.getImageData']),
+            // Audio
+            getByteFrequencyDataHash: hashMini(prototypeLies['AnalyserNode.getByteFrequencyData']),
+            getByteTimeDomainDataHash: hashMini(prototypeLies['AnalyserNode.getByteTimeDomainData']),
+            getFloatFrequencyDataHash: hashMini(prototypeLies['AnalyserNode.getFloatFrequencyData']),
+            getFloatTimeDomainDataHash: hashMini(prototypeLies['AnalyserNode.getFloatTimeDomainData']),
+            copyFromChannelHash: hashMini(prototypeLies['AudioBuffer.copyFromChannel']),
+            getChannelDataHash: hashMini(prototypeLies['AudioBuffer.getChannelData']),
+            // Hardware
+            hardwareConcurrencyHash: hashMini(prototypeLies['Navigator.hardwareConcurrency']),
+            // Screen
+            availHeightHash: hashMini(prototypeLies['Screen.availHeight']),
+            availLeftHash: hashMini(prototypeLies['Screen.availLeft']),
+            availTopHash: hashMini(prototypeLies['Screen.availTop']),
+            availWidthHash: hashMini(prototypeLies['Screen.availWidth']),
+            colorDepthHash: hashMini(prototypeLies['Screen.colorDepth']),
+            pixelDepthHash: hashMini(prototypeLies['Screen.pixelDepth']),
+        };
+        data.extensionHashPattern = Object.keys(hash).reduce((acc, key) => {
+            const val = hash[key];
+            if (val == disabled) {
+                return acc;
+            }
+            acc[key.replace('Hash', '')] = val;
+            return acc;
+        }, {});
+        const getExtension = ({ pattern, hash, prototypeLiesLen }) => {
+            const { noscript, trace, cydec, canvasblocker, chameleon, duckduckgo, privacybadger, privacypossum, jshelter, puppeteerExtra, fakeBrowser, } = pattern;
+            const disabled = 'c767712b';
+            if (prototypeLiesLen) {
+                if (prototypeLiesLen >= 7 &&
+                    trace.contentDocumentHash.includes(hash.contentDocumentHash) &&
+                    trace.contentWindowHash.includes(hash.contentWindowHash) &&
+                    trace.createElementHash.includes(hash.createElementHash) &&
+                    trace.getElementByIdHash.includes(hash.getElementByIdHash) &&
+                    trace.toDataURLHash.includes(hash.toDataURLHash) &&
+                    trace.toBlobHash.includes(hash.toBlobHash) &&
+                    trace.getImageDataHash.includes(hash.getImageDataHash)) {
+                    return 'Trace';
+                }
+                if (prototypeLiesLen >= 7 &&
+                    cydec.contentDocumentHash.includes(hash.contentDocumentHash) &&
+                    cydec.contentWindowHash.includes(hash.contentWindowHash) &&
+                    cydec.createElementHash.includes(hash.createElementHash) &&
+                    cydec.getElementByIdHash.includes(hash.getElementByIdHash) &&
+                    cydec.toDataURLHash.includes(hash.toDataURLHash) &&
+                    cydec.toBlobHash.includes(hash.toBlobHash) &&
+                    cydec.getImageDataHash.includes(hash.getImageDataHash)) {
+                    return 'CyDec';
+                }
+                if (prototypeLiesLen >= 6 &&
+                    canvasblocker.contentDocumentHash.includes(hash.contentDocumentHash) &&
+                    canvasblocker.contentWindowHash.includes(hash.contentWindowHash) &&
+                    canvasblocker.appendHash.includes(hash.appendHash) &&
+                    canvasblocker.toDataURLHash.includes(hash.toDataURLHash) &&
+                    canvasblocker.toBlobHash.includes(hash.toBlobHash) &&
+                    canvasblocker.getImageDataHash.includes(hash.getImageDataHash)) {
+                    return 'CanvasBlocker';
+                }
+                if (prototypeLiesLen >= 9 &&
+                    chameleon.appendHash.includes(hash.appendHash) &&
+                    chameleon.insertAdjacentElementHash.includes(hash.insertAdjacentElementHash) &&
+                    chameleon.insertAdjacentHTMLHash.includes(hash.insertAdjacentHTMLHash) &&
+                    chameleon.insertAdjacentTextHash.includes(hash.insertAdjacentTextHash) &&
+                    chameleon.prependHash.includes(hash.prependHash) &&
+                    chameleon.replaceWithHash.includes(hash.replaceWithHash) &&
+                    chameleon.appendChildHash.includes(hash.appendChildHash) &&
+                    chameleon.insertBeforeHash.includes(hash.insertBeforeHash) &&
+                    chameleon.replaceChildHash.includes(hash.replaceChildHash)) {
+                    return 'Chameleon';
+                }
+                if (prototypeLiesLen >= 10 &&
+                    duckduckgo.toDataURLHash.includes(hash.toDataURLHash) &&
+                    duckduckgo.toBlobHash.includes(hash.toBlobHash) &&
+                    duckduckgo.getImageDataHash.includes(hash.getImageDataHash) &&
+                    duckduckgo.getByteFrequencyDataHash.includes(hash.getByteFrequencyDataHash) &&
+                    duckduckgo.getByteTimeDomainDataHash.includes(hash.getByteTimeDomainDataHash) &&
+                    duckduckgo.getFloatFrequencyDataHash.includes(hash.getFloatFrequencyDataHash) &&
+                    duckduckgo.getFloatTimeDomainDataHash.includes(hash.getFloatTimeDomainDataHash) &&
+                    duckduckgo.copyFromChannelHash.includes(hash.copyFromChannelHash) &&
+                    duckduckgo.getChannelDataHash.includes(hash.getChannelDataHash) &&
+                    duckduckgo.hardwareConcurrencyHash.includes(hash.hardwareConcurrencyHash) &&
+                    duckduckgo.availHeightHash.includes(hash.availHeightHash) &&
+                    duckduckgo.availLeftHash.includes(hash.availLeftHash) &&
+                    duckduckgo.availTopHash.includes(hash.availTopHash) &&
+                    duckduckgo.availWidthHash.includes(hash.availWidthHash) &&
+                    duckduckgo.colorDepthHash.includes(hash.colorDepthHash) &&
+                    duckduckgo.pixelDepthHash.includes(hash.pixelDepthHash)) {
+                    return 'DuckDuckGo';
+                }
+                if (prototypeLiesLen >= 2 &&
+                    privacybadger.getImageDataHash.includes(hash.getImageDataHash) &&
+                    privacybadger.toDataURLHash.includes(hash.toDataURLHash)) {
+                    return 'Privacy Badger';
+                }
+                if (prototypeLiesLen >= 3 &&
+                    privacypossum.hardwareConcurrencyHash.includes(hash.hardwareConcurrencyHash) &&
+                    privacypossum.availWidthHash.includes(hash.availWidthHash) &&
+                    privacypossum.colorDepthHash.includes(hash.colorDepthHash)) {
+                    return 'Privacy Possum';
+                }
+                if (prototypeLiesLen >= 2 &&
+                    noscript.contentDocumentHash.includes(hash.contentDocumentHash) &&
+                    noscript.contentWindowHash.includes(hash.contentDocumentHash) &&
+                    noscript.getContextHash.includes(hash.getContextHash) &&
+                    // distinguish NoScript from JShelter
+                    hash.hardwareConcurrencyHash == disabled) {
+                    return 'NoScript';
+                }
+                if (prototypeLiesLen >= 14 &&
+                    jshelter.contentDocumentHash.includes(hash.contentDocumentHash) &&
+                    jshelter.contentWindowHash.includes(hash.contentDocumentHash) &&
+                    jshelter.appendHash.includes(hash.appendHash) &&
+                    jshelter.insertAdjacentElementHash.includes(hash.insertAdjacentElementHash) &&
+                    jshelter.insertAdjacentHTMLHash.includes(hash.insertAdjacentHTMLHash) &&
+                    jshelter.prependHash.includes(hash.prependHash) &&
+                    jshelter.replaceWithHash.includes(hash.replaceWithHash) &&
+                    jshelter.appendChildHash.includes(hash.appendChildHash) &&
+                    jshelter.insertBeforeHash.includes(hash.insertBeforeHash) &&
+                    jshelter.replaceChildHash.includes(hash.replaceChildHash) &&
+                    jshelter.hardwareConcurrencyHash.includes(hash.hardwareConcurrencyHash)) {
+                    return 'JShelter';
+                }
+                if (prototypeLiesLen >= 13 &&
+                    puppeteerExtra.contentDocumentHash.includes(hash.contentDocumentHash) &&
+                    puppeteerExtra.contentWindowHash.includes(hash.contentWindowHash) &&
+                    puppeteerExtra.createElementHash.includes(hash.createElementHash) &&
+                    puppeteerExtra.getElementByIdHash.includes(hash.getElementByIdHash) &&
+                    puppeteerExtra.appendHash.includes(hash.appendHash) &&
+                    puppeteerExtra.insertAdjacentElementHash.includes(hash.insertAdjacentElementHash) &&
+                    puppeteerExtra.insertAdjacentHTMLHash.includes(hash.insertAdjacentHTMLHash) &&
+                    puppeteerExtra.insertAdjacentTextHash.includes(hash.insertAdjacentTextHash) &&
+                    puppeteerExtra.prependHash.includes(hash.prependHash) &&
+                    puppeteerExtra.replaceWithHash.includes(hash.replaceWithHash) &&
+                    puppeteerExtra.appendChildHash.includes(hash.appendChildHash) &&
+                    puppeteerExtra.insertBeforeHash.includes(hash.insertBeforeHash) &&
+                    puppeteerExtra.contentDocumentHash.includes(hash.contentDocumentHash) &&
+                    puppeteerExtra.replaceChildHash.includes(hash.replaceChildHash) &&
+                    puppeteerExtra.getContextHash.includes(hash.getContextHash) &&
+                    puppeteerExtra.toDataURLHash.includes(hash.toDataURLHash) &&
+                    puppeteerExtra.toBlobHash.includes(hash.toBlobHash) &&
+                    puppeteerExtra.getImageDataHash.includes(hash.getImageDataHash) &&
+                    puppeteerExtra.hardwareConcurrencyHash.includes(hash.hardwareConcurrencyHash)) {
+                    return 'puppeteer-extra';
+                }
+                if (prototypeLiesLen >= 12 &&
+                    fakeBrowser.appendChildHash.includes(hash.appendChildHash) &&
+                    fakeBrowser.getContextHash.includes(hash.getContextHash) &&
+                    fakeBrowser.toDataURLHash.includes(hash.toDataURLHash) &&
+                    fakeBrowser.toBlobHash.includes(hash.toBlobHash) &&
+                    fakeBrowser.getImageDataHash.includes(hash.getImageDataHash) &&
+                    fakeBrowser.hardwareConcurrencyHash.includes(hash.hardwareConcurrencyHash) &&
+                    fakeBrowser.availHeightHash.includes(hash.availHeightHash) &&
+                    fakeBrowser.availLeftHash.includes(hash.availLeftHash) &&
+                    fakeBrowser.availTopHash.includes(hash.availTopHash) &&
+                    fakeBrowser.availWidthHash.includes(hash.availWidthHash) &&
+                    fakeBrowser.colorDepthHash.includes(hash.colorDepthHash) &&
+                    fakeBrowser.pixelDepthHash.includes(hash.pixelDepthHash)) {
+                    return 'FakeBrowser';
+                }
+                return;
+            }
+            return;
+        };
+        // @ts-ignore
+        data.extension = getExtension({ pattern, hash, prototypeLiesLen });
+        logTestResult({ time: timer.stop(), test: 'resistance', passed: true });
+        return data;
+    }
+    catch (error) {
+        logTestResult({ test: 'resistance', passed: false });
+        captureError(error);
+        return;
+    }
+}
+function resistanceHTML(fp) {
+    if (!fp.resistance) {
+        return `
+		<div class="col-six undefined">
+			<strong>Resistance</strong>
+			<div>privacy: ${HTMLNote.BLOCKED}</div>
+			<div>security: ${HTMLNote.BLOCKED}</div>
+			<div>mode: ${HTMLNote.BLOCKED}</div>
+			<div>extension: ${HTMLNote.BLOCKED}</div>
+		</div>`;
+    }
+    const { resistance: data, } = fp;
+    const { $hash, privacy, security, mode, extension, extensionHashPattern, engine, } = data || {};
+    const securitySettings = !security || Object.keys(security).reduce((acc, curr) => {
+        if (security[curr]) {
+            acc[curr] = 'enabled';
+            return acc;
+        }
+        acc[curr] = 'disabled';
+        return acc;
+    }, {});
+    const browserIcon = (/brave/i.test(privacy) ? '<span class="icon brave"></span>' :
+        /tor/i.test(privacy) ? '<span class="icon tor"></span>' :
+            /firefox/i.test(privacy) ? '<span class="icon firefox"></span>' :
+                '');
+    const extensionIcon = (/blink/i.test(engine) ? '<span class="icon chrome-extension"></span>' :
+        /gecko/i.test(engine) ? '<span class="icon firefox-addon"></span>' :
+            '');
+    return `
+	<div class="relative col-six">
+		<span class="aside-note">${performanceLogger.getLog().resistance}</span>
+		<strong>Resistance</strong><span class="hash">${hashSlice($hash)}</span>
+		<div>privacy: ${privacy ? `${browserIcon}${privacy}` : HTMLNote.UNKNOWN}</div>
+		<div>security: ${!security ? HTMLNote.UNKNOWN :
+        modal('creep-resistance', '<strong>Security</strong><br><br>' +
+            Object.keys(securitySettings).map((key) => `${key}: ${'' + securitySettings[key]}`).join('<br>'), hashMini(security))}</div>
+		<div>mode: ${mode || HTMLNote.UNKNOWN}</div>
+		<div>extension: ${!Object.keys(extensionHashPattern || {}).length ? HTMLNote.UNKNOWN :
+        modal('creep-extension', '<strong>Pattern</strong><br><br>' +
+            Object.keys(extensionHashPattern).map((key) => `${key}: ${'' + extensionHashPattern[key]}`).join('<br>'), (extension ? `${extensionIcon}${extension}` : hashMini(extensionHashPattern)))}</div>
+	</div>
+	`;
+}
+
+async function renderSamples(samples, { fp, styleSystemHash }) {
+    if (!samples) {
+        return;
+    }
+    const { window: windowSamples, math: mathSamples, error: errorSamples, html: htmlSamples, style: styleSamples, } = samples || {};
+    const computeData = (hash, data) => {
+        let systems = [];
+        let poolTotal = 0;
+        const metricTotal = Object.keys(data).reduce((acc, item) => acc += data[item].length, 0);
+        const decryption = Object.keys(data).find((key) => data[key].find((item) => {
+            if (!(item.id == hash)) {
+                return false;
+            }
+            systems = item.systems;
+            poolTotal = data[key].length;
+            return true;
+        }));
+        return {
+            systems,
+            poolTotal,
+            metricTotal,
+            decryption,
+        };
+    };
+    const decryptHash = (hash, data) => {
+        const { systems, poolTotal, metricTotal, decryption } = computeData(hash, data);
+        const getIcon = (name) => `<span class="icon ${name}"></span>`;
+        const browserIcon = (!decryption ? '' :
+            /edgios|edge/i.test(decryption) ? getIcon('edge') :
+                /brave/i.test(decryption) ? getIcon('brave') :
+                    /vivaldi/i.test(decryption) ? getIcon('vivaldi') :
+                        /duckduckgo/i.test(decryption) ? getIcon('duckduckgo') :
+                            /yandex/i.test(decryption) ? getIcon('yandex') :
+                                /opera/i.test(decryption) ? getIcon('opera') :
+                                    /crios|chrome/i.test(decryption) ? getIcon('chrome') :
+                                        /tor browser/i.test(decryption) ? getIcon('tor') :
+                                            /palemoon/i.test(decryption) ? getIcon('palemoon') :
+                                                /fxios|firefox/i.test(decryption) ? getIcon('firefox') :
+                                                    /safari/i.test(decryption) ? getIcon('safari') :
+                                                        '');
+        const icon = {
+            blink: '<span class="icon blink"></span>',
+            v8: '<span class="icon v8"></span>',
+            webkit: '<span class="icon webkit"></span>',
+            gecko: '<span class="icon gecko"></span>',
+            goanna: '<span class="icon goanna"></span>',
+            tor: '<span class="icon tor"></span>',
+            firefox: '<span class="icon firefox"></span>',
+            cros: '<span class="icon cros"></span>',
+            linux: '<span class="icon linux"></span>',
+            apple: '<span class="icon apple"></span>',
+            windows: '<span class="icon windows"></span>',
+            android: '<span class="icon android"></span>',
+        };
+        const engineIcon = (!decryption ? '' :
+            /SpiderMonkey/.test(decryption) ? icon.firefox :
+                /JavaScriptCore/.test(decryption) ? icon.webkit :
+                    /V8/.test(decryption) ? icon.v8 :
+                        '');
+        const engineRendererIcon = (!decryption ? '' :
+            /Gecko/.test(decryption) ? icon.gecko :
+                /WebKit/.test(decryption) ? icon.webkit :
+                    /Blink/.test(decryption) ? icon.blink :
+                        /Goanna/.test(decryption) ? icon.goanna :
+                            '');
+        const systemIcon = ((!decryption || (systems.length != 1)) ? '' :
+            /windows/i.test(systems[0]) ? icon.windows :
+                /linux/i.test(systems[0]) ? icon.linux :
+                    /ipad|iphone|ipod|ios|mac/i.test(systems[0]) ? icon.apple :
+                        /android/i.test(systems[0]) ? icon.android :
+                            /chrome os/i.test(systems[0]) ? icon.cros :
+                                '');
+        const formatPercent = (n) => n.toFixed(2).replace('.00', '');
+        return {
+            decryption: decryption || 'unknown',
+            browserHTML: (!decryption ? undefined :
+                `${browserIcon}${decryption}`),
+            engineHTML: (!decryption ? undefined :
+                `${engineIcon}${decryption}`),
+            engineRendererHTML: (!decryption ? undefined :
+                `${engineRendererIcon}${decryption}`),
+            engineRendererSystemHTML: (!decryption ? undefined :
+                `${engineRendererIcon}${systemIcon}${decryption}${systems.length != 1 ? '' : ` on ${systems[0]}`}`),
+            engineSystem: (!decryption ? undefined :
+                `${engineIcon}${systemIcon}${decryption}${systems.length != 1 ? '' : ` on ${systems[0]}`}`),
+            uniqueMetric: !decryption ? '0' : formatPercent(1 / metricTotal * 100),
+            uniqueEngine: !decryption ? '0' : formatPercent(1 / poolTotal * 100),
+        };
+    };
+    const renderWindowSamples = (fp) => {
+        const id = document.getElementById(`window-features-samples`);
+        if (!fp.windowFeatures || !id) {
+            return;
+        }
+        const { windowFeatures: { $hash } } = fp;
+        const { browserHTML, uniqueEngine } = decryptHash($hash, windowSamples);
+        return patch(id, html `
 			<div>
 				<style>
 					.window-features-class-rating {
-						background: linear-gradient(90deg, var(${zS<0xa?'--unique':'--grey-glass'}) ${zS}%, #fff0 ${zS}%, #fff0 100%);
+						background: linear-gradient(90deg, var(${uniqueEngine < 10 ? '--unique' : '--grey-glass'}) ${uniqueEngine}%, #fff0 ${uniqueEngine}%, #fff0 100%);
 					}
 				</style>
-				<div class="window-features-class-rating">${zS}% of ${zb||r[S5(0x30b)]}</div>
+				<div class="window-features-class-rating">${uniqueEngine}% of ${browserHTML || HTMLNote.UNKNOWN}</div>
 			</div>
-		`);},zT=zL=>{const S6=a0T,zp=document[S6(0xa0c)]('math-samples');if(!zL[S6(0x690)]||!zp)return;const {maths:{$hash:zn}}=zL,{engineHTML:zb,uniqueEngine:zS}=z9(zn,z4);return i(zp,K`
+		`);
+    };
+    const renderMathSamples = (fp) => {
+        const id = document.getElementById(`math-samples`);
+        if (!fp.maths || !id) {
+            return;
+        }
+        const { maths: { $hash } } = fp;
+        const { engineHTML, uniqueEngine } = decryptHash($hash, mathSamples);
+        return patch(id, html `
 			<div>
 				<style>
 					.math-class-rating {
-						background: linear-gradient(90deg, var(${zS<0xa?S6(0x935):S6(0x385)}) ${zS}%, #fff0 ${zS}%, #fff0 100%);
+						background: linear-gradient(90deg, var(${uniqueEngine < 10 ? '--unique' : '--grey-glass'}) ${uniqueEngine}%, #fff0 ${uniqueEngine}%, #fff0 100%);
 					}
 				</style>
-				<div class="math-class-rating">${zS}% of ${zb||r[S6(0x30b)]}</div>
+				<div class="math-class-rating">${uniqueEngine}% of ${engineHTML || HTMLNote.UNKNOWN}</div>
 			</div>
-		`);},zz=zL=>{const S7=a0T,zp=document[S7(0xa0c)]('error-samples');if(!zL[S7(0x412)]||!zp)return;const {consoleErrors:{$hash:zn}}=zL,{engineHTML:zb,uniqueEngine:zS}=z9(zn,z5);return i(zp,K`
+		`);
+    };
+    const renderErrorSamples = (fp) => {
+        const id = document.getElementById(`error-samples`);
+        if (!fp.consoleErrors || !id) {
+            return;
+        }
+        const { consoleErrors: { $hash } } = fp;
+        const { engineHTML, uniqueEngine } = decryptHash($hash, errorSamples);
+        return patch(id, html `
 			<div>
 				<style>
 					.console-errors-class-rating {
-						background: linear-gradient(90deg, var(${zS<0xa?S7(0x935):'--grey-glass'}) ${zS}%, #fff0 ${zS}%, #fff0 100%);
+						background: linear-gradient(90deg, var(${uniqueEngine < 10 ? '--unique' : '--grey-glass'}) ${uniqueEngine}%, #fff0 ${uniqueEngine}%, #fff0 100%);
 					}
 				</style>
-				<div class="console-errors-class-rating">${zS}% of ${zb||r['UNKNOWN']}</div>
+				<div class="console-errors-class-rating">${uniqueEngine}% of ${engineHTML || HTMLNote.UNKNOWN}</div>
 			</div>
-		`);},zZ=zL=>{const S8=a0T,zp=document[S8(0xa0c)](S8(0x557));if(!zL[S8(0xbaa)]||!zp)return;const {htmlElementVersion:{$hash:zn}}=zL,{engineRendererHTML:zb,uniqueEngine:zS}=z9(zn,z6);return i(zp,K`
+		`);
+    };
+    const renderHTMLElementSamples = (fp) => {
+        const id = document.getElementById(`html-element-samples`);
+        if (!fp.htmlElementVersion || !id) {
+            return;
+        }
+        const { htmlElementVersion: { $hash } } = fp;
+        const { engineRendererHTML, uniqueEngine } = decryptHash($hash, htmlSamples);
+        return patch(id, html `
 			<div>
 				<style>
 					.html-element-version-class-rating {
-						background: linear-gradient(90deg, var(${zS<0xa?S8(0x935):'--grey-glass'}) ${zS}%, #fff0 ${zS}%, #fff0 100%);
+						background: linear-gradient(90deg, var(${uniqueEngine < 10 ? '--unique' : '--grey-glass'}) ${uniqueEngine}%, #fff0 ${uniqueEngine}%, #fff0 100%);
 					}
 				</style>
-				<div class="html-element-version-class-rating">${zS}% of ${zb||r['UNKNOWN']}</div>
+				<div class="html-element-version-class-rating">${uniqueEngine}% of ${engineRendererHTML || HTMLNote.UNKNOWN}</div>
 			</div>
-		`);},zd=(zL,zp)=>{const S9=a0T,zn=document['getElementById']('system-style-samples');if(!zL[S9(0x8d0)]||!zn)return;const {engineRendererSystemHTML:zb}=z9(zp,z7);return i(zn,K`
+		`);
+    };
+    const renderSystemStylesSamples = (fp, styleSystemHash) => {
+        const id = document.getElementById(`system-style-samples`);
+        if (!fp.css || !id) {
+            return;
+        }
+        const { engineRendererSystemHTML } = decryptHash(styleSystemHash, styleSamples);
+        return patch(id, html `
 			<div>
-				<div>${zb||r[S9(0x30b)]}</div>
+				<div>${engineRendererSystemHTML || HTMLNote.UNKNOWN}</div>
 			</div>
-		`);};zW(z1),zT(z1),zz(z1),zZ(z1),zd(z1,z2);return;}async function Ti(z0=!![]){const SW=L3;try{const z1=q();z1['start']();let z2=WQ[SW(0x982)]||WQ[SW(0xb02)]||WQ[SW(0x6dd)]||WQ[SW(0x7d0)]||WQ[SW(0x136)]||WQ[SW(0x258)]||![];const z3=window[SW(0x6bd)]||{},{width:z4,height:z5,availWidth:z6,availHeight:z7,colorDepth:z8,pixelDepth:z9}=z3,zW=window[SW(0x36f)]||undefined,zT=d&&zW!=0x1;if(!zT){const zZ=!matchMedia(SW(0xb0f)+z3['width']+SW(0x8ab)+z3['height']+SW(0x101))[SW(0x251)];zZ&&(z2=!![],h(SW(0x745),SW(0x8b0)));}const zz={'width':z4,'height':z5,'availWidth':z6,'availHeight':z7,'colorDepth':z8,'pixelDepth':z9,'lied':z2};return z0&&a({'time':z1[SW(0x8c4)](),'test':'screen','passed':!![]}),{...zz};}catch(zd){z0&&a({'test':SW(0x6bd),'passed':![]}),f(zd);return;}}function Ty(z0){const ST=L3;if(!z0[ST(0x6bd)])return ST(0xb77)+r[ST(0x7ca)]+ST(0xae0)+r[ST(0x7ca)]+ST(0x64e)+r['BLOCKED']+ST(0x3a5)+r['BLOCKED']+'</div>\x0a\x09\x09\x09<div\x20class=\x22screen-container\x22></div>\x0a\x09\x09</div>';const {screen:z1}=z0,{$hash:z2}=z1||{},z3=P[ST(0x649)]()['screen'],z4=z6=>{const Sz=ST,z7=document[Sz(0xa0c)](Sz(0x285));if(!z7)return;return removeEventListener(Sz(0x67a),z4),Ti(![])['then'](z8=>{requestAnimationFrame(()=>i(z7,K`${z5({'data':z8,'$hash':z2,'perf':z3,'paintScreen':z4})}`));});},z5=({data:z6,$hash:z7,perf:z8,paintScreen:z9})=>{const SZ=ST,{width:zW,height:zT,availWidth:zz,availHeight:zZ,colorDepth:zd,pixelDepth:zL,lied:zp}=z6;addEventListener(SZ(0x67a),z9);const zn=window[SZ(0x6bd)]||{},{orientation:zb}=zn,{type:zS}=zb||{},zQ=window[SZ(0x36f)]||undefined,{width:zu,height:zF}=window[SZ(0x173)]||{},zv=!window[SZ(0x988)]?undefined:matchMedia(SZ(0x9d1))[SZ(0x251)]?SZ(0x2d3):matchMedia(SZ(0x71c))[SZ(0x251)]?SZ(0xaa9):undefined,zH=!window[SZ(0x988)]?undefined:matchMedia('(display-mode:\x20fullscreen)')['matches']?SZ(0x750):matchMedia('(display-mode:\x20standalone)')['matches']?SZ(0x8c8):matchMedia('(display-mode:\x20minimal-ui)')['matches']?SZ(0x219):matchMedia(SZ(0x432))[SZ(0x251)]?'browser':undefined,zx=(zP,za,zq=0xb4)=>{const zt=zP/za,zM=za>zP,zB=zM?zq*zt:zq,zO=zM?zq:zq/zt;return{'deviceWidth':zB,'deviceHeight':zO};},{deviceWidth:zD,deviceHeight:zA}=zx(innerWidth,innerHeight),zY=(zP,za)=>{const Sd=SZ,zq=+(0x1+[...Array(za)][Sd(0x638)](zt=>0x0)[Sd(0x644)](''));return Math['round'](zP*zq)/zq;},zk='Window.outerWidth\x0aWindow.outerHeight\x0aWindow.innerWidth\x0aWindow.innerHeight\x0aVisualViewport.width\x0aVisualViewport.height\x0aWindow.matchMedia()\x0aScreenOrientation.type\x0aWindow.devicePixelRatio';return SZ(0x18b)+(zp?'\x20rejected':'')+'\x22>\x0a\x09\x09\x09\x09<span\x20class=\x22time\x22>'+z8+SZ(0x7e8)+(zp?SZ(0xb64):'')+SZ(0x241)+N(z7)+'</span>\x0a\x09\x09\x09\x09<div\x20class=\x22help\x22\x20title=\x22Screen.width\x0aScreen.height\x22>...screen:\x20'+zW+SZ(0x400)+zT+'</div>\x0a\x09\x09\x09\x09<div\x20class=\x22help\x22\x20title=\x22Screen.availWidth\x0aScreen.availHeight\x22>....avail:\x20'+zz+SZ(0x400)+zZ+SZ(0x7b1)+zd+'|'+zL+SZ(0x120)+zk+SZ(0x3db)+zk+'\x22>\x0a\x09\x09\x09\x09\x09<style>\x0a\x09\x09\x09\x09\x09\x09.screen-frame\x20{\x20width:'+zD+SZ(0x7f1)+zA+SZ(0x6a4)+outerWidth+SZ(0x132)+innerWidth+SZ(0xb80)+zY(zu,0x6)+'</span>\x0a\x09\x09\x09\x09\x09<span\x20class=\x22screen-outer-h\x22>'+outerHeight+'</span>\x0a\x09\x09\x09\x09\x09<span\x20class=\x22screen-inner-h\x22>'+innerHeight+SZ(0x9e2)+zY(zF,0x6)+'</span>\x0a\x09\x09\x09\x09\x09<span\x20class=\x22screen-display-mode\x22>'+zH+SZ(0x2af)+zv+SZ(0xa1c)+zS+SZ(0xa89)+zQ+SZ(0xb15);};return'\x0a\x09'+z5({'data':z1,'$hash':z2,'perf':z3,'paintScreen':z4})+'\x0a\x09';}async function TK(){return new Promise(async z0=>{const SL=a0T;try{const z1=q();await t(z1);const z2=SL(0x801)in window;z2&&speechSynthesis[SL(0x328)]();if(!z2)return a({'test':'speech','passed':![]}),z0(null);const z3=!!WQ[SL(0x311)],z4=setTimeout(()=>{return a({'test':'speech','passed':![]}),z0(null);},0xbb8),z5=()=>{const Sp=SL,z6=speechSynthesis[Sp(0x328)](),z7=(z6||[])[Sp(0xaac)](zd=>zd[Sp(0x65d)]);if(!z6||!z6[Sp(0xb8e)]||Z&&!z7)return;clearTimeout(z4);const z8=({data:zd,voiceURISet:zL})=>zd[Sp(0x73b)](zp=>{const Sn=Sp,{voiceURI:zn}=zp;if(!zL[Sn(0x7ea)](zn))return zL[Sn(0x933)](zn),!![];return![];}),z9=z8({'data':z6,'voiceURISet':new Set()}),zW=z9[Sp(0x73b)](zd=>zd[Sp(0x65d)])[Sp(0x638)](zd=>zd[Sp(0x8ce)]),zT=z9[Sp(0x73b)](zd=>!zd['localService'])[Sp(0x638)](zd=>zd['name']),zz=[...new Set(z9[Sp(0x638)](zd=>zd[Sp(0x4be)]))],zZ=z9[Sp(0x73b)](zd=>zd[Sp(0x997)])[Sp(0x638)](zd=>zd[Sp(0x8ce)]);return a({'time':z1[Sp(0x8c4)](),'test':Sp(0x1fc),'passed':!![]}),z0({'local':zW,'remote':zT,'languages':zz,'defaults':zZ,'lied':z3});};z5();if(speechSynthesis[SL(0x926)])return speechSynthesis['addEventListener']('voiceschanged',z5);speechSynthesis['onvoiceschanged']=z5;}catch(z6){return a({'test':SL(0x1fc),'passed':![]}),f(z6),z0(null);}});}function Tr(z0){const Sb=L3;if(!z0[Sb(0x625)])return Sb(0x8cd)+r[Sb(0x7ca)]+Sb(0x396)+r[Sb(0x7ca)]+Sb(0x281)+r[Sb(0x7ca)]+'</div>\x0a\x09\x09\x09<div>default\x20(0):</div>\x0a\x09\x09\x09<div\x20class=\x22block-text\x22>'+r[Sb(0x7ca)]+Sb(0x692);const {voices:{$hash:z1,local:z2,remote:z3,languages:z4,defaults:z5,lied:z6}}=z0,z7={'Linux':Sb(0x11f),'Apple':Sb(0x170),'Windows':'<span\x20class=\x22icon\x20windows\x22></span>','Android':Sb(0xb95),'CrOS':Sb(0x124)},z8={'Chrome\x20OS':z7[Sb(0x805)],'Maged':z7[Sb(0x139)],'Microsoft':z7[Sb(0x93e)],'English\x20United\x20States':z7[Sb(0x64d)],'English\x20(United\x20States)':z7[Sb(0x64d)]},z9=Object[Sb(0xab4)](z8)[Sb(0xaac)](zW=>z2[Sb(0xaac)](zT=>zT[Sb(0x725)](zW)));return Sb(0x574)+(z6?Sb(0x5e1):'')+Sb(0x2d4)+P[Sb(0x649)]()[Sb(0x1fc)]+Sb(0x9af)+(z6?Sb(0xb64):'')+'hash\x22>'+N(z1)+Sb(0x49a)+V(z2)+Sb(0x303)+(!z2||!z2[Sb(0xb8e)]?r[Sb(0x786)]:w(Sb(0x803),z2['join'](Sb(0x708)),''+(z8[z9]||'')+WO(z2)))+Sb(0xb5a)+V(z3)+Sb(0x303)+(!z3||!z3['length']?r[Sb(0x786)]:w(Sb(0xa2f),z3[Sb(0x644)](Sb(0x708)),WO(z3)))+'</div>\x0a\x09\x09<div\x20class=\x22help\x22\x20title=\x22SpeechSynthesis.getVoices()\x0aSpeechSynthesisVoice.lang\x22>lang\x20('+V(z4)+Sb(0x303)+(!z4||!z4[Sb(0xb8e)]?r[Sb(0x7ca)]:z4['length']==0x1?z4[0x0]:w('creep-voices-languages',z4[Sb(0x644)](Sb(0x708)),WO(z4)))+Sb(0x856)+V(z5)+Sb(0x64b)+(!z5||!z5['length']?r[Sb(0x786)]:z5[Sb(0xb8e)]==0x1?z5[0x0]:w(Sb(0x413),z5[Sb(0x644)](Sb(0x708)),WO(z5)))+'\x0a\x09\x09</div>\x0a\x09</div>\x0a\x09';}async function TV(){const SS=L3;try{const z0=q();await t(z0);const z1=WQ[SS(0x24d)]||WQ[SS(0x5b3)]||WQ[SS(0x918)]||WQ[SS(0x109)]||WQ['String.fromCodePoint']||![],z2=WT&&WT[SS(0x4ea)]&&WT[SS(0x4ea)][SS(0x88e)]?WT[SS(0x4ea)]:document,z3=document[SS(0xba8)](SS(0x4e5));z2[SS(0x88e)][SS(0x446)](z3),i(z3,K`
+		`);
+    };
+    renderWindowSamples(fp);
+    renderMathSamples(fp);
+    renderErrorSamples(fp);
+    renderHTMLElementSamples(fp);
+    renderSystemStylesSamples(fp, styleSystemHash);
+    return;
+}
+
+async function getScreen(log = true) {
+    try {
+        const timer = createTimer();
+        timer.start();
+        let lied = (lieProps['Screen.width'] ||
+            lieProps['Screen.height'] ||
+            lieProps['Screen.availWidth'] ||
+            lieProps['Screen.availHeight'] ||
+            lieProps['Screen.colorDepth'] ||
+            lieProps['Screen.pixelDepth']) || false;
+        const s = (window.screen || {});
+        const { width, height, availWidth, availHeight, colorDepth, pixelDepth, } = s;
+        const dpr = window.devicePixelRatio || undefined;
+        const firefoxWithHighDPR = IS_GECKO && (dpr != 1);
+        if (!firefoxWithHighDPR) {
+            // firefox with high dpr requires floating point precision dimensions
+            const matchMediaLie = !matchMedia(`(device-width: ${s.width}px) and (device-height: ${s.height}px)`).matches;
+            if (matchMediaLie) {
+                lied = true;
+                documentLie('Screen', 'failed matchMedia');
+            }
+        }
+        const data = {
+            width,
+            height,
+            availWidth,
+            availHeight,
+            colorDepth,
+            pixelDepth,
+            lied,
+        };
+        log && logTestResult({ time: timer.stop(), test: 'screen', passed: true });
+        return Object.assign({}, data);
+    }
+    catch (error) {
+        log && logTestResult({ test: 'screen', passed: false });
+        captureError(error);
+        return;
+    }
+}
+function screenHTML(fp) {
+    if (!fp.screen) {
+        return `
+		<div class="col-six undefined">
+			<strong>Screen</strong>
+			<div>...screen: ${HTMLNote.BLOCKED}</div>
+			<div>....avail: ${HTMLNote.BLOCKED}</div>
+			<div>depth: ${HTMLNote.BLOCKED}</div>
+			<div>viewport: ${HTMLNote.BLOCKED}</div>
+			<div class="screen-container"></div>
+		</div>`;
+    }
+    const { screen: data, } = fp;
+    const { $hash } = data || {};
+    const perf = performanceLogger.getLog().screen;
+    const paintScreen = (event) => {
+        const el = document.getElementById('creep-resize');
+        if (!el) {
+            return;
+        }
+        removeEventListener('resize', paintScreen);
+        return getScreen(false).then((data) => {
+            requestAnimationFrame(() => patch(el, html `${resizeHTML(({ data, $hash, perf, paintScreen }))}`));
+        });
+    };
+    const resizeHTML = ({ data, $hash, perf, paintScreen }) => {
+        const { width, height, availWidth, availHeight, colorDepth, pixelDepth, lied, } = data;
+        addEventListener('resize', paintScreen);
+        const s = (window.screen || {});
+        const { orientation } = s;
+        const { type: orientationType } = orientation || {};
+        const dpr = window.devicePixelRatio || undefined;
+        const { width: vVWidth, height: vVHeight } = (window.visualViewport || {});
+        const mediaOrientation = !window.matchMedia ? undefined : (matchMedia('(orientation: landscape)').matches ? 'landscape' :
+            matchMedia('(orientation: portrait)').matches ? 'portrait' : undefined);
+        const displayMode = !window.matchMedia ? undefined : (matchMedia('(display-mode: fullscreen)').matches ? 'fullscreen' :
+            matchMedia('(display-mode: standalone)').matches ? 'standalone' :
+                matchMedia('(display-mode: minimal-ui)').matches ? 'minimal-ui' :
+                    matchMedia('(display-mode: browser)').matches ? 'browser' : undefined);
+        const getDeviceDimensions = (width, height, diameter = 180) => {
+            const aspectRatio = width / height;
+            const isPortrait = height > width;
+            const deviceWidth = isPortrait ? diameter * aspectRatio : diameter;
+            const deviceHeight = isPortrait ? diameter : diameter / aspectRatio;
+            return { deviceWidth, deviceHeight };
+        };
+        // const { deviceWidth, deviceHeight } = getDeviceDimensions(width, height)
+        const { deviceWidth: deviceInnerWidth, deviceHeight: deviceInnerHeight } = getDeviceDimensions(innerWidth, innerHeight);
+        const toFix = (n, nFix) => {
+            const d = +(1 + [...Array(nFix)].map((x) => 0).join(''));
+            return Math.round(n * d) / d;
+        };
+        const viewportTitle = `Window.outerWidth\nWindow.outerHeight\nWindow.innerWidth\nWindow.innerHeight\nVisualViewport.width\nVisualViewport.height\nWindow.matchMedia()\nScreenOrientation.type\nWindow.devicePixelRatio`;
+        return `
+			<div id="creep-resize" class="relative col-six${lied ? ' rejected' : ''}">
+				<span class="time">${perf}</span>
+				<strong>Screen</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+				<div class="help" title="Screen.width\nScreen.height">...screen: ${width} x ${height}</div>
+				<div class="help" title="Screen.availWidth\nScreen.availHeight">....avail: ${availWidth} x ${availHeight}</div>
+				<div class="help" title="Screen.colorDepth\nScreen.pixelDepth">depth: ${colorDepth}|${pixelDepth}</div>
+				<div class="help" title="${viewportTitle}">viewport:</div>
+				<div class="screen-container relative help" title="${viewportTitle}">
+					<style>
+						.screen-frame { width:${deviceInnerWidth}px;height:${deviceInnerHeight}px; }
+						.screen-outer-w,
+						.screen-outer-h,
+						.screen-inner-w,
+						.screen-inner-h,
+						.screen-visual-w,
+						.screen-visual-h,
+						.screen-display-mode,
+						.screen-media-orientation,
+						.screen-orientation-type,
+						.screen-dpr {
+							position: absolute;
+							font-size: 12px !important;
+							border-radius: 3px;
+							padding: 0 3px;
+							margin: 3px 0;
+							z-index: 1;
+						}
+						.screen-outer-w,
+						.screen-inner-w,
+						.screen-visual-w,
+						.screen-display-mode,
+						.screen-media-orientation,
+						.screen-orientation-type,
+						.screen-dpr, {
+							text-align: center;
+						}
+						.screen-outer-h,
+						.screen-inner-h,
+						.screen-visual-h,
+						.screen-display-mode,
+						.screen-media-orientation,
+						.screen-orientation-type,
+						.screen-dpr {
+							line-height: 216px; /* this is derived from the container height*/
+						}
+						.screen-outer-h,
+						.screen-inner-h,
+						.screen-visual-h {
+							left: 0;
+						}
+						.screen-outer-w,
+						.screen-outer-h {
+							top: -29px;
+						}
+						.screen-inner-w,
+						.screen-inner-h {
+							top: -17px;
+						}
+						.screen-visual-w,
+						.screen-visual-h {
+							top: -5px;
+						}
+
+						.screen-display-mode {
+							top: -31px;
+						}
+						.screen-media-orientation {
+							top: -19px;
+						}
+						.screen-orientation-type {
+							top: -7px;
+						}
+						.screen-dpr {
+							top: 5px;
+						}
+
+					</style>
+					<span class="screen-outer-w">${outerWidth}</span>
+					<span class="screen-inner-w">${innerWidth}</span>
+					<span class="screen-visual-w">${toFix(vVWidth, 6)}</span>
+					<span class="screen-outer-h">${outerHeight}</span>
+					<span class="screen-inner-h">${innerHeight}</span>
+					<span class="screen-visual-h">${toFix(vVHeight, 6)}</span>
+					<span class="screen-display-mode">${displayMode}</span>
+					<span class="screen-media-orientation">${mediaOrientation}</span>
+					<span class="screen-orientation-type">${orientationType}</span>
+					<span class="screen-dpr">${dpr}</span>
+					<div class="screen-frame relative">
+						<div class="screen-glass"></div>
+					</div>
+				</div>
+			</div>
+			`;
+    };
+    return `
+	${resizeHTML({ data, $hash, perf, paintScreen })}
+	`;
+}
+
+async function getVoices() {
+    return new Promise(async (resolve) => {
+        try {
+            const timer = createTimer();
+            await queueEvent(timer);
+            // use window since iframe is unstable in FF
+            const supported = 'speechSynthesis' in window;
+            supported && speechSynthesis.getVoices(); // warm up
+            if (!supported) {
+                logTestResult({ test: 'speech', passed: false });
+                return resolve(null);
+            }
+            const voicesLie = !!lieProps['SpeechSynthesis.getVoices'];
+            const giveUpOnVoices = setTimeout(() => {
+                logTestResult({ test: 'speech', passed: false });
+                return resolve(null);
+            }, 3000);
+            const getVoices = () => {
+                const data = speechSynthesis.getVoices();
+                const localServiceDidLoad = (data || []).find((x) => x.localService);
+                if (!data || !data.length || (IS_BLINK && !localServiceDidLoad)) {
+                    return;
+                }
+                clearTimeout(giveUpOnVoices);
+                const filterFirstOccurrenceOfUniqueVoiceURIData = ({ data, voiceURISet }) => data
+                    .filter((x) => {
+                    const { voiceURI } = x;
+                    if (!voiceURISet.has(voiceURI)) {
+                        voiceURISet.add(voiceURI);
+                        return true;
+                    }
+                    return false;
+                });
+                const dataUnique = filterFirstOccurrenceOfUniqueVoiceURIData({
+                    data,
+                    voiceURISet: new Set(),
+                });
+                // https://wicg.github.io/speech-api/#speechsynthesisvoice-attributes
+                const local = dataUnique.filter((x) => x.localService).map((x) => x.name);
+                const remote = dataUnique.filter((x) => !x.localService).map((x) => x.name);
+                const languages = [...new Set(dataUnique.map((x) => x.lang))];
+                const defaults = dataUnique.filter((x) => x.default).map((x) => x.name);
+                logTestResult({ time: timer.stop(), test: 'speech', passed: true });
+                return resolve({
+                    local,
+                    remote,
+                    languages,
+                    defaults,
+                    lied: voicesLie,
+                });
+            };
+            getVoices();
+            if (speechSynthesis.addEventListener) {
+                return speechSynthesis.addEventListener('voiceschanged', getVoices);
+            }
+            speechSynthesis.onvoiceschanged = getVoices;
+        }
+        catch (error) {
+            logTestResult({ test: 'speech', passed: false });
+            captureError(error);
+            return resolve(null);
+        }
+    });
+}
+function voicesHTML(fp) {
+    if (!fp.voices) {
+        return `
+		<div class="col-four undefined">
+			<strong>Speech</strong>
+			<div>local (0): ${HTMLNote.BLOCKED}</div>
+			<div>remote (0): ${HTMLNote.BLOCKED}</div>
+			<div>lang (0): ${HTMLNote.BLOCKED}</div>
+			<div>default (0):</div>
+			<div class="block-text">${HTMLNote.BLOCKED}</div>
+		</div>`;
+    }
+    const { voices: { $hash, local, remote, languages, defaults, lied, }, } = fp;
+    const icon = {
+        'Linux': '<span class="icon linux"></span>',
+        'Apple': '<span class="icon apple"></span>',
+        'Windows': '<span class="icon windows"></span>',
+        'Android': '<span class="icon android"></span>',
+        'CrOS': '<span class="icon cros"></span>',
+    };
+    const system = {
+        'Chrome OS': icon.CrOS,
+        'Maged': icon.Apple,
+        'Microsoft': icon.Windows,
+        'English United States': icon.Android,
+        'English (United States)': icon.Android,
+    };
+    const systemVoice = Object.keys(system).find((key) => local.find((voice) => voice.includes(key)));
+    return `
+	<div class="relative col-four${lied ? ' rejected' : ''}">
+		<span class="aside-note">${performanceLogger.getLog().speech}</span>
+		<strong>Speech</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+		<div class="help" title="SpeechSynthesis.getVoices()\nSpeechSynthesisVoice.localService">local (${count(local)}): ${!local || !local.length ? HTMLNote.UNSUPPORTED :
+        modal('creep-voices-local', local.join('<br>'), `${system[systemVoice] || ''}${hashMini(local)}`)}</div>
+		<div class="help" title="SpeechSynthesis.getVoices()">remote (${count(remote)}): ${!remote || !remote.length ? HTMLNote.UNSUPPORTED :
+        modal('creep-voices-remote', remote.join('<br>'), hashMini(remote))}</div>
+		<div class="help" title="SpeechSynthesis.getVoices()\nSpeechSynthesisVoice.lang">lang (${count(languages)}): ${!languages || !languages.length ? HTMLNote.BLOCKED :
+        languages.length == 1 ? languages[0] : modal('creep-voices-languages', languages.join('<br>'), hashMini(languages))}</div>
+		<div class="help" title="SpeechSynthesis.getVoices()\nSpeechSynthesisVoice.default">default (${count(defaults)}):</div>
+		<div class="block-text">
+			${!defaults || !defaults.length ? HTMLNote.UNSUPPORTED :
+        defaults.length == 1 ? defaults[0] : modal('creep-voices-defaults', defaults.join('<br>'), hashMini(defaults))}
+		</div>
+	</div>
+	`;
+}
+
+async function getSVG() {
+    try {
+        const timer = createTimer();
+        await queueEvent(timer);
+        const lied = (lieProps['SVGRect.height'] ||
+            lieProps['SVGRect.width'] ||
+            lieProps['SVGRect.x'] ||
+            lieProps['SVGRect.y'] ||
+            lieProps['String.fromCodePoint']) || false;
+        const doc = (PHANTOM_DARKNESS &&
+            PHANTOM_DARKNESS.document &&
+            PHANTOM_DARKNESS.document.body ? PHANTOM_DARKNESS.document :
+            document);
+        const divElement = document.createElement('div');
+        doc.body.appendChild(divElement);
+        // patch div
+        patch(divElement, html `
 			<div id="svg-container">
 				<style>
 				#svg-container {
@@ -321,7 +7409,7 @@ function a0W(){const QU=['call','Asia/Almaty','\x27\x20(device-width:\x20','conv
 					height: auto;
 				}
 				.svgrect-emoji {
-					font-family: ${O};
+					font-family: ${CSS_FONT_FAMILY};
 					font-size: 200px !important;
 					height: auto;
 					position: absolute !important;
@@ -330,20 +7418,2160 @@ function a0W(){const QU=['call','Asia/Almaty','\x27\x20(device-width:\x20','conv
 				</style>
 				<svg>
 					<g id="svgBox">
-						${B[SS(0x638)](zd=>{const SQ=SS;return SQ(0x968)+zd+SQ(0x6be);})}
+						${EMOJIS.map((emoji) => {
+            return `<text x="32" y="32" class="svgrect-emoji">${emoji}</text>`;
+        })}
 					</g>
 				</svg>
 			</div>
-		`);const z4=zd=>{const Su=SS,zL=Object[Su(0xab4)](zd[Su(0x617)]);return zL[Su(0x729)]((zp,zn)=>{const SF=Su,zb=zd[zn],zS=typeof zb==SF(0x71b);return zS?zp:{...zp,[zn]:zb};},{});},z5=zd=>{const Sv=SS,zL=Object[Sv(0xab4)](zd['__proto__']);return zL[Sv(0x729)]((zp,zn)=>{const zb=zd[zn];return isNaN(zb)?zp:zp+=zb;},0x0);},z6=zd=>!zd?0x0:Object[SS(0xab4)](zd)[SS(0x729)]((zL,zp)=>zL+=Math[SS(0xb73)](zd[zp]),0x0),z7=z2[SS(0xa0c)]('svgBox'),z8=z4(z7[SS(0x985)]()),z9=new Set(),zW=[...z7[SS(0x1ae)](SS(0x685))];await t(z0);const zT=zW[SS(0x729)]((zd,zL,zp)=>{const SH=SS,zn=B[zp],zb=''+zL['getComputedTextLength']();return!z9[SH(0x7ea)](zb)&&(z9[SH(0x933)](zb),zd[SH(0x933)](zn)),zd;},new Set()),zz=0.00001*[...z9][SS(0x638)](zd=>{const Sx=SS;return zd[Sx(0x184)](',')[Sx(0x729)]((zL,zp)=>zL+=+zp||0x0,0x0);})['reduce']((zd,zL)=>zd+=zL,0x0),zZ={'bBox':z6(z8),'extentOfChar':z5(zW[0x0][SS(0x546)](B[0x0])),'subStringLength':zW[0x0]['getSubStringLength'](0x0,0xa),'computedTextLength':zW[0x0][SS(0x66a)](),'emojiSet':[...zT],'svgrectSystemSum':zz,'lied':z1};return z2[SS(0x88e)][SS(0x3e3)](z2['getElementById'](SS(0xb62))),a({'time':z0[SS(0x8c4)](),'test':SS(0xabe),'passed':!![]}),zZ;}catch(zd){a({'test':SS(0xabe),'passed':![]}),f(zd);return;}}function TR(z0){const SD=L3;if(!z0[SD(0xabe)])return'\x0a\x09\x09<div\x20class=\x22col-six\x20undefined\x22>\x0a\x09\x09\x09<strong>SVGRect</strong>\x0a\x09\x09\x09<div>bBox:\x20'+r[SD(0x7ca)]+'</div>\x0a\x09\x09\x09<div>char:\x20'+r[SD(0x7ca)]+SD(0x1e5)+r[SD(0x7ca)]+'</div>\x0a\x09\x09\x09<div>text:\x20'+r[SD(0x7ca)]+SD(0x91b)+r[SD(0x7ca)]+SD(0x692);const {svg:{$hash:z1,bBox:z2,subStringLength:z3,extentOfChar:z4,computedTextLength:z5,emojiSet:z6,svgrectSystemSum:z7,lied:z8}}=z0,z9=0x2710,zW=SD(0x4c2)+WO(z6)+'\x0a'+z6[SD(0x638)]((zT,zz)=>zz&&zz%0x6==0x0?zT+'\x0a':zT)['join']('');return SD(0xb6a)+(z8?SD(0x5e1):'')+SD(0x2d4)+P[SD(0x649)]()[SD(0xabe)]+'</span>\x0a\x09\x09<strong>SVGRect</strong><span\x20class=\x22'+(z8?SD(0xb64):'')+SD(0x241)+N(z1)+SD(0x31a)+(z2?z2/z9:r[SD(0x7ca)])+SD(0x8d5)+(z4?z4/z9:r[SD(0x7ca)])+SD(0x67c)+(z3?z3/z9:r[SD(0x7ca)])+'</div>\x0a\x09\x09<div\x20class=\x22help\x22\x20title=\x22SVGTextContentElement.getComputedTextLength()\x22>text:\x20'+(z5?z5/z9:r['BLOCKED'])+SD(0xbd4)+zW+SD(0x23d)+(z7||r['UNSUPPORTED'])+SD(0x24c)+O+'\x22>'+M(z6)+SD(0x674);}function Tw(){const SA=L3,z0=[SA(0x6a8),SA(0xacf),SA(0x7ab),'Etc/GMT+1',SA(0x1fb),SA(0x457),SA(0x559),'Etc/GMT+2',SA(0x4a7),SA(0x93c),'Etc/GMT+5','Etc/GMT+6',SA(0x80f),SA(0x9b8),SA(0x350),'Etc/GMT-1','Etc/GMT-10',SA(0x8f2),'Etc/GMT-12',SA(0x4a5),SA(0x561),SA(0x208),SA(0x79f),'Etc/GMT-4',SA(0x74f),'Etc/GMT-6',SA(0x776),SA(0x36a),SA(0x5a2),SA(0x73a),SA(0x810),SA(0x7c2),SA(0x56d),SA(0x454),SA(0x7c1),SA(0x554),'Africa/Bangui','Africa/Banjul',SA(0xa5c),'Africa/Blantyre',SA(0x654),SA(0x107),SA(0x7e3),SA(0xa0e),SA(0x376),'Africa/Conakry','Africa/Dakar',SA(0x5ba),'Africa/Djibouti',SA(0x6ea),SA(0x7ad),SA(0x3e0),'Africa/Gaborone',SA(0x861),SA(0x181),SA(0x9a0),SA(0xa3d),SA(0x9f6),SA(0x7db),SA(0x95d),SA(0x500),SA(0x66d),'Africa/Lome',SA(0x7f9),SA(0x829),'Africa/Lusaka','Africa/Malabo',SA(0x61f),SA(0x4d5),SA(0xb11),SA(0xb0e),SA(0x163),SA(0x93a),'Africa/Ndjamena','Africa/Niamey',SA(0x3dd),SA(0x7a4),'Africa/Porto-Novo',SA(0x2d2),'Africa/Tripoli',SA(0x304),SA(0xb6c),SA(0x9d9),'America/Anchorage',SA(0x40b),SA(0x84e),SA(0x13e),SA(0x739),SA(0x9f7),SA(0x7b0),'America/Argentina/Jujuy','America/Argentina/La_Rioja',SA(0x2a4),SA(0xa4b),SA(0x459),SA(0x8b5),SA(0x25a),SA(0x2bc),'America/Argentina/Ushuaia','America/Aruba',SA(0x835),SA(0x416),'America/Bahia',SA(0x7fc),SA(0x8a2),SA(0x293),'America/Belize',SA(0x703),SA(0x68e),SA(0x455),SA(0x96a),SA(0x205),SA(0x6c5),'America/Cancun',SA(0x53e),'America/Cayenne',SA(0x870),SA(0xad6),SA(0x4aa),SA(0x724),SA(0x7a3),SA(0x6ed),SA(0x59c),SA(0x249),SA(0x1d4),SA(0x800),SA(0x3ca),SA(0x96e),SA(0x91c),SA(0x18a),SA(0xa17),SA(0x15e),'America/Fort_Nelson',SA(0x2b1),'America/Glace_Bay','America/Godthab',SA(0x55d),SA(0x178),SA(0xa82),SA(0x854),SA(0x191),'America/Guayaquil',SA(0x9be),SA(0xb27),'America/Havana',SA(0x555),SA(0xacb),SA(0x898),SA(0xbaf),SA(0x9cf),SA(0x95e),SA(0xb54),SA(0x676),'America/Indiana/Winamac',SA(0x4d9),SA(0xbd1),SA(0x6c1),'America/Juneau',SA(0x6c0),SA(0x2f8),SA(0x76f),'America/La_Paz',SA(0x341),SA(0x6e0),SA(0x7d3),SA(0x4d2),SA(0x713),SA(0x33b),SA(0x9e6),'America/Martinique','America/Matamoros','America/Mazatlan',SA(0xb2d),SA(0x53d),SA(0x36e),SA(0x4f9),'America/Miquelon',SA(0x1bb),SA(0x483),SA(0x5e8),SA(0xfa),SA(0x3a0),SA(0x3cd),'America/Nipigon',SA(0x334),'America/Noronha','America/North_Dakota/Beulah',SA(0x811),'America/North_Dakota/New_Salem',SA(0x2f4),SA(0xa07),SA(0x2b0),'America/Paramaribo',SA(0x8b9),'America/Port-au-Prince',SA(0xa21),SA(0x1ef),SA(0xacc),SA(0x9c7),SA(0x4c8),SA(0x68c),SA(0x13c),SA(0xadf),'America/Resolute',SA(0x14e),SA(0x8ea),SA(0x993),'America/Santo_Domingo',SA(0x8aa),SA(0x160),SA(0x548),SA(0x425),'America/St_Johns',SA(0xa05),SA(0x637),SA(0x477),SA(0x768),SA(0x398),'America/Tegucigalpa',SA(0x6d0),SA(0x42e),SA(0x80c),SA(0x1de),SA(0x1f3),SA(0x671),SA(0x2b4),SA(0x383),'America/Yakutat',SA(0xbb9),SA(0x41c),SA(0xb9e),SA(0x9ed),SA(0x525),SA(0x72b),SA(0x23b),SA(0x989),SA(0xa23),SA(0x135),SA(0x318),'Antarctica/Vostok',SA(0x2c1),SA(0x85e),SA(0xa35),SA(0x104),SA(0x761),SA(0xaf5),SA(0x57c),SA(0x7ec),SA(0x64c),SA(0x268),SA(0x967),SA(0xa60),SA(0x653),'Asia/Barnaul',SA(0x5f2),SA(0x1fd),SA(0x263),'Asia/Calcutta',SA(0x675),SA(0x96d),SA(0x76b),SA(0x16d),SA(0x93f),SA(0x979),SA(0x7ae),SA(0x5c9),SA(0x771),SA(0x849),SA(0x94b),SA(0x2ad),SA(0x47c),'Asia/Hovd','Asia/Irkutsk',SA(0x9bc),'Asia/Jayapura',SA(0xaca),'Asia/Kabul','Asia/Kamchatka',SA(0x92a),SA(0xb66),SA(0x4dc),'Asia/Kolkata',SA(0x126),'Asia/Kuala_Lumpur',SA(0x1b4),SA(0xab9),SA(0xaab),SA(0x4ad),'Asia/Makassar',SA(0x98f),SA(0x8a6),'Asia/Nicosia',SA(0x5b7),SA(0x195),SA(0x97d),'Asia/Oral',SA(0x2fb),SA(0x9f1),'Asia/Pyongyang',SA(0xb82),SA(0x21e),SA(0x8bf),SA(0x889),SA(0x28a),SA(0xafc),SA(0x276),SA(0xb97),'Asia/Singapore',SA(0x5f3),'Asia/Taipei',SA(0x9b6),SA(0x6c8),SA(0x514),SA(0x199),SA(0x1e4),SA(0x5ac),SA(0x4ff),SA(0x18d),SA(0x797),SA(0xb5f),'Asia/Vladivostok',SA(0xb8f),SA(0x1c3),SA(0xa3c),SA(0x4c6),SA(0x87b),'Atlantic/Bermuda',SA(0xa4e),'Atlantic/Cape_Verde','Atlantic/Faroe',SA(0x5a9),SA(0x5a4),SA(0x955),SA(0x177),SA(0x4c1),'Australia/Adelaide',SA(0x87f),SA(0x78c),'Australia/Currie',SA(0x90d),SA(0x41a),'Australia/Hobart',SA(0x292),SA(0x488),SA(0x4f5),'Australia/Perth',SA(0x716),SA(0x669),SA(0x3fd),'Europe/Astrakhan',SA(0x50c),SA(0x3de),SA(0x12b),SA(0x863),'Europe/Brussels','Europe/Bucharest',SA(0x727),SA(0x715),SA(0x448),SA(0x284),SA(0x346),SA(0x921),SA(0x237),SA(0x1c9),SA(0x2c5),SA(0x37f),'Europe/Jersey','Europe/Kaliningrad',SA(0x3fa),SA(0x351),'Europe/Lisbon','Europe/Ljubljana','Europe/London',SA(0xaa5),'Europe/Madrid',SA(0xbcf),SA(0xac3),SA(0x98a),'Europe/Monaco',SA(0xbcc),'Europe/Oslo',SA(0x424),'Europe/Podgorica',SA(0x3b6),SA(0xa3f),SA(0x733),SA(0x209),'Europe/San_Marino',SA(0x10f),SA(0x971),SA(0x45c),'Europe/Skopje',SA(0x7c9),'Europe/Stockholm',SA(0x884),SA(0x5f9),'Europe/Ulyanovsk',SA(0x56e),SA(0x817),'Europe/Vatican',SA(0x92e),SA(0x9ee),SA(0x43a),'Europe/Warsaw','Europe/Zagreb',SA(0xa91),SA(0x809),SA(0xa90),SA(0x22f),SA(0x91a),'Indian/Cocos','Indian/Comoro',SA(0x330),SA(0x437),SA(0x313),'Indian/Mauritius',SA(0x82f),SA(0x7fe),SA(0x7ed),SA(0x99c),'Pacific/Bougainville',SA(0x254),SA(0x7a5),SA(0x99b),SA(0x165),SA(0x8b4),'Pacific/Fakaofo',SA(0xa69),SA(0x33f),SA(0x6dc),SA(0x769),'Pacific/Guadalcanal',SA(0x223),'Pacific/Honolulu',SA(0x393),'Pacific/Kosrae','Pacific/Kwajalein',SA(0x6db),SA(0x859),'Pacific/Midway',SA(0x47e),SA(0x431),SA(0x28e),SA(0xb75),'Pacific/Pago_Pago','Pacific/Palau',SA(0x1c1),SA(0x15c),SA(0x9f3),'Pacific/Rarotonga',SA(0x7de),'Pacific/Tahiti','Pacific/Tarawa',SA(0x244),SA(0x102),SA(0x5ec)],z1=()=>{const SY=SA,[z6,z7,z8]=JSON[SY(0x1b9)](new Date())[SY(0x80d)](0x1,0xb)['split']('-'),z9=z7+'/'+z8+'/'+z6,zW=z6+'-'+z7+'-'+z8,zT=+new Date(z9),zz=+new Date(zW),zZ=+((zT-zz)/0xea60);return~~zZ;},z2=({year:z6,city:city=null})=>{const Sk=SA,z7={'timeZone':'','year':'numeric','month':Sk(0x6d4),'day':'numeric','hour':Sk(0x6d4),'minute':Sk(0x6d4),'second':Sk(0x6d4)},z8=0xea60;let z9,zW;if(city){const zZ={...z7,'timeZone':city};z9=new Intl['DateTimeFormat']('en',zZ),zW=+new Date(z9[Sk(0x138)](new Date(Sk(0x5ae)+z6)));}else zW=+new Date('7/1/'+z6);const zT=+new Date(z6+Sk(0xb03)),zz=(zW-zT)/z8;return zz;},z3=(z6,z7)=>{const SP=SA,z8=z6[SP(0xb8e)],z9=Math[SP(0x4f2)](z8/0x2),[zW,zT]=[z6[SP(0x80d)](0x0,z9),z6['slice'](z9,z8)],zz=z7(zW);return z8==0x1||zz[SP(0xb8e)]?zz:z3(zT,z7);},z4=({year:z6,timeZone:z7})=>{const Sa=SA,z8=z2({'year':z6}),z9=z2({'year':z6,'city':z7}),zW=zZ=>zZ[Sa(0x73b)](zd=>z8==z2({'year':z6,'city':zd})),zT=z8==z9?[z7]:z3(z0,zW),zz=zT[Sa(0xb8e)]==0x1&&zT[0x0]==z7?z7:WO(zT);return zz;},z5=z6=>{const Sq=SA;try{return z6[Sq(0x737)](/_/,'\x20')[Sq(0x184)]('/')['join'](',\x20');}catch(z7){}return z6;};try{const z6=q();z6['start']();const z7=WQ[SA(0x587)]||WQ[SA(0x17f)]||WQ[SA(0x1da)]||![],z8=0x459,{timeZone:z9}=Intl[SA(0x7d2)]()[SA(0x69e)](),zW=z4({'year':z8,'timeZone':z9}),zT=+new Date(new Date(SA(0x5ae)+z8)),zz=/.*\(|\).*/g,zZ={'zone':(''+new Date())[SA(0x737)](zz,''),'location':z5(z9),'locationMeasured':z5(zW),'locationEpoch':zT,'offset':new Date()[SA(0x66c)](),'offsetComputed':z1(),'lied':z7};return a({'time':z6[SA(0x8c4)](),'test':SA(0x79b),'passed':!![]}),{...zZ};}catch(zd){a({'test':SA(0x79b),'passed':![]}),f(zd);return;}}function Tm(z0){const St=L3;if(!z0[St(0x79b)])return'\x0a\x09\x09<div\x20class=\x22col-six\x20undefined\x22>\x0a\x09\x09\x09<strong>Timezone</strong>\x0a\x09\x09\x09<div\x20class=\x22block-text\x22>'+r[St(0x7ca)]+St(0x692);const {timezone:{$hash:z1,zone:z2,location:z3,locationMeasured:z4,locationEpoch:z5,offset:z6,offsetComputed:z7,lied:z8}}=z0;return'\x0a\x09<div\x20class=\x22relative\x20col-six'+(z8?St(0x5e1):'')+St(0x2d4)+P[St(0x649)]()[St(0x79b)]+St(0x365)+(z8?St(0xb64):'')+St(0x241)+N(z1)+St(0x28f)+(z2?z2:'')+St(0x186)+(z3!=z4?z4:z3)+St(0x186)+z5+'\x0a\x09\x09\x09<br>'+(z6!=z7?z7:z6)+St(0x60b);}async function TE(){const SM=L3,z0=()=>[SM(0x445),SM(0x55e),'STENCIL_VALUE_MASK',SM(0x37c),'STENCIL_BACK_VALUE_MASK',SM(0x1e3),SM(0x3a6),SM(0x791),SM(0x680),SM(0x694),SM(0x812),SM(0x9d7),SM(0x914),SM(0x6ba),SM(0x720),'MAX_FRAGMENT_UNIFORM_VECTORS',SM(0x6c9),'VENDOR','RENDERER','VERSION','MAX_CUBE_MAP_TEXTURE_SIZE',SM(0x224),SM(0x6c3),'MAX_ELEMENTS_VERTICES',SM(0x8cc),SM(0xb90),'MAX_DRAW_BUFFERS',SM(0x540),SM(0xa62),SM(0x458),SM(0x56b),'MAX_VARYING_COMPONENTS',SM(0x5eb),SM(0x6da),SM(0x114),SM(0x961),SM(0x45a),SM(0xa7a),SM(0x88c),SM(0x6b6),SM(0x6fd),'MAX_UNIFORM_BLOCK_SIZE',SM(0x623),'MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS',SM(0xb10),SM(0xb18),SM(0xa24),SM(0x1c0),SM(0x4ab)][SM(0x89d)](),z1=z2=>{const SB=SM,z3=SB(0x787)in window&&L&&!/(Cr|Fx)iOS/[SB(0x579)](navigator[SB(0x4b4)]);if(!z2||z3)return;z2[SB(0x510)](z2['COLOR_BUFFER_BIT']);const z4=z2[SB(0x52f)]();z2[SB(0x246)](z2[SB(0x8ca)],z4);const z5=new Float32Array([-0.9,-0.7,0x0,0.8,-0.7,0x0,0x0,0.5,0x0]);z2[SB(0x3d4)](z2['ARRAY_BUFFER'],z5,z2[SB(0x7a7)]);const z6=z2['createProgram'](),z7=z2[SB(0xae8)](z2['VERTEX_SHADER']);z2['shaderSource'](z7,SB(0x615)),z2[SB(0x7dc)](z7),z2['attachShader'](z6,z7);const z8=z2[SB(0xae8)](z2['FRAGMENT_SHADER']);z2[SB(0x723)](z8,'\x0a\x09\x09\x09precision\x20mediump\x20float;\x0a\x09\x09\x09varying\x20vec2\x20varyinTexCoordinate;\x0a\x09\x09\x09void\x20main()\x20{\x0a\x09\x09\x09\x09gl_FragColor\x20=\x20vec4(varyinTexCoordinate,\x201,\x201);\x0a\x09\x09\x09}\x0a\x09\x09'),z2[SB(0x7dc)](z8),z2[SB(0xa15)](z6,z8);const z9=0x3;z2[SB(0x5a6)](z6),z2[SB(0xaa4)](z6),z6['vertexPosAttrib']=z2[SB(0x176)](z6,SB(0xafd)),z6[SB(0x2e9)]=z2['getUniformLocation'](z6,'uniformOffset'),z2[SB(0x282)](z6[SB(0x7f2)]),z2[SB(0x81c)](z6[SB(0x8d8)],z9,z2[SB(0xa9c)],![],0x0,0x0),z2['uniform2f'](z6[SB(0x2e9)],0x1,0x1);const zW=0x3;return z2[SB(0x207)](z2['LINE_LOOP'],0x0,zW),z2;};try{const z2=q();await t(z2);const z3=WQ['HTMLCanvasElement.toDataURL'],z4=WQ[SM(0x2ff)],z5=WQ[SM(0x752)]||WQ[SM(0xa3b)]||WQ[SM(0x53b)]||WQ[SM(0xbd7)],z6=z3||z4||z5||WQ[SM(0x6c4)]||WQ[SM(0x8e6)]||![];let z7=window;!n&&WT&&(z7=WT);const z8=z7['document'];let z9,zW;SM(0xba5)in window?(z9=new z7[(SM(0xba5))](0x100,0x100),zW=new z7['OffscreenCanvas'](0x100,0x100)):(z9=z8['createElement'](SM(0x1ca)),zW=z8[SM(0xba8)]('canvas'));const zT=(zk,zP)=>{const SO=SM;try{if(zP=='webgl2')return zk['getContext'](SO(0x110))||zk['getContext'](SO(0xb5d));return zk['getContext'](SO(0x58c))||zk[SO(0x1fa)]('experimental-webgl')||zk[SO(0x1fa)]('moz-webgl')||zk['getContext'](SO(0x607));}catch(za){return;}},zz=zT(z9,SM(0x58c)),zZ=zT(zW,SM(0x110));if(!zz){a({'test':SM(0x58c),'passed':![]});return;}const zd=(zk,zP)=>{const SN=SM;if(!zk)return;const za=c(()=>zk[SN(0x52b)](zk[zP],zk[SN(0x9cb)])),zq=c(()=>zk['getShaderPrecisionFormat'](zk[zP],zk[SN(0x65c)])),zt=c(()=>zk[SN(0x52b)](zk[zP],zk[SN(0x8fb)])),zM=c(()=>zk[SN(0x52b)](zk[zP],zk[SN(0xb84)]));return{'LOW_FLOAT':za,'MEDIUM_FLOAT':zq,'HIGH_FLOAT':zt,'HIGH_INT':zM};},zL=(zk,zP)=>{const Si=SM,za={};for(const zq in zP){const zt=zP[zq];za[zk+'.'+zq+'.precision']=zt?c(()=>zt[Si(0x39e)]):undefined,za[zk+'.'+zq+'.rangeMax']=zt?c(()=>zt[Si(0x213)]):undefined,za[zk+'.'+zq+Si(0x28d)]=zt?c(()=>zt[Si(0x404)]):undefined;}return za;},zp=zk=>{const Sy=SM;if(!zk)return;const zP=zk['getExtension'](Sy(0x16a))||zk[Sy(0x2b3)](Sy(0x6ab))||zk[Sy(0x2b3)](Sy(0x4ba));return zP?zk['getParameter'](zP[Sy(0x526)]):undefined;},zn=zk=>{const SK=SM;if(!zk)return{};const zP=new Set(z0()),za=Object[SK(0x6d8)](Object['getPrototypeOf'](zk))[SK(0x73b)](zq=>zP['has'](zq));return za[SK(0x729)]((zq,zt)=>{const Sr=SK,zM=zk[Sr(0x9e1)](zk[zt]);return!!zM&&Sr(0x327)in Object[Sr(0x85d)](zM)?zq[zt]=[...zM]:zq[zt]=zM,zq;},{});},zb=zk=>{const SV=SM,zP=!!zk?zk[SV(0x2b3)](SV(0xb7e)):null;return!zP?{}:{'UNMASKED_VENDOR_WEBGL':zk[SV(0x9e1)](zP[SV(0x94a)]),'UNMASKED_RENDERER_WEBGL':zk[SV(0x9e1)](zP[SV(0x319)])};},zS=zk=>{const SR=SM;if(!zk)return[];const zP=c(()=>zk[SR(0x484)]());if(!zP)return[];return zP;},zQ=(zk,zP)=>{const Sw=SM;if(!zk)return{'dataURI':undefined,'pixels':undefined};try{z1(zk);const {drawingBufferWidth:za,drawingBufferHeight:zq}=zk;let zt='';if(zk['canvas'][Sw(0x480)][Sw(0x8ce)]===Sw(0xba5)){const zN=document[Sw(0xba8)](Sw(0x1ca));z1(zT(zN,zP)),zt=zN[Sw(0x335)]();}else zt=zk[Sw(0x1ca)][Sw(0x335)]();const zM=za/0xf,zB=zq/0x6,zO=new Uint8Array(zM*zB*0x4);try{zk['readPixels'](0x0,0x0,zM,zB,zk['RGBA'],zk['UNSIGNED_BYTE'],zO);}catch(zi){return{'dataURI':zt,'pixels':undefined};}return{'dataURI':zt,'pixels':[...zO]};}catch(zy){return f(zy);}};await t(z2);const zu={...zn(zz),...zb(zz)},zF={...zn(zZ),...zb(zZ)},zv=Object['keys'](zF)[SM(0x73b)](zk=>!!zu[zk]&&''+zu[zk]!=''+zF[zk])[SM(0x8ac)]()['replace'](SM(0xa33),'');zv&&Wt(SM(0x261),zv);await t(z2);const {dataURI:zH,pixels:zx}=zQ(zz,'webgl')||{},{dataURI:zD,pixels:zA}=zQ(zZ,SM(0x110))||{},zY={'extensions':[...zS(zz),...zS(zZ)],'pixels':zx,'pixels2':zA,'dataURI':zH,'dataURI2':zD,'parameters':{...{...zu,...zF},...{'antialias':zz[SM(0x1a1)]()?zz[SM(0x1a1)]()['antialias']:undefined,'MAX_VIEWPORT_DIMS':c(()=>[...zz[SM(0x9e1)](zz[SM(0x791)])]),'MAX_TEXTURE_MAX_ANISOTROPY_EXT':zp(zz),...zL('VERTEX_SHADER',zd(zz,'VERTEX_SHADER')),...zL(SM(0x180),zd(zz,SM(0x180))),'MAX_DRAW_BUFFERS_WEBGL':c(()=>{const Sm=SM,zk=zz[Sm(0x2b3)](Sm(0x8b8));return zk?zz[Sm(0x9e1)](zk[Sm(0xae5)]):undefined;})}},'parameterOrExtensionLie':z5,'lied':z6};return a({'time':z2[SM(0x8c4)](),'test':SM(0x58c),'passed':!![]}),{...zY,'gpu':{...WP((zY['parameters']||{})['UNMASKED_RENDERER_WEBGL'])||{},'compressedGPU':WY((zY[SM(0xba0)]||{})[SM(0x319)])}};}catch(zk){a({'test':SM(0x58c),'passed':![]}),f(zk);return;}}function Tf(z0){const SE=L3;if(!z0[SE(0x569)])return'\x0a\x09\x09<div\x20class=\x22col-six\x20undefined\x22>\x0a\x09\x09\x09<strong>WebGL</strong>\x0a\x09\x09\x09<div>images:\x20'+r[SE(0x7ca)]+SE(0x33c)+r[SE(0x7ca)]+SE(0x95a)+r[SE(0x7ca)]+'</div>\x0a\x09\x09\x09<div>exts\x20(0):\x20'+r[SE(0x7ca)]+SE(0x5cb)+r['BLOCKED']+'</div>\x0a\x09\x09\x09<div\x20class=\x22gl-image\x22></div>\x0a\x09\x09</div>';const {canvasWebgl:z1}=z0,z2='creep-canvas-webgl',{$hash:z3,dataURI:z4,dataURI2:z5,pixels:z6,pixels2:z7,lied:z8,extensions:z9,parameters:zW,gpu:zT}=z1||{},{parts:zz,warnings:zZ,gibbers:zd,confidence:zL,grade:zp,compressedGPU:zn}=zT||{},zb=zW?Object['keys'](zW)[SE(0x89d)]():[];return'\x0a\x0a\x09<div\x20class=\x22relative\x20col-six'+(z8?SE(0x5e1):'')+SE(0x2e0)+P[SE(0x649)]()[SE(0x58c)]+'</span>\x0a\x09\x09<strong>WebGL</strong><span\x20class=\x22'+(z8?'lies\x20':'')+'hash\x22>'+N(z3)+SE(0x39c)+(!z4?'\x20'+r[SE(0x7ca)]:SE(0x84d)+WO(z4)+SE(0x44b)+(!z5||z4==z5?'':'<span\x20class=\x22sub-hash\x22>'+WO(z5)+SE(0x44b)))+'</div>\x0a\x09\x09<div>pixels:'+(!z6?'\x20'+r[SE(0x7ca)]:'<span\x20class=\x22sub-hash\x22>'+N(z6)+SE(0x44b)+(!z7||z6==z7?'':SE(0x84d)+N(z7)+SE(0x44b)))+'</div>\x0a\x09\x09<div>params\x20('+V(zb)+'):\x20'+(!zb[SE(0xb8e)]?r['BLOCKED']:w(z2+'-parameters',zb[SE(0x638)](zS=>zS+':\x20'+zW[zS])[SE(0x644)](SE(0x708)),WO(zW)))+'</div>\x0a\x09\x09<div>exts\x20('+V(z9)+SE(0x303)+(!z9['length']?r[SE(0x7ca)]:w(z2+SE(0x81e),z9[SE(0x89d)]()['join'](SE(0x708)),WO(z9)))+'</div>\x0a\x0a\x09\x09<div\x20class=\x22relative\x22>gpu:'+(zL?SE(0x373)+zp+'\x22>'+zL+SE(0x1bc):'')+SE(0x4ec)+(zL?SE(0x4b2)+zn+SE(0x749)+(zz||SE(0x370))+SE(0x2dd)+(zd||SE(0x370))+SE(0x3d9)+(zZ[SE(0x644)](',\x20')||'none'):SE(0x409))+'\x22>\x0a\x09\x09\x09<div>\x0a\x09\x09\x09\x09'+(zW[SE(0x94a)]?zW[SE(0x94a)]:'')+SE(0x4f6)+(!zW[SE(0x319)]?r[SE(0x7ca)]:SE(0x708)+zW[SE(0x319)])+SE(0x417)+(!z4?'<div\x20class=\x22gl-image\x22></div>':SE(0x402)+z4+SE(0x5d9))+'\x0a\x09</div>\x0a\x09';}const Tc=z0=>{const Sf=L3,z1=((''+z0)['match'](/extmap:\d+ [^\n|\r]+/g)||[])['map'](z2=>z2[Sf(0x737)](/extmap:[^\s]+ /,''));return[...new Set(z1)][Sf(0x89d)]();},TG=()=>{let z0=0x0;return{'increment':()=>z0+=0x1,'getValue':()=>z0};},Te=({mediaType:z0,sdp:z1,sdpDescriptors:z2,rtxCounter:z3})=>{const Sc=L3;if(!(''+z2))return;return z2[Sc(0x729)]((z4,z5)=>{const SG=Sc,z6=SG(0x242)+z5+'\x20(.+)',z7=z1[SG(0x12a)](new RegExp(z6,'g'))||[];if(!(''+z7))return z4;const z8=(''+z7)[SG(0x725)](SG(0x86d));if(z8){if(z3['getValue']())return z4;z3[SG(0x6ae)]();}const z9=zZ=>zZ[SG(0x737)](/[^\s]+ /,''),zW=z7[SG(0x729)]((zZ,zd)=>{const Se=SG,zL=z9(zd),zp=zL['split']('/'),zn=zp[0x0],zb={};if(zd[Se(0x725)]('rtpmap'))return z0==Se(0x608)&&(zb[Se(0xb70)]=+zp[0x2]||0x1),zb['mimeType']=z0+'/'+zn,zb[Se(0x169)]=[+zp[0x1]],{...zZ,...zb};else{if(zd[Se(0x725)](Se(0x220)))return{...zZ,'feedbackSupport':[...zZ[Se(0x40c)]||[],zL]};else{if(z8)return zZ;}}return{...zZ,'sdpFmtpLine':[...zL[Se(0x184)](';')]};},{});let zT=![];const zz=z4[SG(0x638)](zZ=>{const SC=SG;zT=zZ[SC(0x232)]==zW[SC(0x232)];if(zT)return zZ[SC(0x40c)]&&(zZ[SC(0x40c)]=[...new Set([...zZ['feedbackSupport'],...zW[SC(0x40c)]])]),zZ[SC(0x6f4)]&&(zZ['sdpFmtpLine']=[...new Set([...zZ[SC(0x6f4)],...zW[SC(0x6f4)]])]),{...zZ,'clockRates':[...new Set([...zZ['clockRates'],...zW[SC(0x169)]])]};return zZ;});if(zT)return zz;return[...z4,zW];},[]);},TC=z0=>{const Ss=L3,z1=((/m=video [^\s]+ [^\s]+ ([^\n|\r]+)/[Ss(0xad3)](z0)||[])[0x1]||'')['split']('\x20'),z2=((/m=audio [^\s]+ [^\s]+ ([^\n|\r]+)/['exec'](z0)||[])[0x1]||'')[Ss(0x184)]('\x20'),z3=TG();return{'audio':Te({'mediaType':Ss(0x608),'sdp':z0,'sdpDescriptors':z2,'rtxCounter':z3}),'video':Te({'mediaType':Ss(0xaa1),'sdp':z0,'sdpDescriptors':z1,'rtxCounter':z3})};},Ts=z0=>{const SI=L3,z1=SI(0x37b),z2=/((udp|tcp)\s)((\d|\w)+\s)((\d|\w|(\.|\:))+)(?=\s)/ig,z3=/(c=IN\s)(.+)\s/ig,z4=((z0[SI(0x12a)](z3)||[])[0x0]||'')['trim']()['split']('\x20')[0x2];if(z4&&z4!=z1)return z4;const z5=((z0[SI(0x12a)](z2)||[])[0x0]||'')[SI(0x184)]('\x20')[0x2];return z5&&z5!=z1?z5:undefined;};async function TI(){return new Promise(async z0=>{const Sj=a0T;if(!window['RTCPeerConnection'])return z0(null);const z1={'iceCandidatePoolSize':0x1,'iceServers':[{'urls':[Sj(0x594),Sj(0x1b3)]}]},z2=new RTCPeerConnection(z1);z2[Sj(0xa3e)]('');const z3={'offerToReceiveAudio':0x1,'offerToReceiveVideo':0x1},z4=await z2[Sj(0x5a1)](z3);z2[Sj(0x17d)](z4);const {sdp:z5}=z4||{},z6=Tc(z5),z7=TC(z5);let z8='',z9='';const zW=setTimeout(()=>{const Sh=Sj;z2['removeEventListener'](Sh(0x63a),zT),z2[Sh(0x571)]();if(z5)return z0({'codecsSdp':z7,'extensions':z6,'foundation':z9,'iceCandidate':z8});return z0(null);},0xbb8),zT=zz=>{const Sl=Sj,{candidate:zZ}=zz['candidate']||{};if(!zZ)return;!z8&&(z8=zZ,z9=(/^candidate:([\w]+)/[Sl(0xad3)](zZ)||[])[0x1]||'');const {sdp:zd}=z2[Sl(0xa83)]||{},zL=Ts(zd);if(!zL)return;return z2['removeEventListener'](Sl(0x63a),zT),clearTimeout(zW),z2[Sl(0x571)](),z0({'codecsSdp':z7,'extensions':z6,'foundation':z9,'iceCandidate':z8,'address':zL,'stunConnection':zZ});};z2['addEventListener']('icecandidate',zT);});}function Tj(z0){const SX=L3;if(!z0)return SX(0xb78)+r['BLOCKED']+'</div>\x0a\x09</div>\x0a\x09<div\x20class=\x22col-six\x22>\x0a\x09\x09<div>sdp\x20capabilities:\x20'+r[SX(0x7ca)]+SX(0x19a)+r[SX(0x7ca)]+'</div>\x0a\x09</div>';const {codecsSdp:z1,extensions:z2,foundation:z3,iceCandidate:z4,address:z5,stunConnection:z6}=z0||{},{audio:z7,video:z8}=z1||{},z9=SX(0x147),zW=WO({'codecsSdp':z1,'extensions':z2,'foundation':z3,'address':z5}),zT={'ccm\x20fir':SX(0x469),'goog-remb':SX(0xab3),'nack':SX(0x8b1),'nack\x20pli':SX(0x20e),'transport-cc':SX(0xb07)},zz=zZ=>zZ[SX(0x638)](zd=>{const Sg=SX;return'\x0a\x09\x09\x09<strong>'+zd['mimeType']+Sg(0x34b)+zd['clockRates'][Sg(0x89d)]((zL,zp)=>zp-zL)[Sg(0x644)](',\x20')+Sg(0x5db)+(zd['channels']>0x1?'<br>Channels:\x20'+zd[Sg(0xb70)]:'')+Sg(0x5db)+(zd[Sg(0x6f4)]?'<br>Format\x20Specific\x20Parameters:<br>-\x20'+zd[Sg(0x6f4)][Sg(0x89d)]()[Sg(0x638)](zL=>zL['replace']('=',':\x20'))[Sg(0x644)](Sg(0x626)):'')+Sg(0x5db)+(zd[Sg(0x40c)]?Sg(0x471)+zd[Sg(0x40c)][Sg(0x638)](zL=>{return zT[zL]||zL;})['sort']()[Sg(0x644)](Sg(0x626)):'')+Sg(0x2ed);})['join'](SX(0x719));return SX(0xad4)+zW+SX(0x4d3)+(z4||r[SX(0x7ca)])+SX(0x26d)+(!z1?r[SX(0x7ca)]:w(z9+SX(0x18f),zz(z7)+'<br><br>'+zz(z8)+SX(0x61b)+z2['join'](SX(0x708)),WO({'audio':z7,'video':z8,'extensions':z2})))+'</div>\x0a\x09\x09<div>stun\x20connection:</div>\x0a\x09\x09<div\x20class=\x22block-text\x22>'+(z6||r['BLOCKED'])+SX(0x225);}function Th(){const SJ=L3;try{const z0=q();z0['start']();const z1=WT||window;let z2=Object[SJ(0x6d8)](z1)[SJ(0x73b)](z9=>!/_|\d{3,}/['test'](z9));const z3=SJ(0x958),z4=['PerformanceNavigationTiming',SJ(0x726)];if(d){const z9=z2[SJ(0x40a)](z3);z9!=-0x1&&(z2=z2['slice'](0x0,z9)[SJ(0x7ba)](z2[SJ(0x80d)](z9+0x1)),z2=[...z2,z3]),z4[SJ(0xa0f)](zW=>{const So=SJ,zT=z2['indexOf'](zW);return zT!=-0x1&&(z2=z2[So(0x80d)](0x0,zT)[So(0x7ba)](z2[So(0x80d)](zT+0x1))),z2;});}const z5=z2[SJ(0x73b)](zW=>/moz/i[SJ(0x579)](zW))[SJ(0xb8e)],z6=z2['filter'](zW=>/webkit/i[SJ(0x579)](zW))['length'],z7=z2[SJ(0x73b)](zW=>/apple/i[SJ(0x579)](zW))[SJ(0xb8e)],z8={'keys':z2,'apple':z7,'moz':z5,'webkit':z6};return a({'time':z0[SJ(0x8c4)](),'test':SJ(0x78f),'passed':!![]}),{...z8};}catch(zW){a({'test':SJ(0x78f),'passed':![]}),f(zW);return;}}function Tl(z0){const SU=L3;if(!z0[SU(0x3f8)])return SU(0xb25)+r[SU(0x7ca)]+SU(0x943)+r[SU(0x7ca)]+SU(0x5b9);const {windowFeatures:{$hash:z1,keys:z2}}=z0;return'\x0a\x09<div\x20class=\x22relative\x20col-six\x22>\x0a\x09\x09<span\x20class=\x22aside-note\x22>'+P['getLog']()[SU(0x78f)]+SU(0x8da)+N(z1)+SU(0x8de)+V(z2)+SU(0x303)+(z2&&z2[SU(0xb8e)]?w(SU(0x627),z2[SU(0x644)](',\x20')):r[SU(0x7ca)])+SU(0x4b3);}async function TX(){const Q8=L3,z0=z9=>{try{return z9();}catch(zW){return;}};function z1(z9){const Q0=a0T,zW=W9(z9),{searchLies:zT}=zW;zT(()=>Function,{'target':[Q0(0x8ac)],'ignore':[Q0(0x593),Q0(0xb85)]}),zT(()=>WorkerNavigator,{'target':[Q0(0x920),'hardwareConcurrency',Q0(0x6d5),'languages',Q0(0xbc4),Q0(0x4b4)]});const zz=zW[Q0(0x46a)](),zZ=zW[Q0(0x66b)]();return{'lieDetector':zW,'lieList':Object[Q0(0xab4)](zz)[Q0(0x89d)](),'lieDetail':zz,'lieCount':Object[Q0(0xab4)](zz)[Q0(0x729)]((zd,zL)=>zd+zz[zL][Q0(0xb8e)],0x0),'propsSearched':zZ};}const z2=async z9=>{const Q1=a0T;if(!('userAgentData'in z9))return;const zW=await z9[Q1(0x843)]['getHighEntropyValues']([Q1(0xbc4),Q1(0xab8),Q1(0x2e1),Q1(0x65e),Q1(0x6a5),Q1(0xb5e)]),{brands:zT,mobile:zz}=z9['userAgentData']||{},zZ=(zp,zn=![])=>zp[Q1(0x73b)](zb=>!/Not/[Q1(0x579)](zb[Q1(0x757)]))[Q1(0x638)](zb=>''+zb[Q1(0x757)]+(zn?'\x20'+zb[Q1(0xabb)]:'')),zd=zp=>zp['length']>0x1?zp[Q1(0x73b)](zn=>!/Chromium/[Q1(0x579)](zn)):zp;!zW[Q1(0x34d)]&&(zW[Q1(0x34d)]=zT);zW['brandsVersion']=zZ(zW[Q1(0x34d)],!![]),zW[Q1(0x34d)]=zZ(zW[Q1(0x34d)]),zW[Q1(0x701)]=zd(zW[Q1(0x701)]),zW[Q1(0x34d)]=zd(zW[Q1(0x34d)]);!zW[Q1(0x974)]&&(zW['mobile']=zz);const zL=Object[Q1(0xab4)](zW)['sort']()[Q1(0x729)]((zp,zn)=>{return zp[zn]=zW[zn],zp;},{});return zL;},z3=()=>z0(()=>{const Q2=a0T,z9=new OffscreenCanvas(0x100,0x100),zW=z9[Q2(0x1fa)](Q2(0x58c)),zT=zW[Q2(0x2b3)]('WEBGL_debug_renderer_info');return{'webglVendor':zW[Q2(0x9e1)](zT[Q2(0x94a)]),'webglRenderer':zW[Q2(0x9e1)](zT[Q2(0x319)])};}),z4=()=>{const Q3=a0T,z9=new Date()[Q3(0x61a)](),zW=new Date()[Q3(0x1b0)](),zT=Date()['split']` `[0x3],zz=zn=>(''+zn)[Q3(0xb8e)]==0x1?'0'+zn:zn,zZ=zW+0x1+'/'+zz(z9)+'/'+zT,zd=zT+'-'+zz(zW+0x1)+'-'+zz(z9),zL=Date[Q3(0x17b)](new Date(zZ)),zp=+new Date(zd);return+((zL-zp)/0xea60)[Q3(0x250)](0x0);},z5=()=>{const Q4=a0T,z9=[Q4(0xa9a),Q4(0x7d2),Q4(0x2b8),Q4(0xb2b),'NumberFormat',Q4(0x62a),Q4(0x8c6)],zW=z9['reduce']((zT,zz)=>{const Q5=Q4;try{const zZ=new Intl[zz]();if(!zZ)return zT;const {locale:zd}=zZ[Q5(0x69e)]()||{};return[...zT,zd];}catch(zL){return zT;}},[]);return[...new Set(zW)];},z6=async()=>{const Q6=a0T,z9=q();await t(z9);const zW=await z2(navigator)[Q6(0x2a2)](zM=>console['error'](zM)),{webglVendor:zT,webglRenderer:zz}=z3()||{},zZ=z4(),zd=Intl[Q6(0x7d2)]()['resolvedOptions']()[Q6(0x712)],zL=z5(),{hardwareConcurrency:zp,language:zn,languages:zb,platform:zS,userAgent:zQ,deviceMemory:zu}=navigator||{},zF=Object[Q6(0x6d8)](self);await t(z9);const {lieList:zv,lieDetail:zH}=z1(self),zx=zv[Q6(0xb8e)];let zD;const zA=(''+zn)[Q6(0x184)](',')[0x0];try{zD=0x1['toLocaleString'](zA||undefined,{'style':Q6(0x521),'currency':Q6(0x239),'currencyDisplay':Q6(0x8ce),'minimumFractionDigits':0x0,'maximumFractionDigits':0x0});}catch(zM){}const zY=0x1[Q6(0x614)](undefined,{'style':Q6(0x521),'currency':Q6(0x239),'currencyDisplay':Q6(0x8ce),'minimumFractionDigits':0x0,'maximumFractionDigits':0x0}),zk=zY==zD,zP=new Set((''+zn)[Q6(0x184)](','))[Q6(0x7ea)](''+zL),{href:za,pathname:zq}=self[Q6(0x928)]||{},zt=!za||!zq||!/^(\/docs|\/creepjs|)\/creep.js$/[Q6(0x579)](zq)||!new RegExp(zq+'$')[Q6(0x579)](za);return{'scopeKeys':zF,'lied':zx||+zt,'lies':{'proto':zx?zH:![]},'locale':''+zL,'systemCurrencyLocale':zD,'engineCurrencyLocale':zY,'localeEntropyIsTrusty':zk,'localeIntlEntropyIsTrusty':zP,'timezoneOffset':zZ,'timezoneLocation':zd,'deviceMemory':zu,'hardwareConcurrency':zp,'language':zn,'languages':''+zb,'platform':zS,'userAgent':zQ,'webglRenderer':zz,'webglVendor':zT,'userAgentData':zW};},z7=(z9,zW)=>addEventListener(z9,zW),z8=z9=>{const Q7=a0T;return z6()[Q7(0x1f2)](zW=>z9['postMessage'](zW));};return W&&(globalThis[Q8(0x7b5)]?z7(Q8(0x1b2),z9=>z8(z9['source'])):globalThis['SharedWorkerGlobalScope']?z7(Q8(0x87c),z9=>z8(z9[Q8(0x8a8)][0x0])):z8(self)),W?0x0:0x1;}async function Tg(){const Q9=L3;try{const z0=q();await t(z0);const z1=zP=>{try{return zP();}catch(za){return;}},z2=(zP,za)=>zP&&zP['__proto__'][Q9(0x480)]['name']==za,z3=({scriptSource:zP})=>new Promise(za=>{const QW=Q9,zq=setTimeout(()=>{return za(null);},0xbb8),zt=z1(()=>new Worker(zP));if(!z2(zt,'Worker'))return za(null);zt[QW(0x902)]=zM=>{const QT=QW;return zt[QT(0xb3a)](),clearTimeout(zq),za(zM[QT(0x3e6)]);};}),z4=({scriptSource:zP})=>new Promise(za=>{const Qz=Q9,zq=setTimeout(()=>{return za(null);},0xbb8),zt=z1(()=>new SharedWorker(zP));if(!z2(zt,Qz(0x616)))return za(null);zt[Qz(0xb3c)]['start'](),zt[Qz(0xb3c)][Qz(0x902)]=zM=>{const QZ=Qz;return zt[QZ(0xb3c)][QZ(0x571)](),clearTimeout(zq),za(zM[QZ(0x3e6)]);};}),z5=({scriptSource:zP})=>new Promise(za=>{const Qd=Q9,zq=setTimeout(()=>{return za(null);},0xbb8);if(!z1(()=>navigator[Qd(0xab5)][Qd(0x86b)]))return za(null);return navigator[Qd(0xab5)][Qd(0x86b)](zP)[Qd(0x1f2)](zt=>{const QL=Qd;if(!z2(zt,QL(0x192)))return za(null);return navigator['serviceWorker'][QL(0x5da)][QL(0x1f2)](zM=>{const Qp=QL;zM['active']['postMessage'](undefined),navigator[Qp(0xab5)][Qp(0x902)]=zB=>{const Qn=Qp;return zM[Qn(0x100)](),clearTimeout(zq),za(zB[Qn(0x3e6)]);};});})[Qd(0x2a2)](zt=>{return console['error'](zt),clearTimeout(zq),za(null);});}),z6=Q9(0xb1d);let z7=Q9(0x7b5),z8=Q9(0x307),z9=await z5({'scriptSource':z6})[Q9(0x2a2)](zP=>{const Qb=Q9;f(zP),console[Qb(0xb52)](zP[Qb(0x1b2)]);return;});!(z9||{})[Q9(0x4b4)]&&(z7=Q9(0x901),z8='shared',z9=await z4({'scriptSource':z6})[Q9(0x2a2)](zP=>{const QS=Q9;f(zP),console[QS(0xb52)](zP[QS(0x1b2)]);return;}));!(z9||{})[Q9(0x4b4)]&&(z7=Q9(0x9b9),z8='dedicated',z9=await z3({'scriptSource':z6})[Q9(0x2a2)](zP=>{const QQ=Q9;f(zP),console[QQ(0xb52)](zP[QQ(0x1b2)]);return;}));if(!(z9||{})[Q9(0x4b4)])return;z9['system']=u(z9[Q9(0x4b4)]),z9['device']=v({'userAgent':z9['userAgent']}),z9['type']=z8,z9['scope']=z7;const {system:zW,userAgent:zT,userAgentData:zz,platform:zZ,deviceMemory:zd,hardwareConcurrency:zL}=z9||{},zp=Q9(0x451);zZ!=navigator[Q9(0xbc4)]&&h('Navigator.platform',zp);zT!=navigator[Q9(0x4b4)]&&h('Navigator.userAgent',zp);zL&&zL!=navigator['hardwareConcurrency']&&h('Navigator.hardwareConcurrency',zp);zd&&zd!=navigator[Q9(0x920)]&&h(Q9(0x8be),zp);if(z9[Q9(0x152)]['proto']){const {proto:zP}=z9[Q9(0x152)],za=Object[Q9(0xab4)](zP);za[Q9(0xa0f)](zq=>{const Qu=Q9,zt=z9[Qu(0x69a)]+'.'+zq,zM=zP[zq];zM[Qu(0xa0f)](zB=>h(zt,zB));});}const zn=/win(dows|16|32|64|95|98|nt)|wow64/ig[Q9(0x579)](zT)?Q9(0x93e):/android|linux|cros/ig[Q9(0x579)](zT)?Q9(0x887):/(i(os|p(ad|hone|od)))|mac/ig[Q9(0x579)](zT)?Q9(0x139):Q9(0xb56),zb=/win/ig[Q9(0x579)](zZ)?Q9(0x93e):/android|arm|linux/ig[Q9(0x579)](zZ)?Q9(0x887):/(i(os|p(ad|hone|od)))|mac/ig[Q9(0x579)](zZ)?Q9(0x139):Q9(0xb56),zS=zn!=zb;zS&&(z9['lied']=!![],z9['lies']['os']=zb+Q9(0x3a9)+zn+Q9(0x308),h(z9[Q9(0x69a)],z9['lies']['os']));const zQ=F({'ua':zT,'os':zW,'isBrave':![]}),zu=/safari/i[Q9(0x579)](zQ)||/iphone|ipad/i['test'](zT)?'JavaScriptCore':/firefox/i[Q9(0x579)](zT)?Q9(0x386):/chrome/i[Q9(0x579)](zT)?'V8':undefined;zu!=p&&(z9['lied']=!![],z9[Q9(0x152)]['engine']=p+Q9(0x8f4)+zu+Q9(0x308),h(z9[Q9(0x69a)],z9[Q9(0x152)]['engine']));const zF=zq=>(/\d+/[Q9(0xad3)](zq)||[])[0x0],zv=zF(zQ),zH=zF(zz?zz[Q9(0xb5e)]:''),zx=zH&&zv,zD=zH==zv;zx&&!zD&&(z9['lied']=!![],z9[Q9(0x152)][Q9(0xabb)]=Q9(0x862)+zH+'\x20and\x20user\x20agent\x20version\x20'+zv+'\x20do\x20not\x20match',h(z9[Q9(0x69a)],z9[Q9(0x152)]['version']));const zA=(zq,zt)=>{const QF=Q9;if(!/windows/i[QF(0x579)](zq)||!zt||!zt[QF(0xab8)])return![];const zM=+(/windows ([\d|\.]+)/i[QF(0xad3)](zq)||[])[0x1],zB=zM==0xa,{platformVersion:zO}=zt,zN=3.141592653589793**-0x64==1.9275814160560204e-50&&CSS[QF(0x722)](QF(0x3f4)),zi={'6.1':'7','6.1.0':'7','6.2':'8','6.2.0':'8','6.3':QF(0x3ef),'6.3.0':QF(0x3ef),'10.0':'10','10.0.0':'10'};let zy=zi[zO];if(!zN&&zy)return zy!=''+zM;zy=+(/(\d+)\./[QF(0xad3)](''+zO)||[])[0x1];const zK=zy>0x0;return zK&&!zB||!zK&&zB;},zY=zA(z9[Q9(0x6aa)],zz);zY&&(z9[Q9(0x153)]=!![],z9[Q9(0x152)][Q9(0xab8)]=Q9(0x2d7)+(zz||{})[Q9(0xab8)]+Q9(0x43e)+z9['device'],h(z9[Q9(0x69a)],z9[Q9(0x152)][Q9(0xab8)]));z9[Q9(0x917)]=zv,z9[Q9(0xac7)]=zH,z9['userAgentEngine']=zu;const zk={...WP(z9[Q9(0xae7)])||{},'compressedGPU':WY(z9['webglRenderer'])};return a({'time':z0[Q9(0x8c4)](),'test':z8+'\x20worker','passed':!![]}),{...z9,'gpu':zk,'uaPostReduction':A(z9['userAgent'])};}catch(zq){a({'test':Q9(0x498),'passed':![]}),f(zq,'workers\x20failed\x20or\x20blocked\x20by\x20client');return;}}function TJ(z0){const Qv=L3;if(!z0[Qv(0xa52)])return Qv(0x32c)+r[Qv(0x7ca)]+Qv(0xb4b)+r[Qv(0x7ca)]+Qv(0x5cb)+r['BLOCKED']+Qv(0x7bb)+r[Qv(0x7ca)]+'</div>\x0a\x09\x09\x09<div>device:</div>\x0a\x09\x09\x09<div\x20class=\x22block-text\x22>'+r[Qv(0x7ca)]+'</div>\x0a\x09\x09\x09<div>userAgentData:</div>\x0a\x09\x09\x09<div\x20class=\x22block-text\x22>'+r['BLOCKED']+'</div>\x0a\x09\x09</div>';const {workerScope:z1}=z0,{scopeKeys:z2,lied:z3,locale:z4,systemCurrencyLocale:z5,engineCurrencyLocale:z6,localeEntropyIsTrusty:z7,localeIntlEntropyIsTrusty:z8,timezoneOffset:z9,timezoneLocation:zW,deviceMemory:zT,hardwareConcurrency:zz,language:zZ,platform:zd,userAgent:zL,uaPostReduction:zp,webglRenderer:zn,webglVendor:zb,gpu:zS,userAgentData:zQ,type:zu,scope:zF,system:zv,device:zH,$hash:zx}=z1||{},{parts:zD,warnings:zA,gibbers:zY,confidence:zk,grade:zP,compressedGPU:za}=zS||{};return'\x0a\x09<span\x20class=\x22time\x22>'+P[Qv(0x649)]()[zu+Qv(0x51e)]+Qv(0x291)+(zF||'')+Qv(0xaed)+(z3?'\x20rejected':'')+Qv(0x1ce)+N(zx)+Qv(0x8de)+V(z2)+Qv(0x303)+(z2&&z2[Qv(0xb8e)]?w(Qv(0x265),z2[Qv(0x644)](',\x20'),WO(z2)):r[Qv(0x7ca)])+Qv(0x3ed)+(z7?zZ+'\x20('+z5+')':zZ+'\x20(<span\x20class=\x22bold-fail\x22>'+z6+'</span>)')+Qv(0x5db)+(z4===zZ?'':z8?'\x20'+z4:Qv(0x231)+z4+Qv(0x44b))+Qv(0x186)+zW+'\x20('+(''+z9)+Qv(0x2c0)+(zk?'<span\x20class=\x22confidence-note\x22>confidence:\x20<span\x20class=\x22scale-up\x20grade-'+zP+'\x22>'+zk+Qv(0x1bc):'')+Qv(0x6f5)+(zk?Qv(0x4b2)+za+'\x0aknown\x20parts:\x20'+(zD||Qv(0x370))+Qv(0x2dd)+(zY||Qv(0x370))+Qv(0x3d9)+(zA['join'](',\x20')||Qv(0x370)):Qv(0x409))+Qv(0x6ec)+(zb?zb:'')+'\x0a\x09\x09\x09'+(zn?Qv(0x708)+zn:r[Qv(0x786)])+'\x0a\x09\x09</div>\x0a\x0a\x09</div>\x0a\x09<div\x20class=\x22col-six'+(z3?Qv(0x5e1):'')+Qv(0x32d)+(!zp?'':Qv(0x23f))+Qv(0x783)+(zL||r[Qv(0x786)])+Qv(0x1c6)+(''+zv+(zd?'\x20('+zd+')':''))+'\x0a\x09\x09\x09'+(zH?Qv(0x708)+zH:r[Qv(0x7ca)])+Qv(0x5db)+(zz&&zT?Qv(0x873)+zz+Qv(0x682)+zT:zz&&!zT?'<br>cores:\x20'+zz:!zz&&zT?Qv(0x54a)+zT:'')+Qv(0x494)+(zq=>{const QH=Qv,{architecture:zt,bitness:zM,brandsVersion:zB,uaFullVersion:zO,mobile:zN,model:zi,platformVersion:zy,platform:zK}=zq||{},zr=H({'platform':zK,'platformVersion':zy});return!zq?r[QH(0x786)]:QH(0x247)+(zB||[])['join'](',')+(zO?'\x20('+zO+')':'')+'\x0a\x09\x09\x09\x09\x09<br>'+(zr||zK+'\x20'+zy)+'\x20'+(zt?''+zt+(zM?'_'+zM:''):'')+QH(0x247)+(zi?QH(0x708)+zi:'')+QH(0x247)+(zN?QH(0x5be):'')+'\x0a\x09\x09\x09\x09';})(zQ)+'\x0a\x09\x09\x09</div>\x0a\x09\x09</div>\x0a\x0a\x09</div>\x0a\x09';}!(async function(){const Qx=L3,z0=await TX();if(z0==0x0)return;const z1=Z?await b():![],z2=z1?S():{},z3=z1&&(z2[Qx(0x3f5)]||z2[Qx(0xa09)]),z4=async()=>{const QD=Qx,zr=e(),zV=e(),[zR,zw,zm,zE,zf,zc,zG,ze,zC,zs,zI,zj,zh,zl,zX,zg,zJ,zo,zU,Z0]=await Promise[QD(0x840)]([Th(),Wh(),WC(),WI(),Ti(),TK(),WG(),TE(),Tx(),Wo(),Tw(),WX(),TS(),Tg(),TY(),TV(),TB(),Tv(),TP(),WR()])[QD(0x2a2)](Zs=>console[QD(0xb52)](Zs[QD(0x1b2)])),[Z1,Z2]=await Promise[QD(0x840)]([Tu(zl),T8({'cssComputed':zm,'navigatorComputed':zU,'windowFeaturesComputed':zR})])[QD(0x2a2)](Zs=>console[QD(0xb52)](Zs[QD(0x1b2)])),[Z3,Z4,Z5]=await Promise[QD(0x840)]([Wv(),WM(),C()])[QD(0x2a2)](Zs=>console[QD(0xb52)](Zs['message'])),Z6=zV();console[QD(0x642)](QD(0xace)+Z6[QD(0x250)](0x2)+'ms');const {parameters:Z7}=ze||{},Z8={...z3?Q(Z7):Z7,'RENDERER':undefined,'SHADING_LANGUAGE_VERSION':undefined,'UNMASKED_RENDERER_WEBGL':undefined,'UNMASKED_VENDOR_WEBGL':undefined,'VERSION':undefined,'VENDOR':undefined},Z9=e(),[ZW,ZT,Zz,ZZ,Zd,ZL,Zp,Zn,Zb,ZS,ZQ,Zu,ZF,Zv,ZH,Zx,ZD,ZA,ZY,Zk,ZP,Za,Zq,Zt,ZM,ZB,ZO,ZN,Zi,Zy,ZK,Zr,ZV,ZR,Zw,Zm,ZE,Zf,Zc]=await Promise[QD(0x840)]([Wi(zR),Wi(Z1),Wi((zw||{})['keys']),Wi(zE),Wi(zm),Wi((zm||{})[QD(0xadd)]),Wi((zm||{})['system']),Wi(zf),Wi(zc),Wi(zG),Wi((zG||{})[QD(0x34e)]),Wi((zG||{})['blob'][QD(0x6b5)]),Wi((zG||{})[QD(0x65b)]),Wi((zG||{})[QD(0x5b2)]),Wi((zG||{})[QD(0x467)]),Wi(ze),Wi((ze||{})[QD(0x34e)]),Wi(Z8),((ze||{})[QD(0x3a3)]||[])[QD(0xb8e)]?Wi(ze[QD(0x3a3)]):undefined,((ze||{})['pixels2']||[])[QD(0xb8e)]?Wi(ze[QD(0x278)]):undefined,Wi((zC||{})[QD(0x3e6)]),Wi((zs||{})['errors']),Wi(zI),Wi(zj),Wi([(zj||{})[QD(0x380)],(zj||{})[QD(0xa18)],(zj||{})[QD(0x69f)],(zj||{})[QD(0x618)]]),Wi(Z0),Wi(zh),Wi(zl),Wi(zX),Wi((zX||{})[QD(0x1d7)]),Wi(zU),Wi(Z3),Wi(Z4),Wi(Z5),Wi(zg),Wi(zJ),Wi(zo),Wi(Z2),Wi(((()=>{const {bluetoothAvailability:Zs,device:ZI,deviceMemory:Zj,hardwareConcurrency:Zh,maxTouchPoints:Zl,oscpu:ZX,platform:Zg,system:ZJ,userAgentData:Zo}=zU||{},{architecture:ZU,bitness:d0,mobile:d1,model:d2,platform:d3,platformVersion:d4}=Zo||{},{anyPointer:d5}=zE||{},{colorDepth:d6,pixelDepth:d7,height:d8,width:d9}=zf||{},{location:dW,locationEpoch:dT,zone:dz}=zI||{},{deviceMemory:dZ,hardwareConcurrency:dd,gpu:dL,platform:dp,system:dn,timezoneLocation:db,userAgentData:dS}=zl||{},{compressedGPU:dQ,confidence:du}=dL||{},{architecture:dF,bitness:dv,mobile:dH,model:dx,platform:dD,platformVersion:dA}=dS||{};return[d5,ZU,dF,d0,dv,Zs,d6,...dQ&&du!='low'?[dQ]:[],ZI,Zj,dZ,Zh,dd,d8,dW,db,dT,Zl,d1,dH,d2,dx,ZX,d7,Zg,dp,d4,dA,ZJ,dn,d3,dD,d9,dz];})()))])['catch'](Zs=>console['error'](Zs[QD(0x1b2)])),ZG=Z9(),Ze=zr();console[QD(0x642)]('Hashing\x20complete\x20in\x20'+ZG[QD(0x250)](0x2)+'ms');Wz&&Wz[QD(0x159)]['removeChild'](Wz);const ZC={'workerScope':!zl?undefined:{...zl,'$hash':ZN},'navigator':!zU?undefined:{...zU,'$hash':ZK},'windowFeatures':!zR?undefined:{...zR,'$hash':ZW},'headless':!Z1?undefined:{...Z1,'$hash':ZT},'htmlElementVersion':!zw?undefined:{...zw,'$hash':Zz},'cssMedia':!zE?undefined:{...zE,'$hash':ZZ},'css':!zm?undefined:{...zm,'$hash':Zd},'screen':!zf?undefined:{...zf,'$hash':Zn},'voices':!zc?undefined:{...zc,'$hash':Zb},'media':!zX?undefined:{...zX,'$hash':Zi},'canvas2d':!zG?undefined:{...zG,'$hash':ZS},'canvasWebgl':!ze?undefined:{...ze,'pixels':ZY,'pixels2':Zk,'$hash':Zx},'maths':!zC?undefined:{...zC,'$hash':ZP},'consoleErrors':!zs?undefined:{...zs,'$hash':Za},'timezone':!zI?undefined:{...zI,'$hash':Zq},'clientRects':!zj?undefined:{...zj,'$hash':Zt},'offlineAudioContext':!Z0?undefined:{...Z0,'$hash':ZB},'fonts':!zh?undefined:{...zh,'$hash':ZO},'lies':!Z3?undefined:{...Z3,'$hash':Zr},'trash':!Z4?undefined:{...Z4,'$hash':ZV},'capturedErrors':!Z5?undefined:{...Z5,'$hash':ZR},'svg':!zg?undefined:{...zg,'$hash':Zw},'resistance':!zJ?undefined:{...zJ,'$hash':Zm},'intl':!zo?undefined:{...zo,'$hash':ZE},'features':!Z2?undefined:{...Z2,'$hash':Zf}};return{'fingerprint':ZC,'styleSystemHash':Zp,'styleHash':ZL,'domRectHash':ZM,'mimeTypesHash':Zy,'canvas2dImageHash':ZQ,'canvasWebglImageHash':ZD,'canvas2dBlobHash':Zu,'canvas2dPaintHash':ZF,'canvas2dTextHash':Zv,'canvas2dEmojiHash':ZH,'canvasWebglParametersHash':ZA,'deviceOfTimezoneHash':Zc,'timeEnd':Ze};},{fingerprint:z5,styleSystemHash:z6,styleHash:z7,domRectHash:z8,mimeTypesHash:z9,canvas2dImageHash:zW,canvas2dBlobHash:zT,canvas2dPaintHash:zz,canvas2dTextHash:zZ,canvas2dEmojiHash:zd,canvasWebglImageHash:zL,canvasWebglParametersHash:zp,deviceOfTimezoneHash:zn,timeEnd:zb}=await z4()['catch'](zr=>console[Qx(0xb52)](zr))||{};if(!z5)throw new Error(Qx(0xa20));console[Qx(0x642)](Qx(0x9bf),Qx(0x1ee)),console[Qx(0x214)]('Loose\x20Fingerprint'),console['log'](z5),console[Qx(0x5de)](),console[Qx(0x214)](Qx(0x9d0)),console[Qx(0x642)]('diff\x20check\x20at\x20https://www.diffchecker.com/diff\x0a\x0a',JSON['stringify'](z5,null,'\x09')),console[Qx(0x5de)]();const zS=z5[Qx(0x934)][Qx(0x54e)]['length'],zQ=!(Qx(0xa8b)in z5[Qx(0x152)])?0x0:z5[Qx(0x152)][Qx(0xa8b)],zu=z5[Qx(0xbb3)]['data'][Qx(0xb8e)],{offlineAudioContext:zF}=z5||{},{compressorGainReduction:zv,sampleSum:zH}=zF||{},zx=Wr[zv],zD=zH&&zv&&zx&&!zx[Qx(0x725)](zH),zA=d&&zD,zY=(zr,zV)=>{const QA=Qx;return!zr?zV:zr['localeEntropyIsTrusty']&&zr[QA(0xb28)]?zV:undefined;},zk=z5['resistance']&&/^(tor browser|firefox)$/i[Qx(0x579)](z5['resistance'][Qx(0x2a5)]),zP=zr=>{const QY=Qx,{gpu:{confidence:zV,compressedGPU:zR}}=zr;return zV==QY(0xb09)?{}:{'UNMASKED_RENDERER_WEBGL':zR,'UNMASKED_VENDOR_WEBGL':zr[QY(0xba0)][QY(0x94a)]};},za={'navigator':!z5[Qx(0xaf4)]||z5['navigator'][Qx(0x153)]?undefined:{'bluetoothAvailability':z5['navigator'][Qx(0x2c4)],'device':z5[Qx(0xaf4)]['device'],'deviceMemory':z5['navigator'][Qx(0x920)],'hardwareConcurrency':z5['navigator'][Qx(0x936)],'language':zY(z5[Qx(0xa52)],z5[Qx(0xaf4)][Qx(0x6d5)]),'maxTouchPoints':z5['navigator'][Qx(0xbcd)],'mimeTypes':z5['navigator'][Qx(0x1d7)],'oscpu':z5[Qx(0xaf4)][Qx(0x6cf)],'platform':z5[Qx(0xaf4)][Qx(0xbc4)],'plugins':z5[Qx(0xaf4)][Qx(0x662)],'system':z5[Qx(0xaf4)][Qx(0x164)],'userAgentData':{...z5[Qx(0xaf4)][Qx(0x843)]||{},'brandsVersion':undefined,'uaFullVersion':undefined},'vendor':z5[Qx(0xaf4)]['vendor']},'screen':!z5[Qx(0x6bd)]||z5['screen'][Qx(0x153)]||zk?undefined:zY(z5[Qx(0xa52)],{'height':z5[Qx(0x6bd)][Qx(0x996)],'width':z5['screen'][Qx(0x90f)],'pixelDepth':z5['screen'][Qx(0x590)],'colorDepth':z5[Qx(0x6bd)][Qx(0x4c9)],'lied':z5[Qx(0x6bd)][Qx(0x153)]}),'workerScope':!z5[Qx(0xa52)]||z5['workerScope']['lied']?undefined:{'deviceMemory':z3?undefined:z5['workerScope']['deviceMemory'],'hardwareConcurrency':z3?undefined:z5[Qx(0xa52)]['hardwareConcurrency'],'language':z5[Qx(0xa52)][Qx(0x6d5)],'languages':z5[Qx(0xa52)][Qx(0xb0c)],'platform':z5[Qx(0xa52)]['platform'],'system':z5[Qx(0xa52)]['system'],'device':z5['workerScope'][Qx(0x6aa)],'timezoneLocation':zY(z5['workerScope'],z5[Qx(0xa52)]['timezoneLocation']),'webglRenderer':z5[Qx(0xa52)][Qx(0x893)]['confidence']!='low'?z5[Qx(0xa52)][Qx(0x893)][Qx(0x283)]:undefined,'webglVendor':z5[Qx(0xa52)][Qx(0x893)]['confidence']!=Qx(0xb09)?z5['workerScope'][Qx(0x60d)]:undefined,'userAgentData':{...z5['workerScope'][Qx(0x843)],'brandsVersion':undefined,'uaFullVersion':undefined}},'media':z5[Qx(0x3c4)],'canvas2d':(zr=>{if(!zr)return;const {lied:zV,liedTextMetrics:zR}=zr;let zw;if(!zV){const {dataURI:zm,paintURI:zE,textURI:zf,emojiURI:zc,blob:zG,blobOffscreen:ze}=zr;zw={'lied':zV,...{'dataURI':zm,'paintURI':zE,'textURI':zf,'emojiURI':zc,'blob':zG,'blobOffscreen':ze}};}if(!zR){const {textMetricsSystemSum:zC,emojiSet:zs}=zr;zw={...zw||{},...{'textMetricsSystemSum':zC,'emojiSet':zs}};}return zw;})(z5[Qx(0x823)]),'canvasWebgl':!z5[Qx(0x569)]?undefined:z3?{'parameters':{...Q(z5[Qx(0x569)]['parameters']),...zP(z5[Qx(0x569)])}}:z5[Qx(0x569)][Qx(0x153)]?undefined:{...((zr,zV)=>{const Qk=Qx;if(zV&&zV[Qk(0x153)]){const {extensions:zR,gpu:zw,lied:zm,parameterOrExtensionLie:zE}=zr;return{'extensions':zR,'gpu':zw,'lied':zm,'parameterOrExtensionLie':zE};}return zr;})(z5[Qx(0x569)],z5[Qx(0x823)]),'parameters':{...z5[Qx(0x569)][Qx(0xba0)],...zP(z5[Qx(0x569)])}},'cssMedia':!z5[Qx(0xb49)]?undefined:{'reducedMotion':G(()=>z5[Qx(0xb49)][Qx(0x2c7)][Qx(0x641)]),'colorScheme':z3?undefined:G(()=>z5[Qx(0xb49)][Qx(0x2c7)][Qx(0x952)]),'monochrome':G(()=>z5[Qx(0xb49)]['mediaCSS'][Qx(0x481)]),'invertedColors':G(()=>z5[Qx(0xb49)][Qx(0x2c7)][Qx(0x4e2)]),'forcedColors':G(()=>z5['cssMedia'][Qx(0x2c7)][Qx(0x2c2)]),'anyHover':G(()=>z5['cssMedia'][Qx(0x2c7)][Qx(0x504)]),'hover':G(()=>z5['cssMedia'][Qx(0x2c7)]['hover']),'anyPointer':G(()=>z5[Qx(0xb49)][Qx(0x2c7)][Qx(0x575)]),'pointer':G(()=>z5[Qx(0xb49)]['mediaCSS'][Qx(0x35d)]),'colorGamut':G(()=>z5[Qx(0xb49)][Qx(0x2c7)]['color-gamut']),'screenQuery':zk?undefined:zY(z5[Qx(0xa52)],G(()=>z5[Qx(0xb49)]['screenQuery']))},'css':!z5[Qx(0x8d0)]?undefined:{'interfaceName':G(()=>z5[Qx(0x8d0)][Qx(0xadd)]['interfaceName']),'system':G(()=>z5[Qx(0x8d0)]['system'])},'maths':!z5['maths']||z5[Qx(0x690)][Qx(0x153)]?undefined:z5[Qx(0x690)],'consoleErrors':z5['consoleErrors'],'timezone':!z5[Qx(0x79b)]||z5[Qx(0x79b)][Qx(0x153)]?undefined:{'locationMeasured':zY(z5[Qx(0xa52)],z5[Qx(0x79b)]['locationMeasured']),'lied':z5[Qx(0x79b)][Qx(0x153)]},'svg':!z5[Qx(0xabe)]||z5[Qx(0xabe)][Qx(0x153)]?undefined:z5[Qx(0xabe)],'clientRects':!z5[Qx(0x439)]||z5[Qx(0x439)]['lied']?undefined:z5[Qx(0x439)],'offlineAudioContext':!z5[Qx(0x9f5)]?undefined:z3?{'values':z5['offlineAudioContext'][Qx(0x828)],'compressorGainReduction':z5[Qx(0x9f5)][Qx(0x34a)]}:z5[Qx(0x9f5)][Qx(0x153)]||zA?undefined:z5[Qx(0x9f5)],'fonts':!z5[Qx(0x1cb)]||z5[Qx(0x1cb)][Qx(0x153)]?undefined:z5['fonts'],'capturedErrors':!!zu,'lies':!!zQ,'resistance':z5[Qx(0x8d4)]||undefined,'forceRenew':0x1805e27c6cf};console[Qx(0x642)]('%c✔\x20stable\x20fingerprint\x20passed',Qx(0x1ee)),console[Qx(0x214)](Qx(0xa4d)),console[Qx(0x642)](za),console['groupEnd'](),console[Qx(0x214)](Qx(0x946)),console[Qx(0x642)](Qx(0xbbb),JSON[Qx(0x1b9)](za,null,'\x09')),console[Qx(0x5de)]();const zq=Qx(0x6bc),[zt,zM]=await Promise[Qx(0x840)]([Wi(z5),Wi(za)])['catch'](zr=>{const QP=Qx;console[QP(0xb52)](zr[QP(0x1b2)]);})||[];window[Qx(0x463)]=JSON[Qx(0x17b)](JSON['stringify'](z5)),window[Qx(0x576)]=JSON[Qx(0x17b)](JSON[Qx(0x1b9)](za));const zB=({fingerprint:zr,loading:loading=![],computePreviousLoadRevision:computePreviousLoadRevision=![]})=>{const Qa=Qx,zV={'revisedKeysFromPreviousLoad':[],'revisedKeys':[],'initial':'','loads':0x0};try{const zR=Object[Qa(0xab4)](zr)['reduce']((zf,zc)=>{const Qq=Qa;if(!zr[zc])return zf;return zf[zc]=zr[zc][Qq(0x3fb)],zf;},{}),zw=+sessionStorage[Qa(0x269)](Qa(0xa7c)),zm=JSON[Qa(0x17b)](sessionStorage[Qa(0x269)](Qa(0xaee))),zE=JSON['parse'](sessionStorage[Qa(0x269)](Qa(0x48c)));if(zm){zV['initial']=WO(zm);loading?(zV[Qa(0xa7c)]=0x1+zw,sessionStorage[Qa(0xb3e)](Qa(0xa7c),''+zV[Qa(0xa7c)])):zV['loads']=zw;computePreviousLoadRevision&&sessionStorage['setItem'](Qa(0x48c),JSON['stringify'](zR));const zf=Object[Qa(0xab4)](zR),zc=zf[Qa(0x73b)](ze=>zR[ze]!=zE[ze]),zG=zf[Qa(0x73b)](ze=>zR[ze]!=zm[ze]);return zV['revisedKeys']=zG[Qa(0xb8e)]?zG:[],zV[Qa(0x2d8)]=zc[Qa(0xb8e)]?zc:[],zV;}return sessionStorage[Qa(0xb3e)]('initialFingerprint',JSON[Qa(0x1b9)](zR)),sessionStorage['setItem'](Qa(0x48c),JSON[Qa(0x1b9)](zR)),sessionStorage[Qa(0xb3e)](Qa(0xa7c),''+0x1),zV[Qa(0x22a)]=WO(zR),zV[Qa(0xa7c)]=0x1,zV;}catch(ze){return console[Qa(0xb52)](ze),zV;}},zO=!!zS,{lies:zN,capturedErrors:zi}=za,zy=()=>'<span\x20class=\x22icon\x22></span><span\x20class=\x22icon\x22></span>',zK=document[Qx(0xa0c)](Qx(0xb39));i(zK,K`
+		`);
+        // SVG
+        const reduceToObject = (nativeObj) => {
+            const keys = Object.keys(nativeObj.__proto__);
+            return keys.reduce((acc, key) => {
+                const val = nativeObj[key];
+                const isMethod = typeof val == 'function';
+                return isMethod ? acc : Object.assign(Object.assign({}, acc), { [key]: val });
+            }, {});
+        };
+        const reduceToSum = (nativeObj) => {
+            const keys = Object.keys(nativeObj.__proto__);
+            return keys.reduce((acc, key) => {
+                const val = nativeObj[key];
+                return isNaN(val) ? acc : (acc += val);
+            }, 0);
+        };
+        const getObjectSum = (obj) => !obj ? 0 : Object.keys(obj).reduce((acc, key) => acc += Math.abs(obj[key]), 0);
+        // SVGRect
+        const svgBox = doc.getElementById('svgBox');
+        const bBox = reduceToObject(svgBox.getBBox());
+        // compute SVGRect emojis
+        const pattern = new Set();
+        const svgElems = [...svgBox.getElementsByClassName('svgrect-emoji')];
+        await queueEvent(timer);
+        const emojiSet = svgElems.reduce((emojiSet, el, i) => {
+            const emoji = EMOJIS[i];
+            const dimensions = '' + el.getComputedTextLength();
+            if (!pattern.has(dimensions)) {
+                pattern.add(dimensions);
+                emojiSet.add(emoji);
+            }
+            return emojiSet;
+        }, new Set());
+        // svgRect System Sum
+        const svgrectSystemSum = 0.00001 * [...pattern].map((x) => {
+            return x.split(',').reduce((acc, x) => acc += (+x || 0), 0);
+        }).reduce((acc, x) => acc += x, 0);
+        const data = {
+            bBox: getObjectSum(bBox),
+            extentOfChar: reduceToSum(svgElems[0].getExtentOfChar(EMOJIS[0])),
+            subStringLength: svgElems[0].getSubStringLength(0, 10),
+            computedTextLength: svgElems[0].getComputedTextLength(),
+            emojiSet: [...emojiSet],
+            svgrectSystemSum,
+            lied,
+        };
+        doc.body.removeChild(doc.getElementById('svg-container'));
+        logTestResult({ time: timer.stop(), test: 'svg', passed: true });
+        return data;
+    }
+    catch (error) {
+        logTestResult({ test: 'svg', passed: false });
+        captureError(error);
+        return;
+    }
+}
+function svgHTML(fp) {
+    if (!fp.svg) {
+        return `
+		<div class="col-six undefined">
+			<strong>SVGRect</strong>
+			<div>bBox: ${HTMLNote.BLOCKED}</div>
+			<div>char: ${HTMLNote.BLOCKED}</div>
+			<div>subs: ${HTMLNote.BLOCKED}</div>
+			<div>text: ${HTMLNote.BLOCKED}</div>
+			<div class="block-text">${HTMLNote.BLOCKED}</div>
+		</div>`;
+    }
+    const { svg: { $hash, bBox, subStringLength, extentOfChar, computedTextLength, emojiSet, svgrectSystemSum, lied, }, } = fp;
+    const divisor = 10000;
+    const helpTitle = `SVGTextContentElement.getComputedTextLength()\nhash: ${hashMini(emojiSet)}\n${emojiSet.map((x, i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`;
+    return `
+	<div class="relative col-six${lied ? ' rejected' : ''}">
+		<span class="aside-note">${performanceLogger.getLog().svg}</span>
+		<strong>SVGRect</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+		<div class="help" title="SVGGraphicsElement.getBBox()">bBox: ${bBox ? (bBox / divisor) : HTMLNote.BLOCKED}</div>
+		<div class="help" title="SVGTextContentElement.getExtentOfChar()">char: ${extentOfChar ? (extentOfChar / divisor) : HTMLNote.BLOCKED}</div>
+		<div class="help" title="SVGTextContentElement.getSubStringLength()">subs: ${subStringLength ? (subStringLength / divisor) : HTMLNote.BLOCKED}</div>
+		<div class="help" title="SVGTextContentElement.getComputedTextLength()">text: ${computedTextLength ? (computedTextLength / divisor) : HTMLNote.BLOCKED}</div>
+		<div class="block-text help relative" title="${helpTitle}">
+			<span>${svgrectSystemSum || HTMLNote.UNSUPPORTED}</span>
+			<span class="grey jumbo" style="font-family: ${CSS_FONT_FAMILY}">${formatEmojiSet(emojiSet)}</span>
+		</div>
+	</div>
+	`;
+}
+
+function getTimezone() {
+    // inspired by https://arkenfox.github.io/TZP
+    // https://github.com/vvo/tzdb/blob/master/time-zones-names.json
+    const cities = [
+        'UTC',
+        'GMT',
+        'Etc/GMT+0',
+        'Etc/GMT+1',
+        'Etc/GMT+10',
+        'Etc/GMT+11',
+        'Etc/GMT+12',
+        'Etc/GMT+2',
+        'Etc/GMT+3',
+        'Etc/GMT+4',
+        'Etc/GMT+5',
+        'Etc/GMT+6',
+        'Etc/GMT+7',
+        'Etc/GMT+8',
+        'Etc/GMT+9',
+        'Etc/GMT-1',
+        'Etc/GMT-10',
+        'Etc/GMT-11',
+        'Etc/GMT-12',
+        'Etc/GMT-13',
+        'Etc/GMT-14',
+        'Etc/GMT-2',
+        'Etc/GMT-3',
+        'Etc/GMT-4',
+        'Etc/GMT-5',
+        'Etc/GMT-6',
+        'Etc/GMT-7',
+        'Etc/GMT-8',
+        'Etc/GMT-9',
+        'Etc/GMT',
+        'Africa/Abidjan',
+        'Africa/Accra',
+        'Africa/Addis_Ababa',
+        'Africa/Algiers',
+        'Africa/Asmara',
+        'Africa/Bamako',
+        'Africa/Bangui',
+        'Africa/Banjul',
+        'Africa/Bissau',
+        'Africa/Blantyre',
+        'Africa/Brazzaville',
+        'Africa/Bujumbura',
+        'Africa/Cairo',
+        'Africa/Casablanca',
+        'Africa/Ceuta',
+        'Africa/Conakry',
+        'Africa/Dakar',
+        'Africa/Dar_es_Salaam',
+        'Africa/Djibouti',
+        'Africa/Douala',
+        'Africa/El_Aaiun',
+        'Africa/Freetown',
+        'Africa/Gaborone',
+        'Africa/Harare',
+        'Africa/Johannesburg',
+        'Africa/Juba',
+        'Africa/Kampala',
+        'Africa/Khartoum',
+        'Africa/Kigali',
+        'Africa/Kinshasa',
+        'Africa/Lagos',
+        'Africa/Libreville',
+        'Africa/Lome',
+        'Africa/Luanda',
+        'Africa/Lubumbashi',
+        'Africa/Lusaka',
+        'Africa/Malabo',
+        'Africa/Maputo',
+        'Africa/Maseru',
+        'Africa/Mbabane',
+        'Africa/Mogadishu',
+        'Africa/Monrovia',
+        'Africa/Nairobi',
+        'Africa/Ndjamena',
+        'Africa/Niamey',
+        'Africa/Nouakchott',
+        'Africa/Ouagadougou',
+        'Africa/Porto-Novo',
+        'Africa/Sao_Tome',
+        'Africa/Tripoli',
+        'Africa/Tunis',
+        'Africa/Windhoek',
+        'America/Adak',
+        'America/Anchorage',
+        'America/Anguilla',
+        'America/Antigua',
+        'America/Araguaina',
+        'America/Argentina/Buenos_Aires',
+        'America/Argentina/Catamarca',
+        'America/Argentina/Cordoba',
+        'America/Argentina/Jujuy',
+        'America/Argentina/La_Rioja',
+        'America/Argentina/Mendoza',
+        'America/Argentina/Rio_Gallegos',
+        'America/Argentina/Salta',
+        'America/Argentina/San_Juan',
+        'America/Argentina/San_Luis',
+        'America/Argentina/Tucuman',
+        'America/Argentina/Ushuaia',
+        'America/Aruba',
+        'America/Asuncion',
+        'America/Atikokan',
+        'America/Bahia',
+        'America/Bahia_Banderas',
+        'America/Barbados',
+        'America/Belem',
+        'America/Belize',
+        'America/Blanc-Sablon',
+        'America/Boa_Vista',
+        'America/Bogota',
+        'America/Boise',
+        'America/Cambridge_Bay',
+        'America/Campo_Grande',
+        'America/Cancun',
+        'America/Caracas',
+        'America/Cayenne',
+        'America/Cayman',
+        'America/Chicago',
+        'America/Chihuahua',
+        'America/Costa_Rica',
+        'America/Creston',
+        'America/Cuiaba',
+        'America/Curacao',
+        'America/Danmarkshavn',
+        'America/Dawson',
+        'America/Dawson_Creek',
+        'America/Denver',
+        'America/Detroit',
+        'America/Dominica',
+        'America/Edmonton',
+        'America/Eirunepe',
+        'America/El_Salvador',
+        'America/Fort_Nelson',
+        'America/Fortaleza',
+        'America/Glace_Bay',
+        'America/Godthab',
+        'America/Goose_Bay',
+        'America/Grand_Turk',
+        'America/Grenada',
+        'America/Guadeloupe',
+        'America/Guatemala',
+        'America/Guayaquil',
+        'America/Guyana',
+        'America/Halifax',
+        'America/Havana',
+        'America/Hermosillo',
+        'America/Indiana/Indianapolis',
+        'America/Indiana/Knox',
+        'America/Indiana/Marengo',
+        'America/Indiana/Petersburg',
+        'America/Indiana/Tell_City',
+        'America/Indiana/Vevay',
+        'America/Indiana/Vincennes',
+        'America/Indiana/Winamac',
+        'America/Inuvik',
+        'America/Iqaluit',
+        'America/Jamaica',
+        'America/Juneau',
+        'America/Kentucky/Louisville',
+        'America/Kentucky/Monticello',
+        'America/Kralendijk',
+        'America/La_Paz',
+        'America/Lima',
+        'America/Los_Angeles',
+        'America/Lower_Princes',
+        'America/Maceio',
+        'America/Managua',
+        'America/Manaus',
+        'America/Marigot',
+        'America/Martinique',
+        'America/Matamoros',
+        'America/Mazatlan',
+        'America/Menominee',
+        'America/Merida',
+        'America/Metlakatla',
+        'America/Mexico_City',
+        'America/Miquelon',
+        'America/Moncton',
+        'America/Monterrey',
+        'America/Montevideo',
+        'America/Montserrat',
+        'America/Nassau',
+        'America/New_York',
+        'America/Nipigon',
+        'America/Nome',
+        'America/Noronha',
+        'America/North_Dakota/Beulah',
+        'America/North_Dakota/Center',
+        'America/North_Dakota/New_Salem',
+        'America/Ojinaga',
+        'America/Panama',
+        'America/Pangnirtung',
+        'America/Paramaribo',
+        'America/Phoenix',
+        'America/Port-au-Prince',
+        'America/Port_of_Spain',
+        'America/Porto_Velho',
+        'America/Puerto_Rico',
+        'America/Punta_Arenas',
+        'America/Rainy_River',
+        'America/Rankin_Inlet',
+        'America/Recife',
+        'America/Regina',
+        'America/Resolute',
+        'America/Rio_Branco',
+        'America/Santarem',
+        'America/Santiago',
+        'America/Santo_Domingo',
+        'America/Sao_Paulo',
+        'America/Scoresbysund',
+        'America/Sitka',
+        'America/St_Barthelemy',
+        'America/St_Johns',
+        'America/St_Kitts',
+        'America/St_Lucia',
+        'America/St_Thomas',
+        'America/St_Vincent',
+        'America/Swift_Current',
+        'America/Tegucigalpa',
+        'America/Thule',
+        'America/Thunder_Bay',
+        'America/Tijuana',
+        'America/Toronto',
+        'America/Tortola',
+        'America/Vancouver',
+        'America/Whitehorse',
+        'America/Winnipeg',
+        'America/Yakutat',
+        'America/Yellowknife',
+        'Antarctica/Casey',
+        'Antarctica/Davis',
+        'Antarctica/DumontDUrville',
+        'Antarctica/Macquarie',
+        'Antarctica/Mawson',
+        'Antarctica/McMurdo',
+        'Antarctica/Palmer',
+        'Antarctica/Rothera',
+        'Antarctica/Syowa',
+        'Antarctica/Troll',
+        'Antarctica/Vostok',
+        'Arctic/Longyearbyen',
+        'Asia/Aden',
+        'Asia/Almaty',
+        'Asia/Amman',
+        'Asia/Anadyr',
+        'Asia/Aqtau',
+        'Asia/Aqtobe',
+        'Asia/Ashgabat',
+        'Asia/Atyrau',
+        'Asia/Baghdad',
+        'Asia/Bahrain',
+        'Asia/Baku',
+        'Asia/Bangkok',
+        'Asia/Barnaul',
+        'Asia/Beirut',
+        'Asia/Bishkek',
+        'Asia/Brunei',
+        'Asia/Calcutta',
+        'Asia/Chita',
+        'Asia/Choibalsan',
+        'Asia/Colombo',
+        'Asia/Damascus',
+        'Asia/Dhaka',
+        'Asia/Dili',
+        'Asia/Dubai',
+        'Asia/Dushanbe',
+        'Asia/Famagusta',
+        'Asia/Gaza',
+        'Asia/Hebron',
+        'Asia/Ho_Chi_Minh',
+        'Asia/Hong_Kong',
+        'Asia/Hovd',
+        'Asia/Irkutsk',
+        'Asia/Jakarta',
+        'Asia/Jayapura',
+        'Asia/Jerusalem',
+        'Asia/Kabul',
+        'Asia/Kamchatka',
+        'Asia/Karachi',
+        'Asia/Kathmandu',
+        'Asia/Khandyga',
+        'Asia/Kolkata',
+        'Asia/Krasnoyarsk',
+        'Asia/Kuala_Lumpur',
+        'Asia/Kuching',
+        'Asia/Kuwait',
+        'Asia/Macau',
+        'Asia/Magadan',
+        'Asia/Makassar',
+        'Asia/Manila',
+        'Asia/Muscat',
+        'Asia/Nicosia',
+        'Asia/Novokuznetsk',
+        'Asia/Novosibirsk',
+        'Asia/Omsk',
+        'Asia/Oral',
+        'Asia/Phnom_Penh',
+        'Asia/Pontianak',
+        'Asia/Pyongyang',
+        'Asia/Qatar',
+        'Asia/Qostanay',
+        'Asia/Qyzylorda',
+        'Asia/Riyadh',
+        'Asia/Sakhalin',
+        'Asia/Samarkand',
+        'Asia/Seoul',
+        'Asia/Shanghai',
+        'Asia/Singapore',
+        'Asia/Srednekolymsk',
+        'Asia/Taipei',
+        'Asia/Tashkent',
+        'Asia/Tbilisi',
+        'Asia/Tehran',
+        'Asia/Thimphu',
+        'Asia/Tokyo',
+        'Asia/Tomsk',
+        'Asia/Ulaanbaatar',
+        'Asia/Urumqi',
+        'Asia/Ust-Nera',
+        'Asia/Vientiane',
+        'Asia/Vladivostok',
+        'Asia/Yakutsk',
+        'Asia/Yangon',
+        'Asia/Yekaterinburg',
+        'Asia/Yerevan',
+        'Atlantic/Azores',
+        'Atlantic/Bermuda',
+        'Atlantic/Canary',
+        'Atlantic/Cape_Verde',
+        'Atlantic/Faroe',
+        'Atlantic/Madeira',
+        'Atlantic/Reykjavik',
+        'Atlantic/South_Georgia',
+        'Atlantic/St_Helena',
+        'Atlantic/Stanley',
+        'Australia/Adelaide',
+        'Australia/Brisbane',
+        'Australia/Broken_Hill',
+        'Australia/Currie',
+        'Australia/Darwin',
+        'Australia/Eucla',
+        'Australia/Hobart',
+        'Australia/Lindeman',
+        'Australia/Lord_Howe',
+        'Australia/Melbourne',
+        'Australia/Perth',
+        'Australia/Sydney',
+        'Europe/Amsterdam',
+        'Europe/Andorra',
+        'Europe/Astrakhan',
+        'Europe/Athens',
+        'Europe/Belgrade',
+        'Europe/Berlin',
+        'Europe/Bratislava',
+        'Europe/Brussels',
+        'Europe/Bucharest',
+        'Europe/Budapest',
+        'Europe/Busingen',
+        'Europe/Chisinau',
+        'Europe/Copenhagen',
+        'Europe/Dublin',
+        'Europe/Gibraltar',
+        'Europe/Guernsey',
+        'Europe/Helsinki',
+        'Europe/Isle_of_Man',
+        'Europe/Istanbul',
+        'Europe/Jersey',
+        'Europe/Kaliningrad',
+        'Europe/Kiev',
+        'Europe/Kirov',
+        'Europe/Lisbon',
+        'Europe/Ljubljana',
+        'Europe/London',
+        'Europe/Luxembourg',
+        'Europe/Madrid',
+        'Europe/Malta',
+        'Europe/Mariehamn',
+        'Europe/Minsk',
+        'Europe/Monaco',
+        'Europe/Moscow',
+        'Europe/Oslo',
+        'Europe/Paris',
+        'Europe/Podgorica',
+        'Europe/Prague',
+        'Europe/Riga',
+        'Europe/Rome',
+        'Europe/Samara',
+        'Europe/San_Marino',
+        'Europe/Sarajevo',
+        'Europe/Saratov',
+        'Europe/Simferopol',
+        'Europe/Skopje',
+        'Europe/Sofia',
+        'Europe/Stockholm',
+        'Europe/Tallinn',
+        'Europe/Tirane',
+        'Europe/Ulyanovsk',
+        'Europe/Uzhgorod',
+        'Europe/Vaduz',
+        'Europe/Vatican',
+        'Europe/Vienna',
+        'Europe/Vilnius',
+        'Europe/Volgograd',
+        'Europe/Warsaw',
+        'Europe/Zagreb',
+        'Europe/Zaporozhye',
+        'Europe/Zurich',
+        'Indian/Antananarivo',
+        'Indian/Chagos',
+        'Indian/Christmas',
+        'Indian/Cocos',
+        'Indian/Comoro',
+        'Indian/Kerguelen',
+        'Indian/Mahe',
+        'Indian/Maldives',
+        'Indian/Mauritius',
+        'Indian/Mayotte',
+        'Indian/Reunion',
+        'Pacific/Apia',
+        'Pacific/Auckland',
+        'Pacific/Bougainville',
+        'Pacific/Chatham',
+        'Pacific/Chuuk',
+        'Pacific/Easter',
+        'Pacific/Efate',
+        'Pacific/Enderbury',
+        'Pacific/Fakaofo',
+        'Pacific/Fiji',
+        'Pacific/Funafuti',
+        'Pacific/Galapagos',
+        'Pacific/Gambier',
+        'Pacific/Guadalcanal',
+        'Pacific/Guam',
+        'Pacific/Honolulu',
+        'Pacific/Kiritimati',
+        'Pacific/Kosrae',
+        'Pacific/Kwajalein',
+        'Pacific/Majuro',
+        'Pacific/Marquesas',
+        'Pacific/Midway',
+        'Pacific/Nauru',
+        'Pacific/Niue',
+        'Pacific/Norfolk',
+        'Pacific/Noumea',
+        'Pacific/Pago_Pago',
+        'Pacific/Palau',
+        'Pacific/Pitcairn',
+        'Pacific/Pohnpei',
+        'Pacific/Port_Moresby',
+        'Pacific/Rarotonga',
+        'Pacific/Saipan',
+        'Pacific/Tahiti',
+        'Pacific/Tarawa',
+        'Pacific/Tongatapu',
+        'Pacific/Wake',
+        'Pacific/Wallis',
+    ];
+    const getTimezoneOffset = () => {
+        const [year, month, day] = JSON.stringify(new Date())
+            .slice(1, 11)
+            .split('-');
+        const dateString = `${month}/${day}/${year}`;
+        const dateStringUTC = `${year}-${month}-${day}`;
+        const now = +new Date(dateString);
+        const utc = +new Date(dateStringUTC);
+        const offset = +((now - utc) / 60000);
+        return ~~offset;
+    };
+    const getTimezoneOffsetHistory = ({ year, city = null }) => {
+        const format = {
+            timeZone: '',
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+        };
+        const minute = 60000;
+        let formatter;
+        let summer;
+        if (city) {
+            const options = Object.assign(Object.assign({}, format), { timeZone: city });
+            // @ts-ignore
+            formatter = new Intl.DateTimeFormat('en', options);
+            summer = +new Date(formatter.format(new Date(`7/1/${year}`)));
+        }
+        else {
+            summer = +new Date(`7/1/${year}`);
+        }
+        const summerUTCTime = +new Date(`${year}-07-01`);
+        const offset = (summer - summerUTCTime) / minute;
+        return offset;
+    };
+    const binarySearch = (list, fn) => {
+        const end = list.length;
+        const middle = Math.floor(end / 2);
+        const [left, right] = [list.slice(0, middle), list.slice(middle, end)];
+        const found = fn(left);
+        return end == 1 || found.length ? found : binarySearch(right, fn);
+    };
+    const decryptLocation = ({ year, timeZone }) => {
+        const system = getTimezoneOffsetHistory({ year });
+        const resolvedOptions = getTimezoneOffsetHistory({ year, city: timeZone });
+        const filter = (cities) => cities
+            .filter((city) => system == getTimezoneOffsetHistory({ year, city }));
+        // get city region set
+        const decryption = (system == resolvedOptions ? [timeZone] : binarySearch(cities, filter));
+        // reduce set to one city
+        const decrypted = (decryption.length == 1 && decryption[0] == timeZone ? timeZone : hashMini(decryption));
+        return decrypted;
+    };
+    const formatLocation = (x) => {
+        try {
+            return x.replace(/_/, ' ').split('/').join(', ');
+        }
+        catch (error) { }
+        return x;
+    };
+    try {
+        const timer = createTimer();
+        timer.start();
+        const lied = (lieProps['Date.getTimezoneOffset'] ||
+            lieProps['Intl.DateTimeFormat.resolvedOptions'] ||
+            lieProps['Intl.RelativeTimeFormat.resolvedOptions']) || false;
+        const year = 1113;
+        // eslint-disable-next-line new-cap
+        const { timeZone } = Intl.DateTimeFormat().resolvedOptions();
+        const decrypted = decryptLocation({ year, timeZone });
+        const locationEpoch = +new Date(new Date(`7/1/${year}`));
+        const notWithinParentheses = /.*\(|\).*/g;
+        const data = {
+            zone: ('' + new Date()).replace(notWithinParentheses, ''),
+            location: formatLocation(timeZone),
+            locationMeasured: formatLocation(decrypted),
+            locationEpoch,
+            offset: new Date().getTimezoneOffset(),
+            offsetComputed: getTimezoneOffset(),
+            lied,
+        };
+        logTestResult({ time: timer.stop(), test: 'timezone', passed: true });
+        return Object.assign({}, data);
+    }
+    catch (error) {
+        logTestResult({ test: 'timezone', passed: false });
+        captureError(error);
+        return;
+    }
+}
+function timezoneHTML(fp) {
+    if (!fp.timezone) {
+        return `
+		<div class="col-six undefined">
+			<strong>Timezone</strong>
+			<div class="block-text">${HTMLNote.BLOCKED}</div>
+		</div>`;
+    }
+    const { timezone: { $hash, zone, location, locationMeasured, locationEpoch, offset, offsetComputed, lied, }, } = fp;
+    return `
+	<div class="relative col-six${lied ? ' rejected' : ''}">
+		<span class="aside-note">${performanceLogger.getLog().timezone}</span>
+		<strong>Timezone</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+		<div class="block-text help"  title="Date\nDate.getTimezoneOffset\nIntl.DateTimeFormat">
+			${zone ? zone : ''}
+			<br>${location != locationMeasured ? locationMeasured : location}
+			<br>${locationEpoch}
+			<br>${offset != offsetComputed ? offsetComputed : offset}
+		</div>
+	</div>
+	`;
+}
+
+async function getCanvasWebgl() {
+    // use short list to improve performance
+    const getParamNames = () => [
+        // 'BLEND_EQUATION',
+        // 'BLEND_EQUATION_RGB',
+        // 'BLEND_EQUATION_ALPHA',
+        // 'BLEND_DST_RGB',
+        // 'BLEND_SRC_RGB',
+        // 'BLEND_DST_ALPHA',
+        // 'BLEND_SRC_ALPHA',
+        // 'BLEND_COLOR',
+        // 'CULL_FACE',
+        // 'BLEND',
+        // 'DITHER',
+        // 'STENCIL_TEST',
+        // 'DEPTH_TEST',
+        // 'SCISSOR_TEST',
+        // 'POLYGON_OFFSET_FILL',
+        // 'SAMPLE_ALPHA_TO_COVERAGE',
+        // 'SAMPLE_COVERAGE',
+        // 'LINE_WIDTH',
+        'ALIASED_POINT_SIZE_RANGE',
+        'ALIASED_LINE_WIDTH_RANGE',
+        // 'CULL_FACE_MODE',
+        // 'FRONT_FACE',
+        // 'DEPTH_RANGE',
+        // 'DEPTH_WRITEMASK',
+        // 'DEPTH_CLEAR_VALUE',
+        // 'DEPTH_FUNC',
+        // 'STENCIL_CLEAR_VALUE',
+        // 'STENCIL_FUNC',
+        // 'STENCIL_FAIL',
+        // 'STENCIL_PASS_DEPTH_FAIL',
+        // 'STENCIL_PASS_DEPTH_PASS',
+        // 'STENCIL_REF',
+        'STENCIL_VALUE_MASK',
+        'STENCIL_WRITEMASK',
+        // 'STENCIL_BACK_FUNC',
+        // 'STENCIL_BACK_FAIL',
+        // 'STENCIL_BACK_PASS_DEPTH_FAIL',
+        // 'STENCIL_BACK_PASS_DEPTH_PASS',
+        // 'STENCIL_BACK_REF',
+        'STENCIL_BACK_VALUE_MASK',
+        'STENCIL_BACK_WRITEMASK',
+        // 'VIEWPORT',
+        // 'SCISSOR_BOX',
+        // 'COLOR_CLEAR_VALUE',
+        // 'COLOR_WRITEMASK',
+        // 'UNPACK_ALIGNMENT',
+        // 'PACK_ALIGNMENT',
+        'MAX_TEXTURE_SIZE',
+        'MAX_VIEWPORT_DIMS',
+        'SUBPIXEL_BITS',
+        // 'RED_BITS',
+        // 'GREEN_BITS',
+        // 'BLUE_BITS',
+        // 'ALPHA_BITS',
+        // 'DEPTH_BITS',
+        // 'STENCIL_BITS',
+        // 'POLYGON_OFFSET_UNITS',
+        // 'POLYGON_OFFSET_FACTOR',
+        // 'SAMPLE_BUFFERS',
+        // 'SAMPLES',
+        // 'SAMPLE_COVERAGE_VALUE',
+        // 'SAMPLE_COVERAGE_INVERT',
+        // 'COMPRESSED_TEXTURE_FORMATS',
+        // 'GENERATE_MIPMAP_HINT',
+        'MAX_VERTEX_ATTRIBS',
+        'MAX_VERTEX_UNIFORM_VECTORS',
+        'MAX_VARYING_VECTORS',
+        'MAX_COMBINED_TEXTURE_IMAGE_UNITS',
+        'MAX_VERTEX_TEXTURE_IMAGE_UNITS',
+        'MAX_TEXTURE_IMAGE_UNITS',
+        'MAX_FRAGMENT_UNIFORM_VECTORS',
+        'SHADING_LANGUAGE_VERSION',
+        'VENDOR',
+        'RENDERER',
+        'VERSION',
+        'MAX_CUBE_MAP_TEXTURE_SIZE',
+        // 'ACTIVE_TEXTURE',
+        // 'IMPLEMENTATION_COLOR_READ_TYPE',
+        // 'IMPLEMENTATION_COLOR_READ_FORMAT',
+        'MAX_RENDERBUFFER_SIZE',
+        // 'UNPACK_FLIP_Y_WEBGL',
+        // 'UNPACK_PREMULTIPLY_ALPHA_WEBGL',
+        // 'UNPACK_COLORSPACE_CONVERSION_WEBGL',
+        // 'READ_BUFFER',
+        // 'UNPACK_ROW_LENGTH',
+        // 'UNPACK_SKIP_ROWS',
+        // 'UNPACK_SKIP_PIXELS',
+        // 'PACK_ROW_LENGTH',
+        // 'PACK_SKIP_ROWS',
+        // 'PACK_SKIP_PIXELS',
+        // 'UNPACK_SKIP_IMAGES',
+        // 'UNPACK_IMAGE_HEIGHT',
+        'MAX_3D_TEXTURE_SIZE',
+        'MAX_ELEMENTS_VERTICES',
+        'MAX_ELEMENTS_INDICES',
+        'MAX_TEXTURE_LOD_BIAS',
+        'MAX_DRAW_BUFFERS',
+        // 'DRAW_BUFFER0',
+        // 'DRAW_BUFFER1',
+        // 'DRAW_BUFFER2',
+        // 'DRAW_BUFFER3',
+        // 'DRAW_BUFFER4',
+        // 'DRAW_BUFFER5',
+        // 'DRAW_BUFFER6',
+        // 'DRAW_BUFFER7',
+        'MAX_FRAGMENT_UNIFORM_COMPONENTS',
+        'MAX_VERTEX_UNIFORM_COMPONENTS',
+        // 'FRAGMENT_SHADER_DERIVATIVE_HINT',
+        'MAX_ARRAY_TEXTURE_LAYERS',
+        // 'MIN_PROGRAM_TEXEL_OFFSET',
+        'MAX_PROGRAM_TEXEL_OFFSET',
+        'MAX_VARYING_COMPONENTS',
+        'MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS',
+        // 'RASTERIZER_DISCARD',
+        'MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS',
+        'MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS',
+        'MAX_COLOR_ATTACHMENTS',
+        'MAX_SAMPLES',
+        'MAX_VERTEX_UNIFORM_BLOCKS',
+        'MAX_FRAGMENT_UNIFORM_BLOCKS',
+        'MAX_COMBINED_UNIFORM_BLOCKS',
+        'MAX_UNIFORM_BUFFER_BINDINGS',
+        'MAX_UNIFORM_BLOCK_SIZE',
+        'MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS',
+        'MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS',
+        // 'UNIFORM_BUFFER_OFFSET_ALIGNMENT',
+        'MAX_VERTEX_OUTPUT_COMPONENTS',
+        'MAX_FRAGMENT_INPUT_COMPONENTS',
+        'MAX_SERVER_WAIT_TIMEOUT',
+        // 'TRANSFORM_FEEDBACK_PAUSED',
+        // 'TRANSFORM_FEEDBACK_ACTIVE',
+        'MAX_ELEMENT_INDEX',
+        'MAX_CLIENT_WAIT_TIMEOUT_WEBGL',
+    ].sort();
+    const draw = (gl) => {
+        const isSafari15AndAbove = ('BigInt64Array' in window &&
+            IS_WEBKIT &&
+            !/(Cr|Fx)iOS/.test(navigator.userAgent));
+        if (!gl || isSafari15AndAbove) {
+            return;
+        }
+        // gl.clearColor(0.47, 0.7, 0.78, 1)
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        // based on https://github.com/Valve/fingerprintjs2/blob/master/fingerprint2.js
+        const vertexPosBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexPosBuffer);
+        const vertices = new Float32Array([-0.9, -0.7, 0, 0.8, -0.7, 0, 0, 0.5, 0]);
+        gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+        // create program
+        const program = gl.createProgram();
+        // compile and attach vertex shader
+        const vertexShader = gl.createShader(gl.VERTEX_SHADER);
+        gl.shaderSource(vertexShader, `
+			attribute vec2 attrVertex;
+			varying vec2 varyinTexCoordinate;
+			uniform vec2 uniformOffset;
+			void main(){
+				varyinTexCoordinate = attrVertex + uniformOffset;
+				gl_Position = vec4(attrVertex, 0, 1);
+			}
+		`);
+        gl.compileShader(vertexShader);
+        gl.attachShader(program, vertexShader);
+        // compile and attach fragment shader
+        const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+        gl.shaderSource(fragmentShader, `
+			precision mediump float;
+			varying vec2 varyinTexCoordinate;
+			void main() {
+				gl_FragColor = vec4(varyinTexCoordinate, 1, 1);
+			}
+		`);
+        gl.compileShader(fragmentShader);
+        gl.attachShader(program, fragmentShader);
+        // use program
+        const componentSize = 3;
+        gl.linkProgram(program);
+        gl.useProgram(program);
+        program.vertexPosAttrib = gl.getAttribLocation(program, 'attrVertex');
+        program.offsetUniform = gl.getUniformLocation(program, 'uniformOffset');
+        gl.enableVertexAttribArray(program.vertexPosArray);
+        gl.vertexAttribPointer(program.vertexPosAttrib, componentSize, gl.FLOAT, false, 0, 0);
+        gl.uniform2f(program.offsetUniform, 1, 1);
+        // draw
+        const numOfIndices = 3;
+        gl.drawArrays(gl.LINE_LOOP, 0, numOfIndices);
+        return gl;
+    };
+    try {
+        const timer = createTimer();
+        await queueEvent(timer);
+        // detect lies
+        const dataLie = lieProps['HTMLCanvasElement.toDataURL'];
+        const contextLie = lieProps['HTMLCanvasElement.getContext'];
+        const parameterOrExtensionLie = (lieProps['WebGLRenderingContext.getParameter'] ||
+            lieProps['WebGL2RenderingContext.getParameter'] ||
+            lieProps['WebGLRenderingContext.getExtension'] ||
+            lieProps['WebGL2RenderingContext.getExtension']);
+        const lied = (dataLie ||
+            contextLie ||
+            parameterOrExtensionLie ||
+            lieProps['WebGLRenderingContext.getSupportedExtensions'] ||
+            lieProps['WebGL2RenderingContext.getSupportedExtensions']) || false;
+        // create canvas context
+        let win = window;
+        if (!LIKE_BRAVE && PHANTOM_DARKNESS) {
+            win = PHANTOM_DARKNESS;
+        }
+        const doc = win.document;
+        let canvas;
+        let canvas2;
+        if ('OffscreenCanvas' in window) {
+            // @ts-ignore OffscreenCanvas
+            canvas = new win.OffscreenCanvas(256, 256);
+            // @ts-ignore OffscreenCanvas
+            canvas2 = new win.OffscreenCanvas(256, 256);
+        }
+        else {
+            canvas = doc.createElement('canvas');
+            canvas2 = doc.createElement('canvas');
+        }
+        const getContext = (canvas, contextType) => {
+            try {
+                if (contextType == 'webgl2') {
+                    return (canvas.getContext('webgl2') ||
+                        canvas.getContext('experimental-webgl2'));
+                }
+                return (canvas.getContext('webgl') ||
+                    canvas.getContext('experimental-webgl') ||
+                    canvas.getContext('moz-webgl') ||
+                    canvas.getContext('webkit-3d'));
+            }
+            catch (error) {
+                return;
+            }
+        };
+        const gl = getContext(canvas, 'webgl');
+        const gl2 = getContext(canvas2, 'webgl2');
+        if (!gl) {
+            logTestResult({ test: 'webgl', passed: false });
+            return;
+        }
+        // helpers
+        const getShaderPrecisionFormat = (gl, shaderType) => {
+            if (!gl) {
+                return;
+            }
+            const LOW_FLOAT = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.LOW_FLOAT));
+            const MEDIUM_FLOAT = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.MEDIUM_FLOAT));
+            const HIGH_FLOAT = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.HIGH_FLOAT));
+            const HIGH_INT = attempt(() => gl.getShaderPrecisionFormat(gl[shaderType], gl.HIGH_INT));
+            return {
+                LOW_FLOAT,
+                MEDIUM_FLOAT,
+                HIGH_FLOAT,
+                HIGH_INT,
+            };
+        };
+        const getShaderData = (name, shader) => {
+            const data = {};
+            // eslint-disable-next-line guard-for-in
+            for (const prop in shader) {
+                const obj = shader[prop];
+                data[name + '.' + prop + '.precision'] = obj ? attempt(() => obj.precision) : undefined;
+                data[name + '.' + prop + '.rangeMax'] = obj ? attempt(() => obj.rangeMax) : undefined;
+                data[name + '.' + prop + '.rangeMin'] = obj ? attempt(() => obj.rangeMin) : undefined;
+            }
+            return data;
+        };
+        const getMaxAnisotropy = (gl) => {
+            if (!gl) {
+                return;
+            }
+            const ext = (gl.getExtension('EXT_texture_filter_anisotropic') ||
+                gl.getExtension('MOZ_EXT_texture_filter_anisotropic') ||
+                gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic'));
+            return ext ? gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT) : undefined;
+        };
+        const getParams = (gl) => {
+            if (!gl) {
+                return {};
+            }
+            const pnamesShortList = new Set(getParamNames());
+            const pnames = Object.getOwnPropertyNames(Object.getPrototypeOf(gl))
+                // .filter(prop => prop.toUpperCase() == prop) // global test
+                .filter((name) => pnamesShortList.has(name));
+            return pnames.reduce((acc, name) => {
+                const val = gl.getParameter(gl[name]);
+                if (!!val && 'buffer' in Object.getPrototypeOf(val)) {
+                    acc[name] = [...val];
+                }
+                else {
+                    acc[name] = val;
+                }
+                return acc;
+            }, {});
+        };
+        const getUnmasked = (gl) => {
+            const ext = !!gl ? gl.getExtension('WEBGL_debug_renderer_info') : null;
+            return !ext ? {} : {
+                UNMASKED_VENDOR_WEBGL: gl.getParameter(ext.UNMASKED_VENDOR_WEBGL),
+                UNMASKED_RENDERER_WEBGL: gl.getParameter(ext.UNMASKED_RENDERER_WEBGL),
+            };
+        };
+        const getSupportedExtensions = (gl) => {
+            if (!gl) {
+                return [];
+            }
+            const ext = attempt(() => gl.getSupportedExtensions());
+            if (!ext) {
+                return [];
+            }
+            return ext;
+        };
+        const getWebGLData = (gl, contextType) => {
+            if (!gl) {
+                return {
+                    dataURI: undefined,
+                    pixels: undefined,
+                };
+            }
+            try {
+                draw(gl);
+                const { drawingBufferWidth, drawingBufferHeight } = gl;
+                let dataURI = '';
+                if (gl.canvas.constructor.name === 'OffscreenCanvas') {
+                    const canvas = document.createElement('canvas');
+                    draw(getContext(canvas, contextType));
+                    dataURI = canvas.toDataURL();
+                }
+                else {
+                    dataURI = gl.canvas.toDataURL();
+                }
+                // reduce excessive reads to improve performance
+                const width = drawingBufferWidth / 15;
+                const height = drawingBufferHeight / 6;
+                const pixels = new Uint8Array(width * height * 4);
+                try {
+                    gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+                }
+                catch (error) {
+                    return {
+                        dataURI,
+                        pixels: undefined,
+                    };
+                }
+                // console.log([...pixels].filter(x => !!x)) // test read
+                return {
+                    dataURI,
+                    pixels: [...pixels],
+                };
+            }
+            catch (error) {
+                return captureError(error);
+            }
+        };
+        // get data
+        await queueEvent(timer);
+        const params = Object.assign(Object.assign({}, getParams(gl)), getUnmasked(gl));
+        const params2 = Object.assign(Object.assign({}, getParams(gl2)), getUnmasked(gl2));
+        const mismatch = Object.keys(params2)
+            .filter((key) => !!params[key] && '' + params[key] != '' + params2[key])
+            .toString()
+            .replace('SHADING_LANGUAGE_VERSION,VERSION', '');
+        if (mismatch) {
+            sendToTrash('webgl/webgl2 mirrored params mismatch', mismatch);
+        }
+        await queueEvent(timer);
+        const { dataURI, pixels } = getWebGLData(gl, 'webgl') || {};
+        const { dataURI: dataURI2, pixels: pixels2 } = getWebGLData(gl2, 'webgl2') || {};
+        const data = {
+            extensions: [...getSupportedExtensions(gl), ...getSupportedExtensions(gl2)],
+            pixels,
+            pixels2,
+            dataURI,
+            dataURI2,
+            parameters: Object.assign(Object.assign({}, Object.assign(Object.assign({}, params), params2)), Object.assign(Object.assign(Object.assign({ antialias: gl.getContextAttributes() ? gl.getContextAttributes().antialias : undefined, MAX_VIEWPORT_DIMS: attempt(() => [...gl.getParameter(gl.MAX_VIEWPORT_DIMS)]), MAX_TEXTURE_MAX_ANISOTROPY_EXT: getMaxAnisotropy(gl) }, getShaderData('VERTEX_SHADER', getShaderPrecisionFormat(gl, 'VERTEX_SHADER'))), getShaderData('FRAGMENT_SHADER', getShaderPrecisionFormat(gl, 'FRAGMENT_SHADER'))), { MAX_DRAW_BUFFERS_WEBGL: attempt(() => {
+                    const buffers = gl.getExtension('WEBGL_draw_buffers');
+                    return buffers ? gl.getParameter(buffers.MAX_DRAW_BUFFERS_WEBGL) : undefined;
+                }) })),
+            parameterOrExtensionLie,
+            lied,
+        };
+        logTestResult({ time: timer.stop(), test: 'webgl', passed: true });
+        return Object.assign(Object.assign({}, data), { gpu: Object.assign(Object.assign({}, (getWebGLRendererConfidence((data.parameters || {}).UNMASKED_RENDERER_WEBGL) || {})), { compressedGPU: compressWebGLRenderer((data.parameters || {}).UNMASKED_RENDERER_WEBGL) }) });
+    }
+    catch (error) {
+        logTestResult({ test: 'webgl', passed: false });
+        captureError(error);
+        return;
+    }
+}
+function webglHTML(fp) {
+    if (!fp.canvasWebgl) {
+        return `
+		<div class="col-six undefined">
+			<strong>WebGL</strong>
+			<div>images: ${HTMLNote.BLOCKED}</div>
+			<div>pixels: ${HTMLNote.BLOCKED}</div>
+			<div>params (0): ${HTMLNote.BLOCKED}</div>
+			<div>exts (0): ${HTMLNote.BLOCKED}</div>
+			<div>gpu:</div>
+			<div class="block-text">${HTMLNote.BLOCKED}</div>
+			<div class="gl-image"></div>
+		</div>`;
+    }
+    const { canvasWebgl: data } = fp;
+    const id = 'creep-canvas-webgl';
+    const { $hash, dataURI, dataURI2, pixels, pixels2, lied, extensions, parameters, gpu, } = data || {};
+    const { parts, warnings, gibbers, confidence, grade: confidenceGrade, compressedGPU, } = gpu || {};
+    const paramKeys = parameters ? Object.keys(parameters).sort() : [];
+    return `
+
+	<div class="relative col-six${lied ? ' rejected' : ''}">
+		<span class="time">${performanceLogger.getLog().webgl}</span>
+		<strong>WebGL</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+		<div>images:${!dataURI ? ' ' + HTMLNote.BLOCKED : `<span class="sub-hash">${hashMini(dataURI)}</span>${!dataURI2 || dataURI == dataURI2 ? '' : `<span class="sub-hash">${hashMini(dataURI2)}</span>`}`}</div>
+		<div>pixels:${!pixels ? ' ' + HTMLNote.BLOCKED : `<span class="sub-hash">${hashSlice(pixels)}</span>${!pixels2 || pixels == pixels2 ? '' : `<span class="sub-hash">${hashSlice(pixels2)}</span>`}`}</div>
+		<div>params (${count(paramKeys)}): ${!paramKeys.length ? HTMLNote.BLOCKED :
+        modal(`${id}-parameters`, paramKeys.map((key) => `${key}: ${parameters[key]}`).join('<br>'), hashMini(parameters))}</div>
+		<div>exts (${count(extensions)}): ${!extensions.length ? HTMLNote.BLOCKED :
+        modal(`${id}-extensions`, extensions.sort().join('<br>'), hashMini(extensions))}</div>
+
+		<div class="relative">gpu:${confidence ? `<span class="confidence-note">confidence: <span class="scale-up grade-${confidenceGrade}">${confidence}</span></span>` : ''}</div>
+		<div class="block-text help" title="${confidence ? `\nWebGLRenderingContext.getParameter()\ngpu compressed: ${compressedGPU}\nknown parts: ${parts || 'none'}\ngibberish: ${gibbers || 'none'}\nwarnings: ${warnings.join(', ') || 'none'}` : 'WebGLRenderingContext.getParameter()'}">
+			<div>
+				${parameters.UNMASKED_VENDOR_WEBGL ? parameters.UNMASKED_VENDOR_WEBGL : ''}
+				${!parameters.UNMASKED_RENDERER_WEBGL ? HTMLNote.BLOCKED : `<br>${parameters.UNMASKED_RENDERER_WEBGL}`}
+			</div>
+		</div>
+		${!dataURI ? '<div class="gl-image"></div>' : `<image class="gl-image" src="${dataURI}"/>`}
+	</div>
+	`;
+}
+
+const getExtensions = (sdp) => {
+    const extensions = (('' + sdp).match(/extmap:\d+ [^\n|\r]+/g) || [])
+        .map((x) => x.replace(/extmap:[^\s]+ /, ''));
+    return [...new Set(extensions)].sort();
+};
+const createCounter = () => {
+    let counter = 0;
+    return {
+        increment: () => counter += 1,
+        getValue: () => counter,
+    };
+};
+// https://webrtchacks.com/sdp-anatomy/
+// https://tools.ietf.org/id/draft-ietf-rtcweb-sdp-08.html
+const constructDescriptions = ({ mediaType, sdp, sdpDescriptors, rtxCounter }) => {
+    if (!('' + sdpDescriptors)) {
+        return;
+    }
+    return sdpDescriptors.reduce((descriptionAcc, descriptor) => {
+        const matcher = `(rtpmap|fmtp|rtcp-fb):${descriptor} (.+)`;
+        const formats = (sdp.match(new RegExp(matcher, 'g')) || []);
+        if (!('' + formats)) {
+            return descriptionAcc;
+        }
+        const isRtxCodec = ('' + formats).includes(' rtx/');
+        if (isRtxCodec) {
+            if (rtxCounter.getValue()) {
+                return descriptionAcc;
+            }
+            rtxCounter.increment();
+        }
+        const getLineData = (x) => x.replace(/[^\s]+ /, '');
+        const description = formats.reduce((acc, x) => {
+            const rawData = getLineData(x);
+            const data = rawData.split('/');
+            const codec = data[0];
+            const description = {};
+            if (x.includes('rtpmap')) {
+                if (mediaType == 'audio') {
+                    description.channels = (+data[2]) || 1;
+                }
+                description.mimeType = `${mediaType}/${codec}`;
+                description.clockRates = [+data[1]];
+                return Object.assign(Object.assign({}, acc), description);
+            }
+            else if (x.includes('rtcp-fb')) {
+                return Object.assign(Object.assign({}, acc), { feedbackSupport: [...(acc.feedbackSupport || []), rawData] });
+            }
+            else if (isRtxCodec) {
+                return acc; // no sdpFmtpLine
+            }
+            return Object.assign(Object.assign({}, acc), { sdpFmtpLine: [...rawData.split(';')] });
+        }, {});
+        let shouldMerge = false;
+        const mergerAcc = descriptionAcc.map((x) => {
+            shouldMerge = x.mimeType == description.mimeType;
+            if (shouldMerge) {
+                if (x.feedbackSupport) {
+                    x.feedbackSupport = [
+                        ...new Set([...x.feedbackSupport, ...description.feedbackSupport]),
+                    ];
+                }
+                if (x.sdpFmtpLine) {
+                    x.sdpFmtpLine = [
+                        ...new Set([...x.sdpFmtpLine, ...description.sdpFmtpLine]),
+                    ];
+                }
+                return Object.assign(Object.assign({}, x), { clockRates: [
+                        ...new Set([...x.clockRates, ...description.clockRates]),
+                    ] });
+            }
+            return x;
+        });
+        if (shouldMerge) {
+            return mergerAcc;
+        }
+        return [...descriptionAcc, description];
+    }, []);
+};
+const getCapabilities = (sdp) => {
+    const videoDescriptors = ((/m=video [^\s]+ [^\s]+ ([^\n|\r]+)/.exec(sdp) || [])[1] || '').split(' ');
+    const audioDescriptors = ((/m=audio [^\s]+ [^\s]+ ([^\n|\r]+)/.exec(sdp) || [])[1] || '').split(' ');
+    const rtxCounter = createCounter();
+    return {
+        audio: constructDescriptions({
+            mediaType: 'audio',
+            sdp,
+            sdpDescriptors: audioDescriptors,
+            rtxCounter,
+        }),
+        video: constructDescriptions({
+            mediaType: 'video',
+            sdp,
+            sdpDescriptors: videoDescriptors,
+            rtxCounter,
+        }),
+    };
+};
+const getIPAddress = (sdp) => {
+    const blocked = '0.0.0.0';
+    const candidateEncoding = /((udp|tcp)\s)((\d|\w)+\s)((\d|\w|(\.|\:))+)(?=\s)/ig;
+    const connectionLineEncoding = /(c=IN\s)(.+)\s/ig;
+    const connectionLineIpAddress = ((sdp.match(connectionLineEncoding) || [])[0] || '').trim().split(' ')[2];
+    if (connectionLineIpAddress && (connectionLineIpAddress != blocked)) {
+        return connectionLineIpAddress;
+    }
+    const candidateIpAddress = ((sdp.match(candidateEncoding) || [])[0] || '').split(' ')[2];
+    return candidateIpAddress && (candidateIpAddress != blocked) ? candidateIpAddress : undefined;
+};
+async function getWebRTCData() {
+    return new Promise(async (resolve) => {
+        if (!window.RTCPeerConnection) {
+            return resolve(null);
+        }
+        const config = {
+            iceCandidatePoolSize: 1,
+            iceServers: [
+                {
+                    urls: [
+                        'stun:stun4.l.google.com:19302?transport=udp',
+                        'stun:stun3.l.google.com:19302?transport=udp',
+                        // 'stun:stun2.l.google.com:19302?transport=udp',
+                        // 'stun:stun1.l.google.com:19302?transport=udp',
+                        // 'stun:stun.l.google.com:19302?transport=udp',
+                    ],
+                },
+            ],
+        };
+        const connection = new RTCPeerConnection(config);
+        connection.createDataChannel('');
+        const options = { offerToReceiveAudio: 1, offerToReceiveVideo: 1 };
+        // @ts-ignore
+        const offer = await connection.createOffer(options);
+        connection.setLocalDescription(offer);
+        const { sdp } = offer || {};
+        const extensions = getExtensions(sdp);
+        const codecsSdp = getCapabilities(sdp);
+        let iceCandidate = '';
+        let foundation = '';
+        const giveUpOnIPAddress = setTimeout(() => {
+            connection.removeEventListener('icecandidate', computeCandidate);
+            connection.close();
+            if (sdp) {
+                return resolve({
+                    codecsSdp,
+                    extensions,
+                    foundation,
+                    iceCandidate,
+                });
+            }
+            return resolve(null);
+        }, 3000);
+        const computeCandidate = (event) => {
+            const { candidate } = event.candidate || {};
+            if (!candidate) {
+                return;
+            }
+            if (!iceCandidate) {
+                iceCandidate = candidate;
+                foundation = (/^candidate:([\w]+)/.exec(candidate) || [])[1] || '';
+            }
+            const { sdp } = connection.localDescription || {};
+            const address = getIPAddress(sdp);
+            if (!address) {
+                return;
+            }
+            connection.removeEventListener('icecandidate', computeCandidate);
+            clearTimeout(giveUpOnIPAddress);
+            connection.close();
+            return resolve({
+                codecsSdp,
+                extensions,
+                foundation,
+                iceCandidate,
+                address,
+                stunConnection: candidate,
+            });
+        };
+        connection.addEventListener('icecandidate', computeCandidate);
+    });
+}
+function webrtcHTML(webRTC) {
+    if (!webRTC) {
+        return `
+	<div class="col-six">
+		<strong>WebRTC</strong>
+		<div>host connection:</div>
+		<div class="block-text">${HTMLNote.BLOCKED}</div>
+	</div>
+	<div class="col-six">
+		<div>sdp capabilities: ${HTMLNote.BLOCKED}</div>
+		<div>stun connection:</div>
+		<div class="block-text">${HTMLNote.BLOCKED}</div>
+	</div>`;
+    }
+    const { codecsSdp, extensions, foundation, iceCandidate, address, stunConnection, } = webRTC || {};
+    const { audio, video } = codecsSdp || {};
+    const id = 'creep-webrtc';
+    const webRTCHash = hashMini({
+        codecsSdp,
+        extensions,
+        foundation,
+        address,
+    });
+    const feedbackId = {
+        'ccm fir': 'Codec Control Message Full Intra Request (ccm fir)',
+        'goog-remb': 'Google\'s Receiver Estimated Maximum Bitrate (goog-remb)',
+        'nack': 'Negative ACKs (nack)',
+        'nack pli': 'Picture loss Indication and NACK (nack pli)',
+        'transport-cc': 'Transport Wide Congestion Control (transport-cc)',
+    };
+    const getModalTemplate = (list) => list.map((x) => {
+        return `
+			<strong>${x.mimeType}</strong>
+			<br>Clock Rates: ${x.clockRates.sort((a, b) => b - a).join(', ')}
+			${x.channels > 1 ? `<br>Channels: ${x.channels}` : ''}
+			${x.sdpFmtpLine ? `<br>Format Specific Parameters:<br>- ${x.sdpFmtpLine.sort().map((x) => x.replace('=', ': ')).join('<br>- ')}` : ''}
+			${x.feedbackSupport ? `<br>Feedback Support:<br>- ${x.feedbackSupport.map((x) => {
+            return feedbackId[x] || x;
+        }).sort().join('<br>- ')}` : ''}
+		`;
+    }).join('<br><br>');
+    return `
+	<div class="relative col-six">
+		<strong>WebRTC</strong><span class="hash">${webRTCHash}</span>
+		<div>host connection:</div>
+		<div class="block-text">${iceCandidate || HTMLNote.BLOCKED}</div>
+	</div>
+	<div class="relative col-six">
+		<div class="help" title="RTCSessionDescription.sdp">sdp capabilities: ${!codecsSdp ? HTMLNote.BLOCKED :
+        modal(`${id}-sdp-capabilities`, getModalTemplate(audio) +
+            '<br><br>' + getModalTemplate(video) +
+            '<br><br><strong>extensions</strong><br>' + extensions.join('<br>'), hashMini({ audio, video, extensions }))}</div>
+		<div>stun connection:</div>
+		<div class="block-text">${stunConnection || HTMLNote.BLOCKED}</div>
+	</div>
+	`;
+}
+
+function getWindowFeatures() {
+    try {
+        const timer = createTimer();
+        timer.start();
+        const win = PHANTOM_DARKNESS || window;
+        let keys = Object.getOwnPropertyNames(win)
+            .filter((key) => !/_|\d{3,}/.test(key)); // clear out known ddg noise
+        // if Firefox, remove the 'Event' key and push to end for consistent order
+        // and disregard keys known to be missing in RFP mode
+        const firefoxKeyMovedByInspect = 'Event';
+        const varyingKeysMissingInRFP = ['PerformanceNavigationTiming', 'Performance'];
+        if (IS_GECKO) {
+            const index = keys.indexOf(firefoxKeyMovedByInspect);
+            if (index != -1) {
+                keys = keys.slice(0, index).concat(keys.slice(index + 1));
+                keys = [...keys, firefoxKeyMovedByInspect];
+            }
+            varyingKeysMissingInRFP.forEach((key) => {
+                const index = keys.indexOf(key);
+                if (index != -1) {
+                    keys = keys.slice(0, index).concat(keys.slice(index + 1));
+                }
+                return keys;
+            });
+        }
+        const moz = keys.filter((key) => (/moz/i).test(key)).length;
+        const webkit = keys.filter((key) => (/webkit/i).test(key)).length;
+        const apple = keys.filter((key) => (/apple/i).test(key)).length;
+        const data = { keys, apple, moz, webkit };
+        logTestResult({ time: timer.stop(), test: 'window', passed: true });
+        return Object.assign({}, data);
+    }
+    catch (error) {
+        logTestResult({ test: 'window', passed: false });
+        captureError(error);
+        return;
+    }
+}
+function windowFeaturesHTML(fp) {
+    if (!fp.windowFeatures) {
+        return `
+		<div class="col-six undefined">
+			<strong>Window</strong>
+			<div>keys (0): ${HTMLNote.BLOCKED}</div>
+			<div>
+				<div>${HTMLNote.BLOCKED}</div>
+			</div>
+		</div>`;
+    }
+    const { windowFeatures: { $hash, keys, }, } = fp;
+    return `
+	<div class="relative col-six">
+		<span class="aside-note">${performanceLogger.getLog().window}</span>
+		<strong>Window</strong><span class="hash">${hashSlice($hash)}</span>
+		<div>keys (${count(keys)}): ${keys && keys.length ? modal('creep-iframe-content-window-version', keys.join(', ')) : HTMLNote.BLOCKED}</div>
+		<div class="blurred" id="window-features-samples">
+			<div>0% of version</div>
+		</div>
+	</div>
+	`;
+}
+
+async function getBestWorkerScope() {
+    try {
+        const timer = createTimer();
+        await queueEvent(timer);
+        const ask = (fn) => {
+            try {
+                return fn();
+            }
+            catch (e) {
+                return;
+            }
+        };
+        const hasConstructor = (x, name) => x && x.__proto__.constructor.name == name;
+        const getDedicatedWorker = ({ scriptSource }) => new Promise((resolve) => {
+            const giveUpOnWorker = setTimeout(() => {
+                return resolve(null);
+            }, 3000);
+            const dedicatedWorker = ask(() => new Worker(scriptSource));
+            if (!hasConstructor(dedicatedWorker, 'Worker'))
+                return resolve(null);
+            dedicatedWorker.onmessage = (event) => {
+                dedicatedWorker.terminate();
+                clearTimeout(giveUpOnWorker);
+                return resolve(event.data);
+            };
+        });
+        const getSharedWorker = ({ scriptSource }) => new Promise((resolve) => {
+            const giveUpOnWorker = setTimeout(() => {
+                return resolve(null);
+            }, 3000);
+            const sharedWorker = ask(() => new SharedWorker(scriptSource));
+            if (!hasConstructor(sharedWorker, 'SharedWorker'))
+                return resolve(null);
+            sharedWorker.port.start();
+            sharedWorker.port.onmessage = (event) => {
+                sharedWorker.port.close();
+                clearTimeout(giveUpOnWorker);
+                return resolve(event.data);
+            };
+        });
+        const getServiceWorker = ({ scriptSource }) => new Promise((resolve) => {
+            const giveUpOnWorker = setTimeout(() => {
+                return resolve(null);
+            }, 3000);
+            if (!ask(() => navigator.serviceWorker.register))
+                return resolve(null);
+            return navigator.serviceWorker.register(scriptSource).then((registration) => {
+                if (!hasConstructor(registration, 'ServiceWorkerRegistration'))
+                    return resolve(null);
+                return navigator.serviceWorker.ready.then((registration) => {
+                    // @ts-ignore
+                    registration.active.postMessage(undefined);
+                    navigator.serviceWorker.onmessage = (event) => {
+                        registration.unregister();
+                        clearTimeout(giveUpOnWorker);
+                        return resolve(event.data);
+                    };
+                });
+            }).catch((error) => {
+                console.error(error);
+                clearTimeout(giveUpOnWorker);
+                return resolve(null);
+            });
+        });
+        const scriptSource = 'creepworker.js';
+        let scope = 'ServiceWorkerGlobalScope';
+        let type = 'service'; // loads fast but is not available in frames
+        let workerScope = await getServiceWorker({ scriptSource }).catch((error) => {
+            captureError(error);
+            console.error(error.message);
+            return;
+        });
+        if (!(workerScope || {}).userAgent) {
+            scope = 'SharedWorkerGlobalScope';
+            type = 'shared'; // no support in Safari, iOS, and Chrome Android
+            workerScope = await getSharedWorker({ scriptSource }).catch((error) => {
+                captureError(error);
+                console.error(error.message);
+                return;
+            });
+        }
+        if (!(workerScope || {}).userAgent) {
+            scope = 'WorkerGlobalScope';
+            type = 'dedicated'; // device emulators can easily spoof dedicated scope
+            workerScope = await getDedicatedWorker({ scriptSource }).catch((error) => {
+                captureError(error);
+                console.error(error.message);
+                return;
+            });
+        }
+        if (!(workerScope || {}).userAgent) {
+            return;
+        }
+        workerScope.system = getOS(workerScope.userAgent);
+        workerScope.device = getUserAgentPlatform({ userAgent: workerScope.userAgent });
+        workerScope.type = type;
+        workerScope.scope = scope;
+        // detect lies
+        const { system, userAgent, userAgentData, platform, deviceMemory, hardwareConcurrency, } = workerScope || {};
+        // navigator lies
+        // skip language and languages to respect valid engine language switching bug in Chrome
+        // these are more likely navigator lies, so don't trigger lied worker scope
+        const workerScopeMatchLie = 'does not match worker scope';
+        if (platform != navigator.platform) {
+            documentLie('Navigator.platform', workerScopeMatchLie);
+        }
+        if (userAgent != navigator.userAgent) {
+            documentLie('Navigator.userAgent', workerScopeMatchLie);
+        }
+        if (hardwareConcurrency && (hardwareConcurrency != navigator.hardwareConcurrency)) {
+            documentLie('Navigator.hardwareConcurrency', workerScopeMatchLie);
+        }
+        // @ts-ignore
+        if (deviceMemory && (deviceMemory != navigator.deviceMemory)) {
+            documentLie('Navigator.deviceMemory', workerScopeMatchLie);
+        }
+        // prototype lies
+        if (workerScope.lies.proto) {
+            const { proto } = workerScope.lies;
+            const keys = Object.keys(proto);
+            keys.forEach((key) => {
+                const api = `${workerScope.scope}.${key}`;
+                const lies = proto[key];
+                lies.forEach((lie) => documentLie(api, lie));
+            });
+        }
+        // user agent os lie
+        const userAgentOS = (
+        // order is important
+        /win(dows|16|32|64|95|98|nt)|wow64/ig.test(userAgent) ? 'Windows' :
+            /android|linux|cros/ig.test(userAgent) ? 'Linux' :
+                /(i(os|p(ad|hone|od)))|mac/ig.test(userAgent) ? 'Apple' :
+                    'Other');
+        const platformOS = (
+        // order is important
+        /win/ig.test(platform) ? 'Windows' :
+            /android|arm|linux/ig.test(platform) ? 'Linux' :
+                /(i(os|p(ad|hone|od)))|mac/ig.test(platform) ? 'Apple' :
+                    'Other');
+        const osLie = userAgentOS != platformOS;
+        if (osLie) {
+            workerScope.lied = true;
+            workerScope.lies.os = `${platformOS} platform and ${userAgentOS} user agent do not match`;
+            documentLie(workerScope.scope, workerScope.lies.os);
+        }
+        // user agent engine lie
+        const decryptedName = decryptUserAgent({
+            ua: userAgent,
+            os: system,
+            isBrave: false, // default false since we are only looking for JS runtime and version
+        });
+        const userAgentEngine = ((/safari/i.test(decryptedName) || /iphone|ipad/i.test(userAgent)) ? 'JavaScriptCore' :
+            /firefox/i.test(userAgent) ? 'SpiderMonkey' :
+                /chrome/i.test(userAgent) ? 'V8' :
+                    undefined);
+        if (userAgentEngine != JS_ENGINE) {
+            workerScope.lied = true;
+            workerScope.lies.engine = `${JS_ENGINE} JS runtime and ${userAgentEngine} user agent do not match`;
+            documentLie(workerScope.scope, workerScope.lies.engine);
+        }
+        // user agent version lie
+        const getVersion = (x) => (/\d+/.exec(x) || [])[0];
+        const userAgentVersion = getVersion(decryptedName);
+        const userAgentDataVersion = getVersion(userAgentData ? userAgentData.uaFullVersion : '');
+        const versionSupported = userAgentDataVersion && userAgentVersion;
+        const versionMatch = userAgentDataVersion == userAgentVersion;
+        if (versionSupported && !versionMatch) {
+            workerScope.lied = true;
+            workerScope.lies.version = `userAgentData version ${userAgentDataVersion} and user agent version ${userAgentVersion} do not match`;
+            documentLie(workerScope.scope, workerScope.lies.version);
+        }
+        // windows platformVersion lie
+        // https://docs.microsoft.com/en-us/microsoft-edge/web-platform/how-to-detect-win11
+        const getWindowsVersionLie = (device, userAgentData) => {
+            if (!/windows/i.test(device) || !userAgentData || !userAgentData.platformVersion) {
+                return false;
+            }
+            const reportedVersionNumber = +(/windows ([\d|\.]+)/i.exec(device) || [])[1];
+            const windows1OrHigherReport = reportedVersionNumber == 10;
+            const { platformVersion } = userAgentData;
+            // userAgentData version format changed in Chrome 95
+            // https://github.com/WICG/ua-client-hints/issues/220#issuecomment-870858413
+            const chrome95AndAbove = (((3.141592653589793 ** -100) == 1.9275814160560204e-50) && CSS.supports('app-region: initial'));
+            const versionMap = {
+                '6.1': '7',
+                '6.1.0': '7',
+                '6.2': '8',
+                '6.2.0': '8',
+                '6.3': '8.1',
+                '6.3.0': '8.1',
+                '10.0': '10',
+                '10.0.0': '10',
+            };
+            let versionNumber = versionMap[platformVersion];
+            if (!chrome95AndAbove && versionNumber) {
+                return versionNumber != ('' + reportedVersionNumber);
+            }
+            versionNumber = +(/(\d+)\./.exec('' + platformVersion) || [])[1];
+            const windows10OrHigherPlatform = versionNumber > 0;
+            return ((windows10OrHigherPlatform && !windows1OrHigherReport) ||
+                (!windows10OrHigherPlatform && windows1OrHigherReport));
+        };
+        const windowsVersionLie = getWindowsVersionLie(workerScope.device, userAgentData);
+        if (windowsVersionLie) {
+            workerScope.lied = true;
+            workerScope.lies.platformVersion = `Windows platformVersion ${(userAgentData || {}).platformVersion} does not match user agent version ${workerScope.device}`;
+            documentLie(workerScope.scope, workerScope.lies.platformVersion);
+        }
+        // capture userAgent version
+        workerScope.userAgentVersion = userAgentVersion;
+        workerScope.userAgentDataVersion = userAgentDataVersion;
+        workerScope.userAgentEngine = userAgentEngine;
+        const gpu = Object.assign(Object.assign({}, (getWebGLRendererConfidence(workerScope.webglRenderer) || {})), { compressedGPU: compressWebGLRenderer(workerScope.webglRenderer) });
+        logTestResult({ time: timer.stop(), test: `${type} worker`, passed: true });
+        return Object.assign(Object.assign({}, workerScope), { gpu, uaPostReduction: isUAPostReduction(workerScope.userAgent) });
+    }
+    catch (error) {
+        logTestResult({ test: 'worker', passed: false });
+        captureError(error, 'workers failed or blocked by client');
+        return;
+    }
+}
+function workerScopeHTML(fp) {
+    if (!fp.workerScope) {
+        return `
+		<div class="col-six undefined">
+			<strong>Worker</strong>
+			<div>keys (0): ${HTMLNote.BLOCKED}</div>
+			<div>lang/timezone:</div>
+			<div class="block-text">${HTMLNote.BLOCKED}</div>
+			<div>gpu:</div>
+			<div class="block-text">${HTMLNote.BLOCKED}</div>
+		</div>
+		<div class="col-six undefined">
+			<div>userAgent:</div>
+			<div class="block-text">${HTMLNote.BLOCKED}</div>
+			<div>device:</div>
+			<div class="block-text">${HTMLNote.BLOCKED}</div>
+			<div>userAgentData:</div>
+			<div class="block-text">${HTMLNote.BLOCKED}</div>
+		</div>`;
+    }
+    const { workerScope: data } = fp;
+    const { scopeKeys, lied, locale, systemCurrencyLocale, engineCurrencyLocale, localeEntropyIsTrusty, localeIntlEntropyIsTrusty, timezoneOffset, timezoneLocation, deviceMemory, hardwareConcurrency, language,
+    // languages,
+    platform, userAgent, uaPostReduction, webglRenderer, webglVendor, gpu, userAgentData, type, scope, system, device, $hash, } = data || {};
+    const { parts, warnings, gibbers, confidence, grade: confidenceGrade, compressedGPU, } = gpu || {};
+    return `
+	<span class="time">${performanceLogger.getLog()[`${type} worker`]}</span>
+	<span class="aside-note-bottom">${scope || ''}</span>
+
+	<div class="relative col-six${lied ? ' rejected' : ''}">
+
+		<strong>Worker</strong><span class="hash">${hashSlice($hash)}</span>
+		<div>keys (${count(scopeKeys)}): ${scopeKeys && scopeKeys.length ? modal('creep-worker-scope-version', scopeKeys.join(', '), hashMini(scopeKeys)) : HTMLNote.BLOCKED}</div>
+		<div class="help">lang/timezone:</div>
+		<div class="block-text help" title="WorkerNavigator.language\nWorkerNavigator.languages\nIntl.Collator.resolvedOptions()\nIntl.DateTimeFormat.resolvedOptions()\nIntl.DisplayNames.resolvedOptions()\nIntl.ListFormat.resolvedOptions()\nIntl.NumberFormat.resolvedOptions()\nIntl.PluralRules.resolvedOptions()\nIntl.RelativeTimeFormat.resolvedOptions()\nNumber.toLocaleString()\nIntl.DateTimeFormat().resolvedOptions().timeZone\nDate.getDate()\nDate.getMonth()\nDate.parse()">
+			${localeEntropyIsTrusty ? `${language} (${systemCurrencyLocale})` :
+        `${language} (<span class="bold-fail">${engineCurrencyLocale}</span>)`}
+			${locale === language ? '' : localeIntlEntropyIsTrusty ? ` ${locale}` :
+        ` <span class="bold-fail">${locale}</span>`}
+			<br>${timezoneLocation} (${'' + timezoneOffset})
+		</div>
+
+		<div class="relative">${confidence ? `<span class="confidence-note">confidence: <span class="scale-up grade-${confidenceGrade}">${confidence}</span></span>` : ''}gpu:</div>
+		<div class="block-text help" title="${confidence ? `\nWebGLRenderingContext.getParameter()\ngpu compressed: ${compressedGPU}\nknown parts: ${parts || 'none'}\ngibberish: ${gibbers || 'none'}\nwarnings: ${warnings.join(', ') || 'none'}` : 'WebGLRenderingContext.getParameter()'}">
+			${webglVendor ? webglVendor : ''}
+			${webglRenderer ? `<br>${webglRenderer}` : HTMLNote.UNSUPPORTED}
+		</div>
+
+	</div>
+	<div class="col-six${lied ? ' rejected' : ''}">
+
+		<div class="relative">userAgent:${!uaPostReduction ? '' : `<span class="confidence-note">ua reduction</span>`}</div>
+		<div class="block-text help" title="WorkerNavigator.userAgent">
+			<div>${userAgent || HTMLNote.UNSUPPORTED}</div>
+		</div>
+
+		<div>device:</div>
+		<div class="block-text help" title="WorkerNavigator.deviceMemory\nWorkerNavigator.hardwareConcurrency\nWorkerNavigator.platform\nWorkerNavigator.userAgent">
+			${`${system}${platform ? ` (${platform})` : ''}`}
+			${device ? `<br>${device}` : HTMLNote.BLOCKED}
+			${hardwareConcurrency && deviceMemory ? `<br>cores: ${hardwareConcurrency}, ram: ${deviceMemory}` :
+        hardwareConcurrency && !deviceMemory ? `<br>cores: ${hardwareConcurrency}` :
+            !hardwareConcurrency && deviceMemory ? `<br>ram: ${deviceMemory}` : ''}
+		</div>
+
+		<div>userAgentData:</div>
+		<div class="block-text help" title="WorkerNavigator.userAgentData\nNavigatorUAData.getHighEntropyValues()">
+			<div>
+			${((userAgentData) => {
+        const { architecture, bitness, brandsVersion, uaFullVersion, mobile, model, platformVersion, platform, } = userAgentData || {};
+        // @ts-ignore
+        const windowsRelease = computeWindowsRelease({ platform, platformVersion });
+        return !userAgentData ? HTMLNote.UNSUPPORTED : `
+					${(brandsVersion || []).join(',')}${uaFullVersion ? ` (${uaFullVersion})` : ''}
+					<br>${windowsRelease || `${platform} ${platformVersion}`} ${architecture ? `${architecture}${bitness ? `_${bitness}` : ''}` : ''}
+					${model ? `<br>${model}` : ''}
+					${mobile ? '<br>mobile' : ''}
+				`;
+    })(userAgentData)}
+			</div>
+		</div>
+
+	</div>
+	`;
+}
+
+!async function () {
+    const isBrave = IS_BLINK ? await braveBrowser() : false;
+    const braveMode = isBrave ? getBraveMode() : {};
+    const braveFingerprintingBlocking = isBrave && (braveMode.standard || braveMode.strict);
+    const fingerprint = async () => {
+        const timeStart = timer();
+        const fingerprintTimeStart = timer();
+        // @ts-ignore
+        const [windowFeaturesComputed, htmlElementVersionComputed, cssComputed, cssMediaComputed, screenComputed, voicesComputed, canvas2dComputed, canvasWebglComputed, mathsComputed, consoleErrorsComputed, timezoneComputed, clientRectsComputed, fontsComputed, workerScopeComputed, mediaComputed, svgComputed, resistanceComputed, intlComputed, navigatorComputed, offlineAudioContextComputed,] = await Promise.all([
+            getWindowFeatures(),
+            getHTMLElementVersion(),
+            getCSS(),
+            getCSSMedia(),
+            getScreen(),
+            getVoices(),
+            getCanvas2d(),
+            getCanvasWebgl(),
+            getMaths(),
+            getConsoleErrors(),
+            getTimezone(),
+            getClientRects(),
+            getFonts(),
+            getBestWorkerScope(),
+            getMedia(),
+            getSVG(),
+            getResistance(),
+            getIntl(),
+            getNavigator(),
+            getOfflineAudioContext(),
+        ]).catch((error) => console.error(error.message));
+        // @ts-ignore
+        const [headlessComputed, featuresComputed,] = await Promise.all([
+            getHeadlessFeatures(workerScopeComputed),
+            getEngineFeatures({
+                cssComputed,
+                navigatorComputed,
+                windowFeaturesComputed,
+            }),
+        ]).catch((error) => console.error(error.message));
+        // @ts-ignore
+        const [liesComputed, trashComputed, capturedErrorsComputed,] = await Promise.all([
+            getLies(),
+            getTrash(),
+            getCapturedErrors(),
+        ]).catch((error) => console.error(error.message));
+        const fingerprintTimeEnd = fingerprintTimeStart();
+        console.log(`Fingerprinting complete in ${(fingerprintTimeEnd).toFixed(2)}ms`);
+        // GPU Prediction
+        const { parameters: gpuParameter } = canvasWebglComputed || {};
+        const reducedGPUParameters = Object.assign(Object.assign({}, (braveFingerprintingBlocking ? getBraveUnprotectedParameters(gpuParameter) :
+            gpuParameter)), { RENDERER: undefined, SHADING_LANGUAGE_VERSION: undefined, UNMASKED_RENDERER_WEBGL: undefined, UNMASKED_VENDOR_WEBGL: undefined, VERSION: undefined, VENDOR: undefined });
+        // Hashing
+        const hashStartTime = timer();
+        // @ts-ignore
+        const [windowHash, headlessHash, htmlHash, cssMediaHash, cssHash, styleHash, styleSystemHash, screenHash, voicesHash, canvas2dHash, canvas2dImageHash, canvas2dBlobHash, canvas2dPaintHash, canvas2dTextHash, canvas2dEmojiHash, canvasWebglHash, canvasWebglImageHash, canvasWebglParametersHash, pixelsHash, pixels2Hash, mathsHash, consoleErrorsHash, timezoneHash, rectsHash, domRectHash, audioHash, fontsHash, workerHash, mediaHash, mimeTypesHash, navigatorHash, liesHash, trashHash, errorsHash, svgHash, resistanceHash, intlHash, featuresHash, deviceOfTimezoneHash,] = await Promise.all([
+            hashify(windowFeaturesComputed),
+            hashify(headlessComputed),
+            hashify((htmlElementVersionComputed || {}).keys),
+            hashify(cssMediaComputed),
+            hashify(cssComputed),
+            hashify((cssComputed || {}).computedStyle),
+            hashify((cssComputed || {}).system),
+            hashify(screenComputed),
+            hashify(voicesComputed),
+            hashify(canvas2dComputed),
+            hashify((canvas2dComputed || {}).dataURI),
+            hashify((canvas2dComputed || {}).blob.readAsDataURL),
+            hashify((canvas2dComputed || {}).paintURI),
+            hashify((canvas2dComputed || {}).textURI),
+            hashify((canvas2dComputed || {}).emojiURI),
+            hashify(canvasWebglComputed),
+            hashify((canvasWebglComputed || {}).dataURI),
+            hashify(reducedGPUParameters),
+            ((canvasWebglComputed || {}).pixels || []).length ? hashify(canvasWebglComputed.pixels) : undefined,
+            ((canvasWebglComputed || {}).pixels2 || []).length ? hashify(canvasWebglComputed.pixels2) : undefined,
+            hashify((mathsComputed || {}).data),
+            hashify((consoleErrorsComputed || {}).errors),
+            hashify(timezoneComputed),
+            hashify(clientRectsComputed),
+            hashify([
+                (clientRectsComputed || {}).elementBoundingClientRect,
+                (clientRectsComputed || {}).elementClientRects,
+                (clientRectsComputed || {}).rangeBoundingClientRect,
+                (clientRectsComputed || {}).rangeClientRects,
+            ]),
+            hashify(offlineAudioContextComputed),
+            hashify(fontsComputed),
+            hashify(workerScopeComputed),
+            hashify(mediaComputed),
+            hashify((mediaComputed || {}).mimeTypes),
+            hashify(navigatorComputed),
+            hashify(liesComputed),
+            hashify(trashComputed),
+            hashify(capturedErrorsComputed),
+            hashify(svgComputed),
+            hashify(resistanceComputed),
+            hashify(intlComputed),
+            hashify(featuresComputed),
+            hashify((() => {
+                const { bluetoothAvailability, device, deviceMemory, hardwareConcurrency, maxTouchPoints, oscpu, platform, system, userAgentData, } = navigatorComputed || {};
+                const { architecture, bitness, mobile, model, platform: uaPlatform, platformVersion, } = userAgentData || {};
+                const { anyPointer } = cssMediaComputed || {};
+                const { colorDepth, pixelDepth, height, width } = screenComputed || {};
+                const { location, locationEpoch, zone } = timezoneComputed || {};
+                const { deviceMemory: deviceMemoryWorker, hardwareConcurrency: hardwareConcurrencyWorker, gpu, platform: platformWorker, system: systemWorker, timezoneLocation: locationWorker, userAgentData: userAgentDataWorker, } = workerScopeComputed || {};
+                const { compressedGPU, confidence } = gpu || {};
+                const { architecture: architectureWorker, bitness: bitnessWorker, mobile: mobileWorker, model: modelWorker, platform: uaPlatformWorker, platformVersion: platformVersionWorker, } = userAgentDataWorker || {};
+                return [
+                    anyPointer,
+                    architecture,
+                    architectureWorker,
+                    bitness,
+                    bitnessWorker,
+                    bluetoothAvailability,
+                    colorDepth,
+                    ...(compressedGPU && confidence != 'low' ? [compressedGPU] : []),
+                    device,
+                    deviceMemory,
+                    deviceMemoryWorker,
+                    hardwareConcurrency,
+                    hardwareConcurrencyWorker,
+                    height,
+                    location,
+                    locationWorker,
+                    locationEpoch,
+                    maxTouchPoints,
+                    mobile,
+                    mobileWorker,
+                    model,
+                    modelWorker,
+                    oscpu,
+                    pixelDepth,
+                    platform,
+                    platformWorker,
+                    platformVersion,
+                    platformVersionWorker,
+                    system,
+                    systemWorker,
+                    uaPlatform,
+                    uaPlatformWorker,
+                    width,
+                    zone,
+                ];
+            })()),
+        ]).catch((error) => console.error(error.message));
+        // console.log(performance.now()-start)
+        const hashTimeEnd = hashStartTime();
+        const timeEnd = timeStart();
+        console.log(`Hashing complete in ${(hashTimeEnd).toFixed(2)}ms`);
+        if (PARENT_PHANTOM) {
+            // @ts-ignore
+            PARENT_PHANTOM.parentNode.removeChild(PARENT_PHANTOM);
+        }
+        const fingerprint = {
+            workerScope: !workerScopeComputed ? undefined : Object.assign(Object.assign({}, workerScopeComputed), { $hash: workerHash }),
+            navigator: !navigatorComputed ? undefined : Object.assign(Object.assign({}, navigatorComputed), { $hash: navigatorHash }),
+            windowFeatures: !windowFeaturesComputed ? undefined : Object.assign(Object.assign({}, windowFeaturesComputed), { $hash: windowHash }),
+            headless: !headlessComputed ? undefined : Object.assign(Object.assign({}, headlessComputed), { $hash: headlessHash }),
+            htmlElementVersion: !htmlElementVersionComputed ? undefined : Object.assign(Object.assign({}, htmlElementVersionComputed), { $hash: htmlHash }),
+            cssMedia: !cssMediaComputed ? undefined : Object.assign(Object.assign({}, cssMediaComputed), { $hash: cssMediaHash }),
+            css: !cssComputed ? undefined : Object.assign(Object.assign({}, cssComputed), { $hash: cssHash }),
+            screen: !screenComputed ? undefined : Object.assign(Object.assign({}, screenComputed), { $hash: screenHash }),
+            voices: !voicesComputed ? undefined : Object.assign(Object.assign({}, voicesComputed), { $hash: voicesHash }),
+            media: !mediaComputed ? undefined : Object.assign(Object.assign({}, mediaComputed), { $hash: mediaHash }),
+            canvas2d: !canvas2dComputed ? undefined : Object.assign(Object.assign({}, canvas2dComputed), { $hash: canvas2dHash }),
+            canvasWebgl: !canvasWebglComputed ? undefined : Object.assign(Object.assign({}, canvasWebglComputed), { pixels: pixelsHash, pixels2: pixels2Hash, $hash: canvasWebglHash }),
+            maths: !mathsComputed ? undefined : Object.assign(Object.assign({}, mathsComputed), { $hash: mathsHash }),
+            consoleErrors: !consoleErrorsComputed ? undefined : Object.assign(Object.assign({}, consoleErrorsComputed), { $hash: consoleErrorsHash }),
+            timezone: !timezoneComputed ? undefined : Object.assign(Object.assign({}, timezoneComputed), { $hash: timezoneHash }),
+            clientRects: !clientRectsComputed ? undefined : Object.assign(Object.assign({}, clientRectsComputed), { $hash: rectsHash }),
+            offlineAudioContext: !offlineAudioContextComputed ? undefined : Object.assign(Object.assign({}, offlineAudioContextComputed), { $hash: audioHash }),
+            fonts: !fontsComputed ? undefined : Object.assign(Object.assign({}, fontsComputed), { $hash: fontsHash }),
+            lies: !liesComputed ? undefined : Object.assign(Object.assign({}, liesComputed), { $hash: liesHash }),
+            trash: !trashComputed ? undefined : Object.assign(Object.assign({}, trashComputed), { $hash: trashHash }),
+            capturedErrors: !capturedErrorsComputed ? undefined : Object.assign(Object.assign({}, capturedErrorsComputed), { $hash: errorsHash }),
+            svg: !svgComputed ? undefined : Object.assign(Object.assign({}, svgComputed), { $hash: svgHash }),
+            resistance: !resistanceComputed ? undefined : Object.assign(Object.assign({}, resistanceComputed), { $hash: resistanceHash }),
+            intl: !intlComputed ? undefined : Object.assign(Object.assign({}, intlComputed), { $hash: intlHash }),
+            features: !featuresComputed ? undefined : Object.assign(Object.assign({}, featuresComputed), { $hash: featuresHash }),
+        };
+        return {
+            fingerprint,
+            styleSystemHash,
+            styleHash,
+            domRectHash,
+            mimeTypesHash,
+            canvas2dImageHash,
+            canvasWebglImageHash,
+            canvas2dBlobHash,
+            canvas2dPaintHash,
+            canvas2dTextHash,
+            canvas2dEmojiHash,
+            canvasWebglParametersHash,
+            deviceOfTimezoneHash,
+            timeEnd,
+        };
+    };
+    // fingerprint and render
+    const { fingerprint: fp, styleSystemHash, styleHash, domRectHash, mimeTypesHash, canvas2dImageHash, canvas2dBlobHash, canvas2dPaintHash, canvas2dTextHash, canvas2dEmojiHash, canvasWebglImageHash, canvasWebglParametersHash, deviceOfTimezoneHash, timeEnd, } = await fingerprint().catch((error) => console.error(error)) || {};
+    if (!fp) {
+        throw new Error('Fingerprint failed!');
+    }
+    console.log('%c✔ loose fingerprint passed', 'color:#4cca9f');
+    console.groupCollapsed('Loose Fingerprint');
+    console.log(fp);
+    console.groupEnd();
+    console.groupCollapsed('Loose Fingerprint JSON');
+    console.log('diff check at https://www.diffchecker.com/diff\n\n', JSON.stringify(fp, null, '\t'));
+    console.groupEnd();
+    // Trusted Fingerprint
+    const trashLen = fp.trash.trashBin.length;
+    const liesLen = !('totalLies' in fp.lies) ? 0 : fp.lies.totalLies;
+    const errorsLen = fp.capturedErrors.data.length;
+    // limit to known audio
+    const { offlineAudioContext } = fp || {};
+    const { compressorGainReduction, sampleSum } = offlineAudioContext || {};
+    const knownSums = KnownAudio[compressorGainReduction];
+    const unknownAudio = (sampleSum && compressorGainReduction && knownSums && !knownSums.includes(sampleSum));
+    const unknownFirefoxAudio = IS_GECKO && unknownAudio;
+    const hardenEntropy = (workerScope, prop) => {
+        return (!workerScope ? prop :
+            (workerScope.localeEntropyIsTrusty && workerScope.localeIntlEntropyIsTrusty) ? prop :
+                undefined);
+    };
+    const privacyResistFingerprinting = (fp.resistance && /^(tor browser|firefox)$/i.test(fp.resistance.privacy));
+    // harden gpu
+    const hardenGPU = (canvasWebgl) => {
+        const { gpu: { confidence, compressedGPU } } = canvasWebgl;
+        return (confidence == 'low' ? {} : {
+            UNMASKED_RENDERER_WEBGL: compressedGPU,
+            UNMASKED_VENDOR_WEBGL: canvasWebgl.parameters.UNMASKED_VENDOR_WEBGL,
+        });
+    };
+    const creep = {
+        navigator: (!fp.navigator || fp.navigator.lied ? undefined : {
+            bluetoothAvailability: fp.navigator.bluetoothAvailability,
+            device: fp.navigator.device,
+            deviceMemory: fp.navigator.deviceMemory,
+            hardwareConcurrency: fp.navigator.hardwareConcurrency,
+            // distrust language if worker locale is not trusty
+            language: hardenEntropy(fp.workerScope, fp.navigator.language),
+            maxTouchPoints: fp.navigator.maxTouchPoints,
+            mimeTypes: fp.navigator.mimeTypes,
+            oscpu: fp.navigator.oscpu,
+            platform: fp.navigator.platform,
+            plugins: fp.navigator.plugins,
+            system: fp.navigator.system,
+            userAgentData: Object.assign(Object.assign({}, (fp.navigator.userAgentData || {})), {
+                // loose
+                brandsVersion: undefined, uaFullVersion: undefined }),
+            vendor: fp.navigator.vendor,
+        }),
+        screen: (!fp.screen || fp.screen.lied || privacyResistFingerprinting ? undefined :
+            hardenEntropy(fp.workerScope, {
+                height: fp.screen.height,
+                width: fp.screen.width,
+                pixelDepth: fp.screen.pixelDepth,
+                colorDepth: fp.screen.colorDepth,
+                lied: fp.screen.lied,
+            })),
+        workerScope: !fp.workerScope || fp.workerScope.lied ? undefined : {
+            deviceMemory: (braveFingerprintingBlocking ? undefined : fp.workerScope.deviceMemory),
+            hardwareConcurrency: (braveFingerprintingBlocking ? undefined : fp.workerScope.hardwareConcurrency),
+            // system locale in blink
+            language: fp.workerScope.language,
+            languages: fp.workerScope.languages,
+            platform: fp.workerScope.platform,
+            system: fp.workerScope.system,
+            device: fp.workerScope.device,
+            timezoneLocation: hardenEntropy(fp.workerScope, fp.workerScope.timezoneLocation),
+            webglRenderer: ((fp.workerScope.gpu.confidence != 'low') ? fp.workerScope.gpu.compressedGPU : undefined),
+            webglVendor: ((fp.workerScope.gpu.confidence != 'low') ? fp.workerScope.webglVendor : undefined),
+            userAgentData: Object.assign(Object.assign({}, fp.workerScope.userAgentData), {
+                // loose
+                brandsVersion: undefined, uaFullVersion: undefined }),
+        },
+        media: fp.media,
+        canvas2d: ((canvas2d) => {
+            if (!canvas2d) {
+                return;
+            }
+            const { lied, liedTextMetrics } = canvas2d;
+            let data;
+            if (!lied) {
+                const { dataURI, paintURI, textURI, emojiURI, blob, blobOffscreen } = canvas2d;
+                data = Object.assign({ lied }, { dataURI, paintURI, textURI, emojiURI, blob, blobOffscreen });
+            }
+            if (!liedTextMetrics) {
+                const { textMetricsSystemSum, emojiSet } = canvas2d;
+                data = Object.assign(Object.assign({}, (data || {})), { textMetricsSystemSum, emojiSet });
+            }
+            return data;
+        })(fp.canvas2d),
+        canvasWebgl: !fp.canvasWebgl ? undefined : (braveFingerprintingBlocking ? {
+            parameters: Object.assign(Object.assign({}, getBraveUnprotectedParameters(fp.canvasWebgl.parameters)), hardenGPU(fp.canvasWebgl)),
+        } : fp.canvasWebgl.lied ? undefined : Object.assign(Object.assign({}, ((gl, canvas2d) => {
+            if (canvas2d && canvas2d.lied) {
+                // distrust images
+                const { extensions, gpu, lied, parameterOrExtensionLie } = gl;
+                return {
+                    extensions,
+                    gpu,
+                    lied,
+                    parameterOrExtensionLie,
+                };
+            }
+            return gl;
+        })(fp.canvasWebgl, fp.canvas2d)), { parameters: Object.assign(Object.assign({}, fp.canvasWebgl.parameters), hardenGPU(fp.canvasWebgl)) })),
+        cssMedia: !fp.cssMedia ? undefined : {
+            reducedMotion: caniuse(() => fp.cssMedia.mediaCSS['prefers-reduced-motion']),
+            colorScheme: (braveFingerprintingBlocking ? undefined :
+                caniuse(() => fp.cssMedia.mediaCSS['prefers-color-scheme'])),
+            monochrome: caniuse(() => fp.cssMedia.mediaCSS.monochrome),
+            invertedColors: caniuse(() => fp.cssMedia.mediaCSS['inverted-colors']),
+            forcedColors: caniuse(() => fp.cssMedia.mediaCSS['forced-colors']),
+            anyHover: caniuse(() => fp.cssMedia.mediaCSS['any-hover']),
+            hover: caniuse(() => fp.cssMedia.mediaCSS.hover),
+            anyPointer: caniuse(() => fp.cssMedia.mediaCSS['any-pointer']),
+            pointer: caniuse(() => fp.cssMedia.mediaCSS.pointer),
+            colorGamut: caniuse(() => fp.cssMedia.mediaCSS['color-gamut']),
+            screenQuery: privacyResistFingerprinting ? undefined : hardenEntropy(fp.workerScope, caniuse(() => fp.cssMedia.screenQuery)),
+        },
+        css: !fp.css ? undefined : {
+            interfaceName: caniuse(() => fp.css.computedStyle.interfaceName),
+            system: caniuse(() => fp.css.system),
+        },
+        maths: !fp.maths || fp.maths.lied ? undefined : fp.maths,
+        consoleErrors: fp.consoleErrors,
+        timezone: !fp.timezone || fp.timezone.lied ? undefined : {
+            locationMeasured: hardenEntropy(fp.workerScope, fp.timezone.locationMeasured),
+            lied: fp.timezone.lied,
+        },
+        svg: !fp.svg || fp.svg.lied ? undefined : fp.svg,
+        clientRects: !fp.clientRects || fp.clientRects.lied ? undefined : fp.clientRects,
+        offlineAudioContext: !fp.offlineAudioContext ? undefined : (braveFingerprintingBlocking ? {
+            values: fp.offlineAudioContext.values,
+            compressorGainReduction: fp.offlineAudioContext.compressorGainReduction,
+        } :
+            fp.offlineAudioContext.lied || unknownFirefoxAudio ? undefined :
+                fp.offlineAudioContext),
+        fonts: !fp.fonts || fp.fonts.lied ? undefined : fp.fonts,
+        // skip trash since it is random
+        capturedErrors: !!errorsLen,
+        lies: !!liesLen,
+        resistance: fp.resistance || undefined,
+        forceRenew: 1650847106767,
+    };
+    console.log('%c✔ stable fingerprint passed', 'color:#4cca9f');
+    console.groupCollapsed('Stable Fingerprint');
+    console.log(creep);
+    console.groupEnd();
+    console.groupCollapsed('Stable Fingerprint JSON');
+    console.log('diff check at https://www.diffchecker.com/diff\n\n', JSON.stringify(creep, null, '\t'));
+    console.groupEnd();
+    // get/post request
+    const webapp = 'https://creepjs-api.web.app/fp';
+    const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
+        .catch((error) => {
+        console.error(error.message);
+    }) || [];
+    // expose results to the window
+    // @ts-ignore
+    window.Fingerprint = JSON.parse(JSON.stringify(fp));
+    // @ts-ignore
+    window.Creep = JSON.parse(JSON.stringify(creep));
+    // session
+    const computeSession = ({ fingerprint, loading = false, computePreviousLoadRevision = false }) => {
+        const data = {
+            revisedKeysFromPreviousLoad: [],
+            revisedKeys: [],
+            initial: '',
+            loads: 0,
+        };
+        try {
+            const currentFingerprint = Object.keys(fingerprint).reduce((acc, key) => {
+                if (!fingerprint[key]) {
+                    return acc;
+                }
+                acc[key] = fingerprint[key].$hash;
+                return acc;
+            }, {});
+            // @ts-ignore
+            const loads = +(sessionStorage.getItem('loads'));
+            // @ts-ignore
+            const initialFingerprint = JSON.parse(sessionStorage.getItem('initialFingerprint'));
+            // @ts-ignore
+            const previousFingerprint = JSON.parse(sessionStorage.getItem('previousFingerprint'));
+            if (initialFingerprint) {
+                data.initial = hashMini(initialFingerprint);
+                if (loading) {
+                    data.loads = 1 + loads;
+                    sessionStorage.setItem('loads', '' + data.loads);
+                }
+                else {
+                    data.loads = loads;
+                }
+                if (computePreviousLoadRevision) {
+                    sessionStorage.setItem('previousFingerprint', JSON.stringify(currentFingerprint));
+                }
+                const currentFingerprintKeys = Object.keys(currentFingerprint);
+                const revisedKeysFromPreviousLoad = currentFingerprintKeys
+                    .filter((key) => currentFingerprint[key] != previousFingerprint[key]);
+                const revisedKeys = currentFingerprintKeys
+                    .filter((key) => currentFingerprint[key] != initialFingerprint[key]);
+                // @ts-ignore
+                data.revisedKeys = revisedKeys.length ? revisedKeys : [];
+                // @ts-ignore
+                data.revisedKeysFromPreviousLoad = revisedKeysFromPreviousLoad.length ? revisedKeysFromPreviousLoad : [];
+                return data;
+            }
+            sessionStorage.setItem('initialFingerprint', JSON.stringify(currentFingerprint));
+            sessionStorage.setItem('previousFingerprint', JSON.stringify(currentFingerprint));
+            sessionStorage.setItem('loads', '' + 1);
+            data.initial = hashMini(currentFingerprint);
+            data.loads = 1;
+            return data;
+        }
+        catch (error) {
+            console.error(error);
+            return data;
+        }
+    };
+    // patch dom
+    const hasTrash = !!trashLen;
+    const { lies: hasLied, capturedErrors: hasErrors } = creep;
+    const getBlankIcons = () => `<span class="icon"></span><span class="icon"></span>`;
+    const el = document.getElementById('fingerprint-data');
+    patch(el, html `
 	<div id="fingerprint-data">
 		<div class="fingerprint-header-container">
 			<div class="fingerprint-header">
-				<div class="ellipsis-all">FP ID: ${zM}</div>
+				<div class="ellipsis-all">FP ID: ${creepHash}</div>
 				<div id="fuzzy-fingerprint">
 					<div class="ellipsis-all fuzzy-fp">Fuzzy: <span class="blurred-pause">0000000000000000000000000000000000000000000000000000000000000000</span></div>
 					<div class="ellipsis-all fuzzy-diffs">Diffs: <span class="blurred-pause">0000000000000000000000000000000000000000000000000000000000000000</span></div>
 				</div>
-				<div class="ellipsis"><span class="time">${(zb||0x0)[Qx(0x250)](0x2)} ms</span></div>
+				<div class="ellipsis"><span class="time">${(timeEnd || 0).toFixed(2)} ms</span></div>
 			</div>
 		</div>
 		<div id="creep-browser" class="visitor-info">
@@ -377,32 +9605,32 @@ function a0W(){const QU=['call','Asia/Almaty','\x27\x20(device-width:\x20','conv
 		<div id="browser-detection" class="flex-grid">
 			<div class="col-six">
 				<strong>Loading...</strong>
-				<div>${zy()}</div>
-				<div>${zy()}<span class="user-agent">self</span></div>
-				<div>${zy()}system styles</div>
-				<div>${zy()}computed styles</div>
-				<div>${zy()}html element</div>
-				<div>${zy()}js runtime</div>
-				<div>${zy()}js engine</div>
-				<div>${zy()}domRect emojis</div>
-				<div>${zy()}domRect</div>
-				<div>${zy()}svg emojis</div>
-				<div>${zy()}mimeTypes</div>
-				<div>${zy()}audio</div>
-				<div>${zy()}canvas image</div>
-				<div>${zy()}canvas blob</div>
-				<div>${zy()}canvas paint</div>
-				<div>${zy()}canvas text</div>
-				<div>${zy()}canvas emoji</div>
-				<div>${zy()}textMetrics</div>
-				<div>${zy()}webgl</div>
-				<div>${zy()}gpu params</div>
-				<div>${zy()}gpu model</div>
-				<div>${zy()}fonts</div>
-				<div>${zy()}voices</div>
-				<div>${zy()}screen</div>
-				<div>${zy()}resistance</div>
-				<div>${zy()}device of timezone</div>
+				<div>${getBlankIcons()}</div>
+				<div>${getBlankIcons()}<span class="user-agent">self</span></div>
+				<div>${getBlankIcons()}system styles</div>
+				<div>${getBlankIcons()}computed styles</div>
+				<div>${getBlankIcons()}html element</div>
+				<div>${getBlankIcons()}js runtime</div>
+				<div>${getBlankIcons()}js engine</div>
+				<div>${getBlankIcons()}domRect emojis</div>
+				<div>${getBlankIcons()}domRect</div>
+				<div>${getBlankIcons()}svg emojis</div>
+				<div>${getBlankIcons()}mimeTypes</div>
+				<div>${getBlankIcons()}audio</div>
+				<div>${getBlankIcons()}canvas image</div>
+				<div>${getBlankIcons()}canvas blob</div>
+				<div>${getBlankIcons()}canvas paint</div>
+				<div>${getBlankIcons()}canvas text</div>
+				<div>${getBlankIcons()}canvas emoji</div>
+				<div>${getBlankIcons()}textMetrics</div>
+				<div>${getBlankIcons()}webgl</div>
+				<div>${getBlankIcons()}gpu params</div>
+				<div>${getBlankIcons()}gpu model</div>
+				<div>${getBlankIcons()}fonts</div>
+				<div>${getBlankIcons()}voices</div>
+				<div>${getBlankIcons()}screen</div>
+				<div>${getBlankIcons()}resistance</div>
+				<div>${getBlankIcons()}device of timezone</div>
 			</div>
 			<div class="col-six icon-prediction-container">
 			</div>
@@ -420,47 +9648,47 @@ function a0W(){const QU=['call','Asia/Almaty','\x27\x20(device-width:\x20','conv
 			</div>
 		</div>
 		<div class="flex-grid">
-			${Tm(z5)}
-			${TH(z5)}
+			${timezoneHTML(fp)}
+			${intlHTML(fp)}
 		</div>
 		<div id="headless-resistance-detection-results" class="flex-grid">
-			${TF(z5)}
-			${TO(z5)}
+			${headlessFeaturesHTML(fp)}
+			${resistanceHTML(fp)}
 		</div>
-		<div class="flex-grid relative">${TJ(z5)}</div>
+		<div class="flex-grid relative">${workerScopeHTML(fp)}</div>
 		<div class="flex-grid relative">
-			${Tf(z5)}
-			${Ty(z5)}
+			${webglHTML(fp)}
+			${screenHTML(fp)}
 		</div>
 		<div class="flex-grid">
-			${We(z5)}
-			${TQ(z5)}
+			${canvasHTML(fp)}
+			${fontsHTML(fp)}
 		</div>
 		<div class="flex-grid">
-			${Wg(z5)}
-			${TR(z5)}
+			${clientRectsHTML(fp)}
+			${svgHTML(fp)}
 		</div>
 		<div class="flex-grid">
-			${Ww(z5)}
-			${Tr(z5)}
-			${Tk(z5)}
+			${audioHTML(fp)}
+			${voicesHTML(fp)}
+			${mediaHTML(fp)}
 		</div>
-		<div class="flex-grid relative">${T9(z5)}</div>
+		<div class="flex-grid relative">${featuresHTML(fp)}</div>
 		<div class="flex-grid">
-			${Wj(z5)}
-			${Ws(z5)}
+			${cssMediaHTML(fp)}
+			${cssHTML(fp)}
 		</div>
 		<div>
 			<div class="flex-grid">
-				${TD(z5)}
-				${WU(z5)}
+				${mathsHTML(fp)}
+				${consoleErrorsHTML(fp)}
 			</div>
 			<div class="flex-grid">
-				${Tl(z5)}
-				${Wl(z5)}
+				${windowFeaturesHTML(fp)}
+				${htmlElementVersionHTML(fp)}
 			</div>
 		</div>
-		<div class="flex-grid relative">${Ta(z5)}</div>
+		<div class="flex-grid relative">${navigatorHTML(fp)}</div>
 		<div>
 			<strong>Tests</strong>
 			<div>
@@ -480,28 +9708,598 @@ function a0W(){const QU=['call','Asia/Almaty','\x27\x20(device-width:\x20','conv
 			</div>
 		</div>
 	</div>
-	`,async()=>{const Qt=Qx;TI()[Qt(0x1f2)](zj=>{const QM=Qt;i(document[QM(0xa0c)]('webrtc-connection'),K`
+	`, async () => {
+        // get WebRTC data
+        getWebRTCData().then((data) => {
+            patch(document.getElementById('webrtc-connection'), html `
 				<div class="flex-grid">
-					${Tj(zj)}
+					${webrtcHTML(data)}
 				</div>
-			`);});const zr=Qt(0x25e),zV=document[Qt(0xa0c)](zr),{botHash:zR,badBot:zw}=Wy(z5,{'getFeaturesLie':T7,'computeWindowsRelease':H}),zm=await WK(z5),{$hash:zE,privacy:zf,mode:zc,extension:zG}=z5['resistance']||{},ze=new Set([N(zE),zf,zc,zG]);ze['delete'](undefined);const zC=[...ze][Qt(0x644)](':'),zs=e(),zI=zq+Qt(0x76d)+zM+Qt(0x794)+zt+Qt(0x29f)+zO+'&hasLied='+zN+Qt(0x16b)+zi+Qt(0x2ec)+zS+Qt(0xabc)+zQ+'&errorsLen='+zu+Qt(0x51b)+zm+'&botHash='+zR+Qt(0x32e)+(zb||0x0)[Qt(0x250)](0x2)+Qt(0x339)+zC;fetch(zI)[Qt(0x1f2)](zj=>zj[Qt(0x629)]())[Qt(0x1f2)](async zj=>{const QB=Qt;console[QB(0x214)]('Server\x20Response'),console[QB(0x642)](JSON[QB(0x1b9)](zj,null,'\x09')),zs(QB(0x61c)),console['groupEnd']();const {firstVisit:zh,timeHoursAlive:zl,visits:zX,looseSwitchCount:zg,signature:zJ,fuzzyInit:zo,fuzzyLast:zU,shadow:Z0,shadowBits:Z1,score:Z2,scoreData:Z3,crowdBlendingScore:Z4,bot:Z5,botHash:Z6,botLevel:Z7,timeHoursIdleMin:Z8,timeHoursIdleMax:Z9,benchmark:ZW,resistance:ZT}=zj||{},Zz=document[QB(0xa0c)](QB(0xae1)),ZZ=R({'stringA':zo,'stringB':zU,'charDiff':!![],'decorate':dx=>QB(0xabf)+dx+QB(0x44b)});i(Zz,K`
+			`);
+        });
+        // fetch fingerprint data from server
+        const id = 'creep-browser';
+        const visitorElem = document.getElementById(id);
+        const { botHash, badBot } = getBotHash(fp, { getFeaturesLie, computeWindowsRelease });
+        const fuzzyFingerprint = await getFuzzyHash(fp);
+        const { privacy, mode, extension } = fp.resistance || {};
+        const resistanceSet = new Set([privacy, (mode ? `(${mode})` : mode), extension]);
+        resistanceSet.delete(undefined);
+        const resistanceType = [...resistanceSet].join(' ');
+        const fetchVisitorDataTimer = timer();
+        const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&trashLen=${trashLen}&liesLen=${liesLen}&errorsLen=${errorsLen}&fuzzy=${fuzzyFingerprint}&botHash=${botHash}&perf=${(timeEnd || 0).toFixed(2)}&resistance=${resistanceType}`;
+        fetch(request)
+            .then((response) => response.json())
+            .then(async (data) => {
+            console.groupCollapsed('Server Response');
+            console.log(JSON.stringify(data, null, '\t'));
+            fetchVisitorDataTimer('response time');
+            console.groupEnd();
+            const { firstVisit,
+            // lastVisit: latestVisit,
+            // lastVisitEpoch,
+            timeHoursAlive: persistence,
+            // looseFingerprints: subIds,
+            visits, looseSwitchCount: switchCount,
+            // hasTrash,
+            // hasLied,
+            // hasErrors,
+            signature, fuzzyInit, fuzzyLast, shadow, shadowBits, score, scoreData, crowdBlendingScore: fpCrowdBlendingScore, bot, botHash, botLevel, timeHoursIdleMin, timeHoursIdleMax, benchmark, resistance: resistanceId, } = data || {};
+            const fuzzyFpEl = document.getElementById('fuzzy-fingerprint');
+            const fuzzyDiff = getDiffs({
+                stringA: fuzzyInit,
+                stringB: fuzzyLast,
+                charDiff: true,
+                decorate: (diff) => `<span class="fuzzy-fp">${diff}</span>`,
+            });
+            patch(fuzzyFpEl, html `
 				<div id="fuzzy-fingerprint">
-					<div class="ellipsis-all fuzzy-fp">Fuzzy: <span class="unblurred">${zo}</span></div>
-					<div class="ellipsis-all fuzzy-diffs">Diffs: <span class="unblurred">${ZZ}</span></div>
+					<div class="ellipsis-all fuzzy-fp">Fuzzy: <span class="unblurred">${fuzzyInit}</span></div>
+					<div class="ellipsis-all fuzzy-diffs">Diffs: <span class="unblurred">${fuzzyDiff}</span></div>
 				</div>
-			`);const Zd=dx=>{const QO=QB,dD=new Date(dx),dA=dD[QO(0xa29)](),dY=dD['toLocaleTimeString']();return dA+',\x20'+dY;},{switchCountPointGain:ZL,errorsPointGain:Zp,trashPointGain:Zn,liesPointGain:Zb,shadowBitsPointGain:ZS,grade:ZQ}=JSON[QB(0x17b)](Z3),Zu=dx=>{const QN=QB;return QN(0x980)+(dx<0x0?'F':dx>0x0?'A':'')+'\x22>'+(dx>0x0?'+'+dx:dx<0x0?''+dx:'')+QN(0x44b);},ZF=new Date(za[QB(0x3b5)]),Zv=ZF[QB(0x1b0)]()+0x1+'/'+ZF['getDate']()+'/'+ZF[QB(0x9ea)](),ZH=(dx,dD)=>{const Qi=QB,dA=new Date(dx);return dA[Qi(0x603)](dA[Qi(0x61a)]()+dD),dA;},Zx=dx=>{const Qy=QB,dD=ZH(dx,0x7),dA=Math[Qy(0x900)]((+dD-+new Date())/(0x3e8*0xe10*0x18));return dA>=0x0;},ZD=(dx,dD)=>dx['reduce']((dA,dY,dk)=>{const QK=QB,dP=Math[QK(0x4f2)](dk/dD);return dA[dP]=[...dA[dP]||[],dY],dA;},[]),ZA=dx=>dx['map']((dD,dA)=>{const Qr=QB,dY=dk=>Qr(0xbb8)+0x3*dk+Qr(0x3ac)+0x6*dk+'00ms\x20cubic-bezier(.47,.47,.56,1.26)\x20alternate\x20infinite';return Qr(0x235)+dD['map']((dk,dP)=>Qr(0x108)+(dk=='1'?Qr(0x68b):Qr(0xafe))+Qr(0x741)+(dk==0x1?dY(dP+dA):'')+Qr(0xad1))[Qr(0x644)]('')+'</div>';})['join'](''),{initial:ZY,loads:Zk,revisedKeys:ZP}=zB({'fingerprint':z5,'loading':!![]}),Za=QB(0x3a2)+(Zx(Zv)?'renewed':'')+'\x22>'+new Date(Zv)[QB(0xa29)]()+QB(0x34c)+ZT+QB(0x69c)+Z2+QB(0xae2)+ZQ[QB(0x4a2)](0x0)+'\x22>'+ZQ+QB(0xac2)+zX+QB(0x1af)+Zd(zh)+QB(0x347)+(dx=>{const QR=QB,dD=dA=>{const QV=a0T,dY=dA['toFixed'](0x1),dk=/\.0/[QV(0x579)](dY);return dk?dA[QV(0x250)]():dY;};return dx>0x30?dD(dx/0x18)+QR(0x44a):dD(dx)+QR(0x960);})(zl)+QB(0x5f0)+(!Z1?'0':Z1[QB(0x250)](0x5))+'</span>\x20\x20'+Zu(ZS)+'\x0a\x09\x09\x09\x09\x09\x09\x09'+(!Z1?'':QB(0x4e7)+WO(Z0)+'</span>')+QB(0x931)+ZA(ZD(Z0[QB(0x184)](''),0x8))+QB(0x519)+WB(z5,Zu(Zn))+QB(0x1cf)+WH(z5,Zu(Zb))+QB(0x1cf)+s(z5,Zu(Zp))+QB(0xb23)+(''+Zk)+QB(0x905)+ZY+QB(0x197)+(''+ZP[QB(0xb8e)])+QB(0x303)+(!ZP[QB(0xb8e)]?QB(0x370):w(QB(0x9ca),ZP[QB(0x644)](QB(0x708)),WO(ZP)))+QB(0xb86)+(''+zg)+QB(0x905)+N(zt)+QB(0x509)+Zu(ZL)+QB(0xb98)+Z5[QB(0x250)](0x2)+':'+Z7+':'+Z6+QB(0x43f)+Z8+'-'+Z9+QB(0x4e3)+ZW[QB(0x250)](0x2)+'\x20ms</div>\x0a\x09\x09\x09\x09\x09\x09\x09</div>\x0a\x0a\x09\x09\x09\x09\x09\x09\x09'+(zJ?'\x0a\x09\x09\x09\x09\x09\x09\x09\x09<div\x20class=\x22fade-right-in\x22\x20id=\x22signature\x22>\x0a\x09\x09\x09\x09\x09\x09\x09\x09\x09<div\x20class=\x22ellipsis\x22><strong>signed</strong>:\x20<span>'+zJ+QB(0x896):'<form\x20class=\x22fade-right-in\x22\x20id=\x22signature\x22>\x0a\x09\x09\x09\x09\x09\x09\x09\x09\x09<input\x20id=\x22signature-input\x22\x20type=\x22text\x22\x20placeholder=\x22add\x20a\x20signature\x22\x20title=\x22sign\x20this\x20fingerprint\x22\x20required\x20minlength=\x224\x22\x20maxlength=\x2264\x22>\x0a\x09\x09\x09\x09\x09\x09\x09\x09\x09<input\x20type=\x22submit\x22\x20value=\x22Sign\x22>\x0a\x09\x09\x09\x09\x09\x09\x09\x09</form>\x0a\x09\x09\x09\x09\x09\x09\x09\x09')+QB(0xfe);i(zV,K`${Za}`,()=>{const Qw=QB,dx=document[Qw(0xa0c)](Qw(0x2db)),dD=+new Date(),dA=()=>{const Qm=Qw;requestAnimationFrame(dA);const dk=0x36ee80,dP=dk*0x18,da=+new Date(+new Date()-dP*0x1e),dq=Math[Qm(0xb73)](dD-da)/dk/0x18;return dx[Qm(0x3f3)][Qm(0x890)]('--auto-delete-time','\x27'+dq[Qm(0x250)](0x8)+'\x27');};dA();if(zJ)return;const dY=document[Qw(0xa0c)](Qw(0x4f0));dY['addEventListener'](Qw(0x86e),async dk=>{const QE=Qw;dk[QE(0x7d6)]();const dP=document[QE(0xa0c)](QE(0x73f))['value'],da=confirm(QE(0x782)+dP);if(!da)return;const dq='https://creepjs-api.web.app/sign?id='+zM+QE(0x2ee)+dP;return dY[QE(0x72d)]['remove'](QE(0x71d)),dY[QE(0x72d)][QE(0x933)]('fade-down-out'),fetch(dq)[QE(0x1f2)](dt=>dt[QE(0x629)]())[QE(0x1f2)](dt=>{return setTimeout(()=>{const Qf=a0T;return i(dY,K`
-								<div class="fade-right-in" id="signature">
-									<div class="ellipsis"><strong>signed</strong>: <span>${dP}</span></div>
-								</div>
-							`),console['log'](Qf(0x300),JSON[Qf(0x1b9)](dt,null,'\x09'));},0x12c);})[QE(0x2a2)](dt=>{const Qc=QE;return i(dY,K`
-							<div class="fade-right-in" id="signature">
-								<div class="ellipsis"><strong style="color:crimson">${dt}</strong></div>
+			`);
+            const toLocaleStr = (str) => {
+                const date = new Date(str);
+                const dateString = date.toLocaleDateString();
+                const timeString = date.toLocaleTimeString();
+                return `${dateString}, ${timeString}`;
+            };
+            const { switchCountPointGain, errorsPointGain, trashPointGain, liesPointGain, shadowBitsPointGain, grade, } = JSON.parse(scoreData);
+            const computePoints = (x) => {
+                return `<span class="scale-up grade-${x < 0 ? 'F' : x > 0 ? 'A' : ''}">${x > 0 ? `+${x}` : x < 0 ? `${x}` : ''}</span>`;
+            };
+            const renewedDate = new Date(creep.forceRenew);
+            const renewedDateString = `${renewedDate.getMonth() + 1}/${renewedDate.getDate()}/${renewedDate.getFullYear()}`;
+            const addDays = (date, n) => {
+                const d = new Date(date);
+                d.setDate(d.getDate() + n);
+                return d;
+            };
+            const shouldStyle = (renewedDateString) => {
+                const endNoticeDate = addDays(renewedDateString, 7);
+                const daysRemaining = Math.round((+endNoticeDate - +new Date()) / (1000 * 3600 * 24));
+                return daysRemaining >= 0;
+            };
+            const getChunks = (list, chunkLen) => list.reduce((acc, x, i) => {
+                const chunk = Math.floor(i / chunkLen);
+                acc[chunk] = [...(acc[chunk] || []), x];
+                return acc;
+            }, []);
+            const styleChunks = (chunks) => chunks.map((y, yi) => {
+                const animate = (n) => `animation: balloon ${3 * n}00ms ${6 * n}00ms cubic-bezier(.47,.47,.56,1.26) alternate infinite`;
+                return `<div>${y.map((x, xi) => `<span class="${x == '1' ? 'shadow' : 'blank'}" style="${x == 1 ? animate(xi + yi) : ''}"></span>`).join('')}</div>`;
+            }).join('');
+            const { initial, loads, revisedKeys } = computeSession({ fingerprint: fp, loading: true });
+            const template = `
+				<div class="visitor-info">
+					<span class="time">fingerprints renewed <span class="${shouldStyle(renewedDateString) ? 'renewed' : ''}">${new Date(renewedDateString).toLocaleDateString()}</span></span>
+					<div class="flex-grid relative">
+						<span class="aside-note-bottom left">${resistanceId}</span>
+						<div class="col-six">
+							<strong>Browser</strong>
+							<div>trust score: <span class="unblurred">
+								${score}% <span class="scale-down grade-${grade.charAt(0)}">${grade}</span>
+							</span></div>
+							<div>visits: <span class="unblurred">${visits}</span></div>
+							<div class="ellipsis">first: <span class="unblurred">${toLocaleStr(firstVisit)}</span></div>
+							<div>alive: <span class="unblurred">${((hours) => {
+                const format = (n) => {
+                    const fixed = n.toFixed(1);
+                    const shouldMakeNumberWhole = /\.0/.test(fixed);
+                    return shouldMakeNumberWhole ? n.toFixed() : fixed;
+                };
+                return (hours > 48 ? `${format(hours / 24)} days` : `${format(hours)} hrs`);
+            })(persistence)}</span></div>
+							<div id="auto-delete">auto-delete in</div>
+							<div class="relative">shadow: <span class="unblurred">${!shadowBits ? '0' : shadowBits.toFixed(5)}</span>  ${computePoints(shadowBitsPointGain)}
+							${!shadowBits ? '' : `<span class="confidence-note">${hashMini(shadow)}</span>`}
 							</div>
-						`),console[Qc(0xb52)](Qc(0x6e6),dt[Qc(0x1b2)]);});});});const {maths:Zq,consoleErrors:Zt,htmlElementVersion:ZM,windowFeatures:ZB,clientRects:ZO,offlineAudioContext:ZN,resistance:Zi,canvas2d:Zy,canvasWebgl:ZK,screen:Zr,fonts:ZV,voices:ZR,svg:Zw,media:Zm}=z5||{},ZE=Zi['privacy']==QB(0x7a2),Zf=Zi['privacy']==QB(0xab7),Zc=!Zr||Zr[QB(0x153)]||Zf||ZE?QB(0x63d):Zr['width']+'x'+Zr[QB(0x996)],{compressorGainReduction:ZG,sampleSum:Ze,floatFrequencyDataSum:ZC,floatTimeDomainDataSum:Zs,values:ZI}=ZN||{},Zj=WO(ZI),Zh=Ze+'_'+ZG+'_'+ZC+'_'+Zs+'_'+Zj,Zl=({canvasWebgl:dx,workerScope:dD})=>{const Qe=QB,dA=dY=>{const QG=a0T;return(dY['gpu']||{})[QG(0xa11)]&&dY[QG(0x893)][QG(0xa11)]!=QG(0xb09);};if(!dx||dx[Qe(0x6a9)])return'undefined';else{if(dD&&dA(dD))return dD[Qe(0xae7)];else{if(dx&&!dx['parameterOrExtensionLie']&&dA(dx))return''+(dx[Qe(0xba0)]||{})[Qe(0x319)];}}return Qe(0x63d);},ZX=encodeURIComponent(Zl({'canvasWebgl':ZK,'workerScope':z5['workerScope']}));if(!zw){let dx=window[QB(0x52e)]&&JSON['parse'](sessionStorage[QB(0x269)]('decryptionData'));const dD=[QB(0x823),QB(0x569),QB(0x439),'consoleErrors','css','cssMedia','fonts',QB(0xbaa),QB(0x690),QB(0x3c4),QB(0xaf4),QB(0x9f5),'resistance',QB(0x6bd),QB(0xabe),QB(0x79b),QB(0x625),QB(0x3f8),QB(0xa52)],{revisedKeysFromPreviousLoad:dA}=zB({'fingerprint':z5,'computePreviousLoadRevision':!![]}),dY=dD[QB(0x73b)](dy=>dA['includes'](dy)),dk=dY['length'],dP=!dx||dk;console[QB(0x642)](dk+QB(0x36d)+(dP?'server':'session')+'...');if(dP){const dy={'e':{0x50:1.9275814160560204e-50,0x3a:1.9275814160560185e-50,0x4d:1.9275814160560206e-50}[z]||0x0,'l':+new Date(QB(0x78a))},{userAgent:dK,userAgentData:dr}=z5[QB(0xa52)]||{},{platformVersion:dV}=z5[QB(0x1cb)]||{},dR=Y({'userAgent':dK,'userAgentData':dr,'fontPlatformVersion':dV}),dw=D({'userAgent':dK,'userAgentData':dr,'fontPlatformVersion':dV}),dm=dR||dw;dR&&dR!=dK&&console['log'](QB(0x3c9)+dm);const dE=QB(0x9db)+['sender='+dy['e']+'_'+dy['l'],QB(0xb47)+ZE,'isRFP='+Zf,QB(0x963)+z1,'resistanceId='+Zi['$hash'],QB(0x143)+Zq[QB(0x3fb)],QB(0x340)+Zt[QB(0x3fb)],QB(0xbab)+ZM[QB(0x3fb)],QB(0x22b)+ZB[QB(0x3fb)],QB(0x379)+z7,QB(0xb21)+z6,'emojiId='+(!ZO||ZO['lied']?QB(0x63d):encodeURIComponent(ZO[QB(0x92c)])),QB(0xa2a)+(!ZO||ZO[QB(0x153)]?'undefined':z8),QB(0xf5)+(!Zw||Zw[QB(0x153)]?QB(0x63d):encodeURIComponent(Zw[QB(0xa5f)])),QB(0x597)+(!Zm||Zm[QB(0x153)]?'undefined':z9),QB(0x888)+(!ZN||ZN[QB(0x153)]||zA?QB(0x63d):Zh),QB(0x111)+(!Zy||Zy[QB(0x153)]?QB(0x63d):zW),QB(0x7e1)+(!Zy||Zy[QB(0x153)]?QB(0x63d):zT),QB(0x9fa)+(!Zy||Zy[QB(0x153)]?QB(0x63d):zz),'canvasTextId='+(!Zy||Zy[QB(0x153)]?QB(0x63d):zZ),QB(0x732)+(!Zy||Zy['lied']?QB(0x63d):zd),QB(0x38f)+(!Zy||Zy[QB(0x880)]||+Zy[QB(0x915)]==0x0?QB(0x63d):encodeURIComponent(Zy[QB(0x915)])),QB(0x538)+(!ZK||(Zy||{})[QB(0x153)]||ZK['lied']?QB(0x63d):zL),QB(0x489)+(!ZK||ZK[QB(0x6a9)]?QB(0x63d):zp),QB(0x495)+ZX,QB(0x10e)+(!ZV||ZV[QB(0x153)]?QB(0x63d):ZV[QB(0x3fb)]),QB(0x81a)+(!ZR||ZR['lied']?QB(0x63d):ZR[QB(0x3fb)]),QB(0x310)+Zc,QB(0x407)+zn,'ua='+encodeURIComponent(dm)]['join']('&'),df=await fetch(dE)[QB(0x2a2)](dc=>{const QC=QB;console[QC(0xb52)](dc),TM({'error':dc,'patch':i,'html':K});return;});if(!df)return;dx=await df[QB(0x629)](),dx&&window[QB(0x52e)]&&sessionStorage[QB(0xb3e)](QB(0x9dc),JSON[QB(0x1b9)](dx));}const da=[QB(0x534),QB(0x2ef),'jsEngine',QB(0xa7f),QB(0x3e2),QB(0x8d4),QB(0x636),QB(0x891),QB(0x24a),QB(0x821),QB(0x755),QB(0x7a0),QB(0x9aa),QB(0xaec),QB(0x464),'canvasTextSystem',QB(0xb0a),QB(0x305),'webglSystem','gpuSystem',QB(0x85c),QB(0x44d),QB(0x394),QB(0x3ee),'deviceOfTimezone'],dq=da[QB(0x729)]((dc,dG)=>{const Qs=QB,{score:de}=dx[dG]||{},dC=de==0x24?0x1:de==0x54?0x2:de==0x60?0x3:de==0x64?0x4:0x0;return dc[Qs(0x115)]=[...dc[Qs(0x115)]||[],{'key':dG,'score':de||0x0,'reporters':dC}],dc[Qs(0x512)]=[...dc[Qs(0x512)]||[],de||0x0],dc;},{}),{metrics:dt}=dq,dM=Object['keys'](dt)[QB(0x729)]((dc,dG)=>{const QI=QB,de=dt[dG],{score:dC,reporters:ds}=de;return dc[de[QI(0x866)]]={'score':dC,'reporters':ds},dc;},{}),dB=dq[QB(0x512)]['includes'](0x0),dO=dq['scores'][QB(0x73b)](dc=>!!dc),dN=Math['min'](...dO),di=dB?0.75*dN:dN;console['groupCollapsed']('Crowd-Blending\x20Score:\x20'+di+'%'),console[QB(0x511)](dM),console['groupEnd']();if(di!=Z4){console['log']('updating\x20crowd-blending\x20score\x20from\x20'+Z4+'\x20to\x20'+di);const dc=QB(0xa4f)+zM+QB(0x1ba)+di;fetch(dc)['catch'](dG=>console['error']('Failed\x20Score\x20Request',dG));}Tt({'decryptionData':dx,'crowdBlendingScore':di});}const Zg=async()=>{const Qj=QB,dG=window['sessionStorage']&&sessionStorage['getItem']('samples');if(dG)return{'samples':JSON['parse'](dG),'samplesDidLoadFromSession':!![]};const de=Qj(0x24b),dC=await fetch(de)[Qj(0x1f2)](ds=>ds[Qj(0x629)]())[Qj(0x2a2)](ds=>{const Qh=Qj;console[Qh(0xb52)](ds);return;});return dC&&window[Qj(0x52e)]&&sessionStorage[Qj(0xb3e)](Qj(0x76e),JSON['stringify'](dC)),{'samples':dC,'samplesDidLoadFromSession':![]};},{samples:ZJ,samplesDidLoadFromSession:Zo}=await Zg(),ZU=dG=>!dG?dG:(''+dG)[QB(0x737)](/\//g,''),{window:d0,math:d1,error:d2,html:d3,style:d4,resistance:d5,styleVersion:d6,emoji:d7,domRect:d8,svg:d9,mimeTypes:dW,audio:dT,canvas:dz,canvasBlob:dZ,canvasPaint:dd,canvasText:dL,canvasEmoji:dp,textMetrics:dn,webgl:db,fonts:dS,voices:dQ,screen:du,gpu:dF,gpuModel:dv,deviceOfTimezone:dH}=ZJ||{};zw&&!ZJ&&TM({'error':QB(0x190),'patch':i,'html':K});if(zw&&ZJ){const dG={'windowVersion':Tq({'hash':(ZB||{})['$hash'],'data':d0}),'jsRuntime':Tq({'hash':(Zq||{})[QB(0x3fb)],'data':d1}),'jsEngine':Tq({'hash':(Zt||{})[QB(0x3fb)],'data':d2}),'htmlVersion':Tq({'hash':(ZM||{})[QB(0x3fb)],'data':d3}),'styleVersion':Tq({'hash':z7,'data':d6}),'styleSystem':Tq({'hash':z6,'data':d4}),'resistance':Tq({'hash':(Zi||{})[QB(0x3fb)],'data':d5}),'emojiSystem':Tq({'hash':(ZO||{})['domrectSystemSum'],'data':d7}),'domRectSystem':Tq({'hash':z8,'data':d8}),'svgSystem':Tq({'hash':(Zw||{})[QB(0xa5f)],'data':d9}),'mimeTypesSystem':Tq({'hash':z9,'data':dW}),'audioSystem':Tq({'hash':Zh,'data':dT}),'canvasSystem':Tq({'hash':zW,'data':dz}),'canvasBlobSystem':Tq({'hash':zT,'data':dZ}),'canvasPaintSystem':Tq({'hash':zz,'data':dd}),'canvasTextSystem':Tq({'hash':zZ,'data':dL}),'canvasEmojiSystem':Tq({'hash':zd,'data':dp}),'textMetricsSystem':Tq({'hash':(Zy||{})[QB(0x915)],'data':dn}),'webglSystem':Tq({'hash':zL,'data':db}),'gpuSystem':Tq({'hash':zp,'data':dF}),'gpuModelSystem':Tq({'hash':ZU(ZX),'data':dv}),'fontsSystem':Tq({'hash':(ZV||{})[QB(0x3fb)],'data':dS}),'voicesSystem':Tq({'hash':(ZR||{})[QB(0x3fb)],'data':dQ}),'screenSystem':Tq({'hash':Zc,'data':du}),'deviceOfTimezone':Tq({'hash':zn,'data':dH})};Tt({'decryptionData':dG,'bot':!![]});}if(ZJ){const de=(dI,dj)=>{const Ql=QB;let dh=0x0;const dl=Object[Ql(0xab4)](dj)[Ql(0x729)]((dg,dJ)=>dg+=dj[dJ]['length'],0x0),dX=Object[Ql(0xab4)](dj)[Ql(0xaac)](dg=>dj[dg]['find'](dJ=>{const QX=Ql;if(dJ['id']==dI&&dJ[QX(0x47b)]>0x24){const dU=dj[dg]['filter'](L0=>{const Qg=QX;return L0[Qg(0x47b)]>0x24;});return dh=dU[QX(0xb8e)],!![];}return![];}));return{'classTotal':dh,'decryption':dX,'metricTotal':dl};},dC={'window':(ZB||{})['$hash'],'math':(Zq||{})[QB(0x3fb)],'error':(Zt||{})[QB(0x3fb)],'html':(ZM||{})['$hash'],'style':z6,'resistance':(Zi||{})['$hash'],'styleVersion':z7,'emoji':(ZO||{})['domrectSystemSum'],'domRect':z8,'svg':(Zw||{})[QB(0xa5f)],'mimeTypes':z9,'audio':Zh,'canvas':zW,'canvasBlob':zT,'canvasPaint':zz,'canvasText':zZ,'canvasEmoji':zd,'textMetrics':(Zy||{})[QB(0x915)],'webgl':zL,'fonts':(ZV||{})[QB(0x3fb)],'voices':(ZR||{})[QB(0x3fb)],'screen':Zc,'gpu':zp,'gpuModel':ZX,'deviceOfTimezone':zn},ds={'window':QB(0xba3),'math':QB(0x1ab),'error':QB(0x462),'html':QB(0x7a9),'style':'system\x20styles','resistance':'resistance\x20patterns','styleVersion':QB(0x8df),'emoji':QB(0xb9c),'domRect':QB(0x3d5),'svg':QB(0x79d),'mimeTypes':'media\x20mimeTypes','audio':'audio\x20metrics','canvas':QB(0x49b),'canvasBlob':'canvas\x20blob','canvasPaint':QB(0x5a5),'canvasText':'canvas\x20text','canvasEmoji':QB(0xa1f),'textMetrics':QB(0x5cf),'webgl':QB(0x6e2),'fonts':'system\x20fonts','voices':QB(0x625),'screen':QB(0x781),'gpu':QB(0x777),'gpuModel':QB(0x798),'deviceOfTimezone':QB(0x69b)};Object['keys'](ZJ)['forEach']((dI,dj)=>{const QJ=QB,dh=dI==QJ(0x1a6)?ZU(decodeURIComponent(dC[dI])):dC[dI],{classTotal:dl,decryption:dX}=de(dh,ZJ[dI]),dg=document['getElementById'](dI+QJ(0xb63)),dJ=dI==QJ(0x6bd)||dI==QJ(0x1cb)||dI=='gpuModel'||dI==QJ(0x41f),dU=!dl?0x0:0x1/dl*0x64,L0=dU==0x0?QJ(0x882):dU<0x1?QJ(0x6f6):dU>0xa?QJ(0x349):'',L1=Zo?'':QJ(0x86a)+0x64*dj+'ms\x20ease\x20both;\x22';return i(dg,K`
-						<span ${L1} class="${L0} entropy-note help" title="1 of ${dl||Infinity}${dJ?'\x20in\x20x\x20device':QJ(0x32f)+(dX||QJ(0x15d))}${'\x20(trusted\x20'+ds[dI]+')'}">
-							${dU[QJ(0x250)](0x2)}%
+							<div class="block-text shadow-icon help" title="fuzzy diff history">
+								${styleChunks(getChunks(shadow.split(''), 8))}
+							</div>
+						</div>
+						<div class="col-six">
+							${trashHTML(fp, computePoints(trashPointGain))}
+							${liesHTML(fp, computePoints(liesPointGain))}
+							${errorsHTML(fp, computePoints(errorsPointGain))}
+							<div>session (${'' + loads}):<span class="unblurred sub-hash">${initial}</span></div>
+							<div>revisions (${'' + revisedKeys.length}): ${!revisedKeys.length ? 'none' : modal(`creep-revisions`, revisedKeys.join('<br>'), hashMini(revisedKeys))}
+							<div class="ellipsis">loose fp (${'' + switchCount}):<span class="unblurred sub-hash">${hashSlice(fpHash)}</span> ${computePoints(switchCountPointGain)}</div>
+
+							<div class="block-text">
+								<div class="unblurred">bot: ${bot.toFixed(2)}:${botLevel}:${botHash}</div>
+								<div class="unblurred">idle min-max: ${timeHoursIdleMin}-${timeHoursIdleMax} hrs</div>
+								<div class="unblurred">performance benchmark: ${benchmark.toFixed(2)} ms</div>
+							</div>
+
+							${signature ?
+                `
+								<div class="fade-right-in" id="signature">
+									<div class="ellipsis"><strong>signed</strong>: <span>${signature}</span></div>
+								</div>
+								` :
+                `<form class="fade-right-in" id="signature">
+									<input id="signature-input" type="text" placeholder="add a signature" title="sign this fingerprint" required minlength="4" maxlength="64">
+									<input type="submit" value="Sign">
+								</form>
+								`}
+						</div>
+					</div>
+				</div>
+			`;
+            patch(visitorElem, html `${template}`, () => {
+                // show self destruct time
+                const el = document.getElementById('auto-delete');
+                const arrivalTime = +new Date;
+                const showTime = () => {
+                    requestAnimationFrame(showTime);
+                    const hoursInMs = 36e5;
+                    const day = hoursInMs * 24;
+                    const destructionDate = +new Date(+new Date - (day * 30));
+                    const hoursTillSelfDestruct = Math.abs(arrivalTime - destructionDate) / hoursInMs / 24;
+                    // @ts-ignore
+                    return el.style.setProperty('--auto-delete-time', `'${hoursTillSelfDestruct.toFixed(8)}'`);
+                };
+                showTime();
+                // listen to form signature if not already signed
+                if (signature) {
+                    return;
+                }
+                const form = document.getElementById('signature');
+                // @ts-ignore
+                form.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+                    // @ts-ignore
+                    const input = document.getElementById('signature-input').value;
+                    const submit = confirm(`Are you sure? This cannot be undone.\n\nsignature: ${input}`);
+                    if (!submit) {
+                        return;
+                    }
+                    const signatureRequest = `https://creepjs-api.web.app/sign?id=${creepHash}&signature=${input}`;
+                    // animate out
+                    // @ts-ignore
+                    form.classList.remove('fade-right-in');
+                    // @ts-ignore
+                    form.classList.add('fade-down-out');
+                    // fetch/animate in
+                    return fetch(signatureRequest)
+                        .then((response) => response.json())
+                        .then((data) => {
+                        return setTimeout(() => {
+                            patch(form, html `
+								<div class="fade-right-in" id="signature">
+									<div class="ellipsis"><strong>signed</strong>: <span>${input}</span></div>
+								</div>
+							`);
+                            return console.log('Signed: ', JSON.stringify(data, null, '\t'));
+                        }, 300);
+                    })
+                        .catch((error) => {
+                        patch(form, html `
+							<div class="fade-right-in" id="signature">
+								<div class="ellipsis"><strong style="color:crimson">${error}</strong></div>
+							</div>
+						`);
+                        return console.error('Error!', error.message);
+                    });
+                });
+            });
+            const { maths, consoleErrors, htmlElementVersion, windowFeatures,
+            // css,
+            clientRects, offlineAudioContext, resistance, canvas2d, canvasWebgl, screen: screenFp, fonts, voices, svg, media, } = fp || {};
+            // const { computedStyle, system } = css || {}
+            const isTorBrowser = resistance.privacy == 'Tor Browser';
+            const isRFP = resistance.privacy == 'Firefox';
+            // const isBravePrivacy = resistance.privacy == 'Brave'
+            const screenMetrics = (!screenFp || screenFp.lied || isRFP || isTorBrowser ? 'undefined' :
+                `${screenFp.width}x${screenFp.height}`);
+            const { compressorGainReduction: gain, sampleSum, floatFrequencyDataSum: freqSum, floatTimeDomainDataSum: timeSum, values: audioValues, } = offlineAudioContext || {};
+            const valuesHash = hashMini(audioValues);
+            const audioMetrics = `${sampleSum}_${gain}_${freqSum}_${timeSum}_${valuesHash}`;
+            const getBestGPUModel = ({ canvasWebgl, workerScope }) => {
+                const gpuHasGoodConfidence = (data) => {
+                    return ((data.gpu || {}).confidence &&
+                        (data.gpu.confidence != 'low'));
+                };
+                if (!canvasWebgl || canvasWebgl.parameterOrExtensionLie) {
+                    return 'undefined';
+                }
+                else if (workerScope && gpuHasGoodConfidence(workerScope)) {
+                    return workerScope.webglRenderer;
+                }
+                else if (canvasWebgl && !canvasWebgl.parameterOrExtensionLie && gpuHasGoodConfidence(canvasWebgl)) {
+                    return '' + ((canvasWebgl.parameters || {}).UNMASKED_RENDERER_WEBGL);
+                }
+                return 'undefined';
+            };
+            const gpuModel = encodeURIComponent(getBestGPUModel({ canvasWebgl, workerScope: fp.workerScope }));
+            if (!badBot) {
+                // get data from session
+                // @ts-ignore
+                let decryptionData = window.sessionStorage && JSON.parse(sessionStorage.getItem('decryptionData'));
+                const targetMetrics = [
+                    'canvas2d',
+                    'canvasWebgl',
+                    'clientRects',
+                    'consoleErrors',
+                    'css',
+                    'cssMedia',
+                    'fonts',
+                    'htmlElementVersion',
+                    'maths',
+                    'media',
+                    'navigator',
+                    'offlineAudioContext',
+                    'resistance',
+                    'screen',
+                    'svg',
+                    'timezone',
+                    'voices',
+                    'windowFeatures',
+                    'workerScope',
+                    /* disregard metrics not in samples:
+                        capturedErrors,
+                        features,
+                        headless,
+                        intl,
+                        lies,
+                        trash,
+                    */
+                ];
+                const { revisedKeysFromPreviousLoad } = computeSession({
+                    fingerprint: fp,
+                    computePreviousLoadRevision: true,
+                });
+                // @ts-ignore
+                const sessionFingerprintRevision = targetMetrics.filter((x) => revisedKeysFromPreviousLoad.includes(x));
+                const revisionLen = sessionFingerprintRevision.length;
+                // fetch data
+                const requireNewDecryptionFetch = !decryptionData || revisionLen;
+                console.log(`${revisionLen} revisions: fetching prediction data from ${requireNewDecryptionFetch ? 'server' : 'session'}...`);
+                if (requireNewDecryptionFetch) {
+                    const sender = {
+                        e: ({
+                            // this just allows us to keep using Math.PI ** -100 results in the data base for consistency
+                            80: 1.9275814160560204e-50,
+                            58: 1.9275814160560185e-50,
+                            77: 1.9275814160560206e-50,
+                        })[ENGINE_IDENTIFIER] || 0,
+                        l: +new Date('7/1/1113'),
+                    };
+                    const { userAgent, userAgentData } = fp.workerScope || {};
+                    const { platformVersion: fontPlatformVersion } = fp.fonts || {};
+                    const restoredUA = getUserAgentRestored({ userAgent, userAgentData, fontPlatformVersion });
+                    const windows11UA = attemptWindows11UserAgent({
+                        userAgent,
+                        userAgentData,
+                        fontPlatformVersion,
+                    });
+                    const workerScopeUserAgent = restoredUA || windows11UA;
+                    if (restoredUA && (restoredUA != userAgent)) {
+                        console.log(`corrected: ${workerScopeUserAgent}`);
+                    }
+                    const decryptRequest = `https://creepjs-api.web.app/decrypt?${[
+                        `sender=${sender.e}_${sender.l}`,
+                        `isTorBrowser=${isTorBrowser}`,
+                        `isRFP=${isRFP}`,
+                        `isBrave=${isBrave}`,
+                        `resistanceId=${resistance.$hash}`,
+                        `mathId=${maths.$hash}`,
+                        `errorId=${consoleErrors.$hash}`,
+                        `htmlId=${htmlElementVersion.$hash}`,
+                        `winId=${windowFeatures.$hash}`,
+                        `styleId=${styleHash}`,
+                        `styleSystemId=${styleSystemHash}`,
+                        `emojiId=${!clientRects || clientRects.lied ? 'undefined' :
+                            encodeURIComponent(clientRects.domrectSystemSum)}`,
+                        `domRectId=${!clientRects || clientRects.lied ? 'undefined' : domRectHash}`,
+                        `svgId=${!svg || svg.lied ? 'undefined' :
+                            encodeURIComponent(svg.svgrectSystemSum)}`,
+                        `mimeTypesId=${!media || media.lied ? 'undefined' : mimeTypesHash}`,
+                        `audioId=${!offlineAudioContext ||
+                            offlineAudioContext.lied ||
+                            unknownFirefoxAudio ? 'undefined' :
+                            audioMetrics}`,
+                        `canvasId=${!canvas2d || canvas2d.lied ? 'undefined' :
+                            canvas2dImageHash}`,
+                        `canvasBlobId=${!canvas2d || canvas2d.lied ? 'undefined' :
+                            canvas2dBlobHash}`,
+                        `canvasPaintId=${!canvas2d || canvas2d.lied ? 'undefined' :
+                            canvas2dPaintHash}`,
+                        `canvasTextId=${!canvas2d || canvas2d.lied ? 'undefined' :
+                            canvas2dTextHash}`,
+                        `canvasEmojiId=${!canvas2d || canvas2d.lied ? 'undefined' :
+                            canvas2dEmojiHash}`,
+                        `textMetricsId=${!canvas2d || canvas2d.liedTextMetrics || ((+canvas2d.textMetricsSystemSum) == 0) ? 'undefined' :
+                            encodeURIComponent(canvas2d.textMetricsSystemSum)}`,
+                        `webglId=${!canvasWebgl || (canvas2d || {}).lied || canvasWebgl.lied ? 'undefined' :
+                            canvasWebglImageHash}`,
+                        `gpuId=${!canvasWebgl || canvasWebgl.parameterOrExtensionLie ? 'undefined' :
+                            canvasWebglParametersHash}`,
+                        `gpu=${gpuModel}`,
+                        `fontsId=${!fonts || fonts.lied ? 'undefined' : fonts.$hash}`,
+                        `voicesId=${!voices || voices.lied ? 'undefined' : voices.$hash}`,
+                        `screenId=${screenMetrics}`,
+                        `deviceOfTimezoneId=${deviceOfTimezoneHash}`,
+                        `ua=${encodeURIComponent(workerScopeUserAgent)}`,
+                    ].join('&')}`;
+                    const decryptionResponse = await fetch(decryptRequest)
+                        .catch((error) => {
+                        console.error(error);
+                        predictionErrorPatch({ error, patch, html });
+                        return;
+                    });
+                    if (!decryptionResponse) {
+                        return;
+                    }
+                    decryptionData = await decryptionResponse.json();
+                    if (decryptionData && window.sessionStorage) {
+                        sessionStorage.setItem('decryptionData', JSON.stringify(decryptionData));
+                    }
+                }
+                // Crowd-Blending Score
+                const scoreKeys = [
+                    'windowVersion',
+                    'jsRuntime',
+                    'jsEngine',
+                    'htmlVersion',
+                    'styleVersion',
+                    'resistance',
+                    'styleSystem',
+                    'emojiSystem',
+                    'domRectSystem',
+                    'svgSystem',
+                    'mimeTypesSystem',
+                    'audioSystem',
+                    'canvasSystem',
+                    'canvasBlobSystem',
+                    'canvasPaintSystem',
+                    'canvasTextSystem',
+                    'canvasEmojiSystem',
+                    'textMetricsSystem',
+                    'webglSystem',
+                    'gpuSystem',
+                    'gpuModelSystem',
+                    'fontsSystem',
+                    'voicesSystem',
+                    'screenSystem',
+                    'deviceOfTimezone',
+                ];
+                const decryptionDataScores = scoreKeys.reduce((acc, key) => {
+                    const { score } = decryptionData[key] || {};
+                    const reporters = (score == 36 ? 1 :
+                        score == 84 ? 2 :
+                            score == 96 ? 3 :
+                                score == 100 ? 4 :
+                                    0);
+                    // @ts-ignore
+                    acc.metrics = [...(acc.metrics || []), { key, score: (score || 0), reporters }];
+                    // @ts-ignore
+                    acc.scores = [...(acc.scores || []), (score || 0)];
+                    return acc;
+                }, {});
+                // @ts-ignore
+                const { metrics: scoreMetrics } = decryptionDataScores;
+                const scoreMetricsMap = Object.keys(scoreMetrics).reduce((acc, key) => {
+                    const scoreMetricData = scoreMetrics[key];
+                    const { score, reporters } = scoreMetricData;
+                    acc[scoreMetricData.key] = { score, reporters };
+                    return acc;
+                }, {});
+                // @ts-ignore
+                const blockedOrOpenlyPoisonedMetric = decryptionDataScores.scores.includes(0);
+                // @ts-ignore
+                const validScores = decryptionDataScores.scores.filter((n) => !!n);
+                const crowdBlendingScoreMin = Math.min(...validScores);
+                const crowdBlendingScore = blockedOrOpenlyPoisonedMetric ? (0.75 * crowdBlendingScoreMin) : crowdBlendingScoreMin;
+                console.groupCollapsed(`Crowd-Blending Score: ${crowdBlendingScore}%`);
+                console.table(scoreMetricsMap);
+                console.groupEnd();
+                if (crowdBlendingScore != fpCrowdBlendingScore) {
+                    console.log(`updating crowd-blending score from ${fpCrowdBlendingScore} to ${crowdBlendingScore}`);
+                    const scoreRequest = `https://creepjs-api.web.app/score-crowd-blending?id=${creepHash}&crowdBlendingScore=${crowdBlendingScore}`;
+                    fetch(scoreRequest)
+                        .catch((error) => console.error('Failed Score Request', error));
+                }
+                renderPrediction({ decryptionData, crowdBlendingScore });
+            }
+            // get GCD Samples
+            const getSamples = async () => {
+                const samples = window.sessionStorage && sessionStorage.getItem('samples');
+                if (samples) {
+                    return {
+                        samples: JSON.parse(samples),
+                        samplesDidLoadFromSession: true,
+                    };
+                }
+                const url = 'https://script.google.com/macros/s/AKfycbw26MLaK1PwIGzUiStwweOeVfl-sEmIxFIs5Ax7LMoP1Cuw-s0llN-aJYS7F8vxQuVG-A/exec';
+                const cloudSamples = await fetch(url).then((res) => res.json()).catch((error) => {
+                    console.error(error);
+                    return;
+                });
+                if (cloudSamples && window.sessionStorage) {
+                    sessionStorage.setItem('samples', JSON.stringify(cloudSamples));
+                }
+                return {
+                    samples: cloudSamples,
+                    samplesDidLoadFromSession: false,
+                };
+            };
+            const { samples: decryptionSamples, samplesDidLoadFromSession } = await getSamples();
+            // prevent Error: value for argument "documentPath" must point to a document
+            const cleanGPUString = (x) => !x ? x : ('' + x).replace(/\//g, '');
+            const { window: winSamples, math: mathSamples, error: errorSamples, html: htmlSamples, style: styleSamples, resistance: resistanceSamples, styleVersion: styleVersionSamples, emoji: emojiSamples, domRect: domRectSamples, svg: svgSamples, mimeTypes: mimeTypesSamples, audio: audioSamples, canvas: canvasSamples, canvasBlob: canvasBlobSamples, canvasPaint: canvasPaintSamples, canvasText: canvasTextSamples, canvasEmoji: canvasEmojiSamples, textMetrics: textMetricsSamples, webgl: webglSamples, fonts: fontsSamples, voices: voicesSamples, screen: screenSamples, gpu: gpuSamples, gpuModel: gpuModelSamples, deviceOfTimezone: deviceOfTimezoneSamples, } = decryptionSamples || {};
+            if (badBot && !decryptionSamples) {
+                predictionErrorPatch({ error: 'Failed prediction fetch', patch, html });
+            }
+            if (badBot && decryptionSamples) {
+                // Perform Dragon Fire Magic
+                const decryptionData = {
+                    windowVersion: getPrediction({ hash: (windowFeatures || {}).$hash, data: winSamples }),
+                    jsRuntime: getPrediction({ hash: (maths || {}).$hash, data: mathSamples }),
+                    jsEngine: getPrediction({ hash: (consoleErrors || {}).$hash, data: errorSamples }),
+                    htmlVersion: getPrediction({ hash: (htmlElementVersion || {}).$hash, data: htmlSamples }),
+                    styleVersion: getPrediction({ hash: styleHash, data: styleVersionSamples }),
+                    styleSystem: getPrediction({ hash: styleSystemHash, data: styleSamples }),
+                    resistance: getPrediction({ hash: (resistance || {}).$hash, data: resistanceSamples }),
+                    emojiSystem: getPrediction({
+                        hash: (clientRects || {}).domrectSystemSum,
+                        data: emojiSamples,
+                    }),
+                    domRectSystem: getPrediction({ hash: domRectHash, data: domRectSamples }),
+                    svgSystem: getPrediction({
+                        hash: (svg || {}).svgrectSystemSum,
+                        data: svgSamples,
+                    }),
+                    mimeTypesSystem: getPrediction({ hash: mimeTypesHash, data: mimeTypesSamples }),
+                    audioSystem: getPrediction({ hash: audioMetrics, data: audioSamples }),
+                    canvasSystem: getPrediction({ hash: canvas2dImageHash, data: canvasSamples }),
+                    canvasBlobSystem: getPrediction({ hash: canvas2dBlobHash, data: canvasBlobSamples }),
+                    canvasPaintSystem: getPrediction({ hash: canvas2dPaintHash, data: canvasPaintSamples }),
+                    canvasTextSystem: getPrediction({ hash: canvas2dTextHash, data: canvasTextSamples }),
+                    canvasEmojiSystem: getPrediction({ hash: canvas2dEmojiHash, data: canvasEmojiSamples }),
+                    textMetricsSystem: getPrediction({
+                        hash: (canvas2d || {}).textMetricsSystemSum,
+                        data: textMetricsSamples,
+                    }),
+                    webglSystem: getPrediction({ hash: canvasWebglImageHash, data: webglSamples }),
+                    gpuSystem: getPrediction({ hash: canvasWebglParametersHash, data: gpuSamples }),
+                    gpuModelSystem: getPrediction({ hash: cleanGPUString(gpuModel), data: gpuModelSamples }),
+                    fontsSystem: getPrediction({ hash: (fonts || {}).$hash, data: fontsSamples }),
+                    voicesSystem: getPrediction({ hash: (voices || {}).$hash, data: voicesSamples }),
+                    screenSystem: getPrediction({ hash: screenMetrics, data: screenSamples }),
+                    deviceOfTimezone: getPrediction({ hash: deviceOfTimezoneHash, data: deviceOfTimezoneSamples }),
+                };
+                // @ts-ignore
+                renderPrediction({ decryptionData, bot: true });
+            }
+            // render entropy notes
+            if (decryptionSamples) {
+                const getEntropy = (hash, data) => {
+                    let classTotal = 0;
+                    const metricTotal = Object.keys(data)
+                        .reduce((acc, key) => acc += data[key].length, 0);
+                    const decryption = Object.keys(data).find((key) => data[key].find((item) => {
+                        if ((item.id == hash) && (item.reporterTrustScore > 36)) {
+                            const trustedSamples = data[key].filter((sample) => {
+                                return (sample.reporterTrustScore > 36);
+                            });
+                            classTotal = trustedSamples.length;
+                            return true;
+                        }
+                        return false;
+                    }));
+                    return {
+                        classTotal,
+                        decryption,
+                        metricTotal,
+                    };
+                };
+                const entropyHash = {
+                    window: (windowFeatures || {}).$hash,
+                    math: (maths || {}).$hash,
+                    error: (consoleErrors || {}).$hash,
+                    html: (htmlElementVersion || {}).$hash,
+                    style: styleSystemHash,
+                    resistance: (resistance || {}).$hash,
+                    styleVersion: styleHash,
+                    emoji: (clientRects || {}).domrectSystemSum,
+                    domRect: domRectHash,
+                    svg: (svg || {}).svgrectSystemSum,
+                    mimeTypes: mimeTypesHash,
+                    audio: audioMetrics,
+                    canvas: canvas2dImageHash,
+                    canvasBlob: canvas2dBlobHash,
+                    canvasPaint: canvas2dPaintHash,
+                    canvasText: canvas2dTextHash,
+                    canvasEmoji: canvas2dEmojiHash,
+                    textMetrics: (canvas2d || {}).textMetricsSystemSum,
+                    webgl: canvasWebglImageHash,
+                    fonts: (fonts || {}).$hash,
+                    voices: (voices || {}).$hash,
+                    screen: screenMetrics,
+                    gpu: canvasWebglParametersHash,
+                    gpuModel,
+                    deviceOfTimezone: deviceOfTimezoneHash,
+                };
+                const entropyDescriptors = {
+                    window: 'window object',
+                    math: 'engine math runtime',
+                    error: 'engine console errors',
+                    html: 'html element',
+                    style: 'system styles',
+                    resistance: 'resistance patterns',
+                    styleVersion: 'computed styles',
+                    emoji: 'domrect emojis',
+                    domRect: 'domrect metrics',
+                    svg: 'svg emojis',
+                    mimeTypes: 'media mimeTypes',
+                    audio: 'audio metrics',
+                    canvas: 'canvas image',
+                    canvasBlob: 'canvas blob',
+                    canvasPaint: 'canvas paint',
+                    canvasText: 'canvas text',
+                    canvasEmoji: 'canvas emoji',
+                    textMetrics: 'textMetrics',
+                    webgl: 'webgl image',
+                    fonts: 'system fonts',
+                    voices: 'voices',
+                    screen: 'screen metrics',
+                    gpu: 'webgl parameters',
+                    gpuModel: 'webgl renderer',
+                    deviceOfTimezone: 'device of timezone',
+                };
+                Object.keys(decryptionSamples).forEach((key, i) => {
+                    const hash = (key == 'gpuModel' ? cleanGPUString(decodeURIComponent(entropyHash[key])) :
+                        entropyHash[key]);
+                    const { classTotal, decryption,
+                    // metricTotal,
+                     } = getEntropy(hash, decryptionSamples[key]);
+                    const el = document.getElementById(`${key}-entropy`);
+                    const deviceMetric = ((key == 'screen') || (key == 'fonts') || (key == 'gpuModel') || (key == 'deviceOfTimezone'));
+                    const uniquePercent = !classTotal ? 0 : (1 / classTotal) * 100;
+                    const signal = (uniquePercent == 0 ? 'entropy-unknown' :
+                        uniquePercent < 1 ? 'entropy-high' :
+                            uniquePercent > 10 ? 'entropy-low' :
+                                '');
+                    const animate = samplesDidLoadFromSession ? '' : `style="animation: fade-up .3s ${100 * i}ms ease both;"`;
+                    return patch(el, html `
+						<span ${animate} class="${signal} entropy-note help" title="1 of ${classTotal || Infinity}${deviceMetric ? ' in x device' : ` in ${decryption || 'unknown'}`}${` (trusted ${entropyDescriptors[key]})`}">
+							${(uniquePercent).toFixed(2)}%
 						</span>
-					`);});}return TN(ZJ,{'fp':z5,'styleSystemHash':z6});})[Qt(0x2a2)](zj=>{const Qo=Qt;zs(Qo(0x98c));const zh=document['getElementById'](Qo(0xa08));console[Qo(0xb52)]('Error!',zj[Qo(0x1b2)]);if(!zh)return;return i(zh,K`
+					`);
+                });
+            }
+            return renderSamples(decryptionSamples, { fp, styleSystemHash });
+        })
+            .catch((error) => {
+            fetchVisitorDataTimer('Error fetching visitor data');
+            const el = document.getElementById('browser-detection');
+            console.error('Error!', error.message);
+            if (!el) {
+                return;
+            }
+            return patch(el, html `
 				<style>
 					.rejected {
 						background: #ca656e14 !important;
@@ -509,9 +10307,13 @@ function a0W(){const QU=['call','Asia/Almaty','\x27\x20(device-width:\x20','conv
 				</style>
 				<div class="flex-grid rejected">
 					<div class="col-eight">
-						${'prediction\x20service\x20unavailable'}
+						${'prediction service unavailable'}
 					</div>
 					<div class="col-four icon-prediction-container">
 					</div>
 				</div>
-			`);});});}());}()));
+			`);
+        });
+    });
+}();
+//# sourceMappingURL=creep.js.map
