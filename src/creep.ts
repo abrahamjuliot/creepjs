@@ -22,7 +22,7 @@ import getVoices, { voicesHTML } from './speech'
 import getSVG, { svgHTML } from './svg'
 import getTimezone, { timezoneHTML } from './timezone'
 import { getTrash, trashHTML } from './trash'
-import { hashify, hashMini, getBotHash, getFuzzyHash } from './utils/crypto'
+import { hashify, hashMini, getBotHash, getFuzzyHash, cipher } from './utils/crypto'
 import { IS_BLINK, braveBrowser, getBraveMode, getBraveUnprotectedParameters, IS_GECKO, computeWindowsRelease, hashSlice, ENGINE_IDENTIFIER, getUserAgentRestored, attemptWindows11UserAgent } from './utils/helpers'
 import { patch, html, getDiffs, modal } from './utils/html'
 import getCanvasWebgl, { webglHTML } from './webgl'
@@ -1129,9 +1129,8 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				}
 				return 'undefined'
 			}
-			const gpuModel = encodeURIComponent(
-				getBestGPUModel({ canvasWebgl, workerScope: fp.workerScope }),
-			)
+			const gpuModel = getBestGPUModel({ canvasWebgl, workerScope: fp.workerScope })
+
 
 			if (!badBot) {
 				// get data from session
@@ -1200,80 +1199,94 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 						console.log(`corrected: ${workerScopeUserAgent}`)
 					}
 
-					const decryptRequest = `https://creepjs-api.web.app/decrypt?${[
-						`sender=${sender.e}_${sender.l}`,
-						`isTorBrowser=${isTorBrowser}`,
-						`isRFP=${isRFP}`,
-						`isBrave=${isBrave}`,
-						`resistanceId=${resistance.$hash}`,
-						`mathId=${maths.$hash}`,
-						`errorId=${consoleErrors.$hash}`,
-						`htmlId=${htmlElementVersion.$hash}`,
-						`winId=${windowFeatures.$hash}`,
-						`styleId=${styleHash}`,
-						`styleSystemId=${styleSystemHash}`,
-						`emojiId=${
-							!clientRects || clientRects.lied ? 'undefined' :
-								encodeURIComponent(clientRects.domrectSystemSum)
-						}`,
-						`domRectId=${!clientRects || clientRects.lied ? 'undefined' : domRectHash}`,
-						`svgId=${
-							!svg || svg.lied ? 'undefined' :
-								encodeURIComponent(svg.svgrectSystemSum)
-						}`,
-						`mimeTypesId=${!media || media.lied ? 'undefined' : mimeTypesHash}`,
-						`audioId=${
-								!offlineAudioContext ||
-								offlineAudioContext.lied ||
-								unknownFirefoxAudio ? 'undefined' :
-									audioMetrics
-						}`,
-						`canvasId=${
-							!canvas2d || canvas2d.lied ? 'undefined' :
-								canvas2dImageHash
-						}`,
-						`canvasBlobId=${
-							!canvas2d || canvas2d.lied ? 'undefined' :
-								canvas2dBlobHash
-						}`,
-						`canvasPaintId=${
-							!canvas2d || canvas2d.lied ? 'undefined' :
-								canvas2dPaintHash
-						}`,
-						`canvasTextId=${
-							!canvas2d || canvas2d.lied ? 'undefined' :
-								canvas2dTextHash
-						}`,
-						`canvasEmojiId=${
-							!canvas2d || canvas2d.lied ? 'undefined' :
-								canvas2dEmojiHash
-						}`,
-						`textMetricsId=${
-							!canvas2d || canvas2d.liedTextMetrics || ((+canvas2d.textMetricsSystemSum) == 0) ? 'undefined' :
-								encodeURIComponent(canvas2d.textMetricsSystemSum)
-						}`,
-						`webglId=${
-							!canvasWebgl || (canvas2d || {}).lied || canvasWebgl.lied ? 'undefined' :
-								canvasWebglImageHash
-						}`,
-						`gpuId=${
-							!canvasWebgl || canvasWebgl.parameterOrExtensionLie ? 'undefined' :
-								canvasWebglParametersHash
-						}`,
-						`gpu=${gpuModel}`,
-						`fontsId=${!fonts || fonts.lied ? 'undefined' : fonts.$hash}`,
-						`voicesId=${!voices || voices.lied ? 'undefined' : voices.$hash}`,
-						`screenId=${screenMetrics}`,
-						`deviceOfTimezoneId=${deviceOfTimezoneHash}`,
-						`ua=${encodeURIComponent(workerScopeUserAgent)}`,
-					].join('&')}`
 
-					const decryptionResponse = await fetch(decryptRequest)
-						.catch((error) => {
-							console.error(error)
-							predictionErrorPatch({error, patch, html})
-							return
-						})
+					// cipher
+					const rawBody = {
+						sender: `${sender.e}_${sender.l}`,
+						isTorBrowser,
+						isRFP,
+						isBrave,
+						resistanceId: resistance.$hash,
+						mathId: maths.$hash,
+						errorId: consoleErrors.$hash,
+						htmlId: htmlElementVersion.$hash,
+						winId: windowFeatures.$hash,
+						styleId: styleHash,
+						styleSystemId: styleSystemHash,
+						emojiId: (
+							!clientRects || clientRects.lied ? null :
+								clientRects.domrectSystemSum
+						),
+						domRectId: (
+							!clientRects || clientRects.lied ? null : domRectHash
+						),
+						svgId: (
+							!svg || svg.lied ? null : svg.svgrectSystemSum
+						),
+						mimeTypesId: (
+							!media || media.lied ? null : mimeTypesHash
+						),
+						audioId: (
+							!offlineAudioContext ||
+							offlineAudioContext.lied ||
+							unknownFirefoxAudio ? null : audioMetrics
+						),
+						canvasId: (
+							!canvas2d || canvas2d.lied ? null :
+								canvas2dImageHash
+						),
+						canvasBlobId: (
+							!canvas2d || canvas2d.lied ? null :
+								canvas2dBlobHash
+						),
+						canvasPaintId: (
+							!canvas2d || canvas2d.lied ? null :
+								canvas2dPaintHash
+						),
+						canvasTextId: (
+							!canvas2d || canvas2d.lied ? null :
+								canvas2dTextHash
+						),
+						canvasEmojiId: (
+							!canvas2d || canvas2d.lied ? null :
+								canvas2dEmojiHash
+						),
+						textMetricsId: (
+							!canvas2d ||
+							canvas2d.liedTextMetrics ||
+							((+canvas2d.textMetricsSystemSum) == 0) ? null :
+								canvas2d.textMetricsSystemSum
+						),
+						webglId: (
+							!canvasWebgl || (canvas2d || {}).lied || canvasWebgl.lied ? null :
+								canvasWebglImageHash
+						),
+						gpuId: (
+							!canvasWebgl || canvasWebgl.parameterOrExtensionLie ? null :
+								canvasWebglParametersHash
+						),
+						gpu: gpuModel,
+						fontsId: !fonts || fonts.lied ? null : fonts.$hash,
+						voicesId: !voices || voices.lied ? null : voices.$hash,
+						screenId: screenMetrics,
+						deviceOfTimezoneId: deviceOfTimezoneHash,
+						ua: workerScopeUserAgent,
+					}
+
+					const secret = await cipher(rawBody)
+					const decryptionResponse = await fetch('https://creepjs-api.web.app/decrypt', {
+						method: 'POST',
+						headers: {
+							'Accept': 'application/json, text/plain, */*',
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify(secret),
+					}).catch((error) => {
+						console.error(error)
+						predictionErrorPatch({error, patch, html})
+						return
+					})
+
 					if (!decryptionResponse) {
 						return
 					}

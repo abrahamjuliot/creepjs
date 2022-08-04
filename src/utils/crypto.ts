@@ -26,6 +26,33 @@ const hashify = (x, algorithm = 'SHA-256') => {
 	})
 }
 
+async function cipher(data: any): Promise<string[]> {
+	const iv = crypto.getRandomValues(new Uint8Array(12))
+	const key = await crypto.subtle.generateKey(
+		{ name: 'AES-GCM', length: 256 },
+		true,
+		['encrypt', 'decrypt'],
+	)
+	const json = JSON.stringify(data)
+	const encoded = new TextEncoder().encode(json)
+	const ciphertext = await crypto.subtle.encrypt(
+		{ name: 'AES-GCM', iv },
+		key,
+		encoded,
+	)
+	const message = btoa(String.fromCharCode.apply(
+		null,
+		new Uint8Array(ciphertext) as unknown as number[],
+	))
+	const vector = btoa(String.fromCharCode.apply(
+		null,
+		iv as unknown as number[],
+	))
+	const { k: keyData } = await crypto.subtle.exportKey('jwk', key)
+
+	return [message, vector, keyData!]
+}
+
 
 const getBotHash = (fp, imports) => {
 	const { getFeaturesLie, computeWindowsRelease } = imports
@@ -314,4 +341,4 @@ const getFuzzyHash = async (fp) => {
 	return fuzzyFingerprint
 }
 
-export { hashMini, instanceId, hashify, getBotHash, getFuzzyHash }
+export { hashMini, instanceId, hashify, getBotHash, getFuzzyHash, cipher }
