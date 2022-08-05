@@ -10,7 +10,7 @@ The purpose of this project is to shed light on weaknesses and privacy leaks amo
 4. Fingerprint browser privacy settings
 5. Use large-scale validation and collect inconsistencies
 6. Feature detect and fingerprint [new APIs](https://www.javascripture.com/) that contain high entropy
-7. Use APIs that are the most difficult to fake in a stable fingerprint
+7. For fingerprinting, use APIs that are the most difficult to fake
 
 Tests are focused on:
 - Tor Browser (SL 1 & 2)
@@ -35,7 +35,9 @@ Tests are focused on:
 - ScriptSafe
 - Windscribe
 
-## Rules
+## Fingerprinting API
+Service is limited to the [CreepJS](https://abrahamjuliot.github.io/creepjs) GitHub site. Read more about the design [here](https://github.com/abrahamjuliot/creepjs/discussions/177#discussioncomment-2259171).
+
 ### Data
 - data collected: worker scope user agent, webgl gpu renderer, js runtime engine, hashed browser fingerprints (`stable`, `loose`, `fuzzy`, & `shadow`), encrypted ip, encrypted system location, dates, and other metrics displayed on the website
 - data retention:
@@ -338,5 +340,11 @@ This is the main fingerprint, the creep
 - aims to ignore entropy unique to a browser version release
 - gathers compressed and static entropy
 
----
+## Develop
+
 Contributions are welcome.
+
+🟩 build `yarn build:dev`<br>
+🟪 watch `yarn watch:dev`<br>
+🟦 release to GitHub pages `yarn build`<br>
+
