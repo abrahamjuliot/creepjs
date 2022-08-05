@@ -344,6 +344,7 @@ This is the main fingerprint, the creep
 
 Contributions are welcome.
 
+🟫 install `yarn install`<br>
 🟩 build `yarn build:dev`<br>
 🟪 watch `yarn watch:dev`<br>
 🟦 release to GitHub pages `yarn build`<br>
