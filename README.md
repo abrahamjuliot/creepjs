@@ -42,7 +42,7 @@ Service is limited to the [CreepJS](https://abrahamjuliot.github.io/creepjs) Git
 
 `/decrypt` captures hash strings in a data model and renders the data to cloud storage. The data model follows a set of instructions on how to respond if the metric appears again. This includes reject, merge, timestamp, modify, log data, and self-learn from patterns. Some patterns are configured to trigger a manual review.
 
-Data that is newly discovered starts out with a very low score. The score will improve if the same data reappears with unique visits. The data will be placed in a queue for auto-deletion if the score remains low for two weeks. If the data is falsified, it should be difficult for it to build up any degree of trust over time. Data with a timestamp older than 40 days are also automatically deleted. This is designed to make it difficult for abnormal data to blend in.
+Data that is newly discovered starts out with a very low score. The score will improve if the same data reappears with unique visits. The data will be placed in a queue for auto-deletion if the score remains low for two weeks. Data with a timestamp aging 40 days is also automatically deleted. This is designed to make it difficult for abnormal data to blend in. It should be difficult for counterfeit fingerprints to build up any degree of trust over time.
 
 > Fingerprint API: https://creepjs-api.web.app/fp
 
@@ -50,7 +50,7 @@ Data that is newly discovered starts out with a very low score. The score will i
 
 > Rate-Limits
 
-Every hour, the API grants a maximum number of tokens to every incoming network. These tokens are then spent on request. If the network consumes all tokens in a given hour, then it gets put on timeout.
+Every hour, the API grants a maximum number of tokens to every incoming network. These tokens are then spent on the request. If the network consumes all tokens in a given hour, then it gets put on timeout.
 
 ### Data
 - data collected: worker scope user agent, webgl gpu renderer, js runtime engine, hashed browser fingerprints (`stable`, `loose`, `fuzzy`, & `shadow`), encrypted ip, encrypted system location, dates, and other metrics displayed on the website
