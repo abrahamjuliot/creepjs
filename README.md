@@ -35,8 +35,22 @@ Tests are focused on:
 - ScriptSafe
 - Windscribe
 
-## Fingerprinting API
-Service is limited to the [CreepJS](https://abrahamjuliot.github.io/creepjs) GitHub site. Read more about the design [here](https://github.com/abrahamjuliot/creepjs/discussions/177#discussioncomment-2259171).
+## Fingerprinting APIs
+Service is limited to the [CreepJS](https://abrahamjuliot.github.io/creepjs) GitHub page.
+
+> Prediction API: https://creepjs-api.web.app/decrypt
+
+`/decrypt` captures hash strings in a data model and renders the data to cloud storage. The data model follows a set of instructions on how to respond if the metric appears again. This includes reject, merge, timestamp, modify, log data, and self-learn from patterns. Some patterns are configured to trigger a manual review.
+
+Data that is newly discovered starts out with a very low score. The score will improve if the same data reappears with unique visits. The data will be placed in a queue for auto-deletion if the score remains low for two weeks. If the data is falsified, it should be difficult for it to build up any degree of trust over time. Data with a timestamp older than 40 days are also automatically deleted. This is designed to make it difficult for abnormal data to blend in.
+
+> Fingerprint API: https://creepjs-api.web.app/fp
+
+`/fp` computes a fingerprint profile derived from unique patterns. If certain suspicious patterns are detected, then the Prediction API will go into "locked" mode, in which case all further learning and data merging on the server will be shut down.
+
+> Rate-Limits
+
+Every hour, the API grants a maximum number of tokens to every incoming network. These tokens are then spent on request. If the network consumes all tokens in a given hour, then it gets put on timeout.
 
 ### Data
 - data collected: worker scope user agent, webgl gpu renderer, js runtime engine, hashed browser fingerprints (`stable`, `loose`, `fuzzy`, & `shadow`), encrypted ip, encrypted system location, dates, and other metrics displayed on the website
