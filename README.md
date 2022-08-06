@@ -53,7 +53,7 @@ Data that is newly discovered starts out with a very low score. The score will i
 Every hour, the API grants a maximum number of tokens to every incoming network. These tokens are then spent on the request. If the network consumes all tokens in a given hour, then it gets put on timeout.
 
 ### Data
-- data collected: worker scope user agent, webgl gpu renderer, js runtime engine, hashed browser fingerprints (`stable`, `loose`, `fuzzy`, & `shadow`), encrypted ip, encrypted system location, dates, and other metrics displayed on the website
+- data collected: worker scope user agent, webgl gpu renderer, js runtime engine, hashed browser fingerprints (`stable`, `loose`, `fuzzy`, & `shadow`), masked ip, masked system location, dates, and other fingerprint data displayed on the website
 - data retention:
     - browser fingerprint auto deletes:
         - 30 days after last visit
