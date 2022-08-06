@@ -66,7 +66,7 @@ export default async function getOfflineAudioContext() {
 			window.OfflineAudioContext = OfflineAudioContext || webkitOfflineAudioContext
 		} catch (err) { }
 
-		if (!OfflineAudioContext) {
+		if (!window.OfflineAudioContext) {
 			logTestResult({test: 'audio', passed: false})
 			return
 		}
