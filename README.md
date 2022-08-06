@@ -42,7 +42,7 @@ Service is limited to the [CreepJS](https://abrahamjuliot.github.io/creepjs) Git
 
 `/decrypt` captures hash strings in a data model and renders the data to cloud storage. The data model follows a set of instructions on how to respond if the metric appears again. This includes reject, merge, timestamp, modify, log data, and self-learn from patterns. Some patterns are configured to trigger a manual review.
 
-Data that is newly discovered starts out with a very low score. The score will improve if the same data reappears with unique visits. The data will be placed in a queue for auto-deletion if the score remains low for two weeks. Data with a timestamp aging 40 days is also automatically deleted. This is designed to make it difficult for abnormal data to blend in. It should be difficult for counterfeit fingerprints to build up any degree of trust over time.
+Data that is newly discovered starts out with a very low score. The score will improve if the same data reappears with unique visits. The data will be placed in a queue for auto-deletion if the score remains low for two weeks. Data with a timestamp aging 45 days is also automatically deleted. This is designed to make it difficult for abnormal data to blend in. It should be difficult for counterfeit fingerprints to build up any degree of trust over time.
 
 > Fingerprint API: https://creepjs-api.web.app/fp
 
