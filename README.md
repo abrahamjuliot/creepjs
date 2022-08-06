@@ -40,7 +40,7 @@ Service is limited to the [CreepJS](https://abrahamjuliot.github.io/creepjs) Git
 
 > Prediction API: https://creepjs-api.web.app/decrypt
 
-`/decrypt` captures hash strings in a data model and renders the data to cloud storage. The data model follows a set of instructions on how to respond if the metric appears again. This includes reject, merge, timestamp, modify, log data, and self-learn from patterns. Some patterns are configured to trigger a manual review.
+`/decrypt` captures fingerprints (Canvas, WebGL, etc.) in a data model and renders the data to cloud storage. The data model follows a set of instructions on how to respond if the fingerprint appears again. This includes reject, merge, timestamp, modify, log data, and self-learn from patterns. Some patterns are configured to trigger a manual review.
 
 Data that is newly discovered starts out with a very low score. The score will improve if the same data reappears with unique visits. The data will be placed in a queue for auto-deletion if the score remains low for two weeks. Data with a timestamp aging 45 days is also automatically deleted. This is designed to make it difficult for abnormal data to blend in. It should be difficult for counterfeit fingerprints to build up any degree of trust over time.
 
@@ -203,13 +203,13 @@ A failing trust score is unique
 #### Definitions
 ##### Trash
 - unusual results or rare data
-- forgivable lies: invalid metrics that can either be restored or used to create a better fingerprint
+- forgivable lies: invalid data that can either be restored or used to create a better fingerprint
 ```js
 platform = 'Cat OS'
 gpu = '   Cat Adaptor'
 // ¯\_(ツ)_/¯
 ```
-- failed calculations that may reasonably occur at random (loose fingerprint metrics)
+- failed calculations that may reasonably occur at random (loose fingerprints)
 ```js
 userAgent = 'Chrome 102'
 features = '101' // I disabled a feature
@@ -241,13 +241,13 @@ shadowBits = bits/totalBins // 0.0625
 ```
 
 ### Crowd-Blending Score
-A metric with only 1 reporter is unique
+A data set with only 1 reporter is unique and easy to trace
 
-> In the prediction section, the crowd blending score is a site indicator that scores how well certain metrics blend in with other fingerprints (strictly collected on the same site).
+> In the prediction section, the crowd blending score is a site indicator that scores how well certain fingerprints blend in with others (strictly collected on the same site).
 
-- Metric scores decline by metric uniqueness
-- Final score is the minimum of all metrics scores
-- Blocked or openly poisoned metrics collectively reduce the final score by 25%
+- Data scores decline by data uniqueness
+- Final score is the minimum of all data scores
+- Blocked or openly poisoned data will collectively reduce the final score by 25%
 - Scoring formula: `100-(numberOfRequiredReporters ** (numberOfRequiredReporters - numberOfReporters))`
  - Where the number of required reporters is 4:
 	* Blocked/Openly Poisoned `-100`
@@ -255,7 +255,7 @@ A metric with only 1 reporter is unique
 	* 2 reporters `-16`
 	* 3 reporters `-4`
 	* 4+ reporters is considered a perfect score
-- Unique metrics get 2 weeks to improve their score before auto-deletion
+- Unique data gets 2 weeks to improve its score before auto-deletion
 
 ### Bot Detection
 Bots leak unusual behavior and can be denied services
@@ -295,7 +295,7 @@ if (catTime < 1000) {
 ![image](https://user-images.githubusercontent.com/6946045/178409285-49b345f7-c9ef-4d25-a07b-41db8fc46711.png)
 
 ### Shadow
-Loose metric revision patterns can follow stable fingerprints like a shadow
+Loose fingerprint revision patterns can follow stable fingerprints like a shadow
 
 - Shadow: a string of 64 characters used to capture the history of fuzzy fingerprint diffs
 - Diffs or revisions may include browser updates, user settings and/or API tampering
@@ -303,7 +303,7 @@ Loose metric revision patterns can follow stable fingerprints like a shadow
 ## Browser Prediction
 - A prediction is made to decrypt the browser vendor, version, renderer, engine, system, device and gpu
 - This prediction does not affect the fingerprint
-- Data is auto matched to fingerprint ids gathered from `WorkerNavigator.userAgent` and other stable metrics
+- Data is auto matched to fingerprints gathered from `WorkerNavigator.userAgent` and other stable fingerprints
 - Decoded samples from the server are auto computed or manually reviewed
 - Each sample goes through a number of client and server checks before it is considered trustworthy
 - Samples that are poisoned can self learn and heal themselves
@@ -345,7 +345,7 @@ The loose fingerprint is used to detect rapid and excessive fingerprints
 
 - collects as much entropy as possible, including data with instability caused by fingerprinting resistance: JS tampering patterns, random poison, known noise, invalid data, and more
 - does not collect data containing a high amount of instability: viewport size, performance, network speed,
-- skips slow metrics: webrtc data
+- skips slow fingerprints: webrtc data
 
 ### Creep (FP ID)
 This is the main fingerprint, the creep
