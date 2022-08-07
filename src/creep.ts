@@ -1283,7 +1283,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 						body: JSON.stringify(secret),
 					}).catch((error) => {
 						console.error(error)
-						predictionErrorPatch({error, patch, html})
+						predictionErrorPatch(error)
 						return
 					})
 
@@ -1429,7 +1429,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			} = decryptionSamples || {}
 
 			if (badBot && !decryptionSamples) {
-				predictionErrorPatch({error: 'Failed prediction fetch', patch, html})
+				predictionErrorPatch('Failed prediction fetch')
 			}
 
 			if (badBot && decryptionSamples) {
@@ -1583,8 +1583,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			}
 
 			return renderSamples(decryptionSamples, { fp, styleSystemHash })
-		})
-		.catch((error) => {
+		}).catch((error) => {
 			fetchVisitorDataTimer('Error fetching visitor data')
 			const el = document.getElementById('browser-detection')
 			console.error('Error!', error.message)

@@ -331,10 +331,11 @@ export function renderPrediction({
 	`)
 }
 
-export function predictionErrorPatch({ error, patch, html }) {
+export function predictionErrorPatch(error: string): void {
 	const getBlankIcons = () => `<span class="icon"></span><span class="icon"></span>`
-	const el = document.getElementById('browser-detection')
-	return patch(el, html`
+	const el = document.getElementById('browser-detection')!
+
+	patch(el, html`
 		<div class="flex-grid rejected">
 			<div class="col-eight">
 				<strong>Prediction Failed: ${error}</strong>

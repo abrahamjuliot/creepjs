@@ -1,12 +1,12 @@
 
 // template views
-const patch = (oldEl, newEl, fn) => {
-	oldEl.parentNode.replaceChild(newEl, oldEl)
+function patch(oldEl: HTMLElement, newEl: DocumentFragment, fn?: Function) {
+	oldEl.parentNode?.replaceChild(newEl, oldEl)
 	return typeof fn === 'function' ? fn() : true
 }
-const html = (str, ...expressionSet) => {
+function html(templateStr: TemplateStringsArray, ...expressionSet: string[]) {
 	const template = document.createElement('template')
-	template.innerHTML = str.map((s, i) => `${s}${expressionSet[i] || ''}`).join('')
+	template.innerHTML = templateStr.map((s, i) => `${s}${expressionSet[i] || ''}`).join('')
 	return document.importNode(template.content, true)
 }
 
