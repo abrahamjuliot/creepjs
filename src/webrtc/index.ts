@@ -1,5 +1,12 @@
 import { hashMini } from '../utils/crypto'
-import { HTMLNote, modal } from '../utils/html'
+import { count, HTMLNote, modal } from '../utils/html'
+
+export async function getWebRTCDevices(): Promise<MediaDeviceKind[] | null> {
+	if (!navigator?.mediaDevices?.enumerateDevices) return null
+	return navigator.mediaDevices.enumerateDevices().then((devices) => {
+		return devices.map((device) => device.kind).sort()
+	})
+}
 
 const getMediaConfig = (codec, video, audio) => ({
 	type: 'file',
@@ -49,9 +56,7 @@ export const getMediaCapabilities = async () => {
 	const capabilities = await Promise.all(decodingInfo).then((data) => {
 		return data.reduce((acc, support) => {
 			const { codec, supported, smooth, powerEfficient } = support || {}
-			if (!supported) {
-return acc
-}
+			if (!supported) return acc
 			return {
 				...acc,
 				[''+codec]: [
@@ -238,7 +243,7 @@ export default async function getWebRTCData() {
 		}, 3000)
 
 		const computeCandidate = (event) => {
-			const { candidate } = event.candidate || {}
+			const { candidate, foundation: foundationProp } = event.candidate || {}
 
 			if (!candidate) {
 				return
@@ -255,13 +260,19 @@ export default async function getWebRTCData() {
 				return
 			}
 
+			const knownInterface: Record<string, string> = {
+				842163049: 'public interface',
+				2268587630: 'WireGuard',
+			}
+
 			connection.removeEventListener('icecandidate', computeCandidate)
 			clearTimeout(giveUpOnIPAddress)
 			connection.close()
 			return resolve({
 				codecsSdp,
 				extensions,
-				foundation,
+				foundation: knownInterface[foundation] || foundation,
+				foundationProp,
 				iceCandidate,
 				address,
 				stunConnection: candidate,
@@ -272,24 +283,30 @@ export default async function getWebRTCData() {
 	})
 }
 
-export function webrtcHTML(webRTC) {
-	if (!webRTC) {
+export function webrtcHTML([webRTC, mediaDevices]) {
+	if (!webRTC && !mediaDevices) {
 		return `
-	<div class="col-six">
-		<strong>WebRTC</strong>
-		<div>host connection:</div>
-		<div class="block-text">${HTMLNote.BLOCKED}</div>
-	</div>
-	<div class="col-six">
-		<div>sdp capabilities: ${HTMLNote.BLOCKED}</div>
-		<div>stun connection:</div>
-		<div class="block-text">${HTMLNote.BLOCKED}</div>
-	</div>`
+			<div class="col-six">
+				<strong>WebRTC</strong>
+				<div>host connection:</div>
+				<div class="block-text">${HTMLNote.BLOCKED}</div>
+				<div>foundation/ip:</div>
+				<div class="block-text">${HTMLNote.BLOCKED}</div>
+			</div>
+			<div class="col-six">
+				<div>sdp capabilities: ${HTMLNote.BLOCKED}</div>
+				<div>stun connection:</div>
+				<div class="block-text">${HTMLNote.BLOCKED}</div>
+				<div>devices (0): ${HTMLNote.BLOCKED}</div>
+				<div class="block-text">${HTMLNote.BLOCKED}</div>
+			</div>
+		`
 	}
 	const {
 		codecsSdp,
 		extensions,
 		foundation,
+		foundationProp,
 		iceCandidate,
 		address,
 		stunConnection,
@@ -301,8 +318,16 @@ export function webrtcHTML(webRTC) {
 		codecsSdp,
 		extensions,
 		foundation,
+		foundationProp,
 		address,
+		mediaDevices,
 	})
+
+	const deviceMap = {
+		'audioinput': 'mic',
+		'audiooutput': 'audio',
+		'videoinput': 'webcam',
+	}
 
 	const feedbackId = {
 		'ccm fir': 'Codec Control Message Full Intra Request (ccm fir)',
@@ -311,6 +336,28 @@ export function webrtcHTML(webRTC) {
 		'nack pli': 'Picture loss Indication and NACK (nack pli)',
 		'transport-cc': 'Transport Wide Congestion Control (transport-cc)',
 	}
+
+	const replaceIndex = ({ list, index, replacement }) => [
+		...list.slice(0, index),
+		replacement,
+		...list.slice(index + 1),
+	]
+
+	const mediaDevicesByType = (mediaDevices || []).reduce((acc, x) => {
+		const deviceType = deviceMap[x] || x
+		if (!acc.includes(deviceType)) {
+			return (acc = [...acc, deviceType])
+		} else if (!deviceType.includes('dual') && (acc.filter((x) => x == deviceType) || []).length == 1) {
+			return (
+				acc = replaceIndex({
+					list: acc,
+					index: acc.indexOf(deviceType),
+					replacement: `dual ${deviceType}`,
+				})
+			)
+		}
+		return (acc = [...acc, deviceType])
+	}, [])
 
 	const getModalTemplate = (list) => list.map((x) => {
 		return `
@@ -323,11 +370,17 @@ export function webrtcHTML(webRTC) {
 			}).sort().join('<br>- ')}` : ''}
 		`
 	}).join('<br><br>')
+
 	return `
 	<div class="relative col-six">
 		<strong>WebRTC</strong><span class="hash">${webRTCHash}</span>
 		<div>host connection:</div>
-		<div class="block-text">${iceCandidate || HTMLNote.BLOCKED}</div>
+		<div class="block-text unblurred">${iceCandidate || HTMLNote.BLOCKED}</div>
+		<div>foundation/ip:</div>
+		<div class="block-text unblurred">
+			<div>${foundation || HTMLNote.BLOCKED}</div>
+			<div>${address || HTMLNote.BLOCKED}</div>
+		</div>
 	</div>
 	<div class="relative col-six">
 		<div class="help" title="RTCSessionDescription.sdp">sdp capabilities: ${
@@ -341,7 +394,13 @@ export function webrtcHTML(webRTC) {
 			)
 		}</div>
 		<div>stun connection:</div>
-		<div class="block-text">${stunConnection || HTMLNote.BLOCKED}</div>
+		<div class="block-text unblurred">${stunConnection || HTMLNote.BLOCKED}</div>
+		<div class="help" title="MediaDevices.enumerateDevices()\nMediaDeviceInfo.kind">devices (${count(mediaDevices)}):</div>
+		<div class="block-text unblurred">${
+				!mediaDevices || !mediaDevices.length ? HTMLNote.BLOCKED :
+					mediaDevicesByType.join(', ')
+			}
+		</div>
 	</div>
 	`
 }

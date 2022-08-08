@@ -3,6 +3,14 @@ import { lieProps, documentLie } from '../lies'
 import { createTimer, IS_GECKO, logTestResult, performanceLogger, hashSlice } from '../utils/helpers'
 import { HTMLNote, patch, html } from '../utils/html'
 
+function hasTouch() {
+	try {
+		return 'ontouchstart' in window && !!document.createEvent('TouchEvent')
+	} catch (err) {
+		return false
+	}
+}
+
 export default async function getScreen(log = true) {
 	try {
 		const timer = createTimer()
@@ -46,11 +54,12 @@ export default async function getScreen(log = true) {
 			availHeight,
 			colorDepth,
 			pixelDepth,
+			touch: hasTouch(),
 			lied,
 		}
 
 		log && logTestResult({ time: timer.stop(), test: 'screen', passed: true })
-		return { ...data }
+		return data
 	} catch (error) {
 		log && logTestResult({ test: 'screen', passed: false })
 		captureError(error)
@@ -65,6 +74,7 @@ export function screenHTML(fp) {
 			<strong>Screen</strong>
 			<div>...screen: ${HTMLNote.BLOCKED}</div>
 			<div>....avail: ${HTMLNote.BLOCKED}</div>
+			<div>touch: ${HTMLNote.BLOCKED}</div>
 			<div>depth: ${HTMLNote.BLOCKED}</div>
 			<div>viewport: ${HTMLNote.BLOCKED}</div>
 			<div class="screen-container"></div>
@@ -97,6 +107,7 @@ export function screenHTML(fp) {
 			availHeight,
 			colorDepth,
 			pixelDepth,
+			touch,
 			lied,
 		} = data
 
@@ -139,6 +150,7 @@ export function screenHTML(fp) {
 				<strong>Screen</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 				<div class="help" title="Screen.width\nScreen.height">...screen: ${width} x ${height}</div>
 				<div class="help" title="Screen.availWidth\nScreen.availHeight">....avail: ${availWidth} x ${availHeight}</div>
+				<div class="help" title="TouchEvent">touch: ${touch}</div>
 				<div class="help" title="Screen.colorDepth\nScreen.pixelDepth">depth: ${colorDepth}|${pixelDepth}</div>
 				<div class="help" title="${viewportTitle}">viewport:</div>
 				<div class="screen-container relative help" title="${viewportTitle}">

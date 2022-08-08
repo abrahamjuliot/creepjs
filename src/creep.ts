@@ -26,7 +26,7 @@ import { hashify, hashMini, getBotHash, getFuzzyHash, cipher } from './utils/cry
 import { IS_BLINK, braveBrowser, getBraveMode, getBraveUnprotectedParameters, IS_GECKO, computeWindowsRelease, hashSlice, ENGINE_IDENTIFIER, getUserAgentRestored, attemptWindows11UserAgent } from './utils/helpers'
 import { patch, html, getDiffs, modal } from './utils/html'
 import getCanvasWebgl, { webglHTML } from './webgl'
-import getWebRTCData, { webrtcHTML } from './webrtc'
+import getWebRTCData, { getWebRTCDevices, webrtcHTML } from './webrtc'
 import getWindowFeatures, { windowFeaturesHTML } from './window'
 import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worker'
 
@@ -578,7 +578,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		capturedErrors: !!errorsLen,
 		lies: !!liesLen,
 		resistance: fp.resistance || undefined,
-		forceRenew: 1650847106767,
+		forceRenew: 1659917774098,
 	}
 
 	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f')
@@ -748,12 +748,23 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			<div class="col-six">
 				<strong>WebRTC</strong>
 				<div>host connection:</div>
-				<div class="block-text"></div>
+				<div class="block-text blurred">
+					candidate:0000000000 1 udp 9353978903 93549af7-47d4-485c-a57a-751a3d213876.local 56518 typ host generation 0 ufrag bk84 network-cost 999
+				</div>
+				<div>foundation/ip:</div>
+				<div class="block-text blurred">
+					<div>0000000000</div>
+					<div>000.000.000.000</div>
+				</div>
 			</div>
 			<div class="col-six">
 				<div>capabilities:</div>
 				<div>stun connection:</div>
-				<div class="block-text"></div>
+				<div class="block-text blurred">
+					candidate:0000000000 1 udp 9353978903 93549af7-47d4-485c-a57a-751a3d213876.local 56518 typ host generation 0 ufrag bk84 network-cost 999
+				</div>
+				<div>devices (0):</div>
+				<div class="block-text blurred">mic, audio, webcam</div>
 			</div>
 		</div>
 		<div class="flex-grid">
@@ -819,7 +830,10 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 	</div>
 	`, async () => {
 		// get WebRTC data
-		getWebRTCData().then((data) => {
+		Promise.all([
+			getWebRTCData(),
+			getWebRTCDevices(),
+		]).then((data) => {
 			patch(document.getElementById('webrtc-connection'), html`
 				<div class="flex-grid">
 					${webrtcHTML(data)}
@@ -839,8 +853,13 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		const fetchVisitorDataTimer = timer()
 		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&trashLen=${trashLen}&liesLen=${liesLen}&errorsLen=${errorsLen}&fuzzy=${fuzzyFingerprint}&botHash=${botHash}&perf=${(timeEnd || 0).toFixed(2)}&resistance=${resistanceType}`
 
+		let status = ''
 		fetch(request)
-		.then((response) => response.json())
+		.then((res) => {
+			if (res.ok) return res.json()
+			status = `${res.status}:${res.statusText.toLocaleLowerCase()}`
+			return res
+		})
 		.then(async (data) => {
 			console.groupCollapsed('Server Response')
 			console.log(JSON.stringify(data, null, '\t'))
@@ -1132,6 +1151,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			const gpuModel = getBestGPUModel({ canvasWebgl, workerScope: fp.workerScope })
 
 
+			let RAW_BODY // store so we can access el
 			if (!badBot) {
 				// get data from session
 				// @ts-ignore
@@ -1179,11 +1199,11 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				if (requireNewDecryptionFetch) {
 					const sender = {
 						e: ({
-							// this just allows us to keep using Math.PI ** -100 results in the data base for consistency
+							// this just allows us to keep using Math.PI ** -100 results in the database for consistency
 							80: 1.9275814160560204e-50,
 							58: 1.9275814160560185e-50,
 							77: 1.9275814160560206e-50,
-						})[ENGINE_IDENTIFIER] || 0,
+						} as Record<string, number>)[ENGINE_IDENTIFIER] || 0,
 						l: +new Date('7/1/1113'),
 					}
 					const { userAgent, userAgentData } = fp.workerScope || {}
@@ -1199,9 +1219,8 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 						console.log(`corrected: ${workerScopeUserAgent}`)
 					}
 
-
 					// cipher
-					const rawBody = {
+					RAW_BODY = {
 						sender: `${sender.e}_${sender.l}`,
 						isTorBrowser,
 						isRFP,
@@ -1273,59 +1292,62 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 						ua: workerScopeUserAgent,
 					}
 
-					const secret = await cipher(rawBody)
-					const decryptionResponse = await fetch('https://creepjs-api.web.app/decrypt', {
+					const secret = await cipher(RAW_BODY)
+					decryptionData = await fetch('https://creepjs-api.web.app/decrypt', {
 						method: 'POST',
 						headers: {
 							'Accept': 'application/json, text/plain, */*',
 							'Content-Type': 'application/json',
 						},
 						body: JSON.stringify(secret),
-					}).catch((error) => {
+					})
+					.then((res) => {
+						if (res.ok) return res.json()
+						status = `${res.status}:${res.statusText.toLocaleLowerCase()}`
+						return res
+					})
+					.catch((error) => {
 						console.error(error)
 						predictionErrorPatch(error)
 						return
 					})
 
-					if (!decryptionResponse) {
-						return
-					}
-					decryptionData = await decryptionResponse.json()
 					if (decryptionData && window.sessionStorage) {
 						sessionStorage.setItem('decryptionData', JSON.stringify(decryptionData))
 					}
 				}
 
 				// Crowd-Blending Score
-				const scoreKeys = [
-					'windowVersion',
-					'jsRuntime',
-					'jsEngine',
-					'htmlVersion',
-					'styleVersion',
-					'resistance',
-					'styleSystem',
-					'emojiSystem',
-					'domRectSystem',
-					'svgSystem',
-					'mimeTypesSystem',
-					'audioSystem',
-					'canvasSystem',
-					'canvasBlobSystem',
-					'canvasPaintSystem',
-					'canvasTextSystem',
-					'canvasEmojiSystem',
-					'textMetricsSystem',
-					'webglSystem',
-					'gpuSystem',
-					'gpuModelSystem',
-					'fontsSystem',
-					'voicesSystem',
-					'screenSystem',
-					'deviceOfTimezone',
-				]
+				const crowdMap: Record<string, string | number | null | undefined> = {
+					windowVersion: RAW_BODY?.winId,
+					jsRuntime: RAW_BODY?.mathId,
+					jsEngine: RAW_BODY?.errorId,
+					htmlVersion: RAW_BODY?.htmlId,
+					styleVersion: RAW_BODY?.styleId,
+					resistance: RAW_BODY?.resistanceId,
+					styleSystem: RAW_BODY?.styleSystemId,
+					emojiSystem: RAW_BODY?.emojiId,
+					domRectSystem: RAW_BODY?.domRectId,
+					svgSystem: RAW_BODY?.svgId,
+					mimeTypesSystem: RAW_BODY?.mimeTypesId,
+					audioSystem: RAW_BODY?.audioId,
+					canvasSystem: RAW_BODY?.canvasId,
+					canvasBlobSystem: RAW_BODY?.canvasBlobId,
+					canvasPaintSystem: RAW_BODY?.canvasPaintId,
+					canvasTextSystem: RAW_BODY?.canvasTextId,
+					canvasEmojiSystem: RAW_BODY?.canvasEmojiId,
+					textMetricsSystem: RAW_BODY?.textMetricsId,
+					webglSystem: RAW_BODY?.webglId,
+					gpuSystem: RAW_BODY?.gpuId,
+					gpuModelSystem: RAW_BODY?.gpu,
+					fontsSystem: RAW_BODY?.fontsId,
+					voicesSystem: RAW_BODY?.voicesId,
+					screenSystem: RAW_BODY?.screenId,
+					deviceOfTimezone: RAW_BODY?.deviceOfTimezoneId,
+				}
 
-				const decryptionDataScores = scoreKeys.reduce((acc, key) => {
+				const scoreKeys = Object.keys(crowdMap)
+				const decryptionDataScores = Object.keys(crowdMap).reduce((acc, key) => {
 					const { score } = decryptionData[key] || {}
 					const reporters = (
 						score == 36 ? 1:
@@ -1348,7 +1370,18 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 					const { score, reporters } = scoreMetricData
 					acc[scoreMetricData.key] = { score, reporters }
 					return acc
-				}, {})
+				}, {} as Record<string, { score: number, reporters: number }>)
+
+				// Generate Trace Fingerprint
+				const traceId = !RAW_BODY ? null : await hashify(
+					scoreKeys.reduce((acc, key) => {
+						const hasGoodScore = scoreMetricsMap[key].score > 90
+						if (hasGoodScore) {
+							acc.push(String(crowdMap[key]))
+						}
+						return acc
+					}, [] as string[]),
+				)
 
 				// @ts-ignore
 				const blockedOrOpenlyPoisonedMetric = decryptionDataScores.scores.includes(0)
@@ -1363,7 +1396,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 
 				if (crowdBlendingScore != fpCrowdBlendingScore) {
 					console.log(`updating crowd-blending score from ${fpCrowdBlendingScore} to ${crowdBlendingScore}`)
-					const scoreRequest = `https://creepjs-api.web.app/score-crowd-blending?id=${creepHash}&crowdBlendingScore=${crowdBlendingScore}`
+					const scoreRequest = `https://creepjs-api.web.app/score-crowd-blending?id=${creepHash}&crowdBlendingScore=${crowdBlendingScore}&traceId=${traceId}`
 
 					fetch(scoreRequest)
 						.catch((error) => console.error('Failed Score Request', error))
@@ -1598,7 +1631,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				</style>
 				<div class="flex-grid rejected">
 					<div class="col-eight">
-						${'prediction service unavailable'}
+						${status}:API service unavailable
 					</div>
 					<div class="col-four icon-prediction-container">
 					</div>

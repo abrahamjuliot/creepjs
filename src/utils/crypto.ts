@@ -186,7 +186,6 @@ const getFuzzyHash = async (fp) => {
 		'lies.data',
 		'lies.totalLies',
 		'maths.data',
-		'media.mediaDevices',
 		'media.mimeTypes',
 		'navigator.appVersion',
 		'navigator.bluetoothAvailability',
@@ -230,6 +229,7 @@ const getFuzzyHash = async (fp) => {
 		'screen.colorDepth',
 		'screen.height',
 		'screen.pixelDepth',
+		'screen.touch',
 		'screen.width',
 		'svg.bBox',
 		'svg.computedTextLength',
@@ -298,8 +298,7 @@ const getFuzzyHash = async (fp) => {
 	const binSize = Math.ceil(metricKeys.length/maxBins)
 
 	// update log
-	const { host } = window.location || {}
-	const devMode = host != 'abrahamjuliot.github.io'
+	const devMode = window.location.host != 'abrahamjuliot.github.io'
 	if (devMode && (''+metricKeysReported != ''+metricKeys)) {
 		const newKeys = metricKeysReported.filter((key) => !metricKeys.includes(key))
 		const oldKeys = metricKeys.filter((key) => !metricKeysReported.includes(key))

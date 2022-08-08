@@ -199,6 +199,7 @@ A failing trust score is unique
 - trash: subtract `total*5.5`
 - lies: subtract `total*31`
 - errors: subtract `total*3.5`
+- finally add the `crowdBlendingScore` to the above total and divide by 2
 
 #### Definitions
 ##### Trash

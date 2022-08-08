@@ -1,6 +1,7 @@
 
 // template views
-function patch(oldEl: HTMLElement, newEl: DocumentFragment, fn?: Function) {
+function patch(oldEl: HTMLElement | null, newEl: DocumentFragment, fn?: Function) {
+	if (!oldEl) return null
 	oldEl.parentNode?.replaceChild(newEl, oldEl)
 	return typeof fn === 'function' ? fn() : true
 }
