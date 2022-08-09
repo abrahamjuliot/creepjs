@@ -223,6 +223,7 @@ export default async function getWebRTCData() {
 
 		connection.setLocalDescription(offer)
 		const { sdp } = offer || {}
+
 		const extensions = getExtensions(sdp)
 		const codecsSdp = getCapabilities(sdp)
 
@@ -283,7 +284,7 @@ export default async function getWebRTCData() {
 	})
 }
 
-export function webrtcHTML([webRTC, mediaDevices]) {
+export function webrtcHTML(webRTC, mediaDevices) {
 	if (!webRTC && !mediaDevices) {
 		return `
 			<div class="col-six">

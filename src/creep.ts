@@ -19,6 +19,7 @@ import getResistance, { resistanceHTML } from './resistance'
 import renderSamples from './samples'
 import getScreen, { screenHTML } from './screen'
 import getVoices, { voicesHTML } from './speech'
+import { getStatus, statusHTML } from './status'
 import getSVG, { svgHTML } from './svg'
 import getTimezone, { timezoneHTML } from './timezone'
 import { getTrash, trashHTML } from './trash'
@@ -809,6 +810,21 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			</div>
 		</div>
 		<div class="flex-grid relative">${navigatorHTML(fp)}</div>
+		<div id="status-info" class="flex-grid">
+			<div class="col-four">
+				<strong>Status</strong>
+				<div>network:</div>
+				<div class="block-text blurred"></div>
+			</div>
+			<div class="col-four">
+				<div>battery:</div>
+				<div class="block-text-large blurred"></div>
+			</div>
+			<div class="col-four">
+				<div>available:</div>
+				<div class="block-text-large blurred"></div>
+			</div>
+		</div>
 		<div>
 			<strong>Tests</strong>
 			<div>
@@ -833,10 +849,18 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		Promise.all([
 			getWebRTCData(),
 			getWebRTCDevices(),
+			getStatus(),
 		]).then((data) => {
+			const [webRTC, mediaDevices, status] = data
 			patch(document.getElementById('webrtc-connection'), html`
 				<div class="flex-grid">
-					${webrtcHTML(data)}
+					${webrtcHTML(webRTC, mediaDevices)}
+				</div>
+			`)
+
+			patch(document.getElementById('status-info'), html`
+				<div class="flex-grid">
+					${statusHTML(status)}
 				</div>
 			`)
 		})
