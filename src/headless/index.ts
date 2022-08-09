@@ -40,6 +40,22 @@ export default async function getHeadlessFeatures(workerScope) {
 					return activeText === 'rgb(255, 0, 0)'
 				})(),
 				['prefers light color scheme']: matchMedia('(prefers-color-scheme: light)').matches,
+				// @ts-expect-error
+				['network round-trip time is 0']: navigator?.connection?.rtt === 0,
+				['userAgentData is blank']: (
+					'userAgentData' in navigator && (
+						// @ts-expect-error
+						navigator.userAgentData.platform === '' ||
+						// @ts-expect-error
+						await navigator.userAgentData.getHighEntropyValues(['platform']).platform === ''
+					)
+				),
+				['Web Share API is not supported']: IS_BLINK && CSS.supports('accent-color: initial') && (
+					!('share' in navigator) || !('canShare' in navigator)
+				),
+				['pdf viewer is disabled']: (
+					'pdfViewerEnabled' in navigator && navigator.pdfViewerEnabled === false
+				),
 			},
 			headless: {
 				['chrome window.chrome is undefined']: IS_BLINK && !('chrome' in window),
