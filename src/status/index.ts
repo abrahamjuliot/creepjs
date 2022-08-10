@@ -163,7 +163,7 @@ export function statusHTML(status: Status) {
     <div class="col-four">
       <strong>Status</strong><span class="hash">${statusHash}</span>
       <div>network:</div>
-      <div class="block-text unblurred">${
+      <div class="block-text unblurred help" title="Navigator.connection">${
         isNaN(Number(rtt)) ? HTMLNote.UNSUPPORTED : `
           <div>rtt: ${rtt}, downlink: ${downlink}${downlinkMax ? `, max: ${downlinkMax}`: ''}</div>
           <div>effectiveType: ${effectiveType}</div>
@@ -173,9 +173,10 @@ export function statusHTML(status: Status) {
     </div>
     <div class="col-four">
       <div>battery:</div>
-      <div class="block-text-large">${
+      <div class="block-text-large unblurred help" title="Navigator.getBattery()">${
         !level || isNaN(Number(level)) ? HTMLNote.UNSUPPORTED : `
-        <div>level: ${level*100}%, charging: ${charging}</div>
+        <div>level: ${level*100}%</div>
+        <div>charging: ${charging}</div>
         <div>charge time: ${
         chargingTime === Infinity ? 'discharging' :
           chargingTime === 0 ? 'fully charged' :
@@ -189,13 +190,13 @@ export function statusHTML(status: Status) {
     </div>
     <div class="col-four">
       <div>available:</div>
-      <div class="block-text-large">
-        <div>drive: ${
-          quota ? `${quotaInGigabytes}GB (${quota})` : HTMLNote.UNSUPPORTED
-        }</div>
-        <div>ram: ${
-          memory ? `${memoryInGigabytes}GB (${memory})` : HTMLNote.UNSUPPORTED
-        }</div>
+      <div class="block-text-large unblurred help" title="StorageManager.estimate()\nPerformance.memory">
+        ${
+          quota ? `<div>storage: ${quotaInGigabytes}GB<br>[${quota}]</div>` : ''
+        }
+        ${
+          memory ? `<div>memory: ${memoryInGigabytes}GB<br>[${memory}]</div>` : ''
+        }
         <div>stack: ${stackSize || HTMLNote.BLOCKED}</div>
       </div>
     </div>

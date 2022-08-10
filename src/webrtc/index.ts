@@ -379,8 +379,8 @@ export function webrtcHTML(webRTC, mediaDevices) {
 		<div class="block-text unblurred">${iceCandidate || HTMLNote.BLOCKED}</div>
 		<div>foundation/ip:</div>
 		<div class="block-text unblurred">
-			<div>${foundation || HTMLNote.BLOCKED}</div>
-			<div>${address || HTMLNote.BLOCKED}</div>
+			<div>${foundation ? `type & base ip: ${foundation}` : HTMLNote.UNSUPPORTED}</div>
+			<div>${address ? `ip: ${address}` : HTMLNote.BLOCKED}</div>
 		</div>
 	</div>
 	<div class="relative col-six">
