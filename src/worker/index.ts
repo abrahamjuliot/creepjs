@@ -168,9 +168,6 @@ export async function spawnWorker() {
 			deviceMemory,
 		} = navigator || {}
 
-		// scope keys
-		const scopeKeys = Object.getOwnPropertyNames(self)
-
 		// prototype lies
 		await queueEvent(timer)
 		const {
@@ -214,7 +211,6 @@ export async function spawnWorker() {
 		)
 
 		return {
-			scopeKeys,
 			lied: protoLieLen || +locationPathNameLie,
 			lies: {
 				proto: protoLieLen ? lieDetail : false,
@@ -538,7 +534,6 @@ export function workerScopeHTML(fp) {
 	const { workerScope: data } = fp
 
 	const {
-		scopeKeys,
 		lied,
 		locale,
 		systemCurrencyLocale,
@@ -581,13 +576,6 @@ export function workerScopeHTML(fp) {
 	<div class="relative col-six${lied ? ' rejected' : ''}">
 
 		<strong>Worker</strong><span class="hash">${hashSlice($hash)}</span>
-		<div>keys (${count(scopeKeys)}): ${
-			scopeKeys && scopeKeys.length ? modal(
-				'creep-worker-scope-version',
-				scopeKeys.join(', '),
-				hashMini(scopeKeys),
-			) : HTMLNote.BLOCKED
-		}</div>
 		<div class="help">lang/timezone:</div>
 		<div class="block-text help" title="WorkerNavigator.language\nWorkerNavigator.languages\nIntl.Collator.resolvedOptions()\nIntl.DateTimeFormat.resolvedOptions()\nIntl.DisplayNames.resolvedOptions()\nIntl.ListFormat.resolvedOptions()\nIntl.NumberFormat.resolvedOptions()\nIntl.PluralRules.resolvedOptions()\nIntl.RelativeTimeFormat.resolvedOptions()\nNumber.toLocaleString()\nIntl.DateTimeFormat().resolvedOptions().timeZone\nDate.getDate()\nDate.getMonth()\nDate.parse()">
 			${
