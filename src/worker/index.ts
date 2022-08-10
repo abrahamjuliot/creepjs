@@ -516,7 +516,6 @@ export function workerScopeHTML(fp) {
 		return `
 		<div class="col-six undefined">
 			<strong>Worker</strong>
-			<div>keys (0): ${HTMLNote.BLOCKED}</div>
 			<div>lang/timezone:</div>
 			<div class="block-text">${HTMLNote.BLOCKED}</div>
 			<div>gpu:</div>
