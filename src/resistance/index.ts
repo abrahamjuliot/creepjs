@@ -165,12 +165,12 @@ export default async function getResistance() {
 			},
 
 			canvasblocker: {
-				contentDocumentHash: ['98ec858e'],
-				contentWindowHash: ['98ec858e'],
-				appendHash: ['98ec858e'],
-				getImageDataHash: ['98ec858e', 'a2971888', disabled],
-				toBlobHash: ['9f1c3dfe', 'a2971888', disabled],
-				toDataURLHash: ['98ec858e', 'a2971888', disabled],
+				contentDocumentHash: ['98ec858e', 'dbbaf31f'],
+				contentWindowHash: ['98ec858e', 'dbbaf31f'],
+				appendHash: ['98ec858e', 'dbbaf31f'],
+				getImageDataHash: ['98ec858e', 'a2971888', 'dbbaf31f', disabled],
+				toBlobHash: ['9f1c3dfe', 'a2971888', 'dbbaf31f', disabled],
+				toDataURLHash: ['98ec858e', 'a2971888', 'dbbaf31f', disabled],
 			},
 			chameleon: {
 				appendHash: ['77dea834'],
