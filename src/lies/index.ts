@@ -116,6 +116,7 @@ function hasKnownToString(name: string) {
 }
 
 function hasValidStack(err: any, reg: RegExp, i: number = 1) {
+	if (i === 0) return reg.test(err.message)
 	return reg.test(err.stack.split('\n')[i])
 }
 
@@ -123,6 +124,7 @@ const AT_FUNCTION = /at Function\.toString /
 const AT_OBJECT = /at Object\.toString/
 const FUNCTION_INSTANCE = /at (Function\.)?\[Symbol.hasInstance\]/ // useful if < Chrome 102
 const PROXY_INSTANCE = /at (Proxy\.)?\[Symbol.hasInstance\]/ // useful if < Chrome 102
+const STRICT_MODE = /strict mode/
 
 // API Function Test
 interface LiesConfig {
@@ -236,11 +238,13 @@ function queryLies({
 			spawnErr: () => {
 				apiFunction.arguments; apiFunction.caller
 			},
+			withStack: (err: any) => IS_GECKO && !hasValidStack(err, STRICT_MODE, 0),
 		}),
 		['failed at toString incompatible proxy error']: failsTypeError({
 			spawnErr: () => {
 				apiFunction.toString.arguments; apiFunction.toString.caller
 			},
+			withStack: (err: any) => IS_GECKO && !hasValidStack(err, STRICT_MODE, 0),
 		}),
 		['failed at too much recursion error']: failsTypeError({
 			spawnErr: () => {
@@ -352,83 +356,82 @@ function createLieDetector(scope: Window & typeof globalThis) {
 			}
 
 			const interfaceObject = !!obj.prototype ? obj.prototype : obj
-			Object.getOwnPropertyNames(interfaceObject)
-				;[...new Set([
-					...Object.getOwnPropertyNames(interfaceObject),
-					...Object.keys(interfaceObject), // backup
-				])].sort().forEach((name) => {
-					const skip = (
-						name == 'constructor' ||
-						(!new Set(target).has(name)) ||
-						(new Set(ignore).has(name))
-					)
-					if (skip) {
-						return
-					}
-					const objectNameString = /\s(.+)\]/
-					const apiName = `${
-						// @ts-ignore
-						obj.name ? obj.name : objectNameString.test(obj) ? objectNameString.exec(obj)[1] : undefined
-						}.${name}`
-					propsSearched.push(apiName)
+			;[...new Set([
+				...Object.getOwnPropertyNames(interfaceObject),
+				...Object.keys(interfaceObject), // backup
+			])].sort().forEach((name) => {
+				const skip = (
+					name == 'constructor' ||
+					(target && !new Set(target).has(name)) ||
+					(ignore && new Set(ignore).has(name))
+				)
+				if (skip) return
+
+				const objectNameString = /\s(.+)\]/
+				const apiName = `${
+					obj.name ? obj.name :
+						objectNameString.test(obj) ? objectNameString.exec(obj)?.[1] :
+							undefined
+				}.${name}`
+				propsSearched.push(apiName)
+				try {
+					const proto = obj.prototype ? obj.prototype : obj
+					let res // response from getLies
+
+					// search if function
 					try {
-						const proto = obj.prototype ? obj.prototype : obj
-						let res // response from getLies
-
-						// search if function
-						try {
-							const apiFunction = proto[name] // may trigger TypeError
-							if (typeof apiFunction == 'function') {
-								res = queryLies({
-									scope,
-									apiFunction: proto[name],
-									proto,
-									obj: null,
-									lieProps: props,
-								})
-								if (res.lied) {
-									documentLie(apiName, res.lieTypes)
-									return (props[apiName] = res.lieTypes)
-								}
-								return
+						const apiFunction = proto[name] // may trigger TypeError
+						if (typeof apiFunction == 'function') {
+							res = queryLies({
+								scope,
+								apiFunction: proto[name],
+								proto,
+								obj: null,
+								lieProps: props,
+							})
+							if (res.lied) {
+								documentLie(apiName, res.lieTypes)
+								return (props[apiName] = res.lieTypes)
 							}
-							// since there is no TypeError and the typeof is not a function,
-							// handle invalid values and ignore name, length, and constants
-							if (
-								name != 'name' &&
-								name != 'length' &&
-								name[0] !== name[0].toUpperCase()) {
-								const lie = ['failed descriptor.value undefined']
-								documentLie(apiName, lie)
-								return (
-									props[apiName] = lie
-								)
-							}
-						} catch (error) { }
-						// else search getter function
-						// @ts-ignore
-						const getterFunction = Object.getOwnPropertyDescriptor(proto, name).get!
-						res = queryLies({
-							scope,
-							apiFunction: getterFunction,
-							proto,
-							obj,
-							lieProps: props,
-						}) // send the obj for special tests
-
-						if (res.lied) {
-							documentLie(apiName, res.lieTypes)
-							return (props[apiName] = res.lieTypes)
+							return
 						}
-						return
-					} catch (error) {
-						const lie = `failed prototype test execution`
-						documentLie(apiName, lie)
-						return (
-							props[apiName] = [lie]
-						)
+						// since there is no TypeError and the typeof is not a function,
+						// handle invalid values and ignore name, length, and constants
+						if (
+							name != 'name' &&
+							name != 'length' &&
+							name[0] !== name[0].toUpperCase()) {
+							const lie = ['failed descriptor.value undefined']
+							documentLie(apiName, lie)
+							return (
+								props[apiName] = lie
+							)
+						}
+					} catch (error) { }
+					// else search getter function
+					// @ts-ignore
+					const getterFunction = Object.getOwnPropertyDescriptor(proto, name).get!
+					res = queryLies({
+						scope,
+						apiFunction: getterFunction,
+						proto,
+						obj,
+						lieProps: props,
+					}) // send the obj for special tests
+
+					if (res.lied) {
+						documentLie(apiName, res.lieTypes)
+						return (props[apiName] = res.lieTypes)
 					}
-				})
+					return
+				} catch (error) {
+					const lie = `failed prototype test execution`
+					documentLie(apiName, lie)
+					return (
+						props[apiName] = [lie]
+					)
+				}
+			})
 		},
 	}
 }
@@ -734,6 +737,18 @@ function getPrototypeLies(scope: Window & typeof globalThis) {
 		],
 	})
 	searchLies(() => SVGRect)
+	searchLies(() => SVGRectElement, {
+		target: [
+			'getBBox',
+		],
+	})
+	searchLies(() => SVGTextContentElement, {
+		target: [
+			'getExtentOfChar',
+			'getSubStringLength',
+			'getComputedTextLength',
+		],
+	})
 	searchLies(() => TextMetrics)
 	searchLies(() => WebGLRenderingContext, {
 		target: [
