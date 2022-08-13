@@ -13,7 +13,11 @@ export default async function getSVG() {
 			lieProps['SVGRect.width'] ||
 			lieProps['SVGRect.x'] ||
 			lieProps['SVGRect.y'] ||
-			lieProps['String.fromCodePoint']
+			lieProps['String.fromCodePoint'] ||
+			lieProps['SVGRectElement.getBBox'] ||
+			lieProps['SVGTextContentElement.getExtentOfChar'] ||
+			lieProps['SVGTextContentElement.getSubStringLength'] ||
+			lieProps['SVGTextContentElement.getComputedTextLength']
 		) || false
 
 		const doc = (
