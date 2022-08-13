@@ -16,14 +16,18 @@ const getPixelMods = () => {
 
 	try {
 		// create 2 canvas contexts
+		const options = {
+			willReadFrequently: true,
+			desynchronized: true,
+		}
 		const canvasDisplay1 = document.createElement('canvas')
 		const canvasDisplay2 = document.createElement('canvas')
 		const canvas1 = document.createElement('canvas')
 		const canvas2 = document.createElement('canvas')
-		const contextDisplay1 = canvasDisplay1.getContext('2d')
-		const contextDisplay2 = canvasDisplay2.getContext('2d')
-		const context1 = canvas1.getContext('2d')
-		const context2 = canvas2.getContext('2d')
+		const contextDisplay1 = canvasDisplay1.getContext('2d', options)
+		const contextDisplay2 = canvasDisplay2.getContext('2d', options)
+		const context1 = canvas1.getContext('2d', options)
+		const context2 = canvas2.getContext('2d', options)
 
 		if (!contextDisplay1 || !contextDisplay2 || !context1 || !context2) {
 			throw new Error('canvas context blocked')
@@ -360,6 +364,12 @@ export default async function getCanvas2d() {
 
 		const canvas = doc.createElement('canvas')
 		const context = canvas.getContext('2d')
+		const canvasCPU = doc.createElement('canvas')
+		const contextCPU = canvasCPU.getContext('2d', {
+			desynchronized: true,
+			willReadFrequently: true,
+		})
+
 		if (!context) {
 			throw new Error('canvas context blocked')
 		}
@@ -454,6 +464,15 @@ export default async function getCanvas2d() {
 		}) // clears image
 		const paintURI = canvas.toDataURL()
 
+		// Paint with CPU
+		await queueEvent(timer)
+		paintCanvas({
+			canvas: canvasCPU,
+			context: contextCPU,
+			area: { width: maxSize, height: maxSize },
+		}) // clears image
+		const paintCpuURI = canvasCPU.toDataURL()
+
 		// Text
 		context.restore()
 		context.clearRect(0, 0, canvas.width, canvas.height)
@@ -474,8 +493,7 @@ export default async function getCanvas2d() {
 
 		// lies
 		context.clearRect(0, 0, canvas.width, canvas.height)
-		const liedImageData = !!Math.max(...context.getImageData(0, 0, 8, 8).data)
-		if ((mods && mods.pixels) || liedImageData) {
+		if ((mods && mods.pixels) || !!Math.max(...context.getImageData(0, 0, 8, 8).data)) {
 			lied = true
 			documentLie(`CanvasRenderingContext2D.getImageData`, `pixel data modified`)
 		}
@@ -515,6 +533,7 @@ export default async function getCanvas2d() {
 		return {
 			dataURI,
 			paintURI,
+			paintCpuURI,
 			textURI,
 			emojiURI,
 			mods,
@@ -551,6 +570,7 @@ export function canvasHTML(fp) {
 			lied,
 			dataURI,
 			paintURI,
+			paintCpuURI,
 			textURI,
 			emojiURI,
 			mods,
@@ -573,6 +593,7 @@ export function canvasHTML(fp) {
 		textURI: hashMini(textURI),
 		emojiURI: hashMini(emojiURI),
 		paintURI: hashMini(paintURI),
+		paintCpuURI: hashMini(paintCpuURI),
 	}
 	const dataTemplate = `
 		${textURI ? `<div class="icon-pixel text-image"></div>` : ''}
@@ -584,7 +605,11 @@ export function canvasHTML(fp) {
 
 		<br><br>
 		${paintURI ? `<div class="icon-pixel paint-image"></div>` : ''}
-		<br>paint: ${!paintURI ? HTMLNote.BLOCKED : hash.paintURI}
+		<br>paint (GPU): ${!paintURI ? HTMLNote.BLOCKED : hash.paintURI}
+
+		<br><br>
+		${paintCpuURI ? `<div class="icon-pixel paint-cpu-image"></div>` : ''}
+		<br>paint (CPU): ${!paintCpuURI ? HTMLNote.BLOCKED : hash.paintCpuURI}
 
 		<br><br>
 		${dataURI ? `<div class="icon-pixel combined-image"></div>` : ''}
@@ -629,6 +654,7 @@ export function canvasHTML(fp) {
 			.combined-image,
 			.combined-image-blob,
 			.paint-image,
+			.paint-cpu-image,
 			.text-image,
 			.emoji-image,
 			.offscreen-image {
@@ -644,6 +670,9 @@ export function canvasHTML(fp) {
 			}
 			.paint-image {
 				background-image: url(${paintURI})
+			}
+			.paint-cpu-image {
+				background-image: url(${paintCpuURI})
 			}
 			.text-image {
 				background-image: url(${textURI})
@@ -706,7 +735,7 @@ export function canvasHTML(fp) {
 		<div class="icon-pixel-container pixels">
 			${textURI ? `<div class="icon-pixel text-image"></div>` : ''}
 			${emojiURI ? `<div class="icon-pixel emoji-image"></div>` : ''}
-			${paintURI ? `<div class="icon-pixel paint-image"></div>` : ''}
+			${paintCpuURI ? `<div class="icon-pixel paint-cpu-image"></div>` : ''}
 			${dataURI ? `<div class="icon-pixel combined-image"></div>` : ''}
 
 		</div>
