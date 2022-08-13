@@ -1,7 +1,7 @@
 import { captureError } from '../errors'
 import { PHANTOM_DARKNESS, lieProps } from '../lies'
 import { hashMini } from '../utils/crypto'
-import { CSS_FONT_FAMILY, createTimer, queueEvent, EMOJIS, logTestResult, performanceLogger, hashSlice, formatEmojiSet } from '../utils/helpers'
+import { CSS_FONT_FAMILY, createTimer, queueEvent, EMOJIS, logTestResult, performanceLogger, hashSlice, formatEmojiSet, LIKE_BRAVE_RESISTANCE } from '../utils/helpers'
 import { patch, html, HTMLNote, count } from '../utils/html'
 
 // inspired by Lalit Patel's fontdetect.js
@@ -92,7 +92,8 @@ const DesktopAppFonts = {
 const APPLE_FONTS = Object.keys(MacOSFonts).map((key) => MacOSFonts[key]).flat()
 const WINDOWS_FONTS = Object.keys(WindowsFonts).map((key) => WindowsFonts[key]).flat()
 const DESKTOP_APP_FONTS = (
-	Object.keys(DesktopAppFonts).map((key) => DesktopAppFonts[key]).flat()
+	LIKE_BRAVE_RESISTANCE /* unsupported & poisonous */ ? [] :
+		Object.keys(DesktopAppFonts).map((key) => DesktopAppFonts[key]).flat()
 )
 const LINUX_FONTS = [
 	'Arimo', // ubuntu, chrome os
