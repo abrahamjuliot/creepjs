@@ -265,7 +265,6 @@ const getFuzzyHash = async (fp) => {
 		'workerScope.localeIntlEntropyIsTrusty',
 		'workerScope.platform',
 		'workerScope.scope',
-		'workerScope.scopeKeys',
 		'workerScope.system',
 		'workerScope.systemCurrencyLocale',
 		'workerScope.timezoneLocation',
