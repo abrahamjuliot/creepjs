@@ -115,6 +115,7 @@ export default async function getNavigator() {
 				if (!('deviceMemory' in navigator)) {
 					return undefined
 				}
+
 				// @ts-ignore
 				const { deviceMemory } = navigator
 				const trusted = {
@@ -128,6 +129,14 @@ export default async function getNavigator() {
 				if (!trusted[deviceMemory]) {
 					sendToTrash('deviceMemory', `${deviceMemory} is not a valid value [0.25, 0.5, 1, 2, 4, 8]`)
 				}
+
+				// @ts-expect-error memory is undefined if not supported
+				const memory = performance?.memory?.jsHeapSizeLimit || null
+				const memoryInGigabytes = memory ? +(memory/1073741824).toFixed(1) : 0
+				if (memoryInGigabytes > deviceMemory) {
+					sendToTrash('deviceMemory', `available memory ${memoryInGigabytes}GB is greater than device memory ${deviceMemory}GB`)
+				}
+
 				return deviceMemory
 			}, 'deviceMemory failed'),
 			doNotTrack: attempt(() => {
