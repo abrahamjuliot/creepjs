@@ -85,7 +85,7 @@ export default async function getOfflineAudioContext() {
 
 		// detect lie
 		const dataArray = new Float32Array(analyser.frequencyBinCount)
-		analyser.getFloatFrequencyData(dataArray)
+		analyser.getFloatFrequencyData?.(dataArray)
 		const floatFrequencyUniqueDataSize = new Set(dataArray).size
 		if (floatFrequencyUniqueDataSize > 1) {
 			lied = true
@@ -151,7 +151,7 @@ export default async function getOfflineAudioContext() {
 					dynamicsCompressor.disconnect()
 					oscillator.disconnect()
 					const floatFrequencyData = new Float32Array(analyser.frequencyBinCount)
-					analyser.getFloatFrequencyData(floatFrequencyData)
+					analyser.getFloatFrequencyData?.(floatFrequencyData)
 					const floatTimeDomainData = new Float32Array(analyser.fftSize)
 					if ('getFloatTimeDomainData' in analyser) {
 						analyser.getFloatTimeDomainData(floatTimeDomainData)
@@ -446,7 +446,7 @@ export function audioHTML(fp) {
 		<span class="aside-note">${performanceLogger.getLog().audio}</span>
 		<strong>Audio</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
 		<div class="help" title="AudioBuffer.getChannelData()">sum: ${
-			!validAudio || matchesKnownAudio ? sampleSum : getDiffs({
+			!sampleSum ? HTMLNote.BLOCKED : (!validAudio || matchesKnownAudio) ? sampleSum : getDiffs({
 				stringA: knownSums[0],
 				stringB: sampleSum,
 				charDiff: true,
