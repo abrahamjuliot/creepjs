@@ -222,13 +222,16 @@ export function headlessFeaturesHTML(fp) {
 		[Platform.LINUX]: `<span class="icon linux"></span>`,
 	}
 
-	const platformTemplate = !scores ? '' : Object.keys(scores).map((key) => {
-		const score = scores[key]
-		const style = `
-			filter: opacity(${score == highestScore ? 100 : 15}%);
+	const platformTemplate = !scores ? '' : `
+		${Object.keys(scores).map((key) => (scores[key]*100).toFixed(0)).join(':')}
+		<br>${Object.keys(scores).map((key) => {
+			const score = scores[key]
+			const style = `
+				filter: opacity(${score == highestScore ? 100 : 15}%);
+			`
+			return `<span style="${style}">${IconMap[key]}</span>`
+		}).join('')}
 		`
-		return `<span style="${style}">${IconMap[key]}</span>`
-	}).join('')+`<br>${Object.keys(scores).map((key) => scores[key]).join(':')}`
 
 	return `
 	<div class="relative col-six">
