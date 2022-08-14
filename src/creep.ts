@@ -433,13 +433,9 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				device: fp.navigator.device,
 				deviceMemory: fp.navigator.deviceMemory,
 				hardwareConcurrency: fp.navigator.hardwareConcurrency,
-				// distrust language if worker locale is not trusty
-				language: hardenEntropy(fp.workerScope, fp.navigator.language),
 				maxTouchPoints: fp.navigator.maxTouchPoints,
-				mimeTypes: fp.navigator.mimeTypes,
 				oscpu: fp.navigator.oscpu,
 				platform: fp.navigator.platform,
-				plugins: fp.navigator.plugins,
 				system: fp.navigator.system,
 				userAgentData: {
 					...(fp.navigator.userAgentData || {}),
@@ -471,7 +467,6 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			),
 			// system locale in blink
 			language: fp.workerScope.language,
-			languages: fp.workerScope.languages,
 			platform: fp.workerScope.platform,
 			system: fp.workerScope.system,
 			device: fp.workerScope.device,
