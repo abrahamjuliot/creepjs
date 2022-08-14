@@ -133,9 +133,9 @@ export default async function getFonts() {
 					}
 					</style>
 					${
-						emojis.map((emoji) => {
+						emojis.map((emoji: string) => {
 							return `<div class="pixel-emoji">${emoji}</div>`
-						})
+						}).join('')
 					}
 				</div>
 			`)
