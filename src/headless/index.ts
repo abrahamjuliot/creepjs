@@ -4,6 +4,9 @@ import { lieProps, PARENT_PHANTOM } from '../lies'
 import { instanceId, hashMini } from '../utils/crypto'
 import { createTimer, queueEvent, IS_BLINK, logTestResult, performanceLogger, hashSlice } from '../utils/helpers'
 import { HTMLNote, modal } from '../utils/html'
+import { Platform } from './constants'
+import getPlatformEstimate from './getPlatformEstimate'
+import { getSystemFonts } from './getSystemFonts'
 
 /**
  * @param {{ userAgent: string; }} workerScope
@@ -13,7 +16,13 @@ export default async function getHeadlessFeatures(workerScope) {
 		const timer = createTimer()
 		await queueEvent(timer)
 		const mimeTypes = Object.keys({ ...navigator.mimeTypes })
-		const data = {
+		interface Headless {
+			chromium: boolean,
+			likeHeadless: Record<string, boolean>,
+			headless: Record<string, boolean>,
+			stealth: Record<string, boolean>,
+		}
+		const data: Headless = {
 			chromium: IS_BLINK,
 			likeHeadless: {
 				['navigator.webdriver is on']: 'webdriver' in navigator && !!navigator.webdriver,
@@ -34,19 +43,18 @@ export default async function getHeadlessFeatures(workerScope) {
 					rendered.setAttribute('style', `background-color: ActiveText`)
 					const { backgroundColor: activeText } = getComputedStyle(rendered)
 					if (!PARENT_PHANTOM) {
-						// @ts-ignore
-						rendered.parentNode.removeChild(rendered)
+						document.body.removeChild(rendered)
 					}
 					return activeText === 'rgb(255, 0, 0)'
 				})(),
 				['prefers light color scheme']: matchMedia('(prefers-color-scheme: light)').matches,
-				// @ts-expect-error
+				// @ts-expect-error rtt will be undefined if not supported
 				['network round-trip time is 0']: navigator?.connection?.rtt === 0,
 				['userAgentData is blank']: (
 					'userAgentData' in navigator && (
-						// @ts-expect-error
-						navigator.userAgentData.platform === '' ||
-						// @ts-expect-error
+						// @ts-expect-error if userAgentData is null
+						navigator.userAgentData?.platform === '' ||
+						// @ts-expect-error if userAgentData is null
 						await navigator.userAgentData.getHighEntropyValues(['platform']).platform === ''
 					)
 				),
@@ -156,8 +164,18 @@ export default async function getHeadlessFeatures(workerScope) {
 		const headlessRating = +((headlessKeys.filter((key) => headless[key]).length / headlessKeys.length) * 100).toFixed(0)
 		const stealthRating = +((stealthKeys.filter((key) => stealth[key]).length / stealthKeys.length) * 100).toFixed(0)
 
+		const systemFonts = getSystemFonts()
+		const platformEstimate = getPlatformEstimate()
+
 		logTestResult({ time: timer.stop(), test: 'headless', passed: true })
-		return { ...data, likeHeadlessRating, headlessRating, stealthRating }
+		return {
+			...data,
+			likeHeadlessRating,
+			headlessRating,
+			stealthRating,
+			systemFonts,
+			platformEstimate,
+		}
 	} catch (error) {
 		logTestResult({ test: 'headless', passed: false })
 		captureError(error)
@@ -170,10 +188,12 @@ export function headlessFeaturesHTML(fp) {
 		return `
 		<div class="col-six">
 			<strong>Headless</strong>
-			<div>chromium: ${HTMLNote.Blocked}</div>
-			<div>0% like headless: ${HTMLNote.Blocked}</div>
-			<div>0% headless: ${HTMLNote.Blocked}</div>
-			<div>0% stealth: ${HTMLNote.Blocked}</div>
+			<div>chromium: ${HTMLNote.BLOCKED}</div>
+			<div>0% like headless: ${HTMLNote.BLOCKED}</div>
+			<div>0% headless: ${HTMLNote.BLOCKED}</div>
+			<div>0% stealth: ${HTMLNote.BLOCKED}</div>
+			<div>platform hints:</div>
+			<div class="block-text">${HTMLNote.BLOCKED}</div>
 		</div>`
 	}
 	const {
@@ -188,7 +208,27 @@ export function headlessFeaturesHTML(fp) {
 		headlessRating,
 		stealth,
 		stealthRating,
+		systemFonts,
+		platformEstimate,
 	} = data || {}
+
+	const [scores, highestScore] = platformEstimate || []
+
+	const IconMap: Record<string, string> = {
+		[Platform.ANDROID]: `<span class="icon android"></span>`,
+		[Platform.CHROME_OS]: `<span class="icon cros"></span>`,
+		[Platform.WINDOWS]: `<span class="icon windows"></span>`,
+		[Platform.MAC]: `<span class="icon apple"></span>`,
+		[Platform.LINUX]: `<span class="icon linux"></span>`,
+	}
+
+	const platformTemplate = !scores ? '' : Object.keys(scores).map((key) => {
+		const score = scores[key]
+		const style = `
+			filter: opacity(${score == highestScore ? 100 : 15}%);
+		`
+		return `<span style="${style}">${IconMap[key]}</span>`
+	}).join('')+`<br>${Object.keys(scores).map((key) => scores[key]).join(':')}`
 
 	return `
 	<div class="relative col-six">
@@ -230,5 +270,10 @@ export function headlessFeaturesHTML(fp) {
 				hashMini(stealth),
 			)
 		}</div>
+		<div>platform hints:</div>
+		<div class="block-text">
+			${systemFonts ? `<div>${systemFonts}</div>` : ''}
+			${platformTemplate ? `<div>${platformTemplate}</div>` : ''}
+		</div>
 	</div>`
 }
