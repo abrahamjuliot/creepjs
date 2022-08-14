@@ -1,5 +1,5 @@
 import { captureError } from '../errors'
-import { lieProps, PHANTOM_DARKNESS } from '../lies'
+import { documentLie, lieProps, PHANTOM_DARKNESS } from '../lies'
 import { hashMini } from '../utils/crypto'
 import { createTimer, queueEvent, CSS_FONT_FAMILY, EMOJIS, logTestResult, performanceLogger, hashSlice, formatEmojiSet } from '../utils/helpers'
 import { patch, html, HTMLNote } from '../utils/html'
@@ -8,7 +8,7 @@ export default async function getSVG() {
 	try {
 		const timer = createTimer()
 		await queueEvent(timer)
-		const lied = (
+		let lied = (
 			lieProps['SVGRect.height'] ||
 			lieProps['SVGRect.width'] ||
 			lieProps['SVGRect.x'] ||
@@ -39,6 +39,9 @@ export default async function getSVG() {
 					left: -9999px;
 					height: auto;
 				}
+				#svg-container .shift-svg {
+					transform: scale(1.000999) !important;
+				}
 				.svgrect-emoji {
 					font-family: ${CSS_FONT_FAMILY};
 					font-size: 200px !important;
@@ -52,7 +55,7 @@ export default async function getSVG() {
 						${
 							EMOJIS.map((emoji) => {
 								return `<text x="32" y="32" class="svgrect-emoji">${emoji}</text>`
-							})
+							}).join('')
 						}
 					</g>
 				</svg>
@@ -101,6 +104,18 @@ export default async function getSVG() {
 		const svgrectSystemSum = 0.00001 * [...pattern].map((x) => {
 			return x.split(',').reduce((acc, x) => acc += (+x||0), 0)
 		}).reduce((acc, x) => acc += x, 0)
+
+		// detect failed shift calculation
+		const svgEmojiEl = svgElems[0] as SVGTextContentElement
+		const initial = svgEmojiEl.getComputedTextLength()
+		svgEmojiEl.classList.add('shift-svg')
+		const shifted = svgEmojiEl.getComputedTextLength()
+		svgEmojiEl.classList.remove('shift-svg')
+		const unshifted = svgEmojiEl.getComputedTextLength()
+		if ((initial - shifted) != (unshifted - shifted)) {
+			lied = true
+			documentLie('SVGTextContentElement.getComputedTextLength', 'failed unshift calculation')
+		}
 
 		const data = {
 			bBox: getObjectSum(bBox),
