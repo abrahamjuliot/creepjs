@@ -185,34 +185,6 @@ export default async function getClientRects() {
 				<div id="cRect12" class="rects"></div>
 				<div id="emoji" class="emojis"></div>
 			</div>
-			<style>
-				#${fontId} {
-					--font: '';
-					position: absolute !important;
-					left: -9999px!important;
-					font-size: 256px !important;
-					font-style: normal !important;
-					font-weight: normal !important;
-					letter-spacing: normal !important;
-					line-break: auto !important;
-					line-height: normal !important;
-					text-transform: none !important;
-					text-align: left !important;
-					text-decoration: none !important;
-					text-shadow: none !important;
-					white-space: normal !important;
-					word-break: normal !important;
-					word-spacing: normal !important;
-					/* in order to test scrollWidth, clientWidth, etc. */
-					padding: 0 !important;
-					margin: 0 !important;
-				}
-				#${fontId}::after {
-					font-family: var(--font);
-					content: '${EMOJIS.join('')}';
-				}
-			</style>
-			<span id="${fontId}"></span>
 			<div id="emoji-container">
 				<style>
 				.domrect-emoji {
@@ -226,7 +198,7 @@ export default async function getClientRects() {
 				${
 					EMOJIS.map((emoji) => {
 						return `<div class="domrect-emoji">${emoji}</div>`
-					})
+					}).join('')
 				}
 			</div>
 		</div>
