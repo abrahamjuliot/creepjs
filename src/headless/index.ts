@@ -68,7 +68,7 @@ export default async function getHeadlessFeatures(workerScope) {
 					screen.height === screen.availHeight &&
 					screen.width === screen.availWidth
 				),
-				['screen resolution matches viewport resolution']: (
+				['screen res matches viewport res']: (
 					(innerWidth === screen.width && outerHeight === screen.height) || (
 						'visualViewport' in window &&
 						(visualViewport.width === screen.width && visualViewport.height === screen.height)
