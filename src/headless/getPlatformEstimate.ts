@@ -9,7 +9,6 @@ export default function getPlatformEstimate(): [Record<string, number>, number] 
     const v86 = 'DisplayNames' in Intl
     const v88 = CSS.supports('aspect-ratio: initial')
     const v89 = CSS.supports('border-end-end-radius: initial')
-    const v93 = CSS.supports('accent-color: initial')
     const v95 = 'randomUUID' in Crypto.prototype
     const hasBarcodeDetector = 'BarcodeDetector' in window
     const canvas = document.createElement('canvas')
@@ -22,7 +21,6 @@ export default function getPlatformEstimate(): [Record<string, number>, number] 
     const hasEyeDropper = 'EyeDropper' in window
     const hasFileSystemWritableFileStream = 'FileSystemWritableFileStream' in window
     const hasHid = 'HID' in window && 'HIDDevice' in window
-    const hasShare = 'share' in navigator && 'canShare' in navigator
     const hasSerialPort = 'SerialPort' in window && 'Serial' in window
     const hasSharedWorker = 'SharedWorker' in window
     const hasTouch = 'ontouchstart' in Window && 'TouchEvent' in window
@@ -41,7 +39,6 @@ export default function getPlatformEstimate(): [Record<string, number>, number] 
             ...hasFeature(v86, !hasFileSystemWritableFileStream),
             ...hasFeature(v89, !hasHid),
             ...hasFeature(v89, !hasSerialPort),
-            ...hasFeature(v93, hasShare),
             !hasSharedWorker,
             hasTouch,
         ],
@@ -55,7 +52,6 @@ export default function getPlatformEstimate(): [Record<string, number>, number] 
             ...hasFeature(v86, hasFileSystemWritableFileStream),
             ...hasFeature(v89, hasHid),
             ...hasFeature(v89, hasSerialPort),
-            ...hasFeature(v93, hasShare),
             hasSharedWorker,
             hasTouch || !hasTouch,
         ],
@@ -69,7 +65,6 @@ export default function getPlatformEstimate(): [Record<string, number>, number] 
             ...hasFeature(v86, hasFileSystemWritableFileStream),
             ...hasFeature(v89, hasHid),
             ...hasFeature(v89, hasSerialPort),
-            ...hasFeature(v93, hasShare),
             hasSharedWorker,
             hasTouch || !hasTouch,
         ],
@@ -83,7 +78,6 @@ export default function getPlatformEstimate(): [Record<string, number>, number] 
             ...hasFeature(v86, hasFileSystemWritableFileStream),
             ...hasFeature(v89, hasHid),
             ...hasFeature(v89, hasSerialPort),
-            ...hasFeature(v93, !hasShare),
             hasSharedWorker,
             !hasTouch,
         ],
@@ -97,7 +91,6 @@ export default function getPlatformEstimate(): [Record<string, number>, number] 
             ...hasFeature(v86, hasFileSystemWritableFileStream),
             ...hasFeature(v89, hasHid),
             ...hasFeature(v89, hasSerialPort),
-            ...hasFeature(v93, !hasShare),
             hasSharedWorker,
             !hasTouch || !hasTouch,
         ],
