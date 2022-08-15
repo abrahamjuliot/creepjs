@@ -64,6 +64,16 @@ export default async function getHeadlessFeatures(workerScope) {
 				['pdf viewer is disabled']: (
 					'pdfViewerEnabled' in navigator && navigator.pdfViewerEnabled === false
 				),
+				['screen has no taskbar']: (
+					screen.height === screen.availHeight &&
+					screen.width === screen.availWidth
+				),
+				['screen resolution matches viewport resolution']: (
+					(innerWidth === screen.width && outerHeight === screen.height) || (
+						'visualViewport' in window &&
+						(visualViewport.width === screen.width && visualViewport.height === screen.height)
+					)
+				),
 			},
 			headless: {
 				['chrome window.chrome is undefined']: IS_BLINK && !('chrome' in window),
@@ -88,14 +98,6 @@ export default async function getHeadlessFeatures(workerScope) {
 				),
 			},
 			stealth: {
-				['srcdoc throws an error']: (() => {
-					try {
-						const { srcdoc } = document.createElement('iframe')
-						return !!srcdoc
-					} catch (error) {
-						return true
-					}
-				})(),
 				['srcdoc triggers a window Proxy']: (() => {
 					const iframe = document.createElement('iframe')
 					iframe.srcdoc = instanceId
@@ -135,18 +137,6 @@ export default async function getHeadlessFeatures(workerScope) {
 						return true
 					} catch (err: any) {
 						return err.constructor.name != 'TypeError' ? true : false
-					}
-				})(),
-				['Permissions.prototype.query leaks Proxy behavior']: (
-					('Permissions' in window) && !!lieProps['Permissions.query']
-				),
-				['Function.prototype.toString leaks Proxy behavior']: (() => {
-					try {
-						// @ts-ignore
-						class Blah extends Function.prototype.toString { } // eslint-disable-line no-unused-vars
-						return true
-					} catch (err: any) {
-						return /\[object Function\]/.test(err.message)
 					}
 				})(),
 				['Function.prototype.toString has invalid TypeError']: (
