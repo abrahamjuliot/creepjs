@@ -153,8 +153,7 @@ const getEngineMaps = (browser) => {
 		'97-98': ['Array.findLast', 'Array.findLastIndex', 'Document.onslotchange'],
 		'99-101': ['Intl.supportedValuesOf', 'Document.oncontextlost', 'Document.oncontextrestored'],
 		'102': ['Element.ariaInvalid', 'Document.onbeforematch'],
-		'103-104': ['Element.role'],
-		'105-106': ['Element.checkVisibility'],
+		'103-106': ['Element.role'],
 	}
 
 	const geckoJS = {
