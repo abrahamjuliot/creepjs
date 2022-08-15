@@ -222,9 +222,10 @@ export function headlessFeaturesHTML(fp) {
 		[Platform.LINUX]: `<span class="icon linux"></span>`,
 	}
 
+	const scoreKeys = Object.keys(scores || {})
 	const platformTemplate = !scores ? '' : `
-		${Object.keys(scores).map((key) => (scores[key]*100).toFixed(0)).join(':')}
-		<br>${Object.keys(scores).map((key) => {
+		${scoreKeys.map((key) => (scores[key]*100).toFixed(0)).join(':')}
+		<br>${scoreKeys.map((key) => {
 			const score = scores[key]
 			const style = `
 				filter: opacity(${score == highestScore ? 100 : 15}%);
