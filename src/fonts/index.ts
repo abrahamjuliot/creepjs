@@ -1,7 +1,7 @@
 import { captureError } from '../errors'
-import { PHANTOM_DARKNESS, lieProps } from '../lies'
+import { PHANTOM_DARKNESS, lieProps, getRandomValues } from '../lies'
 import { hashMini } from '../utils/crypto'
-import { CSS_FONT_FAMILY, createTimer, queueEvent, EMOJIS, logTestResult, performanceLogger, hashSlice, formatEmojiSet, LIKE_BRAVE_RESISTANCE } from '../utils/helpers'
+import { CSS_FONT_FAMILY, createTimer, queueEvent, EMOJIS, logTestResult, performanceLogger, hashSlice, formatEmojiSet } from '../utils/helpers'
 import { patch, html, HTMLNote, count } from '../utils/html'
 
 // inspired by Lalit Patel's fontdetect.js
@@ -92,7 +92,6 @@ const DesktopAppFonts = {
 const APPLE_FONTS = Object.keys(MacOSFonts).map((key) => MacOSFonts[key]).flat()
 const WINDOWS_FONTS = Object.keys(WindowsFonts).map((key) => WindowsFonts[key]).flat()
 const DESKTOP_APP_FONTS = (
-	LIKE_BRAVE_RESISTANCE /* unsupported & poisonous */ ? [] :
 		Object.keys(DesktopAppFonts).map((key) => DesktopAppFonts[key]).flat()
 )
 const LINUX_FONTS = [
@@ -182,8 +181,16 @@ export default async function getFonts() {
 		}
 	}
 
-	const getFontFaceLoadFonts = async (fontList) => {
+	const getFontFaceLoadFonts = async (fontList: string[]) => {
 		try {
+			if (!document.fonts.check(`0px "${getRandomValues()}"`)) {
+				const fontsChecked = fontList.reduce((acc, font) => {
+					const found = document.fonts.check(`0px "${font}"`)
+					if (found) acc.push(font)
+					return acc
+				}, [] as string[])
+				return fontsChecked
+			}
 			const fontFaceList = fontList.map((font) => new FontFace(font, `local("${font}")`))
 			const responseCollection = await Promise
 				.allSettled(fontFaceList.map((font) => font.load()))
@@ -375,7 +382,7 @@ export function fontsHTML(fp) {
 			)
 		})(fontFaceLoadFonts)}</div>
 		<div>apps: ${(apps || []).length ? apps.join(', ') : HTMLNote.UNSUPPORTED}</div>
-		<div class="block-text-large help relative" title="FontFace.load()">
+		<div class="block-text-large help relative" title="FontFace.load()\nFontFaceSet.check()">
 			${fontFaceLoadFonts.join(', ') || HTMLNote.UNSUPPORTED}
 		</div>
 		<div class="block-text help relative" title="${blockHelpTitle}">

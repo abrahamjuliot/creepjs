@@ -930,4 +930,4 @@ function liesHTML(fp: LiesFingerprint, pointsHTML: string): string {
 	}${pointsHTML}</div>`
 }
 
-export { documentLie, createLieDetector, PHANTOM_DARKNESS, PARENT_PHANTOM, lieProps, prototypeLies, lieRecords, getLies, getPluginLies, liesHTML }
+export { getRandomValues, documentLie, createLieDetector, PHANTOM_DARKNESS, PARENT_PHANTOM, lieProps, prototypeLies, lieRecords, getLies, getPluginLies, liesHTML }
