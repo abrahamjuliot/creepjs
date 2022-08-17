@@ -15,7 +15,7 @@
     "declaration": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "target": "ES2019",
+    "target": "ES2020",
     "module": "ESNext",
     "moduleResolution": "node"
   },
