@@ -8,14 +8,18 @@ import { Platform } from './constants'
 import getPlatformEstimate from './getPlatformEstimate'
 import { getSystemFonts } from './getSystemFonts'
 
-/**
- * @param {{ userAgent: string; }} workerScope
- */
-export default async function getHeadlessFeatures(workerScope) {
+export default async function getHeadlessFeatures({
+	webgl,
+	workerScope,
+}) {
 	try {
 		const timer = createTimer()
 		await queueEvent(timer)
 		const mimeTypes = Object.keys({ ...navigator.mimeTypes })
+
+		const systemFonts = getSystemFonts()
+		const [scores, highestScore, headlessEstimate] = getPlatformEstimate()
+
 		interface Headless {
 			chromium: boolean,
 			likeHeadless: Record<string, boolean>,
@@ -25,7 +29,10 @@ export default async function getHeadlessFeatures(workerScope) {
 		const data: Headless = {
 			chromium: IS_BLINK,
 			likeHeadless: {
-				['navigator.webdriver is on']: 'webdriver' in navigator && !!navigator.webdriver,
+				['navigator.webdriver is on']: (
+					(CSS.supports('border-end-end-radius: initial') && navigator.webdriver === undefined) ||
+					!!navigator.webdriver
+				),
 				['chrome plugins array is empty']: IS_BLINK && navigator.plugins.length === 0,
 				['chrome mimeTypes array is empty']: IS_BLINK && mimeTypes.length === 0,
 				['notification permission is denied']: (
@@ -41,7 +48,7 @@ export default async function getHeadlessFeatures(workerScope) {
 					}
 					if (!rendered) return false
 					rendered.setAttribute('style', `background-color: ActiveText`)
-					const { backgroundColor: activeText } = getComputedStyle(rendered)
+					const { backgroundColor: activeText } = getComputedStyle(rendered) || []
 					if (!PARENT_PHANTOM) {
 						document.body.removeChild(rendered)
 					}
@@ -58,9 +65,6 @@ export default async function getHeadlessFeatures(workerScope) {
 						await navigator.userAgentData.getHighEntropyValues(['platform']).platform === ''
 					)
 				),
-				['Web Share API is not supported']: IS_BLINK && CSS.supports('accent-color: initial') && (
-					!('share' in navigator) || !('canShare' in navigator)
-				),
 				['pdf viewer is disabled']: (
 					'pdfViewerEnabled' in navigator && navigator.pdfViewerEnabled === false
 				),
@@ -74,6 +78,13 @@ export default async function getHeadlessFeatures(workerScope) {
 						(visualViewport.width === screen.width && visualViewport.height === screen.height)
 					)
 				),
+				['use of swift shader cpu graphics']: /SwiftShader/.test(workerScope?.webglRenderer),
+				['web share is not supported']: IS_BLINK && CSS.supports('accent-color: initial') && (
+					!('share' in navigator) || !('canShare' in navigator)
+				),
+				['content index is not supported']: !!headlessEstimate?.noContentIndex,
+				['contacts manager is not supported']: !!headlessEstimate?.noContactsManager,
+				['downlink max is not supported']: !!headlessEstimate?.noDownlinkMax,
 			},
 			headless: {
 				['chrome window.chrome is undefined']: IS_BLINK && !('chrome' in window),
@@ -142,6 +153,11 @@ export default async function getHeadlessFeatures(workerScope) {
 				['Function.prototype.toString has invalid TypeError']: (
 					!!lieProps['Function.toString']
 				),
+				['worker and window webgl renderer mismatch']: (() => {
+					const { UNMASKED_RENDERER_WEBGL: gpu } = webgl?.parameters || {}
+					const { webglRenderer: workerGPU } = workerScope || {}
+					return (gpu && workerGPU && (gpu !== workerGPU))
+				})(),
 			},
 		}
 
@@ -154,9 +170,6 @@ export default async function getHeadlessFeatures(workerScope) {
 		const headlessRating = +((headlessKeys.filter((key) => headless[key]).length / headlessKeys.length) * 100).toFixed(0)
 		const stealthRating = +((stealthKeys.filter((key) => stealth[key]).length / stealthKeys.length) * 100).toFixed(0)
 
-		const systemFonts = getSystemFonts()
-		const platformEstimate = getPlatformEstimate()
-
 		logTestResult({ time: timer.stop(), test: 'headless', passed: true })
 		return {
 			...data,
@@ -164,7 +177,7 @@ export default async function getHeadlessFeatures(workerScope) {
 			headlessRating,
 			stealthRating,
 			systemFonts,
-			platformEstimate,
+			platformEstimate: [scores, highestScore],
 		}
 	} catch (error) {
 		logTestResult({ test: 'headless', passed: false })

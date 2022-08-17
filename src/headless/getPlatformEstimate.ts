@@ -1,8 +1,12 @@
 import { IS_BLINK } from '../utils/helpers'
 import { Platform } from './constants'
 
-export default function getPlatformEstimate(): [Record<string, number>, number] | null {
-    if (!IS_BLINK) return null
+export default function getPlatformEstimate(): [
+    scores: Record<string, number>,
+    highestScore: number,
+    headlessEstimate: Record<string, boolean>
+] | [] {
+    if (!IS_BLINK) return []
     const v80 = 'getVideoPlaybackQuality' in HTMLVideoElement.prototype
     const v84 = CSS.supports('appearance: initial')
     const v86 = 'DisplayNames' in Intl
@@ -86,6 +90,13 @@ export default function getPlatformEstimate(): [Record<string, number>, number] 
         ],
     }
 
+    // Chrome only features
+    const headlessEstimate: Record<string, boolean> = {
+        noContentIndex: v84 && !hasContentIndex,
+        noContactsManager: v80 && !hasContactsManager,
+        noDownlinkMax: !hasDownlinkMax,
+    }
+
     const scores = Object.keys(estimate).reduce((acc, key) => {
         const list = estimate[key]
         const score = +((list.filter((x) => x).length / list.length).toFixed(2))
@@ -96,5 +107,5 @@ export default function getPlatformEstimate(): [Record<string, number>, number] 
     const platform = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b)
     const highestScore = scores[platform]
 
-    return [scores, highestScore]
+    return [scores, highestScore, headlessEstimate]
 }
