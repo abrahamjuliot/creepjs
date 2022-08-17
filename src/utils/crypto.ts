@@ -92,10 +92,12 @@ const getBotHash = (fp, imports) => {
 	}
 
 	const { totalLies } = fp.lies || {}
-	const maxLieCount = 100
-	const extremeLieCount = (totalLies || 0) > maxLieCount
-
 	const { stealth } = fp.headless || {}
+	const maxLieCount = 100
+	const extremeLieCount = (
+		((totalLies || 0) > maxLieCount) ||
+		Object.values(stealth || {}).some((x) => x === true) // stealth lies are severe
+	)
 	const functionToStringHasProxy = (
 		!!( stealth || {})['Function.prototype.toString has invalid TypeError'] ||
 		!!( stealth || {})['Function.prototype.toString leaks Proxy behavior']
