@@ -183,25 +183,24 @@ export default async function getFonts() {
 
 	const getFontFaceLoadFonts = async (fontList: string[]) => {
 		try {
+			let fontsChecked: string[] = []
 			if (!document.fonts.check(`0px "${getRandomValues()}"`)) {
-				const fontsChecked = fontList.reduce((acc, font) => {
+				fontsChecked = fontList.reduce((acc, font) => {
 					const found = document.fonts.check(`0px "${font}"`)
 					if (found) acc.push(font)
 					return acc
 				}, [] as string[])
-				return fontsChecked
 			}
 			const fontFaceList = fontList.map((font) => new FontFace(font, `local("${font}")`))
 			const responseCollection = await Promise
 				.allSettled(fontFaceList.map((font) => font.load()))
-			// @ts-ignore
-			const fonts = responseCollection.reduce((acc, font) => {
+			const fontsLoaded = responseCollection.reduce((acc, font) => {
 				if (font.status == 'fulfilled') {
-					return [...acc, font.value.family]
+					acc.push(font.value.family)
 				}
 				return acc
-			}, [])
-			return fonts
+			}, [] as string[])
+			return [...new Set([...fontsChecked, ...fontsLoaded])].sort()
 		} catch (error) {
 			console.error(error)
 			return []
