@@ -96,7 +96,10 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			headlessComputed,
 			featuresComputed,
 		] = await Promise.all([
-			getHeadlessFeatures(workerScopeComputed),
+			getHeadlessFeatures({
+				webgl: canvasWebglComputed,
+				workerScope: workerScopeComputed,
+			}),
 			getEngineFeatures({
 				cssComputed,
 				navigatorComputed,
@@ -574,7 +577,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		capturedErrors: !!errorsLen,
 		lies: !!liesLen,
 		resistance: fp.resistance || undefined,
-		forceRenew: 1660540659730,
+		forceRenew: 1660712729417,
 	}
 
 	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f')
@@ -1433,7 +1436,10 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 						samplesDidLoadFromSession: true,
 					}
 				}
-				const url = 'https://script.google.com/macros/s/AKfycbw26MLaK1PwIGzUiStwweOeVfl-sEmIxFIs5Ax7LMoP1Cuw-s0llN-aJYS7F8vxQuVG-A/exec'
+				const url = (
+					/\.github\.io/.test(location.origin) ? './data/samples.json' :
+						'../docs/data/samples.json'
+				)
 				const cloudSamples = await fetch(url).then((res) => res.json()).catch((error) => {
 					console.error(error)
 					return

@@ -169,8 +169,8 @@
 	}
 
 	// get data
-	const webapp = 'https://script.google.com/macros/s/AKfycbw26MLaK1PwIGzUiStwweOeVfl-sEmIxFIs5Ax7LMoP1Cuw-s0llN-aJYS7F8vxQuVG-A/exec'
-	const samples = await fetch(webapp)
+	const url = '../data/samples.json'
+	const samples = await fetch(url)
 		.then(response => response.json())
 		.catch(error => {
 			console.error(error)
@@ -188,10 +188,10 @@
 			</div>
 		`)
 	}
-	
+
 	const { window: windowSamples } = samples || {}
 
-	// construct template 
+	// construct template
 	let matchingIndex
 	const computeTemplate = ({ name, fingerprints, index }) => {
 		fingerprints = fingerprints.sort((a, b) => (a.systems[0] > b.systems[0]) ? 1 : -1)
