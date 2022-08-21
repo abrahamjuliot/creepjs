@@ -83,7 +83,16 @@ Purpose: learn and predict browser engine and platform version, device, and gpu
 		"Windows:Windows 7 (64-bit)",
 		"Windows:Windows 11 (64-bit)"
 	],
-	gpus: [],
+	gpuBrands: [
+		"INTEL"
+	],
+	gpus: [
+		"INTEL:ANGLE (Intel(R) UHD Graphics Direct3D11 vs_5_0 ps_5_0)",
+		"INTEL:ANGLE (Intel, Intel(R) UHD Graphics 620 Direct3D11 vs_5_0 ps_5_0, D3D11)"
+	],
+	gpuWatch: [
+		"INTEL:460191600000:8/2/1984:703722......:18"
+	],
 	healEvents: [],
 	highEntropyLossYield: false,
 	highEntropyLost: true,
