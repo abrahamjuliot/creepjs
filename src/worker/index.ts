@@ -206,7 +206,7 @@ export async function spawnWorker() {
 		const locationPathNameLie = (
 			!href ||
 			!pathname ||
-			!/^(\/docs|\/creepjs|)\/creep.js$/.test(pathname) ||
+			!/^\/(docs|creepjs|public)\/creep.js$/.test(pathname) ||
 			!new RegExp(`${pathname}$`).test(href)
 		)
 
