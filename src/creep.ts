@@ -14,9 +14,9 @@ import { getLies, PARENT_PHANTOM, liesHTML } from './lies'
 import getMaths, { mathsHTML } from './math'
 import getMedia, { mediaHTML } from './media'
 import getNavigator, { navigatorHTML } from './navigator'
-import getPrediction, { predictionErrorPatch, renderPrediction } from './prediction'
+import getPrediction, { getBlankIcons, predictionErrorPatch, renderPrediction } from './prediction'
 import getResistance, { resistanceHTML } from './resistance'
-import renderSamples from './samples'
+import renderSamples, { getSamples } from './samples'
 import getScreen, { screenHTML } from './screen'
 import getVoices, { voicesHTML } from './speech'
 import { getStatus, statusHTML } from './status'
@@ -668,7 +668,6 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 	const hasTrash = !!trashLen
 	const { lies: hasLied, capturedErrors: hasErrors } = creep
 
-	const getBlankIcons = () => `<span class="icon"></span><span class="icon"></span>`
 	const el = document.getElementById('fingerprint-data')
 	patch(el, html`
 	<div id="fingerprint-data">
@@ -1372,7 +1371,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				const decryptionDataScores = Object.keys(crowdMap).reduce((acc, key) => {
 					const { score } = decryptionData[key] || {}
 					const reporters = (
-						score == 36 ? 1:
+						score == 36 ? 1 :
 						score == 84 ? 2 :
 						score == 96 ? 3 :
 						score == 100 ? 4 :
@@ -1427,36 +1426,9 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				renderPrediction({ decryptionData, crowdBlendingScore })
 			}
 
-			// get GCD Samples
-			const getSamples = async () => {
-				const samples = window.sessionStorage && sessionStorage.getItem('samples')
-				if (samples) {
-					return {
-						samples: JSON.parse(samples),
-						samplesDidLoadFromSession: true,
-					}
-				}
-				const url = (
-					/\.github\.io/.test(location.origin) ? './data/samples.json' :
-						'../docs/data/samples.json'
-				)
-				const cloudSamples = await fetch(url).then((res) => res.json()).catch((error) => {
-					console.error(error)
-					return
-				})
-				if (cloudSamples && window.sessionStorage) {
-					sessionStorage.setItem('samples', JSON.stringify(cloudSamples))
-				}
-				return {
-					samples: cloudSamples,
-					samplesDidLoadFromSession: false,
-				}
-			}
+			const { samples: decryptionSamples, samplesDidLoadFromSession } = await getSamples() || {}
 
-			const { samples: decryptionSamples, samplesDidLoadFromSession } = await getSamples()
-
-			// prevent Error: value for argument "documentPath" must point to a document
-			const cleanGPUString = (x) => !x ? x : (''+x).replace(/\//g, '')
+			const cleanGPUString = (x: string) => !x ? x : (''+x).replace(/\//g, '')
 
 			const {
 				window: winSamples,
@@ -1555,7 +1527,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 						metricTotal,
 					}
 				}
-				const entropyHash = {
+				const entropyHash: Record<string, string> = {
 					window: (windowFeatures || {}).$hash,
 					math: (maths || {}).$hash,
 					error: (consoleErrors || {}).$hash,
@@ -1582,7 +1554,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 					gpuModel,
 					deviceOfTimezone: deviceOfTimezoneHash,
 				}
-				const entropyDescriptors = {
+				const entropyDescriptors: Record<string, string> = {
 					window: 'window object',
 					math: 'engine math runtime',
 					error: 'engine console errors',

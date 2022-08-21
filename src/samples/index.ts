@@ -1,5 +1,36 @@
 import { patch, html, HTMLNote } from '../utils/html'
 
+// get GCD Samples
+export async function getSamples() {
+	const samples = window.sessionStorage && sessionStorage.getItem('samples')
+
+	if (samples) {
+		return {
+			samples: JSON.parse(samples),
+			samplesDidLoadFromSession: true,
+		}
+	}
+
+	const url = (
+		/\.github\.io/.test(location.origin) ? './data/samples.json' :
+			'../docs/data/samples.json'
+	)
+
+	const cloudSamples = await fetch(url).then((res) => res.json()).catch((error) => {
+		console.error(error)
+		return
+	})
+
+	if (cloudSamples && window.sessionStorage) {
+		sessionStorage.setItem('samples', JSON.stringify(cloudSamples))
+	}
+
+	return {
+		samples: cloudSamples,
+		samplesDidLoadFromSession: false,
+	}
+}
+
 export default async function renderSamples(samples, { fp, styleSystemHash }) {
 	if (!samples) {
 		return
