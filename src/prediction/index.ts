@@ -101,25 +101,25 @@ export function renderPrediction({
 							/windows/i.test(system) ? iconSet.add('windows') && htmlIcon('windows') : htmlIcon('')
 		)
 
-		const gpuBrandIconMap: Record<string, (x: string) => string> = {
-			AMD: (x) => iconSet.add(x) && htmlIcon(x),
-			NVIDIA: (x) => iconSet.add(x) && htmlIcon(x),
-			APPLE: (x) => iconSet.add(x) && htmlIcon(x),
-			INTEL: (x) => iconSet.add(x) && htmlIcon(x),
-			MICROSOFT: (x) => iconSet.add(x) && htmlIcon(x),
-			SWIFTSHADER: (x) => iconSet.add(x) && htmlIcon(x),
-			ADRENO: (x) => iconSet.add(x) && htmlIcon(x),
-			MALI: (x) => iconSet.add(x) && htmlIcon(x),
-			POWERVR: (x) => iconSet.add(x) && htmlIcon(x),
-			SAMSUNG: (x) => iconSet.add(x) && htmlIcon(x),
-			PARALLELS: (x) => iconSet.add(x) && htmlIcon(x),
-			VMWARE: (x) => iconSet.add(x) && htmlIcon(x),
-			VIRTUALBOX: (x) => iconSet.add(x) && htmlIcon(x),
-			LLVM: (x) => iconSet.add(x) && htmlIcon(x),
+		const gpuBrandIconMap: Record<string, () => string> = {
+			AMD: () => iconSet.add('chip') && htmlIcon('chip'),
+			NVIDIA: () => iconSet.add('chip') && htmlIcon('chip'),
+			APPLE: () => iconSet.add('chip') && htmlIcon('chip'),
+			INTEL: () => iconSet.add('chip') && htmlIcon('chip'),
+			MICROSOFT: () => iconSet.add('chip') && htmlIcon('chip'),
+			SWIFTSHADER: () => iconSet.add('chip') && htmlIcon('chip'),
+			ADRENO: () => iconSet.add('chip') && htmlIcon('chip'),
+			MALI: () => iconSet.add('chip') && htmlIcon('chip'),
+			POWERVR: () => iconSet.add('chip') && htmlIcon('chip'),
+			SAMSUNG: () => iconSet.add('chip') && htmlIcon('chip'),
+			PARALLELS: () => iconSet.add('chip') && htmlIcon('chip'),
+			VMWARE: () => iconSet.add('chip') && htmlIcon('chip'),
+			VIRTUALBOX: () => iconSet.add('chip') && htmlIcon('chip'),
+			LLVM: () => iconSet.add('chip') && htmlIcon('chip'),
 		}
 
 		const gpuBrandIcon = (
-			gpuBrandIconMap[gpuBrand] ? gpuBrandIconMap[gpuBrand](gpuBrand.toLowerCase()) :
+			gpuBrandIconMap[gpuBrand] ? gpuBrandIconMap[gpuBrand]() :
 				htmlIcon('')
 		)
 
@@ -252,8 +252,8 @@ export function renderPrediction({
 		return undefined
 	}
 
-	const gpuBrandName = [...gpuBrands]
-	const gpuName = [...gpus]
+	const gpuBrandName = String([...gpuBrands])
+	const gpuName = String([...gpus])
 	const deviceCollection = [...devices]
 	const deviceName = (
 		getRFPWindowOS(deviceCollection) ||
