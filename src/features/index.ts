@@ -58,7 +58,7 @@ const getEngineMaps = (browser) => {
 		'97': ['print-color-adjust', 'scrollbar-gutter', 'd'],
 		'98-101': ['hyphenate-character'],
 		'102': ['overflow-clip-margin'],
-		'103': ['backdrop-filter', 'scroll-snap-stop'],
+		'103': ['scroll-snap-stop'],
 	}
 
 	const blinkCSS = {
