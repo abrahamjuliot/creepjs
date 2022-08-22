@@ -6,7 +6,7 @@ import { createTimer, queueEvent, getOS, braveBrowser, decryptUserAgent, getUser
 import { HTMLNote, count, modal } from '../utils/html'
 
 // special thanks to https://arh.antoinevastel.com for inspiration
-export default async function getNavigator() {
+export default async function getNavigator(workerScope) {
 	try {
 		const timer = createTimer()
 		await queueEvent(timer)
@@ -55,13 +55,17 @@ export default async function getNavigator() {
 							/(i(os|p(ad|hone|od)))|mac/ig.test(platform) ? 'Apple' :
 								'Other'
 				)
-				const osLie = userAgentOS != platformOS
-				if (osLie) {
+
+				if (userAgentOS != platformOS) {
 					lied = true
 					documentLie(
 						`Navigator.platform`,
 						`${platformOS} platform and ${userAgentOS} user agent do not match`,
 					)
+				}
+
+				if (platform != workerScope.platform) {
+					lied = true // documented in the worker source
 				}
 
 				return platform
@@ -91,6 +95,10 @@ export default async function getNavigator() {
 				const gibbers = gibberish(userAgent)
 				if (!!gibbers.length) {
 					sendToTrash(`userAgent is gibberish`, userAgent)
+				}
+
+				if (userAgent != workerScope.userAgent) {
+					lied = true // documented in the worker source
 				}
 
 				return userAgent.trim().replace(/\s{2,}/, ' ')
@@ -135,6 +143,10 @@ export default async function getNavigator() {
 				const memoryInGigabytes = memory ? +(memory/1073741824).toFixed(1) : 0
 				if (memoryInGigabytes > deviceMemory) {
 					sendToTrash('deviceMemory', `available memory ${memoryInGigabytes}GB is greater than device memory ${deviceMemory}GB`)
+				}
+
+				if (deviceMemory !== workerScope.deviceMemory) {
+					lied = true // documented in the worker source
 				}
 
 				return deviceMemory
@@ -183,7 +195,14 @@ export default async function getNavigator() {
 				if (!('hardwareConcurrency' in navigator)) {
 					return undefined
 				}
-				return navigator.hardwareConcurrency
+
+				const { hardwareConcurrency } = navigator
+
+				if (hardwareConcurrency !== workerScope.hardwareConcurrency) {
+					lied = true // documented in the worker source
+				}
+
+				return hardwareConcurrency
 			}, 'hardwareConcurrency failed'),
 			language: attempt(() => {
 				const { language, languages } = navigator
@@ -224,6 +243,22 @@ export default async function getNavigator() {
 						sendToTrash('language/languages', `${[language, languages].join(' ')} mismatch`)
 					}
 					return `${languages.join(', ')} (${language})`
+				}
+
+				if (language != workerScope.language) {
+					lied = true
+					documentLie(
+						`Navigator.language`,
+						`${language} does not match worker scope`,
+					)
+				}
+
+				if (languages !== workerScope.languages) {
+					lied = true
+					documentLie(
+						`Navigator.languages`,
+						`${languages} does not match worker scope`,
+					)
 				}
 
 				return `${language} ${languages}`
