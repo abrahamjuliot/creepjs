@@ -55,7 +55,6 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			screenComputed,
 			voicesComputed,
 			canvas2dComputed,
-			canvasWebglComputed,
 			mathsComputed,
 			consoleErrorsComputed,
 			timezoneComputed,
@@ -66,8 +65,6 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			svgComputed,
 			resistanceComputed,
 			intlComputed,
-			navigatorComputed,
-			offlineAudioContextComputed,
 		] = await Promise.all([
 			getWindowFeatures(),
 			getHTMLElementVersion(),
@@ -76,7 +73,6 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			getScreen(),
 			getVoices(),
 			getCanvas2d(),
-			getCanvasWebgl(),
 			getMaths(),
 			getConsoleErrors(),
 			getTimezone(),
@@ -87,8 +83,17 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			getSVG(),
 			getResistance(),
 			getIntl(),
-			getNavigator(),
+		]).catch((error) => console.error(error.message))
+
+		// @ts-ignore
+		const [
+			navigatorComputed,
+			offlineAudioContextComputed,
+			canvasWebglComputed,
+		] = await Promise.all([
+			getNavigator(workerScopeComputed),
 			getOfflineAudioContext(),
+			getCanvasWebgl(),
 		]).catch((error) => console.error(error.message))
 
 		// @ts-ignore
