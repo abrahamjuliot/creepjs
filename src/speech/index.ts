@@ -23,7 +23,7 @@ export default async function getVoices() {
 			const giveUpOnVoices = setTimeout(() => {
 				logTestResult({ test: 'speech', passed: false })
 				return resolve(null)
-			}, 3000)
+			}, 300)
 
 			const getVoices = () => {
 				const data = speechSynthesis.getVoices()

@@ -48,53 +48,49 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		const fingerprintTimeStart = timer()
 		// @ts-ignore
 		const [
+			workerScopeComputed,
+			voicesComputed,
+			offlineAudioContextComputed,
+			canvasWebglComputed,
+			canvas2dComputed,
 			windowFeaturesComputed,
 			htmlElementVersionComputed,
 			cssComputed,
 			cssMediaComputed,
 			screenComputed,
-			voicesComputed,
-			canvas2dComputed,
 			mathsComputed,
 			consoleErrorsComputed,
 			timezoneComputed,
 			clientRectsComputed,
 			fontsComputed,
-			workerScopeComputed,
 			mediaComputed,
 			svgComputed,
 			resistanceComputed,
 			intlComputed,
 		] = await Promise.all([
+			getBestWorkerScope(),
+			getVoices(),
+			getOfflineAudioContext(),
+			getCanvasWebgl(),
+			getCanvas2d(),
 			getWindowFeatures(),
 			getHTMLElementVersion(),
 			getCSS(),
 			getCSSMedia(),
 			getScreen(),
-			getVoices(),
-			getCanvas2d(),
 			getMaths(),
 			getConsoleErrors(),
 			getTimezone(),
 			getClientRects(),
 			getFonts(),
-			getBestWorkerScope(),
 			getMedia(),
 			getSVG(),
 			getResistance(),
 			getIntl(),
 		]).catch((error) => console.error(error.message))
 
-		// @ts-ignore
-		const [
-			navigatorComputed,
-			offlineAudioContextComputed,
-			canvasWebglComputed,
-		] = await Promise.all([
-			getNavigator(workerScopeComputed),
-			getOfflineAudioContext(),
-			getCanvasWebgl(),
-		]).catch((error) => console.error(error.message))
+		const navigatorComputed = await getNavigator(workerScopeComputed)
+			.catch((error) => console.error(error.message))
 
 		// @ts-ignore
 		const [
