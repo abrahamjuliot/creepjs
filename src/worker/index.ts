@@ -2,7 +2,7 @@ import { captureError } from '../errors'
 import { createLieDetector, documentLie } from '../lies'
 import { getWebGLRendererConfidence, compressWebGLRenderer } from '../trash'
 import { hashMini } from '../utils/crypto'
-import { createTimer, queueEvent, getOS, getUserAgentPlatform, decryptUserAgent, computeWindowsRelease, JS_ENGINE, logTestResult, isUAPostReduction, performanceLogger, hashSlice, IS_WORKER_SCOPE } from '../utils/helpers'
+import { createTimer, queueEvent, getOS, getUserAgentPlatform, decryptUserAgent, computeWindowsRelease, JS_ENGINE, logTestResult, isUAPostReduction, performanceLogger, hashSlice, IS_WORKER_SCOPE, IS_BLINK } from '../utils/helpers'
 import { HTMLNote, count, modal } from '../utils/html'
 
 export const enum Scope {
@@ -446,36 +446,28 @@ export default async function getBestWorkerScope() {
 		}
 
 		// windows platformVersion lie
-		// https://docs.microsoft.com/en-us/microsoft-edge/web-platform/how-to-detect-win11
 		const getWindowsVersionLie = (device, userAgentData) => {
 			if (!/windows/i.test(device) || !userAgentData || !userAgentData.platformVersion) {
 				return false
 			}
-			const reportedVersionNumber = +(/windows ([\d|\.]+)/i.exec(device)||[])[1]
-			const windows1OrHigherReport = reportedVersionNumber == 10
+			const reportedVersionNumber = (/windows ([\d|\.]+)/i.exec(device)||[])[1]
+			const windows1OrHigherReport = +reportedVersionNumber == 10
 			const { platformVersion } = userAgentData
-
-			// userAgentData version format changed in Chrome 95
-			// https://github.com/WICG/ua-client-hints/issues/220#issuecomment-870858413
-			const chrome95AndAbove = (
-				((3.141592653589793 ** -100) == 1.9275814160560204e-50) && CSS.supports('app-region: initial')
-			)
-			const versionMap = {
+			const versionMap: Record<string, string> = {
 				'6.1': '7',
-				'6.1.0': '7',
 				'6.2': '8',
-				'6.2.0': '8',
 				'6.3': '8.1',
-				'6.3.0': '8.1',
 				'10.0': '10',
-				'10.0.0': '10',
 			}
-			let versionNumber = versionMap[platformVersion]
-			if (!chrome95AndAbove && versionNumber) {
-				return versionNumber != (''+reportedVersionNumber)
+			const version = versionMap[platformVersion]
+			if (!(IS_BLINK && CSS.supports('app-region: initial')) && version) {
+				return version != reportedVersionNumber
 			}
-			versionNumber = +(/(\d+)\./.exec(''+platformVersion)||[])[1]
-			const windows10OrHigherPlatform = versionNumber > 0
+
+			const parts = platformVersion.split('.')
+			if (parts.length != 3) return true
+
+			const windows10OrHigherPlatform = +parts[0] > 0
 			return (
 				(windows10OrHigherPlatform && !windows1OrHigherReport) ||
 				(!windows10OrHigherPlatform && windows1OrHigherReport)
@@ -484,7 +476,7 @@ export default async function getBestWorkerScope() {
 		const windowsVersionLie = getWindowsVersionLie(workerScope.device, userAgentData)
 		if (windowsVersionLie) {
 			workerScope.lied = true
-			workerScope.lies.platformVersion = `Windows platformVersion ${(userAgentData||{}).platformVersion} does not match user agent version ${workerScope.device}`
+			workerScope.lies.platformVersion = `platform version is fake`
 			documentLie(workerScope.scope, workerScope.lies.platformVersion)
 		}
 
