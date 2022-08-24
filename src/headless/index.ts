@@ -110,9 +110,13 @@ export default async function getHeadlessFeatures({
 			},
 			stealth: {
 				['srcdoc triggers a window Proxy']: (() => {
-					const iframe = document.createElement('iframe')
-					iframe.srcdoc = instanceId
-					return !!iframe.contentWindow
+					try {
+						const iframe = document.createElement('iframe')
+						iframe.srcdoc = instanceId
+						return !!iframe.contentWindow
+					} catch (err) {
+						return true
+					}
 				})(),
 				['index of chrome is too high']: (() => {
 					const control = (
