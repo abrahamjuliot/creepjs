@@ -1,3 +1,4 @@
+import { PlatformClassifier } from './types'
 
 // @ts-expect-error
 export const IS_WORKER_SCOPE = !self.document && self.WorkerGlobalScope
@@ -161,6 +162,30 @@ const getOS = (userAgent) => {
 	)
 	return os
 }
+
+function getReportedPlatform(userAgent: string, platform?: string): PlatformClassifier[] {
+	// user agent os lie
+		const userAgentOS = (
+			// order is important
+			/win(dows|16|32|64|95|98|nt)|wow64/ig.test(userAgent) ? PlatformClassifier.WINDOWS :
+				/android|linux|cros/ig.test(userAgent) ? PlatformClassifier.LINUX :
+					/(i(os|p(ad|hone|od)))|mac/ig.test(userAgent) ? PlatformClassifier.APPLE :
+						PlatformClassifier.OTHER
+		)
+
+		if (!platform) return [userAgentOS]
+
+		const platformOS = (
+			// order is important
+			/win/ig.test(platform) ? PlatformClassifier.WINDOWS :
+				/android|arm|linux/ig.test(platform) ? PlatformClassifier.LINUX :
+					/(i(os|p(ad|hone|od)))|mac/ig.test(platform) ? PlatformClassifier.APPLE :
+						PlatformClassifier.OTHER
+		)
+		return [userAgentOS, platformOS]
+}
+const { userAgent: navUserAgent, platform: navPlatform } = self.navigator || {}
+const [USER_AGENT_OS, PLATFORM_OS] = getReportedPlatform(navUserAgent, navPlatform)
 
 const decryptUserAgent = ({ ua, os, isBrave }) => {
 	const apple = /ipad|iphone|ipod|ios|mac/ig.test(os)
@@ -528,6 +553,8 @@ const CSS_FONT_FAMILY = `
 	'Nirmala UI',
 	'Lucida Console',
 	'Cambria Math',
+	'Chakra Petch',
+	'Bai Jamjuree',
 	'Galvji',
 	'MuktaMahee Regular',
 	'InaiMathi Bold',
@@ -558,4 +585,4 @@ const CSS_FONT_FAMILY = `
 
 const hashSlice = (x) => !x ? x : x.slice(0, 8)
 
-export { IS_BLINK, IS_GECKO, IS_WEBKIT, JS_ENGINE, LIKE_BRAVE, LIKE_BRAVE_RESISTANCE, ENGINE_IDENTIFIER, braveBrowser, getBraveMode, getBraveUnprotectedParameters, getOS, decryptUserAgent, getUserAgentPlatform, computeWindowsRelease, attemptWindows11UserAgent, isUAPostReduction, getUserAgentRestored, logTestResult, performanceLogger, getPromiseRaceFulfilled, queueEvent, createTimer, formatEmojiSet, EMOJIS, CSS_FONT_FAMILY, hashSlice }
+export { IS_BLINK, IS_GECKO, IS_WEBKIT, JS_ENGINE, LIKE_BRAVE, LIKE_BRAVE_RESISTANCE, ENGINE_IDENTIFIER, braveBrowser, getBraveMode, getBraveUnprotectedParameters, getOS, getReportedPlatform, USER_AGENT_OS, PLATFORM_OS, decryptUserAgent, getUserAgentPlatform, computeWindowsRelease, attemptWindows11UserAgent, isUAPostReduction, getUserAgentRestored, logTestResult, performanceLogger, getPromiseRaceFulfilled, queueEvent, createTimer, formatEmojiSet, EMOJIS, CSS_FONT_FAMILY, hashSlice }

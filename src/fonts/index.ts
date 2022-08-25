@@ -1,8 +1,56 @@
 import { captureError } from '../errors'
 import { PHANTOM_DARKNESS, lieProps, getRandomValues } from '../lies'
+import { sendToTrash } from '../trash'
 import { hashMini } from '../utils/crypto'
-import { CSS_FONT_FAMILY, createTimer, queueEvent, EMOJIS, logTestResult, performanceLogger, hashSlice, formatEmojiSet } from '../utils/helpers'
+import { CSS_FONT_FAMILY, createTimer, queueEvent, EMOJIS, logTestResult, performanceLogger, hashSlice, formatEmojiSet, USER_AGENT_OS } from '../utils/helpers'
 import { patch, html, HTMLNote, count } from '../utils/html'
+import { PlatformClassifier } from '../utils/types'
+
+export function isFontOSBad(userAgentOS: string, fonts: string[]): boolean {
+	if (!userAgentOS || !fonts || !fonts.length) return false
+
+	const fontMap = fonts.reduce((acc, x) => {
+		acc[x] = true
+		return acc
+	}, {} as Record<string, boolean>)
+
+	const isLikeWindows = (
+		'Cambria Math' in fontMap ||
+		'Nirmala UI' in fontMap ||
+		'Leelawadee UI' in fontMap ||
+		'HoloLens MDL2 Assets' in fontMap ||
+		'Segoe Fluent Icons' in fontMap
+	)
+
+	const isLikeApple = (
+		'Helvetica Neue' in fontMap ||
+		'Luminari' in fontMap ||
+		'PingFang HK Light' in fontMap ||
+		'Futura Bold' in fontMap ||
+		'InaiMathi Bold' in fontMap ||
+		'Galvji' in fontMap ||
+		'Kodchasan' in fontMap
+	)
+
+	const isLikeLinux = (
+		'Arimo' in fontMap ||
+		'MONO' in fontMap ||
+		'Ubuntu' in fontMap ||
+		'Noto Color Emoji' in fontMap ||
+		'Dancing Script' in fontMap ||
+		'Droid Sans Mono' in fontMap ||
+		'Roboto' in fontMap
+	)
+
+	if (isLikeWindows && userAgentOS != PlatformClassifier.WINDOWS) {
+		return true
+	} else if (isLikeApple && userAgentOS != PlatformClassifier.APPLE) {
+		return true
+	} else if (isLikeLinux && userAgentOS != PlatformClassifier.LINUX) {
+		return true
+	}
+	return false
+}
 
 // inspired by Lalit Patel's fontdetect.js
 // https://www.lalit.org/wordpress/wp-content/uploads/2008/05/fontdetect.js?ver=0.3
@@ -64,9 +112,11 @@ const MacOSFonts = {
 		'Galvji',
 		'MuktaMahee Regular',
 	],
-	// Monterey: https://www.apple.com/my/macos/monterey/features/
-	// https://apple.stackexchange.com/questions/429548/request-for-list-of-fonts-folder-contents-on-monterey
-	// '12': []
+	// Monterey: https://support.apple.com/en-us/HT212587
+	'12': [
+		'Chakra Petch',
+		'Bai Jamjuree',
+	],
 }
 
 const DesktopAppFonts = {
@@ -239,6 +289,7 @@ export default async function getFonts() {
 
 		const getMacOS = ({ fonts, fontMap }) => {
 			const fontVersion = {
+				['12']: fontMap['12'].find((x) => fonts.includes(x)),
 				['10.15-11']: fontMap['10.15-11'].find((x) => fonts.includes(x)),
 				['10.13-10.14']: fontMap['10.13-10.14'].find((x) => fonts.includes(x)),
 				['10.12']: fontMap['10.12'].find((x) => fonts.includes(x)),
@@ -251,6 +302,7 @@ export default async function getFonts() {
 				'' + Object.keys(fontVersion).sort().filter((key) => !!fontVersion[key])
 			)
 			const hashMap = {
+				'10.10,10.11,10.12,10.13-10.14,10.15-11,10.9,12': 'Monterey',
 				'10.10,10.11,10.12,10.13-10.14,10.15-11,10.9': '10.15-11',
 				'10.10,10.11,10.12,10.13-10.14,10.9': '10.13-10.14',
 				'10.10,10.11,10.12,10.9': 'Sierra', // 10.12
@@ -315,6 +367,10 @@ export default async function getFonts() {
 			lieProps['CSSStyleDeclaration.setProperty'] ||
 			lieProps['CSS2Properties.setProperty']
 		)
+
+		if (isFontOSBad(USER_AGENT_OS, fontFaceLoadFonts)) {
+			sendToTrash('platform', `${USER_AGENT_OS} system and fonts are suspicious`)
+		}
 
 		logTestResult({ time: timer.stop(), test: 'fonts', passed: true })
 		return {

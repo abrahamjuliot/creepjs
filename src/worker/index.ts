@@ -2,7 +2,7 @@ import { captureError } from '../errors'
 import { createLieDetector, documentLie } from '../lies'
 import { getWebGLRendererConfidence, compressWebGLRenderer } from '../trash'
 import { hashMini } from '../utils/crypto'
-import { createTimer, queueEvent, getOS, getUserAgentPlatform, decryptUserAgent, computeWindowsRelease, JS_ENGINE, logTestResult, isUAPostReduction, performanceLogger, hashSlice, IS_WORKER_SCOPE, IS_BLINK } from '../utils/helpers'
+import { createTimer, queueEvent, getOS, getUserAgentPlatform, decryptUserAgent, computeWindowsRelease, JS_ENGINE, logTestResult, isUAPostReduction, performanceLogger, hashSlice, IS_WORKER_SCOPE, IS_BLINK, getReportedPlatform } from '../utils/helpers'
 import { HTMLNote, count, modal } from '../utils/html'
 
 export const enum Scope {
@@ -395,22 +395,8 @@ export default async function getBestWorkerScope() {
 		}
 
 		// user agent os lie
-		const userAgentOS = (
-			// order is important
-			/win(dows|16|32|64|95|98|nt)|wow64/ig.test(userAgent) ? 'Windows' :
-				/android|linux|cros/ig.test(userAgent) ? 'Linux' :
-					/(i(os|p(ad|hone|od)))|mac/ig.test(userAgent) ? 'Apple' :
-						'Other'
-		)
-		const platformOS = (
-			// order is important
-			/win/ig.test(platform) ? 'Windows' :
-				/android|arm|linux/ig.test(platform) ? 'Linux' :
-					/(i(os|p(ad|hone|od)))|mac/ig.test(platform) ? 'Apple' :
-						'Other'
-		)
-		const osLie = userAgentOS != platformOS
-		if (osLie) {
+		const [userAgentOS, platformOS] = getReportedPlatform(userAgent, platform)
+		if (userAgentOS != platformOS) {
 			workerScope.lied = true
 			workerScope.lies.os = `${platformOS} platform and ${userAgentOS} user agent do not match`
 			documentLie(workerScope.scope, workerScope.lies.os)

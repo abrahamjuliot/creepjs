@@ -2,7 +2,7 @@ import { attempt, caniuse, captureError } from '../errors'
 import { lieProps, documentLie, getPluginLies } from '../lies'
 import { sendToTrash, gibberish } from '../trash'
 import { hashMini } from '../utils/crypto'
-import { createTimer, queueEvent, getOS, braveBrowser, decryptUserAgent, getUserAgentPlatform, isUAPostReduction, computeWindowsRelease, logTestResult, performanceLogger, hashSlice } from '../utils/helpers'
+import { createTimer, queueEvent, getOS, braveBrowser, decryptUserAgent, getUserAgentPlatform, isUAPostReduction, computeWindowsRelease, logTestResult, performanceLogger, hashSlice, USER_AGENT_OS, PLATFORM_OS } from '../utils/helpers'
 import { HTMLNote, count, modal } from '../utils/html'
 
 // special thanks to https://arh.antoinevastel.com for inspiration
@@ -40,27 +40,11 @@ export default async function getNavigator(workerScope) {
 				}
 
 				// user agent os lie
-				const { userAgent } = navigator
-				const userAgentOS = (
-					// order is important
-					/win(dows|16|32|64|95|98|nt)|wow64/ig.test(userAgent) ? 'Windows' :
-						/android|linux|cros/ig.test(userAgent) ? 'Linux' :
-							/(i(os|p(ad|hone|od)))|mac/ig.test(userAgent) ? 'Apple' :
-								'Other'
-				)
-				const platformOS = (
-					// order is important
-					/win/ig.test(platform) ? 'Windows' :
-						/android|arm|linux/ig.test(platform) ? 'Linux' :
-							/(i(os|p(ad|hone|od)))|mac/ig.test(platform) ? 'Apple' :
-								'Other'
-				)
-
-				if (userAgentOS != platformOS) {
+				if (USER_AGENT_OS !== PLATFORM_OS) {
 					lied = true
 					documentLie(
 						`Navigator.platform`,
-						`${platformOS} platform and ${userAgentOS} user agent do not match`,
+						`${PLATFORM_OS} platform and ${USER_AGENT_OS} user agent do not match`,
 					)
 				}
 

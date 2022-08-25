@@ -1,3 +1,6 @@
+import { DISTRUST_OS, isFontOSBad } from "../fonts"
+import { getReportedPlatform } from "./helpers"
+
 // https://stackoverflow.com/a/22429679
 const hashMini = (x) => {
 	const json = `${JSON.stringify(x)}`
@@ -92,9 +95,13 @@ const getBotHash = (fp, imports) => {
 	}
 
 	const { totalLies } = fp.lies || {}
+	const { fontFaceLoadFonts } = fp.fonts || {}
+	const { userAgent } = fp.workerScope || {}
 	const { stealth } = fp.headless || {}
+	const [workerUserAgentOS] = userAgent ? getReportedPlatform(userAgent) : []
 	const maxLieCount = 100
 	const extremeLieCount = (
+		isFontOSBad(workerUserAgentOS, fontFaceLoadFonts) ||
 		((totalLies || 0) > maxLieCount) ||
 		Object.values(stealth || {}).some((x) => x === true) // stealth lies are severe
 	)
