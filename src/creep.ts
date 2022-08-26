@@ -24,7 +24,7 @@ import getSVG, { svgHTML } from './svg'
 import getTimezone, { timezoneHTML } from './timezone'
 import { getTrash, trashHTML } from './trash'
 import { hashify, hashMini, getBotHash, getFuzzyHash, cipher } from './utils/crypto'
-import { IS_BLINK, braveBrowser, getBraveMode, getBraveUnprotectedParameters, IS_GECKO, computeWindowsRelease, hashSlice, ENGINE_IDENTIFIER, getUserAgentRestored, attemptWindows11UserAgent } from './utils/helpers'
+import { IS_BLINK, braveBrowser, getBraveMode, getBraveUnprotectedParameters, IS_GECKO, computeWindowsRelease, hashSlice, ENGINE_IDENTIFIER, getUserAgentRestored, attemptWindows11UserAgent, IS_WEBKIT } from './utils/helpers'
 import { patch, html, getDiffs, modal } from './utils/html'
 import getCanvasWebgl, { webglHTML } from './webgl'
 import getWebRTCData, { getWebRTCDevices, webrtcHTML } from './webrtc'
@@ -497,9 +497,16 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			let data
 			if (!lied) {
 				const { dataURI, paintURI, textURI, emojiURI, blob, blobOffscreen } = canvas2d
-				data = {
-					lied,
-					...{ dataURI, paintURI, textURI, emojiURI, blob, blobOffscreen },
+				if (IS_WEBKIT) {
+					data = {
+						lied,
+						...{ textURI, emojiURI },
+					}
+				} else {
+					data = {
+						lied,
+						...{ dataURI, paintURI, textURI, emojiURI, blob, blobOffscreen },
+					}
 				}
 			}
 			if (!liedTextMetrics) {
@@ -861,7 +868,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 					${statusHTML(status)}
 				</div>
 			`)
-		})
+		}).catch((err) => console.error(err))
 
 		// fetch fingerprint data from server
 		const id = 'creep-browser'
