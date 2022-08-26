@@ -29,7 +29,7 @@ export function isFontOSBad(userAgentOS: string, fonts: string[]): boolean {
 		'Futura Bold' in fontMap ||
 		'InaiMathi Bold' in fontMap ||
 		'Galvji' in fontMap ||
-		'Kodchasan' in fontMap
+		'Chakra Petch' in fontMap
 	)
 
 	const isLikeLinux = (
@@ -114,8 +114,10 @@ const MacOSFonts = {
 	],
 	// Monterey: https://support.apple.com/en-us/HT212587
 	'12': [
-		'Chakra Petch',
 		'Bai Jamjuree',
+		'Chakra Petch',
+		'Charmonman',
+		'Kodchasan',
 	],
 }
 
