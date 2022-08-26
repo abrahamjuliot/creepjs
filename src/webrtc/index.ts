@@ -360,7 +360,7 @@ export function webrtcHTML(webRTC, mediaDevices) {
 		return (acc = [...acc, deviceType])
 	}, [])
 
-	const getModalTemplate = (list) => list.map((x) => {
+	const getModalTemplate = (list) => (list || []).map((x) => {
 		return `
 			<strong>${x.mimeType}</strong>
 			<br>Clock Rates: ${x.clockRates.sort((a, b) => b - a).join(', ')}
