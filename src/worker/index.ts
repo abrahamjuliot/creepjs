@@ -431,13 +431,19 @@ export default async function getBestWorkerScope() {
 			documentLie(workerScope.scope, workerScope.lies.version)
 		}
 
-		// windows platformVersion lie
-		const getWindowsVersionLie = (device, userAgentData) => {
-			if (!/windows/i.test(device) || !userAgentData || !userAgentData.platformVersion) {
+		// platformVersion lie
+		const FEATURE_CASE = IS_BLINK && CSS.supports('accent-color: initial')
+		const getPlatformVersionLie = (device, userAgentData) => {
+			if (!/windows|mac/i.test(device) || !userAgentData?.platformVersion) {
 				return false
 			}
+
+			if (FEATURE_CASE && userAgentData.platform == 'macOS') {
+				return /_/.test(userAgentData.platformVersion)
+			}
+
 			const reportedVersionNumber = (/windows ([\d|\.]+)/i.exec(device)||[])[1]
-			const windows1OrHigherReport = +reportedVersionNumber == 10
+			const windows10OrHigherReport = +reportedVersionNumber == 10
 			const { platformVersion } = userAgentData
 			const versionMap: Record<string, string> = {
 				'6.1': '7',
@@ -446,7 +452,7 @@ export default async function getBestWorkerScope() {
 				'10.0': '10',
 			}
 			const version = versionMap[platformVersion]
-			if (!(IS_BLINK && CSS.supports('app-region: initial')) && version) {
+			if (!FEATURE_CASE && version) {
 				return version != reportedVersionNumber
 			}
 
@@ -455,11 +461,11 @@ export default async function getBestWorkerScope() {
 
 			const windows10OrHigherPlatform = +parts[0] > 0
 			return (
-				(windows10OrHigherPlatform && !windows1OrHigherReport) ||
-				(!windows10OrHigherPlatform && windows1OrHigherReport)
+				(windows10OrHigherPlatform && !windows10OrHigherReport) ||
+				(!windows10OrHigherPlatform && windows10OrHigherReport)
 			)
 		}
-		const windowsVersionLie = getWindowsVersionLie(workerScope.device, userAgentData)
+		const windowsVersionLie = getPlatformVersionLie(workerScope.device, userAgentData)
 		if (windowsVersionLie) {
 			workerScope.lied = true
 			workerScope.lies.platformVersion = `platform version is fake`
