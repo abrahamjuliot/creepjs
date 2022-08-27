@@ -1,7 +1,7 @@
 import { attempt, captureError } from '../errors'
 import { lieProps, PHANTOM_DARKNESS, documentLie } from '../lies'
 import { hashMini } from '../utils/crypto'
-import { createTimer, queueEvent, LIKE_BRAVE, CSS_FONT_FAMILY, EMOJIS, logTestResult, performanceLogger, hashSlice, formatEmojiSet } from '../utils/helpers'
+import { createTimer, queueEvent, LIKE_BRAVE, CSS_FONT_FAMILY, EMOJIS, logTestResult, performanceLogger, hashSlice, formatEmojiSet, IS_WEBKIT } from '../utils/helpers'
 import { HTMLNote, modal } from '../utils/html'
 
 // inspired by https://arkenfox.github.io/TZP/tests/canvasnoise.html
@@ -130,8 +130,8 @@ const paintCanvas = ({
   context,
 	strokeText = false,
 	cssFontFamily = '',
-  area = { width: 100, height: 100 },
-  rounds = 50,
+  area = { width: 50, height: 50 },
+  rounds = 10,
   maxShadowBlur = 50,
   seed = 500,
   offset = 2001000001,
@@ -277,12 +277,10 @@ const paintCanvas = ({
     createCircularArc,
     createBezierCurve,
     createQuadraticCurve,
-    createEllipticalArc,
   ]
 
-	if (strokeText) {
-		methods.push(drawOutlineOfText)
-	}
+	if (!IS_WEBKIT) methods.push(createEllipticalArc) // unstable in webkit
+	if (strokeText) methods.push(drawOutlineOfText)
 
   ;[...Array(rounds)].forEach((x) => {
     addRandomCanvasGradient(context, offset, area, colors, getNextSeed)
@@ -296,34 +294,8 @@ const paintCanvas = ({
   return
 }
 
-const emojifyCanvas = ({ canvas, context, cssFontFamily }) => {
-	const width = 140
-	const height = 30
-	canvas.width = width
-	canvas.height = height
-	context.font = `5px ${cssFontFamily.replace(/!important/gm, '')}`
-	context.fillText(`😀☺🤵‍♂️♨☸⚧⁉ℹ🏳️‍⚧️🥲☹☠🧑‍🦰🧏‍♂️⛷🧑‍🤝‍🧑☘⛰`, 0, 5)
-	context.fillText(`⛩⛴✈⏱⛈☂⛱☃☄⛸♟⛑⌨✉✏👩‍❤️‍`, 0, 10)
-	context.fillText(`💋‍👨👨‍👩‍👧‍👦👨‍👩‍👦😀©®™👁️‍�`, 0, 15)
-	context.fillText(`�️✒✂⛏⚒⚔⚙⛓⚗⚰⚱⚠☢☣⬆↗➡⬅`, 0, 20)
-	context.fillText(`⚛✡✝☦▶⏭⏯⏏♀♂✖〰⚕⚜✔✳❇◼▪❣`, 0, 25)
-	context.fillText(`❤✌☝✍❄⚖↪☯☪☮☑✴🅰🅿`, 0, 30)
-	return
-}
 
 export default async function getCanvas2d() {
-	const getFileReaderData = (blob) => {
-		if (!blob) {
-			return
-		}
-		const getRead = (method, blob) => new Promise((resolve) => {
-			const reader = new FileReader()
-			reader[method](blob)
-			return reader.addEventListener('loadend', () => resolve(reader.result))
-		})
-		return getRead('readAsDataURL', blob)
-	}
-
 	try {
 		const timer = createTimer()
 		await queueEvent(timer)
@@ -380,41 +352,11 @@ export default async function getCanvas2d() {
 			context,
 			strokeText: true,
 			cssFontFamily: CSS_FONT_FAMILY,
-			area: { width: 50, height: 50 },
+			area: { width: 75, height: 75 },
 			rounds: 10,
 		})
 
 		const dataURI = canvas.toDataURL()
-
-		let canvasOffscreen
-		try {
-			// @ts-ignore OffscreenCanvas
-			canvasOffscreen = new OffscreenCanvas(140, 30)
-			await queueEvent(timer)
-			emojifyCanvas({
-				canvas: canvasOffscreen,
-				context: canvasOffscreen.getContext('2d'),
-				cssFontFamily: CSS_FONT_FAMILY,
-			})
-		} catch (error) { }
-
-		await queueEvent(timer)
-		const [
-			fileReaderData,
-			fileReaderDataOffscreen,
-		] = await Promise.all([
-			new Promise((resolve) => canvas.toBlob((blob) => {
-				return resolve(getFileReaderData(blob))
-			})),
-			getFileReaderData(canvasOffscreen && await attempt(() => canvasOffscreen.convertToBlob())),
-		])
-
-		const blob = {
-			readAsDataURL: fileReaderData,
-		}
-		const blobOffscreen = {
-			readAsDataURL: fileReaderDataOffscreen,
-		}
 
 		await queueEvent(timer)
 		const mods = getPixelMods()
@@ -455,7 +397,7 @@ export default async function getCanvas2d() {
 		}).reduce((acc, x) => acc += x, 0)
 
 		// Paint
-		const maxSize = 50
+		const maxSize = 75
 		await queueEvent(timer)
 		paintCanvas({
 			canvas,
@@ -476,8 +418,8 @@ export default async function getCanvas2d() {
 		// Text
 		context.restore()
 		context.clearRect(0, 0, canvas.width, canvas.height)
-		canvas.width = maxSize
-		canvas.height = maxSize
+		canvas.width = 50
+		canvas.height = 50
 		context.font = `50px ${CSS_FONT_FAMILY.replace(/!important/gm, '')}`
 		context.fillText('A', 7, 37)
 		const textURI = canvas.toDataURL()
@@ -485,8 +427,8 @@ export default async function getCanvas2d() {
 		// Emoji
 		context.restore()
 		context.clearRect(0, 0, canvas.width, canvas.height)
-		canvas.width = maxSize
-		canvas.height = maxSize
+		canvas.width = 50
+		canvas.height = 50
 		context.font = `35px ${CSS_FONT_FAMILY.replace(/!important/gm, '')}`
 		context.fillText('👾', 0, 37)
 		const emojiURI = canvas.toDataURL()
@@ -537,8 +479,6 @@ export default async function getCanvas2d() {
 			textURI,
 			emojiURI,
 			mods,
-			blob,
-			blobOffscreen,
 			textMetricsSystemSum,
 			liedTextMetrics: textMetricsLie,
 			emojiSet: [...emojiSet],
@@ -574,8 +514,6 @@ export function canvasHTML(fp) {
 			textURI,
 			emojiURI,
 			mods,
-			blob,
-			blobOffscreen,
 			emojiSet,
 			textMetricsSystemSum,
 			$hash,
@@ -584,12 +522,8 @@ export function canvasHTML(fp) {
 	const { pixels, rgba, pixelImage } = mods || {}
 	const modPercent = pixels ? Math.round((pixels / 400) * 100) : 0
 
-	const blobDataURI = (blob || {}).readAsDataURL
-	const blobOffscreenDataURI = (blobOffscreen || {}).readAsDataURL
 	const hash = {
 		dataURI: hashMini(dataURI),
-		blobDataURI: hashMini(blobDataURI),
-		blobOffscreenDataURI: hashMini(blobOffscreenDataURI),
 		textURI: hashMini(textURI),
 		emojiURI: hashMini(emojiURI),
 		paintURI: hashMini(paintURI),
@@ -613,14 +547,7 @@ export function canvasHTML(fp) {
 
 		<br><br>
 		${dataURI ? `<div class="icon-pixel combined-image"></div>` : ''}
-		${dataURI ? `<div class="icon-pixel combined-image-blob"></div>` : ''}
 		<br>combined: ${!dataURI ? HTMLNote.BLOCKED : hash.dataURI}
-		<br>toBlob (combined): ${!blobDataURI ? HTMLNote.UNSUPPORTED : hash.blobDataURI}
-		<br><br>
-		${blobOffscreenDataURI ? `<div class="icon-pixel offscreen-image"></div>` : ''}
-		<br>convertToBlob (emoji storm): ${
-			!blobOffscreenDataURI ? HTMLNote.UNSUPPORTED : hash.blobOffscreenDataURI
-		}
 	`
 
 	// rgba: "b, g, gb, r, rb, rg, rgb"
@@ -652,12 +579,10 @@ export function canvasHTML(fp) {
 			.pixel-image,
 			.pixel-image-random,
 			.combined-image,
-			.combined-image-blob,
 			.paint-image,
 			.paint-cpu-image,
 			.text-image,
-			.emoji-image,
-			.offscreen-image {
+			.emoji-image {
 				max-width: 35px;
     		border-radius: 50%;
 				transform: scale(1.5);
@@ -682,14 +607,6 @@ export function canvasHTML(fp) {
 			}
 			.combined-image {
 				background-image: url(${dataURI})
-			}
-			.combined-image-blob {
-				background-image: url(${blobDataURI})
-			}
-			.offscreen-image {
-				background-image: url(${blobOffscreenDataURI});
-				background-repeat: repeat-y;
-				background-size: 70px;
 			}
 			.rgba {
 				width: 8px;
@@ -720,14 +637,17 @@ export function canvasHTML(fp) {
 		</style>
 		<span class="aside-note">${performanceLogger.getLog()['canvas 2d']}</span>
 		<strong>Canvas 2d</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
-		<div class="help" title="HTMLCanvasElement.toDataURL()\nCanvasRenderingContext2D.getImageData()\nHTMLCanvasElement.toBlob()\nOffscreenCanvas.convertToBlob()\nFileReader.readAsDataURL()">data: ${
+		<div class="help" title="HTMLCanvasElement.toDataURL()\nCanvasRenderingContext2D.getImageData()">data: ${
 			modal(
 				'creep-canvas-data',
 				dataTemplate,
 				hashMini({
 					dataURI,
-					blob,
-					blobOffscreen,
+					pixelImage,
+					paintURI,
+					paintCpuURI,
+					textURI,
+					emojiURI,
 				}),
 			)
 		}</div>
@@ -737,10 +657,8 @@ export function canvasHTML(fp) {
 			${emojiURI ? `<div class="icon-pixel emoji-image"></div>` : ''}
 			${paintCpuURI ? `<div class="icon-pixel paint-cpu-image"></div>` : ''}
 			${dataURI ? `<div class="icon-pixel combined-image"></div>` : ''}
-
 		</div>
 		<div class="icon-pixel-container pixels">
-			${blobOffscreenDataURI ? `<div class="icon-pixel offscreen-image"></div>` : ''}
 			<div class="icon-pixel pixel-image-random"></div>
 			${rgba ? `<div class="icon-pixel pixel-image"></div>` : ''}
 		</div>

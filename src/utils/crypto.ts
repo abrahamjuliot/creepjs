@@ -1,5 +1,5 @@
-import { DISTRUST_OS, isFontOSBad } from "../fonts"
-import { getReportedPlatform } from "./helpers"
+import { isFontOSBad } from '../fonts'
+import { getReportedPlatform } from './helpers'
 
 // https://stackoverflow.com/a/22429679
 const hashMini = (x) => {
@@ -131,8 +131,6 @@ const getBotHash = (fp, imports) => {
 const getFuzzyHash = async (fp) => {
 	// requires update log (below) when adding new keys to fp
 	const metricKeys = [
-		'canvas2d.blob',
-		'canvas2d.blobOffscreen',
 		'canvas2d.dataURI',
 		'canvas2d.emojiSet',
 		'canvas2d.emojiURI',
@@ -160,7 +158,6 @@ const getFuzzyHash = async (fp) => {
 		'consoleErrors.errors',
 		'css.computedStyle',
 		'css.system',
-		'cssMedia.importCSS',
 		'cssMedia.matchMediaCSS',
 		'cssMedia.mediaCSS',
 		'cssMedia.screenQuery',

@@ -152,7 +152,6 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			voicesHash,
 			canvas2dHash,
 			canvas2dImageHash,
-			canvas2dBlobHash,
 			canvas2dPaintHash,
 			canvas2dTextHash,
 			canvas2dEmojiHash,
@@ -192,7 +191,6 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			hashify(voicesComputed),
 			hashify(canvas2dComputed),
 			hashify((canvas2dComputed || {}).dataURI),
-			hashify((canvas2dComputed || {}).blob.readAsDataURL),
 			hashify((canvas2dComputed || {}).paintURI),
 			hashify((canvas2dComputed || {}).textURI),
 			hashify((canvas2dComputed || {}).emojiURI),
@@ -351,7 +349,6 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			mimeTypesHash,
 			canvas2dImageHash,
 			canvasWebglImageHash,
-			canvas2dBlobHash,
 			canvas2dPaintHash,
 			canvas2dTextHash,
 			canvas2dEmojiHash,
@@ -369,7 +366,6 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		domRectHash,
 		mimeTypesHash,
 		canvas2dImageHash,
-		canvas2dBlobHash,
 		canvas2dPaintHash,
 		canvas2dTextHash,
 		canvas2dEmojiHash,
@@ -496,17 +492,10 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			const { lied, liedTextMetrics } = canvas2d
 			let data
 			if (!lied) {
-				const { dataURI, paintURI, textURI, emojiURI, blob, blobOffscreen } = canvas2d
-				if (IS_WEBKIT) {
-					data = {
-						lied,
-						...{ textURI, emojiURI },
-					}
-				} else {
-					data = {
-						lied,
-						...{ dataURI, paintURI, textURI, emojiURI, blob, blobOffscreen },
-					}
+				const { dataURI, paintURI, textURI, emojiURI } = canvas2d
+				data = {
+					lied,
+					...{ dataURI, paintURI, textURI, emojiURI },
 				}
 			}
 			if (!liedTextMetrics) {
@@ -585,7 +574,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		capturedErrors: !!errorsLen,
 		lies: !!liesLen,
 		resistance: fp.resistance || undefined,
-		forceRenew: 1661405418365,
+		forceRenew: 1661633627037,
 	}
 
 	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f')
@@ -733,7 +722,6 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				<div>${getBlankIcons()}mimeTypes</div>
 				<div>${getBlankIcons()}audio</div>
 				<div>${getBlankIcons()}canvas image</div>
-				<div>${getBlankIcons()}canvas blob</div>
 				<div>${getBlankIcons()}canvas paint</div>
 				<div>${getBlankIcons()}canvas text</div>
 				<div>${getBlankIcons()}canvas emoji</div>
@@ -1283,10 +1271,6 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 							!canvas2d || canvas2d.lied ? null :
 								canvas2dImageHash
 						),
-						canvasBlobId: (
-							!canvas2d || canvas2d.lied ? null :
-								canvas2dBlobHash
-						),
 						canvasPaintId: (
 							!canvas2d || canvas2d.lied ? null :
 								canvas2dPaintHash
@@ -1361,7 +1345,6 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 					mimeTypesSystem: RAW_BODY?.mimeTypesId,
 					audioSystem: RAW_BODY?.audioId,
 					canvasSystem: RAW_BODY?.canvasId,
-					canvasBlobSystem: RAW_BODY?.canvasBlobId,
 					canvasPaintSystem: RAW_BODY?.canvasPaintId,
 					canvasTextSystem: RAW_BODY?.canvasTextId,
 					canvasEmojiSystem: RAW_BODY?.canvasEmojiId,
@@ -1416,8 +1399,11 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				const blockedOrOpenlyPoisonedMetric = decryptionDataScores.scores.includes(0)
 				// @ts-ignore
 				const validScores = decryptionDataScores.scores.filter((n) => !!n)
-				const crowdBlendingScoreMin = Math.min(...validScores)
-				const crowdBlendingScore = blockedOrOpenlyPoisonedMetric ? (0.75 * crowdBlendingScoreMin) : crowdBlendingScoreMin
+				const crowdBlendingScoreMin = Math.min(...(validScores.length ? validScores : [0]))
+				const crowdBlendingScore = (
+					blockedOrOpenlyPoisonedMetric ? (0.75 * crowdBlendingScoreMin) :
+						crowdBlendingScoreMin
+				)
 
 				console.groupCollapsed(`Crowd-Blending Score: ${crowdBlendingScore}%`)
 					console.table(scoreMetricsMap)
@@ -1452,7 +1438,6 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				mimeTypes: mimeTypesSamples,
 				audio: audioSamples,
 				canvas: canvasSamples,
-				canvasBlob: canvasBlobSamples,
 				canvasPaint: canvasPaintSamples,
 				canvasText: canvasTextSamples,
 				canvasEmoji: canvasEmojiSamples,
@@ -1492,7 +1477,6 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 					mimeTypesSystem: getPrediction({ hash: mimeTypesHash, data: mimeTypesSamples }),
 					audioSystem: getPrediction({ hash: audioMetrics, data: audioSamples }),
 					canvasSystem: getPrediction({ hash: canvas2dImageHash, data: canvasSamples }),
-					canvasBlobSystem: getPrediction({ hash: canvas2dBlobHash, data: canvasBlobSamples }),
 					canvasPaintSystem: getPrediction({ hash: canvas2dPaintHash, data: canvasPaintSamples }),
 					canvasTextSystem: getPrediction({ hash: canvas2dTextHash, data: canvasTextSamples }),
 					canvasEmojiSystem: getPrediction({ hash: canvas2dEmojiHash, data: canvasEmojiSamples }),
@@ -1549,7 +1533,6 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 					mimeTypes: mimeTypesHash,
 					audio: audioMetrics,
 					canvas: canvas2dImageHash,
-					canvasBlob: canvas2dBlobHash,
 					canvasPaint: canvas2dPaintHash,
 					canvasText: canvas2dTextHash,
 					canvasEmoji: canvas2dEmojiHash,
@@ -1576,7 +1559,6 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 					mimeTypes: 'media mimeTypes',
 					audio: 'audio metrics',
 					canvas: 'canvas image',
-					canvasBlob: 'canvas blob',
 					canvasPaint: 'canvas paint',
 					canvasText: 'canvas text',
 					canvasEmoji: 'canvas emoji',

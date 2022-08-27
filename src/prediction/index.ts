@@ -54,7 +54,6 @@ export function renderPrediction({
 		mimeTypesSystem,
 		audioSystem,
 		canvasSystem,
-		canvasBlobSystem,
 		canvasPaintSystem,
 		canvasTextSystem,
 		canvasEmojiSystem,
@@ -67,7 +66,7 @@ export function renderPrediction({
 		screenSystem,
 		deviceOfTimezone,
 		pendingReview,
-	} = decryptionData
+	} = decryptionData || {}
 
 	const iconSet = new Set()
 	const htmlIcon = (cssClass: string) => `<span class="icon ${cssClass}"></span>`
@@ -161,7 +160,6 @@ export function renderPrediction({
 		(mimeTypesSystem || {}).gpuBrand,
 		(audioSystem || {}).gpuBrand,
 		(canvasSystem || {}).gpuBrand,
-		(canvasBlobSystem || {}).gpuBrand,
 		(canvasPaintSystem || {}).gpuBrand,
 		(canvasTextSystem || {}).gpuBrand,
 		(canvasEmojiSystem || {}).gpuBrand,
@@ -184,7 +182,6 @@ export function renderPrediction({
 		(mimeTypesSystem || {}).gpus,
 		(audioSystem || {}).gpus,
 		(canvasSystem || {}).gpus,
-		(canvasBlobSystem || {}).gpus,
 		(canvasPaintSystem || {}).gpus,
 		(canvasTextSystem || {}).gpus,
 		(canvasEmojiSystem || {}).gpus,
@@ -207,7 +204,6 @@ export function renderPrediction({
 		(mimeTypesSystem || {}).device,
 		(audioSystem || {}).device,
 		(canvasSystem || {}).device,
-		(canvasBlobSystem || {}).device,
 		(canvasPaintSystem || {}).device,
 		(canvasTextSystem || {}).device,
 		(canvasEmojiSystem || {}).device,
@@ -331,10 +327,6 @@ export function renderPrediction({
 				!hasValue(canvasSystem) ? unknownHTML('canvas image') :
 					getTemplate({ title: 'canvas image', agent: canvasSystem })
 			}</div>
-			<div class="ellipsis relative"><span id="canvasBlob-entropy"></span>${
-				!hasValue(canvasBlobSystem) ? unknownHTML('canvas blob') :
-					getTemplate({ title: 'canvas blob', agent: canvasBlobSystem })
-			}</div>
 			<div class="ellipsis relative"><span id="canvasPaint-entropy"></span>${
 				!hasValue(canvasPaintSystem) ? unknownHTML('canvas paint') :
 					getTemplate({ title: 'canvas paint', agent: canvasPaintSystem })
@@ -420,7 +412,6 @@ export function predictionErrorPatch(error: string): void {
 				<div>${getBlankIcons()}mimeTypes</div>
 				<div>${getBlankIcons()}audio</div>
 				<div>${getBlankIcons()}canvas image</div>
-				<div>${getBlankIcons()}canvas blob</div>
 				<div>${getBlankIcons()}canvas paint</div>
 				<div>${getBlankIcons()}canvas text</div>
 				<div>${getBlankIcons()}canvas emoji</div>
