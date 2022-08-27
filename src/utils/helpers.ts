@@ -359,34 +359,36 @@ const getUserAgentPlatform = ({ userAgent, excludeBuild = true }) => {
 }
 
 const computeWindowsRelease = ({ platform, platformVersion, fontPlatformVersion }) => {
-	const chrome95Features = (
-		IS_BLINK &&
-		CSS.supports('contain-intrinsic-width', 'initial')
-	)
-	if ((platform != 'Windows') || !chrome95Features) {
+	if ((platform != 'Windows') || !(IS_BLINK && CSS.supports('accent-color', 'initial'))) {
 		return
 	}
 	const platformVersionNumber = +(/(\d+)\./.exec(platformVersion)||[])[1]
 
 	// https://github.com/WICG/ua-client-hints/issues/220#issuecomment-870858413
-	const release = {
-		0: '7/8/8.1',
-		1: '10 (1507)',
-		2: '10 (1511)',
-		3: '10 (1607)',
-		4: '10 (1703)',
-		5: '10 (1709)',
-		6: '10 (1803)',
-		7: '10 (1809)',
-		8: '10 (1903|1909)',
-		10: '10 (2004|20H2|21H1)',
+	// https://docs.microsoft.com/en-us/microsoft-edge/web-platform/how-to-detect-win11
+	// https://docs.microsoft.com/en-us/microsoft-edge/web-platform/user-agent-guidance
+	const release: Record<string, string> = {
+		'0.1.0': '7',
+		'0.2.0': '8',
+		'0.3.0': '8.1',
+		'1.0.0': '10 (1507)',
+		'2.0.0': '10 (1511)',
+		'3.0.0': '10 (1607)',
+		'4.0.0': '10 (1703)',
+		'5.0.0': '10 (1709)',
+		'6.0.0': '10 (1803)',
+		'7.0.0': '10 (1809)',
+		'8.0.0': '10 (1903|1909)',
+		'10.0.0': '10 (2004|20H2|21H1)',
+		'11.0.0': '10',
+		'12.0.0': '10',
 	}
 
 	const oldFontPlatformVersionNumber = (/7|8\.1|8/.exec(fontPlatformVersion)||[])[0]
 	const version = (
 		platformVersionNumber >= 13 ? '11' :
 			platformVersionNumber == 0 && oldFontPlatformVersionNumber ? oldFontPlatformVersionNumber :
-				(release[platformVersionNumber] || 'Unknown')
+				(release[platformVersion] || 'Unknown')
 	)
 	return (
 		`Windows ${version} [${platformVersion}]`
