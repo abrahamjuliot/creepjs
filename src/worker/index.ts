@@ -438,8 +438,8 @@ export default async function getBestWorkerScope() {
 				return false
 			}
 
-			if (FEATURE_CASE && userAgentData.platform == 'macOS') {
-				return /_/.test(userAgentData.platformVersion)
+			if (userAgentData.platform == 'macOS') {
+				return FEATURE_CASE ? /_/.test(userAgentData.platformVersion) : false
 			}
 
 			const reportedVersionNumber = (/windows ([\d|\.]+)/i.exec(device)||[])[1]
