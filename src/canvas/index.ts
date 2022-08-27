@@ -347,12 +347,13 @@ export default async function getCanvas2d() {
 		}
 
 		await queueEvent(timer)
+		const imageSizeMax = IS_WEBKIT ? 50 : 75 // webkit is unstable
 		paintCanvas({
 			canvas,
 			context,
 			strokeText: true,
 			cssFontFamily: CSS_FONT_FAMILY,
-			area: { width: 75, height: 75 },
+			area: { width: imageSizeMax, height: imageSizeMax },
 			rounds: 10,
 		})
 
