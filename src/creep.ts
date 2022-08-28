@@ -868,6 +868,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				rtt: status?.rtt,
 				webRTCFoundation: webRTC?.foundation,
 				webRTCCodecs: webRTC?.codecsSdp ? await hashify(webRTC.codecsSdp) : undefined,
+				webRTCMediaDevices: mediaDevices,
 			}
 
 			cipher(RAW_BODY).then((secret) => {
