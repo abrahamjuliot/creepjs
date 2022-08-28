@@ -247,3 +247,156 @@ export default async function renderSamples(samples, { fp, styleSystemHash }) {
 
 	return
 }
+
+export function getRawFingerprint(fp) {
+	try {
+		const {
+			canvas2d,
+			canvasWebgl,
+			capturedErrors,
+			clientRects,
+			cssMedia,
+			features,
+			fonts,
+			headless,
+			intl,
+			lies,
+			navigator: nav,
+			offlineAudioContext,
+			resistance,
+			screen: screenFp,
+			svg,
+			timezone,
+			trash,
+			voices,
+			workerScope: wkr,
+		} = fp || {}
+
+		const analysisFP = {
+			device: (() => {
+				const { width, height } = cssMedia?.screenQuery || {}
+				return [
+					wkr?.gpu?.compressedGPU || canvasWebgl?.gpu?.compressedGPU || null,
+					wkr?.deviceMemory || nav?.deviceMemory || null,
+					wkr?.hardwareConcurrency || nav?.hardwareConcurrency || null,
+					fonts?.platformVersion || null,
+					width || null,
+					height || null,
+					screenFp?.touch || null,
+					nav?.maxTouchPoints !== undefined ? nav.maxTouchPoints : null,
+					typeof nav?.bluetoothAvailability != 'boolean' ? nav.bluetoothAvailability : null,
+				]
+			})(),
+			voices: voices?.local?.slice(0, 3),
+			headless: headless?.$hash,
+			headlessRating: headless?.headlessRating,
+			headlessLikeRating: headless?.likeHeadlessRating,
+			headlessStealthRating: headless?.stealthRating,
+			headlessPlatformEstimate: headless?.platformEstimate?.[0],
+			headlessSystemFont: headless?.systemFonts,
+			engine: resistance?.engine,
+			resistance: [
+				resistance?.$hash.slice(0, 8) || '',
+				resistance?.extension,
+			].join(':'),
+			audio: offlineAudioContext?.$hash,
+			canvas: canvas2d?.$hash,
+			webgl: canvasWebgl?.$hash,
+			errors: capturedErrors?.$hash,
+			emojiDOMRect: clientRects?.domrectSystemSum,
+			emojiSVGRect: svg?.svgrectSystemSum,
+			emojiPixels: fonts?.pixelSizeSystemSum,
+			emojiTextMetrics: canvas2d?.textMetricsSystemSum,
+			features: features?.version,
+			gpu: (() => {
+				if (!canvasWebgl?.parameters) return
+				const {
+					RENDERER,
+					UNMASKED_RENDERER_WEBGL,
+					UNMASKED_VENDOR_WEBGL,
+				} = canvasWebgl.parameters || {}
+				return [
+					RENDERER || null,
+					UNMASKED_VENDOR_WEBGL || null,
+					UNMASKED_RENDERER_WEBGL || null,
+				]
+			})(),
+			fonts: fonts?.$hash,
+			fontList: fonts?.fontFaceLoadFonts,
+			fontPlatformVersion: fonts?.platformVersion,
+			userAgent: nav?.userAgent,
+			userAgentParsed: nav?.userAgentParsed,
+			uaParsed: [
+				wkr?.device || nav?.device || null,
+				wkr?.platform || nav?.platform || null,
+				wkr?.system || nav?.system || null,
+			],
+			userAgentData: wkr?.userAgentData || nav?.userAgentData || undefined,
+			lies: lies?.totalLies !== 0 ? lies?.$hash : undefined,
+			lieKeys: lies?.totalLies !== 0 ? Object.keys(lies.data || {}) : undefined,
+			trash: trash?.trashBin.length,
+			timezone: (() => {
+				if (!timezone) return
+
+				const {
+					location,
+					zone,
+					locationEpoch,
+					offset,
+					offsetComputed,
+				} = timezone || {}
+
+				const {
+					locale,
+					language,
+					languages,
+					timezoneLocation,
+					localeEntropyIsTrusty,
+					localeIntlEntropyIsTrusty,
+				} = wkr || {}
+
+				return [
+					timezoneLocation || location || null,
+					zone || null,
+					locationEpoch || null,
+					offset || null,
+					offsetComputed || null,
+					locale || intl?.locale || null,
+					language || null,
+					languages || null,
+					localeEntropyIsTrusty || null,
+					localeIntlEntropyIsTrusty || null,
+				]
+			})(),
+			screen: (() => {
+				if (!screenFp) return
+
+				const {
+					availHeight,
+					availWidth,
+					colorDepth,
+					height,
+					pixelDepth,
+					touch,
+					width,
+				} = screenFp || {}
+				return [
+					width,
+					height,
+					availWidth,
+					availHeight,
+					colorDepth,
+					pixelDepth,
+					touch,
+					nav?.maxTouchPoints !== undefined ? nav.maxTouchPoints : null,
+					window.devicePixelRatio || null,
+				]
+			})(),
+		}
+
+		return analysisFP
+	} catch (err) {
+		console.error(err)
+		return { fpErr: err }
+	}
+}

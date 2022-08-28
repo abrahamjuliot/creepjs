@@ -16,7 +16,7 @@ import getMedia, { mediaHTML } from './media'
 import getNavigator, { navigatorHTML } from './navigator'
 import getPrediction, { getBlankIcons, predictionErrorPatch, renderPrediction } from './prediction'
 import getResistance, { resistanceHTML } from './resistance'
-import renderSamples, { getSamples } from './samples'
+import renderSamples, { getSamples, getRawFingerprint } from './samples'
 import getScreen, { screenHTML } from './screen'
 import getVoices, { voicesHTML } from './speech'
 import { getStatus, statusHTML } from './status'
@@ -838,13 +838,13 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		</div>
 	</div>
 	`, async () => {
-		// get WebRTC data
+		// send analysis fingerprint
 		Promise.all([
 			getWebRTCData(),
 			getWebRTCDevices(),
 			getStatus(),
-		]).then((data) => {
-			const [webRTC, mediaDevices, status] = data
+		]).then(async (data) => {
+			const [webRTC, mediaDevices, status] = data || []
 			patch(document.getElementById('webrtc-connection'), html`
 				<div class="flex-grid">
 					${webrtcHTML(webRTC, mediaDevices)}
@@ -856,6 +856,32 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 					${statusHTML(status)}
 				</div>
 			`)
+
+			// entropy
+			const RAW_BODY = {
+				...getRawFingerprint(fp),
+				memory: status?.memory,
+				memoryGB: status?.memoryInGigabytes,
+				quota: status?.quota,
+				quotaGB: status?.quotaInGigabytes,
+				stackSize: status?.stackSize,
+				rtt: status?.rtt,
+				webRTCFoundation: webRTC?.foundation,
+				webRTCCodecs: webRTC?.codecsSdp ? await hashify(webRTC.codecsSdp) : undefined,
+			}
+
+			cipher(RAW_BODY).then((secret) => {
+				fetch('https://creepjs-api.web.app/analysis', {
+					method: 'POST',
+					headers: {
+						'Accept': 'application/json, text/plain, */*',
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(secret),
+				})
+				// .then((res) => res.json()) // return the analysis
+				.catch((error) => console.error(error))
+			})
 		}).catch((err) => console.error(err))
 
 		// fetch fingerprint data from server
