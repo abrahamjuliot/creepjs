@@ -282,9 +282,9 @@ export function getRawFingerprint(fp) {
 					fonts?.platformVersion || null,
 					width || null,
 					height || null,
-					screenFp?.touch || null,
+					typeof screenFp?.touch == 'boolean' ? screenFp.touch : null,
 					nav?.maxTouchPoints !== undefined ? nav.maxTouchPoints : null,
-					typeof nav?.bluetoothAvailability != 'boolean' ? nav.bluetoothAvailability : null,
+					typeof nav?.bluetoothAvailability == 'boolean' ? nav.bluetoothAvailability : null,
 				]
 			})(),
 			voices: voices?.local?.slice(0, 3),
@@ -303,10 +303,10 @@ export function getRawFingerprint(fp) {
 			canvas: canvas2d?.$hash,
 			webgl: canvasWebgl?.$hash,
 			errors: capturedErrors?.$hash,
-			emojiDOMRect: clientRects?.domrectSystemSum,
-			emojiSVGRect: svg?.svgrectSystemSum,
-			emojiPixels: fonts?.pixelSizeSystemSum,
-			emojiTextMetrics: canvas2d?.textMetricsSystemSum,
+			emojiDOMRect: clientRects?.domrectSystemSum ? ''+clientRects.domrectSystemSum : undefined,
+			emojiSVGRect: svg?.svgrectSystemSum ? ''+svg.svgrectSystemSum : undefined,
+			emojiPixels: fonts?.pixelSizeSystemSum ? ''+fonts.pixelSizeSystemSum : undefined,
+			emojiTextMetrics: canvas2d?.textMetricsSystemSum ? ''+canvas2d.textMetricsSystemSum : undefined,
 			features: features?.version,
 			gpu: (() => {
 				if (!canvasWebgl?.parameters) return
@@ -326,7 +326,7 @@ export function getRawFingerprint(fp) {
 			fontPlatformVersion: fonts?.platformVersion,
 			userAgent: nav?.userAgent,
 			userAgentParsed: nav?.userAgentParsed,
-			uaParsed: [
+			userAgentDevice: [
 				wkr?.device || nav?.device || null,
 				wkr?.platform || nav?.platform || null,
 				wkr?.system || nav?.system || null,
