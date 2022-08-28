@@ -351,6 +351,7 @@ export function getRawFingerprint(fp) {
 					language,
 					languages,
 					timezoneLocation,
+					timezoneOffset,
 					localeEntropyIsTrusty,
 					localeIntlEntropyIsTrusty,
 				} = wkr || {}
@@ -359,13 +360,13 @@ export function getRawFingerprint(fp) {
 					timezoneLocation || location || null,
 					zone || null,
 					locationEpoch || null,
+					timezoneOffset || offsetComputed || null,
 					offset || null,
-					offsetComputed || null,
 					locale || intl?.locale || null,
 					language || null,
 					languages || null,
-					localeEntropyIsTrusty || null,
-					localeIntlEntropyIsTrusty || null,
+					typeof localeEntropyIsTrusty == 'boolean' ? localeEntropyIsTrusty : null,
+					typeof localeIntlEntropyIsTrusty == 'boolean' ? localeIntlEntropyIsTrusty : null,
 				]
 			})(),
 			screen: (() => {

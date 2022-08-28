@@ -574,7 +574,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		capturedErrors: !!errorsLen,
 		lies: !!liesLen,
 		resistance: fp.resistance || undefined,
-		forceRenew: 1661633627037,
+		forceRenew: 1661669867336,
 	}
 
 	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f')
@@ -871,6 +871,8 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				webRTCMediaDevices: mediaDevices,
 			}
 
+			// console.log(`'`+Object.keys(RAW_BODY).join(`',\n'`))
+
 			cipher(RAW_BODY).then((secret) => {
 				fetch('https://creepjs-api.web.app/analysis', {
 					method: 'POST',
@@ -880,7 +882,14 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 					},
 					body: JSON.stringify(secret),
 				})
-				// .then((res) => res.json()) // return the analysis
+				.then(async (res) => {
+					if (res.ok) {
+						const data = await res.json()
+						console.groupCollapsed('Analysis')
+						console.log(JSON.stringify(data, null, '\t'))
+						console.groupEnd()
+					}
+				}) // return the analysis
 				.catch((error) => console.error(error))
 			})
 		}).catch((err) => console.error(err))
