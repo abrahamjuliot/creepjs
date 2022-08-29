@@ -288,7 +288,7 @@ export function getRawFingerprint(fp) {
 				]
 			})(),
 			voices: voices?.local?.slice(0, 3),
-			headless: headless?.$hash,
+			headless: headless?.$hash?.slice(0, 16),
 			headlessRating: headless?.headlessRating,
 			headlessLikeRating: headless?.likeHeadlessRating,
 			headlessStealthRating: headless?.stealthRating,
@@ -299,14 +299,14 @@ export function getRawFingerprint(fp) {
 				resistance?.$hash.slice(0, 8) || '',
 				resistance?.extension,
 			].join(':'),
-			audio: offlineAudioContext?.$hash,
-			canvas: canvas2d?.$hash,
-			webgl: canvasWebgl?.$hash,
-			errors: capturedErrors?.$hash,
-			emojiDOMRect: clientRects?.domrectSystemSum ? ''+clientRects.domrectSystemSum : undefined,
-			emojiSVGRect: svg?.svgrectSystemSum ? ''+svg.svgrectSystemSum : undefined,
-			emojiPixels: fonts?.pixelSizeSystemSum ? ''+fonts.pixelSizeSystemSum : undefined,
-			emojiTextMetrics: canvas2d?.textMetricsSystemSum ? ''+canvas2d.textMetricsSystemSum : undefined,
+			audio: offlineAudioContext?.$hash?.slice(0, 16),
+			canvas: canvas2d?.$hash?.slice(0, 16),
+			webgl: canvasWebgl?.$hash?.slice(0, 16),
+			errors: capturedErrors?.$hash?.slice(0, 16),
+			emojiDOMRect: clientRects?.domrectSystemSum,
+			emojiSVGRect: svg?.svgrectSystemSum,
+			emojiPixels: fonts?.pixelSizeSystemSum,
+			emojiTextMetrics: canvas2d?.textMetricsSystemSum,
 			features: features?.version,
 			gpu: (() => {
 				if (!canvasWebgl?.parameters) return
@@ -321,18 +321,38 @@ export function getRawFingerprint(fp) {
 					UNMASKED_RENDERER_WEBGL || null,
 				]
 			})(),
-			fonts: fonts?.$hash,
+			fonts: fonts?.$hash?.slice(0, 16),
 			fontList: fonts?.fontFaceLoadFonts,
 			fontPlatformVersion: fonts?.platformVersion,
-			userAgent: nav?.userAgent,
-			userAgentParsed: nav?.userAgentParsed,
+			userAgent: wkr?.userAgent || nav?.userAgent,
 			userAgentDevice: [
 				wkr?.device || nav?.device || null,
 				wkr?.platform || nav?.platform || null,
 				wkr?.system || nav?.system || null,
 			],
-			userAgentData: wkr?.userAgentData || nav?.userAgentData || undefined,
-			lies: lies?.totalLies !== 0 ? lies?.$hash : undefined,
+			userAgentData: (() => {
+				const data = wkr?.userAgentData || nav?.userAgentData
+				if (!data) return
+
+				const {
+					platform,
+					platformVersion,
+					bitness,
+					architecture,
+					model,
+					mobile,
+				} = data || {}
+
+				return [
+					platform || null,
+					platformVersion || null,
+					bitness || null,
+					architecture || null,
+					model || null,
+					typeof mobile == 'boolean' ? mobile : null,
+				]
+			})(),
+			lies: lies?.totalLies !== 0 ? lies?.$hash?.slice(0, 16) : undefined,
 			lieKeys: lies?.totalLies !== 0 ? Object.keys(lies.data || {}) : undefined,
 			trash: trash?.trashBin.length,
 			timezone: (() => {

@@ -15,6 +15,46 @@ function getMaxCallStackSize(): number {
   return fn()
 }
 
+// based on and inspired by
+// https://github.com/Joe12387/OP-Fingerprinting-Script/blob/main/opfs.js#L443
+function getTimingResolution(): [number, number] {
+  const maxRuns = 5000
+  let valA = 1
+  let valB = 1
+  let res
+
+  for (let i = 0; i < maxRuns; i++) {
+    const a = performance.now()
+    const b = performance.now()
+    if (a < b) {
+      res = b - a
+      if (res > valA && res < valB) {
+        valB = res
+      } else if (res < valA) {
+        valB = valA
+        valA = res
+      }
+    }
+  }
+
+  return [valA, valB]
+}
+
+function getClientLitter(): string[] {
+  try {
+    const iframe = document.createElement('iframe')
+    document.body.appendChild(iframe)
+    const iframeWindow = iframe.contentWindow
+    const windowKeys = Object.getOwnPropertyNames(window)
+    const iframeKeys = Object.getOwnPropertyNames(iframeWindow)
+    document.body.removeChild(iframe)
+    const clientKeys = windowKeys.filter((x) => !iframeKeys.includes(x))
+    return clientKeys
+  } catch (err) {
+    return []
+  }
+}
+
 interface BatteryManager {
   charging: boolean
   chargingTime: number
@@ -23,7 +63,7 @@ interface BatteryManager {
 }
 async function getBattery(): Promise<BatteryManager | null> {
   if (!('getBattery' in navigator)) return null
-  // @ts-expect-error
+  // @ts-expect-error if not supported
   return navigator.getBattery()
 }
 
@@ -32,12 +72,26 @@ async function getStorage(): Promise<number | null> {
   return Promise.all([
     navigator.storage.estimate().then(({ quota }) => quota),
     new Promise((resolve) => {
-      // @ts-expect-error
+      // @ts-expect-error if not supported
       navigator.webkitTemporaryStorage.queryUsageAndQuota((_, quota) => {
         resolve(quota)
       })
     }).catch(() => null),
   ]).then(([quota1, quota2]) => (quota2 || quota1) as number)
+}
+
+async function getScriptSize(): Promise<number | null> {
+  let url = null
+  try {
+    // @ts-expect-error if unsupported
+    url = document?.currentScript?.src || import.meta.url
+  } catch (err) { }
+
+  if (!url) return null
+  return fetch(url)
+    .then((res) => res.blob())
+    .then((blob) => blob.size)
+    .catch(() => null)
 }
 
 interface Status {
@@ -55,15 +109,27 @@ interface Status {
     saveData?: boolean
     downlinkMax?: number
     type?: ConnectionType
-    stackSize: number
+    stackSize: number,
+    timingRes: [number, number],
+    clientLitter: string[],
+    scripts: string[],
+    scriptSize: number | null,
 }
 export async function getStatus(): Promise<Status> {
   const [
     batteryInfo,
     quota,
+    scriptSize,
+    stackSize,
+    timingRes,
+    clientLitter,
   ] = await Promise.all([
     getBattery(),
     getStorage(),
+    getScriptSize(),
+    getMaxCallStackSize(),
+    getTimingResolution(),
+    getClientLitter().sort().slice(0, 40),
   ])
 
   // BatteryManager
@@ -75,7 +141,7 @@ export async function getStatus(): Promise<Status> {
   } = batteryInfo || {}
 
   // MemoryInfo
-  // @ts-expect-error
+  // @ts-expect-error if not supported
   const memory = performance?.memory?.jsHeapSizeLimit || null
   const memoryInGigabytes = memory ? +(memory/GIGABYTE).toFixed(2) : null
 
@@ -93,8 +159,9 @@ export async function getStatus(): Promise<Status> {
     downlinkMax?: number,
   } || {}
 
-  // Stack Size
-  const stackSize = getMaxCallStackSize()
+  const scripts: string[] = [
+    ...document.querySelectorAll('script'),
+  ].map((x) => x.src.replace(/^https?:\/\//, '')).slice(0, 10)
 
   return {
     charging,
@@ -112,6 +179,10 @@ export async function getStatus(): Promise<Status> {
     downlinkMax,
     type,
     stackSize,
+    timingRes,
+    clientLitter,
+    scripts,
+    scriptSize,
   }
 }
 
@@ -150,11 +221,13 @@ export function statusHTML(status: Status) {
     downlinkMax,
     type,
     stackSize,
+    timingRes,
   } = status
 
 	const statusHash = hashMini({
 		memoryInGigabytes,
     quotaInGigabytes,
+    timingRes,
     rtt: rtt === 0 ? 0 : -1,
     type,
 	})
@@ -196,6 +269,9 @@ export function statusHTML(status: Status) {
         }
         ${
           memory ? `<div>memory: ${memoryInGigabytes}GB<br>[${memory}]</div>` : ''
+        }
+        ${
+          timingRes ? `<div>timing res:<br>${timingRes.join('<br>')}</div>` : ''
         }
         <div>stack: ${stackSize || HTMLNote.BLOCKED}</div>
       </div>

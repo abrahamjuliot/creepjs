@@ -865,10 +865,18 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				quota: status?.quota,
 				quotaGB: status?.quotaInGigabytes,
 				stackSize: status?.stackSize,
+				timingRes: status?.timingRes,
 				rtt: status?.rtt,
+				networkType: status?.downlink ? [status?.effectiveType, status?.type] : undefined,
 				webRTCFoundation: webRTC?.foundation,
-				webRTCCodecs: webRTC?.codecsSdp ? await hashify(webRTC.codecsSdp) : undefined,
+				webRTCCodecs: (
+					webRTC?.codecsSdp ? (await hashify(webRTC.codecsSdp)).slice(0, 16) :
+						undefined
+				),
 				webRTCMediaDevices: mediaDevices,
+				scripts: status?.scripts,
+				client: status?.clientLitter,
+				scriptSize: status?.scriptSize,
 			}
 
 			// console.log(`'`+Object.keys(RAW_BODY).join(`',\n'`))
