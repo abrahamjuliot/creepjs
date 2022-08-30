@@ -4,6 +4,7 @@ export function getBlankIcons() {
 	return `<span class="icon"></span><span class="icon"></span><span class="icon"></span>`
 }
 
+// This is the Dragon Fire Magic that runs when the API is locked
 export default function getPrediction({ hash, data }) {
 	const getBaseDeviceName = (devices: string[]) => {
 		// ex: find Android 10 in [Android 10, Android 10 Blah Blah]
@@ -14,15 +15,17 @@ export default function getPrediction({ hash, data }) {
 	let gpus: string[] = []
 	let gpuBrands: string[] = []
 	const decrypted = Object.keys(data).find((key) => data[key].find((item) => {
-		if (item.id !== hash) {
-			return false
-		}
+		if (item.id !== hash && ''+item.id !== ''+hash) return false
+
 		devices = item.devices || []
 		systems = item.systems || []
 		gpus = item.gpus || []
 		gpuBrands = item.gpuBrands || []
+
 		return true
 	}))
+
+	// This gets us what the API returns
 	const prediction = {
 		decrypted,
 		system: systems.length == 1 ? systems[0] : undefined,
@@ -30,8 +33,9 @@ export default function getPrediction({ hash, data }) {
 			devices.length == 1 ? devices[0] : getBaseDeviceName(devices)
 		),
 		gpu: gpus.length == 1 ? gpus[0] : undefined,
-		gpuBrands: gpuBrands.length == 1 ? gpuBrands[0] : undefined,
+		gpuBrand: gpuBrands.length == 1 ? gpuBrands[0] : undefined,
 	}
+
 	return prediction
 }
 
@@ -100,26 +104,25 @@ export function renderPrediction({
 							/windows/i.test(system) ? iconSet.add('windows') && htmlIcon('windows') : htmlIcon('')
 		)
 
-		const gpuBrandIconMap: Record<string, () => string> = {
-			AMD: () => iconSet.add('chip') && htmlIcon('chip'),
-			NVIDIA: () => iconSet.add('chip') && htmlIcon('chip'),
-			APPLE: () => iconSet.add('chip') && htmlIcon('chip'),
-			INTEL: () => iconSet.add('chip') && htmlIcon('chip'),
-			MICROSOFT: () => iconSet.add('chip') && htmlIcon('chip'),
-			SWIFTSHADER: () => iconSet.add('chip') && htmlIcon('chip'),
-			ADRENO: () => iconSet.add('chip') && htmlIcon('chip'),
-			MALI: () => iconSet.add('chip') && htmlIcon('chip'),
-			POWERVR: () => iconSet.add('chip') && htmlIcon('chip'),
-			SAMSUNG: () => iconSet.add('chip') && htmlIcon('chip'),
-			PARALLELS: () => iconSet.add('chip') && htmlIcon('chip'),
-			VMWARE: () => iconSet.add('chip') && htmlIcon('chip'),
-			VIRTUALBOX: () => iconSet.add('chip') && htmlIcon('chip'),
-			LLVM: () => iconSet.add('chip') && htmlIcon('chip'),
+		const gpuBrandIconMap: Record<string, boolean> = {
+			AMD: true,
+			NVIDIA: true,
+			APPLE: true,
+			INTEL: true,
+			MICROSOFT: true,
+			SWIFTSHADER: true,
+			ADRENO: true,
+			MALI: true,
+			POWERVR: true,
+			SAMSUNG: true,
+			PARALLELS: true,
+			VMWARE: true,
+			VIRTUALBOX: true,
+			LLVM: true,
 		}
 
 		const gpuBrandIcon = (
-			gpuBrandIconMap[gpuBrand] ? gpuBrandIconMap[gpuBrand]() :
-				htmlIcon('')
+			gpuBrandIconMap[gpuBrand] ? iconSet.add('chip') && htmlIcon('chip') : htmlIcon('')
 		)
 
 		const icons = [
@@ -175,24 +178,24 @@ export function renderPrediction({
 	gpuBrands.delete(undefined)
 
 	const gpus = new Set([
-		(jsRuntime || {}).gpus,
-		(emojiSystem || {}).gpus,
-		(domRectSystem || {}).gpus,
-		(svgSystem || {}).gpus,
-		(mimeTypesSystem || {}).gpus,
-		(audioSystem || {}).gpus,
-		(canvasSystem || {}).gpus,
-		(canvasPaintSystem || {}).gpus,
-		(canvasTextSystem || {}).gpus,
-		(canvasEmojiSystem || {}).gpus,
-		(textMetricsSystem || {}).gpus,
-		(webglSystem || {}).gpus,
-		(gpuSystem || {}).gpus,
-		(gpuModelSystem || {}).gpus,
-		(fontsSystem || {}).gpus,
-		(voicesSystem || {}).gpus,
-		(screenSystem || {}).gpus,
-		(deviceOfTimezone || {}).gpus,
+		(jsRuntime || {}).gpu,
+		(emojiSystem || {}).gpu,
+		(domRectSystem || {}).gpu,
+		(svgSystem || {}).gpu,
+		(mimeTypesSystem || {}).gpu,
+		(audioSystem || {}).gpu,
+		(canvasSystem || {}).gpu,
+		(canvasPaintSystem || {}).gpu,
+		(canvasTextSystem || {}).gpu,
+		(canvasEmojiSystem || {}).gpu,
+		(textMetricsSystem || {}).gpu,
+		(webglSystem || {}).gpu,
+		(gpuSystem || {}).gpu,
+		(gpuModelSystem || {}).gpu,
+		(fontsSystem || {}).gpu,
+		(voicesSystem || {}).gpu,
+		(screenSystem || {}).gpu,
+		(deviceOfTimezone || {}).gpu,
 	])
 	gpus.delete(undefined)
 
@@ -217,7 +220,7 @@ export function renderPrediction({
 		(deviceOfTimezone || {}).device,
 	])
 	devices.delete(undefined)
-
+	console.log(emojiSystem)
 	const getBaseDeviceName = (devices: string[]) => {
 		return devices.find((a) => devices.filter((b) => b.includes(a)).length == devices.length)
 	}
