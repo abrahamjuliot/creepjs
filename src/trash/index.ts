@@ -75,7 +75,10 @@ const trustInteger = (name, val) => {
 }
 
 // WebGL Renderer helpers
-const compressWebGLRenderer = (x) => (''+x)
+function compressWebGLRenderer(x: string): string | undefined {
+	if (!x) return
+
+	return (''+x)
 	.replace(/ANGLE \(|\sDirect3D.+|\sD3D.+|\svs_.+\)|\((DRM|POLARIS|LLVM).+|Mesa.+|(ATI|INTEL)-.+|Metal\s-\s.+|NVIDIA\s[\d|\.]+/ig, '')
 	.replace(/(\s(ti|\d{1,2}GB|super)$)/ig, '')
 	.replace(/\s{2,}/g, ' ')
@@ -83,6 +86,7 @@ const compressWebGLRenderer = (x) => (''+x)
 	.replace(/((r|g)(t|)(x|s|\d) |Graphics |GeForce |Radeon (HD |Pro |))(\d+)/i, (...args) => {
 		return `${args[1]}${args[6][0]}${args[6].slice(1).replace(/\d/g, '0')}s`
 	})
+}
 
 const getWebGLRendererParts = (x) => {
     const knownParts = [

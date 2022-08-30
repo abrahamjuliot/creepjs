@@ -220,7 +220,7 @@ export function renderPrediction({
 		(deviceOfTimezone || {}).device,
 	])
 	devices.delete(undefined)
-	console.log(emojiSystem)
+
 	const getBaseDeviceName = (devices: string[]) => {
 		return devices.find((a) => devices.filter((b) => b.includes(a)).length == devices.length)
 	}
