@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const express = require('express')
 const path = require('path')
 const home = path.join(__dirname, '/public')
