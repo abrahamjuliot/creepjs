@@ -248,6 +248,19 @@ export default async function renderSamples(samples, { fp, styleSystemHash }) {
 	return
 }
 
+function getGpuBrand(gpu: string): string | null {
+	if (!gpu) return null
+	const gpuBrandMatcher = /(adreno|amd|apple|intel|llvm|mali|microsoft|nvidia|parallels|powervr|samsung|swiftshader|virtualbox|vmware)/i
+
+	const brand = (
+		/radeon/i.test(gpu) ? 'AMD' :
+			/geforce/i.test(gpu) ? 'NVIDIA' :
+					(gpuBrandMatcher.exec(gpu)?.[0] || 'other').toLocaleUpperCase()
+	)
+
+	return brand
+}
+
 export function getRawFingerprint(fp) {
 	try {
 		const {
@@ -295,10 +308,8 @@ export function getRawFingerprint(fp) {
 			headlessPlatformEstimate: headless?.platformEstimate?.[0],
 			headlessSystemFont: headless?.systemFonts,
 			engine: resistance?.engine,
-			resistance: [
-				resistance?.$hash.slice(0, 8) || '',
-				resistance?.extension,
-			].join(':'),
+			resistance: resistance?.$hash.slice(0, 16),
+			resistanceExt: resistance?.extension || null,
 			audio: offlineAudioContext?.$hash?.slice(0, 16),
 			canvas: canvas2d?.$hash?.slice(0, 16),
 			webgl: canvasWebgl?.$hash?.slice(0, 16),
@@ -308,18 +319,19 @@ export function getRawFingerprint(fp) {
 			emojiPixels: fonts?.pixelSizeSystemSum,
 			emojiTextMetrics: canvas2d?.textMetricsSystemSum,
 			features: features?.version,
-			gpu: (() => {
-				if (!canvasWebgl?.parameters) return
-				const {
-					RENDERER,
-					UNMASKED_RENDERER_WEBGL,
-					UNMASKED_VENDOR_WEBGL,
-				} = canvasWebgl.parameters || {}
-				return [
-					RENDERER || null,
-					UNMASKED_VENDOR_WEBGL || null,
-					UNMASKED_RENDERER_WEBGL || null,
-				]
+			...(() => {
+				const vendor = (
+					wkr?.webglVendor ||
+					canvasWebgl?.parameters.UNMASKED_VENDOR_WEBGL
+				)
+				const renderer = (
+					wkr?.webglRenderer ||
+					canvasWebgl?.parameters.UNMASKED_RENDERER_WEBGL
+				)
+				const gpu = [vendor || null, renderer || null]
+				const gpuBrand = getGpuBrand(renderer)
+
+				return { gpu, gpuBrand }
 			})(),
 			fonts: fonts?.$hash?.slice(0, 16),
 			fontList: fonts?.fontFaceLoadFonts,
@@ -413,6 +425,9 @@ export function getRawFingerprint(fp) {
 					window.devicePixelRatio || null,
 				]
 			})(),
+			permDenied: nav?.permissions.denied,
+			permGranted: nav?.permissions.granted,
+			workerEnabled: wkr?.scope,
 		}
 
 		return analysisFP
