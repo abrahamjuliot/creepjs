@@ -42,7 +42,7 @@ Service is limited to the [CreepJS](https://abrahamjuliot.github.io/creepjs) Git
 
 `/decrypt` captures fingerprints (Canvas, WebGL, etc.) in a data model and renders the data to cloud storage. The data model follows a set of instructions on how to respond if the fingerprint appears again. This includes reject, merge, timestamp, modify, log data, and self-learn from patterns. Some patterns are configured to trigger a manual review.
 
-Data that is newly discovered starts out with a very low score. The score will improve if the same data reappears with unique visits. The data will be placed in a queue for auto-deletion if the score remains low for two weeks. Data with a timestamp aging 45 days is also automatically deleted. This is designed to make it difficult for abnormal data to blend in. It should be difficult for counterfeit fingerprints to build up any degree of trust over time.
+Newly discovered data starts off with a low score. If the data reappears with unique visits, the score will improve. If the score does not improve within 3 days, the data will be placed in a queue for auto-deletion. Any data with a last visit timestamp older than 7 days is automatically deleted. This design aims to make it difficult for abnormal data to blend in and establish any level of trust over time.
 
 > Fingerprint API: https://creepjs-api.web.app/fp
 
@@ -55,13 +55,13 @@ Every hour, the API grants a maximum number of tokens to every incoming network.
 ### Data
 - data collected: worker scope user agent, webgl gpu renderer, js runtime engine, hashed browser fingerprints (`stable`, `loose`, `fuzzy`, & `shadow`), masked network ip address, system location, dates, and other fingerprint data displayed on the website
 - data retention:
-    - browser fingerprint auto deletes:
+    - browser fingerprint profiles auto delete:
         - 30 days after last visit
-        - 30 days after we change the fingerprint
-    - prediction data auto deletes:
-        - if it fails to establish a good crowd-blending score within 2 weeks
-        - 40 days after last seen
-    - web tracing and traffic history auto discards:
+        - Or, 30 days after we change the fingerprint
+    - prediction data profiles auto delete:
+        - if it fails to establish a good crowd-blending score within 3 days
+        - 7 days after last seen
+    - web analytics and traffic history auto discards:
         - after 60 days
 
 #### Example Data Models
@@ -317,7 +317,7 @@ Loose fingerprint revision patterns can follow stable fingerprints like a shadow
 - Decoded samples from the server are auto computed or manually reviewed
 - Each sample goes through a number of client and server checks before it is considered trustworthy
 - Samples that are poisoned can self learn and heal themselves
-- Samples aging 45 days since last timestamp visit are auto discarded (random samples that never return are eventually auto removed)
+- Samples aging 7 days since last timestamp visit are auto discarded (random samples that never return are eventually auto removed)
 - If the worker scope is blocked and the fingerprint ids exist in the database, the prediction can still be made
 
 ### Tests
