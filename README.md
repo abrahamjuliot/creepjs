@@ -50,7 +50,7 @@ Newly discovered data starts off with a low score. If the data reappears with un
 
 > Web Traffic API: https://creepjs-api.web.app/analysis
 
-`Analysis` creates a hidden fingerprint profile and collects as much unique data as possible, both stable and unstable. This profile is used to analyze patterns and improve fingerprinting on the front end. It is also used to identify and prevent network abuse. If you receive a tag of `sus` or `bad`, it means that your fingerprint was identified as highly suspicious and easily trackable, even with any anti-fingerprinting measures taken.
+`/analysis` creates a hidden fingerprint profile and collects as much unique data as possible, both stable and unstable. This profile is used to analyze patterns and improve fingerprinting on the front end. It is also used to identify and prevent network abuse. If you receive a tag of `sus` or `bad`, it means that your fingerprint was identified as highly suspicious and easily trackable, even with any anti-fingerprinting measures taken.
 
 > Rate-Limits
 
