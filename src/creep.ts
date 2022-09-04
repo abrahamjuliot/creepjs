@@ -871,6 +871,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				scripts: status?.scripts,
 				client: status?.clientLitter,
 				scriptSize: status?.scriptSize,
+				benchmark: Math.floor(timeEnd || 0),
 			}
 
 			// console.log(`'`+Object.keys(RAW_BODY).join(`',\n'`))

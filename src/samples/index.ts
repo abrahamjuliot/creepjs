@@ -313,11 +313,25 @@ export function getRawFingerprint(fp) {
 			audio: offlineAudioContext?.$hash?.slice(0, 16),
 			canvas: canvas2d?.$hash?.slice(0, 16),
 			webgl: canvasWebgl?.$hash?.slice(0, 16),
-			errors: capturedErrors?.$hash?.slice(0, 16),
+			webglParams: (
+				canvasWebgl?.parameters ?
+				''+[
+					...new Set(Object.values(canvasWebgl.parameters)
+						.filter((val) => val && typeof val != 'string')
+						.flat()
+						.map((val) => Number(val))),
+				].sort((a, b) => (a - b)) :
+					undefined
+			),
+			errors: capturedErrors?.data.length !== 0 ? capturedErrors?.data.slice(0, 6) : undefined,
 			emojiDOMRect: clientRects?.domrectSystemSum,
+			emojiSetDOMRect: clientRects?.emojiSet?.join(''),
 			emojiSVGRect: svg?.svgrectSystemSum,
+			emojiSetSVGRect: svg?.emojiSet?.join(''),
 			emojiPixels: fonts?.pixelSizeSystemSum,
+			emojiSetPixels: fonts?.emojiSet?.join(''),
 			emojiTextMetrics: canvas2d?.textMetricsSystemSum,
+			emojiSetTextMetrics: canvas2d?.emojiSet?.join(''),
 			features: features?.version,
 			...(() => {
 				const vendor = (
@@ -332,6 +346,41 @@ export function getRawFingerprint(fp) {
 				const gpuBrand = getGpuBrand(renderer)
 
 				return { gpu, gpuBrand }
+			})(),
+			...(() => {
+				const {
+					['any-hover']: cssAnyHover,
+					['any-pointer']: cssAnyPointer,
+					['color-gamut']: cssColorGamut,
+					['device-aspect-ratio']: cssDeviceAspectRatio,
+					['device-screen']: cssDeviceScreen,
+					['display-mode']: cssDisplayMode,
+					['forced-colors']: cssForcedColors,
+					['hover']: cssHover,
+					['inverted-colors']: cssInvertedColors,
+					['monochrome']: cssMonochrome,
+					['orientation']: cssOrientation,
+					['pointer']: cssPointer,
+					['prefers-color-scheme']: cssColorScheme,
+					['prefers-reduced-motion']: cssReducedMotion,
+				} = cssMedia?.mediaCSS || {}
+				return {
+					cssMedia: cssMedia?.$hash?.slice(0, 16),
+					cssAnyHover,
+					cssAnyPointer,
+					cssColorGamut,
+					cssDeviceAspectRatio,
+					cssDeviceScreen,
+					cssDisplayMode,
+					cssForcedColors,
+					cssHover,
+					cssInvertedColors,
+					cssMonochrome,
+					cssOrientation,
+					cssPointer,
+					cssColorScheme,
+					cssReducedMotion,
+				}
 			})(),
 			fonts: fonts?.$hash?.slice(0, 16),
 			fontList: fonts?.fontFaceLoadFonts,
@@ -366,7 +415,7 @@ export function getRawFingerprint(fp) {
 			})(),
 			lies: lies?.totalLies !== 0 ? lies?.$hash?.slice(0, 16) : undefined,
 			lieKeys: lies?.totalLies !== 0 ? Object.keys(lies.data || {}) : undefined,
-			trash: trash?.trashBin.length,
+			trash: trash?.trashBin.length !== 0 ? trash?.trashBin.slice(0, 6) : undefined,
 			timezone: (() => {
 				if (!timezone) return
 
