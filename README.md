@@ -52,6 +52,8 @@ Newly discovered data starts off with a low score. If the data reappears with un
 
 Every hour, the API grants a maximum number of tokens to every incoming network. These tokens are then spent on the request. If the network consumes all tokens in a given hour, then it gets put on timeout.
 
+Automated scripts are welcome, but please give them a good hourly and daily rest. Otherwise, they could be put on timeout. Fingerprints that cause a constant network storm without pause may be marked and banned. The challenge, if you choose to accept it, is to avoid getting put on timeout or banned. The most effective way to do this is to behave like normal traffic.
+
 ### Data
 - data collected: worker scope user agent, webgl gpu renderer, js runtime engine, hashed browser fingerprints (`stable`, `loose`, `fuzzy`, & `shadow`), masked network ip address, system location, dates, and other fingerprint data displayed on the website
 - data retention:
@@ -372,4 +374,6 @@ Contributions are welcome.
 🟩 build `yarn build:dev`<br>
 🟪 watch `yarn watch:dev`<br>
 🟦 release to GitHub pages `yarn build`<br>
+
+If you would like to test on a secure connection, GitHub Codespaces is supported. It is discouraged to host a copy of this repo on a personal site. The goal of this project is to conduct research and provide education, not to create a fingerprinting library.
 

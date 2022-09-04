@@ -595,12 +595,6 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		console.error(error.message)
 	}) || []
 
-	// expose results to the window
-	// @ts-ignore
-	window.Fingerprint = JSON.parse(JSON.stringify(fp))
-	// @ts-ignore
-	window.Creep = JSON.parse(JSON.stringify(creep))
-
 	// session
 	const computeSession = ({ fingerprint, loading = false, computePreviousLoadRevision = false }) => {
 		const data = {
@@ -893,6 +887,25 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				.then(async (res) => {
 					if (res.ok) {
 						const data = await res.json()
+
+						const { host, protocol } = location
+						const isSecure = /https:/.test(protocol)
+						const shouldDiscourage = isSecure && !(
+							host == 'abrahamjuliot.github.io' ||
+							/githubpreview\.dev$/.test(host)
+						)
+
+						if (shouldDiscourage || data.isNetworkAbuse) {
+							window.location.href = 'about:blank'
+							return
+						}
+
+						// expose results to the window
+						// @ts-expect-error does not exist
+						window.Fingerprint = JSON.parse(JSON.stringify(fp))
+						// @ts-expect-error does not exist
+						window.Creep = JSON.parse(JSON.stringify(creep))
+
 						console.groupCollapsed('Analysis')
 						console.log(JSON.stringify(data, null, '\t'))
 						console.groupEnd()
