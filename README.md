@@ -48,6 +48,10 @@ Newly discovered data starts off with a low score. If the data reappears with un
 
 `/fp` computes a fingerprint profile derived from unique patterns. If certain suspicious patterns are detected, then the Prediction API will go into "locked" mode, in which case all further learning and data merging on the server will be shut down.
 
+> Web Traffic API: https://creepjs-api.web.app/analysis
+
+`Analysis` creates a hidden fingerprint profile and collects as much unique data as possible, both stable and unstable. This profile is used to analyze patterns and improve fingerprinting on the front end. It is also used to identify and prevent network abuse. If you receive a tag of `sus` or `bad`, it means that your fingerprint was identified as highly suspicious and easily trackable, even with any anti-fingerprinting measures taken.
+
 > Rate-Limits
 
 Every hour, the API grants a maximum number of tokens to every incoming network. These tokens are then spent on the request. If the network consumes all tokens in a given hour, then it gets put on timeout.

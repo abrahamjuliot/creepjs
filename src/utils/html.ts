@@ -17,6 +17,7 @@ const HTMLNote = {
 	UNSUPPORTED: '<span class="blocked">unsupported</span>',
 	BLOCKED: '<span class="blocked">blocked</span>',
 	LIED: '<span class="lies">lied</span>',
+	SECRET: '<span class="blocked">secret</span>',
 }
 
 const pluralify = (len) => len > 1 ? 's' : ''

@@ -25,7 +25,7 @@ import getTimezone, { timezoneHTML } from './timezone'
 import { getTrash, trashHTML } from './trash'
 import { hashify, hashMini, getBotHash, getFuzzyHash, cipher } from './utils/crypto'
 import { IS_BLINK, braveBrowser, getBraveMode, getBraveUnprotectedParameters, IS_GECKO, computeWindowsRelease, hashSlice, ENGINE_IDENTIFIER, getUserAgentRestored, attemptWindows11UserAgent, IS_WEBKIT } from './utils/helpers'
-import { patch, html, getDiffs, modal } from './utils/html'
+import { patch, html, getDiffs, modal, HTMLNote } from './utils/html'
 import getCanvasWebgl, { webglHTML } from './webgl'
 import getWebRTCData, { getWebRTCDevices, webrtcHTML } from './webrtc'
 import getWindowFeatures, { windowFeaturesHTML } from './window'
@@ -700,6 +700,22 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				</div>
 			</div>
 		</div>
+		<div id="network-analysis" class="flex-grid">
+			<div class="col-six">
+				<strong id="loader">Loading...</strong>
+				<div>network: <span class="blurred">000.000</span></div>
+				<div>tokens: <span class="blurred">500</span></div>
+				<div>hidden fingerprint: <span class="blurred">none</span></div>
+			</div>
+			<div class="col-six">
+				<div>org:</div>
+				<div class="block-text">
+					<div class="blurred">Mars Communications</div>
+					<div class="blurred">Mars Union</div>
+					<div class="blurred">Mars/Martian</div>
+				</div>
+			</div>
+		</div>
 		<div id="browser-detection" class="flex-grid">
 			<div class="col-six">
 				<strong>Loading...</strong>
@@ -900,6 +916,34 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 							window.location.href = 'about:blank'
 							return
 						}
+
+						const { network, org, tokensAvailable, tag } = data
+						const TagGrade: Record<string, string> = {
+							1: 'scale-down grade-D',
+							2: 'scale-down grade-F',
+						}
+						const TagName: Record<string, string> = {
+							1: 'sus',
+							2: 'bad',
+						}
+						patch(document.getElementById('network-analysis'), html`
+							<div class="flex-grid">
+								<div class="col-six">
+									<strong id="loader">Analysis</strong>
+									<div>network: ${network}</div>
+									<div>tokens: ${tokensAvailable}</div>
+									<div>hidden fingerprint: <span class="${TagGrade[tag] || ''}">${
+										TagName[tag] || HTMLNote.SECRET
+									}</span></div>
+								</div>
+								<div class="col-six">
+									<div>org:</div>
+									<div class="block-text">
+										${org ? org.split(':').join('<br>') : HTMLNote.UNKNOWN}
+									</div>
+								</div>
+							</div>
+						`)
 
 						// expose results to the window
 						// @ts-expect-error does not exist
