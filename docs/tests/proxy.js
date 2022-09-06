@@ -46,7 +46,9 @@
       }
     } finally {
       if (final) {
-        final()
+        try {
+          final()
+        } catch (err) {}
       }
     }
   }
