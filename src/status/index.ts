@@ -153,7 +153,7 @@ export async function getStatus(): Promise<Status> {
     getScriptSize(),
     getMaxCallStackSize(),
     getTimingResolution(),
-    [new Set([...getClientLitter(), ...getClientCode()])].sort().slice(0, 50),
+    [...new Set([...getClientLitter(), ...getClientCode()])].sort().slice(0, 50),
   ])
 
   // BatteryManager
