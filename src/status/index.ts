@@ -55,6 +55,30 @@ function getClientLitter(): string[] {
   }
 }
 
+function getClientCode(): string[] {
+  const clientFn: string[] = []
+  const clientObj: string[] = []
+  const windowPropNames = Object.getOwnPropertyNames(window)
+  const [nativeCodeStart, nativeCodeEnd] = String.toString().split(String.name)
+  windowPropNames.forEach((name) => {
+    try {
+      const descriptor = Object.getOwnPropertyDescriptor(window, name)
+      if (!descriptor) return
+      const { value: functionValue, get: functionGet } = descriptor
+      const value = (functionValue || functionGet)
+
+      if (typeof value === 'function' &&
+        (nativeCodeStart + value.name + nativeCodeEnd) !== value.toString()) {
+        clientFn.push(name)
+      } else if (typeof value !== 'function') {
+        clientObj.push(name)
+      }
+    } catch (err) { }
+  })
+
+  return [...clientObj, ...clientFn]
+}
+
 interface BatteryManager {
   charging: boolean
   chargingTime: number
@@ -99,21 +123,21 @@ interface Status {
     chargingTime?: number
     dischargingTime?: number
     level?: number
-    memory: number | null;
-    memoryInGigabytes: number | null;
-    quota: number | null;
-    quotaInGigabytes: number | null;
+    memory: number | null
+    memoryInGigabytes: number | null
+    quota: number | null
+    quotaInGigabytes: number | null
     downlink?: number
     effectiveType?: string
-    rtt?: number | undefined;
+    rtt?: number | undefined
     saveData?: boolean
     downlinkMax?: number
-    type?: ConnectionType
-    stackSize: number,
-    timingRes: [number, number],
-    clientLitter: string[],
-    scripts: string[],
-    scriptSize: number | null,
+    type?: string
+    stackSize: number
+    timingRes: [number, number]
+    clientLitter: string[]
+    scripts: string[]
+    scriptSize: number | null
 }
 export async function getStatus(): Promise<Status> {
   const [
@@ -129,7 +153,7 @@ export async function getStatus(): Promise<Status> {
     getScriptSize(),
     getMaxCallStackSize(),
     getTimingResolution(),
-    getClientLitter().sort().slice(0, 40),
+    [new Set([...getClientLitter(), ...getClientCode()])].sort().slice(0, 50),
   ])
 
   // BatteryManager
@@ -151,6 +175,7 @@ export async function getStatus(): Promise<Status> {
   // Network Info
   const {
     downlink, effectiveType, rtt, saveData, downlinkMax, type,
+    // @ts-expect-error if not supported
   } = navigator?.connection as NetworkInformation & {
     downlink?: number,
     effectiveType?: string,

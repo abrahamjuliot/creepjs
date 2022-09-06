@@ -10,7 +10,7 @@ import getEngineFeatures, { featuresHTML, getFeaturesLie } from './features'
 import getFonts, { fontsHTML } from './fonts'
 import getHeadlessFeatures, { headlessFeaturesHTML } from './headless'
 import getIntl, { intlHTML } from './intl'
-import { getLies, PARENT_PHANTOM, liesHTML } from './lies'
+import { getLies, PARENT_PHANTOM, liesHTML, PROTO_BENCHMARK } from './lies'
 import getMaths, { mathsHTML } from './math'
 import getMedia, { mediaHTML } from './media'
 import getNavigator, { navigatorHTML } from './navigator'
@@ -888,6 +888,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				client: status?.clientLitter,
 				scriptSize: status?.scriptSize,
 				benchmark: Math.floor(timeEnd || 0),
+				benchmarkProto: PROTO_BENCHMARK,
 			}
 
 			// console.log(`'`+Object.keys(RAW_BODY).join(`',\n'`))

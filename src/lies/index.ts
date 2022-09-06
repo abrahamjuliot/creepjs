@@ -802,6 +802,7 @@ const getNonFunctionToStringLies = (x: string[]) => !x ? x : x.filter((x) => !/o
 
 let lieProps
 let prototypeLies
+let PROTO_BENCHMARK = 0
 if (!IS_WORKER_SCOPE) {
 	lieProps = (() => {
 		const props = lieDetector.getProps()
@@ -814,9 +815,9 @@ if (!IS_WORKER_SCOPE) {
 	prototypeLies = JSON.parse(JSON.stringify(lieDetail))
 	const perf = performance.now() - start
 
-
+	PROTO_BENCHMARK = +perf.toFixed(2)
 	console.log(
-		`${propsSearched.length} API properties analyzed in ${(perf).toFixed(2)}ms (${lieList.length} corrupted)`,
+		`${propsSearched.length} API properties analyzed in ${PROTO_BENCHMARK}ms (${lieList.length} corrupted)`,
 	)
 }
 
@@ -930,4 +931,4 @@ function liesHTML(fp: LiesFingerprint, pointsHTML: string): string {
 	}${pointsHTML}</div>`
 }
 
-export { getRandomValues, documentLie, createLieDetector, PHANTOM_DARKNESS, PARENT_PHANTOM, lieProps, prototypeLies, lieRecords, getLies, getPluginLies, liesHTML }
+export { getRandomValues, documentLie, createLieDetector, PHANTOM_DARKNESS, PARENT_PHANTOM, lieProps, prototypeLies, lieRecords, getLies, getPluginLies, liesHTML, PROTO_BENCHMARK }
