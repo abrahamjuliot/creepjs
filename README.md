@@ -54,17 +54,17 @@ Newly discovered data starts off with a low score. If the data reappears with un
 
 > Rate-Limits
 
+The challenge, if you choose to accept it, is to avoid getting put on timeout or banned.
+
 - Each network is allotted 500 tokens per hour to spend on API calls.
-- There is a token bucket for each of API. The `/analysis` API simulates cost, but it does not implement a timeout.
+  - There is a token bucket for each of API.
+	- The `/analysis` API simulates cost, but it does not implement a timeout.
 - One token is consumed per request.
-- Complete refunds will be given to networks that pause for at least 5 minutes.
-- If a request to the `/decrypt` API is delayed for less than a minute, the token cost will be doubled. Requests to this API are sent only at the start of a session or when the fingerprint changes (if the API is not locked).
-- If the number of encrypted IP addresses on the network exceeds 5, the network will be suspended from receiving awards. Moreover, the token cost will be multiplied by the number of IPs divided by 2 (100 IPs is the maximum tracked per network).
-- If all 500 tokens are consumed within a given hour, the network will be put on timeout for 1 hour multiplied by the number of historic timeouts given to the network.
-
-A network with 100 encrypted IPs will cost 50 tokens per request and 100 tokens per request to the decrypt API. If the network has been put on timeout 10 times, the next timeout will last 10 hours.
-
-Automated scripts are welcome, but please give them a good hourly and daily rest. Otherwise, they could be put on timeout. Fingerprints that cause a constant network storm without pause may be marked and banned. The challenge, if you choose to accept it, is to avoid getting put on timeout or banned. The most effective way to do this is to behave like normal traffic.
+  - Complete refunds will be given to networks that pause for at least 5 minutes.
+  - If a request to the `/decrypt` API is delayed for less than a minute, the token cost will be doubled. Requests to this API are sent only at the start of a session or when the fingerprint changes (if the API is not locked).
+  - If the number of encrypted IP addresses on the network exceeds 5, the network will be suspended from receiving refunds. Moreover, the token cost will be multiplied by the number of IPs divided by 2 (100 IPs is the maximum tracked per network).
+  - If all 500 tokens are consumed within a given hour, the network will be put on timeout for 1 hour multiplied by the number of historic timeouts given to the network.
+- Fingerprints that cause a constant network storm without pause may be marked and banned.
 
 ### Data
 - data collected: worker scope user agent, webgl gpu renderer, js runtime engine, hashed browser fingerprints (`stable`, `loose`, `fuzzy`, & `shadow`), masked network ip address, system location, dates, and other fingerprint data displayed on the website
