@@ -57,8 +57,7 @@ Newly discovered data starts off with a low score. If the data reappears with un
 The challenge, if you choose to accept it, is to avoid getting put on timeout or banned.
 
 - Each network is allotted 500 tokens per hour to spend on API calls.
-  - There is a token bucket for each of API.
-	- The `/analysis` API simulates cost, but it does not implement a timeout.
+  - There is a token bucket for each of API. The `/analysis` API simulates cost, but it does not implement a timeout.
 - One token is consumed per request.
   - Complete refunds will be given to networks that pause for at least 5 minutes.
   - If a request to the `/decrypt` API is delayed for less than a minute, the token cost will be doubled. Requests to this API are sent only at the start of a session or when the fingerprint changes (if the API is not locked).
