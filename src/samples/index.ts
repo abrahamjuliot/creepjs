@@ -474,8 +474,8 @@ export function getRawFingerprint(fp) {
 					window.devicePixelRatio || null,
 				]
 			})(),
-			permDenied: nav?.permissions.denied,
-			permGranted: nav?.permissions.granted,
+			permDenied: nav?.permissions?.denied,
+			permGranted: nav?.permissions?.granted,
 			workerEnabled: wkr?.scope,
 		}
 
