@@ -5,6 +5,9 @@ import { createTimer, queueEvent, logTestResult, IS_BLINK, performanceLogger, ha
 import { HTMLNote, count, modal } from '../utils/html'
 
 export default async function getVoices() {
+	// Don't run voice immediately. This is unstable
+	// wait a bit for services to load
+	await new Promise((resolve) => setTimeout(() => resolve(undefined), 50))
 	return new Promise(async (resolve) => {
 		try {
 			const timer = createTimer()
