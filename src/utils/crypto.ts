@@ -1,4 +1,5 @@
 import { isFontOSBad } from '../fonts'
+import { WORKER_TYPE } from '../worker'
 import { getReportedPlatform } from './helpers'
 
 // https://stackoverflow.com/a/22429679
@@ -65,7 +66,7 @@ const getBotHash = (fp, imports) => {
 		!fp.workerScope.userAgent ||
 		// only accept shared and service types
 		// device emulators can easily spoof dedicated scope
-		fp.workerScope.type == 'dedicated'
+		WORKER_TYPE == 'dedicated'
 	)
 	const liedWorkerScope = !!(fp.workerScope && fp.workerScope.lied)
 	let liedPlatformVersion = false
@@ -273,12 +274,10 @@ const getFuzzyHash = async (fp) => {
 		'workerScope.localeEntropyIsTrusty',
 		'workerScope.localeIntlEntropyIsTrusty',
 		'workerScope.platform',
-		'workerScope.scope',
 		'workerScope.system',
 		'workerScope.systemCurrencyLocale',
 		'workerScope.timezoneLocation',
 		'workerScope.timezoneOffset',
-		'workerScope.type',
 		'workerScope.uaPostReduction',
 		'workerScope.userAgent',
 		'workerScope.userAgentData',

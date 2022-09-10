@@ -1,14 +1,16 @@
 import { captureError } from '../errors'
 import { createLieDetector, documentLie } from '../lies'
 import { getWebGLRendererConfidence, compressWebGLRenderer } from '../trash'
-import { hashMini } from '../utils/crypto'
 import { createTimer, queueEvent, getOS, getUserAgentPlatform, decryptUserAgent, computeWindowsRelease, JS_ENGINE, logTestResult, isUAPostReduction, performanceLogger, hashSlice, IS_WORKER_SCOPE, IS_BLINK, getReportedPlatform } from '../utils/helpers'
-import { HTMLNote, count, modal } from '../utils/html'
+import { HTMLNote } from '../utils/html'
 
 export const enum Scope {
 	WORKER = 0,
 	WINDOW,
 }
+
+export let WORKER_TYPE = ''
+export let WORKER_NAME = ''
 
 export async function spawnWorker() {
 	const ask = (fn) => {
@@ -265,7 +267,7 @@ export default async function getBestWorkerScope() {
 		const getDedicatedWorker = ({ scriptSource }) => new Promise((resolve) => {
 			const giveUpOnWorker = setTimeout(() => {
 				return resolve(null)
-			}, 3000)
+			}, 1000)
 
 			const dedicatedWorker = ask(() => new Worker(scriptSource))
 			if (!hasConstructor(dedicatedWorker, 'Worker')) return resolve(null)
@@ -279,7 +281,7 @@ export default async function getBestWorkerScope() {
 		const getSharedWorker = ({ scriptSource }) => new Promise((resolve) => {
 			const giveUpOnWorker = setTimeout(() => {
 				return resolve(null)
-			}, 3000)
+			}, 1000)
 
 			const sharedWorker = ask(() => new SharedWorker(scriptSource))
 			if (!hasConstructor(sharedWorker, 'SharedWorker')) return resolve(null)
@@ -320,8 +322,8 @@ export default async function getBestWorkerScope() {
 		})
 
 		const scriptSource = './creep.js'
-		let scope = 'ServiceWorkerGlobalScope'
-		let type = 'service' // loads fast but is not available in frames
+		WORKER_NAME = 'ServiceWorkerGlobalScope'
+		WORKER_TYPE = 'service' // loads fast but is not available in frames
 		let workerScope = await getServiceWorker({ scriptSource }).catch((error) => {
 			captureError(error)
 			console.error(error.message)
@@ -329,8 +331,8 @@ export default async function getBestWorkerScope() {
 		})
 
 		if (!(workerScope || {}).userAgent) {
-			scope = 'SharedWorkerGlobalScope'
-			type = 'shared' // no support in Safari, iOS, and Chrome Android
+			WORKER_NAME = 'SharedWorkerGlobalScope'
+			WORKER_TYPE = 'shared' // no support in Safari, iOS, and Chrome Android
 			workerScope = await getSharedWorker({ scriptSource }).catch((error) => {
 				captureError(error)
 				console.error(error.message)
@@ -339,8 +341,8 @@ export default async function getBestWorkerScope() {
 		}
 
 		if (!(workerScope || {}).userAgent) {
-			scope = 'WorkerGlobalScope'
-			type = 'dedicated' // device emulators can easily spoof dedicated scope
+			WORKER_NAME = 'DedicatedWorkerGlobalScope'
+			WORKER_TYPE = 'dedicated' // device emulators can easily spoof dedicated scope
 			workerScope = await getDedicatedWorker({ scriptSource }).catch((error) => {
 				captureError(error)
 				console.error(error.message)
@@ -352,8 +354,6 @@ export default async function getBestWorkerScope() {
 		}
 		workerScope.system = getOS(workerScope.userAgent)
 		workerScope.device = getUserAgentPlatform({ userAgent: workerScope.userAgent })
-		workerScope.type = type
-		workerScope.scope = scope
 
 		// detect lies
 		const {
@@ -388,7 +388,7 @@ export default async function getBestWorkerScope() {
 			const { proto } = workerScope.lies
 			const keys = Object.keys(proto)
 			keys.forEach((key) => {
-				const api = `${workerScope.scope}.${key}`
+				const api = `WorkerGlobalScope.${key}`
 				const lies = proto[key]
 				lies.forEach((lie) => documentLie(api, lie))
 			})
@@ -399,7 +399,7 @@ export default async function getBestWorkerScope() {
 		if (userAgentOS != platformOS) {
 			workerScope.lied = true
 			workerScope.lies.os = `${platformOS} platform and ${userAgentOS} user agent do not match`
-			documentLie(workerScope.scope, workerScope.lies.os)
+			documentLie('WorkerGlobalScope', workerScope.lies.os)
 		}
 
 		// user agent engine lie
@@ -417,7 +417,7 @@ export default async function getBestWorkerScope() {
 		if (userAgentEngine != JS_ENGINE) {
 			workerScope.lied = true
 			workerScope.lies.engine = `${JS_ENGINE} JS runtime and ${userAgentEngine} user agent do not match`
-			documentLie(workerScope.scope, workerScope.lies.engine)
+			documentLie('WorkerGlobalScope', workerScope.lies.engine)
 		}
 		// user agent version lie
 		const getVersion = (x) => (/\d+/.exec(x) || [])[0]
@@ -428,7 +428,7 @@ export default async function getBestWorkerScope() {
 		if (versionSupported && !versionMatch) {
 			workerScope.lied = true
 			workerScope.lies.version = `userAgentData version ${userAgentDataVersion} and user agent version ${userAgentVersion} do not match`
-			documentLie(workerScope.scope, workerScope.lies.version)
+			documentLie('WorkerGlobalScope', workerScope.lies.version)
 		}
 
 		// platformVersion lie
@@ -469,7 +469,7 @@ export default async function getBestWorkerScope() {
 		if (windowsVersionLie) {
 			workerScope.lied = true
 			workerScope.lies.platformVersion = `platform version is fake`
-			documentLie(workerScope.scope, workerScope.lies.platformVersion)
+			documentLie('WorkerGlobalScope', workerScope.lies.platformVersion)
 		}
 
 		// capture userAgent version
@@ -482,7 +482,7 @@ export default async function getBestWorkerScope() {
 			compressedGPU: compressWebGLRenderer(workerScope.webglRenderer),
 		}
 
-		logTestResult({ time: timer.stop(), test: `${type} worker`, passed: true })
+		logTestResult({ time: timer.stop(), test: `${WORKER_TYPE} worker`, passed: true })
 		return {
 			...workerScope,
 			gpu,
@@ -536,8 +536,6 @@ export function workerScopeHTML(fp) {
 		webglVendor,
 		gpu,
 		userAgentData,
-		type,
-		scope,
 		system,
 		device,
 		$hash,
@@ -553,8 +551,8 @@ export function workerScopeHTML(fp) {
 	} = gpu || {}
 
 	return `
-	<span class="time">${performanceLogger.getLog()[`${type} worker`]}</span>
-	<span class="aside-note-bottom">${scope || ''}</span>
+	<span class="time">${performanceLogger.getLog()[`${WORKER_TYPE} worker`]}</span>
+	<span class="aside-note-bottom">${WORKER_NAME || ''}</span>
 
 	<div class="relative col-six${lied ? ' rejected' : ''}">
 

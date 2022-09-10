@@ -1,4 +1,5 @@
 import { patch, html, HTMLNote } from '../utils/html'
+import { WORKER_NAME } from '../worker'
 
 // get GCD Samples
 export async function getSamples() {
@@ -476,7 +477,7 @@ export function getRawFingerprint(fp) {
 			})(),
 			permDenied: nav?.permissions?.denied,
 			permGranted: nav?.permissions?.granted,
-			workerEnabled: wkr?.scope,
+			workerEnabled: WORKER_NAME,
 		}
 
 		return analysisFP

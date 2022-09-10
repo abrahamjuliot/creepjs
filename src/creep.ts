@@ -24,7 +24,7 @@ import getSVG, { svgHTML } from './svg'
 import getTimezone, { timezoneHTML } from './timezone'
 import { getTrash, trashHTML } from './trash'
 import { hashify, hashMini, getBotHash, getFuzzyHash, cipher } from './utils/crypto'
-import { IS_BLINK, braveBrowser, getBraveMode, getBraveUnprotectedParameters, IS_GECKO, computeWindowsRelease, hashSlice, ENGINE_IDENTIFIER, getUserAgentRestored, attemptWindows11UserAgent, IS_WEBKIT } from './utils/helpers'
+import { IS_BLINK, braveBrowser, getBraveMode, getBraveUnprotectedParameters, IS_GECKO, computeWindowsRelease, hashSlice, ENGINE_IDENTIFIER, getUserAgentRestored, attemptWindows11UserAgent } from './utils/helpers'
 import { patch, html, getDiffs, modal, HTMLNote } from './utils/html'
 import getCanvasWebgl, { webglHTML } from './webgl'
 import getWebRTCData, { getWebRTCDevices, webrtcHTML } from './webrtc'
@@ -574,7 +574,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		capturedErrors: !!errorsLen,
 		lies: !!liesLen,
 		resistance: fp.resistance || undefined,
-		forceRenew: 1661669867336,
+		forceRenew: 1662843302537,
 	}
 
 	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f')
