@@ -4,6 +4,10 @@ import { instanceId, hashMini } from '../utils/crypto'
 import { createTimer, queueEvent, EMOJIS, CSS_FONT_FAMILY, IS_BLINK, IS_GECKO, logTestResult, performanceLogger, hashSlice, formatEmojiSet } from '../utils/helpers'
 import { patch, html, HTMLNote, getDiffs } from '../utils/html'
 
+function getRectSum(rect: Record<string, number>): number {
+	return Object.keys(rect).reduce((acc, key) => acc += rect[key], 0)/100_000_000
+}
+
 // inspired by
 // https://privacycheck.sec.lrz.de/active/fp_gcr/fp_getclientrects.html
 // https://privacycheck.sec.lrz.de/active/fp_e/fp_emoji.html
@@ -11,7 +15,7 @@ export default async function getClientRects() {
 	try {
 		const timer = createTimer()
 		await queueEvent(timer)
-		const toNativeObject = (domRect) => {
+		const toNativeObject = (domRect: DOMRect) => {
 			return {
 				bottom: domRect.bottom,
 				height: domRect.height,
@@ -315,6 +319,18 @@ export default async function getClientRects() {
 			}
 		}
 
+		const unique = new Set([
+			elementClientRects.reduce((acc, rect) => acc += getRectSum(rect), 0),
+			elementBoundingClientRect.reduce((acc, rect) => acc += getRectSum(rect), 0),
+			rangeClientRects.reduce((acc, rect) => acc += getRectSum(rect), 0),
+			rangeBoundingClientRect.reduce((acc, rect) => acc += getRectSum(rect), 0)
+		])
+
+		if (unique.size > 1) {
+			documentLie('Element.getClientRects', 'distant sums (suspected lie)')
+			lied = true
+		}
+
 		doc.body.removeChild(doc.getElementById(rectsId))
 
 		logTestResult({ time: timer.stop(), test: 'rects', passed: true })
@@ -359,8 +375,6 @@ export function clientRectsHTML(fp) {
 		},
 	} = fp
 
-	// compute mismatch style
-	const getRectSum = (rect) => Object.keys(rect).reduce((acc, key) => acc += rect[key], 0)/100_000_000
 	// const reduceRectSum = n => (''+n).split('.').reduce((acc, s) => acc += +s, 0)
 	const computeDiffs = (rects) => {
 		if (!rects || !rects.length) {
