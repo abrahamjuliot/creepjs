@@ -29,18 +29,14 @@ export default async function getHeadlessFeatures({
 		const data: Headless = {
 			chromium: IS_BLINK,
 			likeHeadless: {
-				['navigator.webdriver is on']: (
-					(CSS.supports('border-end-end-radius: initial') && navigator.webdriver === undefined) ||
-					!!navigator.webdriver
-				),
-				['chrome plugins array is empty']: IS_BLINK && navigator.plugins.length === 0,
-				['chrome mimeTypes array is empty']: IS_BLINK && mimeTypes.length === 0,
-				['notification permission is denied']: (
+				noPlugins: IS_BLINK && navigator.plugins.length === 0,
+				noMimeTypes: IS_BLINK && mimeTypes.length === 0,
+				notificationIsDenied: (
 					IS_BLINK &&
 					'Notification' in window &&
 					(Notification.permission == 'denied')
 				),
-				['chrome system color ActiveText is rgb(255, 0, 0)']: IS_BLINK && (() => {
+				hasKnownBgColor: IS_BLINK && (() => {
 					let rendered = PARENT_PHANTOM
 					if (!PARENT_PHANTOM) {
 						rendered = document.createElement('div')
@@ -54,9 +50,9 @@ export default async function getHeadlessFeatures({
 					}
 					return activeText === 'rgb(255, 0, 0)'
 				})(),
-				['prefers light color scheme']: matchMedia('(prefers-color-scheme: light)').matches,
+				prefersLightColor: matchMedia('(prefers-color-scheme: light)').matches,
 				// @ts-expect-error rtt will be undefined if not supported
-				['network round-trip time is 0']: navigator?.connection?.rtt === 0,
+				rttIsZero: navigator?.connection?.rtt === 0,
 				['userAgentData is blank']: (
 					'userAgentData' in navigator && (
 						// @ts-expect-error if userAgentData is null
@@ -65,30 +61,35 @@ export default async function getHeadlessFeatures({
 						await navigator.userAgentData.getHighEntropyValues(['platform']).platform === ''
 					)
 				),
-				['pdf viewer is disabled']: (
+				pdfIsDisabled: (
 					'pdfViewerEnabled' in navigator && navigator.pdfViewerEnabled === false
 				),
-				['screen has no taskbar']: (
+				noTaskbar: (
 					screen.height === screen.availHeight &&
 					screen.width === screen.availWidth
 				),
-				['screen res matches viewport res']: (
+				hasVvpScreenRes: (
 					(innerWidth === screen.width && outerHeight === screen.height) || (
 						'visualViewport' in window &&
+						// @ts-expect-error if unsupported
 						(visualViewport.width === screen.width && visualViewport.height === screen.height)
 					)
 				),
-				['use of swift shader cpu graphics']: /SwiftShader/.test(workerScope?.webglRenderer),
-				['web share is not supported']: IS_BLINK && CSS.supports('accent-color: initial') && (
+				hasSwiftShader: /SwiftShader/.test(workerScope?.webglRenderer),
+				noWebShare: IS_BLINK && CSS.supports('accent-color: initial') && (
 					!('share' in navigator) || !('canShare' in navigator)
 				),
-				['content index is not supported']: !!headlessEstimate?.noContentIndex,
-				['contacts manager is not supported']: !!headlessEstimate?.noContactsManager,
-				['downlink max is not supported']: !!headlessEstimate?.noDownlinkMax,
+				noContentIndex: !!headlessEstimate?.noContentIndex,
+				noContactsManager: !!headlessEstimate?.noContactsManager,
+				noDownlinkMax: !!headlessEstimate?.noDownlinkMax,
 			},
 			headless: {
-				['chrome window.chrome is undefined']: IS_BLINK && !('chrome' in window),
-				['chrome permission state is inconsistent']: (
+				webDriverIsOn: (
+					(CSS.supports('border-end-end-radius: initial') && navigator.webdriver === undefined) ||
+					!!navigator.webdriver
+				),
+				noChrome: IS_BLINK && !('chrome' in window),
+				hasPermissionsBug: (
 					IS_BLINK &&
 					'permissions' in navigator &&
 					await (async () => {
@@ -100,16 +101,16 @@ export default async function getHeadlessFeatures({
 						)
 					})()
 				),
-				['userAgent contains HeadlessChrome']: (
+				hasHeadlessUA: (
 					/HeadlessChrome/.test(navigator.userAgent) ||
 					/HeadlessChrome/.test(navigator.appVersion)
 				),
-				['worker userAgent contains HeadlessChrome']: !!workerScope && (
+				hasHeadlessWorkerUA: !!workerScope && (
 					/HeadlessChrome/.test(workerScope.userAgent)
 				),
 			},
 			stealth: {
-				['srcdoc triggers a window Proxy']: (() => {
+				hasIframeProxy: (() => {
 					try {
 						const iframe = document.createElement('iframe')
 						iframe.srcdoc = instanceId
@@ -118,7 +119,7 @@ export default async function getHeadlessFeatures({
 						return true
 					}
 				})(),
-				['index of chrome is too high']: (() => {
+				hasHighChromeIndex: (() => {
 					const control = (
 						'cookieStore' in window ? 'cookieStore' :
 							'ondevicemotion' in window ? 'ondevicemotion' :
@@ -133,31 +134,31 @@ export default async function getHeadlessFeatures({
 					const controlIndex = propsInWindow.indexOf(control)
 					return chromeIndex > controlIndex
 				})(),
-				['chrome.runtime functions are invalid']: (() => {
-					// @ts-ignore
+				hasBadChromeRuntime: (() => {
+					// @ts-expect-error if unsupported
 					if (!('chrome' in window && 'runtime' in chrome)) {
 						return false
 					}
 					try {
-						// @ts-ignore
+						// @ts-expect-error if unsupported
 						if ('prototype' in chrome.runtime.sendMessage ||
-							// @ts-ignore
+							// @ts-expect-error if unsupported
 							'prototype' in chrome.runtime.connect) {
 							return true
 						}
-						// @ts-ignore
+						// @ts-expect-error if unsupported
 						new chrome.runtime.sendMessage
-						// @ts-ignore
+						// @ts-expect-error if unsupported
 						new chrome.runtime.connect
 						return true
 					} catch (err: any) {
 						return err.constructor.name != 'TypeError' ? true : false
 					}
 				})(),
-				['Function.prototype.toString has invalid TypeError']: (
+				hasToStringProxy: (
 					!!lieProps['Function.toString']
 				),
-				['worker and window webgl renderer mismatch']: (() => {
+				hasBadWebGL: (() => {
 					const { UNMASKED_RENDERER_WEBGL: gpu } = webgl?.parameters || {}
 					const { webglRenderer: workerGPU } = workerScope || {}
 					return (gpu && workerGPU && (gpu !== workerGPU))
