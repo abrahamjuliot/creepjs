@@ -574,7 +574,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		capturedErrors: !!errorsLen,
 		lies: !!liesLen,
 		resistance: fp.resistance || undefined,
-		forceRenew: 1662843302537,
+		forceRenew: 1662843302539,
 	}
 
 	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f')
