@@ -212,23 +212,23 @@ export async function getStatus(): Promise<Status> {
 }
 
 export function statusHTML(status: Status) {
-	if (!status) {
-		return `
-			<div class="col-four">
-				<strong>Status</strong>
+  if (!status) {
+    return `
+      <div class="col-four">
+        <strong>Status</strong>
         <div>network:</div>
         <div class="block-text">${HTMLNote.BLOCKED}</div>
-			</div>
+      </div>
       <div class="col-four">
-				<div>battery:</div>
+        <div>battery:</div>
         <div class="block-text-large">${HTMLNote.BLOCKED}</div>
-			</div>
+      </div>
       <div class="col-four">
-				<div>available:</div>
+        <div>available:</div>
         <div class="block-text-large">${HTMLNote.BLOCKED}</div>
-			</div>
-		`
-	}
+      </div>
+    `
+  }
 
   const {
     charging,
@@ -249,15 +249,15 @@ export function statusHTML(status: Status) {
     timingRes,
   } = status
 
-	const statusHash = hashMini({
-		memoryInGigabytes,
+  const statusHash = hashMini({
+    memoryInGigabytes,
     quotaInGigabytes,
     timingRes,
     rtt: rtt === 0 ? 0 : -1,
     type,
-	})
+  })
 
-	return `
+  return `
     <div class="col-four">
       <strong>Status</strong><span class="hash">${statusHash}</span>
       <div>network:</div>
