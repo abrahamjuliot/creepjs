@@ -549,18 +549,11 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			colorGamut: caniuse(() => fp.cssMedia.mediaCSS['color-gamut']),
 			screenQuery: privacyResistFingerprinting ? undefined : hardenEntropy(fp.workerScope, caniuse(() => fp.cssMedia.screenQuery)),
 		},
-		css: !fp.css ? undefined : {
-			interfaceName: caniuse(() => fp.css.computedStyle.interfaceName),
-			system: caniuse(() => fp.css.system),
-		},
-		maths: !fp.maths || fp.maths.lied ? undefined : fp.maths,
-		consoleErrors: fp.consoleErrors,
+		css: !fp.css ? undefined : fp.css.system.fonts,
 		timezone: !fp.timezone || fp.timezone.lied ? undefined : {
 			locationMeasured: hardenEntropy(fp.workerScope, fp.timezone.locationMeasured),
 			lied: fp.timezone.lied,
 		},
-		svg: !fp.svg || fp.svg.lied ? undefined : fp.svg,
-		clientRects: !fp.clientRects || fp.clientRects.lied ? undefined : fp.clientRects,
 		offlineAudioContext: !fp.offlineAudioContext ? undefined : (
 			braveFingerprintingBlocking ? {
 				values: fp.offlineAudioContext.values,
@@ -569,12 +562,8 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				fp.offlineAudioContext.lied || unknownFirefoxAudio ? undefined :
 					fp.offlineAudioContext
 		),
-		fonts: !fp.fonts || fp.fonts.lied ? undefined : fp.fonts,
-		// skip trash since it is random
-		capturedErrors: !!errorsLen,
-		lies: !!liesLen,
-		resistance: fp.resistance || undefined,
-		forceRenew: 1662843302539,
+		fonts: !fp.fonts || fp.fonts.lied ? undefined : fp.fonts.fontFaceLoadFonts,
+		forceRenew: 1662872248389,
 	}
 
 	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f')

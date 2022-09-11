@@ -53,7 +53,7 @@ export default async function getHeadlessFeatures({
 				prefersLightColor: matchMedia('(prefers-color-scheme: light)').matches,
 				// @ts-expect-error rtt will be undefined if not supported
 				rttIsZero: navigator?.connection?.rtt === 0,
-				['userAgentData is blank']: (
+				uaDataIsBlank: (
 					'userAgentData' in navigator && (
 						// @ts-expect-error if userAgentData is null
 						navigator.userAgentData?.platform === '' ||
