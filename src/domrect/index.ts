@@ -319,18 +319,6 @@ export default async function getClientRects() {
 			}
 		}
 
-		const unique = new Set([
-			elementClientRects.reduce((acc, rect) => acc += getRectSum(rect), 0),
-			elementBoundingClientRect.reduce((acc, rect) => acc += getRectSum(rect), 0),
-			rangeClientRects.reduce((acc, rect) => acc += getRectSum(rect), 0),
-			rangeBoundingClientRect.reduce((acc, rect) => acc += getRectSum(rect), 0)
-		])
-
-		if (unique.size > 1) {
-			documentLie('Element.getClientRects', 'distant sums (suspected lie)')
-			lied = true
-		}
-
 		doc.body.removeChild(doc.getElementById(rectsId))
 
 		logTestResult({ time: timer.stop(), test: 'rects', passed: true })
