@@ -267,7 +267,7 @@ export default async function getBestWorkerScope() {
 		const getDedicatedWorker = ({ scriptSource }) => new Promise((resolve) => {
 			const giveUpOnWorker = setTimeout(() => {
 				return resolve(null)
-			}, 1000)
+			}, 3000)
 
 			const dedicatedWorker = ask(() => new Worker(scriptSource))
 			if (!hasConstructor(dedicatedWorker, 'Worker')) return resolve(null)
@@ -281,7 +281,7 @@ export default async function getBestWorkerScope() {
 		const getSharedWorker = ({ scriptSource }) => new Promise((resolve) => {
 			const giveUpOnWorker = setTimeout(() => {
 				return resolve(null)
-			}, 1000)
+			}, 3000)
 
 			const sharedWorker = ask(() => new SharedWorker(scriptSource))
 			if (!hasConstructor(sharedWorker, 'SharedWorker')) return resolve(null)
@@ -297,7 +297,7 @@ export default async function getBestWorkerScope() {
 		const getServiceWorker = ({ scriptSource }) => new Promise((resolve) => {
 			const giveUpOnWorker = setTimeout(() => {
 				return resolve(null)
-			}, 3000)
+			}, 4000)
 
 			if (!ask(() => navigator.serviceWorker.register)) return resolve(null)
 
