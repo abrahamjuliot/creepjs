@@ -302,7 +302,20 @@ export function getRawFingerprint(fp) {
 				]
 			})(),
 			voices: voices?.local?.slice(0, 3),
+			voicesDefault: voices?.defaultVoiceName ? [
+				voices?.defaultVoiceName,
+				voices?.defaultVoiceLang || null,
+			] : undefined,
 			headless: headless?.$hash?.slice(0, 16),
+			...(() => {
+				if (!headless) return {}
+				const { headless: hl, likeHeadless: ldl, stealth: s } = headless
+				const data = { ...hl, ...ldl, ...s }
+				return Object.keys(data).reduce((acc, key) => {
+					acc[`headless${key[0].toUpperCase()}${key.slice(1)}`] = data[key]
+					return acc
+				}, {} as Record<string, string>)
+			})(),
 			headlessRating: headless?.headlessRating,
 			headlessLikeRating: headless?.likeHeadlessRating,
 			headlessStealthRating: headless?.stealthRating,
