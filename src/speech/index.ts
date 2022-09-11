@@ -35,7 +35,12 @@ export default async function getVoices() {
 					return
 				}
 				clearTimeout(giveUpOnVoices)
-				const filterFirstOccurrenceOfUniqueVoiceURIData = ({data, voiceURISet}) => data
+
+				// filter first occurrence of unique voiceURI data
+				const getUniques = (
+					data: SpeechSynthesisVoice[],
+					voiceURISet: Set<string>,
+				): SpeechSynthesisVoice[] => data
 					.filter((x) => {
 						const { voiceURI } = x
 						if (!voiceURISet.has(voiceURI)) {
@@ -45,23 +50,24 @@ export default async function getVoices() {
 						return false
 					})
 
-				const dataUnique = filterFirstOccurrenceOfUniqueVoiceURIData({
-					data,
-					voiceURISet: new Set(),
-				})
+				const dataUnique = getUniques(data, new Set())
 
 				// https://wicg.github.io/speech-api/#speechsynthesisvoice-attributes
 				const local = dataUnique.filter((x) => x.localService).map((x) => x.name)
 				const remote = dataUnique.filter((x) => !x.localService).map((x) => x.name)
 				const languages = [...new Set(dataUnique.map((x) => x.lang))]
-				const defaults = dataUnique.filter((x) => x.default).map((x) => x.name)
+				const {
+						name: defaultVoiceName,
+						lang: defaultVoiceLang,
+				} = dataUnique.find((x) => x.default) || {}
 
 				logTestResult({ time: timer.stop(), test: 'speech', passed: true })
 				return resolve({
 					local,
 					remote,
 					languages,
-					defaults,
+					defaultVoiceName,
+					defaultVoiceLang,
 					lied: voicesLie,
 				})
 			}
@@ -87,7 +93,7 @@ export function voicesHTML(fp) {
 			<div>local (0): ${HTMLNote.BLOCKED}</div>
 			<div>remote (0): ${HTMLNote.BLOCKED}</div>
 			<div>lang (0): ${HTMLNote.BLOCKED}</div>
-			<div>default (0):</div>
+			<div>default:</div>
 			<div class="block-text">${HTMLNote.BLOCKED}</div>
 		</div>`
 	}
@@ -97,7 +103,8 @@ export function voicesHTML(fp) {
 			local,
 			remote,
 			languages,
-			defaults,
+			defaultVoiceName,
+			defaultVoiceLang,
 			lied,
 		},
 	} = fp
@@ -109,7 +116,7 @@ export function voicesHTML(fp) {
 		'Android': '<span class="icon android"></span>',
 		'CrOS': '<span class="icon cros"></span>',
 	}
-	const system = {
+	const system: Record<string, string> = {
 		'Chrome OS': icon.CrOS,
 		'Maged': icon.Apple,
 		'Microsoft': icon.Windows,
@@ -146,15 +153,11 @@ export function voicesHTML(fp) {
 					hashMini(languages),
 				)
 		}</div>
-		<div class="help" title="SpeechSynthesis.getVoices()\nSpeechSynthesisVoice.default">default (${count(defaults)}):</div>
+		<div class="help" title="SpeechSynthesis.getVoices()\nSpeechSynthesisVoice.default">default:</div>
 		<div class="block-text">
 			${
-				!defaults || !defaults.length ? HTMLNote.UNSUPPORTED :
-					defaults.length == 1 ? defaults[0] : modal(
-						'creep-voices-defaults',
-						defaults.join('<br>'),
-						hashMini(defaults),
-					)
+				!defaultVoiceName ? HTMLNote.UNSUPPORTED :
+					`${defaultVoiceName}${defaultVoiceLang ? `[${defaultVoiceLang}]`: ''}`
 			}
 		</div>
 	</div>
