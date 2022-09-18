@@ -800,7 +800,7 @@ const {
 // disregard Function.prototype.toString lies when determining if the API can be trusted
 const getNonFunctionToStringLies = (x: string[]) => !x ? x : x.filter((x) => !/object toString|toString incompatible proxy/.test(x)).length
 
-let lieProps
+let lieProps: Record<string, number>
 let prototypeLies
 let PROTO_BENCHMARK = 0
 if (!IS_WORKER_SCOPE) {

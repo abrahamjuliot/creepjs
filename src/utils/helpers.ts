@@ -456,7 +456,7 @@ const getUserAgentRestored = ({ userAgent, userAgentData, fontPlatformVersion })
 }
 
 const createPerformanceLogger = () => {
-	const log = {}
+	const log: Record<string, string> = {}
 	let total = 0
 	return {
 		logTestResult: ({ test, passed, time = 0 }) => {

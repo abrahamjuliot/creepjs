@@ -15,7 +15,7 @@ export default async function getClientRects() {
 	try {
 		const timer = createTimer()
 		await queueEvent(timer)
-		const toNativeObject = (domRect: DOMRect) => {
+		const toNativeObject = (domRect: DOMRect): Record<string, number> => {
 			return {
 				bottom: domRect.bottom,
 				height: domRect.height,
@@ -35,51 +35,56 @@ export default async function getClientRects() {
 			lieProps['String.fromCodePoint']
 		) || false
 
-		const getBestRect = (lieProps, doc, el) => {
-			let range
-			if (!lieProps['Element.getClientRects']) {
-				return el.getClientRects()[0]
-			} else if (!lieProps['Element.getBoundingClientRect']) {
-				return el.getBoundingClientRect()
-			} else if (!lieProps['Range.getClientRects']) {
-				range = doc.createRange()
-				range.selectNode(el)
-				return range.getClientRects()[0]
-			}
-			range = doc.createRange()
-			range.selectNode(el)
-			return range.getBoundingClientRect()
-		}
-
-		const doc = (
+		const DOC = (
 			PHANTOM_DARKNESS &&
 			PHANTOM_DARKNESS.document &&
 			PHANTOM_DARKNESS.document.body ? PHANTOM_DARKNESS.document :
 				document
 		)
 
+		const getBestRect = (el: Element) => {
+			let range
+			if (!lieProps['Element.getClientRects']) {
+				return el.getClientRects()[0]
+			} else if (!lieProps['Element.getBoundingClientRect']) {
+				return el.getBoundingClientRect()
+			} else if (!lieProps['Range.getClientRects']) {
+				range = DOC.createRange()
+				range.selectNode(el)
+				return range.getClientRects()[0]
+			}
+			range = DOC.createRange()
+			range.selectNode(el)
+			return range.getBoundingClientRect()
+		}
+
 		const rectsId = `${instanceId}-client-rects-div`
-		const fontId = 'domrect-font-detector'
-		// const chars = `mmmmmmmmmmlli`
-		// const emojiChar = String.fromCodePoint(128512)
 		const divElement = document.createElement('div')
 		divElement.setAttribute('id', rectsId)
-		doc.body.appendChild(divElement)
+		DOC.body.appendChild(divElement)
 
 		patch(divElement, html`
 		<div id="${rectsId}">
 			<style>
+			.rect-ghost,
 			.rect-known {
 				top: 0;
 				left: 0;
 				position: absolute;
 				visibility: hidden;
+			}
+			.rect-known {
 				width: 100px;
 				height: 100px;
 				transform: rotate(45deg);
 			}
+			.rect-ghost {
+				width: 0;
+				height: 0;
+			}
 			</style>
 			<div class="rect-known"></div>
+			<div class="rect-ghost"></div>
 			<div style="perspective:100px;width:1000.099%;" id="rect-container">
 				<style>
 				.rects {
@@ -209,20 +214,20 @@ export default async function getClientRects() {
 		`)
 
 		// get emoji set and system
-		const pattern = new Set()
+		const pattern: Set<string> = new Set()
 		await queueEvent(timer)
 
-		const emojiElems = [...doc.getElementsByClassName('domrect-emoji')]
+		const emojiElems = [...DOC.getElementsByClassName('domrect-emoji')]
 		const emojiSet = emojiElems.reduce((emojiSet, el, i) => {
 			const emoji = EMOJIS[i]
-			const { height, width } = getBestRect(lieProps, doc, el)
+			const { height, width } = getBestRect(el)
 			const dimensions = `${width},${height}`
 			if (!pattern.has(dimensions)) {
 				pattern.add(dimensions)
 				emojiSet.add(emoji)
 			}
 			return emojiSet
-		}, new Set())
+		}, new Set() as Set<string>)
 
 		const domrectSystemSum = 0.00001 * [...pattern].map((x) => {
 			return x.split(',').reduce((acc, x) => acc += (+x||0), 0)
@@ -230,7 +235,7 @@ export default async function getClientRects() {
 
 		// get clientRects
 		const range = document.createRange()
-		const rectElems = doc.getElementsByClassName('rects')
+		const rectElems = DOC.getElementsByClassName('rects')
 
 		const elementClientRects = [...rectElems].map((el) => {
 			return toNativeObject(el.getClientRects()[0])
@@ -292,34 +297,43 @@ export default async function getClientRects() {
 			lied = true
 		}
 
-		// detect unknown dimensions
-		const elKnown = [...doc.getElementsByClassName('rect-known')][0]
-		const dimensionsKnown = toNativeObject(elKnown.getClientRects()[0])
-		const knownSum = Object.keys(dimensionsKnown)
-			.reduce((acc, key) => (acc += +dimensionsKnown[key]), 0)
+		// detect unknown rotate dimensions
+		const knownEl = [...DOC.getElementsByClassName('rect-known')][0]
+		const knownDimensions = toNativeObject(knownEl.getClientRects()[0])
+		const knownHash = hashMini(knownDimensions)
 
-		// console.log(knownSum)
 		if (IS_BLINK) {
-			const zoom = {
-				'441.4213562011719': true, // 100, etc
-				'441.3523979187012': true, // 33, 67
-				'441.4214057922363': true, // 90
+			const Rotate: Record<string, boolean> = {
+				'9d9215cc': true, // 100, etc
+				'47ded322': true, // 33, 67
+				'd0eceaa8': true, // 90
 			}
-			if (!zoom[knownSum]) {
-				documentLie('Element.getClientRects', 'unknown dimensions')
+			if (!Rotate[knownHash]) {
+				documentLie('Element.getClientRects', 'unknown rotate dimensions')
 				lied = true
 			}
 		} else if (IS_GECKO) {
-			const zoom = {
-				'441.3666687011719': true, // 100, etc
+			const Rotate: Record<string, boolean> = {
+				'e38453f0': true, // 100, etc
 			}
-			if (!zoom[knownSum]) {
-				documentLie('Element.getClientRects', 'unknown dimensions')
+			if (!Rotate[knownHash]) {
+				documentLie('Element.getClientRects', 'unknown rotate dimensions')
 				lied = true
 			}
 		}
 
-		doc.body.removeChild(doc.getElementById(rectsId))
+		// detect ghost dimensions
+		const ghostEl = [...DOC.getElementsByClassName('rect-ghost')][0]
+		const ghostDimensions = toNativeObject(ghostEl.getClientRects()[0])
+		const hasGhostDimensions = Object.keys(ghostDimensions)
+			.some((key) => ghostDimensions[key] !== 0)
+
+		if (hasGhostDimensions) {
+			documentLie('Element.getClientRects', 'unknown ghost dimensions')
+			lied = true
+		}
+
+		DOC.body.removeChild(DOC.getElementById(rectsId) as HTMLElement)
 
 		logTestResult({ time: timer.stop(), test: 'rects', passed: true })
 		return {
@@ -338,7 +352,8 @@ export default async function getClientRects() {
 	}
 }
 
-export function clientRectsHTML(fp) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function clientRectsHTML(fp: any) {
 	if (!fp.clientRects) {
 		return `
 		<div class="col-six undefined">
@@ -363,8 +378,7 @@ export function clientRectsHTML(fp) {
 		},
 	} = fp
 
-	// const reduceRectSum = n => (''+n).split('.').reduce((acc, s) => acc += +s, 0)
-	const computeDiffs = (rects) => {
+	const computeDiffs = (rects: Record<string, number>[]) => {
 		if (!rects || !rects.length) {
 			return
 		}
@@ -391,7 +405,8 @@ export function clientRectsHTML(fp) {
 		})
 	}
 
-	const helpTitle = `Element.getClientRects()\nhash: ${hashMini(emojiSet)}\n${emojiSet.map((x, i) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`
+	const helpTitle = `Element.getClientRects()\nhash: ${hashMini(emojiSet)}\n${emojiSet.map((x: string, i: number) => i && (i % 6 == 0) ? `${x}\n` : x).join('')}`
+
 	return `
 	<div class="relative col-six${lied ? ' rejected' : ''}">
 		<span class="aside-note">${performanceLogger.getLog().rects}</span>
