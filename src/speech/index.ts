@@ -56,10 +56,15 @@ export default async function getVoices() {
 				const local = dataUnique.filter((x) => x.localService).map((x) => x.name)
 				const remote = dataUnique.filter((x) => !x.localService).map((x) => x.name)
 				const languages = [...new Set(dataUnique.map((x) => x.lang))]
-				const {
-						name: defaultVoiceName,
-						lang: defaultVoiceLang,
-				} = dataUnique.find((x) => x.default) || {}
+				const defaultLocalVoices = dataUnique.filter((x) => x.default && x.localService)
+
+				let defaultVoiceName = ''
+				let defaultVoiceLang = ''
+				if (defaultLocalVoices.length === 1) {
+					const { name, lang } = defaultLocalVoices[0]
+					defaultVoiceName = name
+					defaultVoiceLang = lang
+				}
 
 				logTestResult({ time: timer.stop(), test: 'speech', passed: true })
 				return resolve({
@@ -123,7 +128,7 @@ export function voicesHTML(fp) {
 		'English United States': icon.Android,
 		'English (United States)': icon.Android,
 	}
-	const systemVoice = Object.keys(system).find((key) => local.find((voice) => voice.includes(key)))
+	const systemVoice = Object.keys(system).find((key) => local.find((voice: string) => voice.includes(key))) || ''
 
 	return `
 	<div class="relative col-four${lied ? ' rejected' : ''}">
@@ -157,7 +162,7 @@ export function voicesHTML(fp) {
 		<div class="block-text">
 			${
 				!defaultVoiceName ? HTMLNote.UNSUPPORTED :
-					`${defaultVoiceName}${defaultVoiceLang ? `[${defaultVoiceLang}]`: ''}`
+					`${defaultVoiceName}${defaultVoiceLang ? ` [${defaultVoiceLang}]`: ''}`
 			}
 		</div>
 	</div>
