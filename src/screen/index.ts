@@ -34,17 +34,23 @@ export default async function getScreen(log = true) {
 			pixelDepth,
 		} = s
 
-		const dpr = window.devicePixelRatio || undefined
+		const dpr = window.devicePixelRatio || 0
 		const firefoxWithHighDPR = IS_GECKO && (dpr != 1)
 		if (!firefoxWithHighDPR) {
 			// firefox with high dpr requires floating point precision dimensions
 			const matchMediaLie = !matchMedia(
-				`(device-width: ${s.width}px) and (device-height: ${s.height}px)`,
+				`(device-width: ${width}px) and (device-height: ${height}px)`,
 			).matches
 			if (matchMediaLie) {
 				lied = true
 				documentLie('Screen', 'failed matchMedia')
 			}
+		}
+
+		const hasLiedDPR = !matchMedia(`(resolution: ${dpr}dppx)`).matches
+		if (hasLiedDPR) {
+			lied = true
+			documentLie('Window.devicePixelRatio', 'lied dpr')
 		}
 
 		const data = {
