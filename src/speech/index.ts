@@ -68,7 +68,8 @@ export default async function getVoices() {
 
 				// eslint-disable-next-line new-cap
 				const { locale: localeLang } = Intl.DateTimeFormat().resolvedOptions()
-				if (defaultVoiceLang && defaultVoiceLang !== localeLang) {
+				if (defaultVoiceLang &&
+					defaultVoiceLang.split('-')[0] !== localeLang.split('-')[0]) {
 					Analysis.voiceLangMismatch = true
 					LowerEntropy.TIME_ZONE = true
 				}

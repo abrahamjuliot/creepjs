@@ -25,7 +25,7 @@ import getTimezone, { timezoneHTML } from './timezone'
 import { getTrash, trashHTML } from './trash'
 import { hashify, hashMini, getBotHash, getFuzzyHash, cipher } from './utils/crypto'
 import { exile } from './utils/exile'
-import { IS_BLINK, braveBrowser, getBraveMode, getBraveUnprotectedParameters, IS_GECKO, computeWindowsRelease, hashSlice, ENGINE_IDENTIFIER, getUserAgentRestored, attemptWindows11UserAgent } from './utils/helpers'
+import { IS_BLINK, braveBrowser, getBraveMode, getBraveUnprotectedParameters, IS_GECKO, computeWindowsRelease, hashSlice, ENGINE_IDENTIFIER, getUserAgentRestored, attemptWindows11UserAgent, LowerEntropy } from './utils/helpers'
 import { patch, html, getDiffs, modal, HTMLNote } from './utils/html'
 import getCanvasWebgl, { webglHTML } from './webgl'
 import getWebRTCData, { getWebRTCDevices, webrtcHTML } from './webrtc'
@@ -469,11 +469,15 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				braveFingerprintingBlocking ? undefined : fp.workerScope.hardwareConcurrency
 			),
 			// system locale in blink
-			language: fp.workerScope.language,
+			language: !LowerEntropy.TIME_ZONE ? fp.workerScope.language : undefined,
 			platform: fp.workerScope.platform,
 			system: fp.workerScope.system,
 			device: fp.workerScope.device,
-			timezoneLocation: hardenEntropy(fp.workerScope, fp.workerScope.timezoneLocation),
+			timezoneLocation: (
+				!LowerEntropy.TIME_ZONE ?
+					hardenEntropy(fp.workerScope, fp.workerScope.timezoneLocation) :
+						undefined
+			),
 			webglRenderer: (
 				(fp.workerScope.gpu.confidence != 'low') ? fp.workerScope.gpu.compressedGPU : undefined
 			),
@@ -553,7 +557,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			screenQuery: privacyResistFingerprinting ? undefined : hardenEntropy(fp.workerScope, caniuse(() => fp.cssMedia.screenQuery)),
 		},
 		css: !fp.css ? undefined : fp.css.system.fonts,
-		timezone: !fp.timezone || fp.timezone.lied ? undefined : {
+		timezone: !fp.timezone || fp.timezone.lied || LowerEntropy.TIME_ZONE ? undefined : {
 			locationMeasured: hardenEntropy(fp.workerScope, fp.timezone.locationMeasured),
 			lied: fp.timezone.lied,
 		},
@@ -565,7 +569,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				fp.offlineAudioContext.lied || unknownFirefoxAudio ? undefined :
 					fp.offlineAudioContext
 		),
-		fonts: !fp.fonts || fp.fonts.lied ? undefined : fp.fonts.fontFaceLoadFonts,
+		fonts: !fp.fonts || fp.fonts.lied || LowerEntropy.FONTS ? undefined : fp.fonts.fontFaceLoadFonts,
 		forceRenew: 1662872248389,
 	}
 

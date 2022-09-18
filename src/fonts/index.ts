@@ -2,7 +2,7 @@ import { captureError } from '../errors'
 import { PHANTOM_DARKNESS, lieProps, getRandomValues } from '../lies'
 import { sendToTrash } from '../trash'
 import { hashMini } from '../utils/crypto'
-import { CSS_FONT_FAMILY, createTimer, queueEvent, EMOJIS, logTestResult, performanceLogger, hashSlice, formatEmojiSet, USER_AGENT_OS } from '../utils/helpers'
+import { CSS_FONT_FAMILY, createTimer, queueEvent, EMOJIS, logTestResult, performanceLogger, hashSlice, formatEmojiSet, USER_AGENT_OS, LowerEntropy, Analysis } from '../utils/helpers'
 import { patch, html, HTMLNote, count } from '../utils/html'
 import { PlatformClassifier } from '../utils/types'
 
@@ -371,6 +371,8 @@ export default async function getFonts() {
 		)
 
 		if (isFontOSBad(USER_AGENT_OS, fontFaceLoadFonts)) {
+			LowerEntropy.FONTS = true,
+			Analysis.FontOsIsBad = true
 			sendToTrash('platform', `${USER_AGENT_OS} system and fonts are suspicious`)
 		}
 
