@@ -1,7 +1,7 @@
 import { captureError } from '../errors'
 import { lieProps } from '../lies'
 import { hashMini } from '../utils/crypto'
-import { createTimer, queueEvent, logTestResult, IS_BLINK, performanceLogger, hashSlice } from '../utils/helpers'
+import { createTimer, queueEvent, logTestResult, IS_BLINK, performanceLogger, hashSlice, Analysis, LowerEntropy } from '../utils/helpers'
 import { HTMLNote, count, modal } from '../utils/html'
 
 export default async function getVoices() {
@@ -63,7 +63,14 @@ export default async function getVoices() {
 				if (defaultLocalVoices.length === 1) {
 					const { name, lang } = defaultLocalVoices[0]
 					defaultVoiceName = name
-					defaultVoiceLang = lang
+					defaultVoiceLang = (lang || '').replace(/_/, '-')
+				}
+
+				// eslint-disable-next-line new-cap
+				const { locale: localeLang } = Intl.DateTimeFormat().resolvedOptions()
+				if (defaultVoiceLang && defaultVoiceLang !== localeLang) {
+					Analysis.voiceLangMismatch = true
+					LowerEntropy.TIME_ZONE = true
 				}
 
 				logTestResult({ time: timer.stop(), test: 'speech', passed: true })

@@ -469,7 +469,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				braveFingerprintingBlocking ? undefined : fp.workerScope.hardwareConcurrency
 			),
 			// system locale in blink
-			language: fp.workerScope.language,
+			language: LowerEntropy.TIME_ZONEfp.workerScope.language,
 			platform: fp.workerScope.platform,
 			system: fp.workerScope.system,
 			device: fp.workerScope.device,
