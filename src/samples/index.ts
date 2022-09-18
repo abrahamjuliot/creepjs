@@ -1,4 +1,4 @@
-import { ANALYSIS } from '../utils/helpers'
+import { Analysis } from '../utils/helpers'
 import { patch, html, HTMLNote } from '../utils/html'
 import { WORKER_NAME } from '../worker'
 
@@ -492,7 +492,7 @@ export function getRawFingerprint(fp) {
 			permDenied: nav?.permissions?.denied,
 			permGranted: nav?.permissions?.granted,
 			workerEnabled: WORKER_NAME,
-			...ANALYSIS,
+			...Analysis,
 		}
 
 		return analysisFP

@@ -1,7 +1,7 @@
 import { captureError } from '../errors'
 import { lieProps, PHANTOM_DARKNESS, documentLie } from '../lies'
 import { hashMini } from '../utils/crypto'
-import { createTimer, queueEvent, LIKE_BRAVE, CSS_FONT_FAMILY, EMOJIS, logTestResult, performanceLogger, hashSlice, formatEmojiSet, IS_WEBKIT, IS_BLINK, ANALYSIS } from '../utils/helpers'
+import { createTimer, queueEvent, LIKE_BRAVE, CSS_FONT_FAMILY, EMOJIS, logTestResult, performanceLogger, hashSlice, formatEmojiSet, IS_WEBKIT, IS_BLINK, Analysis } from '../utils/helpers'
 import { HTMLNote, modal } from '../utils/html'
 
 // inspired by https://arkenfox.github.io/TZP/tests/canvasnoise.html
@@ -453,14 +453,26 @@ export default async function getCanvas2d() {
     context.closePath()
     context.fill()
 		const imageDataLowEntropy = context.getImageData(0, 0, 2, 2).data.join('')
-		const knownImageData: Record<string, boolean> = {
-			'255255255255178178178255247247247255565656255': true, // C
-			'255255255255171171171255223223223255606060255': true, // F
-			'255255255255192192192255240240240255484848255': true, // F m
-			'255255255255185185185255218218218255474747255': true, // S
+		const KnownImageData: Record<string, string[]> = {
+			BLINK: [
+				'255255255255192192192255240240240255484848255',
+				'255255255255177177177255246246246255535353255',
+				'255255255255128128128255191191191255646464255',
+				'255255255255178178178255247247247255565656255', // ?
+				'255255255255178178178255247247247255565656255',
+			],
+			GECKO: [
+				'255255255255192192192255240240240255484848255',
+				'255255255255191191191255239239239255646464255',
+				'255255255255191191191255223223223255606060255', // ?
+			],
+			WEBKIT: [
+				'255255255255185185185255233233233255474747255',
+				'255255255255185185185255229229229255474747255',
+			],
 		}
-		ANALYSIS.imageDataLowEntropy = imageDataLowEntropy
-		// if (IS_BLINK && !knownImageData[imageStr]) {
+		Analysis.imageDataLowEntropy = imageDataLowEntropy
+		// if (IS_BLINK && !KnownImageData.BLINK.includes(imageDataLowEntropy)) {
 		// 	lied = true
 		// 	documentLie(`CanvasRenderingContext2D.getImageData`, `unknown pixel data`)
 		// }
