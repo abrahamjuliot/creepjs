@@ -57,6 +57,22 @@ export const KnownAudio = {
 
 const AUDIO_TRAP = Math.random()
 
+async function hasFakeAudio() {
+	const context = new OfflineAudioContext(1, 100, 44100)
+	const oscillator = context.createOscillator()
+	oscillator.frequency.value = 0
+	oscillator.start(0)
+	context.startRendering()
+
+	return new Promise((resolve) => {
+		context.oncomplete = (event) => {
+			const channelData = event.renderedBuffer.getChannelData(0)
+			oscillator.disconnect()
+			return resolve(''+[...new Set(channelData)] !== '0')
+		}
+	})
+}
+
 export default async function getOfflineAudioContext() {
 	try {
 		const timer = createTimer()
@@ -171,12 +187,19 @@ export default async function getOfflineAudioContext() {
 			})
 		}))
 		await queueEvent(timer)
-		const {
-			floatFrequencyData,
-			floatTimeDomainData,
-			buffer,
-			compressorGainReduction,
-		} = await getRenderedBuffer(new OfflineAudioContext(1, bufferLen, 44100)) || {}
+		const [
+			{
+				floatFrequencyData,
+				floatTimeDomainData,
+				buffer,
+				compressorGainReduction,
+			},
+			audioIsFake,
+		] = await Promise.all([
+			getRenderedBuffer(new OfflineAudioContext(1, bufferLen, 44100)) || {},
+			hasFakeAudio().catch(() => false),
+		])
+
 
 		await queueEvent(timer)
 		const getSnapshot = (arr, start, end) => {
@@ -198,6 +221,11 @@ export default async function getOfflineAudioContext() {
 		const sampleSum = getSum(getSnapshot([...bins], 4500, bufferLen))
 
 		// detect lies
+
+		if (audioIsFake) {
+			lied = true
+			documentLie('AudioBuffer', 'audio is fake')
+		}
 
 		// sample matching
 		const matching = '' + binsSample == '' + copySample
