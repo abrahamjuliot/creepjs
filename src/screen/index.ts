@@ -1,6 +1,6 @@
 import { captureError } from '../errors'
 import { lieProps, documentLie } from '../lies'
-import { createTimer, IS_GECKO, logTestResult, performanceLogger, hashSlice } from '../utils/helpers'
+import { createTimer, IS_GECKO, logTestResult, performanceLogger, hashSlice, LowerEntropy } from '../utils/helpers'
 import { HTMLNote, patch, html } from '../utils/html'
 
 function hasTouch() {
@@ -51,6 +51,11 @@ export default async function getScreen(log = true) {
 		if (hasLiedDPR) {
 			lied = true
 			documentLie('Window.devicePixelRatio', 'lied dpr')
+		}
+
+		const noTaskbar = !(width - availWidth || height - availHeight)
+		if (width > 800 && noTaskbar) {
+			LowerEntropy.SCREEN = true
 		}
 
 		const data = {
@@ -153,7 +158,7 @@ export function screenHTML(fp) {
 		return `
 			<div id="creep-resize" class="relative col-six${lied ? ' rejected' : ''}">
 				<span class="time">${perf}</span>
-				<strong>Screen</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+				<strong>Screen</strong><span class="${lied ? 'lies ' : LowerEntropy.SCREEN ? 'bold-fail ' : ''}hash">${hashSlice($hash)}</span>
 				<div class="help" title="Screen.width\nScreen.height">...screen: ${width} x ${height}</div>
 				<div class="help" title="Screen.availWidth\nScreen.availHeight">....avail: ${availWidth} x ${availHeight}</div>
 				<div class="help" title="TouchEvent">touch: ${touch}</div>

@@ -1,6 +1,6 @@
 import { caniuse, captureError } from '../errors'
 import { lieProps } from '../lies'
-import { createTimer, queueEvent, logTestResult, performanceLogger, hashSlice } from '../utils/helpers'
+import { createTimer, queueEvent, logTestResult, performanceLogger, hashSlice, LowerEntropy } from '../utils/helpers'
 import { HTMLNote } from '../utils/html'
 
 export default async function getIntl() {
@@ -133,7 +133,7 @@ export function intlHTML(fp) {
 	return `
 	<div class="relative col-six${lied ? ' rejected' : ''}">
 		<span class="aside-note">${performanceLogger.getLog().intl}</span>
-		<strong>Intl</strong><span class="hash">${hashSlice($hash)}</span>
+		<strong>Intl</strong><span class="${lied ? 'lies ' : LowerEntropy.TIME_ZONE ? 'bold-fail ' : ''}hash">${hashSlice($hash)}</span>
 		<div class="block-text help"  title="Intl.Collator\nIntl.DateTimeFormat\nIntl.DisplayNames\nIntl.ListFormat\nIntl.NumberFormat\nIntl.PluralRules\nIntl.RelativeTimeFormat">
 			${[
 				locale,

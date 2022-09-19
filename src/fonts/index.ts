@@ -427,7 +427,7 @@ export function fontsHTML(fp) {
 	return `
 	<div class="relative col-six${lied ? ' rejected' : ''}">
 		<span class="aside-note">${performanceLogger.getLog().fonts}</span>
-		<strong>Fonts</strong><span class="hash">${hashSlice($hash)}</span>
+		<strong>Fonts</strong><span class="${lied ? 'lies ' : LowerEntropy.FONTS ? 'bold-fail ' : ''}hash">${hashSlice($hash)}</span>
 		<div class="help" title="FontFace.load()">load (${fontFaceLoadFonts ? count(fontFaceLoadFonts) : '0'}/${'' + FONT_LIST.length}): ${platformVersion || ((fonts) => {
 			return !(fonts || []).length ? '' : (
 				((''+fonts).match(/Lucida Console/)||[]).length ? `${icon.Windows}Windows` :

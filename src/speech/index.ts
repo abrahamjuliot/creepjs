@@ -70,6 +70,7 @@ export default async function getVoices() {
 				const { locale: localeLang } = Intl.DateTimeFormat().resolvedOptions()
 				if (defaultVoiceLang &&
 					defaultVoiceLang.split('-')[0] !== localeLang.split('-')[0]) {
+					// this is not trash
 					Analysis.voiceLangMismatch = true
 					LowerEntropy.TIME_ZONE = true
 				}

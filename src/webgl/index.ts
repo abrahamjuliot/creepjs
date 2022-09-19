@@ -2,7 +2,7 @@ import { attempt, captureError } from '../errors'
 import { lieProps, PHANTOM_DARKNESS } from '../lies'
 import { sendToTrash, getWebGLRendererConfidence, compressWebGLRenderer } from '../trash'
 import { hashMini } from '../utils/crypto'
-import { IS_WEBKIT, createTimer, queueEvent, LIKE_BRAVE, logTestResult, performanceLogger, hashSlice } from '../utils/helpers'
+import { IS_WEBKIT, createTimer, queueEvent, LIKE_BRAVE, logTestResult, performanceLogger, hashSlice, LowerEntropy } from '../utils/helpers'
 import { HTMLNote, count, modal } from '../utils/html'
 
 export default async function getCanvasWebgl() {
@@ -502,7 +502,7 @@ export function webglHTML(fp) {
 
 	<div class="relative col-six${lied ? ' rejected' : ''}">
 		<span class="time">${performanceLogger.getLog().webgl}</span>
-		<strong>WebGL</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+		<strong>WebGL</strong><span class="${lied ? 'lies ' : LowerEntropy.CANVAS ? 'bold-fail ' : ''}hash">${hashSlice($hash)}</span>
 		<div>images:${
 			!dataURI ? ' '+HTMLNote.BLOCKED : `<span class="sub-hash">${hashMini(dataURI)}</span>${!dataURI2 || dataURI == dataURI2 ? '' : `<span class="sub-hash">${hashMini(dataURI2)}</span>`}`
 		}</div>

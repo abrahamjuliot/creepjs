@@ -1,7 +1,7 @@
 import { captureError } from '../errors'
 import { lieProps } from '../lies'
 import { hashMini } from '../utils/crypto'
-import { createTimer, logTestResult, performanceLogger, hashSlice } from '../utils/helpers'
+import { createTimer, logTestResult, performanceLogger, hashSlice, LowerEntropy } from '../utils/helpers'
 import { HTMLNote } from '../utils/html'
 
 export default function getTimezone() {
@@ -596,7 +596,7 @@ export function timezoneHTML(fp) {
 	return `
 	<div class="relative col-six${lied ? ' rejected' : ''}">
 		<span class="aside-note">${performanceLogger.getLog().timezone}</span>
-		<strong>Timezone</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+		<strong>Timezone</strong><span class="${lied ? 'lies ' : LowerEntropy.TIME_ZONE ? 'bold-fail ' : ''}hash">${hashSlice($hash)}</span>
 		<div class="block-text help"  title="Date\nDate.getTimezoneOffset\nIntl.DateTimeFormat">
 			${zone ? zone : ''}
 			<br>${location != locationMeasured ? locationMeasured : location}

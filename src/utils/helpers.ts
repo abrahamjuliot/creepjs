@@ -599,9 +599,11 @@ const Analysis: Record<string, unknown> = {}
 
 // use if needed to stable fingerprint
 const LowerEntropy: Record<string, boolean> = {
+	AUDIO: false,
 	CANVAS: false,
-	TIME_ZONE: false,
 	FONTS: false,
+	SCREEN: false,
+	TIME_ZONE: false,
 }
 
 export { IS_BLINK, IS_GECKO, IS_WEBKIT, JS_ENGINE, LIKE_BRAVE, LIKE_BRAVE_RESISTANCE, ENGINE_IDENTIFIER, braveBrowser, getBraveMode, getBraveUnprotectedParameters, getOS, getReportedPlatform, USER_AGENT_OS, PLATFORM_OS, decryptUserAgent, getUserAgentPlatform, computeWindowsRelease, attemptWindows11UserAgent, isUAPostReduction, getUserAgentRestored, logTestResult, performanceLogger, getPromiseRaceFulfilled, queueEvent, createTimer, formatEmojiSet, EMOJIS, CSS_FONT_FAMILY, hashSlice, Analysis, LowerEntropy }

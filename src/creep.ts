@@ -1,4 +1,4 @@
-import getOfflineAudioContext, { KnownAudio, audioHTML } from './audio'
+import getOfflineAudioContext, { audioHTML } from './audio'
 import getCanvas2d, { canvasHTML } from './canvas'
 import getCSS, { cssHTML } from './css'
 import getCSSMedia, { cssMediaHTML } from './cssmedia'
@@ -397,15 +397,6 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 	const liesLen = !('totalLies' in fp.lies) ? 0 : fp.lies.totalLies
 	const errorsLen = fp.capturedErrors.data.length
 
-	// limit to known audio
-	const { offlineAudioContext } = fp || {}
-	const { compressorGainReduction, sampleSum } = offlineAudioContext || {}
-	const knownSums = KnownAudio[compressorGainReduction]
-	const unknownAudio = (
-		sampleSum && compressorGainReduction && knownSums && !knownSums.includes(sampleSum)
-	)
-	const unknownFirefoxAudio = IS_GECKO && unknownAudio
-
 	const hardenEntropy = (workerScope, prop) => {
 		return (
 			!workerScope ? prop :
@@ -450,7 +441,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			}
 		),
 		screen: (
-			!fp.screen || fp.screen.lied || privacyResistFingerprinting ? undefined :
+			!fp.screen || fp.screen.lied || privacyResistFingerprinting || LowerEntropy.SCREEN ? undefined :
 				hardenEntropy(
 					fp.workerScope, {
 						height: fp.screen.height,
@@ -522,7 +513,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				},
 			} : fp.canvasWebgl.lied ? undefined : {
 				...((gl, canvas2d) => {
-					if (canvas2d && canvas2d.lied) {
+					if ((canvas2d && canvas2d.lied) || LowerEntropy.CANVAS) {
 						// distrust images
 						const { extensions, gpu, lied, parameterOrExtensionLie } = gl
 						return {
@@ -554,7 +545,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			anyPointer: caniuse(() => fp.cssMedia.mediaCSS['any-pointer']),
 			pointer: caniuse(() => fp.cssMedia.mediaCSS.pointer),
 			colorGamut: caniuse(() => fp.cssMedia.mediaCSS['color-gamut']),
-			screenQuery: privacyResistFingerprinting ? undefined : hardenEntropy(fp.workerScope, caniuse(() => fp.cssMedia.screenQuery)),
+			screenQuery: privacyResistFingerprinting || LowerEntropy.SCREEN ? undefined : hardenEntropy(fp.workerScope, caniuse(() => fp.cssMedia.screenQuery)),
 		},
 		css: !fp.css ? undefined : fp.css.system.fonts,
 		timezone: !fp.timezone || fp.timezone.lied || LowerEntropy.TIME_ZONE ? undefined : {
@@ -562,15 +553,11 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			lied: fp.timezone.lied,
 		},
 		offlineAudioContext: !fp.offlineAudioContext ? undefined : (
-			braveFingerprintingBlocking ? {
-				values: fp.offlineAudioContext.values,
-				compressorGainReduction: fp.offlineAudioContext.compressorGainReduction,
-			} :
-				fp.offlineAudioContext.lied || unknownFirefoxAudio ? undefined :
-					fp.offlineAudioContext
+			fp.offlineAudioContext.lied || LowerEntropy.AUDIO ? undefined :
+				fp.offlineAudioContext
 		),
 		fonts: !fp.fonts || fp.fonts.lied || LowerEntropy.FONTS ? undefined : fp.fonts.fontFaceLoadFonts,
-		forceRenew: 1662872248389,
+		forceRenew: 1663563210940,
 	}
 
 	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f')
@@ -1363,8 +1350,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 						),
 						audioId: (
 							!offlineAudioContext ||
-							offlineAudioContext.lied ||
-							unknownFirefoxAudio ? null : audioMetrics
+							offlineAudioContext.lied ? null : audioMetrics
 						),
 						canvasId: (
 							!canvas2d || canvas2d.lied ? null :

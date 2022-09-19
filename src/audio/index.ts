@@ -2,7 +2,7 @@ import { attempt, caniuse, captureError } from '../errors'
 import { lieProps, documentLie } from '../lies'
 import { sendToTrash } from '../trash'
 import { hashMini } from '../utils/crypto'
-import { createTimer, queueEvent, logTestResult, performanceLogger, hashSlice } from '../utils/helpers'
+import { createTimer, queueEvent, logTestResult, performanceLogger, hashSlice, LowerEntropy } from '../utils/helpers'
 import { HTMLNote, getDiffs, modal } from '../utils/html'
 
 export const KnownAudio = {
@@ -304,7 +304,7 @@ export default async function getOfflineAudioContext() {
 		)
 
 		// Locked Patterns
-		const known = {
+		const known: Record<string, number[]> = {
 			/* BLINK */
 			// 124.04347527516074/124.04347518575378
 			'-20.538286209106445,164537.64796829224,502.5999283068122': [124.04347527516074],
@@ -412,8 +412,8 @@ export default async function getOfflineAudioContext() {
 
 		const knownPattern = known[pattern]
 		if (knownPattern && !knownPattern.includes(sampleSum)) {
-			lied = true
-			documentLie('AudioBuffer', 'unknown frequency pattern (suspected lie)')
+			LowerEntropy.AUDIO = true
+			sendToTrash('AudioBuffer', 'suspicious frequency data')
 		}
 
 		logTestResult({time: timer.stop(), test: 'audio', passed: true})
@@ -472,7 +472,7 @@ export function audioHTML(fp) {
 	return `
 	<div class="relative col-four${lied ? ' rejected' : ''}">
 		<span class="aside-note">${performanceLogger.getLog().audio}</span>
-		<strong>Audio</strong><span class="${lied ? 'lies ' : ''}hash">${hashSlice($hash)}</span>
+		<strong>Audio</strong><span class="${lied ? 'lies ' : LowerEntropy.AUDIO ? 'bold-fail ' : ''}hash">${hashSlice($hash)}</span>
 		<div class="help" title="AudioBuffer.getChannelData()">sum: ${
 			!sampleSum ? HTMLNote.BLOCKED : (!validAudio || matchesKnownAudio) ? sampleSum : getDiffs({
 				stringA: knownSums[0],
