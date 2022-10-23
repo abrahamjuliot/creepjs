@@ -505,13 +505,13 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			}
 			return data
 		})(fp.canvas2d),
-		canvasWebgl: !fp.canvasWebgl ? undefined : (
+		canvasWebgl: !fp.canvasWebgl || fp.canvasWebgl.lied ? undefined : (
 			braveFingerprintingBlocking ? {
 				parameters: {
 					...getBraveUnprotectedParameters(fp.canvasWebgl.parameters),
 					...hardenGPU(fp.canvasWebgl),
 				},
-			} : fp.canvasWebgl.lied ? undefined : {
+			} : {
 				...((gl, canvas2d) => {
 					if ((canvas2d && canvas2d.lied) || LowerEntropy.CANVAS) {
 						// distrust images
