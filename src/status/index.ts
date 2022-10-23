@@ -56,6 +56,8 @@ function getClientLitter(): string[] {
 }
 
 function getClientCode(): string[] {
+  const limit = 50
+  const names = Object.getOwnPropertyNames(window).slice(-limit)
   const [p1, p2] = (1).constructor.toString().split((1).constructor.name)
   const isEngine = (fn: unknown) => {
     return (
@@ -67,10 +69,10 @@ function getClientCode(): string[] {
     if (/_$/.test(key)) return true
     const d = Object.getOwnPropertyDescriptor(window, key)
     if (!d) return true
-    return !isEngine(d.get || d.value)
+    return (key === 'chrome' && names.includes(key)) || !isEngine(d.get || d.value)
   }
   return Object.keys(window)
-    .slice(-50)
+    .slice(-limit)
     .filter((x) => isClient(x))
 }
 
