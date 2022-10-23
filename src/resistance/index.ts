@@ -184,9 +184,9 @@ export default async function getResistance() {
 				replaceChildHash: ['77dea834'],
 			},
 			duckduckgo: {
-				toDataURLHash: ['fd00bf5d', '8ee7df22'],
-				toBlobHash: ['fd00bf5d', '8ee7df22'],
-				getImageDataHash: ['fd00bf5d', '8ee7df22'],
+				toDataURLHash: ['fd00bf5d', '8ee7df22', disabled],
+				toBlobHash: ['fd00bf5d', '8ee7df22', disabled],
+				getImageDataHash: ['fd00bf5d', '8ee7df22', disabled],
 				getByteFrequencyDataHash: ['fd00bf5d', '8ee7df22', disabled],
 				getByteTimeDomainDataHash: ['fd00bf5d', '8ee7df22', disabled],
 				getFloatFrequencyDataHash: ['fd00bf5d', '8ee7df22', disabled],
@@ -212,16 +212,16 @@ export default async function getResistance() {
 				colorDepthHash: ['452924d5'],
 			},
 			jshelter: {
-				contentDocumentHash: ['0007ab4e', '0b637a33'],
-				contentWindowHash: ['0007ab4e', '0b637a33'],
-				appendHash: ['0007ab4e', '0b637a33'],
-				insertAdjacentElementHash: ['0007ab4e', '0b637a33'],
-				insertAdjacentHTMLHash: ['0007ab4e', '0b637a33'],
-				prependHash: ['0007ab4e', '0b637a33'],
-				replaceWithHash: ['0007ab4e', '0b637a33'],
-				appendChildHash: ['0007ab4e', '0b637a33'],
-				insertBeforeHash: ['0007ab4e', '0b637a33'],
-				replaceChildHash: ['0007ab4e', '0b637a33'],
+				contentDocumentHash: ['0007ab4e', '0b637a33', '866fa7e7', '318390d1'],
+				contentWindowHash: ['0007ab4e', '0b637a33', '866fa7e7', '318390d1'],
+				appendHash: ['0007ab4e', '0b637a33', '866fa7e7', '318390d1'],
+				insertAdjacentElementHash: ['0007ab4e', '0b637a33', '866fa7e7', '318390d1'],
+				insertAdjacentHTMLHash: ['0007ab4e', '0b637a33', '866fa7e7', '318390d1'],
+				prependHash: ['0007ab4e', '0b637a33', '866fa7e7', '318390d1'],
+				replaceWithHash: ['0007ab4e', '0b637a33', '866fa7e7', '318390d1'],
+				appendChildHash: ['0007ab4e', '0b637a33', '866fa7e7', '318390d1'],
+				insertBeforeHash: ['0007ab4e', '0b637a33', '866fa7e7', '318390d1'],
+				replaceChildHash: ['0007ab4e', '0b637a33', '866fa7e7', '318390d1'],
 				hardwareConcurrencyHash: ['dfd41ab4'],
 			},
 			puppeteerExtra: {
@@ -376,7 +376,7 @@ export default async function getResistance() {
 					chameleon.replaceChildHash.includes(hash.replaceChildHash)) {
 					return 'Chameleon'
 				}
-				if (prototypeLiesLen >= 10 &&
+				if (prototypeLiesLen >= 7 &&
 					duckduckgo.toDataURLHash.includes(hash.toDataURLHash) &&
 					duckduckgo.toBlobHash.includes(hash.toBlobHash) &&
 					duckduckgo.getImageDataHash.includes(hash.getImageDataHash) &&
