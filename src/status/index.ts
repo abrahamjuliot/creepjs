@@ -56,27 +56,22 @@ function getClientLitter(): string[] {
 }
 
 function getClientCode(): string[] {
-  const clientFn: string[] = []
-  const clientObj: string[] = []
-  const windowPropNames = Object.getOwnPropertyNames(window)
-  const [nativeCodeStart, nativeCodeEnd] = String.toString().split(String.name)
-  windowPropNames.forEach((name) => {
-    try {
-      const descriptor = Object.getOwnPropertyDescriptor(window, name)
-      if (!descriptor) return
-      const { value: functionValue, get: functionGet } = descriptor
-      const value = (functionValue || functionGet)
-
-      if (typeof value === 'function' &&
-        (nativeCodeStart + value.name + nativeCodeEnd) !== value.toString()) {
-        clientFn.push(name)
-      } else if (typeof value !== 'function') {
-        clientObj.push(name)
-      }
-    } catch (err) { }
-  })
-
-  return [...clientObj, ...clientFn]
+  const [p1, p2] = (1).constructor.toString().split((1).constructor.name)
+  const isEngine = (fn: unknown) => {
+    return (
+      typeof fn === 'function' &&
+      (''+fn === p1 + fn.name + p2 || ''+fn === p1 + (fn.name || '').replace('get ', '') + p2)
+    )
+  }
+  const isClient = (key: string) => {
+    if (/_$/.test(key)) return true
+    const d = Object.getOwnPropertyDescriptor(window, key)
+    if (!d) return true
+    return !isEngine(d.get || d.value)
+  }
+  return Object.keys(window)
+    .slice(-50)
+    .filter((x) => isClient(x))
 }
 
 interface BatteryManager {

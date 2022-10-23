@@ -430,7 +430,12 @@ export function getRawFingerprint(fp) {
 			})(),
 			lies: lies?.totalLies !== 0 ? lies?.$hash?.slice(0, 16) : undefined,
 			lieKeys: lies?.totalLies !== 0 ? Object.keys(lies.data || {}) : undefined,
-			trash: trash?.trashBin.length !== 0 ? trash?.trashBin.slice(0, 6) : undefined,
+			trash: (
+				trash?.trashBin.length !== 0 ?
+				trash?.trashBin
+					.map((x: { name: string, value: string }) => [x.name, x.value].join(': ')).slice(0, 10):
+					undefined
+			),
 			timezone: (() => {
 				if (!timezone) return
 
