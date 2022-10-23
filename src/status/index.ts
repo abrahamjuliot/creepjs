@@ -69,7 +69,7 @@ function getClientCode(): string[] {
     if (/_$/.test(key)) return true
     const d = Object.getOwnPropertyDescriptor(window, key)
     if (!d) return true
-    return (key === 'chrome' && names.includes(key)) || !isEngine(d.get || d.value)
+    return key === 'chrome' ? names.includes(key) : !isEngine(d.get || d.value)
   }
   return Object.keys(window)
     .slice(-limit)
