@@ -73,7 +73,7 @@ function getClientCode(): string[] {
   }
   return Object.keys(window)
     .slice(-limit)
-    .filter((x) => isClient(x))
+    .filter((x) => x.length > 3 && isClient(x))
 }
 
 interface BatteryManager {
