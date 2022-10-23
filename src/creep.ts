@@ -893,7 +893,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 						const isSecure = /https:/.test(protocol)
 						const shouldDiscourage = isSecure && !(
 							host == 'abrahamjuliot.github.io' ||
-							/githubpreview\.dev$/.test(host)
+							/github(preview|)\.dev$/.test(host)
 						)
 
 						if (shouldDiscourage || data.isNetworkAbuse) {
