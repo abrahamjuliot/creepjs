@@ -1695,6 +1695,13 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			if (!el) {
 				return
 			}
+
+			const loader = document.getElementById('loader')
+			loader && patch(loader, html`
+				<strong id="loader" class="bold-fail">
+					${status}:API access denied
+				</strong>
+			`)
 			return patch(el, html`
 				<style>
 					.rejected {
@@ -1703,7 +1710,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				</style>
 				<div class="flex-grid rejected">
 					<div class="col-eight">
-						${status}:API service unavailable
+						${status}:API access denied
 					</div>
 					<div class="col-four icon-prediction-container">
 					</div>
