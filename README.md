@@ -213,14 +213,14 @@ A failing trust score is unique
 > The trust score shows the level of trust computed from the browser fingerprint values and revision indicators. If the score is 100%, there is a high level of trust in the reported values. Values should not be trusted when the score is low. No attempt is made to score how well a browser performs against fingerprint traceability and linkability. It is not always beneficial to have a high trust score, and sometimes a low trust score is not bad.
 
 - start at `100`
-- less than 2 loose fingerprints: reward `5` extra credit
-- 0 shadow bits (revision indicator): reward `10` extra credit
-- 2 - 10 loose fingerprints (revision indicator): subtract `total*0.1`
-- 11+ loose fingerprints: subtract `total*0.2`
-- shadow bits: subtract `(total/64)*31`
-- trash: subtract `total*5.5`
-- lies: subtract `total*31`
-- errors: subtract `total*3.5`
+- less than `20` loose fingerprints: reward `3` extra credit
+- less than `0.2` shadow bits (revision indicator): reward `4` extra credit
+- `20-40` loose fingerprints (revision indicator): subtract `count * 0.1`
+- `40` or more loose fingerprints: subtract `count * 0.5`
+- `0.1` or more shadow bits: subtract `value * 15`
+- trash: subtract `count * 5.5`
+- lies: subtract `count * 31`
+- errors: subtract `count * 3.5`
 - finally add the `crowdBlendingScore` to the above total and divide by 2
 
 #### Definitions
