@@ -158,8 +158,7 @@ const getEngineMaps = (browser) => {
 		'97-98': ['Array.findLast', 'Array.findLastIndex', 'Document.onslotchange'],
 		'99-101': ['Intl.supportedValuesOf', 'Document.oncontextlost', 'Document.oncontextrestored'],
 		'102': ['Element.ariaInvalid', 'Document.onbeforematch'],
-		'103-105': ['Element.role'],
-		'106': ['Document.prerendering', 'Document.onprerenderingchange'],
+		'103-106': ['Element.role'],
 		'107': ['Element.ariaBrailleLabel', 'Element.ariaBrailleRoleDescription'],
 		'108': ['Array.group', 'Array.groupToMap', 'Document.oncontentvisibilityautostatechanged'],
 	}
