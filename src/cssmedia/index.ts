@@ -1,7 +1,7 @@
 import { captureError } from '../errors'
 import { PHANTOM_DARKNESS } from '../lies'
 import { hashMini } from '../utils/crypto'
-import { createTimer, IS_GECKO, logTestResult, performanceLogger, hashSlice } from '../utils/helpers'
+import { createTimer, logTestResult, performanceLogger, hashSlice, LowerEntropy } from '../utils/helpers'
 import { HTMLNote, modal } from '../utils/html'
 
 export default function getCSSMedia() {
@@ -42,15 +42,18 @@ export default function getCSSMedia() {
 		return { width: +widthMatch, height: +heightMatch }
 	}
 
-	const getCSSDataURI = (x) => `data:text/css,body {${x}}`
-
 	try {
 		const timer = createTimer()
 		timer.start()
 		const win = PHANTOM_DARKNESS.window
 
 		const { body } = win.document
-		const { width, height } = win.screen
+		const { width, availWidth, height, availHeight } = win.screen
+
+		const noTaskbar = !(width - availWidth || height - availHeight)
+		if (width > 800 && noTaskbar) {
+			LowerEntropy.IFRAME_SCREEN = true
+		}
 
 		const deviceAspectRatio = getAspectRatio(width, height)
 
@@ -227,7 +230,9 @@ export function cssMediaHTML(fp) {
 			)
 		}</div>
 		<div>touch device: ${!mediaCSS ? HTMLNote.BLOCKED : mediaCSS['any-pointer'] == 'coarse' ? true : HTMLNote.UNKNOWN}</div>
-		<div>screen query: ${!screenQuery ? HTMLNote.BLOCKED : `${screenQuery.width} x ${screenQuery.height}`}</div>
+		<div>screen query: <span class="${(LowerEntropy.SCREEN || LowerEntropy.IFRAME_SCREEN) ? 'bold-fail ' : ''}">
+			${!screenQuery ? HTMLNote.BLOCKED : `${screenQuery.width} x ${screenQuery.height}`}
+		</span></div>
 	</div>
 	`
 }

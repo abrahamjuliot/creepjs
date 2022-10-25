@@ -545,7 +545,11 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			anyPointer: caniuse(() => fp.cssMedia.mediaCSS['any-pointer']),
 			pointer: caniuse(() => fp.cssMedia.mediaCSS.pointer),
 			colorGamut: caniuse(() => fp.cssMedia.mediaCSS['color-gamut']),
-			screenQuery: privacyResistFingerprinting || LowerEntropy.SCREEN ? undefined : hardenEntropy(fp.workerScope, caniuse(() => fp.cssMedia.screenQuery)),
+			screenQuery: (
+				privacyResistFingerprinting || (LowerEntropy.SCREEN || LowerEntropy.IFRAME_SCREEN) ?
+					undefined :
+						hardenEntropy(fp.workerScope, caniuse(() => fp.cssMedia.screenQuery))
+			),
 		},
 		css: !fp.css ? undefined : fp.css.system.fonts,
 		timezone: !fp.timezone || fp.timezone.lied || LowerEntropy.TIME_ZONE ? undefined : {
