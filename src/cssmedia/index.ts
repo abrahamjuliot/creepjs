@@ -51,7 +51,7 @@ export default function getCSSMedia() {
 		const { width, availWidth, height, availHeight } = win.screen
 
 		const noTaskbar = !(width - availWidth || height - availHeight)
-		if (width > 800 && noTaskbar) {
+		if (screen.width !== width || (width > 800 && noTaskbar)) {
 			LowerEntropy.IFRAME_SCREEN = true
 		}
 
