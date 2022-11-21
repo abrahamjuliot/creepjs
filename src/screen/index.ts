@@ -1,6 +1,6 @@
 import { captureError } from '../errors'
 import { lieProps, documentLie } from '../lies'
-import { createTimer, IS_GECKO, logTestResult, performanceLogger, hashSlice, LowerEntropy } from '../utils/helpers'
+import { createTimer, IS_GECKO, logTestResult, performanceLogger, hashSlice, LowerEntropy, IS_WEBKIT } from '../utils/helpers'
 import { HTMLNote, patch, html } from '../utils/html'
 
 function hasTouch() {
@@ -48,7 +48,7 @@ export default async function getScreen(log = true) {
 		}
 
 		const hasLiedDPR = !matchMedia(`(resolution: ${dpr}dppx)`).matches
-		if (hasLiedDPR) {
+		if (!IS_WEBKIT && hasLiedDPR) {
 			lied = true
 			documentLie('Window.devicePixelRatio', 'lied dpr')
 		}
