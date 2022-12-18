@@ -229,15 +229,6 @@ async function getServiceWorker(channelName, src) {
 	})
 }
 
-// WorkerGlobalScope
-if (isWorker) {
-	return (
-		isServiceWorker ? getServiceWorkerGlobalScope() :
-			isSharedWorker ? getSharedWorkerGlobalScope() :
-				getWorkerGlobalScope()
-	)
-}
-
 // system
 const getOS = (userAgent) => {
 	const os = (
