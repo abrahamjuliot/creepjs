@@ -18,85 +18,6 @@ const html = (str, ...expressionSet) => {
 }
 
 async function getWorkerData() {
-	function measureText(context, font) {
-		context.font = `16px ${font}`;
-		const {
-			actualBoundingBoxAscent,
-			actualBoundingBoxDescent,
-			actualBoundingBoxLeft,
-			actualBoundingBoxRight,
-			fontBoundingBoxAscent,
-			fontBoundingBoxDescent,
-			width,
-		} = context.measureText('mwmwmwmwlli');
-		return [
-			actualBoundingBoxAscent,
-			actualBoundingBoxDescent,
-			actualBoundingBoxLeft,
-			actualBoundingBoxRight,
-			fontBoundingBoxAscent,
-			fontBoundingBoxDescent,
-			width,
-		];
-	}
-
-	function detectFonts(context) {
-		const detected = [];
-		const fallbackFont = measureText(context, 'monospace')
-		;[`'Segoe UI', monospace`, `'Helvetica Neue', monospace`].forEach((fontFamily) => {
-			const dimensions = measureText(context, fontFamily);
-			const font = /'(.+)'/.exec(fontFamily)?.[1] || '';
-
-			if (String(dimensions) !== String(fallbackFont)) detected.push(font);
-		})
-		return detected;
-	}
-
-	// Get Canvas
-	async function getCanvas() {
-		let canvasData
-		let fonts
-		try {
-			const canvas = new OffscreenCanvas(500, 200)
-			const context = canvas.getContext('2d')
-			// @ts-expect-error if not supported
-			context.font = '14px Arial'
-			// @ts-expect-error if not supported
-			context.fillText('😃', 0, 20)
-			// @ts-expect-error if not supported
-			context.fillStyle = 'rgba(0, 0, 0, 0)'
-			// @ts-expect-error if not supported
-			context.fillRect(0, 0, canvas.width, canvas.height)
-			const getDataURI = async () => {
-				// @ts-expect-error if not supported
-				const blob = await canvas.convertToBlob()
-				const reader = new FileReader()
-				reader.readAsDataURL(blob)
-				return new Promise((resolve) => {
-					reader.onloadend = () => resolve(reader.result)
-				})
-			}
-			canvasData = await getDataURI()
-			fonts = detectFonts(context)
-		} finally {
-			return [canvasData, fonts]
-		}
-	}
-
-	// get gpu
-	function getGpu() {
-		let gpu
-		try {
-			const context = new OffscreenCanvas(0, 0).getContext('webgl')
-			// @ts-expect-error if not supported
-			const rendererInfo = context.getExtension('WEBGL_debug_renderer_info')
-			// @ts-expect-error if not supported
-			gpu = context.getParameter(rendererInfo.UNMASKED_RENDERER_WEBGL)
-		} finally {
-			return gpu
-		}
-	}
-
 	// get client code
 	function getClientCode() {
 		if (globalThis.document) return []
@@ -123,12 +44,6 @@ async function getWorkerData() {
 		return clientCode
 	}
 
-	// get storage
-	async function getStorage() {
-		if (!('storage' in navigator && 'estimate' in navigator.storage)) return null
-		return navigator.storage.estimate().then(({ quota }) => quota)
-	}
-
 	// get ua data
 	async function getUaData() {
 		if (!('userAgentData' in navigator)) return null
@@ -141,27 +56,11 @@ async function getWorkerData() {
 			})
 	}
 
-	// notification bug
-	async function getPermission() {
-		if (!('permissions' in navigator && 'query' in navigator.permissions)) return null
-		return navigator.permissions.query({ name: 'notifications' }).then((res) => {
-			return String([res.state, self.Notification.permission])
-		})
-	}
-
 	const [
 		uaData,
-		storage,
-		[canvas, fonts],
-		permission,
-		gpu,
 		clientCode,
 	] = await Promise.all([
 		getUaData(),
-		getStorage(),
-		getCanvas(),
-		getPermission(),
-		getGpu(),
 		getClientCode(),
 	]).catch(() => [])
 
@@ -176,12 +75,7 @@ async function getWorkerData() {
 		userAgent,
 		platform,
 		uaData,
-		canvas,
-		fonts,
-		gpu,
-		storage,
 		clientCode,
-		permission,
 	}
 	return data
 }
@@ -197,9 +91,9 @@ async function getWorkerGlobalScope() {
 	close()
 }
 
-function getDedicatedWorker(phantomDarkness, src, fn = getWorkerData) {
+function getDedicatedWorker(frame, src, fn = getWorkerData) {
 	return new Promise((resolve) => {
-		const Wkr = phantomDarkness ? phantomDarkness.Worker : Worker
+		const Wkr = frame ? frame.Worker : Worker
 		if (!Wkr || Wkr.prototype.constructor.name !== 'Worker') resolve({})
 
 		try {
@@ -264,9 +158,9 @@ function getSharedWorkerGlobalScope() {
 	}
 }
 
-function getSharedWorker(phantomDarkness, src, fn = getWorkerData) {
+function getSharedWorker(frame, src, fn = getWorkerData) {
 	return new Promise((resolve) => {
-		const Wkr = phantomDarkness ? phantomDarkness.SharedWorker : SharedWorker
+		const Wkr = frame ? frame.SharedWorker : SharedWorker
 		if (!Wkr || Wkr.prototype.constructor.name !== 'SharedWorker') resolve({})
 
 		try {
@@ -344,53 +238,6 @@ if (isWorker) {
 	)
 }
 
-// Window
-// frame
-const ghost = () => `
-	height: 100vh;
-	width: 100vw;
-	position: absolute;
-	left:-10000px;
-	visibility: hidden;
-`
-const getRandomValues = () => {
-	const id = [...crypto.getRandomValues(new Uint32Array(10))]
-		.map((n) => n.toString(36)).join('')
-	return id
-}
-
-const getPhantomIframe = () => {
-	try {
-		const numberOfIframes = window.length
-		const frag = new DocumentFragment()
-		const div = document.createElement('div')
-		const id = getRandomValues()
-		div.setAttribute('id', id)
-		frag.appendChild(div)
-		div.innerHTML = `<div style="${ghost()}"><iframe></iframe></div>`
-		document.body.appendChild(frag)
-		const iframeWindow = window[numberOfIframes]
-		return { iframeWindow, div }
-	} catch (error) {
-		console.error(error)
-		return { iframeWindow: window, div: undefined }
-	}
-}
-const { iframeWindow: phantomDarkness, div: parentPhantom } = getPhantomIframe()
-
-function getGpuBrand(gpu) {
-	if (!gpu) return
-	const gpuBrandMatcher = /(adreno|amd|apple|intel|llvm|mali|microsoft|nvidia|parallels|powervr|samsung|swiftshader|virtualbox|vmware)/i
-
-	const brand = (
-		/radeon/i.test(gpu) ? 'AMD' :
-			/geforce/i.test(gpu) ? 'NVIDIA' :
-					(gpuBrandMatcher.exec(gpu)?.[0] || 'Other')
-	)
-
-	return brand
-}
-
 // system
 const getOS = (userAgent) => {
 	const os = (
@@ -417,7 +264,7 @@ scriptEl.textContent = `! async function() {
 	window.inlineWorkers = await Promise.all([
 		${getDedicatedWorker.toString()}(window, 'nested-blob', ${getWorkerData.toString()}),
 		${getSharedWorker.toString()}(window, 'blob', ${getWorkerData.toString()}),
-		${getServiceWorker.toString()}('inline', 'w_service_inline.js'),
+		${getServiceWorker.toString()}('inline', 'worker_service.js'),
 	])
 }()`
 document.body.appendChild(scriptEl)
@@ -437,32 +284,12 @@ const getInlineWorkers = () => new Promise((resolve) => {
 	}, 10)
 })
 
-// @ts-expect-error if unsupported
-const currentScriptSrc = document.currentScript.src
 const [
 	windowScope,
-	dedicatedWorker,
-	sharedWorker,
-	serviceWorker,
 	[dedicatedWorkerInline, sharedWorkerInline, serviceWorkerInline],
-	dedicatedWorkerFile,
-	sharedWorkerFile,
-	serviceWorkerFile,
-	dedicatedWorkerBlob,
-	sharedWorkerBlob,
-	dedicatedWorkerNestedBlob,
 ] = await Promise.all([
 	getWorkerData(),
-	getDedicatedWorker(phantomDarkness, currentScriptSrc),
-	getSharedWorker(phantomDarkness, currentScriptSrc),
-	getServiceWorker('same-file', currentScriptSrc),
 	getInlineWorkers(),
-	getDedicatedWorker(phantomDarkness, 'w_dedicated.js'),
-	getSharedWorker(phantomDarkness, 'w_shared.js'),
-	getServiceWorker('separate-file', 'w_service.js'),
-	getDedicatedWorker(phantomDarkness, 'blob'),
-	getSharedWorker(phantomDarkness, 'blob'),
-	getDedicatedWorker(phantomDarkness, 'nested-blob'),
 ]).catch((error) => {
 	console.error(error.message)
 	return []
@@ -470,35 +297,15 @@ const [
 
 const perf = performance.now() - start
 
-if (parentPhantom) {
-	// @ts-expect-error if null
-	parentPhantom.parentNode.removeChild(parentPhantom)
-}
-
 const red = '#ca656e2b'
 
 // same file
 const windowHash = hashMini(windowScope)
-const dedicatedHash = hashMini(dedicatedWorker)
-const sharedHash = hashMini(sharedWorker)
-const serviceHash = hashMini(serviceWorker)
 
 // inline
 const dedicatedInlineHash = hashMini(dedicatedWorkerInline)
 const sharedInlineHash = hashMini(sharedWorkerInline)
 const serviceInlineHash = hashMini(serviceWorkerInline)
-
-// separate file
-const dedicatedFileHash = hashMini(dedicatedWorkerFile)
-const sharedFileHash = hashMini(sharedWorkerFile)
-const serviceFileHash = hashMini(serviceWorkerFile)
-
-// blob
-const dedicatedBlobHash = hashMini(dedicatedWorkerBlob)
-const sharedBlobHash = hashMini(sharedWorkerBlob)
-
-// nested-blob
-const dedicatedNestedBlobHash = hashMini(dedicatedWorkerNestedBlob)
 
 const style = (controlHash, hash) => {
 	return `
@@ -535,12 +342,10 @@ function computeTemplate(worker, name) {
 				...workerHash[name],
 				[key]: (
 					RawValueMap[key] ? worker[key] :
-						key === 'gpu' && worker[key] ? `${hashMini(worker[key])} (${getGpuBrand(worker[key])})` :
-							key === 'userAgent' && worker[key] ? `${hashMini(worker[key])} (${getOS(worker[key])})` :
-								key === 'languages' && worker[key] ? `${hashMini(worker[key])} (${worker[key].split(',')[0]})` :
-									key === 'storage' && worker[key] ? `${hashMini(worker[key])} (${+(worker[key] / (1024 ** 3)).toFixed(1)} GB)` :
-										key === 'code' && worker[key] ? `${hashMini(worker[key])} (${worker[key].length})` :
-											worker[key] ? hashMini(worker[key]) : HTMLNote.UNSUPPORTED
+						key === 'userAgent' && worker[key] ? `${hashMini(worker[key])} (${getOS(worker[key])})` :
+							key === 'languages' && worker[key] ? `${hashMini(worker[key])} (${worker[key].split(',')[0]})` :
+								key === 'code' && worker[key] ? `${hashMini(worker[key])} (${worker[key].length})` :
+									worker[key] ? hashMini(worker[key]) : HTMLNote.UNSUPPORTED
 				),
 			}
 		)
@@ -565,14 +370,9 @@ function computeTemplate(worker, name) {
 		<div>platform: ${(hash || {}).platform || HTMLNote.BLOCKED}</div>
 		<div>data: ${(hash || {}).uaData || HTMLNote.UNSUPPORTED}</div>
 		<div>hardware: ${(hash || {}).hardware || HTMLNote.UNSUPPORTED}</div>
-		<div>canvas: ${(hash || {}).canvas || HTMLNote.UNSUPPORTED}</div>
-		<div>fonts: ${(hash || {}).fonts || HTMLNote.UNSUPPORTED}</div>
-		<div>gpu: ${(hash || {}).gpu || HTMLNote.UNSUPPORTED}</div>
 		<div>tz: ${(hash || {}).timezone || HTMLNote.BLOCKED}</div>
 		<div>langs: ${(hash || {}).languages || HTMLNote.BLOCKED}</div>
 		<div>code: ${(hash || {}).clientCode || HTMLNote.BLOCKED}</div>
-		<div>bytes: ${(hash || {}).storage || HTMLNote.UNSUPPORTED}</div>
-		<div>perm: ${(hash || {}).permission || HTMLNote.UNSUPPORTED}</div>
 	`
 }
 
@@ -584,34 +384,14 @@ patch(el, html`
 		<strong>Window compared to WorkerGlobalScope</strong>
 	</div>
 	<div class="flex-grid relative">
-		<span class="aside-note">worker.js</span>
 		<div ${style(windowHash, windowHash)}>
 			<strong>Window</strong>
 			<span class="hash">${windowHash}</span>
 			${computeTemplate(windowScope, 'window')}
 		</div>
 	</div>
-	<div class="flex-grid relative">
-		<span class="aside-note">same file</span>
-		<div class="col-four" ${style(windowHash, dedicatedHash)}>
-			<strong>Dedicated</strong>
-			<span class="hash">${dedicatedHash}</span>
-			<div class="worker">${computeTemplate(dedicatedWorker, 'dedicated')}</div>
-		</div>
-		<div class="col-four" ${style(windowHash, sharedHash)}>
-			<strong>Shared</strong>
-			<span class="hash">${sharedHash}</span>
-			<div class="worker">${computeTemplate(sharedWorker, 'shared')}</div>
-		</div>
-		<div class="col-four" ${style(windowHash, serviceHash)}>
-			<strong>Service</strong>
-			<span class="hash">${serviceHash}</span>
-			<div class="worker">${computeTemplate(serviceWorker, 'service')}</div>
-		</div>
-	</div>
 
 	<div class="flex-grid relative">
-		<span class="aside-note">inline script tag</span>
 		<div class="col-four" ${style(windowHash, dedicatedInlineHash)}>
 			<strong>Dedicated</strong>
 			<span class="hash">${dedicatedInlineHash}</span>
@@ -626,46 +406,6 @@ patch(el, html`
 			<strong>Service</strong>
 			<span class="hash">${serviceInlineHash}</span>
 			<div class="worker">${computeTemplate(serviceWorkerInline, 'service-inline')}</div>
-		</div>
-	</div>
-
-	<div class="flex-grid relative">
-		<span class="aside-note">separate files</span>
-		<div class="col-four" ${style(windowHash, dedicatedFileHash)}>
-			<strong>Dedicated</strong>
-			<span class="hash">${dedicatedFileHash}</span>
-			<div class="worker">${computeTemplate(dedicatedWorkerFile, 'dedicated-file')}</div>
-		</div>
-		<div class="col-four" ${style(windowHash, sharedFileHash)}>
-			<strong>Shared</strong>
-			<span class="hash">${sharedFileHash}</span>
-			<div class="worker">${computeTemplate(sharedWorkerFile, 'shared-file')}</div>
-		</div>
-		<div class="col-four" ${style(windowHash, serviceFileHash)}>
-			<strong>Service</strong>
-			<span class="hash">${serviceFileHash}</span>
-			<div class="worker">${computeTemplate(serviceWorkerFile, 'service-file')}</div>
-		</div>
-	</div>
-	<div class="flex-grid relative">
-		<span class="aside-note">inline blob</span>
-		<div class="col-six" ${style(windowHash, dedicatedBlobHash)}>
-			<strong>Dedicated</strong>
-			<span class="hash">${dedicatedBlobHash}</span>
-			<div class="worker">${computeTemplate(dedicatedWorkerBlob, 'dedicated-blob')}</div>
-		</div>
-		<div class="col-six" ${style(windowHash, sharedBlobHash)}>
-			<strong>Shared</strong>
-			<span class="hash">${sharedBlobHash}</span>
-			<div class="worker">${computeTemplate(sharedWorkerBlob, 'shared-blob')}</div>
-		</div>
-	</div>
-	<div class="flex-grid relative">
-		<span class="aside-note">nested inline blob</span>
-		<div class="col-six" ${style(windowHash, dedicatedNestedBlobHash)}>
-			<strong>Dedicated</strong>
-			<span class="hash">${dedicatedNestedBlobHash}</span>
-			<div class="worker">${computeTemplate(dedicatedWorkerNestedBlob, 'dedicated-nest-blob')}</div>
 		</div>
 	</div>
 </div>
