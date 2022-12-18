@@ -80,17 +80,6 @@ async function getWorkerData() {
 	return data
 }
 
-// Tests
-const isWorker = !globalThis.document && !!globalThis.WorkerGlobalScope
-const isSharedWorker = !!globalThis.SharedWorkerGlobalScope
-const isServiceWorker = !!globalThis.ServiceWorkerGlobalScope
-
-// WorkerGlobalScope
-async function getWorkerGlobalScope() {
-	postMessage(await getWorkerData())
-	close()
-}
-
 function getDedicatedWorker(frame, src, fn = getWorkerData) {
 	return new Promise((resolve) => {
 		const Wkr = frame ? frame.Worker : Worker
@@ -149,15 +138,6 @@ function getDedicatedWorker(frame, src, fn = getWorkerData) {
 	})
 }
 
-// SharedWorkerGlobalScope
-function getSharedWorkerGlobalScope() {
-	// @ts-expect-error if not supported
-	onconnect = async (message) => {
-		const port = message.ports[0]
-		port.postMessage(await getWorkerData())
-	}
-}
-
 function getSharedWorker(frame, src, fn = getWorkerData) {
 	return new Promise((resolve) => {
 		const Wkr = frame ? frame.SharedWorker : SharedWorker
@@ -187,17 +167,6 @@ function getSharedWorker(frame, src, fn = getWorkerData) {
 			return resolve({})
 		}
 	})
-}
-
-// ServiceWorkerGlobalScope
-function getServiceWorkerGlobalScope() {
-	const broadcast = new BroadcastChannel('same-file')
-	broadcast.onmessage = async (event) => {
-		if (event.data && event.data.type == 'fingerprint') {
-			const data = await getWorkerData()
-			broadcast.postMessage(data)
-		}
-	}
 }
 
 async function getServiceWorker(channelName, src) {
