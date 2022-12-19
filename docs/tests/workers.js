@@ -454,6 +454,7 @@ console.groupEnd()
 
 // Remove unstable keys for hash comparison
 function generateStableData(data) {
+	if (!data) return data;
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const { windowScope, workerScope, ...stabilizedData} = data
 	return stabilizedData
@@ -474,7 +475,7 @@ const emptyHash = 'ac6c4be7' // array
 const styleHash = (controlHash, hash) => {
 	return `
 	style="
-		background: ${hash === voidHash ? '#bbbbbb1f' : hash !== controlHash ? red : 'none'}
+		background: ${hash === undefined || hash === voidHash ? '#bbbbbb1f' : hash !== controlHash ? red : 'none'}
 	"
 `
 }
