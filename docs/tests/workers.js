@@ -496,7 +496,7 @@ function computeTemplate(worker, name) {
 					RawValueMap[key] && worker[key] ? (String(worker[key]) || HTMLNote.UNSUPPORTED) :
 						key === 'gpu' && worker[key] ? `${hashMini(worker[key])} (${getGpuBrand(worker[key])})` :
 						key === 'languages' && worker[key] ? `${hashMini(worker[key])} (${worker[key][0]})` :
-						key === 'storage' && worker[key] ? `${hashMini(worker[key])} (${+(worker[key] / (1024 ** 3)).toFixed(1)} GB)` :
+						key === 'storage' && worker[key] ? `${hashMini(worker[key])} (${+(worker[key] / (1024 ** 3)).toFixed(1)})` :
 						key === 'ua' && worker[key] ? `${hashMini(worker[key])} (${getOS(worker[key][0])})` :
 						key === 'uaData' && worker[key] ? `${hashMini(worker[key])}${worker[key].platform ? ` (${worker[key].platform})`: ''}` :
 						worker[key] ? hashMini(worker[key]) : HTMLNote.UNSUPPORTED
@@ -558,7 +558,7 @@ function computeTemplate(worker, name) {
 		<div>canvas: ${(hash || {}).canvas || HTMLNote.UNSUPPORTED}</div>
 		<div>gpu: ${(hash || {}).gpu || HTMLNote.UNSUPPORTED}</div>
 		<div>hardware: ${(hash || {}).hardware || HTMLNote.UNSUPPORTED}</div>
-		<div>storage: ${(hash || {}).storage || HTMLNote.UNSUPPORTED}</div>
+		<div>gb: ${(hash || {}).storage || HTMLNote.UNSUPPORTED}</div>
 		<div>network: ${(hash || {}).network || HTMLNote.UNSUPPORTED}</div>
 		<div>tz: ${(hash || {}).timezone || HTMLNote.UNSUPPORTED}</div>
 		<div>langs: ${(hash || {}).languages || HTMLNote.UNSUPPORTED}</div>
