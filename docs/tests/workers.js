@@ -103,15 +103,6 @@ async function getWorkerData() {
 		return navigator.storage.estimate().then(({ quota }) => quota)
 	}
 
-	// notification bug
-	async function getNotificationBug() {
-		if (!navigator.userAgent.includes('Chrome')) return null
-		if (!('permissions' in navigator && 'query' in navigator.permissions)) return null
-		return navigator.permissions.query({ name: 'notifications' }).then((res) => {
-			return String([res.state, self.Notification.permission])
-		})
-	}
-
 	// get client code
 	function getClientCode() {
 		const limit = 50
@@ -170,7 +161,6 @@ async function getWorkerData() {
 		uaData,
 		storage,
 		[canvas, fonts],
-		bug,
 		gpu,
 		clientCode,
 		network,
@@ -178,7 +168,6 @@ async function getWorkerData() {
 		getUaData(),
 		getStorage(),
 		getCanvas(),
-		getNotificationBug(),
 		getGpu(),
 		getClientCode(),
 		getNetworkInfo(),
@@ -207,7 +196,6 @@ async function getWorkerData() {
 		storage,
 		canvas,
 		fonts,
-		bug,
 		gpu,
 		network,
 		windowScope: [
@@ -493,7 +481,6 @@ const el = document.getElementById('fingerprint-data')
 const workerHash = {}
 function computeTemplate(worker, name) {
 	const RawValueMap = {
-		bug: true,
 		hardware: true,
 		fonts: true,
 		memory: true,
@@ -575,7 +562,6 @@ function computeTemplate(worker, name) {
 		<div>network: ${(hash || {}).network || HTMLNote.UNSUPPORTED}</div>
 		<div>tz: ${(hash || {}).timezone || HTMLNote.UNSUPPORTED}</div>
 		<div>langs: ${(hash || {}).languages || HTMLNote.UNSUPPORTED}</div>
-		<div>bug: ${(hash || {}).bug || HTMLNote.UNSUPPORTED}</div>
 		<div>window: ${(hash || {}).windowScope || HTMLNote.UNSUPPORTED}</div>
 		<div>worker: ${(hash || {}).workerScope || HTMLNote.UNSUPPORTED}</div>
 		<div>code: ${(hash || {}).clientCode || HTMLNote.UNSUPPORTED}</div>
