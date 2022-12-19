@@ -18,9 +18,102 @@ const html = (str, ...expressionSet) => {
 }
 
 async function getWorkerData() {
+	function measureText(context, font) {
+		context.font = `16px ${font}`;
+		const {
+			actualBoundingBoxAscent,
+			actualBoundingBoxDescent,
+			actualBoundingBoxLeft,
+			actualBoundingBoxRight,
+			fontBoundingBoxAscent,
+			fontBoundingBoxDescent,
+			width,
+		} = context.measureText('mwmwmwmwlli');
+		return [
+			actualBoundingBoxAscent,
+			actualBoundingBoxDescent,
+			actualBoundingBoxLeft,
+			actualBoundingBoxRight,
+			fontBoundingBoxAscent,
+			fontBoundingBoxDescent,
+			width,
+		];
+	}
+
+	function detectFonts(context) {
+		const detected = [];
+		const fallbackFont = measureText(context, 'monospace')
+		;[`'Segoe UI', monospace`, `'Helvetica Neue', monospace`].forEach((fontFamily) => {
+			const dimensions = measureText(context, fontFamily);
+			const font = /'(.+)'/.exec(fontFamily)?.[1] || '';
+
+			if (String(dimensions) !== String(fallbackFont)) detected.push(font);
+		})
+		return detected;
+	}
+
+	// Get Canvas
+	async function getCanvas() {
+		let canvasData
+		let fonts
+		try {
+			const canvas = new OffscreenCanvas(500, 200)
+			const context = canvas.getContext('2d')
+			// @ts-expect-error if not supported
+			context.font = '14px Arial'
+			// @ts-expect-error if not supported
+			context.fillText('😃', 0, 20)
+			// @ts-expect-error if not supported
+			context.fillStyle = 'rgba(0, 0, 0, 0)'
+			// @ts-expect-error if not supported
+			context.fillRect(0, 0, canvas.width, canvas.height)
+			const getDataURI = async () => {
+				// @ts-expect-error if not supported
+				const blob = await canvas.convertToBlob()
+				const reader = new FileReader()
+				reader.readAsDataURL(blob)
+				return new Promise((resolve) => {
+					reader.onloadend = () => resolve(reader.result)
+				})
+			}
+			canvasData = await getDataURI()
+			fonts = detectFonts(context)
+		} finally {
+			return [canvasData, fonts]
+		}
+	}
+
+	// get gpu
+	function getGpu() {
+		let gpu
+		try {
+			const context = new OffscreenCanvas(0, 0).getContext('webgl')
+			// @ts-expect-error if not supported
+			const rendererInfo = context.getExtension('WEBGL_debug_renderer_info')
+			// @ts-expect-error if not supported
+			gpu = context.getParameter(rendererInfo.UNMASKED_RENDERER_WEBGL)
+		} finally {
+			return gpu
+		}
+	}
+
+	// get storage
+	async function getStorage() {
+		if (!('storage' in navigator && 'estimate' in navigator.storage)) return null
+		return navigator.storage.estimate().then(({ quota }) => quota)
+	}
+
+	// notification bug
+	async function getNotificationBug() {
+		if (!navigator.userAgent.includes('Chrome')) return null
+		if (!('permissions' in navigator && 'query' in navigator.permissions)) return null
+		return navigator.permissions.query({ name: 'notifications' }).then((res) => {
+			return String([res.state, self.Notification.permission])
+		})
+	}
+
 	// get client code
 	function getClientCode() {
-		if (globalThis.document) return []
 		const limit = 50
 		const [p1, p2] = (1).constructor.toString().split((1).constructor.name)
 		const isEngine = (fn) => {
@@ -48,34 +141,85 @@ async function getWorkerData() {
 	async function getUaData() {
 		if (!('userAgentData' in navigator)) return null
 		// @ts-expect-error if unsupported
-		return navigator.userAgentData
-			.getHighEntropyValues(['platform', 'platformVersion'])
-			.then(({ platform, platformVersion}) => {
-				if (platform === undefined && platformVersion === undefined) return null
-				return String([platform, platformVersion])
-			})
+		return navigator.userAgentData.getHighEntropyValues([
+			'brands',
+			'mobile',
+			'architecture',
+			'bitness',
+			'model',
+			'platform',
+			'platformVersion',
+			'uaFullVersion',
+			'wow64',
+			'fullVersionList',
+		])
+	}
+
+	function getNetworkInfo() {
+		if (!('connection' in navigator)) return null
+		// @ts-expect-error undefined if not supported
+		const { effectiveType, rtt, type } = navigator.connection
+		return [
+			effectiveType,
+			rtt === 0 ? 0 : rtt > 0 ? -1 : -2,
+			type || 'null',
+		]
 	}
 
 	const [
 		uaData,
+		storage,
+		[canvas, fonts],
+		bug,
+		gpu,
 		clientCode,
+		network,
 	] = await Promise.all([
 		getUaData(),
+		getStorage(),
+		getCanvas(),
+		getNotificationBug(),
+		getGpu(),
 		getClientCode(),
+		getNetworkInfo(),
 	]).catch(() => [])
 
 	// eslint-disable-next-line new-cap
 	const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
-	// @ts-expect-error undefined if not supported
-	const { deviceMemory, hardwareConcurrency, language, languages, platform, userAgent } = navigator
+	const {
+		// @ts-expect-error undefined if not supported
+		deviceMemory,
+		hardwareConcurrency,
+		language,
+		languages,
+		platform,
+		userAgent,
+		appVersion,
+	} = navigator
 	const data = {
 		timezone,
-		languages: String([language, ...languages]),
-		hardware: String([deviceMemory || null, hardwareConcurrency || null]),
-		userAgent,
+		languages: [language, ...languages],
+		hardware: [deviceMemory || 'null', hardwareConcurrency || 'null'],
+		ua: [userAgent, appVersion],
 		platform,
 		uaData,
 		clientCode,
+		storage,
+		canvas,
+		fonts,
+		bug,
+		gpu,
+		network,
+		windowScope: [
+			'HTMLDocument' in self,
+			'HTMLElement' in self,
+			'Window' in self,
+		].filter((x) => x),
+		workerScope: [
+			'WorkerGlobalScope' in self,
+			'WorkerNavigator' in self,
+			'WorkerLocation' in self,
+		].filter((x) => x),
 	}
 	return data
 }
@@ -169,36 +313,60 @@ function getSharedWorker(frame, src, fn = getWorkerData) {
 	})
 }
 
+function getServiceWorkerGlobalScope() {
+	const broadcast = new BroadcastChannel('same-file')
+	broadcast.onmessage = async (event) => {
+		if (event.data && event.data.type == 'fingerprint') {
+			const data = await getWorkerData()
+			broadcast.postMessage(data)
+		}
+	}
+}
+
 async function getServiceWorker(channelName, src) {
 	return new Promise(async (resolve) => {
 		const worker = navigator.serviceWorker
-		// @ts-expect-error if __proto__ is not supported
+		// @ts-expect-error if unsupported
 		if (!worker || worker.__proto__.constructor.name !== 'ServiceWorkerContainer') resolve({})
-		try {
-			await worker.register(src, { scope: '../tests/' }).catch((error) => {
-				console.error(error)
-				return resolve({})
-			})
-			worker.ready.then((registration) => {
-				const broadcast = new BroadcastChannel(channelName)
-				broadcast.onmessage = (message) => {
-					registration.unregister()
-					broadcast.close()
-					return resolve(message.data)
-				}
-				return broadcast.postMessage({ type: 'fingerprint' })
-			}).catch((error) => {
-				console.error(error)
-				return resolve({})
-			})
-		} catch (error) {
+		await worker.register(src, { scope: '../tests/' }).catch((error) => {
 			console.error(error)
 			return resolve({})
+		})
+		const broadcast = new BroadcastChannel(channelName)
+		broadcast.onmessage = (message) => {
+			worker.getRegistration(src).then((x) => x && x.unregister())
+			broadcast.close()
+			resolve(message.data)
 		}
+		broadcast.postMessage({ type: 'fingerprint' })
+	}).catch((err) => {
+		console.error(err)
+		return {}
 	})
 }
 
-// system
+// Execute service worker in same file
+if (!globalThis.document && globalThis.ServiceWorkerGlobalScope) {
+	return getServiceWorkerGlobalScope()
+}
+
+// Continue in window scope
+
+// gpu brand
+function getGpuBrand(gpu) {
+	if (!gpu) return
+	const gpuBrandMatcher = /(adreno|amd|apple|intel|llvm|mali|microsoft|nvidia|parallels|powervr|samsung|swiftshader|virtualbox|vmware)/i
+
+	const brand = (
+		/radeon/i.test(gpu) ? 'AMD' :
+			/geforce/i.test(gpu) ? 'NVIDIA' :
+					(gpuBrandMatcher.exec(gpu)?.[0] || 'Other')
+	)
+
+	return brand
+}
+
+// operating system
 const getOS = (userAgent) => {
 	const os = (
 		// order is important
@@ -218,13 +386,13 @@ const getOS = (userAgent) => {
 }
 
 const start = performance.now()
+
 // Create inline workers
 const scriptEl = document.createElement('script')
 scriptEl.textContent = `! async function() {
 	window.inlineWorkers = await Promise.all([
 		${getDedicatedWorker.toString()}(window, 'nested-blob', ${getWorkerData.toString()}),
 		${getSharedWorker.toString()}(window, 'blob', ${getWorkerData.toString()}),
-		${getServiceWorker.toString()}('inline', 'worker_service.js'),
 	])
 }()`
 document.body.appendChild(scriptEl)
@@ -232,6 +400,7 @@ document.body.appendChild(scriptEl)
 const getInlineWorkers = () => new Promise((resolve) => {
 	const wait = setTimeout(() => {
 		clearInterval(check)
+		document.body.removeChild(scriptEl)
 		resolve([undefined, undefined, undefined])
 	}, 6000)
 
@@ -239,17 +408,27 @@ const getInlineWorkers = () => new Promise((resolve) => {
 		if ('inlineWorkers' in window) {
 			clearTimeout(wait)
 			clearInterval(check)
+			document.body.removeChild(scriptEl) // cleanup
 			resolve(window.inlineWorkers)
 		}
 	}, 10)
+}).finally(() => {
+	if ('inlineWorkers' in window) {
+		// @ts-expect-error undefined if not available
+		delete inlineWorkers // cleanup
+	}
 })
 
+// @ts-expect-error if unsupported
+const currentScriptSrc = document.currentScript.src
 const [
 	windowScope,
-	[dedicatedWorkerInline, sharedWorkerInline, serviceWorkerInline],
+	[dedicatedWorkerInline, sharedWorkerInline],
+	serviceWorker,
 ] = await Promise.all([
 	getWorkerData(),
 	getInlineWorkers(),
+	getServiceWorker('same-file', currentScriptSrc),
 ]).catch((error) => {
 	console.error(error.message)
 	return []
@@ -257,25 +436,49 @@ const [
 
 const perf = performance.now() - start
 
-const red = '#ca656e2b'
+console.groupCollapsed(`Window:`)
+	console.log(windowScope)
+console.groupEnd()
+
+console.groupCollapsed(`Dedicated:`)
+	console.log(dedicatedWorkerInline)
+console.groupEnd()
+
+console.groupCollapsed(`Shared:`)
+	console.log(sharedWorkerInline)
+console.groupEnd()
+
+console.groupCollapsed(`Service:`)
+	console.log(serviceWorker)
+console.groupEnd()
+
+// Remove unstable keys for hash comparison
+function generateStableData(data) {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const { windowScope, workerScope, ...stabilizedData} = data
+	return stabilizedData
+}
 
 // same file
-const windowHash = hashMini(windowScope)
+const windowHash = hashMini(generateStableData(windowScope))
 
-// inline
-const dedicatedInlineHash = hashMini(dedicatedWorkerInline)
-const sharedInlineHash = hashMini(sharedWorkerInline)
-const serviceInlineHash = hashMini(serviceWorkerInline)
+// Get hashes
+const dedicatedInlineHash = hashMini(generateStableData(dedicatedWorkerInline))
+const sharedInlineHash = hashMini(generateStableData(sharedWorkerInline))
+const serviceHash = hashMini(generateStableData(serviceWorker))
 
-const style = (controlHash, hash) => {
+// template helpers
+const red = '#ca656e2b'
+const voidHash = 'ac6c4fe7'
+const emptyHash = 'ac6c4be7' // array
+const styleHash = (controlHash, hash) => {
 	return `
 	style="
-		background: ${hash == 'undefined' ? '#bbbbbb1f' : hash != controlHash ? red : 'none'}
+		background: ${hash === voidHash ? '#bbbbbb1f' : hash !== controlHash ? red : 'none'}
 	"
 `
 }
 
-// template helpers
 const HTMLNote = {
 	UNKNOWN: '<span class="blocked">unknown</span>',
 	UNSUPPORTED: '<span class="blocked">unsupported</span>',
@@ -284,55 +487,97 @@ const HTMLNote = {
 	SECRET: '<span class="blocked">secret</span>',
 }
 
+// Generate template
 const el = document.getElementById('fingerprint-data')
 const workerHash = {}
 function computeTemplate(worker, name) {
 	const RawValueMap = {
+		bug: true,
 		hardware: true,
 		fonts: true,
 		memory: true,
-		permission: true,
+		network: true,
 		platform: true,
 		timezone: true,
-		uaData: true,
 	}
-	Object.keys(worker || []).forEach((key) => {
+	Object.keys(worker || {}).forEach((key) => {
 		return (
 			workerHash[name] = {
 				...workerHash[name],
 				[key]: (
-					RawValueMap[key] ? worker[key] :
-						key === 'userAgent' && worker[key] ? `${hashMini(worker[key])} (${getOS(worker[key])})` :
-							key === 'languages' && worker[key] ? `${hashMini(worker[key])} (${worker[key].split(',')[0]})` :
-								key === 'code' && worker[key] ? `${hashMini(worker[key])} (${worker[key].length})` :
-									worker[key] ? hashMini(worker[key]) : HTMLNote.UNSUPPORTED
+					RawValueMap[key] && worker[key] ? (String(worker[key]) || HTMLNote.UNSUPPORTED) :
+						key === 'gpu' && worker[key] ? `${hashMini(worker[key])} (${getGpuBrand(worker[key])})` :
+						key === 'languages' && worker[key] ? `${hashMini(worker[key])} (${worker[key][0]})` :
+						key === 'storage' && worker[key] ? `${hashMini(worker[key])} (${+(worker[key] / (1024 ** 3)).toFixed(1)} GB)` :
+						key === 'ua' && worker[key] ? `${hashMini(worker[key])} (${getOS(worker[key][0])})` :
+						key === 'uaData' && worker[key] ? `${hashMini(worker[key])}${worker[key].platform ? ` (${worker[key].platform})`: ''}` :
+						worker[key] ? hashMini(worker[key]) : HTMLNote.UNSUPPORTED
 				),
 			}
 		)
 	})
 	const hash = workerHash[name]
-	const style = `
+	const failStyle = `
 		style="
 			color: #fff;
 			background: #ca656eb8;
-			padding: 0 2px;
 		"
 	`
-	if (workerHash.dedicated && hash) {
-		Object.keys(hash).forEach((key) => {
-			if (String(hash[key]) !== String(workerHash.window[key])) {
-				hash[key] = `<span ${style}>${hash[key]}</span>`
-			}
-		})
+	// use for custom tests
+	const CustomMap = {
+		clientCode: true,
+		windowScope: true,
+		workerScope: true,
 	}
+
+	// translate hashes to HTML
+	const HashValueMap = {
+		[voidHash]: HTMLNote.UNKNOWN,
+	}
+
+	Object.keys(hash || {}).forEach((key) => {
+		const failsWindow = (String(hash[key]) !== String(workerHash.window[key]))
+		const failsDedicatedWorker = workerHash.dedicated && (String(hash[key]) !== String(workerHash.dedicated[key]))
+		const failsScope = !CustomMap[key] && (failsWindow || failsDedicatedWorker)
+
+		const failsCode = key === 'clientCode' && hash[key] !== emptyHash
+		const failsFeatures = (
+			(name === 'window' && key === 'workerScope' && hash[key] !== emptyHash) ||
+			(name !== 'window' && key === 'windowScope' && hash[key] !== emptyHash)
+		)
+
+		if (failsScope || failsCode || failsFeatures) {
+			hash[key] = `<span ${failStyle}>${hash[key]}</span>`
+			return
+		}
+
+		if (hash[key] === emptyHash) {
+			hash[key] = HTMLNote.UNKNOWN
+			return
+		}
+
+		const html = HashValueMap[hash[key]]
+		if (html) {
+			hash[key] = html
+		}
+	})
+
 	return `
-		<div>ua: ${(hash || {}).userAgent || HTMLNote.BLOCKED}</div>
-		<div>platform: ${(hash || {}).platform || HTMLNote.BLOCKED}</div>
+		<div>ua: ${(hash || {}).ua || HTMLNote.UNSUPPORTED}</div>
 		<div>data: ${(hash || {}).uaData || HTMLNote.UNSUPPORTED}</div>
+		<div>platform: ${(hash || {}).platform || HTMLNote.UNSUPPORTED}</div>
+		<div>fonts: ${(hash || {}).fonts || HTMLNote.UNSUPPORTED}</div>
+		<div>canvas: ${(hash || {}).canvas || HTMLNote.UNSUPPORTED}</div>
+		<div>gpu: ${(hash || {}).gpu || HTMLNote.UNSUPPORTED}</div>
 		<div>hardware: ${(hash || {}).hardware || HTMLNote.UNSUPPORTED}</div>
-		<div>tz: ${(hash || {}).timezone || HTMLNote.BLOCKED}</div>
-		<div>langs: ${(hash || {}).languages || HTMLNote.BLOCKED}</div>
-		<div>code: ${(hash || {}).clientCode || HTMLNote.BLOCKED}</div>
+		<div>storage: ${(hash || {}).storage || HTMLNote.UNSUPPORTED}</div>
+		<div>network: ${(hash || {}).network || HTMLNote.UNSUPPORTED}</div>
+		<div>tz: ${(hash || {}).timezone || HTMLNote.UNSUPPORTED}</div>
+		<div>langs: ${(hash || {}).languages || HTMLNote.UNSUPPORTED}</div>
+		<div>bug: ${(hash || {}).bug || HTMLNote.UNSUPPORTED}</div>
+		<div>window: ${(hash || {}).windowScope || HTMLNote.UNSUPPORTED}</div>
+		<div>worker: ${(hash || {}).workerScope || HTMLNote.UNSUPPORTED}</div>
+		<div>code: ${(hash || {}).clientCode || HTMLNote.UNSUPPORTED}</div>
 	`
 }
 
@@ -344,7 +589,7 @@ patch(el, html`
 		<strong>Window compared to WorkerGlobalScope</strong>
 	</div>
 	<div class="flex-grid relative">
-		<div ${style(windowHash, windowHash)}>
+		<div ${styleHash(windowHash, windowHash)}>
 			<strong>Window</strong>
 			<span class="hash">${windowHash}</span>
 			${computeTemplate(windowScope, 'window')}
@@ -352,20 +597,20 @@ patch(el, html`
 	</div>
 
 	<div class="flex-grid relative">
-		<div class="col-four" ${style(windowHash, dedicatedInlineHash)}>
+		<div class="col-four" ${styleHash(windowHash, dedicatedInlineHash)}>
 			<strong>Dedicated</strong>
 			<span class="hash">${dedicatedInlineHash}</span>
-			<div class="worker">${computeTemplate(dedicatedWorkerInline, 'dedicated-inline')}</div>
+			<div class="worker">${computeTemplate(dedicatedWorkerInline, 'dedicated')}</div>
 		</div>
-		<div class="col-four" ${style(windowHash, sharedInlineHash)}>
+		<div class="col-four" ${styleHash(windowHash, sharedInlineHash)}>
 			<strong>Shared</strong>
 			<span class="hash">${sharedInlineHash}</span>
-			<div class="worker">${computeTemplate(sharedWorkerInline, 'shared-inline')}</div>
+			<div class="worker">${computeTemplate(sharedWorkerInline, 'shared')}</div>
 		</div>
-		<div class="col-four" ${style(windowHash, serviceInlineHash)}>
+		<div class="col-four" ${styleHash(windowHash, serviceHash)}>
 			<strong>Service</strong>
-			<span class="hash">${serviceInlineHash}</span>
-			<div class="worker">${computeTemplate(serviceWorkerInline, 'service-inline')}</div>
+			<span class="hash">${serviceHash}</span>
+			<div class="worker">${computeTemplate(serviceWorker, 'service')}</div>
 		</div>
 	</div>
 </div>
