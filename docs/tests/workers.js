@@ -18,6 +18,16 @@ const html = (str, ...expressionSet) => {
 }
 
 async function getWorkerData() {
+	const Platform = {
+		WINDOWS: 'Windows',
+		APPLE: 'Apple',
+		OTHER: 'Other',
+	}
+	const FontMap = {
+		'Segoe UI': Platform.WINDOWS,
+		'Helvetica Neue': Platform.APPLE,
+	}
+
 	function measureText(context, font) {
 		context.font = `16px ${font}`;
 		const {
@@ -157,13 +167,78 @@ async function getWorkerData() {
 		]
 	}
 
+	function checkFonts(fonts) {
+		const scope = self.document ? document : self
+		if (!('fonts' in scope && 'check' in scope.fonts) || scope.fonts.check(`12px 'abc123'`)) return
+		return fonts.filter((x) => scope.fonts.check(`12px '${x}'`))
+	}
+
+	async function loadFonts(fonts) {
+		const list = []
+		await Promise.all(
+			fonts.map((x) => new FontFace(x, `local("${x}")`)
+				.load()
+				.then((x) => list.push(x.family))
+				.catch(() => null),
+			),
+		)
+		return list
+	}
+
+	function getMaxCallStackSize() {
+		const fn = () => {
+			try {
+				return 1 + fn()
+			} catch (err) {
+				return 1
+			}
+		}
+		;[...Array(10)].forEach(() => fn()) // stabilize
+		return fn()
+	}
+
+	function getTimingResolution() {
+		const maxRuns = 5000
+		let valA = 1
+		let valB = 1
+		let res
+		for (let i = 0; i < maxRuns; i++) {
+			const a = performance.now()
+			const b = performance.now()
+			if (a < b) {
+				res = b - a
+				if (res > valA && res < valB) {
+					valB = res
+				} else if (res < valA) {
+					valB = valA
+					valA = res
+				}
+			}
+		}
+		return valA
+	}
+
+	async function getNotificationBug() {
+		if (!navigator.userAgent.includes('Chrome')) return null
+		if (!('permissions' in navigator && 'query' in navigator.permissions)) return null
+		return navigator.permissions.query({ name: 'notifications' }).then((res) => {
+			return String([res.state, self.Notification.permission])
+		})
+	}
+
+
 	const [
 		uaData,
 		storage,
-		[canvas, fonts],
+		[canvas, fontsText],
 		gpu,
 		clientCode,
 		network,
+		fontsCheck,
+		fontsLoad,
+		stackSize,
+		timingResolution,
+		bug,
 	] = await Promise.all([
 		getUaData(),
 		getStorage(),
@@ -171,6 +246,11 @@ async function getWorkerData() {
 		getGpu(),
 		getClientCode(),
 		getNetworkInfo(),
+		checkFonts(['Segoe UI', 'Helvetica Neue']),
+		loadFonts(['Segoe UI', 'Helvetica Neue']),
+		getMaxCallStackSize(),
+		getTimingResolution(),
+		getNotificationBug(),
 	]).catch(() => [])
 
 	// eslint-disable-next-line new-cap
@@ -195,7 +275,9 @@ async function getWorkerData() {
 		clientCode,
 		storage,
 		canvas,
-		fonts,
+		fontsCheck: FontMap[fontsCheck] || (fontsCheck ? Platform.OTHER : undefined),
+		fontsLoad: FontMap[fontsLoad] || (fontsLoad ? Platform.OTHER : undefined),
+		fontsText: FontMap[fontsText] || (fontsText ? Platform.OTHER : undefined),
 		gpu,
 		network,
 		windowScope: [
@@ -208,6 +290,9 @@ async function getWorkerData() {
 			'WorkerNavigator' in self,
 			'WorkerLocation' in self,
 		].filter((x) => x),
+		stackSize,
+		timingResolution,
+		bug,
 	}
 	return data
 }
@@ -301,16 +386,6 @@ function getSharedWorker(frame, src, fn = getWorkerData) {
 	})
 }
 
-function getServiceWorkerGlobalScope() {
-	const broadcast = new BroadcastChannel('same-file')
-	broadcast.onmessage = async (event) => {
-		if (event.data && event.data.type == 'fingerprint') {
-			const data = await getWorkerData()
-			broadcast.postMessage(data)
-		}
-	}
-}
-
 async function getServiceWorker(channelName, src) {
 	return new Promise(async (resolve) => {
 		const worker = navigator.serviceWorker
@@ -331,11 +406,6 @@ async function getServiceWorker(channelName, src) {
 		console.error(err)
 		return {}
 	})
-}
-
-// Execute service worker in same file
-if (!globalThis.document && globalThis.ServiceWorkerGlobalScope) {
-	return getServiceWorkerGlobalScope()
 }
 
 // Continue in window scope
@@ -381,11 +451,12 @@ scriptEl.textContent = `! async function() {
 	window.inlineWorkers = await Promise.all([
 		${getDedicatedWorker.toString()}(window, 'nested-blob', ${getWorkerData.toString()}),
 		${getSharedWorker.toString()}(window, 'blob', ${getWorkerData.toString()}),
+		${getServiceWorker.toString()}('service', 'worker_service.js'),
 	])
 }()`
 document.body.appendChild(scriptEl)
 
-const getInlineWorkers = () => new Promise((resolve) => {
+const getWorkers = () => new Promise((resolve) => {
 	const wait = setTimeout(() => {
 		clearInterval(check)
 		document.body.removeChild(scriptEl)
@@ -407,16 +478,12 @@ const getInlineWorkers = () => new Promise((resolve) => {
 	}
 })
 
-// @ts-expect-error if unsupported
-const currentScriptSrc = document.currentScript.src
 const [
 	windowScope,
-	[dedicatedWorkerInline, sharedWorkerInline],
-	serviceWorker,
+	[dedicatedWorkerInline, sharedWorkerInline, serviceWorker],
 ] = await Promise.all([
 	getWorkerData(),
-	getInlineWorkers(),
-	getServiceWorker('same-file', currentScriptSrc),
+	getWorkers(),
 ]).catch((error) => {
 	console.error(error.message)
 	return []
@@ -444,7 +511,7 @@ console.groupEnd()
 function generateStableData(data) {
 	if (!data) return data;
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const { windowScope, workerScope, ...stabilizedData} = data
+	const { bug, stackSize, windowScope, workerScope, ...stabilizedData } = data
 	return stabilizedData
 }
 
@@ -481,12 +548,17 @@ const el = document.getElementById('fingerprint-data')
 const workerHash = {}
 function computeTemplate(worker, name) {
 	const RawValueMap = {
+		bug: true,
 		hardware: true,
-		fonts: true,
+		fontsCheck: true,
+		fontsLoad: true,
+		fontsText: true,
 		memory: true,
 		network: true,
 		platform: true,
+		stackSize: true,
 		timezone: true,
+		timingResolution: true,
 	}
 	Object.keys(worker || {}).forEach((key) => {
 		return (
@@ -516,6 +588,8 @@ function computeTemplate(worker, name) {
 		clientCode: true,
 		windowScope: true,
 		workerScope: true,
+		stackSize: true,
+		bug: true,
 	}
 
 	// translate hashes to HTML
@@ -554,7 +628,9 @@ function computeTemplate(worker, name) {
 		<div>ua: ${(hash || {}).ua || HTMLNote.UNSUPPORTED}</div>
 		<div>data: ${(hash || {}).uaData || HTMLNote.UNSUPPORTED}</div>
 		<div>platform: ${(hash || {}).platform || HTMLNote.UNSUPPORTED}</div>
-		<div>fonts: ${(hash || {}).fonts || HTMLNote.UNSUPPORTED}</div>
+		<div>font A: ${(hash || {}).fontsText || HTMLNote.UNSUPPORTED}</div>
+		<div>font B: ${(hash || {}).fontsCheck || HTMLNote.UNSUPPORTED}</div>
+		<div>font C: ${(hash || {}).fontsLoad || HTMLNote.UNSUPPORTED}</div>
 		<div>canvas: ${(hash || {}).canvas || HTMLNote.UNSUPPORTED}</div>
 		<div>gpu: ${(hash || {}).gpu || HTMLNote.UNSUPPORTED}</div>
 		<div>hardware: ${(hash || {}).hardware || HTMLNote.UNSUPPORTED}</div>
@@ -565,6 +641,9 @@ function computeTemplate(worker, name) {
 		<div>window: ${(hash || {}).windowScope || HTMLNote.UNSUPPORTED}</div>
 		<div>worker: ${(hash || {}).workerScope || HTMLNote.UNSUPPORTED}</div>
 		<div>code: ${(hash || {}).clientCode || HTMLNote.UNSUPPORTED}</div>
+		<div>stack: ${(hash || {}).stackSize || HTMLNote.UNSUPPORTED}</div>
+		<div>timing: ${(hash || {}).timingResolution || HTMLNote.UNSUPPORTED}</div>
+		<div>bug: ${(hash || {}).bug || HTMLNote.UNSUPPORTED}</div>
 	`
 }
 
