@@ -140,8 +140,8 @@ export default async function getResistance() {
 		const disabled = 'c767712b'
 		const pattern = {
 			noscript: {
-				contentDocumentHash: ['0b637a33', '37e2f32e'],
-				contentWindowHash: ['0b637a33', '37e2f32e'],
+				contentDocumentHash: ['0b637a33', '37e2f32e', '318390d1'],
+				contentWindowHash: ['0b637a33', '37e2f32e', '318390d1'],
 				getContextHash: ['0b637a33', '081d6d1b', disabled],
 			},
 			trace: {
@@ -245,7 +245,7 @@ export default async function getResistance() {
 				toDataURLHash: ['55e9b959', disabled],
 				toBlobHash: ['55e9b959', disabled],
 				getImageDataHash: ['55e9b959'],
-				hardwareConcurrencyHash: ['efbd4cf9', 'a63491fb', 'b011fd1c', '194ecf17'],
+				hardwareConcurrencyHash: ['efbd4cf9', 'a63491fb', 'b011fd1c', '194ecf17', '55e9b959'],
 			},
 
 			fakeBrowser: {
