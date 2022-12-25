@@ -407,12 +407,16 @@ export default async function getCanvasWebgl() {
 		await queueEvent(timer)
 		const params = { ...getParams(gl), ...getUnmasked(gl) }
 		const params2 = { ...getParams(gl2), ...getUnmasked(gl2) }
+		const VersionParam: Record<string, boolean> = {
+			ALIASED_LINE_WIDTH_RANGE: true,
+			SHADING_LANGUAGE_VERSION: true,
+			VERSION: true,
+		}
 		const mismatch = Object.keys(params2)
-			.filter((key) => !!params[key] && '' + params[key] != '' + params2[key])
-			.toString()
-			.replace('SHADING_LANGUAGE_VERSION,VERSION', '')
-		if (mismatch) {
-			sendToTrash('webgl/webgl2 mirrored params mismatch', mismatch)
+			.filter((key) => !!params[key] && !VersionParam[key] && ('' + params[key] != '' + params2[key]))
+
+		if (mismatch.length) {
+			sendToTrash('webgl/webgl2 mirrored params mismatch', mismatch.toString())
 		}
 
 		await queueEvent(timer)
