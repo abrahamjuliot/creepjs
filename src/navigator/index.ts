@@ -190,33 +190,6 @@ export default async function getNavigator(workerScope) {
 			}, 'hardwareConcurrency failed'),
 			language: attempt(() => {
 				const { language, languages } = navigator
-				const lang = ('' + language).split(',')[0]
-				let currencyLanguage
-				try {
-					currencyLanguage = (1).toLocaleString((lang || undefined), {
-						style: 'currency',
-						currency: 'USD',
-						currencyDisplay: 'name',
-						minimumFractionDigits: 0,
-						maximumFractionDigits: 0,
-					})
-				} catch (e) { }
-				const currencyLocale = (1).toLocaleString(undefined, {
-					style: 'currency',
-					currency: 'USD',
-					currencyDisplay: 'name',
-					minimumFractionDigits: 0,
-					maximumFractionDigits: 0,
-				})
-
-				const languageLie = currencyLocale != currencyLanguage
-				if (languageLie) {
-					lied = true
-					documentLie(
-						`Navigator.language`,
-						`${currencyLocale} locale and ${currencyLanguage} language do not match`,
-					)
-				}
 
 				if (language && languages) {
 					// @ts-ignore
@@ -534,7 +507,9 @@ export function navigatorHTML(fp) {
 		<div class="help" title="Navigator.globalPrivacyControl">gpc: ${
 		'' + globalPrivacyControl == 'undefined' ? HTMLNote.UNSUPPORTED : '' + globalPrivacyControl
 		}</div>
-		<div class="help" title="Navigator.language\nNavigator.languages">lang: ${!blocked[language] ? language : HTMLNote.BLOCKED}</div>
+		<div class="help" title="Navigator.language\nNavigator.languages">lang: ${
+			!blocked[language] ? language : HTMLNote.BLOCKED
+		}</div>
 		<div>mimeTypes (${count(mimeTypes)}): ${
 		!blocked['' + mimeTypes] ?
 			modal(
