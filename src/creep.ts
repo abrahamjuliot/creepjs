@@ -24,8 +24,8 @@ import getSVG, { svgHTML } from './svg'
 import getTimezone, { timezoneHTML } from './timezone'
 import { getTrash, trashHTML } from './trash'
 import { hashify, hashMini, getBotHash, getFuzzyHash, cipher } from './utils/crypto'
-import { exile } from './utils/exile'
-import { IS_BLINK, braveBrowser, getBraveMode, getBraveUnprotectedParameters, IS_GECKO, computeWindowsRelease, hashSlice, ENGINE_IDENTIFIER, getUserAgentRestored, attemptWindows11UserAgent, LowerEntropy } from './utils/helpers'
+import { exile, getStackBytes } from './utils/exile'
+import { IS_BLINK, braveBrowser, getBraveMode, getBraveUnprotectedParameters, computeWindowsRelease, hashSlice, ENGINE_IDENTIFIER, getUserAgentRestored, attemptWindows11UserAgent, LowerEntropy } from './utils/helpers'
 import { patch, html, getDiffs, modal, HTMLNote } from './utils/html'
 import getCanvasWebgl, { webglHTML } from './webgl'
 import getWebRTCData, { getWebRTCDevices, webrtcHTML } from './webrtc'
@@ -40,6 +40,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		return
 	}
 
+	const stackBytes = getStackBytes()
 	await exile()
 
 	const isBrave = IS_BLINK ? await braveBrowser() : false
@@ -861,6 +862,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				memoryGB: status?.memoryInGigabytes,
 				quota: status?.quota,
 				quotaGB: status?.quotaInGigabytes,
+				stackBytes,
 				stackSize: status?.stackSize,
 				timingRes: status?.timingRes,
 				rtt: status?.rtt,
@@ -958,7 +960,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		resistanceSet.delete(undefined)
 		const resistanceType = [...resistanceSet].join(':')
 		const fetchVisitorDataTimer = timer()
-		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&trashLen=${trashLen}&liesLen=${liesLen}&errorsLen=${errorsLen}&fuzzy=${fuzzyFingerprint}&botHash=${botHash}&perf=${(timeEnd || 0).toFixed(2)}&resistance=${resistanceType}`
+		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&trashLen=${trashLen}&liesLen=${liesLen}&errorsLen=${errorsLen}&fuzzy=${fuzzyFingerprint}&botHash=${botHash}&perf=${(timeEnd || 0).toFixed(2)}&resistance=${resistanceType}&stackBytes=${stackBytes}`
 
 		let status = ''
 		fetch(request)
@@ -1328,6 +1330,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 
 					// cipher
 					RAW_BODY = {
+						stackBytes,
 						sender: `${sender.e}_${sender.l}`,
 						isTorBrowser,
 						isRFP,
