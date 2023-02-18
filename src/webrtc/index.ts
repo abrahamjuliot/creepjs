@@ -193,7 +193,7 @@ const getIPAddress = (sdp) => {
 	return candidateIpAddress && (candidateIpAddress != blocked) ? candidateIpAddress : undefined
 }
 
-export default async function getWebRTCData() {
+export default async function getWebRTCData(): Promise<Record<string, unknown> | null> {
 	return new Promise(async (resolve) => {
 		if (!window.RTCPeerConnection) {
 			return resolve(null)
@@ -218,8 +218,8 @@ export default async function getWebRTCData() {
 		connection.createDataChannel('')
 
 		const options = { offerToReceiveAudio: 1, offerToReceiveVideo: 1 }
-		// @ts-ignore
-		const offer = await connection.createOffer(options)
+
+		const offer = await connection.createOffer(options as unknown as RTCOfferOptions)
 
 		connection.setLocalDescription(offer)
 		const { sdp } = offer || {}
