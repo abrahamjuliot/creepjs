@@ -40,8 +40,10 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		return
 	}
 
-	const stackBytes = getStackBytes()
-	await exile()
+	const [stackBytes] = await Promise.all([
+		getStackBytes(),
+		exile(),
+	])
 
 	const isBrave = IS_BLINK ? await braveBrowser() : false
 	const braveMode = isBrave ? getBraveMode() : {}
