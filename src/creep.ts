@@ -1505,7 +1505,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 
 				if (crowdBlendingScore != fpCrowdBlendingScore) {
 					console.log(`updating crowd-blending score from ${fpCrowdBlendingScore} to ${crowdBlendingScore}`)
-					const scoreRequest = `https://creepjs-api.web.app/score-crowd-blending?id=${creepHash}&crowdBlendingScore=${crowdBlendingScore}&traceId=${traceId}`
+					const scoreRequest = `https://creepjs-api.web.app/score-crowd-blending?id=${creepHash}&crowdBlendingScore=${crowdBlendingScore}&traceId=${traceId}&stackBytes=${stackBytes}`
 
 					fetch(scoreRequest)
 						.catch((error) => console.error('Failed Score Request', error))
