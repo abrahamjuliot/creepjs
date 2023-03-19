@@ -25,7 +25,7 @@ import getTimezone, { timezoneHTML } from './timezone'
 import { getTrash, trashHTML } from './trash'
 import { hashify, hashMini, getBotHash, getFuzzyHash, cipher } from './utils/crypto'
 import { exile, getStackBytes } from './utils/exile'
-import { IS_BLINK, braveBrowser, getBraveMode, getBraveUnprotectedParameters, computeWindowsRelease, hashSlice, ENGINE_IDENTIFIER, getUserAgentRestored, attemptWindows11UserAgent, LowerEntropy } from './utils/helpers'
+import { IS_BLINK, braveBrowser, getBraveMode, getBraveUnprotectedParameters, computeWindowsRelease, hashSlice, ENGINE_IDENTIFIER, getUserAgentRestored, attemptWindows11UserAgent, LowerEntropy, queueTask } from './utils/helpers'
 import { patch, html, getDiffs, modal, HTMLNote } from './utils/html'
 import getCanvasWebgl, { webglHTML } from './webgl'
 import getWebRTCData, { getWebRTCDevices, webrtcHTML } from './webrtc'
@@ -40,10 +40,8 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		return
 	}
 
-	const [stackBytes] = await Promise.all([
-		getStackBytes(),
-		exile(),
-	])
+	await queueTask()
+	const stackBytes = getStackBytes()
 
 	const isBrave = IS_BLINK ? await braveBrowser() : false
 	const braveMode = isBrave ? getBraveMode() : {}

@@ -517,6 +517,8 @@ const queueEvent = (timer, delay = 0) => {
 		.catch((e) => { })
 }
 
+const queueTask = () => new Promise((resolve) => setTimeout(() => resolve(null)))
+
 const formatEmojiSet = (emojiSet, limit = 3) => {
 	const maxLen = (limit * 2) + 3
 	const list = (emojiSet || [])
@@ -606,4 +608,4 @@ const LowerEntropy: Record<string, boolean> = {
 	TIME_ZONE: false,
 }
 
-export { IS_BLINK, IS_GECKO, IS_WEBKIT, JS_ENGINE, LIKE_BRAVE, LIKE_BRAVE_RESISTANCE, ENGINE_IDENTIFIER, braveBrowser, getBraveMode, getBraveUnprotectedParameters, getOS, getReportedPlatform, USER_AGENT_OS, PLATFORM_OS, decryptUserAgent, getUserAgentPlatform, computeWindowsRelease, attemptWindows11UserAgent, isUAPostReduction, getUserAgentRestored, logTestResult, performanceLogger, getPromiseRaceFulfilled, queueEvent, createTimer, formatEmojiSet, EMOJIS, CSS_FONT_FAMILY, hashSlice, Analysis, LowerEntropy }
+export { IS_BLINK, IS_GECKO, IS_WEBKIT, JS_ENGINE, LIKE_BRAVE, LIKE_BRAVE_RESISTANCE, ENGINE_IDENTIFIER, braveBrowser, getBraveMode, getBraveUnprotectedParameters, getOS, getReportedPlatform, USER_AGENT_OS, PLATFORM_OS, decryptUserAgent, getUserAgentPlatform, computeWindowsRelease, attemptWindows11UserAgent, isUAPostReduction, getUserAgentRestored, logTestResult, performanceLogger, getPromiseRaceFulfilled, queueEvent, queueTask, createTimer, formatEmojiSet, EMOJIS, CSS_FONT_FAMILY, hashSlice, Analysis, LowerEntropy }
