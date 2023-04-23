@@ -384,6 +384,8 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		throw new Error('Fingerprint failed!')
 	}
 
+	const tmSum = +(fp.canvas2d?.textMetricsSystemSum) || 0
+
 	console.log('%c✔ loose fingerprint passed', 'color:#4cca9f')
 
 	console.groupCollapsed('Loose Fingerprint')
@@ -866,6 +868,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				stackBytes,
 				stackSize: status?.stackSize,
 				timingRes: status?.timingRes,
+				tmSum,
 				rtt: status?.rtt,
 				networkType: status?.downlink ? [status?.effectiveType, status?.type] : undefined,
 				webRTCFoundation: webRTC?.foundation,
@@ -961,7 +964,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		resistanceSet.delete(undefined)
 		const resistanceType = [...resistanceSet].join(':')
 		const fetchVisitorDataTimer = timer()
-		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&trashLen=${trashLen}&liesLen=${liesLen}&errorsLen=${errorsLen}&fuzzy=${fuzzyFingerprint}&botHash=${botHash}&perf=${(timeEnd || 0).toFixed(2)}&resistance=${resistanceType}&stackBytes=${stackBytes}`
+		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&trashLen=${trashLen}&liesLen=${liesLen}&errorsLen=${errorsLen}&fuzzy=${fuzzyFingerprint}&botHash=${botHash}&perf=${(timeEnd || 0).toFixed(2)}&resistance=${resistanceType}&stackBytes=${stackBytes}&tmSum=${tmSum}`
 
 		let status = ''
 		fetch(request)
@@ -1332,6 +1335,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 					// cipher
 					RAW_BODY = {
 						stackBytes,
+						tmSum,
 						sender: `${sender.e}_${sender.l}`,
 						isTorBrowser,
 						isRFP,
@@ -1504,7 +1508,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 
 				if (crowdBlendingScore != fpCrowdBlendingScore) {
 					console.log(`updating crowd-blending score from ${fpCrowdBlendingScore} to ${crowdBlendingScore}`)
-					const scoreRequest = `https://creepjs-api.web.app/score-crowd-blending?id=${creepHash}&crowdBlendingScore=${crowdBlendingScore}&traceId=${traceId}&stackBytes=${stackBytes}`
+					const scoreRequest = `https://creepjs-api.web.app/score-crowd-blending?id=${creepHash}&crowdBlendingScore=${crowdBlendingScore}&traceId=${traceId}&stackBytes=${stackBytes}&tmSum=${tmSum}`
 
 					fetch(scoreRequest)
 						.catch((error) => console.error('Failed Score Request', error))
