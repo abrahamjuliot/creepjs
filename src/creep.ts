@@ -6,7 +6,7 @@ import getHTMLElementVersion, { htmlElementVersionHTML } from './document'
 import getClientRects, { clientRectsHTML } from './domrect'
 import getConsoleErrors, { consoleErrorsHTML } from './engine'
 import { timer, getCapturedErrors, caniuse, errorsHTML } from './errors'
-import getEngineFeatures, { featuresHTML, getFeaturesLie } from './features'
+import getEngineFeatures, { FeatureDiffs, featuresHTML, getFeaturesLie } from './features'
 import getFonts, { fontsHTML } from './fonts'
 import getHeadlessFeatures, { headlessFeaturesHTML } from './headless'
 import getIntl, { intlHTML } from './intl'
@@ -882,8 +882,12 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				scriptSize: status?.scriptSize,
 				benchmark: Math.floor(timeEnd || 0),
 				benchmarkProto: PROTO_BENCHMARK,
+				featuresCSS: FeatureDiffs.css,
+				featuresJS: FeatureDiffs.js,
+				featuresWindow: FeatureDiffs.window,
+				featuresVersion: FeatureDiffs.version,
 			}
-
+			console.log(FeatureDiffs)
 			// console.log(`'`+Object.keys(RAW_BODY).join(`',\n'`))
 
 			cipher(RAW_BODY).then((secret) => {

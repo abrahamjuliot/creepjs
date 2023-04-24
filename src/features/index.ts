@@ -5,6 +5,19 @@ import { hashMini } from '../utils/crypto'
 import { IS_BLINK, IS_GECKO, createTimer, queueEvent, logTestResult, performanceLogger } from '../utils/helpers'
 import { HTMLNote, modal } from '../utils/html'
 
+// Global feature list to track differences between versions
+export const FeatureDiffs: {
+	version: number | null,
+	css: Record<string, string[]> | null,
+	js: Record<string, string[]> | null,
+	window: Record<string, string[]> | null,
+} = {
+	version: null,
+	css: null,
+	js: null,
+	window: null,
+}
+
 /*
 Steps to update:
 0. get beta release desktop/mobile
@@ -535,30 +548,56 @@ export function featuresHTML(fp) {
 		const stable = getStableFeatures()
 		const { windowKeys, cssKeys, jsKeys, version } = stable[browser] || {}
 		const logger = shouldLogFeatures(browser, version, userAgentVersion)
-		let diff
+		let diff: {
+				removed: string[]
+				added: string[]
+		} | null = null
+
 		if (id == 'css') {
 			const { computedStyleKeys } = report
-			diff = !cssKeys ? undefined : getListDiff({
-				oldList: cssKeys.split(', '),
-				newList: computedStyleKeys,
-				removeCamelCase: true,
-			})
-			logger && console.log(`computing ${browser} ${userAgentVersion} diffs from ${browser} ${version}...`)
-			logger && log({ features: computedStyleKeys, name: 'CSS', diff })
+
+			if (cssKeys) {
+				diff = getListDiff({
+					oldList: cssKeys.split(', '),
+					newList: computedStyleKeys,
+					removeCamelCase: true,
+				})
+			}
+
+			if (!logger) return
+
+			console.log(`computing ${browser} ${userAgentVersion} diffs from ${browser} ${version}...`)
+
+			FeatureDiffs[id] = diff
+			log({ features: computedStyleKeys, name: 'CSS', diff })
 		} else if (id == 'window') {
 			const { windowFeaturesKeys } = report
-			diff = !windowKeys ? undefined : getListDiff({
-				oldList: windowKeys.split(', '),
-				newList: windowFeaturesKeys,
-			})
-			logger && log({ features: windowFeaturesKeys, name: 'Window', diff })
+
+			if (windowKeys) {
+				diff = getListDiff({
+					oldList: windowKeys.split(', '),
+					newList: windowFeaturesKeys,
+				})
+			}
+
+			if (!logger) return
+
+			FeatureDiffs[id] = diff
+			log({ features: windowFeaturesKeys, name: 'Window', diff })
 		} else if (id == 'js') {
 			const { jsFeaturesKeys } = report
-			diff = !jsKeys ? undefined : getListDiff({
-				oldList: jsKeys.split(', '),
-				newList: jsFeaturesKeys,
-			})
-			logger && log({ features: jsFeaturesKeys, name: 'JS', diff })
+
+			if (jsKeys) {
+				diff = getListDiff({
+					oldList: jsKeys.split(', '),
+					newList: jsFeaturesKeys,
+				})
+			}
+
+			if (!logger) return
+
+			FeatureDiffs[id] = diff
+			log({ features: jsFeaturesKeys, name: 'JS', diff })
 		}
 
 		const header = !version || !diff || (!diff.added.length && !diff.removed.length) ? '' : `
@@ -586,6 +625,8 @@ export function featuresHTML(fp) {
 			`
 		}).join('<br>'), hashMini([...features]))
 	}
+
+	FeatureDiffs.version = +userAgentVersion || 0
 
 	const cssModal = getModal({
 		id: 'css',
