@@ -596,6 +596,19 @@ const CSS_FONT_FAMILY = `
 
 const hashSlice = (x) => !x ? x : x.slice(0, 8)
 
+function getGpuBrand(gpu: string): string | null {
+	if (!gpu) return null
+	const gpuBrandMatcher = /(adreno|amd|apple|intel|llvm|mali|microsoft|nvidia|parallels|powervr|samsung|swiftshader|virtualbox|vmware)/i
+
+	const brand = (
+		/radeon/i.test(gpu) ? 'AMD' :
+			/geforce/i.test(gpu) ? 'NVIDIA' :
+					(gpuBrandMatcher.exec(gpu)?.[0] || 'other').toLocaleUpperCase()
+	)
+
+	return brand
+}
+
 // collect fingerprints for analysis
 const Analysis: Record<string, unknown> = {}
 
@@ -606,6 +619,7 @@ const LowerEntropy: Record<string, boolean> = {
 	FONTS: false,
 	SCREEN: false,
 	TIME_ZONE: false,
+	WEBGL: false,
 }
 
-export { IS_BLINK, IS_GECKO, IS_WEBKIT, JS_ENGINE, LIKE_BRAVE, LIKE_BRAVE_RESISTANCE, ENGINE_IDENTIFIER, braveBrowser, getBraveMode, getBraveUnprotectedParameters, getOS, getReportedPlatform, USER_AGENT_OS, PLATFORM_OS, decryptUserAgent, getUserAgentPlatform, computeWindowsRelease, attemptWindows11UserAgent, isUAPostReduction, getUserAgentRestored, logTestResult, performanceLogger, getPromiseRaceFulfilled, queueEvent, queueTask, createTimer, formatEmojiSet, EMOJIS, CSS_FONT_FAMILY, hashSlice, Analysis, LowerEntropy }
+export { IS_BLINK, IS_GECKO, IS_WEBKIT, JS_ENGINE, LIKE_BRAVE, LIKE_BRAVE_RESISTANCE, ENGINE_IDENTIFIER, braveBrowser, getBraveMode, getBraveUnprotectedParameters, getOS, getReportedPlatform, USER_AGENT_OS, PLATFORM_OS, decryptUserAgent, getUserAgentPlatform, computeWindowsRelease, attemptWindows11UserAgent, isUAPostReduction, getUserAgentRestored, logTestResult, performanceLogger, getPromiseRaceFulfilled, queueEvent, queueTask, createTimer, formatEmojiSet, EMOJIS, CSS_FONT_FAMILY, hashSlice, Analysis, LowerEntropy, getGpuBrand }

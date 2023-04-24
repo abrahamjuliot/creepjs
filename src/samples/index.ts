@@ -1,4 +1,4 @@
-import { Analysis } from '../utils/helpers'
+import { Analysis, getGpuBrand } from '../utils/helpers'
 import { patch, html, HTMLNote } from '../utils/html'
 import { WORKER_NAME } from '../worker'
 
@@ -250,19 +250,6 @@ export default async function renderSamples(samples, { fp, styleSystemHash }) {
 	return
 }
 
-function getGpuBrand(gpu: string): string | null {
-	if (!gpu) return null
-	const gpuBrandMatcher = /(adreno|amd|apple|intel|llvm|mali|microsoft|nvidia|parallels|powervr|samsung|swiftshader|virtualbox|vmware)/i
-
-	const brand = (
-		/radeon/i.test(gpu) ? 'AMD' :
-			/geforce/i.test(gpu) ? 'NVIDIA' :
-					(gpuBrandMatcher.exec(gpu)?.[0] || 'other').toLocaleUpperCase()
-	)
-
-	return brand
-}
-
 export function getRawFingerprint(fp) {
 	try {
 		const {
@@ -328,16 +315,6 @@ export function getRawFingerprint(fp) {
 			audio: offlineAudioContext?.$hash?.slice(0, 16),
 			canvas: canvas2d?.$hash?.slice(0, 16),
 			webgl: canvasWebgl?.$hash?.slice(0, 16),
-			webglParams: (
-				canvasWebgl?.parameters ?
-				''+[
-					...new Set(Object.values(canvasWebgl.parameters)
-						.filter((val) => val && typeof val != 'string')
-						.flat()
-						.map((val) => Number(val))),
-				].sort((a, b) => (a - b)) :
-					undefined
-			),
 			errors: capturedErrors?.data.length !== 0 ? capturedErrors?.data.slice(0, 6) : undefined,
 			emojiDOMRect: clientRects?.domrectSystemSum,
 			emojiSetDOMRect: clientRects?.emojiSet?.join(''),

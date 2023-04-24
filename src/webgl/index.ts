@@ -2,7 +2,7 @@ import { attempt, captureError } from '../errors'
 import { lieProps, PHANTOM_DARKNESS } from '../lies'
 import { sendToTrash, getWebGLRendererConfidence, compressWebGLRenderer } from '../trash'
 import { hashMini } from '../utils/crypto'
-import { IS_WEBKIT, createTimer, queueEvent, LIKE_BRAVE, logTestResult, performanceLogger, hashSlice, LowerEntropy } from '../utils/helpers'
+import { IS_WEBKIT, createTimer, queueEvent, LIKE_BRAVE, logTestResult, performanceLogger, hashSlice, LowerEntropy, getGpuBrand, Analysis } from '../utils/helpers'
 import { HTMLNote, count, modal } from '../utils/html'
 
 export default async function getCanvasWebgl() {
@@ -447,6 +447,37 @@ export default async function getCanvasWebgl() {
 			lied,
 		}
 
+		// Firewall
+		const brandCapabilities = ['fca66520', 'b62321c3', 'b362c2f5', '0eb2fc19', '55e821f7', '6951838b', '08847ba5', 'c00582e9', '6edf1720', '2b80fd96', '6346cf49', '2259b706', 'e796b84e', '5a5658f1', '58871380', '5a90a5f8', 'cfd20274', '5582debe', 'e4569a5b', 'f2293447', 'c04889b1', '1b251fd7', 'ea59b343', 'b8ea6e7f', '16c481a6', '58fdc720', 'bf06317e', '6294d84e', 'e6464c9f', 'a397a568', '81b9cd29', '1bfd326c', '70859bdb', '70a095b1', '230d6a0d', '3bf321b8', 'c04e374a', 'be2dfaea', 'f9714b3d', '461f97e1', 'd09c1c07', 'a1c808d5', '0b2d4333', '5ddb9237', '39ead506', '802e2547', '49bf7358', 'c026469d', '581f3282', 'f0d5a3c7', '6357365c', 'ae2c4777', '849ccb64', 'e965d541', '794f8929', '2402c3d2', 'e15afab0', '696e1548', 'afa583bc', 'ea54d525', '5ca55292', 'f51cab9a', '087d5759', '8d371161', 'd860ff42', '1453d59a', '12e92e62', 'b504662d', 'cf9643e6', 'dd67b076', 'a581f55e', 'b224cc7c', '2f014c41', '33bc5492', '0fc123c7', 'dbdbe7a4', 'd2172943', '6864dcb0', '3fea1100', 'd913dafa', 'd6bf35ad', 'a26e9aa9', '171831c5', '534002ab', '12f8ac14', '3ff82303', '99b1a1c6', '74daf866', 'fc37fe1f', '6aa1ff7e', 'ec928655', '8428fc8e', 'd8bd9e5a', '8bd0b91b', '52e348ba', 'c2bce496', 'e142d1f9', '2f582ed9', '4065cd69', '66628310', '903c8847', '1ff7c7e7', '402e1064', 'eb799d34', 'ef8f5db1', 'e155c47e', '177cc258', '6f81cbe7', '6b290cd4', 'f1077334', 'd1e76c89', '5d786cef', 'eaa13804', 'fafa14c0', '2c04c2eb', 'c93b5366', '4962ada1', '25a760b8', 'bf610cdb', 'bcf7315f', '801d73af', '00fe1ec9', '0f39d057', 'f8e65486', '3999a5e1', 'ad01a422', 'dc271c35', 'b50edd99', 'e68b5c4e', '82a9a2f1', '0cdb985d', 'a2383001', 'ce2e3d16', 'c9bc4ffd', 'eed2e5e1', 'e10339b3', 'f7451c92', '43038e3d', '8541aa4c', 'fa994f33', 'b2d6fc98', '6a75ae3b', '67995996', '0f840379', 'e574bef6', 'b5494027', '3660b71f', 'a22788f8', 'e16bb1bb', 'e5962ba3', 'c5e9a883', '5ee41456', '3a91d0d6', 'c05f7596', 'ded74044', 'f5d19934', 'c79634c2', '18579e83', '1e8a9a79', '508d1625', 'd05a66eb', '34270469', 'f3c6ea11', '55d3aa56', '7b2e5242', 'e965d180', '258789d0', 'd2dc2474', 'd498797d', 'ea7f90ea', 'a4d34176', 'c04b0635', '02b3eea3', '6b07d4f8', '6c168801', 'ab40bece', 'a4b988da', '4c9e8f5d', '5aea1af1', '795e5c95', '27db292c', '057857ac', '23d1ce20', '917871e7', 'beffda26', '482c81b2', 'c092fdf8', '6248d9e3', 'e316e4c0', 'ade75c4f', '7360ebd1', '300ee927', '5bef9a39', '3740c4c7', '668f0f93', '6dfae3cb', '9b67b7dc', 'de793ead', '149a1efa', '79a57aa9', 'bfe1c212', '62bf7ef1', '25f9385d', '4027d193', 'e9dbb8d5', 'cba1878b', '4503e771', 'cbeade8c', 'c07307c6', 'cefb72ca', '623c3bfd', '00b72507', '8219e1a4', '61d9464e', '7238c5dd', 'b4d40dcc', '0463627d', '5831d5fd', '0586e20b', '467b99a5', 'b10c2a85', 'f221fef5', '7b811cdd', '99ef2c3b', '5b6a17aa', 'a5a477ae', '19594666', '464d51ac', 'a97d3858', '2048bc5a', '6e806ffc', '698c5c2e', '27938830', '66d992e8', 'c7e37ca0', '78640859', '502c402c', 'd970d345', 'ec050bb6', '741688e4', '61178f2a', '9c814c1b', '79284c47', 'd734ea08', '101e0582', 'ea8f5ad0', '61eecaae', 'dcd9a29e', '48af038f', 'bb77a469', '85479b99', '0639a81a', 'df9daeb6', '9fd76352', '3b724916', '2bb488da', 'fe0997b6', '9e2b5e94', 'f33d918e', 'b8961d15', 'a3f9ee34', 'a9640880', 'bc0f9686', '2d15287f', 'aa73f3a4', '00c1b42d']
+		const capabilities = [-2147287810, -2147382251, -2147361769, -2147382272, -2147361792, -2145974612, -2145974598, -2147287834, -2147133749, -2146384027, -2147295822, -2146384003, -1147451901, -2147383246, -2145966545, -2147447137, -1147160553, 349912, -2147429201, -2147459031, -2146384011, -1147464177, -2145966535, -2147440422, -1148326739, 1229835, -2147362760, -2147337003, -2147333118, -2147407821, -2147447161, -2147316383, -2146251641, -1147451883, 999156922, -2146286438, -2146286463, -1147464169, -1147168724, -2147136328, -2147382221, -2147447149, -2147287854, -2130659912, -2146253693, -1148678631, -2147387335, -2147361775, -1147602934, -2147365863, -1147419775, -1962919974, -2147466972, -2145966529, -1164279890, -2147385825, -2147361774, 1147714426, -2147287820, -2147336998, -2147461169, -2147475352, -1148572354, -2146384281, -2147361731, -2147304193, -2147389930, -2147386292, -1962928178, -2147344686, -2147447111, -2147447122, 998804992, -134823971, -2147447873, -2147346747, -2146286583, -2147389951, -2130164388, 184555483, -2147394188, 1610618841, -1332029332, 2147440438, 351513, -2146400384, -2146187766, -1147160399, 1197075, 998911268, -2147295849, -2130164162, -2147385849, -2130164546, -1147765274, -1073719331, -2146417027, -2147365760, 999148597, -1878111124, -677558160, -133757475, -2147128275, -2147453701, -2130172573, -1147419751, -2146526795, -2146236703, -2147410941, -2147415037, -2145974657, -2147306321, -2147378146, -2146237020, -2145966414, -2147453768, -2147291820, -2147470173, -638494755, -1342154787, -2147467172, -2145974489, -1147643759, -2147447892, 83625, -2146232503, -2147295857, -2146253671, -2147316382, -2147429223, -2147390461, -2147291718, -2146526934, -2147447126, -2146384120, 21667, -2145974729, -2147293058, -2146251619, 1099536, -2147142429, -2146379955, -2147365827, -2146400556, -2147295768, -2146251681, -1878102921, -2145974343, 2147475085, -2147394251, -2146232723, -2147400057, -2147414956, -2147439020, -2146319268, -2147406798, -1148680509, -2146277218, 2146590728, -2146400620, -2147414733, -2146376065, -2147387364, -2147386326, -1962893370, -2130164382, -2145933648, -2147447928, -2147448592, -2145974380, -2147133747, -2145941977, -2147407643, -2147447157, -2147300019, 2147479181, -1164800478, -2146232338, -2145974637, -2147453767, -2146401928, -2147365730, -2146384034, -2147475351, -2146232480, -2146236588, -2147447896, -2147295823, -999987216, -2145966441, -2147134974, -1147419753, -2147394484, -16746546, -2146232724, -1148335070, -2146232590, -2146398568, -1164800191, -2147466956, -1147643872, -1148713259, -1147427826, -2147365759, -2147337012, -2145970658, -2147125544, -2147414987, -2147373914, -2147373984, -1147488144, -671082546, -2147361652, -2147374080, -2147287835, -2145974596, 1508998, -2147378041, -2147374032, -2147410938, -2145958228, -2147337022, -2147382130, -2147287811]
+
+		const webglParams = !data.parameters ? undefined : [
+			...new Set(Object.values(data.parameters)
+				.filter((val) => val && typeof val != 'string')
+				.flat()
+				.map((val) => Number(val))),
+		].sort((a, b) => (a - b))
+
+		const gpuBrand = getGpuBrand(data.parameters?.UNMASKED_RENDERER_WEBGL)
+		const webglParamsStr = ''+webglParams
+		const webglBrandCapabilities = !gpuBrand || !webglParamsStr ? undefined : hashMini([gpuBrand, webglParamsStr])
+		const webglCapabilities = !webglParams ? undefined : webglParams.reduce((acc, val, i) => acc ^ (+val + i), 0)
+		Analysis.webglParams = webglParamsStr
+		Analysis.webglBrandCapabilities = webglBrandCapabilities
+		Analysis.webglCapabilities = webglCapabilities
+		const hasSusGpu = webglBrandCapabilities && !brandCapabilities.includes(webglBrandCapabilities)
+		const hasSusCapabilities = webglCapabilities && !capabilities.includes(webglCapabilities)
+
+		if (hasSusGpu) {
+			LowerEntropy.WEBGL = true
+			sendToTrash('WebGLRenderingContext.getParameter', 'suspicious gpu')
+		}
+
+		if (hasSusCapabilities) {
+			LowerEntropy.WEBGL = true
+			sendToTrash('WebGLRenderingContext.getParameter', 'suspicious capabilities')
+		}
+
 		logTestResult({ time: timer.stop(), test: 'webgl', passed: true })
 		return {
 			...data,
@@ -506,7 +537,7 @@ export function webglHTML(fp) {
 
 	<div class="relative col-six${lied ? ' rejected' : ''}">
 		<span class="time">${performanceLogger.getLog().webgl}</span>
-		<strong>WebGL</strong><span class="${lied ? 'lies ' : LowerEntropy.CANVAS ? 'bold-fail ' : ''}hash">${hashSlice($hash)}</span>
+		<strong>WebGL</strong><span class="${lied ? 'lies ' : (LowerEntropy.CANVAS || LowerEntropy.WEBGL) ? 'bold-fail ' : ''}hash">${hashSlice($hash)}</span>
 		<div>images:${
 			!dataURI ? ' '+HTMLNote.BLOCKED : `<span class="sub-hash">${hashMini(dataURI)}</span>${!dataURI2 || dataURI == dataURI2 ? '' : `<span class="sub-hash">${hashMini(dataURI2)}</span>`}`
 		}</div>
