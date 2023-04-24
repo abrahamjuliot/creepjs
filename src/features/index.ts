@@ -2,21 +2,8 @@ import { captureError } from '../errors'
 import { PHANTOM_DARKNESS, documentLie } from '../lies'
 import { sendToTrash } from '../trash'
 import { hashMini } from '../utils/crypto'
-import { IS_BLINK, IS_GECKO, createTimer, queueEvent, logTestResult, performanceLogger } from '../utils/helpers'
+import { IS_BLINK, IS_GECKO, createTimer, queueEvent, logTestResult, performanceLogger, Analysis } from '../utils/helpers'
 import { HTMLNote, modal } from '../utils/html'
-
-// Global feature list to track differences between versions
-export const FeatureDiffs: {
-	version: number | null,
-	css: Record<string, string[]> | null,
-	js: Record<string, string[]> | null,
-	window: Record<string, string[]> | null,
-} = {
-	version: null,
-	css: null,
-	js: null,
-	window: null,
-}
 
 /*
 Steps to update:
@@ -568,7 +555,7 @@ export function featuresHTML(fp) {
 
 			console.log(`computing ${browser} ${userAgentVersion} diffs from ${browser} ${version}...`)
 
-			FeatureDiffs[id] = diff
+			Analysis.featuresCSS = diff
 			log({ features: computedStyleKeys, name: 'CSS', diff })
 		} else if (id == 'window') {
 			const { windowFeaturesKeys } = report
@@ -582,7 +569,7 @@ export function featuresHTML(fp) {
 
 			if (!logger) return
 
-			FeatureDiffs[id] = diff
+			Analysis.featuresWindow = diff
 			log({ features: windowFeaturesKeys, name: 'Window', diff })
 		} else if (id == 'js') {
 			const { jsFeaturesKeys } = report
@@ -596,7 +583,7 @@ export function featuresHTML(fp) {
 
 			if (!logger) return
 
-			FeatureDiffs[id] = diff
+			Analysis.featuresJS = diff
 			log({ features: jsFeaturesKeys, name: 'JS', diff })
 		}
 
@@ -626,7 +613,7 @@ export function featuresHTML(fp) {
 		}).join('<br>'), hashMini([...features]))
 	}
 
-	FeatureDiffs.version = +userAgentVersion || 0
+	Analysis.featuresVersion = +userAgentVersion || 0
 
 	const cssModal = getModal({
 		id: 'css',
