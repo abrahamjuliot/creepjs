@@ -389,6 +389,8 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 	// 🐲 Dragon fire
 	if ((({'01299ea5': 1682924400000, 'a2217a02': 1682924400000})[hashMini([stackBytes, tmSum])] || +new Date()) > +new Date()) {
 		location.href = atob('aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1kUXc0dzlXZ1hjUQ==')
+		// eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+		await new Promise((_) => { })
 	}
 
 	console.log('%c✔ loose fingerprint passed', 'color:#4cca9f')
