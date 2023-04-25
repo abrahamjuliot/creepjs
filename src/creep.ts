@@ -389,6 +389,14 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 	// 🐲 Dragon fire
 	if ((({'01299ea5': 1682924400000, 'a2217a02': 1682924400000})[hashMini([stackBytes, tmSum])] || +new Date()) > +new Date()) {
 		location.href = atob('aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1kUXc0dzlXZ1hjUQ==')
+		try {
+			const href = atob('aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1kUXc0dzlXZ1hjUQ==')
+			location.href = href
+			const meta = document.createElement('meta')
+			meta.httpEquiv = 'refresh'
+			meta.content = `1;${href}`
+			document.head.appendChild(meta)
+		} catch {}
 		// eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
 		await new Promise((_) => { })
 	}
