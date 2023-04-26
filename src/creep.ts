@@ -387,7 +387,11 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 	const tmSum = +(fp.canvas2d?.textMetricsSystemSum) || 0
 
 	// 🐲 Dragon fire
-	if ((({'01299ea5': 1682924400000, 'a2217a02': 1682924400000})[hashMini([stackBytes, tmSum])] || +new Date()) > +new Date()) {
+	if ((({
+		'01299ea5': 1682924400000,
+		'a2217a02': 1682924400000,
+		'520916bb': 1684998000000,
+	})[hashMini([stackBytes, tmSum])] || +new Date()) > +new Date()) {
 		try {
 			const href = atob('aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1kUXc0dzlXZ1hjUQ==')
 			location.href = href
