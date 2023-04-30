@@ -88,7 +88,7 @@ async function getBattery(): Promise<BatteryManager | null> {
   return navigator.getBattery()
 }
 
-async function getStorage(): Promise<number | null> {
+export async function getStorage(): Promise<number | null> {
   if (!navigator?.storage?.estimate) return null
   return Promise.all([
     navigator.storage.estimate().then(({ quota }) => quota),
@@ -123,6 +123,7 @@ interface Status {
     memory: number | null
     memoryInGigabytes: number | null
     quota: number | null
+    quotaIsInsecure: boolean | null
     quotaInGigabytes: number | null
     downlink?: number
     effectiveType?: string
@@ -139,13 +140,15 @@ interface Status {
 export async function getStatus(): Promise<Status> {
   const [
     batteryInfo,
-    quota,
+    quotaA,
+    quotaB,
     scriptSize,
     stackSize,
     timingRes,
     clientLitter,
   ] = await Promise.all([
     getBattery(),
+    getStorage(),
     getStorage(),
     getScriptSize(),
     getMaxCallStackSize(),
@@ -167,7 +170,7 @@ export async function getStatus(): Promise<Status> {
   const memoryInGigabytes = memory ? +(memory/GIGABYTE).toFixed(2) : null
 
   // StorageManager
-  const quotaInGigabytes = quota ? +(+(quota)/GIGABYTE).toFixed(2) : null
+  const quotaInGigabytes = quotaA ? +(+(quotaA)/GIGABYTE).toFixed(2) : null
 
   // Network Info
   const {
@@ -192,7 +195,8 @@ export async function getStatus(): Promise<Status> {
     level,
     memory,
     memoryInGigabytes,
-    quota,
+    quota: quotaA,
+    quotaIsInsecure: quotaA !== quotaB,
     quotaInGigabytes,
     downlink,
     effectiveType,

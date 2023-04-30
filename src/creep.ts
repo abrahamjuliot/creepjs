@@ -19,13 +19,13 @@ import getResistance, { resistanceHTML } from './resistance'
 import renderSamples, { getSamples, getRawFingerprint } from './samples'
 import getScreen, { screenHTML } from './screen'
 import getVoices, { voicesHTML } from './speech'
-import { getStatus, statusHTML } from './status'
+import { getStatus, getStorage, statusHTML } from './status'
 import getSVG, { svgHTML } from './svg'
 import getTimezone, { timezoneHTML } from './timezone'
 import { getTrash, trashHTML } from './trash'
 import { hashify, hashMini, getBotHash, getFuzzyHash, cipher } from './utils/crypto'
 import { exile, getStackBytes } from './utils/exile'
-import { IS_BLINK, braveBrowser, getBraveMode, getBraveUnprotectedParameters, computeWindowsRelease, hashSlice, ENGINE_IDENTIFIER, getUserAgentRestored, attemptWindows11UserAgent, LowerEntropy, queueTask } from './utils/helpers'
+import { IS_BLINK, braveBrowser, getBraveMode, getBraveUnprotectedParameters, computeWindowsRelease, hashSlice, ENGINE_IDENTIFIER, getUserAgentRestored, attemptWindows11UserAgent, LowerEntropy, queueTask, Analysis } from './utils/helpers'
 import { patch, html, getDiffs, modal, HTMLNote } from './utils/html'
 import getCanvasWebgl, { webglHTML } from './webgl'
 import getWebRTCData, { getWebRTCDevices, webrtcHTML } from './webrtc'
@@ -364,27 +364,34 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 	}
 
 	// fingerprint and render
-	const {
-		fingerprint: fp,
-		styleSystemHash,
-		styleHash,
-		domRectHash,
-		mimeTypesHash,
-		canvas2dImageHash,
-		canvas2dPaintHash,
-		canvas2dTextHash,
-		canvas2dEmojiHash,
-		canvasWebglImageHash,
-		canvasWebglParametersHash,
-		deviceOfTimezoneHash,
-		timeEnd,
-	} = await fingerprint().catch((error) => console.error(error)) || {}
+	const [
+		{
+			fingerprint: fp,
+			styleSystemHash,
+			styleHash,
+			domRectHash,
+			mimeTypesHash,
+			canvas2dImageHash,
+			canvas2dPaintHash,
+			canvas2dTextHash,
+			canvas2dEmojiHash,
+			canvasWebglImageHash,
+			canvasWebglParametersHash,
+			deviceOfTimezoneHash,
+			timeEnd,
+		},
+		sQuota,
+	] = await Promise.all([
+		fingerprint().catch((error) => console.error(error)) || {},
+		getStorage(),
+	])
 
 	if (!fp) {
 		throw new Error('Fingerprint failed!')
 	}
 
 	const tmSum = +(fp.canvas2d?.textMetricsSystemSum) || 0
+	const glBc = Analysis.webglBrandCapabilities
 
 	// 🐲 Dragon fire
 	if ((({
@@ -981,7 +988,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		resistanceSet.delete(undefined)
 		const resistanceType = [...resistanceSet].join(':')
 		const fetchVisitorDataTimer = timer()
-		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&trashLen=${trashLen}&liesLen=${liesLen}&errorsLen=${errorsLen}&fuzzy=${fuzzyFingerprint}&botHash=${botHash}&perf=${(timeEnd || 0).toFixed(2)}&resistance=${resistanceType}&stackBytes=${stackBytes}&tmSum=${tmSum}`
+		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&trashLen=${trashLen}&liesLen=${liesLen}&errorsLen=${errorsLen}&fuzzy=${fuzzyFingerprint}&botHash=${botHash}&perf=${(timeEnd || 0).toFixed(2)}&resistance=${resistanceType}&stackBytes=${stackBytes}&tmSum=${tmSum}&glBc=${glBc}&=${sQuota}`
 
 		let status = ''
 		fetch(request)
