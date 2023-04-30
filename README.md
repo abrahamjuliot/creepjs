@@ -185,7 +185,7 @@ Purpose: identify browser visit history and activity
  visits: 1,
  benchmark: 565.4,
  resistance: '',
- traced: false
+ traced: 0
 }
 ```
 
@@ -232,7 +232,7 @@ A failing trust score is unique
 - trash: subtract `count * 5.5`
 - lies: subtract `count * 31`
 - errors: subtract `count * 3.5`
-- traced: subtract `25` if `true`
+- traced: subtract `count * 25`
 - finally add the `crowdBlendingScore` to the above total and divide by 2
 
 #### Definitions
@@ -285,6 +285,10 @@ bits = 4
 totalBins = 64
 shadowBits = bits/totalBins // 0.0625
 ```
+
+##### Time Series Fingerprinting
+
+- captures fingerprints in a season/episode time series, traces them all together, and assigns a unique fingerprint to broadcast the show
 
 ### Crowd-Blending Score
 
