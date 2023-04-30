@@ -888,6 +888,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				memory: status?.memory,
 				memoryGB: status?.memoryInGigabytes,
 				quota: status?.quota,
+				quotaIsInsecure: status?.quotaIsInsecure,
 				quotaGB: status?.quotaInGigabytes,
 				stackBytes,
 				stackSize: status?.stackSize,
