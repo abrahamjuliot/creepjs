@@ -2,7 +2,7 @@ import { attempt, caniuse, captureError } from '../errors'
 import { lieProps, documentLie, getPluginLies } from '../lies'
 import { sendToTrash, gibberish } from '../trash'
 import { hashMini } from '../utils/crypto'
-import { createTimer, queueEvent, getOS, braveBrowser, decryptUserAgent, getUserAgentPlatform, isUAPostReduction, computeWindowsRelease, logTestResult, performanceLogger, hashSlice, USER_AGENT_OS, PLATFORM_OS } from '../utils/helpers'
+import { createTimer, queueEvent, getOS, braveBrowser, decryptUserAgent, getUserAgentPlatform, isUAPostReduction, computeWindowsRelease, logTestResult, performanceLogger, hashSlice, USER_AGENT_OS, PLATFORM_OS, Analysis } from '../utils/helpers'
 import { HTMLNote, count, modal } from '../utils/html'
 
 // special thanks to https://arh.antoinevastel.com for inspiration
@@ -371,23 +371,39 @@ export default async function getNavigator(workerScope) {
 			return permissions
 		}, 'permissions failed')
 
-		const getWebgpu = () => attempt(() => {
+		const getWebGpu = () => attempt(() => {
 			if (!('gpu' in navigator)) {
 				return
 			}
-			// @ts-ignore
-			return navigator.gpu.requestAdapter().then(({ limits, features }) => {
-				return {
-					features: [...features.values()],
-					limits: ((limits) => {
-						const data = {}
+			// @ts-expect-error if unsupported
+			return navigator.gpu.requestAdapter().then((adapter) => {
+				if (!adapter) return
+				const { limits = {}, features = [] } = adapter || {}
+
+				// @ts-expect-error if unsupported
+				return adapter.requestAdapterInfo().then((info) => {
+					const { architecture, description, device, vendor } = info
+					const adapterInfo = [vendor, architecture, description, device]
+					const featureValues = [...features.values()]
+					const limitsData = ((limits) => {
+						const data: Record<string, number> = {}
 						// eslint-disable-next-line guard-for-in
 						for (const prop in limits) {
 							data[prop] = limits[prop]
 						}
 						return data
-					})(limits),
-				}
+					})(limits)
+
+					Analysis.webGpuAdapter = adapterInfo
+					Analysis.webGpuFeatures = hashMini(featureValues)
+					Analysis.webGpuLimits = hashMini(limitsData)
+
+					return {
+						adapterInfo,
+						features: featureValues,
+						limits: limitsData,
+					}
+				})
 			})
 		}, 'webgpu failed')
 
@@ -396,7 +412,7 @@ export default async function getNavigator(workerScope) {
 			getUserAgentData(),
 			getBluetoothAvailability(),
 			getPermissions(),
-			getWebgpu(),
+			getWebGpu(),
 		]).then(([
 			userAgentData,
 			bluetoothAvailability,
@@ -540,10 +556,13 @@ export function navigatorHTML(fp) {
 			modal(
 				`${id}-webgpu`,
 				((webgpu) => {
-					const { limits, features } = webgpu
+					const { adapterInfo, features, limits } = webgpu
 					return `
 					<div>
-						<strong>Features</strong><br>${features.join('<br>')}
+						<strong>Adapter</strong><br>${adapterInfo.filter((x: string) => x).join('<br>')}
+					</div>
+					<div>
+						<br><strong>Features</strong><br>${features.join('<br>')}
 					</div>
 					<div>
 						<br><strong>Limits</strong><br>${Object.keys(limits).map((x) => `${x}: ${limits[x]}`).join('<br>')}
