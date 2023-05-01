@@ -8,6 +8,7 @@ export default function getPlatformEstimate(): [
 ] | [] {
     if (!IS_BLINK) return []
     const v80 = 'getVideoPlaybackQuality' in HTMLVideoElement.prototype
+    const v81 = CSS.supports('color-scheme: initial')
     const v84 = CSS.supports('appearance: initial')
     const v86 = 'DisplayNames' in Intl
     const v88 = CSS.supports('aspect-ratio: initial')
@@ -23,6 +24,7 @@ export default function getPlatformEstimate(): [
     const hasSerialPort = 'SerialPort' in window && 'Serial' in window
     const hasSharedWorker = 'SharedWorker' in window
     const hasTouch = 'ontouchstart' in Window && 'TouchEvent' in window
+    const hasAppBadge = 'setAppBadge' in Navigator.prototype
 
     const hasFeature = (version: boolean, condition: boolean) => {
         return (version ? [condition] : [])
@@ -39,6 +41,7 @@ export default function getPlatformEstimate(): [
             ...hasFeature(v89, !hasSerialPort),
             !hasSharedWorker,
             hasTouch,
+            ...hasFeature(v81, !hasAppBadge),
         ],
         [Platform.CHROME_OS]: [
             ...hasFeature(v88, hasBarcodeDetector),
@@ -51,6 +54,7 @@ export default function getPlatformEstimate(): [
             ...hasFeature(v89, hasSerialPort),
             hasSharedWorker,
             hasTouch || !hasTouch,
+            ...hasFeature(v81, !hasAppBadge),
         ],
         [Platform.WINDOWS]: [
             ...hasFeature(v88, !hasBarcodeDetector),
@@ -63,6 +67,7 @@ export default function getPlatformEstimate(): [
             ...hasFeature(v89, hasSerialPort),
             hasSharedWorker,
             hasTouch || !hasTouch,
+            ...hasFeature(v81, hasAppBadge),
         ],
         [Platform.MAC]: [
             ...hasFeature(v88, hasBarcodeDetector),
@@ -75,6 +80,7 @@ export default function getPlatformEstimate(): [
             ...hasFeature(v89, hasSerialPort),
             hasSharedWorker,
             !hasTouch,
+            ...hasFeature(v81, hasAppBadge),
         ],
         [Platform.LINUX]: [
             ...hasFeature(v88, !hasBarcodeDetector),
@@ -87,6 +93,7 @@ export default function getPlatformEstimate(): [
             ...hasFeature(v89, hasSerialPort),
             hasSharedWorker,
             !hasTouch || !hasTouch,
+            ...hasFeature(v81, !hasAppBadge),
         ],
     }
 
