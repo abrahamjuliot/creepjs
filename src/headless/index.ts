@@ -85,6 +85,8 @@ export default async function getHeadlessFeatures({
 				webDriverIsOn: (
 					(CSS.supports('border-end-end-radius: initial') && navigator.webdriver === undefined) ||
 					!!navigator.webdriver
+					// Somehow this tells me some things that have been changed on `navigator` 
+					|| Object.getOwnPropertyNames(navigator).indexOf("webdriver") != -1
 				),
 				noChrome: IS_BLINK && !('chrome' in window),
 				hasPermissionsBug: (
