@@ -15,6 +15,7 @@ export default function getPlatformEstimate(): [
     const v89 = CSS.supports('border-end-end-radius: initial')
     const v95 = 'randomUUID' in Crypto.prototype
     const hasBarcodeDetector = 'BarcodeDetector' in window
+    // @ts-expect-error if not supported
     const hasDownlinkMax = 'downlinkMax' in (window.NetworkInformation?.prototype || {})
     const hasContentIndex = 'ContentIndex' in window
     const hasContactsManager = 'ContactsManager' in window

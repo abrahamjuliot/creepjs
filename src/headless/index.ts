@@ -29,6 +29,19 @@ export default async function getHeadlessFeatures({
 		const data: Headless = {
 			chromium: IS_BLINK,
 			likeHeadless: {
+				noChrome: IS_BLINK && !('chrome' in window),
+				hasPermissionsBug: (
+					IS_BLINK &&
+					'permissions' in navigator &&
+					await (async () => {
+						const res = await navigator.permissions.query({ name: 'notifications' })
+						return (
+							res.state == 'prompt' &&
+							'Notification' in window &&
+							Notification.permission === 'denied'
+						)
+					})()
+				),
 				noPlugins: IS_BLINK && navigator.plugins.length === 0,
 				noMimeTypes: IS_BLINK && mimeTypes.length === 0,
 				notificationIsDenied: (
@@ -84,22 +97,8 @@ export default async function getHeadlessFeatures({
 			headless: {
 				webDriverIsOn: (
 					(CSS.supports('border-end-end-radius: initial') && navigator.webdriver === undefined) ||
-					!!navigator.webdriver
-					// Somehow this tells me some things that have been changed on `navigator` 
-					|| Object.getOwnPropertyNames(navigator).indexOf("webdriver") != -1
-				),
-				noChrome: IS_BLINK && !('chrome' in window),
-				hasPermissionsBug: (
-					IS_BLINK &&
-					'permissions' in navigator &&
-					await (async () => {
-						const res = await navigator.permissions.query({ name: 'notifications' })
-						return (
-							res.state == 'prompt' &&
-							'Notification' in window &&
-							Notification.permission === 'denied'
-						)
-					})()
+					!!navigator.webdriver ||
+					!!lieProps['Navigator.webdriver']
 				),
 				hasHeadlessUA: (
 					/HeadlessChrome/.test(navigator.userAgent) ||
@@ -120,19 +119,12 @@ export default async function getHeadlessFeatures({
 					}
 				})(),
 				hasHighChromeIndex: (() => {
-					const control = (
-						'cookieStore' in window ? 'cookieStore' :
-							'ondevicemotion' in window ? 'ondevicemotion' :
-								'speechSynthesis'
+					const key = 'chrome'
+					const highIndexRange = -50
+					return (
+						Object.keys(window).slice(highIndexRange).includes(key) &&
+						Object.getOwnPropertyNames(window).slice(highIndexRange).includes(key)
 					)
-					const propsInWindow = []
-					// eslint-disable-next-line guard-for-in
-					for (const prop in window) {
-						propsInWindow.push(prop)
-					}
-					const chromeIndex = propsInWindow.indexOf('chrome')
-					const controlIndex = propsInWindow.indexOf(control)
-					return chromeIndex > controlIndex
 				})(),
 				hasBadChromeRuntime: (() => {
 					// @ts-expect-error if unsupported
