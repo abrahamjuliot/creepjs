@@ -542,6 +542,18 @@ function getPrototypeLies(scope: Window & typeof globalThis) {
 			'valueOf',
 		],
 	})
+	// @ts-expect-error if not supported
+	searchLies(() => GPU, {
+		target: [
+			'requestAdapter',
+		],
+	})
+	// @ts-expect-error if not supported
+	searchLies(() => GPUAdapter, {
+		target: [
+			'requestAdapterInfo',
+		],
+	})
 	searchLies(() => Intl.DateTimeFormat, {
 		target: [
 			'format',
@@ -677,9 +689,12 @@ function getPrototypeLies(scope: Window & typeof globalThis) {
 			'productSub',
 			'sendBeacon',
 			'serviceWorker',
+			'storage',
 			'userAgent',
 			'vendor',
 			'vendorSub',
+			'webdriver',
+			'gpu',
 		],
 	})
 	searchLies(() => Node, {
@@ -734,6 +749,11 @@ function getPrototypeLies(scope: Window & typeof globalThis) {
 	searchLies(() => String, {
 		target: [
 			'fromCodePoint',
+		],
+	})
+	searchLies(() => StorageManager, {
+		target: [
+			'estimate',
 		],
 	})
 	searchLies(() => SVGRect)
