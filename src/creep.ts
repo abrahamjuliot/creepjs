@@ -247,7 +247,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 					platform: uaPlatform,
 					platformVersion,
 				} = userAgentData || {}
-				const { anyPointer } = cssMediaComputed || {}
+				const { 'any-pointer': anyPointer } = cssMediaComputed?.mediaCSS || {}
 				const { colorDepth, pixelDepth, height, width } = screenComputed || {}
 				const { location, locationEpoch, zone } = timezoneComputed || {}
 				const {
