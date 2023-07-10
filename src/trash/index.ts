@@ -4,15 +4,14 @@ import { modal } from '../utils/html'
 // Detect proxy behavior
 const proxyBehavior = (x) => typeof x == 'function' ? true : false
 
-// Detect gibberish
-const accept={};for (let i = 'a'; i <= 'z'; i = String.fromCharCode(i.charCodeAt()+1)){for (let j = 'a'; j <= 'z'; j = String.fromCharCode(j.charCodeAt()+1)){accept[i+j]=1;}}
+const GIBBERS = /[cC]f|[jJ][bcdfghlmprsty]|[qQ][bcdfghjklmnpsty]|[vV][bfhjkmpt]|[xX][dkrz]|[yY]y|[zZ][fr]|[cCxXzZ]j|[bBfFgGjJkKpPvVqQtTwWyYzZ]q|[cCfFgGjJpPqQwW]v|[jJqQvV]w|[bBcCdDfFgGhHjJkKmMpPqQsSvVwWxXzZ]x|[bBfFhHjJkKmMpPqQ]z/g
 
-const gibberish = (str, {strict = false} = {}) => {
-	if (!str) {
-		return []
-	}
+// Detect gibberish
+const gibberish = (str: string, {strict = false} = {}): string[] => {
+	if (!str) return []
+
 	// test letter case sequence
-	const letterCaseSequenceGibbers = []
+	const letterCaseSequenceGibbers: string[] = []
 	const tests = [
 		/([A-Z]{3,}[a-z])/g, // ABCd
 		/([a-z][A-Z]{3,})/g, // aBCD
@@ -30,19 +29,20 @@ const gibberish = (str, {strict = false} = {}) => {
 	})
 
 	// test letter sequence
-	const letterSequenceGibbers = []
-	const clean = str.toLowerCase().replace(/\d|\W|_/g, ' ').replace(/\s+/g, ' ').trim().split(' ').join('_')
+	const letterSequenceGibbers: string[] = []
+	const clean = str.replace(/\d|\W|_/g, ' ').replace(/\s+/g, ' ').trim().split(' ').join('_')
 	const len = clean.length
 	const arr = [...clean]
+
 	arr.forEach((char, index) => {
-		const next = index+1
-		if (arr[next] == '_' || char == '_' || next == len) {
-return true
-}
-		const combo = char+arr[index+1]
-		const acceptable = !!accept[combo]
-		!acceptable && letterSequenceGibbers.push(combo)
-		return
+		const nextIndex = index + 1
+		const nextChar = arr[nextIndex]
+		const isWordSequence = nextChar !== '_' && char !== '_' && nextIndex !== len
+
+		if (isWordSequence) {
+			const combo = char + nextChar
+			if (GIBBERS.test(combo)) letterSequenceGibbers.push(combo)
+		}
 	})
 
 	const gibbers = [
