@@ -672,7 +672,8 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 
 	// patch dom
 	const hasTrash = !!trashLen
-	const { lies: hasLied, capturedErrors: hasErrors } = creep
+	const hasLied = !!fp.lies?.totalLies
+	const hasErrors = !!fp.capturedErrors?.data?.length
 
 	const el = document.getElementById('fingerprint-data')
 	patch(el, html`
