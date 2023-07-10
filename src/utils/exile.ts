@@ -37,3 +37,21 @@ export function getStackBytes(): string {
   const bytes = (sizeB * 8) / (sizeA - sizeB)
   return [sizeA, sizeB, bytes].join(':')
 }
+
+export async function measure(): Promise<number | undefined> {
+  const encoded = 'IWZ1bmN0aW9uKCl7dmFyIG89e307dmFyIGE9W107Zm9yKGxldCBpPTA7aTw1MDAwO2krKykob1tpXT1pKTtmb3IobGV0IGk9MDtpPDUwO2krPTEpYS5wdXNoKG8pO3ZhciBzPXBlcmZvcm1hbmNlLm5vdygpO2NvbnNvbGUuZ3JvdXBDb2xsYXBzZWQoJycpO2NvbnNvbGUudGFibGUoYSk7Y29uc29sZS5ncm91cEVuZCgpO3ZhciB0PXBlcmZvcm1hbmNlLm5vdygpLXM7dDw1JiZjb25zb2xlLmNsZWFyKCk7cG9zdE1lc3NhZ2UodCl9KCk='
+  const blob = new Blob([atob(encoded)], { type: 'application/javascript' })
+  const url = URL.createObjectURL(blob)
+  const worker = new Worker(url)
+  URL.revokeObjectURL(url)
+
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(), 3000)
+
+    worker.addEventListener('message', (event) => {
+      if (typeof event.data === 'number') {
+        resolve(event.data)
+      }
+    })
+  })
+}
