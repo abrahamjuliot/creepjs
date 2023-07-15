@@ -836,9 +836,8 @@ if (!IS_WORKER_SCOPE) {
 	const perf = performance.now() - start
 
 	PROTO_BENCHMARK = +perf.toFixed(2)
-	console.log(
-		`${propsSearched.length} API properties analyzed in ${PROTO_BENCHMARK}ms (${lieList.length} corrupted)`,
-	)
+	const message = `${propsSearched.length} API properties analyzed in ${PROTO_BENCHMARK}ms (${lieList.length} corrupted)`
+	setTimeout(() => console.log(message), 3000)
 }
 
 const getPluginLies = (plugins: PluginArray, mimeTypes: MimeTypeArray) => {
