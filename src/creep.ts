@@ -24,7 +24,7 @@ import getSVG, { svgHTML } from './svg'
 import getTimezone, { timezoneHTML } from './timezone'
 import { getTrash, trashHTML } from './trash'
 import { hashify, hashMini, getBotHash, getFuzzyHash, cipher } from './utils/crypto'
-import { exile, getStackBytes, measure } from './utils/exile'
+import { exile, getStackBytes, getTTFB, measure } from './utils/exile'
 import { IS_BLINK, braveBrowser, getBraveMode, getBraveUnprotectedParameters, computeWindowsRelease, hashSlice, ENGINE_IDENTIFIER, getUserAgentRestored, attemptWindows11UserAgent, LowerEntropy, queueTask, Analysis } from './utils/helpers'
 import { patch, html, getDiffs, modal, HTMLNote } from './utils/html'
 import getCanvasWebgl, { webglHTML } from './webgl'
@@ -36,13 +36,19 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 	'use strict';
 
 	const scope = await spawnWorker()
+
 	if (scope == Scope.WORKER) {
 		return
 	}
 
 	await queueTask()
 	const stackBytes = getStackBytes()
-	await exile()
+	const [, measured, ttfb] = await Promise.all([
+		exile(),
+		measure(),
+		getTTFB(),
+	])
+	console.clear()
 
 	const isBrave = IS_BLINK ? await braveBrowser() : false
 	const braveMode = isBrave ? getBraveMode() : {}
@@ -602,9 +608,6 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 	console.log('diff check at https://www.diffchecker.com/diff\n\n', JSON.stringify(creep, null, '\t'))
 	console.groupEnd()
 
-	// get/post request
-	const webapp = 'https://creepjs-api.web.app/fp'
-
 	const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
 	.catch((error) => {
 		console.error(error.message)
@@ -869,9 +872,8 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			getWebRTCData(),
 			getWebRTCDevices(),
 			getStatus(),
-			measure(),
 		]).then(async (data) => {
-			const [webRTC, mediaDevices, status, measured] = data || []
+			const [webRTC, mediaDevices, status] = data || []
 			patch(document.getElementById('webrtc-connection'), html`
 				<div class="flex-grid">
 					${webrtcHTML(webRTC, mediaDevices)}
@@ -910,6 +912,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				benchmark: Math.floor(timeEnd || 0),
 				benchmarkProto: PROTO_BENCHMARK,
 				measured,
+				ttfb,
 			}
 
 			// console.log(`'`+Object.keys(RAW_BODY).join(`',\n'`))
@@ -992,10 +995,34 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		resistanceSet.delete(undefined)
 		const resistanceType = [...resistanceSet].join(':')
 		const fetchVisitorDataTimer = timer()
-		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&trashLen=${trashLen}&liesLen=${liesLen}&errorsLen=${errorsLen}&fuzzy=${fuzzyFingerprint}&botHash=${botHash}&perf=${(timeEnd || 0).toFixed(2)}&resistance=${resistanceType}&stackBytes=${stackBytes}&tmSum=${tmSum}&glBc=${glBc}&sQuota=${sQuota}`
 
 		let status = ''
-		fetch(request)
+		const secret = await cipher({
+			id: creepHash,
+			subId: fpHash,
+			trashLen,
+			liesLen,
+			errorsLen,
+			fuzzy: fuzzyFingerprint,
+			botHash,
+			perf: (timeEnd || 0).toFixed(2),
+			resistance: resistanceType,
+			stackBytes,
+			tmSum,
+			glBc,
+			sQuota,
+			measured,
+			ttfb,
+		})
+
+		fetch('https://creepjs-api.web.app/fp', {
+			method: 'POST',
+			headers: {
+				'Accept': 'application/json, text/plain, */*',
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(secret),
+		})
 		.then((res) => {
 			if (res.ok) return res.json()
 			status = `${res.status}:${res.statusText.toLocaleLowerCase()}`
