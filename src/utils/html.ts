@@ -24,6 +24,7 @@ const pluralify = (len) => len > 1 ? 's' : ''
 const count = (arr) => arr && arr.constructor.name === 'Array' ? '' + (arr.length) : '0'
 
 const getDiffs = ({ stringA, stringB, charDiff = false, decorate = (diff) => `[${diff}]` }) => {
+	if (!stringA || !stringB) return;
 	const splitter = charDiff ? '' : ' '
 	const listA = (''+stringA).split(splitter)
 	const listB = (''+stringB).split(splitter)
