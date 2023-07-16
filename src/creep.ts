@@ -613,11 +613,14 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		console.error(error.message)
 	}) || []
 
-	const canvasGpuScreen = hashMini([
-		fpHash?.canvas2d?.$hash,
-		fpHash?.canvasWebgl?.$hash,
-		fpHash?.screen?.$hash,
-	])
+	let canvasHash = ''
+	let webglHash = ''
+	let screenHash = ''
+	try {
+		canvasHash = fpHash?.canvas2d?.$hash.slice(0, 8)
+		webglHash = fpHash?.canvasWebgl?.$hash.slice(0, 8)
+		screenHash = fpHash?.screen?.$hash.slice(0, 8)
+	} catch {}
 
 	// session
 	const computeSession = ({ fingerprint, loading = false, computePreviousLoadRevision = false }) => {
@@ -914,7 +917,6 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				benchmarkProto: PROTO_BENCHMARK,
 				measured,
 				ttfb,
-				canvasGpuScreen,
 			}
 
 			// console.log(`'`+Object.keys(RAW_BODY).join(`',\n'`))
@@ -1015,7 +1017,9 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			sQuota,
 			measured,
 			ttfb,
-			canvasGpuScreen,
+			canvasHash,
+			webglHash,
+			screenHash,
 		})
 
 		fetch('https://creepjs-api.web.app/fp', {
