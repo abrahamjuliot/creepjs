@@ -24,7 +24,7 @@ import getSVG, { svgHTML } from './svg'
 import getTimezone, { timezoneHTML } from './timezone'
 import { getTrash, trashHTML } from './trash'
 import { hashify, hashMini, getBotHash, getFuzzyHash, cipher } from './utils/crypto'
-import { exile, getStackBytes, measure } from './utils/exile'
+import { exile, getStackBytes, getTTFB, measure } from './utils/exile'
 import { IS_BLINK, braveBrowser, getBraveMode, getBraveUnprotectedParameters, computeWindowsRelease, hashSlice, ENGINE_IDENTIFIER, getUserAgentRestored, attemptWindows11UserAgent, LowerEntropy, queueTask, Analysis } from './utils/helpers'
 import { patch, html, getDiffs, modal, HTMLNote } from './utils/html'
 import getCanvasWebgl, { webglHTML } from './webgl'
@@ -36,13 +36,19 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 	'use strict';
 
 	const scope = await spawnWorker()
+
 	if (scope == Scope.WORKER) {
 		return
 	}
 
 	await queueTask()
 	const stackBytes = getStackBytes()
-	await exile()
+	const [, measured, ttfb] = await Promise.all([
+		exile(),
+		measure(),
+		getTTFB(),
+	])
+	console.clear()
 
 	const isBrave = IS_BLINK ? await braveBrowser() : false
 	const braveMode = isBrave ? getBraveMode() : {}
@@ -602,13 +608,18 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 	console.log('diff check at https://www.diffchecker.com/diff\n\n', JSON.stringify(creep, null, '\t'))
 	console.groupEnd()
 
-	// get/post request
-	const webapp = 'https://creepjs-api.web.app/fp'
-
-	const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
-	.catch((error) => {
+	const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)]).catch((error) => {
 		console.error(error.message)
 	}) || []
+
+	let canvasHash = ''
+	let webglHash = ''
+	let screenHash = ''
+	try {
+		canvasHash = fpHash.canvas2d.$hash.slice(0, 8)
+		webglHash = fpHash.canvasWebgl.$hash.slice(0, 8)
+		screenHash = fpHash.screen.$hash.slice(0, 8)
+	} catch {}
 
 	// session
 	const computeSession = ({ fingerprint, loading = false, computePreviousLoadRevision = false }) => {
@@ -670,20 +681,16 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		}
 	}
 
-	// patch dom
-	const hasTrash = !!trashLen
-	const hasLied = !!fp.lies?.totalLies
-	const hasErrors = !!fp.capturedErrors?.data?.length
-
+	const blankFingerprint = '0000000000000000000000000000000000000000000000000000000000000000'
 	const el = document.getElementById('fingerprint-data')
 	patch(el, html`
 	<div id="fingerprint-data">
 		<div class="fingerprint-header-container">
 			<div class="fingerprint-header">
-				<div class="ellipsis-all">FP ID: ${creepHash}</div>
+				<div id="creep-fingerprint" class="ellipsis-all">FP ID: <span style="animation: fade-down-out 0.7s ease both">Computing...<span></div>
 				<div id="fuzzy-fingerprint">
-					<div class="ellipsis-all fuzzy-fp">Fuzzy: <span class="blurred-pause">0000000000000000000000000000000000000000000000000000000000000000</span></div>
-					<div class="ellipsis-all fuzzy-diffs">Diffs: <span class="blurred-pause">0000000000000000000000000000000000000000000000000000000000000000</span></div>
+					<div class="ellipsis-all fuzzy-fp">Fuzzy: <span class="blurred-pause">${blankFingerprint}</span></div>
+					<div class="ellipsis-all fuzzy-diffs">Diffs: <span class="blurred-pause">${blankFingerprint}</span></div>
 				</div>
 				<div class="ellipsis"><span class="time">${(timeEnd || 0).toFixed(2)} ms</span></div>
 			</div>
@@ -869,9 +876,8 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			getWebRTCData(),
 			getWebRTCDevices(),
 			getStatus(),
-			measure(),
 		]).then(async (data) => {
-			const [webRTC, mediaDevices, status, measured] = data || []
+			const [webRTC, mediaDevices, status] = data || []
 			patch(document.getElementById('webrtc-connection'), html`
 				<div class="flex-grid">
 					${webrtcHTML(webRTC, mediaDevices)}
@@ -910,6 +916,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				benchmark: Math.floor(timeEnd || 0),
 				benchmarkProto: PROTO_BENCHMARK,
 				measured,
+				ttfb,
 			}
 
 			// console.log(`'`+Object.keys(RAW_BODY).join(`',\n'`))
@@ -992,10 +999,37 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		resistanceSet.delete(undefined)
 		const resistanceType = [...resistanceSet].join(':')
 		const fetchVisitorDataTimer = timer()
-		const request = `${webapp}?id=${creepHash}&subId=${fpHash}&hasTrash=${hasTrash}&hasLied=${hasLied}&hasErrors=${hasErrors}&trashLen=${trashLen}&liesLen=${liesLen}&errorsLen=${errorsLen}&fuzzy=${fuzzyFingerprint}&botHash=${botHash}&perf=${(timeEnd || 0).toFixed(2)}&resistance=${resistanceType}&stackBytes=${stackBytes}&tmSum=${tmSum}&glBc=${glBc}&sQuota=${sQuota}`
 
 		let status = ''
-		fetch(request)
+		const secret = await cipher({
+			id: creepHash,
+			subId: fpHash,
+			trashLen,
+			liesLen,
+			errorsLen,
+			fuzzy: fuzzyFingerprint,
+			botHash,
+			perf: (timeEnd || 0).toFixed(2),
+			resistance: resistanceType,
+			stackBytes,
+			tmSum,
+			glBc,
+			sQuota,
+			measured,
+			ttfb,
+			canvasHash,
+			webglHash,
+			screenHash,
+		})
+
+		fetch('https://creepjs-api.web.app/fp', {
+			method: 'POST',
+			headers: {
+				'Accept': 'application/json, text/plain, */*',
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(secret),
+		})
 		.then((res) => {
 			if (res.ok) return res.json()
 			status = `${res.status}:${res.statusText.toLocaleLowerCase()}`
@@ -1008,6 +1042,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			console.groupEnd()
 
 			const {
+				fingerprint: serverFingerprint,
 				firstVisit,
 				// lastVisit: latestVisit,
 				// lastVisitEpoch,
@@ -1033,6 +1068,8 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				timeHoursIdleMax,
 				benchmark,
 				resistance: resistanceId,
+				traced,
+				timeSeries,
 			} = data || {}
 
 			const fuzzyFpEl = document.getElementById('fuzzy-fingerprint')
@@ -1044,12 +1081,27 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			})
 			patch(fuzzyFpEl, html`
 				<div id="fuzzy-fingerprint">
-					<div class="ellipsis-all fuzzy-fp">Fuzzy: <span class="unblurred">${fuzzyInit}</span></div>
-					<div class="ellipsis-all fuzzy-diffs">Diffs: <span class="unblurred">${fuzzyDiff}</span></div>
+					<div class="ellipsis-all fuzzy-fp">Fuzzy: <span class="unblurred">${fuzzyInit || blankFingerprint}</span></div>
+					<div class="ellipsis-all fuzzy-diffs">Diffs: <span class="unblurred">${fuzzyDiff || blankFingerprint}</span></div>
 				</div>
 			`)
 
-			const toLocaleStr = (str) => {
+			// Display fingerprint
+			const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min)
+			setTimeout(() => {
+				const isTracing = traced > 0
+				const timeseries = `timeseries ${timeSeries}`
+				const hardenedFingerprint = serverFingerprint !== creepHash ? serverFingerprint : creepHash
+				const displayedFingerprint = isTracing ? hardenedFingerprint.slice(0, 64 - timeseries.length - 2) : hardenedFingerprint
+
+				patch(document.getElementById('creep-fingerprint'), html`
+					<div class="ellipsis-all">FP ID: ${displayedFingerprint?.split('').map((x: string, i: number) => {
+						return `<span style="display:inline-block;animation: reveal-fingerprint ${i*rand(1, 10)}ms ${i*rand(1, 10)}ms ease both">${x}</span>`
+					}).join('')}${isTracing ? `[<span class="high-entropy">${timeseries}</span>]` : ''}</div>
+				`)
+			}, 300)
+
+			const toLocaleStr = (str: string) => {
 				const date = new Date(str)
 				const dateString = date.toLocaleDateString()
 				const timeString = date.toLocaleTimeString()

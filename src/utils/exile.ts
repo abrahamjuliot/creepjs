@@ -56,3 +56,12 @@ export async function measure(): Promise<number | undefined> {
     worker.terminate()
   })
 }
+
+export function getTTFB(): number {
+  const entries = performance.getEntriesByType('navigation')
+      .map((x) => x.responseStart - x.requestStart)
+      .filter((x) => x !== 0)
+      .sort((a, b) => a - b)
+  const mid = Math.floor(entries.length / 2)
+  return entries.length % 2 === 1 ? entries[mid] : (entries[mid - 1] + entries[mid]) / 2
+}

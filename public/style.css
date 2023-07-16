@@ -809,6 +809,17 @@ input[type="radio"] {
         opacity: 0.5;
     }
 }
+
+@keyframes reveal-fingerprint {
+    0% {
+        transform: translate(-15px, 0);
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
 @keyframes unblur {
     0% {
         opacity: 0.5;
