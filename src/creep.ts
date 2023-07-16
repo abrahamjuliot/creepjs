@@ -613,6 +613,12 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		console.error(error.message)
 	}) || []
 
+	const canvasGpuScreen = hashMini([
+		fpHash?.canvas2d?.$hash,
+		fpHash?.canvasWebgl?.$hash,
+		fpHash?.screen?.$hash,
+	])
+
 	// session
 	const computeSession = ({ fingerprint, loading = false, computePreviousLoadRevision = false }) => {
 		const data = {
@@ -672,11 +678,6 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			return data
 		}
 	}
-
-	// patch dom
-	const hasTrash = !!trashLen
-	const hasLied = !!fp.lies?.totalLies
-	const hasErrors = !!fp.capturedErrors?.data?.length
 
 	const el = document.getElementById('fingerprint-data')
 	patch(el, html`
@@ -913,6 +914,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				benchmarkProto: PROTO_BENCHMARK,
 				measured,
 				ttfb,
+				canvasGpuScreen,
 			}
 
 			// console.log(`'`+Object.keys(RAW_BODY).join(`',\n'`))
@@ -1013,6 +1015,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			sQuota,
 			measured,
 			ttfb,
+			canvasGpuScreen,
 		})
 
 		fetch('https://creepjs-api.web.app/fp', {
