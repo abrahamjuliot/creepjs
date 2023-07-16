@@ -608,8 +608,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 	console.log('diff check at https://www.diffchecker.com/diff\n\n', JSON.stringify(creep, null, '\t'))
 	console.groupEnd()
 
-	const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)])
-	.catch((error) => {
+	const [fpHash, creepHash] = await Promise.all([hashify(fp), hashify(creep)]).catch((error) => {
 		console.error(error.message)
 	}) || []
 
@@ -617,9 +616,9 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 	let webglHash = ''
 	let screenHash = ''
 	try {
-		canvasHash = fpHash?.canvas2d?.$hash.slice(0, 8)
-		webglHash = fpHash?.canvasWebgl?.$hash.slice(0, 8)
-		screenHash = fpHash?.screen?.$hash.slice(0, 8)
+		canvasHash = fpHash.canvas2d.$hash.slice(0, 8)
+		webglHash = fpHash.canvasWebgl.$hash.slice(0, 8)
+		screenHash = fpHash.screen.$hash.slice(0, 8)
 	} catch {}
 
 	// session
@@ -682,15 +681,16 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		}
 	}
 
+	const blankFingerprint = '0000000000000000000000000000000000000000000000000000000000000000'
 	const el = document.getElementById('fingerprint-data')
 	patch(el, html`
 	<div id="fingerprint-data">
 		<div class="fingerprint-header-container">
 			<div class="fingerprint-header">
-				<div class="ellipsis-all">FP ID: ${creepHash}</div>
+				<div id="creep-fingerprint" class="ellipsis-all">FP ID: <span style="animation: fade-down-out 0.7s ease both">Computing...<span></div>
 				<div id="fuzzy-fingerprint">
-					<div class="ellipsis-all fuzzy-fp">Fuzzy: <span class="blurred-pause">0000000000000000000000000000000000000000000000000000000000000000</span></div>
-					<div class="ellipsis-all fuzzy-diffs">Diffs: <span class="blurred-pause">0000000000000000000000000000000000000000000000000000000000000000</span></div>
+					<div class="ellipsis-all fuzzy-fp">Fuzzy: <span class="blurred-pause">${blankFingerprint}</span></div>
+					<div class="ellipsis-all fuzzy-diffs">Diffs: <span class="blurred-pause">${blankFingerprint}</span></div>
 				</div>
 				<div class="ellipsis"><span class="time">${(timeEnd || 0).toFixed(2)} ms</span></div>
 			</div>
@@ -1042,6 +1042,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			console.groupEnd()
 
 			const {
+				fingerprint: serverFingerprint,
 				firstVisit,
 				// lastVisit: latestVisit,
 				// lastVisitEpoch,
@@ -1067,6 +1068,8 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				timeHoursIdleMax,
 				benchmark,
 				resistance: resistanceId,
+				traced,
+				timeSeries,
 			} = data || {}
 
 			const fuzzyFpEl = document.getElementById('fuzzy-fingerprint')
@@ -1078,12 +1081,27 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			})
 			patch(fuzzyFpEl, html`
 				<div id="fuzzy-fingerprint">
-					<div class="ellipsis-all fuzzy-fp">Fuzzy: <span class="unblurred">${fuzzyInit}</span></div>
-					<div class="ellipsis-all fuzzy-diffs">Diffs: <span class="unblurred">${fuzzyDiff}</span></div>
+					<div class="ellipsis-all fuzzy-fp">Fuzzy: <span class="unblurred">${fuzzyInit || blankFingerprint}</span></div>
+					<div class="ellipsis-all fuzzy-diffs">Diffs: <span class="unblurred">${fuzzyDiff || blankFingerprint}</span></div>
 				</div>
 			`)
 
-			const toLocaleStr = (str) => {
+			// Display fingerprint
+			const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min)
+			setTimeout(() => {
+				const isTracing = traced > 0
+				const timeseries = `timeseries ${timeSeries}`
+				const hardenedFingerprint = serverFingerprint !== creepHash ? serverFingerprint : creepHash
+				const displayedFingerprint = isTracing ? hardenedFingerprint.slice(0, 64 - timeseries.length - 2) : hardenedFingerprint
+
+				patch(document.getElementById('creep-fingerprint'), html`
+					<div class="ellipsis-all">FP ID: ${displayedFingerprint?.split('').map((x: string, i: number) => {
+						return `<span style="display:inline-block;animation: reveal-fingerprint ${i*rand(1, 10)}ms ${i*rand(1, 10)}ms ease both">${x}</span>`
+					}).join('')}${isTracing ? `[<span class="high-entropy">${timeseries}</span>]` : ''}</div>
+				`)
+			}, 300)
+
+			const toLocaleStr = (str: string) => {
 				const date = new Date(str)
 				const dateString = date.toLocaleDateString()
 				const timeString = date.toLocaleTimeString()
