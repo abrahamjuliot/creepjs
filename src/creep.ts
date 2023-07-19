@@ -1063,6 +1063,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				traced,
 				timeSeries,
 			} = data || {}
+			const shouldLock = badBot || traced > 1
 
 			const fuzzyFpEl = document.getElementById('fuzzy-fingerprint')
 			const fuzzyDiff = getDiffs({
@@ -1337,7 +1338,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 
 
 			let RAW_BODY // store so we can access el
-			if (!badBot) {
+			if (!shouldLock) {
 				// get data from session
 				// @ts-ignore
 				let decryptionData = window.sessionStorage && JSON.parse(sessionStorage.getItem('decryptionData'))
@@ -1620,11 +1621,11 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				deviceOfTimezone: deviceOfTimezoneSamples,
 			} = decryptionSamples || {}
 
-			if (badBot && !decryptionSamples) {
+			if (shouldLock && !decryptionSamples) {
 				predictionErrorPatch('Failed prediction fetch')
 			}
 
-			if (badBot && decryptionSamples) {
+			if (shouldLock && decryptionSamples) {
 				// Perform Dragon Fire Magic
 				const decryptionData = {
 					windowVersion: getPrediction({ hash: (windowFeatures || {}).$hash, data: winSamples }),
