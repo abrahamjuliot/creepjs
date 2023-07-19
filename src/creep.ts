@@ -725,8 +725,8 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				<div>org:</div>
 				<div class="block-text">
 					<div class="blurred">Mars Communications</div>
-					<div class="blurred">Mars Union</div>
-					<div class="blurred">Mars/Martian</div>
+					<div class="blurred">MR Mars Union (Launchville)</div>
+					<div class="blurred">intensity: 0.0000</div>
 				</div>
 			</div>
 		</div>
@@ -937,7 +937,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 							return
 						}
 
-						const { network, org, tokensAvailable, tag } = data
+						const { network, org, tokensAvailable, tag, intensity } = data
 						const TagGrade: Record<string, string> = {
 							1: 'scale-down grade-D',
 							2: 'scale-down grade-F',
@@ -960,6 +960,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 									<div>org:</div>
 									<div class="block-text">
 										${org ? org.split(':').join('<br>') : HTMLNote.UNKNOWN}
+										<br><span class="${intensity >= 0.7 ? 'high-entropy' : ''}">intensity: ${intensity}</span>
 									</div>
 								</div>
 							</div>
