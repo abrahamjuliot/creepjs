@@ -5,7 +5,7 @@ import getCSSMedia, { cssMediaHTML } from './cssmedia'
 import getHTMLElementVersion, { htmlElementVersionHTML } from './document'
 import getClientRects, { clientRectsHTML } from './domrect'
 import getConsoleErrors, { consoleErrorsHTML } from './engine'
-import { timer, getCapturedErrors, caniuse, errorsHTML } from './errors'
+import { timer, getCapturedErrors, caniuse, errorsHTML, attempt } from './errors'
 import getEngineFeatures, { featuresHTML, getFeaturesLie } from './features'
 import getFonts, { fontsHTML } from './fonts'
 import getHeadlessFeatures, { headlessFeaturesHTML } from './headless'
@@ -612,15 +612,6 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		console.error(error.message)
 	}) || []
 
-	let canvasHash = ''
-	let webglHash = ''
-	let screenHash = ''
-	try {
-		canvasHash = fpHash.canvas2d.$hash.slice(0, 8)
-		webglHash = fpHash.canvasWebgl.$hash.slice(0, 8)
-		screenHash = fpHash.screen.$hash.slice(0, 8)
-	} catch {}
-
 	// session
 	const computeSession = ({ fingerprint, loading = false, computePreviousLoadRevision = false }) => {
 		const data = {
@@ -1017,9 +1008,9 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			sQuota,
 			measured,
 			ttfb,
-			canvasHash,
-			webglHash,
-			screenHash,
+			canvasHash: fp.canvas2d?.$hash.slice(0, 8),
+			webglHash: fp.canvasWebgl?.$hash.slice(0, 8),
+			screenHash: fp.screen?.$hash.slice(0, 8),
 		})
 
 		fetch('https://creepjs-api.web.app/fp', {
