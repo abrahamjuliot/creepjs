@@ -1012,6 +1012,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			canvasHash: fp.canvas2d?.$hash.slice(0, 8),
 			webglHash: fp.canvasWebgl?.$hash.slice(0, 8),
 			screenHash: fp.screen?.$hash.slice(0, 8),
+			timeZoneHash: fp.timezone?.$hash.slice(0, 8),
 		})
 
 		fetch('https://creepjs-api.web.app/fp', {
