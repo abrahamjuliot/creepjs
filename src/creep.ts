@@ -1062,6 +1062,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				benchmark,
 				resistance: resistanceId,
 				traced,
+				supervised,
 				timeSeries,
 			} = data || {}
 			const shouldLock = badBot || traced > 1
@@ -1107,6 +1108,9 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				errorsPointGain,
 				trashPointGain,
 				liesPointGain,
+				tracedPointGain,
+				measuredPointGain,
+				supervisedPointGain,
 				shadowBitsPointGain,
 				grade,
 			} = JSON.parse(scoreData)
@@ -1157,7 +1161,9 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 							<div>trust score: <span class="unblurred">
 								${score}% <span class="scale-down grade-${grade.charAt(0)}">${grade}</span>
 							</span></div>
-							<div>visits: <span class="unblurred">${visits}</span></div>
+							<div>visits: <span class="unblurred">${visits}</span> ${
+								supervised > 0 ? `[<span>supervised</span>] ${computePoints(supervisedPointGain)}` : ''
+							}</div>
 							<div class="ellipsis">first: <span class="unblurred">${toLocaleStr(firstVisit)}</span></div>
 							<div>alive: <span class="unblurred">${((hours) => {
 								const format = (n) => {
@@ -1168,9 +1174,11 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 								return (
 									hours > 48 ? `${format(hours/24)} days` : `${format(hours)} hrs`
 								)
-							})(persistence)}</span></div>
+							})(persistence)}</span> ${
+								traced > 0 ? `[<span>traced</span>] ${computePoints(tracedPointGain)}` : ''
+							}</div>
 							<div id="auto-delete">auto-delete in</div>
-							<div class="relative">shadow: <span class="unblurred">${!shadowBits ? '0' : shadowBits.toFixed(5)}</span>  ${computePoints(shadowBitsPointGain)}
+							<div class="relative">shadow: <span class="unblurred">${!shadowBits ? '0' : shadowBits.toFixed(5)}</span> ${computePoints(shadowBitsPointGain)}
 							${
 								!shadowBits ? '' : `<span class="confidence-note">${hashMini(shadow)}</span>`
 							}
@@ -1183,7 +1191,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 							${trashHTML(fp, computePoints(trashPointGain))}
 							${liesHTML(fp, computePoints(liesPointGain))}
 							${errorsHTML(fp, computePoints(errorsPointGain))}
-							<div>session (${''+loads}):<span class="unblurred sub-hash">${initial}</span></div>
+							<div>session (${''+loads}):<span class="unblurred sub-hash">${initial}</span> ${computePoints(measuredPointGain)}</div>
 							<div>revisions (${''+revisedKeys.length}): ${
 								!revisedKeys.length ? 'none' : modal(
 									`creep-revisions`,
