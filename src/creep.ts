@@ -43,12 +43,13 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 
 	await queueTask()
 	const stackBytes = getStackBytes()
-	const [, measured, ttfb] = await Promise.all([
+	const [, measuredTime, ttfb] = await Promise.all([
 		exile(),
 		measure(),
 		getTTFB(),
 	])
 	console.clear()
+	const measured = (outerWidth - innerWidth < 150) && (outerHeight - innerHeight < 150) ? measuredTime : 0
 
 	const isBrave = IS_BLINK ? await braveBrowser() : false
 	const braveMode = isBrave ? getBraveMode() : {}
