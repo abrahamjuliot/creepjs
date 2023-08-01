@@ -26,7 +26,6 @@ export function isFontOSBad(userAgentOS: string, fonts: string[]): boolean {
 		'Helvetica Neue' in fontMap ||
 		'Luminari' in fontMap ||
 		'PingFang HK Light' in fontMap ||
-		'Futura Bold' in fontMap ||
 		'InaiMathi Bold' in fontMap ||
 		'Galvji' in fontMap ||
 		'Chakra Petch' in fontMap
@@ -38,8 +37,7 @@ export function isFontOSBad(userAgentOS: string, fonts: string[]): boolean {
 		'Ubuntu' in fontMap ||
 		'Noto Color Emoji' in fontMap ||
 		'Dancing Script' in fontMap ||
-		'Droid Sans Mono' in fontMap ||
-		'Roboto' in fontMap
+		'Droid Sans Mono' in fontMap
 	)
 
 	if (isLikeWindows && userAgentOS != PlatformClassifier.WINDOWS) {
@@ -373,7 +371,7 @@ export default async function getFonts() {
 		if (isFontOSBad(USER_AGENT_OS, fontFaceLoadFonts)) {
 			LowerEntropy.FONTS = true,
 			Analysis.FontOsIsBad = true
-			sendToTrash('platform', `${USER_AGENT_OS} system and fonts are suspicious`)
+			sendToTrash('platform', `${USER_AGENT_OS} system and fonts are uncommon`)
 		}
 
 		logTestResult({ time: timer.stop(), test: 'fonts', passed: true })
@@ -428,15 +426,15 @@ export function fontsHTML(fp) {
 	<div class="relative col-six${lied ? ' rejected' : ''}">
 		<span class="aside-note">${performanceLogger.getLog().fonts}</span>
 		<strong>Fonts</strong><span class="${lied ? 'lies ' : LowerEntropy.FONTS ? 'bold-fail ' : ''}hash">${hashSlice($hash)}</span>
-		<div class="help" title="FontFace.load()">load (${fontFaceLoadFonts ? count(fontFaceLoadFonts) : '0'}/${'' + FONT_LIST.length}): ${platformVersion || ((fonts) => {
+		<div class="help" title="FontFace.load()">load (${fontFaceLoadFonts ? count(fontFaceLoadFonts) : '0'}/${'' + FONT_LIST.length}): ${`Like ${platformVersion}` || ((fonts) => {
 			return !(fonts || []).length ? '' : (
-				((''+fonts).match(/Lucida Console/)||[]).length ? `${icon.Windows}Windows` :
-				((''+fonts).match(/Droid Sans Mono|Noto Color Emoji|Roboto/g)||[]).length == 3 ? `${icon.Linux}${icon.Android}Linux Android` :
-				((''+fonts).match(/Droid Sans Mono|Roboto/g)||[]).length == 2 ? `${icon.Android}Android` :
-				((''+fonts).match(/Noto Color Emoji|Roboto/g)||[]).length == 2 ? `${icon.CrOS}Chrome OS` :
-				((''+fonts).match(/Noto Color Emoji/)||[]).length ? `${icon.Linux}Linux` :
-				((''+fonts).match(/Arimo/)||[]).length ? `${icon.Linux}Linux` :
-				((''+fonts).match(/Helvetica Neue/g)||[]).length == 2 ? `${icon.Apple}Apple` :
+				((''+fonts).match(/Lucida Console/)||[]).length ? `${icon.Windows}Like Windows` :
+				((''+fonts).match(/Droid Sans Mono|Noto Color Emoji|Roboto/g)||[]).length == 3 ? `${icon.Linux}${icon.Android}Like Linux Android` :
+				((''+fonts).match(/Droid Sans Mono|Roboto/g)||[]).length == 2 ? `${icon.Android}Like Android` :
+				((''+fonts).match(/Noto Color Emoji|Roboto/g)||[]).length == 2 ? `${icon.CrOS}Like Chrome OS` :
+				((''+fonts).match(/Noto Color Emoji/)||[]).length ? `${icon.Linux}Like Linux` :
+				((''+fonts).match(/Arimo/)||[]).length ? `${icon.Linux}Like Linux` :
+				((''+fonts).match(/Helvetica Neue/g)||[]).length == 2 ? `${icon.Apple}Like Apple` :
 				`${(fonts||[])[0]}...`
 			)
 		})(fontFaceLoadFonts)}</div>
