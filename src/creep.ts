@@ -1010,8 +1010,8 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			sQuota,
 			measured,
 			ttfb,
-			canvasHash: fp.canvas2d?.$hash.slice(0, 8),
-			webglHash: fp.canvasWebgl?.$hash.slice(0, 8),
+			canvasHash: fp.canvas2d?.lied === true ? null : fp.canvas2d?.$hash.slice(0, 8),
+			webglHash: fp.canvasWebgl?.lied === true ? null : fp.canvasWebgl?.$hash.slice(0, 8),
 			screenHash: fp.screen?.$hash.slice(0, 8),
 			timeZoneHash: fp.timezone?.$hash.slice(0, 8),
 		})
