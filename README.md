@@ -171,8 +171,10 @@ Purpose: identify browser visit history and activity
   "errorsPointGain": 0,
   "trashPointGain": 0,
   "liesPointGain": 0,
-  "tracedPointGain": 0,
+  "measuredPointGain": 0,
   "shadowBitsPointGain": 10,
+  "supervisedPointGain": 0,
+  "tracedPointGain": 0,  
   "grade": "A+"
  }`,
  shadow: "0000000000000000000000000000000000000000000000000000000000000000",
@@ -186,6 +188,7 @@ Purpose: identify browser visit history and activity
  benchmark: 565.4,
  resistance: '',
  traced: 0
+ supervised: 0,
 }
 ```
 
@@ -226,13 +229,15 @@ A failing trust score is unique
 - start at `100`
 - less than `20` loose fingerprints: reward `3` extra credit
 - less than `0.2` shadow bits (revision indicator): reward `4` extra credit
-- `20-40` loose fingerprints (revision indicator): subtract `count * 0.1`
-- `40` or more loose fingerprints: subtract `count * 0.5`
+- `20-39` loose fingerprints (revision indicator): subtract `count * 0.1`
+- `40-99` loose fingerprints (revision indicator): subtract `count * 0.2`
+- `100` or more loose fingerprints: subtract `count * 0.5`
 - `0.1` or more shadow bits: subtract `value * 15`
 - trash: subtract `count * 5.5`
 - lies: subtract `count * 31`
 - errors: subtract `count * 3.5`
-- traced: subtract `count * 25`
+- traced: subtract `count * 25` (tracing involves time series fingerprinting)
+- supervised: subtract `count * 10` (supervised is a special case of anomalies)
 - finally add the `crowdBlendingScore` to the above total and divide by 2
 
 #### Definitions
