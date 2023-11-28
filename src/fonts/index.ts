@@ -112,10 +112,16 @@ const MacOSFonts = {
 	],
 	// Monterey: https://support.apple.com/en-us/HT212587
 	'12': [
-		'Bai Jamjuree',
-		'Chakra Petch',
-		'Charmonman',
-		'Kodchasan',
+		'Noto Sans Gunjala Gondi Regular',
+		'Noto Sans Masaram Gondi Regular',
+		'Noto Serif Yezidi Regular'
+	],
+	// Ventura: https://support.apple.com/en-us/HT213266
+	'13': [
+		'Apple SD Gothic Neo ExtraBold',
+		'STIX Two Math Regular',
+		'STIX Two Text Regular',
+		'Noto Sans Canadian Aboriginal Regular',
 	],
 }
 
@@ -289,6 +295,7 @@ export default async function getFonts() {
 
 		const getMacOS = ({ fonts, fontMap }) => {
 			const fontVersion = {
+				['13']: fontMap['13'].find((x) => fonts.includes(x)),
 				['12']: fontMap['12'].find((x) => fonts.includes(x)),
 				['10.15-11']: fontMap['10.15-11'].find((x) => fonts.includes(x)),
 				['10.13-10.14']: fontMap['10.13-10.14'].find((x) => fonts.includes(x)),
@@ -302,6 +309,7 @@ export default async function getFonts() {
 				'' + Object.keys(fontVersion).sort().filter((key) => !!fontVersion[key])
 			)
 			const hashMap = {
+				'10.10,10.11,10.12,10.13-10.14,10.15-11,10.9,12,13': 'Ventura',
 				'10.10,10.11,10.12,10.13-10.14,10.15-11,10.9,12': 'Monterey',
 				'10.10,10.11,10.12,10.13-10.14,10.15-11,10.9': '10.15-11',
 				'10.10,10.11,10.12,10.13-10.14,10.9': '10.13-10.14',
