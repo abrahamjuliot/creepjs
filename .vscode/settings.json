@@ -6,6 +6,6 @@
 	"javascript.suggest.completeFunctionCalls": true,
 	"js/ts.implicitProjectConfig.checkJs": true,
 	"editor.codeActionsOnSave": {
-		"source.addMissingImports": true,
+		"source.addMissingImports": "explicit"
 	}
 }
