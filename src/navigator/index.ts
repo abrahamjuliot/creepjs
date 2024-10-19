@@ -379,9 +379,8 @@ export default async function getNavigator(workerScope) {
 			return navigator.gpu.requestAdapter().then((adapter) => {
 				if (!adapter) return
 				const { limits = {}, features = [] } = adapter || {}
-
 				// @ts-expect-error if unsupported
-				return adapter.requestAdapterInfo().then((info) => {
+				const handleInfo = (info) => {
 					const { architecture, description, device, vendor } = info
 					const adapterInfo = [vendor, architecture, description, device]
 					const featureValues = [...features.values()]
@@ -403,7 +402,9 @@ export default async function getNavigator(workerScope) {
 						features: featureValues,
 						limits: limitsData,
 					}
-				})
+				}
+				const { info } = adapter
+				return info ? handleInfo(info) : adapter.requestAdapterInfo().then(handleInfo)
 			})
 		}, 'webgpu failed')
 
