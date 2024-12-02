@@ -476,7 +476,16 @@ const createPerformanceLogger = () => {
 		getTotal: () => total,
 	}
 }
-const performanceLogger = createPerformanceLogger()
+
+const createNullPerformanceLogger = () => {
+	return {
+		logTestResult: () => {},
+		getLog: () => {},
+		getTotal: () => 0,
+	}
+}
+
+const performanceLogger = createNullPerformanceLogger()
 const { logTestResult } = performanceLogger
 
 const getPromiseRaceFulfilled = async ({

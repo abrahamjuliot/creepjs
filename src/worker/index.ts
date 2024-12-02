@@ -208,7 +208,7 @@ export async function spawnWorker() {
 		const locationPathNameLie = (
 			!href ||
 			!pathname ||
-			!/^\/(docs|creepjs|public)|\/creep.js$/.test(pathname) ||
+			!/^\/(docs|creepjs|public)|\/init.js$/.test(pathname) ||
 			!new RegExp(`${pathname}$`).test(href)
 		)
 
@@ -321,7 +321,7 @@ export default async function getBestWorkerScope() {
 			})
 		})
 
-		const scriptSource = './creep.js'
+		const scriptSource = './init.js'
 		WORKER_NAME = 'ServiceWorkerGlobalScope'
 		WORKER_TYPE = 'service' // loads fast but is not available in frames
 		let workerScope = await getServiceWorker({ scriptSource }).catch((error) => {
