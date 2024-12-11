@@ -374,7 +374,7 @@ export default async function getFonts() {
 			lieProps['String.fromCodePoint'] ||
 			lieProps['CSSStyleDeclaration.setProperty'] ||
 			lieProps['CSS2Properties.setProperty']
-		)
+		) || false
 
 		if (isFontOSBad(USER_AGENT_OS, fontFaceLoadFonts)) {
 			LowerEntropy.FONTS = true,
