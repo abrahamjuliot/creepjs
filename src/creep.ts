@@ -43,10 +43,13 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 
 	await queueTask()
 	const stackBytes = getStackBytes()
-	const [, measuredTime, ttfb] = await Promise.all([
+	const [, measuredTime, ttfb, aInfo, sQuota] = await Promise.all([
 		exile(),
 		measure(),
 		getTTFB(),
+		// @ts-expect-error if unsupported
+		'gpu' in navigator ? navigator.gpu.requestAdapter().then((x) => x ? true : null) : null,
+		getStorage(),
 	])
 	console.clear()
 	const measured = (outerWidth - innerWidth < 150) && (outerHeight - innerHeight < 150) ? measuredTime : 0
@@ -387,10 +390,8 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			deviceOfTimezoneHash,
 			timeEnd,
 		},
-		sQuota,
 	] = await Promise.all([
 		fingerprint().catch((error) => console.error(error)) || {},
-		getStorage(),
 	])
 
 	if (!fp) {
@@ -909,6 +910,8 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				benchmarkProto: PROTO_BENCHMARK,
 				measured,
 				ttfb,
+				aInfo,
+				sQuota,
 			}
 
 			// console.log(`'`+Object.keys(RAW_BODY).join(`',\n'`))
@@ -1010,6 +1013,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 			sQuota,
 			measured,
 			ttfb,
+			aInfo,
 			canvasHash: fp.canvas2d?.lied === true ? null : fp.canvas2d?.$hash.slice(0, 8),
 			webglHash: fp.canvasWebgl?.lied === true ? null : fp.canvasWebgl?.$hash.slice(0, 8),
 			screenHash: fp.screen?.$hash.slice(0, 8),
@@ -1419,6 +1423,10 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 					RAW_BODY = {
 						stackBytes,
 						tmSum,
+						measured,
+						ttfb,
+						aInfo,
+						sQuota,
 						sender: `${sender.e}_${sender.l}`,
 						isTorBrowser,
 						isRFP,
@@ -1591,7 +1599,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 
 				if (crowdBlendingScore != fpCrowdBlendingScore) {
 					console.log(`updating crowd-blending score from ${fpCrowdBlendingScore} to ${crowdBlendingScore}`)
-					const scoreRequest = `https://creepjs-api.web.app/score-crowd-blending?id=${creepHash}&crowdBlendingScore=${crowdBlendingScore}&traceId=${traceId}&stackBytes=${stackBytes}&tmSum=${tmSum}`
+					const scoreRequest = `https://creepjs-api.web.app/score-crowd-blending?id=${creepHash}&crowdBlendingScore=${crowdBlendingScore}&traceId=${traceId}&stackBytes=${stackBytes}&tmSum=${tmSum}&measured=${measured}&ttfb=${ttfb}&aInfo=${aInfo}&sQuota=${sQuota}`
 
 					fetch(scoreRequest)
 						.catch((error) => console.error('Failed Score Request', error))
