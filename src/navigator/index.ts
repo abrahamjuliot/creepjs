@@ -383,7 +383,7 @@ export default async function getNavigator(workerScope) {
 				const handleInfo = (info) => {
 					const { architecture, description, device, vendor } = info
 					const adapterInfo = [vendor, architecture, description, device]
-					const featureValues = [...features.values()].filter((x) => x !== 'shader-f16')
+					const featureValues = [...features.values()]
 					const limitsData = ((limits) => {
 						const data: Record<string, number> = {}
 						// eslint-disable-next-line guard-for-in
@@ -394,12 +394,11 @@ export default async function getNavigator(workerScope) {
 					})(limits)
 
 					Analysis.webGpuAdapter = adapterInfo
-					Analysis.webGpuFeatures = hashMini(featureValues)
+					Analysis.webGpuFeatures = featureValues
 					Analysis.webGpuLimits = hashMini(limitsData)
 
 					return {
 						adapterInfo,
-						features: featureValues,
 						limits: limitsData,
 					}
 				}
@@ -557,13 +556,10 @@ export function navigatorHTML(fp) {
 			modal(
 				`${id}-webgpu`,
 				((webgpu) => {
-					const { adapterInfo, features, limits } = webgpu
+					const { adapterInfo, limits } = webgpu
 					return `
 					<div>
 						<strong>Adapter</strong><br>${adapterInfo.filter((x: string) => x).join('<br>')}
-					</div>
-					<div>
-						<br><strong>Features</strong><br>${features.join('<br>')}
 					</div>
 					<div>
 						<br><strong>Limits</strong><br>${Object.keys(limits).map((x) => `${x}: ${limits[x]}`).join('<br>')}

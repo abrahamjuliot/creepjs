@@ -601,7 +601,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				fp.offlineAudioContext
 		),
 		fonts: !fp.fonts || fp.fonts.lied || LowerEntropy.FONTS ? undefined : fp.fonts.fontFaceLoadFonts,
-		forceRenew: 1737083351544,
+		forceRenew: 1737085481442,
 	}
 
 	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f')
