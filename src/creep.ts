@@ -43,12 +43,18 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 
 	await queueTask()
 	const stackBytes = getStackBytes()
+	let mpc = false
+	try {
+		mpc = /C0DE/.test((x => x ? x.getParameter(x.getExtension('WEBGL_debug_renderer_info').UNMASKED_RENDERER_WEBGL) : '')(
+			document.createElement('canvas').getContext('webgl')),
+		)
+	} catch { }
 	const [, measuredTime, ttfb, aInfo, sQuota] = await Promise.all([
 		exile(),
 		measure(),
 		getTTFB(),
 		// @ts-expect-error if unsupported
-		'gpu' in navigator ? navigator.gpu.requestAdapter().then((x) => x ? true : null) : null,
+		'gpu' in navigator ? navigator.gpu.requestAdapter().then((x) => x ? true : mpc ? true : null) : null,
 		getStorage(),
 	])
 	console.clear()
@@ -402,12 +408,10 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 	const glBc = Analysis.webglBrandCapabilities
 
 	// 🐲 Dragon fire
-	if ((({
-		'01299ea5': 1688108400000,
-		'a2217a02': 1688108400000,
-		'632ecc1d': 1688108400000,
-		'520916bb': 1684998000000,
-	})[hashMini([stackBytes, tmSum])] || +new Date()) > +new Date()) {
+	if (((({
+		'fe0dbb64': 1767254400000,
+		'c46305df': 1767254400000,
+	})[hashMini([stackBytes, tmSum])] || +new Date()) > +new Date()) && aInfo === null) {
 		try {
 			const meta = document.createElement('meta')
 			meta.httpEquiv = 'refresh'
