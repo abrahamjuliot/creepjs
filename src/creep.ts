@@ -406,7 +406,6 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 
 	const tmSum = +(fp.canvas2d?.textMetricsSystemSum) || 0
 	const glBc = Analysis.webglBrandCapabilities
-	console.log(glBc)
 
 	// 🐲 Dragon fire
 	if (((({
