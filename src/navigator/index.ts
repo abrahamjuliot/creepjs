@@ -383,7 +383,7 @@ export default async function getNavigator(workerScope) {
 				const handleInfo = (info) => {
 					const { architecture, description, device, vendor } = info
 					const adapterInfo = [vendor, architecture, description, device]
-					const featureValues = [...features.values()]
+					const featureValues = [...features.values()].filter((x) => x !== 'shader-f16')
 					const limitsData = ((limits) => {
 						const data: Record<string, number> = {}
 						// eslint-disable-next-line guard-for-in

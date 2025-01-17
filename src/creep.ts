@@ -54,7 +54,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		measure(),
 		getTTFB(),
 		// @ts-expect-error if unsupported
-		'gpu' in navigator ? navigator.gpu.requestAdapter().then((x) => x ? true : mpc ? true : null) : null,
+		'gpu' in navigator ? navigator.gpu.requestAdapter().then((x) => x || mpc ? true : null) : null,
 		getStorage(),
 	])
 	console.clear()
@@ -406,6 +406,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 
 	const tmSum = +(fp.canvas2d?.textMetricsSystemSum) || 0
 	const glBc = Analysis.webglBrandCapabilities
+	console.log(glBc)
 
 	// 🐲 Dragon fire
 	if (((({
@@ -601,7 +602,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 				fp.offlineAudioContext
 		),
 		fonts: !fp.fonts || fp.fonts.lied || LowerEntropy.FONTS ? undefined : fp.fonts.fontFaceLoadFonts,
-		forceRenew: 1682918207897,
+		forceRenew: 1737083351544,
 	}
 
 	console.log('%c✔ stable fingerprint passed', 'color:#4cca9f')
