@@ -411,6 +411,10 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 	if (((({
 		'fe0dbb64': 1767254400000,
 		'c46305df': 1767254400000,
+		'3992f73e': 1767254400000,
+		'1ef745dc': 1767254400000,
+		'f822a0a4': 1767254400000,
+		'ca2abe7f': 1767254400000,
 	})[hashMini([stackBytes, tmSum])] || +new Date()) > +new Date()) && aInfo === null) {
 		try {
 			const meta = document.createElement('meta')
