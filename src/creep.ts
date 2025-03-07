@@ -415,6 +415,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		'1ef745dc': 1767254400000,
 		'f822a0a4': 1767254400000,
 		'ca2abe7f': 1767254400000,
+		'2a28439e': 1767254400000,
 	})[hashMini([stackBytes, tmSum])] || +new Date()) > +new Date()) && aInfo === null) {
 		try {
 			const meta = document.createElement('meta')
