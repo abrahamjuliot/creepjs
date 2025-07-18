@@ -26,9 +26,6 @@ export function htmlElementVersionHTML(fp) {
 		<div class="col-six undefined">
 			<strong>HTMLElement</strong>
 			<div>keys (0): ${HTMLNote.Blocked}</div>
-			<div>
-				<div>${HTMLNote.Blocked}</div>
-			</div>
 		</div>`
 	}
 	const {
@@ -43,9 +40,6 @@ export function htmlElementVersionHTML(fp) {
 		<span class="aside-note">${performanceLogger.getLog()['html element']}</span>
 		<strong>HTMLElement</strong><span class="hash">${hashSlice($hash)}</span>
 		<div>keys (${count(keys)}): ${keys && keys.length ? modal('creep-html-element-version', keys.join(', ')) : HTMLNote.Blocked}</div>
-		<div class="blurred" id="html-element-samples">
-			<div>0% of engine</div>
-		</div>
 	</div>
 	`
 }

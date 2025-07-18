@@ -46,9 +46,6 @@ export function consoleErrorsHTML(fp) {
 		<div class="col-six undefined">
 			<strong>Error</strong>
 			<div>results: ${HTMLNote.BLOCKED}</div>
-			<div>
-				<div>${HTMLNote.BLOCKED}</div>
-			</div>
 		</div>`
 	}
 	const {
@@ -67,9 +64,6 @@ export function consoleErrorsHTML(fp) {
 		<span class="aside-note">${performanceLogger.getLog()['console errors']}</span>
 		<strong>Error</strong><span class="hash">${hashSlice($hash)}</span>
 		<div>results: ${modal('creep-console-errors', results.join('<br>'))}</div>
-		<div class="blurred" id="error-samples">
-			<div>0% of engine</div>
-		</div>
 	</div>
 	`
 }

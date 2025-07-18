@@ -277,9 +277,6 @@ export function mathsHTML(fp) {
 				header+results.join('<br>'),
 			)
 		}</div>
-		<div class="blurred" id="math-samples">
-			<div>0% of engine</div>
-		</div>
 	</div>
 	`
 }

@@ -49,9 +49,6 @@ export function windowFeaturesHTML(fp) {
 		<div class="col-six undefined">
 			<strong>Window</strong>
 			<div>keys (0): ${HTMLNote.BLOCKED}</div>
-			<div>
-				<div>${HTMLNote.BLOCKED}</div>
-			</div>
 		</div>`
 	}
 	const {
@@ -66,9 +63,6 @@ export function windowFeaturesHTML(fp) {
 		<span class="aside-note">${performanceLogger.getLog().window}</span>
 		<strong>Window</strong><span class="hash">${hashSlice($hash)}</span>
 		<div>keys (${count(keys)}): ${keys && keys.length ? modal('creep-iframe-content-window-version', keys.join(', ')) : HTMLNote.BLOCKED}</div>
-		<div class="blurred" id="window-features-samples">
-			<div>0% of version</div>
-		</div>
 	</div>
 	`
 }

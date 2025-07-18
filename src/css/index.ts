@@ -198,9 +198,6 @@ export function cssHTML(fp) {
 			<strong>Computed Style</strong>
 			<div>keys (0): ${HTMLNote.BLOCKED}</div>
 			<div>system styles: ${HTMLNote.BLOCKED}</div>
-			<div>
-				<div>${HTMLNote.BLOCKED}</div>
-			</div>
 			<div class="gradient"></div>
 		</div>`
 	}
@@ -257,9 +254,6 @@ export function cssHTML(fp) {
 				hashMini(system),
 			) : HTMLNote.BLOCKED
 		}</div>
-		<div class="blurred" id="system-style-samples">
-			<div>system</div>
-		</div>
 		<style>.gradient { background: repeating-linear-gradient(to right, ${gradientColors.join(', ')}); }</style>
 		<div class="gradient"></div>
 	</div>
