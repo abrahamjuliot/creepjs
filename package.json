@@ -4,6 +4,7 @@
   "description": "creepy device and browser fingerprinting",
   "main": "server.js",
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
     "watch:dev": "npx rollup --config rollup.config.js -w & nodemon -d 3 ./server.js localhost 8000",
@@ -11,9 +12,9 @@
     "minify:js": "javascript-obfuscator public/creep.js -o docs/creep.js --identifier-names-generator \"mangled-shuffled\"",
     "autoprefixer": "postcss public/style.css -u autoprefixer -o public/style.prefix.css",
     "minify:css": "cleancss -o docs/style.min.css public/style.prefix.css",
-    "build:css": "yarn autoprefixer && yarn minify:css",
-    "build:js": "yarn build:dev && yarn minify:js",
-    "build": "yarn build:js & yarn build:css",
+    "build:css": "pnpm autoprefixer && pnpm minify:css",
+    "build:js": "pnpm build:dev && pnpm minify:js",
+    "build": "pnpm build:js & pnpm build:css",
     "postbuild": "echo 'build complete 🔥'"
   },
   "repository": {
@@ -26,23 +27,24 @@
     "url": "https://github.com/abrahamjuliot/CreepJS/issues"
   },
   "homepage": "https://github.com/abrahamjuliot/CreepJS#readme",
-  "dependencies": {},
   "devDependencies": {
-    "@rollup/plugin-typescript": "^8.3.3",
-    "@typescript-eslint/eslint-plugin": "^5.30.7",
-    "@typescript-eslint/parser": "^5.30.7",
-    "autoprefixer": "^10.4.1",
-    "axios": "^0.27.2",
-    "clean-css-cli": "^4.3.0",
-    "eslint": "^8.20.0",
+    "@rollup/plugin-typescript": "^12.1.2",
+    "@typescript-eslint/eslint-plugin": "^8.19.1",
+    "@typescript-eslint/parser": "^8.19.1",
+    "autoprefixer": "^10.4.20",
+    "axios": "^1.7.9",
+    "clean-css-cli": "^5.6.3",
+    "eslint": "^9.18.0",
     "eslint-config-google": "^0.14.0",
-    "express": "^4.18.1",
-    "javascript-obfuscator": "^4.0.0",
-    "nodemon": "^2.0.19",
-    "postcss": "^8.4.5",
-    "postcss-cli": "^8.3.1",
-    "rollup": "^2.77.0",
-    "terser": "^5.14.2",
-    "typescript": "^4.7.4"
+    "eslint-config-prettier": "^9.1.0",
+    "express": "^4.21.2",
+    "javascript-obfuscator": "^4.1.1",
+    "nodemon": "^3.1.9",
+    "postcss": "^8.4.49",
+    "postcss-cli": "^11.0.0",
+    "prettier": "3.4.2",
+    "rollup": "^4.30.1",
+    "terser": "^5.37.0",
+    "typescript": "^5.7.3"
   }
 }

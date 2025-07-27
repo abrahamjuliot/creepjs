@@ -74,9 +74,9 @@ Tests are focused on:
 
 Contributions are welcome.
 
-🟫 install `yarn install`<br>
-🟩 build `yarn build:dev`<br>
-🟪 watch `yarn watch:dev`<br>
-🟦 release to GitHub pages `yarn build`<br>
+🟫 install `pnpm install`<br>
+🟩 build `pnpm build:dev`<br>
+🟪 watch `pnpm watch:dev`<br>
+🟦 release to GitHub pages `pnpm build`<br>
 
 If you would like to test on a secure connection, GitHub Codespaces is supported. It is discouraged to host a copy of this repo on a personal site. The goal of this project is to conduct research and provide education, not to create a fingerprinting library.
