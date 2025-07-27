@@ -9,7 +9,7 @@
     "start": "node server.js",
     "watch:dev": "npx rollup --config rollup.config.js -w & nodemon -d 3 ./server.js localhost 8000",
     "build:dev": "npx rollup --config rollup.config.js",
-    "minify:js": "javascript-obfuscator public/creep.js -o docs/creep.js --identifier-names-generator \"mangled-shuffled\"",
+    "minify:js": "javascript-obfuscator public/creep.js -o docs/creep.js --identifier-names-generator \"mangled-shuffled\" && javascript-obfuscator public/lib.js -o docs/lib.js --identifier-names-generator \"mangled-shuffled\"",
     "autoprefixer": "postcss public/style.css -u autoprefixer -o public/style.prefix.css",
     "minify:css": "cleancss -o docs/style.min.css public/style.prefix.css",
     "build:css": "pnpm autoprefixer && pnpm minify:css",
