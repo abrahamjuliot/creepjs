@@ -20,14 +20,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/atk81/CreepJS.git"
+    "url": "git+https://github.com/atk81/creepjs.git"
   },
-  "author": "",
+  "author": "atk81",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/atk81/CreepJS/issues"
+    "url": "https://github.com/atk81/creepjs/issues"
   },
-  "homepage": "https://github.com/atk81/CreepJS#readme",
+  "homepage": "https://github.com/atk81/creepjs#readme",
   "devDependencies": {
     "@rollup/plugin-typescript": "^12.1.2",
     "@typescript-eslint/eslint-plugin": "^8.19.1",
