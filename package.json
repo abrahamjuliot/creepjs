@@ -1,32 +1,33 @@
 {
   "name": "creepjs",
   "version": "1.0.0",
+  "type": "module",
   "description": "creepy device and browser fingerprinting",
-  "main": "server.js",
+  "main": "server.cjs",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
-    "watch:dev": "npx rollup --config rollup.config.js -w & nodemon -d 3 ./server.js localhost 8000",
+    "start": "node server.cjs",
+    "watch:dev": "npx rollup --config rollup.config.js -w & nodemon -d 3 ./server.cjs localhost 8000",
     "build:dev": "npx rollup --config rollup.config.js",
     "minify:js": "javascript-obfuscator public/creep.js -o docs/creep.js --identifier-names-generator \"mangled-shuffled\"",
     "autoprefixer": "postcss public/style.css -u autoprefixer -o public/style.prefix.css",
     "minify:css": "cleancss -o docs/style.min.css public/style.prefix.css",
     "build:css": "pnpm autoprefixer && pnpm minify:css",
-    "build:js": "pnpm build:dev && pnpm minify:js",
-    "build": "pnpm build:js & pnpm build:css",
+    "build:js": "pnpm build:dev",
+    "build": "pnpm build:js",
     "postbuild": "echo 'build complete 🔥'"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/abrahamjuliot/CreepJS.git"
+    "url": "git+https://github.com/atk81/CreepJS.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/abrahamjuliot/CreepJS/issues"
+    "url": "https://github.com/atk81/CreepJS/issues"
   },
-  "homepage": "https://github.com/abrahamjuliot/CreepJS#readme",
+  "homepage": "https://github.com/atk81/CreepJS#readme",
   "devDependencies": {
     "@rollup/plugin-typescript": "^12.1.2",
     "@typescript-eslint/eslint-plugin": "^8.19.1",
