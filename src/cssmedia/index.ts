@@ -109,9 +109,9 @@ export default function getCSSMedia() {
 							win.matchMedia('(display-mode: browser)').matches ? 'browser' : undefined
 			),
 			['color-gamut']: (
-				win.matchMedia('(color-gamut: srgb)').matches ? 'srgb' :
+				win.matchMedia('(color-gamut: rec2020)').matches ? 'rec2020' :
 					win.matchMedia('(color-gamut: p3)').matches ? 'p3' :
-						win.matchMedia('(color-gamut: rec2020)').matches ? 'rec2020' : undefined
+						win.matchMedia('(color-gamut: srgb)').matches ? 'srgb' : undefined
 			),
 			orientation: (
 				win.matchMedia('(orientation: landscape)').matches ? 'landscape' :
