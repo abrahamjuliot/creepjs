@@ -325,7 +325,7 @@
 	)
 
 	// test mobile lies
-	const testMobile = (n, system, limit = 8) => n > limit && system && /Windows Phone|Android/.test(system)
+	const testMobile = (n, system, limit = 10) => n > limit && system && /Windows Phone|Android/.test(system)
 	const memoryLie = testMobile(deviceMemory, system)
 	const coresLie = testMobile(hardwareConcurrency, system)
 
@@ -407,9 +407,9 @@
 			background: #657fca1a
 		}
 		@media (prefers-color-scheme: dark) {
-			
+
 		}
-		
+
 		</style>
 		<div class="visitor-info">
 			<span class="aside-note">${perf.toFixed(2)}ms</span>
@@ -421,7 +421,7 @@
 			<div>${!system ? fail() : pass()}system: ${!system ? 'unknown' : system}</div>
 			<div>${!res.parsed ? fail() : pass()}device: ${!res.parsed ? 'unknown' : res.parsed}</div>
 			<div>${res.platformLie ? fail() : pass()}platform: ${platform}</div>
-			
+
 			<div>${voiceSystemLie ? fail() : pass()}speechSynthesis: ${voiceSystem || 'unknown'}</div>
 			<div class="group">
 				<div>${res.touchLie || cssTouchLie ? fail() : pass()}maxTouchPoints: ${'' + maxTouchPoints}</div>
