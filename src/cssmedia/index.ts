@@ -63,8 +63,9 @@ export default function getCSSMedia() {
 					win.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'reduce' : undefined
 			),
 			['prefers-color-scheme']: (
-				win.matchMedia('(prefers-color-scheme: light)').matches ? 'light' :
-					win.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : undefined
+				// prefer main window
+				matchMedia('(prefers-color-scheme: light)').matches ? 'light' :
+					matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : undefined
 			),
 			monochrome: (
 				win.matchMedia('(monochrome)').matches ? 'monochrome' :
@@ -114,8 +115,9 @@ export default function getCSSMedia() {
 						win.matchMedia('(color-gamut: srgb)').matches ? 'srgb' : undefined
 			),
 			orientation: (
-				win.matchMedia('(orientation: landscape)').matches ? 'landscape' :
-					win.matchMedia('(orientation: portrait)').matches ? 'portrait' : undefined
+				// prefer main window
+				matchMedia('(orientation: landscape)').matches ? 'landscape' :
+					matchMedia('(orientation: portrait)').matches ? 'portrait' : undefined
 			),
 		}
 
@@ -147,9 +149,9 @@ export default function getCSSMedia() {
 		@media (display-mode: standalone) {body {--display-mode: standalone}}
 		@media (display-mode: minimal-ui) {body {--display-mode: minimal-ui}}
 		@media (display-mode: browser) {body {--display-mode: browser}}
-		@media (color-gamut: srgb) {body {--color-gamut: srgb}}
-		@media (color-gamut: p3) {body {--color-gamut: p3}}
 		@media (color-gamut: rec2020) {body {--color-gamut: rec2020}}
+		@media (color-gamut: p3) {body {--color-gamut: p3}}
+		@media (color-gamut: srgb) {body {--color-gamut: srgb}}
 		@media (orientation: landscape) {body {--orientation: landscape}}
 		@media (orientation: portrait) {body {--orientation: portrait}}
 		</style>
