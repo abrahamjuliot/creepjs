@@ -149,9 +149,9 @@ export default function getCSSMedia() {
 		@media (display-mode: standalone) {body {--display-mode: standalone}}
 		@media (display-mode: minimal-ui) {body {--display-mode: minimal-ui}}
 		@media (display-mode: browser) {body {--display-mode: browser}}
-		@media (color-gamut: rec2020) {body {--color-gamut: rec2020}}
-		@media (color-gamut: p3) {body {--color-gamut: p3}}
 		@media (color-gamut: srgb) {body {--color-gamut: srgb}}
+		@media (color-gamut: p3) {body {--color-gamut: p3}}
+		@media (color-gamut: rec2020) {body {--color-gamut: rec2020}}
 		@media (orientation: landscape) {body {--orientation: landscape}}
 		@media (orientation: portrait) {body {--orientation: portrait}}
 		</style>
