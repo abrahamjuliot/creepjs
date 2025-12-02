@@ -1,5 +1,9 @@
 # CreepJS
 
+> **Disclaimer**  
+This repository is a standalone project and has no affiliation with any external websites, organizations, or projects that may use a similar name or reference this repo.
+
+
 [https://abrahamjuliot.github.io/creepjs](https://abrahamjuliot.github.io/creepjs)
 
 The purpose of this project is to shed light on weaknesses and privacy leaks among modern anti-fingerprinting extensions and browsers.
