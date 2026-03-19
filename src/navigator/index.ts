@@ -117,9 +117,11 @@ export default async function getNavigator(workerScope) {
 					'2': true,
 					'4': true,
 					'8': true,
+					'16': true,
+					'32': true,
 				}
 				if (!trusted[deviceMemory]) {
-					sendToTrash('deviceMemory', `${deviceMemory} is not a valid value [0.25, 0.5, 1, 2, 4, 8]`)
+					sendToTrash('deviceMemory', `${deviceMemory} is not a valid value [0.25, 0.5, 1, 2, 4, 8, 16, 32]`)
 				}
 
 				// @ts-expect-error memory is undefined if not supported
