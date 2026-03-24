@@ -9,11 +9,10 @@
     "start": "node server.js",
     "watch:dev": "pnpm exec rollup --config rollup.config.js -w & nodemon -d 3 ./server.js localhost 8000",
     "build:dev": "NODE_OPTIONS=--no-warnings TSCONFIG_PATH=./tsconfig.build.json pnpm exec rollup --config rollup.config.js",
-    "minify:js": "terser public/creep.js -o docs/creep.js -c -m",
     "autoprefixer": "postcss public/style.css -u autoprefixer -o public/style.prefix.css",
     "minify:css": "cleancss -o docs/style.min.css public/style.prefix.css",
     "build:css": "pnpm autoprefixer && pnpm minify:css",
-    "build:js": "pnpm build:dev && pnpm minify:js",
+    "build:js": "pnpm build:dev",
     "build": "pnpm -s build:js && pnpm -s build:css"
   },
   "repository": {

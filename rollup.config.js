@@ -2,14 +2,27 @@ import typescript from '@rollup/plugin-typescript';
 
 const tsconfig = process.env.TSCONFIG_PATH || './tsconfig.json'
 
-export default {
+/**
+ * @param {string} dir
+ */
+const createConfig = (dir) => ({
   input: 'src/creep.ts',
   output: {
-    dir: 'public',
+    file: `${dir}/creep.js`,
     format: 'iife',
-    sourcemap: true,
+    sourcemap: false,
   },
   plugins: [
-    typescript({ tsconfig }),
+    typescript({
+      tsconfig,
+      compilerOptions: {
+        outDir: `./${dir}`,
+      },
+    }),
   ],
-};
+})
+
+export default [
+  createConfig('public'),
+  createConfig('docs'),
+]
