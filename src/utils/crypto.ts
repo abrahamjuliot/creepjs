@@ -1,4 +1,4 @@
-import { isFontOSBad } from '../fonts'
+import { isFontOSBad } from './fonts'
 import { WORKER_TYPE } from '../worker'
 import { getReportedPlatform } from './helpers'
 
