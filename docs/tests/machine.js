@@ -334,11 +334,6 @@
 		res.core == 'iOS' &&
 		typeof deviceMemory != 'undefined'
 	)
-	const iosCoresLie = (
-		res.core == 'iOS' &&
-		typeof hardwareConcurrency != 'undefined'
-	)
-
 	// test gpu
 	const gpu = getGPU()
 	const gpuLie = gpu.length > 1
@@ -428,7 +423,7 @@
 				<div>${anyPointerLie ? fail() : pass()}any-pointer: ${'' + cssTouch}</div>
 
 				<div>${deviceMemory < 1 || memoryLie || iosMemoryLie ? fail() : pass()}deviceMemory: ${'' + deviceMemory}</div>
-				<div>${hardwareConcurrency < 1 || coresLie || iosCoresLie ? fail() : pass()}hardwareConcurrency: ${'' + hardwareConcurrency}</div>
+				<div>${hardwareConcurrency < 1 || coresLie ? fail() : pass()}hardwareConcurrency: ${'' + hardwareConcurrency}</div>
 				<div>${gpuLie || iosGPULie ? fail() : pass()}gpu: ${
 		gpuLie ?
 			`<div class=group>- ${'' + gpu.join('<br>- ')}</div></div>` :
@@ -448,7 +443,6 @@
 			!memoryLie &&
 			!iosMemoryLie &&
 			hardwareConcurrency > 1 &&
-			!iosCoresLie &&
 			!coresLie &&
 			!gpuLie &&
 			!iosGPULie
@@ -465,7 +459,6 @@
 			${memoryLie ? `<div class="erratic">deviceMemory too high for ${system}</div>` : ''}
 			${iosMemoryLie ? `<div class="erratic">${res.core} core does not support deviceMemory</div>` : ''}
 			${hardwareConcurrency < 1 ? `<div class="erratic">hardwareConcurrency should not be less than 1</div>` : ''}
-			${iosCoresLie ? `<div class="erratic">${res.core} core does not support hardwareConcurrency</div>` : ''}
 			${coresLie ? `<div class="erratic">hardwareConcurrency too high for ${system}</div>` : ''}
 			${gpuLie ? `<div class="erratic">gpus mismatch</div>` : ''}
 			${iosGPULie ? `<div class="erratic">${res.core} core does not support ${gpu[0] || 'undefined'} gpu</div>` : ''}
