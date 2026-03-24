@@ -303,12 +303,7 @@ export default async function getClientRects() {
 		const knownHash = hashMini(knownDimensions)
 
 		if (IS_BLINK) {
-			const Rotate: Record<string, boolean> = {
-				'9d9215cc': true, // 100, etc
-				'47ded322': true, // 33, 67
-				'd0eceaa8': true, // 90
-			}
-			if (!Rotate[knownHash]) {
+			if (devicePixelRatio === 1 && knownHash !== '9d9215cc') {
 				documentLie('Element.getClientRects', 'unknown rotate dimensions')
 				lied = true
 			}
