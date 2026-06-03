@@ -252,7 +252,7 @@ export default async function getClientRects() {
 
 		const rangeBoundingClientRect = [...rectElems].map((el) => {
 			range.selectNode(el)
-			return toNativeObject(el.getBoundingClientRect())
+			return toNativeObject(range.getBoundingClientRect())
 		})
 
 		// detect failed shift calculation
