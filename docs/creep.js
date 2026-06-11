@@ -4147,7 +4147,7 @@
             });
             const rangeBoundingClientRect = [...rectElems].map((el) => {
                 range.selectNode(el);
-                return toNativeObject(el.getBoundingClientRect());
+                return toNativeObject(range.getBoundingClientRect());
             });
             // detect failed shift calculation
             // inspired by https://arkenfox.github.io/TZP
